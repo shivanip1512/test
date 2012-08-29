@@ -94,13 +94,9 @@
         		 	
         		 		<tags:nameValueGap gapHeight="10px"/>
         		 		
-        		 		<tags:nameValue name="${groupLabel}">
-        		 			
-        		 			<tags:deviceGroupNameSelector fieldName="deviceGroupName_${formUniqueId}" 
-												  	  fieldValue="${deviceGroupName}" 
-												      dataJson="${groupDataJson}"
-												      linkGroupName="true"
-												      showSelectedDevicesIcon="false"/>
+        		 		<tags:nameValue id="attributeDeviceGroups" name="${groupLabel}">
+        		 			<tags:deviceGroupNameSelector fieldName="deviceGroupName_${formUniqueId}" fieldValue="${deviceGroupName}" 
+												      dataJson="${groupDataJson}" linkGroupName="true" showSelectedDevicesIcon="false"/>
         		 		</tags:nameValue>
         		 		
         		 		<tags:nameValueGap gapHeight="12px"/>
@@ -180,13 +176,9 @@
         		 		
         		 		<tags:nameValueGap gapHeight="10px"/>
         		 		
-        		 		<tags:nameValue name="${groupLabel}">
-        		 			
-							<tags:deviceGroupNameSelector fieldName="deviceGroupName_${formUniqueId}" 
-												  	  fieldValue="${deviceGroupName}" 
-												      dataJson="${groupDataJson}"
-												      linkGroupName="true"
-												      showSelectedDevicesIcon="false"/>
+        		 		<tags:nameValue id="commandDeviceGroups" name="${groupLabel}">
+							<tags:deviceGroupNameSelector fieldName="deviceGroupName_${formUniqueId}" fieldValue="${deviceGroupName}" 
+												      dataJson="${groupDataJson}" linkGroupName="true" showSelectedDevicesIcon="false"/>
         		 		</tags:nameValue>
         		 		
         		 		<tags:nameValueGap gapHeight="12px"/>
