@@ -85,3 +85,28 @@ table.contentTable .rightColumn {
     vertical-align: top;
 }
 
+.disclaimer {
+	font-size: 0.6em;
+	color: #aaa;
+	margin: 20px 10px;
+}
+
+.disclaimer h3 {
+	text-align: left;
+}
+
+.progress {
+	border: solid 1px #888;
+/* 	border-radius: 5px; */
+	width: 500px;
+	float: left;
+	margin-right: 20px; 
+}
+
+.percent_90 {
+	width: 90%;
+	background-color: green;
+	color: white;
+	text-align: center;
+	position: relative;
+}

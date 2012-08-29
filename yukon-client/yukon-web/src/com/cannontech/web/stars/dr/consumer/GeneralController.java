@@ -5,6 +5,7 @@ import java.util.List;
 import javax.servlet.http.HttpServletRequest;
 
 import org.apache.commons.lang.StringUtils;
+import org.apache.ecs.xhtml.em;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.ModelMap;
@@ -52,6 +53,7 @@ public class GeneralController extends AbstractConsumerController {
                                       ControlPeriod.PAST_DAY);
         map.addAttribute("displayablePrograms", displayablePrograms);
         
+        boolean promptForEmail = false;
         boolean isNotEnrolled = displayablePrograms.size() == 0;
         map.addAttribute("isNotEnrolled", isNotEnrolled);
         
@@ -68,6 +70,27 @@ public class GeneralController extends AbstractConsumerController {
         }else if(!optOutEnabled.isCommunicationEnabled()){
         	map.addAttribute("optOutDisabledKey", "communcationDisabledWarning");
         }
+        
+        //See if we need to prompt for an email address. step 1: Can we recover passwords?
+        if(rolePropertyDao.checkProperty(YukonRoleProperty.ENABLE_PASSWORD_RECOVERY, null)){
+        	//Step 2: Can this user edit their password and access the contacts page?
+        	if(rolePropertyDao.checkAllProperties(yukonUserContext.getYukonUser(), 
+        											YukonRoleProperty.RESIDENTIAL_CONSUMER_INFO_CHANGE_LOGIN_PASSWORD, 
+        											YukonRoleProperty.RESIDENTIAL_CONTACTS_ACCESS)){
+        		//This user should be prompted unless they have a valid email address
+        		promptForEmail = true;
+        		
+        		//Step 3: Does this user have an email address?
+        		LiteContact primaryContact = contactDao.getPrimaryContactForAccount(customerAccount.getAccountId());
+                LiteContactNotification emailNotification = contactNotificationDao.getFirstNotificationForContactByType(primaryContact, ContactNotificationType.EMAIL);
+                
+                if(emailNotification != null){
+                	promptForEmail = false;
+                }
+        	}
+        }
+        
+        map.addAttribute("promptForEmail", promptForEmail);
         
         if (isNotEnrolled) return viewName; // if there are no programs enrolled there is nothing more to show
         

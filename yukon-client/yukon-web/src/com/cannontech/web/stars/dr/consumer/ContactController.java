@@ -42,6 +42,7 @@ import com.cannontech.stars.util.ServletUtils;
 import com.cannontech.stars.util.WebClientException;
 import com.cannontech.stars.web.StarsYukonUser;
 import com.cannontech.user.UserUtils;
+import com.cannontech.user.YukonUserContext;
 import com.cannontech.util.ServletUtil;
 import com.cannontech.web.security.annotation.CheckRoleProperty;
 import com.cannontech.web.stars.dr.consumer.model.ContactNotificationOption;
@@ -60,13 +61,17 @@ public class ContactController extends AbstractConsumerController {
 
     @RequestMapping(value = "/consumer/contacts", method = RequestMethod.GET)
     public String view(@ModelAttribute("customerAccount") CustomerAccount customerAccount,
+    		YukonUserContext yukonUserContext,
             ModelMap map) {
 
+    	
         // Get the primary contact
         int customerAccountId = customerAccount.getAccountId();
         LiteContact contact = contactDao.getPrimaryContactForAccount(customerAccountId);
         map.addAttribute("primaryContact", contact);
 
+        promptForEmail(map, yukonUserContext, customerAccountId);
+        
         // Get a list of additional contacts
         List<LiteContact> additionalContacts = contactDao.getAdditionalContactsForAccount(customerAccountId);
         map.addAttribute("additionalContacts", additionalContacts);
@@ -105,7 +110,7 @@ public class ContactController extends AbstractConsumerController {
 
         int userId = user.getUserID();
         LiteCustomer customer = customerDao.getCustomerForUser(userId);
-
+        
         LiteContact contact = new LiteContact(-1);
         contact.setContFirstName("New Contact");
         contact.setContLastName("New Contact");
@@ -270,5 +275,29 @@ public class ContactController extends AbstractConsumerController {
                                                                                "");
             notificationList.add(notification);
         }
+    }
+    
+    private void promptForEmail(ModelMap map, YukonUserContext yukonUserContext, int accountId){
+    	boolean promptForEmail = false;
+    	//See if we need to prompt for an email address. step 1: Can we recover passwords?
+        if(rolePropertyDao.checkProperty(YukonRoleProperty.ENABLE_PASSWORD_RECOVERY, null)){
+        	//Step 2: Can this user edit their password and access the contacts page?
+        	if(rolePropertyDao.checkAllProperties(yukonUserContext.getYukonUser(), 
+        											YukonRoleProperty.RESIDENTIAL_CONSUMER_INFO_CHANGE_LOGIN_PASSWORD, 
+        											YukonRoleProperty.RESIDENTIAL_CONTACTS_ACCESS)){
+        		//This user should be prompted unless they have a valid email address
+        		promptForEmail = true;
+        		
+        		//Step 3: Does this user have an email address?
+        		LiteContact primaryContact = contactDao.getPrimaryContactForAccount(accountId);
+                LiteContactNotification emailNotification = contactNotificationDao.getFirstNotificationForContactByType(primaryContact, ContactNotificationType.EMAIL);
+                
+                if(emailNotification != null){
+                	promptForEmail = false;
+                }
+        	}
+        }
+        
+        map.addAttribute("promptForEmail", promptForEmail);
     }
 }

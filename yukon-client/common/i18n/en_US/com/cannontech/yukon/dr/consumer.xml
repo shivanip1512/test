@@ -60,6 +60,20 @@
     For more information please contact your Energy Company.
     ]]></entry>
     <entry key="yukon.web.modules.consumer.general.optOutsDisabledWarning.title">Temporary Limited Access to Features</entry>
+
+    <entry key="yukon.web.modules.consumer.general.promptForEmail.label">Continue</entry>
+    <entry key="yukon.web.modules.consumer.title">Almost Complete!</entry>
+    <entry key="yukon.web.modules.consumer.general.promptForEmail.title">Almost Complete!</entry>
+    <entry key="yukon.web.modules.consumer.general.promptForEmail"><![CDATA[
+    Please provide an email address to ensure access to your account.  We will only use this address to reset your password should you ever forget it.
+    <br/>
+    <div class="disclaimer">
+    <h3>We value your privacy</h3>
+    We will never share, sell, or rent individual personal information with anyone without your advance permission or unless ordered by a court of law. Information submitted to us is only available to employees managing this information for purposes of contacting you or sending you emails based on your request for information and to contracted service providers for purposes of providing services relating to our communications with you.
+    </div>
+    <div class="progress"><div class="percent_90">90%</div></div>
+    ]]></entry>
+    
     
     <!--  contacts.jsp -->
     <entry key="yukon.dr.consumer.contacts.header">Account - Contacts</entry>
@@ -77,6 +91,18 @@
     <entry key="yukon.dr.consumer.contacts.removeNotificationTitle">Remove Notification</entry>
     <entry key="yukon.dr.consumer.contacts.removeImage">/WebConfig/yukon/Icons/clearbits/close.gif</entry>
     <entry key="yukon.dr.consumer.contacts.invalidNotification">Contact {0} for {1} contains invalid characters</entry>    
+    <entry key="yukon.dr.consumer.contacts.promptForEmail.instructions"><![CDATA[
+    <br/>
+    <br/>
+    <div class="help">
+    	To add an email:
+    	<ol>
+    		<li>Click the <strong>Add Notification</strong> button under the <strong>Contact (Primary)</strong> section</li>
+    		<li>Select <strong>Email</strong> from the drop down that appears on the left</li>
+    		<li>Enter the email address where you will be able to receive password reset messages</li>
+    		<li>Click <strong>Update Contact</strong> to save your changes</li>
+    </div> 
+    ]]></entry>
     
     <!-- controlHistory.jsp -->
     <entry key="yukon.web.modules.consumer.controlhistory.header">Programs - Control History</entry>

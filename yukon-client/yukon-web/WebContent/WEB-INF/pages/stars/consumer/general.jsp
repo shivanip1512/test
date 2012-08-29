@@ -22,7 +22,6 @@
 		    return true;
 	    }
 	}
-	
 </script>
 
 
@@ -31,6 +30,16 @@
     <c:if test="${not empty optOutDisabledKey}">
         <tags:boxContainer2 nameKey="optOutsDisabledWarning" hideEnabled="false">
             <cti:msg2 key=".${optOutDisabledKey}"/>
+        </tags:boxContainer2>
+        <br>
+        <br>
+    </c:if>
+    <c:if test="${promptForEmail}">
+        <tags:boxContainer2 nameKey="promptForEmail" hideEnabled="false">
+            <cti:msg2 key=".promptForEmail"/>
+            <div class="fr">
+	            <cti:button nameKey="promptForEmail" href="contacts" />
+            </div>
         </tags:boxContainer2>
         <br>
         <br>
