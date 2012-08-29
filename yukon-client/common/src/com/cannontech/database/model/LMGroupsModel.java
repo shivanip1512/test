@@ -29,9 +29,8 @@ public class LMGroupsModel extends AbstractDeviceTreeModel {
         if (isPorterDevicesOnly() && paoType == PaoType.LM_GROUP_DIGI_SEP) {
             // DIGI_SEP groups are not compatible with porter
             return false;
-        } else {
-            return (paoClass == PaoClass.GROUP 
-                    && paoCategory == PaoCategory.DEVICE);
-        }
+        } 
+
+        return (paoClass == PaoClass.GROUP && paoCategory == PaoCategory.DEVICE);
     }
 }

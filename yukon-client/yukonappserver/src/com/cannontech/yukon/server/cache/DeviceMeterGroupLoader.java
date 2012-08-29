@@ -30,9 +30,9 @@ public DeviceMeterGroupLoader(ArrayList<LiteDeviceMeterNumber> deviceList, Strin
 public void run()
 {
 	long timer = System.currentTimeMillis();
-	String sqlString = "SELECT DeviceId, MeterNumber, Type FROM DeviceMeterGroup dmg " + 
+	String sqlString = "SELECT dmg.DeviceId, dmg.MeterNumber, pao.Type FROM DeviceMeterGroup dmg " + 
 	                    " JOIN YukonPaobject pao ON dmg.DeviceId = pao.PaobjectId " +
-	                    " ORDER BY MeterNumber";
+	                    " ORDER BY dmg.MeterNumber";
 
 	java.sql.Connection conn = null;
 	java.sql.Statement stmt = null;
