@@ -108,6 +108,7 @@
                     <cti:item value="${current_filter}"/>
 					<cti:item value="${from_toInstant_breach}"/>
 					<cti:item value="${reporting_interval}"/>
+                    <cti:item value="${detection_algorithm}"/>
 				</cti:list>
 				<cti:msg2 key=".filterBetweenFromAndToBreach" arguments="${arguments}" htmlEscapeArguments="false"/>
 		    </div>
@@ -117,6 +118,7 @@
 				<cti:list var="arguments">
                     <cti:item value="${current_filter}"/>
 					<cti:item value="${toInstant_now_breach}"/>
+                    <cti:item value="${detection_algorithm}"/>
 				</cti:list>
 				<cti:msg2 key=".filterBetweenToAndNowBreach" arguments="${arguments}" htmlEscapeArguments="false"/>
 		    </div>
@@ -177,38 +179,38 @@
         <tags:filteredByContainer>
             <!-- Devices -->
             <c:set var="isDeviceGroup" value="${backingBean.deviceCollection.collectionParameters['collectionType'] == 'group'}" />
-            <cti:msg2 key=".filteredBy.devices.value.individual" var="individual_value"/>
+            <cti:msg2 key="yukon.common.filteredBy.devices.value.individual" var="individual_value"/>
             <c:set var="devices_filter" value="${isDeviceGroup ? backingBean.deviceCollection.collectionParameters['group.name'] :
              individual_value} (${backingBean.deviceCollection.deviceCount})"/>
-			<tags:filteredBy labelKey=".filteredBy.devices.label" value="${devices_filter}"
-				cssClass="${isDeviceGroup ? 'device_group' : 'individual' }" isClearable="false" />
+			<tags:filteredBy labelKey="yukon.common.filteredBy.devices.label" value="${devices_filter}"
+				cssClass="${isDeviceGroup ? 'f_filter_group_clicked' : 'f_filter_individual_clicked' }" isClearable="false" />
 
             <!-- Dates -->
 			<c:set var="dates_filter">
-				<span class="date from">
+				<span class="date">
 				    <cti:formatDate type="DATEHM" value="${backingBean.fromInstant}" />
 			    </span>
 			    -
-			    <span class="date to">
+			    <span class="date f_filter_to_date_clicked">
 					<cti:formatDate type="DATEHM" value="${backingBean.toInstant}" />
 				</span>
 			</c:set>
-			<tags:filteredBy labelKey=".filteredBy.dates.label" value="${dates_filter}" cssClass="range" isClearable="false"/>
+			<tags:filteredBy labelKey="yukon.common.filteredBy.dates.label" value="${dates_filter}" cssClass="range f_filter_date_range" isClearable="false"/>
 
             <!-- Threshold -->
-            <cti:msg2 key=".filteredBy.threshold.value" argument="${backingBean.threshold}" var="threshold_value" />
-			<tags:filteredBy labelKey=".filteredBy.threshold.label" value="${threshold_value}" cssClass="threshold" isClearable="false"/>
+            <cti:msg2 key="yukon.common.filteredBy.threshold.value.galPerHour" argument="${backingBean.threshold}" var="threshold_value" />
+			<tags:filteredBy labelKey="yukon.common.filteredBy.threshold.label" value="${threshold_value}" cssClass="f_filter_threshold_clicked" isClearable="false"/>
 
             <!-- Disabled Devices -->
             <c:if test="${backingBean.includeDisabledPaos}">
-				<cti:msg2 key=".filteredBy.disabledDevices.value" var="disabled_value"/>
-				<tags:filteredBy labelKey=".filteredBy.disabledDevices.label" value="${disabled_value}" cssClass="disabled_devices" clearClass="reset_disabled_devices"/>
+				<cti:msg2 key="yukon.common.filteredBy.disabledDevices.value" var="disabled_value"/>
+				<tags:filteredBy labelKey="yukon.common.filteredBy.disabledDevices.label" value="${disabled_value}" cssClass="f_disabled_devices" clearClass="f_filter_reset_disabled_devices_clicked"/>
 			</c:if>
 
             <!-- Reset link if not using defaults -->
 			<c:if test="${!usingDefaultFilter}">
-                <cti:msg2 key=".filteredBy.reset.value" var="reset_value"/>
-                <tags:filteredBy labelKey=".filteredBy.reset.label" value="${reset_value}" isClearable="false" isReset="true"/>
+                <cti:msg2 key="yukon.common.filteredBy.reset.value" var="reset_value"/>
+                <tags:filteredBy labelKey="yukon.common.filteredBy.reset.label" value="${reset_value}" isClearable="false" isReset="true" cssClass="f_reset_filter_submit"/>
 			</c:if>
         </tags:filteredByContainer>
 		<table id="leaksTable" class="compactResultsTable">

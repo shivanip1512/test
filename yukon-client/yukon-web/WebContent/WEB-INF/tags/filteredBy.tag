@@ -17,7 +17,7 @@
 jQuery(function() {
     jQuery(".filter_container .icon_small_clear").bind("click", function(e) {
         var clear_icon = jQuery(e.target);
-        var clear_href = clear_icon.attr("href");
+        var clear_href = clear_icon.attr("data-href");
         if (typeof(clear_href) !== 'undefined' && clear_href !== "") {
             window.location.href = clear_href;
         } else {
@@ -29,11 +29,11 @@ jQuery(function() {
 
 <c:choose>
     <c:when test="${filteredByContainer}">
-		<a href="javascript:void(0);" class="${pageScope.cssClass} <c:if test="${pageScope.isReset}">reset</c:if>">
+		<a href="javascript:void(0);" class="${pageScope.cssClass} <c:if test="${pageScope.isReset}"> reset</c:if>">
 			<span class="label"><i:inline key="${pageScope.labelKey}"/></span>
 			<span class="value">${pageScope.value}</span>
 			<c:if test="${empty pageScope.isClearable || pageScope.isClearable == 'true'}">
-		        <i href="${pageScope.clearHref}" class="icon_small_clear ${pageScope.clearClass}" title="<cti:msg2 key="yukon.web.defaults.remove"/>"></i>
+		        <i data-href="${pageScope.clearHref}" class="icon_small_clear ${pageScope.clearClass}" title="<cti:msg2 key="yukon.web.defaults.remove"/>"></i>
 			</c:if>
 		</a>
 	</c:when>

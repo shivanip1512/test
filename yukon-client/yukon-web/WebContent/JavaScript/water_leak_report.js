@@ -42,14 +42,14 @@ if(typeof(WaterLeakReport) === 'undefined'){
                 this._init_interval_data_form();
                 
                 /* report.jsp filter labels */
-                jQuery(".filter_container .device_group").bind("click", this._filter_group_clicked);
-                jQuery(".filter_container .individual").bind("click", this._filter_individual_clicked);
-                jQuery(".filter_container .range .date.to").bind("click", this._filter_to_date_clicked);
-                jQuery(".filter_container .range").bind("click", this._filter_date_range_clicked);
-                jQuery(".filter_container .threshold").bind("click", this._filter_threshold_clicked);
-                jQuery(".filter_container .disabled_devices .reset_disabled_devices").bind("click", this._filter_reset_disabled_devices_clicked);
-                jQuery(".filter_container .disabled_devices").bind("click", this._filter_disabled_devices_clicked);
-                jQuery(".filter_container .reset").bind("click", this.reset_filter_submit);
+                jQuery(".filter_container .f_filter_group_clicked").bind("click", this._filter_group_clicked);
+                jQuery(".filter_container .f_filter_individual_clicked").bind("click", this._filter_individual_clicked);
+                jQuery(".filter_container .f_filter_date_range .f_filter_to_date_clicked").bind("click", this._filter_to_date_clicked);
+                jQuery(".filter_container .f_filter_date_range").bind("click", this._filter_date_range_clicked);
+                jQuery(".filter_container .f_filter_threshold_clicked").bind("click", this._filter_threshold_clicked);
+                jQuery(".filter_container .f_disabled_devices .f_filter_reset_disabled_devices_clicked").bind("click", this._filter_reset_disabled_devices_clicked);
+                jQuery(".filter_container .f_disabled_devices").bind("click", this._filter_disabled_devices_clicked);
+                jQuery(".filter_container .f_reset_filter_submit").bind("click", this.reset_filter_submit);
 
                 /* intervalData.jsp */
                 jQuery("#exportIntervalCsv").bind("click", this._export_interval_csv);
@@ -146,7 +146,7 @@ if(typeof(WaterLeakReport) === 'undefined'){
         
         _filter_group_clicked: function() {
             open_leakFilterDialog();
-            jQuery("[class^='chooseGroupIcon_deviceGroupNameSelectorTag_']").trigger("click");
+            jQuery("[class^='chooseGroupIcon_deviceGroupNameSelectorTag_']", WaterLeakReport._leak_filter_dialog).trigger("click");
         },
         _filter_individual_clicked: function() {
             open_leakFilterDialog();
@@ -154,25 +154,25 @@ if(typeof(WaterLeakReport) === 'undefined'){
         },
         _filter_to_date_clicked: function() {
             open_leakFilterDialog();
-            jQuery(".f_to_datetime").focus();
+            jQuery(".f_to_datetime", WaterLeakReport._leak_filter_dialog).focus();
             return false;
         },
         _filter_date_range_clicked: function() {
             open_leakFilterDialog();
-            jQuery(".f_from_datetime").focus();
+            jQuery(".f_from_datetime", WaterLeakReport._leak_filter_dialog).focus();
         },
         _filter_threshold_clicked: function(e) {
             open_leakFilterDialog();
-            jQuery(".f_threshold").focus();
+            jQuery(".f_threshold", WaterLeakReport._leak_filter_dialog).focus();
         },
         _filter_reset_disabled_devices_clicked: function() {
-            jQuery(".f_include_disabled_paos").val(false);
+            jQuery(".f_include_disabled_paos", WaterLeakReport._leak_filter_dialog).val(false);
             WaterLeakReport.filter_submit();
             return false;
         },
         _filter_disabled_devices_clicked: function() {
-            jQuery("input").blur();
             open_leakFilterDialog();
+            jQuery("input", WaterLeakReport._leak_filter_dialog).blur();
         },
         
         _set_filter_form_hidden_input: function(name, value) {
@@ -231,7 +231,7 @@ if(typeof(WaterLeakReport) === 'undefined'){
         },
         
         _disable_filter_buttons: function() {
-            jQuery(".ui-button").attr("disabled", true);
+            jQuery(".ui-button", ".ui-dialog-buttonset").attr("disabled", true);
         },
         
         _get_row_pao_id: function(elem){
