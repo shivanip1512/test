@@ -65,6 +65,8 @@ private:
     void    setFlags(UINT flags);
     void    setCommand(UINT command);
 
+    static double  getDurationInSeconds(std::string token);
+
     typedef std::map< std::string, CtiParseValue > map_type;
     typedef std::map< std::string, CtiParseValue >::const_iterator  map_itr_type;
 

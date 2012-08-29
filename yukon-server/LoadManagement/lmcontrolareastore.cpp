@@ -1043,7 +1043,7 @@ void CtiLMControlAreaStore::reset()
                             lmProgramDirectGearList.push_back(newDirectGear);
                         }
                     }
-                    else // Currently this is only hit if the SEPTemperatureOffset gear is misconfigured.
+                    else // Currently this is only hit if the SEPTemperatureOffset gear or BeatThePeak gear is misconfigured.
                     {
                         string gearName;
                         int gearId;

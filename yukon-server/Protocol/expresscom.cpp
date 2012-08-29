@@ -1106,7 +1106,6 @@ INT CtiProtocolExpresscom::parseRequest(CtiCommandParser &parse)
 
         parse.setValue( "xcextier",  true );
         parse.setValue( "xcextierlevel", tierOf(alert_level) );
-        
     }
 
     switch( command )
@@ -2969,7 +2968,7 @@ int CtiProtocolExpresscom::tierOf(std::string btp_alert_level)
     else
     {
         CtiLockGuard<CtiLogger> logger_guard(dout);
-        dout << " **** EXCEPTION Checkpoint **** Invalid tier: " << btp_alert_level << ". Setting to 0." << endl;
+        dout << " **** Checkpoint **** Invalid tier: " << btp_alert_level << ". Setting to 0." << endl;
         return 0;
     }
 }

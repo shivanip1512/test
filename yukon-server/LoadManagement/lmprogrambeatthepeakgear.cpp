@@ -81,7 +81,7 @@ bool CtiLMProgramBeatThePeakGear::stopControl(CtiLMGroupPtr currentLMGroup)
 
 unsigned long CtiLMProgramBeatThePeakGear::estimateOffTime(long controlSeconds)
 {
-    if( getTier() == BeatThePeakControlInterface::Red)
+    if( getTier() == BeatThePeakControlInterface::Red || getTier() == BeatThePeakControlInterface::Yellow)
     {
         return controlSeconds;
     }
@@ -101,7 +101,7 @@ BeatThePeakControlInterface::Tier CtiLMProgramBeatThePeakGear::getTier() const
     default:
         {
             CtiLockGuard<CtiLogger> logger_guard(dout);
-            dout << " **** EXCEPTION Checkpoint **** Invalid tier: " << _tier << ". Setting to Green." << std::endl;
+            dout << " **** Checkpoint **** Invalid tier: " << _tier << ". Setting to Green." << std::endl;
         }
         return BeatThePeakControlInterface::Green;
     }

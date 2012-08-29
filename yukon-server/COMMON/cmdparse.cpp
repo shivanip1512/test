@@ -1142,55 +1142,18 @@ void  CtiCommandParser::doParseControl(const string &_CmdStr)
 
             if(!(token = CmdStr.match( (const boost::regex) (CtiString("shed *") + str_floatnum + CtiString(" *[hms]?( |$)")))).empty())      // Sourcing from CmdStr, which is the entire command string.
             {
-                DOUBLE mult = 60.0;
-
-                // What shed time is needed now...
-                if(!(temp2 = token.match(re_floatnum)).empty())
+                double shedTime = getDurationInSeconds(token);
+                      
+                if(shedTime == -1.0)
                 {
-                    dValue = atof(temp2.c_str());
-                }
-                else
-                {
-                    // Something went  wrong sort of ....
-                    dValue = 60.0;
-                    {
-                        CtiLockGuard<CtiLogger> doubt_guard(dout);
-                        dout << "Command Parameter Assumed.  Shed for 1 hour. " << endl;
-                    }
+                    CtiLockGuard<CtiLogger> doubt_guard(dout);
+                    dout << "Command Parameter Assumed.  Shed for 1 hour. " << endl;
+                    shedTime = 360;
                 }
 
-                if(dValue == 7.5)
-                {
-                    _snprintf(tbuf2, sizeof(tbuf2),"SHED %.1f", dValue);
-                }
-                else
-                {
-                    _snprintf(tbuf2, sizeof(tbuf2),"SHED %d", (INT)dValue);
-                }
-
-                if(!(temp2 = token.match((const boost::regex) CtiString(str_floatnum + CtiString(" *[hs]")))).empty())
-                {
-                    /*
-                     *  Minutes is the assumed entry format, but we return the number in seconds... so
-                     */
-                    if(temp2.contains("h"))
-                    {
-                        mult = 3600.0;
-                        _snprintf(tbuf, sizeof(tbuf), "%sH", tbuf2);
-                    }
-                    else if(temp2.contains("s"))
-                    {
-                        mult = 1.0;
-                        _snprintf(tbuf, sizeof(tbuf), "%sS", tbuf2);
-                    }
-                }
-                else
-                {
-                    _snprintf(tbuf, sizeof(tbuf), "%sM", tbuf2);
-                }
-
-                // dout << "Shedding for " << (mult * MacsReq.dValue) << " seconds" << endl;
-                _cmd["shed"] = CtiParseValue( (mult * dValue) );
+                _snprintf(tbuf2, sizeof(tbuf2),"SHED %dS", (INT)dValue);
+                
+                _cmd["shed"] = CtiParseValue( shedTime );
             }
             else
             {
@@ -4600,50 +4563,21 @@ void  CtiCommandParser::doParseControlExpresscom(const string &_CmdStr)
     {
         _cmd["btp"] = CtiParseValue(true);
  
-        if(!(temp = CmdStr.match("btp +\\w*")).empty())
+        const boost::regex btpCmd = (const boost::regex) ( CtiString("btp \\w* ") + str_floatnum + CtiString(" ?[hms]?( |$)") );
+
+        if(!(temp = CmdStr.match( btpCmd ) ).empty() )
         {
-            if(! (temp.replace("btp +", "", CtiString::all).empty()) )
+            temp.replace("btp ", "" );
+
+            CtiString alertLevel;
+            if(! (alertLevel = temp.match( (const boost::regex) "\\w*")).empty() )
             {
-                _cmd["btp_alert_level"] = temp;
+                _cmd["btp_alert_level"] = alertLevel;
             }
 
             if(!(token = CmdStr.match( (const boost::regex) (CtiString("btp .*") + str_floatnum + CtiString(" *[hms]?( |$)")))).empty())      // Sourcing from CmdStr, which is the entire command string.
             {
-                CtiString temp2;
-
-                // dValue is how much time
-                if(!(temp2 = token.match(re_floatnum)).empty())
-                {
-                    dValue = atof(temp2.c_str());
-                }
-                else
-                {
-                    //No time found, default to one hour
-                    dValue = 60.0;
-                    {
-                        CtiLockGuard<CtiLogger> doubt_guard(dout);
-                        dout << "Command Parameter Assumed.  Control for 1 hour. " << endl;
-                    }
-                }
-
-                /*
-                    Default is in minutes. If the time is in hours or seconds,
-                    we must set the multiplier so that dValue * mult is in seconds
-                */
-                double mult = 60.0;
-                if(!(temp2 = token.match((const boost::regex) CtiString(str_floatnum + CtiString(" *[hs]")))).empty())
-                {
-                    if(temp2.contains("h"))
-                    {
-                        mult = 3600.0;
-                    }
-                    else if(temp2.contains("s"))
-                    {
-                        mult = 1.0;
-                    }
-                }
-
-                _cmd["xctiertimeout"] = CtiParseValue( (mult * dValue) );
+                _cmd["xctiertimeout"] = CtiParseValue( getDurationInSeconds(token) );
             }
         }
     }
@@ -6984,4 +6918,45 @@ std::vector<float> CtiCommandParser::parseListOfFloats(const std::string &floatL
     }
 
     return retVal;
+}
+
+/* 
+  matches a float followed by possibly h/m/s (hours/minutes/seconds) 
+  no units specified is assumed to be minutes
+  returns time in seconds
+  returns -1 on in an invalidly formatted string
+ */
+double CtiCommandParser::getDurationInSeconds( std::string token_ )
+{
+    CtiString token(token_);
+    double timeSec = -1.0;
+
+    if((token = token.match( (const boost::regex) (str_floatnum + CtiString(" *[hms]?( |$)")) )).empty() )
+    {
+        CtiLockGuard<CtiLogger> doubt_guard(dout);
+        dout << "Invalid time format: " << token_ << endl;
+        return -1.0;
+    }
+
+    CtiString timeStr = token.match(re_floatnum);
+    timeSec = atof(timeStr.c_str());
+
+    /*
+      Determine units, with default as minutes.
+      Multiply to get time in seconds.
+     */
+
+    if(token.contains("h"))
+    {
+        timeSec *= 3600.0;
+    }
+    else if(token.contains("s"))
+    {
+        timeSec *= 1.0;
+    }
+    else
+    {
+        timeSec *= 60.0;
+    }
+    return timeSec;
 }

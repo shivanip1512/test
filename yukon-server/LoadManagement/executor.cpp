@@ -659,8 +659,8 @@ void CtiLMCommandExecutor::ShedGroup()
                         }
                         else
                         {
-                            /* If the group could have Beat the Peak gears,
-                               then we should send their control message in addition to the regular message
+                            /* If the program has Beat the Peak gears,
+                               then we should send their control message to the group in addition to the regular message
                              */
                             if(hasBeatThePeakGear)
                             {
@@ -855,8 +855,8 @@ void CtiLMCommandExecutor::RestoreGroup()
                         currentLMGroup->setGroupControlState(CtiLMGroupBase::InactiveState);
                         ((CtiLMControlArea*)controlAreas[i])->setUpdatedFlag(TRUE);
 
-                        /* If the group could have Beat the Peak gears,
-                           then we should send their control message in addition to the regular message
+                        /* If the program has Beat the Peak gears,
+                           then we should send their control message to the group in addition to the regular message
                          */
                         if(hasBeatThePeakGear)
                         {

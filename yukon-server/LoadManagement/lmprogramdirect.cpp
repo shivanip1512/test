@@ -5322,14 +5322,14 @@ void CtiLMProgramDirect::restoreGuts(RWvistream& istrm)
     >> rw_groups;
 
     setHasBeatThePeakGear(false);
-    for( long i=0; i < _lmprogramdirectgears.size(); i++ )
+    for each( CtiLMProgramDirectGear *gear in _lmprogramdirectgears )
     {
-        if( ciStringEqual(_lmprogramdirectgears[i]->getControlMethod(), CtiLMProgramDirectGear::BeatThePeakMethod) )
+        if( ciStringEqual(gear->getControlMethod(), CtiLMProgramDirectGear::BeatThePeakMethod) )
         {
             setHasBeatThePeakGear(true);
             break;
         }
-   }
+    }
 
     _directstarttime = CtiTime(tempTime1);
     _directstoptime = CtiTime(tempTime2);
@@ -5438,10 +5438,10 @@ CtiLMProgramDirect& CtiLMProgramDirect::operator=(const CtiLMProgramDirect& righ
         _constraint_override = right._constraint_override;
         _announced_program_constraint_violation = right._announced_program_constraint_violation;
 
-        for( LONG i=0;i<right._lmprogramdirectgears.size();i++ )
+        for each( CtiLMProgramDirectGear *gear in right._lmprogramdirectgears )
         {
-            _lmprogramdirectgears.push_back(((CtiLMProgramDirectGear*)right._lmprogramdirectgears[i])->replicate());
-            if( ciStringEqual(right._lmprogramdirectgears[i]->getControlMethod(), CtiLMProgramDirectGear::BeatThePeakMethod) )
+            _lmprogramdirectgears.push_back( gear->replicate() );
+            if( ciStringEqual( gear->getControlMethod(), CtiLMProgramDirectGear::BeatThePeakMethod) )
             {
                 setHasBeatThePeakGear(true);
             }
