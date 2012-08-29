@@ -22,7 +22,7 @@
          The {0} has a from date and to date that are {1,choice,0#0 hours|1#1 hour|1<{1} hours} apart. A {2} hour period or longer is recommended for accurately determining leaks.
     ]]></entry>
     <entry key="yukon.web.modules.amr.waterLeakReport.report.filterBetweenToAndNowBreach"><![CDATA[
-         The {0} has a from date of {1,choice,0#0 hours|1#1 hour|1<{1} hours} ago. Data may not yet be expected for some devices during this time.
+         The {0} is showing leaks up to {1,choice,0#now|1#1 hour ago|1<{1} hours ago}. Data may not be available for some devices in the last 24 hours.
     ]]></entry>
     <entry key="yukon.web.modules.amr.waterLeakReport.report.foundLeaks">There have been {0} water leaks identified (see below) using our {1} and based on the {2}.</entry>
 	<entry key="yukon.web.modules.amr.waterLeakReport.report.defaultFilter">default filter</entry>
