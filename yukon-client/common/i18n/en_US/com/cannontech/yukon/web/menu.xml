@@ -15,10 +15,9 @@
 <!-- Consumer Account Information -->
 <entry key="yukon.web.menu.portal.consumerAccountInformation">Consumer Account Information</entry>
 <entry key="yukon.web.menu.portal.consumerAccountInformation.newAccount">New Account</entry>
+<entry key="yukon.web.menu.portal.consumerAccountInformation.accountImport">Import Account</entry>
 <entry key="yukon.web.menu.portal.consumerAccountInformation.optOutAdmin">Opt Out Administration</entry>
 <entry key="yukon.web.menu.portal.consumerAccountInformation.commercialcurtailment">C&amp;I Curtailment</entry>
-<entry key="yukon.web.menu.portal.consumerAccountInformation.commander">Commander</entry>
-<entry key="yukon.web.menu.portal.consumerAccountInformation.reporting">Reporting</entry>
 
 <!-- Metering -->
 <entry key="yukon.web.menu.portal.metering">Metering</entry>

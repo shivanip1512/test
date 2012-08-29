@@ -29,6 +29,9 @@
             <requireRoleProperty value="OPERATOR_NEW_ACCOUNT_WIZARD" />
             <link>/spring/stars/operator/account/accountCreate</link>
           </option>
+          <option name="accountImport">
+            <link>/spring/stars/operator/account/accountImport</link>
+          </option>          
           <option name="optOutAdmin">
             <link>/spring/stars/operator/optOut/admin</link>
           </option>
