@@ -217,7 +217,7 @@
             <tfoot>
                 <tr>
                     <td colspan="3">
-                        <select name="ruleType">
+                        <select name="ruleType" class="f_allowSubmitViaEnterKey">
                             <c:forEach items="${ruleTypes}" var="ruleType">
                                 <option value="${ruleType}"><cti:formatObject value="${ruleType}"/></option>
                             </c:forEach>
