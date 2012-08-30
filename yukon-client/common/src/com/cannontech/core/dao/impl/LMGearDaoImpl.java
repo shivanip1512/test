@@ -10,67 +10,65 @@ import com.cannontech.database.SqlParameterSink;
 import com.cannontech.database.YukonJdbcTemplate;
 import com.cannontech.database.YukonResultSet;
 import com.cannontech.database.YukonRowMapper;
-import com.cannontech.loadcontrol.gear.model.TierGearContainer;
+import com.cannontech.loadcontrol.gear.model.BeatThePeakGearContainer;
 
 public class LMGearDaoImpl implements LMGearDao {
     @Autowired private YukonJdbcTemplate yukonJdbcTemplate;
-    private final static String tableName = "LMTierGear";
+    private final static String tableName = "LMBeatThePeakGear";
     
-    public static YukonRowMapper<TierGearContainer> tierGearRowMapper = new YukonRowMapper<TierGearContainer>() {
+    public static YukonRowMapper<BeatThePeakGearContainer> beatThePeakGearRowMapper = new YukonRowMapper<BeatThePeakGearContainer>() {
         @Override
-        public TierGearContainer mapRow(YukonResultSet rs) throws SQLException {
-            TierGearContainer tgc = new TierGearContainer();
+        public BeatThePeakGearContainer mapRow(YukonResultSet rs) throws SQLException {
+            BeatThePeakGearContainer btpContainer = new BeatThePeakGearContainer();
             
             int gearId = rs.getInt("GearId");
-            int tier= rs.getInt("Tier");
-            tgc.setGearId(gearId);
-            tgc.setTier(tier);
+            String alertLevel = rs.getString("AlertLevel");
+            btpContainer.setGearId(gearId);
+            btpContainer.setAlertLevel(alertLevel);
             
-            return tgc;
+            return btpContainer;
         }
     };
-        
-    public void insertContainer(TierGearContainer tgc){
+    
+    @Override
+    public void insertContainer(BeatThePeakGearContainer tgc){
         SqlStatementBuilder sql = new SqlStatementBuilder();
 
         SqlParameterSink params = sql.insertInto(tableName);
         params.addValue( "GearId", tgc.getGearId() );
-        params.addValue( "Tier", tgc.getTier() );
+        params.addValue( "AlertLevel" , tgc.getAlertLevel() );
 
         yukonJdbcTemplate.update(sql);
     }
     
-    public void updateContainer(TierGearContainer tgc){
+    @Override
+    public void updateContainer(BeatThePeakGearContainer btpGearContainer){
         SqlStatementBuilder sql = new SqlStatementBuilder();
 
         SqlParameterSink params = sql.update(tableName);
-        params.addValue("Tier", tgc.getTier());
-        sql.append("WHERE GearId").eq(tgc.getGearId());
+        params.addValue("AlertLevel", btpGearContainer.getAlertLevel());
+        sql.append("WHERE GearId").eq(btpGearContainer.getGearId());
 
         yukonJdbcTemplate.update(sql);
     }
     
-    public TierGearContainer getContainer(int gearId) {    
+    @Override
+    public BeatThePeakGearContainer getContainer(int gearId) {    
         SqlStatementBuilder sql = new SqlStatementBuilder();
-        sql.append("SELECT GearId, Tier");
+        sql.append("SELECT GearId, AlertLevel");
         sql.append("FROM " + tableName);
         sql.append("WHERE GearId").eq(gearId);
         
-        TierGearContainer tgc = yukonJdbcTemplate.queryForObject(sql, tierGearRowMapper);
+        BeatThePeakGearContainer btpgearContainer = yukonJdbcTemplate.queryForObject(sql, beatThePeakGearRowMapper);
         
-        return tgc;
+        return btpgearContainer;
     }
     
+    @Override
     public void delete(int gearId){
         SqlStatementBuilder sql = new SqlStatementBuilder();
         sql.append("DELETE FROM " + tableName);
         sql.append("WHERE GearId").eq(gearId);
         yukonJdbcTemplate.update(sql);
-    }
-    
-       
-    public Integer getTierByGearId(int gearId) {
-        TierGearContainer tgc = getContainer(gearId);
-        return tgc.getTier();
     }
 }

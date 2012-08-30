@@ -4,13 +4,13 @@ import java.sql.SQLException;
 
 import com.cannontech.core.dao.LMGearDao;
 import com.cannontech.database.db.device.lm.GearControlMethod;
-import com.cannontech.loadcontrol.gear.model.TierGearContainer;
+import com.cannontech.loadcontrol.gear.model.BeatThePeakGearContainer;
 import com.cannontech.spring.YukonSpringHook;
 
 public class BeatThePeakGear extends com.cannontech.database.db.device.lm.LMProgramDirectGear
 {
 
-    private TierGearContainer tierGearContainer = new TierGearContainer();
+    private BeatThePeakGearContainer tierGearContainer = new BeatThePeakGearContainer();
 
     public BeatThePeakGear() {
         super();
@@ -18,11 +18,11 @@ public class BeatThePeakGear extends com.cannontech.database.db.device.lm.LMProg
         setControlMethod(GearControlMethod.BeatThePeak);
     }
 
-    public TierGearContainer getTierGearContainer() {
+    public BeatThePeakGearContainer getTierGearContainer() {
         return tierGearContainer;
     }
 
-    public void setTierGearContainer(TierGearContainer tierGearContainer) {
+    public void setTierGearContainer(BeatThePeakGearContainer tierGearContainer) {
         this.tierGearContainer = tierGearContainer;
     }
 

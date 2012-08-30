@@ -2,9 +2,9 @@ package com.cannontech.loadcontrol.gear.model;
 
 import java.io.Serializable;
 
-public class TierGearContainer implements Serializable{
+public class BeatThePeakGearContainer implements Serializable{
     private Integer gearId;
-    private Integer tier;
+    private String alertLevel;
     
     public Integer getGearId() {
         return gearId;
@@ -14,11 +14,11 @@ public class TierGearContainer implements Serializable{
         this.gearId = gearId;
     }
    
-    public Integer  getTier() {
-        return tier;
+    public String  getAlertLevel() {
+        return alertLevel;
     }
-    
-    public void setTier(Integer tier) {
-        this.tier = tier;
+
+    public void setAlertLevel(String alertLevel) {
+        this.alertLevel = alertLevel;
     }
 }
