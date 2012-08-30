@@ -1,22 +1,29 @@
-package com.cannontech.cbc.cyme;
+package com.cannontech.cbc.cyme.model;
 
-import com.cannontech.cbc.cyme.impl.PhaseInformation;
+import com.cannontech.common.pao.PaoType;
 
-public class CymeResultCap {
+
+public class SerializableDictionaryData {
     private String eqNo;
     private String fdrNwId;
     private PhaseInformation phaseA;
     private PhaseInformation phaseB;
     private PhaseInformation phaseC;    
-
-    public CymeResultCap(String eqNo, String fdrNwId, PhaseInformation phaseA,
-                         PhaseInformation phaseB, PhaseInformation phaseC) {
+    private PaoType paoType;
+    private int ltcTapPosition;
+    
+    public SerializableDictionaryData(String eqNo, String fdrNwId, 
+                                   PhaseInformation phaseA, PhaseInformation phaseB, PhaseInformation phaseC, int ltcTapPosition,
+                                   PaoType paoType) {
         this.eqNo = eqNo;
         this.fdrNwId = fdrNwId;
-        this.setPhaseA(phaseA);
-        this.setPhaseB(phaseB);
-        this.setPhaseC(phaseC);
+        this.phaseA = phaseA;
+        this.phaseB = phaseB;
+        this.phaseC = phaseC;
+        this.ltcTapPosition = ltcTapPosition;
+        this.paoType = paoType;
     }
+    
     public String getEqNo() {
         return eqNo;
     }
@@ -47,6 +54,16 @@ public class CymeResultCap {
     public PhaseInformation getPhaseC() {
         return phaseC;
     }
-
-
+    public PaoType getPaoType() {
+        return paoType;
+    }
+    public void setPaoType(PaoType paoType) {
+        this.paoType = paoType;
+    }
+    public int getLtcTapPosition() {
+        return ltcTapPosition;
+    }
+    public void setLtcTapPosition(int ltcTapPosition) {
+        this.ltcTapPosition = ltcTapPosition;
+    }
 }

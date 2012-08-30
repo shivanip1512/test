@@ -1,6 +1,6 @@
 package com.cannontech.core.dao.impl;
 
-import java.util.Date;
+import org.joda.time.Instant;
 
 import com.cannontech.common.exception.PointDataException;
 import com.cannontech.common.point.PointQuality;
@@ -30,51 +30,51 @@ public class SimplePointAccessDaoImpl implements SimplePointAccessDao {
     
     @Override
     public void setPointValue(LitePoint point, double value) {
-        setPointValue(point.getPointID(), new Date(), value, PointTypes.ANALOG_POINT);
+        setPointValue(point.getPointID(), new Instant(), value, PointTypes.ANALOG_POINT);
     }
 
     @Override
     public void setPointValue(int pointId, double value) {
-        setPointValue(pointId, new Date(), value, PointTypes.ANALOG_POINT);
+        setPointValue(pointId, new Instant(), value, PointTypes.ANALOG_POINT);
     }
     
     @Override
     public void setPointValue(LitePoint point, PointState pointState) {
-        setPointValue(point.getPointID(), new Date(), pointState.getRawState(), PointTypes.STATUS_POINT);
+        setPointValue(point.getPointID(), new Instant(), pointState.getRawState(), PointTypes.STATUS_POINT);
     }
     
     @Override
     public void setPointValue(int pointId, PointState pointState) {
-        setPointValue(pointId, new Date(), pointState.getRawState(), PointTypes.STATUS_POINT);
+        setPointValue(pointId, new Instant(), pointState.getRawState(), PointTypes.STATUS_POINT);
     }
     
     @Override
-    public void setPointValue(LitePoint point, Date time, double value) {
+    public void setPointValue(LitePoint point, Instant time, double value) {
         setPointValue(point.getPointID(), time, value, PointTypes.ANALOG_POINT);
     }
 
     @Override
-    public void setPointValue(int pointId, Date time, double value) {
+    public void setPointValue(int pointId, Instant time, double value) {
         setPointValue(pointId, time, value, PointTypes.ANALOG_POINT);
     }
     
     @Override
-    public void setPointValue(LitePoint point,  Date time, PointState pointState) {
+    public void setPointValue(LitePoint point,  Instant time, PointState pointState) {
         setPointValue(point.getPointID(),time,pointState.getRawState(),PointTypes.STATUS_POINT);
     }
     
     @Override
-    public void setPointValue(int pointId, Date time, PointState pointState) {
+    public void setPointValue(int pointId, Instant time, PointState pointState) {
         setPointValue(pointId,time,pointState.getRawState(),PointTypes.STATUS_POINT);
     }
     
-    private void setPointValue(int pointId, Date time, double value, int pointType) {
+    private void setPointValue(int pointId, Instant time, double value, int pointType) {
         PointData pointData = new PointData();
         pointData.setId(pointId);
         pointData.setValue(value);
         pointData.setType(pointType);
         pointData.setPointQuality(PointQuality.Normal);
-        pointData.setTime(time);
+        pointData.setTime(time.toDate());
         
         writePointData(pointData);
     }

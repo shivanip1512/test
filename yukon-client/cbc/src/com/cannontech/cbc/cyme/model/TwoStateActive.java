@@ -1,16 +1,16 @@
-package com.cannontech.database.db.point.stategroup;
+package com.cannontech.cbc.cyme.model;
 
 import com.cannontech.core.dao.NotFoundException;
 import com.cannontech.database.db.point.stategroup.PointState;
 
-public enum TrueFalse implements PointState {
-    TRUE(1,"True"),
-    FALSE(0,"False");
+public enum TwoStateActive implements PointState{
+    INACTIVE(0,"Inactive"),
+    ACTIVE(1,"Active");
     
     final private int analogValue;
     final private String displayValue; 
     
-    private TrueFalse(int analogValue, String displayValue) {
+    private TwoStateActive(int analogValue, String displayValue) {
         this.analogValue = analogValue;
         this.displayValue = displayValue;
     }
@@ -19,13 +19,13 @@ public enum TrueFalse implements PointState {
         return displayValue;
     }
     
-    public static TrueFalse getForAnalogValue(int analogValue) {
-        for(TrueFalse state: values()) {
+    public static TwoStateActive getForAnalogValue(int analogValue) {
+        for(TwoStateActive state: values()) {
             if (state.getRawState() == analogValue) {
                 return state;
             }
         }
-        throw new NotFoundException("TrueFalse state was not found for value: " + analogValue);
+        throw new NotFoundException("TwoStateActive state was not found for value: " + analogValue);
     }
 
     @Override

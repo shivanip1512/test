@@ -133,9 +133,15 @@ public class AsyncDynamicDataSourceImpl implements AsyncDynamicDataSource, Messa
         }
     }
     
+    @Override
     public PointValueQualityHolder getAndRegisterForPointData(PointDataListener l, int pointId) {
         registerForPointData(l, Collections.singleton(pointId));
         return dynamicDataSource.getPointValue(pointId);
+    }
+    
+    public Set<? extends PointValueQualityHolder> getAndRegisterForPointData(PointDataListener l, Set<Integer> pointIds) {
+        registerForPointData(l, pointIds);
+        return dynamicDataSource.getPointValue(pointIds);
     }
 
     public void unRegisterForPointData(PointDataListener l, Set<Integer> pointIds) {

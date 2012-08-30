@@ -2,7 +2,6 @@ package com.cannontech.capcontrol.dao.impl;
 
 import java.sql.ResultSet;
 import java.sql.SQLException;
-import java.util.Collection;
 import java.util.List;
 
 import org.springframework.beans.factory.annotation.Autowired;
@@ -10,6 +9,8 @@ import org.springframework.jdbc.core.simple.ParameterizedRowMapper;
 
 import com.cannontech.capcontrol.dao.SubstationBusDao;
 import com.cannontech.capcontrol.model.LiteCapControlObject;
+import com.cannontech.capcontrol.model.PointIdContainer;
+import com.cannontech.capcontrol.model.PointPaoIdentifier;
 import com.cannontech.capcontrol.model.SubstationBus;
 import com.cannontech.common.pao.PaoIdentifier;
 import com.cannontech.common.pao.PaoType;
@@ -22,15 +23,17 @@ import com.cannontech.database.IntegerRowMapper;
 import com.cannontech.database.PagingResultSetExtractor;
 import com.cannontech.database.SqlParameterSink;
 import com.cannontech.database.YukonJdbcTemplate;
+import com.cannontech.database.YukonResultSet;
+import com.cannontech.database.YukonRowMapper;
 import com.cannontech.message.dispatch.message.DbChangeType;
 import com.cannontech.util.Validator;
 
 public class SubstationBusDaoImpl implements SubstationBusDao {
     private static final ParameterizedRowMapper<LiteCapControlObject> liteCapControlObjectRowMapper;
     
-    private PaoCreationHelper paoCreationHelper;
-    private PaoDao paoDao;
-    private YukonJdbcTemplate yukonJdbcTemplate;
+    @Autowired private PaoCreationHelper paoCreationHelper;
+    @Autowired private PaoDao paoDao;
+    @Autowired private YukonJdbcTemplate yukonJdbcTemplate;
     
     static {
         liteCapControlObjectRowMapper = CapbankControllerDaoImpl.createLiteCapControlObjectRowMapper();
@@ -67,6 +70,27 @@ public class SubstationBusDaoImpl implements SubstationBusDao {
         }
     };
 
+    public static final YukonRowMapper<PointPaoIdentifier> pointPaoRowMapper  = new YukonRowMapper<PointPaoIdentifier>(){
+
+            @Override
+            public PointPaoIdentifier mapRow(YukonResultSet rs) throws SQLException {
+                PointPaoIdentifier bankPoint= new PointPaoIdentifier();
+
+                int paoId = rs.getInt("PaObjectId");
+                String typeStr = rs.getString("Type");
+                PaoType paoType = PaoType.getForDbString(typeStr);
+                bankPoint.setPaoIdentifier(new PaoIdentifier(paoId, paoType));
+                
+                String paoName = rs.getString("PaoName");
+                bankPoint.setPaoName(paoName);
+                
+                int pointId = rs.getInt("PointId");
+                bankPoint.setPointId(pointId);
+                
+                return bankPoint;
+            }
+    };
+    
     public SubstationBus findSubBusById(int id){
         SqlStatementBuilder sql = new SqlStatementBuilder();
         
@@ -185,37 +209,65 @@ public class SubstationBusDaoImpl implements SubstationBusDao {
     }
 	
 	@Override
-    public Collection<Integer> getBankStatusPointIdsBySubbusId(int substationId) {
+	public List<PointPaoIdentifier> getBankStatusPointPaoIdsBySubbusId(int substationBusId) {
+        SqlStatementBuilder sql = new SqlStatementBuilder();
+        
+        sql.append("SELECT P.PointId, YPO.PAObjectId, YPO.PaoName, YPO.Type");
+        buildBankStatusPointQueryEnd(sql,substationBusId);        
+        
+        List<PointPaoIdentifier> statusPoints = yukonJdbcTemplate.query(sql,pointPaoRowMapper);
+        
+        return statusPoints;
+    }
+	
+    @Override
+    public List<Integer> getBankStatusPointIdsBySubbusId(int substationBusId) {
         SqlStatementBuilder sql = new SqlStatementBuilder();
         
         sql.append("SELECT P.PointId");
+        buildBankStatusPointQueryEnd(sql,substationBusId);        
+        
+        List<Integer> statusPoints = yukonJdbcTemplate.query(sql,new IntegerRowMapper());
+        
+        return statusPoints;
+    }
+	
+    private void buildBankStatusPointQueryEnd(SqlStatementBuilder sql, int substationBusId) {
+
         sql.append("FROM Point P");
-        sql.append("WHERE P.POINTTYPE = 'Status'");
-        sql.append("  AND P.PointOffset = 1 ");
-        sql.append("  AND P.PAObjectID IN (SELECT DeviceId ");
-        sql.append("                       FROM CCFeederBankList");
-        sql.append("                       WHERE FeederId IN (SELECT FeederId ");
-        sql.append("                                          FROM CCFeederSubAssignment ");
-        sql.append("                                          WHERE SubStationBusID").eq(substationId).append("))");
+        sql.append("JOIN YukonPAObject YPO on YPO.PAObjectId = P.PAObjectId");
+        sql.append("JOIN CCFeederBankList FBL on P.PAObjectId = FBL.DeviceId");
+        sql.append("JOIN CCFeederSubAssignment FSA on FBL.FeederId = FSA.FeederId");
+        sql.append("WHERE FSA.SubStationBusId").eq(substationBusId).append("AND P.POINTTYPE = 'Status'");
+    }
+    
+	@Override
+	public PointIdContainer getSubstationBusPointIds(int substationBusId) {
+        SqlStatementBuilder sql = new SqlStatementBuilder();
         
+        sql.append("SELECT CurrentVarLoadPointId, CurrentWattLoadPointId, CurrentVoltLoadPointId, UsePhaseData, PhaseB, PhaseC");
+        sql.append("FROM CapControlSubstationBus");
+        sql.append("WHERE SubstationBusId").eq(substationBusId);
         
-        List<Integer> statusPointIds = yukonJdbcTemplate.query(sql, new IntegerRowMapper());
+        PointIdContainer points = yukonJdbcTemplate.queryForObject(sql, new YukonRowMapper<PointIdContainer>() {
+
+            @Override
+            public PointIdContainer mapRow(YukonResultSet rs) throws SQLException {
+                PointIdContainer pc = new PointIdContainer();
+                
+                pc.setTotalizekVar(!"Y".equalsIgnoreCase(rs.getString("UsePhaseData")));
+                pc.setVarTotalId(rs.getInt("CurrentVarLoadPointId"));
+                pc.setVarAId(rs.getInt("CurrentVarLoadPointId"));
+                pc.setVarBId(rs.getInt("PhaseB"));
+                pc.setVarCId(rs.getInt("PhaseC"));
+                pc.setVoltId(rs.getInt("CurrentVoltLoadPointId"));
+                pc.setWattId(rs.getInt("CurrentWattLoadPointId"));
+                
+                return pc;
+            }
+        });
         
-        return statusPointIds;
-    }
-	
-	@Autowired
-	public void setPaoCreationHelper(PaoCreationHelper paoCreationHelper) {
-        this.paoCreationHelper = paoCreationHelper;
-    }
-	
-	@Autowired
-	public void setPaoDao(PaoDao paoDao) {
-        this.paoDao = paoDao;
-    }
-	    
-    @Autowired
-    public void setYukonJdbcTemplate(final YukonJdbcTemplate yukonJdbcTemplate) {
-        this.yukonJdbcTemplate = yukonJdbcTemplate;
-    }
+        return points;
+	}
+
 }

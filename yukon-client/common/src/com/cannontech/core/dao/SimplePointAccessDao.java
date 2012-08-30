@@ -1,6 +1,6 @@
 package com.cannontech.core.dao;
 
-import java.util.Date;
+import org.joda.time.Instant;
 
 import com.cannontech.common.exception.PointDataException;
 import com.cannontech.database.data.lite.LitePoint;
@@ -16,10 +16,10 @@ public interface SimplePointAccessDao {
     public void setPointValue(LitePoint point, PointState pointState);
     public void setPointValue(int pointId, PointState pointState);
     
-    public void setPointValue(LitePoint point, Date time, double value);
-    public void setPointValue(int pointId, Date time, double value);
-    public void setPointValue(LitePoint point,  Date time, PointState pointState);
-    public void setPointValue(int pointId,  Date time, PointState pointState);
+    public void setPointValue(LitePoint point, Instant time, double value);
+    public void setPointValue(int pointId, Instant time, double value);
+    public void setPointValue(LitePoint point,  Instant time, PointState pointState);
+    public void setPointValue(int pointId,  Instant time, PointState pointState);
     
     public void writePointData(PointData pointData);
 

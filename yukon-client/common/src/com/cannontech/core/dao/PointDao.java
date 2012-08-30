@@ -17,6 +17,7 @@ import com.cannontech.database.data.lite.LiteStateGroup;
 import com.cannontech.database.data.point.CapBankMonitorPointParams;
 import com.cannontech.database.data.point.PointBase;
 import com.cannontech.database.data.point.PointInfo;
+import com.cannontech.database.data.point.PointType;
 
 public interface PointDao {
     public LitePoint getLitePoint(int pointId);
@@ -162,4 +163,11 @@ public interface PointDao {
      * @return LitePoint or null
      */
     public LitePoint findPointByName(YukonPao pao, String pointName);
+    
+    /**
+     * Returns the point on the given PAO with the name and type specified.  Case is ignored.  No trimming
+     * is done.  If no point with that name exists on the PAO null is returned.
+     * @return LitePoint or null
+     */
+    public LitePoint findPointByNameAndType(YukonPao pao, String pointName, PointType pointType);
 }

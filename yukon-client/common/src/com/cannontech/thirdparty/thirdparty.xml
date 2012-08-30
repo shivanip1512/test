@@ -27,9 +27,9 @@
     <bean id="zigbeeControlEventDao" class="com.cannontech.thirdparty.digi.dao.impl.ZigbeeControlEventDaoImpl"/>
     
     <bean id="restTemplate" class="org.springframework.web.client.RestTemplate">
-        <constructor-arg>
+        <!-- <constructor-arg>
             <bean class="com.cannontech.thirdparty.digi.DigiClientHttpRequestFactory"/>
-        </constructor-arg>
+        </constructor-arg> -->
         <property name="errorHandler" ref="digiErrorHandler"/>
         <property name="messageConverters">
             <list>

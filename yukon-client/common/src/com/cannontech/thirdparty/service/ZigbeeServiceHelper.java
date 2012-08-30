@@ -24,7 +24,7 @@ public class ZigbeeServiceHelper {
     
     public void sendPointStatusUpdate(YukonDevice device, Instant lastTime, BuiltInAttribute attribute, PointState pointState) {
         LitePoint point = attributeService.getPointForAttribute(device, attribute);
-        simplePointAccessDao.setPointValue(point, lastTime.toDate(), pointState);
+        simplePointAccessDao.setPointValue(point, lastTime, pointState);
     }
     
     @Autowired

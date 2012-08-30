@@ -1,16 +1,18 @@
-package com.cannontech.cbc.cyme.impl;
+package com.cannontech.cbc.cyme.model;
 
 public class PhaseInformation {
     private float current;
     private float voltage;
     private float kVar;
     private float kW;
+    private float tapPosition;
 
-    public PhaseInformation(float current, float voltage, float kVar, float kW) {
+    public PhaseInformation(float current, float voltage, float kVar, float kW, float tapPosition) {
         this.current = current;
         this.voltage = voltage;
         this.kVar = kVar;
         this.kW = kW;
+        this.tapPosition = tapPosition;
     }
     
     public void setCurrent(float current) {
@@ -36,6 +38,11 @@ public class PhaseInformation {
     }
     public float getkW() {
         return kW;
+    }
+    public float getTapPosition() {
+        return tapPosition;
+    }
+    public void setTapPosition(float tapPosition) {
+        this.tapPosition = tapPosition;
     }    
-
 };

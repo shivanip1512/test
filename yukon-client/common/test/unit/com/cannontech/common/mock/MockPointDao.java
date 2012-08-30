@@ -20,6 +20,7 @@ import com.cannontech.database.data.lite.LiteStateGroup;
 import com.cannontech.database.data.point.CapBankMonitorPointParams;
 import com.cannontech.database.data.point.PointBase;
 import com.cannontech.database.data.point.PointInfo;
+import com.cannontech.database.data.point.PointType;
 import com.cannontech.database.data.point.PointTypes;
 
 /**
@@ -206,6 +207,11 @@ public class MockPointDao implements PointDao {
 
     @Override
     public LitePoint findPointByName(YukonPao pao, String pointName) {
+        return null;
+    }
+
+    @Override
+    public LitePoint findPointByNameAndType(YukonPao pao, String pointName, PointType pointType) {
         return null;
     }
 }

@@ -20,6 +20,7 @@ import com.cannontech.capcontrol.model.AbstractZone;
 import com.cannontech.capcontrol.model.CapBankPointDelta;
 import com.cannontech.capcontrol.model.CcEvent;
 import com.cannontech.capcontrol.model.CcEventType;
+import com.cannontech.capcontrol.model.PointPaoIdentifier;
 import com.cannontech.capcontrol.model.RegulatorToZoneMapping;
 import com.cannontech.capcontrol.model.Zone;
 import com.cannontech.common.util.SqlStatementBuilder;
@@ -37,6 +38,7 @@ import com.cannontech.database.YukonRowMapper;
 import com.cannontech.database.data.pao.ZoneType;
 import com.cannontech.database.incrementer.NextValueHelper;
 import com.cannontech.enums.Phase;
+import com.cannontech.enums.RegulatorPointMapping;
 import com.google.common.collect.Lists;
 import com.google.common.collect.Maps;
 
@@ -585,6 +587,23 @@ public class ZoneDaoImpl implements ZoneDao, InitializingBean {
                 results.put(pointId, phase);
             }
         });
+
+        return results;
+    }
+    
+    @Override
+    public List<PointPaoIdentifier> getTapPointsBySubBusId(int substationBusId) {
+        SqlStatementBuilder sql = new SqlStatementBuilder();
+        
+        sql.append("SELECT EPPA.PointId, YPO.PAObjectId, YPO.PaoName, YPO.Type");
+        sql.append("FROM ExtraPaoPointAssignment EPPA");
+        sql.append("  JOIN YukonPAObject YPO on YPO.PAObjectID = EPPA.PAObjectID");
+        sql.append("  JOIN RegulatorToZoneMapping RZM on RZM.RegulatorId = EPPA.PAObjectId");
+        sql.append("  JOIN Zone Z on RZM.ZoneId = Z.ZoneId");
+        sql.append("WHERE Z.SubstationBusId").eq(substationBusId);
+        sql.append("  AND EPPA.Attribute").eq_k(RegulatorPointMapping.TAP_POSITION);
+
+        List<PointPaoIdentifier> results = yukonJdbcTemplate.query(sql, SubstationBusDaoImpl.pointPaoRowMapper);
 
         return results;
     }

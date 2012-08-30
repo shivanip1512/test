@@ -30,6 +30,8 @@ public interface CapControlDao {
     public List<OrphanCBC> getOrphanedCBCs();
     
     public List<LiteCapBankAdditional> getCapBankAdditional (List<Integer> deviceIds);
+    
+    
 
     /**
      * Returns the events for the capcontrol object.

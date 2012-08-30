@@ -9,8 +9,27 @@
 
     <context:component-scan base-package="com.cannontech.services.cymDISTService"/>
 
-    <bean class="com.cannontech.cbc.cyme.impl.CymDISTWebServiceImpl" />
+    <bean class="com.cannontech.cbc.cyme.impl.CymeWebServiceImpl" />
+    <bean class="com.cannontech.cbc.cyme.impl.CymeSimulatorServiceImpl" />
+    <bean class="com.cannontech.cbc.cyme.impl.CymeSimulationHelper" />
+    <bean class="com.cannontech.cbc.cyme.impl.CymeTaskExecutor" />
+    <bean class="com.cannontech.cbc.cyme.impl.CymeLoadProfileReaderImpl" />
+    <bean class="com.cannontech.cbc.cyme.impl.CymePointDataCacheImpl" />
 
-    <bean class="com.cannontech.cbc.cyme.impl.CymDISTSimulatorServiceImpl" />
-    
+    <bean id="cymeIvvcMessageListener" class="com.cannontech.cbc.cyme.impl.CymeIvvcMessageListener" />    
+    <jms:listener-container 
+        connection-factory="connectionFactory" 
+        destination-type="queue"
+        concurrency="1" 
+        container-type="simple"
+        container-class="com.cannontech.services.jms.ContextLoggingMessageListenerContainer">
+        <jms:listener destination="yukon.notif.stream.cc.CapControlOperationMessage" ref="cymeIvvcMessageListener" method="handleOperationMessage"/>
+    </jms:listener-container>
+
+    <bean id="taskExecutor" class="org.springframework.scheduling.concurrent.ThreadPoolTaskExecutor">
+        <property name="corePoolSize" value="20" />
+        <property name="maxPoolSize" value="30" />
+        <property name="queueCapacity" value="50" />
+        <property name="keepAliveSeconds" value="60" /> 
+    </bean>
 </beans>

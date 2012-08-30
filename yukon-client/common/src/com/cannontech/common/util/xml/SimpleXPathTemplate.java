@@ -45,8 +45,6 @@ import org.joda.time.Instant;
 import org.springframework.xml.namespace.SimpleNamespaceContext;
 import org.springframework.xml.transform.TransformerObjectSupport;
 import org.springframework.xml.transform.TraxUtils;
-import org.springframework.xml.xpath.NodeCallbackHandler;
-import org.springframework.xml.xpath.NodeMapper;
 import org.springframework.xml.xpath.XPathException;
 import org.springframework.xml.xpath.XPathOperations;
 import org.w3c.dom.DOMException;
@@ -59,7 +57,6 @@ import com.cannontech.common.bulk.mapper.ObjectMappingException;
 import com.cannontech.common.exception.InvalidDateFormatException;
 import com.cannontech.common.util.Iso8601DateUtil;
 import com.cannontech.common.util.ObjectMapper;
-import com.google.common.collect.Lists;
 
 /**
  * Implementation of {@link XPathOperations} that uses JAXP 1.3. JAXP 1.3 is part of Java SE since 1.5.
@@ -83,27 +80,6 @@ public class SimpleXPathTemplate extends TransformerObjectSupport {
     public void setNamespaces(Properties namespaces) {
         this.namespaces = namespaces;
     }
-
-    public void evaluate(String expression, NodeCallbackHandler callbackHandler)
-    throws XPathException {
-        evaluate(expression, new NodeCallbackHandlerNodeMapper(callbackHandler));
-    }
-
-    /** Static inner class that adapts a {@link NodeCallbackHandler} to the interface of {@link NodeMapper}. */
-    private static class NodeCallbackHandlerNodeMapper implements NodeMapper {
-
-        private final NodeCallbackHandler callbackHandler;
-
-        public NodeCallbackHandlerNodeMapper(NodeCallbackHandler callbackHandler) {
-            this.callbackHandler = callbackHandler;
-        }
-
-        public Object mapNode(Node node, int nodeNum) throws DOMException {
-            callbackHandler.processNode(node);
-            return null;
-        }
-    }
-
 
     /**
      * Returns the root element of the given source.
@@ -381,35 +357,6 @@ public class SimpleXPathTemplate extends TransformerObjectSupport {
         }
     
         return defaultDate;
-    }
-    
-    public Object evaluateAsObject(String expression, NodeMapper nodeMapper) throws XPathException {
-        Node node = evaluateAsNode(expression);
-        if (node != null) {
-            try {
-                return nodeMapper.mapNode(node, 0);
-            }
-            catch (DOMException ex) {
-                throw new XPathException("Mapping resulted in DOMException", ex);
-            }
-        }
-        else {
-            return null;
-        }
-    }
-
-    public List<Object> evaluate(String expression, NodeMapper nodeMapper) throws XPathException {
-        NodeList nodes = (NodeList) evaluate(expression, XPathConstants.NODESET);
-        List<Object> results = Lists.newArrayListWithExpectedSize(nodes.getLength());
-        for (int i = 0; i < nodes.getLength(); i++) {
-            try {
-                results.add(nodeMapper.mapNode(nodes.item(i), i));
-            }
-            catch (DOMException ex) {
-                throw new XPathException("Mapping resulted in DOMException", ex);
-            }
-        }
-        return results;
     }
     
     public List<Integer> evaluateAsIntegerList(String expression) throws XPathException {

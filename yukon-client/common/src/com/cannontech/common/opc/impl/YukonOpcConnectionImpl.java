@@ -70,7 +70,7 @@ public class YukonOpcConnectionImpl implements YukonOpcConnection, Runnable, All
 		this.hostIp = host;
 		this.serverName = serverName;
 		this.refreshRate = refreshRate;
-		this.dataUpdateRate = dataUpdateRate*1000;//convert from seconds
+		this.dataUpdateRate = dataUpdateRate;//convert from seconds
 		this.statusItemName = statusItemName;
 		
 		connectionStatusListeners = new EventListenerList();

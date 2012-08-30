@@ -125,6 +125,21 @@ public final class PointDaoImpl implements PointDao {
         }
     }
     
+
+    @Override
+    public LitePoint findPointByNameAndType(YukonPao pao, String pointName, PointType pointType) {
+        try {
+            SqlStatementBuilder sql = new SqlStatementBuilder(litePointSql);
+            sql.append("WHERE PaobjectId").eq(pao.getPaoIdentifier().getPaoId());
+            sql.append(  "AND UPPER(PointName)").eq(pointName.toUpperCase());
+            sql.append(  "AND PointType").eq(pointType);
+            
+            return yukonJdbcTemplate.queryForObject(sql, litePointRowMapper);
+        } catch (EmptyResultDataAccessException e) {
+            return null;
+        }
+    }
+    
     /* (non-Javadoc)
      * @see com.cannontech.core.dao.PointDao#getLitePoint(int)
      */
@@ -633,7 +648,8 @@ public final class PointDaoImpl implements PointDao {
     
     public boolean deviceHasPoint(int deviceId, int pointOffset, int pointType) {
         int pointId = getPointIDByDeviceID_Offset_PointType(deviceId, pointOffset, pointType);
-        return pointId != 0;
+        
+        return pointId == 0 ? false : true;
     }
     
     private int getAccumulatorPointDataOffset(int pointId) {

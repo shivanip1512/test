@@ -1,9 +1,10 @@
 package com.cannontech.capcontrol.dao;
 
-import java.util.Collection;
 import java.util.List;
 
 import com.cannontech.capcontrol.model.LiteCapControlObject;
+import com.cannontech.capcontrol.model.PointIdContainer;
+import com.cannontech.capcontrol.model.PointPaoIdentifier;
 import com.cannontech.capcontrol.model.Substation;
 import com.cannontech.capcontrol.model.SubstationBus;
 import com.cannontech.common.search.SearchResult;
@@ -50,5 +51,15 @@ public interface SubstationBusDao {
      */
     public boolean unassignSubstationBus(int substationBusId);
     
-    public Collection<Integer> getBankStatusPointIdsBySubbusId(int substationId);
+
+    public List<PointPaoIdentifier> getBankStatusPointPaoIdsBySubbusId(int substationBusId);
+    
+    public List<Integer> getBankStatusPointIdsBySubbusId(int substationBusId);
+    
+    /**
+     * Returns a container with the PointId's selected by the pickers for the substation bus with the given Pao Id.
+     * @param substationBusId
+     * @return
+     */
+    public PointIdContainer getSubstationBusPointIds(int substationBusId);
 }

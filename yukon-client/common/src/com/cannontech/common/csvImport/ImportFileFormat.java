@@ -228,6 +228,7 @@ public class ImportFileFormat implements Cloneable {
                 dependentValueStrings.add(String.valueOf(dependentValue));
             }
         }
+        ImmutableList.Builder<Integer> iList = new ImmutableList.Builder<Integer>();
         
         ImportValueDependentColumnDefinition column = new ImportValueDependentColumnDefinition(name, 
                                                                                                typeClass, 

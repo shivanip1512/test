@@ -149,7 +149,7 @@ public class DynamicDataSourceImpl implements DynamicDataSource {
     public PointValueQualityHolder getPointValue(int pointId) throws DynamicDataAccessException {
         return getPointData(pointId);
     }
-
+    
     public Set<? extends PointValueQualityHolder> getPointValue(Set<Integer> pointIds) throws DynamicDataAccessException {
         return getPointData(pointIds);
     }
