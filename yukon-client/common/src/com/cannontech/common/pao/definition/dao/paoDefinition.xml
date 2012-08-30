@@ -3506,14 +3506,14 @@
                 <init>false</init>
                 <name>Total LUF Event Count</name>
                 <multiplier value="1.0"/>
-                <unitofmeasure value="Undefined"/>
+                <unitofmeasure value="Counts"/>
                 <decimalplaces value="0"/>
             </point>
             <point type="Analog" offset="18">
                 <init>false</init>
                 <name>Total LUV Event Count</name>
                 <multiplier value="1.0"/>
-                <unitofmeasure value="Undefined"/>
+                <unitofmeasure value="Counts"/>
                 <decimalplaces value="0"/>
             </point>
             
