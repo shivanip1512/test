@@ -112,8 +112,8 @@ function initiateCannonDataUpdate(url, delayMs) {
         _updaterTimeout = setTimeout(doUpdate, delayMs * 5);
     };
     
-    var refreshPage = function() {
-        window.location.href = window.location.href;
+    var warnStaleData = function() {
+        jQuery('#updatedWarning').show();
     };
     
     var doUpdate = function() {
@@ -159,7 +159,7 @@ function initiateCannonDataUpdate(url, delayMs) {
                                             // way to detect that the server is shutdown
                                             // note: the onSuccess will not be called when
                                             // the on200 is called
-            on409: refreshPage, // Bad data on webpage, trigger a reload
+            on409: warnStaleData, // Bad data on webpage, ask user if they want to reload
             onSuccess: failureCallback,     
             onFailure: failureCallback,      
             onException: failureCallback    

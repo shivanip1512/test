@@ -298,4 +298,9 @@
     <entry key="yukon.web.components.dialog.close">Close</entry>
     <entry key="yukon.web.components.ajaxConfirm.confirmDelete.title">Confirm Delete</entry>
     <entry key="yukon.web.components.ajaxConfirm.confirmDelete.message">Are you sure you want to delete "{0}"?</entry>
+    
+    <entry key="yukon.web.components.updatedWarning.title">Data Update Failed</entry>
+    <entry key="yukon.web.components.updatedWarning.text">One or more objects on this page have been deleted. Refresh to update.</entry>
+    <entry key="yukon.web.components.updatedWarning.reloadButton.label">Refresh</entry>
+    <entry key="yukon.web.components.updatedWarning.cancelButton.label">Ignore</entry>
 </properties>

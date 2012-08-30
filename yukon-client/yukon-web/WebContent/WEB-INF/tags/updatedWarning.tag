@@ -1,4 +1,18 @@
-<div id="updatedWarning" style="background-color: ivory;border: 1px solid grey;width:320px;float:right;position: fixed;bottom: 0;right:0;padding:5px;display: none;">
-    <img style="vertical-align:middle;padding-right:4px;" alt="warning" src="/WebConfig/yukon/Icons/warning.gif">
-    <span style="vertical-align:middle;font-weight:bold;font-size:11px;">This page has been update: <a href="javascript:window.location.reload();">Reload</a> | <a href="javascript:hideUpdateWarning()">Ignore</a></span>
-</div>
+<%@ taglib prefix="cti" uri="http://cannontech.com/tags/cti"%>
+<%@ taglib prefix="tags" tagdir="/WEB-INF/tags"%>
+<%@ taglib prefix="i" tagdir="/WEB-INF/tags/i18n"%>
+
+<cti:msg2 key="yukon.web.components.updatedWarning.title" var="warningTitle"/>
+<tags:simplePopup title="${warningTitle}" id="updatedWarning">
+    <div class="bottomPadded">
+        <i:inline key="yukon.web.components.updatedWarning.text"/>
+    </div>
+    <div style="text-align:right;">
+        <button onclick="javascript:window.location.reload();">
+            <i:inline key="yukon.web.components.updatedWarning.reloadButton.label"/>
+        </button>
+        <button onclick="jQuery('#updatedWarning').hide();">
+            <i:inline key="yukon.web.components.updatedWarning.cancelButton.label"/>
+        </button>
+    </div>
+</tags:simplePopup>
