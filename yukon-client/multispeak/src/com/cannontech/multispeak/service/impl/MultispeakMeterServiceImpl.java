@@ -1851,7 +1851,7 @@ public class MultispeakMeterServiceImpl implements MultispeakMeterService, Messa
 	 */
 	private String getMeterSubstationName(Meter mspMeter, ServiceLocation mspServiceLocation) {
 		
-        Boolean useExtension = configurationSource.getBoolean(MasterConfigBooleanKeysEnum.MSP_ENABLE_SUBSTATIONNAME_EXTENSION);
+        boolean useExtension = configurationSource.getBoolean(MasterConfigBooleanKeysEnum.MSP_ENABLE_SUBSTATIONNAME_EXTENSION);
         if (useExtension) {
             if (mspServiceLocation == null) {
                 // null is passed in with MeterChangedNotification. This saves on an extra call to load mspServiceLocation when
