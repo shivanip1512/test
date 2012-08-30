@@ -168,7 +168,7 @@ public class DigiXMLBuilder {
         short deviceClass = buildDeviceClass(deviceClasses);
         
         //Get Util Enrollment Group value
-        byte utilEnrollmentGroup = lmGroupDao.getUtilityEnrollmentGroupForSepGroup(groupId);
+        byte utilEnrollmentGroup = lmGroupDao.getSEPAttributesGroupForSepGroup(groupId).getUtilityEnrollmentGroup();
         
         //Get gateways on the group
         Set<String> connectwareIds = Sets.newHashSet();        
@@ -247,7 +247,7 @@ public class DigiXMLBuilder {
         short deviceClass = buildDeviceClass(deviceClasses);
         
         //Get Util Enrollment Group value
-        byte utilEnrollmentGroup = lmGroupDao.getUtilityEnrollmentGroupForSepGroup(groupId);
+        byte utilEnrollmentGroup = lmGroupDao.getSEPAttributesGroupForSepGroup(groupId).getUtilityEnrollmentGroup();
         
         //Get gateways on the group
         List<String> macAddresses = Lists.newArrayList();
