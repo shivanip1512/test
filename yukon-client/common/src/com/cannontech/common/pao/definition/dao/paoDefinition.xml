@@ -3766,28 +3766,28 @@
             </point>
             <point type="Analog" offset="15">
             	<init>true</init>
-                <name>Relay 1 Control Time</name>
+                <name>Relay 1 Remaining Control Time</name>
                 <multiplier value="1.0"/>
                 <unitofmeasure value="Seconds"/>
                 <decimalplaces value="0"/>
             </point>
             <point type="Analog" offset="16">
             	<init>true</init>
-                <name>Relay 2 Control Time</name>
+                <name>Relay 2 Remaining Control Time</name>
                 <multiplier value="1.0"/>
                 <unitofmeasure value="Seconds"/>
                 <decimalplaces value="0"/>
             </point>
             <point type="Analog" offset="17">
             	<init>true</init>
-                <name>Relay 3 Control Time</name>
+                <name>Relay 3 Remaining Control Time</name>
                 <multiplier value="1.0"/>
                 <unitofmeasure value="Seconds"/>
                 <decimalplaces value="0"/>
             </point>
             <point type="Analog" offset="18">
             	<init>true</init>
-                <name>Relay 4 Control Time</name>
+                <name>Relay 4 Remaining Control Time</name>
                 <multiplier value="1.0"/>
                 <unitofmeasure value="Seconds"/>
                 <decimalplaces value="0"/>
@@ -3866,22 +3866,42 @@
         	<command id="RELAY_1_SHED_TIME">
         		<name>Relay 1 Shed Time</name>
         		<cmd text="getvalue shedtime relay 1 previous 12"/>
-        		<pointRef name="Runtime Load 1"/>
+        		<pointRef name="Relay 1 Shed Time"/>
         	</command>
         	<command id="RELAY_2_SHED_TIME">
         		<name>Relay 2 Shed Time</name>
         		<cmd text="getvalue shedtime relay 2 previous 12"/>
-        		<pointRef name="Runtime Load 2"/>
+        		<pointRef name="Relay 2 Shed Time"/>
         	</command>
         	<command id="RELAY_3_SHED_TIME">
         		<name>Relay 3 Shed Time</name>
         		<cmd text="getvalue shedtime relay 3 previous 12"/>
-        		<pointRef name="Runtime Load 3"/>
+        		<pointRef name="Relay 3 Shed Time"/>
         	</command>
         	<command id="RELAY_4_SHED_TIME">
         		<name>Relay 4 Shed Time</name>
         		<cmd text="getvalue shedtime relay 4 previous 12"/>
-        		<pointRef name="Runtime Load 4"/>
+        		<pointRef name="Relay 4 Shed Time"/>
+        	</command>
+			<command id="RELAY_1_REMAINING_CONTROL">
+        		<name>Relay 1 Remaining Control Time</name>
+        		<cmd text="getvalue controltime remaining relay 1"/>
+        		<pointRef name="Relay 1 Remaining Control Time"/>
+        	</command>
+			<command id="RELAY_2_REMAINING_CONTROL">
+        		<name>Relay 2 Remaining Control Time</name>
+        		<cmd text="getvalue controltime remaining relay 2"/>
+        		<pointRef name="Relay 2 Remaining Control Time"/>
+        	</command>
+			<command id="RELAY_3_REMAINING_CONTROL">
+        		<name>Relay 3 Remaining Control Time</name>
+        		<cmd text="getvalue controltime remaining relay 3"/>
+        		<pointRef name="Relay 3 Remaining Control Time"/>
+        	</command>
+			<command id="RELAY_4_REMAINING_CONTROL">
+        		<name>Relay 4 Remaining Control Time</name>
+        		<cmd text="getvalue controltime remaining relay 4"/>
+        		<pointRef name="Relay 4 Remaining Control Time"/>
         	</command>
         	<command id="PROP_COUNT">
         		<name>Prop Count</name>
@@ -3890,6 +3910,42 @@
         	</command>
     	</commands>
     	<attributes>
+            <attribute name="RELAY_1_RUN_TIME_DATA_LOG">
+                <basicLookup point="Runtime Load 1"/>
+            </attribute>
+            <attribute name="RELAY_1_SHED_TIME_DATA_LOG">
+                <basicLookup point="Relay 1 Shed Time"/>
+            </attribute>
+            <attribute name="RELAY_1_REMAINING_CONTROL">
+                <basicLookup point="Relay 1 Remaining Control Time"/>
+            </attribute>
+            <attribute name="RELAY_2_RUN_TIME_DATA_LOG">
+                <basicLookup point="Runtime Load 2"/>
+            </attribute>
+            <attribute name="RELAY_2_SHED_TIME_DATA_LOG">
+                <basicLookup point="Relay 2 Shed Time"/>
+            </attribute>
+            <attribute name="RELAY_2_REMAINING_CONTROL">
+                <basicLookup point="Relay 2 Remaining Control Time"/>
+            </attribute>
+            <attribute name="RELAY_3_RUN_TIME_DATA_LOG">
+                <basicLookup point="Runtime Load 3"/>
+            </attribute>
+            <attribute name="RELAY_3_SHED_TIME_DATA_LOG">
+                <basicLookup point="Relay 3 Shed Time"/>
+            </attribute>
+            <attribute name="RELAY_3_REMAINING_CONTROL">
+                <basicLookup point="Relay 3 Remaining Control Time"/>
+            </attribute>
+            <attribute name="RELAY_4_RUN_TIME_DATA_LOG">
+                <basicLookup point="Runtime Load 4"/>
+            </attribute>
+            <attribute name="RELAY_4_SHED_TIME_DATA_LOG">
+                <basicLookup point="Relay 4 Shed Time"/>
+            </attribute>
+            <attribute name="RELAY_4_REMAINING_CONTROL">
+                <basicLookup point="Relay 4 Remaining Control Time"/>
+            </attribute>
         </attributes>
     </pao>
     

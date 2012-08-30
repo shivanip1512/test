@@ -60,6 +60,9 @@ public enum BuiltInAttribute implements Attribute, DisplayableEnum {
     RELAY_3_REMAINING_CONTROL("Relay 3 Remaining Control Time"),
     RELAY_3_RUN_TIME_DATA_LOG("Relay 3 Run Time"),
     RELAY_3_SHED_TIME_DATA_LOG("Relay 3 Shed Time"),
+    RELAY_4_REMAINING_CONTROL("Relay 4 Remaining Control Time"),
+    RELAY_4_RUN_TIME_DATA_LOG("Relay 4 Run Time"),
+    RELAY_4_SHED_TIME_DATA_LOG("Relay 4 Shed Time"),
     REPORTING_INTERVAL("Reporting Interval"),
     REVERSE_POWER_FLAG("Reverse Power Flag"),
     RF_DEMAND_RESET_STATUS("RF Demand Reset Status"),
@@ -276,6 +279,9 @@ public enum BuiltInAttribute implements Attribute, DisplayableEnum {
         relay.add(RELAY_3_REMAINING_CONTROL);
         relay.add(RELAY_3_RUN_TIME_DATA_LOG);
         relay.add(RELAY_3_SHED_TIME_DATA_LOG);
+        relay.add(RELAY_4_REMAINING_CONTROL);
+        relay.add(RELAY_4_RUN_TIME_DATA_LOG);
+        relay.add(RELAY_4_SHED_TIME_DATA_LOG);
         relayAttributes = relay.build();
         
         
