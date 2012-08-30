@@ -143,7 +143,7 @@ public:
 
         for each(const val_type item in _map)
         {
-            if( predicate(*(item.second)) )
+            if( predicate(item.second) )
             {
                 matches.push_back(item.second);
             }

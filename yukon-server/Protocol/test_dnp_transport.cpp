@@ -8,29 +8,19 @@ using std::vector;
 
 BOOST_AUTO_TEST_SUITE( test_dnp_transport )
 
-class test_Transport : private Cti::Protocol::DNP::TransportLayer
+struct test_Transport : private Cti::Protocol::DNP::TransportLayer
 {
-    typedef Cti::Protocol::DNP::TransportLayer Inherited;
+    using Cti::Protocol::DNP::TransportLayer::packet_sequence_t;
 
-public:
-    typedef Inherited::packet_sequence_t packet_sequence_t;
-
-    static bool test_isPacketSequenceValid(const packet_sequence_t &packet_sequence)
-    {
-        return Inherited::isPacketSequenceValid(packet_sequence);
-    }
-
-    static vector<unsigned char> test_extractPayload(const packet_sequence_t &packet_sequence)
-    {
-        return Inherited::extractPayload(packet_sequence);
-    }
+    using Cti::Protocol::DNP::TransportLayer::isPacketSequenceValid;
+    using Cti::Protocol::DNP::TransportLayer::extractPayload;
 };
 
 BOOST_AUTO_TEST_CASE(test_dnp_transport_isPacketSequenceValid_no_packets)
 {
     test_Transport::packet_sequence_t packet_sequence;
 
-    BOOST_CHECK_EQUAL(false, test_Transport::test_isPacketSequenceValid(packet_sequence));
+    BOOST_CHECK_EQUAL(false, test_Transport::isPacketSequenceValid(packet_sequence));
 }
 
 BOOST_AUTO_TEST_CASE(test_dnp_transport_isPacketSequenceValid_one_packet)
@@ -47,13 +37,14 @@ BOOST_AUTO_TEST_CASE(test_dnp_transport_isPacketSequenceValid_one_packet)
 
     const int packet_count = sizeof(packets) / sizeof(packets[0]);
 
-    bool sequence_valid[packet_count] =
+    const bool _ = false, X = true;
+
+    bool expected[packet_count] =
     {
-        false,
-        false,
-        false,
-         true
+        _, _, _, X
     };
+
+    std::vector<bool> results;
 
     for( int i = 0; i < packet_count; ++i )
     {
@@ -61,8 +52,12 @@ BOOST_AUTO_TEST_CASE(test_dnp_transport_isPacketSequenceValid_one_packet)
 
         packet_sequence.insert(packets[i]);
 
-        BOOST_CHECK_INDEXED_EQUAL(i, sequence_valid[i], test_Transport::test_isPacketSequenceValid(packet_sequence));
+        results.push_back(test_Transport::isPacketSequenceValid(packet_sequence));
     }
+
+    BOOST_CHECK_EQUAL_COLLECTIONS(
+       expected, expected + packet_count,
+       results.begin(), results.end());
 }
 
 
@@ -80,15 +75,19 @@ BOOST_AUTO_TEST_CASE(test_dnp_transport_isPacketSequenceValid_two_packets)
 
     const int packet_count = sizeof(packets) / sizeof(packets[0]);
 
-    bool sequence_valid[packet_count * packet_count] =
+    const bool _ = false, X = true;
+
+    const bool sequence_valid[packet_count * packet_count] =
     {
         //  This matrix encodes the packets and the order in which they were added to the set.
         //  It's valid to have packet 3 and packet 2 added, or packet 4 added twice.
-        '\0', '\0', '\0', '\0',
-        '\0', '\0', true, '\0',
-        '\0', true, '\0', '\0',
-        '\0', '\0', '\0', true,
+        _, _, _, _,
+        _, _, X, _,
+        _, X, _, _,
+        _, _, _, X,
     };
+
+    std::vector<bool> results;
 
     for( int i = 0; i < packet_count; ++i )
     {
@@ -99,16 +98,13 @@ BOOST_AUTO_TEST_CASE(test_dnp_transport_isPacketSequenceValid_two_packets)
             packet_sequence.insert(packets[i]);
             packet_sequence.insert(packets[j]);
 
-            int index = 0;
-
-            index += i;
-            index *= packet_count;
-            index += j;
-
-            BOOST_CHECK_INDEXED_EQUAL(index, sequence_valid[index],
-                                      test_Transport::test_isPacketSequenceValid(packet_sequence));
+            results.push_back(test_Transport::isPacketSequenceValid(packet_sequence));
         }
     }
+
+    BOOST_CHECK_EQUAL_COLLECTIONS(
+       sequence_valid, sequence_valid + packet_count * packet_count,
+       results.begin(), results.end());
 }
 
 
@@ -126,29 +122,33 @@ BOOST_AUTO_TEST_CASE(test_dnp_transport_isPacketSequenceValid_three_packets)
 
     const int packet_count = sizeof(packets) / sizeof(packets[0]);
 
-    bool sequence_valid[packet_count * packet_count * packet_count] =
+    const bool _ = false, X = true;
+
+    const bool sequence_valid[packet_count * packet_count * packet_count] =
     {
         //  This matrix encodes the packets and the order in which they were added to the set.
-        '\0', '\0', '\0', '\0',
-        '\0', '\0', true, '\0',
-        '\0', true, '\0', '\0',
-        '\0', '\0', '\0', '\0',
+        _, _, _, _,
+        _, _, X, _,
+        _, X, _, _,
+        _, _, _, _,
 
-        '\0', '\0', true, '\0',
-        '\0', '\0', '\0', '\0',
-        true, '\0', '\0', '\0',
-        '\0', '\0', '\0', '\0',
+        _, _, X, _,
+        _, _, _, _,
+        X, _, _, _,
+        _, _, _, _,
 
-        '\0', true, '\0', '\0',
-        true, '\0', '\0', '\0',
-        '\0', '\0', '\0', '\0',
-        '\0', '\0', '\0', '\0',
+        _, X, _, _,
+        X, _, _, _,
+        _, _, _, _,
+        _, _, _, _,
 
-        '\0', '\0', '\0', '\0',
-        '\0', '\0', '\0', '\0',
-        '\0', '\0', '\0', '\0',
-        '\0', '\0', '\0', true,
+        _, _, _, _,
+        _, _, _, _,
+        _, _, _, _,
+        _, _, _, X,
     };
+
+    std::vector<bool> results;
 
     for( int i = 0; i < packet_count; ++i )
     {
@@ -162,18 +162,14 @@ BOOST_AUTO_TEST_CASE(test_dnp_transport_isPacketSequenceValid_three_packets)
                 packet_sequence.insert(packets[j]);
                 packet_sequence.insert(packets[k]);
 
-                int index = 0;
-
-                index += i;
-                index *= packet_count;
-                index += j;
-                index *= packet_count;
-                index += k;
-
-                BOOST_CHECK_INDEXED_EQUAL(index, sequence_valid[index], test_Transport::test_isPacketSequenceValid(packet_sequence));
+                results.push_back(test_Transport::isPacketSequenceValid(packet_sequence));
             }
         }
     }
+
+    BOOST_CHECK_EQUAL_COLLECTIONS(
+       sequence_valid, sequence_valid + packet_count * packet_count * packet_count,
+       results.begin(), results.end());
 }
 
 
@@ -222,14 +218,14 @@ BOOST_AUTO_TEST_CASE(test_dnp_transport_isPacketSequenceValid_wraparound)
                     packet_sequence.insert(packets[i]);
 
                     //  verify that it's continuously not valid without the first packet
-                    BOOST_CHECK_EQUAL(false, test_Transport::test_isPacketSequenceValid(packet_sequence));
+                    BOOST_CHECK_EQUAL(false, test_Transport::isPacketSequenceValid(packet_sequence));
                 }
 
                 //  now insert the first packet
                 packet_sequence.insert(packets[0]);
 
                 //  and verify that it's valid
-                BOOST_CHECK_EQUAL(true, test_Transport::test_isPacketSequenceValid(packet_sequence));
+                BOOST_CHECK_EQUAL(true, test_Transport::isPacketSequenceValid(packet_sequence));
             }
         }
     }
@@ -241,7 +237,7 @@ BOOST_AUTO_TEST_CASE(test_dnp_transport_extractPayload_no_packets)
     test_Transport::packet_sequence_t packet_sequence;
 
     const vector<unsigned char> expected;
-    const vector<unsigned char> result = test_Transport::test_extractPayload(packet_sequence);
+    const vector<unsigned char> result = test_Transport::extractPayload(packet_sequence);
 
     BOOST_CHECK_EQUAL(expected.size(), result.size());
 
@@ -263,7 +259,7 @@ BOOST_AUTO_TEST_CASE(test_dnp_transport_extractPayload_one_packet)
     packet_sequence.insert(TransportPacket(true, 99, (const unsigned char *)expected_string.c_str(),
                                                      expected_string.size()));
 
-    const vector<unsigned char> result = test_Transport::test_extractPayload(packet_sequence);
+    const vector<unsigned char> result = test_Transport::extractPayload(packet_sequence);
 
     BOOST_CHECK_EQUAL(expected.size(), result.size());
 
@@ -295,7 +291,7 @@ BOOST_AUTO_TEST_CASE(test_dnp_transport_extractPayload_two_packets)
             packet_sequence.insert(TransportPacket(!i, i, (const unsigned char *)chunk_begin, chunk_end - chunk_begin));
         }
 
-        const vector<unsigned char> result = test_Transport::test_extractPayload(packet_sequence);
+        const vector<unsigned char> result = test_Transport::extractPayload(packet_sequence);
 
         BOOST_CHECK_EQUAL(expected.size(), result.size());
 
@@ -316,7 +312,7 @@ BOOST_AUTO_TEST_CASE(test_dnp_transport_extractPayload_two_packets)
             packet_sequence.insert(TransportPacket(!i, (i + 63) % 64, (const unsigned char *)chunk_begin, chunk_end - chunk_begin));
         }
 
-        const vector<unsigned char> result = test_Transport::test_extractPayload(packet_sequence);
+        const vector<unsigned char> result = test_Transport::extractPayload(packet_sequence);
 
         BOOST_CHECK_EQUAL(expected.size(), result.size());
 
@@ -349,7 +345,7 @@ BOOST_AUTO_TEST_CASE(test_dnp_transport_extractPayload_three_packets)
             packet_sequence.insert(TransportPacket(!i, i % 64, (const unsigned char *)chunk_begin, chunk_end - chunk_begin));
         }
 
-        const vector<unsigned char> result = test_Transport::test_extractPayload(packet_sequence);
+        const vector<unsigned char> result = test_Transport::extractPayload(packet_sequence);
 
         BOOST_CHECK_EQUAL(expected.size(), result.size());
 
@@ -370,7 +366,7 @@ BOOST_AUTO_TEST_CASE(test_dnp_transport_extractPayload_three_packets)
             packet_sequence.insert(TransportPacket(!i, (i + 63) % 64, (const unsigned char *)chunk_begin, chunk_end - chunk_begin));
         }
 
-        const vector<unsigned char> result = test_Transport::test_extractPayload(packet_sequence);
+        const vector<unsigned char> result = test_Transport::extractPayload(packet_sequence);
 
         BOOST_CHECK_EQUAL(expected.size(), result.size());
 
@@ -391,7 +387,7 @@ BOOST_AUTO_TEST_CASE(test_dnp_transport_extractPayload_three_packets)
             packet_sequence.insert(TransportPacket(!i, (i + 62) % 64, (const unsigned char *)chunk_begin, chunk_end - chunk_begin));
         }
 
-        const vector<unsigned char> result = test_Transport::test_extractPayload(packet_sequence);
+        const vector<unsigned char> result = test_Transport::extractPayload(packet_sequence);
 
         BOOST_CHECK_EQUAL(expected.size(), result.size());
 

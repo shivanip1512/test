@@ -12,10 +12,6 @@ namespace boost
 } // namespace boost
 
 
-#define BOOST_CHECK_INDEXED_EQUAL(i,x,y) \
-    BOOST_CHECK_MESSAGE((x) == (y), "failed with index = " << (i)); \
-    BOOST_CHECK_EQUAL((x), (y))
-
 //  for use with shared_ptr<>
 struct null_deleter
 {

@@ -79,6 +79,8 @@ protected:
 
     virtual void refreshDeviceProperties(Cti::Database::id_set &paoids, int type);
 
+    virtual bool shouldDiscardDevice(CtiDeviceSPtr dev) const;
+
     int getPortDevicePriority(long portid, long deviceid) const;
 
 public:
@@ -88,7 +90,6 @@ public:
 
     coll_type::lock_t &getLock();
 
-    int getErrorCode() const { return _dberrorcode; };
     int setErrorCode(int ec)
     {
         if( ec ) _dberrorcode = ec;      // Only set it if there was an error (don't re-set it)

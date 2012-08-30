@@ -19,6 +19,8 @@ protected:
 
     virtual void refreshDeviceProperties(Database::id_set &paoids, int type);
 
+    virtual bool shouldDiscardDevice(CtiDeviceSPtr dev) const;
+
 public:
 
     ScannableDeviceManager(CtiApplication_t app_id) :

@@ -38,11 +38,7 @@ using std::endl;
 CtiSyncDefStruct PorterSyncs[] = {
    { CtiEventType, TRUE , FALSE, "CtiTimeSyncEvent"},
    { CtiEventType, TRUE , FALSE, "CtiQueueEvent"},
-   { CtiEventType, TRUE , FALSE, "CtiScannerPostEvent"},
-   { CtiEventType, TRUE , FALSE, "CtiPerformEvent"},
    { CtiEventType, TRUE , FALSE, "CtiPorterQuitEvent"},
-   { CtiEventType, TRUE , FALSE, "CtiRefreshEvent"},
-   { CtiEventType, TRUE , FALSE, "CtiGWResultEvent"}
 };
 
 void APIENTRY GlobalsCleanUp ()

@@ -59,12 +59,9 @@ BOOST_AUTO_TEST_CASE(test_ccu721_bword)
         expected.assign(reinterpret_cast<unsigned char *>(result),
                         reinterpret_cast<unsigned char *>(result) + 7 * 4);
 
-        BOOST_CHECK_EQUAL(28, buf.size());
-
-        for( int i = 0; i < 7 * 4; ++i )
-        {
-            BOOST_CHECK_INDEXED_EQUAL(i, buf[i], expected[i]);
-        }
+        BOOST_CHECK_EQUAL_COLLECTIONS(
+           expected.begin(), expected.end(),
+           buf.begin(), buf.end());
     }
 
     BSt.Length = 0;
@@ -77,14 +74,11 @@ BOOST_AUTO_TEST_CASE(test_ccu721_bword)
         char *result = "\xa2\x10\x0c\x0e\x40\x13\x50";
 
         expected.assign(reinterpret_cast<unsigned char *>(result),
-                        reinterpret_cast<unsigned char *>(result) + 7 * 4);
+                        reinterpret_cast<unsigned char *>(result) + 7);
 
-        BOOST_CHECK_EQUAL(7, buf.size());
-
-        for( int i = 0; i < 7 * 1; ++i )
-        {
-            BOOST_CHECK_INDEXED_EQUAL(i, buf[i], expected[i]);
-        }
+        BOOST_CHECK_EQUAL_COLLECTIONS(
+           expected.begin(), expected.end(),
+           buf.begin(), buf.end());
     }
 }
 

@@ -776,20 +776,18 @@ void CtiDeviceManager::refreshList(const Cti::Database::id_set &paoids, const LO
             delete deviceTemplate;
         }
 
-        // Now I need to check for any Device removals based upon the Updated Flag being NOT set.
         {
-            Timing::DebugTimer timer("removing non-updated devices ");
+            Timing::DebugTimer timer("removing invalidated devices ");
 
             std::vector<CtiDeviceSPtr> evictedDevices;
 
-            //  If this was a "reload all" and we didn't reload anything,
-            //    DON'T clear the map - we probably just had a DB error.
-            //  So make sure we got at least one row before clearing the non-updated devices.
+            //  If this was a "reload all"...
             if( paoids.empty() )
             {
+                //  ...make sure we loaded something before we evict any records
                 if( rowFound )
                 {
-                    evictedDevices = _smartMap.findAll(std::not1(std::mem_fun_ref(&CtiMemDBObject::getUpdatedFlag)));
+                    evictedDevices = _smartMap.findAll(boost::bind(&CtiDeviceManager::shouldDiscardDevice, this, _1));
                 }
             }
             else
@@ -798,7 +796,7 @@ void CtiDeviceManager::refreshList(const Cti::Database::id_set &paoids, const LO
                 {
                     if( CtiDeviceSPtr dev = getDeviceByID(paoid) )
                     {
-                        if( ! dev->getUpdatedFlag() )
+                        if( shouldDiscardDevice(dev) )
                         {
                             evictedDevices.push_back(dev);
                         }
@@ -842,6 +840,13 @@ void CtiDeviceManager::refreshList(const Cti::Database::id_set &paoids, const LO
         RWTHROW(e);
 
     }
+}
+
+
+bool CtiDeviceManager::shouldDiscardDevice(CtiDeviceSPtr dev) const
+{
+    //  Discard the device if it has not been updated
+    return ! (dev && dev->getUpdatedFlag());
 }
 
 

@@ -11,6 +11,4 @@ IM_EX_DEVDB CtiDeviceBase *DeviceFactory(Cti::RowReader &rdr);
 IM_EX_DEVDB CtiDeviceBase *createDeviceType(int type);
 IM_EX_DEVDB CtiRouteBase  *RouteFactory(Cti::RowReader &rdr);
 
-IM_EX_DEVDB bool isAScannableDevice(CtiDeviceSPtr& pDevice, void* d);
-
-IM_EX_DEVDB bool isCarrierLPDevice(CtiDeviceSPtr& pDevice);
+IM_EX_DEVDB bool isCarrierLPDeviceType(const int type);

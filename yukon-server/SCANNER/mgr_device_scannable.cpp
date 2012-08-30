@@ -2,6 +2,7 @@
 
 #include "mgr_device_scannable.h"
 #include "dev_single.h"
+#include "dev_carrier.h"
 #include "tbl_dv_wnd.h"
 
 #include "debug_timer.h"
@@ -20,6 +21,47 @@ void ScannableDeviceManager::refreshDeviceProperties(Database::id_set &paoids, i
 
     {  Timing::DebugTimer timer("loading scan rates",   print_bounds);  refreshScanRates    (paoids);  }
     {  Timing::DebugTimer timer("loading scan windows", print_bounds);  refreshDeviceWindows(paoids);  }
+}
+
+
+bool ScannableDeviceManager::shouldDiscardDevice(CtiDeviceSPtr dev) const
+{
+    //  first, check to see if the parent wants to discard the device (if non-updated on a DB reload, the device was deleted)
+    if( Inherited::shouldDiscardDevice(dev) )
+    {
+        return true;
+    }
+
+    //  then look to see if the device has a scan rate or is collecting load profile
+    if( dev && dev->isSingle() )
+    {
+        CtiDeviceSingleSPtr devSingle = boost::static_pointer_cast<CtiDeviceSingle>(dev);
+
+        // Return TRUE if it is NOT SET
+        for(INT i = 0; i  < ScanRateInvalid; i++ )
+        {
+            if( devSingle->getScanRate(i) != -1 )
+            {
+                return false;              // I found a scan rate...
+            }
+        }
+
+        if( isCarrierLPDeviceType(devSingle->getType()) )
+        {
+            Cti::Devices::CarrierDevice *devCarrier = (Cti::Devices::CarrierDevice *)devSingle.get();
+
+            for(int i = 0; i < CtiTableDeviceLoadProfile::MaxCollectedChannel; i++)
+            {
+                if( devCarrier->getLoadProfile()->isChannelValid(i) )
+                {
+                    return false;
+                }
+            }
+        }
+    }
+
+    //  otherwise discard it
+    return true;
 }
 
 
@@ -51,7 +93,7 @@ void ScannableDeviceManager::refreshAllDevices()
             }
         }
 
-        int i = 0;
+        int load_count = 0;
 
         while( rdr() )
         {
@@ -63,18 +105,18 @@ void ScannableDeviceManager::refreshAllDevices()
 
             type_paoids[resolveDeviceType(temp)].insert(id);
 
-            if( !(++i % 1000) )
+            if( !(++load_count % 1000) )
             {
                 CtiLockGuard<CtiLogger> doubt_guard(dout);
 
-                dout << "loaded " << i << " scannables " << endl;
+                dout << "loaded " << load_count << " scannables " << endl;
             }
         }
 
         {
             CtiLockGuard<CtiLogger> doubt_guard(dout);
 
-            dout << "loaded " << i << " scannables " << endl;
+            dout << "loaded " << load_count << " scannables " << endl;
         }
     }
 
@@ -136,8 +178,10 @@ void ScannableDeviceManager::refreshScanRates(Database::id_set &paoids)
                 //  is this check necessary?
                 if( *paoid_itr > 0 )
                 {
-                    CtiDeviceSPtr devsptr = getDeviceByID(*paoid_itr);
-                    if(devsptr) devsptr->invalidateScanRates();
+                    if(CtiDeviceSPtr devsptr = getDeviceByID(*paoid_itr))
+                    {
+                        devsptr->invalidateScanRates();
+                    }
                 }
             }
         }

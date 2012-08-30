@@ -5,56 +5,39 @@
 
 #include "boostutil.h"
 
+#include <boost/assign/list_of.hpp>
+
 #include <set>
 
 BOOST_AUTO_TEST_SUITE( test_slctdev )
 
-struct test_CtiDeviceBase : public CtiDeviceBase
+BOOST_AUTO_TEST_CASE(test_is_carrier_lp_device_type)
 {
-    using CtiDeviceBase::setType;
-};
+    const bool X = true, _ = false;
 
+    const std::vector<bool> expected = boost::assign::list_of
+        (_)(_)(X)(_)(X) (_)(_)(_)(_)(_)  //   0
+        (_)(_)(_)(_)(_) (_)(_)(_)(_)(_)  //  10
+        (_)(_)(_)(_)(_) (_)(_)(_)(_)(_)  //  20
+        (X)(X)(X)(_)(_) (_)(_)(_)(_)(_)  //  30
+        (X)(_)(_)(_)(_) (_)(_)(_)(_)(_)  //  40
+        (X)(_)(_)(_)(_) (_)(_)(_)(_)(_)  //  50
+        (_)(_)(_)(_)(_) (_)(_)(_)(_)(X)  //  60
+        (X)(_)(_)(_)(_) (_)(_)(_)(_)(_)  //  70
+        (_)(_)(X)(X)(X) (X)(X)(X)(X)(X)  //  80
+        (X)(X)(X)(X)(X) (_)(_)(_)(_)(_)  //  90
+        .repeat(9900, _);
 
-BOOST_AUTO_TEST_CASE(test_is_carrier_lp_device)
-{
-    CtiDeviceSPtr dev(new test_CtiDeviceBase);
+    std::vector<bool> results;
 
-    int types[] = {
-        TYPELMT2,
-        TYPEDCT501,
-        TYPEMCT240,
-        TYPEMCT242,
-        TYPEMCT248,
-        TYPEMCT250,
-        TYPEMCT260,
-        TYPEMCT310IL,
-        TYPEMCT318L,
-        TYPEMCT410CL,
-        TYPEMCT410FL,
-        TYPEMCT410GL,
-        TYPEMCT410IL,
-        TYPEMCT420CL,
-        TYPEMCT420CD,
-        TYPEMCT420FL,
-        TYPEMCT420FD,
-        TYPEMCT430A,
-        TYPEMCT430A3,
-        TYPEMCT430S4,
-        TYPEMCT430SL,
-        TYPEMCT470 };
-
-    size_t type_count = sizeof(types) / sizeof(types[0]);
-
-    std::set<int> type_set;
-
-    type_set.insert(types, types + type_count);
-
-    for( int i = 0; i < 10000; ++i )
+    for( int type = 0; type < 10000; ++type )
     {
-        dev->setType(i);
-
-        BOOST_CHECK_INDEXED_EQUAL(i, isCarrierLPDevice(dev), type_set.find(i) != type_set.end());
+        results.push_back(isCarrierLPDeviceType(type));
     }
+
+    BOOST_CHECK_EQUAL_COLLECTIONS(
+       expected.begin(), expected.end(),
+       results.begin(), results.end());
 }
 
 BOOST_AUTO_TEST_SUITE_END()

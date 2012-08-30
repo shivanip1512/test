@@ -394,40 +394,6 @@ DLLEXPORT CtiRouteBase* RouteFactory(Cti::RowReader &rdr)
     return Route;
 }
 
-DLLEXPORT bool isAScannableDevice(CtiDeviceSPtr& pDevice, void* d)
-{
-    bool bRet = false;
-
-    if(pDevice->isSingle())
-    {
-        CtiDeviceSingle* pUnique = (CtiDeviceSingle*)pDevice.get();
-
-        // Return TRUE if it is NOT SET
-        for(INT i = 0; i  < ScanRateInvalid; i++ )
-        {
-            if(pUnique->getScanRate(i) != -1)
-            {
-                bRet = true;              // I found a scan rate...
-                break;
-            }
-        }
-
-        if(!bRet && isCarrierLPDevice(pDevice))
-        {
-            for(int i = 0; i < CtiTableDeviceLoadProfile::MaxCollectedChannel; i++)
-            {
-                if(((CarrierDevice *)pUnique)->getLoadProfile()->isChannelValid(i))
-                {
-                    bRet = true;
-                    break;
-                }
-            }
-        }
-    }
-
-    return(bRet);
-}
-
 DLLEXPORT BOOL isARoute(CtiRouteBase* pSp, void *arg)
 {
     BOOL bRet = TRUE;
@@ -436,9 +402,10 @@ DLLEXPORT BOOL isARoute(CtiRouteBase* pSp, void *arg)
 }
 
 
-DLLEXPORT bool isCarrierLPDevice(CtiDeviceSPtr &pDevice)
+//  This
+DLLEXPORT bool isCarrierLPDeviceType(const int type)
 {
-    switch(pDevice->getType())
+    switch(type)
     {
         case TYPELMT2:
         case TYPEDCT501:
