@@ -11,7 +11,7 @@
         </c:when>
         <c:otherwise>
             <div class="hardwarePageContainer">
-                <table class="compactResultsTable history">
+                <table class="compactResultsTable">
                     <thead>
                         <tr>
                             <th class="wsnw"><i:inline key=".deviceStatusHistory.event"/></th>
@@ -44,7 +44,7 @@
         <c:otherwise>
             <div class="hardwarePageContainer">
                 <tags:alternateRowReset/>
-                <table class="compactResultsTable history">
+                <table class="compactResultsTable">
                     <thead>
                         <tr>
                             <th class="wsnw"><i:inline key=".hardwareHistory.date"/></th>
