@@ -37,12 +37,6 @@ public enum PolicyRule implements DisplayableEnum {
             return RandomStringUtils.random(1, 32, 47, false, false);
         }
     },
-    UNICODE_CHARACTERS("[\\p{L}&&[^"+PolicyRuleRegexSupport.EUROPEAN_LANG_CHAR_REGEX+"]]") {
-        @Override
-        public String generateRandomCharacter() {
-            return RandomStringUtils.random(1, 250, 5000, false, false);
-        }
-    },
     ;
     
     private static final String formatKeyPrefix = "yukon.web.modules.passwordPolicy.policyRule.";

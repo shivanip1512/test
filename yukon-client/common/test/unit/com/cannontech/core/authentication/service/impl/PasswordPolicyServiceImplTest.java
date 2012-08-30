@@ -74,7 +74,7 @@ public class PasswordPolicyServiceImplTest {
             .withRoleProperty(POLICY_RULE_LOWERCASE_CHARACTERS, true)
             .withRoleProperty(POLICY_RULE_BASE_10_DIGITS, false)
             .withRoleProperty(POLICY_RULE_NONALPHANUMERIC_CHARACTERS, false)
-            .withRoleProperty(POLICY_RULE_UNICODE_CHARACTERS, true);
+            .withRoleProperty(POLICY_RULE_UNICODE_CHARACTERS, false);
         
         rolePropertyDaoMock.setupRolesFor(USER_NO_POLICY)
             .withRoleProperty(LOCKOUT_DURATION, 0)
@@ -126,7 +126,7 @@ public class PasswordPolicyServiceImplTest {
     @Test
     public void testPasswordPolicy_UserTwo() {
         List<PolicyRule> expectedPolicyRules = 
-                Lists.newArrayList(PolicyRule.LOWERCASE_CHARACTERS, PolicyRule.UNICODE_CHARACTERS);
+                Lists.newArrayList(PolicyRule.LOWERCASE_CHARACTERS);
 
         // Checking policy rules
         List<PolicyRule> policyRules = passwordPolicyService.getPolicyRules(USER_TWO);

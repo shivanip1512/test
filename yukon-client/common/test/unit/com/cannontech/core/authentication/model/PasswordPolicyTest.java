@@ -17,11 +17,9 @@ public class PasswordPolicyTest {
     private static final String PASSWORD_LOWER = "abcdefgh";
     private static final String PASSWORD_DIGITS = "12345678";
     private static final String PASSWORD_NONALPHA = "~!@#<>,.";
-    private static final String PASSWORD_UNICODE = "\u0E01\u0E02\u0E03\u0E04\u0E05\u0E06\u0E07\u0E08";
     private static final String PASSWORD_ONE = "ABCDabcd";
     private static final String PASSWORD_TWO = "ABCabc123";
     private static final String PASSWORD_THREE = "ABCabc123!?@";
-    private static final String PASSWORD_FOUR = "ABCabc123!?@\u0E01\u0E02\u0E03";
     
     private static final LiteYukonUser USER_JUST_CHANGED = new LiteYukonUser();
     {
@@ -85,16 +83,6 @@ public class PasswordPolicyTest {
     }
 
     @Test
-    public void testUnicodePasswordPolicy() throws Exception {
-        PolicyRule unicodeCharacters = PolicyRule.UNICODE_CHARACTERS;
-        
-        Pattern unicodePattern = unicodeCharacters.getRegexPattern();
-        Matcher unicodeMatcher = unicodePattern.matcher(PASSWORD_UNICODE);
-        
-        Assert.assertTrue(unicodeMatcher.find());
-    }
-
-    @Test
     public void testPasswordOne() throws Exception {
         int numberOfRulesMet = passwordPolicyOne.numberOfRulesMet(PASSWORD_ONE);
         Assert.assertEquals(2, numberOfRulesMet);
@@ -118,15 +106,6 @@ public class PasswordPolicyTest {
         Assert.assertEquals(4, numberOfRulesMet);
         
         boolean isPasswordQualityCheckMet = passwordPolicyOne.isPasswordQualityCheckMet(PASSWORD_THREE);
-        Assert.assertTrue(isPasswordQualityCheckMet);
-    }
-    
-    @Test
-    public void testPasswordFour() throws Exception {
-        int numberOfRulesMet = passwordPolicyOne.numberOfRulesMet(PASSWORD_FOUR);
-        Assert.assertEquals(5, numberOfRulesMet);
-        
-        boolean isPasswordQualityCheckMet = passwordPolicyOne.isPasswordQualityCheckMet(PASSWORD_FOUR);
         Assert.assertTrue(isPasswordQualityCheckMet);
     }
 

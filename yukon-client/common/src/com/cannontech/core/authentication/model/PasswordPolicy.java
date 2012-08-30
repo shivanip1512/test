@@ -180,19 +180,9 @@ public class PasswordPolicy {
         String genPass = PolicyRule.UPPERCASE_CHARACTERS.generateRandomCharacter();
         genPass = genPass.concat(PolicyRule.LOWERCASE_CHARACTERS.generateRandomCharacter());
         genPass = genPass.concat(PolicyRule.BASE_10_DIGITS.generateRandomCharacter());
-        if (numberOfPolicies - passwordQualityCheck  == 1) {
-            if (policyRules.contains(PolicyRule.NONALPHANUMERIC_CHARACTERS) &&
-                policyRules.contains(PolicyRule.UNICODE_CHARACTERS)) {
-                genPass = genPass.concat(PolicyRule.NONALPHANUMERIC_CHARACTERS.generateRandomCharacter());
-            }
-            
-        // All the rules are needed.
-        } else if (numberOfPolicies - passwordQualityCheck  == 0) {
+        if (numberOfPolicies - passwordQualityCheck  == 0) {
             if (policyRules.contains(PolicyRule.NONALPHANUMERIC_CHARACTERS)) {
                 genPass = genPass.concat(PolicyRule.NONALPHANUMERIC_CHARACTERS.generateRandomCharacter());
-            }
-            if (policyRules.contains(PolicyRule.UNICODE_CHARACTERS)) {
-                genPass = genPass.concat(PolicyRule.UNICODE_CHARACTERS.generateRandomCharacter());
             }
         } 
 
