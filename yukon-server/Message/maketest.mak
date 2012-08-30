@@ -30,6 +30,7 @@ MESSAGE_TEST_OBJS=\
 test_main.obj \
 test_PointDataRequest.obj \
 test_message.obj \
+test_multi_msg.obj \
 
 LIBS=\
 kernel32.lib user32.lib advapi32.lib \

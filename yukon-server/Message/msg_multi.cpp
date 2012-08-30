@@ -55,11 +55,10 @@ CtiMultiMsg&  CtiMultiMsg::setData(const CtiMultiMsg_vec& Data)
 {
    for(int i = 0; i < Data.size(); i++)
    {
-      RWCollectable *pNew = Data[i]->newSpecies();
+      RWCollectable *pNew = Data[i]->copy();
 
       if(pNew != NULL)
       {
-         *pNew = *(Data[i]);     // Use object's copy constructor!
          _bag.push_back(pNew);
       }
       else
