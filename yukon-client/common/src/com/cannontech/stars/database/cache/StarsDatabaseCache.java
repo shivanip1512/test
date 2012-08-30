@@ -639,29 +639,31 @@ public class StarsDatabaseCache implements DBChangeListener {
 	 * set start date to new java.util.Date(0).
 	 */
 	public LiteStarsLMControlHistory getLMControlHistory(int groupID, ReadableInstant startReadableInstant) {
-		/* STARS cannot assume that a zero group ID means no control history...should
-		 * still show something
-		 */
-		//if (groupID == CtiUtilities.NONE_ZERO_ID) return null;
-		Instant startDateTime = startReadableInstant.toInstant();
+	    Instant startDateTime = startReadableInstant.toInstant();
 	    
 		LiteStarsLMControlHistory lmCtrlHist =
 				getLMCtrlHistMap().get( new Integer(groupID));
-		if (lmCtrlHist == null) lmCtrlHist = new LiteStarsLMControlHistory( groupID );
+		if (lmCtrlHist == null) 
+		    lmCtrlHist = new LiteStarsLMControlHistory( groupID );
 		
+		// Clear out the cache if we are loading older data. Note this means we never try to fill in gaps in old data
+		// and always load new. 
+		// Also if the data we are requesting is more than than 7 days newer than what we already
+		// have loaded we will throw out the old data and just start loading new information. Presumably this
+		// prevents us from trying to fill in days/months of data we don't really need.
 		if (startDateTime != null &&
 			 (startDateTime.isBefore(lmCtrlHist.getLastSearchedStartTime()) ||
 			   (new Duration(new Instant(lmCtrlHist.getLastSearchedStopTime()),
 			                 startDateTime).isLongerThan(CTRL_HIST_CACHE_INVALID_INTERVAL)))) {
-			// Clear the cached control history if the request date is earlier than the cache start date,
-			// or it is later than the cache stop date and the interval is too long.
 			lmCtrlHist = new LiteStarsLMControlHistory( groupID );
 		}
 		
-		int lastSearchedID = LMControlHistoryUtil.getLastLMCtrlHistID();
+		int maxControlHistID = LMControlHistoryUtil.getLastLMCtrlHistID();
 		
 		if (startDateTime != null) {
 			if (lmCtrlHist.getLmControlHistory() == null) {
+		        // Either we have never loaded or we are loading older data than what is currently cached. Load everything 
+	            // after the given date.
 				Date dateFrom = StarsUtils.translateDate( startDateTime.toDate().getTime() );
 				com.cannontech.database.db.pao.LMControlHistory[] ctrlHist =
 						LMControlHistoryUtil.getLMControlHistory( groupID, dateFrom, null );
@@ -669,16 +671,19 @@ public class StarsDatabaseCache implements DBChangeListener {
 				List<LiteBase> ctrlHistList = new ArrayList<LiteBase>();
 				for (int i = 0; i < ctrlHist.length; i++)
 					ctrlHistList.add( StarsLiteFactory.createLite(ctrlHist[i]) );
+				
 				lmCtrlHist.setLmControlHistory( ctrlHistList );
 			}
 			else {
+			    // We already have cached data and do not need to read earlier data, so load everything that has been added
+			    // since last time we updated the cache.
 				com.cannontech.database.db.pao.LMControlHistory[] ctrlHist =
 						LMControlHistoryUtil.getLMControlHistory( groupID, lmCtrlHist.getLastSearchedCtrlHistID() );
 				for (int i = 0; i < ctrlHist.length; i++)
 					lmCtrlHist.getLmControlHistory().add( StarsLiteFactory.createLite(ctrlHist[i]) );
 			}
 			
-			lmCtrlHist.setLastSearchedCtrlHistID( lastSearchedID );
+			lmCtrlHist.setLastSearchedCtrlHistID( maxControlHistID );
 			if (startDateTime.isBefore(lmCtrlHist.getLastSearchedStartTime())) {
 				lmCtrlHist.setLastSearchedStartTime(startDateTime.toDate().getTime());
 			}
@@ -689,14 +694,17 @@ public class StarsDatabaseCache implements DBChangeListener {
 			lmCtrlHist.setLmControlHistory(new ArrayList<LiteBase>());
 		}
 		
+		// This block sets the lastControlHistory object and makes sure lastSearchedCtrlHistId is correct. Loading
+		// cache objects is complete but the lastControlHistory object may be loaded if our cache is empty for this group.
 		if (lmCtrlHist.getLmControlHistory().size() > 0) {
 			LiteLMControlHistory liteCtrlHist = (LiteLMControlHistory)
 					lmCtrlHist.getLmControlHistory().get(lmCtrlHist.getLmControlHistory().size() - 1);
 			
-			lastSearchedID = Math.max( liteCtrlHist.getLmCtrlHistID(), lastSearchedID );
-			lmCtrlHist.setLastSearchedCtrlHistID( lastSearchedID );
+			maxControlHistID = Math.max( liteCtrlHist.getLmCtrlHistID(), maxControlHistID );
+			lmCtrlHist.setLastSearchedCtrlHistID( maxControlHistID );
 			
-			LiteLMControlHistory lastCtrlHist = new LiteLMControlHistory( lastSearchedID );
+			// As far as I can tell the entire purpose of this is to set maxControlHistID on the lastControlHistory object.
+			LiteLMControlHistory lastCtrlHist = new LiteLMControlHistory( maxControlHistID );
 			lastCtrlHist.setStartDateTime( liteCtrlHist.getStartDateTime() );
 			lastCtrlHist.setStopDateTime( liteCtrlHist.getStopDateTime() );
 			lastCtrlHist.setCurrentDailyTime( liteCtrlHist.getCurrentDailyTime() );
@@ -714,12 +722,12 @@ public class StarsDatabaseCache implements DBChangeListener {
 			
 			if (lastCtrlHist != null) {
 				LiteLMControlHistory liteCtrlHist = (LiteLMControlHistory) StarsLiteFactory.createLite(lastCtrlHist);
-				if (liteCtrlHist.getLmCtrlHistID() < lastSearchedID)
-					liteCtrlHist.setLmCtrlHistID( lastSearchedID );
+				if (liteCtrlHist.getLmCtrlHistID() < maxControlHistID)
+					liteCtrlHist.setLmCtrlHistID( maxControlHistID );
 				lmCtrlHist.setLastControlHistory( liteCtrlHist );
 			} else {
 				if (lmCtrlHist.getLastControlHistory() == null)
-					lmCtrlHist.setLastControlHistory( new LiteLMControlHistory(lastSearchedID) );
+					lmCtrlHist.setLastControlHistory( new LiteLMControlHistory(maxControlHistID) );
 			}
 		}
 		
