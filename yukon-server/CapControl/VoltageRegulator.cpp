@@ -11,6 +11,7 @@
 #include "Capcontroller.h"
 
 using namespace boost::posix_time;
+using namespace Cti::Messaging::CapControl;
 
 namespace Cti           {
 namespace CapControl    {
@@ -224,6 +225,7 @@ void VoltageRegulator::executeTapUpOperation()
     std::string description = "Raise Tap Position" + getPhaseString();
 
     executeDigitalOutputHelper( getPointByAttribute( PointAttribute::TapUp ), description, capControlIvvcTapOperation );
+    sendCapControlOperationMessage( CapControlOperationMessage::createRaiseTapMessage( getPaoId(), CtiTime() ) );
 }
 
 
@@ -234,6 +236,7 @@ void VoltageRegulator::executeTapDownOperation()
     std::string description = "Lower Tap Position" + getPhaseString();
 
     executeDigitalOutputHelper( getPointByAttribute( PointAttribute::TapDown ), description, capControlIvvcTapOperation );
+    sendCapControlOperationMessage( CapControlOperationMessage::createLowerTapMessage( getPaoId(), CtiTime() ) );
 }
 
 
@@ -247,6 +250,7 @@ void VoltageRegulator::executeIntegrityScanHelper( const LitePoint & point )
     request->setSOE(5);
 
     CtiCapController::getInstance()->manualCapBankControl( request );
+    sendCapControlOperationMessage( CapControlOperationMessage::createScanDeviceMessage( point.getPaoId(), CtiTime() ) );
 }
 
 

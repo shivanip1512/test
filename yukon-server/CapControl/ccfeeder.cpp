@@ -29,6 +29,8 @@ using Cti::CapControl::PointResponse;
 using Cti::CapControl::PointResponseManager;
 using Cti::CapControl::createPorterRequestMsg;
 using Cti::CapControl::setVariableIfDifferent;
+using Cti::CapControl::sendCapControlOperationMessage;
+using namespace Cti::Messaging::CapControl;
 using std::endl;
 
 extern unsigned long _CC_DEBUG;
@@ -1571,6 +1573,7 @@ CtiRequestMsg* CtiCCFeeder::createIncreaseVarRequest(CtiCCCapBank* capBank, CtiM
         store->getFeederParentInfo(this, spAreaId, areaId, stationId);
         ccEvents.push_back(new CtiCCEventLogMsg(0, capBank->getStatusPointId(), spAreaId, areaId, stationId, getParentId(), getPaoId(), capControlCommandSent, getEventSequence(), capBank->getControlStatus(), textInfo, "cap control", kvarBefore, kvarBefore, 0,
                                                 capBank->getIpAddress(), capBank->getActionId(), stateInfo, varAValue, varBValue, varCValue));
+        sendCapControlOperationMessage( CapControlOperationMessage::createOpenBankMessage( capBank->getPaoId(), CtiTime() ) );
     }
     else
     {
@@ -1870,6 +1873,8 @@ CtiRequestMsg* CtiCCFeeder::createDecreaseVarRequest(CtiCCCapBank* capBank, CtiM
         string stateInfo = capBank->getControlStatusQualityString();
         ccEvents.push_back(new CtiCCEventLogMsg(0, capBank->getStatusPointId(), spAreaId, areaId, stationId, getParentId(), getPaoId(), capControlCommandSent, getEventSequence(), capBank->getControlStatus(), textInfo, "cap control", kvarBefore, kvarBefore, 0,
                                                 capBank->getIpAddress(), capBank->getActionId(), stateInfo, varAValue, varBValue, varCValue));
+
+        sendCapControlOperationMessage( CapControlOperationMessage::createCloseBankMessage( capBank->getPaoId(), CtiTime() ) );
     }
     else
     {
@@ -4095,7 +4100,7 @@ CtiRequestMsg*  CtiCCFeeder::createCapBankVerificationControl(const CtiTime& cur
         double controlValue = (ciStringEqual(getStrategy()->getControlUnits(), ControlStrategy::VoltsControlUnit) ? getCurrentVoltLoadPointValue() : getCurrentVarLoadPointValue());
         string text = createTextString(getStrategy()->getControlMethod(), control, controlValue, getCurrentVarLoadPointValue()) ;
         bool flipFlag = _USE_FLIP_FLAG && stringContainsIgnoreCase(currentCapBank->getControlDeviceType(),"CBC 701");
-        
+
         if( control == CtiCCCapBank::Open)
         {
             control = (flipFlag ? 4 : CtiCCCapBank::Open);

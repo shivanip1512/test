@@ -22,6 +22,7 @@ using Cti::CapControl::VoltageRegulator;
 using Cti::CapControl::VoltageRegulatorManager;
 using Cti::CapControl::Zone;
 using Cti::CapControl::ZoneManager;
+using Cti::CapControl::sendCapControlOperationMessage;
 
 using namespace Cti::Messaging::CapControl;
 
@@ -104,13 +105,13 @@ bool IVVCAlgorithm::checkConfigAllZonesHaveRegulator(IVVCStatePtr state, CtiCCSu
 }
 
 /**
- * Checks to see if the subbus or any of the parents of the 
- * subbus are disabled. 
- * 
+ * Checks to see if the subbus or any of the parents of the
+ * subbus are disabled.
+ *
  * @param state The IVVC state.
  * @param subbus The subbus object.
- * 
- * @return bool - true if the subbus or any of the subbus' 
+ *
+ * @return bool - true if the subbus or any of the subbus'
  *         parents are disabled, false otherwise.
  */
 bool IVVCAlgorithm::isBusInDisabledIvvcState(IVVCStatePtr state, CtiCCSubstationBusPtr subbus)
@@ -147,7 +148,7 @@ bool IVVCAlgorithm::isBusInDisabledIvvcState(IVVCStatePtr state, CtiCCSubstation
         {
             {
                 CtiLockGuard<CtiLogger> logger_guard(dout);
-                dout << CtiTime() << " - IVVC Suspended for bus: " << subbus->getPaoName() 
+                dout << CtiTime() << " - IVVC Suspended for bus: " << subbus->getPaoName()
                      << ". The " << culprit << " is disabled." << std::endl;
             }
             sendIVVCAnalysisMessage(IVVCAnalysisMessage::createSubbusDisabledMessage(subbus->getPaoId(), CtiTime::now()));
@@ -240,6 +241,9 @@ void IVVCAlgorithm::execute(IVVCStatePtr state, CtiCCSubstationBusPtr subbus, IV
             // Make GroupRequest Here
             PointDataRequestPtr request(_requestFactory->createDispatchPointDataRequest(dispatchConnection));
             request->watchPoints(pointRequests);
+
+            //ActiveMQ message here for System Refresh
+            sendCapControlOperationMessage( CapControlOperationMessage::createRefreshSystemMessage( subbus->getPaoId(), CtiTime() ) );
 
             //save away this request for later.
             state->setGroupRequest(request);
@@ -1113,6 +1117,7 @@ void IVVCAlgorithm::operateBank(long bankId, CtiCCSubstationBusPtr subbus, Dispa
             {
                 string text = feeder->createTextString(ControlStrategy::IntegratedVoltVarControlUnit,CtiCCCapBank::Close,feeder->getIVControl(),beforeKvar);
                 request = feeder->createDecreaseVarRequest(bank,pointChanges,ccEvents,text,beforeKvar,varValueA,varValueB,varValueC);
+
             }
             else if (isCapBankClosed)
             {
@@ -2291,7 +2296,6 @@ void IVVCAlgorithm::sendIVVCAnalysisMessage( Cti::Messaging::CapControl::IVVCAna
     std::auto_ptr<StreamableMessage> msg( message );
     gActiveMQConnection.enqueueMessage( ActiveMQConnectionManager::Queue_IvvcAnalysisMessage, msg );
 }
-
 
 void IVVCAlgorithm::updateCommsState( const long busCommsPointId, const bool isCommsLost ) const
 {

@@ -29,6 +29,7 @@ ActiveMQConnectionManager::ActiveMQConnectionManager(const string &broker_uri) :
     _queue_names.insert(make_pair(Queue_HistoryRowAssociationResponse, "yukon.notif.stream.dr.HistoryRowAssociationResponse"));
     _queue_names.insert(make_pair(Queue_IvvcAnalysisMessage, "yukon.notif.stream.cc.IvvcAnalysisMessage"));
     _queue_names.insert(make_pair(Queue_RfnBroadcast, "yukon.qr.obj.dr.rfn.ExpressComBroadcastRequest"));
+    _queue_names.insert(make_pair(Queue_CapControlOperationMessage, "yukon.notif.stream.cc.CapControlOperationMessage"));
 }
 
 

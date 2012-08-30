@@ -4,6 +4,8 @@
 #include "devicetypes.h"
 #include "msg_pcrequest.h"
 #include "mgr_paosched.h"
+#include "amq_connection.h"
+#include "CapControlOperationMessage.h"
 
 namespace Cti           {
 namespace CapControl    {
@@ -90,4 +92,13 @@ private:
     std::string _description;
     bool    _complain;
 };
+
+void static sendCapControlOperationMessage( Cti::Messaging::CapControl::CapControlOperationMessage * message )
+{
+    using namespace Cti::Messaging;
+
+    std::auto_ptr<StreamableMessage> msg( message );
+    Cti::Messaging::gActiveMQConnection.enqueueMessage( ActiveMQConnectionManager::Queue_CapControlOperationMessage, msg );
+}
+
 }}
