@@ -5,6 +5,7 @@ import java.nio.ByteBuffer;
 import java.nio.charset.Charset;
 
 import org.apache.log4j.Logger;
+import org.joda.time.Duration;
 import org.springframework.beans.factory.annotation.Autowired;
 
 import com.cannontech.amr.rfn.dao.RfnDeviceDao;
@@ -25,6 +26,7 @@ import com.cannontech.stars.database.data.lite.LiteStarsAppliance;
 import com.cannontech.stars.dr.hardware.model.ExpressComAddressView;
 import com.cannontech.stars.dr.hardware.model.LmHardwareCommand;
 import com.cannontech.stars.dr.hardware.model.LmHardwareCommandParam;
+import com.cannontech.stars.dr.hardware.model.LmHardwareCommandType;
 import com.cannontech.stars.energyCompany.model.YukonEnergyCompany;
 
 public class RawExpressComCommandBuilderImpl implements RawExpressComCommandBuilder {
@@ -73,8 +75,11 @@ public class RawExpressComCommandBuilderImpl implements RawExpressComCommandBuil
         return(sw.toString().getBytes()); 
     }
 
-    private ByteBuffer getInnerPayload(LmHardwareCommand lmHardwareCommand) {
-        RfnDevice device = rfnDeviceDao.getDeviceForId(lmHardwareCommand.getDevice().getDeviceID());
+    /**
+     * Builds ExpressCom command as byte array, see document 'Expresscom Protocol (2.0 Final).docx' for reference.
+     */
+    private ByteBuffer getInnerPayload(LmHardwareCommand command) {
+        RfnDevice device = rfnDeviceDao.getDeviceForId(command.getDevice().getDeviceID());
         Integer serialNumber = Integer.parseInt(device.getRfnIdentifier().getSensorSerialNumber());
         
         ByteBuffer outputBuffer = ByteBuffer.allocate(1024);
@@ -86,22 +91,37 @@ public class RawExpressComCommandBuilderImpl implements RawExpressComCommandBuil
         outputBuffer.putInt(serialNumber);
         
         // Add command-type specific payload type & message data.
-        switch(lmHardwareCommand.getType()) {
+        LmHardwareCommandType type = command.getType();
+        switch(type) {
             case IN_SERVICE:
-                outputBuffer.put((byte) 0x15);
+                outputBuffer.put((byte) 0x15); // Permanent Service Change
                 outputBuffer.put((byte) 0x80);
                 break;
-            case OUT_OF_SERVICE:
-                outputBuffer.put((byte) 0x15);
-                outputBuffer.put((byte) 0x00);
-                break;
             case CONFIG:
-                ByteBuffer configCommand = getExpressComForConfigCommand(lmHardwareCommand);
+                ByteBuffer configCommand = getExpressComForConfigCommand(command);
                 outputBuffer.put(configCommand.array(), 0, configCommand.position());
                 break;
             case READ_NOW:
-                outputBuffer.put((byte) 0xA2);
+                outputBuffer.put((byte) 0xA2); // Transmit DRReport Packet
                 break;
+            case OUT_OF_SERVICE:
+                outputBuffer.put((byte) 0x15); // Permanent Service Change
+                outputBuffer.put((byte) 0x00);
+                break;
+            case TEMP_OUT_OF_SERVICE:
+                outputBuffer.put((byte) 0x16); // Temporary Service Change
+                outputBuffer.put((byte) 0x83); // Disable device with lights and cold load pickup disabled
+                
+                Duration duration = command.findParam(LmHardwareCommandParam.DURATION, Duration.class);
+                outputBuffer.putShort((short) duration.toStandardHours().getHours());
+                
+                break;
+            case CANCEL_TEMP_OUT_OF_SERVICE:
+                outputBuffer.put((byte) 0x16); // Temporary Service Change
+                outputBuffer.put((byte) 0x00); // Cancel a previous temporary out of service command
+                break;
+            default:
+                throw new IllegalArgumentException("Command Type: " + type + " not implemented");
         }
         ByteBuffer trimmedOutput = ByteBuffer.allocate(outputBuffer.position());
         trimmedOutput.put(outputBuffer.array(), 0, outputBuffer.position());

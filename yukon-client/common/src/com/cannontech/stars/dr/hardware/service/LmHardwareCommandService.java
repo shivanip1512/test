@@ -46,5 +46,11 @@ public interface LmHardwareCommandService {
      * @throws {@link CommandCompletionException}
      */
     public void sendOutOfServiceCommand(LmHardwareCommand command) throws CommandCompletionException;
+
+    /**
+     * Will attempt to send an opt out (temporary out of service) command to the dr device
+     * @throws {@link CommandCompletionException}
+     */
+    public void sendOptOutCommand(LmHardwareCommand command) throws CommandCompletionException;
     
 }

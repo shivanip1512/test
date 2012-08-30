@@ -6,7 +6,9 @@ import java.io.IOException;
 import java.io.PrintWriter;
 import java.util.List;
 
+import org.apache.commons.lang.StringUtils;
 import org.apache.log4j.Logger;
+import org.joda.time.Duration;
 import org.joda.time.LocalTime;
 import org.springframework.beans.factory.annotation.Autowired;
 
@@ -21,10 +23,10 @@ import com.cannontech.core.dao.NotFoundException;
 import com.cannontech.core.dao.PaoDao;
 import com.cannontech.core.dao.YukonListDao;
 import com.cannontech.stars.core.dao.StarsCustAccountInformationDao;
+import com.cannontech.stars.database.data.lite.LiteAccountInfo;
 import com.cannontech.stars.database.data.lite.LiteLMConfiguration;
 import com.cannontech.stars.database.data.lite.LiteLmHardwareBase;
 import com.cannontech.stars.database.data.lite.LiteStarsAppliance;
-import com.cannontech.stars.database.data.lite.LiteAccountInfo;
 import com.cannontech.stars.dr.hardware.dao.LMHardwareConfigurationDao;
 import com.cannontech.stars.dr.hardware.model.Thermostat;
 import com.cannontech.stars.dr.thermostat.model.AccountThermostatSchedule;
@@ -130,6 +132,103 @@ public class PorterExpressComCommandBuilder {
             commands.add("putconfig sa305 serial " + sn + " utility " + utility + " use relay map 1");
         }
         return commands;
+    }
+    
+    public List<String> getOptOutCommands(LiteLmHardwareBase inventory, 
+                                          Duration duration, 
+                                          boolean useHardwareAddressing,
+                                          boolean restoreFirst) {
+        String serialNumber = inventory.getManufacturerSerialNumber();
+        
+        String durationInHours = String.valueOf(duration.getStandardHours());
+
+        if (StringUtils.isBlank(serialNumber)) {
+            throw new IllegalArgumentException("Cannot send opt out command. " +
+                    "The serial # of inventory with id: " + 
+                    inventory.getInventoryID() + " is empty." );
+        }
+        
+        // Build the command
+        
+        StringBuffer cmd = new StringBuffer();
+        cmd.append("putconfig serial ");
+        cmd.append(inventory.getManufacturerSerialNumber());
+        
+        HardwareType type = HardwareType.valueOf(yukonListDao.getYukonListEntry(inventory.getLmHardwareTypeID()).getYukonDefID());
+        HardwareConfigType configType = type.getHardwareConfigType();
+        if (configType == HardwareConfigType.VERSACOM) {
+            // Versacom
+            cmd.append(" vcom service out temp offhours ");
+            cmd.append(durationInHours);
+        } else if (configType == HardwareConfigType.EXPRESSCOM) {
+            // Expresscom
+            cmd.append(" xcom service out temp offhours ");
+            cmd.append(durationInHours);
+            
+            //if true, the opt out also includes a restore command so the switch gets both at once
+            if (restoreFirst) {
+                cmd.append(" control restore load 0");
+            }
+        } else if (configType == HardwareConfigType.SA205) {
+            //SA205
+            cmd.append(" sa205 service out temp offhours ");
+            cmd.append(durationInHours);
+        } else if (configType == HardwareConfigType.SA305) {
+            //SA305
+            
+            if (!useHardwareAddressing) {
+                throw new IllegalStateException("The utility ID of the SA305 switch is unknown");
+            }
+            
+            int utilityId = inventory.getLMConfiguration().getSA305().getUtility();
+            cmd.append(" sa305 utility ");
+            cmd.append(utilityId);
+            cmd.append(" override ");
+            cmd.append(durationInHours);
+        }
+        
+        return Lists.newArrayList(cmd.toString());
+    }
+    
+    public List<String> getCancelOptOutCommands(LiteLmHardwareBase inventory, boolean useHardwareAddressing) {
+        String serialNumber = inventory.getManufacturerSerialNumber();
+
+        if (StringUtils.isBlank(serialNumber)) {
+            throw new IllegalArgumentException("Cannot send cancel opt out command. " +
+                    "The serial # of inventory with id: " + 
+                    inventory.getInventoryID() + " is empty." );
+        }
+        
+        StringBuffer cmd = new StringBuffer();
+        cmd.append("putconfig serial ");
+        cmd.append(inventory.getManufacturerSerialNumber());
+        
+        HardwareType type = HardwareType.valueOf(yukonListDao.getYukonListEntry(inventory.getLmHardwareTypeID()).getYukonDefID());
+        HardwareConfigType configType = type.getHardwareConfigType();
+        if (configType == HardwareConfigType.VERSACOM) {
+            // Versacom
+            cmd.append(" vcom service in temp");
+        } else if (configType == HardwareConfigType.EXPRESSCOM) {
+            // Expresscom
+            cmd.append(" xcom service in temp");
+        } else if (configType == HardwareConfigType.SA205) {
+            // SA205
+            cmd.append(" sa205 service out temp offhours 0");
+        } else if (configType == HardwareConfigType.SA305) {
+            // SA305
+            
+            if (!useHardwareAddressing) {
+                throw new IllegalStateException("The utility ID of the SA305 switch is unknown");
+            }
+            
+            int utilityId = inventory.getLMConfiguration().getSA305().getUtility();
+            cmd.append(" sa305 utility ");
+            cmd.append(utilityId);
+            cmd.append(" override 0");
+            
+        }
+        
+        return Lists.newArrayList(cmd.toString());
     }
     
     /**

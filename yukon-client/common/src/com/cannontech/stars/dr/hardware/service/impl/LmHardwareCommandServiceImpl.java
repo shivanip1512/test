@@ -208,6 +208,20 @@ public class LmHardwareCommandServiceImpl implements LmHardwareCommandService {
         int unavailable = lsec.getYukonListEntry(YukonListEntryTypes.YUK_DEF_ID_DEV_STAT_UNAVAIL).getEntryID();
         inventoryBaseDao.updateCurrentState(inventoryId, unavailable);
     }
+    
+    @Override
+    public void sendOptOutCommand(LmHardwareCommand command) throws CommandCompletionException {
+        
+        LiteLmHardwareBase device = command.getDevice();
+        HardwareType type = HardwareType.valueOf(yukonListDao.getYukonListEntry(device.getLmHardwareTypeID()).getYukonDefID());
+        HardwareStrategyType strategy = getStrategy(type);
+        final LmHardwareCommandStrategy impl = strategies.get(strategy);
+
+        impl.sendCommand(command);
+        log.debug("Opt out command sent: " + command);
+        
+        //TODO probably should add event like other commands, maybe opt out service is already doing this?
+    }
 
     private HardwareStrategyType getStrategy(HardwareType type) throws CommandCompletionException {
         for (HardwareStrategyType strategyType : strategies.keySet()) {

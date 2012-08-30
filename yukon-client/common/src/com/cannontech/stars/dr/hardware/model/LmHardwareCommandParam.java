@@ -1,5 +1,7 @@
 package com.cannontech.stars.dr.hardware.model;
 
+import org.joda.time.Duration;
+
 public enum LmHardwareCommandParam {
     
     OPTIONAL_ROUTE_ID(Integer.class), // XCEL BATCH COMMANDS ONLY
@@ -9,6 +11,7 @@ public enum LmHardwareCommandParam {
     EXPECT_RESPONSE(Boolean.class), // NM ONLY
     BULK(Boolean.class), // NM ONLY
     PRIORITY(Integer.class),
+    DURATION(Duration.class), // Currently only used for opt out duration in hours
     FORCE_IN_SERVICE(Boolean.class);
     
     private Class<?> clazz;

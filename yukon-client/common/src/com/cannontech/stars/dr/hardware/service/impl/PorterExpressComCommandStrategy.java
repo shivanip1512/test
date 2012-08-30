@@ -4,6 +4,7 @@ import java.util.List;
 import java.util.Map;
 
 import org.apache.log4j.Logger;
+import org.joda.time.Duration;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -153,19 +154,36 @@ public class PorterExpressComCommandStrategy implements LmHardwareCommandStrateg
     public void sendCommand(LmHardwareCommand parameters) throws CommandCompletionException {
         
         List<String> commands = Lists.newArrayList();
+        YukonEnergyCompany yec = yecService.getEnergyCompanyByInventoryId(parameters.getDevice().getInventoryID());
+        boolean trackAddressing = ecRolePropertyDao.getPropertyBooleanValue(YukonRoleProperty.TRACK_HARDWARE_ADDRESSING, yec);
+        
         if (parameters.getType() == LmHardwareCommandType.CONFIG) {
-            YukonEnergyCompany yec = yecService.getEnergyCompanyByInventoryId(parameters.getDevice().getInventoryID());
-            boolean trackAddressing = ecRolePropertyDao.getPropertyBooleanValue(YukonRoleProperty.TRACK_HARDWARE_ADDRESSING, yec);
+            
             Integer optionalGroupId = null;
             Integer param = parameters.findParam(LmHardwareCommandParam.OPTIONAL_GROUP_ID, Integer.class);
             if (param != null) {
                 optionalGroupId = param;
             }
             commands = xcomCommandBuilder.getConfigCommands(parameters.getDevice(), trackAddressing, optionalGroupId);
+            
         } else if (parameters.getType() == LmHardwareCommandType.IN_SERVICE) {
+            
             commands = xcomCommandBuilder.getEnableCommands(parameters.getDevice(), false);
+            
         } else if (parameters.getType() == LmHardwareCommandType.OUT_OF_SERVICE) {
+            
             commands = xcomCommandBuilder.getDisableCommands(parameters.getDevice());
+            
+        } else if (parameters.getType() == LmHardwareCommandType.TEMP_OUT_OF_SERVICE) {
+            
+            Duration duration = parameters.findParam(LmHardwareCommandParam.DURATION, Duration.class);
+            boolean restoreFirst = rolePropertyDao.checkProperty(YukonRoleProperty.EXPRESSCOM_TOOS_RESTORE_FIRST, parameters.getUser());
+            commands = xcomCommandBuilder.getOptOutCommands(parameters.getDevice(), duration, trackAddressing, restoreFirst);
+            
+        } else if (parameters.getType() == LmHardwareCommandType.CANCEL_TEMP_OUT_OF_SERVICE) {
+            
+            commands = xcomCommandBuilder.getCancelOptOutCommands(parameters.getDevice(), trackAddressing);
+            
         }
         
         Integer param = parameters.findParam(LmHardwareCommandParam.OPTIONAL_ROUTE_ID, Integer.class);

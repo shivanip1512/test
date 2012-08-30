@@ -37,8 +37,6 @@ import com.cannontech.clientutils.YukonLogManager;
 import com.cannontech.common.device.commands.impl.CommandCompletionException;
 import com.cannontech.common.events.loggers.AccountEventLogService;
 import com.cannontech.common.events.loggers.StarsEventLogService;
-import com.cannontech.common.inventory.HardwareConfigType;
-import com.cannontech.common.inventory.HardwareType;
 import com.cannontech.common.survey.dao.SurveyDao;
 import com.cannontech.common.survey.model.Result;
 import com.cannontech.common.util.OpenInterval;
@@ -49,7 +47,6 @@ import com.cannontech.core.dao.CustomerDao;
 import com.cannontech.core.dao.InventoryNotFoundException;
 import com.cannontech.core.dao.NotFoundException;
 import com.cannontech.core.dao.ProgramNotFoundException;
-import com.cannontech.core.dao.YukonListDao;
 import com.cannontech.core.dao.YukonUserDao;
 import com.cannontech.core.roleproperties.YukonRole;
 import com.cannontech.core.roleproperties.YukonRoleProperty;
@@ -64,8 +61,8 @@ import com.cannontech.stars.core.dao.StarsSearchDao;
 import com.cannontech.stars.core.service.YukonEnergyCompanyService;
 import com.cannontech.stars.database.cache.StarsDatabaseCache;
 import com.cannontech.stars.database.data.lite.LiteInventoryBase;
-import com.cannontech.stars.database.data.lite.LiteStarsEnergyCompany;
 import com.cannontech.stars.database.data.lite.LiteLmHardwareBase;
+import com.cannontech.stars.database.data.lite.LiteStarsEnergyCompany;
 import com.cannontech.stars.dr.account.dao.CustomerAccountDao;
 import com.cannontech.stars.dr.account.model.CustomerAccount;
 import com.cannontech.stars.dr.displayable.dao.DisplayableInventoryDao;
@@ -75,8 +72,12 @@ import com.cannontech.stars.dr.displayable.model.DisplayableInventoryEnrollment;
 import com.cannontech.stars.dr.enrollment.dao.EnrollmentDao;
 import com.cannontech.stars.dr.hardware.dao.LmHardwareBaseDao;
 import com.cannontech.stars.dr.hardware.model.LMHardwareBase;
-import com.cannontech.stars.dr.hardware.service.LmHardwareCommandRequestExecutor;
+import com.cannontech.stars.dr.hardware.model.LmHardwareCommand;
+import com.cannontech.stars.dr.hardware.model.LmHardwareCommand.Builder;
+import com.cannontech.stars.dr.hardware.model.LmHardwareCommandParam;
+import com.cannontech.stars.dr.hardware.model.LmHardwareCommandType;
 import com.cannontech.stars.dr.hardware.service.LMHardwareControlInformationService;
+import com.cannontech.stars.dr.hardware.service.LmHardwareCommandService;
 import com.cannontech.stars.dr.optout.dao.OptOutAdditionalDao;
 import com.cannontech.stars.dr.optout.dao.OptOutEventDao;
 import com.cannontech.stars.dr.optout.dao.OptOutSurveyDao;
@@ -127,7 +128,6 @@ public class OptOutServiceImpl implements OptOutService {
 	@Autowired private OptOutAdditionalDao optOutAdditionalDao;
 	@Autowired private OptOutNotificationService optOutNotificationService;
 	@Autowired private CustomerAccountDao customerAccountDao;
-	@Autowired private LmHardwareCommandRequestExecutor lmHardwareCommandRequestExecutor;
 	@Autowired private StarsDatabaseCache starsDatabaseCache;
 	@Autowired private OptOutStatusService optOutStatusService;
 	@Autowired private OptOutTemporaryOverrideDao optOutTemporaryOverrideDao;
@@ -142,8 +142,8 @@ public class OptOutServiceImpl implements OptOutService {
 	@Autowired private YukonUserDao yukonUserDao;
 	@Autowired private SurveyDao surveyDao;
 	@Autowired private OptOutSurveyDao optOutSurveyDao;
-	@Autowired private YukonListDao yukonListDao;
 	@Autowired @Qualifier("main") private Executor executor;
+	@Autowired private LmHardwareCommandService lmHardwareCommandService;
 	
 	private RolePropertyDao rolePropertyDao;
 	
@@ -1071,7 +1071,7 @@ public class OptOutServiceImpl implements OptOutService {
 		int inventoryId = inventory.getInventoryID();
 		
 		// Send the command to cancel opt out to the field
-		this.sendCancelRequest(inventory, yukonEnergyCompany, user);
+		this.sendCancelRequest(inventory, user);
 		
 		ActivityLogger.logEvent(
 				user.getUserID(), 
@@ -1149,65 +1149,10 @@ public class OptOutServiceImpl implements OptOutService {
 	private void sendOptOutRequest(LiteLmHardwareBase inventory, int durationInHours, LiteYukonUser user) 
 		throws CommandCompletionException {
 		
+	    Builder b = new LmHardwareCommand.Builder(inventory, LmHardwareCommandType.TEMP_OUT_OF_SERVICE, user);
+		b.withParam(LmHardwareCommandParam.DURATION, Duration.standardHours(durationInHours));
 		
-		String serialNumber = inventory.getManufacturerSerialNumber();
-		String durationString = String.valueOf(durationInHours);
-
-		if (StringUtils.isBlank(serialNumber)) {
-			throw new IllegalArgumentException("Cannot send opt out command. " +
-					"The serial # of inventory with id: " + 
-					inventory.getInventoryID() + " is empty." );
-		}
-        
-		// Build the command
-		
-		StringBuffer cmd = new StringBuffer();
-		cmd.append("putconfig serial ");
-		cmd.append(inventory.getManufacturerSerialNumber());
-		
-		HardwareType type = HardwareType.valueOf(yukonListDao.getYukonListEntry(inventory.getLmHardwareTypeID()).getYukonDefID());
-        HardwareConfigType configType = type.getHardwareConfigType();
-		if (configType == HardwareConfigType.VERSACOM) {
-			// Versacom
-			cmd.append(" vcom service out temp offhours ");
-			cmd.append(durationString);
-		} else if (configType == HardwareConfigType.EXPRESSCOM) {
-			// Expresscom
-			cmd.append(" xcom service out temp offhours ");
-			cmd.append(durationString);
-			
-			//if true, the opt out also includes a restore command so the switch gets both at once
-			boolean restoreFirst = rolePropertyDao.checkProperty(
-					YukonRoleProperty.EXPRESSCOM_TOOS_RESTORE_FIRST, user);
-			
-			if (restoreFirst) {
-				cmd.append(" control restore load 0");
-			}
-		} else if (configType == HardwareConfigType.SA205) {
-			//SA205
-			cmd.append(" sa205 service out temp offhours ");
-			cmd.append(durationString);
-		} else if (configType == HardwareConfigType.SA305) {
-			//SA305
-			
-			boolean trackHwAddr = rolePropertyDao.checkProperty(
-					YukonRoleProperty.TRACK_HARDWARE_ADDRESSING, user);
-			
-			if (!trackHwAddr) {
-				throw new IllegalStateException("The utility ID of the SA305 switch is unknown");
-			}
-			
-			int utilityId = inventory.getLMConfiguration().getSA305().getUtility();
-			cmd.append(" sa305 utility ");
-			cmd.append(utilityId);
-			cmd.append(" override ");
-			cmd.append(durationString);
-		}
-		
-		// Send the command
-		String commandString = cmd.toString();
-		lmHardwareCommandRequestExecutor.execute(inventory, commandString, user);
-		
+		lmHardwareCommandService.sendOptOutCommand(b.build());
 	}
 	
 	/**
@@ -1217,55 +1162,12 @@ public class OptOutServiceImpl implements OptOutService {
 	 * 		cancel opt out to the device
 	 * @throws CommandCompletionException - If request is interrupted or times out
 	 */
-	private void sendCancelRequest(LiteLmHardwareBase inventory, YukonEnergyCompany yukonEnergyCompany, LiteYukonUser user) 
-	throws CommandCompletionException{
-
-		String serialNumber = inventory.getManufacturerSerialNumber();
-
-		if (StringUtils.isBlank(serialNumber)) {
-			throw new IllegalArgumentException("Cannot send cancel opt out command. " +
-					"The serial # of inventory with id: " + 
-					inventory.getInventoryID() + " is empty." );
-		}
-		
-		StringBuffer cmd = new StringBuffer();
-		cmd.append("putconfig serial ");
-		cmd.append(inventory.getManufacturerSerialNumber());
-		
-		HardwareType type = HardwareType.valueOf(yukonListDao.getYukonListEntry(inventory.getLmHardwareTypeID()).getYukonDefID());
-		HardwareConfigType configType = type.getHardwareConfigType();
-		if (configType == HardwareConfigType.VERSACOM) {
-			// Versacom
-			cmd.append(" vcom service in temp");
-		} else if (configType == HardwareConfigType.EXPRESSCOM) {
-			// Expresscom
-			cmd.append(" xcom service in temp");
-		} else if (configType == HardwareConfigType.SA205) {
-			// SA205
-			cmd.append(" sa205 service out temp offhours 0");
-		} else if (configType == HardwareConfigType.SA305) {
-			// SA305
-			
-			boolean trackHwAddr = rolePropertyDao.checkProperty(
-					YukonRoleProperty.TRACK_HARDWARE_ADDRESSING, user);
-			
-			if (!trackHwAddr) {
-				throw new IllegalStateException(
-						"The utility ID of the SA305 switch is unknown");
-			}
-			
-			int utilityId = inventory.getLMConfiguration().getSA305().getUtility();
-			cmd.append(" sa305 utility ");
-			cmd.append(utilityId);
-			cmd.append(" override 0");
-			
-		}
-		
-		// Send the command
-		String commandString = cmd.toString();
-		lmHardwareCommandRequestExecutor.execute(inventory, commandString, user);
+	private void sendCancelRequest(LiteLmHardwareBase inventory,  LiteYukonUser user) 
+	throws CommandCompletionException {
+	    
+	    Builder b = new LmHardwareCommand.Builder(inventory, LmHardwareCommandType.CANCEL_TEMP_OUT_OF_SERVICE, user);
+        lmHardwareCommandService.sendOptOutCommand(b.build());
 	}
-	
 	
     public String checkOptOutStartDate(int accountId, LocalDate startDate, 
                                        YukonUserContext userContext, boolean isOperator) {

@@ -121,7 +121,11 @@ public class RfnLcrDataMappingServiceImpl implements RfnLcrDataMappingService {
             throw new RuntimeException();
         }
         
+        Long timeInSec = data.evaluateAsLong("/DRReport/@utc");
+        Instant timeOfReading = new Instant(timeInSec * 1000);
+        
         for (RfnLcrRelayDataMap relay : rfnLcrRelayDataMap) {
+            
             List<Integer> intervalData = data.evaluateAsIntegerList("/DRReport/Relays/Relay" + 
                     relay.getRelayIdXPathString() + "/IntervalData/Interval");
 
@@ -129,12 +133,18 @@ public class RfnLcrDataMappingServiceImpl implements RfnLcrDataMappingService {
             LitePoint shedTimePoint = attributeService.getPointForAttribute(device, relay.getShedTimeAttribute());
 
             Long firstIntervalTimestamp = data.evaluateAsLong("/DRReport/Relays/Relay" + relay.getRelayIdXPathString() + "/IntervalData/@startTime");
-            Instant currentIntervalTimestamp = new Instant(firstIntervalTimestamp * 1000);
+            Instant currentIntervalTimestamp = new Instant(firstIntervalTimestamp * 1000); // Oldest first to newest, 36 intervals in total
+            
             // If we only want to read the first interval of the message, re-make the list with only its first element.
             if (readFirstInterval) {  
                 intervalData = Lists.newArrayList(intervalData.get(0));
             }
             for (Integer interval : intervalData) {
+                
+                /** Skip all intervals occuring in the future since the device sends us 36
+                 * intervals every time even if they have not happened yet. */
+                if (currentIntervalTimestamp.isAfter(timeOfReading)) continue;
+                
                 Integer runTime = (interval & 0xFF00) >>> 8;
                 Integer shedTime = interval & 0xFF;
 
