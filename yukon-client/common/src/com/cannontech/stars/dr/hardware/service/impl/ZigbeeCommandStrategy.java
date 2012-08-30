@@ -19,6 +19,7 @@ import com.cannontech.common.model.ZigbeeTextMessageDto;
 import com.cannontech.common.temperature.FahrenheitTemperature;
 import com.cannontech.core.dao.LMGroupDao;
 import com.cannontech.database.data.lite.LiteYukonUser;
+import com.cannontech.loadcontrol.loadgroup.model.SEPGroupAttributes;
 import com.cannontech.stars.database.data.lite.LiteLmHardwareBase;
 import com.cannontech.stars.dr.account.model.CustomerAccount;
 import com.cannontech.stars.dr.hardware.dao.InventoryDao;
@@ -100,11 +101,13 @@ public class ZigbeeCommandStrategy implements LmHardwareCommandStrategy {
             Map<DRLCClusterAttribute,Integer> attributes = Maps.newHashMap();
             
             //Utility Enrollment group
-            int utilEnrollGroup = lmGroupDao.getUtilityEnrollmentGroupForSepGroup(lmGroupId);
-            if (utilEnrollGroup == 0) {
+            SEPGroupAttributes groupAttributes = lmGroupDao.getSEPAttributesGroupForSepGroup(lmGroupId);
+            if (groupAttributes.getUtilityEnrollmentGroup() == 0) {
                 log.warn("Not sending Utility Enrollment Group to device because it is '0'. ");
             } else {
-                attributes.put(DRLCClusterAttribute.UTILITY_ENROLLMENT_GROUP, utilEnrollGroup);
+                attributes.put(DRLCClusterAttribute.UTILITY_ENROLLMENT_GROUP, (int)groupAttributes.getUtilityEnrollmentGroup());
+                attributes.put(DRLCClusterAttribute.START_RANDOMIZE_MINUTES, groupAttributes.getRampIn());
+                attributes.put(DRLCClusterAttribute.STOP_RANDOMIZE_MINTES, groupAttributes.getRampOut());
                 try {
                     zigbeeWebService.sendLoadGroupAddressing(device.getDeviceID(), attributes);
                     

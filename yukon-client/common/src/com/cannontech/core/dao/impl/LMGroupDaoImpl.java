@@ -9,6 +9,7 @@ import com.cannontech.core.dao.LMGroupDao;
 import com.cannontech.database.YukonJdbcTemplate;
 import com.cannontech.database.YukonResultSet;
 import com.cannontech.database.YukonRowMapper;
+import com.cannontech.loadcontrol.loadgroup.model.SEPGroupAttributes;
 import com.cannontech.stars.dr.hardware.model.ExpressComAddressView;
 
 public class LMGroupDaoImpl implements LMGroupDao {
@@ -16,13 +17,25 @@ public class LMGroupDaoImpl implements LMGroupDao {
     @Autowired private YukonJdbcTemplate yukonJdbcTemplate;
     
     @Override
-    public byte getUtilityEnrollmentGroupForSepGroup(int groupId) {
+    public SEPGroupAttributes getSEPAttributesGroupForSepGroup(int groupId) {
         SqlStatementBuilder sql = new SqlStatementBuilder();
-        sql.append("SELECT UtilityEnrollmentGroup");
+        sql.append("SELECT UtilityEnrollmentGroup,RampIn,RampOut");
         sql.append("FROM LMGroupSEP");
         sql.append("WHERE DeviceId").eq(groupId);
         
-        return (byte)yukonJdbcTemplate.queryForInt(sql);
+        return yukonJdbcTemplate.queryForObject(sql, new YukonRowMapper<SEPGroupAttributes>() {
+
+            @Override
+            public SEPGroupAttributes mapRow(YukonResultSet rs) throws SQLException {
+                
+                byte enrollmentGroup = rs.getByte("UtilityEnrollmentGroup");
+                int rampIn = rs.getInt("RampIn");
+                int rampOut = rs.getInt("RampOut");
+                
+                SEPGroupAttributes attributes = new SEPGroupAttributes(enrollmentGroup, rampIn, rampOut);
+                return attributes;
+            }
+        });
     }
     
     @Override

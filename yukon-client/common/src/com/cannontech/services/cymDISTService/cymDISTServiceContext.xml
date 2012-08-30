@@ -32,4 +32,13 @@
         <property name="queueCapacity" value="50" />
         <property name="keepAliveSeconds" value="60" /> 
     </bean>
+    
+    <bean id="cymeRestTemplate" class="org.springframework.web.client.RestTemplate">
+        <property name="errorHandler" ref="digiErrorHandler"/>
+        <property name="messageConverters">
+            <list>
+                <bean class="org.springframework.http.converter.StringHttpMessageConverter"/>
+            </list>
+        </property>
+    </bean>
 </beans>
