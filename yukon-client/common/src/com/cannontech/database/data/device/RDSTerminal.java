@@ -14,6 +14,8 @@ public class RDSTerminal extends IEDBase {
     private StaticPaoInfo encoderAddress = new StaticPaoInfo(PaoInfo.RDS_TRANSMITTER_ENCODER_ADDRESS);
     private StaticPaoInfo transmitSpeed = new StaticPaoInfo(PaoInfo.RDS_TRANSMITTER_TRANSMIT_SPEED);
     private StaticPaoInfo groupType = new StaticPaoInfo(PaoInfo.RDS_TRANSMITTER_GROUP_TYPE);
+    private StaticPaoInfo spid = new StaticPaoInfo(PaoInfo.RDS_TRANSMITTER_SPID);
+    private StaticPaoInfo aidRepeatPeriod = new StaticPaoInfo(PaoInfo.RDS_TRANSMITTER_AID_REPEAT_PERIOD);
     
     public RDSTerminal(){
         super();
@@ -28,7 +30,9 @@ public class RDSTerminal extends IEDBase {
         getSiteAddress().add();
         getEncoderAddress().add();
         getTransmitSpeed().add();
-        getGroupType().add();        
+        getGroupType().add();
+        getSpid().add();
+        getAidRepeatPeriod().add();
     }
     
     @Override
@@ -40,6 +44,8 @@ public class RDSTerminal extends IEDBase {
         getEncoderAddress().add();
         getTransmitSpeed().add();
         getGroupType().add();
+        getSpid().add();
+        getAidRepeatPeriod().add();
     }
     
     @Override
@@ -50,6 +56,8 @@ public class RDSTerminal extends IEDBase {
         getEncoderAddress().delete();
         getTransmitSpeed().delete();
         getGroupType().delete();
+        getSpid().delete();
+        getAidRepeatPeriod().delete();
         super.delete();
     }
     
@@ -67,6 +75,8 @@ public class RDSTerminal extends IEDBase {
         getEncoderAddress().retrieve();
         getTransmitSpeed().retrieve();
         getGroupType().retrieve();
+        getSpid().retrieve();
+        getAidRepeatPeriod().retrieve();
     }
 
     @Override
@@ -78,6 +88,8 @@ public class RDSTerminal extends IEDBase {
         getEncoderAddress().update();
         getTransmitSpeed().update();
         getGroupType().update();
+        getSpid().update();
+        getAidRepeatPeriod().update();
     }
     
     @Override
@@ -89,6 +101,8 @@ public class RDSTerminal extends IEDBase {
         getEncoderAddress().setPaobjectId(deviceId);
         getTransmitSpeed().setPaobjectId(deviceId);
         getGroupType().setPaobjectId(deviceId);
+        getSpid().setPaobjectId(deviceId);
+        getAidRepeatPeriod().setPaobjectId(deviceId);
     }
     
     @Override
@@ -100,6 +114,8 @@ public class RDSTerminal extends IEDBase {
         getEncoderAddress().setDbConnection(conn);
         getTransmitSpeed().setDbConnection(conn);
         getGroupType().setDbConnection(conn);
+        getSpid().setDbConnection(conn);
+        getAidRepeatPeriod().setDbConnection(conn);
     }
     
     public StaticPaoInfo getRdsIpAddress() {
@@ -148,5 +164,21 @@ public class RDSTerminal extends IEDBase {
 
     public void setGroupType(StaticPaoInfo groupType) {
         this.groupType = groupType;
+    }
+    
+    public StaticPaoInfo getSpid() {
+        return spid;
+    }
+    
+    public void setSpid(StaticPaoInfo spid) {
+        this.spid = spid;
+    }
+    
+    public StaticPaoInfo getAidRepeatPeriod() {
+        return aidRepeatPeriod;
+    }
+    
+    public void setAidRepeatPeriod(StaticPaoInfo aidRepeatPeriod) {
+        this.aidRepeatPeriod = aidRepeatPeriod;
     }
 }

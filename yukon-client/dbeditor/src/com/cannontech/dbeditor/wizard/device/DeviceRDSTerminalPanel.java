@@ -44,6 +44,11 @@ public class DeviceRDSTerminalPanel extends DataInputPanel implements
     private JTextField paoInfoIpPort = null;
     private JLabel paoInfoIpAddressLabel = null;
     private JTextField paoInfoIpAddress = null;
+    
+    private JLabel paoInfoSpidLabel = null;
+    private JTextField paoInfoSpid = null;
+    private JLabel paoInfoAidRepeatPeriodLabel = null;
+    private JTextField paoInfoAidRepeatPeriod = null;
 
     private JLabel errorMessageLabel = null;
 
@@ -63,7 +68,9 @@ public class DeviceRDSTerminalPanel extends DataInputPanel implements
             source == getTransmitSpeed() || 
             source == getGroupType() ||
             source == getPaoInfoIpAddress() ||
-            source == getPaoInfoIpPort()) {
+            source == getPaoInfoIpPort() ||
+            source == getPaoInfoSpid() ||
+            source == getPaoInfoAidRepeatPeriod()) {
             fireInputUpdate();
         }
     }
@@ -176,6 +183,39 @@ public class DeviceRDSTerminalPanel extends DataInputPanel implements
                 constraints.insets = new Insets(5, 8, 5, 0);
                 constraints.weightx = 1.0;
                 staticPaoInfoPanel.add(getPaoInfoIpPort(), constraints);
+
+                
+                constraints = new GridBagConstraints();
+                constraints.gridx = 0;
+                constraints.gridy = 6;
+                constraints.fill = GridBagConstraints.HORIZONTAL;
+                constraints.anchor = GridBagConstraints.WEST;
+                staticPaoInfoPanel.add(getPaoInfoAidRepeatPeriodLabel(), constraints);
+
+                constraints = new GridBagConstraints();
+                constraints.gridx = 1;
+                constraints.gridy = 6;
+                constraints.fill = GridBagConstraints.HORIZONTAL;
+                constraints.anchor = GridBagConstraints.WEST;
+                constraints.insets = new Insets(5, 8, 5, 0);
+                constraints.weightx = 1.0;
+                staticPaoInfoPanel.add(getPaoInfoAidRepeatPeriod(), constraints);
+                
+                constraints = new GridBagConstraints();
+                constraints.gridx = 0;
+                constraints.gridy = 7;
+                constraints.fill = GridBagConstraints.HORIZONTAL;
+                constraints.anchor = GridBagConstraints.WEST;
+                staticPaoInfoPanel.add(getPaoInfoSpidLabel(), constraints);
+
+                constraints = new GridBagConstraints();
+                constraints.gridx = 1;
+                constraints.gridy = 7;
+                constraints.fill = GridBagConstraints.HORIZONTAL;
+                constraints.anchor = GridBagConstraints.WEST;
+                constraints.insets = new Insets(5, 8, 5, 0);
+                constraints.weightx = 1.0;
+                staticPaoInfoPanel.add(getPaoInfoSpid(), constraints);
 
                 constraints = new GridBagConstraints();
                 constraints.gridx = 0;
@@ -335,6 +375,64 @@ public class DeviceRDSTerminalPanel extends DataInputPanel implements
         }
         return paoInfoIpPort;
     }
+    
+    private JLabel getPaoInfoSpidLabel() {
+        if (paoInfoSpidLabel == null) {
+            try {
+                paoInfoSpidLabel = new JLabel();
+                paoInfoSpidLabel.setName("PaoInfoSpidLabel");
+                paoInfoSpidLabel.setFont(new Font("dialog", 0, 14));
+                paoInfoSpidLabel.setText("SPID:");
+            } catch (Throwable ivjExc) {
+                handleException(ivjExc);
+            }
+        }
+        return paoInfoSpidLabel;
+    }
+    
+    private JTextField getPaoInfoSpid() {
+        if (paoInfoSpid == null) {
+            try {
+                paoInfoSpid = new JTextField();
+                paoInfoSpid.setName("PaoInfoSpid");
+                paoInfoSpid.setFont(new Font("sansserif", 0, 14));
+                paoInfoSpid.setColumns(20);
+                paoInfoSpid.setDocument(new LongRangeDocument(0, 65535));
+            } catch (Throwable ivjExc) {
+                handleException(ivjExc);
+            }
+        }
+        return paoInfoSpid;
+    }
+    
+    private JLabel getPaoInfoAidRepeatPeriodLabel() {
+        if (paoInfoAidRepeatPeriodLabel == null) {
+            try {
+                paoInfoAidRepeatPeriodLabel = new JLabel();
+                paoInfoAidRepeatPeriodLabel.setName("PaoInfoAidRepeatPeriodLabel");
+                paoInfoAidRepeatPeriodLabel.setFont(new Font("dialog", 0, 14));
+                paoInfoAidRepeatPeriodLabel.setText("AID Repeat Period:");
+            } catch (Throwable ivjExc) {
+                handleException(ivjExc);
+            }
+        }
+        return paoInfoAidRepeatPeriodLabel;
+    }
+    
+    private JTextField getPaoInfoAidRepeatPeriod() {
+        if (paoInfoAidRepeatPeriod == null) {
+            try {
+                paoInfoAidRepeatPeriod = new JTextField();
+                paoInfoAidRepeatPeriod.setName("PaoInfoAidRepeatPeriod");
+                paoInfoAidRepeatPeriod.setFont(new Font("sansserif", 0, 14));
+                paoInfoAidRepeatPeriod.setColumns(20);
+                paoInfoAidRepeatPeriod.setDocument(new LongRangeDocument(0, 3600));
+            } catch (Throwable ivjExc) {
+                handleException(ivjExc);
+            }
+        }
+        return paoInfoAidRepeatPeriod;
+    }
 
     private JLabel getPaoInfoIpAddressLabel() {
         if (paoInfoIpAddressLabel == null) {
@@ -412,6 +510,12 @@ public class DeviceRDSTerminalPanel extends DataInputPanel implements
         String paoInfoIpPort = getPaoInfoIpPort().getText();
         rdsTerminal.getRdsIpPort().setValue(paoInfoIpPort);
         
+        String paoInfoSpid = getPaoInfoSpid().getText();
+        rdsTerminal.getSpid().setValue(paoInfoSpid);
+        
+        String paoInfoAidRepeatPeriod = getPaoInfoAidRepeatPeriod().getText();
+        rdsTerminal.getAidRepeatPeriod().setValue(paoInfoAidRepeatPeriod);
+        
         return rdsTerminal;
     }
 
@@ -427,6 +531,8 @@ public class DeviceRDSTerminalPanel extends DataInputPanel implements
         getGroupType().addActionListener(this);
         getPaoInfoIpAddress().addActionListener(this);
         getPaoInfoIpPort().addActionListener(this);
+        getPaoInfoSpid().addActionListener(this);
+        getPaoInfoAidRepeatPeriod().addActionListener(this);
 
         getSiteAddress().addCaretListener(this);
         getEncoderAddress().addCaretListener(this);
@@ -434,6 +540,8 @@ public class DeviceRDSTerminalPanel extends DataInputPanel implements
         getGroupType().addCaretListener(this);
         getPaoInfoIpAddress().addCaretListener(this);
         getPaoInfoIpPort().addCaretListener(this);
+        getPaoInfoSpid().addCaretListener(this);
+        getPaoInfoAidRepeatPeriod().addCaretListener(this);
     }
 
     private void initialize() {
@@ -524,6 +632,21 @@ public class DeviceRDSTerminalPanel extends DataInputPanel implements
         if (StringUtils.isBlank(getPaoInfoIpPort().getText())) {
             return "The Pao Info IP Port must be filled in.";
         }
+        
+        // Validate AID Repeat Period
+        String aidRepeatPeriod = getPaoInfoAidRepeatPeriod().getText();
+        if(StringUtils.isBlank(aidRepeatPeriod) || !StringUtils.isNumeric(aidRepeatPeriod) ||
+           Integer.parseInt(aidRepeatPeriod) < 0) {
+            return "The Pao Info AID Repeat Period must be a non-negative integer.";
+        } else if (!StringUtils.isBlank(aidRepeatPeriod) && StringUtils.isNumeric(aidRepeatPeriod) ||
+                   Integer.parseInt(aidRepeatPeriod) > 0){
+            // Validate SPID. Must be an integer 0-65535. Only required if AID Repeat Period is nonzero
+            String spid = getPaoInfoSpid().getText();
+            if (StringUtils.isBlank(spid) || !StringUtils.isNumeric(spid) ||
+                (Integer.parseInt(spid) < 0 || Integer.parseInt(spid) > 65535)) {
+                return "The Pao Info SPID must be an integer 0 - 65535.";
+            }
+        }
 
         return null;
     }
@@ -556,6 +679,8 @@ public class DeviceRDSTerminalPanel extends DataInputPanel implements
             getGroupType().setText(rdsTerminal.getGroupType().getValue());            
             getPaoInfoIpAddress().setText(rdsTerminal.getRdsIpAddress().getValue());
             getPaoInfoIpPort().setText(rdsTerminal.getRdsIpPort().getValue());
+            getPaoInfoSpid().setText(rdsTerminal.getSpid().getValue());
+            getPaoInfoAidRepeatPeriod().setText(rdsTerminal.getAidRepeatPeriod().getValue());
         }
     }
 
