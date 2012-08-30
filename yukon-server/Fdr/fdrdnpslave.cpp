@@ -501,8 +501,6 @@ int CtiFDRDnpSlave::processScanSlaveRequest (Cti::Fdr::ServerConnection& connect
                  CtiLockGuard<CtiLogger> dout_guard(dout);
                  logNow() << " "<< getInterfaceName() <<" was not able to generate scan response. "<< endl;
              }
-             _dnpData.slaveTransactionComplete();
-         
          }
      }
  
