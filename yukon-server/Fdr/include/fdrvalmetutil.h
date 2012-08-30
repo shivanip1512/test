@@ -96,5 +96,7 @@ std::string   YukonToForeignTime (CtiTime aTimeStamp);
 USHORT        YukonToForeignQuality (const CtiFDRPoint &p);
 USHORT        YukonToForeignStatus (int aStatus);
 
+const std::set<int> parseCommaSeparatedInt(std::string commaList);
+
 }
 }

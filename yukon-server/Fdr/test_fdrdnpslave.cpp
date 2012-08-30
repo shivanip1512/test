@@ -31,6 +31,7 @@ struct Test_ServerConnection : Cti::Fdr::ServerConnection
 
     virtual std::string getName()     const  {  return "test server connection";  }
     virtual int getConnectionNumber() const  {  return 42;  }
+    virtual int getPortNumber() { return 42;  }
 };
 
 BOOST_AUTO_TEST_CASE( test_scan_request )

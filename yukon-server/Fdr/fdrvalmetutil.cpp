@@ -5,6 +5,8 @@
 #include "cparms.h"
 
 using std::string;
+using std::set;
+
 namespace Fdr {
 namespace Valmet {
 
@@ -214,5 +216,23 @@ string YukonToForeignTime (CtiTime aTimeStamp)
     return(string (tmp));
 }
 
+const set<int> parseCommaSeparatedInt(string commaList)
+{
+    set<int> values;
+
+    boost::char_separator<char> sep(",");
+    Boost_char_tokenizer intTokenizer(commaList, sep);
+    for ( Boost_char_tokenizer::iterator itr = intTokenizer.begin() ;
+        itr != intTokenizer.end() ;
+        ++itr)
+    {
+        int value = atoi((*itr).c_str());
+        values.insert(value);
+    }
+
+    return values;
+}
+
 } //Valmet namespace
 } //Fdr namespace
+

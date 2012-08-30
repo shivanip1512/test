@@ -82,7 +82,7 @@ class IM_EX_FDRDNPSLAVE CtiFDRDnpSlave : public CtiFDRSocketServer
         void startup();
 
     protected:
-        virtual CtiFDRClientServerConnection* createNewConnection(SOCKET newConnection);
+        virtual CtiFDRClientServerConnectionSPtr createNewConnection(SOCKET newConnection);
 
         virtual bool translateSinglePoint(CtiFDRPointSPtr & translationPoint, bool sendList);
         virtual void cleanupTranslationPoint(CtiFDRPointSPtr & translationPoint, bool recvList);

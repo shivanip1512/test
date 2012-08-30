@@ -45,10 +45,9 @@ BOOL FDRWabash::init()
     return loadTranslationLists();
 }
 
-bool FDRWabash::readConfig()
+int FDRWabash::readConfig()
 {
-    //FDR_WABASH_DB_RELOAD_RATE     :  360
-    //FDR_WABASH_INITAL_LOAD        :  false
+    Inherited::readConfig();
 
     int ok = true;
     string tempString;

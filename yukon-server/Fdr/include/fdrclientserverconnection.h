@@ -101,3 +101,6 @@ class IM_EX_FDRBASE CtiFDRClientServerConnection : public Cti::Fdr::ServerConnec
         };
 
 };
+
+typedef boost::shared_ptr<CtiFDRClientServerConnection> CtiFDRClientServerConnectionSPtr;
+

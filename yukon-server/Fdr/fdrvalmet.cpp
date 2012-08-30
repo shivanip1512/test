@@ -78,7 +78,7 @@ CtiFDR_Valmet::~CtiFDR_Valmet()
 */
 int CtiFDR_Valmet::readConfig()
 {
-    int         successful = TRUE;
+    int successful = Inherited::readConfig();
     string   tempStr;
 
     tempStr = getCparmValueAsString(KEY_LISTEN_PORT_NUMBER);

@@ -78,7 +78,7 @@ CtiFDRAcsMulti::~CtiFDRAcsMulti()
 */
 int CtiFDRAcsMulti::readConfig()
 {
-    int         successful = TRUE;
+    int successful = Inherited::readConfig();
     string   tempStr;
 
     setPortNumber(gConfigParms.getValueAsInt( KEY_LISTEN_PORT_NUMBER, ACS_PORTNUMBER));
@@ -203,7 +203,7 @@ int CtiFDRAcsMulti::readConfig()
     return successful;
 }
 
-CtiFDRClientServerConnection* CtiFDRAcsMulti::createNewConnection(SOCKET newSocket)
+CtiFDRClientServerConnectionSPtr CtiFDRAcsMulti::createNewConnection(SOCKET newSocket)
 {
     sockaddr_in peerAddr;
     int peerAddrSize = sizeof(peerAddr);
@@ -219,10 +219,7 @@ CtiFDRClientServerConnection* CtiFDRAcsMulti::createNewConnection(SOCKET newSock
     {
         connName = _serverNameLookup[ipString];
     }
-    CtiFDRClientServerConnection* newConnection;
-    newConnection = new CtiFDRClientServerConnection(connName.c_str(),
-                                                 newSocket,
-                                                 this);
+    CtiFDRClientServerConnectionSPtr newConnection(new CtiFDRClientServerConnection(connName.c_str(),newSocket,this));
     newConnection->setRegistered(true); //ACS doesn't have a separate registration message
 
     // I'm not sure this is the best location for this
@@ -480,7 +477,7 @@ unsigned int CtiFDRAcsMulti::getMessageSize(const char* data)
     return sizeof (ACSInterface_t);
 }
 
-bool CtiFDRAcsMulti::processValueMessage(Cti::Fdr::ServerConnection& connection,
+bool CtiFDRAcsMulti::processValueMessage(CtiFDRClientServerConnection* connection,
                                      const char* data, unsigned int size)
 {
     ACSInterface_t     *acsData = (ACSInterface_t*)data;
@@ -491,7 +488,7 @@ bool CtiFDRAcsMulti::processValueMessage(Cti::Fdr::ServerConnection& connection,
     CtiAcsId acsId = ForeignToYukonId(acsData->Value.RemoteNumber,
                                     acsData->Value.CategoryCode,
                                     acsData->Value.PointNumber,
-                                    connection.getName());
+                                    connection->getName());
     // assign last stuff
     quality = ForeignToYukonQuality(acsData->Value.Quality);
     timestamp = ForeignToYukonTime(acsData->TimeStamp);
@@ -500,7 +497,7 @@ bool CtiFDRAcsMulti::processValueMessage(Cti::Fdr::ServerConnection& connection,
     return _helper->handleValueUpdate(acsId, value, quality, timestamp);
 }
 
-bool CtiFDRAcsMulti::processStatusMessage(Cti::Fdr::ServerConnection& connection,
+bool CtiFDRAcsMulti::processStatusMessage(CtiFDRClientServerConnection* connection,
                                       const char* data, unsigned int size)
 {
     ACSInterface_t  *acsData = (ACSInterface_t*)data;
@@ -511,7 +508,7 @@ bool CtiFDRAcsMulti::processStatusMessage(Cti::Fdr::ServerConnection& connection
     CtiAcsId acsId = ForeignToYukonId(acsData->Status.RemoteNumber,
                                     acsData->Status.CategoryCode,
                                     acsData->Status.PointNumber,
-                                    connection.getName());
+                                    connection->getName());
 
     // assign last stuff
     quality = ForeignToYukonQuality(acsData->Status.Quality);
@@ -521,7 +518,7 @@ bool CtiFDRAcsMulti::processStatusMessage(Cti::Fdr::ServerConnection& connection
     return _helper->handleStatusUpdate(acsId, value, quality, timestamp);
 }
 
-bool CtiFDRAcsMulti::processControlMessage(Cti::Fdr::ServerConnection& connection, const char* data, unsigned int size)
+bool CtiFDRAcsMulti::processControlMessage(CtiFDRClientServerConnection* connection, const char* data, unsigned int size)
 {
     int retVal = NORMAL;
     CtiPointDataMsg     *pData;
@@ -534,7 +531,7 @@ bool CtiFDRAcsMulti::processControlMessage(Cti::Fdr::ServerConnection& connectio
     CtiAcsId acsId = ForeignToYukonId(acsData->Control.RemoteNumber,
                                     acsData->Control.CategoryCode,
                                     acsData->Control.PointNumber,
-                                    connection.getName());
+                                    connection->getName());
 
 
     int controlState = ForeignToYukonStatus (acsData->Control.Value);
@@ -542,7 +539,7 @@ bool CtiFDRAcsMulti::processControlMessage(Cti::Fdr::ServerConnection& connectio
     return _helper->handleControl(acsId, controlState);
 }
 
-bool CtiFDRAcsMulti::processTimeSyncMessage(Cti::Fdr::ServerConnection& connection, const char* data, unsigned int size)
+bool CtiFDRAcsMulti::processTimeSyncMessage(CtiFDRClientServerConnection* connection, const char* data, unsigned int size)
 {
     int retVal = NORMAL;
     CtiPointDataMsg     *pData;

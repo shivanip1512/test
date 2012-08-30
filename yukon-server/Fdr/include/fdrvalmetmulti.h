@@ -56,7 +56,7 @@ class IM_EX_FDRVALMETMULTI CtiFDR_ValmetMulti : public CtiFDRScadaServer
         virtual BOOL stop( void );
 
         virtual int processScanMessage(CtiFDRClientServerConnection* connection, const char* data);
-        virtual CtiFDRClientServerConnection* createNewConnection(SOCKET newConnection);
+        virtual CtiFDRClientServerConnectionSPtr createNewConnection(SOCKET newConnection);
 
         virtual bool translateSinglePoint(CtiFDRPointSPtr & translationPoint, bool sendList);
         virtual void cleanupTranslationPoint(CtiFDRPointSPtr & translationPoint, bool recvList);
@@ -78,13 +78,12 @@ class IM_EX_FDRVALMETMULTI CtiFDR_ValmetMulti : public CtiFDRScadaServer
 
         virtual void begineNewPoints();
         virtual void signalReloadList();
-        virtual void signalPointRemoved(std::string &pointName);
 
         void updatePointQualitiesOnDevice(PointQuality_t quality, long paoId);
 
         CtiFDRPointSPtr findFdrPointInPointList(const std::string &translationName);
 
-        virtual CtiFDRClientServerConnection* findConnectionForDestination(const CtiFDRDestination destination) const;
+         virtual CtiFDRClientServerConnectionSPtr findConnectionForDestination(const CtiFDRDestination destination) const;
 
     protected:
         void threadListenerStartupMonitor();
@@ -111,6 +110,7 @@ class IM_EX_FDRVALMETMULTI CtiFDR_ValmetMulti : public CtiFDRScadaServer
         static const CHAR * KEY_SCAN_DEVICE_POINTNAME;
         static const CHAR * KEY_SEND_ALL_POINTS_POINTNAME;
         static const CHAR * KEY_STARTUP_DELAY_SECONDS;
+        static const CHAR * KEY_PORTS_TO_LOG;
 
         CtiFDRScadaHelper<CtiValmetPortId>* _helper;
 
@@ -122,4 +122,10 @@ class IM_EX_FDRVALMETMULTI CtiFDR_ValmetMulti : public CtiFDRScadaServer
         std::string _scanDevicePointName;
         std::string _sendAllPointsPointName;
         int _listenerThreadStartupDelay;
+
+        std::set<int> _portsToLog;
+        bool _specificPortLoggingEnabled;
+        bool isPortLoggingNotRestricted(Cti::Fdr::ServerConnection& connection);
+        bool isPortLoggingNotRestricted(const CtiFDRDestination& destination);
+        bool isPortLoggingNotRestricted(int portNumber);
 };

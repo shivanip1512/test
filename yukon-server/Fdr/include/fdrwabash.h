@@ -19,7 +19,7 @@ class __declspec(dllexport) FDRWabash : public CtiFDRInterface
 
         //Initializers
         BOOL init();
-        bool readConfig();
+        virtual int readConfig();
         bool loadTranslationLists();
         bool translateSinglePoint(CtiFDRPointSPtr & translationPoint, bool sendList = false);
         void resetForInitialLoad();

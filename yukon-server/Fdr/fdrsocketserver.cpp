@@ -32,6 +32,9 @@ using namespace std;  // get the STL into our namespace for use.  Do NOT use ios
 #include "ctitime.h"
 #include "ctidate.h"
 
+using std::pair;
+using std::multimap;
+
 // Constructors, Destructor, and Operators
 CtiFDRSocketServer::CtiFDRSocketServer(string &name) :
     CtiFDRInterface(name),
@@ -57,12 +60,7 @@ CtiFDRSocketServer::CtiFDRSocketServer(string &name) :
 
 CtiFDRSocketServer::~CtiFDRSocketServer()
 {
-    for (ConnectionList::const_iterator myIter = _connectionList.begin();
-         myIter != _connectionList.end();
-         ++myIter) {
-        delete *myIter;
-
-    }
+    _connectionList.clear();
 }
 
 void CtiFDRSocketServer::clearFailedLayers() {
@@ -76,7 +74,6 @@ void CtiFDRSocketServer::clearFailedLayers() {
         ++myIter;
         if ((*tempIter)->isFailed()) {
             (*tempIter)->stop();
-            delete *tempIter;
             _connectionList.erase(tempIter);
         }
     }
@@ -91,11 +88,6 @@ BOOL CtiFDRSocketServer::init( void )
 {
     // init the base class
     CtiFDRInterface::init();
-
-    if ( !readConfig( ) )
-    {
-        return FALSE;
-    }
 
     _threadHeartbeat = rwMakeThreadFunction(*this, &CtiFDRSocketServer::threadFunctionSendHeartbeat);
 
@@ -118,7 +110,7 @@ BOOL CtiFDRSocketServer::run( void )
     // start up the socket layer
     if (_singleListeningPort)
     {
-        if (getDebugLevel() & MAJOR_DETAIL_FDR_DEBUGLEVEL)
+        if (getDebugLevel() & STARTUP_FDR_DEBUGLEVEL)
         {
             CtiLockGuard<CtiLogger> doubt_guard(dout);
             logNow() << "Configured to run on a single port: " << getPortNumber() << endl;
@@ -128,7 +120,7 @@ BOOL CtiFDRSocketServer::run( void )
     }
     else
     {
-        if (getDebugLevel() & MAJOR_DETAIL_FDR_DEBUGLEVEL)
+        if (getDebugLevel() & STARTUP_FDR_DEBUGLEVEL)
         {
             CtiLockGuard<CtiLogger> doubt_guard(dout);
             logNow() << "Configured to run on multiple ports. Handled in extending code" << endl;
@@ -306,7 +298,7 @@ void CtiFDRSocketServer::threadFunctionSendHeartbeat( void )
 
     try
     {
-        if (getDebugLevel () & CONNECTION_FDR_DEBUGLEVEL)
+        if (getDebugLevel () & CONNECTION_INFORMATION_DEBUGLEVEL)
         {
             CtiLockGuard<CtiLogger> doubt_guard(dout);
             logNow() <<"threadFunctionSendHeartbeat initializing" << endl;
@@ -335,7 +327,7 @@ void CtiFDRSocketServer::threadFunctionSendHeartbeat( void )
                 bool result = buildForeignSystemHeartbeatMsg(&heartbeatMsg, size);
                 if (result && size > 0)
                 {
-                    if (getDebugLevel () & CONNECTION_FDR_DEBUGLEVEL)
+                    if (getDebugLevel () & CONNECTION_HEALTH_DEBUGLEVEL)
                     {
                         CtiLockGuard<CtiLogger> doubt_guard(dout);
                         logNow() << "Queueing heartbeat message to " << **myIter << endl;
@@ -378,7 +370,7 @@ void CtiFDRSocketServer::threadFunctionConnection( unsigned short listeningPort,
 
     try {
 
-        if (getDebugLevel() & MAJOR_DETAIL_FDR_DEBUGLEVEL) {
+        if (getDebugLevel() & CONNECTION_INFORMATION_DEBUGLEVEL) {
             CtiLockGuard<CtiLogger> doubt_guard(dout);
             logNow() << "threadFunctionConnection initializing in " << startupDelaySeconds << " seconds." << endl;
         }
@@ -386,7 +378,7 @@ void CtiFDRSocketServer::threadFunctionConnection( unsigned short listeningPort,
         //Delay for initial load. This gives Dispatch a chance to give us data before being bombarded by VALMET
         Sleep(startupDelaySeconds*1000);
 
-        if (getDebugLevel() & MAJOR_DETAIL_FDR_DEBUGLEVEL) {
+        if (getDebugLevel() & CONNECTION_INFORMATION_DEBUGLEVEL) {
             CtiLockGuard<CtiLogger> doubt_guard(dout);
             logNow() << "threadFunctionConnection initializing now." << endl;
         }
@@ -407,10 +399,12 @@ void CtiFDRSocketServer::threadFunctionConnection( unsigned short listeningPort,
 
             listenerSocket = createBoundListener(listeningPort);
             if (listenerSocket == NULL) {
-                CtiLockGuard<CtiLogger> doubt_guard(dout);
-                logNow() << "Failed to open listener socket for port: " << listeningPort << endl;
+                if (getDebugLevel() & CONNECTION_HEALTH_DEBUGLEVEL) {
+                    CtiLockGuard<CtiLogger> doubt_guard(dout);
+                    logNow() << "Failed to open listener socket for port: " << listeningPort << endl;
+                }
             } else {
-                if (getDebugLevel() & CONNECTION_FDR_DEBUGLEVEL)
+                if (getDebugLevel() & CONNECTION_INFORMATION_DEBUGLEVEL)
                 {
                     CtiLockGuard<CtiLogger> doubt_guard(dout);
                     logNow() << "Listening for connection on port " << listeningPort << endl;
@@ -452,7 +446,6 @@ void CtiFDRSocketServer::threadFunctionConnection( unsigned short listeningPort,
                         // layers that have failed (because the client
                         // reconnecting now may be one of the failed
                         // ones that is still in our list).
-                        clearFailedLayers();
                         if (getDebugLevel () & MIN_DETAIL_FDR_DEBUGLEVEL)
                         {
                             CtiLockGuard<CtiLogger> doubt_guard(dout);
@@ -461,11 +454,10 @@ void CtiFDRSocketServer::threadFunctionConnection( unsigned short listeningPort,
                                << endl;
                         }
 
-                        CtiFDRClientServerConnection* newConnection;
+
                         try
                         {
-                            // the following may throw an exception
-                            newConnection = createNewConnection(tmpConnection);
+                            CtiFDRClientServerConnectionSPtr newConnection = createNewConnection(tmpConnection);
                             CtiLockGuard<CtiMutex> guard(_connectionListMutex);
                             _connectionList.push_back(newConnection);
                             newConnection->run();
@@ -473,8 +465,7 @@ void CtiFDRSocketServer::threadFunctionConnection( unsigned short listeningPort,
                         catch (CtiFDRClientServerConnection::StartupException& e)
                         {
                             CtiLockGuard<CtiLogger> doubt_guard(dout);
-                            logNow() << "Unable to create CtiFDRClientServerConnection object: "
-                               << e.what() << endl;
+                            logNow() << "Unable to create CtiFDRClientServerConnection object: " << e.what() << endl;
                         }
                     }
                 } // accept loop
@@ -566,66 +557,102 @@ SOCKET CtiFDRSocketServer::createBoundListener(unsigned short listeningPort) {
 
 }
 
-bool CtiFDRSocketServer::sendAllPoints(CtiFDRClientServerConnection* connection)
+bool CtiFDRSocketServer::sendAllPoints(int portNumber)
 {
     bool retVal = true;
-    CtiFDRPointSPtr point;
-
-    CtiLockGuard<CtiMutex> sendGuard(getSendToList().getMutex());
-    CtiFDRManager::spiterator  myIterator = getSendToList().getPointList()->getMap().begin();
-    for ( ; myIterator != getSendToList().getPointList()->getMap().end(); ++myIterator)
+    PortToPointsMap::iterator itr =  _portToPointsMap.find(portNumber);
+    if (itr == _portToPointsMap.end())
     {
-        point = (*myIterator).second;
-        if (point->isControllable())
+        //No points defined
+        return retVal;
+    }
+    else
+    {
+        for (set<int>::iterator itr2 =  itr->second.begin(); itr2 != itr->second.end(); ++itr2)
         {
-            if (getDebugLevel () & DETAIL_FDR_DEBUGLEVEL)
-            {
-                CtiLockGuard<CtiLogger> doubt_guard(dout);
-                logNow() << "Control point " << *point << " was not sent because a database reload triggered the send" << endl;
-            }
-            continue;
-        }
-        if (point->getLastTimeStamp() < CtiTime(CtiDate(1,1,2001)))
-        {
-            if (getDebugLevel () & DETAIL_FDR_DEBUGLEVEL)
-            {
-                CtiLockGuard<CtiLogger> doubt_guard(dout);
-                logNow() << *point
-                    << " was not sent to any interfaces because it hasn't been initialized"
-                    << endl;
-            }
-            continue;
+            //Each itr is a pointId
+            //Find by pointId
+            CtiFDRPointSPtr point = getSendToList().getPointList()->findFDRPointID((*itr2));
+            retVal = retVal && sendPoint(point);
         }
 
-        CtiFDRPoint::DestinationList& destList = point->getDestinationList();
-        for each( CtiFDRDestination dest in destList )
+    }
+
+    return retVal;
+}
+
+void CtiFDRSocketServer::insertPortToPointsMap(int portId, int pointId)
+{
+    PortToPointsMap::iterator itr =  _portToPointsMap.find(portId);
+    if (itr == _portToPointsMap.end())
+    {
+        std::set<int> newSet;
+        newSet.insert(pointId);
+        _portToPointsMap.insert(std::make_pair<int,std::set<int> >(portId,newSet));
+    }
+    else
+    {
+        itr->second.insert(pointId);
+    }
+}
+
+void CtiFDRSocketServer::removePortToPointsMap(int portId, int pointId)
+{
+    PortToPointsMap::iterator itr =  _portToPointsMap.find(portId);
+    if (itr == _portToPointsMap.end())
+    {
+        //Port isn't even in here.
+        return;
+    }
+    else
+    {
+        itr->second.erase(pointId);
+    }
+}
+
+bool CtiFDRSocketServer::sendPoint(CtiFDRPointSPtr point)
+{
+    bool retVal = true;
+
+    if (point->isControllable())
+    {
+        if (getDebugLevel () & DETAIL_FDR_DEBUGLEVEL)
         {
-            CtiFDRClientServerConnection::Destination destination = dest.getDestination();
+            CtiLockGuard<CtiLogger> doubt_guard(dout);
+            logNow() << "Control point " << *point << " was not sent because a database reload triggered the send" << endl;
+        }
+        return false;
+    }
+    if (point->getLastTimeStamp() < CtiTime(CtiDate(1,1,2001)))
+    {
+        if (getDebugLevel () & DETAIL_FDR_DEBUGLEVEL)
+        {
+            CtiLockGuard<CtiLogger> doubt_guard(dout);
+            logNow() << *point
+                << " was not sent to any interfaces because it hasn't been initialized"
+                << endl;
+        }
+        return false;
+    }
 
-            // For ValmetMulti interface, we may have multiple connections to the same
-            // IP differentiated only by port number, so we need to check if this port
-            // is correct before sending out all the points.
-            int portNum = atoi(dest.getTranslationValue("Port").c_str());
-            //bool portValid = !portNum || portNum == connection->getPortNumber();
-            bool portValid = (portNum == connection->getPortNumber());
-
-            if (portValid)
+    CtiFDRPoint::DestinationList& destList = point->getDestinationList();
+    for each( CtiFDRDestination dest in destList )
+    {
+        CtiFDRClientServerConnectionSPtr connection = findConnectionForDestination(dest);
+        if (connection)
+        {
+            if (!connection->isRegistered())
             {
-                if (!connection->isRegistered()) {
-                    continue;
-                }
-                char* buffer = NULL;
-                unsigned int bufferSize = 0;
-                bool result = buildForeignSystemMessage(dest, &buffer, bufferSize);
-                if (result && bufferSize > 0)
+                continue;
+            }
+            char* buffer = NULL;
+            unsigned int bufferSize = 0;
+            bool result = buildForeignSystemMessage(dest, &buffer, bufferSize);
+            if (result && bufferSize > 0)
+            {
+                if( ! connection->queueMessage(buffer, bufferSize, MAXPRIORITY-1))
                 {
-                    bool tmpRet = connection->queueMessage(buffer, bufferSize, MAXPRIORITY-1);
-                    retVal = retVal && tmpRet;
-                    if (tmpRet == false)
-                    {
-                        //There was an error with the connection. Stop sending.
-                        break;
-                    }
+                    return false;
                 }
             }
         }
@@ -633,13 +660,27 @@ bool CtiFDRSocketServer::sendAllPoints(CtiFDRClientServerConnection* connection)
     return retVal;
 }
 
+bool CtiFDRSocketServer::sendAllPoints(CtiFDRClientServerConnectionSPtr connection)
+{
+    int portNumber = connection->getPortNumber();
+    return sendAllPoints(portNumber);
+
+    bool retVal;
+}
+
+void CtiFDRSocketServer::processCommandFromDispatch(CtiCommandMsg* commandMsg)
+{
+    const CtiCommandMsg::CtiOpArgList_t portList = commandMsg->getOpArgList();
+
+    //There is only one.
+    const int portNumber = portList[0];
+
+    sendAllPoints(portNumber);
+}
+
 bool CtiFDRSocketServer::sendMessageToForeignSys(CtiMessage *aMessage)
 {
-    CtiPointDataMsg     *localMsg = (CtiPointDataMsg *)aMessage;
-    CtiFDRPoint point;
-
-    // lock on the send list
-    CtiLockGuard<CtiMutex> sendGuard(getSendToList().getMutex());
+    CtiPointDataMsg *localMsg = (CtiPointDataMsg *)aMessage;
 
     if (!forwardPointData(*localMsg))
     {
@@ -651,7 +692,7 @@ bool CtiFDRSocketServer::sendMessageToForeignSys(CtiMessage *aMessage)
     // if this is a response to a registration, do nothing
     if (localMsg->getTags() & TAG_POINT_MOA_REPORT)
     {
-        if (getDebugLevel () & DETAIL_FDR_DEBUGLEVEL)
+        if (getDebugLevel () & MAJOR_DETAIL_FDR_DEBUGLEVEL)
         {
             CtiLockGuard<CtiLogger> doubt_guard(dout);
             logNow() << "Point registration response tag set, point "
@@ -660,14 +701,19 @@ bool CtiFDRSocketServer::sendMessageToForeignSys(CtiMessage *aMessage)
         return false;
     }
 
-    // see if the point exists;
-    if (!findPointIdInList(localMsg->getId(), getSendToList(), point))
+    CtiFDRPointSPtr point;
     {
-        if (getDebugLevel () & MIN_DETAIL_FDR_DEBUGLEVEL)
+        // lock on the send list
+        CtiLockGuard<CtiMutex> sendGuard(getSendToList().getMutex());
+        point = getSendToList().getPointList()->findFDRPointID(localMsg->getId());
+    }
+
+    if (!point)
+    {
+        if (getDebugLevel () & ERROR_FDR_DEBUGLEVEL)
         {
             CtiLockGuard<CtiLogger> doubt_guard(dout);
-            logNow() << "Translation for point " << localMsg->getId()
-                << " cannot be found" << endl;;
+            logNow() << "Translation for point " << localMsg->getId() << " cannot be found" << endl;;
         }
         return false;
     }
@@ -676,13 +722,12 @@ bool CtiFDRSocketServer::sendMessageToForeignSys(CtiMessage *aMessage)
     * then don't route the point because it is uninitialized (uninitialized points
     * come across as 11-10-1990).
     */
-    if (point.getLastTimeStamp() < CtiTime(CtiDate(1,1,2000)))
+    if (point->getLastTimeStamp() < CtiTime(CtiDate(1,1,2000)))
     {
-        if (getDebugLevel () & MIN_DETAIL_FDR_DEBUGLEVEL)
+        if (getDebugLevel () & MAJOR_DETAIL_FDR_DEBUGLEVEL)
         {
             CtiLockGuard<CtiLogger> doubt_guard(dout);
-            logNow() << "Data for " << point
-                << " was not sent because it hasn't been initialized " << endl;
+            logNow() << "Data for " << point << " was not sent because it hasn't been initialized " << endl;
         }
         return false;
     }
@@ -690,40 +735,13 @@ bool CtiFDRSocketServer::sendMessageToForeignSys(CtiMessage *aMessage)
     bool retVal = true;
     try
     {
-        CtiLockGuard<CtiMutex> guard(_connectionListMutex);
-        CtiFDRPoint::DestinationList& destList = point.getDestinationList();
-        for each (const CtiFDRDestination dest in destList)
-        {
-            CtiFDRClientServerConnection* connection = findConnectionForDestination(dest);
-            if (connection)
-            {
-                if (!connection->isRegistered())
-                {
-                    continue;
-                }
-                char* buffer = NULL;
-                unsigned int bufferSize = 0;
-                bool result = buildForeignSystemMessage(dest, &buffer, bufferSize);
-                if (result && bufferSize > 0)
-                {
-                    bool tmpRet = connection->queueMessage(buffer, bufferSize, MAXPRIORITY-1);
-                    retVal = retVal && tmpRet;
-                }
-            }
-        }
-
+        retVal = sendPoint(point);
     }
     catch (...)
     {
         CtiLockGuard<CtiLogger> doubt_guard(dout);
-        logNow() << "Unknown exception caught in CtiFDRSocketServer::sendMessageToForeignSys()"
-            << endl;
+        logNow() << "Unknown exception caught in CtiFDRSocketServer::sendMessageToForeignSys()" << endl;
         retVal = false;
-    }
-
-    if (!retVal)
-    {
-        clearFailedLayers();
     }
 
     return retVal;
@@ -756,7 +774,7 @@ bool CtiFDRSocketServer::forwardPointData(const CtiPointDataMsg& localMsg)
     return result;
 }
 
-CtiFDRClientServerConnection* CtiFDRSocketServer::findConnectionForDestination(const CtiFDRDestination destination) const
+CtiFDRClientServerConnectionSPtr CtiFDRSocketServer::findConnectionForDestination(const CtiFDRDestination destination) const
 {
     // Because new connections are put on the end of the list,
     // we want to search the list backwards so that we find
@@ -764,6 +782,7 @@ CtiFDRClientServerConnection* CtiFDRSocketServer::findConnectionForDestination(c
     // (eventually the older connections will timeout, but
     // that could take a while).
     ConnectionList::const_reverse_iterator myIter;
+    CtiLockGuard<CtiMutex> guard(_connectionListMutex);
     for (myIter = _connectionList.rbegin(); myIter != _connectionList.rend(); ++myIter)
     {
         if ((*myIter)->getName() == destination.getDestination())
@@ -772,7 +791,7 @@ CtiFDRClientServerConnection* CtiFDRSocketServer::findConnectionForDestination(c
         }
     }
 
-    return NULL;
+    return CtiFDRClientServerConnectionSPtr();
 }
 
 unsigned short CtiFDRSocketServer::getPortNumber() const

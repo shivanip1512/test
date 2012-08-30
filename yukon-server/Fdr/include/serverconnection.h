@@ -8,6 +8,7 @@ struct IM_EX_FDRBASE ServerConnection
     virtual bool queueMessage(char *buf, unsigned len, int priority) = 0;
     virtual std::string getName() const = 0;
     virtual int getConnectionNumber() const = 0;
+    virtual int getPortNumber() = 0;
 };
 
 }

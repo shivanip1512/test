@@ -74,7 +74,7 @@ bool CtiFDR_Rdex::isRegistrationNeeded()
 */
 int CtiFDR_Rdex::readConfig()
 {
-    int         successful = TRUE;
+    int successful = Inherited::readConfig();
     string   tempStr;
 
     tempStr = getCparmValueAsString(KEY_LISTEN_PORT_NUMBER);

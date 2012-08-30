@@ -26,9 +26,11 @@ class IM_EX_FDRBASE CtiFDRInterface
         virtual ~CtiFDRInterface( void );
 
         // pure virtual function implementent by interface
-        virtual bool        sendMessageToForeignSys ( CtiMessage *aMessage ) = 0;
-        virtual bool        sendMessageToDispatch   ( CtiMessage *aMessage );
-        virtual bool        queueMessageToDispatch   ( CtiMessage *aMessage );
+        virtual bool        sendMessageToForeignSys    ( CtiMessage *aMessage ) = 0;
+        virtual bool        sendMessageToDispatch      ( CtiMessage *aMessage );
+        virtual bool        queueMessageToDispatch     ( CtiMessage *aMessage );
+        virtual void        processCommandFromDispatch ( CtiCommandMsg *cmd ){delete cmd;};
+
         bool                logEvent( const std::string &logDesc,
                                       const std::string &logMsg,
                                       bool aSendImmediatelyFlag=false );
@@ -57,7 +59,7 @@ class IM_EX_FDRBASE CtiFDRInterface
         BOOL                isInterfaceInDebugMode() const;
         void                setInterfaceDebugMode(const BOOL aChangeFlag = TRUE);
 
-        ULONG               getDebugLevel() const { return iDebugLevel;};
+        ULONG               getDebugLevel();
 
         int                 getOutboundSendRate () const;
         CtiFDRInterface&    setOutboundSendRate (INT aRate);
@@ -72,6 +74,8 @@ class IM_EX_FDRBASE CtiFDRInterface
         virtual BOOL        init( void );
         virtual BOOL        run( void );
         virtual BOOL        stop( void );
+
+        virtual int readConfig( void );
 
         virtual int processMessageFromForeignSystem (CHAR *data) = 0;
 
@@ -115,26 +119,31 @@ class IM_EX_FDRBASE CtiFDRInterface
         CtiMutex            iDispatchMux;
         CtiConnection       *iDispatchConn;
         CtiFDRManager       *iOutBoundPoints;
+        CtiMutex            iCparmMutex;
 
         RWThreadFunction    iThreadFromDispatch;
         RWThreadFunction    iThreadDbChange;
         RWThreadFunction    iThreadToDispatch;
         RWThreadFunction    iThreadConnectToDispatch;
+        RWThreadFunction    iThreadReloadCparm;
 
         void threadFunctionSendToDispatch( void );
         void threadFunctionReceiveFromDispatch( void );
         void threadFunctionReloadDb( void );
         void threadFunctionConnectToDispatch( void );
+        void threadFunctionReloadCparm( void );
 
         void printLists(std::string title, int pid);
 
         static const CHAR * KEY_DISPATCH_NAME;
         static const CHAR * KEY_DEBUG_LEVEL;
+        static const CHAR * KEY_CPARM_RELOAD_RATE_SECONDS;
 
     private:
         std::string           iInterfaceName;
         std::string           iDispatchMachine;
 
+        int                 iCparmReloadSeconds;
         FDRDbReloadReason   iDbReloadReason;
         ULONG               iDebugLevel;
         int                 iReloadRate;
@@ -163,6 +172,7 @@ class IM_EX_FDRBASE CtiFDRInterface
         // add things here and then send dispatch a multi point msg
         CtiFIFOQueue<CtiMessage> iDispatchQueue;
 
-        int  readConfig( void );
+        int  reloadConfigs();
+
         void disconnect( void );
 };

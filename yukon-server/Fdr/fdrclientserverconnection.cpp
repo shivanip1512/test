@@ -46,10 +46,7 @@ CtiFDRClientServerConnection::CtiFDRClientServerConnection(const string& connect
 
     _linkName = _parentInterface->getInterfaceName() + "-" + _connectionName;
     _linkId = _parentInterface->getClientLinkStatusID(_linkName);
-    {
-        CtiLockGuard<CtiLogger> doubt_guard(dout);
-        logNow() << "connection created" << endl;
-    }
+
     _parentInterface->logEvent(_linkName + ": connection created", "", true);
 }
 
@@ -95,12 +92,6 @@ void CtiFDRClientServerConnection::run ()
     _receiveThread.start();
     _healthThread.start();
     sendLinkState(true);
-    if (getDebugLevel () & DETAIL_FDR_DEBUGLEVEL)
-    {
-        CtiLockGuard<CtiLogger> doubt_guard(dout);
-        logNow() << "Connection running" << endl;
-    }
-
 }
 
 void CtiFDRClientServerConnection::stop ()
@@ -225,7 +216,7 @@ void CtiFDRClientServerConnection::threadFunctionSendDataTo( void )
     try
     {
 
-        if (getDebugLevel () & DETAIL_FDR_DEBUGLEVEL)
+        if (getDebugLevel () & CONNECTION_INFORMATION_DEBUGLEVEL)
         {
             CtiLockGuard<CtiLogger> doubt_guard(dout);
             logNow() <<"threadFunctionSendDataTo initializing" << endl;
@@ -308,7 +299,7 @@ void CtiFDRClientServerConnection::threadFunctionSendDataTo( void )
                             millisToSleep = 1000;//default to 1 second.  prevents an infinite sleep. (negative value)
                         }
 
-                        if (getDebugLevel () & MIN_DETAIL_FDR_DEBUGLEVEL)
+                        if (getDebugLevel () & CONNECTION_INFORMATION_DEBUGLEVEL)
                         {
                             CtiLockGuard<CtiLogger> doubt_guard(dout);
                             logNow() << "Maximum throughput of "
@@ -372,7 +363,7 @@ void CtiFDRClientServerConnection::threadFunctionHealth( void )
             return;
         }
 
-        if (getDebugLevel() & DETAIL_FDR_DEBUGLEVEL)
+        if (getDebugLevel() & CONNECTION_INFORMATION_DEBUGLEVEL)
         {
             CtiLockGuard<CtiLogger> doubt_guard(dout);
             logNow() <<"threadFunctionHealth initializing" << endl;
@@ -453,12 +444,6 @@ INT CtiFDRClientServerConnection::writeSocket(CHAR *aBuffer, ULONG length, ULONG
     {
         // set return parameter
         aBytesWritten = bytesSent;
-    }
-
-    if (getDebugLevel () & CONNECTION_FDR_DEBUGLEVEL)
-    {
-        CtiLockGuard<CtiLogger> dout_guard(dout);
-        logNow() << "Wrote " << aBytesWritten << " bytes" << endl;
     }
 
     return retVal;
@@ -601,12 +586,6 @@ INT CtiFDRClientServerConnection::readSocket (CHAR *aBuffer, ULONG length, ULONG
         aBytesRead = totalByteCnt;
 
     } while (totalByteCnt < length);
-
-    if (getDebugLevel () & CONNECTION_FDR_DEBUGLEVEL)
-    {
-        CtiLockGuard<CtiLogger> dout_guard(dout);
-        logNow() << "Read " << aBytesRead << " bytes" << endl;
-    }
 
     return retVal;
 }

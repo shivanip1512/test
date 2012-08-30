@@ -1,97 +1,3 @@
-/*
- *
- *    FILE NAME: fdrinterface.cpp
- *
- *    DATE: 07/15/2000
- *
- *    AUTHOR: Matt Fisher
- *
- *    PURPOSE: Base Class Functions and Interface for Foreign Data
- *
- *    DESCRIPTION: Profides an interface for all Foreign Data Interfaces
- *                 data exchanges.  The Interfaces implement methods to
- *                 exchange data with other systems.
- *
- *    Copyright (C) 2005 Cannon Technologies, Inc.  All rights reserved.
- *
- *    ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/FDR/fdrinterface.cpp-arc  $
- *    REVISION     :  $Revision: 1.35 $
- *    DATE         :  $Date: 2008/11/18 21:50:22 $
- *    History:
- *     $Log: fdrinterface.cpp,v $
- *     Revision 1.35  2008/11/18 21:50:22  tspar
- *     YUK-5013 Full FDR reload changes
- *
- *     Fixed a bad condition check in UpdateBypointid. Smart Pointer retruns true if not null
- *
- *     Revision 1.34  2008/10/15 14:38:23  jotteson
- *     Fixing problems found by static analysis tools.
- *
- *     Revision 1.33  2008/10/13 21:23:30  mfisher
- *     YUK-6574 Server-side logging is slow
- *     Limited localtime()/fstat() checks to twice per day instead of on each write
- *
- *     Revision 1.32  2008/10/02 23:57:15  tspar
- *     YUK-5013 Full FDR reload should not happen with every point
- *
- *     YUKRV-325  review changes
- *
- *     Revision 1.31  2008/09/23 15:14:58  tspar
- *     YUK-5013 Full FDR reload should not happen with every point db change
- *
- *     Review changes. Most notable is mgr_fdrpoint.cpp now encapsulates CtiSmartMap instead of extending from rtdb.
- *
- *     Revision 1.30  2008/09/15 21:08:48  tspar
- *     YUK-5013 Full FDR reload should not happen with every point db change
- *
- *     Changed interfaces to handle points on an individual basis so they can be added
- *     and removed by point id.
- *
- *     Changed the fdr point manager to use smart pointers to help make this transition possible.
- *
- *     Revision 1.29  2008/03/20 21:27:14  tspar
- *     YUK-5541 FDR Textimport and other interfaces incorrectly use the boost tokenizer.
- *
- *     Changed all uses of the tokenizer to have a local copy of the string being tokenized.
- *
- *     Revision 1.28  2007/04/10 23:42:09  tspar
- *     Added even more protection against bad input when tokenizing.
- *
- *     Doing a ++ operation on an token iterator that is already at the end will also assert.
- *
- *     Revision 1.27  2007/04/10 23:04:35  tspar
- *     Added some more protection against bad input when tokenizing.
- *
- *     Revision 1.26  2006/09/26 14:02:48  mfisher
- *     fixes for std namespace
- *
- *     Revision 1.25  2006/08/09 05:03:17  tspar
- *     changed maps in macs to not use a pointer as a key, to fix the find() calls.
- *
- *     Revision 1.24  2006/05/23 17:17:43  tspar
- *     bug fix: boost iterator used incorrectly in loop.
- *
- *     Revision 1.23  2006/04/24 14:47:32  tspar
- *     RWreplace: replacing a few missed or new Rogue Wave elements
- *
- *     Revision 1.22  2006/02/17 17:04:31  tspar
- *     CtiMultiMsg:  replaced RWOrdered with vector<RWCollectable*> throughout the tree
- *
- *     Revision 1.21  2006/01/03 20:23:37  tspar
- *     Moved non RW string utilities from rwutil.h to utility.h
- *
- *     Revision 1.20  2005/12/20 17:17:13  tspar
- *     Commiting  RougeWave Replacement of:  RWCString RWTokenizer RWtime RWDate Regex
- *
- *     Revision 1.19  2005/09/13 20:43:07  tmack
- *     In the process of working on the new ACS(MULTI) implementation, the following changes were made:
- *
- *     - clean up logging messages (especially those at shutdown)
- *     - change logEvent() parameters to be const (allows passing char*)
- *     - add logNow() method that provides a common string at the front of all dout messages.
- *
- *
- */
 #include "precompiled.h"
 
 #include "row_reader.h"
@@ -122,6 +28,7 @@ using std::endl;
 /** local definitions **/
 const CHAR * CtiFDRInterface::KEY_DISPATCH_NAME = "DISPATCH_MACHINE";
 const CHAR * CtiFDRInterface::KEY_DEBUG_LEVEL = "_DEBUGLEVEL";
+const CHAR * CtiFDRInterface::KEY_CPARM_RELOAD_RATE_SECONDS = "FDR_CPARM_RELOAD_RATE_SECONDS";
 
 bool isPointIdEqual (CtiFDRManager::ptr_type &a, void* arg);
 bool isTranslationNameEqual (CtiFDRManager::ptr_type &a, void* arg);
@@ -322,7 +229,7 @@ BOOL CtiFDRInterface::init( void )
     iOutBoundPoints = new CtiFDRManager(iInterfaceName, string(FDR_INTERFACE_SEND));
     iOutBoundPoints->loadPointList();
 
-    if ( !readConfig() )
+    if ( !reloadConfigs() )
     {
         return FALSE;
     }
@@ -331,9 +238,10 @@ BOOL CtiFDRInterface::init( void )
     // this thread knows how to handle messages from dispatch
     iThreadFromDispatch = rwMakeThreadFunction(*this, &CtiFDRInterface::threadFunctionReceiveFromDispatch);
     iThreadToDispatch = rwMakeThreadFunction(*this, &CtiFDRInterface::threadFunctionSendToDispatch);
+    iThreadDbChange = rwMakeThreadFunction(*this, &CtiFDRInterface::threadFunctionReloadDb);
+    iThreadReloadCparm = rwMakeThreadFunction(*this, &CtiFDRInterface::threadFunctionReloadCparm);
 
-    iThreadDbChange = rwMakeThreadFunction(*this,
-                                           &CtiFDRInterface::threadFunctionReloadDb);
+
     return TRUE;
 }
 
@@ -552,6 +460,7 @@ BOOL CtiFDRInterface::run( void )
     iThreadFromDispatch.start();
     iThreadToDispatch.start();
     iThreadDbChange.start();
+    iThreadReloadCparm.start();
 
     registerWithDispatch();
     return TRUE;
@@ -591,6 +500,12 @@ BOOL CtiFDRInterface::stop( void )
 
         {
             CtiLockGuard<CtiLogger> doubt_guard(dout);
+            logNow() << "Attempting to cancel threadFunctionReloadCparm;" << endl;
+        }
+        iThreadReloadCparm.requestCancellation();
+
+        {
+            CtiLockGuard<CtiLogger> doubt_guard(dout);
             logNow() << "Attempting to shutdown connections" << endl;
         }
 
@@ -600,6 +515,7 @@ BOOL CtiFDRInterface::stop( void )
        iThreadDbChange.join();
        iThreadFromDispatch.join();
        iThreadToDispatch.join();
+       iThreadReloadCparm.join();
        {
            CtiLockGuard<CtiLogger> doubt_guard(dout);
            logNow() << "All threads have joined up" << endl;
@@ -726,12 +642,34 @@ string CtiFDRInterface::getCparmValueAsString(string key)
     return myTempStr;
 }
 
+/**
+ * Returns the current debuglevel for the interface.
+ *
+ */
+ULONG CtiFDRInterface::getDebugLevel()
+{
+    CtiLockGuard<CtiMutex> cparm_guard(iCparmMutex);
+    return iDebugLevel;
+}
+
+/**
+ * Wrapping readConfig to add the mutex call for extended
+ * classes.
+ *
+ */
+int CtiFDRInterface::reloadConfigs() {
+    CtiLockGuard<CtiMutex> cparm_guard(iCparmMutex);
+    gConfigParms.RefreshConfigParameters();
+    return this->readConfig();
+}
 
 /************************************************************************
 * Function Name: CtiFDRInterface::readConfig(  )
 *
 * Description: loads base class config information.
 *              (Dispatch Name and FDR Debug level)
+*
+* NOTE: Do not call this directly. This should be called from reloadConfigs only.
 *
 *************************************************************************
 */
@@ -777,6 +715,13 @@ int CtiFDRInterface::readConfig( void )
             dout << " Loaded Debug Level " << myKeyName << " Value is: " << iDebugLevel << endl;
         }
 
+    }
+
+    iCparmReloadSeconds = gConfigParms.getValueAsInt(KEY_CPARM_RELOAD_RATE_SECONDS,300);
+
+    {
+        CtiLockGuard<CtiLogger> doubt_guard(dout);
+        dout << " CPARM Reload Rate is " << iCparmReloadSeconds << " seconds." << endl;
     }
 
     return successful;
@@ -1027,35 +972,39 @@ void CtiFDRInterface::threadFunctionReceiveFromDispatch( void )
                     }
                 case MSG_COMMAND:
                     {
-                        // we will handle this message for other classes
                         CtiCommandMsg* cmd = (CtiCommandMsg*)incomingMsg;
 
                         switch (cmd->getOperation())
                         {
                             case (CtiCommandMsg::Shutdown):
+                            {
                                 {
                                     CtiLockGuard<CtiLogger> doubt_guard(dout);
                                     dout << CtiTime() << " FDR received a shutdown message from somewhere- Ignoring!!" << endl;
                                 }
                                 break;
-
+                            }
                             case (CtiCommandMsg::AreYouThere):
+                            {
                                 // echo back the same message - we are here
                                 sendMessageToDispatch(cmd->replicateMessage());
-
-    //                            if (getDebugLevel() & DETAIL_FDR_DEBUGLEVEL)
                                 {
                                     CtiLockGuard<CtiLogger> doubt_guard(dout);
                                     dout << CtiTime() << " FDR" << getInterfaceName() << " has been pinged by dispatch" << endl;
                                 }
                                 break;
-
-                            default:
-                                {
-                                    CtiLockGuard<CtiLogger> doubt_guard(dout);
-                                    dout << CtiTime() << " FDR received a unknown Command message- " << endl;
-                                }
+                            }
+                            case (CtiCommandMsg::InitiateScan):
+                            {
+                                processCommandFromDispatch(cmd);
                                 break;
+                            }
+                            default:
+                            {
+                                CtiLockGuard<CtiLogger> doubt_guard(dout);
+                                dout << CtiTime() << " FDR received a unknown Command message- " << endl;
+                                break;
+                            }
 
                         }
                     }
@@ -1331,6 +1280,57 @@ void CtiFDRInterface::threadFunctionReloadDb( void )
         logNow() << "Fatal Error: threadFunctionReloadDb is dead! " << endl;
     }
 }
+
+/**
+ * This is a thread that will periodically reload the CPARMS for
+ * the interface.
+ *
+ * */
+void CtiFDRInterface::threadFunctionReloadCparm( void )
+{
+    RWRunnableSelf  pSelf = rwRunnable( );
+
+    CtiTime nextReload = CtiTime() + iCparmReloadSeconds;
+
+    try
+    {
+        if (getDebugLevel () & DETAIL_FDR_DEBUGLEVEL)
+        {
+            CtiLockGuard<CtiLogger> doubt_guard(dout);
+            logNow() << " Initializing CtiFDRInterface::threadFunctionReloadCparm " << endl;
+        }
+
+        for ( ; ; )
+        {
+            pSelf.serviceCancellation( );
+            pSelf.sleep (1000);
+
+            CtiTime timeNow;
+            if (timeNow > nextReload) {
+                if ( !reloadConfigs() )
+                {
+                    {
+                        CtiLockGuard<CtiLogger> doubt_guard(dout);
+                        logNow() << " Error while Reloading CPARMS. " << endl;
+                    }
+                }
+                nextReload = timeNow + iCparmReloadSeconds;
+            }
+        }
+    }
+    catch ( RWCancellation &cancellationMsg )
+    {
+        CtiLockGuard<CtiLogger> doubt_guard(dout);
+        logNow() << "threadFunctionReloadDb shutdown" << endl;
+    }
+    // try and catch the thread death
+    catch ( ... )
+    {
+        CtiLockGuard<CtiLogger> doubt_guard(dout);
+        logNow() << "Fatal Error: threadFunctionReloadDb is dead! " << endl;
+    }
+}
+
 
 bool CtiFDRInterface::logEvent( const string &aDesc, const string &aAction, bool aSendImmediatelyFlag )
 {

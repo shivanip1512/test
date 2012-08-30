@@ -26,12 +26,9 @@ CtiFDRScadaServer::~CtiFDRScadaServer()
  * The caller is responsible for cleaning up any memory allocated
  * for data when this method returns.
  */
-int CtiFDRScadaServer::processMessageFromForeignSystem(
-  Cti::Fdr::ServerConnection& connection, const char* data, unsigned int size)
+int CtiFDRScadaServer::processMessageFromForeignSystem(Cti::Fdr::ServerConnection& connection, const char* data, unsigned int size)
 {
     bool retVal = false;
-
-    CtiLockGuard<CtiMutex> sendGuard(getReceiveFromList().getMutex());
 
     USHORT function = getHeaderBytes(data, size);
 
@@ -68,28 +65,26 @@ int CtiFDRScadaServer::processMessageFromForeignSystem(
             {
                 if (shouldUpdatePCTime())
                 {
-                    if (getDebugLevel () & DETAIL_FDR_DEBUGLEVEL)
+                    if (getDebugLevel () & DATA_RECV_DEBUGLEVEL)
                     {
                         CtiLockGuard<CtiLogger> doubt_guard(dout);
                         logNow() << "Time sync message received"  << endl;
                     }
-
                     retVal = processTimeSyncMessage (connection, data, size);
                 }
                 else
                 {
-                    if (getDebugLevel () & DETAIL_FDR_DEBUGLEVEL)
+                    if (getDebugLevel () & DATA_RECV_ERR_DEBUGLEVEL)
                     {
                         CtiLockGuard<CtiLogger> doubt_guard(dout);
-                        logNow() << "Time sync message received, "
-                            << "PC not configured to update" << endl;
+                        logNow() << "Time sync message received, PC not configured to update" << endl;
                     }
                 }
                 break;
             }
         case SINGLE_SOCKET_NULL:
             {
-                if (getDebugLevel () & DETAIL_FDR_DEBUGLEVEL)
+                if (getDebugLevel () & DATA_RECV_DEBUGLEVEL)
                 {
                     CtiLockGuard<CtiLogger> doubt_guard(dout);
                     logNow() << "Heartbeat message received from " << connection <<  endl;
@@ -97,7 +92,7 @@ int CtiFDRScadaServer::processMessageFromForeignSystem(
                 break;
             }
         default:
-            if (getDebugLevel () & MIN_DETAIL_FDR_DEBUGLEVEL)
+            if (getDebugLevel () & DATA_RECV_ERR_DEBUGLEVEL)
             {
                 CtiLockGuard<CtiLogger> doubt_guard(dout);
                 logNow() << "Unknown message type " << function <<  " received" << endl;

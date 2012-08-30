@@ -55,7 +55,6 @@ class IM_EX_FDRBASE CtiFDRSingleSocket : public CtiFDRSocketInterface
         virtual CHAR *buildForeignSystemMsg (CtiFDRPoint &aPoint)=0;
         virtual bool buildAndWriteToForeignSystem (CtiFDRPoint &aPoint );
         virtual bool alwaysSendRegistrationPoints();
-        virtual int readConfig( void )=0;
         virtual bool translateAndUpdatePoint(CtiFDRPointSPtr & translationPoint, int aIndex)=0;
 
         virtual bool translateSinglePoint(CtiFDRPointSPtr & translationPoint, bool sendList = false);

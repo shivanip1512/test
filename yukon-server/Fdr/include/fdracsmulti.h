@@ -162,7 +162,7 @@ class IM_EX_FDRACSMULTI CtiFDRAcsMulti : public CtiFDRScadaServer
 {
     public:
         // helper structs
-
+        typedef CtiFDRScadaServer Inherited;
 
         // constructors and destructors
         CtiFDRAcsMulti();
@@ -178,7 +178,7 @@ class IM_EX_FDRACSMULTI CtiFDRAcsMulti : public CtiFDRScadaServer
         void startup();
 
     protected:
-        virtual CtiFDRClientServerConnection* createNewConnection(SOCKET newConnection);
+        virtual CtiFDRClientServerConnectionSPtr createNewConnection(SOCKET newConnection);
 
         virtual void begineNewPoints();
         virtual bool translateSinglePoint(CtiFDRPointSPtr & translationPoint, bool sendList);
@@ -190,13 +190,13 @@ class IM_EX_FDRACSMULTI CtiFDRAcsMulti : public CtiFDRScadaServer
                                                char** buffer,
                                                unsigned int& bufferSize);
 
-        virtual bool processValueMessage(Cti::Fdr::ServerConnection& connection,
+        virtual bool processValueMessage(CtiFDRClientServerConnection* connection,
                                          const char* data, unsigned int size);
-        virtual bool processStatusMessage(Cti::Fdr::ServerConnection& connection,
+        virtual bool processStatusMessage(CtiFDRClientServerConnection* connection,
                                           const char* data, unsigned int size);
-        virtual bool processControlMessage(Cti::Fdr::ServerConnection& connection,
+        virtual bool processControlMessage(CtiFDRClientServerConnection* connection,
                                            const char* data, unsigned int size);
-        virtual bool processTimeSyncMessage(Cti::Fdr::ServerConnection& connection,
+        virtual bool processTimeSyncMessage(CtiFDRClientServerConnection* connection,
                                             const char* data, unsigned int size);
 
     private:

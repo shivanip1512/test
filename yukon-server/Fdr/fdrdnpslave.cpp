@@ -169,7 +169,7 @@ int CtiFDRDnpSlave::readConfig()
     return successful;
 }
 
-CtiFDRClientServerConnection* CtiFDRDnpSlave::createNewConnection(SOCKET newSocket)
+CtiFDRClientServerConnectionSPtr CtiFDRDnpSlave::createNewConnection(SOCKET newSocket)
 {
     sockaddr_in peerAddr;
     int peerAddrSize = sizeof(peerAddr);
@@ -185,10 +185,7 @@ CtiFDRClientServerConnection* CtiFDRDnpSlave::createNewConnection(SOCKET newSock
     {
         connName = _serverNameLookup[ipString];
     }
-    CtiFDRClientServerConnection* newConnection;
-    newConnection = new CtiFDRClientServerConnection(connName.c_str(),
-                                                 newSocket,
-                                                 this);
+    CtiFDRClientServerConnectionSPtr newConnection(new CtiFDRClientServerConnection(connName.c_str(),newSocket,this));
     newConnection->setRegistered(true); //DNPSLAVE doesn't have a separate registration message
 
     // I'm not sure this is the best location for this
