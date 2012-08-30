@@ -200,7 +200,8 @@ executor.obj:	precompiled.h msg_server_req.h dlldefs.h message.h \
 		lmenergyexchangecustomer.h lmenergyexchangecustomerreply.h \
 		lmenergyexchangehourlycustomer.h lmprogramcontrolwindow.h \
 		devicetypes.h lmconstraint.h lmutility.h \
-		GroupControlInterface.h
+		GroupControlInterface.h BeatThePeakControlInterface.h \
+		BeatThePeakAlertLevel.h
 lmcicustomerbase.obj:	precompiled.h dbaccess.h dllbase.h dsm2.h \
 		cticonnect.h yukon.h types.h ctidbgmem.h dlldefs.h netports.h \
 		mutex.h guard.h utility.h ctitime.h queues.h cticalls.h \
@@ -284,7 +285,9 @@ lmcontrolareastore.obj:	precompiled.h mgr_holiday.h ctidate.h \
 		ctibase.h ctinexus.h msg_dbchg.h loadmanager.h executor.h \
 		ctdpcptrq.h msg_server_req.h lmmessage.h \
 		ConstraintViolation.h lmfactory.h tbl_paoexclusion.h \
-		database_writer.h row_writer.h debug_timer.h clistener.h
+		database_writer.h row_writer.h debug_timer.h clistener.h \
+		BeatThePeakAlertLevel.h BeatThePeakControlInterface.h \
+		LMProgramBeatThePeakGear.h
 lmcontrolareatrigger.obj:	precompiled.h dbaccess.h dllbase.h dsm2.h \
 		cticonnect.h yukon.h types.h ctidbgmem.h dlldefs.h netports.h \
 		mutex.h guard.h utility.h ctitime.h queues.h cticalls.h \
@@ -438,7 +441,8 @@ lmfactory.obj:	precompiled.h lmfactory.h lmgroupbase.h boostutil.h \
 		SepControlInterface.h lmgroupemetcon.h lmgroupexpresscom.h \
 		lmgroupmct.h lmgroupripple.h lmgrouppoint.h lmgroupsa105.h \
 		lmgroupsa205.h lmgroupsa305.h lmgroupsadigital.h \
-		lmgroupgolay.h lmgroupmacro.h
+		lmgroupgolay.h lmgroupmacro.h LMProgramBeatThePeakGear.h \
+		BeatThePeakAlertLevel.h BeatThePeakControlInterface.h
 lmgroupbase.obj:	precompiled.h dbaccess.h dllbase.h dsm2.h \
 		cticonnect.h yukon.h types.h ctidbgmem.h dlldefs.h netports.h \
 		mutex.h guard.h utility.h ctitime.h queues.h cticalls.h \
@@ -502,7 +506,8 @@ lmgroupexpresscom.obj:	precompiled.h dbaccess.h dllbase.h dsm2.h \
 		lmprogramdirectgear.h tbl_lmprogramhistory.h \
 		ConstraintViolation.h lmprogramcurtailment.h \
 		lmcurtailcustomer.h lmcicustomerbase.h ctibase.h ctinexus.h \
-		ctistring.h ctitokenizer.h
+		ctistring.h ctitokenizer.h LMProgramBeatThePeakGear.h \
+		BeatThePeakAlertLevel.h BeatThePeakControlInterface.h
 lmgroupgolay.obj:	precompiled.h lmgroupgolay.h lmgroupbase.h \
 		boostutil.h utility.h ctitime.h dlldefs.h queues.h cticalls.h \
 		os2_2w32.h types.h numstr.h dbmemobject.h observe.h \
@@ -678,6 +683,9 @@ lmprogrambase.obj:	precompiled.h dbaccess.h dllbase.h dsm2.h \
 		lmcurtailcustomer.h lmcicustomerbase.h ctibase.h ctinexus.h \
 		resolvers.h db_entry_defines.h mgr_holiday.h mgr_season.h \
 		lmutility.h database_writer.h row_writer.h
+lmprogrambeatthepeakgear.obj:	precompiled.h logger.h  \
+		BeatThePeakControlInterface.h BeatThePeakAlertLevel.h \
+		lmprogrambeatthepeakgear.h
 lmprogramcontrolwindow.obj:	precompiled.h dbaccess.h dllbase.h dsm2.h \
 		cticonnect.h yukon.h types.h ctidbgmem.h dlldefs.h netports.h \
 		mutex.h guard.h utility.h ctitime.h queues.h cticalls.h \

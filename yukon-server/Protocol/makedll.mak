@@ -423,7 +423,7 @@ expresscom.obj:	precompiled.h expresscom.h cmdparse.h ctitokenizer.h \
 		words.h optional.h ctistring.h logger.h thread.h \
 		CtiPCPtrQueue.h cparms.h rwutil.h database_connection.h \
 		dbaccess.h database_reader.h row_reader.h boost_time.h \
-		boostutil.h configkey.h configval.h ctidate.h
+		boostutil.h configkey.h configval.h ctidate.h BeatThePeakAlertLevel.h
 fmu_application.obj:	precompiled.h guard.h utility.h ctitime.h \
 		dlldefs.h queues.h cticalls.h os2_2w32.h types.h numstr.h \
 		logger.h thread.h mutex.h CtiPCPtrQueue.h

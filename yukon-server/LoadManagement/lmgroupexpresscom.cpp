@@ -670,23 +670,25 @@ void CtiLMGroupExpresscom::restore(Cti::RowReader &rdr)
     CtiLMGroupBase::restore(rdr);
 }
 
-bool CtiLMGroupExpresscom::sendBeatThePeakControl(Tier tier, int timeout)
+bool CtiLMGroupExpresscom::sendBeatThePeakControl(Cti::BeatThePeak::AlertLevel level, int timeout)
 {
-    std::string command;
-    if(tier == BeatThePeakControlInterface::Green)
-    {
-        command = std::string("control btp restore");
-    }
-    else
-    {
-        command = std::string("control btp ") + tierAsString(tier);
+    std::string command = std::string("control btp ") + level.asString();
 
-        if(timeout != 0)
-        {
-            command += std::string(" ") + CtiNumStr(timeout).toString() + std::string("m");
-        }
+    if(timeout != 0)
+    {
+        command += std::string(" ") + CtiNumStr(timeout).toString() + std::string("m");
     }
 
+    return sendBeatThePeakCommandToPorter(command);
+}
+
+bool CtiLMGroupExpresscom::sendBeatThePeakRestore()
+{
+    return sendBeatThePeakCommandToPorter("control btp restore");
+}
+
+bool CtiLMGroupExpresscom::sendBeatThePeakCommandToPorter(std::string command)
+{
     CtiRequestMsg* msg = CTIDBG_new CtiRequestMsg( getPAOId(), command );
 
     CtiLoadManager::getInstance()->sendMessageToPIL(msg);
@@ -707,9 +709,4 @@ bool CtiLMGroupExpresscom::sendBeatThePeakControl(Tier tier, int timeout)
 
     setGroupControlState(CtiLMGroupBase::ActiveState);
     return true;
-}
-
-bool CtiLMGroupExpresscom::sendBeatThePeakRestore()
-{
-    return sendBeatThePeakControl(BeatThePeakControlInterface::Green,0);
 }

@@ -21,6 +21,7 @@
 #include "cparms.h"
 #include "cmdparse.h"
 #include "ctidate.h"
+#include "BeatThePeakAlertLevel.h"
 
 #define EXPRESSCOM_CRC_LENGTH 2
 
@@ -2952,23 +2953,32 @@ bool CtiProtocolExpresscom::validateParseAddressing(const CtiCommandParser &pars
 //Used to convert string containing beat the peak tier into its integer value
 int CtiProtocolExpresscom::tierOf(std::string btp_alert_level)
 {
-    if( ciStringEqual(btp_alert_level, std::string("red") ) )
+    try
     {
-        return 4;
+        const Cti::BeatThePeak::AlertLevel alertLevel(btp_alert_level);
+        if( alertLevel == Cti::BeatThePeak::AlertLevelRed )
+        {
+            return 4;
+        }
+        else if( alertLevel == Cti::BeatThePeak::AlertLevelYellow )
+        {
+            return 2;
+        }
+        else if( alertLevel == Cti::BeatThePeak::AlertLevelGreen )
+        {
+            return 0;
+        }
+        else
+        {
+            CtiLockGuard<CtiLogger> logger_guard(dout);
+            dout << " **** Checkpoint **** Unhandled alert level: " << btp_alert_level << ". Setting to 0." << endl;
+            return 0;
+        }
     }
-    else if( ciStringEqual(btp_alert_level, std::string("yellow") ) )
-    {
-        return 2;
-    }
-    else if( ciStringEqual(btp_alert_level, std::string("green")) ||
-             ciStringEqual(btp_alert_level, std::string("restore")) )
-    {
-        return 0;
-    }
-    else
+    catch(Cti::BeatThePeak::AlertLevel::InvalidAlertLevel)
     {
         CtiLockGuard<CtiLogger> logger_guard(dout);
-        dout << " **** Checkpoint **** Invalid tier: " << btp_alert_level << ". Setting to 0." << endl;
+        dout << " **** Checkpoint **** Invalid alert level: " << btp_alert_level << ". Setting to 0." << endl;
         return 0;
     }
 }

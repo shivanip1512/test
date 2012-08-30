@@ -6929,7 +6929,6 @@ std::vector<float> CtiCommandParser::parseListOfFloats(const std::string &floatL
 double CtiCommandParser::getDurationInSeconds( std::string token_ )
 {
     CtiString token(token_);
-    double timeSec = -1.0;
 
     if((token = token.match( (const boost::regex) (str_floatnum + CtiString(" *[hms]?( |$)")) )).empty() )
     {
@@ -6939,7 +6938,7 @@ double CtiCommandParser::getDurationInSeconds( std::string token_ )
     }
 
     CtiString timeStr = token.match(re_floatnum);
-    timeSec = atof(timeStr.c_str());
+    double timeSec = atof(timeStr.c_str());
 
     /*
       Determine units, with default as minutes.

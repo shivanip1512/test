@@ -2,6 +2,7 @@
 #include "lmprogrambeatthepeakgear.h"
 #include "BeatThePeakControlInterface.h"
 #include "logger.h"
+#include "BeatThePeakAlertLevel.h"
 
 using std::endl;
 using namespace Cti::LoadManagement;
@@ -19,17 +20,29 @@ CtiLMProgramDirectGear * CtiLMProgramBeatThePeakGear::replicate() const
 
 int CtiLMProgramBeatThePeakGear::operator==(const CtiLMProgramBeatThePeakGear& right) const
 {
-    return Inherited::operator==(right) && _tier == right._tier;
+    return Inherited::operator==(right) && _alertLevel == right._alertLevel;
 }
 int CtiLMProgramBeatThePeakGear::operator!=(const CtiLMProgramBeatThePeakGear& right) const
 {
-    return Inherited::operator!=(right) || _tier != right._tier;
+    return Inherited::operator!=(right) || _alertLevel != right._alertLevel;
 }
 
 void CtiLMProgramBeatThePeakGear::restore(Cti::RowReader &rdr)
 {
     Inherited::restore(rdr);
-    rdr["tier"] >> _tier;
+    std::string temp;
+    rdr["alertlevel"] >> temp;
+    try
+    {
+        _alertLevel = Cti::BeatThePeak::AlertLevel(temp);
+    }
+    catch (Cti::BeatThePeak::AlertLevel::InvalidAlertLevel & invalidLevel)
+    {
+        CtiLockGuard<CtiLogger> logger_guard(dout);
+        dout << CtiTime() << " - " << invalidLevel.what() << ". Setting to Green." << endl;
+        _alertLevel = Cti::BeatThePeak::AlertLevelGreen;
+    }
+
 }
 
 bool CtiLMProgramBeatThePeakGear::attemptControl(CtiLMGroupPtr currentLMGroup, long controlSeconds, DOUBLE &expectedLoadReduced)
@@ -43,7 +56,7 @@ bool CtiLMProgramBeatThePeakGear::attemptControl(CtiLMGroupPtr currentLMGroup, l
             controlTimeout = controlMinutes;
         }
 
-        bool controlSent = controllableGroup->sendBeatThePeakControl( getTier(), controlTimeout );
+        bool controlSent = controllableGroup->sendBeatThePeakControl( getAlertLevel(), controlTimeout );
         if( getMethodRate() == 0 )
         {
             currentLMGroup->setNextControlTime( CtiTime(CtiTime::pos_infin) );
@@ -81,28 +94,14 @@ bool CtiLMProgramBeatThePeakGear::stopControl(CtiLMGroupPtr currentLMGroup)
 
 unsigned long CtiLMProgramBeatThePeakGear::estimateOffTime(long controlSeconds)
 {
-    if( getTier() == BeatThePeakControlInterface::Red || getTier() == BeatThePeakControlInterface::Yellow)
+    if( getAlertLevel() == Cti::BeatThePeak::AlertLevelRed || getAlertLevel() == Cti::BeatThePeak::AlertLevelYellow )
     {
         return controlSeconds;
     }
     return 0;
 }
 
-BeatThePeakControlInterface::Tier CtiLMProgramBeatThePeakGear::getTier() const
+Cti::BeatThePeak::AlertLevel CtiLMProgramBeatThePeakGear::getAlertLevel() const
 {
-    switch(_tier)
-    {
-    case 0:
-        return BeatThePeakControlInterface::Green;
-    case 2:
-        return BeatThePeakControlInterface::Yellow;
-    case 4:
-        return BeatThePeakControlInterface::Red;
-    default:
-        {
-            CtiLockGuard<CtiLogger> logger_guard(dout);
-            dout << " **** Checkpoint **** Invalid tier: " << _tier << ". Setting to Green." << std::endl;
-        }
-        return BeatThePeakControlInterface::Green;
-    }
+    return _alertLevel;
 }

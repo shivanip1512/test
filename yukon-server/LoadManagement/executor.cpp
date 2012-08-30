@@ -666,7 +666,7 @@ void CtiLMCommandExecutor::ShedGroup()
                             {
                                 if( BeatThePeakControlInterfacePtr btpGroup = boost::dynamic_pointer_cast<BeatThePeakControlInterface>(currentLMGroup) )
                                 {
-                                    btpGroup->sendBeatThePeakControl( BeatThePeakControlInterface::Red , shedTime / 60 );
+                                    btpGroup->sendBeatThePeakControl( Cti::BeatThePeak::AlertLevelRed , shedTime / 60 );
                                 }
                             }
 

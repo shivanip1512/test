@@ -37,7 +37,7 @@ RWDECLARE_COLLECTABLE( CtiLMGroupExpresscom )
                                                     LONG precoolTime, LONG precoolHoldTime, LONG maxTempChange,
                                                     LONG totalTime, LONG rampOutTime, LONG minutesFromBegin,
                                                     int priority) const;
-    virtual bool sendBeatThePeakControl(Tier tier, int timeout);
+    virtual bool sendBeatThePeakControl(Cti::BeatThePeak::AlertLevel level, int timeout);
     virtual bool sendBeatThePeakRestore();
 
     //Members inherited from RWCollectable
@@ -54,4 +54,5 @@ RWDECLARE_COLLECTABLE( CtiLMGroupExpresscom )
 private:
 
     void restore(Cti::RowReader &rdr);
+    bool sendBeatThePeakCommandToPorter(std::string command);
 };

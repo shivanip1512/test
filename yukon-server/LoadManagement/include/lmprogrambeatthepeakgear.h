@@ -2,7 +2,8 @@
 
 #include "lmprogramdirect.h"
 #include "smartgearbase.h"
-#include "BeatThePeakcontrolinterface.h"
+#include "BeatThePeakControlInterface.h"
+#include "BeatThePeakAlertLevel.h"
 
 class CtiLMProgramBeatThePeakGear : public SmartGearBase, public CtiLMProgramDirectGear
 {
@@ -21,8 +22,8 @@ public:
     virtual bool stopControl(CtiLMGroupPtr currentLMGroup);
     virtual unsigned long estimateOffTime(long controlSeconds);
 
-    Cti::LoadManagement::BeatThePeakControlInterface::Tier getTier() const;
+    Cti::BeatThePeak::AlertLevel getAlertLevel() const;
 
 private:
-    int _tier;
+    Cti::BeatThePeak::AlertLevel _alertLevel;
 };

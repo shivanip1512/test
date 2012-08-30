@@ -87,6 +87,7 @@ configval.obj \
 configkey.obj \
 cparms.obj \
 encryption.obj \
+BeatThePeakAlertLevel.obj \
 
 CTIPROGS=\
 ctibase.dll
@@ -183,6 +184,8 @@ attributeservice.obj:	precompiled.h AttributeService.h LitePoint.h \
 		guard.h utility.h ctitime.h queues.h cticalls.h os2_2w32.h \
 		dsm2err.h words.h optional.h database_reader.h \
 		database_connection.h row_reader.h
+BeatThePeakAlertLevel.obj:	precompiled.h dlldefs.h \
+		BeatThePeakAlertLevel.h
 bfexec.obj:	precompiled.h bfexec.h
 cmdparse.obj:	precompiled.h cmdparse.h ctitokenizer.h dlldefs.h \
 		parsevalue.h cparms.h rwutil.h yukon.h types.h ctidbgmem.h \
