@@ -95,21 +95,19 @@ public class RfnLcrDataMappingServiceImpl implements RfnLcrDataMappingService {
             }
         }
         List<PointData> intervalData;
-        Boolean readNowRequestFlag = (data.evaluateAsInt("/DRReport/Info/Flags") & 0x01) == 1;
-        if (readNowRequestFlag) {
-            intervalData = mapIntervalData(request, data, device, true);
-            messagesToSend.addAll(intervalData);
-        } else {
-            intervalData = mapIntervalData(request, data, device, false);
-            messagesToSend.addAll(intervalData);
-        }
+        
+        /** This may be useful some day */
+        boolean readNow = (data.evaluateAsInt("/DRReport/Info/Flags") & 0x01) == 1;
+        
+        intervalData = mapIntervalData(request, data, device);
+        messagesToSend.addAll(intervalData);
         
         return messagesToSend;
     }
 
 
     private List<PointData> mapIntervalData(RfnLcrReadingArchiveRequest archiveRequest, 
-            SimpleXPathTemplate data, RfnDevice device, boolean readFirstInterval) {
+            SimpleXPathTemplate data, RfnDevice device) {
         
         List<PointData> intervalPointData = Lists.newArrayListWithExpectedSize(16);
         Set<RfnLcrRelayDataMap> rfnLcrRelayDataMap = Sets.newHashSet();
@@ -135,10 +133,6 @@ public class RfnLcrDataMappingServiceImpl implements RfnLcrDataMappingService {
             Long firstIntervalTimestamp = data.evaluateAsLong("/DRReport/Relays/Relay" + relay.getRelayIdXPathString() + "/IntervalData/@startTime");
             Instant currentIntervalTimestamp = new Instant(firstIntervalTimestamp * 1000); // Oldest first to newest, 36 intervals in total
             
-            // If we only want to read the first interval of the message, re-make the list with only its first element.
-            if (readFirstInterval) {  
-                intervalData = Lists.newArrayList(intervalData.get(0));
-            }
             for (Integer interval : intervalData) {
                 
                 /** Skip all intervals occuring in the future since the device sends us 36
