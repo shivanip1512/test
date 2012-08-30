@@ -66,8 +66,10 @@ public class UserEditorController {
         model.addAttribute("passwordChange", new PasswordChange());
         model.addAttribute("mode", PageEditMode.VIEW);
         
-        LiteUserGroup liteUserGroup = userGroupDao.getLiteUserGroup(user.getUserGroupId());
-        model.addAttribute("userGroupName", liteUserGroup.getUserGroupName());
+        if (user.getUserGroupId() != null) {
+            LiteUserGroup liteUserGroup = userGroupDao.getLiteUserGroup(user.getUserGroupId());
+            model.addAttribute("userGroupName", liteUserGroup.getUserGroupName());
+        }
         setupModelMap(model, user);
         
         return "userGroupEditor/user.jsp";

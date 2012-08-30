@@ -59,7 +59,7 @@ public class LoginValidator extends SimpleValidator<LoginBackingBean> {
             }
             
             // Check the password against the password policy.
-            LiteUserGroup liteUserGroup = userGroupDao.getLiteUserGroupByUserGroupName(loginBackingBean.getUserGroupName());
+            LiteUserGroup liteUserGroup = userGroupDao.findLiteUserGroupByUserGroupName(loginBackingBean.getUserGroupName());
             String password = loginBackingBean.getPassword1();
             PasswordPolicyError passwordPolicyError = passwordPolicyService.checkPasswordPolicy(password, user, liteUserGroup);
 

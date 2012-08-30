@@ -1022,8 +1022,10 @@ public class AccountServiceImpl implements AccountService {
             LiteYukonUser user = yukonUserDao.getLiteYukonUser(loginId);
             retrievedDto.setUserName(user.getUsername());
 
-            LiteUserGroup userGroup = userGroupDao.getLiteUserGroup(user.getUserGroupId());
-            retrievedDto.setUserGroup(userGroup.getUserGroupName());
+            if (user.getUserGroupId() != null) {
+                LiteUserGroup userGroup = userGroupDao.getLiteUserGroup(user.getUserGroupId());
+                retrievedDto.setUserGroup(userGroup.getUserGroupName());
+            }
         }else {
             retrievedDto.setUserName("");
             retrievedDto.setUserGroup("");

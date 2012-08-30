@@ -41,12 +41,14 @@ public class ResidentialLoginServiceImpl implements ResidentialLoginService{
             
             public Integer doInTransaction(TransactionStatus status) {
                 checkSuppliedResidentialUserGroup(energyCompanyId, loginBackingBean);
-                LiteUserGroup residentialUserGroup = userGroupDao.getLiteUserGroupByUserGroupName(loginBackingBean.getUserGroupName());
+                LiteUserGroup residentialUserGroup = userGroupDao.findLiteUserGroupByUserGroupName(loginBackingBean.getUserGroupName());
                 
                 // Build up the user for creation
                 LiteYukonUser newUser = new LiteYukonUser();
                 newUser.setUsername(loginBackingBean.getUsername());
-                newUser.setUserGroupId(residentialUserGroup.getUserGroupId());
+                if (residentialUserGroup != null) {
+                    newUser.setUserGroupId(residentialUserGroup.getUserGroupId());
+                }
                 
                 if (loginBackingBean.isLoginEnabled()) {
                     newUser.setLoginStatus(LoginStatusEnum.ENABLED);
@@ -91,9 +93,13 @@ public class ResidentialLoginServiceImpl implements ResidentialLoginService{
 
                 // Update the user group for the user
                 checkSuppliedResidentialUserGroup(energyCompanyId, loginBackingBean);
-                LiteUserGroup newUserGroup = userGroupDao.getLiteUserGroupByUserGroupName(loginBackingBean.getUserGroupName());
-                residentialUser.setUserGroupId(newUserGroup.getUserGroupId());
-                yukonUserDao.updateUserGroupId(residentialUser.getUserID(), newUserGroup.getUserGroupId());
+                LiteUserGroup newUserGroup = userGroupDao.findLiteUserGroupByUserGroupName(loginBackingBean.getUserGroupName());
+                if (newUserGroup != null) {
+                    residentialUser.setUserGroupId(newUserGroup.getUserGroupId());
+                    yukonUserDao.updateUserGroupId(residentialUser.getUserID(), newUserGroup.getUserGroupId());
+                } else {
+                    yukonUserDao.updateUserGroupId(residentialUser.getUserID(), null);
+                }
 
                 updateLoginStatus(loginBackingBean, residentialUser);
                 
@@ -141,8 +147,9 @@ public class ResidentialLoginServiceImpl implements ResidentialLoginService{
      */
     private void checkSuppliedResidentialUserGroup(final int energyCompanyId, final LoginBackingBean loginBackingBean) {
         List<LiteUserGroup> ecResidentialUserGroups = ecMappingDao.getResidentialUserGroups(energyCompanyId);
-        LiteUserGroup residentialLoginGroup = userGroupDao.getLiteUserGroupByUserGroupName(loginBackingBean.getUserGroupName());
-        if (!ecResidentialUserGroups.contains(residentialLoginGroup)) {
+
+        LiteUserGroup residentialLoginGroup = userGroupDao.findLiteUserGroupByUserGroupName(loginBackingBean.getUserGroupName());
+        if (residentialLoginGroup != null && !ecResidentialUserGroups.contains(residentialLoginGroup)) {
             throw new IllegalArgumentException();
         }
     }

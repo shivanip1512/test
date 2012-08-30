@@ -17,8 +17,8 @@
     <tags:boxContainer2 nameKey="groupsContainer" styleClass="groupsContainer">
         <c:choose>
             <c:when test="${!empty groups}">
-                <form action="/spring/adminSetup/userGroup/removeGroup" method="post">
-                    <input type="hidden" name="userId" value="${userId}">
+                <form action="/spring/adminSetup/userGroup/removeRoleGroup" method="post">
+                    <input type="hidden" name="userGroupId" value="${userGroupId}">
                     <table class="compactResultsTable rowHighlighting">
                         <tr>
                             <th><i:inline key=".groupName"/></th>

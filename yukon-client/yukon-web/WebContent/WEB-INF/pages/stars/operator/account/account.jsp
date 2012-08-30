@@ -332,9 +332,9 @@
                     <tags:formElementContainer nameKey="loginInfoSection">
                         
                         <tags:nameValueContainer2>
-                            
+                            <cti:msg2 var="none" key="defaults.none"/>
                             <tags:selectNameValue nameKey=".customerGroup" path="loginBackingBean.userGroupName" items="${ecResidentialUserGroups}" 
-                                                                 itemValue="userGroupName" itemLabel="userGroupName"/>
+                                                                 itemValue="userGroupName" itemLabel="userGroupName" defaultItemLabel="${none}"/>
                             <tags:nameValue2 nameKey=".loginEnabled"><tags:checkbox path="loginBackingBean.loginEnabled"/></tags:nameValue2>
                             
                             <!-- Username Field -->

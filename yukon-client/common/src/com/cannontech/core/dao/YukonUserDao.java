@@ -91,12 +91,9 @@ public interface YukonUserDao {
     public void callbackWithYukonUsersInUserGroup(LiteUserGroup userGroup, SimpleCallback<LiteYukonUser> simpleCallback);
     
     /**
-     * This method removes a user from the supplied groups and sends out the necessary db change messages
-     * 
-     * @param user
-     * @param yukonGroups
+     * This method removes the user from their current user group.
      */
-    public void removeUserFromGroup(int userId, Integer... groupIds);
+    public void removeUserFromUserGroup(int userId);
 
     /**
      * This method adds a user to the supplied groups and sends out the necessary db change messages
@@ -138,10 +135,11 @@ public interface YukonUserDao {
     /**
      * Updates which user group a user is apart of 
      */
-    public void updateUserGroupId(int userId, int userGroupId);
+    public void updateUserGroupId(int userId, Integer userGroupId);
     
     /**
      * Changes all the forceReset values for a given group.
      */
     public void updateForceResetByGroupId(int groupId, boolean forceReset);
+
 }

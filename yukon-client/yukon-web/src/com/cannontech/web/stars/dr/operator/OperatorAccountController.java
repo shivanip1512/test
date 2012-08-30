@@ -492,12 +492,10 @@ public class OperatorAccountController {
         setupAccountModel(fragment, model, context, ecResidentialUserGroups, residentialUser);
 	}
 	
-	private void buildAccountDto(ModelMap model, 
-	                             YukonUserContext context, 
-	                             int accountId, 
-	                             LiteYukonUser residentialUser,
-	                             LiteStarsEnergyCompany energyCompany) {
-        /* AccountDto */
+	private void buildAccountDto(ModelMap model, YukonUserContext context, int accountId, 
+	                             LiteYukonUser residentialUser, LiteStarsEnergyCompany energyCompany) {
+
+	    /* AccountDto */
         AccountDto accountDto = accountService.getAccountDto(accountId, energyCompany.getEnergyCompanyId(), context);
 
         /* OperatorGeneralUiExtras */
@@ -505,9 +503,11 @@ public class OperatorAccountController {
         
         /* LoginBackingBean */
         LoginBackingBean loginBackingBean = new LoginBackingBean();
-        LiteUserGroup userResidentialUserGroup= userGroupDao.getLiteUserGroup(residentialUser.getUserGroupId());
-        if (userResidentialUserGroup != null) {
-            loginBackingBean.setUserGroupName(userResidentialUserGroup.getUserGroupName());
+        if (residentialUser.getUserGroupId() != null) {
+            LiteUserGroup userResidentialUserGroup= userGroupDao.getLiteUserGroup(residentialUser.getUserGroupId());
+            if (userResidentialUserGroup != null) {
+                loginBackingBean.setUserGroupName(userResidentialUserGroup.getUserGroupName());
+            }
         }
         
         if (residentialUser.getUserID() == UserUtils.USER_DEFAULT_ID) {
@@ -539,7 +539,7 @@ public class OperatorAccountController {
             user = yukonUserDao.getLiteYukonUser(userId);
         }
         
-        LiteUserGroup liteUserGroup = userGroupDao.getLiteUserGroupByUserGroupName(userGroupName);
+        LiteUserGroup liteUserGroup = userGroupDao.findLiteUserGroupByUserGroupName(userGroupName);
         PasswordPolicy passwordPolicy = passwordPolicyService.getPasswordPolicy(user, liteUserGroup);
         String generatedPassword = "";
         try {
@@ -631,7 +631,10 @@ public class OperatorAccountController {
         modelMap.addAttribute("loginMode", loginMode);
         final LiteYukonUser residentialUser = customerAccountDao.getYukonUserByAccountId(accountInfoFragment.getAccountId());
 
-        LiteUserGroup originalUserGroup = userGroupDao.getLiteUserGroup(residentialUser.getUserGroupId());
+        LiteUserGroup originalUserGroup = null;
+        if (residentialUser.getUserGroupId() != null) {
+            originalUserGroup = userGroupDao.getLiteUserGroup(residentialUser.getUserGroupId());
+        }
         
         /* 
          * Ignore the login fields if: 

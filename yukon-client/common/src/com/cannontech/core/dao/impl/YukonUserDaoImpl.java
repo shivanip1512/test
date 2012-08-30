@@ -1,6 +1,5 @@
 package com.cannontech.core.dao.impl;
 
-import java.util.Arrays;
 import java.util.Date;
 import java.util.List;
 
@@ -308,14 +307,15 @@ public class YukonUserDaoImpl implements YukonUserDao {
 	    yukonJdbcTemplate.query(sql, new YukonMappingRowCallbackHandler<LiteYukonUser>(new LiteYukonUserMapper(), callback));
 	}
 
-    public void removeUserFromGroup(int userId, Integer... groupIds) {
-        SqlStatementBuilder sql = new SqlStatementBuilder();
-        sql.append("DELETE FROM YukonUserGroup");
-        sql.append("WHERE UserId").eq(userId);
-        sql.append("AND GroupId").in(Arrays.asList(groupIds));
-        yukonJdbcTemplate.update(sql);
-
-        sendUserDbChangeMsg(userId, DbChangeType.DELETE);
+	@Override
+    public void removeUserFromUserGroup(int userId) {
+	    SqlStatementBuilder sql = new SqlStatementBuilder();
+	    sql.append("UPDATE YukonUser");
+	    sql.append("SET UserGroupId").eq(null);
+	    sql.append("WHERE UserId").eq(userId);
+	    yukonJdbcTemplate.update(sql);
+	    
+        sendUserDbChangeMsg(userId, DbChangeType.UPDATE);
     }
 	
     public void addUserToGroup(int userId, Integer... groupIds) {
@@ -413,7 +413,7 @@ public class YukonUserDaoImpl implements YukonUserDao {
     };
 
     @Override
-    public void updateUserGroupId(int userId, int userGroupId) {
+    public void updateUserGroupId(int userId, Integer userGroupId) {
         SqlStatementBuilder sql = new SqlStatementBuilder();
         sql.append("UPDATE YukonUser");
         sql.append("SET UserGroupId").eq(userGroupId);

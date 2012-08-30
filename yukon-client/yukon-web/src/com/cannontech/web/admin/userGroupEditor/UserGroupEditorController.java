@@ -191,11 +191,11 @@ public class UserGroupEditorController {
     }
 
     @RequestMapping(method=RequestMethod.POST)
-    public String removeUserGroup(ModelMap model, FlashScope flash, int userGroupId, int remove) {
-        yukonUserDao.removeUserFromGroup(userGroupId, remove);
+    public String removeRoleGroup(ModelMap model, FlashScope flash, int userGroupId, int remove) {
+        userGroupDao.deleteUserGroupToYukonGroupMappng(userGroupId, remove);
         model.addAttribute("userGroupId", userGroupId);
         flash.setConfirm(new YukonMessageSourceResolvable("yukon.web.modules.adminSetup.userEditor.updateSuccessful"));
-        return "redirect:groups";
+        return "redirect:roleGroups";
     }
     
     /* Users Tab */
@@ -232,7 +232,7 @@ public class UserGroupEditorController {
     /* Remove User From User Group */
     @RequestMapping(value="removeUser", method=RequestMethod.POST, params="remove")
     public String removeUser(ModelMap model, FlashScope flash, int userGroupId, int remove) {
-        yukonUserDao.removeUserFromGroup(remove, userGroupId);
+        yukonUserDao.removeUserFromUserGroup(remove);
         
         flash.setConfirm(new YukonMessageSourceResolvable("yukon.web.modules.adminSetup.roleGroupEditor.updateSuccessful"));
         model.addAttribute("userGroupId", userGroupId);

@@ -12,7 +12,6 @@ public class LiteUserGroup extends LiteBase {
     
     public LiteUserGroup() {
         setLiteType(LiteTypes.USER_GROUP);
-        setLiteID(NULL_USER_GROUP_ID);
     }
 
     public int getUserGroupId() {
