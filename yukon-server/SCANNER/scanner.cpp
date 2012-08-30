@@ -252,7 +252,7 @@ static void applyDLCLPScan(const long key, CtiDeviceSPtr pBase, void *d)
     }
 
     //  only MCTs do DLC load profile scans
-    if(isCarrierLPDevice(pBase))
+    if(isCarrierLPDeviceType(pBase->getType()))
     {
         Cti::Devices::MctDevice *pMCT = (Cti::Devices::MctDevice *)pBase.get();
 
@@ -314,7 +314,6 @@ INT ScannerMainFunction (INT argc, CHAR **argv)
 {
     char  tstr[256];
 
-    INT   nRet = 0;
     INT   i, j;
     DWORD dwWait;
     INT   ObjWait;
@@ -322,19 +321,11 @@ INT ScannerMainFunction (INT argc, CHAR **argv)
     /* Misc. definitions */
     UINT invcnt = 0;
 
-    /* Define the various records */
-    CtiDeviceSPtr Device;
-    CtiDeviceSingle *DeviceRecord = NULL;
-
     CtiTime      NextScan[MAX_SCAN_TYPE];
     CtiTime      TimeNow;
 
     /* Define for the porter interface */
-    IM_EX_CTIBASE extern USHORT   PrintLogEvent;
     list< OUTMESS* >         outList;         // Nice little collection of OUTMESS's
-
-
-    int Op, k;
 
     HANDLE hScanArray[] = {
         hScannerSyncs[S_QUIT_EVENT],
@@ -925,14 +916,11 @@ void ResultThread (void *Arg)
 
 void NexusThread (void *Arg)
 {
-    DWORD       dwWait;
     /* Define the return Pipe handle */
     IM_EX_CTIBASE extern CTINEXUS PorterNexus;
 
     /* Misc. definitions */
     ULONG       i = 0;
-    /* Define the various time variable */
-    CtiTime      TimeNow;
 
     /* Define the pipe variables */
     ULONG       BytesRead;
@@ -1074,7 +1062,7 @@ static void applyAnalyzeNextLPScan(const long key, CtiDeviceSPtr Device, void *d
         CtiTime TempTime(YUKONEOT);
         CtiTime &nextLPScanTime = *((CtiTime*)d);
 
-        if(isCarrierLPDevice(Device))
+        if(isCarrierLPDeviceType(Device->getType()))
         {
             Cti::Devices::MctDevice  *DeviceRecord = (Cti::Devices::MctDevice *)Device.get();
 
@@ -1170,8 +1158,6 @@ void InitScannerGlobals(void)
 void LoadScannableDevices(void *ptr)
 {
     static bool bLoaded = false;        // Useful for debugging memory leaks.. Set to true inside the if.
-    CtiHashKey  *hKey = NULL;
-    CtiDeviceSPtr DeviceRecord;
     CtiDBChangeMsg *pChg = (CtiDBChangeMsg *)ptr;
 
     bool bforce = ((pChg == NULL) ? false : true);
@@ -1316,8 +1302,6 @@ void LoadScannableDevices(void *ptr)
 
 void DispatchMsgHandlerThread(void *Arg)
 {
-    BOOL           bServerClosing = FALSE;
-
     CtiTime         TimeNow;
     CtiTime         LastTime;
 
@@ -1328,9 +1312,7 @@ void DispatchMsgHandlerThread(void *Arg)
     {
         threadStatus.monitorCheck(CtiThreadRegData::None);
 
-        CtiMessage *MsgPtr = VanGoghConnection.ReadConnQue(5000L);
-
-        if(MsgPtr != NULL)
+        if( CtiMessage *MsgPtr = VanGoghConnection.ReadConnQue(5000L) )
         {
             switch(MsgPtr->isA())
             {
@@ -1449,8 +1431,6 @@ void DispatchMsgHandlerThread(void *Arg)
 
 void DatabaseHandlerThread(void *Arg)
 {
-    BOOL    bServerClosing = FALSE;
-
     ThreadStatusKeeper threadStatus("Scanner DatabaseHandlerThread");
 
     CtiTime TimeNow;
@@ -1488,7 +1468,6 @@ void DatabaseHandlerThread(void *Arg)
 
             if(TimeNow >= RefreshTime)
             {
-                // Refresh the scanner in memory database once every 5 minutes.
                 LoadScannableDevices();
                 // Post the wakup to ensure that the main loop re-examines the devices.
                 SetEvent(hScannerSyncs[ S_SCAN_EVENT ]);
