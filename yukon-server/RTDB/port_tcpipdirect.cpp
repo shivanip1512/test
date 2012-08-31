@@ -133,8 +133,11 @@ INT CtiPortTCPIPDirect::openPort(INT rate, INT bits, INT parity, INT stopbits)
     else
     {
         //  this delay is here for ports that allow connections but then immediately disconnect;
-        //    if we connected more than 15 seconds ago, we can connect immediately
-        CtiTime nextConnect = _lastConnect + 15;
+        //    if we connected more than PORTER_TCP_CONNECTION_DELAY seconds ago (default 15), we can connect immediately
+        const int reconnectRate = gConfigParms.getValueAsInt("PORTER_TCP_CONNECTION_DELAY",-1) > 0 ?
+                                  gConfigParms.getValueAsInt("PORTER_TCP_CONNECTION_DELAY",-1) : 15;
+
+        CtiTime nextConnect = _lastConnect + reconnectRate;
 
         int connect_delay = nextConnect.seconds() - CtiTime::now().seconds();
 
