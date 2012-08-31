@@ -588,7 +588,7 @@ INT CtiRouteXCU::assembleExpresscomRequest(CtiRequestMsg *pReq, CtiCommandParser
         xcom.setUseCRC(false);
     }
 
-    const bool usingEncryption = ( _encryptionKey.size() != 16 );   // reject malformed keys
+    const bool usingEncryption = ( _encryptionKey.size() == 16 );   // reject malformed keys
 
     if ( usingEncryption )
     {
