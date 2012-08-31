@@ -897,8 +897,16 @@ public class StarsLiteFactory {
 		event.getLmThermostatManualEvent().setHoldTemperature( liteEvent.isHoldTemperature() ? "Y" : "N" );
 		event.getLmThermostatManualEvent().setOperationStateID( new Integer(liteEvent.getOperationStateID()) );
 		event.getLmThermostatManualEvent().setFanOperationID( new Integer(liteEvent.getFanOperationID()) );
-        event.getLmThermostatManualEvent().setPreviousCoolTemperature( liteEvent.getPreviousCoolTemperature() );
-        event.getLmThermostatManualEvent().setPreviousHeatTemperature( liteEvent.getPreviousHeatTemperature() );
+        if (liteEvent.getPreviousCoolTemperature() == 0.0) {
+            event.getLmThermostatManualEvent().setPreviousCoolTemperature( null );
+        } else {
+            event.getLmThermostatManualEvent().setPreviousCoolTemperature( liteEvent.getPreviousCoolTemperature() );
+        }
+        if (liteEvent.getPreviousHeatTemperature() == 0.0) {
+            event.getLmThermostatManualEvent().setPreviousHeatTemperature( null );
+        } else {
+            event.getLmThermostatManualEvent().setPreviousHeatTemperature( liteEvent.getPreviousHeatTemperature() );
+        }
 	}
 	
 	public static void setApplianceBase(com.cannontech.stars.database.data.appliance.ApplianceBase app, LiteStarsAppliance liteApp) {
