@@ -81,11 +81,11 @@ function ${widgetParameters.widgetId}_updateDifference(firstUpdate) {
   var elem = jQuery(document.getElementById('${widgetParameters.widgetId}_totalConsumption'));
   elem.html(totalUsage.toFixed(3));
   //only makes sense to draw attention to the updated value if it actually changed
-  if(previousVal){
-	  flashYellow(elem, 3.5);
+  if(previousVal && !firstUpdate){
+	  jQuery(elem).flashYellow(3.5);
   }
 }
-${widgetParameters.widgetId}_updateDifference();
+${widgetParameters.widgetId}_updateDifference(true);
 </script>
 
 <cti:attributeResolver device="${device}" attributeName="${previousReadingsAttribute}" var="pointId" />
