@@ -35,7 +35,7 @@ RWDECLARE_COLLECTABLE( LMGroupDigiSEP )
     virtual bool sendStopControl(bool stopImmediately);
     virtual bool sendShedControl(long controlMinutes);
 
-    virtual bool isRestoreNeededAt(CtiTime currentTime);
+    virtual bool doesStopRequireCommandAt(const CtiTime &currentTime) const;
 
     //Unused
     virtual CtiRequestMsg* createTimeRefreshRequestMsg(LONG refreshRate, LONG shedTime, int priority) const;

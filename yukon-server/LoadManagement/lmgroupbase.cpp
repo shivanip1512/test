@@ -32,6 +32,7 @@ CtiLMGroupBase::CtiLMGroupBase()
 _controlstarttime(gInvalidCtiTime),
 _controlcompletetime(gInvalidCtiTime),
 _daily_ops(0),
+_lastStopTimeSent(gInvalidCtiTime),
 _groupcontrolstate(InactiveState),
 _insertDynamicDataFlag(TRUE)
 {
@@ -43,6 +44,7 @@ CtiLMGroupBase::CtiLMGroupBase(Cti::RowReader &rdr)
 _controlstarttime(gInvalidCtiTime),
 _controlcompletetime(gInvalidCtiTime),
 _daily_ops(0),
+_lastStopTimeSent(gInvalidCtiTime),
 _groupcontrolstate(InactiveState),
 _insertDynamicDataFlag(TRUE)
 {
@@ -298,6 +300,17 @@ const CtiTime& CtiLMGroupBase::getControlCompleteTime() const
 const CtiTime& CtiLMGroupBase::getNextControlTime() const
 {
     return _next_control_time;
+}
+
+/*----------------------------------------------------------------------------
+  getLastStopTimeSent
+
+  Returns the time this group was most recently told to stop
+  Currently only maintained by Digi SEP group
+----------------------------------------------------------------------------*/
+const CtiTime& CtiLMGroupBase::getLastStopTimeSent() const
+{
+    return _lastStopTimeSent;
 }
 
 /*-----------------------------------------------------------------------------
@@ -697,6 +710,22 @@ CtiLMGroupBase& CtiLMGroupBase::setNextControlTime(const CtiTime& controltime)
     return *this;
 }
 
+/*----------------------------------------------------------------------------
+  setLastStopTimeSent
+
+  Sets the time that the group will stop at
+  Currently only maintained by Digi SEP group
+----------------------------------------------------------------------------*/
+CtiLMGroupBase& CtiLMGroupBase::setLastStopTimeSent(const CtiTime& lastStopTimeSent)
+{
+    if( _lastStopTimeSent != lastStopTimeSent )
+    {
+        _lastStopTimeSent = lastStopTimeSent;
+        setDirty(true);
+    }
+    return *this;
+}
+
 /*-----------------------------------------------------------------------------
   setDynamicTimestamp
 
@@ -948,6 +977,7 @@ void CtiLMGroupBase::restoreGuts(RWvistream& istrm)
     CtiTime tempTime2;
     CtiTime tempTime3;
     CtiTime tempTime4;
+    CtiTime tempLastStopTimeSent;
 
     istrm >> _paoid
     >> _paocategory
@@ -971,7 +1001,8 @@ void CtiLMGroupBase::restoreGuts(RWvistream& istrm)
     >> tempTime3
     >> tempTime4
     >> _internalState
-    >> _daily_ops;
+    >> _daily_ops
+    >> tempLastStopTimeSent;
 
     _paoType = resolvePAOType(_paocategory,_paoTypeString);
 
@@ -979,6 +1010,7 @@ void CtiLMGroupBase::restoreGuts(RWvistream& istrm)
     _controlstarttime = CtiTime(tempTime2);
     _controlcompletetime = CtiTime(tempTime3);
     _next_control_time = CtiTime(tempTime4);
+    _lastStopTimeSent = CtiTime(tempLastStopTimeSent);
 }
 
 /*---------------------------------------------------------------------------
@@ -1012,7 +1044,8 @@ void CtiLMGroupBase::saveGuts(RWvostream& ostrm ) const
     << _controlcompletetime
     << _next_control_time
     << _internalState
-    << _daily_ops;
+    << _daily_ops
+    << _lastStopTimeSent;
 
     return;
 }
@@ -1056,6 +1089,7 @@ CtiLMGroupBase& CtiLMGroupBase::operator=(const CtiLMGroupBase& right)
         _lastcontrolstring = right._lastcontrolstring;
         _internalState = right._internalState;
         _daily_ops = right._daily_ops;
+        _lastStopTimeSent = right._lastStopTimeSent;
     }
 
     return *this;
@@ -1216,6 +1250,7 @@ void CtiLMGroupBase::restore(Cti::RowReader &rdr)
         rdr["controlcompletetime"] >> _controlcompletetime;
         rdr["nextcontroltime"] >> _next_control_time;
         rdr["internalstate"] >> _internalState;
+        rdr["laststoptimesent"] >> _lastStopTimeSent;
 
         _insertDynamicDataFlag = FALSE;
         setDirty(false);
@@ -1233,6 +1268,7 @@ void CtiLMGroupBase::restore(Cti::RowReader &rdr)
         setControlCompleteTime(gInvalidCtiTime);
         setNextControlTime(gInvalidCtiTime);
         resetDailyOps(0);
+        setLastStopTimeSent(gInvalidCtiTime);
         _internalState = 0;
 
         _insertDynamicDataFlag = TRUE;
@@ -1317,7 +1353,8 @@ void CtiLMGroupBase::dumpDynamicData(Cti::Database::DatabaseConnection& conn, Ct
                                                     "controlcompletetime = ?, "
                                                     "nextcontroltime = ?, "
                                                     "internalstate = ?, "
-                                                    "dailyops = ?"
+                                                    "dailyops = ?, "
+                                                    "laststoptimesent = ?"
                                                " where "
                                                     "deviceid = ?";
 
@@ -1336,6 +1373,7 @@ void CtiLMGroupBase::dumpDynamicData(Cti::Database::DatabaseConnection& conn, Ct
             << getNextControlTime()
             << _internalState
             << getDailyOps()
+            << getLastStopTimeSent()
             << getPAOId();
 
         if( _LM_DEBUG & LM_DEBUG_DYNAMIC_DB )
@@ -1348,7 +1386,7 @@ void CtiLMGroupBase::dumpDynamicData(Cti::Database::DatabaseConnection& conn, Ct
     }
     else
     {
-        static const std::string sql_insert = "insert into dynamiclmgroup values (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)";
+        static const std::string sql_insert = "insert into dynamiclmgroup values (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)";
 
         {
             CtiLockGuard<CtiLogger> logger_guard(dout);
@@ -1370,7 +1408,8 @@ void CtiLMGroupBase::dumpDynamicData(Cti::Database::DatabaseConnection& conn, Ct
             << getControlCompleteTime()
             << getNextControlTime()
             << _internalState
-            << getDailyOps();
+            << getDailyOps()
+            << getLastStopTimeSent();
 
         if( _LM_DEBUG & LM_DEBUG_DYNAMIC_DB )
         {
@@ -1498,6 +1537,19 @@ void CtiLMGroupBase::updateDailyOps()
     {
         resetDailyOps();
     }
+}
+
+/*-----------------------------------------------------------------------------
+  doesStopRequireCommandAt
+
+  Checks whether a group stop at this point would require a command message,
+  since the group may have already been told to stop at this time.
+ 
+  Currently only maintained by Digi SEP Group
+-----------------------------------------------------------------------------*/
+bool CtiLMGroupBase::doesStopRequireCommandAt(const CtiTime &currentTime) const
+{
+    return true;
 }
 
 // Static Members

@@ -1272,7 +1272,8 @@ void CtiLMDynamicGroupDataMsg::saveGuts(RWvostream& strm) const
     << _controlcompletetime
     << _next_control_time
     << _internalState //What the heck is this???
-    << _daily_ops;
+    << _daily_ops
+    << _lastStopTimeSent;
 }
 
 /*---------------------------------------------------------------------------
@@ -1351,6 +1352,7 @@ CtiLMDynamicGroupDataMsg::CtiLMDynamicGroupDataMsg(CtiLMGroupPtr group)
         _next_control_time = group->getNextControlTime();
         _internalState = group->getIsRampingOut() | group->getIsRampingIn(); //What the heck is this???
         _daily_ops = group->getDailyOps();
+        _lastStopTimeSent = group->getLastStopTimeSent();
     }
 }
 
@@ -1431,6 +1433,7 @@ void CtiLMDynamicGroupDataMsg::dump() const
     dout << "Next Control Time              " << _next_control_time << endl;
     dout << "Internal State                 " << _internalState << endl;
     dout << "Daily Ops                      " << _daily_ops << endl;
+    dout << "Last Stop Time Sent           " << _lastStopTimeSent << endl;
 }
 
 void CtiLMDynamicProgramDataMsg::dump() const
@@ -1507,6 +1510,7 @@ CtiMessage* CtiLMDynamicGroupDataMsg::replicateMessage() const
     msg->_next_control_time = _next_control_time;
     msg->_internalState = _internalState;
     msg->_daily_ops = _daily_ops;
+    msg->_lastStopTimeSent = _lastStopTimeSent;
     return msg;
 }
 

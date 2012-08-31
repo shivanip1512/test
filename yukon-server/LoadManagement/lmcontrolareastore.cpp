@@ -573,7 +573,7 @@ void CtiLMControlAreaStore::reset()
                                                "DLG.currenthoursmonthly, DLG.currenthoursseasonal, DLG.currenthoursannually, "
                                                "DLG.lastcontrolsent, DLG.timestamp, DLG.controlstarttime, "
                                                "DLG.controlcompletetime, DLG.nextcontroltime, DLG.internalstate, "
-                                               "DLG.dailyops "
+                                               "DLG.dailyops, DLG.laststoptimesent "
                                            "FROM dynamiclmgroup DLG";
 
                 Cti::Database::DatabaseReader rdr(connection);
@@ -595,6 +595,7 @@ void CtiLMControlAreaStore::reset()
                     CtiTime control_start_time;
                     CtiTime control_complete_time;
                     CtiTime next_control_time;
+                    CtiTime lastStopTimeSent;
                     long internal_state;
                     long daily_ops;
                     bool constraint_override;
@@ -613,6 +614,7 @@ void CtiLMControlAreaStore::reset()
                     rdr["nextcontroltime"] >> next_control_time;
                     rdr["internalstate"] >> internal_state;
                     rdr["dailyops"] >> daily_ops;
+                    rdr["laststoptimesent"] >> lastStopTimeSent;
 
                     std::map< long, CtiLMGroupPtr >::iterator iter = temp_all_group_map.find(group_id);
                     if( iter != temp_all_group_map.end() )
@@ -631,6 +633,7 @@ void CtiLMControlAreaStore::reset()
                         lm_group->setNextControlTime(next_control_time);
                         lm_group->setInternalState(internal_state);
                         lm_group->resetDailyOps(daily_ops);
+                        lm_group->setLastStopTimeSent(lastStopTimeSent);
 
                         lm_group->setDirty(false);
                         lm_group->_insertDynamicDataFlag = FALSE;

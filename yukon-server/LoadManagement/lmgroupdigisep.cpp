@@ -109,6 +109,7 @@ bool LMGroupDigiSEP::sendSEPCycleControl(long controlMinutes, long cyclePercent,
     }
 
     setLastControlSent(CtiTime());
+    setLastStopTimeSent( CtiTime::now() + 60*controlMinutes );
 
     if( getGroupControlState() != CtiLMGroupBase::ActiveState )
     {
@@ -177,6 +178,7 @@ bool LMGroupDigiSEP::sendSEPTempOffsetControl(long controlMinutes, long heatOffs
     }
 
     setLastControlSent(CtiTime());
+    setLastStopTimeSent( CtiTime::now() + 60*controlMinutes );
 
     if( getGroupControlState() != CtiLMGroupBase::ActiveState )
     {
@@ -205,6 +207,10 @@ bool LMGroupDigiSEP::sendStopControl(bool stopImmediately)
     }
 
     setLastControlSent(CtiTime::now());
+    if(stopImmediately)
+    {
+        setLastStopTimeSent(CtiTime::now());
+    }
     return true;
 }
 
@@ -223,6 +229,7 @@ bool LMGroupDigiSEP::sendShedControl(long controlMinutes)
     }
 
     setLastControlSent(CtiTime::now());
+    setLastStopTimeSent( CtiTime::now() + 60*controlMinutes );
     return true;
 }
 
@@ -230,13 +237,9 @@ bool LMGroupDigiSEP::sendShedControl(long controlMinutes)
   SEP Devices know to stop themselves at Control Complete time.
   If we are at or after that time, there is no need to send a restore command.
 */
-bool LMGroupDigiSEP::isRestoreNeededAt(CtiTime currentTime)
+bool LMGroupDigiSEP::doesStopRequireCommandAt(const CtiTime &currentTime) const
 {
-    if( currentTime != gInvalidCtiTime && currentTime >= getControlCompleteTime())
-    {
-        return false;
-    }
-    return true;
+    return getLastStopTimeSent() < currentTime || getLastStopTimeSent() == gInvalidCtiTime;
 }
 
 CtiRequestMsg* LMGroupDigiSEP::createTimeRefreshRequestMsg(LONG refreshRate, LONG shedTime, int priority) const

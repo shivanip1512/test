@@ -52,6 +52,7 @@ public:
     virtual const CtiTime& getNextControlTime() const; //FIXME
     virtual const CtiTime& getDynamicTimestamp() const;
     virtual LONG getDailyOps();
+    virtual const CtiTime& getLastStopTimeSent() const; //Currently only maintained by LMGroupDigiSep
 
     virtual bool getIsRampingIn() const;
     virtual bool getIsRampingOut() const;
@@ -83,13 +84,14 @@ public:
     virtual CtiLMGroupBase& setCurrentHoursSeasonal(LONG seasonal);
     virtual CtiLMGroupBase& setCurrentHoursAnnually(LONG annually);
     virtual CtiLMGroupBase& setLastControlSent(const CtiTime& controlsent);
-    virtual CtiLMGroupBase& setControlStartTime(const CtiTime& start);
     virtual CtiLMGroupBase& setControlCompleteTime(const CtiTime& complete);
     virtual CtiLMGroupBase& setNextControlTime(const CtiTime& controltime);
+    virtual CtiLMGroupBase& setLastStopTimeSent(const CtiTime& lastStopTimeSent);  //Currently only maintained by LMGroupDigiSep
     virtual CtiLMGroupBase& setDynamicTimestamp(const CtiTime& timestamp);
     virtual CtiLMGroupBase& incrementDailyOps();
     virtual CtiLMGroupBase& resetDailyOps(int ops = 0);
     virtual void setInternalState(unsigned state);
+    virtual CtiLMGroupBase& setControlStartTime(const CtiTime& start);
 
     virtual CtiLMGroupBase& setIsRampingIn(bool in);
     virtual CtiLMGroupBase& setIsRampingOut(bool out);
@@ -120,7 +122,7 @@ public:
                                                     LONG precoolTime, LONG precoolHoldTime, LONG maxTempChange,
                                                     LONG totalTime, LONG rampOutTime, LONG minutesFromBegin,
                                                     int priority) const;// CtiLMGroupExpresscom
-
+    virtual bool doesStopRequireCommandAt(const CtiTime &currentTime) const; //Currently only used by lmGroupDigiSep
     //pure virtuals
     virtual CtiLMGroupBase* replicate() const = 0;
     virtual CtiRequestMsg* createTimeRefreshRequestMsg(LONG refreshRate, LONG shedTime, int priority) const = 0;
@@ -187,6 +189,8 @@ private:
 
     CtiTime _next_control_time;
     LONG _daily_ops;
+
+    CtiTime _lastStopTimeSent;
 
     CtiTime _dynamic_timestamp;
 
