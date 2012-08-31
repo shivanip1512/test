@@ -10,8 +10,8 @@ import com.cannontech.core.roleproperties.YukonRoleProperty;
 import com.cannontech.database.data.lite.LiteYukonGroup;
 
 class RoleGroupPropertyTuple implements PropertyTuple{
-    public Integer roleGroupId;
-    public YukonRoleProperty yukonRoleProperty;
+    private Integer roleGroupId;
+    private YukonRoleProperty yukonRoleProperty;
 
     public RoleGroupPropertyTuple(LiteYukonGroup liteYukonGroup, YukonRoleProperty yukonRoleProperty) {
         if (liteYukonGroup != null) {

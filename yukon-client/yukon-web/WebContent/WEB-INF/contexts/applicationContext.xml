@@ -1543,7 +1543,6 @@
     <bean id="filterModelValidator" class="com.cannontech.web.stars.dr.operator.inventory.FilterModelValidator"/>
 
 	<bean id="energyCompanyInfoService" class="com.cannontech.web.admin.energyCompany.service.impl.EnergyCompanyInfoServiceImpl"/>
-	<bean id="yukonUserValidator" class="com.cannontech.web.admin.userGroupEditor.model.YukonUserValidator"/>
     <bean id="userGroupValidator" class="com.cannontech.web.admin.userGroupEditor.model.UserGroupValidator"/>
 
     <!-- OPERATOR -->

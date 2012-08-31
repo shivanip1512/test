@@ -213,7 +213,7 @@
 			<attribute name="org.eclipse.jst.component.dependency" value="../"/>
 		</attributes>
 	</classpathentry>
-	<classpathentry exported="true" kind="lib" path="/third-party/activemq-all-5.4.2.jar" sourcepath="/third-party/linked-sources/apache-activemq-5.4.2-bin.zip">
+	<classpathentry exported="true" kind="lib" path="/third-party/activemq-all-5.4.2.jar" sourcepath="/third-party/linked-sources/activemq-parent-5.4.2-source-release.zip">
 		<attributes>
 			<attribute name="org.eclipse.jst.component.dependency" value="../"/>
 		</attributes>
@@ -385,16 +385,16 @@
 			<attribute name="org.eclipse.jst.component.dependency" value="../"/>
 		</attributes>
 	</classpathentry>
-    <classpathentry exported="true" kind="lib" path="/third-party/xml-apis.jar">
-        <attributes>
-            <attribute name="org.eclipse.jst.component.dependency" value="../"/>
-        </attributes>
-    </classpathentry>
-    <classpathentry exported="true" kind="lib" path="/third-party/exificient.jar">
-        <attributes>
-            <attribute name="org.eclipse.jst.component.dependency" value="../"/>
-        </attributes>
-    </classpathentry>
+	<classpathentry exported="true" kind="lib" path="/third-party/xml-apis.jar">
+		<attributes>
+			<attribute name="org.eclipse.jst.component.dependency" value="../"/>
+		</attributes>
+	</classpathentry>
+	<classpathentry exported="true" kind="lib" path="/third-party/exificient.jar">
+		<attributes>
+			<attribute name="org.eclipse.jst.component.dependency" value="../"/>
+		</attributes>
+	</classpathentry>
 	<classpathentry exported="true" kind="lib" path="/third-party/jasypt-1.9.0.jar" sourcepath="/third-party/linked-sources/jasypt-1.9.0-sources.jar">
 		<attributes>
 			<attribute name="org.eclipse.jst.component.dependency" value="../"/>
@@ -404,7 +404,7 @@
 		<attributes>
 			<attribute name="org.eclipse.jst.component.dependency" value="../"/>
 		</attributes>
-	</classpathentry>	
+	</classpathentry>
 	<classpathentry exported="true" kind="lib" path="/third-party/bcpkix-jdk15on-147.jar">
 		<attributes>
 			<attribute name="org.eclipse.jst.component.dependency" value="../"/>

@@ -9,8 +9,25 @@
 <cti:standardPage module="adminSetup" page="userEditor.${mode}">
 
 <script type="text/javascript">
+var supportsPasswordSet = ${cti:jsonString(supportsPasswordSet)};
+var originalAuthCategory = '${user.authCategory}';
+
 YEvent.observeSelectorClick('#cancelChangePassword', function(event) {
     $('changePasswordPopup').hide();
+});
+
+jQuery(function() {
+	var authCategorySelect = jQuery('#authCategory');
+	authCategorySelect.change(function() {
+		var newAuthCategory = authCategorySelect.val();
+    	if (newAuthCategory !== originalAuthCategory && supportsPasswordSet[newAuthCategory]) {
+    		jQuery('#changeAuthPassword').show();
+    		jQuery('#changeAuthConfirmPassword').show();
+    	} else {
+    		jQuery('#changeAuthPassword').hide();
+    		jQuery('#changeAuthConfirmPassword').hide();
+    	}
+	});
 });
 </script>
     
@@ -20,7 +37,7 @@ YEvent.observeSelectorClick('#cancelChangePassword', function(event) {
         <c:if test="${showChangePasswordErrors}">
             <cti:flashScopeMessages/>
         </c:if>
-        <form:form commandName="passwordChange" action="changePassword" method="post">
+        <form:form commandName="password" action="changePassword" method="post">
             <input type="hidden" value="${userId}" name="userId">
             <tags:nameValueContainer2>
                 <tags:nameValue2 nameKey=".password">
@@ -45,9 +62,8 @@ YEvent.observeSelectorClick('#cancelChangePassword', function(event) {
         <cti:dataGridCell>
 
             <form:form commandName="user" action="edit" method="post">
-                <form:hidden path="userID"/>
-                <input type="hidden" value="${userId}" name="userId">
-                
+                <form:hidden path="userId"/>
+
                 <tags:nameValueContainer2>
                     
                     <c:choose>
@@ -61,9 +77,18 @@ YEvent.observeSelectorClick('#cancelChangePassword', function(event) {
                             </tags:nameValue2>
                         </c:otherwise>
                     </c:choose>
-                        
-                    <tags:selectNameValue nameKey=".authentication" items="${authTypes}" path="authType" />
-                    
+
+                    <tags:selectNameValue nameKey=".authentication" items="${authenticationCategories}" path="authCategory"/>
+
+                    <cti:displayForPageEditModes modes="EDIT,CREATE">
+                        <tags:nameValue2 nameKey=".password" rowId="changeAuthPassword" rowClass="dn">
+                            <tags:password path="password.password"/>
+                        </tags:nameValue2>
+                        <tags:nameValue2 nameKey=".confirmPassword" rowId="changeAuthConfirmPassword" rowClass="dn">
+                            <tags:password path="password.confirmPassword"/>
+                        </tags:nameValue2>
+                    </cti:displayForPageEditModes>
+
                     <c:choose>
                         <c:when test="${editNameAndStatus}">
                             <tags:selectNameValue nameKey=".loginStatus" items="${loginStatusTypes}" path="loginStatus"/>
@@ -110,11 +135,14 @@ YEvent.observeSelectorClick('#cancelChangePassword', function(event) {
                     <cti:displayForPageEditModes modes="EDIT,CREATE">
                         <cti:button nameKey="save" name="update" type="submit"/>
                         <%-- TODO implement this later <cti:button nameKey="delete" name="delete" type="submit"/> --%>
-                        <cti:button nameKey="cancel" name="cancel" type="submit"/>
+                        <cti:url var="cancelUrl" value="view">
+                            <cti:param name="userId" value="${user.userId}"/>
+                        </cti:url>
+                        <cti:button nameKey="cancel" href="${cancelUrl}"/>
                     </cti:displayForPageEditModes>
                     <cti:displayForPageEditModes modes="VIEW">
                         <cti:button nameKey="edit" name="edit" type="submit"/>
-                        <c:if test="${showChangePassword}">
+                        <c:if test="${supportsPasswordSet[user.authCategory]}">
                             <cti:button nameKey="changePassword" id="changePasswordButton" type="button"/>
                         </c:if>
                     </cti:displayForPageEditModes>
@@ -141,8 +169,18 @@ YEvent.observeSelectorClick('#cancelChangePassword', function(event) {
                                             <ul class="role">
                                                 <c:forEach var="roleGroupPair" items="${category.value}">
                                                     <li>
-                                                        <cti:formatObject value="${roleGroupPair.first}"/>
-                                                        &nbsp;<span class="subtleGray"><spring:escapeBody htmlEscape="true">(${roleGroupPair.second})</spring:escapeBody></span>
+                                                        <cti:url var="roleUrl" value="/spring/adminSetup/roleEditor/view">
+                                                            <cti:param name="roleGroupId" value="${roleGroupPair.second.groupID}"/>
+                                                            <cti:param name="roleId" value="${roleGroupPair.first.roleId}"/>
+                                                        </cti:url>
+                                                        <cti:url var="roleGroupUrl" value="/spring/adminSetup/roleGroup/view">
+                                                            <cti:param name="roleGroupId" value="${roleGroupPair.second.groupID}"/>
+                                                        </cti:url>
+                                                        <a href="${roleUrl}"><cti:formatObject value="${roleGroupPair.first}"/></a>
+                                                        &nbsp;
+                                                        <a href="${roleGroupUrl}" class="subtleGray">
+                                                            <spring:escapeBody htmlEscape="true">(${roleGroupPair.second})</spring:escapeBody>
+                                                        </a>
                                                     </li>
                                                 </c:forEach>
                                             </ul>

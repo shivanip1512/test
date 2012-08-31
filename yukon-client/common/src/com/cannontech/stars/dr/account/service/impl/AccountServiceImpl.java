@@ -80,43 +80,41 @@ import com.cannontech.user.UserUtils;
 import com.cannontech.user.YukonUserContext;
 
 public class AccountServiceImpl implements AccountService {
-    
-    private AccountEventLogService accountEventLogService;
-    private Logger log = YukonLogManager.getLogger(AccountServiceImpl.class);
-    
-    private YukonUserDao yukonUserDao;
-    private RolePropertyDao rolePropertyDao;
-    private AuthDao authDao;
-    private AddressDao addressDao;
-    private ContactDao contactDao;
-    private ContactNotificationDao contactNotificationDao;
-    private CustomerDao customerDao;
-    private SiteInformationDao siteInformationDao;
-    private AccountSiteDao accountSiteDao;
-    private CustomerAccountDao customerAccountDao;
-    private ECMappingDao ecMappingDao;
-    private InventoryDao inventoryDao;
-    private LmHardwareBaseDao hardwareBaseDao;
-    private LMProgramEventDao lmProgramEventDao;
-    private ApplianceDao applianceDao;
-    private StarsWorkOrderBaseDao workOrderDao;
-    private CallReportDao callReportDao;
-    private EventAccountDao eventAccountDao;
-    private StarsCustAccountInformationDao starsCustAccountInformationDao;
-    private DBPersistentDao dbPersistantDao;
-    private StarsDatabaseCache starsDatabaseCache;
-    private SystemDateFormattingService systemDateFormattingService;
-    private AuthenticationService authenticationService;
-    private LMHardwareControlGroupDao lmHardwareControlGroupDao;
-    private ContactNotificationService contactNotificationService;
-    private ContactService contactService;
-    private PhoneNumberFormattingService phoneNumberFormattingService;
-    private YukonUserContextService yukonUserContextService;
-    private AccountThermostatScheduleDao accountThermostatScheduleDao;
+    private final static Logger log = YukonLogManager.getLogger(AccountServiceImpl.class);
+
+    @Autowired private AccountEventLogService accountEventLogService;
+    @Autowired private YukonUserDao yukonUserDao;
+    @Autowired private RolePropertyDao rolePropertyDao;
+    @Autowired private AuthDao authDao;
+    @Autowired private AddressDao addressDao;
+    @Autowired private ContactDao contactDao;
+    @Autowired private ContactNotificationDao contactNotificationDao;
+    @Autowired private CustomerDao customerDao;
+    @Autowired private SiteInformationDao siteInformationDao;
+    @Autowired private AccountSiteDao accountSiteDao;
+    @Autowired private CustomerAccountDao customerAccountDao;
+    @Autowired private ECMappingDao ecMappingDao;
+    @Autowired private InventoryDao inventoryDao;
+    @Autowired private LmHardwareBaseDao hardwareBaseDao;
+    @Autowired private LMProgramEventDao lmProgramEventDao;
+    @Autowired private ApplianceDao applianceDao;
+    @Autowired private StarsWorkOrderBaseDao workOrderDao;
+    @Autowired private CallReportDao callReportDao;
+    @Autowired private EventAccountDao eventAccountDao;
+    @Autowired private StarsCustAccountInformationDao starsCustAccountInformationDao;
+    @Autowired private DBPersistentDao dbPersistentDao;
+    @Autowired private StarsDatabaseCache starsDatabaseCache;
+    @Autowired private SystemDateFormattingService systemDateFormattingService;
+    @Autowired private AuthenticationService authenticationService;
+    @Autowired private LMHardwareControlGroupDao lmHardwareControlGroupDao;
+    @Autowired private ContactNotificationService contactNotificationService;
+    @Autowired private ContactService contactService;
+    @Autowired private PhoneNumberFormattingService phoneNumberFormattingService;
+    @Autowired private YukonUserContextService yukonUserContextService;
+    @Autowired private AccountThermostatScheduleDao accountThermostatScheduleDao;
     @Autowired private UserGroupDao userGroupDao;
-    private YukonEnergyCompanyService yukonEnergyCompanyService;
-    
-    // ADD ACCOUNT
+    @Autowired private YukonEnergyCompanyService yukonEnergyCompanyService;
+
     @Override
     @Transactional
     public int addAccount(UpdatableAccount updatableAccount, LiteYukonUser operator) throws AccountNumberUnavailableException, UserNameUnavailableException {
@@ -161,7 +159,7 @@ public class AccountServiceImpl implements AccountService {
          */
         LiteYukonUser user = null;
         String emptyPassword = "";
-        AuthType defaultAuthType = rolePropertyDao.getPropertyEnumValue(YukonRoleProperty.DEFAULT_AUTH_TYPE, AuthType.class, user);
+        AuthType defaultAuthType = authenticationService.getDefaultAuthType();
         if(!StringUtils.isBlank(accountDto.getUserName())) {
             user = new LiteYukonUser(); 
             user.setUsername(accountDto.getUserName());
@@ -184,7 +182,7 @@ public class AccountServiceImpl implements AccountService {
             yukonUserDao.save(user);
             authenticationService.setPassword(user, password);
 
-            dbPersistantDao.processDBChange(new DBChangeMsg(user.getLiteID(), DBChangeMsg.CHANGE_YUKON_USER_DB,
+            dbPersistentDao.processDBChange(new DBChangeMsg(user.getLiteID(), DBChangeMsg.CHANGE_YUKON_USER_DB,
                 DBChangeMsg.CAT_YUKON_USER, DBChangeMsg.CAT_YUKON_USER, DbChangeType.ADD));
         }
             
@@ -269,7 +267,7 @@ public class AccountServiceImpl implements AccountService {
         liteCustomer.setAltTrackingNumber(accountDto.getAltTrackingNumber());
         liteCustomer.setTemperatureUnit(rolePropertyDao.getPropertyStringValue(YukonRoleProperty.DEFAULT_TEMPERATURE_UNIT, yukonEnergyCompany.getEnergyCompanyUser()));
         customerDao.addCustomer(liteCustomer);
-        dbPersistantDao.processDBChange(new DBChangeMsg(liteCustomer.getLiteID(),
+        dbPersistentDao.processDBChange(new DBChangeMsg(liteCustomer.getLiteID(),
                                DBChangeMsg.CHANGE_CUSTOMER_DB,
                                DBChangeMsg.CAT_CUSTOMER,
                                DBChangeMsg.CAT_CUSTOMER,
@@ -300,7 +298,7 @@ public class AccountServiceImpl implements AccountService {
             }
             liteCICustomer.setEnergyCompanyID(yukonEnergyCompany.getEnergyCompanyId());
             customerDao.addCICustomer(liteCICustomer);
-            dbPersistantDao.processDBChange(new DBChangeMsg(liteCustomer.getLiteID(),
+            dbPersistentDao.processDBChange(new DBChangeMsg(liteCustomer.getLiteID(),
                                    DBChangeMsg.CHANGE_CUSTOMER_DB,
                                    DBChangeMsg.CAT_CI_CUSTOMER,
                                    DBChangeMsg.CAT_CI_CUSTOMER,
@@ -359,7 +357,7 @@ public class AccountServiceImpl implements AccountService {
             customerAccount.setBillingAddressId(liteBillingAddress.getAddressID());
         }
         customerAccountDao.add(customerAccount);
-        dbPersistantDao.processDBChange(new DBChangeMsg(customerAccount.getAccountId(),
+        dbPersistentDao.processDBChange(new DBChangeMsg(customerAccount.getAccountId(),
                                                         DBChangeMsg.CHANGE_CUSTOMER_ACCOUNT_DB,
                                                         DBChangeMsg.CAT_CUSTOMER_ACCOUNT,
                                                         DBChangeMsg.CAT_CUSTOMER_ACCOUNT,
@@ -486,7 +484,7 @@ public class AccountServiceImpl implements AccountService {
          * - handles contact deletion
          */
         customerDao.deleteCustomer(account.getCustomerId());
-        dbPersistantDao.processDBChange(new DBChangeMsg(liteCustomer.getLiteID(),
+        dbPersistentDao.processDBChange(new DBChangeMsg(liteCustomer.getLiteID(),
                                            DBChangeMsg.CHANGE_CUSTOMER_DB,
                                            DBChangeMsg.CAT_CUSTOMER,
                                            DBChangeMsg.CAT_CUSTOMER,
@@ -506,7 +504,7 @@ public class AccountServiceImpl implements AccountService {
          * Delete customer info
          */
         starsEnergyCompany.deleteCustAccountInformation(customerInfo);
-        dbPersistantDao.processDBChange(new DBChangeMsg(customerInfo.getLiteID(),
+        dbPersistentDao.processDBChange(new DBChangeMsg(customerInfo.getLiteID(),
                                DBChangeMsg.CHANGE_CUSTOMER_ACCOUNT_DB,
                                DBChangeMsg.CAT_CUSTOMER_ACCOUNT,
                                DBChangeMsg.CAT_CUSTOMER_ACCOUNT,
@@ -611,7 +609,7 @@ public class AccountServiceImpl implements AccountService {
          *  to a space(done by dao).
          */
         int newLoginId = UserUtils.USER_DEFAULT_ID;
-        AuthType defaultAuthType = rolePropertyDao.getPropertyEnumValue(YukonRoleProperty.DEFAULT_AUTH_TYPE, AuthType.class, null);
+        AuthType defaultAuthType = authenticationService.getDefaultAuthType();
         String emptyPassword = ""; // Dao will end up setting this to a space for oracle reasons.
         if(StringUtils.isNotBlank(username)) {
             LiteYukonUser login = yukonUserDao.getLiteYukonUser(primaryContact.getLoginID());
@@ -657,7 +655,7 @@ public class AccountServiceImpl implements AccountService {
                 authenticationService.setPassword(user, password);
 
                 newLoginId = newUser.getUserID();
-                dbPersistantDao.processDBChange(new DBChangeMsg(newUser.getLiteID(),
+                dbPersistentDao.processDBChange(new DBChangeMsg(newUser.getLiteID(),
                     DBChangeMsg.CHANGE_YUKON_USER_DB,
                     DBChangeMsg.CAT_YUKON_USER,
                     DBChangeMsg.CAT_YUKON_USER,
@@ -691,7 +689,7 @@ public class AccountServiceImpl implements AccountService {
         account.setAccountNotes(accountDto.getAccountNotes());
         
         customerAccountDao.update(account);
-        dbPersistantDao.processDBChange(new DBChangeMsg(account.getAccountId(),
+        dbPersistentDao.processDBChange(new DBChangeMsg(account.getAccountId(),
                                                         DBChangeMsg.CHANGE_CUSTOMER_ACCOUNT_DB,
                                                         DBChangeMsg.CAT_CUSTOMER_ACCOUNT,
                                                         DBChangeMsg.CAT_CUSTOMER_ACCOUNT,
@@ -708,7 +706,7 @@ public class AccountServiceImpl implements AccountService {
             primaryContact.setLoginID(newLoginId);
         }
         contactDao.saveContact(primaryContact);
-        dbPersistantDao.processDBChange(new DBChangeMsg(primaryContact.getLiteID(),
+        dbPersistentDao.processDBChange(new DBChangeMsg(primaryContact.getLiteID(),
             DBChangeMsg.CHANGE_CONTACT_DB,
             DBChangeMsg.CAT_CUSTOMERCONTACT,
             DBChangeMsg.CAT_CUSTOMERCONTACT,
@@ -869,7 +867,7 @@ public class AccountServiceImpl implements AccountService {
             }
         }
         
-        dbPersistantDao.processDBChange(new DBChangeMsg(liteCustomer.getLiteID(),
+        dbPersistentDao.processDBChange(new DBChangeMsg(liteCustomer.getLiteID(),
                                                         DBChangeMsg.CHANGE_CUSTOMER_DB,
                                                         DBChangeMsg.CAT_CUSTOMER,
                                                         DBChangeMsg.CAT_CUSTOMER,
@@ -1111,161 +1109,4 @@ public class AccountServiceImpl implements AccountService {
     private String stripNone (String value) {
     	return CtiUtilities.STRING_NONE.equals(value) ? "" : value;
     }
-    
-    // INJECTED DEPENDANCIES
-    @Autowired
-    public void setAccountEventLogService(AccountEventLogService accountEventLogService) {
-        this.accountEventLogService = accountEventLogService;
-    }
-    
-    @Autowired
-    public void setYukonUserDao(YukonUserDao yukonUserDao) {
-        this.yukonUserDao = yukonUserDao;
-    }
-    
-    @Autowired
-    public void setAuthDao(AuthDao authDao) {
-        this.authDao = authDao;
-    }
-    
-    @Autowired
-    public void setAddressDao(AddressDao addressDao) {
-        this.addressDao = addressDao;
-    }
-    
-    @Autowired
-    public void setContactDao(ContactDao contactDao) {
-        this.contactDao = contactDao;
-    }
-    
-    @Autowired
-    public void setContactNotificationDao(ContactNotificationDao contactNotificationDao) {
-        this.contactNotificationDao = contactNotificationDao;
-    }
-    
-    @Autowired
-    public void setCustomerDao(CustomerDao customerDao) {
-        this.customerDao = customerDao;
-    }
-    
-    @Autowired
-    public void setSiteInformationDao(SiteInformationDao siteInformationDao) {
-        this.siteInformationDao = siteInformationDao;
-    }
-    
-    @Autowired
-    public void setAccountSiteDao(AccountSiteDao accountSiteDao) {
-        this.accountSiteDao = accountSiteDao;
-    }
-    
-    @Autowired
-    public void setCustomerAccountDao(CustomerAccountDao customerAccountDao) {
-        this.customerAccountDao = customerAccountDao;
-    }
-    
-    @Autowired
-    public void setECMappingDao(ECMappingDao ecMappingDao) {
-        this.ecMappingDao = ecMappingDao;
-    }
-    
-    @Autowired
-    public void setInventoryDao(InventoryDao inventoryDao) {
-        this.inventoryDao = inventoryDao;
-    }
-    
-    @Autowired
-    public void setHardwareBaseDao(LmHardwareBaseDao hardwareBaseDao) {
-        this.hardwareBaseDao = hardwareBaseDao;
-    }
-
-    @Autowired
-    public void setLMProgramEventDao(LMProgramEventDao lmProgramEventDao) {
-        this.lmProgramEventDao = lmProgramEventDao;
-    }
-
-    @Autowired
-    public void setApplianceDao(ApplianceDao applianceDao) {
-        this.applianceDao = applianceDao;
-    }
-
-    @Autowired
-    public void setWorkOrderDao(StarsWorkOrderBaseDao workOrderDao) {
-        this.workOrderDao = workOrderDao;
-    }
-
-    @Autowired
-    public void setCallReportDao(CallReportDao callReportDao) {
-        this.callReportDao = callReportDao;
-    }
-
-    @Autowired
-    public void setEventAccountDao(EventAccountDao eventAccountDao) {
-        this.eventAccountDao = eventAccountDao;
-    }
-
-    @Autowired
-    public void setStarsCustAccountInformationDao(StarsCustAccountInformationDao starsCustAccountInformationDao) {
-        this.starsCustAccountInformationDao = starsCustAccountInformationDao;
-    }
-    
-    @Autowired
-    public void setDBPersistentDao(DBPersistentDao dbPersistentDao) {
-        this.dbPersistantDao = dbPersistentDao;
-    }
-    
-    @Autowired
-    public void setStarsDatabaseCache(StarsDatabaseCache starsDatabaseCache) {
-        this.starsDatabaseCache = starsDatabaseCache;
-    }
-    
-    @Autowired
-    public void setSystemDateFormattingService(SystemDateFormattingService systemDateFormattingService) {
-		this.systemDateFormattingService = systemDateFormattingService;
-	}
-    
-    @Autowired
-    public void setAuthenticationService(AuthenticationService authenticationService) {
-        this.authenticationService = authenticationService;
-    }
-    
-    @Autowired
-    public void setRolePropertyDao(RolePropertyDao rolePropertyDao) {
-        this.rolePropertyDao = rolePropertyDao;
-    }
-    
-    @Autowired
-    public void setLmHardwareControlGroupDao(LMHardwareControlGroupDao lmHardwareControlGroupDao) {
-        this.lmHardwareControlGroupDao = lmHardwareControlGroupDao;
-    }
-    
-    @Autowired
-    public void setContactNotificationService(ContactNotificationService contactNotificationService) {
-		this.contactNotificationService = contactNotificationService;
-	}
-    
-    @Autowired
-    public void setContactService(ContactService contactService) {
-		this.contactService = contactService;
-	}
-    
-    @Autowired
-    public void setPhoneNumberFormattingService(PhoneNumberFormattingService phoneNumberFormattingService) {
-		this.phoneNumberFormattingService = phoneNumberFormattingService;
-	}
-    
-    @Autowired
-    public void setYukonUserContextService(YukonUserContextService yukonUserContextService) {
-        this.yukonUserContextService = yukonUserContextService;
-    }
-    
-    @Autowired
-    public void setAccountThermostatScheduleDao(AccountThermostatScheduleDao accountThermostatScheduleDao) {
-		this.accountThermostatScheduleDao = accountThermostatScheduleDao;
-	}
-    
-    @Autowired
-    public void setYukonEnergyCompanyService(YukonEnergyCompanyService yukonEnergyCompanyService) {
-        this.yukonEnergyCompanyService = yukonEnergyCompanyService;
-    }
-    
 }

@@ -25,7 +25,6 @@ import com.cannontech.web.stars.dr.operator.model.LoginBackingBean;
 import com.cannontech.web.stars.dr.operator.service.ResidentialLoginService;
 
 public class ResidentialLoginServiceImpl implements ResidentialLoginService{
-    
     @Autowired private AuthenticationService authenticationService;
     @Autowired private ContactDao contactDao;
     @Autowired private ECMappingDao ecMappingDao;
@@ -39,6 +38,7 @@ public class ResidentialLoginServiceImpl implements ResidentialLoginService{
 
         Integer newUserId = transactionTemplate.execute(new TransactionCallback<Integer>() {
             
+            @Override
             public Integer doInTransaction(TransactionStatus status) {
                 checkSuppliedResidentialUserGroup(energyCompanyId, loginBackingBean);
                 LiteUserGroup residentialUserGroup = userGroupDao.findLiteUserGroupByUserGroupName(loginBackingBean.getUserGroupName());
@@ -57,8 +57,7 @@ public class ResidentialLoginServiceImpl implements ResidentialLoginService{
                 }
 
                 // Get the default authType
-                AuthType authType = rolePropertyDao.getPropertyEnumValue(YukonRoleProperty.DEFAULT_AUTH_TYPE,
-                                                                         AuthType.class, user);
+                AuthType authType = authenticationService.getDefaultAuthType();
                 String password = loginBackingBean.getPassword1();
                 // This is problematic.  It should be fixed with YUK-10019.
                 if (password == null) {
@@ -89,6 +88,7 @@ public class ResidentialLoginServiceImpl implements ResidentialLoginService{
                                         final LiteYukonUser residentialUser, final int energyCompanyId) {
 
         transactionTemplate.execute(new TransactionCallback<Object>() {
+            @Override
             public Object doInTransaction(TransactionStatus status) {
 
                 // Update the user group for the user
@@ -118,12 +118,13 @@ public class ResidentialLoginServiceImpl implements ResidentialLoginService{
                                         final YukonUserContext userContext, 
                                         final LiteYukonUser residentialUser) {
         transactionTemplate.execute(new TransactionCallback<Object>() {
+            @Override
             public Object doInTransaction(TransactionStatus status) {
                 if (!StringUtils.isBlank(loginBackingBean.getPassword1()) && !StringUtils.isBlank(loginBackingBean.getPassword2())) {
                     
                     // Security checks for password change.
                     rolePropertyDao.verifyProperty(YukonRoleProperty.OPERATOR_CONSUMER_INFO_ADMIN_CHANGE_LOGIN_PASSWORD, userContext.getYukonUser());
-                    AuthType currentAuthType = authenticationService.getDefaultAuthType(residentialUser);
+                    AuthType currentAuthType = authenticationService.getDefaultAuthType();
                     boolean passwordSetSupported = authenticationService.supportsPasswordSet(currentAuthType);
                     if (!passwordSetSupported) {
                         throw new IllegalArgumentException("You cannot set the password on this style of account.");

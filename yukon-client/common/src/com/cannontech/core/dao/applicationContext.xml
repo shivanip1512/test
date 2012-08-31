@@ -130,6 +130,7 @@
      <property name="databaseCache" ref="databaseCache"/>
      <property name="userPaoPermissionDao" ref="userPaoPermissionDao" />
   </bean>
+  <bean class="com.cannontech.core.service.impl.YukonUserServiceImpl"/>
 
   <bean id="userGroupDao" class="com.cannontech.core.users.dao.impl.UserGroupDaoImpl" />
   <bean id="userGroupService" class="com.cannontech.core.users.service.impl.UserGroupServiceImpl" />

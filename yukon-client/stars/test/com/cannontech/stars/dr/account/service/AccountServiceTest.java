@@ -1,7 +1,6 @@
 package com.cannontech.stars.dr.account.service;
 
-import static org.easymock.EasyMock.expect;
-import static org.easymock.EasyMock.expectLastCall;
+import static org.easymock.EasyMock.*;
 
 import java.lang.reflect.Method;
 import java.util.List;
@@ -76,8 +75,8 @@ public class AccountServiceTest extends EasyMockSupport {
     
     // Class under test
     private AccountServiceImpl accountService;
-    
-    // collobarators to be mocked...and ridiculed
+
+    // collaborators to be mocked...and ridiculed
     private AuthenticationService authenticationServiceMock;
     private YukonUserDao yukonUserDaoMock;
     private UserGroupDao userGroupDaoMock;
@@ -99,13 +98,12 @@ public class AccountServiceTest extends EasyMockSupport {
     private AccountThermostatScheduleDao accountThermostatScheduleDaoMock;
     private EventAccountDao eventAccountDaoMock;
     private StarsCustAccountInformationDao starsCustAccountInformationDaoMock;
-    private DBPersistentDao dbPersistantDaoMock;
+    private DBPersistentDao dbPersistentDaoMock;
     private AccountEventLogService accountEventLogServiceMock;
-    
     private YukonEnergyCompanyService yukonEnergyCompanyServiceMock;
     private ContactService contactServiceMock;
     private StarsDatabaseCache starsDatabaseCacheMock;
-    
+
     @Before
     public void setUp() throws SecurityException, NoSuchMethodException {
         authenticationServiceMock = createNiceMock(AuthenticationService.class);
@@ -130,8 +128,9 @@ public class AccountServiceTest extends EasyMockSupport {
         accountThermostatScheduleDaoMock = createMock(AccountThermostatScheduleDao.class);
         eventAccountDaoMock = createMock(EventAccountDao.class);
         starsCustAccountInformationDaoMock = createMock(StarsCustAccountInformationDao.class);
-        dbPersistantDaoMock = createNiceMock(DBPersistentDao.class);
+        dbPersistentDaoMock = createNiceMock(DBPersistentDao.class);
         accountEventLogServiceMock = createMock(AccountEventLogService.class);
+        authenticationServiceMock = createMock(AuthenticationService.class);
 
         
         
@@ -167,6 +166,7 @@ public class AccountServiceTest extends EasyMockSupport {
             @Override
             public LiteStarsEnergyCompany getEnergyCompanyByUser(LiteYukonUser user) {
                 LiteStarsEnergyCompany ec = new LiteStarsEnergyCompany() {
+                    @Override
                     public LiteAccountInfo searchAccountByAccountNo(String accountNumber) {
                         return null;
                     }
@@ -176,32 +176,31 @@ public class AccountServiceTest extends EasyMockSupport {
         };
 
         accountService = new AccountServiceImpl();
-        accountService.setAuthenticationService(authenticationServiceMock);
-        accountService.setYukonUserDao(yukonUserDaoMock);
-        accountService.setRolePropertyDao(rolePropertyDaoMock);
-        accountService.setAuthDao(authDaoMock);
-        accountService.setAddressDao(addressDaoMock);
-        accountService.setContactService(contactServiceMock);
-        accountService.setContactNotificationService(contactNotificationServiceMock);
-        accountService.setCustomerDao(customerDaoMock);
-        accountService.setSiteInformationDao(siteInformationDaoMock);
-        accountService.setAccountSiteDao(accountSiteDaoMock);
-        accountService.setCustomerAccountDao(customerAccountDaoMock);
-        accountService.setECMappingDao(ecMappingDaoMock);
-        accountService.setInventoryDao(inventoryDaoMock);
-        accountService.setHardwareBaseDao(hardwareBaseDaoMock);
-        accountService.setLMProgramEventDao(lmProgramEventDaoMock);
-        accountService.setApplianceDao(applianceDaoMock);
-        accountService.setWorkOrderDao(workOrderDaoMock);
-        accountService.setCallReportDao(callReportDaoMock);
-        accountService.setAccountThermostatScheduleDao(accountThermostatScheduleDaoMock);
-        accountService.setEventAccountDao(eventAccountDaoMock);
-        accountService.setStarsCustAccountInformationDao(starsCustAccountInformationDaoMock);
-        accountService.setDBPersistentDao(dbPersistantDaoMock);
-        accountService.setYukonEnergyCompanyService(yukonEnergyCompanyServiceMock);
-        accountService.setAccountEventLogService(accountEventLogServiceMock);
-        accountService.setStarsDatabaseCache(starsDatabaseCacheMock);
-        
+        ReflectionTestUtils.setField(accountService, "authenticationService", authenticationServiceMock);
+        ReflectionTestUtils.setField(accountService, "yukonUserDao", yukonUserDaoMock);
+        ReflectionTestUtils.setField(accountService, "rolePropertyDao", rolePropertyDaoMock);
+        ReflectionTestUtils.setField(accountService, "authDao", authDaoMock);
+        ReflectionTestUtils.setField(accountService, "addressDao", addressDaoMock);
+        ReflectionTestUtils.setField(accountService, "contactService", contactServiceMock);
+        ReflectionTestUtils.setField(accountService, "contactNotificationService", contactNotificationServiceMock);
+        ReflectionTestUtils.setField(accountService, "customerDao", customerDaoMock);
+        ReflectionTestUtils.setField(accountService, "siteInformationDao", siteInformationDaoMock);
+        ReflectionTestUtils.setField(accountService, "accountSiteDao", accountSiteDaoMock);
+        ReflectionTestUtils.setField(accountService, "customerAccountDao", customerAccountDaoMock);
+        ReflectionTestUtils.setField(accountService, "ecMappingDao", ecMappingDaoMock);
+        ReflectionTestUtils.setField(accountService, "inventoryDao", inventoryDaoMock);
+        ReflectionTestUtils.setField(accountService, "hardwareBaseDao", hardwareBaseDaoMock);
+        ReflectionTestUtils.setField(accountService, "lmProgramEventDao", lmProgramEventDaoMock);
+        ReflectionTestUtils.setField(accountService, "applianceDao", applianceDaoMock);
+        ReflectionTestUtils.setField(accountService, "workOrderDao", workOrderDaoMock);
+        ReflectionTestUtils.setField(accountService, "callReportDao", callReportDaoMock);
+        ReflectionTestUtils.setField(accountService, "accountThermostatScheduleDao", accountThermostatScheduleDaoMock);
+        ReflectionTestUtils.setField(accountService, "eventAccountDao", eventAccountDaoMock);
+        ReflectionTestUtils.setField(accountService, "starsCustAccountInformationDao", starsCustAccountInformationDaoMock);
+        ReflectionTestUtils.setField(accountService, "dbPersistentDao", dbPersistentDaoMock);
+        ReflectionTestUtils.setField(accountService, "yukonEnergyCompanyService", yukonEnergyCompanyServiceMock);
+        ReflectionTestUtils.setField(accountService, "accountEventLogService", accountEventLogServiceMock);
+        ReflectionTestUtils.setField(accountService, "starsDatabaseCache", starsDatabaseCacheMock);
         ReflectionTestUtils.setField(accountService, "userGroupDao", userGroupDaoMock);
 
     }
@@ -278,13 +277,12 @@ public class AccountServiceTest extends EasyMockSupport {
          */
         expect(customerAccountDaoMock.getByAccountNumber(updatableAccount.getAccountDto().getAccountNumber(), 1)).andReturn(null);
         expect(yukonUserDaoMock.findUserByUsername(updatableAccount.getAccountDto().getUserName())).andReturn(null);
-        expect(rolePropertyDaoMock.getPropertyEnumValue(YukonRoleProperty.DEFAULT_AUTH_TYPE, AuthType.class, null)).andReturn(AuthType.NONE);
         expect(userGroupDaoMock.getLiteUserGroupByUserGroupName(updatableAccount.getAccountDto().getUserGroup())).andReturn(new LiteUserGroup());
 
         yukonUserDaoMock.save(newuser);
         authenticationServiceMock.setPassword(newuser, updatableAccount.getAccountDto().getPassword());
         
-        dbPersistantDaoMock.processDBChange(new DBChangeMsg(user.getLiteID(),
+        dbPersistentDaoMock.processDBChange(new DBChangeMsg(user.getLiteID(),
             DBChangeMsg.CHANGE_YUKON_USER_DB,
             DBChangeMsg.CAT_YUKON_USER,
             DBChangeMsg.CAT_YUKON_USER,
@@ -293,7 +291,8 @@ public class AccountServiceTest extends EasyMockSupport {
         expect(addressDaoMock.add(new LiteAddress())).andReturn(true);
         expect(contactServiceMock.createContact(updatableAccount.getAccountDto().getFirstName(), 
                                                 updatableAccount.getAccountDto().getLastName(), user));
-        dbPersistantDaoMock.processDBChange(new DBChangeMsg(1,
+        expect(authenticationServiceMock.getDefaultAuthType()).andReturn(AuthType.NONE);
+        dbPersistentDaoMock.processDBChange(new DBChangeMsg(1,
                                DBChangeMsg.CHANGE_CONTACT_DB,
                                DBChangeMsg.CAT_CUSTOMERCONTACT,
                                DBChangeMsg.CAT_CUSTOMERCONTACT,
@@ -309,7 +308,7 @@ public class AccountServiceTest extends EasyMockSupport {
         expect(authDaoMock.getRolePropertyValue(-9999, -1110)).andReturn(null);
         expect(rolePropertyDaoMock.getPropertyStringValue(YukonRoleProperty.DEFAULT_TEMPERATURE_UNIT, YukonEnergyCompanyMockFactory.getYukonEC1().getEnergyCompanyUser())).andReturn(null);
         customerDaoMock.addCustomer(liteCustomer);
-        dbPersistantDaoMock.processDBChange(new DBChangeMsg(1,
+        dbPersistentDaoMock.processDBChange(new DBChangeMsg(1,
                                DBChangeMsg.CHANGE_CUSTOMER_DB,
                                DBChangeMsg.CAT_CUSTOMER,
                                DBChangeMsg.CAT_CUSTOMER,
@@ -322,7 +321,7 @@ public class AccountServiceTest extends EasyMockSupport {
         customerAccount.setAccountNotes(updatableAccount.getAccountDto().getAccountNotes());
         customerAccount.setCustomerId(liteCustomer.getCustomerID());
         customerAccountDaoMock.add(customerAccount);
-        dbPersistantDaoMock.processDBChange(new DBChangeMsg(1,
+        dbPersistentDaoMock.processDBChange(new DBChangeMsg(1,
                                                             DBChangeMsg.CHANGE_CUSTOMER_ACCOUNT_DB,
                                                             DBChangeMsg.CAT_CUSTOMER_ACCOUNT,
                                                             DBChangeMsg.CAT_CUSTOMER_ACCOUNT,

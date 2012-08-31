@@ -36,11 +36,10 @@ import com.cannontech.common.gui.util.TitleBorder;
 import com.cannontech.common.i18n.DisplayableEnumCellRenderer;
 import com.cannontech.common.login.ClientSession;
 import com.cannontech.core.authentication.model.AuthType;
+import com.cannontech.core.authentication.model.AuthenticationCategory;
 import com.cannontech.core.authentication.service.AuthenticationService;
 import com.cannontech.core.dao.DaoFactory;
 import com.cannontech.core.dao.impl.LoginStatusEnum;
-import com.cannontech.core.roleproperties.YukonRoleProperty;
-import com.cannontech.core.roleproperties.dao.RolePropertyDao;
 import com.cannontech.core.users.dao.UserGroupDao;
 import com.cannontech.core.users.model.LiteUserGroup;
 import com.cannontech.database.cache.DefaultDatabaseCache;
@@ -73,7 +72,7 @@ public class UserLoginBasePanel extends DataInputPanel {
     private JLabel ivjJLabelUserGroup = null;
     private JLabel ivjJLabelErrorMessage = null;
     private JPanel ivjJPanelError = null;
-    private AuthType initialAuthType = AuthType.PLAIN;
+    private AuthenticationCategory initialAuthType = null;
     private LiteUserGroup initialLiteUserGroup = null;
     private String newPasswordValue = null;
     private boolean passwordRequiresChanging = false;
@@ -213,7 +212,7 @@ public class UserLoginBasePanel extends DataInputPanel {
 
     private JComboBox getJListAuthType() {
         if (ivjJListAuthType == null) {
-            ivjJListAuthType = new JComboBox(AuthType.values());
+            ivjJListAuthType = new JComboBox(AuthenticationCategory.values());
             ivjJListAuthType.setRenderer(new DisplayableEnumCellRenderer());
             ivjJListAuthType.setName("JListAuthType");
             Dimension dimension = new Dimension(122, 17);
@@ -227,8 +226,8 @@ public class UserLoginBasePanel extends DataInputPanel {
                 public void itemStateChanged(ItemEvent e) {
                     if (e.getStateChange() == ItemEvent.DESELECTED)
                         return;
-                    AuthType type = (AuthType) ivjJListAuthType.getSelectedItem();
-                    boolean shouldSetPass = authenticationService.supportsPasswordSet(type);
+                    AuthenticationCategory type = (AuthenticationCategory) ivjJListAuthType.getSelectedItem();
+                    boolean shouldSetPass = authenticationService.supportsPasswordSet(type.getSupportingAuthType());
                     if (type != initialAuthType) {
                         fireInputUpdate();
                     }
@@ -490,10 +489,10 @@ public class UserLoginBasePanel extends DataInputPanel {
             login.getYukonUser().setUsername(getJTextFieldUserID().getText());
         }
 
-        AuthType type = (AuthType) getJListAuthType().getSelectedItem();
-        login.getYukonUser().setAuthType(type);
+        AuthenticationCategory type = (AuthenticationCategory) getJListAuthType().getSelectedItem();
+        login.getYukonUser().setAuthType(type.getSupportingAuthType());
 
-        boolean shouldSetPass = authenticationService.supportsPasswordSet(type);
+        boolean shouldSetPass = authenticationService.supportsPasswordSet(type.getSupportingAuthType());
         if (type != initialAuthType) {
             if (shouldSetPass) {
                 passwordRequiresChanging = true;
@@ -714,8 +713,7 @@ public class UserLoginBasePanel extends DataInputPanel {
             });
             frame.setVisible(true);
             Insets insets = frame.getInsets();
-            frame
-                .setSize(frame.getWidth() + insets.left + insets.right, frame.getHeight() + insets.top + insets.bottom);
+            frame.setSize(frame.getWidth() + insets.left + insets.right, frame.getHeight() + insets.top + insets.bottom);
             frame.setVisible(true);
         } catch (Throwable exception) {
             System.err.println("Exception occurred in main() of DataInputPanel");
@@ -726,12 +724,11 @@ public class UserLoginBasePanel extends DataInputPanel {
     @Override
     public void setValue(Object o) {
         if (o == null) {
-            RolePropertyDao rolePropertyDao = YukonSpringHook.getBean("rolePropertyDao", RolePropertyDao.class);
-            initialAuthType =
-                rolePropertyDao.getPropertyEnumValue(YukonRoleProperty.DEFAULT_AUTH_TYPE, AuthType.class, null);
+            initialAuthType = authenticationService.getDefaultAuthenticationCategory();
 
             getJListAuthType().setSelectedItem(initialAuthType);
-            boolean supportsPasswordSet = authenticationService.supportsPasswordSet(initialAuthType);
+            boolean supportsPasswordSet =
+                    authenticationService.supportsPasswordSet(initialAuthType.getSupportingAuthType());
             passwordRequiresChanging = supportsPasswordSet;
 
             return;
@@ -745,9 +742,10 @@ public class UserLoginBasePanel extends DataInputPanel {
 
         getJTextFieldUserID().setText(login.getYukonUser().getUsername());
         initialUsername = getJTextFieldUserID().getText();
-        initialAuthType = login.getYukonUser().getAuthType();
+        AuthType userAuthType = login.getYukonUser().getAuthType();
+        initialAuthType = AuthenticationCategory.getByAuthType(userAuthType);
         getJListAuthType().setSelectedItem(initialAuthType);
-        boolean authSupportsPasswordSet = authenticationService.supportsPasswordSet(initialAuthType);
+        boolean authSupportsPasswordSet = authenticationService.supportsPasswordSet(userAuthType);
         getJButtonChangePassword().setEnabled(authSupportsPasswordSet);
 
         LiteUserGroup userGroup = userGroupDao.getLiteUserGroup(login.getYukonUser().getUserGroupId());

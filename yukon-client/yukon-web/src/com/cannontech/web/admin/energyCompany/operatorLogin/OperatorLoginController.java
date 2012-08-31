@@ -131,7 +131,7 @@ public class OperatorLoginController {
         modelMap.addAttribute("mode", PageEditMode.CREATE);
         
         //determine if we can set a password
-        AuthType defaultAuthType = rolePropertyDao.getPropertyEnumValue(YukonRoleProperty.DEFAULT_AUTH_TYPE, AuthType.class, null );
+        AuthType defaultAuthType = authenticationService.getDefaultAuthType();
         modelMap.addAttribute("supportsPasswordSet", authenticationService.supportsPasswordSet(defaultAuthType));
         
         return "energyCompany/operatorLogin/create.jsp"; 
@@ -146,8 +146,7 @@ public class OperatorLoginController {
         //check permissions
         checkPermissionsAndSetupModel(energyCompanyInfoFragment, modelMap, userContext);
 
-        AuthType defaultAuthType = rolePropertyDao.getPropertyEnumValue(YukonRoleProperty.DEFAULT_AUTH_TYPE,
-                                                                        AuthType.class, null);
+        AuthType defaultAuthType = authenticationService.getDefaultAuthType();
 
         //validate login
         LoginValidator loginValidator = loginValidatorFactory.getLoginValidator(new LiteYukonUser());

@@ -16,7 +16,7 @@ public class YukonUser extends DBPersistent  {
 	private Integer userID = null;
 	private String username = null;
 	private LoginStatusEnum loginStatus = LoginStatusEnum.DISABLED;
-    private AuthType authType = AuthType.PLAIN;
+    private AuthType authType = AuthType.HASH_SHA_V2;
     private Date lastChangedDate = null;
     private boolean forceReset = false;
     private int userGroupId;
@@ -35,6 +35,7 @@ public class YukonUser extends DBPersistent  {
     /**
      * @see com.cannontech.database.db.DBPersistent#add()
      */
+    @Override
     public void add() throws SQLException {
         // Because the addValues must include a value for every column, a blank value
         // for the password is included here even though the rest of this class ignores
@@ -61,14 +62,16 @@ public class YukonUser extends DBPersistent  {
 	/**
 	 * @see com.cannontech.database.db.DBPersistent#delete()
 	 */
-	public void delete() throws SQLException {
+	@Override
+    public void delete() throws SQLException {
 		delete(TABLE_NAME, "UserID", getUserID());
 	}
 
 	/**
 	 * @see com.cannontech.database.db.DBPersistent#retrieve()
 	 */
-	public void retrieve() throws SQLException {
+	@Override
+    public void retrieve() throws SQLException {
 		String[] constraintColumns = { "UserID" };
 		Object[] constraintValues = { getUserID() };
 		
@@ -79,7 +82,7 @@ public class YukonUser extends DBPersistent  {
 			setLoginStatus(LoginStatusEnum.retrieveLoginStatus((String) results[1]));
 			setAuthType(AuthType.valueOf((String) results[2]));
 			setLastChangedDate((Date) results[3]);
-            setForceReset("Y".equals((String) results[4]));
+            setForceReset("Y".equals(results[4]));
 			setUserGroupId(((Integer) results[5]));
 		}
 	}
@@ -87,7 +90,8 @@ public class YukonUser extends DBPersistent  {
 	/**
 	 * @see com.cannontech.database.db.DBPersistent#update()
 	 */
-	public void update() throws SQLException {
+	@Override
+    public void update() throws SQLException {
 		Object[] setValues = { getUsername(), getLoginStatus().getDatabaseRepresentation(), 
 		                       getAuthType().name(), getLastChangedDate(), isForceReset() ? 'Y': 'N', getUserGroupId()};
 		

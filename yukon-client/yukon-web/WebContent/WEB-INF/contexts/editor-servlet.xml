@@ -13,11 +13,11 @@
     <!-- Loads all @Controllers from the specified packages. -->
     <context:component-scan base-package="com.cannontech.web.editor" />
 
-    <bean id="annotationMapping" class="org.springframework.web.servlet.mvc.annotation.DefaultAnnotationHandlerMapping">
+    <bean class="org.springframework.web.servlet.mvc.annotation.DefaultAnnotationHandlerMapping">
         <property name="order" value="1"/>
     </bean>
 
-    <bean id="simpleUrlMapping" class="org.springframework.web.servlet.handler.SimpleUrlHandlerMapping">
+    <bean class="org.springframework.web.servlet.handler.SimpleUrlHandlerMapping">
         <property name="mappings">
             <value>
             	/userGroupSelector=userGroupSelector

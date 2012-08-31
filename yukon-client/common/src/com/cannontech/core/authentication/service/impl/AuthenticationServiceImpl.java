@@ -17,6 +17,7 @@ import com.cannontech.common.exception.BadAuthenticationException;
 import com.cannontech.common.exception.PasswordExpiredException;
 import com.cannontech.core.authentication.dao.PasswordHistoryDao;
 import com.cannontech.core.authentication.model.AuthType;
+import com.cannontech.core.authentication.model.AuthenticationCategory;
 import com.cannontech.core.authentication.model.AuthenticationThrottleDto;
 import com.cannontech.core.authentication.model.PasswordHistory;
 import com.cannontech.core.authentication.model.PasswordPolicy;
@@ -45,9 +46,17 @@ public class AuthenticationServiceImpl implements AuthenticationService, Initial
     @Autowired private YukonUserDao yukonUserDao;
 
     @Override
-    public AuthType getDefaultAuthType(LiteYukonUser user) {
-        AuthType authType = rolePropertyDao.getPropertyEnumValue(YukonRoleProperty.DEFAULT_AUTH_TYPE, AuthType.class, user);
-        return authType;
+    public AuthType getDefaultAuthType() {
+        AuthenticationCategory authenticationCategory = getDefaultAuthenticationCategory();
+        return authenticationCategory.getSupportingAuthType();
+    }
+
+    @Override
+    public AuthenticationCategory getDefaultAuthenticationCategory() {
+        AuthenticationCategory authenticationCategory =
+                rolePropertyDao.getPropertyEnumValue(YukonRoleProperty.DEFAULT_AUTH_TYPE, AuthenticationCategory.class,
+                    null);
+        return authenticationCategory;
     }
 
     @Override
@@ -90,6 +99,7 @@ public class AuthenticationServiceImpl implements AuthenticationService, Initial
         }
     }
 
+    @Override
     public boolean isPasswordExpired(LiteYukonUser user) {
         PasswordPolicy passwordPolicy = passwordPolicyService.getPasswordPolicy(user);
         if (user.isForceReset() || 
@@ -113,7 +123,7 @@ public class AuthenticationServiceImpl implements AuthenticationService, Initial
     @Override
     public void setPassword(LiteYukonUser yukonUser, String newPassword) {
         // Update to the current authentication type when password is changed.
-        AuthType authType = getDefaultAuthType(yukonUser);
+        AuthType authType = getDefaultAuthType();
         boolean supportsSetPassword = supportsPasswordSet(authType);
         if (!supportsSetPassword) {
             throw new UnsupportedOperationException("setPassword not supported for type: " + authType);
@@ -130,7 +140,7 @@ public class AuthenticationServiceImpl implements AuthenticationService, Initial
         }
         
         // Update to the current authentication type when password is changed.
-        AuthType authType = getDefaultAuthType(yukonUser);
+        AuthType authType = getDefaultAuthType();
         boolean supportsSetPassword = supportsPasswordSet(authType);
         if (!supportsSetPassword) {
             throw new UnsupportedOperationException("setPassword not supported for type: " + authType);

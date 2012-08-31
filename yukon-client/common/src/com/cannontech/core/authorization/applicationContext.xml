@@ -33,19 +33,18 @@
 
     
     <!-- Pao Permission Service -->
-    <bean id="paoPermissionService" class="com.cannontech.core.authorization.service.impl.PaoPermissionServiceImpl">
-	    <property name="userGroupPaoPermissionDao" ref="userGroupPaoPermissionDao" />
-	    <property name="userPaoPermissionDao" ref="userPaoPermissionDao" />
-    </bean>
-    
+    <bean id="paoPermissionService" class="com.cannontech.core.authorization.service.impl.PaoPermissionServiceImpl"/>
+
     <!-- Authorization Daos -->
-    <bean id="userPaoPermissionDao" class="com.cannontech.core.authorization.dao.UserPaoPermissionDaoImpl" >
-    	<property name="jdbcOps" ref="jdbcTemplate" />
-    	<property name="nextValueHelper" ref="nextValueHelper" />
+    <bean id="userPaoPermissionDao" class="com.cannontech.core.authorization.dao.UserPaoPermissionDaoImpl">
+        <qualifier value="user"/>
+        <property name="jdbcOps" ref="jdbcTemplate" />
+        <property name="nextValueHelper" ref="nextValueHelper" />
         <property name="yukonJdbcTemplate" ref="simpleJdbcTemplate" />
     </bean>
 	
-    <bean id="userGroupPaoPermissionDao" class="com.cannontech.core.authorization.dao.UserGroupPaoPermissionDaoImpl" >
+    <bean id="userGroupPaoPermissionDao" class="com.cannontech.core.authorization.dao.UserGroupPaoPermissionDaoImpl">
+        <qualifier value="userGroup"/>
     	<property name="nextValueHelper" ref="nextValueHelper" />
         <property name="yukonJdbcTemplate" ref="simpleJdbcTemplate" />
     </bean>

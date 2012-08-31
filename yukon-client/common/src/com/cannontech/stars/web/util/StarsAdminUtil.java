@@ -24,7 +24,6 @@ import com.cannontech.core.dao.DaoFactory;
 import com.cannontech.core.dao.RoleDao;
 import com.cannontech.core.dao.impl.LoginStatusEnum;
 import com.cannontech.core.roleproperties.YukonRoleProperty;
-import com.cannontech.core.roleproperties.dao.RolePropertyDao;
 import com.cannontech.core.users.dao.UserGroupDao;
 import com.cannontech.core.users.model.LiteUserGroup;
 import com.cannontech.database.PoolManager;
@@ -742,9 +741,8 @@ public class StarsAdminUtil {
 		LiteStarsEnergyCompany energyCompany) throws TransactionException, WebClientException, CommandExecutionException
 	{
 	    AuthenticationService authenticationService = (AuthenticationService) YukonSpringHook.getBean("authenticationService");
-	    RolePropertyDao rolePropertyDao = YukonSpringHook.getBean("rolePropertyDao", RolePropertyDao.class);
 
-	    AuthType defaultAuthType = rolePropertyDao.getPropertyEnumValue(YukonRoleProperty.DEFAULT_AUTH_TYPE, AuthType.class, null );
+        AuthType defaultAuthType = authenticationService.getDefaultAuthType();
 		if (username.length() == 0)
 			throw new WebClientException( "Username cannot be empty" );
 		if (password.length() == 0)

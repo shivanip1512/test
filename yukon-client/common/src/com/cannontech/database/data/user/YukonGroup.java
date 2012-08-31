@@ -40,6 +40,7 @@ public class YukonGroup extends DBPersistent implements CTIDbChange, EditorPanel
         yukonGroup.setGroupName(groupName);
     }
 
+    @Override
     public void setDbConnection(java.sql.Connection conn) {
 		super.setDbConnection( conn );
 		getYukonGroup().setDbConnection( conn );
@@ -64,7 +65,8 @@ public class YukonGroup extends DBPersistent implements CTIDbChange, EditorPanel
 	/**
 	 * @see com.cannontech.database.db.DBPersistent#add()
 	 */
-	public void add() throws SQLException 
+	@Override
+    public void add() throws SQLException 
 	{
 		if( getYukonGroup().getGroupID() == null ) {
 			setGroupID(com.cannontech.database.db.user.YukonGroup.getNextGroupID());
@@ -81,7 +83,8 @@ public class YukonGroup extends DBPersistent implements CTIDbChange, EditorPanel
 	/**
 	 * @see com.cannontech.database.db.DBPersistent#delete()
 	 */
-	public void delete() throws SQLException {
+	@Override
+    public void delete() throws SQLException {
 		delete( YukonGroupRole.TABLE_NAME, "GroupID", getYukonGroup().getGroupID() );
 		getYukonGroup().delete();
 	}
@@ -89,7 +92,8 @@ public class YukonGroup extends DBPersistent implements CTIDbChange, EditorPanel
 	/**
 	 * @see com.cannontech.database.db.DBPersistent#retrieve()
 	 */
-	public void retrieve() throws SQLException {
+	@Override
+    public void retrieve() throws SQLException {
 	    getYukonGroup().retrieve();
 
 		//add the roles this user has
@@ -107,7 +111,8 @@ public class YukonGroup extends DBPersistent implements CTIDbChange, EditorPanel
 	/**
 	 * @see com.cannontech.database.db.DBPersistent#update()
 	 */
-	public void update() throws SQLException {
+	@Override
+    public void update() throws SQLException {
 
 	    setGroupID( getYukonGroup().getGroupID() );
 		getYukonGroup().update();
@@ -173,7 +178,8 @@ public class YukonGroup extends DBPersistent implements CTIDbChange, EditorPanel
 	}
 
 	
-	public String toString()
+	@Override
+    public String toString()
 	{
 		return getYukonGroup().getGroupName();
 	}
@@ -182,7 +188,8 @@ public class YukonGroup extends DBPersistent implements CTIDbChange, EditorPanel
 	/**
 	 * @see com.cannontech.database.db.CTIDbChange#getDBChangeMsgs(int)
 	 */
-	public DBChangeMsg[] getDBChangeMsgs(DbChangeType dbChangeType) {
+	@Override
+    public DBChangeMsg[] getDBChangeMsgs(DbChangeType dbChangeType) {
 		
 	    DBChangeMsg[] msgs = {
 	            new DBChangeMsg(getYukonGroup().getGroupID().intValue(), DBChangeMsg.CHANGE_YUKON_USER_DB,

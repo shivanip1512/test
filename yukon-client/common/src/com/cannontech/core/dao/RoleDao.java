@@ -115,7 +115,7 @@ public interface RoleDao {
     /**
      * This method returns a map that contains the roles and the groups associated with those roles.
      * This method should not be used for user validation.
-     * This method will return an empty map if the user is not apart of any groups.
+     * This method will return an empty map if the user is not part of any group.
      */
     public Map<YukonRole, LiteYukonGroup> getRolesAndGroupsForUser(int userId);
 

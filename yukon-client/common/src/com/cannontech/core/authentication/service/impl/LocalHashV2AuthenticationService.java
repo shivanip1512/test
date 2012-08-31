@@ -11,7 +11,7 @@ import com.cannontech.database.data.lite.LiteYukonUser;
 
 public class LocalHashV2AuthenticationService implements AuthenticationProvider,
         PasswordSetProvider {
-    private final static StrongPasswordEncryptor digester = new StrongPasswordEncryptor();
+    private final StrongPasswordEncryptor digester = new StrongPasswordEncryptor();
 
     @Autowired private YukonUserPasswordDao yukonUserPasswordDao;
 

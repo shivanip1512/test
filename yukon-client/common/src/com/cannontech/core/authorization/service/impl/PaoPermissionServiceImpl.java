@@ -5,6 +5,7 @@ import java.util.List;
 import java.util.Set;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Qualifier;
 
 import com.cannontech.common.pao.PaoIdentifier;
 import com.cannontech.common.pao.YukonPao;
@@ -27,19 +28,15 @@ import com.google.common.collect.Sets;
  */
 public class PaoPermissionServiceImpl implements PaoPermissionService {
 
-    public PaoPermissionDao<LiteUserGroup> userGroupPaoPermissionDao = null;
-    public PaoPermissionDao<LiteYukonUser> userPaoPermissionDao = null;
+    @Qualifier("userGroup")
+    @Autowired private PaoPermissionDao<LiteUserGroup> userGroupPaoPermissionDao;
+
+    @Qualifier("user")
+    @Autowired private PaoPermissionDao<LiteYukonUser> userPaoPermissionDao;
 
     @Autowired UserGroupDao userGroupDao;
 
-    public void setUserGroupPaoPermissionDao(PaoPermissionDao<LiteUserGroup> userGroupPaoPermissionDao) {
-        this.userGroupPaoPermissionDao = userGroupPaoPermissionDao;
-    }
-
-    public void setUserPaoPermissionDao(PaoPermissionDao<LiteYukonUser> userPaoPermissionDao) {
-        this.userPaoPermissionDao = userPaoPermissionDao;
-    }
-
+    @Override
     public UserGroupPermissionList getUserPermissions(LiteYukonUser user) {
 
         UserGroupPermissionList permissionList = new UserGroupPermissionList();
@@ -54,6 +51,7 @@ public class PaoPermissionServiceImpl implements PaoPermissionService {
         return permissionList;
     }
 
+    @Override
     public UserGroupPermissionList getUserPermissionsForPao(LiteYukonUser user,
             YukonPao pao) {
 
@@ -69,20 +67,24 @@ public class PaoPermissionServiceImpl implements PaoPermissionService {
         return permissionList;
     }
 
+    @Override
     public void addPermission(LiteYukonUser user, YukonPao pao, Permission permission, boolean allow) {
         validatePermission(permission);
         userPaoPermissionDao.addPermission(user, pao.getPaoIdentifier().getPaoId(), permission, allow);
     }
 
+    @Override
     public void removePermission(LiteYukonUser user, YukonPao pao, Permission permission) {
         validatePermission(permission);
         userPaoPermissionDao.removePermission(user, pao, permission);
     }
 
+    @Override
     public void removeAllUserPermissions(int userId) {
         userPaoPermissionDao.removeAllPermissions(userId);
     }
 
+    @Override
     public AuthorizationResponse hasPermission(LiteYukonUser user, YukonPao pao, Permission permission) {
         if(!permission.isSettablePerPao()) {
             return AuthorizationResponse.UNKNOWN;
@@ -134,23 +136,28 @@ public class PaoPermissionServiceImpl implements PaoPermissionService {
         return groupPaoAuthorizations;
     }
     
+    @Override
     public void addGroupPermission(LiteUserGroup userGroup, YukonPao pao, Permission permission, boolean allow) {
         validatePermission(permission);
         userGroupPaoPermissionDao.addPermission(userGroup, pao.getPaoIdentifier().getPaoId(), permission, allow);
     }
 
+    @Override
     public List<PaoPermission> getGroupPermissions(LiteUserGroup userGroup) {
         return userGroupPaoPermissionDao.getPermissions(userGroup);
     }
 
+    @Override
     public List<PaoPermission> getGroupPermissions(List<LiteUserGroup> userGroupList) {
         return userGroupPaoPermissionDao.getPermissions(userGroupList);
     }
 
+    @Override
     public List<PaoPermission> getGroupPermissionsForPao(LiteUserGroup userGroup, YukonPao pao) {
         return userGroupPaoPermissionDao.getPermissionsForPao(userGroup, pao);
     }
 
+    @Override
     public AuthorizationResponse hasPermission(LiteUserGroup userGroup, YukonPao pao, Permission permission) {
     	if(permission.equals(Permission.ALLOWED_COMMAND)) {
     		// ALLOWED_COMMAND permission are always allowed
@@ -160,6 +167,7 @@ public class PaoPermissionServiceImpl implements PaoPermissionService {
     	return userGroupPaoPermissionDao.hasPermissionForPao(userGroup, pao, permission);
     }
 
+    @Override
     public AuthorizationResponse hasPermission(List<LiteUserGroup> userGroups, YukonPao pao, Permission permission) {
         
     	if(!permission.isSettablePerPao()) {
@@ -169,16 +177,19 @@ public class PaoPermissionServiceImpl implements PaoPermissionService {
         return userGroupPaoPermissionDao.hasPermissionForPao(userGroups, pao, permission);
     }
 
+    @Override
     public void removeGroupPermission(LiteUserGroup userGroup, YukonPao pao, Permission permission) {
 
         validatePermission(permission);
         userGroupPaoPermissionDao.removePermission(userGroup, pao, permission);
     }
 
+    @Override
     public void removeAllGroupPermissions(LiteUserGroup userGroup) {
         userGroupPaoPermissionDao.removeAllPermissions(userGroup);
     }
 
+    @Override
     public Set<Integer> getPaoIdsForUserPermission(LiteYukonUser user, Permission permission) {
 
         // Get paos for user
@@ -195,6 +206,7 @@ public class PaoPermissionServiceImpl implements PaoPermissionService {
         return paoIdSet;
     }
     
+    @Override
     public Set<Integer> getPaoIdsForUserPermissionNoGroup(LiteYukonUser user, Permission permission) {
 
         // Get paos for user
@@ -204,6 +216,7 @@ public class PaoPermissionServiceImpl implements PaoPermissionService {
         return paoIdSet;
     }
     
+    @Override
     public Set<Integer> getPaoIdsForGroupPermission(LiteUserGroup group, Permission permission) {
 
         // Get paos for group
@@ -215,6 +228,7 @@ public class PaoPermissionServiceImpl implements PaoPermissionService {
         return groupPaoIdSet;
     }
 
+    @Override
     public void removeAllPaoPermissions(int paoId) {
         userPaoPermissionDao.removeAllPaoPermissions(paoId);
         userGroupPaoPermissionDao.removeAllPaoPermissions(paoId);

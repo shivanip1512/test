@@ -7,7 +7,6 @@ import java.io.OutputStreamWriter;
 import java.math.RoundingMode;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
-import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 import java.util.Map;
@@ -65,7 +64,6 @@ import com.cannontech.web.common.flashScope.FlashScope;
 import com.cannontech.web.input.DatePropertyEditorFactory;
 import com.cannontech.web.input.EnumPropertyEditor;
 import com.cannontech.web.security.annotation.CheckRoleProperty;
-import com.google.common.collect.Maps;
 
 @Controller
 @RequestMapping("/archivedValuesExporter/*")

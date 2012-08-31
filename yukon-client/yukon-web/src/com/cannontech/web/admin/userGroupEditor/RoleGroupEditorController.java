@@ -1,6 +1,6 @@
 package com.cannontech.web.admin.userGroupEditor;
 
-import static com.cannontech.common.util.StringUtils.parseIntStringForList;
+import static com.cannontech.common.util.StringUtils.*;
 
 import java.sql.SQLException;
 import java.util.List;
@@ -114,10 +114,10 @@ public class RoleGroupEditorController {
         }
         
         yukonGroupDao.save(group);
-        
+
         flash.setConfirm(new YukonMessageSourceResolvable("yukon.web.modules.adminSetup.roleGroupEditor.updateSuccessful"));
-        setupModelMap(model, group);
-        
+        model.addAttribute("roleGroupId", group.getGroupID());
+
         return "redirect:view";
     }
     

@@ -836,7 +836,7 @@ public class OperatorAccountController {
 
         modelMap.addAttribute("loginMode", LoginModeEnum.CREATE);
         boolean supportsPasswordSet = 
-                authenticationService.supportsPasswordSet(authenticationService.getDefaultAuthType(user));
+                authenticationService.supportsPasswordSet(authenticationService.getDefaultAuthType());
         modelMap.addAttribute("supportsPasswordSet", supportsPasswordSet);
         modelMap.addAttribute("energyCompanyId", energyCompany.getEnergyCompanyId());
         modelMap.addAttribute("showLoginSection", showLoginSection);
@@ -857,7 +857,7 @@ public class OperatorAccountController {
         
         modelMap.addAttribute("showLoginSection", hasEditLoginPrivileges(userContext.getYukonUser()));
 
-        AuthType currentAuthType = authenticationService.getDefaultAuthType(residentialUser);
+        AuthType currentAuthType = authenticationService.getDefaultAuthType();
         modelMap.addAttribute("supportsPasswordSet",
                               authenticationService.supportsPasswordSet(currentAuthType));
 

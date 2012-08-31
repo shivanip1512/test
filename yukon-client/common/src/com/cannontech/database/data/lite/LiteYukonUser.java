@@ -9,6 +9,7 @@ import org.springframework.jdbc.core.ResultSetExtractor;
 
 import com.cannontech.common.util.SqlStatementBuilder;
 import com.cannontech.core.authentication.model.AuthType;
+import com.cannontech.core.authentication.model.AuthenticationCategory;
 import com.cannontech.core.dao.impl.LoginStatusEnum;
 import com.cannontech.core.users.model.LiteUserGroup;
 import com.cannontech.database.YukonJdbcTemplate;
@@ -35,7 +36,8 @@ public class LiteYukonUser extends LiteBase {
     }
 
     public LiteYukonUser(int id, String username, LoginStatusEnum loginStatus) {
-        this(id, username, loginStatus, AuthType.PLAIN, Instant.now(), false, null);
+        // TODO:  should this use the role property to know which authentication type to use?
+        this(id, username, loginStatus, AuthType.HASH_SHA_V2, Instant.now(), false, null);
     }
 
     public LiteYukonUser(int id, String username, LoginStatusEnum loginStatus, AuthType authType, Instant lastChangedDate,
@@ -60,6 +62,7 @@ public class LiteYukonUser extends LiteBase {
         sql.append("WHERE  UserId").eq(getUserID());
 
         yukonJdbcTemplate.query(sql, new ResultSetExtractor<LiteYukonUser>() {
+            @Override
             public LiteYukonUser extractData(ResultSet rs) throws SQLException, DataAccessException {
                 rs.next();
                 setUsername(rs.getString("Username").trim() );
@@ -105,6 +108,9 @@ public class LiteYukonUser extends LiteBase {
     }
     public void setAuthType(AuthType authType) {
         this.authType = authType;
+    }
+    public AuthenticationCategory getAuthenticationCategory() {
+        return AuthenticationCategory.getByAuthType(authType);
     }
 
     public Instant getLastChangedDate() {

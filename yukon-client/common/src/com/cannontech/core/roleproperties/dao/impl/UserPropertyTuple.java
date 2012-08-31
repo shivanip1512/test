@@ -9,9 +9,9 @@ import com.cannontech.core.roleproperties.UserNotInRoleException;
 import com.cannontech.core.roleproperties.YukonRoleProperty;
 import com.cannontech.database.data.lite.LiteYukonUser;
 
-class UserPropertyTuple implements PropertyTuple {
-    public Integer userId;
-    public YukonRoleProperty yukonRoleProperty;
+final class UserPropertyTuple implements PropertyTuple {
+    private final Integer userId;
+    private final YukonRoleProperty yukonRoleProperty;
 
     public UserPropertyTuple(LiteYukonUser user, YukonRoleProperty yukonRoleProperty) {
         if (user == null) {

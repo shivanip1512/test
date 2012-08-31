@@ -80,7 +80,7 @@
     <entry key="yukon.web.modules.adminSetup.users.usersUpdated">Role Group Users Updated Successfully</entry>
     <entry key="yukon.web.modules.adminSetup.users.usersContainer">Users of this Group</entry>
     <entry key="yukon.web.modules.adminSetup.users.username">Username</entry>
-    <entry key="yukon.web.modules.adminSetup.users.authtype">Auth Type</entry>
+    <entry key="yukon.web.modules.adminSetup.users.authentication">Authentication</entry>
     <entry key="yukon.web.modules.adminSetup.users.loginStatus">Login Status</entry>
     <entry key="yukon.web.modules.adminSetup.users.remove">Remove</entry>
     <entry key="yukon.web.modules.adminSetup.users.noUsers">No Users In This Group</entry>

@@ -179,8 +179,9 @@ public class YukonUserDaoImpl implements YukonUserDao {
 		    return null;
 		}
 	}
-		
-	public LiteContact getLiteContact(final int userId) {
+
+	@Override
+    public LiteContact getLiteContact(final int userId) {
 		return databaseCache.getAContactByUserID(userId);
 	}
 	
@@ -193,7 +194,8 @@ public class YukonUserDaoImpl implements YukonUserDao {
 	 * @param String firstName
 	 * @param String lastName
 	 */
-	public String generateUsername(String firstName, String lastName) {
+	@Override
+    public String generateUsername(String firstName, String lastName) {
         String newUsername = null;
 
         String firstInitial = firstName.toLowerCase().substring(0, 1);
@@ -317,7 +319,8 @@ public class YukonUserDaoImpl implements YukonUserDao {
 	    
         sendUserDbChangeMsg(userId, DbChangeType.UPDATE);
     }
-	
+
+    @Override
     public void addUserToGroup(int userId, Integer... groupIds) {
         
         for (int groupId : groupIds) {
@@ -415,8 +418,7 @@ public class YukonUserDaoImpl implements YukonUserDao {
     @Override
     public void updateUserGroupId(int userId, Integer userGroupId) {
         SqlStatementBuilder sql = new SqlStatementBuilder();
-        sql.append("UPDATE YukonUser");
-        sql.append("SET UserGroupId").eq(userGroupId);
+        sql.append("UPDATE YukonUser").set("UserGroupId", userGroupId);
         sql.append("WHERE UserId").eq(userId);
         
         yukonJdbcTemplate.update(sql);

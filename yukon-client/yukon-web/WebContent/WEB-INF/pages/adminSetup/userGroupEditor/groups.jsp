@@ -30,8 +30,8 @@
                                 <cti:param name="roleGroupId" value="${group.groupID}"/>
                             </cti:url>
                             <tr class="<tags:alternateRow odd="" even="altTableCell"/>">
-                                <td><a href="${editGroupUrl}">${group.groupName}</a></td>
-                                <td>${group.groupDescription}</td>
+                                <td><a href="${editGroupUrl}">${fn:escapeXml(group.groupName)}</a></td>
+                                <td>${fn:escapeXml(group.groupDescription)}</td>
                                 <td class="removeColumn">
                                     <div class="dib">
                                         <input type="submit" name="remove" value="${group.groupID}" class="pointer icon icon_remove">

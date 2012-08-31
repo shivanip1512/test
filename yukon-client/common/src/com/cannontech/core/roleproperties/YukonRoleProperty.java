@@ -8,7 +8,7 @@ import java.math.RoundingMode;
 import org.apache.commons.lang.Validate;
 
 import com.cannontech.amr.meter.dao.impl.MeterDisplayFieldEnum;
-import com.cannontech.core.authentication.model.AuthType;
+import com.cannontech.core.authentication.model.AuthenticationCategory;
 import com.cannontech.core.roleproperties.enums.CsrfTokenMode;
 import com.cannontech.core.roleproperties.enums.SerialNumberValidation;
 import com.cannontech.roles.application.CalcHistoricalRole;
@@ -399,7 +399,7 @@ public enum YukonRoleProperty {
     AUTH_METHOD(AUTHENTICATION, AuthenticationRole.AUTH_METHOD, stringType()),
     AUTHENTICATION_MODE(AUTHENTICATION, AuthenticationRole.AUTHENTICATION_MODE, stringType()),
     AUTH_TIMEOUT(AUTHENTICATION, AuthenticationRole.AUTH_TIMEOUT, stringType()),
-    DEFAULT_AUTH_TYPE(AUTHENTICATION, AuthenticationRole.DEFAULT_AUTH_TYPE, InputTypeFactory.enumType(AuthType.class)),
+    DEFAULT_AUTH_TYPE(AUTHENTICATION, AuthenticationRole.DEFAULT_AUTH_TYPE, InputTypeFactory.enumType(AuthenticationCategory.class)),
     LDAP_DN(AUTHENTICATION, AuthenticationRole.LDAP_DN, stringType()),
     LDAP_USER_SUFFIX(AUTHENTICATION, AuthenticationRole.LDAP_USER_SUFFIX, stringType()),
     LDAP_USER_PREFIX(AUTHENTICATION, AuthenticationRole.LDAP_USER_PREFIX, stringType()),

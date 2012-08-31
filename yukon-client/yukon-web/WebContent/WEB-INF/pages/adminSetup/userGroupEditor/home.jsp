@@ -17,11 +17,14 @@
     <script type="text/javascript">
         jQuery(function() {
             jQuery('#tabs').tabs({'cookie' : {}});
+            roleGroupPicker.show();
+            userGroupPicker.show();
+            userPicker.show();
         });
 
-        function editUser() { window.location = '${userUrl}?userId=' + $F('userId'); }
-        function editUserGroup() { window.location = '${userGroupUrl}?userGroupId=' + $F('userGroupId'); }
-        function editRoleGroup() { window.location = '${roleGroupUrl}?roleGroupId=' + $F('roleGroupId'); }
+        function editUser() { window.location.href = '${userUrl}?userId=' + $F('userId'); }
+        function editUserGroup() { window.location.href = '${userGroupUrl}?userGroupId=' + $F('userGroupId'); }
+        function editRoleGroup() { window.location.href = '${roleGroupUrl}?roleGroupId=' + $F('roleGroupId'); }
     </script>
 
     <div id="tabs">
@@ -52,16 +55,4 @@
                 immediateSelectMode="true" destinationFieldId="roleGroupId" endAction="editRoleGroup"/>
         </div>
     </div>
-
-    <script type="text/javascript">
-        Event.observe(window, 'load', function() {
-        	roleGroupPicker.show(true);
-        });
-        Event.observe(window, 'load', function() {
-            userGroupPicker.show(true);
-        });
-        Event.observe(window, 'load', function() {
-            userPicker.show();
-        });
-    </script>
 </cti:standardPage>

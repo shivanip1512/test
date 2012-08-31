@@ -26,7 +26,7 @@ function addUsers() {
                         <table class="compactResultsTable rowHighlighting">
                             <tr>
                                 <th><i:inline key=".username"/></th>
-                                <th><i:inline key=".authtype"/></th>
+                                <th><i:inline key=".authentication"/></th>
                                 <th><i:inline key=".loginStatus"/></th>
                                 <th class="removeColumn"><i:inline key=".remove"/></th>
                             </tr>
@@ -44,7 +44,7 @@ function addUsers() {
                                 </c:choose>
                                 <tr class="<tags:alternateRow odd="" even="altTableCell"/>">
                                     <td><a href="${editUserUrl}">${user.username}</a></td>
-                                    <td><cti:formatObject value="${user.authType}"/></td>
+                                    <td><cti:formatObject value="${user.authenticationCategory}"/></td>
                                     <td><span class="${styleClass}"><cti:formatObject value="${user.loginStatus}"/></span></td>
                                     <td class="removeColumn">
                                         <div class="dib">

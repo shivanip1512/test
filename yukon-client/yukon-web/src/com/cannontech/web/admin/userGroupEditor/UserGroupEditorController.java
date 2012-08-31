@@ -1,6 +1,6 @@
 package com.cannontech.web.admin.userGroupEditor;
 
-import static com.cannontech.common.util.StringUtils.parseIntStringForList;
+import static com.cannontech.common.util.StringUtils.*;
 
 import java.sql.SQLException;
 import java.util.Arrays;
@@ -35,6 +35,7 @@ import com.cannontech.core.roleproperties.YukonRoleCategory;
 import com.cannontech.core.roleproperties.YukonRoleProperty;
 import com.cannontech.core.users.dao.UserGroupDao;
 import com.cannontech.core.users.model.LiteUserGroup;
+import com.cannontech.database.data.lite.LiteBase;
 import com.cannontech.database.data.lite.LiteYukonGroup;
 import com.cannontech.database.data.lite.LiteYukonUser;
 import com.cannontech.database.data.user.UserGroup;
@@ -217,13 +218,7 @@ public class UserGroupEditorController {
         List<LiteYukonUser> users = searchResult.getResultList();
         model.addAttribute("users", users);
         
-        List<Integer> alreadyAssignedUserIds = 
-            Lists.transform(users, new Function<LiteYukonUser, Integer>() {
-                @Override
-                public Integer apply(LiteYukonUser user) {
-                    return user.getUserID();
-                }
-            });
+        List<Integer> alreadyAssignedUserIds = Lists.transform(users, LiteBase.ID_FUNCTION);
         model.addAttribute("alreadyAssignedUserIds", alreadyAssignedUserIds);
         setupModelMap(model, userGroup);
         return "userGroupEditor/users.jsp";

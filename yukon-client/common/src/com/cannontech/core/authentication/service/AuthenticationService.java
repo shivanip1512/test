@@ -4,6 +4,7 @@ import com.cannontech.common.exception.BadAuthenticationException;
 import com.cannontech.common.exception.PasswordExpiredException;
 import com.cannontech.core.authentication.model.AuthType;
 import com.cannontech.core.authentication.model.AuthenticationThrottleDto;
+import com.cannontech.core.authentication.model.AuthenticationCategory;
 import com.cannontech.database.data.lite.LiteYukonUser;
 
 /**
@@ -15,11 +16,22 @@ import com.cannontech.database.data.lite.LiteYukonUser;
  */
 public interface AuthenticationService {
     /**
-     * Get the default authorization type.  This may differ from the type in use by the login for
-     * the user if the utility has updated the role property.  Password changes should use this so
-     * the user is updated to the current authorization type when changing their password.
+     * Get the default authentication type. This may differ from the type in use by the login for
+     * the user if the utility has updated the role property. Password changes should use this so
+     * the user is updated to the current authentication type when changing their password.
+     * 
+     * This returns the authentication type to actually use when creating the password.
+     * 
+     * @see AuthType
      */
-    public AuthType getDefaultAuthType(LiteYukonUser user);
+    public AuthType getDefaultAuthType();
+
+    /**
+     * Get the default user authentication type.  This return the abstracted "user authentication".
+     * 
+     * @see AuthenticationCategory
+     */
+    public AuthenticationCategory getDefaultAuthenticationCategory();
 
     /**
      * Attempt to login to Yukon. How the username/password is authenticated
