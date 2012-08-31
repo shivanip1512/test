@@ -1,10 +1,11 @@
-<%@ attribute name="columnInfo" required="true" type="java.util.ArrayList"%>
-<%@ attribute name="rows" required="true" type="java.util.ArrayList"%>
-<%@ attribute name="title" required="true" type="java.lang.String"%>
-<%@ attribute name="total" required="true" type="java.lang.Integer"%>
+<%@ attribute name="columnInfo" required="true" type="java.util.ArrayList" description="List<ColumnInfo>  This describes which columns to show and how big they should be."%>
+<%@ attribute name="rows" required="true" type="java.util.ArrayList" description="The rows of data.  Can be comprised of any Java Object that will convert nicely to a JSONObject" %>
+<%@ attribute name="title" required="true" type="java.lang.String" description="Make sure this is a resolved string." %>
+<%@ attribute name="total" required="true" type="java.lang.Integer" description="Total number of records for the query - not always the same as rows.size()" %>
 
-<%@ attribute name="height" required="false" type="java.lang.Integer"%>
+<%@ attribute name="height" required="false" type="java.lang.Integer" description="Height in pixels" %>
 <%@ attribute name="width" required="false" type="java.lang.String"%>
+<%@ attribute name="cssClass" required="false" type="java.lang.String"%>
 <%@ attribute name="showLoadMask" required="false" type="java.lang.String" description="Possible values: 'enable', 'disable', 'block'"%>
 
 <%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core"%>
@@ -48,7 +49,7 @@
     });
 </script>
 
-<div class="jqgrid-container">
+<div class="jqgrid-container ${cssClass}">
 	<table id="${gridId}"><tr><td/></tr></table>
 	<div id="${gridId}_pager"></div>
 </div>
