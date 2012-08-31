@@ -54,20 +54,30 @@
                                     <cti:param name="scenarioId" value="${scenarioId}"/>
                                 </cti:url>
                                 <tags:simpleDialogLink titleKey="yukon.web.modules.dr.program.startMultiplePrograms.title"
-                                                               dialogId="drDialog"
-                                                               actionUrl="${startScenarioUrl}"
-                                                               logoKey="yukon.web.modules.dr.scenarioDetail.actions.startIcon"
-                                                               labelKey="yukon.web.modules.dr.scenarioDetail.actions.start"/>
+                                               dialogId="drDialog"
+                                               actionUrl="${startScenarioUrl}"
+                                               logoKey="yukon.web.modules.dr.scenarioDetail.actions.startIcon"
+                                               labelKey="yukon.web.modules.dr.scenarioDetail.actions.start"/>
                                 <br>
         
                                 <cti:url var="stopScenarioUrl" value="/spring/dr/program/stop/multipleDetails">
                                     <cti:param name="scenarioId" value="${scenarioId}"/>
                                 </cti:url>
                                 <tags:simpleDialogLink titleKey="yukon.web.modules.dr.program.stopMultiplePrograms.title"
-                                                               dialogId="drDialog"
-                                                               actionUrl="${stopScenarioUrl}"
-                                                               logoKey="yukon.web.modules.dr.scenarioDetail.actions.stopIcon"
-                                                               labelKey="yukon.web.modules.dr.scenarioDetail.actions.stop"/>
+                                               dialogId="drDialog"
+                                               actionUrl="${stopScenarioUrl}"
+                                               logoKey="yukon.web.modules.dr.scenarioDetail.actions.stopIcon"
+                                               labelKey="yukon.web.modules.dr.scenarioDetail.actions.stop"/>
+                                <br>
+                                
+                                <cti:url var="changeScenarioGearsUrl" value="/spring/dr/program/changeGearMultiplePopup">
+                                    <cti:param name="scenarioId" value="${scenarioId}"/>
+                                </cti:url>
+                                <tags:simpleDialogLink titleKey="yukon.web.modules.dr.program.getChangeGearValue.title" 
+                                            dialogId="drDialog" 
+                                            actionUrl="${changeScenarioGearsUrl}" 
+                                            logoKey="yukon.web.modules.dr.programDetail.actions.changeGearsIcon"
+                                            labelKey="yukon.web.modules.dr.programDetail.actions.changeGears"/>
                                 <br>
                                 
                                 <cti:url var="sendEnableProgramsUrl" value="/spring/dr/program/sendEnableDisableProgramsConfirm">

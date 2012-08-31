@@ -180,7 +180,8 @@ gearChanged = function() {
             <c:set var="programId" value="${program.paoIdentifier.paoId}"/>
             <c:set var="gears" value="${gearsByProgramId[programId]}"/>
             <tr class="<tags:alternateRow odd="" even="altRow"/>">
-                <td><form:hidden path="programStartInfo[${status.index}].programId"/>
+                <td>
+                <form:hidden path="programStartInfo[${status.index}].programId"/>
                 <form:checkbox path="programStartInfo[${status.index}].startProgram"
                     id="startProgramCheckbox${status.index}"
                     onclick="singleProgramChecked(this);"/>

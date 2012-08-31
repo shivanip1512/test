@@ -1,7 +1,9 @@
 package com.cannontech.web.dr;
 
 import java.util.Collections;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.MessageSourceResolvable;
@@ -22,6 +24,7 @@ import com.cannontech.loadcontrol.data.LMProgramBase;
 import com.cannontech.loadcontrol.data.LMProgramDirectGear;
 import com.cannontech.web.common.flashScope.FlashScope;
 import com.cannontech.web.common.flashScope.FlashScopeMessageType;
+import com.google.common.collect.Maps;
 
 public class ProgramControllerBase {
     protected ControlAreaService controlAreaService = null;
@@ -66,6 +69,44 @@ public class ProgramControllerBase {
                 YukonValidationUtils.errorsForBindingResult(bindingResult);
             flashScope.setMessage(messages, FlashScopeMessageType.ERROR);
         }
+    }
+    
+    protected void addGearsToModel(List<DisplayablePao> programs, ModelMap model) {
+        Map<Integer, List<LMProgramDirectGear>> gearsByProgramId = Maps.newHashMap();
+        Map<Integer, LMProgramDirectGear> currentGearByProgramId = Maps.newHashMap();
+        LMProgramDirectGear currentGear = null;
+        for (DisplayablePao program : programs) {
+            List<LMProgramDirectGear> gears = Collections.emptyList();
+            LMProgramBase programBase = programService.getProgramForPao(program);
+            if (programBase instanceof IGearProgram) {
+                gears = ((IGearProgram) programBase).getDirectGearVector();
+                currentGear = ((IGearProgram) programBase).getCurrentGear();
+            }
+            currentGearByProgramId.put(program.getPaoIdentifier().getPaoId(), currentGear);
+            gearsByProgramId.put(program.getPaoIdentifier().getPaoId(), gears);
+        }
+        model.addAttribute("gearsByProgramId", gearsByProgramId);
+        model.addAttribute("currentGearByProgramId", currentGearByProgramId);
+
+    }
+    
+    protected Map<Integer, Map<Integer, Boolean>> getIndexBasedIsTargetGearMap(List<DisplayablePao> programs) {
+        Map<Integer, Map<Integer, Boolean>> programIndexTargetGearMap = new HashMap<Integer, Map<Integer, Boolean>>();
+        for (int i = 0; i < programs.size(); i++){
+            DisplayablePao program = programs.get(i);
+            LMProgramBase programBase = programService.getProgramForPao(program);
+            List<LMProgramDirectGear> gears;
+            if (programBase instanceof IGearProgram) {
+                gears = ((IGearProgram) programBase).getDirectGearVector();
+                Map<Integer, Boolean> gearIndexIsTrueCycleMap = new HashMap<Integer, Boolean>();
+                programIndexTargetGearMap.put(i, gearIndexIsTrueCycleMap);
+                for (int j = 0; j < gears.size(); j++){
+                    LMProgramDirectGear lmProgramDirectGear = gears.get(j);
+                    gearIndexIsTrueCycleMap.put(j+1, lmProgramDirectGear.isTargetCycle());
+                }
+            }
+        }
+        return programIndexTargetGearMap;
     }
 
     @Autowired

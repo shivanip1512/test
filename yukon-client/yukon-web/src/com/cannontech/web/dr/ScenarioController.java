@@ -113,7 +113,7 @@ public class ScenarioController {
 
         return "dr/scenario/detail.jsp";
     }
-
+    
     private void addFilterErrorsToFlashScopeIfNecessary(ModelMap model,
             BindingResult bindingResult, FlashScope flashScope) {
         if (bindingResult.hasErrors()) {

@@ -169,7 +169,7 @@ public class StopProgramController extends ProgramControllerBase {
             BindingResult bindingResult, YukonUserContext userContext, FlashScope flashScope) {
         
         UiFilter<DisplayablePao> filter = null;
-
+        Map<Integer, ScenarioProgram> scenarioPrograms = null;
         String paoName = null;
         if (backingBean.getControlAreaId() != null) {
             DisplayablePao controlArea = controlAreaService.getControlArea(backingBean.getControlAreaId());
@@ -190,7 +190,7 @@ public class StopProgramController extends ProgramControllerBase {
             model.addAttribute("scenario", scenario);
             paoName = scenario.getName();
             filter = new ForScenarioFilter(backingBean.getScenarioId());
-            Map<Integer, ScenarioProgram> scenarioPrograms =
+            scenarioPrograms =
                 scenarioDao.findScenarioProgramsForScenario(backingBean.getScenarioId());
             model.addAttribute("scenarioPrograms", scenarioPrograms);
         }
@@ -219,12 +219,25 @@ public class StopProgramController extends ProgramControllerBase {
             backingBean.setStopDate(new Date());
             List<ProgramStopInfo> programStopInfo = new ArrayList<ProgramStopInfo>(programs.size());
             for (DisplayablePao program : programs) {
-                programStopInfo.add(new ProgramStopInfo(program.getPaoIdentifier().getPaoId(),
-                                                        true));
+                int programId = program.getPaoIdentifier().getPaoId();
+                int gearNumber = 1;
+                if (scenarioPrograms != null) {
+                    ScenarioProgram scenarioProgram = scenarioPrograms.get(programId);
+                    if (scenarioProgram != null) {
+                        gearNumber = scenarioProgram.getStartGear();
+                    }
+                }
+                programStopInfo.add(new ProgramStopInfo(programId, gearNumber,true));
             }
             backingBean.setProgramStopInfo(programStopInfo);
         }
         
+        boolean stopGearAllowed =
+                rolePropertyDao.checkProperty(YukonRoleProperty.ALLOW_STOP_GEAR_ACCESS,
+                                              userContext.getYukonUser());
+        model.addAttribute("stopGearAllowed",stopGearAllowed);
+        
+        addGearsToModel(searchResult.getResultList(), model);
         addErrorsToFlashScopeIfNecessary(bindingResult, flashScope);
 
         return "dr/program/stopMultipleProgramsDetails.jsp";
@@ -272,21 +285,31 @@ public class StopProgramController extends ProgramControllerBase {
             stopDate = new Date();
         }
         for (ProgramStopInfo programStopInfo : backingBean.getProgramStopInfo()) {
-            if (!programStopInfo.isStopProgram()) {
-                continue;
-            }
-
-            Duration stopOffset = null;
-            if (scenarioPrograms != null) {
-                ScenarioProgram scenarioProgram = scenarioPrograms.get(programStopInfo.getProgramId());
-                stopOffset = scenarioProgram.getStopOffset();
-            }
-
-            if (backingBean.isStopNow() && stopOffset == null) {
-                programService.stopProgram(programStopInfo.getProgramId());
-            } else {
-                programService.scheduleProgramStop(programStopInfo.getProgramId(),
-                                                   stopDate, stopOffset);
+            if (programStopInfo.isStopProgram()) {
+                Duration stopOffset = null;
+                if (scenarioPrograms != null) {
+                    ScenarioProgram scenarioProgram = scenarioPrograms.get(programStopInfo.getProgramId());
+                    stopOffset = scenarioProgram.getStopOffset();
+                }
+    
+                if (backingBean.isStopNow() && stopOffset == null) {
+                    programService.stopProgram(programStopInfo.getProgramId());
+                } else {
+                    programService.scheduleProgramStop(programStopInfo.getProgramId(),
+                                                       stopDate, stopOffset);
+                }
+                boolean stopGearAllowed =
+                        rolePropertyDao.checkProperty(YukonRoleProperty.ALLOW_STOP_GEAR_ACCESS,
+                                                      userContext.getYukonUser());
+                
+                if (stopGearAllowed && programStopInfo.isUseStopGear()) {
+                    DisplayablePao program = programService.getProgram(programStopInfo.getProgramId());
+        
+                    LiteYukonUser yukonUser = userContext.getYukonUser();
+                    programService.changeGear(programStopInfo.getProgramId(), programStopInfo.getGearNumber());
+                    demandResponseEventLogService.threeTierProgramChangeGear(yukonUser, program.getName());
+    
+                }
             }
         }
         

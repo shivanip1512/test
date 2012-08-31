@@ -209,6 +209,17 @@
                                     logoKey="yukon.web.modules.dr.controlAreaDetail.actions.disableIcon"
                                     labelKey="yukon.web.modules.dr.controlAreaDetail.actions.disable"/>
                                 <br>
+                                
+                                <cti:url var="changeScenarioGearsUrl" value="/spring/dr/program/changeGearMultiplePopup">
+                                     <cti:param name="controlAreaId" value="${controlAreaId}"/>
+                                </cti:url>
+                                <tags:simpleDialogLink titleKey="yukon.web.modules.dr.program.getChangeGearValue.title" 
+                                            dialogId="drDialog" 
+                                            actionUrl="${changeScenarioGearsUrl}" 
+                                            logoKey="yukon.web.modules.dr.programDetail.actions.changeGearsIcon"
+                                            labelKey="yukon.web.modules.dr.programDetail.actions.changeGears"/>
+                                <br>
+                                
                                 <cti:url var="sendEnableProgramsUrl" value="/spring/dr/program/sendEnableDisableProgramsConfirm">
                                     <cti:param name="controlAreaId" value="${controlAreaId}"/>
                                     <cti:param name="enable" value="true"/>
@@ -304,6 +315,17 @@
                                     logoKey="yukon.web.modules.dr.controlAreaDetail.actions.disableIcon"
                                     labelKey="yukon.web.modules.dr.controlAreaDetail.actions.disable"/>
                                 <br>
+                                
+                                <cti:url var="changeScenarioGearsUrl" value="/spring/dr/program/changeGearMultiplePopup">
+                                     <cti:param name="controlAreaId" value="${controlAreaId}"/>
+                                </cti:url>
+                                <tags:simpleDialogLink titleKey="yukon.web.modules.dr.program.getChangeGearValue.title" 
+                                            dialogId="drDialog" 
+                                            actionUrl="${changeScenarioGearsUrl}" 
+                                            logoKey="yukon.web.modules.dr.programDetail.actions.changeGearsIcon"
+                                            labelKey="yukon.web.modules.dr.programDetail.actions.changeGears"/>
+                                <br>
+                                
                                 <cti:url var="sendEnableProgramsUrl" value="/spring/dr/program/sendEnableDisableProgramsConfirm">
                                     <cti:param name="controlAreaId" value="${controlAreaId}"/>
                                     <cti:param name="enable" value="true"/>

@@ -13,6 +13,41 @@ submitForm = function() {
 
 updateComponentAvailability = function() {
     setDateTimeInputEnabled('stopDate', !$('stopNowCheckbox').checked);
+    if (${stopGearAllowed}) {
+        setUseStopGearEnabled(!$('stopNowCheckbox').checked);
+    }
+}
+
+setUseStopGearEnabled = function(isEnabled) {
+    for (index = 0; index < ${fn:length(programs)}; index++) {
+        if (!isEnabled) {
+            jQuery('#useStopGear'+index).removeAttr("checked");
+            jQuery('#useStopGear'+index).attr("disabled","disabled");
+            jQuery('#programGear'+index).attr("disabled","disabled");
+        } else {
+            jQuery('#useStopGear'+index).removeAttr("disabled");
+            jQuery('#programGear'+index).removeAttr("disabled");
+        }
+    }
+    if(!isEnabled) {
+        jQuery('#allProgramsUseStopGearsCheckbox').removeAttr("checked");
+        jQuery('#allProgramsUseStopGearsCheckbox').attr("disabled","disabled");
+    } else {
+        jQuery('#allProgramsUseStopGearsCheckbox').removeAttr("disabled");
+    }
+}
+
+allStopGearChecked = function() {
+    allChecked = jQuery("#allProgramsUseStopGearsCheckbox").is(':checked');
+    for (index = 0; index < ${fn:length(programs)}; index++) {
+        if (allChecked) {
+            jQuery('#useStopGear'+index).removeAttr("disabled");
+            jQuery('#useStopGear'+index).attr("checked","checked");
+            jQuery('#programGear'+index).removeAttr("disabled");
+        } else {
+            jQuery('#useStopGear'+index).removeAttr("checked");
+        }
+    }
 }
 
 allProgramsChecked = function() {
@@ -20,6 +55,14 @@ allProgramsChecked = function() {
     for (index = 0; index < ${fn:length(programs)}; index++) {
         $('stopProgramCheckbox' + index).checked =
             allChecked && !$('stopProgramCheckbox' + index).disabled;
+    }
+}
+
+useStopGearChecked = function(checkBox, id) {
+    if (jQuery(checkBox).is(':checked')) {
+        jQuery('#'+id).removeAttr("disabled");
+    } else {
+        jQuery('#'+id).attr("disabled","disabled");
     }
 }
 
@@ -103,21 +146,53 @@ updateProgramState = function(index) {
     <table class="compactResultsTable">
         <tr class="<tags:alternateRow odd="" even="altRow"/>">
             <th><cti:msg key="yukon.web.modules.dr.program.stopMultiplePrograms.stopProgramName"/></th>
+            
+             <c:if test="${stopGearAllowed}">
+                <th><cti:msg key="yukon.web.modules.dr.program.changeMultipleGears.stopGearLbl"/></th>
+             </c:if>
             <th><cti:msg key="yukon.web.modules.dr.program.stopMultiplePrograms.currentState"/></th>
+            
             <c:if test="${!empty scenarioPrograms}">
                 <th><cti:msg key="yukon.web.modules.dr.program.stopMultiplePrograms.stopOffset"/></th>
             </c:if>
         </tr>
         <c:forEach var="program" varStatus="status" items="${programs}">
             <c:set var="programId" value="${program.paoIdentifier.paoId}"/>
+            <c:if test="${stopGearAllowed}">
+                <c:set var="gears" value="${gearsByProgramId[programId]}"/>
+            </c:if>
+            <c:set var="currentGear" value="${currentGearByProgramId[programId]}"/>
             <tr class="<tags:alternateRow odd="" even="altRow"/>">
-                <td><form:hidden path="programStopInfo[${status.index}].programId"/>
-                <form:checkbox path="programStopInfo[${status.index}].stopProgram"
-                    id="stopProgramCheckbox${status.index}"
-                    onclick="singleProgramChecked(this);"/>
-                <label for="stopProgramCheckbox${status.index}">${program.name}</label></td>
-                <td><cti:dataUpdaterValue identifier="${programId}/STATE" type="DR_PROGRAM"/>
-                <cti:dataUpdaterCallback function="updateProgramState(${status.index})" initialize="true" state="DR_PROGRAM/${programId}/SHOW_ACTION"/></td>
+                <td>
+                    <form:hidden path="programStopInfo[${status.index}].programId"/>
+                    <form:checkbox path="programStopInfo[${status.index}].stopProgram"
+                        id="stopProgramCheckbox${status.index}"
+                        onclick="singleProgramChecked(this);"/>
+                    <label for="stopProgramCheckbox${status.index}">${program.name}</label>
+                </td>
+                <c:if test="${stopGearAllowed}">
+                    <td>
+                        <c:if test="${fn:length(gears) > 1}">
+                            <form:checkbox path="programStopInfo[${status.index}].useStopGear"
+                                id="useStopGear${status.index}"
+                                onclick="useStopGearChecked(this,'programGear${status.index}');"/>
+                            <form:select path="programStopInfo[${status.index}].gearNumber" id="programGear${status.index}">
+                                <c:forEach var="gear" varStatus="gearStatus" items="${gears}">
+                                    <c:if test="${currentGear.gearNumber != gear.gearNumber}">
+                                        <form:option value="${gearStatus.index + 1}"><spring:escapeBody htmlEscape="true">${gear.gearName}</spring:escapeBody></form:option>
+                                    </c:if>
+                                </c:forEach>
+                            </form:select>
+                        </c:if>
+                        <c:if test="${fn:length(gears) < 2}">
+                           <cti:msg key="yukon.web.modules.dr.program.stopMultiplePrograms.gearChangeUnavailable"/>
+                        </c:if>
+                    </td>
+                </c:if>
+                <td>
+                    <cti:dataUpdaterValue identifier="${programId}/STATE" type="DR_PROGRAM"/>
+                    <cti:dataUpdaterCallback function="updateProgramState(${status.index})" initialize="true" state="DR_PROGRAM/${programId}/SHOW_ACTION"/>
+                </td>
                 <c:if test="${!empty scenarioPrograms}">
                     <c:set var="scenarioProgram" value="${scenarioPrograms[programId]}"/>
                     <td><cti:formatPeriod type="HM_SHORT" value="${scenarioProgram.stopOffset}"/></td>
@@ -134,6 +209,14 @@ updateProgramState = function(index) {
     <label for="allProgramsCheckbox">
         <cti:msg key="yukon.web.modules.dr.program.stopMultiplePrograms.stopAllPrograms"/>
     </label><br>
+    
+    <c:if test="${stopGearAllowed}">
+        <input type="checkbox" id="allProgramsUseStopGearsCheckbox" onclick="allStopGearChecked()"/>
+        <label for="allProgramsUseStopGearsCheckbox">
+            <cti:msg key="yukon.web.modules.dr.program.stopMultiplePrograms.allPropgramsUseStopGears"/>
+        </label><br>
+    </c:if>
+    
     <c:if test="${autoObserveConstraintsAllowed}">
         <c:if test="${checkConstraintsAllowed}">
             <form:checkbox path="autoObserveConstraints" id="autoObserveConstraints"

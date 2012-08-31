@@ -4,7 +4,6 @@ package com.cannontech.web.dr;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Date;
-import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
@@ -623,19 +622,6 @@ public class StartProgramController extends ProgramControllerBase {
         }
     }
 
-    private void addGearsToModel(List<DisplayablePao> programs, ModelMap model) {
-        Map<Integer, List<LMProgramDirectGear>> gearsByProgramId = Maps.newHashMap();
-        for (DisplayablePao program : programs) {
-            List<LMProgramDirectGear> gears = Collections.emptyList();
-            LMProgramBase programBase = programService.getProgramForPao(program);
-            if (programBase instanceof IGearProgram) {
-                gears = ((IGearProgram) programBase).getDirectGearVector();
-            }
-            gearsByProgramId.put(program.getPaoIdentifier().getPaoId(), gears);
-        }
-        model.addAttribute("gearsByProgramId", gearsByProgramId);
-    }
-
     private void assertOverrideAllowed(YukonUserContext userContext, Boolean overrideConstraints) {
         boolean overrideAllowed =
             rolePropertyDao.checkProperty(YukonRoleProperty.ALLOW_OVERRIDE_CONSTRAINT,
@@ -645,25 +631,6 @@ public class StartProgramController extends ProgramControllerBase {
         }
     }
 
-    private Map<Integer, Map<Integer, Boolean>> getIndexBasedIsTargetGearMap(List<DisplayablePao> programs) {
-        Map<Integer, Map<Integer, Boolean>> programIndexTargetGearMap = new HashMap<Integer, Map<Integer, Boolean>>();
-        for (int i = 0; i < programs.size(); i++){
-            DisplayablePao program = programs.get(i);
-            LMProgramBase programBase = programService.getProgramForPao(program);
-            List<LMProgramDirectGear> gears;
-            if (programBase instanceof IGearProgram) {
-                gears = ((IGearProgram) programBase).getDirectGearVector();
-                Map<Integer, Boolean> gearIndexIsTrueCycleMap = new HashMap<Integer, Boolean>();
-                programIndexTargetGearMap.put(i, gearIndexIsTrueCycleMap);
-                for (int j = 0; j < gears.size(); j++){
-                    LMProgramDirectGear lmProgramDirectGear = gears.get(j);
-                    gearIndexIsTrueCycleMap.put(j+1, lmProgramDirectGear.isTargetCycle());
-                }
-            }
-        }
-        return programIndexTargetGearMap;
-    }
-    
     private void setStartProgramBackingBeanBaseDefaults(StartProgramBackingBeanBase backingBean,
                                                           YukonUserContext userContext) {
         // With start and stop, it's important that we get the values

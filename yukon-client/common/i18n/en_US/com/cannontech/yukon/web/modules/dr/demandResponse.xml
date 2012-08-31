@@ -273,6 +273,8 @@
 <entry key="yukon.web.modules.dr.program.stopMultiplePrograms.currentState">Current State</entry>
 <entry key="yukon.web.modules.dr.program.stopMultiplePrograms.stopOffset">Stop Offset</entry>
 <entry key="yukon.web.modules.dr.program.stopMultiplePrograms.stopAllPrograms">Stop All Programs</entry>
+<entry key="yukon.web.modules.dr.program.stopMultiplePrograms.allPropgramsUseStopGears">Use Stop Gears All Programs</entry>
+<entry key="yukon.web.modules.dr.program.stopMultiplePrograms.gearChangeUnavailable">Only one gear defined</entry>
 <entry key="yukon.web.modules.dr.program.stopMultiplePrograms.autoObserveConstraints">Automatically Observe Constraints</entry>
 <entry key="yukon.web.modules.dr.program.stopMultiplePrograms.constraintsWillBeObserved">All constraints will be observed.</entry>
 
@@ -310,8 +312,8 @@
 <entry key="yukon.web.modules.dr.program.getChangeGearValue.gearSelect">Select Gear:</entry>
 <entry key="yukon.web.modules.dr.program.getChangeGearValue.okButton">OK</entry>
 <entry key="yukon.web.modules.dr.program.getChangeGearValue.cancelButton">Cancel</entry>
-<entry key="yukon.web.modules.dr.program.getChangeGearValue.notEnoughGears">Program {0} does not have multiple gears.</entry>
 <entry key="yukon.web.modules.dr.program.getChangeGearValue.gearChanged">Gear changed.</entry>
+<entry key="yukon.web.modules.dr.program.getChangeGearValue.multipleGearChanged">Gears changed.</entry>
 
 <!-- sendEnableConfirm.jsp -->
 <entry key="yukon.web.modules.dr.program.sendEnableConfirm.title">Send Enable</entry>
@@ -322,6 +324,17 @@
 <entry key="yukon.web.modules.dr.program.sendEnableConfirm.cancelButton">Cancel</entry>
 <entry key="yukon.web.modules.dr.program.sendEnableConfirm.enabled">Program enabled.</entry>
 <entry key="yukon.web.modules.dr.program.sendEnableConfirm.disabled">Program disabled.</entry>
+
+<entry key="yukon.web.modules.dr.program.changeMultipleGears.programs">Programs To Change Gears</entry>
+<entry key="yukon.web.modules.dr.program.changeMultipleGears.programLbl">Program</entry>
+<entry key="yukon.web.modules.dr.program.changeMultipleGears.gearLbl">Gear</entry>
+<entry key="yukon.web.modules.dr.program.changeMultipleGears.stopGearLbl">Use Stop Gear</entry>
+<entry key="yukon.web.modules.dr.program.changeMultipleGears.okButton">Change</entry>
+<entry key="yukon.web.modules.dr.program.changeMultipleGears.cancelButton">Cancel</entry>
+<entry key="yukon.web.modules.dr.program.changeMultipleGears.confirmChange.controlArea">Are you sure you want to change gears for programs in {0}?</entry>
+<entry key="yukon.web.modules.dr.program.changeMultipleGears.currentState">Current State</entry>
+<entry key="yukon.web.modules.dr.program.changeMultipleGears.confirmChange.scenario">Are you sure you want to change gears for programs in {0}?</entry>
+
 
 <!--  Load Group Field Values -->
 <entry key="yukon.web.modules.dr.loadGroup.value.STATE.ACTIVE">Active</entry>

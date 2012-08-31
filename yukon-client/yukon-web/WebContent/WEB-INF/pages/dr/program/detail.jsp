@@ -90,7 +90,7 @@
                     <cti:checkPaoAuthorization permission="CONTROL_COMMAND" pao="${program}">
                         
                         <%-- Actions are enabled only if the user has CONTROL_COMMAND for LM objects --%>
-                    
+
                         <tags:dynamicChoose updaterString="DR_PROGRAM/${programId}/SHOW_ACTION" suffix="${programId}">
                             <tags:dynamicChooseOption optionId="unknown">
                                 <cti:msg var="programUnknown" key="yukon.web.modules.dr.programDetail.unknown"/>
@@ -167,12 +167,14 @@
                                     logoKey="yukon.web.modules.dr.programDetail.actions.stopIcon"
                                     labelKey="yukon.web.modules.dr.programDetail.actions.stop"/>
                                 <br>
+                                
                                 <cti:msg var="changeGearsDisabled" key="yukon.web.modules.dr.programDetail.actions.changeGears.disabled"/>
                                 <span id="changeGearDisabled" title="${changeGearsDisabled}">
                                     <cti:logo key="yukon.web.modules.dr.programDetail.actions.changeGearsIcon.disabled"/>
                                     <cti:msg key="yukon.web.modules.dr.programDetail.actions.changeGears"/>
                                 </span>
                                 <br>
+                                
                                 <cti:url var="sendDisableUrl" value="/spring/dr/program/sendEnableConfirm">
                                     <cti:param name="programId" value="${programId}"/>
                                     <cti:param name="isEnabled" value="false"/>
