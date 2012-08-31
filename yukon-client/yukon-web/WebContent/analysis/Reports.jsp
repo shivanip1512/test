@@ -23,6 +23,7 @@
 <%@ taglib uri="http://cannontech.com/tags/cti" prefix="cti" %>
 <%@ taglib uri="http://java.sun.com/jsp/jstl/core" prefix="c" %>
 <%@ taglib prefix="tags" tagdir="/WEB-INF/tags"%>
+<%@ taglib prefix="dt" tagdir="/WEB-INF/tags/dateTime"%>
 
 
 <%@page import="com.cannontech.analysis.controller.ReportController"%>
@@ -308,12 +309,7 @@ function makeFirstSelectedFilterValueVisible() {
 				  <table width="100%" border="0" cellspacing="0" cellpadding="0">				
 				    <tr>
 				      <td valign="bottom">
-                      
-                        <tags:dateInputCalendar fieldId="startCal" 
-                                                fieldName="startDate" 
-                                                disabled="<%=(model != null && model.useStartDate() ? false : true)%>" 
-                                                fieldValue="<%= datePart.format(REPORT_BEAN.getStartDate()) %>"/>
-				   		
+						<dt:date id="startCal" name="startDate" disabled="<%=(model != null && model.useStartDate() ? false : true)%>" value="${REPORT_BEAN.startDate}" />
 					  </td>
 					  <td valign="bottom">&nbsp</td>
 			   		  <%if( controller != null && controller.useStartStopTimes() ){%>
@@ -344,12 +340,7 @@ function makeFirstSelectedFilterValueVisible() {
 				  <table width="100%" border="0" cellspacing="0" cellpadding="0">				
 				    <tr>
 					  <td valign="bottom">			
-                      
-                        <tags:dateInputCalendar fieldId="stopCal" 
-                                                fieldName="stopDate" 
-                                                disabled="<%=(model != null && model.useStopDate() ? false : true)%>" 
-                                                fieldValue="<%= datePart.format(REPORT_BEAN.getStopDate()) %>"/>
-                                                	
+                      	<dt:date id="stopCal" name="stopDate" disabled="<%=(model != null && model.useStopDate() ? false : true)%>" value="${REPORT_BEAN.stopDate}" />
                 	  </td>
 					  <td valign="bottom">&nbsp</td>
 					  <% if( controller != null && controller.useStartStopTimes() ){%>

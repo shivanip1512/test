@@ -129,8 +129,7 @@ public class ProfileWidget extends WidgetControllerBase {
 
     private void addFutureScheduleDateToMav(ModelAndView mav, YukonUserContext userContext) {
 
-        mav.addObject("futureScheduleDate", dateFormattingService.format(DateUtils.addDays(new Date(), 7),
-                                                       DateFormattingService.DateFormatEnum.DATE, userContext));
+        mav.addObject("futureScheduleDate", DateUtils.addDays(new Date(), 7));
         List<LocalTime> hours = Lists.newArrayList();
         LocalTime localTime = new LocalTime(0,0,0);
         for (Integer i = 1; i <= 24; i++) {
@@ -175,11 +174,11 @@ public class ProfileWidget extends WidgetControllerBase {
             WidgetParameterHelper.getStringParameter(request, "dailyUsageStopDateStr", "");
         if (StringUtils.isBlank(dailyUsageReportStartDateStr)
             && StringUtils.isBlank(dailyUsageReportStopDateStr)) {
-            dailyUsageReportStartDateStr = dateFormattingService.format(DateUtils.addDays(new Date(), -5),
-                                         DateFormattingService.DateFormatEnum.DATE, userContext);
-            dailyUsageReportStopDateStr = dateFormattingService.format(new Date(), DateFormattingService.DateFormatEnum.DATE, userContext);
-            mav.addObject("dailyUsageStartDateStr", dailyUsageReportStartDateStr);
-            mav.addObject("dailyUsageStopDateStr", dailyUsageReportStopDateStr);
+        	Date dailyUsageReportStartDate = DateUtils.addDays(new Date(), -5);
+        	Date dailyUsageReportStopDate = new Date();
+
+            mav.addObject("dailyUsageStartDate", dailyUsageReportStartDate);
+            mav.addObject("dailyUsageStopDate", dailyUsageReportStopDate);
         }
 
         // initialize past profile dates
@@ -193,8 +192,7 @@ public class ProfileWidget extends WidgetControllerBase {
     	    startDate = DateUtils.addDays(new Date(), -5);
     	}
 
-    	startDateStr = dateFormattingService.format(startDate, DateFormattingService.DateFormatEnum.DATE, userContext);
-    	mav.addObject("startDateStr", startDateStr);
+    	mav.addObject("startDate", startDate);
 
         // stop date
         Date stopDate;
@@ -204,8 +202,7 @@ public class ProfileWidget extends WidgetControllerBase {
             stopDate = new Date();
         }
 
-	    stopDateStr = dateFormattingService.format(stopDate, DateFormattingService.DateFormatEnum.DATE, userContext);
-		mav.addObject("stopDateStr", stopDateStr);
+		mav.addObject("stopDate", stopDate);
 
         // init future schedule date
         addFutureScheduleDateToMav(mav, userContext);
@@ -544,9 +541,21 @@ public class ProfileWidget extends WidgetControllerBase {
             url = ServletUtil.createSafeUrl(request, url);
             mav.addObject("reportQueryString", url);
         } else {
+        	try {
+        		LocalDate reportStartDate = dateFormattingService.parseLocalDate(reportStartDateStr, userContext);
+        		mav.addObject("dailyUsageStartDate", reportStartDate);
+            } catch (ParseException e) {
+                errorMessages.add(messageSourceAccessor.getMessage("yukon.web.widgets.profileWidget.startInvalid",
+                                                                   reportStartDateStr));
+            }
+            try {
+                LocalDate reportStopDate = dateFormattingService.parseLocalDate(reportStopDateStr, userContext);
+                mav.addObject("dailyUsageStopDate", reportStopDate);
+            } catch (ParseException e) {
+                errorMessages.add(messageSourceAccessor.getMessage("yukon.web.widgets.profileWidget.stopInvalid", 
+                                                                   reportStopDateStr));
+            }
             mav.addObject("errorMsgDailyUsage", errorMessages);
-            mav.addObject("dailyUsageStartDateStr", dateFormattingService.parseLocalDate(reportStartDateStr, userContext));
-            mav.addObject("dailyUsageStopDateStr", dateFormattingService.parseLocalDate(reportStopDateStr, userContext));
         }
         return mav;
     }

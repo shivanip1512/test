@@ -3,6 +3,7 @@
 <%@ taglib uri="http://cannontech.com/tags/cti" prefix="cti"%>
 <%@ taglib uri="http://www.springframework.org/tags" prefix="spring"%>
 <%@ taglib tagdir="/WEB-INF/tags" prefix="ct"%>
+<%@ taglib prefix="dt" tagdir="/WEB-INF/tags/dateTime" %>
 
 <h3><cti:msg key="yukon.dr.operator.optout.header"/></h3>
 
@@ -34,7 +35,7 @@
                             <spring:escapeBody htmlEscape="true">${formattedDate}</spring:escapeBody>
                         </c:when>
                         <c:otherwise>
-                            <ct:dateInputCalendar fieldName="startDate" fieldValue="${formattedDate}"/>
+                        	<dt:date name="startDate" value="${currentDate}" />
                         </c:otherwise>
                     </c:choose>
                 </td>

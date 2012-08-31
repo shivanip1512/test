@@ -5,6 +5,7 @@
 <%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core"%>
 <%@ taglib prefix="cti" uri="http://cannontech.com/tags/cti"%>
 <%@ taglib prefix="tags" tagdir="/WEB-INF/tags" %>
+<%@ taglib prefix="dt" tagdir="/WEB-INF/tags/dateTime" %>
 
 <%-- SET POPUP VAR NAMES --%>
 <c:set var="popupName" scope="page" value="togglePopupDiv${channelNum}"/>
@@ -14,6 +15,13 @@
 <c:set var="startHour" scope="page" value="startHour${channelNum}"/>
 <c:set var="stopDate" scope="page" value="stopDate${channelNum}"/>
 <c:set var="stopHour" scope="page" value="stopHour${channelNum}"/>
+
+<script>
+//needed for ajaxed date pickers
+jQuery(function(){
+	Yukon.ui.dateTimePickers.init();
+});
+</script>
 
 <c:choose>
     <c:when test="${newToggleVal}">
@@ -47,7 +55,7 @@
                 <td><input type="radio" name="${startRadio}" value="future"></td>
                 <td><i:inline key=".date"/></td>
                 <td>
-                    <tags:dateInputCalendar fieldName="${startDate}" fieldValue="${futureScheduleDate}"/> 
+                    <dt:date name="${startDate}" value="${futureScheduleDate}"/> 
                     <select name="${startHour}">
                         <c:forEach var="hour" items="${hours}">
                             <cti:formatDate value="${hour}" type="TIME" var="formattedHour" />
@@ -70,7 +78,7 @@
                 <td><input type="radio" name="${stopRadio}" id="radio" value="future"></td>
                 <td><i:inline key=".date"/></td>
                 <td>
-                    <tags:dateInputCalendar fieldName="${stopDate}" fieldValue="${futureScheduleDate}"/> 
+                    <dt:date name="${stopDate}" value="${futureScheduleDate}"/> 
                     <select name="${stopHour}">
                         <c:forEach var="hour" items="${hours}">
                             <cti:formatDate value="${hour}" type="TIME" var="formattedHour" />
@@ -96,7 +104,7 @@
                 <td><input type="radio" name="${stopRadio}" id="radio" value="future"></td>
                 <td><i:inline key=".date"/></td>
                 <td>
-                    <tags:dateInputCalendar fieldName="${stopDate}" fieldValue="${futureScheduleDate}"/> 
+                    <dt:date name="${stopDate}" value="${futureScheduleDate}"/> 
                     <select name="${stopHour}">
                         <c:forEach var="hour" items="${hours}">
                             <cti:formatDate value="${hour}" type="TIME" var="formattedHour" />

@@ -6,6 +6,7 @@
 <%@ taglib prefix="tags" tagdir="/WEB-INF/tags" %>
 <%@ taglib prefix="i" tagdir="/WEB-INF/tags/i18n" %>
 <%@ taglib prefix="dr" tagdir="/WEB-INF/tags/dr" %>
+<%@ taglib prefix="dt" tagdir="/WEB-INF/tags/dateTime" %>
 
 <cti:standardPage module="survey" page="reportConfig">
 
@@ -157,10 +158,10 @@ function updateFieldsFromBackingBean() {
 		    </form:select>
         </tags:nameValue2>
         <tags:nameValue2 nameKey=".startDate">
-            <tags:dateInputCalendar fieldName="startDate" springInput="true"/>
+            <dt:date path="startDate" />
         </tags:nameValue2>
         <tags:nameValue2 nameKey=".endDate">
-            <tags:dateInputCalendar fieldName="stopDate" springInput="true"/>
+            <dt:date path="stopDate" />
         </tags:nameValue2>
         <tags:nameValue2 nameKey=".question">
             <form:select id="questionSelect" path="questionId" onchange="questionChanged()">

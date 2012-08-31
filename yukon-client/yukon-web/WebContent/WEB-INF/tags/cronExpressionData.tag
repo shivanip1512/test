@@ -2,6 +2,7 @@
 <%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core" %>
 <%@ taglib prefix="tags" tagdir="/WEB-INF/tags"%>
 <%@ taglib prefix="i" tagdir="/WEB-INF/tags/i18n" %>
+<%@ taglib prefix="dt" tagdir="/WEB-INF/tags/dateTime" %>
 
 <%@ attribute name="id" required="true" rtexprvalue="true" description="Used to give the variable unique names so that multiple tags can be used on a single page without conflicting"%>
 <%@ attribute name="state" required="true" rtexprvalue="true" type="com.cannontech.web.amr.util.cronExpressionTag.CronExpressionTagState" description="Used to configure the controls to a certain state. Pass a new CronExpressionTagState to configure to default state."%>
@@ -165,10 +166,7 @@
 
 <%-- ONE-TIME --%>
 <div id="${id}_cronExpOneTimeDiv" style="padding-top:6px;display:none;">
-
-<cti:formatDate var="todayStr" type="DATE" value="${state.date}"/>
-<tags:dateInputCalendar fieldName="${id}_CRONEXP_ONETIME_DATE" fieldValue="${todayStr}"/>
-
+	<dt:date name="${id}_CRONEXP_ONETIME_DATE" value="${state.date}"/>
 </div>
 
 <%-- CUSTOM --%>

@@ -4,6 +4,7 @@
 <%@ taglib prefix="tags" tagdir="/WEB-INF/tags" %>
 <%@ taglib prefix="form" uri="http://www.springframework.org/tags/form" %>
 <%@ taglib prefix="i" tagdir="/WEB-INF/tags/i18n"%>
+<%@ taglib prefix="dt" tagdir="/WEB-INF/tags/dateTime" %>
 
 <cti:standardPage page="scheduledGroupRequestAllJobs" module="amr">
     
@@ -27,12 +28,10 @@
             <tags:sortFields backingBean="${backingBean}" />
 
             <tags:nameValueContainer2>
-                <tags:nameValue2 nameKey=".filter.dateFrom">
-                    <tags:dateInputCalendar fieldName="fromDate" springInput="true" />
-                </tags:nameValue2>
-
-                <tags:nameValue2 nameKey=".filter.dateTo">
-                    <tags:dateInputCalendar fieldName="toDate" springInput="true" />
+                <tags:nameValue2 nameKey=".filter.dateRange">
+                    <dt:dateRange startPath="fromDate" endPath="toDate" >
+                    	<i:inline key=".filter.dateTo"/>
+                    </dt:dateRange>
                 </tags:nameValue2>
 
                 <tags:nameValue2 nameKey=".executions.tableHeader.status.linkText">

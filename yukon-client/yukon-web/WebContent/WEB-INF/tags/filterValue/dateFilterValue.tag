@@ -6,10 +6,9 @@
 <%@ taglib prefix="cti" uri="http://cannontech.com/tags/cti" %>
 <%@ taglib prefix="tags" tagdir="/WEB-INF/tags" %>
 <%@ taglib prefix="form" uri="http://www.springframework.org/tags/form" %>
+<%@ taglib prefix="dt" tagdir="/WEB-INF/tags/dateTime" %>
 
 <tags:nameValue2 nameKey=".dateFilter" label="${eventLogFilter.key}">
-
-    <tags:dateInputCalendar fieldName="eventLogFilters[${count-1}].filterValue.startDate" springInput="true" showErrorOnNextLine="false"/>
-    <tags:dateInputCalendar fieldName="eventLogFilters[${count-1}].filterValue.stopDate" springInput="true" />
-
+    <dt:dateRange startPath="eventLogFilters[${count-1}].filterValue.startDate"
+    			  endPath="eventLogFilters[${count-1}].filterValue.stopDate" />
 </tags:nameValue2>

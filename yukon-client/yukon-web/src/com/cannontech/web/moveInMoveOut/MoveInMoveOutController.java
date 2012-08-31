@@ -65,18 +65,12 @@ public class MoveInMoveOutController extends MultiActionController {
         Meter meter = getMeter(request);
         SimpleDevice device = deviceDao.getYukonDevice(meter.getDeviceId());
         LiteYukonUser liteYukonUser = ServletUtil.getYukonUser(request);
-        YukonUserContext userContext = YukonUserContextUtils.getYukonUserContext(request);
-
-        Date currentDate = new Date();
-        String currentDateFormatted = dateFormattingService.format(currentDate,
-                                                                       DateFormattingService.DateFormatEnum.DATE,
-                                                                       userContext);
 
         // Adds the group to the mav object
         mav.addObject("meter", meter);
         mav.addObject("deviceId", meter.getDeviceId());
         mav.addObject("deviceName", paoLoadingService.getDisplayablePao(device).getName());
-        mav.addObject("currentDate", currentDateFormatted);
+        mav.addObject("currentDate", new Date());
         
         // readable?
         boolean readable = moveInMoveOutService.isAuthorized(liteYukonUser, meter);
@@ -183,18 +177,12 @@ public class MoveInMoveOutController extends MultiActionController {
         Meter meter = getMeter(request);
         SimpleDevice device = deviceDao.getYukonDevice(meter.getDeviceId());
         LiteYukonUser liteYukonUser = ServletUtil.getYukonUser(request);
-        YukonUserContext userContext = YukonUserContextUtils.getYukonUserContext(request);
-
-        Date currentDate = new Date();
-        String currentDateFormatted = dateFormattingService.format(currentDate,
-                                                                       DateFormattingService.DateFormatEnum.DATE,
-                                                                       userContext);
 
         // Adds the group to the mav object
         mav.addObject("meter", meter);
         mav.addObject("deviceId", meter.getDeviceId());
         mav.addObject("deviceName", paoLoadingService.getDisplayablePao(device).getName());
-        mav.addObject("currentDate", currentDateFormatted);
+        mav.addObject("currentDate", new Date());
         
         // readable?
         boolean readable = moveInMoveOutService.isAuthorized(liteYukonUser, meter);

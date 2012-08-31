@@ -30,11 +30,26 @@
     </c:if>
 </c:if>
 
-<c:if test="${!empty pageScope.value}">
-    <cti:formatDate var="timeValue" value="${pageScope.value}" type="TIME24H"/>
-    <cti:formatDate var="timeZoneShort" value="${pageScope.value}" type="TIMEZONE"/>
-    <cti:formatDate var="timeZoneFull" value="${pageScope.value}" type="TIMEZONE_EXTENDED"/>
-</c:if>
+<c:set var="timeValue" value=""/>
+<c:set var="timeZoneShort" value=""/>
+<c:set var="timeZoneFull" value=""/>
+
+<c:choose>
+	<c:when test="${empty pageScope.value}">
+		<c:if test="${not empty pageScope.path && not empty status.actualValue}">
+			<spring:bind path="${path}">
+			    <cti:formatDate var="timeValue" value="${status.actualValue}" type="TIME24H"/>
+			    <cti:formatDate var="timeZoneShort" value="${status.actualValue}" type="TIMEZONE"/>
+			    <cti:formatDate var="timeZoneFull" value="${status.actualValue}" type="TIMEZONE_EXTENDED"/>
+		    </spring:bind>
+	    </c:if>
+	</c:when>
+	<c:otherwise>
+	    <cti:formatDate var="dateTimeValue" value="${pageScope.value}" type="TIME24H"/>
+	    <cti:formatDate var="timeZoneShort" value="${pageScope.value}" type="TIMEZONE"/>
+	    <cti:formatDate var="timeZoneFull" value="${pageScope.value}" type="TIMEZONE_EXTENDED"/>
+	</c:otherwise>
+</c:choose>
 
 <c:if test="${!empty pageScope.minDate}">
     <cti:formatDate var="minFormattedDate" value="${pageScope.minDate}" type="DATE"/>
@@ -47,13 +62,13 @@
     <c:set var="disabled" value="false"/>
 </c:if>
 
-<cti:msg2 var="jsDateTimeFormat" key="yukon.common.dateFormatting.TIME24H.js" />
+<cti:msg var="jsDateTimeFormat" key="yukon.common.dateFormatting.TIME24H.js" />
 
 <c:choose>
 	<c:when test="${not empty pageScope.path}">
 		<spring:bind path="${path}">
 			<cti:displayForPageEditModes modes="VIEW">
-				${timeValue}
+				${status.value}
 			</cti:displayForPageEditModes>
 			<cti:displayForPageEditModes modes="EDIT,CREATE">
                 <form:input id="${id}" 

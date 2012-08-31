@@ -1,6 +1,7 @@
 <%@ taglib prefix="ct" tagdir="/WEB-INF/tags"%>
 <%@ taglib prefix="cti" uri="http://cannontech.com/tags/cti"%>
 <%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core"%>
+<%@ taglib prefix="dt" tagdir="/WEB-INF/tags/dateTime" %>
 
 <c:forEach items="${validationErrors}" var="error">
     <span class="internalSectionHeader" style>${error}</span>
@@ -16,7 +17,7 @@
 		<ct:nameValueContainer2>
 		
 			<ct:nameValue2 nameKey=".moveOutDate">
-			    <ct:dateInputCalendar fieldName="moveOutDate" fieldValue="${currentDate}" />
+			    <dt:date name="moveOutDate" value="${currentDate}" />
 			</ct:nameValue2>
 			<ct:nameValue2 nameKey=".emailNotification">
 			    <input name="emailAddress" type="text" />

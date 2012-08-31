@@ -5,6 +5,7 @@
 <%@ taglib prefix="dr" tagdir="/WEB-INF/tags/dr"%>
 <%@ taglib uri="http://www.springframework.org/tags" prefix="spring" %>
 <%@ taglib uri="http://www.springframework.org/tags/form" prefix="form" %>
+<%@ taglib prefix="dt" tagdir="/WEB-INF/tags/dateTime" %>
 
 <cti:standardPage title="Event Log" module="support" page="eventViewer.byCategory">
     <cti:standardMenu menuSelection="events|byCategory" />
@@ -30,8 +31,7 @@
                 
                 <tags:nameValue2 nameKey=".dateRange">
                     <span class="dateRangeInputField">
-                        <tags:dateInputCalendar fieldName="startDate" springInput="true" showErrorOnNextLine="false"/> - 
-                        <tags:dateInputCalendar fieldName="stopDate" springInput="true"/>
+						<dt:dateRange startPath="startDate" endPath="stopDate" />
                     </span>
                 </tags:nameValue2>
                 

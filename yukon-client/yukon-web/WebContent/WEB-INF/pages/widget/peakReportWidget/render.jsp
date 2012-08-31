@@ -2,9 +2,7 @@
 <%@ taglib prefix="i" tagdir="/WEB-INF/tags/i18n"%>
 <%@ taglib prefix="cti" uri="http://cannontech.com/tags/cti"%>
 <%@ taglib prefix="tags" tagdir="/WEB-INF/tags" %>
-
-<cti:includeScript link="/JavaScript/calendarControl.js"/>
-<cti:includeCss link="/WebConfig/yukon/styles/calendarControl.css"/>
+<%@ taglib prefix="dt" tagdir="/WEB-INF/tags/dateTime" %>
 
 <c:choose>
 	<c:when test="${readable}">
@@ -35,16 +33,16 @@
 			   		</select>
 			   	</td>
 			</tr>
-		</table> 
-		
-		<table>
 			<tr>
-				<td><i:inline key="yukon.web.defaults.start"/>:</td>
-				<td><tags:dateInputCalendar fieldName="startDateStr" fieldValue="${startDateStr}"></tags:dateInputCalendar></td>
-				<td><i:inline key="yukon.web.defaults.stop"/>:</td>
-				<td><tags:dateInputCalendar fieldName="stopDateStr" fieldValue="${stopDateStr}"></tags:dateInputCalendar></td>
+				<td>
+				<i:inline key="yukon.web.defaults.dateRange"/>:
+				</td>
+				<td>
+					<dt:dateRange startName="startDateStr" startValue="${startDate}"
+								  endName="stopDateStr" endValue="${stopDate}" />
+				</td>
 			</tr>
-		</table>
+		</table> 
 		
 		<%--RESULTS--%>
 		<div id="${widgetParameters.widgetId}_results">

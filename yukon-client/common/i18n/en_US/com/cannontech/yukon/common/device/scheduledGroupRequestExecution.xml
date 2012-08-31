@@ -60,8 +60,9 @@
     <entry key="yukon.web.modules.amr.scheduledGroupRequestAllJobs.pageName">All Schedules</entry>
     <entry key="yukon.web.modules.amr.scheduledGroupRequestAllJobs.tableTitle.title">Schedules</entry>
     <entry key="yukon.web.modules.amr.scheduledGroupRequestAllJobs.filter.section">Filters</entry>
+    <entry key="yukon.web.modules.amr.scheduledGroupRequestAllJobs.filter.dateRange">Date Range</entry>
     <entry key="yukon.web.modules.amr.scheduledGroupRequestAllJobs.filter.dateFrom">From</entry>
-    <entry key="yukon.web.modules.amr.scheduledGroupRequestAllJobs.filter.dateTo">To</entry>
+    <entry key="yukon.web.modules.amr.scheduledGroupRequestAllJobs.filter.dateTo">to</entry>
     <entry key="yukon.web.modules.amr.scheduledGroupRequestAllJobs.filter.type">Request Type</entry>
     <entry key="yukon.web.modules.amr.scheduledGroupRequestAllJobs.filter.typeAny">Any Scheduled</entry>
     <entry key="yukon.web.modules.amr.scheduledGroupRequestAllJobs.filter.enabled">Enabled</entry>

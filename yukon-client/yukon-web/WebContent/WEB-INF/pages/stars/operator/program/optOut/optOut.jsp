@@ -6,6 +6,7 @@
 <%@ taglib tagdir="/WEB-INF/tags/i18n" prefix="i"%>
 <%@ taglib tagdir="/WEB-INF/tags" prefix="tags"%>
 <%@ taglib tagdir="/WEB-INF/tags/dr" prefix="dr"%>
+<%@ taglib prefix="dt" tagdir="/WEB-INF/tags/dateTime" %>
 
 <cti:standardPage module="operator" page="optOut.main">
 <cti:includeCss link="/WebConfig/yukon/styles/operator/optOut.css"/>
@@ -55,8 +56,7 @@
                     <input type="hidden" name="startDate" value="${formattedDate}" />
                 </cti:checkRolesAndProperties>
                 <cti:checkRolesAndProperties value="!OPERATOR_OPT_OUT_TODAY_ONLY">
-                    <tags:dateInputCalendar fieldName="startDate" fieldValue="${formattedDate}" 
-                                            springInput="true" />
+                	<dt:date path="startDate" value="${optOutBackingBean.startDate}"/>
                 </cti:checkRolesAndProperties>
             </tags:nameValue2>
     	

@@ -157,7 +157,10 @@ if(typeof(Yukon.ui.dateTimePickers) == 'undefined') {
     		//}
     	},
     	_insertTimezone: function(self){
-    	    self.after('<div class="timezone_container" title="' + self.attr('data-time-zone-full') + '">' + self.attr('data-time-zone-short') + '</div>');
+    		//there are some implementations of LocalDate out there, ugh...
+    		if(typeof(self.attr('data-time-zone-short')) != "undefined"){
+    			self.after('<div class="timezone_container" title="' + self.attr('data-time-zone-full') + '">' + self.attr('data-time-zone-short') + '</div>');
+    	    }
     	},
     	_onBeforeShow: function(input){
     	    jQuery('#ui-datepicker-div').addClass(jQuery(input).attr('data-class'));

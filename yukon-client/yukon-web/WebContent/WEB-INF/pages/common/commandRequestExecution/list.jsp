@@ -2,6 +2,7 @@
 <%@ taglib prefix="cti" uri="http://cannontech.com/tags/cti"%>
 <%@ taglib prefix="fn" uri="http://java.sun.com/jsp/jstl/functions"%>
 <%@ taglib prefix="tags" tagdir="/WEB-INF/tags"%>
+<%@ taglib prefix="dt" tagdir="/WEB-INF/tags/dateTime" %>
 
 <cti:msg var="pageTitle" key="yukon.web.modules.amr.commandRequestExecution.results.list.pageTitle" />
 <cti:msg var="filterSectionText" key="yukon.web.modules.amr.commandRequestExecution.results.list.filter.section" />
@@ -83,12 +84,12 @@
             
                 <tags:nameValue name="${filerDateFromText}" nameColumnWidth="100px">
                     <cti:formatDate var="fromDateStr" type="DATE" value="${fromDate}" nullText=""/>
-                    <tags:dateInputCalendar fieldName="fromDate" fieldValue="${fromDateStr}"/>
+                    <dt:date name="fromDate" value="${fromDate}" />
                 </tags:nameValue>
                 
                 <tags:nameValue name="${filerDateToText}">
                     <cti:formatDate var="toDateStr" type="DATE" value="${toDate}" nullText=""/>
-                    <tags:dateInputCalendar fieldName="toDate" fieldValue="${toDateStr}"/>
+                    <dt:date name="toDate" value="${toDate}" />
                 </tags:nameValue>
                 
                 <c:if test="${!singleJob}">

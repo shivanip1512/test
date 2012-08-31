@@ -10,7 +10,6 @@
 <%@ attribute name="maxDate" type="java.lang.Object" description="Set a maximum selectable date via a Instant object or as a string in the current dateFormat, or a number of days from today (e.g. +7) or a string of values and periods ('y' for years, 'm' for months, 'w' for weeks, 'd' for days, e.g. '+1m +1w'), or null for no limit." %>
 <%@ attribute name="minDate" type="java.lang.Object" description="Set a maximum selectable date via a Instant object or as a string in the current dateFormat, or a number of days from today (e.g. +7) or a string of values and periods ('y' for years, 'm' for months, 'w' for weeks, 'd' for days, e.g. '+1m +1w'), or null for no limit." %>
 
-
 <%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core" %>
 <%@ taglib prefix="cti" uri="http://cannontech.com/tags/cti" %>
 <%@ taglib prefix="spring" uri="http://www.springframework.org/tags" %>
@@ -28,11 +27,26 @@
     </c:if>
 </c:if>
 
-<c:if test="${!empty pageScope.value}">
-    <cti:formatDate var="dateValue" value="${pageScope.value}" type="DATE"/>
-    <cti:formatDate var="timeZoneShort" value="${pageScope.value}" type="TIMEZONE"/>
-    <cti:formatDate var="timeZoneFull" value="${pageScope.value}" type="TIMEZONE_EXTENDED"/>
-</c:if>
+<c:set var="dateValue" value=""/>
+<c:set var="timeZoneShort" value=""/>
+<c:set var="timeZoneFull" value=""/>
+
+<c:choose>
+	<c:when test="${empty pageScope.value}">
+		<c:if test="${not empty pageScope.path && not empty status.actualValue}">
+			<spring:bind path="${path}">
+			    <cti:formatDate var="dateValue" value="${status.actualValue}" type="DATE"/>
+			    <cti:formatDate var="timeZoneShort" value="${status.actualValue}" type="TIMEZONE"/>
+			    <cti:formatDate var="timeZoneFull" value="${status.actualValue}" type="TIMEZONE_EXTENDED"/>
+		    </spring:bind>
+	    </c:if>
+	</c:when>
+	<c:otherwise>
+	    <cti:formatDate var="dateValue" value="${pageScope.value}" type="DATE"/>
+	    <cti:formatDate var="timeZoneShort" value="${pageScope.value}" type="TIMEZONE"/>
+	    <cti:formatDate var="timeZoneFull" value="${pageScope.value}" type="TIMEZONE_EXTENDED"/>
+	</c:otherwise>
+</c:choose>
 
 <c:if test="${!empty pageScope.minDate}">
     <cti:formatDate var="minFormattedDate" value="${pageScope.minDate}" type="DATE"/>
@@ -45,13 +59,13 @@
     <c:set var="disabled" value="false"/>
 </c:if>
 
-<cti:msg2 var="jsDateTimeFormat" key="yukon.common.dateFormatting.DATE.js" />
+<cti:msg var="jsDateTimeFormat" key="yukon.common.dateFormatting.DATE.js" />
 
 <c:choose>
 	<c:when test="${not empty pageScope.path}">
 		<spring:bind path="${path}">
 			<cti:displayForPageEditModes modes="VIEW">
-				${dateValue}
+				${status.value}
 			</cti:displayForPageEditModes>
 			<cti:displayForPageEditModes modes="EDIT,CREATE">
                 <form:input id="${id}" 

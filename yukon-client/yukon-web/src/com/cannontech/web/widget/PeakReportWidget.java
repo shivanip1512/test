@@ -242,25 +242,34 @@ public class PeakReportWidget extends WidgetControllerBase {
         
         // start date
         if (StringUtils.isBlank(startDateStr)) {
+        	Date startDate = DateUtils.addDays(new Date(), -5);
             mav.addObject("startDateStr",
-                          dateFormattingService.format(DateUtils.addDays(new Date(),
-                                                                             -5),
-                                                           DateFormattingService.DateFormatEnum.DATE,
-                                                           userContext));
+                          dateFormattingService.format(startDate,
+                                                       DateFormattingService.DateFormatEnum.DATE,
+                                                       userContext));
+            mav.addObject("startDate", startDate);
         }
         else {
             mav.addObject("startDateStr", startDateStr);
+            try {
+				mav.addObject("startDate", dateFormattingService.flexibleDateParser(startDateStr, userContext));
+			} catch (ParseException e) {}
         }
         
         // stop date
         if (StringUtils.isBlank(stopDateStr)) {
+        	Date stopDate = new Date();
             mav.addObject("stopDateStr",
-                          dateFormattingService.format(new Date(),
-                                                           DateFormattingService.DateFormatEnum.DATE,
-                                                           userContext));
+                          dateFormattingService.format(stopDate,
+                                                       DateFormattingService.DateFormatEnum.DATE,
+                                                       userContext));
+            mav.addObject("stopDate", stopDate);
         }
         else {
             mav.addObject("stopDateStr", stopDateStr);
+            try {
+				mav.addObject("startDate", dateFormattingService.flexibleDateParser(stopDateStr, userContext));
+			} catch (ParseException e) {}
         }
             
         return mav;

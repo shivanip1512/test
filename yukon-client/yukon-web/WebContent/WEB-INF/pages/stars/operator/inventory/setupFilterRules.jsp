@@ -5,6 +5,7 @@
 <%@ taglib prefix="form" uri="http://www.springframework.org/tags/form"%>
 <%@ taglib prefix="i" tagdir="/WEB-INF/tags/i18n"%>
 <%@ taglib prefix="spring" uri="http://www.springframework.org/tags"%>
+<%@ taglib prefix="dt" tagdir="/WEB-INF/tags/dateTime" %>
 
 <cti:standardPage module="operator" page="filterSelection">
     <cti:includeCss link="/WebConfig/yukon/styles/operator/inventory.css"/>
@@ -115,7 +116,7 @@
                                         </c:when>
 
                                         <c:when test="${rule.ruleType eq 'FIELD_INSTALL_DATE'}">
-                                            <tags:dateInputCalendar fieldName="filterRules[${row.index}].fieldInstallDate" springInput="true"/>
+                                            <dt:date path="filterRules[${row.index}].fieldInstallDate" />
                                         </c:when>
                                         
                                         <c:when test="${rule.ruleType eq 'LOAD_GROUP'}">
@@ -150,7 +151,7 @@
                                         </c:when>
                                         
                                         <c:when test="${rule.ruleType eq 'PROGRAM_SIGNUP_DATE'}">
-                                            <tags:dateInputCalendar fieldName="filterRules[${row.index}].programSignupDate" springInput="true"/>
+                                            <dt:date path="filterRules[${row.index}].programSignupDate" />
                                         </c:when>
                                         
                                         <c:when test="${rule.ruleType eq 'SERIAL_NUMBER_RANGE'}">

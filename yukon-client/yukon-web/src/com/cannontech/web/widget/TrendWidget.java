@@ -1,5 +1,6 @@
 package com.cannontech.web.widget;
 
+import java.text.ParseException;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.LinkedHashMap;
@@ -125,10 +126,14 @@ public class TrendWidget extends WidgetControllerBase {
             String stopDateParam = cachingWidgetParameterGrabber.getCachedStringParameter(request, "stopDateParam", null);
         
             if (startDateParam != null) {
-                startDate = dateFormattingService.flexibleDateParser(startDateParam, DateFormattingService.DateOnlyMode.START_OF_DAY, userContext);
+            	try{
+            		startDate = dateFormattingService.flexibleDateParser(startDateParam, DateFormattingService.DateOnlyMode.START_OF_DAY, userContext);
+            	}catch(ParseException e){}
             }
             if (stopDateParam != null) {
+            	try{
                 stopDate = dateFormattingService.flexibleDateParser(stopDateParam, DateFormattingService.DateOnlyMode.START_OF_DAY, userContext);
+            	}catch(ParseException e){}
             }
             
         }
@@ -168,8 +173,8 @@ public class TrendWidget extends WidgetControllerBase {
         mav.addObject("availableAttributeGraphs", availableAttributeGraphs);
         mav.addObject("period", period);
         mav.addObject("interval", chartInteval);
-        mav.addObject("startDate", startDateStr);
-        mav.addObject("stopDate", stopDateStr);
+        mav.addObject("startDate", startDate);
+        mav.addObject("stopDate", stopDate);
         mav.addObject("graphType", graphType);
         
         MessageSourceAccessor accessor = messageSourceResolver.getMessageSourceAccessor(userContext);

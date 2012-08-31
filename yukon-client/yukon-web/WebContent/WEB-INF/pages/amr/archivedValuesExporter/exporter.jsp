@@ -5,7 +5,7 @@
 <%@ taglib prefix="i" tagdir="/WEB-INF/tags/i18n"%>
 <%@ taglib prefix="fn" uri="http://java.sun.com/jsp/jstl/functions"%>
 <%@ taglib prefix="dialog" tagdir="/WEB-INF/tags/dialog"%>
-
+<%@ taglib prefix="dt" tagdir="/WEB-INF/tags/dateTime" %>
 
 <cti:standardPage page="archivedValueExporter.${mode}" module="amr">
 
@@ -404,9 +404,8 @@
                     <c:if test="${not empty backingBean.allFormats}">
                         <tags:nameValue2 nameKey=".endDate">
                             <tags:setFormEditMode mode="${editMode}" />
-                            <tags:dateInputCalendar fieldId="endDate" fieldName="endDate" fieldValue="${backingBean.endDate}" springInput="true"></tags:dateInputCalendar>
+                            <dt:date path="endDate" value="${backingBean.endDate}" />
                             <tags:setFormEditMode mode="${mode}" />
-                            <i:inline key=".timezone" arguments="${backingBean.timezone}" />
                             <c:choose>
                                 <c:when test="${empty deviceCollection}">
                                     <cti:button id="selectDevicesBtn2" nameKey="selectDevices" />

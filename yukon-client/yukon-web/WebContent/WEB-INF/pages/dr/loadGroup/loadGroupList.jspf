@@ -5,6 +5,7 @@
 <%@ taglib uri="http://www.springframework.org/tags/form" prefix="form"%>
 <%@ taglib prefix="tags" tagdir="/WEB-INF/tags"%>
 <%@ taglib prefix="dr" tagdir="/WEB-INF/tags/dr"%>
+<%@ taglib prefix="dt" tagdir="/WEB-INF/tags/dateTime" %>
 
 <cti:msgScope paths="modules.dr.loadGroupList">
 
@@ -90,9 +91,11 @@
 						<td>
                             <table>
                                 <tr>
-                                    <td><tags:dateInputCalendar springInput="true" fieldName="lastAction.min"/></td>
-                                    <td>${toStr}</td>
-                                    <td><tags:dateInputCalendar springInput="true" fieldName="lastAction.max"/></td>
+                                	<td>
+	                                    <dt:dateRange startPath="lastAction.min" endPath="lastAction.max">
+                                    		${toStr}
+	                                   	</dt:dateRange>
+                                   	</td>
                                 </tr>
                             </table>
                         </td>

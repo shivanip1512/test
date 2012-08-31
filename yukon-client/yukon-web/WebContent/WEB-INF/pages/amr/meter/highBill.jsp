@@ -3,6 +3,8 @@
 <%@ taglib prefix="amr" tagdir="/WEB-INF/tags/amr"%>
 <%@ taglib prefix="tags" tagdir="/WEB-INF/tags"%>
 <%@ taglib prefix="i" tagdir="/WEB-INF/tags/i18n"%>
+<%@ taglib prefix="dt" tagdir="/WEB-INF/tags/dateTime" %>
+
 
 <cti:standardPage module="amr" page="highBill">
 
@@ -94,18 +96,19 @@
         <tags:sectionContainer title="${step1}" id="hbcStep1">
             
             <%-- GET REPORT --%>
-            <div class="smallBoldLabel" style="display:inline;"><i:inline key=".startDate"/> </div><tags:dateInputCalendar fieldName="getReportStartDate" fieldValue="${formattedStartDate}"/>
-            <div class="smallBoldLabel" style="display:inline;"><i:inline key=".endDate"/> </div><tags:dateInputCalendar fieldName="getReportStopDate" fieldValue="${formattedStopDate}"/>
-            
+            <div class="smallBoldLabel fl" style="display:inline;"><i:inline key=".startDate"/> </div>
+            <dt:date name="getReportStartDate" value="${startDate}"  />
+            <div class="smallBoldLabel fl" style="display:inline;"><i:inline key=".endDate"/> </div>
+			<dt:date name="getReportStopDate" value="${stopDate}"/>
             <c:if test="${readable}">
                 <cti:url var="getReportUrl" value="/spring/meter/highBill/getReport"/>
                 <cti:url var="hbcRedirectUrl" value="/spring/meter/highBill/view"/>
                 
                 
-                <input type="button" id="getReportButton" value="<cti:msg2 key=".getReport"/>" onclick="getReport('${getReportUrl}', '${hbcRedirectUrl}');" class="formSubmit"> 
+                <input type="button" id="getReportButton" value="<cti:msg2 key=".getReport"/>" onclick="getReport('${getReportUrl}', '${hbcRedirectUrl}');" class="formSubmit fl"> 
                 <img id="getReportProcessImg" style="display:none;" src="<cti:url value="/WebConfig/yukon/Icons/indicator_arrows.gif"/>">
             </c:if>
-                    
+            <br/>
             <%-- PROFILE PEAK REPORT(S) --%>
             <c:choose>
                 <c:when test="${not analyze}">

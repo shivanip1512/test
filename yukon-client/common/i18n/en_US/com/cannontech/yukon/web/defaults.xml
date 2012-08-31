@@ -18,6 +18,7 @@
 <entry key="yukon.web.defaults.off">Off</entry>
 <entry key="yukon.web.defaults.stop">Stop</entry>
 <entry key="yukon.web.defaults.start">Start</entry>
+<entry key="yukon.web.defaults.dateRange">Date Range</entry>
 <entry key="yukon.web.defaults.minuteAbbreviation">{0} min</entry>
 <entry key="yukon.web.defaults.hourAbbreviation">{0} hr</entry>
 <entry key="yukon.web.defaults.day">Day</entry>

@@ -6,6 +6,7 @@
 <%@ taglib prefix="dialog" tagdir="/WEB-INF/tags/dialog" %>
 <%@ taglib prefix="i" tagdir="/WEB-INF/tags/i18n" %>
 <%@ taglib prefix="spring" uri="http://www.springframework.org/tags"%>
+<%@ taglib prefix="dt" tagdir="/WEB-INF/tags/dateTime" %>
 
 <script type="text/javascript">
 YEvent.observeSelectorClick('#newButton', function(event) {
@@ -125,15 +126,15 @@ Event.observe(window, 'load', updateServiceCompanyInfo);
                 </c:if>
                 
                 <tags:nameValue2 nameKey=".fieldInstallDate">
-                    <tags:dateInputCalendar fieldName="fieldInstallDate" fieldValue="fieldInstallDate" springInput="true"></tags:dateInputCalendar>
+                    <dt:date path="fieldInstallDate" />
                 </tags:nameValue2>
                 
                 <tags:nameValue2 nameKey=".fieldReceiveDate">
-                    <tags:dateInputCalendar fieldName="fieldReceiveDate" fieldValue="fieldReceiveDate" springInput="true"></tags:dateInputCalendar>
+                    <dt:date path="fieldReceiveDate" />
                 </tags:nameValue2>
                 
                 <tags:nameValue2 nameKey=".fieldRemoveDate">
-                    <tags:dateInputCalendar fieldName="fieldRemoveDate" fieldValue="fieldRemoveDate" springInput="true"></tags:dateInputCalendar>
+                	<dt:date path="fieldRemoveDate" />
                 </tags:nameValue2>
                 
                 <tags:textareaNameValue nameKey=".deviceNotes" path="deviceNotes" rows="4" cols="35" rowClass="notesRow"/>

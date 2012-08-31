@@ -3,7 +3,7 @@
 <%@ taglib uri="http://cannontech.com/tags/cti" prefix="cti"%>
 <%@ taglib tagdir="/WEB-INF/tags" prefix="ct"%>
 <%@ taglib uri="http://www.springframework.org/tags" prefix="spring"%>
-
+<%@ taglib prefix="dt" tagdir="/WEB-INF/tags/dateTime" %>
 
 <c:set var="actionUrl" value="/spring/stars/consumer/optout/deviceSelection"/>
 
@@ -39,7 +39,7 @@
                                     ${formattedDate}
                                 </c:when>
                                 <c:otherwise>
-                                    <ct:dateInputCalendar fieldName="startDate" fieldValue="${formattedDate}"/>
+                                    <dt:date name="startDate" value="${currentDate}" />
 	       	                    </c:otherwise>
 	       	                </c:choose>
 		                </td>

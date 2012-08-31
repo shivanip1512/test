@@ -7,6 +7,7 @@
 <%@ taglib uri="http://java.sun.com/jsp/jstl/core" prefix="c" %>
 <%@ taglib prefix="tags" tagdir="/WEB-INF/tags" %>
 <%@ taglib prefix="jsTree" tagdir="/WEB-INF/tags/jsTree" %>
+<%@ taglib prefix="dt" tagdir="/WEB-INF/tags/dateTime" %>
 
 <cti:verifyRolesAndProperties value="APPLICATION_BILLING"/>
 
@@ -43,7 +44,7 @@
 	<br>
 	
 	<c:set var="formatMap" value="<%=FileFormatTypes.getValidFormats()%>"></c:set>
-	<c:set var="origEndDate" value="<%= datePart.format(billingBean.getEndDate()) %>"></c:set>
+	<c:set var="origEndDate" value="<%= billingBean.getEndDate() %>"></c:set>
 	<c:set var="systemTimezone" value="<%= tzFormat.format(billingBean.getEndDate()) %>"></c:set>
     
     <cti:msg key="yukon.web.settings" var="settingsLabel"/>
@@ -68,8 +69,7 @@
 				</tags:nameValue>
 				<cti:msg key="yukon.web.billing.billingEndDate" var="billingEndDate" />
 				<tags:nameValue name="${billingEndDate}">
-		        	<tags:dateInputCalendar fieldName="endDate" fieldValue="${origEndDate}"></tags:dateInputCalendar>
-		        	<cti:msg key="yukon.web.billing.timeZoneDisclaimer" argument="${systemTimezone }"/>
+		        	<dt:date name="endDate" value="${origEndDate}" />
 				</tags:nameValue>
 				<cti:msg key="yukon.web.billing.demandDaysPrevious" var="demandDaysPrevious" />
 				<tags:nameValue name="${demandDaysPrevious}">

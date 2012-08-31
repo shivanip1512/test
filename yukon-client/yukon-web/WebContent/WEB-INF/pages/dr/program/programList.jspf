@@ -5,6 +5,7 @@
 <%@ taglib uri="http://www.springframework.org/tags/form" prefix="form"%>
 <%@ taglib prefix="tags" tagdir="/WEB-INF/tags"%>
 <%@ taglib prefix="dr" tagdir="/WEB-INF/tags/dr"%>
+<%@ taglib prefix="dt" tagdir="/WEB-INF/tags/dateTime" %>
 
 <cti:msgScope paths="modules.dr.programList">
 <cti:url var="submitUrl" value="${baseUrl}" />
@@ -93,11 +94,9 @@
 						<td>
 						    <table>
 						        <tr>
-                                    <td><tags:dateInputCalendar springInput="true"
-                                        fieldName="start.min"/></td>
-                                    <td>${toStr}</td>
-                                    <td><tags:dateInputCalendar
-                                        springInput="true" fieldName="start.max"/></td>
+									<dt:dateRange startPath="start.min" endPath="start.max" >
+										${toStr}
+									</dt:dateRange>
 						        </tr>
 						    </table>
 					    </td>
@@ -129,11 +128,11 @@
                         <td>
                             <table>
                                 <tr>
-                                    <td><tags:dateInputCalendar springInput="true"
-                                        fieldName="stop.min"/></td>
-                                    <td>${toStr}</td>
-                                    <td><tags:dateInputCalendar
-                                        springInput="true" fieldName="stop.max"/></td>
+									<td>
+										<dt:dateRange startPath="stop.min" endPath="stop.max" >
+											${toStr}
+										</dt:dateRange>
+									</td>
                                 </tr>
                             </table>
                         </td>

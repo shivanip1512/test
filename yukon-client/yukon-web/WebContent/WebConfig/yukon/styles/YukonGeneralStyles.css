@@ -2059,6 +2059,7 @@ div.scrollingContainer_medium {
 	margin-top: 5px;
 }
 
+.ui-datepicker::before,
 .dropdown-menu::before {
 	right: 14px;
 	left: auto;
@@ -2071,6 +2072,7 @@ div.scrollingContainer_medium {
 	border-bottom-color: rgba(0, 0, 0, 0.2);
 	content: '';
 }
+.ui-datepicker::after,
 .dropdown-menu::after {
   position: absolute;
   top: -6px;
@@ -2082,6 +2084,8 @@ div.scrollingContainer_medium {
   border-left: 6px solid transparent;
   content: '';
 }
+.ui-datepicker::before {left:3.5em;right:auto;border-bottom-color: #999;}
+
 .dropdown-menu {
 	display: none;
 	position: absolute;
@@ -2281,11 +2285,14 @@ table th.small_width {
 	-moz-border-radius: 2px;
 	border-radius: 2px;
 	border: solid 1px #999;
+	float: left;
+	margin-right: 5px;
 }
 
 .datetimeEntry_wrap input {
 	padding: 2px;
 	float: left;
+	height: 16px;
 	border: solid 1px white;
 }
 .datetimeEntry_wrap img {
@@ -2301,7 +2308,7 @@ table th.small_width {
 }
 
 .datetimeEntry_wrap .timezone_container {
-	line-height: 19px;
+	line-height: 21px;
 	margin-left: -31px;
 	float: left;
 	color: #999;

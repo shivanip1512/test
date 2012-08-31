@@ -3,9 +3,7 @@
 <%@ taglib prefix="cti" uri="http://cannontech.com/tags/cti" %>
 <%@ taglib prefix="i" tagdir="/WEB-INF/tags/i18n"%>
 <%@ taglib prefix="tags" tagdir="/WEB-INF/tags" %>
-
-<cti:includeScript link="/JavaScript/calendarControl.js"/>
-<cti:includeCss link="/WebConfig/yukon/styles/calendarControl.css"/>
+<%@ taglib prefix="dt" tagdir="/WEB-INF/tags/dateTime" %>
 
 <script type="text/javascript"> 
 	
@@ -95,8 +93,9 @@
         			<tr id="optionalDateFields" name="optionalDateFields">
         				<td>&nbsp;</td>
         				<td>
-            				<tags:dateInputCalendar fieldName="startDateParam" fieldValue="${startDate}" />&nbsp;
-            				<tags:dateInputCalendar fieldName="stopDateParam" fieldValue="${stopDate}" />&nbsp;
+							<div class="fl">
+								<dt:dateRange startName="startDateParam" startValue="${startDate}" endName="stopDateParam" endValue="${stopDate}" />
+							</div>
                             <tags:widgetActionRefreshImage nameKey="reloadUsingCustomDates" method="render"/>
         				</td>
         			</tr>

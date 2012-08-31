@@ -7,12 +7,10 @@
 <%@ taglib uri="http://cannontech.com/tags/cti" prefix="cti"%>
 <%@ taglib tagdir="/WEB-INF/tags/dr" prefix="dr"%>
 <%@ taglib tagdir="/WEB-INF/tags" prefix="tags"%>
+<%@ taglib prefix="dt" tagdir="/WEB-INF/tags/dateTime" %>
 
 <cti:standardPage module="consumer" page="trending">
 <cti:standardMenu/>
-
-<cti:includeScript link="/JavaScript/calendarControl.js"/>
-<cti:includeCss link="/WebConfig/yukon/styles/calendarControl.css"/>
 
 <script language="JavaScript">
     function MM_reloadPage(init) {  //reloads the window if Nav4 resized
@@ -60,23 +58,24 @@
     boolean isEvent = com.cannontech.util.ServletUtil.EVENT.equals(graphBean.getPeriod());
 
     String spanStyle = "none";
-    String startDate = datePart.format(graphBean.getStartDate());
+    java.util.Date startDate = graphBean.getStartDate();
     if(isEvent){
         spanStyle = "";
-        startDate = datePart.format(graphBean.getStopDate());
+        startDate = graphBean.getStopDate();
     }
 
 %>
-                                    <table width="375" border="0" cellspacing="2" cellpadding="0">
+                                    <table width="450" border="0" cellspacing="2" cellpadding="0">
                                       <tr>
-                                          <td width="163" valign="top" class="SubText">Start Date:
-                                            
-                                            <tags:dateInputCalendar fieldId="cal"
-                                                                    fieldName="start"
-                                                                    fieldValue="<%=startDate%>" />
-                            
+                                          <td width="225" valign="top" class="SubText">
+                                          	<div class="fl" style="margin: 5px 5px 0 0">
+                                          		Start Date:
+                                          	</div>
+                                            <dt:date id="cal" name="start" value="<%= startDate %>" />
                                           </td>
-                                          <td width="154" valign="top" class="SubText">Time Period:
+                                          <td width="225" valign="top" class="SubText">
+                                          	<div class="fl" style="margin-right: 5px;">
+                                          	Time Period:
                                             <select id="period" name="period" onchange="changeEvent()">
 <% /* Fill in the period drop down and attempt to match the current period with one of the options */                           
     for( String period : com.cannontech.util.ServletUtil.historicalPeriods) {
@@ -99,11 +98,8 @@
 %>
                                               </select>
                                               </span>
-                                          </td>
-                                          <td width="75">
-                                            <div align="left">
-                                              <input type="image" src="/WebConfig/yukon/Buttons/GoButton.gif" name="image" border="0">
-                                            </div>
+                                              </div>
+                                              <input type="image" src="/WebConfig/yukon/Buttons/GoButton.gif" name="image" border="0" class="fl">
                                           </td>
                                       </tr>
                                     </table>

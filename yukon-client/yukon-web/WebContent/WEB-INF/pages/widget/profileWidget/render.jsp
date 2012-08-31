@@ -1,10 +1,18 @@
 <%@ taglib prefix="tags" tagdir="/WEB-INF/tags" %>
+<%@ taglib prefix="dt" tagdir="/WEB-INF/tags/dateTime" %>
 <%@ taglib prefix="cti" uri="http://cannontech.com/tags/cti"%>
 <%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core"%>
 <%@ taglib prefix="i" tagdir="/WEB-INF/tags/i18n"%>
 
 <cti:includeScript link="/JavaScript/calendarControl.js"/>
 <cti:includeCss link="/WebConfig/yukon/styles/calendarControl.css"/>
+
+<script>
+	//reinit the datepickers
+	jQuery(function(){
+		Yukon.ui.dateTimePickers.init();
+	});
+</script>
 
 <c:choose>
 <c:when test="${not empty reportQueryString}">
@@ -80,14 +88,14 @@
     		<tr>
     			<td class="label"><i:inline key=".startDate"/></td>
     			<td colspan="2">
-    				<tags:dateInputCalendar fieldName="startDateStr" fieldValue="${startDateStr}"></tags:dateInputCalendar>
+    				<dt:date name="startDateStr" value="${startDate}" />
     			</td>
     		</tr>
     		
     		<tr>
     			<td class="label"><i:inline key=".stopDate"/></td>
     			<td colspan="2">
-    				<tags:dateInputCalendar fieldName="stopDateStr" fieldValue="${stopDateStr}"></tags:dateInputCalendar>
+    				<dt:date name="stopDateStr" value="${stopDate}" />
     			</td>
     		</tr>
     		
@@ -127,11 +135,11 @@
         <tr>
             <td class="label"><i:inline key=".startDate"/></td>
             <td>
-                <tags:dateInputCalendar fieldName="dailyUsageStartDate" fieldValue="${dailyUsageStartDateStr}"></tags:dateInputCalendar>
+                <dt:date name="dailyUsageStartDate" value="${dailyUsageStartDate}" />
             </td>
             <td class="label"><i:inline key=".stopDate"/></td>
             <td>
-                <tags:dateInputCalendar fieldName="dailyUsageStopDate" fieldValue="${dailyUsageStopDateStr}"></tags:dateInputCalendar>
+                <dt:date name="dailyUsageStopDate" value="${dailyUsageStopDate}" />
             </td>
             <td class="last" align="right">
                 <tags:widgetActionRefresh method="viewDailyUsageReport" nameKey="viewReport"/>

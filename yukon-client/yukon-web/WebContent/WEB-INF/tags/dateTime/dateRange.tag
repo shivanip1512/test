@@ -1,4 +1,4 @@
-<%@ tag body-content="empty" trimDirectiveWhitespaces="true" %>
+<%@ tag trimDirectiveWhitespaces="true" %>
 
 <%@ attribute name="startPath" required="false" description="Spring binding path"%>
 <%@ attribute name="startName" description="Name of the field in the supplied object"%>
@@ -9,6 +9,7 @@
 <%@ attribute name="disabled" type="java.lang.Boolean" description="Default: false. Determines if the input is disabled." %>
 <%@ attribute name="cssClass" type="java.lang.String" description="Class added to the input of the widget" %>
 <%@ attribute name="cssDialogClass" type="java.lang.String" description="Class added to the outer dialog div" %>
+
 
 <%@ taglib prefix="dt" tagdir="/WEB-INF/tags/dateTime" %>
 
@@ -22,6 +23,7 @@
 			 cssClass="${pageScope.cssClass} f_dateStart"
 			 cssDialogClass="${pageScope.cssDialogClass}"
 			 maxDate="${pageScope.endValue}" />
+	<jsp:doBody/>
 	<dt:date path="${pageScope.endPath}"
 			 name="${pageScope.endName}"
 			 value="${pageScope.endValue}"

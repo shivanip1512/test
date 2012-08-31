@@ -1,6 +1,7 @@
 <%@ taglib prefix="tags" tagdir="/WEB-INF/tags"%>
 <%@ taglib prefix="cti" uri="http://cannontech.com/tags/cti"%>
 <%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core"%>
+<%@ taglib prefix="dt" tagdir="/WEB-INF/tags/dateTime" %>
 
 <c:forEach items="${validationErrors}" var="error">
     <span class="internalSectionHeader" style>${error}</span>
@@ -20,7 +21,7 @@
 			    <input name="deviceName" size="30" type="text" value="${meter.name}" />
 			</tags:nameValue2>
 			<tags:nameValue2 nameKey=".moveInDate">
-				<tags:dateInputCalendar fieldName="moveInDate" fieldValue="${currentDate}" />
+				<dt:date name="moveInDate" value="${currentDate}" />
 			</tags:nameValue2>
 			<tags:nameValue2 nameKey=".emailNotification">
 			    <input name="emailAddress" type="text" />

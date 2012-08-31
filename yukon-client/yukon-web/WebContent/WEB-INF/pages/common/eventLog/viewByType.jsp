@@ -8,6 +8,7 @@
 <%@ taglib uri="http://www.springframework.org/tags" prefix="spring" %>
 <%@ taglib uri="http://www.springframework.org/tags/form" prefix="form" %>
 <%@ taglib tagdir="/WEB-INF/tags/i18n" prefix="i" %>
+<%@ taglib prefix="dt" tagdir="/WEB-INF/tags/dateTime" %>
 
 <cti:standardPage title="Event Log" module="support" page="eventViewer.byType">
     <cti:standardMenu menuSelection="events|byType" />
@@ -23,8 +24,7 @@
                     <tags:nameValueContainer2>
         
                         <tags:nameValue2 nameKey=".eventLogDateRange">
-                            <tags:dateInputCalendar fieldName="startDate" springInput="true" showErrorOnNextLine="false"/>
-                            <tags:dateInputCalendar fieldName="stopDate" springInput="true" />
+                            <dt:dateRange startPath="startDate" endPath="stopDate" />
                         </tags:nameValue2>
         
                         <c:forEach var="eventLogFilter" items="${eventLogTypeBackingBean.eventLogFilters}" varStatus="status">

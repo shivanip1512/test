@@ -41,6 +41,11 @@
 			    disableInputs: ${disableInputs}});
 		}
 	}
+	
+	//needed for ajaxed date pickers
+	jQuery(function(){
+		Yukon.ui.dateTimePickers.init();
+	});
 </script>
 
 <span id="${thisId}">

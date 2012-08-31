@@ -3,6 +3,7 @@
 <%@ taglib prefix="fn" uri="http://java.sun.com/jsp/jstl/functions"%>
 <%@ taglib prefix="tags" tagdir="/WEB-INF/tags"%>
 <%@ taglib prefix="i" tagdir="/WEB-INF/tags/i18n"%>
+<%@ taglib prefix="dt" tagdir="/WEB-INF/tags/dateTime" %>
 
 <cti:standardPage page="webServices.loadControl" module="support">
 
@@ -80,12 +81,12 @@
                         </tags:nameValue2>
                         
                         <tags:nameValue2 nameKey=".startTime">
-                            <tags:dateInputCalendar fieldName="startDate" fieldValue="${startDate}"/>
+							<dt:date name="startDate" value="${startDate}" />
                             <input type="text" name="startTime" value="${startTime}"><i:inline key=".hhMM"/>
                         </tags:nameValue2>
                         
                         <tags:nameValue2 nameKey=".stopTime">
-                            <tags:dateInputCalendar fieldName="stopDate" fieldValue="${stopDate}"/>
+                            <dt:date name="stopDate" value="${stopDate}"/>
                             <input type="text" name="stopTime" value="${stopTime}"><i:inline key=".hhMM"/>
                         </tags:nameValue2>
 
@@ -116,12 +117,12 @@
                         </tags:nameValue2>
                         
                         <tags:nameValue2 nameKey=".startTime">
-                            <tags:dateInputCalendar fieldName="startDate" fieldValue="${startDate}"/>
+                            <dt:date name="startDate" value="${startDate}"/>
                             <input type="text" name="startTime" value="${startTime}"><i:inline key=".hhMM"/>
                         </tags:nameValue2>
                         
                         <tags:nameValue2 nameKey=".stopTime">
-                            <tags:dateInputCalendar fieldName="stopDate" fieldValue="${stopDate}"/>
+                            <dt:date name="stopDate" value="${stopDate}"/>
                             <input type="text" name="stopTime" value="${stopTime}"><i:inline key=".hhMM"/>
                         </tags:nameValue2>
                         
@@ -156,7 +157,7 @@
                         </tags:nameValue2>
                         
                         <tags:nameValue2 nameKey=".stopTime">
-                            <tags:dateInputCalendar fieldName="stopDate" fieldValue="${stopDate}"/>
+                            <dt:date name="stopDate" value="${stopDate}"/>
                             <input type="text" name="stopTime" value="${stopTime}"><i:inline key=".hhMM"/>
                         </tags:nameValue2>
                         
@@ -187,7 +188,7 @@
                         </tags:nameValue2>
                         
                         <tags:nameValue2 nameKey=".stopTime">
-                            <tags:dateInputCalendar fieldName="stopDate" fieldValue="${startDate}"/>
+                            <dt:date name="stopDate" value="${startDate}"/>
                             <input type="text" name="stopTime" value="${startTime}"><i:inline key=".hhMM"/>
                         </tags:nameValue2>
                         
@@ -320,7 +321,7 @@
                             <input type="text" name="deviceType" value="${deviceType}">
                         </tags:nameValue2>
                         <tags:nameValue2 nameKey=".fieldInstallDate">
-                            <tags:dateInputCalendar fieldName="fieldInstallDate" fieldValue="${fieldInstallDate}"/>
+                            <dt:date name="fieldInstallDate" value="${fieldInstallDate}"/>
                         </tags:nameValue2>                        
                         <tags:nameValue2 nameKey=".serviceCompanyName" >
                             <input type="text" name="serviceCompanyName" value="${serviceCompanyName}">
@@ -354,7 +355,7 @@
                             <input type="text" name="deviceType" value="${deviceType}">
                         </tags:nameValue2>
                         <tags:nameValue2 nameKey=".fieldInstallDate">
-                            <tags:dateInputCalendar fieldName="fieldInstallDate" fieldValue="${fieldInstallDate}"/>
+                            <dt:date name="fieldInstallDate" value="${fieldInstallDate}"/>
                         </tags:nameValue2>                        
                         <tags:nameValue2 nameKey=".serviceCompanyName" >
                             <input type="text" name="serviceCompanyName" value="${serviceCompanyName}">
@@ -388,7 +389,7 @@
                             <input type="text" name="deviceType" value="${deviceType}">
                         </tags:nameValue2>
                         <tags:nameValue2 nameKey=".fieldRemoveDate">
-                            <tags:dateInputCalendar fieldName="fieldRemoveDate" fieldValue="${fieldRemoveDate}"/>
+                            <dt:date name="fieldRemoveDate" value="${fieldRemoveDate}"/>
                         </tags:nameValue2>                        
                         
                         <tags:nameValue2 nameKey=".run">
