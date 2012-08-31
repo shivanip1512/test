@@ -100,7 +100,7 @@ DEALLOCATE userId_curs;
 /* Clean up old tables and detact the foreign keys */
 ALTER TABLE UserGroup
     DROP COLUMN GroupIdStr;
-
+GO
 sp_rename 'YukonUserGroup', 'YukonUserGroup_Old';
 /* @error ignore-begin */
 ALTER TABLE YukonUserGroup_Old
