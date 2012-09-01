@@ -7,7 +7,6 @@ import java.util.Map;
 import javax.annotation.PostConstruct;
 
 import org.apache.log4j.Logger;
-import org.jdom.Attribute;
 import org.jdom.Element;
 import org.jdom.JDOMException;
 import org.jdom.Namespace;
@@ -81,33 +80,43 @@ public class SendThermostatScheduleEndpoint {
             // Get the inventoryIds from the serial numbers supplied.
             YukonEnergyCompany yukonEnergyCompany = yukonEnergyCompanyService.getEnergyCompanyByOperator(user);
             List<Integer> inventoryIds = inventoryDao.getInventoryIds(serialNumbers, yukonEnergyCompany.getEnergyCompanyId());
+            if(inventoryIds.isEmpty()){
+                if(serialNumbers.isEmpty()){
+                    Element fe = XMLFailureGenerator.generateFailure(sendThermostatSchedule, new Exception(), "SerialNumberDoesNotExist", "At least one Serial Number is required.");
+                    resp.addContent(fe);
+                }else if(serialNumbers.size() == 1){
+                    Element fe = XMLFailureGenerator.generateFailure(sendThermostatSchedule, new Exception(), "SerialNumberDoesNotExist", "Serial Number supplied does not exist.");
+                    resp.addContent(fe);
+                }else{
+                    Element fe = XMLFailureGenerator.generateFailure(sendThermostatSchedule, new Exception(), "SerialNumberDoesNotExist", "Serial Numbers supplied do not exist.");
+                    resp.addContent(fe);
+                }
+            }else{
             
-            // Send out thermostat schedule
-            Map<Integer, CustomerAccount> inventoryIdsToAccountMap = customerAccountDao.getInventoryIdsToAccountMap(inventoryIds);
-            for (Integer inventoryId : inventoryIds) {
-                CustomerAccount customerAccount = inventoryIdsToAccountMap.get(inventoryId);
-                
-                AccountThermostatSchedule ats = 
-                        accountThermostatScheduleDao.getSchedulesForAccountByScheduleName(customerAccount.getAccountId(), scheduleName);
-                thermostatService.sendSchedule(customerAccount, ats, Collections.singleton(inventoryId), ats.getThermostatScheduleMode(), user);
+                // Send out thermostat schedule
+                Map<Integer, CustomerAccount> inventoryIdsToAccountMap = customerAccountDao.getInventoryIdsToAccountMap(inventoryIds);
+                for (Integer inventoryId : inventoryIds) {
+                    CustomerAccount customerAccount = inventoryIdsToAccountMap.get(inventoryId);
+                    
+                    AccountThermostatSchedule ats = 
+                            accountThermostatScheduleDao.getSchedulesForAccountByScheduleName(customerAccount.getAccountId(), scheduleName);
+                    thermostatService.sendSchedule(customerAccount, ats, Collections.singleton(inventoryId), ats.getThermostatScheduleMode(), user);
+                }
+                // build response
+                resp.addContent(new Element("success", ns));
             }
             
         } catch (NotAuthorizedException e) {
             Element fe = XMLFailureGenerator.generateFailure(sendThermostatSchedule, e, "UserNotAuthorized", "The user is not authorized to send text messages.");
             resp.addContent(fe);
-            return resp;
         } catch (EmptyResultDataAccessException e) {
             Element fe = XMLFailureGenerator.generateFailure(sendThermostatSchedule, e, "ScheduleNameDoesNotExist", "The schedule name supplied does not exist.");
             resp.addContent(fe);
-            return resp;
         } catch (Exception e) {
-            Element fe = XMLFailureGenerator.generateFailure(sendThermostatSchedule, e, "OtherException", "An exception has been caught.");
+            Element fe = XMLFailureGenerator.generateFailure(sendThermostatSchedule, e, "OtherException", "An exception has been caught."); 
             resp.addContent(fe);
             log.error(e.getMessage(), e);
         }
-        
-        // build response
-        resp.addContent(XmlUtils.createStringElement("success", ns, ""));
         
         return resp;
     }
