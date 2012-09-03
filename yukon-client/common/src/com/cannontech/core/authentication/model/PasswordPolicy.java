@@ -2,7 +2,6 @@ package com.cannontech.core.authentication.model;
 
 import java.util.Arrays;
 import java.util.Collections;
-import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 import java.util.regex.Matcher;
@@ -16,6 +15,7 @@ import org.joda.time.Duration;
 import org.joda.time.Instant;
 
 import com.cannontech.database.data.lite.LiteYukonUser;
+import com.google.common.collect.Sets;
 import com.google.common.primitives.Ints;
 
 public class PasswordPolicy {
@@ -122,7 +122,7 @@ public class PasswordPolicy {
      * Return a list of the PolicyRules met
      */
     public Set<PolicyRule> getValidPolicyRules(String password) {
-    	Set<PolicyRule> validRules = new HashSet<PolicyRule>();
+    	Set<PolicyRule> validRules = Sets.newHashSet();
     	
     	for (PolicyRule policyRule :  this.policyRules) {
     		Pattern policyRolePattern = policyRule.getRegexPattern();
