@@ -71,7 +71,7 @@
         <span class="fl previousLink">
             <c:choose>
                 <c:when test="${result.previousNeeded}">
-                    <a href="${prevUrl}" class="labeled_icon icon_prev ajaxPaging">
+                    <a href="${prevUrl}" class="labeled_icon icon_prev f_ajaxPaging">
                         <i:inline key="yukon.common.paging.previous"/>
                     </a>
                 </c:when>
@@ -84,7 +84,7 @@
         <span class="fl nextLink">
             <c:choose>
                 <c:when test="${result.nextNeeded}">
-                    <a href="${nextUrl}" class="labeled_icon_right icon_next ajaxPaging">
+                    <a href="${nextUrl}" class="labeled_icon_right icon_next f_ajaxPaging">
                         <i:inline key="yukon.common.paging.next"/>
                     </a>
                 </c:when>
