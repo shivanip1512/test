@@ -2352,6 +2352,7 @@ div.threeQuarterLayout div.primary,
 div.threeQuarterLayout div.secondary {
     float: left;
     position: relative;
+    margin: 0 0 !important;
 }
 div.threeQuarterLayout div.primary {
     width: 75%;
