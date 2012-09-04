@@ -1,7 +1,7 @@
 /*==============================================================*/
 /* Database name:  YukonDatabase                                */
 /* DBMS name:      ORACLE Version 9i                            */
-/* Created on:     9/4/2012 3:00:15 AM                          */
+/* Created on:     9/4/2012 3:16:59 AM                          */
 /*==============================================================*/
 
 
@@ -5077,6 +5077,15 @@ create table JOBSTATUS  (
 );
 
 /*==============================================================*/
+/* Table: LMBeatThePeakGear                                     */
+/*==============================================================*/
+create table LMBeatThePeakGear  (
+   GearId               NUMBER                          not null,
+   AlertLevel           VARCHAR2(20)                    not null,
+   constraint PK_LMBeatThePeakGear primary key (GearId)
+);
+
+/*==============================================================*/
 /* Table: LMCONTROLAREAPROGRAM                                  */
 /*==============================================================*/
 create table LMCONTROLAREAPROGRAM  (
@@ -6022,15 +6031,6 @@ INSERT INTO LMThermostatSeasonEntry VALUES (-13,-1,1174,75600,72,72);
 /*==============================================================*/
 create index INDX_LMThermSeaEntry_SeaId on LMThermostatSeasonEntry (
    SeasonID ASC
-);
-
-/*==============================================================*/
-/* Table: LMTierGear                                            */
-/*==============================================================*/
-create table LMTierGear  (
-   GearId               NUMBER                          not null,
-   Tier                 NUMBER                          not null,
-   constraint PK_GearId primary key (GearId)
 );
 
 /*==============================================================*/
@@ -11168,6 +11168,11 @@ alter table JOBSTATUS
       references JOB (JobID)
       on delete cascade;
 
+alter table LMBeatThePeakGear
+   add constraint FK_BTPGear_LMProgramDirectGear foreign key (GearId)
+      references LMProgramDirectGear (GearID)
+      on delete cascade;
+
 alter table LMCONTROLAREAPROGRAM
    add constraint FK_LMCntlArea_LMCntlArProg foreign key (DEVICEID)
       references LMControlArea (DEVICEID);
@@ -11575,11 +11580,6 @@ alter table LMThermostatSeason
 alter table LMThermostatSeasonEntry
    add constraint FK_LMThermSeaEntry_LMThermSea foreign key (SeasonID)
       references LMThermostatSeason (SeasonID)
-      on delete cascade;
-
-alter table LMTierGear
-   add constraint FK_GearId_DeviceId foreign key (GearId)
-      references LMProgramDirectGear (GearID)
       on delete cascade;
 
 alter table MACROROUTE
