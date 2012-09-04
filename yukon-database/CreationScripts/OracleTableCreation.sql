@@ -1,7 +1,7 @@
 /*==============================================================*/
 /* Database name:  YukonDatabase                                */
 /* DBMS name:      ORACLE Version 9i                            */
-/* Created on:     9/4/2012 12:36:13 AM                         */
+/* Created on:     9/4/2012 1:00:41 AM                          */
 /*==============================================================*/
 
 
@@ -7236,7 +7236,7 @@ INSERT INTO State VALUES(-19, 3, 'Unsupported', 7, 6, 0);
 INSERT INTO State VALUES(-18, 0, 'Unknown', 9, 6, 0);
 INSERT INTO State VALUES(-18, 1, 'In Service', 0, 6, 0);
 INSERT INTO State VALUES(-18, 2, 'Out of Service', 1, 6, 0);
-INSERT INTO State VALUES(-18, 3, 'Temporarily Out of Serivice', 7, 6, 0);
+INSERT INTO State VALUES(-18, 3, 'Temporarily Out of Service', 7, 6, 0);
 INSERT INTO State VALUES(-17, 0, 'Manual', 0, 6, 0);
 INSERT INTO State VALUES(-17, 1, 'SCADA Override', 1, 6, 0);
 INSERT INTO State VALUES(-17, 2, 'Fault Current', 2, 6, 0);

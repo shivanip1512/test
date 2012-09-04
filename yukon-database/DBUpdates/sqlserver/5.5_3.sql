@@ -376,6 +376,12 @@ SET ForceReset = 'Y'
 WHERE UserId IN (-1, -2, -100);
 /* End YUK-11039 */
 
+/* Start YUK-11338 */
+UPDATE State 
+SET Text = 'Temporarily Out of Service' 
+WHERE Text = 'Temporarily Out of Serivice';
+/* End YUK-11338 */
+
 /**************************************************************/ 
 /* VERSION INFO                                               */ 
 /*   Automatically gets inserted from build script            */ 
