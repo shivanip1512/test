@@ -224,6 +224,10 @@ public class ReportGenerator extends javax.servlet.http.HttpServlet
                         //resp.addHeader("Content-Type", "application/pdf");
                     }
                 }
+                if(ext.equalsIgnoreCase("csv")){
+                    resp.setContentType("text/csv"); 
+                }
+                
 
             }
             else if( action.equalsIgnoreCase("GenerateMissedMeterList"))

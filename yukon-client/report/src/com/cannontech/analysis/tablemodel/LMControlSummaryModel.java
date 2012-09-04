@@ -64,7 +64,6 @@ public class LMControlSummaryModel extends BareDatedReportModelBase<LMControlSum
         public Integer enrolledInventory = 0;
         public Double controlHours;
         public Double totalOptOutHoursDuringControl;
-        public Double totalOptOutHours;
         public Integer optOutEvents;
     }
     
@@ -127,10 +126,10 @@ public class LMControlSummaryModel extends BareDatedReportModelBase<LMControlSum
         data = new ArrayList<ModelRow>(ecPrograms.size());
         HashMap<Integer, Double[]> programTotals = new HashMap<Integer, Double[]>();
         List<LiteYukonPAObject> restrictedPrograms = 
-            ReportFuncs.getRestrictedPrograms(userContext.getYukonUser());
-        
-       
-        
+                ReportFuncs.getRestrictedPrograms(userContext.getYukonUser());
+            
+           
+            
         for (CustomerAccountWithNames account : accountsFromSQL) {
             try{
                 List<Integer> groupIds = lmHardwareControlGroupDao.getDistinctGroupIdsByAccountId(account.getAccountId());
