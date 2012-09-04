@@ -406,6 +406,14 @@ Description = 'Set the default authentication type to use {AD,ENCRYPTED,LDAP,RAD
 WHERE RolePropertyId = -1307 AND RoleId = -4;
 /* End YUK-11329 */
 
+/* Start YUK-11336 */
+DELETE FROM YukonGroupRole
+WHERE RolePropertyId = -11055;
+
+DELETE FROM YukonRoleProperty
+WHERE RolePropertyId = -11055;
+/* End YUK-11336 */
+
 /**************************************************************/ 
 /* VERSION INFO                                               */ 
 /*   Automatically gets inserted from build script            */ 
