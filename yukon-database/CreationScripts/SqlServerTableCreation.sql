@@ -1,7 +1,7 @@
 /*==============================================================*/
 /* Database name:  YukonDatabase                                */
 /* DBMS name:      Microsoft SQL Server 2005                    */
-/* Created on:     9/4/2012 2:33:11 AM                          */
+/* Created on:     9/4/2012 2:58:46 AM                          */
 /*==============================================================*/
 
 /*==============================================================*/
@@ -4386,6 +4386,7 @@ create table DynamicLMGroup (
    NextControlTime      datetime             not null,
    InternalState        numeric              not null,
    dailyops             smallint             not null,
+   LastStopTimeSent     datetime             not null,
    constraint PK_DYNAMICLMGROUP primary key (DeviceID)
 )
 go

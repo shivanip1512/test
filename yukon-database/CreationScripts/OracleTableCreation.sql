@@ -1,7 +1,7 @@
 /*==============================================================*/
 /* Database name:  YukonDatabase                                */
 /* DBMS name:      ORACLE Version 9i                            */
-/* Created on:     9/4/2012 2:31:37 AM                          */
+/* Created on:     9/4/2012 3:00:15 AM                          */
 /*==============================================================*/
 
 
@@ -4187,6 +4187,7 @@ create table DynamicLMGroup  (
    NextControlTime      DATE                            not null,
    InternalState        NUMBER                          not null,
    dailyops             SMALLINT                        not null,
+   LastStopTimeSent     DATE                            not null,
    constraint PK_DYNAMICLMGROUP primary key (DeviceID)
 );
 

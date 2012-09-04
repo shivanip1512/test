@@ -397,6 +397,17 @@ DELETE FROM YukonRoleProperty
 WHERE RolePropertyId = -11055;
 /* End YUK-11336 */
 
+/* Start YUK-11339 */
+ALTER TABLE DynamicLMGroup
+ADD LastStopTimeSent DATETIME;
+
+UPDATE DynamicLMGroup
+SET LastStopTimeSent ='01-JAN-1990';
+
+ALTER TABLE DynamicLMGroup
+ALTER COLUMN LastStopTimeSent DATETIME NOT NULL;
+/* End YUK-11339 */
+
 /**************************************************************/ 
 /* VERSION INFO                                               */ 
 /*   Automatically gets inserted from build script            */ 
