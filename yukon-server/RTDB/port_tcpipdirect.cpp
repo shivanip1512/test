@@ -134,8 +134,21 @@ INT CtiPortTCPIPDirect::openPort(INT rate, INT bits, INT parity, INT stopbits)
     {
         //  this delay is here for ports that allow connections but then immediately disconnect;
         //    if we connected more than PORTER_TCP_CONNECTION_DELAY seconds ago (default 15), we can connect immediately
-        const int reconnectRate = gConfigParms.getValueAsInt("PORTER_TCP_CONNECTION_DELAY",-1) > 0 ?
-                                  gConfigParms.getValueAsInt("PORTER_TCP_CONNECTION_DELAY",-1) : 15;
+        int reconnectRate = 15;
+        const std::string cparmReconnectKey = "PORTER_TCP_CONNECTION_DELAY";
+        if(gConfigParms.isOpt(cparmReconnectKey))
+        {
+            const int cparmReconnectValue = gConfigParms.getValueAsInt(cparmReconnectKey,-1);
+            if( 1 <= cparmReconnectValue && cparmReconnectValue <=3600 )
+            {
+                reconnectRate = cparmReconnectValue;
+            }
+            else
+            {
+                CtiLockGuard<CtiLogger> doubt_guard(dout);
+                dout << CtiTime() << "- Invalid reconnect rate " << cparmReconnectValue << ". " << cparmReconnectKey << "must be between 1 and 3600 (1 hr). Setting to " << reconnectRate << " seconds." << endl;
+            }
+        }
 
         CtiTime nextConnect = _lastConnect + reconnectRate;
 
