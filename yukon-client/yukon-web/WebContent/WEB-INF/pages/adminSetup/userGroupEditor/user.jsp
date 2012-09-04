@@ -169,18 +169,8 @@ jQuery(function() {
                                             <ul class="role">
                                                 <c:forEach var="roleGroupPair" items="${category.value}">
                                                     <li>
-                                                        <cti:url var="roleUrl" value="/spring/adminSetup/roleEditor/view">
-                                                            <cti:param name="roleGroupId" value="${roleGroupPair.second.groupID}"/>
-                                                            <cti:param name="roleId" value="${roleGroupPair.first.roleId}"/>
-                                                        </cti:url>
-                                                        <cti:url var="roleGroupUrl" value="/spring/adminSetup/roleGroup/view">
-                                                            <cti:param name="roleGroupId" value="${roleGroupPair.second.groupID}"/>
-                                                        </cti:url>
-                                                        <a href="${roleUrl}"><cti:formatObject value="${roleGroupPair.first}"/></a>
-                                                        &nbsp;
-                                                        <a href="${roleGroupUrl}" class="subtleGray">
-                                                            <spring:escapeBody htmlEscape="true">(${roleGroupPair.second})</spring:escapeBody>
-                                                        </a>
+                                                        <cti:formatObject value="${roleGroupPair.first}"/>
+                                                        &nbsp;<span class="subtleGray"><spring:escapeBody htmlEscape="true">(${fn:escapeXml(roleGroupPair.second)})</spring:escapeBody></span>
                                                     </li>
                                                 </c:forEach>
                                             </ul>
