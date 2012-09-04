@@ -1127,13 +1127,9 @@ private void executeEditButton_ActionPerformed(ActionEvent event)
 			
 		} else if (event.getSource() != null && event.getSource() instanceof DBPersistent){
 		    showEditor((DBPersistent) event.getSource());
+		} else {
+			JOptionPane.showMessageDialog(getParentFrame(), "You must select something to be edited", "Edit Error", JOptionPane.INFORMATION_MESSAGE);
 		}
-		else
-			JOptionPane.showMessageDialog(
-				getParentFrame(),
-				"You must select something to be edited", "Edit Error", 
-				JOptionPane.INFORMATION_MESSAGE);
-		 
    } catch (Exception e) {
         handleException( e );
     } finally {

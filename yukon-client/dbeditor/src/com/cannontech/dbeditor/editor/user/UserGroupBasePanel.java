@@ -23,7 +23,6 @@ import com.cannontech.common.gui.util.TextFieldDocument;
 import com.cannontech.common.gui.util.TitleBorder;
 import com.cannontech.common.util.SimpleCallback;
 import com.cannontech.core.dao.YukonUserDao;
-import com.cannontech.core.users.model.LiteUserGroup;
 import com.cannontech.database.data.lite.LiteYukonUser;
 import com.cannontech.database.data.user.UserGroup;
 import com.cannontech.spring.YukonSpringHook;
@@ -296,10 +295,10 @@ public class UserGroupBasePanel extends DataInputPanel implements CaretListener 
     	}
     
     	if(StringUtils.isNotBlank(getJTextFieldUserGroupName().getText()))
-    		userGroup.getLiteUserGroup().setUserGroupName(getJTextFieldUserGroupName().getText());
+    		userGroup.getUserGroup().setUserGroupName(getJTextFieldUserGroupName().getText());
     
     	if(StringUtils.isNotEmpty(getJEditorPaneDesc().getText()))
-    		userGroup.getLiteUserGroup().setUserGroupDescription(getJEditorPaneDesc().getText());
+    		userGroup.getUserGroup().setUserGroupDescription(getJEditorPaneDesc().getText());
     
     	return userGroup;
     }
@@ -397,7 +396,7 @@ public class UserGroupBasePanel extends DataInputPanel implements CaretListener 
         
         setCursor(Cursor.getPredefinedCursor(Cursor.WAIT_CURSOR));
     
-        final LiteUserGroup userGroup = ((com.cannontech.database.data.user.UserGroup)o).getLiteUserGroup();
+        final com.cannontech.database.db.user.UserGroup userGroup = ((com.cannontech.database.data.user.UserGroup)o).getUserGroup();
     
         getJTextFieldUserGroupName().setText( userGroup.getUserGroupName() );
         getJEditorPaneDesc().setText( userGroup.getUserGroupDescription() );

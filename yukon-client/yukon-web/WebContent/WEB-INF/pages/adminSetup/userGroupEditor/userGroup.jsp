@@ -14,12 +14,11 @@
         <cti:dataGridCell>
 
             <form:form commandName="userGroup" action="edit" method="post">
-                <form:hidden path="liteUserGroup.userGroupId"/>
-                <input type="hidden" value="${userGroupId}" name="userGroupId">
+                <form:hidden path="userGroupId"/>
 
                 <tags:nameValueContainer2>
-                    <tags:inputNameValue nameKey=".userGroupName" path="liteUserGroup.userGroupName"/>
-                    <tags:inputNameValue nameKey=".userGroupDescription" path="liteUserGroup.userGroupDescription"/>
+                    <tags:inputNameValue nameKey=".userGroupName" path="userGroupName"/>
+                    <tags:inputNameValue nameKey=".userGroupDescription" path="userGroupDescription"/>
                 </tags:nameValueContainer2>
                 
                 <div class="pageActionArea">
@@ -29,7 +28,7 @@
                             <cti:button nameKey="delete" name="delete" type="submit"/>
                         </c:if>
                         <cti:url var="cancelUrl" value="view">
-                            <cti:param name="userGroupId" value="${userGroup.liteUserGroup.userGroupId}"/>
+                            <cti:param name="userGroupId" value="${userGroupId}"/>
                         </cti:url>
                         <cti:button nameKey="cancel" href="${cancelUrl}"/>
                     </cti:displayForPageEditModes>

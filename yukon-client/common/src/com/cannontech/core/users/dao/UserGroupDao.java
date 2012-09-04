@@ -7,11 +7,15 @@ import com.cannontech.database.data.user.UserGroup;
 
 public interface UserGroupDao {
     
-    public void create(LiteUserGroup liteUserGroup);
-    public void update(LiteUserGroup liteUserGroup);
-    public void delete(LiteUserGroup liteUserGroup);
+    public void create(com.cannontech.database.db.user.UserGroup userGroup);
+    public void update(com.cannontech.database.db.user.UserGroup userGroup);
     public void delete(int userGroupId);
 
+    /**
+     * This method returns the lite user group associated with the supplied user group id.
+     */
+    public com.cannontech.database.db.user.UserGroup getDBUserGroup(int userGroupId);
+    
     /**
      * This method returns the lite user group associated with the supplied user group id.
      */
@@ -26,6 +30,16 @@ public interface UserGroupDao {
      * This method returns the lite user group associated with the supplied user group name.
      */
     public LiteUserGroup getLiteUserGroupByUserGroupName(String userGroupName);
+
+    /**
+     * This method returns the lite user group associated with the supplied user group name.
+     */
+    public com.cannontech.database.db.user.UserGroup getDBUserGroupByUserGroupName(String userGroupName);
+
+    /**
+     * This method returns the lite user group associated with the supplied user group name.
+     */
+    public com.cannontech.database.db.user.UserGroup findDBUserGroupByUserGroupName(String userGroupName);
 
     /**
      * This method returns all of the lite user groups that have the supplied role group id.

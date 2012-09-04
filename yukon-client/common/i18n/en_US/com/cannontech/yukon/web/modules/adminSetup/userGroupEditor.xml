@@ -17,8 +17,6 @@
     <entry key="yukon.web.modules.adminSetup.roleGroupEditor.VIEW.pageDescription">{0}</entry>
     <entry key="yukon.web.modules.adminSetup.roleGroupEditor.EDIT.pageName">Edit</entry>
     <entry key="yukon.web.modules.adminSetup.roleGroupEditor.EDIT.pageDescription">{0}</entry>
-    <entry key="yukon.web.modules.adminSetup.userGroups.pageName">User Groups</entry>
-    <entry key="yukon.web.modules.adminSetup.userGroups.pageDescription">{0}</entry>
     <entry key="yukon.web.modules.adminSetup.roleGroupEditor.groupSettings.title">Group Information</entry>
     <entry key="yukon.web.modules.adminSetup.roleGroupEditor.rolesContainer.title">Roles</entry>
     <entry key="yukon.web.modules.adminSetup.roleGroupEditor.otherActions.title">Other Actions</entry>
@@ -34,8 +32,8 @@
     <entry key="yukon.web.modules.adminSetup.roleGroupEditor.deletedSuccessful">Group Deleted Successfully</entry>
     <entry key="yukon.web.modules.adminSetup.roleGroupEditor.confirmDelete.title">Delete Group {0}</entry>
     <entry key="yukon.web.modules.adminSetup.roleGroupEditor.confirmDelete.message">Are you sure you want to delete group {0}?</entry>
-    <entry key="yukon.web.modules.adminSetup.roleGroupEditor.error.required.groupName">Name is required.</entry>
-    <entry key="yukon.web.modules.adminSetup.roleGroupEditor.error.unavailable.groupName">Name is already in use by another group.</entry>
+    <entry key="yukon.web.modules.adminSetup.roleGroupEditor.groupNameRequired">Name is required.</entry>
+    <entry key="yukon.web.modules.adminSetup.roleGroupEditor.groupNameUnavailable">Name is already in use by another group.</entry>
     <entry key="yukon.web.modules.adminSetup.roleGroupEditor.noRoles">No roles assigned for this group.</entry>
     <entry key="yukon.web.modules.adminSetup.roleGroupEditor.expireAllPasswords.label">Expire All Passwords</entry>
     <entry key="yukon.web.modules.adminSetup.roleGroupEditor.confirmExpireAllPasswords.title">Expire All Passwords {0}</entry>

@@ -45,8 +45,6 @@
 	
     <bean id="userGroupPaoPermissionDao" class="com.cannontech.core.authorization.dao.UserGroupPaoPermissionDaoImpl">
         <qualifier value="userGroup"/>
-    	<property name="nextValueHelper" ref="nextValueHelper" />
-        <property name="yukonJdbcTemplate" ref="simpleJdbcTemplate" />
     </bean>
     
   	<bean id="userEditorService" class="com.cannontech.core.authorization.service.impl.PaoPermissionEditorServiceImpl">

@@ -34,6 +34,7 @@ import com.cannontech.database.data.lite.LiteContact;
 import com.cannontech.database.data.lite.LiteYukonGroup;
 import com.cannontech.database.data.lite.LiteYukonUser;
 import com.cannontech.database.data.user.YukonUser;
+import com.cannontech.database.db.user.UserGroup;
 import com.cannontech.database.incrementer.NextValueHelper;
 import com.cannontech.message.dispatch.message.DBChangeMsg;
 import com.cannontech.message.dispatch.message.DbChangeType;
@@ -298,7 +299,7 @@ public class YukonUserDaoImpl implements YukonUserDao {
 	}
 
 	@Override
-	public void callbackWithYukonUsersInUserGroup(LiteUserGroup userGroup, SimpleCallback<LiteYukonUser> callback) {
+	public void callbackWithYukonUsersInUserGroup(UserGroup userGroup, SimpleCallback<LiteYukonUser> callback) {
 	    
 	    SqlStatementBuilder sql = new SqlStatementBuilder();
 	    sql.append("SELECT YU.*");

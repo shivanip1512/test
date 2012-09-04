@@ -32,6 +32,7 @@ import com.cannontech.core.users.dao.UserGroupDao;
 import com.cannontech.core.users.model.LiteUserGroup;
 import com.cannontech.database.TransactionException;
 import com.cannontech.database.data.lite.LiteYukonUser;
+import com.cannontech.database.db.user.UserGroup;
 import com.cannontech.i18n.YukonMessageSourceResolvable;
 import com.cannontech.stars.core.dao.ECMappingDao;
 import com.cannontech.stars.database.cache.StarsDatabaseCache;
@@ -161,10 +162,10 @@ public class OperatorLoginController {
         }
         
         //save login
-        LiteUserGroup liteUserGroup = userGroupDao.getLiteUserGroupByUserGroupName(operatorLogin.getUserGroupName());
+        UserGroup userGroup = userGroupDao.getDBUserGroupByUserGroupName(operatorLogin.getUserGroupName());
         LiteStarsEnergyCompany energyCompany = starsDatabaseCache.getEnergyCompany(ecId);
         StarsAdminUtil.createOperatorLogin(operatorLogin.getUsername(), operatorLogin.getPassword1(), 
-                                            operatorLogin.getLoginStatus(), liteUserGroup, energyCompany);
+                                            operatorLogin.getLoginStatus(), userGroup, energyCompany);
 
         //add message
         flashScope.setConfirm(new YukonMessageSourceResolvable("yukon.web.modules.adminSetup.operatorLogin.operatorLoginCreated"));

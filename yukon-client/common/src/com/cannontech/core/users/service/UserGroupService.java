@@ -1,8 +1,8 @@
 package com.cannontech.core.users.service;
 
 import com.cannontech.core.roleproperties.YukonRole;
-import com.cannontech.core.users.model.LiteUserGroup;
 import com.cannontech.database.data.lite.LiteYukonGroup;
+import com.cannontech.database.db.user.UserGroup;
 import com.google.common.collect.TreeMultimap;
 
 /**
@@ -14,6 +14,6 @@ public interface UserGroupService {
     /**
      * 
      */
-    public TreeMultimap<LiteYukonGroup, LiteUserGroup> getAssociations(YukonRole yukonRole);
+    public TreeMultimap<LiteYukonGroup, UserGroup> getAssociations(YukonRole yukonRole);
 
 }

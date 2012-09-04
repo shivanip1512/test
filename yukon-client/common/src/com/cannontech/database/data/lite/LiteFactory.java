@@ -212,9 +212,9 @@ public final static com.cannontech.database.db.DBPersistent createDBPersistent(L
         case LiteTypes.USER_GROUP:
             returnObject = new com.cannontech.database.data.user.UserGroup();
             LiteUserGroup liteUserGroup = (LiteUserGroup)liteObject;
-            ((UserGroup)returnObject).getLiteUserGroup().setUserGroupId(liteUserGroup.getUserGroupId());
-            ((UserGroup)returnObject).getLiteUserGroup().setUserGroupName(liteUserGroup.getUserGroupName());
-            ((UserGroup)returnObject).getLiteUserGroup().setUserGroupDescription(liteUserGroup.getUserGroupDescription());
+            ((UserGroup)returnObject).getUserGroup().setUserGroupId(liteUserGroup.getUserGroupId());
+            ((UserGroup)returnObject).getUserGroup().setUserGroupName(liteUserGroup.getUserGroupName());
+            ((UserGroup)returnObject).getUserGroup().setUserGroupDescription(liteUserGroup.getUserGroupDescription());
             break;
 		case LiteTypes.DEVICE_TYPE_COMMAND:
 			returnObject = new DeviceTypeCommand();
@@ -428,7 +428,7 @@ public final static LiteBase createLite(com.cannontech.database.db.DBPersistent 
 	        returnLite = new LiteYukonUser(user.getUserID(), user.getUsername(), user.getLoginStatus(), user.getAuthType(), 
 	                                       lastChangedDate, user.isForceReset(), user.getUserGroupId());
     } else if( val instanceof UserGroup ) {
-        returnLite = ((UserGroup)val).getLiteUserGroup();
+        returnLite = ((UserGroup)val).getUserGroup().getLiteUserGroup();
     } else if( val instanceof YukonGroup ) {
 
 	    returnLite = new LiteYukonGroup(

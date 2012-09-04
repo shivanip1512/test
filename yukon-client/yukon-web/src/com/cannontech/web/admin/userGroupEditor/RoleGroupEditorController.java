@@ -169,7 +169,7 @@ public class RoleGroupEditorController {
                 userGroup.addRoleGroups(roleGroup);
                 userGroup.update();
             } catch (ConfigurationException e) {
-                conflictingUserGroupNames.add(userGroup.getLiteUserGroup().getUserGroupName());
+                conflictingUserGroupNames.add(userGroup.getUserGroup().getUserGroupName());
             }
         }
 
@@ -218,12 +218,12 @@ public class RoleGroupEditorController {
 
         @Override
         protected void doValidation(LiteYukonGroup target, Errors errors) {
-            YukonValidationUtils.rejectIfEmptyOrWhitespace(errors, "groupName", "yukon.web.modules.adminSetup.roleGroupEditor.error.required.groupName");
+            YukonValidationUtils.rejectIfEmptyOrWhitespace(errors, "groupName", "yukon.web.modules.adminSetup.roleGroupEditor.groupNameRequired");
             YukonValidationUtils.checkExceedsMaxLength(errors, "groupName", target.getGroupName(), 120);
             try {
                 LiteYukonGroup duplicate = yukonGroupDao.getLiteYukonGroupByName(target.getGroupName());
                 if (duplicate.getGroupID() != target.getGroupID()) {
-                    errors.rejectValue("groupName", "yukon.web.modules.adminSetup.roleGroupEditor.error.unavailable.groupName");
+                    errors.rejectValue("groupName", "yukon.web.modules.adminSetup.roleGroupEditor.groupNameUnavailable");
                 }
             } catch (NotFoundException e) {/* Ignore, name is available */}
             

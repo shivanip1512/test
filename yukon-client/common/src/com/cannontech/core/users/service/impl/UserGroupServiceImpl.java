@@ -24,18 +24,18 @@ public class UserGroupServiceImpl implements UserGroupService {
     }
 
     @Override
-    public TreeMultimap<LiteYukonGroup, LiteUserGroup> getAssociations(YukonRole yukonRole) {
-        TreeMultimap<LiteYukonGroup, LiteUserGroup> userGroupAssociations = TreeMultimap.create();
+    public TreeMultimap<LiteYukonGroup, com.cannontech.database.db.user.UserGroup> getAssociations(YukonRole yukonRole) {
+        TreeMultimap<LiteYukonGroup, com.cannontech.database.db.user.UserGroup> userGroupAssociations = TreeMultimap.create();
 
         List<UserGroup> userGroups = getAllUserGroups();
         for (UserGroup userGroup : userGroups) {
-            LiteUserGroup liteUserGroup = userGroup.getLiteUserGroup();
+            com.cannontech.database.db.user.UserGroup dbUserGroup = userGroup.getUserGroup();
             
             if (userGroup.hasYukonRole(yukonRole)) {
                 LiteYukonGroup liteYukonGroup = userGroup.getRolesToGroupMap().get(yukonRole);
-                userGroupAssociations.put(liteYukonGroup, liteUserGroup);
+                userGroupAssociations.put(liteYukonGroup, dbUserGroup);
             } else {
-                userGroupAssociations.put(NON_EXISTANT_YUKON_GROUP, liteUserGroup);
+                userGroupAssociations.put(NON_EXISTANT_YUKON_GROUP, dbUserGroup);
             }
         }
         

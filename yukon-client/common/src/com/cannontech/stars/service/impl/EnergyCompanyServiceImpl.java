@@ -38,7 +38,6 @@ import com.cannontech.core.roleproperties.YukonRole;
 import com.cannontech.core.roleproperties.YukonRoleProperty;
 import com.cannontech.core.roleproperties.dao.RolePropertyDao;
 import com.cannontech.core.users.dao.UserGroupDao;
-import com.cannontech.core.users.model.LiteUserGroup;
 import com.cannontech.database.SqlStatement;
 import com.cannontech.database.TransactionException;
 import com.cannontech.database.TransactionType;
@@ -50,6 +49,7 @@ import com.cannontech.database.data.lite.LiteYukonUser;
 import com.cannontech.database.data.user.YukonGroup;
 import com.cannontech.database.data.user.YukonUser;
 import com.cannontech.database.db.company.EnergyCompany;
+import com.cannontech.database.db.user.UserGroup;
 import com.cannontech.message.dispatch.message.DBChangeMsg;
 import com.cannontech.message.dispatch.message.DbChangeCategory;
 import com.cannontech.message.dispatch.message.DbChangeType;
@@ -126,7 +126,7 @@ public class EnergyCompanyServiceImpl implements EnergyCompanyService {
 
         /* Create a privilege group with EnergyCompany and Administrator role */
         String adminGroupName = energyCompanyDto.getName() + ecAdminLoginGroupExtension;
-        LiteUserGroup ecAdminUserGrp = 
+        UserGroup ecAdminUserGrp = 
                 StarsAdminUtil.createOperatorAdminUserGroup(adminGroupName, energyCompanyDto.getPrimaryOperatorUserGroupId(), topLevelEc);
         
         /* Create the primary operator login */

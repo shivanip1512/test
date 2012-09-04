@@ -34,7 +34,6 @@ import com.cannontech.core.roleproperties.YukonRole;
 import com.cannontech.core.roleproperties.YukonRoleCategory;
 import com.cannontech.core.roleproperties.YukonRoleProperty;
 import com.cannontech.core.users.dao.UserGroupDao;
-import com.cannontech.core.users.model.LiteUserGroup;
 import com.cannontech.database.data.lite.LiteBase;
 import com.cannontech.database.data.lite.LiteYukonGroup;
 import com.cannontech.database.data.lite.LiteYukonUser;
@@ -71,10 +70,10 @@ public class UserGroupEditorController {
     public String view(ModelMap model, int userGroupId) throws SQLException {
         UserGroup userGroup = userGroupDao.getUserGroup(userGroupId);
         
-        model.addAttribute("userGroup", userGroup);
+        model.addAttribute("userGroup", userGroup.getUserGroup());
         model.addAttribute("mode", PageEditMode.VIEW);
         
-        setupModelMap(model, userGroup.getLiteUserGroup());
+        setupModelMap(model, userGroup.getUserGroup());
         return "userGroupEditor/userGroup.jsp";
     }
     
@@ -84,7 +83,7 @@ public class UserGroupEditorController {
         UserGroup userGroup = userGroupDao.getUserGroup(userGroupId);
         
         model.addAttribute("userGroupId", userGroupId);
-        model.addAttribute("userGroup", userGroup);
+        model.addAttribute("userGroup", userGroup.getUserGroup());
         model.addAttribute("isUserGroupDeletable", userGroup.isUserGroupDeletable());
         model.addAttribute("mode", PageEditMode.EDIT);
         
@@ -100,7 +99,7 @@ public class UserGroupEditorController {
 
     /* Update Group */
     @RequestMapping(value="edit", method=RequestMethod.POST, params="update")
-    public String update(HttpServletRequest request, @ModelAttribute("userGroup") UserGroup userGroup, BindingResult result, ModelMap model, FlashScope flash) throws SQLException {
+    public String update(HttpServletRequest request, @ModelAttribute("userGroup") com.cannontech.database.db.user.UserGroup userGroup, BindingResult result, ModelMap model, FlashScope flash) throws SQLException {
         
         userGroupValidator.validate(userGroup, result);
         
@@ -108,14 +107,14 @@ public class UserGroupEditorController {
             List<MessageSourceResolvable> messages = YukonValidationUtils.errorsForBindingResult(result);
             flash.setMessage(messages, FlashScopeMessageType.ERROR);
             model.addAttribute("mode", PageEditMode.EDIT);
-            setupModelMap(model, userGroup.getLiteUserGroup());
+            setupModelMap(model, userGroup);
             return "userGroupEditor/userGroup.jsp";
         }
         
-        userGroupDao.update(userGroup.getLiteUserGroup());
+        userGroupDao.update(userGroup);
         
         flash.setConfirm(new YukonMessageSourceResolvable("yukon.web.modules.adminSetup.userGroupEditor.updateSuccessful"));
-        setupModelMap(model, userGroup.getLiteUserGroup());
+        setupModelMap(model, userGroup);
         
         return "redirect:view";
     }
@@ -139,7 +138,7 @@ public class UserGroupEditorController {
     /* Role Groups Page */
     @RequestMapping
     public String roleGroups(ModelMap model, int userGroupId) {
-        LiteUserGroup userGroup = userGroupDao.getLiteUserGroup(userGroupId);
+        com.cannontech.database.db.user.UserGroup userGroup = userGroupDao.getDBUserGroup(userGroupId);
         List<LiteYukonGroup> roleGroups = yukonGroupDao.getRoleGroupsForUserGroupId(userGroupId);
         List<Integer> alreadyAssignedRoleGroupIds = 
                 Lists.transform(roleGroups, new Function<LiteYukonGroup, Integer>() {
@@ -212,7 +211,7 @@ public class UserGroupEditorController {
         
         int startIndex = (page - 1) * itemsPerPage;
         
-        LiteUserGroup userGroup = userGroupDao.getLiteUserGroup(userGroupId);
+        com.cannontech.database.db.user.UserGroup userGroup = userGroupDao.getDBUserGroup(userGroupId);
         SearchResult<LiteYukonUser> searchResult = yukonUserDao.getUsersForUserGroup(userGroupId, startIndex, itemsPerPage);
         model.addAttribute("searchResult", searchResult);
         List<LiteYukonUser> users = searchResult.getResultList();
@@ -255,11 +254,11 @@ public class UserGroupEditorController {
         }
     }
     
-    private void setupModelMap(ModelMap model, LiteUserGroup liteUserGroup) {
-        model.addAttribute("userGroupId", liteUserGroup.getUserGroupId());
-        model.addAttribute("userGroupName", liteUserGroup.getUserGroupName());
+    private void setupModelMap(ModelMap model, com.cannontech.database.db.user.UserGroup userGroup) {
+        model.addAttribute("userGroupId", userGroup.getUserGroupId());
+        model.addAttribute("userGroupName", userGroup.getUserGroupName());
         
-        Map<YukonRole, LiteYukonGroup> rolesAndGroups = roleDao.getRolesAndRoleGroupsForUserGroup(liteUserGroup.getUserGroupId());
+        Map<YukonRole, LiteYukonGroup> rolesAndGroups = roleDao.getRolesAndRoleGroupsForUserGroup(userGroup.getUserGroupId());
         ImmutableMultimap<YukonRoleCategory, Pair<YukonRole, LiteYukonGroup>> sortedRoles = RoleListHelper.sortRolesByCategory(rolesAndGroups);
         model.addAttribute("roles", sortedRoles.asMap());
     }

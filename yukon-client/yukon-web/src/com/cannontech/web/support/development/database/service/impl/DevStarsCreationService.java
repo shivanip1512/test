@@ -19,6 +19,7 @@ import com.cannontech.core.users.dao.UserGroupDao;
 import com.cannontech.core.users.model.LiteUserGroup;
 import com.cannontech.database.data.lite.LiteYukonGroup;
 import com.cannontech.database.data.lite.LiteYukonUser;
+import com.cannontech.database.db.user.UserGroup;
 import com.cannontech.stars.core.dao.ECMappingDao;
 import com.cannontech.stars.core.dao.InventoryBaseDao;
 import com.cannontech.stars.core.service.YukonEnergyCompanyService;
@@ -106,13 +107,13 @@ public class DevStarsCreationService extends DevObjectCreationBase {
         setRoleProperty(roleGroup, YukonRoleProperty.DYNAMIC_BILLING_FILE_SETUP, " ");
         
         // Creating the operator user group that the group above will be mapped to.
-        LiteUserGroup userGroup = new LiteUserGroup();
+        UserGroup userGroup = new UserGroup();
         userGroup.setUserGroupDescription(devStars.getNewEnergyCompanyName() + " Operators Grp");
         userGroup.setUserGroupName(devStars.getNewEnergyCompanyName() + " Operators Grp");
         userGroupDao.create(userGroup);
         userGroupDao.createUserGroupToYukonGroupMappng(userGroup.getUserGroupId(), roleGroup.getGroupID());
         
-        devStars.setLiteUserGroupOperator(userGroup);
+        devStars.setUserGroupOperator(userGroup.getLiteUserGroup());
     }
     
     private void createEnergyCompany(DevStars devStars) {
@@ -120,7 +121,7 @@ public class DevStarsCreationService extends DevObjectCreationBase {
         EnergyCompanyDto energyCompanyDto = new EnergyCompanyDto();
         energyCompanyDto.setName(devStars.getNewEnergyCompanyName());
         energyCompanyDto.setEmail("info@cannontech.com");
-        energyCompanyDto.setPrimaryOperatorUserGroupId(devStars.getLiteUserGroupOperator().getUserGroupId());
+        energyCompanyDto.setPrimaryOperatorUserGroupId(devStars.getUserGroupOperator().getUserGroupId());
         String username = StringUtils.deleteWhitespace(devStars.getNewEnergyCompanyName()).toLowerCase() + "_op";
         energyCompanyDto.setAdminUsername(username);
         energyCompanyDto.setAdminPassword1(username);
@@ -192,16 +193,16 @@ public class DevStarsCreationService extends DevObjectCreationBase {
             setRoleProperty(roleGroup, YukonRoleProperty.CSRF_TOKEN_MODE, " ");
             
             // Creating the residential user group that the group above will be mapped to.
-            LiteUserGroup userGroup = new LiteUserGroup();
+            UserGroup userGroup = new UserGroup();
             userGroup.setUserGroupDescription(devStars.getNewEnergyCompanyName() + " Residential Grp");
             userGroup.setUserGroupName(devStars.getNewEnergyCompanyName() + " Residential Grp");
             userGroupDao.create(userGroup);
             userGroupDao.createUserGroupToYukonGroupMappng(userGroup.getUserGroupId(), roleGroup.getGroupID());
             
             ecMappingDao.addECToResidentialUserGroupMapping(energyCompanyId, Lists.newArrayList(userGroup.getUserGroupId()));
-            devStars.setLiteUserGroupResidential(userGroup);
+            devStars.setUserGroupResidential(userGroup.getLiteUserGroup());
         } else {
-            devStars.setLiteUserGroupResidential(residentialUserGroups.get(0));
+            devStars.setUserGroupResidential(residentialUserGroups.get(0));
         }
     }
 
@@ -223,7 +224,7 @@ public class DevStarsCreationService extends DevObjectCreationBase {
             accountDto.setBillingAddress(new Address("1234 Fake Street", "5678 Really Fake Street", "Fakeland", "MN", "55555", "Fake County"));
             accountDto.setUserName(accountNumString);
             accountDto.setPassword(accountNumString);
-            accountDto.setUserGroup(devStars.getLiteUserGroupResidential().getUserGroupName());
+            accountDto.setUserGroup(devStars.getUserGroupResidential().getUserGroupName());
             accountDto.setMapNumber(accountNumString);
             accountDto.setAltTrackingNumber(accountNumString);
             accountDto.setIsCommercial(false);

@@ -101,33 +101,19 @@ jQuery(function() {
                         </c:otherwise>
                     </c:choose>
                     
-                    <c:choose>
-                        <c:when test="${editNameAndStatus}">
-                            <cti:displayForPageEditModes modes="EDIT,CREATE">
-                                <cti:msg2 var="none" key="defaults.none"/>
-                                <tags:selectNameValue nameKey=".userGroup" items="${userGroups}" itemValue="userGroupId" itemLabel="userGroupName" 
-                                    path="userGroupId" defaultItemLabel="${none}" defaultItemValue="-9999"/>
-                            </cti:displayForPageEditModes>
-                            <cti:displayForPageEditModes modes="VIEW">
-                                <cti:url value="/spring/adminSetup/userGroup/view" var="userGroupUrl">
-                                    <cti:param name="userGroupId" value="${user.userGroupId}" />
-                                </cti:url>
-                                <tags:nameValue2 nameKey=".userGroup">
-                                    <a href="${userGroupUrl}"><spring:escapeBody htmlEscape="true">${userGroupName}</spring:escapeBody></a>
-                                </tags:nameValue2>
-                            </cti:displayForPageEditModes>
-                        </c:when>
-                        
-                        <c:otherwise>
-                            <tags:hidden path="userGroupId"/>
+                        <cti:displayForPageEditModes modes="EDIT,CREATE">
+                            <cti:msg2 var="none" key="defaults.none"/>
+                            <tags:selectNameValue nameKey=".userGroup" items="${userGroups}" itemValue="userGroupId" itemLabel="userGroupName" 
+                                path="userGroupId" defaultItemLabel="${none}" />
+                        </cti:displayForPageEditModes>
+                        <cti:displayForPageEditModes modes="VIEW">
+                            <cti:url value="/spring/adminSetup/userGroup/view" var="userGroupUrl">
+                                <cti:param name="userGroupId" value="${user.userGroupId}" />
+                            </cti:url>
                             <tags:nameValue2 nameKey=".userGroup">
-                                <cti:url value="/spring/adminSetup/userGroup/view" var="userGroupUrl">
-                                    <cti:param name="userGroupId" value="${user.userGroupId}" />
-                                </cti:url>
-                                <a href="${userGroupUrl}"><spring:escapeBody htmlEscape="true"><i:inline key="${user.userGroupId}"/></spring:escapeBody></a>
+                                <a href="${userGroupUrl}"><spring:escapeBody htmlEscape="true">${userGroupName}</spring:escapeBody></a>
                             </tags:nameValue2>
-                        </c:otherwise>
-                    </c:choose>
+                        </cti:displayForPageEditModes>
                     
                 </tags:nameValueContainer2>
                 

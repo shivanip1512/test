@@ -276,7 +276,7 @@ public class UserGroupRoleEditorPanel extends com.cannontech.common.gui.util.Dat
                     try {
                         userGroup.addRoleGroups(group);
                     } catch (ConfigurationException e) {
-                        log.error("The role group "+group.getGroupName()+" cannot be added to the user group "+userGroup.getLiteUserGroup().getUserGroupName()+" since it causes a role conflict",e);
+                        log.error("The role group "+group.getGroupName()+" cannot be added to the user group "+userGroup.getUserGroup().getUserGroupName()+" since it causes a role conflict",e);
                         return null;
                     }
                 }

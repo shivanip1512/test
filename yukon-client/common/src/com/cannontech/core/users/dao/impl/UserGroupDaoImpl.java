@@ -33,46 +33,58 @@ public class UserGroupDaoImpl implements UserGroupDao, InitializingBean {
     @Autowired private NextValueHelper nextValueHelper;
     @Autowired private YukonJdbcTemplate yukonJdbcTemplate;
         
-    private SimpleTableAccessTemplate<LiteUserGroup> userGroupTemplate;
+    private SimpleTableAccessTemplate<com.cannontech.database.db.user.UserGroup> userGroupTemplate;
     
-    private FieldMapper<LiteUserGroup> userGroupFieldMapper = new FieldMapper<LiteUserGroup>() {
+    private FieldMapper<com.cannontech.database.db.user.UserGroup> userGroupFieldMapper = new FieldMapper<com.cannontech.database.db.user.UserGroup>() {
         @Override
-        public void extractValues(MapSqlParameterSource p, LiteUserGroup liteUserGroup) {
-            p.addValue("Name", liteUserGroup.getUserGroupName());
-            p.addValue("Description", liteUserGroup.getUserGroupDescription());
+        public void extractValues(MapSqlParameterSource p, com.cannontech.database.db.user.UserGroup userGroup) {
+            p.addValue("Name", userGroup.getUserGroupName());
+            p.addValue("Description", userGroup.getUserGroupDescription());
         }
         
         @Override
-        public Number getPrimaryKey(LiteUserGroup liteUserGroup) {
-            return liteUserGroup.getUserGroupId();
+        public Number getPrimaryKey(com.cannontech.database.db.user.UserGroup userGroup) {
+            return userGroup.getUserGroupId();
         }
         
         @Override
-        public void setPrimaryKey(LiteUserGroup liteUserGroup, int newId) {
-            liteUserGroup.setUserGroupId(newId);
+        public void setPrimaryKey(com.cannontech.database.db.user.UserGroup userGroup, int newId) {
+            userGroup.setUserGroupId(newId);
         }
     };
     
     @Override
     public void afterPropertiesSet() throws Exception {
-        userGroupTemplate = new SimpleTableAccessTemplate<LiteUserGroup>(yukonJdbcTemplate, nextValueHelper);
+        userGroupTemplate = new SimpleTableAccessTemplate<com.cannontech.database.db.user.UserGroup>(yukonJdbcTemplate, nextValueHelper);
         userGroupTemplate.setTableName("UserGroup");
         userGroupTemplate.setPrimaryKeyField("UserGroupId");
         userGroupTemplate.setFieldMapper(userGroupFieldMapper);
-        userGroupTemplate.setPrimaryKeyValidNotEqualTo(0);
     }
 
     //Row Mappers
     public static class LiteUserGroupRowMapper implements YukonRowMapper<LiteUserGroup> {
         @Override
         public LiteUserGroup mapRow(YukonResultSet rs) throws SQLException {
-            LiteUserGroup liteUserGroup = new LiteUserGroup();
+            LiteUserGroup userGroup = new LiteUserGroup();
             
-            liteUserGroup.setUserGroupId(rs.getInt("UserGroupId"));
-            liteUserGroup.setUserGroupName(rs.getString("Name"));
-            liteUserGroup.setUserGroupDescription(rs.getStringSafe("Description"));
+            userGroup.setUserGroupId(rs.getInt("UserGroupId"));
+            userGroup.setUserGroupName(rs.getString("Name"));
+            userGroup.setUserGroupDescription(rs.getStringSafe("Description"));
 
-            return liteUserGroup;
+            return userGroup;
+        }
+    }
+
+    public static class DBUserGroupRowMapper implements YukonRowMapper<com.cannontech.database.db.user.UserGroup> {
+        @Override
+        public com.cannontech.database.db.user.UserGroup mapRow(YukonResultSet rs) throws SQLException {
+            com.cannontech.database.db.user.UserGroup userGroup = new com.cannontech.database.db.user.UserGroup();
+            
+            userGroup.setUserGroupId(rs.getInt("UserGroupId"));
+            userGroup.setUserGroupName(rs.getString("Name"));
+            userGroup.setUserGroupDescription(rs.getStringSafe("Description"));
+
+            return userGroup;
         }
     }
     
@@ -83,14 +95,14 @@ public class UserGroupDaoImpl implements UserGroupDao, InitializingBean {
         public UserGroup mapRow(YukonResultSet rs) throws SQLException {
             UserGroup userGroup = new UserGroup();
             userGroup.setUserGroupId(rs.getInt("UserGroupId"));
-            userGroup.setLiteUserGroup(new LiteUserGroupRowMapper().mapRow(rs));
+            userGroup.setUserGroup(new DBUserGroupRowMapper().mapRow(rs));
             
             Map<YukonRole, LiteYukonGroup> rolesToGroupsMap = 
-                    roleDao.getRolesAndRoleGroupsForUserGroup(userGroup.getLiteUserGroup().getUserGroupId());
+                    roleDao.getRolesAndRoleGroupsForUserGroup(userGroup.getUserGroup().getUserGroupId());
             try {
                 userGroup.putAllRolesToGroupMap(rolesToGroupsMap);
             } catch (ConfigurationException e) {
-                log.error("The user group "+userGroup.getLiteUserGroup().getUserGroupName()+" has conflicting role groups", e);
+                log.error("The user group "+userGroup.getUserGroup().getUserGroupName()+" has conflicting role groups", e);
             }
             
             return userGroup;
@@ -98,27 +110,33 @@ public class UserGroupDaoImpl implements UserGroupDao, InitializingBean {
     }
     
     @Override
-    public void create(final LiteUserGroup liteUserGroup) {
-        userGroupTemplate.insert(liteUserGroup);
+    public void create(final com.cannontech.database.db.user.UserGroup userGroup) {
+        userGroupTemplate.insert(userGroup);
     }
 
     @Override
-    public void update(LiteUserGroup liteUserGroup) {
-        userGroupTemplate.update(liteUserGroup);
+    public void update(com.cannontech.database.db.user.UserGroup userGroup) {
+        userGroupTemplate.update(userGroup);
     }
 
     @Override
-    public void delete(LiteUserGroup liteUserGroup) {
-        delete(liteUserGroup.getUserGroupId());
-    }
-
-    @Override
-    public void delete(int liteUserGroupId) {
+    public void delete(int userGroupId) {
         SqlStatementBuilder sql = new SqlStatementBuilder();
         sql.append("DELETE FROM UserGroup");
-        sql.append("WHERE UserGroupId").eq(liteUserGroupId);
+        sql.append("WHERE UserGroupId").eq(userGroupId);
         
         yukonJdbcTemplate.update(sql);
+    }
+    
+    @Override
+    public com.cannontech.database.db.user.UserGroup getDBUserGroup(int userGroupId) {
+        SqlStatementBuilder sql = new SqlStatementBuilder();
+        sql.append("SELECT *");
+        sql.append("FROM UserGroup UG");
+        sql.append("WHERE UG.UserGroupId").eq(userGroupId);
+        
+        com.cannontech.database.db.user.UserGroup userGroup = yukonJdbcTemplate.queryForObject(sql, new DBUserGroupRowMapper());
+        return userGroup;
     }
     
     @Override
@@ -136,8 +154,8 @@ public class UserGroupDaoImpl implements UserGroupDao, InitializingBean {
     public UserGroup getUserGroup(int userGroupId) {
         SqlStatementBuilder sql = new SqlStatementBuilder();
         sql.append("SELECT *");
-        sql.append("FROM UserGroup UG");
-        sql.append("WHERE UG.UserGroupId").eq(userGroupId);
+        sql.append("FROM UserGroup");
+        sql.append("WHERE UserGroupId").eq(userGroupId);
         
         UserGroup userGroup = yukonJdbcTemplate.queryForObject(sql, new UserGroupRowMapper());
         return userGroup;
@@ -168,17 +186,6 @@ public class UserGroupDaoImpl implements UserGroupDao, InitializingBean {
     }
 
     @Override
-    public LiteUserGroup getLiteUserGroupByUserGroupName(String userGroupName) {
-        SqlStatementBuilder sql = new SqlStatementBuilder();
-        sql.append("SELECT UG.*");
-        sql.append("FROM UserGroup UG");
-        sql.append("WHERE UG.Name").eq(userGroupName);
-        
-        LiteUserGroup userGroup = yukonJdbcTemplate.queryForObject(sql, new LiteUserGroupRowMapper());
-        return userGroup;
-    }
-
-    @Override
     public List<LiteUserGroup> getLiteUserGroupsByRoleGroupId(int roleGroupId) {
         SqlStatementBuilder sql = new SqlStatementBuilder();
         sql.append("SELECT *");
@@ -189,6 +196,17 @@ public class UserGroupDaoImpl implements UserGroupDao, InitializingBean {
         List<LiteUserGroup> liteUserGroups = yukonJdbcTemplate.query(sql, new LiteUserGroupRowMapper());
         return liteUserGroups;
     }
+
+    @Override
+    public LiteUserGroup getLiteUserGroupByUserGroupName(String userGroupName) {
+        SqlStatementBuilder sql = new SqlStatementBuilder();
+        sql.append("SELECT UG.*");
+        sql.append("FROM UserGroup UG");
+        sql.append("WHERE UG.Name").eq(userGroupName);
+        
+        LiteUserGroup userGroup = yukonJdbcTemplate.queryForObject(sql, new LiteUserGroupRowMapper());
+        return userGroup;
+    }
     
     @Override
     public LiteUserGroup findLiteUserGroupByUserGroupName(String userGroupName) {
@@ -198,6 +216,27 @@ public class UserGroupDaoImpl implements UserGroupDao, InitializingBean {
         
         return null;
     }
+
+    @Override
+    public com.cannontech.database.db.user.UserGroup getDBUserGroupByUserGroupName(String userGroupName) {
+        SqlStatementBuilder sql = new SqlStatementBuilder();
+        sql.append("SELECT UG.*");
+        sql.append("FROM UserGroup UG");
+        sql.append("WHERE UG.Name").eq(userGroupName);
+        
+        com.cannontech.database.db.user.UserGroup userGroup = yukonJdbcTemplate.queryForObject(sql, new DBUserGroupRowMapper());
+        return userGroup;
+    }
+    
+    @Override
+    public com.cannontech.database.db.user.UserGroup findDBUserGroupByUserGroupName(String userGroupName) {
+        try {
+            return getDBUserGroupByUserGroupName(userGroupName);
+        } catch (EmptyResultDataAccessException e) {}
+        
+        return null;
+    }
+
     
     @Override
     public List<LiteUserGroup> getAllLiteUserGroups() {

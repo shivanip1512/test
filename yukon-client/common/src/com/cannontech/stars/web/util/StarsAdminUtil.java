@@ -678,7 +678,7 @@ public class StarsAdminUtil {
 		return DaoFactory.getRoleDao().getGroup( liteGroup.getGroupID() );
 	}
 	
-	public static LiteUserGroup createOperatorAdminUserGroup(final String userGroupName, int primaryOperatorUserGroupId, final boolean topLevelEc)
+	public static com.cannontech.database.db.user.UserGroup createOperatorAdminUserGroup(final String userGroupName, int primaryOperatorUserGroupId, final boolean topLevelEc)
 	throws TransactionException, ConfigurationException, SQLException {
 	    RoleDao roleDao = YukonSpringHook.getBean("roleDao", RoleDao.class);
 	    UserGroupDao userGroupDao = YukonSpringHook.getBean("userGroupDao", UserGroupDao.class);
@@ -724,8 +724,8 @@ public class StarsAdminUtil {
 
 		// Create the new admin user group including the links to the newly created role group.
 		UserGroup userGroup = new UserGroup();
-		userGroup.getLiteUserGroup().setUserGroupName(userGroupName);
-		userGroup.getLiteUserGroup().setUserGroupDescription("Privilege user group for the energy company's default operator login");
+		userGroup.getUserGroup().setUserGroupName(userGroupName);
+		userGroup.getUserGroup().setUserGroupDescription("Privilege user group for the energy company's default operator login");
 		userGroup.addRoleGroups(ecAdminGroup);
 		
 		// Adding the primary operator user groups role groups
@@ -734,10 +734,10 @@ public class StarsAdminUtil {
 		userGroup.add();
 		
 		handleDBChange( ecAdminGroup, DbChangeType.ADD );
-		return userGroup.getLiteUserGroup();
+		return userGroup.getUserGroup();
 	}
 
-	public static LiteYukonUser createOperatorLogin(String username, String password, LoginStatusEnum status, LiteUserGroup liteUserGroup,
+	public static LiteYukonUser createOperatorLogin(String username, String password, LoginStatusEnum status, com.cannontech.database.db.user.UserGroup liteUserGroup,
 		LiteStarsEnergyCompany energyCompany) throws TransactionException, WebClientException, CommandExecutionException
 	{
 	    AuthenticationService authenticationService = (AuthenticationService) YukonSpringHook.getBean("authenticationService");

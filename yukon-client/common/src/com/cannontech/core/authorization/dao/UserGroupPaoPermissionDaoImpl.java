@@ -6,6 +6,7 @@ import java.util.Collection;
 import java.util.Collections;
 import java.util.List;
 
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.jdbc.core.simple.ParameterizedRowMapper;
 
 import com.cannontech.common.pao.PaoIdentifier;
@@ -34,15 +35,8 @@ import com.google.common.collect.Multimap;
  */
 public class UserGroupPaoPermissionDaoImpl implements PaoPermissionDao<LiteUserGroup> {
 
-    private NextValueHelper nextValueHelper;
-    private YukonJdbcTemplate yukonJdbcTemplate;
-
-    public void setNextValueHelper(NextValueHelper nextValueHelper) {
-        this.nextValueHelper = nextValueHelper;
-    }
-    public void setYukonJdbcTemplate(YukonJdbcTemplate yukonJdbcTemplate) {
-        this.yukonJdbcTemplate = yukonJdbcTemplate;
-    }
+    @Autowired private NextValueHelper nextValueHelper;
+    @Autowired private YukonJdbcTemplate yukonJdbcTemplate;
 
     public List<PaoPermission> getPermissions(LiteUserGroup userGroup) {
         return this.getPermissionsByUserGroupIds(Collections.singletonList(userGroup.getUserGroupId()));
@@ -120,7 +114,7 @@ public class UserGroupPaoPermissionDaoImpl implements PaoPermissionDao<LiteUserG
         SqlStatementBuilder sql = new SqlStatementBuilder();
         sql.append("DELETE FROM GroupPaoPermission");
         sql.append("WHERE UserGroupId").eq(userGroup.getUserGroupId());
-        sql.append("  AND Permission").eq(permission);
+        sql.append("  AND Permission").eq_k(permission);
 
         yukonJdbcTemplate.update(sql);
     }

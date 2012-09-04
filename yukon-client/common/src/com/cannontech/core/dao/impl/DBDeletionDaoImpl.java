@@ -542,7 +542,7 @@ public class DBDeletionDaoImpl implements DBDeletionDao
         {
             delRes.getConfirmMessage().append("Are you sure you want to permanently delete '" + nodeName + "'?");
             delRes.getUnableDelMsg().append("You cannot delete the user group '" + nodeName + "'");
-            delRes.setItemID(((com.cannontech.database.data.user.UserGroup) toDelete).getLiteUserGroup().getUserGroupId());
+            delRes.setItemID(((com.cannontech.database.data.user.UserGroup) toDelete).getUserGroup().getUserGroupId());
             delRes.setDelType( DBDeletionDaoImpl.USER_GROUP_TYPE );
         }
 		else if (toDelete instanceof com.cannontech.database.data.user.YukonGroup)

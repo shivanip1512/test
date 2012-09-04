@@ -11,6 +11,7 @@ import com.cannontech.core.users.model.LiteUserGroup;
 import com.cannontech.database.data.lite.LiteContact;
 import com.cannontech.database.data.lite.LiteYukonGroup;
 import com.cannontech.database.data.lite.LiteYukonUser;
+import com.cannontech.database.db.user.UserGroup;
 
 public interface YukonUserDao {
 
@@ -88,7 +89,7 @@ public interface YukonUserDao {
     /**
      * A Lists of users are given to the callback as they are retrieved in chunks from the user group.
      */
-    public void callbackWithYukonUsersInUserGroup(LiteUserGroup userGroup, SimpleCallback<LiteYukonUser> simpleCallback);
+    public void callbackWithYukonUsersInUserGroup(UserGroup userGroup, SimpleCallback<LiteYukonUser> simpleCallback);
     
     /**
      * This method removes the user from their current user group.

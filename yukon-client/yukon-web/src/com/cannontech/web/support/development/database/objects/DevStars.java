@@ -4,8 +4,8 @@ import com.cannontech.core.users.model.LiteUserGroup;
 import com.cannontech.stars.database.data.lite.LiteStarsEnergyCompany;
 
 public class DevStars extends DevObject {
-    private LiteUserGroup liteUserGroupResidential;
-    private LiteUserGroup liteUserGroupOperator;
+    private LiteUserGroup userGroupResidential;
+    private LiteUserGroup userGroupOperator;
     private LiteStarsEnergyCompany energyCompany;
     private DevStarsAccounts devStarsAccounts = new DevStarsAccounts();
     private DevStarsHardware devStarsHardware = new DevStarsHardware();
@@ -44,18 +44,18 @@ public class DevStars extends DevObject {
         return total;
     }
 
-    public LiteUserGroup getLiteUserGroupResidential() {
-        return liteUserGroupResidential;
+    public LiteUserGroup getUserGroupResidential() {
+        return userGroupResidential;
     }
-    public void setLiteUserGroupResidential(LiteUserGroup liteUserGroupResidential) {
-        this.liteUserGroupResidential = liteUserGroupResidential;
+    public void setUserGroupResidential(LiteUserGroup userGroupResidential) {
+        this.userGroupResidential = userGroupResidential;
     }
 
-    public LiteUserGroup getLiteUserGroupOperator() {
-        return liteUserGroupOperator;
+    public LiteUserGroup getUserGroupOperator() {
+        return userGroupOperator;
     }
-    public void setLiteUserGroupOperator(LiteUserGroup liteUserGroupOperator) {
-        this.liteUserGroupOperator = liteUserGroupOperator;
+    public void setUserGroupOperator(LiteUserGroup userGroupOperator) {
+        this.userGroupOperator = userGroupOperator;
     }
 
     public String getNewEnergyCompanyName() {

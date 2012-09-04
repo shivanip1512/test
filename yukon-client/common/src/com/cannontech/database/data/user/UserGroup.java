@@ -15,7 +15,6 @@ import com.cannontech.core.dao.RoleDao;
 import com.cannontech.core.dao.YukonGroupDao;
 import com.cannontech.core.roleproperties.YukonRole;
 import com.cannontech.core.users.dao.UserGroupDao;
-import com.cannontech.core.users.model.LiteUserGroup;
 import com.cannontech.database.data.lite.LiteYukonGroup;
 import com.cannontech.database.db.CTIDbChange;
 import com.cannontech.database.db.DBPersistent;
@@ -28,17 +27,18 @@ import com.google.common.collect.Sets;
 
 public class UserGroup extends DBPersistent implements CTIDbChange, EditorPanel {	
 
-    private LiteUserGroup liteUserGroup = new LiteUserGroup();
+    private com.cannontech.database.db.user.UserGroup userGroup = new com.cannontech.database.db.user.UserGroup();
     private Map<YukonRole, LiteYukonGroup> rolesToGroupMap = Maps.newHashMap();
 
-    public LiteUserGroup getLiteUserGroup() {
-        return liteUserGroup;
+    public com.cannontech.database.db.user.UserGroup getUserGroup() {
+        return userGroup;
     }
-    public void setLiteUserGroup(LiteUserGroup liteUserGroup) {
-        this.liteUserGroup = liteUserGroup;
+    public void setUserGroup(com.cannontech.database.db.user.UserGroup userGroup) {
+        this.userGroup = userGroup;
     }
-    public void setUserGroupId(int userGroupId) {
-        liteUserGroup.setUserGroupId(userGroupId);
+    
+    public void setUserGroupId(Integer userGroupId) {
+        userGroup.setUserGroupId(userGroupId);
     }
     
     public Set<LiteYukonGroup> getRoleGroups() {
@@ -66,7 +66,7 @@ public class UserGroup extends DBPersistent implements CTIDbChange, EditorPanel 
     }
     public void putRolesToGroupMap(YukonRole yukonRole, LiteYukonGroup yukonGroup) throws ConfigurationException {
         if (!isAddable(yukonRole)) {
-            throw new ConfigurationException("The group settings supplied in "+yukonGroup.getGroupName()+" contains a role that already exists for the user group "+ this.liteUserGroup.getUserGroupName() +".");
+            throw new ConfigurationException("The group settings supplied in "+yukonGroup.getGroupName()+" contains a role that already exists for the user group "+ this.userGroup.getUserGroupName() +".");
         }
 
         this.rolesToGroupMap.put(yukonRole, yukonGroup);
@@ -74,7 +74,7 @@ public class UserGroup extends DBPersistent implements CTIDbChange, EditorPanel 
     public void putAllRolesToGroupMap(Map<YukonRole, LiteYukonGroup> roleToGroupMap) throws ConfigurationException {
         for (Entry<YukonRole, LiteYukonGroup> roleToGroupEntry : roleToGroupMap.entrySet()) {
             if (!isAddable(roleToGroupEntry.getKey())) {
-                throw new ConfigurationException("The role group settings supplied in "+roleToGroupEntry.getValue().getGroupName()+" contains a role "+roleToGroupEntry.getKey() +" that already exists in the user group" +liteUserGroup.getUserGroupName()+
+                throw new ConfigurationException("The role group settings supplied in "+roleToGroupEntry.getValue().getGroupName()+" contains a role "+roleToGroupEntry.getKey() +" that already exists in the user group" +userGroup.getUserGroupName()+
                                                                        ".  ["+rolesToGroupMap+"]");
             }
         }
@@ -97,72 +97,72 @@ public class UserGroup extends DBPersistent implements CTIDbChange, EditorPanel 
 
     @Override
     public String toString() {
-        return liteUserGroup.getUserGroupName();
+        return userGroup.getUserGroupName();
     }
     
     public boolean isUserGroupDeletable() {
-        return liteUserGroup.getUserGroupId() > 0;
+        return userGroup.getUserGroupId() > 0;
     }
     
     // DBPersistent methods
     @Override
     public void add() throws SQLException {
         UserGroupDao userGroupDao = YukonSpringHook.getBean("userGroupDao", UserGroupDao.class);
-        userGroupDao.create(liteUserGroup);
+        userGroupDao.create(userGroup);
         
         RoleDao roleDao = YukonSpringHook.getBean("roleDao", RoleDao.class);
-        Map<YukonRole, LiteYukonGroup> rolesToGroupsMap = roleDao.getRolesAndRoleGroupsForUserGroup(liteUserGroup.getUserGroupId());
+        Map<YukonRole, LiteYukonGroup> rolesToGroupsMap = roleDao.getRolesAndRoleGroupsForUserGroup(userGroup.getUserGroupId());
         try {
             putAllRolesToGroupMap(rolesToGroupsMap);
         } catch (ConfigurationException e) {
-            Log.error("The user group "+getLiteUserGroup().getUserGroupName()+" has a role group conflict.", e);
+            Log.error("The user group "+userGroup.getUserGroupName()+" has a role group conflict.", e);
         }
 
         // Add the connections between the yukon group and the user group
         for (LiteYukonGroup liteYukonGroup : getRoleGroups()) {
-            userGroupDao.createUserGroupToYukonGroupMappng(liteUserGroup.getUserGroupId(), liteYukonGroup.getGroupID());
+            userGroupDao.createUserGroupToYukonGroupMappng(userGroup.getUserGroupId(), liteYukonGroup.getGroupID());
         }
     }
 
     @Override
     public void delete() throws SQLException {
         UserGroupDao userGroupDao = YukonSpringHook.getBean("userGroupDao", UserGroupDao.class);
-        userGroupDao.delete(liteUserGroup);
+        userGroupDao.delete(userGroup.getUserGroupId());
     }
 
     @Override
     public void retrieve() throws SQLException {
         UserGroupDao userGroupDao = YukonSpringHook.getBean("userGroupDao", UserGroupDao.class);
-        UserGroup userGroup = userGroupDao.getUserGroup(this.liteUserGroup.getUserGroupId());
-        this.liteUserGroup = userGroup.liteUserGroup;
+        UserGroup userGroup = userGroupDao.getUserGroup(this.userGroup.getUserGroupId());
+        this.userGroup = userGroup.userGroup;
         this.rolesToGroupMap = userGroup.rolesToGroupMap;
     }
 
     @Override
     public void update() throws SQLException {
         UserGroupDao userGroupDao = YukonSpringHook.getBean("userGroupDao", UserGroupDao.class);
-        userGroupDao.update(liteUserGroup);
+        userGroupDao.update(userGroup);
 
         // Update the connections between the yukon group and the user group
         YukonGroupDao yukonGroupDao = YukonSpringHook.getBean("yukonGroupDao", YukonGroupDao.class);
-        List<LiteYukonGroup> existingYukonGroups = yukonGroupDao.getRoleGroupsForUserGroupId(liteUserGroup.getUserGroupId());
+        List<LiteYukonGroup> existingYukonGroups = yukonGroupDao.getRoleGroupsForUserGroupId(userGroup.getUserGroupId());
         Set<LiteYukonGroup> yukonGroupsToAdd = getRoleGroups();
         yukonGroupsToAdd.removeAll(existingYukonGroups);
         for (LiteYukonGroup newYukonGroup : yukonGroupsToAdd) {
-            userGroupDao.createUserGroupToYukonGroupMappng(liteUserGroup.getUserGroupId(), newYukonGroup.getGroupID());
+            userGroupDao.createUserGroupToYukonGroupMappng(userGroup.getUserGroupId(), newYukonGroup.getGroupID());
         }
 
         Set<LiteYukonGroup> yukonGroupsToRemove = Sets.newHashSet(existingYukonGroups);
         yukonGroupsToRemove.removeAll(getRoleGroups());
         for (LiteYukonGroup existingYukonGroup : yukonGroupsToRemove) {
-            userGroupDao.deleteUserGroupToYukonGroupMappng(liteUserGroup.getUserGroupId(), existingYukonGroup.getGroupID());
+            userGroupDao.deleteUserGroupToYukonGroupMappng(userGroup.getUserGroupId(), existingYukonGroup.getGroupID());
         }
     }
     
     @Override
     public DBChangeMsg[] getDBChangeMsgs(DbChangeType dbChangeType) {
         DBChangeMsg[] msgs = 
-            {new DBChangeMsg(getLiteUserGroup().getUserGroupId(), DBChangeMsg.CHANGE_USER_GROUP_DB,
+            {new DBChangeMsg(userGroup.getUserGroupId(), DBChangeMsg.CHANGE_USER_GROUP_DB,
                              DBChangeMsg.CAT_USER_GROUP, DBChangeMsg.CAT_USER_GROUP,  dbChangeType)};
 
         return msgs;
