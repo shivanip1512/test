@@ -1,7 +1,7 @@
 /*==============================================================*/
 /* Database name:  YukonDatabase                                */
 /* DBMS name:      ORACLE Version 9i                            */
-/* Created on:     9/4/2012 3:16:59 AM                          */
+/* Created on:     9/4/2012 2:45:32 PM                          */
 /*==============================================================*/
 
 
@@ -11904,11 +11904,13 @@ alter table RepeaterRoute
 
 alter table ReportedAddressExpressCom
    add constraint FK_RepAddExpressCom_Device foreign key (DeviceId)
-      references DEVICE (DEVICEID);
+      references DEVICE (DEVICEID)
+      on delete cascade;
 
 alter table ReportedAddressRelayExpressCom
    add constraint FK_RepAddRelayExp_RepAddExpCom foreign key (ChangeId)
-      references ReportedAddressExpressCom (ChangeId);
+      references ReportedAddressExpressCom (ChangeId)
+      on delete cascade;
 
 alter table Route
    add constraint FK_Route_DevID foreign key (DeviceID)

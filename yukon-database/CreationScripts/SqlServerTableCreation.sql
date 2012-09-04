@@ -1,7 +1,7 @@
 /*==============================================================*/
 /* Database name:  YukonDatabase                                */
 /* DBMS name:      Microsoft SQL Server 2005                    */
-/* Created on:     9/4/2012 3:18:31 AM                          */
+/* Created on:     9/4/2012 2:44:13 PM                          */
 /*==============================================================*/
 
 /*==============================================================*/
@@ -12942,11 +12942,13 @@ go
 alter table ReportedAddressExpressCom
    add constraint FK_RepAddExpressCom_Device foreign key (DeviceId)
       references DEVICE (DEVICEID)
+         on delete cascade
 go
 
 alter table ReportedAddressRelayExpressCom
    add constraint FK_RepAddRelayExp_RepAddExpCom foreign key (ChangeId)
       references ReportedAddressExpressCom (ChangeId)
+         on delete cascade
 go
 
 alter table Route

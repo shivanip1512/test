@@ -355,7 +355,8 @@ GO
 
 ALTER TABLE ReportedAddressExpressCom
    ADD CONSTRAINT FK_RepAddExpressCom_Device FOREIGN KEY (DeviceId)
-      REFERENCES Device (DeviceId);
+      REFERENCES Device (DeviceId)
+         ON DELETE CASCADE;
 GO
 
 CREATE TABLE ReportedAddressRelayExpressCom (
@@ -370,6 +371,7 @@ GO
 ALTER TABLE ReportedAddressRelayExpressCom
    ADD CONSTRAINT FK_RepAddRelayExp_RepAddExpCom FOREIGN KEY (ChangeId)
       REFERENCES ReportedAddressExpressCom (ChangeId);
+         ON DELETE CASCADE;
 GO
 /* End YUK-11293 */
 
