@@ -19,7 +19,11 @@
 <script>
 //needed for ajaxed date pickers
 jQuery(function(){
-	Yukon.ui.dateTimePickers.init();
+	try{
+		Yukon.ui.dateTimePickers.init();
+	}catch(err){
+		//this page does not include dateTime Pickers
+	}
 });
 </script>
 
