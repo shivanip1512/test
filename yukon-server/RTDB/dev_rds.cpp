@@ -187,7 +187,7 @@ int RDSTransmitter::decode(CtiXfer &xfer, int status)
                     {
                         delta = _lastPeriodicActionTime.seconds() + getAIDRepeatRate() - CtiTime::now().seconds();
                     }
-                    sleepDelay = std::min( _remainingSleepDelay, std::min( delta, getAIDRepeatRate() ) );
+                    sleepDelay = std::min( _remainingSleepDelay, 1000 * std::min( delta, getAIDRepeatRate() ) );
                     _remainingSleepDelay -= sleepDelay;
                 }
 
