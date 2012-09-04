@@ -96,6 +96,7 @@
 <entry key="yukon.common.filteredBy.reset.label">or</entry>
 <entry key="yukon.common.filteredBy.reset.value">reset to defaults</entry>
 
+<entry key="yukon.common.adobeRequired">The Adobe Flash Player is required to view this graph.</entry>
+<entry key="yukon.common.adobePleaseDL">Please download the latest version of the Flash Player by following the link below.</entry>
 
-        
 </properties>
