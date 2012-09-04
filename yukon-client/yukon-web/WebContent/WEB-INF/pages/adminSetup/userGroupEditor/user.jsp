@@ -170,7 +170,7 @@ jQuery(function() {
                                                 <c:forEach var="roleGroupPair" items="${category.value}">
                                                     <li>
                                                         <cti:formatObject value="${roleGroupPair.first}"/>
-                                                        &nbsp;<span class="subtleGray"><spring:escapeBody htmlEscape="true">(${fn:escapeXml(roleGroupPair.second)})</spring:escapeBody></span>
+                                                        &nbsp;<span class="subtleGray"><spring:escapeBody htmlEscape="true">(${roleGroupPair.second})</spring:escapeBody></span>
                                                     </li>
                                                 </c:forEach>
                                             </ul>
