@@ -274,7 +274,7 @@ END;
 DROP TABLE GroupPaoPermission_Delete;
 /* End YUK-11317 */
 
-/* End YUK-11311 */
+/* Start YUK-11311 */
 CREATE TABLE LMBeatThePeakGear
 (
     GearId    NUMBER          NOT NULL,
