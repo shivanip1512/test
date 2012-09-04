@@ -42,7 +42,7 @@ Yukon.ui.passwordManager = {
 	},
 	
 	indicatePassFail: function(data){
-		jQuery(".password_manager .fail, .password_manager .pass").removeClass("fail").removeClass("passs");
+		jQuery(".password_manager .fail, .password_manager .pass").removeClass("fail").removeClass("pass");
 		var errors = ['policy_errors', 'rule_errors'];
 		var validations = ['policy_validations', 'rule_validations'];
 		
