@@ -240,7 +240,7 @@ jQuery(function() {
                                <cti:param name="accountId" value="${accountId}"/>
                                <cti:param name="inventoryId" value="${param.inventoryId}"/>
                             </cti:url>
-                            <a class="labeled_icon icon_enable" href="${enableUrl}"><i:inline key="yukon.web.components.button.enable.label"/></a>
+                            <a class="labeled_icon enable" href="${enableUrl}"><i:inline key="yukon.web.components.button.enable.label"/></a>
                         </li>
                         
                         <li>
@@ -248,7 +248,7 @@ jQuery(function() {
                                <cti:param name="accountId" value="${accountId}"/>
                                <cti:param name="inventoryId" value="${param.inventoryId}"/>
                             </cti:url>
-                            <a class="labeled_icon icon_disable cl" href="${disableUrl}"><i:inline key="yukon.web.components.button.disable.label"/></a>
+                            <a class="labeled_icon disable cl" href="${disableUrl}"><i:inline key="yukon.web.components.button.disable.label"/></a>
                         </li>
                     </ul>
                 </tags:formElementContainer>

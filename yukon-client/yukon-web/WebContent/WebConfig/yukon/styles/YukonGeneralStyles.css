@@ -1568,6 +1568,7 @@ a.icon {
 
 .labeled_icon,
 .labeled_icon_right {
+    background-repeat: no-repeat;
     padding: 0 0 0 20px;
     overflow:hidden;
     float:left;
@@ -1621,29 +1622,29 @@ a.icon {
     background-position: 0 0px;
 }
 
-.icon_enable {
-    background: transparent url(../Icons/enable.gif) top left no-repeat;
+.enable {
+    background-image: url(../Icons/enable.gif);
 }
 
-.icon_enable:hover {
-    background: transparent url(../Icons/enable_over.gif) top left no-repeat;
+.enable:hover {
+    background-image: url(../Icons/enable_over.gif);
 }
 
-.icon_enable_disabled {
-    background: transparent url(../Icons/enable_disabled.gif) top left no-repeat;
+.enable_disabled {
+    background-image: url(../Icons/enable_disabled.gif);
     cursor: not-allowed;
 }
 
-.icon_disable {
-    background: transparent url(../Icons/disable.gif) top left no-repeat;
+.disable {
+    background-image: url(../Icons/disable.gif);
 }
 
-.icon_disable:hover {
-    background: transparent url(../Icons/disable_over.gif) top left no-repeat;
+.disable:hover {
+    background-image: url(../Icons/disable_over.gif);
 }
 
-.icon_disable_disabled {
-    background: transparent url(../Icons/disable_disabled.gif) top left no-repeat;
+.disable_disabled {
+    background-image: url(../Icons/disable_disabled.gif);
     cursor: not-allowed;
 }
 
