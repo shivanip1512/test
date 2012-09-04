@@ -38,6 +38,7 @@ class IM_EX_CTIPIL CtiPILServer : public CtiServer
    RWThreadFunction     _schedulerThread;
    RWThreadFunction     _nexusThread;
    RWThreadFunction     _nexusWriteThread;
+   RWThreadFunction     _periodicActionThread;
 
    CtiCommandParser     _currentParse;
    long                 _currentUserMessageId;
@@ -93,6 +94,7 @@ public:
    void  nexusWriteThread();
    void  vgConnThread();
    void  schedulerThread();
+   void  periodicActionThread();
 
    INT analyzeWhiteRabbits(CtiRequestMsg& pReq, CtiCommandParser &parse, std::list< CtiRequestMsg* > & execList, std::list< CtiMessage* > & retList);
    INT analyzeAutoRole(CtiRequestMsg& Req, CtiCommandParser &parse, std::list< CtiRequestMsg* > & execList, std::list< CtiMessage* > & retList);

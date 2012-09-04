@@ -29,6 +29,8 @@ public:
 
     static bool isPacketValid(const unsigned char *buf, const size_t len);
 
+    virtual bool timeToPerformPeriodicAction(const CtiTime & currentTime);
+
 protected:
 
     typedef CtiDeviceRemote Inherited;
@@ -44,13 +46,14 @@ protected:
     {
         StateSendBiDirectionalRequest,
         StateSendRequestedMessage,
-        StateSendRepeatedMessage,
         StateSendODAConfig,
-        StateCheckResponse
+        StateCheckResponse,
+        StateSendAIDMessage
     };
 
     enum MessageElementCodes
     {
+        TransparentFreeFormat = 0x24,
         CommunicationModeCode = 0x2C,
         ODAConfiguration      = 0x40,
         ODAFreeFormat         = 0x42,
@@ -67,8 +70,10 @@ protected:
     bool                  _messageToggleFlag;
     bool                  _twoWay;
     unsigned int          _repeatCount;
+    CtiTime               _lastPeriodicActionTime;
+    unsigned              _remainingSleepDelay;
 
-    void resetStates();
+    void resetStates(const StateMachine &s);
 
     unsigned char  getEncoderAddress() const;
     unsigned short getSiteAddress() const;
@@ -80,6 +85,7 @@ protected:
     // Message to ask unit to give us immediate responses
     void createBiDirectionRequest     (MessageStore &message);
     void createRequestedMessage       (MessageStore &message);
+    void createPeriodicAIDMessage     (MessageStore &message);
 
     void addMessageSize             (MessageStore &message);
     void addSequenceCounter         (MessageStore &message);
@@ -92,6 +98,8 @@ protected:
     void buildRDSFrameFromOutMessage(MessageStore &frame);
     void addFrameToUECPMessage(MessageStore &message, MessageStore &frame);
 
+    void buildRDSMessage(const StateMachine &m, MessageStore &msg);
+
     void copyMessageToXfer          (CtiXfer &xfer, MessageStore &message);
 
     void printAcknowledgmentError   (unsigned char error);
@@ -101,6 +109,10 @@ protected:
     bool isTwoWay();
     bool isOdaConfigSendNeeded();
     void delay();
+
+    unsigned calculateSleepDelay();
+
+    unsigned getAIDRepeatRate();
 
     unsigned int uecp_crc   (const MessageStore &message);
     unsigned int cooper_crc (const MessageStore &message);

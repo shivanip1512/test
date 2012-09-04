@@ -27,7 +27,7 @@ _messageToggleFlag(false),
 _command(Complete),
 _repeatCount(0)
 {
-    resetStates();
+    resetStates(StateSendRequestedMessage);
 }
 
 RDSTransmitter::~RDSTransmitter()
@@ -52,8 +52,27 @@ int RDSTransmitter::recvCommRequest( OUTMESS *OutMessage )
             _outMessage.OutLength = _outMessage.Buffer.TAPSt.Length;
         }
 
-        resetStates();
-        _command = Normal;
+        // do we have a AppID outmessage?
+
+        CtiString command( _outMessage.Request.CommandStr );
+
+        if ( command.contains( "putvalue application-id" ) )
+        {
+            _command = Complete;    // ignore this if we've sent an AppID message withing the last getAIDRepeatRate() time.
+            if ( timeToPerformPeriodicAction( CtiTime::now() ) )
+            {
+                _command = Normal;
+                _repeatCount = 0;
+                resetStates(StateSendAIDMessage);
+            }
+        }
+        else
+        {
+            _command = Normal;
+            _repeatCount = gConfigParms.getValueAsInt("RDS_REPEAT_COUNT", 0); // Reset this on every new transmission
+            resetStates(StateSendRequestedMessage);
+        }
+
 
     }
     else
@@ -75,10 +94,39 @@ bool RDSTransmitter::isTwoWay()
     return gConfigParms.isTrue("RDS_USE_TWO_WAY_MESSAGING");
 }
 
+void RDSTransmitter::buildRDSMessage(const StateMachine &m, MessageStore &msg)
+{
+    switch(m)
+    {
+        case StateSendAIDMessage:
+        {
+            createPeriodicAIDMessage(msg);
+            _lastPeriodicActionTime = CtiTime::now();
+            break;
+        }
+        case StateSendBiDirectionalRequest:
+        {
+            createBiDirectionRequest(msg);
+            break;
+        }
+        case StateSendRequestedMessage:
+        {
+            // Note that due to this we need to ensure we have set up the encryption or other before this so the repeat is identical!
+            createRequestedMessage(msg);
+            break;
+        }
+    }
+
+    addMessageSize(msg);
+    addSequenceCounter(msg);
+    addMessageAddressing(msg);
+    addUECPCRC(msg);
+    replaceReservedBytes(msg);
+    addStartStopBytes(msg);
+}
+
 int RDSTransmitter::generate(CtiXfer &xfer)
 {
-    int status = Normal;
-
     MessageStore newMessage;
 
     if(isTwoWay() && !_isBiDirectionSet)
@@ -86,42 +134,19 @@ int RDSTransmitter::generate(CtiXfer &xfer)
         _currentState = StateSendBiDirectionalRequest;
     }
 
-    switch(_currentState)
+    if ( _remainingSleepDelay == 0 ) // received an outMessage based message
     {
-        case StateSendBiDirectionalRequest:
-        {
-            createBiDirectionRequest(newMessage);
-            break;
-        }
-        case StateSendRequestedMessage:
-        {
-            _repeatCount = gConfigParms.getValueAsInt("RDS_REPEAT_COUNT", 0); // Reset this on every new transmission
-            //FALL Through.
-        }
-        case StateSendRepeatedMessage:
-        {
-            // Note that due to this we need to ensure we have set up the encryption or other before this so the repeat is identical!
-            createRequestedMessage(newMessage);
-            break;
-        }
+        buildRDSMessage(_currentState, newMessage);
+        _remainingSleepDelay = calculateSleepDelay();
+    }
+    else    // send AppID from 'interrupted' sleep...
+    {
+        buildRDSMessage(StateSendAIDMessage, newMessage);
     }
 
-    _previousState = _currentState;
-    _currentState  = StateCheckResponse;
+    copyMessageToXfer(xfer, newMessage);
 
-    if(status == Normal)
-    {
-        addMessageSize(newMessage);
-        addSequenceCounter(newMessage);
-        addMessageAddressing(newMessage);
-        addUECPCRC(newMessage);
-        replaceReservedBytes(newMessage);
-        addStartStopBytes(newMessage);
-
-        copyMessageToXfer(xfer, newMessage);
-    }
-
-    return status;
+    return Normal;
 }
 
 int RDSTransmitter::decode(CtiXfer &xfer, int status)
@@ -146,19 +171,39 @@ int RDSTransmitter::decode(CtiXfer &xfer, int status)
                 _isBiDirectionSet = true;
                 _currentState = StateSendRequestedMessage;
             }
-            else if(_previousState == StateSendRequestedMessage ||
-                    _previousState == StateSendRepeatedMessage)
+            else if(_previousState == StateSendRequestedMessage )
             {
-                if(_repeatCount > 0)
+                unsigned sleepDelay = 0;
+
+                if ( getAIDRepeatRate() == 0 )  // no periodic AppID - wait whole time
                 {
-                    _currentState = StateSendRepeatedMessage;
-                    _repeatCount--;
+                    sleepDelay = _remainingSleepDelay;
+                    _remainingSleepDelay = 0;
                 }
                 else
                 {
-                    _command = Complete; //Transaction Complete
+                    unsigned delta = 0;
+                    if ( _lastPeriodicActionTime.seconds() + getAIDRepeatRate() > CtiTime::now().seconds() )
+                    {
+                        delta = _lastPeriodicActionTime.seconds() + getAIDRepeatRate() - CtiTime::now().seconds();
+                    }
+                    sleepDelay = std::min( _remainingSleepDelay, std::min( delta, getAIDRepeatRate() ) );
+                    _remainingSleepDelay -= sleepDelay;
                 }
-                delay();
+
+                Sleep(sleepDelay);
+
+                if ( _remainingSleepDelay == 0 )
+                {
+                    if(_repeatCount > 0)
+                    {
+                        _repeatCount--;
+                    }
+                    else
+                    {
+                        _command = Complete; //Transaction Complete
+                    }
+                }
             }
             else
             {
@@ -176,6 +221,25 @@ int RDSTransmitter::decode(CtiXfer &xfer, int status)
     }
 
     return status;
+}
+
+unsigned RDSTransmitter::calculateSleepDelay()  // time in milliseconds!!
+{
+    unsigned delay = 0;
+
+    const int totalGroups = getMessageCountFromBufSize(_outMessage.OutLength);
+    if(getGroupsPerSecond() > 0)
+    {
+        delay = (1000.0 * totalGroups) / getGroupsPerSecond();
+
+   //     Sleep(1000*totalGroups/getGroupsPerSecond());
+    }
+    else
+    {
+        CtiLockGuard<CtiLogger> doubt_guard(dout);
+        dout << "**** Checkpoint **** Invalid groups per second value" << __FILE__ << " (" << __LINE__ << ")" << endl;
+    }
+    return delay;
 }
 
 void RDSTransmitter::delay()
@@ -460,6 +524,22 @@ INT RDSTransmitter::ExecuteRequest(CtiRequestMsg *pReq, CtiCommandParser &parse,
             OutMessage = NULL;
             break;
         }
+        if( parse.isKeyValid("application-id") )
+        {
+            OutMessage->OutLength   = 0;
+            OutMessage->DeviceID    = getID();
+            OutMessage->TargetID    = getID();
+            OutMessage->Port        = getPortID();
+            OutMessage->InLength    = 0;
+            OutMessage->Source      = 0;
+            OutMessage->Retry       = 2;
+
+            resultString = "Device: " + getName() + " -- Application ID sent";
+
+            outList.push_back(OutMessage);
+            OutMessage = NULL;
+            break;
+        }
         //else fall through!
     }
     case ControlRequest:
@@ -513,10 +593,9 @@ bool RDSTransmitter::isTransactionComplete()
     return _command == Complete;
 }
 
-void RDSTransmitter::resetStates()
+void RDSTransmitter::resetStates(const StateMachine &s)
 {
-    _currentState = StateSendRequestedMessage;
-    _previousState = StateSendRequestedMessage;
+    _currentState = _previousState = s;
 }
 
 void RDSTransmitter::printAcknowledgmentError(unsigned char error)
@@ -679,6 +758,33 @@ LONG RDSTransmitter::getAddress() const
     return ((long)getSiteAddress() << 6) | getEncoderAddress();
 }
 
+void RDSTransmitter::createPeriodicAIDMessage(MessageStore &message)
+{
+    message.push_back(TransparentFreeFormat);
+    message.push_back(0x06);
+
+    message.push_back(getGroupTypeCode());
+
+    unsigned short spid = getStaticInfo(CtiTableStaticPaoInfo::Key_RDS_SPID);
+
+    message.push_back(spid >> 8);
+    message.push_back(spid);
+
+    message.push_back(CooperAID >> 8);
+    message.push_back(CooperAID);
+}
+
+bool RDSTransmitter::timeToPerformPeriodicAction(const CtiTime & currentTime)
+{
+    unsigned repeatRate = getAIDRepeatRate();
+
+    return ( repeatRate > 0 && currentTime >= ( _lastPeriodicActionTime + repeatRate ) );
+}
+
+unsigned RDSTransmitter::getAIDRepeatRate()
+{
+    return getStaticInfo(CtiTableStaticPaoInfo::Key_RDS_AID_Repeat_Period);
+}
 
 }
 }

@@ -324,6 +324,7 @@ public:
     virtual bool isShedProtocolParent(CtiDeviceBase *otherdev)  { return false; }
     virtual bool isRestoreProtocolParent(CtiDeviceBase *otherdev)  { return false; }
 
+    virtual bool timeToPerformPeriodicAction(const CtiTime & currentTime)   { return false; }
 
 };
 

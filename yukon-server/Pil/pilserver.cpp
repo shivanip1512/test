@@ -104,6 +104,9 @@ int CtiPILServer::execute()
 
             _schedulerThread = rwMakeThreadFunction(*this, &CtiPILServer::schedulerThread);
             _schedulerThread.start();
+
+            _periodicActionThread = rwMakeThreadFunction(*this, &CtiPILServer::periodicActionThread);
+            _periodicActionThread.start();
         }
     }
     catch(const RWxmsg& x)
@@ -2216,5 +2219,47 @@ int CtiPILServer::reportClientRequests(CtiDeviceSPtr &Dev, const CtiCommandParse
 bool inmess_user_message_id_equal(const INMESS &in, int user_message_id)
 {
     return in.Return.UserID == user_message_id;
+}
+
+
+
+
+void CtiPILServer::periodicActionThread()
+{
+    {
+        CtiLockGuard<CtiLogger> doubt_guard(dout);
+        dout << CtiTime() << " PIL periodicActionThread : Started as TID " << rwThreadId() << std::endl;
+    }
+
+    SetThreadName(-1, "prdActThd");
+
+    /* perform the wait loop forever */
+    for( ; !bServerClosing ; )
+    {
+        Sleep(1000);
+
+        {   // RDS application id
+
+            std::vector< CtiDeviceManager::ptr_type >   rdsDevices;
+
+            DeviceManager->getDevicesByType( TYPE_RDS, rdsDevices );
+
+            for each ( CtiDeviceSPtr device in rdsDevices )
+            {
+                if ( device->timeToPerformPeriodicAction( CtiTime::now() ) )
+                {
+                    putQueue( new CtiRequestMsg( device->getID(), "putvalue application-id") );
+                }
+            }
+        }
+
+        // future periodic stuff...
+
+    }
+
+    {
+        CtiLockGuard<CtiLogger> doubt_guard(dout);
+        dout << CtiTime() << " PIL periodicActionThread : " << rwThreadId() << " terminating " << std::endl;
+    }
 }
 

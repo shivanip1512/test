@@ -27,6 +27,9 @@ public:
         Key_RDS_Transmit_Speed,
         Key_RDS_Group_Type,
         Key_CPS_One_Way_Encryption_Key,
+        Key_RDS_SPID,
+        Key_RDS_AID_Repeat_Period,
+
         //  make sure to add any new enum values to the string map
     };
 
@@ -39,6 +42,8 @@ protected:
     static const std::string _key_rds_transmit_speed;
     static const std::string _key_rds_group_type;
     static const std::string _key_cps_one_way_encryption_key;
+    static const std::string _key_rds_spid;
+    static const std::string _key_rds_aid_repeat_period;
 
     typedef std::map<PaoInfoKeys,const std::string *> key_map_t;
 

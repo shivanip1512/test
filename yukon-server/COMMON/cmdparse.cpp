@@ -1485,6 +1485,10 @@ void  CtiCommandParser::doParsePutValue(const string &_CmdStr)
                 }
             }
         }
+        if(CmdStr.contains(" application-id"))
+        {
+            _cmd["application-id"] = CtiParseValue(true);
+        }
 
         setFlags(flag);
     }
