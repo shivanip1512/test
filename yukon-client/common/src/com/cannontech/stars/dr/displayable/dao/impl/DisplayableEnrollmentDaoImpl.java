@@ -15,6 +15,9 @@ import com.cannontech.common.pao.PaoType;
 import com.cannontech.common.pao.definition.dao.PaoDefinitionDao;
 import com.cannontech.common.pao.definition.model.PaoTag;
 import com.cannontech.core.dao.NotFoundException;
+import com.cannontech.database.data.pao.DeviceTypes;
+import com.cannontech.loadcontrol.loadgroup.dao.LoadGroupDao;
+import com.cannontech.loadcontrol.loadgroup.model.LoadGroup;
 import com.cannontech.stars.dr.appliance.model.ApplianceCategory;
 import com.cannontech.stars.dr.displayable.dao.AbstractDisplayableDao;
 import com.cannontech.stars.dr.displayable.dao.DisplayableEnrollmentDao;
@@ -33,8 +36,9 @@ import com.google.common.collect.Maps;
 @Repository
 public class DisplayableEnrollmentDaoImpl extends AbstractDisplayableDao implements DisplayableEnrollmentDao {
     
-	private EnrollmentDao enrollmentDao;
-	private PaoDefinitionDao paoDefinitionDao;
+    @Autowired private EnrollmentDao enrollmentDao;
+	@Autowired private PaoDefinitionDao paoDefinitionDao;
+	@Autowired LoadGroupDao loadGroupDao; 
 	
     @Override
     public List<DisplayableEnrollment> find(int customerAccountId) {
@@ -126,6 +130,31 @@ public class DisplayableEnrollmentDaoImpl extends AbstractDisplayableDao impleme
                 if (!type.isEnrollable()) {
                     return false;
                 }
+
+                /* Exclude devices from the list if there are no load groups of the right type for
+                 * the given load program and device.  All groups are looped over in the for loop, at
+                 * least one load group must match the device type.
+                 * If the device is an RFN device, it will be visible if there is at least one RFN 
+                 * ExpressCom load group.
+                 * If the device is non-RFN, it will be visible if there is at least one normal (PLC) 
+                 * ExpressCom load group.
+                 * If a load program has both RFN and PLC ExpressCom load groups, then both RFN and
+                 * non-RFN devices will be visible in the list. */
+                List<LoadGroup> loadGroups = loadGroupDao.getByStarsProgramId(program.getProgramId());
+                if (program.getPaoType().getDeviceTypeId() == DeviceTypes.LM_DIRECT_PROGRAM) {
+                    boolean isVisible = false;
+                    for (LoadGroup group : loadGroups) {
+                        if ((group.getPaoIdentifier().getPaoType().getDeviceTypeId() == DeviceTypes.LM_GROUP_RFN_EXPRESSCOMM
+                                && type.isRf()) 
+                         || (group.getPaoIdentifier().getPaoType().getDeviceTypeId() != DeviceTypes.LM_GROUP_RFN_EXPRESSCOMM
+                                && !type.isRf())) {
+                            isVisible = true;
+                        }
+                    }
+                    if (!isVisible) {
+                        return false;
+                    }
+                }
                 
                 /* Exclude non valid program enrollment (SEP hardware cannot be enrolled in DIRECT programs) */
                 HardwareConfigType hardwareConfigType = type.getHardwareConfigType();
@@ -188,15 +217,4 @@ public class DisplayableEnrollmentDaoImpl extends AbstractDisplayableDao impleme
                                                   relay, numRelays);
 		
     }
-    
-    @Autowired
-    public void setEnrollmentDao(EnrollmentDao enrollmentDao) {
-		this.enrollmentDao = enrollmentDao;
-	}
-    
-    @Autowired
-    public void setPaoDefinitionDao(PaoDefinitionDao paoDefinitionDao) {
-        this.paoDefinitionDao = paoDefinitionDao;
-    }
-    
 }
