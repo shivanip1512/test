@@ -112,14 +112,14 @@ jQuery(function() {
                                 <cti:param name="auditId" value="${audit.auditId}"/>
                                 <cti:param name="type" value="UNCONTROLLED"/>
                             </cti:url>
-                            <a href="${newOperationControlled}" class="small icon_cog_go labeled_icon"><i:inline key=".newOperation"/></a>
+                            <a href="${newOperationControlled}" class="small cog_go labeled_icon"><i:inline key=".newOperation"/></a>
                         </li>
                         <li>
                             <cti:url var="download" value="download">
                                 <cti:param name="auditId" value="${audit.auditId}"/>
                                 <cti:param name="type" value="UNCONTROLLED"/>
                             </cti:url>
-                            <a href="${download}" class="small icon_csv labeled_icon"><i:inline key=".download"/></a>
+                            <a href="${download}" class="small csv labeled_icon"><i:inline key=".download"/></a>
                         </li>
                     </ul>
                 </div>
@@ -146,14 +146,14 @@ jQuery(function() {
                                     <cti:param name="auditId" value="${audit.auditId}"/>
                                     <cti:param name="type" value="UNKNOWN"/>
                                 </cti:url>
-                                <a href="${newOperationControlled}" class="small icon_cog_go labeled_icon"><i:inline key=".newOperation"/></a>
+                                <a href="${newOperationControlled}" class="small cog_go labeled_icon"><i:inline key=".newOperation"/></a>
                             </li>
                             <li>
                                 <cti:url var="download" value="download">
                                     <cti:param name="auditId" value="${audit.auditId}"/>
                                     <cti:param name="type" value="UNKNOWN"/>
                                 </cti:url>
-                                <a href="${download}" class="small icon_csv labeled_icon"><i:inline key=".download"/></a>
+                                <a href="${download}" class="small csv labeled_icon"><i:inline key=".download"/></a>
                             </li>
                         </ul>
                 </div>
@@ -180,14 +180,14 @@ jQuery(function() {
                                 <cti:param name="auditId" value="${audit.auditId}"/>
                                 <cti:param name="type" value="CONTROLLED"/>
                             </cti:url>
-                            <a href="${newOperationControlled}" class="small icon_cog_go labeled_icon"><i:inline key=".newOperation"/></a>
+                            <a href="${newOperationControlled}" class="small cog_go labeled_icon"><i:inline key=".newOperation"/></a>
                         </li>
                         <li>
                             <cti:url var="download" value="download">
                                 <cti:param name="auditId" value="${audit.auditId}"/>
                                 <cti:param name="type" value="CONTROLLED"/>
                             </cti:url>
-                            <a href="${download}" class="small icon_csv labeled_icon"><i:inline key=".download"/></a>
+                            <a href="${download}" class="small csv labeled_icon"><i:inline key=".download"/></a>
                         </li>
                     </ul>
                 </div>
@@ -214,14 +214,14 @@ jQuery(function() {
                                 <cti:param name="auditId" value="${audit.auditId}"/>
                                 <cti:param name="type" value="UNSUPPORTED"/>
                             </cti:url>
-                            <a href="${newOperationControlled}" class="small icon_cog_go labeled_icon"><i:inline key=".newOperation"/></a>
+                            <a href="${newOperationControlled}" class="small cog_go labeled_icon"><i:inline key=".newOperation"/></a>
                         </li>
                         <li>
                             <cti:url var="download" value="download">
                                 <cti:param name="auditId" value="${audit.auditId}"/>
                                 <cti:param name="type" value="UNSUPPORTED"/>
                             </cti:url>
-                            <a href="${download}" class="small icon_csv labeled_icon"><i:inline key=".download"/></a>
+                            <a href="${download}" class="small csv labeled_icon"><i:inline key=".download"/></a>
                         </li>
                     </ul>
                 </div>

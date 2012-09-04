@@ -1661,47 +1661,47 @@ a.icon {
     cursor: not-allowed;
 }
 
-.icon_cog_go {
-    background: transparent url(../Icons/cog_go.gif) top left no-repeat;
+.cog_go {
+    background-image: url(../Icons/cog_go.gif);
 }
-.icon_cog_go:hover {
-    background: transparent url(../Icons/cog_go_over.gif) top left no-repeat;
+.cog_go:hover {
+    background-image: url(../Icons/cog_go_over.gif);
 }
-.icon_cog_go_disabled {
-    background: transparent url(../Icons/cog_go_disabled.gif) top left no-repeat;
+.cog_go_disabled {
+    background-image: url(../Icons/cog_go_disabled.gif);
     cursor: not-allowed;
 }
 
-.icon_csv {
-    background: transparent url(../Icons/excel.gif) top left no-repeat;
+.csv {
+    background-image: url(../Icons/excel.gif);
 }
-.icon_csv:hover {
-    background: transparent url(../Icons/excel_over.gif) top left no-repeat;
+.csv:hover {
+    background-image: url(../Icons/excel_over.gif);
 }
-.icon_csv_disabled {
-    background: transparent url(../Icons/excel_disabled.gif) top left no-repeat;
+.csv_disabled {
+    background-image: url(../Icons/excel_disabled.gif);
     cursor: not-allowed;
 }
 
-.icon_prev {
-    background: transparent url(../Icons/resultset_previous.gif) top left no-repeat;
+.prev {
+    background-image: url(../Icons/resultset_previous.gif);
 }
-.icon_prev:hover {
-    background: transparent url(../Icons/resultset_previous.gif) top left no-repeat;
+.prev:hover {
+    background-image: url(../Icons/resultset_previous.gif);
 }
-.icon_prev_disabled {
-    background: transparent url(../Icons/resultset_previous_disabled.gif) top left no-repeat;
+.prev_disabled {
+    background-image: url(../Icons/resultset_previous_disabled.gif);
     color:  #555;
     cursor: default;
 }
-.icon_next {
-    background: transparent url(../Icons/resultset_next.gif) top left no-repeat;
+.next {
+    background-image:url(../Icons/resultset_next.gif);
 }
-.icon_next:hover {
-    background: transparent url(../Icons/resultset_next.gif) top left no-repeat;
+.next:hover {
+    background-image: url(../Icons/resultset_next.gif);
 }
-.icon_next_disabled {
-    background: transparent url(../Icons/resultset_next_disabled.gif) top left no-repeat;
+.next_disabled {
+    background-image:url(../Icons/resultset_next_disabled.gif);
     color:  #555;
     cursor: default;
 }
