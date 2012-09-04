@@ -5,26 +5,26 @@ using namespace Cti::BeatThePeak;
 
 AlertLevel::AlertLevel(std::string alertLevel)
 {
-    if( ciStringEqual(alertLevel, BTP_RED) ||
-        ciStringEqual(alertLevel, BTP_YELLOW) ||
-        ciStringEqual(alertLevel, BTP_GREEN)  )
+    if( ciStringEqual(alertLevel, AlertLevel::BTP_RED) ||
+        ciStringEqual(alertLevel, AlertLevel::BTP_YELLOW) ||
+        ciStringEqual(alertLevel, AlertLevel::BTP_GREEN)  )
     {
         _alertLevel = alertLevel;
     }
-    else if(ciStringEqual(alertLevel, BTP_RESTORE))
+    else if(ciStringEqual(alertLevel, AlertLevel::BTP_RESTORE))
     {
-        _alertLevel = BTP_GREEN;
+        _alertLevel = AlertLevel::BTP_GREEN;
     }
     else 
     {
-        _alertLevel = BTP_GREEN;
+        _alertLevel = AlertLevel::BTP_GREEN;
         throw InvalidAlertLevel(alertLevel);
     }
 }
 
 AlertLevel::AlertLevel()
 {
-    _alertLevel = BTP_GREEN;
+    _alertLevel = AlertLevel::BTP_GREEN;
 
 }
 
@@ -43,3 +43,8 @@ int AlertLevel::operator!=(const AlertLevel& right) const
 {
     return ! operator==(right);
 }
+
+const std::string AlertLevel::BTP_GREEN = "green";
+const std::string AlertLevel::BTP_YELLOW = "yellow";
+const std::string AlertLevel::BTP_RED = "red";
+const std::string AlertLevel::BTP_RESTORE = "restore";

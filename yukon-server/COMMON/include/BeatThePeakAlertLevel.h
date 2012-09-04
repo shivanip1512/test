@@ -30,19 +30,20 @@ public:
     private:
         std::string _description;
     };
+    static const std::string BTP_RED;
+    static const std::string BTP_GREEN;
+    static const std::string BTP_YELLOW;
+    static const std::string BTP_RESTORE;
 
 private:
 
     std::string _alertLevel;
 
 };
-static const std::string BTP_RED = "red";
-static const std::string BTP_GREEN = "green";
-static const std::string BTP_YELLOW = "yellow";
-static const std::string BTP_RESTORE = "restore";
-static const AlertLevel AlertLevelRed = AlertLevel(BTP_RED);
-static const AlertLevel AlertLevelYellow = AlertLevel(BTP_YELLOW);
-static const AlertLevel AlertLevelGreen = AlertLevel(BTP_GREEN);
+
+static const AlertLevel AlertLevelRed = AlertLevel(AlertLevel::BTP_RED);
+static const AlertLevel AlertLevelYellow = AlertLevel(AlertLevel::BTP_YELLOW);
+static const AlertLevel AlertLevelGreen = AlertLevel(AlertLevel::BTP_GREEN);
 
 
 }

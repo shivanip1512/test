@@ -2,7 +2,6 @@
 
 #include "lmprogramdirect.h"
 #include "smartgearbase.h"
-#include "BeatThePeakControlInterface.h"
 #include "BeatThePeakAlertLevel.h"
 
 class CtiLMProgramBeatThePeakGear : public SmartGearBase, public CtiLMProgramDirectGear
