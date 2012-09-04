@@ -399,6 +399,13 @@ SET Text = 'Temporarily Out of Service'
 WHERE Text = 'Temporarily Out of Serivice';
 /* End YUK-11338 */
 
+/* Start YUK-11329 */
+UPDATE YukonRoleProperty
+SET DefaultValue = 'ENCRYPTED',
+Description = 'Set the default authentication type to use {AD,ENCRYPTED,LDAP,RADIUS,NONE}'
+WHERE RolePropertyId = -1307 AND RoleId = -4;
+/* End YUK-11329 */
+
 /**************************************************************/ 
 /* VERSION INFO                                               */ 
 /*   Automatically gets inserted from build script            */ 

@@ -1,7 +1,7 @@
 /*==============================================================*/
 /* Database name:  YukonDatabase                                */
 /* DBMS name:      Microsoft SQL Server 2005                    */
-/* Created on:     9/4/2012 1:03:56 AM                          */
+/* Created on:     9/4/2012 2:05:59 AM                          */
 /*==============================================================*/
 
 /*==============================================================*/
@@ -9271,7 +9271,7 @@ INSERT INTO YukonRoleProperty VALUES(-1303,-4,'secret_key','cti','Client machine
 INSERT INTO YukonRoleProperty VALUES(-1304,-4,'auth_method',' ','Authentication method. Possible values are leaving the field empty | PAP, [chap, others to follow soon]');
 INSERT INTO YukonRoleProperty VALUES(-1305,-4,'authentication_mode','Yukon','Authentication mode to use.  Valid values are:   Yukon | Radius');
 INSERT INTO YukonRoleProperty VALUES(-1306,-4,'auth_timeout','30','Number of seconds before the authentication process times out');
-INSERT INTO YukonRoleProperty VALUES(-1307,-4,'Default Authentication Type', 'PLAIN', 'Set the default authentication type to use {PLAIN,HASH_SHA,RADIUS,AD,LDAP,NONE}');
+INSERT INTO YukonRoleProperty VALUES(-1307,-4,'Default Authentication Type', 'ENCRYPTED', 'Set the default authentication type to use {AD,ENCRYPTED,LDAP,RADIUS,NONE}');
 INSERT INTO YukonRoleProperty VALUES(-1308,-4,'LDAP DN','dc=example,dc=com','LDAP Distinguished Name');
 INSERT INTO YukonRoleProperty VALUES(-1309,-4,'LDAP User Suffix','ou=users','LDAP User Suffix');
 
