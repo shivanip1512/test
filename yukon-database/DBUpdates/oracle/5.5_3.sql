@@ -305,7 +305,7 @@ SET DeviceLabel = (
       FROM LMHardwareBase LMHB
       WHERE LMHB.InventoryId = IB.InventoryId
 )
-WHERE (IB.DeviceLabel = '' OR IB.DeviceLabel IS NULL);
+WHERE (TRIM(IB.DeviceLabel) IS NULL);
 
 UPDATE InventoryBase IB
 SET DeviceLabel = (
@@ -313,7 +313,7 @@ SET DeviceLabel = (
       FROM MeterHardwareBase MHB
       WHERE MHB.InventoryId = IB.InventoryId
 )
-WHERE (IB.DeviceLabel = '' OR IB.DeviceLabel IS NULL);
+WHERE (TRIM(IB.DeviceLabel) IS NULL);
 
 UPDATE InventoryBase IB
 SET DeviceLabel = (
@@ -321,7 +321,7 @@ SET DeviceLabel = (
       FROM YukonPAObject YPAO
       WHERE YPAO.PAObjectID = IB.InventoryId
 )
-WHERE (IB.DeviceLabel = '' OR IB.DeviceLabel IS NULL);
+WHERE (TRIM(IB.DeviceLabel) IS NULL);
 /* End YUK-11192 */
 
 /* Start YUK-11330 */
