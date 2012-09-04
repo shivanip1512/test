@@ -1,7 +1,7 @@
 /*==============================================================*/
 /* Database name:  YukonDatabase                                */
 /* DBMS name:      ORACLE Version 9i                            */
-/* Created on:     8/28/2012 6:58:31 PM                         */
+/* Created on:     9/4/2012 12:36:13 AM                         */
 /*==============================================================*/
 
 
@@ -9321,9 +9321,9 @@ create table YukonUser  (
 );
 
 INSERT INTO yukonuser VALUES (-9999, '(none)', '(none)', 'Enabled', 'PLAIN', '01-JAN-2000', 'N', null);
-INSERT INTO yukonuser VALUES (-100, 'DefaultCTI', '$cti_default', 'Enabled', 'PLAIN', '01-JAN-2000', 'N', -1);
-INSERT INTO yukonuser VALUES (-2, 'yukon', 'yukon', 'Enabled', 'PLAIN', '01-JAN-2000', 'N', -1);
-INSERT INTO yukonuser VALUES (-1, 'admin', 'admin', 'Enabled', 'PLAIN', '01-JAN-2000', 'N', -1);
+INSERT INTO yukonuser VALUES (-100, 'DefaultCTI', '$cti_default', 'Enabled', 'PLAIN', '01-JAN-2000', 'Y', -1);
+INSERT INTO yukonuser VALUES (-2, 'yukon', 'yukon', 'Enabled', 'PLAIN', '01-JAN-2000', 'Y', -1);
+INSERT INTO yukonuser VALUES (-1, 'admin', 'admin', 'Enabled', 'PLAIN', '01-JAN-2000', 'Y', -1);
 
 /*==============================================================*/
 /* Index: Indx_YukonUser_Username                               */

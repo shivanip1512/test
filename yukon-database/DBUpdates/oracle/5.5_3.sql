@@ -386,6 +386,12 @@ ALTER TABLE ReportedAddressRelayExpressCom
    ADD CONSTRAINT FK_RepAddRelayExp_RepAddExpCom FOREIGN KEY (ChangeId)
       REFERENCES ReportedAddressExpressCom (ChangeId);
 /* End YUK-11293 */
+      
+/* Start YUK-11039 */
+UPDATE YukonUser
+SET ForceReset = 'Y'
+WHERE UserId IN (-1, -2, -100);
+/* End YUK-11039 */
 
 /**************************************************************/ 
 /* VERSION INFO                                               */ 
