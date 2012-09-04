@@ -143,8 +143,6 @@ void CtiFDR_ValmetMulti::stopMultiListeners()
 *************************************************/
 int CtiFDR_ValmetMulti::readConfig()
 {
-    Inherited::readConfig();
-
     int linkTimeout = gConfigParms.getValueAsInt(KEY_LINK_TIMEOUT, 60);
     setLinkTimeout(linkTimeout);
 

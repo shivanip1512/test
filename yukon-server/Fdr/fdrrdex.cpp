@@ -74,7 +74,6 @@ bool CtiFDR_Rdex::isRegistrationNeeded()
 */
 int CtiFDR_Rdex::readConfig()
 {
-    int successful = Inherited::readConfig();
     string   tempStr;
 
     tempStr = getCparmValueAsString(KEY_LISTEN_PORT_NUMBER);
@@ -171,7 +170,7 @@ int CtiFDR_Rdex::readConfig()
         else
             dout << CtiTime() << " Rdex running in normal mode "<< endl;
     }
-    return successful;
+    return true;
 }
 
 

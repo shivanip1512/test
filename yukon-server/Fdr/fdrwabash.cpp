@@ -47,8 +47,6 @@ BOOL FDRWabash::init()
 
 int FDRWabash::readConfig()
 {
-    Inherited::readConfig();
-
     int ok = true;
     string tempString;
     _writeInitialLoad = false;

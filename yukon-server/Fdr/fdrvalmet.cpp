@@ -78,7 +78,6 @@ CtiFDR_Valmet::~CtiFDR_Valmet()
 */
 int CtiFDR_Valmet::readConfig()
 {
-    int successful = Inherited::readConfig();
     string   tempStr;
 
     tempStr = getCparmValueAsString(KEY_LISTEN_PORT_NUMBER);
@@ -221,7 +220,7 @@ int CtiFDR_Valmet::readConfig()
             dout << CtiTime() << " Valmet running in normal mode "<< endl;
     }
 
-    return successful;
+    return true;
 }
 
 void CtiFDR_Valmet::signalReloadList()

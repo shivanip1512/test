@@ -660,6 +660,7 @@ ULONG CtiFDRInterface::getDebugLevel()
 int CtiFDRInterface::reloadConfigs() {
     CtiLockGuard<CtiMutex> cparm_guard(iCparmMutex);
     gConfigParms.RefreshConfigParameters();
+    CtiFDRInterface::readConfig();
     return this->readConfig();
 }
 

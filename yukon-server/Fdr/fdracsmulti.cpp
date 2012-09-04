@@ -78,7 +78,6 @@ CtiFDRAcsMulti::~CtiFDRAcsMulti()
 */
 int CtiFDRAcsMulti::readConfig()
 {
-    int successful = Inherited::readConfig();
     string   tempStr;
 
     setPortNumber(gConfigParms.getValueAsInt( KEY_LISTEN_PORT_NUMBER, ACS_PORTNUMBER));
@@ -200,7 +199,7 @@ int CtiFDRAcsMulti::readConfig()
             << (isInterfaceInDebugMode() ? "TRUE" : "FALSE") << endl;
 
     }
-    return successful;
+    return true;
 }
 
 CtiFDRClientServerConnectionSPtr CtiFDRAcsMulti::createNewConnection(SOCKET newSocket)
