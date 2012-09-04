@@ -261,8 +261,8 @@ DROP TABLE GroupPaoPermission_Delete;
 /* Start YUK-11311 */
 CREATE TABLE LMBeatThePeakGear
 (
-    GearId    NUMERIC        NOT NULL,
-    Tier      VARCHAR(20)    NOT NULL,
+    GearId       NUMERIC        NOT NULL,
+    AlertLevel   VARCHAR(20)    NOT NULL,
     CONSTRAINT PK_LMBeatThePeakGear PRIMARY KEY (GearId)
 );
 ALTER TABLE LMBeatThePeakGear
