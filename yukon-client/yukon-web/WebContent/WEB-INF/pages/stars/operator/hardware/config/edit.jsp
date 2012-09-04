@@ -218,17 +218,21 @@ jQuery(function() {
         <div class="columnContent">
             <c:if test="${configurable}">
                 <tags:formElementContainer nameKey="serviceStatus">
-                    <c:if test="${showStaticServiceStatus}">
-                        <c:if test="${inService}">
-                            <i:inline key=".inService"/>
-                        </c:if>
-                        <c:if test="${!inService}">
-                            <i:inline key=".outOfService"/>
-                        </c:if>
-                    </c:if>
                     <div class="wsnp marginBottom">
-                        <cti:pointValue pointId="${serviceStatusPointId}" cssClass="pointStat" format="VALUE" colorForStatus="true"/>
-                        <cti:pointValue pointId="${serviceStatusPointId}" cssClass="pointStat nonStatusPointStat" format="DATE"/>
+                        <c:choose>
+                            <c:when test="${showStaticServiceStatus}">
+                                <c:if test="${inService}">
+                                    <i:inline key=".inService"/>
+                                </c:if>
+                                <c:if test="${!inService}">
+                                    <i:inline key=".outOfService"/>
+                                </c:if>
+                            </c:when>
+                            <c:otherwise>
+                                    <cti:pointValue pointId="${serviceStatusPointId}" cssClass="pointStat" format="VALUE" colorForStatus="true"/>
+                                    <cti:pointValue pointId="${serviceStatusPointId}" cssClass="pointStat nonStatusPointStat" format="DATE"/>
+                            </c:otherwise>
+                        </c:choose>
                     </div>
                     <ul class="labeledImageStack">
                         <li>
