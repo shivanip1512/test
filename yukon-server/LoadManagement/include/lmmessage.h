@@ -373,7 +373,6 @@ private:
     CtiTime _next_control_time;
     unsigned _internalState; //What the heck is this???
     LONG _daily_ops;
-    CtiTime _lastStopTimeSent;
 };
 
 class CtiLMDynamicProgramDataMsg : public CtiMessage
