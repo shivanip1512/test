@@ -19,7 +19,7 @@ public class YukonUser extends DBPersistent  {
     private AuthType authType = AuthType.HASH_SHA_V2;
     private Date lastChangedDate = null;
     private boolean forceReset = false;
-    private int userGroupId;
+    private Integer userGroupId;
 
 	private static final String[] SELECT_COLUMNS = 
 	{ 	
@@ -143,7 +143,7 @@ public class YukonUser extends DBPersistent  {
         this.forceReset = forceReset;
     }
 
-    public int getUserGroupId() {
+    public Integer getUserGroupId() {
         return userGroupId;
     }
     public void setUserGroupId(Integer userGroupId) {

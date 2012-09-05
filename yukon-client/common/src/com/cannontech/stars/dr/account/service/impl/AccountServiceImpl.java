@@ -1026,7 +1026,7 @@ public class AccountServiceImpl implements AccountService {
             }
         }else {
             retrievedDto.setUserName("");
-            retrievedDto.setUserGroup("");
+            retrievedDto.setUserGroup(null);
         }
         
         /*

@@ -4,6 +4,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
+import org.apache.log4j.Logger;
 import org.joda.time.Instant;
 import org.springframework.beans.factory.annotation.Autowired;
 
@@ -41,6 +42,7 @@ import com.google.common.collect.Maps;
  * Implementation class for OptOutStatusService
  */
 public class OptOutStatusServiceImpl implements OptOutStatusService {
+    private static final Logger log = Logger.getLogger(OptOutStatusServiceImpl.class);
 
     @Autowired private CustomerAccountDao customerAccountDao;
     @Autowired private ECMappingDao ecMappingDao;
@@ -220,6 +222,7 @@ public class OptOutStatusServiceImpl implements OptOutStatusService {
         List<LiteUserGroup> residentialCustomerUserGroups = ecMappingDao.getResidentialUserGroups(energyCompany.getEnergyCompanyId());
 
         if (residentialCustomerUserGroups.size() > 0) {
+            log.debug("Checking the first user group "+residentialCustomerUserGroups.get(0).getUserGroupName()+" to see if system opt outs are enabled.");
             LiteUserGroup residentialUserGroup = residentialCustomerUserGroups.get(0);
 
             List<LiteYukonGroup> residentialRoleGroups = yukonGroupDao.getRoleGroupsForUserGroupId(residentialUserGroup.getUserGroupId());

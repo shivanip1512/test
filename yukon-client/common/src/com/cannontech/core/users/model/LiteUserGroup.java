@@ -8,8 +8,6 @@ public class LiteUserGroup extends LiteBase {
     protected String userGroupName;
     protected String userGroupDescription;
     
-    public static int NULL_USER_GROUP_ID = -9999;
-    
     public LiteUserGroup() {
         setLiteType(LiteTypes.USER_GROUP);
     }

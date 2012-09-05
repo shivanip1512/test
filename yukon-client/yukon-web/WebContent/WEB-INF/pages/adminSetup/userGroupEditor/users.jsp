@@ -10,7 +10,7 @@
 
 <script type="text/javascript">
 function addUsers() {
-    $('addUsersForm').submit();
+    jQuery('#addUsersForm').submit();
 }
 </script>
     
@@ -43,7 +43,7 @@ function addUsers() {
                                     </c:otherwise>
                                 </c:choose>
                                 <tr class="<tags:alternateRow odd="" even="altTableCell"/>">
-                                    <td><a href="${editUserUrl}">${user.username}</a></td>
+                                    <td><a href="${editUserUrl}">${fn:escapeXml(user.username)}</a></td>
                                     <td><cti:formatObject value="${user.authenticationCategory}"/></td>
                                     <td><span class="${styleClass}"><cti:formatObject value="${user.loginStatus}"/></span></td>
                                     <td class="removeColumn">
@@ -65,7 +65,7 @@ function addUsers() {
             <form id="addUsersForm" action="/spring/adminSetup/userGroup/addUsers" method="post">
                 <input type="hidden" name="userIds" id="userIds">
                 <input type="hidden" name="userGroupId" value="${userGroupId}">
-                <tags:pickerDialog type="userPicker" id="userPicker" destinationFieldId="userIds" alreadyAssignedIds="${alreadyAssignedUserIds}" linkType="button" 
+                <tags:pickerDialog type="userPicker" id="userPicker" destinationFieldId="userIds" excludeIds="${alreadyAssignedUserIds}" linkType="button" 
                         nameKey="addUsers" multiSelectMode="true" endAction="addUsers"/>
 
             </form>

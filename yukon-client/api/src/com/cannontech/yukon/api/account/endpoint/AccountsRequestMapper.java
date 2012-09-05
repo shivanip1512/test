@@ -35,7 +35,7 @@ public class AccountsRequestMapper implements ObjectMapper<Element, UpdatableAcc
         dto.setMapNumber(template.evaluateAsString("//y:mapNumber"));
         dto.setUserName(template.evaluateAsString("//y:accountUser/y:username"));
         dto.setPassword(template.evaluateAsString("//y:accountUser/y:password"));
-        dto.setUserGroup(template.evaluateAsString("//y:accountUser/y:loginGroupName")); // Should we changes the soap request?
+        dto.setUserGroup(template.evaluateAsString("//y:accountUser/y:loginGroupName")); // This field is represented as a user group. 
         
         mainAddress.setLocationAddress1(template.evaluateAsString("//y:mainAddress/y:street"));
         mainAddress.setLocationAddress2(template.evaluateAsString("//y:mainAddress/y:street2"));

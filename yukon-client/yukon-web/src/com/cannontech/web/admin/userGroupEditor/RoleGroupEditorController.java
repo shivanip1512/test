@@ -1,6 +1,6 @@
 package com.cannontech.web.admin.userGroupEditor;
 
-import static com.cannontech.common.util.StringUtils.*;
+import static com.cannontech.common.util.StringUtils.parseIntStringForList;
 
 import java.sql.SQLException;
 import java.util.List;
@@ -29,6 +29,7 @@ import com.cannontech.core.roleproperties.YukonRoleProperty;
 import com.cannontech.core.roleproperties.dao.RolePropertyEditorDao;
 import com.cannontech.core.users.dao.UserGroupDao;
 import com.cannontech.core.users.model.LiteUserGroup;
+import com.cannontech.database.data.lite.LiteBase;
 import com.cannontech.database.data.lite.LiteYukonGroup;
 import com.cannontech.database.data.user.UserGroup;
 import com.cannontech.i18n.YukonMessageSourceResolvable;
@@ -37,7 +38,6 @@ import com.cannontech.web.PageEditMode;
 import com.cannontech.web.common.flashScope.FlashScope;
 import com.cannontech.web.common.flashScope.FlashScopeMessageType;
 import com.cannontech.web.security.annotation.CheckRoleProperty;
-import com.google.common.base.Function;
 import com.google.common.collect.Lists;
 
 @Controller
@@ -137,18 +137,12 @@ public class RoleGroupEditorController {
         return "redirect:/spring/adminSetup/userEditor/home";
     }
 
-    /* Add User Group */
+    /* User Groups */
     @RequestMapping
     public String userGroups(ModelMap model, FlashScope flash, int roleGroupId) {
         LiteYukonGroup roleGroup = yukonGroupDao.getLiteYukonGroup(roleGroupId);
         List<LiteUserGroup> userGroups = userGroupDao.getLiteUserGroupsByRoleGroupId(roleGroupId);
-        List<Integer> alreadyAssignedUserGroupIds = 
-            Lists.transform(userGroups, new Function<LiteUserGroup, Integer>() {
-                @Override
-                public Integer apply(LiteUserGroup liteUserGroup) {
-                    return liteUserGroup.getUserGroupId();
-                }
-            });
+        List<Integer> alreadyAssignedUserGroupIds = Lists.transform(userGroups, LiteBase.ID_FUNCTION);
         
         model.addAttribute("userGroups", userGroups);
         model.addAttribute("alreadyAssignedUserGroupIds",alreadyAssignedUserGroupIds);
@@ -220,12 +214,11 @@ public class RoleGroupEditorController {
         protected void doValidation(LiteYukonGroup target, Errors errors) {
             YukonValidationUtils.rejectIfEmptyOrWhitespace(errors, "groupName", "yukon.web.modules.adminSetup.roleGroupEditor.groupNameRequired");
             YukonValidationUtils.checkExceedsMaxLength(errors, "groupName", target.getGroupName(), 120);
-            try {
-                LiteYukonGroup duplicate = yukonGroupDao.getLiteYukonGroupByName(target.getGroupName());
-                if (duplicate.getGroupID() != target.getGroupID()) {
-                    errors.rejectValue("groupName", "yukon.web.modules.adminSetup.roleGroupEditor.groupNameUnavailable");
-                }
-            } catch (NotFoundException e) {/* Ignore, name is available */}
+
+            LiteYukonGroup duplicate = yukonGroupDao.findLiteYukonGroupByName(target.getGroupName());
+            if (duplicate != null && duplicate.getGroupID() != target.getGroupID()) {
+                errors.rejectValue("groupName", "yukon.web.modules.adminSetup.roleGroupEditor.groupNameUnavailable");
+            }
             
             YukonValidationUtils.checkExceedsMaxLength(errors, "groupDescription", target.getGroupDescription(), 200);
         }

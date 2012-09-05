@@ -11,7 +11,6 @@ import com.cannontech.common.util.SqlStatementBuilder;
 import com.cannontech.core.authentication.model.AuthType;
 import com.cannontech.core.authentication.model.AuthenticationCategory;
 import com.cannontech.core.dao.impl.LoginStatusEnum;
-import com.cannontech.core.users.model.LiteUserGroup;
 import com.cannontech.database.YukonJdbcTemplate;
 import com.cannontech.spring.YukonSpringHook;
 
@@ -131,10 +130,6 @@ public class LiteYukonUser extends LiteBase {
             return userGroupId;
     }
     public void setUserGroupId(Integer userGroupId) {
-        if (userGroupId == null || LiteUserGroup.NULL_USER_GROUP_ID ==  userGroupId) {
-            this.userGroupId = null;
-        } else {
-            this.userGroupId = userGroupId;
-        }
+        this.userGroupId = userGroupId;
     }
 }

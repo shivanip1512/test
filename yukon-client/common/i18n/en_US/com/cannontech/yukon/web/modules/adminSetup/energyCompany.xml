@@ -51,7 +51,7 @@
     <entry key="yukon.web.modules.adminSetup.generalInfo.VIEW.pageDescription">{0}</entry>
     <entry key="yukon.web.modules.adminSetup.generalInfo.infoContainer.title">Energy Company Information</entry>
     <entry key="yukon.web.modules.adminSetup.generalInfo.membersContainer.title">Member Energy Companies</entry>
-    <entry key="yukon.web.modules.adminSetup.generalInfo.loginGroupsContainer.title">Role Groups</entry>
+    <entry key="yukon.web.modules.adminSetup.generalInfo.userGroupsContainer.title">User Groups</entry>
     <entry key="yukon.web.modules.adminSetup.generalInfo.operatorGroups">Operator Groups</entry>
     <entry key="yukon.web.modules.adminSetup.generalInfo.customerGroups">Residential Customer Groups</entry>
     <entry key="yukon.web.modules.adminSetup.generalInfo.noCustomerGroups">No Residential Customer Groups</entry>

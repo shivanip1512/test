@@ -24,6 +24,7 @@ import com.cannontech.core.users.model.LiteUserGroup;
 import com.cannontech.database.IntegerRowMapper;
 import com.cannontech.database.StringRowMapper;
 import com.cannontech.database.YukonJdbcTemplate;
+import com.cannontech.database.data.lite.LiteBase;
 import com.cannontech.database.incrementer.NextValueHelper;
 import com.google.common.base.Function;
 import com.google.common.collect.ArrayListMultimap;
@@ -66,13 +67,7 @@ public class UserGroupPaoPermissionDaoImpl implements PaoPermissionDao<LiteUserG
 
     @Override
     public AuthorizationResponse hasPermissionForPao(List<LiteUserGroup> userGroups, YukonPao pao, Permission permission) {
-        List<Integer> userGroupIdList = Lists.transform(userGroups, new Function<LiteUserGroup, Integer>() {
-            @Override
-            public Integer apply(LiteUserGroup userGroup) {
-                return userGroup.getUserGroupId();
-            }
-        });
-
+        List<Integer> userGroupIdList = Lists.transform(userGroups, LiteBase.ID_FUNCTION);
         return this.isHasPermissionForPao(userGroupIdList, pao.getPaoIdentifier().getPaoId(), permission);
     }
 

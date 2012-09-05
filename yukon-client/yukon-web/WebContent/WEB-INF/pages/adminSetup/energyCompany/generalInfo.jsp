@@ -152,7 +152,7 @@ Event.observe(window, "load", function() {
                     
                     <br>
                     
-                    <tags:boxContainer2 nameKey="loginGroupsContainer">
+                    <tags:boxContainer2 nameKey="userGroupsContainer">
                         <form action="updateOperatorGroups" id="operatorUserGroupsForm" method="post">
                             <input name="ecId" type="hidden" value="${ecId}">
                             <input type="hidden" name="operatorUserGroupIds" id="operatorUserGroupIds">

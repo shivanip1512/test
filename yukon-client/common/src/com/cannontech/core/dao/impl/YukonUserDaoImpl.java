@@ -285,7 +285,6 @@ public class YukonUserDaoImpl implements YukonUserDao {
 	}
 	
 	@Override
-	// TODO Should this method be deleted?
 	public void callbackWithYukonUsersInGroup(LiteYukonGroup group, SimpleCallback<LiteYukonUser> callback) {
 
 	    SqlStatementBuilder sql = new SqlStatementBuilder();
@@ -314,7 +313,7 @@ public class YukonUserDaoImpl implements YukonUserDao {
     public void removeUserFromUserGroup(int userId) {
 	    SqlStatementBuilder sql = new SqlStatementBuilder();
 	    sql.append("UPDATE YukonUser");
-	    sql.append("SET UserGroupId").eq(null);
+	    sql.set("UserGroupId", null);
 	    sql.append("WHERE UserId").eq(userId);
 	    yukonJdbcTemplate.update(sql);
 	    

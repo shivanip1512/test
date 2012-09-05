@@ -55,7 +55,7 @@ import com.cannontech.yukon.IDatabaseCache;
 
 
 public class UserRolePanel extends DataInputPanel implements TreeSelectionListener {
-    private Logger log = YukonLogManager.getLogger(UserRolePanel.class);
+    private static final Logger log = YukonLogManager.getLogger(UserRolePanel.class);
     
 	private javax.swing.JPanel ivjJPanelLoginDescription = null;
 	private javax.swing.JTree ivjJTreeRoles = null;

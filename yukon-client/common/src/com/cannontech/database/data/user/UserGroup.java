@@ -8,7 +8,7 @@ import java.util.Set;
 
 import javax.naming.ConfigurationException;
 
-import org.jfree.util.Log;
+import org.apache.log4j.Logger;
 
 import com.cannontech.common.editor.EditorPanel;
 import com.cannontech.core.dao.RoleDao;
@@ -26,7 +26,8 @@ import com.google.common.collect.Maps;
 import com.google.common.collect.Sets;
 
 public class UserGroup extends DBPersistent implements CTIDbChange, EditorPanel {	
-
+    private static final Logger log = Logger.getLogger(UserGroup.class);
+    
     private com.cannontech.database.db.user.UserGroup userGroup = new com.cannontech.database.db.user.UserGroup();
     private Map<YukonRole, LiteYukonGroup> rolesToGroupMap = Maps.newHashMap();
 
@@ -114,7 +115,7 @@ public class UserGroup extends DBPersistent implements CTIDbChange, EditorPanel 
         try {
             putAllRolesToGroupMap(rolesToGroupsMap);
         } catch (ConfigurationException e) {
-            Log.error("The user group "+userGroup.getUserGroupName()+" has a role group conflict.", e);
+            log.error("The user group "+userGroup.getUserGroupName()+" has a role group conflict.", e);
         }
 
         // Add the connections between the yukon group and the user group
@@ -133,9 +134,13 @@ public class UserGroup extends DBPersistent implements CTIDbChange, EditorPanel 
     public void retrieve() throws SQLException {
         userGroup.retrieve();
 
-        UserGroupDao userGroupDao = YukonSpringHook.getBean("userGroupDao", UserGroupDao.class);
-        UserGroup userGroup = userGroupDao.getUserGroup(this.userGroup.getUserGroupId());
-        this.rolesToGroupMap = userGroup.rolesToGroupMap;
+        RoleDao roleDao = YukonSpringHook.getBean("roleDao", RoleDao.class);
+        Map<YukonRole, LiteYukonGroup> rolesToGroupsMap = roleDao.getRolesAndRoleGroupsForUserGroup(userGroup.getUserGroupId());
+        try {
+            putAllRolesToGroupMap(rolesToGroupsMap);
+        } catch (ConfigurationException e) {
+            log.error("The user group "+userGroup.getUserGroupName()+" has conflicting role groups", e);
+        }
     }
 
     @Override

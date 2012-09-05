@@ -204,7 +204,7 @@ public class OptOutLimitModel extends BareDatedReportModelBase<OptOutLimitModel.
 
         List<LiteYukonGroup> residentialRoleGroups = yukonGroupDao.getDistinctRoleGroupsForUserGroupIds(userGroupIds);
         for (LiteYukonGroup residentialRoleGroup : residentialRoleGroups) {
-            // Only use the role groups that have the 
+            // Only use the role groups that has the role that holds the opt out limits.
             Set<YukonRole> rolesForGroup = roleDao.getRolesForGroup(residentialRoleGroup.getGroupID());
             if (!rolesForGroup.contains(YukonRole.RESIDENTIAL_CUSTOMER)) {
                 continue;

@@ -10,7 +10,7 @@
 
     <script type="text/javascript">
         function addRoleGroups() {
-            $('addGroupsForm').submit();
+        	jQuery('#addGroupsForm').submit();
         }
     </script>
     
@@ -50,7 +50,7 @@
             <form id="addGroupsForm" action="/spring/adminSetup/userGroup/addRoleGroups" method="post">
                 <input type="hidden" name="roleGroupIds" id="roleGroupIds">
                 <input type="hidden" name="userGroupId" value="${userGroupId}">
-                <tags:pickerDialog type="loginGroupPicker" id="loginGroupPicker" destinationFieldId="roleGroupIds" alreadyAssignedIds="${alreadyAssignedRoleGroupIds}" 
+                <tags:pickerDialog type="loginGroupPicker" id="loginGroupPicker" destinationFieldId="roleGroupIds" excludeIds="${alreadyAssignedRoleGroupIds}" 
                         linkType="button" nameKey="addGroups" multiSelectMode="true" endAction="addRoleGroups"/>
             </form>
         </div>

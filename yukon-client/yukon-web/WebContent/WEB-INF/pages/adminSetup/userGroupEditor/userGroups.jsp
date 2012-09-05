@@ -10,7 +10,7 @@
 
 <script type="text/javascript">
     function addUserGroups() {
-        $('addUserGroupsForm').submit();
+    	jQuery('#addUserGroupsForm').submit();
     }
 </script>
     
@@ -30,8 +30,8 @@
                                 <cti:param name="userGroupId" value="${userGroup.userGroupId}"/>
                             </cti:url>
                             <tr class="<tags:alternateRow odd="" even="altTableCell"/>">
-                                <td><a href="${editGroupUrl}">${userGroup.userGroupName}</a></td>
-                                <td>${userGroup.userGroupDescription}</td>
+                                <td><a href="${editGroupUrl}">${fn:escapeXml(userGroup.userGroupName)}</a></td>
+                                <td>${fn:escapeXml(userGroup.userGroupDescription)}</td>
                                 <td class="removeColumn">
                                     <div class="dib">
                                         <input type="submit" name="remove" value="${userGroup.userGroupId}" class="pointer icon icon_remove">
@@ -50,7 +50,7 @@
             <form id="addUserGroupsForm" action="/spring/adminSetup/roleGroup/addUserGroups" method="post">
                 <input type="hidden" name="userGroupIds" id="userGroupIds">
                 <input type="hidden" name="roleGroupId" value="${roleGroupId}">
-                <tags:pickerDialog type="userGroupPicker" id="userGroupPicker" alreadyAssignedIds="${alreadyAssignedUserGroupIds}" destinationFieldId="userGroupIds" 
+                <tags:pickerDialog type="userGroupPicker" id="userGroupPicker" excludeIds="${alreadyAssignedUserGroupIds}" destinationFieldId="userGroupIds" 
                         linkType="button" nameKey="addUserGroups" multiSelectMode="true" endAction="addUserGroups"/>
             </form>
         </div>

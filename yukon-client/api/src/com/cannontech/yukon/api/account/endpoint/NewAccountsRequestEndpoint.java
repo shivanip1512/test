@@ -2,7 +2,6 @@ package com.cannontech.yukon.api.account.endpoint;
 
 import java.util.List;
 
-import org.jdom.Attribute;
 import org.jdom.Element;
 import org.jdom.Namespace;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -18,9 +17,9 @@ import com.cannontech.database.data.lite.LiteYukonUser;
 import com.cannontech.stars.dr.account.exception.AccountNumberUnavailableException;
 import com.cannontech.stars.dr.account.exception.InvalidAccountNumberException;
 import com.cannontech.stars.dr.account.exception.InvalidLoginGroupException;
+import com.cannontech.stars.dr.account.exception.InvalidSubstationNameException;
 import com.cannontech.stars.dr.account.model.UpdatableAccount;
 import com.cannontech.stars.dr.account.service.AccountService;
-import com.cannontech.stars.dr.account.exception.InvalidSubstationNameException;
 import com.cannontech.yukon.api.util.NodeToElementMapperWrapper;
 import com.cannontech.yukon.api.util.XMLFailureGenerator;
 import com.cannontech.yukon.api.util.XmlVersionUtils;
