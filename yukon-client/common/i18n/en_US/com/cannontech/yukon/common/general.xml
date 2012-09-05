@@ -8,7 +8,7 @@
 <entry key="yukon.common.enable">Enable</entry>
 <entry key="yukon.common.cancel">Cancel</entry>
 <entry key="yukon.common.save">Save</entry>
-<entry key="yukon.common.history">Click to view history</entry>
+<entry key="yukon.common.historyTooltip">Click to view history</entry>
 
 <entry key="yukon.common.to">to</entry>
 

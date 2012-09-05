@@ -48,11 +48,11 @@ public class HistoricalReadingsController {
     
     private static int MAX_ROWS_DISPLAY = 100;
     
-    private static String PERIOD = "period";
+    private static final String PERIOD = "period";
     
-    private static String ALL = "all";
-    private static String ONE_MONTH = "oneMonth";
-    private static String DISPLAY = "display";
+    private static final String ALL = "all";
+    private static final String ONE_MONTH = "oneMonth";
+    private static final String DISPLAY = "display";
 
     @RequestMapping
     public String view(ModelMap model,

@@ -28,7 +28,7 @@
                     <a class="f_ajaxPage pv_history labeled_icon_right history" 
                         data-selector="#${uid}" 
                         href="${showHistoricalReadingsUrl}"
-                        title="<i:inline key="yukon.common.history"/>">
+                        title="<i:inline key="yukon.common.historyTooltip"/>">
                         <cti:pointValue pointId="${pointId}"/>
                     </a>
                     <div id="${uid}"></div>
