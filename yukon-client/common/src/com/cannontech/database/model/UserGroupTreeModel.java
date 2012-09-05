@@ -26,7 +26,7 @@ public class UserGroupTreeModel extends DBTreeModel {
     public void update() {
         // alphabetize the list of user groups
         List<LiteUserGroup> allUserGroups = userGroupDao.getAllLiteUserGroups();
-        Collections.sort(allUserGroups, LiteUserGroup.userGroupNameComparotor());
+        Collections.sort(allUserGroups, LiteUserGroup.userGroupNameComparator());
 
         // Clear the children already in the panel
         DBTreeNode rootNode = (DBTreeNode) getRoot();

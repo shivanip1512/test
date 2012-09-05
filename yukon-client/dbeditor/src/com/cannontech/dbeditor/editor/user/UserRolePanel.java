@@ -717,7 +717,7 @@ public static void main(java.lang.String[] args) {
                 LiteYukonRole role = (LiteYukonRole)rNode.getUserObject();
             
                 YukonRole newRole = YukonRole.getForId(role.getRoleID());
-                if (!yukonGroup.isYukonGroupRoleAddable(yukonGroup.getGroupID(), newRole)){
+                if (yukonGroup != null && !yukonGroup.isYukonGroupRoleAddable(yukonGroup.getGroupID(), newRole)){
                     
                     YukonGroupDao yukonGroupDao = YukonSpringHook.getBean("yukonGroupDao", YukonGroupDao.class);
                     LiteYukonGroup liteYukonGroup = yukonGroupDao.getLiteYukonGroup(yukonGroup.getGroupID());

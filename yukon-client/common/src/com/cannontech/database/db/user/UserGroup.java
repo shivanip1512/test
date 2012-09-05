@@ -39,13 +39,13 @@ public class UserGroup extends DBPersistent implements Comparable {
     @Override
     public int compareTo(Object val) {
         UserGroup userGroup = ((UserGroup)val);
-        return userGroupNameComparotor().compare(this, userGroup);
+        return userGroupNameComparator().compare(this, userGroup);
     }
     
     /**
      * This method returns a comparator that will order a list of user groups by their user group names 
      */
-    public static Ordering<UserGroup> userGroupNameComparotor() {
+    public static Ordering<UserGroup> userGroupNameComparator() {
         return new Ordering<UserGroup>() {
             @Override
             public int compare(UserGroup left, UserGroup right) {

@@ -107,8 +107,7 @@ public class UserGroup extends DBPersistent implements CTIDbChange, EditorPanel 
     // DBPersistent methods
     @Override
     public void add() throws SQLException {
-        UserGroupDao userGroupDao = YukonSpringHook.getBean("userGroupDao", UserGroupDao.class);
-        userGroupDao.create(userGroup);
+        userGroup.add();
         
         RoleDao roleDao = YukonSpringHook.getBean("roleDao", RoleDao.class);
         Map<YukonRole, LiteYukonGroup> rolesToGroupsMap = roleDao.getRolesAndRoleGroupsForUserGroup(userGroup.getUserGroupId());
@@ -119,6 +118,7 @@ public class UserGroup extends DBPersistent implements CTIDbChange, EditorPanel 
         }
 
         // Add the connections between the yukon group and the user group
+        UserGroupDao userGroupDao = YukonSpringHook.getBean("userGroupDao", UserGroupDao.class);
         for (LiteYukonGroup liteYukonGroup : getRoleGroups()) {
             userGroupDao.createUserGroupToYukonGroupMappng(userGroup.getUserGroupId(), liteYukonGroup.getGroupID());
         }
@@ -126,22 +126,22 @@ public class UserGroup extends DBPersistent implements CTIDbChange, EditorPanel 
 
     @Override
     public void delete() throws SQLException {
-        UserGroupDao userGroupDao = YukonSpringHook.getBean("userGroupDao", UserGroupDao.class);
-        userGroupDao.delete(userGroup.getUserGroupId());
+        userGroup.delete();
     }
 
     @Override
     public void retrieve() throws SQLException {
+        userGroup.retrieve();
+
         UserGroupDao userGroupDao = YukonSpringHook.getBean("userGroupDao", UserGroupDao.class);
         UserGroup userGroup = userGroupDao.getUserGroup(this.userGroup.getUserGroupId());
-        this.userGroup = userGroup.userGroup;
         this.rolesToGroupMap = userGroup.rolesToGroupMap;
     }
 
     @Override
     public void update() throws SQLException {
         UserGroupDao userGroupDao = YukonSpringHook.getBean("userGroupDao", UserGroupDao.class);
-        userGroupDao.update(userGroup);
+        userGroup.update();
 
         // Update the connections between the yukon group and the user group
         YukonGroupDao yukonGroupDao = YukonSpringHook.getBean("yukonGroupDao", YukonGroupDao.class);

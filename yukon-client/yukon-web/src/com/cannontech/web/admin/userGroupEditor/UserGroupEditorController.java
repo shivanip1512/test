@@ -90,13 +90,6 @@ public class UserGroupEditorController {
         return "userGroupEditor/userGroup.jsp";
     }
 
-    /* Cancel Edit */
-    @RequestMapping(value="edit", method=RequestMethod.POST, params="cancel")
-    public String cancel(ModelMap model, int userGroupId) {
-        model.addAttribute("userGroupId", userGroupId);
-        return "redirect:view";
-    }
-
     /* Update Group */
     @RequestMapping(value="edit", method=RequestMethod.POST, params="update")
     public String update(HttpServletRequest request, @ModelAttribute("userGroup") com.cannontech.database.db.user.UserGroup userGroup, BindingResult result, ModelMap model, FlashScope flash) throws SQLException {
@@ -114,7 +107,7 @@ public class UserGroupEditorController {
         userGroupDao.update(userGroup);
         
         flash.setConfirm(new YukonMessageSourceResolvable("yukon.web.modules.adminSetup.userGroupEditor.updateSuccessful"));
-        setupModelMap(model, userGroup);
+        model.addAttribute("userGroupId", userGroup.getLiteUserGroup().getUserGroupId());
         
         return "redirect:view";
     }
@@ -128,12 +121,6 @@ public class UserGroupEditorController {
         
         return "userGroupEditor/userGroupAssociations.jsp";
     }
-    
-//    public String associations(ModelMap model, YukonRole yukonRole) {
-//        TreeMultimap<LiteYukonGroup, LiteUserGroup> userGroupRoleAssociations = userGroupService.getAssociations(yukonRole);
-//        
-//        return "userGroupAssInsert.jsp";
-//    }
     
     /* Role Groups Page */
     @RequestMapping

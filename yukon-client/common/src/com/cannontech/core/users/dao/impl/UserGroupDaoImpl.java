@@ -28,6 +28,7 @@ import com.cannontech.database.data.user.UserGroup;
 import com.cannontech.database.incrementer.NextValueHelper;
 
 public class UserGroupDaoImpl implements UserGroupDao, InitializingBean {
+    private static final Logger log = YukonLogManager.getLogger(UserGroupDaoImpl.class);
     
     @Autowired private RoleDao roleDao;
     @Autowired private NextValueHelper nextValueHelper;
@@ -89,7 +90,6 @@ public class UserGroupDaoImpl implements UserGroupDao, InitializingBean {
     }
     
     private class UserGroupRowMapper implements YukonRowMapper<UserGroup> {
-        private Logger log = YukonLogManager.getLogger(UserGroupRowMapper.class);
 
         @Override
         public UserGroup mapRow(YukonResultSet rs) throws SQLException {

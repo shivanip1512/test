@@ -38,13 +38,13 @@ public class LiteUserGroup extends LiteBase {
     @Override
     public int compareTo(Object val) {
         LiteUserGroup userGroup = (LiteUserGroup) val;
-        return userGroupNameComparotor().compare(this, userGroup);
+        return userGroupNameComparator().compare(this, userGroup);
     }
 
     /**
      * This method returns a comparator that will order a list of user groups by their user group names 
      */
-    public static Ordering<LiteUserGroup> userGroupNameComparotor() {
+    public static Ordering<LiteUserGroup> userGroupNameComparator() {
         return new Ordering<LiteUserGroup>() {
             @Override
             public int compare(LiteUserGroup left, LiteUserGroup right) {
