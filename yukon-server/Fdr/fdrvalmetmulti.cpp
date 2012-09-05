@@ -213,7 +213,12 @@ int CtiFDR_ValmetMulti::readConfig()
         dout << CtiTime() << " Valmet running in " + string(isInterfaceInDebugMode() ? "debug" : "normal") + " mode" << endl;
         if (_specificPortLoggingEnabled)
         {
-            dout << CtiTime() << " Valmet Multi logging only these ports: " << portsToLogStr << endl;
+            dout << CtiTime() << " Valmet Multi logging only these ports: ";
+            for each(int port in _portsToLog)
+            {
+               dout << port << " ";
+            }
+            dout << endl;
         }
 
     }

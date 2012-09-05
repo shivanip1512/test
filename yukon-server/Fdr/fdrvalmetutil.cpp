@@ -3,6 +3,7 @@
 #include "ctidate.h"
 #include "fdrvalmetutil.h"
 #include "cparms.h"
+#include <boost/algorithm/string.hpp>
 
 using std::string;
 using std::set;
@@ -226,7 +227,9 @@ const set<int> parseCommaSeparatedInt(string commaList)
         itr != intTokenizer.end() ;
         ++itr)
     {
-        int value = atoi((*itr).c_str());
+        string valueStr = *itr;
+        boost::algorithm::trim(valueStr);
+        int value = atoi((valueStr).c_str());
         values.insert(value);
     }
 
