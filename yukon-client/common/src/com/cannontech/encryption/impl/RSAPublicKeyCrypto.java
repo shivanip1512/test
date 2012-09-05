@@ -1,9 +1,14 @@
 package com.cannontech.encryption.impl;
 
+import java.security.InvalidKeyException;
+import java.security.NoSuchAlgorithmException;
 import java.security.PrivateKey;
 import java.security.PublicKey;
 
+import javax.crypto.BadPaddingException;
 import javax.crypto.Cipher;
+import javax.crypto.IllegalBlockSizeException;
+import javax.crypto.NoSuchPaddingException;
 
 import org.bouncycastle.jce.provider.BouncyCastleProvider;
 
@@ -17,8 +22,6 @@ public class RSAPublicKeyCrypto {
     /**
      * Encrypts the byte array using a public key cipher.
      * Returns an encrypted byte array.
-     * This should use the same internal cipher as decrypt() so anything encrypted by this
-     * object will be decrypted into its original byte array
      * 
      * @param plainText : byte[], publicKey PublicKey
      * @throws CryptoException 
@@ -26,12 +29,21 @@ public class RSAPublicKeyCrypto {
     public static byte[] encrypt(byte[] plainText, PublicKey publicKey) throws CryptoException  {
         byte[] cipherText = null;
         try {
+            
             Cipher cipher = Cipher.getInstance(TRANSFORMATION, new BouncyCastleProvider());
             cipher.init(Cipher.ENCRYPT_MODE, publicKey);
             plainText = CryptoUtils.appendSalt(plainText, numRandomBytes);
             cipherText = cipher.doFinal(plainText);
-        } catch (Exception e) {
-            throw new CryptoException("Unable to encrypt plainText", e);
+        } catch (NoSuchPaddingException e) {
+            throw new CryptoException("Unable to encrypt plaintext. No such padding exists", e);
+        } catch (NoSuchAlgorithmException e) {
+            throw new CryptoException("Unable to encrypt plaintext. No such algorithm exists", e);
+        } catch (InvalidKeyException e) {
+            throw new CryptoException("Unable to encrypt plaintext. Key is invalidt", e);
+        } catch (IllegalBlockSizeException e) {
+            throw new CryptoException("Unable to encrypt plaintext. Illegal Block Size", e);
+        } catch (BadPaddingException e) {
+            throw new CryptoException("Unable to encrypt plaintext. Bad Padding", e);
         }
         return cipherText;
     }
@@ -39,8 +51,6 @@ public class RSAPublicKeyCrypto {
     /**
      * Decrypts the byte array using a public key cipher.
      * Returns the plain text version as byte array.
-     * This should use the same internal cipher as encrypt() so anything encrypted by this
-     * object will be decrypted into its original byte array
      * 
      * @param encryptedText : byte[], privatekey PrivateKey
      * @throws CryptoException 
@@ -52,8 +62,16 @@ public class RSAPublicKeyCrypto {
             cipher.init(Cipher.DECRYPT_MODE, privateKey);
             decryptedText = cipher.doFinal(cipherText);
             decryptedText = CryptoUtils.removeSalt(decryptedText, numRandomBytes);
-        } catch (Exception e) {
-            throw new CryptoException("caught exception in encrypt", e);
+        } catch (NoSuchPaddingException e) {
+            throw new CryptoException("Unable to decrypt cipher text. No such padding exists", e);
+        } catch (NoSuchAlgorithmException e) {
+            throw new CryptoException("Unable to decrypt cipher text. No such algorithm exists", e);
+        } catch (InvalidKeyException e) {
+            throw new CryptoException("Unable to decrypt cipher text. Key is invalidt", e);
+        } catch (IllegalBlockSizeException e) {
+            throw new CryptoException("Unable to decrypt cipher text. Illegal Block Size", e);
+        } catch (BadPaddingException e) {
+            throw new CryptoException("Unable to decrypt cipher text. Bad Padding", e);
         }
         return decryptedText;
     }

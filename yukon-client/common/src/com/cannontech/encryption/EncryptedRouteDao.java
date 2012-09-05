@@ -6,10 +6,17 @@ import com.cannontech.database.db.pao.EncryptedRoute;
 import com.cannontech.database.db.security.EncryptionKey;
 
 public interface EncryptedRouteDao {
-    List<EncryptedRoute> getAllEncryptedRoutes();
-    void addEncryptedRoute(EncryptedRoute encryptedRoute);
-    void deleteEncryptedRoute(EncryptedRoute encryptedRoute);
-    List<EncryptionKey> getEncryptionKeys();
-    void saveNewEncyptionKey(String name, String value) throws CryptoException;
-    void deleteEncyptionKey(int encryptionKeyId);
+    
+    public List<EncryptedRoute> getAllEncryptedRoutes();
+    
+    public void addEncryptedRoute(EncryptedRoute encryptedRoute);
+    
+    public void deleteEncryptedRoute(EncryptedRoute encryptedRoute);
+    
+    public List<EncryptionKey> getEncryptionKeys();
+    
+    public void saveNewEncyptionKey(String name, String value) throws CryptoException;
+    
+    public void deleteEncyptionKey(int encryptionKeyId);
+    
 }

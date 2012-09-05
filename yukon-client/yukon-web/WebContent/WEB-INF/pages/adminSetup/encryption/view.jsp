@@ -13,11 +13,11 @@
         <tags:nameValueContainer2>
             <form:form method="POST" commandName="encryptionKey"
                 action="saveNewKey" autocomplete="off">
-                <i:inline key=".addNewKeyHeading" />
-                <tags:nameValue2 nameKey=".keyNameLbl">
+                <h3><i:inline key=".addNewKeyHeading" /></h3>
+                <tags:nameValue2 nameKey=".keyName">
                     <tags:input path="name" size="50" />
                 </tags:nameValue2>
-                <tags:nameValue2 nameKey=".keyLbl">
+                <tags:nameValue2 nameKey=".key">
                     <tags:input path="value" size="50" />
                 </tags:nameValue2>
             </form:form>
@@ -30,12 +30,12 @@
             <form:form method="POST" commandName="fileImportBindingBean"
                 action="importKeyFile" autocomplete="off"
                 enctype="multipart/form-data">
-                <tags:nameValue2 nameKey=".importKeyFileLbl">
+                <tags:nameValue2 nameKey=".importKeyFile">
                     <tags:bind path="file">
                         <input type="file" name="keyFile">
                     </tags:bind>
                 </tags:nameValue2>
-                <tags:nameValue2 nameKey=".keyNameLbl">
+                <tags:nameValue2 nameKey=".keyName">
                     <tags:input path="name" size="50" />
                 </tags:nameValue2>
             </form:form>
@@ -48,7 +48,7 @@
         <div id="publicKeyStatus"></div>
         <div id="publicKeyExpiration"></div>
         <div id="publicKeyText">
-            <p><i:inline key=".currentPublicKeyLbl" /></p>
+            <p><i:inline key=".currentPublicKey" /></p>
             <textarea id="publicKeyTextArea" rows="17" cols="70"
                 readonly="readonly"></textarea>
         </div>
@@ -60,13 +60,13 @@
                 <table id="routesBoxTable"
                     class="compactResultsTable rowHighlighting">
                     <tr>
-                        <th><i:inline key=".paoNameLbl" />
+                        <th><i:inline key=".paoName" />
                         </th>
-                        <th><i:inline key=".paoTypeLbl" />
+                        <th><i:inline key=".paoType" />
                         </th>
-                        <th style="width: 50%"><i:inline key=".CPSkeyLbl" />
+                        <th style="width: 50%"><i:inline key=".CPSkey" />
                         </th>
-                        <th><i:inline key=".actionLbl" />
+                        <th><i:inline key=".action" />
                         </th>
                     </tr>
                     <c:forEach var="route" items="${encryptedRoutes}">
@@ -130,10 +130,10 @@
                 <c:if test="${fn:length(encryptionKeys) > 0}">
                     <table id="keyBoxTable" class="compactResultsTable rowHighlighting">
                         <tr>
-                            <th><i:inline key=".keyLbl" /> </th>
-                            <th><i:inline key=".statusLbl" /> </th>
-                            <th><i:inline key=".assignedLbl" /> </th>
-                            <th class="removeColumn">Remove</th>
+                            <th><i:inline key=".key" /> </th>
+                            <th><i:inline key=".status" /> </th>
+                            <th><i:inline key=".assigned" /> </th>
+                            <th class="removeColumn"><i:inline key=".remove" /></th>
                         </tr>
                         <c:forEach items="${encryptionKeys}" var="key">
                             <dialog:confirm on="#deleteKeyBtn_${key.encryptionKeyId}" nameKey="confirmDelete" argument="${key.name}" />
@@ -143,7 +143,7 @@
                                     <td>${fn:escapeXml(key.name)}</td>
                                     <td id="keyStatus_${key.encryptionKeyId}">
                                         <c:if test="${key.isValid}">
-                                            <span class="ConfirmMsg"><i:inline key=".validKey" /></span>
+                                            <span class="successMessage"><i:inline key=".validKey" /></span>
                                         </c:if>
                                         <c:if test="${not key.isValid}">
                                             <span class="errorMessage"><i:inline key=".invalidKey" /></span>
@@ -152,7 +152,8 @@
                                     <td id="keyAssigned_${key.encryptionKeyId}">
                                         <i:inline key=".unassignedKey" />
                                     </td>
-                                    <td class="removeColumn"><cti:button type="submit" id="deleteKeyBtn_${key.encryptionKeyId}" nameKey="deleteKeyBtn" href="javascript:submitForm('keys_${key.encryptionKeyId}')" styleClass="pointer icon icon_remove" />
+                                    <td class="removeColumn">
+                                        <cti:button type="submit" id="deleteKeyBtn_${key.encryptionKeyId}" nameKey="deleteKeyBtn" href="javascript:submitForm('keys_${key.encryptionKeyId}')" styleClass="pointer icon icon_remove" />
                                     </td>
                                 </tr>
                             </form:form>
@@ -165,10 +166,10 @@
             </tags:boxContainer2>
         </cti:dataGridCell>
     </cti:dataGrid>
+    
     <script type="text/javascript">
     jQuery(function(){
         
-        // Add the border to last row
         if ("${showDialog}" == "addKey") {
             jQuery('#addNewKeyBtn').trigger(jQuery.Event("click"));
         } else if ("${showDialog}" == "importKey") {
@@ -210,7 +211,7 @@
                 jQuery("#publicKeyStatus").html("<i:inline key='.publicKey.keyExpired'/>").show('fade',{},200);
             } else {
                 // A valid key is found
-                jQuery("#publicKeyStatus").html("<i:inline key='.encryption.expiresLbl'/>"+publicKeyObj.expiration);
+                jQuery("#publicKeyStatus").html("<i:inline key='.encryption.expires'/>"+publicKeyObj.expiration);
                 jQuery("#publicKeyTextArea").val(publicKeyObj.publicKey);
                 jQuery("#publicKeyText").show('fade',{},200);
             }
@@ -224,4 +225,3 @@
     
     </script>
 </cti:standardPage>
-]

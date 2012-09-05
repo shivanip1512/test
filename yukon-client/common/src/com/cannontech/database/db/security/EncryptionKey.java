@@ -2,11 +2,11 @@ package com.cannontech.database.db.security;
 
 public class EncryptionKey {
 
-    private Integer encryptionKeyId = null;
+    private int encryptionKeyId;
     private String value = null;
     private String name = null;
-    private Boolean currentlyUsed = null;
-    private Boolean isValid = true;
+    private boolean currentlyUsed;
+    private boolean isValid = true;
     
     public EncryptionKey() { }
     
@@ -16,7 +16,7 @@ public class EncryptionKey {
         this.value = value;
     }
     
-    public EncryptionKey(Integer encryptionKeyId) {
+    public EncryptionKey(int encryptionKeyId) {
         this(encryptionKeyId, null, null);
     }
     
@@ -24,7 +24,7 @@ public class EncryptionKey {
         return encryptionKeyId;
     }
 
-    public void setEncryptionKeyId(Integer encryptionKeyId) {
+    public void setEncryptionKeyId(int encryptionKeyId) {
         this.encryptionKeyId = encryptionKeyId;
     }
 
@@ -44,7 +44,7 @@ public class EncryptionKey {
         this.name = name;
     }
 
-    public void setCurrentlyUsed(Boolean currentlyUsed) {
+    public void setCurrentlyUsed(boolean currentlyUsed) {
         this.currentlyUsed = currentlyUsed;
     }
 

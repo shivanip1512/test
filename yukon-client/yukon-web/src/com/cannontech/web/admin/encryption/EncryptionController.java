@@ -14,6 +14,7 @@ import org.apache.commons.codec.binary.Hex;
 import org.apache.commons.fileupload.servlet.ServletFileUpload;
 import org.apache.commons.lang.StringUtils;
 import org.apache.log4j.Logger;
+import org.jdom.JDOMException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.MessageSourceResolvable;
 import org.springframework.stereotype.Controller;
@@ -195,7 +196,7 @@ public class EncryptionController {
     @RequestMapping(method = RequestMethod.POST, value = "saveNewKey")
     public String saveNewKey(HttpServletRequest request, ModelMap model,
                              EncryptionKey encryptionKey, BindingResult bindingResult,
-                             FlashScope flashScope, YukonUserContext userContext) {
+                             FlashScope flashScope, YukonUserContext userContext) throws IOException, CryptoException, JDOMException, DecoderException {
 
         addKeyValidator.validate(encryptionKey, bindingResult);
 
@@ -208,19 +209,13 @@ public class EncryptionController {
             return view(request, model, new EncryptedRoute(), encryptionKey, new FileImportBindingBean(), flashScope, userContext);
         }
 
-        try {
-            char[] password = CryptoUtils.getSharedPasskey();
+        char[] password = CryptoUtils.getSharedPasskey();
 
-            AESPasswordBasedCrypto encrypter = new AESPasswordBasedCrypto(password);
-            byte [] keyBytes = Hex.decodeHex(encryptionKey.getValue().toCharArray());
-            String encryptedValue = new String(Hex.encodeHex(encrypter.encrypt(keyBytes)));
+        AESPasswordBasedCrypto encrypter = new AESPasswordBasedCrypto(password);
+        byte [] keyBytes = Hex.decodeHex(encryptionKey.getValue().toCharArray());
+        String encryptedValue = new String(Hex.encodeHex(encrypter.encrypt(keyBytes)));
 
-            encryptedRouteDao.saveNewEncyptionKey(encryptionKey.getName(),encryptedValue);
-        } catch (CryptoException e) {
-            log.warn("caught exception in saveNewKey", e);
-        } catch (Exception e) {
-            log.warn("caught exception in saveNewKey", e);
-        } 
+        encryptedRouteDao.saveNewEncyptionKey(encryptionKey.getName(),encryptedValue);
 
         return "redirect:view";
     }
@@ -387,17 +382,15 @@ public class EncryptionController {
                 flashScope.setConfirm(new YukonMessageSourceResolvable(baseKey + ".fileUploadSuccess", fileImportBindingBean.getName()));
                 success = true;
             } catch (IOException e) {
-                //Unable to upload File
-                log.warn("caught exception in handleUploadedFile", e);
+                log.error("File not found or other IO error", e);
                 flashScope.setError(new YukonMessageSourceResolvable(baseKey + ".fileUploadError.unknownError"));
             } catch (CryptoException e) {
-                // unable to decrypt file
-                log.warn("caught exception in handleUploadedFile", e);
+                log.error("Unable to decrypt file", e);
                 flashScope.setError(new YukonMessageSourceResolvable(baseKey + ".fileUploadError.unableToDecryptFile"));
-            } catch (Exception e) {
-                log.warn("Caught Excpetion handling upload file.",e);
+            } catch (JDOMException e) {
+                log.error("Unable to properly read file", e);
                 flashScope.setError(new YukonMessageSourceResolvable(baseKey + ".fileUploadError.unknownError"));
-            }
+            } 
         }
         return success;
     }

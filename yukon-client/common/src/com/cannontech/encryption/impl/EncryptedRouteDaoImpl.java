@@ -4,23 +4,20 @@ import java.sql.SQLException;
 import java.util.List;
 import java.util.Set;
 
-import org.apache.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
 
-import com.cannontech.clientutils.YukonLogManager;
 import com.cannontech.common.pao.PaoType;
 import com.cannontech.common.pao.definition.dao.PaoDefinitionDao;
 import com.cannontech.common.pao.definition.model.PaoTag;
 import com.cannontech.common.util.SqlStatementBuilder;
 import com.cannontech.core.dao.DBPersistentDao;
-import com.cannontech.core.dao.PersistenceException;
 import com.cannontech.database.YukonJdbcTemplate;
 import com.cannontech.database.YukonResultSet;
 import com.cannontech.database.YukonRowCallbackHandler;
+import com.cannontech.database.YukonRowMapper;
 import com.cannontech.database.db.pao.EncryptedRoute;
 import com.cannontech.database.db.security.EncryptionKey;
 import com.cannontech.database.incrementer.NextValueHelper;
-import com.cannontech.encryption.CryptoException;
 import com.cannontech.encryption.EncryptedRouteDao;
 import com.cannontech.message.dispatch.message.DBChangeMsg;
 import com.cannontech.message.dispatch.message.DbChangeType;
@@ -32,20 +29,15 @@ public class EncryptedRouteDaoImpl implements EncryptedRouteDao {
     @Autowired private PaoDefinitionDao paoDefinitionDao;
     @Autowired private DBPersistentDao dbPersistentDao;
 
-    private Logger log = YukonLogManager.getLogger(EncryptedRouteDaoImpl.class);
-    
-    private static final String selectEncryptedRouteSql = "SELECT ypo.PAOName, ypo.PAObjectID, ypo.Type, ek.Name, ek.EncryptionKeyId " 
-                    + "FROM YukonPAObjectEncryptionKey ypoe " 
-                    + "RIGHT JOIN YukonPAObject ypo ON ypoe.PAObjectId = ypo.PAObjectID " 
-                    + "LEFT JOIN EncryptionKey ek ON ek.EncryptionKeyId = ypoe.EncryptionKeyId";
-
-    
     @Override
     public List<EncryptedRoute> getAllEncryptedRoutes() {
         Set<PaoType> paoTypes = paoDefinitionDao.getPaoTypesThatSupportTag(PaoTag.ROUTE_ENCRYPTION);
 
         SqlStatementBuilder sql = new SqlStatementBuilder();
-        sql.append(selectEncryptedRouteSql);
+        sql.append("SELECT ypo.PAOName, ypo.PAObjectID, ypo.Type, ek.Name, ek.EncryptionKeyId");
+        sql.append("FROM YukonPAObjectEncryptionKey ypoe");
+        sql.append("RIGHT JOIN YukonPAObject ypo ON ypoe.PAObjectId = ypo.PAObjectID");
+        sql.append("LEFT JOIN EncryptionKey ek ON ek.EncryptionKeyId = ypoe.EncryptionKeyId");
         sql.append("WHERE ypo.Type").in(paoTypes);
 
         final List<EncryptedRoute> encryptedRoutes = Lists.newArrayList();
@@ -70,13 +62,10 @@ public class EncryptedRouteDaoImpl implements EncryptedRouteDao {
 
     @Override
     public void addEncryptedRoute(EncryptedRoute encryptedRoute) {
-        Object [] args = {encryptedRoute.getPaobjectId(), encryptedRoute.getEncryptionKeyId()};
         SqlStatementBuilder sql = new SqlStatementBuilder();
         sql.append("INSERT INTO YukonPAObjectEncryptionKey");
         sql.append("(PAObjectId, EncryptionKeyId)");
-        sql.append("VALUES(");
-        sql.appendList(args);
-        sql.append(")");
+        sql.values(encryptedRoute.getPaobjectId(),encryptedRoute.getEncryptionKeyId());
 
         yukonJdbcTemplate.update(sql);
 
@@ -103,41 +92,34 @@ public class EncryptedRouteDaoImpl implements EncryptedRouteDao {
 
     @Override
     public List<EncryptionKey> getEncryptionKeys() {
-        final List<EncryptionKey> map = Lists.newArrayList();
+        List<EncryptionKey> keyList = Lists.newArrayList();
 
         SqlStatementBuilder sql = new SqlStatementBuilder();
-        sql.append("Select EncryptionKeyId, Name, Value");
+        sql.append("SELECT EncryptionKeyId, Name, Value");
         sql.append("FROM EncryptionKey ");
 
-        yukonJdbcTemplate.query(sql, new YukonRowCallbackHandler() {
+        keyList = yukonJdbcTemplate.query(sql, new YukonRowMapper<EncryptionKey>() {
             @Override
-            public void processRow(YukonResultSet rs) throws SQLException {
+            public EncryptionKey mapRow(YukonResultSet rs) throws SQLException {
                 int id = rs.getInt("EncryptionKeyId");
-                //int energyCompanyId = rs.getInt("EnergyCompanyId");
                 String name = rs.getString("Name");
                 String value = rs.getString("Value");
 
-                EncryptionKey key = new EncryptionKey(id,name,value);
-                map.add(key);
+                return new EncryptionKey(id,name,value);
             }
+            
         });
-        return map;
+        
+        return keyList;
     }
 
     @Override
-    public void saveNewEncyptionKey(String name, String value) throws CryptoException {
-        try {
+    public void saveNewEncyptionKey(String name, String value) {
             int encryptionKeyId = getNextEncryptionKeyId();
             SqlStatementBuilder sql = new SqlStatementBuilder();
             sql.append("INSERT INTO EncryptionKey");
             sql.append("(EncryptionKeyId, Name, Value)");
-            sql.append("VALUES(");
-            sql.appendArgument(encryptionKeyId);
-            sql.append(",");
-            sql.appendArgument(name);
-            sql.append(",");
-            sql.appendArgument(value);
-            sql.append(")");
+            sql.values(encryptionKeyId, name, value);
 
             yukonJdbcTemplate.update(sql);
 
@@ -146,17 +128,10 @@ public class EncryptedRouteDaoImpl implements EncryptedRouteDao {
                                                             DBChangeMsg.CAT_ENCRYPTION_KEY_DB,
                                                             DbChangeType.ADD));   
             
-        } catch (PersistenceException pe) {
-            throw pe;
-        } catch (Exception e) {
-            log.warn("caught exception in saveNewEncyptionKey", e);
-        }
-
     }
 
     @Override
     public void deleteEncyptionKey(int encryptionKeyId) {
-        try {
             SqlStatementBuilder sql = new SqlStatementBuilder();
             sql.append("DELETE FROM EncryptionKey");
             sql.append("WHERE");
@@ -169,11 +144,6 @@ public class EncryptedRouteDaoImpl implements EncryptedRouteDao {
                                                             DBChangeMsg.CAT_ENCRYPTION_KEY_DB,
                                                             DbChangeType.DELETE));   
             
-        } catch (PersistenceException pe) {
-            throw pe;
-        } catch (Exception e) {
-            log.warn("caught exception in saveNewEncyptionKey", e);
-        }
     }
 
     public final static Integer getNextEncryptionKeyId( ) {
