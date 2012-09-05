@@ -1,7 +1,7 @@
 /*==============================================================*/
 /* Database name:  YukonDatabase                                */
 /* DBMS name:      ORACLE Version 9i                            */
-/* Created on:     9/4/2012 2:45:32 PM                          */
+/* Created on:     9/5/2012 10:44:42 AM                         */
 /*==============================================================*/
 
 
@@ -4475,7 +4475,7 @@ create table EnergyCompany  (
    constraint PK_ENERGYCOMPANY primary key (EnergyCompanyID)
 );
 
-insert into EnergyCompany VALUES (-1,'Default Energy Company',0,-1);
+insert into EnergyCompany VALUES (-1,'Default Energy Company',0,-100);
 
 /*==============================================================*/
 /* Index: Indx_EnCmpName                                        */

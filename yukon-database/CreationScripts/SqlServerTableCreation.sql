@@ -1,7 +1,7 @@
 /*==============================================================*/
 /* Database name:  YukonDatabase                                */
 /* DBMS name:      Microsoft SQL Server 2005                    */
-/* Created on:     9/4/2012 2:44:13 PM                          */
+/* Created on:     9/5/2012 10:45:36 AM                         */
 /*==============================================================*/
 
 /*==============================================================*/
@@ -4702,7 +4702,7 @@ create table EnergyCompany (
 )
 go
 
-insert into EnergyCompany VALUES (-1,'Default Energy Company',0,-1);
+insert into EnergyCompany VALUES (-1,'Default Energy Company',0,-100);
 
 /*==============================================================*/
 /* Index: Indx_EnCmpName                                        */
