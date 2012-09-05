@@ -7,18 +7,28 @@
 
 <script type="text/javascript">
 
-submitForm = function() {
-    var url = '<cti:url value="/spring/dr/program/changeMultipleGears"/>';
-    return submitFormViaAjax('drDialog', 'changeGearForm', url);
-}
-
-singleProgramChecked = function(boxChecked, index) {
-    if (jQuery(boxChecked).is(':checked')) {
-        jQuery('#programGear'+index).removeAttr("disabled");
-    } else {
-        jQuery('#programGear'+index).attr("disabled","disabled");
+jQuery(function() {
+   
+    submitForm = function() {
+        return submitFormViaAjax('drDialog', 'changeGearForm', '<cti:url value="/spring/dr/program/changeMultipleGears"/>');
     }
-}
+    
+    singleProgramChecked = function(event) {
+        if (jQuery(event.target).is(':checked')) {
+            jQuery(event.target).parent().next().find(".f_useStopGearCheckedTarget").removeAttr("disabled");
+        } else {
+            jQuery(event.target).parent().next().find(".f_useStopGearCheckedTarget").attr("disabled","disabled");
+        }
+    }
+    
+    hideDrDialog = function() {
+        jQuery("#drDialog").hide();
+    }
+    
+    jQuery("#cancelBtn").click(hideDrDialog);
+    jQuery(".f_singleProgramChecked").click(singleProgramChecked); 
+
+});
 </script>
 
 <cti:flashScopeMessages/>
@@ -57,7 +67,7 @@ singleProgramChecked = function(boxChecked, index) {
                     <c:if test="${fn:length(gears) > 1}">
                         <td>
                             <form:hidden path="programGearChangeInfo[${status.index}].programId" />
-                                <form:checkbox path="programGearChangeInfo[${status.index}].changeGear" id="changeGearCheckbox${status.index}" onclick="singleProgramChecked(this,${status.index});"/>
+                            <form:checkbox path="programGearChangeInfo[${status.index}].changeGear" id="changeGearCheckbox${status.index}" cssClass="f_singleProgramChecked"/>
                             <c:if test="${fn:length(gears) < 2}">
                                 <form:hidden path="programGearChangeInfo[${status.index}].changeGear"/>
                                 <input type="checkbox" disabled="disabled"/>
@@ -65,7 +75,7 @@ singleProgramChecked = function(boxChecked, index) {
                             <label for="changeGearCheckbox${status.index}"><spring:escapeBody htmlEscape="true">${program.name}</spring:escapeBody></label>
                         </td>
                         <td>
-                            <form:select path="programGearChangeInfo[${status.index}].gearNumber" id="programGear${status.index}">
+                            <form:select path="programGearChangeInfo[${status.index}].gearNumber" id="programGear${status.index}" cssClass="f_useStopGearCheckedTarget">
                                 <c:forEach var="gear" varStatus="gearStatus" items="${gears}">
                                     <c:if test="${currentGear.gearNumber != gear.gearNumber}">
                                         <form:option value="${gearStatus.index + 1}"><spring:escapeBody htmlEscape="true">${gear.gearName}</spring:escapeBody></form:option>
@@ -94,7 +104,6 @@ singleProgramChecked = function(boxChecked, index) {
 
     <div class="actionArea">
         <input id="okButton" type="submit" value="<cti:msg key="yukon.web.modules.dr.program.changeMultipleGears.okButton"/>"/>
-        <input type="button" value="<cti:msg key="yukon.web.modules.dr.program.changeMultipleGears.cancelButton"/>"
-            onclick="parent.$('drDialog').hide()"/>
+        <input type="button" id="cancelBtn" value="<cti:msg key="yukon.web.modules.dr.program.changeMultipleGears.cancelButton"/>"/>
     </div>
 </form:form>

@@ -6,98 +6,160 @@
 
 
 <script type="text/javascript">
-submitForm = function() {
-    combineDateAndTimeFields('stopDate');
-    return submitFormViaAjax('drDialog', 'stopProgramForm');
-}
 
-updateComponentAvailability = function() {
-    setDateTimeInputEnabled('stopDate', !$('stopNowCheckbox').checked);
-    if (${stopGearAllowed}) {
-        setUseStopGearEnabled(!$('stopNowCheckbox').checked);
+jQuery(function(){
+    
+    submitForm = function() {
+        combineDateAndTimeFields('stopDate');
+        return submitFormViaAjax('drDialog', 'stopProgramForm');
     }
-}
-
-setUseStopGearEnabled = function(isEnabled) {
-    for (index = 0; index < ${fn:length(programs)}; index++) {
-        if (!isEnabled) {
-            jQuery('#useStopGear'+index).removeAttr("checked");
-            jQuery('#useStopGear'+index).attr("disabled","disabled");
-            jQuery('#programGear'+index).attr("disabled","disabled");
+    
+    stopProgramChecked = function(event) {
+        if (!jQuery(event.target).is(':checked')) {
+            jQuery("#allProgramsCheckbox").removeAttr("checked");
+        }
+        updateComponents();
+    }
+    
+    // Check-All type checkbox for Stop Program checkboxes
+    updateStopAllProgramCheckbox = function() {
+        var stopAll = true;
+        var allDisabled = true;
+        
+        jQuery(".f_singleProgramChecked").each(function(index,element) {
+            // Stopall should be checked if all the valid checkboxes are checked
+            stopAll = stopAll && (jQuery(element).is(":disabled") || jQuery(element).is(":checked"));
+            allDisabled = (allDisabled && jQuery(element).is(":disabled"));
+        });
+        
+        
+        if (allDisabled) {
+            jQuery("#allProgramsCheckbox").removeAttr("checked");
+            jQuery("#allProgramsCheckbox").attr("disabled","disabled");
+        } else if (stopAll) {
+            jQuery("#allProgramsCheckbox").removeAttr("disabled");
+            jQuery("#allProgramsCheckbox").attr("checked","checked");
         } else {
-            jQuery('#useStopGear'+index).removeAttr("disabled");
-            jQuery('#programGear'+index).removeAttr("disabled");
+            jQuery("#allProgramsCheckbox").removeAttr("disabled");
+            jQuery("#allProgramsCheckbox").removeAttr("checked");
         }
+        
     }
-    if(!isEnabled) {
-        jQuery('#allProgramsUseStopGearsCheckbox').removeAttr("checked");
-        jQuery('#allProgramsUseStopGearsCheckbox').attr("disabled","disabled");
-    } else {
-        jQuery('#allProgramsUseStopGearsCheckbox').removeAttr("disabled");
-    }
-}
-
-allStopGearChecked = function() {
-    allChecked = jQuery("#allProgramsUseStopGearsCheckbox").is(':checked');
-    for (index = 0; index < ${fn:length(programs)}; index++) {
-        if (allChecked) {
-            jQuery('#useStopGear'+index).removeAttr("disabled");
-            jQuery('#useStopGear'+index).attr("checked","checked");
-            jQuery('#programGear'+index).removeAttr("disabled");
+    
+    useStopGearChecked = function(event) {
+        if (jQuery(event.target).is(':checked')) {
+            jQuery(event.target).siblings(".f_useStopGearCheckedTarget").removeAttr("disabled");
         } else {
-            jQuery('#useStopGear'+index).removeAttr("checked");
+            jQuery(event.target).siblings(".f_useStopGearCheckedTarget").attr("disabled","disabled");
         }
+        updateComponents();
     }
-}
-
-allProgramsChecked = function() {
-    allChecked = $('allProgramsCheckbox').checked;
-    for (index = 0; index < ${fn:length(programs)}; index++) {
-        $('stopProgramCheckbox' + index).checked =
-            allChecked && !$('stopProgramCheckbox' + index).disabled;
-    }
-}
-
-useStopGearChecked = function(checkBox, id) {
-    if (jQuery(checkBox).is(':checked')) {
-        jQuery('#'+id).removeAttr("disabled");
-    } else {
-        jQuery('#'+id).attr("disabled","disabled");
-    }
-}
-
-updateAllProgramsChecked = function() {
-    allChecked = true;
-    for (index = 0; index < ${fn:length(programs)}; index++) {
-        if (!$('stopProgramCheckbox' + index).disabled
-                && !$('stopProgramCheckbox' + index).checked) {
-            allChecked = false;
-            break;
-        }
-    }
-    $('allProgramsCheckbox').checked = allChecked;
-}
-
-singleProgramChecked = function(boxChecked) {
-    if ($(boxChecked).checked) {
-        updateAllProgramsChecked();
-    } else {
-        $('allProgramsCheckbox').checked = false;
-    }
-}
-
-updateProgramState = function(index) {
-  //assumes data is of type Hash
-    return function(data) {
-        if (data.get('state').startsWith('running') || data.get('state').startsWith('scheduled')) {
-            $('stopProgramCheckbox' + index).enable();
+    
+    // Check-All type checkbox for Use Stop Gear checkboxes
+    updateUseStopGearsAllCheckbox = function() {
+        var stopAll = true;
+        var allDisabled = true;
+        
+        if (jQuery("#stopNowCheckbox").is(':checked')) {
+            jQuery("#allProgramsUseStopGearsCheckbox").removeAttr("checked");
+            jQuery("#allProgramsUseStopGearsCheckbox").attr("disabled","disabled");
         } else {
-            $('stopProgramCheckbox' + index).disable();
-            $('stopProgramCheckbox' + index).checked = false;
+            jQuery("#allProgramsUseStopGearsCheckbox").removeAttr("disabled");
+
+            jQuery(".f_useStopGearChecked").each(function(index,element) {
+                stopAll = stopAll && (jQuery(element).is(":disabled") || jQuery(element).is(":checked"));
+                allDisabled = (allDisabled && jQuery(element).is(":disabled"));
+            });
+            
+            if (allDisabled) {
+                jQuery("#allProgramsUseStopGearsCheckbox").removeAttr("checked");
+                jQuery("#allProgramsUseStopGearsCheckbox").attr("disabled","disabled");
+            } else if (stopAll) {
+                jQuery("#allProgramsUseStopGearsCheckbox").removeAttr("disabled");
+                jQuery("#allProgramsUseStopGearsCheckbox").attr("checked","checked");
+            } else {
+                jQuery("#allProgramsUseStopGearsCheckbox").removeAttr("disabled");
+                jQuery("#allProgramsUseStopGearsCheckbox").removeAttr("checked");
+            }
         }
-        updateAllProgramsChecked();
     }
-}
+    
+    allStopProgramChecked = function() {
+        allChecked = jQuery("#allProgramsCheckbox").is(":checked");
+        for (index = 0; index < ${fn:length(programs)}; index++) {
+            if (allChecked && !jQuery("#stopProgramCheckbox"+index).is(":disabled")) {
+                jQuery("#stopProgramCheckbox"+index).attr("checked","checked");
+            } else {
+                jQuery("#stopProgramCheckbox"+index).removeAttr("checked");
+            }
+        }
+        updateComponents();
+    }
+    
+    allUseStopGearChecked = function() {
+        allChecked = jQuery("#allProgramsUseStopGearsCheckbox").is(":checked");
+        for (index = 0; index < ${fn:length(programs)}; index++) {
+            if (allChecked) {
+                jQuery("#useStopGear" + index).attr("checked","checked");
+            } else {
+                jQuery("#useStopGear" + index).removeAttr("checked");
+            }
+        }
+        updateComponents();
+    }
+    
+    stopNowChecked = function () {
+        var stopNow = jQuery("#stopNowCheckbox").is(':checked');
+        setDateTimeInputEnabled('stopDate', !stopNow);
+        updateComponents();
+    }
+    
+    updateComponents = function() {
+        var stopNow = jQuery("#stopNowCheckbox").is(':checked');
+        
+        for (index = 0; index < ${fn:length(programs)}; index++) {
+
+            if (!stopNow && jQuery("#stopProgramCheckbox" + index).is(":checked")) {
+                jQuery('#useStopGear'+index).removeAttr("disabled");
+                if(jQuery('#useStopGear'+index).is(":checked")) {
+                    jQuery('#programGear'+index).removeAttr("disabled");
+                } else {
+                    jQuery('#programGear'+index).attr("disabled","disabled");
+                }
+            } else {
+                jQuery('#useStopGear'+index).removeAttr("checked");
+                jQuery('#useStopGear'+index).attr("disabled","disabled");
+                jQuery('#programGear'+index).attr("disabled","disabled");
+            }
+        }
+        updateStopAllProgramCheckbox();
+        updateUseStopGearsAllCheckbox();
+    }
+    
+    updateComponents();
+    
+    jQuery(".f_singleProgramChecked").click(stopProgramChecked);
+    jQuery(".f_useStopGearChecked").click(useStopGearChecked);
+    jQuery("#allProgramsUseStopGearsCheckbox").click(allUseStopGearChecked);
+    jQuery("#allProgramsCheckbox").click(allStopProgramChecked);
+    jQuery("#stopNowCheckbox").click(stopNowChecked);
+    
+
+    updateProgramState = function(index) {
+        //assumes data is of type Hash
+        return function(data) {
+            if (data.get('state').startsWith('running') || data.get('state').startsWith('scheduled')) {
+                $('stopProgramCheckbox' + index).enable();
+            } else {
+                $('stopProgramCheckbox' + index).disable();
+                $('stopProgramCheckbox' + index).checked = false;
+            }
+            updateComponents();
+        }
+    }
+
+});
+
 </script>
 
 <cti:flashScopeMessages/>
@@ -126,7 +188,7 @@ updateProgramState = function(index) {
         <tr><td>
             <table>
                 <tr><td>
-                    <form:checkbox path="stopNow" id="stopNowCheckbox" onclick="updateComponentAvailability()"/>
+                    <form:checkbox path="stopNow" id="stopNowCheckbox"/>
                     <label for="stopNowCheckbox">
                         <cti:msg key="yukon.web.modules.dr.program.stopMultiplePrograms.stopNow"/>
                     </label>
@@ -165,21 +227,19 @@ updateProgramState = function(index) {
             <tr class="<tags:alternateRow odd="" even="altRow"/>">
                 <td>
                     <form:hidden path="programStopInfo[${status.index}].programId"/>
-                    <form:checkbox path="programStopInfo[${status.index}].stopProgram"
-                        id="stopProgramCheckbox${status.index}"
-                        onclick="singleProgramChecked(this);"/>
+                    <form:checkbox path="programStopInfo[${status.index}].stopProgram" id="stopProgramCheckbox${status.index}" cssClass="f_singleProgramChecked"/>
                     <label for="stopProgramCheckbox${status.index}">${program.name}</label>
                 </td>
                 <c:if test="${stopGearAllowed}">
                     <td>
                         <c:if test="${fn:length(gears) > 1}">
-                            <form:checkbox path="programStopInfo[${status.index}].useStopGear"
-                                id="useStopGear${status.index}"
-                                onclick="useStopGearChecked(this,'programGear${status.index}');"/>
-                            <form:select path="programStopInfo[${status.index}].gearNumber" id="programGear${status.index}">
+                            <form:checkbox path="programStopInfo[${status.index}].useStopGear" id="useStopGear${status.index}" cssClass="f_useStopGearChecked"/>
+                            <form:select path="programStopInfo[${status.index}].gearNumber" id="programGear${status.index}" cssClass="f_useStopGearCheckedTarget">
                                 <c:forEach var="gear" varStatus="gearStatus" items="${gears}">
                                     <c:if test="${currentGear.gearNumber != gear.gearNumber}">
-                                        <form:option value="${gearStatus.index + 1}"><spring:escapeBody htmlEscape="true">${gear.gearName}</spring:escapeBody></form:option>
+                                        <form:option value="${gearStatus.index + 1}">
+                                            <spring:escapeBody htmlEscape="true">${gear.gearName}</spring:escapeBody>
+                                        </form:option>
                                     </c:if>
                                 </c:forEach>
                             </form:select>
@@ -204,23 +264,21 @@ updateProgramState = function(index) {
     </tags:abstractContainer>
     <br>
 
-    <input type="checkbox" id="allProgramsCheckbox" onclick="allProgramsChecked()"/>
-    <script type="text/javascript">updateAllProgramsChecked();</script>
+    <input type="checkbox" id="allProgramsCheckbox"/>
     <label for="allProgramsCheckbox">
         <cti:msg key="yukon.web.modules.dr.program.stopMultiplePrograms.stopAllPrograms"/>
     </label><br>
     
     <c:if test="${stopGearAllowed}">
-        <input type="checkbox" id="allProgramsUseStopGearsCheckbox" onclick="allStopGearChecked()"/>
+        <input type="checkbox" id="allProgramsUseStopGearsCheckbox"/>
         <label for="allProgramsUseStopGearsCheckbox">
-            <cti:msg key="yukon.web.modules.dr.program.stopMultiplePrograms.allPropgramsUseStopGears"/>
+            <cti:msg key="yukon.web.modules.dr.program.stopMultiplePrograms.allProgramsUseStopGears"/>
         </label><br>
     </c:if>
     
     <c:if test="${autoObserveConstraintsAllowed}">
         <c:if test="${checkConstraintsAllowed}">
-            <form:checkbox path="autoObserveConstraints" id="autoObserveConstraints"
-                onclick="updateSubmitButtons();"/>
+            <form:checkbox path="autoObserveConstraints" id="autoObserveConstraints" onclick="updateSubmitButtons();"/>
             <label for="autoObserveConstraints">
                 <cti:msg key="yukon.web.modules.dr.program.stopMultiplePrograms.autoObserveConstraints"/>
             </label>
@@ -234,11 +292,6 @@ updateProgramState = function(index) {
 
     <div class="actionArea">
         <input id="okButton" type="submit" value="<cti:msg key="yukon.web.modules.dr.program.stopMultiplePrograms.okButton"/>"/>
-        <input type="button" value="<cti:msg key="yukon.web.modules.dr.program.stopMultiplePrograms.cancelButton"/>"
-            onclick="parent.$('drDialog').hide()"/>
+        <input type="button" value="<cti:msg key="yukon.web.modules.dr.program.stopMultiplePrograms.cancelButton"/>" onclick="parent.$('drDialog').hide()"/>
     </div>
 </form:form>
-
-<script type="text/javascript">
-updateComponentAvailability();
-</script>

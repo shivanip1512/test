@@ -273,7 +273,7 @@
 <entry key="yukon.web.modules.dr.program.stopMultiplePrograms.currentState">Current State</entry>
 <entry key="yukon.web.modules.dr.program.stopMultiplePrograms.stopOffset">Stop Offset</entry>
 <entry key="yukon.web.modules.dr.program.stopMultiplePrograms.stopAllPrograms">Stop All Programs</entry>
-<entry key="yukon.web.modules.dr.program.stopMultiplePrograms.allPropgramsUseStopGears">Use Stop Gears All Programs</entry>
+<entry key="yukon.web.modules.dr.program.stopMultiplePrograms.allProgramsUseStopGears">Use Stop Gears All Programs</entry>
 <entry key="yukon.web.modules.dr.program.stopMultiplePrograms.gearChangeUnavailable">Only one gear defined</entry>
 <entry key="yukon.web.modules.dr.program.stopMultiplePrograms.autoObserveConstraints">Automatically Observe Constraints</entry>
 <entry key="yukon.web.modules.dr.program.stopMultiplePrograms.constraintsWillBeObserved">All constraints will be observed.</entry>
