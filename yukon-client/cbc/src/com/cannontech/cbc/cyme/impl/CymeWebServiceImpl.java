@@ -26,12 +26,12 @@ public class CymeWebServiceImpl implements CymeWebService {
     private RestOperations cymeRestTemplate;    /*Autowired by Setter*/
     @Autowired private ConfigurationSource configurationSource;
     
-    private static String baseCymeURL;
-    private static final String simulationURLpart = "/CYMDIST/SimulationsService.svc/rest/Simulation";
-    private static final String runStudyURLEnd = "/Run/Study/";
-    private static final String checkReportStatusURLEnd = "/Status/";
-    private static final String generateResultSummaryURLend = "/Result/Summary/";
-    private static final String generateReportURLpart = "/Report/";
+    private static String BASE_CYME_URL;
+    private static final String SIMULATION_URL_PART = "/CYMDIST/SimulationsService.svc/rest/Simulation";
+    private static final String RUN_STUDY_URL_END = "/Run/Study/";
+    private static final String CHECK_REPORT_STATUS_URL_END = "/Status/";
+    private static final String GENERATE_RESULT_SUMMARY_URL_END = "/Result/Summary/";
+    private static final String GENERATE_REPORT_URL_PART = "/Report/";
     private static final Logger log = YukonLogManager.getLogger(CymeWebService.class);
 
     private static final Namespace cymeDcNamespace = Namespace.getNamespace("ns1", "http://schemas.datacontract.org/2004/07/Cyme.Services.CymDistService.DataContracts");
@@ -46,13 +46,13 @@ public class CymeWebServiceImpl implements CymeWebService {
 
     @PostConstruct
     public void initialize() {
-        baseCymeURL = configurationSource.getRequiredString("CYME_DIST_BASE_URL");
-        log.info(baseCymeURL);
+        BASE_CYME_URL = configurationSource.getRequiredString("CYME_DIST_BASE_URL");
+        log.info(BASE_CYME_URL);
     }
 
     @Override
     public String runSimulation(String xmlData) {
-        String response = cymeRestTemplate.postForObject(baseCymeURL + simulationURLpart + runStudyURLEnd, xmlData, String.class);
+        String response = cymeRestTemplate.postForObject(BASE_CYME_URL + SIMULATION_URL_PART + RUN_STUDY_URL_END, xmlData, String.class);
         log.info("Simulation ran on CYME"); 
         log.debug(response); 
 
@@ -66,7 +66,7 @@ public class CymeWebServiceImpl implements CymeWebService {
 
     @Override
     public CymeSimulationStatus getSimulationReportStatus(String simulationId) {
-        String response = cymeRestTemplate.getForObject(baseCymeURL + simulationURLpart + "/" + simulationId + checkReportStatusURLEnd, String.class);
+        String response = cymeRestTemplate.getForObject(BASE_CYME_URL + SIMULATION_URL_PART + "/" + simulationId + CHECK_REPORT_STATUS_URL_END, String.class);
         log.info("Checked Simulation Status with CYME"); 
         log.debug(response);
         
@@ -100,7 +100,7 @@ public class CymeWebServiceImpl implements CymeWebService {
     @Override
     public List<SimulationResultSummaryData> generateResultSummary(String simulationId) {
         // Generate Reports
-        String summary = cymeRestTemplate.getForObject(baseCymeURL + simulationURLpart + "/" + simulationId + generateResultSummaryURLend, String.class);
+        String summary = cymeRestTemplate.getForObject(BASE_CYME_URL + SIMULATION_URL_PART + "/" + simulationId + GENERATE_RESULT_SUMMARY_URL_END, String.class);
 
         log.info("Generate reports command sent to CYME"); 
         log.debug(summary);
@@ -117,8 +117,8 @@ public class CymeWebServiceImpl implements CymeWebService {
     @Override
     public String getSimulationReport(SimulationResultSummaryData simulationSummary) {
         // Retrieve report
-        String response = cymeRestTemplate.getForObject(baseCymeURL + simulationURLpart + "/" + simulationSummary.getSimulationId()
-                                                    + generateReportURLpart + simulationSummary.getReportId() + "/" + simulationSummary.getNetworkId()
+        String response = cymeRestTemplate.getForObject(BASE_CYME_URL + SIMULATION_URL_PART + "/" + simulationSummary.getSimulationId()
+                                                    + GENERATE_REPORT_URL_PART + simulationSummary.getReportId() + "/" + simulationSummary.getNetworkId()
                                                     + "/", String.class);
         
         log.info("Retrieved report from CYME"); 

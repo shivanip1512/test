@@ -26,12 +26,12 @@ public class CymeTaskExecutor {
             @Override
             public void run() {
                 try {
-                    logger.debug("Cyme IVVC: Started processing simulation with Id: " + simulationId);
-                    
                     if (simulationId == null) {
                         logger.warn("Cyme IVVC: Simulation Id of NULL !");
                         return;
                     }
+
+                    logger.debug("Cyme IVVC: Started processing simulation with Id: " + simulationId);
                     
                     for (int i = 0; i < 15; i++) {
                         CymeSimulationStatus simStatus = cymeWebService.getSimulationReportStatus(simulationId);
