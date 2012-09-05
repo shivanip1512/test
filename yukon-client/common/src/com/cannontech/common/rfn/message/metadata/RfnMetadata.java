@@ -25,7 +25,7 @@ public enum RfnMetadata implements Serializable, DisplayableEnum {
     PRODUCT_NUMBER(String.class), // Product Number
     SUB_MODULE_FIRMWARE_VERSION(String.class); // Zigbee Firmware Version
     
-    private Class<?> parseType;
+    private final Class<?> parseType;
     
     private RfnMetadata(Class<?> parseType) {
         this.parseType = parseType;
@@ -35,10 +35,6 @@ public enum RfnMetadata implements Serializable, DisplayableEnum {
         return parseType;
     }
     
-    public void setParseType(Class<?> parseType) {
-        this.parseType = parseType;
-    }
-
     @Override
     public String getFormatKey() {
         return "yukon.web.widgets.RfnDeviceMetadataWidget." + name();
