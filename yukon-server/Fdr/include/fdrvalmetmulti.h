@@ -93,7 +93,7 @@ class IM_EX_FDRVALMETMULTI CtiFDR_ValmetMulti : public CtiFDRScadaServer
         void startMultiListeners();
         void stopMultiListeners();
 
-        RWThreadFunction _listnerStarterThread;
+        RWThreadFunction _listenerStarterThread;
         CtiMutex _listeningThreadManagementMutex;
         std::set<int> _listeningPortNumbers;
 

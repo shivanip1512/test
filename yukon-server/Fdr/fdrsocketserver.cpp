@@ -60,7 +60,6 @@ CtiFDRSocketServer::CtiFDRSocketServer(string &name) :
 
 CtiFDRSocketServer::~CtiFDRSocketServer()
 {
-    _connectionList.clear();
 }
 
 void CtiFDRSocketServer::clearFailedLayers() {

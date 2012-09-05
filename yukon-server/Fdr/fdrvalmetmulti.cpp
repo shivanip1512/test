@@ -82,8 +82,8 @@ BOOL CtiFDR_ValmetMulti::run( void )
     // load up the base class
     CtiFDRScadaServer::run();
 
-    _listnerStarterThread = rwMakeThreadFunction(*this, &CtiFDR_ValmetMulti::threadListenerStartupMonitor);
-    _listnerStarterThread.start();
+    _listenerStarterThread = rwMakeThreadFunction(*this, &CtiFDR_ValmetMulti::threadListenerStartupMonitor);
+    _listenerStarterThread.start();
 
     return TRUE;
 }
@@ -93,8 +93,8 @@ BOOL CtiFDR_ValmetMulti::stop( void )
     // stop the base class
     CtiFDRScadaServer::stop();
 
-    _listnerStarterThread.requestCancellation();
-    _listnerStarterThread.join();
+    _listenerStarterThread.requestCancellation();
+    _listenerStarterThread.join();
 
     //Stop all listener threads happens in CtiFDRSocketServer
     stopMultiListeners();
@@ -710,7 +710,7 @@ CtiFDRPointSPtr CtiFDR_ValmetMulti::findFdrPointInPointList(const std::string &t
     return point;
 }
 
-bool CtiFDR_ValmetMulti::processValueMessage(Cti::Fdr::ServerConnection&connection,
+bool CtiFDR_ValmetMulti::processValueMessage(Cti::Fdr::ServerConnection& connection,
                                          const char* aData, unsigned int size)
 {
     int retVal = NORMAL, quality;
