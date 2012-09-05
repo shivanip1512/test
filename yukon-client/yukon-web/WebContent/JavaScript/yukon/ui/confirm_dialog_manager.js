@@ -147,7 +147,14 @@ if(typeof(Yukon.Dialog.ConfirmationManager) === 'undefined'){
                 }
                 //is the intent to submit a form on ok?
                 else if(element.attr("type").toLowerCase() == "submit"){
-                    buttons[0].click = function(){element.closest("form")[0].submit();};
+                    buttons[0].click = function(){
+                    	var form = element.closest("form")[0];
+                    	if(!(typeof(element.attr("value")) == "undefined") 
+                    		&& !(typeof(element.attr("name")) == "undefined")){
+                    		jQuery(form).prepend('<input type="hidden" name="'+ element.attr("name") +'" value="'+ element.attr("value") +'">');
+                    	}
+                    	form.submit();
+                    	};
                 }
                 //is the intent to submit a specific form on ok?
                 else if(element.attr("data-form")){

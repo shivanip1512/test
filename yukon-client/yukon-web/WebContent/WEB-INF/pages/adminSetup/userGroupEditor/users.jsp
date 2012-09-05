@@ -4,6 +4,7 @@
 <%@ taglib prefix="form" uri="http://www.springframework.org/tags/form" %>
 <%@ taglib prefix="tags" tagdir="/WEB-INF/tags" %>
 <%@ taglib prefix="i" tagdir="/WEB-INF/tags/i18n" %>
+<%@ taglib prefix="dialog" tagdir="/WEB-INF/tags/dialog" %>
 <%@ taglib prefix="spring" uri="http://www.springframework.org/tags"%>
 
 <cti:standardPage module="adminSetup" page="users">
@@ -46,9 +47,11 @@ function addUsers() {
                                     <td><a href="${editUserUrl}">${fn:escapeXml(user.username)}</a></td>
                                     <td><cti:formatObject value="${user.authenticationCategory}"/></td>
                                     <td><span class="${styleClass}"><cti:formatObject value="${user.loginStatus}"/></span></td>
+
+                                    <dialog:confirm on="#remove_${user.userID}" nameKey="confirmRemove" argument="${fn:escapeXml(user.username)}" />
                                     <td class="removeColumn">
                                         <div class="dib">
-                                            <input type="submit" name="remove" value="${user.userID}" class="pointer icon icon_remove">
+                                            <input id="remove_${user.userID}" name="remove" value="${user.userID}" class="pointer icon icon_remove" type="submit">
                                         </div>
                                     </td>
                                 </tr>

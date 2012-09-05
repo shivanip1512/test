@@ -95,7 +95,7 @@ public class RolePropertyController {
         Collections.sort(mappedPropertiesHelper.getMappableProperties(), comparator);
         
         map.addAttribute("mappedPropertiesHelper", mappedPropertiesHelper);
-        map.addAttribute("groupName", liteYukonGroup.getGroupName());
+        map.addAttribute("roleGroupName", liteYukonGroup.getGroupName());
         map.addAttribute("roleName", messageSourceAccessor.getMessage(role.getFormatKey()));
         map.addAttribute("roleId", role.getRoleId());
         map.addAttribute("roleGroupId", liteYukonGroup.getGroupID());

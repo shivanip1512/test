@@ -86,7 +86,7 @@ public class UserGroupEditorController {
         model.addAttribute("userGroup", userGroup.getUserGroup());
         model.addAttribute("isUserGroupDeletable", userGroup.isUserGroupDeletable());
         model.addAttribute("mode", PageEditMode.EDIT);
-        
+        model.addAttribute("userGroupName",userGroup.getUserGroup().getUserGroupName());
         return "userGroupEditor/userGroup.jsp";
     }
 
