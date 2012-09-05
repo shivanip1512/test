@@ -272,7 +272,8 @@ ALTER TABLE LMBeatThePeakGear
 /* End YUK-11311 */
 
 /* Start YUK-11192 */
-UPDATE YukonListEntry SET EntryText = 'Meter'
+UPDATE YukonListEntry 
+SET EntryText = 'Meter'
 WHERE EntryId = 1058;
 
 UPDATE InventoryBase SET AlternateTrackingNumber = ' '
