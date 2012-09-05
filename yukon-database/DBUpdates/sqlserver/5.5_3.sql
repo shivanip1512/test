@@ -370,7 +370,7 @@ GO
 
 ALTER TABLE ReportedAddressRelayExpressCom
    ADD CONSTRAINT FK_RepAddRelayExp_RepAddExpCom FOREIGN KEY (ChangeId)
-      REFERENCES ReportedAddressExpressCom (ChangeId);
+      REFERENCES ReportedAddressExpressCom (ChangeId)
          ON DELETE CASCADE;
 GO
 /* End YUK-11293 */
