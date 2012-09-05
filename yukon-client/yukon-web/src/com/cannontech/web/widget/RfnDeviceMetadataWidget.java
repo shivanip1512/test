@@ -1,5 +1,6 @@
 package com.cannontech.web.widget;
 
+import java.text.Collator;
 import java.util.Collections;
 import java.util.Comparator;
 import java.util.List;
@@ -82,12 +83,13 @@ public class RfnDeviceMetadataWidget extends AdvancedWidgetControllerBase {
         List<Pair<RfnMetadata, Object>> csrMetadataPairs = Lists.newArrayList();
         
         List<RfnMetadata> metadataTypes = Lists.newArrayList(metadata.keySet());
+        final Collator collator = Collator.getInstance(context.getLocale());
         Collections.sort(metadataTypes, new Comparator<RfnMetadata>() {
             @Override
             public int compare(RfnMetadata o1, RfnMetadata o2) {
                 String name1 = accessor.getMessage(o1);
                 String name2 = accessor.getMessage(o2);
-                return name1.compareToIgnoreCase(name2);
+                return collator.compare(name1, name2);
             }
         });
         
