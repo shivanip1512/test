@@ -11,7 +11,7 @@ import com.cannontech.clientutils.YukonLogManager;
  */
 public abstract class WaitableDataCallback<T> implements DataCallback<T> {
 
-    private Logger log = YukonLogManager.getLogger(WaitableDataCallback.class);
+    private final static Logger log = YukonLogManager.getLogger(WaitableDataCallback.class);
 
     private CountDownLatch completeLatch = new CountDownLatch(1);
 
