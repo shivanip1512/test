@@ -9,7 +9,6 @@ import org.apache.log4j.Logger;
 import org.jdom.Namespace;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.client.RestOperations;
-import org.springframework.xml.xpath.NodeMapper;
 import org.w3c.dom.DOMException;
 import org.w3c.dom.Node;
 
@@ -21,11 +20,10 @@ import com.cannontech.common.config.ConfigurationSource;
 import com.cannontech.common.util.ObjectMapper;
 import com.cannontech.common.util.xml.SimpleXPathTemplate;
 import com.cannontech.common.util.xml.YukonXml;
-import com.cannontech.thirdparty.digi.model.FileData;
 
 public class CymeWebServiceImpl implements CymeWebService {
     
-    private RestOperations restTemplate;    /*Autowired by Setter*/
+    private RestOperations cymeRestTemplate;    /*Autowired by Setter*/
     @Autowired private ConfigurationSource configurationSource;
     
     private static String baseCymeURL;
@@ -54,7 +52,7 @@ public class CymeWebServiceImpl implements CymeWebService {
 
     @Override
     public String runSimulation(String xmlData) {
-        String response = restTemplate.postForObject(baseCymeURL + simulationURLpart + runStudyURLEnd, xmlData, String.class);
+        String response = cymeRestTemplate.postForObject(baseCymeURL + simulationURLpart + runStudyURLEnd, xmlData, String.class);
         log.info("Simulation ran on CYME"); 
         log.debug(response); 
 
@@ -68,7 +66,7 @@ public class CymeWebServiceImpl implements CymeWebService {
 
     @Override
     public CymeSimulationStatus getSimulationReportStatus(String simulationId) {
-        String response = restTemplate.getForObject(baseCymeURL + simulationURLpart + "/" + simulationId + checkReportStatusURLEnd, String.class);
+        String response = cymeRestTemplate.getForObject(baseCymeURL + simulationURLpart + "/" + simulationId + checkReportStatusURLEnd, String.class);
         log.info("Checked Simulation Status with CYME"); 
         log.debug(response);
         
@@ -102,7 +100,7 @@ public class CymeWebServiceImpl implements CymeWebService {
     @Override
     public List<SimulationResultSummaryData> generateResultSummary(String simulationId) {
         // Generate Reports
-        String summary = restTemplate.getForObject(baseCymeURL + simulationURLpart + "/" + simulationId + generateResultSummaryURLend, String.class);
+        String summary = cymeRestTemplate.getForObject(baseCymeURL + simulationURLpart + "/" + simulationId + generateResultSummaryURLend, String.class);
 
         log.info("Generate reports command sent to CYME"); 
         log.debug(summary);
@@ -119,7 +117,7 @@ public class CymeWebServiceImpl implements CymeWebService {
     @Override
     public String getSimulationReport(SimulationResultSummaryData simulationSummary) {
         // Retrieve report
-        String response = restTemplate.getForObject(baseCymeURL + simulationURLpart + "/" + simulationSummary.getSimulationId()
+        String response = cymeRestTemplate.getForObject(baseCymeURL + simulationURLpart + "/" + simulationSummary.getSimulationId()
                                                     + generateReportURLpart + simulationSummary.getReportId() + "/" + simulationSummary.getNetworkId()
                                                     + "/", String.class);
         
@@ -130,7 +128,7 @@ public class CymeWebServiceImpl implements CymeWebService {
     }
 
     @Autowired
-    public void setRestTemplate(RestOperations restTemplate) {
-        this.restTemplate = restTemplate;
+    public void setCymeRestTemplate(RestOperations cymeRestTemplate) {
+        this.cymeRestTemplate = cymeRestTemplate;
     }
 }

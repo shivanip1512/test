@@ -27,6 +27,7 @@ import com.cannontech.cbc.cyme.CymeWebService;
 import com.cannontech.cbc.cyme.profile.CymeLoadProfile;
 import com.cannontech.clientutils.YukonLogManager;
 import com.cannontech.common.config.ConfigurationSource;
+import com.cannontech.common.config.MasterConfigBooleanKeysEnum;
 import com.cannontech.common.config.MasterConfigStringKeysEnum;
 import com.cannontech.common.config.UnknownKeyException;
 import com.cannontech.common.pao.PaoIdentifier;
@@ -76,30 +77,37 @@ public class CymeSimulatorServiceImpl implements CymeSimulatorService, CymeSimul
     @PostConstruct
     public void initialize() {
         
-        String subBusName = null;
-        logger.info("CYME IVVC Simulator is initializing.");
-        try {
-            subBusName = configurationSource.getString(MasterConfigStringKeysEnum.CYME_INTEGRATION_SUBBUS,null);
-            if (subBusName == null) {
-                throw new UnknownKeyException("Missing CYME_INTEGRATION_SUBBUS cparm.");
+        boolean cymeEnabled = configurationSource.getBoolean(MasterConfigBooleanKeysEnum.CYME_ENABLED,false);
+        
+        if (cymeEnabled) {
+            String subBusName = null;
+            logger.info("CYME IVVC Simulator is initializing.");
+            try {
+                subBusName = configurationSource.getString(MasterConfigStringKeysEnum.CYME_INTEGRATION_SUBBUS,null);
+                if (subBusName == null) {
+                    throw new UnknownKeyException("Missing CYME_INTEGRATION_SUBBUS cparm.");
+                }
+                
+                simulationDelay = configurationSource.getDuration("CYME_SIMULATION_DELAY", new Duration(5000));
+                
+                substationBusPao = paoDao.getYukonPao(subBusName,PaoType.CAP_CONTROL_SUBBUS.getPaoCategory(),
+                                                                    PaoType.CAP_CONTROL_SUBBUS.getPaoClass());
+                logger.info("CYME Simulator is configured for sub bus with name: " + subBusName);
+              
+                //register with CymePointDataCache
+                cymePointDataCache.registerPointsForSubStationBus(this,substationBusPao.getPaoIdentifier());
+                
+                return;
+            } catch (UnknownKeyException e) {
+                logger.error("CYME IVVC Simulator is missing CPARM for subbus. CYME_INTEGRATION_SUBBUS");
+            } catch (NotFoundException e) {
+                logger.error("CYME Simulator: Subbus is not found in the system. " + subBusName);
             }
-            
-            simulationDelay = configurationSource.getDuration("CYME_SIMULATION_DELAY", new Duration(5000));
-            
-            substationBusPao = paoDao.getYukonPao(subBusName,PaoType.CAP_CONTROL_SUBBUS.getPaoCategory(),
-                                                                PaoType.CAP_CONTROL_SUBBUS.getPaoClass());
-            logger.info("CYME Simulator is configured for sub bus with name: " + subBusName);
-          
-            //register with CymePointDataCache
-            cymePointDataCache.registerPointsForSubStationBus(this,substationBusPao.getPaoIdentifier());
-            
+        } else {
+            logger.info("CYME integration is disabled.");
             return;
-        } catch (UnknownKeyException e) {
-            logger.error("CYME IVVC Simulator is missing CPARM for subbus. CYME_INTEGRATION_SUBBUS");
-        } catch (NotFoundException e) {
-            logger.error("CYME Simulator: Subbus is not found in the system. " + subBusName);
         }
-    
+        
         // We didnt return out where we expected, something is wrong
         logger.info("CYME IVVC Simulator is disabled and will not run.");
     }
