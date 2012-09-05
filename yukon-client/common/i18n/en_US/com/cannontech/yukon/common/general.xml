@@ -28,6 +28,7 @@
 <entry key="yukon.common.authenticationCategory.LDAP">LDAP</entry>
 <entry key="yukon.common.authenticationCategory.RADIUS">Radius</entry>
 <entry key="yukon.common.authenticationCategory.NONE">No Login</entry>
+<entry key="yukon.common.authenticationCategory.PLAIN">Plain - Deprecated</entry>
 
 <entry key="yukon.common.phase">Phase</entry>
 <entry key="yukon.common.noPhase">No Phase</entry>

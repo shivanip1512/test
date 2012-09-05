@@ -23,6 +23,11 @@ public enum AuthenticationCategory implements DisplayableEnum {
      * in Yukon using the IntegrationLoginController.
      */
     NONE(AuthType.NONE),
+
+    /**
+     * This is to be removed upon completion of YUK-11346
+     */
+    PLAIN(AuthType.PLAIN)
     ;
 
     /**
@@ -70,5 +75,9 @@ public enum AuthenticationCategory implements DisplayableEnum {
     @Override
     public String getFormatKey() {
         return "yukon.common.authenticationCategory." + name();
+    }
+
+    public static AuthenticationCategory[] values(AuthType authType) {
+        return AuthenticationCategory.values();
     }
 }
