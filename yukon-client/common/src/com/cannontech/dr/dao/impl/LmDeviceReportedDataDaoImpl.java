@@ -9,6 +9,7 @@ import javax.annotation.PostConstruct;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.dao.EmptyResultDataAccessException;
 import org.springframework.jdbc.core.namedparam.MapSqlParameterSource;
+import org.springframework.transaction.annotation.Transactional;
 
 import com.cannontech.common.util.SqlStatementBuilder;
 import com.cannontech.core.dao.NotFoundException;
@@ -100,6 +101,7 @@ public class LmDeviceReportedDataDaoImpl implements LmDeviceReportedDataDao {
     };
     
     @Override
+    @Transactional
     public boolean save(LmReportedAddress address) {
         try {
             LmReportedAddress current = getCurrentAddress(address.getDeviceId());
