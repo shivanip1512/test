@@ -93,6 +93,8 @@ public void restoreGuts(Object obj, com.roguewave.vsj.VirtualInputStream vstr, c
 	lmDirectGroup.setNextControlTime( (Date)vstr.restoreObject( SimpleMappings.Time ));
 	lmDirectGroup.setInternalState( (int) vstr.extractUnsignedInt());	
 	lmDirectGroup.setDailyOps( new Integer( (int) vstr.extractUnsignedInt()));
+	lmDirectGroup.setLastStopTimeSent( (Date)vstr.restoreObject( SimpleMappings.Time ));
+	
 }
 /**
  * saveGuts method comment.

@@ -28,6 +28,7 @@ public abstract class LMDirectGroupBase extends LMGroupBase implements ILMGroup
 	private Date controlStartTime = null;
 	private Date controlCompleteTime = null;
 	private Date nextControlTime = null;	
+	private Date lastStopTimeSent = null;
 
 	private int internalState = 0x0000000;
 	
@@ -273,6 +274,14 @@ public abstract class LMDirectGroupBase extends LMGroupBase implements ILMGroup
 		nextControlTime = date;
 	}
 	
+	
+	public Date getLastStopTimeSent() {
+	    return lastStopTimeSent;
+	}
+	
+	public void setLastStopTimeSent(Date lastStopTimeSent) {
+	    this.lastStopTimeSent = lastStopTimeSent;
+	}
 	public boolean isRampingIn() {
 		return (internalState & GROUP_RAMPING_IN) != 0;
 	}
