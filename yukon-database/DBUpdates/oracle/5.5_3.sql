@@ -407,6 +407,9 @@ UPDATE YukonRoleProperty
 SET DefaultValue = 'ENCRYPTED',
 Description = 'Set the default authentication type to use {AD,ENCRYPTED,LDAP,RADIUS,NONE}'
 WHERE RolePropertyId = -1307 AND RoleId = -4;
+
+UPDATE YukonGroupRole SET Value = 'ENCRYPTED'
+WHERE RolePropertyId = -1307 AND Value IN ('HASH_SHA', 'PLAIN');
 /* End YUK-11329 */
 
 /* Start YUK-11336 */
