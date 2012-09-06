@@ -141,7 +141,8 @@ public class ControlAuditController {
         
         List<String[]> dataRows = Lists.newArrayList();
         for(AuditRow device: devices) {
-            String[] dataRow = new String[4];
+            String[] dataRow = new String[3];
+            if (isControlled) dataRow = new String[4];
             dataRow[0] = device.getHardware().getSerialNumber();
             dataRow[1] = accessor.getMessage(device.getHardware().getInventoryIdentifier().getHardwareType());
             dataRow[2] = device.getHardware().getAccountNo();
