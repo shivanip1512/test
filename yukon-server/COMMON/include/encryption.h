@@ -41,9 +41,11 @@ namespace Encryption
      *  Unit Testing
      *  ---
      *  Used to push in mock data for the encrypted xml file where
-     *  the decryption key is stored.
+     *  the decryption key is stored and to signal the reloading of
+     *  keys.
      */
     IM_EX_CTIBASE void seedFileData( const EncryptionType type, const Buffer & fileData );
+    IM_EX_CTIBASE void unseedFileData( const EncryptionType type );
 }
 }
 

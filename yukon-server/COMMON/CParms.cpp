@@ -103,6 +103,17 @@ int CtiConfigParameters::RefreshConfigParameters()
 
                                 std::pair< bool, std::string > processed = preprocessValue(chValue);
 
+                                /*
+                                    processed.first
+                                        did we get an acceptable value from the input.
+                                            true  : unencrypted cparm or a correctly decrypted encrypted cparm
+                                            false : decryption error occured on an encrypted cparm
+                                    processed.second
+                                        if processed.first is true the we have the cparm value - properly decrypted
+                                            if it was encrypted.
+                                        if processed.first is false this value is the improperly decrypted cparm and is ignored
+                                */
+                                    
                                 if ( processed.first )
                                 {
                                     CtiConfigValue *Val = new CtiConfigValue( processed.second );
@@ -114,12 +125,12 @@ int CtiConfigParameters::RefreshConfigParameters()
                                         //delete Key;
                                         delete Val;
                                     }
-    #ifdef DEBUGLEVEL100
+#ifdef DEBUGLEVEL100
                                     else
                                     {
                                         cout << "Key/Value = " << Key->getKey() << " : " << Val->getValue() << endl;
                                     }
-    #endif
+#endif
                                 }
                                 else
                                 {
@@ -186,15 +197,17 @@ CtiConfigParameters::Dump()
 // This checks if a master.cfg entry is encrypted and automatically decrypts it if found
 std::pair< bool, std::string > CtiConfigParameters::preprocessValue( char * chValue ) const
 {
-    bool success = true;
-    CtiString retVal( chValue );
+    const std::string autoEncrypted( "(AUTO_ENCRYPTED)" );
 
-    if ( retVal.contains( "(AUTO_ENCRYPTED)" ) )
+    bool success = true;
+    std::string retVal(chValue);
+
+    if ( ! retVal.compare( 0, autoEncrypted.length(), autoEncrypted ) ) // starts with "(AUTO_ENCRYPTED)"
     {
         Cti::Encryption::Buffer encrypted,
                                 decrypted;
 
-        convertHexStringToBytes( retVal.substr( 16 ), encrypted );
+        convertHexStringToBytes( retVal.substr( autoEncrypted.length() ), encrypted );
 
         try
         {

@@ -1,5 +1,4 @@
 #include <boost/test/unit_test.hpp>
-#include <boost/test/detail/unit_test_parameters.hpp>
 
 #include "encryption.h"
 
@@ -37,6 +36,8 @@ BOOST_AUTO_TEST_CASE(test_encryption)
         0x2d, 0xd2, 0x77, 0x4c, 0xfb, 0x27, 0x8d, 0x40
     };
 
+    // Bypass the real encryption file
+
     Cti::Encryption::seedFileData( Cti::Encryption::MasterCfg,
                                    Cti::Encryption::Buffer( mockFileData, mockFileData + sizeof( mockFileData ) ) );
 
@@ -56,23 +57,9 @@ BOOST_AUTO_TEST_CASE(test_encryption)
 
         Cti::Encryption::Buffer encrypted( cipherText, cipherText + sizeof( cipherText ) );
 
-        try
-        {
-            Cti::Encryption::Buffer plainText = Cti::Encryption::decrypt( Cti::Encryption::MasterCfg, encrypted );
+        Cti::Encryption::Buffer plainText = Cti::Encryption::decrypt( Cti::Encryption::MasterCfg, encrypted );
 
-            BOOST_REQUIRE_EQUAL( "127.0.0.1", std::string( plainText.begin(), plainText.end() ) );
-        }
-        catch ( Cti::Encryption::Error e )
-        {
-            using namespace boost::unit_test;
-
-            log_level   saved = boost::unit_test::runtime_config::log_level();
-            unit_test_log.set_threshold_level( log_messages );
-
-            BOOST_TEST_MESSAGE( "Caught unexpected exception: " << e.what() << "\nLine: " << __LINE__ << " in " << __FILE__ );
-
-            unit_test_log.set_threshold_level( saved );
-        }
+        BOOST_REQUIRE_EQUAL( "127.0.0.1", std::string( plainText.begin(), plainText.end() ) );
     }
 
     // ciphertext has an error
@@ -95,6 +82,10 @@ BOOST_AUTO_TEST_CASE(test_encryption)
 
         BOOST_REQUIRE_THROW( plainText = Cti::Encryption::decrypt( Cti::Encryption::MasterCfg, encrypted ), Cti::Encryption::Error );
     }
+
+    // Re-enable the real ecryption file
+
+    Cti::Encryption::unseedFileData( Cti::Encryption::MasterCfg );
 }
 
 BOOST_AUTO_TEST_SUITE_END()

@@ -29,6 +29,7 @@ namespace
     static std::string  _yukonBase;
     static FileDataMap  _fileData;
 
+    static bool _unitTestBypass = false;
 
     Buffer getFileData(const EncryptionType type, const char * filename)
     {
@@ -185,15 +186,15 @@ namespace
         static CtiMutex _mutex;
         static bool     _keysLoaded = false;
 
-        if ( ! _keysLoaded )
+        if ( ! _keysLoaded || _unitTestBypass )
         {
             CtiLockGuard< CtiMutex > guard( _mutex );
-            if ( ! _keysLoaded )
+            if ( ! _keysLoaded || _unitTestBypass )
             {
                 loadKeysFromFileData( "Bdk=5ohaIc51ifstd-zl2dCV)5iUE(DG",
                                       getFileData( MasterCfg, "server\\config\\keys\\masterConfigKeyfile.dat" ),
                                       aesKey, initVector, hmacKey );
-                _keysLoaded = true;
+                _keysLoaded = ! _unitTestBypass;
             }
         }
 
@@ -257,7 +258,15 @@ IM_EX_CTIBASE Buffer encrypt( const EncryptionType type, const Buffer & plainTex
 
 IM_EX_CTIBASE void seedFileData( const EncryptionType type, const Buffer & fileData )
 {
+    _unitTestBypass = true;
     _fileData[ type ] = fileData;
+}
+
+
+IM_EX_CTIBASE void unseedFileData( const EncryptionType type )
+{
+    _unitTestBypass = false;
+    _fileData.erase( type );
 }
 
 

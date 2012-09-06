@@ -313,7 +313,8 @@ BOOST_AUTO_TEST_CASE(test_convertHexStringToBytes)
 
         std::vector< unsigned char >    result;
 
-        BOOST_CHECK_EQUAL( false, convertHexStringToBytes( input, result ) );
+        convertHexStringToBytes( input, result );
+
         BOOST_CHECK_EQUAL(     0, result.size() );
     }
 
@@ -354,7 +355,7 @@ BOOST_AUTO_TEST_CASE(test_convertHexStringToBytes)
 
         std::vector< unsigned char >    result;
 
-        BOOST_CHECK_EQUAL( false, convertHexStringToBytes( input, result ) );
+        convertHexStringToBytes( input, result );
 
         BOOST_CHECK_EQUAL_COLLECTIONS( result.begin(),  result.end(),
                                        inputAsArray,    inputAsArray + sizeof(inputAsArray) );
@@ -374,7 +375,7 @@ BOOST_AUTO_TEST_CASE(test_convertHexStringToBytes)
 
         std::vector< unsigned char >    result;
 
-        BOOST_CHECK_EQUAL( true, convertHexStringToBytes( input, result ) );
+        convertHexStringToBytes( input, result );
 
         BOOST_CHECK_EQUAL_COLLECTIONS( result.begin(),  result.end(),
                                        inputAsArray,    inputAsArray + sizeof(inputAsArray) );
