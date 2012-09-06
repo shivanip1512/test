@@ -315,7 +315,7 @@ bool UdpPortHandler::tryBindSocket( void )
     {
         {
             CtiLockGuard<CtiLogger> doubt_guard(dout);
-            dout << CtiTime() << " Cti::Porter::UDP::UdpPortHandler::bindSocket() - **** Checkpoint - socket() failed with error " << WSAGetLastError() << " **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
+            dout << CtiTime() << " Cti::Porter::UdpPortHandler::bindSocket() - **** Checkpoint - socket() failed with error " << WSAGetLastError() << " **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
         }
 
         return false;
@@ -330,7 +330,7 @@ bool UdpPortHandler::tryBindSocket( void )
     {
         {
             CtiLockGuard<CtiLogger> doubt_guard(dout);
-            dout << CtiTime() << " Cti::Porter::UDP::UdpPortHandler::bindSocket() - **** Checkpoint - bind() failed with error " << WSAGetLastError() << " **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
+            dout << CtiTime() << " Cti::Porter::UdpPortHandler::bindSocket() - **** Checkpoint - bind() failed with error " << WSAGetLastError() << " **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
         }
 
         teardownSocket();
@@ -343,6 +343,28 @@ bool UdpPortHandler::tryBindSocket( void )
     ioctlsocket(_udp_socket, FIONBIO, &on);
 
     _connected_port = _udp_port->getIPPort();
+
+    int rcvbuf;
+    int rcvbuf_size = sizeof(int);
+
+    getsockopt(_udp_socket, SOL_SOCKET, SO_RCVBUF, (char *)&rcvbuf, &rcvbuf_size);
+
+    {
+        CtiLockGuard<CtiLogger> doubt_guard(dout);
+        dout << CtiTime() << " Cti::Porter::UdpPortHandler::bindSocket() - **** Checkpoint - original SO_RCVBUF is " << rcvbuf << " **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
+    }
+
+    if( rcvbuf = gConfigParms.getValueAsULong("PORTER_UDP_RCVBUF") )
+    {
+        setsockopt(_udp_socket, SOL_SOCKET, SO_RCVBUF, (char *)&rcvbuf, rcvbuf_size);
+
+        getsockopt(_udp_socket, SOL_SOCKET, SO_RCVBUF, (char *)&rcvbuf, &rcvbuf_size);
+
+        {
+            CtiLockGuard<CtiLogger> doubt_guard(dout);
+            dout << CtiTime() << " Cti::Porter::UdpPortHandler::bindSocket() - **** Checkpoint - new SO_RCVBUF is " << rcvbuf << " **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
+        }
+    }
 
     return true;
 }

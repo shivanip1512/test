@@ -1517,6 +1517,15 @@ INT RefreshPorterRTDB(const CtiDBChangeMsg *pChg)
 
     if(pChg == NULL)
     {
+        if(gConfigParms.isTrue("PORTER_LOAD_ALL_POINTS"))
+        {
+            {
+                CtiLockGuard<CtiLogger> doubt_guard(dout);
+                dout << CtiTime() << " PORTER_LOAD_ALL_POINTS is set" << endl;
+            }
+            PorterPointManager.refreshList();
+        }
+
         try
         {
             LoadCommFailPoints();
