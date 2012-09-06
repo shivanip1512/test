@@ -25,7 +25,8 @@ _inCountActual(0),
 _isBiDirectionSet(false),
 _messageToggleFlag(false),
 _command(Complete),
-_repeatCount(0)
+_repeatCount(0),
+_remainingSleepDelay(0)
 {
     resetStates(StateSendRequestedMessage);
 }
@@ -58,11 +59,11 @@ int RDSTransmitter::recvCommRequest( OUTMESS *OutMessage )
 
         if ( command.contains( "putvalue application-id" ) )
         {
+            _repeatCount = 0;
             _command = Complete;    // ignore this if we've sent an AppID message withing the last getAIDRepeatRate() time.
             if ( timeToPerformPeriodicAction( CtiTime::now() ) )
             {
                 _command = Normal;
-                _repeatCount = 0;
                 resetStates(StateSendAIDMessage);
             }
         }
@@ -72,8 +73,6 @@ int RDSTransmitter::recvCommRequest( OUTMESS *OutMessage )
             _repeatCount = gConfigParms.getValueAsInt("RDS_REPEAT_COUNT", 0); // Reset this on every new transmission
             resetStates(StateSendRequestedMessage);
         }
-
-
     }
     else
     {
@@ -101,7 +100,12 @@ void RDSTransmitter::buildRDSMessage(const StateMachine &m, MessageStore &msg)
         case StateSendAIDMessage:
         {
             createPeriodicAIDMessage(msg);
-            _lastPeriodicActionTime = CtiTime::now();
+            _lastPeriodicActionTime += getAIDRepeatRate();
+            if ( ( _lastPeriodicActionTime < ( CtiTime::now() - getAIDRepeatRate() ) ) ||   // catch up if way behind...
+                 ( _lastPeriodicActionTime > CtiTime::now() ) )                             // but don't go into the future...
+            {
+                _lastPeriodicActionTime = CtiTime::now();
+            }
             break;
         }
         case StateSendBiDirectionalRequest:
@@ -137,7 +141,10 @@ int RDSTransmitter::generate(CtiXfer &xfer)
     if ( _remainingSleepDelay == 0 ) // received an outMessage based message
     {
         buildRDSMessage(_currentState, newMessage);
-        _remainingSleepDelay = calculateSleepDelay();
+        if ( _currentState != StateSendAIDMessage )     // no delay for AppID messages
+        {
+            _remainingSleepDelay = calculateSleepDelay();
+        }
     }
     else    // send AppID from 'interrupted' sleep...
     {
@@ -171,7 +178,8 @@ int RDSTransmitter::decode(CtiXfer &xfer, int status)
                 _isBiDirectionSet = true;
                 _currentState = StateSendRequestedMessage;
             }
-            else if(_previousState == StateSendRequestedMessage )
+            else if(_previousState == StateSendRequestedMessage ||
+                    _previousState == StateSendAIDMessage)
             {
                 unsigned sleepDelay = 0;
 
@@ -199,7 +207,7 @@ int RDSTransmitter::decode(CtiXfer &xfer, int status)
                     {
                         _repeatCount--;
                     }
-                    else
+                    if ( _repeatCount == 0 )
                     {
                         _command = Complete; //Transaction Complete
                     }
@@ -231,8 +239,6 @@ unsigned RDSTransmitter::calculateSleepDelay()  // time in milliseconds!!
     if(getGroupsPerSecond() > 0)
     {
         delay = (1000.0 * totalGroups) / getGroupsPerSecond();
-
-   //     Sleep(1000*totalGroups/getGroupsPerSecond());
     }
     else
     {
