@@ -131,7 +131,7 @@ public class ControlAuditController {
             devices = result.getUnsupportedRows();
         }
         
-        String[] headerRow = new String[5];
+        String[] headerRow = new String[4];
         headerRow[0] = "SERIAL_NUMBER";
         headerRow[1] = "DEVICE_TYPE";
         headerRow[2] = "ACCOUNT_NUMBER";
