@@ -2314,6 +2314,7 @@ table th.small_width {
 	float: left;
 	color: #999;
 	font-size: 13px;
+	padding-right: 5px;
 }
 
 input.datePicker {
@@ -2325,7 +2326,7 @@ input.timePicker {
 }
 
 input.dateTimePicker {
-/* 	width:  */
+	margin: 0;
 }
 .ui-datepicker-trigger:hover {
     cursor: pointer;
