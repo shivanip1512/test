@@ -64,7 +64,7 @@ BOOST_AUTO_TEST_CASE(test_pt_base_isStatus)
     BOOST_CHECK( ! p.isStatus());
 
     p.setType(SystemPointType);
-    BOOST_CHECK( p.isStatus());
+    BOOST_CHECK( ! p.isStatus());
 
     p.setType(StatusOutputPointType);
     BOOST_CHECK( p.isStatus());
@@ -76,7 +76,7 @@ BOOST_AUTO_TEST_CASE(test_pt_base_isStatus)
     BOOST_CHECK( p.isStatus());
 
     p.setType(InvalidPointType);
-    BOOST_CHECK( p.isStatus());
+    BOOST_CHECK( ! p.isStatus());
 }
 
 BOOST_AUTO_TEST_SUITE_END()

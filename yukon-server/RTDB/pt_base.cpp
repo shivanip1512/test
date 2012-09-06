@@ -25,7 +25,17 @@ bool CtiPointBase::isNumeric() const
 
 bool CtiPointBase::isStatus() const
 {
-    return ! isNumeric();
+    switch(getType())
+    {
+        case StatusPointType:
+        case StatusOutputPointType:
+        case CalculatedStatusPointType:
+        {
+            return true;
+        }
+    }
+
+    return false;
 }
 
 CtiPointBase::CtiPointBase(LONG pid) :
