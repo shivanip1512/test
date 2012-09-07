@@ -132,7 +132,7 @@ public class UserLoginBasePanel extends DataInputPanel {
                 ivjJCheckBoxEnableLogin = new JCheckBox();
                 ivjJCheckBoxEnableLogin.setName("JCheckBoxEnableLogin");
                 ivjJCheckBoxEnableLogin.setFont(new Font("Arial", 1, 14));
-                ivjJCheckBoxEnableLogin.setText("Login Enabled");
+                ivjJCheckBoxEnableLogin.setText("Enabled");
                 // user code begin {1}
                 // user code end
             } catch (Throwable ivjExc) {
