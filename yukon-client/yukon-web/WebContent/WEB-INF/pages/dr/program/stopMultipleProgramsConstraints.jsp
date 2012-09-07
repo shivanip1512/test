@@ -22,6 +22,7 @@ jQuery(function () {
                 }
             }
         }
+        updateAllOverridesChecked();
     }
 
     updateAllOverridesChecked = function() {
@@ -45,12 +46,7 @@ jQuery(function () {
     }
 
     singleOverrideChecked = function(event) {
-
-        if (jQuery(event.target).is(":checked")) {
-            updateAllOverridesChecked();
-        } else {
-            jQuery("#overrideAllConstraints").attr("checked","checked");
-        }
+        updateAllOverridesChecked();
     }
     
     jQuery("#overrideAllConstraints").click(overideAllChecked);
