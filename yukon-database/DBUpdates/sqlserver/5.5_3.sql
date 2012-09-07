@@ -409,7 +409,7 @@ WHERE RolePropertyId = -11055;
 /* Start YUK-11339 */
 ALTER TABLE DynamicLMGroup
 ADD LastStopTimeSent DATETIME;
-
+GO
 UPDATE DynamicLMGroup
 SET LastStopTimeSent ='01-JAN-1990';
 
