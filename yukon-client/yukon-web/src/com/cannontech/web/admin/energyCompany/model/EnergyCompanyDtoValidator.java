@@ -30,7 +30,7 @@ public class EnergyCompanyDtoValidator extends SimpleValidator<EnergyCompanyDto>
 
         /* Primary Operator Group */
         if (energyCompanyDto.getPrimaryOperatorUserGroupId() == null) {
-            errors.rejectValue("primaryOperatorGroupId", "yukon.web.modules.adminSetup.createEnergyCompany.primaryOperatorGroup.required");
+            errors.rejectValue("primaryOperatorUserGroupId", "yukon.web.modules.adminSetup.createEnergyCompany.primaryOperatorGroup.required");
         }
         
         /* Default Operator Login */
