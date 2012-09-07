@@ -113,6 +113,17 @@
         </options>
       </option>
 
+      <!-- Word Orders -->
+      <option name="workOrders">
+        <requireRoleProperty value="WORK_ORDER" />
+        <options>
+          <option name="serviceOrderList">
+            <link>operator/WorkOrder/WOFilter.jsp</link>
+            <requireRoleProperty value="WORK_ORDER_SHOW_ALL" />
+          </option>
+        </options>
+      </option>
+
       <!-- Hardware Inventory -->
       <option name="hardwareInventory">
         <requireRoleProperty value="INVENTORY" />
@@ -143,7 +154,10 @@
             <link>/apps/SelectDevice.jsp</link>
             <requireRoleProperty value="ENABLE_WEB_COMMANDER" />
           </option>
-
+          <option name="archivedDateExport">
+            <link>/spring/amr/archivedValuesExporter/view</link>
+            <requireRoleProperty value="ARCHIVED_DATA_EXPORT"/>
+          </option>
           <option name="visualDisplays">
             <link>/spring/multispeak/visualDisplays/loadManagement/home</link>
             <requireRoleProperty value="MSP_LM_MAPPING_SETUP" />

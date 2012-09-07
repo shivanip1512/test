@@ -60,6 +60,7 @@
 <entry key="yukon.web.menu.portal.analysis">Analysis</entry>
 <entry key="yukon.web.menu.portal.analysis.reporting">Reporting</entry>
 <entry key="yukon.web.menu.portal.analysis.commander">Commander</entry>
+<entry key="yukon.web.menu.portal.analysis.archivedDateExport">Archived Data Export</entry>
 <entry key="yukon.web.menu.portal.analysis.visualDisplays">Power Supplier Loads</entry>
 <entry key="yukon.web.menu.portal.analysis.surveys">Surveys</entry>
 
