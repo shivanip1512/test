@@ -12,13 +12,13 @@
 <c:choose>
     <c:when test="${pointId == 0}">
         <span class="errorMessage">
-            <cti:msg2 key="yukon.common.attributes.pointNotFound"/>
+            <i:inline key="yukon.common.attributes.pointNotFound"/>
         </span>
     </c:when>
     <c:otherwise>
         <span class="wsnw">
             <c:choose>
-                <c:when test="${not empty pageScope.showHistoricalReadings && pageScope.showHistoricalReadings}">
+                <c:when test="${empty pageScope.showHistoricalReadings || pageScope.showHistoricalReadings}">
                     <cti:uniqueIdentifier var="uid" prefix="historicalReadings_" />
                     <cti:url var="showHistoricalReadingsUrl" value="/spring/meter/historicalReadings/view">
                         <cti:param name="div_id" value="${uid}" />
@@ -28,7 +28,7 @@
                     <a class="f_ajaxPage pv_history labeled_icon_right history" 
                         data-selector="#${uid}" 
                         href="${showHistoricalReadingsUrl}"
-                        title="<i:inline key="yukon.common.historyTooltip"/>">
+                        title="<cti:msg2 key="yukon.common.historyTooltip"/>">
                         <cti:pointValue pointId="${pointId}"/>
                     </a>
                     <div id="${uid}"></div>

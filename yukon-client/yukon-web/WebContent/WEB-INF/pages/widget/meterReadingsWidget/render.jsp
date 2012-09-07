@@ -21,7 +21,7 @@
     		</c:when>
             <c:otherwise>
             	<ct:nameValue2 nameKey=".argumentStub" argument="${attribute.description}">
-                    <ct:attributeValue device="${device}" attribute="${attribute}" showHistoricalReadings="true"/>
+                    <ct:attributeValue device="${device}" attribute="${attribute}"/>
 				</ct:nameValue2>
                 <c:if test="${attribute == previousReadingsAttribute}">
                     <ct:nameValue2 nameKey=".previousUsage">

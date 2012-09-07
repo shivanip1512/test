@@ -5,6 +5,9 @@ import java.io.IOException;
 import java.io.OutputStream;
 import java.io.OutputStreamWriter;
 import java.io.Writer;
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.Comparator;
 import java.util.List;
 
 import javax.servlet.http.HttpServletRequest;
@@ -30,6 +33,7 @@ import com.cannontech.core.dynamic.PointValueHolder;
 import com.cannontech.core.service.PointFormattingService;
 import com.cannontech.core.service.PointFormattingService.Format;
 import com.cannontech.i18n.YukonUserContextMessageSourceResolver;
+import com.cannontech.stars.dr.hardware.model.HardwareConfigAction;
 import com.cannontech.tools.csv.CSVWriter;
 import com.cannontech.user.YukonUserContext;
 import com.cannontech.util.ServletUtil;
@@ -160,29 +164,24 @@ public class HistoricalReadingsController {
             DateTime startDate = new DateTime(context.getJodaTimeZone());
             startDate = startDate.minusDays(30);
             DateTime endDate = new DateTime(context.getJodaTimeZone());
-            data = rawPointHistoryDao.getLimitedPointData(pointId, startDate.toDate(), endDate.toDate(), Clusivity.INCLUSIVE_EXCLUSIVE, order, orderBy, MAX_ROWS_DISPLAY); 
+            data = rawPointHistoryDao.getLimitedPointData(pointId, startDate.toDate(), endDate.toDate(), Clusivity.INCLUSIVE_EXCLUSIVE, order, MAX_ROWS_DISPLAY);
         }
         else if(period.equals(ONE_MONTH)){
             DateTime startDate = new DateTime(context.getJodaTimeZone());
             startDate = startDate.minusDays(30);
             DateTime endDate = new DateTime(context.getJodaTimeZone());
-            data = rawPointHistoryDao.getPointData(pointId, startDate.toDate(), endDate.toDate(), Clusivity.INCLUSIVE_EXCLUSIVE, order, orderBy); 
+            data = rawPointHistoryDao.getPointData(pointId, startDate.toDate(), endDate.toDate(), Clusivity.INCLUSIVE_EXCLUSIVE, order); 
         }else if(period.equals(ALL)){
             Instant startDate = new Instant(0);
-            data = rawPointHistoryDao.getPointData(pointId, startDate.toDate(), null, Clusivity.INCLUSIVE_INCLUSIVE, order, orderBy);
+            data = rawPointHistoryDao.getPointData(pointId, startDate.toDate(), null, Clusivity.INCLUSIVE_INCLUSIVE, order);
         }
+        data = sort(data, order, orderBy);
         List<List<String>> points = Lists.transform(data, new Function<PointValueHolder, List<String>>() {
             @Override
             public List<String> apply(PointValueHolder pvh) {
                 List<String> row = Lists.newArrayList();
                 row.add(pointFormattingService.getValueString(pvh, Format.DATE, context));
-                StringBuilder value  = new StringBuilder();
-                value.append(pointFormattingService.getValueString(pvh, Format.RAWVALUE, context));
-                value.append(" ");
-                value.append(pointFormattingService.getValueString(pvh, Format.UNIT, context));
-                value.append(" ");
-                value.append(pointFormattingService.getValueString(pvh, Format.QUALITY, context));
-                row.add(value.toString());
+                row.add(pointFormattingService.getValueString(pvh, Format.SHORT, context));
                 return row;
             }
         });
@@ -191,5 +190,34 @@ public class HistoricalReadingsController {
     
     private String getDownloadUrl(String period, int pointId, Order order, OrderBy orderBy){
         return "/spring/meter/historicalReadings/download?" + PERIOD +"="+ period+"&pointId="+pointId+"&orderBy="+orderBy+"&order="+order;
+    }
+
+    private List<PointValueHolder> sort(List<PointValueHolder> data, final Order order, OrderBy orderBy) {
+        List<PointValueHolder> modifiableList = new ArrayList<PointValueHolder>(data);
+        if (orderBy == OrderBy.TIMESTAMP) {
+            Collections.sort(modifiableList, new Comparator<PointValueHolder>() {
+                @Override
+                public int compare(PointValueHolder pvh1, PointValueHolder pvh2) {
+                    if (order == Order.FORWARD) {
+                        return pvh1.getPointDataTimeStamp().compareTo(pvh2.getPointDataTimeStamp());
+                    } else {
+                        return -pvh1.getPointDataTimeStamp().compareTo(pvh2.getPointDataTimeStamp());
+                    }
+                }
+            });
+        }
+        else if (orderBy == OrderBy.VALUE) {
+            Collections.sort(modifiableList, new Comparator<PointValueHolder>() {
+                @Override
+                public int compare(PointValueHolder pvh1, PointValueHolder pvh2) {
+                    if (order == Order.FORWARD) {
+                        return -new Double(pvh1.getValue()).compareTo(pvh2.getValue());
+                    } else {
+                        return new Double(pvh1.getValue()).compareTo(pvh2.getValue());
+                    }
+                }
+            });
+        }
+        return modifiableList;
     }
 }
