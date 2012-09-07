@@ -15,6 +15,7 @@ import com.cannontech.database.YukonJdbcTemplate;
 import com.cannontech.database.YukonResultSet;
 import com.cannontech.database.YukonRowCallbackHandler;
 import com.cannontech.database.YukonRowMapper;
+import com.cannontech.database.data.pao.PAOGroups;
 import com.cannontech.database.db.pao.EncryptedRoute;
 import com.cannontech.database.db.security.EncryptionKey;
 import com.cannontech.database.incrementer.NextValueHelper;
@@ -71,8 +72,8 @@ public class EncryptedRouteDaoImpl implements EncryptedRouteDao {
 
         dbPersistentDao.processDBChange(new DBChangeMsg(encryptedRoute.getPaobjectId(),
                                                         DBChangeMsg.CHANGE_YUKON_PAOBJECT_ENCRYPTION_KEY_DB,
-                                                        DBChangeMsg.CAT_YUKON_PAOBJECT_ENCRYPTION_KEY_DB,
-                                                        DbChangeType.ADD));
+                                                        PAOGroups.STRING_CAT_ROUTE,
+                                                        DbChangeType.UPDATE));
     }
 
     @Override
@@ -86,8 +87,8 @@ public class EncryptedRouteDaoImpl implements EncryptedRouteDao {
         yukonJdbcTemplate.update(sql);
         dbPersistentDao.processDBChange(new DBChangeMsg(encryptedRoute.getPaobjectId(),
                                                         DBChangeMsg.CHANGE_YUKON_PAOBJECT_ENCRYPTION_KEY_DB,
-                                                        DBChangeMsg.CAT_YUKON_PAOBJECT_ENCRYPTION_KEY_DB,
-                                                        DbChangeType.DELETE));    
+                                                        PAOGroups.STRING_CAT_ROUTE,
+                                                        DbChangeType.UPDATE));    
     }
 
     @Override
@@ -126,7 +127,7 @@ public class EncryptedRouteDaoImpl implements EncryptedRouteDao {
             dbPersistentDao.processDBChange(new DBChangeMsg(encryptionKeyId,
                                                             DBChangeMsg.CHANGE_ENCRYPTION_KEY_DB,
                                                             DBChangeMsg.CAT_ENCRYPTION_KEY_DB,
-                                                            DbChangeType.ADD));   
+                                                            DbChangeType.ADD));
             
     }
 
