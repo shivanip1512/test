@@ -27,7 +27,7 @@ private SwingWorker<Object, LiteYukonUser> worker;
  */
 public LoginTreeModel() 
 {
-	super( new DBTreeNode("Logins") );
+	super( new DBTreeNode("Users") );
 }
 
 @Override

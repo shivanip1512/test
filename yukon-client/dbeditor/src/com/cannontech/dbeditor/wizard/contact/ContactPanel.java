@@ -538,7 +538,7 @@ private javax.swing.JLabel getJLabelLoginUser() {
 			ivjJLabelLoginUser = new javax.swing.JLabel();
 			ivjJLabelLoginUser.setName("JLabelLoginUser");
 			ivjJLabelLoginUser.setFont(new java.awt.Font("dialog", 0, 14));
-			ivjJLabelLoginUser.setText("Yukon Login:");
+			ivjJLabelLoginUser.setText("Yukon User:");
 			// user code begin {1}
 			// user code end
 		} catch (java.lang.Throwable ivjExc) {

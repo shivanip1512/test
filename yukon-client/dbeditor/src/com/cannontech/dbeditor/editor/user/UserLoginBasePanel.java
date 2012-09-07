@@ -396,7 +396,7 @@ public class UserLoginBasePanel extends DataInputPanel {
                 TitleBorder ivjLocalBorder;
                 ivjLocalBorder = new TitleBorder();
                 ivjLocalBorder.setTitleFont(new Font("Arial", 1, 14));
-                ivjLocalBorder.setTitle("Login Information");
+                ivjLocalBorder.setTitle("User Information");
                 ivjJPanelLoginPanel = new JPanel();
                 ivjJPanelLoginPanel.setName("JPanelLoginPanel");
                 ivjJPanelLoginPanel.setBorder(ivjLocalBorder);

@@ -144,6 +144,6 @@ public class LoginEditorPanel extends com.cannontech.common.editor.PropertyPanel
 	 * @return java.lang.String
 	 */
 	public String toString() {
-		return "Login Editor";
+		return "User Editor";
 	}
 }
