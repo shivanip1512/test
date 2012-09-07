@@ -592,6 +592,7 @@ INT CtiRouteXCU::assembleExpresscomRequest(CtiRequestMsg *pReq, CtiCommandParser
 
     if ( usingEncryption )
     {
+        xcom.setUseCRC(false);
         xcom.setUseASCII(false);
         isAscii = false;
     }
