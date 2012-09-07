@@ -11,7 +11,16 @@ jQuery(function(){
     
     submitForm = function() {
         combineDateAndTimeFields('stopDate');
-        return submitFormViaAjax('drDialog', 'stopProgramForm');
+        var url;
+
+        if (jQuery("#autoObserveConstraints").is(":checked") 
+                || jQuery("#autoObserveConstraints").is(":disabled")
+                || ${!checkConstraintsAllowed}) {
+            url = '<cti:url value="/spring/dr/program/stop/stopMultiple"/>';
+        } else {
+            url = '<cti:url value="/spring/dr/program/stop/stopMultipleConstraints"/>';
+        }
+        return submitFormViaAjax('drDialog', 'stopProgramForm',url);
     }
     
     stopProgramChecked = function(event) {
@@ -109,13 +118,12 @@ jQuery(function(){
     }
     
     stopNowChecked = function () {
-        var stopNow = jQuery("#stopNowCheckbox").is(':checked');
-        setDateTimeInputEnabled('stopDate', !stopNow);
         updateComponents();
     }
     
     updateComponents = function() {
         var stopNow = jQuery("#stopNowCheckbox").is(':checked');
+        setDateTimeInputEnabled('stopDate', !stopNow);
         
         for (index = 0; index < ${fn:length(programs)}; index++) {
 
@@ -132,8 +140,36 @@ jQuery(function(){
                 jQuery('#programGear'+index).attr("disabled","disabled");
             }
         }
+
         updateStopAllProgramCheckbox();
         updateUseStopGearsAllCheckbox();
+        updateActionButtons();
+    }
+    
+    
+    updateActionButtons = function() {
+        var atLeastOneGearChange = false;
+
+        jQuery(".f_useStopGearChecked").each(function(index,element) {
+            atLeastOneGearChange = (atLeastOneGearChange || 
+                    (!jQuery(element).is(":disabled") && jQuery(element).is(":checked")));
+        });
+        
+        if (atLeastOneGearChange && ${checkConstraintsAllowed}) {
+            jQuery("#autoObserveConstraints").removeAttr("disabled");
+            if (jQuery("#autoObserveConstraints").is(":checked")) {
+                jQuery('#okButton').removeAttr("disabled");
+                jQuery('#nextButton').attr("disabled","disabled");
+            } else {
+                jQuery('#okButton').attr("disabled","disabled");
+                jQuery('#nextButton').removeAttr("disabled");
+            }
+        } else {
+            jQuery("#autoObserveConstraints").removeAttr("checked");
+            jQuery("#autoObserveConstraints").attr("disabled","disabled");
+            jQuery('#okButton').removeAttr("disabled");
+            jQuery('#nextButton').attr("disabled","disabled");
+        }
     }
     
     updateComponents();
@@ -143,6 +179,7 @@ jQuery(function(){
     jQuery("#allProgramsUseStopGearsCheckbox").click(allUseStopGearChecked);
     jQuery("#allProgramsCheckbox").click(allStopProgramChecked);
     jQuery("#stopNowCheckbox").click(stopNowChecked);
+    jQuery("#autoObserveConstraints").click(updateActionButtons);
     
 
     updateProgramState = function(index) {
@@ -176,8 +213,7 @@ jQuery(function(){
 </h1>
 
 <cti:url var="submitUrl" value="/spring/dr/program/stop/stopMultiple"/>
-<form:form id="stopProgramForm" commandName="backingBean" action="${submitUrl}"
-    onsubmit="return submitForm();">
+<form:form id="stopProgramForm" commandName="backingBean" onsubmit="return submitForm();">
     <form:hidden path="controlAreaId"/>
     <form:hidden path="scenarioId"/>
 
@@ -291,7 +327,10 @@ jQuery(function(){
     <br>
 
     <div class="actionArea">
-        <input id="okButton" type="submit" value="<cti:msg key="yukon.web.modules.dr.program.stopMultiplePrograms.okButton"/>"/>
+        <c:if test="${autoObserveConstraintsAllowed || checkConstraintsAllowed}">
+            <input id="nextButton" type="submit" value="<cti:msg key="yukon.web.modules.dr.program.startMultiplePrograms.nextButton"/>"/>
+        </c:if>
+        <input id="okButton" type="submit" value="<cti:msg key="yukon.web.modules.dr.program.startMultiplePrograms.okButton"/>"/>
         <input type="button" value="<cti:msg key="yukon.web.modules.dr.program.stopMultiplePrograms.cancelButton"/>" onclick="parent.$('drDialog').hide()"/>
     </div>
 </form:form>

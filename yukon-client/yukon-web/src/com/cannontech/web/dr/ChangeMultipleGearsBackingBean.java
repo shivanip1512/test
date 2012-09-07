@@ -1,21 +1,13 @@
-/**
- * 
- */
 package com.cannontech.web.dr;
 
 import java.util.List;
 
-import org.apache.commons.collections.FactoryUtils;
-import org.apache.commons.collections.list.LazyList;
+import com.cannontech.common.util.LazyList;
 
-import com.google.common.collect.Lists;
-
-@SuppressWarnings("unchecked")
 public class ChangeMultipleGearsBackingBean {
     private Integer controlAreaId;
     private Integer scenarioId;
-    private List<ProgramGearChangeInfo> programGearChangeInfo =
-        LazyList.decorate(Lists.newArrayList(), FactoryUtils.instantiateFactory(ProgramGearChangeInfo.class));
+    private List<ProgramGearChangeInfo> programGearChangeInfo = LazyList.ofInstance(ProgramGearChangeInfo.class);
 
     public Integer getControlAreaId() {
         return controlAreaId;

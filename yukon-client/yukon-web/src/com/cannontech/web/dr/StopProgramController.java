@@ -31,9 +31,11 @@ import com.cannontech.dr.program.filter.ForScenarioFilter;
 import com.cannontech.dr.program.service.ConstraintViolations;
 import com.cannontech.dr.scenario.model.ScenarioProgram;
 import com.cannontech.i18n.YukonMessageSourceResolvable;
+import com.cannontech.loadcontrol.messages.LMManualControlRequest;
 import com.cannontech.user.YukonUserContext;
 import com.cannontech.web.common.flashScope.FlashScope;
 import com.cannontech.web.security.annotation.CheckRoleProperty;
+import com.google.common.collect.Maps;
 
 @Controller
 @CheckRoleProperty(YukonRoleProperty.DEMAND_RESPONSE)
@@ -74,6 +76,8 @@ public class StopProgramController extends ProgramControllerBase {
 
         DisplayablePao program = programService.getProgram(backingBean.getProgramId());
         model.addAttribute("program", program);
+        
+        addConstraintsInfoToModel(model, fromBack, userContext, backingBean);
         boolean stopGearAllowed = rolePropertyDao.checkProperty(YukonRoleProperty.ALLOW_STOP_GEAR_ACCESS,
                                                                 userContext.getYukonUser());
         model.addAttribute("stopGearAllowed", stopGearAllowed);
@@ -232,6 +236,8 @@ public class StopProgramController extends ProgramControllerBase {
             backingBean.setProgramStopInfo(programStopInfo);
         }
         
+        addConstraintsInfoToModel(model, fromBack, userContext, backingBean);
+        
         boolean stopGearAllowed =
                 rolePropertyDao.checkProperty(YukonRoleProperty.ALLOW_STOP_GEAR_ACCESS,
                                               userContext.getYukonUser());
@@ -292,24 +298,37 @@ public class StopProgramController extends ProgramControllerBase {
                     stopOffset = scenarioProgram.getStopOffset();
                 }
     
-                if (backingBean.isStopNow() && stopOffset == null) {
-                    programService.stopProgram(programStopInfo.getProgramId());
-                } else {
-                    programService.scheduleProgramStop(programStopInfo.getProgramId(),
-                                                       stopDate, stopOffset);
-                }
                 boolean stopGearAllowed =
                         rolePropertyDao.checkProperty(YukonRoleProperty.ALLOW_STOP_GEAR_ACCESS,
                                                       userContext.getYukonUser());
                 
-                if (stopGearAllowed && programStopInfo.isUseStopGear()) {
+                if (backingBean.isStopNow() && stopOffset == null) {
+                    programService.stopProgram(programStopInfo.getProgramId());
+                } else if (stopGearAllowed && programStopInfo.isUseStopGear()) {
+                    programService.stopProgramWithGear(programStopInfo.getProgramId(), 
+                                                       programStopInfo.getGearNumber(), 
+                                                       stopDate, 
+                                                       programStopInfo.isOverrideConstraints());
+                    
                     DisplayablePao program = programService.getProgram(programStopInfo.getProgramId());
-        
                     LiteYukonUser yukonUser = userContext.getYukonUser();
-                    programService.changeGear(programStopInfo.getProgramId(), programStopInfo.getGearNumber());
                     demandResponseEventLogService.threeTierProgramChangeGear(yukonUser, program.getName());
-    
+
+                } else {
+                    programService.scheduleProgramStop(programStopInfo.getProgramId(),
+                                                       stopDate, stopOffset);
                 }
+                
+                
+                
+//                if (stopGearAllowed && programStopInfo.isUseStopGear()) {
+//                    DisplayablePao program = programService.getProgram(programStopInfo.getProgramId());
+//        
+//                    LiteYukonUser yukonUser = userContext.getYukonUser();
+//                    programService.changeGear(programStopInfo.getProgramId(), programStopInfo.getGearNumber());
+//                    demandResponseEventLogService.threeTierProgramChangeGear(yukonUser, program.getName());
+//    
+//                }
             }
         }
         
@@ -323,6 +342,105 @@ public class StopProgramController extends ProgramControllerBase {
         return closeDialog(model);
     }
 
+    @RequestMapping
+    public String stopMultipleConstraints(ModelMap model,
+            @ModelAttribute("backingBean") StopMultipleProgramsBackingBean backingBean,
+            BindingResult bindingResult, YukonUserContext userContext,
+            FlashScope flashScope) {
+
+        LiteYukonUser user = userContext.getYukonUser();
+
+        if (backingBean.getControlAreaId() != null) {
+            DisplayablePao controlArea = controlAreaService.getControlArea(backingBean.getControlAreaId());
+            paoAuthorizationService.verifyAllPermissions(user,
+                                                         controlArea,
+                                                         Permission.LM_VISIBLE,
+                                                         Permission.CONTROL_COMMAND);
+            model.addAttribute("controlArea", controlArea);
+        }
+        if (backingBean.getScenarioId() != null) {
+            DisplayablePao scenario = scenarioDao.getScenario(backingBean.getScenarioId());
+            paoAuthorizationService.verifyAllPermissions(userContext.getYukonUser(),
+                                                         scenario,
+                                                         Permission.LM_VISIBLE,
+                                                         Permission.CONTROL_COMMAND);
+            model.addAttribute("scenario", scenario);
+        }
+
+        boolean autoObserveConstraintsAllowed =
+            rolePropertyDao.checkProperty(YukonRoleProperty.ALLOW_OBSERVE_CONSTRAINTS, user);
+        boolean checkConstraintsAllowed =
+            rolePropertyDao.checkProperty(YukonRoleProperty.ALLOW_CHECK_CONSTRAINTS, user);
+
+        if (autoObserveConstraintsAllowed && (!checkConstraintsAllowed || backingBean.isAutoObserveConstraints())) {
+            return stopMultiple(model, checkConstraintsAllowed, backingBean, bindingResult, userContext, flashScope);
+        }
+
+        boolean overrideAllowed =
+            rolePropertyDao.checkProperty(YukonRoleProperty.ALLOW_OVERRIDE_CONSTRAINT, user);
+        model.addAttribute("overrideAllowed", overrideAllowed);
+
+        Map<Integer, ConstraintViolations> violationsByProgramId = Maps.newHashMap();
+        Map<Integer, DisplayablePao> programsByProgramId = Maps.newHashMap();
+        boolean constraintsViolated = false;
+        int numProgramsToStop = 0;
+        for (ProgramStopInfo programStopInfo : backingBean.getProgramStopInfo()) {
+            if (!programStopInfo.isStopProgram()) {
+                continue;
+            }
+
+            numProgramsToStop++;
+            int programId = programStopInfo.getProgramId();
+            DisplayablePao program = programService.getProgram(programId);
+            programsByProgramId.put(programId, program);
+
+            if (programStopInfo.isUseStopGear()) {
+                ConstraintViolations violations =
+                    programService.getConstraintViolationsForStopProgram(programId,
+                                                                         programStopInfo.getGearNumber(),
+                                                                         backingBean.getStopDate());
+                if (violations != null && violations.isViolated() ) {
+                    violationsByProgramId.put(programId, violations);
+                    constraintsViolated = true;
+                }
+            }
+        }
+
+        if (numProgramsToStop == 0) {
+            bindingResult.reject("noProgramsSelected");
+            return multipleDetails(model, true, backingBean, bindingResult, userContext, flashScope);
+        }
+
+        model.addAttribute("numProgramsToStop", numProgramsToStop);
+        model.addAttribute("programsByProgramId", programsByProgramId);
+        model.addAttribute("violationsByProgramId", violationsByProgramId);
+        model.addAttribute("constraintsViolated", constraintsViolated);
+
+        return "dr/program/stopMultipleProgramsConstraints.jsp";
+    }
+    
+    private void addConstraintsInfoToModel(ModelMap model, Boolean fromBack,
+                                           YukonUserContext userContext, StopProgramBackingBeanBase backingBean) {
+       LiteYukonUser user = userContext.getYukonUser();
+       boolean autoObserveConstraintsAllowed =
+           rolePropertyDao.checkProperty(YukonRoleProperty.ALLOW_OBSERVE_CONSTRAINTS, user);
+       boolean checkConstraintsAllowed =
+           rolePropertyDao.checkProperty(YukonRoleProperty.ALLOW_CHECK_CONSTRAINTS, user);
+
+       model.addAttribute("autoObserveConstraintsAllowed", autoObserveConstraintsAllowed);
+       model.addAttribute("checkConstraintsAllowed", checkConstraintsAllowed);
+
+       if (checkConstraintsAllowed && autoObserveConstraintsAllowed) {
+           // It might be more sane to change the "DEFAULT_CONSTRAINT_SELECTION"
+           // role property to something more like "AUTO_OBSERVE_CONSTRAINTS_BY_DEFAULT".
+           String defaultConstraint =
+               rolePropertyDao.getPropertyStringValue(YukonRoleProperty.DEFAULT_CONSTRAINT_SELECTION, user);
+           if (fromBack == null || !fromBack) {
+               backingBean.setAutoObserveConstraints(defaultConstraint.equalsIgnoreCase(LMManualControlRequest.CONSTRAINT_FLAG_STRS[LMManualControlRequest.CONSTRAINTS_FLAG_USE]));
+           }
+       }
+   }
+    
     @InitBinder
     public void initBinder(WebDataBinder binder, YukonUserContext userContext) {
         programControllerHelper.initBinder(binder, userContext, "program.stopProgram");

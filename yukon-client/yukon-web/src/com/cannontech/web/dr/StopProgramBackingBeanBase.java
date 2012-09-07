@@ -8,6 +8,11 @@ import java.util.Date;
 public class StopProgramBackingBeanBase {
     private boolean stopNow;
     private Date stopDate;
+    private boolean autoObserveConstraints;
+   
+    public boolean isAutoObserveConstraints() {
+        return autoObserveConstraints;
+    }
 
     public boolean isStopNow() {
         return stopNow;
@@ -24,4 +29,9 @@ public class StopProgramBackingBeanBase {
     public void setStopDate(Date stopDate) {
         this.stopDate = stopDate;
     }
+
+    public void setAutoObserveConstraints(boolean autoObserveConstraints) {
+        this.autoObserveConstraints = autoObserveConstraints;
+    }
+
 }

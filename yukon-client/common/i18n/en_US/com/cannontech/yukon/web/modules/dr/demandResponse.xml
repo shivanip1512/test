@@ -278,10 +278,17 @@
 <entry key="yukon.web.modules.dr.program.stopMultiplePrograms.autoObserveConstraints">Automatically Observe Constraints</entry>
 <entry key="yukon.web.modules.dr.program.stopMultiplePrograms.constraintsWillBeObserved">All constraints will be observed.</entry>
 
+<entry key="yukon.web.modules.dr.program.stopMultiplePrograms.violations">Violations</entry>
+<entry key="yukon.web.modules.dr.program.stopMultiplePrograms.programName">Name</entry>
+<entry key="yukon.web.modules.dr.program.stopMultiplePrograms.overrideProgramName">Override</entry>
+<entry key="yukon.web.modules.dr.program.stopMultiplePrograms.noConstraintsViolated">No constraints will be violated.</entry>
+<entry key="yukon.web.modules.dr.program.stopMultiplePrograms.noConstraintsViolatedForProgram">None</entry>
+<entry key="yukon.web.modules.dr.program.stopMultiplePrograms.overrideAllConstraints">Override all constraints</entry>
 <entry key="yukon.web.modules.dr.program.stopMultiplePrograms.okButton">OK</entry>
 <entry key="yukon.web.modules.dr.program.stopMultiplePrograms.cancelButton">Cancel</entry>
 <entry key="yukon.web.modules.dr.program.stopMultiplePrograms.scenarioStopRequested">Scenario stop requested.</entry>
 <entry key="yukon.web.modules.dr.program.stopMultiplePrograms.controlAreaStopRequested">Control area stop requested.</entry>
+<entry key="yukon.web.modules.dr.program.stopMultiplePrograms.backButton">Back</entry>
 
 <!-- sendEnableDisablePrograms.jsp -->
 <entry key="yukon.web.modules.dr.program.sendEnableProgramsConfirm.title">Enable Programs</entry>
