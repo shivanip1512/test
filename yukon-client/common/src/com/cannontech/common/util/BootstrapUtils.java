@@ -9,9 +9,7 @@ import javax.naming.InitialContext;
 import org.apache.commons.lang.StringUtils;
 
 /**
- * Must not be dependent on any other part of yukon
- * This includes masterconfig, logging
- * Do not use CTIUtilities here
+ * The purpose of this utility class is to limit dependencies on other classes.
  */
 public class BootstrapUtils {
 

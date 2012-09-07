@@ -32,6 +32,7 @@ public class AESEncryptedFileInputStream extends ByteArrayInputStream {
         long length = file.length();
 
         if (length > Integer.MAX_VALUE) {
+            is.close();
             throw new IOException("File is too large.");
         }
 
@@ -44,6 +45,7 @@ public class AESEncryptedFileInputStream extends ByteArrayInputStream {
 
         // Ensure all the bytes have been read in
         if (offset < bytes.length) {
+            is.close();
             throw new IOException("Could not completely read file "+file.getName());
         }
         is.close();

@@ -87,6 +87,7 @@ public class PoolManager {
         
         jdbcUrl = configSource.getString("DB_JAVA_URL");
         if (StringUtils.isNotBlank(jdbcUrl)) {
+            log.debug("Using DB_JAVA_URL=" + jdbcUrl);
             return new ConnectionDescription(jdbcUrl, dbType);
         }
         

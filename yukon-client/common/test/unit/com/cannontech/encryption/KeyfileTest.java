@@ -20,8 +20,8 @@ public class KeyfileTest {
     private static final File masterCfgCryptoFile = new File(keysFolder,"masterConfigKeyfile.dat");
     private static final Instant timeAtTest = new Instant();
 
-    private static File testFileGood; // Set before tests run
-    private static File testFileBad; // Set before tests run
+    private File testFileGood; // Set before tests run
+    private File testFileBad; // Set before tests run
     private static final String testFilePassKeyStr = "1r[cP7.=ui=u$Z}5ct2TC-:siZ1niLA3";
 
     @Before

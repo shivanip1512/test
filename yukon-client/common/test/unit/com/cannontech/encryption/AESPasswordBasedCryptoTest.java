@@ -25,30 +25,46 @@ public class AESPasswordBasedCryptoTest  {
     
     private char[] password = {'?','W',')','s','8','!','D','h','I','o','f','1','=','G','F','2'};
 
+    /**
+     * Tests the isAuthentic method against cipherText1
+     */
     @Test
     public void test_validityToPass1() throws CryptoException {
         AESPasswordBasedCrypto aes = new AESPasswordBasedCrypto(password);
         Assert.assertEquals(true, aes.isAuthentic(cipherText1));
     }
 
+    /**
+     * Tests the isAuthentic method against cipherText2
+     */
     @Test
     public void test_validityToPass2() throws CryptoException {
         AESPasswordBasedCrypto aes = new AESPasswordBasedCrypto(password);
         Assert.assertEquals(true, aes.isAuthentic(cipherText2));
     }
 
+    /**
+     * Tests the isAuthentic method against cipherText3
+     */
     @Test
     public void test_validityToPass3() throws CryptoException {
         AESPasswordBasedCrypto aes = new AESPasswordBasedCrypto(password);
         Assert.assertEquals(true, aes.isAuthentic(cipherText3));
     }
 
+    /**
+     * Tests the isAuthentic method against cipherText4 (test to fail)
+     */
     @Test
     public void test_validityToFail() throws CryptoException {
         AESPasswordBasedCrypto aes = new AESPasswordBasedCrypto(password);
         Assert.assertEquals(false, aes.isAuthentic(badCipherText4));
     }
 
+    /**
+     * Tests decrypt() method against cipherText1
+     * cipherText1 should decrypt to plainText
+     */
     @Test
     public void test_deryptionWithPassword1() throws CryptoException {
         AESPasswordBasedCrypto aes = new AESPasswordBasedCrypto(password);
@@ -56,6 +72,10 @@ public class AESPasswordBasedCryptoTest  {
         Assert.assertEquals(true, Arrays.equals(plainText1,plainText));
     }
 
+    /**
+     * Tests decrypt() method against cipherText2
+     * cipherText2 should decrypt to plainText
+     */
     @Test
     public void test_deryptionWithPassword2() throws CryptoException {
         AESPasswordBasedCrypto aes = new AESPasswordBasedCrypto(password);
@@ -64,6 +84,10 @@ public class AESPasswordBasedCryptoTest  {
         Assert.assertEquals(true, Arrays.equals(plainText2,plainText));
     }
 
+    /**
+     * Tests decrypt() method against cipherText3
+     * cipherText3 should decrypt to plainText
+     */
     @Test
     public void test_deryptionWithPassword3() throws CryptoException {
         AESPasswordBasedCrypto aes = new AESPasswordBasedCrypto(password);
@@ -107,6 +131,10 @@ public class AESPasswordBasedCryptoTest  {
         }
     }
 
+    /**
+     * Tests the cipher by encrypting randomly generated data 10 times,
+     * then decrypts 10 more to arrive at plaintext. 
+     */
     private void testCipher(AESPasswordBasedCrypto aes) throws CryptoException {
         int numBytes = 128;
         int encryptionLayers = 10;
@@ -131,7 +159,7 @@ public class AESPasswordBasedCryptoTest  {
             computedData = aes.decrypt(computedData);
         }
 
-        // Make sure something changed, that we wernt just passing around the same data
+        // Make sure something changed, that we weren't just passing around the same data
         Assert.assertEquals(false, Arrays.equals(encryptedData,computedData));
         Assert.assertEquals(false, Arrays.equals(encryptedData,knownData));
 

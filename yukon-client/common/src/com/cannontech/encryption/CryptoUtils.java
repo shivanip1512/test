@@ -43,6 +43,7 @@ public class CryptoUtils {
     private static final String CRYPTO_FILE_XML_VERSION = "version";
     private static final String CRYPTO_FILE_VERSION = "1";
     private static final String CRYPTO_FILE_XML_PASSKEY = "pk";
+    private static final String RSA_ALGORITHM = "RSA";
     private static final SecureRandom secureRandom = new SecureRandom();
 
     private CryptoUtils() {/*Not instantiable. Utility class only */ }
@@ -71,7 +72,7 @@ public class CryptoUtils {
      * @throws NoSuchAlgorithmException
      */
     public static KeyPair generateRSAKeyPair() throws NoSuchAlgorithmException {
-        KeyPairGenerator keyGen = KeyPairGenerator.getInstance("RSA");
+        KeyPairGenerator keyGen = KeyPairGenerator.getInstance(RSA_ALGORITHM);
         keyGen.initialize(rsaKeySize*8);
         KeyPair key = keyGen.generateKeyPair();
         return key;
