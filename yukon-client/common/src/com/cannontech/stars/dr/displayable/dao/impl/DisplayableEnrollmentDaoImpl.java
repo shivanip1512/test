@@ -142,16 +142,17 @@ public class DisplayableEnrollmentDaoImpl extends AbstractDisplayableDao impleme
                  * non-RFN devices will be visible in the list. */
                 List<LoadGroup> loadGroups = loadGroupDao.getByStarsProgramId(program.getProgramId());
                 if (program.getPaoType().getDeviceTypeId() == DeviceTypes.LM_DIRECT_PROGRAM) {
-                    boolean isVisible = false;
+                    boolean isValid = false;
                     for (LoadGroup group : loadGroups) {
                         if ((group.getPaoIdentifier().getPaoType().getDeviceTypeId() == DeviceTypes.LM_GROUP_RFN_EXPRESSCOMM
                                 && type.isRf()) 
                          || (group.getPaoIdentifier().getPaoType().getDeviceTypeId() != DeviceTypes.LM_GROUP_RFN_EXPRESSCOMM
                                 && !type.isRf())) {
-                            isVisible = true;
+                            isValid = true;
+                            break;
                         }
                     }
-                    if (!isVisible) {
+                    if (!isValid) {
                         return false;
                     }
                 }
