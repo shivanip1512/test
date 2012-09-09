@@ -21,7 +21,6 @@ import org.springframework.web.bind.annotation.RequestMethod;
 import com.cannontech.common.validator.SimpleValidator;
 import com.cannontech.common.validator.YukonValidationUtils;
 import com.cannontech.core.authentication.service.AuthenticationService;
-import com.cannontech.core.dao.NotFoundException;
 import com.cannontech.core.dao.RoleDao;
 import com.cannontech.core.dao.YukonGroupDao;
 import com.cannontech.core.roleproperties.YukonRole;
@@ -197,7 +196,13 @@ public class RoleGroupEditorController {
         YukonRole role = YukonRole.getForId(newRoleId);
         
         /* Save the default role properties to the db for this group and role */
-        rolePropertyEditorDao.addRoleToGroup(group, role);
+        try {
+            rolePropertyEditorDao.addRoleToGroup(group, role);
+        } catch (ConfigurationException e) {
+            model.addAttribute("roleGroupId", roleGroupId);
+            flash.setError(new YukonMessageSourceResolvable("yukon.web.modules.adminSetup.roleGroupEditor.roleConflictingWithUserGroup", role.name(), group.getGroupName()));
+            return "redirect:view";
+        }
         
         model.addAttribute("roleGroupId", roleGroupId);
         model.addAttribute("roleId", newRoleId);

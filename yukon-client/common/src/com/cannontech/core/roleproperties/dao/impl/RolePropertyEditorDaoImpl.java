@@ -7,6 +7,7 @@ import java.util.Map;
 import java.util.Set;
 
 import javax.annotation.PostConstruct;
+import javax.naming.ConfigurationException;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.MessageSourceResolvable;
@@ -14,6 +15,7 @@ import org.springframework.transaction.annotation.Transactional;
 
 import com.cannontech.common.util.SqlStatementBuilder;
 import com.cannontech.core.dao.DBPersistentDao;
+import com.cannontech.core.dao.RoleDao;
 import com.cannontech.core.roleproperties.DescriptiveRoleProperty;
 import com.cannontech.core.roleproperties.GroupRolePropertyValueCollection;
 import com.cannontech.core.roleproperties.InputTypeFactory;
@@ -21,6 +23,8 @@ import com.cannontech.core.roleproperties.RolePropertyValue;
 import com.cannontech.core.roleproperties.YukonRole;
 import com.cannontech.core.roleproperties.YukonRoleProperty;
 import com.cannontech.core.roleproperties.dao.RolePropertyEditorDao;
+import com.cannontech.core.users.dao.UserGroupDao;
+import com.cannontech.core.users.model.LiteUserGroup;
 import com.cannontech.database.SqlUtils;
 import com.cannontech.database.YukonJdbcOperations;
 import com.cannontech.database.YukonResultSet;
@@ -36,6 +40,7 @@ import com.google.common.collect.ImmutableMap.Builder;
 import com.google.common.collect.Iterables;
 import com.google.common.collect.Lists;
 import com.google.common.collect.Maps;
+import com.google.common.collect.Multimap;
 import com.google.common.collect.Sets;
 
 public class RolePropertyEditorDaoImpl implements RolePropertyEditorDao {
@@ -52,11 +57,14 @@ public class RolePropertyEditorDaoImpl implements RolePropertyEditorDao {
         }
     }
 
-    private RolePropertyDaoImpl rolePropertyDao;
-    private YukonJdbcOperations yukonJdbcOperations;
+    @Autowired private DBPersistentDao dbPersistentDao;
+    @Autowired private NextValueHelper nextValueHelper;
+    @Autowired private RoleDao roleDao;
+    @Autowired private RolePropertyDaoImpl rolePropertyDao;
+    @Autowired private UserGroupDao userGroupDao;
+    @Autowired private YukonJdbcOperations yukonJdbcOperations;
+
     private ImmutableMap<YukonRoleProperty, DescriptiveRoleProperty> descriptiveRoleProperties;
-    private NextValueHelper nextValueHelper;
-    private DBPersistentDao dbPersistentDao;
     private static boolean WRITE_NULL_FOR_DEFAULTS = false; // set to true when db editor support is no longer needed
     
     @PostConstruct
@@ -175,11 +183,20 @@ public class RolePropertyEditorDaoImpl implements RolePropertyEditorDao {
     
     @Override
     @Transactional
-    public void addRoleToGroup(LiteYukonGroup liteYukonGroup, YukonRole role) {
+    public void addRoleToGroup(LiteYukonGroup liteYukonGroup, YukonRole role) throws ConfigurationException {
+        // Checking to see if we have any conflicts with the existing user groups on this role.
+        List<LiteUserGroup> userGroups = userGroupDao.getLiteUserGroupsByRoleGroupId(liteYukonGroup.getGroupID());
+        for (LiteUserGroup userGroup : userGroups) {
+            Multimap<YukonRole, LiteYukonGroup> rolesAndRoleGroups = roleDao.getRolesAndRoleGroupsForUserGroup(userGroup.getUserGroupId());
+            if (rolesAndRoleGroups.containsKey(role)) {
+                throw new ConfigurationException("The role "+role+" already exists on one of its user group");
+            }
+        }
+        
+        // Adding the role to the role group.
         Iterable<YukonRoleProperty> roleProperties = getFilteredRoleProperties(new RolePredicate(role));
         for (YukonRoleProperty yukonRoleProperty : roleProperties) {
             String dbTextValue = getStringToStoreForValue(yukonRoleProperty, null);
-            
             insertGroupRoleProperty(liteYukonGroup, yukonRoleProperty, dbTextValue);
         }
         
@@ -264,25 +281,4 @@ public class RolePropertyEditorDaoImpl implements RolePropertyEditorDao {
                                                   type);
         dbPersistentDao.processDBChange(dbChangeMsg);
     }
-
-    @Autowired
-    public void setRolePropertyDao(RolePropertyDaoImpl rolePropertyDao) {
-        this.rolePropertyDao = rolePropertyDao;
-    }
-    
-    @Autowired
-    public void setYukonJdbcOperations(YukonJdbcOperations yukonJdbcOperations) {
-        this.yukonJdbcOperations = yukonJdbcOperations;
-    }
-    
-    @Autowired
-    public void setNextValueHelper(NextValueHelper nextValueHelper) {
-        this.nextValueHelper = nextValueHelper;
-    }
-    
-    @Autowired
-    public void setDbPersistentDao(DBPersistentDao dbPersistentDao) {
-        this.dbPersistentDao = dbPersistentDao;
-    }
-
 }

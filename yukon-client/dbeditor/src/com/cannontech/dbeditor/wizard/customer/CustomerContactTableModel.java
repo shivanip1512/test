@@ -22,7 +22,7 @@ public class CustomerContactTableModel extends javax.swing.table.AbstractTableMo
 	public static final String[] COLUMNS = 
 	{ 
 		"Name", 
-		"Yukon Login",
+		"Yukon User",
 		"Notification"
 	};
 	

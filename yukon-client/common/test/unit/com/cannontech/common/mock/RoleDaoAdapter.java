@@ -1,6 +1,5 @@
 package com.cannontech.common.mock;
 
-import java.util.Map;
 import java.util.Set;
 
 import com.cannontech.core.dao.RoleDao;
@@ -8,6 +7,7 @@ import com.cannontech.core.roleproperties.YukonRole;
 import com.cannontech.database.data.lite.LiteYukonGroup;
 import com.cannontech.database.data.lite.LiteYukonRole;
 import com.cannontech.database.data.lite.LiteYukonRoleProperty;
+import com.google.common.collect.Multimap;
 
 public class RoleDaoAdapter implements RoleDao {
     @Override
@@ -67,7 +67,7 @@ public class RoleDaoAdapter implements RoleDao {
     }
 
     @Override
-    public Map<YukonRole, LiteYukonGroup> getRolesAndGroupsForUser(int userId) {
+    public Multimap<YukonRole, LiteYukonGroup> getRolesAndGroupsForUser(int userId) {
         throw new UnsupportedOperationException();
     }
 
@@ -77,7 +77,7 @@ public class RoleDaoAdapter implements RoleDao {
     }
 
     @Override
-    public Map<YukonRole, LiteYukonGroup> getRolesAndRoleGroupsForUserGroup(int userGroupId) {
+    public Multimap<YukonRole, LiteYukonGroup> getRolesAndRoleGroupsForUserGroup(int userGroupId) {
         throw new UnsupportedOperationException();
     }
 }

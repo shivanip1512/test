@@ -46,8 +46,8 @@ import com.cannontech.web.admin.userGroupEditor.model.User;
 import com.cannontech.web.common.flashScope.FlashScope;
 import com.cannontech.web.common.flashScope.FlashScopeMessageType;
 import com.cannontech.web.security.annotation.CheckRoleProperty;
-import com.google.common.collect.ImmutableMultimap;
 import com.google.common.collect.Maps;
+import com.google.common.collect.Multimap;
 
 @Controller
 @RequestMapping("/user/*")
@@ -188,8 +188,8 @@ public class UserEditorController {
         model.addAttribute("userGroups", userGroupDao.getAllLiteUserGroups());
         model.addAttribute("pwChangeFormMode", PageEditMode.EDIT);
 
-        Map<YukonRole, LiteYukonGroup> rolesAndGroups = roleDao.getRolesAndGroupsForUser(user.getUserId());
-        ImmutableMultimap<YukonRoleCategory, Pair<YukonRole, LiteYukonGroup>> sortedRoles = RoleListHelper.sortRolesByCategory(rolesAndGroups);
+        Multimap<YukonRole, LiteYukonGroup> rolesAndGroups = roleDao.getRolesAndGroupsForUser(user.getUserId());
+        Multimap<YukonRoleCategory, Pair<YukonRole, LiteYukonGroup>> sortedRoles = RoleListHelper.sortRolesByCategory(rolesAndGroups);
         model.addAttribute("roles", sortedRoles.asMap());
     }
 

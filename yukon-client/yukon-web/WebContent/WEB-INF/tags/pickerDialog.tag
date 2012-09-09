@@ -1,7 +1,7 @@
 <%@ attribute name="type" required="true" description="Spring bean name of the Picker class"%>
 <%@ attribute name="id" required="true" description="Unique id for this picker"%>
 <%@ attribute name="destinationFieldId" description="Id of field to place selected items on picker close"%>
-<%@ attribute name="excludeIds" description="The ids that cannot be selected in the picker"%>
+<%@ attribute name="excludeIds" description="The ids that cannot be selected in the picker" type="java.lang.Object"%>
 <%@ attribute name="destinationFieldName"  description="Name of field to place selected items on picker close"%>
 <%@ attribute name="multiSelectMode" type="java.lang.Boolean" description="True if this picker allows selection of multiple items"%>
 <%@ attribute name="immediateSelectMode" type="java.lang.Boolean" description="True if picker should select and close when an item is clicked"%>

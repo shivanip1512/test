@@ -2,7 +2,6 @@ package com.cannontech.core.users.dao.impl;
 
 import java.sql.SQLException;
 import java.util.List;
-import java.util.Map;
 
 import javax.naming.ConfigurationException;
 
@@ -26,6 +25,7 @@ import com.cannontech.database.YukonRowMapper;
 import com.cannontech.database.data.lite.LiteYukonGroup;
 import com.cannontech.database.data.user.UserGroup;
 import com.cannontech.database.incrementer.NextValueHelper;
+import com.google.common.collect.Multimap;
 
 public class UserGroupDaoImpl implements UserGroupDao, InitializingBean {
     private static final Logger log = YukonLogManager.getLogger(UserGroupDaoImpl.class);
@@ -97,8 +97,7 @@ public class UserGroupDaoImpl implements UserGroupDao, InitializingBean {
             userGroup.setUserGroupId(rs.getInt("UserGroupId"));
             userGroup.setUserGroup(new DBUserGroupRowMapper().mapRow(rs));
             
-            Map<YukonRole, LiteYukonGroup> rolesToGroupsMap = 
-                    roleDao.getRolesAndRoleGroupsForUserGroup(userGroup.getUserGroup().getUserGroupId());
+            Multimap<YukonRole, LiteYukonGroup> rolesToGroupsMap = roleDao.getRolesAndRoleGroupsForUserGroup(userGroup.getUserGroup().getUserGroupId());
             try {
                 userGroup.putAllRolesToGroupMap(rolesToGroupsMap);
             } catch (ConfigurationException e) {

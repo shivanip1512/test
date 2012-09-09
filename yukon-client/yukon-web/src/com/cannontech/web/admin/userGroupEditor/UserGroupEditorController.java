@@ -1,6 +1,6 @@
 package com.cannontech.web.admin.userGroupEditor;
 
-import static com.cannontech.common.util.StringUtils.*;
+import static com.cannontech.common.util.StringUtils.parseIntStringForList;
 
 import java.sql.SQLException;
 import java.util.Arrays;
@@ -46,8 +46,8 @@ import com.cannontech.web.common.flashScope.FlashScope;
 import com.cannontech.web.common.flashScope.FlashScopeMessageType;
 import com.cannontech.web.security.annotation.CheckRoleProperty;
 import com.google.common.base.Function;
-import com.google.common.collect.ImmutableMultimap;
 import com.google.common.collect.Lists;
+import com.google.common.collect.Multimap;
 
 @Controller
 @RequestMapping("/userGroup/*")
@@ -245,8 +245,8 @@ public class UserGroupEditorController {
         model.addAttribute("userGroupId", userGroup.getUserGroupId());
         model.addAttribute("userGroupName", userGroup.getUserGroupName());
         
-        Map<YukonRole, LiteYukonGroup> rolesAndGroups = roleDao.getRolesAndRoleGroupsForUserGroup(userGroup.getUserGroupId());
-        ImmutableMultimap<YukonRoleCategory, Pair<YukonRole, LiteYukonGroup>> sortedRoles = RoleListHelper.sortRolesByCategory(rolesAndGroups);
+        Multimap<YukonRole, LiteYukonGroup> rolesAndGroups = roleDao.getRolesAndRoleGroupsForUserGroup(userGroup.getUserGroupId());
+        Multimap<YukonRoleCategory, Pair<YukonRole, LiteYukonGroup>> sortedRoles = RoleListHelper.sortRolesByCategory(rolesAndGroups);
         model.addAttribute("roles", sortedRoles.asMap());
     }
 }

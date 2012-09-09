@@ -34,7 +34,8 @@ import com.cannontech.database.data.lite.LiteYukonRole;
 import com.cannontech.database.data.lite.LiteYukonRoleProperty;
 import com.cannontech.database.db.user.YukonGroupRole;
 import com.cannontech.yukon.IDatabaseCache;
-import com.google.common.collect.Maps;
+import com.google.common.collect.HashMultimap;
+import com.google.common.collect.Multimap;
 import com.google.common.collect.Sets;
 
 /**
@@ -228,9 +229,9 @@ public class RoleDaoImpl implements RoleDao {
     }
 
     @Override
-    public Map<YukonRole, LiteYukonGroup> getRolesAndGroupsForUser(int userId) {
+    public Multimap<YukonRole, LiteYukonGroup> getRolesAndGroupsForUser(int userId) {
         
-        final Map<YukonRole, LiteYukonGroup> results = Maps.newHashMap();
+        final Multimap<YukonRole, LiteYukonGroup> results = HashMultimap.create();
 
         SqlStatementBuilder sql = new SqlStatementBuilder();
         sql.append("SELECT DISTINCT YGR.RoleId, YG.GroupId, YG.GroupName, YG.GroupDescription");
@@ -257,14 +258,14 @@ public class RoleDaoImpl implements RoleDao {
     }
     
     @Override
-    public Map<YukonRole, LiteYukonGroup> getRolesAndRoleGroupsForUserGroup(int userGroupId) {
+    public Multimap<YukonRole, LiteYukonGroup> getRolesAndRoleGroupsForUserGroup(int userGroupId) {
         
-        final Map<YukonRole, LiteYukonGroup> results = Maps.newHashMap();
+        final Multimap<YukonRole, LiteYukonGroup> results = HashMultimap.create();
 
         SqlStatementBuilder sql = new SqlStatementBuilder();
         sql.append("SELECT DISTINCT YGR.RoleId, YG.GroupId, YG.GroupName, YG.GroupDescription");
         sql.append("FROM YukonGroupRole YGR");
-        sql.append("  JOIN YukonGroup YG ON YGR.GroupId = YG.GroupId");
+        sql.append("  RIGHT OUTER JOIN YukonGroup YG ON YGR.GroupId = YG.GroupId");
         sql.append("  JOIN UserGroupToYukonGroupMapping UGYGM ON YG.GroupId = UGYGM.GroupId");
         sql.append("WHERE UGYGM.UserGroupId").eq(userGroupId);
 
@@ -275,7 +276,6 @@ public class RoleDaoImpl implements RoleDao {
                 LiteYukonGroup liteYukonGroup = YukonGroupDaoImpl.liteYukonGroupRowMapper.mapRow(rs);
 
                 results.put(yukonRole, liteYukonGroup);
-                
             }
         });
         

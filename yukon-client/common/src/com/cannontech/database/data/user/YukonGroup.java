@@ -2,7 +2,6 @@ package com.cannontech.database.data.user;
 
 import java.sql.SQLException;
 import java.util.List;
-import java.util.Map;
 import java.util.Map.Entry;
 
 import javax.naming.ConfigurationException;
@@ -23,6 +22,7 @@ import com.cannontech.message.dispatch.message.DbChangeType;
 import com.cannontech.spring.YukonSpringHook;
 import com.google.common.collect.ImmutableList;
 import com.google.common.collect.Lists;
+import com.google.common.collect.Multimap;
 
 public class YukonGroup extends DBPersistent implements CTIDbChange, EditorPanel {
     private final static Logger log = YukonLogManager.getLogger(YukonGroup.class);
@@ -224,8 +224,8 @@ public class YukonGroup extends DBPersistent implements CTIDbChange, EditorPanel
         
         // Check to see if the role being added already exists on one of the user groups attached to this role group.
         for (UserGroup userGroup : userGroups) {
-            Map<YukonRole, LiteYukonGroup> existingRoles = userGroup.getRolesToGroupMap();
-            for (Entry<YukonRole, LiteYukonGroup> entry : existingRoles.entrySet()) {
+            Multimap<YukonRole, LiteYukonGroup> existingRoles = userGroup.getRolesToGroupMap();
+            for (Entry<YukonRole, LiteYukonGroup> entry : existingRoles.entries()) {
                 if (entry.getKey() == newRole && entry.getValue().getGroupID() != roleGroupId) {
                     return false;
                 }

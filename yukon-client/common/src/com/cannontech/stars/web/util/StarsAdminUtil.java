@@ -10,6 +10,7 @@ import java.util.Map;
 import javax.naming.ConfigurationException;
 
 import org.joda.time.Instant;
+import org.springframework.transaction.annotation.Transactional;
 
 import com.cannontech.clientutils.CTILogger;
 import com.cannontech.common.constants.YukonListEntry;
@@ -678,12 +679,12 @@ public class StarsAdminUtil {
 		return DaoFactory.getRoleDao().getGroup( liteGroup.getGroupID() );
 	}
 	
+	@Transactional
 	public static com.cannontech.database.db.user.UserGroup createOperatorAdminUserGroup(final String userGroupName, int primaryOperatorUserGroupId, final boolean topLevelEc)
 	throws TransactionException, ConfigurationException, SQLException {
 	    RoleDao roleDao = YukonSpringHook.getBean("roleDao", RoleDao.class);
 	    UserGroupDao userGroupDao = YukonSpringHook.getBean("userGroupDao", UserGroupDao.class);
 
-	    
 	    // Creating the admin role group for the new energy company
 		com.cannontech.database.data.user.YukonGroup adminGrp = new com.cannontech.database.data.user.YukonGroup();
 		com.cannontech.database.db.user.YukonGroup groupDB = adminGrp.getYukonGroup();

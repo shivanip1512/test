@@ -1,12 +1,12 @@
 package com.cannontech.core.dao;
 
-import java.util.Map;
 import java.util.Set;
 
 import com.cannontech.core.roleproperties.YukonRole;
 import com.cannontech.database.data.lite.LiteYukonGroup;
 import com.cannontech.database.data.lite.LiteYukonRole;
 import com.cannontech.database.data.lite.LiteYukonRoleProperty;
+import com.google.common.collect.Multimap;
 
 public interface RoleDao {
 
@@ -117,14 +117,14 @@ public interface RoleDao {
      * This method should not be used for user validation.
      * This method will return an empty map if the user is not part of any group.
      */
-    public Map<YukonRole, LiteYukonGroup> getRolesAndGroupsForUser(int userId);
+    public Multimap<YukonRole, LiteYukonGroup> getRolesAndGroupsForUser(int userId);
 
     /**
      * This method returns a map that contains the roles and the groups associated with those roles.
      * This method should not be used for user validation.
      * This method will return an empty map if the user group is not apart of any groups.
      */
-    public Map<YukonRole, LiteYukonGroup> getRolesAndRoleGroupsForUserGroup(int userGroupId);
+    public Multimap<YukonRole, LiteYukonGroup> getRolesAndRoleGroupsForUserGroup(int userGroupId);
 
     /**
      * This method returns all of the roles for a given login group.  This method should not be

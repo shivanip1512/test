@@ -50,21 +50,23 @@
                         <c:otherwise>
                             <div class="rolesContainer">
                                 <c:forEach var="category" items="${roles}">
-                                    <ul class="category">
-                                        <li><span class="categoryLabel">${category.key}</span>
-                                            <ul class="role">
-                                                <c:forEach var="roleGroupPair" items="${category.value}">
-                                                    <li>
-                                                        <cti:url value="/spring/adminSetup/roleGroup/view" var="roleGroupUrl">
-                                                            <cti:param name="roleGroupId" value="${roleGroupPair.second.groupID}"/>
-                                                        </cti:url>
-                                                        <cti:formatObject value="${roleGroupPair.first}"/>
-                                                        &nbsp;<a href="${roleGroupUrl}"><spring:escapeBody htmlEscape="true">(${roleGroupPair.second})</spring:escapeBody></a>
-                                                    </li>
-                                                </c:forEach>
-                                            </ul>
-                                        </li>
-                                    </ul>
+                                    <c:if test="${not empty category.key}">
+                                        <ul class="category">
+                                            <li><span class="categoryLabel">${category.key}</span>
+                                                <ul class="role">
+                                                    <c:forEach var="roleGroupPair" items="${category.value}">
+                                                        <li>
+                                                            <cti:url value="/spring/adminSetup/roleGroup/view" var="roleGroupUrl">
+                                                                <cti:param name="roleGroupId" value="${roleGroupPair.second.groupID}"/>
+                                                            </cti:url>
+                                                            <cti:formatObject value="${roleGroupPair.first}"/>
+                                                            &nbsp;<a href="${roleGroupUrl}"><spring:escapeBody htmlEscape="true">(${roleGroupPair.second})</spring:escapeBody></a>
+                                                        </li>
+                                                    </c:forEach>
+                                                </ul>
+                                            </li>
+                                        </ul>
+                                    </c:if>
                                 </c:forEach>
                             </div>
                         </c:otherwise>

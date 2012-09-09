@@ -20,10 +20,12 @@ import com.cannontech.roles.NotificationsRoleDefs;
 import com.cannontech.roles.OperatorRoleDefs;
 import com.cannontech.roles.YukonRoleDefs;
 import com.cannontech.roles.capcontrol.CBCOnelineSettingsRole;
+import com.google.common.base.Function;
 import com.google.common.collect.ImmutableCollection;
 import com.google.common.collect.ImmutableMap;
 import com.google.common.collect.ImmutableMap.Builder;
 import com.google.common.collect.ImmutableMultimap;
+import com.google.common.collect.Ordering;
 
 public enum YukonRole implements DisplayableEnum, DatabaseRepresentationSource {
     APPLICATION_BILLING(Application, ApplicationRoleDefs.BILLING_ROLEID),
@@ -69,10 +71,29 @@ public enum YukonRole implements DisplayableEnum, DatabaseRepresentationSource {
     WEB_GRAPH(System, ApplicationRoleDefs.WEB_GRAPH_ROLEID),
     SYSTEM(System, YukonRoleDefs.SYSTEM_ROLEID),
     ;
-    
+
     private final YukonRoleCategory category;
     private final int roleId;
-    
+
+    public final static Function<YukonRole, String> CATEGORY_FUNCTION = new Function<YukonRole, String>() {
+        @Override
+        public String apply(YukonRole input) {
+            if (input == null) {
+                return null;
+            }
+            return input.getCategory().name();
+        }
+    };
+    public final static Function<YukonRole, String> NAME_FUNCTION = new Function<YukonRole, String>() {
+        @Override
+        public String apply(YukonRole input) {
+            return input.name();
+        }
+    };
+
+    public final static Ordering<YukonRole> CATEGORY_COMPARATOR = Ordering.natural().nullsFirst().onResultOf(CATEGORY_FUNCTION);
+    public final static Ordering<YukonRole> CATEGORY_AND_NAME_COMPARATOR = CATEGORY_COMPARATOR.compound(Ordering.natural().nullsFirst().onResultOf(NAME_FUNCTION));
+
     private final static ImmutableMultimap<YukonRoleCategory, YukonRole> lookupByCategory;
     static {
         ImmutableMultimap.Builder<YukonRoleCategory, YukonRole>  builder = ImmutableMultimap.builder();
@@ -126,4 +147,8 @@ public enum YukonRole implements DisplayableEnum, DatabaseRepresentationSource {
         return roleId;
     }
     
+    @Override
+    public String toString() {
+        return name()+" ("+category+") ";
+    }
 }

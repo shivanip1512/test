@@ -2,7 +2,6 @@ package com.cannontech.database.data.user;
 
 import java.sql.SQLException;
 import java.util.List;
-import java.util.Map;
 import java.util.Map.Entry;
 import java.util.Set;
 
@@ -21,15 +20,16 @@ import com.cannontech.database.db.DBPersistent;
 import com.cannontech.message.dispatch.message.DBChangeMsg;
 import com.cannontech.message.dispatch.message.DbChangeType;
 import com.cannontech.spring.YukonSpringHook;
-import com.google.common.collect.ImmutableMap;
-import com.google.common.collect.Maps;
+import com.google.common.collect.HashMultimap;
+import com.google.common.collect.ImmutableMultimap;
+import com.google.common.collect.Multimap;
 import com.google.common.collect.Sets;
 
 public class UserGroup extends DBPersistent implements CTIDbChange, EditorPanel {	
     private static final Logger log = Logger.getLogger(UserGroup.class);
     
     private com.cannontech.database.db.user.UserGroup userGroup = new com.cannontech.database.db.user.UserGroup();
-    private Map<YukonRole, LiteYukonGroup> rolesToGroupMap = Maps.newHashMap();
+    private Multimap<YukonRole, LiteYukonGroup> rolesToGroupMap = HashMultimap.create();
 
     public com.cannontech.database.db.user.UserGroup getUserGroup() {
         return userGroup;
@@ -46,18 +46,22 @@ public class UserGroup extends DBPersistent implements CTIDbChange, EditorPanel 
         Set<LiteYukonGroup> roleGroups = Sets.newHashSet(rolesToGroupMap.values());
         return roleGroups;
     }
-    public void addRoleGroups(LiteYukonGroup liteYukonGroup) throws ConfigurationException {
+    public void addRoleGroups(LiteYukonGroup roleGroup) throws ConfigurationException {
         RoleDao roleDao = YukonSpringHook.getBean("roleDao", RoleDao.class);
-        Set<YukonRole> rolesForGroup = roleDao.getRolesForGroup(liteYukonGroup.getGroupID());
+        Set<YukonRole> rolesForRoleGroup = roleDao.getRolesForGroup(roleGroup.getGroupID());
 
-        for (YukonRole yukonRole : rolesForGroup) {
-            putRolesToGroupMap(yukonRole, liteYukonGroup);
+        if (rolesForRoleGroup.isEmpty()) {
+            putRolesToGroupMap(null, roleGroup);
+        }
+        
+        for (YukonRole yukonRole : rolesForRoleGroup) {
+            putRolesToGroupMap(yukonRole, roleGroup);
         }
     }
     
     // loginGroups
-    public Map<YukonRole, LiteYukonGroup> getRolesToGroupMap() {
-        return ImmutableMap.copyOf(rolesToGroupMap);
+    public Multimap<YukonRole, LiteYukonGroup> getRolesToGroupMap() {
+        return ImmutableMultimap.copyOf(rolesToGroupMap);
     }
     public boolean hasYukonRole(YukonRole yukonRole) {
         return rolesToGroupMap.containsKey(yukonRole);
@@ -65,15 +69,15 @@ public class UserGroup extends DBPersistent implements CTIDbChange, EditorPanel 
     public void clearRolesToGroupMap() {
         rolesToGroupMap.clear();
     }
-    public void putRolesToGroupMap(YukonRole yukonRole, LiteYukonGroup yukonGroup) throws ConfigurationException {
+    public void putRolesToGroupMap(YukonRole yukonRole, LiteYukonGroup roleGroup) throws ConfigurationException {
         if (!isAddable(yukonRole)) {
-            throw new ConfigurationException("The group settings supplied in "+yukonGroup.getGroupName()+" contains a role that already exists for the user group "+ this.userGroup.getUserGroupName() +".");
+            throw new ConfigurationException("The group settings supplied in "+roleGroup.getGroupName()+" contains a role that already exists for the user group "+ this.userGroup.getUserGroupName() +".");
         }
 
-        this.rolesToGroupMap.put(yukonRole, yukonGroup);
+        this.rolesToGroupMap.put(yukonRole, roleGroup);
     }
-    public void putAllRolesToGroupMap(Map<YukonRole, LiteYukonGroup> roleToGroupMap) throws ConfigurationException {
-        for (Entry<YukonRole, LiteYukonGroup> roleToGroupEntry : roleToGroupMap.entrySet()) {
+    public void putAllRolesToGroupMap(Multimap<YukonRole, LiteYukonGroup> roleToGroupMap) throws ConfigurationException {
+        for (Entry<YukonRole, LiteYukonGroup> roleToGroupEntry : roleToGroupMap.entries()) {
             if (!isAddable(roleToGroupEntry.getKey())) {
                 throw new ConfigurationException("The role group settings supplied in "+roleToGroupEntry.getValue().getGroupName()+" contains a role "+roleToGroupEntry.getKey() +" that already exists in the user group" +userGroup.getUserGroupName()+
                                                                        ".  ["+rolesToGroupMap+"]");
@@ -89,7 +93,7 @@ public class UserGroup extends DBPersistent implements CTIDbChange, EditorPanel 
      */
     public boolean isAddable(YukonRole yukonRole) {
         Set<YukonRole> existingRoles = this.rolesToGroupMap.keySet();
-        if (existingRoles.contains(yukonRole)) {
+        if (yukonRole != null && existingRoles.contains(yukonRole)) {
             return false;
         }
 
@@ -111,11 +115,11 @@ public class UserGroup extends DBPersistent implements CTIDbChange, EditorPanel 
         userGroup.add();
         
         RoleDao roleDao = YukonSpringHook.getBean("roleDao", RoleDao.class);
-        Map<YukonRole, LiteYukonGroup> rolesToGroupsMap = roleDao.getRolesAndRoleGroupsForUserGroup(userGroup.getUserGroupId());
+        Multimap<YukonRole, LiteYukonGroup> rolesToGroupsMap = roleDao.getRolesAndRoleGroupsForUserGroup(userGroup.getUserGroupId());
         try {
             putAllRolesToGroupMap(rolesToGroupsMap);
         } catch (ConfigurationException e) {
-            log.error("The user group "+userGroup.getUserGroupName()+" has a role group conflict.", e);
+            throw new RoleConflictInUserGroupException("The user group "+userGroup.getUserGroupName()+" has a role group conflict.", e);
         }
 
         // Add the connections between the yukon group and the user group
@@ -135,7 +139,7 @@ public class UserGroup extends DBPersistent implements CTIDbChange, EditorPanel 
         userGroup.retrieve();
 
         RoleDao roleDao = YukonSpringHook.getBean("roleDao", RoleDao.class);
-        Map<YukonRole, LiteYukonGroup> rolesToGroupsMap = roleDao.getRolesAndRoleGroupsForUserGroup(userGroup.getUserGroupId());
+        Multimap<YukonRole, LiteYukonGroup> rolesToGroupsMap = roleDao.getRolesAndRoleGroupsForUserGroup(userGroup.getUserGroupId());
         try {
             putAllRolesToGroupMap(rolesToGroupsMap);
         } catch (ConfigurationException e) {
