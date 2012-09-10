@@ -83,39 +83,34 @@ public class RawPointHistoryDaoImpl implements RawPointHistoryDao {
         };
 
     private SqlFragmentSource buildSql(Clusivity clusivity, List<Integer> pointIds, Date startDate,
-                                       Date stopDate, Order order, OrderBy orderBy) {
+                                       Date stopDate, Order order) {
         SqlStatementBuilder sql = new SqlStatementBuilder();
         sql.append("SELECT DISTINCT rph.pointid, rph.timestamp, rph.value, rph.quality, p.pointtype");
         appendFromAndWhereClause(sql, pointIds, startDate, stopDate, clusivity);
-        appendOrderByClause(sql, order, orderBy);
+        appendOrderByClause(sql, order);
 
         return sql;
     }
-    
-    private SqlFragmentSource buildLimitedSql(Clusivity clusivity, int pointId, Date startDate, Date stopDate, int maxRows, Order order, OrderBy orderBy) {
+
+    private SqlFragmentSource buildLimitedSql(Clusivity clusivity, int pointId, Date startDate, Date stopDate, int maxRows, Order order) {
         VendorSpecificSqlBuilder builder = vendorSpecificSqlBuilderFactory.create();
         SqlBuilder sqla = builder.buildFor(DatabaseVendor.MS2000);
         sqla.append("SELECT DISTINCT TOP " + maxRows);
         sqla.append(  "rph.pointid, rph.timestamp, rph.value, rph.quality, p.pointtype");
         appendFromAndWhereClause(sqla, pointId, startDate, stopDate, clusivity);
-        
+        appendOrderByClause(sqla, order);
+
         SqlBuilder sqlb = builder.buildOther();
         sqlb.append("select * from (");
         sqlb.append(  "SELECT DISTINCT rph.pointid, rph.timestamp,");
         sqlb.append(    "rph.value, rph.quality, p.pointtype,");
         sqlb.append(    "ROW_NUMBER() over (");
-        // This is done to enforce that latest date or the highest value should always be row number: 1
-        appendOrderByClause(sqlb, Order.REVERSE, orderBy);
+        appendOrderByClause(sqlb, order);
         sqlb.append(    ") rn");
         appendFromAndWhereClause(sqlb, pointId, startDate, stopDate, clusivity);
         sqlb.append(") numberedRows");
         sqlb.append("where numberedRows.rn").lte(maxRows);
         sqlb.append("ORDER BY numberedRows.rn");
-        //row number 1 = latest date or the highest value 
-        //sorting row numbers descending will always return the smallest timestamp or value first.
-        if (order == Order.FORWARD) {
-            sqlb.append("DESC");
-        }
         
         return builder;
     }
@@ -197,51 +192,47 @@ public class RawPointHistoryDaoImpl implements RawPointHistoryDao {
         return result;
     }
     
+    @Override
     public List<PointValueHolder> getPointData(int pointId, Date startDate, Date stopDate) {
         return getPointData(pointId, startDate, stopDate, Clusivity.EXCLUSIVE_INCLUSIVE, Order.FORWARD);
     }
 
+    @Override
     public List<PointValueHolder> getPointData(int pointId, Date startDate, Date stopDate,
                                                Clusivity clusivity, Order order) {
         SqlFragmentSource sql =
-            buildSql(clusivity, Collections.singletonList(pointId), startDate, stopDate, order, OrderBy.TIMESTAMP);
-        return executeQuery(sql);
-    }
-    
-    public List<PointValueHolder> getPointData(int pointId, Date startDate, Date stopDate,
-                                               Clusivity clusivity, Order order, OrderBy orderBy) {
-        SqlFragmentSource sql =
-            buildSql(clusivity, Collections.singletonList(pointId), startDate, stopDate, order, orderBy);
+            buildSql(clusivity, Collections.singletonList(pointId), startDate, stopDate, order);
         return executeQuery(sql);
     }
 
-    public List<PointValueHolder> getLimitedPointData(int pointId, Date startDate, Date stopDate, Clusivity clusivity, Order order, OrderBy orderBy, int maxRows) {
-        SqlFragmentSource sql = buildLimitedSql(clusivity, pointId, startDate, stopDate, maxRows, order, orderBy);
+    @Override
+    public List<PointValueHolder> getLimitedPointData(int pointId, Date startDate, Date stopDate, Clusivity clusivity, Order order, int maxRows) {
+        SqlFragmentSource sql = buildLimitedSql(clusivity, pointId, startDate, stopDate, maxRows, order);
         return executeQuery(sql);
     }
     
-    public List<PointValueHolder> getLimitedPointData(int pointId, Date startDate, Date stopDate, Clusivity clusivity, Order order, int maxRows) {
-        SqlFragmentSource sql = buildLimitedSql(clusivity, pointId, startDate, stopDate, maxRows, order, OrderBy.TIMESTAMP);
-        return executeQuery(sql);
-    }
-   
+    @Override
     public Map<PaoIdentifier, PointValueQualityHolder> getSingleAttributeData(Iterable<? extends YukonPao> displayableDevices, Attribute attribute, final boolean excludeDisabledPaos) {
         ListMultimap<PaoIdentifier, PointValueQualityHolder> limitedStuff = 
                 getLimitedAttributeData(displayableDevices, attribute, null, null, 1, excludeDisabledPaos, Clusivity.EXCLUSIVE_EXCLUSIVE, Order.REVERSE);
         
         return Maps.transformValues(limitedStuff.asMap(), new Function<Collection<PointValueQualityHolder>, PointValueQualityHolder>() {
+            @Override
             public PointValueQualityHolder apply(Collection<PointValueQualityHolder> from) {
                 return Iterables.getOnlyElement(from);
             }
         });
     }
     
+    @Override
     public ListMultimap<PaoIdentifier, PointValueQualityHolder> getLimitedAttributeData(Iterable<? extends YukonPao> displayableDevices, Attribute attribute, final Date startDate, final Date stopDate, final int maxRows, final boolean excludeDisabledPaos, final Clusivity clusivity, final Order order) {
         return getLimitedAttributeData(displayableDevices, attribute, startDate, stopDate, maxRows, excludeDisabledPaos, clusivity, order, OrderBy.TIMESTAMP);
     }
     
+    @Override
     public ListMultimap<PaoIdentifier, PointValueQualityHolder> getLimitedAttributeData(Iterable<? extends YukonPao> displayableDevices, Attribute attribute, final Date startDate, final Date stopDate, final int maxRows, final boolean excludeDisabledPaos, final Clusivity clusivity, final Order order, final OrderBy orderBy) {
         SqlFragmentGeneratorFactory factory = new SqlFragmentGeneratorFactory() {
+            @Override
             public SqlFragmentGenerator<Integer> create(final PointIdentifier pointIdentifier) {
                 return new SqlFragmentGenerator<Integer>() {
                     @Override
@@ -277,6 +268,7 @@ public class RawPointHistoryDaoImpl implements RawPointHistoryDao {
         return loadValuesForGeneratorFactory(factory, displayableDevices, attribute, maxRows, excludeDisabledPaos);
     }
     
+    @Override
     public ListMultimap<PaoIdentifier, PointValueQualityHolder> getAttributeData(Iterable<? extends YukonPao> displayableDevices,
                                                                                  Attribute attribute,
                                                                                  final Date startDate,
@@ -285,6 +277,7 @@ public class RawPointHistoryDaoImpl implements RawPointHistoryDao {
                                                                                  final Clusivity clusivity,
                                                                                  final Order order) {
         SqlFragmentGeneratorFactory factory = new SqlFragmentGeneratorFactory() {
+            @Override
             public SqlFragmentGenerator<Integer> create(final PointIdentifier pointIdentifier) {
                 return new SqlFragmentGenerator<Integer>() {
                     @Override
@@ -316,6 +309,7 @@ public class RawPointHistoryDaoImpl implements RawPointHistoryDao {
     @Override
     public ListMultimap<PaoIdentifier, PointValueQualityHolder> getAttributeDataByChangeIdRange(Iterable <? extends YukonPao> displayableDevices, Attribute attribute, final Range<Long> changeIdRange, final boolean excludeDisabledPaos, final Clusivity clusivity, final Order order) {
         SqlFragmentGeneratorFactory factory = new SqlFragmentGeneratorFactory() {
+            @Override
             public SqlFragmentGenerator<Integer> create(final PointIdentifier pointIdentifier) {
                 return new SqlFragmentGenerator<Integer>() {
                     @Override
@@ -417,6 +411,7 @@ public class RawPointHistoryDaoImpl implements RawPointHistoryDao {
                                                                                        final Date startDate, final Date stopDate, final Clusivity clusivity, 
                                                                                        final Order order) {
         SqlFragmentGeneratorFactory factory = new SqlFragmentGeneratorFactory() {
+            @Override
             public SqlFragmentGenerator<Integer> create(final PointIdentifier pointIdentifier) {
                 return new SqlFragmentGenerator<Integer>() {
                     @Override
@@ -456,6 +451,7 @@ public class RawPointHistoryDaoImpl implements RawPointHistoryDao {
                                                                                        final Clusivity clusivity, 
                                                                                        final Order order) {
         SqlFragmentGeneratorFactory factory = new SqlFragmentGeneratorFactory() {
+            @Override
             public SqlFragmentGenerator<Integer> create(final PointIdentifier pointIdentifier) {
                 return new SqlFragmentGenerator<Integer>() {
                     @Override
@@ -503,6 +499,7 @@ public class RawPointHistoryDaoImpl implements RawPointHistoryDao {
                                                                                                  final Clusivity clusivity, 
                                                                                                  final Order order) {
         SqlFragmentGeneratorFactory factory = new SqlFragmentGeneratorFactory() {
+            @Override
             public SqlFragmentGenerator<Integer> create(final PointIdentifier pointIdentifier) {
                 return new SqlFragmentGenerator<Integer>() {
                     @Override
@@ -573,6 +570,7 @@ public class RawPointHistoryDaoImpl implements RawPointHistoryDao {
         return result;
     }
 
+    @Override
     public long getMaxChangeId() {
         SqlStatementBuilder sql = new SqlStatementBuilder();
         sql.append("SELECT MAX(ChangeId)");
@@ -702,6 +700,7 @@ public class RawPointHistoryDaoImpl implements RawPointHistoryDao {
      */
     private class LiteRphRowMapper implements ParameterizedRowMapper<PointValueHolder> {
 
+        @Override
         public PointValueQualityHolder mapRow(ResultSet rs, int rowNum) throws SQLException {
 
             PointValueBuilder builder = PointValueBuilder.create();
@@ -713,6 +712,7 @@ public class RawPointHistoryDaoImpl implements RawPointHistoryDao {
     
     private class LiteRPHQualityRowMapper implements ParameterizedRowMapper<PointValueQualityHolder> {
 
+        @Override
         public PointValueQualityHolder mapRow(ResultSet rs, int rowNum) throws SQLException {
             PointValueBuilder builder = PointValueBuilder.create();
             builder.withResultSet(rs);
@@ -721,6 +721,7 @@ public class RawPointHistoryDaoImpl implements RawPointHistoryDao {
         }
     }
 
+    @Override
     public List<PointValueHolder> getIntervalPointData(int pointId, Date startDate, Date stopDate, ChartInterval resolution, Mode mode) {
         // unlike the other code, this expects to process things in increasing order
 
@@ -793,6 +794,7 @@ public class RawPointHistoryDaoImpl implements RawPointHistoryDao {
         public SqlFragmentGenerator<Integer> create(PointIdentifier pointIdentifier);
     }
     
+    @Override
     public AdjacentPointValues getAdjacentPointValues(PointValueHolder pvh) {
         
         int pointId = pvh.getId();
