@@ -17,6 +17,7 @@ import com.cannontech.cbc.cyme.model.CymeSimulationStatus;
 import com.cannontech.cbc.cyme.model.SimulationResultSummaryData;
 import com.cannontech.clientutils.YukonLogManager;
 import com.cannontech.common.config.ConfigurationSource;
+import com.cannontech.common.config.MasterConfigStringKeysEnum;
 import com.cannontech.common.util.ObjectMapper;
 import com.cannontech.common.util.xml.SimpleXPathTemplate;
 import com.cannontech.common.util.xml.YukonXml;
@@ -26,7 +27,7 @@ public class CymeWebServiceImpl implements CymeWebService {
     private RestOperations cymeRestTemplate;    /*Autowired by Setter*/
     @Autowired private ConfigurationSource configurationSource;
     
-    private static String BASE_CYME_URL;
+    private String BASE_CYME_URL;
     private static final String SIMULATION_URL_PART = "/CYMDIST/SimulationsService.svc/rest/Simulation";
     private static final String RUN_STUDY_URL_END = "/Run/Study/";
     private static final String CHECK_REPORT_STATUS_URL_END = "/Status/";
@@ -46,7 +47,7 @@ public class CymeWebServiceImpl implements CymeWebService {
 
     @PostConstruct
     public void initialize() {
-        BASE_CYME_URL = configurationSource.getRequiredString("CYME_DIST_BASE_URL");
+        BASE_CYME_URL = configurationSource.getString(MasterConfigStringKeysEnum.CYME_DIST_BASE_URL, "http://localhost:8866");
         log.info(BASE_CYME_URL);
     }
 

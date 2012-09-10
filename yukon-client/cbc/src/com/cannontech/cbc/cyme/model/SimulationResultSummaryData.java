@@ -1,6 +1,6 @@
 package com.cannontech.cbc.cyme.model;
 
-public class SimulationResultSummaryData {
+public final class SimulationResultSummaryData {
 
     private String networkId;
     private String simulationId;

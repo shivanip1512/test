@@ -167,15 +167,15 @@ public class CymeXMLBuilder {
     private static String convertBankStatus(BankState state) {
         
         switch (state) {
-            case Open:
-            case OpenFail://Should we consider this a closed because it "Failed to open?"
-            case OpenPending:
-            case OpenQuestionable:
+            case OPEN:
+            case OPEN_FAIL://Should we consider this a closed because it "Failed to open?"
+            case OPEN_PENDING:
+            case OPEN_QUESTIONABLE:
                 return "Disconnected";
-            case Close:
-            case CloseFail://Should we consider this an open because it "Failed to close?"
-            case ClosePending:
-            case CloseQuestionable:
+            case CLOSE:
+            case CLOSE_FAIL://Should we consider this an open because it "Failed to close?"
+            case CLOSE_PENDING:
+            case CLOSE_QUESTIONABLE:
                 return "Connected";
         }
         throw new UnsupportedOperationException("Attempted to convert an unknown BankState: " + state.name());

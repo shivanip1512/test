@@ -1,7 +1,5 @@
 package com.cannontech.common.pao.model;
 
-import javax.xml.bind.annotation.XmlRootElement;
-
 import com.cannontech.common.pao.PaoCategory;
 import com.cannontech.common.pao.PaoClass;
 import com.cannontech.common.pao.PaoIdentifier;
@@ -10,7 +8,6 @@ import com.cannontech.common.pao.annotation.YukonPao;
 import com.cannontech.common.pao.annotation.YukonPaoField;
 import com.cannontech.common.util.CtiUtilities;
 
-@XmlRootElement
 @YukonPao(tableName="YukonPaObject", idColumnName="PaObjectId")
 public class CompleteYukonPao implements com.cannontech.common.pao.YukonPao {
     private PaoIdentifier paoIdentifier;

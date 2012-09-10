@@ -69,27 +69,6 @@ public class SubstationBusDaoImpl implements SubstationBusDao {
             return bus;
         }
     };
-
-    public static final YukonRowMapper<PointPaoIdentifier> pointPaoRowMapper  = new YukonRowMapper<PointPaoIdentifier>(){
-
-            @Override
-            public PointPaoIdentifier mapRow(YukonResultSet rs) throws SQLException {
-                PointPaoIdentifier bankPoint= new PointPaoIdentifier();
-
-                int paoId = rs.getInt("PaObjectId");
-                String typeStr = rs.getString("Type");
-                PaoType paoType = PaoType.getForDbString(typeStr);
-                bankPoint.setPaoIdentifier(new PaoIdentifier(paoId, paoType));
-                
-                String paoName = rs.getString("PaoName");
-                bankPoint.setPaoName(paoName);
-                
-                int pointId = rs.getInt("PointId");
-                bankPoint.setPointId(pointId);
-                
-                return bankPoint;
-            }
-    };
     
     public SubstationBus findSubBusById(int id){
         SqlStatementBuilder sql = new SqlStatementBuilder();

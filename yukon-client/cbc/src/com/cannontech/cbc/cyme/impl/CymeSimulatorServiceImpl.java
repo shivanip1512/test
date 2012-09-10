@@ -305,8 +305,8 @@ public class CymeSimulatorServiceImpl implements CymeSimulatorService, CymeSimul
     @Override
     public void notifyCbcControl(PointValueQualityHolder pointData) {
         BankState state = PointStateHelper.decodeRawState(BankState.class, pointData.getValue());
-        if (state == BankState.OpenPending || state == BankState.ClosePending) {
-            logger.debug("OpenPending or Close pending state detected. Scheduling Simulation.");
+        if (state == BankState.OPEN_PENDING || state == BankState.CLOSE_PENDING) {
+            logger.debug("OpenPending or ClosePending state detected. Scheduling Simulation.");
             scheduleCymeStudy();
         }
     }

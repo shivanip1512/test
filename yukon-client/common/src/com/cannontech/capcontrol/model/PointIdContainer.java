@@ -2,14 +2,14 @@ package com.cannontech.capcontrol.model;
 
 public class PointIdContainer {
 
-    int voltId;
-    int varAId;
-    int varBId;
-    int varCId;
-    int varTotalId;
-    int wattId;
+    private int voltId;
+    private int varAId;
+    private int varBId;
+    private int varCId;
+    private int varTotalId;
+    private int wattId;
     
-    boolean totalizekVar;
+    private boolean totalizekVar;
     
     
     public boolean isTotalizekVar() {

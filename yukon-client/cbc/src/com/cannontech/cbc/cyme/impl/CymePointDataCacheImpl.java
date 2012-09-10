@@ -6,7 +6,11 @@ import java.util.Map;
 import java.util.Map.Entry;
 import java.util.Set;
 import java.util.concurrent.ConcurrentHashMap;
+import java.util.concurrent.Executors;
+import java.util.concurrent.ScheduledExecutorService;
+import java.util.concurrent.TimeUnit;
 
+import org.apache.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
 
 import com.cannontech.capcontrol.dao.SubstationBusDao;
@@ -14,6 +18,7 @@ import com.cannontech.capcontrol.dao.ZoneDao;
 import com.cannontech.capcontrol.model.PointPaoIdentifier;
 import com.cannontech.cbc.cyme.CymePointDataCache;
 import com.cannontech.cbc.cyme.CymeSimulationListener;
+import com.cannontech.clientutils.YukonLogManager;
 import com.cannontech.common.pao.PaoIdentifier;
 import com.cannontech.common.pao.definition.model.PaoPointIdentifier;
 import com.cannontech.common.pao.definition.model.PointIdentifier;
@@ -25,6 +30,7 @@ import com.cannontech.core.dynamic.PointValueQualityHolder;
 import com.cannontech.database.data.lite.LitePoint;
 import com.cannontech.database.data.point.PointType;
 import com.cannontech.database.db.point.stategroup.TrueFalse;
+import com.cannontech.yukon.IServerConnection;
 import com.google.common.collect.ImmutableList;
 import com.google.common.collect.ImmutableMap;
 import com.google.common.collect.Lists;
@@ -32,10 +38,13 @@ import com.google.common.collect.Sets;
 
 public class CymePointDataCacheImpl implements CymePointDataCache, PointDataListener {
     
+    private static final Logger log = YukonLogManager.getLogger(CymePointDataCacheImpl.class);
+    
     @Autowired private AsyncDynamicDataSource asyncDynamicDataSource;  
     @Autowired private SubstationBusDao substationBusDao;
     @Autowired private PointDao pointDao;
     @Autowired private ZoneDao zoneDao;
+    @Autowired private IServerConnection dispatchConnection;
     
     private Map<Integer,PointPaoIdentifier> pointIdToPointPaoIdentifier = new ConcurrentHashMap<Integer,PointPaoIdentifier>();
     private Map<Integer,PointValueQualityHolder> pointIdToValue = new ConcurrentHashMap<Integer,PointValueQualityHolder>();
@@ -47,10 +56,15 @@ public class CymePointDataCacheImpl implements CymePointDataCache, PointDataList
     
     private Map<Integer,CymeSimulationListener> busIdtoListener = new ConcurrentHashMap<Integer,CymeSimulationListener>();
     private List<CymeSimulationListener> cymeListeners = Lists.newArrayList();
-        
+
+    private ScheduledExecutorService scheduledExecutor = Executors.newScheduledThreadPool(1);
+    
+    private Set<Integer> subBusPoints = Sets.newHashSet();
+    
     @Override
     public void registerPointsForSubStationBus(CymeSimulationListener listener, PaoIdentifier subbus) {
-        loadCymeSimulationControlPoints(listener, subbus);
+        Set<Integer> pointsToRegister = loadCymeSimulationControlPoints(listener, subbus);
+        subBusPoints.addAll(pointsToRegister);
         
         // Determine the Bank Status points to watch for Capcontrol Server changes.
         Collection<PointPaoIdentifier> bankPoints = substationBusDao.getBankStatusPointPaoIdsBySubbusId(subbus.getPaoId());
@@ -64,18 +78,39 @@ public class CymePointDataCacheImpl implements CymePointDataCache, PointDataList
         for (PointPaoIdentifier zone : regulatorPoints) {
             pointIdToPointPaoIdentifier.put(zone.getPointId(), zone);
         }
-        
-        //Register Bank Statuses
-        Set<? extends PointValueQualityHolder> pointValues = asyncDynamicDataSource.getAndRegisterForPointData(this, pointIdToPointPaoIdentifier.keySet());
 
-        for (PointValueQualityHolder pvqh : pointValues) {
-            pointIdToValue.put(pvqh.getId(), pvqh);
-        }
+        scheduledExecutor.scheduleAtFixedRate(new Runnable() {            
+            @Override
+            public void run() {
+                if(registerPoints()) {
+                    log.info("Dispatch connection online, registered points successfully.");
+                   throw new RuntimeException();//Terminates future calls 
+                } else {
+                    log.info("Could not register for point updates. Dispatch is not connected. Attempting to register again in 30 seconds.");
+                }
+            }
+        }, 0,30,TimeUnit.SECONDS);
         
         cymeListeners.add(listener);
     }
 
-    private void loadCymeSimulationControlPoints(CymeSimulationListener listener, PaoIdentifier subbus) {
+    private boolean registerPoints() {
+        if (dispatchConnection.isValid()) {
+            //Register Bank Statuses
+            Set<? extends PointValueQualityHolder> pointValues = asyncDynamicDataSource.getAndRegisterForPointData(this, pointIdToPointPaoIdentifier.keySet());
+
+            for (PointValueQualityHolder pvqh : pointValues) {
+                pointIdToValue.put(pvqh.getId(), pvqh);
+            }
+            
+            asyncDynamicDataSource.getAndRegisterForPointData(this, subBusPoints);
+            
+            return true;
+        }
+        return false;
+    }
+    
+    private Set<Integer> loadCymeSimulationControlPoints(CymeSimulationListener listener, PaoIdentifier subbus) {
         PointIdentifier cymeEnabled = new PointIdentifier(PointType.Status, 350);
         PointIdentifier startSimulation = new PointIdentifier(PointType.Status, 351);
         PointIdentifier loadFactor = new PointIdentifier(PointType.Analog, 352);
@@ -105,7 +140,7 @@ public class CymePointDataCacheImpl implements CymePointDataCache, PointDataList
         pointIdToPointPaoIdentifier.put(pointId, pointPaoIdentifier);
         //NOT putting in pointIds because it will get registered above.
         
-        asyncDynamicDataSource.getAndRegisterForPointData(this,pointIds);
+        return pointIds;
     }
     
     @Override

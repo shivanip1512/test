@@ -105,6 +105,7 @@ public class AsyncDynamicDataSourceImpl implements AsyncDynamicDataSource, Messa
         this.dispatchConnection.addMessageListener(this);
     }
     
+    @Override
     public void registerForAllPointData(PointDataListener l) {
         allPointListeners.add(l);
         allPointsRegistered = true;
@@ -116,6 +117,7 @@ public class AsyncDynamicDataSourceImpl implements AsyncDynamicDataSource, Messa
         }
     }
 
+    @Override
     public void registerForPointData(PointDataListener l, Set<Integer> pointIds) {
         // find points we aren't already registered for
         Set<Integer> unregisteredPointIds = Sets.difference(pointIds, getAllRegisteredPoints()).immutableCopy();
@@ -139,21 +141,25 @@ public class AsyncDynamicDataSourceImpl implements AsyncDynamicDataSource, Messa
         return dynamicDataSource.getPointValue(pointId);
     }
     
+    @Override
     public Set<? extends PointValueQualityHolder> getAndRegisterForPointData(PointDataListener l, Set<Integer> pointIds) {
         registerForPointData(l, pointIds);
         return dynamicDataSource.getPointValue(pointIds);
     }
 
+    @Override
     public void unRegisterForPointData(PointDataListener l, Set<Integer> pointIds) {
         for (Integer id : pointIds) {
             pointIdPointDataListeners.remove(id, l);
         }
     }
 
+    @Override
     public void unRegisterForPointData(PointDataListener l) {
         pointIdPointDataListeners.values().removeAll(ImmutableSet.of(l));
     }
 
+    @Override
     public void registerForSignals(SignalListener l, Set<Integer> pointIds) {
         // find points we aren't already registered for
         Set<Integer> unregisteredPointIds = Sets.difference(pointIds, getAllRegisteredPoints()).immutableCopy();
@@ -176,28 +182,34 @@ public class AsyncDynamicDataSourceImpl implements AsyncDynamicDataSource, Messa
         alarmSignalListeners.add(listener);
     }
 
+    @Override
     public void unRegisterForSignals(SignalListener l, Set<Integer> pointIds) {
         for (Integer id : pointIds) {
             pointIdSignalListeners.remove(id, l);
         }
     }
 
+    @Override
     public void unRegisterForSignals(SignalListener l) {
         pointIdSignalListeners.values().removeAll(ImmutableSet.of(l));
     }
 
+    @Override
     public void addDBChangeListener(DBChangeListener l) {
         dbChangeListeners.add(l);
     }
 
+    @Override
     public void removeDBChangeListener(DBChangeListener l) {
         dbChangeListeners.remove(l);
     }
 
+    @Override
     public void addDBChangeLiteListener(DBChangeLiteListener l) {
         dbChangeLiteListeners.add(l);
     }
 
+    @Override
     public void removeDBChangeLiteListener(DBChangeLiteListener l) {
         dbChangeLiteListeners.remove(l);
     }
@@ -234,13 +246,14 @@ public class AsyncDynamicDataSourceImpl implements AsyncDynamicDataSource, Messa
             }
         });
     }
-        
+
+    @Override
     public void messageReceived(MessageEvent e) {
         Object o = e.getMessage();
         handleIncoming(o);        
     }
 
-    public void handleIncoming(Object o) {
+    private void handleIncoming(Object o) {
         if(o instanceof PointData) {
             handlePointData((PointData)o);
         }
@@ -285,7 +298,7 @@ public class AsyncDynamicDataSourceImpl implements AsyncDynamicDataSource, Messa
         }
     }
     
-    public void handleSignal(Signal signal) {
+    private void handleSignal(Signal signal) {
         Set<SignalListener> listeners;
         // lock pointIdSignalListeners (the object is the lock used internally)
         synchronized (pointIdSignalListeners) {
@@ -306,7 +319,6 @@ public class AsyncDynamicDataSourceImpl implements AsyncDynamicDataSource, Messa
             }
         }
     }
-    
     
     private void handleDBChange(DBChangeMsg dbChange) {
         // Don't process message if we know it was sent through

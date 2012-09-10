@@ -14,6 +14,7 @@ import org.springframework.jdbc.core.namedparam.MapSqlParameterSource;
 import com.cannontech.capcontrol.CapBankToZoneMapping;
 import com.cannontech.capcontrol.PointToZoneMapping;
 import com.cannontech.capcontrol.dao.CcMonitorBankListDao;
+import com.cannontech.capcontrol.dao.SubstationBusDao;
 import com.cannontech.capcontrol.dao.ZoneDao;
 import com.cannontech.capcontrol.exception.OrphanedRegulatorException;
 import com.cannontech.capcontrol.model.AbstractZone;
@@ -603,7 +604,7 @@ public class ZoneDaoImpl implements ZoneDao, InitializingBean {
         sql.append("WHERE Z.SubstationBusId").eq(substationBusId);
         sql.append("  AND EPPA.Attribute").eq_k(RegulatorPointMapping.TAP_POSITION);
 
-        List<PointPaoIdentifier> results = yukonJdbcTemplate.query(sql, SubstationBusDaoImpl.pointPaoRowMapper);
+        List<PointPaoIdentifier> results = yukonJdbcTemplate.query(sql, SubstationBusDao.pointPaoRowMapper);
 
         return results;
     }
