@@ -6,6 +6,7 @@ import com.cannontech.core.users.dao.UserGroupDao;
 import com.cannontech.core.users.model.LiteUserGroup;
 import com.cannontech.database.db.DBPersistent;
 import com.cannontech.spring.YukonSpringHook;
+import com.google.common.base.Function;
 import com.google.common.collect.Ordering;
 
 
@@ -36,22 +37,25 @@ public class UserGroup extends DBPersistent implements Comparable {
         this.userGroupDescription = userGroupDescription;
     }
 
-    @Override
-    public int compareTo(Object val) {
-        UserGroup userGroup = ((UserGroup)val);
-        return userGroupNameComparator().compare(this, userGroup);
-    }
-    
+    /**
+     * A google function that translates a user group to a user group name.
+     */
+    public static final Function<UserGroup, String> USER_GROUP_TO_NAME_FUNCTION = new Function<UserGroup, String>() {
+        @Override
+        public String apply(UserGroup userGroup) {
+            return userGroup.getUserGroupName();
+        }
+    };
+
     /**
      * This method returns a comparator that will order a list of user groups by their user group names 
      */
-    public static Ordering<UserGroup> userGroupNameComparator() {
-        return new Ordering<UserGroup>() {
-            @Override
-            public int compare(UserGroup left, UserGroup right) {
-                return left.getUserGroupName().compareTo(right.getUserGroupName());
-            }
-        };
+    public static Ordering<UserGroup> ORDER_BY_USER_GROUP_NAME = Ordering.natural().onResultOf(USER_GROUP_TO_NAME_FUNCTION);
+    
+    @Override
+    public int compareTo(Object val) {
+        UserGroup userGroup = ((UserGroup)val);
+        return ORDER_BY_USER_GROUP_NAME.compare(this, userGroup);
     }
     
     /**

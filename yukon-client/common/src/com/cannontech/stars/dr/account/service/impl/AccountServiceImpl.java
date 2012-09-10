@@ -617,6 +617,17 @@ public class AccountServiceImpl implements AccountService {
                 /*
                  * Update their login info.
                  */
+                
+                if (accountDto.getUserGroup() != null) {
+                    try {
+                        LiteUserGroup userGroup = userGroupDao.getLiteUserGroupByUserGroupName(accountDto.getUserGroup());
+                        login.setUserGroupId(userGroup.getUserGroupId());
+                    }catch (NotFoundException e) {
+                        log.error("Account " + accountNumber + " could not be updated: The provided user group '"+ accountDto.getUserGroup() + "' doesn't exist.");
+                        throw new InvalidLoginGroupException("The provided user group '"+ accountDto.getUserGroup() + "' doesn't exist.");
+                    }
+                }
+                
                 login.setUsername(username);
                 // passwords should be handled better than plain text
                 String password = accountDto.getPassword();
@@ -634,13 +645,15 @@ public class AccountServiceImpl implements AccountService {
                 LiteYukonUser newUser = new LiteYukonUser(); 
                 newUser.setUsername(accountDto.getUserName());
                 newUser.setLoginStatus(LoginStatusEnum.ENABLED);
-                LiteUserGroup userGroup = null;
-                try {
-                    userGroup = userGroupDao.getLiteUserGroupByUserGroupName(accountDto.getUserGroup());
-                    newUser.setUserGroupId(userGroup.getUserGroupId());
-                }catch (NotFoundException e) {
-                    log.error("Account " + accountNumber + " could not be updated: The provided user group '"+ accountDto.getUserGroup() + "' doesn't exist.");
-                    throw new InvalidLoginGroupException("The provided user group '"+ accountDto.getUserGroup() + "' doesn't exist.");
+
+                if (accountDto.getUserGroup() != null) {
+                    try {
+                        LiteUserGroup userGroup = userGroupDao.getLiteUserGroupByUserGroupName(accountDto.getUserGroup());
+                        newUser.setUserGroupId(userGroup.getUserGroupId());
+                    }catch (NotFoundException e) {
+                        log.error("Account " + accountNumber + " could not be updated: The provided user group '"+ accountDto.getUserGroup() + "' doesn't exist.");
+                        throw new InvalidLoginGroupException("The provided user group '"+ accountDto.getUserGroup() + "' doesn't exist.");
+                    }
                 }
                 
                 String password = accountDto.getPassword();
