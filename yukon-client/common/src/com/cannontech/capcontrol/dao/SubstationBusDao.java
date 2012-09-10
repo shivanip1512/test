@@ -1,5 +1,6 @@
 package com.cannontech.capcontrol.dao;
 
+import java.sql.SQLException;
 import java.util.List;
 
 import com.cannontech.capcontrol.model.LiteCapControlObject;
@@ -7,9 +8,34 @@ import com.cannontech.capcontrol.model.PointIdContainer;
 import com.cannontech.capcontrol.model.PointPaoIdentifier;
 import com.cannontech.capcontrol.model.Substation;
 import com.cannontech.capcontrol.model.SubstationBus;
+import com.cannontech.common.pao.PaoIdentifier;
+import com.cannontech.common.pao.PaoType;
 import com.cannontech.common.search.SearchResult;
+import com.cannontech.database.YukonResultSet;
+import com.cannontech.database.YukonRowMapper;
 
 public interface SubstationBusDao {
+    
+    public final YukonRowMapper<PointPaoIdentifier> pointPaoRowMapper  = new YukonRowMapper<PointPaoIdentifier>(){
+
+        @Override
+        public PointPaoIdentifier mapRow(YukonResultSet rs) throws SQLException {
+            PointPaoIdentifier bankPoint= new PointPaoIdentifier();
+
+            int paoId = rs.getInt("PaObjectId");
+            String typeStr = rs.getString("Type");
+            PaoType paoType = PaoType.getForDbString(typeStr);
+            bankPoint.setPaoIdentifier(new PaoIdentifier(paoId, paoType));
+            
+            String paoName = rs.getString("PaoName");
+            bankPoint.setPaoName(paoName);
+            
+            int pointId = rs.getInt("PointId");
+            bankPoint.setPointId(pointId);
+            
+            return bankPoint;
+        }
+    };
     
     /**
      * This method returns a {@link SubstationBus} specified by an Id.
