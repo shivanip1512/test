@@ -435,3 +435,4 @@ MODIFY LastStopTimeSent DATE NOT NULL;
 /* VERSION INFO                                               */ 
 /*   Automatically gets inserted from build script            */ 
 /**************************************************************/ 
+INSERT INTO CTIDatabase VALUES ('5.5', 'Garrett D', '10-SEP-2012', 'Latest Update', 3 );
