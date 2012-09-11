@@ -366,7 +366,7 @@
     
     <target name="symstore">
         <exec failonerror="true" dir="yukon-build/symbolserver/" executable="cmd.exe">
-            <arg line='/c symstore add /r /f ${basedir}\yukon-server\*.* /s \\pspl0019\symbols /t "Yukon Server" /v "${yukon.build.details}"'/>
+            <arg line='/c symstore add /r /f ${basedir}\yukon-server\*.* /s \\pspl0019.cannontech.com\symbols /t "Yukon Server" /v "${yukon.build.details}"'/>
         </exec>   
     </target>
         
