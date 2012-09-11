@@ -619,13 +619,7 @@ public class AccountServiceImpl implements AccountService {
                  */
                 
                 if (accountDto.getUserGroup() != null) {
-                    try {
-                        LiteUserGroup userGroup = userGroupDao.getLiteUserGroupByUserGroupName(accountDto.getUserGroup());
-                        login.setUserGroupId(userGroup.getUserGroupId());
-                    }catch (NotFoundException e) {
-                        log.error("Account " + accountNumber + " could not be updated: The provided user group '"+ accountDto.getUserGroup() + "' doesn't exist.");
-                        throw new InvalidLoginGroupException("The provided user group '"+ accountDto.getUserGroup() + "' doesn't exist.");
-                    }
+                    updateUserGroup(login, accountDto.getUserGroup(), accountNumber);
                 }
                 
                 login.setUsername(username);
@@ -647,13 +641,7 @@ public class AccountServiceImpl implements AccountService {
                 newUser.setLoginStatus(LoginStatusEnum.ENABLED);
 
                 if (accountDto.getUserGroup() != null) {
-                    try {
-                        LiteUserGroup userGroup = userGroupDao.getLiteUserGroupByUserGroupName(accountDto.getUserGroup());
-                        newUser.setUserGroupId(userGroup.getUserGroupId());
-                    }catch (NotFoundException e) {
-                        log.error("Account " + accountNumber + " could not be updated: The provided user group '"+ accountDto.getUserGroup() + "' doesn't exist.");
-                        throw new InvalidLoginGroupException("The provided user group '"+ accountDto.getUserGroup() + "' doesn't exist.");
-                    }
+                    updateUserGroup(newUser, accountDto.getUserGroup(), accountNumber);
                 }
                 
                 String password = accountDto.getPassword();
@@ -1121,5 +1109,21 @@ public class AccountServiceImpl implements AccountService {
     
     private String stripNone (String value) {
     	return CtiUtilities.STRING_NONE.equals(value) ? "" : value;
+    }
+    
+    /**
+     * This method tries to update the user's user group to the user group name supplied.  This method will throw a
+     * InvalidLoginGroupException if the user group does not exist.
+     * 
+     * @throws InvalidLoginGroupException - The user group name supplied does not exist.
+     */
+    private void updateUserGroup(LiteYukonUser user, String userGroupName, String accountNumber) throws InvalidLoginGroupException{
+        try {
+            LiteUserGroup userGroup = userGroupDao.getLiteUserGroupByUserGroupName(userGroupName);
+            user.setUserGroupId(userGroup.getUserGroupId());
+        }catch (NotFoundException e) {
+            log.error("Account " + accountNumber + " could not be updated: The provided user group '"+ userGroupName + "' doesn't exist.");
+            throw new InvalidLoginGroupException("The provided user group '"+ userGroupName + "' doesn't exist.");
+        }
     }
 }

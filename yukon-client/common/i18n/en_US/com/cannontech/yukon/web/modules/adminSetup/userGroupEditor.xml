@@ -87,7 +87,7 @@
     <entry key="yukon.web.modules.adminSetup.users.addUsers.imageUrl">/WebConfig/yukon/Icons/add.png</entry>
     <entry key="yukon.web.modules.adminSetup.users.addUsers.hoverUrl">/WebConfig/yukon/Icons/add_over.png</entry>
     <entry key="yukon.web.modules.adminSetup.users.confirmRemove.title">Confirm Remove</entry>
-    <entry key="yukon.web.modules.adminSetup.users.confirmRemove.message">Are you sure you want to remove the user {0} from this user group'?</entry>
+    <entry key="yukon.web.modules.adminSetup.users.confirmRemove.message">Are you sure you want to remove the user {0} from this user group?</entry>
 
     <!-- User Editor user.jsp-->
     <entry key="yukon.web.modules.adminSetup.userEditor.VIEW.pageName">User Info</entry>
