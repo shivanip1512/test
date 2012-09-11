@@ -182,7 +182,12 @@ public enum BuiltInAttribute implements Attribute, DisplayableEnum {
         buildRfnEventAttributeSets();
         buildAllAttributeGroups();
     }
-
+    
+    /**
+     * Builds sets of data attributes.  A data attribute is an attribute that holds a value
+     * or measurement.  Data attributes are sometimes called readable attributes since 
+     * they have numeric values which can be read.
+     */
     private static void buildDataAttributeSets() {
         ImmutableSet.Builder<BuiltInAttribute> profile = ImmutableSet.builder();
         profile.add(LOAD_PROFILE);
@@ -285,7 +290,9 @@ public enum BuiltInAttribute implements Attribute, DisplayableEnum {
         relayAttributes = relay.build();
         
         
-        // Build headings & sub-options relationships for data (non-event) attributes.
+        // Group attributes in categories so they can be more easily displayed and
+        // found in the UI.  The attribute group map that is created can be used 
+        // in conjunction with the selectNameValue tag and groupItems="true".
         ImmutableMap.Builder<AttributeGroup, ImmutableSet<BuiltInAttribute>> groupedDataAttributesBuilder = ImmutableMap.builder();
         
         groupedDataAttributesBuilder.put(AttributeGroup.PROFILE, profileAttributes);
@@ -300,7 +307,11 @@ public enum BuiltInAttribute implements Attribute, DisplayableEnum {
         
         groupedDataAttributes = groupedDataAttributesBuilder.build();
     }
-    
+
+    /**
+     * This method builds ImmutableSet's of RFN event attributes.  An event attribute 
+     * indicates that some significant event has occurred on a device.
+     */
     private static void buildRfnEventAttributeSets() {
         Builder<BuiltInAttribute> builder = ImmutableSet.builder();
         builder.add(CONFIGURATION_ERROR);
@@ -443,7 +454,9 @@ public enum BuiltInAttribute implements Attribute, DisplayableEnum {
         other.add(TIME_ADJUSTMENT);
         rfnOtherAttributes = other.build();
         
-        // Build headings & sub-options relationships for RFN event attributes.
+        // Group attributes in categories so they can be more easily displayed and
+        // found in the UI.  The attribute group map that is created can be used 
+        // in conjunction with the selectNameValue tag and groupItems="true".
         ImmutableMap.Builder<AttributeGroup, ImmutableSet<BuiltInAttribute>> groupedRfnEventBuilder = ImmutableMap.builder();
 
         groupedRfnEventBuilder.put(AttributeGroup.RFN_HARDWARE_EVENT, rfnHardwareAttributes);
@@ -457,6 +470,12 @@ public enum BuiltInAttribute implements Attribute, DisplayableEnum {
         groupedRfnEventAttributes = groupedRfnEventBuilder.build();
     }
     
+    /**
+     * Group attributes in categories so they can be more easily displayed and
+     * found in the UI.  Some data attribute groups and event attribute groups
+     * are made into a composite group where there is some logical overlap as
+     * in the case of the voltage & current groups.
+     */
     private static void buildAllAttributeGroups() {
         ImmutableMap.Builder<AttributeGroup, ImmutableSet<BuiltInAttribute>> allGroupedBuilder = ImmutableMap.builder();
         
@@ -484,11 +503,14 @@ public enum BuiltInAttribute implements Attribute, DisplayableEnum {
         allGroupedBuilder.put(AttributeGroup.USAGE, accumulatorAttributes);
         allGroupedBuilder.put(AttributeGroup.STATUS, statusAttributes);
         allGroupedBuilder.put(AttributeGroup.RELAY, relayAttributes);
+        allGroupedBuilder.put(AttributeGroup.BLINK_AND_OUTAGE, blinkAndOutageCounts);
         
         allGroupedBuilder.put(AttributeGroup.RFN_HARDWARE_EVENT, rfnHardwareAttributes);
         allGroupedBuilder.put(AttributeGroup.RFN_SOFTWARE_EVENT, rfnSoftwareAttributes);
-        allGroupedBuilder.put(AttributeGroup.BLINK_AND_OUTAGE, blinkAndOutageCounts);
         allGroupedBuilder.put(AttributeGroup.RFN_DISCONNECT_EVENT, rfnDisconnectAttributes);
+
+        // The attribute group map that is created can be used in conjunction with 
+        // the selectNameValue tag and groupItems="true".
         allGroupedAttributes = allGroupedBuilder.build();
     }
     

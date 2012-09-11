@@ -173,9 +173,8 @@ public interface AttributeService {
      * Creates a map of AttributeGroup to list of BuiltInAttribute.  The resulting map contains only
      * those attributes that are in the 'attributes' collection that is passed in.
      * 
-     * @param attributes
-     * @param userContext
-     * @return
+     * @param attributes The collection of Attribute objects that will be made into a grouped attribute map.
+     * @param userContext Used to sort the attributes and AttributeGroup option groups according to the user's locale. 
      */
     public Map<AttributeGroup, List<BuiltInAttribute>> getGroupedAttributeMapFromCollection(
             Collection<? extends Attribute> attributes, YukonUserContext userContext);
