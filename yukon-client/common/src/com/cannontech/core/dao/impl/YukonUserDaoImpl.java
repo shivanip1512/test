@@ -131,7 +131,6 @@ public class YukonUserDaoImpl implements YukonUserDao {
 	    sql.append("UPDATE YukonUser");
         sql.append("SET Username").eq(user.getUsername()).append(",");
         sql.append("    Status").eq_k(user.getLoginStatus()).append(",");
-        sql.append("    AuthType").eq_k(user.getAuthType()).append(",");
         sql.append("    ForceReset").eq(YNBoolean.valueOf(user.isForceReset())).append(",");
 	    sql.append("    UserGroupId").eq(user.getUserGroupId());
 	    sql.append("WHERE UserId").eq(user.getUserID());
