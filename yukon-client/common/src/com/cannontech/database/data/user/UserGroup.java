@@ -21,7 +21,6 @@ import com.cannontech.message.dispatch.message.DBChangeMsg;
 import com.cannontech.message.dispatch.message.DbChangeType;
 import com.cannontech.spring.YukonSpringHook;
 import com.google.common.collect.HashMultimap;
-import com.google.common.collect.ImmutableMultimap;
 import com.google.common.collect.Multimap;
 import com.google.common.collect.Sets;
 
@@ -59,9 +58,9 @@ public class UserGroup extends DBPersistent implements CTIDbChange, EditorPanel 
         }
     }
     
-    // loginGroups
+    // role groups
     public Multimap<YukonRole, LiteYukonGroup> getRolesToGroupMap() {
-        return ImmutableMultimap.copyOf(rolesToGroupMap);
+        return HashMultimap.create(rolesToGroupMap);
     }
     public boolean hasYukonRole(YukonRole yukonRole) {
         return rolesToGroupMap.containsKey(yukonRole);
