@@ -15,7 +15,9 @@ import org.springframework.stereotype.Controller;
 import org.springframework.ui.ModelMap;
 import org.springframework.validation.BindingResult;
 import org.springframework.validation.MessageCodesResolver;
+import org.springframework.web.bind.ServletRequestBindingException;
 import org.springframework.web.bind.ServletRequestDataBinder;
+import org.springframework.web.bind.ServletRequestUtils;
 import org.springframework.web.bind.WebDataBinder;
 import org.springframework.web.bind.annotation.InitBinder;
 import org.springframework.web.bind.annotation.ModelAttribute;
@@ -29,6 +31,8 @@ import com.cannontech.common.exception.NotAuthorizedException;
 import com.cannontech.common.inventory.HardwareConfigType;
 import com.cannontech.common.inventory.HardwareType;
 import com.cannontech.common.inventory.InventoryIdentifier;
+import com.cannontech.common.pao.PaoIdentifier;
+import com.cannontech.common.pao.PaoType;
 import com.cannontech.common.pao.attribute.model.BuiltInAttribute;
 import com.cannontech.common.pao.attribute.service.AttributeService;
 import com.cannontech.common.validator.YukonMessageCodeResolver;
@@ -436,9 +440,14 @@ public class OperatorHardwareConfigController {
                                  YukonUserContext userContext,
                                  HttpServletRequest request,
                                  FlashScope flashScope,
-                                 AccountInfoFragment accountInfoFragment) {
+                                 AccountInfoFragment accountInfoFragment) throws ServletRequestBindingException {
         AccountInfoFragmentHelper.setupModelMapBasics(accountInfoFragment, model);
 
+        int deviceTypeId = ServletRequestUtils.getRequiredIntParameter(request, "deviceTypeId");
+        int paoId = ServletRequestUtils.getRequiredIntParameter(request, "paoId");
+        PaoIdentifier paoIdentifier = new PaoIdentifier(paoId, PaoType.getForId(deviceTypeId));
+        meter.setPaoIdentifier(paoIdentifier);
+        
         meterConfigValidator.validate(meter, bindingResult);
 
         if(!bindingResult.hasErrors()) {

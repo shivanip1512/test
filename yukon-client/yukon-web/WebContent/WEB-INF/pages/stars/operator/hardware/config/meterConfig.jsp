@@ -15,7 +15,8 @@
         <form:hidden path="disabled"/>
         <form:hidden path="name"/>
         <form:hidden path="route"/>
-        <form:hidden path="paoType"/>
+        <input type="hidden" name="deviceTypeId" value="${meter.paoType.deviceTypeId}">
+        <input type="hidden" name="paoId" value="${meter.paoIdentifier.paoId}">
         
         <tags:formElementContainer nameKey="meterConfigurationSection">
         
