@@ -558,6 +558,7 @@ public class HardwareUiServiceImpl implements HardwareUiService {
         } catch (NotFoundException nfe) {
             /* This meter has never been added to a stars account before.  Add it to InventoryBase */
             Hardware hardware = new Hardware();
+            hardware.setAccountId(accountId);
             hardware.setDeviceId(meterId);
             if (accountId > 0) {
                 hardware.setFieldInstallDate(new Date());
