@@ -264,11 +264,11 @@ public class RoleDaoImpl implements RoleDao {
 
         SqlStatementBuilder sql = new SqlStatementBuilder();
         sql.append("SELECT DISTINCT YGR.RoleId, YG.GroupId, YG.GroupName, YG.GroupDescription");
-        sql.append("FROM YukonGroupRole YGR");
-        sql.append("  LEFT JOIN YukonGroup YG ON YG.GroupId = YGR.GroupId");
+        sql.append("FROM YukonGroup YG");
+        sql.append("  LEFT JOIN YukonGroupRole YGR ON YGR.GroupId = YG.GroupId");
         sql.append("  JOIN UserGroupToYukonGroupMapping UGYGM ON YG.GroupId = UGYGM.GroupId");
         sql.append("WHERE UGYGM.UserGroupId").eq(userGroupId);
-
+        
         yukonJdbcTemplate.query(sql, new YukonRowCallbackHandler() {
             @Override
             public void processRow(YukonResultSet rs) throws SQLException {
