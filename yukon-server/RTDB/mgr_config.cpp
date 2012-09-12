@@ -35,7 +35,7 @@ void CtiConfigManager::refreshConfigurations()
     //ok, so in theory right now my 2 maps are built up.. although I should only need one of them
     //Now I want to give the device configs to the devices themselves
 
-    updateDeviceConfigs();
+    updateDeviceConfigs(NoConfigIdSpecified, NoDeviceIdSpecified);
 }
 
 //This function was created so the initialization only happens once. I dont like it and
@@ -92,7 +92,7 @@ void CtiConfigManager::processDBUpdate(LONG identifier, string category, string 
                     removeFromMaps(identifier);
                     loadConfigs(identifier);
                     loadData(identifier);
-                    updateDeviceConfigs(identifier);
+                    updateDeviceConfigs(identifier, NoDeviceIdSpecified);
                     break;
                 }
             case ChangeTypeDelete:
@@ -114,7 +114,7 @@ void CtiConfigManager::processDBUpdate(LONG identifier, string category, string 
             case ChangeTypeUpdate:
             case ChangeTypeAdd:
                 {
-                    updateDeviceConfigs(0, identifier);
+                    updateDeviceConfigs(NoConfigIdSpecified, identifier);
                     break;
                 }
             case ChangeTypeDelete:
@@ -138,6 +138,13 @@ void CtiConfigManager::processDBUpdate(LONG identifier, string category, string 
         refreshConfigurations();
     }
 }
+
+
+void CtiConfigManager::refreshConfigForDeviceId(long deviceid)
+{
+    updateDeviceConfigs(NoConfigIdSpecified, deviceid);
+}
+
 
 void CtiConfigManager::loadData(long configID)
 {
@@ -293,7 +300,7 @@ void CtiConfigManager::updateDeviceConfigs(long configID, long deviceID)
             rdr.setCommandText(sqlConfig);
             rdr << configID;
         }
-        else if( deviceID != 0 )
+        else if( deviceID != NoDeviceIdSpecified )
         {
             rdr.setCommandText(sqlDevice);
             rdr << deviceID;
@@ -309,7 +316,7 @@ void CtiConfigManager::updateDeviceConfigs(long configID, long deviceID)
         // If we specify a device, this may be the equivalent of a "delete"
         // If we also specified a config, we cant risk the "delete" operation,
         // As it would be too specific and could result in a delete that was not desired
-        if( deviceID != 0 && configID == NoConfigIdSpecified )
+        if( deviceID != NoDeviceIdSpecified && configID == NoConfigIdSpecified )
         {
             if( rdr() )
             {

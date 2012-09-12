@@ -18,12 +18,13 @@ private:
 
     enum ConfigValue
     {
-        NoConfigIdSpecified = -1000
+        NoConfigIdSpecified = -1000,
+        NoDeviceIdSpecified =     0
     };
 
     void loadData(long configID = NoConfigIdSpecified);
     void loadConfigs(long configID = NoConfigIdSpecified);
-    void updateDeviceConfigs(long configID = NoConfigIdSpecified, long deviceID = 0);
+    void updateDeviceConfigs(long configID, long deviceID);
     void removeFromMaps(long configID = NoConfigIdSpecified);
 
     void refreshConfigurations();
@@ -38,6 +39,7 @@ public:
 
     void initialize(CtiDeviceManager &mgr);
     void processDBUpdate(LONG identifer, std::string category, std::string objectType, int updateType);
+    void refreshConfigForDeviceId(long deviceid);
 
     Cti::Config::DeviceConfigSPtr getDeviceConfigFromID(long configID);
 };

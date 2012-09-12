@@ -1420,6 +1420,7 @@ INT RefreshPorterRTDB(const CtiDBChangeMsg *pChg)
             const long chgid = pChg->getId();
 
             DeviceManager.refreshDeviceByID(chgid, pChg->getCategory(), pChg->getObjectType());
+            ConfigManager.refreshConfigForDeviceId(chgid);
 
             if( CtiDeviceSPtr pDev = DeviceManager.getDeviceByID(chgid) )
             {
