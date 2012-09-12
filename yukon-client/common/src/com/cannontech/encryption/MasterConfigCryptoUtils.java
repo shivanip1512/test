@@ -1,7 +1,9 @@
 package com.cannontech.encryption;
 
 import java.io.File;
+import java.io.FileOutputStream;
 import java.io.IOException;
+import java.nio.channels.FileLock;
 import java.util.HashSet;
 import java.util.Set;
 
@@ -14,8 +16,8 @@ import com.cannontech.common.util.BootstrapUtils;
 import com.cannontech.encryption.impl.AESPasswordBasedCrypto;
 
 public class MasterConfigCryptoUtils {
-
     private static final File masterCfgCryptoFile = new File(BootstrapUtils.getKeysFolder(),"masterConfigKeyfile.dat");
+    private static final File masterCfgCryptoLockFile = new File(BootstrapUtils.getKeysFolder(), "masterConfigKeyfile.lck");
     private static final String encryptionIndicator = "(AUTO_ENCRYPTED)";
     private static final Set<String> sensitiveData;
     private static AESPasswordBasedCrypto encrypter;
@@ -69,12 +71,19 @@ public class MasterConfigCryptoUtils {
     private static char[] getMasterCfgPasskey() throws IOException, CryptoException, JDOMException {
         char[] passkey = null;
 
-        if (CryptoUtils.isValidCryptoFile(masterCfgCryptoFile)) {
-            passkey = CryptoUtils.getPasskeyFromCryptoFile(masterCfgCryptoFile);
-        } else {
-            masterCfgCryptoFile.delete();
-            CryptoUtils.createNewCryptoFile(masterCfgCryptoFile);
-            passkey = CryptoUtils.getPasskeyFromCryptoFile(masterCfgCryptoFile);
+        FileOutputStream fos = new FileOutputStream(masterCfgCryptoLockFile);
+        FileLock lock = fos.getChannel().lock();
+        try {
+            if (CryptoUtils.isValidCryptoFile(masterCfgCryptoFile)) {
+                passkey = CryptoUtils.getPasskeyFromCryptoFile(masterCfgCryptoFile);
+            } else {
+                masterCfgCryptoFile.delete();
+                CryptoUtils.createNewCryptoFile(masterCfgCryptoFile);
+                passkey = CryptoUtils.getPasskeyFromCryptoFile(masterCfgCryptoFile);
+            }
+        } finally {
+            lock.release();
+            fos.close();
         }
 
         return passkey;
