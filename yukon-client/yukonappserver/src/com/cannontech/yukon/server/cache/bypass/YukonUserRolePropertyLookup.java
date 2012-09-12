@@ -8,6 +8,8 @@ package com.cannontech.yukon.server.cache.bypass;
 
 import java.sql.SQLException;
 
+import org.springframework.dao.EmptyResultDataAccessException;
+
 import com.cannontech.common.util.SqlStatementBuilder;
 import com.cannontech.database.YukonJdbcTemplate;
 import com.cannontech.database.YukonResultSet;
@@ -48,7 +50,12 @@ public class YukonUserRolePropertyLookup {
         sql.append("WHERE YU.UserId").eq(user.getUserID());
         sql.append("  AND YGR.RoleId").eq(roleId);
 
-        LiteYukonRole yukonRole = yukonJdbcTemplate.queryForObject(sql, liteYukonRoleMapper);
-		return yukonRole;
+        try {
+            LiteYukonRole yukonRole = yukonJdbcTemplate.queryForObject(sql, liteYukonRoleMapper);
+            return yukonRole;
+        } catch (EmptyResultDataAccessException e) {
+            // No results found, role doesn't exist for user, return null
+            return null;
+        }
 	}
 }
