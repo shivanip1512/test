@@ -431,6 +431,19 @@ ALTER TABLE DynamicLMGroup
 MODIFY LastStopTimeSent DATE NOT NULL;
 /* End YUK-11339 */
 
+/* Start YUK-11371 */
+/* Fix minimum password length & password policy quality values */
+UPDATE YukonRoleProperty
+SET DefaultValue = '1'
+WHERE RolePropertyID IN (-11002, -11050)
+  AND DefaultValue = '0';
+
+UPDATE YukonGroupRole
+SET Value = '1'
+WHERE RolePropertyID IN (-11002, -11050)
+  AND Value = '0';
+/* End YUK-11371 */
+
 /**************************************************************/ 
 /* VERSION INFO                                               */ 
 /*   Automatically gets inserted from build script            */ 
