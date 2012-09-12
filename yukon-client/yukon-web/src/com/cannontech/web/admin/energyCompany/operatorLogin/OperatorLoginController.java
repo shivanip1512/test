@@ -214,7 +214,7 @@ public class OperatorLoginController {
         
         //save login
         LiteYukonUser liteUser = yukonUserDao.getLiteYukonUser(operatorLogin.getUserId());
-        LiteUserGroup userGroup = userGroupDao.getLiteUserGroup(liteUser.getUserGroupId());
+        LiteUserGroup userGroup = userGroupDao.getLiteUserGroupByUserGroupName(operatorLogin.getUserGroupName());
         LiteStarsEnergyCompany energyCompany = starsDatabaseCache.getEnergyCompany(ecId);
         StarsAdminUtil.updateLogin( liteUser, operatorLogin.getUsername(), operatorLogin.getPassword1(), operatorLogin.getLoginStatus(),
                                     userGroup, energyCompany, false);
