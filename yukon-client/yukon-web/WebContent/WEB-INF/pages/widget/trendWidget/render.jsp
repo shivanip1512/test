@@ -94,7 +94,7 @@
         				<td>&nbsp;</td>
         				<td>
 							<div class="fl">
-								<dt:dateRange startName="startDateParam" startValue="${startDate}" endName="stopDateParam" endValue="${stopDate}" />
+								<dt:dateRange startName="startDateParam" startValue="${startDate}" endName="stopDateParam" endValue="${stopDate}" forceIncludes="true" />
 							</div>
                             <tags:widgetActionRefreshImage nameKey="reloadUsingCustomDates" method="render"/>
         				</td>
