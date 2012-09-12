@@ -331,12 +331,12 @@ INSERT INTO YukonGroup SELECT MAX(GroupId)+1, 'Password Policy Grp', 'A set of r
 
 /* Add a set of (default) Password Policy Role Properties */
 INSERT INTO YukonGroupRole SELECT (SELECT MAX(GroupRoleID)+1 FROM YukonGroupRole), MAX(GroupId), -110, -11001, '0' FROM YukonGroup YG;
-INSERT INTO YukonGroupRole SELECT (SELECT MAX(GroupRoleID)+1 FROM YukonGroupRole), MAX(GroupId), -110, -11002, '0' FROM YukonGroup YG ;
+INSERT INTO YukonGroupRole SELECT (SELECT MAX(GroupRoleID)+1 FROM YukonGroupRole), MAX(GroupId), -110, -11002, '1' FROM YukonGroup YG ;
 INSERT INTO YukonGroupRole SELECT (SELECT MAX(GroupRoleID)+1 FROM YukonGroupRole), MAX(GroupId), -110, -11003, '0' FROM YukonGroup YG;
 INSERT INTO YukonGroupRole SELECT (SELECT MAX(GroupRoleID)+1 FROM YukonGroupRole), MAX(GroupId), -110, -11004, '0' FROM YukonGroup YG;
 INSERT INTO YukonGroupRole SELECT (SELECT MAX(GroupRoleID)+1 FROM YukonGroupRole), MAX(GroupId), -110, -11005, '0' FROM YukonGroup YG;
 INSERT INTO YukonGroupRole SELECT (SELECT MAX(GroupRoleID)+1 FROM YukonGroupRole), MAX(GroupId), -110, -11006, '0' FROM YukonGroup YG;
-INSERT INTO YukonGroupRole SELECT (SELECT MAX(GroupRoleID)+1 FROM YukonGroupRole), MAX(GroupId), -110, -11050, '0' FROM YukonGroup YG;
+INSERT INTO YukonGroupRole SELECT (SELECT MAX(GroupRoleID)+1 FROM YukonGroupRole), MAX(GroupId), -110, -11050, '1' FROM YukonGroup YG;
 INSERT INTO YukonGroupRole SELECT (SELECT MAX(GroupRoleID)+1 FROM YukonGroupRole), MAX(GroupId), -110, -11051, 'true' FROM YukonGroup YG;
 INSERT INTO YukonGroupRole SELECT (SELECT MAX(GroupRoleID)+1 FROM YukonGroupRole), MAX(GroupId), -110, -11052, 'true' FROM YukonGroup YG;
 INSERT INTO YukonGroupRole SELECT (SELECT MAX(GroupRoleID)+1 FROM YukonGroupRole), MAX(GroupId), -110, -11053, 'true' FROM YukonGroup YG;

@@ -411,7 +411,7 @@ BEGIN
     
     INSERT INTO YukonGroupRole VALUES (v_newGroupRoleId, v_maxGroupId, -110, -11001, '0');
     SELECT MAX(GroupRoleID)+1 INTO v_newGroupRoleId FROM YukonGroupRole;
-    INSERT INTO YukonGroupRole VALUES (v_newGroupRoleId, v_maxGroupId, -110, -11002, '0');
+    INSERT INTO YukonGroupRole VALUES (v_newGroupRoleId, v_maxGroupId, -110, -11002, '1');
     SELECT MAX(GroupRoleID)+1 INTO v_newGroupRoleId FROM YukonGroupRole;
     INSERT INTO YukonGroupRole VALUES (v_newGroupRoleId, v_maxGroupId, -110, -11003, '0');
     SELECT MAX(GroupRoleID)+1 INTO v_newGroupRoleId FROM YukonGroupRole;
@@ -421,7 +421,7 @@ BEGIN
     SELECT MAX(GroupRoleID)+1 INTO v_newGroupRoleId FROM YukonGroupRole;
     INSERT INTO YukonGroupRole VALUES (v_newGroupRoleId, v_maxGroupId, -110, -11006, '0');
     SELECT MAX(GroupRoleID)+1 INTO v_newGroupRoleId FROM YukonGroupRole;
-    INSERT INTO YukonGroupRole VALUES (v_newGroupRoleId, v_maxGroupId, -110, -11050, '0');
+    INSERT INTO YukonGroupRole VALUES (v_newGroupRoleId, v_maxGroupId, -110, -11050, '1');
     SELECT MAX(GroupRoleID)+1 INTO v_newGroupRoleId FROM YukonGroupRole;
     INSERT INTO YukonGroupRole VALUES (v_newGroupRoleId, v_maxGroupId, -110, -11051, 'true');
     SELECT MAX(GroupRoleID)+1 INTO v_newGroupRoleId FROM YukonGroupRole;
