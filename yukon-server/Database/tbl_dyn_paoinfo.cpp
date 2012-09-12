@@ -529,8 +529,8 @@ void CtiTableDynamicPaoInfo::DecodeDatabaseReader(Cti::RowReader& rdr)
     key_map_t::const_iterator k_itr;
     owner_map_t::const_iterator o_itr;
 
-    rdr["entryid"]    >> tmp_entryid;
-    rdr["paobjectid"] >> tmp_paoid;
+    rdr["entryid"]    >> _entry_id;
+    rdr["paobjectid"] >> _pao_id;
     rdr["owner"]      >> tmp_owner;
     rdr["infokey"]    >> tmp_key;
     rdr["value"]      >> tmp_value;
