@@ -4,6 +4,7 @@
 
 #include "PaoStatistics.h"
 #include "database_writer.h"
+#include "database_transaction.h"
 #include "InvalidReaderException.h"
 #include "ctidate.h"
 #include "debug_timer.h"
@@ -310,39 +311,39 @@ void StatisticsManager::writeRecordRange(const unsigned thread_num, const unsign
             return;
         }
 
-        conn.beginTransaction();
-
         unsigned records_inspected = 0, dirty_records = 0, rows_written = 0;
 
-        id_statistics_map::const_iterator itr = begin;
-
-        while( itr != end )
         {
-            PaoStatistics &p = *(itr++->second);
+            Database::DatabaseTransaction trans(conn);
 
-            ++records_inspected;
+            id_statistics_map::const_iterator itr = begin;
 
-            if( p.isDirty() )
+            while( itr != end )
             {
-                Database::DatabaseWriter writer(conn);
+                PaoStatistics &p = *(itr++->second);
 
-                rows_written += p.writeRecords(writer);
+                ++records_inspected;
 
-                if( !(++dirty_records % 1000) )
+                if( p.isDirty() )
                 {
-                    threadKeeper && threadKeeper->monitorCheck(CtiThreadMonitor::StandardMonitorTime);
+                    Database::DatabaseWriter writer(conn);
 
+                    rows_written += p.writeRecords(writer);
+
+                    if( !(++dirty_records % 1000) )
                     {
-                        CtiLockGuard<CtiLogger> doubt_guard(dout);
-                        dout << CtiTime() << " StatisticsManager::writeRecordRange() : thread " << thread_num << " ";
-                        dout << "inspected " << records_inspected << " / " << chunk_size << " statistics records; ";
-                        dout << dirty_records << " records have written a total of " << rows_written << " rows." << endl;
+                        threadKeeper && threadKeeper->monitorCheck(CtiThreadMonitor::StandardMonitorTime);
+
+                        {
+                            CtiLockGuard<CtiLogger> doubt_guard(dout);
+                            dout << CtiTime() << " StatisticsManager::writeRecordRange() : thread " << thread_num << " ";
+                            dout << "inspected " << records_inspected << " / " << chunk_size << " statistics records; ";
+                            dout << dirty_records << " records have written a total of " << rows_written << " rows." << endl;
+                        }
                     }
                 }
             }
         }
-
-        conn.commitTransaction();
 
         if( dirty_records )
         {

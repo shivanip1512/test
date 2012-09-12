@@ -15,7 +15,7 @@ class IM_EX_CTIBASE DatabaseConnection
 {
 private:
     SAConnection *connection;
-    
+
     void*  operator new   (size_t){return NULL;};
     void*  operator new[] (size_t){return NULL;};
     void   operator delete   (void *){};
@@ -26,14 +26,16 @@ protected:
 
     friend class DatabaseWriter;
     friend class DatabaseReader;
+    //friend class DatabaseTransaction;
 
 public:
     DatabaseConnection();
-    
+
     virtual ~DatabaseConnection();
 
     bool isValid() const;
 
+    //  Move these to protected/private when all transactions are handled by DatabaseTransaction
     void beginTransaction();
     bool commitTransaction();
 };

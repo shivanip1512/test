@@ -43,6 +43,7 @@ ctilocalconnect.obj \
 ctinexus.obj \
 database_writer.obj \
 database_connection.obj \
+database_transaction.obj \
 database_reader.obj \
 dbaccess.obj \
 debug_timer.obj \
