@@ -552,7 +552,7 @@
 
 <%-- METERS TABLE --%>
 <c:set var="meterTypes" value="${deviceTypeMap['METER']}"/>
-<c:if test="${fn:length(meterTypes) > 0}">
+<c:if test="${fn:length(meterTypes) > 0 || !starsMeters}">
     <tags:boxContainer2 nameKey="meters" styleClass="hardwareListContainer">
         <c:choose>
             <c:when test="${empty meters}">
