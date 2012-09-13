@@ -16,6 +16,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import com.cannontech.capcontrol.dao.SubstationBusDao;
 import com.cannontech.capcontrol.dao.ZoneDao;
 import com.cannontech.capcontrol.model.PointPaoIdentifier;
+import com.cannontech.cbc.cyme.CymeConfigurationException;
 import com.cannontech.cbc.cyme.CymePointDataCache;
 import com.cannontech.cbc.cyme.CymeSimulationListener;
 import com.cannontech.clientutils.YukonLogManager;
@@ -115,9 +116,17 @@ public class CymePointDataCacheImpl implements CymePointDataCache, PointDataList
         PointIdentifier startSimulation = new PointIdentifier(PointType.Status, 351);
         PointIdentifier loadFactor = new PointIdentifier(PointType.Analog, 352);
         
-        LitePoint enabledPoint = pointDao.getLitePoint(new PaoPointIdentifier(subbus, cymeEnabled));
-        LitePoint simulationPoint = pointDao.getLitePoint(new PaoPointIdentifier(subbus, startSimulation));
-        LitePoint loadPoint = pointDao.getLitePoint(new PaoPointIdentifier(subbus, loadFactor));
+        LitePoint enabledPoint;
+        LitePoint simulationPoint;
+        LitePoint loadPoint;
+        
+        try {
+            enabledPoint = pointDao.getLitePoint(new PaoPointIdentifier(subbus, cymeEnabled));
+            simulationPoint = pointDao.getLitePoint(new PaoPointIdentifier(subbus, startSimulation));
+            loadPoint = pointDao.getLitePoint(new PaoPointIdentifier(subbus, loadFactor));
+        } catch (NotFoundException e) {
+            throw new CymeConfigurationException("Error loading CYME control points from Subbus with paoId '"+ subbus.getPaoId() + "' ");
+        }
         
         Set<Integer> pointIds = Sets.newHashSet();
         int pointId = enabledPoint.getLiteID();

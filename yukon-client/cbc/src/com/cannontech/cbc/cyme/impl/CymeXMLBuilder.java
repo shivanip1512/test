@@ -15,11 +15,17 @@ import com.google.common.collect.Lists;
 
 public class CymeXMLBuilder {
 
-    public static String generateStudy(Collection<PointPaoIdentifier> paosInSystem, Map<Integer,PointValueQualityHolder> currentPointValues) {
+    public static String generateStudy(Collection<PointPaoIdentifier> paosInSystem, Map<Integer,PointValueQualityHolder> currentPointValues, List<String> paoNames) {
         
         List<String> modifDeviceStrings = Lists.newArrayList();
         int maxIndex = 0;
         String loadFactor = null;
+
+        String networkIds = "";
+        
+        for (String paoName: paoNames) {
+            networkIds += "<NetworkID>"+paoName+"</NetworkID>\n";
+        }
         
         for (PointPaoIdentifier entry : paosInSystem) {
             PaoType paoType = entry.getPaoIdentifier().getPaoType();
@@ -128,11 +134,7 @@ public class CymeXMLBuilder {
             "        						<ReportID>CooperVVO2</ReportID>" +
             "     						</Report>" +
             "    					</Reports>" +
-            "    					<Networks>" +
-            "                           <NetworkID>GA02</NetworkID>" +            
-            "     						<NetworkID>GA06</NetworkID>" +
-            "							<NetworkID>GALVESTON</NetworkID>" +
-            "    					</Networks>" +
+            "    					<Networks>" + networkIds + "</Networks>" +
             "  					</CommandLoadFlow>" +
             "				</Commands>" +
             "				<CommandTypes>" +
@@ -145,16 +147,8 @@ public class CymeXMLBuilder {
             "    					<CommandTypeEnum>LoadFlow</CommandTypeEnum>" +
             "  					</CommandType>" +
             "				</CommandTypes>" +
-            "				<NetworksToDisplay>" +
-            "                   <NetworkID>GA02</NetworkID>" +
-            "					<NetworkID>GA06</NetworkID>" +
-            "					<NetworkID>GALVESTON</NetworkID>" +
-            "				</NetworksToDisplay>" +
-            "				<NetworksToLoad>" +
-            "  					<NetworkID>GA02</NetworkID>" +
-            "                   <NetworkID>GA06</NetworkID>" +
-            "					<NetworkID>GALVESTON</NetworkID>" +
-            "				</NetworksToLoad>" +
+            "				<NetworksToDisplay>" + networkIds + "</NetworksToDisplay>" +
+            "				<NetworksToLoad>" + networkIds + "</NetworksToLoad>" +
             "			</Study>" +
             "		</Studies>" +
             "	</Cymdist>" +

@@ -52,6 +52,23 @@ public class FeederDaoImpl implements FeederDao {
         return listmap;
     }
     
+    /**
+     * This method returns all the Feeder IDs that are assigned
+     *  to the SubBus passed in.
+     */
+    public List<Integer> getFeederIdBySubstationBus(YukonPao subbus) {
+        SqlStatementBuilder sql = new SqlStatementBuilder();
+        
+        sql.append("SELECT FeederID");
+        sql.append("FROM CapControlFeeder");
+        sql.append("WHERE FeederID  IN");
+        sql.append(   "(SELECT FeederID");
+        sql.append(    "FROM CCFeederSubAssignment WHERE SubstationBusId = " + subbus.getPaoIdentifier().getPaoId() +")");
+        
+        List<Integer> listmap = yukonJdbcTemplate.query(sql, new IntegerRowMapper());
+        return listmap;
+    }
+    
     @Override
     public FeederPhaseData getFeederPhaseData(int feederId) {
         SqlStatementBuilder sql = new SqlStatementBuilder();

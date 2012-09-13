@@ -14,11 +14,13 @@ import org.joda.time.Duration;
 import org.joda.time.Instant;
 import org.springframework.beans.factory.annotation.Autowired;
 
+import com.cannontech.capcontrol.dao.FeederDao;
 import com.cannontech.capcontrol.dao.ZoneDao;
 import com.cannontech.capcontrol.model.BankState;
 import com.cannontech.capcontrol.model.PointPaoIdentifier;
 import com.cannontech.capcontrol.model.RegulatorToZoneMapping;
 import com.cannontech.capcontrol.model.Zone;
+import com.cannontech.cbc.cyme.CymeConfigurationException;
 import com.cannontech.cbc.cyme.CymeLoadProfileReader;
 import com.cannontech.cbc.cyme.CymePointDataCache;
 import com.cannontech.cbc.cyme.CymeSimulationListener;
@@ -42,10 +44,12 @@ import com.cannontech.core.dao.PointDao;
 import com.cannontech.core.dao.SimplePointAccessDao;
 import com.cannontech.core.dynamic.PointValueQualityHolder;
 import com.cannontech.database.data.lite.LitePoint;
+import com.cannontech.database.data.lite.LiteYukonPAObject;
 import com.cannontech.database.data.point.PointType;
 import com.cannontech.database.db.point.stategroup.PointStateHelper;
 import com.cannontech.database.db.point.stategroup.TrueFalse;
 import com.cannontech.enums.RegulatorPointMapping;
+import com.google.common.collect.Lists;
 
 public class CymeSimulatorServiceImpl implements CymeSimulatorService, CymeSimulationListener {
 
@@ -61,6 +65,7 @@ public class CymeSimulatorServiceImpl implements CymeSimulatorService, CymeSimul
     @Autowired private CymeTaskExecutor cymeTaskExecutor;
     @Autowired private CymeLoadProfileReader cymeLoadProfileReader;
     @Autowired private CymePointDataCache cymePointDataCache;
+    @Autowired private FeederDao feederDao;
     
     private ScheduledExecutorService scheduledExecutor = Executors.newScheduledThreadPool(1);
     
@@ -102,6 +107,8 @@ public class CymeSimulatorServiceImpl implements CymeSimulatorService, CymeSimul
                 logger.error("CYME IVVC Simulator is missing CPARM for subbus. CYME_INTEGRATION_SUBBUS");
             } catch (NotFoundException e) {
                 logger.error("CYME Simulator: Subbus is not found in the system. " + subBusName);
+            } catch (CymeConfigurationException e) {
+                logger.error(e.getMessage());
             }
         } else {
             logger.info("CYME integration is disabled.");
@@ -267,8 +274,18 @@ public class CymeSimulatorServiceImpl implements CymeSimulatorService, CymeSimul
                     Collection<PointPaoIdentifier> paosInSystem = cymePointDataCache.getPaosInSystem();
                     Map<Integer,PointValueQualityHolder> currentPointValues = cymePointDataCache.getCurrentValues();
                     
-                    String xmlData = CymeXMLBuilder.generateStudy(paosInSystem,currentPointValues);
+                    List<String> paoNames = Lists.newArrayList();
+                    LiteYukonPAObject subbus = paoDao.getLiteYukonPAO(substationBusPao.getPaoIdentifier().getPaoId());
+                    paoNames.add(subbus.getPaoName());
+                    List<Integer> feederIds = feederDao.getFeederIdBySubstationBus(substationBusPao);
+                    for (Integer feederId : feederIds) {
+                        LiteYukonPAObject feeder = paoDao.getLiteYukonPAO(feederId);
+                        paoNames.add(feeder.getPaoName());
+                    }
                     
+                    String xmlData = CymeXMLBuilder.generateStudy(paosInSystem,currentPointValues,paoNames);
+                    
+                    logger.debug("Study date being sent: " + xmlData);
                     simulationId = cymDISTWebService.runSimulation(xmlData);
     
                     if (simulationId != null) {
