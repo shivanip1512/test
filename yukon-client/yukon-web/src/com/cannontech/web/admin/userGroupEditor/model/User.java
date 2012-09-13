@@ -12,7 +12,7 @@ public class User {
     private Password password = new Password();
     private AuthenticationCategory authCategory;
     private LoginStatusEnum loginStatus;
-    private int userGroupId;
+    private Integer userGroupId;
     private boolean authenticationChanged;
 
     public User() {
@@ -91,11 +91,11 @@ public class User {
         this.loginStatus = loginStatus;
     }
 
-    public int getUserGroupId() {
+    public Integer getUserGroupId() {
         return userGroupId;
     }
 
-    public void setUserGroupId(int userGroupId) {
+    public void setUserGroupId(Integer userGroupId) {
         this.userGroupId = userGroupId;
     }
 

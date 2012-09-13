@@ -73,11 +73,6 @@ public class UserEditorController {
         LiteYukonUser yukonUser = yukonUserDao.getLiteYukonUser(userId);
         User user = new User(yukonUser);
 
-        if (yukonUser.getUserGroupId() != null) {
-            LiteUserGroup liteUserGroup = userGroupDao.getLiteUserGroup(yukonUser.getUserGroupId());
-            model.addAttribute("userGroupName", liteUserGroup.getUserGroupName());
-        }
-
         setupModelMap(model, user, PageEditMode.VIEW);
         return "userGroupEditor/user.jsp";
     }
@@ -186,6 +181,12 @@ public class UserEditorController {
         model.addAttribute("supportsPasswordSet", supportsPasswordSet);
         model.addAttribute("loginStatusTypes", LoginStatusEnum.values());
         model.addAttribute("userGroups", userGroupDao.getAllLiteUserGroups());
+        
+        if (user.getUserGroupId() != null) {
+            LiteUserGroup liteUserGroup = userGroupDao.getLiteUserGroup(user.getUserGroupId());
+            model.addAttribute("userGroupName", liteUserGroup.getUserGroupName());
+        }
+        
         model.addAttribute("pwChangeFormMode", PageEditMode.EDIT);
 
         Multimap<YukonRole, LiteYukonGroup> rolesAndGroups = roleDao.getRolesAndGroupsForUser(user.getUserId());
