@@ -16,8 +16,9 @@ import com.cannontech.common.util.BootstrapUtils;
 import com.cannontech.encryption.impl.AESPasswordBasedCrypto;
 
 public class MasterConfigCryptoUtils {
-    private static final File masterCfgCryptoFile = new File(BootstrapUtils.getKeysFolder(),"masterConfigKeyfile.dat");
-    private static final File masterCfgCryptoLockFile = new File(BootstrapUtils.getKeysFolder(), "masterConfigKeyfile.lck");
+    private static final File keysFolder = new File(BootstrapUtils.getKeysFolder());
+    private static final File masterCfgCryptoFile = new File(keysFolder, "masterConfigKeyfile.dat");
+    private static final File masterCfgCryptoLockFile = new File(keysFolder, "masterConfigKeyfile.lck");
     private static final String encryptionIndicator = "(AUTO_ENCRYPTED)";
     private static final Set<String> sensitiveData;
     private static AESPasswordBasedCrypto encrypter;
@@ -71,6 +72,9 @@ public class MasterConfigCryptoUtils {
     private static char[] getMasterCfgPasskey() throws IOException, CryptoException, JDOMException {
         char[] passkey = null;
 
+        if (!keysFolder.exists()) {
+            keysFolder.mkdir();
+        }
         FileOutputStream fos = new FileOutputStream(masterCfgCryptoLockFile);
         FileLock lock = fos.getChannel().lock();
         try {
