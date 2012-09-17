@@ -16,7 +16,7 @@
   <!-- log4j documents for conversion/format character definitions -->
   <appender name="consoleAppender" class="org.apache.log4j.ConsoleAppender">
     <layout class="org.apache.log4j.PatternLayout">
-      <param name="ConversionPattern" value="%d [%t] %-5p %c - %m%n"/>
+      <param name="ConversionPattern" value="%d{MM/dd/yyyy HH:mm:ss,SSS zzz} [%t] %-5p %c - %m%n"/>
     </layout>
   </appender>
   
@@ -40,7 +40,33 @@
   <logger name="org.apache.myfaces">
   	<level value="warn"/>
   </logger>
+  
+  <logger name="com.cannontech.multispeak">
+	<level value="debug"/>
+  </logger>
 
+  <logger name="com.cannontech.yimp">
+	<level value="debug"/>
+  </logger>
+
+ <!-- <logger name="com.cannontech.common.config">
+	<level value="debug"/>
+  </logger>
+  -->
+
+  
+<!--  <logger name="com.cannontech.message">
+	<level value="debug"/>
+  </logger>
+  
+  <logger name="com.cannontech.database">
+	<level value="debug"/>
+  </logger>
+  
+  <logger name="com.cannontech.dbeditor">
+	<level value="debug"/>
+  </logger>
+-->  
   <!-- root logger -->
   <!-- all loggers will inherit these two loggers -->
   <root>

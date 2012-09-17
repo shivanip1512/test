@@ -18,7 +18,7 @@
   <!-- log4j documents for conversion/format character definitions -->
   <appender name="consoleAppender" class="org.apache.log4j.ConsoleAppender">
     <layout class="org.apache.log4j.PatternLayout">
-      <param name="ConversionPattern" value="%d [%t] %-5p %c - %m%n"/>
+      <param name="ConversionPattern" value="%d{MM/dd/yyyy HH:mm:ss,SSS zzz} [%t] %-5p %c - %m%n"/>
     </layout>
   </appender>
   
