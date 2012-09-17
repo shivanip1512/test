@@ -411,9 +411,9 @@ public final class CustomerDaoImpl implements CustomerDao, InitializingBean {
         
         public void mapRow(YukonResultSet rs, LiteCICustomer customer) throws SQLException {
 
-            final LiteCICustomer ciCustomer = (LiteCICustomer) customer;
+            final LiteCICustomer ciCustomer = customer;
             ciCustomer.setMainAddressID(rs.getInt("MainAddressID"));            
-            ciCustomer.setCompanyName(SqlUtils.convertDbValueToString("CompanyName"));   
+            ciCustomer.setCompanyName(SqlUtils.convertDbValueToString(rs.getResultSet(), "CompanyName"));   
             ciCustomer.setDemandLevel(rs.getDouble("CustomerDemandLevel"));
             ciCustomer.setCurtailAmount(rs.getDouble("CurtailAmount"));
             ciCustomer.setCICustType(rs.getInt("CICustType"));
