@@ -6025,25 +6025,32 @@ bool CtiCCExecutor::moveCapBank(int permanentFlag, long oldFeederId, long movedC
             movedCapBankPtr->setCloseOrder(closeOrder);
             movedCapBankPtr->setTripOrder(tripOrder);
 
+            /**
+             * Adding the bank to this feeder may not be necessary if it's 
+             * here as a result of a temp move and is being kept here 
+             * instead of moved to its original parent.
+             */
+            bool addNecessary = true;
+            for (CtiCCCapBank_SVector::iterator itr = newFeederCapBanks.begin(); itr != newFeederCapBanks.end(); itr++)
+            {
+                if((*itr)->getPaoId() == movedCapBankPtr->getPaoId())
+                {
+                    addNecessary = false;
+                    break;
+                }
+            }
+
+            if (addNecessary) 
+            {
+                newFeederCapBanks.push_back(movedCapBankPtr);
+            }
+
             //If permanent, reorder the banks to get rid of any '.' values.
             if (permanentFlag)
             {
-                for (CtiCCCapBank_SVector::iterator itr = newFeederCapBanks.begin(); itr != newFeederCapBanks.end(); itr++)
-                {
-                    if((*itr)->getPaoId() == movedCapBankPtr->getPaoId())
-                    {
-                        newFeederCapBanks.erase(itr);
-                        break;
-                    }
-                }
-
-                //reorder new feeder.
                 newFeederPtr->orderBanksOnFeeder();
-                //reorder old feeder
                 oldFeederPtr->orderBanksOnFeeder();
             }
-
-            newFeederCapBanks.push_back(movedCapBankPtr);
 
             store->insertItemsIntoMap(CtiCCSubstationBusStore::CapBankIdFeederIdMap, &movedCapBankId, &newFeederId);
             long subBusId = store->findSubBusIDbyFeederID(newFeederId);
