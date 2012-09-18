@@ -1,6 +1,7 @@
 package com.cannontech.stars.dr.hardware.service;
 
 import com.cannontech.common.device.commands.impl.CommandCompletionException;
+import com.cannontech.common.model.YukonTextMessage;
 import com.cannontech.database.data.lite.LiteYukonUser;
 import com.cannontech.stars.dr.account.model.CustomerAccount;
 import com.cannontech.stars.dr.hardware.model.LmHardwareCommand;
@@ -52,5 +53,10 @@ public interface LmHardwareCommandService {
      * @throws {@link CommandCompletionException}
      */
     public void sendOptOutCommand(LmHardwareCommand command) throws CommandCompletionException;
+    
+    /**
+     * Will attempt to send text message to Utility Pro thermostats
+     */
+    public void sendTextMessage(YukonTextMessage message);
     
 }

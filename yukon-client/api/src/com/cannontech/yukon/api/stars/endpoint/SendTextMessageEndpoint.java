@@ -11,7 +11,6 @@ import javax.annotation.PostConstruct;
 import javax.jms.ConnectionFactory;
 
 import org.apache.log4j.Logger;
-import org.jdom.Attribute;
 import org.jdom.Element;
 import org.jdom.JDOMException;
 import org.jdom.Namespace;
@@ -36,7 +35,7 @@ import com.cannontech.database.incrementer.NextValueHelper;
 import com.cannontech.message.activemq.YukonTextMessageDao;
 import com.cannontech.stars.core.service.YukonEnergyCompanyService;
 import com.cannontech.stars.dr.hardware.dao.InventoryDao;
-import com.cannontech.stars.dr.thermostat.service.ThermostatService;
+import com.cannontech.stars.dr.hardware.service.LmHardwareCommandService;
 import com.cannontech.stars.energyCompany.model.YukonEnergyCompany;
 import com.cannontech.yukon.api.stars.endpoint.endpointMappers.TextMessageElementRequestMapper;
 import com.cannontech.yukon.api.stars.model.DeviceTextMessage;
@@ -57,7 +56,7 @@ public class SendTextMessageEndpoint {
     @Autowired private YukonEnergyCompanyService yukonEnergyCompanyService;
     @Autowired private YukonTextMessageDao yukonTextMessageDao;
     @Autowired private NextValueHelper nextValueHelper;
-    @Autowired private ThermostatService thermostatService;
+    @Autowired private LmHardwareCommandService lmHardwareCommandService;
 
     // @Autowired by setter
     private JmsTemplate jmsTemplate;
@@ -110,7 +109,7 @@ public class SendTextMessageEndpoint {
                     YukonTextMessage yukonTextMessage = getYukonTextMessage(deviceTextMessage, serialNumberToInventoryIdMap, user);
                     
                     // Send out message
-                    thermostatService.sendTextMessage(yukonTextMessage);
+                    lmHardwareCommandService.sendTextMessage(yukonTextMessage);
                 }
                 // build a response
                 addRequestedNode(deviceTextMessage.getSerialNumbers().size(), lookupFailedSerialNumbers.size(), unsupportedSerialNumbers.size(), resp);

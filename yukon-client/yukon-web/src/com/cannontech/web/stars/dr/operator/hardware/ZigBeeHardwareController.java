@@ -390,7 +390,7 @@ public class ZigBeeHardwareController {
         boolean messageFailed = false;
         String errorMessage = null;
         try {
-            Set<Integer> inventoryIds = Sets.newHashSet(1);
+            Set<Integer> inventoryIds = Sets.newHashSet();
             inventoryIds.add(inventoryId);
             textMessage.setInventoryIds(inventoryIds);
             

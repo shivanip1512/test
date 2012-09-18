@@ -78,6 +78,7 @@ public enum HardwareType implements DatabaseRepresentationSource, DisplayableEnu
     
     private final static ImmutableSet<HardwareType> supportsChangeType;
     private final static ImmutableSet<HardwareType> supportsAddByRange;
+    private final static ImmutableSet<HardwareType> supportsTextMessages;
     
     private final static ListMultimap<PaoType, HardwareType> starsToPaoMap;
     
@@ -116,6 +117,7 @@ public enum HardwareType implements DatabaseRepresentationSource, DisplayableEnu
         
         utilityProTypes =  ImmutableSet.of(UTILITY_PRO, UTILITY_PRO_G2, UTILITY_PRO_G3, UTILITY_PRO_ZIGBEE);
         autoModeEnableTypes =  ImmutableSet.of(UTILITY_PRO, UTILITY_PRO_G2, UTILITY_PRO_G3);
+        supportsTextMessages = ImmutableSet.of(UTILITY_PRO, UTILITY_PRO_G2, UTILITY_PRO_G3, UTILITY_PRO_ZIGBEE, DIGI_GATEWAY);
         
         // PaoType map
         starsToPaoMap = ArrayListMultimap.create();
@@ -269,7 +271,7 @@ public enum HardwareType implements DatabaseRepresentationSource, DisplayableEnu
 	 * Returns true if this hardware type supports receiving messages
 	 */
 	public boolean isSupportsTextMessages() {
-		return isUtilityProType();
+		return supportsTextMessages.contains(this);
 	}
 
     /**

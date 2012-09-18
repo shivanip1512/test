@@ -4,14 +4,18 @@ import java.util.Date;
 import java.util.List;
 import java.util.TimerTask;
 
+import javax.jms.ConnectionFactory;
+
 import org.apache.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.jms.core.JmsTemplate;
 
 import com.cannontech.clientutils.LogHelper;
 import com.cannontech.clientutils.YukonLogManager;
 import com.cannontech.common.constants.YukonListEntryTypes;
 import com.cannontech.common.device.commands.impl.CommandCompletionException;
 import com.cannontech.common.inventory.HardwareType;
+import com.cannontech.common.model.YukonTextMessage;
 import com.cannontech.core.dao.DBPersistentDao;
 import com.cannontech.core.dao.YukonListDao;
 import com.cannontech.core.roleproperties.YukonRoleProperty;
@@ -54,6 +58,9 @@ public class LmHardwareCommandServiceImpl implements LmHardwareCommandService {
     @Autowired private InventoryBaseDao inventoryBaseDao;
     @Autowired private DBPersistentDao dbPersistentDao;
     
+    //@Autowired by setter
+    private JmsTemplate jmsTemplate;
+
     private ImmutableMap<HardwareStrategyType, LmHardwareCommandStrategy> strategies = ImmutableMap.of();
     @Autowired
     public void setStrategies(List<LmHardwareCommandStrategy> strategyList) {
@@ -248,6 +255,18 @@ public class LmHardwareCommandServiceImpl implements LmHardwareCommandService {
         event.setEnergyCompanyID(ecId);
    
         dbPersistentDao.performDBChange(event, TransactionType.INSERT);
+    }
+    
+    @Override
+    public void sendTextMessage(YukonTextMessage message){
+        
+        jmsTemplate.convertAndSend("yukon.notif.stream.message.yukonTextMessage.Send", message);
+    }
+    
+    @Autowired
+    public void setConnectionFactory(ConnectionFactory connectionFactory) {
+        jmsTemplate = new JmsTemplate(connectionFactory);
+        jmsTemplate.setPubSubDomain(false);
     }
     
 }

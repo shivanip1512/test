@@ -3,7 +3,6 @@ package com.cannontech.stars.dr.thermostat.service;
 import java.util.List;
 import java.util.Set;
 
-import com.cannontech.common.model.YukonTextMessage;
 import com.cannontech.common.temperature.Temperature;
 import com.cannontech.database.data.lite.LiteYukonUser;
 import com.cannontech.stars.dr.account.model.CustomerAccount;
@@ -141,10 +140,4 @@ public interface ThermostatService {
      */
     public boolean isAutoModeAvailable(int accountId, int thermostatId);
     
-    /**
-     * Sends Text message
-     * @param message
-     * @return
-     */
-    public void sendTextMessage(YukonTextMessage message);
 }
