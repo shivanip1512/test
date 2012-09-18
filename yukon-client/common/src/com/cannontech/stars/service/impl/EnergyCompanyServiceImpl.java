@@ -37,7 +37,6 @@ import com.cannontech.core.dao.impl.LoginStatusEnum;
 import com.cannontech.core.roleproperties.YukonRole;
 import com.cannontech.core.roleproperties.YukonRoleProperty;
 import com.cannontech.core.roleproperties.dao.RolePropertyDao;
-import com.cannontech.core.users.dao.UserGroupDao;
 import com.cannontech.database.SqlStatement;
 import com.cannontech.database.TransactionException;
 import com.cannontech.database.TransactionType;
@@ -103,11 +102,10 @@ public class EnergyCompanyServiceImpl implements EnergyCompanyService {
     @Autowired private ConfigurationSource configurationSource;
     @Autowired private YukonEnergyCompanyService yukonEnergyCompanyService;
     @Autowired private WarehouseDao warehouseDao;
-    @Autowired private UserGroupDao userGroupDao;
     @Autowired private AccountService accountService;
 
     @Override
-    @Transactional
+    @Transactional(rollbackFor = {ConfigurationException.class, RuntimeException.class})
     public LiteStarsEnergyCompany createEnergyCompany(EnergyCompanyDto energyCompanyDto, LiteYukonUser user, Integer parentId)
     throws WebClientException, TransactionException, CommandExecutionException, ConfigurationException, SQLException {
         
