@@ -29,8 +29,8 @@ void CtiConfigManager::refreshConfigurations()
 
     _deviceConfig.removeAll(NULL,0);
 
-    loadConfigs();
-    loadData();
+    loadAllConfigs();
+    loadAllConfigurationItems();
 
     //ok, so in theory right now my 2 maps are built up.. although I should only need one of them
     //Now I want to give the device configs to the devices themselves
@@ -90,8 +90,8 @@ void CtiConfigManager::processDBUpdate(LONG identifier, string category, string 
             case ChangeTypeAdd:
                 {
                     removeFromMaps(identifier);
-                    loadConfigs(identifier);
-                    loadData(identifier);
+                    loadConfig(identifier);
+                    loadConfigurationItems(identifier);
                     updateDeviceConfigs(identifier, NoDeviceIdSpecified);
                     break;
                 }
@@ -145,8 +145,26 @@ void CtiConfigManager::refreshConfigForDeviceId(long deviceid)
     updateDeviceConfigs(NoConfigIdSpecified, deviceid);
 }
 
+void CtiConfigManager::loadConfigurationItems(long configID)
+{
+    const string sql =  "SELECT DCI.deviceconfigurationid, DCI.fieldname, DCI.value "
+                        "FROM DeviceConfigurationItem DCI "
+                        "WHERE DCI.deviceconfigurationid = " + CtiNumStr(configID) +
+                        "ORDER BY DCI.deviceconfigurationid ASC";
 
-void CtiConfigManager::loadData(long configID)
+    executeLoadItems(sql);
+}
+
+void CtiConfigManager::loadAllConfigurationItems()
+{
+    static const string sql = "SELECT DCI.deviceconfigurationid, DCI.fieldname, DCI.value "
+                              "FROM DeviceConfigurationItem DCI "
+                              "ORDER BY DCI.deviceconfigurationid ASC";
+
+    executeLoadItems(sql);
+}
+
+void CtiConfigManager::executeLoadItems(const string &sql)
 {
     CtiTime start, stop;
 
@@ -156,34 +174,17 @@ void CtiConfigManager::loadData(long configID)
                                       "FROM DeviceConfigurationItem DCI "
                                       "ORDER BY DCI.deviceconfigurationid ASC";
 
-        static const string sqlID =  "SELECT DCI.deviceconfigurationid, DCI.fieldname, DCI.value "
-                                     "FROM DeviceConfigurationItem DCI "
-                                     "WHERE DCI.deviceconfigurationid = ? "
-                                     "ORDER BY DCI.deviceconfigurationid ASC";
-
         Cti::Database::DatabaseConnection connection;
-        Cti::Database::DatabaseReader rdr(connection);
-
-        if(configID != NoConfigIdSpecified)
-        {
-            rdr.setCommandText(sqlID);
-            rdr << configID;
-        }
-        else
-        {
-            rdr.setCommandText(sqlNoID);
-        }
+        Cti::Database::DatabaseReader rdr(connection, sql);
 
         rdr.execute();
 
-        long oldDeviceConfigID = 0;
+        long deviceConfigID, oldDeviceConfigID = 0;
         DeviceConfigSPtr config;
-        long deviceConfigID;
         string value,valueName;
 
         while( rdr() )
         {
-            //rdr["deviceconfigurationitemid"] >> itemID;
             rdr["deviceconfigurationid"] >> deviceConfigID;
             rdr["fieldname"] >> valueName;
             rdr["value"] >> value;
@@ -216,34 +217,14 @@ void CtiConfigManager::loadData(long configID)
     }
 }
 
-void CtiConfigManager::loadConfigs(long configID)
+void CtiConfigManager::executeLoadConfig(const string &sql) 
 {
     CtiTime start, stop;
 
     start = start.now();
     {
-        string sql =  "SELECT DCF.deviceconfigurationid, DCF.name, DCF.type "
-                      "FROM DeviceConfiguration DCF";
-
         Cti::Database::DatabaseConnection connection;
-        Cti::Database::DatabaseReader rdr(connection);
-
-        if(configID != NoConfigIdSpecified)
-        {
-            _deviceConfig.remove(configID);//Give us a fresh start
-            sql += " WHERE DCF.deviceconfigurationid = ?";
-        }
-        else
-        {
-            _deviceConfig.clear();
-        }
-
-        rdr.setCommandText(sql);
-
-        if(configID != NoConfigIdSpecified)
-        {
-            rdr << configID;
-        }
+        Cti::Database::DatabaseReader rdr(connection, sql);
 
         rdr.execute();
 
@@ -270,8 +251,31 @@ void CtiConfigManager::loadConfigs(long configID)
     if(DebugLevel & 0x80000000 || stop.seconds() - start.seconds() > 5)
     {
         CtiLockGuard<CtiLogger> doubt_guard(dout);
-        dout << CtiTime() << " " << stop.seconds() - start.seconds() << " seconds to load config parts " << endl;
+        dout << CtiTime() << " " << stop.seconds() - start.seconds() << " seconds to load device configurations." << endl;
     }
+}
+
+void CtiConfigManager::loadAllConfigs()
+{
+    static const string sql =  "SELECT DCF.deviceconfigurationid, DCF.name, DCF.type "
+                               "FROM DeviceConfiguration DCF";
+
+    _deviceConfig.clear();
+
+    executeLoadConfig(sql);
+}
+
+void CtiConfigManager::loadConfig(long configID)
+{
+    string sql =  "SELECT DCF.deviceconfigurationid, DCF.name, DCF.type "
+                  "FROM DeviceConfiguration DCF ";
+                  "WHERE DCF.deviceconfigurationid = " + CtiNumStr(configID);
+
+
+    //Give us a fresh start
+    _deviceConfig.remove(configID);
+
+    executeLoadConfig(sql);
 }
 
 //Send configs to devices
@@ -375,8 +379,5 @@ void CtiConfigManager::updateDeviceConfigs(long configID, long deviceID)
 
 void CtiConfigManager::removeFromMaps(long configID)
 {
-    if( configID != NoConfigIdSpecified )
-    {
-        _deviceConfig.remove(configID);
-    }
+    _deviceConfig.remove(configID);
 }

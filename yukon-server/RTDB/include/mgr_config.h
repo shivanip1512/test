@@ -22,10 +22,15 @@ private:
         NoDeviceIdSpecified =     0
     };
 
-    void loadData(long configID = NoConfigIdSpecified);
-    void loadConfigs(long configID = NoConfigIdSpecified);
+    void loadConfigurationItems(long configID);
+    void loadAllConfigurationItems();
+    void loadConfig(long configID);
+    void loadAllConfigs();
     void updateDeviceConfigs(long configID, long deviceID);
-    void removeFromMaps(long configID = NoConfigIdSpecified);
+    void removeFromMaps(long configID);
+
+    void executeLoadConfig(const std::string &sql);
+    void executeLoadItems (const std::string &sql);
 
     void refreshConfigurations();
     void setDeviceManager(CtiDeviceManager &mgr);
