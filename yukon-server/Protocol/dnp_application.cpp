@@ -219,10 +219,10 @@ void ApplicationLayer::initForSlaveOutput( void )
     _response.ctrl.final       = 1;
     _response.ctrl.app_confirm = 0;
     _response.ctrl.unsolicited = 0;
-    _response.ind.all_stations = 1;
-    _response.ind.class_1 = 1;
-    _response.ind.class_2 = 1;
-    _response.ind.class_3 = 1;
+    _response.ind.all_stations = 0;
+    _response.ind.class_1 = 0;
+    _response.ind.class_2 = 0;
+    _response.ind.class_3 = 0;
     _response.ctrl.seq = _seqno;
 
     _response.func_code = DNP::ApplicationLayer::ResponseResponse;
