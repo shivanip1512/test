@@ -79,6 +79,7 @@ public class DevRolePropUpdaterService extends DevObjectCreationBase {
 
         // WEB_CLIENT
         setRoleProperty(group, YukonRoleProperty.VIEW_ALARMS_AS_ALERTS,true);
+        setRoleProperty(group, YukonRoleProperty.SUPPRESS_ERROR_PAGE_DETAILS,false);
 
         // APPLICATION_ESUBSTATION_EDITOR
         setRoleProperty(group, YukonRoleProperty.ESUB_EDITOR_ROLE_EXITS,true);
