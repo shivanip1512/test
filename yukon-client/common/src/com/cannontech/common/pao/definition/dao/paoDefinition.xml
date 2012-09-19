@@ -5784,6 +5784,11 @@
                 <decimalplaces value="3"/>
             </point>
         </points>
+        <attributes>
+            <attribute name="KVARH">
+                <basicLookup point="Delivered kVArh" />
+            </attribute>
+        </attributes>
     </pao>
     
     <!-- Coincident Value Supporting Devices, adds Coincident kVAr, kVA, and PF -->
