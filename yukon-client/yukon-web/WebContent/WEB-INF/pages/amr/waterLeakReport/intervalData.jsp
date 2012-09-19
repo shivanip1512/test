@@ -41,7 +41,7 @@
         <a href="javascript:void(0);" class="f_open_detection_algorithm"><i:inline key="yukon.web.modules.amr.waterLeakReport.report.leakDetectionAlgorithm"/></a>
     </c:set>
 	<div class="page_help">
-		<cti:msg2 key=".leakIndicationDescription" arguments="${detection_algorithm}" htmlEscape="false"/>
+		<cti:msg2 key=".leakIndicationDescription" arguments="${detection_algorithm}" htmlEscapeArguments="false"/>
 	</div>
 
 	<tags:pagedBox2 nameKey="tableTitle" searchResult="${filterResult}"

@@ -50,7 +50,7 @@
     <entry key="yukon.web.modules.amr.waterLeakReport.report.filter.toDate">To Date</entry>
     <entry key="yukon.web.modules.amr.waterLeakReport.report.filter.toHour">To Hour</entry>
     <entry key="yukon.web.modules.amr.waterLeakReport.report.filter.threshold">Threshold (gal)</entry>
-    <entry key="yukon.web.modules.amr.waterLeakReport.report.filter.threshold.helpText">If a given usage reading is greater than this value it is considered a leak</entry>
+    <entry key="yukon.web.modules.amr.waterLeakReport.report.filter.threshold.helpText">If all readings during the filter period are above this value, the device is considered leaking</entry>
     <entry key="yukon.web.modules.amr.waterLeakReport.report.filter.includeDisabledDevices">Include Disabled Devices</entry>
     <entry key="yukon.web.modules.amr.waterLeakReport.report.tableTitle.title">Water Leaks</entry>
     <entry key="yukon.web.modules.amr.waterLeakReport.report.tableHeader.deviceName.linkText">Device Name</entry>
