@@ -14,8 +14,8 @@ import com.cannontech.message.util.ServerRequest;
 
 public class LoadControlCommandServiceImpl implements LoadControlCommandService {
 
-    private LoadControlClientConnection loadControlClientConnection;
-    private ServerRequest serverRequest;
+    @Autowired private LoadControlClientConnection loadControlClientConnection;
+    @Autowired private ServerRequest serverRequest;
     
     public ConstraintViolations executeManualCommand(LMManualControlRequest request) throws BadServerResponseException {
         
@@ -24,19 +24,8 @@ public class LoadControlCommandServiceImpl implements LoadControlCommandService 
         LMManualControlResponse lmResponse = (LMManualControlResponse)response.getPayload();
         
         if (response.getStatus() != ServerResponseMsg.STATUS_OK) {
-            throw new BadServerResponseException("Invalid response received from Load Management.");
+            throw new BadServerResponseException("Invalid response received from Load Management. Response status:" + response.getStatus());
         }
         return new ConstraintViolations(LCUtils.convertViolationsToContainers(lmResponse.getConstraintViolations()));
-    }
-
-    @Autowired
-    public void setLoadControlClientConnection(
-            LoadControlClientConnection loadControlClientConnection) {
-        this.loadControlClientConnection = loadControlClientConnection;
-    }
-    
-    @Autowired
-    public void setServerRequest(ServerRequest serverRequest) {
-        this.serverRequest = serverRequest;
     }
 }

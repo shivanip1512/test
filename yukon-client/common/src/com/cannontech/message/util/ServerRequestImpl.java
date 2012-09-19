@@ -99,7 +99,7 @@ public class ServerRequestImpl implements ServerRequest
             // Did we get a response that matched our request id?
             if(_responseMsg == null) {
                 _responseMsg = ServerResponseMsg.createTimeoutResp();
-                log.debug("Server response was a timeout");
+                log.info("Server response was a timeout");
                 //throw new TimeoutException("Timed out waiting for response message with id: " + _requestID);
             }
             
