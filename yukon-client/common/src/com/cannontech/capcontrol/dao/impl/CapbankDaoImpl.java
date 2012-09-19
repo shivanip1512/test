@@ -61,6 +61,7 @@ public class CapbankDaoImpl implements CapbankDao {
 			capbankAdditional.setOtherComments(rs.getString("OtherComments"));
 			capbankAdditional.setOpTeamComments(rs.getString("OpTeamComments"));
 			capbankAdditional.setCbcInstallDate(rs.getDate("CBCBattInstallDate"));
+			capbankAdditional.setAddress(rs.getString("Description"));
 			
 			return capbankAdditional;
 		}
@@ -261,8 +262,9 @@ public class CapbankDaoImpl implements CapbankDao {
 		sql.append("SELECT DeviceId, MaintenanceAreaID, PoleNumber, DriveDirections, Latitude, Longitude,");
 		sql.append(   "CapBankConfig, CommMedium, CommStrength, ExtAntenna, AntennaType, LastMaintVisit,");
 		sql.append(   "LastInspVisit, OpCountResetDate, PotentialTransformer, MaintenanceReqPend, OtherComments,");
-		sql.append(   "OpTeamComments, CBCBattInstallDate");
-		sql.append("FROM CapBankAdditional");
+		sql.append(   "OpTeamComments, CBCBattInstallDate, ypo.Description");
+		sql.append("FROM CapBankAdditional cba");
+		sql.append("JOIN YukonPaObject ypo ON cba.DeviceId = ypo.PAObjectId");
 		sql.append("WHERE DeviceId").eq(paoId);
 		
 		CapbankAdditional capbankAdditional = yukonJdbcTemplate.queryForObject(sql, capBankAdditionalRowMapper);
