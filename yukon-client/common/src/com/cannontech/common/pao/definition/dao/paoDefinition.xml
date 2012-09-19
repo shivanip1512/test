@@ -874,6 +874,9 @@
         	<attribute name="DEMAND">
         		<basicLookup point="Last Interval kW" />
         	</attribute>
+            <attribute name="PEAK_KVAR">
+                <basicLookup point="Peak kVAr (Rate A kVAr)" />
+            </attribute>
         	<attribute name="KVAR">
         		<basicLookup point="Peak kVAr (Rate A kVAr)" />
         	</attribute>
@@ -1289,6 +1292,9 @@
         	<attribute name="DEMAND">
         		<basicLookup point="Last Interval kW" />
         	</attribute>
+            <attribute name="PEAK_KVAR">
+                <basicLookup point="Peak kVAr (Rate A kVAr)" />
+            </attribute>
         	<attribute name="KVAR">
         		<basicLookup point="Peak kVAr (Rate A kVAr)" />
         	</attribute>
@@ -6491,6 +6497,11 @@
                 <decimalplaces value="4"/>
             </point>
         </points>
+        <attributes>
+            <attribute name="PEAK_KVAR">
+                <basicLookup point="Peak kVAr" />
+            </attribute>
+        </attributes>
     </pao>
     
     <!-- FOCUS RFN METERS -->

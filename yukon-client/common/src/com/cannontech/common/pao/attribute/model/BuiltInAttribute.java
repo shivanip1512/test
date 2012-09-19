@@ -43,6 +43,7 @@ public enum BuiltInAttribute implements Attribute, DisplayableEnum {
     OUTAGE_LOG("Outage Log"),
     OUTAGE_STATUS("Outage Status"),
     PEAK_DEMAND("Peak Demand"),
+    PEAK_KVAR("Peak kVAr"),
     PHASE("Phase"),
     POWER_FAIL_FLAG("Power Fail Flag"),
     PROFILE_CHANNEL_2("Profile Channel 2"),
@@ -219,6 +220,7 @@ public enum BuiltInAttribute implements Attribute, DisplayableEnum {
         other.add(ENERGY_GENERATED);
         other.add(KVAR);
         other.add(KVARH);
+        other.add(PEAK_KVAR);
         other.add(PHASE);
         other.add(RECORDING_INTERVAL);
         other.add(REPORTING_INTERVAL);
