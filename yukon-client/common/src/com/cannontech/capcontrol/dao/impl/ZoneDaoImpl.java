@@ -169,7 +169,7 @@ public class ZoneDaoImpl implements ZoneDao, InitializingBean {
         SqlStatementBuilder regulatorToZoneSql = new SqlStatementBuilder();
         regulatorToZoneSql.append("SELECT rtz.RegulatorId, rtz.ZoneId, cc.Phase");
         regulatorToZoneSql.append("FROM RegulatorToZoneMapping rtz");
-        regulatorToZoneSql.append("JOIN CcMonitorBankList cc ON rtz.RegulatorId = cc.DeviceId");
+        regulatorToZoneSql.append("LEFT JOIN CcMonitorBankList cc ON rtz.RegulatorId = cc.DeviceId");
         regulatorToZoneSql.append("WHERE rtz.zoneId").eq(zoneId);
         regulatorToZoneSql.append("ORDER BY cc.Phase");
 
