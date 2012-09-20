@@ -397,7 +397,7 @@ public class UserGroupRoleEditorPanel extends com.cannontech.common.gui.util.Dat
 		}
 		catch( TransactionException te )
 		{
-			CTILogger.error( "Unabel to get the role data from the database", te );					
+			CTILogger.error( "Unable to get the role data from the database", te );					
 		}
 	
 	}
