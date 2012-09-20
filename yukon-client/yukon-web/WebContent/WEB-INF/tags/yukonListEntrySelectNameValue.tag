@@ -2,7 +2,7 @@
 
 <%@ attribute name="nameKey" required="true" type="java.lang.String"%>
 <%@ attribute name="path" required="true" type="java.lang.String"%>
-<%@ attribute name="energyCompanyId" required="true" type="java.lang.Integer"%>
+<%@ attribute name="energyCompanyId" required="true" type="java.lang.String"%>
 <%@ attribute name="listName" required="true" type="java.lang.String"%>
 <%@ attribute name="defaultItemValue" required="false" type="java.lang.String"%>
 <%@ attribute name="defaultItemLabel" required="false" type="java.lang.String"%>

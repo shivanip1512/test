@@ -17,14 +17,14 @@ import com.cannontech.stars.database.data.lite.LiteStarsEnergyCompany;
 public class YukonListEntryListTag extends YukonTagSupport {
 
 	private String var;
-	private int energyCompanyId;
+	private String energyCompanyId;
 	private String listName;
 	private StarsDatabaseCache starsDatabaseCache;
     
     @Override
-    public void doTag() throws JspException, IOException {
+    public void doTag() throws JspException, IOException, NumberFormatException {
     	
-    	LiteStarsEnergyCompany energyCompany = starsDatabaseCache.getEnergyCompany(energyCompanyId);
+    	LiteStarsEnergyCompany energyCompany = starsDatabaseCache.getEnergyCompany(Integer.parseInt(energyCompanyId));
     	YukonSelectionListEnum yukonSelectionListEnum = YukonSelectionListEnum.valueOf(listName);
     	List<YukonListEntry> yukonListEntries = energyCompany.getYukonSelectionList(yukonSelectionListEnum.getListName()).getYukonListEntries();
     	
@@ -35,7 +35,7 @@ public class YukonListEntryListTag extends YukonTagSupport {
 		this.var = var;
 	}
     
-    public void setEnergyCompanyId(int energyCompanyId) {
+    public void setEnergyCompanyId(String energyCompanyId) {
 		this.energyCompanyId = energyCompanyId;
 	}
     
