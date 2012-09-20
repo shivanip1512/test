@@ -4141,7 +4141,7 @@
     <pao id="TAPTERMINAL" inherits="SIGNAL_TRANSMITTER_BASE">
         <displayName>PAGING TAP TERMINAL</displayName>
     </pao>
-    <pao id="RDS_TERMINAL" inherits="SIGNAL_TRANSMITTER_BASE" creatable="false">
+    <pao id="RDS_TERMINAL" inherits="SIGNAL_TRANSMITTER_BASE">
         <displayName>RDS TERMINAL</displayName>
     </pao>
     <pao id="REPEATER" inherits="REPEATER_BASE">
