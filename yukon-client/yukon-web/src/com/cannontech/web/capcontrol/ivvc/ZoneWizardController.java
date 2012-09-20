@@ -345,6 +345,7 @@ public class ZoneWizardController {
         Zone zone = zoneService.getZoneById(zoneId);
         try{
             zoneService.deleteZone(zoneId);
+            flashScope.setConfirm(new YukonMessageSourceResolvable("yukon.web.modules.capcontrol.ivvc.zoneWizard.success.zoneDeleted"));
         } catch (DataIntegrityViolationException e) {
             flashScope.setError(new YukonMessageSourceResolvable("yukon.web.modules.capcontrol.ivvc.zoneWizard.error.zoneDeleteError"));
         }

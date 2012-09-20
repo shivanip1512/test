@@ -158,7 +158,8 @@
                                 <c:choose>
                                     <c:when  test="${hasEditingRole}">
                                         <cti:button nameKey="edit" renderMode="image" onclick="javascript:showZoneEditorWizard('${zoneEditorUrl}');"/>
-                                        <cti:button id="delete_${zone.zoneId}" nameKey="remove" renderMode="image" href="${zoneDeleteUrl}"/>
+                                        <cti:button id="delete_${zone.zoneId}" nameKey="remove" renderMode="image"/>
+                                        <tags:confirmDialog nameKey=".deleteConfirmation" argument="${zone.name}" submitName="delete" href="${zoneDeleteUrl}" on="#delete_${zone.zoneId}"/>
                                     </c:when>
                                     <c:otherwise>
                                         <cti:button nameKey="disabledEdit" renderMode="image" disabled="true"/>
