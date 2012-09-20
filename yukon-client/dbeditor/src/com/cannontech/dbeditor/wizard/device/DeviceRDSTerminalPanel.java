@@ -219,7 +219,7 @@ public class DeviceRDSTerminalPanel extends DataInputPanel implements
 
                 constraints = new GridBagConstraints();
                 constraints.gridx = 0;
-                constraints.gridy = 6;
+                constraints.gridy = 8;
                 constraints.gridwidth = 2;
                 constraints.anchor = GridBagConstraints.WEST;
                 constraints.insets = new java.awt.Insets(0, 2, 0, 2);
