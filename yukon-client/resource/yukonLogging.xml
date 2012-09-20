@@ -40,33 +40,7 @@
   <logger name="org.apache.myfaces">
   	<level value="warn"/>
   </logger>
-  
-  <logger name="com.cannontech.multispeak">
-	<level value="debug"/>
-  </logger>
 
-  <logger name="com.cannontech.yimp">
-	<level value="debug"/>
-  </logger>
-
- <!-- <logger name="com.cannontech.common.config">
-	<level value="debug"/>
-  </logger>
-  -->
-
-  
-<!--  <logger name="com.cannontech.message">
-	<level value="debug"/>
-  </logger>
-  
-  <logger name="com.cannontech.database">
-	<level value="debug"/>
-  </logger>
-  
-  <logger name="com.cannontech.dbeditor">
-	<level value="debug"/>
-  </logger>
--->  
   <!-- root logger -->
   <!-- all loggers will inherit these two loggers -->
   <root>
