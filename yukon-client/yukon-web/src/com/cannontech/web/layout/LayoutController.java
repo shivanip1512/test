@@ -264,7 +264,7 @@ public class LayoutController {
     public String getyukonBuild() {
         Map<String, String> buildInfo = VersionTools.getBuildInfo();
         if (buildInfo.containsKey("JOB_NAME") && buildInfo.containsKey("BUILD_NUMBER")) {
-            return "<a href=\"http://hudson.cooperpowereas.net/job/" + buildInfo.get("JOB_NAME") + "/" 
+            return "<a href=\"http://swbuild.cooperpowereas.net/job/" + buildInfo.get("JOB_NAME") + "/" 
             + buildInfo.get("BUILD_NUMBER") + "\">" + buildInfo.get("BUILD_NUMBER") + "</a>";
         } else {
             return "undefined";
