@@ -874,6 +874,7 @@
         	<attribute name="DEMAND">
         		<basicLookup point="Last Interval kW" />
         	</attribute>
+            <!-- Peak kVAr (Rate A kVar) is mapped to both PEAK_KVAR and KVAR attributes because this device type does not have a dedicated Peak KVar point (like the RFN types do). Using Rate A to represent peak kVAr. -->
             <attribute name="PEAK_KVAR">
                 <basicLookup point="Peak kVAr (Rate A kVAr)" />
             </attribute>
@@ -1292,6 +1293,7 @@
         	<attribute name="DEMAND">
         		<basicLookup point="Last Interval kW" />
         	</attribute>
+            <!-- Peak kVAr (Rate A kVar) is mapped to both PEAK_KVAR and KVAR attributes because this device type does not have a dedicated Peak KVar point (like the RFN types do). Using Rate A to represent peak kVAr. -->
             <attribute name="PEAK_KVAR">
                 <basicLookup point="Peak kVAr (Rate A kVAr)" />
             </attribute>
