@@ -533,16 +533,12 @@ public class ValmetProtocol extends FDEProtocol implements Runnable {
             Float value = x.nextFloat();
             try {
                 nextpoint = (ValmetPoint) pointarray[i];
-                lastpoint = (ValmetPoint) pointarray[i + 1];
 
-                if( nextpoint == null || lastpoint == null) {
+                if (nextpoint == null) {
                     exit = 1; 
                     continue;
                 }
-                
-                if (lastpoint.getPointName().equalsIgnoreCase("")) {
-                    exit = 1;
-                }
+
                 
                 boolean forceScan = false;
                 if (nextpoint != null) {
@@ -553,7 +549,7 @@ public class ValmetProtocol extends FDEProtocol implements Runnable {
                     if (forceScan) {
                         createForceScan(out);
                         i++;
-                        continue;
+
                     }
                     
                     if ("Value".equalsIgnoreCase(nextpoint.getPointType())) {
