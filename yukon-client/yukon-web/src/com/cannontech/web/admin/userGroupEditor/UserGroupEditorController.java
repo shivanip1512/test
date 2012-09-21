@@ -38,6 +38,7 @@ import com.cannontech.database.data.lite.LiteBase;
 import com.cannontech.database.data.lite.LiteYukonGroup;
 import com.cannontech.database.data.lite.LiteYukonUser;
 import com.cannontech.database.data.user.UserGroup;
+import com.cannontech.database.db.user.YukonGroup;
 import com.cannontech.i18n.YukonMessageSourceResolvable;
 import com.cannontech.user.YukonUserContext;
 import com.cannontech.web.PageEditMode;
@@ -134,7 +135,7 @@ public class UserGroupEditorController {
                         return roleGroup.getGroupID();
                     }
                 });
-
+        model.addAttribute("yukonGrpId", YukonGroup.YUKON_GROUP_ID);
         model.addAttribute("groups", roleGroups);
         model.addAttribute("alreadyAssignedRoleGroupIds", alreadyAssignedRoleGroupIds);
         setupModelMap(model, userGroup);
@@ -179,9 +180,13 @@ public class UserGroupEditorController {
 
     @RequestMapping(method=RequestMethod.POST)
     public String removeRoleGroup(ModelMap model, FlashScope flash, int userGroupId, int remove) {
-        userGroupDao.deleteUserGroupToYukonGroupMappng(userGroupId, remove);
+        if (remove != YukonGroup.YUKON_GROUP_ID) {
+            userGroupDao.deleteUserGroupToYukonGroupMappng(userGroupId, remove);
+            flash.setConfirm(new YukonMessageSourceResolvable("yukon.web.modules.adminSetup.userEditor.updateSuccessful"));
+        } else {
+            flash.setError(new YukonMessageSourceResolvable("yukon.web.modules.adminSetup.userEditor.error.unableToDelete"));
+        }
         model.addAttribute("userGroupId", userGroupId);
-        flash.setConfirm(new YukonMessageSourceResolvable("yukon.web.modules.adminSetup.userEditor.updateSuccessful"));
         return "redirect:roleGroups";
     }
     
