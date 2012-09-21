@@ -43,7 +43,7 @@ Lcr3102Device& Lcr3102Device::operator=( const Lcr3102Device &aRef )
 
 INT Lcr3102Device::ErrorDecode( const INMESS &InMessage, const CtiTime TimeNow, std::list< CtiMessage* > &retList )
 {
-    INT retCode = NOTNORMAL;
+    INT retCode = NoError;
 
     if( InMessage.Sequence == EmetconProtocol::Scan_Integrity )
     {
@@ -56,7 +56,7 @@ INT Lcr3102Device::ErrorDecode( const INMESS &InMessage, const CtiTime TimeNow, 
 
 INT Lcr3102Device::ResultDecode( INMESS *InMessage, CtiTime &TimeNow, list< CtiMessage* > &vgList, list< CtiMessage* > &retList, list< OUTMESS* > &outList )
 {
-    INT status = NOTNORMAL;
+    INT status = NoError;
 
     switch(InMessage->Sequence)
     {
@@ -147,7 +147,7 @@ INT Lcr3102Device::ResultDecode( INMESS *InMessage, CtiTime &TimeNow, list< CtiM
 
 INT Lcr3102Device::decodeGetValueTemperature( INMESS *InMessage, CtiTime &TimeNow, list< CtiMessage* > &vgList, list< CtiMessage* > &retList, list< OUTMESS* > &outList )
 {
-    INT status = NOTNORMAL;
+    INT status = NoError;
 
     DSTRUCT      *DSt       = &InMessage->Buffer.DSt;
     CtiReturnMsg *ReturnMsg = NULL;     // Message sent to VanGogh, inherits from Multi
@@ -178,7 +178,7 @@ INT Lcr3102Device::decodeGetValueTemperature( INMESS *InMessage, CtiTime &TimeNo
 
 INT Lcr3102Device::decodeGetValueTransmitPower( INMESS *InMessage, CtiTime &TimeNow, list< CtiMessage* > &vgList, list< CtiMessage* > &retList, list< OUTMESS* > &outList )
 {
-    INT status = NOTNORMAL;
+    INT status = NoError;
 
     DSTRUCT      *DSt       = &InMessage->Buffer.DSt;
     CtiReturnMsg *ReturnMsg = NULL;     // Message sent to VanGogh, inherits from Multi
@@ -208,7 +208,7 @@ INT Lcr3102Device::decodeGetValueTransmitPower( INMESS *InMessage, CtiTime &Time
 
 INT Lcr3102Device::decodeGetValueDutyCycle(INMESS *InMessage, CtiTime &TimeNow, list< CtiMessage* > &vgList, list< CtiMessage* > &retList, list< OUTMESS* > &outList )
 {
-    INT status = NOTNORMAL;
+    INT status = NoError;
 
     DSTRUCT      *DSt       = &InMessage->Buffer.DSt;
     CtiReturnMsg *ReturnMsg = NULL;     // Message sent to VanGogh, inherits from Multi
@@ -263,7 +263,7 @@ INT Lcr3102Device::decodeGetValueDutyCycle(INMESS *InMessage, CtiTime &TimeNow, 
 
 INT Lcr3102Device::decodeGetValueIntervalLast( INMESS *InMessage, CtiTime &TimeNow, list< CtiMessage* > &vgList, list< CtiMessage* > &retList, list< OUTMESS* > &outList )
 {
-    INT status = NOTNORMAL;
+    INT status = NoError;
 
     DSTRUCT      *DSt       = &InMessage->Buffer.DSt;
     CtiReturnMsg *ReturnMsg = NULL;     // Message sent to VanGogh, inherits from Multi
@@ -347,7 +347,7 @@ INT Lcr3102Device::decodeGetValueIntervalLast( INMESS *InMessage, CtiTime &TimeN
 //Decodes the getvalue shedtime/runtime read. All points are generated with a end of interval timestamp.
 INT Lcr3102Device::decodeGetValueHistoricalTime( INMESS *InMessage, CtiTime &TimeNow, list< CtiMessage* > &vgList, list< CtiMessage* > &retList, list< OUTMESS* > &outList )
 {
-    INT status = NOTNORMAL;
+    INT status = NoError;
 
     DSTRUCT      *DSt       = &InMessage->Buffer.DSt;
     CtiReturnMsg *ReturnMsg = NULL;     // Message sent to VanGogh, inherits from Multi
@@ -463,7 +463,7 @@ INT Lcr3102Device::decodeGetValueHistoricalTime( INMESS *InMessage, CtiTime &Tim
 
 INT Lcr3102Device::decodeGetValueXfmrHistoricalRuntime( INMESS *InMessage, CtiTime &TimeNow, list< CtiMessage* > &vgList, list< CtiMessage* > &retList, list< OUTMESS* > &outList )
 {
-    INT status = NOTNORMAL;
+    INT status = NoError;
 
     DSTRUCT      *DSt       = &InMessage->Buffer.DSt;
     BSTRUCT       BSt;
@@ -542,7 +542,7 @@ INT Lcr3102Device::decodeGetValueXfmrHistoricalRuntime( INMESS *InMessage, CtiTi
 
 INT Lcr3102Device::decodeGetValueControlTime( INMESS *InMessage, CtiTime &TimeNow, list< CtiMessage* > &vgList, list< CtiMessage* > &retList, list< OUTMESS* > &outList )
 {
-    INT status = NOTNORMAL;
+    INT status = NoError;
 
     DSTRUCT      *DSt       = &InMessage->Buffer.DSt;
     CtiReturnMsg *ReturnMsg = NULL;     // Message sent to VanGogh, inherits from Multi
@@ -599,7 +599,7 @@ INT Lcr3102Device::decodeGetValueControlTime( INMESS *InMessage, CtiTime &TimeNo
 
 INT Lcr3102Device::decodeGetValuePropCount( INMESS *InMessage, CtiTime &TimeNow, list< CtiMessage* > &vgList, list< CtiMessage* > &retList, list< OUTMESS* > &outList )
 {
-    INT status = NOTNORMAL;
+    INT status = NoError;
 
     DSTRUCT      *DSt       = &InMessage->Buffer.DSt;
     CtiReturnMsg *ReturnMsg = NULL;     // Message sent to VanGogh, inherits from Multi
@@ -632,7 +632,7 @@ INT Lcr3102Device::decodeGetValuePropCount( INMESS *InMessage, CtiTime &TimeNow,
 
 INT Lcr3102Device::decodePutConfig( INMESS *InMessage, CtiTime &TimeNow, list< CtiMessage* > &vgList, list< CtiMessage* > &retList, list< OUTMESS* > &outList )
 {
-    INT status = NOTNORMAL;
+    INT status = NoError;
 
     DSTRUCT      *DSt       = &InMessage->Buffer.DSt;
     CtiReturnMsg *ReturnMsg = NULL;     // Message sent to VanGogh, inherits from Multi
@@ -670,7 +670,7 @@ INT Lcr3102Device::decodePutConfig( INMESS *InMessage, CtiTime &TimeNow, list< C
 
 INT Lcr3102Device::decodeGetConfigRaw( INMESS *InMessage, CtiTime &TimeNow, list< CtiMessage* > &vgList, list< CtiMessage* > &retList, list< OUTMESS* > &outList )
 {
-    INT status = NOTNORMAL;
+    INT status = NoError;
 
     DSTRUCT      *DSt       = &InMessage->Buffer.DSt;
     CtiReturnMsg *ReturnMsg = NULL;     // Message sent to VanGogh, inherits from Multi
@@ -747,7 +747,7 @@ INT Lcr3102Device::decodeGetConfigRaw( INMESS *InMessage, CtiTime &TimeNow, list
 
 INT Lcr3102Device::decodeGetConfigSoftspec( INMESS *InMessage, CtiTime &TimeNow, list< CtiMessage* > &vgList, list< CtiMessage* > &retList, list< OUTMESS* > &outList )
 {
-    INT status = NOTNORMAL;
+    INT status = NoError;
 
     DSTRUCT      *DSt       = &InMessage->Buffer.DSt;
     CtiReturnMsg *ReturnMsg = NULL;     // Message sent to VanGogh, inherits from Multi
@@ -790,7 +790,7 @@ INT Lcr3102Device::decodeGetConfigSoftspec( INMESS *InMessage, CtiTime &TimeNow,
 
 INT Lcr3102Device::decodeGetConfigAddressing( INMESS *InMessage, CtiTime &TimeNow, list< CtiMessage* > &vgList, list< CtiMessage* > &retList, list< OUTMESS* > &outList )
 {
-    INT status = NOTNORMAL;
+    INT status = NoError;
 
     DSTRUCT      *DSt       = &InMessage->Buffer.DSt;
     CtiReturnMsg *ReturnMsg = NULL;     // Message sent to VanGogh, inherits from Multi
@@ -867,7 +867,7 @@ INT Lcr3102Device::decodeGetConfigAddressing( INMESS *InMessage, CtiTime &TimeNo
 
 INT Lcr3102Device::decodeGetConfigTime( INMESS *InMessage, CtiTime &TimeNow, list< CtiMessage* > &vgList, list< CtiMessage* > &retList, list< OUTMESS* > &outList )
 {
-    INT status = NOTNORMAL;
+    INT status = NoError;
 
     DSTRUCT      *DSt       = &InMessage->Buffer.DSt;
     CtiReturnMsg *ReturnMsg = NULL;     // Message sent to VanGogh, inherits from Multi
