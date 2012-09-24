@@ -105,6 +105,7 @@
           <xsd:choice maxOccurs="1" minOccurs="1">
             <xsd:element name="paos" type="yukon:PaoPointList"/>
             <xsd:element name="values" type="yukon:FlattenedValueList"/>
+            <xsd:element name="failure" type="yukon:Failure" />
           </xsd:choice>
         </xsd:extension>
       </xsd:complexContent>
