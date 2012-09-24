@@ -1,0 +1,813 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<con:soapui-project activeEnvironment="Default" name="AMI" resourceRoot="${projectDir}" soapui-version="4.5.0" abortOnError="false" runType="SEQUENTIAL" xmlns:con="http://eviware.com/soapui/config"><con:settings/><con:interface xsi:type="con:WsdlInterface" wsaVersion="NONE" name="amiPortSoap11" type="wsdl" bindingName="{http://yukon.cannontech.com/service}amiPortSoap11" soapVersion="1_1" anonymous="optional" definition="http://localhost:8081/api/soap/ami.wsdl" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"><con:settings/><con:definitionCache type="TEXT" rootPart="http://localhost:8081/api/soap/ami.wsdl"><con:part><con:url>http://localhost:8081/api/soap/ami.wsdl</con:url><con:content><![CDATA[<wsdl:definitions targetNamespace="http://yukon.cannontech.com/service" xmlns:wsdl="http://schemas.xmlsoap.org/wsdl/" xmlns:sch="http://yukon.cannontech.com/api" xmlns:soap="http://schemas.xmlsoap.org/wsdl/soap/" xmlns:tns="http://yukon.cannontech.com/service">
+  <wsdl:types>
+    <xsd:schema attributeFormDefault="unqualified" elementFormDefault="qualified" targetNamespace="http://yukon.cannontech.com/api" xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns:yukon="http://yukon.cannontech.com/api">
+      <xsd:complexType name="DeviceGroup">
+        <xsd:attribute name="value" type="xsd:string" use="required"/>
+      </xsd:complexType>
+      <xsd:complexType name="PaoName">
+        <xsd:attribute name="value" type="xsd:string" use="required"/>
+      </xsd:complexType>
+      <xsd:complexType name="MeterNumber">
+        <xsd:attribute name="value" type="xsd:string" use="required"/>
+      </xsd:complexType>
+      <xsd:complexType name="CarrierAddress">
+        <xsd:attribute name="value" type="yukon:nonNegativeInt" use="required"/>
+      </xsd:complexType>
+      <xsd:complexType name="PaoId">
+        <xsd:attribute name="value" type="yukon:nonNegativeInt" use="required"/>
+      </xsd:complexType>
+      <xsd:complexType name="PaoCollection">
+        <xsd:choice maxOccurs="unbounded">
+          <xsd:element maxOccurs="unbounded" name="deviceGroup" type="yukon:DeviceGroup"/>
+          <xsd:element maxOccurs="unbounded" name="paoName" type="yukon:PaoName"/>
+          <xsd:element maxOccurs="unbounded" name="meterNumber" type="yukon:MeterNumber"/>
+          <xsd:element maxOccurs="unbounded" name="carrierAddress" type="yukon:CarrierAddress"/>
+          <xsd:element maxOccurs="unbounded" name="paoId" type="yukon:PaoId"/>
+        </xsd:choice>
+      </xsd:complexType>
+      <xsd:complexType name="PaoIdCollection">
+        <xsd:sequence>
+          <xsd:element maxOccurs="unbounded" name="paoId" type="yukon:PaoId"/>
+        </xsd:sequence>
+      </xsd:complexType>
+      <xsd:complexType name="Pao">
+        <xsd:choice>
+          <xsd:element name="paoName" type="yukon:PaoName"/>
+          <xsd:element name="meterNumber" type="yukon:MeterNumber"/>
+          <xsd:element name="carrierAddress" type="yukon:CarrierAddress"/>
+          <xsd:element name="paoId" type="yukon:PaoId"/>
+        </xsd:choice>
+      </xsd:complexType>
+      <xsd:complexType name="PaoError">
+        <xsd:sequence>
+          <xsd:element name="paoId" type="yukon:PaoId"/>
+          <xsd:element name="description" type="xsd:string"/>
+          <xsd:element name="troubleshooting" type="xsd:string"/>
+          <xsd:element minOccurs="0" name="resultString" type="xsd:string"/>
+        </xsd:sequence>
+        <xsd:attribute name="code" type="xsd:int" use="required"/>
+        <xsd:attribute name="category" type="xsd:string" use="required"/>
+      </xsd:complexType>
+      <xsd:simpleType name="AccountNumber">
+        <xsd:restriction base="xsd:string"/>
+      </xsd:simpleType>
+      <xsd:simpleType name="SerialNumber">
+        <xsd:restriction base="xsd:string"/>
+      </xsd:simpleType>
+      <xsd:simpleType name="UnboundedLimit">
+        <xsd:union memberTypes="xsd:positiveInteger yukon:UnboundedLimitWord"/>
+      </xsd:simpleType>
+      <xsd:simpleType name="UnboundedLimitWord">
+        <xsd:restriction base="xsd:string">
+          <xsd:enumeration value="unbounded"/>
+        </xsd:restriction>
+      </xsd:simpleType>
+      <xsd:complexType name="emptyElement">
+        <xsd:complexContent>
+          <xsd:restriction base="xsd:anyType"/>
+        </xsd:complexContent>
+      </xsd:complexType>
+      <xsd:simpleType name="ThermostatMode">
+        <xsd:restriction base="xsd:string">
+          <xsd:enumeration value="Auto"/>
+          <xsd:enumeration value="Cool"/>
+          <xsd:enumeration value="Heat"/>
+          <xsd:enumeration value="Off"/>
+        </xsd:restriction>
+      </xsd:simpleType>
+      <xsd:simpleType name="ThermostatFan">
+        <xsd:restriction base="xsd:string">
+          <xsd:enumeration value="Auto"/>
+          <xsd:enumeration value="Circulate"/>
+          <xsd:enumeration value="On"/>
+        </xsd:restriction>
+      </xsd:simpleType>
+      <xsd:simpleType name="TemperatureUnit">
+        <xsd:restriction base="xsd:string">
+          <xsd:pattern value="F|C"/>
+        </xsd:restriction>
+      </xsd:simpleType>
+      <xsd:complexType name="Temperature">
+        <xsd:simpleContent>
+          <xsd:extension base="xsd:double">
+            <xsd:attribute name="unit" type="yukon:TemperatureUnit"/>
+          </xsd:extension>
+        </xsd:simpleContent>
+      </xsd:complexType>
+      <xsd:simpleType name="OptOutType">
+        <xsd:restriction base="xsd:string">
+          <xsd:enumeration value="ENABLED"/>
+          <xsd:enumeration value="DISABLED_WITH_COMM"/>
+          <xsd:enumeration value="DISABLED_WITHOUT_COMM"/>
+        </xsd:restriction>
+      </xsd:simpleType>
+      <xsd:simpleType name="HardwareClass">
+        <xsd:restriction base="xsd:string">
+          <xsd:enumeration value="SWITCH"/>
+          <xsd:enumeration value="THERMOSTAT"/>
+          <xsd:enumeration value="METER"/>
+          <xsd:enumeration value="GATEWAY"/>
+        </xsd:restriction>
+      </xsd:simpleType>
+      <xsd:simpleType name="nonNegativeInt">
+        <xsd:annotation>
+          <xsd:documentation>A 32 bit non-negative integer.</xsd:documentation>
+        </xsd:annotation>
+        <xsd:restriction base="xsd:int">
+          <xsd:minInclusive value="0"/>
+        </xsd:restriction>
+      </xsd:simpleType>
+      <xsd:complexType name="NamedElement">
+        <xsd:annotation>
+          <xsd:documentation xml:lang="en">This type is used as a base class for any complex type that requires a name element.</xsd:documentation>
+        </xsd:annotation>
+        <xsd:sequence>
+          <xsd:element name="name" type="xsd:string"/>
+        </xsd:sequence>
+      </xsd:complexType>
+      <xsd:complexType name="YukonMessage">
+        <xsd:attribute name="version" type="xsd:string" use="required"/>
+      </xsd:complexType>
+      <xsd:element name="yukonUser">
+        <xsd:simpleType>
+          <xsd:restriction base="xsd:string"/>
+        </xsd:simpleType>
+      </xsd:element>
+      <xsd:element name="extra">
+        <xsd:complexType>
+          <xsd:sequence>
+            <xsd:any processContents="skip"/>
+          </xsd:sequence>
+        </xsd:complexType>
+      </xsd:element>
+      <xsd:complexType name="Success"/>
+      <xsd:complexType name="Failure">
+        <xsd:sequence>
+          <xsd:element name="errorCode" type="xsd:string"/>
+          <xsd:element minOccurs="0" name="errorReference" type="xsd:string"/>
+          <xsd:element name="errorDescription" type="xsd:string"/>
+        </xsd:sequence>
+      </xsd:complexType>
+      <xsd:complexType name="SimpleSuccessOrFailure">
+        <xsd:complexContent>
+          <xsd:extension base="yukon:YukonMessage">
+            <xsd:choice>
+              <xsd:element name="success" type="yukon:Success"/>
+              <xsd:element name="failure" type="yukon:Failure"/>
+            </xsd:choice>
+          </xsd:extension>
+        </xsd:complexContent>
+      </xsd:complexType>
+      <xsd:complexType name="Token">
+        <xsd:attribute name="value" type="xsd:string" use="required"/>
+      </xsd:complexType>
+      <xsd:complexType name="TokenMessage">
+        <xsd:annotation>
+          <xsd:documentation xml:lang="en">This type is used as the parent for all Yukon Messages that contain a token element.</xsd:documentation>
+        </xsd:annotation>
+        <xsd:complexContent>
+          <xsd:extension base="yukon:YukonMessage">
+            <xsd:sequence>
+              <xsd:element name="token" type="yukon:Token"/>
+            </xsd:sequence>
+          </xsd:extension>
+        </xsd:complexContent>
+      </xsd:complexType>
+      <xsd:simpleType name="PointType">
+        <xsd:restriction base="xsd:string">
+          <xsd:enumeration value="Status"/>
+          <xsd:enumeration value="Analog"/>
+          <xsd:enumeration value="PulseAccumulator"/>
+          <xsd:enumeration value="DemandAccumulator"/>
+          <xsd:enumeration value="CalcAnalog"/>
+          <xsd:enumeration value="StatusOutput"/>
+          <xsd:enumeration value="AnalogOutput"/>
+          <xsd:enumeration value="System"/>
+          <xsd:enumeration value="CalcStatus"/>
+        </xsd:restriction>
+      </xsd:simpleType>
+      <xsd:simpleType name="Order">
+        <xsd:restriction base="xsd:string">
+          <xsd:enumeration value="ascending"/>
+          <xsd:enumeration value="descending"/>
+        </xsd:restriction>
+      </xsd:simpleType>
+      <xsd:complexType name="ResponseDescriptors">
+        <xsd:choice maxOccurs="unbounded">
+          <xsd:element name="meterNumber" type="yukon:emptyElement"/>
+          <xsd:element name="carrierAddress" type="yukon:emptyElement"/>
+          <xsd:element name="name" type="yukon:emptyElement"/>
+          <xsd:element name="enabled" type="yukon:emptyElement"/>
+          <xsd:element name="paoId" type="yukon:emptyElement"/>
+          <xsd:element name="paoType" type="yukon:emptyElement"/>
+          <xsd:element name="pointType" type="yukon:emptyElement"/>
+          <xsd:element name="uofm" type="yukon:emptyElement"/>
+          <xsd:element name="pointName" type="yukon:emptyElement"/>
+          <xsd:element name="quality" type="yukon:emptyElement"/>
+          <xsd:element name="statusText" type="yukon:emptyElement"/>
+        </xsd:choice>
+        <xsd:attribute default="false" name="flatten" type="xsd:boolean"/>
+      </xsd:complexType>
+      <xsd:complexType name="ValueProducer">
+        <xsd:attribute name="label" type="xsd:Name" use="optional"/>
+      </xsd:complexType>
+      <xsd:complexType name="ValueDescription">
+        <xsd:sequence>
+          <xsd:choice>
+            <xsd:element name="attribute">
+              <xsd:complexType>
+                <xsd:attribute name="name" type="xsd:string" use="required"/>
+              </xsd:complexType>
+            </xsd:element>
+            <xsd:element name="pointName">
+              <xsd:complexType>
+                <xsd:attribute name="name" type="xsd:string" use="required"/>
+              </xsd:complexType>
+            </xsd:element>
+            <xsd:element name="defaultPointName">
+              <xsd:complexType>
+                <xsd:attribute name="name" type="xsd:string" use="required"/>
+              </xsd:complexType>
+            </xsd:element>
+            <xsd:element name="typeAndOffset">
+              <xsd:complexType>
+                <xsd:attribute name="type" type="yukon:PointType" use="required"/>
+                <xsd:attribute name="offset" type="xsd:unsignedShort" use="required"/>
+              </xsd:complexType>
+            </xsd:element>
+          </xsd:choice>
+          <xsd:choice maxOccurs="unbounded">
+            <xsd:element name="before">
+              <xsd:complexType>
+                <xsd:complexContent>
+                  <xsd:extension base="yukon:ValueProducer">
+                    <xsd:attribute name="date" type="xsd:dateTime"/>
+                    <xsd:attribute default="1" name="index" type="xsd:positiveInteger"/>
+                    <xsd:attribute default="true" name="inclusive" type="xsd:boolean"/>
+                  </xsd:extension>
+                </xsd:complexContent>
+              </xsd:complexType>
+            </xsd:element>
+            <xsd:element name="after">
+              <xsd:complexType>
+                <xsd:complexContent>
+                  <xsd:extension base="yukon:ValueProducer">
+                    <xsd:attribute name="date" type="xsd:dateTime"/>
+                    <xsd:attribute default="1" name="index" type="xsd:positiveInteger"/>
+                    <xsd:attribute default="false" name="inclusive" type="xsd:boolean"/>
+                  </xsd:extension>
+                </xsd:complexContent>
+              </xsd:complexType>
+            </xsd:element>
+            <xsd:element name="allBefore">
+              <xsd:complexType>
+                <xsd:complexContent>
+                  <xsd:extension base="yukon:ValueProducer">
+                    <xsd:attribute name="date" type="xsd:dateTime"/>
+                    <xsd:attribute default="unbounded" name="limit" type="yukon:UnboundedLimit"/>
+                    <xsd:attribute default="true" name="inclusive" type="xsd:boolean"/>
+                    <xsd:attribute default="descending" name="order" type="yukon:Order"/>
+                  </xsd:extension>
+                </xsd:complexContent>
+              </xsd:complexType>
+            </xsd:element>
+            <xsd:element name="allAfter">
+              <xsd:complexType>
+                <xsd:complexContent>
+                  <xsd:extension base="yukon:ValueProducer">
+                    <xsd:attribute name="date" type="xsd:dateTime"/>
+                    <xsd:attribute default="unbounded" name="limit" type="yukon:UnboundedLimit"/>
+                    <xsd:attribute default="false" name="inclusive" type="xsd:boolean"/>
+                    <xsd:attribute default="ascending" name="order" type="yukon:Order"/>
+                  </xsd:extension>
+                </xsd:complexContent>
+              </xsd:complexType>
+            </xsd:element>
+            <xsd:element name="allBetween">
+              <xsd:complexType>
+                <xsd:complexContent>
+                  <xsd:extension base="yukon:ValueProducer">
+                    <xsd:attribute name="from" type="xsd:dateTime"/>
+                    <xsd:attribute default="false" name="fromInclusive" type="xsd:boolean"/>
+                    <xsd:attribute name="to" type="xsd:dateTime"/>
+                    <xsd:attribute default="true" name="toInclusive" type="xsd:boolean"/>
+                    <xsd:attribute default="ascending" name="order" type="yukon:Order"/>
+                    <xsd:attribute default="unbounded" name="limit" type="yukon:UnboundedLimit"/>
+                  </xsd:extension>
+                </xsd:complexContent>
+              </xsd:complexType>
+            </xsd:element>
+            <xsd:element name="all" type="yukon:ValueProducer"/>
+            <xsd:element name="latest" type="yukon:ValueProducer"/>
+            <xsd:element name="snapshot" type="yukon:ValueProducer"/>
+          </xsd:choice>
+        </xsd:sequence>
+      </xsd:complexType>
+      <xsd:complexType name="ArchivedValuesRequest">
+        <xsd:complexContent>
+          <xsd:extension base="yukon:YukonMessage">
+            <xsd:sequence>
+              <xsd:element name="paos" type="yukon:PaoCollection"/>
+              <xsd:element maxOccurs="unbounded" name="point" type="yukon:ValueDescription"/>
+              <xsd:element minOccurs="0" name="response" type="yukon:ResponseDescriptors"/>
+            </xsd:sequence>
+          </xsd:extension>
+        </xsd:complexContent>
+      </xsd:complexType>
+      <xsd:element name="archivedValuesRequest" type="yukon:ArchivedValuesRequest"/>
+      <xsd:complexType name="PaoPointList">
+        <xsd:sequence maxOccurs="unbounded">
+          <xsd:element maxOccurs="unbounded" name="pao" type="yukon:PaoPoint"/>
+        </xsd:sequence>
+      </xsd:complexType>
+      <xsd:complexType name="FlattenedValueList">
+        <xsd:sequence maxOccurs="unbounded">
+          <xsd:element maxOccurs="unbounded" name="value" type="yukon:FlatValue"/>
+        </xsd:sequence>
+      </xsd:complexType>
+      <xsd:complexType name="PaoPoint">
+        <xsd:sequence maxOccurs="unbounded">
+          <xsd:element name="point">
+            <xsd:complexType>
+              <xsd:choice maxOccurs="unbounded">
+                <xsd:element maxOccurs="unbounded" minOccurs="0" name="value" type="yukon:PaoValueSingle"/>
+                <xsd:element maxOccurs="unbounded" minOccurs="0" name="list" type="yukon:PaoValueList"/>
+                <xsd:element maxOccurs="unbounded" minOccurs="0" name="nullValue" type="yukon:PaoValueNullable"/>
+              </xsd:choice>
+              <xsd:attributeGroup ref="yukon:PointDescriptors"/>
+            </xsd:complexType>
+          </xsd:element>
+        </xsd:sequence>
+        <xsd:attributeGroup ref="yukon:PaoDescriptors"/>
+      </xsd:complexType>
+      <xsd:complexType name="PaoValueBase">
+        <xsd:simpleContent>
+          <xsd:extension base="xsd:double">
+            <xsd:attribute name="timestamp" type="xsd:dateTime" use="required"/>
+            <xsd:attribute name="quality" type="xsd:string" use="optional"/>
+            <xsd:attribute name="statusText" type="xsd:string" use="optional"/>
+          </xsd:extension>
+        </xsd:simpleContent>
+      </xsd:complexType>
+      <xsd:complexType name="PaoValueSingle">
+        <xsd:simpleContent>
+          <xsd:extension base="yukon:PaoValueBase">
+            <xsd:attributeGroup ref="yukon:DataLabel"/>
+          </xsd:extension>
+        </xsd:simpleContent>
+      </xsd:complexType>
+      <xsd:complexType name="FlatValue">
+        <xsd:simpleContent>
+          <xsd:extension base="yukon:PaoValueBase">
+            <xsd:attributeGroup ref="yukon:DataLabel"/>
+            <xsd:attributeGroup ref="yukon:PaoDescriptors"/>
+            <xsd:attributeGroup ref="yukon:PointDescriptors"/>
+          </xsd:extension>
+        </xsd:simpleContent>
+      </xsd:complexType>
+      <xsd:complexType name="PaoValueList">
+        <xsd:sequence>
+          <xsd:element maxOccurs="unbounded" name="value" type="yukon:PaoValueBase"/>
+        </xsd:sequence>
+        <xsd:attributeGroup ref="yukon:DataLabel"/>
+      </xsd:complexType>
+      <xsd:complexType name="PaoValueNullable">
+        <xsd:complexContent>
+          <xsd:restriction base="xsd:anyType">
+            <xsd:attributeGroup ref="yukon:DataLabel"/>
+          </xsd:restriction>
+        </xsd:complexContent>
+      </xsd:complexType>
+      <xsd:attributeGroup name="DataLabel">
+        <xsd:attribute name="label" type="xsd:string" use="optional"/>
+      </xsd:attributeGroup>
+      <xsd:attributeGroup name="PaoDescriptors">
+        <xsd:attribute name="meterNumber" type="xsd:string" use="optional"/>
+        <xsd:attribute name="carrierAddress" type="yukon:nonNegativeInt" use="optional"/>
+        <xsd:attribute name="name" type="xsd:string" use="optional"/>
+        <xsd:attribute name="enabled" type="xsd:boolean" use="optional"/>
+        <xsd:attribute name="paoId" type="yukon:nonNegativeInt" use="optional"/>
+        <xsd:attribute name="paoType" type="xsd:string" use="optional"/>
+      </xsd:attributeGroup>
+      <xsd:attributeGroup name="PointDescriptors">
+        <xsd:attribute name="pointType" type="xsd:string" use="optional"/>
+        <xsd:attribute name="uofm" type="xsd:string" use="optional"/>
+        <xsd:attribute name="pointName" type="xsd:string" use="optional"/>
+      </xsd:attributeGroup>
+      <xsd:complexType name="ArchivedValuesResponse">
+        <xsd:complexContent>
+          <xsd:extension base="yukon:YukonMessage">
+            <xsd:choice>
+              <xsd:element name="paos" type="yukon:PaoPointList"/>
+              <xsd:element name="values" type="yukon:FlattenedValueList"/>
+              <xsd:element name="failure" type="yukon:Failure"/>
+            </xsd:choice>
+          </xsd:extension>
+        </xsd:complexContent>
+      </xsd:complexType>
+      <xsd:element name="archivedValuesResponse" type="yukon:ArchivedValuesResponse"/>
+      <xsd:complexType name="DemandResetRequest">
+        <xsd:complexContent>
+          <xsd:extension base="yukon:YukonMessage">
+            <xsd:choice>
+              <xsd:element name="paos" type="yukon:PaoCollection"/>
+            </xsd:choice>
+          </xsd:extension>
+        </xsd:complexContent>
+      </xsd:complexType>
+      <xsd:element name="demandResetRequest" type="yukon:DemandResetRequest"/>
+      <xsd:complexType name="ResetsRequested">
+        <xsd:attribute name="initiated" type="xsd:int" use="required"/>
+        <xsd:attribute default="0" name="numLookupErrors" type="xsd:int" use="optional"/>
+        <xsd:attribute default="0" name="numUnsupportedDevices" type="xsd:int" use="optional"/>
+        <xsd:attribute default="0" name="numErrors" type="xsd:int" use="optional"/>
+      </xsd:complexType>
+      <xsd:complexType name="DemandResetResponse">
+        <xsd:complexContent>
+          <xsd:extension base="yukon:YukonMessage">
+            <xsd:choice>
+              <xsd:sequence>
+                <xsd:element name="resetsRequested" type="yukon:ResetsRequested"/>
+                <xsd:element minOccurs="0" name="lookupError" type="yukon:PaoCollection">
+                  <xsd:annotation>
+                    <xsd:documentation>No device or devices could be found which match the given
+                                    criteria.</xsd:documentation>
+                  </xsd:annotation>
+                </xsd:element>
+                <xsd:element minOccurs="0" name="unsupportedDevices" type="yukon:PaoIdCollection"/>
+                <xsd:element maxOccurs="unbounded" minOccurs="0" name="error" type="yukon:PaoError"/>
+              </xsd:sequence>
+              <xsd:element name="generalFailure" type="yukon:Failure"/>
+            </xsd:choice>
+          </xsd:extension>
+        </xsd:complexContent>
+      </xsd:complexType>
+      <xsd:element name="demandResetResponse" type="yukon:DemandResetResponse"/>
+      <xsd:simpleType name="Channel">
+        <xsd:restriction base="xsd:string">
+          <xsd:enumeration value="LOAD_PROFILE"/>
+          <xsd:enumeration value="PROFILE_CHANNEL_2"/>
+          <xsd:enumeration value="PROFILE_CHANNEL_3"/>
+          <xsd:enumeration value="VOLTAGE_PROFILE"/>
+        </xsd:restriction>
+      </xsd:simpleType>
+      <xsd:complexType name="StartCollection">
+        <xsd:sequence>
+          <xsd:element name="paos" type="yukon:PaoCollection"/>
+        </xsd:sequence>
+        <xsd:attribute default="LOAD_PROFILE" name="channel" type="yukon:Channel"/>
+        <xsd:attribute name="start" type="xsd:dateTime">
+          <xsd:annotation>
+            <xsd:documentation>If omitted, will default to starting now.  If this date is more than 59
+                    minutes in the past, the device will be queried for past data and a token will
+                    be returned in the response which can be used to check on the status of this
+                    request.</xsd:documentation>
+          </xsd:annotation>
+        </xsd:attribute>
+        <xsd:attribute name="stop" type="xsd:dateTime">
+          <xsd:annotation>
+            <xsd:documentation>If omitted, will default never stop.  If this is more than 59 minutes in the
+                    future, future collection will be scheduled.</xsd:documentation>
+          </xsd:annotation>
+        </xsd:attribute>
+      </xsd:complexType>
+      <xsd:complexType name="StopCollection">
+        <xsd:sequence>
+          <xsd:element name="paos" type="yukon:PaoCollection"/>
+        </xsd:sequence>
+        <xsd:attribute default="Load Profile" name="channel" type="xsd:string"/>
+        <xsd:attribute name="stop" type="xsd:dateTime"/>
+      </xsd:complexType>
+      <xsd:complexType name="CancelCollection">
+        <xsd:annotation>
+          <xsd:documentation>Cancel a previously started past profile collection.</xsd:documentation>
+        </xsd:annotation>
+        <xsd:sequence>
+          <xsd:element name="token" type="yukon:Token"/>
+        </xsd:sequence>
+      </xsd:complexType>
+      <xsd:complexType name="ProfileCollectionRequest">
+        <xsd:complexContent>
+          <xsd:extension base="yukon:YukonMessage">
+            <xsd:choice>
+              <xsd:element name="startCollection" type="yukon:StartCollection"/>
+              <xsd:element name="stopCollection" type="yukon:StopCollection"/>
+              <xsd:element name="cancelCollection" type="yukon:CancelCollection"/>
+            </xsd:choice>
+          </xsd:extension>
+        </xsd:complexContent>
+      </xsd:complexType>
+      <xsd:element name="profileCollectionRequest" type="yukon:ProfileCollectionRequest"/>
+      <xsd:complexType name="InvalidChannelError">
+        <xsd:sequence>
+          <xsd:element maxOccurs="unbounded" name="paoId" type="yukon:PaoId"/>
+        </xsd:sequence>
+      </xsd:complexType>
+      <xsd:complexType name="ProfileCollectionResponse">
+        <xsd:complexContent>
+          <xsd:extension base="yukon:YukonMessage">
+            <xsd:choice>
+              <xsd:element minOccurs="0" name="failure" type="yukon:Failure"/>
+              <xsd:sequence>
+                <xsd:element minOccurs="0" name="lookupError" type="yukon:PaoCollection">
+                  <xsd:annotation>
+                    <xsd:documentation>No device or devices could be found which match the given
+                                    criteria.</xsd:documentation>
+                  </xsd:annotation>
+                </xsd:element>
+                <xsd:element minOccurs="0" name="futureScheduleUpdated" type="yukon:Success"/>
+                <xsd:element minOccurs="0" name="token" type="yukon:Token">
+                  <xsd:annotation>
+                    <xsd:documentation>A token is returned if a load of past profile data was requested.
+                                    If the start date is more than 59 minutes in the past, the request
+                                    is considered to include a request for past data.</xsd:documentation>
+                  </xsd:annotation>
+                </xsd:element>
+                <xsd:element minOccurs="0" name="invalidChannel" type="yukon:InvalidChannelError"/>
+              </xsd:sequence>
+              <xsd:element name="canceled" type="yukon:emptyElement">
+                <xsd:annotation>
+                  <xsd:documentation>This is returned for cancelCollection requests if the request was
+                                successfully canceled.</xsd:documentation>
+                </xsd:annotation>
+              </xsd:element>
+              <xsd:element name="unknownToken" type="yukon:emptyElement">
+                <xsd:annotation>
+                  <xsd:documentation>This is returned for cancelCollection requests if the specified
+                                token is invalid or has expired.</xsd:documentation>
+                </xsd:annotation>
+              </xsd:element>
+            </xsd:choice>
+          </xsd:extension>
+        </xsd:complexContent>
+      </xsd:complexType>
+      <xsd:element name="profileCollectionResponse" type="yukon:ProfileCollectionResponse"/>
+    </xsd:schema>
+  </wsdl:types>
+  <wsdl:message name="archivedValuesResponse">
+    <wsdl:part element="sch:archivedValuesResponse" name="archivedValuesResponse"/>
+  </wsdl:message>
+  <wsdl:message name="demandResetResponse">
+    <wsdl:part element="sch:demandResetResponse" name="demandResetResponse"/>
+  </wsdl:message>
+  <wsdl:message name="demandResetRequest">
+    <wsdl:part element="sch:demandResetRequest" name="demandResetRequest"/>
+  </wsdl:message>
+  <wsdl:message name="profileCollectionRequest">
+    <wsdl:part element="sch:profileCollectionRequest" name="profileCollectionRequest"/>
+  </wsdl:message>
+  <wsdl:message name="extraHeader">
+    <wsdl:part element="sch:extra" name="extra"/>
+  </wsdl:message>
+  <wsdl:message name="archivedValuesRequest">
+    <wsdl:part element="sch:archivedValuesRequest" name="archivedValuesRequest"/>
+  </wsdl:message>
+  <wsdl:message name="profileCollectionResponse">
+    <wsdl:part element="sch:profileCollectionResponse" name="profileCollectionResponse"/>
+  </wsdl:message>
+  <wsdl:message name="yukonUserHeader">
+    <wsdl:part element="sch:yukonUser" name="yukonUser"/>
+  </wsdl:message>
+  <wsdl:portType name="amiPort">
+    <wsdl:operation name="demandReset">
+      <wsdl:input message="tns:demandResetRequest" name="demandResetRequest"/>
+      <wsdl:output message="tns:demandResetResponse" name="demandResetResponse"/>
+    </wsdl:operation>
+    <wsdl:operation name="archivedValues">
+      <wsdl:input message="tns:archivedValuesRequest" name="archivedValuesRequest"/>
+      <wsdl:output message="tns:archivedValuesResponse" name="archivedValuesResponse"/>
+    </wsdl:operation>
+    <wsdl:operation name="profileCollection">
+      <wsdl:input message="tns:profileCollectionRequest" name="profileCollectionRequest"/>
+      <wsdl:output message="tns:profileCollectionResponse" name="profileCollectionResponse"/>
+    </wsdl:operation>
+  </wsdl:portType>
+  <wsdl:binding name="amiPortSoap11" type="tns:amiPort">
+    <soap:binding style="document" transport="http://schemas.xmlsoap.org/soap/http"/>
+    <wsdl:operation name="demandReset">
+      <soap:operation soapAction=""/>
+      <wsdl:input name="demandResetRequest">
+        <soap:body use="literal"/>
+        <soap:header message="tns:extraHeader" part="extra" use="literal"></soap:header>
+        <soap:header message="tns:yukonUserHeader" part="yukonUser" use="literal"></soap:header>
+      </wsdl:input>
+      <wsdl:output name="demandResetResponse">
+        <soap:body use="literal"/>
+        <soap:header message="tns:extraHeader" part="extra" use="literal"></soap:header>
+        <soap:header message="tns:yukonUserHeader" part="yukonUser" use="literal"></soap:header>
+      </wsdl:output>
+    </wsdl:operation>
+    <wsdl:operation name="archivedValues">
+      <soap:operation soapAction=""/>
+      <wsdl:input name="archivedValuesRequest">
+        <soap:body use="literal"/>
+        <soap:header message="tns:extraHeader" part="extra" use="literal"></soap:header>
+        <soap:header message="tns:yukonUserHeader" part="yukonUser" use="literal"></soap:header>
+      </wsdl:input>
+      <wsdl:output name="archivedValuesResponse">
+        <soap:body use="literal"/>
+        <soap:header message="tns:extraHeader" part="extra" use="literal"></soap:header>
+        <soap:header message="tns:yukonUserHeader" part="yukonUser" use="literal"></soap:header>
+      </wsdl:output>
+    </wsdl:operation>
+    <wsdl:operation name="profileCollection">
+      <soap:operation soapAction=""/>
+      <wsdl:input name="profileCollectionRequest">
+        <soap:body use="literal"/>
+        <soap:header message="tns:extraHeader" part="extra" use="literal"></soap:header>
+        <soap:header message="tns:yukonUserHeader" part="yukonUser" use="literal"></soap:header>
+      </wsdl:input>
+      <wsdl:output name="profileCollectionResponse">
+        <soap:body use="literal"/>
+        <soap:header message="tns:extraHeader" part="extra" use="literal"></soap:header>
+        <soap:header message="tns:yukonUserHeader" part="yukonUser" use="literal"></soap:header>
+      </wsdl:output>
+    </wsdl:operation>
+  </wsdl:binding>
+  <wsdl:service name="amiService">
+    <wsdl:port binding="tns:amiPortSoap11" name="amiPortSoap11">
+      <soap:address location="http://localhost:8081/api/soap"/>
+    </wsdl:port>
+  </wsdl:service>
+</wsdl:definitions>]]></con:content><con:type>http://schemas.xmlsoap.org/wsdl/</con:type></con:part></con:definitionCache><con:endpoints><con:endpoint>http://localhost:8081/api/soap</con:endpoint></con:endpoints><con:operation isOneWay="false" action="" name="archivedValues" bindingOperationName="archivedValues" type="Request-Response" outputName="archivedValuesResponse" inputName="archivedValuesRequest" receivesAttachments="false" sendsAttachments="false" anonymous="optional"><con:settings/><con:call name="Request 1"><con:settings/><con:encoding>UTF-8</con:encoding><con:endpoint>http://localhost:8081/api/soap</con:endpoint><con:request><![CDATA[<soapenv:Envelope xmlns:soapenv="http://schemas.xmlsoap.org/soap/envelope/" xmlns:api="http://yukon.cannontech.com/api">
+   <soapenv:Header>
+      <api:yukonUser>?</api:yukonUser>
+      <api:extra>
+         <!--You may enter ANY elements at this point-->
+      </api:extra>
+   </soapenv:Header>
+   <soapenv:Body>
+      <api:archivedValuesRequest version="?">
+         <api:paos>
+            <!--You have a CHOICE of the next 5 items at this level-->
+            <!--1 or more repetitions:-->
+            <api:deviceGroup value="?"/>
+            <!--1 or more repetitions:-->
+            <api:paoName value="?"/>
+            <!--1 or more repetitions:-->
+            <api:meterNumber value="?"/>
+            <!--1 or more repetitions:-->
+            <api:carrierAddress value="?"/>
+            <!--1 or more repetitions:-->
+            <api:paoId value="?"/>
+         </api:paos>
+         <!--1 or more repetitions:-->
+         <api:point>
+            <!--You have a CHOICE of the next 4 items at this level-->
+            <api:attribute name="?"/>
+            <api:pointName name="?"/>
+            <api:defaultPointName name="?"/>
+            <api:typeAndOffset type="?" offset="?"/>
+            <!--You have a CHOICE of the next 8 items at this level-->
+            <api:before label="?" date="?" index="1" inclusive="true"/>
+            <api:after label="?" date="?" index="1" inclusive="false"/>
+            <api:allBefore label="?" date="?" limit="unbounded" inclusive="true" order="descending"/>
+            <api:allAfter label="?" date="?" limit="unbounded" inclusive="false" order="ascending"/>
+            <api:allBetween label="?" from="?" fromInclusive="false" to="?" toInclusive="true" order="ascending" limit="unbounded"/>
+            <api:all label="?"/>
+            <api:latest label="?"/>
+            <api:snapshot label="?"/>
+         </api:point>
+         <!--Optional:-->
+         <api:response flatten="false">
+            <!--You have a CHOICE of the next 11 items at this level-->
+            <api:meterNumber/>
+            <api:carrierAddress/>
+            <api:name/>
+            <api:enabled/>
+            <api:paoId/>
+            <api:paoType/>
+            <api:pointType/>
+            <api:uofm/>
+            <api:pointName/>
+            <api:quality/>
+            <api:statusText/>
+         </api:response>
+      </api:archivedValuesRequest>
+   </soapenv:Body>
+</soapenv:Envelope>]]></con:request><con:wsaConfig mustUnderstand="NONE" version="200508" action="http://yukon.cannontech.com/service/amiPort/archivedValuesRequest"/></con:call></con:operation><con:operation isOneWay="false" action="" name="demandReset" bindingOperationName="demandReset" type="Request-Response" outputName="demandResetResponse" inputName="demandResetRequest" receivesAttachments="false" sendsAttachments="false" anonymous="optional"><con:settings/><con:call name="Request 1"><con:settings/><con:encoding>UTF-8</con:encoding><con:endpoint>http://localhost:8081/api/soap</con:endpoint><con:request><![CDATA[<soapenv:Envelope xmlns:soapenv="http://schemas.xmlsoap.org/soap/envelope/" xmlns:api="http://yukon.cannontech.com/api">
+   <soapenv:Header>
+      <api:yukonUser>?</api:yukonUser>
+      <api:extra>
+         <!--You may enter ANY elements at this point-->
+      </api:extra>
+   </soapenv:Header>
+   <soapenv:Body>
+      <api:demandResetRequest version="?">
+         <api:paos>
+            <!--You have a CHOICE of the next 5 items at this level-->
+            <!--1 or more repetitions:-->
+            <api:deviceGroup value="?"/>
+            <!--1 or more repetitions:-->
+            <api:paoName value="?"/>
+            <!--1 or more repetitions:-->
+            <api:meterNumber value="?"/>
+            <!--1 or more repetitions:-->
+            <api:carrierAddress value="?"/>
+            <!--1 or more repetitions:-->
+            <api:paoId value="?"/>
+         </api:paos>
+      </api:demandResetRequest>
+   </soapenv:Body>
+</soapenv:Envelope>]]></con:request><con:wsaConfig mustUnderstand="NONE" version="200508" action="http://yukon.cannontech.com/service/amiPort/demandResetRequest"/></con:call></con:operation><con:operation isOneWay="false" action="" name="profileCollection" bindingOperationName="profileCollection" type="Request-Response" outputName="profileCollectionResponse" inputName="profileCollectionRequest" receivesAttachments="false" sendsAttachments="false" anonymous="optional"><con:settings/><con:call name="Request 1"><con:settings/><con:encoding>UTF-8</con:encoding><con:endpoint>http://localhost:8081/api/soap</con:endpoint><con:request><![CDATA[<soapenv:Envelope xmlns:soapenv="http://schemas.xmlsoap.org/soap/envelope/" xmlns:api="http://yukon.cannontech.com/api">
+   <soapenv:Header>
+      <api:yukonUser>?</api:yukonUser>
+      <api:extra>
+         <!--You may enter ANY elements at this point-->
+      </api:extra>
+   </soapenv:Header>
+   <soapenv:Body>
+      <api:profileCollectionRequest version="?">
+         <!--You have a CHOICE of the next 3 items at this level-->
+         <api:startCollection channel="LOAD_PROFILE" start="?" stop="?">
+            <api:paos>
+               <!--You have a CHOICE of the next 5 items at this level-->
+               <!--1 or more repetitions:-->
+               <api:deviceGroup value="?"/>
+               <!--1 or more repetitions:-->
+               <api:paoName value="?"/>
+               <!--1 or more repetitions:-->
+               <api:meterNumber value="?"/>
+               <!--1 or more repetitions:-->
+               <api:carrierAddress value="?"/>
+               <!--1 or more repetitions:-->
+               <api:paoId value="?"/>
+            </api:paos>
+         </api:startCollection>
+         <api:stopCollection channel="Load Profile" stop="?">
+            <api:paos>
+               <!--You have a CHOICE of the next 5 items at this level-->
+               <!--1 or more repetitions:-->
+               <api:deviceGroup value="?"/>
+               <!--1 or more repetitions:-->
+               <api:paoName value="?"/>
+               <!--1 or more repetitions:-->
+               <api:meterNumber value="?"/>
+               <!--1 or more repetitions:-->
+               <api:carrierAddress value="?"/>
+               <!--1 or more repetitions:-->
+               <api:paoId value="?"/>
+            </api:paos>
+         </api:stopCollection>
+         <api:cancelCollection>
+            <api:token value="?"/>
+         </api:cancelCollection>
+      </api:profileCollectionRequest>
+   </soapenv:Body>
+</soapenv:Envelope>]]></con:request><con:wsaConfig mustUnderstand="NONE" version="200508" action="http://yukon.cannontech.com/service/amiPort/profileCollectionRequest"/></con:call></con:operation></con:interface><con:testSuite name="amiPortSoap11 TestSuite"><con:settings/><con:runType>SEQUENTIAL</con:runType><con:testCase failOnError="true" failTestCaseOnErrors="true" keepSession="false" maxResults="0" name="archivedValues TestCase" searchProperties="true" id="7fca8a1e-29eb-42ff-9675-03e7a41ebc3f"><con:settings/><con:testStep type="request" name="archivedValues"><con:settings/><con:config xsi:type="con:RequestStep" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"><con:interface>amiPortSoap11</con:interface><con:operation>archivedValues</con:operation><con:request name="archivedValues"><con:settings><con:setting id="com.eviware.soapui.impl.wsdl.WsdlRequest@request-headers">&lt;xml-fragment/></con:setting></con:settings><con:encoding>UTF-8</con:encoding><con:endpoint>http://localhost:8081/api/soap</con:endpoint><con:request><![CDATA[<soapenv:Envelope xmlns:soapenv="http://schemas.xmlsoap.org/soap/envelope/" xmlns:api="http://yukon.cannontech.com/api">
+   <soapenv:Header>
+      <api:yukonUser>yukon</api:yukonUser>
+      <api:extra>
+         <!--You may enter ANY elements at this point-->
+      </api:extra>
+   </soapenv:Header>
+   <soapenv:Body>
+      <api:archivedValuesRequest version="1.0">
+         <api:paos>
+            <api:deviceGroup value="/Meters"/>
+         </api:paos>
+         <!--1 or more repetitions:-->
+         <api:point>
+            <api:attribute name="USAGE"/>
+            <api:before/>
+         </api:point>
+         <!--Optional:-->
+         <api:response flatten="false">
+            <api:meterNumber/>
+         </api:response>
+      </api:archivedValuesRequest>
+   </soapenv:Body>
+</soapenv:Envelope>]]></con:request><con:assertion type="SOAP Fault Assertion" name="Not SOAP Fault"/><con:assertion type="Schema Compliance" name="Schema Compliance"><con:configuration><definition/></con:configuration></con:assertion><con:assertion type="SOAP Response" name="SOAP Response"/><con:assertion type="XPath Match" name="Match content of [@version]"><con:configuration><path>declare namespace y='http://yukon.cannontech.com/api';
+//y:archivedValuesResponse[1]/@version</path><content>1.0</content><allowWildcards>false</allowWildcards><ignoreNamspaceDifferences>false</ignoreNamspaceDifferences><ignoreComments>false</ignoreComments></con:configuration></con:assertion><con:jmsConfig JMSDeliveryMode="PERSISTENT"/><con:jmsPropertyConfig/><con:wsaConfig action="http://yukon.cannontech.com/service/amiPort/archivedValuesRequest" mustUnderstand="NONE" version="200508"/><con:wsrmConfig version="1.2"/></con:request></con:config></con:testStep><con:properties/></con:testCase><con:testCase failOnError="true" failTestCaseOnErrors="true" keepSession="false" maxResults="0" name="demandReset TestCase" searchProperties="true" id="2acc73b2-c876-4829-9b35-99d13e0fcdcb"><con:settings/><con:testStep type="request" name="demandReset"><con:settings/><con:config xsi:type="con:RequestStep" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"><con:interface>amiPortSoap11</con:interface><con:operation>demandReset</con:operation><con:request name="demandReset"><con:settings><con:setting id="com.eviware.soapui.impl.wsdl.WsdlRequest@request-headers">&lt;xml-fragment/></con:setting></con:settings><con:encoding>UTF-8</con:encoding><con:endpoint>http://localhost:8081/api/soap</con:endpoint><con:request><![CDATA[<soapenv:Envelope xmlns:soapenv="http://schemas.xmlsoap.org/soap/envelope/" xmlns:api="http://yukon.cannontech.com/api">
+   <soapenv:Header>
+      <api:yukonUser>yukon</api:yukonUser>
+      <api:extra>
+         <!--You may enter ANY elements at this point-->
+      </api:extra>
+   </soapenv:Header>
+   <soapenv:Body>
+      <api:demandResetRequest version="1.0">
+         <api:paos>
+            <api:deviceGroup value="/Meters"/>
+         </api:paos>
+      </api:demandResetRequest>
+   </soapenv:Body>
+</soapenv:Envelope>]]></con:request><con:assertion type="SOAP Fault Assertion" name="Not SOAP Fault"/><con:assertion type="SOAP Response" name="SOAP Response"/><con:assertion type="Schema Compliance" name="Schema Compliance"><con:configuration><definition/></con:configuration></con:assertion><con:assertion type="XPath Match" name="Match content of [@version]"><con:configuration><path>declare namespace y='http://yukon.cannontech.com/api';
+//y:demandResetResponse[1]/@version</path><content>1.0</content><allowWildcards>false</allowWildcards><ignoreNamspaceDifferences>false</ignoreNamspaceDifferences><ignoreComments>false</ignoreComments></con:configuration></con:assertion><con:jmsConfig JMSDeliveryMode="PERSISTENT"/><con:jmsPropertyConfig/><con:wsaConfig action="http://yukon.cannontech.com/service/amiPort/demandResetRequest" mustUnderstand="NONE" version="200508"/><con:wsrmConfig version="1.2"/></con:request></con:config></con:testStep><con:properties/></con:testCase><con:testCase failOnError="true" failTestCaseOnErrors="true" keepSession="false" maxResults="0" name="profileCollection TestCase" searchProperties="true" id="5b1163c4-9d72-4ab3-ba1b-83d122d8125d"><con:settings/><con:testStep type="request" name="profileCollection"><con:settings/><con:config xsi:type="con:RequestStep" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"><con:interface>amiPortSoap11</con:interface><con:operation>profileCollection</con:operation><con:request name="profileCollection"><con:settings><con:setting id="com.eviware.soapui.impl.wsdl.WsdlRequest@request-headers">&lt;xml-fragment/></con:setting></con:settings><con:encoding>UTF-8</con:encoding><con:endpoint>http://localhost:8081/api/soap</con:endpoint><con:request><![CDATA[<soapenv:Envelope xmlns:soapenv="http://schemas.xmlsoap.org/soap/envelope/" xmlns:api="http://yukon.cannontech.com/api">
+   <soapenv:Header>
+      <api:yukonUser>yukon</api:yukonUser>
+      <api:extra>
+      </api:extra>
+   </soapenv:Header>
+   <soapenv:Body>
+      <api:profileCollectionRequest version="1.0">
+         <api:startCollection>
+            <api:paos>
+               <api:deviceGroup value="/Meters"/>
+            </api:paos>
+         </api:startCollection>
+      </api:profileCollectionRequest>
+   </soapenv:Body>
+</soapenv:Envelope>]]></con:request><con:assertion type="SOAP Fault Assertion" name="Not SOAP Fault"/><con:assertion type="SOAP Response" name="SOAP Response"/><con:assertion type="Schema Compliance" name="Schema Compliance"><con:configuration><definition/></con:configuration></con:assertion><con:assertion type="XPath Match" name="Match content of [@version]"><con:configuration><path>declare namespace y='http://yukon.cannontech.com/api';
+//y:profileCollectionResponse[1]/@version</path><content>1.0</content><allowWildcards>false</allowWildcards><ignoreNamspaceDifferences>false</ignoreNamspaceDifferences><ignoreComments>false</ignoreComments></con:configuration></con:assertion><con:jmsConfig JMSDeliveryMode="PERSISTENT"/><con:jmsPropertyConfig/><con:wsaConfig action="http://yukon.cannontech.com/service/amiPort/profileCollectionRequest" mustUnderstand="NONE" version="200508"/><con:wsrmConfig version="1.2"/></con:request></con:config></con:testStep><con:properties/></con:testCase><con:properties/></con:testSuite><con:properties/><con:wssContainer/><con:sensitiveInformation/></con:soapui-project>
