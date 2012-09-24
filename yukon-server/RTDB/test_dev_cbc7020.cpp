@@ -56,10 +56,10 @@ BOOST_AUTO_TEST_CASE(test_test_dev_cbc7020_firmware_points_points_present)
 
     points.push_back( new CtiPointDataMsg( 42, 3.1415, NormalQuality, AnalogPointType ) );
 
-    // and a firmware point -- value = 0x0805 == 2053
+    // and a firmware point -- value = 0x030D == 781
 
     points.push_back( new CtiPointDataMsg( TestCbc7020Device::PointOffset_FirmwareRevision,
-                                           0x0805,
+                                           0x030D,
                                            NormalQuality, AnalogPointType ) );
 
     TestCbc7020Device::processFirmwarePoint( points );
@@ -80,19 +80,19 @@ BOOST_AUTO_TEST_CASE(test_test_dev_cbc7020_firmware_points_points_present)
     BOOST_REQUIRE_EQUAL( points[1]->getQuality(),   NormalQuality );
 
     /*
-        Resulting firmware version should be 'H.6'
+        Resulting firmware version should be 'M.3'
 
-        chars                   ==  'H',    '.',    '6'
-        hex                     ==  48,     2e,     36
-        encoded (hex - 0x20)    ==  28,     0e,     16
-        6-bit binary            ==  101000, 001110, 010110
-        4-bit regroup (rhs)     ==  10 1000 0011 1001 0110
-        as hex #                ==  28396
-        as decimal #            ==  164758
+        chars                   ==  'M',    '.',    '3'
+        hex                     ==  4d,     2e,     33
+        encoded (hex - 0x20)    ==  2d,     0e,     13
+        6-bit binary            ==  101101, 001110, 010011
+        4-bit regroup (rhs)     ==  10 1101 0011 1001 0011
+        as hex #                ==  2d393
+        as decimal #            ==  185235
     */
 
     // normally we'd use BOOST_REQUIRE_CLOSE(...) on this but we are looking to exactly match the mantissa
-    BOOST_REQUIRE_EQUAL( points[1]->getValue(),     164758.0 );
+    BOOST_REQUIRE_EQUAL( points[1]->getValue(),     185235.0 );
 
     delete_container(points);
 }
@@ -102,10 +102,10 @@ BOOST_AUTO_TEST_CASE(test_test_dev_cbc7020_firmware_points_point_present_low_lim
 {
     Cti::Protocol::Interface::pointlist_t   points;
 
-    // and a firmware point -- value = 0x0100 == 256
+    // and a firmware point -- value = 0x0001 == 1
 
     points.push_back( new CtiPointDataMsg( TestCbc7020Device::PointOffset_FirmwareRevision,
-                                           0x0100,
+                                           0x0001,
                                            NormalQuality, AnalogPointType ) );
 
     TestCbc7020Device::processFirmwarePoint( points );
@@ -113,19 +113,19 @@ BOOST_AUTO_TEST_CASE(test_test_dev_cbc7020_firmware_points_point_present_low_lim
     BOOST_REQUIRE_EQUAL( points.size(),             1 );
 
     /*
-        Resulting firmware version should be 'A.1'
+        Resulting firmware version should be 'A.0'
 
-        chars                   ==  'A',    '.',    '1'
-        hex                     ==  41,     2e,     31
-        encoded (hex - 0x20)    ==  21,     0e,     11
-        6-bit binary            ==  100001, 001110, 010001
-        4-bit regroup (rhs)     ==  10 0001 0011 1001 0001
-        as hex #                ==  21391
-        as decimal #            ==  136081
+        chars                   ==  'A',    '.',    '0'
+        hex                     ==  41,     2e,     30
+        encoded (hex - 0x20)    ==  21,     0e,     10
+        6-bit binary            ==  100001, 001110, 010000
+        4-bit regroup (rhs)     ==  10 0001 0011 1001 0000
+        as hex #                ==  21390
+        as decimal #            ==  136080
     */
 
     // normally we'd use BOOST_REQUIRE_CLOSE(...) on this but we are looking to exactly match the mantissa
-    BOOST_REQUIRE_EQUAL( points[0]->getValue(),     136081.0 );
+    BOOST_REQUIRE_EQUAL( points[0]->getValue(),     136080.0 );
 
     delete_container(points);
 }
@@ -135,10 +135,10 @@ BOOST_AUTO_TEST_CASE(test_test_dev_cbc7020_firmware_points_point_present_high_li
 {
     Cti::Protocol::Interface::pointlist_t   points;
 
-    // and a firmware point -- value = 0x1AFF == 6911
+    // and a firmware point -- value = 0xFF1A == 65306
 
     points.push_back( new CtiPointDataMsg( TestCbc7020Device::PointOffset_FirmwareRevision,
-                                           0x1aff,
+                                           0xff1a,
                                            NormalQuality, AnalogPointType ) );
 
     TestCbc7020Device::processFirmwarePoint( points );
@@ -146,19 +146,19 @@ BOOST_AUTO_TEST_CASE(test_test_dev_cbc7020_firmware_points_point_present_high_li
     BOOST_REQUIRE_EQUAL( points.size(),             1 );
 
     /*
-        Resulting firmware version should be 'Z.256'
+        Resulting firmware version should be 'Z.255'
 
-        chars                   ==  'Z',    '.',    '2',    '5',    '6'
-        hex                     ==  5a,     2e,     32,     35,     36
-        encoded (hex - 0x20)    ==  3a,     0e,     12,     15,     16
-        6-bit binary            ==  111010, 001110, 010010, 010101, 010110
-        4-bit regroup (rhs)     ==  11 1010 0011 1001 0010 0101 0101 0110
-        as hex #                ==  3a392556
-        as decimal #            ==  976823638
+        chars                   ==  'Z',    '.',    '2',    '5',    '5'
+        hex                     ==  5a,     2e,     32,     35,     35
+        encoded (hex - 0x20)    ==  3a,     0e,     12,     15,     15
+        6-bit binary            ==  111010, 001110, 010010, 010101, 010101
+        4-bit regroup (rhs)     ==  11 1010 0011 1001 0010 0101 0101 0101
+        as hex #                ==  3a392555
+        as decimal #            ==  976823637
     */
 
     // normally we'd use BOOST_REQUIRE_CLOSE(...) on this but we are looking to exactly match the mantissa
-    BOOST_REQUIRE_EQUAL( points[0]->getValue(),     976823638.0 );
+    BOOST_REQUIRE_EQUAL( points[0]->getValue(),     976823637.0 );
 
     delete_container(points);
 }
@@ -168,10 +168,10 @@ BOOST_AUTO_TEST_CASE(test_test_dev_cbc7020_firmware_points_point_present_major_v
 {
     Cti::Protocol::Interface::pointlist_t   points;
 
-    // and a firmware point -- value = 0x0012 == 18 --> major revision == 0
+    // and a firmware point -- value = 0x1200 == 4608 --> major revision == 0
 
     points.push_back( new CtiPointDataMsg( TestCbc7020Device::PointOffset_FirmwareRevision,
-                                           0x0012,
+                                           0x1200,
                                            NormalQuality, AnalogPointType ) );
 
     TestCbc7020Device::processFirmwarePoint( points );
@@ -201,10 +201,10 @@ BOOST_AUTO_TEST_CASE(test_test_dev_cbc7020_firmware_points_point_present_major_v
 {
     Cti::Protocol::Interface::pointlist_t   points;
 
-    // and a firmware point -- value = 0x2012 == 8210 --> major revision == 32
+    // and a firmware point -- value = 0x1220 == 4640 --> major revision == 32
 
     points.push_back( new CtiPointDataMsg( TestCbc7020Device::PointOffset_FirmwareRevision,
-                                           0x2012,
+                                           0x1220,
                                            NormalQuality, AnalogPointType ) );
 
     TestCbc7020Device::processFirmwarePoint( points );

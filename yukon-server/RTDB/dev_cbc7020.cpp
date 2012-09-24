@@ -94,8 +94,8 @@ void Cbc7020Device::processFirmwarePoint( Cti::Protocol::Interface::pointlist_t 
         {
             /*
                 incoming data:
-                    'pt_msg' : 16-bit value -- upper 8-bits == major_version
-                                            -- lower 8-bits == minor_version
+                    'pt_msg' : 16-bit value -- upper 8-bits == minor_version
+                                            -- lower 8-bits == major_version
 
                 outgoing data format:
                     a SIXBIT (http://nemesis.lonestar.org/reference/telecom/codes/sixbit.html)
@@ -103,19 +103,19 @@ void Cbc7020Device::processFirmwarePoint( Cti::Protocol::Interface::pointlist_t 
                     double which limits us to 8 (6-bit) encoded characters inside the 52-bit mantissa.
                     The string format is "major_version.minor_version".
                     The major version is represented by a single capital alphabet letter.  The
-                    valid range is 1 to 26 mapping to 'A' to 'Z' (ie: '@' + i).  The minor version
-                    is the raw 8 bit number plus 1.  Since max length of the string is 5 chars, no
+                    valid range is 1 to 26 mapping to 'A' to 'Z' (ie: '@' + major_version).  The minor version
+                    is the raw 8 bit number.  Since max length of the string is 5 chars, no
                     overflow of the 8 char limit is possible.
 
-                    Example: 0x0805 --> H.6     (8th letter of alphabet . minor + 1)
+                    Example: 0x030D --> M.3     (13th letter of alphabet . minor)
 
                     An error in the range of the major value (0 or greater than 26) will report
                     0.0 as the firmware revision.
             */
             unsigned int value = pt_msg->getValue();
 
-            int major = ( value >> 8 ) & 0x0ff;
-            int minor = value & 0x0ff;
+            int minor = ( value >> 8 ) & 0x0ff;
+            int major = value & 0x0ff;
 
             if ( major == 0 || major > 26 )
             {
@@ -125,7 +125,6 @@ void Cbc7020Device::processFirmwarePoint( Cti::Protocol::Interface::pointlist_t 
             else
             {
                 major += '@';
-                ++minor;
             }
 
             char buffer[16];
