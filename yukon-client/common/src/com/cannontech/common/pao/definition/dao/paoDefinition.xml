@@ -6741,10 +6741,10 @@
     </pao>
     
     <!-- ELO RFN METERS -->
-    <pao id="RFN420ELO" inherits="RFN_ELO_BASE, RFN_BASIC_VOLTAGE, RFN_DISCONNECT">
+    <pao id="RFN420ELO" inherits="RFN_ELO_BASE, RFN_BASIC_VOLTAGE, RFN_DISCONNECT" creatable="false">
         <displayName>RFN-420ELO</displayName>
     </pao>
-    <pao id="RFN430ELO" inherits="RFN_ELO_BASE, THREE_PHASE_VOLTAGE">
+    <pao id="RFN430ELO" inherits="RFN_ELO_BASE, THREE_PHASE_VOLTAGE" creatable="false">
         <displayName>RFN-430ELO</displayName>
         <points>
             <point type="Analog" offset="70">
