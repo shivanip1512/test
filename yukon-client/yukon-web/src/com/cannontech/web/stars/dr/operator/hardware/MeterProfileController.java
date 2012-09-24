@@ -102,6 +102,7 @@ public class MeterProfileController {
         helper.updateAttempted(hardware, user, YukonRoleProperty.OPERATOR_ALLOW_ACCOUNT_EDITING, result);
         
         if (result.hasErrors()) {
+            model.addAttribute("energyCompanyId", fragment.getEnergyCompanyId());
             model.addAttribute("mode", PageEditMode.EDIT);
             setupModel(model, fragment, hardware);
             List<MessageSourceResolvable> messages = YukonValidationUtils.errorsForBindingResult(result);
@@ -156,6 +157,7 @@ public class MeterProfileController {
         }
 
         model.addAttribute("hardware", hardware);
+        model.addAttribute("energyCompanyId", fragment.getEnergyCompanyId());
         
         AccountInfoFragmentHelper.setupModelMapBasics(fragment, model);
         return "operator/hardware/meterProfile.jsp";
@@ -188,6 +190,7 @@ public class MeterProfileController {
         helper.creationAttempted(user, fragment.getAccountNumber(), hardware, verifyProperties, result);
 
         if (result.hasErrors()) {
+            model.addAttribute("energyCompanyId", fragment.getEnergyCompanyId());
             model.addAttribute("mode", PageEditMode.CREATE);
             List<MessageSourceResolvable> messages = YukonValidationUtils.errorsForBindingResult(result);
             flash.setMessage(messages, FlashScopeMessageType.ERROR);
@@ -210,6 +213,7 @@ public class MeterProfileController {
         hardwareUiService.validateInventoryAgainstAccount(Collections.singletonList(inventoryId), fragment.getAccountId());
         model.addAttribute("hardware", hardware);
         model.addAttribute("displayName", hardware.getDisplayName());
+        model.addAttribute("energyCompanyId", fragment.getEnergyCompanyId());
         
         AccountInfoFragmentHelper.setupModelMapBasics(fragment, model);
         
