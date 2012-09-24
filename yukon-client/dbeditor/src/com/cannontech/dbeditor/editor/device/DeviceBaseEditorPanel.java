@@ -52,9 +52,8 @@ import com.cannontech.database.data.device.IDLCBase;
 import com.cannontech.database.data.device.IEDBase;
 import com.cannontech.database.data.device.KV;
 import com.cannontech.database.data.device.MCT400SeriesBase;
-import com.cannontech.database.data.device.MCT430A;
-import com.cannontech.database.data.device.MCT430A3;
-import com.cannontech.database.data.device.MCT430S4;
+import com.cannontech.database.data.device.MCT420SeriesBase;
+import com.cannontech.database.data.device.MCT430SeriesBase;
 import com.cannontech.database.data.device.MCT470;
 import com.cannontech.database.data.device.MCTBase;
 import com.cannontech.database.data.device.PagingTapTerminal;
@@ -2439,7 +2438,7 @@ public class DeviceBaseEditorPanel extends DataInputPanel {
        if( base instanceof MCTBase )
        {
     	   getJPanelMCTSettings().setVisible(true);
-    	   if(base instanceof MCT430A || base instanceof MCT430A3 || base instanceof MCT430S4 || base instanceof MCT430S4 || base instanceof MCT470) {
+    	   if(base instanceof MCT430SeriesBase || base instanceof MCT420SeriesBase || base instanceof MCT470) {
     	       MCTBase mctBase = (MCTBase) base;
     	       int id = mctBase.getPAObjectID();
     	       PaoType type = PaoType.getForDbString(mctBase.getPAOType());
