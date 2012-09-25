@@ -336,9 +336,7 @@ public class OperatorHardwareController {
                        YukonUserContext context, 
                        AccountInfoFragment fragment, 
                        int inventoryId) {
-        
-        YukonEnergyCompany energyCompany = yukonEnergyCompanyService.getEnergyCompanyByOperator(context.getYukonUser());
-        
+               
         hardwareUiService.validateInventoryAgainstAccount(Collections.singletonList(inventoryId), fragment.getAccountId());
         
         Hardware hardware = hardwareUiService.getHardware(inventoryId);
@@ -350,9 +348,7 @@ public class OperatorHardwareController {
         
         setupHardwareViewEditModel(fragment, hardware, model, context);
         
-        MeteringType meterDesignation= ecRolePropertyDao.getPropertyEnumValue(YukonRoleProperty.METER_MCT_BASE_DESIGNATION, EnergyCompanyRole.MeteringType.class,  energyCompany);
-        boolean starsMeters = meterDesignation == MeteringType.stars; 
-        if(starsMeters){
+        if(hardware.getHardwareType() == HardwareType.NON_YUKON_METER){
             return "redirect:/spring/stars/operator/hardware/mp/view";
         }
         return "operator/hardware/hardware.jsp";
