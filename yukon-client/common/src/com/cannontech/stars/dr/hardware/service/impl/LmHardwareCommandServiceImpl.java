@@ -303,15 +303,17 @@ public class LmHardwareCommandServiceImpl implements LmHardwareCommandService {
 
         for (HardwareType hardwareType : hardwareTypeToInventoryIds.keySet()) {
             boolean isSupportsCancelTextMessages = false;
-            message.setInventoryIds(hardwareTypeToInventoryIds.get(hardwareType));
-            HardwareStrategyType foundStrategy;
-            try {
-                foundStrategy = getStrategy(hardwareType);
-                LmHardwareCommandStrategy impl = strategies.get(foundStrategy);
-                impl.cancelTextMessage(message);
-                isSupportsCancelTextMessages = true;
-            } catch (CommandCompletionException e) {
-                // No strategy found for this device
+            if (hardwareType.isZigbee() && hardwareType.isSupportsTextMessages()) {
+                message.setInventoryIds(hardwareTypeToInventoryIds.get(hardwareType));
+                HardwareStrategyType foundStrategy;
+                try {
+                    foundStrategy = getStrategy(hardwareType);
+                    LmHardwareCommandStrategy impl = strategies.get(foundStrategy);
+                    impl.cancelTextMessage(message);
+                    isSupportsCancelTextMessages = true;
+                } catch (CommandCompletionException e) {
+                    // No strategy found for this device
+                }
             }
 
             if (!isSupportsCancelTextMessages) {
