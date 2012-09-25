@@ -11,6 +11,8 @@ import com.cannontech.clientutils.YukonLogManager;
 import com.cannontech.common.constants.YukonListEntry;
 import com.cannontech.common.device.commands.impl.CommandCompletionException;
 import com.cannontech.common.inventory.HardwareType;
+import com.cannontech.common.model.YukonCancelTextMessage;
+import com.cannontech.common.model.YukonTextMessage;
 import com.cannontech.common.rfn.message.RfnIdentifier;
 import com.cannontech.common.rfn.message.RfnMessageClass;
 import com.cannontech.common.rfn.model.RfnManufacturerModel;
@@ -128,6 +130,16 @@ public class RfCommandStrategy implements LmHardwareCommandStrategy {
     @Override
     public boolean canHandle(HardwareType type) {
         return type.isRf();
+    }
+    
+    @Override
+    public void sendTextMessage(YukonTextMessage message) {
+        throw new UnsupportedOperationException("Not yet implemented");
+    }
+    
+    @Override
+    public void cancelTextMessage(YukonCancelTextMessage message) {
+        throw new UnsupportedOperationException("Not yet implemented");
     }
     
 }

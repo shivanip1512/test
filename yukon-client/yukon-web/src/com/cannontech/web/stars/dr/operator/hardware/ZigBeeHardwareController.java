@@ -6,7 +6,6 @@ import java.io.PrintWriter;
 import java.util.List;
 import java.util.Set;
 
-import javax.jms.ConnectionFactory;
 import javax.servlet.http.HttpServletResponse;
 
 import net.sf.jsonOLD.JSONObject;
@@ -17,7 +16,6 @@ import org.joda.time.Instant;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.MessageSourceResolvable;
 import org.springframework.context.NoSuchMessageException;
-import org.springframework.jms.core.JmsTemplate;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.ModelMap;
 import org.springframework.validation.BindingResult;
@@ -51,6 +49,7 @@ import com.cannontech.thirdparty.digi.dao.ZigbeeDeviceDao;
 import com.cannontech.thirdparty.digi.exception.DigiNotConfiguredException;
 import com.cannontech.thirdparty.digi.exception.DigiWebServiceException;
 import com.cannontech.thirdparty.digi.service.errors.ZigbeePingResponse;
+import com.cannontech.thirdparty.exception.ZigbeeClusterLibraryException;
 import com.cannontech.thirdparty.exception.ZigbeeCommissionException;
 import com.cannontech.thirdparty.model.ZigbeeDevice;
 import com.cannontech.thirdparty.service.ZigbeeStateUpdaterService;
@@ -87,8 +86,6 @@ public class ZigBeeHardwareController {
     @Autowired private ZigbeeEventLogService zigbeeEventLogService;
     @Autowired private PaoDao paoDao;
     @Autowired private NextValueHelper nextValueHelper;
-    // @Autowired by setter
-    private JmsTemplate jmsTemplate;
     
     @RequestMapping
     public void refresh(HttpServletResponse resp, YukonUserContext context, int deviceId) throws NoSuchMessageException, IOException {
@@ -396,13 +393,16 @@ public class ZigBeeHardwareController {
             
             long yukonMessageId = nextValueHelper.getNextValue("ExternalToYukonMessageIdMapping");
             textMessage.setMessageId(yukonMessageId);
-            jmsTemplate.convertAndSend("yukon.notif.stream.message.yukonTextMessage.Send", textMessage);
-            
-            zigbeeEventLogService.zigbeeSentText(pao.getPaoName(),textMessage.getMessage());
+            zigbeeWebService.sendTextMessage(textMessage);
+
+            zigbeeEventLogService.zigbeeSentText(pao.getPaoName(), textMessage.getMessage());
         } catch (DigiNotConfiguredException e) {
             messageFailed = true;
             errorMessage = e.getMessage();
         } catch (DigiWebServiceException e) {
+            messageFailed = true;
+            errorMessage = e.getMessage();
+        } catch (ZigbeeClusterLibraryException e) {
             messageFailed = true;
             errorMessage = e.getMessage();
         }
@@ -487,11 +487,5 @@ public class ZigBeeHardwareController {
         model.addAttribute("accountId", accountId);
         
         return "redirect:/spring/stars/operator/hardware/view";
-    }
-    
-    @Autowired
-    public void setConnectionFactory(ConnectionFactory connectionFactory) {
-        jmsTemplate = new JmsTemplate(connectionFactory);
-        jmsTemplate.setPubSubDomain(false);
     }
 }

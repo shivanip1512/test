@@ -11,6 +11,7 @@ import org.springframework.transaction.annotation.Transactional;
 import com.cannontech.clientutils.YukonLogManager;
 import com.cannontech.common.device.commands.impl.CommandCompletionException;
 import com.cannontech.common.inventory.HardwareType;
+import com.cannontech.common.model.YukonCancelTextMessage;
 import com.cannontech.common.model.YukonTextMessage;
 import com.cannontech.core.roleproperties.YukonRoleProperty;
 import com.cannontech.core.roleproperties.dao.EnergyCompanyRolePropertyDao;
@@ -127,29 +128,6 @@ public class PorterExpressComCommandStrategy implements LmHardwareCommandStrateg
         return ThermostatScheduleUpdateResult.SEND_SCHEDULE_SUCCESS;
     }
     
-    public void sendTextMessage(YukonTextMessage message, Map<Integer, HardwareSummary> hardwareSummary) {
-        //TODO Cleanup this up, (move xcom to builder) could be part of the interface but would have to adjust zigbee service calls
-        StringBuilder command = new StringBuilder();
-        command.append("putconfig xcom data '");
-        command.append(message.getMessage());
-        command.append("' msgpriority 7");
-        
-        if (message.getDisplayDuration() != null) {
-            int displayDuration = message.getDisplayDuration().toPeriod().toStandardMinutes().getMinutes();
-            command.append(" timeout ");
-            command.append(displayDuration);
-        }
-        for (Integer inventoryId : message.getInventoryIds()) {
-            try {
-                String serial = " serial " + hardwareSummary.get(inventoryId).getSerialNumber();
-                executor.execute(inventoryId, command.toString()+serial, message.getYukonUser());
-            } catch (CommandCompletionException e) {
-                //continue sending text messages
-                log.warn("Unable to send text message to thermostat "+ inventoryId, e);
-            }
-        }
-    }
-    
     @Override
     public void sendCommand(LmHardwareCommand parameters) throws CommandCompletionException {
         
@@ -210,6 +188,38 @@ public class PorterExpressComCommandStrategy implements LmHardwareCommandStrateg
     @Override
     public boolean canHandle(HardwareType type) {
         return !type.isRf() && !type.isZigbee(); // Maybe this should be more specific
+    }
+    
+    @Override
+    public void sendTextMessage(YukonTextMessage message) {
+        //TODO Cleanup this up, (move xcom to builder) could be part of the interface but would have to adjust zigbee service calls
+        
+        Map<Integer, HardwareSummary> hardwareSummary = inventoryDao.findHardwareSummariesById(message.getInventoryIds());
+        
+        StringBuilder command = new StringBuilder();
+        command.append("putconfig xcom data '");
+        command.append(message.getMessage());
+        command.append("' msgpriority 7");
+        
+        if (message.getDisplayDuration() != null) {
+            int displayDuration = message.getDisplayDuration().toPeriod().toStandardMinutes().getMinutes();
+            command.append(" timeout ");
+            command.append(displayDuration);
+        }
+        for (Integer inventoryId : message.getInventoryIds()) {
+            try {
+                String serial = " serial " + hardwareSummary.get(inventoryId).getSerialNumber();
+                executor.execute(inventoryId, command.toString()+serial, message.getYukonUser());
+            } catch (CommandCompletionException e) {
+                //continue sending text messages
+                log.warn("Unable to send text message to thermostat "+ inventoryId, e);
+            }
+        }
+    }
+    
+    @Override
+    public void cancelTextMessage(YukonCancelTextMessage message) {
+        throw new UnsupportedOperationException("Not yet implemented");
     }
     
 }

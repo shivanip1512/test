@@ -6,15 +6,20 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 
+import javax.jms.ConnectionFactory;
+
 import org.apache.log4j.Logger;
 import org.joda.time.Duration;
 import org.joda.time.Instant;
 import org.joda.time.LocalTime;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.jms.core.JmsTemplate;
 
 import com.cannontech.clientutils.YukonLogManager;
 import com.cannontech.common.device.commands.impl.CommandCompletionException;
 import com.cannontech.common.inventory.HardwareType;
+import com.cannontech.common.model.YukonCancelTextMessage;
+import com.cannontech.common.model.YukonTextMessage;
 import com.cannontech.common.model.ZigbeeTextMessageDto;
 import com.cannontech.common.temperature.FahrenheitTemperature;
 import com.cannontech.core.dao.LMGroupDao;
@@ -62,6 +67,9 @@ public class ZigbeeCommandStrategy implements LmHardwareCommandStrategy {
     @Autowired private ZigbeeWebService zigbeeWebService;
     @Autowired private CustomerEventDao customerEventDao;
     @Autowired private LMGroupDao lmGroupDao;
+    
+    //@Autowired by setter
+    private JmsTemplate jmsTemplate;
     
     private final SetMultimap<TimeOfWeek, String> dayLetterLookup;
     {
@@ -323,4 +331,19 @@ public class ZigbeeCommandStrategy implements LmHardwareCommandStrategy {
         return type.isZigbee();
     }
 
+    @Override
+    public void sendTextMessage(YukonTextMessage message) {
+        jmsTemplate.convertAndSend("yukon.notif.stream.dr.smartEnergyProfileTextMessage.Send", message);
+    }
+    
+    @Override
+    public void cancelTextMessage(YukonCancelTextMessage message) {
+        jmsTemplate.convertAndSend("yukon.notif.stream.dr.smartEnergyProfileTextMessage.Cancel", message);
+    }
+    
+    @Autowired
+    public void setConnectionFactory(ConnectionFactory connectionFactory) {
+        jmsTemplate = new JmsTemplate(connectionFactory);
+        jmsTemplate.setPubSubDomain(false);
+    }
 }

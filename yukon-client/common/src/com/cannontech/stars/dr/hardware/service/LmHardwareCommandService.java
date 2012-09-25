@@ -1,6 +1,7 @@
 package com.cannontech.stars.dr.hardware.service;
 
 import com.cannontech.common.device.commands.impl.CommandCompletionException;
+import com.cannontech.common.model.YukonCancelTextMessage;
 import com.cannontech.common.model.YukonTextMessage;
 import com.cannontech.database.data.lite.LiteYukonUser;
 import com.cannontech.stars.dr.account.model.CustomerAccount;
@@ -58,5 +59,10 @@ public interface LmHardwareCommandService {
      * Will attempt to send text message to Utility Pro thermostats
      */
     public void sendTextMessage(YukonTextMessage message);
+
+    /**
+     * Will attempt to cancel text message
+     */
+    public void cancelTextMessage(YukonCancelTextMessage message);
     
 }

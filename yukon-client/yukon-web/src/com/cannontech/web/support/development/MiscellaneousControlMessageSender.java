@@ -3,12 +3,9 @@ package com.cannontech.web.support.development;
 import java.util.List;
 import java.util.Set;
 
-import javax.jms.ConnectionFactory;
-
 import org.joda.time.Duration;
 import org.joda.time.Instant;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.jms.core.JmsTemplate;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.RequestMapping;
 
@@ -17,6 +14,7 @@ import com.cannontech.common.model.YukonCancelTextMessage;
 import com.cannontech.common.model.YukonTextMessage;
 import com.cannontech.database.incrementer.NextValueHelper;
 import com.cannontech.stars.dr.enrollment.dao.EnrollmentDao;
+import com.cannontech.stars.dr.hardware.service.LmHardwareCommandService;
 import com.cannontech.stars.dr.program.dao.ProgramDao;
 import com.cannontech.web.security.annotation.AuthorizeByCparm;
 import com.google.common.collect.Sets;
@@ -29,9 +27,8 @@ public class MiscellaneousControlMessageSender {
     @Autowired ProgramDao programDao;
     @Autowired EnrollmentDao enrollmentDao;
     @Autowired NextValueHelper nextValueHelper;
-    
-    //Autowired by setter.
-    private JmsTemplate jmsTemplate;
+    @Autowired private LmHardwareCommandService lmHardwareCommandService;
+
     private int controlId = 0;
     
     @RequestMapping("/development/miscellaneousMethod/sendTestTextMessage")
@@ -45,16 +42,16 @@ public class MiscellaneousControlMessageSender {
         
         controlId = nextValueHelper.getNextValue("ExternalToYukonMessageIdMapping");
         
-        YukonTextMessage yukonTextMessage = new YukonTextMessage();
+        YukonTextMessage message = new YukonTextMessage();
 
-        yukonTextMessage.setMessageId(controlId);
-        yukonTextMessage.setInventoryIds(inventoryIds);
-        yukonTextMessage.setMessage("Test Message: " + controlId);
-        yukonTextMessage.setConfirmationRequired(false);
-        yukonTextMessage.setDisplayDuration(displayDuration);
-        yukonTextMessage.setStartTime(startTime);
+        message.setMessageId(controlId);
+        message.setInventoryIds(inventoryIds);
+        message.setMessage("Test Message: " + controlId);
+        message.setConfirmationRequired(false);
+        message.setDisplayDuration(displayDuration);
+        message.setStartTime(startTime);
         
-        jmsTemplate.convertAndSend("yukon.notif.stream.message.yukonTextMessage.Send", yukonTextMessage);
+        lmHardwareCommandService.sendTextMessage(message);
         return "redirect:main";
     }
     
@@ -63,12 +60,12 @@ public class MiscellaneousControlMessageSender {
         List<Integer> groupIds = programDao.getDistinctGroupIdsByYukonProgramIds(Sets.newHashSet(loadProgramId));
         Set<Integer> inventoryIds = enrollmentDao.getActiveEnrolledInventoryIdsForGroupIds(groupIds);
 
-        YukonCancelTextMessage cancelZigbeeText = new YukonCancelTextMessage();
+        YukonCancelTextMessage message = new YukonCancelTextMessage();
         
-        cancelZigbeeText.setInventoryIds(inventoryIds);
-        cancelZigbeeText.setMessageId(controlId);
+        message.setInventoryIds(inventoryIds);
+        message.setMessageId(controlId);
         
-        jmsTemplate.convertAndSend("yukon.notif.stream.message.yukonTextMessage.Cancel", cancelZigbeeText);
+        lmHardwareCommandService.cancelTextMessage(message);
         return "redirect:main";
     }
     
@@ -106,11 +103,5 @@ public class MiscellaneousControlMessageSender {
 //        
 //        jmsTemplate.convertAndSend("yukon.notif.stream.dr.ControlNotification", controlNotification);
         return "redirect:main";
-    }
-    
-    @Autowired
-    public void setConnectionFactory(ConnectionFactory connectionFactory) {
-        jmsTemplate = new JmsTemplate(connectionFactory); 
-        jmsTemplate.setPubSubDomain(false);
     }
 }

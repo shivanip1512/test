@@ -1,7 +1,11 @@
 package com.cannontech.stars.dr.hardware.service.impl;
 
 import java.util.Date;
+import java.util.EnumMap;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Map;
+import java.util.Set;
 import java.util.TimerTask;
 
 import javax.jms.ConnectionFactory;
@@ -15,6 +19,7 @@ import com.cannontech.clientutils.YukonLogManager;
 import com.cannontech.common.constants.YukonListEntryTypes;
 import com.cannontech.common.device.commands.impl.CommandCompletionException;
 import com.cannontech.common.inventory.HardwareType;
+import com.cannontech.common.model.YukonCancelTextMessage;
 import com.cannontech.common.model.YukonTextMessage;
 import com.cannontech.core.dao.DBPersistentDao;
 import com.cannontech.core.dao.YukonListDao;
@@ -31,6 +36,8 @@ import com.cannontech.stars.database.data.lite.LiteLmHardwareBase;
 import com.cannontech.stars.database.data.lite.LiteStarsEnergyCompany;
 import com.cannontech.stars.database.db.event.LMCustomerEventBase;
 import com.cannontech.stars.dr.account.model.CustomerAccount;
+import com.cannontech.stars.dr.hardware.dao.InventoryDao;
+import com.cannontech.stars.dr.hardware.model.HardwareSummary;
 import com.cannontech.stars.dr.hardware.model.LmHardwareCommand;
 import com.cannontech.stars.dr.hardware.model.LmHardwareCommandParam;
 import com.cannontech.stars.dr.hardware.model.LmHardwareCommandType;
@@ -57,6 +64,7 @@ public class LmHardwareCommandServiceImpl implements LmHardwareCommandService {
     @Autowired private YukonEnergyCompanyService yecService;
     @Autowired private InventoryBaseDao inventoryBaseDao;
     @Autowired private DBPersistentDao dbPersistentDao;
+    @Autowired private InventoryDao inventoryDao;
     
     //@Autowired by setter
     private JmsTemplate jmsTemplate;
@@ -258,9 +266,60 @@ public class LmHardwareCommandServiceImpl implements LmHardwareCommandService {
     }
     
     @Override
-    public void sendTextMessage(YukonTextMessage message){
-        
-        jmsTemplate.convertAndSend("yukon.notif.stream.message.yukonTextMessage.Send", message);
+    public void sendTextMessage(YukonTextMessage message) {
+        Map<Integer, HardwareSummary> hardwareSummary =
+            inventoryDao.findHardwareSummariesById(message.getInventoryIds());
+        Map<HardwareType, Set<Integer>> hardwareTypeToInventoryIds =
+            getHardwareTypeToInventoryIdsMap(message.getInventoryIds(), hardwareSummary);
+
+        for (HardwareType hardwareType : hardwareTypeToInventoryIds.keySet()) {
+            boolean isSupportsTextMessages = false;
+            if (hardwareType.isSupportsTextMessages()) {
+                message.setInventoryIds(hardwareTypeToInventoryIds.get(hardwareType));
+                HardwareStrategyType foundStrategy;
+                try {
+                    foundStrategy = getStrategy(hardwareType);
+                    LmHardwareCommandStrategy impl = strategies.get(foundStrategy);
+                    impl.sendTextMessage(message);
+                    isSupportsTextMessages = true;
+                } catch (CommandCompletionException e) {
+                    //No strategy found for this device
+                }
+            }
+            if (!isSupportsTextMessages) {
+                log.error("Send Text Message is not supported by hardware config type "
+                          + hardwareType.getHardwareConfigType() + " for " + message.getInventoryIds().size()
+                          + " devices.");
+            }
+        }
+    }
+    
+    @Override
+    public void cancelTextMessage(YukonCancelTextMessage message) {
+        Map<Integer, HardwareSummary> hardwareSummary =
+            inventoryDao.findHardwareSummariesById(message.getInventoryIds());
+        Map<HardwareType, Set<Integer>> hardwareTypeToInventoryIds =
+            getHardwareTypeToInventoryIdsMap(message.getInventoryIds(), hardwareSummary);
+
+        for (HardwareType hardwareType : hardwareTypeToInventoryIds.keySet()) {
+            boolean isSupportsCancelTextMessages = false;
+            message.setInventoryIds(hardwareTypeToInventoryIds.get(hardwareType));
+            HardwareStrategyType foundStrategy;
+            try {
+                foundStrategy = getStrategy(hardwareType);
+                LmHardwareCommandStrategy impl = strategies.get(foundStrategy);
+                impl.cancelTextMessage(message);
+                isSupportsCancelTextMessages = true;
+            } catch (CommandCompletionException e) {
+                // No strategy found for this device
+            }
+
+            if (!isSupportsCancelTextMessages) {
+                log.error("Cancel Text Message is not supported by hardware config type "
+                          + hardwareType.getHardwareConfigType() + " for " + message.getInventoryIds().size()
+                          + " devices.");
+            }
+        }
     }
     
     @Autowired
@@ -268,5 +327,19 @@ public class LmHardwareCommandServiceImpl implements LmHardwareCommandService {
         jmsTemplate = new JmsTemplate(connectionFactory);
         jmsTemplate.setPubSubDomain(false);
     }
+    
+    private Map<HardwareType, Set<Integer>> getHardwareTypeToInventoryIdsMap( Set<Integer> inventoryIds,  Map<Integer, HardwareSummary> hardwareSummary){
+        Map<HardwareType, Set<Integer>> hardwareTypeToInventoryIds = new EnumMap<HardwareType, Set<Integer>>(HardwareType.class);
+        for (int inventoryId : inventoryIds) {
+            HardwareType type = hardwareSummary.get(inventoryId).getHardwareType();
+            
+            if(!hardwareTypeToInventoryIds.containsKey(type)){
+                hardwareTypeToInventoryIds.put(type, new HashSet<Integer>());
+            }
+            hardwareTypeToInventoryIds.get(type).add(inventoryId);
+        }
+        return hardwareTypeToInventoryIds;
+    }
+    
     
 }

@@ -2,6 +2,8 @@ package com.cannontech.stars.dr.hardware.service;
 
 import com.cannontech.common.device.commands.impl.CommandCompletionException;
 import com.cannontech.common.inventory.HardwareType;
+import com.cannontech.common.model.YukonCancelTextMessage;
+import com.cannontech.common.model.YukonTextMessage;
 import com.cannontech.common.pao.PaoType;
 import com.cannontech.database.data.lite.LiteYukonUser;
 import com.cannontech.stars.dr.account.model.CustomerAccount;
@@ -53,4 +55,14 @@ public interface LmHardwareCommandStrategy {
      */
     public void sendCommand(LmHardwareCommand parameters) throws CommandCompletionException;
     
+    /**
+     * Will attempt to send a text message to a thermostat
+     */
+    public void sendTextMessage(YukonTextMessage message);
+    
+    /**
+     * Will attempt to cancel a text message
+     */
+    public void cancelTextMessage(YukonCancelTextMessage message);
+
 }
