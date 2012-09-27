@@ -185,10 +185,30 @@ void CtiPILServer::mainThread()
                     {
                         {
                             CtiLockGuard<CtiLogger> doubt_guard(dout);
-                            dout << TimeNow << " PIL processing an inbound request/command message which is over 15 minutes old.  Message will be discarded." << endl;
+                            dout << TimeNow << " PIL processing an inbound request message which is over 15 minutes old.  Message will be discarded." << endl;
                             dout << " >>---------- Message Content ----------<< " << endl;
                             MsgPtr->dump();
                             dout << " <<---------- Message Content ---------->> " << endl;
+                        }
+
+                        if( CtiConnection *requestingClient = static_cast<CtiConnection *>(MsgPtr->getConnectionHandle()) )
+                        {
+                            const CtiRequestMsg *req = static_cast<const CtiRequestMsg *>(MsgPtr);
+
+                            auto_ptr<CtiReturnMsg> expiredRequestError(
+                                new CtiReturnMsg(
+                                        req->DeviceId(),
+                                        req->CommandString(),
+                                        FormatError(ErrRequestExpired),
+                                        ErrRequestExpired,
+                                        req->RouteId(),
+                                        req->MacroOffset(),
+                                        req->AttemptNum(),
+                                        req->GroupMessageId(),
+                                        req->UserMessageId(),
+                                        req->getSOE()));
+
+                            requestingClient->WriteConnQue(expiredRequestError.release());
                         }
 
                         delete MsgPtr;    // No one attached it to them, so we need to kill it!

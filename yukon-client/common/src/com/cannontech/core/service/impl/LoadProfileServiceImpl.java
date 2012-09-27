@@ -187,6 +187,10 @@ public class LoadProfileServiceImpl implements LoadProfileService {
      */
     private void queueRequest(int deviceId, final ProfileRequestInfo info, boolean queue) {
         try {
+            info.request.setTimeStamp(new Date());
+            log.debug("updated request time to " + info.request.getTimeStamp() + " for request id " 
+                      + info.request.getUserMessageID() + " for device id " + deviceId + ": " 
+                      + info.request.getCommandString());
             log.debug("sending request id " + info.request.getUserMessageID() 
                       + " for device id " + deviceId + ": " + info.request.getCommandString());
             if (queue) {
