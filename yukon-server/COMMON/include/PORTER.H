@@ -121,16 +121,6 @@ class CtiHashKey;
 #define ALGO_SUSPENDED       3
 
 
-/* Define protocol wraps */
-#define NOWRAP          0
-#define IDLCWRAP        1
-#define UCAWRAP         2
-#define DNPWRAP         3
-
-/* Amp Mode masks */
-#define AMP_FAILOVER    0x0001
-#define AMP_SWAPPING    0x0002
-
 /* queue commands */
 #define NOWAIT          0x0000
 #define NORESULT        0x0000
@@ -150,19 +140,6 @@ class CtiHashKey;
 #define ENCODED         0x4000
 #define DECODED         0x4000
 #define COMMANDCODE     0x8000
-
-#define STOPALL         0x0010
-#define LOOPBACKCOMMAND 0x0030
-#define REMOTECONTROL   0x0040
-#define ANALOGLOOP      0x0050
-
-#define COMMANDMASK     ~(COMMANDCODE | WAIT | RESULT | QUEUED | ACTIN)
-
-/* Defines used for TCP/IP Interfaces */
-#define TCP_SES92       1
-#define TCP_CCU710      2
-#define TCP_WELCO       3
-#define TCP_DUALWELCO   4
 
 
 struct QUEENT

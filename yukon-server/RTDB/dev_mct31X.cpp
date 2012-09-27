@@ -578,7 +578,6 @@ INT Mct31xDevice::decodeStatus(INMESS *InMessage, CtiTime &TimeNow, CtiMessageLi
     USHORT SaveCount;
     string resultString;
 
-    INT ErrReturn  = InMessage->EventCode & 0x3fff;
     DSTRUCT *DSt   = &InMessage->Buffer.DSt;
 
     DOUBLE Value;
@@ -2126,7 +2125,6 @@ INT Mct31xDevice::decodeGetValueDemand(INMESS *InMessage, CtiTime &TimeNow, CtiM
     INT pid;
     string resultString;
 
-    INT ErrReturn  = InMessage->EventCode & 0x3fff;
     DSTRUCT *DSt   = &InMessage->Buffer.DSt;
 
     int demand_rate;
@@ -2248,7 +2246,6 @@ INT Mct31xDevice::decodeGetValuePeak(INMESS *InMessage, CtiTime &TimeNow, CtiMes
     double    Value;
     string resultString;
 
-    INT ErrReturn  = InMessage->EventCode & 0x3fff;
     DSTRUCT *DSt   = &InMessage->Buffer.DSt;
 
     CtiPointSPtr         pPoint;

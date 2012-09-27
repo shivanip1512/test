@@ -656,7 +656,6 @@ INT Mct310Device::decodePutConfigPeakMode(INMESS *InMessage, CtiTime &TimeNow, l
     ULONG i,x;
     string resultString;
 
-    INT ErrReturn  = InMessage->EventCode & 0x3fff;
     DSTRUCT *DSt   = &InMessage->Buffer.DSt;
 
     CtiReturnMsg *ReturnMsg = NULL;    // Message sent to VanGogh, inherits from Multi
@@ -698,7 +697,6 @@ INT Mct310Device::decodeGetValueKWH(INMESS *InMessage, CtiTime &TimeNow, list< C
     INT pid;
     string resultString;
 
-    INT ErrReturn  = InMessage->EventCode & 0x3fff;
     DSTRUCT *DSt   = &InMessage->Buffer.DSt;
 
     DOUBLE Value;
@@ -796,7 +794,6 @@ INT Mct310Device::decodeGetValueDemand(INMESS *InMessage, CtiTime &TimeNow, list
     PointQuality_t quality;
     bool bad_data;
 
-    INT ErrReturn  = InMessage->EventCode & 0x3fff;
     DSTRUCT *DSt   = &InMessage->Buffer.DSt;
 
     CtiPointSPtr         pPoint;
@@ -882,7 +879,6 @@ INT Mct310Device::decodeGetValuePeak(INMESS *InMessage, CtiTime &TimeNow, list< 
     double    Value;
     string resultString;
 
-    INT ErrReturn  = InMessage->EventCode & 0x3fff;
     DSTRUCT *DSt   = &InMessage->Buffer.DSt;
 
     CtiPointSPtr         pPoint;
@@ -1175,7 +1171,6 @@ INT Mct310Device::decodeGetStatusInternal( INMESS *InMessage, CtiTime &TimeNow, 
 {
     INT status = NORMAL;
 
-    INT ErrReturn  = InMessage->EventCode & 0x3fff;
     unsigned char *geneBuf = InMessage->Buffer.DSt.Message;
 
     string resultString;
@@ -1249,7 +1244,6 @@ INT Mct310Device::decodeGetStatusLoadProfile( INMESS *InMessage, CtiTime &TimeNo
 {
     INT status = NORMAL;
 
-    INT ErrReturn  = InMessage->EventCode & 0x3fff;
     DSTRUCT *DSt   = &InMessage->Buffer.DSt;
 
     INT   j;
@@ -1290,7 +1284,6 @@ INT Mct310Device::decodeGetConfigModel(INMESS *InMessage, CtiTime &TimeNow, list
 {
     INT status = NORMAL;
 
-    INT ErrReturn  = InMessage->EventCode & 0x3fff;
     DSTRUCT *DSt   = &InMessage->Buffer.DSt;
 
     INT ssp;

@@ -515,7 +515,6 @@ INT Lmt2Device::decodeGetStatusInternal( INMESS *InMessage, CtiTime &TimeNow, li
     CtiReturnMsg         *ReturnMsg = NULL;    // Message sent to VanGogh, inherits from Multi
     CtiPointDataMsg      *pData = NULL;
 
-    INT ErrReturn  = InMessage->EventCode & 0x3fff;
     unsigned char *geneBuf = InMessage->Buffer.DSt.Message;
 
     ULONG pulseCount = 0;
@@ -603,7 +602,6 @@ INT Lmt2Device::decodeGetConfigModel(INMESS *InMessage, CtiTime &TimeNow, list< 
 {
    INT status = NORMAL;
 
-   INT ErrReturn  = InMessage->EventCode & 0x3fff;
    DSTRUCT *DSt   = &InMessage->Buffer.DSt;
 
   INT ssp;

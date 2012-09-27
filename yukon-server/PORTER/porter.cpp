@@ -754,16 +754,6 @@ INT PorterMainFunction (INT argc, CHAR **argv)
                 VCUWait = TRUE;
                 continue;
             }
-            if(!(stricmp (argv[i], "/F")))
-            {
-                AmpFailOver |= AMP_FAILOVER;
-                continue;
-            }
-            if(!(stricmp (argv[i], "/S")))
-            {
-                AmpFailOver |= AMP_SWAPPING;
-                continue;
-            }
             if(!(::strcmp (argv[i], "/?")))
             {
                 cout << "/C       Reset (Cold Start) all 711's in system" << endl;

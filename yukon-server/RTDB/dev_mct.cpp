@@ -2435,25 +2435,10 @@ INT MctDevice::executePutConfig(CtiRequestMsg *pReq,
     }
     else if(parse.isKeyValid("timesync"))
     {
-        if( parse.isKeyValid("noqueue") )
-        {
-            function = EmetconProtocol::PutConfig_TSync;
-            found = getOperation(function, OutMessage->Buffer.BSt);
+        function = EmetconProtocol::PutConfig_TSync;
+        found = getOperation(function, OutMessage->Buffer.BSt);
 
-            //  the message is filled in by RefreshMCTTimeSync() in porttime.cpp
-            OutMessage->EventCode |= TSYNC;
-        }
-        else
-        {
-            if( errRet )
-            {
-                temp = "Timesync commands cannot be queued to the CCU";
-                errRet->setResultString( temp );
-                errRet->setStatus(NoMethod);
-                retList.push_back( errRet );
-                errRet = NULL;
-            }
-        }
+        // the message is filled in by RefreshMCTTimeSync() in porttime.cpp
     }
     else if(parse.isKeyValid("multiplier"))
     {
@@ -2711,8 +2696,6 @@ INT MctDevice::decodeLoopback(INMESS *InMessage, CtiTime &TimeNow, CtiMessageLis
 
     CtiReturnMsg *ReturnMsg = NULL;    // Message sent to VanGogh, inherits from Multi
 
-    INT ErrReturn  = InMessage->EventCode & 0x3fff;
-
     if((ReturnMsg = CTIDBG_new CtiReturnMsg(getID(), InMessage->Return.CommandStr)) == NULL)
     {
         CtiLockGuard<CtiLogger> doubt_guard(dout);
@@ -2801,7 +2784,6 @@ INT MctDevice::decodeGetConfig(INMESS *InMessage, CtiTime &TimeNow, CtiMessageLi
 {
     INT status = NORMAL;
 
-    INT ErrReturn  = InMessage->EventCode & 0x3fff;
     DSTRUCT &DSt   = InMessage->Buffer.DSt;
     CtiCommandParser parse(InMessage->Return.CommandStr);
 
@@ -3048,7 +3030,6 @@ INT MctDevice::decodeGetStatusDisconnect(INMESS *InMessage, CtiTime &TimeNow, Ct
 {
     INT status = NORMAL;
 
-    INT ErrReturn  = InMessage->EventCode & 0x3fff;
     DSTRUCT &DSt   = InMessage->Buffer.DSt;
 
     CtiReturnMsg    *ReturnMsg = NULL;    // Message sent to VanGogh, inherits from Multi
@@ -3185,8 +3166,6 @@ INT MctDevice::decodeControl(INMESS *InMessage, CtiTime &TimeNow, CtiMessageList
 
     CtiReturnMsg *ReturnMsg = NULL;    // Message sent to VanGogh, inherits from Multi
 
-    INT ErrReturn  = InMessage->EventCode & 0x3fff;
-
     if((ReturnMsg = CTIDBG_new CtiReturnMsg(getID(), InMessage->Return.CommandStr)) == NULL)
     {
         CtiLockGuard<CtiLogger> doubt_guard(dout);
@@ -3241,9 +3220,6 @@ INT MctDevice::decodePutValue(INMESS *InMessage, CtiTime &TimeNow, CtiMessageLis
 
     CtiReturnMsg *ReturnMsg = NULL;    // Message sent to VanGogh, inherits from Multi
 
-    INT ErrReturn  = InMessage->EventCode & 0x3fff;
-
-
     if((ReturnMsg = CTIDBG_new CtiReturnMsg(getID(), InMessage->Return.CommandStr)) == NULL)
     {
         CtiLockGuard<CtiLogger> doubt_guard(dout);
@@ -3271,8 +3247,6 @@ INT MctDevice::decodePutStatus(INMESS *InMessage, CtiTime &TimeNow, CtiMessageLi
     string resultString;
 
     CtiReturnMsg *ReturnMsg = NULL;    // Message sent to VanGogh, inherits from Multi
-
-    INT ErrReturn  = InMessage->EventCode & 0x3fff;
 
     if((ReturnMsg = CTIDBG_new CtiReturnMsg(getID(), InMessage->Return.CommandStr)) == NULL)
     {

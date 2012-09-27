@@ -34,7 +34,6 @@ IM_EX_PORTGLOB USHORT          TraceFlag = {FALSE};
 IM_EX_PORTGLOB USHORT          TraceErrorsOnly = {FALSE};
 IM_EX_PORTGLOB USHORT          ResetAll711s = {FALSE};
 IM_EX_PORTGLOB USHORT          LoadRoutes = {FALSE};
-IM_EX_PORTGLOB USHORT          AmpFailOver = 0;
 IM_EX_PORTGLOB USHORT          VCUWait = {FALSE};
 IM_EX_PORTGLOB USHORT          LAndGLCUs = {FALSE};
 IM_EX_PORTGLOB USHORT          DLCFreq1 = 94;

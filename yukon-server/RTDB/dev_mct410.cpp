@@ -2805,7 +2805,6 @@ INT Mct410Device::decodeGetValueKWH(INMESS *InMessage, CtiTime &TimeNow, CtiMess
     CtiTime pointTime;
     bool valid_data = true;
 
-    INT ErrReturn  = InMessage->EventCode & 0x3fff;
     DSTRUCT *DSt   = &InMessage->Buffer.DSt;
 
     point_info pi, pi_freezecount;
@@ -2932,7 +2931,6 @@ INT Mct410Device::decodeGetValueTOUkWh(INMESS *InMessage, CtiTime &TimeNow, CtiM
     INT status = NORMAL;
     CtiTime pointTime;
 
-    INT ErrReturn  = InMessage->EventCode & 0x3fff;
     DSTRUCT *DSt   = &InMessage->Buffer.DSt;
 
     point_info pi, pi_freezecount;
@@ -3098,7 +3096,6 @@ INT Mct410Device::decodeGetValueVoltage( INMESS *InMessage, CtiTime &TimeNow, Ct
 {
     INT status = NORMAL;
 
-    INT ErrReturn  = InMessage->EventCode & 0x3fff;
     DSTRUCT *DSt   = &InMessage->Buffer.DSt;
 
     point_info pi, max_volt_info, min_volt_info;
@@ -3897,7 +3894,6 @@ INT Mct410Device::decodeGetStatusInternal( INMESS *InMessage, CtiTime &TimeNow, 
 {
     INT status = NORMAL;
 
-    INT ErrReturn  = InMessage->EventCode & 0x3fff;
     DSTRUCT &DSt = InMessage->Buffer.DSt;
 
     string resultString;
@@ -3983,7 +3979,6 @@ INT Mct410Device::decodeGetStatusLoadProfile( INMESS *InMessage, CtiTime &TimeNo
 {
     INT status = NORMAL;
 
-    INT ErrReturn  = InMessage->EventCode & 0x3fff;
     DSTRUCT *DSt  = &InMessage->Buffer.DSt;
 
     string resultString;
@@ -4047,7 +4042,6 @@ INT Mct410Device::decodeGetStatusFreeze( INMESS *InMessage, CtiTime &TimeNow, Ct
 {
      INT status = NORMAL;
 
-     INT ErrReturn  = InMessage->EventCode & 0x3fff;
      DSTRUCT *DSt  = &InMessage->Buffer.DSt;
 
      string resultString;
@@ -4126,7 +4120,6 @@ INT Mct410Device::decodeGetConfigIntervals(INMESS *InMessage, CtiTime &TimeNow, 
 {
     INT status = NORMAL;
 
-    INT ErrReturn  = InMessage->EventCode & 0x3fff;
     DSTRUCT *DSt   = &InMessage->Buffer.DSt;
 
     CtiReturnMsg *ReturnMsg = NULL;    // Message sent to VanGogh, inherits from Multi
@@ -4167,7 +4160,6 @@ INT Mct410Device::decodeGetConfigThresholds(INMESS *InMessage, CtiTime &TimeNow,
 {
     INT status = NORMAL;
 
-    INT ErrReturn  = InMessage->EventCode & 0x3fff;
     DSTRUCT *DSt   = &InMessage->Buffer.DSt;
 
     CtiReturnMsg *ReturnMsg = NULL;    // Message sent to VanGogh, inherits from Multi
@@ -4211,7 +4203,6 @@ INT Mct410Device::decodeGetConfigFreeze(INMESS *InMessage, CtiTime &TimeNow, Cti
 {
     INT status = NORMAL;
 
-    INT ErrReturn  = InMessage->EventCode & 0x3fff;
     DSTRUCT *DSt   = &InMessage->Buffer.DSt;
 
     CtiReturnMsg *ReturnMsg = NULL;    // Message sent to VanGogh, inherits from Multi
@@ -4322,7 +4313,6 @@ INT Mct410Device::decodeGetConfigDisconnect(INMESS *InMessage, CtiTime &TimeNow,
 {
     INT status = NORMAL, state = 0;
 
-    INT ErrReturn  = InMessage->EventCode & 0x3fff;
     DSTRUCT *DSt   = &InMessage->Buffer.DSt;
 
     string resultStr;
@@ -4515,7 +4505,6 @@ INT Mct410Device::decodeGetConfigAddress(INMESS *InMessage, CtiTime &TimeNow, Ct
 {
     INT status = NORMAL;
 
-    INT ErrReturn  = InMessage->EventCode & 0x3fff;
     DSTRUCT *DSt   = &InMessage->Buffer.DSt;
 
     string resultStr;
@@ -4551,7 +4540,6 @@ INT Mct410Device::decodeGetConfigPhaseDetect(INMESS *InMessage, CtiTime &TimeNow
 {
     INT status = NORMAL;
 
-    INT ErrReturn  = InMessage->EventCode & 0x3fff;
     DSTRUCT *DSt   = &InMessage->Buffer.DSt;
 
     string resultStr;

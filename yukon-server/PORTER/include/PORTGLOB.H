@@ -30,7 +30,6 @@ extern IM_EX_PORTGLOB USHORT        TraceFlag;
 extern IM_EX_PORTGLOB USHORT        TraceErrorsOnly;
 extern IM_EX_PORTGLOB USHORT        ResetAll711s;
 extern IM_EX_PORTGLOB USHORT        LoadRoutes;
-extern IM_EX_PORTGLOB USHORT        AmpFailOver;
 extern IM_EX_PORTGLOB USHORT        VCUWait;
 extern IM_EX_PORTGLOB USHORT        LAndGLCUs;
 extern IM_EX_PORTGLOB USHORT        DLCFreq1;

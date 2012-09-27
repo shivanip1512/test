@@ -645,6 +645,7 @@ int DlcBaseDevice::executeOnDLCRoute( CtiRequestMsg              *pReq,
             if( pOut->Sequence == EmetconProtocol::PutConfig_TSync )
             {
                 pOut->EventCode |= TSYNC;
+                pOut->EventCode |= DTRAN;  //  Send timesyncs nonqueued no matter what, even if "noqueue" wasn't specified for the command
             }
 
             static const string str_noqueue = "noqueue";
