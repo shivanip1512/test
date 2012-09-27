@@ -10,7 +10,7 @@
 <h:form>
 <t:dataList id="programList" value="#{rProgramList.programTypeList}" var="thisType" layout="unorderedList">
   <h:outputText value="#{thisType.self.name}"/>
-  <t:dataList value="#{thisType.children}" var="thisProgram" layout="unorderedList">
+  <t:dataList value="#{thisType.children}" var="thisProgram" layout="unorderedList" styleClass="indent list_circle">
     <h:commandLink action="#{sProgramDetail.editProgram}">
       <f:param name="programId" value="#{thisProgram.id}"/>
       <h:outputText value="#{thisProgram.name}" />
