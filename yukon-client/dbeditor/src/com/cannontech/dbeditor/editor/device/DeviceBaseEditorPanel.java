@@ -9,6 +9,7 @@ import java.awt.Insets;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.util.List;
+import java.util.Set;
 
 import javax.swing.BorderFactory;
 import javax.swing.JLabel;
@@ -37,11 +38,13 @@ import com.cannontech.common.model.PaoProperty;
 import com.cannontech.common.model.PaoPropertyName;
 import com.cannontech.common.pao.PaoIdentifier;
 import com.cannontech.common.pao.PaoType;
+import com.cannontech.common.pao.definition.model.PaoTag;
 import com.cannontech.common.rfn.message.RfnIdentifier;
 import com.cannontech.common.rfn.model.RfnDevice;
 import com.cannontech.common.util.CtiUtilities;
 import com.cannontech.core.dao.NotFoundException;
 import com.cannontech.core.dao.PaoPropertyDao;
+import com.cannontech.database.cache.DefaultDatabaseCache;
 import com.cannontech.database.data.device.CCU721;
 import com.cannontech.database.data.device.CarrierBase;
 import com.cannontech.database.data.device.DNPBase;
@@ -52,9 +55,6 @@ import com.cannontech.database.data.device.IDLCBase;
 import com.cannontech.database.data.device.IEDBase;
 import com.cannontech.database.data.device.KV;
 import com.cannontech.database.data.device.MCT400SeriesBase;
-import com.cannontech.database.data.device.MCT420SeriesBase;
-import com.cannontech.database.data.device.MCT430SeriesBase;
-import com.cannontech.database.data.device.MCT470;
 import com.cannontech.database.data.device.MCTBase;
 import com.cannontech.database.data.device.PagingTapTerminal;
 import com.cannontech.database.data.device.RTCBase;
@@ -69,6 +69,9 @@ import com.cannontech.database.data.device.Series5Base;
 import com.cannontech.database.data.device.Sixnet;
 import com.cannontech.database.data.device.TwoWayLCR;
 import com.cannontech.database.data.device.WCTPTerminal;
+import com.cannontech.database.data.device.lm.LMGroupEmetcon;
+import com.cannontech.database.data.device.lm.LMGroupRipple;
+import com.cannontech.database.data.device.lm.LMGroupVersacom;
 import com.cannontech.database.data.lite.LiteYukonPAObject;
 import com.cannontech.database.data.pao.DeviceClasses;
 import com.cannontech.database.data.pao.DeviceTypes;
@@ -78,10 +81,12 @@ import com.cannontech.database.db.device.DeviceDialupSettings;
 import com.cannontech.database.db.device.DeviceDirectCommSettings;
 import com.cannontech.database.db.device.DeviceIDLCRemote;
 import com.cannontech.dbeditor.DatabaseEditorOptionPane;
+import com.cannontech.dbeditor.DatabaseEditorUtil;
 import com.cannontech.device.range.DlcAddressRangeService;
 import com.cannontech.device.range.IntegerRange;
 import com.cannontech.spring.YukonSpringHook;
 import com.cannontech.yukon.IDatabaseCache;
+import com.google.common.collect.ImmutableSet;
 import com.klg.jclass.util.value.JCValueEvent;
 import com.klg.jclass.util.value.JCValueListener;
 
@@ -158,6 +163,12 @@ public class DeviceBaseEditorPanel extends DataInputPanel {
     
     private DlcAddressRangeService dlcAddressRangeService =
         YukonSpringHook.getBean("dlcAddressRangeService", DlcAddressRangeService.class);
+    
+    private final Set<PaoTag> mctConfigTags = 
+        ImmutableSet.of(
+            PaoTag.DEVICE_CONFIGURATION_420,
+            PaoTag.DEVICE_CONFIGURATION_430,
+            PaoTag.DEVICE_CONFIGURATION_470);
     
     class EventHandler implements ActionListener, CaretListener, JCValueListener {
 		public void actionPerformed(ActionEvent e) {
@@ -2423,94 +2434,90 @@ public class DeviceBaseEditorPanel extends DataInputPanel {
     	getPhysicalAddressTextField().setVisible(true);
     
     }
-    /**
-     * Insert the method's description here.
-     * Creation date: (9/18/2001 1:58:37 PM)
-     */
-    private void setNonRemBaseValue( Object base )
-    {  
-       getJLabelCCUAmpUseType().setVisible(false);
-       getJComboBoxAmpUseType().setVisible(false);
-       getPortLabel().setVisible(false);
-       getPortComboBox().setVisible(false);
-       getPasswordLabel().setVisible(false);
-       getPasswordTextField().setVisible(false);
-       if( base instanceof MCTBase )
-       {
-    	   getJPanelMCTSettings().setVisible(true);
-    	   if(base instanceof MCT430SeriesBase || base instanceof MCT420SeriesBase || base instanceof MCT470) {
-    	       MCTBase mctBase = (MCTBase) base;
-    	       int id = mctBase.getPAObjectID();
-    	       PaoType type = PaoType.getForDbString(mctBase.getPAOType());
-    	       SimpleDevice device = new SimpleDevice(id, type);
-    	       DeviceConfigurationDao deviceConfigurationDao = YukonSpringHook.getBean("deviceConfigurationDao", DeviceConfigurationDao.class);
-    	       ConfigurationBase config = deviceConfigurationDao.findConfigurationForDevice(device);
-    	       if(config != null){
-    	           getAssignedMctConfigLabel().setText(config.getName());
-    	       } else {
-    	           getAssignedMctConfigLabel().setText(CtiUtilities.STRING_NONE);
-    	       }
-           } else {
-               getAssignedMctConfigLabel().setText("Not Supported");
-           }
-    	   if(base instanceof MCT400SeriesBase)
-    	   {
-    	   		getTOUComboBox().setVisible(false);
+
+    private void setNonRemBaseValue (Object base) {
+        getJLabelCCUAmpUseType().setVisible(false);
+        getJComboBoxAmpUseType().setVisible(false);
+        getPortLabel().setVisible(false);
+        getPortComboBox().setVisible(false);
+        getPasswordLabel().setVisible(false);
+        getPasswordTextField().setVisible(false);
+        
+        if (base instanceof MCTBase) {
+            MCTBase mctBase = (MCTBase) base;
+           
+            getJPanelMCTSettings().setVisible(true);
+            if (DatabaseEditorUtil.isTagSupported(mctBase, mctConfigTags)) {
+                int id = mctBase.getPAObjectID();
+                PaoType type = PaoType.getForDbString(mctBase.getPAOType());
+                SimpleDevice device = new SimpleDevice(id, type);
+                DeviceConfigurationDao deviceConfigurationDao = YukonSpringHook.getBean("deviceConfigurationDao", DeviceConfigurationDao.class);
+                ConfigurationBase config = deviceConfigurationDao.findConfigurationForDevice(device);
+                if (config != null) {
+                    getAssignedMctConfigLabel().setText(config.getName());
+                } else {
+                    getAssignedMctConfigLabel().setText(CtiUtilities.STRING_NONE);
+                }
+            } else {
+                getAssignedMctConfigLabel().setText("Not Supported");
+            }
+            
+            if (base instanceof MCT400SeriesBase) {
+                getTOUComboBox().setVisible(false);
     	   		getTOULabel().setVisible(false);		
-    	   }
-       }
+            }
+        }
     	
     	getRouteLabel().setVisible(true);
     	getRouteComboBox().setVisible(true);
-       
-       	getPostCommWaitLabel().setVisible(false);
+
+    	getPostCommWaitLabel().setVisible(false);
     	getPostCommWaitSpinner().setVisible(false);
     	getWaitLabel().setVisible(false);
     	getSlaveAddressLabel().setVisible(false);
     	getSlaveAddressComboBox().setVisible(false);   
     
-    	int assignedRouteID = 0;
-    	if( getRouteComboBox().getModel().getSize() > 0 )
+    	if (getRouteComboBox().getModel().getSize() > 0) {
     		getRouteComboBox().removeAllItems();
+    	}
     
     	getTOUComboBox().addItem(CtiUtilities.STRING_NONE );
     	
-    	IDatabaseCache cache = com.cannontech.database.cache.DefaultDatabaseCache.getInstance();
-    	synchronized(cache)
-    	{
+    	IDatabaseCache cache = DefaultDatabaseCache.getInstance();
+    	
+    	synchronized (cache) {
     		List<LiteYukonPAObject> routes = cache.getAllRoutes();
     		
-    		if( base instanceof CarrierBase )
-    		{
+    		int assignedRouteID = 0;
+    		if (base instanceof CarrierBase) {
     			assignedRouteID = ((CarrierBase) base).getDeviceRoutes().getRouteID().intValue();
     			
     			for (LiteYukonPAObject liteRoute : routes) {
-    				if (liteRoute.getPaoType() == PaoType.ROUTE_CCU ||
-    						liteRoute.getPaoType() == PaoType.ROUTE_MACRO)
-    				{
+    			    PaoType paoType = liteRoute.getPaoType();
+    				if (paoType == PaoType.ROUTE_CCU || paoType == PaoType.ROUTE_MACRO) {
     					getRouteComboBox().addItem(liteRoute);
-    					if (liteRoute.getYukonID() == assignedRouteID )
+    					if (liteRoute.getYukonID() == assignedRouteID ) {
     						getRouteComboBox().setSelectedItem(liteRoute);
+    					}
     				}
     			}
-    		}
-    		else
-    		{
-    			if( base instanceof com.cannontech.database.data.device.lm.LMGroupEmetcon )
-    				assignedRouteID = ((com.cannontech.database.data.device.lm.LMGroupEmetcon) base).getLmGroupEmetcon().getRouteID().intValue();
-    			else if( base instanceof com.cannontech.database.data.device.lm.LMGroupVersacom )
-    				assignedRouteID = ((com.cannontech.database.data.device.lm.LMGroupVersacom) base).getLmGroupVersacom().getRouteID().intValue();
-    			else if (base instanceof com.cannontech.database.data.device.lm.LMGroupRipple) 
-    				assignedRouteID = ((com.cannontech.database.data.device.lm.LMGroupRipple)base).getLmGroupRipple().getRouteID().intValue();
-    				for( int i = 0 ; i < routes.size(); i++ )
-    			{
-    				getRouteComboBox().addItem( routes.get(i) );
-    				if( ((com.cannontech.database.data.lite.LiteYukonPAObject)routes.get(i)).getYukonID() == assignedRouteID )
-    					getRouteComboBox().setSelectedItem((com.cannontech.database.data.lite.LiteYukonPAObject)routes.get(i));
+    		} else {
+    			if (base instanceof LMGroupEmetcon) {
+    				assignedRouteID = ((LMGroupEmetcon) base).getLmGroupEmetcon().getRouteID().intValue();
+    			} else if (base instanceof LMGroupVersacom) {
+    				assignedRouteID = ((LMGroupVersacom) base).getLmGroupVersacom().getRouteID().intValue();
+    		    } else if (base instanceof LMGroupRipple) {
+    				assignedRouteID = ((LMGroupRipple)base).getLmGroupRipple().getRouteID().intValue();
+    		    }
+    				
+    			for (LiteYukonPAObject route : routes) {
+    			    getRouteComboBox().addItem(route);
+    			    if (route.getYukonID() == assignedRouteID) {
+                        getRouteComboBox().setSelectedItem(route);
+    			    }
     			}
     		}
     	}
-       
     }
     
     private void setGridBaseValue ( GridAdvisorBase gBase, int intType )

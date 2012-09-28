@@ -1,6 +1,7 @@
 package com.cannontech.dbeditor;
 
 import java.awt.Container;
+import java.util.Set;
 import java.util.concurrent.Executor;
 
 import javax.swing.JCheckBox;
@@ -202,5 +203,17 @@ public final class DatabaseEditorUtil {
             }
         });
     }
-
+    
+    /**
+     * Returns true if yukonPaobject supports at least one of the paoTags, otherwise false.
+     */
+    public static boolean isTagSupported(final YukonPAObject yukonPAObject, Set<PaoTag> paoTags){
+        PaoType paoType = PaoType.getForDbString(yukonPAObject.getPAOType());
+        for (PaoTag paoTag : paoTags) {
+            if (paoDefinitionDao.isTagSupported(paoType, paoTag)) {
+                return true;
+            }
+        }
+        return false;
+    }
 }
