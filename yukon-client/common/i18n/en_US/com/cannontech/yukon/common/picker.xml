@@ -76,10 +76,10 @@
 <entry key="yukon.web.picker.userGroup.userGroupId">User Group Id</entry>
 <entry key="yukon.web.picker.userGroupPicker.dialogTitle">Select User Group</entry>
 
-<!-- Login Group Picker -->
-<entry key="yukon.web.picker.loginGroup.groupName">Login Group Name</entry>
+<!-- Role Group Picker -->
+<entry key="yukon.web.picker.loginGroup.groupName">Role Group Name</entry>
 <entry key="yukon.web.picker.loginGroup.groupId">Group Id</entry>
-<entry key="yukon.web.picker.loginGroupPicker.dialogTitle">Select Login Group</entry>
+<entry key="yukon.web.picker.loginGroupPicker.dialogTitle">Select Role Group</entry>
 
 <!-- Assigned Program Picker -->
 
@@ -114,11 +114,11 @@
 <entry key="yukon.web.picker.databaseMigrationEXPRESSCOM_LOAD_GROUPPicker.dialogTitle">Select Expresscom Load Group</entry>
 <entry key="yukon.web.picker.databaseMigrationEXPRESSCOM_LOAD_GROUPPicker.groupName">Load Group Name</entry>
 
-<entry key="yukon.web.picker.databaseMigrationLM_GROUP_PERMISSIONSPicker.dialogTitle">Select Login Group</entry>
-<entry key="yukon.web.picker.databaseMigrationLM_GROUP_PERMISSIONSPicker.groupName">Login Group Name</entry>
+<entry key="yukon.web.picker.databaseMigrationLM_GROUP_PERMISSIONSPicker.dialogTitle">Select User Group</entry>
+<entry key="yukon.web.picker.databaseMigrationLM_GROUP_PERMISSIONSPicker.groupName">User Group Name</entry>
 
-<entry key="yukon.web.picker.databaseMigrationLOGIN_GROUPPicker.dialogTitle">Select Login Group</entry>
-<entry key="yukon.web.picker.databaseMigrationLOGIN_GROUPPicker.loginGroupName">Login Group Name</entry>
+<entry key="yukon.web.picker.databaseMigrationLOGIN_GROUPPicker.dialogTitle">Select User Group</entry>
+<entry key="yukon.web.picker.databaseMigrationLOGIN_GROUPPicker.loginGroupName">User Group Name</entry>
 
 <!-- Survey Picker -->
 <entry key="yukon.web.picker.survey.name">Name</entry>

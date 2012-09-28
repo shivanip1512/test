@@ -17,8 +17,8 @@
     <entry key="yukon.web.modules.adminSetup.createEnergyCompany.generalInfo.title">General Information</entry>
     <entry key="yukon.web.modules.adminSetup.createEnergyCompany.name">Company Name</entry>
     <entry key="yukon.web.modules.adminSetup.createEnergyCompany.email">Email</entry>
-    <entry key="yukon.web.modules.adminSetup.createEnergyCompany.defaultOperatorLogin.title">Admin Operator Login</entry>
-    <entry key="yukon.web.modules.adminSetup.createEnergyCompany.defaultOperatorLogin.note">The admin operator login belongs to the primary operator group selected and the energy company's admin group and can therefore edit energy company settings.</entry>
+    <entry key="yukon.web.modules.adminSetup.createEnergyCompany.defaultOperatorLogin.title">Admin Operator User</entry>
+    <entry key="yukon.web.modules.adminSetup.createEnergyCompany.defaultOperatorLogin.note">The admin operator user belongs to the primary operator group selected and the energy company's admin group and can therefore edit energy company settings.</entry>
     <entry key="yukon.web.modules.adminSetup.createEnergyCompany.note">Note:</entry>
     <entry key="yukon.web.modules.adminSetup.createEnergyCompany.username">Username</entry>
     <entry key="yukon.web.modules.adminSetup.createEnergyCompany.password">Password</entry>
@@ -56,7 +56,7 @@
     <entry key="yukon.web.modules.adminSetup.generalInfo.customerGroups">Residential Customer Groups</entry>
     <entry key="yukon.web.modules.adminSetup.generalInfo.noCustomerGroups">No Residential Customer Groups</entry>
     <entry key="yukon.web.modules.adminSetup.generalInfo.operatorGroupsUpdatedSuccessful">Operator Groups Updated Successfully</entry>
-    <entry key="yukon.web.modules.adminSetup.generalInfo.operatorGroupsInUse">Operator Logins in Selected Group Are Assigned to This Energy Company</entry>
+    <entry key="yukon.web.modules.adminSetup.generalInfo.operatorGroupsInUse">Operator Users in Selected Group Are Assigned to This Energy Company</entry>
     <entry key="yukon.web.modules.adminSetup.generalInfo.requireAtLeastOneOpGroup">At least one operator group is required.</entry>
     <entry key="yukon.web.modules.adminSetup.generalInfo.customerGroupsUpdatedSuccessful">Residential Customer Groups Updated Successfully</entry>
     <entry key="yukon.web.modules.adminSetup.generalInfo.customerGroupsInUse">Residential Customer(s) in Selected Group Are Assigned to This Energy Company</entry>
@@ -69,7 +69,7 @@
     <entry key="yukon.web.modules.adminSetup.generalInfo.fax">Main Fax #</entry>
     <entry key="yukon.web.modules.adminSetup.generalInfo.email">Email</entry>
     <entry key="yukon.web.modules.adminSetup.generalInfo.route">Default Route</entry>
-    <entry key="yukon.web.modules.adminSetup.generalInfo.parentLogin">Parent Login</entry>
+    <entry key="yukon.web.modules.adminSetup.generalInfo.parentLogin">Parent User</entry>
     <entry key="yukon.web.modules.adminSetup.generalInfo.streetAddress1">Street Address 1</entry>
     <entry key="yukon.web.modules.adminSetup.generalInfo.streetAddress2">Street Address 2</entry>
     <entry key="yukon.web.modules.adminSetup.generalInfo.city">City</entry>
@@ -95,7 +95,7 @@
         
         <br><br>
         <ul style="font-size:11px;">
-            <li class="disclaimer">&nbsp;&bull; Operator Logins</li>
+            <li class="disclaimer">&nbsp;&bull; Operator Users</li>
             <li>&nbsp;&bull; Customer Accounts</li>
             <li>&nbsp;&bull; Inventory</li>
             <li>&nbsp;&bull; Work Orders</li>

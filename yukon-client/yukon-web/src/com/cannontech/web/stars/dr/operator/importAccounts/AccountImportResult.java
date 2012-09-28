@@ -45,7 +45,7 @@ public class AccountImportResult implements Completable {
         "SERV_VOLT",
         "USERNAME",
         "PASSWORD",
-        "LOGIN_GROUP",
+        "USER_GROUP",
         "COMPANY_NAME",
         "IVR_PIN",
         "IVR_USERNAME"

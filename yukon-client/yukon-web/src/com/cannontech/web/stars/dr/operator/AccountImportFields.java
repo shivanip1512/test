@@ -23,7 +23,7 @@ public enum AccountImportFields {
     SERV_VOLT(null),
     USERNAME(null),
     PASSWORD(null),
-    LOGIN_GROUP("c"),
+    USER_GROUP("c"),
     COMPANY_NAME(null),
     IVR_PIN(null),
     IVR_USERNAME(null);

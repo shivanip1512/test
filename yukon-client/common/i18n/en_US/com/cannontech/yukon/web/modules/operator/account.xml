@@ -45,7 +45,7 @@
     <entry key="yukon.web.modules.operator.account.serviceAddressSection.title">Service Address</entry>
     <entry key="yukon.web.modules.operator.account.serviceInformationSection.title">Service Information</entry>
     <entry key="yukon.web.modules.operator.account.billingAddressSection.title">Billing Address</entry>
-    <entry key="yukon.web.modules.operator.account.loginInfoSection.title">Login Info</entry>
+    <entry key="yukon.web.modules.operator.account.loginInfoSection.title">User Info</entry>
     
     <entry key="yukon.web.modules.operator.account.accountNumberLabel">Account Number</entry>
     <entry key="yukon.web.modules.operator.account.commercialLabel">Commercial</entry>
@@ -89,14 +89,14 @@
     <entry key="yukon.web.modules.operator.account.delete">Delete</entry>
     <entry key="yukon.web.modules.operator.account.confirmDeleteDialogTitle">Confirm Delete</entry>
     <entry key="yukon.web.modules.operator.account.confirmDelete">Are you sure you want to delete account {0}?</entry>
-    <entry key="yukon.web.modules.operator.account.confirmDeleteLogin">Are you sure you want to delete the login for account {0}?</entry>
+    <entry key="yukon.web.modules.operator.account.confirmDeleteLogin">Are you sure you want to delete the user for account {0}?</entry>
     <entry key="yukon.web.modules.operator.account.confirmDeleteOk.label">OK</entry>
     <entry key="yukon.web.modules.operator.account.confirmDeleteCancel.label">Cancel</entry>
 
     <entry key="yukon.web.modules.operator.account.accountCreated">Account Created</entry>
     <entry key="yukon.web.modules.operator.account.accountUpdated">Account Updated</entry>
     <entry key="yukon.web.modules.operator.account.accountDeleted">Account Deleted</entry>
-    <entry key="yukon.web.modules.operator.account.loginDeleted">Login Deleted</entry>
+    <entry key="yukon.web.modules.operator.account.loginDeleted">User Deleted</entry>
     
     <entry key="yukon.web.modules.operator.account.customerGroup">Customer Group</entry>
     <entry key="yukon.web.modules.operator.account.loginEnabled">Enabled</entry>
@@ -105,7 +105,7 @@
     <entry key="yukon.web.modules.operator.account.newPassword">New Password</entry>
     <entry key="yukon.web.modules.operator.account.confirmPassword">Confirm Password</entry>
     <entry key="yukon.web.modules.operator.account.showPassword">Show Password</entry>
-    <entry key="yukon.web.modules.operator.account.deleteLogin">Delete Login</entry>
+    <entry key="yukon.web.modules.operator.account.deleteLogin">Delete User</entry>
     <entry key="yukon.web.modules.operator.account.generatePassword">Generate Password</entry>
     <entry key="yukon.web.modules.operator.account.changePassword">Change Password</entry>
     
@@ -178,9 +178,9 @@
 	<entry key="yukon.web.modules.operator.accountImport.accountField.description.POLE">Pole feeding this account. Maximum number of characters is 20.</entry>
 	<entry key="yukon.web.modules.operator.accountImport.accountField.description.TRFM_SIZE">Size of the transformer for this account. Maximum number of characters is 20.</entry>
 	<entry key="yukon.web.modules.operator.accountImport.accountField.description.SERV_VOLT">Service voltage of this account. Maximum number of characters is 20.</entry>
-	<entry key="yukon.web.modules.operator.accountImport.accountField.description.USERNAME">Login name of the customer contact. Maximum number of characters is 64.</entry>
+	<entry key="yukon.web.modules.operator.accountImport.accountField.description.USERNAME">Username of the customer contact. Maximum number of characters is 64.</entry>
 	<entry key="yukon.web.modules.operator.accountImport.accountField.description.PASSWORD">Password of the customer contact. Maximum number of characters is 64.</entry>
-	<entry key="yukon.web.modules.operator.accountImport.accountField.description.LOGIN_GROUP">Customer login group. The login group must match the name of customer login group assigned to the Energy Company. Maximum number of characters is 120.</entry>
+	<entry key="yukon.web.modules.operator.accountImport.accountField.description.USER_GROUP">Customer user group. The user group must match the name of customer user group assigned to the Energy Company. Maximum number of characters is 120.</entry>
 	<entry key="yukon.web.modules.operator.accountImport.accountField.description.COMPANY_NAME">Name of company (commercial customer). Maximum number of characters is 80.</entry>
 	<entry key="yukon.web.modules.operator.accountImport.accountField.description.IVR_PIN">The IVR pin number of the account. Must be numeric. Maximum number of digits is 19.</entry>
 	<entry key="yukon.web.modules.operator.accountImport.accountField.description.IVR_USERNAME">The IVR username of the account. Must be numeric. Maximum number of digits is 19.</entry>
@@ -190,7 +190,7 @@
     <entry key="yukon.web.modules.operator.accountImport.accountFieldLegend.b.label">b.</entry> 
     <entry key="yukon.web.modules.operator.accountImport.accountFieldLegend.b.text">The REMOVE customer action deletes a customer account including all account and enrollment information. Load control devices that was assigned to the account is moved to the general inventory.</entry>
     <entry key="yukon.web.modules.operator.accountImport.accountFieldLegend.c.label">c.</entry> 
-    <entry key="yukon.web.modules.operator.accountImport.accountFieldLegend.c.text">If the USERNAME and PASSWORD fields are specified, the LOGIN_GROUP becomes a required field. However, a customer’s login group cannot be updated or removed using the LOGIN_GROUP field.</entry>
+    <entry key="yukon.web.modules.operator.accountImport.accountFieldLegend.c.text">If the USERNAME and PASSWORD fields are specified, the USER_GROUP becomes a required field. However, a customer’s user group cannot be updated or removed using the USER_GROUP field.</entry>
     
     <!-- Import Hardware Fields -->
     <entry key="yukon.web.modules.operator.accountImport.hardwareField.description.ACCOUNT_NO">Customer account number. Maximum number of characters is 40.</entry>

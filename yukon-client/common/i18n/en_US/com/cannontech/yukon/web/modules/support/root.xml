@@ -36,7 +36,7 @@
     <entry key="yukon.web.modules.support.bulkPointInjection.archive">Archive</entry>
 
     <entry key="yukon.web.modules.support.setup.pageName">Setup</entry>
-    <entry key="yukon.web.modules.support.setup.loginGroupRoleUpdated">Login Group Role Updated</entry>
+    <entry key="yukon.web.modules.support.setup.loginGroupRoleUpdated">User Group Role Updated</entry>
 
     <entry key="yukon.web.modules.support.supportBundle.pageName">Support Bundle</entry>
 
@@ -347,7 +347,7 @@
     <entry key="yukon.web.modules.support.webServices.account.serviceVoltage">Service Voltage</entry>
     <entry key="yukon.web.modules.support.webServices.account.username">Username</entry>
     <entry key="yukon.web.modules.support.webServices.account.password">Password</entry>
-    <entry key="yukon.web.modules.support.webServices.account.loginGroup">Login Group</entry>
+    <entry key="yukon.web.modules.support.webServices.account.loginGroup">User Group</entry>
     <entry key="yukon.web.modules.support.webServices.account.run">RUN</entry>
     <entry key="yukon.web.modules.support.webServices.account.testBtn.label">TEST</entry>
 

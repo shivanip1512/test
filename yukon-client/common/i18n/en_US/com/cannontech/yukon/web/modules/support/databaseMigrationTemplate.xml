@@ -4,6 +4,6 @@
     <entry key="yukon.web.modules.support.databaseMigrationTemplate.APP_CATEGORY">{Description}</entry>
     <entry key="yukon.web.modules.support.databaseMigrationTemplate.DIRECT_PROGRAM">{PAOName}</entry>
     <entry key="yukon.web.modules.support.databaseMigrationTemplate.EXPRESSCOM_LOAD_GROUP">{PAOName} ({Type})</entry>
-    <entry key="yukon.web.modules.support.databaseMigrationTemplate.LM_GROUP_PERMISSIONS">{GroupName} ({PAOName})</entry>
+    <entry key="yukon.web.modules.support.databaseMigrationTemplate.LM_GROUP_PERMISSIONS">{Name} ({PAOName})</entry>
     <entry key="yukon.web.modules.support.databaseMigrationTemplate.LOGIN_GROUP">{GroupName}</entry>
 </properties>
