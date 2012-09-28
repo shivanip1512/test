@@ -11,9 +11,11 @@ import java.io.File;
 import java.io.FileReader;
 import java.io.FileWriter;
 import java.io.IOException;
+import java.util.List;
 import java.util.StringTokenizer;
 
 import com.cannontech.fdemulator.protocols.ValmetPoint;
+import com.google.common.collect.Lists;
 
 /**
  * @author ASolberg
@@ -278,7 +280,7 @@ public class ValmetFileIO
 	// method for filling point array with points from point file
 	public Object[] getValmetPointsFromFileForPort(Integer runningPort)
 	{
-		Object[] pointarray = new Object[500];
+	    List<ValmetPoint> pointArray = Lists.newArrayList();
 
 		// fill points array with point objects from file
 		try
@@ -292,8 +294,6 @@ public class ValmetFileIO
 			} else
 				e.printStackTrace(System.out);
 		}
-
-		int i = 0;
 
 		while (true)
 		{
@@ -319,9 +319,7 @@ public class ValmetFileIO
 				int newPort = new Integer(port);
 				if (runningPort == null || newPort == runningPort) {
     				ValmetPoint newpoint = new ValmetPoint(pointtype, pointname, port, interval, function, min, max, delta, maxstart);
-    				pointarray[i] = newpoint;
-    
-    				i++;
+    				pointArray.add(newpoint);
 				}
 
 			} catch (Exception e)
@@ -331,6 +329,7 @@ public class ValmetFileIO
 				break;
 			}
 		}
-		return pointarray;
+		
+		return pointArray.toArray();
 	}
 }
