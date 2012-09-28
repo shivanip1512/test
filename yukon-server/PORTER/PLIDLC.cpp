@@ -203,7 +203,7 @@ INT GenReply (PBYTE Reply,            /* reply message */
    const bool slaveSequenceAdjusted = (Reply[6] & STAT_NSADJ);
    const bool sequencesMatch = (seqNum == *RepNum);
 
-   if(gConfigParms.isTrue("CCU711_SEQUENCING_FIX") && *sequencingBroken)
+   if(*sequencingBroken)
    {
        if(sequencesMatch && slaveSequenceAdjusted)
        {
