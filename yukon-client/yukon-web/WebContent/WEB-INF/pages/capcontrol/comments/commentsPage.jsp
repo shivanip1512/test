@@ -108,7 +108,7 @@
         
     </script>
     
-    <div style="max-height:400px;overflow-x:hidden;overflow-y:auto;">
+    <div style="max-height:400px;overflow-x:hidden;overflow-y:auto;" class="boxContainer">
         <form id="commentForm" action="/spring/capcontrol/comments/" method="POST">
             <input type="hidden" name="paoId" value="${paoId}">
             <input type="hidden" name="commentId" id="commentId" value="">

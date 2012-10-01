@@ -98,14 +98,14 @@ treeInit = function() {
         </tags:boxContainer2>
 
         <div id="controlOrders" class="padBottom clear"></div>
+        <div style="float:right;">
+            <cti:button nameKey="tempMove" type="submit" name="tempMove"/>
+            <cti:button nameKey="move" type="submit" name="move"/>
+        </div>
         <div style="float:left;">
             <span><i:inline key=".displayOrder"/><form:input path="displayOrder" size="1" maxlength="3" cssStyle="margin-left:3px;"/></span>
             <span><i:inline key=".closeOrder"/><form:input path="closeOrder" size="1" maxlength="3"  cssStyle="margin-left:3px;"/></span>
             <span><i:inline key=".tripOrder"/><form:input path="tripOrder" size="1" maxlength="3"  cssStyle="margin-left:3px;"/></span>
-        </div>
-        <div style="float:right;">
-            <cti:button nameKey="tempMove" type="submit" name="tempMove"/>
-            <cti:button nameKey="move" type="submit" name="move"/>
         </div>
     </form:form>
 </div>

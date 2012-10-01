@@ -23,7 +23,27 @@ function getCommandMenu(id, event) {
 }
 
 function showDialog(title, url) {
-	openSimpleDialog('contentPopup', url, title, null, null, 'get');
+	Yukon.ui.blockPage();
+	jQuery.ajax({
+		url: url,
+		success: function(data, status, raw){
+			if (data && data.action == 'close') {
+				jQuery("#contentPopup").dialog('close');
+	    	} else {
+	    		jQuery("#contentPopup").removeClass("simplePopup").html(data);
+	    		jQuery("#contentPopup").dialog({
+	    			title: title,
+	    			resizable: false,
+	    			width: 800,
+	    			position: ["center", 50]
+	    		});
+	    	}
+			Yukon.ui.unblockPage();
+		},
+		error: function(){
+			Yukon.ui.unblockPage();
+		}
+	});
 }
 
 function getMovedBankMenu(id, event) {
