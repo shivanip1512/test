@@ -32,6 +32,7 @@ public class ImportData {
         stringDataCopy.remove(0);
         
         for(String[] stringRow : stringDataCopy) {
+            if(isRowBlank(stringRow)) continue; //ignore blank lines
             ImportRow newImportRow = new ImportRow(format, columnNames, stringRow);
             rows.add(newImportRow);
         }
@@ -147,5 +148,12 @@ public class ImportData {
             }
         }
         return index;
+    }
+    
+    private boolean isRowBlank(String[] row) {
+        if(row.length == 0 || (row.length == 1 && row[0].equals(""))) {
+            return true;
+        }
+        return false;
     }
 }
