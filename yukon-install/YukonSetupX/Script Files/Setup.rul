@@ -716,6 +716,12 @@ Dlg_ObjDialogs:
 				StopYukonServices();
 				MessageBox(SERVICE_WARNING, WARNING);	
 			endif;
+			
+			//Save the configuration of all installed services.
+			//This will be read in on the other side of the file transfer
+			//to re-populate the settings lost in the repair
+			SaveServiceSettings();
+			
 			// Changed for DevStudio 9, Disk1 files are now always updated when installed
 			// so when running from ADDREMOVE we need to prevent these files from being
 			// updated since this will result in files being updated that are locked by the setup.
@@ -729,6 +735,7 @@ Dlg_ObjDialogs:
                 // Reinstall all previously installed features.
                 FeatureReinstall();
             endif;
+            
             // Added in 11.0 - Set appropriate StatusEx static text.
             SetStatusExStaticText( SdLoadString( IDS_IFX_STATUSEX_STATICTEXT_MAINTUI_REPAIR ) );
         case MODIFY:
@@ -757,6 +764,10 @@ function OnMaintUIAfter()
     NUMBER bvOpt1, bvOpt2, bOptYes, bOptNo;
 begin
     Disable(BACKBUTTON);
+ 	
+ 	//reapply old settings to newly updated services
+	LoadServiceSettings();
+ 	
  	if (FeatureIsItemSelected(MEDIA, "Yukon Server") && (!BATCH_INSTALL)) then
  		bOptYes = TRUE;
  		AskOptions(EXCLUSIVE,
