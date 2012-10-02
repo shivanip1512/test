@@ -28,6 +28,8 @@ import com.cannontech.common.device.config.dao.DeviceConfigurationDao;
 import com.cannontech.common.device.config.dao.InvalidDeviceTypeException;
 import com.cannontech.common.device.config.model.ConfigurationBase;
 import com.cannontech.common.device.model.SimpleDevice;
+import com.cannontech.common.model.PaoProperty;
+import com.cannontech.common.model.PaoPropertyName;
 import com.cannontech.common.pao.PaoCategory;
 import com.cannontech.common.pao.PaoClass;
 import com.cannontech.common.pao.PaoIdentifier;
@@ -46,8 +48,10 @@ import com.cannontech.common.pao.model.CompleteOneWayCbc;
 import com.cannontech.common.pao.model.CompleteTwoWayCbc;
 import com.cannontech.common.pao.model.CompleteYukonPao;
 import com.cannontech.common.pao.service.PaoPersistenceService;
+import com.cannontech.common.util.CtiUtilities;
 import com.cannontech.core.dao.NotFoundException;
 import com.cannontech.core.dao.PaoDao;
+import com.cannontech.core.dao.PaoPropertyDao;
 import com.cannontech.core.dao.PointDao;
 import com.cannontech.database.data.point.PointBase;
 import com.google.common.collect.ImmutableMap;
@@ -66,6 +70,7 @@ public class CapControlImportServiceImpl implements CapControlImportService {
     @Autowired private FeederDao feederDao;
     @Autowired private SubstationBusDao substationBusDao;
     @Autowired private DeviceConfigurationDao deviceConfigurationDao;
+    @Autowired private PaoPropertyDao paoPropertyDao;
 
     private abstract class PaoRetriever {
         abstract CompleteYukonPao retrievePao(PaoIdentifier pao, HierarchyImportData hierarchyImportData);
@@ -175,6 +180,7 @@ public class CapControlImportServiceImpl implements CapControlImportService {
         Integer parentId = getParentCapBankId(cbcImportData);
         
         CompleteCbcBase pao;
+        YukonPao commChannel = null;
         if (paoDefinitionDao.isTagSupported(cbcImportData.getCbcType(), PaoTag.ONE_WAY_DEVICE)) {
             pao = new CompleteOneWayCbc();
         } else if (paoDefinitionDao.isTagSupported(cbcImportData.getCbcType(), PaoTag.TWO_WAY_DEVICE)) {
@@ -193,7 +199,7 @@ public class CapControlImportServiceImpl implements CapControlImportService {
                 }
             }
             
-            YukonPao commChannel = paoDao.findYukonPao(cbcImportData.getCommChannel(),
+            commChannel = paoDao.findYukonPao(cbcImportData.getCommChannel(),
                                                        PaoCategory.PORT, PaoClass.PORT);
             if (commChannel != null) {
                 cbc.setPortId(commChannel.getPaoIdentifier().getPaoId());
@@ -215,6 +221,15 @@ public class CapControlImportServiceImpl implements CapControlImportService {
         pao.setPaoName(cbcImportData.getCbcName());
         
         paoPersistenceService.createPao(pao, cbcImportData.getCbcType());
+        
+        if (commChannel != null && commChannel.getPaoIdentifier().getPaoType() == PaoType.TCPPORT) {
+            // In this case we need to add some PaoProperty entries.
+            PaoIdentifier identifier = pao.getPaoIdentifier();
+            
+            // Default these values to none, we don't accept these values in the importer.
+            paoPropertyDao.add(new PaoProperty(identifier,PaoPropertyName.TcpIpAddress, CtiUtilities.STRING_NONE));
+            paoPropertyDao.add(new PaoProperty(identifier,PaoPropertyName.TcpPort, CtiUtilities.STRING_NONE));
+        }
         
         /*
          * Two-way CBCs need to have a DNP config assigned. In the future, this config will
