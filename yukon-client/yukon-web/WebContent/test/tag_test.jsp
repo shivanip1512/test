@@ -3,7 +3,6 @@
 <%@ page import="com.cannontech.roles.loadcontrol.DirectLoadcontrolRole" %>
 <%@ page import="com.cannontech.roles.operator.OddsForControlRole" %>
 <%@ page import="com.cannontech.roles.application.DBEditorRole" %>
-<%@ page import="com.cannontech.roles.yukon.SystemRole" %>
 
 <%@ taglib uri="http://cannontech.com/tags/cti" prefix="cti" %>
 
@@ -69,10 +68,10 @@ DBEditorRole.POINT_ID_EDIT is false!, good<br>
 
 <br><b>checkMultiRole</b><br>
 ----<br>
-Checking for WebClientRole AND SystemRole<br>
-<cti:checkMultiRole roleid="<%= Integer.toString(WebClientRole.ROLEID) + ',' + Integer.toString(SystemRole.ROLEID) %>">
-Found WebClientRole AND SystemRole, good<br>
-</cti:checkMultiRole>
+Checking for WebClientRole<br>
+<cti:checkRole roleid="<%= Integer.toString(WebClientRole.ROLEID)%>">
+Found WebClientRole good<br>
+</cti:checkRole>
 ----<br>
 Checking for WebClientRole AND DBEditorRole<br>
 <cti:checkMultiRole roleid="<%= Integer.toString(WebClientRole.ROLEID) + ',' + Integer.toString(DBEditorRole.ROLEID) %>">

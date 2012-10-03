@@ -1,9 +1,11 @@
-<%@ page import="com.cannontech.roles.yukon.SystemRole" %>
 <%@ page import="com.cannontech.core.dao.DaoFactory" %>
+<%@page import="com.cannontech.system.YukonSetting"%>
+<%@page import="com.cannontech.spring.YukonSpringHook" %>
+<%@page import="com.cannontech.system.dao.YukonSettingsDao" %>
 
 <%
-String logo = 
-	DaoFactory.getRoleDao().getGlobalPropertyValue( SystemRole.WEB_LOGO_URL );
+YukonSettingsDao yukonSettingsDao = YukonSpringHook.getBean("yukonSettingsDao", YukonSettingsDao.class);
+String logo = "/" +  yukonSettingsDao.getSettingStringValue(YukonSetting.WEB_LOGO_URL);
 %>
 <html>
 <head>

@@ -66,25 +66,6 @@ public class RoleDaoImpl implements RoleDao {
         return list.toArray(retVal);
     }
 
-//	@Deprecated
-//	public String getGlobalPropertyValue( int rolePropertyID_ ) {
-//	    String value = rolePropertyDao.getPropertyStringValue(YukonRoleProperty.getForId(rolePropertyID_), null);
-//	    return value;
-//	}
-//	
-//	@Override
-//	public boolean checkGlobalRoleProperty(int rolePropertyID) {
-//	    YukonRoleProperty property = YukonRoleProperty.getForId(rolePropertyID);
-//	    if (rolePropertyDao.isCheckPropertyCompatible(property)) {
-//	        return rolePropertyDao.checkProperty(property, null);
-//	    } else {
-//	        // uh oh, the property must not be Boolean
-//	        // print a complaint in the log and try the old code
-//	        CTILogger.warn("Property " + property + " improperly accessed with a check method");
-//	        return !CtiUtilities.isFalse(getGlobalPropertyValue(rolePropertyID));
-//	    }
-//	}
-
 	public LiteYukonRoleProperty getRoleProperty(int propid) {
         
         synchronized(databaseCache) {
