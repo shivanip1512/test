@@ -16,10 +16,12 @@
 
     <script type="text/javascript">
         jQuery(function() {
-            jQuery('#tabs').tabs({'cookie' : {}});
-            roleGroupPicker.show();
-            userGroupPicker.show();
-            userPicker.show();
+            jQuery('#tabs').tabs({'cookie' : {},
+            	'show'  : function(event, ui) {
+            		if (ui.index == 0) userPicker.show();
+            		if (ui.index == 1) userGroupPicker.show();
+            		if (ui.index == 2) roleGroupPicker.show();
+        		}});
         });
 
         function editUser() { window.location.href = '${userUrl}?userId=' + $F('userId'); }
