@@ -284,8 +284,9 @@
 <entry key="yukon.web.menu.config.adminSetup.multispeak.lm_mappings">LM Mappings</entry>
 <entry key="yukon.web.menu.config.adminSetup.multispeak.synchronization">Synchronization</entry>
 <entry key="yukon.web.menu.config.adminSetup.usersEditor">Users</entry>
-<entry key="yukon.web.menu.config.adminSetup.encryption">Encryption</entry>
-<entry key="yukon.web.menu.config.adminSetup.encryption.home"></entry>
+<entry key="yukon.web.menu.config.adminSetup.system">System</entry>
+<entry key="yukon.web.menu.config.adminSetup.system.security">Security</entry>
+<entry key="yukon.web.menu.config.adminSetup.system.config">Configuration</entry>
 <entry key="yukon.web.menu.config.adminSetup.maintenance">Maintenance</entry>
 
 </properties>

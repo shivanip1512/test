@@ -28,8 +28,8 @@
         <cti:checkRolesAndProperties value="ADMIN_SUPER_USER">
             <cti:checkGlobalRolesAndProperties value="SHOW_ONE_WAY_ENCRYPT">
                 <div>
-                	<cti:url var="encryption" value="/spring/adminSetup/encryption/view"/>
-                	<a href="${encryption}"><i:inline key=".encryption"/></a>
+                	<cti:url var="security" value="/spring/adminSetup/security/view"/>
+                	<a href="${security}"><i:inline key=".security"/></a>
              	</div>
              </cti:checkGlobalRolesAndProperties>   
          </cti:checkRolesAndProperties>     

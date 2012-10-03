@@ -1355,16 +1355,19 @@
                     <requireRoleProperty value="ADMIN_SUPER_USER" />
                     <link>/spring/adminSetup/maintenance/view</link>
                 </option>
-                <option name="encryption">
+                <option name="system">
                     <requireRoleProperty value="ADMIN_SUPER_USER" />
-                    <requireRoleProperty value="SHOW_ONE_WAY_ENCRYPT" />
-                    <link>/spring/adminSetup/encryption/view</link>
+                    <requireRoleProperty value="SHOW_ONE_WAY_ENCRYPT"/>
+                    <link>/spring/adminSetup/security/view</link>
                     <options>
-                        <option name="home">
-                            <link>/spring/adminSetup/encryption/view</link>
+                        <option name="security">
+                            <link>/spring/adminSetup/security/view</link>
+                        </option>
+                        <option name="config">
+                            <link>/spring/adminSetup/config/view</link>
                         </option>
                     </options>
-                </option>                
+                </option>
             </options>
         </menu>
         
@@ -1374,9 +1377,11 @@
                 <menu>adminSetup</menu>
                 <link>/spring/adminSetup/systemAdmin</link>
                 <pages>
-                    <page name="encryption" type="BASIC">
-                        <menu>encryption|home</menu>
-                        <link>/spring/adminSetup/encryption/view</link>
+                    <page name="security" type="BASIC">
+                        <menu>system|security</menu>
+                    </page>
+                    <page name="config" type="BASIC">
+                        <menu>system|config</menu>
                     </page>
                     
                     <page name="substationToRouteMapping" type="BASIC">
