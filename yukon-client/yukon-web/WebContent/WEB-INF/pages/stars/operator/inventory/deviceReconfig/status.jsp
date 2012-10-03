@@ -82,9 +82,13 @@
             
             <br>
             
+            <cti:button nameKey="delete" styleClass="f_open_delete_confirm_dialog"/>
+            <cti:url value="/spring/stars/operator/inventory/home" var="inventory_home_url"></cti:url>
+            <cti:button nameKey="cancel" href="${inventory_home_url}"/>
             <form action="/spring/stars/operator/inventory/inventoryActions/deviceReconfig/delete" method="post">
                 <input type="hidden" value="${task.inventoryConfigTaskId}" name="taskId">
-                <cti:button nameKey="delete" type="submit"/>
+                <cti:msg2 key="yukon.web.components.button.delete.label" var="delete_text"/>
+                <tags:confirmDialog on=".f_open_delete_confirm_dialog" nameKey=".confirmDelete" argument="${task.taskName}"/>
             </form>
             
         </tags:boxContainer2>

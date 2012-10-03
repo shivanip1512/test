@@ -162,10 +162,11 @@ public class DeviceReconfigController {
     }
     
     @RequestMapping(value="/operator/inventory/inventoryActions/deviceReconfig/delete", method=RequestMethod.POST)
-    public String delete(HttpServletRequest request, ModelMap modelMap, int taskId, YukonUserContext userContext) throws ServletRequestBindingException {
+    public String delete(HttpServletRequest request, ModelMap modelMap, int taskId, YukonUserContext userContext, FlashScope flashScope) throws ServletRequestBindingException {
         InventoryConfigTask task = inventoryConfigTaskDao.getById(taskId);
         inventoryConfigTaskDao.delete(taskId);
         inventoryConfigEventLogService.taskDeleted(userContext.getYukonUser(), task.getTaskName());
+        flashScope.setConfirm(new YukonMessageSourceResolvable("yukon.web.modules.operator.deviceReconfig.deletionSuccessful", task.getTaskName()));
         return "redirect:/spring/stars/operator/inventory/home";
     }
     

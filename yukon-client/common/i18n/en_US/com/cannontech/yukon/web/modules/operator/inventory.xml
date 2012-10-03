@@ -307,6 +307,7 @@
     <entry key="yukon.web.modules.operator.deviceReconfig.error.unavailable.name">Name already in use.</entry>
     <entry key="yukon.web.modules.operator.deviceReconfig.error.tooLong.name">Name must be 250 characters or less.</entry>
     <entry key="yukon.web.modules.operator.deviceReconfig.creationSuccessful">Inventory Configuration Task {0} created successfully.</entry>
+    <entry key="yukon.web.modules.operator.deviceReconfig.deletionSuccessful">Inventory Configuration Task {0} deleted successfully.</entry>
     
     <!-- /inventory/commandSchedule.jsp -->
     <entry key="yukon.web.modules.operator.commandSchedule.CREATE.pageName">Create Command Schedule</entry>
@@ -347,6 +348,8 @@
     <entry key="yukon.web.modules.operator.deviceReconfigStatus.notesLabel">Note:</entry>
     <entry key="yukon.web.modules.operator.deviceReconfigStatus.notes">Progress is updated periodically. Processing will continue if you wish to navigate away from this page at any time.</entry>
     <entry key="yukon.web.modules.operator.deviceReconfigStatus.newOperation">Choose A New Operation For Inventory</entry>
+    <entry key="yukon.web.modules.operator.deviceReconfigStatus.confirmDelete.title">Confirm Delete</entry>
+    <entry key="yukon.web.modules.operator.deviceReconfigStatus.confirmDelete.message">Are you sure you want to delete task: {0}?</entry>
     
     <!-- /inventory/contolAudit/audit.jsp -->
     <entry key="yukon.web.modules.operator.controlAudit.pageName">LM Control Audit</entry>
