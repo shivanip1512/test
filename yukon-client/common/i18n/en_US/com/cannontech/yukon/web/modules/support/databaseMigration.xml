@@ -6,8 +6,8 @@
     <entry key="yukon.web.modules.support.databaseMigration.label.APP_CATEGORY">Appliance Categories And Related Programs</entry>
     <entry key="yukon.web.modules.support.databaseMigration.label.DIRECT_PROGRAM">Direct Load Program</entry>
     <entry key="yukon.web.modules.support.databaseMigration.label.EXPRESSCOM_LOAD_GROUP">Expresscom Load Group</entry>
-    <entry key="yukon.web.modules.support.databaseMigration.label.LM_GROUP_PERMISSIONS">Load Management to User Group Permissions</entry>
-    <entry key="yukon.web.modules.support.databaseMigration.label.LOGIN_GROUP">User Group</entry>
+    <entry key="yukon.web.modules.support.databaseMigration.label.LM_GROUP_PERMISSIONS">Load Management to Login Group Permissions</entry>
+    <entry key="yukon.web.modules.support.databaseMigration.label.LOGIN_GROUP">Login Group</entry>
 
 	<!-- Home home.jsp -->
 	<entry key="yukon.web.modules.support.databaseMigration.pageName">Database Migration</entry>

@@ -114,11 +114,11 @@
 <entry key="yukon.web.picker.databaseMigrationEXPRESSCOM_LOAD_GROUPPicker.dialogTitle">Select Expresscom Load Group</entry>
 <entry key="yukon.web.picker.databaseMigrationEXPRESSCOM_LOAD_GROUPPicker.groupName">Load Group Name</entry>
 
-<entry key="yukon.web.picker.databaseMigrationLM_GROUP_PERMISSIONSPicker.dialogTitle">Select User Group</entry>
-<entry key="yukon.web.picker.databaseMigrationLM_GROUP_PERMISSIONSPicker.groupName">User Group Name</entry>
+<entry key="yukon.web.picker.databaseMigrationLM_GROUP_PERMISSIONSPicker.dialogTitle">Select Login Group</entry>
+<entry key="yukon.web.picker.databaseMigrationLM_GROUP_PERMISSIONSPicker.groupName">Login Group Name</entry>
 
-<entry key="yukon.web.picker.databaseMigrationLOGIN_GROUPPicker.dialogTitle">Select User Group</entry>
-<entry key="yukon.web.picker.databaseMigrationLOGIN_GROUPPicker.loginGroupName">User Group Name</entry>
+<entry key="yukon.web.picker.databaseMigrationLOGIN_GROUPPicker.dialogTitle">Select Login Group</entry>
+<entry key="yukon.web.picker.databaseMigrationLOGIN_GROUPPicker.loginGroupName">Login Group Name</entry>
 
 <!-- Survey Picker -->
 <entry key="yukon.web.picker.survey.name">Name</entry>
