@@ -11,7 +11,6 @@ import com.cannontech.message.dispatch.message.DbChangeType;
 import com.cannontech.system.YukonSetting;
 import com.cannontech.system.dao.YukonSettingsUpdater;
 
-// Need
 public class YukonSettingsUpdaterImpl implements YukonSettingsUpdater {
     
     @Autowired private YukonJdbcTemplate yukonJdbcTemplate;
@@ -19,27 +18,18 @@ public class YukonSettingsUpdaterImpl implements YukonSettingsUpdater {
 
     @Override
     public void updateSetting(YukonSetting setting, String newVal) {
-        // TODO verify the newVal?
         newVal = SqlUtils.convertStringToDbValue(newVal);
-        //String settingValue = findSettingValue(setting);        
         
         SqlStatementBuilder sql = new SqlStatementBuilder();
-        sql.append("Update YukonSetting");
-        sql.append("set Value").eq(newVal);
+        sql.append("UPDATE YukonSetting");
+        sql.append("SET Value").eq(newVal);
         sql.append("WHERE Name").eq(setting.name());
 
         yukonJdbcTemplate.update(sql);
         
-        //if (settingValue != null) {
-            dbPersistentDao.processDBChange(new DBChangeMsg(0,
-                                                           DBChangeMsg.CHANGE_YUKON_SETTING_DB,
-                                                           DBChangeMsg.CAT_YUKON_SETTING_DB,
-                                                           DbChangeType.UPDATE));
-//        } else {
-//            dbPersistentDao.processDBChange(new DBChangeMsg(0,
-//                                                            DBChangeMsg.CHANGE_YUKON_SETTING_DB,
-//                                                            DBChangeMsg.CAT_YUKON_SETTING_DB,
-//                                                            DbChangeType.ADD));
-//        }
+        dbPersistentDao.processDBChange(new DBChangeMsg(0,
+                       DBChangeMsg.CHANGE_YUKON_SETTING_DB,
+                       DBChangeMsg.CAT_YUKON_SETTING_DB,
+                       DbChangeType.UPDATE));
     }
 }

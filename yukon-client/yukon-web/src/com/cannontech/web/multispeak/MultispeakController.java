@@ -355,44 +355,24 @@ public class MultispeakController {
         MultispeakMeterLookupFieldEnum mspMeterLookupField = ServletRequestEnumUtils.getEnumParameter(request, MultispeakMeterLookupFieldEnum.class, "mspMeterLookupField", oldMspMeterLookupField);
         
         try {
-            //LiteYukonGroup liteYukonGroup = roleDao.getGroup( YukonGroupRoleDefs.GRP_YUKON );
             
             // update Primary CIS Vendor
             if (oldMspPrimaryCIS != mspPrimaryCIS) {
                 yukonSettingsUpdateDao.updateSetting(YukonSetting.MSP_PRIMARY_CB_VENDORID, String.valueOf(mspPrimaryCIS));
-//                roleDao.updateGroupRoleProperty(liteYukonGroup, 
-//                                                YukonRole.MULTISPEAK.getRoleId(),
-//                                                YukonRoleProperty.MSP_PRIMARY_CB_VENDORID.getPropertyId(),
-//                                                String.valueOf(mspPrimaryCIS));
-                
                 //reload the search field methods since primaryCIS has changed
                 mspMeterSearchService.loadMspSearchFields(mspPrimaryCIS);
             }
             if (oldMspPaoNameAliasExtension != mspPaoNameAliasExtension) {
                 // update PaoName Alias Extension field name
                 yukonSettingsUpdateDao.updateSetting(YukonSetting.MSP_PAONAME_EXTENSION, mspPaoNameAliasExtension);
-
-//                roleDao.updateGroupRoleProperty(liteYukonGroup, 
-//                                                YukonRole.MULTISPEAK.getRoleId(),
-//                                                YukonRoleProperty.MSP_PAONAME_EXTENSION.getPropertyId(),
-//                                                mspPaoNameAliasExtension);
             }            
             if (oldMspPaoNameAlias != mspPaoNameAlias) {
                 // update PaoName Alias
                 yukonSettingsUpdateDao.updateSetting(YukonSetting.MSP_PAONAME_ALIAS, String.valueOf(mspPaoNameAlias));
-//                roleDao.updateGroupRoleProperty(liteYukonGroup, 
-//                                                YukonRole.MULTISPEAK.getRoleId(),
-//                                                YukonRoleProperty.MSP_PAONAME_ALIAS.getPropertyId(),
-//                                                String.valueOf(mspPaoNameAlias));
             }
             if ( oldMspMeterLookupField != mspMeterLookupField) {
                 // update Meter Lookup Field
                 yukonSettingsUpdateDao.updateSetting(YukonSetting.MSP_METER_LOOKUP_FIELD, String.valueOf(mspMeterLookupField));
-
-//                roleDao.updateGroupRoleProperty(liteYukonGroup, 
-//                                                YukonRole.MULTISPEAK.getRoleId(),
-//                                                YukonRoleProperty.MSP_METER_LOOKUP_FIELD.getPropertyId(),
-//                                                String.valueOf(mspMeterLookupField));
             }
         } catch (Exception e) {
             CTILogger.error( "Role Properties for MultiSpeak Setup not saved", e );
