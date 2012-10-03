@@ -16,10 +16,15 @@ import com.cannontech.common.device.DeviceRequestType;
 import com.cannontech.common.device.commands.CommandRequestDevice;
 import com.cannontech.common.device.commands.CommandRequestDeviceExecutor;
 import com.cannontech.common.device.commands.impl.CommandCallbackBase;
+import com.cannontech.common.device.config.dao.DeviceConfigurationDao;
+import com.cannontech.common.device.config.dao.InvalidDeviceTypeException;
+import com.cannontech.common.device.config.model.ConfigurationBase;
 import com.cannontech.common.device.model.SimpleDevice;
 import com.cannontech.common.pao.PaoType;
 import com.cannontech.common.pao.YukonDevice;
+import com.cannontech.common.pao.definition.dao.PaoDefinitionDao;
 import com.cannontech.common.pao.definition.model.PaoDefinition;
+import com.cannontech.common.pao.definition.model.PaoTag;
 import com.cannontech.common.pao.definition.model.PointIdentifier;
 import com.cannontech.common.pao.definition.model.PointTemplate;
 import com.cannontech.common.pao.definition.service.PaoDefinitionService;
@@ -63,15 +68,17 @@ import com.cannontech.message.dispatch.message.DbChangeType;
 
 public class DeviceUpdateServiceImpl implements DeviceUpdateService {
 
-    private DeviceDao deviceDao = null;
-    private PaoDao paoDao = null;
-    private RouteDiscoveryService routeDiscoveryService = null;
-    private CommandRequestDeviceExecutor commandRequestDeviceExecutor = null;
-    private PaoDefinitionService paoDefinitionService = null;
-    private PointService pointService = null;
-    private PointCreationService pointCreationService = null;
-    private DBPersistentDao dbPersistentDao = null;
-    private DlcAddressRangeService dlcAddressRangeService = null;
+    @Autowired private DeviceDao deviceDao;
+    @Autowired private PaoDao paoDao;
+    @Autowired private RouteDiscoveryService routeDiscoveryService;
+    @Autowired private CommandRequestDeviceExecutor commandRequestDeviceExecutor;
+    @Autowired private PaoDefinitionService paoDefinitionService;
+    @Autowired private PointService pointService;
+    @Autowired private PointCreationService pointCreationService;
+    @Autowired private DBPersistentDao dbPersistentDao;
+    @Autowired private DlcAddressRangeService dlcAddressRangeService;
+    @Autowired private DeviceConfigurationDao deviceConfigurationDao;
+    @Autowired private PaoDefinitionDao paoDefinitionDao;
     
     private Logger log = YukonLogManager.getLogger(DeviceUpdateServiceImpl.class);
     
@@ -171,6 +178,21 @@ public class DeviceUpdateServiceImpl implements DeviceUpdateService {
             t.execute();
         } catch(TransactionException e) {
             throw new PersistenceException("Could not save device type change", e);
+        }
+        
+        //meters with a device config should only retain the config if it's appropriate for the new type
+        YukonDevice device = deviceDao.getYukonDevice(changedDevice.getPAObjectID());
+        ConfigurationBase config = deviceConfigurationDao.findConfigurationForDevice(device);
+        if(config != null) {
+            PaoTag configTag = config.getType().getSupportedDeviceTag();
+            boolean configSupported = paoDefinitionDao.isTagSupported(device.getPaoIdentifier().getPaoType(), configTag);
+            if(!configSupported) {
+                try {
+                    deviceConfigurationDao.unassignConfig(device);
+                } catch(InvalidDeviceTypeException e) {
+                    log.error("Unable to remove device config on type change.", e);
+                }
+            }
         }
         
         DBChangeMsg[] changeMsgs = changedDevice.getDBChangeMsgs(DbChangeType.UPDATE);
@@ -380,53 +402,5 @@ public class DeviceUpdateServiceImpl implements DeviceUpdateService {
             point = PointUtil.changePointType(point, pair.newDefinitionTemplate);
         }
 
-    }
-
-    @Autowired
-    public void setDeviceDao(DeviceDao deviceDao) {
-        this.deviceDao = deviceDao;
-    }
-    
-    @Autowired
-    public void setPaoDao(PaoDao paoDao) {
-        this.paoDao = paoDao;
-    }
-    
-    @Autowired
-    public void setRouteDiscoveryService(
-            RouteDiscoveryService routeDiscoveryService) {
-        this.routeDiscoveryService = routeDiscoveryService;
-    }
-    
-    @Autowired
-    public void setCommandRequestDeviceExecutor(
-            CommandRequestDeviceExecutor commandRequestDeviceExecutor) {
-        this.commandRequestDeviceExecutor = commandRequestDeviceExecutor;
-    }
-    
-    @Autowired
-    public void setPaoDefinitionService(
-			PaoDefinitionService paoDefinitionService) {
-		this.paoDefinitionService = paoDefinitionService;
-	}
-    
-    @Autowired
-    public void setPointService(PointService pointService) {
-		this.pointService = pointService;
-	}
-    
-    @Autowired
-    public void setPointCreationService(PointCreationService pointCreationService) {
-		this.pointCreationService = pointCreationService;
-	}
-    
-    @Autowired
-    public void setDbPersistentDao(DBPersistentDao dbPersistentDao) {
-		this.dbPersistentDao = dbPersistentDao;
-	}
-    
-    @Autowired
-    public void setDlcAddressRangeService(DlcAddressRangeService dlcAddressRangeService) {
-        this.dlcAddressRangeService = dlcAddressRangeService;
     }
 }

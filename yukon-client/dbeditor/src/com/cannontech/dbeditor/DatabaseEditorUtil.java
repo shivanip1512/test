@@ -14,8 +14,12 @@ import javax.swing.SwingUtilities;
 
 import org.springframework.dao.DataAccessException;
 
+import com.cannontech.common.device.config.dao.DeviceConfigurationDao;
+import com.cannontech.common.device.config.dao.InvalidDeviceTypeException;
+import com.cannontech.common.device.config.model.ConfigurationBase;
 import com.cannontech.common.device.model.SimpleDevice;
 import com.cannontech.common.pao.PaoType;
+import com.cannontech.common.pao.YukonDevice;
 import com.cannontech.common.pao.attribute.model.Attribute;
 import com.cannontech.common.pao.attribute.model.BuiltInAttribute;
 import com.cannontech.common.pao.attribute.service.AttributeService;
@@ -46,9 +50,28 @@ public final class DatabaseEditorUtil {
     private static final AttributeService attributeService = YukonSpringHook.getBean("attributeService", AttributeService.class);
     private static final DBPersistentDao dbPersistentDao = YukonSpringHook.getBean("dbPersistentDao", DBPersistentDao.class);
     private static final PaoDao paoDao = YukonSpringHook.getBean("paoDao", PaoDao.class);
-
+    private static final DeviceConfigurationDao configurationDao = YukonSpringHook.getBean("deviceConfigurationDao", DeviceConfigurationDao.class);
+    
     private DatabaseEditorUtil() {
         
+    }
+    
+    /**
+     * Checks that the device config assigned to the specified device is valid. If it is not, the
+     * config is removed from that device.
+     * @throws InvalidDeviceTypeException if the config cannot be unassigned due to the device type.
+     */
+    public static void unassignDeviceConfigIfInvalid(int paoId) throws InvalidDeviceTypeException {
+        YukonDevice device = deviceDao.getYukonDevice(paoId);
+        
+        ConfigurationBase config = configurationDao.findConfigurationForDevice(device);
+        if(config != null) {
+            PaoTag configTag = config.getType().getSupportedDeviceTag();
+            boolean configSupported = paoDefinitionDao.isTagSupported(device.getPaoIdentifier().getPaoType(), configTag);
+            if(!configSupported) {
+                configurationDao.unassignConfig(device);
+            }
+        }
     }
     
     public static boolean isDisconnectCollarCompatible(final Object object){

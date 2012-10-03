@@ -44,6 +44,7 @@ import org.springframework.dao.DataAccessException;
 
 import com.cannontech.clientutils.YukonLogManager;
 import com.cannontech.common.device.config.dao.DeviceConfigurationDao;
+import com.cannontech.common.device.config.dao.InvalidDeviceTypeException;
 import com.cannontech.common.device.config.model.DNPConfiguration;
 import com.cannontech.common.device.model.SimpleDevice;
 import com.cannontech.common.editor.EditorInputValidationException;
@@ -73,7 +74,6 @@ import com.cannontech.database.TransactionException;
 import com.cannontech.database.cache.DefaultDatabaseCache;
 import com.cannontech.database.data.device.DNPBase;
 import com.cannontech.database.data.device.DeviceBase;
-import com.cannontech.database.data.device.DeviceTypesFuncs;
 import com.cannontech.database.data.device.IPCMeter;
 import com.cannontech.database.data.device.devicemetergroup.DeviceMeterGroupBase;
 import com.cannontech.database.data.device.lm.LMScenario;
@@ -87,7 +87,6 @@ import com.cannontech.database.data.multi.SmartMultiDBPersistent;
 import com.cannontech.database.data.pao.PAOFactory;
 import com.cannontech.database.data.pao.YukonPAObject;
 import com.cannontech.database.data.point.PointBase;
-import com.cannontech.database.data.point.PointTypes;
 import com.cannontech.database.data.tou.TOUSchedule;
 import com.cannontech.database.db.CTIDbChange;
 import com.cannontech.database.db.DBPersistent;
@@ -686,13 +685,16 @@ private boolean executeChangeObjectType(WizardPanelEvent event)
 	int currentType = 0;
 	int newType = 0;
 	String type = " ";
-
+	boolean checkConfigs = false;
+	int paoId = -1;
+	
 	if (selectedObject instanceof com.cannontech.database.data.device.DeviceBase)
 	{
 		type = ((com.cannontech.database.data.device.DeviceBase) selectedObject).getPAOType();
 		currentType = com.cannontech.database.data.pao.PAOGroups.getDeviceType(type);
 		newType = ((PaoType) p.getValue(null)).getDeviceTypeId();
-
+		checkConfigs = true;
+		paoId = ((DeviceBase) selectedObject).getPAObjectID();
 	} else if (selectedObject instanceof DeviceMeterGroupBase) {
 	    DeviceDao deviceDao = (DeviceDao) YukonSpringHook.getBean("deviceDao");
         int deviceId = ((DeviceMeterGroupBase) selectedObject).getDeviceMeterGroup().getDeviceID();
@@ -767,7 +769,16 @@ private boolean executeChangeObjectType(WizardPanelEvent event)
 
 			Transaction t1 = Transaction.createTransaction(Transaction.UPDATE, selectedObject);
 			selectedObject = t1.execute();
-
+			
+			//meters with a device config should only retain the config if it's appropriate for the new type
+			if(checkConfigs) {
+		        try {
+		            DatabaseEditorUtil.unassignDeviceConfigIfInvalid(paoId);
+		        } catch(InvalidDeviceTypeException e) {
+                    log.error("Unable to unassign device configuration on type change.", e);
+                }
+			}
+			
 			//always do this
 			generateDBChangeMsg( selectedObject, DbChangeType.UPDATE );
 			
