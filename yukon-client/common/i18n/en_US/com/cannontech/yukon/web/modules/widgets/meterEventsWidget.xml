@@ -3,7 +3,7 @@
 <properties>
 
 <entry key="yukon.web.widgets.meterEventsWidget.title">Meter Events</entry>
-<entry key="yukon.web.widgets.meterEventsWidget.noEvents">No Events have occured for this meter</entry>
+<entry key="yukon.web.widgets.meterEventsWidget.noEvents">No Events have occurred for this meter</entry>
 <entry key="yukon.web.widgets.meterEventsWidget.table.timestamp">Timestamp</entry>
 <entry key="yukon.web.widgets.meterEventsWidget.table.event">Event</entry>
 <entry key="yukon.web.widgets.meterEventsWidget.table.state">State</entry>
