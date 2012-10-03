@@ -1,17 +1,42 @@
 package com.cannontech.core.roleproperties;
 
-import static com.cannontech.core.roleproperties.InputTypeFactory.*;
-import static com.cannontech.core.roleproperties.YukonRole.*;
-
-import java.math.RoundingMode;
+import static com.cannontech.core.roleproperties.InputTypeFactory.booleanType;
+import static com.cannontech.core.roleproperties.InputTypeFactory.enumType;
+import static com.cannontech.core.roleproperties.InputTypeFactory.integerType;
+import static com.cannontech.core.roleproperties.InputTypeFactory.stringType;
+import static com.cannontech.core.roleproperties.YukonRole.APPLICATION_BILLING;
+import static com.cannontech.core.roleproperties.YukonRole.APPLICATION_ESUBSTATION_EDITOR;
+import static com.cannontech.core.roleproperties.YukonRole.CBC_ONELINE_CAP_SETTINGS;
+import static com.cannontech.core.roleproperties.YukonRole.CBC_ONELINE_FEEDER_SETTINGS;
+import static com.cannontech.core.roleproperties.YukonRole.CBC_ONELINE_SUB_SETTINGS;
+import static com.cannontech.core.roleproperties.YukonRole.CBC_SETTINGS;
+import static com.cannontech.core.roleproperties.YukonRole.CI_CURTAILMENT;
+import static com.cannontech.core.roleproperties.YukonRole.COMMANDER;
+import static com.cannontech.core.roleproperties.YukonRole.CONSUMER_INFO;
+import static com.cannontech.core.roleproperties.YukonRole.DATABASE_EDITOR;
+import static com.cannontech.core.roleproperties.YukonRole.DEVICE_ACTIONS;
+import static com.cannontech.core.roleproperties.YukonRole.ENERGY_COMPANY;
+import static com.cannontech.core.roleproperties.YukonRole.INVENTORY;
+import static com.cannontech.core.roleproperties.YukonRole.IVR;
+import static com.cannontech.core.roleproperties.YukonRole.LM_DIRECT_LOADCONTROL;
+import static com.cannontech.core.roleproperties.YukonRole.METERING;
+import static com.cannontech.core.roleproperties.YukonRole.NOTIFICATION_CONFIGURATION;
+import static com.cannontech.core.roleproperties.YukonRole.ODDS_FOR_CONTROL;
+import static com.cannontech.core.roleproperties.YukonRole.OPERATOR_ADMINISTRATOR;
+import static com.cannontech.core.roleproperties.YukonRole.OPERATOR_ESUBSTATION_DRAWINGS;
+import static com.cannontech.core.roleproperties.YukonRole.PASSWORD_POLICY;
+import static com.cannontech.core.roleproperties.YukonRole.REPORTING;
+import static com.cannontech.core.roleproperties.YukonRole.RESIDENTIAL_CUSTOMER;
+import static com.cannontech.core.roleproperties.YukonRole.SCHEDULER;
+import static com.cannontech.core.roleproperties.YukonRole.TABULAR_DISPLAY_CONSOLE;
+import static com.cannontech.core.roleproperties.YukonRole.TRENDING;
+import static com.cannontech.core.roleproperties.YukonRole.WEB_CLIENT;
+import static com.cannontech.core.roleproperties.YukonRole.WORK_ORDER;
 
 import org.apache.commons.lang.Validate;
 
-import com.cannontech.amr.meter.dao.impl.MeterDisplayFieldEnum;
-import com.cannontech.core.authentication.model.AuthenticationCategory;
 import com.cannontech.core.roleproperties.enums.CsrfTokenMode;
 import com.cannontech.core.roleproperties.enums.SerialNumberValidation;
-import com.cannontech.roles.application.CalcHistoricalRole;
 import com.cannontech.roles.application.CommanderRole;
 import com.cannontech.roles.application.DBEditorRole;
 import com.cannontech.roles.application.EsubEditorRole;
@@ -20,7 +45,6 @@ import com.cannontech.roles.application.ReportingRole;
 import com.cannontech.roles.application.TDCRole;
 import com.cannontech.roles.application.TrendingRole;
 import com.cannontech.roles.application.WebClientRole;
-import com.cannontech.roles.application.WebGraphRole;
 import com.cannontech.roles.capcontrol.CBCOnelineSettingsRole;
 import com.cannontech.roles.capcontrol.CBCSettingsRole;
 import com.cannontech.roles.consumer.ResidentialCustomerRole;
@@ -37,23 +61,15 @@ import com.cannontech.roles.operator.MeteringRole;
 import com.cannontech.roles.operator.OddsForControlRole;
 import com.cannontech.roles.operator.SchedulerRole;
 import com.cannontech.roles.operator.WorkOrderRole;
-import com.cannontech.roles.yukon.AuthenticationRole;
-import com.cannontech.roles.yukon.BillingRole;
-import com.cannontech.roles.yukon.ConfigurationRole;
 import com.cannontech.roles.yukon.EnergyCompanyRole;
-import com.cannontech.roles.yukon.MultispeakRole;
-import com.cannontech.roles.yukon.SystemRole;
-import com.cannontech.roles.yukon.VoiceServerRole;
 import com.cannontech.web.input.type.InputType;
 import com.google.common.collect.ImmutableMap;
 import com.google.common.collect.ImmutableMap.Builder;
 
 public enum YukonRoleProperty {
-    DYNAMIC_BILLING_FILE_SETUP(APPLICATION_BILLING, com.cannontech.roles.application.BillingRole.DYNAMIC_BILLING_FILE_SETUP, booleanType()),
+    // Yukon Grp associated role properties moved to YukonSettings
     
-    INTERVAL(CALC_HISTORICAL, CalcHistoricalRole.INTERVAL, stringType()),
-    BASELINE_CALCTIME(CALC_HISTORICAL, CalcHistoricalRole.BASELINE_CALCTIME, stringType()),
-    DAYS_PREVIOUS_TO_COLLECT(CALC_HISTORICAL, CalcHistoricalRole.DAYS_PREVIOUS_TO_COLLECT, stringType()),
+    DYNAMIC_BILLING_FILE_SETUP(APPLICATION_BILLING, com.cannontech.roles.application.BillingRole.DYNAMIC_BILLING_FILE_SETUP, booleanType()),
     
     COMMAND_MSG_PRIORITY(COMMANDER, CommanderRole.COMMAND_MSG_PRIORITY, stringType()),
     VERSACOM_SERIAL_MODEL(COMMANDER, CommanderRole.VERSACOM_SERIAL_MODEL, booleanType()),
@@ -141,9 +157,6 @@ public enum YukonRoleProperty {
     DEFAULT_TIMEZONE(WEB_CLIENT, WebClientRole.DEFAULT_TIMEZONE, stringType()),
     SESSION_TIMEOUT(WEB_CLIENT, WebClientRole.SESSION_TIMEOUT, integerType()),
     CSRF_TOKEN_MODE(WEB_CLIENT, WebClientRole.CSRF_TOKEN_MODE, InputTypeFactory.enumType(CsrfTokenMode.class)),
-    
-    HOME_DIRECTORY(WEB_GRAPH, WebGraphRole.HOME_DIRECTORY, stringType()),
-    RUN_INTERVAL(WEB_GRAPH, WebGraphRole.RUN_INTERVAL, stringType()),
     
     ESUB_EDITOR_ROLE_EXITS(APPLICATION_ESUBSTATION_EDITOR, EsubEditorRole.ESUB_EDITOR_ROLE_EXITS, booleanType()),
     
@@ -392,43 +405,6 @@ public enum YukonRoleProperty {
     WORK_ORDER_REPORT(WORK_ORDER, WorkOrderRole.WORK_ORDER_REPORT, stringType()),
     ADDTL_ORDER_NUMBER_LABEL(WORK_ORDER, WorkOrderRole.ADDTL_ORDER_NUMBER_LABEL, stringType()),
     
-    SERVER_ADDRESS(AUTHENTICATION, AuthenticationRole.SERVER_ADDRESS, stringType()),
-    AUTH_PORT(AUTHENTICATION, AuthenticationRole.AUTH_PORT, stringType()),
-    ACCT_PORT(AUTHENTICATION, AuthenticationRole.ACCT_PORT, stringType()),
-    SECRET_KEY(AUTHENTICATION, AuthenticationRole.SECRET_KEY, stringType()),
-    AUTH_METHOD(AUTHENTICATION, AuthenticationRole.AUTH_METHOD, stringType()),
-    AUTHENTICATION_MODE(AUTHENTICATION, AuthenticationRole.AUTHENTICATION_MODE, stringType()),
-    AUTH_TIMEOUT(AUTHENTICATION, AuthenticationRole.AUTH_TIMEOUT, stringType()),
-    DEFAULT_AUTH_TYPE(AUTHENTICATION, AuthenticationRole.DEFAULT_AUTH_TYPE, InputTypeFactory.enumType(AuthenticationCategory.class)),
-    LDAP_DN(AUTHENTICATION, AuthenticationRole.LDAP_DN, stringType()),
-    LDAP_USER_SUFFIX(AUTHENTICATION, AuthenticationRole.LDAP_USER_SUFFIX, stringType()),
-    LDAP_USER_PREFIX(AUTHENTICATION, AuthenticationRole.LDAP_USER_PREFIX, stringType()),
-    LDAP_SERVER_ADDRESS(AUTHENTICATION, AuthenticationRole.LDAP_SERVER_ADDRESS, stringType()),
-    LDAP_SERVER_PORT(AUTHENTICATION, AuthenticationRole.LDAP_SERVER_PORT, stringType()),
-    LDAP_SERVER_TIMEOUT(AUTHENTICATION, AuthenticationRole.LDAP_SERVER_TIMEOUT, stringType()),
-    AD_SERVER_ADDRESS(AUTHENTICATION, AuthenticationRole.AD_SERVER_ADDRESS, stringType()),
-    AD_SERVER_PORT(AUTHENTICATION, AuthenticationRole.AD_SERVER_PORT, stringType()),
-    AD_SERVER_TIMEOUT(AUTHENTICATION, AuthenticationRole.AD_SERVER_TIMEOUT, stringType()),
-    AD_NTDOMAIN(AUTHENTICATION, AuthenticationRole.AD_NTDOMAIN, stringType()),
-    ENABLE_PASSWORD_RECOVERY(AUTHENTICATION, AuthenticationRole.ENABLE_PASSWORD_RECOVERY, booleanType()),
-    
-    WIZ_ACTIVATE(SYSTEM_BILLING, BillingRole.WIZ_ACTIVATE, stringType()),
-    INPUT_FILE(SYSTEM_BILLING, BillingRole.INPUT_FILE, stringType()),
-    DEFAULT_BILLING_FORMAT(SYSTEM_BILLING, BillingRole.DEFAULT_BILLING_FORMAT, stringType()),
-    DEMAND_DAYS_PREVIOUS(SYSTEM_BILLING, BillingRole.DEMAND_DAYS_PREVIOUS, stringType()),
-    ENERGY_DAYS_PREVIOUS(SYSTEM_BILLING, BillingRole.ENERGY_DAYS_PREVIOUS, stringType()),
-    APPEND_TO_FILE(SYSTEM_BILLING, BillingRole.APPEND_TO_FILE, stringType()),
-    REMOVE_MULTIPLIER(SYSTEM_BILLING, BillingRole.REMOVE_MULTIPLIER, stringType()),
-    COOP_ID_CADP_ONLY(SYSTEM_BILLING, BillingRole.COOP_ID_CADP_ONLY, stringType()),
-    DEFAULT_ROUNDING_MODE(SYSTEM_BILLING, BillingRole.DEFAULT_ROUNDING_MODE, InputTypeFactory.enumType(RoundingMode.class)),
-    
-    DEVICE_DISPLAY_TEMPLATE(SYSTEM_CONFIGURATION, ConfigurationRole.DEVICE_DISPLAY_TEMPLATE, InputTypeFactory.enumType(MeterDisplayFieldEnum.class)),
-    ALERT_TIMEOUT_HOURS(SYSTEM_CONFIGURATION, ConfigurationRole.ALERT_TIMEOUT_HOURS, stringType()),
-    CUSTOMER_INFO_IMPORTER_FILE_LOCATION(SYSTEM_CONFIGURATION, ConfigurationRole.CUSTOMER_INFO_IMPORTER_FILE_LOCATION, stringType()),
-    SYSTEM_TIMEZONE(SYSTEM_CONFIGURATION, ConfigurationRole.SYSTEM_TIMEZONE, stringType()),
-    OPT_OUTS_COUNT(SYSTEM_CONFIGURATION, ConfigurationRole.OPT_OUTS_COUNT, booleanType()),
-    DATABASE_MIGRATION_FILE_LOCATION(SYSTEM_CONFIGURATION, ConfigurationRole.DATABASE_MIGRATION_FILE_LOCATION, stringType()),
-    ENABLE_CAPTCHAS(SYSTEM_CONFIGURATION, ConfigurationRole.ENABLE_CAPTCHAS, booleanType()),
     
     /* Use EnergyCompanyRolePropertyDao when dealing with these role properties */
     ADMIN_EMAIL_ADDRESS(ENERGY_COMPANY, EnergyCompanyRole.ADMIN_EMAIL_ADDRESS, stringType()),
@@ -451,36 +427,6 @@ public enum YukonRoleProperty {
     ADMIN_ALLOW_THERMOSTAT_SCHEDULE_WEEKDAY_WEEKEND(ENERGY_COMPANY, EnergyCompanyRole.ALLOW_THERMOSTAT_SCHEDULE_WEEKDAY_WEEKEND, booleanType()),
     ADMIN_ALLOW_THERMOSTAT_SCHEDULE_WEEKDAY_SATURDAY_SUNDAY(ENERGY_COMPANY, EnergyCompanyRole.ALLOW_THERMOSTAT_SCHEDULE_WEEKDAY_SATURDAY_SUNDAY, booleanType()),
     ADMIN_ALLOW_THERMOSTAT_SCHEDULE_7_DAY(ENERGY_COMPANY, EnergyCompanyRole.ALLOW_THERMOSTAT_SCHEDULE_7_DAY, booleanType()),
-    
-    
-    MSP_PAONAME_ALIAS(MULTISPEAK, MultispeakRole.MSP_PAONAME_ALIAS, InputTypeFactory.enumType(MspPaoNameAliasEnum.class)),
-    MSP_PRIMARY_CB_VENDORID(MULTISPEAK, MultispeakRole.MSP_PRIMARY_CB_VENDORID, integerType()),
-    MSP_BILLING_CYCLE_PARENT_DEVICEGROUP(MULTISPEAK, MultispeakRole.MSP_BILLING_CYCLE_PARENT_DEVICEGROUP, stringType()),
-    MSP_LM_MAPPING_SETUP(MULTISPEAK, MultispeakRole.MSP_LM_MAPPING_SETUP, booleanType()),
-    MSP_METER_LOOKUP_FIELD(MULTISPEAK, MultispeakRole.MSP_METER_LOOKUP_FIELD, InputTypeFactory.enumType(MultispeakMeterLookupFieldEnum.class)),
-    MSP_PAONAME_EXTENSION(MULTISPEAK, MultispeakRole.MSP_PAONAME_EXTENSION, stringType()),
-    
-    DISPATCH_MACHINE(SYSTEM, SystemRole.DISPATCH_MACHINE, stringType()),
-    DISPATCH_PORT(SYSTEM, SystemRole.DISPATCH_PORT, integerType()),
-    PORTER_MACHINE(SYSTEM, SystemRole.PORTER_MACHINE, stringType()),
-    PORTER_PORT(SYSTEM, SystemRole.PORTER_PORT, integerType()),
-    MACS_MACHINE(SYSTEM, SystemRole.MACS_MACHINE, stringType()),
-    MACS_PORT(SYSTEM, SystemRole.MACS_PORT, integerType()),
-    CAP_CONTROL_MACHINE(SYSTEM, SystemRole.CAP_CONTROL_MACHINE, stringType()),
-    CAP_CONTROL_PORT(SYSTEM, SystemRole.CAP_CONTROL_PORT, integerType()),
-    LOADCONTROL_MACHINE(SYSTEM, SystemRole.LOADCONTROL_MACHINE, stringType()),
-    LOADCONTROL_PORT(SYSTEM, SystemRole.LOADCONTROL_PORT, integerType()),
-    SMTP_HOST(SYSTEM, SystemRole.SMTP_HOST, stringType()),
-    MAIL_FROM_ADDRESS(SYSTEM, SystemRole.MAIL_FROM_ADDRESS, stringType()),
-    STARS_PRELOAD_DATA(SYSTEM, SystemRole.STARS_PRELOAD_DATA, stringType()),
-    WEB_LOGO_URL(SYSTEM, SystemRole.WEB_LOGO_URL, stringType()),
-    NOTIFICATION_HOST(SYSTEM, SystemRole.NOTIFICATION_HOST, stringType()),
-    NOTIFICATION_PORT(SYSTEM, SystemRole.NOTIFICATION_PORT, integerType()),
-    BATCHED_SWITCH_COMMAND_TOGGLE(SYSTEM, SystemRole.BATCHED_SWITCH_COMMAND_TOGGLE, stringType()),
-    BULK_IMPORTER_COMMUNICATIONS_ENABLED(SYSTEM, SystemRole.BULK_IMPORTER_COMMUNICATIONS_ENABLED, stringType()),
-
-    CALL_RESPONSE_TIMEOUT(VOICE_SERVER, VoiceServerRole.CALL_RESPONSE_TIMEOUT, integerType()),
-    CALL_PREFIX(VOICE_SERVER, VoiceServerRole.CALL_PREFIX, stringType()),
     ;
     
     private final YukonRole role;

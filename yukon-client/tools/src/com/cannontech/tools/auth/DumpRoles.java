@@ -19,14 +19,12 @@ import com.cannontech.roles.application.EsubEditorRole;
 import com.cannontech.roles.application.TDCRole;
 import com.cannontech.roles.application.TrendingRole;
 import com.cannontech.roles.application.WebClientRole;
-import com.cannontech.roles.application.WebGraphRole;
 import com.cannontech.roles.consumer.ResidentialCustomerRole;
 import com.cannontech.roles.operator.AdministratorRole;
 import com.cannontech.roles.operator.ConsumerInfoRole;
 import com.cannontech.roles.operator.MeteringRole;
 import com.cannontech.roles.operator.OddsForControlRole;
 import com.cannontech.roles.yukon.EnergyCompanyRole;
-import com.cannontech.roles.yukon.SystemRole;
 
 /*
  * Created on May 22, 2003
@@ -36,9 +34,6 @@ import com.cannontech.roles.yukon.SystemRole;
  *  Should print out a crusty little report.
   */
 
-/**
- * @author aaron
- */
 public class DumpRoles {
 
 	private static Class[] classToDump = 
@@ -51,7 +46,6 @@ public class DumpRoles {
 		TDCRole.class,
 		TrendingRole.class,
 		WebClientRole.class,
-		WebGraphRole.class,
 
 		ResidentialCustomerRole.class,
 		
@@ -63,7 +57,6 @@ public class DumpRoles {
 		OddsForControlRole.class,
 		
 		EnergyCompanyRole.class,
-		SystemRole.class
 		
 	};
 	

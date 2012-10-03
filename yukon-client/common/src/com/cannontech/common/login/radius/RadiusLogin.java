@@ -8,14 +8,14 @@ import net.sourceforge.jradiusclient.exception.InvalidParameterException;
 import net.sourceforge.jradiusclient.exception.RadiusException;
 
 import org.apache.log4j.Logger;
-import org.springframework.beans.factory.annotation.Required;
+import org.springframework.beans.factory.annotation.Autowired;
 
 import com.cannontech.clientutils.CTILogger;
 import com.cannontech.clientutils.YukonLogManager;
 import com.cannontech.core.authentication.service.AuthenticationProvider;
-import com.cannontech.core.dao.RoleDao;
 import com.cannontech.database.data.lite.LiteYukonUser;
-import com.cannontech.roles.yukon.AuthenticationRole;
+import com.cannontech.system.YukonSetting;
+import com.cannontech.system.dao.YukonSettingsDao;
 
 /**
  * @author snebben
@@ -25,7 +25,8 @@ import com.cannontech.roles.yukon.AuthenticationRole;
  */
 public class RadiusLogin implements AuthenticationProvider {
     private static Logger log = YukonLogManager.getLogger(RadiusLogin.class);
-    private RoleDao roleDao;
+    @Autowired private YukonSettingsDao yukonSettingsDao;
+
 	/**
 	 * @param username
 	 * @param password
@@ -37,12 +38,12 @@ public class RadiusLogin implements AuthenticationProvider {
         // has some value other than '(none)'. SN / Jon
         RadiusClient rc;
         try {
-            String radiusAddr = roleDao.getGlobalPropertyValue(AuthenticationRole.SERVER_ADDRESS);
-            int authPort = Integer.valueOf(roleDao.getGlobalPropertyValue(AuthenticationRole.AUTH_PORT)).intValue();
-            int acctPort = Integer.valueOf(roleDao.getGlobalPropertyValue(AuthenticationRole.ACCT_PORT)).intValue();
-            int authTimeout = Integer.parseInt(roleDao.getGlobalPropertyValue(AuthenticationRole.AUTH_TIMEOUT)) * 1000;
-            String secret = roleDao.getGlobalPropertyValue(AuthenticationRole.SECRET_KEY);
-
+            String radiusAddr = yukonSettingsDao.getSettingStringValue(YukonSetting.SERVER_ADDRESS);
+            int authPort = yukonSettingsDao.getSettingIntegerValue(YukonSetting.AUTH_PORT);
+            int acctPort = yukonSettingsDao.getSettingIntegerValue(YukonSetting.ACCT_PORT);
+            int authTimeout = yukonSettingsDao.getSettingIntegerValue(YukonSetting.AUTH_TIMEOUT) * 1000;
+            String secret = yukonSettingsDao.getSettingStringValue(YukonSetting.SECRET_KEY);
+            
             rc = new RadiusClient(radiusAddr, authPort, acctPort, secret, authTimeout );
 
             if( basicAuthenticate(rc, username, password)) {
@@ -128,10 +129,4 @@ public class RadiusLogin implements AuthenticationProvider {
 
 		return false;
 	}
-
-    @Required
-    public void setRoleDao(RoleDao roleDao) {
-        this.roleDao = roleDao;
-    }	
-
 }

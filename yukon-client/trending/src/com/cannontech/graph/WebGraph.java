@@ -8,7 +8,6 @@ package com.cannontech.graph;
 import java.util.GregorianCalendar;
 
 import com.cannontech.clientutils.CTILogger;
-import com.cannontech.common.login.ClientSession;
 import com.cannontech.core.dynamic.AsyncDynamicDataSource;
 import com.cannontech.database.cache.DBChangeListener;
 import com.cannontech.database.db.graph.GraphRenderers;
@@ -18,8 +17,9 @@ import com.cannontech.graph.buffer.html.TabularHtml;
 import com.cannontech.graph.buffer.html.UsageHtml;
 import com.cannontech.graph.model.TrendModel;
 import com.cannontech.message.dispatch.message.DBChangeMsg;
-import com.cannontech.roles.application.WebGraphRole;
 import com.cannontech.spring.YukonSpringHook;
+import com.cannontech.system.YukonSetting;
+import com.cannontech.system.dao.YukonSettingsDao;
 import com.cannontech.yukon.IDatabaseCache;
 
 
@@ -186,8 +186,8 @@ public class WebGraph implements Runnable
 	{
 		if( homeDirectory == null )
 		{
-			homeDirectory = ClientSession.getInstance().getRolePropertyValue(
-						WebGraphRole.HOME_DIRECTORY, "c:/temp/" );
+		    YukonSettingsDao yukonSettingsDao = YukonSpringHook.getBean("yukonSettingsDao", YukonSettingsDao.class);
+		    homeDirectory = yukonSettingsDao.getSettingStringValue(YukonSetting.HOME_DIRECTORY);
 
 			java.io.File file = new java.io.File( homeDirectory );
 			file.mkdirs();
@@ -262,12 +262,11 @@ public class WebGraph implements Runnable
 	{
 		if (createTimeInterval == null)
 		{
+	          YukonSettingsDao yukonSettingsDao = YukonSpringHook.getBean("yukonSettingsDao", YukonSettingsDao.class);
 			try
 			{
-				String temp = ClientSession.getInstance().getRolePropertyValue(
-							WebGraphRole.RUN_INTERVAL, "900" );
 				
-				createTimeInterval = new Integer(temp);
+			    createTimeInterval = yukonSettingsDao.getSettingIntegerValue(YukonSetting.RUN_INTERVAL);
 				CTILogger.info("RunTime Interval set to: " + createTimeInterval + " seconds.");
 			}
 			catch (Exception e)

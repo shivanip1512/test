@@ -75,7 +75,7 @@
 reading. The rounding will be applied to the selected field when the billing file is generated. <br>
 <br>
 Acceptable rounding modes for the reading are: HALF_EVEN, CEILING, FLOOR, UP, DOWN, HALF_DOWN, HALF_UP. The default rounding mode selected
-is defined by the Yukon [System] Billing Role property Rounding Mode. <br><br>
+is defined by the Yukon Setting Billing Rounding Mode. <br><br>
 Rounding Mode specifies a rounding behavior for numerical operations capable of discarding precision. Each rounding mode indicates how the
 least significant returned digit of a rounded result is to be calculated. If fewer digits are returned than the digits needed to
 represent the exact numerical result, the discarded digits will be referred to as the discarded fraction regardless the digits'

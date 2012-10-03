@@ -67,12 +67,10 @@
     <bean id="ldapService" class="com.cannontech.common.login.ldap.LDAPService"/>
     
     <bean id="ADAuthentication" class="com.cannontech.common.login.ldap.impl.LDAPADLogin">
-    	<property name="roleDao" ref="roleDao"/>
     	<property name="ldapService" ref="ldapService"/>
     </bean>
     
     <bean id="ldapAuthentication" class="com.cannontech.common.login.ldap.impl.LDAPX500Login">
-    	<property name="roleDao" ref="roleDao"/>
     	<property name="ldapService" ref="ldapService"/>
     </bean>
     

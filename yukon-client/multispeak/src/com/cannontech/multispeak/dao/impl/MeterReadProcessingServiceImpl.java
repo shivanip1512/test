@@ -12,17 +12,17 @@ import org.springframework.beans.factory.annotation.Autowired;
 import com.cannontech.amr.meter.model.YukonMeter;
 import com.cannontech.common.pao.attribute.model.BuiltInAttribute;
 import com.cannontech.core.dynamic.PointValueHolder;
-import com.cannontech.core.roleproperties.YukonRoleProperty;
-import com.cannontech.core.roleproperties.dao.RolePropertyDao;
 import com.cannontech.multispeak.client.MultispeakDefines;
 import com.cannontech.multispeak.dao.MeterReadProcessingService;
 import com.cannontech.multispeak.dao.MeterReadUpdater;
 import com.cannontech.multispeak.deploy.service.MeterRead;
+import com.cannontech.system.YukonSetting;
+import com.cannontech.system.dao.YukonSettingsDao;
 import com.google.common.collect.ImmutableMap;
 
 public class MeterReadProcessingServiceImpl implements MeterReadProcessingService {
 
-    private RolePropertyDao rolePropertyDao;
+    @Autowired private YukonSettingsDao yukonSettingsDao;
 
     private Map<BuiltInAttribute, ReadingProcessor> attributesToLoad;
 
@@ -32,7 +32,7 @@ public class MeterReadProcessingServiceImpl implements MeterReadProcessingServic
 
     @PostConstruct
     public void setup() {
-        final RoundingMode roundingMode = rolePropertyDao.getPropertyEnumValue(YukonRoleProperty.DEFAULT_ROUNDING_MODE, RoundingMode.class, null);
+        final RoundingMode roundingMode = yukonSettingsDao.getSettingEnumValue(YukonSetting.DEFAULT_ROUNDING_MODE, RoundingMode.class);
 
         ReadingProcessor usageConverter = new ReadingProcessor() {
             @Override
@@ -103,11 +103,6 @@ public class MeterReadProcessingServiceImpl implements MeterReadProcessingServic
         reading.setDeviceID(meter.getMeterNumber());
         reading.setUtility(MultispeakDefines.AMR_VENDOR);
         return reading;
-    }
-
-    @Autowired
-    public void setRolePropertyDao(RolePropertyDao rolePropertyDao) {
-        this.rolePropertyDao = rolePropertyDao;
     }
 
 }

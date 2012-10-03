@@ -2,15 +2,15 @@ package com.cannontech.web.common.captcha.service.impl;
 
 import javax.annotation.PostConstruct;
 
-import org.springframework.beans.factory.annotation.Autowired;
-
 import net.tanesha.recaptcha.ReCaptchaImpl;
 import net.tanesha.recaptcha.ReCaptchaResponse;
 
+import org.springframework.beans.factory.annotation.Autowired;
+
 import com.cannontech.common.config.ConfigurationSource;
 import com.cannontech.common.config.MasterConfigStringKeysEnum;
-import com.cannontech.core.roleproperties.YukonRoleProperty;
-import com.cannontech.core.roleproperties.dao.RolePropertyDao;
+import com.cannontech.system.YukonSetting;
+import com.cannontech.system.dao.YukonSettingsDao;
 import com.cannontech.web.common.captcha.model.Captcha;
 import com.cannontech.web.common.captcha.model.CaptchaErrorCode;
 import com.cannontech.web.common.captcha.model.CaptchaResponse;
@@ -21,7 +21,7 @@ public class CaptchaServiceImpl implements CaptchaService{
     private String RECAPTCHA_PUBLIC_KEY;
     private String RECAPTCHA_PRIVATE_KEY;
     
-    @Autowired private RolePropertyDao rolePropertyDao;
+    @Autowired private YukonSettingsDao yukonSettingsDao;
     @Autowired private ConfigurationSource configurationSource;
     
     @PostConstruct 
@@ -33,8 +33,8 @@ public class CaptchaServiceImpl implements CaptchaService{
     @Override
     public CaptchaResponse checkCaptcha(Captcha captcha) {
         
-        // The captcha service is corrently turned off.  Return no errors since it's not being used.
-        boolean isCaptchasEnabled = rolePropertyDao.getPropertyBooleanValue(YukonRoleProperty.ENABLE_CAPTCHAS, null);
+        // The captcha service is currently turned off.  Return no errors since it's not being used.
+        boolean isCaptchasEnabled = yukonSettingsDao.getSettingBooleanValue(YukonSetting.ENABLE_CAPTCHAS);
         if (!isCaptchasEnabled) {
             return new CaptchaResponse(CaptchaErrorCode.NO_ERRORS);
         }

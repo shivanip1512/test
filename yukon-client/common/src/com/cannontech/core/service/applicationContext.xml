@@ -14,9 +14,7 @@
   <context:annotation-config/>
   <aop:aspectj-autoproxy/>
     
-  <bean id="emailService" class="com.cannontech.tools.email.impl.EmailServiceImpl">
-    <property name="roleDao" ref="roleDao"/>
-  </bean>
+  <bean id="emailService" class="com.cannontech.tools.email.impl.EmailServiceImpl"/>
  
   <bean id="loadProfileService" class="com.cannontech.core.service.impl.LoadProfileServiceImpl" init-method="initialize">
     <property name="executor" ref="globalScheduledExecutor"/>

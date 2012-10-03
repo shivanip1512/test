@@ -20,10 +20,4 @@ interface PropertyTuple {
      */
     public NotInRoleException notInRoleException();
 
-    /**
-     * Checks to see if we're looking for a system role property.
-     * @throws IllegalArgumentException - The property is not a system role property and user or role group is null.
-     */
-    public boolean isSystemProperty();
-    
 }

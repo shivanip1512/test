@@ -7,10 +7,6 @@ import java.awt.GridBagLayout;
 import java.awt.Insets;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
-import java.awt.event.MouseAdapter;
-import java.awt.event.MouseEvent;
-import java.awt.event.MouseListener;
-import java.awt.image.ColorModel;
 import java.util.Iterator;
 
 import javax.swing.JButton;
@@ -28,7 +24,6 @@ import com.cannontech.core.dao.DaoFactory;
 import com.cannontech.database.data.lite.LiteYukonRole;
 import com.cannontech.esub.editor.EditorPrefs;
 import com.cannontech.esub.element.DrawingMetaElement;
-import com.cannontech.roles.yukon.SystemRole;
 
 /**
  * Creation date: (12/5/2002 4:16:03 PM)
@@ -340,10 +335,6 @@ public class DrawingMetaElementEditorPanel extends DataInputPanel {
             try {
                 ivjYukonRoleComboBox = new javax.swing.JComboBox();
                 ivjYukonRoleComboBox.setName("YukonRoleComboBox");
-                //allow them to pick the 'everybody' role
-                LiteYukonRole sysRole = DaoFactory.getAuthDao().getRole(SystemRole.ROLEID);
-                ivjYukonRoleComboBox.addItem(sysRole);
-
                 Iterator i = DaoFactory.getAuthDao().getRoles("eSubstation").iterator();
                 while(i.hasNext()) {
                     LiteYukonRole r = (LiteYukonRole) i.next();
@@ -444,9 +435,10 @@ public class DrawingMetaElementEditorPanel extends DataInputPanel {
         if(selected != null) {
             e.setRoleID(((LiteYukonRole)selected).getRoleID());
         }
-        else {
-            e.setRoleID(SystemRole.ROLEID);
-        }
+        // TODO make sure removing this is ok
+//        else {
+//            e.setRoleID(SystemRole.ROLEID);
+//        }
         return e;			
     }
 

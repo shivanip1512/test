@@ -115,7 +115,7 @@
                                 </td>
                             </tr>
                         </table>
-                        <cti:checkGlobalRolesAndProperties value="ENABLE_PASSWORD_RECOVERY">
+                        <cti:checkYukonSetting setting="ENABLE_PASSWORD_RECOVERY">
                             <div class="loginHelp">
                                 <cti:msg var="forgotPasswordText" key="yukon.web.login.forgotPassword"/>
                                 <c:choose>
@@ -131,7 +131,7 @@
                                     </c:otherwise>
                                 </c:choose>
                             </div>
-                        </cti:checkGlobalRolesAndProperties>
+                        </cti:checkYukonSetting>
                         <input type="hidden" name="REDIRECTED_FROM" value="<spring:escapeBody htmlEscape="true">${param.REDIRECTED_FROM}</spring:escapeBody>">
                         <input type="hidden" name="ACTION" value="LOGIN">
                     </form>

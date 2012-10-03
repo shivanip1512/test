@@ -16,7 +16,6 @@ import com.cannontech.common.point.PointQuality;
 import com.cannontech.common.util.CtiUtilities;
 import com.cannontech.common.util.LogWriter;
 import com.cannontech.common.version.VersionTools;
-import com.cannontech.core.dao.DaoFactory;
 import com.cannontech.database.PoolManager;
 import com.cannontech.database.data.lite.LitePointUnit;
 import com.cannontech.database.data.lite.LiteRawPointHistory;
@@ -29,7 +28,9 @@ import com.cannontech.message.dispatch.message.Multi;
 import com.cannontech.message.dispatch.message.PointData;
 import com.cannontech.message.dispatch.message.Registration;
 import com.cannontech.roles.application.CalcHistoricalRole;
-import com.cannontech.roles.yukon.SystemRole;
+import com.cannontech.spring.YukonSpringHook;
+import com.cannontech.system.YukonSetting;
+import com.cannontech.system.dao.impl.YukonSettingsDaoImpl;
 
 public final class CalcHistorical
 {
@@ -325,8 +326,7 @@ public java.lang.Integer getAggregationInterval()
 {
 	if( aggregationInterval == null )
 	{
-		String propValue = DaoFactory.getRoleDao().getGlobalPropertyValue(CalcHistoricalRole.INTERVAL);
-		aggregationInterval = Integer.valueOf(propValue);
+	    aggregationInterval= YukonSpringHook.getBean("yukonSettingsDao",YukonSettingsDaoImpl.class).getSettingIntegerValue(YukonSetting.INTERVAL);
 			
 		logEvent(" Aggregation interval = " + aggregationInterval + " seconds.", LogWriter.INFO);
 		CTILogger.info("Aggregation interval from Global Properties is " + aggregationInterval + " seconds.");
@@ -505,10 +505,9 @@ public ClientConnection getDispatchConnection()
 	{
 		String host = "127.0.0.1";
 		int port = 1510;
-		try
-		{
-			host = DaoFactory.getRoleDao().getGlobalPropertyValue( SystemRole.DISPATCH_MACHINE );
-			port = Integer.parseInt( DaoFactory.getRoleDao().getGlobalPropertyValue( SystemRole.DISPATCH_PORT ) ); 
+		try {
+		    host = YukonSpringHook.getBean("yukonSettingsDao",YukonSettingsDaoImpl.class).getSettingStringValue(YukonSetting.DISPATCH_MACHINE);
+            port = YukonSpringHook.getBean("yukonSettingsDao",YukonSettingsDaoImpl.class).getSettingIntegerValue(YukonSetting.DISPATCH_PORT);
 		}
 		catch( Exception e)
 		{

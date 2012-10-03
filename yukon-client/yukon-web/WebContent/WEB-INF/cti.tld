@@ -150,18 +150,28 @@
   		<rtexprvalue>true</rtexprvalue>
   	</attribute>	
   </tag>
+ 
+   <tag>
+    <name>checkProperty</name>
+    <tag-class>com.cannontech.web.taglib.CheckProperty</tag-class>
+    <attribute>
+        <name>propertyid</name>
+        <required>false</required>
+        <rtexprvalue>true</rtexprvalue>
+    </attribute>    
+    <attribute>
+        <name>property</name>
+        <required>false</required>
+        <rtexprvalue>true</rtexprvalue>
+    </attribute>    
+  </tag>
   
   <tag>
-  	<name>checkProperty</name>
-  	<tag-class>com.cannontech.web.taglib.CheckProperty</tag-class>
+  	<name>checkYukonSetting</name>
+  	<tag-class>com.cannontech.web.taglib.CheckYukonSetting</tag-class>
   	<attribute>
-  		<name>propertyid</name>
-  		<required>false</required>
-  		<rtexprvalue>true</rtexprvalue>
-  	</attribute>	
-  	<attribute>
-  		<name>property</name>
-  		<required>false</required>
+  		<name>setting</name>
+  		<required>true</required>
   		<rtexprvalue>true</rtexprvalue>
   	</attribute>	
   </tag>

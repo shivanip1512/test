@@ -6,7 +6,6 @@ import static com.cannontech.core.roleproperties.YukonRoleCategory.Consumer;
 import static com.cannontech.core.roleproperties.YukonRoleCategory.LoadControl;
 import static com.cannontech.core.roleproperties.YukonRoleCategory.Notifications;
 import static com.cannontech.core.roleproperties.YukonRoleCategory.Operator;
-import static com.cannontech.core.roleproperties.YukonRoleCategory.System;
 
 import org.apache.commons.lang.Validate;
 
@@ -18,7 +17,7 @@ import com.cannontech.roles.ConsumerRoleDefs;
 import com.cannontech.roles.LMRoleDefs;
 import com.cannontech.roles.NotificationsRoleDefs;
 import com.cannontech.roles.OperatorRoleDefs;
-import com.cannontech.roles.YukonRoleDefs;
+import com.cannontech.roles.EnergyCompanyRoleDefs;
 import com.cannontech.roles.capcontrol.CBCOnelineSettingsRole;
 import com.google.common.base.Function;
 import com.google.common.collect.ImmutableCollection;
@@ -28,6 +27,8 @@ import com.google.common.collect.ImmutableMultimap;
 import com.google.common.collect.Ordering;
 
 public enum YukonRole implements DisplayableEnum, DatabaseRepresentationSource {
+
+    // Yukon Grp associated roles moved to YukonSettings 
     APPLICATION_BILLING(Application, ApplicationRoleDefs.BILLING_ROLEID),
     COMMANDER(Application, ApplicationRoleDefs.COMMANDER_ROLEID),
     DATABASE_EDITOR(Application, ApplicationRoleDefs.DATABASE_EDITOR_ROLEID),
@@ -54,22 +55,13 @@ public enum YukonRole implements DisplayableEnum, DatabaseRepresentationSource {
     CI_CURTAILMENT(Operator, OperatorRoleDefs.CI_CURTAILMENT_ROLEID),
     CONSUMER_INFO(Operator, OperatorRoleDefs.CONSUMER_INFO_ROLEID),
     DEVICE_ACTIONS(Operator, OperatorRoleDefs.DEVICE_ACTIONS_ROLEID),
-    ENERGY_COMPANY(Operator, YukonRoleDefs.ENERGY_COMPANY_ROLEID),
+    ENERGY_COMPANY(Operator, EnergyCompanyRoleDefs.ENERGY_COMPANY_ROLEID),
     OPERATOR_ESUBSTATION_DRAWINGS(Operator, OperatorRoleDefs.ESUBSTATION_DRAWINGS_ROLEID),
     INVENTORY(Operator, OperatorRoleDefs.INVENTORY_ROLEID),
     METERING(Operator, OperatorRoleDefs.METERING_ROLEID),
     ODDS_FOR_CONTROL(Operator, OperatorRoleDefs.ODDS_FOR_CONTROL_ROLEID),
     SCHEDULER(Operator, OperatorRoleDefs.SCHEDULER_ROLEID),
     WORK_ORDER(Operator, OperatorRoleDefs.WORK_ORDER_ROLEID),
-    
-    AUTHENTICATION(System, YukonRoleDefs.AUTHENTICATION_ROLEID),
-    SYSTEM_BILLING(System, YukonRoleDefs.BILLING_ROLEID),
-    CALC_HISTORICAL(System, ApplicationRoleDefs.CALC_HISTORICAL_ROLEID),
-    SYSTEM_CONFIGURATION(System, YukonRoleDefs.CONFIGURATION_ROLEID),
-    MULTISPEAK(System, YukonRoleDefs.MULTISPEAK_ROLEID),
-    VOICE_SERVER(System, YukonRoleDefs.VOICE_SERVER_ROLEID),
-    WEB_GRAPH(System, ApplicationRoleDefs.WEB_GRAPH_ROLEID),
-    SYSTEM(System, YukonRoleDefs.SYSTEM_ROLEID),
     ;
 
     private final YukonRoleCategory category;

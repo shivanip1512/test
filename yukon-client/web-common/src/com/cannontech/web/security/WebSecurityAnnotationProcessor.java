@@ -7,10 +7,12 @@ import org.springframework.core.annotation.AnnotationUtils;
 import com.cannontech.common.config.MasterConfigBooleanKeysEnum;
 import com.cannontech.core.roleproperties.YukonRole;
 import com.cannontech.core.roleproperties.YukonRoleProperty;
+import com.cannontech.system.YukonSetting;
 import com.cannontech.web.security.annotation.AuthorizeByCparm;
 import com.cannontech.web.security.annotation.CheckFalseRoleProperty;
 import com.cannontech.web.security.annotation.CheckRole;
 import com.cannontech.web.security.annotation.CheckRoleProperty;
+import com.cannontech.web.security.annotation.CheckSystemSetting;
 import com.cannontech.web.widget.support.WidgetMultiActionController;
 
 
@@ -28,6 +30,11 @@ public class WebSecurityAnnotationProcessor {
         boolean hasCheckRole = hasCheckRole(clazz);
         if (hasCheckRole) {
             doHasCheckRole(getCheckRole(clazz));
+        }
+        
+        boolean hasCheckSystemSetting = hasCheckSystemSetting(clazz);
+        if (hasCheckSystemSetting) {
+            doHasCheckSystemSetting(getCheckSystemSetting(clazz));
         }
         
         boolean hasCheckRoleProperty = hasCheckRoleProperty(clazz);
@@ -65,6 +72,11 @@ public class WebSecurityAnnotationProcessor {
         webSecurityChecker.checkRole(roles);
     }
 
+    private void doHasCheckSystemSetting(CheckSystemSetting checkSystemSetting) {
+        YukonSetting setting = checkSystemSetting.value();
+        webSecurityChecker.checkSystemSetting(setting);
+    }
+
     private void doHasCheckRoleProperty(CheckRoleProperty checkRoleProperty) throws Exception {
         YukonRoleProperty[] roleProperties = checkRoleProperty.value();
         boolean requireAll = checkRoleProperty.requireAll();
@@ -91,6 +103,11 @@ public class WebSecurityAnnotationProcessor {
         return checkRoleProperty;
     }
     
+    private CheckSystemSetting getCheckSystemSetting(Class<?> clazz) {
+        CheckSystemSetting checkSystemSetting = AnnotationUtils.findAnnotation(clazz, CheckSystemSetting.class);
+        return checkSystemSetting;
+    }
+    
     private CheckFalseRoleProperty getCheckFalseRoleProperty(Class<?> clazz) {
     	CheckFalseRoleProperty checkFalseRoleProperty = AnnotationUtils.findAnnotation(clazz, CheckFalseRoleProperty.class);
         return checkFalseRoleProperty;
@@ -108,6 +125,11 @@ public class WebSecurityAnnotationProcessor {
         return hasCheckRole;
     }
 
+    private boolean hasCheckSystemSetting(Class<?> clazz) {
+        CheckSystemSetting checkSystemSetting = AnnotationUtils.findAnnotation(clazz, CheckSystemSetting.class);
+        return checkSystemSetting != null;
+    }
+    
     private boolean hasCheckRoleProperty(Class<?> clazz) {
         CheckRoleProperty checkRoleProperty = getCheckRoleProperty(clazz);
         boolean hasCheckRoleProperty = checkRoleProperty != null;

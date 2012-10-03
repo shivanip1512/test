@@ -114,7 +114,6 @@
     <entry key="yukon.web.modules.adminSetup.userEditor.updateSuccessful">User Updated Successfully</entry>
     <entry key="yukon.web.modules.adminSetup.userEditor.passwordUpdateSuccessful">Password Updated Successfully</entry>
     <entry key="yukon.web.modules.adminSetup.userEditor.groupConflict">Could not add user to group(s). The groups this user is already a member of and the new group(s) {0} have conflicting roles.</entry>
-    <entry key="yukon.web.modules.adminSetup.userEditor.error.unableToDelete">Cannot remove Yukon Grp</entry>
     
     <!-- Groups Editor groups.jsp -->
     <entry key="yukon.web.modules.adminSetup.roleGroups.pageName">Role Groups</entry>

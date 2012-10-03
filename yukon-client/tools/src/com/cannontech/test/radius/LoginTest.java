@@ -15,7 +15,6 @@ import javax.swing.WindowConstants;
 
 import com.cannontech.common.login.ClientSession;
 import com.cannontech.common.login.radius.RadiusLogin;
-import com.cannontech.roles.yukon.AuthenticationRole;
 
 /**
  * @author snebben
@@ -487,11 +486,6 @@ public class LoginTest implements ActionListener
 			if(session == null) 
 			{
 				System.exit(-1);
-			}
-			if(!session.checkRole(AuthenticationRole.ROLEID))
-			{
-			  JOptionPane.showMessageDialog(null, "User: '" + session.getUser().getUsername() + "' is not authorized to use this application, exiting.", "Access Denied", JOptionPane.WARNING_MESSAGE);
-			  System.exit(-1);				
 			}
 			JOptionPane.showMessageDialog(null, "User: '" + session.getUser().getUsername() + "' Authorized.  Test complete.", "Access Granted", JOptionPane.INFORMATION_MESSAGE);
 			return JOptionPane.CANCEL_OPTION;	//force DONE!	

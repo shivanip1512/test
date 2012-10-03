@@ -116,8 +116,9 @@ import com.cannontech.message.dispatch.message.DBChangeMsg;
 import com.cannontech.message.dispatch.message.DbChangeType;
 import com.cannontech.roles.application.DBEditorRole;
 import com.cannontech.roles.application.TDCRole;
-import com.cannontech.roles.yukon.BillingRole;
 import com.cannontech.spring.YukonSpringHook;
+import com.cannontech.system.YukonSetting;
+import com.cannontech.system.dao.YukonSettingsDao;
 import com.cannontech.yukon.IServerConnection;
 import com.cannontech.yukon.conns.ConnPool;
 
@@ -2142,11 +2143,8 @@ private void readConfigParameters()
 
 	//Decide whether to put the billing file option into the create (core) menu
 
-	try
-	{
-		activateBilling = 
-			ClientSession.getInstance().getRolePropertyValue(
-				BillingRole.WIZ_ACTIVATE, "FALSE").trim().equalsIgnoreCase("TRUE");
+	try {
+	    activateBilling = YukonSpringHook.getBean("yukonSettingsDao",YukonSettingsDao.class).getSettingBooleanValue(YukonSetting.WIZ_ACTIVATE);
 	}
 
 	catch( Exception e )

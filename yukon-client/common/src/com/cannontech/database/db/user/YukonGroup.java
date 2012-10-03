@@ -19,7 +19,6 @@ public class YukonGroup extends DBPersistent {
     public static final int EDITABLE_MIN_GROUP_ID  = 0;
     
 	// Default group ids
-	public static final int YUKON_GROUP_ID = -1;
 	public static final int SYSTEM_ADMINISTRATOR_GROUP_ID = -2;
 	public static final int OPERATORS_GROUP_ID = -100;
 	public static final int ESUB_USERS_GROUP_ID = -200;

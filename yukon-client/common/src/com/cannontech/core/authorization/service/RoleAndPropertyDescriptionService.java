@@ -10,6 +10,8 @@ import com.cannontech.core.roleproperties.YukonRole;
 import com.cannontech.core.roleproperties.YukonRoleCategory;
 import com.cannontech.core.roleproperties.YukonRoleProperty;
 import com.cannontech.database.data.lite.LiteYukonUser;
+import com.cannontech.system.YukonSetting;
+import com.cannontech.system.dao.YukonSettingsDao;
 import com.cannontech.user.checker.AggregateOrUserChecker;
 import com.cannontech.user.checker.NotUserChecker;
 import com.cannontech.user.checker.NullUserChecker;
@@ -18,8 +20,9 @@ import com.cannontech.user.checker.UserChecker;
 import com.google.common.collect.Lists;
 
 public class RoleAndPropertyDescriptionService {
-    private RolePropertyUserCheckerFactory userCheckerFactory;
-    private ConfigurationSource configurationSource;
+    @Autowired private RolePropertyUserCheckerFactory userCheckerFactory;
+    @Autowired private ConfigurationSource configurationSource;
+    @Autowired private YukonSettingsDao yukonSettingsDao;
     
     /**
      * This will check that the user has the given roles, categories,
@@ -113,6 +116,22 @@ public class RoleAndPropertyDescriptionService {
 
             } catch (IllegalArgumentException ignore) { }
 
+            // see if it is a supported system setting 
+            try {
+                
+                boolean bool = yukonSettingsDao.checkSetting(YukonSetting.valueOf(someEnumName));
+                
+                UserChecker propertyChecker;
+                if (inverted) {
+                    propertyChecker = userCheckerFactory.createBooleanChecker(!bool);
+                } else {
+                    propertyChecker = userCheckerFactory.createBooleanChecker(bool);
+                }
+                checkers.add(propertyChecker);
+                continue;
+
+            } catch (IllegalArgumentException ignore) { }
+            
             // if we get here, we must not have a valid role or property
             throw new IllegalArgumentException("Can't use '" + someEnumName + "', check that it is a valid role, category, or boolean property");
         }
@@ -121,13 +140,5 @@ public class RoleAndPropertyDescriptionService {
         return userChecker;  
     }
         
-    @Autowired
-    public void setUserCheckerFactory(
-            RolePropertyUserCheckerFactory userCheckerFactory) {
-        this.userCheckerFactory = userCheckerFactory;
-    }
-    @Autowired
-    public void setConfigurationSource(ConfigurationSource configurationSource) {
-		this.configurationSource = configurationSource;
-	}
+
 }

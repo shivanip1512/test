@@ -14,7 +14,6 @@ import org.apache.commons.lang.StringUtils;
 import org.apache.commons.lang.Validate;
 import org.apache.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.dao.EmptyResultDataAccessException;
 import org.springframework.jdbc.core.RowCallbackHandler;
 import org.springframework.jmx.export.annotation.ManagedAttribute;
 import org.springframework.jmx.export.annotation.ManagedResource;
@@ -40,7 +39,6 @@ import com.cannontech.database.StringRowMapper;
 import com.cannontech.database.YukonJdbcTemplate;
 import com.cannontech.database.data.lite.LiteYukonGroup;
 import com.cannontech.database.data.lite.LiteYukonUser;
-import com.cannontech.roles.YukonGroupRoleDefs;
 import com.google.common.base.Predicate;
 import com.google.common.cache.CacheBuilder;
 import com.google.common.cache.CacheLoader;
@@ -347,31 +345,6 @@ public class RolePropertyDaoImpl implements RolePropertyDao {
         return result;
     }
 
-    /**
-     * This method returns the global role property value of the property supplied.  It will return null if there is no value for the role property.
-     */
-    private String findGlobalPropertyValue(YukonRoleProperty property) {
-        Validate.isTrue(property.getRole().getCategory().isSystem(), "can't get global property for non-System property");
-
-        SqlStatementBuilder sql = new SqlStatementBuilder();
-        sql.append("SELECT Value");
-        sql.append("FROM YukonGroupRole YGR");
-        sql.append("WHERE GroupId").eq(YukonGroupRoleDefs.GRP_YUKON);
-        sql.append("  AND RolePropertyId").eq(property.getPropertyId());
-        
-        String value = null;
-        try {
-            value = yukonJdbcTemplate.queryForObject(sql, new StringRowMapper());
-        } catch (EmptyResultDataAccessException e) {
-            log.debug("got zero rows for global property");
-        }
-
-        if (log.isDebugEnabled()) {
-            log.debug("got global property value of " + property + ": " + value);
-        }
-        return value;
-    }
-
     @Override
     public boolean getPropertyBooleanValue(YukonRoleProperty property, LiteYukonUser user) throws UserNotInRoleException {
         UserPropertyTuple userPropertyTuple = new UserPropertyTuple(user, property);
@@ -448,12 +421,6 @@ public class RolePropertyDaoImpl implements RolePropertyDao {
     private String findPropertyValue(PropertyTuple propertyTuple) throws UserNotInRoleException {
         totalDbHits.incrementAndGet();
 
-        // Check to see if the role property we are looking at is a system role property.
-        YukonRoleProperty property = propertyTuple.getYukonRoleProperty();
-        if (propertyTuple.isSystemProperty()) {
-            return findGlobalPropertyValue(property);
-        }
-        
         SqlFragmentSource sql = propertyTuple.getRolePropertyValueLookupQuery();
         List<String> values = yukonJdbcTemplate.query(sql, new StringRowMapper());
         

@@ -36,9 +36,10 @@ import com.cannontech.common.databaseMigration.service.DatabaseMigrationService;
 import com.cannontech.common.util.BinaryPrefix;
 import com.cannontech.common.util.CtiUtilities;
 import com.cannontech.core.roleproperties.YukonRoleProperty;
-import com.cannontech.core.roleproperties.dao.RolePropertyDao;
 import com.cannontech.database.PoolManager;
 import com.cannontech.i18n.YukonMessageSourceResolvable;
+import com.cannontech.system.YukonSetting;
+import com.cannontech.system.dao.YukonSettingsDao;
 import com.cannontech.user.YukonUserContext;
 import com.cannontech.util.ServletUtil;
 import com.cannontech.web.common.flashScope.FlashScope;
@@ -53,7 +54,7 @@ public class DatabaseMigrationController {
 
     @Autowired private DatabaseMigrationService databaseMigrationService;
     @Autowired private PoolManager poolManager;
-    @Autowired private RolePropertyDao rolePropertyDao;
+    @Autowired private YukonSettingsDao yukonSettingsDao;
 
     private Map<String, FileSystemResource> fileStore = new HashMap<String, FileSystemResource>();
 	
@@ -394,8 +395,7 @@ public class DatabaseMigrationController {
 	    List<String> exportFilePaths = new ArrayList<String>();
 	    
 	    String rolePropertyPath = 
-	    	rolePropertyDao.getPropertyStringValue(YukonRoleProperty.DATABASE_MIGRATION_FILE_LOCATION, 
-	    										   userContext.getYukonUser());
+	            yukonSettingsDao.getSettingStringValue(YukonSetting.DATABASE_MIGRATION_FILE_LOCATION);
 	    File exportDir = new File(CtiUtilities.getYukonBase(), rolePropertyPath);
 	    
 	    if (exportDir == null ||

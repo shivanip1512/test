@@ -13,15 +13,15 @@ import org.springframework.web.servlet.mvc.multiaction.MultiActionController;
 
 import com.cannontech.core.dao.NotFoundException;
 import com.cannontech.core.dao.PaoDao;
-import com.cannontech.core.roleproperties.YukonRoleProperty;
 import com.cannontech.multispeak.dao.MspLMInterfaceMappingDao;
 import com.cannontech.multispeak.db.MspLMInterfaceMapping;
 import com.cannontech.multispeak.db.MspLMInterfaceMappingStrategyNameComparator;
 import com.cannontech.multispeak.db.MspLmInterfaceMappingColumnEnum;
-import com.cannontech.web.security.annotation.CheckRoleProperty;
+import com.cannontech.system.YukonSetting;
+import com.cannontech.web.security.annotation.CheckSystemSetting;
 import com.cannontech.web.util.JsonView;
 
-@CheckRoleProperty(YukonRoleProperty.MSP_LM_MAPPING_SETUP)
+@CheckSystemSetting(YukonSetting.MSP_LM_MAPPING_SETUP)
 public class LMMappingsController extends  MultiActionController {
 
 	private PaoDao paoDao;

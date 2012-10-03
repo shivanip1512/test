@@ -39,7 +39,6 @@ import com.cannontech.database.data.activity.ActivityLogActions;
 import com.cannontech.database.data.lite.LiteFactory;
 import com.cannontech.database.data.lite.LiteYukonPAObject;
 import com.cannontech.database.db.DBPersistent;
-import com.cannontech.roles.yukon.SystemRole;
 import com.cannontech.spring.YukonSpringHook;
 import com.cannontech.stars.core.dao.InventoryBaseDao;
 import com.cannontech.stars.core.dao.StarsSearchDao;
@@ -64,6 +63,8 @@ import com.cannontech.stars.util.SwitchCommandQueue;
 import com.cannontech.stars.util.WebClientException;
 import com.cannontech.stars.xml.serialize.StarsCustAccountInformation;
 import com.cannontech.stars.xml.serialize.StarsInventory;
+import com.cannontech.system.YukonSetting;
+import com.cannontech.system.dao.impl.YukonSettingsDaoImpl;
 import com.cannontech.util.ServletUtil;
 import com.cannontech.yukon.IDatabaseCache;
 
@@ -124,7 +125,7 @@ public class InventoryManagerUtil {
 		LiteStarsEnergyCompany energyCompany = StarsDatabaseCache.getInstance().getEnergyCompany( cmd.getEnergyCompanyID() );
         boolean writeToFile = false;
         
-        String batchProcessType = DaoFactory.getRoleDao().getGlobalPropertyValue( SystemRole.BATCHED_SWITCH_COMMAND_TOGGLE );
+        String batchProcessType = YukonSpringHook.getBean("yukonSettingsDao",YukonSettingsDaoImpl.class).getSettingStringValue(YukonSetting.BATCHED_SWITCH_COMMAND_TOGGLE);
         if(batchProcessType != null) {
             writeToFile = batchProcessType.compareTo(StarsUtils.BATCH_SWITCH_COMMAND_MANUAL) == 0 
                 && VersionTools.staticLoadGroupMappingExists();

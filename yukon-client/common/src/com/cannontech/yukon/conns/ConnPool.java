@@ -3,13 +3,15 @@ package com.cannontech.yukon.conns;
 
 import java.util.Hashtable;
 
+import org.springframework.beans.factory.annotation.Autowired;
+
 import com.cannontech.clientutils.CTILogger;
 import com.cannontech.common.util.CtiUtilities;
-import com.cannontech.core.dao.StandaloneRoleDao;
 import com.cannontech.message.dispatch.ClientConnection;
 import com.cannontech.message.dispatch.message.Registration;
-import com.cannontech.roles.yukon.SystemRole;
 import com.cannontech.spring.YukonSpringHook;
+import com.cannontech.system.YukonSetting;
+import com.cannontech.system.dao.YukonSettingsDao;
 import com.cannontech.yukon.IMACSConnection;
 import com.cannontech.yukon.INotifConnection;
 import com.cannontech.yukon.IServerConnection;
@@ -35,12 +37,10 @@ public class ConnPool
 	public static final String MACS_CONN = "MACS";
 	public static final String CAPCONTROL_CONN = "CAPCONTROL";
 	public static final String NOTIFCATION_CONN = "NOTIFCATION";
-	
+	@Autowired private YukonSettingsDao yukonSettingsDao;
 
 	// Map<String, IServerConnection>
 	private Hashtable<String, IServerConnection> _allConns = null;
-
-    private StandaloneRoleDao standaloneRoleDao;
 
 	/**
 	 * Returns the singleton instance of this class
@@ -113,20 +113,13 @@ public class ConnPool
 
 	    if( connToDispatch == null ) {
 	        String defaultHost = "127.0.0.1";
-	        int defaultPort = 1510;
 
-	        defaultHost = standaloneRoleDao.getGlobalPropertyValue(SystemRole.DISPATCH_MACHINE);
-
-	        String portStr = standaloneRoleDao.getGlobalPropertyValue(SystemRole.DISPATCH_PORT);
-	        try {
-	            defaultPort = Integer.parseInt(portStr);
-	        } catch (NumberFormatException e) {
-	            CTILogger.warn("dispatch connection port value was not valid '" + portStr + "', using default", e);
-	        }
+	        defaultHost = yukonSettingsDao.getSettingStringValue(YukonSetting.DISPATCH_MACHINE);
+	        int port = yukonSettingsDao.getSettingIntegerValue(YukonSetting.DISPATCH_PORT);
 
 	        connToDispatch = (ClientConnection)createDispatchConn();
 	        connToDispatch.setHost(defaultHost);
-	        connToDispatch.setPort(defaultPort);
+	        connToDispatch.setPort(port);
 	        
 	        CTILogger.info("Attempting Dispatch connection to " + connToDispatch.getHost() + ":" + connToDispatch.getPort());
 	        connToDispatch.connectWithoutWait();
@@ -152,17 +145,9 @@ public class ConnPool
         if( porterCC == null )
         {
             String host = "127.0.0.1";
-            int port = 1510;
             
-            host = standaloneRoleDao.getGlobalPropertyValue( SystemRole.PORTER_MACHINE );
-            String portStr = standaloneRoleDao.getGlobalPropertyValue( SystemRole.PORTER_PORT );
-            try {
-                port = Integer.parseInt(portStr);
-            } catch (NumberFormatException e) {
-                CTILogger
-                    .error("porter connection port value was not valid '" + portStr + "', using default",
-                           e);
-            }
+            host = yukonSettingsDao.getSettingStringValue(YukonSetting.PORTER_MACHINE);
+            int port = yukonSettingsDao.getSettingIntegerValue(YukonSetting.PORTER_PORT);
     
             porterCC = (com.cannontech.message.porter.ClientConnection)createPorterConn();
     
@@ -191,17 +176,10 @@ public class ConnPool
         if( macsConn == null ) {
             
             String host = "127.0.0.1";
-            int port = 1900;
-            
-            host = standaloneRoleDao.getGlobalPropertyValue( SystemRole.MACS_MACHINE );
-            String portStr = standaloneRoleDao.getGlobalPropertyValue( SystemRole.MACS_PORT );
-            try {
-                port = Integer.parseInt(portStr);
-            } catch (NumberFormatException e) {
-                CTILogger
-                    .error("macs connection port value was not valid '" + portStr + "', using default",
-                           e);
-            }    
+
+            host = yukonSettingsDao.getSettingStringValue(YukonSetting.MACS_MACHINE);
+            int port = yukonSettingsDao.getSettingIntegerValue(YukonSetting.MACS_PORT);
+
             macsConn = (ServerMACSConnection)createMacsConn();
     
             macsConn.setHost(host);
@@ -240,9 +218,9 @@ public class ConnPool
         if( cbcConn == null )
         {		
         	cbcConn = (CapControlClientConnection)createCapControlConn();
-            cbcConn.setHost( standaloneRoleDao.getGlobalPropertyValue( SystemRole.CAP_CONTROL_MACHINE ) );
-            String portStr = standaloneRoleDao.getGlobalPropertyValue( SystemRole.CAP_CONTROL_PORT );
-            cbcConn.setPort( Integer.parseInt(portStr ) );
+            cbcConn.setHost(yukonSettingsDao.getSettingStringValue(YukonSetting.CAP_CONTROL_MACHINE));
+            int port = yukonSettingsDao.getSettingIntegerValue(YukonSetting.CAP_CONTROL_PORT);
+            cbcConn.setPort(port);
 
             cbcConn.connectWithoutWait();
 			
@@ -291,16 +269,10 @@ public class ConnPool
 	private IServerConnection createNotificationConn()
 	{       
 		NotifClientConnection notifConn = new NotifClientConnection();
-        String host = standaloneRoleDao.getGlobalPropertyValue( SystemRole.NOTIFICATION_HOST );
+		String host = yukonSettingsDao.getSettingStringValue(YukonSetting.NOTIFICATION_HOST);
         notifConn.setHost(host);
-        String portStr = standaloneRoleDao.getGlobalPropertyValue( SystemRole.NOTIFICATION_PORT );
-        int port = Integer.parseInt(portStr);
+        int port = yukonSettingsDao.getSettingIntegerValue(YukonSetting.NOTIFICATION_PORT);
         notifConn.setPort(port);
 		return notifConn;
 	}
-
-    public void setStandaloneRoleDao(StandaloneRoleDao standaloneRoleDao) {
-        this.standaloneRoleDao = standaloneRoleDao;
-    }
-
 }

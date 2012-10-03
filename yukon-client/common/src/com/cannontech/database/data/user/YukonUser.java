@@ -21,7 +21,6 @@ import com.cannontech.database.db.user.YukonGroup;
 import com.cannontech.database.db.web.EnergyCompanyOperatorLoginList;
 import com.cannontech.message.dispatch.message.DBChangeMsg;
 import com.cannontech.message.dispatch.message.DbChangeType;
-import com.cannontech.roles.YukonGroupRoleDefs;
 import com.cannontech.spring.YukonSpringHook;
 
 /*** 
@@ -47,9 +46,6 @@ public class YukonUser extends DBPersistent implements CTIDbChange, EditorPanel
 	public YukonUser() 
 	{
 		super();
-
-		YukonGroup group = new YukonGroup( new Integer(YukonGroupRoleDefs.GRP_YUKON) );
-		getYukonGroups().add( group );
 	}
 	
 	@Override

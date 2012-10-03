@@ -36,6 +36,8 @@ import com.cannontech.stars.dr.hardware.dao.StaticLoadGroupMappingDao;
 import com.cannontech.stars.dr.hardware.model.HardwareConfigAction;
 import com.cannontech.stars.energyCompany.model.YukonEnergyCompany;
 import com.cannontech.stars.util.StarsUtils;
+import com.cannontech.system.YukonSetting;
+import com.cannontech.system.dao.YukonSettingsDao;
 import com.cannontech.user.YukonUserContext;
 import com.cannontech.web.common.flashScope.FlashScope;
 import com.cannontech.web.security.annotation.CheckRoleProperty;
@@ -50,19 +52,19 @@ import com.google.common.collect.Sets;
 @CheckRoleProperty(YukonRoleProperty.OPERATOR_CONSUMER_INFO_PROGRAMS_ENROLLMENT)
 public class OperatorEnrollmentController {
     
-    private AccountEventLogService accountEventLogService;
-    private DisplayableEnrollmentDao displayableEnrollmentDao;
-    private LMHardwareControlGroupDao lmHardwareControlGroupDao;
-    private PaoDao paoDao;
-    private LoadGroupDao loadGroupDao;
-    private StaticLoadGroupMappingDao staticLoadGroupMappingDao;
-    private AssignedProgramDao assignedProgramDao;
-    private EnergyCompanyRolePropertyDao energyCompanyRolePropertyDao;
-    private YukonEnergyCompanyService yukonEnergyCompanyService; 
-    private EnrollmentDao enrollmentDao;
-    private EnrollmentHelperService enrollmentHelperService;
-    private RolePropertyDao rolePropertyDao;
-
+    @Autowired private AccountEventLogService accountEventLogService;
+    @Autowired private DisplayableEnrollmentDao displayableEnrollmentDao;
+    @Autowired private LMHardwareControlGroupDao lmHardwareControlGroupDao;
+    @Autowired private PaoDao paoDao;
+    @Autowired private LoadGroupDao loadGroupDao;
+    @Autowired private StaticLoadGroupMappingDao staticLoadGroupMappingDao;
+    @Autowired private AssignedProgramDao assignedProgramDao;
+    @Autowired private EnergyCompanyRolePropertyDao energyCompanyRolePropertyDao;
+    @Autowired private YukonEnergyCompanyService yukonEnergyCompanyService; 
+    @Autowired private EnrollmentDao enrollmentDao;
+    @Autowired private EnrollmentHelperService enrollmentHelperService;
+    @Autowired private RolePropertyDao rolePropertyDao;
+    @Autowired private YukonSettingsDao yukonSettingsDao;
     /**
      * The main operator "enrollment" page. Lists all current enrollments and
      * has icons for adding, removing and editing these enrollments.
@@ -152,9 +154,8 @@ public class OperatorEnrollmentController {
         
         boolean trackHardwareAddressingEnabled =
             energyCompanyRolePropertyDao.getPropertyBooleanValue(YukonRoleProperty.TRACK_HARDWARE_ADDRESSING, yukonEnergyCompany);
-        String batchedSwitchCommandToggle =
-            rolePropertyDao.getPropertyStringValue(YukonRoleProperty.BATCHED_SWITCH_COMMAND_TOGGLE,
-                                                   userContext.getYukonUser());
+      String batchedSwitchCommandToggle =
+      yukonSettingsDao.getSettingStringValue(YukonSetting.BATCHED_SWITCH_COMMAND_TOGGLE);
         boolean useStaticLoadGroups =
             StarsUtils.BATCH_SWITCH_COMMAND_MANUAL.equals(batchedSwitchCommandToggle)
                 && VersionTools.staticLoadGroupMappingExists();
@@ -296,67 +297,5 @@ public class OperatorEnrollmentController {
         Validate.isTrue(rolePropertyDao.checkProperty(YukonRoleProperty.OPERATOR_ALLOW_ACCOUNT_EDITING,
                                                       userContext.getYukonUser()),
                                                       "Account editing not allowed by this user.");
-    }
-
-    @Autowired
-    public void setAccountEventLogService(AccountEventLogService accountEventLogService) {
-        this.accountEventLogService = accountEventLogService;
-    }
-    
-    @Autowired
-    public void setDisplayableEnrollmentDao(DisplayableEnrollmentDao displayableEnrollmentDao) {
-        this.displayableEnrollmentDao = displayableEnrollmentDao;
-    }
-
-    @Autowired
-    public void setLmHardwareControlGroupDao(LMHardwareControlGroupDao lmHardwareControlGroupDao) {
-        this.lmHardwareControlGroupDao = lmHardwareControlGroupDao;
-    }
-
-    @Autowired
-    public void setPaoDao(PaoDao paoDao) {
-        this.paoDao = paoDao;
-    }
-
-    @Autowired
-    public void setLoadGroupDao(LoadGroupDao loadGroupDao) {
-        this.loadGroupDao = loadGroupDao;
-    }
-
-    @Autowired
-    public void setStaticLoadGroupMappingDao(
-            StaticLoadGroupMappingDao staticLoadGroupMappingDao) {
-        this.staticLoadGroupMappingDao = staticLoadGroupMappingDao;
-    }
-
-    @Autowired
-    public void setAssignedProgramDao(AssignedProgramDao assignedProgramDao) {
-        this.assignedProgramDao = assignedProgramDao;
-    }
-    
-    @Autowired
-    public void setYukonEnergyCompanyService(YukonEnergyCompanyService yukonEnergyCompanyService) {
-        this.yukonEnergyCompanyService = yukonEnergyCompanyService;
-    }
-
-    @Autowired
-    public void setEnergyCompanyRolePropertyDao(EnergyCompanyRolePropertyDao energyCompanyRolePropertyDao) {
-        this.energyCompanyRolePropertyDao = energyCompanyRolePropertyDao;
-    }
-    
-    @Autowired
-    public void setEnrollmentDao(EnrollmentDao enrollmentDao) {
-        this.enrollmentDao = enrollmentDao;
-    }
-
-    @Autowired
-    public void setEnrollmentHelperService(EnrollmentHelperService enrollmentHelperService) {
-        this.enrollmentHelperService = enrollmentHelperService;
-    }
-
-    @Autowired
-    public void setRolePropertyDao(RolePropertyDao rolePropertyDao) {
-        this.rolePropertyDao = rolePropertyDao;
-    }
-    
+    } 
 }

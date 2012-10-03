@@ -106,9 +106,10 @@
   </bean>
   <bean id="pointDao" class="com.cannontech.core.dao.impl.PointDaoImpl"/>
   <bean id="roleDao" class="com.cannontech.core.dao.impl.RoleDaoImpl" />
+  <bean id="yukonSettingsDao" class="com.cannontech.system.dao.impl.YukonSettingsDaoImpl"/>
+  <bean id="YukonSettingsUpdater" class="com.cannontech.system.dao.impl.YukonSettingsUpdaterImpl"/>
 
-  <bean id="standaloneRoleDao" class="com.cannontech.core.dao.impl.StandaloneRoleDaoImpl" />
-   <bean id="simplePointAccessDao" class="com.cannontech.core.dao.impl.SimplePointAccessDaoImpl" >
+  <bean id="simplePointAccessDao" class="com.cannontech.core.dao.impl.SimplePointAccessDaoImpl" >
     <property name="dynamicDataSource" ref="dynamicDataSource"/>
   </bean>
   <bean id="stateDao" class="com.cannontech.core.dao.impl.StateDaoImpl" >

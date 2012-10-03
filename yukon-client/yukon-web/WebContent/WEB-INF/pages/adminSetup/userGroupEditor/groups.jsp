@@ -34,9 +34,7 @@
                                 <td>${fn:escapeXml(group.groupDescription)}</td>
                                 <td class="removeColumn">
                                     <div class="dib">
-                                        <c:if test="${group.groupID != yukonGrpId}">
-                                            <input type="submit" name="remove" value="${group.groupID}" class="pointer icon icon_remove">
-                                        </c:if>
+                                        <input type="submit" name="remove" value="${group.groupID}" class="pointer icon icon_remove">
                                     </div>
                                 </td>
                             </tr>

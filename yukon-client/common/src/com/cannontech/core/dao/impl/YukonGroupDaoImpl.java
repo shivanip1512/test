@@ -25,7 +25,6 @@ import com.cannontech.database.YukonResultSet;
 import com.cannontech.database.YukonRowMapper;
 import com.cannontech.database.data.lite.LiteYukonGroup;
 import com.cannontech.database.data.lite.LiteYukonUser;
-import com.cannontech.database.db.user.YukonGroup;
 import com.cannontech.database.incrementer.NextValueHelper;
 import com.cannontech.message.dispatch.message.DBChangeMsg;
 import com.cannontech.message.dispatch.message.DbChangeType;
@@ -104,10 +103,6 @@ public class YukonGroupDaoImpl implements YukonGroupDao {
     	return getGroupsForUser(user.getUserID());
     }
     
-    public List<LiteYukonGroup> getGroupsForUser(int userId) {
-        return getGroupsForUser(userId, false);
-    }
-    
     @Override
     public List<LiteYukonGroup> getAllGroups() {
 
@@ -121,7 +116,7 @@ public class YukonGroupDaoImpl implements YukonGroupDao {
     }
     
     @Override
-    public List<LiteYukonGroup> getGroupsForUser(int userId, boolean excludeYukonGroup) {
+    public List<LiteYukonGroup> getGroupsForUser(int userId) {
 
         SqlStatementBuilder sql = new SqlStatementBuilder();
         sql.append("SELECT YU.UserId, YG.GroupId, YG.GroupName, YG.GroupDescription ");
@@ -129,9 +124,6 @@ public class YukonGroupDaoImpl implements YukonGroupDao {
         sql.append("  JOIN UserGroupToYukonGroupMapping UGYGM ON YG.GroupId = UGYGM.GroupId");
         sql.append("  JOIN YukonUser YU ON UGYGM.UserGroupId = YU.UserGroupId");
         sql.append("WHERE YU.UserId").eq(userId);
-        if (excludeYukonGroup) {
-            sql.append("AND YG.GroupId").neq_k(YukonGroup.YUKON_GROUP_ID);
-        }
         
         List<LiteYukonGroup> groupList = yukonJdbcTemplate.query(sql, liteYukonGroupRowMapper);
         

@@ -1,6 +1,6 @@
 package com.cannontech.common.alert.service.impl;
 
-import static org.junit.Assert.*;
+import static org.junit.Assert.assertEquals;
 
 import java.util.Collection;
 import java.util.Date;
@@ -10,25 +10,26 @@ import org.junit.Test;
 
 import com.cannontech.common.alert.alarms.AlarmAlert;
 import com.cannontech.common.alert.model.IdentifiableAlert;
-import com.cannontech.common.mock.RoleDaoAdapter;
+import com.cannontech.common.mock.YukonSettingsDaoAdapter;
 import com.cannontech.common.util.ResolvableTemplate;
 import com.cannontech.common.util.TimeSourceImpl;
 import com.cannontech.common.util.TimeSourceMock;
+import com.cannontech.system.YukonSetting;
 import com.cannontech.user.checker.NullUserChecker;
 
 public class AlertServiceImplTest {
     
     private AlertServiceImpl alertService = null;
     
-    private static class MockRoleDao extends RoleDaoAdapter {
+    private static class MockDao extends YukonSettingsDaoAdapter {
         private final String returnValue;
-        public MockRoleDao(String returnValue) {
+        public MockDao(String returnValue) {
             this.returnValue = returnValue;
         }
-        public String getGlobalPropertyValue(int rolePropertyID_) {
+        
+        public String getSettingStringValue(YukonSetting setting) {
             return returnValue;
         }
-
     }
     
     @Before
@@ -39,25 +40,24 @@ public class AlertServiceImplTest {
 
     @Test
     public void testInitialize() {
-        final long millisInHour = 60 * 60 * 1000;
         long maxAge;
         
-        alertService.setRoleDao(new MockRoleDao("5"));
+        alertService.setYukonSettingsDao(new MockDao("5"));
         alertService.setupMaxAge();
         maxAge = alertService.getMaxAge();
         assertEquals(18000000l, maxAge);
         
-        alertService.setRoleDao(new MockRoleDao(".5"));
+        alertService.setYukonSettingsDao(new MockDao(".5"));
         alertService.setupMaxAge();
         maxAge = alertService.getMaxAge();
         assertEquals(1800000l, maxAge);
         
-        alertService.setRoleDao(new MockRoleDao(" "));
+        alertService.setYukonSettingsDao(new MockDao(" "));
         alertService.setupMaxAge();
         maxAge = alertService.getMaxAge();
         assertEquals(Long.MAX_VALUE, maxAge);
         
-        alertService.setRoleDao(new MockRoleDao("aba"));
+        alertService.setYukonSettingsDao(new MockDao("aba"));
         alertService.setupMaxAge();
         maxAge = alertService.getMaxAge();
         assertEquals(Long.MAX_VALUE, maxAge);

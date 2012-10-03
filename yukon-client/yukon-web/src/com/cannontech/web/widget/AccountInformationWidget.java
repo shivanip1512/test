@@ -17,7 +17,6 @@ import com.cannontech.amr.meter.dao.MeterDao;
 import com.cannontech.amr.meter.model.Meter;
 import com.cannontech.common.model.Address;
 import com.cannontech.core.roleproperties.YukonRoleProperty;
-import com.cannontech.core.roleproperties.dao.RolePropertyDao;
 import com.cannontech.core.service.DateFormattingService;
 import com.cannontech.multispeak.client.MultispeakFuncs;
 import com.cannontech.multispeak.client.MultispeakVendor;
@@ -33,6 +32,8 @@ import com.cannontech.multispeak.deploy.service.PointType;
 import com.cannontech.multispeak.deploy.service.UtilityInfo;
 import com.cannontech.multispeak.service.MultispeakCustomerInfoService;
 import com.cannontech.servlet.YukonUserContextUtils;
+import com.cannontech.system.YukonSetting;
+import com.cannontech.system.dao.YukonSettingsDao;
 import com.cannontech.user.YukonUserContext;
 import com.cannontech.web.security.annotation.CheckRoleProperty;
 import com.cannontech.web.widget.support.WidgetControllerBase;
@@ -47,16 +48,16 @@ public class AccountInformationWidget extends WidgetControllerBase{
     @Autowired private MultispeakDao multispeakDao;
     @Autowired private MeterDao meterDao;
     @Autowired private DateFormattingService dateFormattingService;
-    @Autowired private RolePropertyDao rolePropertyDao;
     @Autowired private MultispeakCustomerInfoService multispeakCustomerInfoService;
-    
+    @Autowired private YukonSettingsDao yukonSettingsDao;
+
     public ModelAndView render(HttpServletRequest request, HttpServletResponse response) throws Exception {
         
         ModelAndView mav = new ModelAndView("accountInformationWidget/accountInfo.jsp");
         int deviceId = WidgetParameterHelper.getIntParameter(request, "deviceId");
         YukonUserContext userContext = YukonUserContextUtils.getYukonUserContext(request);
         
-        int vendorId = rolePropertyDao.getPropertyIntegerValue(YukonRoleProperty.MSP_PRIMARY_CB_VENDORID, userContext.getYukonUser());
+        int vendorId = yukonSettingsDao.getSettingIntegerValue(YukonSetting.MSP_PRIMARY_CB_VENDORID);
         if (vendorId <= 0) {
         	mav.addObject("hasVendorId", false);
         	return mav;

@@ -20,15 +20,13 @@ import org.springframework.web.servlet.ModelAndView;
 import com.cannontech.common.model.Route;
 import com.cannontech.common.model.Substation;
 import com.cannontech.core.roleproperties.YukonRole;
-import com.cannontech.core.roleproperties.YukonRoleProperty;
-import com.cannontech.core.roleproperties.dao.RolePropertyDao;
 import com.cannontech.core.substation.dao.SubstationDao;
 import com.cannontech.core.substation.dao.SubstationToRouteMappingDao;
-import com.cannontech.servlet.YukonUserContextUtils;
 import com.cannontech.stars.core.service.YukonEnergyCompanyService;
 import com.cannontech.stars.energyCompany.model.YukonEnergyCompany;
 import com.cannontech.stars.service.EnergyCompanyService;
-import com.cannontech.user.YukonUserContext;
+import com.cannontech.system.YukonSetting;
+import com.cannontech.system.dao.YukonSettingsDao;
 import com.cannontech.web.security.annotation.CheckRole;
 import com.google.common.collect.Lists;
 
@@ -37,11 +35,11 @@ import com.google.common.collect.Lists;
 @Controller
 public class SubstationController { 
 
-    private EnergyCompanyService energyCompanyService;
-    private RolePropertyDao rolePropertyDao;
-    private SubstationDao substationDao;
-    private SubstationToRouteMappingDao strmDao;
-    private YukonEnergyCompanyService yukonEnergyCompanyService;
+    @Autowired private EnergyCompanyService energyCompanyService;
+    @Autowired private SubstationDao substationDao;
+    @Autowired private SubstationToRouteMappingDao strmDao;
+    @Autowired private YukonEnergyCompanyService yukonEnergyCompanyService;
+    @Autowired private YukonSettingsDao yukonSettingsDao;
 
     @RequestMapping("routeMapping/view")
     public ModelAndView view(HttpServletRequest request, HttpServletResponse response) {
@@ -73,10 +71,9 @@ public class SubstationController {
     public ModelAndView viewSubstation(HttpServletRequest request, HttpServletResponse response) {
         
         ModelAndView mav = new ModelAndView();
-        YukonUserContext userContext = YukonUserContextUtils.getYukonUserContext(request);
         
         boolean hasVendorId = false;
-        int vendorId = rolePropertyDao.getPropertyIntegerValue(YukonRoleProperty.MSP_PRIMARY_CB_VENDORID, userContext.getYukonUser());
+        int vendorId = yukonSettingsDao.getSettingIntegerValue(YukonSetting.MSP_PRIMARY_CB_VENDORID);
         if (vendorId > 0) {
             hasVendorId = true;
         }
@@ -203,31 +200,4 @@ public class SubstationController {
             return o1.getName().compareToIgnoreCase(o2.getName());
         }
     };
-
-    /* Dependencies */
-    @Autowired
-    public void setEnergyCompanyService(EnergyCompanyService energyCompanyService) {
-        this.energyCompanyService = energyCompanyService;
-    }
-    
-    @Autowired
-    public void setSubstationDao(final SubstationDao substationDao) {
-        this.substationDao = substationDao;
-    }
-
-    @Autowired
-    public void setSubstationToRouteMappingDao(final SubstationToRouteMappingDao strmDao) {
-        this.strmDao = strmDao;
-    }
-    
-    @Autowired
-    public void setRolePropertyDao(RolePropertyDao rolePropertyDao) {
-        this.rolePropertyDao = rolePropertyDao;
-    }
-    
-    @Autowired
-    public void setYukonEnergyCompanyService(YukonEnergyCompanyService yukonEnergyCompanyService) {
-        this.yukonEnergyCompanyService = yukonEnergyCompanyService;
-    }
-    
 }

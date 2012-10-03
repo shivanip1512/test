@@ -27,9 +27,9 @@ import com.cannontech.core.authentication.service.AuthenticationThrottleService;
 import com.cannontech.core.authentication.service.PasswordPolicyService;
 import com.cannontech.core.authentication.service.PasswordSetProvider;
 import com.cannontech.core.dao.YukonUserDao;
-import com.cannontech.core.roleproperties.YukonRoleProperty;
-import com.cannontech.core.roleproperties.dao.RolePropertyDao;
 import com.cannontech.database.data.lite.LiteYukonUser;
+import com.cannontech.system.YukonSetting;
+import com.cannontech.system.dao.YukonSettingsDao;
 
 public class AuthenticationServiceImpl implements AuthenticationService, InitializingBean {
     private final static Logger log = YukonLogManager.getLogger(AuthenticationServiceImpl.class);
@@ -38,11 +38,10 @@ public class AuthenticationServiceImpl implements AuthenticationService, Initial
     private AuthenticationThrottleService authenticationThrottleService;
     @Autowired @Qualifier("static") private AuthenticationThrottleService staticAuthenticationThrottleService;
     @Autowired @Qualifier("increasing") private AuthenticationThrottleService increasingAuthenticationThrottleService;
-    
     @Autowired private ConfigurationSource configurationSource;
     @Autowired private PasswordHistoryDao passwordHistoryDao;
     @Autowired private PasswordPolicyService passwordPolicyService;
-    @Autowired private RolePropertyDao rolePropertyDao;
+    @Autowired private YukonSettingsDao yukonSettingsDao;
     @Autowired private YukonUserDao yukonUserDao;
 
     @Override
@@ -54,8 +53,7 @@ public class AuthenticationServiceImpl implements AuthenticationService, Initial
     @Override
     public AuthenticationCategory getDefaultAuthenticationCategory() {
         AuthenticationCategory authenticationCategory =
-                rolePropertyDao.getPropertyEnumValue(YukonRoleProperty.DEFAULT_AUTH_TYPE, AuthenticationCategory.class,
-                    null);
+                yukonSettingsDao.getSettingEnumValue(YukonSetting.DEFAULT_AUTH_TYPE, AuthenticationCategory.class);
         return authenticationCategory;
     }
 

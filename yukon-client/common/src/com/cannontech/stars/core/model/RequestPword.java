@@ -6,13 +6,14 @@ import java.util.Vector;
 import org.apache.commons.lang.StringUtils;
 
 import com.cannontech.clientutils.CTILogger;
-import com.cannontech.common.login.ClientSession;
 import com.cannontech.core.dao.DaoFactory;
 import com.cannontech.database.data.lite.LiteCICustomer;
 import com.cannontech.database.data.lite.LiteContact;
 import com.cannontech.database.data.lite.LiteEnergyCompany;
 import com.cannontech.database.data.lite.LiteYukonUser;
-import com.cannontech.roles.yukon.SystemRole;
+import com.cannontech.spring.YukonSpringHook;
+import com.cannontech.system.YukonSetting;
+import com.cannontech.system.dao.YukonSettingsDao;
 import com.cannontech.tools.email.EmailMessage;
 
 /**
@@ -62,21 +63,18 @@ public class RequestPword
 		
 		allParams = new String[] { userName, email, fName, lName };
 
+		YukonSettingsDao yukonSettingsDao = YukonSpringHook.getBean("yukonSettingsDao", YukonSettingsDao.class);
+
+		
         /*
          * Now that we no longer return a defaultValue automatically on a getRolePropertyValue, we
          * will get a null if the user is null.  The user SHOULD be null in this case, since nobody
          * should be logged in.  Let's try to avoid the error.
          */
-		Object o;
-        if(ClientSession.getInstance().getUser() == null) {
-            o = DaoFactory.getRoleDao().getGlobalPropertyValue(SystemRole.MAIL_FROM_ADDRESS);
-        }
-        else {
-            o = ClientSession.getInstance().getRolePropertyValue(                            
-							SystemRole.MAIL_FROM_ADDRESS );
-        }
-		if( o != null )
-			masterMail = o.toString();
+		String mail = yukonSettingsDao.getSettingStringValue(YukonSetting.MAIL_FROM_ADDRESS);
+		if(mail != null) {
+			masterMail = mail;
+		}
 	}
 
 	public String getResultString()

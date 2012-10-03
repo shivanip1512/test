@@ -47,7 +47,6 @@ import com.cannontech.database.data.user.YukonGroup;
 import com.cannontech.database.data.user.YukonUser;
 import com.cannontech.database.db.user.YukonGroupRole;
 import com.cannontech.database.model.DBTreeNode;
-import com.cannontech.roles.YukonGroupRoleDefs;
 import com.cannontech.roles.application.WebClientRole;
 import com.cannontech.spring.YukonSpringHook;
 import com.cannontech.user.UserUtils;
@@ -585,11 +584,6 @@ public void valueChanged(TreeSelectionEvent e) {
             } else if( !((CheckNode)liteBaseNode).isSelected() ) {
                 //always disable the property if the role is NOT selected
                 getJTableProperties().setEnabled( false );
-
-            } else if( getRoleContainer() instanceof YukonGroup
-                  && getRoleContainer().getID().intValue() == YukonGroupRoleDefs.GRP_YUKON ) {
-                //allow the Yukon Group to edit any properties
-                getJTableProperties().setEnabled( true );
 
             } else {
                 //if the ROLE_CATEGORY is SystemReserved, dont allow editing

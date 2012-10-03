@@ -3,26 +3,20 @@ package com.cannontech.loadcontrol;
 import org.springframework.beans.factory.annotation.Autowired;
 
 import com.cannontech.clientutils.CTILogger;
-import com.cannontech.core.dao.StandaloneRoleDao;
 import com.cannontech.loadcontrol.messages.LMCommand;
-import com.cannontech.roles.yukon.SystemRole;
+import com.cannontech.system.YukonSetting;
+import com.cannontech.system.dao.YukonSettingsDao;
 
 public class LoadControlClientConnectionFactory {
-    private StandaloneRoleDao standaloneRoleDao;
-
-    @Autowired
-    public void setStandaloneRoleDao(StandaloneRoleDao standaloneRoleDao) {
-		this.standaloneRoleDao = standaloneRoleDao;
-	}
     
+    @Autowired private YukonSettingsDao yukonSettingDao;
     
     public LoadControlClientConnection createConnection() {
     	// make connection
     	LoadControlClientConnection clientConnection = new LoadControlClientConnection();
     	
-    	String lcHost = standaloneRoleDao.getGlobalPropertyValue(SystemRole.LOADCONTROL_MACHINE );
-        String lcPortStr = standaloneRoleDao.getGlobalPropertyValue(SystemRole.LOADCONTROL_PORT);
-        int lcPort = Integer.parseInt(lcPortStr);
+    	String lcHost = yukonSettingDao.getSettingStringValue(YukonSetting.LOADCONTROL_MACHINE );
+        int lcPort = yukonSettingDao.getSettingIntegerValue(YukonSetting.LOADCONTROL_PORT);
 
     	CTILogger.info("Will attempt to connect to loadcontrol @" + lcHost + ":" + lcPort);
     	if ( lcHost != null ) {

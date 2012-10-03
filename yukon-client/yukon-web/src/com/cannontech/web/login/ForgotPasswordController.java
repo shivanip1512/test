@@ -9,27 +9,22 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.servlet.ModelAndView;
 
-import com.cannontech.core.roleproperties.YukonRoleProperty;
-import com.cannontech.core.roleproperties.dao.RolePropertyDao;
+import com.cannontech.system.YukonSetting;
+import com.cannontech.system.dao.YukonSettingsDao;
 
 @Controller
 public class ForgotPasswordController {
     
-	private RolePropertyDao rolePropertyDao;
-	
+    @Autowired private YukonSettingsDao yukonSettingsDao;
+
     @RequestMapping(value = "/forgotPassword", method = RequestMethod.GET)
     public ModelAndView forgotPassword(final HttpServletRequest request, final HttpServletResponse response) throws Exception {
     	
     	//Check global role property (we're not logged in at this point so user is null)
-    	rolePropertyDao.verifyProperty(YukonRoleProperty.ENABLE_PASSWORD_RECOVERY, null);
+        yukonSettingsDao.verifySetting(YukonSetting.ENABLE_PASSWORD_RECOVERY);
     	
     	final ModelAndView mav = new ModelAndView();
     	mav.setViewName("forgotPassword.jsp");
     	return mav;
     }
-    
-    @Autowired
-    public void setRolePropertyDao(RolePropertyDao rolePropertyDao) {
-		this.rolePropertyDao = rolePropertyDao;
-	}
 }

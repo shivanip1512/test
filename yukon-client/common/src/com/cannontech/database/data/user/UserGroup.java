@@ -19,7 +19,6 @@ import com.cannontech.database.db.CTIDbChange;
 import com.cannontech.database.db.DBPersistent;
 import com.cannontech.message.dispatch.message.DBChangeMsg;
 import com.cannontech.message.dispatch.message.DbChangeType;
-import com.cannontech.roles.YukonGroupRoleDefs;
 import com.cannontech.spring.YukonSpringHook;
 import com.google.common.collect.HashMultimap;
 import com.google.common.collect.Multimap;
@@ -127,7 +126,6 @@ public class UserGroup extends DBPersistent implements CTIDbChange, EditorPanel 
         for (LiteYukonGroup liteYukonGroup : getRoleGroups()) {
             userGroupDao.createUserGroupToYukonGroupMappng(userGroup.getUserGroupId(), liteYukonGroup.getGroupID());
         }
-        userGroupDao.createUserGroupToYukonGroupMappng(userGroup.getUserGroupId(), YukonGroupRoleDefs.GRP_YUKON);
     }
 
     @Override

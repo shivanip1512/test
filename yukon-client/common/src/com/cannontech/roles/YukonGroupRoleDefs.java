@@ -10,7 +10,6 @@ package com.cannontech.roles;
 public interface YukonGroupRoleDefs
 {
 	//general yukon reserved groups
-	public static final int GRP_YUKON = -1;
 	public static final int GRP_SYS_ADMIN = -2;
 	public static final int GRP_OPERATORS = -100;
 	

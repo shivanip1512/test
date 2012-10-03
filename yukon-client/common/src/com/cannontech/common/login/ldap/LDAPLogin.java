@@ -3,18 +3,19 @@ package com.cannontech.common.login.ldap;
 import javax.naming.Context;
 import javax.naming.NamingException;
 
-import org.apache.log4j.Logger;
 import org.apache.commons.lang.StringUtils;
+import org.apache.log4j.Logger;
+import org.springframework.beans.factory.annotation.Autowired;
 
 import com.cannontech.clientutils.YukonLogManager;
 import com.cannontech.core.authentication.service.AuthenticationProvider;
-import com.cannontech.core.dao.RoleDao;
 import com.cannontech.database.data.lite.LiteYukonUser;
+import com.cannontech.system.dao.YukonSettingsDao;
 
 public abstract class LDAPLogin implements AuthenticationProvider {
     private static Logger log = YukonLogManager.getLogger(LDAPLogin.class);
-    protected RoleDao roleDao;
     protected LDAPService ldapService;
+    @Autowired protected YukonSettingsDao yukonSettingsDao;
     
     public boolean login(final LiteYukonUser user, final String password) {
         if (user == null || StringUtils.isBlank(password)) return false;
@@ -43,10 +44,6 @@ public abstract class LDAPLogin implements AuthenticationProvider {
         } finally {
             ldapService.close(ctx);
         }    
-    }
-    
-    public void setRoleDao(final RoleDao roleDao) {
-        this.roleDao = roleDao;
     }
     
     public void setLdapService(final LDAPService ldapService) {

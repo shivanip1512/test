@@ -5,6 +5,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Required;
 import org.springframework.jdbc.core.simple.SimpleJdbcOperations;
 
@@ -14,18 +15,18 @@ import com.cannontech.common.device.groups.dao.DeviceGroupProviderDao;
 import com.cannontech.common.device.groups.model.DeviceGroup;
 import com.cannontech.common.util.SqlFragmentSource;
 import com.cannontech.common.util.SqlStatementBuilder;
-import com.cannontech.core.roleproperties.YukonRoleProperty;
-import com.cannontech.core.roleproperties.dao.RolePropertyDao;
 import com.cannontech.database.ListRowCallbackHandler;
 import com.cannontech.database.MaxRowCalbackHandlerRse;
 import com.cannontech.database.SqlProvidingRowMapper;
+import com.cannontech.system.YukonSetting;
+import com.cannontech.system.dao.YukonSettingsDao;
 
 public class GroupMetersDaoImpl implements GroupMetersDao {
 
     private SqlProvidingRowMapper<Meter> meterRowMapper;
     private SimpleJdbcOperations simpleJdbcTemplate;
     private DeviceGroupProviderDao deviceGroupProviderDao;
-    private RolePropertyDao rolePropertyDao;
+    @Autowired private YukonSettingsDao yukonSettingsDao;
     
     private static Map<MeterDisplayFieldEnum, String> orderByMap = new HashMap<MeterDisplayFieldEnum, String>();
     static {
@@ -44,10 +45,6 @@ public class GroupMetersDaoImpl implements GroupMetersDao {
         this.simpleJdbcTemplate = simpleJdbcTemplate;
     }
     @Required
-    public void setRolePropertyDao(RolePropertyDao rolePropertyDao) {
-        this.rolePropertyDao = rolePropertyDao;
-    }
-    @Required
     public void setDeviceGroupProviderDao(
             DeviceGroupProviderDao deviceGroupProviderDao) {
         this.deviceGroupProviderDao = deviceGroupProviderDao;
@@ -59,8 +56,8 @@ public class GroupMetersDaoImpl implements GroupMetersDao {
     
     private String getOrderBySql() {
         
-        MeterDisplayFieldEnum meterDisplayFieldEnumVal = rolePropertyDao.getPropertyEnumValue(YukonRoleProperty.DEVICE_DISPLAY_TEMPLATE, 
-                                                                                              MeterDisplayFieldEnum.class, null);
+        MeterDisplayFieldEnum meterDisplayFieldEnumVal = yukonSettingsDao.getSettingEnumValue(YukonSetting.DEVICE_DISPLAY_TEMPLATE, 
+                                                                                              MeterDisplayFieldEnum.class);
         return getOrderByFromMeterDisplayFieldEnum(meterDisplayFieldEnumVal);
     }
 

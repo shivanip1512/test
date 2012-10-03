@@ -7,10 +7,10 @@ import org.apache.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
 
 import com.cannontech.clientutils.YukonLogManager;
-import com.cannontech.core.roleproperties.YukonRoleProperty;
-import com.cannontech.core.roleproperties.dao.RolePropertyDao;
 import com.cannontech.notif.outputs.OutputHandlerHelper;
 import com.cannontech.spring.YukonSpringHook;
+import com.cannontech.system.YukonSetting;
+import com.cannontech.system.dao.YukonSettingsDao;
 import com.cannontech.util.MBeanUtil;
 
 /**
@@ -36,9 +36,9 @@ public class NotificationServer implements Runnable, NotificationServerMBean
     // The thread accept any incoming connections
     private Thread acceptThread = null;
 
-    private @Autowired NotificationMessageHandler messageHandler;
-    private @Autowired OutputHandlerHelper outputHelper;
-    private @Autowired RolePropertyDao rolePropertyDao;
+    @Autowired private NotificationMessageHandler messageHandler;
+    @Autowired private OutputHandlerHelper outputHelper;
+    @Autowired private YukonSettingsDao yukonSettingsDao;
 
     /**
      * Start the notification server.
@@ -49,11 +49,11 @@ public class NotificationServer implements Runnable, NotificationServerMBean
     public void start() {
         try {
 
-            String bindAddress = rolePropertyDao.getPropertyStringValue(YukonRoleProperty.NOTIFICATION_HOST, null);
-            String port = rolePropertyDao.getPropertyStringValue(YukonRoleProperty.NOTIFICATION_PORT, null);
+            String bindAddress = yukonSettingsDao.getSettingStringValue(YukonSetting.NOTIFICATION_HOST);
+            int port = yukonSettingsDao.getSettingIntegerValue(YukonSetting.NOTIFICATION_PORT);
 
             setBindAddress(bindAddress);
-            setPort(Integer.parseInt(port));
+            setPort(port);
 
             server = new ServerSocket(getPort(), getBacklog(), null);
 

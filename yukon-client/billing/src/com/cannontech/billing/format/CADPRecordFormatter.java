@@ -12,8 +12,9 @@ import com.cannontech.clientutils.CTILogger;
 import com.cannontech.common.dynamicBilling.Channel;
 import com.cannontech.common.dynamicBilling.ReadingType;
 import com.cannontech.common.dynamicBilling.model.BillableField;
-import com.cannontech.core.dao.DaoFactory;
-import com.cannontech.roles.yukon.BillingRole;
+import com.cannontech.spring.YukonSpringHook;
+import com.cannontech.system.YukonSetting;
+import com.cannontech.system.dao.impl.YukonSettingsDaoImpl;
 
 /**
  * Class used to create a billing file with row format as follows:
@@ -177,8 +178,7 @@ public class CADPRecordFormatter extends BillingFormatterBase {
      * @return String representing the Coopid
      */
     public String getCoopId() {
-
-        String coopId = DaoFactory.getRoleDao().getGlobalPropertyValue(BillingRole.COOP_ID_CADP_ONLY);
+        String coopId = YukonSpringHook.getBean("yukonSettingsDao",YukonSettingsDaoImpl.class).getSettingStringValue(YukonSetting.COOP_ID_CADP_ONLY);
 
         if (StringUtils.isBlank(coopId)) {
             CTILogger.info("No value set for Billing Configuration > Coop ID - CADP Only. A default value of '00000' will be used.");

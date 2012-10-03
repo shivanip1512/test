@@ -10,15 +10,13 @@ public interface YukonGroupDao {
 
     public List<LiteYukonGroup> getGroupsForUser(LiteYukonUser user);
     
-    public List<LiteYukonGroup> getGroupsForUser(int userID);
-    
     /**
-     * Returns a list of yukon groups the use is in excluding the 'Yukon Grp' if excludeYukonGroup is true
+     * Returns a list of yukon groups the user is in
      * @param userId
      * @param excludeYukonGroup
      * @return
      */
-    public List<LiteYukonGroup> getGroupsForUser(int userId, boolean excludeYukonGroup);
+    public List<LiteYukonGroup> getGroupsForUser(int userId);
     
     public List<LiteYukonGroup> getAllGroups();
 

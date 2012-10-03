@@ -33,8 +33,6 @@ import com.cannontech.core.dao.ContactDao;
 import com.cannontech.core.dao.NotFoundException;
 import com.cannontech.core.dao.YukonListDao;
 import com.cannontech.core.dao.YukonUserDao;
-import com.cannontech.core.roleproperties.YukonRoleProperty;
-import com.cannontech.core.roleproperties.dao.RolePropertyDao;
 import com.cannontech.database.data.activity.ActivityLogActions;
 import com.cannontech.database.data.lite.LiteYukonUser;
 import com.cannontech.stars.core.dao.InventoryBaseDao;
@@ -57,6 +55,8 @@ import com.cannontech.stars.util.StarsUtils;
 import com.cannontech.stars.web.util.ImportFields;
 import com.cannontech.stars.ws.LmDeviceDto;
 import com.cannontech.stars.ws.StarsControllableDeviceHelper;
+import com.cannontech.system.YukonSetting;
+import com.cannontech.system.dao.YukonSettingsDao;
 import com.cannontech.tools.email.EmailMessage;
 import com.cannontech.user.UserUtils;
 import com.cannontech.user.YukonUserContext;
@@ -84,7 +84,7 @@ public class AccountImportService {
     @Autowired private LmDeviceDtoConverter dtoConverter;
     @Autowired private StarsControllableDeviceHelper deviceHelper;
     @Autowired private EnrollmentHelperService enrollmentHelperService;
-    @Autowired private RolePropertyDao rolePropertyDao;
+    @Autowired private YukonSettingsDao yukonSettingsDao;
     
     private static final Logger log = YukonLogManager.getLogger(AccountImportService.class);
     private static final String LINE_SEPARATOR = System.getProperty("line.separator");
@@ -1187,7 +1187,7 @@ public class AccountImportService {
         }
         
         // Check to see if it exist in role property if not use default.
-        String baseDirRoleValue = rolePropertyDao.getPropertyStringValue(YukonRoleProperty.CUSTOMER_INFO_IMPORTER_FILE_LOCATION, user);
+        String baseDirRoleValue = yukonSettingsDao.getSettingStringValue(YukonSetting.CUSTOMER_INFO_IMPORTER_FILE_LOCATION);
 
         // Gets base Directory
         File baseDir = null;

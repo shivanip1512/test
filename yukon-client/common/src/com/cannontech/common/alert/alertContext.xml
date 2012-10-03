@@ -15,7 +15,6 @@
                 <ref bean="alarmAlertClearHandler"/>
             </list>
         </property>   
-        <property name="roleDao" ref="roleDao" />     
         <property name="timeSource" ref="timeSource" />     
     </bean>            
        

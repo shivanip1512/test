@@ -23,7 +23,6 @@ interface RoleDefs {
 	static final int LM_ROLEID_BASE = -900;
     static final int CBC_ONELINE_ROLEID_BASE = -1000;
 	
-	
 	/*
 	 * The base rolepropertyids for each category
 	*/ 

@@ -10,14 +10,15 @@ import java.util.Date;
 
 import com.cannontech.common.point.PointQuality;
 import com.cannontech.common.util.CtiUtilities;
-import com.cannontech.core.dao.DaoFactory;
 import com.cannontech.database.PoolManager;
 import com.cannontech.database.SqlUtils;
 import com.cannontech.database.data.point.PointTypes;
 import com.cannontech.message.dispatch.ClientConnection;
 import com.cannontech.message.dispatch.message.Multi;
 import com.cannontech.message.dispatch.message.PointData;
-import com.cannontech.roles.yukon.SystemRole;
+import com.cannontech.spring.YukonSpringHook;
+import com.cannontech.system.YukonSetting;
+import com.cannontech.system.dao.impl.YukonSettingsDaoImpl;
 
 /**
  * Replays the point changes of a given day in the past.
@@ -46,9 +47,9 @@ public class PointChangePlayer {
 		System.out.println("loaded " + pChanges.length + " point changes");
 		
 		ClientConnection conn = new ClientConnection();
-		conn.setHost( DaoFactory.getRoleDao().getGlobalPropertyValue( SystemRole.DISPATCH_MACHINE ) );
-		conn.setPort(Integer.parseInt
-				(DaoFactory.getRoleDao().getGlobalPropertyValue( SystemRole.DISPATCH_PORT).toString()));
+		YukonSettingsDaoImpl yukonSettingsDao = YukonSpringHook.getBean("yukonSettingDao",YukonSettingsDaoImpl.class);
+		conn.setHost(yukonSettingsDao.getSettingStringValue(YukonSetting.DISPATCH_MACHINE));
+		conn.setPort(yukonSettingsDao.getSettingIntegerValue(YukonSetting.DISPATCH_PORT));
 				
 		try {
 			conn.connect();

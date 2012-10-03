@@ -10,11 +10,14 @@ import com.cannontech.core.roleproperties.YukonRole;
 import com.cannontech.core.roleproperties.YukonRoleProperty;
 import com.cannontech.core.roleproperties.dao.RolePropertyDao;
 import com.cannontech.database.data.lite.LiteYukonUser;
+import com.cannontech.system.YukonSetting;
+import com.cannontech.system.dao.YukonSettingsDao;
 import com.cannontech.web.util.SpringWebUtil;
 
 public class WebSecurityChecker {
     @Autowired private RolePropertyDao rolePropertyDao;
     @Autowired private ConfigurationSource configurationSource;
+    @Autowired private YukonSettingsDao yukonSettingsDao;
     
     public void authorizeByCparm(MasterConfigBooleanKeysEnum configKey) {
         final LiteYukonUser user = getYukonUser();
@@ -52,6 +55,14 @@ public class WebSecurityChecker {
         }
     }
     
+    public void checkSystemSetting(YukonSetting setting) {
+        final LiteYukonUser user = getYukonUser();
+        
+        if (!yukonSettingsDao.checkSetting(setting)) {
+            throw new NotAuthorizedException("User " + user + " is not authorized to access this page.");
+        }
+    }
+
     public void checkFalseRoleProperty(YukonRoleProperty... rolePropertyIds) {
         final LiteYukonUser user = getYukonUser();
         

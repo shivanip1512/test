@@ -14,16 +14,16 @@ import javax.mail.internet.MimeBodyPart;
 import javax.mail.internet.MimeMessage;
 import javax.mail.internet.MimeMultipart;
 
-import org.springframework.beans.factory.annotation.Required;
+import org.springframework.beans.factory.annotation.Autowired;
 
-import com.cannontech.core.dao.RoleDao;
-import com.cannontech.roles.yukon.SystemRole;
+import com.cannontech.system.YukonSetting;
+import com.cannontech.system.dao.YukonSettingsDao;
 import com.cannontech.tools.email.EmailAttachmentMessageHolder;
 import com.cannontech.tools.email.EmailMessageHolder;
 import com.cannontech.tools.email.EmailService;
 
 public class EmailServiceImpl implements EmailService {
-    private RoleDao roleDao;
+    @Autowired private YukonSettingsDao YukonSettingsDao;
 
     public void sendMessage(EmailMessageHolder holder) throws MessagingException {
         
@@ -93,7 +93,7 @@ public class EmailServiceImpl implements EmailService {
         java.util.Properties systemProps = System.getProperties();
         
         //a property used internally by the JavaMail API
-        String smtpServer = roleDao.getGlobalPropertyValue( SystemRole.SMTP_HOST );
+        String smtpServer = YukonSettingsDao.getSettingStringValue(YukonSetting.SMTP_HOST);
         if( smtpServer == null ) {
             throw new MessagingException("No SMTP_HOST server defined in SystemRole.");
         }
@@ -103,8 +103,8 @@ public class EmailServiceImpl implements EmailService {
         
         MimeMessage _message = new MimeMessage(session);
         _message.setHeader("X-Mailer", "CannontechEmail");
-        
-        String from = roleDao.getGlobalPropertyValue( SystemRole.MAIL_FROM_ADDRESS );
+        String from = YukonSettingsDao.getSettingStringValue(YukonSetting.MAIL_FROM_ADDRESS);
+
         if (from == null) {
             throw new MessagingException("No MAIL_FROM_ADDRESS defined in SystemRole.");
         }
@@ -119,13 +119,4 @@ public class EmailServiceImpl implements EmailService {
         
         return _message;
     }
-    
-    
-    
-
-    @Required
-    public void setRoleDao(RoleDao roleDao) {
-        this.roleDao = roleDao;
-    }
-
 }

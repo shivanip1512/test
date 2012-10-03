@@ -10,6 +10,7 @@ import java.util.Map;
 
 import org.apache.commons.lang.StringUtils;
 import org.apache.log4j.Logger;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Required;
 
 import com.cannontech.clientutils.YukonLogManager;
@@ -19,13 +20,13 @@ import com.cannontech.common.alert.service.AlertClearHandler;
 import com.cannontech.common.alert.service.AlertService;
 import com.cannontech.common.util.ReverseList;
 import com.cannontech.common.util.TimeSource;
-import com.cannontech.core.dao.RoleDao;
 import com.cannontech.database.data.lite.LiteYukonUser;
-import com.cannontech.roles.yukon.ConfigurationRole;
+import com.cannontech.system.YukonSetting;
+import com.cannontech.system.dao.YukonSettingsDao;
 
-public class AlertServiceImpl implements AlertService{
+public class AlertServiceImpl implements AlertService {
     private Logger log = YukonLogManager.getLogger(AlertServiceImpl.class);
-    private RoleDao roleDao;
+    private YukonSettingsDao yukonSettingsDao;
     private TimeSource timeSource;
     private List<AlertClearHandler> alertClearHandlers = Collections.emptyList();
     private final Map<Integer,IdentifiableAlertImpl> map = 
@@ -40,7 +41,7 @@ public class AlertServiceImpl implements AlertService{
 
     public void setupMaxAge() {
         maxAge = Long.MAX_VALUE;
-        String hoursAsString = roleDao.getGlobalPropertyValue(ConfigurationRole.ALERT_TIMEOUT_HOURS);
+        String hoursAsString = yukonSettingsDao.getSettingStringValue(YukonSetting.ALERT_TIMEOUT_HOURS);
         if (StringUtils.isBlank(hoursAsString)) {
             log.debug("ALERT_TIMEOUT_HOURS was \"" + hoursAsString + "\", interpreted as blank");
         } else {
@@ -55,7 +56,7 @@ public class AlertServiceImpl implements AlertService{
         }
         log.debug("maxAge = " + maxAge);
     }
-    
+
     private void pruneOldEntries() {
         long minimumTime = timeSource.getCurrentMillis() - maxAge;
         Iterator<IdentifiableAlertImpl> iter = map.values().iterator();
@@ -132,23 +133,23 @@ public class AlertServiceImpl implements AlertService{
         this.alertClearHandlers = alertClearHandlers;
     }
     
-    @Required
-    public void setRoleDao(RoleDao roleDao) {
-        this.roleDao = roleDao;
-    }
-    
-    
-    @Required
-    public void setTimeSource(TimeSource timeSource) {
-        this.timeSource = timeSource;
-    }
-
     public long getMaxAge() {
         return maxAge;
     }
 
     public void setMaxAge(long maxAge) {
         this.maxAge = maxAge;
+    }
+    
+    // Leaving this method old-style Autowiring so this setter can be used in a test.
+    @Autowired
+    public void setYukonSettingsDao(YukonSettingsDao yukonSettingsDao) {
+        this.yukonSettingsDao = yukonSettingsDao;
+    }
+    
+    @Required
+    public void setTimeSource(TimeSource timeSource) {
+        this.timeSource = timeSource;
     }
 
 }

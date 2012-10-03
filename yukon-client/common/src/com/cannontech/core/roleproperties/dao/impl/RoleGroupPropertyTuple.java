@@ -1,7 +1,5 @@
 package com.cannontech.core.roleproperties.dao.impl;
 
-import org.apache.commons.lang.Validate;
-
 import com.cannontech.common.util.SqlFragmentSource;
 import com.cannontech.common.util.SqlStatementBuilder;
 import com.cannontech.core.roleproperties.NotInRoleException;
@@ -40,15 +38,6 @@ class RoleGroupPropertyTuple implements PropertyTuple{
         return sql;
     }
     
-    @Override
-    public boolean isSystemProperty() {
-        if(yukonRoleProperty.getRole().getCategory().isSystem()) {
-            return true;
-        }
-        Validate.notNull(roleGroupId, "The role group id can only be null when requesting System properties");
-        return false;
-    }
-        
     @Override
     public NotInRoleException notInRoleException() {
         return new RoleGroupNotInRoleException(yukonRoleProperty, roleGroupId);

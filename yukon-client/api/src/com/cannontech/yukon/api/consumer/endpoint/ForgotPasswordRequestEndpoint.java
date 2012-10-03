@@ -1,7 +1,6 @@
 package com.cannontech.yukon.api.consumer.endpoint;
 
 import org.apache.log4j.Logger;
-import org.jdom.Attribute;
 import org.jdom.Element;
 import org.jdom.Namespace;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -14,11 +13,11 @@ import com.cannontech.common.util.xml.SimpleXPathTemplate;
 import com.cannontech.common.util.xml.XmlUtils;
 import com.cannontech.common.util.xml.YukonXml;
 import com.cannontech.core.dao.NotFoundException;
-import com.cannontech.core.roleproperties.YukonRoleProperty;
-import com.cannontech.core.roleproperties.dao.RolePropertyDao;
 import com.cannontech.stars.core.dao.StarsCustAccountInformationDao;
 import com.cannontech.stars.core.model.RequestPword;
 import com.cannontech.stars.core.model.StarsRequestPword;
+import com.cannontech.system.YukonSetting;
+import com.cannontech.system.dao.YukonSettingsDao;
 import com.cannontech.yukon.api.stars.endpoint.RunThermostatProgramEndpoint;
 import com.cannontech.yukon.api.util.XMLFailureGenerator;
 import com.cannontech.yukon.api.util.XmlVersionUtils;
@@ -28,7 +27,7 @@ public class ForgotPasswordRequestEndpoint {
     private Namespace ns = YukonXml.getYukonNamespace();
     private Logger log = YukonLogManager.getLogger(RunThermostatProgramEndpoint.class);
     
-    @Autowired private RolePropertyDao rolePropertyDao;
+    @Autowired private YukonSettingsDao yukonSettingsDao;
     @Autowired private StarsCustAccountInformationDao starsCustAccountInformationDao;
 
     @PayloadRoot(namespace="http://yukon.cannontech.com/api", localPart="forgotPasswordRequest")
@@ -43,7 +42,7 @@ public class ForgotPasswordRequestEndpoint {
         try {
             //see if resetting the password even makes sense.  this assumes that the authentication
             //for the user is done through the corresponding UserLoginRequest webservice
-            if(!rolePropertyDao.checkProperty(YukonRoleProperty.ENABLE_PASSWORD_RECOVERY, null)){
+            if(!yukonSettingsDao.checkSetting(YukonSetting.ENABLE_PASSWORD_RECOVERY)){
                 throw new NotAuthorizedException("Password recovery is not available.");
             }
             

@@ -148,7 +148,6 @@ BILLING_ERRORS = {
                         
                         <tr>
                             <td colspan="2">
-                            
                                 <div id="addFieldsDropDown" style="display:none;">
                                     <br>
                                     <h4 style="display: inline;"><cti:msg2 key=".availableFields"/></h4><br>
@@ -159,7 +158,7 @@ BILLING_ERRORS = {
                                     </select>&nbsp;
                                     <cti:msg2 key=".add" var="add" />
                                     <cti:msg2 key=".done" var="done" />
-                                    <input type="button" onclick="addToSelected('<cti:getProperty property="yukon.BillingRole.DEFAULT_ROUNDING_MODE"/>');" value="${add}" style="width:55px;">
+                                    <input type="button" onclick="addToSelected('${defaultRoundingMode}');" value="${add}" style="width:55px;">
                                     <input type="button" onclick="addFieldButton();" value="${done}" style="width:59px;">
                                 </div>
                             

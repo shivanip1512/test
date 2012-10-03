@@ -65,19 +65,14 @@ import com.cannontech.message.porter.message.Return;
 import com.cannontech.message.util.Message;
 import com.cannontech.message.util.MessageEvent;
 import com.cannontech.message.util.MessageListener;
-import com.cannontech.roles.yukon.SystemRole;
 import com.cannontech.spring.YukonSpringHook;
+import com.cannontech.system.YukonSetting;
+import com.cannontech.system.dao.impl.YukonSettingsDaoImpl;
 import com.cannontech.yimp.util.DBFuncs;
 import com.cannontech.yimp.util.ImportFuncs;
 import com.cannontech.yukon.IServerConnection;
 import com.cannontech.yukon.conns.ConnPool;
 
-/**
- * @author jdayton
- *
- * To change the template for this generated type comment go to
- * Window&gt;Preferences&gt;Java&gt;Code Generation&gt;Code and Comments
- */
 public final class BulkImporter extends Observable implements MessageListener
 {
 	private Thread starter = null;
@@ -546,7 +541,7 @@ public void runImport(List<ImportData> imps) {
                 updateGroup(billingGroupBase, billGrp, yukonDevice, deviceGroupMemberEditorDao, deviceGroupEditorDao);
 
                 //write pending communication entry for porter thread to pick up
-                boolean importerCommunications = Boolean.parseBoolean(roleDao.getGlobalPropertyValue(SystemRole.BULK_IMPORTER_COMMUNICATIONS_ENABLED));
+                boolean importerCommunications =  YukonSpringHook.getBean("yukonSettingsDao",YukonSettingsDaoImpl.class).getSettingBooleanValue(YukonSetting.BULK_IMPORTER_COMMUNICATIONS_ENABLED);
                 if (importerCommunications){
                     Transaction.createTransaction(TransactionType.INSERT, pc).execute();
                 }

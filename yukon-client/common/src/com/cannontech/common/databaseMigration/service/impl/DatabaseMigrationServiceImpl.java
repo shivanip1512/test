@@ -12,8 +12,8 @@ import java.util.Comparator;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
-import java.util.Set;
 import java.util.Map.Entry;
+import java.util.Set;
 
 import org.apache.commons.lang.StringEscapeUtils;
 import org.apache.commons.lang.StringUtils;
@@ -73,13 +73,13 @@ import com.cannontech.common.util.RecentResultsCache;
 import com.cannontech.common.util.ScheduledExecutor;
 import com.cannontech.common.util.SqlStatementBuilder;
 import com.cannontech.common.util.TemplateProcessorFactory;
-import com.cannontech.core.roleproperties.YukonRoleProperty;
-import com.cannontech.core.roleproperties.dao.RolePropertyDao;
 import com.cannontech.database.PoolManager;
 import com.cannontech.database.SqlUtils;
 import com.cannontech.database.YukonJdbcTemplate;
 import com.cannontech.database.incrementer.NextValueHelper;
 import com.cannontech.i18n.YukonUserContextMessageSourceResolver;
+import com.cannontech.system.YukonSetting;
+import com.cannontech.system.dao.YukonSettingsDao;
 import com.cannontech.user.SystemUserContext;
 import com.cannontech.user.YukonUserContext;
 import com.google.common.collect.ArrayListMultimap;
@@ -112,11 +112,11 @@ public class DatabaseMigrationServiceImpl implements DatabaseMigrationService, R
     private ExportXMLGeneratorService exportXMLGeneratorService;
     private YukonJdbcTemplate yukonJdbcTemplate;
     private NextValueHelper nextValueHelper;
-    private RolePropertyDao rolePropertyDao;
     private TransactionOperations transactionTemplate;
     private TemplateProcessorFactory templateProcessorFactory;
     private ScheduledExecutor scheduledExecutor = null;
     private YukonUserContextMessageSourceResolver messageSourceResolver;
+    @Autowired private YukonSettingsDao yukonSettingsDao;
     
     private RecentResultsCache<ExportDatabaseMigrationStatus> exportStatusCache = 
     			new RecentResultsCache<ExportDatabaseMigrationStatus>();
@@ -1443,8 +1443,7 @@ public class DatabaseMigrationServiceImpl implements DatabaseMigrationService, R
      */
     private String getFileBasePath(YukonUserContext userContext) {
         String exportFilePath = 
-            rolePropertyDao.getPropertyStringValue(YukonRoleProperty.DATABASE_MIGRATION_FILE_LOCATION, 
-                                                   userContext.getYukonUser());
+            yukonSettingsDao.getSettingStringValue(YukonSetting.DATABASE_MIGRATION_FILE_LOCATION);
         return CtiUtilities.getYukonBase() + exportFilePath;
         
     }
@@ -1479,11 +1478,6 @@ public class DatabaseMigrationServiceImpl implements DatabaseMigrationService, R
     @Autowired
     public void setExportXMLGeneratorService(ExportXMLGeneratorService exportXMLGeneratorService) {
         this.exportXMLGeneratorService = exportXMLGeneratorService;
-    }
-
-    @Autowired
-    public void setRolePropertyDao(RolePropertyDao rolePropertyDao) {
-        this.rolePropertyDao = rolePropertyDao;
     }
 
     @Autowired

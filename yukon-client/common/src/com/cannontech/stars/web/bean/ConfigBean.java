@@ -9,9 +9,11 @@ import com.cannontech.core.dao.DaoFactory;
 import com.cannontech.database.data.lite.LiteYukonUser;
 import com.cannontech.roles.operator.AdministratorRole;
 import com.cannontech.roles.operator.InventoryRole;
-import com.cannontech.roles.yukon.SystemRole;
+import com.cannontech.spring.YukonSpringHook;
 import com.cannontech.stars.database.db.hardware.StaticLoadGroupMapping;
 import com.cannontech.stars.util.StarsUtils;
+import com.cannontech.system.YukonSetting;
+import com.cannontech.system.dao.impl.YukonSettingsDaoImpl;
 
 public class ConfigBean 
 {
@@ -25,8 +27,7 @@ public class ConfigBean
     public ConfigBean()
     {
         super();
-        
-        String batchProcessType = DaoFactory.getRoleDao().getGlobalPropertyValue( SystemRole.BATCHED_SWITCH_COMMAND_TOGGLE );
+        String batchProcessType = YukonSpringHook.getBean("yukonSettingsDao",YukonSettingsDaoImpl.class).getSettingStringValue(YukonSetting.BATCHED_SWITCH_COMMAND_TOGGLE);
         if(batchProcessType != null)
         {
             writeToFileAllowed = batchProcessType.compareTo(StarsUtils.BATCH_SWITCH_COMMAND_MANUAL) == 0 

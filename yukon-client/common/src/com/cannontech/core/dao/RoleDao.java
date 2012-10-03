@@ -19,17 +19,6 @@ public interface RoleDao {
     public LiteYukonRoleProperty[] getRoleProperties(int roleID_);
 
     /**
-     * Returns the LiteYukonRoleProperty specified by the roleProeprtyID_.
-     * This global value is a property that belongs to the Yukon Group.
-     *  
-     * @param LiteYukonRole
-     * @return String
-     * @deprecated use RolePropertyDao.getPropertyStringValue()
-     */
-    @Deprecated
-    public String getGlobalPropertyValue(int rolePropertyID_);
-
-    /**
      * Return a particular role property given a role property id.
      * @param propid
      * @return
@@ -96,21 +85,6 @@ public interface RoleDao {
                                            int roleID, 
                                            int rolePropertyID, 
                                            String newVal);
-    
-    /**
-     * @deprecated use RolePropertyDao.getPropertyEnumValue()
-     */
-    @Deprecated
-    public <E extends Enum<E>> E getGlobalRolePropertyValue(Class<E> class1, int rolePropertyID);
-
-    /**
-     * Returns true if the value of the role property is true, false otherwise.
-     * @param rolePropertyID
-     * @return
-     * @deprecated use RolePropertyDao.checkProperty()
-     */
-    @Deprecated
-    public boolean checkGlobalRoleProperty(int rolePropertyID);
     
     /**
      * This method returns a map that contains the roles and the groups associated with those roles.

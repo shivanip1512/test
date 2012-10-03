@@ -61,9 +61,7 @@
     <bean id="databaseVendorResolver" class="com.cannontech.database.vendor.MetaDataDatabaseVendorResolver"/>
     <bean id="vendorSpecificSqlBuilderFactory" class="com.cannontech.database.vendor.VendorSpecificSqlBuilderFactory"/>
 
-    <bean id="connectionPool" class="com.cannontech.yukon.conns.ConnPool" destroy-method="shutdown">
-        <property name="standaloneRoleDao" ref="standaloneRoleDao" />
-    </bean>
+    <bean id="connectionPool" class="com.cannontech.yukon.conns.ConnPool" destroy-method="shutdown"/>
 
     <bean id="notificationProxy" factory-bean="connectionPool" factory-method="getDefNotificationConn" scope="prototype" />
     <bean id="dispatchConnection" factory-bean="connectionPool" factory-method="getDefDispatchConn" scope="prototype" />

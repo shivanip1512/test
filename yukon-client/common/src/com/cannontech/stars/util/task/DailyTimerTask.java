@@ -13,25 +13,19 @@ import java.util.Map;
 import com.cannontech.clientutils.ActivityLogger;
 import com.cannontech.clientutils.CTILogger;
 import com.cannontech.common.device.commands.impl.CommandCompletionException;
-import com.cannontech.core.dao.DaoFactory;
 import com.cannontech.database.data.activity.ActivityLogActions;
-import com.cannontech.roles.yukon.SystemRole;
+import com.cannontech.spring.YukonSpringHook;
 import com.cannontech.stars.database.cache.StarsDatabaseCache;
 import com.cannontech.stars.database.data.lite.LiteStarsEnergyCompany;
 import com.cannontech.stars.util.ECUtils;
 import com.cannontech.stars.util.LMControlHistoryUtil;
 import com.cannontech.stars.util.StarsUtils;
 import com.cannontech.stars.util.SwitchCommandQueue;
-import com.cannontech.stars.util.WebClientException;
 import com.cannontech.stars.web.util.InventoryManagerUtil;
+import com.cannontech.system.YukonSetting;
+import com.cannontech.system.dao.impl.YukonSettingsDaoImpl;
 import com.cannontech.util.ServletUtil;
 
-/**
- * @author yao
- *
- * To change the template for this generated type comment go to
- * Window>Preferences>Java>Code Generation>Code and Comments
- */
 public class DailyTimerTask extends StarsTimerTask {
 	
 	private static final long TIMER_PERIOD = 1000 * 60 * 60 * 24;	// 1 day
@@ -62,8 +56,7 @@ public class DailyTimerTask extends StarsTimerTask {
 	 */
 	public void run() {
 		CTILogger.debug( "*** Daily timer task start ***" );
-		
-        String batchProcessType = DaoFactory.getRoleDao().getGlobalPropertyValue( SystemRole.BATCHED_SWITCH_COMMAND_TOGGLE );
+		String batchProcessType =  YukonSpringHook.getBean("yukonSettingsDao",YukonSettingsDaoImpl.class).getSettingStringValue(YukonSetting.BATCHED_SWITCH_COMMAND_TOGGLE);
         boolean noAuto = false;
         if(batchProcessType != null)
         {

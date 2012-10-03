@@ -7,25 +7,25 @@ import java.util.TimeZone;
 import org.apache.commons.lang.StringUtils;
 import org.joda.time.format.DateTimeFormat;
 import org.joda.time.format.DateTimeFormatter;
-import org.springframework.beans.factory.annotation.Required;
+import org.springframework.beans.factory.annotation.Autowired;
 
 import com.cannontech.clientutils.CTILogger;
 import com.cannontech.common.exception.BadConfigurationException;
 import com.cannontech.common.util.CtiUtilities;
-import com.cannontech.core.dao.RoleDao;
 import com.cannontech.core.service.SystemDateFormattingService;
-import com.cannontech.roles.yukon.ConfigurationRole;
+import com.cannontech.system.YukonSetting;
+import com.cannontech.system.dao.YukonSettingsDao;
 
 public class SystemDateFormattingServiceImpl implements SystemDateFormattingService {
 
-    private RoleDao roleDao;
+    @Autowired private YukonSettingsDao yukonSettingsDao;
     
     @Override
     public TimeZone getSystemTimeZone() throws BadConfigurationException {
         
         TimeZone timeZone;
         
-        String timeZoneStr = roleDao.getGlobalPropertyValue(ConfigurationRole.SYSTEM_TIMEZONE);
+        String timeZoneStr = yukonSettingsDao.getSettingStringValue(YukonSetting.SYSTEM_TIMEZONE);
 
         if (StringUtils.isNotBlank(timeZoneStr)) {   //Get the TimeZone from timeZoneStr
             try {
@@ -56,10 +56,5 @@ public class SystemDateFormattingServiceImpl implements SystemDateFormattingServ
     @Override
     public Calendar getSystemCalendar() {
         return Calendar.getInstance(getSystemTimeZone());
-    }
-    
-    @Required
-    public void setRoleDao(RoleDao roleDao) {
-        this.roleDao = roleDao;
     }
 }

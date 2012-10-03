@@ -21,12 +21,9 @@ import org.springframework.web.bind.annotation.RequestMethod;
 
 import com.cannontech.clientutils.CTILogger;
 import com.cannontech.core.dao.DuplicateException;
-import com.cannontech.core.dao.RoleDao;
 import com.cannontech.core.roleproperties.MspPaoNameAliasEnum;
 import com.cannontech.core.roleproperties.MultispeakMeterLookupFieldEnum;
-import com.cannontech.core.roleproperties.YukonRole;
 import com.cannontech.core.roleproperties.YukonRoleProperty;
-import com.cannontech.database.data.lite.LiteYukonGroup;
 import com.cannontech.i18n.YukonMessageSourceResolvable;
 import com.cannontech.multispeak.client.MultispeakDefines;
 import com.cannontech.multispeak.client.MultispeakFuncs;
@@ -35,7 +32,8 @@ import com.cannontech.multispeak.dao.MspObjectDao;
 import com.cannontech.multispeak.dao.MultispeakDao;
 import com.cannontech.multispeak.db.MultispeakInterface;
 import com.cannontech.multispeak.deploy.service.ErrorObject;
-import com.cannontech.roles.YukonGroupRoleDefs;
+import com.cannontech.system.YukonSetting;
+import com.cannontech.system.dao.YukonSettingsUpdater;
 import com.cannontech.web.amr.meter.service.MspMeterSearchService;
 import com.cannontech.web.common.flashScope.FlashScope;
 import com.cannontech.web.security.annotation.CheckRoleProperty;
@@ -46,11 +44,11 @@ import com.cannontech.web.util.ServletRequestEnumUtils;
 @CheckRoleProperty(YukonRoleProperty.ADMIN_MULTISPEAK_SETUP)
 public class MultispeakController {
     
-    private MultispeakDao multispeakDao;
-    private MultispeakFuncs multispeakFuncs;
-    private MspObjectDao mspObjectDao;
-    private RoleDao roleDao;
-    private MspMeterSearchService mspMeterSearchService;
+    @Autowired private MultispeakDao multispeakDao;
+    @Autowired private MultispeakFuncs multispeakFuncs;
+    @Autowired private MspObjectDao mspObjectDao;
+    @Autowired private MspMeterSearchService mspMeterSearchService;
+    @Autowired private YukonSettingsUpdater yukonSettingsUpdateDao;
     
     private MultispeakVendor defaultMspVendor;
 
@@ -357,38 +355,44 @@ public class MultispeakController {
         MultispeakMeterLookupFieldEnum mspMeterLookupField = ServletRequestEnumUtils.getEnumParameter(request, MultispeakMeterLookupFieldEnum.class, "mspMeterLookupField", oldMspMeterLookupField);
         
         try {
-            LiteYukonGroup liteYukonGroup = roleDao.getGroup( YukonGroupRoleDefs.GRP_YUKON );
+            //LiteYukonGroup liteYukonGroup = roleDao.getGroup( YukonGroupRoleDefs.GRP_YUKON );
             
             // update Primary CIS Vendor
             if (oldMspPrimaryCIS != mspPrimaryCIS) {
-                roleDao.updateGroupRoleProperty(liteYukonGroup, 
-                                                YukonRole.MULTISPEAK.getRoleId(),
-                                                YukonRoleProperty.MSP_PRIMARY_CB_VENDORID.getPropertyId(),
-                                                String.valueOf(mspPrimaryCIS));
+                yukonSettingsUpdateDao.updateSetting(YukonSetting.MSP_PRIMARY_CB_VENDORID, String.valueOf(mspPrimaryCIS));
+//                roleDao.updateGroupRoleProperty(liteYukonGroup, 
+//                                                YukonRole.MULTISPEAK.getRoleId(),
+//                                                YukonRoleProperty.MSP_PRIMARY_CB_VENDORID.getPropertyId(),
+//                                                String.valueOf(mspPrimaryCIS));
                 
                 //reload the search field methods since primaryCIS has changed
                 mspMeterSearchService.loadMspSearchFields(mspPrimaryCIS);
             }
             if (oldMspPaoNameAliasExtension != mspPaoNameAliasExtension) {
                 // update PaoName Alias Extension field name
-                roleDao.updateGroupRoleProperty(liteYukonGroup, 
-                                                YukonRole.MULTISPEAK.getRoleId(),
-                                                YukonRoleProperty.MSP_PAONAME_EXTENSION.getPropertyId(),
-                                                mspPaoNameAliasExtension);
+                yukonSettingsUpdateDao.updateSetting(YukonSetting.MSP_PAONAME_EXTENSION, mspPaoNameAliasExtension);
+
+//                roleDao.updateGroupRoleProperty(liteYukonGroup, 
+//                                                YukonRole.MULTISPEAK.getRoleId(),
+//                                                YukonRoleProperty.MSP_PAONAME_EXTENSION.getPropertyId(),
+//                                                mspPaoNameAliasExtension);
             }            
             if (oldMspPaoNameAlias != mspPaoNameAlias) {
                 // update PaoName Alias
-                roleDao.updateGroupRoleProperty(liteYukonGroup, 
-                                                YukonRole.MULTISPEAK.getRoleId(),
-                                                YukonRoleProperty.MSP_PAONAME_ALIAS.getPropertyId(),
-                                                String.valueOf(mspPaoNameAlias));
+                yukonSettingsUpdateDao.updateSetting(YukonSetting.MSP_PAONAME_ALIAS, String.valueOf(mspPaoNameAlias));
+//                roleDao.updateGroupRoleProperty(liteYukonGroup, 
+//                                                YukonRole.MULTISPEAK.getRoleId(),
+//                                                YukonRoleProperty.MSP_PAONAME_ALIAS.getPropertyId(),
+//                                                String.valueOf(mspPaoNameAlias));
             }
             if ( oldMspMeterLookupField != mspMeterLookupField) {
                 // update Meter Lookup Field
-                roleDao.updateGroupRoleProperty(liteYukonGroup, 
-                                                YukonRole.MULTISPEAK.getRoleId(),
-                                                YukonRoleProperty.MSP_METER_LOOKUP_FIELD.getPropertyId(),
-                                                String.valueOf(mspMeterLookupField));
+                yukonSettingsUpdateDao.updateSetting(YukonSetting.MSP_METER_LOOKUP_FIELD, String.valueOf(mspMeterLookupField));
+
+//                roleDao.updateGroupRoleProperty(liteYukonGroup, 
+//                                                YukonRole.MULTISPEAK.getRoleId(),
+//                                                YukonRoleProperty.MSP_METER_LOOKUP_FIELD.getPropertyId(),
+//                                                String.valueOf(mspMeterLookupField));
             }
         } catch (Exception e) {
             CTILogger.error( "Role Properties for MultiSpeak Setup not saved", e );
@@ -439,31 +443,5 @@ public class MultispeakController {
     @PostConstruct 
     public void init() throws Exception {
         defaultMspVendor = multispeakDao.getMultispeakVendor("Cannon", "");
-    }
-    
-    @Autowired
-    public void setMultispeakDao(MultispeakDao multispeakDao) {
-        this.multispeakDao = multispeakDao;
-    }
-    
-    @Autowired
-    public void setMultispeakFuncs(MultispeakFuncs multispeakFuncs) {
-        this.multispeakFuncs = multispeakFuncs;
-    }
-    
-    @Autowired
-    public void setMspObjectDao(MspObjectDao mspObjectDao) {
-        this.mspObjectDao = mspObjectDao;
-    }
-    
-    @Autowired
-    public void setRoleDao(RoleDao roleDao) {
-        this.roleDao = roleDao;
-    }
-    
-    @Autowired
-    public void setMspMeterSearchService(
-            MspMeterSearchService mspMeterSearchService) {
-        this.mspMeterSearchService = mspMeterSearchService;
     }
 }

@@ -73,8 +73,6 @@ public class UserGroupTableModel extends javax.swing.table.AbstractTableModel im
 	{
 		if( getRowAt(row).hasConflict() )
 			return CELL_COLORS[1];
-		else if( getRowAt(row).isDisabled() )
-			return CELL_COLORS[2];
 		else
 			return CELL_COLORS[0];
 	}
@@ -166,8 +164,7 @@ public class UserGroupTableModel extends javax.swing.table.AbstractTableModel im
 			 	case COL_NAME:
 					return 
 						sr.getLiteYukonGroup().toString() +
-						(sr.hasConflict() ? "  (role conflict)" : "") +
-						(sr.isDisabled() ? "  (RESERVED)" : "");
+						(sr.hasConflict() ? "  (role conflict)" : "");
 					
 				default:
 					return null;
@@ -185,7 +182,7 @@ public class UserGroupTableModel extends javax.swing.table.AbstractTableModel im
 	 */
 	public boolean isCellEditable(int row, int column)
 	{
-		return( column == COL_SELECTED && !getRowAt(row).isDisabled() );
+		return( column == COL_SELECTED);
 	}
 	
 	/**

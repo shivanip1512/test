@@ -10,9 +10,10 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
 import com.cannontech.common.exception.NotAuthorizedException;
-import com.cannontech.core.dao.DaoFactory;
-import com.cannontech.roles.yukon.AuthenticationRole;
+import com.cannontech.spring.YukonSpringHook;
 import com.cannontech.stars.core.model.RequestPword;
+import com.cannontech.system.YukonSetting;
+import com.cannontech.system.dao.impl.YukonSettingsDaoImpl;
 import com.cannontech.util.ServletUtil;
 
 public class PWordRequest extends javax.servlet.http.HttpServlet 
@@ -49,8 +50,8 @@ public class PWordRequest extends javax.servlet.http.HttpServlet
         reqPword.setEnergyCompany( energyComp );
 
 		String returnURI = "";
-		
-		if(!DaoFactory.getRoleDao().checkGlobalRoleProperty(AuthenticationRole.ENABLE_PASSWORD_RECOVERY)) {
+		boolean authorized = YukonSpringHook.getBean("yukonSettingsDao",YukonSettingsDaoImpl.class).checkSetting(YukonSetting.ENABLE_PASSWORD_RECOVERY);
+		if(!authorized) {
 		    throw new NotAuthorizedException("Missing a required role or property to use this page.");
         }
 		else if( !reqPword.isValidParams() )

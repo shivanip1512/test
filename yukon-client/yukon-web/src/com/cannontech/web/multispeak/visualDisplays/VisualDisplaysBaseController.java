@@ -9,15 +9,15 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.servlet.ModelAndView;
 import org.springframework.web.servlet.mvc.multiaction.MultiActionController;
 
-import com.cannontech.core.roleproperties.YukonRoleProperty;
 import com.cannontech.core.service.DateFormattingService;
 import com.cannontech.core.service.DateFormattingService.DateFormatEnum;
 import com.cannontech.servlet.YukonUserContextUtils;
+import com.cannontech.system.YukonSetting;
 import com.cannontech.user.YukonUserContext;
-import com.cannontech.web.security.annotation.CheckRoleProperty;
+import com.cannontech.web.security.annotation.CheckSystemSetting;
 import com.cannontech.web.util.JsonView;
 
-@CheckRoleProperty(YukonRoleProperty.MSP_LM_MAPPING_SETUP)
+@CheckSystemSetting(YukonSetting.MSP_LM_MAPPING_SETUP)
 public class VisualDisplaysBaseController extends MultiActionController {
 
 	private DateFormattingService dateFormattingService;

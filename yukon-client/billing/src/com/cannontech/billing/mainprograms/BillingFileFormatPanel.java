@@ -26,8 +26,10 @@ import com.cannontech.common.device.groups.service.DeviceGroupTreeFactory;
 import com.cannontech.common.device.groups.service.NonHiddenDeviceGroupPredicate;
 import com.cannontech.common.gui.tree.CustomRenderJTree;
 import com.cannontech.common.login.ClientSession;
-import com.cannontech.roles.yukon.BillingRole;
+import com.cannontech.roles.application.BillingRole;
 import com.cannontech.spring.YukonSpringHook;
+import com.cannontech.system.YukonSetting;
+import com.cannontech.system.dao.impl.YukonSettingsDaoImpl;
 
 public class BillingFileFormatPanel extends javax.swing.JPanel implements java.awt.event.ActionListener, java.awt.event.FocusListener, java.util.Observer
 {
@@ -762,8 +764,7 @@ private String getInputFileText()
 	{
 		try
 		{
-			inputFileText = ClientSession.getInstance().getRolePropertyValue(
-					BillingRole.INPUT_FILE );
+		    inputFileText = YukonSpringHook.getBean("yukonSettingsDao",YukonSettingsDaoImpl.class).getSettingStringValue(YukonSetting.INPUT_FILE);
 		}
 		catch( Exception e)
 		{
@@ -1063,7 +1064,7 @@ private void initialize() {
 	  	
 		if(session == null) 		
 			System.exit(-1);
-				
+        
 		if(!session.checkRole(BillingRole.ROLEID)) 
 		{
 		  JOptionPane.showMessageDialog(null, "User: '" + session.getUser().getUsername() + "' is not authorized to use this application, exiting.", "Access Denied", JOptionPane.WARNING_MESSAGE);

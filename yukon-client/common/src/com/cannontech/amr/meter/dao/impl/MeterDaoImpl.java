@@ -36,8 +36,6 @@ import com.cannontech.core.dao.DBPersistentDao;
 import com.cannontech.core.dao.NotFoundException;
 import com.cannontech.core.dao.PaoDao;
 import com.cannontech.core.dao.impl.YukonPaoRowMapper;
-import com.cannontech.core.roleproperties.YukonRoleProperty;
-import com.cannontech.core.roleproperties.dao.RolePropertyDao;
 import com.cannontech.core.service.impl.PaoLoader;
 import com.cannontech.database.ListRowCallbackHandler;
 import com.cannontech.database.MaxRowCalbackHandlerRse;
@@ -47,6 +45,8 @@ import com.cannontech.database.YukonResultSet;
 import com.cannontech.database.YukonRowMapper;
 import com.cannontech.database.data.lite.LiteYukonPAObject;
 import com.cannontech.database.data.pao.YukonPAObject;
+import com.cannontech.system.YukonSetting;
+import com.cannontech.system.dao.YukonSettingsDao;
 import com.cannontech.util.NaturalOrderComparator;
 import com.google.common.base.Function;
 import com.google.common.collect.ImmutableList;
@@ -54,12 +54,12 @@ import com.google.common.collect.Lists;
 import com.google.common.collect.Maps;
 
 public class MeterDaoImpl implements MeterDao, InitializingBean {
-    private DBPersistentDao dbPersistentDao;
     private JdbcOperations jdbcOps;
     private YukonJdbcTemplate yukonJdbcTemplate;
-    private MeterRowMapper meterRowMapper;
-    private PaoDao paoDao;
-    private RolePropertyDao rolePropertyDao;
+    @Autowired private DBPersistentDao dbPersistentDao;
+    @Autowired private MeterRowMapper meterRowMapper;
+    @Autowired private PaoDao paoDao;
+    @Autowired private YukonSettingsDao yukonSettingsDao;
     
     private String retrieveOneByIdSql;
     private String retrieveOneByMeterNumberSql;
@@ -245,7 +245,7 @@ public class MeterDaoImpl implements MeterDao, InitializingBean {
     public String getFormattedDeviceName(Meter device) throws IllegalArgumentException{
         
         MeterDisplayFieldEnum meterDisplayFieldEnum = 
-        	rolePropertyDao.getPropertyEnumValue(YukonRoleProperty.DEVICE_DISPLAY_TEMPLATE, MeterDisplayFieldEnum.class, null);
+                yukonSettingsDao.getSettingEnumValue(YukonSetting.DEVICE_DISPLAY_TEMPLATE, MeterDisplayFieldEnum.class);
 
         String formattedName = new DisplayableMeter(device, meterDisplayFieldEnum).getName();
         return formattedName;
@@ -257,7 +257,7 @@ public class MeterDaoImpl implements MeterDao, InitializingBean {
             @Override
             public Map<PaoIdentifier, DisplayablePao> getForPaos(Iterable<PaoIdentifier> identifiers) {
                 MeterDisplayFieldEnum meterDisplayFieldEnum = 
-                    rolePropertyDao.getPropertyEnumValue(YukonRoleProperty.DEVICE_DISPLAY_TEMPLATE, MeterDisplayFieldEnum.class, null);
+                        yukonSettingsDao.getSettingEnumValue(YukonSetting.DEVICE_DISPLAY_TEMPLATE, MeterDisplayFieldEnum.class);
 
                 List<Meter> metersForYukonDevices = getMetersForPaoIdentifiers(identifiers);
 
@@ -428,27 +428,6 @@ public class MeterDaoImpl implements MeterDao, InitializingBean {
         LiteYukonPAObject liteYukonPAO = paoDao.getLiteYukonPAO(meter.getDeviceId());
         YukonPAObject yukonPaobject = (YukonPAObject) dbPersistentDao.retrieveDBPersistent(liteYukonPAO);
         dbPersistentDao.performDBChange(yukonPaobject, TransactionType.UPDATE);
-
-    }
-
-    @Autowired
-    public void setMeterRowMapper(MeterRowMapper meterRowMapper) {
-        this.meterRowMapper = meterRowMapper;
-    }
-
-    @Autowired
-    public void setRolePropertyDao(RolePropertyDao rolePropertyDao) {
-    	this.rolePropertyDao = rolePropertyDao;
-    }
-    
-    @Autowired
-    public void setDbPersistentDao(DBPersistentDao dbPersistentDao) {
-        this.dbPersistentDao = dbPersistentDao;
-    }
-
-    @Autowired
-    public void setPaoDao(PaoDao paoDao) {
-        this.paoDao = paoDao;
     }
     
     @Autowired
