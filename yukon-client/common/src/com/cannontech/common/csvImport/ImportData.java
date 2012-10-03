@@ -3,6 +3,8 @@ package com.cannontech.common.csvImport;
 import java.util.Iterator;
 import java.util.List;
 
+import org.apache.commons.lang.StringUtils;
+
 import com.google.common.collect.Lists;
 
 /**
@@ -151,7 +153,7 @@ public class ImportData {
     }
     
     private boolean isRowBlank(String[] row) {
-        if(row.length == 0 || (row.length == 1 && row[0].equals(""))) {
+        if(row.length == 0 || (row.length == 1 && StringUtils.isBlank(row[0]))) {
             return true;
         }
         return false;
