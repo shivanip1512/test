@@ -138,7 +138,7 @@ public class OperatorLoginController {
         return "energyCompany/operatorLogin/create.jsp"; 
     }
     
-    @RequestMapping(method=RequestMethod.POST, value="update", params="create")
+    @RequestMapping(method=RequestMethod.POST, value="update", params="save")
     public String createOperatorLogin(YukonUserContext userContext, ModelMap modelMap, int ecId,
                                       final @ModelAttribute ("operatorLogin") LoginBackingBean operatorLogin,
                                       BindingResult bindingResult, FlashScope flashScope,

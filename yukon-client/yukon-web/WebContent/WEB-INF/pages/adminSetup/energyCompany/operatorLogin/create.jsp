@@ -78,7 +78,7 @@
         <div class="pageActionArea">
             <!-- Save/Update -->
             <cti:displayForPageEditModes modes="CREATE">
-                <cti:button nameKey="save" name="create" type="submit"/>
+                <cti:button nameKey="save" name="save" type="submit"/>
             </cti:displayForPageEditModes>
             
             <cti:displayForPageEditModes modes="EDIT">
@@ -102,7 +102,7 @@
             <cti:url var="operatorLoginHomeUrl" value="${baseUrl}/home">
                 <cti:param name="ecId" value="${ecId}"/>
             </cti:url>
-            <cti:button nameKey="cancel" href="${operatorLoginHomeUrl}"/>
+            <cti:button nameKey="cancel" name="cancel" href="${operatorLoginHomeUrl}"/>
         </div>
      </form:form>
   

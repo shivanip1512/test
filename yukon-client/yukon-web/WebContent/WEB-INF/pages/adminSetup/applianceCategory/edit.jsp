@@ -341,7 +341,7 @@
                 <cti:param name="applianceCategoryId" value="${applianceCategoryId}"/>
             </cti:url>
         </c:if>
-        <cti:button nameKey="cancel" href="${backUrl}"/>
+        <cti:button nameKey="cancel" name="cancel" href="${backUrl}"/>
     </cti:displayForPageEditModes>
 </div>
 
