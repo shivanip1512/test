@@ -164,82 +164,6 @@ private:
 };
 
 
-void initialize_area(Test_CtiCCSubstationBusStore* store, CtiCCArea* area)
-{
-    store->insertAreaToPaoMap(area);
-    area->setDisableFlag(false);
-}
-
-
-void initialize_station(Test_CtiCCSubstationBusStore* store, CtiCCSubstation* station, CtiCCArea* parentArea)
-{
-    station->setSaEnabledFlag(false);
-    station->setParentId(parentArea->getPaoId());
-    parentArea->getSubstationIds().push_back(station->getPaoId());
-    store->insertSubstationToPaoMap(station);
-    station->setDisableFlag(false);
-}
-
-
-void initialize_bus(Test_CtiCCSubstationBusStore* store, CtiCCSubstationBus* bus, CtiCCSubstation* parentStation)
-{
-    bus->setParentId(parentStation->getPaoId());
-    bus->setEventSequence(22);
-    bus->setCurrentVarLoadPointId(1);
-    bus->setCurrentVarLoadPointValue(55, CtiTime());
-    bus->setVerificationFlag(false);
-    parentStation->getCCSubIds().push_back(bus->getPaoId());
-    store->insertSubBusToPaoMap(bus);
-    bus->setDisableFlag(false);
-    bus->setVerificationFlag(false);
-    bus->setPerformingVerificationFlag(false);
-    bus->setVerificationDoneFlag(false);
-}
-
-
-void initialize_feeder(Test_CtiCCSubstationBusStore* store, CtiCCFeeder* feed, CtiCCSubstationBus* parentBus, long displayOrder)
-{
-
-    long feederId = feed->getPaoId();
-    long busId = parentBus->getPaoId();
-    feed->setParentId(busId);
-    feed->setDisplayOrder(displayOrder);
-    parentBus->getCCFeeders().push_back(feed);
-    store->insertItemsIntoMap(CtiCCSubstationBusStore::FeederIdSubBusIdMap, &feederId, &busId);
-    store->insertFeederToPaoMap(feed);
-    feed->setDisableFlag(false);
-    feed->setVerificationFlag(false);
-    feed->setPerformingVerificationFlag(false);
-    feed->setVerificationDoneFlag(false);
-
-    feed->setStrategy( -1 );        // init to NoStrategy
-
-    feed->setCurrentVarPointQuality(NormalQuality);
-    feed->setWaitForReCloseDelayFlag(false);
-
-}
-
-
-void initialize_capbank(Test_CtiCCSubstationBusStore* store, CtiCCCapBank* cap, CtiCCFeeder* parentFeed, long displayOrder)
-{
-    long bankId = cap->getPaoId();
-    long fdrId = parentFeed->getPaoId();
-    cap->setParentId(fdrId);
-    cap->setControlOrder(displayOrder);
-    cap->setCloseOrder(displayOrder);
-    cap->setTripOrder(displayOrder);
-    parentFeed->getCCCapBanks().push_back(cap);
-    store->insertItemsIntoMap(CtiCCSubstationBusStore::CapBankIdFeederIdMap, &bankId, &fdrId);
-    cap->setOperationalState(CtiCCCapBank::SwitchedOperationalState);
-    cap->setDisableFlag(false);
-    cap->setVerificationFlag(false);
-    cap->setPerformingVerificationFlag(false);
-    cap->setVerificationDoneFlag(false);
-    cap->setBankSize(600);
-
-    cap->setControlPointId(1);
-}
-
 BOOST_AUTO_TEST_CASE(test_cap_control_ivvc_algorithm_voltage_flatness_calculation)
 {
     struct test_IVVCAlgorithm : public IVVCAlgorithm
@@ -339,7 +263,7 @@ BOOST_AUTO_TEST_CASE(test_cap_control_ivvc_algorithm_bus_weight_calculation)
 
         double test_calculateBusWeight(const double Kv, const double Vf, const double Kp, const double powerFactor)
         {
-            return calculateBusWeight(Kv, Vf, Kp, powerFactor, 1.0);    // Tying the last param to 1.0...
+            return calculateBusWeight(Kv, Vf, Kp, powerFactor, 1.0, 0.0);    // Targeting unity power factor and no voltage violation cost.
         }
     };
 
@@ -484,53 +408,6 @@ BOOST_AUTO_TEST_CASE(test_cap_control_ivvc_algorithm_regulator_tap_operation_cal
 }
 
 
-BOOST_AUTO_TEST_CASE(test_cap_control_ivvc_algorithm)
-{
-    Test_CtiCCSubstationBusStore* store = new Test_CtiCCSubstationBusStore();
-    CtiCCSubstationBusStore::setInstance(store);
-
-    StrategyManager _strategyManager( std::auto_ptr<StrategyUnitTestLoader>( new StrategyUnitTestLoader ) );
-    _strategyManager.reloadAll();
-
-    CtiCCArea           *area     = create_object<CtiCCArea>(1, "Area-1");
-    CtiCCSubstation     *station  = create_object<CtiCCSubstation>(2, "Substation-A");
-    CtiCCSubstationBus  *bus      = create_object<CtiCCSubstationBus>(3, "SubBus-A1");
-    CtiCCFeeder         *feeder   = create_object<CtiCCFeeder>(11, "Feeder");
-    CtiCCCapBank        *capbank1 = create_object<CtiCCCapBank>(14, "Capbank1");
-    CtiCCCapBank        *capbank2 = create_object<CtiCCCapBank>(15, "Capbank2");
-    CtiCCCapBank        *capbank3 = create_object<CtiCCCapBank>(16, "Capbank3");
-
-    Test_CtiCapController *controller = new Test_CtiCapController();
-    CtiCapController::setInstance(controller);
-
-    initialize_area(store, area);
-    initialize_station(store, station, area);
-    initialize_bus(store, bus, station);
-
-    initialize_feeder(store, feeder, bus, 1);
-
-    initialize_capbank(store, capbank1, feeder, 1);
-    initialize_capbank(store, capbank2, feeder, 2);
-    initialize_capbank(store, capbank3, feeder, 3);
-
-    bus->setStrategyManager( &_strategyManager );
-    bus->setStrategy(100);
-
-    // END of setup....
-
-
-
-
-
-    BOOST_CHECK( true );        // something here so hudson doesn't choke on an empty unit test
-
-
-
-    store->deleteInstance();
-
-}
-
-
 BOOST_AUTO_TEST_CASE(test_cap_control_ivvc_algorithm_zone_subsets_by_subbus)
 {
     ZoneManager zoneManager( std::auto_ptr<ZoneUnitTestLoader>( new ZoneUnitTestLoader ) );
@@ -646,5 +523,173 @@ BOOST_AUTO_TEST_CASE(test_cap_control_ivvc_algorithm_all_children_of_zone_with_z
 
     BOOST_CHECK_EQUAL_COLLECTIONS( results.begin(), results.end(), subset.begin(), subset.end() );
 }
+
+
+BOOST_AUTO_TEST_CASE(test_cap_control_ivvc_algorithm_voltage_violation_component_defaults_and_assignments)
+{
+    IVVCStrategy        strategy( PointDataRequestFactoryPtr( new PointDataRequestFactory ) );
+
+    // test the defaults
+    //
+    BOOST_CHECK_CLOSE(    3.0, strategy.getLowVoltageViolationBandwidth(), 1e-6 );
+    BOOST_CHECK_CLOSE(    1.0, strategy.getHighVoltageViolationBandwidth(), 1e-6 );
+    BOOST_CHECK_CLOSE( -150.0, strategy.getEmergencyLowVoltageViolationCost(), 1e-6 );
+    BOOST_CHECK_CLOSE(  -10.0, strategy.getLowVoltageViolationCost(), 1e-6 );
+    BOOST_CHECK_CLOSE(   70.0, strategy.getHighVoltageViolationCost(), 1e-6 );
+    BOOST_CHECK_CLOSE(  300.0, strategy.getEmergencyHighVoltageViolationCost(), 1e-6 );
+
+    // load in new values and check they reflect correctly
+    //
+    strategy.restoreParameters("Low Voltage Violation",  "BANDWIDTH",      "2.5");
+    strategy.restoreParameters("Low Voltage Violation",  "COST",           "-31.2");
+    strategy.restoreParameters("Low Voltage Violation",  "EMERGENCY_COST", "-123.45");
+    strategy.restoreParameters("High Voltage Violation", "BANDWIDTH",      "5.75");
+    strategy.restoreParameters("High Voltage Violation", "COST",           "95.9");
+    strategy.restoreParameters("High Voltage Violation", "EMERGENCY_COST", "246.8");
+
+    BOOST_CHECK_CLOSE(     2.5, strategy.getLowVoltageViolationBandwidth(), 1e-6 );
+    BOOST_CHECK_CLOSE(    5.75, strategy.getHighVoltageViolationBandwidth(), 1e-6 );
+    BOOST_CHECK_CLOSE( -123.45, strategy.getEmergencyLowVoltageViolationCost(), 1e-6 );
+    BOOST_CHECK_CLOSE(   -31.2, strategy.getLowVoltageViolationCost(), 1e-6 );
+    BOOST_CHECK_CLOSE(    95.9, strategy.getHighVoltageViolationCost(), 1e-6 );
+    BOOST_CHECK_CLOSE(   246.8, strategy.getEmergencyHighVoltageViolationCost(), 1e-6 );
+}
+
+
+BOOST_AUTO_TEST_CASE(test_cap_control_ivvc_algorithm_voltage_violation_component)
+{
+    struct test_IVVCAlgorithm : public IVVCAlgorithm
+    {
+        test_IVVCAlgorithm() : IVVCAlgorithm( PointDataRequestFactoryPtr( new PointDataRequestFactory ) ) {  }
+
+        using IVVCAlgorithm::voltageViolationCalculator;
+    };
+
+    test_IVVCAlgorithm  algorithm;
+    IVVCStrategy        strategy( PointDataRequestFactoryPtr( new PointDataRequestFactory ) );
+
+    strategy.restoreParameters("Lower Volt Limit", "PEAK", "110.0");
+    strategy.restoreParameters("Upper Volt Limit", "PEAK", "130.0");
+
+    BOOST_CHECK_CLOSE(  110.0, strategy.getLowerVoltLimit(true), 1e-6 );
+    BOOST_CHECK_CLOSE(  130.0, strategy.getUpperVoltLimit(true), 1e-6 );
+
+    // voltages between the lower and upper limit inclusive
+    //  
+    for ( double voltage = 110.0; voltage <= 130.0; voltage += 0.5 )
+    {
+        BOOST_CHECK_CLOSE(  0.0, algorithm.voltageViolationCalculator( voltage, &strategy, true ), 1e-6 );
+    }
+
+    // voltages less than lower limit but not emergency -- cost increase by 10 per volt under
+    //
+    BOOST_CHECK_CLOSE(   5.0, algorithm.voltageViolationCalculator( 109.5, &strategy, true ), 1e-6 );
+    BOOST_CHECK_CLOSE(  10.0, algorithm.voltageViolationCalculator( 109.0, &strategy, true ), 1e-6 );
+    BOOST_CHECK_CLOSE(  15.0, algorithm.voltageViolationCalculator( 108.5, &strategy, true ), 1e-6 );
+    BOOST_CHECK_CLOSE(  20.0, algorithm.voltageViolationCalculator( 108.0, &strategy, true ), 1e-6 );
+    BOOST_CHECK_CLOSE(  25.0, algorithm.voltageViolationCalculator( 107.5, &strategy, true ), 1e-6 );
+    BOOST_CHECK_CLOSE(  30.0, algorithm.voltageViolationCalculator( 107.0, &strategy, true ), 1e-6 );
+
+    // emergency voltages less than lower limit -- cost increase by 150 per volt under
+    //
+    BOOST_CHECK_CLOSE( 105.0, algorithm.voltageViolationCalculator( 106.5, &strategy, true ), 1e-6 );
+    BOOST_CHECK_CLOSE( 180.0, algorithm.voltageViolationCalculator( 106.0, &strategy, true ), 1e-6 );
+    BOOST_CHECK_CLOSE( 255.0, algorithm.voltageViolationCalculator( 105.5, &strategy, true ), 1e-6 );
+    BOOST_CHECK_CLOSE( 330.0, algorithm.voltageViolationCalculator( 105.0, &strategy, true ), 1e-6 );
+    BOOST_CHECK_CLOSE( 405.0, algorithm.voltageViolationCalculator( 104.5, &strategy, true ), 1e-6 );
+    BOOST_CHECK_CLOSE( 480.0, algorithm.voltageViolationCalculator( 104.0, &strategy, true ), 1e-6 );
+
+    // voltages greater than upper limit but not emergency -- cost increase by 70 per volt over
+    //
+    BOOST_CHECK_CLOSE(  35.0, algorithm.voltageViolationCalculator( 130.5, &strategy, true ), 1e-6 );
+    BOOST_CHECK_CLOSE(  70.0, algorithm.voltageViolationCalculator( 131.0, &strategy, true ), 1e-6 );
+
+    // emergency voltages greater than upper limit -- cost increase by 300 per volt over
+    //
+    BOOST_CHECK_CLOSE( 220.0, algorithm.voltageViolationCalculator( 131.5, &strategy, true ), 1e-6 );
+    BOOST_CHECK_CLOSE( 370.0, algorithm.voltageViolationCalculator( 132.0, &strategy, true ), 1e-6 );
+    BOOST_CHECK_CLOSE( 520.0, algorithm.voltageViolationCalculator( 132.5, &strategy, true ), 1e-6 );
+    BOOST_CHECK_CLOSE( 670.0, algorithm.voltageViolationCalculator( 133.0, &strategy, true ), 1e-6 );
+}
+
+
+BOOST_AUTO_TEST_CASE(test_cap_control_ivvc_algorithm_voltage_violation_component_calculation)
+{
+    struct test_IVVCAlgorithm : public IVVCAlgorithm
+    {
+        test_IVVCAlgorithm() : IVVCAlgorithm( PointDataRequestFactoryPtr( new PointDataRequestFactory ) ) {  }
+
+        using IVVCAlgorithm::calculateVoltageViolation;
+    };
+
+    test_IVVCAlgorithm  algorithm;
+    IVVCStrategy        strategy( PointDataRequestFactoryPtr( new PointDataRequestFactory ) );
+
+    PointValue    _value;
+    PointValueMap _voltages;
+
+    _value.quality   = NormalQuality;
+    _value.timestamp = CtiTime();
+
+    _value.value    = 120.0;
+    _voltages[1000] = _value;
+
+    _value.value    = 121.2;
+    _voltages[1001] = _value;
+
+    _value.value    = 122.1;
+    _voltages[1002] = _value;
+
+    _value.value    = 119.6;
+    _voltages[1003] = _value;
+
+    _value.value    = 120.3;
+    _voltages[1004] = _value;
+
+    _value.value    = 119.8;
+    _voltages[1005] = _value;
+
+    _value.value    = 118.2;
+    _voltages[1006] = _value;
+
+    _value.value    = 121.9;
+    _voltages[1007] = _value;
+
+    strategy.restoreParameters("Lower Volt Limit", "PEAK", "115.0");
+    strategy.restoreParameters("Upper Volt Limit", "PEAK", "125.0");
+
+    // all points within the limits...
+    //
+    BOOST_CHECK_CLOSE( 0.0, algorithm.calculateVoltageViolation( _voltages, &strategy, true ), 1e-6 );
+
+    // add a low non-emergency low voltage
+    //
+    _value.value    = 114.5;
+    _voltages[1008] = _value;
+
+    BOOST_CHECK_CLOSE( 5.0, algorithm.calculateVoltageViolation( _voltages, &strategy, true ), 1e-6 );
+
+    // make it an emergency low voltage
+    //
+    _value.value    = 111.0;
+    _voltages[1008] = _value;
+
+    BOOST_CHECK_CLOSE( 180.0, algorithm.calculateVoltageViolation( _voltages, &strategy, true ), 1e-6 );
+
+    // add in a non-emergency high voltage
+    //
+    _value.value    = 126.0;
+    _voltages[1009] = _value;
+
+    BOOST_CHECK_CLOSE( 250.0, algorithm.calculateVoltageViolation( _voltages, &strategy, true ), 1e-6 );
+
+    // make it an emergency high voltage
+    //
+    _value.value    = 127.0;
+    _voltages[1009] = _value;
+
+    BOOST_CHECK_CLOSE( 550.0, algorithm.calculateVoltageViolation( _voltages, &strategy, true ), 1e-6 );
+}
+
 
 BOOST_AUTO_TEST_SUITE_END()

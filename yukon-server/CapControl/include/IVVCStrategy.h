@@ -43,6 +43,14 @@ public:
     const double getDecisionWeight(const bool isPeak) const;
     const double getVoltageRegulationMargin(const bool isPeak) const;
 
+    // the following don't distinguish between peak and off-peak
+    const double getLowVoltageViolationBandwidth() const;
+    const double getHighVoltageViolationBandwidth() const;
+    const double getEmergencyLowVoltageViolationCost() const;
+    const double getLowVoltageViolationCost() const;
+    const double getHighVoltageViolationCost() const;
+    const double getEmergencyHighVoltageViolationCost() const;
+
     const unsigned getMaxConsecutiveCapBankOps(const bool isPeak) const;
 
     virtual void registerControllable(const long paoid);
@@ -84,6 +92,13 @@ private:
     double _offpeakVoltageRegulationMargin;
     unsigned _peakMaxConsecutiveCapBankOps;
     unsigned _offpeakMaxConsecutiveCapBankOps;
+
+    double _lowVoltageViolationBandwidth;
+    double _highVoltageViolationBandwidth;
+    double _emergencyLowVoltageViolationCost;
+    double _lowVoltageViolationCost;
+    double _highVoltageViolationCost;
+    double _emergencyHighVoltageViolationCost;
 
     typedef std::map<long, std::pair<unsigned, IVVCStatePtr> >   PaoToStateMap;     // PaoID -> { reference count, state }
 

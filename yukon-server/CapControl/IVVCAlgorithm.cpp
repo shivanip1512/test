@@ -1552,10 +1552,14 @@ bool IVVCAlgorithm::busAnalysisState(IVVCStatePtr state, CtiCCSubstationBusPtr s
     //calculate current flatness of the bus
     double Vf = calculateVf(pointValues);
 
+    //calculate current voltage violation cost
+    double violationCost = calculateVoltageViolation( pointValues, strategy, isPeakTime );
+
     //calculate current weight of the bus
     double currentBusWeight = calculateBusWeight(strategy->getVoltWeight(isPeakTime), Vf,
                                                  strategy->getPFWeight(isPeakTime), PFBus,
-                                                 (strategy->getTargetPF(isPeakTime) / 100.0) );
+                                                 (strategy->getTargetPF(isPeakTime) / 100.0),
+                                                 violationCost );
 
     double targetPowerFactorVars = calculateTargetPFVars(strategy->getTargetPF(isPeakTime), wattValue);
 
@@ -1575,6 +1579,7 @@ bool IVVCAlgorithm::busAnalysisState(IVVCStatePtr state, CtiCCSubstationBusPtr s
         dout << "Subbus VARs         : " << varValue << std::endl;
         dout << "Subbus Flatness     : " << Vf << std::endl;
         dout << "Subbus Power Factor : " << PFBus << std::endl;
+        dout << "Subbus ViolationCost: " << violationCost << std::endl;
         dout << "Subbus Weight       : " << currentBusWeight << std::endl;
         dout << "Target PF VARs      : " << targetPowerFactorVars << std::endl;
     }
@@ -1655,6 +1660,9 @@ bool IVVCAlgorithm::busAnalysisState(IVVCStatePtr state, CtiCCSubstationBusPtr s
                 //calculate estimated flatness of the bus if current bank switches state
                 state->_estimated[currentBank->getPaoId()].flatness = calculateVf(deltas);
 
+                //calculate estimated voltage violation cost
+                state->_estimated[currentBank->getPaoId()].voltViolation = calculateVoltageViolation( deltas, strategy, isPeakTime );
+
                 //calculate the VAR target window
                 double varLowLimit   = targetPowerFactorVars - (currentBank->getBankSize() * (strategy->getMinBankOpen(isPeakTime) / 100.0));
                 double varUpperLimit = targetPowerFactorVars + (currentBank->getBankSize() * (strategy->getMinBankClose(isPeakTime) / 100.0));
@@ -1688,7 +1696,8 @@ bool IVVCAlgorithm::busAnalysisState(IVVCStatePtr state, CtiCCSubstationBusPtr s
                 state->_estimated[currentBank->getPaoId()].busWeight =
                     calculateBusWeight(strategy->getVoltWeight(isPeakTime), state->_estimated[currentBank->getPaoId()].flatness,
                                        (pfmodifier * strategy->getPFWeight(isPeakTime)), state->_estimated[currentBank->getPaoId()].powerFactor,
-                                       (strategy->getTargetPF(isPeakTime) / 100.0));
+                                       (strategy->getTargetPF(isPeakTime) / 100.0),
+                                       state->_estimated[currentBank->getPaoId()].voltViolation);
 
                 // Log our estimated calculations
                 if (_CC_DEBUG & CC_DEBUG_IVVC)
@@ -1699,6 +1708,7 @@ bool IVVCAlgorithm::busAnalysisState(IVVCStatePtr state, CtiCCSubstationBusPtr s
                     dout << "Estimated Subbus VARs         : " << estVarValue << std::endl;
                     dout << "Estimated Subbus Flatness     : " << state->_estimated[currentBank->getPaoId()].flatness << std::endl;
                     dout << "Estimated Subbus Power Factor : " << state->_estimated[currentBank->getPaoId()].powerFactor << std::endl;
+                    dout << "Estimated Subbus ViolationCost: " << state->_estimated[currentBank->getPaoId()].voltViolation << std::endl;
                     dout << "Estimated Subbus Weight       : " << state->_estimated[currentBank->getPaoId()].busWeight << std::endl;
                 }
             }
@@ -2110,7 +2120,54 @@ int IVVCAlgorithm::calculateVte(const PointValueMap &voltages, IVVCStrategy* str
 }
 
 
-double IVVCAlgorithm::calculateBusWeight(const double Kv, const double Vf, const double Kp, const double powerFactor, const double targetPowerFactor)
+double IVVCAlgorithm::voltageViolationCalculator(const double voltage, const IVVCStrategy * strategy, const bool isPeakTime)
+{
+    double cost = 0.0;
+
+    if ( voltage < strategy->getLowerVoltLimit(isPeakTime) )
+    {
+        const double kneePoint = strategy->getLowerVoltLimit(isPeakTime) - strategy->getLowVoltageViolationBandwidth();
+
+        cost = ( voltage <= kneePoint )
+            ? strategy->getEmergencyLowVoltageViolationCost() * ( voltage - kneePoint )
+                - strategy->getLowVoltageViolationCost() * strategy->getLowVoltageViolationBandwidth()
+            : strategy->getLowVoltageViolationCost() * ( voltage - strategy->getLowerVoltLimit(isPeakTime) );
+    }
+
+    if ( voltage >= strategy->getUpperVoltLimit(isPeakTime) )
+    {
+        const double kneePoint = strategy->getUpperVoltLimit(isPeakTime) + strategy->getHighVoltageViolationBandwidth();
+
+        cost = ( voltage >= kneePoint )
+            ? strategy->getEmergencyHighVoltageViolationCost() * ( voltage - kneePoint )
+                + strategy->getHighVoltageViolationCost() * strategy->getHighVoltageViolationBandwidth()
+            : strategy->getHighVoltageViolationCost() * ( voltage - strategy->getUpperVoltLimit(isPeakTime) );
+    }
+
+    return cost;
+}
+
+
+static bool pointValueComparator(const PointValueMap::value_type & v1, const PointValueMap::value_type & v2)
+{
+    return v1.second.value < v2.second.value;
+}
+
+
+double IVVCAlgorithm::calculateVoltageViolation(const PointValueMap & voltages,
+                                                const IVVCStrategy * strategy, const bool isPeakTime)
+{
+    PointValueMap::const_iterator minElement = std::min_element( voltages.begin(), voltages.end(), pointValueComparator );
+    PointValueMap::const_iterator maxElement = std::max_element( voltages.begin(), voltages.end(), pointValueComparator );
+
+    return voltageViolationCalculator( minElement->second.value, strategy, isPeakTime )
+            + voltageViolationCalculator( maxElement->second.value, strategy, isPeakTime );
+}
+
+
+double IVVCAlgorithm::calculateBusWeight(const double Kv, const double Vf,
+                                         const double Kp, const double powerFactor, const double targetPowerFactor,
+                                         const double voltageViolationCost)
 {
     // convert from [-1.0, 1.0] to [0.0, 2.0]
     const double biasedTargetPF = (targetPowerFactor < 0.0) ? 2.0 + targetPowerFactor : targetPowerFactor;
@@ -2129,7 +2186,7 @@ double IVVCAlgorithm::calculateBusWeight(const double Kv, const double Vf, const
 
     const double powerFactorWeight = (Kp * (e * std::pow( Pf, f ) + g));
 
-    return (voltageWeight + powerFactorWeight);
+    return (voltageWeight + powerFactorWeight + voltageViolationCost);
 }
 
 

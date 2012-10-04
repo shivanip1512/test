@@ -90,10 +90,15 @@ class IVVCState
             bool            operated;
             double          flatness;
             double          powerFactor;
+            double          voltViolation;
             double          busWeight;
             CtiCCCapBankPtr capbank;
 
-            EstimatedData() : operated(false), flatness(0.0), powerFactor(0.0), busWeight(0.0), capbank(0) {  }
+            EstimatedData()
+                : operated(false), flatness(0.0), powerFactor(0.0), voltViolation(0.0), busWeight(0.0), capbank(0)
+            {
+                // empty
+            }
         };
 
         typedef std::map<long, EstimatedData> EstimatedDataMap;

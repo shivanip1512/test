@@ -30,7 +30,13 @@ IVVCStrategy::IVVCStrategy(const PointDataRequestFactoryPtr& factory)
     _offpeakVoltageRegulationMargin(1.0),
     _ivvcAlgorithm(factory),
     _peakMaxConsecutiveCapBankOps(2),
-    _offpeakMaxConsecutiveCapBankOps(2)
+    _offpeakMaxConsecutiveCapBankOps(2),
+    _lowVoltageViolationBandwidth(3.0),
+    _highVoltageViolationBandwidth(1.0),
+    _emergencyLowVoltageViolationCost(-150.0),
+    _lowVoltageViolationCost(-10.0),
+    _highVoltageViolationCost(70.0),
+    _emergencyHighVoltageViolationCost(300.0)
 {
 }
 
@@ -168,6 +174,36 @@ void IVVCStrategy::restoreParameters( const std::string &name, const std::string
             _offpeakMaxConsecutiveCapBankOps = static_cast<unsigned>(newValue);
         }
     }
+    else if (name == "Low Voltage Violation")
+    {
+        if (type == "BANDWIDTH")
+        {
+            _lowVoltageViolationBandwidth = newValue;
+        }
+        else if (type == "COST")
+        {
+            _lowVoltageViolationCost = newValue;
+        }
+        else    // type == "EMERGENCY_COST"
+        {
+            _emergencyLowVoltageViolationCost = newValue;
+        }
+    }
+    else if (name == "High Voltage Violation")
+    {
+        if (type == "BANDWIDTH")
+        {
+            _highVoltageViolationBandwidth = newValue;
+        }
+        else if (type == "COST")
+        {
+            _highVoltageViolationCost = newValue;
+        }
+        else    // type == "EMERGENCY_COST"
+        {
+            _emergencyHighVoltageViolationCost = newValue;
+        }
+    }
 }
 
 
@@ -258,6 +294,42 @@ const double IVVCStrategy::getDecisionWeight(const bool isPeak) const
 const double IVVCStrategy::getVoltageRegulationMargin(const bool isPeak) const
 {
     return isPeak ? _peakVoltageRegulationMargin : _offpeakVoltageRegulationMargin;
+}
+
+
+const double IVVCStrategy::getLowVoltageViolationBandwidth() const
+{
+    return _lowVoltageViolationBandwidth;
+}
+
+
+const double IVVCStrategy::getHighVoltageViolationBandwidth() const
+{
+    return _highVoltageViolationBandwidth;
+}
+
+
+const double IVVCStrategy::getEmergencyLowVoltageViolationCost() const
+{
+    return _emergencyLowVoltageViolationCost;
+}
+
+
+const double IVVCStrategy::getLowVoltageViolationCost() const
+{
+    return _lowVoltageViolationCost;
+}
+
+
+const double IVVCStrategy::getHighVoltageViolationCost() const
+{
+    return _highVoltageViolationCost;
+}
+
+
+const double IVVCStrategy::getEmergencyHighVoltageViolationCost() const
+{
+    return _emergencyHighVoltageViolationCost;
 }
 
 
