@@ -15,7 +15,7 @@ import com.cannontech.clientutils.CTILogger;
 import com.cannontech.common.util.SqlStatementBuilder;
 
 
-public class VarImbalanceOnExecutionModel extends BareReportModelBase<VarImbalanceOnExecutionModel.ModelRow> implements CapControlFilterable {
+public class VarImbalanceOnExecutionModel extends BareDatedReportModelBase<VarImbalanceOnExecutionModel.ModelRow> implements CapControlFilterable {
     
     // dependencies
     private JdbcOperations jdbcOps;
@@ -78,7 +78,7 @@ public class VarImbalanceOnExecutionModel extends BareReportModelBase<VarImbalan
         
         StringBuffer sql = buildSQLStatement();
         CTILogger.info(sql.toString()); 
-        Integer[] args = {imbalance, imbalance,imbalance};
+        Object[] args = {getStartDate(), getStopDate(), imbalance, imbalance,imbalance};
         jdbcOps.query(sql.toString(), args ,new RowCallbackHandler() {
             public void processRow(ResultSet rs) throws SQLException {
                 
@@ -134,7 +134,9 @@ public class VarImbalanceOnExecutionModel extends BareReportModelBase<VarImbalan
         sql.append("cceventlog cAction, ");
         sql.append("cceventlog cOutcome ");
         sql.append("where ");
-        sql.append("cAction.pointid = cOutcome.pointid ");
+        sql.append("cAction.DateTime >= ?"); 
+        sql.append("and cAction.DateTime <= ?");
+        sql.append("and cAction.pointid = cOutcome.pointid ");
         sql.append("and p.pointid = cAction.pointid ");
         sql.append("and cAction.actionId = cOutcome.actionId ");
         sql.append("and cAction.actionid > 0 ");
