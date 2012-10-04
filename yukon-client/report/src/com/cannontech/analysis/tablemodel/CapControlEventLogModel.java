@@ -1,7 +1,6 @@
 package com.cannontech.analysis.tablemodel;
 
 import java.sql.ResultSet;
-import java.util.Collections;
 import java.util.Comparator;
 import java.util.Date;
 import java.util.Vector;
@@ -14,8 +13,8 @@ import com.cannontech.analysis.data.device.capcontrol.CapControlStatusData;
 import com.cannontech.analysis.report.SimpleYukonReportBase;
 import com.cannontech.clientutils.CTILogger;
 import com.cannontech.common.util.CtiUtilities;
+import com.cannontech.common.util.SqlStatementBuilder;
 import com.cannontech.core.dao.DaoFactory;
-import com.cannontech.core.dao.NotFoundException;
 import com.cannontech.database.PoolManager;
 import com.cannontech.database.SqlUtils;
 import com.cannontech.database.data.lite.LiteState;
@@ -67,29 +66,24 @@ public class CapControlEventLogModel extends FilterObjectsReportModelBase<Object
 		    CapControlStatusData data1 = (CapControlStatusData)o1;
 		    CapControlStatusData data2 = (CapControlStatusData)o2;
 	        
-		    //Order by Sub Bus first
-		    try {
-		    String thisValStr = DaoFactory.getPaoDao().getYukonPAOName(data1.getSubBusPaoID().intValue());
-		    String anotherValStr = DaoFactory.getPaoDao().getYukonPAOName(data2.getSubBusPaoID().intValue());
-			
-			if( thisValStr.equalsIgnoreCase(anotherValStr))
+		    String thisValStr = data1.getSubBusName();
+		    String anotherValStr = data2.getSubBusName();			
+			if( thisValStr.equals(anotherValStr))
 			{
 //				Order by Feeder
-				thisValStr = DaoFactory.getPaoDao().getYukonPAOName(data1.getFeederPaoID().intValue());
-				anotherValStr = DaoFactory.getPaoDao().getYukonPAOName(data2.getFeederPaoID().intValue());
+				thisValStr = data1.getFeederName();
+				anotherValStr = data2.getFeederName();
 
-				if( thisValStr.equalsIgnoreCase(anotherValStr))
+				if( thisValStr.equals(anotherValStr))
 				{
 //					Order by CapBank
-					thisValStr = DaoFactory.getPaoDao().getYukonPAOName(data1.getCapBankPaoID().intValue());
-					anotherValStr = DaoFactory.getPaoDao().getYukonPAOName(data2.getCapBankPaoID().intValue());
+					thisValStr = data1.getBankName();
+					anotherValStr = data2.getBankName();
 				}
 			}
 		    
-			return (thisValStr.compareToIgnoreCase(anotherValStr));
-		    }catch(NotFoundException nfe) {
-                return -1;
-            }
+			return (thisValStr.compareTo(anotherValStr));
+
 		}
 		public boolean equals(Object obj){
 			return false;
@@ -124,51 +118,58 @@ public class CapControlEventLogModel extends FilterObjectsReportModelBase<Object
 	 */
 	public StringBuffer buildSQLStatement()
 	{
-		StringBuffer sql = new StringBuffer	("SELECT CCLOG.SUBID, CCLOG.FEEDERID, P.PAOBJECTID, P.POINTNAME, CCLOG.DATETIME, CCLOG.TEXT, CCLOG.VALUE, CCLOG.SEQID, EVENTTYPE " +
-											" FROM CCEVENTLOG CCLOG, POINT P " +
-											" WHERE CCLOG.POINTID = P.POINTID " +
-											" AND CCLOG.SEQID IN (SELECT DISTINCT CCLOG2.SEQID FROM CCEVENTLOG CCLOG2" +
-												" WHERE CCLOG2.EVENTTYPE = 7 " +	//7 is for the start of a schedule
-												" AND CCLOG2.DATETIME > ? " + 
-												" AND CCLOG2.DATETIME <= ?");
-												if (getPaoIDs() != null && getPaoIDs().length > 0)
-												{
-												    if(getFilterModelType().equals(ReportFilter.AREA)) { 
-								                        sql.append(" AND CCLOG.areaid IN ( " + getPaoIDs()[0] +" ");
-								                        for (int i = 1; i < getPaoIDs().length; i++)
-								                            sql.append(" , " + getPaoIDs()[i]);
-								                                
-								                        sql.append(")");
-								                    }else if(getFilterModelType().equals(ReportFilter.CAPCONTROLFEEDER)) { 
-								                        sql.append(" AND CCLOG.FEEDERID IN ( " + getPaoIDs()[0] +" ");
-								                        for (int i = 1; i < getPaoIDs().length; i++)
-								                            sql.append(" , " + getPaoIDs()[i]);
-								                                
-								                        sql.append(")");
-								                    }else if(getFilterModelType().equals(ReportFilter.CAPCONTROLSUBBUS)) { 
-								                        sql.append(" AND CCLOG.SUBID IN ( " + getPaoIDs()[0] +" ");
-								                        for (int i = 1; i < getPaoIDs().length; i++)
-								                            sql.append(" , " + getPaoIDs()[i]);
-								                                
-								                        sql.append(")");
-								                    }else if(getFilterModelType().equals(ReportFilter.CAPCONTROLSUBSTATION)) { 
-								                        sql.append(" AND CCLOG.STATIONID IN ( " + getPaoIDs()[0] +" ");
-								                        for (int i = 1; i < getPaoIDs().length; i++)
-								                            sql.append(" , " + getPaoIDs()[i]);
-								                                
-								                        sql.append(")");
-								                    }
-												}
-												sql.append(" ) ");	//ending paren for IN statement
-												
-												if( !isShowAllActivity())
-													sql.append(" AND EVENTTYPE != 4 ");	//!= 4 is to remove the op increment logs
+	    SqlStatementBuilder sql = new SqlStatementBuilder();
+		sql.append("SELECT CCLOG.SUBID, YPO1.PaoName BusName, CCLOG.FEEDERID, YPO2.PaoName FeederName, P.PAOBJECTID, YPO3.PaoName BankName, P.POINTNAME,"); 
+		sql.append("CCLOG.DATETIME, CCLOG.TEXT, CCLOG.VALUE, CCLOG.SEQID, EVENTTYPE");  
+		sql.append("FROM CCEVENTLOG CCLOG");
+		sql.append("Join Point P on CCLOG.PointId = P.PointId ");
+		sql.append("JOIN YukonPaObject YPO1 on YPO1.paobjectId = CCLOG.SUBID");
+		sql.append("JOIN YukonPaObject YPO2 on YPO2.paobjectId = CCLOG.FEEDERID");
+		sql.append("JOIN YukonPaObject YPO3 on YPO3.paobjectId = P.PAOBJECTID ");
+		sql.append("WHERE CCLOG.SEQID IN (");
+		sql.append("  SELECT DISTINCT CCLOG2.SEQID"); 
+		sql.append("  FROM CCEVENTLOG CCLOG2 ");
+		sql.append("  WHERE CCLOG2.EVENTTYPE = 7");  
+		sql.append("    AND CCLOG2.DATETIME > ?  ");
+		sql.append("    AND CCLOG2.DATETIME <= ? ");
+		
+        if (getPaoIDs() != null && getPaoIDs().length > 0)
+        {
+            if (getFilterModelType().equals(ReportFilter.AREA)) {
+                sql.append(" AND CCLOG.areaid IN ( " + getPaoIDs()[0] + " ");
+                for (int i = 1; i < getPaoIDs().length; i++)
+                    sql.append(" , " + getPaoIDs()[i]);
 
+                sql.append(")");
+            } else if (getFilterModelType().equals(ReportFilter.CAPCONTROLFEEDER)) {
+                sql.append(" AND CCLOG.FEEDERID IN ( " + getPaoIDs()[0] + " ");
+                for (int i = 1; i < getPaoIDs().length; i++)
+                    sql.append(" , " + getPaoIDs()[i]);
 
-				/*Note: Verify the control states when processing the result set instead of in the query.
-				 		Need all states if the most recent one is in getControlStates()*/
-				sql.append(" ORDER BY CCLOG.SUBID, SEQID, CCLOG.DATETIME, LOGID");
-		return sql;
+                sql.append(")");
+            } else if (getFilterModelType().equals(ReportFilter.CAPCONTROLSUBBUS)) {
+                sql.append(" AND CCLOG.SUBID IN ( " + getPaoIDs()[0] + " ");
+                for (int i = 1; i < getPaoIDs().length; i++)
+                    sql.append(" , " + getPaoIDs()[i]);
+
+                sql.append(")");
+            } else if (getFilterModelType().equals(ReportFilter.CAPCONTROLSUBSTATION)) {
+                sql.append(" AND CCLOG.STATIONID IN ( " + getPaoIDs()[0] + " ");
+                for (int i = 1; i < getPaoIDs().length; i++)
+                    sql.append(" , " + getPaoIDs()[i]);
+
+                sql.append(")");
+            }
+        }
+        sql.append(" ) "); // ending paren for IN statement
+
+        if (!isShowAllActivity())
+            sql.append(" AND EVENTTYPE != 4 "); // != 4 is to remove the op increment logs
+
+		/*Note: Verify the control states when processing the result set instead of in the query.
+		 		Need all states if the most recent one is in getControlStates()*/
+        sql.append("ORDER BY BusName, FeederName, BankName, CCLOG.SEQID, CCLOG.DATETIME");
+		return new StringBuffer(sql.getSql());
 	}
 		
 	@Override
@@ -177,7 +178,6 @@ public class CapControlEventLogModel extends FilterObjectsReportModelBase<Object
 		//Reset all objects, new data being collected!
 		setData(null);
 		
-		int rowCount = 0;
 		StringBuffer sql = buildSQLStatement();
 		CTILogger.info(sql.toString());	
 		
@@ -201,14 +201,15 @@ public class CapControlEventLogModel extends FilterObjectsReportModelBase<Object
 				pstmt.setTimestamp(2, new java.sql.Timestamp( getStopDate().getTime() ));
 				CTILogger.info("START DATE >= " + getStartDate() + " - STOP DATE < " + getStopDate());
 				rset = pstmt.executeQuery();
-				Vector tempObjects = new Vector();
+				Vector<CapControlStatusData> tempObjects = new Vector<CapControlStatusData>();
 				int prevCapBankID = -1;
 				CapControlStatusData ccStatusData = null;
 				while( rset.next())
 				{
 					try
 					{
-						int capBankPaoID = rset.getInt(3);
+						int capBankPaoID = rset.getInt(5);
+						String bankName = rset.getString(6);
 						if (! isShowAllActivity())	//selectively add to data Vector 
 						{
 							if( prevCapBankID != capBankPaoID)
@@ -235,16 +236,17 @@ public class CapControlEventLogModel extends FilterObjectsReportModelBase<Object
 								prevCapBankID= capBankPaoID;
 							}
 						}
-						Integer subBusPaoID = new Integer(rset.getInt(1));
-						Integer feederPaoID = new Integer(rset.getInt(2));
-						String pointName = new String(rset.getString(4));
-						Date changedateTime = rset.getTimestamp(5);
-						String eventText = new String(rset.getString(6));
-						Integer controlStatus = new Integer(rset.getInt(7));
-						Integer eventType = new Integer(rset.getInt(9));
-						
+						Integer subBusPaoID = rset.getInt(1);
+						String subBusName = rset.getString(2);
+						Integer feederPaoID = rset.getInt(3);
+						String feederName = rset.getString(4);
+						String pointName = rset.getString(7);
+						Date changedateTime = rset.getTimestamp(8);
+						String eventText = rset.getString(9);
+						Integer controlStatus = rset.getInt(10);
+						Integer eventType = rset.getInt(11);
 									
-						ccStatusData= new CapControlStatusData( new Integer(capBankPaoID), subBusPaoID, feederPaoID, pointName, changedateTime, eventText, controlStatus, eventType);
+						ccStatusData= new CapControlStatusData(capBankPaoID, bankName, subBusPaoID, subBusName, feederPaoID, feederName, pointName, changedateTime, eventText, controlStatus, eventType);
 						tempObjects.add(ccStatusData);
 					}
 					catch(java.sql.SQLException e)
@@ -271,15 +273,7 @@ public class CapControlEventLogModel extends FilterObjectsReportModelBase<Object
                     } else
                         getData().addAll(tempObjects); //Add all objects at some point!
                 }				
-                tempObjects.clear();				
-
-				if(getData() != null)
-				{
-//					Order the records
-					Collections.sort(getData(), ccStatusDataComparator);
-					if( getSortOrder() == DESCENDING)
-					    Collections.reverse(getData());				
-				}
+                tempObjects.clear();	
 			}
 		}
 			
@@ -309,17 +303,17 @@ public class CapControlEventLogModel extends FilterObjectsReportModelBase<Object
 				case SUB_BUS_NAME_COLUMN:
 					if( ccStatData.getSubBusPaoID().intValue() == Device.SYSTEM_DEVICE_ID)
 						return null;
-				    return DaoFactory.getPaoDao().getYukonPAOName(ccStatData.getSubBusPaoID().intValue());
+				    return ccStatData.getSubBusName();
 
 				case FEEDER_NAME_COLUMN:
 					if( ccStatData.getFeederPaoID().intValue() == Device.SYSTEM_DEVICE_ID)
 						return null;
-				    return DaoFactory.getPaoDao().getYukonPAOName(ccStatData.getFeederPaoID().intValue());
+				    return ccStatData.getFeederName();
 				
 				case CAP_BANK_NAME_COLUMN:
 					if( ccStatData.getCapBankPaoID().intValue() == Device.SYSTEM_DEVICE_ID)
 						return null;
-					return DaoFactory.getPaoDao().getYukonPAOName(ccStatData.getCapBankPaoID().intValue());
+					return ccStatData.getBankName();
 					
 				case STATUS_VALUE_COLUMN:
 					if( ccStatData.getEventType().intValue() == 4)//4 is for OpCount

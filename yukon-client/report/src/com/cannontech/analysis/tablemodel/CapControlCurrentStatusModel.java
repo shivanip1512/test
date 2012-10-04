@@ -95,14 +95,14 @@ public class CapControlCurrentStatusModel extends FilterObjectsReportModelBase<O
 	        
             if( ORDER_TYPE_STRINGS[0].equals(getOrderBy()) ) {
     		    //Order by Sub Bus first
-    		    String thisValStr = DaoFactory.getPaoDao().getYukonPAOName(data1.getSubBusPaoID().intValue());
-    		    String anotherValStr = DaoFactory.getPaoDao().getYukonPAOName(data2.getSubBusPaoID().intValue());
+    		    String thisValStr = data1.getSubBusName();
+    		    String anotherValStr = data2.getSubBusName();
     			
     			if( thisValStr.equalsIgnoreCase(anotherValStr))
     			{
     //				Order by Feeder
-    				thisValStr = DaoFactory.getPaoDao().getYukonPAOName(data1.getFeederPaoID().intValue());
-    				anotherValStr = DaoFactory.getPaoDao().getYukonPAOName(data2.getFeederPaoID().intValue());
+    				thisValStr = data1.getFeederName();
+    				anotherValStr = data2.getFeederName();
     
     				if( thisValStr.equalsIgnoreCase(anotherValStr))
     				{
@@ -177,8 +177,12 @@ public class CapControlCurrentStatusModel extends FilterObjectsReportModelBase<O
             String userName = rset.getString(9);
             String userComment = rset.getString(10);
             
+            String bankName = rset.getString("BankName");
+            String feederName = rset.getString("FeederName");
+            String busName = rset.getString("SubBusName");
+            
 			CapControlStatusData ccStatusData= new CapControlStatusData(
-			        capBankPaoID, subBusPaoID, feederPaoID,
+			        capBankPaoID, bankName, subBusPaoID, busName, feederPaoID, feederName,
 			        controlStatus, new Date(lastChangedateTime.getTime()), operationalState, capAddress, 
 			        						capDriveDir, disableFlag, userName, userComment, controlOrder);
 			getData().add(ccStatusData);
@@ -195,7 +199,7 @@ public class CapControlCurrentStatusModel extends FilterObjectsReportModelBase<O
 	{
 		StringBuffer sql = new StringBuffer	("SELECT DCC.CAPBANKID, CCF.SUBSTATIONBUSID, CCFBL.FEEDERID " +
 				", DCC.CONTROLSTATUS, DCC.LASTSTATUSCHANGETIME, cb.operationalstate, CCFBL.CONTROLORDER " +
-				", cba.drivedirections, yu.username, ccc.capcomment FROM DYNAMICCCCAPBANK DCC " +
+				", cba.drivedirections, yu.username, ccc.capcomment, YPO2.PaoName SubBusName, YPO3.PaoName FeederName, YPO1.PaoName BankName   FROM DYNAMICCCCAPBANK DCC " +
 				" join capbank cb on cb.deviceid = dcc.capbankid " +
 				" join capbankadditional cba on cba.deviceid = cb.deviceid " +
 				" join CCFEEDERBANKLIST CCFBL on DCC.CAPBANKID = CCFBL.DEVICEID " +
@@ -203,6 +207,9 @@ public class CapControlCurrentStatusModel extends FilterObjectsReportModelBase<O
 				" join ccsubstationsubbuslist ssb on ssb.substationbusid = CCF.substationbusid " + 
 				" join ccsubareaassignment saa on saa.substationbusid = ssb.substationid " +
 				" join capcontrolarea ca on saa.areaid = ca.areaid " +
+				" join YukonPaObject YPO1 on YPO1.PaObjectId = DCC.CapBankId" +
+				" join YukonPaObject YPO2 on YPO2.PaObjectId = CCF.SUBSTATIONBUSID" +
+				" join YukonPaObject YPO3 on YPO3.PaObjectId = CCFBL.FEEDERID" +
 				" left outer join (select  paoid, max(commenttime) maxCommentTime from capcontrolcomment " +
 				" where action like '%ABLED' group by paoid ) ccct on ccct.paoid = cb.deviceid " +
 				" left outer join capcontrolcomment ccc on ccc.commenttime = ccct.maxcommenttime and ccc.paoid = ccct.paoid " +
@@ -332,12 +339,12 @@ public class CapControlCurrentStatusModel extends FilterObjectsReportModelBase<O
 		    switch( columnIndex)
 			{
 				case SUB_BUS_NAME_COLUMN:
-				    return DaoFactory.getPaoDao().getYukonPAOName(ccStatData.getSubBusPaoID().intValue());
+				    return ccStatData.getSubBusName();
 				case FEEDER_NAME_COLUMN:
-				    return DaoFactory.getPaoDao().getYukonPAOName(ccStatData.getFeederPaoID().intValue());
+				    return ccStatData.getFeederName();
 				
 				case CAP_BANK_NAME_COLUMN:
-					return DaoFactory.getPaoDao().getYukonPAOName(ccStatData.getCapBankPaoID().intValue());
+					return ccStatData.getBankName();
 					
 				case CONTROL_STATUS_COLUMN:
 					return DaoFactory.getStateDao().findLiteState(StateGroupUtils.STATEGROUPID_CAPBANK, ccStatData.getControlStatus().intValue());
