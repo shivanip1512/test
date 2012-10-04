@@ -25,8 +25,8 @@ import com.cannontech.core.substation.dao.SubstationToRouteMappingDao;
 import com.cannontech.stars.core.service.YukonEnergyCompanyService;
 import com.cannontech.stars.energyCompany.model.YukonEnergyCompany;
 import com.cannontech.stars.service.EnergyCompanyService;
-import com.cannontech.system.YukonSetting;
-import com.cannontech.system.dao.YukonSettingsDao;
+import com.cannontech.system.GlobalSetting;
+import com.cannontech.system.dao.GlobalSettingsDao;
 import com.cannontech.web.security.annotation.CheckRole;
 import com.google.common.collect.Lists;
 
@@ -39,7 +39,7 @@ public class SubstationController {
     @Autowired private SubstationDao substationDao;
     @Autowired private SubstationToRouteMappingDao strmDao;
     @Autowired private YukonEnergyCompanyService yukonEnergyCompanyService;
-    @Autowired private YukonSettingsDao yukonSettingsDao;
+    @Autowired private GlobalSettingsDao globalSettingsDao;
 
     @RequestMapping("routeMapping/view")
     public ModelAndView view(HttpServletRequest request, HttpServletResponse response) {
@@ -73,7 +73,7 @@ public class SubstationController {
         ModelAndView mav = new ModelAndView();
         
         boolean hasVendorId = false;
-        int vendorId = yukonSettingsDao.getSettingIntegerValue(YukonSetting.MSP_PRIMARY_CB_VENDORID);
+        int vendorId = globalSettingsDao.getInteger(GlobalSetting.MSP_PRIMARY_CB_VENDORID);
         if (vendorId > 0) {
             hasVendorId = true;
         }

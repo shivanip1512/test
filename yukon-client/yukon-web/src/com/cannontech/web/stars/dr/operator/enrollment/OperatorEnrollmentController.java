@@ -36,8 +36,8 @@ import com.cannontech.stars.dr.hardware.dao.StaticLoadGroupMappingDao;
 import com.cannontech.stars.dr.hardware.model.HardwareConfigAction;
 import com.cannontech.stars.energyCompany.model.YukonEnergyCompany;
 import com.cannontech.stars.util.StarsUtils;
-import com.cannontech.system.YukonSetting;
-import com.cannontech.system.dao.YukonSettingsDao;
+import com.cannontech.system.GlobalSetting;
+import com.cannontech.system.dao.GlobalSettingsDao;
 import com.cannontech.user.YukonUserContext;
 import com.cannontech.web.common.flashScope.FlashScope;
 import com.cannontech.web.security.annotation.CheckRoleProperty;
@@ -64,7 +64,7 @@ public class OperatorEnrollmentController {
     @Autowired private EnrollmentDao enrollmentDao;
     @Autowired private EnrollmentHelperService enrollmentHelperService;
     @Autowired private RolePropertyDao rolePropertyDao;
-    @Autowired private YukonSettingsDao yukonSettingsDao;
+    @Autowired private GlobalSettingsDao globalSettingsDao;
     /**
      * The main operator "enrollment" page. Lists all current enrollments and
      * has icons for adding, removing and editing these enrollments.
@@ -155,7 +155,7 @@ public class OperatorEnrollmentController {
         boolean trackHardwareAddressingEnabled =
             energyCompanyRolePropertyDao.getPropertyBooleanValue(YukonRoleProperty.TRACK_HARDWARE_ADDRESSING, yukonEnergyCompany);
       String batchedSwitchCommandToggle =
-      yukonSettingsDao.getSettingStringValue(YukonSetting.BATCHED_SWITCH_COMMAND_TOGGLE);
+      globalSettingsDao.getString(GlobalSetting.BATCHED_SWITCH_COMMAND_TOGGLE);
         boolean useStaticLoadGroups =
             StarsUtils.BATCH_SWITCH_COMMAND_MANUAL.equals(batchedSwitchCommandToggle)
                 && VersionTools.staticLoadGroupMappingExists();

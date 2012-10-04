@@ -55,8 +55,8 @@ import com.cannontech.stars.util.StarsUtils;
 import com.cannontech.stars.web.util.ImportFields;
 import com.cannontech.stars.ws.LmDeviceDto;
 import com.cannontech.stars.ws.StarsControllableDeviceHelper;
-import com.cannontech.system.YukonSetting;
-import com.cannontech.system.dao.YukonSettingsDao;
+import com.cannontech.system.GlobalSetting;
+import com.cannontech.system.dao.GlobalSettingsDao;
 import com.cannontech.tools.email.EmailMessage;
 import com.cannontech.user.UserUtils;
 import com.cannontech.user.YukonUserContext;
@@ -84,7 +84,7 @@ public class AccountImportService {
     @Autowired private LmDeviceDtoConverter dtoConverter;
     @Autowired private StarsControllableDeviceHelper deviceHelper;
     @Autowired private EnrollmentHelperService enrollmentHelperService;
-    @Autowired private YukonSettingsDao yukonSettingsDao;
+    @Autowired private GlobalSettingsDao globalSettingsDao;
     
     private static final Logger log = YukonLogManager.getLogger(AccountImportService.class);
     private static final String LINE_SEPARATOR = System.getProperty("line.separator");
@@ -1187,7 +1187,7 @@ public class AccountImportService {
         }
         
         // Check to see if it exist in role property if not use default.
-        String baseDirRoleValue = yukonSettingsDao.getSettingStringValue(YukonSetting.CUSTOMER_INFO_IMPORTER_FILE_LOCATION);
+        String baseDirRoleValue = globalSettingsDao.getString(GlobalSetting.CUSTOMER_INFO_IMPORTER_FILE_LOCATION);
 
         // Gets base Directory
         File baseDir = null;

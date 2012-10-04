@@ -28,7 +28,7 @@ import com.google.common.collect.Ordering;
 
 public enum YukonRole implements DisplayableEnum, DatabaseRepresentationSource {
 
-    // Yukon Grp associated roles moved to YukonSettings 
+    // Yukon Grp associated roles moved to GlobalSettings 
     APPLICATION_BILLING(Application, ApplicationRoleDefs.BILLING_ROLEID),
     COMMANDER(Application, ApplicationRoleDefs.COMMANDER_ROLEID),
     DATABASE_EDITOR(Application, ApplicationRoleDefs.DATABASE_EDITOR_ROLEID),

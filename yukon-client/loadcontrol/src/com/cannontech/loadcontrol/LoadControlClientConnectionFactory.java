@@ -4,19 +4,19 @@ import org.springframework.beans.factory.annotation.Autowired;
 
 import com.cannontech.clientutils.CTILogger;
 import com.cannontech.loadcontrol.messages.LMCommand;
-import com.cannontech.system.YukonSetting;
-import com.cannontech.system.dao.YukonSettingsDao;
+import com.cannontech.system.GlobalSetting;
+import com.cannontech.system.dao.GlobalSettingsDao;
 
 public class LoadControlClientConnectionFactory {
     
-    @Autowired private YukonSettingsDao yukonSettingDao;
+    @Autowired private GlobalSettingsDao globalSettingDao;
     
     public LoadControlClientConnection createConnection() {
     	// make connection
     	LoadControlClientConnection clientConnection = new LoadControlClientConnection();
     	
-    	String lcHost = yukonSettingDao.getSettingStringValue(YukonSetting.LOADCONTROL_MACHINE );
-        int lcPort = yukonSettingDao.getSettingIntegerValue(YukonSetting.LOADCONTROL_PORT);
+    	String lcHost = globalSettingDao.getString(GlobalSetting.LOADCONTROL_MACHINE );
+        int lcPort = globalSettingDao.getInteger(GlobalSetting.LOADCONTROL_PORT);
 
     	CTILogger.info("Will attempt to connect to loadcontrol @" + lcHost + ":" + lcPort);
     	if ( lcHost != null ) {

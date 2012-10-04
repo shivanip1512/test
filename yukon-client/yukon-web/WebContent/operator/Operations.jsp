@@ -300,12 +300,12 @@
                         <a href="/spring/amr/archivedValuesExporter/view"><cti:msg key="yukon.web.archivedDataExport"/></a>
                     </tags:sectionLink>
                 </cti:checkRolesAndProperties>
-                <cti:checkYukonSetting setting="MSP_LM_MAPPING_SETUP">
+                <cti:checkGlobalSetting setting="MSP_LM_MAPPING_SETUP">
                     <tags:sectionLink>
                         <a href="/spring/multispeak/visualDisplays/loadManagement/home"><cti:msg key="yukon.web.menu.portal.analysis.visualDisplays" />
                         </a>
                     </tags:sectionLink>
-                </cti:checkYukonSetting>
+                </cti:checkGlobalSetting>
                 <cti:checkRolesAndProperties value="OPERATOR_SURVEY_EDIT">
                     <tags:sectionLink>
                         <a href="/spring/stars/survey/list"><cti:msg key="yukon.web.menu.portal.analysis.surveys" />

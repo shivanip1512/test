@@ -53,8 +53,8 @@ import com.cannontech.multispeak.deploy.service.Customer;
 import com.cannontech.multispeak.deploy.service.ErrorObject;
 import com.cannontech.multispeak.deploy.service.LoadActionCode;
 import com.cannontech.multispeak.deploy.service.ServiceLocation;
-import com.cannontech.system.YukonSetting;
-import com.cannontech.system.dao.YukonSettingsDao;
+import com.cannontech.system.GlobalSetting;
+import com.cannontech.system.dao.GlobalSettingsDao;
 import com.cannontech.user.SystemUserContext;
 
 public class MultispeakFuncs
@@ -67,7 +67,7 @@ public class MultispeakFuncs
     @Autowired public AuthenticationService authenticationService;
     @Autowired public PaoDefinitionDao paoDefinitionDao;
     @Autowired public PointFormattingService pointFormattingService;
-    @Autowired private YukonSettingsDao yukonSettingsDao;
+    @Autowired private GlobalSettingsDao globalSettingsDao;
 
     public void logStrings(String intfaceName, String methodName, String[] strings)
 	{
@@ -287,15 +287,15 @@ public class MultispeakFuncs
     }
     
     public String getPaoNameAliasExtension() {
-        return yukonSettingsDao.getSettingStringValue(YukonSetting.MSP_PAONAME_EXTENSION);
+        return globalSettingsDao.getString(GlobalSetting.MSP_PAONAME_EXTENSION);
     }
     
     public MultispeakMeterLookupFieldEnum getMeterLookupField() {
-        return yukonSettingsDao.getSettingEnumValue(YukonSetting.MSP_METER_LOOKUP_FIELD, MultispeakMeterLookupFieldEnum.class);
+        return globalSettingsDao.getEnum(GlobalSetting.MSP_METER_LOOKUP_FIELD, MultispeakMeterLookupFieldEnum.class);
     }
     
     public MspPaoNameAliasEnum getPaoNameAlias() {
-        MspPaoNameAliasEnum paoNameAlias = yukonSettingsDao.getSettingEnumValue(YukonSetting.MSP_PAONAME_ALIAS, MspPaoNameAliasEnum.class);
+        MspPaoNameAliasEnum paoNameAlias = globalSettingsDao.getEnum(GlobalSetting.MSP_PAONAME_ALIAS, MspPaoNameAliasEnum.class);
         return paoNameAlias;
     }
     
@@ -303,7 +303,7 @@ public class MultispeakFuncs
      * @return Returns the primaryCIS vendorID.
      */
     public int getPrimaryCIS() {
-        return yukonSettingsDao.getSettingIntegerValue(YukonSetting.MSP_PRIMARY_CB_VENDORID);
+        return globalSettingsDao.getInteger(GlobalSetting.MSP_PRIMARY_CB_VENDORID);
     }
 
     /**
@@ -324,7 +324,7 @@ public class MultispeakFuncs
      */
     public DeviceGroup getBillingCycleDeviceGroup() throws NotFoundException{
         //WE MAY HAVE SOME PROBLEMS HERE WITH THE EXPLICIT CAST TO STOREDDEVICEGROUP....
-        String value = yukonSettingsDao.getSettingStringValue(YukonSetting.MSP_BILLING_CYCLE_PARENT_DEVICEGROUP);
+        String value = globalSettingsDao.getString(GlobalSetting.MSP_BILLING_CYCLE_PARENT_DEVICEGROUP);
         DeviceGroup deviceGroup = deviceGroupService.resolveGroupName(value);
         return deviceGroup;
     }

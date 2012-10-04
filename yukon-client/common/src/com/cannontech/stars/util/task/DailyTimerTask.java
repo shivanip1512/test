@@ -22,8 +22,8 @@ import com.cannontech.stars.util.LMControlHistoryUtil;
 import com.cannontech.stars.util.StarsUtils;
 import com.cannontech.stars.util.SwitchCommandQueue;
 import com.cannontech.stars.web.util.InventoryManagerUtil;
-import com.cannontech.system.YukonSetting;
-import com.cannontech.system.dao.impl.YukonSettingsDaoImpl;
+import com.cannontech.system.GlobalSetting;
+import com.cannontech.system.dao.impl.GlobalSettingsDaoImpl;
 import com.cannontech.util.ServletUtil;
 
 public class DailyTimerTask extends StarsTimerTask {
@@ -56,7 +56,7 @@ public class DailyTimerTask extends StarsTimerTask {
 	 */
 	public void run() {
 		CTILogger.debug( "*** Daily timer task start ***" );
-		String batchProcessType =  YukonSpringHook.getBean("yukonSettingsDao",YukonSettingsDaoImpl.class).getSettingStringValue(YukonSetting.BATCHED_SWITCH_COMMAND_TOGGLE);
+		String batchProcessType =  YukonSpringHook.getBean("globalSettingsDao",GlobalSettingsDaoImpl.class).getString(GlobalSetting.BATCHED_SWITCH_COMMAND_TOGGLE);
         boolean noAuto = false;
         if(batchProcessType != null)
         {

@@ -14,8 +14,8 @@ import com.cannontech.clientutils.CTILogger;
 import com.cannontech.clientutils.YukonLogManager;
 import com.cannontech.core.authentication.service.AuthenticationProvider;
 import com.cannontech.database.data.lite.LiteYukonUser;
-import com.cannontech.system.YukonSetting;
-import com.cannontech.system.dao.YukonSettingsDao;
+import com.cannontech.system.GlobalSetting;
+import com.cannontech.system.dao.GlobalSettingsDao;
 
 /**
  * @author snebben
@@ -25,7 +25,7 @@ import com.cannontech.system.dao.YukonSettingsDao;
  */
 public class RadiusLogin implements AuthenticationProvider {
     private static Logger log = YukonLogManager.getLogger(RadiusLogin.class);
-    @Autowired private YukonSettingsDao yukonSettingsDao;
+    @Autowired private GlobalSettingsDao globalSettingsDao;
 
 	/**
 	 * @param username
@@ -38,11 +38,11 @@ public class RadiusLogin implements AuthenticationProvider {
         // has some value other than '(none)'. SN / Jon
         RadiusClient rc;
         try {
-            String radiusAddr = yukonSettingsDao.getSettingStringValue(YukonSetting.SERVER_ADDRESS);
-            int authPort = yukonSettingsDao.getSettingIntegerValue(YukonSetting.AUTH_PORT);
-            int acctPort = yukonSettingsDao.getSettingIntegerValue(YukonSetting.ACCT_PORT);
-            int authTimeout = yukonSettingsDao.getSettingIntegerValue(YukonSetting.AUTH_TIMEOUT) * 1000;
-            String secret = yukonSettingsDao.getSettingStringValue(YukonSetting.SECRET_KEY);
+            String radiusAddr = globalSettingsDao.getString(GlobalSetting.SERVER_ADDRESS);
+            int authPort = globalSettingsDao.getInteger(GlobalSetting.AUTH_PORT);
+            int acctPort = globalSettingsDao.getInteger(GlobalSetting.ACCT_PORT);
+            int authTimeout = globalSettingsDao.getInteger(GlobalSetting.AUTH_TIMEOUT) * 1000;
+            String secret = globalSettingsDao.getString(GlobalSetting.SECRET_KEY);
             
             rc = new RadiusClient(radiusAddr, authPort, acctPort, secret, authTimeout );
 

@@ -19,15 +19,15 @@ import com.cannontech.common.util.ObjectMapper;
 import com.cannontech.common.version.VersionTools;
 import com.cannontech.database.data.lite.LiteYukonUser;
 import com.cannontech.spring.YukonSpringHook;
-import com.cannontech.system.YukonSetting;
-import com.cannontech.system.dao.YukonSettingsDao;
-import com.cannontech.system.dao.impl.YukonSettingsDaoImpl;
+import com.cannontech.system.GlobalSetting;
+import com.cannontech.system.dao.GlobalSettingsDao;
+import com.cannontech.system.dao.impl.GlobalSettingsDaoImpl;
 
 public class BillingBean implements java.util.Observer
 {
 	public static java.text.SimpleDateFormat dateFormat = new java.text.SimpleDateFormat("MM/dd/yyyy");
     private DeviceGroupProviderDao deviceGroupDao = YukonSpringHook.getBean("deviceGroupDao", DeviceGroupProviderDao.class);
-    private YukonSettingsDao yukonSettingsDao = YukonSpringHook.getBean("yukonSettingsDao", YukonSettingsDaoImpl.class);
+    private GlobalSettingsDao globalSettingsDao = YukonSpringHook.getBean("globalSettingsDao", GlobalSettingsDaoImpl.class);
 	public static final String BILLING_VERSION = VersionTools.getYUKON_VERSION();
 	private BillingFile billingFile = null;
 	private BillingFileDefaults billingFileDefaults = null;
@@ -108,7 +108,7 @@ public BillingFileDefaults getBillingDefaults() {
 public int getFileFormat()
 {
 	if( fileFormat == FileFormatTypes.INVALID) {
-	    String format = yukonSettingsDao.getSettingStringValue(YukonSetting.DEFAULT_BILLING_FORMAT);
+	    String format = globalSettingsDao.getString(GlobalSetting.DEFAULT_BILLING_FORMAT);
 		fileFormat = FileFormatTypes.getFormatID(format);
 	}
 	return fileFormat;
@@ -152,7 +152,7 @@ public void setEndDateStr(String newEndDateStr)
 public int getDemandDaysPrev()
 {
 	if( demandDaysPrev < 0)  {
-	    demandDaysPrev = yukonSettingsDao.getSettingIntegerValue(YukonSetting.DEMAND_DAYS_PREVIOUS);
+	    demandDaysPrev = globalSettingsDao.getInteger(GlobalSetting.DEMAND_DAYS_PREVIOUS);
 	}
 	return demandDaysPrev;
 }
@@ -175,7 +175,7 @@ public void setDemandDaysPrev(int newDemandDaysPrev)
 public int getEnergyDaysPrev()
 {
 	if (energyDaysPrev < 0)  {
-	    energyDaysPrev = yukonSettingsDao.getSettingIntegerValue(YukonSetting.ENERGY_DAYS_PREVIOUS);
+	    energyDaysPrev = globalSettingsDao.getInteger(GlobalSetting.ENERGY_DAYS_PREVIOUS);
 	}
 	return energyDaysPrev;
 }
@@ -188,7 +188,7 @@ public void setEnergyDaysPrev(int newEnergyDaysPrev)
 public boolean getAppendToFile()
 {
 	if( appendToFile == null) {
-	    appendToFile = yukonSettingsDao.getSettingBooleanValue(YukonSetting.APPEND_TO_FILE);
+	    appendToFile = globalSettingsDao.getBoolean(GlobalSetting.APPEND_TO_FILE);
 	}
 	return appendToFile.booleanValue();
 }
@@ -200,7 +200,7 @@ public void setAppendToFile(boolean isAppendToFile)
 public boolean getRemoveMult()
 {
 	if (removeMult == null) {
-	    removeMult = yukonSettingsDao.getSettingBooleanValue(YukonSetting.REMOVE_MULTIPLIER);
+	    removeMult = globalSettingsDao.getBoolean(GlobalSetting.REMOVE_MULTIPLIER);
 	}
 	return removeMult.booleanValue();
 }
@@ -274,7 +274,7 @@ public void setLiteYukonUser(LiteYukonUser liteYukonUser) {
 }
 public String getInputFile() {
 	if(inputFile == null)  {
-	    inputFile = yukonSettingsDao.getSettingStringValue(YukonSetting.INPUT_FILE);
+	    inputFile = globalSettingsDao.getString(GlobalSetting.INPUT_FILE);
 	}
 	return inputFile;
 }

@@ -14,8 +14,8 @@ import com.cannontech.integration.crs.YukonCRSIntegrator;
 import com.cannontech.spring.YukonSpringHook;
 import com.cannontech.stars.database.cache.StarsDatabaseCache;
 import com.cannontech.stars.web.util.TimerTaskUtil;
-import com.cannontech.system.YukonSetting;
-import com.cannontech.system.dao.impl.YukonSettingsDaoImpl;
+import com.cannontech.system.GlobalSetting;
+import com.cannontech.system.dao.impl.GlobalSettingsDaoImpl;
 
 public class TimerTaskInitializer extends ErrorAwareContextListener {
     
@@ -24,7 +24,7 @@ public class TimerTaskInitializer extends ErrorAwareContextListener {
         TimerTaskUtil ttu = (TimerTaskUtil) getApplicationContext().getBean("timerTaskUtil");
         ttu.startAllTimerTasks();
         
-        String preloadData = YukonSpringHook.getBean("yukonSettingsDao",YukonSettingsDaoImpl.class).getSettingStringValue(YukonSetting.STARS_PRELOAD_DATA);
+        String preloadData = YukonSpringHook.getBean("globalSettingsDao",GlobalSettingsDaoImpl.class).getString(GlobalSetting.STARS_PRELOAD_DATA);
         if (CtiUtilities.isTrue( preloadData )) {
             StarsDatabaseCache.getInstance().loadData();
         }

@@ -167,8 +167,8 @@
   </tag>
   
   <tag>
-  	<name>checkYukonSetting</name>
-  	<tag-class>com.cannontech.web.taglib.CheckYukonSetting</tag-class>
+  	<name>checkGlobalSetting</name>
+  	<tag-class>com.cannontech.web.taglib.CheckGlobalSetting</tag-class>
   	<attribute>
   		<name>setting</name>
   		<required>true</required>

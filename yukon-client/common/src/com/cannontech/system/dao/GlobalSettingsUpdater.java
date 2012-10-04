@@ -1,6 +1,6 @@
 package com.cannontech.system.dao;
 
-import com.cannontech.system.YukonSetting;
+import com.cannontech.system.GlobalSetting;
 
 /**
  *
@@ -8,16 +8,16 @@ import com.cannontech.system.YukonSetting;
  * with Yukon Grp role properties.
  * 
  * This is primarily intended for updating the settings and not for reading settings.
- * To read Yukon settings there is YukonSettingsDaoImpl
+ * To read Yukon settings there is GlobalSettingsDaoImpl
  * 
  */
-public interface YukonSettingsUpdater {
+public interface GlobalSettingsUpdater {
     
     /**
-     * Updates the specified setting in YukonSetting DB table to the value newVal;
+     * Updates the specified setting in GlobalSetting DB table to the value newVal;
      * 
      * @param setting
      * @param newVal
      */
-    public void updateSetting(YukonSetting setting, String newVal);
+    public void updateSetting(GlobalSetting setting, String newVal);
 }

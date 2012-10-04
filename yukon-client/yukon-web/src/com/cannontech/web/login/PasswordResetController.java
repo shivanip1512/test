@@ -34,8 +34,8 @@ import com.cannontech.database.data.lite.LiteYukonUser;
 import com.cannontech.i18n.YukonMessageSourceResolvable;
 import com.cannontech.stars.core.login.model.PasswordResetInfo;
 import com.cannontech.stars.core.login.service.PasswordResetService;
-import com.cannontech.system.YukonSetting;
-import com.cannontech.system.dao.YukonSettingsDao;
+import com.cannontech.system.GlobalSetting;
+import com.cannontech.system.dao.GlobalSettingsDao;
 import com.cannontech.tools.email.EmailException;
 import com.cannontech.user.YukonUserContext;
 import com.cannontech.web.common.captcha.model.Captcha;
@@ -59,11 +59,11 @@ public class PasswordResetController {
     @Autowired private YukonUserContextResolver yukonUserContextResolver;
     @Autowired private PasswordPolicyService passwordPolicyService;
     @Autowired private UserGroupDao userGroupDao;
-    @Autowired private YukonSettingsDao yukonSettingsDao;
+    @Autowired private GlobalSettingsDao globalSettingsDao;
 
     @RequestMapping(value = "/forgottenPassword", method = RequestMethod.GET)
     public String newForgottenPassword(ModelMap model, HttpServletRequest request) throws Exception {
-        yukonSettingsDao.verifySetting(YukonSetting.ENABLE_PASSWORD_RECOVERY);
+        globalSettingsDao.verifySetting(GlobalSetting.ENABLE_PASSWORD_RECOVERY);
         
         setupModelMap(model, request);
         model.addAttribute("forgottenPassword", new ForgottenPassword());
@@ -76,7 +76,7 @@ public class PasswordResetController {
                                            @ModelAttribute ForgottenPassword forgottenPassword, 
                                            String recaptcha_challenge_field, String recaptcha_response_field)
     throws Exception {
-        yukonSettingsDao.verifySetting(YukonSetting.ENABLE_PASSWORD_RECOVERY);
+        globalSettingsDao.verifySetting(GlobalSetting.ENABLE_PASSWORD_RECOVERY);
         
         // Process Captcha
         Captcha captcha = new Captcha(request.getRemoteAddr(), recaptcha_challenge_field, recaptcha_response_field);
@@ -123,7 +123,7 @@ public class PasswordResetController {
 
     @RequestMapping(value = "/changePassword", method = RequestMethod.GET)
     public String changePassword(ModelMap model, FlashScope flashScope, String k) {
-        yukonSettingsDao.verifySetting(YukonSetting.ENABLE_PASSWORD_RECOVERY);
+        globalSettingsDao.verifySetting(GlobalSetting.ENABLE_PASSWORD_RECOVERY);
         LiteYukonUser passwordResetUser = passwordResetService.findUserFromPasswordKey(k);
         if (passwordResetUser == null) {
             return "redirect:/login.jsp";
@@ -144,7 +144,7 @@ public class PasswordResetController {
 
     @RequestMapping(value = "/changePassword", method = RequestMethod.POST)
     public String submitChangePassword(@ModelAttribute LoginBackingBean loginBackingBean, BindingResult bindingResult, FlashScope flashScope, String k, ModelMap model) {
-        yukonSettingsDao.verifySetting(YukonSetting.ENABLE_PASSWORD_RECOVERY);
+        globalSettingsDao.verifySetting(GlobalSetting.ENABLE_PASSWORD_RECOVERY);
         
         // Check to see if the supplied userId matches up with the hex key.  I'm not sure if this is really necessary.  It might be overkill.
         LiteYukonUser suppliedPasswordResetUser = yukonUserDao.getLiteYukonUser(loginBackingBean.getUserId());
@@ -179,7 +179,7 @@ public class PasswordResetController {
     																	ModelMap model,
     																	HttpServletResponse response,
     																	HttpServletRequest request) {
-        yukonSettingsDao.verifySetting(YukonSetting.ENABLE_PASSWORD_RECOVERY);
+        globalSettingsDao.verifySetting(GlobalSetting.ENABLE_PASSWORD_RECOVERY);
         
     	// Check to see if the supplied userId matches up with the hex key.  I'm not sure if this is really necessary.  It might be overkill.
     	LiteYukonUser suppliedPasswordResetUser = yukonUserDao.getLiteYukonUser(loginBackingBean.getUserId());
@@ -233,7 +233,7 @@ public class PasswordResetController {
      * Sets up the need information for the view to be rendered
      */
     private void setupModelMap(ModelMap model, HttpServletRequest request) {
-        boolean captchaEnabled = yukonSettingsDao.getSettingBooleanValue(YukonSetting.ENABLE_CAPTCHAS);
+        boolean captchaEnabled = globalSettingsDao.getBoolean(GlobalSetting.ENABLE_CAPTCHAS);
         
         model.addAttribute("captchaPublicKey", captchaService.getPublicKey());
         model.addAttribute("captchaEnabled", captchaEnabled);

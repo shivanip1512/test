@@ -16,13 +16,13 @@ import com.cannontech.multispeak.client.MultispeakDefines;
 import com.cannontech.multispeak.dao.MeterReadProcessingService;
 import com.cannontech.multispeak.dao.MeterReadUpdater;
 import com.cannontech.multispeak.deploy.service.MeterRead;
-import com.cannontech.system.YukonSetting;
-import com.cannontech.system.dao.YukonSettingsDao;
+import com.cannontech.system.GlobalSetting;
+import com.cannontech.system.dao.GlobalSettingsDao;
 import com.google.common.collect.ImmutableMap;
 
 public class MeterReadProcessingServiceImpl implements MeterReadProcessingService {
 
-    @Autowired private YukonSettingsDao yukonSettingsDao;
+    @Autowired private GlobalSettingsDao globalSettingsDao;
 
     private Map<BuiltInAttribute, ReadingProcessor> attributesToLoad;
 
@@ -32,7 +32,7 @@ public class MeterReadProcessingServiceImpl implements MeterReadProcessingServic
 
     @PostConstruct
     public void setup() {
-        final RoundingMode roundingMode = yukonSettingsDao.getSettingEnumValue(YukonSetting.DEFAULT_ROUNDING_MODE, RoundingMode.class);
+        final RoundingMode roundingMode = globalSettingsDao.getEnum(GlobalSetting.DEFAULT_ROUNDING_MODE, RoundingMode.class);
 
         ReadingProcessor usageConverter = new ReadingProcessor() {
             @Override

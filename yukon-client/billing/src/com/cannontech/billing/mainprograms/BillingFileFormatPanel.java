@@ -28,8 +28,8 @@ import com.cannontech.common.gui.tree.CustomRenderJTree;
 import com.cannontech.common.login.ClientSession;
 import com.cannontech.roles.application.BillingRole;
 import com.cannontech.spring.YukonSpringHook;
-import com.cannontech.system.YukonSetting;
-import com.cannontech.system.dao.impl.YukonSettingsDaoImpl;
+import com.cannontech.system.GlobalSetting;
+import com.cannontech.system.dao.impl.GlobalSettingsDaoImpl;
 
 public class BillingFileFormatPanel extends javax.swing.JPanel implements java.awt.event.ActionListener, java.awt.event.FocusListener, java.util.Observer
 {
@@ -764,7 +764,7 @@ private String getInputFileText()
 	{
 		try
 		{
-		    inputFileText = YukonSpringHook.getBean("yukonSettingsDao",YukonSettingsDaoImpl.class).getSettingStringValue(YukonSetting.INPUT_FILE);
+		    inputFileText = YukonSpringHook.getBean("globalSettingsDao",GlobalSettingsDaoImpl.class).getString(GlobalSetting.INPUT_FILE);
 		}
 		catch( Exception e)
 		{

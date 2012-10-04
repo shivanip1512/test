@@ -10,14 +10,14 @@ import com.cannontech.core.roleproperties.YukonRole;
 import com.cannontech.core.roleproperties.YukonRoleProperty;
 import com.cannontech.core.roleproperties.dao.RolePropertyDao;
 import com.cannontech.database.data.lite.LiteYukonUser;
-import com.cannontech.system.YukonSetting;
-import com.cannontech.system.dao.YukonSettingsDao;
+import com.cannontech.system.GlobalSetting;
+import com.cannontech.system.dao.GlobalSettingsDao;
 import com.cannontech.web.util.SpringWebUtil;
 
 public class WebSecurityChecker {
     @Autowired private RolePropertyDao rolePropertyDao;
     @Autowired private ConfigurationSource configurationSource;
-    @Autowired private YukonSettingsDao yukonSettingsDao;
+    @Autowired private GlobalSettingsDao globalSettingsDao;
     
     public void authorizeByCparm(MasterConfigBooleanKeysEnum configKey) {
         final LiteYukonUser user = getYukonUser();
@@ -55,10 +55,10 @@ public class WebSecurityChecker {
         }
     }
     
-    public void checkSystemSetting(YukonSetting setting) {
+    public void checkGlobalSetting(GlobalSetting setting) {
         final LiteYukonUser user = getYukonUser();
         
-        if (!yukonSettingsDao.checkSetting(setting)) {
+        if (!globalSettingsDao.checkSetting(setting)) {
             throw new NotAuthorizedException("User " + user + " is not authorized to access this page.");
         }
     }
@@ -82,4 +82,5 @@ public class WebSecurityChecker {
             throw new UnsupportedOperationException("Web security checks cannont be done outside of a DispatcherServlet request");
         }
     }
+
 }

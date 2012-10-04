@@ -5,10 +5,10 @@ import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
 import java.lang.annotation.Target;
 
-import com.cannontech.system.YukonSetting;
+import com.cannontech.system.GlobalSetting;
 
 @Target(ElementType.TYPE)
 @Retention(RetentionPolicy.RUNTIME)
-public @interface CheckSystemSetting {
-    YukonSetting value();
+public @interface CheckGlobalSetting {
+    GlobalSetting value();
 }

@@ -21,8 +21,8 @@ import com.cannontech.core.roleproperties.YukonRoleProperty;
 import com.cannontech.core.roleproperties.dao.RolePropertyDao;
 import com.cannontech.database.data.lite.LiteEnergyCompany;
 import com.cannontech.database.data.lite.LiteYukonUser;
-import com.cannontech.system.YukonSetting;
-import com.cannontech.system.dao.YukonSettingsDao;
+import com.cannontech.system.GlobalSetting;
+import com.cannontech.system.dao.GlobalSettingsDao;
 import com.google.common.collect.Maps;
 
 
@@ -30,7 +30,7 @@ public class UrlDialerFactory implements DialerFactory {
     private @Autowired RolePropertyDao rolePropertyDao;
     private @Autowired YukonUserDao yukonUserDao;
     private @Autowired ConfigurationSource configurationSource;
-    @Autowired private YukonSettingsDao yukonSettingsDao;
+    @Autowired private GlobalSettingsDao globalSettingsDao;
 
     private static final Logger log = YukonLogManager.getLogger(UrlDialerFactory.class);
 
@@ -51,10 +51,10 @@ public class UrlDialerFactory implements DialerFactory {
                 final String urlTemplate = rolePropertyDao.getPropertyStringValue(YukonRoleProperty.IVR_URL_DIALER_TEMPLATE, ecUser);
                 log.debug("template: " + urlTemplate);
                 
-                final int callTimeoutSeconds = yukonSettingsDao.getSettingIntegerValue(YukonSetting.CALL_RESPONSE_TIMEOUT);
+                final int callTimeoutSeconds = globalSettingsDao.getInteger(GlobalSetting.CALL_RESPONSE_TIMEOUT);
                 log.debug("callTimeoutSeconds: " + callTimeoutSeconds);
                 
-                final String dialPrefix = yukonSettingsDao.getSettingStringValue(YukonSetting.CALL_PREFIX);
+                final String dialPrefix = globalSettingsDao.getString(GlobalSetting.CALL_PREFIX);
                 log.debug("dialPrefix: " + dialPrefix);
                 
                 final String successMatcherStr = rolePropertyDao.getPropertyStringValue(YukonRoleProperty.IVR_URL_DIALER_SUCCESS_MATCHER, ecUser);

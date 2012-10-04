@@ -21,12 +21,12 @@ import com.cannontech.common.alert.service.AlertService;
 import com.cannontech.common.util.ReverseList;
 import com.cannontech.common.util.TimeSource;
 import com.cannontech.database.data.lite.LiteYukonUser;
-import com.cannontech.system.YukonSetting;
-import com.cannontech.system.dao.YukonSettingsDao;
+import com.cannontech.system.GlobalSetting;
+import com.cannontech.system.dao.GlobalSettingsDao;
 
 public class AlertServiceImpl implements AlertService {
     private Logger log = YukonLogManager.getLogger(AlertServiceImpl.class);
-    private YukonSettingsDao yukonSettingsDao;
+    private GlobalSettingsDao globalSettingsDao;
     private TimeSource timeSource;
     private List<AlertClearHandler> alertClearHandlers = Collections.emptyList();
     private final Map<Integer,IdentifiableAlertImpl> map = 
@@ -41,7 +41,7 @@ public class AlertServiceImpl implements AlertService {
 
     public void setupMaxAge() {
         maxAge = Long.MAX_VALUE;
-        String hoursAsString = yukonSettingsDao.getSettingStringValue(YukonSetting.ALERT_TIMEOUT_HOURS);
+        String hoursAsString = globalSettingsDao.getString(GlobalSetting.ALERT_TIMEOUT_HOURS);
         if (StringUtils.isBlank(hoursAsString)) {
             log.debug("ALERT_TIMEOUT_HOURS was \"" + hoursAsString + "\", interpreted as blank");
         } else {
@@ -143,8 +143,8 @@ public class AlertServiceImpl implements AlertService {
     
     // Leaving this method old-style Autowiring so this setter can be used in a test.
     @Autowired
-    public void setYukonSettingsDao(YukonSettingsDao yukonSettingsDao) {
-        this.yukonSettingsDao = yukonSettingsDao;
+    public void setGlobalSettingsDao(GlobalSettingsDao globalSettingsDao) {
+        this.globalSettingsDao = globalSettingsDao;
     }
     
     @Required

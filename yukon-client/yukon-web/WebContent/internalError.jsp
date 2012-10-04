@@ -1,9 +1,9 @@
 <!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN" "http://www.w3.org/TR/html4/loose.dtd">
 <%@page import="com.cannontech.core.dao.DaoFactory" %>
 <%@page import="com.cannontech.spring.YukonSpringHook" %>
-<%@page import="com.cannontech.system.dao.YukonSettingsDao" %>
+<%@page import="com.cannontech.system.dao.GlobalSettingsDao" %>
 <%@page import="com.cannontech.util.ServletUtil"%>
-<%@page import="com.cannontech.system.YukonSetting"%>
+<%@page import="com.cannontech.system.GlobalSetting"%>
 <%@page import="com.cannontech.database.data.lite.LiteYukonUser"%>
 <%@page import="com.cannontech.common.exception.NotLoggedInException"%>
 <%@page import="org.apache.commons.lang.ObjectUtils"%>
@@ -18,8 +18,8 @@
 <%@page isErrorPage="true" %>
 
 <%
-YukonSettingsDao yukonSettingsDao = YukonSpringHook.getBean("yukonSettingsDao", YukonSettingsDao.class);
-String logo = "/" +  yukonSettingsDao.getSettingStringValue(YukonSetting.WEB_LOGO_URL);
+    GlobalSettingsDao globalSettingsDao = YukonSpringHook.getBean("globalSettingsDao", GlobalSettingsDao.class);
+String logo = "/" +  globalSettingsDao.getString(GlobalSetting.WEB_LOGO_URL);
 
 String homeUrl = "/";
 try {

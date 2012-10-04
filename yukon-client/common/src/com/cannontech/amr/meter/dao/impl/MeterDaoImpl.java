@@ -45,8 +45,8 @@ import com.cannontech.database.YukonResultSet;
 import com.cannontech.database.YukonRowMapper;
 import com.cannontech.database.data.lite.LiteYukonPAObject;
 import com.cannontech.database.data.pao.YukonPAObject;
-import com.cannontech.system.YukonSetting;
-import com.cannontech.system.dao.YukonSettingsDao;
+import com.cannontech.system.GlobalSetting;
+import com.cannontech.system.dao.GlobalSettingsDao;
 import com.cannontech.util.NaturalOrderComparator;
 import com.google.common.base.Function;
 import com.google.common.collect.ImmutableList;
@@ -59,7 +59,7 @@ public class MeterDaoImpl implements MeterDao, InitializingBean {
     @Autowired private DBPersistentDao dbPersistentDao;
     @Autowired private MeterRowMapper meterRowMapper;
     @Autowired private PaoDao paoDao;
-    @Autowired private YukonSettingsDao yukonSettingsDao;
+    @Autowired private GlobalSettingsDao globalSettingsDao;
     
     private String retrieveOneByIdSql;
     private String retrieveOneByMeterNumberSql;
@@ -245,7 +245,7 @@ public class MeterDaoImpl implements MeterDao, InitializingBean {
     public String getFormattedDeviceName(Meter device) throws IllegalArgumentException{
         
         MeterDisplayFieldEnum meterDisplayFieldEnum = 
-                yukonSettingsDao.getSettingEnumValue(YukonSetting.DEVICE_DISPLAY_TEMPLATE, MeterDisplayFieldEnum.class);
+                globalSettingsDao.getEnum(GlobalSetting.DEVICE_DISPLAY_TEMPLATE, MeterDisplayFieldEnum.class);
 
         String formattedName = new DisplayableMeter(device, meterDisplayFieldEnum).getName();
         return formattedName;
@@ -257,7 +257,7 @@ public class MeterDaoImpl implements MeterDao, InitializingBean {
             @Override
             public Map<PaoIdentifier, DisplayablePao> getForPaos(Iterable<PaoIdentifier> identifiers) {
                 MeterDisplayFieldEnum meterDisplayFieldEnum = 
-                        yukonSettingsDao.getSettingEnumValue(YukonSetting.DEVICE_DISPLAY_TEMPLATE, MeterDisplayFieldEnum.class);
+                        globalSettingsDao.getEnum(GlobalSetting.DEVICE_DISPLAY_TEMPLATE, MeterDisplayFieldEnum.class);
 
                 List<Meter> metersForYukonDevices = getMetersForPaoIdentifiers(identifiers);
 

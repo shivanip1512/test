@@ -10,8 +10,8 @@ import com.cannontech.core.roleproperties.YukonRole;
 import com.cannontech.core.roleproperties.YukonRoleCategory;
 import com.cannontech.core.roleproperties.YukonRoleProperty;
 import com.cannontech.database.data.lite.LiteYukonUser;
-import com.cannontech.system.YukonSetting;
-import com.cannontech.system.dao.YukonSettingsDao;
+import com.cannontech.system.GlobalSetting;
+import com.cannontech.system.dao.GlobalSettingsDao;
 import com.cannontech.user.checker.AggregateOrUserChecker;
 import com.cannontech.user.checker.NotUserChecker;
 import com.cannontech.user.checker.NullUserChecker;
@@ -22,7 +22,7 @@ import com.google.common.collect.Lists;
 public class RoleAndPropertyDescriptionService {
     @Autowired private RolePropertyUserCheckerFactory userCheckerFactory;
     @Autowired private ConfigurationSource configurationSource;
-    @Autowired private YukonSettingsDao yukonSettingsDao;
+    @Autowired private GlobalSettingsDao globalSettingsDao;
     
     /**
      * This will check that the user has the given roles, categories,
@@ -119,7 +119,7 @@ public class RoleAndPropertyDescriptionService {
             // see if it is a supported system setting 
             try {
                 
-                boolean bool = yukonSettingsDao.checkSetting(YukonSetting.valueOf(someEnumName));
+                boolean bool = globalSettingsDao.checkSetting(GlobalSetting.valueOf(someEnumName));
                 
                 UserChecker propertyChecker;
                 if (inverted) {

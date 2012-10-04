@@ -6,22 +6,22 @@ import javax.servlet.jsp.JspException;
 import javax.servlet.jsp.tagext.BodyTagSupport;
 
 import com.cannontech.spring.YukonSpringHook;
-import com.cannontech.system.YukonSetting;
-import com.cannontech.system.dao.YukonSettingsDao;
+import com.cannontech.system.GlobalSetting;
+import com.cannontech.system.dao.GlobalSettingsDao;
 
 /**
  * Checks a yukon system settng
  * If the setting is true then the body of the tag is evaluated, otherwise it is skipped.
  */
-public class CheckYukonSetting extends BodyTagSupport {
+public class CheckGlobalSetting extends BodyTagSupport {
 
-	private YukonSetting yukonSetting;
+	private GlobalSetting globalSetting;
 
 	/**
 	 * @see javax.servlet.jsp.tagext.Tag#doStartTag()
 	 */
 	public int doStartTag() throws JspException {
-	    boolean isSettingSet = YukonSpringHook.getBean("yukonSettingsDao",YukonSettingsDao.class).checkSetting(yukonSetting);
+	    boolean isSettingSet = YukonSpringHook.getBean("globalSettingsDao",GlobalSettingsDao.class).checkSetting(globalSetting);
 		return (isSettingSet) ? SKIP_BODY : EVAL_BODY_INCLUDE;
 	}
 	
@@ -41,7 +41,7 @@ public class CheckYukonSetting extends BodyTagSupport {
 	}
     
     public void setSetting(String setting){
-        this.yukonSetting = YukonSetting.valueOf(setting);
+        this.globalSetting = GlobalSetting.valueOf(setting);
     }
 
 }

@@ -1,11 +1,11 @@
 <%@ page import="com.cannontech.core.dao.DaoFactory" %>
-<%@page import="com.cannontech.system.YukonSetting"%>
+<%@page import="com.cannontech.system.GlobalSetting"%>
 <%@page import="com.cannontech.spring.YukonSpringHook" %>
-<%@page import="com.cannontech.system.dao.YukonSettingsDao" %>
+<%@page import="com.cannontech.system.dao.GlobalSettingsDao" %>
 
 <%
-YukonSettingsDao yukonSettingsDao = YukonSpringHook.getBean("yukonSettingsDao", YukonSettingsDao.class);
-String logo = "/" +  yukonSettingsDao.getSettingStringValue(YukonSetting.WEB_LOGO_URL);
+    GlobalSettingsDao globalSettingsDao = YukonSpringHook.getBean("globalSettingsDao", GlobalSettingsDao.class);
+String logo = "/" +  globalSettingsDao.getString(GlobalSetting.WEB_LOGO_URL);
 %>
 <html>
 <head>

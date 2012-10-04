@@ -18,15 +18,15 @@ import com.cannontech.common.util.SqlStatementBuilder;
 import com.cannontech.database.ListRowCallbackHandler;
 import com.cannontech.database.MaxRowCalbackHandlerRse;
 import com.cannontech.database.SqlProvidingRowMapper;
-import com.cannontech.system.YukonSetting;
-import com.cannontech.system.dao.YukonSettingsDao;
+import com.cannontech.system.GlobalSetting;
+import com.cannontech.system.dao.GlobalSettingsDao;
 
 public class GroupMetersDaoImpl implements GroupMetersDao {
 
     private SqlProvidingRowMapper<Meter> meterRowMapper;
     private SimpleJdbcOperations simpleJdbcTemplate;
     private DeviceGroupProviderDao deviceGroupProviderDao;
-    @Autowired private YukonSettingsDao yukonSettingsDao;
+    @Autowired private GlobalSettingsDao globalSettingsDao;
     
     private static Map<MeterDisplayFieldEnum, String> orderByMap = new HashMap<MeterDisplayFieldEnum, String>();
     static {
@@ -56,7 +56,7 @@ public class GroupMetersDaoImpl implements GroupMetersDao {
     
     private String getOrderBySql() {
         
-        MeterDisplayFieldEnum meterDisplayFieldEnumVal = yukonSettingsDao.getSettingEnumValue(YukonSetting.DEVICE_DISPLAY_TEMPLATE, 
+        MeterDisplayFieldEnum meterDisplayFieldEnumVal = globalSettingsDao.getEnum(GlobalSetting.DEVICE_DISPLAY_TEMPLATE, 
                                                                                               MeterDisplayFieldEnum.class);
         return getOrderByFromMeterDisplayFieldEnum(meterDisplayFieldEnumVal);
     }

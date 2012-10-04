@@ -29,7 +29,7 @@
     <bean id="yukonUserContextMessageSourceResolver" class="com.cannontech.i18n.YukonUserContextMessageSourceResolverMock">
     </bean>
     
-    <bean id="yukonSettingsDao" class="com.cannontech.common.mock.YukonSettingsDaoAdapter"/>
+    <bean id="globalSettingsDao" class="com.cannontech.common.mock.GlobalSettingsDaoAdapter"/>
     
 
 </beans>

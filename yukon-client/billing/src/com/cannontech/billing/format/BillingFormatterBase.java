@@ -13,8 +13,8 @@ import com.cannontech.billing.BillingDao;
 import com.cannontech.billing.device.base.BillableDevice;
 import com.cannontech.billing.format.simple.SimpleBillingFormatBase;
 import com.cannontech.spring.YukonSpringHook;
-import com.cannontech.system.YukonSetting;
-import com.cannontech.system.dao.YukonSettingsDao;
+import com.cannontech.system.GlobalSetting;
+import com.cannontech.system.dao.GlobalSettingsDao;
 
 public abstract class BillingFormatterBase extends SimpleBillingFormatBase {
 
@@ -195,8 +195,8 @@ public abstract class BillingFormatterBase extends SimpleBillingFormatBase {
         
         //Default the rounding mode to the Billing System default property.
         if (format instanceof DecimalFormat) {
-            YukonSettingsDao yukonSettingsDao = YukonSpringHook.getBean("yukonSettingsDao", YukonSettingsDao.class);
-        	RoundingMode roundingMode = yukonSettingsDao.getSettingEnumValue(YukonSetting.DEFAULT_ROUNDING_MODE, RoundingMode.class);
+            GlobalSettingsDao globalSettingsDao = YukonSpringHook.getBean("globalSettingsDao", GlobalSettingsDao.class);
+        	RoundingMode roundingMode = globalSettingsDao.getEnum(GlobalSetting.DEFAULT_ROUNDING_MODE, RoundingMode.class);
         	((DecimalFormat)format).setRoundingMode(roundingMode);
         }
 

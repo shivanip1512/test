@@ -18,8 +18,8 @@ import com.cannontech.graph.buffer.html.UsageHtml;
 import com.cannontech.graph.model.TrendModel;
 import com.cannontech.message.dispatch.message.DBChangeMsg;
 import com.cannontech.spring.YukonSpringHook;
-import com.cannontech.system.YukonSetting;
-import com.cannontech.system.dao.YukonSettingsDao;
+import com.cannontech.system.GlobalSetting;
+import com.cannontech.system.dao.GlobalSettingsDao;
 import com.cannontech.yukon.IDatabaseCache;
 
 
@@ -186,8 +186,8 @@ public class WebGraph implements Runnable
 	{
 		if( homeDirectory == null )
 		{
-		    YukonSettingsDao yukonSettingsDao = YukonSpringHook.getBean("yukonSettingsDao", YukonSettingsDao.class);
-		    homeDirectory = yukonSettingsDao.getSettingStringValue(YukonSetting.HOME_DIRECTORY);
+		    GlobalSettingsDao globalSettingsDao = YukonSpringHook.getBean("globalSettingsDao", GlobalSettingsDao.class);
+		    homeDirectory = globalSettingsDao.getString(GlobalSetting.HOME_DIRECTORY);
 
 			java.io.File file = new java.io.File( homeDirectory );
 			file.mkdirs();
@@ -262,11 +262,11 @@ public class WebGraph implements Runnable
 	{
 		if (createTimeInterval == null)
 		{
-	          YukonSettingsDao yukonSettingsDao = YukonSpringHook.getBean("yukonSettingsDao", YukonSettingsDao.class);
+	          GlobalSettingsDao globalSettingsDao = YukonSpringHook.getBean("globalSettingsDao", GlobalSettingsDao.class);
 			try
 			{
 				
-			    createTimeInterval = yukonSettingsDao.getSettingIntegerValue(YukonSetting.RUN_INTERVAL);
+			    createTimeInterval = globalSettingsDao.getInteger(GlobalSetting.RUN_INTERVAL);
 				CTILogger.info("RunTime Interval set to: " + createTimeInterval + " seconds.");
 			}
 			catch (Exception e)

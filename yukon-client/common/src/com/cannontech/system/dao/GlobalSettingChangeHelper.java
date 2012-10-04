@@ -9,13 +9,13 @@ import com.cannontech.clientutils.YukonLogManager;
 import com.cannontech.core.dynamic.AsyncDynamicDataSource;
 import com.cannontech.database.cache.DBChangeListener;
 import com.cannontech.message.dispatch.message.DBChangeMsg;
-import com.cannontech.system.dao.impl.YukonSettingsDaoImpl;
+import com.cannontech.system.dao.impl.GlobalSettingsDaoImpl;
 
-public class YukonSettingChangeHelper {
+public class GlobalSettingChangeHelper {
     
     @Autowired private AsyncDynamicDataSource asyncDynamicDataSource;
-    @Autowired private YukonSettingsDaoImpl yukonSettingsDaoImpl;
-    private Logger log = YukonLogManager.getLogger(YukonSettingChangeHelper.class);
+    @Autowired private GlobalSettingsDaoImpl globalSettingsDaoImpl;
+    private Logger log = YukonLogManager.getLogger(GlobalSettingChangeHelper.class);
     
     @PostConstruct
     public void setup() {
@@ -25,14 +25,14 @@ public class YukonSettingChangeHelper {
             public void dbChangeReceived(DBChangeMsg dbChange) {
                  if (dbChange.getDatabase() == DBChangeMsg.CHANGE_YUKON_SETTING_DB) {
                      if (log.isDebugEnabled()) {
-                         log.debug("Sending clearCache to YukonSettingDao because: " + dbChange);
+                         log.debug("Sending clearCache to GlobalSettingDao because: " + dbChange);
                      }
-                     yukonSettingsDaoImpl.clearCache();
+                     globalSettingsDaoImpl.clearCache();
                  }
             }
         });
 
         // now that we're registered, clear out the cache of anything accumulated until now
-        yukonSettingsDaoImpl.clearCache();
+        globalSettingsDaoImpl.clearCache();
     }
 }

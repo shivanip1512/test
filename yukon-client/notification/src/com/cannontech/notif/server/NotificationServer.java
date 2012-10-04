@@ -9,8 +9,8 @@ import org.springframework.beans.factory.annotation.Autowired;
 import com.cannontech.clientutils.YukonLogManager;
 import com.cannontech.notif.outputs.OutputHandlerHelper;
 import com.cannontech.spring.YukonSpringHook;
-import com.cannontech.system.YukonSetting;
-import com.cannontech.system.dao.YukonSettingsDao;
+import com.cannontech.system.GlobalSetting;
+import com.cannontech.system.dao.GlobalSettingsDao;
 import com.cannontech.util.MBeanUtil;
 
 /**
@@ -38,7 +38,7 @@ public class NotificationServer implements Runnable, NotificationServerMBean
 
     @Autowired private NotificationMessageHandler messageHandler;
     @Autowired private OutputHandlerHelper outputHelper;
-    @Autowired private YukonSettingsDao yukonSettingsDao;
+    @Autowired private GlobalSettingsDao globalSettingsDao;
 
     /**
      * Start the notification server.
@@ -49,8 +49,8 @@ public class NotificationServer implements Runnable, NotificationServerMBean
     public void start() {
         try {
 
-            String bindAddress = yukonSettingsDao.getSettingStringValue(YukonSetting.NOTIFICATION_HOST);
-            int port = yukonSettingsDao.getSettingIntegerValue(YukonSetting.NOTIFICATION_PORT);
+            String bindAddress = globalSettingsDao.getString(GlobalSetting.NOTIFICATION_HOST);
+            int port = globalSettingsDao.getInteger(GlobalSetting.NOTIFICATION_PORT);
 
             setBindAddress(bindAddress);
             setPort(port);

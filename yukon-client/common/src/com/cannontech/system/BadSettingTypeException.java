@@ -2,7 +2,7 @@ package com.cannontech.system;
 
 
 public class BadSettingTypeException extends RuntimeException {
-    public BadSettingTypeException(YukonSetting setting, String value, Throwable cause) {
+    public BadSettingTypeException(GlobalSetting setting, String value, Throwable cause) {
         super("Unable to convert value of \"" + value + " for " + setting, cause);
     }
 }

@@ -10,24 +10,24 @@ import org.junit.Test;
 
 import com.cannontech.common.alert.alarms.AlarmAlert;
 import com.cannontech.common.alert.model.IdentifiableAlert;
-import com.cannontech.common.mock.YukonSettingsDaoAdapter;
+import com.cannontech.common.mock.GlobalSettingsDaoAdapter;
 import com.cannontech.common.util.ResolvableTemplate;
 import com.cannontech.common.util.TimeSourceImpl;
 import com.cannontech.common.util.TimeSourceMock;
-import com.cannontech.system.YukonSetting;
+import com.cannontech.system.GlobalSetting;
 import com.cannontech.user.checker.NullUserChecker;
 
 public class AlertServiceImplTest {
     
     private AlertServiceImpl alertService = null;
     
-    private static class MockDao extends YukonSettingsDaoAdapter {
+    private static class MockDao extends GlobalSettingsDaoAdapter {
         private final String returnValue;
         public MockDao(String returnValue) {
             this.returnValue = returnValue;
         }
         
-        public String getSettingStringValue(YukonSetting setting) {
+        public String getString(GlobalSetting setting) {
             return returnValue;
         }
     }
@@ -42,22 +42,22 @@ public class AlertServiceImplTest {
     public void testInitialize() {
         long maxAge;
         
-        alertService.setYukonSettingsDao(new MockDao("5"));
+        alertService.setGlobalSettingsDao(new MockDao("5"));
         alertService.setupMaxAge();
         maxAge = alertService.getMaxAge();
         assertEquals(18000000l, maxAge);
         
-        alertService.setYukonSettingsDao(new MockDao(".5"));
+        alertService.setGlobalSettingsDao(new MockDao(".5"));
         alertService.setupMaxAge();
         maxAge = alertService.getMaxAge();
         assertEquals(1800000l, maxAge);
         
-        alertService.setYukonSettingsDao(new MockDao(" "));
+        alertService.setGlobalSettingsDao(new MockDao(" "));
         alertService.setupMaxAge();
         maxAge = alertService.getMaxAge();
         assertEquals(Long.MAX_VALUE, maxAge);
         
-        alertService.setYukonSettingsDao(new MockDao("aba"));
+        alertService.setGlobalSettingsDao(new MockDao("aba"));
         alertService.setupMaxAge();
         maxAge = alertService.getMaxAge();
         assertEquals(Long.MAX_VALUE, maxAge);

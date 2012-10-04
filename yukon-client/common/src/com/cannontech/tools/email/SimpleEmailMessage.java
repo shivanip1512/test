@@ -10,8 +10,8 @@ import javax.mail.internet.InternetAddress;
 import javax.mail.internet.MimeMessage;
 
 import com.cannontech.spring.YukonSpringHook;
-import com.cannontech.system.YukonSetting;
-import com.cannontech.system.dao.YukonSettingsDao;
+import com.cannontech.system.GlobalSetting;
+import com.cannontech.system.dao.GlobalSettingsDao;
 
 /**
  * This class is a simple wrapper for the javax mail API.
@@ -26,10 +26,10 @@ public class SimpleEmailMessage {
     @Deprecated
     public SimpleEmailMessage() throws MessagingException {
         java.util.Properties systemProps = System.getProperties();
-        YukonSettingsDao yukonSettingsDao = YukonSpringHook.getBean("yukonSettingsDao", YukonSettingsDao.class);
+        GlobalSettingsDao globalSettingsDao = YukonSpringHook.getBean("globalSettingsDao", GlobalSettingsDao.class);
         
         //a property used internally by the JavaMail API
-        String smtpServer = yukonSettingsDao.getSettingStringValue(YukonSetting.SMTP_HOST);
+        String smtpServer = globalSettingsDao.getString(GlobalSetting.SMTP_HOST);
         if( smtpServer == null ) {
             throw new MessagingException("No SMTP_HOST server defined in SystemRole.");
         }
@@ -40,7 +40,7 @@ public class SimpleEmailMessage {
         _message = new MimeMessage(session);
         _message.setHeader("X-Mailer", "CannontechEmail");
         
-        String from = yukonSettingsDao.getSettingStringValue(YukonSetting.MAIL_FROM_ADDRESS);
+        String from = globalSettingsDao.getString(GlobalSetting.MAIL_FROM_ADDRESS);
         if (from == null) {
             throw new MessagingException("No MAIL_FROM_ADDRESS defined in SystemRole.");
         }

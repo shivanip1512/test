@@ -67,7 +67,7 @@ import com.google.common.collect.ImmutableMap;
 import com.google.common.collect.ImmutableMap.Builder;
 
 public enum YukonRoleProperty {
-    // Yukon Grp associated role properties moved to YukonSettings
+    // Yukon Grp associated role properties moved to GlobalSettings
     
     DYNAMIC_BILLING_FILE_SETUP(APPLICATION_BILLING, com.cannontech.roles.application.BillingRole.DYNAMIC_BILLING_FILE_SETUP, booleanType()),
     

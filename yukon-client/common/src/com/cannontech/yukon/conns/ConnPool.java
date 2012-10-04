@@ -10,8 +10,8 @@ import com.cannontech.common.util.CtiUtilities;
 import com.cannontech.message.dispatch.ClientConnection;
 import com.cannontech.message.dispatch.message.Registration;
 import com.cannontech.spring.YukonSpringHook;
-import com.cannontech.system.YukonSetting;
-import com.cannontech.system.dao.YukonSettingsDao;
+import com.cannontech.system.GlobalSetting;
+import com.cannontech.system.dao.GlobalSettingsDao;
 import com.cannontech.yukon.IMACSConnection;
 import com.cannontech.yukon.INotifConnection;
 import com.cannontech.yukon.IServerConnection;
@@ -37,7 +37,7 @@ public class ConnPool
 	public static final String MACS_CONN = "MACS";
 	public static final String CAPCONTROL_CONN = "CAPCONTROL";
 	public static final String NOTIFCATION_CONN = "NOTIFCATION";
-	@Autowired private YukonSettingsDao yukonSettingsDao;
+	@Autowired private GlobalSettingsDao globalSettingsDao;
 
 	// Map<String, IServerConnection>
 	private Hashtable<String, IServerConnection> _allConns = null;
@@ -114,8 +114,8 @@ public class ConnPool
 	    if( connToDispatch == null ) {
 	        String defaultHost = "127.0.0.1";
 
-	        defaultHost = yukonSettingsDao.getSettingStringValue(YukonSetting.DISPATCH_MACHINE);
-	        int port = yukonSettingsDao.getSettingIntegerValue(YukonSetting.DISPATCH_PORT);
+	        defaultHost = globalSettingsDao.getString(GlobalSetting.DISPATCH_MACHINE);
+	        int port = globalSettingsDao.getInteger(GlobalSetting.DISPATCH_PORT);
 
 	        connToDispatch = (ClientConnection)createDispatchConn();
 	        connToDispatch.setHost(defaultHost);
@@ -146,8 +146,8 @@ public class ConnPool
         {
             String host = "127.0.0.1";
             
-            host = yukonSettingsDao.getSettingStringValue(YukonSetting.PORTER_MACHINE);
-            int port = yukonSettingsDao.getSettingIntegerValue(YukonSetting.PORTER_PORT);
+            host = globalSettingsDao.getString(GlobalSetting.PORTER_MACHINE);
+            int port = globalSettingsDao.getInteger(GlobalSetting.PORTER_PORT);
     
             porterCC = (com.cannontech.message.porter.ClientConnection)createPorterConn();
     
@@ -177,8 +177,8 @@ public class ConnPool
             
             String host = "127.0.0.1";
 
-            host = yukonSettingsDao.getSettingStringValue(YukonSetting.MACS_MACHINE);
-            int port = yukonSettingsDao.getSettingIntegerValue(YukonSetting.MACS_PORT);
+            host = globalSettingsDao.getString(GlobalSetting.MACS_MACHINE);
+            int port = globalSettingsDao.getInteger(GlobalSetting.MACS_PORT);
 
             macsConn = (ServerMACSConnection)createMacsConn();
     
@@ -218,8 +218,8 @@ public class ConnPool
         if( cbcConn == null )
         {		
         	cbcConn = (CapControlClientConnection)createCapControlConn();
-            cbcConn.setHost(yukonSettingsDao.getSettingStringValue(YukonSetting.CAP_CONTROL_MACHINE));
-            int port = yukonSettingsDao.getSettingIntegerValue(YukonSetting.CAP_CONTROL_PORT);
+            cbcConn.setHost(globalSettingsDao.getString(GlobalSetting.CAP_CONTROL_MACHINE));
+            int port = globalSettingsDao.getInteger(GlobalSetting.CAP_CONTROL_PORT);
             cbcConn.setPort(port);
 
             cbcConn.connectWithoutWait();
@@ -269,9 +269,9 @@ public class ConnPool
 	private IServerConnection createNotificationConn()
 	{       
 		NotifClientConnection notifConn = new NotifClientConnection();
-		String host = yukonSettingsDao.getSettingStringValue(YukonSetting.NOTIFICATION_HOST);
+		String host = globalSettingsDao.getString(GlobalSetting.NOTIFICATION_HOST);
         notifConn.setHost(host);
-        int port = yukonSettingsDao.getSettingIntegerValue(YukonSetting.NOTIFICATION_PORT);
+        int port = globalSettingsDao.getInteger(GlobalSetting.NOTIFICATION_PORT);
         notifConn.setPort(port);
 		return notifConn;
 	}

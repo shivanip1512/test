@@ -12,8 +12,8 @@ import com.cannontech.database.data.lite.LiteContact;
 import com.cannontech.database.data.lite.LiteEnergyCompany;
 import com.cannontech.database.data.lite.LiteYukonUser;
 import com.cannontech.spring.YukonSpringHook;
-import com.cannontech.system.YukonSetting;
-import com.cannontech.system.dao.YukonSettingsDao;
+import com.cannontech.system.GlobalSetting;
+import com.cannontech.system.dao.GlobalSettingsDao;
 import com.cannontech.tools.email.EmailMessage;
 
 /**
@@ -63,7 +63,7 @@ public class RequestPword
 		
 		allParams = new String[] { userName, email, fName, lName };
 
-		YukonSettingsDao yukonSettingsDao = YukonSpringHook.getBean("yukonSettingsDao", YukonSettingsDao.class);
+		GlobalSettingsDao globalSettingsDao = YukonSpringHook.getBean("globalSettingsDao", GlobalSettingsDao.class);
 
 		
         /*
@@ -71,7 +71,7 @@ public class RequestPword
          * will get a null if the user is null.  The user SHOULD be null in this case, since nobody
          * should be logged in.  Let's try to avoid the error.
          */
-		String mail = yukonSettingsDao.getSettingStringValue(YukonSetting.MAIL_FROM_ADDRESS);
+		String mail = globalSettingsDao.getString(GlobalSetting.MAIL_FROM_ADDRESS);
 		if(mail != null) {
 			masterMail = mail;
 		}

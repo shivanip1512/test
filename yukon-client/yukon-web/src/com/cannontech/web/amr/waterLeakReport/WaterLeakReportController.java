@@ -59,8 +59,8 @@ import com.cannontech.multispeak.client.MultispeakVendor;
 import com.cannontech.multispeak.dao.MspObjectDao;
 import com.cannontech.multispeak.dao.MultispeakDao;
 import com.cannontech.multispeak.service.MultispeakCustomerInfoService;
-import com.cannontech.system.YukonSetting;
-import com.cannontech.system.dao.YukonSettingsDao;
+import com.cannontech.system.GlobalSetting;
+import com.cannontech.system.dao.GlobalSettingsDao;
 import com.cannontech.user.YukonUserContext;
 import com.cannontech.web.amr.waterLeakReport.model.WaterLeakReportFilterBackingBean;
 import com.cannontech.web.common.flashScope.FlashScope;
@@ -96,7 +96,7 @@ public class WaterLeakReportController {
     @Autowired private WaterMeterLeakService waterMeterLeakService;
     @Autowired private YukonUserContextMessageSourceResolver messageSourceResolver;
     @Autowired private MultispeakCustomerInfoService multispeakCustomerInfoService;
-    @Autowired private YukonSettingsDao yukonSettingsDao;
+    @Autowired private GlobalSettingsDao globalSettingsDao;
 
     private final static String baseKey = "yukon.web.modules.amr.waterLeakReport.report";
     private final static Hours water_node_reporting_interval = Hours.hours(24);
@@ -436,7 +436,7 @@ public class WaterLeakReportController {
     }
 
     private void setupMspVendorModelInfo(YukonUserContext userContext, ModelMap model) {
-        int vendorId = yukonSettingsDao.getSettingIntegerValue(YukonSetting.MSP_PRIMARY_CB_VENDORID);
+        int vendorId = globalSettingsDao.getInteger(GlobalSetting.MSP_PRIMARY_CB_VENDORID);
         boolean hasVendorId = vendorId <= 0 ? false : true;
         model.addAttribute("hasVendorId", hasVendorId);
     }

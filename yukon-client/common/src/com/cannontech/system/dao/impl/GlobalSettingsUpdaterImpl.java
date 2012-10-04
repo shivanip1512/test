@@ -8,16 +8,16 @@ import com.cannontech.database.SqlUtils;
 import com.cannontech.database.YukonJdbcTemplate;
 import com.cannontech.message.dispatch.message.DBChangeMsg;
 import com.cannontech.message.dispatch.message.DbChangeType;
-import com.cannontech.system.YukonSetting;
-import com.cannontech.system.dao.YukonSettingsUpdater;
+import com.cannontech.system.GlobalSetting;
+import com.cannontech.system.dao.GlobalSettingsUpdater;
 
-public class YukonSettingsUpdaterImpl implements YukonSettingsUpdater {
+public class GlobalSettingsUpdaterImpl implements GlobalSettingsUpdater {
     
     @Autowired private YukonJdbcTemplate yukonJdbcTemplate;
     @Autowired private DBPersistentDao dbPersistentDao;
 
     @Override
-    public void updateSetting(YukonSetting setting, String newVal) {
+    public void updateSetting(GlobalSetting setting, String newVal) {
         newVal = SqlUtils.convertStringToDbValue(newVal);
         
         SqlStatementBuilder sql = new SqlStatementBuilder();

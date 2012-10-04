@@ -16,14 +16,14 @@ import javax.mail.internet.MimeMultipart;
 
 import org.springframework.beans.factory.annotation.Autowired;
 
-import com.cannontech.system.YukonSetting;
-import com.cannontech.system.dao.YukonSettingsDao;
+import com.cannontech.system.GlobalSetting;
+import com.cannontech.system.dao.GlobalSettingsDao;
 import com.cannontech.tools.email.EmailAttachmentMessageHolder;
 import com.cannontech.tools.email.EmailMessageHolder;
 import com.cannontech.tools.email.EmailService;
 
 public class EmailServiceImpl implements EmailService {
-    @Autowired private YukonSettingsDao YukonSettingsDao;
+    @Autowired private GlobalSettingsDao GlobalSettingsDao;
 
     public void sendMessage(EmailMessageHolder holder) throws MessagingException {
         
@@ -93,7 +93,7 @@ public class EmailServiceImpl implements EmailService {
         java.util.Properties systemProps = System.getProperties();
         
         //a property used internally by the JavaMail API
-        String smtpServer = YukonSettingsDao.getSettingStringValue(YukonSetting.SMTP_HOST);
+        String smtpServer = GlobalSettingsDao.getString(GlobalSetting.SMTP_HOST);
         if( smtpServer == null ) {
             throw new MessagingException("No SMTP_HOST server defined in SystemRole.");
         }
@@ -103,7 +103,7 @@ public class EmailServiceImpl implements EmailService {
         
         MimeMessage _message = new MimeMessage(session);
         _message.setHeader("X-Mailer", "CannontechEmail");
-        String from = YukonSettingsDao.getSettingStringValue(YukonSetting.MAIL_FROM_ADDRESS);
+        String from = GlobalSettingsDao.getString(GlobalSetting.MAIL_FROM_ADDRESS);
 
         if (from == null) {
             throw new MessagingException("No MAIL_FROM_ADDRESS defined in SystemRole.");

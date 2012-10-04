@@ -12,8 +12,8 @@ import com.cannontech.common.util.SqlStatementBuilder;
 import com.cannontech.core.roleproperties.InputTypeFactory;
 import com.cannontech.database.YukonJdbcTemplate;
 import com.cannontech.system.BadSettingTypeException;
-import com.cannontech.system.YukonSetting;
-import com.cannontech.system.dao.YukonSettingsDao;
+import com.cannontech.system.GlobalSetting;
+import com.cannontech.system.dao.GlobalSettingsDao;
 
 /**
  * The class handles Yukon System wide settings. 
@@ -22,7 +22,7 @@ import com.cannontech.system.dao.YukonSettingsDao;
  * 
  * 
  * This is primarily intended for reading the settings and not for updating settings.
- * To update Yukon settings there is YukonSettingsUpdater to avoid circular dependencies
+ * To update Yukon settings there is GlobalSettingsUpdater to avoid circular dependencies
  * 
  * Taken From RolePropertyDaoImpl.java:
  * This class is designed to have a single dependency on a JdbcTemplate. Any other
@@ -34,23 +34,23 @@ import com.cannontech.system.dao.YukonSettingsDao;
  * This creates the following dependency graph:
 
  * <pre>
- *    DispatchConnection --> YukonSettingsDaoImpl --> DataSource
+ *    DispatchConnection --> GlobalSettingsDaoImpl --> DataSource
  *             ^                 ^
  *             |                 |
- *    YukonSettingChangeHelper --|
+ *    GlobalSettingChangeHelper --|
  * </pre>
  * 
  */
-public class YukonSettingsDaoImpl implements YukonSettingsDao {
+public class GlobalSettingsDaoImpl implements GlobalSettingsDao {
     
-    private Logger log = YukonLogManager.getLogger(YukonSettingsDaoImpl.class);
-    private LeastRecentlyUsedCacheMap<YukonSetting, Object> cache = new LeastRecentlyUsedCacheMap<YukonSetting, Object>(10000);
+    private Logger log = YukonLogManager.getLogger(GlobalSettingsDaoImpl.class);
+    private LeastRecentlyUsedCacheMap<GlobalSetting, Object> cache = new LeastRecentlyUsedCacheMap<GlobalSetting, Object>(10000);
     private final Object NULL_CACHE_VALUE = new Object();
     
     @Autowired private YukonJdbcTemplate yukonJdbcTemplate;
 
     @Override
-    public String getSettingStringValue(YukonSetting setting) {
+    public String getString(GlobalSetting setting) {
         Object convertedValue = getConvertedValue(setting, Object.class);
         if (convertedValue == null) {
             return "";
@@ -60,13 +60,13 @@ public class YukonSettingsDaoImpl implements YukonSettingsDao {
     }
 
     @Override
-    public Boolean getSettingBooleanValue(YukonSetting setting) {
+    public Boolean getBoolean(GlobalSetting setting) {
         return getConvertedValue(setting, Boolean.class);
     }
 
     @Override
-    public boolean checkSetting(YukonSetting setting) {
-        Boolean value = getSettingBooleanValue(setting);
+    public boolean checkSetting(GlobalSetting setting) {
+        Boolean value = getBoolean(setting);
         if (value == null) {
             return false;
         }
@@ -74,17 +74,17 @@ public class YukonSettingsDaoImpl implements YukonSettingsDao {
     }
 
     @Override
-    public void verifySetting(YukonSetting setting) throws NotAuthorizedException {
+    public void verifySetting(GlobalSetting setting) throws NotAuthorizedException {
         if (!checkSetting(setting)) throw new NotAuthorizedException("User not authorized to view this page.");
     }
 
     @Override
-    public Integer getSettingIntegerValue(YukonSetting setting) {
+    public Integer getInteger(GlobalSetting setting) {
         return getConvertedValue(setting, Integer.class);
     }
 
     @Override
-    public <E extends Enum<E>> E getSettingEnumValue(YukonSetting setting, Class<E> enumClass) {
+    public <E extends Enum<E>> E getEnum(GlobalSetting setting, Class<E> enumClass) {
         return getConvertedValue(setting, enumClass);
     }
 
@@ -94,7 +94,7 @@ public class YukonSettingsDaoImpl implements YukonSettingsDao {
      * @param returnType the type to convert to, can be Object, otherwise must be compatible with setting
      * @return the converted value or the default, will only return null if the default was null
      */
-    private <T> T getConvertedValue(YukonSetting setting, Class<T> returnType) {
+    private <T> T getConvertedValue(GlobalSetting setting, Class<T> returnType) {
 
         if (log.isDebugEnabled()) {
             log.debug("Getting converted value of " + setting + " as " + returnType.getSimpleName());
@@ -130,7 +130,7 @@ public class YukonSettingsDaoImpl implements YukonSettingsDao {
         return result;
     }
 
-    private Object convertSettingValue(YukonSetting setting, String value) {
+    private Object convertSettingValue(GlobalSetting setting, String value) {
         try {
             return InputTypeFactory.convertPropertyValue(setting.getType(), value);
         } catch (Exception e) {
@@ -138,7 +138,7 @@ public class YukonSettingsDaoImpl implements YukonSettingsDao {
         }
     }
 
-    private String findSettingValue(YukonSetting setting) {
+    private String findSettingValue(GlobalSetting setting) {
         SqlStatementBuilder sql = new SqlStatementBuilder();
         sql.append("SELECT Value");
         sql.append("FROM YukonSetting");
