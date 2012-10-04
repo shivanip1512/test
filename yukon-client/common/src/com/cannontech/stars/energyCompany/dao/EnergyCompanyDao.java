@@ -35,6 +35,15 @@ public interface EnergyCompanyDao {
     public LiteEnergyCompany getEnergyCompanyByName(String energyCompanyName);
     
     /**
+     * Equivalent to getEnergyCompanyByName(String name) except this method will return 
+     * null if not found and will not throw an exception.
+     * 
+     * @param energyCompanyName
+     * @return LiteEnergyCompany or null if not found
+     */
+    public LiteEnergyCompany findEnergyCompanyByName(String energyCompanyName);
+
+    /**
      * Returns all the LiteEnergyCompany's that have customerID_ in it.
      * 
      * @param customerID_ int

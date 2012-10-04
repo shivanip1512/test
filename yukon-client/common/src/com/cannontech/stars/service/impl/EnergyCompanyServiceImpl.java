@@ -29,7 +29,6 @@ import com.cannontech.core.dao.ContactNotificationDao;
 import com.cannontech.core.dao.DBPersistentDao;
 import com.cannontech.core.dao.DaoFactory;
 import com.cannontech.core.dao.EnergyCompanyNameUnavailableException;
-import com.cannontech.core.dao.NotFoundException;
 import com.cannontech.core.dao.UserNameUnavailableException;
 import com.cannontech.core.dao.YukonListDao;
 import com.cannontech.core.dao.YukonUserDao;
@@ -112,10 +111,10 @@ public class EnergyCompanyServiceImpl implements EnergyCompanyService {
         boolean topLevelEc = parentId == null;
         
         /* Check energy company name availability */
-        try {
-            energyCompanyDao.getEnergyCompanyByName(energyCompanyDto.getName());
+        if(energyCompanyDao.findEnergyCompanyByName(energyCompanyDto.getName()) != null) {
             throw new EnergyCompanyNameUnavailableException();
-        } catch (NotFoundException e) {/* Ignore */}
+        }
+
         
         /* Check usernames availability */
         if (yukonUserDao.findUserByUsername(energyCompanyDto.getAdminUsername()) != null) {

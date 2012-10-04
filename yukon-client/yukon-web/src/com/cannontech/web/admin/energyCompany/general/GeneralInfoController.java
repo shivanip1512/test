@@ -57,17 +57,17 @@ public class GeneralInfoController {
     private final static String baseKey = "yukon.web.modules.adminSetup.generalInfo.";
 
 //    private CsrfTokenService csrfTokenService;
-    private EnergyCompanyService energyCompanyService;
-    private ECMappingDao ecMappingDao;
-    private GeneralInfoService generalInfoService;
-    private GeneralInfoValidator generalInfoValidator;
-    private RolePropertyDao rolePropertyDao;
-    private StarsDatabaseCache starsDatabaseCache;
-    private StarsEventLogService starsEventLogService;
-    private YukonGroupService yukonGroupService;
-    private YukonUserContextMessageSourceResolver messageSourceResolver;
-    private YukonUserDao yukonUserDao;
-    
+    @Autowired private EnergyCompanyService energyCompanyService;
+    @Autowired private ECMappingDao ecMappingDao;
+    @Autowired private GeneralInfoService generalInfoService;
+    @Autowired private GeneralInfoValidator generalInfoValidator;
+    @Autowired private RolePropertyDao rolePropertyDao;
+    @Autowired private StarsDatabaseCache starsDatabaseCache;
+    @Autowired private StarsEventLogService starsEventLogService;
+    @Autowired private YukonGroupService yukonGroupService;
+    @Autowired private YukonUserContextMessageSourceResolver messageSourceResolver;
+    @Autowired private YukonUserDao yukonUserDao;
+
     /* View Page*/
     @RequestMapping
     public String view(YukonUserContext context, ModelMap model, int ecId, EnergyCompanyInfoFragment fragment) {
@@ -386,54 +386,4 @@ public class GeneralInfoController {
         this.csrfTokenService = csrfTokenService;
     }
 */    
-    @Autowired
-    public void setStarsDatabaseCache(StarsDatabaseCache starsDatabaseCache) {
-        this.starsDatabaseCache = starsDatabaseCache;
-    }
-    
-    @Autowired
-    public void setGeneralInfoService(GeneralInfoService generalInfoService) {
-        this.generalInfoService = generalInfoService;
-    }
-    
-    @Autowired
-    public void setMessageSourceResolver(YukonUserContextMessageSourceResolver messageSourceResolver) {
-        this.messageSourceResolver = messageSourceResolver;
-    }
-    
-    @Autowired
-    public void setGeneralInfoValidator(GeneralInfoValidator generalInfoValidator) {
-        this.generalInfoValidator = generalInfoValidator;
-    }
-    
-    @Autowired
-    public void setEnergyCompanyService(EnergyCompanyService energyCompanyService) {
-        this.energyCompanyService = energyCompanyService;
-    }
-    
-    @Autowired
-    public void setEcMappingDao(ECMappingDao ecMappingDao) {
-        this.ecMappingDao = ecMappingDao;
-    }
-    
-    @Autowired
-    public void setStarsEventLogService(StarsEventLogService starsEventLogService) {
-        this.starsEventLogService = starsEventLogService;
-    }
-    
-    @Autowired
-    public void setYukonUserDao(YukonUserDao yukonUserDao) {
-        this.yukonUserDao = yukonUserDao;
-    }
-    
-    @Autowired
-    public void setRolePropertyDao(RolePropertyDao rolePropertyDao) {
-        this.rolePropertyDao = rolePropertyDao;
-    }
-    
-    @Autowired
-    public void setYukonGroupService(YukonGroupService yukonGroupService) {
-        this.yukonGroupService = yukonGroupService;
-    }
-    
 }

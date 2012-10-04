@@ -188,6 +188,15 @@ public final class EnergyCompanyDaoImpl implements EnergyCompanyDao {
         throw new NotFoundException("Energy Company with name: " + energyCompanyName + " not found.");
     }
 
+    @Override
+    public LiteEnergyCompany findEnergyCompanyByName(final String energyCompanyName) {
+        LiteEnergyCompany company = null;
+        try {
+            company = getEnergyCompanyByName(energyCompanyName);
+        } catch (NotFoundException e) {/* Ignore */}
+        return company;
+    }
+
     /*
      * (non-Javadoc)
      * @see
