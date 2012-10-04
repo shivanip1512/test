@@ -116,6 +116,10 @@
         <displayName>RDS Terminal Route</displayName>
     </pao>
     
+    <pao id= "ROUTE_TNPP_TERMINAL" inherits="ROUTE_ENCRYPTION">
+        <displayName>TNPP Terminal Route</displayName>
+    </pao>
+    
     <pao id="MCT_200_SERIES_TAG" abstract="true">
         <tags>
             <tag name="MCT_200_SERIES"/>
