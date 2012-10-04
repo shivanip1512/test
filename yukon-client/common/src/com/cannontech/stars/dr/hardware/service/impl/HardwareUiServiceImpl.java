@@ -302,6 +302,7 @@ public class HardwareUiServiceImpl implements HardwareUiService {
         LiteInventoryBase liteInventoryBase = inventoryBaseDao.getByInventoryId(hardware.getInventoryId());
         setInventoryFieldsFromDto(liteInventoryBase, hardware);
         YukonEnergyCompany ec = yukonEnergyCompanyService.getEnergyCompanyByInventoryId(hardware.getInventoryId());
+        hardware.setEnergyCompanyId(ec.getEnergyCompanyId());
         
         checkSerialNumber(hardware);
         
@@ -434,6 +435,7 @@ public class HardwareUiServiceImpl implements HardwareUiService {
         int inventoryId;
         String deviceLabel;
         
+        hardware.setEnergyCompanyId(energyCompany.getEnergyCompanyId());
         checkSerialNumber(hardware);
         
         HardwareType hardwareType;
@@ -463,7 +465,7 @@ public class HardwareUiServiceImpl implements HardwareUiService {
                 /* MeterHardwareBase */
                 LiteMeterHardwareBase meterHardwareBase = buildMeterHardwareBase(hardware, energyCompany); 
                 
-                inventoryId = inventoryBaseDao.saveMeterHardware(meterHardwareBase, hardware.getEnergyCompanyId()).getInventoryID();
+                inventoryId = inventoryBaseDao.saveMeterHardware(meterHardwareBase, energyCompany.getEnergyCompanyId()).getInventoryID();
                 
                 /* Update LMHardwareToMeterMapping */
                 List<Integer> assignedSwitches = Lists.newArrayList();
