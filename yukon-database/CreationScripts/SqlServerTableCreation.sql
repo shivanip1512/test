@@ -1,7 +1,7 @@
 /*==============================================================*/
 /* Database name:  YukonDatabase                                */
 /* DBMS name:      Microsoft SQL Server 2005                    */
-/* Created on:     9/5/2012 10:45:36 AM                         */
+/* Created on:     10/4/2012 1:42:21 PM                         */
 /*==============================================================*/
 
 /*==============================================================*/
@@ -7416,6 +7416,7 @@ create table Regulator (
    RegulatorId          numeric              not null,
    KeepAliveTimer       numeric              not null,
    KeepAliveConfig      numeric              not null,
+   vTapChange           float                not null,
    constraint PK_Reg primary key (RegulatorId)
 )
 go
