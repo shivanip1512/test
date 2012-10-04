@@ -104,7 +104,6 @@ function yukonGeneral_moveOptionPositionInSelect(selectElement, direction) {
 }
 
 function yukonGeneral_addOptionToTopOfSelect(selectObj,optValue,optText) {
-    
     // new option
     var newOpt = document.createElement("option");
 
@@ -112,7 +111,7 @@ function yukonGeneral_addOptionToTopOfSelect(selectObj,optValue,optText) {
     var firstOptGroup = jQuery(selectObj).find("optgroup")[0];
     
     // get first option in first group
-    var firstGroupOptions = firstOptGroup.find("option");
+    var firstGroupOptions = jQuery(firstOptGroup).find("option");
     
     // either stick new opt in before the opt that is currently first in the first option group [DOM function] 
     // or, if there are no current opts, just append it to that first group

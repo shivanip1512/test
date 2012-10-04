@@ -31,7 +31,7 @@
                         </select>
                     </ct:nameValue2>
                     <ct:nameValue2 nameKey=".totalConsumption">
-                        <div id="${widgetParameters.widgetId}_totalConsumption"></div>
+                        <div id="${widgetParameters.widgetId}_totalConsumption" class="untouched"></div>
                     </ct:nameValue2>
                 </c:if>
             </c:otherwise>
@@ -73,19 +73,26 @@ function ${widgetParameters.widgetId}_updateCurrent(allIdentifierValues) {
     ${widgetParameters.widgetId}_updateDifference();
 }
 
-function ${widgetParameters.widgetId}_updateDifference(firstUpdate) {
+function ${widgetParameters.widgetId}_updateDifference() {
   var currentUsage = ${widgetParameters.widgetId}_currentUsage;
-  if (currentUsage == null) return;
+  
+  if (currentUsage == null) {
+	  return false;
+  }
+  
   var previousVal = jQuery(document.getElementById('${widgetParameters.widgetId}_prevSelect')).val();
   var totalUsage = currentUsage - previousVal;
   var elem = jQuery(document.getElementById('${widgetParameters.widgetId}_totalConsumption'));
+  var previousTotalUsage = elem.data("totalUsage"); 
+  elem.data("totalUsage", totalUsage);
   elem.html(totalUsage.toFixed(3));
+  
   //only makes sense to draw attention to the updated value if it actually changed
-  if(previousVal && !firstUpdate){
+  if(previousVal && !jQuery(elem).hasClass('untouched') && totalUsage != previousTotalUsage){
 	  jQuery(elem).flashYellow(3.5);
   }
+  jQuery(elem).removeClass('untouched');
 }
-${widgetParameters.widgetId}_updateDifference(true);
 </script>
 
 <cti:attributeResolver device="${device}" attributeName="${previousReadingsAttribute}" var="pointId" />
