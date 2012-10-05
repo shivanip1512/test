@@ -1,7 +1,7 @@
 /*==============================================================*/
 /* Database name:  YukonDatabase                                */
 /* DBMS name:      ORACLE Version 9i                            */
-/* Created on:     10/4/2012 2:32:08 PM                         */
+/* Created on:     10/5/2012 11:17:35 AM                        */
 /*==============================================================*/
 
 
@@ -6983,7 +6983,7 @@ create table Regulator  (
    RegulatorId          NUMBER                          not null,
    KeepAliveTimer       NUMBER                          not null,
    KeepAliveConfig      NUMBER                          not null,
-   vTapChange           FLOAT                           not null,
+   VoltChangePerTap     FLOAT                           not null,
    constraint PK_Reg primary key (RegulatorId)
 );
 

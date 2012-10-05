@@ -4,13 +4,13 @@
 
 /* Start YUK-11429 */
 ALTER TABLE Regulator
-ADD vTapChange FLOAT;
+ADD VoltChangePerTap FLOAT;
 
 UPDATE Regulator
-SET vTapChange = 0.75;
+SET VoltChangePerTap = 0.75;
 
 ALTER TABLE Regulator
-MODIFY vTapChange FLOAT NOT NULL;
+MODIFY VoltChangePerTap FLOAT NOT NULL;
 /* End YUK-11429 */
 
 /* Start YUK-11466 */
