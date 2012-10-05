@@ -10971,7 +10971,7 @@
           </com.cariboulake.db.schemacompare.business.domain.db.Column>
           <com.cariboulake.db.schemacompare.business.domain.db.Column>
             <i__table reference="../../.."/>
-            <i__columnName>vTapChange</i__columnName>
+            <i__columnName>VoltChangePerTap</i__columnName>
             <i__columnNameDiffers>false</i__columnNameDiffers>
             <i__typeName>float</i__typeName>
             <i__typeNameDiffers>false</i__typeNameDiffers>
