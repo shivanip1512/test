@@ -7,6 +7,7 @@ import com.cannontech.capcontrol.model.ViewableStrategy;
 import com.cannontech.database.db.capcontrol.CapControlStrategy;
 import com.cannontech.database.db.capcontrol.LiteCapControlStrategy;
 import com.cannontech.database.db.capcontrol.PeakTargetSetting;
+import com.cannontech.database.db.capcontrol.VoltageViolationSetting;
 import com.cannontech.user.YukonUserContext;
 
 public interface StrategyDao {
@@ -25,7 +26,11 @@ public interface StrategyDao {
     
     public int add(String name);
 
+    public void saveVoltageViolationSettings(CapControlStrategy strategy);
+
     public void savePeakSettings(CapControlStrategy strategy);
+
+    public List<VoltageViolationSetting> getVoltageViolationSettings(CapControlStrategy strategy);
 
     public List<PeakTargetSetting> getPeakSettings(CapControlStrategy capControlStrategy);
 

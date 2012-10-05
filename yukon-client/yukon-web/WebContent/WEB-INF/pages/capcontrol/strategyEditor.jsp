@@ -235,6 +235,54 @@
             
             <x:htmlTag value="br"/>
             
+            <x:htmlTag value="fieldset" styleClass="fieldSet" rendered="#{capControlForm.strategy.ivvc}">
+                <x:htmlTag value="legend">
+                    <x:outputText value="Voltage Violation Settings" styleClass="leftOfImageLabel"/>
+                    <x:htmlTag value="span" styleClass="icon icon_help fr voltage_violation_help"></x:htmlTag>
+                    <x:htmlTag value="div" styleClass="dn voltage_violation_graph_container">
+	                    <x:htmlTag value="div" styleClass="ivvc_voltage_violation_graph"></x:htmlTag>
+                    </x:htmlTag>
+                </x:htmlTag>
+
+				<h:dataTable id="voltageViolationSettingsData" var="setting" 
+					value="#{capControlForm.strategy.voltageViolationSettings}"
+					headerClass="peakSettingsTableHeader"
+					rowClasses="peakSettingsTableCell"
+					columnClasses="peakSettingsTableCell">
+
+                    <h:column>
+                        <h:outputText value="#{setting.name.displayName}" style="padding-left:50px;"/>
+                        <h:outputText value=":" />
+                    </h:column>
+
+                    <h:column>
+                        <f:facet name="header">
+                            <x:outputText value="Bandwidth"/>
+                        </f:facet>
+                        <x:inputText styleClass="char8Label" required="true" value="#{setting.bandwidth}" 
+                                     disabled="#{!capControlForm.hasEditingRole || !capControlForm.editingCBCStrategy}"/>
+                    </h:column>
+                    <h:column>
+                        <f:facet name="header">
+                            <x:outputText value="Cost"/>
+                        </f:facet>
+                        <x:inputText styleClass="char8Label" required="true" value="#{setting.cost}" 
+                                     disabled="#{!capControlForm.hasEditingRole || !capControlForm.editingCBCStrategy}"/>
+                    </h:column>
+                    <h:column>
+                        <f:facet name="header">
+                            <x:outputText value="Emergency Cost"/>
+                        </f:facet>
+                        <x:inputText styleClass="char8Label" required="true" value="#{setting.emergencyCost}" 
+                                     disabled="#{!capControlForm.hasEditingRole || !capControlForm.editingCBCStrategy}"/>
+                    </h:column>
+
+				</h:dataTable>
+
+			</x:htmlTag>
+            
+            <x:htmlTag value="br"/>
+            
             <x:htmlTag value="fieldset" styleClass="fieldSet" rendered="#{!capControlForm.timeOfDay}">
                 <x:htmlTag value="legend">
                     <x:outputText value="Peak Operating Days" />

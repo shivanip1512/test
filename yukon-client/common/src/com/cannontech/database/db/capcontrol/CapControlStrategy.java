@@ -40,6 +40,8 @@ public class CapControlStrategy extends DBPersistent implements CTIDbChange {
     private String likeDayFallBack = "N";
     private String endDaySettings = CtiUtilities.STRING_NONE;
     private List<PeakTargetSetting> targetSettings = StrategyPeakSettingsHelper.getSettingDefaults(ControlAlgorithm.KVAR);
+    private List<VoltageViolationSetting> voltageViolationSettings = VoltageViolationSettingsHelper.getVoltageViolationDefaults();
+    
 	public static final String SETTER_COLUMNS[] = { 
 		"StrategyName", "ControlMethod", "MaxDailyOperation",
 		"MaxOperationDisableFlag",
@@ -82,6 +84,7 @@ public class CapControlStrategy extends DBPersistent implements CTIDbChange {
         update( TABLE_NAME, SETTER_COLUMNS, setValues, CONSTRAINT_COLUMNS, constraintValues );
         
         strategyDao.savePeakSettings(this);
+        strategyDao.saveVoltageViolationSettings(this);
     }
 	
 	public void retrieve() throws SQLException {
@@ -111,6 +114,7 @@ public class CapControlStrategy extends DBPersistent implements CTIDbChange {
             throw new IncorrectResultSizeDataAccessException(SETTER_COLUMNS.length, results.length);
         }
         retrieveTargetSettings(this);
+        retrieveVoltageViolationSettings(this);
     }
 	
 	public void delete() throws java.sql.SQLException {
@@ -236,6 +240,10 @@ public class CapControlStrategy extends DBPersistent implements CTIDbChange {
 	private void retrieveTargetSettings(CapControlStrategy strategy) {
 	    targetSettings = strategyDao.getPeakSettings(strategy);
 	}
+	
+	private void retrieveVoltageViolationSettings(CapControlStrategy strategy) {
+	    voltageViolationSettings = strategyDao.getVoltageViolationSettings(strategy);
+	}
 
 	public String toString() {
 		return getStrategyName();
@@ -297,6 +305,14 @@ public class CapControlStrategy extends DBPersistent implements CTIDbChange {
         this.targetSettings = targetSettings;
     }
     
+    public List<VoltageViolationSetting> getVoltageViolationSettings() {
+        return voltageViolationSettings;
+    }
+
+    public void setVoltageViolationSettings(List<VoltageViolationSetting> voltageViolationSettings) {
+        this.voltageViolationSettings = voltageViolationSettings;
+    }
+
     public boolean isKVarAlgorithm () {
         return controlUnits == ControlAlgorithm.KVAR;
     }
@@ -307,6 +323,10 @@ public class CapControlStrategy extends DBPersistent implements CTIDbChange {
     
     public boolean isVoltVar () {
         return controlUnits == ControlAlgorithm.MULTI_VOLT_VAR;
+    }
+    
+    public boolean isIvvc () {
+        return controlUnits == ControlAlgorithm.INTEGRATED_VOLT_VAR;
     }
     
     public boolean isVoltStrat() {

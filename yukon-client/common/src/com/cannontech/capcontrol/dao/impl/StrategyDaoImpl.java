@@ -6,6 +6,7 @@ import java.sql.Types;
 import java.util.List;
 import java.util.concurrent.TimeUnit;
 
+import org.apache.commons.lang.StringUtils;
 import org.springframework.beans.factory.InitializingBean;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.dao.DataIntegrityViolationException;
@@ -33,7 +34,11 @@ import com.cannontech.database.db.capcontrol.LiteCapControlStrategy;
 import com.cannontech.database.db.capcontrol.PeakTargetSetting;
 import com.cannontech.database.db.capcontrol.PeaksTargetType;
 import com.cannontech.database.db.capcontrol.StrategyPeakSettingsHelper;
+import com.cannontech.database.db.capcontrol.VoltageViolationSettingsHelper;
 import com.cannontech.database.db.capcontrol.TargetSettingType;
+import com.cannontech.database.db.capcontrol.VoltageViolationSetting;
+import com.cannontech.database.db.capcontrol.VoltageViolationSettingNameType;
+import com.cannontech.database.db.capcontrol.VoltageViolationSettingType;
 import com.cannontech.database.incrementer.NextValueHelper;
 import com.cannontech.user.YukonUserContext;
 import com.google.common.base.Function;
@@ -92,6 +97,7 @@ public class StrategyDaoImpl implements StrategyDao, InitializingBean {
         try {
             strategyTemplate.insert(strategy);
             savePeakSettings(strategy);
+            saveVoltageViolationSettings(strategy);
         } catch (DataIntegrityViolationException e) {
             throw new DataIntegrityViolationException("Strategy name already in use.");
         }
@@ -105,6 +111,7 @@ public class StrategyDaoImpl implements StrategyDao, InitializingBean {
         try {
             strategyTemplate.update(strategy);
             savePeakSettings(strategy);
+            saveVoltageViolationSettings(strategy);
         } catch (DataIntegrityViolationException e) {
             throw new DataIntegrityViolationException("Strategy name already in use.");
         }
@@ -188,6 +195,7 @@ public class StrategyDaoImpl implements StrategyDao, InitializingBean {
         
         CapControlStrategy strategy =  yukonJdbcTemplate.queryForObject(sql, rowMapper);
         strategy.setTargetSettings(getPeakSettings(strategy));
+        strategy.setVoltageViolationSettings(getVoltageViolationSettings(strategy));
         
         return strategy;
     }
@@ -208,6 +216,7 @@ public class StrategyDaoImpl implements StrategyDao, InitializingBean {
         
         for(CapControlStrategy strategy : strategies) {
             strategy.setTargetSettings(getPeakSettings(strategy));
+            strategy.setVoltageViolationSettings(getVoltageViolationSettings(strategy));
         }
         
         return strategies;
@@ -321,6 +330,37 @@ public class StrategyDaoImpl implements StrategyDao, InitializingBean {
     }
 
     @Override
+    public void saveVoltageViolationSettings(CapControlStrategy strategy) {
+        List<VoltageViolationSetting> targetSettings = strategy.getVoltageViolationSettings();
+        
+        /* Perform Validation */
+        validateVoltageViolationSettings(targetSettings);
+
+        int strategyId = strategy.getStrategyID();
+        
+        SqlStatementBuilder sql = new SqlStatementBuilder();
+        sql.append("DELETE FROM CCStrategyTargetSettings WHERE strategyId").eq(strategyId);
+        yukonJdbcTemplate.update(sql.getSql(), sql.getArguments());
+        
+        for(VoltageViolationSetting setting : targetSettings) {
+            sql = new SqlStatementBuilder();
+            sql.append("INSERT INTO CCStrategyTargetSettings");
+            sql.values(strategyId, setting.getName(), setting.getBandwidth(), VoltageViolationSettingType.BANDWIDTH);
+            yukonJdbcTemplate.update(sql);
+
+            sql = new SqlStatementBuilder();
+            sql.append("INSERT INTO CCStrategyTargetSettings");
+            sql.values(strategyId, setting.getName(), setting.getCost(), VoltageViolationSettingType.COST);
+            yukonJdbcTemplate.update(sql);
+            
+            sql = new SqlStatementBuilder();
+            sql.append("INSERT INTO CCStrategyTargetSettings");
+            sql.values(strategyId, setting.getName(), setting.getEmergencyCost(), VoltageViolationSettingType.EMERGENCY_COST);
+            yukonJdbcTemplate.update(sql);
+        }
+    }
+
+    @Override
     public List<PeakTargetSetting> getPeakSettings(CapControlStrategy strategy) {
         PeaksTargetType peak;
         PeaksTargetType offpeak;
@@ -343,6 +383,29 @@ public class StrategyDaoImpl implements StrategyDao, InitializingBean {
         List<PeakTargetSetting> settings = yukonJdbcTemplate.query(sql, peakTargetSettingMapper);
         if(settings.isEmpty()) {
             settings = StrategyPeakSettingsHelper.getSettingDefaults(strategy.getControlUnits());
+        }
+        
+        return settings;
+    }
+
+    @Override
+    public List<VoltageViolationSetting> getVoltageViolationSettings(CapControlStrategy strategy) {
+        SqlStatementBuilder sql = new SqlStatementBuilder();
+        sql.append("SELECT bw.SettingName name, bw.SettingValue bwValue, cost.SettingValue costValue, emergencyCost.SettingValue emergencyCostValue");
+        sql.append("FROM CCStrategyTargetSettings bw, CCStrategyTargetSettings cost, CCStrategyTargetSettings emergencyCost");
+        sql.append("WHERE bw.SettingName = cost.SettingName");
+        sql.append("  AND bw.SettingName = emergencyCost.SettingName");
+        sql.append("  AND bw.strategyid = cost.strategyid");
+        sql.append("  AND bw.strategyid = emergencyCost.strategyid");
+        sql.append("  AND bw.SettingType").eq(VoltageViolationSettingType.BANDWIDTH);
+        sql.append("  AND cost.SettingType").eq(VoltageViolationSettingType.COST);
+        sql.append("  AND emergencyCost.SettingType").eq(VoltageViolationSettingType.EMERGENCY_COST);
+        sql.append("  AND bw.strategyid").eq(strategy.getStrategyID());
+        sql.append("ORDER BY bw.SettingName DESC");
+        
+        List<VoltageViolationSetting> settings = yukonJdbcTemplate.query(sql, voltageViolationSettingMapper);
+        if(settings.isEmpty()) {
+            settings = VoltageViolationSettingsHelper.getVoltageViolationDefaults();
         }
         
         return settings;
@@ -377,6 +440,48 @@ public class StrategyDaoImpl implements StrategyDao, InitializingBean {
             return setting;
         }
     };
+    
+    private static YukonRowMapper<VoltageViolationSetting> voltageViolationSettingMapper = 
+            new YukonRowMapper<VoltageViolationSetting>() {
+        @Override
+        public VoltageViolationSetting mapRow(YukonResultSet rs) throws SQLException {
+            VoltageViolationSettingNameType type = rs.getEnum("name", VoltageViolationSettingNameType.class);
+            double bwValue = rs.getDouble("bwValue");
+            double costValue = rs.getDouble("costValue");
+            double emergencyCostValue = rs.getDouble("emergencyCostValue");
+            
+            VoltageViolationSetting setting = new VoltageViolationSetting(type, bwValue, costValue, emergencyCostValue);
+            return setting;
+        }
+    };
+    
+    private static void validateVoltageViolationSettings(List<VoltageViolationSetting> settings) {
+        List<String> errors = Lists.newArrayList();
+        for (VoltageViolationSetting setting : settings) {
+            if (setting.getName() == VoltageViolationSettingNameType.LOW_VOLTAGE_VIOLATION) {
+                if (setting.getCost() > 0) {
+                    errors.add(VoltageViolationSettingNameType.LOW_VOLTAGE_VIOLATION.getDisplayName() + " Cost must be less than or equal to zero");
+                }
+                if (setting.getEmergencyCost() > setting.getCost()) {
+                    errors.add(VoltageViolationSettingNameType.LOW_VOLTAGE_VIOLATION.getDisplayName() + " Emergency Cost must be less than or equal to cost");
+                }
+                if (setting.getBandwidth() <= 0) {
+                    errors.add(VoltageViolationSettingNameType.LOW_VOLTAGE_VIOLATION.getDisplayName() + " Bandwidth must be greater than zero");
+                }
+            } else if (setting.getName() == VoltageViolationSettingNameType.HIGH_VOLTAGE_VIOLATION) {
+                if (setting.getCost() < 0) {
+                    errors.add(VoltageViolationSettingNameType.HIGH_VOLTAGE_VIOLATION.getDisplayName() + " Cost must be greater than or equal to zero");
+                }
+                if (setting.getEmergencyCost() < setting.getCost()) {
+                    errors.add(VoltageViolationSettingNameType.HIGH_VOLTAGE_VIOLATION.getDisplayName() + " Emergency Cost must be greater than or equal to cost");
+                }
+                if (setting.getBandwidth() <= 0) {
+                    errors.add(VoltageViolationSettingNameType.HIGH_VOLTAGE_VIOLATION.getDisplayName() + " Bandwidth must be greater than zero");
+                }
+            }
+        }
+        if (!errors.isEmpty()) throw new IllegalArgumentException(StringUtils.join(errors, ", "));
+    }
     
     @Autowired
     public void setYukonJdbcTemplate(YukonJdbcTemplate yukonJdbcTemplate) {
