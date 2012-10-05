@@ -25,6 +25,7 @@ struct test_Lcr3102Device : Cti::Devices::Lcr3102Device
     using Lcr3102Device::decodeGetValuePropCount;
     using Lcr3102Device::decodeGetValueHistoricalTime;
     using Lcr3102Device::decodeGetValueControlTime;
+    using Lcr3102Device::executeGetValueHistorical;
 
     typedef std::map< int, point_info > point_results_map;
     typedef std::map< int, point_info >::iterator point_results_map_iter;
@@ -486,5 +487,255 @@ BOOST_AUTO_TEST_CASE(test_duty_cycle)
     BOOST_CHECK_EQUAL(currentTransformer, 2);
     BOOST_CHECK_EQUAL(dutyCycle, 42);
 }
+
+struct beginExecuteRequest_helper
+{
+    CtiRequestMsg           request;
+    std::list<CtiMessage*>  vgList, retList;
+    std::list<OUTMESS*>     outList;
+
+    ~beginExecuteRequest_helper()
+    {
+        delete_container(vgList);
+        delete_container(retList);
+        delete_container(outList);
+    }
+};
+
+BOOST_FIXTURE_TEST_SUITE(test_execute_getvalue, beginExecuteRequest_helper)
+//{ Brace matching for BOOST_FIXTURE_TEST_SUITE
+    BOOST_AUTO_TEST_CASE(test_execute_getvalue_historical_three_read)
+    {
+        OUTMESS *OutMessage = new OUTMESS;
+        test_Lcr3102Device test_device;
+        const long userMessageId = 42, connectionHandle = 0;
+        const std::string command = "getvalue runtime load 1 previous 36 update noqueue";
+        CtiCommandParser parse(command);
+
+        request.setUserMessageId(userMessageId);
+        request.setConnectionHandle(connectionHandle);
+
+        test_device.executeGetValueHistorical(&request, parse, OutMessage, outList);
+
+        BOOST_CHECK_EQUAL(test_device.getGroupMessageCount(userMessageId, connectionHandle), 3);
+
+        BOOST_CHECK_EQUAL(outList.size(), 3);
+
+        {
+            const OUTMESS *om = outList.front(); outList.pop_front();
+
+            BOOST_CHECK_EQUAL( om->Buffer.BSt.IO,        Cti::Protocols::EmetconProtocol::IO_Function_Read );
+            BOOST_CHECK_EQUAL( om->Buffer.BSt.Function,  0xb0 );
+            BOOST_CHECK_EQUAL( om->Buffer.BSt.Length,    13 );
+            BOOST_CHECK_EQUAL( om->Request.CommandStr,   command);
+            BOOST_CHECK_EQUAL( om->Request.OptionsField, 1);
+        }
+
+        {
+            const OUTMESS *om = outList.front(); outList.pop_front();
+
+            BOOST_CHECK_EQUAL( om->Buffer.BSt.IO,        Cti::Protocols::EmetconProtocol::IO_Function_Read );
+            BOOST_CHECK_EQUAL( om->Buffer.BSt.Function,  0xb4 );
+            BOOST_CHECK_EQUAL( om->Buffer.BSt.Length,    13 );
+            BOOST_CHECK_EQUAL( om->Request.CommandStr,   command);
+            BOOST_CHECK_EQUAL( om->Request.OptionsField, 2);
+        }
+
+        {
+            const OUTMESS *om = outList.front(); outList.pop_front();
+
+            BOOST_CHECK_EQUAL( om->Buffer.BSt.IO,        Cti::Protocols::EmetconProtocol::IO_Function_Read );
+            BOOST_CHECK_EQUAL( om->Buffer.BSt.Function,  0xb8 );
+            BOOST_CHECK_EQUAL( om->Buffer.BSt.Length,    4 );
+            BOOST_CHECK_EQUAL( om->Request.CommandStr,   command);
+            BOOST_CHECK_EQUAL( om->Request.OptionsField, 3);
+        }
+
+        delete OutMessage;
+        OutMessage = NULL;
+    }
+
+    BOOST_AUTO_TEST_CASE(test_execute_getvalue_historical_12_read)
+    {
+        OUTMESS *OutMessage = new OUTMESS;
+        test_Lcr3102Device test_device;
+        const long userMessageId = 42, connectionHandle = 0;
+        const std::string command = "getvalue runtime load 1 previous 12 update noqueue";
+        CtiCommandParser parse(command);
+
+        request.setUserMessageId(userMessageId);
+        request.setConnectionHandle(connectionHandle);
+
+        test_device.executeGetValueHistorical(&request, parse, OutMessage, outList);
+
+        BOOST_CHECK_EQUAL(test_device.getGroupMessageCount(userMessageId, connectionHandle), 0);
+
+        BOOST_CHECK_EQUAL(outList.size(), 1);
+
+        {
+            const OUTMESS *om = outList.front(); outList.pop_front();
+
+            BOOST_CHECK_EQUAL( om->Buffer.BSt.IO,        Cti::Protocols::EmetconProtocol::IO_Function_Read );
+            BOOST_CHECK_EQUAL( om->Buffer.BSt.Function,  0xb0 );
+            BOOST_CHECK_EQUAL( om->Buffer.BSt.Length,    13 );
+            BOOST_CHECK_EQUAL( om->Request.CommandStr,   command);
+            BOOST_CHECK_EQUAL( om->Request.OptionsField, 0);
+        }
+
+        delete OutMessage;
+        OutMessage = NULL;
+    }
+
+    BOOST_AUTO_TEST_CASE(test_execute_getvalue_historical_24_read)
+    {
+        OUTMESS *OutMessage = new OUTMESS;
+        test_Lcr3102Device test_device;
+        const long userMessageId = 42, connectionHandle = 0;
+        const std::string command = "getvalue runtime load 1 previous 24 update noqueue";
+        CtiCommandParser parse(command);
+
+        request.setUserMessageId(userMessageId);
+        request.setConnectionHandle(connectionHandle);
+
+        test_device.executeGetValueHistorical(&request, parse, OutMessage, outList);
+
+        BOOST_CHECK_EQUAL(test_device.getGroupMessageCount(userMessageId, connectionHandle), 2);
+
+        BOOST_CHECK_EQUAL(outList.size(), 2);
+
+        {
+            const OUTMESS *om = outList.front(); outList.pop_front();
+
+            BOOST_CHECK_EQUAL( om->Buffer.BSt.IO,        Cti::Protocols::EmetconProtocol::IO_Function_Read );
+            BOOST_CHECK_EQUAL( om->Buffer.BSt.Function,  0xb0 );
+            BOOST_CHECK_EQUAL( om->Buffer.BSt.Length,    13 );
+            BOOST_CHECK_EQUAL( om->Request.CommandStr,   command);
+            BOOST_CHECK_EQUAL( om->Request.OptionsField, 1);
+        }
+
+        {
+            const OUTMESS *om = outList.front(); outList.pop_front();
+
+            BOOST_CHECK_EQUAL( om->Buffer.BSt.IO,        Cti::Protocols::EmetconProtocol::IO_Function_Read );
+            BOOST_CHECK_EQUAL( om->Buffer.BSt.Function,  0xb4 );
+            BOOST_CHECK_EQUAL( om->Buffer.BSt.Length,    13 );
+            BOOST_CHECK_EQUAL( om->Request.CommandStr,   command);
+            BOOST_CHECK_EQUAL( om->Request.OptionsField, 2);
+        }
+
+        delete OutMessage;
+        OutMessage = NULL;
+    }
+
+    BOOST_AUTO_TEST_CASE(test_execute_getvalue_historical_retry_32_read)
+    {
+        OUTMESS *OutMessage = new OUTMESS;
+        test_Lcr3102Device test_device;
+        const long userMessageId = 42, connectionHandle = 0;
+        const std::string command = "getvalue runtime load 1 previous 32 update noqueue";
+        CtiCommandParser parse(command);
+
+        request.setUserMessageId(userMessageId);
+        request.setConnectionHandle(connectionHandle);
+        
+         // This is a retry of the second read. Setup the RequestMessage as such.
+        request.setOptionsField(2);
+
+        test_device.executeGetValueHistorical(&request, parse, OutMessage, outList);
+
+        BOOST_CHECK_EQUAL(test_device.getGroupMessageCount(userMessageId, connectionHandle), 0);
+
+        BOOST_CHECK_EQUAL(outList.size(), 1);
+
+        {
+            const OUTMESS *om = outList.front(); outList.pop_front();
+
+            BOOST_CHECK_EQUAL( om->Buffer.BSt.IO,        Cti::Protocols::EmetconProtocol::IO_Function_Read );
+            BOOST_CHECK_EQUAL( om->Buffer.BSt.Function,  0xb4 );
+            BOOST_CHECK_EQUAL( om->Buffer.BSt.Length,    13 );
+            BOOST_CHECK_EQUAL( om->Request.CommandStr,   command);
+            BOOST_CHECK_EQUAL( om->Request.OptionsField, 2);
+        }
+
+        delete OutMessage;
+        OutMessage = NULL;
+    }
+
+    BOOST_AUTO_TEST_CASE(test_execute_getvalue_historical_retry_36_read)
+    {
+        OUTMESS *OutMessage = new OUTMESS;
+        test_Lcr3102Device test_device;
+        const long userMessageId = 42, connectionHandle = 0;
+        const std::string command = "getvalue runtime load 1 previous 36 update noqueue";
+        CtiCommandParser parse(command);
+
+        request.setUserMessageId(userMessageId);
+        request.setConnectionHandle(connectionHandle);
+
+         // This is a retry of the third read. Set up the RequestMessage as such.
+        request.setOptionsField(3);
+
+        test_device.executeGetValueHistorical(&request, parse, OutMessage, outList);
+
+        BOOST_CHECK_EQUAL(test_device.getGroupMessageCount(userMessageId, connectionHandle), 0);
+
+        BOOST_CHECK_EQUAL(outList.size(), 1);
+
+        {
+            const OUTMESS *om = outList.front(); outList.pop_front();
+
+            BOOST_CHECK_EQUAL( om->Buffer.BSt.IO,        Cti::Protocols::EmetconProtocol::IO_Function_Read );
+            BOOST_CHECK_EQUAL( om->Buffer.BSt.Function,  0xb8 );
+            BOOST_CHECK_EQUAL( om->Buffer.BSt.Length,    4 );
+            BOOST_CHECK_EQUAL( om->Request.CommandStr,   command);
+            BOOST_CHECK_EQUAL( om->Request.OptionsField, 3);
+        }
+
+        delete OutMessage;
+        OutMessage = NULL;
+    }
+
+    BOOST_AUTO_TEST_CASE(test_execute_getvalue_historical_retry_17)
+    {
+        OUTMESS *OutMessage = new OUTMESS;
+        test_Lcr3102Device test_device;
+        const long userMessageId = 42, connectionHandle = 0;
+        const std::string command = "getvalue runtime load 1 previous 17 update noqueue";
+        CtiCommandParser parse(command);
+
+        request.setUserMessageId(userMessageId);
+        request.setConnectionHandle(connectionHandle);
+
+        test_device.executeGetValueHistorical(&request, parse, OutMessage, outList);
+
+        BOOST_CHECK_EQUAL(test_device.getGroupMessageCount(userMessageId, connectionHandle), 2);
+
+        BOOST_CHECK_EQUAL(outList.size(), 2);
+
+        {
+            const OUTMESS *om = outList.front(); outList.pop_front();
+
+            BOOST_CHECK_EQUAL( om->Buffer.BSt.IO,        Cti::Protocols::EmetconProtocol::IO_Function_Read );
+            BOOST_CHECK_EQUAL( om->Buffer.BSt.Function,  0xb0 );
+            BOOST_CHECK_EQUAL( om->Buffer.BSt.Length,    13 );
+            BOOST_CHECK_EQUAL( om->Request.CommandStr,   command);
+            BOOST_CHECK_EQUAL( om->Request.OptionsField, 1);
+        }
+
+        {
+            const OUTMESS *om = outList.front(); outList.pop_front();
+
+            BOOST_CHECK_EQUAL( om->Buffer.BSt.IO,        Cti::Protocols::EmetconProtocol::IO_Function_Read );
+            BOOST_CHECK_EQUAL( om->Buffer.BSt.Function,  0xb4 );
+            BOOST_CHECK_EQUAL( om->Buffer.BSt.Length,    13 );
+            BOOST_CHECK_EQUAL( om->Request.CommandStr,   command);
+            BOOST_CHECK_EQUAL( om->Request.OptionsField, 2);
+        }
+
+        delete OutMessage;
+        OutMessage = NULL;
+    }
+//} Brace matching for BOOST_FIXTURE_TEST_SUITE
+BOOST_AUTO_TEST_SUITE_END()
 
 BOOST_AUTO_TEST_SUITE_END()

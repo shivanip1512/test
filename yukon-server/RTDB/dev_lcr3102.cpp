@@ -8,6 +8,7 @@
 using std::string;
 using std::endl;
 using std::list;
+using std::deque;
 using Cti::Protocols::EmetconProtocol;
 using namespace Cti::Devices::Commands;
 
@@ -41,7 +42,7 @@ Lcr3102Device& Lcr3102Device::operator=( const Lcr3102Device &aRef )
 }
 
 
-INT Lcr3102Device::ErrorDecode( const INMESS &InMessage, const CtiTime TimeNow, std::list< CtiMessage* > &retList )
+INT Lcr3102Device::ErrorDecode( const INMESS &InMessage, const CtiTime TimeNow, CtiMessageList &retList )
 {
     INT retCode = NoError;
 
@@ -54,7 +55,7 @@ INT Lcr3102Device::ErrorDecode( const INMESS &InMessage, const CtiTime TimeNow, 
 }
 
 
-INT Lcr3102Device::ResultDecode( INMESS *InMessage, CtiTime &TimeNow, list< CtiMessage* > &vgList, list< CtiMessage* > &retList, list< OUTMESS* > &outList )
+INT Lcr3102Device::ResultDecode( INMESS *InMessage, CtiTime &TimeNow, CtiMessageList &vgList, CtiMessageList &retList, OutMessageList &outList )
 {
     INT status = NoError;
 
@@ -145,7 +146,7 @@ INT Lcr3102Device::ResultDecode( INMESS *InMessage, CtiTime &TimeNow, list< CtiM
     return status;
 }
 
-INT Lcr3102Device::decodeGetValueTemperature( INMESS *InMessage, CtiTime &TimeNow, list< CtiMessage* > &vgList, list< CtiMessage* > &retList, list< OUTMESS* > &outList )
+INT Lcr3102Device::decodeGetValueTemperature( INMESS *InMessage, CtiTime &TimeNow, CtiMessageList &vgList, CtiMessageList &retList, OutMessageList &outList )
 {
     INT status = NoError;
 
@@ -176,7 +177,7 @@ INT Lcr3102Device::decodeGetValueTemperature( INMESS *InMessage, CtiTime &TimeNo
     return status;
 }
 
-INT Lcr3102Device::decodeGetValueTransmitPower( INMESS *InMessage, CtiTime &TimeNow, list< CtiMessage* > &vgList, list< CtiMessage* > &retList, list< OUTMESS* > &outList )
+INT Lcr3102Device::decodeGetValueTransmitPower( INMESS *InMessage, CtiTime &TimeNow, CtiMessageList &vgList, CtiMessageList &retList, OutMessageList &outList )
 {
     INT status = NoError;
 
@@ -206,7 +207,7 @@ INT Lcr3102Device::decodeGetValueTransmitPower( INMESS *InMessage, CtiTime &Time
     return status;
 }
 
-INT Lcr3102Device::decodeGetValueDutyCycle(INMESS *InMessage, CtiTime &TimeNow, list< CtiMessage* > &vgList, list< CtiMessage* > &retList, list< OUTMESS* > &outList )
+INT Lcr3102Device::decodeGetValueDutyCycle(INMESS *InMessage, CtiTime &TimeNow, CtiMessageList &vgList, CtiMessageList &retList, OutMessageList &outList )
 {
     INT status = NoError;
 
@@ -261,7 +262,7 @@ INT Lcr3102Device::decodeGetValueDutyCycle(INMESS *InMessage, CtiTime &TimeNow, 
     return status;
 }
 
-INT Lcr3102Device::decodeGetValueIntervalLast( INMESS *InMessage, CtiTime &TimeNow, list< CtiMessage* > &vgList, list< CtiMessage* > &retList, list< OUTMESS* > &outList )
+INT Lcr3102Device::decodeGetValueIntervalLast( INMESS *InMessage, CtiTime &TimeNow, CtiMessageList &vgList, CtiMessageList &retList, OutMessageList &outList )
 {
     INT status = NoError;
 
@@ -345,7 +346,7 @@ INT Lcr3102Device::decodeGetValueIntervalLast( INMESS *InMessage, CtiTime &TimeN
 }
 
 //Decodes the getvalue shedtime/runtime read. All points are generated with a end of interval timestamp.
-INT Lcr3102Device::decodeGetValueHistoricalTime( INMESS *InMessage, CtiTime &TimeNow, list< CtiMessage* > &vgList, list< CtiMessage* > &retList, list< OUTMESS* > &outList )
+INT Lcr3102Device::decodeGetValueHistoricalTime( INMESS *InMessage, CtiTime &TimeNow, CtiMessageList &vgList, CtiMessageList &retList, OutMessageList &outList )
 {
     INT status = NoError;
 
@@ -461,7 +462,7 @@ INT Lcr3102Device::decodeGetValueHistoricalTime( INMESS *InMessage, CtiTime &Tim
     return status;
 }
 
-INT Lcr3102Device::decodeGetValueXfmrHistoricalRuntime( INMESS *InMessage, CtiTime &TimeNow, list< CtiMessage* > &vgList, list< CtiMessage* > &retList, list< OUTMESS* > &outList )
+INT Lcr3102Device::decodeGetValueXfmrHistoricalRuntime( INMESS *InMessage, CtiTime &TimeNow, CtiMessageList &vgList, CtiMessageList &retList, OutMessageList &outList )
 {
     INT status = NoError;
 
@@ -540,7 +541,7 @@ INT Lcr3102Device::decodeGetValueXfmrHistoricalRuntime( INMESS *InMessage, CtiTi
     return status;
 }
 
-INT Lcr3102Device::decodeGetValueControlTime( INMESS *InMessage, CtiTime &TimeNow, list< CtiMessage* > &vgList, list< CtiMessage* > &retList, list< OUTMESS* > &outList )
+INT Lcr3102Device::decodeGetValueControlTime( INMESS *InMessage, CtiTime &TimeNow, CtiMessageList &vgList, CtiMessageList &retList, OutMessageList &outList )
 {
     INT status = NoError;
 
@@ -597,7 +598,7 @@ INT Lcr3102Device::decodeGetValueControlTime( INMESS *InMessage, CtiTime &TimeNo
     return status;
 }
 
-INT Lcr3102Device::decodeGetValuePropCount( INMESS *InMessage, CtiTime &TimeNow, list< CtiMessage* > &vgList, list< CtiMessage* > &retList, list< OUTMESS* > &outList )
+INT Lcr3102Device::decodeGetValuePropCount( INMESS *InMessage, CtiTime &TimeNow, CtiMessageList &vgList, CtiMessageList &retList, OutMessageList &outList )
 {
     INT status = NoError;
 
@@ -630,7 +631,7 @@ INT Lcr3102Device::decodeGetValuePropCount( INMESS *InMessage, CtiTime &TimeNow,
     return status;
 }
 
-INT Lcr3102Device::decodePutConfig( INMESS *InMessage, CtiTime &TimeNow, list< CtiMessage* > &vgList, list< CtiMessage* > &retList, list< OUTMESS* > &outList )
+INT Lcr3102Device::decodePutConfig( INMESS *InMessage, CtiTime &TimeNow, CtiMessageList &vgList, CtiMessageList &retList, OutMessageList &outList )
 {
     INT status = NoError;
 
@@ -668,7 +669,7 @@ INT Lcr3102Device::decodePutConfig( INMESS *InMessage, CtiTime &TimeNow, list< C
     return status;
 }
 
-INT Lcr3102Device::decodeGetConfigRaw( INMESS *InMessage, CtiTime &TimeNow, list< CtiMessage* > &vgList, list< CtiMessage* > &retList, list< OUTMESS* > &outList )
+INT Lcr3102Device::decodeGetConfigRaw( INMESS *InMessage, CtiTime &TimeNow, CtiMessageList &vgList, CtiMessageList &retList, OutMessageList &outList )
 {
     INT status = NoError;
 
@@ -745,7 +746,7 @@ INT Lcr3102Device::decodeGetConfigRaw( INMESS *InMessage, CtiTime &TimeNow, list
     return status;
 }
 
-INT Lcr3102Device::decodeGetConfigSoftspec( INMESS *InMessage, CtiTime &TimeNow, list< CtiMessage* > &vgList, list< CtiMessage* > &retList, list< OUTMESS* > &outList )
+INT Lcr3102Device::decodeGetConfigSoftspec( INMESS *InMessage, CtiTime &TimeNow, CtiMessageList &vgList, CtiMessageList &retList, OutMessageList &outList )
 {
     INT status = NoError;
 
@@ -788,7 +789,7 @@ INT Lcr3102Device::decodeGetConfigSoftspec( INMESS *InMessage, CtiTime &TimeNow,
     return status;
 }
 
-INT Lcr3102Device::decodeGetConfigAddressing( INMESS *InMessage, CtiTime &TimeNow, list< CtiMessage* > &vgList, list< CtiMessage* > &retList, list< OUTMESS* > &outList )
+INT Lcr3102Device::decodeGetConfigAddressing( INMESS *InMessage, CtiTime &TimeNow, CtiMessageList &vgList, CtiMessageList &retList, OutMessageList &outList )
 {
     INT status = NoError;
 
@@ -865,7 +866,7 @@ INT Lcr3102Device::decodeGetConfigAddressing( INMESS *InMessage, CtiTime &TimeNo
     return status;
 }
 
-INT Lcr3102Device::decodeGetConfigTime( INMESS *InMessage, CtiTime &TimeNow, list< CtiMessage* > &vgList, list< CtiMessage* > &retList, list< OUTMESS* > &outList )
+INT Lcr3102Device::decodeGetConfigTime( INMESS *InMessage, CtiTime &TimeNow, CtiMessageList &vgList, CtiMessageList &retList, OutMessageList &outList )
 {
     INT status = NoError;
 
@@ -998,9 +999,9 @@ Lcr3102Device::CommandSet Lcr3102Device::initCommandStore()
 INT Lcr3102Device::IntegrityScan(CtiRequestMsg *pReq,
                                 CtiCommandParser &parse,
                                 OUTMESS *&OutMessage,
-                                list< CtiMessage* > &vgList,
-                                list< CtiMessage* > &retList,
-                                list< OUTMESS* > &outList,
+                                CtiMessageList &vgList,
+                                CtiMessageList &retList,
+                                OutMessageList &outList,
                                 INT ScanPriority)
 {
     INT status = NORMAL;
@@ -1046,13 +1047,12 @@ INT Lcr3102Device::IntegrityScan(CtiRequestMsg *pReq,
 }
 
 
-INT Lcr3102Device::executeGetValue ( CtiRequestMsg *pReq, CtiCommandParser &parse, OUTMESS *&OutMessage, list< CtiMessage* > &vgList, list< CtiMessage* > &retList, list< OUTMESS* > &outList )
+INT Lcr3102Device::executeGetValue ( CtiRequestMsg *pReq, CtiCommandParser &parse, OUTMESS *&OutMessage, CtiMessageList &vgList, CtiMessageList &retList, OutMessageList &outList )
 {
     INT nRet = NoMethod;
 
     int  function = -1;
     bool found    = false;
-    bool multiple_messages = false;
 
     if(parse.getFlags() & CMD_FLAG_GV_DEMAND)
     {
@@ -1168,67 +1168,7 @@ INT Lcr3102Device::executeGetValue ( CtiRequestMsg *pReq, CtiCommandParser &pars
     }
     else if(parse.getFlags() & CMD_FLAG_GV_RUNTIME || parse.getFlags() & CMD_FLAG_GV_SHEDTIME)
     {
-        if(parse.getFlags() & CMD_FLAG_GV_RUNTIME)
-        {
-            function = EmetconProtocol::GetValue_Runtime;
-        }
-        else
-        {
-            function = EmetconProtocol::GetValue_Shedtime;
-        }
-
-        found = getOperation(function, OutMessage->Buffer.BSt);
-
-        int load = parseLoadValue(parse);
-        int previous = parsePreviousValue(parse);
-
-        if( load == -1 || previous == -1)
-        {
-            nRet = BADPARAM;
-        }
-        else
-        {
-            // pack relay number into OutMessages Function
-            OutMessage->Buffer.BSt.Function += (load - 1);
-
-            // packed 6 bit data
-            int total_bits = previous * 6;
-
-                                   // round up
-            int remaining_bytes = (total_bits + 7) / 8;
-            int total_messages  = (remaining_bytes + 11) / 12;
-
-            if(total_messages > 1)  multiple_messages = true;
-
-            // for all but the last message - send a full 13 byte request - 12 data bytes and 1 Flags byte
-            for(int i = 0; i < total_messages - 1; i++)
-            {
-                if( found )
-                {
-                    OutMessage->DeviceID  = getID();
-                    OutMessage->TargetID  = getID();
-                    OutMessage->Port      = getPortID();
-                    OutMessage->Remote    = getAddress();
-                    OutMessage->TimeOut   = 2;
-                    OutMessage->Sequence  = function;         // Helps us figure it out later!
-                    OutMessage->Retry     = 2;
-                    OutMessage->Request.RouteID   = getRouteID();
-
-                    strncpy(OutMessage->Request.CommandStr, pReq->CommandString().c_str(), COMMAND_STR_SIZE);
-                    outList.push_back(CTIDBG_new OUTMESS(*OutMessage));
-                    incrementGroupMessageCount(pReq->UserMessageId(), (long)pReq->getConnectionHandle());
-
-                    // deduct out the data bytes we should get from the above message from our total
-                    remaining_bytes -= 12;
-
-                    // go to next function to get next set of data bytes
-                    OutMessage->Buffer.BSt.Function += 4;
-                }
-            }
-
-            // setup remaining message for the leftover bytes we need - don't forget the Flags byte
-            OutMessage->Buffer.BSt.Length = remaining_bytes + 1;
-        }
+        return executeGetValueHistorical(pReq, parse, OutMessage, outList);
     }
 
     if(!found)
@@ -1251,10 +1191,6 @@ INT Lcr3102Device::executeGetValue ( CtiRequestMsg *pReq, CtiCommandParser &pars
 
         OutMessage->Request.RouteID   = getRouteID();
         strncpy(OutMessage->Request.CommandStr, pReq->CommandString().c_str(), COMMAND_STR_SIZE);
-        if(multiple_messages)
-        {
-            incrementGroupMessageCount(pReq->UserMessageId(), (long)pReq->getConnectionHandle());
-        }
 
         nRet = NoError;
     }
@@ -1265,9 +1201,9 @@ INT Lcr3102Device::executeGetValue ( CtiRequestMsg *pReq, CtiCommandParser &pars
 INT Lcr3102Device::executeScan(CtiRequestMsg                  *pReq,
                               CtiCommandParser               &parse,
                               OUTMESS                        *&OutMessage,
-                              list< CtiMessage* >      &vgList,
-                              list< CtiMessage* >      &retList,
-                              list< OUTMESS* >         &outList)
+                              CtiMessageList      &vgList,
+                              CtiMessageList      &retList,
+                              OutMessageList         &outList)
 {
     bool found = false;
     INT  nRet  = NoError;
@@ -1309,7 +1245,7 @@ INT Lcr3102Device::executeScan(CtiRequestMsg                  *pReq,
     return nRet;
 }
 
-INT Lcr3102Device::executeGetConfig( CtiRequestMsg *pReq, CtiCommandParser &parse, OUTMESS *&OutMessage, list< CtiMessage* > &vgList, list< CtiMessage* > &retList, list< OUTMESS* > &outList )
+INT Lcr3102Device::executeGetConfig( CtiRequestMsg *pReq, CtiCommandParser &parse, OUTMESS *&OutMessage, CtiMessageList &vgList, CtiMessageList &retList, OutMessageList &outList )
 {
     INT nRet = NoMethod;
 
@@ -1395,7 +1331,7 @@ INT Lcr3102Device::executeGetConfig( CtiRequestMsg *pReq, CtiCommandParser &pars
     return nRet;
 }
 
-INT Lcr3102Device::executePutConfig( CtiRequestMsg *pReq, CtiCommandParser &parse, OUTMESS *&OutMessage, list< CtiMessage* > &vgList, list< CtiMessage* > &retList, list< OUTMESS* > &outList )
+INT Lcr3102Device::executePutConfig( CtiRequestMsg *pReq, CtiCommandParser &parse, OUTMESS *&OutMessage, CtiMessageList &vgList, CtiMessageList &retList, OutMessageList &outList )
 {
     INT nRet = NoMethod;
 
@@ -1439,6 +1375,151 @@ INT Lcr3102Device::executePutConfig( CtiRequestMsg *pReq, CtiCommandParser &pars
         strncpy(OutMessage->Request.CommandStr, pReq->CommandString().c_str(), COMMAND_STR_SIZE);
 
         nRet = NoError;
+    }
+
+    return nRet;
+}
+
+int Lcr3102Device::executeGetValueHistorical( CtiRequestMsg *pReq, CtiCommandParser &parse, OUTMESS *&OutMessage, OutMessageList &outList )
+{
+    int nRet = NoMethod;
+    int function = -1;
+
+    if(parse.getFlags() & CMD_FLAG_GV_RUNTIME)
+    {
+        function = EmetconProtocol::GetValue_Runtime;
+    }
+    else
+    {
+        function = EmetconProtocol::GetValue_Shedtime;
+    }
+
+    bool found = getOperation(function, OutMessage->Buffer.BSt);
+
+    int load = parseLoadValue(parse);
+    int previous = parsePreviousValue(parse);
+
+    if( load == -1 || previous == -1)
+    {
+        nRet = BADPARAM;
+    }
+    else
+    {
+        // packed 6 bit data
+        int total_bits = previous * 6;
+
+        // round up
+        int remaining_bytes = (total_bits + 7) / 8;
+        int total_messages  = (remaining_bytes + 11) / 12;
+
+        if (found)
+        {
+            // pack relay number into OutMessages Function
+            OutMessage->Buffer.BSt.Function += (load - 1);
+
+            // Set up the OutMessage.
+            OutMessage->DeviceID  = getID();
+            OutMessage->TargetID  = getID();
+            OutMessage->Port      = getPortID();
+            OutMessage->Remote    = getAddress();
+            OutMessage->TimeOut   = 2;
+            OutMessage->Sequence  = function;         // Helps us figure it out later!
+            OutMessage->Retry     = 2;
+            OutMessage->Request.RouteID = getRouteID();
+
+            /**
+             * Handle the retries if necessary.
+             * 
+             *  If optionsField is 0, we aren't a retry: Continue function
+             *      normally.
+             *  If optionsField is 1, we're a retry of the first "part" of
+             *      this command, hours 0-15, (function 0xB0/0xC0) plus the
+             *      load value which has been added previously. No need to
+             *      modify the length or function value as they were already
+             *      set in the getOperation function call.
+             *  If optionsField is 2, we're a retry of the second "part" of
+             *      this command, hours 16-31, (function 0xB4/0xC4) plus the
+             *      load value which has been added previously. Increment
+             *      the function value by four and leave the length at 13.
+             *  If optionsField is 3, we're a retry of the third "part" of
+             *      this command, hours 32-35, (function 0xB8/0xC8) plus the
+             *      load value which has been added previously. Increment
+             *      the function value by eight and set the length to four.
+             *  Any other optionsField value is invalid and will result in
+             *      treating this message as though it were the original
+             *      attempts.
+             * 
+             *  The switch statement below uses fall-throughs to achieve the
+             *      functionality noted above.
+             */
+            int optionsField = pReq->OptionsField();
+            switch (optionsField)
+            {
+                case 3:
+                {
+                    // Third retry is 4 6-bit packed hours and a flags byte.
+                    OutMessage->Buffer.BSt.Length = 4;
+                    OutMessage->Buffer.BSt.Function += 4;
+                    // Fall through!
+                }
+                case 2:
+                {
+                    // Length is already correct, increment the function.
+                    OutMessage->Buffer.BSt.Function += 4;
+                    // Fall through!
+                }
+                case 1:
+                {
+                    // Length and function are both correct, set total_messages to one for any retry.
+                    total_messages = 1;
+
+                    // Put the optionsField value into the OutMessage in case of future retries.
+                    OutMessage->Request.OptionsField = optionsField;
+                }
+                case 0:
+                {
+                    // Nothing to do here.
+                    break;
+                }
+                default:
+                {
+                    CtiLockGuard<CtiLogger> doubt_guard(dout);
+                    dout << CtiTime() << " Invalid optionsField value " << optionsField << " for device " << getName() 
+                         << ". Treating this message as an initial attempt." << endl;
+                }
+            }
+
+            if (total_messages == 1)
+            {
+                // Don't need to mess with anything here.
+                strncpy(OutMessage->Request.CommandStr, parse.getCommandStr().c_str(), COMMAND_STR_SIZE);
+                outList.push_back(CTIDBG_new OUTMESS(*OutMessage));
+            }
+            else
+            {
+                // For all but the last message - send a full 13 byte request - 12 data bytes and 1 Flags byte
+                for (int i = 0; i < total_messages; i++)
+                {
+                    // Store which read this is for retries.
+                    OutMessage->Request.OptionsField = i + 1;
+
+                    // The first two reads are 13 bytes always, the third read is always 4 bytes.
+                    OutMessage->Buffer.BSt.Length = (OutMessage->Request.OptionsField != 3) ? 13 : 4;
+
+                    strncpy(OutMessage->Request.CommandStr, parse.getCommandStr().c_str(), COMMAND_STR_SIZE);
+
+                    outList.push_back(new OUTMESS(*OutMessage));
+                    incrementGroupMessageCount(pReq->UserMessageId(), (long)pReq->getConnectionHandle());
+
+                    // go to next function to get next set of data bytes
+                    OutMessage->Buffer.BSt.Function += 4;
+                }
+            }
+
+            OutMessage = NULL;
+
+            nRet = NoError;
+        }
     }
 
     return nRet;
