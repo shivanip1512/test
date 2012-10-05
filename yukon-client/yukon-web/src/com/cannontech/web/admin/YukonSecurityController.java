@@ -202,11 +202,7 @@ public class YukonSecurityController {
         addKeyValidator.validate(encryptionKey, bindingResult);
 
         if (bindingResult.hasErrors()) {
-            List<MessageSourceResolvable> messages = YukonValidationUtils.errorsForBindingResult(bindingResult);
-            flashScope.setMessage(messages, FlashScopeMessageType.ERROR);
-
             model.addAttribute("showDialog", "addKey");
-
             return view(request, model, new EncryptedRoute(), encryptionKey, new FileImportBindingBean(), flashScope, userContext);
         }
 
@@ -335,7 +331,6 @@ public class YukonSecurityController {
                                 YukonUserContext userContext) {
 
         if (!ServletFileUpload.isMultipartContent(request)) {
-            flashScope.setError(new YukonMessageSourceResolvable(baseKey + ".fileUploadError.noFile"));
             model.addAttribute("showDialog", "importKey");
             return view(request, model, new EncryptedRoute(), new EncryptionKey(), fileImportBindingBean,flashScope, userContext);     
         } else {
@@ -347,11 +342,7 @@ public class YukonSecurityController {
             importFileValidator.validate(fileImportBindingBean, bindingResult);
 
             if (bindingResult.hasErrors()) {
-                List<MessageSourceResolvable> messages = YukonValidationUtils.errorsForBindingResult(bindingResult);
-                flashScope.setMessage(messages, FlashScopeMessageType.ERROR);
-
                 model.addAttribute("showDialog", "importKey");
-
                 return view(request, model, new EncryptedRoute(), new EncryptionKey() ,fileImportBindingBean, flashScope, userContext);
             } else {
                 boolean success = handleUploadedFile(fileImportBindingBean, flashScope);

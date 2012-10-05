@@ -8,11 +8,9 @@
 
 <cti:standardPage module="adminSetup" page="security">
 
-    <dialog:inline nameKey="addKeyDialog" okEvent="yukonDialogSubmit"
-        on="#addNewKeyBtn">
+    <dialog:inline nameKey="addKeyDialog" okEvent="addKeyFormSubmit" on="#addNewKeyBtn">
         <tags:nameValueContainer2>
-            <form:form method="POST" commandName="encryptionKey"
-                action="saveNewKey" autocomplete="off">
+            <form:form method="POST" commandName="encryptionKey" action="saveNewKey" autocomplete="off">
                 <h3><i:inline key=".addNewKeyHeading" /></h3>
                 <tags:nameValue2 nameKey=".keyName">
                     <tags:input path="name" size="50" />
@@ -24,12 +22,9 @@
         </tags:nameValueContainer2>
     </dialog:inline>
 
-    <dialog:inline nameKey="importKeyFileDialog"
-        okEvent="yukonDialogSubmit" on="#importKeyFileBtn">
+    <dialog:inline nameKey="importKeyFileDialog" okEvent="importKeyFileFormSubmit" on="#importKeyFileBtn">
         <tags:nameValueContainer2>
-            <form:form method="POST" commandName="fileImportBindingBean"
-                action="importKeyFile" autocomplete="off"
-                enctype="multipart/form-data">
+            <form:form method="POST" commandName="fileImportBindingBean" action="importKeyFile" autocomplete="off" enctype="multipart/form-data">
                 <tags:nameValue2 nameKey=".importKeyFile">
                     <tags:bind path="file">
                         <input type="file" name="keyFile">
@@ -171,9 +166,9 @@
     jQuery(function(){
         
         if ("${showDialog}" == "addKey") {
-            jQuery('#addNewKeyBtn').trigger(jQuery.Event("click"));
+            jQuery('#addNewKeyBtn').trigger(jQuery.Event("click")); // Opens up addKey Dialog
         } else if ("${showDialog}" == "importKey") {
-            jQuery('#importKeyFileBtn').trigger(jQuery.Event("click"));
+            jQuery('#importKeyFileBtn').trigger(jQuery.Event("click")); // Opens up importKey Dialog
         }
         <c:forEach var="route" items="${encryptedRoutes}">
         if (${route.encrypted}) {
@@ -184,6 +179,8 @@
     });
     
     function submitForm(formId) {
+        jQuery(".ui-dialog").css("display","none");
+        Yukon.ui.blockPage();
         jQuery("#"+formId).submit();
     }
     
@@ -222,6 +219,16 @@
             Yukon.ui.unblockPage();
         });
     }
+    
+    jQuery(document).bind('addKeyFormSubmit', function(event) {
+        Yukon.ui.blockPage();
+        jQuery('#encryptionKey').submit();
+    });
+    
+    jQuery(document).bind('importKeyFileFormSubmit', function(event) {
+        Yukon.ui.blockPage();
+        jQuery('#fileImportBindingBean').submit();
+    });
     
     </script>
 </cti:standardPage>
