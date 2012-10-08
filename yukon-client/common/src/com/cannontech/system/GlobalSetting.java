@@ -120,8 +120,8 @@ public enum GlobalSetting {
     }
     
     private final InputType<?> type;
-    private Object defaultValue;
-    private GlobalSettingCategory category;
+    private final Object defaultValue;
+    private final GlobalSettingCategory category;
     private GlobalSetting(GlobalSettingCategory category, InputType<?> type, Object defaultValue) {
         this.type = type;
         this.category = category;

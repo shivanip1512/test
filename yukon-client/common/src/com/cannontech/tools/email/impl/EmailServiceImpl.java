@@ -23,7 +23,7 @@ import com.cannontech.tools.email.EmailMessageHolder;
 import com.cannontech.tools.email.EmailService;
 
 public class EmailServiceImpl implements EmailService {
-    @Autowired private GlobalSettingsDao GlobalSettingsDao;
+    @Autowired private GlobalSettingsDao globalSettingsDao;
 
     public void sendMessage(EmailMessageHolder holder) throws MessagingException {
         
@@ -40,7 +40,7 @@ public class EmailServiceImpl implements EmailService {
         
         MimeBodyPart plain_part = new MimeBodyPart();
         plain_part.setContent(holder.getBody(), "text/plain");
-        
+
         MimeBodyPart html_part = new MimeBodyPart();
         html_part.setContent(holder.getHtmlBody(), "text/html");
         
@@ -93,9 +93,10 @@ public class EmailServiceImpl implements EmailService {
         java.util.Properties systemProps = System.getProperties();
         
         //a property used internally by the JavaMail API
-        String smtpServer = GlobalSettingsDao.getString(GlobalSetting.SMTP_HOST);
+        String smtpServer = globalSettingsDao.getString(GlobalSetting.SMTP_HOST);
         if( smtpServer == null ) {
-            throw new MessagingException("No SMTP_HOST server defined in SystemRole.");
+            // if this occurs there is either an issue with the GlobalSettingsDao or no default is set in GlobalSetting enum.
+            throw new MessagingException("No SMTP_HOST server defined in the GlobalSettings table in the database.");
         }
         systemProps.put("mail.smtp.host", smtpServer);
 
@@ -103,10 +104,11 @@ public class EmailServiceImpl implements EmailService {
         
         MimeMessage _message = new MimeMessage(session);
         _message.setHeader("X-Mailer", "CannontechEmail");
-        String from = GlobalSettingsDao.getString(GlobalSetting.MAIL_FROM_ADDRESS);
+        String from = globalSettingsDao.getString(GlobalSetting.MAIL_FROM_ADDRESS);
 
         if (from == null) {
-            throw new MessagingException("No MAIL_FROM_ADDRESS defined in SystemRole.");
+            // if this occurs there is either an issue with the GlobalSettingsDao or no default is set in GlobalSetting enum.
+            throw new MessagingException("No MAIL_FROM_ADDRESS defined in the GlobalSettings table in the database.");
         }
         _message.setFrom(new InternetAddress(from));
         

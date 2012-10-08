@@ -5,7 +5,7 @@
 
 <%
     GlobalSettingsDao globalSettingsDao = YukonSpringHook.getBean("globalSettingsDao", GlobalSettingsDao.class);
-String logo = "/" +  globalSettingsDao.getString(GlobalSetting.WEB_LOGO_URL);
+    String logo = globalSettingsDao.getString(GlobalSetting.WEB_LOGO_URL);
 %>
 <html>
 <head>

@@ -30,9 +30,9 @@ public class SystemDateFormattingServiceImpl implements SystemDateFormattingServ
         if (StringUtils.isNotBlank(timeZoneStr)) {   //Get the TimeZone from timeZoneStr
             try {
                 timeZone = CtiUtilities.getValidTimeZone(timeZoneStr);
-                CTILogger.debug("Configuration Role System TimeZone found: " + timeZone.getDisplayName());
+                CTILogger.debug("System time zone found: " + timeZone.getDisplayName());
             } catch (BadConfigurationException e) {
-                throw new BadConfigurationException (e.getMessage() + ".  Invalid value in ConfigurationRole System TimeZone property");
+                throw new BadConfigurationException (e.getMessage() + ".  Invalid value in the GlobalSettings database table for System time zone property, 'SYSTEM_TIMEZONE'");
             }
         } else {    //Default to the system timezone if blank
             timeZone = TimeZone.getDefault();

@@ -31,7 +31,8 @@ public class SimpleEmailMessage {
         //a property used internally by the JavaMail API
         String smtpServer = globalSettingsDao.getString(GlobalSetting.SMTP_HOST);
         if( smtpServer == null ) {
-            throw new MessagingException("No SMTP_HOST server defined in SystemRole.");
+         // if this occurs there is either an issue with the GlobalSettingsDao or no default is set in GlobalSetting enum.
+            throw new MessagingException("No SMTP_HOST server defined in the GlobalSettings table in the database.");
         }
         systemProps.put("mail.smtp.host", smtpServer);
 
@@ -42,7 +43,8 @@ public class SimpleEmailMessage {
         
         String from = globalSettingsDao.getString(GlobalSetting.MAIL_FROM_ADDRESS);
         if (from == null) {
-            throw new MessagingException("No MAIL_FROM_ADDRESS defined in SystemRole.");
+         // if this occurs there is either an issue with the GlobalSettingsDao or no default is set in GlobalSetting enum.
+            throw new MessagingException("No MAIL_FROM_ADDRESS defined in the GlobalSettings table in the database.");
         }
         _message.setFrom(new InternetAddress(from));
     }

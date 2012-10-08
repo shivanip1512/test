@@ -505,9 +505,10 @@ public ClientConnection getDispatchConnection()
 	{
 		String host = "127.0.0.1";
 		int port = 1510;
+		GlobalSettingsDaoImpl globalSettingsDao = YukonSpringHook.getBean("globalSettingsDao",GlobalSettingsDaoImpl.class);
 		try {
-		    host = YukonSpringHook.getBean("globalSettingsDao",GlobalSettingsDaoImpl.class).getString(GlobalSetting.DISPATCH_MACHINE);
-            port = YukonSpringHook.getBean("globalSettingsDao",GlobalSettingsDaoImpl.class).getInteger(GlobalSetting.DISPATCH_PORT);
+		    host = globalSettingsDao.getString(GlobalSetting.DISPATCH_MACHINE);
+            port = globalSettingsDao.getInteger(GlobalSetting.DISPATCH_PORT);
 		}
 		catch( Exception e)
 		{

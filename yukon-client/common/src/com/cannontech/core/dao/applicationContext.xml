@@ -107,7 +107,7 @@
   <bean id="pointDao" class="com.cannontech.core.dao.impl.PointDaoImpl"/>
   <bean id="roleDao" class="com.cannontech.core.dao.impl.RoleDaoImpl" />
   <bean id="globalSettingsDao" class="com.cannontech.system.dao.impl.GlobalSettingsDaoImpl"/>
-  <bean id="GlobalSettingsUpdater" class="com.cannontech.system.dao.impl.GlobalSettingsUpdaterImpl"/>
+  <bean id="globalSettingsUpdater" class="com.cannontech.system.dao.impl.GlobalSettingsUpdaterImpl"/>
 
   <bean id="simplePointAccessDao" class="com.cannontech.core.dao.impl.SimplePointAccessDaoImpl" >
     <property name="dynamicDataSource" ref="dynamicDataSource"/>

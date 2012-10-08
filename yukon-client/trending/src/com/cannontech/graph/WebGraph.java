@@ -285,19 +285,6 @@ public class WebGraph implements Runnable
 	 */
 	public static void main(String[] args) 
 	{
-/*		ClientSession session = ClientSession.getInstance(); 
-		if(!session.establishSession()){
-			System.exit(-1);			
-		}
-	  	
-		if(session == null) 		
-			System.exit(-1);
-				
-		if(!session.checkRole(WebGraphRole.ROLEID)) 
-		{
-		  CTILogger.info("User: '" + session.getUser().getUsername() + "' is not authorized to use this application, exiting.");
-		  System.exit(-1);				
-		}		*/
 		CTILogger.info("WebGraph - Yukon Version: " + com.cannontech.common.version.VersionTools.getYUKON_VERSION() + " - Yukon Database Version: " +com.cannontech.common.version.VersionTools.getDatabaseVersion());
 	
 		System.setProperty("cti.app.name", "WebGraph");

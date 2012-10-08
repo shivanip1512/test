@@ -25,8 +25,8 @@ public class RoleAndPropertyDescriptionService {
     @Autowired private GlobalSettingsDao globalSettingsDao;
     
     /**
-     * This will check that the user has the given roles, categories,
-     * or has a true value for the given role properties.
+     * This will check that the user has the given roles, categories, has a 
+     * true value for the given role properties, or a true GlobalSetting value.
      * Categories, roles and properties are specified as a comma-separated
      * list of enum names. 
      * 
@@ -132,8 +132,8 @@ public class RoleAndPropertyDescriptionService {
 
             } catch (IllegalArgumentException ignore) { }
             
-            // if we get here, we must not have a valid role or property
-            throw new IllegalArgumentException("Can't use '" + someEnumName + "', check that it is a valid role, category, or boolean property");
+            // if we get here, we must not have a valid role, property, or global setting
+            throw new IllegalArgumentException("Can't use '" + someEnumName + "', check that it is a valid role, category, boolean property, or boolean global setting.");
         }
         // if we get here, nothing matched
         AggregateOrUserChecker userChecker = new AggregateOrUserChecker(checkers);

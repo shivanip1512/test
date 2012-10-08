@@ -48,7 +48,7 @@ public class MultispeakController {
     @Autowired private MultispeakFuncs multispeakFuncs;
     @Autowired private MspObjectDao mspObjectDao;
     @Autowired private MspMeterSearchService mspMeterSearchService;
-    @Autowired private GlobalSettingsUpdater globalSettingsUpdateDao;
+    @Autowired private GlobalSettingsUpdater globalSettingsUpdater;
     
     private MultispeakVendor defaultMspVendor;
 
@@ -358,21 +358,21 @@ public class MultispeakController {
             
             // update Primary CIS Vendor
             if (oldMspPrimaryCIS != mspPrimaryCIS) {
-                globalSettingsUpdateDao.updateSetting(GlobalSetting.MSP_PRIMARY_CB_VENDORID, String.valueOf(mspPrimaryCIS));
+                globalSettingsUpdater.updateSetting(GlobalSetting.MSP_PRIMARY_CB_VENDORID, String.valueOf(mspPrimaryCIS));
                 //reload the search field methods since primaryCIS has changed
                 mspMeterSearchService.loadMspSearchFields(mspPrimaryCIS);
             }
             if (oldMspPaoNameAliasExtension != mspPaoNameAliasExtension) {
                 // update PaoName Alias Extension field name
-                globalSettingsUpdateDao.updateSetting(GlobalSetting.MSP_PAONAME_EXTENSION, mspPaoNameAliasExtension);
+                globalSettingsUpdater.updateSetting(GlobalSetting.MSP_PAONAME_EXTENSION, mspPaoNameAliasExtension);
             }            
             if (oldMspPaoNameAlias != mspPaoNameAlias) {
                 // update PaoName Alias
-                globalSettingsUpdateDao.updateSetting(GlobalSetting.MSP_PAONAME_ALIAS, String.valueOf(mspPaoNameAlias));
+                globalSettingsUpdater.updateSetting(GlobalSetting.MSP_PAONAME_ALIAS, String.valueOf(mspPaoNameAlias));
             }
             if ( oldMspMeterLookupField != mspMeterLookupField) {
                 // update Meter Lookup Field
-                globalSettingsUpdateDao.updateSetting(GlobalSetting.MSP_METER_LOOKUP_FIELD, String.valueOf(mspMeterLookupField));
+                globalSettingsUpdater.updateSetting(GlobalSetting.MSP_METER_LOOKUP_FIELD, String.valueOf(mspMeterLookupField));
             }
         } catch (Exception e) {
             CTILogger.error( "Role Properties for MultiSpeak Setup not saved", e );

@@ -435,10 +435,6 @@ public class DrawingMetaElementEditorPanel extends DataInputPanel {
         if(selected != null) {
             e.setRoleID(((LiteYukonRole)selected).getRoleID());
         }
-        // TODO make sure removing this is ok
-//        else {
-//            e.setRoleID(SystemRole.ROLEID);
-//        }
         return e;			
     }
 
