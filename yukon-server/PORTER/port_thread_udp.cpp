@@ -135,11 +135,31 @@ void UdpPortHandler::addDeviceProperties(const CtiDeviceSingle &device)
 
     if( isGpuffDevice(device) )
     {
-        _typeAndSerial_to_id.insert(type_serial_id_bimap::value_type(makeGpuffTypeSerialPair(device), device_id));
+        std::pair<type_serial_id_bimap::iterator, bool> insertResult =
+            _typeAndSerial_to_id.insert(type_serial_id_bimap::value_type(makeGpuffTypeSerialPair(device), device_id));
+
+        if (!insertResult.second)
+        {
+            // The insert didn't occur! Complain.
+            CtiLockGuard<CtiLogger> doubt_guard(dout);
+            dout << CtiTime() << " Cti::Porter::UdpPortHandler::addDeviceProperties - properties insert failed for device "
+             << device.getName() << ". Please update the type/serial values for this device to be unique. "
+             << __FILE__ << " (" << __LINE__ << ")" << endl;
+        }
     }
     else if( isDnpDevice(device) )
     {
-        _dnpAddress_to_id.insert(dnp_address_id_bimap::value_type(makeDnpAddressPair(device), device_id));
+        std::pair<dnp_address_id_bimap::iterator, bool> insertResult = 
+            _dnpAddress_to_id.insert(dnp_address_id_bimap::value_type(makeDnpAddressPair(device), device_id));
+
+        if (!insertResult.second)
+        {
+            // The insert didn't occur! Complain.
+            CtiLockGuard<CtiLogger> doubt_guard(dout);
+            dout << CtiTime() << " Cti::Porter::UdpPortHandler::addDeviceProperties - properties insert failed for device "
+             << device.getName() << ". Please update the master/slave values for this device to be unique. "
+             << __FILE__ << " (" << __LINE__ << ")" << endl;
+        }
     }
     else if( isRdsDevice(device) )
     {
@@ -202,6 +222,11 @@ void UdpPortHandler::updateDeviceProperties(const CtiDeviceSingle &device)
                 _typeAndSerial_to_id.insert(type_serial_id_bimap::value_type(new_typeAndSerial, device_id));
             }
         }
+        else
+        {
+            // Add the device.
+            addDeviceProperties(device);
+        }
     }
     else if( isDnpDevice(device) )
     {
@@ -220,11 +245,15 @@ void UdpPortHandler::updateDeviceProperties(const CtiDeviceSingle &device)
                 _dnpAddress_to_id.insert(dnp_address_id_bimap::value_type(new_address, device_id));
             }
         }
+        else
+        {
+            // Add the device.
+            addDeviceProperties(device);
+        }
     }
     else if( isRdsDevice(device) )
     {
         loadStaticRdsIPAndPort(device);
-
     }
 }
 
