@@ -41,7 +41,7 @@
           <cti:button nameKey="save" name="save" type="submit"/>
           <c:if test="${showDelete}">
               <cti:button nameKey="delete" id="deleteButton" type="button"/>
-              <tags:confirmDialog nameKey=".confirmDelete" on="#deleteButton" argument="${groupName}" submitName="delete"/>
+              <tags:confirmDialog nameKey=".confirmDelete" on="#deleteButton" argument="${roleGroupName}" submitName="delete"/>
           </c:if>
           <cti:button nameKey="cancel" name="cancel" type="submit"/>
 <%--        </tags:csrfTokenRequest> --%>
