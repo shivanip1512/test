@@ -384,6 +384,10 @@ begin
 	sDir = TARGETDIR ^ "\\Client\\bin";
 	DeleteFilesOfType(sDir, "jar");
 	
+	//Also delete old JRE installer. We only want the latest in this directory 
+	sDir = TARGETDIR ^ "\\Server\\Static\\JRE";
+	DeleteFilesOfType(sDir, "exe");
+	
 	//set installer to update all features that are currently installed
 	FeatureReinstall();
 	
