@@ -72,6 +72,7 @@
         <paoType value="RFN420FX"/>
         <paoType value="RFN420FD"/>
         <paoType value="RFN430A3"/>
+        <paoType value="RFN430KV"/>
         <!-- These guys catch the tou data for devices that send us quad 1 and 4 (focus/elster devices) -->
         <point name="Rate A kWh">
             <uom>Wh</uom>
@@ -236,11 +237,10 @@
         </point>
     </pointGroup>
     
-    <pointGroup><!-- ITRON, ELSTER, GE TOU POINT MAPPINGS -->
+    <pointGroup><!-- ITRON TOU POINT MAPPINGS -->
         <paoType value="RFN420CL"/>
         <paoType value="RFN420CD"/>
-        <paoType value="RFN430KV"/>
-        <paoType value="RFN430A3"/>
+        
         <!-- This guy catches the tou data for devices that DON'T send us quad 1 and 4 (Itron c2sx devices) -->
         <point name="Rate A kWh">
             <uom>Wh</uom>
