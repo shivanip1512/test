@@ -167,7 +167,7 @@
     <entry key="yukon.web.modules.capcontrol.command.CONFIRM_CLOSE">Confirm Close</entry>
     <entry key="yukon.web.modules.capcontrol.command.REQUEST_ALL_DATA">Request All Substation Buses</entry>
     <entry key="yukon.web.modules.capcontrol.command.RETURN_CAP_TO_ORIGINAL_FEEDER">Return Bank to Original Feeder</entry>
-    <entry key="yukon.web.modules.capcontrol.command.RESET_DAILY_OPERATIONS">Reset Daily Op Count</entry>
+    <entry key="yukon.web.modules.capcontrol.command.RESET_DAILY_OPERATIONS">Reset Op Counts</entry>
     <entry key="yukon.web.modules.capcontrol.command.CONFIRM_FEEDER">Confirm Feeder</entry>  
     <entry key="yukon.web.modules.capcontrol.command.RESET_SYSTEM_OP_COUNTS">Reset All Op Counters</entry>
     <entry key="yukon.web.modules.capcontrol.command.SEND_ENABLE_OVUV">Enable OV/UV</entry>
