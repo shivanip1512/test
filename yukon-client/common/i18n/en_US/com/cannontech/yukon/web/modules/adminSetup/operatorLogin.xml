@@ -19,6 +19,7 @@
 
     <!-- UI Elements -->
     <entry key="yukon.web.modules.adminSetup.operatorLogin.create.label">Create</entry>
+    <entry key="yukon.web.modules.adminSetup.operatorLogin.loginEnabled.label">Login Enabled</entry>
 
     <!--  Validation -->
     <entry key="yukon.web.modules.adminSetup.operatorLogin.unableToDeleteCurrentUser">You cannot disable the logged in user.</entry>

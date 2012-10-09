@@ -75,6 +75,7 @@ public class OperatorLoginController {
             rolePropertyDao.checkProperty(YukonRoleProperty.ADMIN_MEMBER_LOGIN_CNTRL, userContext.getYukonUser());
         }
         EnergyCompanyInfoFragmentHelper.setupModelMapBasics(energyCompanyInfoFragment, modelMap);
+        modelMap.addAttribute("currentUserId", userContext.getYukonUser().getUserID());
     }
     
     private LoginBackingBean loginBackingBeanFromYukonUser(LiteYukonUser user) {
@@ -200,7 +201,7 @@ public class OperatorLoginController {
         //check permissions
         checkPermissionsAndSetupModel(energyCompanyInfoFragment, modelMap, userContext);
         
-      //validate login
+        //validate login
         LiteYukonUser user = yukonUserDao.getLiteYukonUser(operatorLogin.getUserId());
         LoginValidator loginValidator = loginValidatorFactory.getLoginValidator(user);
         loginValidator.validate(operatorLogin, bindingResult);

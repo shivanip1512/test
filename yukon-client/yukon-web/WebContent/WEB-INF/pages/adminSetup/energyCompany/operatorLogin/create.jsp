@@ -50,7 +50,18 @@
         <tags:nameValueContainer2>
             <tags:hidden path="userId"/>
             <tags:selectNameValue nameKey=".operatorGroup" items="${assignableGroups}" path="userGroupName"/>
-            <tags:checkboxNameValue nameKey=".loginEnabled" path="loginEnabled"></tags:checkboxNameValue>
+            <c:if test="${currentUserId != operatorLogin.userId}">
+                <tags:checkboxNameValue  checkBoxDescriptionNameKey=".loginEnabled.label" nameKey=".loginEnabled" path="loginEnabled"></tags:checkboxNameValue>
+            </c:if>
+
+            <c:if test="${currentUserId == operatorLogin.userId}">
+                <form:hidden path="loginEnabled" value="true"/>
+                <tags:nameValue2 nameKey=".loginEnabled">
+                    <input id="enableCheckbox" type="checkbox" disabled="disabled" checked="checked"/>
+                    <label for="enableCheckbox"> <i:inline key=".loginEnabled.label"/> </label>
+                </tags:nameValue2>
+            </c:if>
+
             <tags:inputNameValue nameKey=".username" path="username" size="50" maxlength="60"/>
             
             <!-- Password Fields -->
@@ -59,7 +70,7 @@
                     <tags:nameValue2 nameKey=".password">
                         <tags:password path="password1" autocomplete="false" />
                     </tags:nameValue2>
-                    <tags:nameValue2 nameKey=".confirmPassword">
+                    <tags:nameValue2 nameKey=".confirmPassword"> 
                         <tags:password path="password2" autocomplete="false" />
                     </tags:nameValue2>
                     <tags:nameValue2 nameKey="defaults.blank" excludeColon="true">
