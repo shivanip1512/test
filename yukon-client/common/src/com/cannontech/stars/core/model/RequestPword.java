@@ -61,7 +61,7 @@ public class RequestPword
 		fName = fName_;
 		lName = lName_;
 		
-		allParams = new String[] { userName, email, fName, lName };
+		allParams = new String[] {userName, email};
 
 		GlobalSettingsDao globalSettingsDao = YukonSpringHook.getBean("globalSettingsDao", GlobalSettingsDao.class);
 
@@ -282,45 +282,40 @@ public class RequestPword
 				switch( i )
 				{
 					case 0:
-					body += " Username    : " + allParams[i] + CR;
+					body += " Username: " + allParams[i] + CR;
 					break;
 
 					case 1:
-					body += " Email        : " + allParams[i] + CR;
+					body += " Email: " + allParams[i] + CR;
 					break;
 
 					case 2:
-					body += " First Name   : " + allParams[i] + CR;
-					break;
-
-					case 3:
-					body += " Last Name    : " + allParams[i] + CR;
-					break;
-
-					case 4:
-					body += " Account Num. : " + allParams[i] + CR;
+					body += " Account #: " + allParams[i] + CR;
 					break;
 				}
 				
 			}				
 		}
 		
-			
+		if (StringUtils.isNotBlank(fName)) {
+		    body += " First Name: " + fName + CR;
+		}
+		if (StringUtils.isNotBlank(lName)) {
+		    body += " Last Name: " + lName + CR;
+		}
+		if (StringUtils.isNotBlank(getEnergyCompany())) {
+		    body += " Energy Provider: " + getEnergyCompany() + CR;
+		}
+		if (StringUtils.isNotBlank(getNotes())) {
+		    body += " Notes: " + getNotes() + CR;
+		}
+
 		body += CR + "The following information is what was found for this user:" + CR;
 			
 		for( int i = 0; i < foundData.size(); i++ )
 			body += foundData.get(i).toString() + 
 					  (i == (foundData.size()-1) ? "" : CR);
 
-        if( getEnergyCompany() != null )
-            body += CR + CR + 
-                    "The user supplied the following Energy Company: " + getEnergyCompany();
-
-        if( getNotes() != null )
-			body += CR + CR + 
-					"The user supplied the following notes:" + CR + getNotes();
-        
-        
 		return body;
 	}
 
