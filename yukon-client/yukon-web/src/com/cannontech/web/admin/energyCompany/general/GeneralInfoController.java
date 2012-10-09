@@ -56,7 +56,6 @@ import com.google.common.collect.Lists;
 public class GeneralInfoController {
     private final static String baseKey = "yukon.web.modules.adminSetup.generalInfo.";
 
-//    private CsrfTokenService csrfTokenService;
     @Autowired private EnergyCompanyService energyCompanyService;
     @Autowired private ECMappingDao ecMappingDao;
     @Autowired private GeneralInfoService generalInfoService;
@@ -125,15 +124,6 @@ public class GeneralInfoController {
         
         starsEventLogService.deleteEnergyCompanyAttemptedByOperator(user, fragment.getCompanyName());
 
-/*
-        // Check the csrf validation
-        String errorCode = csrfTokenService.checkRequest(request);
-        if(org.apache.commons.lang.StringUtils.isNotEmpty(errorCode)) {
-            setupModelMap(model, context.getYukonUser(), ecId, fragment);
-            flashScope.setError(new YukonMessageSourceResolvable(errorCode));
-            return "redirect:delete";
-        }
-*/
         energyCompanyService.deleteEnergyCompany(user, ecId);
 
         flashScope.setConfirm(new YukonMessageSourceResolvable("yukon.web.modules.adminSetup.deleteEnergyCompanyConfirm.deletedMsg", fragment.getCompanyName()));
@@ -378,12 +368,5 @@ public class GeneralInfoController {
     public boolean getCanEdit(YukonUserContext context, int ecId) {
         return energyCompanyService.canEditEnergyCompany(context.getYukonUser(), ecId);
     }
-    
-    /* Dependencies */
-/*
-    @Autowired
-    public void setCsrfTokenService(CsrfTokenService csrfTokenService) {
-        this.csrfTokenService = csrfTokenService;
-    }
-*/    
+ 
 }
