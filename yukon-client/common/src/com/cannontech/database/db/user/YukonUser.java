@@ -9,29 +9,26 @@ import com.cannontech.database.db.DBPersistent;
 import com.cannontech.database.incrementer.NextValueHelper;
 import com.cannontech.spring.YukonSpringHook;
 
-public class YukonUser extends DBPersistent  {
-    
-    public static final String TABLE_NAME = "YukonUser";	
-		
-	private Integer userID = null;
-	private String username = null;
-	private LoginStatusEnum loginStatus = LoginStatusEnum.DISABLED;
+public class YukonUser extends DBPersistent {
+    public static final String TABLE_NAME = "YukonUser";
+
+    private Integer userID = null;
+    private String username = null;
+    private LoginStatusEnum loginStatus = LoginStatusEnum.DISABLED;
     private AuthType authType = AuthType.HASH_SHA_V2;
     private Date lastChangedDate = null;
     private boolean forceReset = false;
     private Integer userGroupId;
 
-	private static final String[] SELECT_COLUMNS = 
-	{ 	
-		"Username", 
-		"Status",
+    private static final String[] SELECT_COLUMNS = {
+        "Username",
+        "Status",
         "AuthType",
-		"LastChangedDate",
-		"ForceReset",
-		"UserGroupId",
-	};
-	
-	
+        "LastChangedDate",
+        "ForceReset",
+        "UserGroupId",
+    };
+
     /**
      * @see com.cannontech.database.db.DBPersistent#add()
      */
@@ -41,90 +38,90 @@ public class YukonUser extends DBPersistent  {
         // for the password is included here even though the rest of this class ignores
         // that column.
         String dummyPasswordValue = "";
-        Object[] addValues = { getUserID(), getUsername(), dummyPasswordValue, getLoginStatus().getDatabaseRepresentation(), 
-                               getAuthType().name(), getLastChangedDate(), isForceReset() ? "Y":"N", getUserGroupId()};
+        Object[] addValues =
+            { getUserID(), getUsername(), dummyPasswordValue, getLoginStatus().getDatabaseRepresentation(),
+                getAuthType().name(), getLastChangedDate(), isForceReset() ? "Y" : "N", getUserGroupId() };
 
         add(TABLE_NAME, addValues);
     }
 
-	/**
-	 * This method was created in VisualAge.
-	 * @return java.lang.Integer
-	 */
-	public static final Integer getNextUserID( java.sql.Connection conn )
-	{
+    public final static Integer getNextUserID(java.sql.Connection conn)
+    {
         NextValueHelper nextValueHelper = YukonSpringHook.getNextValueHelper();
         int nextValue = nextValueHelper.getNextValue(TABLE_NAME);
         return nextValue;
-	}
-	
-	
-	/**
-	 * @see com.cannontech.database.db.DBPersistent#delete()
-	 */
-	@Override
+    }
+
+    /**
+     * @see com.cannontech.database.db.DBPersistent#delete()
+     */
+    @Override
     public void delete() throws SQLException {
-		delete(TABLE_NAME, "UserID", getUserID());
-	}
+        delete(TABLE_NAME, "UserID", getUserID());
+    }
 
-	/**
-	 * @see com.cannontech.database.db.DBPersistent#retrieve()
-	 */
-	@Override
+    /**
+     * @see com.cannontech.database.db.DBPersistent#retrieve()
+     */
+    @Override
     public void retrieve() throws SQLException {
-		String[] constraintColumns = { "UserID" };
-		Object[] constraintValues = { getUserID() };
-		
-		Object[] results = retrieve(SELECT_COLUMNS, TABLE_NAME, constraintColumns, constraintValues);
-		
-		if(results.length == SELECT_COLUMNS.length) {
-			setUsername((String) results[0]);
-			setLoginStatus(LoginStatusEnum.retrieveLoginStatus((String) results[1]));
-			setAuthType(AuthType.valueOf((String) results[2]));
-			setLastChangedDate((Date) results[3]);
+        String[] constraintColumns = { "UserID" };
+        Object[] constraintValues = { getUserID() };
+
+        Object[] results = retrieve(SELECT_COLUMNS, TABLE_NAME, constraintColumns, constraintValues);
+
+        if (results.length == SELECT_COLUMNS.length) {
+            setUsername((String) results[0]);
+            setLoginStatus(LoginStatusEnum.retrieveLoginStatus((String) results[1]));
+            setAuthType(AuthType.valueOf((String) results[2]));
+            setLastChangedDate((Date) results[3]);
             setForceReset("Y".equals(results[4]));
-			setUserGroupId(((Integer) results[5]));
-		}
-	}
+            setUserGroupId(((Integer) results[5]));
+        }
+    }
 
-	/**
-	 * @see com.cannontech.database.db.DBPersistent#update()
-	 */
-	@Override
+    /**
+     * @see com.cannontech.database.db.DBPersistent#update()
+     */
+    @Override
     public void update() throws SQLException {
-		Object[] setValues = { getUsername(), getLoginStatus().getDatabaseRepresentation(), 
-		                       getAuthType().name(), getLastChangedDate(), isForceReset() ? 'Y': 'N', getUserGroupId()};
-		
-		String[] constraintColumns = { "UserID" };
-		Object[] constraintValues = { getUserID() };
-		
-		update(TABLE_NAME, SELECT_COLUMNS, setValues, constraintColumns, constraintValues);
-	}
+        Object[] setValues = { getUsername(), getLoginStatus().getDatabaseRepresentation(),
+            getAuthType().name(), getLastChangedDate(), isForceReset() ? 'Y' : 'N', getUserGroupId() };
 
-	public Integer getUserID() {
-		return userID;
-	}
-	public void setUserID(Integer userID) {
-	    this.userID = userID;
-	}
+        String[] constraintColumns = { "UserID" };
+        Object[] constraintValues = { getUserID() };
 
-	public String getUsername() {
-		return username;
-	}
-	public void setUsername(String username) {
-		this.username = username;
-	}
+        update(TABLE_NAME, SELECT_COLUMNS, setValues, constraintColumns, constraintValues);
+    }
 
-	public LoginStatusEnum getLoginStatus() {
-		return loginStatus;
-	}
-	public void setLoginStatus(LoginStatusEnum loginStatus) {
-		this.loginStatus = loginStatus;
-	}
+    public Integer getUserID() {
+        return userID;
+    }
+
+    public void setUserID(Integer userID) {
+        this.userID = userID;
+    }
+
+    public String getUsername() {
+        return username;
+    }
+
+    public void setUsername(String username) {
+        this.username = username;
+    }
+
+    public LoginStatusEnum getLoginStatus() {
+        return loginStatus;
+    }
+
+    public void setLoginStatus(LoginStatusEnum loginStatus) {
+        this.loginStatus = loginStatus;
+    }
 
     public AuthType getAuthType() {
         return authType;
     }
+
     public void setAuthType(AuthType authType) {
         this.authType = authType;
     }
@@ -132,6 +129,7 @@ public class YukonUser extends DBPersistent  {
     public Date getLastChangedDate() {
         return lastChangedDate;
     }
+
     public void setLastChangedDate(Date lastChangedDate) {
         this.lastChangedDate = lastChangedDate;
     }
@@ -139,6 +137,7 @@ public class YukonUser extends DBPersistent  {
     public boolean isForceReset() {
         return forceReset;
     }
+
     public void setForceReset(boolean forceReset) {
         this.forceReset = forceReset;
     }
@@ -146,6 +145,7 @@ public class YukonUser extends DBPersistent  {
     public Integer getUserGroupId() {
         return userGroupId;
     }
+
     public void setUserGroupId(Integer userGroupId) {
         this.userGroupId = userGroupId;
     }
