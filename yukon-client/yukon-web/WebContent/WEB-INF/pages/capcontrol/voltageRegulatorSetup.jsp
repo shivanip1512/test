@@ -23,6 +23,15 @@
 					value="#{capControlForm.PAOBase.PAODescription}" required="false"
 					maxlength="60" styleClass="char32Label" />
 
+                <x:htmlTag value="br"/>
+                <x:htmlTag value="br"/>
+
+                <x:outputLabel for="voltChangePerTap" value="Volt Change Per Tap: "
+                    title="Voltage Change Per Tap for the Voltage Regulator" />
+                <x:inputText id="voltChangePerTap"
+                    value="#{capControlForm.regulatorBase.voltChangePerTap}" required="false"
+                    maxlength="10" styleClass="char4Label" />
+
                 <x:htmlTag value="br" rendered="#{capControlForm.regulatorBase.displayTimer}" />
                 <x:htmlTag value="br" rendered="#{capControlForm.regulatorBase.displayTimer}" />
 

@@ -294,6 +294,13 @@
                                         </c:forEach>
                                     </tr>
                                 </c:forEach>
+                                <tr class="<tags:alternateRow odd="" even="altRow"/> regulatorAttributeRow">
+                                    <td><i:inline key=".attributes.voltChangePerTap"/></td>
+	                                <c:forEach items="${zoneDto.regulators}" var="regulator">
+										<c:set var="phaseKey" value="${regulator.key}" />
+										<td><cti:dataUpdaterValue identifier="${regulatorIdMap[phaseKey]}/VOLT_CHANGE_PER_TAP" type="VOLTAGE_REGULATOR"/></td>
+	                                </c:forEach>
+								</tr>
                             </table>
                         </cti:tabbedContentSelectorContent>
                         <c:forEach items="${zoneDto.regulators}" var="regulator">
@@ -336,6 +343,10 @@
                                             </td>
                                         </tr>
                                     </c:forEach>
+                                    <tr class="<tags:alternateRow odd="" even="altRow"/> regulatorAttributeRow">
+                                        <td><i:inline key=".attributes.voltChangePerTap"/></td>
+                                        <td><cti:dataUpdaterValue identifier="${regulatorIdMap[phaseKey]}/VOLT_CHANGE_PER_TAP" type="VOLTAGE_REGULATOR"/></td>
+                                    </tr>
                                 </table>
                             </cti:tabbedContentSelectorContent>
                         </c:forEach>
@@ -382,6 +393,11 @@
             		                    </td>
             		                </tr>
             		            </c:forEach>
+                                <tr class="<tags:alternateRow odd="" even="altRow"/> regulatorAttributeRow">
+                                    <td><i:inline key=".attributes.voltChangePerTap"/></td>
+                                    <td><cti:dataUpdaterValue identifier="${regulatorIdMap[phaseKey]}/VOLT_CHANGE_PER_TAP" type="VOLTAGE_REGULATOR"/></td>
+                                    <td><i:inline key="yukon.web.defaults.dashes"/></td>
+                                </tr>
                             </c:forEach>
         		        </table>
         			</tags:boxContainer2>

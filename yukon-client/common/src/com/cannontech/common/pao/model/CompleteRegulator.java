@@ -9,6 +9,7 @@ import com.cannontech.common.pao.annotation.YukonPaoField;
 public class CompleteRegulator extends CompleteYukonPao {
     private int keepAliveTimer;
     private int keepAliveConfig;
+    private double voltChangePerTap = 0.75;
 
     @YukonPaoField
     public int getKeepAliveTimer() {
@@ -28,10 +29,19 @@ public class CompleteRegulator extends CompleteYukonPao {
         this.keepAliveConfig = keepAliveConfig;
     }
 
+    @YukonPaoField
+    public double getVoltChangePerTap() {
+        return voltChangePerTap;
+    }
+
+    public void setVoltChangePerTap(double voltChangePerTap) {
+        this.voltChangePerTap = voltChangePerTap;
+    }
+
     @Override
     public String toString() {
         return "CompleteRegulator [keepAliveTimer=" + keepAliveTimer + ", keepAliveConfig="
-               + keepAliveConfig + "]";
+               + keepAliveConfig + ", voltChangePerTap=" + voltChangePerTap + "]";
     }
 
     @Override
@@ -40,6 +50,9 @@ public class CompleteRegulator extends CompleteYukonPao {
         int result = super.hashCode();
         result = prime * result + keepAliveConfig;
         result = prime * result + keepAliveTimer;
+        long temp;
+        temp = Double.doubleToLongBits(voltChangePerTap);
+        result = prime * result + (int) (temp ^ (temp >>> 32));
         return result;
     }
 
@@ -55,6 +68,9 @@ public class CompleteRegulator extends CompleteYukonPao {
         if (keepAliveConfig != other.keepAliveConfig)
             return false;
         if (keepAliveTimer != other.keepAliveTimer)
+            return false;
+        if (Double.doubleToLongBits(voltChangePerTap) != Double
+            .doubleToLongBits(other.voltChangePerTap))
             return false;
         return true;
     }

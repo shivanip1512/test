@@ -30,6 +30,7 @@ public class VoltageRegulator extends CapControlYukonPAOBase implements YukonDev
     private List<VoltageRegulatorPointMapping> pointMappings;
     private int keepAliveTimer;
     private int keepAliveConfig;
+    private double voltChangePerTap;
 
     public VoltageRegulator() {
         super();
@@ -83,6 +84,7 @@ public class VoltageRegulator extends CapControlYukonPAOBase implements YukonDev
         regulator.setDisabled(CtiUtilities.trueChar.equals(getDisableFlag()));
         regulator.setKeepAliveConfig(keepAliveConfig);
         regulator.setKeepAliveTimer(keepAliveTimer);
+        regulator.setVoltChangePerTap(voltChangePerTap);
         
         paoPersistenceService.updatePao(regulator);
         
@@ -158,6 +160,17 @@ public class VoltageRegulator extends CapControlYukonPAOBase implements YukonDev
         Integer paoId = getCapControlPAOID();
         keepAliveConfig = voltageRegulatorDao.getKeepAliveConfigForRegulator(paoId);
         return keepAliveConfig;
+    }
+
+    public double getVoltChangePerTap() {
+        VoltageRegulatorDao voltageRegulatorDao = YukonSpringHook.getBean("voltageRegulatorDao", VoltageRegulatorDao.class);
+        Integer paoId = getCapControlPAOID();
+        voltChangePerTap = voltageRegulatorDao.getVoltChangePerTapForRegulator(paoId);
+        return voltChangePerTap;
+    }
+
+    public void setVoltChangePerTap(double voltChangePerTap) {
+        this.voltChangePerTap = voltChangePerTap;
     }
 
     public void setKeepAliveTimer(int keepAliveTimer) {

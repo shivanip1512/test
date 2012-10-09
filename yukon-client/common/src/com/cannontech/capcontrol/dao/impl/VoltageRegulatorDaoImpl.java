@@ -15,6 +15,7 @@ import com.cannontech.common.pao.PaoType;
 import com.cannontech.common.search.SearchResult;
 import com.cannontech.common.util.SqlStatementBuilder;
 import com.cannontech.database.PagingResultSetExtractor;
+import com.cannontech.database.RowMapper;
 import com.cannontech.database.YukonJdbcTemplate;
 import com.google.common.collect.Lists;
 
@@ -43,6 +44,18 @@ public class VoltageRegulatorDaoImpl implements VoltageRegulatorDao {
         sql.append("WHERE RegulatorId").eq(regulatorId);
         
         int result = yukonJdbcTemplate.queryForInt(sql);
+        return result;
+    }
+    
+    @Override
+    public double getVoltChangePerTapForRegulator(int regulatorId) {
+        SqlStatementBuilder sql = new SqlStatementBuilder();
+        
+        sql.append("SELECT VoltChangePerTap");
+        sql.append("FROM Regulator");
+        sql.append("WHERE RegulatorId").eq(regulatorId);
+        
+        Double result = yukonJdbcTemplate.queryForObject(sql, RowMapper.DOUBLE);
         return result;
     }
     

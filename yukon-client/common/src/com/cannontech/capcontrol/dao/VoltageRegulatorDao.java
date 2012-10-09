@@ -16,6 +16,12 @@ public interface VoltageRegulatorDao {
      * @param regulatorId
      */
     public int getKeepAliveConfigForRegulator(int regulatorId);
+    
+    /**
+     * Gets the VoltChangePerTap value from the Regulator table.
+     * @param regulatorId
+     */
+    public double getVoltChangePerTapForRegulator(int regulatorId);
 
     /**
      * Returns a list of all un-assigned Regulators as Search Results.

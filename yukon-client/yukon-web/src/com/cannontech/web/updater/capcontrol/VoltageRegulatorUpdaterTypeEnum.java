@@ -4,5 +4,6 @@ public enum VoltageRegulatorUpdaterTypeEnum {
     MODE,
     TAP,
     TAP_TOOLTIP,
-    OPTIME
+    OPTIME,
+    VOLT_CHANGE_PER_TAP,
 }
