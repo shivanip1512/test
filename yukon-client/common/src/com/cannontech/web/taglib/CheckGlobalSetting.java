@@ -22,7 +22,7 @@ public class CheckGlobalSetting extends BodyTagSupport {
 	 */
 	public int doStartTag() throws JspException {
 	    boolean isSettingSet = YukonSpringHook.getBean("globalSettingsDao",GlobalSettingsDao.class).checkSetting(globalSetting);
-		return (isSettingSet) ? SKIP_BODY : EVAL_BODY_INCLUDE;
+		return (isSettingSet) ? EVAL_BODY_INCLUDE : SKIP_BODY;
 	}
 	
 	/**
