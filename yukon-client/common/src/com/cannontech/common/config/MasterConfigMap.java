@@ -1,9 +1,7 @@
 package com.cannontech.common.config;
 
 import java.io.BufferedReader;
-import java.io.BufferedWriter;
 import java.io.File;
-import java.io.FileWriter;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
@@ -26,6 +24,7 @@ import com.cannontech.clientutils.YukonLogManager;
 import com.cannontech.common.util.SimplePeriodFormat;
 import com.cannontech.encryption.CryptoException;
 import com.cannontech.encryption.MasterConfigCryptoUtils;
+import com.google.common.base.Charsets;
 
 public class MasterConfigMap implements ConfigurationSource {
     private Map<String, String> configMap = new HashMap<String, String>();
@@ -51,19 +50,20 @@ public class MasterConfigMap implements ConfigurationSource {
         configMap.clear();
         boolean updateFile = false;
         String endl = System.getProperty("line.separator");
-        File tmp = File.createTempFile("master", "cfgtmp");
         LogHelper.debug(log, "starting initialization");
         Pattern keyCharPattern = Pattern.compile("^\\s*([^:#\\s]+)\\s*:\\s*([^#]+)\\s*(#.*)*");
         Pattern extCharPattern = Pattern.compile("[^\\p{Print}\n\t\r]");
         Pattern spacePattern = Pattern.compile("\\p{Zs}");
         
         InputStream inputStream = FileUtils.openInputStream(masterCfgFile);
-        BufferedReader bufReader = new BufferedReader(new InputStreamReader(inputStream));
-        BufferedWriter bufWriter = new BufferedWriter(new FileWriter(tmp));
+        BufferedReader masterCfgReader = new BufferedReader(new InputStreamReader(inputStream));
+        // As we are parsing master.cfg, we copy it into this temporary string.  If we come across
+        // 
+        StringBuilder tempWriter = new StringBuilder();
         String line = null;
         int lineNum = 0;
 
-        while ((line = bufReader.readLine()) != null) { 
+        while ((line = masterCfgReader.readLine()) != null) { 
             lineNum++;
             Matcher extCharMatcher = extCharPattern.matcher(line);
 
@@ -84,29 +84,29 @@ public class MasterConfigMap implements ConfigurationSource {
                     if (MasterConfigCryptoUtils.isEncrypted(value)) {
                         // Found a value already encrypted
                         String valueDecrypted = MasterConfigCryptoUtils.decryptValue(value);
-                        bufWriter.write(line + endl);
+                        tempWriter.append(line);
                         configMap.put(key, valueDecrypted);
                     } else {
                         updateFile = true;
                         // Found a value that needs to be encrypted
                         String valueEncrypted = MasterConfigCryptoUtils.encryptValue(value);
-                        bufWriter.write(key + " : " + valueEncrypted + " " + comment + endl);
+                        tempWriter.append(key).append(" : ").append(valueEncrypted).append(" ").append(comment);
                         configMap.put(key, value);
                     }
                 } else {
                     // Non-sensitive data.
                     configMap.put(key, value);
-                    bufWriter.write(line + endl);
+                    tempWriter.append(line);
                 }
             } else {
                 // Line with no "key : value" pair
-                bufWriter.write(line + endl);
+                tempWriter.append(line);
             }
+            tempWriter.append(endl);
         }
-        bufWriter.close();
-        bufReader.close();
-        if (updateFile && !FileUtils.contentEquals(tmp, masterCfgFile)){
-            FileUtils.copyFile(tmp, masterCfgFile);
+        masterCfgReader.close();
+        if (updateFile) {
+            FileUtils.writeStringToFile(masterCfgFile, tempWriter.toString(), Charsets.UTF_8.name());
         }
     }
 
