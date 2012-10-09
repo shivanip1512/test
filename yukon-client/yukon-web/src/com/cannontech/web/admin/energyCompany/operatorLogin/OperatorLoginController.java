@@ -101,6 +101,7 @@ public class OperatorLoginController {
         List<Integer> energyCompanyIds = Collections.singletonList(ecId);
         
         modelMap.addAttribute("operatorLogins", yukonUserDao.getOperatorLoginsByEnergyCompanyIds(energyCompanyIds));
+        modelMap.addAttribute("currentUserId",userContext.getYukonUser().getLiteID());
         return "energyCompany/operatorLogin/home.jsp";
     }
     
@@ -215,9 +216,8 @@ public class OperatorLoginController {
         //save login
         LiteYukonUser liteUser = yukonUserDao.getLiteYukonUser(operatorLogin.getUserId());
         LiteUserGroup userGroup = userGroupDao.getLiteUserGroupByUserGroupName(operatorLogin.getUserGroupName());
-        LiteStarsEnergyCompany energyCompany = starsDatabaseCache.getEnergyCompany(ecId);
         StarsAdminUtil.updateLogin( liteUser, operatorLogin.getUsername(), operatorLogin.getPassword1(), operatorLogin.getLoginStatus(),
-                                    userGroup, energyCompany, false);
+                                    userGroup, false);
         
         //add message
         flashScope.setConfirm(new YukonMessageSourceResolvable("yukon.web.modules.adminSetup.operatorLogin.operatorLoginUpdated"));
@@ -238,20 +238,25 @@ public class OperatorLoginController {
         checkPermissionsAndSetupModel(energyCompanyInfoFragment, modelMap, userContext);
         
         JSONObject returnJSON = new JSONObject();
-        
         LiteYukonUser liteUser = this.yukonUserDao.getLiteYukonUser(operatorLoginId);
-        if(liteUser.getLoginStatus() == LoginStatusEnum.ENABLED) {
-            liteUser.setLoginStatus(LoginStatusEnum.DISABLED);
-            returnJSON.put("message", new YukonMessageSourceResolvable("yukon.web.modules.adminSetup.operatorLogin.operatorLoginStatusDisabled").toString());
+
+        if (userContext.getYukonUser().getUserID() == operatorLoginId) {
+            // The UI shouldn't allow this but just in case they get here send back a message
+            returnJSON.put("message", new YukonMessageSourceResolvable("yukon.web.modules.adminSetup.operatorLogin.unableToDeleteCurrentUser").toString());
         } else {
-            liteUser.setLoginStatus(LoginStatusEnum.ENABLED);
-            returnJSON.put("message", new YukonMessageSourceResolvable("yukon.web.modules.adminSetup.operatorLogin.operatorLoginStatusEnabled").toString());
+            if(liteUser.getLoginStatus() == LoginStatusEnum.ENABLED) {
+                liteUser.setLoginStatus(LoginStatusEnum.DISABLED);
+                returnJSON.put("message", new YukonMessageSourceResolvable("yukon.web.modules.adminSetup.operatorLogin.operatorLoginStatusDisabled").toString());
+            } else {
+                liteUser.setLoginStatus(LoginStatusEnum.ENABLED);
+                returnJSON.put("message", new YukonMessageSourceResolvable("yukon.web.modules.adminSetup.operatorLogin.operatorLoginStatusEnabled").toString());
+            }
+            LiteUserGroup userGroup = userGroupDao.getLiteUserGroupByUserId(liteUser.getLiteID());
+            
+            // null here ensures password doesn't change
+            StarsAdminUtil.updateLogin( liteUser, liteUser.getUsername(),null, liteUser.getLoginStatus(), userGroup, false);
         }
-        
-        StarsAdminUtil.updateLogin( liteUser, liteUser.getUsername(), "", liteUser.getLoginStatus(), null, null, false);
-        
         returnJSON.put("loginStatus", liteUser.getLoginStatus());
-        
         response.setContentType("application/json");
         PrintWriter writer = response.getWriter();
         

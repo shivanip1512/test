@@ -69,19 +69,19 @@ public class UserEditorController {
     }
     
     @RequestMapping
-    public String view(ModelMap model, int userId) {
+    public String view(YukonUserContext userContext, ModelMap model, int userId) {
         LiteYukonUser yukonUser = yukonUserDao.getLiteYukonUser(userId);
         User user = new User(yukonUser);
 
-        setupModelMap(model, user, PageEditMode.VIEW);
+        setupModelMap(model, user, PageEditMode.VIEW, userContext);
         return "userGroupEditor/user.jsp";
     }
     
     /* User Editor Edit Page */
     @RequestMapping(value="edit", method=RequestMethod.POST, params="edit")
-    public String edit(ModelMap model, int userId) {
+    public String edit(YukonUserContext userContext, ModelMap model, int userId) {
         User user = new User(yukonUserDao.getLiteYukonUser(userId));
-        setupModelMap(model, user, PageEditMode.EDIT);
+        setupModelMap(model, user, PageEditMode.EDIT, userContext);
         return "userGroupEditor/user.jsp";
     }
 
@@ -97,7 +97,7 @@ public class UserEditorController {
 
     /* Update Group */
     @RequestMapping(value="edit", method=RequestMethod.POST, params="update")
-    public String update(@ModelAttribute User user, BindingResult result, ModelMap model, FlashScope flash) {
+    public String update(YukonUserContext userContext, @ModelAttribute User user, BindingResult result, ModelMap model, FlashScope flash) {
         LiteYukonUser yukonUser = yukonUserDao.getLiteYukonUser(user.getUserId());
         user.updateForSave(yukonUser);
         userValidator.validate(user, result);
@@ -110,7 +110,7 @@ public class UserEditorController {
         if (result.hasErrors()) {
             List<MessageSourceResolvable> messages = YukonValidationUtils.errorsForBindingResult(result);
             flash.setMessage(messages, FlashScopeMessageType.ERROR);
-            setupModelMap(model, user, PageEditMode.EDIT);
+            setupModelMap(model, user, PageEditMode.EDIT, userContext);
             return "userGroupEditor/user.jsp";
         }
 
@@ -126,7 +126,7 @@ public class UserEditorController {
     }
 
     @RequestMapping(method=RequestMethod.POST)
-    public String changePassword(ModelMap model, FlashScope flash, int userId, 
+    public String changePassword(YukonUserContext userContext, ModelMap model, FlashScope flash, int userId, 
                                  @ModelAttribute Password password, BindingResult result) {
         LiteYukonUser yukonUser = yukonUserDao.getLiteYukonUser(userId);
         new PasswordValidator(yukonUser).validate(password, result);
@@ -137,7 +137,7 @@ public class UserEditorController {
             List<MessageSourceResolvable> messages = YukonValidationUtils.errorsForBindingResult(result);
             flash.setMessage(messages, FlashScopeMessageType.ERROR);
             model.addAttribute("showChangePwPopup", true);
-            setupModelMap(model, user, PageEditMode.VIEW);
+            setupModelMap(model, user, PageEditMode.VIEW, userContext);
             model.addAttribute("pwChangeFormMode", PageEditMode.EDIT);
             return "userGroupEditor/user.jsp";
         }
@@ -162,11 +162,12 @@ public class UserEditorController {
         }
     }
     
-    private void setupModelMap(ModelMap model, User user, PageEditMode mode) {
+    private void setupModelMap(ModelMap model, User user, PageEditMode mode, YukonUserContext userContext) {
         model.addAttribute("user", user);
         model.addAttribute("password", new Password());
         model.addAttribute("mode", mode);
 
+        model.addAttribute("currentUserId",userContext.getYukonUser().getLiteID());
         model.addAttribute("userId", user.getUserId());
         model.addAttribute("editNameAndStatus", user.getUserId() > -1);
 

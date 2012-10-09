@@ -21,6 +21,7 @@
     <entry key="yukon.web.modules.adminSetup.operatorLogin.create.label">Create</entry>
 
     <!--  Validation -->
+    <entry key="yukon.web.modules.adminSetup.operatorLogin.unableToDeleteCurrentUser">You cannot disable the logged in user.</entry>
 
     <!--  Generic success/fail messages -->
     <entry key="yukon.web.modules.adminSetup.operatorLogin.operatorLoginCreated">Successfully created the user.</entry>

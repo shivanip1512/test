@@ -9,24 +9,26 @@
 <cti:standardPage module="adminSetup" page="operatorLogin.home">
 
 <script>
-document.observe("dom:loaded", function() {
-    $$("a.toggle_status").each(function(elem){
-        elem.observe('click', function(event){
-            event.stop();
-            event.target.addClassName("loading");
-            new Ajax.Request(this.href, {
-                onSuccess: function(xhr){
-                    event.target.removeClassName("ENABLED").removeClassName("DISABLED").removeClassName("loading");
-                    event.target.addClassName(xhr.responseJSON.loginStatus);
-                    event.target.title = xhr.responseJSON.loginStatus;
+    jQuery(function() {
+        jQuery("a.toggle_status").click(function(event) {
+            event.preventDefault();// We don't want the anchor href to submit a GET request
+            var anchor = jQuery(event.target);
+            anchor.addClass("loading");
+            jQuery.ajax({
+                type: "POST",
+                url: anchor.attr("href"),
+                datatype: "json",
+                success: function(jsonResponse) {
+                    anchor.removeClass("ENABLED").removeClass("DISABLED").removeClass("loading");
+                    anchor.addClass(jsonResponse.loginStatus);
+                    anchor.attr("title",jsonResponse.loginStatus);
                 },
-                onFailure: function(xhr){
-                    event.target.removeClassName("loading");
+                error: function() {
+                    anchor.removeClass("loading");
                 }
             });
-        });        
+        });
     });
-});
 </script>
 
     <cti:dataGrid cols="2" tableClasses="twoColumnLayout">
@@ -51,7 +53,12 @@ document.observe("dom:loaded", function() {
                                         <cti:param name="ecId" value="${ecId}"/>
                                         <cti:param name="operatorLoginId" value="${login.userID}"/>
                                     </cti:url>
-                                    <a href="${operatorLoginUpdateUrl}" class="icon ${login.loginStatus} toggle_status" title="${login.loginStatus}">${login.loginStatus}</a>
+                                    <c:if test="${currentUserId != login.userID}">
+                                        <a href="${operatorLoginUpdateUrl}" class="icon ${login.loginStatus} toggle_status" title="${login.loginStatus}">${login.loginStatus}</a>
+                                    </c:if>
+                                    <c:if test="${currentUserId == login.userID}">
+                                        <a class="icon enable_disabled" title="<i:inline key=".unableToDeleteCurrentUser"/>"><i:inline key=".unableToDeleteCurrentUser"/></a>
+                                    </c:if>
                                 </div>
                                 </td>
                             </tr>

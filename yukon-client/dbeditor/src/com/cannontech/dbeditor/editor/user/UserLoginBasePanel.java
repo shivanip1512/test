@@ -133,11 +133,7 @@ public class UserLoginBasePanel extends DataInputPanel {
                 ivjJCheckBoxEnableLogin.setName("JCheckBoxEnableLogin");
                 ivjJCheckBoxEnableLogin.setFont(new Font("Arial", 1, 14));
                 ivjJCheckBoxEnableLogin.setText("Enabled");
-                // user code begin {1}
-                // user code end
             } catch (Throwable ivjExc) {
-                // user code begin {2}
-                // user code end
                 handleException(ivjExc);
             }
         }
@@ -643,7 +639,7 @@ public class UserLoginBasePanel extends DataInputPanel {
     public boolean isInputValid() {
         String userName = getJTextFieldUserID().getText();
         if (StringUtils.isBlank(userName)) {
-            setErrorString("The Userid text field must be filled in");
+            setErrorString("The Username text field must be filled in.");
             return false;
         }
 
@@ -747,6 +743,11 @@ public class UserLoginBasePanel extends DataInputPanel {
         getJListAuthType().setSelectedItem(initialAuthType);
         boolean authSupportsPasswordSet = authenticationService.supportsPasswordSet(userAuthType);
         getJButtonChangePassword().setEnabled(authSupportsPasswordSet);
+
+        if (ClientSession.getInstance().getUser().getUserID() == login.getYukonUser().getUserID().intValue()) {
+            getJCheckBoxEnableLogin().setEnabled(false);
+            getJCheckBoxEnableLogin().setToolTipText("You cannot disable the logged in user.");
+        }
 
         LiteUserGroup userGroup = userGroupDao.getLiteUserGroup(login.getYukonUser().getUserGroupId());
         getJListUserGroup().setSelectedItem(userGroup.getUserGroupName());

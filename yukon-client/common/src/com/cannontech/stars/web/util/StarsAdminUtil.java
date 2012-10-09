@@ -782,7 +782,7 @@ public class StarsAdminUtil {
 	}
 	
 	public static void updateLogin(LiteYukonUser liteUser, String username, String password, LoginStatusEnum status,
-		LiteUserGroup userGroup, LiteStarsEnergyCompany energyCompany, boolean authTypeChange) 
+		LiteUserGroup userGroup, boolean authTypeChange) 
 	throws WebClientException, TransactionException {
 	    AuthenticationService authenticationService = (AuthenticationService) YukonSpringHook.getBean("authenticationService");
 	    
@@ -790,7 +790,7 @@ public class StarsAdminUtil {
 			throw new WebClientException( "Username '" + username + "' already exists" );
 		
 		//only update try to update the password if specified
-		if (password.length() != 0) {
+		if (password != null && password.length() != 0) {
 			if (!authenticationService.supportsPasswordSet(liteUser.getAuthType())) {
                 throw new WebClientException( "Password cannot be changed when authentication type is " + liteUser.getAuthType() );
             }
@@ -799,7 +799,7 @@ public class StarsAdminUtil {
 		
 		com.cannontech.database.data.user.YukonUser user = new com.cannontech.database.data.user.YukonUser();
 		com.cannontech.database.db.user.YukonUser dbUser = user.getYukonUser();
-		
+
 		StarsLiteFactory.setYukonUser( dbUser, liteUser );
 		dbUser.setUsername( username );
         

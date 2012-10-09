@@ -90,7 +90,7 @@ jQuery(function() {
                     </cti:displayForPageEditModes>
 
                     <c:choose>
-                        <c:when test="${editNameAndStatus}">
+                        <c:when test="${editNameAndStatus && currentUserId != user.userId}">
                             <tags:selectNameValue nameKey=".loginStatus" items="${loginStatusTypes}" path="loginStatus"/>
                         </c:when>
                         <c:otherwise>
