@@ -3,6 +3,7 @@ package com.cannontech.web.util;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
+import java.util.Comparator;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.LinkedHashMap;
@@ -10,6 +11,7 @@ import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
+import java.util.SortedSet;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
@@ -34,6 +36,9 @@ import com.cannontech.core.dao.StateDao;
 import com.cannontech.core.dao.UnitMeasureDao;
 import com.cannontech.database.data.lite.LiteStateGroup;
 import com.cannontech.database.data.point.PointType;
+import com.google.common.base.Function;
+import com.google.common.collect.Ordering;
+import com.google.common.collect.Sets;
 
 public class DeviceDefinitionViewerController extends AbstractController {
 
@@ -42,6 +47,16 @@ public class DeviceDefinitionViewerController extends AbstractController {
 	private StateDao stateDao;
 	
 	private static String[] DISPLAY_GROUP_ORDER = {"MCT", "Two Way LCR", "Signal Transmitters", "Electronic Meters", "RTU", "Virtual", "Grid Advisor", ""};
+	
+    private static Comparator<Attribute> attributeComparitor() {
+        Ordering<Attribute> descriptionOrdering = Ordering.natural()
+            .onResultOf(new Function<Attribute, String>() {
+                public String apply(Attribute from) {
+                    return from.getDescription();
+                }
+            });
+        return descriptionOrdering;
+    }
 	
 	@Override
     protected ModelAndView handleRequestInternal(HttpServletRequest request, HttpServletResponse response) throws Exception {
@@ -55,7 +70,7 @@ public class DeviceDefinitionViewerController extends AbstractController {
         
         Set<String> allDisplayGroups = new LinkedHashSet<String>();
         Set<String> allChangeGroups = new HashSet<String>();
-        Set<Attribute> allAttributes = new HashSet<Attribute>();
+        SortedSet<Attribute> allAttributes = Sets.newTreeSet(attributeComparitor());
         Set<PaoTag> allTags = new HashSet<PaoTag>();
         
         // parameters
@@ -92,9 +107,7 @@ public class DeviceDefinitionViewerController extends AbstractController {
         	// allAttributes
         	List<AttributeDefinition> definitionAttributes = new ArrayList<AttributeDefinition>(paoDefinitionDao.getDefinedAttributes(deviceDefiniton.getType()));
         	for (AttributeDefinition attribute : definitionAttributes) {
-        		if (!allAttributes.contains(attribute)) {
-        			allAttributes.add(attribute.getAttribute());
-        		}
+        	    allAttributes.add(attribute.getAttribute());
         	}
         	
         	// allTags
@@ -227,6 +240,7 @@ public class DeviceDefinitionViewerController extends AbstractController {
 			
 			// attributes
 			List<AttributeDefinition> attributes = new ArrayList<AttributeDefinition>(paoDefinitionDao.getDefinedAttributes(deviceDefiniton.getType()));
+			Collections.sort(attributes);
 			this.attributes = new ArrayList<AttributeWrapper>();
 			for (AttributeDefinition attribute : attributes) {
 				this.attributes.add(new AttributeWrapper(deviceDefiniton, attribute));

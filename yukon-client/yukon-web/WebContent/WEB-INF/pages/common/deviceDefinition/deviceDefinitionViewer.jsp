@@ -171,6 +171,7 @@
 						<br>
 						<table class="miniResultsTable" style="width:900px">
 							<tr>
+								<th>#</th>
 								<th>Points</th>
 								<th>Type</th>
 								<th>Init</th>
@@ -179,8 +180,9 @@
 								<th>UofM</th>
 								<th>State Group</th>
 							</tr>
-							<c:forEach var="point" items="${deviceInfo.points}">
+							<c:forEach var="point" items="${deviceInfo.points}" varStatus="status">
 								<tr class="<tags:alternateRow odd="" even="altRow"/>">
+									<td>${status.index +1}</td>
 									<td>${point.pointTemplate.name}</td>
 									<td><cti:msg key="${point.pointType}"/></td>
 									<td>
@@ -204,12 +206,14 @@
 						<br>
 						<table class="miniResultsTable" style="width:900px">
 							<tr>
+                                <th>#</th>
 								<th>Attributes</th>
 								<th>Lookup</th>
 								<th>Lookup Attributes</th>
 							</tr>
-							<c:forEach var="attribute" items="${deviceInfo.attributes}">
+							<c:forEach var="attribute" items="${deviceInfo.attributes}" varStatus="status">
 								<tr class="<tags:alternateRow odd="" even="altRow"/>">
+                                    <td>${status.index +1}</td>
 									<td>${attribute.attribute.attribute.description}</td>
 									<td>basicLookup</td>
 									<td>Point = ${attribute.pointTemplateWrapper.pointTemplate.name}</td>
@@ -223,12 +227,14 @@
 						<br>
 						<table class="miniResultsTable" style="width:900px">
 							<tr>
+                                <th>#</th>
 								<th>Commands</th>
 								<th>Command Strings</th>
 								<th>Point Names</th>
 							</tr>
-							<c:forEach var="command" items="${deviceInfo.commands}">
+							<c:forEach var="command" items="${deviceInfo.commands}" varStatus="status">
 								<tr class="<tags:alternateRow odd="" even="altRow"/>">
+									<td valign="top">${status.index +1}</td>
 									<td valign="top">${command.commandDefinition.name}</td>
 									<td valign="top">
 										<ul>
@@ -254,12 +260,14 @@
 						<br>
 						<table class="miniResultsTable" style="width:900px">
 							<tr>
+								<th>#</th>
 								<th>Tags</th>
                                 <th>Value Support</th>
                                 <th>Values</th>
 							</tr>
-							<c:forEach var="tagDefinition" items="${deviceInfo.tagDefinitions}">
+							<c:forEach var="tagDefinition" items="${deviceInfo.tagDefinitions}" varStatus="status">
 								<tr class="<tags:alternateRow odd="" even="altRow"/>">
+									<td>${status.index +1}</td>
 									<td>${tagDefinition.tag.description}</td>
                                     <c:if test="${tagDefinition.tag.tagHasValue}">
                                     	<td>Yes</td>
