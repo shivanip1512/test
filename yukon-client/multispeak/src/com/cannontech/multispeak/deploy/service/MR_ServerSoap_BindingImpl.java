@@ -324,7 +324,7 @@ public class MR_ServerSoap_BindingImpl implements com.cannontech.multispeak.depl
     }
 
     public ErrorObject[] initiateMeterReadByMeterNumber(String[] meterNos,
-            String responseURL, String transactionID, float expirationTime)
+            String responseURL, String transactionID, java.lang.Float expirationTime)
             throws RemoteException {
         return mr_server.initiateMeterReadByMeterNumber(meterNos,
                                                         responseURL,
@@ -372,7 +372,7 @@ public class MR_ServerSoap_BindingImpl implements com.cannontech.multispeak.depl
 
     public ErrorObject[] initiateMeterReadByMeterNoAndType(String meterNo,
             String responseURL, String readingType, String transactionID,
-            float expirationTime) throws RemoteException {
+            java.lang.Float expirationTime) throws RemoteException {
         return mr_server.initiateMeterReadByMeterNoAndType(meterNo,
                                                            responseURL,
                                                            readingType,
@@ -397,7 +397,7 @@ public class MR_ServerSoap_BindingImpl implements com.cannontech.multispeak.depl
     }
 
     public ErrorObject[] initiateDemandReset(MeterIdentifier[] meterIDs,
-            String responseURL, String transactionID, float expirationTime)
+            String responseURL, String transactionID, java.lang.Float expirationTime)
             throws RemoteException {
         return mr_server.initiateDemandReset(meterIDs,
                                              responseURL,

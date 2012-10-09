@@ -5955,7 +5955,7 @@
             <s:element minOccurs="0" maxOccurs="1" name="cdEvents" type="tns:ArrayOfConnectDisconnectEvent" />
             <s:element minOccurs="0" maxOccurs="1" name="responseURL" type="s:string" />
             <s:element minOccurs="0" maxOccurs="1" name="transactionID" type="s:string" />
-            <s:element minOccurs="1" maxOccurs="1" name="expirationTime" type="s:float" />
+            <s:element minOccurs="0" maxOccurs="1" name="expirationTime" type="s:float"/>
           </s:sequence>
         </s:complexType>
       </s:element>

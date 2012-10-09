@@ -870,7 +870,8 @@ public class MR_ServerSoap_BindingStub extends org.apache.axis.client.Stub imple
         param = new org.apache.axis.description.ParameterDesc(new javax.xml.namespace.QName("http://www.multispeak.org/Version_3.0", "transactionID"), org.apache.axis.description.ParameterDesc.IN, new javax.xml.namespace.QName("http://www.w3.org/2001/XMLSchema", "string"), java.lang.String.class, false, false);
         param.setOmittable(true);
         oper.addParameter(param);
-        param = new org.apache.axis.description.ParameterDesc(new javax.xml.namespace.QName("http://www.multispeak.org/Version_3.0", "expirationTime"), org.apache.axis.description.ParameterDesc.IN, new javax.xml.namespace.QName("http://www.w3.org/2001/XMLSchema", "float"), float.class, false, false);
+        param = new org.apache.axis.description.ParameterDesc(new javax.xml.namespace.QName("http://www.multispeak.org/Version_3.0", "expirationTime"), org.apache.axis.description.ParameterDesc.IN, new javax.xml.namespace.QName("http://www.w3.org/2001/XMLSchema", "float"), java.lang.Float.class, false, false);
+        param.setOmittable(true);
         oper.addParameter(param);
         oper.setReturnType(new javax.xml.namespace.QName("http://www.multispeak.org/Version_3.0", "ArrayOfErrorObject"));
         oper.setReturnClass(com.cannontech.multispeak.deploy.service.ErrorObject[].class);
@@ -1006,7 +1007,8 @@ public class MR_ServerSoap_BindingStub extends org.apache.axis.client.Stub imple
         param = new org.apache.axis.description.ParameterDesc(new javax.xml.namespace.QName("http://www.multispeak.org/Version_3.0", "transactionID"), org.apache.axis.description.ParameterDesc.IN, new javax.xml.namespace.QName("http://www.w3.org/2001/XMLSchema", "string"), java.lang.String.class, false, false);
         param.setOmittable(true);
         oper.addParameter(param);
-        param = new org.apache.axis.description.ParameterDesc(new javax.xml.namespace.QName("http://www.multispeak.org/Version_3.0", "expirationTime"), org.apache.axis.description.ParameterDesc.IN, new javax.xml.namespace.QName("http://www.w3.org/2001/XMLSchema", "float"), float.class, false, false);
+        param = new org.apache.axis.description.ParameterDesc(new javax.xml.namespace.QName("http://www.multispeak.org/Version_3.0", "expirationTime"), org.apache.axis.description.ParameterDesc.IN, new javax.xml.namespace.QName("http://www.w3.org/2001/XMLSchema", "float"), java.lang.Float.class, false, false);
+        param.setOmittable(true);
         oper.addParameter(param);
         oper.setReturnType(new javax.xml.namespace.QName("http://www.multispeak.org/Version_3.0", "ArrayOfErrorObject"));
         oper.setReturnClass(com.cannontech.multispeak.deploy.service.ErrorObject[].class);
@@ -1070,7 +1072,8 @@ public class MR_ServerSoap_BindingStub extends org.apache.axis.client.Stub imple
         param = new org.apache.axis.description.ParameterDesc(new javax.xml.namespace.QName("http://www.multispeak.org/Version_3.0", "transactionID"), org.apache.axis.description.ParameterDesc.IN, new javax.xml.namespace.QName("http://www.w3.org/2001/XMLSchema", "string"), java.lang.String.class, false, false);
         param.setOmittable(true);
         oper.addParameter(param);
-        param = new org.apache.axis.description.ParameterDesc(new javax.xml.namespace.QName("http://www.multispeak.org/Version_3.0", "expirationTime"), org.apache.axis.description.ParameterDesc.IN, new javax.xml.namespace.QName("http://www.w3.org/2001/XMLSchema", "float"), float.class, false, false);
+        param = new org.apache.axis.description.ParameterDesc(new javax.xml.namespace.QName("http://www.multispeak.org/Version_3.0", "expirationTime"), org.apache.axis.description.ParameterDesc.IN, new javax.xml.namespace.QName("http://www.w3.org/2001/XMLSchema", "float"), java.lang.Float.class, false, false);
+        param.setOmittable(true);
         oper.addParameter(param);
         oper.setReturnType(new javax.xml.namespace.QName("http://www.multispeak.org/Version_3.0", "ArrayOfErrorObject"));
         oper.setReturnClass(com.cannontech.multispeak.deploy.service.ErrorObject[].class);
@@ -8468,7 +8471,7 @@ public class MR_ServerSoap_BindingStub extends org.apache.axis.client.Stub imple
 }
     }
 
-    public com.cannontech.multispeak.deploy.service.ErrorObject[] initiateMeterReadByMeterNumber(java.lang.String[] meterNos, java.lang.String responseURL, java.lang.String transactionID, float expirationTime) throws java.rmi.RemoteException {
+    public com.cannontech.multispeak.deploy.service.ErrorObject[] initiateMeterReadByMeterNumber(java.lang.String[] meterNos, java.lang.String responseURL, java.lang.String transactionID, java.lang.Float expirationTime) throws java.rmi.RemoteException {
         if (super.cachedEndpoint == null) {
             throw new org.apache.axis.NoEndPointException();
         }
@@ -8484,7 +8487,7 @@ public class MR_ServerSoap_BindingStub extends org.apache.axis.client.Stub imple
 
         setRequestHeaders(_call);
         setAttachments(_call);
- try {        java.lang.Object _resp = _call.invoke(new java.lang.Object[] {meterNos, responseURL, transactionID, new java.lang.Float(expirationTime)});
+ try {        java.lang.Object _resp = _call.invoke(new java.lang.Object[] {meterNos, responseURL, transactionID, expirationTime});
 
         if (_resp instanceof java.rmi.RemoteException) {
             throw (java.rmi.RemoteException)_resp;
@@ -8706,7 +8709,7 @@ public class MR_ServerSoap_BindingStub extends org.apache.axis.client.Stub imple
 }
     }
 
-    public com.cannontech.multispeak.deploy.service.ErrorObject[] initiateMeterReadByMeterNoAndType(java.lang.String meterNo, java.lang.String responseURL, java.lang.String readingType, java.lang.String transactionID, float expirationTime) throws java.rmi.RemoteException {
+    public com.cannontech.multispeak.deploy.service.ErrorObject[] initiateMeterReadByMeterNoAndType(java.lang.String meterNo, java.lang.String responseURL, java.lang.String readingType, java.lang.String transactionID, java.lang.Float expirationTime) throws java.rmi.RemoteException {
         if (super.cachedEndpoint == null) {
             throw new org.apache.axis.NoEndPointException();
         }
@@ -8722,7 +8725,7 @@ public class MR_ServerSoap_BindingStub extends org.apache.axis.client.Stub imple
 
         setRequestHeaders(_call);
         setAttachments(_call);
- try {        java.lang.Object _resp = _call.invoke(new java.lang.Object[] {meterNo, responseURL, readingType, transactionID, new java.lang.Float(expirationTime)});
+ try {        java.lang.Object _resp = _call.invoke(new java.lang.Object[] {meterNo, responseURL, readingType, transactionID, expirationTime});
 
         if (_resp instanceof java.rmi.RemoteException) {
             throw (java.rmi.RemoteException)_resp;
@@ -8808,7 +8811,7 @@ public class MR_ServerSoap_BindingStub extends org.apache.axis.client.Stub imple
 }
     }
 
-    public com.cannontech.multispeak.deploy.service.ErrorObject[] initiateDemandReset(com.cannontech.multispeak.deploy.service.MeterIdentifier[] meterIDs, java.lang.String responseURL, java.lang.String transactionID, float expirationTime) throws java.rmi.RemoteException {
+    public com.cannontech.multispeak.deploy.service.ErrorObject[] initiateDemandReset(com.cannontech.multispeak.deploy.service.MeterIdentifier[] meterIDs, java.lang.String responseURL, java.lang.String transactionID, java.lang.Float expirationTime) throws java.rmi.RemoteException {
         if (super.cachedEndpoint == null) {
             throw new org.apache.axis.NoEndPointException();
         }
@@ -8824,7 +8827,7 @@ public class MR_ServerSoap_BindingStub extends org.apache.axis.client.Stub imple
 
         setRequestHeaders(_call);
         setAttachments(_call);
- try {        java.lang.Object _resp = _call.invoke(new java.lang.Object[] {meterIDs, responseURL, transactionID, new java.lang.Float(expirationTime)});
+ try {        java.lang.Object _resp = _call.invoke(new java.lang.Object[] {meterIDs, responseURL, transactionID, expirationTime});
 
         if (_resp instanceof java.rmi.RemoteException) {
             throw (java.rmi.RemoteException)_resp;

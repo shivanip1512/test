@@ -130,7 +130,7 @@ public class CD_ServerImpl implements CD_ServerSoap_PortType
     @Override
     public ErrorObject[] initiateConnectDisconnect(
             ConnectDisconnectEvent[] cdEvents, String responseURL,
-            String transactionID, float expirationTime) throws RemoteException {
+            String transactionID, Float expirationTime) throws RemoteException {
         init();
         ErrorObject[] errorObjects = new ErrorObject[0];
         

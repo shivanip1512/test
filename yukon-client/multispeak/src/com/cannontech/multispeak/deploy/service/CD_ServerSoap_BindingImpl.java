@@ -82,7 +82,7 @@ public class CD_ServerSoap_BindingImpl implements com.cannontech.multispeak.depl
 
     public ErrorObject[] initiateConnectDisconnect(
             ConnectDisconnectEvent[] cdEvents, String responseURL,
-            String transactionID, float expirationTime) throws RemoteException {
+            String transactionID, Float expirationTime) throws RemoteException {
         return cd_server.initiateConnectDisconnect(cdEvents,
                                                    responseURL,
                                                    transactionID,

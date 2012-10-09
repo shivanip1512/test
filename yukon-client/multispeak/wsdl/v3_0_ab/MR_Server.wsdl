@@ -6505,7 +6505,7 @@
             <s:element minOccurs="0" maxOccurs="1" name="meterNos" type="tns:ArrayOfString2" />
             <s:element minOccurs="0" maxOccurs="1" name="responseURL" type="s:string" />
             <s:element minOccurs="0" maxOccurs="1" name="transactionID" type="s:string" />
-            <s:element minOccurs="1" maxOccurs="1" name="expirationTime" type="s:float" />
+            <s:element minOccurs="0" maxOccurs="1" name="expirationTime" type="s:float" />
           </s:sequence>
         </s:complexType>
       </s:element>
@@ -6615,7 +6615,7 @@
             <s:element minOccurs="0" maxOccurs="1" name="responseURL" type="s:string" />
             <s:element minOccurs="0" maxOccurs="1" name="readingType" type="s:string" />
             <s:element minOccurs="0" maxOccurs="1" name="transactionID" type="s:string" />
-            <s:element minOccurs="1" maxOccurs="1" name="expirationTime" type="s:float" />
+            <s:element minOccurs="0" maxOccurs="1" name="expirationTime" type="s:float" />
           </s:sequence>
         </s:complexType>
       </s:element>
@@ -6665,7 +6665,7 @@
             <s:element minOccurs="0" maxOccurs="1" name="meterIDs" type="tns:ArrayOfMeterIdentifier" />
             <s:element minOccurs="0" maxOccurs="1" name="responseURL" type="s:string" />
             <s:element minOccurs="0" maxOccurs="1" name="transactionID" type="s:string" />
-            <s:element minOccurs="1" maxOccurs="1" name="expirationTime" type="s:float" />
+            <s:element minOccurs="0" maxOccurs="1" name="expirationTime" type="s:float" />
           </s:sequence>
         </s:complexType>
       </s:element>

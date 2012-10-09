@@ -373,7 +373,7 @@ public class MR_ServerImpl implements MR_ServerSoap_PortType{
     //Perform an actual read of the meter and return a CB_MR readingChangedNotification message for each meterNo
     @Override
     public ErrorObject[] initiateMeterReadByMeterNumber(String[] meterNos,
-            String responseURL, String transactionID, float expirationTime)
+            String responseURL, String transactionID, Float expirationTime)
             throws RemoteException {
         init();
         ErrorObject[] errorObjects = new ErrorObject[0];
@@ -704,7 +704,7 @@ public class MR_ServerImpl implements MR_ServerSoap_PortType{
     @Override
     public ErrorObject[] initiateMeterReadByMeterNoAndType(String meterNo, String responseURL,
             String readingType, String transactionID,
-            float expirationTime) throws RemoteException {
+            Float expirationTime) throws RemoteException {
         init();
         ErrorObject[] errorObjects = new ErrorObject[0];
         
@@ -855,7 +855,7 @@ public class MR_ServerImpl implements MR_ServerSoap_PortType{
 
     @Override
     public ErrorObject[] initiateDemandReset(MeterIdentifier[] meterIDs,
-            String responseURL, String transactionId, float expirationTime)
+            String responseURL, String transactionId, Float expirationTime)
             throws RemoteException {
         init();
 

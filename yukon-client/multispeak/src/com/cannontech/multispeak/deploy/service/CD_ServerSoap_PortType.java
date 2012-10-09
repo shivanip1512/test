@@ -162,7 +162,7 @@ public interface CD_ServerSoap_PortType extends java.rmi.Remote {
      * then the publisher will discard the request and the requestor should
      * not expect a response.
      */
-    public com.cannontech.multispeak.deploy.service.ErrorObject[] initiateConnectDisconnect(com.cannontech.multispeak.deploy.service.ConnectDisconnectEvent[] cdEvents, java.lang.String responseURL, java.lang.String transactionID, float expirationTime) throws java.rmi.RemoteException;
+    public com.cannontech.multispeak.deploy.service.ErrorObject[] initiateConnectDisconnect(com.cannontech.multispeak.deploy.service.ConnectDisconnectEvent[] cdEvents, java.lang.String responseURL, java.lang.String transactionID, java.lang.Float expirationTime) throws java.rmi.RemoteException;
 
     /**
      * CB initiates a switch status check directly from one or more

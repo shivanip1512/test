@@ -16,7 +16,7 @@ public class InitiateMeterReadByMeterNoAndType  implements java.io.Serializable 
 
     private java.lang.String transactionID;
 
-    private float expirationTime;
+    private java.lang.Float expirationTime;
 
     public InitiateMeterReadByMeterNoAndType() {
     }
@@ -26,7 +26,7 @@ public class InitiateMeterReadByMeterNoAndType  implements java.io.Serializable 
            java.lang.String responseURL,
            java.lang.String readingType,
            java.lang.String transactionID,
-           float expirationTime) {
+           java.lang.Float expirationTime) {
            this.meterNo = meterNo;
            this.responseURL = responseURL;
            this.readingType = readingType;
@@ -120,7 +120,7 @@ public class InitiateMeterReadByMeterNoAndType  implements java.io.Serializable 
      * 
      * @return expirationTime
      */
-    public float getExpirationTime() {
+    public java.lang.Float getExpirationTime() {
         return expirationTime;
     }
 
@@ -130,7 +130,7 @@ public class InitiateMeterReadByMeterNoAndType  implements java.io.Serializable 
      * 
      * @param expirationTime
      */
-    public void setExpirationTime(float expirationTime) {
+    public void setExpirationTime(java.lang.Float expirationTime) {
         this.expirationTime = expirationTime;
     }
 
@@ -158,7 +158,9 @@ public class InitiateMeterReadByMeterNoAndType  implements java.io.Serializable 
             ((this.transactionID==null && other.getTransactionID()==null) || 
              (this.transactionID!=null &&
               this.transactionID.equals(other.getTransactionID()))) &&
-            this.expirationTime == other.getExpirationTime();
+            ((this.expirationTime==null && other.getExpirationTime()==null) || 
+             (this.expirationTime!=null &&
+              this.expirationTime.equals(other.getExpirationTime())));
         __equalsCalc = null;
         return _equals;
     }
@@ -182,7 +184,9 @@ public class InitiateMeterReadByMeterNoAndType  implements java.io.Serializable 
         if (getTransactionID() != null) {
             _hashCode += getTransactionID().hashCode();
         }
-        _hashCode += new Float(getExpirationTime()).hashCode();
+        if (getExpirationTime() != null) {
+            _hashCode += getExpirationTime().hashCode();
+        }
         __hashCodeCalc = false;
         return _hashCode;
     }
@@ -225,6 +229,7 @@ public class InitiateMeterReadByMeterNoAndType  implements java.io.Serializable 
         elemField.setFieldName("expirationTime");
         elemField.setXmlName(new javax.xml.namespace.QName("http://www.multispeak.org/Version_3.0", "expirationTime"));
         elemField.setXmlType(new javax.xml.namespace.QName("http://www.w3.org/2001/XMLSchema", "float"));
+        elemField.setMinOccurs(0);
         elemField.setNillable(false);
         typeDesc.addFieldDesc(elemField);
     }

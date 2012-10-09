@@ -556,7 +556,7 @@ public interface MR_ServerSoap_PortType extends java.rmi.Remote {
      * in seconds), then the publisher will discard the request and the requestor
      * should not expect a response.
      */
-    public com.cannontech.multispeak.deploy.service.ErrorObject[] initiateMeterReadByMeterNumber(java.lang.String[] meterNos, java.lang.String responseURL, java.lang.String transactionID, float expirationTime) throws java.rmi.RemoteException;
+    public com.cannontech.multispeak.deploy.service.ErrorObject[] initiateMeterReadByMeterNumber(java.lang.String[] meterNos, java.lang.String responseURL, java.lang.String transactionID, java.lang.Float expirationTime) throws java.rmi.RemoteException;
 
     /**
      * Publisher requests MR to establish a new group of meters to
@@ -624,7 +624,7 @@ public interface MR_ServerSoap_PortType extends java.rmi.Remote {
      * time (specified in seconds), then the publisher will discard the request
      * and the requestor should not expect a response.
      */
-    public com.cannontech.multispeak.deploy.service.ErrorObject[] initiateMeterReadByMeterNoAndType(java.lang.String meterNo, java.lang.String responseURL, java.lang.String readingType, java.lang.String transactionID, float expirationTime) throws java.rmi.RemoteException;
+    public com.cannontech.multispeak.deploy.service.ErrorObject[] initiateMeterReadByMeterNoAndType(java.lang.String meterNo, java.lang.String responseURL, java.lang.String readingType, java.lang.String transactionID, java.lang.Float expirationTime) throws java.rmi.RemoteException;
 
     /**
      * EA requests MR to to perform a meter reading for all meters
@@ -662,7 +662,7 @@ public interface MR_ServerSoap_PortType extends java.rmi.Remote {
      * after the expiration time (specified in seconds), then the publisher
      * will discard the request and the requestor should not expect a response.
      */
-    public com.cannontech.multispeak.deploy.service.ErrorObject[] initiateDemandReset(com.cannontech.multispeak.deploy.service.MeterIdentifier[] meterIDs, java.lang.String responseURL, java.lang.String transactionID, float expirationTime) throws java.rmi.RemoteException;
+    public com.cannontech.multispeak.deploy.service.ErrorObject[] initiateDemandReset(com.cannontech.multispeak.deploy.service.MeterIdentifier[] meterIDs, java.lang.String responseURL, java.lang.String transactionID, java.lang.Float expirationTime) throws java.rmi.RemoteException;
 
     /**
      * Publisher requests MDM to add meter(s) to an existing configuration
