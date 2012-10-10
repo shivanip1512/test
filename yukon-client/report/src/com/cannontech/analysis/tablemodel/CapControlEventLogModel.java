@@ -1,7 +1,6 @@
 package com.cannontech.analysis.tablemodel;
 
 import java.sql.ResultSet;
-import java.util.Comparator;
 import java.util.Date;
 import java.util.Vector;
 
@@ -58,37 +57,6 @@ public class CapControlEventLogModel extends FilterObjectsReportModelBase<Object
 	
 	/** A string for the title of the data */
 	private static String title = "Cap Control Schedule Activity Report";
-		
-	public Comparator ccStatusDataComparator = new java.util.Comparator()
-	{
-		public int compare(Object o1, Object o2){
-
-		    CapControlStatusData data1 = (CapControlStatusData)o1;
-		    CapControlStatusData data2 = (CapControlStatusData)o2;
-	        
-		    String thisValStr = data1.getSubBusName();
-		    String anotherValStr = data2.getSubBusName();			
-			if( thisValStr.equals(anotherValStr))
-			{
-//				Order by Feeder
-				thisValStr = data1.getFeederName();
-				anotherValStr = data2.getFeederName();
-
-				if( thisValStr.equals(anotherValStr))
-				{
-//					Order by CapBank
-					thisValStr = data1.getBankName();
-					anotherValStr = data2.getBankName();
-				}
-			}
-		    
-			return (thisValStr.compareTo(anotherValStr));
-
-		}
-		public boolean equals(Object obj){
-			return false;
-		}
-	};
 	
 	/**
 	 * Default Constructor
