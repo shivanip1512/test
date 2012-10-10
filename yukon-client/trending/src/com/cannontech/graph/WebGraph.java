@@ -186,7 +186,7 @@ public class WebGraph implements Runnable
 	{
 		if( homeDirectory == null )
 		{
-		    GlobalSettingsDao globalSettingsDao = YukonSpringHook.getBean("globalSettingsDao", GlobalSettingsDao.class);
+		    GlobalSettingsDao globalSettingsDao = YukonSpringHook.getBean(GlobalSettingsDao.class);
 		    homeDirectory = globalSettingsDao.getString(GlobalSetting.HOME_DIRECTORY);
 
 			java.io.File file = new java.io.File( homeDirectory );
@@ -262,7 +262,7 @@ public class WebGraph implements Runnable
 	{
 		if (createTimeInterval == null)
 		{
-	          GlobalSettingsDao globalSettingsDao = YukonSpringHook.getBean("globalSettingsDao", GlobalSettingsDao.class);
+	          GlobalSettingsDao globalSettingsDao = YukonSpringHook.getBean(GlobalSettingsDao.class);
 			try
 			{
 				

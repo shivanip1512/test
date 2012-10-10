@@ -12,7 +12,7 @@ import com.cannontech.stars.core.dao.StarsCustAccountInformationDao;
 import com.cannontech.stars.core.model.RequestPword;
 import com.cannontech.stars.core.model.StarsRequestPword;
 import com.cannontech.system.GlobalSetting;
-import com.cannontech.system.dao.impl.GlobalSettingsDaoImpl;
+import com.cannontech.system.dao.GlobalSettingsDao;
 import com.cannontech.util.ServletUtil;
 
 public class StarsPWordRequestController implements Controller {
@@ -39,7 +39,7 @@ public class StarsPWordRequestController implements Controller {
         reqPword.setEnergyCompany( energyComp );
 
         String returnURI = "";
-        boolean authorized = YukonSpringHook.getBean("globalSettingsDao",GlobalSettingsDaoImpl.class).checkSetting(GlobalSetting.ENABLE_PASSWORD_RECOVERY);
+        boolean authorized = YukonSpringHook.getBean(GlobalSettingsDao.class).checkSetting(GlobalSetting.ENABLE_PASSWORD_RECOVERY);
         if(!authorized) {
             throw new NotAuthorizedException("Missing a required role or property to use this page.");
         }

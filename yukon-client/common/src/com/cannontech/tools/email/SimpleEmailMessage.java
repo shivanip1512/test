@@ -26,7 +26,7 @@ public class SimpleEmailMessage {
     @Deprecated
     public SimpleEmailMessage() throws MessagingException {
         java.util.Properties systemProps = System.getProperties();
-        GlobalSettingsDao globalSettingsDao = YukonSpringHook.getBean("globalSettingsDao", GlobalSettingsDao.class);
+        GlobalSettingsDao globalSettingsDao = YukonSpringHook.getBean(GlobalSettingsDao.class);
         
         //a property used internally by the JavaMail API
         String smtpServer = globalSettingsDao.getString(GlobalSetting.SMTP_HOST);

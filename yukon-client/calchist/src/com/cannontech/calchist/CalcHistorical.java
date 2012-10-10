@@ -30,7 +30,7 @@ import com.cannontech.message.dispatch.message.Registration;
 import com.cannontech.roles.application.CalcHistoricalRole;
 import com.cannontech.spring.YukonSpringHook;
 import com.cannontech.system.GlobalSetting;
-import com.cannontech.system.dao.impl.GlobalSettingsDaoImpl;
+import com.cannontech.system.dao.GlobalSettingsDao;
 
 public final class CalcHistorical
 {
@@ -326,7 +326,7 @@ public java.lang.Integer getAggregationInterval()
 {
 	if( aggregationInterval == null )
 	{
-	    aggregationInterval= YukonSpringHook.getBean("globalSettingsDao",GlobalSettingsDaoImpl.class).getInteger(GlobalSetting.INTERVAL);
+	    aggregationInterval= YukonSpringHook.getBean(GlobalSettingsDao.class).getInteger(GlobalSetting.INTERVAL);
 			
 		logEvent(" Aggregation interval = " + aggregationInterval + " seconds.", LogWriter.INFO);
 		CTILogger.info("Aggregation interval from Global Properties is " + aggregationInterval + " seconds.");
@@ -505,7 +505,7 @@ public ClientConnection getDispatchConnection()
 	{
 		String host = "127.0.0.1";
 		int port = 1510;
-		GlobalSettingsDaoImpl globalSettingsDao = YukonSpringHook.getBean("globalSettingsDao",GlobalSettingsDaoImpl.class);
+		GlobalSettingsDao globalSettingsDao = YukonSpringHook.getBean(GlobalSettingsDao.class);
 		try {
 		    host = globalSettingsDao.getString(GlobalSetting.DISPATCH_MACHINE);
             port = globalSettingsDao.getInteger(GlobalSetting.DISPATCH_PORT);

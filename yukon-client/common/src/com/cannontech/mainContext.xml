@@ -82,6 +82,8 @@
     <bean class="com.cannontech.core.roleproperties.dao.impl.RolePropertyChangeHelper"/>
     <bean class="com.cannontech.core.roleproperties.dao.impl.RolePropertyEditorDaoImpl"/>
     
+    <bean class="com.cannontech.system.dao.GlobalSettingChangeHelper"/>
+
     <bean id="globalTimer" class="java.util.Timer" destroy-method="cancel" lazy-init="true">
        <constructor-arg value="true"/> <!--  create as daemon  -->
     </bean>

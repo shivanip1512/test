@@ -7,8 +7,9 @@ import org.springframework.beans.factory.annotation.Autowired;
 
 import com.cannontech.clientutils.YukonLogManager;
 import com.cannontech.core.dynamic.AsyncDynamicDataSource;
-import com.cannontech.database.cache.DBChangeListener;
-import com.cannontech.message.dispatch.message.DBChangeMsg;
+import com.cannontech.core.dynamic.DatabaseChangeEventListener;
+import com.cannontech.message.dispatch.message.DatabaseChangeEvent;
+import com.cannontech.message.dispatch.message.DbChangeCategory;
 import com.cannontech.system.dao.impl.GlobalSettingsDaoImpl;
 
 public class GlobalSettingChangeHelper {
@@ -19,19 +20,16 @@ public class GlobalSettingChangeHelper {
     
     @PostConstruct
     public void setup() {
-        asyncDynamicDataSource.addDBChangeListener(new DBChangeListener() {
-
+        asyncDynamicDataSource.addDatabaseChangeEventListener(DbChangeCategory.GLOBAL_SETTING, new DatabaseChangeEventListener() {
             @Override
-            public void dbChangeReceived(DBChangeMsg dbChange) {
-                 if (dbChange.getDatabase() == DBChangeMsg.CHANGE_YUKON_SETTING_DB) {
-                     if (log.isDebugEnabled()) {
-                         log.debug("Sending clearCache to GlobalSettingDao because: " + dbChange);
-                     }
-                     globalSettingsDaoImpl.clearCache();
-                 }
+            public void eventReceived(DatabaseChangeEvent event) {
+                if (log.isDebugEnabled()) {
+                    log.debug("Sending clearCache to globalSettingsDao because database change.");
+                }
+                globalSettingsDaoImpl.clearCache();
             }
         });
-
+        
         // now that we're registered, clear out the cache of anything accumulated until now
         globalSettingsDaoImpl.clearCache();
     }

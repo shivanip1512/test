@@ -4,7 +4,7 @@
 <%@page import="com.cannontech.system.dao.GlobalSettingsDao" %>
 
 <%
-    GlobalSettingsDao globalSettingsDao = YukonSpringHook.getBean("globalSettingsDao", GlobalSettingsDao.class);
+    GlobalSettingsDao globalSettingsDao = YukonSpringHook.getBean(GlobalSettingsDao.class);
     String logo = globalSettingsDao.getString(GlobalSetting.WEB_LOGO_URL);
 %>
 <html>

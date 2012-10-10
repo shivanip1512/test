@@ -8,10 +8,10 @@ import com.cannontech.system.GlobalSetting;
  * with Yukon Grp role properties.
  * 
  * This is primarily intended for updating the settings and not for reading settings.
- * To read Yukon settings there is GlobalSettingsDaoImpl
+ * To read Yukon settings there is GlobalSettingsDao
  * 
  */
-public interface GlobalSettingsUpdater {
+public interface GlobalSettingsUpdateDao {
     
     /**
      * Updates the specified setting in GlobalSetting DB table to the value newVal;

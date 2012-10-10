@@ -28,7 +28,7 @@ import com.cannontech.database.db.point.calculation.CalcComponentTypes;
 import com.cannontech.message.dispatch.message.PointData;
 import com.cannontech.spring.YukonSpringHook;
 import com.cannontech.system.GlobalSetting;
-import com.cannontech.system.dao.impl.GlobalSettingsDaoImpl;
+import com.cannontech.system.dao.GlobalSettingsDao;
 
 public class Baseline implements Serializable
 {
@@ -98,7 +98,7 @@ public class Baseline implements Serializable
 	{
 		if( baselineCalcTime == null )
 		{
-		    baselineCalcTime = YukonSpringHook.getBean("globalSettingsDao",GlobalSettingsDaoImpl.class).getInteger(GlobalSetting.BASELINE_CALCTIME);
+		    baselineCalcTime = YukonSpringHook.getBean(GlobalSettingsDao.class).getInteger(GlobalSetting.BASELINE_CALCTIME);
 			
 			CalcHistorical.logEvent("Baseline calculation time = " + baselineCalcTime + ":00", LogWriter.INFO);
 			CTILogger.info("Baseline calculation time from Global Properties is " + baselineCalcTime + ":00");
@@ -178,7 +178,7 @@ public class Baseline implements Serializable
 	{
 		if( daysPreviousToCollect == null )
 		{
-		    daysPreviousToCollect = YukonSpringHook.getBean("globalSettingsDao",GlobalSettingsDaoImpl.class).getInteger(GlobalSetting.DAYS_PREVIOUS_TO_COLLECT);
+		    daysPreviousToCollect = YukonSpringHook.getBean(GlobalSettingsDao.class).getInteger(GlobalSetting.DAYS_PREVIOUS_TO_COLLECT);
 			CalcHistorical.logEvent("Baseline days previous to collect is " + daysPreviousToCollect, LogWriter.INFO);
 			CTILogger.info("Baseline days previous to collect is " + daysPreviousToCollect);
 		}

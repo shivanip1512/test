@@ -9,14 +9,14 @@ import com.cannontech.system.dao.GlobalSettingsDao;
 
 public class LoadControlClientConnectionFactory {
     
-    @Autowired private GlobalSettingsDao globalSettingDao;
+    @Autowired private GlobalSettingsDao globalSettingsDao;
     
     public LoadControlClientConnection createConnection() {
     	// make connection
     	LoadControlClientConnection clientConnection = new LoadControlClientConnection();
     	
-    	String lcHost = globalSettingDao.getString(GlobalSetting.LOADCONTROL_MACHINE );
-        int lcPort = globalSettingDao.getInteger(GlobalSetting.LOADCONTROL_PORT);
+    	String lcHost = globalSettingsDao.getString(GlobalSetting.LOADCONTROL_MACHINE );
+        int lcPort = globalSettingsDao.getInteger(GlobalSetting.LOADCONTROL_PORT);
 
     	CTILogger.info("Will attempt to connect to loadcontrol @" + lcHost + ":" + lcPort);
     	if ( lcHost != null ) {

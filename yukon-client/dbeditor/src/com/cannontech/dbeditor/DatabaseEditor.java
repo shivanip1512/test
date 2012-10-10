@@ -2144,7 +2144,7 @@ private void readConfigParameters()
 	//Decide whether to put the billing file option into the create (core) menu
 
 	try {
-	    activateBilling = YukonSpringHook.getBean("globalSettingsDao",GlobalSettingsDao.class).getBoolean(GlobalSetting.WIZ_ACTIVATE);
+	    activateBilling = YukonSpringHook.getBean(GlobalSettingsDao.class).getBoolean(GlobalSetting.WIZ_ACTIVATE);
 	}
 
 	catch( Exception e )

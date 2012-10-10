@@ -64,7 +64,7 @@ import com.cannontech.stars.util.WebClientException;
 import com.cannontech.stars.xml.serialize.StarsCustAccountInformation;
 import com.cannontech.stars.xml.serialize.StarsInventory;
 import com.cannontech.system.GlobalSetting;
-import com.cannontech.system.dao.impl.GlobalSettingsDaoImpl;
+import com.cannontech.system.dao.GlobalSettingsDao;
 import com.cannontech.util.ServletUtil;
 import com.cannontech.yukon.IDatabaseCache;
 
@@ -125,7 +125,7 @@ public class InventoryManagerUtil {
 		LiteStarsEnergyCompany energyCompany = StarsDatabaseCache.getInstance().getEnergyCompany( cmd.getEnergyCompanyID() );
         boolean writeToFile = false;
         
-        String batchProcessType = YukonSpringHook.getBean("globalSettingsDao",GlobalSettingsDaoImpl.class).getString(GlobalSetting.BATCHED_SWITCH_COMMAND_TOGGLE);
+        String batchProcessType = YukonSpringHook.getBean(GlobalSettingsDao.class).getString(GlobalSetting.BATCHED_SWITCH_COMMAND_TOGGLE);
         if(batchProcessType != null) {
             writeToFile = batchProcessType.compareTo(StarsUtils.BATCH_SWITCH_COMMAND_MANUAL) == 0 
                 && VersionTools.staticLoadGroupMappingExists();

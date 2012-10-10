@@ -21,13 +21,12 @@ import com.cannontech.database.data.lite.LiteYukonUser;
 import com.cannontech.spring.YukonSpringHook;
 import com.cannontech.system.GlobalSetting;
 import com.cannontech.system.dao.GlobalSettingsDao;
-import com.cannontech.system.dao.impl.GlobalSettingsDaoImpl;
 
 public class BillingBean implements java.util.Observer
 {
 	public static java.text.SimpleDateFormat dateFormat = new java.text.SimpleDateFormat("MM/dd/yyyy");
     private DeviceGroupProviderDao deviceGroupDao = YukonSpringHook.getBean("deviceGroupDao", DeviceGroupProviderDao.class);
-    private GlobalSettingsDao globalSettingsDao = YukonSpringHook.getBean("globalSettingsDao", GlobalSettingsDaoImpl.class);
+    private GlobalSettingsDao globalSettingsDao = YukonSpringHook.getBean(GlobalSettingsDao.class);
 	public static final String BILLING_VERSION = VersionTools.getYUKON_VERSION();
 	private BillingFile billingFile = null;
 	private BillingFileDefaults billingFileDefaults = null;

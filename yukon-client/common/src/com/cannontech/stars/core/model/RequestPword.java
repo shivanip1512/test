@@ -63,8 +63,7 @@ public class RequestPword
 		
 		allParams = new String[] {userName, email};
 
-		GlobalSettingsDao globalSettingsDao = YukonSpringHook.getBean("globalSettingsDao", GlobalSettingsDao.class);
-
+		GlobalSettingsDao globalSettingsDao = YukonSpringHook.getBean(GlobalSettingsDao.class);
 		
         /*
          * Now that we no longer return a defaultValue automatically on a getRolePropertyValue, we

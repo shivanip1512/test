@@ -21,7 +21,7 @@ public class CheckGlobalSetting extends BodyTagSupport {
 	 * @see javax.servlet.jsp.tagext.Tag#doStartTag()
 	 */
 	public int doStartTag() throws JspException {
-	    boolean isSettingSet = YukonSpringHook.getBean("globalSettingsDao",GlobalSettingsDao.class).checkSetting(globalSetting);
+	    boolean isSettingSet = YukonSpringHook.getBean(GlobalSettingsDao.class).checkSetting(globalSetting);
 		return (isSettingSet) ? EVAL_BODY_INCLUDE : SKIP_BODY;
 	}
 	

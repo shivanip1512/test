@@ -13,7 +13,7 @@ import com.cannontech.spring.YukonSpringHook;
 import com.cannontech.stars.database.db.hardware.StaticLoadGroupMapping;
 import com.cannontech.stars.util.StarsUtils;
 import com.cannontech.system.GlobalSetting;
-import com.cannontech.system.dao.impl.GlobalSettingsDaoImpl;
+import com.cannontech.system.dao.GlobalSettingsDao;
 
 public class ConfigBean 
 {
@@ -27,7 +27,7 @@ public class ConfigBean
     public ConfigBean()
     {
         super();
-        String batchProcessType = YukonSpringHook.getBean("globalSettingsDao",GlobalSettingsDaoImpl.class).getString(GlobalSetting.BATCHED_SWITCH_COMMAND_TOGGLE);
+        String batchProcessType = YukonSpringHook.getBean(GlobalSettingsDao.class).getString(GlobalSetting.BATCHED_SWITCH_COMMAND_TOGGLE);
         if(batchProcessType != null)
         {
             writeToFileAllowed = batchProcessType.compareTo(StarsUtils.BATCH_SWITCH_COMMAND_MANUAL) == 0 

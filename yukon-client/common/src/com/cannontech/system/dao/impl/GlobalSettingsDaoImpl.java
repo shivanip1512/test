@@ -22,7 +22,7 @@ import com.cannontech.system.dao.GlobalSettingsDao;
  * 
  * 
  * This is primarily intended for reading the settings and not for updating settings.
- * To update Yukon settings there is GlobalSettingsUpdater to avoid circular dependencies
+ * To update Yukon settings there is GlobalSettingsUpdateDao to avoid circular dependencies
  * 
  * Taken From RolePropertyDaoImpl.java:
  * This class is designed to have a single dependency on a JdbcTemplate. Any other
@@ -157,7 +157,7 @@ public class GlobalSettingsDaoImpl implements GlobalSettingsDao {
 
         return value;
     }
-
+    
     public void clearCache() {
         log.debug("Removing about " +  cache.size() + " values from the Yukon Settings Cache");
         cache.clear();
