@@ -4,6 +4,8 @@ import java.text.DecimalFormat;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashMap;
+import java.util.HashSet;
+import java.util.Iterator;
 import java.util.List;
 import java.util.Set;
 
@@ -172,15 +174,11 @@ public class LMControlSummaryModel extends BareDatedReportModelBase<LMControlSum
                         int optOutEvents = 0;
                        
 
-                        List<LMHardwareControlGroup> allEnrollments =
-                            lmHardwareControlGroupDao
-                                .getByLMGroupIdAndAccountIdAndType(groupId,
-                                                                   account.getAccountId(),
-                                                                   LMHardwareControlGroup.ENROLLMENT_ENTRY);
-                        if (!allEnrollments.isEmpty()) {
-                            for (int i = 0; i < allEnrollments.size(); i++) {
-
-                                int inventoryId = allEnrollments.get(i).getInventoryId();
+                        Set<Integer> allEnrolledInventoryIds = getAllEnrolledInventoryIds(account.getAccountId(), groupId);
+                        
+                        if (!allEnrolledInventoryIds.isEmpty()) {
+                            for (Iterator<Integer> iterator = allEnrolledInventoryIds.iterator(); iterator.hasNext();) {
+                                int inventoryId = (Integer) iterator.next();
 
                                 List<LMHardwareControlGroup> enrollments =
                                     lmHardwareControlGroupDao.getIntersectingEnrollments(account.getAccountId(),
@@ -280,6 +278,21 @@ public class LMControlSummaryModel extends BareDatedReportModelBase<LMControlSum
             }
         }
 
+    }
+    
+    private Set<Integer> getAllEnrolledInventoryIds(int accountId, Integer groupId) {
+        Set<Integer> allEnrolledInventoryIds = new HashSet<Integer>();
+
+        List<LMHardwareControlGroup> allEnrollments =
+            lmHardwareControlGroupDao
+                .getByLMGroupIdAndAccountIdAndType(groupId,
+                                                   accountId,
+                                                   LMHardwareControlGroup.ENROLLMENT_ENTRY);
+        
+        for (int i = 0; i < allEnrollments.size(); i++) {
+            allEnrolledInventoryIds.add(allEnrollments.get(i).getInventoryId());
+        }
+        return allEnrolledInventoryIds;
     }
     
     @Override

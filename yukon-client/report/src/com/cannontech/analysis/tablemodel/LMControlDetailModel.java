@@ -5,6 +5,8 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Date;
 import java.util.HashMap;
+import java.util.HashSet;
+import java.util.Iterator;
 import java.util.List;
 import java.util.Set;
 
@@ -146,16 +148,13 @@ public class LMControlDetailModel extends BareDatedReportModelBase<LMControlDeta
                             continue;
                         }
 
-                        List<LMHardwareControlGroup> allEnrollments =
-                            lmHardwareControlGroupDao
-                                .getByLMGroupIdAndAccountIdAndType(groupId,
-                                                                   account.getAccountId(),
-                                                                   LMHardwareControlGroup.ENROLLMENT_ENTRY);
+                        Set<Integer> allEnrolledInventoryIds = getAllEnrolledInventoryIds(account.getAccountId(), groupId);
+                        
                         List<LMHardwareControlGroup> enrollments = Lists.newArrayList();
                         Date enrollmentStart = null;
                         Date enrollmentStop = null;
                         
-                        if (!allEnrollments.isEmpty()) {
+                        if (!allEnrolledInventoryIds.isEmpty()) {
                             
                             boolean isEnrolled = false;
                             double totalControlHours = 0.0;
@@ -169,10 +168,10 @@ public class LMControlDetailModel extends BareDatedReportModelBase<LMControlDeta
                                 "#" + account.getAccountNumber() + " ---- " + account.getLastName() + ", "
                                         + account.getFirstName();
                             row.program = currentGroupProgram.getProgramName();
-
-                            for (int i = 0; i < allEnrollments.size(); i++) {
-
-                                int inventoryId = allEnrollments.get(i).getInventoryId();
+                            
+                            for (Iterator<Integer> iterator = allEnrolledInventoryIds.iterator(); iterator.hasNext();) {
+                                int inventoryId = (Integer) iterator.next();
+                                
                                 enrollments =
                                     lmHardwareControlGroupDao.getIntersectingEnrollments(account.getAccountId(),
                                                                                          inventoryId,
@@ -238,6 +237,21 @@ public class LMControlDetailModel extends BareDatedReportModelBase<LMControlDeta
                 CTILogger.error("Unable to generate row of report for account " + account.getAccountNumber(), e);
             }
         }
+    }
+
+    private Set<Integer> getAllEnrolledInventoryIds(int accountId, Integer groupId) {
+        Set<Integer> allEnrolledInventoryIds = new HashSet<Integer>();
+
+        List<LMHardwareControlGroup> allEnrollments =
+            lmHardwareControlGroupDao
+                .getByLMGroupIdAndAccountIdAndType(groupId,
+                                                   accountId,
+                                                   LMHardwareControlGroup.ENROLLMENT_ENTRY);
+        
+        for (int i = 0; i < allEnrollments.size(); i++) {
+            allEnrolledInventoryIds.add(allEnrollments.get(i).getInventoryId());
+        }
+        return allEnrolledInventoryIds;
     }
 
     @Override
