@@ -262,14 +262,6 @@
                 <constructor-arg value="METERING"/>
             </bean>
 	   	</property>
-		<property name="plcDeviceAttributeReadService" ref="plcDeviceAttributeReadService"/>
-        <property name="attributeService" ref="attributeService"/>
-        <property name="meterDao" ref="meterDao"/>
-        <property name="stateDao" ref="stateDao"/>
-        <property name="dynamicDataSource" ref="dynamicDataSource"/>
-        <property name="commandRequestExecutor" ref="commandRequestDeviceExecutor"/>
-        <property name="commandAuthorizationService" ref="paoCommandAuthorizationService" />
-        <property name="deviceDao" ref="deviceDao" />
     </bean>
     
     <bean id="rfnMeterDisconnectWidget" class="com.cannontech.web.widget.RfnMeterDisconnectWidget">

@@ -7,7 +7,6 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.beans.factory.annotation.Required;
 import org.springframework.web.bind.ServletRequestBindingException;
 import org.springframework.web.servlet.ModelAndView;
 
@@ -24,11 +23,12 @@ import com.cannontech.common.pao.attribute.service.AttributeService;
 import com.cannontech.common.pao.attribute.service.IllegalUseOfAttribute;
 import com.cannontech.common.pao.definition.dao.PaoDefinitionDao;
 import com.cannontech.common.pao.definition.model.PaoTag;
-import com.cannontech.core.authorization.service.PaoCommandAuthorizationService;
 import com.cannontech.core.dao.DeviceDao;
 import com.cannontech.core.dao.StateDao;
 import com.cannontech.core.dynamic.DynamicDataSource;
 import com.cannontech.core.dynamic.PointValueHolder;
+import com.cannontech.core.roleproperties.YukonRoleProperty;
+import com.cannontech.core.roleproperties.dao.RolePropertyDao;
 import com.cannontech.database.data.lite.LitePoint;
 import com.cannontech.database.data.lite.LiteState;
 import com.cannontech.database.data.lite.LiteYukonUser;
@@ -37,16 +37,15 @@ import com.cannontech.web.widget.support.WidgetControllerBase;
 import com.cannontech.web.widget.support.WidgetParameterHelper;
 
 public class DisconnectMeterWidget extends WidgetControllerBase {
-
-    private MeterDao meterDao;
-    private PlcDeviceAttributeReadService plcDeviceAttributeReadService;
-    private AttributeService attributeService;
-    private StateDao stateDao;
-    private PaoDefinitionDao paoDefinitionDao;
-    private DynamicDataSource dynamicDataSource;
-    private CommandRequestDeviceExecutor commandRequestExecutor;
-    private PaoCommandAuthorizationService commandAuthorizationService;
-    private DeviceDao deviceDao = null;
+    @Autowired private RolePropertyDao rolePropertyDao;
+    @Autowired private MeterDao meterDao;
+    @Autowired private PlcDeviceAttributeReadService plcDeviceAttributeReadService;
+    @Autowired private AttributeService attributeService;
+    @Autowired private StateDao stateDao;
+    @Autowired private PaoDefinitionDao paoDefinitionDao;
+    @Autowired private DynamicDataSource dynamicDataSource;
+    @Autowired private CommandRequestDeviceExecutor commandRequestExecutor;
+    @Autowired private DeviceDao deviceDao;
     
     private final String CONTROL_CONNECT_COMMAND = "control connect";
     private final String CONTROL_DISCONNECT_COMMAND = "control disconnect";
@@ -85,7 +84,7 @@ public class DisconnectMeterWidget extends WidgetControllerBase {
         mav.addObject("configString", "");
         
         LiteYukonUser user = ServletUtil.getYukonUser(request);
-        boolean controllable = commandAuthorizationService.isAuthorized(user, CONTROL_CONNECT_COMMAND, meter);
+        boolean controllable = rolePropertyDao.checkProperty(YukonRoleProperty.ALLOW_DISCONNECT_CONTROL, user);
         mav.addObject("controllable", controllable);
 
         boolean readable = plcDeviceAttributeReadService.isReadable(meter, disconnectAttribute, user);
@@ -113,7 +112,7 @@ public class DisconnectMeterWidget extends WidgetControllerBase {
         
         mav.addObject("result", result);
         
-        boolean controllable = commandAuthorizationService.isAuthorized(user, CONTROL_CONNECT_COMMAND, meter);
+        boolean controllable = rolePropertyDao.checkProperty(YukonRoleProperty.ALLOW_DISCONNECT_CONTROL, user);
         mav.addObject("controllable", controllable);
 
         boolean readable = plcDeviceAttributeReadService.isReadable(meter, disconnectAttribute, user);
@@ -161,10 +160,11 @@ public class DisconnectMeterWidget extends WidgetControllerBase {
     
     public ModelAndView connect(HttpServletRequest request, HttpServletResponse response)
     throws Exception {
-    	
+        LiteYukonUser user = ServletUtil.getYukonUser(request);
+        rolePropertyDao.verifyProperty(YukonRoleProperty.ALLOW_DISCONNECT_CONTROL, user);
+        
     	Meter meter = getMeter(request);
     	
-    	LiteYukonUser user = ServletUtil.getYukonUser(request);
         CommandResultHolder result = commandRequestExecutor.execute(meter, CONTROL_CONNECT_COMMAND, DeviceRequestType.CONTROL_CONNECT_DISCONNECT_COMAMND, user);
         
         ModelAndView mav = getControlModelAndView(request, result);
@@ -174,10 +174,11 @@ public class DisconnectMeterWidget extends WidgetControllerBase {
     
     public ModelAndView disconnect(HttpServletRequest request, HttpServletResponse response)
     throws Exception {
-    	
+        LiteYukonUser user = ServletUtil.getYukonUser(request);
+        rolePropertyDao.verifyProperty(YukonRoleProperty.ALLOW_DISCONNECT_CONTROL, user);
+        
     	Meter meter = getMeter(request);
     	
-    	LiteYukonUser user = ServletUtil.getYukonUser(request);
         CommandResultHolder result = commandRequestExecutor.execute(meter, CONTROL_DISCONNECT_COMMAND, DeviceRequestType.CONTROL_CONNECT_DISCONNECT_COMAMND, user);
         
         ModelAndView mav = getControlModelAndView(request, result);
@@ -223,7 +224,7 @@ public class DisconnectMeterWidget extends WidgetControllerBase {
         
         mav.addObject("result", result);
         
-        boolean controllable = commandAuthorizationService.isAuthorized(user, "control connect", meter);
+        boolean controllable = rolePropertyDao.checkProperty(YukonRoleProperty.ALLOW_DISCONNECT_CONTROL, user);
         mav.addObject("controllable", controllable);
 
         boolean readable = plcDeviceAttributeReadService.isReadable(meter, disconnectAttribute, user);
@@ -285,53 +286,6 @@ public class DisconnectMeterWidget extends WidgetControllerBase {
             return DisconnectState.DISCONNECTED;
         else 
             return DisconnectState.CONNECTED;
-    }
-    
-    @Required
-    public void setMeterDao(MeterDao meterDao) {
-        this.meterDao = meterDao;
-    }
-    
-    @Required
-    public void setAttributeService(AttributeService attributeService) {
-        this.attributeService = attributeService;
-    }
-    
-    @Required
-    public void setPlcDeviceAttributeReadService(PlcDeviceAttributeReadService plcDeviceAttributeReadService) {
-        this.plcDeviceAttributeReadService = plcDeviceAttributeReadService;
-    }
-
-    @Required
-    public void setStateDao(StateDao stateDao) {
-        this.stateDao = stateDao;
-    }
-    
-    @Required
-    public void setDynamicDataSource(DynamicDataSource dynamicDataSource) {
-        this.dynamicDataSource = dynamicDataSource;
-    }
-    
-    @Required
-    public void setCommandRequestExecutor(
-            CommandRequestDeviceExecutor commandRequestExecutor) {
-        this.commandRequestExecutor = commandRequestExecutor;
-    }
-    
-    @Required
-    public void setCommandAuthorizationService(
-			PaoCommandAuthorizationService commandAuthorizationService) {
-		this.commandAuthorizationService = commandAuthorizationService;
-	}
-
-    @Required
-    public void setDeviceDao(DeviceDao deviceDao) {
-        this.deviceDao = deviceDao;
-    }
-
-    @Autowired
-    public void setPaoDefinitionDao(PaoDefinitionDao paoDefinitionDao) {
-        this.paoDefinitionDao = paoDefinitionDao;
     }
 }
 

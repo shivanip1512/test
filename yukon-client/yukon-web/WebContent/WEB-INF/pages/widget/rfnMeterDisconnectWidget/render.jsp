@@ -17,13 +17,15 @@
         <br>
         <div style="text-align: right">
             <tags:widgetActionUpdate container="${widgetParameters.widgetId}_results" method="query" nameKey="query" showConfirm="false"/>
-            <c:if test="${arming || both}">
-                <tags:widgetActionUpdate container="${widgetParameters.widgetId}_results" method="arm" nameKey="arm" showConfirm="true"/>
+            <c:if test="${controllable}">
+                <c:if test="${arming || both}">
+                    <tags:widgetActionUpdate container="${widgetParameters.widgetId}_results" method="arm" nameKey="arm" showConfirm="true"/>
+                </c:if>
+                <c:if test="${!arming || both}">
+                    <tags:widgetActionUpdate container="${widgetParameters.widgetId}_results" method="connect" nameKey="connect" showConfirm="true"/>
+                </c:if>
+                <tags:widgetActionUpdate container="${widgetParameters.widgetId}_results" method="disconnect" nameKey="disconnect" showConfirm="true"/>
             </c:if>
-            <c:if test="${!arming || both}">
-                <tags:widgetActionUpdate container="${widgetParameters.widgetId}_results" method="connect" nameKey="connect" showConfirm="true"/>
-            </c:if>
-            <tags:widgetActionUpdate container="${widgetParameters.widgetId}_results" method="disconnect" nameKey="disconnect" showConfirm="true"/>
         </div>
     </c:otherwise>
 </c:choose>

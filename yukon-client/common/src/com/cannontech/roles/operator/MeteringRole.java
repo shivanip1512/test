@@ -38,4 +38,6 @@ public interface MeteringRole {
     public static final int PORTER_RESPONSE_MONITORING = OperatorRoleDefs.METERING_PROPERTYID_BASE - 18; // -20218
     /** Access to Meter Events features */
     public static final int METER_EVENTS = OperatorRoleDefs.METERING_PROPERTYID_BASE - 19; // -20219
+    /** Controls ability to send disconnects and reconnects to meters */
+    public static final int ALLOW_DISCONNECT_CONTROL = OperatorRoleDefs.METERING_PROPERTYID_BASE - 20; // -20220
 }

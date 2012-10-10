@@ -23,12 +23,17 @@ import com.cannontech.common.pao.attribute.model.BuiltInAttribute;
 import com.cannontech.common.pao.attribute.service.AttributeService;
 import com.cannontech.common.pao.attribute.service.IllegalUseOfAttribute;
 import com.cannontech.core.dao.NotFoundException;
+import com.cannontech.core.roleproperties.YukonRoleProperty;
+import com.cannontech.core.roleproperties.dao.RolePropertyDao;
 import com.cannontech.database.data.lite.LitePoint;
+import com.cannontech.database.data.lite.LiteYukonUser;
+import com.cannontech.i18n.YukonMessageSourceResolvable;
+import com.cannontech.util.ServletUtil;
 import com.cannontech.web.widget.support.AdvancedWidgetControllerBase;
 import com.cannontech.web.widget.support.WidgetParameterHelper;
 
 public class RfnMeterDisconnectWidget extends AdvancedWidgetControllerBase {
-    
+    @Autowired private RolePropertyDao rolePropertyDao;
     @Autowired private RfnDeviceDao rfnDeviceDao;
     @Autowired private AttributeService attributeService;
     @Autowired private RfnMeterDisconnectService rfnMeterDisconnectService;
@@ -74,6 +79,10 @@ public class RfnMeterDisconnectWidget extends AdvancedWidgetControllerBase {
         RfnMeter meter = rfnDeviceDao.getMeterForId(WidgetParameterHelper.getRequiredIntParameter(request, "deviceId"));
         model.addAttribute("meter", meter);
         
+        LiteYukonUser user = ServletUtil.getYukonUser(request);
+        boolean controllable = rolePropertyDao.checkProperty(YukonRoleProperty.ALLOW_DISCONNECT_CONTROL, user);
+        model.addAttribute("controllable", controllable);
+        
         model.addAttribute("arming", mode == RfnMeterDisconnectArming.ARM);
         model.addAttribute("both", mode == RfnMeterDisconnectArming.BOTH);
         
@@ -90,31 +99,40 @@ public class RfnMeterDisconnectWidget extends AdvancedWidgetControllerBase {
         final RfnMeter meter = rfnDeviceDao.getMeterForId(deviceId);
         model.addAttribute("deviceId", deviceId);
         
-        WaitableRfnMeterDisconnectCallback waitableCallback = new WaitableRfnMeterDisconnectCallback() {
+        LiteYukonUser user = ServletUtil.getYukonUser(request);
+        boolean userCanDisconnect = rolePropertyDao.checkProperty(YukonRoleProperty.ALLOW_DISCONNECT_CONTROL, user);
+        //Always allow querying the status. Only allow other commands if the user has the appropriate role property
+        if(action == RfnMeterDisconnectStatusType.QUERY || userCanDisconnect) {
+            WaitableRfnMeterDisconnectCallback waitableCallback = new WaitableRfnMeterDisconnectCallback() {
+                
+                @Override
+                public void processingExceptionOccured(MessageSourceResolvable message) {
+                    model.addAttribute("responseStatus", message);
+                    model.addAttribute("responseSuccess", false);
+                }
+    
+                @Override
+                public void receivedSuccess(RfnMeterDisconnectState state) {
+                    model.addAttribute("responseSuccess", true);
+                }
+    
+                @Override
+                public void receivedError(MessageSourceResolvable message) {
+                    model.addAttribute("responseStatus", message);
+                    model.addAttribute("responseSuccess", false);
+                }
+            };
             
-            @Override
-            public void processingExceptionOccured(MessageSourceResolvable message) {
-                model.addAttribute("responseStatus", message);
-                model.addAttribute("responseSuccess", false);
-            }
-
-            @Override
-            public void receivedSuccess(RfnMeterDisconnectState state) {
-                model.addAttribute("responseSuccess", true);
-            }
-
-            @Override
-            public void receivedError(MessageSourceResolvable message) {
-                model.addAttribute("responseStatus", message);
-                model.addAttribute("responseSuccess", false);
-            }
-        };
-        
-        rfnMeterDisconnectService.send(meter, action, waitableCallback);
-        
-        try {
-            waitableCallback.waitForCompletion();
-        } catch (InterruptedException e) { /* Ignore */ }
+            rfnMeterDisconnectService.send(meter, action, waitableCallback);
+            
+            try {
+                waitableCallback.waitForCompletion();
+            } catch (InterruptedException e) { /* Ignore */ }
+            
+        } else {
+            model.addAttribute("responseStatus", new YukonMessageSourceResolvable("yukon.web.widgets.rfnMeterDisconnectWidget.userNotAuthorized"));
+            model.addAttribute("responseSuccess", false);
+        }
         
     }
 
