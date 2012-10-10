@@ -134,7 +134,7 @@ public class VarImbalanceOnExecutionModel extends BareDatedReportModelBase<VarIm
         sql.append("cceventlog cAction, ");
         sql.append("cceventlog cOutcome ");
         sql.append("where ");
-        sql.append("cAction.DateTime >= ?"); 
+        sql.append("cAction.DateTime > ?"); 
         sql.append("and cAction.DateTime <= ?");
         sql.append("and cAction.pointid = cOutcome.pointid ");
         sql.append("and p.pointid = cAction.pointid ");
