@@ -93,7 +93,8 @@ import com.cannontech.web.stars.dr.operator.service.OperatorAccountService;
 import com.cannontech.web.stars.dr.operator.service.ResidentialLoginService;
 import com.cannontech.web.stars.dr.operator.validator.AccountGeneralValidator;
 import com.cannontech.web.stars.dr.operator.validator.AccountImportDataValidator;
-import com.cannontech.web.stars.dr.operator.validator.LoginValidator;
+import com.cannontech.web.stars.dr.operator.validator.LoginPasswordValidator;
+import com.cannontech.web.stars.dr.operator.validator.LoginUsernameValidator;
 import com.cannontech.web.stars.dr.operator.validator.LoginValidatorFactory;
 import com.cannontech.web.util.JsonView;
 import com.cannontech.web.util.TextView;
@@ -374,7 +375,9 @@ public class OperatorAccountController {
             return "redirect:search";
         }
 	    
-	    LoginValidator loginValidator = loginValidatorFactory.getLoginValidator(new LiteYukonUser());//yukonUserDao.getLiteYukonUser(UserUtils.USER_DEFAULT_ID));
+	    LoginPasswordValidator passwordValidator = loginValidatorFactory.getPasswordValidator(new LiteYukonUser());//yukonUserDao.getLiteYukonUser(UserUtils.USER_DEFAULT_ID));
+	    LoginPasswordValidator usernameValidator = loginValidatorFactory.getPasswordValidator(new LiteYukonUser());//yukonUserDao.getLiteYukonUser(UserUtils.USER_DEFAULT_ID));
+
 	    YukonEnergyCompany yukonEnergyCompany = yukonEnergyCompanyService.getEnergyCompanyByOperator(user);
 	    final LiteStarsEnergyCompany energyCompany = starsDatabaseCache.getEnergyCompany(yukonEnergyCompany);
 	    
@@ -396,7 +399,8 @@ public class OperatorAccountController {
             accountGeneralValidator.validate(accountGeneral, bindingResult);
             if(createLogin) {
                 bindingResult.pushNestedPath("loginBackingBean");
-                loginValidator.validate(accountGeneral.getLoginBackingBean(), bindingResult);
+                usernameValidator.validate(accountGeneral.getLoginBackingBean(), bindingResult);
+                passwordValidator.validate(accountGeneral.getLoginBackingBean(), bindingResult);
                 bindingResult.popNestedPath();
             }
             
@@ -572,8 +576,10 @@ public class OperatorAccountController {
         
         
         /* Make sure the passwords match */
-        LoginValidator loginValidator = loginValidatorFactory.getLoginValidator(residentialUser);
-        loginValidator.validate(loginBackingBean, bindingResult);
+        LoginPasswordValidator passwordValidator = loginValidatorFactory.getPasswordValidator(residentialUser);
+        LoginUsernameValidator usernameValidator = loginValidatorFactory.getUsernameValidator(residentialUser);
+        passwordValidator.validate(loginBackingBean, bindingResult);
+        usernameValidator.validate(loginBackingBean, bindingResult);
         MessageSourceAccessor messageSourceAccessor = messageSourceResolver.getMessageSourceAccessor(userContext);
         
         /* 
@@ -658,7 +664,8 @@ public class OperatorAccountController {
 		if(!ignoreLogin) {
 		    systemEventLogService.loginChangeAttemptedByOperator(userContext.getYukonUser(), residentialUser.getUsername());
 		}
-		LoginValidator loginValidator = loginValidatorFactory.getLoginValidator(residentialUser);
+        LoginPasswordValidator passwordValidator = loginValidatorFactory.getPasswordValidator(residentialUser);
+        LoginUsernameValidator usernameValidator = loginValidatorFactory.getUsernameValidator(residentialUser);
 		
 		/* Validate and Update */
 		try {
@@ -667,7 +674,8 @@ public class OperatorAccountController {
 			if(!ignoreLogin) {
 			    
 			    bindingResult.pushNestedPath("loginBackingBean");
-			    loginValidator.validate(accountGeneral.getLoginBackingBean(), bindingResult);
+			    passwordValidator.validate(accountGeneral.getLoginBackingBean(), bindingResult);
+			    usernameValidator.validate(accountGeneral.getLoginBackingBean(), bindingResult);
 			    bindingResult.popNestedPath();
 			    
 			    /* Check to see if the user is trying to modify the default user */

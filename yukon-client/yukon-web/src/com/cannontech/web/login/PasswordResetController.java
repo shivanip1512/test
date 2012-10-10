@@ -44,7 +44,8 @@ import com.cannontech.web.common.captcha.service.CaptchaService;
 import com.cannontech.web.common.flashScope.FlashScope;
 import com.cannontech.web.common.flashScope.FlashScopeMessageType;
 import com.cannontech.web.stars.dr.operator.model.LoginBackingBean;
-import com.cannontech.web.stars.dr.operator.validator.LoginValidator;
+import com.cannontech.web.stars.dr.operator.validator.LoginPasswordValidator;
+import com.cannontech.web.stars.dr.operator.validator.LoginUsernameValidator;
 import com.cannontech.web.stars.dr.operator.validator.LoginValidatorFactory;
 import com.cannontech.web.util.YukonUserContextResolver;
 
@@ -154,8 +155,11 @@ public class PasswordResetController {
         }
 
         // Validate login change.
-        LoginValidator loginValidator = loginValidatorFactory.getLoginValidator(passwordResetUser);
-        loginValidator.validate(loginBackingBean, bindingResult);
+        LoginPasswordValidator passwordValidator = loginValidatorFactory.getPasswordValidator(passwordResetUser);
+        LoginUsernameValidator usernameValidator = loginValidatorFactory.getUsernameValidator(passwordResetUser);
+
+        passwordValidator.validate(loginBackingBean, bindingResult);
+        usernameValidator.validate(loginBackingBean, bindingResult);
         if (bindingResult.hasErrors()) {
             List<MessageSourceResolvable> messages = YukonValidationUtils.errorsForBindingResult(bindingResult);
             flashScope.setMessage(messages, FlashScopeMessageType.ERROR);

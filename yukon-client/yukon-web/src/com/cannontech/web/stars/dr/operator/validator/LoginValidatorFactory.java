@@ -4,6 +4,8 @@ import com.cannontech.database.data.lite.LiteYukonUser;
 
 public interface LoginValidatorFactory {
     
-    public LoginValidator getLoginValidator(LiteYukonUser residentialUser);
+    public LoginUsernameValidator getUsernameValidator(LiteYukonUser liteYukonUser);
+
+    public LoginPasswordValidator getPasswordValidator(LiteYukonUser liteYukonUser);
 
 }

@@ -11,6 +11,7 @@ import javax.servlet.http.HttpServletResponse;
 
 import net.sf.json.JSONObject;
 
+import org.apache.commons.lang.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.MessageSourceResolvable;
 import org.springframework.stereotype.Controller;
@@ -47,7 +48,8 @@ import com.cannontech.web.admin.energyCompany.service.EnergyCompanyInfoFragmentH
 import com.cannontech.web.common.flashScope.FlashScope;
 import com.cannontech.web.common.flashScope.FlashScopeMessageType;
 import com.cannontech.web.stars.dr.operator.model.LoginBackingBean;
-import com.cannontech.web.stars.dr.operator.validator.LoginValidator;
+import com.cannontech.web.stars.dr.operator.validator.LoginPasswordValidator;
+import com.cannontech.web.stars.dr.operator.validator.LoginUsernameValidator;
 import com.cannontech.web.stars.dr.operator.validator.LoginValidatorFactory;
 
 @RequestMapping("/energyCompany/operatorLogin/*")
@@ -152,9 +154,11 @@ public class OperatorLoginController {
         AuthType defaultAuthType = authenticationService.getDefaultAuthType();
 
         //validate login
-        LoginValidator loginValidator = loginValidatorFactory.getLoginValidator(new LiteYukonUser());
-        loginValidator.validate(operatorLogin, bindingResult);
-        
+        LoginPasswordValidator passwordValidator = loginValidatorFactory.getPasswordValidator(new LiteYukonUser());
+        LoginUsernameValidator usernameValidator = loginValidatorFactory.getUsernameValidator(new LiteYukonUser());
+
+        passwordValidator.validate(operatorLogin, bindingResult);
+        usernameValidator.validate(operatorLogin, bindingResult);
         if (bindingResult.hasErrors()) {
             List<MessageSourceResolvable> messages = YukonValidationUtils.errorsForBindingResult(bindingResult);
             flashScope.setMessage(messages, FlashScopeMessageType.ERROR);
@@ -203,8 +207,15 @@ public class OperatorLoginController {
         
         //validate login
         LiteYukonUser user = yukonUserDao.getLiteYukonUser(operatorLogin.getUserId());
-        LoginValidator loginValidator = loginValidatorFactory.getLoginValidator(user);
-        loginValidator.validate(operatorLogin, bindingResult);
+        LoginUsernameValidator usernameValidator = loginValidatorFactory.getUsernameValidator(user);
+        usernameValidator.validate(operatorLogin, bindingResult);
+
+        if (StringUtils.isNotBlank(operatorLogin.getPassword1()) && StringUtils.isNotBlank(operatorLogin.getPassword1())) {
+            // Both are blank tells us the user doesn't want to change the password
+            // Note we do not need to validate if they are blank because a blank password will not change the current password
+            LoginPasswordValidator passwordValidator = loginValidatorFactory.getPasswordValidator(user);
+            passwordValidator.validate(operatorLogin, bindingResult);
+        }
         
         if (bindingResult.hasErrors()) {
             List<MessageSourceResolvable> messages = YukonValidationUtils.errorsForBindingResult(bindingResult);
