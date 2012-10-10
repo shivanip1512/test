@@ -5,8 +5,6 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Date;
 import java.util.HashMap;
-import java.util.HashSet;
-import java.util.Iterator;
 import java.util.List;
 import java.util.Set;
 
@@ -33,6 +31,7 @@ import com.cannontech.stars.util.model.CustomerControlTotals;
 import com.cannontech.stars.xml.serialize.StarsLMControlHistory;
 import com.cannontech.user.YukonUserContext;
 import com.google.common.collect.Lists;
+import com.google.common.collect.Sets;
 
 public class LMControlDetailModel extends BareDatedReportModelBase<LMControlDetailModel.ModelRow> implements EnergyCompanyModelAttributes, UserContextModelAttributes {
     private int energyCompanyId;
@@ -169,8 +168,7 @@ public class LMControlDetailModel extends BareDatedReportModelBase<LMControlDeta
                                         + account.getFirstName();
                             row.program = currentGroupProgram.getProgramName();
                             
-                            for (Iterator<Integer> iterator = allEnrolledInventoryIds.iterator(); iterator.hasNext();) {
-                                int inventoryId = (Integer) iterator.next();
+                            for (int inventoryId : allEnrolledInventoryIds) {
                                 
                                 enrollments =
                                     lmHardwareControlGroupDao.getIntersectingEnrollments(account.getAccountId(),
@@ -240,7 +238,7 @@ public class LMControlDetailModel extends BareDatedReportModelBase<LMControlDeta
     }
 
     private Set<Integer> getAllEnrolledInventoryIds(int accountId, Integer groupId) {
-        Set<Integer> allEnrolledInventoryIds = new HashSet<Integer>();
+        Set<Integer> allEnrolledInventoryIds = Sets.newHashSet();
 
         List<LMHardwareControlGroup> allEnrollments =
             lmHardwareControlGroupDao
@@ -248,8 +246,8 @@ public class LMControlDetailModel extends BareDatedReportModelBase<LMControlDeta
                                                    accountId,
                                                    LMHardwareControlGroup.ENROLLMENT_ENTRY);
         
-        for (int i = 0; i < allEnrollments.size(); i++) {
-            allEnrolledInventoryIds.add(allEnrollments.get(i).getInventoryId());
+        for (LMHardwareControlGroup enrollment : allEnrollments) {
+            allEnrolledInventoryIds.add(enrollment.getInventoryId());
         }
         return allEnrolledInventoryIds;
     }

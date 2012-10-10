@@ -4,8 +4,6 @@ import java.text.DecimalFormat;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashMap;
-import java.util.HashSet;
-import java.util.Iterator;
 import java.util.List;
 import java.util.Set;
 
@@ -34,6 +32,7 @@ import com.cannontech.stars.util.LMControlHistoryUtil;
 import com.cannontech.stars.util.model.CustomerControlTotals;
 import com.cannontech.stars.xml.serialize.StarsLMControlHistory;
 import com.cannontech.user.YukonUserContext;
+import com.google.common.collect.Sets;
 
 public class LMControlSummaryModel extends BareDatedReportModelBase<LMControlSummaryModel.ModelRow> 
                                      implements EnergyCompanyModelAttributes, UserContextModelAttributes{
@@ -177,9 +176,7 @@ public class LMControlSummaryModel extends BareDatedReportModelBase<LMControlSum
                         Set<Integer> allEnrolledInventoryIds = getAllEnrolledInventoryIds(account.getAccountId(), groupId);
                         
                         if (!allEnrolledInventoryIds.isEmpty()) {
-                            for (Iterator<Integer> iterator = allEnrolledInventoryIds.iterator(); iterator.hasNext();) {
-                                int inventoryId = (Integer) iterator.next();
-
+                            for (int inventoryId : allEnrolledInventoryIds) {
                                 List<LMHardwareControlGroup> enrollments =
                                     lmHardwareControlGroupDao.getIntersectingEnrollments(account.getAccountId(),
                                                                                          inventoryId,
@@ -281,7 +278,7 @@ public class LMControlSummaryModel extends BareDatedReportModelBase<LMControlSum
     }
     
     private Set<Integer> getAllEnrolledInventoryIds(int accountId, Integer groupId) {
-        Set<Integer> allEnrolledInventoryIds = new HashSet<Integer>();
+        Set<Integer> allEnrolledInventoryIds = Sets.newHashSet();
 
         List<LMHardwareControlGroup> allEnrollments =
             lmHardwareControlGroupDao
@@ -289,8 +286,8 @@ public class LMControlSummaryModel extends BareDatedReportModelBase<LMControlSum
                                                    accountId,
                                                    LMHardwareControlGroup.ENROLLMENT_ENTRY);
         
-        for (int i = 0; i < allEnrollments.size(); i++) {
-            allEnrolledInventoryIds.add(allEnrollments.get(i).getInventoryId());
+        for (LMHardwareControlGroup enrollment : allEnrollments) {
+            allEnrolledInventoryIds.add(enrollment.getInventoryId());
         }
         return allEnrolledInventoryIds;
     }
