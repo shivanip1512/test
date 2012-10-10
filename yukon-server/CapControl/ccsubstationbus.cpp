@@ -1444,7 +1444,7 @@ CtiCCSubstationBus& CtiCCSubstationBus::setCurrentVarLoadPointId(long currentvar
 CtiCCSubstationBus& CtiCCSubstationBus::setCurrentVarLoadPointValue(double value, CtiTime timestamp)
 {
     _dirty |= setVariableIfDifferent(_currentvarloadpointvalue, value);
- 
+
     if(_RATE_OF_CHANGE && !getRecentlyControlledFlag())
     {
         regression.appendWithoutFill(std::make_pair((double)timestamp.seconds(),value));
@@ -2352,7 +2352,8 @@ CtiCCSubstationBus& CtiCCSubstationBus::checkForAndProvideNeededControl(const Ct
                         setIVControl(getIVControlTot() / getIVCount());
                     if (getIWCount() > 0)
                         setIWControl(getIWControlTot() / getIWCount());
-                    if (!getDualBusEnable() || getPrimaryBusFlag())
+
+                    if ( _CC_DEBUG & CC_DEBUG_INTEGRATED )
                     {
                         CtiLockGuard<CtiLogger> logger_guard(dout);
                         dout << CtiTime() << " " << getPaoName() <<" USING INTEGRATED CONTROL - iVControl=iVControlTot/iVCount ( "<<
@@ -6462,7 +6463,7 @@ void CtiCCSubstationBus::dumpDynamicData(Cti::Database::DatabaseConnection& conn
         {
             CtiLockGuard<CtiLogger> logger_guard(dout);
             dout << CtiTime() << " - Point Response save failed. " << endl;
-        }       
+        }
     }
 
 }
@@ -6683,7 +6684,7 @@ void CtiCCSubstationBus::setCapBanksToVerifyFlags(int verificationStrategy, CtiM
                     }
                     else
                     {
-                        
+
                         textInfo += " Disabled! Will not verify.";
                         eventAction = capControlDisableVerification;
                     }
@@ -6741,7 +6742,7 @@ bool CtiCCSubstationBus::isBankSelectedByVerificationStrategy(int verificationSt
            return (ciStringEqual(currentCapBank->getOperationalState(),CtiCCCapBank::SwitchedOperationalState) &&
                             ( currentCapBank->getControlStatus() == CtiCCCapBank::CloseFail ||
                               currentCapBank->getControlStatus() == CtiCCCapBank::OpenFail ) );
-                        
+
         }
         case CtiPAOScheduleManager::QuestionableBanks:
         {
@@ -6765,7 +6766,7 @@ bool CtiCCSubstationBus::isBankSelectedByVerificationStrategy(int verificationSt
             return ciStringEqual(currentCapBank->getOperationalState(),CtiCCCapBank::StandAloneState);
         }
         default:
-        {    
+        {
             return false;
         }
     }
@@ -6838,7 +6839,7 @@ void CtiCCSubstationBus::updatePointResponseDeltas(std::set<long> pointIds)
         for each (const map<long, CtiCCMonitorPointPtr>::value_type & entry in _monitorPoints)
         {
             CtiCCMonitorPointPtr point = entry.second;
-        
+
             //This checks to make sure we got an update for the monitor point before updating the deltas.
             if (pointIds.find(point->getPointId()) != pointIds.end())
             {

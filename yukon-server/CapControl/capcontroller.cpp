@@ -2049,7 +2049,7 @@ CcDbReloadInfo CtiCapController::resolveCapControlType(CtiDBChangeMsg *dbChange)
 {
 
     CcDbReloadInfo reloadInfo(dbChange->getId(), dbChange->getTypeOfChange(), Cti::CapControl::Undefined);
-    int paoType = resolvePAOType(dbChange->getCategory(),dbChange->getObjectType());  
+    int paoType = resolvePAOType(dbChange->getCategory(),dbChange->getObjectType());
 
     switch (paoType)
     {
@@ -2093,9 +2093,9 @@ CcDbReloadInfo CtiCapController::resolveCapControlType(CtiDBChangeMsg *dbChange)
                 CtiPAOScheduleManager::getInstance()->setValid(false);
                 break;
             }
-        case TYPE_VIRTUAL_SYSTEM: 
+        case TYPE_VIRTUAL_SYSTEM:
             break;
-        default: 
+        default:
             {
                 reloadInfo = resolveCapControlTypeByDataBase(dbChange);
                 break;
@@ -2230,7 +2230,7 @@ void CtiCapController::parseMessage(RWCollectable *message)
                         }
 
                         CcDbReloadInfo reloadInfo = resolveCapControlType(dbChange);
-                        
+
                         if( _CC_DEBUG & CC_DEBUG_EXTENDED )
                         {
                              CtiLockGuard<CtiLogger> logger_guard(dout);
@@ -2238,7 +2238,7 @@ void CtiCapController::parseMessage(RWCollectable *message)
                              dout << CtiTime() << "            changeType: "<<reloadInfo.typeOfAction() << endl;
                              dout << CtiTime() << "               objType: "<<reloadInfo.objecttype << endl;
                         }
-                        
+
 
                         CtiCCSubstationBusStore::getInstance()->insertDBReloadList(reloadInfo);
                     }
@@ -3313,7 +3313,6 @@ void CtiCapController::pointDataMsgByFeeder( long pointID, double value, unsigne
         try
         {
             currentSubstationBus = NULL;
-            //CtiCCFeederPtr currentFeeder = store->findFeederByPointID(pointID, feederCount);
             if (currentFeeder != NULL)
             {
                 long subBusId = store->findSubBusIDbyFeederID(currentFeeder->getPaoId());
@@ -3336,28 +3335,24 @@ void CtiCapController::pointDataMsgByFeeder( long pointID, double value, unsigne
                                 {
                                     currentFeeder->setCurrentVarLoadPointValue(value, timestamp);
                                     currentSubstationBus->setBusUpdatedFlag(true);
-                                    if (currentFeeder->isControlPoint(pointID) && currentFeeder->getStrategy()->getIntegrateFlag())
-                                    {
-                                        currentFeeder->updateIntegrationVPoint(CtiTime(), currentSubstationBus->getNextCheckTime());
-                                    }
+                                }
+                                if (currentFeeder->isControlPoint(pointID) && currentFeeder->getStrategy()->getIntegrateFlag())
+                                {
+                                    currentFeeder->updateIntegrationVPoint(CtiTime(), currentSubstationBus->getNextCheckTime());
                                 }
                             }
                             else //phase A point id
                             {
                                 if (currentFeeder->getPhaseAValue() != value)
                                 {
-                                    if (currentFeeder->getPhaseAValue() != value)
-                                    {
-                                        currentFeeder->setPhaseAValue(value,timestamp);
-                                        currentSubstationBus->setBusUpdatedFlag(true);
-                                        currentFeeder->setCurrentVarLoadPointValue(currentFeeder->getPhaseAValue() + currentFeeder->getPhaseBValue() + currentFeeder->getPhaseCValue(), timestamp);
-                                        if (currentFeeder->isControlPoint(pointID) && currentFeeder->getStrategy()->getIntegrateFlag())
-                                        {
-                                            currentFeeder->updateIntegrationVPoint(CtiTime(), currentSubstationBus->getNextCheckTime());
-                                        }
-                                    }
+                                    currentFeeder->setPhaseAValue(value,timestamp);
+                                    currentSubstationBus->setBusUpdatedFlag(true);
+                                    currentFeeder->setCurrentVarLoadPointValue(currentFeeder->getPhaseAValue() + currentFeeder->getPhaseBValue() + currentFeeder->getPhaseCValue(), timestamp);
                                 }
-
+                                if (currentFeeder->isControlPoint(pointID) && currentFeeder->getStrategy()->getIntegrateFlag())
+                                {
+                                    currentFeeder->updateIntegrationVPoint(CtiTime(), currentSubstationBus->getNextCheckTime());
+                                }
                             }
 
                             currentFeeder->figureEstimatedVarLoadPointValue();
@@ -3589,7 +3584,7 @@ void CtiCapController::pointDataMsgByCapBank( long pointID, double value, unsign
                                 {
                                     {
                                         CtiLockGuard<CtiLogger> logger_guard(dout);
-                                        dout << CtiTime() << " - CapBank: "<<currentCapBank->getPaoName()<<" received an invalid control state value (" 
+                                        dout << CtiTime() << " - CapBank: "<<currentCapBank->getPaoName()<<" received an invalid control state value ("
                                              << (long)value << "). Not adjusting the cap bank state." << endl;
                                     }
                                 }
