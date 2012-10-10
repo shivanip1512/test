@@ -91,7 +91,7 @@ public class UserEditorController {
         LiteYukonUser user = yukonUserDao.getLiteYukonUser(userId);
         authenticationService.removeAuthenticationThrottle(user.getUsername());
         
-        flash.setConfirm(new YukonMessageSourceResolvable("yukon.web.modules.adminSetup.userEditor.loginUnlocked"));
+        flash.setConfirm(new YukonMessageSourceResolvable("yukon.web.modules.adminSetup.userEditor.userUnlocked"));
         return redirectToView(model, userId);
     }
 

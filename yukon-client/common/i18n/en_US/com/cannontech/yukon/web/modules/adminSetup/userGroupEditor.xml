@@ -80,7 +80,7 @@
     <entry key="yukon.web.modules.adminSetup.users.usersContainer">Users of this Group</entry>
     <entry key="yukon.web.modules.adminSetup.users.username">Username</entry>
     <entry key="yukon.web.modules.adminSetup.users.authentication">Authentication</entry>
-    <entry key="yukon.web.modules.adminSetup.users.loginStatus">User Status</entry>
+    <entry key="yukon.web.modules.adminSetup.users.userStatus">User Status</entry>
     <entry key="yukon.web.modules.adminSetup.users.remove">Remove</entry>
     <entry key="yukon.web.modules.adminSetup.users.noUsers">No Users In This Group</entry>
     <entry key="yukon.web.modules.adminSetup.users.addUsers.label">Add</entry>
@@ -96,7 +96,7 @@
     <entry key="yukon.web.modules.adminSetup.userEditor.EDIT.pageDescription">{0}</entry>
     <entry key="yukon.web.modules.adminSetup.userEditor.username">Username</entry>
     <entry key="yukon.web.modules.adminSetup.userEditor.authentication">Authentication</entry>
-    <entry key="yukon.web.modules.adminSetup.userEditor.loginStatus">User Status</entry>
+    <entry key="yukon.web.modules.adminSetup.userEditor.userStatus">User Status</entry>
     <entry key="yukon.web.modules.adminSetup.userEditor.userGroup">User Group</entry>
     <entry key="yukon.web.modules.adminSetup.userEditor.energyCompany">Link to Energy Company</entry>
     <entry key="yukon.web.modules.adminSetup.userEditor.password">Password</entry>
@@ -105,7 +105,7 @@
     <entry key="yukon.web.modules.adminSetup.userEditor.changePassword.label">Change Password</entry>
     <entry key="yukon.web.modules.adminSetup.userEditor.changePassword.imageUrl">/WebConfig/yukon/Icons/key.png</entry>
     <entry key="yukon.web.modules.adminSetup.userEditor.unlockUser.label">Unlock User</entry>
-    <entry key="yukon.web.modules.adminSetup.userEditor.loginUnlocked">The user is unlocked</entry>
+    <entry key="yukon.web.modules.adminSetup.userEditor.userUnlocked">The user is unlocked</entry>
     <entry key="yukon.web.modules.adminSetup.userEditor.rolesContainer.title">Roles Derived From User Group</entry>
     <entry key="yukon.web.modules.adminSetup.userEditor.noRoles">No roles assigned for this user.</entry>
     <entry key="yukon.web.modules.adminSetup.userEditor.required.username">Username is required</entry>

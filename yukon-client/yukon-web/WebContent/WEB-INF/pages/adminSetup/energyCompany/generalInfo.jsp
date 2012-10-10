@@ -58,7 +58,7 @@ Event.observe(window, "load", function() {
                             nameKey=".route" path="defaultRouteId" defaultItemLabel="${none}" defaultItemValue="-1"/>
                         <c:if test="${showParentLogin}">
                             <tags:selectNameValue items="${operatorLogins}" itemLabel="username" itemValue="userID" 
-                                nameKey=".parentLogin" path="parentLogin" defaultItemLabel="${none}" defaultItemValue=""/>
+                                nameKey=".parentUser" path="parentLogin" defaultItemLabel="${none}" defaultItemValue=""/>
                         </c:if>
                     </tags:nameValueContainer2>
                     

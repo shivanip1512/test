@@ -160,7 +160,7 @@
                         <tags:nameValue2 nameKey=".password" >
                             <input type="text" name="add_password" value="${add_password}">
                         </tags:nameValue2>
-                        <tags:nameValue2 nameKey=".loginGroup" >
+                        <tags:nameValue2 nameKey=".userGroup" >
                             <input type="text" name="add_loginGroup" value="${add_loginGroup}">
                         </tags:nameValue2>
                         
@@ -272,7 +272,7 @@
                         <tags:nameValue2 nameKey=".password" >
                             <input type="text" name="update_password" value="${update_password}">
                         </tags:nameValue2>
-                        <tags:nameValue2 nameKey=".loginGroup" >
+                        <tags:nameValue2 nameKey=".userGroup" >
                             <input type="text" name="update_loginGroup" value="${update_loginGroup}">
                         </tags:nameValue2>
                         

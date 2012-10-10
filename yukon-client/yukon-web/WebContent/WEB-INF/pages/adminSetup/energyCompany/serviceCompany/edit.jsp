@@ -228,7 +228,7 @@
                         <tags:inputNameValue nameKey=".primaryContact.firstName" path="primaryContact.contFirstName" inputClass="string" maxlength="120"/>
                         <tags:inputNameValue nameKey=".primaryContact.lastName" path="primaryContact.contLastName" inputClass="string" maxlength="120"/>
                         <tags:selectNameValue items="${availableLogins}" itemLabel="username" itemValue="userID"
-                                    nameKey=".availableLogins" path="primaryContact.loginID" />
+                                    nameKey=".availableUsers" path="primaryContact.loginID" />
                     </tags:nameValueContainer2>
                 </tags:formElementContainer>
             </cti:dataGridCell>

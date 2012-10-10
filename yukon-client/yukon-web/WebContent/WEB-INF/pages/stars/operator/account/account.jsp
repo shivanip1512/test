@@ -29,7 +29,7 @@
         <cti:param name="loginMode" value="${loginMode}"/>
     </cti:url>
     <i:simplePopup titleKey=".confirmDeleteDialogTitle" id="confirmDeleteLoginDialog" styleClass="mediumSimplePopup">
-        <cti:msg2 key=".confirmDeleteLogin" arguments="${accountGeneral.accountDto.accountNumber}"/>
+        <cti:msg2 key=".confirmDeleteUser" arguments="${accountGeneral.accountDto.accountNumber}"/>
         <div class="actionArea">
             <cti:button nameKey="confirmDeleteOk" href="${deleteLoginUrl}" styleClass="f_blocker"/>
             <cti:button nameKey="confirmDeleteCancel" onclick="jQuery('#confirmDeleteLoginDialog').hide()"/>
@@ -329,7 +329,7 @@
                     <br>
                 
                     <%-- LOGIN INFO --%>
-                    <tags:formElementContainer nameKey="loginInfoSection">
+                    <tags:formElementContainer nameKey="userInfoSection">
                         
                         <tags:nameValueContainer2>
                             <cti:msg2 var="none" key="defaults.none"/>
@@ -395,7 +395,7 @@
                             <c:if test="${loginMode eq 'EDIT'}">
                                 <br/>
                                 <br/>
-                                <button type="button" class="f_deleteLogin fr"><i:inline key=".deleteLogin"/></button>
+                                <button type="button" class="f_deleteLogin fr"><i:inline key=".deleteUser"/></button>
                             </c:if>
                         </cti:displayForPageEditModes>
                         

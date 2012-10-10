@@ -31,7 +31,7 @@
     <entry key="yukon.web.modules.adminSetup.serviceCompany.primaryContactSection.title">Contact</entry>
     <entry key="yukon.web.modules.adminSetup.serviceCompany.designationCodeSection.title">Designation Codes</entry>
     
-    <entry key="yukon.web.modules.adminSetup.serviceCompany.availableLogins">Associated User</entry>
+    <entry key="yukon.web.modules.adminSetup.serviceCompany.availableUsers">Associated User</entry>
     
     <!--  Validation -->
     <entry key="yukon.web.modules.adminSetup.serviceCompany.serviceCompanyDto.serviceCompany.nameRequired">The Service Company name cannot be empty.</entry>

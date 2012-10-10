@@ -57,8 +57,8 @@
             <%-- RIGHT SIDE COLUMN --%>
             <cti:dataGridCell>
                 
-                <tags:formElementContainer nameKey="defaultOperatorLogin">
-                    <div><span class="smallBoldLabel"><i:inline key=".note"/></span>&nbsp;<span class="notes"><i:inline key=".defaultOperatorLogin.note"/></span></div>
+                <tags:formElementContainer nameKey="defaultOperatorUser">
+                    <div><span class="smallBoldLabel"><i:inline key=".note"/></span>&nbsp;<span class="notes"><i:inline key=".defaultOperatorUser.note"/></span></div>
                     <tags:nameValueContainer2>
                         <tags:inputNameValue nameKey=".username" path="adminUsername"/>
                         <tags:nameValue2 nameKey=".password">

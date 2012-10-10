@@ -742,7 +742,7 @@ public class OperatorAccountController {
         if (LoginModeEnum.EDIT.equals(loginModeEnum)) {
             yukonUserDao.deleteUser(custYukonUser.getUserID());
         }
-        flashScope.setConfirm(new YukonMessageSourceResolvable("yukon.web.modules.operator.account.loginDeleted"));
+        flashScope.setConfirm(new YukonMessageSourceResolvable("yukon.web.modules.operator.account.userDeleted"));
         
         modelMap.addAttribute("accountId", accountInfoFragment.getAccountId());
         return "redirect:view";

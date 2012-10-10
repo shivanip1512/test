@@ -45,7 +45,7 @@
     <entry key="yukon.web.modules.operator.account.serviceAddressSection.title">Service Address</entry>
     <entry key="yukon.web.modules.operator.account.serviceInformationSection.title">Service Information</entry>
     <entry key="yukon.web.modules.operator.account.billingAddressSection.title">Billing Address</entry>
-    <entry key="yukon.web.modules.operator.account.loginInfoSection.title">User Info</entry>
+    <entry key="yukon.web.modules.operator.account.userInfoSection.title">User Info</entry>
     
     <entry key="yukon.web.modules.operator.account.accountNumberLabel">Account Number</entry>
     <entry key="yukon.web.modules.operator.account.commercialLabel">Commercial</entry>
@@ -89,14 +89,14 @@
     <entry key="yukon.web.modules.operator.account.delete">Delete</entry>
     <entry key="yukon.web.modules.operator.account.confirmDeleteDialogTitle">Confirm Delete</entry>
     <entry key="yukon.web.modules.operator.account.confirmDelete">Are you sure you want to delete account {0}?</entry>
-    <entry key="yukon.web.modules.operator.account.confirmDeleteLogin">Are you sure you want to delete the user for account {0}?</entry>
+    <entry key="yukon.web.modules.operator.account.confirmDeleteUser">Are you sure you want to delete the user for account {0}?</entry>
     <entry key="yukon.web.modules.operator.account.confirmDeleteOk.label">OK</entry>
     <entry key="yukon.web.modules.operator.account.confirmDeleteCancel.label">Cancel</entry>
 
     <entry key="yukon.web.modules.operator.account.accountCreated">Account Created</entry>
     <entry key="yukon.web.modules.operator.account.accountUpdated">Account Updated</entry>
     <entry key="yukon.web.modules.operator.account.accountDeleted">Account Deleted</entry>
-    <entry key="yukon.web.modules.operator.account.loginDeleted">User Deleted</entry>
+    <entry key="yukon.web.modules.operator.account.userDeleted">User Deleted</entry>
     
     <entry key="yukon.web.modules.operator.account.customerGroup">Customer Group</entry>
     <entry key="yukon.web.modules.operator.account.loginEnabled">Enabled</entry>
@@ -105,7 +105,7 @@
     <entry key="yukon.web.modules.operator.account.newPassword">New Password</entry>
     <entry key="yukon.web.modules.operator.account.confirmPassword">Confirm Password</entry>
     <entry key="yukon.web.modules.operator.account.showPassword">Show Password</entry>
-    <entry key="yukon.web.modules.operator.account.deleteLogin">Delete User</entry>
+    <entry key="yukon.web.modules.operator.account.deleteUser">Delete User</entry>
     <entry key="yukon.web.modules.operator.account.generatePassword">Generate Password</entry>
     <entry key="yukon.web.modules.operator.account.changePassword">Change Password</entry>
     

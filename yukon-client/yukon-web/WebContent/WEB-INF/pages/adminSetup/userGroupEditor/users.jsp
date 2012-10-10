@@ -28,7 +28,7 @@ function addUsers() {
                             <tr>
                                 <th><i:inline key=".username"/></th>
                                 <th><i:inline key=".authentication"/></th>
-                                <th><i:inline key=".loginStatus"/></th>
+                                <th><i:inline key=".userStatus"/></th>
                                 <th class="removeColumn"><i:inline key=".remove"/></th>
                             </tr>
                             <c:forEach items="${users}" var="user">

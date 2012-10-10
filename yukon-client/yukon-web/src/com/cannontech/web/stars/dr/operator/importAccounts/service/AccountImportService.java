@@ -61,6 +61,7 @@ import com.cannontech.tools.email.EmailMessage;
 import com.cannontech.user.UserUtils;
 import com.cannontech.user.YukonUserContext;
 import com.cannontech.util.ServletUtil;
+import com.cannontech.web.stars.dr.operator.AccountImportFields;
 import com.cannontech.web.stars.dr.operator.importAccounts.AccountImportResult;
 import com.google.common.collect.Lists;
 import com.google.common.collect.Maps;
@@ -228,6 +229,14 @@ public class AccountImportService {
                             } else {
                                 labels = StarsUtils.splitString(line, ",");
                             }
+                            for(int i = 0; i < labels.length; i++){
+                                /*LOGIN_GROUP was renamed to USER_GROUP. LOGIN_GROUP is accepted as an import field to support someone
+                                who already has a template file structure defined.*/
+                                if(labels[i].equalsIgnoreCase("Login_Group")){
+                                    labels[i] = AccountImportFields.USER_GROUP.name();
+                                }
+                            }
+                            
                             numCustCol = labels.length;
                             
                             for (int i = 0; i < labels.length; i++) {

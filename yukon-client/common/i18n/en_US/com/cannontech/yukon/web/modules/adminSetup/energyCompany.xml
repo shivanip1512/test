@@ -17,8 +17,8 @@
     <entry key="yukon.web.modules.adminSetup.createEnergyCompany.generalInfo.title">General Information</entry>
     <entry key="yukon.web.modules.adminSetup.createEnergyCompany.name">Company Name</entry>
     <entry key="yukon.web.modules.adminSetup.createEnergyCompany.email">Email</entry>
-    <entry key="yukon.web.modules.adminSetup.createEnergyCompany.defaultOperatorLogin.title">Admin Operator User</entry>
-    <entry key="yukon.web.modules.adminSetup.createEnergyCompany.defaultOperatorLogin.note">The admin operator user belongs to the primary operator group selected and the energy company's admin group and can therefore edit energy company settings.</entry>
+    <entry key="yukon.web.modules.adminSetup.createEnergyCompany.defaultOperatorUser.title">Admin Operator User</entry>
+    <entry key="yukon.web.modules.adminSetup.createEnergyCompany.defaultOperatorUser.note">The admin operator user belongs to the primary operator group selected and the energy company's admin group and can therefore edit energy company settings.</entry>
     <entry key="yukon.web.modules.adminSetup.createEnergyCompany.note">Note:</entry>
     <entry key="yukon.web.modules.adminSetup.createEnergyCompany.username">Username</entry>
     <entry key="yukon.web.modules.adminSetup.createEnergyCompany.password">Password</entry>
@@ -69,7 +69,7 @@
     <entry key="yukon.web.modules.adminSetup.generalInfo.fax">Main Fax #</entry>
     <entry key="yukon.web.modules.adminSetup.generalInfo.email">Email</entry>
     <entry key="yukon.web.modules.adminSetup.generalInfo.route">Default Route</entry>
-    <entry key="yukon.web.modules.adminSetup.generalInfo.parentLogin">Parent User</entry>
+    <entry key="yukon.web.modules.adminSetup.generalInfo.parentUser">Parent User</entry>
     <entry key="yukon.web.modules.adminSetup.generalInfo.streetAddress1">Street Address 1</entry>
     <entry key="yukon.web.modules.adminSetup.generalInfo.streetAddress2">Street Address 2</entry>
     <entry key="yukon.web.modules.adminSetup.generalInfo.city">City</entry>

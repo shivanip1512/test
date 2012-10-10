@@ -91,11 +91,11 @@ jQuery(function() {
 
                     <c:choose>
                         <c:when test="${editNameAndStatus && currentUserId != user.userId}">
-                            <tags:selectNameValue nameKey=".loginStatus" items="${loginStatusTypes}" path="loginStatus"/>
+                            <tags:selectNameValue nameKey=".userStatus" items="${loginStatusTypes}" path="loginStatus"/>
                         </c:when>
                         <c:otherwise>
                             <tags:hidden path="loginStatus"/>
-                            <tags:nameValue2 nameKey=".loginStatus">
+                            <tags:nameValue2 nameKey=".userStatus">
                                 <spring:escapeBody htmlEscape="true"><i:inline key="${user.loginStatus}"/></spring:escapeBody>
                             </tags:nameValue2>
                         </c:otherwise>
