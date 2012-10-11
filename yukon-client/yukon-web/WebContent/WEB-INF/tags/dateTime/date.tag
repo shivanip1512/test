@@ -56,7 +56,7 @@
     <cti:formatDate var="maxFormattedDate" value="${pageScope.maxDate}" type="DATE"/>
 </c:if>
 
-<c:if test="${!empty pageScope.disabled}">
+<c:if test="${empty pageScope.disabled}">
     <c:set var="disabled" value="false"/>
 </c:if>
 
@@ -79,7 +79,8 @@
                             data-min-date="${minFormattedDate}"
                             data-time-zone-short="${timeZoneShort}"
                             data-time-zone-full="${timeZoneFull}"
-                            data-class="${pageScope.cssDialogClass}" />
+                            data-class="${pageScope.cssDialogClass}"
+                            autocomplete="off" />
 			</cti:displayForPageEditModes>
 			<c:if test="${status.error}">
 				<br>
@@ -102,7 +103,8 @@
                         data-class="${pageScope.cssDialogClass}"
                         data-date-time-format="${jsDateTimeFormat}"
                         data-time-zone-short="${timeZoneShort}"
-                        data-time-zone-full="${timeZoneFull}"/>
+                        data-time-zone-full="${timeZoneFull}"
+                        autocomplete="off"/>
 			</cti:displayForPageEditModes>
 	</c:otherwise>
 </c:choose>

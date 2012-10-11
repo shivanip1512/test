@@ -2290,6 +2290,16 @@ table th.small_width {
 	margin-right: 5px;
 }
 
+.datetimeEntry_wrap.date {
+	width: 133px;
+}
+.datetimeEntry_wrap.dateTime {
+	min-width: 169px;
+}
+.datetimeEntry_wrap.time {
+	width: 100px;
+}
+
 .datetimeEntry_wrap input {
 	padding: 2px;
 	float: left;
