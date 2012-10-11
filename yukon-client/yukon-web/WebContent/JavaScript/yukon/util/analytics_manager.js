@@ -63,14 +63,12 @@ if(typeof(Yukon.Util.AnalyticsManager) === 'undefined'){
                     _gaq = [];
                 }
 
-                /* Asynchronous Google Analytics snippet
-                 * mathiasbynens.be/notes/async-analytics-snippet */
-                (function(d,t){
-                    var g=d.createElement(t),s=d.getElementsByTagName(t)[0];
-                    g.async=1;
+                (function(d){
+                    var g=d.createElement("script");
+                    var s=d.getElementsByTagName("body")[0];
                     g.src=("https:"==location.protocol?"//ssl":"//www")+".google-analytics.com/ga.js";
-                    s.parentNode.insertBefore(g,s);
-                }(document,"script"));
+                    s.appendChild(g);
+                }(document));
 
                 this._initialized = true;
             }
