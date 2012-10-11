@@ -1,6 +1,8 @@
 package com.cannontech.system.dao.impl;
 
-import org.apache.commons.lang.Validate;
+import java.sql.SQLException;
+import java.util.List;
+
 import org.apache.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.dao.EmptyResultDataAccessException;
@@ -11,6 +13,9 @@ import com.cannontech.common.util.LeastRecentlyUsedCacheMap;
 import com.cannontech.common.util.SqlStatementBuilder;
 import com.cannontech.core.roleproperties.InputTypeFactory;
 import com.cannontech.database.YukonJdbcTemplate;
+import com.cannontech.database.YukonResultSet;
+import com.cannontech.database.YukonRowMapper;
+import com.cannontech.database.db.setting.GlobalSettingDb;
 import com.cannontech.system.BadSettingTypeException;
 import com.cannontech.system.GlobalSetting;
 import com.cannontech.system.dao.GlobalSettingsDao;
@@ -44,8 +49,7 @@ import com.cannontech.system.dao.GlobalSettingsDao;
 public class GlobalSettingsDaoImpl implements GlobalSettingsDao {
     
     private Logger log = YukonLogManager.getLogger(GlobalSettingsDaoImpl.class);
-    private LeastRecentlyUsedCacheMap<GlobalSetting, Object> cache = new LeastRecentlyUsedCacheMap<GlobalSetting, Object>(10000);
-    private final Object NULL_CACHE_VALUE = new Object();
+    private LeastRecentlyUsedCacheMap<GlobalSetting, GlobalSettingDb> cache = new LeastRecentlyUsedCacheMap<GlobalSetting, GlobalSettingDb>(10000);
     
     @Autowired private YukonJdbcTemplate yukonJdbcTemplate;
 
@@ -88,6 +92,26 @@ public class GlobalSettingsDaoImpl implements GlobalSettingsDao {
         return getConvertedValue(setting, enumClass);
     }
 
+    @Override
+    public GlobalSettingDb getSettingDb(GlobalSetting setting) {
+        GlobalSettingDb settingDb = cache.get(setting);
+        
+        if (settingDb == null) {
+            // Not in cache, Look in Db
+            settingDb = findSetting(setting);
+            if (settingDb == null) {
+                // Not in Db. Need to create one for cache
+                settingDb = new GlobalSettingDb(setting.name(),setting.getDefaultValue());
+            } 
+            cache.put(setting, settingDb);
+            log.debug("Updating cache for " + setting);
+        } else {
+            log.debug("Cache hit for " + setting);
+        }
+        
+        return settingDb;
+    }
+
     /**
      * @param <T>
      * @param setting
@@ -95,71 +119,72 @@ public class GlobalSettingsDaoImpl implements GlobalSettingsDao {
      * @return the converted value or the default, will only return null if the default was null
      */
     private <T> T getConvertedValue(GlobalSetting setting, Class<T> returnType) {
+        return returnType.cast(getSettingDb(setting).getValue());
+    }
 
-        if (log.isDebugEnabled()) {
-            log.debug("Getting converted value of " + setting + " as " + returnType.getSimpleName());
+    private Object convertSettingValue(GlobalSetting setting, String value) {
+        Object convertedValue;
+        try {
+            convertedValue = InputTypeFactory.convertPropertyValue(setting.getType(), value);
+        } catch (Exception e) {
+            throw new BadSettingTypeException(setting, value, e);
         }
-        Validate.isTrue(returnType.isAssignableFrom(setting.getType().getTypeClass()), "can't convert " + setting + " to " + returnType);
-
-        // check cache (using a special value to allow get to be used to check containsValue)
-        Object cachedValue = cache.get(setting);
-        if (cachedValue != null) {
-            if (cachedValue == NULL_CACHE_VALUE) {
-                cachedValue = null;
-            }
-            log.debug("Cache hit for " + setting);
-            return returnType.cast(cachedValue);
-        }
-
-        // We didn't find the entry in the cache, so we'll need to retrieve it from the database.
-        String stringValue = findSettingValue(setting);
-        Object convertedValue = convertSettingValue(setting, stringValue);
         if (convertedValue == null) {
             log.debug("ConvertedValue was null for "+ setting.name() +", using default");
             convertedValue = setting.getDefaultValue();
         }
-        if (log.isDebugEnabled()) {
-            log.debug("Returning: " + convertedValue);
-        }
-        T result = returnType.cast(convertedValue);
-        if (convertedValue == null) {
-            convertedValue = NULL_CACHE_VALUE;
-        }
-        log.debug("Updating cache for " + setting);
-        cache.put(setting, convertedValue);
-        return result;
+        return convertedValue;
     }
 
-    private Object convertSettingValue(GlobalSetting setting, String value) {
-        try {
-            return InputTypeFactory.convertPropertyValue(setting.getType(), value);
-        } catch (Exception e) {
-            throw new BadSettingTypeException(setting, value, e);
-        }
-    }
-
-    private String findSettingValue(GlobalSetting setting) {
+    private GlobalSettingDb findSetting(GlobalSetting setting) {
         SqlStatementBuilder sql = new SqlStatementBuilder();
-        sql.append("SELECT Value");
+        sql.append("SELECT YukonSettingId, Value, Name, LastChangedDate");
         sql.append("FROM YukonSetting");
         sql.append("WHERE Name").eq(setting.name());
         
-        String value = null;
+        List<GlobalSettingDb> values = null;
         try {
-            value = yukonJdbcTemplate.queryForString(sql);
+            values = yukonJdbcTemplate.query(sql,settingMapper);
         } catch (EmptyResultDataAccessException e) {
             log.warn("Setting missing from the database: " + setting.name());
-        }
-        
-        if (log.isDebugEnabled()) {
-            log.debug("Got one setting value of " + setting);
+            return null;
         }
 
-        return value;
+        if (values == null || values.isEmpty()) {
+            log.warn("Setting missing from the database: " + setting.name());
+            return null;
+        } else if (values.size() == 1) {
+            GlobalSettingDb value = values.get(0);
+            if (log.isDebugEnabled()) {
+                log.debug("Found one setting value for " + setting.name());
+            }
+            return value;
+        } else {
+            GlobalSettingDb value = values.get(0);
+            log.warn("Global Setting conflict found for " + setting.name() + " Using value: " + value.getValue());
+            return value;
+        }
     }
     
     public void clearCache() {
-        log.debug("Removing about " +  cache.size() + " values from the Yukon Settings Cache");
+        log.debug("Removing " +  cache.size() + " values from the Yukon Settings Cache");
         cache.clear();
     }
+  
+    private final YukonRowMapper<GlobalSettingDb> settingMapper = new YukonRowMapper<GlobalSettingDb>() {
+        @Override
+        public GlobalSettingDb mapRow(YukonResultSet rs) throws SQLException {
+            
+            GlobalSetting setting = rs.getEnum("Name", GlobalSetting.class);
+            String valueStr = rs.getString("Value");
+            
+            Object value = convertSettingValue(setting,valueStr);
+            
+            GlobalSettingDb globalSettingDb = new GlobalSettingDb(setting.name(),value);
+            globalSettingDb.setLastChangedDate(rs.getInstant("LastChangedDate"));
+            globalSettingDb.setYukonSettingId(rs.getInt("YukonSettingId"));
+            
+            return globalSettingDb;
+        }
+    };
 }

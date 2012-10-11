@@ -1,6 +1,7 @@
 package com.cannontech.common.mock;
 
 import com.cannontech.common.exception.NotAuthorizedException;
+import com.cannontech.database.db.setting.GlobalSettingDb;
 import com.cannontech.system.GlobalSetting;
 import com.cannontech.system.dao.GlobalSettingsDao;
 
@@ -33,5 +34,10 @@ public class GlobalSettingsDaoAdapter implements GlobalSettingsDao {
 
     @Override
     public void verifySetting(GlobalSetting setting) throws NotAuthorizedException {
+    }
+
+    @Override
+    public GlobalSettingDb getSettingDb(GlobalSetting globalSetting) {
+        return null;
     }
 }

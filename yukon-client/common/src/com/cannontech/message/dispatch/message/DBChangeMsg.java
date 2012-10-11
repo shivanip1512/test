@@ -66,7 +66,6 @@ public class DBChangeMsg extends com.cannontech.message.util.Message
     public static final int CHANGE_USER_GROUP_DB = 37;
     public static final int CHANGE_YUKON_PAOBJECT_ENCRYPTION_KEY_DB = 38;
     public static final int CHANGE_ENCRYPTION_KEY_DB = 39;
-    public static final int CHANGE_GLOBAL_SETTING_DB = 40;
 
     /*Possible values for the Categories field
      *NOTE: If you are using the CHANGE_PAO_DB database field you will

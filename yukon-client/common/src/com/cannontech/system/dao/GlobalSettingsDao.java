@@ -1,6 +1,7 @@
 package com.cannontech.system.dao;
 
 import com.cannontech.common.exception.NotAuthorizedException;
+import com.cannontech.database.db.setting.GlobalSettingDb;
 import com.cannontech.system.GlobalSetting;
 
 
@@ -83,4 +84,6 @@ public interface GlobalSettingsDao {
      * @throws NotAuthorizedException
      */
     public void verifySetting(GlobalSetting setting) throws NotAuthorizedException;
+    
+    public GlobalSettingDb getSettingDb(GlobalSetting globalSetting);
 }
