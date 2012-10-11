@@ -48,7 +48,7 @@ public class DeviceDefinitionViewerController extends AbstractController {
 	
 	private static String[] DISPLAY_GROUP_ORDER = {"MCT", "Two Way LCR", "Signal Transmitters", "Electronic Meters", "RTU", "Virtual", "Grid Advisor", ""};
 	
-    private static Comparator<Attribute> attributeComparitor() {
+    private static Comparator<Attribute> attributeComparator() {
         Ordering<Attribute> descriptionOrdering = Ordering.natural()
             .onResultOf(new Function<Attribute, String>() {
                 public String apply(Attribute from) {
@@ -70,7 +70,7 @@ public class DeviceDefinitionViewerController extends AbstractController {
         
         Set<String> allDisplayGroups = new LinkedHashSet<String>();
         Set<String> allChangeGroups = new HashSet<String>();
-        SortedSet<Attribute> allAttributes = Sets.newTreeSet(attributeComparitor());
+        SortedSet<Attribute> allAttributes = Sets.newTreeSet(attributeComparator());
         Set<PaoTag> allTags = new HashSet<PaoTag>();
         
         // parameters
