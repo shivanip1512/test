@@ -4,7 +4,7 @@
 <%@ taglib prefix="i" tagdir="/WEB-INF/tags/i18n" %>
 
 <cti:standardPage module="operator" page="accountImport">
-    <cti:verifyRolePropertyValue property="OPERATOR_IMPORT_CUSTOMER_ACCOUNT" expectedValue="true"/>
+    <cti:checkRolesAndProperties value="OPERATOR_IMPORT_CUSTOMER_ACCOUNT" />
     
     <script type="text/javascript">
         function importFinished() {

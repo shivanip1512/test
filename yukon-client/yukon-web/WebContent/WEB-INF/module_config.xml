@@ -30,6 +30,7 @@
             <link>/spring/stars/operator/account/accountCreate</link>
           </option>
           <option name="accountImport">
+            <requireRoleProperty value="OPERATOR_IMPORT_CUSTOMER_ACCOUNT" />
             <link>/spring/stars/operator/account/accountImport</link>
           </option>          
           <option name="optOutAdmin">

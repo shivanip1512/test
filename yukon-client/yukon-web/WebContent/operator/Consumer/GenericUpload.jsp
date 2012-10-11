@@ -5,7 +5,7 @@
 <%@ include file="include/StarsHeader.jsp" %>
 <%@ taglib uri="http://cannontech.com/tags/cti" prefix="cti" %>
 
-<cti:verifyRolePropertyValue property="OPERATOR_IMPORT_CUSTOMER_ACCOUNT" expectedValue="upload"/>
+<cti:checkRolesAndProperties value="OPERATOR_IMPORT_CUSTOMER_ACCOUNT" />
 <title>Energy Services Operations Center</title>
 <meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1">
 <link rel="stylesheet" href="../../WebConfig/yukon/CannonStyle.css" type="text/css">

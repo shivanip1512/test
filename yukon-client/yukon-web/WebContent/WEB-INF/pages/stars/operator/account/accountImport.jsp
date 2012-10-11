@@ -6,7 +6,7 @@
 
 <cti:standardPage module="operator" page="accountImport">
 
-    <cti:verifyRolePropertyValue property="OPERATOR_IMPORT_CUSTOMER_ACCOUNT" expectedValue="true"/>
+    <cti:checkRolesAndProperties value="OPERATOR_IMPORT_CUSTOMER_ACCOUNT" />
     
     <cti:url var="importImg" value="/WebConfig/yukon/Icons/import_by_DEVICE_TYPE.gif"/>
     <cti:msg var="instructionsText" key="yukon.web.modules.operator.accountImport.instructionsText" />
