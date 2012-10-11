@@ -674,7 +674,12 @@ public class OperatorAccountController {
 			if(!ignoreLogin) {
 			    
 			    bindingResult.pushNestedPath("loginBackingBean");
-			    passwordValidator.validate(accountGeneral.getLoginBackingBean(), bindingResult);
+
+			    if (StringUtils.isNotBlank(accountGeneral.getLoginBackingBean().getPassword1()) 
+			            && StringUtils.isNotBlank(accountGeneral.getLoginBackingBean().getPassword2())) {
+			        passwordValidator.validate(accountGeneral.getLoginBackingBean(), bindingResult);
+			    }
+
 			    usernameValidator.validate(accountGeneral.getLoginBackingBean(), bindingResult);
 			    bindingResult.popNestedPath();
 			    
@@ -693,7 +698,6 @@ public class OperatorAccountController {
         				operatorAccountService.updateAccount(accountId, accountGeneral.getOperatorGeneralUiExtras());
         				if (!ignoreLogin) {
                             if (LoginModeEnum.valueOf(loginMode) == LoginModeEnum.CREATE) {
-            
                                 residentialLoginService.createResidentialLogin(accountGeneral.getLoginBackingBean(), 
                                                        userContext.getYukonUser(), 
                                                        accountInfoFragment.getAccountId(), 
