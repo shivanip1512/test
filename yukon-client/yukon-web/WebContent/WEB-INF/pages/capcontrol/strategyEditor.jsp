@@ -281,7 +281,52 @@
 
 			</x:htmlTag>
             
-            <x:htmlTag value="br"/>
+            <x:htmlTag value="br" rendered="#{capControlForm.strategy.ivvc}"/>
+            
+            <x:htmlTag value="fieldset" styleClass="fieldSet" rendered="#{capControlForm.strategy.ivvc}">
+                <x:htmlTag value="legend">
+                    <x:outputText value="Power Factor Correction Settings" styleClass="leftOfImageLabel"/>
+                    <x:htmlTag value="span" styleClass="icon icon_help fr power_factor_correction_help"></x:htmlTag>
+                    <x:htmlTag value="div" styleClass="dn power_factor_correction_help_container"></x:htmlTag>
+                </x:htmlTag>
+
+                <x:panelGrid columns="2">
+					<x:outputLabel for="pf_bandwidth" value="Bandwidth: " title="Power Factor Correction Bandwidth" />
+					<x:panelGroup>
+						<x:inputText id="pf_bandwidth"
+							disabled="#{!capControlForm.hasEditingRole || !capControlForm.editingCBCStrategy}"
+							required="true" value="#{capControlForm.strategy.powerFactorCorrectionSetting.bandwidth}">
+							<f:validateDoubleRange minimum="0"/>
+							<f:validateDoubleRange maximum="2"/>
+						</x:inputText>
+						<x:outputText value="bandwidth units" styleClass="padUnitsLabel" />
+					</x:panelGroup>
+	
+					<x:outputLabel for="pf_cost" value="Cost: " title="Power Factor Correction Cost" />
+					<x:panelGroup>
+						<x:inputText id="pf_cost"
+							disabled="#{!capControlForm.hasEditingRole || !capControlForm.editingCBCStrategy}"
+							required="true" value="#{capControlForm.strategy.powerFactorCorrectionSetting.cost}">
+							<f:validateDoubleRange minimum="0"/>
+						</x:inputText>
+						<x:outputText value="cost units" styleClass="padUnitsLabel" />
+					</x:panelGroup>
+	
+					<x:outputLabel for="pf_max_cost" value="Max Cost: " title="Power Factor Correction Max Cost" />
+					<x:panelGroup>
+						<x:inputText id="pf_max_cost"
+							disabled="#{!capControlForm.hasEditingRole || !capControlForm.editingCBCStrategy}"
+							required="true" value="#{capControlForm.strategy.powerFactorCorrectionSetting.maxCost}">
+							<f:validateDoubleRange minimum="0" />
+						</x:inputText>
+						<x:outputText value="max cost units" styleClass="padUnitsLabel" />
+					</x:panelGroup>
+
+				</x:panelGrid>
+
+			</x:htmlTag>
+            
+            <x:htmlTag value="br" rendered="#{capControlForm.strategy.ivvc}"/>
             
             <x:htmlTag value="fieldset" styleClass="fieldSet" rendered="#{!capControlForm.timeOfDay}">
                 <x:htmlTag value="legend">

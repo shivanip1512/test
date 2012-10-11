@@ -41,6 +41,7 @@ public class CapControlStrategy extends DBPersistent implements CTIDbChange {
     private String endDaySettings = CtiUtilities.STRING_NONE;
     private List<PeakTargetSetting> targetSettings = StrategyPeakSettingsHelper.getSettingDefaults(ControlAlgorithm.KVAR);
     private List<VoltageViolationSetting> voltageViolationSettings = VoltageViolationSettingsHelper.getVoltageViolationDefaults();
+    private PowerFactorCorrectionSetting powerFactorCorrectionSetting = new PowerFactorCorrectionSetting();
     
 	public static final String SETTER_COLUMNS[] = { 
 		"StrategyName", "ControlMethod", "MaxDailyOperation",
@@ -85,6 +86,7 @@ public class CapControlStrategy extends DBPersistent implements CTIDbChange {
         
         strategyDao.savePeakSettings(this);
         strategyDao.saveVoltageViolationSettings(this);
+        strategyDao.savePowerFactorCorrectionSetting(this);
     }
 	
 	public void retrieve() throws SQLException {
@@ -115,6 +117,7 @@ public class CapControlStrategy extends DBPersistent implements CTIDbChange {
         }
         retrieveTargetSettings(this);
         retrieveVoltageViolationSettings(this);
+        retrievePowerFactorCorrectionSetting(this);
     }
 	
 	public void delete() throws java.sql.SQLException {
@@ -244,6 +247,10 @@ public class CapControlStrategy extends DBPersistent implements CTIDbChange {
 	private void retrieveVoltageViolationSettings(CapControlStrategy strategy) {
 	    voltageViolationSettings = strategyDao.getVoltageViolationSettings(strategy);
 	}
+	
+	private void retrievePowerFactorCorrectionSetting(CapControlStrategy strategy) {
+	    powerFactorCorrectionSetting = strategyDao.getPowerFactorCorrectionSetting(strategy);
+	}
 
 	public String toString() {
 		return getStrategyName();
@@ -311,6 +318,14 @@ public class CapControlStrategy extends DBPersistent implements CTIDbChange {
 
     public void setVoltageViolationSettings(List<VoltageViolationSetting> voltageViolationSettings) {
         this.voltageViolationSettings = voltageViolationSettings;
+    }
+
+    public PowerFactorCorrectionSetting getPowerFactorCorrectionSetting() {
+        return powerFactorCorrectionSetting;
+    }
+
+    public void setPowerFactorCorrectionSetting(PowerFactorCorrectionSetting powerFactorCorrectionSetting) {
+        this.powerFactorCorrectionSetting = powerFactorCorrectionSetting;
     }
 
     public boolean isKVarAlgorithm () {

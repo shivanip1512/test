@@ -9,6 +9,7 @@ import java.util.concurrent.TimeUnit;
 import org.apache.commons.lang.StringUtils;
 import org.springframework.beans.factory.InitializingBean;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.dao.DataAccessException;
 import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.jdbc.core.namedparam.MapSqlParameterSource;
 import org.springframework.jdbc.core.simple.ParameterizedRowMapper;
@@ -33,12 +34,15 @@ import com.cannontech.database.db.capcontrol.CapControlStrategy;
 import com.cannontech.database.db.capcontrol.LiteCapControlStrategy;
 import com.cannontech.database.db.capcontrol.PeakTargetSetting;
 import com.cannontech.database.db.capcontrol.PeaksTargetType;
+import com.cannontech.database.db.capcontrol.PowerFactorCorrectionSetting;
+import com.cannontech.database.db.capcontrol.PowerFactorCorrectionSettingName;
+import com.cannontech.database.db.capcontrol.PowerFactorCorrectionSettingType;
 import com.cannontech.database.db.capcontrol.StrategyPeakSettingsHelper;
-import com.cannontech.database.db.capcontrol.VoltageViolationSettingsHelper;
 import com.cannontech.database.db.capcontrol.TargetSettingType;
 import com.cannontech.database.db.capcontrol.VoltageViolationSetting;
 import com.cannontech.database.db.capcontrol.VoltageViolationSettingNameType;
 import com.cannontech.database.db.capcontrol.VoltageViolationSettingType;
+import com.cannontech.database.db.capcontrol.VoltageViolationSettingsHelper;
 import com.cannontech.database.incrementer.NextValueHelper;
 import com.cannontech.user.YukonUserContext;
 import com.google.common.base.Function;
@@ -48,9 +52,10 @@ public class StrategyDaoImpl implements StrategyDao, InitializingBean {
     
     private final ParameterizedRowMapper<CapControlStrategy> rowMapper = new StrategyRowMapper();
     private SimpleTableAccessTemplate<CapControlStrategy> strategyTemplate;
-    private NextValueHelper nextValueHelper;
-    private YukonJdbcTemplate yukonJdbcTemplate;
-    private DurationFormattingService durationFormattingService;
+    
+    @Autowired private NextValueHelper nextValueHelper;
+    @Autowired private YukonJdbcTemplate yukonJdbcTemplate;
+    @Autowired private DurationFormattingService durationFormattingService;
     
     private FieldMapper<CapControlStrategy> strategyFieldMapper = new FieldMapper<CapControlStrategy>() {
 
@@ -98,6 +103,7 @@ public class StrategyDaoImpl implements StrategyDao, InitializingBean {
             strategyTemplate.insert(strategy);
             savePeakSettings(strategy);
             saveVoltageViolationSettings(strategy);
+            savePowerFactorCorrectionSetting(strategy);
         } catch (DataIntegrityViolationException e) {
             throw new DataIntegrityViolationException("Strategy name already in use.");
         }
@@ -112,6 +118,7 @@ public class StrategyDaoImpl implements StrategyDao, InitializingBean {
             strategyTemplate.update(strategy);
             savePeakSettings(strategy);
             saveVoltageViolationSettings(strategy);
+            savePowerFactorCorrectionSetting(strategy);
         } catch (DataIntegrityViolationException e) {
             throw new DataIntegrityViolationException("Strategy name already in use.");
         }
@@ -196,6 +203,7 @@ public class StrategyDaoImpl implements StrategyDao, InitializingBean {
         CapControlStrategy strategy =  yukonJdbcTemplate.queryForObject(sql, rowMapper);
         strategy.setTargetSettings(getPeakSettings(strategy));
         strategy.setVoltageViolationSettings(getVoltageViolationSettings(strategy));
+        strategy.setPowerFactorCorrectionSetting(getPowerFactorCorrectionSetting(strategy));
         
         return strategy;
     }
@@ -217,6 +225,7 @@ public class StrategyDaoImpl implements StrategyDao, InitializingBean {
         for(CapControlStrategy strategy : strategies) {
             strategy.setTargetSettings(getPeakSettings(strategy));
             strategy.setVoltageViolationSettings(getVoltageViolationSettings(strategy));
+            strategy.setPowerFactorCorrectionSetting(getPowerFactorCorrectionSetting(strategy));
         }
         
         return strategies;
@@ -298,6 +307,7 @@ public class StrategyDaoImpl implements StrategyDao, InitializingBean {
     }
     
     @Override
+    @Transactional
     public void savePeakSettings(CapControlStrategy strategy) {
         List<PeakTargetSetting> targetSettings = strategy.getTargetSettings();
         int strategyId = strategy.getStrategyID();
@@ -313,7 +323,8 @@ public class StrategyDaoImpl implements StrategyDao, InitializingBean {
         }
         
         SqlStatementBuilder sql = new SqlStatementBuilder();
-        sql.append("DELETE FROM CCStrategyTargetSettings WHERE strategyId = ").appendArgument(strategyId);
+        sql.append("DELETE FROM CCStrategyTargetSettings WHERE strategyId").eq(strategyId);
+        sql.append("AND SettingType").in(Lists.newArrayList(PeaksTargetType.values()));
         yukonJdbcTemplate.update(sql.getSql(), sql.getArguments());
         
         for(PeakTargetSetting setting : targetSettings) {
@@ -330,17 +341,20 @@ public class StrategyDaoImpl implements StrategyDao, InitializingBean {
     }
 
     @Override
+    @Transactional
     public void saveVoltageViolationSettings(CapControlStrategy strategy) {
-        List<VoltageViolationSetting> targetSettings = strategy.getVoltageViolationSettings();
-        
-        /* Perform Validation */
-        validateVoltageViolationSettings(targetSettings);
-
         int strategyId = strategy.getStrategyID();
         
         SqlStatementBuilder sql = new SqlStatementBuilder();
         sql.append("DELETE FROM CCStrategyTargetSettings WHERE strategyId").eq(strategyId);
+        sql.append("AND SettingType").in(Lists.newArrayList(VoltageViolationSettingType.values()));
         yukonJdbcTemplate.update(sql.getSql(), sql.getArguments());
+        
+        if (!strategy.isIvvc()) return; // Don't save these IVVC-only settings if we aren't going to use them
+
+        List<VoltageViolationSetting> targetSettings = strategy.getVoltageViolationSettings();
+        /* Perform Validation */
+        validateVoltageViolationSettings(targetSettings);
         
         for(VoltageViolationSetting setting : targetSettings) {
             sql = new SqlStatementBuilder();
@@ -358,6 +372,50 @@ public class StrategyDaoImpl implements StrategyDao, InitializingBean {
             sql.values(strategyId, setting.getName(), setting.getEmergencyCost(), VoltageViolationSettingType.EMERGENCY_COST);
             yukonJdbcTemplate.update(sql);
         }
+    }
+    
+    @Override
+    @Transactional
+    public void savePowerFactorCorrectionSetting(CapControlStrategy strategy) {
+        int strategyId = strategy.getStrategyID();
+        
+        SqlStatementBuilder sql = new SqlStatementBuilder();
+        sql.append("DELETE FROM CCStrategyTargetSettings WHERE strategyId").eq(strategyId);
+        sql.append("AND SettingName").eq_k(PowerFactorCorrectionSettingName.POWER_FACTOR_CORRECTION.getDisplayName());
+        yukonJdbcTemplate.update(sql.getSql(), sql.getArguments());
+        
+        if (!strategy.isIvvc()) return; // Don't save these IVVC-only settings if we aren't going to use them
+        
+        PowerFactorCorrectionSetting setting = strategy.getPowerFactorCorrectionSetting();
+        /* Perform Validation */
+        validatePowerFactorCorrectionSetting(setting);
+
+        /* Bandwidth */
+        sql = new SqlStatementBuilder();
+        sql.append("INSERT INTO CCStrategyTargetSettings");
+        sql.values(strategyId,
+                   PowerFactorCorrectionSettingName.POWER_FACTOR_CORRECTION,
+                   setting.getBandwidth(),
+                   PowerFactorCorrectionSettingType.BANDWIDTH);
+        yukonJdbcTemplate.update(sql);
+
+        /* cost */
+        sql = new SqlStatementBuilder();
+        sql.append("INSERT INTO CCStrategyTargetSettings");
+        sql.values(strategyId,
+                   PowerFactorCorrectionSettingName.POWER_FACTOR_CORRECTION,
+                   setting.getCost(),
+                   PowerFactorCorrectionSettingType.COST);
+        yukonJdbcTemplate.update(sql);
+        
+        /* max cost */
+        sql = new SqlStatementBuilder();
+        sql.append("INSERT INTO CCStrategyTargetSettings");
+        sql.values(strategyId,
+                   PowerFactorCorrectionSettingName.POWER_FACTOR_CORRECTION,
+                   setting.getMaxCost(),
+                   PowerFactorCorrectionSettingType.MAX_COST);
+        yukonJdbcTemplate.update(sql);
     }
 
     @Override
@@ -386,6 +444,28 @@ public class StrategyDaoImpl implements StrategyDao, InitializingBean {
         }
         
         return settings;
+    }
+    
+    @Override
+    public PowerFactorCorrectionSetting getPowerFactorCorrectionSetting(CapControlStrategy strategy) {
+        SqlStatementBuilder sql = new SqlStatementBuilder();
+        sql.append("SELECT bw.SettingValue bwValue, cost.SettingValue costValue, maxCost.SettingValue maxCostValue");
+        sql.append("FROM CCStrategyTargetSettings bw, CCStrategyTargetSettings cost, CCStrategyTargetSettings maxCost");
+        sql.append("WHERE bw.SettingName = cost.SettingName");
+        sql.append("  AND bw.SettingName = maxCost.SettingName");
+        sql.append("  AND bw.SettingName").eq_k(PowerFactorCorrectionSettingName.POWER_FACTOR_CORRECTION.getDisplayName());
+        sql.append("  AND bw.strategyid = cost.strategyid");
+        sql.append("  AND bw.strategyid = maxCost.strategyid");
+        sql.append("  AND bw.strategyid").eq(strategy.getStrategyID());
+        sql.append("  AND bw.SettingType").eq_k(PowerFactorCorrectionSettingType.BANDWIDTH);
+        sql.append("  AND cost.SettingType").eq_k(PowerFactorCorrectionSettingType.COST);
+        sql.append("  AND maxCost.SettingType").eq_k(PowerFactorCorrectionSettingType.MAX_COST);
+        
+        try {
+            return yukonJdbcTemplate.queryForObject(sql, powerFactorCorrectionSettingMapper);
+        } catch (DataAccessException e) {
+            return new PowerFactorCorrectionSetting();
+        }
     }
 
     @Override
@@ -455,6 +535,16 @@ public class StrategyDaoImpl implements StrategyDao, InitializingBean {
         }
     };
     
+    private static YukonRowMapper<PowerFactorCorrectionSetting> powerFactorCorrectionSettingMapper = 
+            new YukonRowMapper<PowerFactorCorrectionSetting>() {
+        @Override
+        public PowerFactorCorrectionSetting mapRow(YukonResultSet rs) throws SQLException {
+            return new PowerFactorCorrectionSetting(rs.getDouble("bwValue"),
+                                                    rs.getDouble("costValue"),
+                                                    rs.getDouble("maxCostValue"));
+        }
+    };
+    
     private static void validateVoltageViolationSettings(List<VoltageViolationSetting> settings) {
         List<String> errors = Lists.newArrayList();
         for (VoltageViolationSetting setting : settings) {
@@ -483,19 +573,18 @@ public class StrategyDaoImpl implements StrategyDao, InitializingBean {
         if (!errors.isEmpty()) throw new IllegalArgumentException(StringUtils.join(errors, ", "));
     }
     
-    @Autowired
-    public void setYukonJdbcTemplate(YukonJdbcTemplate yukonJdbcTemplate) {
-        this.yukonJdbcTemplate = yukonJdbcTemplate;
-    }
-    
-    @Autowired
-    public void setNextValueHelper(NextValueHelper nextValueHelper) {
-        this.nextValueHelper = nextValueHelper;
-    }
-    
-    @Autowired
-    public void setDurationFormattingService(DurationFormattingService durationFormattingService) {
-        this.durationFormattingService = durationFormattingService;
+    private static void validatePowerFactorCorrectionSetting(PowerFactorCorrectionSetting setting) {
+        List<String> errors = Lists.newArrayList();
+        if (setting.getBandwidth() < 0 || setting.getBandwidth() > 2) {
+            errors.add("Bandwidth must be between zero and two");
+        }
+        if (setting.getCost() <= 0) {
+            errors.add("Cost must be greater than zero");
+        }
+        if (setting.getMaxCost() < 0) {
+            errors.add("Max Cost must be greater than or equal to zero");
+        }
+        if (!errors.isEmpty()) throw new IllegalArgumentException(StringUtils.join(errors, ", "));
     }
     
     public void afterPropertiesSet() throws Exception {
