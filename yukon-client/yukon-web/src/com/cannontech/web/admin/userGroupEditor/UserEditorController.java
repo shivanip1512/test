@@ -3,7 +3,6 @@ package com.cannontech.web.admin.userGroupEditor;
 import java.util.List;
 import java.util.Map;
 
-import org.apache.commons.lang.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.MessageSourceResolvable;
 import org.springframework.stereotype.Controller;
@@ -73,7 +72,7 @@ public class UserEditorController {
         LiteYukonUser yukonUser = yukonUserDao.getLiteYukonUser(userId);
         User user = new User(yukonUser);
 
-        setupModelMap(model, user, PageEditMode.VIEW, userContext);
+        setupModelMap(model, user,new Password(), PageEditMode.VIEW, userContext);
         return "userGroupEditor/user.jsp";
     }
     
@@ -81,7 +80,7 @@ public class UserEditorController {
     @RequestMapping(value="edit", method=RequestMethod.POST, params="edit")
     public String edit(YukonUserContext userContext, ModelMap model, int userId) {
         User user = new User(yukonUserDao.getLiteYukonUser(userId));
-        setupModelMap(model, user, PageEditMode.EDIT, userContext);
+        setupModelMap(model, user, new Password(), PageEditMode.EDIT, userContext);
         return "userGroupEditor/user.jsp";
     }
 
@@ -110,7 +109,7 @@ public class UserEditorController {
         if (result.hasErrors()) {
             List<MessageSourceResolvable> messages = YukonValidationUtils.errorsForBindingResult(result);
             flash.setMessage(messages, FlashScopeMessageType.ERROR);
-            setupModelMap(model, user, PageEditMode.EDIT, userContext);
+            setupModelMap(model, user, new Password(), PageEditMode.EDIT, userContext);
             return "userGroupEditor/user.jsp";
         }
 
@@ -127,7 +126,7 @@ public class UserEditorController {
 
     @RequestMapping(method=RequestMethod.POST)
     public String changePassword(YukonUserContext userContext, ModelMap model, FlashScope flash, int userId, 
-                                 @ModelAttribute Password password, BindingResult result) {
+                                 @ModelAttribute(value="passwordBind") Password password, BindingResult result) {
         LiteYukonUser yukonUser = yukonUserDao.getLiteYukonUser(userId);
         new PasswordValidator(yukonUser).validate(password, result);
         User user = new User(yukonUser);
@@ -137,7 +136,7 @@ public class UserEditorController {
             List<MessageSourceResolvable> messages = YukonValidationUtils.errorsForBindingResult(result);
             flash.setMessage(messages, FlashScopeMessageType.ERROR);
             model.addAttribute("showChangePwPopup", true);
-            setupModelMap(model, user, PageEditMode.VIEW, userContext);
+            setupModelMap(model, user, password, PageEditMode.VIEW, userContext);
             model.addAttribute("pwChangeFormMode", PageEditMode.EDIT);
             return "userGroupEditor/user.jsp";
         }
@@ -162,9 +161,9 @@ public class UserEditorController {
         }
     }
     
-    private void setupModelMap(ModelMap model, User user, PageEditMode mode, YukonUserContext userContext) {
+    private void setupModelMap(ModelMap model, User user, Password password, PageEditMode mode, YukonUserContext userContext) {
         model.addAttribute("user", user);
-        model.addAttribute("password", new Password());
+        model.addAttribute("passwordBind", password);
         model.addAttribute("mode", mode);
 
         model.addAttribute("currentUserId",userContext.getYukonUser().getLiteID());
@@ -223,28 +222,26 @@ public class UserEditorController {
         protected void doValidation(Password target, Errors errors) {
             YukonValidationUtils.checkExceedsMaxLength(errors, "password", target.getPassword(), 64);
             YukonValidationUtils.checkExceedsMaxLength(errors, "confirmPassword", target.getConfirmPassword(), 64);
-            if (!StringUtils.isBlank(target.getPassword()) || !StringUtils.isBlank(target.getConfirmPassword())) {
-                if (!target.getPassword().equals(target.getConfirmPassword())) {
-                    YukonValidationUtils.rejectValues(errors, "password.mismatch", "password", "confirmPassword");
-                    return;
-                }
+            if (!target.getPassword().equals(target.getConfirmPassword())) {
+                YukonValidationUtils.rejectValues(errors, "password.mismatch", "password", "confirmPassword");
+                return;
+            }
 
-                // Check the password against the password policy.
-                String password = target.getPassword();
-                PasswordPolicyError passwordPolicyError =
-                        passwordPolicyService.checkPasswordPolicy(password, yukonUser);
-                Object[] errorArgs = {};
+            // Check the password against the password policy.
+            String password = target.getPassword();
+            PasswordPolicyError passwordPolicyError =
+                    passwordPolicyService.checkPasswordPolicy(password, yukonUser);
+            Object[] errorArgs = {};
 
-                if (passwordPolicyError == PasswordPolicyError.PASSWORD_DOES_NOT_MEET_POLICY_QUALITY) {
-                    PasswordPolicy passwordPolicy = passwordPolicyService.getPasswordPolicy(yukonUser);
-                    errorArgs = new Object[] { passwordPolicy.numberOfRulesMet(password),
+            if (passwordPolicyError == PasswordPolicyError.PASSWORD_DOES_NOT_MEET_POLICY_QUALITY) {
+                PasswordPolicy passwordPolicy = passwordPolicyService.getPasswordPolicy(yukonUser);
+                errorArgs = new Object[] { passwordPolicy.numberOfRulesMet(password),
                         passwordPolicy.getPasswordQualityCheck() };
-                }
+            }
 
-                if (passwordPolicyError != null) {
-                    YukonValidationUtils.rejectValues(errors, passwordPolicyError.getFormatKey(), errorArgs,
-                        "password", "confirmPassword");
-                }
+            if (passwordPolicyError != null) {
+                YukonValidationUtils.rejectValues(errors, passwordPolicyError.getFormatKey(), errorArgs,
+                                                  "password", "confirmPassword");
             }
         }
     }
