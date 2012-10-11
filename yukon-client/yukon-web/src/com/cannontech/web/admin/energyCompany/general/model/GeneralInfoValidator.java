@@ -14,8 +14,8 @@ import com.cannontech.web.stars.dr.operator.validator.ContactNotificationDtoVali
 
 public class GeneralInfoValidator extends SimpleValidator<GeneralInfo> {
     
-    @Autowired private PhoneNumberFormattingService phoneNumberFormattingService;
     @Autowired private EnergyCompanyDao energyCompanyDao;
+    @Autowired private PhoneNumberFormattingService phoneNumberFormattingService;
 
     public GeneralInfoValidator() {
         super(GeneralInfo.class);
