@@ -676,7 +676,7 @@ public class OperatorAccountController {
 			    bindingResult.pushNestedPath("loginBackingBean");
 
 			    if (StringUtils.isNotBlank(accountGeneral.getLoginBackingBean().getPassword1()) 
-			            && StringUtils.isNotBlank(accountGeneral.getLoginBackingBean().getPassword2())) {
+			            || StringUtils.isNotBlank(accountGeneral.getLoginBackingBean().getPassword2())) {
 			        passwordValidator.validate(accountGeneral.getLoginBackingBean(), bindingResult);
 			    }
 
