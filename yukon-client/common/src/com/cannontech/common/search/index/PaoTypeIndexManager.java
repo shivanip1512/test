@@ -50,7 +50,7 @@ public class PaoTypeIndexManager extends AbstractIndexManager {
     }
     
     private SqlStatementBuilder getOrderBy() {
-        return new SqlStatementBuilder("order by ypo.Category, ypo.Type, ypo.PAOName, ypo.PAObjectID");
+        return new SqlStatementBuilder("order by ypo.Category, ypo.Type, LEN(ypo.PAOName), ypo.PAOName");
     }
 
     protected String getDocumentCountQuery() {
@@ -69,10 +69,10 @@ public class PaoTypeIndexManager extends AbstractIndexManager {
         String category = rs.getString("category");
         String paoid = Integer.toString(rs.getInt("paobjectid"));
         String paoClass = rs.getString("paoclass");
-        String all = paoName + " " + type + " " + paoid + " " + paoClass + " " + category;
+        String all = paoName + " " + type;
         doc.add(new Field("pao", paoName, Field.Store.YES, Field.Index.ANALYZED));
-        doc.add(new Field("type", type, Field.Store.YES, Field.Index.NOT_ANALYZED));
-        doc.add(new Field("all", all, Field.Store.YES, Field.Index.ANALYZED));
+        doc.add(new Field("type", type, Field.Store.YES, Field.Index.ANALYZED));
+        doc.add(new Field("all", all, Field.Store.NO, Field.Index.ANALYZED));
 
         doc.add(new Field("paoid", paoid, Field.Store.YES, Field.Index.NOT_ANALYZED));
 
