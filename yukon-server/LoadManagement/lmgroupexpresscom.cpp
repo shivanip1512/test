@@ -423,8 +423,10 @@ CtiRequestMsg* CtiLMGroupExpresscom::createSetPointSimpleMsg(string settings, LO
                                                               int priority) const
 {
     LONG controlTime, controlHoldTime;
-    LONG rampUpTime = totalTime - (precoolTime + rampOutTime + precoolHoldTime);
     bool retFlag = true;
+    maxTempChange = abs(maxTempChange);
+
+    LONG rampUpTime = totalTime - (precoolTime + rampOutTime + precoolHoldTime);
     if( rampUpTime < 60 )
     {
         CtiLockGuard<CtiLogger> logger_guard(dout);
@@ -446,26 +448,10 @@ CtiRequestMsg* CtiLMGroupExpresscom::createSetPointSimpleMsg(string settings, LO
     else if( settings.length() > 2 && settings[(size_t)2]=='h' )
     {
         controlString += "mode heat ";
-        if( precoolTemp < 0 )
-        {
-            precoolTemp = precoolTemp*-1;
-        }
-        if( rampRate < 0 )
-        {
-            rampRate = rampRate*-1;
-        }
     }
     else if( settings.length() > 3 && settings[(size_t)3]=='i' )
     {
         controlString += "mode cool ";
-        if( precoolTemp > 0 )
-        {
-            precoolTemp = precoolTemp*-1;
-        }
-        if( rampRate < 0 )
-        {
-            rampRate = rampRate*-1;
-        }
     }
 
     if( minValue != 0 )
@@ -519,16 +505,23 @@ CtiRequestMsg* CtiLMGroupExpresscom::createSetPointSimpleMsg(string settings, LO
 
     int degrees = ((float)rampUpTime/60) * rampRate; //rampRate D is the degree/hour rate, degrees is an int because we can only send a whole number.
 
-    if( degrees > maxTempChange )
+    if( abs(degrees) > maxTempChange )
     {
-        degrees = maxTempChange;
+        if( degrees < 0 )
+        {
+            degrees = -1*maxTempChange;
+        }
+        else
+        {
+            degrees = maxTempChange;
+        }
     }
-    if( rampUpTime != 0 && degrees != 0 )
+    if( rampUpTime != 0 && degrees != 0 && rampRate != 0 )
     {
         // Control time = (total time to do X degrees) - (hold time for the final degree)
         // Hold Time = (hold time for final degree) + any leftover time;
         // This works because of the way degrees is calculated before we get here.
-        controlTime = (float)degrees / rampRate * 60 - ((float)1/rampRate * 60);
+        controlTime = abs((float)degrees / rampRate) * 60 - abs((float)1/rampRate * 60);
         controlHoldTime = rampUpTime -controlTime;
 
         controlString += "td ";
