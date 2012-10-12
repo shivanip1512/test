@@ -17,17 +17,18 @@ YEvent.observeSelectorClick('#cancelChangePassword', function(event) {
 });
 
 jQuery(function() {
-	var authCategorySelect = jQuery('#authCategory');
-	authCategorySelect.change(function() {
-		var newAuthCategory = authCategorySelect.val();
-    	if (newAuthCategory !== originalAuthCategory && supportsPasswordSet[newAuthCategory]) {
-    		jQuery('#changeAuthPassword').show();
-    		jQuery('#changeAuthConfirmPassword').show();
-    	} else {
-    		jQuery('#changeAuthPassword').hide();
-    		jQuery('#changeAuthConfirmPassword').hide();
-    	}
-	});
+    jQuery('#authCategory').change(function() {
+        var newAuthCategory = jQuery('#authCategory').val();
+        if (newAuthCategory !== originalAuthCategory && supportsPasswordSet[newAuthCategory]) {
+            jQuery('#changeAuthPassword, #changeAuthConfirmPassword').show();
+        } else {
+            jQuery('#changeAuthPassword, #changeAuthConfirmPassword').hide();
+        }
+    });
+    
+    <c:if test="${not empty hasPasswordError and hasPasswordError}">
+         jQuery('#changeAuthPassword, #changeAuthConfirmPassword').show();
+    </c:if>
 });
 </script>
     

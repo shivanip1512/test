@@ -99,12 +99,16 @@ public class UserEditorController {
     public String update(YukonUserContext userContext, @ModelAttribute User user, BindingResult result, ModelMap model, FlashScope flash) {
         LiteYukonUser yukonUser = yukonUserDao.getLiteYukonUser(user.getUserId());
         user.updateForSave(yukonUser);
-        userValidator.validate(user, result);
+        
         boolean requiresPasswordChanged = user.isAuthenticationChanged()
                 && authenticationService.supportsPasswordSet(yukonUser.getAuthType());
         if (requiresPasswordChanged) {
-            new PasswordValidator(yukonUser).validate(user.getPassword(), result);
+            new PasswordValidator(yukonUser, "password.password", "password.confirmPassword").validate(user.getPassword(), result);
+            if(result.hasErrors()){
+                model.addAttribute("hasPasswordError", true);
+            }
         }
+        userValidator.validate(user, result);
 
         if (result.hasErrors()) {
             List<MessageSourceResolvable> messages = YukonValidationUtils.errorsForBindingResult(result);
@@ -128,7 +132,7 @@ public class UserEditorController {
     public String changePassword(YukonUserContext userContext, ModelMap model, FlashScope flash, int userId, 
                                  @ModelAttribute(value="passwordBind") Password password, BindingResult result) {
         LiteYukonUser yukonUser = yukonUserDao.getLiteYukonUser(userId);
-        new PasswordValidator(yukonUser).validate(password, result);
+        new PasswordValidator(yukonUser, "password", "confirmPassword").validate(password, result);
         User user = new User(yukonUser);
 
         if (result.hasErrors()) {
@@ -212,18 +216,22 @@ public class UserEditorController {
 
     private class PasswordValidator extends SimpleValidator<Password> {
         LiteYukonUser yukonUser;
+        private String passwordKey;
+        private String confirmPasswordKey;
 
-        PasswordValidator(LiteYukonUser yukonUser) {
+        PasswordValidator(LiteYukonUser yukonUser, String passwordKey, String confirmPasswordKey) {
             super(Password.class);
             this.yukonUser = yukonUser;
+            this.passwordKey = passwordKey;
+            this.confirmPasswordKey = confirmPasswordKey;
         }
 
         @Override
         protected void doValidation(Password target, Errors errors) {
-            YukonValidationUtils.checkExceedsMaxLength(errors, "password", target.getPassword(), 64);
-            YukonValidationUtils.checkExceedsMaxLength(errors, "confirmPassword", target.getConfirmPassword(), 64);
+            YukonValidationUtils.checkExceedsMaxLength(errors, passwordKey, target.getPassword(), 64);
+            YukonValidationUtils.checkExceedsMaxLength(errors, confirmPasswordKey, target.getConfirmPassword(), 64);
             if (!target.getPassword().equals(target.getConfirmPassword())) {
-                YukonValidationUtils.rejectValues(errors, "password.mismatch", "password", "confirmPassword");
+                YukonValidationUtils.rejectValues(errors, "password.mismatch", passwordKey, confirmPasswordKey);
                 return;
             }
 
@@ -241,7 +249,7 @@ public class UserEditorController {
 
             if (passwordPolicyError != null) {
                 YukonValidationUtils.rejectValues(errors, passwordPolicyError.getFormatKey(), errorArgs,
-                                                  "password", "confirmPassword");
+                                                  passwordKey, confirmPasswordKey);
             }
         }
     }
