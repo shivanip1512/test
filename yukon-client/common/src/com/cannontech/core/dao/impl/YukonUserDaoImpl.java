@@ -101,6 +101,7 @@ public class YukonUserDaoImpl implements YukonUserDao {
 	    yukonJdbcTemplate.update(sql, newUsername, modifiedUserId);
 
 	    systemEventLogService.usernameChanged(changingUser, modifiedUser.getUsername(), newUsername);
+	    sendUserDbChangeMsg(modifiedUserId, DbChangeType.UPDATE);
 	}
 	
 	@Override
