@@ -177,8 +177,8 @@ public final class EnergyCompanyDaoImpl implements EnergyCompanyDao {
     }
 
     @Override
-    public LiteEnergyCompany getEnergyCompanyByName(
-            final String energyCompanyName) {
+    public LiteEnergyCompany getEnergyCompanyByName(final String energyCompanyName) {
+
         List<LiteEnergyCompany> energyCompanies = databaseCache.getAllEnergyCompanies();
         for (final LiteEnergyCompany energyCompany : energyCompanies) {
             String name = energyCompany.getName();
