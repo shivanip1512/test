@@ -15,6 +15,7 @@ import com.cannontech.common.pao.attribute.model.BuiltInAttribute;
 import com.cannontech.common.pao.definition.model.PaoMultiPointIdentifier;
 import com.cannontech.common.pao.definition.model.PaoPointIdentifier;
 import com.cannontech.common.pao.definition.model.PaoPointTemplate;
+import com.cannontech.common.pao.definition.model.PaoTypePointIdentifier;
 import com.cannontech.common.util.SqlFragmentSource;
 import com.cannontech.database.data.lite.LitePoint;
 import com.cannontech.user.YukonUserContext;
@@ -155,19 +156,11 @@ public interface AttributeService {
      * Reverse lookup of BuiltInAttribute based on Pao and Point Identifier from set of possible attributes.
      * Will return null if no attribute in possible set matches the pao point identifier definition.
      * Used primarily by MultispeakMeterService to retrieve readable attributes.
-     * @param paoPointIdentifier
+     * @param paoTypePointIdentifier
      * @param possibleMatches
      * @return BuiltInAttribute
      */
-    public BuiltInAttribute findAttributeForPoint(PaoPointIdentifier paoPointIdentifier, Set<BuiltInAttribute> possibleMatches);
-
-    /**
-     * Returns the BuiltInAttribute for the PaoPointIdentifier provided or null if no attribute
-     * is defined for that pao and point combination.
-     * @param paoPointIdentifier
-     * @return BuiltInAttribute
-     */
-    public BuiltInAttribute findAttributeForPaoPointIdentifier(PaoPointIdentifier paoPointIdentifier);
+    public BuiltInAttribute findAttributeForPoint(PaoTypePointIdentifier paoTypePointIdentifier, Set<BuiltInAttribute> possibleMatches);
 
     /**
      * Creates a map of AttributeGroup to list of BuiltInAttribute.  The resulting map contains only

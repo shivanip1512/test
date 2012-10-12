@@ -59,6 +59,7 @@ import com.cannontech.common.pao.definition.model.PaoDefinition;
 import com.cannontech.common.pao.definition.model.PaoDefinitionImpl;
 import com.cannontech.common.pao.definition.model.PaoTag;
 import com.cannontech.common.pao.definition.model.PaoTagDefinition;
+import com.cannontech.common.pao.definition.model.PaoTypePointIdentifier;
 import com.cannontech.common.pao.definition.model.PointIdentifier;
 import com.cannontech.common.pao.definition.model.PointTemplate;
 import com.cannontech.common.pao.definition.model.jaxb.ArchiveDefaults;
@@ -134,7 +135,7 @@ public class PaoDefinitionDaoImpl implements PaoDefinitionDao {
     private Map<PaoTag, BiMap<PaoType, PaoDefinition>> typesBySupportedTag;
     private Set<PaoDefinition> creatablePaoDefinitions = null;
     private List<String> fileIdOrder = null;
-    private Map<Pair<PaoType, PointTemplate>, BuiltInAttribute> paoAndPointToAttributeMap;
+    private Map<Pair<PaoType, PointIdentifier>, BuiltInAttribute> paoAndPointToAttributeMap;
     
     private UnitMeasureDao unitMeasureDao;
     private StateDao stateDao;
@@ -262,8 +263,8 @@ public class PaoDefinitionDaoImpl implements PaoDefinitionDao {
     }
     
     @Override
-    public BuiltInAttribute findAttributeForPoaTypeAndPoint(PaoType paoType, PointTemplate pointTemplate) {
-        Pair<PaoType, PointTemplate> paoAndPoint = new Pair<PaoType, PointTemplate>(paoType, pointTemplate);
+    public BuiltInAttribute findAttributeForPaoTypeAndPoint(PaoTypePointIdentifier paoTypePointIdentifier) {
+        Pair<PaoType, PointIdentifier> paoAndPoint = new Pair<PaoType, PointIdentifier>(paoTypePointIdentifier.getPaoType(), paoTypePointIdentifier.getPointIdentifier());
         return paoAndPointToAttributeMap.get(paoAndPoint);
     }
     
@@ -744,7 +745,7 @@ public class PaoDefinitionDaoImpl implements PaoDefinitionDao {
                 throw new RuntimeException("Attribute: " + attribute.getName() + " is used twice for pao type: " + javaConstant + " in the paoDefinition.xml file - attribute names must be unique within a pao type");
             }
         	attributeMap.put(pointAttribute, attributeDefinition);
-        	Pair<PaoType, PointTemplate> paoAndPoint = new Pair<PaoType, PointTemplate>(pao.getPaoType(), attributeDefinition.getPointTemplate());
+        	Pair<PaoType, PointIdentifier> paoAndPoint = new Pair<PaoType, PointIdentifier>(pao.getPaoType(), attributeDefinition.getPointTemplate().getPointIdentifier());
         	paoAndPointToAttributeMap.put(paoAndPoint, pointAttribute);
         }   
         paoAttributeAttrDefinitionMap.put(paoType, attributeMap);

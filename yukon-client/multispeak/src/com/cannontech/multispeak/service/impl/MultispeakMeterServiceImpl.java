@@ -312,7 +312,7 @@ public class MultispeakMeterServiceImpl implements MultispeakMeterService, Messa
             public void receivedValue(PaoIdentifier pao, PointValueHolder value) {
                 // the following is expensive but unavoidable until PointData is changed
                 PaoPointIdentifier paoPointIdentifier = pointDao.getPaoPointIdentifier(value.getId());
-                BuiltInAttribute thisAttribute = attributeService.findAttributeForPoint(paoPointIdentifier, attributes);
+                BuiltInAttribute thisAttribute = attributeService.findAttributeForPoint(paoPointIdentifier.getPaoTypePointIdentifier(), attributes);
                 if (thisAttribute == null) return;
                 if (thisAttribute == BuiltInAttribute.DISCONNECT_STATUS) {
                     setLoadActionCode(multispeakFuncs.getLoadActionCode(meter, value));
@@ -500,7 +500,7 @@ public class MultispeakMeterServiceImpl implements MultispeakMeterService, Messa
             public void receivedValue(PaoIdentifier pao, PointValueHolder value) {
                 // the following is expensive but unavoidable until PointData is changed
                 PaoPointIdentifier paoPointIdentifier = pointDao.getPaoPointIdentifier(value.getId());
-                BuiltInAttribute thisAttribute = attributeService.findAttributeForPoint(paoPointIdentifier, attributes);
+                BuiltInAttribute thisAttribute = attributeService.findAttributeForPoint(paoPointIdentifier.getPaoTypePointIdentifier(), attributes);
                 if (thisAttribute == null) return;
                 
                 // Get a new updater object for the current value
@@ -638,7 +638,7 @@ public class MultispeakMeterServiceImpl implements MultispeakMeterService, Messa
             public void receivedValue(PaoIdentifier pao, PointValueHolder value) {
                 // the following is expensive but unavoidable until PointData is changed
                 PaoPointIdentifier paoPointIdentifier = pointDao.getPaoPointIdentifier(value.getId());
-                BuiltInAttribute thisAttribute = attributeService.findAttributeForPoint(paoPointIdentifier, attributes);
+                BuiltInAttribute thisAttribute = attributeService.findAttributeForPoint(paoPointIdentifier.getPaoTypePointIdentifier(), attributes);
                 if (thisAttribute == null) return;
                 
                 // Get a new updater object for the current value

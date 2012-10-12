@@ -14,6 +14,7 @@ import com.cannontech.common.pao.definition.model.CommandDefinition;
 import com.cannontech.common.pao.definition.model.PaoDefinition;
 import com.cannontech.common.pao.definition.model.PaoTag;
 import com.cannontech.common.pao.definition.model.PaoTagDefinition;
+import com.cannontech.common.pao.definition.model.PaoTypePointIdentifier;
 import com.cannontech.common.pao.definition.model.PointIdentifier;
 import com.cannontech.common.pao.definition.model.PointTemplate;
 import com.google.common.collect.ImmutableBiMap;
@@ -37,12 +38,11 @@ public interface PaoDefinitionDao {
     
     /**
      * Returns the BuiltInAttribute for the pao type and point template or null if no attribute is 
-     * defined for that pao type, point template combination
-     * @param paoType
-     * @param pointTemplate
+     * defined for that pao type, pointIdentifier combination
+     * @param paoTypePointIdentifier
      * @return BuiltInAttribute
      */
-    public BuiltInAttribute findAttributeForPoaTypeAndPoint(PaoType paoType, PointTemplate pointTemplate);
+    public BuiltInAttribute findAttributeForPaoTypeAndPoint(PaoTypePointIdentifier paoTypePointIdentifier);
 
     // POINTS
     //============================================

@@ -30,8 +30,8 @@ import com.cannontech.common.pao.definition.dao.PaoDefinitionDao;
 import com.cannontech.common.pao.definition.model.PaoMultiPointIdentifier;
 import com.cannontech.common.pao.definition.model.PaoPointIdentifier;
 import com.cannontech.common.pao.definition.model.PaoPointTemplate;
+import com.cannontech.common.pao.definition.model.PaoTypePointIdentifier;
 import com.cannontech.common.pao.definition.model.PointIdentifier;
-import com.cannontech.common.pao.definition.model.PointTemplate;
 import com.cannontech.common.pao.service.PointCreationService;
 import com.cannontech.common.pao.service.PointService;
 import com.cannontech.common.util.IterableUtils;
@@ -287,20 +287,13 @@ public class AttributeServiceImpl implements AttributeService {
     }
     
     @Override
-    public BuiltInAttribute findAttributeForPoint(PaoPointIdentifier paoPointIdentifier, Set<BuiltInAttribute> possibleMatches) {
+    public BuiltInAttribute findAttributeForPoint(PaoTypePointIdentifier paoTypePointIdentifier, Set<BuiltInAttribute> possibleMatches) {
         
-        BuiltInAttribute attribute = findAttributeForPaoPointIdentifier(paoPointIdentifier);
+        BuiltInAttribute attribute = paoDefinitionDao.findAttributeForPaoTypeAndPoint(paoTypePointIdentifier); 
         
         if (attribute != null && possibleMatches.contains(attribute)) return attribute;
         
         return null;
-    }
-    
-    @Override
-    public BuiltInAttribute findAttributeForPaoPointIdentifier(PaoPointIdentifier paoPointIdentifier) {
-        PaoType paoType = paoPointIdentifier.getPaoIdentifier().getPaoType();
-        PointTemplate pointTemplate = new PointTemplate(paoPointIdentifier.getPointIdentifier().getPointType(), paoPointIdentifier.getPointIdentifier().getOffset());
-        return paoDefinitionDao.findAttributeForPoaTypeAndPoint(paoType, pointTemplate);
     }
     
     @Override
