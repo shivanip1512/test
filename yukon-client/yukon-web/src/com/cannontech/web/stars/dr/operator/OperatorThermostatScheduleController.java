@@ -70,9 +70,7 @@ public class OperatorThermostatScheduleController {
 	// SAVE - ajaxy
 	//Try to save the schedule
     //@returns JSONObject containing success or error messages
-    @RequestMapping(value = "save", 
-                    method = {RequestMethod.POST, RequestMethod.HEAD},
-                    headers = "x-requested-with=XMLHttpRequest")
+    @RequestMapping(value = "save", method = {RequestMethod.POST, RequestMethod.HEAD}, headers = "x-requested-with=XMLHttpRequest")
     public void save(HttpServletResponse response,
                        @RequestParam(value="thermostatIds", required=true) String thermostatIds,
                        @RequestParam(value="schedules", required=true) String scheduleString,
