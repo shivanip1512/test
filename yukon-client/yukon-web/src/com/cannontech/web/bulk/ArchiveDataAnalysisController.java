@@ -42,6 +42,7 @@ import com.cannontech.web.input.DatePropertyEditorFactory;
 import com.cannontech.web.input.EnumPropertyEditor;
 import com.cannontech.web.input.PeriodPropertyEditor;
 import com.cannontech.web.security.annotation.CheckRoleProperty;
+import com.google.common.collect.ImmutableSet;
 
 @CheckRoleProperty(YukonRoleProperty.ARCHIVED_DATA_ANALYSIS)
 @Controller
@@ -59,10 +60,10 @@ public class ArchiveDataAnalysisController {
 
     @ModelAttribute("groupedAttributes")
     public Map<AttributeGroup, List<BuiltInAttribute>> getGroupedAttributes(YukonUserContext userContext) {
-        Set<Attribute> allReadableAttributes = attributeService.getReadableAttributes();
-        Map<AttributeGroup, List<BuiltInAttribute>> allGroupedReadableAttributes = attributeService.
-                getGroupedAttributeMapFromCollection(allReadableAttributes, userContext);
-        return allGroupedReadableAttributes;
+        Set<Attribute> allAttributes = ImmutableSet.<Attribute>copyOf(BuiltInAttribute.values());
+        Map<AttributeGroup, List<BuiltInAttribute>> allGroupedAttributes = attributeService.
+                getGroupedAttributeMapFromCollection(allAttributes, userContext);
+        return allGroupedAttributes;
     }
     
     {
