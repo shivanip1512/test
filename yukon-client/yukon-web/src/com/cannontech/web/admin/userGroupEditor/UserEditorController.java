@@ -45,6 +45,7 @@ import com.cannontech.web.admin.userGroupEditor.model.User;
 import com.cannontech.web.common.flashScope.FlashScope;
 import com.cannontech.web.common.flashScope.FlashScopeMessageType;
 import com.cannontech.web.security.annotation.CheckRoleProperty;
+import com.google.common.collect.Lists;
 import com.google.common.collect.Maps;
 import com.google.common.collect.Multimap;
 
@@ -72,7 +73,7 @@ public class UserEditorController {
         LiteYukonUser yukonUser = yukonUserDao.getLiteYukonUser(userId);
         User user = new User(yukonUser);
 
-        setupModelMap(model, user,new Password(), PageEditMode.VIEW, userContext);
+        setupModelMap(model, user, PageEditMode.VIEW, userContext);
         return "userGroupEditor/user.jsp";
     }
     
@@ -80,7 +81,7 @@ public class UserEditorController {
     @RequestMapping(value="edit", method=RequestMethod.POST, params="edit")
     public String edit(YukonUserContext userContext, ModelMap model, int userId) {
         User user = new User(yukonUserDao.getLiteYukonUser(userId));
-        setupModelMap(model, user, new Password(), PageEditMode.EDIT, userContext);
+        setupModelMap(model, user, PageEditMode.EDIT, userContext);
         return "userGroupEditor/user.jsp";
     }
 
@@ -99,12 +100,11 @@ public class UserEditorController {
     public String update(YukonUserContext userContext, @ModelAttribute User user, BindingResult result, ModelMap model, FlashScope flash) {
         LiteYukonUser yukonUser = yukonUserDao.getLiteYukonUser(user.getUserId());
         user.updateForSave(yukonUser);
-        
         boolean requiresPasswordChanged = user.isAuthenticationChanged()
                 && authenticationService.supportsPasswordSet(yukonUser.getAuthType());
         if (requiresPasswordChanged) {
-            new PasswordValidator(yukonUser, "password.password", "password.confirmPassword").validate(user.getPassword(), result);
-            if(result.hasErrors()){
+            new PasswordValidator(yukonUser, "password.password", "password.confirmPassword" ).validate(user.getPassword(), result);
+            if (result.hasErrors()) {
                 model.addAttribute("hasPasswordError", true);
             }
         }
@@ -113,7 +113,7 @@ public class UserEditorController {
         if (result.hasErrors()) {
             List<MessageSourceResolvable> messages = YukonValidationUtils.errorsForBindingResult(result);
             flash.setMessage(messages, FlashScopeMessageType.ERROR);
-            setupModelMap(model, user, new Password(), PageEditMode.EDIT, userContext);
+            setupModelMap(model, user, PageEditMode.EDIT, userContext);
             return "userGroupEditor/user.jsp";
         }
 
@@ -130,17 +130,18 @@ public class UserEditorController {
 
     @RequestMapping(method=RequestMethod.POST)
     public String changePassword(YukonUserContext userContext, ModelMap model, FlashScope flash, int userId, 
-                                 @ModelAttribute(value="passwordBind") Password password, BindingResult result) {
+                                 @ModelAttribute Password password, BindingResult result) {
         LiteYukonUser yukonUser = yukonUserDao.getLiteYukonUser(userId);
-        new PasswordValidator(yukonUser, "password", "confirmPassword").validate(password, result);
+        PasswordValidator validator = new PasswordValidator(yukonUser,  "password", "confirmPassword");
+        validator.validate(password, result);
         User user = new User(yukonUser);
 
         if (result.hasErrors()) {
             model.addAttribute("showChangePasswordErrors", true);
-            List<MessageSourceResolvable> messages = YukonValidationUtils.errorsForBindingResult(result);
+            List<MessageSourceResolvable> messages = validator.getMessages();
             flash.setMessage(messages, FlashScopeMessageType.ERROR);
             model.addAttribute("showChangePwPopup", true);
-            setupModelMap(model, user, password, PageEditMode.VIEW, userContext);
+            setupModelMap(model, user, PageEditMode.VIEW, userContext);
             model.addAttribute("pwChangeFormMode", PageEditMode.EDIT);
             return "userGroupEditor/user.jsp";
         }
@@ -165,9 +166,9 @@ public class UserEditorController {
         }
     }
     
-    private void setupModelMap(ModelMap model, User user, Password password, PageEditMode mode, YukonUserContext userContext) {
+    private void setupModelMap(ModelMap model, User user, PageEditMode mode, YukonUserContext userContext) {
         model.addAttribute("user", user);
-        model.addAttribute("passwordBind", password);
+        model.addAttribute("password", new Password());
         model.addAttribute("mode", mode);
 
         model.addAttribute("currentUserId",userContext.getYukonUser().getLiteID());
@@ -215,6 +216,7 @@ public class UserEditorController {
     }
 
     private class PasswordValidator extends SimpleValidator<Password> {
+        private List<MessageSourceResolvable> messages = Lists.newArrayList();
         LiteYukonUser yukonUser;
         private String passwordKey;
         private String confirmPasswordKey;
@@ -230,8 +232,10 @@ public class UserEditorController {
         protected void doValidation(Password target, Errors errors) {
             YukonValidationUtils.checkExceedsMaxLength(errors, passwordKey, target.getPassword(), 64);
             YukonValidationUtils.checkExceedsMaxLength(errors, confirmPasswordKey, target.getConfirmPassword(), 64);
+                          
             if (!target.getPassword().equals(target.getConfirmPassword())) {
                 YukonValidationUtils.rejectValues(errors, "password.mismatch", passwordKey, confirmPasswordKey);
+                messages.add(new YukonMessageSourceResolvable("yukon.web.modules.adminSetup.userEditor.password.mismatch"));
                 return;
             }
 
@@ -248,9 +252,15 @@ public class UserEditorController {
             }
 
             if (passwordPolicyError != null) {
+                messages.add(new YukonMessageSourceResolvable(passwordPolicyError.getFormatKey(), errorArgs ));
                 YukonValidationUtils.rejectValues(errors, passwordPolicyError.getFormatKey(), errorArgs,
                                                   passwordKey, confirmPasswordKey);
             }
         }
+
+        List<MessageSourceResolvable> getMessages() {
+            return messages;
+        }
+
     }
 }
