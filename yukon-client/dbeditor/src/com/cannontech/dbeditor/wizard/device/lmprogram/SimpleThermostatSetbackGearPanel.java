@@ -60,7 +60,6 @@ public class SimpleThermostatSetbackGearPanel extends GenericGearPanel implement
     private JSpinner maxSpinner;
     private JSpinner restoreTimeSpinner;
     private JSpinner maxRuntimeSpinner;
-    private JSpinner resendRateSpinner;
     private JSpinner changeDurationSpinner;
     private JSpinner changePrioritySpinner;
     private JSpinner changeTriggerNumberSpinner;
@@ -146,13 +145,6 @@ public class SimpleThermostatSetbackGearPanel extends GenericGearPanel implement
             randomStartTimeSpinner = createTimeSpinner(0, 2);
         }
         return randomStartTimeSpinner;
-    }
-
-    private JSpinner getResendRateSpinner() {
-        if (resendRateSpinner == null) {
-            resendRateSpinner = createTimeSpinner(0, 3);
-        }
-        return resendRateSpinner;    
     }
 
     private JSpinner getPreCoolTempSpinner() {
@@ -435,19 +427,6 @@ public class SimpleThermostatSetbackGearPanel extends GenericGearPanel implement
         c.gridy = 7;
         statEditorPanel.add(new JLabel("(4:00 - 24:00, hh:mm)"), c);
 
-        c.gridx = 0;
-        c.gridy = 8;
-        c.gridwidth = 1;
-        statEditorPanel.add(new JLabel("Resend Rate"), c);
-
-        c.gridx = 1;
-        c.gridy = 8;
-        statEditorPanel.add(getResendRateSpinner(), c);
-
-        c.gridx = 2;
-        c.gridy = 8;
-        statEditorPanel.add(new JLabel("(0:00 - 3:00, hh:mm)"), c);
-        
         c.gridx = 0;
         c.gridy = 9;
         c.weightx = 1.0;
@@ -755,9 +734,7 @@ public class SimpleThermostatSetbackGearPanel extends GenericGearPanel implement
         /*Values going into the LMProgramDirectGear table should be stored in seconds, not minutes
          * LMThermostatGear table stores as minutes so the other values are fine.
          * */
-        Integer resendRate = gear.getMethodRate();
-        if (isNotEmpty(resendRate)) getResendRateSpinner().setValue(toDateFromSeconds(resendRate));
-        
+
         setChangeCondition(getChangeGearBox(), gear.getChangeCondition());
         
         Integer changeDuration = Integer.valueOf(gear.getChangeDuration().intValue() / 60);
@@ -818,8 +795,7 @@ public class SimpleThermostatSetbackGearPanel extends GenericGearPanel implement
         /*Values going into the LMProgramDirectGear table should be stored in seconds, not minutes
          * LMThermostatGear table stores as minutes so the other values are fine.
          * */
-        Integer resendRate = toSecondsFromDate(getResendRateSpinner().getValue());
-        gear.setMethodRate(resendRate);
+        gear.setMethodRate(0); // Resends are no longer allowed for the simple thermostat ramping gear.
         
         gear.setChangeCondition(getChangeCondition(getChangeGearBox().getSelectedItem().toString()));
         
