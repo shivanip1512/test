@@ -1,7 +1,7 @@
 package com.cannontech.stars.core.model;
 
+import java.util.ArrayList;
 import java.util.List;
-import java.util.Vector;
 
 import org.apache.commons.lang.StringUtils;
 
@@ -44,7 +44,7 @@ public class RequestPword
 	protected String[] allParams = null;
 	protected String masterMail = null;
 	protected String subject = "Password Request";
-	protected List<String> foundData = new Vector<String>(8);
+	protected List<String> foundData = new ArrayList<String>(8);
 
 
 	public static final int RET_FAILED = 0;
@@ -272,24 +272,21 @@ public class RequestPword
 
 	protected String genBody()
 	{
-		String body =
-			"A password request has been made from a user that provided the following information:" + CR;
-		for( int i = 0; i < allParams.length; i++ )
-		{
-			if( allParams[i] != null )
-			{
-				switch( i )
-				{
+		StringBuffer body = new StringBuffer("A password request has been made from a user that provided the following information:").append(CR);
+		for (int i = 0; i < allParams.length; i++) {
+		    String param = allParams[i];
+			if (param != null) {
+				switch (i) {
 					case 0:
-					body += " Username: " + allParams[i] + CR;
+					    body.append(" Username: ").append(param).append(CR);
 					break;
 
 					case 1:
-					body += " Email: " + allParams[i] + CR;
+					    body.append(" Email: ").append(param).append(CR);
 					break;
 
 					case 2:
-					body += " Account #: " + allParams[i] + CR;
+					    body.append(" Account #: ").append(param).append(CR);
 					break;
 				}
 				
@@ -297,25 +294,25 @@ public class RequestPword
 		}
 		
 		if (StringUtils.isNotBlank(fName)) {
-		    body += " First Name: " + fName + CR;
+		    body.append(" First Name: ").append(fName).append(CR);
 		}
 		if (StringUtils.isNotBlank(lName)) {
-		    body += " Last Name: " + lName + CR;
+		    body.append(" Last Name: ").append(lName).append(CR);
 		}
 		if (StringUtils.isNotBlank(getEnergyCompany())) {
-		    body += " Energy Provider: " + getEnergyCompany() + CR;
+		    body.append(" Energy Provider: ").append(getEnergyCompany()).append(CR);
 		}
 		if (StringUtils.isNotBlank(getNotes())) {
-		    body += " Notes: " + getNotes() + CR;
+		    body.append(" Notes: ").append(getNotes()).append(CR);
 		}
 
-		body += CR + "The following information is what was found for this user:" + CR;
+		body.append(CR).append("The following information is what was found for this user:").append(CR);
 			
-		for( int i = 0; i < foundData.size(); i++ )
-			body += foundData.get(i).toString() + 
-					  (i == (foundData.size()-1) ? "" : CR);
+		for (String data : foundData) {
+            body.append(data).append(CR);
+        }
 
-		return body;
+		return body.toString();
 	}
 
 	/**
@@ -325,9 +322,9 @@ public class RequestPword
 	public boolean isValidParams()
 	{
 		boolean isValid = false;
-		for( int i = 0; i < allParams.length; i++ )
-			isValid |= !StringUtils.isEmpty(allParams[i]);
-
+		for (String param : allParams) {
+			isValid |= !StringUtils.isEmpty(param);
+		}
 		return isValid;
 	}
 	
@@ -342,33 +339,21 @@ public class RequestPword
 		return state;
 	}
 	
-	/**
-	 * @return
-	 */
 	public String getNotes()
 	{
 		return notes;
 	}
 
-	/**
-	 * @param string
-	 */
 	public void setNotes(String string)
 	{
 		notes = string;
 	}
 
-    /**
-     * @param string
-     */
     public void setEnergyCompany(String enrgyCompany)
     {
         energyCompany = enrgyCompany;
     }
 
-    /**
-     * @param string
-     */
     public String getEnergyCompany()
     {
         return energyCompany;
