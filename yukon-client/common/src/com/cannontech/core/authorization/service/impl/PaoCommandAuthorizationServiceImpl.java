@@ -8,8 +8,6 @@ import com.cannontech.core.authorization.service.PaoAuthorizationService;
 import com.cannontech.core.authorization.service.PaoCommandAuthorizationService;
 import com.cannontech.core.authorization.support.CommandPermissionConverter;
 import com.cannontech.core.authorization.support.Permission;
-import com.cannontech.core.dao.PaoDao;
-import com.cannontech.database.data.lite.LiteYukonPAObject;
 import com.cannontech.database.data.lite.LiteYukonUser;
 
 /**
@@ -19,7 +17,6 @@ public class PaoCommandAuthorizationServiceImpl implements PaoCommandAuthorizati
 
     private PaoAuthorizationService authorizationService = null;
     private CommandPermissionConverter converter = null;
-    private PaoDao paoDao = null;
     
     public void setConverter(CommandPermissionConverter converter) {
         this.converter = converter;
@@ -29,14 +26,9 @@ public class PaoCommandAuthorizationServiceImpl implements PaoCommandAuthorizati
         this.authorizationService = authorizationService;
     }
     
-    public void setPaoDao(PaoDao paoDao) {
-		this.paoDao = paoDao;
-	}
-    
     public boolean isAuthorized(LiteYukonUser user, String command, YukonPao device) {
-    	LiteYukonPAObject pao = paoDao.getLiteYukonPAO(device.getPaoIdentifier().getPaoId());
     	Permission permission = converter.getPermission(command);
-        return authorizationService.isAuthorized(user, permission, pao);
+        return authorizationService.isAuthorized(user, permission, device);
     }
 
     @Deprecated

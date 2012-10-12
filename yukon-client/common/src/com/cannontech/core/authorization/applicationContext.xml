@@ -21,7 +21,6 @@
 	<bean id="paoCommandAuthorizationService" class="com.cannontech.core.authorization.service.impl.PaoCommandAuthorizationServiceImpl">
 		<property name="authorizationService" ref="paoAuthorizationService" />
 		<property name="converter" ref="permissionConverter" />
-		<property name="paoDao" ref="paoDao"/>
 	</bean>
 
     <!-- LM command authorization service - authorizes commands on Load Management objects -->	
