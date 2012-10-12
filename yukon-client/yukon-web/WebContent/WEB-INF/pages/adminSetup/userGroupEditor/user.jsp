@@ -38,7 +38,7 @@ jQuery(function() {
         <c:if test="${showChangePasswordErrors}">
             <cti:flashScopeMessages/>
         </c:if>
-        <form:form commandName="password" action="changePassword" method="post">
+       <form:form commandName="passwordBind" action="changePassword" method="post">
             <input type="hidden" value="${userId}" name="userId">
             <tags:nameValueContainer2>
                 <tags:nameValue2 nameKey=".password">
