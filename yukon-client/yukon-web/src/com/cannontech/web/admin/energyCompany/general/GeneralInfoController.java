@@ -147,7 +147,11 @@ public class GeneralInfoController {
         
         energyCompanyService.verifyEditPageAccess(context.getYukonUser(), ecId);
         
+        // Don't validate if the name didn't change
+        boolean ecNameChange = !fragment.getCompanyName().equals(generalInfo.getName());
+        generalInfoValidator.setEcNameChange(ecNameChange);
         generalInfoValidator.validate(generalInfo, binding);
+
         if (binding.hasErrors()) {
             EnergyCompanyInfoFragmentHelper.setupModelMapBasics(fragment, model);
             model.addAttribute("mode", PageEditMode.EDIT);

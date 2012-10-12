@@ -16,6 +16,7 @@ public class GeneralInfoValidator extends SimpleValidator<GeneralInfo> {
     
     @Autowired private EnergyCompanyDao energyCompanyDao;
     @Autowired private PhoneNumberFormattingService phoneNumberFormattingService;
+    boolean ecNameChange = true;
 
     public GeneralInfoValidator() {
         super(GeneralInfo.class);
@@ -52,11 +53,15 @@ public class GeneralInfoValidator extends SimpleValidator<GeneralInfo> {
             errors.rejectValue("email", "yukon.web.modules.adminSetup.generalInfo.invalidEmail");
         }
 
-        if (energyCompanyDao.findEnergyCompanyByName(generalInfo.getName()) != null) {
+        if (ecNameChange && energyCompanyDao.findEnergyCompanyByName(generalInfo.getName()) != null) {
             // Found an energycompany already using this name.
             errors.rejectValue("name", "yukon.web.modules.adminSetup.createEnergyCompany.name.unavailable");
         }
 
+    }
+
+    public void setEcNameChange(boolean ecNameChange) {
+        this.ecNameChange = ecNameChange;
     }
 
 }
