@@ -333,7 +333,7 @@
 			    	<property name="objectChecker" ref="loadManagementPaoCheck" />
 			    	<property name="roleChecker">
 			    		<bean factory-bean="roleAndPropertyDescriptionService" factory-method="compile">
-                            <constructor-arg value="CONTROL_LM_DEVICE"/>
+                            <constructor-arg value="ALLOW_DR_CONTROL"/>
                         </bean>
 			    	</property>
 			    	<property name="permission" value="CONTROL_COMMAND"/>

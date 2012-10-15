@@ -46,5 +46,6 @@ public interface DirectLoadcontrolRole {
     public static final int CONTROL_DURATION_DEFAULT = LMRoleDefs.DIRECT_LOADCONTROL_PROPERTYID_BASE - 40;
     public static final int SCHEDULE_STOP_CHECKED_BY_DEFAULT = LMRoleDefs.DIRECT_LOADCONTROL_PROPERTYID_BASE - 41;
     public static final int START_TIME_DEFAULT = LMRoleDefs.DIRECT_LOADCONTROL_PROPERTYID_BASE - 42;
+    public static final int ALLOW_CONTROL = LMRoleDefs.DIRECT_LOADCONTROL_PROPERTYID_BASE - 43;
 
 }
