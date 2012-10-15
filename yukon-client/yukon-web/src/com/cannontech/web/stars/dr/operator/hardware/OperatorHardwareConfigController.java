@@ -51,6 +51,7 @@ import com.cannontech.i18n.YukonMessageSourceResolvable;
 import com.cannontech.loadcontrol.loadgroup.dao.LoadGroupDao;
 import com.cannontech.loadcontrol.loadgroup.model.LoadGroup;
 import com.cannontech.stars.core.dao.InventoryBaseDao;
+import com.cannontech.stars.core.service.YukonEnergyCompanyService;
 import com.cannontech.stars.database.cache.StarsDatabaseCache;
 import com.cannontech.stars.database.data.lite.LiteInventoryBase;
 import com.cannontech.stars.database.data.lite.LiteLmHardwareBase;
@@ -68,6 +69,7 @@ import com.cannontech.stars.dr.hardware.dao.StaticLoadGroupMappingDao;
 import com.cannontech.stars.dr.hardware.model.HardwareSummary;
 import com.cannontech.stars.dr.hardware.model.LMHardwareBase;
 import com.cannontech.stars.dr.hardwareConfig.HardwareConfigService;
+import com.cannontech.stars.energyCompany.model.YukonEnergyCompany;
 import com.cannontech.stars.util.StarsUtils;
 import com.cannontech.stars.web.action.HardwareAction;
 import com.cannontech.stars.xml.serialize.StarsCustAccountInformation;
@@ -118,7 +120,8 @@ public class OperatorHardwareConfigController {
     @Autowired private LmDeviceReportedDataDao lmDeviceReportedDataDao;
     @Autowired private AttributeService attributeService;
     @Autowired private GlobalSettingsDao globalSettingsDao;
-    
+    @Autowired private YukonEnergyCompanyService yukonEnergyCompanyService;
+
     private ColdLoadPickupValidator coldLoadPickupValidator = new ColdLoadPickupValidator();
     private TamperDetectValidator tamperDetectValidator = new TamperDetectValidator();
 
@@ -165,11 +168,10 @@ public class OperatorHardwareConfigController {
             BindingResult bindingResult, YukonUserContext userContext,
             AccountInfoFragment accountInfo) {
         int inventoryId = configuration.getInventoryId();
-
+        
         HardwareSummary hardware = inventoryDao.findHardwareSummaryById(inventoryId);
         model.addAttribute("hardware", hardware);
         model.addAttribute("inService", enrollmentDao.isInService(inventoryId));
-
         List<DisplayableInventoryEnrollment> enrollments =
             displayableInventoryEnrollmentDao.find(accountInfo.getAccountId(), inventoryId);
         Collections.sort(enrollments, new Comparator<DisplayableInventoryEnrollment>() {
@@ -245,7 +247,10 @@ public class OperatorHardwareConfigController {
             } catch (NotFoundException e) {/* Ignore */}
         }
 
-        return "operator/hardware/config/edit.jsp";
+        YukonEnergyCompany yukonEnergyCompany = 
+                yukonEnergyCompanyService.getEnergyCompanyByAccountId(accountInfo.getAccountId());
+            model.addAttribute("energyCompanyName", yukonEnergyCompany.getName());
+            return "operator/hardware/config/edit.jsp";
     }
 
     private BindingResult bind(ModelMap model, HttpServletRequest request,

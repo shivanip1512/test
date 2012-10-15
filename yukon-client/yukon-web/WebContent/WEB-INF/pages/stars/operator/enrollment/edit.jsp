@@ -45,7 +45,7 @@ updateOKButton = function() {
     <input type="hidden" name="accountId" value="${accountId}"/>
     <input type="hidden" name="assignedProgramId" value="${param.assignedProgramId}"/>
 
-    <cti:checkRolesAndProperties value="!TRACK_HARDWARE_ADDRESSING">
+    <cti:checkEnergyCompanySetting value="!TRACK_HARDWARE_ADDRESSING" energyCompanyName="${energyCompanyName}" >
         <tags:nameValueContainer2>
             <tags:nameValue2 nameKey=".group">
                 <c:if test="${empty loadGroups}">
@@ -58,7 +58,7 @@ updateOKButton = function() {
                 </c:if>
             </tags:nameValue2>
         </tags:nameValueContainer2>
-    </cti:checkRolesAndProperties>
+    </cti:checkEnergyCompanySetting>
 
     <br>
     <tags:boxContainer2 nameKey="hardwareAssigned">

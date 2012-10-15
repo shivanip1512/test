@@ -24,9 +24,9 @@ var programIdsAlreadyEnrolled = [];
         <tr>
             <th class="programName"><i:inline key=".name"/></th>
             <th class="applianceCategory"><i:inline key=".applianceCategory"/></th>
-            <cti:checkRolesAndProperties value="!TRACK_HARDWARE_ADDRESSING">
+            <cti:checkEnergyCompanySetting value="!TRACK_HARDWARE_ADDRESSING" energyCompanyName="${energyCompanyName}">
                 <th class="loadGroup"><i:inline key=".group"/></th>
-            </cti:checkRolesAndProperties>
+            </cti:checkEnergyCompanySetting>
             <th class="hardware"><i:inline key=".hardware"/></th>
             <th class="relay"><i:inline key=".relay"/></th>
             <th class="status"><i:inline key=".status"/></th>
@@ -51,7 +51,7 @@ var programIdsAlreadyEnrolled = [];
                         ${enrollmentProgram.applianceCategory.name}
                     </spring:escapeBody>
                 </td>
-                <cti:checkRolesAndProperties value="!TRACK_HARDWARE_ADDRESSING">
+                <cti:checkEnergyCompanySetting value="!TRACK_HARDWARE_ADDRESSING" energyCompanyName="${energyCompanyName}">
                     <td class="loadGroup">
                         <c:if test="${enrollmentProgram.loadGroupId != 0}">
                             <spring:escapeBody htmlEscape="true">
@@ -59,7 +59,7 @@ var programIdsAlreadyEnrolled = [];
                             </spring:escapeBody><br>
                         </c:if>
                     </td>
-                </cti:checkRolesAndProperties>
+                </cti:checkEnergyCompanySetting>
                 <td class="hardware">
                     <c:forEach var="hardware" items="${enrollmentProgram.inventory}">
                         <c:if test="${hardware.enrolled}">

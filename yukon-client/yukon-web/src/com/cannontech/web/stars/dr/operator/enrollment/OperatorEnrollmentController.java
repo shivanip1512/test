@@ -90,6 +90,9 @@ public class OperatorEnrollmentController {
             lmHardwareControlGroupDao.getHardwareConfigActions(accountId);
         model.addAttribute("hardwareConfigActions", hardwareConfigActions);
         model.addAttribute("energyCompanyId", accountInfoFragment.getEnergyCompanyId());
+        YukonEnergyCompany yukonEnergyCompany = 
+                yukonEnergyCompanyService.getEnergyCompanyByAccountId(accountInfoFragment.getAccountId());
+            model.addAttribute("energyCompanyName", yukonEnergyCompany.getName());
 
         return "operator/enrollment/list.jsp";
     }
@@ -151,7 +154,7 @@ public class OperatorEnrollmentController {
         
         YukonEnergyCompany yukonEnergyCompany = 
             yukonEnergyCompanyService.getEnergyCompanyByAccountId(accountInfoFragment.getAccountId());
-        
+        model.addAttribute("energyCompanyName", yukonEnergyCompany.getName());
         boolean trackHardwareAddressingEnabled =
             energyCompanyRolePropertyDao.getPropertyBooleanValue(YukonRoleProperty.TRACK_HARDWARE_ADDRESSING, yukonEnergyCompany);
       String batchedSwitchCommandToggle =

@@ -77,9 +77,9 @@ jQuery(function() {
                             <tr>
                                 <th><i:inline key=".name"/></th>
                                 <th><i:inline key=".applianceCategory"/></th>
-                                <cti:checkRolesAndProperties value="!TRACK_HARDWARE_ADDRESSING">
+                                <cti:checkEnergyCompanySetting value="!TRACK_HARDWARE_ADDRESSING" energyCompanyName="${energyCompanyName}">
                                     <th><i:inline key=".group"/></th>
-                                </cti:checkRolesAndProperties>
+                                </cti:checkEnergyCompanySetting>
                                 <th><i:inline key=".relay"/></th>
                             </tr>
                 
@@ -100,7 +100,7 @@ jQuery(function() {
                                             ${applianceCategories[assignedPrograms[enrollment.assignedProgramId].applianceCategoryId].name}
                                         </spring:escapeBody>
                                     </td>
-                                    <cti:checkRolesAndProperties value="!TRACK_HARDWARE_ADDRESSING">
+                                    <cti:checkEnergyCompanySetting value="!TRACK_HARDWARE_ADDRESSING" energyCompanyName="${energyCompanyName}">
                                         <td>
                                             <c:set var="loadGroups" value="${loadGroupsByProgramId[programId]}"/>
                                             <c:if test="${fn:length(loadGroups) == 0}">
@@ -113,7 +113,7 @@ jQuery(function() {
                                                     itemValue="loadGroupId"/>
                                             </c:if>
                                         </td>
-                                    </cti:checkRolesAndProperties>
+                                    </cti:checkEnergyCompanySetting>
                                     <td>
                                         <form:select path="programEnrollments[${status.index}].relay">
                                             <form:option value="0"><i:inline key=".noRelay"/></form:option>
@@ -128,10 +128,10 @@ jQuery(function() {
                 </tags:formElementContainer>
             
                 <cti:checkRolesAndProperties value="OPERATOR_ALLOW_ACCOUNT_EDITING">
-                    <cti:checkRolesAndProperties value="TRACK_HARDWARE_ADDRESSING">
+                    <cti:checkEnergyCompanySetting value="TRACK_HARDWARE_ADDRESSING" energyCompanyName="${energyCompanyName}">
                         <br>
                         <dr:hardwareAddressingInfo/>
-                    </cti:checkRolesAndProperties>
+                    </cti:checkEnergyCompanySetting>
                 </cti:checkRolesAndProperties>
             
                 <div class="pageActionArea marginBottom">

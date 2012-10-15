@@ -197,6 +197,21 @@
     </attribute>    
   </tag>
   
+<tag>
+    <name>checkEnergyCompanySetting</name>
+    <tag-class>com.cannontech.web.taglib.CheckEnergyCompanySettingTag</tag-class>
+    <attribute>
+        <name>value</name>
+        <required>true</required>
+        <rtexprvalue>true</rtexprvalue>
+    </attribute>
+    <attribute>
+        <name>energyCompanyName</name>
+        <required>true</required>
+        <rtexprvalue>true</rtexprvalue>
+    </attribute>   
+  </tag>
+  
   <tag>
     <name>checkUserChecker</name>
     <tag-class>com.cannontech.web.taglib.CheckUserCheckerTag</tag-class>
