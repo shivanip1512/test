@@ -133,6 +133,7 @@ public class OperatorAccountSeachDaoImpl implements OperatorAccountSearchDao {
 		sql.append("JOIN ECToInventoryMapping etim ON (lhb.InventoryId = etim.inventoryId)");
 		sql.append("WHERE UPPER(lhb.ManufacturerSerialNumber)").eq(serialNumber.toUpperCase());
 		sql.append("AND etim.EnergyCompanyId").in(energyCompanyIds);
+		sql.append("AND ib.AccountId").gt(0);
 		sql.append("ORDER BY lhb.ManufacturerSerialNumber");
 		
 		return yukonJdbcOperations.query(sql, new IntegerRowMapper());
