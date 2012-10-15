@@ -29,19 +29,19 @@ public class GlobalSettingsUpdateDaoImpl implements GlobalSettingsUpdateDao {
     private final static FieldMapper<GlobalSettingDb> fieldMapper = new FieldMapper<GlobalSettingDb>() {
         @Override
         public Number getPrimaryKey(GlobalSettingDb setting) {
-            return setting.getYukonSettingId();
+            return setting.getGlobalSettingId();
         }
 
         @Override
-        public void setPrimaryKey(GlobalSettingDb setting, int yukonSettingId) {
-            setting.setYukonSettingId(yukonSettingId);
+        public void setPrimaryKey(GlobalSettingDb setting, int globalSettingId) {
+            setting.setGlobalSettingId(globalSettingId);
         }
 
         @Override
         public void extractValues(MapSqlParameterSource parameterHolder, GlobalSettingDb setting) {
             parameterHolder.addValue("Name", setting.getName());
             parameterHolder.addValue("Value", setting.getValue());
-            parameterHolder.addValue("Comment", setting.getComment());
+            parameterHolder.addValue("Comments", setting.getComment());
             parameterHolder.addValue("LastChangedDate", setting.getLastChangedDate());
         }
     };
@@ -54,20 +54,19 @@ public class GlobalSettingsUpdateDaoImpl implements GlobalSettingsUpdateDao {
         
         if (insertTemplate.saveWillUpdate(newSetting)){
             insertTemplate.save(newSetting);
-            dbPersistentDao.processDatabaseChange(DbChangeType.UPDATE, DbChangeCategory.GLOBAL_SETTING, newSetting.getYukonSettingId());
+            dbPersistentDao.processDatabaseChange(DbChangeType.UPDATE, DbChangeCategory.GLOBAL_SETTING, newSetting.getGlobalSettingId());
         } else {
             insertTemplate.save(newSetting);
-            dbPersistentDao.processDatabaseChange(DbChangeType.ADD, DbChangeCategory.GLOBAL_SETTING, newSetting.getYukonSettingId());
+            dbPersistentDao.processDatabaseChange(DbChangeType.ADD, DbChangeCategory.GLOBAL_SETTING, newSetting.getGlobalSettingId());
         }
     }
-    
 
     @PostConstruct
     public void init() {
         insertTemplate = new SimpleTableAccessTemplate<GlobalSettingDb>(yukonJdbcTemplate, nextValueHelper);
-        insertTemplate.setTableName("YukonSetting");
+        insertTemplate.setTableName("GlobalSetting");
         insertTemplate.setFieldMapper(fieldMapper);
-        insertTemplate.setPrimaryKeyField("YukonSettingId");
+        insertTemplate.setPrimaryKeyField("GlobalSettingId");
         insertTemplate.setPrimaryKeyValidOver(0);
     }
 }

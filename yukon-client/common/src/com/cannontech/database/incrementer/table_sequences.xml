@@ -291,8 +291,8 @@
       <sequence name="EncryptionKey">
         <table name="EncryptionKey" identitycolumn="EncryptionKeyId"/>
       </sequence>
-      <sequence name="YukonSetting">
-        <table name="YukonSetting" identitycolumn="YukonSettingId" initsequence="true" />
+      <sequence name="GlobalSetting">
+        <table name="GlobalSetting" identitycolumn="GlobalSettingId" initsequence="true" />
       </sequence>
   </sequencetable>
 </sequencetables>

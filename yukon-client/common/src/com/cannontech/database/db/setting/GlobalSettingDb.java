@@ -3,7 +3,7 @@ package com.cannontech.database.db.setting;
 import org.joda.time.Instant;
 
 public class GlobalSettingDb {
-    private Integer yukonSettingId;
+    private Integer globalSettingId;
     private String name;
     private Object value;
     private String comment;
@@ -18,14 +18,14 @@ public class GlobalSettingDb {
      * A null value in this case does not indicate a null value in the database.
      * Here it indicates it is not in the database, but stored in the cache with null
      * 
-     * @return yukonSettingId if found in database, or null if not
+     * @return globalSettingId if found in database, or null if not
      */
-    public Integer getYukonSettingId() { 
-        return yukonSettingId; 
+    public Integer getGlobalSettingId() { 
+        return globalSettingId; 
     }
 
-    public void setYukonSettingId(int yukonSettingId) {
-        this.yukonSettingId = yukonSettingId;
+    public void setGlobalSettingId(int globalSettingId) {
+        this.globalSettingId = globalSettingId;
     }
 
     public String getName() {

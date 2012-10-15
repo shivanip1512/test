@@ -1,7 +1,6 @@
 package com.cannontech.system.dao.impl;
 
 import java.sql.SQLException;
-import java.util.List;
 
 import org.apache.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -24,7 +23,6 @@ import com.cannontech.system.dao.GlobalSettingsDao;
  * The class handles Yukon System wide settings. 
  * 
  * These were previously associated with Yukon Grp role properties.
- * 
  * 
  * This is primarily intended for reading the settings and not for updating settings.
  * To update Yukon settings there is GlobalSettingsUpdateDao to avoid circular dependencies
@@ -138,36 +136,31 @@ public class GlobalSettingsDaoImpl implements GlobalSettingsDao {
 
     private GlobalSettingDb findSetting(GlobalSetting setting) {
         SqlStatementBuilder sql = new SqlStatementBuilder();
-        sql.append("SELECT YukonSettingId, Value, Name, LastChangedDate");
-        sql.append("FROM YukonSetting");
+        sql.append("SELECT GlobalSettingId, Value, Name, LastChangedDate");
+        sql.append("FROM GlobalSetting");
         sql.append("WHERE Name").eq(setting.name());
         
-        List<GlobalSettingDb> values = null;
+        GlobalSettingDb settingDb = null;
         try {
-            values = yukonJdbcTemplate.query(sql,settingMapper);
+            settingDb = yukonJdbcTemplate.queryForObject(sql,settingMapper);
         } catch (EmptyResultDataAccessException e) {
             log.warn("Setting missing from the database: " + setting.name());
             return null;
         }
 
-        if (values == null || values.isEmpty()) {
+        if (settingDb == null) {
             log.warn("Setting missing from the database: " + setting.name());
             return null;
-        } else if (values.size() == 1) {
-            GlobalSettingDb value = values.get(0);
+        } else {
             if (log.isDebugEnabled()) {
                 log.debug("Found one setting value for " + setting.name());
             }
-            return value;
-        } else {
-            GlobalSettingDb value = values.get(0);
-            log.warn("Global Setting conflict found for " + setting.name() + " Using value: " + value.getValue());
-            return value;
-        }
+            return settingDb;
+        } 
     }
     
     public void clearCache() {
-        log.debug("Removing " +  cache.size() + " values from the Yukon Settings Cache");
+        log.debug("Removing " +  cache.size() + " values from the Global Settings Cache");
         cache.clear();
     }
   
@@ -182,7 +175,7 @@ public class GlobalSettingsDaoImpl implements GlobalSettingsDao {
             
             GlobalSettingDb globalSettingDb = new GlobalSettingDb(setting.name(),value);
             globalSettingDb.setLastChangedDate(rs.getInstant("LastChangedDate"));
-            globalSettingDb.setYukonSettingId(rs.getInt("YukonSettingId"));
+            globalSettingDb.setGlobalSettingId(rs.getInt("GlobalSettingId"));
             
             return globalSettingDb;
         }

@@ -99,28 +99,11 @@ public class RoleAndPropertyDescriptionService {
 
             } catch (IllegalArgumentException ignore) { }
             
-            // see if it is a supported boolean key in master.cfg
-            try {
-            	
-            	MasterConfigBooleanKeysEnum key = MasterConfigBooleanKeysEnum.valueOf(someEnumName);
-            	boolean bool = configurationSource.getBoolean(key);
-            	
-                UserChecker propertyChecker;
-                if (inverted) {
-                    propertyChecker = userCheckerFactory.createBooleanChecker(!bool);
-                } else {
-                    propertyChecker = userCheckerFactory.createBooleanChecker(bool);
-                }
-                checkers.add(propertyChecker);
-                continue;
-
-            } catch (IllegalArgumentException ignore) { }
-
             // see if it is a supported system setting 
             try {
-                
+
                 boolean bool = globalSettingsDao.checkSetting(GlobalSetting.valueOf(someEnumName));
-                
+
                 UserChecker propertyChecker;
                 if (inverted) {
                     propertyChecker = userCheckerFactory.createBooleanChecker(!bool);
@@ -131,7 +114,24 @@ public class RoleAndPropertyDescriptionService {
                 continue;
 
             } catch (IllegalArgumentException ignore) { }
-            
+
+            // see if it is a supported boolean key in master.cfg
+            try {
+
+            	MasterConfigBooleanKeysEnum key = MasterConfigBooleanKeysEnum.valueOf(someEnumName);
+            	boolean bool = configurationSource.getBoolean(key);
+
+                UserChecker propertyChecker;
+                if (inverted) {
+                    propertyChecker = userCheckerFactory.createBooleanChecker(!bool);
+                } else {
+                    propertyChecker = userCheckerFactory.createBooleanChecker(bool);
+                }
+                checkers.add(propertyChecker);
+                continue;
+
+            } catch (IllegalArgumentException ignore) { }
+
             // if we get here, we must not have a valid role, property, or global setting
             throw new IllegalArgumentException("Can't use '" + someEnumName + "', check that it is a valid role, category, boolean property, or boolean global setting.");
         }
