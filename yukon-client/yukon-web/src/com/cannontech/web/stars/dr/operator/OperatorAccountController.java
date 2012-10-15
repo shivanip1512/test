@@ -675,6 +675,8 @@ public class OperatorAccountController {
 			    
 			    bindingResult.pushNestedPath("loginBackingBean");
 
+			    //When both password fields are left blank, this is a special case which means it
+			    // won't change the password, so here we don't want to do validation. 
 			    if (StringUtils.isNotBlank(accountGeneral.getLoginBackingBean().getPassword1()) 
 			            || StringUtils.isNotBlank(accountGeneral.getLoginBackingBean().getPassword2())) {
 			        passwordValidator.validate(accountGeneral.getLoginBackingBean(), bindingResult);
