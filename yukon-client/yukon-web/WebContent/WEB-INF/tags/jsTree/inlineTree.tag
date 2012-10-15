@@ -109,7 +109,7 @@
             </c:choose>
             checkbox: false,
             onClick: function(node, event) {
-                if(node.getEventTargetType(event) != 'expander'){
+                if(node.getEventTargetType(event) != 'expander' && node.getEventTargetType(event) != 'checkbox'){
                     if(!node.data.isFolder){
                         node.toggleSelect();
                     }
