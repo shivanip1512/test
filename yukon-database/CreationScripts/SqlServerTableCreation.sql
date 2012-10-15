@@ -1,7 +1,7 @@
 /*==============================================================*/
 /* Database name:  YukonDatabase                                */
 /* DBMS name:      Microsoft SQL Server 2005                    */
-/* Created on:     10/15/2012 1:53:57 PM                        */
+/* Created on:     10/15/2012 5:41:52 PM                        */
 /*==============================================================*/
 
 /*==============================================================*/
@@ -9093,16 +9093,6 @@ create table YukonRole (
 )
 go
 
-/* Default role for all users - yukon category */
-INSERT INTO YukonRole VALUES(-1,'Yukon','Yukon','Default Yukon role. Edit this role from the Yukon SetUp page.');
-INSERT INTO YukonRole VALUES(-4,'Authentication','Yukon','Settings for using an authentication server to login instead of standard yukon login.');
-INSERT INTO YukonRole VALUES(-5,'Voice Server','Yukon','Inbound and outbound voice interface.');
-INSERT INTO YukonRole VALUES(-6,'Billing Configuration','Yukon','Billing. Edit this role from the Yukon SetUp page.');
-INSERT INTO YukonRole VALUES(-7,'MultiSpeak','Yukon','MultiSpeak web services interface.');
-INSERT INTO YukonRole VALUES(-8,'Configuration','Yukon','Miscellaneous Yukon configuration settings');
-INSERT INTO YukonRole VALUES(-104,'Calc Historical','Yukon','Calc Historical. Edit this role from the Yukon SetUp page.');
-INSERT INTO YukonRole VALUES(-105,'Web Graph','Yukon','Web Graph. Edit this role from the Yukon SetUp page.');
-
 /* Application specific roles */
 INSERT INTO YukonRole VALUES(-100,'Database Editor','Application','Access to the Yukon Database Editor application');
 INSERT INTO YukonRole VALUES(-101,'Tabular Data Console','Application','Access to the Yukon Tabular Data Console (TDC) application');
@@ -9178,26 +9168,6 @@ create table YukonRoleProperty (
 )
 go
 
-/* Yukon Role */
-insert into YukonRoleProperty values(-1000,-1,'dispatch_machine','127.0.0.1','Name or IP address of the Yukon Dispatch Service');
-insert into YukonRoleProperty values(-1001,-1,'dispatch_port','1510','TCP/IP port of the Yukon Dispatch Service');
-insert into YukonRoleProperty values(-1002,-1,'porter_machine','127.0.0.1','Name or IP address of the Yukon Port Control Service');
-insert into YukonRoleProperty values(-1003,-1,'porter_port','1540','TCP/IP port of the Yukon Port Control Service');
-insert into YukonRoleProperty values(-1004,-1,'macs_machine','127.0.0.1','Name or IP address of the Yukon Metering and Control Scheduler Service');
-insert into YukonRoleProperty values(-1005,-1,'macs_port','1900','TCP/IP port of the Yukon Metering and Control Scheduler Service');
-insert into YukonRoleProperty values(-1006,-1,'cap_control_machine','127.0.0.1','Name or IP address of the Yukon Capacitor Control Service');
-insert into YukonRoleProperty values(-1007,-1,'cap_control_port','1910','TCP/IP port of the Yukon Capacitor Control Service');
-insert into YukonRoleProperty values(-1008,-1,'loadcontrol_machine','127.0.0.1','Name or IP Address of the Yukon Load Management Service');
-insert into YukonRoleProperty values(-1009,-1,'loadcontrol_port','1920','TCP/IP port of the Yukon Load Management Service');
-insert into YukonRoleProperty values(-1010,-1,'smtp_host','127.0.0.1','Name or IP address of the mail server');
-insert into YukonRoleProperty values(-1011,-1,'mail_from_address','yukon@cannontech.com','Name of the FROM email address the mail server will use');
-insert into YukonRoleProperty values(-1013,-1,'stars_preload_data','true','Controls whether the STARS application should preload data into the cache.');
-insert into YukonRoleProperty values(-1014,-1,'web_logo','CannonLogo.gif','The logo that is used for the yukon web applications');
-insert into YukonRoleProperty values(-1016,-1,'notification_host','127.0.0.1','Name or IP address of the Yukon Notification service');
-insert into YukonRoleProperty values(-1017,-1,'notification_port','1515','TCP/IP port of the Yukon Notification service');
-insert into YukonRoleProperty values(-1019,-1,'batched_switch_command_timer','auto','Specifies whether the STARS application should automatically process batched switch commands');
-insert into YukonRoleProperty values(-1021,-1,'importer_communications_enabled','true','Specifies whether communications will be allowed by the bulk importer.'); 
-
 /* Energy Company Role Properties */
 INSERT INTO YukonRoleProperty VALUES(-1100,-2,'admin_email_address','info@cannontech.com','Sender address of emails sent on behalf of energy company, e.g. control odds and opt out notification emails.');
 INSERT INTO YukonRoleProperty VALUES(-1101,-2,'optout_notification_recipients',' ','Recipients of the opt out notification email');
@@ -9221,41 +9191,6 @@ INSERT INTO YukonRoleProperty VALUES(-1122, -2, 'Allow 5/2 Thermostat Schedules'
 INSERT INTO YukonRoleProperty VALUES(-1123, -2, 'Allow 5/1/1 Thermostat Schedules', 'true', 'Allow the use of 5/1/1 schedules for compatible thermostats. Weekday/Saturday/Sunday.'); 
 INSERT INTO YukonRoleProperty VALUES(-1124, -2, 'Allow 7 Day Thermostat Schedules', 'false', 'Allow the use of 7 day schedules (different schedule each day of the week) for compatible thermostats.'); 
 
-INSERT INTO YukonRoleProperty VALUES(-1300,-4,'server_address','127.0.0.1','Authentication server machine address');
-INSERT INTO YukonRoleProperty VALUES(-1301,-4,'auth_port','1812','Authentication port.');
-INSERT INTO YukonRoleProperty VALUES(-1302,-4,'acct_port','1813','Accounting port.');
-INSERT INTO YukonRoleProperty VALUES(-1303,-4,'secret_key','cti','Client machine secret key value, defined by the server.');
-INSERT INTO YukonRoleProperty VALUES(-1304,-4,'auth_method',' ','Authentication method. Possible values are leaving the field empty | PAP, [chap, others to follow soon]');
-INSERT INTO YukonRoleProperty VALUES(-1305,-4,'authentication_mode','Yukon','Authentication mode to use.  Valid values are:   Yukon | Radius');
-INSERT INTO YukonRoleProperty VALUES(-1306,-4,'auth_timeout','30','Number of seconds before the authentication process times out');
-INSERT INTO YukonRoleProperty VALUES(-1307,-4,'Default Authentication Type', 'ENCRYPTED', 'Set the default authentication type to use {AD,ENCRYPTED,LDAP,RADIUS,NONE}');
-INSERT INTO YukonRoleProperty VALUES(-1308,-4,'LDAP DN','dc=example,dc=com','LDAP Distinguished Name');
-INSERT INTO YukonRoleProperty VALUES(-1309,-4,'LDAP User Suffix','ou=users','LDAP User Suffix');
-
-INSERT INTO YukonRoleProperty VALUES(-1310,-4,'LDAP User Prefix','uid=','LDAP User Prefix');
-INSERT INTO YukonRoleProperty VALUES(-1311,-4,'LDAP Server Address','127.0.0.1','LDAP Server Address');
-INSERT INTO YukonRoleProperty VALUES(-1312,-4,'LDAP Server Port','389','LDAP Server Port');
-INSERT INTO YukonRoleProperty VALUES(-1313,-4,'LDAP Server Timeout','30','LDAP Server Timeout (in seconds)');
-INSERT INTO YukonRoleProperty VALUES(-1314,-4,'Active Directory Server Address','127.0.0.1','Active Directory Server Address');
-INSERT INTO YukonRoleProperty VALUES(-1315,-4,'Active Directory Server Port','389','Active Directory Server Port');
-INSERT INTO YukonRoleProperty VALUES(-1316,-4,'Active Directory Server Timeout','30','Active Directory Server Timeout (in seconds)');
-INSERT INTO YukonRoleProperty VALUES(-1317,-4,'Active Directory NT Domain Name',' ','Active Directory NT DOMAIN NAME');
-INSERT INTO YukonRoleProperty VALUES(-1318,-4,'Enable Password Recovery','true','Controls access to password recovery (Forgot your password?) feature.');
-
-INSERT INTO YukonRoleProperty VALUES(-1402,-5,'call_response_timeout','240','The time-out in seconds given to each outbound call response');
-INSERT INTO YukonRoleProperty VALUES(-1403,-5,'Call Prefix',' ','Any number or numbers that must be dialed before a call can be placed.');
-
-/* Billing Role Properties */
-INSERT INTO YukonRoleProperty VALUES(-1500,-6,'wiz_activate','false','<description>');
-INSERT INTO YukonRoleProperty VALUES(-1501,-6,'input_file','c:\yukon\client\bin\BillingIn.txt','Directory to read billing input file from. Used by ExtendedTOU_Incode, MVRS, WLT_40, and NCDC_Handhed formats.');
-INSERT INTO YukonRoleProperty VALUES(-1503,-6,'Default File Format','CTI-CSV','The Default file formats.  See table BillingFileFormats.format for other valid values.');
-INSERT INTO YukonRoleProperty VALUES(-1504,-6,'Demand Days Previous','30','Integer value for number of days for demand readings to query back from billing end date.');
-INSERT INTO YukonRoleProperty VALUES(-1505,-6,'Energy Days Previous','7','Integer value for number of days for energy readings to query back from billing end date.');
-INSERT INTO YukonRoleProperty VALUES(-1506,-6,'Append To File','false','Append to existing file.');
-INSERT INTO YukonRoleProperty VALUES(-1507,-6,'Remove Multiplier','false','Remove the multiplier value from the reading.');
-INSERT INTO YukonRoleProperty VALUES(-1508,-6,'Coop ID - CADP Only',' ','CADP format requires a coop id number.');
-INSERT INTO YukonRoleProperty VALUES(-1509,-6,'Rounding Mode','HALF_EVEN','Rounding Mode used when formatting value data in billing formats. Available placeholders: HALF_EVEN, CEILING, FLOOR, UP, DOWN, HALF_DOWN, HALF_UP'); 
-
 /* Database Editor Role */
 INSERT INTO YukonRoleProperty VALUES(-10000,-100,'point_id_edit','false','Controls whether point ids can be edited');
 INSERT INTO YukonRoleProperty VALUES(-10002,-100,'dbeditor_lm','true','Controls whether the Loadmanagement menu item in the View menu is displayed');
@@ -9265,23 +9200,6 @@ INSERT INTO YukonRoleProperty VALUES(-10007,-100,'dbeditor_trans_exclusion','fal
 INSERT INTO YukonRoleProperty VALUES(-10008,-100,'permit_login_edit','true','Closes off all access to logins and login groups for non-administrators in the dbeditor');
 INSERT INTO YukonRoleProperty VALUES(-10010,-100,'z_optional_product_dev','00000000','This feature is for development purposes only');
 INSERT INTO YukonRoleProperty VALUES(-10011,-100,'allow_member_programs','false','Allows member management of LM Direct Programs through the DBEditor');
-
-/* MultiSpeak */
-INSERT INTO YukonRoleProperty VALUES(-1600,-7,'PAOName Alias','METER_NUMBER','Defines a Yukon Pao (Device) Name field alias. Valid values: METER_NUMBER, ACCOUNT_NUMBER, SERVICE_LOCATION, CUSTOMER_ID, GRID_LOCATION, POLE_NUMBER');
-INSERT INTO YukonRoleProperty VALUES(-1601,-7,'Primary CIS Vendor','0','Defines the primary CIS vendor for CB interfaces.');
-INSERT INTO YukonRoleProperty VALUES(-1602,-7,'Msp BillingCycle DeviceGroup','/Meters/Billing/','Defines the Device Group parent group name for the MultiSpeak billingCycle element. Valid values are ''/Meters/Billing/'', ''/Meters/Collection'', ''/Meters/Alternate''');
-INSERT INTO YukonRoleProperty VALUES(-1603,-7,'Msp LM Interface Mapping Setup','false','Controls access to setup the MultiSpeak LM interface mappings.');
-INSERT INTO YukonRoleProperty VALUES(-1604,-7,'Meter Lookup Field','AUTO_METER_NUMBER_FIRST','Defines the field used to lookup a meter by in Yukon. Valid values: AUTO_METER_NUMBER_FIRST, AUTO_DEVICE_NAME_FIRST, METER_NUMBER, DEVICE_NAME, or ADDRESS.'); 
-INSERT INTO YukonRoleProperty VALUES(-1605,-7,'PAOName Extension',' ','The extension name of the field appended to PaoName Alias. Leave this value blank to ignore the use of extensions.');
-
-/* Configuration */
-INSERT INTO YukonRoleProperty VALUES(-1700,-8,'Device Display Template','DEVICE_NAME','Defines the format for displaying devices. Available placeholders: DEVICE_NAME, METER_NUMBER, ID, ADDRESS');
-INSERT INTO YukonRoleProperty VALUES(-1701,-8,'Alert Timeout Hours', '168', 'The number of hours that an alert should be held (zero = forever, decimal numbers are okay)'); 
-INSERT INTO YukonRoleProperty VALUES(-1702,-8,'Customer Info Importer File Location', ' ', 'File location of the automated consumer information import process.');
-INSERT INTO YukonRoleProperty VALUES(-1703,-8,'System Default TimeZone', ' ', 'System Default TimeZone (e.g. America/Denver, America/Chicago, America/Los_Angeles, or America/New_York)'); 
-INSERT INTO YukonRoleProperty VALUES(-1704,-8,'Opt Outs Count', 'true', 'Determines whether new opt outs count against the opt out limits.'); 
-INSERT INTO YukonRoleProperty VALUES(-1705,-8,'Database Migration File Location','/Server/Export/','File location of the database migration export process.'); 
-INSERT INTO YukonRoleProperty VALUES(-1706,-8,'Enable CAPTCHAs','true','Enable CAPTCHAs for password management.');
 
 /* TDC Role */
 INSERT INTO YukonRoleProperty VALUES(-10100,-101,'loadcontrol_edit','00000000','(No settings yet)');
@@ -9321,14 +9239,7 @@ INSERT INTO YukonRoleProperty VALUES(-10317,-103,'Execute Manual Command', 'true
 INSERT INTO YukonRoleProperty VALUES(-10318,-103,'Enable Web Commander', 'true', 'Controls access to web commander applications');
 INSERT INTO YukonRoleProperty VALUES(-10319,-103,'Enable Client Commander', 'true', 'Controls access to client commander application'); 
 
-/* Calc Historical Role Properties */
-INSERT INTO YukonRoleProperty VALUES(-10400,-104,'interval','900','<description>');
-INSERT INTO YukonRoleProperty VALUES(-10401,-104,'baseline_calctime','4','<description>');
-INSERT INTO YukonRoleProperty VALUES(-10402,-104,'daysprevioustocollect','30','<description>');
-
-/* Web Graph Role Properties */
-INSERT INTO YukonRoleProperty VALUES(-10500,-105,'home_directory','c:\yukon\client\webgraphs\','Directory to write generated web graphs to.');
-INSERT INTO YukonRoleProperty VALUES(-10501,-105,'run_interval','900','<description>');
+/* Dynamic Billing File Setup */
 INSERT INTO YukonRoleProperty VALUES(-10600,-106,'Dynamic Billing File Setup','true','Controls access to create, edit, and delete dynamic billing files.'); 
 
 /* Esubstation Editor Role Properties */
