@@ -1,7 +1,7 @@
 /*==============================================================*/
 /* Database name:  YukonDatabase                                */
 /* DBMS name:      Microsoft SQL Server 2005                    */
-/* Created on:     10/5/2012 11:19:23 AM                        */
+/* Created on:     10/15/2012 1:53:57 PM                        */
 /*==============================================================*/
 
 /*==============================================================*/
@@ -5057,6 +5057,27 @@ create table GenericMacro (
 go
 
 /*==============================================================*/
+/* Table: GlobalSetting                                         */
+/*==============================================================*/
+create table GlobalSetting (
+   GlobalSettingId      numeric              not null,
+   Name                 varchar(100)         not null,
+   Value                varchar(1000)        not null,
+   Comments             varchar(1000)        null,
+   LastChangedDate      datetime             null,
+   constraint PK_GlobalSetting primary key nonclustered (GlobalSettingId)
+)
+go
+
+/*==============================================================*/
+/* Index: Indx_GlobalSetting_Name_UNQ                           */
+/*==============================================================*/
+create index Indx_GlobalSetting_Name_UNQ on GlobalSetting (
+Name ASC
+)
+go
+
+/*==============================================================*/
 /* Table: GraphCustomerList                                     */
 /*==============================================================*/
 create table GraphCustomerList (
@@ -8304,7 +8325,6 @@ create table UserGroupToYukonGroupMapping (
 )
 go
 
-INSERT INTO UserGroupToYukonGroupMapping VALUES(-1, -1);
 INSERT INTO UserGroupToYukonGroupMapping VALUES(-1, -2);
 
 /*==============================================================*/
@@ -8404,7 +8424,6 @@ create table YukonGroup (
 )
 go
 
-INSERT INTO YukonGroup VALUES (-1,'Yukon Grp','The default system user group that allows limited user interaction.');
 INSERT INTO YukonGroup VALUES (-2,'System Administrator Grp','A set of roles that allow administrative access to the system.');
 
 /*==============================================================*/
@@ -8427,70 +8446,6 @@ create table YukonGroupRole (
    constraint PK_YUKONGRPROLE primary key (GroupRoleID)
 )
 go
-
-/* Assign the default Yukon role to the default Yukon group */
-insert into YukonGroupRole values(-1,-1,-1,-1000,' ');
-insert into YukonGroupRole values(-2,-1,-1,-1001,' ');
-insert into YukonGroupRole values(-3,-1,-1,-1002,' ');
-insert into YukonGroupRole values(-4,-1,-1,-1003,' ');
-insert into YukonGroupRole values(-5,-1,-1,-1004,' ');
-insert into YukonGroupRole values(-6,-1,-1,-1005,' ');
-insert into YukonGroupRole values(-7,-1,-1,-1006,' ');
-insert into YukonGroupRole values(-8,-1,-1,-1007,' ');
-insert into YukonGroupRole values(-9,-1,-1,-1008,' ');
-insert into YukonGroupRole values(-10,-1,-1,-1009,' ');
-insert into YukonGroupRole values(-11,-1,-1,-1010,' ');
-insert into YukonGroupRole values(-12,-1,-1,-1011,' ');
-insert into YukonGroupRole values(-14,-1,-1,-1013,' ');
-insert into YukonGroupRole values(-15,-1,-1,-1014,'CannonLogo.gif');
-insert into YukonGroupRole values(-17,-1,-1,-1016,' ');
-insert into YukonGroupRole values(-18,-1,-1,-1017,' ');
-insert into YukonGroupRole values(-20,-1,-1,-1019,' ');
-insert into YukonGroupRole values(-50,-1,-4,-1308,' ');
-insert into YukonGroupRole values(-51,-1,-4,-1309,' ');
-insert into YukonGroupRole values(-52,-1,-4,-1310,' ');
-insert into YukonGroupRole values(-53,-1,-4,-1311,' ');
-insert into YukonGroupRole values(-54,-1,-4,-1312,' ');
-insert into YukonGroupRole values(-55,-1,-4,-1313,' ');
-insert into YukonGroupRole values(-56,-1,-4,-1314,' ');
-insert into YukonGroupRole values(-57,-1,-4,-1315,' ');
-insert into YukonGroupRole values(-58,-1,-4,-1316,' ');
-insert into YukonGroupRole values(-59,-1,-4,-1317,' ');
-insert into YukonGroupRole values(-72,-1,-5,-1402,' ');
-insert into YukonGroupRole values(-85,-1,-4,-1300,' ');
-insert into YukonGroupRole values(-86,-1,-4,-1301,' ');
-insert into YukonGroupRole values(-87,-1,-4,-1302,' ');
-insert into YukonGroupRole values(-88,-1,-4,-1303,' ');
-insert into YukonGroupRole values(-89,-1,-4,-1304,' ');
-insert into YukonGroupRole values(-90,-1,-4,-1305,' ');
-insert into YukonGroupRole values(-91,-1,-4,-1306,' ');
-insert into YukonGroupRole values(-92,-1,-4,-1307,' ');
-
-/* Calc Historical for Yukon Group */
-insert into YukonGroupRole values(-190,-1,-104,-10400,' ');
-insert into YukonGroupRole values(-191,-1,-104,-10401,' ');
-insert into YukonGroupRole values(-192,-1,-104,-10402,' ');
-
-/* Web Graph for Yukon Group */
-insert into YukonGroupRole values(-210,-1,-105,-10500,' ');
-insert into YukonGroupRole values(-211,-1,-105,-10501,' ');
-
-/* Billing for Yukon Group */
-INSERT INTO YukonGroupRole VALUES(-230,-1,-6,-1500,' ');
-INSERT INTO YukonGroupRole VALUES(-231,-1,-6,-1501,' ');
-INSERT INTO YukonGroupRole VALUES(-233,-1,-6,-1503,' ');
-INSERT INTO YukonGroupRole VALUES(-234,-1,-6,-1504,' ');
-INSERT INTO YukonGroupRole VALUES(-235,-1,-6,-1505,' ');
-INSERT INTO YukonGroupRole VALUES(-236,-1,-6,-1506,' ');
-INSERT INTO YukonGroupRole VALUES(-237,-1,-6,-1507,' ');
-INSERT INTO YukonGroupRole VALUES(-239,-1,-6,-1509,' '); 
-
-/* MultiSpeak */
-INSERT INTO YukonGroupRole VALUES(-270,-1,-7,-1600,'METER_NUMBER');
-INSERT INTO YukonGroupRole VALUES(-274,-1,-7,-1604,' ');
-
-/* Configuration (Device) */
-INSERT INTO YukonGroupRole VALUES(-280,-1,-8,-1700,' ');
 
 /* START the System Administrator role Group */
 /* Database Editor */
