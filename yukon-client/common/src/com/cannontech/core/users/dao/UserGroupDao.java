@@ -27,6 +27,11 @@ public interface UserGroupDao {
     public LiteUserGroup getLiteUserGroupByUserId(int userId);
 
     /**
+     * The method returns the number of user's apart of a user group.
+     */
+    public int getNumberOfUsers(int userGroupId);
+    
+    /**
      * This method returns the lite user group associated with the supplied user group name.
      */
     public LiteUserGroup getLiteUserGroupByUserGroupName(String userGroupName);

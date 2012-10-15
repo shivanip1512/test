@@ -25,7 +25,9 @@
                     <cti:displayForPageEditModes modes="EDIT,CREATE">
                         <cti:button nameKey="save" name="update" type="submit"/>
                         <c:if test="${isUserGroupDeletable}">
-                            <cti:button nameKey="delete" name="delete" type="submit"/>
+                             <%-- TODO Uncomment this when we implement the role group and user delete functionality.
+                             <cti:button nameKey="delete" id="deleteButton" name="delete" type="button"/>
+                            <tags:confirmDialog nameKey=".confirmDelete" argument="${userGroupName}" on="#deleteButton" submitName="delete"/> --%>
                         </c:if>
                         <cti:url var="cancelUrl" value="view">
                             <cti:param name="userGroupId" value="${userGroupId}"/>

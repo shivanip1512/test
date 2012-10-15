@@ -34,6 +34,7 @@ import com.cannontech.core.roleproperties.YukonRole;
 import com.cannontech.core.roleproperties.YukonRoleCategory;
 import com.cannontech.core.roleproperties.YukonRoleProperty;
 import com.cannontech.core.users.dao.UserGroupDao;
+import com.cannontech.core.users.model.LiteUserGroup;
 import com.cannontech.database.data.lite.LiteBase;
 import com.cannontech.database.data.lite.LiteYukonGroup;
 import com.cannontech.database.data.lite.LiteYukonUser;
@@ -110,6 +111,28 @@ public class UserGroupEditorController {
         model.addAttribute("userGroupId", userGroup.getLiteUserGroup().getUserGroupId());
         
         return "redirect:view";
+    }
+    
+    /**
+     * TODO Uncomment this when we implement the role group and user delete functionality.
+     * 
+    
+    @RequestMapping(value="edit", method=RequestMethod.POST, params="delete")
+     */
+    public String delete(ModelMap model, FlashScope flash, int userGroupId) {
+
+        int numberOfUsers = userGroupDao.getNumberOfUsers(userGroupId);
+        if (numberOfUsers > 0) {
+            flash.setError(new YukonMessageSourceResolvable("yukon.web.modules.adminSetup.userGroupEditor.usersCurrentlyAttached"));
+            model.addAttribute("userGroupId", userGroupId);
+            return "redirect:view";
+        }
+        
+        userGroupDao.delete(userGroupId);
+        
+        LiteUserGroup userGroup = userGroupDao.getLiteUserGroup(userGroupId);
+        flash.setConfirm(new YukonMessageSourceResolvable("yukon.web.modules.adminSetup.userGroupEditor.deletedSuccessful", userGroup.getUserGroupName()));
+        return "userGroupEditor/home.jsp";
     }
 
     /* User Group Associations */
