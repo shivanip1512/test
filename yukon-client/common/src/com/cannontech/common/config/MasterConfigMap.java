@@ -58,7 +58,10 @@ public class MasterConfigMap implements ConfigurationSource {
         InputStream inputStream = FileUtils.openInputStream(masterCfgFile);
         BufferedReader masterCfgReader = new BufferedReader(new InputStreamReader(inputStream));
         // As we are parsing master.cfg, we copy it into this temporary string.  If we come across
-        // 
+        // value which needs to be encrypted, we encrypt it and set updateFile to true.  Then, if
+        // updateFile is true, we overwrite the master.cfg file with the value of this string.
+        // (If updateFile is false, we know that nothing needed to be encrypted so we can leave
+        // the file alone.)
         StringBuilder tempWriter = new StringBuilder();
         String line = null;
         int lineNum = 0;
