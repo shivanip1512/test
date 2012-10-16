@@ -283,18 +283,20 @@ BOOST_AUTO_TEST_CASE(test_decode_get_propcount)
 
 BOOST_AUTO_TEST_CASE(test_decode_control_time)
 {
-    static const int PointOffest_controltime_relay_1 = 15;
+    static const int PointOffset_controltime_relay_1 = 15,
+                     PointOffset_controltime_relay_2 = 16;
+
     INMESS InMessage;
     CtiTime now;
     list< CtiMessage* > vgList;
     list< CtiMessage* > retList;
     list< OUTMESS* > outList;
 
+    test_Lcr3102Device test_device;
+
     // Set the InMessage's control time for relay 1 (half-seconds).
     const int relay1_controlTime = 590;
     const int expected_controlTime = 295;
-
-    test_Lcr3102Device test_device;
 
     InMessage.Buffer.DSt.Address = 10;
     InMessage.Buffer.DSt.Alarm   = 0;
@@ -311,12 +313,31 @@ BOOST_AUTO_TEST_CASE(test_decode_control_time)
     InMessage.Buffer.DSt.Message[3] = relay1_controlTime >> 8;
     InMessage.Buffer.DSt.Message[4] = relay1_controlTime;
 
-    test_device.decodeGetValueControlTime(&InMessage, now, vgList, retList, outList);
+    // Revision 1.0
+    {
+        test_device.setDynamicInfo(CtiTableDynamicPaoInfo::Key_LCR_SSpecRevision, 10);
 
-    test_Lcr3102Device::point_info pi = test_device.test_getPointResults(PointOffest_controltime_relay_1);
+        test_device.decodeGetValueControlTime(&InMessage, now, vgList, retList, outList);
 
-    BOOST_CHECK_EQUAL(pi.value, expected_controlTime); // We are expecting the half seconds to be converted to seconds here!
-    BOOST_CHECK_EQUAL(pi.quality, NormalQuality);
+        test_Lcr3102Device::point_info pi = test_device.test_getPointResults(PointOffset_controltime_relay_1);
+
+        BOOST_CHECK_EQUAL(pi.value, expected_controlTime); // We are expecting the half seconds to be converted to seconds here!
+        BOOST_CHECK_EQUAL(pi.quality, NormalQuality);
+        BOOST_CHECK_EQUAL(pi.description, "Control Time Remaining Relay 1");
+    }
+
+    // Revision 1.1+ (relays are 0-based in revisions 1.1+)
+    {
+        test_device.setDynamicInfo(CtiTableDynamicPaoInfo::Key_LCR_SSpecRevision, 11);
+
+        test_device.decodeGetValueControlTime(&InMessage, now, vgList, retList, outList);
+
+        test_Lcr3102Device::point_info pi = test_device.test_getPointResults(PointOffset_controltime_relay_2);
+
+        BOOST_CHECK_EQUAL(pi.value, expected_controlTime); // We are expecting the half seconds to be converted to seconds here!
+        BOOST_CHECK_EQUAL(pi.quality, NormalQuality);
+        BOOST_CHECK_EQUAL(pi.description, "Control Time Remaining Relay 2"); // Relay + 1 should be reported here!
+    }
 }
 
 BOOST_AUTO_TEST_CASE(test_data_read_address)

@@ -558,7 +558,26 @@ INT Lcr3102Device::decodeGetValueControlTime( INMESS *InMessage, CtiTime &TimeNo
 
     ReturnMsg->setUserMessageId(InMessage->Return.UserID);
 
-    int relay = DSt->Message[0]; // Relay is 1-4 here
+    int relay = DSt->Message[0];
+    if (!hasDynamicInfo(CtiTableDynamicPaoInfo::Key_LCR_SSpecRevision))
+    {
+        CtiLockGuard<CtiLogger> doubt_guard(dout);
+        dout << CtiTime() << " Device " << getName() << " is missing SSPEC revision number. Unable to decode control time data." << endl;
+
+        return ErrorVerifySSPEC;
+    }
+    else
+    {
+        long revision = getDynamicInfo(CtiTableDynamicPaoInfo::Key_LCR_SSpecRevision);
+        if (revision > 10)
+        {
+            /**
+             * Revision 1.0 sent back the relay value in the range of 1-4.
+             * Revision 1.1+ sends the relay in the range of 0-3. 
+             */
+            relay += 1;
+        }
+    }
 
     if( relay > 0 && relay < 5 )
     {
@@ -567,7 +586,7 @@ INT Lcr3102Device::decodeGetValueControlTime( INMESS *InMessage, CtiTime &TimeNo
 
         const double halfSecondsPerSecond = 2.0;
 
-    point_info pi;
+        point_info pi;
 
         // The LCR 3102 returns the control time remaining in half seconds: we want to return seconds.
         int half_seconds = (DSt->Message[1] << 24) | (DSt->Message[2] << 16) | (DSt->Message[3] << 8) | (DSt->Message[4]);
@@ -1066,18 +1085,41 @@ INT Lcr3102Device::executeGetValue ( CtiRequestMsg *pReq, CtiCommandParser &pars
     }
     else if(parse.getFlags() & CMD_FLAG_GV_CONTROLTIME)
     {
-        function = EmetconProtocol::GetValue_ControlTime;
-        found = getOperation(function, OutMessage->Buffer.BSt);
-
-        int load = parseLoadValue(parse);
-
-        if( load == -1 )
+        if (!hasDynamicInfo(CtiTableDynamicPaoInfo::Key_LCR_SSpecRevision))
         {
-            nRet = BADPARAM;
+            executeBackgroundRequest("getconfig install", OutMessage, outList);
+
+            CtiReturnMsg *ReturnMsg = 
+                new CtiReturnMsg(
+                   getID(), 
+                   OutMessage->Request.CommandStr,
+                   getName() + " / SSPEC revision not retrieved yet, attempting to read it automatically; please retry command in a few minutes");
+
+            ReturnMsg->setUserMessageId(OutMessage->Request.UserID);
+            ReturnMsg->setConnectionHandle(OutMessage->Request.Connection);
+
+            retMsgHandler( OutMessage->Request.CommandStr, ErrorVerifySSPEC, ReturnMsg, vgList, retList );
+
+            delete OutMessage;
+            OutMessage = 0;
+            found = false;
+            nRet  = ExecutionComplete;
         }
         else
         {
-            OutMessage->Buffer.BSt.Function += (load - 1);
+            function = EmetconProtocol::GetValue_ControlTime;
+            found = getOperation(function, OutMessage->Buffer.BSt);
+
+            int load = parseLoadValue(parse);
+
+            if( load == -1 )
+            {
+                nRet = BADPARAM;
+            }
+            else
+            {
+                OutMessage->Buffer.BSt.Function += (load - 1);
+            }
         }
     }
     else if(parse.getFlags() & CMD_FLAG_GV_TEMPERATURE)
@@ -1171,14 +1213,7 @@ INT Lcr3102Device::executeGetValue ( CtiRequestMsg *pReq, CtiCommandParser &pars
         return executeGetValueHistorical(pReq, parse, OutMessage, outList);
     }
 
-    if(!found)
-    {
-        if( nRet == NORMAL )
-        {
-            nRet = NoMethod;
-        }
-    }
-    else
+    if(found)
     {
         // Load all the other stuff that is needed
         OutMessage->DeviceID  = getID();

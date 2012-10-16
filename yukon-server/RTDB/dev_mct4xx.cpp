@@ -338,21 +338,6 @@ CtiDeviceSingle::point_info Mct4xxDevice::getDataError(unsigned error_code, cons
     return pi;
 }
 
-
-bool Mct4xxDevice::executeBackgroundRequest(const std::string &commandString, const OUTMESS &OutMessageTemplate, OutMessageList &outList)
-{
-    CtiMessageList unused;
-
-    CtiRequestMsg req(getID(), commandString);
-
-    req.setMessagePriority(OutMessageTemplate.Priority);
-
-    CtiCommandParser parse(req.CommandString());
-
-    return beginExecuteRequestFromTemplate(&req, parse, unused, unused, outList, &OutMessageTemplate) == NoError;
-}
-
-
 INT Mct4xxDevice::executeGetValue(CtiRequestMsg *pReq,
                                   CtiCommandParser &parse,
                                   OUTMESS *&OutMessage,

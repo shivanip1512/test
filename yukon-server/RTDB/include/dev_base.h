@@ -174,6 +174,8 @@ public:
     virtual INT  ResultDecode (INMESS*, CtiTime&, CtiMessageList &vgList, CtiMessageList &retList, OutMessageList &outList);
     virtual INT  ProcessResult(INMESS*, CtiTime&, CtiMessageList &vgList, CtiMessageList &retList, OutMessageList &outList);
 
+    bool executeBackgroundRequest(const std::string &commandString, const OUTMESS &OutMessageTemplate, OutMessageList &outList);
+
     // This is a preprocessing method which calls ExecuteRequest.
     INT beginExecuteRequest(CtiRequestMsg *pReq, CtiCommandParser &parse, CtiMessageList &vgList, CtiMessageList &retList, OutMessageList &outList);
     INT beginExecuteRequestFromTemplate(CtiRequestMsg *pReq, CtiCommandParser &parse, CtiMessageList &vgList, CtiMessageList &retList, OutMessageList &outList, const OUTMESS *OutTemplate);

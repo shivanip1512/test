@@ -84,6 +84,18 @@ INT CtiDeviceBase::beginExecuteRequest(CtiRequestMsg *pReq,
     return beginExecuteRequestFromTemplate(pReq, parse, vgList, retList, outList, 0);
 }
 
+bool CtiDeviceBase::executeBackgroundRequest(const std::string &commandString, const OUTMESS &OutMessageTemplate, OutMessageList &outList)
+{
+    CtiMessageList unused;
+
+    CtiRequestMsg req(getID(), commandString);
+
+    req.setMessagePriority(OutMessageTemplate.Priority);
+
+    CtiCommandParser parse(req.CommandString());
+
+    return beginExecuteRequestFromTemplate(&req, parse, unused, unused, outList, &OutMessageTemplate) == NoError;
+}
 
 INT CtiDeviceBase::beginExecuteRequestFromTemplate(CtiRequestMsg *pReq,
                                                    CtiCommandParser &parse,
