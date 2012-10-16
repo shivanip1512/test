@@ -82,7 +82,11 @@
                         <c:forEach items="${allGroupedReadableAttributes}" var="group">
                             <optgroup label="<cti:msg2 key="${group.key}"/>">
                                 <c:forEach items="${group.value}" var="item">
-                                    <option value="${item.key}">
+                                    <c:set var="selected" value=""/>
+                                    <c:if test="${statusPointMonitor.attribute == item}">
+                                        <c:set var="selected" value="selected"/>
+                                    </c:if>
+                                    <option value="${item.key}" ${selected}>
                                         <cti:formatObject value="${item.description}"/>
                                     </option>
                                 </c:forEach>

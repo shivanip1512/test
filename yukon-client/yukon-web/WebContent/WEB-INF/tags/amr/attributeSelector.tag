@@ -31,7 +31,11 @@
             <c:forEach var="group" items="${attributes}">
                 <optgroup label="<cti:msg2 key="${group.key}"/>">
                     <c:forEach items="${group.value}" var="item">
-                        <option value="${item.key}">
+                        <c:set var="selected" value=""/>
+                        <c:if test="${selectedAttributes.contains(item)}">
+                            <c:set var="selected" value="selected"/>
+                        </c:if>
+                        <option value="${item.key}" ${selected}>
                             <cti:formatObject value="${item.description}"/>
                         </option>
                     </c:forEach>
