@@ -1,6 +1,11 @@
 package com.cannontech.dbeditor.editor.user;
 
+import java.awt.Color;
 import java.awt.Cursor;
+import java.awt.FlowLayout;
+import java.awt.Font;
+import java.awt.GridBagConstraints;
+import java.awt.Insets;
 import java.util.concurrent.Executor;
 
 import javax.swing.BorderFactory;
@@ -12,6 +17,7 @@ import javax.swing.JList;
 import javax.swing.JPanel;
 import javax.swing.JScrollPane;
 import javax.swing.JTextField;
+import javax.swing.SwingConstants;
 import javax.swing.SwingWorker;
 import javax.swing.border.BevelBorder;
 import javax.swing.event.CaretListener;
@@ -23,6 +29,8 @@ import com.cannontech.common.gui.util.TextFieldDocument;
 import com.cannontech.common.gui.util.TitleBorder;
 import com.cannontech.common.util.SimpleCallback;
 import com.cannontech.core.dao.YukonUserDao;
+import com.cannontech.core.users.dao.UserGroupDao;
+import com.cannontech.core.users.model.LiteUserGroup;
 import com.cannontech.database.data.lite.LiteYukonUser;
 import com.cannontech.database.data.user.UserGroup;
 import com.cannontech.spring.YukonSpringHook;
@@ -30,6 +38,7 @@ import com.cannontech.spring.YukonSpringHook;
 public class UserGroupBasePanel extends DataInputPanel implements CaretListener {
 
     private YukonUserDao userDao = YukonSpringHook.getBean("yukonUserDao", YukonUserDao.class);
+    private UserGroupDao userGroupDao = YukonSpringHook.getBean("userGroupDao", UserGroupDao.class);
     
     private JPanel ivjJPanelUserGroupPanel = null;
 	private JLabel ivjJLabelUserGroupName = null;
@@ -42,6 +51,9 @@ public class UserGroupBasePanel extends DataInputPanel implements CaretListener 
 	private JEditorPane ivjJEditorPaneDesc = null;
 	private JScrollPane ivjJScrollPaneDesc = null;
 
+    private JLabel ivjJLabelErrorMessage = null;
+    private JPanel ivjJPanelError = null;
+	
 	private JScrollPane ivjJScrollPaneMembers = null;
 	private JList ivjJListMembers = null;
 	
@@ -156,7 +168,8 @@ public class UserGroupBasePanel extends DataInputPanel implements CaretListener 
 			ivjJLabelNormalDesc = new javax.swing.JLabel();
 			ivjJLabelNormalDesc.setName("JLabelNormalDesc");
 			ivjJLabelNormalDesc.setFont(new java.awt.Font("dialog", 0, 14));
-			ivjJLabelNormalDesc.setText("Description");
+			ivjJLabelNormalDesc.setText("Description:");
+			ivjJLabelNormalDesc.setHorizontalAlignment(JLabel.LEFT);
 			ivjJLabelNormalDesc.setEnabled(true);
     	}
 
@@ -173,6 +186,41 @@ public class UserGroupBasePanel extends DataInputPanel implements CaretListener 
     	return ivjJListMembers;
     }
 
+    private JPanel getJPanelError() {
+        if (ivjJPanelError == null) {
+            try {
+                ivjJPanelError = new JPanel();
+                ivjJPanelError.setName("JPanelError");
+                ivjJPanelError.setLayout(new FlowLayout());
+                getJPanelError().add(getJLabelErrorMessage(), getJLabelErrorMessage().getName());
+
+            } catch (Throwable ivjExc) {
+                handleException(ivjExc);
+            }
+        }
+        return ivjJPanelError;
+    }
+
+    private JLabel getJLabelErrorMessage() {
+        if (ivjJLabelErrorMessage == null) {
+            try {
+                ivjJLabelErrorMessage = new JLabel();
+                ivjJLabelErrorMessage.setName("JLabelRange");
+                ivjJLabelErrorMessage.setOpaque(false);
+                ivjJLabelErrorMessage.setText("...RANGE TEXT...");
+                ivjJLabelErrorMessage.setVisible(true);
+                ivjJLabelErrorMessage.setHorizontalTextPosition(SwingConstants.CENTER);
+                ivjJLabelErrorMessage.setFont(new Font("Arial", 1, 10));
+                ivjJLabelErrorMessage.setHorizontalAlignment(SwingConstants.CENTER);
+                ivjJLabelErrorMessage.setVisible(false);
+
+            } catch (Throwable ivjExc) {
+                handleException(ivjExc);
+            }
+        }
+        return ivjJLabelErrorMessage;
+    }
+
     /**
      * Return the JPanelGroupPanel property value.
      */
@@ -186,43 +234,39 @@ public class UserGroupBasePanel extends DataInputPanel implements CaretListener 
 			ivjJPanelUserGroupPanel.setName("JPanelUserGroupPanel");
 			ivjJPanelUserGroupPanel.setBorder(ivjLocalBorder);
 			ivjJPanelUserGroupPanel.setLayout(new java.awt.GridBagLayout());
-			ivjJPanelUserGroupPanel.setMaximumSize(new java.awt.Dimension(400, 159));
-			ivjJPanelUserGroupPanel.setPreferredSize(new java.awt.Dimension(400, 159));
-			ivjJPanelUserGroupPanel.setMinimumSize(new java.awt.Dimension(400, 159));
 
+			Insets defaultInset = new Insets(5, 5, 5, 5);
+			
 			java.awt.GridBagConstraints constraintsJLabelUserGroupName = new java.awt.GridBagConstraints();
 			constraintsJLabelUserGroupName.gridx = 1; constraintsJLabelUserGroupName.gridy = 1;
-			constraintsJLabelUserGroupName.insets = new java.awt.Insets(21, 14, 6, 2);
+            constraintsJLabelUserGroupName.anchor = GridBagConstraints.WEST;
+			constraintsJLabelUserGroupName.insets = defaultInset;
 			getJPanelUserGroupPanel().add(getJLabelUserGroupName(), constraintsJLabelUserGroupName);
 
             java.awt.GridBagConstraints constraintsJTextFieldUserGroupName = new java.awt.GridBagConstraints();
             constraintsJTextFieldUserGroupName.gridx = 2; constraintsJTextFieldUserGroupName.gridy = 1;
-            constraintsJTextFieldUserGroupName.fill = java.awt.GridBagConstraints.HORIZONTAL;
             constraintsJTextFieldUserGroupName.weightx = 1.0;
-            constraintsJTextFieldUserGroupName.ipadx = -20;
-            constraintsJTextFieldUserGroupName.insets = new java.awt.Insets(21, 3, 3, 52);
+            constraintsJTextFieldUserGroupName.anchor = GridBagConstraints.WEST;
+            constraintsJTextFieldUserGroupName.insets = defaultInset;
             getJPanelUserGroupPanel().add(getJTextFieldUserGroupName(), constraintsJTextFieldUserGroupName);
 
             java.awt.GridBagConstraints constraintsUserGroupIdJLabel = new java.awt.GridBagConstraints();
             constraintsUserGroupIdJLabel.gridx = 1; constraintsUserGroupIdJLabel.gridy = 2;
-            constraintsUserGroupIdJLabel.ipadx = 24;
-            constraintsUserGroupIdJLabel.ipady = -2;
-            constraintsUserGroupIdJLabel.insets = new java.awt.Insets(3, 14, 3, 46);
+            constraintsUserGroupIdJLabel.anchor = GridBagConstraints.WEST;
+            constraintsUserGroupIdJLabel.insets = defaultInset;
             getJPanelUserGroupPanel().add(getUserGroupIdJLabel(), constraintsUserGroupIdJLabel);
 
             java.awt.GridBagConstraints constraintsUserGroupIdValueField = new java.awt.GridBagConstraints();
             constraintsUserGroupIdValueField.gridx = 2; constraintsUserGroupIdValueField.gridy = 2;
+            constraintsUserGroupIdValueField.weightx = 1.0;
             constraintsUserGroupIdValueField.anchor = java.awt.GridBagConstraints.WEST;
-            constraintsUserGroupIdValueField.ipadx = 147;
-            constraintsUserGroupIdValueField.ipady = 1;
-            constraintsUserGroupIdValueField.insets = new java.awt.Insets(3, 3, 3, 53);
+            constraintsUserGroupIdJLabel.insets = defaultInset;
             getJPanelUserGroupPanel().add(getUserGroupIdValueField(), constraintsUserGroupIdValueField);
 
             java.awt.GridBagConstraints constraintsJLabelNormalDesc = new java.awt.GridBagConstraints();
 			constraintsJLabelNormalDesc.gridx = 1; constraintsJLabelNormalDesc.gridy = 3;
-			constraintsJLabelNormalDesc.ipadx = 62;
-			constraintsJLabelNormalDesc.ipady = -2;
-			constraintsJLabelNormalDesc.insets = new java.awt.Insets(3, 14, 1, 2);
+			constraintsJLabelNormalDesc.anchor = GridBagConstraints.WEST;
+			constraintsJLabelNormalDesc.insets = defaultInset;
 			getJPanelUserGroupPanel().add(getJLabelNormalDesc(), constraintsJLabelNormalDesc);
 
 			java.awt.GridBagConstraints constraintsJScrollPaneDesc = new java.awt.GridBagConstraints();
@@ -231,11 +275,17 @@ public class UserGroupBasePanel extends DataInputPanel implements CaretListener 
 			constraintsJScrollPaneDesc.fill = java.awt.GridBagConstraints.BOTH;
 			constraintsJScrollPaneDesc.weightx = 1.0;
 			constraintsJScrollPaneDesc.weighty = 1.0;
-			constraintsJScrollPaneDesc.ipadx = -9;
-			constraintsJScrollPaneDesc.ipady = 24;
-			constraintsJScrollPaneDesc.insets = new java.awt.Insets(1, 14, 14, 29);
+            constraintsUserGroupIdJLabel.insets = defaultInset;
 			getJPanelUserGroupPanel().add(getJScrollPaneDesc(), constraintsJScrollPaneDesc);
 
+            GridBagConstraints constraintsJPanelError = new GridBagConstraints();
+            constraintsJPanelError.gridx = 1;
+            constraintsJPanelError.gridy = 5;
+            constraintsJPanelError.gridwidth = 2;
+            constraintsJPanelError.fill = GridBagConstraints.BOTH;
+            constraintsJPanelError.weightx = 1.0;
+            getJPanelUserGroupPanel().add(getJPanelError(), constraintsJPanelError);
+			
     	}
     	return ivjJPanelUserGroupPanel;
     }
@@ -244,8 +294,6 @@ public class UserGroupBasePanel extends DataInputPanel implements CaretListener 
     	if (ivjJScrollPaneDesc == null) {
 			ivjJScrollPaneDesc = new javax.swing.JScrollPane();
 			ivjJScrollPaneDesc.setName("JScrollPaneDesc");
-			ivjJScrollPaneDesc.setPreferredSize(new java.awt.Dimension(366, 58));
-			ivjJScrollPaneDesc.setMinimumSize(new java.awt.Dimension(366, 58));
 			getJScrollPaneDesc().setViewportView(getJEditorPaneDesc());
     	}
     	return ivjJScrollPaneDesc;
@@ -354,16 +402,33 @@ public class UserGroupBasePanel extends DataInputPanel implements CaretListener 
      * 
      */
     public boolean isInputValid() {
-    	if( getJTextFieldUserGroupName().getText() == null || getJTextFieldUserGroupName().getText().length() <= 0 ) {
+        String userGroupName = getJTextFieldUserGroupName().getText();
+    	if(userGroupName == null || userGroupName.length() <= 0 ) {
     		setErrorString("The User Group Name text field must be filled in");
+            getJLabelErrorMessage().setText("(" + getErrorString() + ")");
+            getJLabelErrorMessage().setToolTipText("(" + getErrorString() + ")");
+            getJLabelErrorMessage().setVisible(true);
     		return false;
     	}
-    
+
+    	LiteUserGroup existingUserGroup = userGroupDao.findLiteUserGroupByUserGroupName(userGroupName);
+    	if (existingUserGroup != null) {
+    	    setErrorString("The user group name supplied already exists.");
+            getJLabelErrorMessage().setText("(" + getErrorString() + ")");
+            getJLabelErrorMessage().setToolTipText("(" + getErrorString() + ")");
+            getJLabelErrorMessage().setVisible(true);
+    	    return false;
+    	}
+
     	if( getJEditorPaneDesc().getText() == null || getJEditorPaneDesc().getText().length() <= 0 ) {
     		setErrorString("The User Group Description text field must be filled in");
+            getJLabelErrorMessage().setText("(" + getErrorString() + ")");
+            getJLabelErrorMessage().setToolTipText("(" + getErrorString() + ")");
+            getJLabelErrorMessage().setVisible(true);
     		return false;
     	}
-    
+
+        getJLabelErrorMessage().setVisible(false);
     	return true;
     }
 
