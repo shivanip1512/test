@@ -658,8 +658,22 @@ public class UserGroupRoleEditorPanel extends com.cannontech.common.gui.util.Dat
 	 * Creation date: (5/1/2001 9:11:36 AM)
 	 * @return boolean
 	 */
-	public boolean isInputValid() 
-	{
+	public boolean isInputValid() {
+	    
+	    // Checking to see if there is a conflict with the currently selected groups.
+	    UserGroup userGroup = new UserGroup();
+	    for( int i = 0; i < getTableModel().getRowCount(); i++ ) {
+            if( getTableModel().getRowAt(i).isSelected().booleanValue() ) {
+                LiteYukonGroup group = getTableModel().getRowAt(i).getLiteYukonGroup(); 
+                try {
+                    userGroup.addRoleGroups(group);
+                } catch (ConfigurationException e) {
+                    setErrorString("The user group currently has a conflict and cannot be saved until fixed.");
+                    return false;
+                }
+            }
+	    }
+	    
 		return true;
 	}
 
