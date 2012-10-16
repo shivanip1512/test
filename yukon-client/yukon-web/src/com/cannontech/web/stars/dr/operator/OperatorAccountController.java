@@ -138,9 +138,7 @@ public class OperatorAccountController {
 	// ACCOUNT IMPORT PAGE
 	@RequestMapping
 	public String accountImport(ModelMap modelMap, YukonUserContext userContext, FlashScope flashScope, String processedBeforeCancel) {
-	    if(!rolePropertyDao.getPropertyBooleanValue(YukonRoleProperty.OPERATOR_IMPORT_CUSTOMER_ACCOUNT, userContext.getYukonUser())) {
-	        throw new NotAuthorizedException("User not authorized to view this page.");
-	    }
+	    rolePropertyDao.verifyProperty(YukonRoleProperty.OPERATOR_IMPORT_CUSTOMER_ACCOUNT, userContext.getYukonUser());
 	    setupAccountImportModelMap(modelMap);
 	    
 	    if(StringUtils.isNotBlank(processedBeforeCancel)){
@@ -157,9 +155,7 @@ public class OperatorAccountController {
                                 ModelMap modelMap, 
                                 YukonUserContext userContext,
                                 FlashScope flashScope) {
-        if(!rolePropertyDao.getPropertyBooleanValue(YukonRoleProperty.OPERATOR_IMPORT_CUSTOMER_ACCOUNT, userContext.getYukonUser())) {
-            throw new NotAuthorizedException("User not authorized to view this page.");
-        }
+        rolePropertyDao.verifyProperty(YukonRoleProperty.OPERATOR_IMPORT_CUSTOMER_ACCOUNT, userContext.getYukonUser());
         
         BulkFileUpload accountFileUpload = BulkFileUploadUtils.getBulkFileUpload(request, "accountImportFile");
         BulkFileUpload hardwareFileUpload = BulkFileUploadUtils.getBulkFileUpload(request, "hardwareImportFile");
@@ -223,9 +219,7 @@ public class OperatorAccountController {
     // CANCEL AN IMPORT
     @RequestMapping(params="cancelImport")
     public String cancelImport(ModelMap modelMap, String resultId, boolean prescan, YukonUserContext userContext) {
-        if(!rolePropertyDao.getPropertyBooleanValue(YukonRoleProperty.OPERATOR_IMPORT_CUSTOMER_ACCOUNT, userContext.getYukonUser())) {
-            throw new NotAuthorizedException("User not authorized to view this page.");
-        }
+        rolePropertyDao.verifyProperty(YukonRoleProperty.OPERATOR_IMPORT_CUSTOMER_ACCOUNT, userContext.getYukonUser());
         AccountImportResult result = recentResultsCache.getResult(resultId);
         result.cancel();
         if(!prescan) {
@@ -238,9 +232,7 @@ public class OperatorAccountController {
     // DO ACCOUNT IMPORT
     @RequestMapping
     public String doAccountImport(ModelMap modelMap, String resultId, YukonUserContext userContext, String cancel) throws ServletException {
-        if(!rolePropertyDao.getPropertyBooleanValue(YukonRoleProperty.OPERATOR_IMPORT_CUSTOMER_ACCOUNT, userContext.getYukonUser())) {
-            throw new NotAuthorizedException("User not authorized to view this page.");
-        }
+        rolePropertyDao.verifyProperty(YukonRoleProperty.OPERATOR_IMPORT_CUSTOMER_ACCOUNT, userContext.getYukonUser());
         AccountImportResult prescanResult = recentResultsCache.getResult(resultId); 
         AccountImportResult result = initAccountImportResult(userContext.getYukonUser(), prescanResult.getAccountFileUpload(), prescanResult.getHardwareFileUpload(), prescanResult.getEmail(), false);
         accountImportService.startAccountImport(result, userContext);
