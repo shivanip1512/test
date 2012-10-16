@@ -192,10 +192,12 @@ public class PhaseDetectController {
         
         phaseDetectService.clearPhaseData(user);/* Will block until done */
         
-        String errorMsg = phaseDetectService.getPhaseDetectResult().getErrorMsg();
-        if(StringUtils.isNotBlank(errorMsg)) {
-            model.addAttribute("errorReason", StringUtils.abbreviate(errorMsg, 65));
-            return "redirect:clearPhaseData";
+        if(phaseDetectService.getPhaseDetectResult() != null){
+            String errorMsg = phaseDetectService.getPhaseDetectResult().getErrorMsg();
+            if(StringUtils.isNotBlank(errorMsg)) {
+                model.addAttribute("errorReason", StringUtils.abbreviate(errorMsg, 65));
+                return "redirect:clearPhaseData";
+            }
         }
         return "redirect:testSettings";
     }

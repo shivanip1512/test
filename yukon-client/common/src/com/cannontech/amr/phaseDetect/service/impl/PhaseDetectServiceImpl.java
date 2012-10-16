@@ -100,24 +100,32 @@ public class PhaseDetectServiceImpl implements PhaseDetectService{
         CompletionCallback callback = new CompletionCallback() {
             @Override
             public void success() {
-                phaseDetectResult.setErrorMsg(null);
+                /* Stateful objects will be null if a cancel occured */
+                if (phaseDetectResult != null) {
+                    phaseDetectResult.setErrorMsg(null);
+                }
                 finishedLatch.countDown();
             }
             @Override
             public void failure(String errorReason) {
-                phaseDetectResult.setErrorMsg(errorReason);
+                /* Stateful objects will be null if a cancel occured */
+                if (phaseDetectResult != null) {
+                    phaseDetectResult.setErrorMsg(errorReason);
+                }
                 finishedLatch.countDown();
             }
         };
-        routeBroadcastService.broadcastCommand(command, phaseDetectData.getBroadcastRoutes(), DeviceRequestType.PHASE_DETECT_CLEAR, callback , user);
-        try {
-            boolean finishedBeforeTimeout = finishedLatch.await(DEFAULT_TIMEOUT, TimeUnit.SECONDS);
-            if(!finishedBeforeTimeout){
-                callback.failure("Timeout waiting for clear command.");
-            }
-        } catch(InterruptedException e) {
+        if (phaseDetectResult != null) {
+            routeBroadcastService.broadcastCommand(command, phaseDetectData.getBroadcastRoutes(), DeviceRequestType.PHASE_DETECT_CLEAR, callback , user);
+            try {
+                boolean finishedBeforeTimeout = finishedLatch.await(DEFAULT_TIMEOUT, TimeUnit.SECONDS);
+                if(!finishedBeforeTimeout){
+                    callback.failure("Timeout waiting for clear command.");
+                }
+            } catch(InterruptedException e) {
             // do nothing
-        } 
+            } 
+        }
     }
     
     @Override
@@ -132,13 +140,21 @@ public class PhaseDetectServiceImpl implements PhaseDetectService{
         CompletionCallback callback = new CompletionCallback() {
             @Override
             public void success() {
-                phaseDetectState.setPhaseDetectSent(phase);
-                phaseDetectResult.setErrorMsg(null);
+                /* Stateful objects will be null if a cancel occured */
+                if (phaseDetectState != null) {
+                    phaseDetectState.setPhaseDetectSent(phase);
+                }
+                if (phaseDetectResult != null) {
+                    phaseDetectResult.setErrorMsg(null);
+                }
                 finishedLatch.countDown();
             }
             @Override
             public void failure(String errorReason) {
-                phaseDetectResult.setErrorMsg(errorReason);
+                /* Stateful objects will be null if a cancel occured */
+                if (phaseDetectResult != null) {
+                    phaseDetectResult.setErrorMsg(errorReason);
+                }
                 finishedLatch.countDown();
             }
         };

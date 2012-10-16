@@ -49,11 +49,9 @@ public interface CommandRequestExecutor<T> {
             CommandRequestExecutionParameterDto context);
     
     /**
-     * 
-     * @param commands
-     * @param commandRequestToken
-     * @param user
-     * @return
+     * Attempts to cancel all remaining commands handled by the specified callback and return the number of commands cancled.
+     * If the callback has not already completed, the {@link CommandCompletionCallback#cancel()} and {@link CommandCompletionCallback#complete()}
+     * methods are called in that order. 
      */
     public long cancelExecution(CommandCompletionCallback<? super T> callback, LiteYukonUser user);
     

@@ -466,6 +466,9 @@ public abstract class CommandRequestExecutorBase<T extends CommandRequestBase> i
     // CANCEL
     public long cancelExecution(CommandCompletionCallback<? super T> callback, LiteYukonUser user) {
         
+        if(msgListeners.isEmpty()){
+            return 0;
+        }
         // get listener
         CommandResultMessageListener messageListener = msgListeners.get(callback);
         
