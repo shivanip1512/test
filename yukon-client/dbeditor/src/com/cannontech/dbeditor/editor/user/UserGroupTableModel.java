@@ -147,33 +147,31 @@ public class UserGroupTableModel extends javax.swing.table.AbstractTableModel im
 	/**
 	 * getValueAt method comment.
 	 */
-	public Object getValueAt(int row, int col) 
-	{
-		if( getRows() == null )
+	public Object getValueAt(int row, int col) {
+
+	    if( getRows() == null ) {
 			return null;
+		}
 	
-		if( row <= getRows().size() )
-		{
+		if( row <= getRows().size() ) {
 			SelectableGroupRow sr = getRowAt(row);
 			
-			switch( col )
-			{
+			switch( col ) {
 				case COL_SELECTED:
 					return sr.isSelected();
 	
 			 	case COL_NAME:
-					return 
-						sr.getLiteYukonGroup().toString() +
-						(sr.hasConflict() ? "  (role conflict)" : "");
+					return sr.getLiteYukonGroup().toString() + (sr.hasConflict() ? "  (role conflict)" : "");
 					
 				default:
 					return null;
 			}
 					
-		}
-		else
+		} else {
 			return null;
+		}
 	}
+	
 	/**
 	 * This method was created in VisualAge.
 	 * @return boolean
