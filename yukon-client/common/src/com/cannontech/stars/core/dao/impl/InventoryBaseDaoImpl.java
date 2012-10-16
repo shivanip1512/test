@@ -523,10 +523,12 @@ public class InventoryBaseDaoImpl implements InventoryBaseDao, InitializingBean 
     }
 
     @Override
-    public void removeInventoryFromAccount(int inventoryId, Instant removeDate) {
+    public void removeInventoryFromAccount(int inventoryId, Instant removeDate, String removeLbl) {
         SqlStatementBuilder sql = new SqlStatementBuilder();
         sql.append("UPDATE InventoryBase");
-        sql.append("SET AccountId = 0, DeviceLabel = '', RemoveDate =").appendArgument(removeDate);
+        sql.append("SET AccountId").eq_k(0);
+        sql.append(", DeviceLabel").eq(removeLbl);
+        sql.append(", RemoveDate").eq(removeDate);
         sql.append("WHERE InventoryId").eq(inventoryId);
         
         yukonJdbcTemplate.update(sql);

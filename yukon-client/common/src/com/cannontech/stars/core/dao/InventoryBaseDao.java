@@ -99,7 +99,7 @@ public interface InventoryBaseDao {
     /**
      * Removes a hardware device from the account.
      */
-    public void removeInventoryFromAccount(int inventoryId, Instant removeDate);
+    public void removeInventoryFromAccount(int inventoryId, Instant removeDate, String removeLbl);
     
     /**
      * Deletes a hardware device from the inventory.  Deletes only the LM Hardware for now.

@@ -336,8 +336,9 @@ public class StarsInventoryBaseServiceImpl implements StarsInventoryBaseService 
             applianceDao.deleteAppliancesByAccountIdAndInventoryId(accountId, inventoryId);
         }
 
+        String removeLbl = inventoryBaseDao.getHardwareByDeviceId(lib.getDeviceID()).getManufacturerSerialNumber();
         // update the Inventory to remove it from the account
-        inventoryBaseDao.removeInventoryFromAccount(inventoryId, removeInstant);
+        inventoryBaseDao.removeInventoryFromAccount(inventoryId, removeInstant, removeLbl);
         
         // cleaup gateway assignments for zigbee devices
         HardwareClass hardwareClass = identifier.getHardwareType().getHardwareClass();

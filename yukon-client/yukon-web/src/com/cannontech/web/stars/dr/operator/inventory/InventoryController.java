@@ -575,7 +575,7 @@ public class InventoryController {
         model.addAttribute("showVoltage", showVoltage);
 
         /* Hide route for meters and zigbee devices */
-        if (!clazz.isMeter() && !type.isZigbee()) {
+        if (!clazz.isMeter() && !type.isZigbee() && !type.isRf() && type != HardwareType.LCR_3102) {
             model.addAttribute("showRoute", true);
         }
         
