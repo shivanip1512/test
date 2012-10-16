@@ -1,6 +1,5 @@
 package com.cannontech.dbeditor.editor.user;
 
-import java.awt.Color;
 import java.awt.Cursor;
 import java.awt.FlowLayout;
 import java.awt.Font;
@@ -37,6 +36,8 @@ import com.cannontech.spring.YukonSpringHook;
 
 public class UserGroupBasePanel extends DataInputPanel implements CaretListener {
 
+    public static final String NEW_USER_GROUP_ID_STRING = "new";
+    
     private YukonUserDao userDao = YukonSpringHook.getBean("yukonUserDao", YukonUserDao.class);
     private UserGroupDao userGroupDao = YukonSpringHook.getBean("userGroupDao", UserGroupDao.class);
     
@@ -127,7 +128,7 @@ public class UserGroupBasePanel extends DataInputPanel implements CaretListener 
 			ivjUserGroupIDValueField = new javax.swing.JLabel();
 			ivjUserGroupIDValueField.setName("UserGroupIDValueField");
 			ivjUserGroupIDValueField.setFont(new java.awt.Font("Arial", 1, 14));
-			ivjUserGroupIDValueField.setText("new");
+			ivjUserGroupIDValueField.setText(NEW_USER_GROUP_ID_STRING);
 			ivjUserGroupIDValueField.setHorizontalTextPosition(javax.swing.SwingConstants.LEFT);
     	}
 
@@ -411,8 +412,10 @@ public class UserGroupBasePanel extends DataInputPanel implements CaretListener 
     		return false;
     	}
 
-    	LiteUserGroup existingUserGroup = userGroupDao.findLiteUserGroupByUserGroupName(userGroupName);
-    	if (existingUserGroup != null) {
+    	LiteUserGroup duplicateUserGroup = userGroupDao.findLiteUserGroupByUserGroupName(userGroupName);
+    	String userGroupIdStr = getUserGroupIdValueField().getText();
+    	if (duplicateUserGroup != null && (userGroupIdStr.equals(NEW_USER_GROUP_ID_STRING) || 
+    	                                                    duplicateUserGroup.getUserGroupId() != Integer.parseInt(userGroupIdStr))) {
     	    setErrorString("The user group name supplied already exists.");
             getJLabelErrorMessage().setText("(" + getErrorString() + ")");
             getJLabelErrorMessage().setToolTipText("(" + getErrorString() + ")");
