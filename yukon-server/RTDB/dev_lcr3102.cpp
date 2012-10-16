@@ -573,7 +573,9 @@ INT Lcr3102Device::decodeGetValueControlTime( INMESS *InMessage, CtiTime &TimeNo
         {
             /**
              * Revision 1.0 sent back the relay value in the range of 1-4.
-             * Revision 1.1+ sends the relay in the range of 0-3. 
+             * Revision 1.1+ sends the relay in the range of 0-3. In this 
+             * case we need to add one to the relay value received from the 
+             * LCR to match the way the 1.0 revision was decoded. 
              */
             relay += 1;
         }
