@@ -144,12 +144,12 @@ public class GlobalSettingsDaoImpl implements GlobalSettingsDao {
         try {
             settingDb = yukonJdbcTemplate.queryForObject(sql,settingMapper);
         } catch (EmptyResultDataAccessException e) {
-            log.warn("Setting missing from the database: " + setting.name());
+            log.debug("Setting missing from the database: " + setting.name());
             return null;
         }
 
         if (settingDb == null) {
-            log.warn("Setting missing from the database: " + setting.name());
+            log.debug("Setting missing from the database: " + setting.name());
             return null;
         } else {
             if (log.isDebugEnabled()) {
