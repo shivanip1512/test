@@ -17,40 +17,35 @@
     <script type="text/javascript">
         jQuery(function() {
             jQuery('#tabs').tabs({'cookie' : {},
-            	'show'  : function(event, ui) {
-            		if (ui.index == 0) userPicker.show();
-            		if (ui.index == 1) userGroupPicker.show();
-            		if (ui.index == 2) roleGroupPicker.show();
+            	'show' : function(event, ui) {
+            		window[ui.panel.id + "Picker"].show();
         		}});
         });
-
-        function editUser() { window.location.href = '${userUrl}?userId=' + $F('userId'); }
-        function editUserGroup() { window.location.href = '${userGroupUrl}?userGroupId=' + $F('userGroupId'); }
-        function editRoleGroup() { window.location.href = '${roleGroupUrl}?roleGroupId=' + $F('roleGroupId'); }
     </script>
 
     <div id="tabs">
         <ul>
-            <li><a href="#usersTab"><i:inline key=".users"/></a></li>
-            <li><a href="#userGroupsTab"><i:inline key=".userGroups"/></a></li>
-            <li><a href="#roleGroupsTab"><i:inline key=".roleGroups"/></a></li>
+            <!-- Panel IDs should match the pickerDialog IDs minus the word 'Picker' -->
+            <li><a href="#user"><i:inline key=".users"/></a></li>
+            <li><a href="#userGroup"><i:inline key=".userGroups"/></a></li>
+            <li><a href="#roleGroup"><i:inline key=".roleGroups"/></a></li>
         </ul>
 
-        <div id="usersTab">
+        <div id="user">
             <input type="hidden" id="userId" name="userId">
             <tags:boxContainer2 nameKey="userPicker" id="userPickerContainer"/>
             <tags:pickerDialog type="userPicker" id="userPicker" linkType="none" containerDiv="userPickerContainer_content" 
                 immediateSelectMode="true" destinationFieldId="userId" endAction="editUser"/>
         </div>
 
-        <div id="userGroupsTab">
+        <div id="userGroup">
             <input type="hidden" id="userGroupId" name="userGroupId">
             <tags:boxContainer2 nameKey="userGroupPicker" id="userGroupPickerContainer"/>
             <tags:pickerDialog type="userGroupPicker" id="userGroupPicker" linkType="none" containerDiv="userGroupPickerContainer_content" 
                 immediateSelectMode="true" destinationFieldId="userGroupId" endAction="editUserGroup"/>
         </div>
 
-        <div id="roleGroupsTab">
+        <div id="roleGroup">
             <input type="hidden" id="roleGroupId" name="roleGroupId">
             <tags:boxContainer2 nameKey="roleGroupPicker" id="roleGroupPickerContainer"/>
             <tags:pickerDialog type="loginGroupPicker" id="roleGroupPicker" linkType="none" containerDiv="roleGroupPickerContainer_content" 
