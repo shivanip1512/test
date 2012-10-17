@@ -135,7 +135,7 @@ INSERT INTO RolePropToSetting_Temp VALUES (-1403, 'CALL_PREFIX', 'VOICE_SERVER',
 CREATE TABLE GlobalSetting (
     GlobalSettingId            NUMBER                 NOT NULL,
     Name                       VARCHAR2(100)          NOT NULL,
-    Value                      VARCHAR2(1000)         NOT NULL,
+    Value                      VARCHAR2(1000)         NULL,
     Comments                   VARCHAR2(1000)         NULL,
     LastChangedDate            DATE                   NULL
 );

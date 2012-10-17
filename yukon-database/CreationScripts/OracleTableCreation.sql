@@ -1,7 +1,7 @@
 /*==============================================================*/
 /* Database name:  YukonDatabase                                */
 /* DBMS name:      ORACLE Version 9i                            */
-/* Created on:     10/15/2012 4:31:06 PM                        */
+/* Created on:     10/17/2012 1:55:59 PM                        */
 /*==============================================================*/
 
 
@@ -4812,7 +4812,7 @@ create table GenericMacro  (
 create table GlobalSetting  (
    GlobalSettingId      NUMBER                          not null,
    Name                 VARCHAR2(100)                   not null,
-   Value                VARCHAR2(1000)                  not null,
+   Value                VARCHAR2(1000),
    Comments             VARCHAR2(1000),
    LastChangedDate      DATE,
    constraint PK_GlobalSetting primary key (GlobalSettingId)
