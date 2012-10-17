@@ -12,12 +12,12 @@ import org.springframework.web.servlet.mvc.multiaction.MultiActionController;
 import com.cannontech.core.service.DateFormattingService;
 import com.cannontech.core.service.DateFormattingService.DateFormatEnum;
 import com.cannontech.servlet.YukonUserContextUtils;
-import com.cannontech.system.GlobalSetting;
+import com.cannontech.system.GlobalSettingType;
 import com.cannontech.user.YukonUserContext;
 import com.cannontech.web.security.annotation.CheckGlobalSetting;
 import com.cannontech.web.util.JsonView;
 
-@CheckGlobalSetting(GlobalSetting.MSP_LM_MAPPING_SETUP)
+@CheckGlobalSetting(GlobalSettingType.MSP_LM_MAPPING_SETUP)
 public class VisualDisplaysBaseController extends MultiActionController {
 
 	private DateFormattingService dateFormattingService;

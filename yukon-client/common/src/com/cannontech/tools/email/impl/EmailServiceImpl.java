@@ -16,14 +16,14 @@ import javax.mail.internet.MimeMultipart;
 
 import org.springframework.beans.factory.annotation.Autowired;
 
-import com.cannontech.system.GlobalSetting;
-import com.cannontech.system.dao.GlobalSettingsDao;
+import com.cannontech.system.GlobalSettingType;
+import com.cannontech.system.dao.GlobalSettingDao;
 import com.cannontech.tools.email.EmailAttachmentMessageHolder;
 import com.cannontech.tools.email.EmailMessageHolder;
 import com.cannontech.tools.email.EmailService;
 
 public class EmailServiceImpl implements EmailService {
-    @Autowired private GlobalSettingsDao globalSettingsDao;
+    @Autowired private GlobalSettingDao globalSettingDao;
 
     public void sendMessage(EmailMessageHolder holder) throws MessagingException {
         
@@ -93,7 +93,7 @@ public class EmailServiceImpl implements EmailService {
         java.util.Properties systemProps = System.getProperties();
         
         //a property used internally by the JavaMail API
-        String smtpServer = globalSettingsDao.getString(GlobalSetting.SMTP_HOST);
+        String smtpServer = globalSettingDao.getString(GlobalSettingType.SMTP_HOST);
         if( smtpServer == null ) {
             // if this occurs there is either an issue with the GlobalSettingsDao or no default is set in GlobalSetting enum.
             throw new MessagingException("No SMTP_HOST server defined in the GlobalSettings table in the database.");
@@ -104,7 +104,7 @@ public class EmailServiceImpl implements EmailService {
         
         MimeMessage _message = new MimeMessage(session);
         _message.setHeader("X-Mailer", "CannontechEmail");
-        String from = globalSettingsDao.getString(GlobalSetting.MAIL_FROM_ADDRESS);
+        String from = globalSettingDao.getString(GlobalSettingType.MAIL_FROM_ADDRESS);
 
         if (from == null) {
             // if this occurs there is either an issue with the GlobalSettingsDao or no default is set in GlobalSetting enum.

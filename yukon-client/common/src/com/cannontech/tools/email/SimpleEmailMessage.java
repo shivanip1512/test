@@ -10,8 +10,8 @@ import javax.mail.internet.InternetAddress;
 import javax.mail.internet.MimeMessage;
 
 import com.cannontech.spring.YukonSpringHook;
-import com.cannontech.system.GlobalSetting;
-import com.cannontech.system.dao.GlobalSettingsDao;
+import com.cannontech.system.GlobalSettingType;
+import com.cannontech.system.dao.GlobalSettingDao;
 
 /**
  * This class is a simple wrapper for the javax mail API.
@@ -26,10 +26,10 @@ public class SimpleEmailMessage {
     @Deprecated
     public SimpleEmailMessage() throws MessagingException {
         java.util.Properties systemProps = System.getProperties();
-        GlobalSettingsDao globalSettingsDao = YukonSpringHook.getBean(GlobalSettingsDao.class);
+        GlobalSettingDao globalSettingDao = YukonSpringHook.getBean(GlobalSettingDao.class);
         
         //a property used internally by the JavaMail API
-        String smtpServer = globalSettingsDao.getString(GlobalSetting.SMTP_HOST);
+        String smtpServer = globalSettingDao.getString(GlobalSettingType.SMTP_HOST);
         if( smtpServer == null ) {
          // if this occurs there is either an issue with the GlobalSettingsDao or no default is set in GlobalSetting enum.
             throw new MessagingException("No SMTP_HOST server defined in the GlobalSettings table in the database.");
@@ -41,7 +41,7 @@ public class SimpleEmailMessage {
         _message = new MimeMessage(session);
         _message.setHeader("X-Mailer", "CannontechEmail");
         
-        String from = globalSettingsDao.getString(GlobalSetting.MAIL_FROM_ADDRESS);
+        String from = globalSettingDao.getString(GlobalSettingType.MAIL_FROM_ADDRESS);
         if (from == null) {
          // if this occurs there is either an issue with the GlobalSettingsDao or no default is set in GlobalSetting enum.
             throw new MessagingException("No MAIL_FROM_ADDRESS defined in the GlobalSettings table in the database.");

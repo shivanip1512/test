@@ -32,8 +32,8 @@ import com.cannontech.multispeak.dao.MspObjectDao;
 import com.cannontech.multispeak.dao.MultispeakDao;
 import com.cannontech.multispeak.db.MultispeakInterface;
 import com.cannontech.multispeak.deploy.service.ErrorObject;
-import com.cannontech.system.GlobalSetting;
-import com.cannontech.system.dao.GlobalSettingsUpdateDao;
+import com.cannontech.system.GlobalSettingType;
+import com.cannontech.system.dao.GlobalSettingUpdateDao;
 import com.cannontech.web.amr.meter.service.MspMeterSearchService;
 import com.cannontech.web.common.flashScope.FlashScope;
 import com.cannontech.web.security.annotation.CheckRoleProperty;
@@ -48,7 +48,7 @@ public class MultispeakController {
     @Autowired private MultispeakFuncs multispeakFuncs;
     @Autowired private MspObjectDao mspObjectDao;
     @Autowired private MspMeterSearchService mspMeterSearchService;
-    @Autowired private GlobalSettingsUpdateDao globalSettingsUpdateDao;
+    @Autowired private GlobalSettingUpdateDao globalSettingUpdateDao;
     
     private MultispeakVendor defaultMspVendor;
 
@@ -358,21 +358,21 @@ public class MultispeakController {
             
             // update Primary CIS Vendor
             if (oldMspPrimaryCIS != mspPrimaryCIS) {
-                globalSettingsUpdateDao.updateSetting(GlobalSetting.MSP_PRIMARY_CB_VENDORID, String.valueOf(mspPrimaryCIS));
+                globalSettingUpdateDao.updateSettingValue(GlobalSettingType.MSP_PRIMARY_CB_VENDORID, String.valueOf(mspPrimaryCIS));
                 //reload the search field methods since primaryCIS has changed
                 mspMeterSearchService.loadMspSearchFields(mspPrimaryCIS);
             }
             if (oldMspPaoNameAliasExtension != mspPaoNameAliasExtension) {
                 // update PaoName Alias Extension field name
-                globalSettingsUpdateDao.updateSetting(GlobalSetting.MSP_PAONAME_EXTENSION, mspPaoNameAliasExtension);
+                globalSettingUpdateDao.updateSettingValue(GlobalSettingType.MSP_PAONAME_EXTENSION, mspPaoNameAliasExtension);
             }            
             if (oldMspPaoNameAlias != mspPaoNameAlias) {
                 // update PaoName Alias
-                globalSettingsUpdateDao.updateSetting(GlobalSetting.MSP_PAONAME_ALIAS, String.valueOf(mspPaoNameAlias));
+                globalSettingUpdateDao.updateSettingValue(GlobalSettingType.MSP_PAONAME_ALIAS, String.valueOf(mspPaoNameAlias));
             }
             if ( oldMspMeterLookupField != mspMeterLookupField) {
                 // update Meter Lookup Field
-                globalSettingsUpdateDao.updateSetting(GlobalSetting.MSP_METER_LOOKUP_FIELD, String.valueOf(mspMeterLookupField));
+                globalSettingUpdateDao.updateSettingValue(GlobalSettingType.MSP_METER_LOOKUP_FIELD, String.valueOf(mspMeterLookupField));
             }
         } catch (Exception e) {
             CTILogger.error( "Role Properties for MultiSpeak Setup not saved", e );

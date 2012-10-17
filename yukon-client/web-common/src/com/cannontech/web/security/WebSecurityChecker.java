@@ -10,14 +10,14 @@ import com.cannontech.core.roleproperties.YukonRole;
 import com.cannontech.core.roleproperties.YukonRoleProperty;
 import com.cannontech.core.roleproperties.dao.RolePropertyDao;
 import com.cannontech.database.data.lite.LiteYukonUser;
-import com.cannontech.system.GlobalSetting;
-import com.cannontech.system.dao.GlobalSettingsDao;
+import com.cannontech.system.GlobalSettingType;
+import com.cannontech.system.dao.GlobalSettingDao;
 import com.cannontech.web.util.SpringWebUtil;
 
 public class WebSecurityChecker {
     @Autowired private RolePropertyDao rolePropertyDao;
     @Autowired private ConfigurationSource configurationSource;
-    @Autowired private GlobalSettingsDao globalSettingsDao;
+    @Autowired private GlobalSettingDao globalSettingDao;
     
     public void authorizeByCparm(MasterConfigBooleanKeysEnum configKey) {
         final LiteYukonUser user = getYukonUser();
@@ -55,10 +55,10 @@ public class WebSecurityChecker {
         }
     }
     
-    public void checkGlobalSetting(GlobalSetting setting) {
+    public void checkGlobalSetting(GlobalSettingType setting) {
         final LiteYukonUser user = getYukonUser();
         
-        if (!globalSettingsDao.checkSetting(setting)) {
+        if (!globalSettingDao.checkSetting(setting)) {
             throw new NotAuthorizedException("User " + user + " is not authorized to access this page.");
         }
     }

@@ -16,8 +16,8 @@ import com.cannontech.core.dao.NotFoundException;
 import com.cannontech.stars.core.dao.StarsCustAccountInformationDao;
 import com.cannontech.stars.core.model.RequestPword;
 import com.cannontech.stars.core.model.StarsRequestPword;
-import com.cannontech.system.GlobalSetting;
-import com.cannontech.system.dao.GlobalSettingsDao;
+import com.cannontech.system.GlobalSettingType;
+import com.cannontech.system.dao.GlobalSettingDao;
 import com.cannontech.yukon.api.stars.endpoint.RunThermostatProgramEndpoint;
 import com.cannontech.yukon.api.util.XMLFailureGenerator;
 import com.cannontech.yukon.api.util.XmlVersionUtils;
@@ -27,7 +27,7 @@ public class ForgotPasswordRequestEndpoint {
     private Namespace ns = YukonXml.getYukonNamespace();
     private Logger log = YukonLogManager.getLogger(RunThermostatProgramEndpoint.class);
     
-    @Autowired private GlobalSettingsDao globalSettingsDao;
+    @Autowired private GlobalSettingDao globalSettingDao;
     @Autowired private StarsCustAccountInformationDao starsCustAccountInformationDao;
 
     @PayloadRoot(namespace="http://yukon.cannontech.com/api", localPart="forgotPasswordRequest")
@@ -42,7 +42,7 @@ public class ForgotPasswordRequestEndpoint {
         try {
             //see if resetting the password even makes sense.  this assumes that the authentication
             //for the user is done through the corresponding UserLoginRequest webservice
-            if(!globalSettingsDao.checkSetting(GlobalSetting.ENABLE_PASSWORD_RECOVERY)){
+            if(!globalSettingDao.checkSetting(GlobalSettingType.ENABLE_PASSWORD_RECOVERY)){
                 throw new NotAuthorizedException("Password recovery is not available.");
             }
             

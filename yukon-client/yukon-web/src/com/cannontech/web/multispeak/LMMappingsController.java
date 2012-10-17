@@ -17,11 +17,11 @@ import com.cannontech.multispeak.dao.MspLMInterfaceMappingDao;
 import com.cannontech.multispeak.db.MspLMInterfaceMapping;
 import com.cannontech.multispeak.db.MspLMInterfaceMappingStrategyNameComparator;
 import com.cannontech.multispeak.db.MspLmInterfaceMappingColumnEnum;
-import com.cannontech.system.GlobalSetting;
+import com.cannontech.system.GlobalSettingType;
 import com.cannontech.web.security.annotation.CheckGlobalSetting;
 import com.cannontech.web.util.JsonView;
 
-@CheckGlobalSetting(GlobalSetting.MSP_LM_MAPPING_SETUP)
+@CheckGlobalSetting(GlobalSettingType.MSP_LM_MAPPING_SETUP)
 public class LMMappingsController extends  MultiActionController {
 
 	private PaoDao paoDao;

@@ -28,8 +28,8 @@ import com.cannontech.stars.dr.displayable.model.DisplayableProgram;
 import com.cannontech.stars.dr.optout.model.OptOutEnabled;
 import com.cannontech.stars.dr.optout.model.OptOutEvent;
 import com.cannontech.stars.dr.optout.service.OptOutStatusService;
-import com.cannontech.system.GlobalSetting;
-import com.cannontech.system.dao.GlobalSettingsDao;
+import com.cannontech.system.GlobalSettingType;
+import com.cannontech.system.dao.GlobalSettingDao;
 import com.cannontech.user.YukonUserContext;
 import com.cannontech.web.security.annotation.CheckRoleProperty;
 
@@ -42,7 +42,7 @@ public class GeneralController extends AbstractConsumerController {
     @Autowired private ContactNotificationDao contactNotificationDao;
     @Autowired private OptOutStatusService optOutStatusService;
     @Autowired private RolePropertyDao rolePropertyDao;
-    @Autowired private GlobalSettingsDao globalSettingsDao;
+    @Autowired private GlobalSettingDao globalSettingDao;
 
     @RequestMapping(value = "/consumer/general", method = RequestMethod.GET)
     public String view(@ModelAttribute("customerAccount") CustomerAccount customerAccount,
@@ -74,7 +74,7 @@ public class GeneralController extends AbstractConsumerController {
         }
         
         //See if we need to prompt for an email address. step 1: Can we recover passwords?
-        if(globalSettingsDao.checkSetting(GlobalSetting.ENABLE_PASSWORD_RECOVERY)){
+        if(globalSettingDao.checkSetting(GlobalSettingType.ENABLE_PASSWORD_RECOVERY)){
         	//Step 2: Can this user edit their password and access the contacts page?
         	if(rolePropertyDao.checkAllProperties(yukonUserContext.getYukonUser(), 
         											YukonRoleProperty.RESIDENTIAL_CONSUMER_INFO_CHANGE_LOGIN_PASSWORD, 

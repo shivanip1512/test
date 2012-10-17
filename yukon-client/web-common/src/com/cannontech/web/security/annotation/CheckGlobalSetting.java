@@ -5,10 +5,10 @@ import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
 import java.lang.annotation.Target;
 
-import com.cannontech.system.GlobalSetting;
+import com.cannontech.system.GlobalSettingType;
 
 @Target(ElementType.TYPE)
 @Retention(RetentionPolicy.RUNTIME)
 public @interface CheckGlobalSetting {
-    GlobalSetting value();
+    GlobalSettingType value();
 }

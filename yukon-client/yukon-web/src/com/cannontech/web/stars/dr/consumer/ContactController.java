@@ -41,8 +41,8 @@ import com.cannontech.stars.dr.account.model.CustomerAccount;
 import com.cannontech.stars.util.ServletUtils;
 import com.cannontech.stars.util.WebClientException;
 import com.cannontech.stars.web.StarsYukonUser;
-import com.cannontech.system.GlobalSetting;
-import com.cannontech.system.dao.GlobalSettingsDao;
+import com.cannontech.system.GlobalSettingType;
+import com.cannontech.system.dao.GlobalSettingDao;
 import com.cannontech.user.UserUtils;
 import com.cannontech.user.YukonUserContext;
 import com.cannontech.util.ServletUtil;
@@ -60,7 +60,7 @@ public class ContactController extends AbstractConsumerController {
     @Autowired private StarsDatabaseCache starsDatabaseCache;
     @Autowired private YukonListDao yukonListDao;
     @Autowired private YukonUserDao yukonUserDao;
-    @Autowired private GlobalSettingsDao globalSettingsDao;
+    @Autowired private GlobalSettingDao globalSettingDao;
     
     @RequestMapping(value = "/consumer/contacts", method = RequestMethod.GET)
     public String view(@ModelAttribute("customerAccount") CustomerAccount customerAccount,
@@ -283,7 +283,7 @@ public class ContactController extends AbstractConsumerController {
     private void promptForEmail(ModelMap map, YukonUserContext yukonUserContext, int accountId){
     	boolean promptForEmail = false;
     	//See if we need to prompt for an email address. step 1: Can we recover passwords?
-        if(globalSettingsDao.checkSetting(GlobalSetting.ENABLE_PASSWORD_RECOVERY)){
+        if(globalSettingDao.checkSetting(GlobalSettingType.ENABLE_PASSWORD_RECOVERY)){
         	//Step 2: Can this user edit their password and access the contacts page?
         	if(rolePropertyDao.checkAllProperties(yukonUserContext.getYukonUser(), 
         											YukonRoleProperty.RESIDENTIAL_CONSUMER_INFO_CHANGE_LOGIN_PASSWORD, 

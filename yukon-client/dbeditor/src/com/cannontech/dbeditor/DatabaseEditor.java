@@ -117,8 +117,8 @@ import com.cannontech.message.dispatch.message.DbChangeType;
 import com.cannontech.roles.application.DBEditorRole;
 import com.cannontech.roles.application.TDCRole;
 import com.cannontech.spring.YukonSpringHook;
-import com.cannontech.system.GlobalSetting;
-import com.cannontech.system.dao.GlobalSettingsDao;
+import com.cannontech.system.GlobalSettingType;
+import com.cannontech.system.dao.GlobalSettingDao;
 import com.cannontech.yukon.IServerConnection;
 import com.cannontech.yukon.conns.ConnPool;
 
@@ -2144,7 +2144,7 @@ private void readConfigParameters()
 	//Decide whether to put the billing file option into the create (core) menu
 
 	try {
-	    activateBilling = YukonSpringHook.getBean(GlobalSettingsDao.class).getBoolean(GlobalSetting.WIZ_ACTIVATE);
+	    activateBilling = YukonSpringHook.getBean(GlobalSettingDao.class).getBoolean(GlobalSettingType.WIZ_ACTIVATE);
 	}
 
 	catch( Exception e )

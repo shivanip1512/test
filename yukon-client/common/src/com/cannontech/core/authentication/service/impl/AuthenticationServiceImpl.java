@@ -28,8 +28,8 @@ import com.cannontech.core.authentication.service.PasswordPolicyService;
 import com.cannontech.core.authentication.service.PasswordSetProvider;
 import com.cannontech.core.dao.YukonUserDao;
 import com.cannontech.database.data.lite.LiteYukonUser;
-import com.cannontech.system.GlobalSetting;
-import com.cannontech.system.dao.GlobalSettingsDao;
+import com.cannontech.system.GlobalSettingType;
+import com.cannontech.system.dao.GlobalSettingDao;
 
 public class AuthenticationServiceImpl implements AuthenticationService, InitializingBean {
     private final static Logger log = YukonLogManager.getLogger(AuthenticationServiceImpl.class);
@@ -41,7 +41,7 @@ public class AuthenticationServiceImpl implements AuthenticationService, Initial
     @Autowired private ConfigurationSource configurationSource;
     @Autowired private PasswordHistoryDao passwordHistoryDao;
     @Autowired private PasswordPolicyService passwordPolicyService;
-    @Autowired private GlobalSettingsDao globalSettingsDao;
+    @Autowired private GlobalSettingDao globalSettingDao;
     @Autowired private YukonUserDao yukonUserDao;
 
     @Override
@@ -53,7 +53,7 @@ public class AuthenticationServiceImpl implements AuthenticationService, Initial
     @Override
     public AuthenticationCategory getDefaultAuthenticationCategory() {
         AuthenticationCategory authenticationCategory =
-                globalSettingsDao.getEnum(GlobalSetting.DEFAULT_AUTH_TYPE, AuthenticationCategory.class);
+                globalSettingDao.getEnum(GlobalSettingType.DEFAULT_AUTH_TYPE, AuthenticationCategory.class);
         return authenticationCategory;
     }
 

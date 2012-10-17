@@ -96,4 +96,8 @@ public class Pair<K,V> {
             return false;
         return true;
     }
+    
+    public static <K,V> Pair<K,V> of(K k, V v) {
+        return new Pair<K, V>(k, v);
+    }
 }

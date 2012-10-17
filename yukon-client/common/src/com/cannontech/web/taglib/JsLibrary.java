@@ -28,6 +28,7 @@ public enum JsLibrary {
     JQUERY_NOCONFLICT("/JavaScript/lib/jQuery/1.6.4/jquery.noconflict.min.js"), //http://api.jquery.com/jQuery.noConflict/
     JQUERY_PLACEHOLDER("/JavaScript/lib/jQuery/plugins/placeholder/jquery.placeholder.js"), // https://github.com/thehappybit/jQuery-HTML5-placeholder-plugin
     JQUERY_SCROLLTO("/JavaScript/lib/jQuery/plugins/scrollTo/jquery.scrollTo-1.4.2-min.js"),    //http://demos.flesler.com/jquery/scrollTo/
+    JQUERY_STICKY_PANEL("/JavaScript/lib/jQuery/plugins/stickyPanel/jquery.stickyPanel.1.4.1.min.js"),    //http://code.google.com/p/sticky-panel/
     JQUERY_TREE("/JavaScript/lib/jQuery/plugins/dynatree/jquery.dynatree.min.js"),  //http://wwwendt.de/tech/dynatree/doc/dynatree-doc.html
     JQUERY_TREE_HELPERS("/JavaScript/lib/jQuery/plugins/dynatree/treeHelper.js"),   //in-house
     JQUERY_UI("/JavaScript/lib/jQuery/plugins/jQueryUI/jquery-ui-1.8.16.custom.min.js"),    //http://www.jqueryui.com

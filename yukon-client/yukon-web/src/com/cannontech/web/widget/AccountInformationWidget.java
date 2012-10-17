@@ -32,8 +32,8 @@ import com.cannontech.multispeak.deploy.service.PointType;
 import com.cannontech.multispeak.deploy.service.UtilityInfo;
 import com.cannontech.multispeak.service.MultispeakCustomerInfoService;
 import com.cannontech.servlet.YukonUserContextUtils;
-import com.cannontech.system.GlobalSetting;
-import com.cannontech.system.dao.GlobalSettingsDao;
+import com.cannontech.system.GlobalSettingType;
+import com.cannontech.system.dao.GlobalSettingDao;
 import com.cannontech.user.YukonUserContext;
 import com.cannontech.web.security.annotation.CheckRoleProperty;
 import com.cannontech.web.widget.support.WidgetControllerBase;
@@ -49,7 +49,7 @@ public class AccountInformationWidget extends WidgetControllerBase{
     @Autowired private MeterDao meterDao;
     @Autowired private DateFormattingService dateFormattingService;
     @Autowired private MultispeakCustomerInfoService multispeakCustomerInfoService;
-    @Autowired private GlobalSettingsDao globalSettingsDao;
+    @Autowired private GlobalSettingDao globalSettingDao;
 
     public ModelAndView render(HttpServletRequest request, HttpServletResponse response) throws Exception {
         
@@ -57,7 +57,7 @@ public class AccountInformationWidget extends WidgetControllerBase{
         int deviceId = WidgetParameterHelper.getIntParameter(request, "deviceId");
         YukonUserContext userContext = YukonUserContextUtils.getYukonUserContext(request);
         
-        int vendorId = globalSettingsDao.getInteger(GlobalSetting.MSP_PRIMARY_CB_VENDORID);
+        int vendorId = globalSettingDao.getInteger(GlobalSettingType.MSP_PRIMARY_CB_VENDORID);
         if (vendorId <= 0) {
         	mav.addObject("hasVendorId", false);
         	return mav;

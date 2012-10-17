@@ -9,8 +9,8 @@ import org.springframework.beans.factory.annotation.Autowired;
 
 import com.cannontech.common.config.ConfigurationSource;
 import com.cannontech.common.config.MasterConfigStringKeysEnum;
-import com.cannontech.system.GlobalSetting;
-import com.cannontech.system.dao.GlobalSettingsDao;
+import com.cannontech.system.GlobalSettingType;
+import com.cannontech.system.dao.GlobalSettingDao;
 import com.cannontech.web.common.captcha.model.Captcha;
 import com.cannontech.web.common.captcha.model.CaptchaErrorCode;
 import com.cannontech.web.common.captcha.model.CaptchaResponse;
@@ -21,7 +21,7 @@ public class CaptchaServiceImpl implements CaptchaService{
     private String RECAPTCHA_PUBLIC_KEY;
     private String RECAPTCHA_PRIVATE_KEY;
     
-    @Autowired private GlobalSettingsDao globalSettingsDao;
+    @Autowired private GlobalSettingDao globalSettingDao;
     @Autowired private ConfigurationSource configurationSource;
     
     @PostConstruct 
@@ -34,7 +34,7 @@ public class CaptchaServiceImpl implements CaptchaService{
     public CaptchaResponse checkCaptcha(Captcha captcha) {
         
         // The captcha service is currently turned off.  Return no errors since it's not being used.
-        boolean isCaptchasEnabled = globalSettingsDao.getBoolean(GlobalSetting.ENABLE_CAPTCHAS);
+        boolean isCaptchasEnabled = globalSettingDao.getBoolean(GlobalSettingType.ENABLE_CAPTCHAS);
         if (!isCaptchasEnabled) {
             return new CaptchaResponse(CaptchaErrorCode.NO_ERRORS);
         }

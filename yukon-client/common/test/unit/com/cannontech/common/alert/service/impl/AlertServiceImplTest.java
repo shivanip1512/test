@@ -10,24 +10,24 @@ import org.junit.Test;
 
 import com.cannontech.common.alert.alarms.AlarmAlert;
 import com.cannontech.common.alert.model.IdentifiableAlert;
-import com.cannontech.common.mock.GlobalSettingsDaoAdapter;
+import com.cannontech.common.mock.GlobalSettingDaoAdapter;
 import com.cannontech.common.util.ResolvableTemplate;
 import com.cannontech.common.util.TimeSourceImpl;
 import com.cannontech.common.util.TimeSourceMock;
-import com.cannontech.system.GlobalSetting;
+import com.cannontech.system.GlobalSettingType;
 import com.cannontech.user.checker.NullUserChecker;
 
 public class AlertServiceImplTest {
     
     private AlertServiceImpl alertService = null;
     
-    private static class MockDao extends GlobalSettingsDaoAdapter {
+    private static class MockDao extends GlobalSettingDaoAdapter {
         private final String returnValue;
         public MockDao(String returnValue) {
             this.returnValue = returnValue;
         }
         
-        public String getString(GlobalSetting setting) {
+        public String getString(GlobalSettingType setting) {
             return returnValue;
         }
     }

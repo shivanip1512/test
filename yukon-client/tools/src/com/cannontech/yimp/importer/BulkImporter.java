@@ -66,8 +66,8 @@ import com.cannontech.message.util.Message;
 import com.cannontech.message.util.MessageEvent;
 import com.cannontech.message.util.MessageListener;
 import com.cannontech.spring.YukonSpringHook;
-import com.cannontech.system.GlobalSetting;
-import com.cannontech.system.dao.GlobalSettingsDao;
+import com.cannontech.system.GlobalSettingType;
+import com.cannontech.system.dao.GlobalSettingDao;
 import com.cannontech.yimp.util.DBFuncs;
 import com.cannontech.yimp.util.ImportFuncs;
 import com.cannontech.yukon.IServerConnection;
@@ -541,7 +541,7 @@ public void runImport(List<ImportData> imps) {
                 updateGroup(billingGroupBase, billGrp, yukonDevice, deviceGroupMemberEditorDao, deviceGroupEditorDao);
 
                 //write pending communication entry for porter thread to pick up
-                boolean importerCommunications =  YukonSpringHook.getBean(GlobalSettingsDao.class).getBoolean(GlobalSetting.BULK_IMPORTER_COMMUNICATIONS_ENABLED);
+                boolean importerCommunications =  YukonSpringHook.getBean(GlobalSettingDao.class).getBoolean(GlobalSettingType.BULK_IMPORTER_COMMUNICATIONS_ENABLED);
                 if (importerCommunications){
                     Transaction.createTransaction(TransactionType.INSERT, pc).execute();
                 }

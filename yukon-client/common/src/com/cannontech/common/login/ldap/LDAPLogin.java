@@ -10,12 +10,12 @@ import org.springframework.beans.factory.annotation.Autowired;
 import com.cannontech.clientutils.YukonLogManager;
 import com.cannontech.core.authentication.service.AuthenticationProvider;
 import com.cannontech.database.data.lite.LiteYukonUser;
-import com.cannontech.system.dao.GlobalSettingsDao;
+import com.cannontech.system.dao.GlobalSettingDao;
 
 public abstract class LDAPLogin implements AuthenticationProvider {
     private static Logger log = YukonLogManager.getLogger(LDAPLogin.class);
     protected LDAPService ldapService;
-    @Autowired protected GlobalSettingsDao globalSettingsDao;
+    @Autowired protected GlobalSettingDao globalSettingDao;
     
     public boolean login(final LiteYukonUser user, final String password) {
         if (user == null || StringUtils.isBlank(password)) return false;

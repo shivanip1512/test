@@ -35,8 +35,8 @@ import com.cannontech.stars.dr.optout.service.OptOutStatusService;
 import com.cannontech.stars.energyCompany.dao.EnergyCompanyDao;
 import com.cannontech.stars.energyCompany.model.YukonEnergyCompany;
 import com.cannontech.stars.service.EnergyCompanyService;
-import com.cannontech.system.GlobalSetting;
-import com.cannontech.system.dao.GlobalSettingsDao;
+import com.cannontech.system.GlobalSettingType;
+import com.cannontech.system.dao.GlobalSettingDao;
 import com.google.common.collect.Lists;
 import com.google.common.collect.Maps;
 
@@ -56,7 +56,7 @@ public class OptOutStatusServiceImpl implements OptOutStatusService {
     @Autowired private RolePropertyDao rolePropertyDao;
     @Autowired private YukonEnergyCompanyService yukonEnergyCompanyService;
     @Autowired private YukonGroupDao yukonGroupDao;
-    @Autowired private GlobalSettingsDao globalSettingsDao;
+    @Autowired private GlobalSettingDao globalSettingDao;
 
 	@Override
 	public OptOutCountsTemporaryOverride getDefaultOptOutCounts(LiteYukonUser user) {
@@ -64,7 +64,7 @@ public class OptOutStatusServiceImpl implements OptOutStatusService {
 		LiteEnergyCompany energyCompany = energyCompanyDao.getEnergyCompany(user);
 		
 		OptOutCountsTemporaryOverride rolePropSetting = new OptOutCountsTemporaryOverride();
-		if(globalSettingsDao.checkSetting(GlobalSetting.OPT_OUTS_COUNT)) {
+		if(globalSettingDao.checkSetting(GlobalSettingType.OPT_OUTS_COUNT)) {
 		    rolePropSetting.setCounting(OptOutCounts.COUNT);
 		} else {
 		    rolePropSetting.setCounting(OptOutCounts.DONT_COUNT);

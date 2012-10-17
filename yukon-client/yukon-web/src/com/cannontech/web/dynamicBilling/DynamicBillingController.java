@@ -38,8 +38,8 @@ import com.cannontech.common.dynamicBilling.model.DynamicFormat;
 import com.cannontech.common.pao.definition.model.PointIdentifier;
 import com.cannontech.core.roleproperties.YukonRoleProperty;
 import com.cannontech.database.data.point.UnitOfMeasure;
-import com.cannontech.system.GlobalSetting;
-import com.cannontech.system.dao.GlobalSettingsDao;
+import com.cannontech.system.GlobalSettingType;
+import com.cannontech.system.dao.GlobalSettingDao;
 import com.cannontech.web.security.annotation.CheckRoleProperty;
 import com.cannontech.web.util.TextView;
 
@@ -48,7 +48,7 @@ public class DynamicBillingController extends MultiActionController {
 
 	private DynamicBillingFormatter dynamicFormatter = null;
 	private DynamicBillingFileDao dynamicBillingFileDao = null;
-	@Autowired private GlobalSettingsDao globalSettingsDao;
+	@Autowired private GlobalSettingDao globalSettingDao;
 	
 	public ModelAndView overview(HttpServletRequest request,
 			HttpServletResponse response) throws ServletException {
@@ -84,7 +84,7 @@ public class DynamicBillingController extends MultiActionController {
 		format.setDelim(",");
 		mav.addObject("format", format);
 		
-		String defaultRoundingMode = globalSettingsDao.getString(GlobalSetting.DEFAULT_ROUNDING_MODE);
+		String defaultRoundingMode = globalSettingDao.getString(GlobalSettingType.DEFAULT_ROUNDING_MODE);
 		mav.addObject("defaultRoundingMode",defaultRoundingMode);
 
 		mav.addObject("initiallySelected", -1);
@@ -154,7 +154,7 @@ public class DynamicBillingController extends MultiActionController {
 	    List<String> roundingModes = getValidRoundingModes();
 	    mav.addObject("roundingModes", roundingModes);
 
-	    String defaultRoundingMode = globalSettingsDao.getString(GlobalSetting.DEFAULT_ROUNDING_MODE);
+	    String defaultRoundingMode = globalSettingDao.getString(GlobalSettingType.DEFAULT_ROUNDING_MODE);
 	    mav.addObject("defaultRoundingMode",defaultRoundingMode);
 
 		mav.addObject("title", "Edit Format");
@@ -211,7 +211,7 @@ public class DynamicBillingController extends MultiActionController {
 	    List<String> roundingModes = getValidRoundingModes();
 	    mav.addObject("roundingModes", roundingModes);
 
-	    String defaultRoundingMode = globalSettingsDao.getString(GlobalSetting.DEFAULT_ROUNDING_MODE);
+	    String defaultRoundingMode = globalSettingDao.getString(GlobalSettingType.DEFAULT_ROUNDING_MODE);
 	    mav.addObject("defaultRoundingMode",defaultRoundingMode);
 
 		mav.addObject("title", "Edit Format");

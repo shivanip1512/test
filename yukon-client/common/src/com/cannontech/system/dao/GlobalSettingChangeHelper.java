@@ -10,12 +10,11 @@ import com.cannontech.core.dynamic.AsyncDynamicDataSource;
 import com.cannontech.core.dynamic.DatabaseChangeEventListener;
 import com.cannontech.message.dispatch.message.DatabaseChangeEvent;
 import com.cannontech.message.dispatch.message.DbChangeCategory;
-import com.cannontech.system.dao.impl.GlobalSettingsDaoImpl;
 
 public class GlobalSettingChangeHelper {
     
     @Autowired private AsyncDynamicDataSource asyncDynamicDataSource;
-    @Autowired private GlobalSettingsDaoImpl globalSettingsDaoImpl;
+    @Autowired private GlobalSettingDao globalSettingDao;
     private Logger log = YukonLogManager.getLogger(GlobalSettingChangeHelper.class);
     
     @PostConstruct
@@ -26,11 +25,11 @@ public class GlobalSettingChangeHelper {
                 if (log.isDebugEnabled()) {
                     log.debug("Sending clearCache to globalSettingsDao because database change.");
                 }
-                globalSettingsDaoImpl.clearCache();
+                globalSettingDao.clearCache();
             }
         });
         
         // now that we're registered, clear out the cache of anything accumulated until now
-        globalSettingsDaoImpl.clearCache();
+        globalSettingDao.clearCache();
     }
 }

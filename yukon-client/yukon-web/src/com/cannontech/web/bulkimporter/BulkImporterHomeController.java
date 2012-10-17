@@ -9,14 +9,14 @@ import org.springframework.web.servlet.ModelAndView;
 import org.springframework.web.servlet.mvc.Controller;
 
 import com.cannontech.core.roleproperties.YukonRoleProperty;
-import com.cannontech.system.GlobalSetting;
-import com.cannontech.system.dao.GlobalSettingsDao;
+import com.cannontech.system.GlobalSettingType;
+import com.cannontech.system.dao.GlobalSettingDao;
 import com.cannontech.web.security.annotation.CheckRoleProperty;
 
 @CheckRoleProperty(YukonRoleProperty.IMPORTER_ENABLED)
 public class BulkImporterHomeController implements Controller  {
 
-    @Autowired private GlobalSettingsDao globalSettingsDao = null;
+    @Autowired private GlobalSettingDao globalSettingDao = null;
 
     public ModelAndView handleRequest(HttpServletRequest request, HttpServletResponse response) throws Exception {
         
@@ -32,7 +32,7 @@ public class BulkImporterHomeController implements Controller  {
         addColumnInfoToMav(mav);
         
         // checking importer for communication access
-        boolean isCommunicationEnabled = globalSettingsDao.getBoolean(GlobalSetting.BULK_IMPORTER_COMMUNICATIONS_ENABLED);
+        boolean isCommunicationEnabled = globalSettingDao.getBoolean(GlobalSettingType.BULK_IMPORTER_COMMUNICATIONS_ENABLED);
         mav.addObject("importerCommunicationsEnabled", isCommunicationEnabled);
         
         return mav;

@@ -52,8 +52,8 @@ import com.cannontech.common.validator.YukonMessageCodeResolver;
 import com.cannontech.common.validator.YukonValidationUtils;
 import com.cannontech.core.roleproperties.YukonRoleProperty;
 import com.cannontech.core.service.DateFormattingService.DateFormatEnum;
-import com.cannontech.system.GlobalSetting;
-import com.cannontech.system.dao.GlobalSettingsDao;
+import com.cannontech.system.GlobalSettingType;
+import com.cannontech.system.dao.GlobalSettingDao;
 import com.cannontech.user.YukonUserContext;
 import com.cannontech.util.ServletUtil;
 import com.cannontech.web.PageEditMode;
@@ -81,7 +81,7 @@ public class ArchivedValuesExporterController {
     @Autowired private ArchiveValuesExportFormatDao archiveValuesExportFormatDao;
     @Autowired private ExportReportGeneratorService exportReportGeneratorService;
     @Autowired private DatePropertyEditorFactory datePropertyEditorFactory;
-    @Autowired private GlobalSettingsDao globalSettingsDao;
+    @Autowired private GlobalSettingDao globalSettingDao;
     @Autowired private MeterDao meterDao;
     @Autowired private ObjectFormattingService objectFormattingService;
     
@@ -279,7 +279,7 @@ public class ArchivedValuesExporterController {
                                 @ModelAttribute("backingBean") ArchivedValuesExporterBackingBean backingBean) {
         if (backingBean.getRowIndex() == -1) {
             RoundingMode roundingMode =
-                    globalSettingsDao.getEnum(GlobalSetting.DEFAULT_ROUNDING_MODE,
+                    globalSettingDao.getEnum(GlobalSettingType.DEFAULT_ROUNDING_MODE,
                                                      RoundingMode.class);
             backingBean.resetField(YukonRoundingMode.valueOf(roundingMode.name()));
             backingBean.setPageNameKey("addField");

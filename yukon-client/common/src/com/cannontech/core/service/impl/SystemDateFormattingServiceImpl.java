@@ -13,19 +13,19 @@ import com.cannontech.clientutils.CTILogger;
 import com.cannontech.common.exception.BadConfigurationException;
 import com.cannontech.common.util.CtiUtilities;
 import com.cannontech.core.service.SystemDateFormattingService;
-import com.cannontech.system.GlobalSetting;
-import com.cannontech.system.dao.GlobalSettingsDao;
+import com.cannontech.system.GlobalSettingType;
+import com.cannontech.system.dao.GlobalSettingDao;
 
 public class SystemDateFormattingServiceImpl implements SystemDateFormattingService {
 
-    @Autowired private GlobalSettingsDao globalSettingsDao;
+    @Autowired private GlobalSettingDao globalSettingDao;
     
     @Override
     public TimeZone getSystemTimeZone() throws BadConfigurationException {
         
         TimeZone timeZone;
         
-        String timeZoneStr = globalSettingsDao.getString(GlobalSetting.SYSTEM_TIMEZONE);
+        String timeZoneStr = globalSettingDao.getString(GlobalSettingType.SYSTEM_TIMEZONE);
 
         if (StringUtils.isNotBlank(timeZoneStr)) {   //Get the TimeZone from timeZoneStr
             try {

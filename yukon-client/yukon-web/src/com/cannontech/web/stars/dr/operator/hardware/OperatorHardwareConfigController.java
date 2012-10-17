@@ -78,8 +78,8 @@ import com.cannontech.stars.xml.serialize.StarsInventory;
 import com.cannontech.stars.xml.serialize.StarsLMConfiguration;
 import com.cannontech.stars.xml.serialize.StarsLMHardwareConfig;
 import com.cannontech.stars.xml.serialize.StarsUpdateLMHardwareConfig;
-import com.cannontech.system.GlobalSetting;
-import com.cannontech.system.dao.GlobalSettingsDao;
+import com.cannontech.system.GlobalSettingType;
+import com.cannontech.system.dao.GlobalSettingDao;
 import com.cannontech.user.YukonUserContext;
 import com.cannontech.web.PageEditMode;
 import com.cannontech.web.common.flashScope.FlashScope;
@@ -119,7 +119,7 @@ public class OperatorHardwareConfigController {
     @Autowired private PaoDao paoDao;
     @Autowired private LmDeviceReportedDataDao lmDeviceReportedDataDao;
     @Autowired private AttributeService attributeService;
-    @Autowired private GlobalSettingsDao globalSettingsDao;
+    @Autowired private GlobalSettingDao globalSettingDao;
     @Autowired private YukonEnergyCompanyService yukonEnergyCompanyService;
 
     private ColdLoadPickupValidator coldLoadPickupValidator = new ColdLoadPickupValidator();
@@ -185,7 +185,7 @@ public class OperatorHardwareConfigController {
         model.addAttribute("enrollments", enrollments);
 
         String batchedSwitchCommandToggle =
-            globalSettingsDao.getString(GlobalSetting.BATCHED_SWITCH_COMMAND_TOGGLE);
+            globalSettingDao.getString(GlobalSettingType.BATCHED_SWITCH_COMMAND_TOGGLE);
         boolean useStaticLoadGroups =
             StarsUtils.BATCH_SWITCH_COMMAND_MANUAL.equals(batchedSwitchCommandToggle)
                 && VersionTools.staticLoadGroupMappingExists();

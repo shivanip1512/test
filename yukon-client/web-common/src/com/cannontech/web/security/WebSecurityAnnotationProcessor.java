@@ -7,7 +7,7 @@ import org.springframework.core.annotation.AnnotationUtils;
 import com.cannontech.common.config.MasterConfigBooleanKeysEnum;
 import com.cannontech.core.roleproperties.YukonRole;
 import com.cannontech.core.roleproperties.YukonRoleProperty;
-import com.cannontech.system.GlobalSetting;
+import com.cannontech.system.GlobalSettingType;
 import com.cannontech.web.security.annotation.AuthorizeByCparm;
 import com.cannontech.web.security.annotation.CheckFalseRoleProperty;
 import com.cannontech.web.security.annotation.CheckRole;
@@ -73,7 +73,7 @@ public class WebSecurityAnnotationProcessor {
     }
 
     private void doHasCheckGlobalSetting(CheckGlobalSetting checkGlobalSetting) {
-        GlobalSetting setting = checkGlobalSetting.value();
+        GlobalSettingType setting = checkGlobalSetting.value();
         webSecurityChecker.checkGlobalSetting(setting);
     }
 

@@ -23,8 +23,8 @@ import javax.mail.internet.MimeMultipart;
 
 import com.cannontech.clientutils.CTILogger;
 import com.cannontech.spring.YukonSpringHook;
-import com.cannontech.system.GlobalSetting;
-import com.cannontech.system.dao.GlobalSettingsDao;
+import com.cannontech.system.GlobalSettingType;
+import com.cannontech.system.dao.GlobalSettingDao;
 
 /**
  * @author snebben
@@ -224,7 +224,7 @@ public class EmailMessage
 	{
 		if( from == null)
 		{
-		    from = YukonSpringHook.getBean(GlobalSettingsDao.class).getString(GlobalSetting.MAIL_FROM_ADDRESS);
+		    from = YukonSpringHook.getBean(GlobalSettingDao.class).getString(GlobalSettingType.MAIL_FROM_ADDRESS);
 
 			//still dont have a value, nothing will work then!
 			if( from == null )
@@ -243,7 +243,7 @@ public class EmailMessage
 	{
 		if( smtpServer == null)
 		{
-		    smtpServer = YukonSpringHook.getBean(GlobalSettingsDao.class).getString(GlobalSetting.SMTP_HOST);
+		    smtpServer = YukonSpringHook.getBean(GlobalSettingDao.class).getString(GlobalSettingType.SMTP_HOST);
 
 			//still dont have a value, nothing will work then!
 			if( smtpServer == null )

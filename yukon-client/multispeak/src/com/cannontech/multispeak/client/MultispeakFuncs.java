@@ -53,8 +53,8 @@ import com.cannontech.multispeak.deploy.service.Customer;
 import com.cannontech.multispeak.deploy.service.ErrorObject;
 import com.cannontech.multispeak.deploy.service.LoadActionCode;
 import com.cannontech.multispeak.deploy.service.ServiceLocation;
-import com.cannontech.system.GlobalSetting;
-import com.cannontech.system.dao.GlobalSettingsDao;
+import com.cannontech.system.GlobalSettingType;
+import com.cannontech.system.dao.GlobalSettingDao;
 import com.cannontech.user.SystemUserContext;
 
 public class MultispeakFuncs
@@ -67,7 +67,7 @@ public class MultispeakFuncs
     @Autowired public AuthenticationService authenticationService;
     @Autowired public PaoDefinitionDao paoDefinitionDao;
     @Autowired public PointFormattingService pointFormattingService;
-    @Autowired private GlobalSettingsDao globalSettingsDao;
+    @Autowired private GlobalSettingDao globalSettingDao;
 
     public void logStrings(String intfaceName, String methodName, String[] strings)
 	{
@@ -287,15 +287,15 @@ public class MultispeakFuncs
     }
     
     public String getPaoNameAliasExtension() {
-        return globalSettingsDao.getString(GlobalSetting.MSP_PAONAME_EXTENSION);
+        return globalSettingDao.getString(GlobalSettingType.MSP_PAONAME_EXTENSION);
     }
     
     public MultispeakMeterLookupFieldEnum getMeterLookupField() {
-        return globalSettingsDao.getEnum(GlobalSetting.MSP_METER_LOOKUP_FIELD, MultispeakMeterLookupFieldEnum.class);
+        return globalSettingDao.getEnum(GlobalSettingType.MSP_METER_LOOKUP_FIELD, MultispeakMeterLookupFieldEnum.class);
     }
     
     public MspPaoNameAliasEnum getPaoNameAlias() {
-        MspPaoNameAliasEnum paoNameAlias = globalSettingsDao.getEnum(GlobalSetting.MSP_PAONAME_ALIAS, MspPaoNameAliasEnum.class);
+        MspPaoNameAliasEnum paoNameAlias = globalSettingDao.getEnum(GlobalSettingType.MSP_PAONAME_ALIAS, MspPaoNameAliasEnum.class);
         return paoNameAlias;
     }
     
@@ -303,7 +303,7 @@ public class MultispeakFuncs
      * @return Returns the primaryCIS vendorID.
      */
     public int getPrimaryCIS() {
-        return globalSettingsDao.getInteger(GlobalSetting.MSP_PRIMARY_CB_VENDORID);
+        return globalSettingDao.getInteger(GlobalSettingType.MSP_PRIMARY_CB_VENDORID);
     }
 
     /**
@@ -324,7 +324,7 @@ public class MultispeakFuncs
      */
     public DeviceGroup getBillingCycleDeviceGroup() throws NotFoundException{
         //WE MAY HAVE SOME PROBLEMS HERE WITH THE EXPLICIT CAST TO STOREDDEVICEGROUP....
-        String value = globalSettingsDao.getString(GlobalSetting.MSP_BILLING_CYCLE_PARENT_DEVICEGROUP);
+        String value = globalSettingDao.getString(GlobalSettingType.MSP_BILLING_CYCLE_PARENT_DEVICEGROUP);
         DeviceGroup deviceGroup = deviceGroupService.resolveGroupName(value);
         return deviceGroup;
     }

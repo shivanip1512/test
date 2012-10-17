@@ -1383,6 +1383,13 @@
                     </page>
                     <page name="config" type="BASIC">
                         <menu>system|config</menu>
+                        <link>/spring/adminSetup/config/view</link>
+                        <pages>
+                            <page name="config.category" type="BLANK">
+                                <menu>system|config</menu>
+                                <link>/spring/adminSetup/config/category</link>
+                            </page>
+                        </pages>
                     </page>
                     
                     <page name="substationToRouteMapping" type="BASIC">

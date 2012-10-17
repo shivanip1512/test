@@ -12,8 +12,8 @@ import com.cannontech.database.data.lite.LiteContact;
 import com.cannontech.database.data.lite.LiteEnergyCompany;
 import com.cannontech.database.data.lite.LiteYukonUser;
 import com.cannontech.spring.YukonSpringHook;
-import com.cannontech.system.GlobalSetting;
-import com.cannontech.system.dao.GlobalSettingsDao;
+import com.cannontech.system.GlobalSettingType;
+import com.cannontech.system.dao.GlobalSettingDao;
 import com.cannontech.tools.email.EmailMessage;
 
 /**
@@ -63,14 +63,14 @@ public class RequestPword
 		
 		allParams = new String[] {userName, email};
 
-		GlobalSettingsDao globalSettingsDao = YukonSpringHook.getBean(GlobalSettingsDao.class);
+		GlobalSettingDao globalSettingDao = YukonSpringHook.getBean(GlobalSettingDao.class);
 		
         /*
          * Now that we no longer return a defaultValue automatically on a getRolePropertyValue, we
          * will get a null if the user is null.  The user SHOULD be null in this case, since nobody
          * should be logged in.  Let's try to avoid the error.
          */
-		String mail = globalSettingsDao.getString(GlobalSetting.MAIL_FROM_ADDRESS);
+		String mail = globalSettingDao.getString(GlobalSettingType.MAIL_FROM_ADDRESS);
 		if(mail != null) {
 			masterMail = mail;
 		}

@@ -38,8 +38,8 @@ import com.cannontech.common.util.CtiUtilities;
 import com.cannontech.core.roleproperties.YukonRoleProperty;
 import com.cannontech.database.PoolManager;
 import com.cannontech.i18n.YukonMessageSourceResolvable;
-import com.cannontech.system.GlobalSetting;
-import com.cannontech.system.dao.GlobalSettingsDao;
+import com.cannontech.system.GlobalSettingType;
+import com.cannontech.system.dao.GlobalSettingDao;
 import com.cannontech.user.YukonUserContext;
 import com.cannontech.util.ServletUtil;
 import com.cannontech.web.common.flashScope.FlashScope;
@@ -54,7 +54,7 @@ public class DatabaseMigrationController {
 
     @Autowired private DatabaseMigrationService databaseMigrationService;
     @Autowired private PoolManager poolManager;
-    @Autowired private GlobalSettingsDao globalSettingsDao;
+    @Autowired private GlobalSettingDao globalSettingDao;
 
     private Map<String, FileSystemResource> fileStore = new HashMap<String, FileSystemResource>();
 	
@@ -395,7 +395,7 @@ public class DatabaseMigrationController {
 	    List<String> exportFilePaths = new ArrayList<String>();
 	    
 	    String rolePropertyPath = 
-	            globalSettingsDao.getString(GlobalSetting.DATABASE_MIGRATION_FILE_LOCATION);
+	            globalSettingDao.getString(GlobalSettingType.DATABASE_MIGRATION_FILE_LOCATION);
 	    File exportDir = new File(CtiUtilities.getYukonBase(), rolePropertyPath);
 	    
 	    if (exportDir == null ||

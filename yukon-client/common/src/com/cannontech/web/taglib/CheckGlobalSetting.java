@@ -6,8 +6,8 @@ import javax.servlet.jsp.JspException;
 import javax.servlet.jsp.tagext.BodyTagSupport;
 
 import com.cannontech.spring.YukonSpringHook;
-import com.cannontech.system.GlobalSetting;
-import com.cannontech.system.dao.GlobalSettingsDao;
+import com.cannontech.system.GlobalSettingType;
+import com.cannontech.system.dao.GlobalSettingDao;
 
 /**
  * Checks a yukon system settng
@@ -15,13 +15,13 @@ import com.cannontech.system.dao.GlobalSettingsDao;
  */
 public class CheckGlobalSetting extends BodyTagSupport {
 
-	private GlobalSetting globalSetting;
+	private GlobalSettingType globalSetting;
 
 	/**
 	 * @see javax.servlet.jsp.tagext.Tag#doStartTag()
 	 */
 	public int doStartTag() throws JspException {
-	    boolean isSettingSet = YukonSpringHook.getBean(GlobalSettingsDao.class).checkSetting(globalSetting);
+	    boolean isSettingSet = YukonSpringHook.getBean(GlobalSettingDao.class).checkSetting(globalSetting);
 		return (isSettingSet) ? EVAL_BODY_INCLUDE : SKIP_BODY;
 	}
 	
@@ -41,7 +41,7 @@ public class CheckGlobalSetting extends BodyTagSupport {
 	}
     
     public void setSetting(String setting){
-        this.globalSetting = GlobalSetting.valueOf(setting);
+        this.globalSetting = GlobalSettingType.valueOf(setting);
     }
 
 }

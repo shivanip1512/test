@@ -78,8 +78,8 @@ import com.cannontech.database.SqlUtils;
 import com.cannontech.database.YukonJdbcTemplate;
 import com.cannontech.database.incrementer.NextValueHelper;
 import com.cannontech.i18n.YukonUserContextMessageSourceResolver;
-import com.cannontech.system.GlobalSetting;
-import com.cannontech.system.dao.GlobalSettingsDao;
+import com.cannontech.system.GlobalSettingType;
+import com.cannontech.system.dao.GlobalSettingDao;
 import com.cannontech.user.SystemUserContext;
 import com.cannontech.user.YukonUserContext;
 import com.google.common.collect.ArrayListMultimap;
@@ -116,7 +116,7 @@ public class DatabaseMigrationServiceImpl implements DatabaseMigrationService, R
     private TemplateProcessorFactory templateProcessorFactory;
     private ScheduledExecutor scheduledExecutor = null;
     private YukonUserContextMessageSourceResolver messageSourceResolver;
-    @Autowired private GlobalSettingsDao globalSettingsDao;
+    @Autowired private GlobalSettingDao globalSettingDao;
     
     private RecentResultsCache<ExportDatabaseMigrationStatus> exportStatusCache = 
     			new RecentResultsCache<ExportDatabaseMigrationStatus>();
@@ -1443,7 +1443,7 @@ public class DatabaseMigrationServiceImpl implements DatabaseMigrationService, R
      */
     private String getFileBasePath(YukonUserContext userContext) {
         String exportFilePath = 
-            globalSettingsDao.getString(GlobalSetting.DATABASE_MIGRATION_FILE_LOCATION);
+            globalSettingDao.getString(GlobalSettingType.DATABASE_MIGRATION_FILE_LOCATION);
         return CtiUtilities.getYukonBase() + exportFilePath;
         
     }
