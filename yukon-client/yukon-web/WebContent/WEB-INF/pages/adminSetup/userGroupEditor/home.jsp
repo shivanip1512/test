@@ -21,6 +21,9 @@
             		window[ui.panel.id + "Picker"].show();
         		}});
         });
+        function editUser() { window.location.href = '${userUrl}?userId=' + $F('userId'); }
+        function editUserGroup() { window.location.href = '${userGroupUrl}?userGroupId=' + $F('userGroupId'); }
+        function editRoleGroup() { window.location.href = '${roleGroupUrl}?roleGroupId=' + $F('roleGroupId'); }
     </script>
 
     <div id="tabs">
