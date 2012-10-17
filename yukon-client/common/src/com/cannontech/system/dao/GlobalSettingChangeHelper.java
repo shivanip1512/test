@@ -15,8 +15,8 @@ public class GlobalSettingChangeHelper {
     
     @Autowired private AsyncDynamicDataSource asyncDynamicDataSource;
     @Autowired private GlobalSettingDao globalSettingDao;
-    private Logger log = YukonLogManager.getLogger(GlobalSettingChangeHelper.class);
-    
+    private static final Logger log = YukonLogManager.getLogger(GlobalSettingChangeHelper.class);
+
     @PostConstruct
     public void setup() {
         asyncDynamicDataSource.addDatabaseChangeEventListener(DbChangeCategory.GLOBAL_SETTING, new DatabaseChangeEventListener() {

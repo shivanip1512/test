@@ -46,8 +46,8 @@ import com.cannontech.system.model.GlobalSetting;
  */
 public class GlobalSettingDaoImpl implements GlobalSettingDao {
     
-    private Logger log = YukonLogManager.getLogger(GlobalSettingDaoImpl.class);
-    private LeastRecentlyUsedCacheMap<GlobalSettingType, GlobalSetting> cache = new LeastRecentlyUsedCacheMap<GlobalSettingType, GlobalSetting>(10000);
+    private final Logger log = YukonLogManager.getLogger(GlobalSettingDaoImpl.class);
+    private final LeastRecentlyUsedCacheMap<GlobalSettingType, GlobalSetting> cache = new LeastRecentlyUsedCacheMap<GlobalSettingType, GlobalSetting>(10000);
     
     @Autowired private YukonJdbcTemplate yukonJdbcTemplate;
 
@@ -147,7 +147,7 @@ public class GlobalSettingDaoImpl implements GlobalSettingDao {
         try {
             settingDb = yukonJdbcTemplate.queryForObject(sql, settingMapper);
         } catch (EmptyResultDataAccessException e) {
-            log.warn("Setting missing from the database: " + setting.name());
+            log.debug("Setting missing from the database: " + setting.name());
             return null;
         }
 
