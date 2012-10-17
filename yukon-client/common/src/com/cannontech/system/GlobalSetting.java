@@ -74,6 +74,8 @@ public enum GlobalSetting {
     
     // Web Server
     WEB_LOGO_URL(GlobalSettingCategory.WEB_SERVER, stringType(), "CannonLogo.gif"),
+    GOOGLE_ANALYTICS_ENABLED(GlobalSettingCategory.WEB_SERVER, booleanType(), true),
+    GOOGLE_ANALYTICS_TRACKING_IDS(GlobalSettingCategory.WEB_SERVER, stringType(), null),
     
     // Billing
     WIZ_ACTIVATE(GlobalSettingCategory.BILLING, booleanType(), false),
