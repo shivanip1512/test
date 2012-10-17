@@ -109,8 +109,16 @@ public class RawExpressComCommandBuilderImpl implements RawExpressComCommandBuil
                 outputBuffer.put((byte) 0x00);
                 break;
             case TEMP_OUT_OF_SERVICE:
-                outputBuffer.put((byte) 0x16); // Temporary Service Change
-                outputBuffer.put((byte) 0x83); // Disable device with lights and cold load pickup disabled
+                // There are 3 commands here and this is desiged to match Porter. Priority Change, Restore, and Temp Service
+                outputBuffer.put((byte) 0x03); // Priority Change Message
+                outputBuffer.put((byte) 0x00); // Max Priority
+                
+                outputBuffer.put((byte) 0x09); // Restore Message
+                outputBuffer.put((byte) 0x80); // Flags = Randomization included, all loads restored
+                outputBuffer.put((byte) 0x02); // 2 minute randomization
+                
+                outputBuffer.put((byte) 0x16); // Temporary Service Change Message
+                outputBuffer.put((byte) 0x80); // Flags = Disable device, include time, do not disable cold load pickup or lights
                 
                 Duration duration = command.findParam(LmHardwareCommandParam.DURATION, Duration.class);
                 outputBuffer.putShort((short) duration.toStandardHours().getHours());
