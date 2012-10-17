@@ -1,0 +1,12 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<updateThermostatScheduleResponse xmlns="http://yukon.cannontech.com/api"
+           xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+           xsi:schemaLocation="http://yukon.cannontech.com/api ../updateThermostatScheduleResponse.xsd"
+           version="1.0">
+    
+    <thermostatScheduleNameAndScheduleId>
+        <thermostatScheduleName>test schedule</thermostatScheduleName>
+        <thermostatScheduleId>54321</thermostatScheduleId>
+    </thermostatScheduleNameAndScheduleId>
+    
+</updateThermostatScheduleResponse>

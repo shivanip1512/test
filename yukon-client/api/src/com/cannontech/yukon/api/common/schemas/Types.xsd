@@ -65,6 +65,41 @@
         </xsd:simpleContent>
     </xsd:complexType>
 
+    <xsd:simpleType name="ThermostatScheduleMode">
+        <xsd:restriction base="xsd:string">
+            <xsd:enumeration value="ALL" />
+            <xsd:enumeration value="WEEKDAY_SAT_SUN" />
+            <xsd:enumeration value="WEEKDAY_WEEKEND" />
+            <xsd:enumeration value="SEVEN_DAY" />
+        </xsd:restriction>
+    </xsd:simpleType>
+
+    <xsd:simpleType name="ThermostatSchedulePeriodType">
+        <xsd:restriction base="xsd:string">
+            <xsd:enumeration value="OCCUPIED" />
+            <xsd:enumeration value="UNOCCUPIED" />
+            <xsd:enumeration value="WAKE" />
+            <xsd:enumeration value="LEAVE" />
+            <xsd:enumeration value="RETURN" />
+            <xsd:enumeration value="SLEEP" />
+        </xsd:restriction>
+    </xsd:simpleType>
+
+    <xsd:simpleType name="TimeOfWeek">
+        <xsd:restriction base="xsd:string">
+            <xsd:enumeration value="WEEKDAY" />
+            <xsd:enumeration value="MONDAY" />
+            <xsd:enumeration value="TUESDAY" />
+            <xsd:enumeration value="WEDNESDAY" />
+            <xsd:enumeration value="THURSDAY" />
+            <xsd:enumeration value="FRIDAY" />
+            <xsd:enumeration value="SATURDAY" />
+            <xsd:enumeration value="SUNDAY" />
+            <xsd:enumeration value="WEEKEND" />
+            <xsd:enumeration value="EVERYDAY" />
+        </xsd:restriction>
+    </xsd:simpleType>
+
     <xsd:simpleType name="OptOutType">
         <xsd:restriction base="xsd:string">
             <xsd:enumeration value="ENABLED"/>
