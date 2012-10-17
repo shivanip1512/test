@@ -35908,7 +35908,7 @@
             <i__columnSizeDiffers>false</i__columnSizeDiffers>
             <i__decimalDigits>0</i__decimalDigits>
             <i__decimalDigitsDiffers>false</i__decimalDigitsDiffers>
-            <i__nullable>0</i__nullable>
+            <i__nullable>1</i__nullable>
             <i__nullableDiffers>false</i__nullableDiffers>
             <i__columnDefaultDiffers>false</i__columnDefaultDiffers>
             <i__ordinalPosition>3</i__ordinalPosition>
