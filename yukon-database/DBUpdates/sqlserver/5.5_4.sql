@@ -162,7 +162,7 @@ BEGIN
         SELECT @maxId = ISNULL(MAX(GlobalSettingId)+1,0)
         FROM GlobalSetting YS; 
 
-        INSERT INTO GlobalSetting (GlobalSettingId, Name, Value, Description)
+        INSERT INTO GlobalSetting (GlobalSettingId, Name, Value)
            (SELECT @maxId + ROW_NUMBER() OVER (ORDER BY YGR.RoleId, YGR.RolePropertyId), 
             RolepropertyEnum, 
             CASE 
@@ -170,8 +170,7 @@ BEGIN
                 WHEN LTRIM(RTRIM(Value)) = '' THEN DefaultValue
                 WHEN Value = '(none)' THEN DefaultValue
                 ELSE Value
-            END, 
-            Description
+            END 
             FROM YukonGroupRole YGR JOIN YukonRoleProperty YRP ON YGR.RolePropertyID = YRP.RolePropertyID
             JOIN RolePropToSetting_Temp T ON T.rolepropertyid = YRP.rolepropertyid
             WHERE GroupID = -1

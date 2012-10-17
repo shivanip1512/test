@@ -174,7 +174,7 @@ BEGIN
     SELECT NVL(MAX(GlobalSettingId)+1,0) INTO v_maxId
     FROM GlobalSetting YS;
     
-    INSERT INTO GlobalSetting (GlobalSettingId, Name, Value, Description)
+    INSERT INTO GlobalSetting (GlobalSettingId, Name, Value)
        SELECT v_maxId + ROW_NUMBER() OVER (ORDER BY YGR.RoleId, YGR.RolePropertyId), 
             T.RolePropertyEnum AS Name,
             CASE
@@ -182,11 +182,10 @@ BEGIN
                 WHEN LTRIM(RTRIM(YGR.Value)) IS NULL THEN YRP.DefaultValue
                 WHEN YGR.Value = '(none)' THEN YRP.DefaultValue
                 ELSE YGR.Value
-            END as Value, 
-            YRP.Description as Description
+            END as Value 
         FROM YukonGroupRole YGR 
-            JOIN YukonRoleProperty YRP ON YRP.RolePropertyId = YGR.RolePropertyId
-            JOIN RolePropToSetting_Temp T ON T.RolePropertyId = YRP.RolePropertyId
+	        JOIN YukonRoleProperty YRP ON YRP.RolePropertyId = YGR.RolePropertyId
+	        JOIN RolePropToSetting_Temp T ON T.RolePropertyId = YRP.RolePropertyId
         WHERE YGR.GroupId = -1
           AND YRP.RoleId IN (-4, -6, -104, -8, -7, -5, -105, -1);
 END;
