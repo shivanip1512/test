@@ -14,7 +14,7 @@
 <!-- ------------------- -->
 <!-- **IMPORTANT** - New Ids need to be generated for every general release of Yukon -->
 <c:set var="cooperDev" value="UA-30935838-1"/>
-<c:set var="cooperProd" value=""/>
+<c:set var="cooperProd" value="UA-30935838-2"/>
 
 <c:set var="disableAnalytics" value="false"/>
 <c:choose>
