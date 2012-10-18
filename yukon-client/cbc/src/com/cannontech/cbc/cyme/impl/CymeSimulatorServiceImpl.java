@@ -65,6 +65,7 @@ public class CymeSimulatorServiceImpl implements CymeSimulatorService, CymeSimul
     @Autowired private CymeTaskExecutor cymeTaskExecutor;
     @Autowired private CymeLoadProfileReader cymeLoadProfileReader;
     @Autowired private CymePointDataCache cymePointDataCache;
+    @Autowired private CymeXMLBuilder cymeXMLBuilder;
     @Autowired private FeederDao feederDao;
     
     private ScheduledExecutorService scheduledExecutor = Executors.newScheduledThreadPool(1);
@@ -82,7 +83,7 @@ public class CymeSimulatorServiceImpl implements CymeSimulatorService, CymeSimul
     @PostConstruct
     public void initialize() {
         
-        boolean cymeEnabled = configurationSource.getBoolean(MasterConfigBooleanKeysEnum.CYME_ENABLED,false);
+        boolean cymeEnabled = isCymeCparmEnabled();
         
         if (cymeEnabled) {
             String subBusName = null;
@@ -201,6 +202,10 @@ public class CymeSimulatorServiceImpl implements CymeSimulatorService, CymeSimul
     }
 
     private void handleTap(int regulatorId, int tapChange) {
+        if (!isCymeCparmEnabled()) {
+            return;
+        }
+        
         PaoIdentifier paoIdentifier = new PaoIdentifier(regulatorId, PaoType.LOAD_TAP_CHANGER);
         LitePoint point = extraPaoPointAssignmentDao.getLitePoint(paoIdentifier, RegulatorPointMapping.TAP_POSITION);
         
@@ -210,7 +215,7 @@ public class CymeSimulatorServiceImpl implements CymeSimulatorService, CymeSimul
         if (tapValue != null) {
             simplePointAccessDao.setPointValue(point.getLiteID(), tapValue.getValue() + tapChange);
         } else {
-            logger.error("Tap Position for Redgulator with Id: " + point.getLiteID() + " was not found in Cache.");
+            logger.error("Tap Position for Regulator with Id: " + point.getLiteID() + " was not found in Cache.");
             return;
         }
         
@@ -220,24 +225,36 @@ public class CymeSimulatorServiceImpl implements CymeSimulatorService, CymeSimul
     @Override
     public void handleOpenBank(int bankId) {
         logger.debug("Open Bank Operation received for bankId: " + bankId);
+        if (!isCymeCparmEnabled()) {
+            return;
+        }
         scheduleCymeStudy();
     }
 
     @Override
     public void handleCloseBank(int bankId) {
         logger.debug("Close Bank Operation received for bankId: " + bankId);
+        if (!isCymeCparmEnabled()) {
+            return;
+        }
         scheduleCymeStudy();
     }
     
     @Override
     public void handleScanDevice(int deviceId) {
         logger.debug("Scan Operation received for deviceId: " + deviceId);
+        if (!isCymeCparmEnabled()) {
+            return;
+        }
         scheduleCymeStudy();
     }
     
     @Override
     public void handleRefreshSystem(int deviceId) {
         logger.debug("Refresh System request received.");
+        if (!isCymeCparmEnabled()) {
+            return;
+        }
         
         //Set regulators to Remote Mode
         List<Zone> zones = zoneDao.getZonesBySubBusId(deviceId);
@@ -282,15 +299,17 @@ public class CymeSimulatorServiceImpl implements CymeSimulatorService, CymeSimul
                         LiteYukonPAObject feeder = paoDao.getLiteYukonPAO(feederId);
                         paoNames.add(feeder.getPaoName());
                     }
+                    try {
+                        String xmlData = cymeXMLBuilder.generateStudy(paosInSystem,currentPointValues,paoNames);
                     
-                    String xmlData = CymeXMLBuilder.generateStudy(paosInSystem,currentPointValues,paoNames);
-                    
-                    logger.debug("Study date being sent: " + xmlData);
-                    simulationId = cymDISTWebService.runSimulation(xmlData);
-    
-                    if (simulationId != null) {
-                        //Create Thread to wait for the results and process.
-                        cymeTaskExecutor.monitorSimulation(simulationId,simulationTime);
+                        logger.debug("Study data being sent: " + xmlData);
+                        simulationId = cymDISTWebService.runSimulation(xmlData);
+                        if (simulationId != null) {
+                            //Create Thread to wait for the results and process.
+                            cymeTaskExecutor.monitorSimulation(simulationId,simulationTime);
+                        }
+                    } catch (CymeConfigurationException e) {
+                        logger.error(e.getMessage());
                     }
                 }
             
@@ -302,11 +321,19 @@ public class CymeSimulatorServiceImpl implements CymeSimulatorService, CymeSimul
 
     @Override
     public void notifyNewLoadFactor(PointValueQualityHolder pointData) {
+        if (!isCymeCparmEnabled()) {
+            return;
+        }
+        
         scheduleCymeStudy();
     }
     
     @Override
     public void notifyNewSimulation(PointValueQualityHolder pointData) {
+        if (!isCymeCparmEnabled()) {
+            return;
+        }
+        
         TrueFalse state = TrueFalse.getForAnalogValue((int)pointData.getValue());
         logger.debug("Simulation Status update received: " + state.getDisplayValue());
 
@@ -321,10 +348,22 @@ public class CymeSimulatorServiceImpl implements CymeSimulatorService, CymeSimul
 
     @Override
     public void notifyCbcControl(PointValueQualityHolder pointData) {
+        if (!isCymeCparmEnabled()) {
+            return;
+        }
+        
         BankState state = PointStateHelper.decodeRawState(BankState.class, pointData.getValue());
         if (state == BankState.OPEN_PENDING || state == BankState.CLOSE_PENDING) {
             logger.debug("OpenPending or ClosePending state detected. Scheduling Simulation.");
             scheduleCymeStudy();
         }
+    }
+    
+    private boolean isCymeCparmEnabled() {
+        boolean enabled = configurationSource.getBoolean(MasterConfigBooleanKeysEnum.CYME_ENABLED,false);
+        if (!enabled) {
+            logger.debug("CYME_ENABLED CPARM is false.");
+        }
+        return enabled;
     }
 }
