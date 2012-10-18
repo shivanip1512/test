@@ -24,6 +24,7 @@ import com.cannontech.common.util.CommandExecutionException;
 import com.cannontech.common.util.CtiUtilities;
 import com.cannontech.common.util.ExceptionHelper;
 import com.cannontech.common.util.SimpleCallback;
+import com.cannontech.common.util.SqlStatementBuilder;
 import com.cannontech.core.dao.ContactDao;
 import com.cannontech.core.dao.ContactNotificationDao;
 import com.cannontech.core.dao.DBPersistentDao;
@@ -36,9 +37,12 @@ import com.cannontech.core.dao.impl.LoginStatusEnum;
 import com.cannontech.core.roleproperties.YukonRole;
 import com.cannontech.core.roleproperties.YukonRoleProperty;
 import com.cannontech.core.roleproperties.dao.RolePropertyDao;
+import com.cannontech.core.users.dao.UserGroupDao;
+import com.cannontech.core.users.model.LiteUserGroup;
 import com.cannontech.database.SqlStatement;
 import com.cannontech.database.TransactionException;
 import com.cannontech.database.TransactionType;
+import com.cannontech.database.YukonJdbcTemplate;
 import com.cannontech.database.data.company.EnergyCompanyBase;
 import com.cannontech.database.data.lite.LiteContact;
 import com.cannontech.database.data.lite.LiteContactNotification;
@@ -102,6 +106,8 @@ public class EnergyCompanyServiceImpl implements EnergyCompanyService {
     @Autowired private YukonEnergyCompanyService yukonEnergyCompanyService;
     @Autowired private WarehouseDao warehouseDao;
     @Autowired private AccountService accountService;
+    @Autowired private UserGroupDao userGroupDao ;
+    @Autowired private YukonJdbcTemplate yukonJdbcTemplate;
 
     @Override
     @Transactional(rollbackFor = {ConfigurationException.class, RuntimeException.class})
@@ -335,7 +341,7 @@ public class EnergyCompanyServiceImpl implements EnergyCompanyService {
 
         String dbAlias = CtiUtilities.getDatabaseAlias();
     
-        deleteAllOperatorLogins(energyCompany, dbAlias);
+        deleteOperatorLoginList(energyCompany);
         
         deleteAllCustomerAccounts(energyCompany, user);
         
@@ -357,7 +363,7 @@ public class EnergyCompanyServiceImpl implements EnergyCompanyService {
         
         LiteYukonGroup liteGroup = deleteEnergyCompanyBase(energyCompany, dbAlias);
         
-        deleteLoginGroupAndLogin(energyCompany, liteGroup);
+        deletePrivilegeGroupsAndDefaultOperatorLogin(energyCompany, liteGroup);
         
         starsEventLogService.deleteEnergyCompany(user, energyCompanyName);
     }
@@ -374,7 +380,7 @@ public class EnergyCompanyServiceImpl implements EnergyCompanyService {
      * @param energyCompany
      * @param liteGroup
      */
-    private void deleteLoginGroupAndLogin(LiteStarsEnergyCompany energyCompany, LiteYukonGroup liteGroup) {
+    private void deletePrivilegeGroupsAndDefaultOperatorLogin(LiteStarsEnergyCompany energyCompany, LiteYukonGroup liteGroup) {
         // Delete the default operator login
         int defaultUserId = energyCompany.getUser().getUserID();
         if (defaultUserId != com.cannontech.user.UserUtils.USER_ADMIN_ID &&
@@ -389,12 +395,20 @@ public class EnergyCompanyServiceImpl implements EnergyCompanyService {
             dbPersistentDao.processDBChange(dbChange);
         }
         
-        // Delete the privilege group of the default operator login as long as it's not a system groupr and ends with with 'Admin Grp' 
+        // Delete the privilege group of the default operator login as long as it's not a system group and ends with with 'Admin Grp' 
         if (liteGroup != null && liteGroup.getGroupName().endsWith(ecAdminLoginGroupExtension) && liteGroup.getGroupID() > -1) {
             YukonGroup dftGroup = new YukonGroup();
             dftGroup.setGroupID(new Integer(liteGroup.getGroupID()));
 
             dbPersistentDao.performDBChange(dftGroup, TransactionType.DELETE);
+        }
+        //Find and delete a privilege user group
+        LiteUserGroup liteUserGroup = userGroupDao.findLiteUserGroupByUserGroupName(energyCompany.getName()+ecAdminLoginGroupExtension);
+        if(liteUserGroup != null){
+            UserGroup userGroup = new UserGroup();
+            userGroup.setUserGroupId(liteUserGroup.getUserGroupId());
+            
+            dbPersistentDao.performDBChange(userGroup, TransactionType.DELETE);
         }
     }
 
@@ -626,43 +640,17 @@ public class EnergyCompanyServiceImpl implements EnergyCompanyService {
     }
 
     /**
-     * @param energyCompanyId
      * @param energyCompany
-     * @param dbAlias
      * @return
-     * @throws CommandExecutionException
      */
-    private void deleteAllOperatorLogins(LiteStarsEnergyCompany energyCompany, String dbAlias) {
+    private void deleteOperatorLoginList(LiteStarsEnergyCompany energyCompany) {
 
-        // Delete operator logins (except the default login)
-        
-        try {
-            String sql = "SELECT OperatorLoginID FROM EnergyCompanyOperatorLoginList WHERE EnergyCompanyID=" + energyCompany.getEnergyCompanyId();
-            SqlStatement stmt = new SqlStatement( sql, dbAlias );
-            stmt.execute();
-            
-            int[] userIDs = new int[ stmt.getRowCount() ];
-            for (int i = 0; i < stmt.getRowCount(); i++)
-                userIDs[i] = ((java.math.BigDecimal) stmt.getRow(i)[0]).intValue();
-            
-            for (int i = 0; i < userIDs.length; i++) {
-                if (userIDs[i] == energyCompany.getUser().getUserID()) continue;
-                
-                try {
-                    YukonUser.deleteOperatorLogin(userIDs[i]);
-                    DBChangeMsg dbChange = new DBChangeMsg(userIDs[i],
-                                                           DBChangeMsg.CHANGE_YUKON_USER_DB,
-                                                           DBChangeMsg.CAT_YUKON_USER,
-                                                           DBChangeMsg.CAT_YUKON_USER,
-                                                           DbChangeType.DELETE);
-                                     dbPersistentDao.processDBChange(dbChange);
-                } catch (UnsupportedOperationException e) {
-                    log.error(e);
-                }
-            }
-        } catch (CommandExecutionException e) {
-            ExceptionHelper.throwOrWrap(e);
-        }
+        // Delete entries in EnergyCompanyOperatorLoginList for EnergyCompanyId exclude the default operator login
+        SqlStatementBuilder sql = new SqlStatementBuilder();
+        sql.append("DELETE FROM EnergyCompanyOperatorLoginList");
+        sql.append("WHERE EnergyCompanyId").eq(energyCompany.getEnergyCompanyId());
+        sql.append("AND OperatorLoginID").neq(energyCompany.getUser().getUserID());
+        yukonJdbcTemplate.update(sql); 
     }
 
     public void addRouteToEnergyCompany(int energyCompanyId, final int routeId) {

@@ -95,8 +95,7 @@
         
         <br><br>
         <ul style="font-size:11px;">
-            <li class="disclaimer">&nbsp;&bull; Operator Users</li>
-            <li>&nbsp;&bull; Customer Accounts</li>
+            <li class="disclaimer">&nbsp;&bull; Customer Accounts</li>
             <li>&nbsp;&bull; Inventory</li>
             <li>&nbsp;&bull; Work Orders</li>
             <li>&nbsp;&bull; Default Thermostat Schedules</li>
@@ -104,7 +103,6 @@
             <li>&nbsp;&bull; Service Companies</li>
             <li>&nbsp;&bull; Appliance Categories</li>
             <li>&nbsp;&bull; Customer Selection Lists</li>
-            <li>&nbsp;&bull; Operator Role Groups</li>
         </ul>
 
     ]]></entry>
