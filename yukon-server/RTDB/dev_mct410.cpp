@@ -710,11 +710,7 @@ void Mct410Device::sendIntervals( OUTMESS *&OutMessage, OutMessageList &outList 
 INT Mct410Device::calcAndInsertLPRequests(OUTMESS *&OutMessage, OutMessageList &outList)
 {
     int nRet = NoError;
-
-    CtiTime       Now;
-    int           channel, block;
-    string        descriptor;
-    OUTMESS      *tmpOutMess;
+    CtiTime Now;
 
     if( !_intervalsSent )
     {
@@ -747,7 +743,7 @@ INT Mct410Device::calcAndInsertLPRequests(OUTMESS *&OutMessage, OutMessageList &
                 if( _lp_info[channel].collection_point <= (Now - block_len - LPBlockEvacuationTime) &&
                     _lp_info[channel].current_schedule <= Now )
                 {
-                    tmpOutMess = CTIDBG_new OUTMESS(*OutMessage);
+                    OUTMESS* tmpOutMess = CTIDBG_new OUTMESS(*OutMessage);
 
                     //  make sure we only ask for what the function reads can access
                     if( (Now.seconds() - _lp_info[channel].collection_point) >= (unsigned long)(LPRecentBlocks * block_len) )
@@ -770,10 +766,9 @@ INT Mct410Device::calcAndInsertLPRequests(OUTMESS *&OutMessage, OutMessageList &
                     _lp_info[channel].collection_point -= _lp_info[channel].collection_point % block_len;
 
                     //  which block to grab?
-                    channel = channel + 1;
-                    block   = (Now.seconds() - _lp_info[channel].collection_point) / block_len;
+                    const int block = (Now.seconds() - _lp_info[channel].collection_point) / block_len;
 
-                    descriptor = " channel " + CtiNumStr(channel) + string(" block ") + CtiNumStr(block);
+                    string descriptor = " channel " + CtiNumStr(channel + 1) + string(" block ") + CtiNumStr(block);
 
                     strncat( tmpOutMess->Request.CommandStr,
                              descriptor.c_str(),
