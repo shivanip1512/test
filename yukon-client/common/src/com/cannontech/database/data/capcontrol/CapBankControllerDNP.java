@@ -34,7 +34,7 @@ public class CapBankControllerDNP extends DNPBase implements DBCopiable, ICapBan
         return getDeviceDirectCommSettings().getPortID();
     }
 
-    public void add() throws java.sql.SQLException {
+    public void add() throws SQLException {
         super.add();
         getDeviceCBC().add();
     }

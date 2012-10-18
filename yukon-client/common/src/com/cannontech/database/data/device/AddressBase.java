@@ -1,5 +1,8 @@
 package com.cannontech.database.data.device;
 
+import java.sql.Connection;
+import java.sql.SQLException;
+
 import com.cannontech.database.db.device.DeviceAddress;
 
 public class AddressBase extends RemoteBase {
@@ -17,22 +20,24 @@ public class AddressBase extends RemoteBase {
         getDeviceAddress().setMasterAddress(newAddress);
     }
 
-    public void add() throws java.sql.SQLException {
+    public void add() throws SQLException {
         super.add();
         getDeviceAddress().add();
     }
 
-    public void delete() throws java.sql.SQLException {
-        getDeviceAddress().delete();
+    public void delete() throws SQLException {
+        if (!isPartialDelete) {
+            getDeviceAddress().delete();
+        }
         super.delete();
     }
 
-    public void retrieve() throws java.sql.SQLException {
+    public void retrieve() throws SQLException {
         super.retrieve();
         getDeviceAddress().retrieve();
     }
 
-    public void setDbConnection(java.sql.Connection conn) {
+    public void setDbConnection(Connection conn) {
         super.setDbConnection(conn);
         getDeviceAddress().setDbConnection(conn);
     }
@@ -42,7 +47,7 @@ public class AddressBase extends RemoteBase {
         getDeviceAddress().setDeviceID(deviceID);
     }
 
-    public void update() throws java.sql.SQLException {
+    public void update() throws SQLException {
         super.update();
         getDeviceAddress().update();
     }

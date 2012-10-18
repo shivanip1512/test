@@ -1,5 +1,8 @@
 package com.cannontech.database.data.capcontrol;
 
+import java.sql.Connection;
+import java.sql.SQLException;
+
 import com.cannontech.database.data.device.DNPBase;
 import com.cannontech.database.db.DBCopiable;
 import com.cannontech.database.db.capcontrol.DeviceCBC;
@@ -39,40 +42,35 @@ public class CapBankController702x extends DNPBase implements DBCopiable, ICapBa
 		return getDeviceDirectCommSettings().getPortID();
 	}
 	
-	public void add() throws java.sql.SQLException {
+	public void add() throws SQLException {
 	    super.add();
 	    getDeviceCBC().add();
 	}
 
-	public void delete() throws java.sql.SQLException {
+	public void delete() throws SQLException {
 	    if (!isPartialDelete) {
-	        getDeviceAddress().delete();
 	        getDeviceCBC().delete();
 	    }
 	    super.delete();
 	}
 
-	public void retrieve() throws java.sql.SQLException {
+	public void retrieve() throws SQLException {
 	    super.retrieve();
-	    getDeviceAddress().retrieve();
 	    getDeviceCBC().retrieve();
 	}
 
-	public void setDbConnection(java.sql.Connection conn) {
+	public void setDbConnection(Connection conn) {
 	    super.setDbConnection(conn);
-	    getDeviceAddress().setDbConnection(conn);
 	    getDeviceCBC().setDbConnection(conn);
 	}
 
 	public void setDeviceID(Integer deviceID) {
 	    super.setDeviceID(deviceID);
-	    getDeviceAddress().setDeviceID(deviceID);
 	    getDeviceCBC().setDeviceID(deviceID);
 	}
 
-	public void update() throws java.sql.SQLException {
+	public void update() throws SQLException {
 	    super.update();
-	    getDeviceAddress().update();
 	    getDeviceCBC().update();
 	}
 
