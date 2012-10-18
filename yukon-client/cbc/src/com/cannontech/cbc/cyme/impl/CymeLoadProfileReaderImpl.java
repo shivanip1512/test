@@ -7,8 +7,6 @@ import java.io.IOException;
 import java.util.List;
 
 import org.apache.log4j.Logger;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.util.CollectionUtils;
 
 import com.cannontech.cbc.cyme.CymeLoadProfileReader;
 import com.cannontech.cbc.cyme.profile.CymeLoadProfile;
@@ -19,9 +17,6 @@ import com.cannontech.cbc.cyme.profile.CymeType.Season;
 import com.cannontech.cbc.cyme.profile.CymeType.TimeInterval;
 import com.cannontech.cbc.cyme.profile.CymeType.Unit;
 import com.cannontech.clientutils.YukonLogManager;
-import com.cannontech.common.config.ConfigurationSource;
-import com.cannontech.common.config.MasterConfigStringKeysEnum;
-import com.cannontech.common.config.UnknownKeyException;
 import com.cannontech.tools.csv.CSVReader;
 import com.google.common.collect.Lists;
 
