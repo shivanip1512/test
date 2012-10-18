@@ -212,7 +212,7 @@ public class YukonConfigurationController {
         
         
         List<GlobalSetting> settings = Lists.newArrayList(adjustSettings(command));
-        globalSettingUpdateDao.updateSettings(settings);
+        globalSettingUpdateDao.updateSettings(settings, context.getYukonUser());
         
         MessageSourceAccessor accessor = resolver.getMessageSourceAccessor(context);
         String categoryName = accessor.getMessage(category);

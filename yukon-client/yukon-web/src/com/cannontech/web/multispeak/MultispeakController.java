@@ -358,21 +358,21 @@ public class MultispeakController {
             
             // update Primary CIS Vendor
             if (oldMspPrimaryCIS != mspPrimaryCIS) {
-                globalSettingUpdateDao.updateSettingValue(GlobalSettingType.MSP_PRIMARY_CB_VENDORID, String.valueOf(mspPrimaryCIS));
+                globalSettingUpdateDao.updateSettingValue(GlobalSettingType.MSP_PRIMARY_CB_VENDORID, String.valueOf(mspPrimaryCIS), null);
                 //reload the search field methods since primaryCIS has changed
                 mspMeterSearchService.loadMspSearchFields(mspPrimaryCIS);
             }
             if (oldMspPaoNameAliasExtension != mspPaoNameAliasExtension) {
                 // update PaoName Alias Extension field name
-                globalSettingUpdateDao.updateSettingValue(GlobalSettingType.MSP_PAONAME_EXTENSION, mspPaoNameAliasExtension);
+                globalSettingUpdateDao.updateSettingValue(GlobalSettingType.MSP_PAONAME_EXTENSION, mspPaoNameAliasExtension, null);
             }            
             if (oldMspPaoNameAlias != mspPaoNameAlias) {
                 // update PaoName Alias
-                globalSettingUpdateDao.updateSettingValue(GlobalSettingType.MSP_PAONAME_ALIAS, String.valueOf(mspPaoNameAlias));
+                globalSettingUpdateDao.updateSettingValue(GlobalSettingType.MSP_PAONAME_ALIAS, String.valueOf(mspPaoNameAlias), null);
             }
             if ( oldMspMeterLookupField != mspMeterLookupField) {
                 // update Meter Lookup Field
-                globalSettingUpdateDao.updateSettingValue(GlobalSettingType.MSP_METER_LOOKUP_FIELD, String.valueOf(mspMeterLookupField));
+                globalSettingUpdateDao.updateSettingValue(GlobalSettingType.MSP_METER_LOOKUP_FIELD, String.valueOf(mspMeterLookupField), null);
             }
         } catch (Exception e) {
             CTILogger.error( "Role Properties for MultiSpeak Setup not saved", e );

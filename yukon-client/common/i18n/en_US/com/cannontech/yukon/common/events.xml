@@ -381,6 +381,10 @@
     <!--  System Administration -->
     <!-- Maintenance -->
     <entry key="yukon.common.events.system.maintenance.rphDeleteDuplicates">Deleted {7} duplicate RawPointHistory rows from database. Start time: {11}. Finish time: {12}.</entry>
+    
+    <!--  System Administration -->
+    <!-- Configuration -->
+    <entry key="yukon.common.events.system.configuration.globalSettingChanged">User {1} changed Global Setting {2} to {3}</entry>
 
 <!--  Monitors -->
     <!-- Status Point Monitor -->

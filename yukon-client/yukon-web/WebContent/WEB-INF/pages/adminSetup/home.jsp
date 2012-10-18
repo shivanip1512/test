@@ -32,6 +32,12 @@
                 	<a href="${security}"><i:inline key=".security"/></a>
              	</div>
              </cti:checkGlobalRolesAndProperties>   
-         </cti:checkRolesAndProperties>     
+         </cti:checkRolesAndProperties>
+         <cti:checkRolesAndProperties value="ADMIN_SUPER_USER">
+            <div>
+                <cti:url var="configuration" value="/spring/adminSetup/config/view"/>
+                <a href="${configuration}"><i:inline key=".configuration"/></a>
+            </div>
+         </cti:checkRolesAndProperties>
     </tags:boxContainer2>
 </cti:standardPage>

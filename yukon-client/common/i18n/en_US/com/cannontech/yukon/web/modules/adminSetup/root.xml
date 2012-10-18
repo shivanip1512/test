@@ -11,6 +11,7 @@
     <entry key="yukon.web.modules.adminSetup.systemAdministration.substations">Substations</entry>
     <entry key="yukon.web.modules.adminSetup.systemAdministration.maintenance">Maintenance</entry>
     <entry key="yukon.web.modules.adminSetup.systemAdministration.security">Security</entry>
+    <entry key="yukon.web.modules.adminSetup.systemAdministration.configuration">Yukon Configuration Settings</entry>
     
     <entry key="yukon.web.modules.adminSetup.config.pageName">Yukon Configuration Settings</entry>
     <entry key="yukon.web.modules.adminSetup.config.contextualPageName">Configuration</entry>

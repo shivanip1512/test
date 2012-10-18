@@ -41,6 +41,7 @@ import com.cannontech.common.pao.PaoType;
 import com.cannontech.common.util.ObjectMapper;
 import com.cannontech.database.data.lite.LiteYukonUser;
 import com.cannontech.database.data.point.PointType;
+import com.cannontech.system.GlobalSettingType;
 import com.google.common.base.Function;
 import com.google.common.collect.ArrayListMultimap;
 import com.google.common.collect.ImmutableList;
@@ -126,6 +127,7 @@ public class EventLogServiceImpl implements EventLogService {
         builder.add(ArgumentMapper.createForEnum(PaoType.class));
         builder.add(ArgumentMapper.createForEnum(PointType.class));
         builder.add(ArgumentMapper.createForEnum(DeviceRequestType.class));
+        builder.add(ArgumentMapper.createForEnum(GlobalSettingType.class));
         builder.add(ArgumentMapper.create(ReadableInstant.class, Types.TIMESTAMP, new ObjectMapper<ReadableInstant, Date>() {
             public Date map(ReadableInstant from) throws ObjectMappingException {
                 return new Instant(from).toDate();
@@ -210,6 +212,7 @@ public class EventLogServiceImpl implements EventLogService {
                 }
             }
             if (!foundArgumentColumn) {
+                log.error("Unable to map event log method to database: " + method);
                 throw new BadConfigurationException("Unable to map event log method to database: " + method);
             }
         }

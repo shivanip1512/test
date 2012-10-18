@@ -41,5 +41,7 @@ public enum ArgEnum {
     workOrderNumber,
     inventoryId,
     commandRequestExecutionIdentifier,
+    globalSettingType,
+    globalSettingValue,
     ;
 }

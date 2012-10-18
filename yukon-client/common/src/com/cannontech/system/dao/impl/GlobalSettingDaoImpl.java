@@ -168,7 +168,10 @@ public class GlobalSettingDaoImpl implements GlobalSettingDao {
             setting.setId(rs.getInt("GlobalSettingId"));
             GlobalSettingType type = rs.getEnum(("Name"), GlobalSettingType.class);
             setting.setType(type);
-            setting.setValue(InputTypeFactory.convertPropertyValue(type.getType(), rs.getString("Value")));
+            String value = rs.getString("Value");
+            if (value != null) {
+                setting.setValue(InputTypeFactory.convertPropertyValue(type.getType(), value));
+            }
             setting.setComments(rs.getString("Comments"));
             setting.setLastChanged(rs.getInstant("LastChangedDate"));
             

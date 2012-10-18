@@ -1,5 +1,6 @@
 package com.cannontech.system.dao;
 
+import com.cannontech.database.data.lite.LiteYukonUser;
 import com.cannontech.system.GlobalSettingType;
 import com.cannontech.system.model.GlobalSetting;
 
@@ -15,12 +16,24 @@ import com.cannontech.system.model.GlobalSetting;
 public interface GlobalSettingUpdateDao {
     
     /**
-     * Updates the specified setting in GlobalSetting DB table to the new value;
+     * Updates the specified setting in GlobalSetting DB table to the new value.
+     * If the setting is actually changing, the event will be logged in EventLog.
+     * If the user is null the user will be 'yukon'.
      */
-    public void updateSettingValue(GlobalSettingType type, Object newVal);
+    public void updateSettingValue(GlobalSettingType type, Object newVal, LiteYukonUser user);
 
-    public void updateSetting(GlobalSetting setting);
+    /**
+     * Updates the specified setting in GlobalSetting DB table to the new value.
+     * If the setting is actually changing, the event will be logged in EventLog.
+     * If the user is null the user will be 'yukon'.
+     */
+    public void updateSetting(GlobalSetting setting, LiteYukonUser user);
 
-    public void updateSettings(Iterable<GlobalSetting> settings);
+    /**
+     * Updates the specified settings in GlobalSetting DB table to the new value.
+     * If the setting is actually changing, the event will be logged in EventLog.
+     * If the user is null the user will be 'yukon'.
+     */
+    public void updateSettings(Iterable<GlobalSetting> settings, LiteYukonUser user);
 
 }
