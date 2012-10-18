@@ -45,33 +45,47 @@ public class CymeSimulationHelper {
             template.setContext(report);
             template.setNamespaces(CymeWebServiceImpl.cymeDcProperties);
 
-            List<SerializableDictionaryData> capBanks = template.evaluate("/ns1:GetSimulationReportResponse/ns1:Values/a:SerializableDictionaryData", cymeSerializableDictionaryDataNodeMapper);
+            List<SerializableDictionaryData> cymeObjects = template.evaluate("/ns1:GetSimulationReportResponse/ns1:Values/a:SerializableDictionaryData", cymeSerializableDictionaryDataNodeMapper);
 
-            for (SerializableDictionaryData cap : capBanks) {
+            for (SerializableDictionaryData cymeObject : cymeObjects) {
                 LiteYukonPAObject pao = null;
-                PaoType paoType = cap.getPaoType();
+                String eqCode = cymeObject.getEqCode();
+                
+                PaoType paoType = translateEqCodeToPaoType(eqCode);
+                
+                if (paoType == null) {
+                    log.warn("CYME CONFIG: EqCode not supported: " + eqCode);
+                    continue;
+                }
+                
                 try {
-                    pao = paoDao.getLiteYukonPAObject(cap.getEqNo(),
+                    pao = paoDao.getLiteYukonPAObject(cymeObject.getEqNo(),
                                                       paoType.getPaoCategory().getCategoryId(),
                                                       paoType.getPaoClass().getPaoClassId(),
                                                       paoType.getDeviceTypeId());
                 } catch (NotFoundException e) {
-                    log.error("Pao not found with Name: " + cap.getEqNo() + ". Skipping");
+                    log.error("Pao not found with Name: " + cymeObject.getEqNo() + " and PaoType: " + paoType.getPaoTypeName() + ". Skipping.");
                     continue;
                 }
                 
                 if (paoType == PaoType.CAPBANK) {
                     Map<Integer, Phase> phaseSetMap = zoneDao.getMonitorPointsForBankAndPhase(pao.getLiteID());
+                    
+                    if (phaseSetMap.size() == 0) {
+                        log.warn("CYME CONFIG: Missing Voltage monitoring points on CapBank " + cymeObject.getEqNo() );
+                        continue;
+                    }
+                    
                     for (Entry<Integer, Phase> entry : phaseSetMap.entrySet()) {
                         Phase phase = entry.getValue();
                         int pointId = entry.getKey();
     
                         if (phase == Phase.A) {
-                            simplePointAccessDao.setPointValue(pointId, simulationTime, cap.getPhaseA().getVoltage());
+                            simplePointAccessDao.setPointValue(pointId, simulationTime, cymeObject.getPhaseA().getVoltage());
                         } else if (phase == Phase.B) {
-                            simplePointAccessDao.setPointValue(pointId, simulationTime, cap.getPhaseB().getVoltage());
+                            simplePointAccessDao.setPointValue(pointId, simulationTime, cymeObject.getPhaseB().getVoltage());
                         } else if (phase == Phase.C) {
-                            simplePointAccessDao.setPointValue(pointId, simulationTime, cap.getPhaseC().getVoltage());
+                            simplePointAccessDao.setPointValue(pointId, simulationTime, cymeObject.getPhaseC().getVoltage());
                         }
                     }
                 } else if (paoType == PaoType.CAP_CONTROL_SUBBUS) {
@@ -84,39 +98,76 @@ public class CymeSimulationHelper {
                         int voltId = pointIds.getVoltId();
                         int wattId = pointIds.getWattId();
                         
-                        PhaseInformation phaseA = cap.getPhaseA();
-                        PhaseInformation phaseB = cap.getPhaseB();
-                        PhaseInformation phaseC = cap.getPhaseC();
+                        PhaseInformation phaseA = cymeObject.getPhaseA();
+                        PhaseInformation phaseB = cymeObject.getPhaseB();
+                        PhaseInformation phaseC = cymeObject.getPhaseC();
                         
                         float voltValue = (phaseA.getVoltage() + phaseB.getVoltage() + phaseC.getVoltage())/3.0f;
                         float wattValue = phaseA.getkW() + phaseB.getkW()+phaseC.getkW();
 
                         if (pointIds.isTotalizekVar()) {
-                            float varTotalValue = phaseA.getkVar() + phaseB.getkVar() + phaseC.getkVar();
-                            simplePointAccessDao.setPointValue(varTotalId, simulationTime, varTotalValue);
+                            if (varTotalId == 0) {
+                                log.warn("CYME CONFIG: Missing Total kVar point on Subbus " + cymeObject.getEqNo() );
+                            } else {
+                                float varTotalValue = phaseA.getkVar() + phaseB.getkVar() + phaseC.getkVar();
+                                simplePointAccessDao.setPointValue(varTotalId, simulationTime, varTotalValue);
+                            }
                         } else {
-                            float varAValue = phaseA.getkVar();
-                            float varBValue = phaseB.getkVar();
-                            float varCValue = phaseC.getkVar();
-                            
-                            simplePointAccessDao.setPointValue(varAId, simulationTime, varAValue);
-                            simplePointAccessDao.setPointValue(varBId, simulationTime, varBValue);
-                            simplePointAccessDao.setPointValue(varCId, simulationTime, varCValue);
+                            if (varAId == 0 || varBId == 0 || varCId == 0) {
+                                log.warn("CYME CONFIG: Missing phase kVar point(s) on Subbus " + cymeObject.getEqNo() );
+                            } else {
+                                float varAValue = phaseA.getkVar();
+                                float varBValue = phaseB.getkVar();
+                                float varCValue = phaseC.getkVar();
+                                
+                                simplePointAccessDao.setPointValue(varAId, simulationTime, varAValue);
+                                simplePointAccessDao.setPointValue(varBId, simulationTime, varBValue);
+                                simplePointAccessDao.setPointValue(varCId, simulationTime, varCValue);
+                            }
                         }
                         
-                        simplePointAccessDao.setPointValue(voltId, simulationTime, voltValue);
-                        simplePointAccessDao.setPointValue(wattId, simulationTime, wattValue);
+                        if (voltId == 0) {
+                            log.warn("CYME CONFIG: Missing Volt point on Subbus " + cymeObject.getEqNo() );
+                        } else {
+                            simplePointAccessDao.setPointValue(voltId, simulationTime, voltValue);
+                        }
+                        if (wattId == 0) {
+                            log.warn("CYME CONFIG: Missing Watt point on Subbus " + cymeObject.getEqNo() );
+                        } else {
+                            simplePointAccessDao.setPointValue(wattId, simulationTime, wattValue);
+                        }
                 } else if (paoType == PaoType.GANG_OPERATED) {
-                    LitePoint litePoint = extraPaoPointAssignmentDao.getLitePoint(pao, RegulatorPointMapping.VOLTAGE_Y);
-                    
-                    simplePointAccessDao.setPointValue(litePoint.getLiteID(), simulationTime, cap.getPhaseA().getVoltage());
+                    try {
+                        LitePoint litePoint = extraPaoPointAssignmentDao.getLitePoint(pao, RegulatorPointMapping.VOLTAGE_Y);
+                        simplePointAccessDao.setPointValue(litePoint.getLiteID(), simulationTime, cymeObject.getPhaseA().getVoltage());
+                    } catch (NotFoundException e) {
+                        log.warn("CYME CONFIG: Missing Voltage_Y attribute on Regulator: " + cymeObject.getEqNo() );
+                    }                    
                 } else if (paoType == PaoType.LOAD_TAP_CHANGER) {
-                    LitePoint litePoint = extraPaoPointAssignmentDao.getLitePoint(pao, RegulatorPointMapping.VOLTAGE_Y);
-                    
-                    simplePointAccessDao.setPointValue(litePoint.getLiteID(), simulationTime, cap.getPhaseA().getVoltage());
+                    try {
+                        LitePoint litePoint = extraPaoPointAssignmentDao.getLitePoint(pao, RegulatorPointMapping.VOLTAGE_Y);
+                        simplePointAccessDao.setPointValue(litePoint.getLiteID(), simulationTime, cymeObject.getPhaseA().getVoltage());
+                    } catch (NotFoundException e) {
+                        log.warn("CYME CONFIG: Missing Voltage_Y attribute on Regulator: " + cymeObject.getEqNo() );
+                    }                    
                 }
             }
         }
+    }
+    
+    private PaoType translateEqCodeToPaoType(String eqCode) {
+        
+        if ("Shunt Capacitor".equals(eqCode)) {
+            return PaoType.CAPBANK;
+        } else if ("Substation".equals(eqCode)) {
+            return PaoType.CAP_CONTROL_SUBBUS;
+        } else if ("Regulator".equals(eqCode)) {
+            return PaoType.GANG_OPERATED;
+        } else if ("Transformer".equals(eqCode)) {
+            return PaoType.LOAD_TAP_CHANGER;
+        }
+        
+        return null;
     }
     
     private static ObjectMapper<Node, SerializableDictionaryData> cymeSerializableDictionaryDataNodeMapper = new ObjectMapper<Node, SerializableDictionaryData>() {
@@ -186,24 +237,13 @@ public class CymeSimulationHelper {
             
             String eqCode = template.evaluateAsString("EqCode");
             
-            
-            PaoType paoType = PaoType.CAPBANK;
-            if (eqCode.equals("Substation")) {
-                paoType = PaoType.CAP_CONTROL_SUBBUS;
-            } else if (eqCode.equals("Regulator")) {
-                paoType = PaoType.GANG_OPERATED;
-            } else if (eqCode.equals("Transformer")) {
-                paoType = PaoType.LOAD_TAP_CHANGER;
-            }
-            
             String ltcTapValueStr = template.evaluateAsString("XfoTap");
             int ltcTapValue = 0;
             if (! ltcTapValueStr.isEmpty()) {
                 ltcTapValue = (int)Float.parseFloat(ltcTapValueStr);
             }
             
-            
-            return new SerializableDictionaryData(eqNo, fdrNwId, phaseA, phaseB, phaseC, ltcTapValue, paoType);
+            return new SerializableDictionaryData(eqNo, fdrNwId, phaseA, phaseB, phaseC, ltcTapValue, eqCode);
         }
     };
 

@@ -1,27 +1,24 @@
 package com.cannontech.cbc.cyme.model;
 
-import com.cannontech.common.pao.PaoType;
-
-
 public class SerializableDictionaryData {
     private String eqNo;
     private String fdrNwId;
     private PhaseInformation phaseA;
     private PhaseInformation phaseB;
     private PhaseInformation phaseC;    
-    private PaoType paoType;
+    private String eqCode;
     private int ltcTapPosition;
     
     public SerializableDictionaryData(String eqNo, String fdrNwId, 
                                    PhaseInformation phaseA, PhaseInformation phaseB, PhaseInformation phaseC, int ltcTapPosition,
-                                   PaoType paoType) {
+                                   String eqCode) {
         this.eqNo = eqNo;
         this.fdrNwId = fdrNwId;
         this.phaseA = phaseA;
         this.phaseB = phaseB;
         this.phaseC = phaseC;
         this.ltcTapPosition = ltcTapPosition;
-        this.paoType = paoType;
+        this.eqCode = eqCode;
     }
     
     public String getEqNo() {
@@ -54,11 +51,11 @@ public class SerializableDictionaryData {
     public PhaseInformation getPhaseC() {
         return phaseC;
     }
-    public PaoType getPaoType() {
-        return paoType;
+    public String getEqCode() {
+        return eqCode;
     }
-    public void setPaoType(PaoType paoType) {
-        this.paoType = paoType;
+    public void setEqCode(String eqCode) {
+        this.eqCode = eqCode;
     }
     public int getLtcTapPosition() {
         return ltcTapPosition;
