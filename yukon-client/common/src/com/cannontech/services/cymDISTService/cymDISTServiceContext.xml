@@ -13,6 +13,7 @@
     <bean class="com.cannontech.cbc.cyme.impl.CymeSimulatorServiceImpl" />
     <bean class="com.cannontech.cbc.cyme.impl.CymeSimulationHelper" />
     <bean class="com.cannontech.cbc.cyme.impl.CymeTaskExecutor" />
+    <bean class="com.cannontech.cbc.cyme.impl.CymeXMLBuilder" />
     <bean class="com.cannontech.cbc.cyme.impl.CymeLoadProfileReaderImpl" />
     <bean class="com.cannontech.cbc.cyme.impl.CymePointDataCacheImpl" />
 

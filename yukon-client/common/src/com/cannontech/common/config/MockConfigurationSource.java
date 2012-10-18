@@ -39,10 +39,15 @@ public class MockConfigurationSource implements ConfigurationSource {
     }
 
     @Override
-    public String getRequiredString(String key) throws UnknownKeyException {
+    public String getRequiredString(MasterConfigStringKeysEnum key) throws UnknownKeyException {
         throw new UnsupportedOperationException();
     }
 
+    @Override
+    public String getRequiredString(String key) throws UnknownKeyException {
+        throw new UnsupportedOperationException();
+    }
+    
     @Override
     public String getString(String key) {
         throw new UnsupportedOperationException();

@@ -11,6 +11,16 @@ import com.cannontech.common.util.SimplePeriodFormat;
 
 public interface ConfigurationSource {
 
+
+    /**
+     * Returns value of key from the configuration file. Throws an exception if the key did not
+     * exist in the file.
+     * @param key
+     * @throws UnknownKeyException if key didn't exist
+     * @return the value of the key, never null
+     */
+    public String getRequiredString(MasterConfigStringKeysEnum key) throws UnknownKeyException;
+    
     /**
      * Returns value of key from the configuration file. Throws an exception if the key did not
      * exist in the file.

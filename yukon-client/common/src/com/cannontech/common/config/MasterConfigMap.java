@@ -114,6 +114,11 @@ public class MasterConfigMap implements ConfigurationSource {
     }
 
     @Override
+    public String getRequiredString(MasterConfigStringKeysEnum key) throws UnknownKeyException {
+        return getRequiredString(key.name());
+    }
+    
+    @Override
     public String getRequiredString(String key) throws UnknownKeyException {
         if (!configMap.containsKey(key)) {
             throw new UnknownKeyException(key);

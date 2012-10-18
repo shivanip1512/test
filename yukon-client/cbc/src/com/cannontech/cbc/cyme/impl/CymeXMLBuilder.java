@@ -5,8 +5,12 @@ import java.util.Collection;
 import java.util.List;
 import java.util.Map;
 
+import org.springframework.beans.factory.annotation.Autowired;
+
 import com.cannontech.capcontrol.model.BankState;
 import com.cannontech.capcontrol.model.PointPaoIdentifier;
+import com.cannontech.common.config.ConfigurationSource;
+import com.cannontech.common.config.MasterConfigStringKeysEnum;
 import com.cannontech.common.pao.PaoType;
 import com.cannontech.core.dao.NotFoundException;
 import com.cannontech.core.dynamic.PointValueQualityHolder;
@@ -15,16 +19,18 @@ import com.google.common.collect.Lists;
 
 public class CymeXMLBuilder {
 
-    public static String generateStudy(Collection<PointPaoIdentifier> paosInSystem, Map<Integer,PointValueQualityHolder> currentPointValues, List<String> paoNames) {
+    @Autowired private ConfigurationSource configurationSource;
+
+    public String generateStudy(Collection<PointPaoIdentifier> paosInSystem, Map<Integer,PointValueQualityHolder> currentPointValues, List<String> paoNames) {
         
         List<String> modifDeviceStrings = Lists.newArrayList();
         int maxIndex = 0;
         String loadFactor = null;
-
+        String reportName = configurationSource.getRequiredString(MasterConfigStringKeysEnum.CYME_REPORT_NAME);
         String networkIds = "";
         
         for (String paoName: paoNames) {
-            networkIds += "<NetworkID>"+paoName+"</NetworkID>\n";
+            networkIds += "<NetworkID>"+paoName+"</NetworkID>";
         }
         
         for (PointPaoIdentifier entry : paosInSystem) {
@@ -35,13 +41,13 @@ public class CymeXMLBuilder {
                 BankState state = PointStateHelper.decodeRawState(BankState.class, (int)pointValueQualityHolder.getValue());
                 
                 String xml =  "<ModifDeviceStatus>" +
-                         "    <Index>" + maxIndex + "</Index>" +    // Incremental number
-                         "    <ModifID>" + maxIndex++ +"</ModifID>" +   // Same as Index
-                         "    <Description>Disconnect ShuntCapacitor "+ bankName  +".</Description>" +
-                         "    <SectionID>" + bankName.split("-")[0] + "</SectionID>" +
-                         "    <DeviceType>ShuntCapacitor</DeviceType>" + // See list at the end of document
-                         "    <DeviceNumber>" + bankName + "</DeviceNumber>" +
-                         "    <ConnectionStatus>" + convertBankStatus(state) + "</ConnectionStatus>" + // Connected, Disconnected 
+                         "<Index>" + maxIndex + "</Index>" +    // Incremental number
+                         "<ModifID>" + maxIndex++ +"</ModifID>" +   // Same as Index
+                         "<Description>Disconnect ShuntCapacitor "+ bankName  +".</Description>" +
+                         "<SectionID>" + bankName.split("-")[0] + "</SectionID>" +
+                         "<DeviceType>ShuntCapacitor</DeviceType>" + // See list at the end of document
+                         "<DeviceNumber>" + bankName + "</DeviceNumber>" +
+                         "<ConnectionStatus>" + convertBankStatus(state) + "</ConnectionStatus>" + // Connected, Disconnected 
                          "</ModifDeviceStatus>";
                 modifDeviceStrings.add(xml);
             } else if (paoType == PaoType.GANG_OPERATED) {
@@ -49,12 +55,12 @@ public class CymeXMLBuilder {
                 PointValueQualityHolder pointValueQualityHolder = currentPointValues.get(entry.getPointId());
                 int tapPosition = (int)pointValueQualityHolder.getValue();
                 String xml =   "<ModifRegulatorTapPosition>" +
-                          "    <ModifID>"+(maxIndex) + "</ModifID>" +
-                          "    <Index>"+(maxIndex++) + "</Index>" +
-                          "    <DeviceNumber>"+regName+"</DeviceNumber>" +
-                          "    <TapPositionA>"+ tapPosition +"</TapPositionA>" +
-                          "    <TapPositionB>"+ tapPosition +"</TapPositionB>" +
-                          "    <TapPositionC>"+ tapPosition +"</TapPositionC>" +
+                          "<ModifID>"+(maxIndex) + "</ModifID>" +
+                          "<Index>"+(maxIndex++) + "</Index>" +
+                          "<DeviceNumber>"+regName+"</DeviceNumber>" +
+                          "<TapPositionA>"+ tapPosition +"</TapPositionA>" +
+                          "<TapPositionB>"+ tapPosition +"</TapPositionB>" +
+                          "<TapPositionC>"+ tapPosition +"</TapPositionC>" +
                           "</ModifRegulatorTapPosition>";
                 modifDeviceStrings.add(xml);
             } else if (paoType == PaoType.LOAD_TAP_CHANGER) {
@@ -62,10 +68,10 @@ public class CymeXMLBuilder {
                 PointValueQualityHolder pointValueQualityHolder = currentPointValues.get(entry.getPointId());
                 int tapPosition = (int)pointValueQualityHolder.getValue();
                 String xml   = "<ModifTransformerTapPosition>" +
-                          "    <ModifID>"+(maxIndex) + "</ModifID>" +
-                          "    <Index>"+(maxIndex++) + "</Index>" +
-                          "    <DeviceNumber>"+regName+"</DeviceNumber>" +
-                          "    <TapPosition>"+ tapPosition +"</TapPosition>" +
+                          "<ModifID>"+(maxIndex) + "</ModifID>" +
+                          "<Index>"+(maxIndex++) + "</Index>" +
+                          "<DeviceNumber>"+regName+"</DeviceNumber>" +
+                          "<TapPosition>"+ tapPosition +"</TapPosition>" +
                           "</ModifTransformerTapPosition>";
                 modifDeviceStrings.add(xml);
             } else if (paoType == PaoType.CAP_CONTROL_SUBBUS) {
@@ -80,85 +86,72 @@ public class CymeXMLBuilder {
          
         String xml = 
             "<Cyme>" +
-            "	<Cymdist>" +
-            "		<SchemaVersion>1</SchemaVersion>" +
-            "		<CymdistProperties>" +
-            "           <Version>5.02</Version>" +
-            "			<Revision>05</Revision>" +
-            "			<Extensions>" +
-            "				<FailureEvents>0</FailureEvents>" +
-            "			</Extensions>" +
-            "		</CymdistProperties>" +
-            "		<Studies>" +
-            "			<Study>" +
-            "				<ProjectID>MyProjectID</ProjectID>" +
-            "				<LoadNetworkOption>2</LoadNetworkOption>" +
-            "				<StudyParameters>" +
-            "					<LoadAllFeedersDisplayed>1</LoadAllFeedersDisplayed>" +
-            "				</StudyParameters>" +
-            "               <CalculationParameters>" +
-            "                   <LoadFlowParameters>" +
-            "                       <LoadScalingFactors>" +
-            "                            <Mode>LoadFlowFactorGlobal</Mode>" +
-            "                            <P_Percent>" + loadFactor + "</P_Percent>" +
-            "                            <Q_Percent>" + loadFactor + "</Q_Percent>" +
-            "                        </LoadScalingFactors>" +
-            "                    </LoadFlowParameters>" +
-            "                </CalculationParameters>" +
-            "				<Modifs>";
+                    "<Cymdist>" +
+                        "<SchemaVersion>1</SchemaVersion>" +
+                        "<CymdistProperties>" +
+                            "<Version>5.02</Version>" +
+                            "<Revision>05</Revision>" +
+                            "<Extensions>" +
+                                "<FailureEvents>0</FailureEvents>" +
+                            "</Extensions>" +
+                        "</CymdistProperties>" +
+                        "<Studies>" +
+                            "<Study>" +
+                            "<ProjectID>MyProjectID</ProjectID>" +
+                            "<LoadNetworkOption>2</LoadNetworkOption>" +
+                            "<StudyParameters>" +
+                                "<LoadAllFeedersDisplayed>1</LoadAllFeedersDisplayed>" +
+                            "</StudyParameters>" +
+                            "<CalculationParameters>" +
+                                "<LoadFlowParameters>" +
+                                    "<LoadScalingFactors>" +
+                                        "<Mode>LoadFlowFactorGlobal</Mode>" +
+                                        "<P_Percent>" + loadFactor + "</P_Percent>" +
+                                        "<Q_Percent>" + loadFactor + "</Q_Percent>" +
+                                    "</LoadScalingFactors>" +
+                                "</LoadFlowParameters>" +
+                            "</CalculationParameters>" +
+                        "<Modifs>";
                 for (String xmlFrag : modifDeviceStrings ) {
                     xml += xmlFrag;
                 }
-            xml += "    </Modifs>" +	
-                      "<Commands>" +
-//            "                  <CommandLoadAllocation>" +     // Load Allocation analysis
-//            "                      <OwnerID>MyProjectID</OwnerID>" + // Same as ProjectID under <Study>
-//            "                      <ModifIndex>0</ModifIndex>" +      //Execute this command after modifIndex 1
-//            "                      <CommandTypeID>CommandLoadAllocationID</CommandTypeID> " + // You should always use this commandType for Load Allocation
-//            "                      <CommandID>CommandLoadAllocation_AfterDiscCapacitor</CommandID> " + // Your commandID 
-//            "                      <ExecuteAfter>1</ExecuteAfter> " +     // Execute after the associated modifIndex (0 = Execute before)
-//            "                      <Networks> " +
-//            "                           <NetworkID>GA02</NetworkID>" +            
-//            "                           <NetworkID>GA06</NetworkID>" +
-//            "                           <NetworkID>GALVESTON</NetworkID>" +
-//            "                       </Networks> " +
-//            "                   </CommandLoadAllocation> " +            
-            "  					<CommandLoadFlow>" +
-            "                       <ModifIndex>"+(maxIndex-1)+"</ModifIndex> " +
-            "    					<OwnerID>MyProjectID</OwnerID>" +
-            "   					<CommandTypeID>CommandLoadFlowID</CommandTypeID>" +
-            "    					<CommandID>CommandLoadFlow</CommandID>" +
-            "    					<ExecuteAfter>1</ExecuteAfter>" +
-            "    					<Reports>" +
-            "      						<Report>" +
-            "        						<ReportID>CooperVVO2</ReportID>" +
-            "     						</Report>" +
-            "    					</Reports>" +
-            "    					<Networks>" + networkIds + "</Networks>" +
-            "  					</CommandLoadFlow>" +
-            "				</Commands>" +
-            "				<CommandTypes>" +
-            "                   <CommandType>" +
-            "                       <CommandTypeID>CommandLoadAllocationID</CommandTypeID>" +
-            "                       <CommandTypeEnum>LoadAllocation</CommandTypeEnum>" +
-            "                   </CommandType>" +
-            "  					<CommandType>" +
-            "    					<CommandTypeID>CommandLoadFlowID</CommandTypeID>" +
-            "    					<CommandTypeEnum>LoadFlow</CommandTypeEnum>" +
-            "  					</CommandType>" +
-            "				</CommandTypes>" +
-            "				<NetworksToDisplay>" + networkIds + "</NetworksToDisplay>" +
-            "				<NetworksToLoad>" + networkIds + "</NetworksToLoad>" +
-            "			</Study>" +
-            "		</Studies>" +
-            "	</Cymdist>" +
+                xml += "</Modifs>" +	
+                          "<Commands>" +
+                              "<CommandLoadFlow>" +
+                                  "<ModifIndex>"+(maxIndex-1)+"</ModifIndex> " +
+                                  "<OwnerID>MyProjectID</OwnerID>" +
+                                  "<CommandTypeID>CommandLoadFlowID</CommandTypeID>" +
+                                  "<CommandID>CommandLoadFlow</CommandID>" +
+                                  "<ExecuteAfter>1</ExecuteAfter>" +
+                                  "<Reports>" +
+                                      "<Report>" +
+                                          "<ReportID>"+ reportName + "</ReportID>" +
+                                      "</Report>" +
+                                  "</Reports>" +
+                                  "<Networks>" + networkIds + "</Networks>" +
+                              "</CommandLoadFlow>" +
+                          "</Commands>" +
+                          "<CommandTypes>" +
+                              "<CommandType>" +
+                                  "<CommandTypeID>CommandLoadAllocationID</CommandTypeID>" +
+                                  "<CommandTypeEnum>LoadAllocation</CommandTypeEnum>" +
+                              "</CommandType>" +
+                              "<CommandType>" +
+                                  "<CommandTypeID>CommandLoadFlowID</CommandTypeID>" +
+                                  "<CommandTypeEnum>LoadFlow</CommandTypeEnum>" +
+                              "</CommandType>" +
+                          "</CommandTypes>" +
+                          "<NetworksToDisplay>" + networkIds + "</NetworksToDisplay>" +
+                          "<NetworksToLoad>" + networkIds + "</NetworksToLoad>" +
+                      "</Study>" +
+                  "</Studies>" +
+              "</Cymdist>" +
             "</Cyme>";
             
         return xml;
-
     }
-
-    private static String convertBankStatus(BankState state) {
+    
+    private String convertBankStatus(BankState state) {
         
         switch (state) {
             case OPEN:
