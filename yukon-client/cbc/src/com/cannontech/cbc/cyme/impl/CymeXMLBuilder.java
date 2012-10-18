@@ -9,8 +9,10 @@ import org.springframework.beans.factory.annotation.Autowired;
 
 import com.cannontech.capcontrol.model.BankState;
 import com.cannontech.capcontrol.model.PointPaoIdentifier;
+import com.cannontech.cbc.cyme.CymeConfigurationException;
 import com.cannontech.common.config.ConfigurationSource;
 import com.cannontech.common.config.MasterConfigStringKeysEnum;
+import com.cannontech.common.config.UnknownKeyException;
 import com.cannontech.common.pao.PaoType;
 import com.cannontech.core.dao.NotFoundException;
 import com.cannontech.core.dynamic.PointValueQualityHolder;
@@ -21,13 +23,19 @@ public class CymeXMLBuilder {
 
     @Autowired private ConfigurationSource configurationSource;
 
-    public String generateStudy(Collection<PointPaoIdentifier> paosInSystem, Map<Integer,PointValueQualityHolder> currentPointValues, List<String> paoNames) {
+    public String generateStudy(Collection<PointPaoIdentifier> paosInSystem, Map<Integer,PointValueQualityHolder> currentPointValues, List<String> paoNames){
         
         List<String> modifDeviceStrings = Lists.newArrayList();
         int maxIndex = 0;
         String loadFactor = null;
-        String reportName = configurationSource.getRequiredString(MasterConfigStringKeysEnum.CYME_REPORT_NAME);
         String networkIds = "";
+        String reportName;
+        
+        try {
+            reportName = configurationSource.getRequiredString(MasterConfigStringKeysEnum.CYME_REPORT_NAME);
+        } catch (UnknownKeyException e) {
+          throw new CymeConfigurationException("Missing the type of the report for CYME to generate. Add CPARM CYME_REPORT_NAME to the master.cfg file.");  
+        }
         
         for (String paoName: paoNames) {
             networkIds += "<NetworkID>"+paoName+"</NetworkID>";
