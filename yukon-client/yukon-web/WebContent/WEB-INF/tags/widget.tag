@@ -30,7 +30,7 @@
 <script type="text/javascript">
     var ${widgetParameters.jsWidget} = new JsWidgetObject("${beanInst.shortName}", ${cti:jsonString(widgetParameters)});
     <c:if test="${beanInst.lazyLoad}">
-        Event.observe(window,'load', function() {${widgetParameters.jsWidget}.render()});
+        jQuery(function() {${widgetParameters.jsWidget}.render()});
     </c:if>
 </script>
 

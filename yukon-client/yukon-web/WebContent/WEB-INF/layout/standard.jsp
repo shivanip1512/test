@@ -166,7 +166,7 @@
 <tags:dataUpdateEnabler/>
 <cti:dataUpdaterCallback function="alert_handleCountUpdate" initialize="true" count="ALERT/COUNT" lastId="ALERT/LASTID"/>
 
-<tags:analyticsTrackPage/>
+<tags:analyticsTrackPage enabled="${analyticsEnabled}" additionalTrackingIds="${additionalTrackingIds}"/>
 
 </body>
 </html>

@@ -19,7 +19,7 @@ if(typeof(Yukon.Util.AnalyticsManager) === 'undefined'){
 	Yukon.Util.AnalyticsManager = {
         _initialized: false,
         _cooper_tracking_id: null,
-        _additional_tracking_id: null,
+        _additional_tracking_ids: [],
         _updater_url: "/spring/updater/update",
         
         /*---------------------*/
@@ -30,17 +30,17 @@ if(typeof(Yukon.Util.AnalyticsManager) === 'undefined'){
          * Sets the google analytics tracking Id's
          * @param {Object} args TrackingId arguments
          * @param {String} args.cooper_tracking_id The Cooper Google Analytics Tracking Id
-         * @param {String} args.additional_tracking_id The additional Google Analytics Tracking Id
+         * @param {String} args.additional_tracking_ids The additional Google Analytics Tracking Ids (comma separated string)
          */
         setTrackingIds: function(args){
             this._init();
             if (typeof args.cooper_tracking_id === "string" && args.cooper_tracking_id !== "") {
                 this._cooper_tracking_id = args.cooper_tracking_id;
-                _gaq=[["_setAccount",this._cooper_tracking_id],["_trackPageview"]];
+                _gaq=[["_setAccount", this._cooper_tracking_id], ["_trackPageview"]];
             }
-            if (typeof args.additional_tracking_id === "string" && args.additional_tracking_id !== "") {
-                this._additional_tracking_id = args.additional_tracking_id;
-                this._setAdditionalTrackingId;
+            if (typeof args.additional_tracking_ids === "string" && args.additional_tracking_ids !== "") {
+                this._additional_tracking_ids = args.additional_tracking_ids.replace(/ /g,'').split(","); //remove all whitespace then split it into our array
+                this._setAdditionalTrackingIds();
             }
 
             var _self = this;
@@ -48,8 +48,10 @@ if(typeof(Yukon.Util.AnalyticsManager) === 'undefined'){
             jQuery(document).ajaxSend(function(event, xhr, settings) {
                 if (settings.url !== _self._updater_url && 
                         typeof _gaq !== "undefined" && _gaq !== null) {
-                    _gaq.push(['_trackPageview',settings.url]);
-                    _self._setAdditionalTrackingId({url: settings.url});
+                    _gaq.push(["_setAccount", this._cooper_tracking_id], ['_trackPageview', settings.url]);
+                    if (_self._additional_tracking_ids.length > 0) {
+                        _self._setAdditionalTrackingIds({url: settings.url});
+                    }
                 }
             });
         },
@@ -58,29 +60,30 @@ if(typeof(Yukon.Util.AnalyticsManager) === 'undefined'){
         /* 'PRIVATE' functions */
         /*---------------------*/
         _init: function(){
-            if(!this._initialized){
-                if (typeof _gaq === "undefined" || _gaq === null) {
-                    _gaq = [];
-                }
-
-                (function(d){
-                    var g=d.createElement("script");
-                    var s=d.getElementsByTagName("body")[0];
-                    g.src=("https:"==location.protocol?"//ssl":"//www")+".google-analytics.com/ga.js";
-                    s.appendChild(g);
-                }(document));
-
-                this._initialized = true;
+            if(this._initialized) return;
+            if (typeof _gaq === "undefined" || _gaq === null) {
+                _gaq = [];
             }
+
+            (function(d){
+                var g=d.createElement("script");
+                var s=d.getElementsByTagName("body")[0];
+                g.src=("https:"==location.protocol?"//ssl":"//www")+".google-analytics.com/ga.js";
+                s.appendChild(g); // append to bottom of <body> to prevent blocking (as opposed to <head>)
+            }(document));
+
+            this._initialized = true;
         },
 
-        _setAdditionalTrackingId: function(args){
-            if (typeof this._additional_tracking_id === "string" && this._additional_tracking_id !== "") {
-                var trackPageview = ['a._trackPageview'];
-                if (typeof args.url === "string" && args.url !== "") {
-                    trackPageview.push(args.url);
+        _setAdditionalTrackingIds: function(args){
+            var trackPageview = ['a._trackPageview'];
+            if (typeof args !== 'undefined' && typeof args.url === "string" && args.url !== "") {
+                trackPageview.push(args.url);
+            }
+            for (var i=0 ; i < this._additional_tracking_ids.length ; i++) {
+                if (typeof this._additional_tracking_ids[i] !== 'undefined' && this._additional_tracking_ids[i] !== '') {
+                    _gaq.push(['a._setAccount', this._additional_tracking_ids[i]], trackPageview);
                 }
-                _gaq.push(['a._setAccount',this._additional_tracking_id],trackPageview);
             }
         }
 	};
