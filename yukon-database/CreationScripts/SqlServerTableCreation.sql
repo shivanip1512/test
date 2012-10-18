@@ -1,7 +1,7 @@
 /*==============================================================*/
 /* Database name:  YukonDatabase                                */
 /* DBMS name:      Microsoft SQL Server 2005                    */
-/* Created on:     10/17/2012 1:54:56 PM                        */
+/* Created on:     10/18/2012 2:04:44 PM                        */
 /*==============================================================*/
 
 /*==============================================================*/
@@ -8928,16 +8928,18 @@ insert into YukonListEntry values (1711,1022,0,'Frame',0);
 insert into YukonListEntry values (1712,1022,0,'Brick',0);
 insert into YukonListEntry values (1720,1023,0,' ',0);
 insert into YukonListEntry values (1721,1023,0,'pre-1900',0);
-insert into YukonListEntry values (1722,1023,0,'1910',0);
-insert into YukonListEntry values (1723,1023,0,'1920',0);
-insert into YukonListEntry values (1724,1023,0,'1930',0);
-insert into YukonListEntry values (1725,1023,0,'1940',0);
-insert into YukonListEntry values (1726,1023,0,'1950',0);
-insert into YukonListEntry values (1727,1023,0,'1960',0);
-insert into YukonListEntry values (1728,1023,0,'1970',0);
-insert into YukonListEntry values (1729,1023,0,'1980',0);
-insert into YukonListEntry values (1730,1023,0,'1990',0);
-insert into YukonListEntry values (1731,1023,0,'2000',0);
+insert into YukonListEntry values (1722,1023,0,'1900',0);
+insert into YukonListEntry values (1723,1023,0,'1910',0);
+insert into YukonListEntry values (1724,1023,0,'1920',0);
+insert into YukonListEntry values (1725,1023,0,'1930',0);
+insert into YukonListEntry values (1726,1023,0,'1940',0);
+insert into YukonListEntry values (1727,1023,0,'1950',0);
+insert into YukonListEntry values (1728,1023,0,'1960',0);
+insert into YukonListEntry values (1729,1023,0,'1970',0);
+insert into YukonListEntry values (1730,1023,0,'1980',0);
+insert into YukonListEntry values (1731,1023,0,'1990',0);
+insert into YukonListEntry values (1732,1023,0,'2000',0);
+insert into YukonListEntry values (1733,1023,0,'2010',0);
 insert into YukonListEntry values (1740,1024,0,' ',0);
 insert into YukonListEntry values (1741,1024,0,'Less Than 1000',0);
 insert into YukonListEntry values (1742,1024,0,'1000-1499',0);
