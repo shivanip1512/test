@@ -50,7 +50,7 @@
     <entry key="yukon.web.modules.adminSetup.userGroupEditor.confirmDelete.title">Delete User Group {0}</entry>
     <entry key="yukon.web.modules.adminSetup.userGroupEditor.confirmDelete.message">Are you sure you want to delete the user group {0}?</entry>
     <entry key="yukon.web.modules.adminSetup.userGroupEditor.noRoles">No role groups are attached to this user group.</entry>
-    <entry key="yukon.web.modules.adminSetup.userGroupEditor.usersCurrentlyAttached">User groups cannot be deleted with user's attached.  Please remove the users from this user group and try again.</entry>
+    <entry key="yukon.web.modules.adminSetup.userGroupEditor.usersCurrentlyAttached">User groups cannot be deleted with users attached.  Please remove the users from this user group and try again.</entry>
     <entry key="yukon.web.modules.adminSetup.userGroupEditor.VIEW.pageName">User Group Info</entry>
     <entry key="yukon.web.modules.adminSetup.userGroupEditor.VIEW.pageDescription">{0}</entry>
     <entry key="yukon.web.modules.adminSetup.userGroupEditor.EDIT.pageName">Edit</entry>
