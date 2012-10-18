@@ -1,10 +1,10 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <updateThermostatScheduleRequest xmlns="http://yukon.cannontech.com/api"
            xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-           xsi:schemaLocation="http://yukon.cannontech.com/api ../updateThermostatScheduleRequest.xsd"
+           xsi:schemaLocation="http://yukon.cannontech.com/api ../UpdateThermostatScheduleRequest.xsd"
            version="1.0">
     
-    <schedule accountNumber="987654" thermostatType="UTILITY_PRO_G2" thermostatScheduleMode="ALL">
+    <schedule accountNumber="987654" thermostatType="UTILITY_PRO_G2" thermostatScheduleMode="WEEKDAY_WEEKEND">
         <scheduleName>test schedule</scheduleName>
         <schedulePeriod timeOfWeek="WEEKDAY">
             <thermostatSchedulePeriod>

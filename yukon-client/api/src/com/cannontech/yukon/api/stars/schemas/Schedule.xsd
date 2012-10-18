@@ -9,16 +9,16 @@
     
     <xsd:annotation>
         <xsd:documentation xml:lang="en">
-            This is a thermostat schedule object is used for updating thermostat schedules request as well as the thermostat schedule response.
+            This is an XML represent of a Yukon thermostat schedule object that is used for updating thermostat schedules as well as retrieving them.
         </xsd:documentation>
     </xsd:annotation>
 
     <xsd:complexType name="ThermostatSchedulePeriod">
-        <xsd:all>
-            <xsd:element name="startTime" type="xsd:string"/>
+        <xsd:sequence>
+            <xsd:element name="startTime" type="yukon:LocalTime"/>
             <xsd:element name="coolTemp" type="yukon:Temperature"/>
             <xsd:element name="heatTemp" type="yukon:Temperature"/>
-        </xsd:all>
+        </xsd:sequence>
     </xsd:complexType>
     
     <xsd:complexType name="SchedulePeriod">

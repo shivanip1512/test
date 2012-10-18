@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <deleteThermostatScheduleRequest xmlns="http://yukon.cannontech.com/api"
            xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-           xsi:schemaLocation="http://yukon.cannontech.com/api ../deleteThermostatScheduleRequest.xsd"
+           xsi:schemaLocation="http://yukon.cannontech.com/api ../DeleteThermostatScheduleRequest.xsd"
            version="1.0">
     <thermostatScheduleId>54321</thermostatScheduleId>
 </deleteThermostatScheduleRequest>
