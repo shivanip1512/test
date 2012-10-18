@@ -18,7 +18,6 @@ public class CymeIvvcMessageListener{
 
     @Autowired private CymeSimulatorService cymeSimulatorService;
     
-    //@Override
     public void handleOperationMessage(Message message) {
         log.trace("Received Operation Message");
          CapControlOperationMessage operationMessage = null;
@@ -33,7 +32,6 @@ public class CymeIvvcMessageListener{
         } else {
             return;
         }
-        
         
         CapControlOperation operation = operationMessage.getOperation();
         
