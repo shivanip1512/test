@@ -120,7 +120,7 @@ public class AlarmMessageHandler extends NotifHandler implements MessageHandler<
                 notif.addData("alarmdatetime", Iso8601DateUtil.formatIso8601Date(msg.alarmTimestamp, timeZone));
                 
                 String uofm = "";
-                if (point.getPointType() == PointTypes.STATUS_POINT) {
+                if (point.getPointTypeEnum().isStatus()) {
                     // handle as status
                     LiteState liteState = DaoFactory.getStateDao().findLiteState(point.getStateGroupID(), (int)msg.value);
                     notif.addData("value", liteState.getStateText());
