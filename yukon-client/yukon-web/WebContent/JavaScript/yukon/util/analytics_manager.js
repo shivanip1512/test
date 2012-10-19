@@ -39,7 +39,7 @@ if(typeof(Yukon.Util.AnalyticsManager) === 'undefined'){
                 _gaq=[["_setAccount", this._cooper_tracking_id], ["_trackPageview"]];
             }
             if (typeof args.additional_tracking_ids === "string" && args.additional_tracking_ids !== "") {
-                this._additional_tracking_ids = args.additional_tracking_ids.replace(/ /g,'').split(","); //remove all whitespace then split it into our array
+                this._additional_tracking_ids = args.additional_tracking_ids.replace(/\s/g,'').split(","); //remove all whitespace then split it into our array
                 this._setAdditionalTrackingIds();
             }
 
