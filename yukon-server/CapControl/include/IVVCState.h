@@ -137,3 +137,12 @@ class IVVCState
 };
 
 typedef boost::shared_ptr<IVVCState> IVVCStatePtr;
+
+// use this guy for memoization during bus analysis
+struct WattVArValues
+{
+    long    paoId;
+    double  wattValue;
+    double  varValue;
+};
+

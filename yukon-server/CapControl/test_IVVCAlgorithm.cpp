@@ -255,30 +255,6 @@ BOOST_AUTO_TEST_CASE(test_cap_control_ivvc_algorithm_voltage_flatness_calculatio
 }
 
 
-BOOST_AUTO_TEST_CASE(test_cap_control_ivvc_algorithm_bus_weight_calculation)
-{
-    struct test_IVVCAlgorithm : public IVVCAlgorithm
-    {
-        test_IVVCAlgorithm() : IVVCAlgorithm( PointDataRequestFactoryPtr( new PointDataRequestFactory ) ) {  }
-
-        double test_calculateBusWeight(const double Kv, const double Vf, const double Kp, const double powerFactor)
-        {
-            return calculateBusWeight(Kv, Vf, Kp, powerFactor, 1.0, 0.0);    // Targeting unity power factor and no voltage violation cost.
-        }
-    };
-
-    test_IVVCAlgorithm  _algorithm;
-
-    // check to 6 significant digits (rounded)
-
-    BOOST_CHECK_CLOSE( 0.500000 , _algorithm.test_calculateBusWeight( 0.500000, 1.000000, 0.500000, 1.000000 ) , 0.0001 );
-
-    BOOST_CHECK_CLOSE( 2.000000 , _algorithm.test_calculateBusWeight( 0.500000, 1.000000, 0.500000, 0.970000 ) , 0.0001 );
-
-    BOOST_CHECK_CLOSE( 2.625000 , _algorithm.test_calculateBusWeight( 0.250000, 2.500000, 0.500000, 0.960000 ) , 0.0001 );
-}
-
-
 BOOST_AUTO_TEST_CASE(test_cap_control_ivvc_algorithm_target_power_factor_var_calculation)
 {
     struct test_IVVCAlgorithm : public IVVCAlgorithm
@@ -689,6 +665,146 @@ BOOST_AUTO_TEST_CASE(test_cap_control_ivvc_algorithm_voltage_violation_component
     _voltages[1009] = _value;
 
     BOOST_CHECK_CLOSE( 550.0, algorithm.calculateVoltageViolation( _voltages, &strategy, true ), 1e-6 );
+}
+
+
+BOOST_AUTO_TEST_CASE(test_cap_control_ivvc_algorithm_power_factor_correction_component_calculation_defaults_and_assignments)
+{
+    struct test_IVVCAlgorithm : public IVVCAlgorithm
+    {
+        test_IVVCAlgorithm() : IVVCAlgorithm( PointDataRequestFactoryPtr( new PointDataRequestFactory ) ) {  }
+
+        using IVVCAlgorithm::feederPFCorrectionCalculator;
+    };
+
+    test_IVVCAlgorithm  algorithm;
+    IVVCStrategy        strategy( PointDataRequestFactoryPtr( new PointDataRequestFactory ) );
+
+    // defaults
+
+    BOOST_CHECK_CLOSE( 0.02, strategy.getPowerFactorCorrectionBandwidth(), 1e-6 );
+    BOOST_CHECK_CLOSE( 20.0, strategy.getPowerFactorCorrectionCost(),      1e-6 );
+    BOOST_CHECK_CLOSE( 2.0,  strategy.getPowerFactorCorrectionMaxCost(),   1e-6 );
+
+    // assignments
+
+    strategy.restoreParameters("Power Factor Correction", "BANDWIDTH", "0.03");
+    strategy.restoreParameters("Power Factor Correction", "COST",      "45.0");
+    strategy.restoreParameters("Power Factor Correction", "MAX_COST",  "6.25");
+
+    BOOST_CHECK_CLOSE( 0.03, strategy.getPowerFactorCorrectionBandwidth(), 1e-6 );
+    BOOST_CHECK_CLOSE( 45.0, strategy.getPowerFactorCorrectionCost(),      1e-6 );
+    BOOST_CHECK_CLOSE( 6.25, strategy.getPowerFactorCorrectionMaxCost(),   1e-6 );
+}
+
+
+BOOST_AUTO_TEST_CASE(test_cap_control_ivvc_algorithm_power_factor_correction_component_calculation)
+{
+    struct test_IVVCAlgorithm : public IVVCAlgorithm
+    {
+        test_IVVCAlgorithm() : IVVCAlgorithm( PointDataRequestFactoryPtr( new PointDataRequestFactory ) ) {  }
+
+        using IVVCAlgorithm::feederPFCorrectionCalculator;
+    };
+
+    test_IVVCAlgorithm  algorithm;
+    IVVCStrategy        strategy( PointDataRequestFactoryPtr( new PointDataRequestFactory ) );
+
+    strategy.restoreParameters("Target PF", "PEAK", "80.0");
+
+    // check against defaults for the power factor correction
+
+    for ( double pf = 0.0; pf <= 0.680; pf += 0.020 )
+    {
+        BOOST_CHECK_CLOSE( 2.0, algorithm.feederPFCorrectionCalculator( pf, &strategy, true ), 1e-6 );
+    }
+
+    BOOST_CHECK_CLOSE( 1.80, algorithm.feederPFCorrectionCalculator( 0.690, &strategy, true ), 1e-6 );
+    BOOST_CHECK_CLOSE( 1.60, algorithm.feederPFCorrectionCalculator( 0.700, &strategy, true ), 1e-6 );
+    BOOST_CHECK_CLOSE( 1.40, algorithm.feederPFCorrectionCalculator( 0.710, &strategy, true ), 1e-6 );
+    BOOST_CHECK_CLOSE( 1.20, algorithm.feederPFCorrectionCalculator( 0.720, &strategy, true ), 1e-6 );
+    BOOST_CHECK_CLOSE( 1.00, algorithm.feederPFCorrectionCalculator( 0.730, &strategy, true ), 1e-6 );
+    BOOST_CHECK_CLOSE( 0.80, algorithm.feederPFCorrectionCalculator( 0.740, &strategy, true ), 1e-6 );
+    BOOST_CHECK_CLOSE( 0.60, algorithm.feederPFCorrectionCalculator( 0.750, &strategy, true ), 1e-6 );
+    BOOST_CHECK_CLOSE( 0.40, algorithm.feederPFCorrectionCalculator( 0.760, &strategy, true ), 1e-6 );
+    BOOST_CHECK_CLOSE( 0.20, algorithm.feederPFCorrectionCalculator( 0.770, &strategy, true ), 1e-6 );
+    BOOST_CHECK_CLOSE( 0.02, algorithm.feederPFCorrectionCalculator( 0.779, &strategy, true ), 1e-6 );
+
+    for ( double pf = 0.780; pf <= 0.820; pf += 0.002 )
+    {
+        BOOST_CHECK_CLOSE( 0.0, algorithm.feederPFCorrectionCalculator( pf, &strategy, true ), 1e-6 );
+    }
+
+    BOOST_CHECK_CLOSE( 0.02, algorithm.feederPFCorrectionCalculator( 0.821, &strategy, true ), 1e-6 );
+    BOOST_CHECK_CLOSE( 0.20, algorithm.feederPFCorrectionCalculator( 0.830, &strategy, true ), 1e-6 );
+    BOOST_CHECK_CLOSE( 0.40, algorithm.feederPFCorrectionCalculator( 0.840, &strategy, true ), 1e-6 );
+    BOOST_CHECK_CLOSE( 0.60, algorithm.feederPFCorrectionCalculator( 0.850, &strategy, true ), 1e-6 );
+    BOOST_CHECK_CLOSE( 0.80, algorithm.feederPFCorrectionCalculator( 0.860, &strategy, true ), 1e-6 );
+    BOOST_CHECK_CLOSE( 1.00, algorithm.feederPFCorrectionCalculator( 0.870, &strategy, true ), 1e-6 );
+    BOOST_CHECK_CLOSE( 1.20, algorithm.feederPFCorrectionCalculator( 0.880, &strategy, true ), 1e-6 );
+    BOOST_CHECK_CLOSE( 1.40, algorithm.feederPFCorrectionCalculator( 0.890, &strategy, true ), 1e-6 );
+    BOOST_CHECK_CLOSE( 1.60, algorithm.feederPFCorrectionCalculator( 0.900, &strategy, true ), 1e-6 );
+    BOOST_CHECK_CLOSE( 1.80, algorithm.feederPFCorrectionCalculator( 0.910, &strategy, true ), 1e-6 );
+
+    for ( double pf = 0.920; pf <= 2.000; pf += 0.020 )
+    {
+        BOOST_CHECK_CLOSE( 2.0, algorithm.feederPFCorrectionCalculator( pf, &strategy, true ), 1e-6 );
+    }
+}
+
+
+BOOST_AUTO_TEST_CASE(test_cap_control_ivvc_algorithm_power_factor_correction_component_calculation_2)
+{
+    struct test_IVVCAlgorithm : public IVVCAlgorithm
+    {
+        test_IVVCAlgorithm() : IVVCAlgorithm( PointDataRequestFactoryPtr( new PointDataRequestFactory ) ) {  }
+
+        using IVVCAlgorithm::feederPFCorrectionCalculator;
+    };
+
+    test_IVVCAlgorithm  algorithm;
+    IVVCStrategy        strategy( PointDataRequestFactoryPtr( new PointDataRequestFactory ) );
+
+    strategy.restoreParameters("Target PF", "PEAK", "-80.0");
+
+    // check against defaults for the power factor correction
+
+    for ( double pf = 0.0; pf <= 1.080; pf += 0.020 )
+    {
+        BOOST_CHECK_CLOSE( 2.0, algorithm.feederPFCorrectionCalculator( pf, &strategy, true ), 1e-6 );
+    }
+
+    BOOST_CHECK_CLOSE( 1.80, algorithm.feederPFCorrectionCalculator( 1.090, &strategy, true ), 1e-6 );
+    BOOST_CHECK_CLOSE( 1.60, algorithm.feederPFCorrectionCalculator( 1.100, &strategy, true ), 1e-6 );
+    BOOST_CHECK_CLOSE( 1.40, algorithm.feederPFCorrectionCalculator( 1.110, &strategy, true ), 1e-6 );
+    BOOST_CHECK_CLOSE( 1.20, algorithm.feederPFCorrectionCalculator( 1.120, &strategy, true ), 1e-6 );
+    BOOST_CHECK_CLOSE( 1.00, algorithm.feederPFCorrectionCalculator( 1.130, &strategy, true ), 1e-6 );
+    BOOST_CHECK_CLOSE( 0.80, algorithm.feederPFCorrectionCalculator( 1.140, &strategy, true ), 1e-6 );
+    BOOST_CHECK_CLOSE( 0.60, algorithm.feederPFCorrectionCalculator( 1.150, &strategy, true ), 1e-6 );
+    BOOST_CHECK_CLOSE( 0.40, algorithm.feederPFCorrectionCalculator( 1.160, &strategy, true ), 1e-6 );
+    BOOST_CHECK_CLOSE( 0.20, algorithm.feederPFCorrectionCalculator( 1.170, &strategy, true ), 1e-6 );
+    BOOST_CHECK_CLOSE( 0.02, algorithm.feederPFCorrectionCalculator( 1.179, &strategy, true ), 1e-6 );
+
+    for ( double pf = 1.180; pf <= 1.220; pf += 0.002 )
+    {
+        BOOST_CHECK_CLOSE( 0.0, algorithm.feederPFCorrectionCalculator( pf, &strategy, true ), 1e-6 );
+    }
+
+    BOOST_CHECK_CLOSE( 0.02, algorithm.feederPFCorrectionCalculator( 1.221, &strategy, true ), 1e-6 );
+    BOOST_CHECK_CLOSE( 0.20, algorithm.feederPFCorrectionCalculator( 1.230, &strategy, true ), 1e-6 );
+    BOOST_CHECK_CLOSE( 0.40, algorithm.feederPFCorrectionCalculator( 1.240, &strategy, true ), 1e-6 );
+    BOOST_CHECK_CLOSE( 0.60, algorithm.feederPFCorrectionCalculator( 1.250, &strategy, true ), 1e-6 );
+    BOOST_CHECK_CLOSE( 0.80, algorithm.feederPFCorrectionCalculator( 1.260, &strategy, true ), 1e-6 );
+    BOOST_CHECK_CLOSE( 1.00, algorithm.feederPFCorrectionCalculator( 1.270, &strategy, true ), 1e-6 );
+    BOOST_CHECK_CLOSE( 1.20, algorithm.feederPFCorrectionCalculator( 1.280, &strategy, true ), 1e-6 );
+    BOOST_CHECK_CLOSE( 1.40, algorithm.feederPFCorrectionCalculator( 1.290, &strategy, true ), 1e-6 );
+    BOOST_CHECK_CLOSE( 1.60, algorithm.feederPFCorrectionCalculator( 1.300, &strategy, true ), 1e-6 );
+    BOOST_CHECK_CLOSE( 1.80, algorithm.feederPFCorrectionCalculator( 1.310, &strategy, true ), 1e-6 );
+
+    for ( double pf = 1.320; pf <= 2.000; pf += 0.020 )
+    {
+        BOOST_CHECK_CLOSE( 2.0, algorithm.feederPFCorrectionCalculator( pf, &strategy, true ), 1e-6 );
+    }
 }
 
 

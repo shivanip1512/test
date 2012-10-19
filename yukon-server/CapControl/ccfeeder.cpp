@@ -436,6 +436,27 @@ long CtiCCFeeder::getPhaseCId() const
     return _phaseCid;
 }
 
+/**
+ * Returns var point id if totalized or the point ids to phase
+ * A, B, and C if not.
+ *
+ * @return std::vector<long>
+ */
+Cti::CapControl::PointIdVector CtiCCFeeder::getCurrentVarLoadPoints() const
+{
+    Cti::CapControl::PointIdVector points;
+
+    points.push_back( getCurrentVarLoadPointId() );
+
+    if ( getUsePhaseData() )
+    {
+        points.push_back( getPhaseBId() );
+        points.push_back( getPhaseCId() );
+    }
+
+    return points;
+}
+
 /*---------------------------------------------------------------------------
     getTotalizedControlFlag
 

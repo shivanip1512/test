@@ -861,6 +861,58 @@ bool IVVCAlgorithm::hasValidData( const PointDataRequestPtr& request, CtiTime ti
         }
     }
 
+    // check the feeder watt and var points exist and are in the request
+
+    for each ( CtiCCFeederPtr feeder in subbus->getCCFeeders() )
+    {
+        // watt point
+        long wattPoint = feeder->getCurrentWattLoadPointId();
+
+        if (wattPoint > 0)
+        {
+            if ( valueMap.count( wattPoint ) == 0 )
+            {
+                // the watt point attached to the feeder is missing from the point data request
+                missingBusPowerPoint = true;
+
+                CtiLockGuard<CtiLogger> logger_guard(dout);
+                dout << CtiTime() << " - IVVC Analysis Error: Missing Watt Point Data Request for Feeder: "
+                     << feeder->getPaoName() << std::endl;
+            }
+        }
+        else
+        {
+            missingBusPowerPoint = true;
+
+            CtiLockGuard<CtiLogger> logger_guard(dout);
+            dout << CtiTime() << " - IVVC Configuration Error: Missing Watt Point on Feeder: " << feeder->getPaoName() << std::endl;
+        }
+
+        // var point(s)
+        for each ( long varPoint in feeder->getCurrentVarLoadPoints() )
+        {
+            if (varPoint > 0)
+            {
+                if ( valueMap.count( varPoint ) == 0 )
+                {
+                    // the var point attached to the feeder is missing from the point data request
+                    missingBusPowerPoint = true;
+
+                    CtiLockGuard<CtiLogger> logger_guard(dout);
+                    dout << CtiTime() << " - IVVC Analysis Error: Missing Var Point Data Request for Feeder: "
+                         << feeder->getPaoName() << std::endl;
+                }
+            }
+            else
+            {
+                missingBusPowerPoint = true;
+
+                CtiLockGuard<CtiLogger> logger_guard(dout);
+                dout << CtiTime() << " - IVVC Configuration Error: Missing Var Point on Feeder: " << feeder->getPaoName() << std::endl;
+            }
+        }
+    }
+
     // if all points are attached to the bus and present in the request --> validate them for their statuses
 
     if ( ! missingBusPowerPoint )
@@ -1077,6 +1129,48 @@ bool IVVCAlgorithm::determineWatchPoints(CtiCCSubstationBusPtr subbus, DispatchC
             {
                 CtiLockGuard<CtiLogger> logger_guard(dout);
                 dout << CtiTime() << " - IVVC Configuration Error: Missing Var Point on Bus: " << subbus->getPaoName() << std::endl;
+            }
+        }
+    }
+
+    // We need the watt and var points for each feeder on the bus
+
+    for each ( CtiCCFeederPtr feeder in subbus->getCCFeeders() )
+    {
+        // watt point
+        long wattPoint = feeder->getCurrentWattLoadPointId();
+
+        if (wattPoint > 0)
+        {
+            pointRequests.insert( PointRequest(wattPoint, BusPowerRequestType) );
+        }
+        else
+        {
+            configurationError = true;
+
+            if (!subbus->getDisableFlag())
+            {
+                CtiLockGuard<CtiLogger> logger_guard(dout);
+                dout << CtiTime() << " - IVVC Configuration Error: Missing Watt Point on Feeder: " << feeder->getPaoName() << std::endl;
+            }
+        }
+
+        // var point(s)
+        for each ( long varPoint in feeder->getCurrentVarLoadPoints() )
+        {
+            if (varPoint > 0)
+            {
+                pointRequests.insert( PointRequest(varPoint, BusPowerRequestType) );
+            }
+            else
+            {
+                configurationError = true;
+
+                if (!subbus->getDisableFlag())
+                {
+                    CtiLockGuard<CtiLogger> logger_guard(dout);
+                    dout << CtiTime() << " - IVVC Configuration Error: Missing Var Point on Feeder: " << feeder->getPaoName() << std::endl;
+                }
             }
         }
     }
@@ -1484,22 +1578,27 @@ bool IVVCAlgorithm::busAnalysisState(IVVCStatePtr state, CtiCCSubstationBusPtr s
         return true;
     }
 
-    std::set<long> pointIdsToSkip;
     bool isPeakTime = subbus->getPeakTimeFlag();    // Is it peak time according to the bus.
 
     PointValueMap pointValues = state->getGroupRequest()->getPointValues();
 
     //calculate current power factor of the bus
 
+    WattVArValues               wattVarData;
+    std::vector<WattVArValues>  powerFactorData;    // index 0 is the bus - 1 to N are N feeders
+
+    wattVarData.paoId     = subbus->getPaoId();
+    wattVarData.wattValue = 0.0;
+    wattVarData.varValue  = 0.0;
+
     // Can't get here if these IDs don't exist
     long    wattPointID = subbus->getCurrentWattLoadPointId();
-    double  wattValue = 0.0;
 
     PointValueMap::iterator iter = pointValues.find(wattPointID);
 
     if ( iter != pointValues.end() )
     {
-        wattValue = iter->second.value;
+        wattVarData.wattValue = iter->second.value;
         pointValues.erase(wattPointID);
     }
     else    // this should never happen but if it does -- reset the state machine and bail out.
@@ -1517,16 +1616,13 @@ bool IVVCAlgorithm::busAnalysisState(IVVCStatePtr state, CtiCCSubstationBusPtr s
         return true;
     }
 
-    PointIdVector pointIds = subbus->getCurrentVarLoadPoints();
-    double      varValue = 0.0;
-
-    for each (long pointId in pointIds)
+    for each (long pointId in subbus->getCurrentVarLoadPoints() )
     {
         iter = pointValues.find(pointId);
 
         if ( iter != pointValues.end() )
         {
-            varValue += iter->second.value;
+            wattVarData.varValue += iter->second.value;
             pointValues.erase(pointId);
         }
         else    // this should never happen but if it does -- reset the state machine and bail out.
@@ -1545,43 +1641,139 @@ bool IVVCAlgorithm::busAnalysisState(IVVCStatePtr state, CtiCCSubstationBusPtr s
         }
     }
 
+    powerFactorData.push_back( wattVarData );   // index 0  ---  subbus watt and var data
+
+    for each ( CtiCCFeederPtr feeder in subbus->getCCFeeders() )
+    {
+        wattVarData.paoId     = feeder->getPaoId();
+        wattVarData.wattValue = 0.0;
+        wattVarData.varValue  = 0.0;
+
+        // watt point
+        long wattPoint = feeder->getCurrentWattLoadPointId();
+
+        PointValueMap::iterator iter = pointValues.find(wattPoint);
+
+        if ( iter != pointValues.end() )
+        {
+            wattVarData.wattValue = iter->second.value;
+            pointValues.erase(wattPoint);
+        }
+        else    // this should never happen but if it does -- reset the state machine and bail out.
+        {
+            {
+                CtiLockGuard<CtiLogger> logger_guard(dout);
+
+                dout << CtiTime() << " - IVVC: " << feeder->getPaoName()
+                     << " - Missing Watt point response.  Aborting analysis." << std::endl;
+            }
+
+            state->setState(IVVCState::IVVC_WAIT);
+            state->setCommsRetryCount(0);
+
+            return true;
+        }
+
+        // var point(s)
+        for each ( long varPoint in feeder->getCurrentVarLoadPoints() )
+        {
+            iter = pointValues.find(varPoint);
+
+            if ( iter != pointValues.end() )
+            {
+                wattVarData.varValue += iter->second.value;
+                pointValues.erase(varPoint);
+            }
+            else    // this should never happen but if it does -- reset the state machine and bail out.
+            {
+                {
+                    CtiLockGuard<CtiLogger> logger_guard(dout);
+
+                    dout << CtiTime() << " - IVVC: " << feeder->getPaoName()
+                         << " - Missing Var point response.  Aborting analysis." << std::endl;
+                }
+
+                state->setState(IVVCState::IVVC_WAIT);
+                state->setCommsRetryCount(0);
+
+                return true;
+            }
+        }
+
+        powerFactorData.push_back( wattVarData );   // index 1 - N  ---  feeder watt and var data
+    }
+
     // At this point we have removed the var and watt points. Only volt points remain.
 
-    double PFBus = subbus->calculatePowerFactor(varValue, wattValue);
-
-    //calculate current flatness of the bus
-    double Vf = calculateVf(pointValues);
-
-    //calculate current voltage violation cost
-    double violationCost = calculateVoltageViolation( pointValues, strategy, isPeakTime );
-
-    //calculate current weight of the bus
-    double currentBusWeight = calculateBusWeight(strategy->getVoltWeight(isPeakTime), Vf,
-                                                 strategy->getPFWeight(isPeakTime), PFBus,
-                                                 (strategy->getTargetPF(isPeakTime) / 100.0),
-                                                 violationCost );
-
-    double targetPowerFactorVars = calculateTargetPFVars(strategy->getTargetPF(isPeakTime), wattValue);
-
-    // Log our current measurement set and calculations
+    // report voltages
     if (_CC_DEBUG & CC_DEBUG_IVVC)
     {
         CtiLockGuard<CtiLogger> logger_guard(dout);
 
-        dout << CtiTime() << " - IVVC Algorithm: "<<subbus->getPaoName() <<"  Current measurement set." << std::endl;
+        dout << CtiTime() << " - IVVC Algorithm: " << subbus->getPaoName() << " - Current measurement set." << std::endl;
 
         dout << "Voltages [ Point ID : Value ]" << std::endl;
         for ( PointValueMap::const_iterator b = pointValues.begin(), e = pointValues.end(); b != e; ++b )
         {
             dout << b->first << " : " << b->second.value << std::endl;
         }
-        dout << "Subbus Watts        : " << wattValue << std::endl;
-        dout << "Subbus VARs         : " << varValue << std::endl;
-        dout << "Subbus Flatness     : " << Vf << std::endl;
-        dout << "Subbus Power Factor : " << PFBus << std::endl;
-        dout << "Subbus ViolationCost: " << violationCost << std::endl;
-        dout << "Subbus Weight       : " << currentBusWeight << std::endl;
+    }
+
+    // report bus stuff
+
+    double targetPowerFactorVars = calculateTargetPFVars( strategy->getTargetPF(isPeakTime), powerFactorData[0].wattValue );
+    double Vf = calculateVf( pointValues );
+    double violationCost = calculateVoltageViolation( pointValues, strategy, isPeakTime );
+    double PFBus = subbus->calculatePowerFactor( powerFactorData[0].varValue, powerFactorData[0].wattValue );
+
+    if (_CC_DEBUG & CC_DEBUG_IVVC)
+    {
+        CtiLockGuard<CtiLogger> logger_guard(dout);
+
         dout << "Target PF VARs      : " << targetPowerFactorVars << std::endl;
+        dout << "Subbus Flatness     : " << Vf << std::endl;
+        dout << "Subbus ViolationCost: " << violationCost << std::endl;
+        dout << "Subbus Watts        : " << powerFactorData[0].wattValue << std::endl;
+        dout << "Subbus VARs         : " << powerFactorData[0].varValue << std::endl;
+        dout << "Subbus Power Factor : " << PFBus << std::endl;
+    }
+
+    //  bus weight == ( voltage weight * flatness ) + voltage violation cost + .......
+
+    double currentBusWeight = ( strategy->getVoltWeight(isPeakTime) * Vf ) + violationCost;
+
+    // add in bus power factor component
+
+    currentBusWeight += strategy->getPFWeight( isPeakTime ) * calculatePowerFactorCost( PFBus, strategy, isPeakTime );
+
+    // report feeder stuff
+
+    for ( int i = 1 ; i < powerFactorData.size() ; i++ )
+    {
+        double PFFeeder = subbus->calculatePowerFactor( powerFactorData[i].varValue, powerFactorData[i].wattValue );
+
+        // add in each feeder power factor component
+
+        currentBusWeight += feederPFCorrectionCalculator( PFFeeder, strategy, isPeakTime )
+                                * calculatePowerFactorCost( PFFeeder, strategy, isPeakTime );
+
+        if (_CC_DEBUG & CC_DEBUG_IVVC)
+        {
+            CtiLockGuard<CtiLogger> logger_guard(dout);
+
+            dout << "Feeder Watts        : " << powerFactorData[i].wattValue << std::endl;
+            dout << "Feeder VARs         : " << powerFactorData[i].varValue << std::endl;
+            dout << "Feeder Power Factor : " << PFFeeder << std::endl;
+        }
+    }
+
+    // Log our current bus weight
+
+    if (_CC_DEBUG & CC_DEBUG_IVVC)
+    {
+        CtiLockGuard<CtiLogger> logger_guard(dout);
+
+        dout << "Subbus Weight       : " << currentBusWeight << std::endl;
     }
 
     //calculate estimated bus weights etc from historical data
@@ -1657,18 +1849,26 @@ bool IVVCAlgorithm::busAnalysisState(IVVCStatePtr state, CtiCCSubstationBusPtr s
                     }
                 }
 
-                //calculate estimated flatness of the bus if current bank switches state
-                state->_estimated[currentBank->getPaoId()].flatness = calculateVf(deltas);
+                // report estimated bus stuff
 
-                //calculate estimated voltage violation cost
+                // calculate estimated flatness and violation costs
+                state->_estimated[currentBank->getPaoId()].flatness = calculateVf(deltas);
                 state->_estimated[currentBank->getPaoId()].voltViolation = calculateVoltageViolation( deltas, strategy, isPeakTime );
+
+                if (_CC_DEBUG & CC_DEBUG_IVVC)
+                {
+                    CtiLockGuard<CtiLogger> logger_guard(dout);
+
+                    dout << "Estimated Subbus Flatness     : " << state->_estimated[currentBank->getPaoId()].flatness << std::endl;
+                    dout << "Estimated Subbus ViolationCost: " << state->_estimated[currentBank->getPaoId()].voltViolation << std::endl;
+                }
 
                 //calculate the VAR target window
                 double varLowLimit   = targetPowerFactorVars - (currentBank->getBankSize() * (strategy->getMinBankOpen(isPeakTime) / 100.0));
                 double varUpperLimit = targetPowerFactorVars + (currentBank->getBankSize() * (strategy->getMinBankClose(isPeakTime) / 100.0));
 
                 //calculate estimated power factor of the bus if current bank switches state
-                double estVarValue = varValue;
+                double estVarValue = powerFactorData[0].varValue;
                 double pfmodifier  = 1.0;
 
                 if ( isCapBankOpen )
@@ -1690,25 +1890,65 @@ bool IVVCAlgorithm::busAnalysisState(IVVCStatePtr state, CtiCCSubstationBusPtr s
                    }
                 }
 
-                state->_estimated[currentBank->getPaoId()].powerFactor = subbus->calculatePowerFactor(estVarValue, wattValue);
+                state->_estimated[currentBank->getPaoId()].powerFactor = subbus->calculatePowerFactor(estVarValue, powerFactorData[0].wattValue);
 
-                //calculate estimated weight of the bus if current bank switches state
+                if (_CC_DEBUG & CC_DEBUG_IVVC)
+                {
+                    CtiLockGuard<CtiLogger> logger_guard(dout);
+
+                    dout << "Estimated Subbus VARs         : " << estVarValue << std::endl;
+                    dout << "Estimated Subbus Power Factor : " << state->_estimated[currentBank->getPaoId()].powerFactor << std::endl;
+                }
+
+                //  bus weight == ( voltage weight * flatness ) + voltage violation cost + .......
+
                 state->_estimated[currentBank->getPaoId()].busWeight =
-                    calculateBusWeight(strategy->getVoltWeight(isPeakTime), state->_estimated[currentBank->getPaoId()].flatness,
-                                       (pfmodifier * strategy->getPFWeight(isPeakTime)), state->_estimated[currentBank->getPaoId()].powerFactor,
-                                       (strategy->getTargetPF(isPeakTime) / 100.0),
-                                       state->_estimated[currentBank->getPaoId()].voltViolation);
+                    ( strategy->getVoltWeight(isPeakTime) * state->_estimated[currentBank->getPaoId()].flatness )
+                        + state->_estimated[currentBank->getPaoId()].voltViolation;
+
+                // add in bus power factor component
+
+                state->_estimated[currentBank->getPaoId()].busWeight +=
+                    pfmodifier * strategy->getPFWeight(isPeakTime)
+                        * calculatePowerFactorCost( state->_estimated[currentBank->getPaoId()].powerFactor, strategy, isPeakTime );
+
+                // report feeder stuff
+
+                for ( int i = 1 ; i < powerFactorData.size() ; i++ )
+                {
+                    CtiCCSubstationBusStore * store = CtiCCSubstationBusStore::getInstance();
+
+                    // is the current bank on the _currentVectorOfStuff[i] feeder ?
+
+                    double feederVarValue = powerFactorData[i].varValue;
+
+                    if ( powerFactorData[i].paoId == store->findFeederIDbyCapBankID( currentBank->getPaoId() ) )
+                    {
+                        feederVarValue += isCapBankOpen ? -currentBank->getBankSize() : currentBank->getBankSize();
+                    }
+
+                    double PFFeeder = subbus->calculatePowerFactor( feederVarValue, powerFactorData[i].wattValue );
+
+                    // add in each feeder power factor component
+
+                    state->_estimated[currentBank->getPaoId()].busWeight +=
+                        pfmodifier * feederPFCorrectionCalculator( PFFeeder, strategy, isPeakTime )
+                            * calculatePowerFactorCost( PFFeeder, strategy, isPeakTime );
+
+                    if (_CC_DEBUG & CC_DEBUG_IVVC)
+                    {
+                        CtiLockGuard<CtiLogger> logger_guard(dout);
+
+                        dout << "Estimated Feeder VARs         : " << feederVarValue << std::endl;
+                        dout << "Estimated Feeder Power Factor : " << PFFeeder << std::endl;
+                    }
+                }
 
                 // Log our estimated calculations
                 if (_CC_DEBUG & CC_DEBUG_IVVC)
                 {
                     CtiLockGuard<CtiLogger> logger_guard(dout);
 
-                    dout << "Estimated Subbus Watts        : " << wattValue << std::endl;
-                    dout << "Estimated Subbus VARs         : " << estVarValue << std::endl;
-                    dout << "Estimated Subbus Flatness     : " << state->_estimated[currentBank->getPaoId()].flatness << std::endl;
-                    dout << "Estimated Subbus Power Factor : " << state->_estimated[currentBank->getPaoId()].powerFactor << std::endl;
-                    dout << "Estimated Subbus ViolationCost: " << state->_estimated[currentBank->getPaoId()].voltViolation << std::endl;
                     dout << "Estimated Subbus Weight       : " << state->_estimated[currentBank->getPaoId()].busWeight << std::endl;
                 }
             }
@@ -2165,28 +2405,32 @@ double IVVCAlgorithm::calculateVoltageViolation(const PointValueMap & voltages,
 }
 
 
-double IVVCAlgorithm::calculateBusWeight(const double Kv, const double Vf,
-                                         const double Kp, const double powerFactor, const double targetPowerFactor,
-                                         const double voltageViolationCost)
+double IVVCAlgorithm::feederPFCorrectionCalculator( const double actualFeederPF,
+                                                    const IVVCStrategy * strategy, const bool isPeakTime ) const
 {
-    // convert from [-1.0, 1.0] to [0.0, 2.0]
-    const double biasedTargetPF = (targetPowerFactor < 0.0) ? 2.0 + targetPowerFactor : targetPowerFactor;
+    return std::min( strategy->getPowerFactorCorrectionMaxCost(),
+                     std::max( 0.0, 
+                               strategy->getPowerFactorCorrectionCost()
+                                * ( calculatePowerFactorCost( actualFeederPF, strategy, isPeakTime ) / 100.0
+                                        - strategy->getPowerFactorCorrectionBandwidth() ) ) );
+}
 
-    const double Pf = std::abs(100.0 * ( biasedTargetPF - powerFactor ) );
 
-    const double a = 1.0;
-    const double b = 1.0;
-    const double c = 0.0;
+double IVVCAlgorithm::calculatePowerFactorCost( const double powerFactor,
+                                                const IVVCStrategy * strategy, const bool isPeakTime ) const
+{
+    // get the target power factor from the strategy
+    // convert from strategy representation [-100.0, 100.0] to [0.0, 200.0]
 
-    const double voltageWeight     = (Kv * (b * std::pow( Vf, a ) + c));
+    double biasedTargetPF = strategy->getTargetPF(isPeakTime);
+    if ( biasedTargetPF < 0.0 )
+    {
+        biasedTargetPF += 200.00;
+    }
 
-    const double e = 1.0;
-    const double f = 1.0;
-    const double g = 0.0;
+    // compute the power factor cost
 
-    const double powerFactorWeight = (Kp * (e * std::pow( Pf, f ) + g));
-
-    return (voltageWeight + powerFactorWeight + voltageViolationCost);
+    return std::abs( biasedTargetPF - ( 100.0 * powerFactor ) );
 }
 
 

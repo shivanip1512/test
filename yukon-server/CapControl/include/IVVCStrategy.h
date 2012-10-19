@@ -51,6 +51,11 @@ public:
     const double getHighVoltageViolationCost() const;
     const double getEmergencyHighVoltageViolationCost() const;
 
+    // power factor correction values
+    const double getPowerFactorCorrectionBandwidth() const;
+    const double getPowerFactorCorrectionCost() const;
+    const double getPowerFactorCorrectionMaxCost() const;
+
     const unsigned getMaxConsecutiveCapBankOps(const bool isPeak) const;
 
     virtual void registerControllable(const long paoid);
@@ -99,6 +104,10 @@ private:
     double _lowVoltageViolationCost;
     double _highVoltageViolationCost;
     double _emergencyHighVoltageViolationCost;
+
+    double _powerFactorCorrectionBandwidth;
+    double _powerFactorCorrectionCost;
+    double _powerFactorCorrectionMaxCost;
 
     typedef std::map<long, std::pair<unsigned, IVVCStatePtr> >   PaoToStateMap;     // PaoID -> { reference count, state }
 

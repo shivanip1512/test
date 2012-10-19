@@ -56,11 +56,13 @@ class IVVCAlgorithm
 
         double voltageViolationCalculator(const double voltage, const IVVCStrategy * strategy, const bool isPeakTime);
 
-        double calculateVoltageViolation(const PointValueMap & voltages, const IVVCStrategy * strategy, const bool isPeakTime);
+        double calculateVoltageViolation(const PointValueMap & voltages,
+                                         const IVVCStrategy * strategy, const bool isPeakTime);
 
-        double calculateBusWeight(const double Kv, const double Vf,
-                                  const double Kp, const double powerFactor, const double targetPowerFactor,
-                                  const double voltageViolationCost);
+        double calculatePowerFactorCost( const double powerFactor, const IVVCStrategy * strategy, const bool isPeakTime ) const;
+
+        double feederPFCorrectionCalculator( const double actualFeederPF,
+                                             const IVVCStrategy * strategy, const bool isPeakTime ) const;
 
         void tapOperation(IVVCStatePtr state, CtiCCSubstationBusPtr subbus, IVVCStrategy* strategy, const PointValueMap & pointValues);
         void tapOpZoneNormalization(const long parentID, const Cti::CapControl::ZoneManager &zoneManager, IVVCState::TapOperationZoneMap &tapOp);

@@ -36,7 +36,10 @@ IVVCStrategy::IVVCStrategy(const PointDataRequestFactoryPtr& factory)
     _emergencyLowVoltageViolationCost(-150.0),
     _lowVoltageViolationCost(-10.0),
     _highVoltageViolationCost(70.0),
-    _emergencyHighVoltageViolationCost(300.0)
+    _emergencyHighVoltageViolationCost(300.0),
+    _powerFactorCorrectionBandwidth(0.02),
+    _powerFactorCorrectionCost(20.0),
+    _powerFactorCorrectionMaxCost(2.0)
 {
 }
 
@@ -204,6 +207,21 @@ void IVVCStrategy::restoreParameters( const std::string &name, const std::string
             _emergencyHighVoltageViolationCost = newValue;
         }
     }
+    else if (name == "Power Factor Correction")
+    {
+        if (type == "BANDWIDTH")
+        {
+            _powerFactorCorrectionBandwidth = newValue;
+        }
+        else if (type == "COST")
+        {
+            _powerFactorCorrectionCost = newValue;
+        }
+        else    // type == "MAX_COST"
+        {
+            _powerFactorCorrectionMaxCost = newValue;
+        }
+    }
 }
 
 
@@ -330,6 +348,24 @@ const double IVVCStrategy::getHighVoltageViolationCost() const
 const double IVVCStrategy::getEmergencyHighVoltageViolationCost() const
 {
     return _emergencyHighVoltageViolationCost;
+}
+
+
+const double IVVCStrategy::getPowerFactorCorrectionBandwidth() const
+{
+    return _powerFactorCorrectionBandwidth;
+}
+
+
+const double IVVCStrategy::getPowerFactorCorrectionCost() const
+{
+    return _powerFactorCorrectionCost;
+}
+
+
+const double IVVCStrategy::getPowerFactorCorrectionMaxCost() const
+{
+    return _powerFactorCorrectionMaxCost;
 }
 
 

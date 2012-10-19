@@ -147,6 +147,7 @@ RWDECLARE_COLLECTABLE( CtiCCFeeder )
     bool getUsePhaseData() const;
     long getPhaseBId() const;
     long getPhaseCId() const;
+    Cti::CapControl::PointIdVector getCurrentVarLoadPoints() const;
     bool getTotalizedControlFlag() const;
     double getPhaseAValue() const;
     double getPhaseBValue() const;
