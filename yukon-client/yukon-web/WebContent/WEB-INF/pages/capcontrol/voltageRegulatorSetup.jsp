@@ -30,7 +30,9 @@
                     title="Voltage Change Per Tap for the Voltage Regulator" />
                 <x:inputText id="voltChangePerTap"
                     value="#{capControlForm.regulatorBase.voltChangePerTap}" required="false"
-                    maxlength="10" styleClass="char4Label" />
+                    maxlength="10" styleClass="char4Label">
+                    <f:validateDoubleRange minimum="0" />
+                </x:inputText>
 
                 <x:htmlTag value="br" rendered="#{capControlForm.regulatorBase.displayTimer}" />
                 <x:htmlTag value="br" rendered="#{capControlForm.regulatorBase.displayTimer}" />
@@ -41,7 +43,9 @@
                 <x:inputText id="keepAliveTimer"
                     value="#{capControlForm.regulatorBase.keepAliveTimer}" required="false"
                     maxlength="10" styleClass="char4Label"
-                    rendered="#{capControlForm.regulatorBase.displayTimer}" />
+                    rendered="#{capControlForm.regulatorBase.displayTimer}">
+                    <f:validateLongRange minimum="0" />
+                </x:inputText>
 
                 <x:htmlTag value="br" rendered="#{capControlForm.regulatorBase.displayConfig}" />
                 <x:htmlTag value="br" rendered="#{capControlForm.regulatorBase.displayConfig}" />
@@ -52,7 +56,9 @@
                 <x:inputText id="keepAliveConfig"
                     value="#{capControlForm.regulatorBase.keepAliveConfig}" required="false"
                     maxlength="10" styleClass="char4Label"
-                    rendered="#{capControlForm.regulatorBase.displayConfig}" />
+                    rendered="#{capControlForm.regulatorBase.displayConfig}">
+                    <f:validateLongRange minimum="0" />
+                </x:inputText>
 			</x:panelGroup>
 		</x:panelGrid>
 	</x:htmlTag>

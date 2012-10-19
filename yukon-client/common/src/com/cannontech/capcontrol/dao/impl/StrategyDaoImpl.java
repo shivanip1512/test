@@ -9,8 +9,8 @@ import java.util.concurrent.TimeUnit;
 import org.apache.commons.lang.StringUtils;
 import org.springframework.beans.factory.InitializingBean;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.dao.DataAccessException;
 import org.springframework.dao.DataIntegrityViolationException;
+import org.springframework.dao.EmptyResultDataAccessException;
 import org.springframework.jdbc.core.namedparam.MapSqlParameterSource;
 import org.springframework.jdbc.core.simple.ParameterizedRowMapper;
 import org.springframework.transaction.annotation.Transactional;
@@ -463,7 +463,7 @@ public class StrategyDaoImpl implements StrategyDao, InitializingBean {
         
         try {
             return yukonJdbcTemplate.queryForObject(sql, powerFactorCorrectionSettingMapper);
-        } catch (DataAccessException e) {
+        } catch (EmptyResultDataAccessException e) {
             return new PowerFactorCorrectionSetting();
         }
     }
@@ -477,9 +477,9 @@ public class StrategyDaoImpl implements StrategyDao, InitializingBean {
         sql.append("  AND bw.SettingName = emergencyCost.SettingName");
         sql.append("  AND bw.strategyid = cost.strategyid");
         sql.append("  AND bw.strategyid = emergencyCost.strategyid");
-        sql.append("  AND bw.SettingType").eq(VoltageViolationSettingType.BANDWIDTH);
-        sql.append("  AND cost.SettingType").eq(VoltageViolationSettingType.COST);
-        sql.append("  AND emergencyCost.SettingType").eq(VoltageViolationSettingType.EMERGENCY_COST);
+        sql.append("  AND bw.SettingType").eq_k(VoltageViolationSettingType.BANDWIDTH);
+        sql.append("  AND cost.SettingType").eq_k(VoltageViolationSettingType.COST);
+        sql.append("  AND emergencyCost.SettingType").eq_k(VoltageViolationSettingType.EMERGENCY_COST);
         sql.append("  AND bw.strategyid").eq(strategy.getStrategyID());
         sql.append("ORDER BY bw.SettingName DESC");
         

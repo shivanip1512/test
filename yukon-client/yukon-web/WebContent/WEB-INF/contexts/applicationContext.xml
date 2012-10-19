@@ -979,7 +979,7 @@
 	<bean id="voltageRegulatorTapHandler" class="com.cannontech.web.updater.capcontrol.handler.VoltageRegulatorTapHandler"/>
 	<bean id="voltageRegulatorOpTimeHandler" class="com.cannontech.web.updater.capcontrol.handler.VoltageRegulatorOpTimeHandler"/>
 	<bean id="voltageRegulatorTapTooltipHandler" class="com.cannontech.web.updater.capcontrol.handler.VoltageRegulatorTapTooltipHandler"/>
-	<bean id="voltageRegulatorVoltChangePerTapUpdaterHandler" class="com.cannontech.web.updater.capcontrol.handler.VoltageRegulatorVoltChangePerTapUpdaterHandler"/>
+	<bean class="com.cannontech.web.updater.capcontrol.handler.VoltageRegulatorVoltChangePerTapUpdaterHandler"/>
 	
     <bean id="cbcAreaFormattingService" class="com.cannontech.web.updater.capcontrol.AreaFormattingService"
           parent="abstractAreaFormattingService"/>
