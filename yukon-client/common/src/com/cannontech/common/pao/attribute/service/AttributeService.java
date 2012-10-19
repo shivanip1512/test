@@ -137,10 +137,19 @@ public interface AttributeService {
     public Set<Attribute> getReadableAttributes();
     
     /**
+     * Returns a set of attributes for which "reading" makes sense. 
+     * 
+     * (Includes "profile" attributes.)
+     */
+    public Set<Attribute> getAdvancedReadableAttributes();
+    
+    
+    /**
      * Returns the Sql that gives you the paObjectId and pointId based on a
      * passed in Attribute
      * @param attribute
      */
+    
     public SqlFragmentSource getAttributeLookupSql(Attribute attribute);
 
     /**

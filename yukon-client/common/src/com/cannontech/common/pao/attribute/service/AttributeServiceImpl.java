@@ -1,8 +1,8 @@
 package com.cannontech.common.pao.attribute.service;
 
+import java.util.Arrays;
 import java.util.Collection;
 import java.util.Collections;
-import java.util.EnumSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
@@ -46,9 +46,11 @@ import com.cannontech.database.YukonJdbcTemplate;
 import com.cannontech.database.data.lite.LitePoint;
 import com.cannontech.database.data.point.PointBase;
 import com.cannontech.user.YukonUserContext;
+import com.google.common.base.Predicate;
 import com.google.common.collect.HashMultimap;
 import com.google.common.collect.ImmutableMap;
 import com.google.common.collect.ImmutableSet;
+import com.google.common.collect.Iterables;
 import com.google.common.collect.Lists;
 import com.google.common.collect.Maps;
 import com.google.common.collect.Multimap;
@@ -70,20 +72,30 @@ public class AttributeServiceImpl implements AttributeService {
     
     private Set<Attribute> readableAttributes;
     {
-        Set<BuiltInAttribute> nonReadableEvents =
-                Sets.difference(BuiltInAttribute.getRfnEventTypes(), EnumSet.of(BuiltInAttribute.POWER_FAIL_FLAG,
-                                                                                BuiltInAttribute.REVERSE_POWER_FLAG,
-                                                                                BuiltInAttribute.TAMPER_FLAG,
-                                                                                BuiltInAttribute.OUTAGE_STATUS));
-    	EnumSet<BuiltInAttribute> readableAttributes = EnumSet.noneOf(BuiltInAttribute.class);
-    	for (BuiltInAttribute attribute : BuiltInAttribute.values()) {
-    	    // Exclude profile attributes and event attributes that are not readable
-    		if (!attribute.isProfile() && !nonReadableEvents.contains(attribute)) {
-    		    readableAttributes.add(attribute);
-    		}
-    	}
-    	// could consider other factors and handle user defined attributes in the future
-    	this.readableAttributes = ImmutableSet.<Attribute>copyOf(readableAttributes);
+        Iterable<BuiltInAttribute> readableAttributes = Iterables.filter(Arrays.asList(BuiltInAttribute.values()), new Predicate<BuiltInAttribute>() {
+            @Override
+            public boolean apply(BuiltInAttribute attribute) {
+                // Exclude profile attributes and event attributes that are not readable
+                return !attribute.isProfile() && !attribute.isRfnNonReadableEvent();
+            }
+        });
+        
+        // could consider other factors and handle user defined attributes in the future
+        this.readableAttributes = ImmutableSet.<Attribute>copyOf(readableAttributes);
+    }
+    
+    private Set<Attribute> advancedReadableAttributes;
+    {
+        Iterable<BuiltInAttribute> advancedReadableAttributes = Iterables.filter(Arrays.asList(BuiltInAttribute.values()), new Predicate<BuiltInAttribute>() {
+            @Override
+            public boolean apply(BuiltInAttribute attribute) {
+                // Exclude event attributes that are not readable
+                return !attribute.isRfnNonReadableEvent() ;
+            }
+        });
+        
+        // could consider other factors and handle user defined attributes in the future
+        this.advancedReadableAttributes = ImmutableSet.<Attribute>copyOf(advancedReadableAttributes);
     }
 
     public LitePoint getPointForAttribute(YukonPao pao, Attribute attribute) throws IllegalUseOfAttribute {
@@ -299,6 +311,11 @@ public class AttributeServiceImpl implements AttributeService {
     @Override
     public Set<Attribute> getReadableAttributes() {
     	return readableAttributes;
+    }
+    
+    @Override
+    public Set<Attribute> getAdvancedReadableAttributes() {
+        return advancedReadableAttributes;
     }
     
     @Override

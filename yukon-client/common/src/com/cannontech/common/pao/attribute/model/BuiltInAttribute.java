@@ -2,6 +2,7 @@ package com.cannontech.common.pao.attribute.model;
 
 import java.util.Collections;
 import java.util.Comparator;
+import java.util.EnumSet;
 import java.util.List;
 import java.util.Set;
 
@@ -14,6 +15,7 @@ import com.cannontech.i18n.YukonMessageSourceResolvable;
 import com.google.common.collect.ImmutableMap;
 import com.google.common.collect.ImmutableSet;
 import com.google.common.collect.ImmutableSet.Builder;
+import com.google.common.collect.Sets;
 
 
 public enum BuiltInAttribute implements Attribute, DisplayableEnum {
@@ -174,6 +176,7 @@ public enum BuiltInAttribute implements Attribute, DisplayableEnum {
     private static ImmutableSet<BuiltInAttribute> rfnDisconnectAttributes;
     private static ImmutableSet<BuiltInAttribute> rfnDemandAttributes;
     private static ImmutableSet<BuiltInAttribute> rfnOtherAttributes;
+    private static ImmutableSet<BuiltInAttribute> rfnNonReadableEvents;
     
     private static ImmutableMap<AttributeGroup, ImmutableSet<BuiltInAttribute>> allGroupedAttributes;
 
@@ -470,6 +473,14 @@ public enum BuiltInAttribute implements Attribute, DisplayableEnum {
         groupedRfnEventBuilder.put(AttributeGroup.RFN_OTHER_EVENT, rfnOtherAttributes);
         
         groupedRfnEventAttributes = groupedRfnEventBuilder.build();
+        
+        ImmutableSet.Builder<BuiltInAttribute> nonReadableRfnEventBuilder = ImmutableSet.builder();
+        nonReadableRfnEventBuilder.addAll(Sets.difference(BuiltInAttribute.getRfnEventTypes(),
+                                    EnumSet.of(BuiltInAttribute.POWER_FAIL_FLAG,
+                                               BuiltInAttribute.REVERSE_POWER_FLAG,
+                                               BuiltInAttribute.TAMPER_FLAG,
+                                               BuiltInAttribute.OUTAGE_STATUS)));
+        rfnNonReadableEvents = nonReadableRfnEventBuilder.build();
     }
     
     /**
@@ -530,7 +541,7 @@ public enum BuiltInAttribute implements Attribute, DisplayableEnum {
     public boolean isProfile() {
         return profileAttributes.contains(this);
     }
-
+    
     public boolean isAccumulator() {
         return accumulatorAttributes.contains(this);
     }
@@ -573,6 +584,10 @@ public enum BuiltInAttribute implements Attribute, DisplayableEnum {
     
     public boolean isRfnEventAnalogType() {
         return rfnEventAnalogTypes.contains(this);
+    }
+    
+    public boolean isRfnNonReadableEvent() {
+        return rfnNonReadableEvents.contains(this);
     }
     
     @Override

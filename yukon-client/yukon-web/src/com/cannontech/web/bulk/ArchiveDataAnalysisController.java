@@ -56,14 +56,13 @@ public class ArchiveDataAnalysisController {
     @Autowired private AttributeService attributeService;
     @Resource(name="recentResultsCache") private RecentResultsCache<ArchiveDataAnalysisCallbackResult> recentResultsCache;
     private Set<Period> intervalPeriods;
-    private Map<String, List<BuiltInAttribute>> attributes;
 
     @ModelAttribute("groupedAttributes")
     public Map<AttributeGroup, List<BuiltInAttribute>> getGroupedAttributes(YukonUserContext userContext) {
-        Set<Attribute> allAttributes = ImmutableSet.<Attribute>copyOf(BuiltInAttribute.values());
-        Map<AttributeGroup, List<BuiltInAttribute>> allGroupedAttributes = attributeService.
-                getGroupedAttributeMapFromCollection(allAttributes, userContext);
-        return allGroupedAttributes;
+        Set<Attribute> advancedReadableAttributes = ImmutableSet.<Attribute>copyOf(attributeService.getAdvancedReadableAttributes());
+        Map<AttributeGroup, List<BuiltInAttribute>> groupedAttributes = attributeService.
+                getGroupedAttributeMapFromCollection(advancedReadableAttributes, userContext);
+        return  groupedAttributes;
     }
     
     {
@@ -81,7 +80,6 @@ public class ArchiveDataAnalysisController {
         DeviceCollection deviceCollection = this.deviceCollectionFactory.createDeviceCollection(request);
         model.addAllAttributes(deviceCollection.getCollectionParameters());
         model.addAttribute("deviceCollection", deviceCollection);
-        model.addAttribute("attributes", attributes);
         model.addAttribute("intervalPeriods", intervalPeriods);
         
         Instant stopDateInitialValue = new DateMidnight().toInstant();
