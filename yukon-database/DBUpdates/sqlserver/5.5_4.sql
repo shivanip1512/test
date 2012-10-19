@@ -44,7 +44,7 @@ SELECT StrategyId, 'High Voltage Violation', '300.0', 'EMERGENCY_COST'
 FROM CapControlStrategy 
 WHERE ControlUnits = 'INTEGRATED_VOLT_VAR';
 /* End YUK-11466 */
-select something from nothing;
+
 /* Start YUK-11481 */
 CREATE TABLE RolePropToSetting_Temp(
     RolePropertyId NUMERIC(18, 0) NOT NULL,
