@@ -174,7 +174,9 @@ jQuery(function() {
                                             <cti:dataUpdaterValue type="LM_REPORTED_ADDRESS" identifier="${deviceId}/GEO"/>
                                         </tags:nameValue2>
                                         <tags:nameValue2 nameKey=".substation" rowClass="middle">
-                                            <cti:dataUpdaterValue type="LM_REPORTED_ADDRESS" identifier="${deviceId}/SUB"/>
+                                            <i:inline key=".notReadable"/>
+                                            <!-- Revert once firmware is fixed to support substations -->
+                                            <%--<cti:dataUpdaterValue type="LM_REPORTED_ADDRESS" identifier="${deviceId}/SUB"/> --%>
                                         </tags:nameValue2>
                                         <tags:nameValue2 nameKey=".feeder" rowClass="middle">
                                             <cti:dataUpdaterValue type="LM_REPORTED_ADDRESS" identifier="${deviceId}/FEEDER"/>

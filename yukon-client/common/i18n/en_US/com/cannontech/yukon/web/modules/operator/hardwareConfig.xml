@@ -51,6 +51,7 @@
 
     <!-- hardware addressing -->
     <entry key="yukon.web.modules.operator.hardwareConfig.expressComAddresses.title">EXPRESSCOM Addresses</entry>
+    <entry key="yukon.web.modules.operator.hardwareConfig.notReadable">Not Readable</entry>
     <entry key="yukon.web.modules.operator.hardwareConfig.serviceProvider">Service Provider</entry>
     <entry key="yukon.web.modules.operator.hardwareConfig.geo">GEO</entry>
     <entry key="yukon.web.modules.operator.hardwareConfig.substation">Substation</entry>
