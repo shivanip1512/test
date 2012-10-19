@@ -237,11 +237,7 @@
             
             <x:htmlTag value="fieldset" styleClass="fieldSet" rendered="#{capControlForm.strategy.ivvc}">
                 <x:htmlTag value="legend">
-                    <x:outputText value="Voltage Violation Settings" styleClass="leftOfImageLabel"/>
-                    <x:htmlTag value="span" styleClass="icon icon_help fr voltage_violation_help"></x:htmlTag>
-                    <x:htmlTag value="div" styleClass="dn voltage_violation_graph_container">
-	                    <x:htmlTag value="div" styleClass="ivvc_voltage_violation_graph"></x:htmlTag>
-                    </x:htmlTag>
+                    <x:outputText value="Voltage Violation Settings"/>
                 </x:htmlTag>
 
 				<h:dataTable id="voltageViolationSettingsData" var="setting" 
@@ -285,9 +281,7 @@
             
             <x:htmlTag value="fieldset" styleClass="fieldSet" rendered="#{capControlForm.strategy.ivvc}">
                 <x:htmlTag value="legend">
-                    <x:outputText value="Power Factor Correction Settings" styleClass="leftOfImageLabel"/>
-                    <x:htmlTag value="span" styleClass="icon icon_help fr power_factor_correction_help"></x:htmlTag>
-                    <x:htmlTag value="div" styleClass="dn power_factor_correction_help_container"></x:htmlTag>
+                    <x:outputText value="Power Factor Correction Settings"/>
                 </x:htmlTag>
 
                 <x:panelGrid columns="2">
