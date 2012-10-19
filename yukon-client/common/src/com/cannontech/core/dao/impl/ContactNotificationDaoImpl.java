@@ -109,7 +109,7 @@ public final class ContactNotificationDaoImpl implements ContactNotificationDao,
         for(LiteContactNotification currentNotification : notificationList) {
             int notificationId = currentNotification.getLiteID();
             currentNotificationIds.add(notificationId);
-            
+            currentNotification.setContactID(contactId);
             this.saveNotification(currentNotification);
         }
 

@@ -286,3 +286,91 @@ div.survey {
 	text-align: left;
 	margin: 20px;
 }
+
+
+.contactCard {
+    border: 1px solid #CCCCCC;
+    border-radius: 3px 3px 3px 3px;
+/*     float: left; */
+/*     width: 300px; */
+    margin: 10px;
+    padding: 5px 10px;
+    overflow: hidden;
+}
+
+.contactCard.primary {
+	background-color: #EFEFEF;
+}
+
+.contactCard .actions {
+	background: #efefef;
+	border-top: solid 1px #ccc;
+	padding: 10px;
+	margin: 10px -10px -10px;
+	font-size: 0.8em;
+	overflow: hidden;
+}
+
+.contactCard li {
+	display: block;
+	overflow: hidden;
+	padding: 0 5px;
+	width: 45%;
+	float: left;
+	font-size: 0.8em;
+}
+
+.contactCard form {
+	display: inline;
+}
+
+.contactCard h3 {
+	font-weight: normal;
+	color: #666;
+	text-align: left;
+    border-bottom: 1px solid #CCCCCC;
+    display: block;
+    padding: 2px 8px;
+    text-decoration: none;
+    margin: 0 0 10px !important;
+}
+
+.contactCard h3 a {
+	font-size: 0.8em;
+	color: #06c;
+	margin-left: 10px;
+}
+
+.contactCard h4 {
+	font-weight: normal;
+	color: #333;
+}
+
+#contactForm p {
+	margin: 0;
+	padding: 0;
+	overflow: hidden;
+}
+.contactCard ul {
+    margin: 0;
+    padding: 0;
+}
+
+
+.contactCard label {
+    color: #888888;
+    display: block;
+    float: left;
+    font-size: 0.8em;
+    line-height: 20px;
+    width: 9em;
+}
+
+.notification {
+	margin: 0 0 5px;
+	overflow: hidden;
+}
+
+.notification select, .notification input {
+	margin: 0 5px 0 0;
+}

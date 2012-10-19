@@ -13,6 +13,11 @@ public class LiteContactNotification extends LiteBase
 	private String notification = null;
 	
 	private int order = 0;
+	
+	public LiteContactNotification() {
+		super();
+		setLiteType(LiteTypes.CONTACT_NOTIFICATION);
+	}
 
 	/**
 	 * LiteContactNotification

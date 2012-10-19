@@ -89,6 +89,8 @@ public class GeneralController extends AbstractConsumerController {
                 if(emailNotification != null){
                 	promptForEmail = false;
                 }
+                
+                map.addAttribute("contactId", primaryContact.getContactID());
         	}
         }
         

@@ -14,10 +14,6 @@ body {
     clear: both;
 }
 
-.consumer_module div.userMessage.CONFIRM, .consumer_module div.userMessage.ERROR {
-    outline: none;
-    background-color: transparent;
-}
 
 #TopRightLogo {
     

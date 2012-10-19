@@ -1538,6 +1538,8 @@
 	<bean id="energyCompanyInfoService" class="com.cannontech.web.admin.energyCompany.service.impl.EnergyCompanyInfoServiceImpl"/>
     <bean id="userGroupValidator" class="com.cannontech.web.admin.userGroupEditor.model.UserGroupValidator"/>
 
+    <bean id="liteContactValidator" class="com.cannontech.web.stars.dr.consumer.model.LiteContactValidator"/>
+
     <!-- OPERATOR -->
     <bean id="operatorAccountService" class="com.cannontech.web.stars.dr.operator.service.impl.OperatorAccountServiceImpl"/>
     <bean id="operatorThermostatHelperImpl" class="com.cannontech.web.stars.dr.operator.service.impl.OperatorThermostatHelperImpl"/>

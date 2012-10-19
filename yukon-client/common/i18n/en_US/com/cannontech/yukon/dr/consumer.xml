@@ -76,31 +76,52 @@
     
     
     <!--  contacts.jsp -->
+    <entry key="yukon.web.modules.consumer.contacts.editContact">Edit Contact</entry>
+    <entry key="yukon.web.modules.consumer.contacts.editContact.title">Edit Contact</entry>
+    <entry key="yukon.web.modules.consumer.contacts.noNotifications">This contact has no notifications</entry>
+    <entry key="yukon.web.modules.consumer.contacts.removeContact">Remove Contact</entry>
+    <entry key="yukon.web.modules.consumer.contacts.removeContact.title">Remove Contact?</entry>
+    <entry key="yukon.web.modules.consumer.contacts.removeContact.message"><![CDATA[Are you sure you want to remove <strong>{0}</strong> as a contact from this account?]]></entry>
+    <entry key="yukon.web.modules.consumer.contacts.additionalContacts.title">Additional Contacts</entry>
+    <entry key="yukon.web.modules.consumer.contacts.primaryContact.title">Primary Contact</entry>
+    <entry key="yukon.web.modules.consumer.contacts.notifications">Notifications</entry>
+    <entry key="yukon.web.modules.consumer.contacts.firstName">First Name</entry>
+    <entry key="yukon.web.modules.consumer.contacts.lastName">Last Name</entry>
+    <entry key="yukon.web.modules.consumer.contacts.addNotification.label">Add Notification</entry>
+    <entry key="yukon.web.modules.consumer.contacts.addNotification.imageUrl">/WebConfig/yukon/Icons/add.gif</entry>
+    <entry key="yukon.web.modules.consumer.contacts.contactSaved">Contact Saved</entry>
+    <entry key="yukon.web.modules.consumer.contacts.createNewContact.label">Create New Contact</entry>
+    <entry key="yukon.web.modules.consumer.contacts.createNewContact.imageUrl">/WebConfig/yukon/Icons/wand.png</entry>
+    
+    <entry key="yukon.web.modules.consumer.contacts.error.blankNotification">Must not be blank.</entry>
+    <entry key="yukon.web.modules.consumer.contacts.error.firstNameRequired">First name is required.</entry>
+    <entry key="yukon.web.modules.consumer.contacts.error.noNotificationMethod">No type defined.</entry>
+    <entry key="yukon.web.modules.consumer.contacts.error.invalidPhoneNumber">Invalid phone number.</entry>
+    <entry key="yukon.web.modules.consumer.contacts.error.emailInvalid">Invalid email address.</entry>
+    
     <entry key="yukon.dr.consumer.contacts.header">Account - Contacts</entry>
-    <entry key="yukon.dr.consumer.contacts.rightColumnLogo">/WebConfig/yukon/Family.jpg</entry>
-    <entry key="yukon.dr.consumer.contacts.primaryContact">Contact (Primary)</entry>
-    <entry key="yukon.dr.consumer.contacts.contact">Contact</entry>
-    <entry key="yukon.dr.consumer.contacts.firstName">First Name:</entry>
-    <entry key="yukon.dr.consumer.contacts.lastName">Last Name:</entry>
-    <entry key="yukon.dr.consumer.contacts.newContact">New Contact</entry>
-    <entry key="yukon.dr.consumer.contacts.createNewContact">Create New Contact</entry>
-    <entry key="yukon.dr.consumer.contacts.noNotifications">This contact has no notifications</entry>
-    <entry key="yukon.dr.consumer.contacts.removeContact">Remove Contact</entry>
-    <entry key="yukon.dr.consumer.contacts.updateContact">Update Contact</entry>
-    <entry key="yukon.dr.consumer.contacts.addNotification">Add notification</entry>
     <entry key="yukon.dr.consumer.contacts.removeNotificationTitle">Remove Notification</entry>
-    <entry key="yukon.dr.consumer.contacts.removeImage">/WebConfig/yukon/Icons/clearbits/close.gif</entry>
-    <entry key="yukon.dr.consumer.contacts.invalidNotification">Contact {0} for {1} contains invalid characters</entry>    
-    <entry key="yukon.dr.consumer.contacts.promptForEmail.instructions"><![CDATA[
+    
+    <entry key="yukon.web.modules.consumer.contacts.promptForEmail.instructions"><![CDATA[
     <br/>
     <br/>
     <div class="help">
     	To add an email:
     	<ol>
-    		<li>Click the <strong>Add Notification</strong> button under the <strong>Contact (Primary)</strong> section</li>
-    		<li>Select <strong>Email</strong> from the drop down that appears on the left</li>
-    		<li>Enter the email address where you will be able to receive password reset messages</li>
-    		<li>Click <strong>Update Contact</strong> to save your changes</li>
+    		<li>Click the <strong>Edit Contact</strong> link for the Contact in the <strong>Primary Contact</strong> section</li>
+    		<li>Follow the instructions on the next page</li>
+    </div> 
+    ]]></entry>
+    <entry key="yukon.web.modules.consumer.contacts.promptForEmail.editPrimaryInstructions"><![CDATA[
+    <br/>
+    <br/>
+    <div class="help">
+    	To add an email:
+    	<ol>
+    		<li>Click the <strong>Add Notification</strong> button.</li>
+    		<li>Select <strong>Email</strong> type notification from the drop down that appears</li>
+    		<li>Enter the email address in the input box</li>
+    		<li>Click <strong>Save</strong> to save your changes</li>
     </div> 
     ]]></entry>
     

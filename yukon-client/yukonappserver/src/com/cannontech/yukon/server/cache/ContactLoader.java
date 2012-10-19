@@ -118,7 +118,6 @@ public class ContactLoader implements Runnable
                 // check if the lastContact is still valid
                 if (lastContact == null || lastContact.getContactID() != ln.getContactID()) {
                     lastContact = allContactsMap.get( new Integer(ln.getContactID()) );
-                    lastContact.setExtended(true);  //This flag will eliminate the automatic "extended" loading.
                 }
                 
                 // add this contact notif to its contact

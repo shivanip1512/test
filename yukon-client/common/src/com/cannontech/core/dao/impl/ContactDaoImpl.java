@@ -679,7 +679,7 @@ public final class ContactDaoImpl implements ContactDao {
             
             List<LiteContactNotification> notifications = contactNotificationDao
 					.getNotificationsForContact(contact.getContactID());
-			contact.setNotifications(notifications);
+            contact.getLiteContactNotifications().addAll(notifications);
             
             return contact;
         }

@@ -38,7 +38,10 @@
         <tags:boxContainer2 nameKey="promptForEmail" hideEnabled="false">
             <cti:msg2 key=".promptForEmail"/>
             <div class="fr">
-	            <cti:button nameKey="promptForEmail" href="contacts" />
+            	<cti:url value="/spring/stars/consumer/contacts/edit" var="editUrl">
+            		<cti:param name="contactId">${contactId}</cti:param>
+            	</cti:url>
+	            <cti:button nameKey="promptForEmail" href="${editUrl}" />
             </div>
         </tags:boxContainer2>
         <br>
