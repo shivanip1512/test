@@ -15,7 +15,7 @@
     <cti:includeScript link="/JavaScript/macsscheduledscripts.js" />
 
 <script language="JavaScript">
-    Event.observe(window, 'load', function() {
+    jQuery(function() {
        new Ajax.PeriodicalUpdater('main', '${url}?sortBy=${sortBy}&descending=${descending}', {
            "method": 'post', "frequency": 5, "decay": 1
        });

@@ -9,7 +9,7 @@
 
 <cti:includeScript link="PROTOTYPE" force="true"/>
 <script langauge="JavaScript" type="text/javascript">
-    Event.observe(window, 'load', function() {
+    jQuery(function() {
         $("accountnumberinput").focus();
         
         Event.observe('accountnumberinput', 'keydown', function(event) {

@@ -43,7 +43,7 @@
                     null, null, 'get');
         }
         
-        Event.observe(window, 'load', function() {
+        jQuery(function() {
             var recentEventsUpdaterTimeout = setTimeout(updateRecentEvents, ${updaterDelay});
             if (${hasControlRole}) {
                 $$('tr[id^="tr_cap"]').each(function (row) {

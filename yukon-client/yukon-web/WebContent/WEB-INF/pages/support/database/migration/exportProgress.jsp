@@ -26,7 +26,7 @@
     
     <script type="text/javascript">
 
-	    Event.observe(window, 'load', function() {
+        jQuery(function() {
 
 		    <c:if test="${not migrationStatus.complete}">
 		    	$('downloadButton').disable();

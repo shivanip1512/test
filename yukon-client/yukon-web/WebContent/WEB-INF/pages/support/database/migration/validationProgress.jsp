@@ -28,7 +28,7 @@
 
     	var buttonHasBeenEnabled = false;
     
-	    Event.observe(window, 'load', function() {
+    	jQuery(function() {
 
 	    	<c:choose>
 			    <c:when test="${not status.complete}">

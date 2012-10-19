@@ -13,7 +13,7 @@
 	
 	<script type="text/javascript">
 		<!-- Focus on the name field on page load -->
-		Event.observe(window, 'load', function() {
+		jQuery(function() {
 			var name = $('name');
 		 	if(name){
 		  		name.focus();

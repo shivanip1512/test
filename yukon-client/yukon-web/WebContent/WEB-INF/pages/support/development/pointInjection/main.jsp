@@ -6,7 +6,7 @@
 
 <script type="text/javascript">
 
-Event.observe(window, 'load', function() {
+jQuery(function() {
     if (localStorage.pointInjectionIds) {
         var tempArray = localStorage.pointInjectionIds.evalJSON();
         tempArray.each(addRow);

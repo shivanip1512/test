@@ -61,7 +61,7 @@
         return true;
     }
 
-    Event.observe(window, 'load', function() {
+    jQuery(function() {
         sameAsNameClicked();
       });
     </script>

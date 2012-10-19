@@ -7,7 +7,7 @@
 
 <cti:standardPage module="support" page="supportBundle">
     <script type="text/javascript">
-        Event.observe(window, 'load', function() {
+        jQuery(function() {
             window.supportBundleProgressUpdater =
                 new Ajax.PeriodicalUpdater('mainDiv', 'getBundleProgress', {
                     'frequency' : 1

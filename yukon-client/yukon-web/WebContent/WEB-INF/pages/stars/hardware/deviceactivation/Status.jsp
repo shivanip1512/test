@@ -10,7 +10,7 @@
 <script language="JavaScript">
     var counter = 4;
 
-    Event.observe(window, 'load', function() {
+    jQuery(function() {
         setInterval(updateDisplay, 1000);    
     });
     

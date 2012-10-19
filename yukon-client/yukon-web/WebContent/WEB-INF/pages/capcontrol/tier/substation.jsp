@@ -30,7 +30,7 @@
 </c:if>
 
 <script type="text/javascript">
-Event.observe(window, 'load', checkPageExpire);
+jQuery(function() {checkPageExpire();});
 
 // Filters
 function applySubBusFilter(select) {

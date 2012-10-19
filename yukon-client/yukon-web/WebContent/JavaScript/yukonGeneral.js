@@ -294,7 +294,7 @@ Object.extend(YEvent, {
 
 Event.observe(document, 'click', YEvent._handleClickEvent);
 
-Event.observe(window, 'load', function() {
+jQuery(function() {
     $$('.csrfPasswordPrompt').each(function(element) {
         var passwordField = element.down('input[type=password]');
         var buttons = element.getElementsBySelector('.formSubmit');
@@ -314,7 +314,7 @@ function hideUpdateWarning() {
     $('updatedWarning').hide();
 }
 
-Event.observe(window, 'load', function() {
+jQuery(function() {
     $$('img.hoverableImage, input.hoverableImage').each(function(element) {
         var basePath = element.src;
         var extStart = basePath.lastIndexOf(".");
@@ -328,7 +328,7 @@ Event.observe(window, 'load', function() {
     });
 });
 
-Event.observe(window, 'load', function() {
+jQuery(function() {
     $$('img.hoverableImage').each(function(element) {
         var basePath = element.src;
         var extStart = basePath.lastIndexOf(".");
@@ -354,7 +354,7 @@ Event.observe(window, 'load', function() {
  * (which happens after the window has loaded completely).
  */
 window.loadComplete = false;
-Event.observe(window, 'load', function() {
+jQuery(function() {
     window.loadComplete = true;
 });
 
@@ -366,7 +366,7 @@ function callAfterMainWindowLoad(func) {
 	if (window.loadComplete) {
 	    func();
 	} else {
-	    Event.observe(window, 'load', func);
+	    jQuery(function() { func;});
 	}
 }
 

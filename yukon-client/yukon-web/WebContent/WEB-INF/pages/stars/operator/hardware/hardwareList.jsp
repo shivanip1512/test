@@ -85,7 +85,7 @@
         return true;
     }
     
-    Event.observe(window, 'load', function() {
+    jQuery(function() {
         if ($('inventoryCheckingThermostatPopup').visible())
             adjustDialogSizeAndPosition('inventoryCheckingThermostatPopup');
         if ($('inventoryCheckingGatewayPopup').visible())

@@ -44,7 +44,7 @@ function updateServiceCompanyInfo() {
     }
 }
 
-Event.observe(window, 'load', updateServiceCompanyInfo);
+jQuery(function() { updateServiceCompanyInfo();});
 </script>
 <cti:dataGridCell>
         

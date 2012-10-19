@@ -42,7 +42,7 @@
     }
 }
 
-Event.observe(window, 'load', function() {
+jQuery(function() {
     var availableRateCheckBoxTds = $$(".availableRateCheckBoxTd");
 
     for (var i = 0; i < availableRateCheckBoxTds.length; i++) {

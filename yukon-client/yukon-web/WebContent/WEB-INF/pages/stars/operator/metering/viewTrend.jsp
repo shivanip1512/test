@@ -39,7 +39,7 @@ final SimpleDateFormat datePart = new java.text.SimpleDateFormat("MM/dd/yyyy");
 	<script type="text/javascript">
 
 		// hack our spring url into trending_options.jspf
-		Event.observe(window, 'load', function() {
+		jQuery(function() {
 			$('trendingOptionMFormRedirect').value = '${thisUrl}';
 			$('trendingOptionMFormReferrer').value = '${thisUrl}';
 	    });

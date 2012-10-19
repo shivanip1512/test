@@ -17,7 +17,7 @@
 	<c:otherwise>
 
 		<script>
-			Event.observe(window, 'load', function() {
+            jQuery(function() {
 				new Ajax.Updater('compareResults', '/spring/support/database/validate/results');
 			});
 		</script>

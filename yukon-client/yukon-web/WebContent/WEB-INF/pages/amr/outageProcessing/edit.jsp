@@ -12,7 +12,7 @@
     <script type="text/javascript">
     var deleteConfirmText = '<cti:msg2 key=".deleteConfirm" javaScriptEscape="true"/>';
     
-    Event.observe(window, 'load', function() {
+        jQuery(function() {
 	    	toggleReadFrequencyOptions();
 		});
 	

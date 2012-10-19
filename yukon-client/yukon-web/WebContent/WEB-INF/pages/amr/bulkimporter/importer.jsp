@@ -16,7 +16,7 @@
     
     setupRefreshStuff("${refreshUrl}", "${refreshRate}");
     
-    Event.observe(window, 'load', function() {
+    jQuery(function() {
         show_next('failed');
     });
     

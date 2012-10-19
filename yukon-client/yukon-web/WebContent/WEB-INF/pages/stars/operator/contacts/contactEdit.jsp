@@ -11,7 +11,7 @@
 	<tags:setFormEditMode mode="${mode}"/>
 
 	<script type="text/javascript">
-		Event.observe(window, 'load', function() {
+	    jQuery(function() {
 			var additionalNotificationTrs = $$('tr.additionalNotificationTr');
 			additionalNotificationTrs.each(flashYellow);
 		});

@@ -12,7 +12,7 @@
 
 <script type="text/javascript">
 
-Event.observe(window, 'load', function() {
+jQuery(function() {
     $$('td.used').each( function (element) {
         
         Event.observe(element, 'mouseout', function(e) {

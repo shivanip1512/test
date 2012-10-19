@@ -43,7 +43,7 @@
     </table>
     
 <script type="text/javascript">
-Event.observe(window, 'load', function() {
+jQuery(function() {
     updateControlEvents('PAST_DAY');       
 });
 

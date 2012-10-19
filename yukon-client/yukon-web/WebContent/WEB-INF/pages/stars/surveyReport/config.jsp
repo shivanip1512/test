@@ -218,7 +218,7 @@ function updateFieldsFromBackingBean() {
 
 <script type="text/javascript">
 
-Event.observe(window, 'load', function() {
+  jQuery(function() {
     questionChanged();
     reportTypeChanged();
     updateFieldsFromBackingBean();

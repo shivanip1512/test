@@ -1,6 +1,6 @@
 <script type="text/javascript">
 // Add behavior
-Event.observe(window, 'load', function() {
+jQuery(function() {
     $$('tr[id^="tr_cap"]').each(function (row) {
         var bankId = row.id.split('_')[2];
         

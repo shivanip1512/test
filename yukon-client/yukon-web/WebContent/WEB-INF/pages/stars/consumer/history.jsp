@@ -12,7 +12,7 @@
 <cti:includeScript link="/JavaScript/thermostatScheduleEditor.js"/>
 
 <script type="text/javascript">
-Event.observe(window, 'load', function(){
+jQuery(function() {
     //for rendering the display safe temperatures in the correct unit for the customer    
     Yukon.ThermostatManualEditor.renderOtherTemperatures('${temperatureUnit}');
 });

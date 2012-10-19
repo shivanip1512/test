@@ -11,7 +11,7 @@ function scrollPerNode(comp, div) {
 }
 
 function addSmartScrolling(hidden_id, div_id, indx_id, comp_id){
-	Event.observe(window, 'load', function() {	
+    jQuery(function() {
 	//get the hidden and div
 	var hidden_el = document.getElementById(hidden_id);
 	var div_el =  document.getElementById(div_id);

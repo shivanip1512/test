@@ -18,7 +18,7 @@
 </cti:breadCrumbs>
 
 <script type="text/javascript">
-    Event.observe(window,'load', function() {selectedFieldsChanged();});
+    jQuery(function() {selectedFieldsChanged();});
 </script>
 
 <ct:simplePopup id="roundingHelper" title="Rounding Mode Help" onClose="toggleHelperPopup('roundingHelper');">

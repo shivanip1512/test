@@ -1,4 +1,4 @@
-Event.observe(window, 'load', function() {
+jQuery(function() {
 
 	$$('td.ACTION_TD').each(function(el) {
 		

@@ -10,7 +10,7 @@
 
 <cti:includeScript link="PROTOTYPE" force="true"/>
 <script langauge="JavaScript" type="text/javascript">
-    Event.observe(window, 'load', function() {
+    jQuery(function() {
         $("serialnumberinput").focus();
     });
 </script>

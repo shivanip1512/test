@@ -20,7 +20,7 @@
     
 <script type="text/javascript">
 
-    Event.observe(window, 'load', function(){init();});
+    jQuery(function() {init();});
 
  	// things that thermostat.js is expecting to get set dynamically
     currentScheduleMode = '${scheduleMode}';

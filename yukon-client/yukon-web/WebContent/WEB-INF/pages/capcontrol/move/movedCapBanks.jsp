@@ -8,7 +8,7 @@
 <cti:standardPage module="capcontrol" page="movedCapBanks">
     <%@include file="/capcontrol/capcontrolHeader.jspf"%>
     <script type="text/javascript">
-    Event.observe(window, 'load', function() {
+    jQuery(function() {
         $$('a.moveLink').each(function(a) {
             a.observe('click', function(event) {getMovedBankMenu(a.id, event)});
         });

@@ -43,7 +43,7 @@
                 $('addDesignationCodeButton').disable();
             }
             
-            Event.observe(window, 'load', function(){
+            jQuery(function() {
                 //get the number of designation codes.  we don't 'really' care about the order,
                 //however spring needs the list to be uniquely indexed
                 DC_INDEX = $$('#designationCodes li').length;

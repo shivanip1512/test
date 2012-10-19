@@ -35,7 +35,7 @@
 	<script language="JavaScript">
 	
 		<!-- onLoad, call init() --> 
-		Event.observe(window, 'load', function(){init();});
+		jQuery(function() {init();});
 		
 		function changeFilter(filterBy) {
 			document.getElementById("DivRoute").style.display = (filterBy == <%= CommandDeviceBean.ROUTE_FILTER %>)? "" : "none";
