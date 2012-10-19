@@ -366,7 +366,7 @@ function callAfterMainWindowLoad(func) {
 	if (window.loadComplete) {
 	    func();
 	} else {
-	    jQuery(function() { func;});
+	    jQuery(function() { func();});
 	}
 }
 
