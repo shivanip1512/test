@@ -2125,7 +2125,7 @@ void IVVCAlgorithm::tapOperation(IVVCStatePtr state, CtiCCSubstationBusPtr subbu
                     }
                 }
 
-                state->_tapOps[ regulator->getPaoId() ] = calculateVte(zonePointValues, strategy, subbus->getAllMonitorPoints(), isPeakTime);
+                state->_tapOps[ regulator->getPaoId() ] = calculateVte(zonePointValues, strategy, subbus->getAllMonitorPoints(), isPeakTime, regulator->getVoltageChangePerTap());
             }
         }
         catch ( const Cti::CapControl::NoVoltageRegulator & noRegulator )
@@ -2320,11 +2320,13 @@ double IVVCAlgorithm::calculateVf(const PointValueMap &voltages)
 
 int IVVCAlgorithm::calculateVte(const PointValueMap &voltages, IVVCStrategy* strategy,
                                 const std::map<long, CtiCCMonitorPointPtr> & _monitorMap,
-                                const bool isPeakTime)
+                                const bool isPeakTime,
+                                const double voltChangePerTap)
 {
     bool lowerTap = false;
     bool raiseTap = false;
     bool marginTap = true;
+    bool regulatorMargin = true;
 
     if ( voltages.empty() )
     {
@@ -2354,9 +2356,10 @@ int IVVCAlgorithm::calculateVte(const PointValueMap &voltages, IVVCStrategy* str
         if ( b->second.value > Vmax ) { lowerTap = true; }
         if ( b->second.value < Vmin ) { raiseTap = true; }
         if ( b->second.value <= Vrm ) { marginTap = false; }
+        if ( ( b->second.value + voltChangePerTap ) >= Vmax ) { regulatorMargin = false; }
     }
 
-    return (( lowerTap || marginTap ) ? -1 : raiseTap ? 1 : 0);
+    return (( lowerTap || marginTap ) ? -1 : ( raiseTap && regulatorMargin ) ? 1 : 0);
 }
 
 

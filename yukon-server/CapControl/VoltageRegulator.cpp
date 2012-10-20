@@ -32,7 +32,8 @@ VoltageRegulator::VoltageRegulator()
     _lastMissingAttributeComplainTime(CtiTime(neg_infin)),
     _keepAliveConfig(0),
     _keepAliveTimer(0),
-    _nextKeepAliveSendTime(CtiTime(neg_infin))
+    _nextKeepAliveSendTime(CtiTime(neg_infin)),
+    _voltChangePerTap(0.75)
 {
     // empty...
 }
@@ -47,7 +48,8 @@ VoltageRegulator::VoltageRegulator(Cti::RowReader & rdr)
     _lastMissingAttributeComplainTime(CtiTime(neg_infin)),
     _keepAliveConfig(0),
     _keepAliveTimer(0),
-    _nextKeepAliveSendTime(CtiTime(neg_infin))
+    _nextKeepAliveSendTime(CtiTime(neg_infin)),
+    _voltChangePerTap(0.75)
 {
     /*
         We have data from the Regulator table - this will only be the case if we are an LTC.
@@ -62,6 +64,8 @@ VoltageRegulator::VoltageRegulator(Cti::RowReader & rdr)
     {
         rdr["KeepAliveConfig"]  >> _keepAliveConfig;
     }
+
+    rdr["VoltChangePerTap"] >> _voltChangePerTap;
 }
 
 
@@ -74,7 +78,8 @@ VoltageRegulator::VoltageRegulator(const VoltageRegulator & toCopy)
     _lastMissingAttributeComplainTime(CtiTime(neg_infin)),
     _keepAliveConfig(0),
     _keepAliveTimer(0),
-    _nextKeepAliveSendTime(CtiTime(neg_infin))
+    _nextKeepAliveSendTime(CtiTime(neg_infin)),
+    _voltChangePerTap(0.75)
 {
     operator=(toCopy);
 }
@@ -103,6 +108,8 @@ VoltageRegulator & VoltageRegulator::operator=(const VoltageRegulator & rhs)
         _keepAliveConfig        = rhs._keepAliveConfig;
         _keepAliveTimer         = rhs._keepAliveTimer;
         _nextKeepAliveSendTime  = rhs._nextKeepAliveSendTime;
+
+        _voltChangePerTap       = rhs._voltChangePerTap;
     }
 
     return *this;
@@ -370,6 +377,12 @@ std::string VoltageRegulator::getPhaseString() const
     }
 
     return "";
+}
+
+
+double VoltageRegulator::getVoltageChangePerTap() const
+{
+    return _voltChangePerTap;
 }
 
 

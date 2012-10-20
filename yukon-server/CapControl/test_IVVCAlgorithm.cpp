@@ -336,24 +336,24 @@ BOOST_AUTO_TEST_CASE(test_cap_control_ivvc_algorithm_regulator_tap_operation_cal
 
     // Don't exclude any points - all voltages within limits, on both sides of the margin - no operation
 
-    BOOST_CHECK_EQUAL(  0 , _algorithm.calculateVte( _voltages, &strategy, monitorMap, true ) );
+    BOOST_CHECK_EQUAL(  0 , _algorithm.calculateVte( _voltages, &strategy, monitorMap, true, 0.75 ) );
 
     // exclude the only point that is below the marginal voltage - should tap down
     _voltages.erase(1006);
 
-    BOOST_CHECK_EQUAL( -1 , _algorithm.calculateVte( _voltages, &strategy, monitorMap, true ) );
+    BOOST_CHECK_EQUAL( -1 , _algorithm.calculateVte( _voltages, &strategy, monitorMap, true, 0.75 ) );
 
     // Don't exclude any points - single voltage over limit - should tap down
     _value.value    = 118.2;
     _voltages[1006] = _value;
     strategy.restoreParameters("Upper Volt Limit", "PEAK", "122.0");
 
-    BOOST_CHECK_EQUAL( -1 , _algorithm.calculateVte( _voltages, &strategy, monitorMap, true ) );
+    BOOST_CHECK_EQUAL( -1 , _algorithm.calculateVte( _voltages, &strategy, monitorMap, true, 0.75 ) );
 
     // exclude the only point that is above the max voltage - no operation
     _voltages.erase(1002);
 
-    BOOST_CHECK_EQUAL(  0 , _algorithm.calculateVte( _voltages, &strategy, monitorMap, true ) );
+    BOOST_CHECK_EQUAL(  0 , _algorithm.calculateVte( _voltages, &strategy, monitorMap, true, 0.75 ) );
 
     // Don't exclude any points - single voltage over limit and single voltage under limit - should tap down
     _value.value    = 122.1;
@@ -362,12 +362,13 @@ BOOST_AUTO_TEST_CASE(test_cap_control_ivvc_algorithm_regulator_tap_operation_cal
     strategy.restoreParameters("Lower Volt Limit", "PEAK", "119.0");
     strategy.restoreParameters("Voltage Regulation Margin", "PEAK", "1.0");
 
-    BOOST_CHECK_EQUAL( -1 , _algorithm.calculateVte( _voltages, &strategy, monitorMap, true ) );
+    BOOST_CHECK_EQUAL( -1 , _algorithm.calculateVte( _voltages, &strategy, monitorMap, true, 0.75 ) );
 
-    // exclude the point above the max voltage - should tap up
+    // exclude the point above the max voltage - but biggest voltage is 121.9 which is within 0.75 of the upper volt limit
+    //  no operation
     _voltages.erase(1002);
 
-    BOOST_CHECK_EQUAL(  1 , _algorithm.calculateVte( _voltages, &strategy, monitorMap, true ) );
+    BOOST_CHECK_EQUAL(  0 , _algorithm.calculateVte( _voltages, &strategy, monitorMap, true, 0.75 ) );
 
     // exclude the point below the min voltage - should tap down
     _value.value    = 122.1;
@@ -375,12 +376,21 @@ BOOST_AUTO_TEST_CASE(test_cap_control_ivvc_algorithm_regulator_tap_operation_cal
 
     _voltages.erase(1006);
 
-    BOOST_CHECK_EQUAL( -1 , _algorithm.calculateVte( _voltages, &strategy, monitorMap, true ) );
+    BOOST_CHECK_EQUAL( -1 , _algorithm.calculateVte( _voltages, &strategy, monitorMap, true, 0.75 ) );
 
     // exclude the points above the max voltage and below min - no operation
     _voltages.erase(1002);
 
-    BOOST_CHECK_EQUAL(  0 , _algorithm.calculateVte( _voltages, &strategy, monitorMap, true ) );
+    BOOST_CHECK_EQUAL(  0 , _algorithm.calculateVte( _voltages, &strategy, monitorMap, true, 0.75 ) );
+
+    // add back the voltage below the lower volt limit and remove the voltage that is within the regulators 0.75 volt from the upper volt limit
+    // tap up operation
+    _value.value    = 118.2;
+    _voltages[1006] = _value;
+
+    _voltages.erase(1007);
+
+    BOOST_CHECK_EQUAL(  1 , _algorithm.calculateVte( _voltages, &strategy, monitorMap, true, 0.75 ) );
 }
 
 

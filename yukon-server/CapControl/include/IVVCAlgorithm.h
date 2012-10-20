@@ -52,7 +52,8 @@ class IVVCAlgorithm
         double calculateTargetPFVars(const double targetPF, const double wattValue);
         double calculateVf(const PointValueMap &voltages);
         int calculateVte(const PointValueMap &voltages, IVVCStrategy* strategy,
-                         const std::map<long, CtiCCMonitorPointPtr> & _monitorMap, const bool isPeakTime);
+                         const std::map<long, CtiCCMonitorPointPtr> & _monitorMap,
+                         const bool isPeakTime, const double voltChangePerTap);
 
         double voltageViolationCalculator(const double voltage, const IVVCStrategy * strategy, const bool isPeakTime);
 

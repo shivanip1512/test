@@ -103,6 +103,8 @@ public:
     Phase       getPhase() const;
     std::string getPhaseString() const;
 
+    double getVoltageChangePerTap() const;
+
 protected:
 
     Phase   _phase;
@@ -122,6 +124,8 @@ protected:
     CtiTime     _nextKeepAliveSendTime;
 
     CtiTime         _lastMissingAttributeComplainTime;
+
+    double      _voltChangePerTap;
 
     virtual void loadPointAttributes(AttributeService * service, const PointAttribute & attribute);
 
