@@ -109,8 +109,7 @@ public interface CustomerAccountDao {
      * @param yukonEnergyCompany - the top level energy company which will be searched
      * @return
      */
-    public CustomerAccount getByAccountNumberForDescendentsOfEnergyCompany(String accountNumber, 
-                                                                           YukonEnergyCompany yukonEnergyCompany);
+    public CustomerAccount getByAccountNumberForDescendentsOfEnergyCompany(String accountNumber,  YukonEnergyCompany yukonEnergyCompany);
     
     /**
      * Method to get a total count of the number of customer accounts in the system.

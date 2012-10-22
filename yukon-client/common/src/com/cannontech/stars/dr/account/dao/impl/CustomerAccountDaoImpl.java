@@ -196,8 +196,8 @@ public class CustomerAccountDaoImpl implements CustomerAccountDao, InitializingB
     }
     
     @Override
-    public CustomerAccount getByAccountNumberForDescendentsOfEnergyCompany(final String accountNumber,
-                                                               YukonEnergyCompany yukonEnergyCompany) {
+    public CustomerAccount getByAccountNumberForDescendentsOfEnergyCompany(final String accountNumber, YukonEnergyCompany yukonEnergyCompany) {
+
         LiteStarsEnergyCompany energyCompany = starsDatabaseCache.getEnergyCompany(yukonEnergyCompany);
         List<LiteStarsEnergyCompany> allDescendants = ECUtils.getAllDescendants(energyCompany);
         List<Integer> energyCompanyIds = 
