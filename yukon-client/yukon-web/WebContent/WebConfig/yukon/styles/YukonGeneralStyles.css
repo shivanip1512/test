@@ -2568,7 +2568,7 @@ a.pv_history:hover {
     width: 66%;
 }
 
-.category {
+.dashboard .category {
     height: 64px;
     margin: 0 30px 20px 0;
 }
