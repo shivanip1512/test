@@ -9,6 +9,7 @@
 #include "millisecond_timer.h"
 #include "database_connection.h"
 #include "database_reader.h"
+#include "database_transaction.h"
 #include "control_history_association.h"
 #include "amq_connection.h"
 #include "ControlHistoryAssociationResponse.h"
@@ -1104,33 +1105,33 @@ void CtiPendingOpThread::writeLMControlHistoryToDB(bool justdoit)
                     return;
                 }
 
-                conn.beginTransaction();
-
-                try
                 {
-                    while( ( justdoit || (panicCounter < PANIC_CONSTANT) ) && (pTblEntry = _lmControlHistoryQueue.getQueue(0)) != NULL)
+                    Cti::Database::DatabaseTransaction trans(conn);
+
+                    try
                     {
-                        panicCounter++;
-                        if( pTblEntry->Insert(conn) )
+                        while( ( justdoit || (panicCounter < PANIC_CONSTANT) ) && (pTblEntry = _lmControlHistoryQueue.getQueue(0)) != NULL)
                         {
-                            writtenEntries.putQueue(pTblEntry);
+                            panicCounter++;
+                            if( pTblEntry->Insert(conn) )
+                            {
+                                writtenEntries.putQueue(pTblEntry);
+                            }
+                            else
+                            {
+                                // Error is logged by the insert function, do not send bad value to clients.
+                                delete pTblEntry;
+                            }
                         }
-                        else
+                    }
+                    catch(...)
+                    {
                         {
-                            // Error is logged by the insert function, do not send bad value to clients.
-                            delete pTblEntry;
+                            CtiLockGuard<CtiLogger> doubt_guard(dout);
+                            dout << CtiTime() << " **** EXCEPTION Checkpoint **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
                         }
                     }
                 }
-                catch(...)
-                {
-                    {
-                        CtiLockGuard<CtiLogger> doubt_guard(dout);
-                        dout << CtiTime() << " **** EXCEPTION Checkpoint **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
-                    }
-                }
-
-                conn.commitTransaction();
             }
             if( panicCounter > 0 )
             {
@@ -1203,26 +1204,26 @@ void CtiPendingOpThread::writeDynamicLMControlHistoryToDB(bool justdoit)
                     return;
                 }
 
-                conn.beginTransaction();
-
-                try
                 {
-                    while( ( justdoit || (panicCounter < PANIC_CONSTANT) ) && (pTblEntry = _dynLMControlHistoryQueue.getQueue(0)) != NULL)
+                    Cti::Database::DatabaseTransaction trans(conn);
+
+                    try
                     {
-                        panicCounter++;
-                        pTblEntry->UpdateDynamic(conn);
-                        delete pTblEntry;
+                        while( ( justdoit || (panicCounter < PANIC_CONSTANT) ) && (pTblEntry = _dynLMControlHistoryQueue.getQueue(0)) != NULL)
+                        {
+                            panicCounter++;
+                            pTblEntry->UpdateDynamic(conn);
+                            delete pTblEntry;
+                        }
+                    }
+                    catch(...)
+                    {
+                        {
+                            CtiLockGuard<CtiLogger> doubt_guard(dout);
+                            dout << CtiTime() << " **** EXCEPTION Checkpoint **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
+                        }
                     }
                 }
-                catch(...)
-                {
-                    {
-                        CtiLockGuard<CtiLogger> doubt_guard(dout);
-                        dout << CtiTime() << " **** EXCEPTION Checkpoint **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
-                    }
-                }
-
-                conn.commitTransaction();
             }
             if( panicCounter > 0 )
             {

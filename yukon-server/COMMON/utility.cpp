@@ -2,6 +2,7 @@
 
 #include "dbaccess.h"
 #include "database_reader.h"
+#include "database_transaction.h"
 #include "database_writer.h"
 #include "logger.h"
 #include "numstr.h"
@@ -475,37 +476,36 @@ INT SynchronizedIdGen(string name, int values_needed)
             return 0;
         }
 
-        connection.beginTransaction();
-
-        static const string updaterSql = "update sequencenumber set lastvalue = lastvalue + ?"
-                                         " where sequencename = ?";
-        DatabaseWriter updater(connection, updaterSql);
-
-        updater << values_needed << name;
-
-        status = executeUpdater(updater);
-
-        if(status)
         {
-            static const string readerSql = "select lastvalue from sequencenumber where sequencename = ?";
+            Cti::Database::DatabaseTransaction trans(connection);
+            static const string updaterSql = "update sequencenumber set lastvalue = lastvalue + ?"
+                                             " where sequencename = ?";
+            DatabaseWriter updater(connection, updaterSql);
 
-            DatabaseReader rdr(connection, readerSql);
-            rdr << name;
+            updater << values_needed << name;
 
-            rdr.execute();
+            status = executeUpdater(updater);
 
-            if(rdr() && rdr.isValid())
+            if(status)
             {
-                rdr >> last;
-            }
-            else
-            {
-                CtiLockGuard<CtiLogger> doubt_guard(dout);
-                dout << CtiTime() << " **** Checkpoint **** Problem reading sequence number: " << name << endl;
+                static const string readerSql = "select lastvalue from sequencenumber where sequencename = ?";
+
+                DatabaseReader rdr(connection, readerSql);
+                rdr << name;
+
+                rdr.execute();
+
+                if(rdr() && rdr.isValid())
+                {
+                    rdr >> last;
+                }
+                else
+                {
+                    CtiLockGuard<CtiLogger> doubt_guard(dout);
+                    dout << CtiTime() << " **** Checkpoint **** Problem reading sequence number: " << name << endl;
+                }
             }
         }
-
-        connection.commitTransaction();
     }
 
     return(last);

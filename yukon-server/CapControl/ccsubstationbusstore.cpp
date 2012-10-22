@@ -28,6 +28,7 @@
 #include "thread_monitor.h"
 #include "database_connection.h"
 #include "database_reader.h"
+#include "database_transaction.h"
 #include "database_writer.h"
 #include "ctistring.h"
 #include "PointResponse.h"
@@ -1084,9 +1085,8 @@ void CtiCCSubstationBusStore::dumpAllDynamicData()
 
                 return;
             }
-
-            conn.beginTransaction();
             {
+                Cti::Database::DatabaseTransaction trans(conn);
 
                 if(_ccGeoAreas->size() > 0 )
                 {
@@ -1152,7 +1152,6 @@ void CtiCCSubstationBusStore::dumpAllDynamicData()
                     }
                 }
             }
-            conn.commitTransaction();
         }
     }
     catch(...)

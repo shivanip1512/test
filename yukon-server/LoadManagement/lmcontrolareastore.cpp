@@ -44,6 +44,7 @@
 #include "dbaccess.h"
 #include "database_reader.h"
 #include "database_connection.h"
+#include "database_transaction.h"
 #include "ctibase.h"
 #include "logger.h"
 #include "msg_dbchg.h"
@@ -215,54 +216,55 @@ void CtiLMControlAreaStore::dumpAllDynamicData()
             return;
         }
 
-        conn.beginTransaction();
-
-        for( LONG i=0;i<_controlAreas->size();i++ )
         {
-            CtiLMControlArea* currentLMControlArea = (CtiLMControlArea*)(*_controlAreas)[i];
-            currentLMControlArea->dumpDynamicData(conn,currentDateTime);
+            Cti::Database::DatabaseTransaction trans(conn);
 
-            vector<CtiLMProgramBaseSPtr>& lmPrograms = currentLMControlArea->getLMPrograms();
-            if( lmPrograms.size() > 0 )
+            for( LONG i=0;i<_controlAreas->size();i++ )
             {
-                for( LONG j=0;j<lmPrograms.size();j++ )
+                CtiLMControlArea* currentLMControlArea = (CtiLMControlArea*)(*_controlAreas)[i];
+                currentLMControlArea->dumpDynamicData(conn,currentDateTime);
+
+                vector<CtiLMProgramBaseSPtr>& lmPrograms = currentLMControlArea->getLMPrograms();
+                if( lmPrograms.size() > 0 )
                 {
-                    CtiLMProgramBaseSPtr currentLMProgramBase = (CtiLMProgramBaseSPtr)lmPrograms[j];
-                    currentLMProgramBase->dumpDynamicData(conn,currentDateTime);
-
-                    if( currentLMProgramBase->getPAOType() ==  TYPE_LMPROGRAM_DIRECT )
+                    for( LONG j=0;j<lmPrograms.size();j++ )
                     {
-                        CtiLMProgramDirectSPtr currentLMProgramDirect = boost::static_pointer_cast< CtiLMProgramDirect>(currentLMProgramBase);
+                        CtiLMProgramBaseSPtr currentLMProgramBase = (CtiLMProgramBaseSPtr)lmPrograms[j];
+                        currentLMProgramBase->dumpDynamicData(conn,currentDateTime);
 
-                        CtiLMGroupVec groups  = currentLMProgramDirect->getLMProgramDirectGroups();
-                        for( CtiLMGroupIter k = groups.begin(); k != groups.end(); k++ )
+                        if( currentLMProgramBase->getPAOType() ==  TYPE_LMPROGRAM_DIRECT )
                         {
-                            CtiLMGroupPtr currentLMGroup  = *k;
-                            currentLMGroup->dumpDynamicData(conn,currentDateTime);
-                        }
-                    }
-                    else if( currentLMProgramBase->getPAOType() ==  TYPE_LMPROGRAM_CURTAILMENT )
-                    {
-                        CtiLMProgramCurtailmentSPtr currentLMProgramCurtailment = boost::static_pointer_cast< CtiLMProgramCurtailment>(currentLMProgramBase);
+                            CtiLMProgramDirectSPtr currentLMProgramDirect = boost::static_pointer_cast< CtiLMProgramDirect>(currentLMProgramBase);
 
-                        if( currentLMProgramCurtailment->getManualControlReceivedFlag() )
-                        {
-                            currentLMProgramCurtailment->dumpDynamicData(conn,currentDateTime);
-
-                            vector<CtiLMCurtailCustomer*>& lmCurtailCustomers = currentLMProgramCurtailment->getLMProgramCurtailmentCustomers();
-
-                            for( LONG k=0;k<lmCurtailCustomers.size();k++ )
+                            CtiLMGroupVec groups  = currentLMProgramDirect->getLMProgramDirectGroups();
+                            for( CtiLMGroupIter k = groups.begin(); k != groups.end(); k++ )
                             {
-                                CtiLMCurtailCustomer* currentLMCurtailCustomer = (CtiLMCurtailCustomer*)lmCurtailCustomers[k];
-                                currentLMCurtailCustomer->dumpDynamicData(conn,currentDateTime);
+                                CtiLMGroupPtr currentLMGroup  = *k;
+                                currentLMGroup->dumpDynamicData(conn,currentDateTime);
                             }
+                        }
+                        else if( currentLMProgramBase->getPAOType() ==  TYPE_LMPROGRAM_CURTAILMENT )
+                        {
+                            CtiLMProgramCurtailmentSPtr currentLMProgramCurtailment = boost::static_pointer_cast< CtiLMProgramCurtailment>(currentLMProgramBase);
 
+                            if( currentLMProgramCurtailment->getManualControlReceivedFlag() )
+                            {
+                                currentLMProgramCurtailment->dumpDynamicData(conn,currentDateTime);
+
+                                vector<CtiLMCurtailCustomer*>& lmCurtailCustomers = currentLMProgramCurtailment->getLMProgramCurtailmentCustomers();
+
+                                for( LONG k=0;k<lmCurtailCustomers.size();k++ )
+                                {
+                                    CtiLMCurtailCustomer* currentLMCurtailCustomer = (CtiLMCurtailCustomer*)lmCurtailCustomers[k];
+                                    currentLMCurtailCustomer->dumpDynamicData(conn,currentDateTime);
+                                }
+
+                            }
                         }
                     }
                 }
             }
         }
-        conn.commitTransaction();
     }
     else
     {

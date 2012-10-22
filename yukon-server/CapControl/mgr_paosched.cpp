@@ -8,11 +8,12 @@
 #include "msg_signal.h"
 #include "ctistring.h"
 #include "database_connection.h"
+#include "database_transaction.h"
 #include "database_reader.h"
 #include "database_writer.h"
 #include "ThreadStatusKeeper.h"
 #include "ExecutorFactory.h"
-#include "MsgVerifyBanks.h"
+#include "MsgVerifyBanks.h" 
 
 #include <stdlib.h>
 
@@ -841,51 +842,51 @@ void CtiPAOScheduleManager::updateDataBaseSchedules(std::list<CtiPAOSchedule*> &
                 return;
             }
 
-            conn.beginTransaction();
-
-            do
             {
+                Cti::Database::DatabaseTransaction trans(conn);
 
-                CtiPAOSchedule *currentSchedule = schedules.front();
-                schedules.pop_front();
-
-                if ( currentSchedule->isDirty() )
+                do
                 {
-                    static const std::string sql_update = "update paoschedule"
-                                                           " set "
-                                                                "nextruntime = ?, "
-                                                                "lastruntime = ?"
-                                                           " where "
-                                                                "scheduleid = ?";
 
-                    Cti::Database::DatabaseWriter   updater(conn, sql_update);
+                    CtiPAOSchedule *currentSchedule = schedules.front();
+                    schedules.pop_front();
 
-                    updater
-                        << currentSchedule->getNextRunTime()
-                        << currentSchedule->getLastRunTime()
-                        << currentSchedule->getScheduleId();
-
-                    bool success = executeUpdater(updater);
-
-                    if( success )
+                    if ( currentSchedule->isDirty() )
                     {
-                        currentSchedule->setDirty(false);
-                    }
-                    else
-                    {
-                        currentSchedule->setDirty(true);
+                        static const std::string sql_update = "update paoschedule"
+                                                               " set "
+                                                                    "nextruntime = ?, "
+                                                                    "lastruntime = ?"
+                                                               " where "
+                                                                    "scheduleid = ?";
+
+                        Cti::Database::DatabaseWriter   updater(conn, sql_update);
+
+                        updater
+                            << currentSchedule->getNextRunTime()
+                            << currentSchedule->getLastRunTime()
+                            << currentSchedule->getScheduleId();
+
+                        bool success = executeUpdater(updater);
+
+                        if( success )
                         {
-                            CtiLockGuard<CtiLogger> doubt_guard(dout);
-                            dout << CtiTime() << " **** Checkpoint **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
-                            dout << "  " << updater.asString() << endl;
+                            currentSchedule->setDirty(false);
+                        }
+                        else
+                        {
+                            currentSchedule->setDirty(true);
+                            {
+                                CtiLockGuard<CtiLogger> doubt_guard(dout);
+                                dout << CtiTime() << " **** Checkpoint **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
+                                dout << "  " << updater.asString() << endl;
+                            }
                         }
                     }
+                    //delete currentSchedule;
                 }
-                //delete currentSchedule;
+                while(!schedules.empty());
             }
-            while(!schedules.empty());
-
-            conn.commitTransaction();
         }
     }
     catch(...)

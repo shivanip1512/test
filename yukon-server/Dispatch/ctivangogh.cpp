@@ -48,6 +48,7 @@
 #include "logger.h"
 #include "database_connection.h"
 #include "database_reader.h"
+#include "database_transaction.h"
 #include "database_writer.h"
 
 #include "connection.h"
@@ -3032,45 +3033,45 @@ void CtiVanGogh::writeSignalsToDB(bool justdoit)
                     return;
                 }
 
-                conn.beginTransaction();
-
-                try
                 {
-                    do
-                    {
-                        sigMsg = _signalMsgQueue.getQueue(0);
+                    Cti::Database::DatabaseTransaction trans(conn);
 
-                        if(sigMsg != NULL)
+                    try
+                    {
+                        do
                         {
-                            CtiTableSignal sig(sigMsg->getId(), sigMsg->getMessageTime(), sigMsg->getSignalMillis(), sigMsg->getText(), sigMsg->getAdditionalInfo(), sigMsg->getSignalCategory(), sigMsg->getLogType(), sigMsg->getSOE(), sigMsg->getUser(), sigMsg->getLogID());
+                            sigMsg = _signalMsgQueue.getQueue(0);
 
-                            if(!sigMsg->getText().empty() || !sigMsg->getAdditionalInfo().empty())
+                            if(sigMsg != NULL)
                             {
-                                // No text, no point then is there now?
-                                sig.Insert(conn);
+                                CtiTableSignal sig(sigMsg->getId(), sigMsg->getMessageTime(), sigMsg->getSignalMillis(), sigMsg->getText(), sigMsg->getAdditionalInfo(), sigMsg->getSignalCategory(), sigMsg->getLogType(), sigMsg->getSOE(), sigMsg->getUser(), sigMsg->getLogID());
+
+                                if(!sigMsg->getText().empty() || !sigMsg->getAdditionalInfo().empty())
+                                {
+                                    // No text, no point then is there now?
+                                    sig.Insert(conn);
+                                }
+
+                                if(!(sigMsg->getTags() & TAG_REPORT_MSG_BLOCK_EXTRA_EMAIL))
+                                {
+                                    postList.push_back(sigMsg);
+                                }
+                                else
+                                {
+                                    delete sigMsg;
+                                }
                             }
 
-                            if(!(sigMsg->getTags() & TAG_REPORT_MSG_BLOCK_EXTRA_EMAIL))
-                            {
-                                postList.push_back(sigMsg);
-                            }
-                            else
-                            {
-                                delete sigMsg;
-                            }
-                        }
-
-                    } while( sigMsg != NULL && (justdoit || (panicCounter++ < 500)));
-                }
-                catch(...)
-                {
+                        } while( sigMsg != NULL && (justdoit || (panicCounter++ < 500)));
+                    }
+                    catch(...)
                     {
-                        CtiLockGuard<CtiLogger> doubt_guard(dout);
-                        dout << CtiTime() << " **** EXCEPTION Checkpoint **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
+                        {
+                            CtiLockGuard<CtiLogger> doubt_guard(dout);
+                            dout << CtiTime() << " **** EXCEPTION Checkpoint **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
+                        }
                     }
                 }
-
-                conn.commitTransaction();
             }
 
             if(panicCounter > 0)
@@ -3217,30 +3218,31 @@ void CtiVanGogh::writeCommErrorHistoryToDB(bool justdoit)
                     return;
                 }
 
-                conn.beginTransaction();
-
-                while( success && ( justdoit || (panicCounter < PANIC_CONSTANT) ) && (pTblEntry = _commErrorHistoryQueue.getQueue(0)) != NULL)
                 {
-                    if(pTblEntry)
+
+                    Cti::Database::DatabaseTransaction trans(conn);
+
+                    while( success && ( justdoit || (panicCounter < PANIC_CONSTANT) ) && (pTblEntry = _commErrorHistoryQueue.getQueue(0)) != NULL)
                     {
-                        if(isDeviceIdValid(pTblEntry->getPAOID()))
+                        if(pTblEntry)
                         {
-                            panicCounter++;
-                            success = pTblEntry->Insert(conn);
+                            if(isDeviceIdValid(pTblEntry->getPAOID()))
+                            {
+                                panicCounter++;
+                                success = pTblEntry->Insert(conn);
+                            }
+                            delete pTblEntry;
+                            pTblEntry = 0;
                         }
-                        delete pTblEntry;
-                        pTblEntry = 0;
-                    }
-                    else
-                    {
+                        else
                         {
-                            CtiLockGuard<CtiLogger> doubt_guard(dout);
-                            dout << CtiTime() << " **** Checkpoint **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
+                            {
+                                CtiLockGuard<CtiLogger> doubt_guard(dout);
+                                dout << CtiTime() << " **** Checkpoint **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
+                            }
                         }
                     }
                 }
-
-                conn.commitTransaction();
             }
 
             if( panicCounter > 0 )
@@ -6212,26 +6214,26 @@ UINT CtiVanGogh::writeRawPointHistory(bool justdoit, int maxrowstowrite)
             return 0;
         }
 
-        conn.beginTransaction();
+       {
+            Cti::Database::DatabaseTransaction trans(conn);
 
-        try
-        {
-            while( ( justdoit || (panicCounter < maxrowstowrite) ) && (pTblEntry = _archiverQueue.getQueue(0)) != NULL)
+            try
             {
-                panicCounter++;
-                pTblEntry->Insert(conn);
-                delete pTblEntry;
+                while( ( justdoit || (panicCounter < maxrowstowrite) ) && (pTblEntry = _archiverQueue.getQueue(0)) != NULL)
+                {
+                    panicCounter++;
+                    pTblEntry->Insert(conn);
+                    delete pTblEntry;
+                }
             }
-        }
-        catch(...)
-        {
+            catch(...)
             {
-                CtiLockGuard<CtiLogger> doubt_guard(dout);
-                dout << CtiTime() << " **** EXCEPTION Checkpoint **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
+                {
+                    CtiLockGuard<CtiLogger> doubt_guard(dout);
+                    dout << CtiTime() << " **** EXCEPTION Checkpoint **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
+                }
             }
-        }
-
-        conn.commitTransaction();
+       }
     }
     catch(...)
     {

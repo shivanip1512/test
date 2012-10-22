@@ -28,6 +28,7 @@
 #include "tbl_dyn_pttag.h"
 #include "database_connection.h"
 #include "database_reader.h"
+#include "database_transaction.h"
 
 using namespace std;
 
@@ -574,27 +575,28 @@ void CtiTagManager::processDynamicQueue()
             }
 
             TagTblDynamicMap_t::iterator itr;
-            conn.beginTransaction();
-
-            for(itr = _dynTagLogMap.begin(); itr != _dynTagLogMap.end(); itr++)
+           
             {
-                TagTblDynamicMap_t::value_type vt = *itr;
-                CtiTableDynamicTag &Tag = vt.second;
+                Cti::Database::DatabaseTransaction trans(conn);
 
-                if( ! Tag.Update(conn) )
+                for(itr = _dynTagLogMap.begin(); itr != _dynTagLogMap.end(); itr++)
                 {
-                    {
-                        CtiLockGuard<CtiLogger> doubt_guard(dout);
-                        dout << CtiTime() << " **** SQL Update Error **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
-                        Tag.dump();
-                    }
+                    TagTblDynamicMap_t::value_type vt = *itr;
+                    CtiTableDynamicTag &Tag = vt.second;
 
-                    failed = true;
-                    break;
+                    if( ! Tag.Update(conn) )
+                    {
+                        {
+                            CtiLockGuard<CtiLogger> doubt_guard(dout);
+                            dout << CtiTime() << " **** SQL Update Error **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
+                            Tag.dump();
+                        }
+
+                        failed = true;
+                        break;
+                    }
                 }
             }
-
-            conn.commitTransaction();
 
             if(!failed) _dynTagLogMap.clear();
         }
@@ -620,25 +622,25 @@ void CtiTagManager::processTagLogQueue()
                 return;
             }
 
-            conn.beginTransaction();
-
-            while((pTag = _tagLogQueue.getQueue(500)) != 0)
             {
-                if( ! pTag->Update(conn) )
+                Cti::Database::DatabaseTransaction trans(conn);
+
+                while((pTag = _tagLogQueue.getQueue(500)) != 0)
                 {
+                    if( ! pTag->Update(conn) )
                     {
-                        CtiLockGuard<CtiLogger> doubt_guard(dout);
-                        dout << CtiTime() << " **** SQL Update Error **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
-                        pTag->dump();
+                        {
+                            CtiLockGuard<CtiLogger> doubt_guard(dout);
+                            dout << CtiTime() << " **** SQL Update Error **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
+                            pTag->dump();
+                        }
+
+                        break;
                     }
-
-                    break;
+                    else
+                        delete pTag;
                 }
-                else
-                    delete pTag;
             }
-
-            conn.commitTransaction();
         }
     }
 }

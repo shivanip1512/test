@@ -7,6 +7,7 @@
 #include "dbaccess.h"
 #include "database_reader.h"
 #include "database_connection.h"
+#include "database_transaction.h"
 #include "devicetypes.h"
 #include "msg_ptreg.h"
 #include "msg_pcreturn.h"
@@ -760,36 +761,36 @@ void CtiPointClientManager::writeRecordsToDB(list<CtiTablePointDispatch> &update
         return;
     }
 
-    conn.beginTransaction();
-
     {
-        CtiLockGuard<CtiLogger> doubt_guard(dout);
-        dout << CtiTime() << " WRITING " << updateList.size() << " dynamic dispatch records. " << endl;
-    }
-
-    int total = updateList.size();
-
-    for(updateListIter = updateList.begin(); updateListIter != updateList.end(); updateListIter++)
-    {
-        listCount ++;
-        if(!updateListIter->getUpdatedFlag())
-        {
-            updateListIter->Insert(conn);
-        }
-        else
-        {
-            updateListIter->Update(conn);
-        }
-
-        if(listCount % 1000 == 0)
+        Cti::Database::DatabaseTransaction trans(conn);
+         
         {
             CtiLockGuard<CtiLogger> doubt_guard(dout);
-            dout << CtiTime() << " WRITING dynamic dispatch records to DB, " << listCount << " of " << total << " records written. " << endl;
+            dout << CtiTime() << " WRITING " << updateList.size() << " dynamic dispatch records. " << endl;
         }
-    }
-    updateList.clear();
 
-    conn.commitTransaction();
+        int total = updateList.size();
+
+        for(updateListIter = updateList.begin(); updateListIter != updateList.end(); updateListIter++)
+        {
+            listCount ++;
+            if(!updateListIter->getUpdatedFlag())
+            {
+                updateListIter->Insert(conn);
+            }
+            else
+            {
+                updateListIter->Update(conn);
+            }
+
+            if(listCount % 1000 == 0)
+            {
+                CtiLockGuard<CtiLogger> doubt_guard(dout);
+                dout << CtiTime() << " WRITING dynamic dispatch records to DB, " << listCount << " of " << total << " records written. " << endl;
+            }
+        }
+        updateList.clear();
+    }
 }
 
 void CtiPointClientManager::removeOldDynamicData()

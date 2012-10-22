@@ -37,6 +37,7 @@
 #include "thread_monitor.h"
 #include "ThreadStatusKeeper.h"
 #include "database_connection.h"
+#include "database_transaction.h"
 
 #include "millisecond_timer.h"
 
@@ -1611,28 +1612,28 @@ INT RecordDynamicData()
          */
         ScannerDeviceManager.apply(applyGenerateScannerDataRows, (void*)&dirtyData);
 
-        conn.beginTransaction();
-
-        try
         {
-            vector< CtiTableDeviceScanData >::iterator dirtyit;
-
-            for(dirtyit = dirtyData.begin(); dirtyit != dirtyData.end(); dirtyit++)
+            Cti::Database::DatabaseTransaction trans(conn);
+            try
             {
-                CtiTableDeviceScanData &dirty = *dirtyit;
-                dirty.Update(conn);
+                vector< CtiTableDeviceScanData >::iterator dirtyit;
+
+                for(dirtyit = dirtyData.begin(); dirtyit != dirtyData.end(); dirtyit++)
+                {
+                    CtiTableDeviceScanData &dirty = *dirtyit;
+                    dirty.Update(conn);
+                }
+            }
+            catch(...)
+            {
+                {
+                    CtiLockGuard<CtiLogger> doubt_guard(dout);
+                    dout << CtiTime() << " **** EXCEPTION **** " << __FILE__ << " (" << __LINE__ << ") ";
+                    dout << " Trying to commit transaction on DynamicDeviceScanData" << endl;
+
+                }
             }
         }
-        catch(...)
-        {
-            {
-                CtiLockGuard<CtiLogger> doubt_guard(dout);
-                dout << CtiTime() << " **** EXCEPTION **** " << __FILE__ << " (" << __LINE__ << ") ";
-                dout << " Trying to commit transaction on DynamicDeviceScanData" << endl;
-
-            }
-        }
-        conn.commitTransaction();
     }
 
     return status;
