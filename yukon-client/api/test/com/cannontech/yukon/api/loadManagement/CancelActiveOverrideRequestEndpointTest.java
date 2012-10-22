@@ -172,8 +172,7 @@ public class CancelActiveOverrideRequestEndpointTest {
     private class MockCustomerAccountDao extends CustomerAccountDaoAdapter {
 
         @Override
-        public CustomerAccount getByAccountNumberForDescendentsOfEnergyCompany(String accountNumber,
-                                                                               YukonEnergyCompany energyCompany) {
+        public CustomerAccount getByAccountNumberForDescendentsOfEnergyCompany(String accountNumber, YukonEnergyCompany energyCompany) {
             if (accountNumber.equals(UNKNOWN_ACCOUNT_NUMBER)) {
                 throw new NotFoundException("Unknown account");
             } else {
