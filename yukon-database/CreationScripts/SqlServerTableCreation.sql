@@ -1,7 +1,7 @@
 /*==============================================================*/
 /* Database name:  YukonDatabase                                */
 /* DBMS name:      Microsoft SQL Server 2005                    */
-/* Created on:     10/18/2012 2:04:44 PM                        */
+/* Created on:     10/22/2012 11:02:40 AM                       */
 /*==============================================================*/
 
 /*==============================================================*/
@@ -9699,9 +9699,9 @@ create table YukonUser (
 )
 go
 
-INSERT INTO yukonuser VALUES (-9999, '(none)', '(none)', 'Enabled', 'PLAIN', '01-JAN-2000', 'N', null);
-INSERT INTO yukonuser VALUES (-100, 'DefaultCTI', '$cti_default', 'Enabled', 'PLAIN', '01-JAN-2000', 'Y', -1);
-INSERT INTO yukonuser VALUES (-2, 'yukon', 'yukon', 'Enabled', 'PLAIN', '01-JAN-2000', 'Y', -1);
+INSERT INTO yukonuser VALUES (-9999, '(none)', '(none)', 'Disabled', 'PLAIN', '01-JAN-2000', 'N', null);
+INSERT INTO yukonuser VALUES (-100, 'DefaultCTI', '$cti_default', 'Disabled', 'PLAIN', '01-JAN-2000', 'Y', -1);
+INSERT INTO yukonuser VALUES (-2, 'yukon', 'yukon', 'Disabled', 'PLAIN', '01-JAN-2000', 'Y', -1);
 INSERT INTO yukonuser VALUES (-1, 'admin', 'admin', 'Enabled', 'PLAIN', '01-JAN-2000', 'Y', -1);
 
 /*==============================================================*/
