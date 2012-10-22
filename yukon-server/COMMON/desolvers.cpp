@@ -147,6 +147,8 @@ string desolveDeviceType( int aType )
         case TYPEMCT430S4:      Ret = "mct-430s4";      break;
         case TYPEMCT430SL:      Ret = "mct-430sl";      break;
         case TYPEMCT470:        Ret = "mct-470";        break;
+        case TYPEMCT440_2131B:  Ret = "mct-440-2131b";  break;
+        case TYPEMCT440_2133B:  Ret = "mct-440-2133b";  break;
         case TYPELMT2:          Ret = "lmt-2";          break;
 
         case TYPERFN430A3:      Ret = "rfn-430a3";  break;
