@@ -24,6 +24,7 @@ import com.cannontech.core.dao.DuplicateException;
 import com.cannontech.core.roleproperties.MspPaoNameAliasEnum;
 import com.cannontech.core.roleproperties.MultispeakMeterLookupFieldEnum;
 import com.cannontech.core.roleproperties.YukonRoleProperty;
+import com.cannontech.database.data.lite.LiteYukonUser;
 import com.cannontech.i18n.YukonMessageSourceResolvable;
 import com.cannontech.multispeak.client.MultispeakDefines;
 import com.cannontech.multispeak.client.MultispeakFuncs;
@@ -32,8 +33,10 @@ import com.cannontech.multispeak.dao.MspObjectDao;
 import com.cannontech.multispeak.dao.MultispeakDao;
 import com.cannontech.multispeak.db.MultispeakInterface;
 import com.cannontech.multispeak.deploy.service.ErrorObject;
+import com.cannontech.servlet.YukonUserContextUtils;
 import com.cannontech.system.GlobalSettingType;
 import com.cannontech.system.dao.GlobalSettingUpdateDao;
+import com.cannontech.user.YukonUserContext;
 import com.cannontech.web.amr.meter.service.MspMeterSearchService;
 import com.cannontech.web.common.flashScope.FlashScope;
 import com.cannontech.web.security.annotation.CheckRoleProperty;
@@ -355,24 +358,25 @@ public class MultispeakController {
         MultispeakMeterLookupFieldEnum mspMeterLookupField = ServletRequestEnumUtils.getEnumParameter(request, MultispeakMeterLookupFieldEnum.class, "mspMeterLookupField", oldMspMeterLookupField);
         
         try {
-            
+            YukonUserContext yukonUserContext = YukonUserContextUtils.getYukonUserContext(request);
+            LiteYukonUser user = yukonUserContext.getYukonUser();
             // update Primary CIS Vendor
             if (oldMspPrimaryCIS != mspPrimaryCIS) {
-                globalSettingUpdateDao.updateSettingValue(GlobalSettingType.MSP_PRIMARY_CB_VENDORID, String.valueOf(mspPrimaryCIS), null);
+                globalSettingUpdateDao.updateSettingValue(GlobalSettingType.MSP_PRIMARY_CB_VENDORID, String.valueOf(mspPrimaryCIS), user);
                 //reload the search field methods since primaryCIS has changed
                 mspMeterSearchService.loadMspSearchFields(mspPrimaryCIS);
             }
             if (oldMspPaoNameAliasExtension != mspPaoNameAliasExtension) {
                 // update PaoName Alias Extension field name
-                globalSettingUpdateDao.updateSettingValue(GlobalSettingType.MSP_PAONAME_EXTENSION, mspPaoNameAliasExtension, null);
+                globalSettingUpdateDao.updateSettingValue(GlobalSettingType.MSP_PAONAME_EXTENSION, mspPaoNameAliasExtension, user);
             }            
             if (oldMspPaoNameAlias != mspPaoNameAlias) {
                 // update PaoName Alias
-                globalSettingUpdateDao.updateSettingValue(GlobalSettingType.MSP_PAONAME_ALIAS, String.valueOf(mspPaoNameAlias), null);
+                globalSettingUpdateDao.updateSettingValue(GlobalSettingType.MSP_PAONAME_ALIAS, String.valueOf(mspPaoNameAlias), user);
             }
             if ( oldMspMeterLookupField != mspMeterLookupField) {
                 // update Meter Lookup Field
-                globalSettingUpdateDao.updateSettingValue(GlobalSettingType.MSP_METER_LOOKUP_FIELD, String.valueOf(mspMeterLookupField), null);
+                globalSettingUpdateDao.updateSettingValue(GlobalSettingType.MSP_METER_LOOKUP_FIELD, String.valueOf(mspMeterLookupField), user);
             }
         } catch (Exception e) {
             CTILogger.error( "Global Settings for MultiSpeak Setup not saved", e );
