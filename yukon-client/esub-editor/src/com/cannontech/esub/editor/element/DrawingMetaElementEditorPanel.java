@@ -7,7 +7,6 @@ import java.awt.GridBagLayout;
 import java.awt.Insets;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
-import java.util.Iterator;
 
 import javax.swing.JButton;
 import javax.swing.JColorChooser;
@@ -24,6 +23,7 @@ import com.cannontech.core.dao.DaoFactory;
 import com.cannontech.database.data.lite.LiteYukonRole;
 import com.cannontech.esub.editor.EditorPrefs;
 import com.cannontech.esub.element.DrawingMetaElement;
+import com.cannontech.roles.operator.EsubDrawingsRole;
 
 /**
  * Creation date: (12/5/2002 4:16:03 PM)
@@ -335,11 +335,8 @@ public class DrawingMetaElementEditorPanel extends DataInputPanel {
             try {
                 ivjYukonRoleComboBox = new javax.swing.JComboBox();
                 ivjYukonRoleComboBox.setName("YukonRoleComboBox");
-                Iterator i = DaoFactory.getAuthDao().getRoles("eSubstation").iterator();
-                while(i.hasNext()) {
-                    LiteYukonRole r = (LiteYukonRole) i.next();
-                    ivjYukonRoleComboBox.addItem(r);
-                }
+                LiteYukonRole r = DaoFactory.getAuthDao().getRole(EsubDrawingsRole.ROLEID);
+                ivjYukonRoleComboBox.addItem(r);
             } catch (java.lang.Throwable ivjExc) {
                 handleException(ivjExc);
             }

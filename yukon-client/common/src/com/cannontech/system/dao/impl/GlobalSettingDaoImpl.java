@@ -104,8 +104,10 @@ public class GlobalSettingDaoImpl implements GlobalSettingDao {
                 setting.setValue(type.getDefaultValue());
             } 
             cache.put(type, setting);
-            log.debug("Updating cache for " + type);
-        } else {
+            if (log.isDebugEnabled()) {
+                log.debug("Updating cache for " + type);
+            }
+        } else if(log.isDebugEnabled()) {
             log.debug("Cache hit for " + type);
         }
         

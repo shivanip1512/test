@@ -375,7 +375,7 @@ public class MultispeakController {
                 globalSettingUpdateDao.updateSettingValue(GlobalSettingType.MSP_METER_LOOKUP_FIELD, String.valueOf(mspMeterLookupField), null);
             }
         } catch (Exception e) {
-            CTILogger.error( "Role Properties for MultiSpeak Setup not saved", e );
+            CTILogger.error( "Global Settings for MultiSpeak Setup not saved", e );
         }
 
     }

@@ -35,7 +35,7 @@ public enum GlobalSettingSubCategory implements DisplayableEnum {
     }
     
     public String getDescriptionKey() {
-        return "yukon.common.setting.subcategory." + name() + ".description";
+        return getFormatKey() + ".description";
     }
     
 }

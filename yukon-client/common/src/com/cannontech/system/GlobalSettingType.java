@@ -122,6 +122,10 @@ public enum GlobalSettingType implements DisplayableEnum {
     ;
     
     private static final ImmutableSetMultimap<GlobalSettingSubCategory, GlobalSettingType> categoryMapping;
+    private final InputType<?> type;
+    private final  Object defaultValue;
+    private final  GlobalSettingSubCategory category;
+
     static {
         final Builder<GlobalSettingSubCategory, GlobalSettingType> b = ImmutableSetMultimap.builder();
         for (GlobalSettingType globalSettingType : values()) {
@@ -130,9 +134,6 @@ public enum GlobalSettingType implements DisplayableEnum {
         categoryMapping = b.build();
     }
     
-    private final InputType<?> type;
-    private Object defaultValue;
-    private GlobalSettingSubCategory category;
     private GlobalSettingType(GlobalSettingSubCategory category, InputType<?> type, Object defaultValue) {
         this.type = type;
         this.category = category;
@@ -157,7 +158,7 @@ public enum GlobalSettingType implements DisplayableEnum {
     }
     
     public String getDescriptionKey() {
-        return "yukon.common.setting." + name() + ".description";
+        return getFormatKey() + ".description";
     }
     
     public static Set<GlobalSettingType> getSettingsForCategory(GlobalSettingSubCategory category) {

@@ -17,6 +17,7 @@ import com.cannontech.user.checker.NotUserChecker;
 import com.cannontech.user.checker.NullUserChecker;
 import com.cannontech.user.checker.RolePropertyUserCheckerFactory;
 import com.cannontech.user.checker.UserChecker;
+import com.cannontech.user.checker.UserCheckerBase;
 import com.google.common.collect.Lists;
 
 public class RoleAndPropertyDescriptionService {
@@ -104,11 +105,9 @@ public class RoleAndPropertyDescriptionService {
 
                 boolean bool = globalSettingDao.checkSetting(GlobalSettingType.valueOf(someEnumName));
 
-                UserChecker propertyChecker;
+                UserChecker propertyChecker = bool ? UserCheckerBase.TRUE : UserCheckerBase.FALSE;
                 if (inverted) {
-                    propertyChecker = userCheckerFactory.createBooleanChecker(!bool);
-                } else {
-                    propertyChecker = userCheckerFactory.createBooleanChecker(bool);
+                    propertyChecker = bool ? UserCheckerBase.FALSE : UserCheckerBase.TRUE;
                 }
                 checkers.add(propertyChecker);
                 continue;
@@ -121,11 +120,9 @@ public class RoleAndPropertyDescriptionService {
             	MasterConfigBooleanKeysEnum key = MasterConfigBooleanKeysEnum.valueOf(someEnumName);
             	boolean bool = configurationSource.getBoolean(key);
 
-                UserChecker propertyChecker;
+                UserChecker propertyChecker = bool ? UserCheckerBase.TRUE : UserCheckerBase.FALSE;
                 if (inverted) {
-                    propertyChecker = userCheckerFactory.createBooleanChecker(!bool);
-                } else {
-                    propertyChecker = userCheckerFactory.createBooleanChecker(bool);
+                    propertyChecker = bool ? UserCheckerBase.FALSE : UserCheckerBase.TRUE;
                 }
                 checkers.add(propertyChecker);
                 continue;
