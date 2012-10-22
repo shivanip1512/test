@@ -10,7 +10,7 @@
     <xsd:complexType name="ThermostatScheduleResponse">
         <xsd:annotation>
             <xsd:documentation xml:lang="en">
-                This is the response for retrieving a thermostat schedule.  The sending of this request is handled through the thermostatScheduleRequest.
+                This is the response for retrieving a thermostat schedule.
             </xsd:documentation>
         </xsd:annotation>
     

@@ -9,7 +9,7 @@
     <xsd:complexType name="DeleteThermostatScheduleResponse">
         <xsd:annotation>
             <xsd:documentation xml:lang="en">
-                This is the response for deleting a thermostat schedule.  The sending of this request is handled through the through the deleteThermostatScheduleRequest.
+                This is the response for deleting a thermostat schedule.
             </xsd:documentation>
         </xsd:annotation>
     

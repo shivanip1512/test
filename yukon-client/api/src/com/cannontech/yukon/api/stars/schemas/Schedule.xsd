@@ -6,12 +6,6 @@
             elementFormDefault="qualified" version="1.0">
 
     <xsd:include schemaLocation="../../common/schemas/Types.xsd"/>
-    
-    <xsd:annotation>
-        <xsd:documentation xml:lang="en">
-            This is an XML represent of a Yukon thermostat schedule object that is used for updating thermostat schedules as well as retrieving them.
-        </xsd:documentation>
-    </xsd:annotation>
 
     <xsd:complexType name="ThermostatSchedulePeriod">
         <xsd:sequence>
@@ -29,6 +23,11 @@
     </xsd:complexType>
 
     <xsd:complexType name="Schedule">
+        <xsd:annotation>
+            <xsd:documentation xml:lang="en">
+                A thermostat schedule representation used for both updating and retrieving thermostat schedules.
+            </xsd:documentation>
+        </xsd:annotation>
         <xsd:sequence>
             <xsd:element name="scheduleName" type="xsd:string"/>
             <xsd:element name="schedulePeriod" type="yukon:SchedulePeriod" maxOccurs="7"/>

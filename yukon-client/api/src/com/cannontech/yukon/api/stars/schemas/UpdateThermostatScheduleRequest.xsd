@@ -11,8 +11,8 @@
     <xsd:complexType name="UpdateThermostatScheduleRequest">
         <xsd:annotation>
             <xsd:documentation xml:lang="en">
-                This web service creates or edits the thermostat schedule supplied and saves it into Yukon.  
-                The thermostatScheduleId attribute determines if the service tries to create a thermostat schedule or edit one.
+                This web service creates or edits the thermostat schedule supplied and saves it into Yukon.  If thermostatScheduleId attribute is 
+                not provided, the request will create a thermostat schedule. Otherwise, the schedule with the provided thermostatScheduleId will be updated.
             </xsd:documentation>
         </xsd:annotation>
     

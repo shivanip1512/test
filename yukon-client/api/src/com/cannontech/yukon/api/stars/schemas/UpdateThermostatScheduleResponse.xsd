@@ -9,7 +9,7 @@
     <xsd:complexType name="UpdateThermostatScheduleResponse">
         <xsd:annotation>
             <xsd:documentation xml:lang="en">
-                This is the response for creating or editing an existing thermostat schedule.  The sending of this request is handled through the through the updateThermostatScheduleRequest.
+                This is the response for creating or editing an existing thermostat schedule.
             </xsd:documentation>
         </xsd:annotation>
     
