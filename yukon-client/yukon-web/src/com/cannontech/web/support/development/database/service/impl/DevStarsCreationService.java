@@ -2,6 +2,7 @@ package com.cannontech.web.support.development.database.service.impl;
 
 import java.util.Date;
 import java.util.List;
+import java.util.concurrent.locks.ReentrantLock;
 
 import org.apache.commons.lang.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -24,7 +25,6 @@ import com.cannontech.stars.core.dao.ECMappingDao;
 import com.cannontech.stars.core.dao.InventoryBaseDao;
 import com.cannontech.stars.core.service.YukonEnergyCompanyService;
 import com.cannontech.stars.database.data.lite.LiteStarsEnergyCompany;
-import com.cannontech.stars.dr.account.dao.CustomerAccountDao;
 import com.cannontech.stars.dr.account.model.AccountDto;
 import com.cannontech.stars.dr.account.model.CustomerAccount;
 import com.cannontech.stars.dr.account.model.UpdatableAccount;
@@ -48,25 +48,40 @@ public class DevStarsCreationService extends DevObjectCreationBase {
     @Autowired private YukonGroupDao yukonGroupDao;
     @Autowired private ECMappingDao ecMappingDao;
     @Autowired private AccountService accountService;
-    @Autowired private CustomerAccountDao customerAccountDao;
     @Autowired private HardwareUiService hardwareUiService;
     @Autowired private InventoryBaseDao inventoryBaseDao;
     @Autowired private UserGroupDao userGroupDao;
-    
-    @Override
-    protected void createAll() {
-        if (devDbSetupTask.getDevStars().getEnergyCompany() == null) {
-            createOperatorsGroup(devDbSetupTask.getDevStars());
-            createEnergyCompany(devDbSetupTask.getDevStars());
-        }
-        createResidentialGroup(devDbSetupTask.getDevStars());
-        setupStarsAccounts(devDbSetupTask.getDevStars());
-        createStars(devDbSetupTask.getDevStars());
+
+    private static int complete = 1;
+    private static int total = 1;
+    private static final ReentrantLock _lock = new ReentrantLock();
+
+    public boolean isRunning() {
+        return _lock.isLocked();
     }
-    
-    @Override
-    protected void logFinalExecutionDetails() {
-        log.info("Stars:");
+
+    public void executeSetup(DevStars devStars) {
+        if (_lock.tryLock()) try {
+            total = devStars.getTotal();
+            complete = 0;
+            if (devStars.getEnergyCompany() == null) {
+                createOperatorsGroup(devStars);
+                createEnergyCompany(devStars);
+            }
+            createResidentialGroup(devStars);
+            setupStarsAccounts(devStars);
+            createStars(devStars);
+        } finally {
+            _lock.unlock();
+        }
+    }
+
+    public int getPercentComplete() {
+        if (total >= 1) {
+            return (complete*100) / total;
+        } else { 
+            return 0;
+        }
     }
     
     private void createOperatorsGroup(DevStars devStars) {
@@ -74,14 +89,14 @@ public class DevStarsCreationService extends DevObjectCreationBase {
         roleGroup.setGroupDescription(devStars.getNewEnergyCompanyName() + " Operators Grp");
         roleGroup.setGroupName(devStars.getNewEnergyCompanyName() + " Operators Grp");
         yukonGroupDao.save(roleGroup);
-        
+
         setRoleProperty(roleGroup, YukonRoleProperty.POINT_ID_EDIT, " ");
         setRoleProperty(roleGroup, YukonRoleProperty.DBEDITOR_LM, " ");
         setRoleProperty(roleGroup, YukonRoleProperty.DBEDITOR_SYSTEM, " ");
         setRoleProperty(roleGroup, YukonRoleProperty.UTILITY_ID_RANGE, " ");
         setRoleProperty(roleGroup, YukonRoleProperty.PERMIT_LOGIN_EDIT, " ");
         setRoleProperty(roleGroup, YukonRoleProperty.ALLOW_MEMBER_PROGRAMS, " ");
-        
+
         setRoleProperty(roleGroup, YukonRoleProperty.LOADCONTROL_EDIT, " ");
         setRoleProperty(roleGroup, YukonRoleProperty.MACS_EDIT, " ");
         setRoleProperty(roleGroup, YukonRoleProperty.TDC_EXPRESS, " ");
@@ -90,7 +105,7 @@ public class DevStarsCreationService extends DevObjectCreationBase {
         setRoleProperty(roleGroup, YukonRoleProperty.TDC_ALARM_COUNT, " ");
         setRoleProperty(roleGroup, YukonRoleProperty.DECIMAL_PLACES, " ");
         setRoleProperty(roleGroup, YukonRoleProperty.LC_REDUCTION_COL, " ");
-        
+
         setRoleProperty(roleGroup, YukonRoleProperty.GRAPH_EDIT_GRAPHDEFINITION, " ");
         setRoleProperty(roleGroup, YukonRoleProperty.TRENDING_DISCLAIMER, " ");
         setRoleProperty(roleGroup, YukonRoleProperty.SCAN_NOW_ENABLED, " ");
@@ -103,21 +118,21 @@ public class DevStarsCreationService extends DevObjectCreationBase {
         setRoleProperty(roleGroup, YukonRoleProperty.DCU_SA305_SERIAL_MODEL,false);
         setRoleProperty(roleGroup, YukonRoleProperty.LC_REDUCTION_COL, " ");
         setRoleProperty(roleGroup, YukonRoleProperty.COMMANDS_GROUP, " ");
-        
+
         setRoleProperty(roleGroup, YukonRoleProperty.DYNAMIC_BILLING_FILE_SETUP, " ");
-        
+
         // Creating the operator user group that the group above will be mapped to.
         UserGroup userGroup = new UserGroup();
         userGroup.setUserGroupDescription(devStars.getNewEnergyCompanyName() + " Operators Grp");
         userGroup.setUserGroupName(devStars.getNewEnergyCompanyName() + " Operators Grp");
         userGroupDao.create(userGroup);
         userGroupDao.createUserGroupToYukonGroupMappng(userGroup.getUserGroupId(), roleGroup.getGroupID());
-        
+
         devStars.setUserGroupOperator(userGroup.getLiteUserGroup());
     }
-    
+
     private void createEnergyCompany(DevStars devStars) {
-        
+
         EnergyCompanyDto energyCompanyDto = new EnergyCompanyDto();
         energyCompanyDto.setName(devStars.getNewEnergyCompanyName());
         energyCompanyDto.setEmail("info@cannontech.com");
@@ -126,9 +141,9 @@ public class DevStarsCreationService extends DevObjectCreationBase {
         energyCompanyDto.setAdminUsername(username);
         energyCompanyDto.setAdminPassword1(username);
         energyCompanyDto.setAdminPassword2(username);
-        
+
         LiteYukonUser yukonUser = yukonUserDao.getLiteYukonUser(UserUtils.USER_YUKON_ID);
-        
+
         try {
             LiteStarsEnergyCompany ec = energyCompanyService.createEnergyCompany(energyCompanyDto,  yukonUser, null);
             devStars.setEnergyCompany(ec);
@@ -136,7 +151,7 @@ public class DevStarsCreationService extends DevObjectCreationBase {
             log.error("Unable to create new energycompany " + energyCompanyDto.getName());
             throw new RuntimeException(e);
         }
-        
+
         try {
             if (!energyCompanyService.isOperator(yukonUser)) {
                 ecMappingDao.addEnergyCompanyOperatorLoginListMapping(yukonUser, devStars.getEnergyCompany());
@@ -149,7 +164,7 @@ public class DevStarsCreationService extends DevObjectCreationBase {
             log.warn("Unable to link new energy company to yukon/yukon",e);
         }
     }
-    
+
     private void createResidentialGroup(DevStars devStars) {
         int energyCompanyId = devStars.getEnergyCompany().getEnergyCompanyId();
         List<LiteUserGroup> residentialUserGroups = ecMappingDao.getResidentialUserGroups(energyCompanyId);
@@ -174,7 +189,7 @@ public class DevStarsCreationService extends DevObjectCreationBase {
             setRoleProperty(roleGroup, YukonRoleProperty.NAV_CONNECTOR_BOTTOM, " ");
             setRoleProperty(roleGroup, YukonRoleProperty.NAV_CONNECTOR_MIDDLE, " ");
             setRoleProperty(roleGroup, YukonRoleProperty.INBOUND_VOICE_HOME_URL, " ");
-            
+
             setRoleProperty(roleGroup, YukonRoleProperty.RESIDENTIAL_CONSUMER_INFO_ACCOUNT_GENERAL,true);
             setRoleProperty(roleGroup, YukonRoleProperty.RESIDENTIAL_CONSUMER_INFO_PROGRAMS_CONTROL_HISTORY,true);
             setRoleProperty(roleGroup, YukonRoleProperty.RESIDENTIAL_CONSUMER_INFO_PROGRAMS_ENROLLMENT,true);
@@ -184,21 +199,21 @@ public class DevStarsCreationService extends DevObjectCreationBase {
             setRoleProperty(roleGroup, YukonRoleProperty.RESIDENTIAL_CONSUMER_INFO_QUESTIONS_UTIL,true);
             setRoleProperty(roleGroup, YukonRoleProperty.RESIDENTIAL_CONSUMER_INFO_CHANGE_LOGIN_USERNAME,true);
             setRoleProperty(roleGroup, YukonRoleProperty.RESIDENTIAL_CONSUMER_INFO_THERMOSTATS_ALL,true);
-            
+
             setRoleProperty(roleGroup, YukonRoleProperty.RESIDENTIAL_HIDE_OPT_OUT_BOX, false);
             setRoleProperty(roleGroup, YukonRoleProperty.RESIDENTIAL_OPT_OUT_PERIOD, " ");
             setRoleProperty(roleGroup, YukonRoleProperty.RESIDENTIAL_WEB_LINK_FAQ, " ");
             setRoleProperty(roleGroup, YukonRoleProperty.RESIDENTIAL_WEB_LINK_THERM_INSTRUCTIONS, " ");
 
             setRoleProperty(roleGroup, YukonRoleProperty.CSRF_TOKEN_MODE, " ");
-            
+
             // Creating the residential user group that the group above will be mapped to.
             UserGroup userGroup = new UserGroup();
             userGroup.setUserGroupDescription(devStars.getNewEnergyCompanyName() + " Residential Grp");
             userGroup.setUserGroupName(devStars.getNewEnergyCompanyName() + " Residential Grp");
             userGroupDao.create(userGroup);
             userGroupDao.createUserGroupToYukonGroupMappng(userGroup.getUserGroupId(), roleGroup.getGroupID());
-            
+
             ecMappingDao.addECToResidentialUserGroupMapping(energyCompanyId, Lists.newArrayList(userGroup.getUserGroupId()));
             devStars.setUserGroupResidential(userGroup.getLiteUserGroup());
         } else {
@@ -238,19 +253,21 @@ public class DevStarsCreationService extends DevObjectCreationBase {
             accountNumIterator++;
         }
     }
-    
+
     private void createStars(DevStars devStars) {
         log.info("Creating Stars Accounts (and Hardware) ...");
         int inventoryIdIterator = devStars.getDevStarsHardware().getSerialNumMin();
         // Account Hardware
         for (UpdatableAccount updatableAccount: devStars.getDevStarsAccounts().getAccounts()) {
             if (createAccount(devStars, updatableAccount)) {
+                complete++; // account total
                 for (int i = 0; i < devStars.getDevStarsHardware().getNumPerAccount(); i++) {
                     for (DevHardwareType devHardwareType: devStars.getDevStarsHardware().getHardwareTypes()) {
                         if (devHardwareType.isCreate()) {
                             CustomerAccount customerAccount = customerAccountDao.getByAccountNumber(updatableAccount.getAccountNumber(), devStars.getEnergyCompany().getEnergyCompanyId());
                             createHardware(devStars, devHardwareType, customerAccount.getAccountId(), inventoryIdIterator);
                             inventoryIdIterator++;
+                            complete++; // hardware total
                         }
                     }
                 }
@@ -263,13 +280,14 @@ public class DevStarsCreationService extends DevObjectCreationBase {
                 if (devHardwareType.isCreate()) {
                     createHardware(devStars, devHardwareType, 0, inventoryIdIterator);
                     inventoryIdIterator++;
+                    complete++; 
                 }
             }
         }
     }
 
     private boolean createAccount(DevStars devStars, UpdatableAccount updatableAccount) {
-        checkIsCancelled();
+        //        checkIsCancelled();
         LiteStarsEnergyCompany energyCompany = devStars.getEnergyCompany();
         if (!canAddStarsAccount(devStars, updatableAccount, energyCompany.getEnergyCompanyId())) {
             devStars.addToFailureCount(devStars.getDevStarsHardware().getNumHardwarePerAccount() + 1);
@@ -280,9 +298,9 @@ public class DevStarsCreationService extends DevObjectCreationBase {
         devStars.incrementSuccessCount();
         return true;
     }
-    
+
     private void createHardware(DevStars devStars, DevHardwareType devHardwareType, int accountId, int inventoryIdIterator) {
-        checkIsCancelled();
+        //        checkIsCancelled();
         LiteStarsEnergyCompany energyCompany = devStars.getEnergyCompany();
         Hardware hardware = getHardwareDto(devHardwareType, energyCompany, inventoryIdIterator);
         hardware.setAccountId(accountId);
@@ -306,7 +324,7 @@ public class DevStarsCreationService extends DevObjectCreationBase {
             devStars.incrementFailureCount();
         }
     }
-    
+
     private Hardware getHardwareDto(DevHardwareType devHardwareType, LiteStarsEnergyCompany energyCompany, int inventoryId) {
         String inventoryIdIteratorString = String.valueOf(inventoryId);
         HardwareType hardwareType = devHardwareType.getHardwareType();
@@ -343,26 +361,26 @@ public class DevStarsCreationService extends DevObjectCreationBase {
         hardwareHistory.setAction("Install performed.");
         hardwareHistory.setDate(new Date());
         hardware.setHardwareHistory(Lists.newArrayList(hardwareHistory));
-        
+
         /* Non-ZigBee two way LCR fields */
         if (hardwareType.isTwoWay() && !hardwareType.isZigbee()) {
             hardware.setCreatingNewTwoWayDevice(true);
         }
         return hardware;
     }
-    
+
     private boolean canAddStarsHardware(DevStars devStars, Hardware hardware) {
         int serialNum = Integer.valueOf(hardware.getSerialNumber());
         if (serialNum >= devStars.getDevStarsHardware().getSerialNumMax()) {
             log.info("Hardware Object " + hardware.getDisplayName() + " cannot be added. Max of "
-                     + devStars.getDevStarsHardware().getSerialNumMax() + " reached.");
+                    + devStars.getDevStarsHardware().getSerialNumMax() + " reached.");
             return false;
         }
         // check energy company
         boolean isSerialNumInUse = hardwareUiService.isSerialNumberInEC(hardware);
         if (isSerialNumInUse) {
             log.info("Hardware Object " + hardware.getDisplayName() + " already exists in the database assigned to ec: "
-                     + hardware.getEnergyCompanyId());
+                    + hardware.getEnergyCompanyId());
             return false;
         }
         // check warehouse
@@ -371,11 +389,11 @@ public class DevStarsCreationService extends DevObjectCreationBase {
         } catch (NotFoundException e) {
             return true;
         }
-        
+
         log.info("Hardware Object " + hardware.getDisplayName() + " already exists in the database (warehouse).");
         return false;
     }
-    
+
     private boolean canAddStarsAccount(DevStars devStars, UpdatableAccount updatableAccount, int energyCompanyId) {
         String accountNumber = updatableAccount.getAccountNumber();
         Integer acctNumInt = Integer.valueOf(accountNumber);
@@ -383,20 +401,29 @@ public class DevStarsCreationService extends DevObjectCreationBase {
             log.info("Account " + accountNumber + " could not be added: Reached max account number of ." + devStars.getDevStarsAccounts().getAccountNumMax());
             return false;
         }
-        // Checks to see if the account number is already being used.
-        try {
-            CustomerAccount customerAccount = customerAccountDao.getByAccountNumber(accountNumber, energyCompanyId);
-            if (customerAccount != null){
-                log.info("Account " + accountNumber + " could not be added: The provided account number already exists.");
-                return false;
-            }
-        } catch (NotFoundException e ) {
-            // Account doesn't exist
+
+        if (doesAccountExist(accountNumber, energyCompanyId)) {
+            log.info("Account " + accountNumber + " could not be added: The provided account number already exists.");
+            return false;
         }
+
         if(yukonUserDao.findUserByUsername( updatableAccount.getAccountDto().getUserName() ) != null) {
             log.info("Account " + accountNumber + " could not be added: The provided username already exists.");
             return false;
         }
         return true;
     }
+
+    public boolean doesAccountExist(String accountNumber,int  energyCompanyId){ 
+        // Checks to see if the account number is already being used.
+        try {
+            CustomerAccount customerAccount = customerAccountDao.getByAccountNumber(accountNumber, energyCompanyId);
+            if (customerAccount != null){
+                return true;
+            }
+        } catch (NotFoundException e ) { }
+
+        return false;
+    }
+
 }

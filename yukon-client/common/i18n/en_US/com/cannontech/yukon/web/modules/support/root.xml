@@ -170,7 +170,12 @@
     <entry key="yukon.web.modules.support.setupDatabase.setupDevDatabase.options">Options</entry>
     <entry key="yukon.web.modules.support.setupDatabase.setupDevDatabase.option.roleProperties">Update Role Properties</entry>
     <entry key="yukon.web.modules.support.setupDatabase.setupDevDatabase.option.roleProperties.title">Enables (most) role properties one would want enabled on a development machine</entry>
+    <entry key="yukon.web.modules.support.setupDatabase.setupDevDatabase.option.amr.title">AMR</entry>
     <entry key="yukon.web.modules.support.setupDatabase.setupDevDatabase.option.amr">AMR</entry>
+ 
+    <entry key="yukon.web.modules.support.setupDatabase.setupDevDatabase.option.roleProperties.title">Role Properties</entry>
+    <entry key="yukon.web.modules.support.setupDatabase.setupDevDatabase.option.roleProperties">Role Properties</entry>
+    
     <entry key="yukon.web.modules.support.setupDatabase.setupDevDatabase.option.amr.createCartObjects">Create Cart Objects</entry>
     <entry key="yukon.web.modules.support.setupDatabase.setupDevDatabase.option.amr.createRfnTemplateMeters">Create Rfn Template Meters</entry>
     <entry key="yukon.web.modules.support.setupDatabase.setupDevDatabase.option.amr.routeId">Select Route</entry>
@@ -178,36 +183,38 @@
     <entry key="yukon.web.modules.support.setupDatabase.setupDevDatabase.option.amr.meterTypes">Meter Types</entry>
     <entry key="yukon.web.modules.support.setupDatabase.setupDevDatabase.option.amr.addressRangeMin">Address Range Min</entry>
     <entry key="yukon.web.modules.support.setupDatabase.setupDevDatabase.option.amr.addressRangeMax">Address Range Max</entry>
+    
+    <entry key="yukon.web.modules.support.setupDatabase.setupDevDatabase.option.capcontrol.title">Cap Control</entry>
     <entry key="yukon.web.modules.support.setupDatabase.setupDevDatabase.option.capcontrol">Cap Control</entry>
     <entry key="yukon.web.modules.support.setupDatabase.setupDevDatabase.option.capcontrol.cbcTypes">CBC Types</entry>
-    <entry
-        key="yukon.web.modules.support.setupDatabase.setupDevDatabase.option.capcontrol.regulatorTypes">Regulator Types</entry>
+    <entry key="yukon.web.modules.support.setupDatabase.setupDevDatabase.option.capcontrol.regulatorTypes">Regulator Types</entry>
     <entry key="yukon.web.modules.support.setupDatabase.setupDevDatabase.option.capcontrol.object.areas"># of Areas</entry>
     <entry key="yukon.web.modules.support.setupDatabase.setupDevDatabase.option.capcontrol.object.subs"># of Subs (per Area)</entry>
-    <entry
-        key="yukon.web.modules.support.setupDatabase.setupDevDatabase.option.capcontrol.object.subBuses"># of SubBuses (per Sub)</entry>
-    <entry
-        key="yukon.web.modules.support.setupDatabase.setupDevDatabase.option.capcontrol.object.feeders"># of Feeders (per SubBus)</entry>
-    <entry
-        key="yukon.web.modules.support.setupDatabase.setupDevDatabase.option.capcontrol.object.capBanks"># of CapBanks (per Feeder)</entry>
+    <entry key="yukon.web.modules.support.setupDatabase.setupDevDatabase.option.capcontrol.object.subBuses"># of SubBuses (per Sub)</entry>
+    <entry key="yukon.web.modules.support.setupDatabase.setupDevDatabase.option.capcontrol.object.feeders"># of Feeders (per SubBus)</entry>
+    <entry key="yukon.web.modules.support.setupDatabase.setupDevDatabase.option.capcontrol.object.capBanks"># of CapBanks (per Feeder)</entry>
     <entry key="yukon.web.modules.support.setupDatabase.setupDevDatabase.option.capcontrol.object.cbcs"># of CBCs (per CapBank)</entry>
-    <entry
-        key="yukon.web.modules.support.setupDatabase.setupDevDatabase.option.capcontrol.object.regulators"># of Regulators (per type)</entry>
-    <entry
-        key="yukon.web.modules.support.setupDatabase.setupDevDatabase.option.capcontrol.object.offset">Offset # (for names)</entry>
+    <entry key="yukon.web.modules.support.setupDatabase.setupDevDatabase.option.capcontrol.object.regulators"># of Regulators (per type)</entry>
+    <entry key="yukon.web.modules.support.setupDatabase.setupDevDatabase.option.capcontrol.object.offset">Offset # (for names)</entry>
+    
+    <entry key="yukon.web.modules.support.setupDatabase.setupDevDatabase.option.stars.title">Stars</entry>
     <entry key="yukon.web.modules.support.setupDatabase.setupDevDatabase.option.stars">Stars</entry>
     <entry key="yukon.web.modules.support.setupDatabase.setupDevDatabase.option.stars.hardwareTypes">Hardware Types</entry>
-    <entry
-        key="yukon.web.modules.support.setupDatabase.setupDevDatabase.option.stars.parentEnergyCompany">Parent Energy Company</entry>
+    <entry key="yukon.web.modules.support.setupDatabase.setupDevDatabase.option.stars.parentEnergyCompany">Parent Energy Company</entry>
     <entry key="yukon.web.modules.support.setupDatabase.setupDevDatabase.option.stars.numAccounts"># of Accounts</entry>
     <entry key="yukon.web.modules.support.setupDatabase.setupDevDatabase.option.stars.createNewEC">New Energy Company Name</entry>
-    <entry
-        key="yukon.web.modules.support.setupDatabase.setupDevDatabase.option.stars.numHardwarePerAccount"># of Hardware (per account)</entry>
+    <entry key="yukon.web.modules.support.setupDatabase.setupDevDatabase.option.stars.numHardwarePerAccount"># of Hardware (per account)</entry>
     <entry key="yukon.web.modules.support.setupDatabase.setupDevDatabase.option.stars.numExtra"># of Extra Hardware (per type)</entry>
     <entry key="yukon.web.modules.support.setupDatabase.setupDevDatabase.option.stars.accountNumMin">Account # Range Start</entry>
     <entry key="yukon.web.modules.support.setupDatabase.setupDevDatabase.option.stars.accountNumMax">Account # Range End</entry>
     <entry key="yukon.web.modules.support.setupDatabase.setupDevDatabase.option.stars.serialNumMin">Serial # Range Start</entry>
     <entry key="yukon.web.modules.support.setupDatabase.setupDevDatabase.option.stars.serialNumMax">Serial # Range End</entry>
+    
+    <entry key="yukon.web.modules.support.setupDatabase.setupDdevDatabase.generic">{0}</entry>
+    <entry key="yukon.web.modules.support.setupDatabase.setupDdevDatabase.error.empty">Cannot be empty</entry>
+    <entry key="yukon.web.modules.support.setupDatabase.setupDdevDatabase.error.mustBePositive">Must be Positive</entry>
+    <entry key="yukon.web.modules.support.setupDatabase.setupDdevDatabase.error.unavailable">Unavailable</entry>
+    <entry key="yukon.web.modules.support.setupDatabase.setupDdevDatabase.error.accountExists">Account already exists: {0}</entry>
 
     <entry key="yukon.web.modules.support.miscellaneousMethod.pageName">Miscellaneous Methods</entry>
     <entry key="yukon.web.modules.support.miscellaneousMethod.insertProgramTypes.label">Insert Program Types</entry>

@@ -1,6 +1,7 @@
 package com.cannontech.web.support.development.database.service.impl;
 
 import java.util.List;
+import java.util.concurrent.locks.ReentrantLock;
 
 import com.cannontech.common.device.model.SimpleDevice;
 import com.cannontech.common.gui.util.TextFieldDocument;
@@ -16,7 +17,6 @@ import com.cannontech.database.data.device.CCU711;
 import com.cannontech.database.data.device.DeviceBase;
 import com.cannontech.database.data.device.IDLCBase;
 import com.cannontech.database.data.device.RemoteBase;
-import com.cannontech.database.data.lite.LiteBase;
 import com.cannontech.database.data.lite.LiteFactory;
 import com.cannontech.database.data.lite.LiteYukonPAObject;
 import com.cannontech.database.data.multi.SmartMultiDBPersistent;
@@ -40,7 +40,23 @@ import com.google.common.collect.Lists;
 
 public class DevAMRCreationService extends DevObjectCreationBase {
     
-    public List<YukonPao> createTestMeters(List<PaoType> types, int numToCreate) {
+    private static final ReentrantLock _lock = new ReentrantLock();
+
+    public boolean isRunning() {
+        return _lock.isLocked();
+    }
+    
+    public void executeSetup(DevAMR devAmr) {
+        if(_lock.tryLock()) try  {
+            createAllCommChannels(devAmr);
+            createAllCCUs(devAmr);
+            createAllMeters(devAmr);
+        } finally {
+            _lock.unlock();
+        }
+    }
+    
+    private List<YukonPao> createTestMeters(List<PaoType> types, int numToCreate) {
         DevAMR devAMR = new DevAMR();
         devAMR.setCreateCartObjects(false);
         devAMR.setCreateRfnTemplates(false);
@@ -54,22 +70,10 @@ public class DevAMRCreationService extends DevObjectCreationBase {
         }
         devAMR.setMeterTypes(devPaoTypes);
         return createAllMeters(devAMR);
-    }
+    }    
     
-    @Override
-    protected void createAll() {
-        createAllCommChannels();
-        createAllCCUs();
-        createAllMeters(devDbSetupTask.getDevAMR());
-    }
-
-    @Override
-    protected void logFinalExecutionDetails() {
-        log.info("AMR:");
-    }
-
-    private void createAllCommChannels() {
-        if (!devDbSetupTask.getDevAMR().isCreateCartObjects()) {
+    private void createAllCommChannels(DevAMR devAmr) {
+        if (!devAmr.isCreateCartObjects()) {
             return;
         }
         log.info("Creating Comm Channels ...");
@@ -118,8 +122,8 @@ public class DevAMRCreationService extends DevObjectCreationBase {
         log.info("Comm Channel with name " + commChannel.getName() + " created.");
     }
 
-    private void createAllCCUs() {
-        if (!devDbSetupTask.getDevAMR().isCreateCartObjects()) {
+    private void createAllCCUs(DevAMR devAmr) {
+        if (!devAmr.isCreateCartObjects()) {
             return;
         }
         log.info("Creating CCUs ...");
@@ -158,7 +162,7 @@ public class DevAMRCreationService extends DevObjectCreationBase {
 
         ((RemoteBase) ccu).getDeviceDirectCommSettings().setPortID(portID);
 
-        DirectPort port = (DirectPort) LiteFactory.createDBPersistent((LiteBase) commChan);
+        DirectPort port = (DirectPort) LiteFactory.createDBPersistent(commChan);
         dbPersistentDao.performDBChange(port, TransactionType.RETRIEVE);
 
         ((RemoteBase) ccu).getDeviceDialupSettings().setBaudRate(port.getPortSettings().getBaudRate());
@@ -186,7 +190,7 @@ public class DevAMRCreationService extends DevObjectCreationBase {
             ((CCURoute) route).setCarrierRoute(new CarrierRoute(routeID));
         }
 
-        SmartMultiDBPersistent newVal = createSmartDBPersistent((DeviceBase) ccu);
+        SmartMultiDBPersistent newVal = createSmartDBPersistent(ccu);
         newVal.addDBPersistent(route);
 
         dbPersistentDao.performDBChange(newVal, TransactionType.INSERT);
@@ -245,7 +249,7 @@ public class DevAMRCreationService extends DevObjectCreationBase {
     }
     
     private boolean canCreateMeter(DevAMR devAMR, String name, Integer address) {
-        checkIsCancelled();
+//        checkIsCancelled();
         if (address != null && address >= devAMR.getAddressRangeMax()) {
             log.info("Meter with name " + name + " has address greater than max address range of "
                     + devAMR.getAddressRangeMax() + " . Skipping.");
@@ -304,4 +308,5 @@ public class DevAMRCreationService extends DevObjectCreationBase {
         }
         return routeId;
     }
+
 }

@@ -3,6 +3,8 @@ package com.cannontech.web.support.development.database.service.impl;
 import java.util.List;
 import java.util.Map;
 
+import javax.naming.ConfigurationException;
+
 import org.apache.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
 
@@ -16,6 +18,7 @@ import com.cannontech.core.dao.DeviceDao;
 import com.cannontech.core.dao.PaoDao;
 import com.cannontech.core.dao.RoleDao;
 import com.cannontech.core.roleproperties.GroupRolePropertyValueCollection;
+import com.cannontech.core.roleproperties.YukonRole;
 import com.cannontech.core.roleproperties.YukonRoleProperty;
 import com.cannontech.core.roleproperties.dao.RolePropertyEditorDao;
 import com.cannontech.database.data.device.DeviceBase;
@@ -23,11 +26,10 @@ import com.cannontech.database.data.lite.LiteYukonGroup;
 import com.cannontech.database.data.lite.LiteYukonPAObject;
 import com.cannontech.database.data.multi.SmartMultiDBPersistent;
 import com.cannontech.database.data.point.PointBase;
+import com.cannontech.stars.dr.account.dao.CustomerAccountDao;
 import com.cannontech.web.support.development.DevDbSetupTask;
-import com.cannontech.web.support.development.database.objects.DevObject;
-import com.cannontech.web.support.development.database.service.DevObjectCreationInterface;
 
-public abstract class DevObjectCreationBase implements DevObjectCreationInterface {
+public abstract class DevObjectCreationBase {
     protected static final Logger log = YukonLogManager.getLogger(DevObjectCreationBase.class);
     protected DevDbSetupTask devDbSetupTask;
     @Autowired protected ConfigurationSource configurationSource;
@@ -35,37 +37,12 @@ public abstract class DevObjectCreationBase implements DevObjectCreationInterfac
     @Autowired protected DeviceDao deviceDao;
     @Autowired protected DeviceCreationService deviceCreationService;
     @Autowired protected DBPersistentDao dbPersistentDao;
+    @Autowired protected CustomerAccountDao customerAccountDao;
+    
     @Autowired private PaoDefinitionService paoDefinitionService;
     @Autowired private RolePropertyEditorDao rolePropertyEditorDao;
     @Autowired private RoleDao roleDao;
 
-    @Override
-    public void createAll(DevDbSetupTask devDbSetupTask) {
-        this.devDbSetupTask = devDbSetupTask;
-        createAll();
-    }
-    
-    protected abstract void createAll();
-    
-    @Override
-    public void logFinalExecutionDetails(DevObject devObj) {
-        logFinalExecutionDetails();
-        log.info(" success: " + devObj.getSuccessCount());
-        log.info(" failure: " + devObj.getFailureCount());
-        log.info(" total:   " + devObj.getTotal());
-    }
-    
-    protected abstract void logFinalExecutionDetails();
-
-    // This is a pretty terrible way of accomplishing this... but good enough for now
-    protected void checkIsCancelled() {
-        if (devDbSetupTask.isCancelled()) {
-            devDbSetupTask.setCancelled(false);
-            log.info("Development database setup cancelled.");
-            throw new RuntimeException("Execution cancelled.");
-        }
-    }
-    
     protected LiteYukonPAObject getPaoByName(String paoName) {
         List<LiteYukonPAObject> paos = paoDao.getLiteYukonPaoByName(paoName, false);
         if (paos.size() != 1) {
@@ -101,8 +78,19 @@ public abstract class DevObjectCreationBase implements DevObjectCreationInterfac
         return smartDB;
     }
     
+    protected boolean canAddRole(LiteYukonGroup group, YukonRole yukonRole) {
+        if (!roleDao.getRolesForGroup(group.getGroupID()).contains(yukonRole)) {
+            try {
+                rolePropertyEditorDao.addRoleToGroup(group, yukonRole);
+            } catch (ConfigurationException e) {
+                return false;
+            }
+        }
+        return true;
+    }
+    
+    protected void setRoleProperty(LiteYukonGroup group, YukonRoleProperty yukonRoleProperty, String newVal)  {
 
-    protected void setRoleProperty(LiteYukonGroup group, YukonRoleProperty yukonRoleProperty, String newVal) {
         roleDao.updateGroupRoleProperty(group,yukonRoleProperty.getRole().getRoleId(),yukonRoleProperty.getPropertyId(),newVal);
         log.info("Group " + group.getGroupName() + " YukonRole " + yukonRoleProperty.getRole().name() + " and YukonRoleProperty " + yukonRoleProperty.name() + " set to " + newVal);
     }

@@ -6,24 +6,24 @@ import com.cannontech.stars.dr.account.model.UpdatableAccount;
 import com.google.common.collect.Lists;
 
 public class DevStarsAccounts {
-    private int accountNumMin = 100000;
-    private int accountNumMax = 999999999;
-    private int numAccounts = 10;
+    private Integer accountNumMin = 100000;
+    private Integer accountNumMax = 999999999;
+    private Integer numAccounts = 10;
     private List<UpdatableAccount> accounts = Lists.newArrayList();
 
-    public int getAccountNumMin() {
+    public Integer getAccountNumMin() {
         return accountNumMin;
     }
 
-    public void setAccountNumMin(int accountNumMin) {
+    public void setAccountNumMin(Integer accountNumMin) {
         this.accountNumMin = accountNumMin;
     }
 
-    public int getNumAccounts() {
+    public Integer getNumAccounts() {
         return numAccounts;
     }
 
-    public void setNumAccounts(int numAccounts) {
+    public void setNumAccounts(Integer numAccounts) {
         this.numAccounts = numAccounts;
     }
 
@@ -35,10 +35,10 @@ public class DevStarsAccounts {
         this.accounts = accounts;
     }
 
-    public int getAccountNumMax() {
+    public Integer getAccountNumMax() {
         return accountNumMax;
     }
-    public void setAccountNumMax(int accountNumMax) {
+    public void setAccountNumMax(Integer accountNumMax) {
         this.accountNumMax = accountNumMax;
     }
 

@@ -13,6 +13,7 @@ public class DevDatabasePopulationServiceImpl implements DevDatabasePopulationSe
     @Autowired private DevStarsCreationService devStarsCreationService;
     private DevDbSetupTask devDbSetupTask;
 
+    @Override
     @Transactional
     public synchronized void executeFullDatabasePopulation(DevDbSetupTask dbSetupTask) {
         if (devDbSetupTask != null && devDbSetupTask.isRunning()) {
@@ -21,44 +22,25 @@ public class DevDatabasePopulationServiceImpl implements DevDatabasePopulationSe
         doPopulate(dbSetupTask);
     }
 
+    @Override
     public DevDbSetupTask getExecuting() {
         return devDbSetupTask;
-    }
-
-    public void cancelExecution() {
-        devDbSetupTask.setCancelled(true);
     }
 
     private void doPopulate(DevDbSetupTask dbSetupTask) {
         try {
             devDbSetupTask = dbSetupTask;
             devDbSetupTask.setRunning(true);
-            
-            if (devDbSetupTask.isUpdateRoleProperties()) {
-                devRolePropUpdaterService.createAll(devDbSetupTask);
-            }
-            if (devDbSetupTask.getDevAMR().isCreate()) {
-                devAMRCreationService.createAll(devDbSetupTask);
-            }
-            if (devDbSetupTask.getDevCapControl().isCreate()) {
-                devCapControlCreationService.createAll(devDbSetupTask);
-            }
-            if (devDbSetupTask.getDevStars().isCreate()) {
-                devStarsCreationService.createAll(devDbSetupTask);
-            }
+            devRolePropUpdaterService.executeSetup(devDbSetupTask.getDevRoleProperties());
+            devAMRCreationService.executeSetup(devDbSetupTask.getDevAMR());
+            devCapControlCreationService.executeSetup(devDbSetupTask.getDevCapControl());
+            devStarsCreationService.executeSetup(devDbSetupTask.getDevStars());
         } catch (Exception e) {
             devDbSetupTask.setHasRun(false);
             devDbSetupTask.setRunning(false);
             throw new RuntimeException(e);
         }
-        logExecutionDetails();
         devDbSetupTask.setHasRun(true);
         devDbSetupTask.setRunning(false);
-    }
-    
-    private void logExecutionDetails() {
-        devAMRCreationService.logFinalExecutionDetails(devDbSetupTask.getDevAMR());
-        devCapControlCreationService.logFinalExecutionDetails(devDbSetupTask.getDevCapControl());
-        devStarsCreationService.logFinalExecutionDetails(devDbSetupTask.getDevStars());
     }
 }

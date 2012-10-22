@@ -1,0 +1,74 @@
+<%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core"%>
+<%@ taglib prefix="cti" uri="http://cannontech.com/tags/cti"%>
+<%@ taglib prefix="fn" uri="http://java.sun.com/jsp/jstl/functions"%>
+<%@ taglib prefix="spring" uri="http://www.springframework.org/tags"%>
+<%@ taglib prefix="tags" tagdir="/WEB-INF/tags"%>
+<%@ taglib prefix="i" tagdir="/WEB-INF/tags/i18n"%>
+
+<tags:boxContainer2 id="capControl" nameKey="setupDevDatabase.option.capcontrol" styleClass="devWidget">
+                <cti:flashScopeMessages />
+                <div class="widgetMessage"></div>
+                <form:form commandName="devCapControl" action="setupCapControl" method="post" id="setupCapControlForm">
+                    <div class="widgetContent">
+                    <ul>
+                        <li><tags:nameValueContainer2>
+                                <tags:inputNameValue path="numAreas"
+                                    nameKey=".setupDevDatabase.option.capcontrol.object.areas"
+                                    size="2" />
+                                <tags:inputNameValue path="numSubs"
+                                    nameKey=".setupDevDatabase.option.capcontrol.object.subs"
+                                    size="2" />
+                                <tags:inputNameValue path="numSubBuses"
+                                    nameKey=".setupDevDatabase.option.capcontrol.object.subBuses"
+                                    size="2" />
+                                <tags:inputNameValue path="numFeeders"
+                                    nameKey=".setupDevDatabase.option.capcontrol.object.feeders"
+                                    size="2" />
+                                <tags:inputNameValue path="numCapBanks"
+                                    nameKey=".setupDevDatabase.option.capcontrol.object.capBanks"
+                                    size="2" />
+                                <tags:inputNameValue path="numRegulators"
+                                    nameKey=".setupDevDatabase.option.capcontrol.object.regulators"
+                                    size="2" />
+                                <tags:inputNameValue path="offset"
+                                    nameKey=".setupDevDatabase.option.capcontrol.object.offset"
+                                    size="10" />
+                            </tags:nameValueContainer2></li>
+                        <li>
+                            <h4><i:inline key=".setupDevDatabase.option.capcontrol.cbcTypes"/></h4>
+                                <ul>
+                                    <li><input type="radio"
+                                        name="cbcType" value="${null}"
+                                        <c:if test="${devCapControl.cbcType == null}">checked="checked"</c:if> />
+                                        <label for="cbcType">None</label></li>
+                                    <c:forEach
+                                        items="${devCapControl.cbcTypes}"
+                                        var="cbcType">
+                                        <li><input type="radio"
+                                            name="cbcType"
+                                            id="cbcType_${cbcType.paoType}"
+                                            value="${cbcType.paoType}"
+                                            <c:if test="${devCapControl.cbcType.paoType == cbcType.paoType}">checked="checked"</c:if> />
+                                            <label for="cbcType_${cbcType.paoType}">${cbcType.paoType}</label>
+                                        </li>
+                                    </c:forEach>
+                                </ul>
+                            </li>
+                        <li>
+                        <h4><i:inline key=".setupDevDatabase.option.capcontrol.regulatorTypes"/></h4>
+                                <ul>
+                                    <c:forEach
+                                        items="${devCapControl.regulatorTypes}"
+                                        var="cbcType" varStatus="status">
+                                        <li><label> <tags:checkbox
+                                                    path="regulatorTypes[${status.index}].create" />
+                                                <span>${devCapControl.regulatorTypes[status.index].paoType}</span>
+                                        </label></li>
+                                    </c:forEach>
+                                </ul>
+                            </li>
+                    </ul>
+                    </div>
+                <input type="submit" value="Run Setup"/>
+            </form:form>
+        </tags:boxContainer2>

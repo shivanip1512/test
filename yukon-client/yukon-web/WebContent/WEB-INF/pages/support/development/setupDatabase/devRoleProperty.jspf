@@ -1,0 +1,47 @@
+<%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core"%>
+<%@ taglib prefix="cti" uri="http://cannontech.com/tags/cti"%>
+<%@ taglib prefix="fn" uri="http://java.sun.com/jsp/jstl/functions"%>
+<%@ taglib prefix="spring" uri="http://www.springframework.org/tags"%>
+<%@ taglib prefix="tags" tagdir="/WEB-INF/tags"%>
+<%@ taglib prefix="i" tagdir="/WEB-INF/tags/i18n"%>
+
+<tags:boxContainer2 id="roleProperties" nameKey="setupDevDatabase.option.roleProperties" styleClass="devWidget">
+
+    <c:if test="${fn:length(results) > 0}">
+        <div class="results">
+            <div class="resultMessage">
+                Results: ${fn:length(results)} Roles Processed
+            </div>
+            <c:forEach items="${results}" var="entry">
+                <c:if test="${!entry.value}">
+                    <div class="resultFailure">
+                        Failed due to conflict: ${entry.key}
+                    </div>
+                </c:if>
+            </c:forEach>
+        </div>
+    </c:if>
+        
+    <form:form commandName="devRoleProperties" action="setupRoleProperties" method="post" id="setupRolePropertiesForm">
+        <cti:flashScopeMessages />
+        <div class="widgetMessage"></div>
+        <div class="widgetContent">
+            <tags:nameValueContainer2>
+                <c:forEach items="${allGroups}" var="group">
+                    <label>
+                        <c:if test="${resGroups.contains(group)}">
+                            <input type="radio" value="${group.groupName}" class="f_disabled" disabled="disabled"/>
+                            ${fn:escapeXml(group.groupName)} (Cannot run with Residential Group)
+                        </c:if>
+                        <c:if test="${!resGroups.contains(group)}">
+                            <form:radiobutton path="groupName" value="${group.groupName}"/>
+                            ${fn:escapeXml(group.groupName)}
+                        </c:if>
+                    </label>
+                    <br/>
+                </c:forEach>
+            </tags:nameValueContainer2>
+        </div>
+        <input type="submit" value="Run Setup"/>
+    </form:form>
+</tags:boxContainer2>

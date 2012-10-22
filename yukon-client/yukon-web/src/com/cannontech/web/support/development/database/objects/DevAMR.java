@@ -9,9 +9,9 @@ public class DevAMR extends DevObject {
     private boolean createCartObjects = true;
     private boolean createRfnTemplates = true;
     private int routeId;
-    private int numAdditionalMeters = 0;
-    private int addressRangeMin = 1000000;
-    private int addressRangeMax = 999999999;
+    private Integer numAdditionalMeters = 0;
+    private Integer addressRangeMin = 1000000;
+    private Integer addressRangeMax = 999999999;
     private List<DevPaoType> meterTypes =
         Lists
             .newArrayList(new DevPaoType(PaoType.MCT410CL),
@@ -47,11 +47,11 @@ public class DevAMR extends DevObject {
         this.routeId = routeId;
     }
 
-    public int getNumAdditionalMeters() {
+    public Integer getNumAdditionalMeters() {
         return numAdditionalMeters;
     }
 
-    public void setNumAdditionalMeters(int numAdditionalMeters) {
+    public void setNumAdditionalMeters(Integer numAdditionalMeters) {
         this.numAdditionalMeters = numAdditionalMeters;
     }
     public List<DevPaoType> getMeterTypes() {
@@ -61,23 +61,20 @@ public class DevAMR extends DevObject {
         this.meterTypes = meterTypes;
     }
 
-    public int getAddressRangeMin() {
+    public Integer getAddressRangeMin() {
         return addressRangeMin;
     }
-    public void setAddressRangeMin(int addressRangeMin) {
+    public void setAddressRangeMin(Integer addressRangeMin) {
         this.addressRangeMin = addressRangeMin;
     }
-    public int getAddressRangeMax() {
+    public Integer getAddressRangeMax() {
         return addressRangeMax;
     }
-    public void setAddressRangeMax(int addressRangeMax) {
+    public void setAddressRangeMax(Integer addressRangeMax) {
         this.addressRangeMax = addressRangeMax;
     }
     @Override
     public int getTotal() {
-        if (!isCreate()) {
-            return 0;
-        }
         int total = getNumObjectsToCreate();
         if (createCartObjects) {
             total += DevMeter.values().length;

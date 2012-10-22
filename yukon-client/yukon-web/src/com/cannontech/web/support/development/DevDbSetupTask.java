@@ -2,10 +2,11 @@ package com.cannontech.web.support.development;
 
 import com.cannontech.web.support.development.database.objects.DevAMR;
 import com.cannontech.web.support.development.database.objects.DevCapControl;
+import com.cannontech.web.support.development.database.objects.DevRoleProperties;
 import com.cannontech.web.support.development.database.objects.DevStars;
 
 public class DevDbSetupTask {
-    private boolean updateRoleProperties = true;
+    private DevRoleProperties devRoleProperties = new DevRoleProperties();
     private DevAMR devAMR = new DevAMR();
     private DevCapControl devCapControl = new DevCapControl();
     private DevStars devStars = new DevStars();
@@ -13,11 +14,11 @@ public class DevDbSetupTask {
     private boolean hasRun = false;
     private boolean cancelled = false;
 
-    public boolean isUpdateRoleProperties() {
-        return updateRoleProperties;
+    public DevRoleProperties getDevRoleProperties() {
+        return devRoleProperties;
     }
-    public void setUpdateRoleProperties(boolean updateRoleProperties) {
-        this.updateRoleProperties = updateRoleProperties;
+    public void setDevRoleProperties(DevRoleProperties devRoleProperties) {
+        this.devRoleProperties = devRoleProperties;
     }
     public DevAMR getDevAMR() {
         return devAMR;

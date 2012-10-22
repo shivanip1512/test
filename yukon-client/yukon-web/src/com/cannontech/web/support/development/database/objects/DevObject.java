@@ -3,16 +3,9 @@ package com.cannontech.web.support.development.database.objects;
 import java.util.concurrent.atomic.AtomicInteger;
 
 public abstract class DevObject {
-    private boolean create = true;
     private AtomicInteger successCount = new AtomicInteger();
     private AtomicInteger failureCount = new AtomicInteger();
 
-    public boolean isCreate() {
-        return create;
-    }
-    public void setCreate(boolean create) {
-        this.create = create;
-    }
     public int getSuccessCount() {
         return successCount.intValue();
     }

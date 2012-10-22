@@ -1,6 +1,7 @@
 package com.cannontech.web.support.development.database.service.impl;
 
 import java.util.List;
+import java.util.concurrent.locks.ReentrantLock;
 
 import org.springframework.beans.factory.annotation.Autowired;
 
@@ -33,29 +34,50 @@ public class DevCapControlCreationService extends DevObjectCreationBase {
     @Autowired private StrategyDao strategyDao;
     @Autowired private DeviceConfigurationDao deviceConfigurationDao;
 
-    @Override
-    protected void createAll() {
-        createCapControl(devDbSetupTask.getDevCapControl());
+    private static final ReentrantLock _lock = new ReentrantLock();
+    private static int complete = 1;
+    private static int total = 1;
+    
+    public boolean isRunning() {
+        return _lock.isLocked();
+    }
+
+    public void executeSetup(DevCapControl devCapControl) {
+        if (_lock.tryLock()) try {
+            total = devCapControl.getTotal();
+            complete = 0;
+            createCapControl(devCapControl);
+        } finally {
+            _lock.unlock();
+        }
     }
     
-    @Override
-    protected void logFinalExecutionDetails() {
-        log.info("CC:");
+    public int getPercentComplete() {
+        if (total >= 1) {
+            return (complete*100) / total;
+        } else { 
+            return 0;
+        }
     }
     
     private void createCapControl(DevCapControl devCapControl) {
         log.info("Creating (and assigning) Cap Control Objects ...");
         for (int areaIndex = 0; areaIndex  < devCapControl.getNumAreas(); areaIndex++) { // Areas
             String areaName = createArea(devCapControl, areaIndex);
+            if (devCapControl.getNumSubs()==0) complete++;
             for (int subIndex = 0; subIndex < devCapControl.getNumSubs(); subIndex++) { // Substations
                 String subName = createSubstation(devCapControl, areaIndex, areaName, subIndex);
+                if (devCapControl.getNumSubBuses()==0) complete++;
                 for (int subBusIndex = 0; subBusIndex < devCapControl.getNumSubBuses(); subBusIndex++) { // Substations Buses
                     String subBusName = createAndAssignSubstationBus(devCapControl, areaIndex, subIndex, subName, subBusIndex);
+                    if (devCapControl.getNumFeeders()==0) complete++;
                     for (int feederIndex = 0; feederIndex < devCapControl.getNumFeeders(); feederIndex++) { // Feeders
                         String feederName = createAndAssignFeeder(devCapControl, areaIndex, subIndex, subBusIndex, subBusName, feederIndex);
+                        if (devCapControl.getNumCapBanks()==0) complete++;
                         for (int capBankIndex = 0; capBankIndex < devCapControl.getNumCapBanks(); capBankIndex++) { // CapBanks & CBCs
                             String capBankName = createAndAssignCapBank(devCapControl, areaIndex, subIndex, subBusIndex, feederIndex, feederName, capBankIndex);
                             createAndAssignCBC(devCapControl, areaIndex, subIndex, subBusIndex, feederIndex, feederName, capBankIndex, capBankName);
+                            complete++;
                         }
                     }
                 }
@@ -160,7 +182,6 @@ public class DevCapControlCreationService extends DevObjectCreationBase {
     }
     
     private void createCapControlCBC(DevCapControl devCapControl, PaoType paoType, String name, boolean disabled, DevCommChannel commChannel) {
-        checkIsCancelled();
         List<LiteYukonPAObject> commChannels = paoDao.getLiteYukonPaoByName(commChannel.getName(), false);
         if (commChannels.size() != 1) {
             throw new RuntimeException("Couldn't find comm channel " + commChannel.getName());
@@ -192,4 +213,5 @@ public class DevCapControlCreationService extends DevObjectCreationBase {
         
         strategyDao.add(name);
     }
+
 }

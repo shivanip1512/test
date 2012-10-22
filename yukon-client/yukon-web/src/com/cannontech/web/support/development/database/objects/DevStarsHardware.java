@@ -7,35 +7,35 @@ import com.cannontech.common.inventory.HardwareType;
 import com.google.common.collect.Lists;
 
 public class DevStarsHardware {
-    private int serialNumMin = 100000;
-    private int serialNumMax = 999999999;
-    private int numPerAccount = 1;
-    private int numExtra = 10;
+    private Integer serialNumMin = 100000;
+    private Integer serialNumMax = 999999999;
+    private Integer numPerAccount = 1;
+    private Integer numExtra = 10;
     private List<DevHardwareType> hardwareTypes = getAllHardwareTypes();
     private List<Hardware> hardware = Lists.newArrayList();
 
-    public int getSerialNumMin() {
+    public Integer getSerialNumMin() {
         return serialNumMin;
     }
-    public void setSerialNumMin(int serialNumMin) {
+    public void setSerialNumMin(Integer serialNumMin) {
         this.serialNumMin = serialNumMin;
     }
-    public int getSerialNumMax() {
+    public Integer getSerialNumMax() {
         return serialNumMax;
     }
-    public void setSerialNumMax(int serialNumMax) {
+    public void setSerialNumMax(Integer serialNumMax) {
         this.serialNumMax = serialNumMax;
     }
-    public int getNumPerAccount() {
+    public Integer getNumPerAccount() {
         return numPerAccount;
     }
-    public void setNumPerAccount(int numPerAccount) {
+    public void setNumPerAccount(Integer numPerAccount) {
         this.numPerAccount = numPerAccount;
     }
-    public int getNumExtra() {
+    public Integer getNumExtra() {
         return numExtra;
     }
-    public void setNumExtra(int numExtra) {
+    public void setNumExtra(Integer numExtra) {
         this.numExtra = numExtra;
     }
     public List<Hardware> getHardware() {
@@ -50,8 +50,8 @@ public class DevStarsHardware {
     public void setHardwareTypes(List<DevHardwareType> hardwareTypes) {
         this.hardwareTypes = hardwareTypes;
     }
-    public int getNumTypesToCreate() {
-        int numTypesToCreate = 0;
+    public Integer getNumTypesToCreate() {
+        Integer numTypesToCreate = 0;
         for(DevHardwareType devHardwareType: hardwareTypes) {
             if (devHardwareType.isCreate()) {
                 numTypesToCreate++;
@@ -59,15 +59,15 @@ public class DevStarsHardware {
         }
         return numTypesToCreate;
     }
-    public int getNumHardwarePerAccount() {
-        int numAccountHardwareToCreate = getNumTypesToCreate() * numPerAccount;
+    public Integer getNumHardwarePerAccount() {
+        Integer numAccountHardwareToCreate = getNumTypesToCreate() * numPerAccount;
         return numAccountHardwareToCreate;
     }
-    public int getNumExtraTotal() {
-        int numExtraToCreate = getNumTypesToCreate() * numExtra;
+    public Integer getNumExtraTotal() {
+        Integer numExtraToCreate = getNumTypesToCreate() * numExtra;
         return numExtraToCreate;
     }
-    public int getNumToCreate() {
+    public Integer getNumToCreate() {
         int numExtraToCreate = getNumExtraTotal();
         int result = getNumHardwarePerAccount() + numExtraToCreate;
         return result;

@@ -6,13 +6,13 @@ import com.cannontech.common.pao.PaoType;
 import com.google.common.collect.Lists;
 
 public class DevCapControl extends DevObject {
-    private int numAreas = 1;
-    private int numSubs = 1;
-    private int numSubBuses = 1;
-    private int numFeeders = 1;
-    private int numCapBanks = 3;
-    private int numRegulators = 10;
-    private int offset = 0;
+    private Integer numAreas = 1;
+    private Integer numSubs = 1;
+    private Integer numSubBuses = 1;
+    private Integer numFeeders = 1;
+    private Integer numCapBanks = 3;
+    private Integer numRegulators = 10;
+    private Integer offset = 0;
     private DevPaoType cbcType;
     private List<DevPaoType> cbcTypes =
         Lists
@@ -32,59 +32,59 @@ public class DevCapControl extends DevObject {
                       new DevPaoType(PaoType.GANG_OPERATED),
                       new DevPaoType(PaoType.PHASE_OPERATED));
     
-    public int getNumAreas() {
+    public Integer getNumAreas() {
         return numAreas;
     }
 
-    public void setNumAreas(int numAreas) {
+    public void setNumAreas(Integer numAreas) {
         this.numAreas = numAreas;
     }
 
-    public int getNumSubs() {
+    public Integer getNumSubs() {
         return numSubs;
     }
 
-    public void setNumSubs(int numSubs) {
+    public void setNumSubs(Integer numSubs) {
         this.numSubs = numSubs;
     }
 
-    public int getNumSubBuses() {
+    public Integer getNumSubBuses() {
         return numSubBuses;
     }
 
-    public void setNumSubBuses(int numSubBuses) {
+    public void setNumSubBuses(Integer numSubBuses) {
         this.numSubBuses = numSubBuses;
     }
 
-    public int getNumFeeders() {
+    public Integer getNumFeeders() {
         return numFeeders;
     }
 
-    public void setNumFeeders(int numFeeders) {
+    public void setNumFeeders(Integer numFeeders) {
         this.numFeeders = numFeeders;
     }
 
-    public int getNumCapBanks() {
+    public Integer getNumCapBanks() {
         return numCapBanks;
     }
 
-    public void setNumCapBanks(int numCapBanks) {
+    public void setNumCapBanks(Integer numCapBanks) {
         this.numCapBanks = numCapBanks;
     }
 
-    public int getNumRegulators() {
+    public Integer getNumRegulators() {
         return numRegulators;
     }
 
-    public void setNumRegulators(int numRegulators) {
+    public void setNumRegulators(Integer numRegulators) {
         this.numRegulators = numRegulators;
     }
 
-    public int getOffset() {
+    public Integer getOffset() {
         return offset;
     }
 
-    public void setOffset(int offset) {
+    public void setOffset(Integer offset) {
         this.offset = offset;
     }
 
@@ -113,7 +113,7 @@ public class DevCapControl extends DevObject {
     }
 
     private int getNumRegulatorsToCreate() {
-        int num = 0;
+        Integer num = 0;
         for (DevPaoType type: regulatorTypes) {
             if (type.isCreate()) {
                 num += numRegulators;
@@ -124,16 +124,13 @@ public class DevCapControl extends DevObject {
     
     @Override
     public int getTotal() {
-        if (!isCreate()) {
-            return 0;
-        }
-        int numTotalSubs = numAreas * numSubs;
-        int numTotalSubBuses = numTotalSubs * numSubBuses;
-        int numTotalFeeders = numTotalSubBuses * numFeeders;
-        int numTotalCapBanks = numTotalFeeders * numCapBanks;
-        int numTotalCBCs = getCbcType() != null ? numTotalCapBanks : 0;
-        int numTotalRegulators = getNumRegulatorsToCreate();
-        int total = numAreas + numTotalSubs + numTotalSubBuses + numTotalFeeders + numTotalCapBanks + numTotalCBCs + numTotalRegulators;
+        Integer numTotalSubs = numAreas * numSubs;
+        Integer numTotalSubBuses = numTotalSubs * numSubBuses;
+        Integer numTotalFeeders = numTotalSubBuses * numFeeders;
+        Integer numTotalCapBanks = numTotalFeeders * numCapBanks;
+        Integer numTotalCBCs = getCbcType() != null ? numTotalCapBanks : 0;
+        Integer numTotalRegulators = getNumRegulatorsToCreate();
+        Integer total = numAreas + numTotalSubs + numTotalSubBuses + numTotalFeeders + numTotalCapBanks + numTotalCBCs + numTotalRegulators;
         return total;
     }
 }
