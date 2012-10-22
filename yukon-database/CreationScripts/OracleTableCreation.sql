@@ -1,7 +1,7 @@
 /*==============================================================*/
 /* Database name:  YukonDatabase                                */
 /* DBMS name:      ORACLE Version 9i                            */
-/* Created on:     10/22/2012 11:09:40 AM                       */
+/* Created on:     10/22/2012 3:33:41 PM                        */
 /*==============================================================*/
 
 
@@ -8856,6 +8856,7 @@ INSERT INTO YukonRoleProperty VALUES(-20216,-202,'Validation Engine','false','Co
 INSERT INTO YukonRoleProperty VALUES(-20217,-202,'Status Point Monitor','false','Controls access to the Status Point Monitor');
 INSERT INTO YukonRoleProperty VALUES(-20218,-202,'Porter Response Monitor','false','Controls access to the Porter Response Monitor');
 INSERT INTO YukonRoleProperty VALUES(-20219,-202,'Meter Events','false','Controls access to Meter Events.');
+INSERT INTO YukonRoleProperty VALUES(-20220,-202,'Allow Disconnect Control','true','Controls access to Disconnect, Connect, and Arm operations.');
 
 /* Operator Esubstation Drawings Role Properties */
 INSERT INTO YukonRoleProperty VALUES(-20600,-206,'View Drawings','true','Controls viewing of Esubstations drawings');

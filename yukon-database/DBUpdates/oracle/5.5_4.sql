@@ -232,6 +232,10 @@ FROM CapControlStrategy
 WHERE ControlUnits = 'INTEGRATED_VOLT_VAR';
 /* End YUK-11522 */
 
+/* Start YUK-11532 */
+INSERT INTO YukonRoleProperty VALUES (-20220, -202, 'Allow Disconnect Control', 'true', 'Controls access to Disconnect, Connect, and Arm operations.');
+/* End YUK-11532 */
+
 /**************************************************************/ 
 /* VERSION INFO                                               */ 
 /*   Automatically gets inserted from build script            */ 
