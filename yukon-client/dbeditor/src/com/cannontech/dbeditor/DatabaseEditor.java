@@ -296,6 +296,7 @@ public DatabaseEditor() {
  * This method was created in VisualAge.
  * @param event java.awt.event.ActionEvent
  */
+@Override
 public void actionPerformed(ActionEvent event)
 {
 	if( !( event.getSource() instanceof JMenuItem) ) {
@@ -458,7 +459,8 @@ private JTreeEditorFrame createInternalEditorFrame()
 	// set up the listener so when the X box in the right hand corner is pressed	
 	frame.addInternalFrameListener( new InternalFrameAdapter()
 	{
-		public void internalFrameClosing(InternalFrameEvent e)
+		@Override
+        public void internalFrameClosing(InternalFrameEvent e)
 		{
 			// Call the events that make it seem like the CANCEL button was pressed
 			if (frame.getContentPane() instanceof PropertyPanel)
@@ -674,7 +676,7 @@ private boolean executeChangeObjectType(WizardPanelEvent event)
 
 	try
 	{
-		Transaction t = Transaction.createTransaction(Transaction.RETRIEVE, (com.cannontech.database.db.DBPersistent) selectedObject);
+		Transaction t = Transaction.createTransaction(Transaction.RETRIEVE, selectedObject);
 		selectedObject = t.execute();
 	}
 	catch (Exception e)
@@ -773,11 +775,18 @@ private boolean executeChangeObjectType(WizardPanelEvent event)
 			
 			//meters with a device config should only retain the config if it's appropriate for the new type
 			if(checkConfigs) {
-		        try {
-		            DatabaseEditorUtil.unassignDeviceConfigIfInvalid(paoId);
+		        boolean configWasRemoved = false;
+			    try {
+		            configWasRemoved = DatabaseEditorUtil.unassignDeviceConfigIfInvalid(paoId);
 		        } catch(InvalidDeviceTypeException e) {
                     log.error("Unable to unassign device configuration on type change.", e);
                 }
+		        if(configWasRemoved) {
+		            JOptionPane.showMessageDialog(getParentFrame(), "The device configuration " + 
+		                "associated with this device is not compatible with the new device type " + 
+		                "and has been removed.", "Device Configuration Removed", 
+		                JOptionPane.WARNING_MESSAGE);
+		        }
 			}
 			
 			//always do this
@@ -1242,7 +1251,8 @@ private void exit(){
 	// let them go first then we can Exit the program.
 	SwingUtilities.invokeLater( new Runnable()
 	{
-		public void run()
+		@Override
+        public void run()
 		{
 		    System.exit(0);
 		}
@@ -1750,11 +1760,13 @@ private int getVisibleEditorFrames()
 /*
  * Handles incoming database change messages.
  */
+@Override
 public void handleDBChangeMsg( final DBChangeMsg msg, final LiteBase liteBase ) {
 	//see if the message originated from us
 	if( !(msg.getSource().equals(CtiUtilities.DEFAULT_MSG_SOURCE) ) ) {
 	    SwingUtilities.invokeLater(new Runnable() {
-	        public void run() {
+	        @Override
+            public void run() {
         		StringBuffer txtMsg = new StringBuffer(
         		    msg.getDbChangeType()
                     + " Database Change Message received from: " + msg.getUserName() + " at " + msg.getSource());
@@ -1819,6 +1831,7 @@ private void handleException(Throwable exception)
  * Creation date: (3/13/2001 3:31:51 PM)
  * @param event com.cannontech.clientutils.commonutils.GenericEvent
  */
+@Override
 public void handlePopUpEvent(com.cannontech.clientutils.commonutils.GenericEvent event) 
 {
 	if( event.getSource() == DatabaseEditor.this.getTreeNodePopupMenu() )
@@ -1874,7 +1887,8 @@ private void initConnections()
 	// add the mouselistener for the JTree
 	MouseListener ml = new MouseAdapter()
 	{
-		public void mousePressed(MouseEvent e) 
+		@Override
+        public void mousePressed(MouseEvent e) 
 		{
 			if (e.getSource() == editMenu) {
 				popupMenuWillBecomeVisible(new PopupMenuEvent(DatabaseEditor.this.getTreeNodePopupMenu()));
@@ -1974,6 +1988,7 @@ public static void main(String[] args) {
         editor.displayDatabaseEditor( f.getRootPane() );
 
         javax.swing.SwingUtilities.invokeLater(new Runnable() {
+            @Override
             public void run() {
                 f.setVisible(true);
             }
@@ -2006,18 +2021,21 @@ public void mouseClicked(MouseEvent event)
  * Creation date: (3/14/2001 2:39:23 PM)
  * @param event javax.swing.event.PopupMenuEvent
  */
+@Override
 public void popupMenuCanceled(PopupMenuEvent event) {}
 /**
  * Insert the method's description here.
  * Creation date: (3/14/2001 2:39:23 PM)
  * @param event javax.swing.event.PopupMenuEvent
  */
+@Override
 public void popupMenuWillBecomeInvisible(PopupMenuEvent event) {}
 /**
  * Insert the method's description here.
  * Creation date: (3/14/2001 2:39:23 PM)
  * @param event javax.swing.event.PopupMenuEvent
  */
+@Override
 public void popupMenuWillBecomeVisible(PopupMenuEvent event) 
 {
 	if( event.getSource() == DatabaseEditor.this.getTreeNodePopupMenu() )
@@ -2253,6 +2271,7 @@ private void removeUnneededEditorFrames()
  * This method was created in VisualAge.
  * @param event com.cannontech.common.editor.PropertyPanelEvent
  */
+@Override
 public void selectionPerformed( PropertyPanelEvent event)
 {
 		
@@ -2410,6 +2429,7 @@ public boolean insertDBPersistent( DBPersistent newItem )
  * This method was created in VisualAge.
  * @param event com.cannontech.common.wizard.WizardPanelEvent
  */
+@Override
 public void selectionPerformed(WizardPanelEvent event)
 {
 
@@ -2761,6 +2781,7 @@ private void showWizardPanel(WizardPanel wizard) {
  * @param o java.util.Observable
  * @param arg java.lang.Object
  */
+@Override
 public void update(java.util.Observable o, Object arg) 
 {
 	if( o instanceof ClientConnection )
@@ -2846,12 +2867,14 @@ private void updateConnectionStatus(IServerConnection conn) {
  * This method was created by Cannon Technologies Inc.
  * @param event java.awt.event.WindowEvent
  */
+@Override
 public void windowActivated(WindowEvent event) {
 }
 /**
  * This method was created by Cannon Technologies Inc.
  * @param event java.awt.event.WindowEvent
  */
+@Override
 public void windowClosed(WindowEvent event) {
     System.out.println("here");
 }
@@ -2859,6 +2882,7 @@ public void windowClosed(WindowEvent event) {
  * This method was created by Cannon Technologies Inc.
  * @param event java.awt.event.WindowEvent
  */
+@Override
 public void windowClosing(WindowEvent event) 
 {
 	if( exitConfirm() )
@@ -2870,24 +2894,28 @@ public void windowClosing(WindowEvent event)
  * This method was created by Cannon Technologies Inc.
  * @param event java.awt.event.WindowEvent
  */
+@Override
 public void windowDeactivated(WindowEvent event) {
 }
 /**
  * This method was created by Cannon Technologies Inc.
  * @param event java.awt.event.WindowEvent
  */
+@Override
 public void windowDeiconified(WindowEvent event) {
 }
 /**
  * This method was created by Cannon Technologies Inc.
  * @param event java.awt.event.WindowEvent
  */
+@Override
 public void windowIconified(WindowEvent event) {
 }
 /**
  * This method was created by Cannon Technologies Inc.
  * @param event java.awt.event.WindowEvent
  */
+@Override
 public void windowOpened(WindowEvent event) {
 }
 

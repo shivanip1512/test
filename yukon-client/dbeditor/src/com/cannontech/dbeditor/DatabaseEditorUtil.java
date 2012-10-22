@@ -59,9 +59,10 @@ public final class DatabaseEditorUtil {
     /**
      * Checks that the device config assigned to the specified device is valid. If it is not, the
      * config is removed from that device.
+     * @return True if a config was removed, otherwise false.
      * @throws InvalidDeviceTypeException if the config cannot be unassigned due to the device type.
      */
-    public static void unassignDeviceConfigIfInvalid(int paoId) throws InvalidDeviceTypeException {
+    public static boolean unassignDeviceConfigIfInvalid(int paoId) throws InvalidDeviceTypeException {
         YukonDevice device = deviceDao.getYukonDevice(paoId);
         
         ConfigurationBase config = configurationDao.findConfigurationForDevice(device);
@@ -70,8 +71,10 @@ public final class DatabaseEditorUtil {
             boolean configSupported = paoDefinitionDao.isTagSupported(device.getPaoIdentifier().getPaoType(), configTag);
             if(!configSupported) {
                 configurationDao.unassignConfig(device);
+                return true;
             }
         }
+        return false;
     }
     
     public static boolean isDisconnectCollarCompatible(final Object object){
@@ -86,6 +89,7 @@ public final class DatabaseEditorUtil {
     
     public static void updateDisconnectStatus(final DatabaseEditor dbEditor, final JComponent c, final Object object) {
         threadExecutor.execute(new Runnable() {
+            @Override
             public void run() {
                 JCheckBox checkBox = DatabaseEditorUtil.findJComponent(c, "JCheckBoxEnableDisconnect", JCheckBox.class);
                 JTextField textField = DatabaseEditorUtil.findJComponent(c, "JTextFieldDisconnectAddress", JTextField.class);
@@ -130,6 +134,7 @@ public final class DatabaseEditorUtil {
     
     public static void doViewMenuRefreshAction(final DatabaseEditor dbEditor) {
         SwingUtilities.invokeLater(new Runnable() {
+            @Override
             public void run() {
                 dbEditor.viewMenuRefreshAction();
             }
@@ -171,6 +176,7 @@ public final class DatabaseEditorUtil {
     
     public static void updateRouteName(final DatabaseEditor dbEditor, final JComponent c, final DBPersistent object) {
         threadExecutor.execute(new Runnable() {
+            @Override
             public void run() {
                 final YukonPAObject paoObj = (YukonPAObject) object;
                 int id = paoObj.getPAObjectID();
@@ -189,6 +195,7 @@ public final class DatabaseEditorUtil {
                     final String message = "Update Route name " + oldName + " to " + paoObj.getPAOName();
                     
                     SwingUtilities.invokeLater(new Runnable() {
+                        @Override
                         public void run() {
                             int result = JOptionPane.showConfirmDialog(
                                                                        CtiUtilities.getParentFrame(c), 
@@ -198,6 +205,7 @@ public final class DatabaseEditorUtil {
                                                                        JOptionPane.INFORMATION_MESSAGE);
                             if (result == JOptionPane.YES_OPTION) {
                                 threadExecutor.execute(new Runnable () {
+                                    @Override
                                     public void run() {
                                         DBPersistent routePAObject = dbPersistentDao.retrieveDBPersistent(liteRoutePAObject);
                                         ((YukonPAObject) routePAObject).setPAOName(paoObj.getPAOName());
