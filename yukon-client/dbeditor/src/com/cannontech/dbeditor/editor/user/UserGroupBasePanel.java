@@ -208,7 +208,6 @@ public class UserGroupBasePanel extends DataInputPanel implements CaretListener 
                 ivjJLabelErrorMessage = new JLabel();
                 ivjJLabelErrorMessage.setName("JLabelRange");
                 ivjJLabelErrorMessage.setOpaque(false);
-                ivjJLabelErrorMessage.setText("...RANGE TEXT...");
                 ivjJLabelErrorMessage.setVisible(true);
                 ivjJLabelErrorMessage.setHorizontalTextPosition(SwingConstants.CENTER);
                 ivjJLabelErrorMessage.setFont(new Font("Arial", 1, 10));
