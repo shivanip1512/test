@@ -69,7 +69,9 @@ import com.cannontech.stars.xml.serialize.StarsInventory;
 import com.google.common.collect.Lists;
 
 public class StarsAdminUtil {
-
+    public static final String ROLE_GROUP_EXTENSION = "Admin Role Grp";
+    public static final String USER_GROUP_EXTENSION = "Admin User Grp";
+    
 	public static final String ENERGY_COMPANY_TEMP = "ENERGY_COMPANY_TEMP";
 	public static final String SERVICE_COMPANY_TEMP = "SERVICE_COMPANY_TEMP";
 	
@@ -686,7 +688,7 @@ public class StarsAdminUtil {
 	    // Creating the admin role group for the new energy company
 		com.cannontech.database.data.user.YukonGroup adminGrp = new com.cannontech.database.data.user.YukonGroup();
 		com.cannontech.database.db.user.YukonGroup groupDB = adminGrp.getYukonGroup();
-		groupDB.setGroupName( userGroupName );
+		groupDB.setGroupName(userGroupName + " " + ROLE_GROUP_EXTENSION);
 		groupDB.setGroupDescription( "Privilege group for the energy company's default operator login" );
 		
 		// Including the Energy Company Role to the EC admin role group
@@ -723,7 +725,7 @@ public class StarsAdminUtil {
 
 		// Create the new admin user group including the links to the newly created role group.
 		UserGroup userGroup = new UserGroup();
-		userGroup.getUserGroup().setUserGroupName(userGroupName);
+		userGroup.getUserGroup().setUserGroupName(userGroupName + " " + USER_GROUP_EXTENSION);
 		userGroup.getUserGroup().setUserGroupDescription("Privilege user group for the energy company's default operator login");
 		userGroup.addRoleGroups(ecAdminGroup);
 		

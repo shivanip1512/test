@@ -8,12 +8,10 @@ import java.util.Set;
 import javax.naming.ConfigurationException;
 
 import org.apache.commons.lang.StringUtils;
-import org.apache.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.dao.EmptyResultDataAccessException;
 import org.springframework.transaction.annotation.Transactional;
 
-import com.cannontech.clientutils.YukonLogManager;
 import com.cannontech.common.config.ConfigurationSource;
 import com.cannontech.common.config.MasterConfigBooleanKeysEnum;
 import com.cannontech.common.constants.YukonSelectionList;
@@ -84,10 +82,6 @@ import com.google.common.collect.Iterables;
 import com.google.common.collect.Sets;
 
 public class EnergyCompanyServiceImpl implements EnergyCompanyService {
-
-    private final String ecAdminLoginGroupExtension = " Admin Grp";
-    private Logger log = YukonLogManager.getLogger(EnergyCompanyServiceImpl.class);
-
     @Autowired private AccountThermostatScheduleDao accountThermostatScheduleDao;
     @Autowired private ContactDao contactDao;
     @Autowired private ContactNotificationDao contactNotificationDao;
@@ -128,9 +122,8 @@ public class EnergyCompanyServiceImpl implements EnergyCompanyService {
         }
 
         /* Create a privilege group with EnergyCompany and Administrator role */
-        String adminGroupName = energyCompanyDto.getName() + ecAdminLoginGroupExtension;
         UserGroup ecAdminUserGrp = 
-                StarsAdminUtil.createOperatorAdminUserGroup(adminGroupName, energyCompanyDto.getPrimaryOperatorUserGroupId(), topLevelEc);
+                StarsAdminUtil.createOperatorAdminUserGroup(energyCompanyDto.getName(), energyCompanyDto.getPrimaryOperatorUserGroupId(), topLevelEc);
         
         /* Create the primary operator login */
         LiteYukonUser adminUser = 
@@ -396,14 +389,14 @@ public class EnergyCompanyServiceImpl implements EnergyCompanyService {
         }
         
         // Delete the privilege group of the default operator login as long as it's not a system group and ends with with 'Admin Grp' 
-        if (liteGroup != null && liteGroup.getGroupName().endsWith(ecAdminLoginGroupExtension) && liteGroup.getGroupID() > -1) {
+        if (liteGroup != null && liteGroup.getGroupName().endsWith(StarsAdminUtil.ROLE_GROUP_EXTENSION) && liteGroup.getGroupID() > -1) {
             YukonGroup dftGroup = new YukonGroup();
             dftGroup.setGroupID(new Integer(liteGroup.getGroupID()));
 
             dbPersistentDao.performDBChange(dftGroup, TransactionType.DELETE);
         }
         //Find and delete a privilege user group
-        LiteUserGroup liteUserGroup = userGroupDao.findLiteUserGroupByUserGroupName(energyCompany.getName()+ecAdminLoginGroupExtension);
+        LiteUserGroup liteUserGroup = userGroupDao.findLiteUserGroupByUserGroupName(energyCompany.getName() + " " + StarsAdminUtil.USER_GROUP_EXTENSION);
         if(liteUserGroup != null){
             UserGroup userGroup = new UserGroup();
             userGroup.setUserGroupId(liteUserGroup.getUserGroupId());
@@ -653,6 +646,7 @@ public class EnergyCompanyServiceImpl implements EnergyCompanyService {
         yukonJdbcTemplate.update(sql); 
     }
 
+    @Override
     public void addRouteToEnergyCompany(int energyCompanyId, final int routeId) {
         
         // remove (i.e. steal) route from children
@@ -684,6 +678,7 @@ public class EnergyCompanyServiceImpl implements EnergyCompanyService {
 
     }
 
+    @Override
     public int removeRouteFromEnergyCompany(int energyCompanyId, final int routeId) {
         
         // make sure removed route isn't the default route
@@ -706,6 +701,7 @@ public class EnergyCompanyServiceImpl implements EnergyCompanyService {
         return rowsDeleted;
     }
 
+    @Override
     public void addSubstationToEnergyCompany(int energyCompanyId, int substationId) {
         
         ecMappingDao.addECToSubstationMapping(energyCompanyId, substationId);
@@ -716,6 +712,7 @@ public class EnergyCompanyServiceImpl implements EnergyCompanyService {
 
     }
     
+    @Override
     @Transactional
     public int removeSubstationFromEnergyCompany(int energyCompanyId, int substationId) {
         
