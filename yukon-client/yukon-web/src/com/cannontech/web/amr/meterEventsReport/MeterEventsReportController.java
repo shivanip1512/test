@@ -251,7 +251,7 @@ public class MeterEventsReportController {
         }
         csvWriter.close();
         
-        return "";
+        return null;
     }
     
     private void setupBackingBean(MeterEventsReportFilterBackingBean backingBean,
