@@ -19,7 +19,6 @@ import com.cannontech.core.roleproperties.YukonRole;
 import com.cannontech.core.users.dao.UserGroupDao;
 import com.cannontech.core.users.model.LiteUserGroup;
 import com.cannontech.database.FieldMapper;
-import com.cannontech.database.IntegerRowMapper;
 import com.cannontech.database.SimpleTableAccessTemplate;
 import com.cannontech.database.YukonJdbcTemplate;
 import com.cannontech.database.YukonResultSet;
@@ -177,7 +176,7 @@ public class UserGroupDaoImpl implements UserGroupDao, InitializingBean {
         sql.append("  JOIN YukonUser YU ON YU.UserGroupId = UG.UserGroupId");
         sql.append("WHERE UG.UserGroupId").eq(userGroupId);
         
-        int userCount = yukonJdbcTemplate.queryForObject(sql, new IntegerRowMapper());
+        int userCount = yukonJdbcTemplate.queryForInt(sql);
         return userCount;
     }
 
