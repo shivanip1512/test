@@ -72,6 +72,9 @@ public:
         GetValue_Temperature,
         GetValue_XfmrHistoricalCT,
         GetValue_DutyCycle,
+        GetValue_InstantLineData,
+        GetValue_TOUkWhReverse,
+        GetValue_FrozenTOUkWhReverse,
 
         // PutValue Commands
         PutValue_IEDReset,
