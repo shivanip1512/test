@@ -124,10 +124,16 @@ public class PasswordResetController {
 
     @RequestMapping(value = "/changePassword", method = RequestMethod.GET)
     public String changePassword(ModelMap model, FlashScope flashScope, String k) {
-        globalSettingDao.verifySetting(GlobalSettingType.ENABLE_PASSWORD_RECOVERY);
+
         LiteYukonUser passwordResetUser = passwordResetService.findUserFromPasswordKey(k);
         if (passwordResetUser == null) {
             return "redirect:/login.jsp";
+        }
+        
+        // Check to see if the user's password is expired.  If their password is not expired the user should only be able to 
+        // hit this request if they have password recovery enabled.
+        if (!authenticationService.isPasswordExpired(passwordResetUser)) {
+            globalSettingDao.verifySetting(GlobalSettingType.ENABLE_PASSWORD_RECOVERY);
         }
         
         /* LoginBackingBean */
@@ -145,13 +151,17 @@ public class PasswordResetController {
 
     @RequestMapping(value = "/changePassword", method = RequestMethod.POST)
     public String submitChangePassword(@ModelAttribute LoginBackingBean loginBackingBean, BindingResult bindingResult, FlashScope flashScope, String k, ModelMap model) {
-        globalSettingDao.verifySetting(GlobalSettingType.ENABLE_PASSWORD_RECOVERY);
-        
         // Check to see if the supplied userId matches up with the hex key.  I'm not sure if this is really necessary.  It might be overkill.
         LiteYukonUser suppliedPasswordResetUser = yukonUserDao.getLiteYukonUser(loginBackingBean.getUserId());
         LiteYukonUser passwordResetUser = passwordResetService.findUserFromPasswordKey(k);
         if(passwordResetUser == null || !passwordResetUser.equals(suppliedPasswordResetUser)) {
             return "redirect:/login.jsp";
+        }
+
+        // Check to see if the user's password is expired.  If their password is not expired the user should only be able to 
+        // hit this request if they have password recovery enabled.
+        if (!authenticationService.isPasswordExpired(passwordResetUser)) {
+            globalSettingDao.verifySetting(GlobalSettingType.ENABLE_PASSWORD_RECOVERY);
         }
 
         // Validate login change.
@@ -176,19 +186,20 @@ public class PasswordResetController {
     }
     
     @RequestMapping(value="/checkPassword", method=RequestMethod.POST)
-    public @ResponseBody JSONObject checkPassword(@ModelAttribute LoginBackingBean loginBackingBean,
-    																	BindingResult bindingResult, 
-    																	FlashScope flashScope, 
-    																	String k, 
-    																	ModelMap model,
-    																	HttpServletResponse response,
-    																	HttpServletRequest request) {
-        globalSettingDao.verifySetting(GlobalSettingType.ENABLE_PASSWORD_RECOVERY);
-        
-    	// Check to see if the supplied userId matches up with the hex key.  I'm not sure if this is really necessary.  It might be overkill.
+    public @ResponseBody JSONObject checkPassword(@ModelAttribute LoginBackingBean loginBackingBean, BindingResult bindingResult, 
+    																	FlashScope flashScope, String k,  ModelMap model,
+    																	HttpServletResponse response,  HttpServletRequest request) {
+
+        // Check to see if the supplied userId matches up with the hex key.  I'm not sure if this is really necessary.  It might be overkill.
     	LiteYukonUser suppliedPasswordResetUser = yukonUserDao.getLiteYukonUser(loginBackingBean.getUserId());
     	LiteYukonUser passwordResetUser = passwordResetService.findUserFromPasswordKey(k);
     	LiteUserGroup liteUserGroup = userGroupDao.getLiteUserGroupByUserGroupName(loginBackingBean.getUserGroupName());
+
+        // Check to see if the user's password is expired.  If their password is not expired the user should only be able to 
+        // hit this request if they have password recovery enabled.
+        if (!authenticationService.isPasswordExpired(passwordResetUser)) {
+            globalSettingDao.verifySetting(GlobalSettingType.ENABLE_PASSWORD_RECOVERY);
+        }
 
     	//login validator is not appropriate for checking the password.  I wish it was
         //but we need information on specific rules not met
