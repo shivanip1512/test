@@ -862,6 +862,10 @@ void  CtiCommandParser::doParseGetValue(const string &_CmdStr)
         {
             _cmd["phasecurrentread"] = CtiParseValue(TRUE);
         }
+        else if(CmdStr.contains(" instant line data"))
+        {
+            _cmd["instantlinedata"] = CtiParseValue(TRUE);
+        }
         else
         {
             // Default Get Value request has been specified....
@@ -927,6 +931,10 @@ void  CtiCommandParser::doParseGetValue(const string &_CmdStr)
         if(CmdStr.contains(" update"))      // Sourcing from CmdStr, which is the entire command string.
         {
             flag |= CMD_FLAG_UPDATE;
+        }
+        if(CmdStr.contains(" reverse"))
+        {
+            flag |= CMD_FLAG_GV_REVERSE;
         }
     }
     else
@@ -1652,6 +1660,11 @@ void  CtiCommandParser::doParseGetConfig(const string &_CmdStr)
             if(!(token = CmdStr.match(re_tou_schedule)).empty())
             {
                 _cmd["tou_schedule"] = CtiParseValue(atoi(token.data() + 13));
+            }
+
+            if(CmdStr.contains(" continued"))
+            {
+                _cmd["continued"] = CtiParseValue(true);
             }
         }
         if(CmdStr.contains(" holiday"))
