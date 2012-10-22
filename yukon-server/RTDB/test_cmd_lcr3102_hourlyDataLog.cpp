@@ -170,6 +170,11 @@ BOOST_AUTO_TEST_CASE( test_decode_execute_incorrect_start_time )
     CtiDate today(13, 2, 2009);
     CtiTime executeTime(today, 17, 31, 30);
 
+    long tz;
+    _get_timezone(&tz);
+    executeTime.addSeconds(21600 - tz);
+
+
     test_Lcr3102HourlyDataLogCommand hourlyRead = test_Lcr3102HourlyDataLogCommand(executeTime.seconds());
 
     {
@@ -240,6 +245,10 @@ BOOST_AUTO_TEST_CASE( test_decode_execute_insufficient_data )
     CtiDate today(13, 2, 2009);
     CtiTime executeTime(today, 17, 31, 30);
 
+    long tz;
+    _get_timezone(&tz);
+    executeTime.addSeconds(21600 - tz);
+
     test_Lcr3102HourlyDataLogCommand hourlyRead = test_Lcr3102HourlyDataLogCommand(executeTime.seconds());
 
     {
@@ -308,6 +317,10 @@ BOOST_AUTO_TEST_CASE( test_decode_execute_normal_execution )
 {
     CtiDate today(13, 2, 2009);
     CtiTime executeTime(today, 17, 31, 30);
+
+    long tz;
+    _get_timezone(&tz);
+    executeTime.addSeconds(21600 - tz);
 
     test_Lcr3102HourlyDataLogCommand hourlyRead = test_Lcr3102HourlyDataLogCommand(executeTime.seconds());
 
@@ -517,6 +530,10 @@ BOOST_AUTO_TEST_CASE( test_execute_decode_more_than_sixty_minutes_error )
 {
     CtiDate today(13, 2, 2009);
     CtiTime executeTime(today, 17, 31, 30);
+
+    long tz;
+    _get_timezone(&tz);
+    executeTime.addSeconds(21600 - tz);
 
     test_Lcr3102HourlyDataLogCommand hourlyRead = test_Lcr3102HourlyDataLogCommand(executeTime.seconds());
 
