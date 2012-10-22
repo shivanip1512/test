@@ -24,7 +24,7 @@
                   <div align="center" class="MainText">
                   <%= liteContact.getContFirstName() + " " + liteContact.getContLastName() %><br clear="ALL">
                   <%
-                    java.util.Vector notifications = liteContact.getLiteContactNotifications();
+                    java.util.List notifications = liteContact.getLiteContactNotifications();
                     for (int j = 0; j < notifications.size(); j++){
                       com.cannontech.database.data.lite.LiteContactNotification liteNot = (com.cannontech.database.data.lite.LiteContactNotification)notifications.get(j);
                   %>
