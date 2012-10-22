@@ -70,7 +70,7 @@ public class PaoTypeIndexManager extends AbstractIndexManager {
         String paoid = Integer.toString(rs.getInt("paobjectid"));
         String paoClass = rs.getString("paoclass");
         String all = paoName + " " + type + " " + paoid + " " + paoClass + " " + category;
-        doc.add(new Field("pao", paoName, Field.Store.YES, Field.Index.NOT_ANALYZED));
+        doc.add(new Field("pao", paoName, Field.Store.YES, Field.Index.ANALYZED));
         doc.add(new Field("type", type, Field.Store.YES, Field.Index.NOT_ANALYZED));
         doc.add(new Field("all", all, Field.Store.YES, Field.Index.ANALYZED));
 
