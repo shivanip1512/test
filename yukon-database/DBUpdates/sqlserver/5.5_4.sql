@@ -200,6 +200,23 @@ BEGIN
 END;
 /* End YUK-11481 */
 
+/* Start YUK-11522 */
+INSERT INTO CCStrategyTargetSettings (StrategyId, SettingName, SettingValue, SettingType)
+SELECT StrategyId, 'Power Factor Correction', '0.02', 'BANDWIDTH'
+FROM CapControlStrategy 
+WHERE ControlUnits = 'INTEGRATED_VOLT_VAR';
+
+INSERT INTO CCStrategyTargetSettings (StrategyId, SettingName, SettingValue, SettingType)
+SELECT StrategyId, 'Power Factor Correction', '20.0', 'COST'
+FROM CapControlStrategy 
+WHERE ControlUnits = 'INTEGRATED_VOLT_VAR';
+
+INSERT INTO CCStrategyTargetSettings (StrategyId, SettingName, SettingValue, SettingType)
+SELECT StrategyId, 'Power Factor Correction', '2.0', 'MAX_COST'
+FROM CapControlStrategy 
+WHERE ControlUnits = 'INTEGRATED_VOLT_VAR';
+/* End YUK-11522 */
+
 /**************************************************************/ 
 /* VERSION INFO                                               */ 
 /*   Automatically gets inserted from build script            */ 
