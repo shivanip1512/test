@@ -49,12 +49,12 @@ WHERE ControlUnits = 'INTEGRATED_VOLT_VAR';
 CREATE TABLE RolePropToSetting_Temp(
     RolePropertyId NUMERIC(18, 0) NOT NULL,
     RolePropertyEnum VARCHAR(100) NOT NULL,
-    RoleEnum VARCHAR(50) NULL,
-    RoleCategory VARCHAR(50) NULL,
+    RoleEnum VARCHAR(50) NOT NULL,
+    RoleCategory VARCHAR(50) NOT NULL,
  CONSTRAINT PK_RolePropToSetting_Temp PRIMARY KEY (RolePropertyId)
 );
 
-INSERT INTO RolePropToSetting_Temp VALUES (-10400, 'INTERVAL', 'CALC_HISTORICAL', 'System');;
+INSERT INTO RolePropToSetting_Temp VALUES (-10400, 'INTERVAL', 'CALC_HISTORICAL', 'System');
 INSERT INTO RolePropToSetting_Temp VALUES (-10401, 'BASELINE_CALCTIME', 'CALC_HISTORICAL', 'System');
 INSERT INTO RolePropToSetting_Temp VALUES (-10402, 'DAYS_PREVIOUS_TO_COLLECT', 'CALC_HISTORICAL', 'System');
 INSERT INTO RolePropToSetting_Temp VALUES (-10500, 'HOME_DIRECTORY', 'WEB_GRAPH', 'System');
@@ -127,11 +127,8 @@ CREATE TABLE GlobalSetting (
     Value VARCHAR(1000) NULL,
     Comments VARCHAR(1000) NULL,
     LastChangedDate DATETIME NULL,
+    constraint PK_GlobalSetting primary key (GlobalSettingId)
 );
-
-ALTER TABLE GlobalSetting
-    ADD CONSTRAINT PK_GlobalSetting 
-        PRIMARY KEY (GlobalSettingId);
 
 CREATE UNIQUE INDEX Indx_GlobalSetting_Name_UNQ ON GlobalSetting (
     Name ASC
@@ -143,17 +140,17 @@ DECLARE
     @DistinctDuplicateSets NUMERIC;
 BEGIN
     SELECT @DistinctDuplicateSets = COUNT(*)
-    FROM (SELECT COUNT(RolePropertyId) AS DuplicateCount 
+    FROM (SELECT GroupId, RoleId, RolePropertyId, COUNT(RolePropertyId) AS DuplicateCount 
           FROM YukonGroupRole 
-          WHERE GroupId=-1) T
+          WHERE GroupId=-1
+          GROUP BY GroupId, RoleId, RolePropertyId) T
     WHERE T.DuplicateCount > 1;
     
     IF 0 < @DistinctDuplicateSets
     BEGIN
-        RAISERROR('There are duplicate role property values for one or more role properties specified in the Yukon Grp role group. In order to continue, these duplicate conflicts must be resolved.  Please see YUK-11418 for an explanation of this process and for the queries needed to delete the duplicate values.', 16, 1);
+        RAISERROR('There are duplicate role property values for one or more role properties specified in the Yukon Grp role group. In order to continue, these duplicate conflicts must be resolved.  Please see YUK-11481 for an explanation of this process and for the queries needed to delete the duplicate values.', 16, 1);
     END
 END;
-
 
 BEGIN
     DECLARE 
@@ -166,7 +163,7 @@ BEGIN
            (SELECT @maxId + ROW_NUMBER() OVER (ORDER BY YGR.RoleId, YGR.RolePropertyId), 
             RolepropertyEnum, 
             CASE 
-                WHEN Value = null THEN DefaultValue
+                WHEN Value IS NULL THEN DefaultValue
                 WHEN LTRIM(RTRIM(Value)) = '' THEN DefaultValue
                 WHEN Value = '(none)' THEN DefaultValue
                 ELSE Value

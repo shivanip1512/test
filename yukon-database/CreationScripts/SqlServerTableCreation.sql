@@ -1,7 +1,7 @@
 /*==============================================================*/
 /* Database name:  YukonDatabase                                */
 /* DBMS name:      Microsoft SQL Server 2005                    */
-/* Created on:     10/22/2012 11:02:40 AM                       */
+/* Created on:     10/22/2012 2:22:34 PM                        */
 /*==============================================================*/
 
 /*==============================================================*/
@@ -5065,7 +5065,7 @@ create table GlobalSetting (
    Value                varchar(1000)        null,
    Comments             varchar(1000)        null,
    LastChangedDate      datetime             null,
-   constraint PK_GlobalSetting primary key nonclustered (GlobalSettingId)
+   constraint PK_GlobalSetting primary key (GlobalSettingId)
 )
 go
 

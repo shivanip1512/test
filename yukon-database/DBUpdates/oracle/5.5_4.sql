@@ -49,8 +49,8 @@ WHERE ControlUnits = 'INTEGRATED_VOLT_VAR';
 CREATE TABLE RolePropToSetting_Temp(
     RolePropertyId        NUMBER         NOT NULL,
     RolePropertyEnum      VARCHAR2(100)  NOT NULL,
-    RoleEnum              VARCHAR2(50)   NULL,
-    RoleCategory          VARCHAR2(50)   NULL,
+    RoleEnum              VARCHAR2(50)   NOT NULL,
+    RoleCategory          VARCHAR2(50)   NOT NULL,
     CONSTRAINT PK_RolePropToSetting_Temp PRIMARY KEY (RolePropertyId)
 );
 
@@ -137,12 +137,9 @@ CREATE TABLE GlobalSetting (
     Name                       VARCHAR2(100)          NOT NULL,
     Value                      VARCHAR2(1000)         NULL,
     Comments                   VARCHAR2(1000)         NULL,
-    LastChangedDate            DATE                   NULL
+    LastChangedDate            DATE                   NULL,
+    CONSTRAINT PK_GlobalSetting primary key (GlobalSettingId)
 );
-
-ALTER TABLE GlobalSetting
-  ADD CONSTRAINT PK_GlobalSetting 
-    PRIMARY KEY (GlobalSettingId);
 
 CREATE UNIQUE INDEX Indx_GlobalSetting_Name_UNQ ON GlobalSetting (
    Name ASC
@@ -161,7 +158,7 @@ BEGIN
     WHERE T.DuplicateCount > 1;
     
     IF 0 < v_DistinctDuplicateSets THEN
-      RAISE_APPLICATION_ERROR(-20001, 'There are duplicate role property values for one or more role properties specified in the Yukon Grp role group. In order to continue, these duplicate conflicts must be resolved.  Please see YUK-11418 for an explanation of this process and for the queries needed to delete the duplicate values.');
+      RAISE_APPLICATION_ERROR(-20001, 'There are duplicate role property values for one or more role properties specified in the Yukon Grp role group. In order to continue, these duplicate conflicts must be resolved.  Please see YUK-11481 for an explanation of this process and for the queries needed to delete the duplicate values.');
     END IF;
 END;
 /
