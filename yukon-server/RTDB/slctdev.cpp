@@ -60,6 +60,8 @@
 #include "dev_mct410.h"
 #include "dev_mct420.h"
 #include "dev_mct470.h"
+#include "dev_mct440_2131b.h"
+#include "dev_mct440_2133b.h"
 #include "dev_mct_lmt2.h"
 #include "dev_mct_broadcast.h"
 #include "dev_kv2.h"
@@ -203,6 +205,9 @@ DLLEXPORT CtiDeviceBase *createDeviceType(int type)
         case TYPEMCT430S4:
         case TYPEMCT430SL:
         case TYPEMCT470:        NewDevice = CTIDBG_new Mct470Device;     break;
+
+        case TYPEMCT440_2131B:  NewDevice = CTIDBG_new Mct440_2131BDevice; break;
+        case TYPEMCT440_2133B:  NewDevice = CTIDBG_new Mct440_2133BDevice; break;
 
         case TYPE_MODBUS:       NewDevice = CTIDBG_new ModbusDevice;      break;
 
@@ -429,6 +434,8 @@ DLLEXPORT bool isCarrierLPDeviceType(const int type)
         case TYPEMCT430S4:
         case TYPEMCT430SL:
         case TYPEMCT470:
+        case TYPEMCT440_2131B:
+        case TYPEMCT440_2133B:
         {
             return true;
         }
