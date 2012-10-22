@@ -14,7 +14,7 @@ import org.springframework.beans.factory.InitializingBean;
 import org.springframework.beans.factory.annotation.Autowired;
 
 import com.cannontech.clientutils.YukonLogManager;
-import com.cannontech.common.device.commands.impl.CommandCompletionException;
+import com.cannontech.common.device.commands.exception.CommandCompletionException;
 import com.cannontech.common.util.ScheduledExecutor;
 import com.cannontech.core.dao.NotFoundException;
 import com.cannontech.database.data.lite.LiteYukonUser;

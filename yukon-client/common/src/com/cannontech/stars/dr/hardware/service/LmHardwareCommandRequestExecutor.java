@@ -3,7 +3,7 @@ package com.cannontech.stars.dr.hardware.service;
 import com.cannontech.common.device.commands.CommandCompletionCallback;
 import com.cannontech.common.device.commands.CommandRequestExecutionTemplate;
 import com.cannontech.common.device.commands.CommandRequestRoute;
-import com.cannontech.common.device.commands.impl.CommandCompletionException;
+import com.cannontech.common.device.commands.exception.CommandCompletionException;
 import com.cannontech.database.data.lite.LiteYukonUser;
 import com.cannontech.stars.database.data.lite.LiteLmHardwareBase;
 

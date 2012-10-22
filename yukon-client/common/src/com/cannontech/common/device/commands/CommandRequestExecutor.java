@@ -4,7 +4,7 @@ import java.util.List;
 
 import com.cannontech.common.device.DeviceRequestType;
 import com.cannontech.common.device.commands.dao.model.CommandRequestExecutionIdentifier;
-import com.cannontech.common.device.commands.impl.CommandCompletionException;
+import com.cannontech.common.device.commands.exception.CommandCompletionException;
 import com.cannontech.database.data.lite.LiteYukonUser;
 
 /**

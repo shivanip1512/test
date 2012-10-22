@@ -20,7 +20,7 @@ import org.apache.log4j.Logger;
 
 import com.cannontech.clientutils.YukonLogManager;
 import com.cannontech.common.constants.YukonListEntryTypes;
-import com.cannontech.common.device.commands.impl.CommandCompletionException;
+import com.cannontech.common.device.commands.exception.CommandCompletionException;
 import com.cannontech.common.exception.NotAuthorizedException;
 import com.cannontech.common.util.CtiUtilities;
 import com.cannontech.common.util.Pair;

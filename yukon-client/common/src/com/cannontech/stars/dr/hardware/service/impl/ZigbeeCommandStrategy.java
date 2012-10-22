@@ -16,7 +16,8 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.jms.core.JmsTemplate;
 
 import com.cannontech.clientutils.YukonLogManager;
-import com.cannontech.common.device.commands.impl.CommandCompletionException;
+import com.cannontech.common.device.commands.exception.CommandCompletionException;
+import com.cannontech.common.device.commands.exception.SystemConfigurationException;
 import com.cannontech.common.inventory.HardwareType;
 import com.cannontech.common.model.YukonCancelTextMessage;
 import com.cannontech.common.model.YukonTextMessage;
@@ -123,8 +124,8 @@ public class ZigbeeCommandStrategy implements LmHardwareCommandStrategy {
                     log.error("Unable to configure Digi device:", e);
                     throw new CommandCompletionException("Unable to configure Digi device.", e);
                 } catch (DigiNotConfiguredException e) {
-                    log.error("Unable to configure Digi device:", e);
-                    throw new CommandCompletionException("Unable to configure Digi device.", e);
+                    log.error("Unable to configure Digi device: Digi is disabled ", e);
+                    throw new SystemConfigurationException("Digi is disabled.");
                 }
             }
         } else {
@@ -156,7 +157,7 @@ public class ZigbeeCommandStrategy implements LmHardwareCommandStrategy {
             
             zigbeeWebService.sendManualAdjustment(message);
         } catch (DigiNotConfiguredException e) {
-            throw new CommandCompletionException(e.getMessage(), e);
+            throw new SystemConfigurationException(e.getMessage(), e);
         } catch (ZigbeeClusterLibraryException e) {
             throw new CommandCompletionException(e.getMessage(), e);
         } catch (DigiWebServiceException e) {
@@ -195,6 +196,8 @@ public class ZigbeeCommandStrategy implements LmHardwareCommandStrategy {
                 
                 customerEventDao.saveAndLogScheduleUpdate(account, ats, timeOfWeek, stat, user);
                 
+            //TODO: The general theme of this file is to throw an exception on error.
+            //Consider changing to match
             } catch (DigiNotConfiguredException e) {
                 return ThermostatScheduleUpdateResult.UPDATE_SCHEDULE_ERROR;
             } catch (ZigbeeClusterLibraryException e) {

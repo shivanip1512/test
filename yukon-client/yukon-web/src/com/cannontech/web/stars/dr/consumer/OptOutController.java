@@ -23,7 +23,7 @@ import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 
-import com.cannontech.common.device.commands.impl.CommandCompletionException;
+import com.cannontech.common.device.commands.exception.CommandCompletionException;
 import com.cannontech.common.events.loggers.AccountEventLogService;
 import com.cannontech.common.survey.dao.SurveyDao;
 import com.cannontech.common.survey.model.Question;

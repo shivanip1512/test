@@ -15,12 +15,14 @@ import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.RequestMapping;
 
 import com.cannontech.common.events.loggers.AccountEventLogService;
+import com.cannontech.common.i18n.MessageSourceAccessor;
 import com.cannontech.common.version.VersionTools;
 import com.cannontech.core.dao.PaoDao;
 import com.cannontech.core.roleproperties.YukonRoleProperty;
 import com.cannontech.core.roleproperties.dao.EnergyCompanyRolePropertyDao;
 import com.cannontech.core.roleproperties.dao.RolePropertyDao;
 import com.cannontech.i18n.YukonMessageSourceResolvable;
+import com.cannontech.i18n.YukonUserContextMessageSourceResolver;
 import com.cannontech.loadcontrol.loadgroup.dao.LoadGroupDao;
 import com.cannontech.loadcontrol.loadgroup.model.LoadGroup;
 import com.cannontech.stars.core.service.YukonEnergyCompanyService;
@@ -30,6 +32,8 @@ import com.cannontech.stars.dr.displayable.dao.DisplayableEnrollmentDao;
 import com.cannontech.stars.dr.displayable.model.DisplayableEnrollment.DisplayableEnrollmentInventory;
 import com.cannontech.stars.dr.displayable.model.DisplayableEnrollment.DisplayableEnrollmentProgram;
 import com.cannontech.stars.dr.enrollment.dao.EnrollmentDao;
+import com.cannontech.stars.dr.enrollment.exception.EnrollmentException;
+import com.cannontech.stars.dr.enrollment.exception.EnrollmentSystemConfigurationException;
 import com.cannontech.stars.dr.enrollment.service.EnrollmentHelperService;
 import com.cannontech.stars.dr.hardware.dao.LMHardwareControlGroupDao;
 import com.cannontech.stars.dr.hardware.dao.StaticLoadGroupMappingDao;
@@ -65,6 +69,7 @@ public class OperatorEnrollmentController {
     @Autowired private EnrollmentHelperService enrollmentHelperService;
     @Autowired private RolePropertyDao rolePropertyDao;
     @Autowired private GlobalSettingDao globalSettingDao;
+    @Autowired private YukonUserContextMessageSourceResolver messageSourceResolver;
     /**
      * The main operator "enrollment" page. Lists all current enrollments and
      * has icons for adding, removing and editing these enrollments.
@@ -219,7 +224,7 @@ public class OperatorEnrollmentController {
 
     private String save(ModelMap model, int assignedProgramId,
             @ModelAttribute ProgramEnrollment programEnrollment,
-            String successKey,
+            String saveTypeKey,
             YukonUserContext userContext,
             AccountInfoFragment accountInfoFragment,
             FlashScope flashScope) {
@@ -234,11 +239,28 @@ public class OperatorEnrollmentController {
         programEnrollments.addAll(programEnrollment.makeProgramEnrollments(assignedProgram.getApplianceCategoryId(), assignedProgramId));
         programEnrollments.addAll(getConflictingEnrollments(model, accountInfoFragment.getAccountId(),
                                                             assignedProgramId, userContext));
-        enrollmentHelperService.updateProgramEnrollments(programEnrollments, accountInfoFragment.getAccountId(), userContext);
-
-        String msgKey = "yukon.web.modules.operator.enrollmentList." + successKey;
-        MessageSourceResolvable message = new YukonMessageSourceResolvable(msgKey, assignedProgram.getDisplayName());
-        flashScope.setConfirm(message);
+        try {
+            enrollmentHelperService.updateProgramEnrollments(programEnrollments, accountInfoFragment.getAccountId(), userContext);
+            
+            String msgKey = "yukon.web.modules.operator.enrollmentList." + saveTypeKey;
+            MessageSourceResolvable message = new YukonMessageSourceResolvable(msgKey, assignedProgram.getDisplayName());
+            flashScope.setConfirm(message);   
+        } catch (EnrollmentSystemConfigurationException e) {
+            //This error will happen if the communication medium was not setup in Yukon.
+            //The device will have been enrolled in Yukon, just not communicated with.
+            //As far as I know it is only possible in Zigbee integrations
+            MessageSourceAccessor messageSourceAccessor = messageSourceResolver.getMessageSourceAccessor(userContext);
+            String reason = messageSourceAccessor.getMessage(e.getKey());
+            
+            String msgKey = "yukon.web.modules.operator.enrollmentList.withError." + saveTypeKey;
+            MessageSourceResolvable message = new YukonMessageSourceResolvable(msgKey, assignedProgram.getDisplayName(),reason);
+            flashScope.setWarning(message);
+        } catch (EnrollmentException e2) {
+            String msgKey = "yukon.web.modules.operator.enrollmentList.failed";
+            MessageSourceResolvable message = new YukonMessageSourceResolvable(msgKey, assignedProgram.getDisplayName(),e2.getMessage());
+            flashScope.setError(message);
+        }
+     
         return closeDialog(model);
     }
 

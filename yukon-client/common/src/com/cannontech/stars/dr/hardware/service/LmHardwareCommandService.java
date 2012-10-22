@@ -1,6 +1,6 @@
 package com.cannontech.stars.dr.hardware.service;
 
-import com.cannontech.common.device.commands.impl.CommandCompletionException;
+import com.cannontech.common.device.commands.exception.CommandCompletionException;
 import com.cannontech.common.model.YukonCancelTextMessage;
 import com.cannontech.common.model.YukonTextMessage;
 import com.cannontech.database.data.lite.LiteYukonUser;

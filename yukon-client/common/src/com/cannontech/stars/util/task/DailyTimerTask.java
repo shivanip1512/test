@@ -12,7 +12,7 @@ import java.util.Map;
 
 import com.cannontech.clientutils.ActivityLogger;
 import com.cannontech.clientutils.CTILogger;
-import com.cannontech.common.device.commands.impl.CommandCompletionException;
+import com.cannontech.common.device.commands.exception.CommandCompletionException;
 import com.cannontech.database.data.activity.ActivityLogActions;
 import com.cannontech.spring.YukonSpringHook;
 import com.cannontech.stars.database.cache.StarsDatabaseCache;

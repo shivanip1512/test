@@ -6,7 +6,7 @@ import java.util.Set;
 import org.springframework.beans.factory.annotation.Autowired;
 
 import com.cannontech.common.bulk.collection.inventory.InventoryCollection;
-import com.cannontech.common.device.commands.impl.CommandCompletionException;
+import com.cannontech.common.device.commands.exception.CommandCompletionException;
 import com.cannontech.common.inventory.InventoryIdentifier;
 import com.cannontech.i18n.YukonMessageSourceResolvable;
 import com.cannontech.stars.core.dao.InventoryBaseDao;

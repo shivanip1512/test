@@ -28,7 +28,7 @@ import com.cannontech.common.device.commands.CommandRequestExecutionTemplate;
 import com.cannontech.common.device.commands.CommandRequestRoute;
 import com.cannontech.common.device.commands.CommandRequestRouteExecutor;
 import com.cannontech.common.device.commands.WaitableCommandCompletionCallbackFactory;
-import com.cannontech.common.device.commands.impl.CommandCompletionException;
+import com.cannontech.common.device.commands.exception.CommandCompletionException;
 import com.cannontech.common.device.commands.impl.WaitableCommandCompletionCallback;
 import com.cannontech.common.device.service.CommandCompletionCallbackAdapter;
 import com.cannontech.common.events.loggers.InventoryConfigEventLogService;

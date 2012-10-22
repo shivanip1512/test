@@ -47,9 +47,27 @@
     <entry key="yukon.web.modules.operator.enrollmentList.enrollCompleted">
         Successfully enrolled in {0}.
     </entry>
+    
     <entry key="yukon.web.modules.operator.enrollmentList.enrollmentUpdated">
         Successfully updated {0}.
     </entry>
+    
+    <entry key="yukon.web.modules.operator.enrollmentList.withError.enrollmentUpdated">
+        {0} was successfully updated in Yukon, however there was an error communicating to the device: {1}
+    </entry>
+
+    <entry key="yukon.web.modules.operator.enrollmentList.withError.enrollCompleted">
+        Device was successfully enrolled into {0} in Yukon, however the configuration was not sent to the device due to: {1}
+    </entry>
+    
+    <entry key="yukon.web.modules.operator.enrollment.error.systemConfiguration">
+        Incorrect System Configuration.
+    </entry>
+    
+    <entry key="yukon.web.modules.operator.enrollmentList.failed">
+        Error enrolling the device into {0}.
+    </entry>
+
     <entry key="yukon.web.modules.operator.enrollmentList.unenrollCompleted">
         Successfully unenrolled from {0}.
     </entry>

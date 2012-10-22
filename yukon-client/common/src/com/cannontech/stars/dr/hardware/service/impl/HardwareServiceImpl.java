@@ -11,7 +11,7 @@ import org.springframework.transaction.annotation.Transactional;
 
 import com.cannontech.common.constants.YukonListEntry;
 import com.cannontech.common.constants.YukonListEntryTypes;
-import com.cannontech.common.device.commands.impl.CommandCompletionException;
+import com.cannontech.common.device.commands.exception.CommandCompletionException;
 import com.cannontech.common.events.loggers.HardwareEventLogService;
 import com.cannontech.common.inventory.Hardware;
 import com.cannontech.common.inventory.HardwareType;

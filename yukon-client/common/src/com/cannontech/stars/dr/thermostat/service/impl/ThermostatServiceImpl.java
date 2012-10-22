@@ -10,7 +10,7 @@ import org.springframework.transaction.annotation.Transactional;
 
 import com.cannontech.clientutils.ActivityLogger;
 import com.cannontech.clientutils.YukonLogManager;
-import com.cannontech.common.device.commands.impl.CommandCompletionException;
+import com.cannontech.common.device.commands.exception.CommandCompletionException;
 import com.cannontech.common.events.loggers.AccountEventLogService;
 import com.cannontech.common.inventory.HardwareType;
 import com.cannontech.common.temperature.Temperature;

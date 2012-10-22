@@ -2,7 +2,7 @@ package com.cannontech.stars.dr.hardwareConfig;
 
 import java.util.List;
 
-import com.cannontech.common.device.commands.impl.CommandCompletionException;
+import com.cannontech.common.device.commands.exception.CommandCompletionException;
 import com.cannontech.user.YukonUserContext;
 
 public interface HardwareConfigService {

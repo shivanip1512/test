@@ -7,7 +7,7 @@ import org.joda.time.DateTimeZone;
 import org.joda.time.LocalDate;
 import org.joda.time.ReadableInstant;
 
-import com.cannontech.common.device.commands.impl.CommandCompletionException;
+import com.cannontech.common.device.commands.exception.CommandCompletionException;
 import com.cannontech.common.util.OpenInterval;
 import com.cannontech.core.dao.AccountNotFoundException;
 import com.cannontech.core.dao.InventoryNotFoundException;

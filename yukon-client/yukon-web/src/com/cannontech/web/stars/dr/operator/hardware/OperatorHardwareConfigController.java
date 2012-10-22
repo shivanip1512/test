@@ -25,7 +25,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 
 import com.cannontech.amr.meter.dao.MeterDao;
 import com.cannontech.amr.meter.model.Meter;
-import com.cannontech.common.device.commands.impl.CommandCompletionException;
+import com.cannontech.common.device.commands.exception.CommandCompletionException;
 import com.cannontech.common.events.loggers.HardwareEventLogService;
 import com.cannontech.common.exception.NotAuthorizedException;
 import com.cannontech.common.inventory.HardwareConfigType;

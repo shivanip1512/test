@@ -48,6 +48,7 @@ import com.cannontech.common.device.commands.dao.CommandRequestExecutionResultDa
 import com.cannontech.common.device.commands.dao.model.CommandRequestExecution;
 import com.cannontech.common.device.commands.dao.model.CommandRequestExecutionIdentifier;
 import com.cannontech.common.device.commands.dao.model.CommandRequestExecutionResult;
+import com.cannontech.common.device.commands.exception.CommandCompletionException;
 import com.cannontech.common.events.loggers.CommandRequestExecutorEventLogService;
 import com.cannontech.core.authorization.support.CommandPermissionConverter;
 import com.cannontech.core.authorization.support.Permission;

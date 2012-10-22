@@ -14,6 +14,7 @@ import com.cannontech.common.device.commands.CommandRequestType;
 import com.cannontech.common.device.commands.CommandResultHolder;
 import com.cannontech.common.device.commands.dao.model.CommandRequestExecutionIdentifier;
 import com.cannontech.common.device.commands.dao.model.CommandRequestExecutionResult;
+import com.cannontech.common.device.commands.exception.CommandCompletionException;
 import com.cannontech.database.data.lite.LiteYukonUser;
 import com.cannontech.message.porter.message.Request;
 

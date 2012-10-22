@@ -20,7 +20,8 @@ import com.cannontech.clientutils.CTILogger;
 import com.cannontech.clientutils.YukonLogManager;
 import com.cannontech.common.constants.YukonListEntry;
 import com.cannontech.common.constants.YukonListEntryTypes;
-import com.cannontech.common.device.commands.impl.CommandCompletionException;
+import com.cannontech.common.device.commands.exception.CommandCompletionException;
+import com.cannontech.common.device.commands.exception.SystemConfigurationException;
 import com.cannontech.common.inventory.HardwareType;
 import com.cannontech.core.dao.DBPersistentDao;
 import com.cannontech.core.dao.NotFoundException;
@@ -163,6 +164,9 @@ public class ProgramEnrollmentServiceImpl implements ProgramEnrollmentService {
                     lmHardwareCommandService.sendOutOfServiceCommand(command);
                 }
             }
+        } catch(SystemConfigurationException e) {
+            log.error(e);
+            return ProgramEnrollmentResultEnum.NOT_CONFIGURED_CORRECTLY;
         } catch (CommandCompletionException e2) {
             log.error(e2);
             return ProgramEnrollmentResultEnum.FAILURE;

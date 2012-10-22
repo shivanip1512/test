@@ -5,7 +5,7 @@ import java.sql.SQLException;
 import javax.servlet.http.HttpSession;
 
 import com.cannontech.common.constants.YukonListEntry;
-import com.cannontech.common.device.commands.impl.CommandCompletionException;
+import com.cannontech.common.device.commands.exception.CommandCompletionException;
 import com.cannontech.common.inventory.InventoryIdentifier;
 import com.cannontech.core.dao.NotFoundException;
 import com.cannontech.core.dao.PersistenceException;

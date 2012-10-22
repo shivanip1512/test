@@ -10,7 +10,7 @@ import org.springframework.core.io.ClassPathResource;
 import org.springframework.core.io.Resource;
 import org.springframework.dao.DataAccessException;
 
-import com.cannontech.common.device.commands.impl.CommandCompletionException;
+import com.cannontech.common.device.commands.exception.CommandCompletionException;
 import com.cannontech.common.util.xml.SimpleXPathTemplate;
 import com.cannontech.common.util.xml.XmlUtils;
 import com.cannontech.common.util.xml.YukonXml;

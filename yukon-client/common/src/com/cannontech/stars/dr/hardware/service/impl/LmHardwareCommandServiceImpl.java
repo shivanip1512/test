@@ -17,7 +17,7 @@ import org.springframework.jms.core.JmsTemplate;
 import com.cannontech.clientutils.LogHelper;
 import com.cannontech.clientutils.YukonLogManager;
 import com.cannontech.common.constants.YukonListEntryTypes;
-import com.cannontech.common.device.commands.impl.CommandCompletionException;
+import com.cannontech.common.device.commands.exception.CommandCompletionException;
 import com.cannontech.common.inventory.HardwareType;
 import com.cannontech.common.model.YukonCancelTextMessage;
 import com.cannontech.common.model.YukonTextMessage;
@@ -159,9 +159,12 @@ public class LmHardwareCommandServiceImpl implements LmHardwareCommandService {
             try {
                 impl.sendCommand(command);
                 log.debug("Config command sent: " + command);
-            } catch (Exception e) {
+            } catch (CommandCompletionException e) {
                 log.error("Unable to send config command", e);
-                throw new CommandCompletionException("Unable to send config command", e);
+                throw e;
+            } catch (Exception e2) {
+                log.error("Unable to send config command", e2);
+                throw new CommandCompletionException("Unable to send config command", e2);
             }
         }
     

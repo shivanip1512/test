@@ -33,6 +33,8 @@ import com.cannontech.stars.dr.appliance.dao.ApplianceDao;
 import com.cannontech.stars.dr.appliance.model.Appliance;
 import com.cannontech.stars.dr.appliance.model.ApplianceCategory;
 import com.cannontech.stars.dr.enrollment.dao.EnrollmentDao;
+import com.cannontech.stars.dr.enrollment.exception.EnrollmentSystemConfigurationException;
+import com.cannontech.stars.dr.enrollment.exception.EnrollmentException;
 import com.cannontech.stars.dr.enrollment.model.EnrolledDevicePrograms;
 import com.cannontech.stars.dr.enrollment.model.EnrollmentEnum;
 import com.cannontech.stars.dr.enrollment.model.EnrollmentEventLoggingData;
@@ -274,11 +276,11 @@ public class EnrollmentHelperServiceImpl implements EnrollmentHelperService {
         ProgramEnrollmentResultEnum applyEnrollmentRequests = 
             programEnrollmentService.applyEnrollmentRequests(customerAccount, enrollmentData, user);
         
-        if (applyEnrollmentRequests.getFormatKey().equals(ProgramEnrollmentResultEnum.FAILURE)){
-            throw new IllegalArgumentException("Program Enrollment Failed.");
+        if (applyEnrollmentRequests == ProgramEnrollmentResultEnum.FAILURE){
+            throw new EnrollmentException("Program Enrollment Failed.");
         }
-        if (applyEnrollmentRequests.getFormatKey().equals(ProgramEnrollmentResultEnum.NOT_CONFIGURED_CORRECTLY)){
-            throw new IllegalArgumentException("Incorrect Configuration.");
+        if (applyEnrollmentRequests == ProgramEnrollmentResultEnum.NOT_CONFIGURED_CORRECTLY){
+            throw new EnrollmentSystemConfigurationException();
         }
     }
     
@@ -286,7 +288,7 @@ public class EnrollmentHelperServiceImpl implements EnrollmentHelperService {
                                         ProgramEnrollment newProgramEnrollment,
                                         boolean seasonalLoad, boolean useHardwareAddressing){
         boolean isProgramEnrollmentEnrolled = false;
-       
+        
         for (ProgramEnrollment programEnrollment : programEnrollments) {
             
             if (programEnrollment.getApplianceCategoryId() == newProgramEnrollment.getApplianceCategoryId()){

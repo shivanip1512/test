@@ -18,7 +18,7 @@ import org.springframework.jmx.export.annotation.ManagedResource;
 
 import com.cannontech.clientutils.LogHelper;
 import com.cannontech.clientutils.YukonLogManager;
-import com.cannontech.common.device.commands.impl.CommandCompletionException;
+import com.cannontech.common.device.commands.exception.CommandCompletionException;
 import com.cannontech.common.inventory.InventoryIdentifier;
 import com.cannontech.common.rfn.endpoint.RfnArchiveRequestListenerBase;
 import com.cannontech.common.rfn.model.RfnDevice;

@@ -8,7 +8,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import com.cannontech.clientutils.ActivityLogger;
 import com.cannontech.clientutils.LogHelper;
 import com.cannontech.clientutils.YukonLogManager;
-import com.cannontech.common.device.commands.impl.CommandCompletionException;
+import com.cannontech.common.device.commands.exception.CommandCompletionException;
 import com.cannontech.common.events.loggers.HardwareEventLogService;
 import com.cannontech.common.version.VersionTools;
 import com.cannontech.core.roleproperties.YukonRoleProperty;
