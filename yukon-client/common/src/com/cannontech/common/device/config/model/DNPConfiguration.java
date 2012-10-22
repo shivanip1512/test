@@ -6,6 +6,8 @@ import com.cannontech.common.device.config.dao.ConfigurationType;
 
 public class DNPConfiguration extends ConfigurationBase implements Serializable {
     
+    public static final int DEFAULT_DNP_CONFIG_ID = -1;
+    
     private int internalRetries = 2;
     private boolean localTime = false;
     private boolean enableDnpTimesyncs = false;

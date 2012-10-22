@@ -34,6 +34,7 @@ import com.cannontech.common.pao.PaoCategory;
 import com.cannontech.common.pao.PaoClass;
 import com.cannontech.common.pao.PaoIdentifier;
 import com.cannontech.common.pao.PaoType;
+import com.cannontech.common.pao.YukonDevice;
 import com.cannontech.common.pao.YukonPao;
 import com.cannontech.common.pao.definition.dao.PaoDefinitionDao;
 import com.cannontech.common.pao.definition.model.PaoTag;
@@ -343,6 +344,22 @@ public class CapControlImportServiceImpl implements CapControlImportService {
         template.setPaoName(cbcImportData.getCbcName());
 
         paoPersistenceService.createPaoWithCustomPoints(template, template.getPaoType(), copyPoints);
+        
+        /*
+         * Two-way CBCs need to have a DNP config assigned. In the future, this config may
+         * come from the import data.
+         */
+        if (paoDefinitionDao.isTagSupported(cbcImportData.getCbcType(), PaoTag.DEVICE_CONFIGURATION_DNP)) {
+            YukonDevice device = new SimpleDevice(templatePao.getPaoIdentifier());
+            ConfigurationBase config = deviceConfigurationDao.findConfigurationForDevice(device);
+            YukonDevice newDevice = new SimpleDevice(template.getPaoIdentifier());
+            try {
+                deviceConfigurationDao.assignConfigToDevice(config, newDevice);
+            } catch (InvalidDeviceTypeException e) {
+                log.error("An error occurred attempting to assign a DNP configuration to CBC '" +
+                          template.getPaoName() + "'. Please assign this device a configuration manually.", e);
+            }
+        }
         
         int paoId = template.getPaObjectId();
         

@@ -18,6 +18,7 @@ import org.springframework.transaction.annotation.Transactional;
 
 import com.cannontech.common.device.config.model.ConfigurationBase;
 import com.cannontech.common.device.config.model.ConfigurationTemplate;
+import com.cannontech.common.device.config.model.DNPConfiguration;
 import com.cannontech.common.device.groups.editor.dao.impl.YukonDeviceRowMapper;
 import com.cannontech.common.device.model.SimpleDevice;
 import com.cannontech.common.pao.YukonDevice;
@@ -218,6 +219,11 @@ public class DeviceConfigurationDaoImpl implements DeviceConfigurationDao {
     @Override
     @Transactional
     public void delete(int id) {
+        if (id == DNPConfiguration.DEFAULT_DNP_CONFIG_ID) {
+            // Don't allow users to delete the default configuration under any circumstances.
+            throw new RuntimeException("Cannot delete the default DNP configuration!");
+        }
+        
         ConfigurationBase configuration = getConfiguration(id);
         if (configuration != null && 
             configuration.getType() == ConfigurationType.DNP && 
@@ -420,13 +426,6 @@ public class DeviceConfigurationDaoImpl implements DeviceConfigurationDao {
 
     @Override
     public ConfigurationBase getDefaultDNPConfiguration() {
-        SqlStatementBuilder sql = new SqlStatementBuilder();
-        sql.append("SELECT MIN(DeviceConfigurationId)");
-        sql.append("FROM DeviceConfiguration");
-        sql.append("WHERE Type").eq("DNP");
-        
-        int defaultID = jdbcTemplate.queryForInt(sql);
-        
-        return getConfiguration(defaultID);
+        return getConfiguration(DNPConfiguration.DEFAULT_DNP_CONFIG_ID);
     }
 }
