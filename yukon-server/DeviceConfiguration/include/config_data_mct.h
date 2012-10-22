@@ -24,6 +24,7 @@ public:
     static const std::string SundaySchedule;
     static const std::string HolidaySchedule;
     static const std::string DefaultTOURate;
+
     static const std::string Schedule1Time1;
     static const std::string Schedule1Rate1;
     static const std::string Schedule1Time2;
@@ -35,8 +36,18 @@ public:
     static const std::string Schedule1Time5;
     static const std::string Schedule1Rate5;
     static const std::string Schedule1Time6;
+    static const std::string Schedule1Rate6;
+    static const std::string Schedule1Time7;
+    static const std::string Schedule1Rate7;
+    static const std::string Schedule1Time8;
+    static const std::string Schedule1Rate8;
+    static const std::string Schedule1Time9;
+    static const std::string Schedule1Rate9;
+    static const std::string Schedule1Time10;
+    static const std::string Schedule1Rate10;
     static const std::string Schedule1Time0;
     static const std::string Schedule1Rate0;
+
     static const std::string Schedule2Time1;
     static const std::string Schedule2Rate1;
     static const std::string Schedule2Time2;
@@ -48,8 +59,18 @@ public:
     static const std::string Schedule2Time5;
     static const std::string Schedule2Rate5;
     static const std::string Schedule2Time6;
+    static const std::string Schedule2Rate6;
+    static const std::string Schedule2Time7;
+    static const std::string Schedule2Rate7;
+    static const std::string Schedule2Time8;
+    static const std::string Schedule2Rate8;
+    static const std::string Schedule2Time9;
+    static const std::string Schedule2Rate9;
+    static const std::string Schedule2Time10;
+    static const std::string Schedule2Rate10;
     static const std::string Schedule2Time0;
     static const std::string Schedule2Rate0;
+
     static const std::string Schedule3Time1;
     static const std::string Schedule3Rate1;
     static const std::string Schedule3Time2;
@@ -61,8 +82,18 @@ public:
     static const std::string Schedule3Time5;
     static const std::string Schedule3Rate5;
     static const std::string Schedule3Time6;
+    static const std::string Schedule3Rate6;
+    static const std::string Schedule3Time7;
+    static const std::string Schedule3Rate7;
+    static const std::string Schedule3Time8;
+    static const std::string Schedule3Rate8;
+    static const std::string Schedule3Time9;
+    static const std::string Schedule3Rate9;
+    static const std::string Schedule3Time10;
+    static const std::string Schedule3Rate10;
     static const std::string Schedule3Time0;
     static const std::string Schedule3Rate0;
+
     static const std::string Schedule4Time1;
     static const std::string Schedule4Rate1;
     static const std::string Schedule4Time2;
@@ -74,6 +105,15 @@ public:
     static const std::string Schedule4Time5;
     static const std::string Schedule4Rate5;
     static const std::string Schedule4Time6;
+    static const std::string Schedule4Rate6;
+    static const std::string Schedule4Time7;
+    static const std::string Schedule4Rate7;
+    static const std::string Schedule4Time8;
+    static const std::string Schedule4Rate8;
+    static const std::string Schedule4Time9;
+    static const std::string Schedule4Rate9;
+    static const std::string Schedule4Time10;
+    static const std::string Schedule4Rate10;
     static const std::string Schedule4Time0;
     static const std::string Schedule4Rate0;
 
