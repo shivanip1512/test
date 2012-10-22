@@ -76,15 +76,15 @@ public class VoltageRegulator extends CapControlYukonPAOBase implements YukonDev
         super.setDbConnection( conn );
     }
     
-    private static void validateBeforeUpdate(VoltageRegulator regulator) {
+    private void validateBeforeUpdate() {
         List<String> errors = Lists.newArrayList();
-        if (regulator.getKeepAliveConfig() < 0) {
+        if (this.keepAliveConfig < 0) {
             errors.add("Keep Alive Config must be greater than or equal to zero");
         }
-        if (regulator.getKeepAliveTimer() < 0) {
+        if (this.keepAliveTimer < 0) {
             errors.add("Keep Alive Timer must be greater than or equal to zero");
         }
-        if (regulator.getVoltChangePerTap() <= 0) {
+        if (this.voltChangePerTap <= 0) {
             errors.add("Volt Change Per Tap must be greater than zero");
         }
         if (!errors.isEmpty()) throw new IllegalArgumentException(StringUtils.join(errors, ", "));
@@ -92,7 +92,7 @@ public class VoltageRegulator extends CapControlYukonPAOBase implements YukonDev
 
     @Override
     public void update() throws java.sql.SQLException {
-        validateBeforeUpdate(this);
+        validateBeforeUpdate();
         super.update();
         
         PaoPersistenceService paoPersistenceService = YukonSpringHook.getBean(PaoPersistenceService.class);
