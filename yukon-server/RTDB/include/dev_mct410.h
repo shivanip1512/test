@@ -76,13 +76,13 @@ private:
         SspecRev_BetaHi =  200,  //  rev 20.0
     };
 
-    virtual bool sspecValid(const unsigned sspec, const unsigned rev) const;
-
     void readSspec(const OUTMESS &OutMessage, std::list<OUTMESS *> &outList) const;
 
     virtual unsigned getUsageReportDelay(const unsigned interval_length, const unsigned days) const;
 
 protected:
+
+    virtual bool sspecValid(const unsigned sspec, const unsigned rev) const;
 
     //  protected so the MCT-420 can access them
     static ValueMapping initMemoryMap();
