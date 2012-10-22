@@ -122,8 +122,8 @@ public class OperatorHardwareConfigController {
     @Autowired private GlobalSettingDao globalSettingDao;
     @Autowired private YukonEnergyCompanyService yukonEnergyCompanyService;
 
-    private ColdLoadPickupValidator coldLoadPickupValidator = new ColdLoadPickupValidator();
-    private TamperDetectValidator tamperDetectValidator = new TamperDetectValidator();
+    private final ColdLoadPickupValidator coldLoadPickupValidator = new ColdLoadPickupValidator();
+    private final TamperDetectValidator tamperDetectValidator = new TamperDetectValidator();
 
     @RequestMapping
     public String edit(ModelMap model, int inventoryId,
@@ -249,8 +249,8 @@ public class OperatorHardwareConfigController {
 
         YukonEnergyCompany yukonEnergyCompany = 
                 yukonEnergyCompanyService.getEnergyCompanyByAccountId(accountInfo.getAccountId());
-            model.addAttribute("energyCompanyName", yukonEnergyCompany.getName());
-            return "operator/hardware/config/edit.jsp";
+        model.addAttribute("energyCompanyId", yukonEnergyCompany.getEnergyCompanyId());
+        return "operator/hardware/config/edit.jsp";
     }
 
     private BindingResult bind(ModelMap model, HttpServletRequest request,

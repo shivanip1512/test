@@ -5,10 +5,8 @@ import javax.servlet.jsp.tagext.TagSupport;
 
 import com.cannontech.core.roleproperties.YukonRoleProperty;
 import com.cannontech.core.roleproperties.dao.EnergyCompanyRolePropertyDao;
-import com.cannontech.database.data.lite.LiteEnergyCompany;
 import com.cannontech.spring.YukonSpringHook;
 import com.cannontech.stars.database.cache.StarsDatabaseCache;
-import com.cannontech.stars.energyCompany.dao.EnergyCompanyDao;
 import com.cannontech.stars.energyCompany.model.YukonEnergyCompany;
 
 
@@ -18,13 +16,12 @@ import com.cannontech.stars.energyCompany.model.YukonEnergyCompany;
  */
 public class CheckEnergyCompanySettingTag extends TagSupport {
     private String value;
-    private String energyCompanyName;
+    private int energyCompanyId;
 
     @Override
     public int doStartTag() throws JspException {
-
+        
         EnergyCompanyRolePropertyDao ecRoleDao = YukonSpringHook.getBean(EnergyCompanyRolePropertyDao.class);
-        EnergyCompanyDao ecDao = YukonSpringHook.getBean(EnergyCompanyDao.class);
         StarsDatabaseCache starsDatabaseCache = YukonSpringHook.getBean(StarsDatabaseCache.class);
         
         boolean inverted = false;
@@ -36,8 +33,7 @@ public class CheckEnergyCompanySettingTag extends TagSupport {
         boolean isSet = false;
         try {
             YukonRoleProperty role = YukonRoleProperty.valueOf(YukonRoleProperty.class, value);
-            LiteEnergyCompany ec =  ecDao.findEnergyCompanyByName(energyCompanyName);
-            YukonEnergyCompany yukonEnergyCompany = starsDatabaseCache.getEnergyCompany(ec.getEnergyCompanyID()); 
+            YukonEnergyCompany yukonEnergyCompany = starsDatabaseCache.getEnergyCompany(energyCompanyId); 
             isSet = ecRoleDao.checkProperty(role, yukonEnergyCompany);
         } catch (IllegalArgumentException ignore) {
             throw new IllegalArgumentException("Can't use '" + value + "', check that it is a valid EnergyCompanyRole");
@@ -65,12 +61,12 @@ public class CheckEnergyCompanySettingTag extends TagSupport {
         return value;
     }
 
-    public String getEnergyCompanyName() {
-        return energyCompanyName;
+    public int getEnergyCompanyId() {
+        return energyCompanyId;
     }
 
-    public void setEnergyCompanyName(String energyCompanyName) {
-        this.energyCompanyName = energyCompanyName;
+    public void setEnergyCompanyId(int energyCompanyId) {
+        this.energyCompanyId = energyCompanyId;
     }
 
 }

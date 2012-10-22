@@ -77,7 +77,7 @@ jQuery(function() {
                             <tr>
                                 <th><i:inline key=".name"/></th>
                                 <th><i:inline key=".applianceCategory"/></th>
-                                <cti:checkEnergyCompanySetting value="!TRACK_HARDWARE_ADDRESSING" energyCompanyName="${energyCompanyName}">
+                                <cti:checkEnergyCompanySetting value="!TRACK_HARDWARE_ADDRESSING" energyCompanyId="${energyCompanyId}">
                                     <th><i:inline key=".group"/></th>
                                 </cti:checkEnergyCompanySetting>
                                 <th><i:inline key=".relay"/></th>
@@ -100,7 +100,7 @@ jQuery(function() {
                                             ${applianceCategories[assignedPrograms[enrollment.assignedProgramId].applianceCategoryId].name}
                                         </spring:escapeBody>
                                     </td>
-                                    <cti:checkEnergyCompanySetting value="!TRACK_HARDWARE_ADDRESSING" energyCompanyName="${energyCompanyName}">
+                                    <cti:checkEnergyCompanySetting value="!TRACK_HARDWARE_ADDRESSING" energyCompanyId="${energyCompanyId}">
                                         <td>
                                             <c:set var="loadGroups" value="${loadGroupsByProgramId[programId]}"/>
                                             <c:if test="${fn:length(loadGroups) == 0}">
@@ -128,7 +128,7 @@ jQuery(function() {
                 </tags:formElementContainer>
             
                 <cti:checkRolesAndProperties value="OPERATOR_ALLOW_ACCOUNT_EDITING">
-                    <cti:checkEnergyCompanySetting value="TRACK_HARDWARE_ADDRESSING" energyCompanyName="${energyCompanyName}">
+                    <cti:checkEnergyCompanySetting value="TRACK_HARDWARE_ADDRESSING" energyCompanyId="${energyCompanyId}">
                         <br>
                         <dr:hardwareAddressingInfo/>
                     </cti:checkEnergyCompanySetting>

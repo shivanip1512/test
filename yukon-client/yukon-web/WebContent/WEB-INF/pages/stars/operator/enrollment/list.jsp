@@ -24,7 +24,7 @@ var programIdsAlreadyEnrolled = [];
         <tr>
             <th class="programName"><i:inline key=".name"/></th>
             <th class="applianceCategory"><i:inline key=".applianceCategory"/></th>
-            <cti:checkEnergyCompanySetting value="!TRACK_HARDWARE_ADDRESSING" energyCompanyName="${energyCompanyName}">
+            <cti:checkEnergyCompanySetting value="!TRACK_HARDWARE_ADDRESSING" energyCompanyId="${energyCompanyId}">
                 <th class="loadGroup"><i:inline key=".group"/></th>
             </cti:checkEnergyCompanySetting>
             <th class="hardware"><i:inline key=".hardware"/></th>
@@ -51,7 +51,7 @@ var programIdsAlreadyEnrolled = [];
                         ${enrollmentProgram.applianceCategory.name}
                     </spring:escapeBody>
                 </td>
-                <cti:checkEnergyCompanySetting value="!TRACK_HARDWARE_ADDRESSING" energyCompanyName="${energyCompanyName}">
+                <cti:checkEnergyCompanySetting value="!TRACK_HARDWARE_ADDRESSING" energyCompanyId="${energyCompanyId}">
                     <td class="loadGroup">
                         <c:if test="${enrollmentProgram.loadGroupId != 0}">
                             <spring:escapeBody htmlEscape="true">
