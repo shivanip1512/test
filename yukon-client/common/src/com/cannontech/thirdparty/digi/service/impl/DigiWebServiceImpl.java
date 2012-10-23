@@ -226,9 +226,6 @@ public class DigiWebServiceImpl implements ZigbeeWebService, ZigbeeStateUpdaterS
         jmsTemplate.convertAndSend("yukon.notif.obj.dr.smartUpdateRequest", new SmartUpdateRequestMessage(device.getPaoIdentifier()));
     }
     
-    /* This is commented temporarily until the feature is implemented in 5.4
-     * This used to be used to "refresh" the device, but that is now done in a similar fashion to the gateway refresh.
-     */
     @Override
     public void readLoadGroupAddressing(ZigbeeDevice endPoint) {
         Integer gatewayId = gatewayDeviceDao.findGatewayIdForDeviceId(endPoint.getPaoIdentifier().getPaoId());

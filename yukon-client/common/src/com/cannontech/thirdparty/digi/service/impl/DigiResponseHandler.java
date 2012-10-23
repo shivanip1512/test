@@ -344,7 +344,8 @@ public class DigiResponseHandler {
                                     <record_list type="list">
                                         <item type="ReadAttributeStatusRecord">
          */
-        List<SEPAttributeValue> attibuteValues = template.evaluate("/sci_reply/send_message/device/rci_reply/do_command/responses/read_attributes_response/record_list/item", digiAttributeNodeMapper);
+        List<SEPAttributeValue> attibuteValues = template.evaluate("/sci_reply/send_message/device/rci_reply/do_command/responses/read_attributes_response/record_list/item", 
+                                                                   digiAttributeNodeMapper);
 
         if (attibuteValues.isEmpty()) {
             //Checking for Error
