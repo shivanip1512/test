@@ -158,7 +158,7 @@ public class GlobalSettingDaoImpl implements GlobalSettingDao {
     }
     
     @Override
-    public void clearCache() {
+    public void valueChanged() {
         log.debug("Removing " +  cache.size() + " values from the Global Settings Cache");
         cache.clear();
     }

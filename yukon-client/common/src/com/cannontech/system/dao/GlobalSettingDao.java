@@ -89,5 +89,11 @@ public interface GlobalSettingDao {
 
     public Object convertSettingValue(GlobalSettingType type, String value);
 
-    public void clearCache();
+    /**
+     * 
+     * Let the Dao know that a value has changed. This is useful
+     * if the implementation utilizes a cache to clear the stale data.
+     * 
+     */
+    public void valueChanged();
 }

@@ -25,11 +25,11 @@ public class GlobalSettingChangeHelper {
                 if (log.isDebugEnabled()) {
                     log.debug("Sending clearCache to globalSettingsDao because database change.");
                 }
-                globalSettingDao.clearCache();
+                globalSettingDao.valueChanged();
             }
         });
         
         // now that we're registered, clear out the cache of anything accumulated until now
-        globalSettingDao.clearCache();
+        globalSettingDao.valueChanged();
     }
 }

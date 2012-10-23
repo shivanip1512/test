@@ -47,6 +47,6 @@ public class GlobalSettingDaoAdapter implements GlobalSettingDao {
     }
 
     @Override
-    public void clearCache() {
+    public void valueChanged() {
     }
 }
