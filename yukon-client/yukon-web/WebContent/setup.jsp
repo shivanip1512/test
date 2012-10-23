@@ -1,3 +1,3 @@
 <%
-response.sendRedirect("/spring/adminSetup/roleEditor/view?groupId=-1&roleId=-1");
+response.sendRedirect("/spring/adminSetup/config/edit?category=YUKON_SERVICES");
 %>
