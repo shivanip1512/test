@@ -1434,6 +1434,289 @@
         <displayName>MCT-420cD</displayName>
     </pao>
 	
+	<!-- MCT 440 BASE -->
+	<pao id="MCT_440_BASE" abstract="true" inherits="MCT_410_BASE, SUPPORTS_INTEGRATED_DISCONNECT, REVERSE_POWER_EVENT">
+        <points>
+            <point type="PulseAccumulator" offset="501">
+                <name>Frozen kWh</name>
+                <multiplier value="0.1"/>
+                <unitofmeasure value="kWH"/>
+                <decimalplaces value="3"/>
+            </point>
+            <point type="PulseAccumulator" offset="601">
+                <name>Frozen Rate A kWh</name>
+                <multiplier value="0.1"/>
+                <unitofmeasure value="kWH"/>
+                <decimalplaces value="3"/>
+            </point>
+			<point type="PulseAccumulator" offset="621">
+                <name>Frozen Rate B kWh</name>
+                <multiplier value="0.1"/>
+                <unitofmeasure value="kWH"/>
+                <decimalplaces value="3"/>
+            </point>
+			<point type="PulseAccumulator" offset="641">
+                <name>Frozen Rate C kWh</name>
+                <multiplier value="0.1"/>
+                <unitofmeasure value="kWH"/>
+                <decimalplaces value="3"/>
+            </point>
+			<point type="PulseAccumulator" offset="661">
+                <name>Frozen Rate D kWh</name>
+                <multiplier value="0.1"/>
+                <unitofmeasure value="kWH"/>
+                <decimalplaces value="3"/>
+            </point>
+			
+			<point type="PulseAccumulator" offset="21">
+                <name>Reverse kWh</name>
+                <multiplier value="0.1"/>
+                <unitofmeasure value="kWH"/>
+                <decimalplaces value="3"/>
+            </point>
+			<point type="PulseAccumulator" offset="201">
+                <name>Rate A Reverse kWh</name>
+                <multiplier value="0.1"/>
+                <unitofmeasure value="kWH"/>
+                <decimalplaces value="3"/>
+            </point>
+			<point type="PulseAccumulator" offset="221">
+                <name>Rate B Reverse kWh</name>
+                <multiplier value="0.1"/>
+                <unitofmeasure value="kWH"/>
+                <decimalplaces value="3"/>
+            </point>
+			<point type="PulseAccumulator" offset="241">
+                <name>Rate C Reverse kWh</name>
+                <multiplier value="0.1"/>
+                <unitofmeasure value="kWH"/>
+                <decimalplaces value="3"/>
+            </point>
+			<point type="PulseAccumulator" offset="261">
+                <name>Rate D Reverse kWh</name>
+                <multiplier value="0.1"/>
+                <unitofmeasure value="kWH"/>
+                <decimalplaces value="3"/>
+            </point>
+			
+			<point type="PulseAccumulator" offset="701">
+                <name>Frozen Rate A Reverse kWh</name>
+                <multiplier value="0.1"/>
+                <unitofmeasure value="kWH"/>
+                <decimalplaces value="3"/>
+            </point>
+			<point type="PulseAccumulator" offset="721">
+                <name>Frozen Rate B Reverse kWh</name>
+                <multiplier value="0.1"/>
+                <unitofmeasure value="kWH"/>
+                <decimalplaces value="3"/>
+            </point>
+			<point type="PulseAccumulator" offset="741">
+                <name>Frozen Rate C Reverse kWh</name>
+                <multiplier value="0.1"/>
+                <unitofmeasure value="kWH"/>
+                <decimalplaces value="3"/>
+            </point>
+			<point type="PulseAccumulator" offset="761">
+                <name>Frozen Rate D Reverse kWh</name>
+                <multiplier value="0.1"/>
+                <unitofmeasure value="kWH"/>
+                <decimalplaces value="3"/>
+            </point>
+			
+			<point type="Analog" offset="1">
+                <name>Last Interval kW</name>
+                <multiplier value="1.0"/>
+                <unitofmeasure value="kW"/>
+                <decimalplaces value="3"/>
+            </point>
+			
+            <point type="DemandAccumulator" offset="611">
+                <name>Frozen Peak Rate A kW</name>
+                <multiplier value="0.1"/>
+                <unitofmeasure value="kW"/>
+                <decimalplaces value="3"/>
+            </point>
+            <point type="DemandAccumulator" offset="631">
+                <name>Frozen Peak Rate B kW</name>
+                <multiplier value="0.1"/>
+                <unitofmeasure value="kW"/>
+                <decimalplaces value="3"/>
+            </point>
+            <point type="DemandAccumulator" offset="651">
+                <name>Frozen Peak Rate C kW</name>
+                <multiplier value="0.1"/>
+                <unitofmeasure value="kW"/>
+                <decimalplaces value="3"/>
+            </point>
+            <point type="DemandAccumulator" offset="671">
+                <name>Frozen Peak Rate D kW</name>
+                <multiplier value="0.1"/>
+                <unitofmeasure value="kW"/>
+                <decimalplaces value="3"/>
+            </point>
+            <point type="DemandAccumulator" offset="600">
+                <name>Profile kW</name>
+                <multiplier value="0.1"/>
+                <unitofmeasure value="kW"/>
+                <decimalplaces value="3"/>
+            </point>			
+
+            <point type="DemandAccumulator" offset="601">
+                <name>Profile kVar</name>
+                <multiplier value="0.1"/>
+                <unitofmeasure value="kVar"/>
+                <decimalplaces value="3"/>
+            </point>
+			
+            <point type="Status" offset="4000">
+            	<init>true</init>
+                <name>Out of Voltage</name>
+                <stategroup value="TrueFalse"/>
+            </point>
+			<point type="Status" offset="4001">
+            	<init>true</init>
+                <name>Internal Error</name>
+                <stategroup value="TrueFalse"/>
+            </point>
+            <point type="Status" offset="4002">
+            	<init>true</init>
+                <name>Meter Box Cover Removal</name>
+                <stategroup value="TrueFalse"/>
+            </point>
+            <point type="Status" offset="4003">
+            	<init>true</init>
+                <name>Reverse Energy</name>
+                <stategroup value="TrueFalse"/>
+            </point>
+            <point type="Status" offset="4004">
+            	<init>true</init>
+                <name>Curent Unbalanced</name>
+                <stategroup value="TrueFalse"/>
+            </point>
+            <point type="Status" offset="4005">
+            	<init>true</init>
+                <name>Voltage Out of Limits</name>
+                <stategroup value="TrueFalse"/>
+            </point>
+            <point type="Status" offset="4006">
+            	<init>true</init>
+                <name>Low Battery</name>
+                <stategroup value="TrueFalse"/>
+            </point>
+            <point type="Status" offset="4007">
+            	<init>true</init>
+                <name>Load Side Voltage Detected, Relay Open</name>
+                <stategroup value="TrueFalse"/>
+            </point>
+		</points>
+    </pao>			
+
+	<!-- MCT 440-2131b -->
+	<pao id="MCT440_2131B" inherits="MCT_440_BASE">
+        <displayName>MCT-440-2131B</displayName>
+		<points>
+			<point type="Analog" offset="60">
+                <name>Last Interval Voltage</name>
+                <multiplier value="0.1"/>
+                <unitofmeasure value="Volts"/>
+                <decimalplaces value="3"/>
+            </point>
+			<point type="Analog" offset="61">
+                <name>Last Interval Current</name>
+                <multiplier value="1.0"/>
+                <unitofmeasure value="Amps"/>
+                <decimalplaces value="3"/>
+            </point>
+			<point type="Analog" offset="62">
+                <name>Last Interval Power Factor</name>
+                <multiplier value="1.0"/>
+                <unitofmeasure value="PF"/>
+                <decimalplaces value="3"/>
+            </point>
+		</points>
+    </pao>
+	
+	<!-- MCT 440-2133b -->
+	<pao id="MCT440_2133B" inherits="MCT_440_BASE, MCT_4XX_POLYPHASE_BASE">
+        <displayName>MCT-440-2133B</displayName>
+		<points>
+			<point type="Analog" offset="20">
+                <name>Last Interval Voltage Phase A</name>
+                <multiplier value="0.1"/>
+                <unitofmeasure value="Volts"/>
+                <decimalplaces value="3"/>
+            </point>
+			<point type="Analog" offset="21">
+                <name>Last Interval Voltage Phase B</name>
+                <multiplier value="0.1"/>
+                <unitofmeasure value="Volts"/>
+                <decimalplaces value="3"/>
+            </point>
+            <point type="Analog" offset="22">
+                <name>Last Interval Voltage Phase C</name>
+                <multiplier value="0.1"/>
+                <unitofmeasure value="Volts"/>
+                <decimalplaces value="3"/>
+            </point>
+			<point type="Analog" offset="23">
+                <name>Profile Phase Voltage A</name>
+                <multiplier value="0.1"/>
+                <unitofmeasure value="Volts"/>
+                <decimalplaces value="3"/>
+            </point>
+			<point type="Analog" offset="24">
+                <name>Profile Voltage Phase B</name>
+                <multiplier value="0.1"/>
+                <unitofmeasure value="Volts"/>
+                <decimalplaces value="3"/>
+            </point>
+			<point type="Analog" offset="25">
+                <name>Profile Voltage Phase C</name>
+                <multiplier value="0.1"/>
+                <unitofmeasure value="Volts"/>
+                <decimalplaces value="3"/>
+            </point>
+			<point type="Analog" offset="26">
+                <name>Last Interval Phase A Current</name>
+                <multiplier value="1.0"/>
+                <unitofmeasure value="Amps"/>
+                <decimalplaces value="3"/>
+            </point>
+			<point type="Analog" offset="27">
+                <name>Last Interval Phase B Current</name>
+                <multiplier value="1.0"/>
+                <unitofmeasure value="Amps"/>
+                <decimalplaces value="3"/>
+            </point>
+			<point type="Analog" offset="28">
+                <name>Last Interval Phase C Current</name>
+                <multiplier value="1.0"/>
+                <unitofmeasure value="Amps"/>
+                <decimalplaces value="3"/>
+            </point>
+			<point type="Analog" offset="29">
+                <name>Last Interval Phase A Power Factor</name>
+                <multiplier value="1.0"/>
+                <unitofmeasure value="PF"/>
+                <decimalplaces value="3"/>
+            </point>
+			<point type="Analog" offset="30">
+                <name>Last Interval Phase B Power Factor</name>
+                <multiplier value="1.0"/>
+                <unitofmeasure value="PF"/>
+                <decimalplaces value="3"/>
+            </point>
+			<point type="Analog" offset="31">
+                <name>Last Interval Phase C Power Factor</name>
+                <multiplier value="1.0"/>
+                <unitofmeasure value="PF"/>
+                <decimalplaces value="3"/>
+            </point>
+		</points>
+    </pao>
+	
+	
     <!-- MCT 410 BASE -->
     <pao id="MCT_410_BASE" abstract="true" inherits="MCT_BASE, SUPPORTS_TOU_TAG, SUPPORTS_OUTAGE_TAG, SUPPORTS_HIGH_BILL_TAG, SUPPORTS_MOVE_TAG, SUPPORTS_LOAD_PROFILE_TAG, SUPPORTS_PEAK_REPORT_TAG, SUPPORTS_VOLTAGE_TAG, SUPPORTS_VOLTAGE_PROFILE_TAG, SUPPORTS_PHASE_DETECT_TAG">
     	<points>
