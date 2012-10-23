@@ -228,7 +228,7 @@ public class DigiWebServiceImpl implements ZigbeeWebService, ZigbeeStateUpdaterS
     
     /* This is commented temporarily until the feature is implemented in 5.4
      * This used to be used to "refresh" the device, but that is now done in a similar fashion to the gateway refresh.
-     *
+     */
     @Override
     public void readLoadGroupAddressing(ZigbeeDevice endPoint) {
         Integer gatewayId = gatewayDeviceDao.findGatewayIdForDeviceId(endPoint.getPaoIdentifier().getPaoId());
@@ -248,7 +248,6 @@ public class DigiWebServiceImpl implements ZigbeeWebService, ZigbeeStateUpdaterS
 
         digiResponseHandler.handleLoadGroupAddressingRead(response,endPoint,gateway);
     }
-*/
     
     @Override
     public void sendLoadGroupAddressing(int deviceId, Map<DRLCClusterAttribute,Integer> attributes) {

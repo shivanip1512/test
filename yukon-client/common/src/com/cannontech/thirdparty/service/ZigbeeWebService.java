@@ -10,6 +10,7 @@ import com.cannontech.thirdparty.exception.ZigbeeCommissionException;
 import com.cannontech.thirdparty.messaging.SepControlMessage;
 import com.cannontech.thirdparty.messaging.SepRestoreMessage;
 import com.cannontech.thirdparty.model.DRLCClusterAttribute;
+import com.cannontech.thirdparty.model.ZigbeeDevice;
 
 public interface ZigbeeWebService extends ZigbeeStateUpdaterService {
 
@@ -56,9 +57,7 @@ public interface ZigbeeWebService extends ZigbeeStateUpdaterService {
 	 * 
 	 * @param endPoint
 	 */
-	/* Intentionally commented
 	public void readLoadGroupAddressing(ZigbeeDevice endPoint);
-	*/
 	
 	/**
 	 * Sends a text message to the gateway. 

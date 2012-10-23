@@ -297,6 +297,10 @@ public class DigiResponseHandler {
         return pingResponses;
     }
     
+    public void handleLoadGroupAddressingRead(String response, ZigbeeDevice endPoint, ZigbeeDevice gateway) {
+        //TODO
+    }
+    
     public Map<PaoIdentifier,ZigbeePingResponse> handleXbeeCoreResponse(String source, List<ZigbeeDevice> expected) {        
         SimpleXPathTemplate template = new SimpleXPathTemplate();
         template.setContext(source);
