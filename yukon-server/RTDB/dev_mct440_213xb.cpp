@@ -25,6 +25,13 @@ using Cti::Protocols::EmetconProtocol;
 #define TOU_SCHEDULE_TIME_NBR      10
 #define TOU_SCHEDULE_RATE_NBR      11
 
+#define OUTAGE_NBR_MIN              1
+#define OUTAGE_NBR_MAX             10
+
+#define STR_EXPAND(x)              #x
+#define STR(x)                     STR_EXPAND(x)
+
+
 namespace Cti {
 namespace Devices {
 
@@ -391,7 +398,7 @@ INT Mct440_213xBDevice::executeGetValue(CtiRequestMsg     *pReq,
 
         int outagenum = parse.getiValue(str_outage);
 
-        if( outagenum < 1 || outagenum > 10 )
+        if( outagenum < OUTAGE_NBR_MIN || outagenum > OUTAGE_NBR_MAX )
         {
             found = false;
 
@@ -409,14 +416,13 @@ INT Mct440_213xBDevice::executeGetValue(CtiRequestMsg     *pReq,
 
             if( errRet )
             {
-                string temp = "Bad outage specification - Acceptable values: 1-10";
-                errRet->setResultString( temp );
+                errRet->setResultString("Bad outage specification - Acceptable values: "STR(OUTAGE_NBR_MIN)" - "STR(OUTAGE_NBR_MAX));
                 errRet->setStatus(NoMethod);
-                retList.push_back( errRet );
-                errRet = NULL;
+                retList.push_back(errRet);
             }
-        } else {
-
+        }
+        else
+        {
             function = EmetconProtocol::GetValue_Outage;
             found    = getOperation(function, OutMessage->Buffer.BSt);
 
@@ -432,6 +438,8 @@ INT Mct440_213xBDevice::executeGetValue(CtiRequestMsg     *pReq,
             OutMessage->Buffer.BSt.Function += ((outagenum - 1) / 2);
         }
     }
+
+                                                                /* -------------- INHERITED FROM MCT-420 -------------- */
     else
     {
         nRet = Inherited::executeGetValue(pReq, parse, OutMessage, vgList, retList, outList);
@@ -623,8 +631,7 @@ INT Mct440_213xBDevice::decodeGetValueInstantLineData(INMESS          *InMessage
 
         point_info PowerFactor;
 
-                                                                /* Bits {7:0} Power factor in units of 0.01, range 0.00 to 1.99 */
-        double PowerFactorVal = PhaseData[3];
+        double PowerFactorVal = PhaseData[3];                   /* Bits {7:0} Power factor in units of 0.01, range 0.00 to 1.99 */
 
         if (PowerFactorVal < 200)
         {
@@ -655,8 +662,6 @@ INT Mct440_213xBDevice::decodeGetValueInstantLineData(INMESS          *InMessage
                               CtiTime(),
                               0.01);
     }
-
-
 
     retMsgHandler( InMessage->Return.CommandStr, status, ReturnMsg, vgList, retList );
 
@@ -1254,19 +1259,7 @@ INT Mct440_213xBDevice::executeGetConfig(CtiRequestMsg     *pReq,
     INT nRet = NoMethod;
     bool found = false;
 
-
-    CtiReturnMsg *errRet = CTIDBG_new CtiReturnMsg(getID( ),
-                                                   string(OutMessage->Request.CommandStr),
-                                                   string(),
-                                                   nRet,
-                                                   OutMessage->Request.RouteID,
-                                                   OutMessage->Request.MacroOffset,
-                                                   OutMessage->Request.Attempt,
-                                                   OutMessage->Request.GrpMsgID,
-                                                   OutMessage->Request.UserID,
-                                                   OutMessage->Request.SOE,
-                                                   CtiMultiMsg_vec( ));
-
+                                                                /* ---------------------- TOU RATE -------------------- */
     if( parse.isKeyValid("tou") )
     {
         found = true;
@@ -1281,12 +1274,14 @@ INT Mct440_213xBDevice::executeGetConfig(CtiRequestMsg     *pReq,
                 {
                     OutMessage->Buffer.BSt.Function = FuncRead_TOUSwitchSchedule12Part2Pos;
                     OutMessage->Buffer.BSt.Length   = FuncRead_TOUSwitchSchedule12Part2Len;
+                    OutMessage->Sequence            = EmetconProtocol::GetConfig_TOU;
                     OutMessage->Buffer.BSt.IO       = EmetconProtocol::IO_Function_Read;
                 }
                 else
                 {
                     OutMessage->Buffer.BSt.Function = FuncRead_TOUSwitchSchedule12Pos;
                     OutMessage->Buffer.BSt.Length   = FuncRead_TOUSwitchSchedule12Len;
+                    OutMessage->Sequence            = EmetconProtocol::GetConfig_TOU;
                     OutMessage->Buffer.BSt.IO       = EmetconProtocol::IO_Function_Read;
                 }
             }
@@ -1296,40 +1291,71 @@ INT Mct440_213xBDevice::executeGetConfig(CtiRequestMsg     *pReq,
                 {
                     OutMessage->Buffer.BSt.Function = FuncRead_TOUSwitchSchedule34Part2Pos;
                     OutMessage->Buffer.BSt.Length   = FuncRead_TOUSwitchSchedule34Part2Len;
+                    OutMessage->Sequence            = EmetconProtocol::GetConfig_TOU;
                     OutMessage->Buffer.BSt.IO       = EmetconProtocol::IO_Function_Read;
                 }
                 else
                 {
                     OutMessage->Buffer.BSt.Function = FuncRead_TOUSwitchSchedule34Pos;
                     OutMessage->Buffer.BSt.Length   = FuncRead_TOUSwitchSchedule34Len;
+                    OutMessage->Sequence            = EmetconProtocol::GetConfig_TOU;
                     OutMessage->Buffer.BSt.IO       = EmetconProtocol::IO_Function_Read;
                 }
             }
             else
             {
-                errRet->setResultString("invalid schedule number " + CtiNumStr(schedulenum));
-                retList.push_back(errRet);
-                errRet = 0;
+                found = false;
+
+                CtiReturnMsg *errRet = CTIDBG_new CtiReturnMsg(getID( ),
+                                                               string(OutMessage->Request.CommandStr),
+                                                               string(),
+                                                               nRet,
+                                                               OutMessage->Request.RouteID,
+                                                               OutMessage->Request.MacroOffset,
+                                                               OutMessage->Request.Attempt,
+                                                               OutMessage->Request.GrpMsgID,
+                                                               OutMessage->Request.UserID,
+                                                               OutMessage->Request.SOE,
+                                                               CtiMultiMsg_vec( ));
+
+                if( errRet )
+                {
+                    errRet->setResultString("invalid schedule number " + CtiNumStr(schedulenum));
+                    errRet->setStatus(NoMethod);
+                    retList.push_back(errRet);
+                }
             }
         }
         else
         {
             OutMessage->Buffer.BSt.Function = FuncRead_TOUStatusPos;
             OutMessage->Buffer.BSt.Length   = FuncRead_TOUStatusLen;
+            OutMessage->Sequence            = EmetconProtocol::GetConfig_TOU;
             OutMessage->Buffer.BSt.IO       = EmetconProtocol::IO_Function_Read;
         }
-
-        OutMessage->Sequence = EmetconProtocol::GetConfig_TOU;
     }
+
+                                                                /* -------------- INHERITED FROM MCT-420 -------------- */
     else
     {
         nRet = Inherited::executeGetConfig(pReq, parse, OutMessage, vgList, retList, outList);
     }
 
-    if( errRet )
+    if( found )
     {
-        delete errRet;
-        errRet = 0;
+        // Load all the other stuff that is needed
+        // FIXME: most of this is taken care of in propagateRequest - we could probably trim a lot of this out
+        OutMessage->DeviceID  = getID();
+        OutMessage->TargetID  = getID();
+        OutMessage->Port      = getPortID();
+        OutMessage->Remote    = getAddress();
+        OutMessage->TimeOut   = 2;
+        OutMessage->Retry     = 2;
+
+        OutMessage->Request.RouteID   = getRouteID();
+        strncpy(OutMessage->Request.CommandStr, pReq->CommandString().c_str(), COMMAND_STR_SIZE);
+
+        nRet = NoError;
     }
 
     return nRet;
