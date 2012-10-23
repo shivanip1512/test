@@ -1,6 +1,5 @@
 package com.cannontech.yukon.api.amr.endpoint;
 
-import java.util.Date;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
@@ -11,6 +10,7 @@ import org.apache.log4j.Logger;
 import org.jdom.Element;
 import org.jdom.Namespace;
 import org.joda.time.DateTime;
+import org.joda.time.Instant;
 import org.joda.time.format.DateTimeFormatter;
 import org.joda.time.format.ISODateTimeFormat;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -30,11 +30,13 @@ import com.cannontech.common.pao.attribute.service.IllegalUseOfAttribute;
 import com.cannontech.common.pao.definition.model.PaoData;
 import com.cannontech.common.pao.definition.model.PaoPointIdentifier;
 import com.cannontech.common.pao.service.PaoSelectionService;
+import com.cannontech.common.util.Range;
 import com.cannontech.common.util.xml.SimpleXPathTemplate;
 import com.cannontech.common.util.xml.XmlUtils;
 import com.cannontech.common.util.xml.YukonXml;
 import com.cannontech.core.dao.PointDao;
 import com.cannontech.core.dao.RawPointHistoryDao;
+import com.cannontech.core.dao.RawPointHistoryDao.OrderBy;
 import com.cannontech.core.dao.StateDao;
 import com.cannontech.core.dynamic.PointValueQualityHolder;
 import com.cannontech.database.data.lite.LiteState;
@@ -58,11 +60,11 @@ import com.google.common.collect.Maps;
 public class ArchivedValuesRequestEndpoint {
     private Logger log = YukonLogManager.getLogger(ArchivedValuesRequestEndpoint.class);
 
-    private RawPointHistoryDao rawPointHistoryDao;
-    private PointDao pointDao;
-    private AttributeService attributeService;
-    private StateDao stateDao;
-    private PaoSelectionService paoSelectionService;
+    @Autowired private RawPointHistoryDao rawPointHistoryDao;
+    @Autowired private PointDao pointDao;
+    @Autowired private AttributeService attributeService;
+    @Autowired private StateDao stateDao;
+    @Autowired private PaoSelectionService paoSelectionService;
 
     private final static Namespace ns = YukonXml.getYukonNamespace();
 
@@ -94,6 +96,7 @@ public class ArchivedValuesRequestEndpoint {
 
             responseData.setResponseFields(findResponseTypes(requestTemplate));
             Node paosNode = requestTemplate.evaluateAsNode("/y:archivedValuesRequest/y:paos");
+            Long sinceValueId = requestTemplate.evaluateAsLong("/y:archivedValuesRequest/y:since/@valueId");
             List<Node> pointNodes = requestTemplate.evaluateAsNodeList("/y:archivedValuesRequest/y:point");
 
             Set<ResponseDescriptor> responseFields = responseData.getResponseFields();
@@ -105,12 +108,19 @@ public class ArchivedValuesRequestEndpoint {
             boolean flatten = requestTemplate.evaluateAsBoolean("/y:archivedValuesRequest/y:response/@flatten");
             responseData.setFlatten(flatten);
 
+            Element lastValueIdElement = null;
+            if (responseFields.contains(ResponseDescriptor.LAST_VALUE_ID)) {
+                lastValueIdElement = new Element("lastValueId", ns);
+                response.addContent(lastValueIdElement);
+                long maxValueId = rawPointHistoryDao.getMaxChangeId();
+                lastValueIdElement.setAttribute("lastValueId", Long.toString(maxValueId));
+            }
             log.debug("building PAO Elements");
             buildPaoElements(responseData, response);
 
             log.debug("processing points");
             for (Node pointNode : pointNodes) {
-                buildResponseForPoint(pointNode, responseData, response);
+                buildResponseForPoint(pointNode, responseData, response, sinceValueId);
             }
         } catch (XmlValidationException xmle) {
             log.error("XML validation error", xmle);
@@ -179,7 +189,7 @@ public class ArchivedValuesRequestEndpoint {
     }
 
     private void buildResponseForPoint(Node pointNode, ArchivedValuesResponseData responseData,
-                                       Element response) {
+                                       Element response, Long sinceValueId) {
         SimpleXPathTemplate pointNodeTemplate = YukonXml.getXPathTemplateForNode(pointNode);
         Set<ResponseDescriptor> responseFields = responseData.getResponseFields();
         Set<PaoIdentifier> paoIdentifiers = responseData.getPaoIdentifiers();
@@ -216,7 +226,7 @@ public class ArchivedValuesRequestEndpoint {
             }
             else {
                 valueMap =
-                    historySelector.getPointValueMap(paoIdentifiers, pointSelector, valueSelector);
+                    historySelector.getPointValueMap(paoIdentifiers, pointSelector, valueSelector, sinceValueId);
             }
 
             String valueLabel = valueSelector.getLabel();
@@ -434,42 +444,30 @@ public class ArchivedValuesRequestEndpoint {
     }
 
     private interface HistorySelector {
-        public ListMultimap<PaoIdentifier, PointValueQualityHolder> getPointValueMap(Set<PaoIdentifier> paos,
-                                                                                     PointSelector pointSelector,
-                                                                                     PointValueSelector selector);
+        ListMultimap<PaoIdentifier, PointValueQualityHolder> getPointValueMap(Set<PaoIdentifier> paos,
+            PointSelector pointSelector, PointValueSelector selector, Long sinceValueId);
 
-        public ListMultimap<PaoIdentifier, PointValueQualityHolder> getPointSnapshotMap(Set<PaoIdentifier> paos,
-                                                                                        PointSelector pointSelector,
-                                                                                        PointValueSelector selector);
+        ListMultimap<PaoIdentifier, PointValueQualityHolder> getPointSnapshotMap(Set<PaoIdentifier> paos,
+            PointSelector pointSelector, PointValueSelector selector);
 
-        public Map<PaoIdentifier, PointInfo> getPointInfo(PointSelector pointSelector, Set<PaoIdentifier> paos);
+        Map<PaoIdentifier, PointInfo> getPointInfo(PointSelector pointSelector, Set<PaoIdentifier> paos);
     }
 
     private class AttributeHistorySelector implements HistorySelector {
         @Override
         public ListMultimap<PaoIdentifier, PointValueQualityHolder> getPointValueMap(Set<PaoIdentifier> paos,
-                                                                                     PointSelector pointSelector,
-                                                                                     PointValueSelector selector) {
+                PointSelector pointSelector, PointValueSelector selector, Long sinceValueId) {
             String name = pointSelector.getName();
             Attribute attribute = attributeService.resolveAttributeName(name);
-            Date startDate = null;
-            if (selector.getStartDate() != null) {
-                startDate = selector.getStartDate().toDate();
-            }
-            Date stopDate = null;
-            if (selector.getStopDate() != null) {
-                stopDate = selector.getStopDate().toDate();
-            }
+            Range<Instant> dateRange = selector.getDateRange();
+            Range<Long> changeIdRange = Range.fromExclusive(sinceValueId);
+
             if (selector.getNumberOfRows() != null) {
-                return rawPointHistoryDao.getLimitedAttributeData(paos, attribute, startDate,
-                                                                  stopDate,
-                                                                  selector.getNumberOfRows(),
-                                                                  false, selector.getClusivity(),
-                                                                  selector.getOrder());
+                return rawPointHistoryDao.getLimitedAttributeData(paos, attribute, dateRange, changeIdRange,
+                    selector.getNumberOfRows(), false, selector.getOrder(), OrderBy.TIMESTAMP);
             } else {
-                return rawPointHistoryDao.getAttributeData(paos, attribute, startDate, stopDate,
-                                                           false, selector.getClusivity(), 
-                                                           selector.getOrder());
+                return rawPointHistoryDao.getAttributeData(paos, attribute, dateRange, changeIdRange, false,
+                    selector.getOrder());
             }
         }
 
@@ -521,27 +519,16 @@ public class ArchivedValuesRequestEndpoint {
     private class PointNameHistorySelector implements HistorySelector {
         @Override
         public ListMultimap<PaoIdentifier, PointValueQualityHolder> getPointValueMap(Set<PaoIdentifier> paos,
-                                                                                     PointSelector pointSelector,
-                                                                                     PointValueSelector selector) {
+                PointSelector pointSelector, PointValueSelector selector, Long sinceValueId) {
             String name = pointSelector.getName();
-            Date startDate = null;
-            if (selector.getStartDate() != null) {
-                startDate = selector.getStartDate().toDate();
-            }
-            Date stopDate = null;
-            if (selector.getStopDate() != null) {
-                stopDate = selector.getStopDate().toDate();
-            }
+            Range<Instant> dateRange = selector.getDateRange();
+            Range<Long> changeIdRange = Range.fromExclusive(sinceValueId);
+
             if (selector.getNumberOfRows() != null) {
-                return rawPointHistoryDao.getLimitedDataByPointName(paos, name, startDate, 
-                                                                    stopDate,
-                                                                    selector.getNumberOfRows(), 
-                                                                    selector.getClusivity(), 
-                                                                    selector.getOrder());
+                return rawPointHistoryDao.getLimitedDataByPointName(paos, name, dateRange, changeIdRange,
+                    selector.getNumberOfRows(), selector.getOrder());
             } else {
-                return rawPointHistoryDao.getDataByPointName(paos, name, startDate, stopDate, 
-                                                             selector.getClusivity(), 
-                                                             selector.getOrder());
+                return rawPointHistoryDao.getDataByPointName(paos, name, dateRange, changeIdRange, selector.getOrder());
             }
         }
 
@@ -562,28 +549,18 @@ public class ArchivedValuesRequestEndpoint {
     private class PointTypeOffsetHistorySelector implements HistorySelector {
         @Override
         public ListMultimap<PaoIdentifier, PointValueQualityHolder> getPointValueMap(Set<PaoIdentifier> paos,
-                                                                                     PointSelector pointSelector,
-                                                                                     PointValueSelector selector) {
+                PointSelector pointSelector, PointValueSelector selector, Long sinceValueId) {
             PointType type = pointSelector.getPointType();
             int offset = pointSelector.getOffset();
-            Date startDate = null;
-            if (selector.getStartDate() != null) {
-                startDate = selector.getStartDate().toDate();
-            }
-            Date stopDate = null;
-            if (selector.getStopDate() != null) {
-                stopDate = selector.getStopDate().toDate();
-            }
+            Range<Instant> dateRange = selector.getDateRange();
+            Range<Long> changeIdRange = Range.fromExclusive(sinceValueId);
+
             if (selector.getNumberOfRows() != null) {
-                return rawPointHistoryDao.getLimitedDataByTypeAndOffset(paos, type, offset,
-                                                                        startDate, stopDate,
-                                                                        selector.getNumberOfRows(),
-                                                                        selector.getClusivity(),
-                                                                        selector.getOrder());
+                return rawPointHistoryDao.getLimitedDataByTypeAndOffset(paos, type, offset, dateRange, changeIdRange,
+                    selector.getNumberOfRows(), selector.getOrder());
             } else {
-                return rawPointHistoryDao.getDataByTypeAndOffset(paos, type, offset, startDate,
-                                                                 stopDate, selector.getClusivity(),
-                                                                 selector.getOrder());
+                return rawPointHistoryDao.getDataByTypeAndOffset(paos, type, offset, dateRange, changeIdRange,
+                    selector.getOrder());
             }
         }
 
@@ -604,28 +581,17 @@ public class ArchivedValuesRequestEndpoint {
     private class DefaultPointNameHistorySelector implements HistorySelector {
         @Override
         public ListMultimap<PaoIdentifier, PointValueQualityHolder> getPointValueMap(Set<PaoIdentifier> paos,
-                                                                                     PointSelector pointSelector,
-                                                                                     PointValueSelector selector) {
+                PointSelector pointSelector, PointValueSelector selector, Long sinceValueId) {
             String defaultName = pointSelector.getName();
-            Date startDate = null;
-            if (selector.getStartDate() != null) {
-                startDate = selector.getStartDate().toDate();
-            }
-            Date stopDate = null;
-            if (selector.getStopDate() != null) {
-                stopDate = selector.getStopDate().toDate();
-            }
+            Range<Instant> dateRange = selector.getDateRange();
+            Range<Long> changeIdRange = Range.fromExclusive(sinceValueId);
+
             if (selector.getNumberOfRows() != null) {
-                return rawPointHistoryDao.getLimitedDataByDefaultPointName(paos, defaultName,
-                                                                           startDate, stopDate,
-                                                                           selector.getNumberOfRows(),
-                                                                           selector.getClusivity(),
-                                                                           selector.getOrder());
+                return rawPointHistoryDao.getLimitedDataByDefaultPointName(paos, defaultName, dateRange, changeIdRange,
+                    selector.getNumberOfRows(), selector.getOrder());
             } else {
-                return rawPointHistoryDao.getDataByDefaultPointName(paos, defaultName, startDate,
-                                                                    stopDate,
-                                                                    selector.getClusivity(),
-                                                                    selector.getOrder());
+                return rawPointHistoryDao.getDataByDefaultPointName(paos, defaultName, dateRange, changeIdRange,
+                    selector.getOrder());
             }
         }
 
@@ -642,30 +608,5 @@ public class ArchivedValuesRequestEndpoint {
                                                           Set<PaoIdentifier> paos) {
             return pointDao.getPointInfoByDefaultName(paos, pointSelector.getName());
         }
-    }
-
-    @Autowired
-    public void setRawPointHistoryDao(RawPointHistoryDao rawPointHistoryDao) {
-        this.rawPointHistoryDao = rawPointHistoryDao;
-    }
-
-    @Autowired
-    public void setPointDao(PointDao pointDao) {
-        this.pointDao = pointDao;
-    }
-
-    @Autowired
-    public void setAttributeService(AttributeService attributeService) {
-        this.attributeService = attributeService;
-    }
-
-    @Autowired
-    public void setStateDao(StateDao stateDao) {
-        this.stateDao = stateDao;
-    }
-
-    @Autowired
-    public void setPaoSelectionService(PaoSelectionService paoSelectionService) {
-        this.paoSelectionService = paoSelectionService;
     }
 }

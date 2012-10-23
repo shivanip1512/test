@@ -49,6 +49,7 @@ import org.apache.commons.lang.StringUtils;
 import org.apache.commons.lang.SystemUtils;
 import org.apache.commons.lang.exception.ExceptionUtils;
 import org.apache.log4j.Level;
+import org.joda.time.Instant;
 import org.springframework.util.FileCopyUtils;
 
 import com.cannontech.clientutils.CTILogger;
@@ -60,6 +61,7 @@ import com.cannontech.common.gui.util.TextFieldDocument;
 import com.cannontech.common.login.ClientSession;
 import com.cannontech.common.version.VersionTools;
 import com.cannontech.database.data.lite.LiteComparators;
+import com.google.common.base.Function;
 
 public final class CtiUtilities {
     private static final String YUKON_HELP_PREFIX = "com/cannontech/help/";
@@ -322,7 +324,7 @@ public final class CtiUtilities {
 
                 }
 
-                int[] ids = (int[]) utilIds.toArray();
+                int[] ids = utilIds.toArray();
                 Arrays.sort(ids);
 
                 return ids;
@@ -1487,4 +1489,18 @@ public final class CtiUtilities {
     public static void setRunningAsClient() {
         runningAsClient = true;
     }
+
+    public final static Function<Instant, Date> DATE_FROM_INSTANT = new Function<Instant, Date>() {
+        @Override
+        public Date apply(Instant input) {
+            return input.toDate();
+        }
+    };
+    
+    public final static Function<Date, Instant> INSTANT_FROM_DATE = new Function<Date, Instant>() {
+        @Override
+        public Instant apply(Date input) {
+            return new Instant(input.getTime());
+        }
+    };
 }

@@ -42,14 +42,20 @@ targetNamespace="http://yukon.cannontech.com/api">
             
             <xsd:element name="quality" type="yukon:emptyElement"/>
             <xsd:element name="statusText" type="yukon:emptyElement"/>
+
+            <xsd:element name="lastValueId" type="yukon:emptyElement"/>
         </xsd:choice>
         <xsd:attribute name="flatten" type="xsd:boolean" default="false"/>
     </xsd:complexType>
-  
+
+    <xsd:complexType name="Since">
+        <xsd:attribute name="valueId"/>
+    </xsd:complexType>
+
     <xsd:complexType name="ValueProducer">
         <xsd:attribute name="label" use="optional" type="xsd:Name"/>
     </xsd:complexType>
-  
+
     <xsd:complexType name="ValueDescription">
         <xsd:sequence>
             <xsd:choice>
@@ -75,7 +81,7 @@ targetNamespace="http://yukon.cannontech.com/api">
                     </xsd:complexType>
                 </xsd:element>
             </xsd:choice>
-            <xsd:choice maxOccurs="unbounded">
+            <xsd:choice minOccurs="0" maxOccurs="unbounded">
                 <xsd:element name="before">
                     <xsd:complexType><xsd:complexContent>
                     <xsd:extension base="yukon:ValueProducer">
@@ -135,12 +141,13 @@ targetNamespace="http://yukon.cannontech.com/api">
             </xsd:choice>
         </xsd:sequence>
     </xsd:complexType>
-  
+
     <xsd:complexType name="ArchivedValuesRequest">
       <xsd:complexContent>
         <xsd:extension base="yukon:YukonMessage">
           <xsd:sequence maxOccurs="1" minOccurs="1">
             <xsd:element name="paos" type="yukon:PaoCollection"/>
+            <xsd:element name="since" type="yukon:Since" minOccurs="0"/>
             <xsd:element name="point" type="yukon:ValueDescription" maxOccurs="unbounded"/>
             <xsd:element name="response" type="yukon:ResponseDescriptors" minOccurs="0"/>
           </xsd:sequence>

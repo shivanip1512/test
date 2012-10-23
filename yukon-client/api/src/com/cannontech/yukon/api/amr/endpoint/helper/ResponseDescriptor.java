@@ -23,7 +23,10 @@ public enum ResponseDescriptor {
 
     // Point value-related fields
     QUALITY("quality"),
-    STATUS_TEXT("statusText");
+    STATUS_TEXT("statusText"),
+
+    LAST_VALUE_ID("lastValueId"),
+    ;
 
     private final static ImmutableMap<String, ResponseDescriptor> byElementName;
     static {
@@ -52,6 +55,7 @@ public enum ResponseDescriptor {
         return paoDataField;
     }
 
+    @Override
     public String toString() {
         return elementName;
     }

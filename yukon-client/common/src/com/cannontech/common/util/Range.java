@@ -1,6 +1,8 @@
 package com.cannontech.common.util;
 
-public class Range<T extends Comparable<T>> {
+import com.google.common.base.Function;
+
+public class Range<T extends Comparable<? super T>> {
     private T min = null;
     private boolean includesMinValue = true;
     private T max = null;
@@ -13,7 +15,7 @@ public class Range<T extends Comparable<T>> {
     }
 
     /**
-     * Create a range from min to max.
+     * Create a range from min to max, inclusive at both ends.
      * @param min The minimum value. A null value represents no minimum.
      * @param max The maximum value. A null value represents no maximum.
      * @throws IllegalArgumentException if min and max are specified and
@@ -28,6 +30,10 @@ public class Range<T extends Comparable<T>> {
         this(min, max);
         this.includesMinValue = includesMinValue;
         this.includesMaxValue = includesMaxValue;
+    }
+
+    public static <U extends Comparable<? super U>> Range<U> fromExclusive(U min) {
+        return new Range<U>(min, false, null, true);
     }
 
     public T getMin() {
@@ -115,6 +121,16 @@ public class Range<T extends Comparable<T>> {
         return min.compareTo(max) <= 0;
 	}
 
+	/**
+	 * Create a new Range given the function to translate the min and max.  This is useful (along with
+	 * {@link CtiUtilities.DATE_FROM_INSTANT} or {@link CtiUtilities.INSTANT_FROM_DATE} for translating
+	 * from a Range&lt;Instant&gt; to or from a Range&lt;Date&gt;.
+	 */
+	public <U extends Comparable<? super U>> Range<U> translate(Function<T, U> translator) {
+	    return new Range<U>(translator.apply(min), includesMinValue, translator.apply(max), includesMaxValue);
+	}
+
+	@Override
     public String toString() {
         return min + " " + (includesMinValue ? "inclusive" : "exclusive")
             + " to " + max + " " + (includesMaxValue ? "inclusive" : "exclusive");

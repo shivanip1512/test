@@ -9,7 +9,9 @@
         <meterNumber value="243523452345342"/>
         <meterNumber value="67845675667"/>
     </paos>
-    
+
+    <since valueId="12355"/>
+
     <point>
         <attribute name="USAGE"/> 
         <after date="2010-04-01T00:00:00Z" label="a"/>
@@ -29,6 +31,7 @@
         <name/>
         <uofm/>
         <pointName/>
+        <lastValueId/>
     </response>
     
 </archivedValuesRequest>

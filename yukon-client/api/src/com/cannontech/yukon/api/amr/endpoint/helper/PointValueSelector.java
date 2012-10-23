@@ -3,6 +3,7 @@ package com.cannontech.yukon.api.amr.endpoint.helper;
 import org.joda.time.Instant;
 import org.w3c.dom.Node;
 
+import com.cannontech.common.util.Range;
 import com.cannontech.common.util.xml.SimpleXPathTemplate;
 import com.cannontech.common.util.xml.YukonXml;
 import com.cannontech.core.dao.RawPointHistoryDao.Clusivity;
@@ -52,6 +53,10 @@ public class PointValueSelector {
 
     public void setClusivity(Clusivity clusivity) {
         this.clusivity = clusivity;
+    }
+
+    public Range<Instant> getDateRange() {
+        return new Range<Instant>(startDate, clusivity.isStartInclusive(), stopDate, clusivity.isEndInclusive());
     }
 
     public Order getOrder() {

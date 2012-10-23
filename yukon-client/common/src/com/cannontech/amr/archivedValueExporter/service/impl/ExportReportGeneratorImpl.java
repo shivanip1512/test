@@ -25,6 +25,7 @@ import com.cannontech.common.pao.PaoType;
 import com.cannontech.common.pao.attribute.service.AttributeService;
 import com.cannontech.common.pao.attribute.service.IllegalUseOfAttribute;
 import com.cannontech.common.point.PointQuality;
+import com.cannontech.common.util.Range;
 import com.cannontech.core.dao.RawPointHistoryDao;
 import com.cannontech.core.dao.RawPointHistoryDao.Clusivity;
 import com.cannontech.core.dao.RawPointHistoryDao.Order;
@@ -72,6 +73,7 @@ public class ExportReportGeneratorImpl implements ExportReportGeneratorService {
     private static PointQuality previewQuality = PointQuality.Normal;
     private static int fakeDeviceId = -1;
     
+    @Override
     public List<String> generatePreview(ExportFormat format, YukonUserContext userContext) {
         Meter previewMeter = getDefaultMeter(userContext);
 
@@ -85,6 +87,7 @@ public class ExportReportGeneratorImpl implements ExportReportGeneratorService {
     }
 
 
+    @Override
     public List<String> generateReport(List<Meter> meters, ExportFormat format, Date stopDate,
                                        YukonUserContext userContext) {
 
@@ -203,15 +206,17 @@ public class ExportReportGeneratorImpl implements ExportReportGeneratorService {
                     break;
                 }
                 DateTime startDate = getStartDate(field.getAttribute(), stopDate);
-                
+
+                Instant startInstant = startDate.toInstant();
+                Instant stopInstant = stopDate.toInstant();
+                Range<Instant> dateRange = Clusivity.EXCLUSIVE_INCLUSIVE.makeRange(startInstant, stopInstant);
                 ListMultimap<PaoIdentifier, PointValueQualityHolder> attributeDataValues =
                     rawPointHistoryDao.getLimitedAttributeData(meters,
                                                                field.getAttribute().getAttribute(),
-                                                               startDate.toDate(),
-                                                               stopDate.toDate(),
+                                                               dateRange,
+                                                               null,
                                                                1,
                                                                false,
-                                                               Clusivity.EXCLUSIVE_INCLUSIVE,
                                                                order,
                                                                orderBy);
                 attributeData.put(field.getFieldId(), attributeDataValues);

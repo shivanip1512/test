@@ -1,40 +1,38 @@
 <?xml version="1.0" encoding="UTF-8"?>
 
-<archivedValuesResponse xmlns="http://yukon.cannontech.com/api"
-           xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-           xsi:schemaLocation="http://yukon.cannontech.com/api ../ArchivedValuesResponse.xsd" 
-           version="1.0">
-           
-        <paos>
-            <pao meterNumber="1012312312" paoType="MCT-410fL" name="1012312312">
-            <!-- there are as many children of this element as there are children of the <values> element above -->
-                <point uofm="kWh" pointName="kWh">
-                    <value timestamp="2010-04-01T00:00:00Z" label="a">23432.456</value> 
-                    <value timestamp="2010-04-01T02:00:00Z" label="b">23454.986</value>
-                </point>
-                <point uofm="V" pointName="Voltage">
-                    <list label="c">
-                        <value timestamp="2010-04-01T00:00:00Z">23432.456</value>
-                        <value timestamp="2010-04-01T02:00:00Z">23454.986</value>
-                        <value timestamp="2010-04-01T04:00:00Z">23454.986</value>
-                    </list>
-                </point>
-            </pao>
+<archivedValuesResponse xmlns="http://yukon.cannontech.com/api" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+    xsi:schemaLocation="http://yukon.cannontech.com/api ../ArchivedValuesResponse.xsd" version="1.0">
 
-            <pao meterNumber="45645645" paoType="MCT-410fL" name="45645645">
-                <point uofm="kWh">
-                    <nullValue label="a"/>
-                    <value timestamp="2010-04-01T00:00:00Z" label="b">23454.986</value>
-                </point>
-                <point uofm="V">
-                    <list label="c">
-                        <value timestamp="2010-04-01T00:00:00Z">23432.456</value>
-                        <value timestamp="2010-04-01T02:00:00Z">23454.986</value>
-                        <value timestamp="2010-04-01T04:00:00Z">23454.986</value>
-                    </list>
-                </point>
+    <lastValueId value="1235532"/>
+
+    <paos>
+        <pao meterNumber="1012312312" paoType="MCT-410fL" name="1012312312">
+        <!-- there are as many children of this element as there are children of the <values> element above -->
+            <point uofm="kWh" pointName="kWh">
+                <value timestamp="2010-04-01T00:00:00Z" label="a">23432.456</value> 
+                <value timestamp="2010-04-01T02:00:00Z" label="b">23454.986</value>
+            </point>
+            <point uofm="V" pointName="Voltage">
+                <list label="c">
+                    <value timestamp="2010-04-01T00:00:00Z">23432.456</value>
+                    <value timestamp="2010-04-01T02:00:00Z">23454.986</value>
+                    <value timestamp="2010-04-01T04:00:00Z">23454.986</value>
+                </list>
+            </point>
+        </pao>
+
+        <pao meterNumber="45645645" paoType="MCT-410fL" name="45645645">
+            <point uofm="kWh">
+                <nullValue label="a"/>
+                <value timestamp="2010-04-01T00:00:00Z" label="b">23454.986</value>
+            </point>
+            <point uofm="V">
+                <list label="c">
+                    <value timestamp="2010-04-01T00:00:00Z">23432.456</value>
+                    <value timestamp="2010-04-01T02:00:00Z">23454.986</value>
+                    <value timestamp="2010-04-01T04:00:00Z">23454.986</value>
+                </list>
+            </point>
         </pao>
     </paos>
-
-
 </archivedValuesResponse>
