@@ -1,7 +1,7 @@
 /*==============================================================*/
 /* Database name:  YukonDatabase                                */
 /* DBMS name:      ORACLE Version 9i                            */
-/* Created on:     10/22/2012 3:33:41 PM                        */
+/* Created on:     10/22/2012 11:53:14 PM                       */
 /*==============================================================*/
 
 
@@ -9019,6 +9019,7 @@ INSERT INTO YukonRoleProperty VALUES (-90039,-900,'Start Now Checked By Default'
 INSERT INTO YukonRoleProperty VALUES (-90040,-900,'Control Duration Default','240', 'Specifies the default duration for a control event in minutes for demand response');
 INSERT INTO YukonRoleProperty VALUES (-90041,-900,'Schedule Stop Checked By Default', 'true', 'Controls whether the schedule stop check box is checked by default in demand response.');
 INSERT INTO YukonRoleProperty VALUES (-90042,-900,'Start Time Default',' ', 'Specifies the default start time for a control event in the format (hh:mm). It will use the current time if no time has been supplied');
+INSERT INTO YukonRoleProperty VALUES (-90043,-900,'Allow DR Control','true','Allow control of demand response control areas, scenarios, programs and groups');
 
 /* Capacitor Control role properties cont...*/
 insert into YukonRoleProperty values(-100000, -1000, 'Target', 'true', 'display Target settings');

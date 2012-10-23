@@ -236,6 +236,10 @@ WHERE ControlUnits = 'INTEGRATED_VOLT_VAR';
 INSERT INTO YukonRoleProperty VALUES (-20220, -202, 'Allow Disconnect Control', 'true', 'Controls access to Disconnect, Connect, and Arm operations.');
 /* End YUK-11532 */
 
+/* Start YUK-11550 */
+INSERT INTO YukonRoleProperty VALUES (-90043, -900, 'Allow DR Control', 'true', 'Allow control of demand response control areas, scenarios, programs and groups');
+/* End YUK-11550 */
+
 /**************************************************************/ 
 /* VERSION INFO                                               */ 
 /*   Automatically gets inserted from build script            */ 
