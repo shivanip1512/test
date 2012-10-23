@@ -37,6 +37,7 @@ public class EnergyCompanyDtoValidator extends SimpleValidator<EnergyCompanyDto>
         ValidationUtils.rejectIfEmptyOrWhitespace(errors, "adminUsername", "yukon.web.modules.adminSetup.createEnergyCompany.adminUsername.required");
         ValidationUtils.rejectIfEmptyOrWhitespace(errors, "adminPassword1", "yukon.web.modules.adminSetup.createEnergyCompany.adminPassword1.required");
         ValidationUtils.rejectIfEmptyOrWhitespace(errors, "adminPassword2", "yukon.web.modules.adminSetup.createEnergyCompany.adminPassword2.required");
+
         if (StringUtils.isNotBlank(energyCompanyDto.getAdminPassword1()) && StringUtils.isNotBlank(energyCompanyDto.getAdminPassword2())
                 && !energyCompanyDto.getAdminPassword1().equals(energyCompanyDto.getAdminPassword2())) {
             errors.rejectValue("adminPassword1", "yukon.web.modules.adminSetup.createEnergyCompany.adminPassword.mismatch");
