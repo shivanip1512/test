@@ -90,7 +90,7 @@
                         
                         <cti:button type="submit" nameKey="resetPassword" name="resetPassword" styleClass="f_disableAfterClick"/>
                         <cti:url value="/login.jsp" var="loginPage"/>
-                        <cti:button href="loginPage" nameKey="cancel"/>
+                        <cti:button href="${loginPage}" nameKey="cancel"/>
                     </form:form>
                 </tags:abstractContainer>
             </div>
