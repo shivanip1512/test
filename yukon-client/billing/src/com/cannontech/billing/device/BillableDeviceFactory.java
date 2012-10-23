@@ -58,6 +58,11 @@ public class BillableDeviceFactory {
         case DeviceTypes.MCT430A3:
             device = new MCT430();
             break;
+            
+        case DeviceTypes.MCT440_2131B:
+        case DeviceTypes.MCT440_2133B:
+            device = new MCT440();
+            break;
 
         case DeviceTypes.MCT470:
             device = new MCT470();
