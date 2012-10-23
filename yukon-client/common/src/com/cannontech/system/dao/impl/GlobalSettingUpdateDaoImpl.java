@@ -74,13 +74,14 @@ public class GlobalSettingUpdateDaoImpl implements GlobalSettingUpdateDao {
         Object currentValue = currentSetting.getValue();
         String currentComments = currentSetting.getComments();
         
-        if (setting.getValue() == null) {
+        Object value = setting.getValue();
+        if (value == null) {
             if (currentValue != null) {
                 changed = true;
                 changedValue = true;
             }
         } else {
-            if (!setting.getValue().equals(currentValue)) {
+            if (!value.equals(currentValue)) {
                 changed = true;
                 changedValue = true;
             }
@@ -110,9 +111,9 @@ public class GlobalSettingUpdateDaoImpl implements GlobalSettingUpdateDao {
                 dbPersistentDao.processDatabaseChange(DbChangeType.ADD, DbChangeCategory.GLOBAL_SETTING, setting.getId());
             }
             if (changedValue) {
-                log.debug(setting.getType() + " changed from (" + currentValue + ") to (" + setting.getValue() + ")");
+                log.debug(setting.getType() + " changed from (" + currentValue + ") to (" + value + ")");
                 if (user == null) user = UserUtils.getYukonUser();
-                systemEventLogService.globalSettingChanged(user, setting.getType(), setting.getValue().toString());
+                systemEventLogService.globalSettingChanged(user, setting.getType(), value == null ? "" : value.toString());
             }
             if (changedComments) {
                 log.debug("Comments for " + setting.getType() + " updated");
