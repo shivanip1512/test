@@ -2,7 +2,7 @@ package com.cannontech.analysis.tablemodel;
 
 import java.sql.ResultSet;
 import java.util.Date;
-import java.util.Vector;
+import java.util.List;
 
 import javax.servlet.http.HttpServletRequest;
 
@@ -19,6 +19,7 @@ import com.cannontech.database.SqlUtils;
 import com.cannontech.database.data.lite.LiteState;
 import com.cannontech.database.db.device.Device;
 import com.cannontech.database.db.state.StateGroupUtils;
+import com.google.common.collect.Lists;
 
 /**
  * Created on Nov 11, 2005
@@ -46,7 +47,7 @@ public class CapControlEventLogModel extends FilterObjectsReportModelBase<Object
 	public final static String STATUS_VALUE_STRING = "Status";
 	public final static String EVENT_TEXT_STRING = "Event";
 	
-	private int[] controlStates = null;
+	private List<Integer> controlStates;
 	private boolean showAllActivity = false;
 	
 	private static final String ATT_CAP_CONTROL_STATE = "capControlState";
@@ -131,18 +132,18 @@ public class CapControlEventLogModel extends FilterObjectsReportModelBase<Object
         }
         sql.append(" ) "); // ending paren for IN statement
 
-        if (!isShowAllActivity())
+        if (!isShowAllActivity()) {
             sql.append(" AND EVENTTYPE != 4 "); // != 4 is to remove the op increment logs
+        }
 
-		/*Note: Verify the control states when processing the result set instead of in the query.
-		 		Need all states if the most recent one is in getControlStates()*/
+        /*Note: Verify the control states when processing the result set instead of in the query.
+                Need all states if the most recent one is in getControlStates()*/
         sql.append("ORDER BY BusName, FeederName, BankName, CCLOG.SEQID, CCLOG.DATETIME");
-		return new StringBuffer(sql.getSql());
+        return new StringBuffer(sql.getSql());
 	}
-		
+
 	@Override
-	public void collectData()
-	{
+	public void collectData() {
 		//Reset all objects, new data being collected!
 		setData(null);
 		
@@ -153,106 +154,49 @@ public class CapControlEventLogModel extends FilterObjectsReportModelBase<Object
 		java.sql.PreparedStatement pstmt = null;
 		java.sql.ResultSet rset = null;
 
-		try
-		{
+		try {
 			conn = PoolManager.getInstance().getConnection(CtiUtilities.getDatabaseAlias());
 
-			if( conn == null )
-			{
+			if( conn == null ) {
 				CTILogger.error(getClass() + ":  Error getting database connection.");
 				return;
-			}
-			else
-			{
+			} else {
 				pstmt = conn.prepareStatement(sql.toString());
 				pstmt.setTimestamp(1, new java.sql.Timestamp( getStartDate().getTime() ));
 				pstmt.setTimestamp(2, new java.sql.Timestamp( getStopDate().getTime() ));
 				CTILogger.info("START DATE >= " + getStartDate() + " - STOP DATE < " + getStopDate());
 				rset = pstmt.executeQuery();
-				Vector<CapControlStatusData> tempObjects = new Vector<CapControlStatusData>();
-				int prevCapBankID = -1;
-				CapControlStatusData ccStatusData = null;
-				while( rset.next())
-				{
-					try
-					{
-						int capBankPaoID = rset.getInt(5);
-						String bankName = rset.getString(6);
-						if (! isShowAllActivity())	//selectively add to data Vector 
-						{
-							if( prevCapBankID != capBankPaoID)
-							{
-								if( prevCapBankID > -1)	//not the first one
-								{
-									if( prevCapBankID == Device.SYSTEM_DEVICE_ID || getControlStates() == null)//if no states to compare to, add them all.
-									{
-										getData().addAll(tempObjects);
-									}								
-									else 
-									{
-										for (int i = 0; i < getControlStates().length; i++)
-										{
-											if( ccStatusData.getControlStatus().intValue() == getControlStates()[i])
-											{
-												getData().addAll(tempObjects);
-												break;
-											}
-										}
-									}
-									tempObjects.clear();								
-								}
-								prevCapBankID= capBankPaoID;
-							}
-						}
-						Integer subBusPaoID = rset.getInt(1);
-						String subBusName = rset.getString(2);
-						Integer feederPaoID = rset.getInt(3);
-						String feederName = rset.getString(4);
-						String pointName = rset.getString(7);
-						Date changedateTime = rset.getTimestamp(8);
-						String eventText = rset.getString(9);
-						Integer controlStatus = rset.getInt(10);
-						Integer eventType = rset.getInt(11);
-									
-						ccStatusData= new CapControlStatusData(capBankPaoID, bankName, subBusPaoID, subBusName, feederPaoID, feederName, pointName, changedateTime, eventText, controlStatus, eventType);
-						tempObjects.add(ccStatusData);
-					}
-					catch(java.sql.SQLException e)
-					{
-						e.printStackTrace();
-					}			
-				}
+
+                while( rset.next()) {
+                    int subBusPaoID = rset.getInt(1);
+                    String subBusName = rset.getString(2);
+                    int feederPaoID = rset.getInt(3);
+                    String feederName = rset.getString(4);
+                    int capBankPaoID = rset.getInt(5);
+                    String bankName = rset.getString(6);
+                    String pointName = rset.getString(7);
+                    Date changedateTime = rset.getTimestamp(8);
+                    String eventText = rset.getString(9);
+                    int controlStatus = rset.getInt(10);
+                    int eventType = rset.getInt(11);
+                
+                    CapControlStatusData ccStatusData= new CapControlStatusData(capBankPaoID, bankName, subBusPaoID, subBusName, feederPaoID, feederName, pointName, changedateTime, eventText, controlStatus, eventType);                    
 				
-                if (ccStatusData != null) { // only do this if we actually have results to work with.
-                    //Process/Load the last entry. 
-                    if (!isShowAllActivity()) //Selectively add to data Vector.
-                    {
-                        if (prevCapBankID == Device.SYSTEM_DEVICE_ID || getControlStates() == null)//if no states to compare to, add them all.
-                        {
-                            getData().addAll(tempObjects);
-                        } else {
-                            for (int i = 0; i < getControlStates().length; i++) {
-                                if (ccStatusData.getControlStatus().intValue() == getControlStates()[i]) {
-                                    getData().addAll(tempObjects);
-                                    break;
-                                }
-                            }
-                        }
-                    } else
-                        getData().addAll(tempObjects); //Add all objects at some point!
-                }				
-                tempObjects.clear();	
+                    if( isShowAllActivity() 
+                        || getControlStates() == null
+                        || capBankPaoID == Device.SYSTEM_DEVICE_ID
+                        || getControlStates().contains(controlStatus)) {
+                        
+                        getData().add(ccStatusData);
+                    }
+				}//end while
 			}
-		}
-			
-		catch( java.sql.SQLException e )
-		{
+		} catch( java.sql.SQLException e ) {
 			e.printStackTrace();
-		}
-		finally
-		{
+		} finally {
 			SqlUtils.close(rset, pstmt, conn);
 		}
+		
 		CTILogger.info("Report Records Collected from Database: " + getData().size());
 		return;
 	}
@@ -446,40 +390,36 @@ public class CapControlEventLogModel extends FilterObjectsReportModelBase<Object
 		if( req != null)
 		{
 			String param = req.getParameter(ATT_SCHEDULE_ACTIVITY);
-			if( param != null)
+			if( param != null) {
 				setShowAllActivity(Boolean.valueOf(param).booleanValue());	//ALL Of them!
+			}
 			
 			param = req.getParameter(ATT_All_CAP_CONTROL_STATE);
-			if( param != null)
+			if( param != null) {
 				setControlStates(null);	//ALL Of them!
-			else{ 			
+			} else { 			
 			    String[] paramArray = req.getParameterValues(ATT_CAP_CONTROL_STATE);
-				if( paramArray != null)
-				{
-					int [] idsArray = new int[paramArray.length];
-					for (int i = 0; i < paramArray.length; i++)
-					{
-						idsArray[i] = Integer.valueOf(paramArray[i]).intValue();
+				if (paramArray != null) {
+					List<Integer> idsArray = Lists.newArrayList();
+					for (int i = 0; i < paramArray.length; i++) {
+						idsArray.add(Integer.valueOf(paramArray[i]).intValue());
 					}
 					setControlStates(idsArray);
-				}
-				else
+				} else {
 					setControlStates(null);
+				}
 			}
 			
 		}
 	}
-    public int[] getControlStates()
+    public List<Integer> getControlStates()
     {
         return controlStates;
     }
-    public void setControlStates(int[] controlStates)
+
+    public void setControlStates(List<Integer> controlStates)
     {
         this.controlStates = controlStates;
-    }
-    public void setControlStates(int controlStates)
-    {
-        setControlStates( new int[]{controlStates});
     }
 
 	public boolean isShowAllActivity() {
