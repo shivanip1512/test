@@ -22,30 +22,32 @@ import com.cannontech.stars.core.dao.StarsSearchDao;
 import com.cannontech.stars.core.dao.StarsWorkOrderBaseDao;
 import com.cannontech.stars.core.dao.WarehouseDao;
 import com.cannontech.stars.core.service.YukonEnergyCompanyService;
+import com.cannontech.stars.database.cache.StarsDatabaseCache;
 import com.cannontech.stars.energyCompany.dao.EnergyCompanyDao;
 import com.cannontech.stars.service.DefaultRouteService;
 import com.cannontech.stars.service.EnergyCompanyService;
 
 public class LiteStarsEnergyCompanyFactory {
-    private AddressDao addressDao;
-    private AsyncDynamicDataSource asyncDynamicDataSource;
-    private DBPersistentDao dbPersistentDao;
-    private ECMappingDao ecMappingDao;
-    private EnergyCompanyRolePropertyDao energyCompanyRolePropertyDao;
-    private DefaultRouteService defaultRouteService;
-    private StarsCustAccountInformationDao starsCustAccountInformationDao;
-    private StarsSearchDao starsSearchDao;
-    private StarsWorkOrderBaseDao starsWorkOrderBaseDao;
-	private SystemDateFormattingService systemDateFormattingService;
-	private WarehouseDao warehouseDao;
-	private YukonJdbcTemplate yukonJdbcTemplate;
-	private YukonGroupDao yukonGroupDao;
-	private YukonListDao yukonListDao;
-	private PaoDao paoDao;
-	private EnergyCompanyDao energyCompanyDao;
-	private EnergyCompanyService energyCompanyService;
-	private RoleDao roleDao;
-	private YukonEnergyCompanyService yukonEnergyCompanyService;
+    @Autowired private AddressDao addressDao;
+    @Autowired private AsyncDynamicDataSource asyncDynamicDataSource;
+    @Autowired private DBPersistentDao dbPersistentDao;
+    @Autowired private DefaultRouteService defaultRouteService;
+    @Autowired private ECMappingDao ecMappingDao;
+    @Autowired private EnergyCompanyDao energyCompanyDao;
+    @Autowired private EnergyCompanyRolePropertyDao energyCompanyRolePropertyDao;
+    @Autowired private EnergyCompanyService energyCompanyService;
+    @Autowired private PaoDao paoDao;
+    @Autowired private RoleDao roleDao;
+    @Autowired private StarsCustAccountInformationDao starsCustAccountInformationDao;
+    @Autowired private StarsDatabaseCache starsDatabaseCache;
+    @Autowired private StarsSearchDao starsSearchDao;
+    @Autowired private StarsWorkOrderBaseDao starsWorkOrderBaseDao;
+    @Autowired private SystemDateFormattingService systemDateFormattingService;
+    @Autowired private WarehouseDao warehouseDao;
+    @Autowired private YukonEnergyCompanyService yukonEnergyCompanyService;
+    @Autowired private YukonGroupDao yukonGroupDao;
+    @Autowired private YukonJdbcTemplate yukonJdbcTemplate;
+    @Autowired private YukonListDao yukonListDao;
 	
     public LiteStarsEnergyCompany createEnergyCompany(EnergyCompany energyCompany) {
         LiteStarsEnergyCompany liteStarsEnergyCompany = new LiteStarsEnergyCompany(energyCompany);
@@ -67,6 +69,7 @@ public class LiteStarsEnergyCompanyFactory {
         energyCompany.setDefaultRouteService(defaultRouteService);
         energyCompany.setStarsCustAccountInformationDao(starsCustAccountInformationDao);
         energyCompany.setSystemDateFormattingService(systemDateFormattingService);
+        energyCompany.setStarsDatabaseCache(starsDatabaseCache);
         energyCompany.setStarsSearchDao(starsSearchDao);
         energyCompany.setStarsWorkOrderBaseDao(starsWorkOrderBaseDao);
         energyCompany.setWarehouseDao(warehouseDao);
@@ -133,101 +136,5 @@ public class LiteStarsEnergyCompanyFactory {
                 energyCompany.resetServiceCompanyInfo();
             }
         });
-    }
-    
-    // DI Setter
-    @Autowired
-    public void setAddressDao(AddressDao addressDao) {
-        this.addressDao = addressDao;
-    }
-
-    @Autowired
-    public void setAsyncDynamicDataSource(AsyncDynamicDataSource asyncDynamicDataSource) {
-        this.asyncDynamicDataSource = asyncDynamicDataSource;
-    }
-    
-    @Autowired
-    public void setDbPersistentDao(DBPersistentDao dbPersistentDao) {
-        this.dbPersistentDao = dbPersistentDao;
-    }
-    
-    @Autowired
-    public void setEcMappingDao(ECMappingDao ecMappingDao) {
-        this.ecMappingDao = ecMappingDao;
-    }
-    
-    @Autowired
-    public void setEnergyCompanyRolePropertyDao(EnergyCompanyRolePropertyDao energyCompanyRolePropertyDao) {
-        this.energyCompanyRolePropertyDao = energyCompanyRolePropertyDao;
-    }
-
-    @Autowired
-    public void setDefaultRouteService(DefaultRouteService defaultRouteService) {
-        this.defaultRouteService = defaultRouteService;
-    }
-    
-    @Autowired
-    public void setStarsCustAccountInformationDao(StarsCustAccountInformationDao starsCustAccountInformationDao) {
-        this.starsCustAccountInformationDao = starsCustAccountInformationDao;
-    }
-    
-    @Autowired
-    public void setStarsSearchDao(StarsSearchDao starsSearchDao) {
-        this.starsSearchDao = starsSearchDao;
-    }
-    
-    @Autowired
-    public void setStarsWorkOrderBaseDao(StarsWorkOrderBaseDao starsWorkOrderBaseDao) {
-        this.starsWorkOrderBaseDao = starsWorkOrderBaseDao;
-    }
-    
-    @Autowired
-    public void setSystemDateFormattingService(SystemDateFormattingService systemDateFormattingService) {
-		this.systemDateFormattingService = systemDateFormattingService;
-	}
-    
-    @Autowired
-    public void setWarehouseDao(WarehouseDao warehouseDao) {
-        this.warehouseDao = warehouseDao;
-    }
-    
-    @Autowired
-    public void setYukonJdbcTemplate(YukonJdbcTemplate yukonJdbcTemplate) {
-        this.yukonJdbcTemplate = yukonJdbcTemplate;
-    }
-    
-    @Autowired
-    public void setYukonGroupDao(YukonGroupDao yukonGroupDao) {
-        this.yukonGroupDao = yukonGroupDao;
-    }
-
-    @Autowired
-    public void setYukonListDao(YukonListDao yukonListDao) {
-        this.yukonListDao = yukonListDao;
-    }
-    
-    @Autowired
-    public void setPaoDao(PaoDao paoDao) {
-        this.paoDao = paoDao;
-    }
-    
-    @Autowired
-    public void setEnergyCompanyDao(EnergyCompanyDao energyCompanyDao) {
-        this.energyCompanyDao = energyCompanyDao;
-    }
-    
-    @Autowired
-    public void setEnergyCompanyService(EnergyCompanyService energyCompanyService) {
-        this.energyCompanyService = energyCompanyService;
-    }
-    
-    @Autowired
-    public void setRoleDao(RoleDao roleDao) {
-        this.roleDao = roleDao;
-    }
-
-    @Autowired
-    public void setYukonEnergyCompanyService(YukonEnergyCompanyService yukonEnergyCompanyService) {
-        this.yukonEnergyCompanyService = yukonEnergyCompanyService;
     }
 }

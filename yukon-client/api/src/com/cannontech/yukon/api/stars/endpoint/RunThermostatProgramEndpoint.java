@@ -22,7 +22,6 @@ import com.cannontech.stars.dr.hardware.dao.InventoryDao;
 import com.cannontech.stars.dr.thermostat.FailedThermostatCommandException;
 import com.cannontech.stars.dr.thermostat.model.ThermostatManualEventResult;
 import com.cannontech.stars.dr.thermostat.service.ThermostatService;
-import com.cannontech.stars.energyCompany.model.YukonEnergyCompany;
 import com.cannontech.yukon.api.util.XMLFailureGenerator;
 import com.cannontech.yukon.api.util.XmlVersionUtils;
 
@@ -64,8 +63,8 @@ public class RunThermostatProgramEndpoint {
             rolePropertyDao.verifyRole(YukonRole.INVENTORY, user);
             
             // Send out run thermostat program commands
-            YukonEnergyCompany yukonEnergyCompany = yukonEnergyCompanyService.getEnergyCompanyByOperator(user);
-            List<Integer> thermostatIds = inventoryDao.getInventoryIds(serialNumbers, yukonEnergyCompany.getEnergyCompanyId());
+            int yukonEnergyCompanyId = yukonEnergyCompanyService.getEnergyCompanyIdByOperator(user);
+            List<Integer> thermostatIds = inventoryDao.getInventoryIds(serialNumbers, yukonEnergyCompanyId);
 
             // Send out run program commands
             for (int thermostatId : thermostatIds) {

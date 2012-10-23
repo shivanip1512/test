@@ -19,7 +19,6 @@ import com.cannontech.clientutils.YukonLogManager;
 import com.cannontech.common.events.loggers.AccountEventLogService;
 import com.cannontech.common.exception.NotAuthorizedException;
 import com.cannontech.common.util.xml.SimpleXPathTemplate;
-import com.cannontech.common.util.xml.XmlUtils;
 import com.cannontech.common.util.xml.YukonXml;
 import com.cannontech.core.roleproperties.YukonRoleProperty;
 import com.cannontech.core.roleproperties.dao.RolePropertyDao;
@@ -31,7 +30,6 @@ import com.cannontech.stars.dr.hardware.dao.InventoryDao;
 import com.cannontech.stars.dr.thermostat.dao.AccountThermostatScheduleDao;
 import com.cannontech.stars.dr.thermostat.model.AccountThermostatSchedule;
 import com.cannontech.stars.dr.thermostat.service.ThermostatService;
-import com.cannontech.stars.energyCompany.model.YukonEnergyCompany;
 import com.cannontech.yukon.api.util.XMLFailureGenerator;
 import com.cannontech.yukon.api.util.XmlVersionUtils;
 
@@ -78,8 +76,8 @@ public class SendThermostatScheduleEndpoint {
             rolePropertyDao.checkProperty(YukonRoleProperty.OPERATOR_CONSUMER_INFO_HARDWARES_THERMOSTAT, user);
             
             // Get the inventoryIds from the serial numbers supplied.
-            YukonEnergyCompany yukonEnergyCompany = yukonEnergyCompanyService.getEnergyCompanyByOperator(user);
-            List<Integer> inventoryIds = inventoryDao.getInventoryIds(serialNumbers, yukonEnergyCompany.getEnergyCompanyId());
+            int yukonEnergyCompanyId = yukonEnergyCompanyService.getEnergyCompanyIdByOperator(user);
+            List<Integer> inventoryIds = inventoryDao.getInventoryIds(serialNumbers, yukonEnergyCompanyId);
             if(inventoryIds.isEmpty()){
                 if(serialNumbers.isEmpty()){
                     Element fe = XMLFailureGenerator.generateFailure(sendThermostatSchedule, new Exception(), "SerialNumberDoesNotExist", "At least one Serial Number is required.");

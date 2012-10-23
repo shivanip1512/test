@@ -1,5 +1,7 @@
 package com.cannontech.yukon.api.loadManagement.endpoint;
 
+import java.util.List;
+
 import org.springframework.beans.factory.annotation.Autowired;
 
 import com.cannontech.common.events.loggers.AccountEventLogService;
@@ -14,7 +16,6 @@ import com.cannontech.stars.dr.account.model.CustomerAccount;
 import com.cannontech.stars.dr.hardware.dao.LmHardwareBaseDao;
 import com.cannontech.stars.dr.hardware.model.LMHardwareBase;
 import com.cannontech.stars.dr.optout.service.OptOutService;
-import com.cannontech.stars.energyCompany.model.YukonEnergyCompany;
 
 public abstract class OverrideRequestEndpointBase {
     
@@ -28,8 +29,10 @@ public abstract class OverrideRequestEndpointBase {
 
     protected CustomerAccount getCustomerAccount(String accountNumber, LiteYukonUser user) throws AccountNotFoundException {
         try {
-            YukonEnergyCompany energyCompany = yukonEnergyCompanyService.getEnergyCompanyByOperator(user);
-            return customerAccountDao.getByAccountNumberForDescendentsOfEnergyCompany(accountNumber, energyCompany);
+            int energyCompanyId = yukonEnergyCompanyService.getEnergyCompanyIdByOperator(user);
+            List<Integer> energyCompanyIds = yukonEnergyCompanyService.getChildEnergyCompanies(energyCompanyId);
+            energyCompanyIds.add(energyCompanyId);
+            return customerAccountDao.getByAccountNumber(accountNumber, energyCompanyIds);
         } catch (NotFoundException e) {
             throw new AccountNotFoundException("Account " + accountNumber+ " couldn't be found.");
         }

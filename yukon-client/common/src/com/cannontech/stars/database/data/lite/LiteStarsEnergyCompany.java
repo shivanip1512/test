@@ -26,7 +26,6 @@ import com.cannontech.common.constants.YukonSelectionListDefs;
 import com.cannontech.common.constants.YukonSelectionListEnum;
 import com.cannontech.common.exception.BadConfigurationException;
 import com.cannontech.common.inventory.HardwareType;
-import com.cannontech.common.util.CommandExecutionException;
 import com.cannontech.common.util.CtiUtilities;
 import com.cannontech.common.util.IterableUtils;
 import com.cannontech.common.util.Pair;
@@ -104,6 +103,7 @@ public class LiteStarsEnergyCompany extends LiteBase implements YukonEnergyCompa
     private EnergyCompanyRolePropertyDao energyCompanyRolePropertyDao;
     private DefaultRouteService defaultRouteService;
     private StarsCustAccountInformationDao starsCustAccountInformationDao;
+    private StarsDatabaseCache starsDatabaseCache;
     private StarsSearchDao starsSearchDao;
     private StarsWorkOrderBaseDao starsWorkOrderBaseDao;
     private SystemDateFormattingService systemDateFormattingService;
@@ -1547,37 +1547,31 @@ public class LiteStarsEnergyCompany extends LiteBase implements YukonEnergyCompa
     private EnergyCompanyHierarchy loadEnergyCompanyHierarchy() {
         EnergyCompanyHierarchy ech = new EnergyCompanyHierarchy();
         
-        String sql = "SELECT EnergyCompanyID, ItemID FROM ECToGenericMapping " +
-                "WHERE MappingCategory='" + ECToGenericMapping.MAPPING_CATEGORY_MEMBER + "' " +
-                "AND (EnergyCompanyID=" + getEnergyCompanyId() + " OR ItemID=" + getEnergyCompanyId() + ")";
+        int energyCompanyId = getEnergyCompanyId();
+        Integer parentEnergyCompanyId = yukonEnergyCompanyService.getParentEnergyCompany(energyCompanyId);
+        List<Integer> childEnergyCompanyIds = yukonEnergyCompanyService.getDirectChildEnergyCompanies(energyCompanyId);
         
-        try {
-            SqlStatement stmt = new SqlStatement( sql, CtiUtilities.getDatabaseAlias() );
-            stmt.execute();
-            
-            for (int i = 0; i < stmt.getRowCount(); i++) {
-                int parentID = ((java.math.BigDecimal) stmt.getRow(i)[0]).intValue();
-                int childID = ((java.math.BigDecimal) stmt.getRow(i)[1]).intValue();
-                
-                if (parentID == getLiteID())
-                    ech.children.add( StarsDatabaseCache.getInstance().getEnergyCompany(childID) );
-                else    // childID == getLiteID()
-                    ech.parent = StarsDatabaseCache.getInstance().getEnergyCompany( parentID );
-            }
-            
-            ECToGenericMapping[] items = ECToGenericMapping.getAllMappingItems(
-                    getEnergyCompanyId(), ECToGenericMapping.MAPPING_CATEGORY_MEMBER_LOGIN );
-            
-            if (items != null) {
-                for (int i = 0; i < items.length; i++)
-                    ech.memberLoginIDs.add( items[i].getItemID() );
-            }
-            
-            CTILogger.info( "Energy company hierarchy loaded for energy company #" + getEnergyCompanyId() );
+        // Translates all of the energy company ids into LiteStarsEnergyCompanies.
+        if (parentEnergyCompanyId != null) {
+            ech.parent = starsDatabaseCache.getEnergyCompany(parentEnergyCompanyId);
         }
-        catch (CommandExecutionException e) {
-            throw new RuntimeException(e);
+
+        List<LiteStarsEnergyCompany> childEnergyCompanies = 
+            Lists.transform(childEnergyCompanyIds, new Function<Integer, LiteStarsEnergyCompany>() {
+                @Override
+                public LiteStarsEnergyCompany apply(Integer energyCompanyId) {
+                    return starsDatabaseCache.getEnergyCompany(energyCompanyId);
+                }});
+        ech.children.addAll(childEnergyCompanies);
+
+        // Getting member logins
+        ECToGenericMapping[] items = ECToGenericMapping.getAllMappingItems(energyCompanyId, ECToGenericMapping.MAPPING_CATEGORY_MEMBER_LOGIN );
+        for (ECToGenericMapping item : items) {
+            ech.memberLoginIDs.add( item.getItemID() );
         }
+        
+        CTILogger.info( "Energy company hierarchy loaded for energy company #" + energyCompanyId);
+        
         return ech;
     }
     
@@ -1946,5 +1940,9 @@ public class LiteStarsEnergyCompany extends LiteBase implements YukonEnergyCompa
 
     public void setYukonEnergyCompanyService(YukonEnergyCompanyService yukonEnergyCompanyService) {
         this.yukonEnergyCompanyService = yukonEnergyCompanyService;
+    }
+
+    public void setStarsDatabaseCache(StarsDatabaseCache starsDatabaseCache) {
+        this.starsDatabaseCache = starsDatabaseCache;
     }
 }

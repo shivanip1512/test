@@ -36,7 +36,6 @@ import com.cannontech.message.activemq.YukonTextMessageDao;
 import com.cannontech.stars.core.service.YukonEnergyCompanyService;
 import com.cannontech.stars.dr.hardware.dao.InventoryDao;
 import com.cannontech.stars.dr.hardware.service.LmHardwareCommandService;
-import com.cannontech.stars.energyCompany.model.YukonEnergyCompany;
 import com.cannontech.yukon.api.stars.endpoint.endpointMappers.TextMessageElementRequestMapper;
 import com.cannontech.yukon.api.stars.model.DeviceTextMessage;
 import com.cannontech.yukon.api.util.NodeToElementMapperWrapper;
@@ -88,17 +87,16 @@ public class SendTextMessageEndpoint {
             DeviceTextMessage deviceTextMessage = requestTemplate.evaluateAsObject("//y:textMessage",
                                       new NodeToElementMapperWrapper<DeviceTextMessage>(new TextMessageElementRequestMapper()));
 
-            YukonEnergyCompany yukonEnergyCompany = yukonEnergyCompanyService.getEnergyCompanyByOperator(user);
-
             // Check authorization
             rolePropertyDao.verifyRole(YukonRole.INVENTORY, user);
 
             // Validate text message
             Matcher matcher = pattern.matcher(deviceTextMessage.getMessage());
             if (matcher.matches()) {
+                int yukonEnergyCompanyId = yukonEnergyCompanyService.getEnergyCompanyIdByOperator(user);
                 Map<String, Integer> serialNumberToInventoryIdMap =
-                    inventoryDao.getSerialNumberToInventoryIdMap(deviceTextMessage.getSerialNumbers(),
-                                                                 yukonEnergyCompany.getEnergyCompanyId());
+                    inventoryDao.getSerialNumberToInventoryIdMap(deviceTextMessage.getSerialNumbers(), yukonEnergyCompanyId);
+
                 // Remove devices which cannot accept messages
                 List<String> unsupportedSerialNumbers = removeUnsupportedSerialNumbers(deviceTextMessage, serialNumberToInventoryIdMap);
                 		
@@ -111,6 +109,7 @@ public class SendTextMessageEndpoint {
                     // Send out message
                     lmHardwareCommandService.sendTextMessage(yukonTextMessage);
                 }
+                
                 // build a response
                 addRequestedNode(deviceTextMessage.getSerialNumbers().size(), lookupFailedSerialNumbers.size(), unsupportedSerialNumbers.size(), resp);
                 addErrorsNode(unsupportedSerialNumbers, resp, "unsupportedDevices");

@@ -1,6 +1,9 @@
 package com.cannontech.stars.core.service.impl;
 
+import java.sql.SQLException;
 import java.util.List;
+import java.util.Map;
+import java.util.Map.Entry;
 
 import org.apache.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -9,20 +12,25 @@ import org.springframework.dao.EmptyResultDataAccessException;
 import com.cannontech.clientutils.YukonLogManager;
 import com.cannontech.common.util.SqlStatementBuilder;
 import com.cannontech.database.YukonJdbcTemplate;
+import com.cannontech.database.YukonResultSet;
+import com.cannontech.database.YukonRowCallbackHandler;
 import com.cannontech.database.data.lite.LiteYukonUser;
 import com.cannontech.stars.core.dao.ECMappingDao;
 import com.cannontech.stars.core.service.YukonEnergyCompanyService;
 import com.cannontech.stars.database.cache.StarsDatabaseCache;
 import com.cannontech.stars.database.data.lite.LiteStarsEnergyCompany;
+import com.cannontech.stars.database.db.ECToGenericMapping;
 import com.cannontech.stars.energyCompany.model.YukonEnergyCompany;
 import com.google.common.collect.Lists;
+import com.google.common.collect.Maps;
 
 
 public class YukonEnergyCompanyServiceImpl implements YukonEnergyCompanyService {
-    private Logger log = YukonLogManager.getLogger(YukonEnergyCompanyServiceImpl.class);
-    private ECMappingDao ecMappingDao;
-    private StarsDatabaseCache starsDatabaseCache;
-    private YukonJdbcTemplate yukonJdbcTemplate;
+    private static final Logger log = YukonLogManager.getLogger(YukonEnergyCompanyServiceImpl.class);
+    
+    @Autowired private ECMappingDao ecMappingDao;
+    @Autowired private StarsDatabaseCache starsDatabaseCache;
+    @Autowired private YukonJdbcTemplate yukonJdbcTemplate;
     
     @Override
     public YukonEnergyCompany getEnergyCompanyByAccountId(int accountId) {
@@ -33,11 +41,18 @@ public class YukonEnergyCompanyServiceImpl implements YukonEnergyCompanyService 
 
     @Override
     public YukonEnergyCompany getEnergyCompanyByOperator(LiteYukonUser operator) {
+        int energyCompanyId = getEnergyCompanyIdByOperator(operator);
+        LiteStarsEnergyCompany energyCompany = starsDatabaseCache.getEnergyCompany(energyCompanyId);
+        return energyCompany;
+    }
+
+    @Override
+    public int getEnergyCompanyIdByOperator(LiteYukonUser operator) {
         SqlStatementBuilder sql = new SqlStatementBuilder();
         sql.append("SELECT ECOLL.EnergyCompanyId");
         sql.append("FROM EnergyCompanyOperatorLoginList ECOLL");
         sql.append("WHERE ECOLL.OperatorLoginId").eq(operator.getUserID());
-
+        
         int energyCompanyId = 0;
         try {
             energyCompanyId = yukonJdbcTemplate.queryForInt(sql);
@@ -45,8 +60,7 @@ public class YukonEnergyCompanyServiceImpl implements YukonEnergyCompanyService 
             log.debug("No energy company found for user id: " + operator.getUserID() + ". Using default energy company.");
             energyCompanyId = StarsDatabaseCache.DEFAULT_ENERGY_COMPANY_ID;
         }
-        LiteStarsEnergyCompany energyCompany = starsDatabaseCache.getEnergyCompany(energyCompanyId);
-        return energyCompany;
+        return energyCompanyId;
     }
 
     @Override
@@ -67,19 +81,60 @@ public class YukonEnergyCompanyServiceImpl implements YukonEnergyCompanyService 
         return energyCompany.getEnergyCompanyId() == StarsDatabaseCache.DEFAULT_ENERGY_COMPANY_ID;
     }
     
-    // DI Setters
-    @Autowired
-    public void setEcMappingDao(ECMappingDao ecMappingDao) {
-        this.ecMappingDao = ecMappingDao;
+    /**
+     * This method returns a map that contains all of the child to parent energy company mappings.
+     */
+    protected Map<Integer, Integer> getChildToParentEnergyCompanyHierarchy() {
+        
+        SqlStatementBuilder sql = new SqlStatementBuilder();
+        sql.append("SELECT EnergyCompanyId, ItemId");
+        sql.append("FROM ECToGenericMapping");
+        sql.append("WHERE MappingCategory").eq_k(ECToGenericMapping.MAPPING_CATEGORY_MEMBER);
+        
+        final Map<Integer, Integer> childToParentMap = Maps.newHashMap();
+        yukonJdbcTemplate.query(sql, new YukonRowCallbackHandler() {
+            @Override
+            public void processRow(YukonResultSet rs) throws SQLException {
+                int parentEnergyCompanyId = rs.getInt("EnergyCompanyId");
+                int childEnergyCompanyId = rs.getInt("ItemId");
+                childToParentMap.put(childEnergyCompanyId, parentEnergyCompanyId);
+            }});
+        
+        return childToParentMap;
     }
     
-    @Autowired
-    public void setStarsDatabaseCache(StarsDatabaseCache starsDatabaseCache) {
-        this.starsDatabaseCache = starsDatabaseCache;
+    @Override
+    public List<Integer> getChildEnergyCompanies(int energyCompanyId) {
+        List<Integer> result = Lists.newArrayList();
+        
+        List<Integer> directChildrenEnergyCompanyIds = getDirectChildEnergyCompanies(energyCompanyId);
+        result.addAll(directChildrenEnergyCompanyIds);
+        for (int directChildEnergycompanyId : directChildrenEnergyCompanyIds) {
+            result.addAll(getChildEnergyCompanies(directChildEnergycompanyId));
+        }
+                           
+        return result;
     }
-    
-    @Autowired
-    public void setYukonJdbcTemplate(YukonJdbcTemplate yukonJdbcTemplate) {
-        this.yukonJdbcTemplate = yukonJdbcTemplate;
+
+    @Override
+    public List<Integer> getDirectChildEnergyCompanies(int energyCompanyId) {
+        Map<Integer, Integer> childToParentMap = getChildToParentEnergyCompanyHierarchy();
+        
+        // Getting the EnergyCompanyIds for this energy company's direct parent and children.
+        List<Integer> childEnergyCompanyIds = Lists.newArrayList();
+        for (Entry<Integer, Integer> childToParentEntry : childToParentMap.entrySet()) {
+            if (energyCompanyId == childToParentEntry.getValue()) {
+                childEnergyCompanyIds.add(childToParentEntry.getKey());
+            }
+        }
+        
+        return childEnergyCompanyIds;
+    }
+
+    @Override
+    public Integer getParentEnergyCompany(int energyCompanyId) {
+        Map<Integer, Integer> childToParentMap = getChildToParentEnergyCompanyHierarchy();
+        Integer parentEnergyCompanyId = childToParentMap.get(energyCompanyId);
+        return parentEnergyCompanyId;
     }
 }

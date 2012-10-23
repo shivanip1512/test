@@ -13,6 +13,11 @@ public interface YukonEnergyCompanyService {
      * accessible and also see the role property values of the operator's energy company.
      */
     public YukonEnergyCompany getEnergyCompanyByOperator(LiteYukonUser operator);
+
+    /**
+     * This method gets the energy company id for the operator supplied.
+     */
+    public int getEnergyCompanyIdByOperator(LiteYukonUser operator);
     
     /**
      * This method gets the yukon energy company that is associated with the supplied account.  
@@ -32,4 +37,29 @@ public interface YukonEnergyCompanyService {
     public List<YukonEnergyCompany> getAllEnergyCompanies();
 
     public boolean isDefaultEnergyCompany(YukonEnergyCompany energyCompany);
+
+    /**
+     * This method returns all of the child energy companies underneath the supplied energy company 
+     * no matter how many levels deep that may be.
+     * 
+     * @param energyCompanyId - The energyCompanyId supplied is not included in the resulting list.
+     */
+    public List<Integer> getChildEnergyCompanies(int energyCompanyId);
+
+    /**
+     * This method returns the direct child energy companies underneath the energy company.
+     * It will not return any of the children of the child energy companies.  If you want that data you'll want to
+     * use the getChildEnergyCompanies method above.
+     * 
+     * @param energyCompanyId - The energyCompanyId supplied is not included in the resulting list.
+     */
+    public List<Integer> getDirectChildEnergyCompanies(int energyCompanyId);
+
+    /**
+     * This method returns the parent energy company id of the energy company id supplied.  This will return null
+     * if the energy company id is the default energy company, since it has no parent.
+     */
+    public Integer getParentEnergyCompany(int energyCompanyId);
+
+    
 }

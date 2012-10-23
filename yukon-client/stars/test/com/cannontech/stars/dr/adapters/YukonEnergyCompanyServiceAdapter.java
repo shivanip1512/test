@@ -29,8 +29,27 @@ public class YukonEnergyCompanyServiceAdapter implements YukonEnergyCompanyServi
     }
 
     @Override
+    public int getEnergyCompanyIdByOperator(LiteYukonUser operator) {
+        throw new UnsupportedOperationException("not implemented");
+    }
+
+    @Override
     public boolean isDefaultEnergyCompany(YukonEnergyCompany energyCompany) {
         throw new UnsupportedOperationException("not implemented");
     }
 
+    @Override
+    public List<Integer> getChildEnergyCompanies(int energyCompanyId) {
+        throw new UnsupportedOperationException("not implemented");
+    }
+
+    @Override
+    public List<Integer> getDirectChildEnergyCompanies(int energyCompanyId) {
+        throw new UnsupportedOperationException("not implemented");
+    }
+
+    @Override
+    public Integer getParentEnergyCompany(int energyCompanyId) {
+        throw new UnsupportedOperationException("not implemented");
+    }
 }

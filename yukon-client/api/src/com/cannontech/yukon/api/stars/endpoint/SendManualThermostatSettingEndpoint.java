@@ -4,7 +4,6 @@ import java.util.Collection;
 import java.util.Map;
 
 import org.apache.log4j.Logger;
-import org.jdom.Attribute;
 import org.jdom.Element;
 import org.jdom.Namespace;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -26,7 +25,6 @@ import com.cannontech.stars.dr.account.model.CustomerAccount;
 import com.cannontech.stars.dr.hardware.dao.InventoryDao;
 import com.cannontech.stars.dr.thermostat.model.ThermostatManualEventResult;
 import com.cannontech.stars.dr.thermostat.service.ThermostatService;
-import com.cannontech.stars.energyCompany.model.YukonEnergyCompany;
 import com.cannontech.yukon.api.stars.endpoint.endpointMappers.ManualThermostatSettingElementRequestMapper;
 import com.cannontech.yukon.api.stars.model.ManualThermostatSetting;
 import com.cannontech.yukon.api.util.NodeToElementMapperWrapper;
@@ -126,11 +124,10 @@ public class SendManualThermostatSettingEndpoint {
      * fan state, and mode for a given thermostat.
      */
     private Map<String, Integer> getSerialNumberToInventoryIdMap(ManualThermostatSetting manualThermostatSetting, LiteYukonUser user) {
-        YukonEnergyCompany yukonEnergyCompany = yukonEnergyCompanyService.getEnergyCompanyByOperator(user);
-
         // Get all the serial numbers used in this web service call.
         Collection<String> serialNumbers = manualThermostatSetting.getSerialNumbers();
 
-         return inventoryDao.getSerialNumberToInventoryIdMap(serialNumbers, yukonEnergyCompany.getEnergyCompanyId());
+        int yukonEnergyCompanyId = yukonEnergyCompanyService.getEnergyCompanyIdByOperator(user);
+        return inventoryDao.getSerialNumberToInventoryIdMap(serialNumbers, yukonEnergyCompanyId);
     }
 }
