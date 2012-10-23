@@ -10,8 +10,7 @@ import org.apache.log4j.Layout;
 import org.apache.log4j.PatternLayout;
 import org.apache.log4j.spi.LoggingEvent;
 
-import com.cannontech.common.config.ConfigurationSource;
-import com.cannontech.common.config.MasterConfigHelper;
+import com.cannontech.common.util.BootstrapUtils;
 import com.cannontech.common.util.CtiUtilities;
 
 
@@ -35,13 +34,15 @@ public class YukonFileAppender extends AppenderSkeleton {
      * maximum file size set at 1 gigabyte
      */ 
     private static long maxFileSize = 1073741824; 
-    private static ConfigurationSource configSource = null;
-    
+
     /**
      * maximum file size as a string, defaults to 1 gigabyte
      * Accepts forms: "1G" or "1g", ".5M", etc.
      */ 
     private String maxFileSizeString; 
+
+    private int maxFileOpenRetries = DatedFileAppender.MAX_FILE_OPEN_RETRIES;
+    private int retryDelayInMs = DatedFileAppender.RETRY_DELAY_IN_MS;
     
     /**
      *  This appenders name
@@ -74,25 +75,23 @@ public class YukonFileAppender extends AppenderSkeleton {
     @Override
     public void activateOptions() {
         super.activateOptions();
-        
-        configSource = MasterConfigHelper.getConfiguration();
-        
+
         //initialize dailyRollingFileAppender 
         //get the name of the application running this appender
-        
+
         String nameOfApp = CtiUtilities.getApplicationName(); 
-        String directory = getLogDirectory();
+        String directory = BootstrapUtils.getServerLogDir();
         String fileName = directory + nameOfApp + ".log";
-        
+
         //create a DatedFileAppender to take over the actual appending, rollover, and timing issues
         dailyRollingFileAppender = new DatedFileAppender(directory, nameOfApp + "_", ".log");
         dailyRollingFileAppender.setName("dailyRollingFileAppender");
         dailyRollingFileAppender.setFile(fileName);
         dailyRollingFileAppender.setSystemInfoString(CtiUtilities.getSystemInfoString());
         dailyRollingFileAppender.setMaxFileSize(maxFileSize);
-        
-        dailyRollingFileAppender.setMaxFileOpenRetries(configSource.getInteger("LOG_MAX_FILE_OPEN_RETRIES", DatedFileAppender.MAX_FILE_OPEN_RETRIES));
-        dailyRollingFileAppender.setRetryDelayInMillis(configSource.getLong("LOG_RETRY_DELAY_IN_MS", DatedFileAppender.RETRY_DELAY_IN_MS));
+
+        dailyRollingFileAppender.setMaxFileOpenRetries(maxFileOpenRetries);
+        dailyRollingFileAppender.setRetryDelayInMillis(retryDelayInMs);
 
         //The layout for the log file:
         Layout layout = new PatternLayout(conversionPattern);
@@ -102,20 +101,10 @@ public class YukonFileAppender extends AppenderSkeleton {
         dailyRollingFileAppender.activateOptions();
     }
 
-    
-    /**
-     * This method checks the master configuration file and uses the 'LOG_DIRECTORY' key
-     * to figure out correct log directory path.
-     *
-     * @return the path to the server log directory
-     */
-    public static String getLogDirectory() {
-        return CtiUtilities.getServerLogDir();
-    }
-
     /**
      * @Override append in AppenderSkeleton
      */
+    @Override
     protected void append(LoggingEvent arg0) {
         dailyRollingFileAppender.append(arg0);
     }
@@ -123,6 +112,7 @@ public class YukonFileAppender extends AppenderSkeleton {
     /**
      * @Override requiresLayout in AppenderSkeleton
      */
+    @Override
     public boolean requiresLayout() {
         return dailyRollingFileAppender.requiresLayout();
     }
@@ -130,6 +120,7 @@ public class YukonFileAppender extends AppenderSkeleton {
     /**
      * @Override close in AppenderSkeleton
      */
+    @Override
     public void close() {
        dailyRollingFileAppender.close();
     }
@@ -157,7 +148,15 @@ public class YukonFileAppender extends AppenderSkeleton {
         this.maxFileSizeString = maxFileSizeString;
         maxFileSize = parseMaxFileSizeString(maxFileSizeString);
     }
-    
+
+    public void setMaxFileOpenRetries(int maxFileOpenRetries) {
+        this.maxFileOpenRetries = maxFileOpenRetries;
+    }
+
+    public void setRetryDelayInMs(int retryDelayInMs) {
+        this.retryDelayInMs = retryDelayInMs;
+    }
+
     /**
      * @return the maximum file size as a string
      */
@@ -252,8 +251,4 @@ public class YukonFileAppender extends AppenderSkeleton {
     public void setConversionPattern(String conversionPattern) {
         this.conversionPattern = conversionPattern;
     }
-    
 }
-
-
-

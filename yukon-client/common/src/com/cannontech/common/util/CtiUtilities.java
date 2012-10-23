@@ -53,8 +53,6 @@ import org.joda.time.Instant;
 import org.springframework.util.FileCopyUtils;
 
 import com.cannontech.clientutils.CTILogger;
-import com.cannontech.common.config.ConfigurationSource;
-import com.cannontech.common.config.MasterConfigHelper;
 import com.cannontech.common.device.groups.IllegalGroupNameException;
 import com.cannontech.common.exception.BadConfigurationException;
 import com.cannontech.common.gui.util.TextFieldDocument;
@@ -127,9 +125,6 @@ public final class CtiUtilities {
     public final static String tiff = "tiff";
     public final static String tif = "tif";
     public final static String png = "png";
-
-    private final static String KEYS_DIRECTORY = "/Server/Config/Keys/";
-    private final static String LOGS_DIRECTORY = "/Server/Log/";
 
     static {
         /** Init our beginning of time here */
@@ -588,36 +583,6 @@ public final class CtiUtilities {
         } else {
             return clientLoc;
         }
-    }
-
-    /**
-     * Gets the server log directory. If the LOG_DIRECTORY cparm exists in the
-     * master.cfg, the absolute value of this path will be returned. Otherwise,
-     * the default of YUKON_BASE\Server\Log is returned.
-     * 
-     * @see #getYukonBase()
-     * @return the String representation of the path to the server log directory
-     */
-    public final static String getServerLogDir() {
-        String logDirectory = CtiUtilities.getYukonBase() + LOGS_DIRECTORY;
-
-        // Gets the value from the cparm if it exists
-        ConfigurationSource configSource = MasterConfigHelper.getConfiguration();
-        String masterCfgLogDir = configSource.getString("LOG_DIRECTORY");
-
-        /*
-         * Checks to see if the path exists and also checks to see if the path
-         * is an absolute path or a relative path. If the path is relative we add
-         * yukon base in front of the path.
-         */
-        if (!StringUtils.isBlank(masterCfgLogDir)) {
-            File file = new File(masterCfgLogDir);
-            if (!file.isAbsolute()) {
-                file = new File(CtiUtilities.getYukonBase(), masterCfgLogDir);
-            }
-            logDirectory = file.getPath();
-        }
-        return logDirectory;
     }
 
     /**

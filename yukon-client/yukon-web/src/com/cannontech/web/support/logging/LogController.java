@@ -8,7 +8,7 @@ import javax.servlet.http.HttpServletRequest;
 import org.springframework.web.bind.ServletRequestBindingException;
 import org.springframework.web.bind.ServletRequestUtils;
 
-import com.cannontech.common.util.CtiUtilities;
+import com.cannontech.common.util.BootstrapUtils;
 import com.cannontech.common.util.FileUtil;
 
 /**
@@ -22,7 +22,7 @@ import com.cannontech.common.util.FileUtil;
 public class LogController {
 
     //get the local log directory
-    protected File localDir = new File(CtiUtilities.getServerLogDir());
+    protected File localDir = new File(BootstrapUtils.getServerLogDir());
     
     /**
      * Gets the correct file from the request and returns it.  In the case that the file

@@ -8,6 +8,7 @@ import org.apache.log4j.Layout;
 import org.apache.log4j.PatternLayout;
 import org.apache.log4j.spi.LoggingEvent;
 
+import com.cannontech.common.util.BootstrapUtils;
 import com.cannontech.common.util.CtiUtilities;
 
 /**
@@ -53,6 +54,7 @@ public class RemoteLoggerImpl implements RemoteLogger {
      * @param event The actual logging message event
      * @see com.cannontech.clientutils.RemoteLogger#doLog(java.lang.String, java.lang.String, org.apache.log4j.spi.LoggingEvent)
      */
+    @Override
     public void doLog(String applicationName, String clientId, LoggingEvent event) {
         getAppender(applicationName, clientId).doAppend(event);
     }
@@ -75,8 +77,8 @@ public class RemoteLoggerImpl implements RemoteLogger {
             dailyRollingFileAppender = appenderIPAddresses.get(fileName);
         } else {
             //get the file path based on yukonbase for this system
-            String directory = YukonFileAppender.getLogDirectory();
-            
+            String directory = BootstrapUtils.getServerLogDir();
+
             // one doesn't exist so create an appender and put it in the map
             //Use DatedFileAppender to take over the actual appending, rollover, and timing issues
             dailyRollingFileAppender = new DatedFileAppender(directory, fileName, ".log");

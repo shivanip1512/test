@@ -9,12 +9,13 @@ import javax.naming.InitialContext;
 import org.apache.commons.lang.StringUtils;
 
 /**
- * The purpose of this utility class is to limit dependencies on other classes.
+ * The purpose of this utility class is to limit dependencies on other classes.  This class should never depend
+ * on anything more complicated than a simple utility class.  It should never have any dependencies on anything
+ * Spring.
  */
 public class BootstrapUtils {
-
     private final static String KEYS_DIRECTORY = "/Server/Config/Keys/";
-    
+
     /**
      * Returns the base/home directory where yukon is installed.
      * From here we can assume the canonical yukon directory
@@ -82,7 +83,26 @@ public class BootstrapUtils {
         // total failure, doh!
         return fs + "yukon";
     }
-    
+
+    /**
+     * Get the directory for log files.  Despite this being called the "Server" log directory, client logs are stored
+     * here also.  This is used both to know where to put log files (e.g. in YukonFileAppender) and to know where to
+     * find log files (e.g. LogController.java).
+     */
+    public final static String getServerLogDir() {
+        String serverLogDir = System.getProperty("yukon.logDir");
+        if (!StringUtils.isBlank(serverLogDir)) {
+            return serverLogDir;
+        }
+
+        serverLogDir = System.getenv("YUKON_LOG_DIR");
+        if (!StringUtils.isBlank(serverLogDir)) {
+            return serverLogDir;
+        }
+
+        return CtiUtilities.getYukonBase() + "/Server/Log/";
+    }
+
     public final static String getKeysFolder() {
         return getYukonBase(false) + KEYS_DIRECTORY;
     }
