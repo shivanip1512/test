@@ -1,7 +1,7 @@
 /*==============================================================*/
 /* Database name:  YukonDatabase                                */
 /* DBMS name:      Microsoft SQL Server 2005                    */
-/* Created on:     10/23/2012 1:06:40 AM                        */
+/* Created on:     10/23/2012 1:10:30 AM                        */
 /*==============================================================*/
 
 /*==============================================================*/
@@ -9314,7 +9314,7 @@ INSERT INTO YukonRoleProperty VALUES(-20121,-201,'Web Service LM Control Access'
 
 /* Operator Consumer Info Role Properties */
 INSERT INTO YukonRoleProperty VALUES(-20151,-201,'New Account Wizard','true','Controls whether to enable the new account wizard');
-INSERT INTO YukonRoleProperty VALUES(-20152,-201,'Import Customer Account',' ','Controls whether to enable the customer account importing feature');
+INSERT INTO YukonRoleProperty VALUES(-20152,-201,'Import Customer Account','false','Controls whether to enable the customer account importing feature');
 INSERT INTO YukonRoleProperty VALUES(-20153,-201,'Inventory Checking','true','Controls whether to perform inventory checking while creating or updating hardware information');
 INSERT INTO YukonRoleProperty VALUES(-20155,-201,'Order Number Auto Generation','false','Controls whether the order number is automatically generated or entered by user');
 INSERT INTO YukonRoleProperty VALUES(-20156,-201,'Call Number Auto Generation','false','Controls whether the call number is automatically generated or entered by user');

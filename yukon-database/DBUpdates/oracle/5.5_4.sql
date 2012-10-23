@@ -240,6 +240,16 @@ INSERT INTO YukonRoleProperty VALUES (-20220, -202, 'Allow Disconnect Control', 
 INSERT INTO YukonRoleProperty VALUES (-90043, -900, 'Allow DR Control', 'true', 'Allow control of demand response control areas, scenarios, programs and groups');
 /* End YUK-11550 */
 
+/* Start YUK-11542 */
+UPDATE YukonRoleProperty
+SET DefaultValue = 'false'
+WHERE RolePropertyID = -20152;
+
+UPDATE YukonGroupRole
+SET Value = 'false' 
+WHERE LOWER(Value) != 'true' AND RolePropertyID = -20152;
+/* End YUK-11542 */
+
 /**************************************************************/ 
 /* VERSION INFO                                               */ 
 /*   Automatically gets inserted from build script            */ 
