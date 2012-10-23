@@ -71,40 +71,6 @@ public  class YukonEnergyCompanyServiceTest {
         testExpectedEnergyCompanyIdList(Arrays.asList(1, 2, 3, 4, 5, 6, 7, 8), childEnergyCompanies);
     }
 
-    @Test
-    public void directChildEnergyCompaniesTest_OneChild() {
-        List<Integer> childEnergyCompanies = yukonEnergyCompanyService.getDirectChildEnergyCompanies(0);
-
-        Assert.assertEquals(1, childEnergyCompanies.size());
-        testExpectedEnergyCompanyIdList(Arrays.asList(1), childEnergyCompanies);
-    }
-    
-    @Test
-    public void directChildEnergyCompaniesTest_MulitpleChildren() {
-        List<Integer> childEnergyCompanies = yukonEnergyCompanyService.getDirectChildEnergyCompanies(1);
-    
-        Assert.assertEquals(3, childEnergyCompanies.size());
-        testExpectedEnergyCompanyIdList(Arrays.asList(2, 3, 4), childEnergyCompanies);
-    }
-    
-    @Test
-    public void directChildEnergyCompaniesTest_NoChildren() {
-        List<Integer> childEnergyCompanies = yukonEnergyCompanyService.getDirectChildEnergyCompanies(5);
-        Assert.assertTrue(childEnergyCompanies.isEmpty());
-    }
-    
-    @Test
-    public void parentEnergyCompanyTest_NoParent() {
-        Integer parentEnergyCompanyId = yukonEnergyCompanyService.getParentEnergyCompany(0);
-        Assert.assertNull(parentEnergyCompanyId);
-    }
-
-    @Test
-    public void parentEnergyCompanyTest() {
-        Integer parentEnergyCompanyId = yukonEnergyCompanyService.getParentEnergyCompany(2);
-        Assert.assertEquals(new Integer(1), parentEnergyCompanyId);
-    }
-
     /**
      * This method checks the supplied energyCompanyId list and makes sure it only items contained in the list.
      */

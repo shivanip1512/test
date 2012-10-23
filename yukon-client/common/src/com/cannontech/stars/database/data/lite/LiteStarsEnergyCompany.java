@@ -1548,7 +1548,7 @@ public class LiteStarsEnergyCompany extends LiteBase implements YukonEnergyCompa
         EnergyCompanyHierarchy ech = new EnergyCompanyHierarchy();
         
         int energyCompanyId = getEnergyCompanyId();
-        Integer parentEnergyCompanyId = yukonEnergyCompanyService.getParentEnergyCompany(energyCompanyId);
+        Integer parentEnergyCompanyId = yukonEnergyCompanyService.findParentEnergyCompany(energyCompanyId);
         List<Integer> childEnergyCompanyIds = yukonEnergyCompanyService.getDirectChildEnergyCompanies(energyCompanyId);
         
         // Translates all of the energy company ids into LiteStarsEnergyCompanies.

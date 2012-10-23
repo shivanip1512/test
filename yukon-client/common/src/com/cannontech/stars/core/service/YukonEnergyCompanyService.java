@@ -56,10 +56,14 @@ public interface YukonEnergyCompanyService {
     public List<Integer> getDirectChildEnergyCompanies(int energyCompanyId);
 
     /**
-     * This method returns the parent energy company id of the energy company id supplied.  This will return null
-     * if the energy company id is the default energy company, since it has no parent.
+     * This method returns the parent energy company id of the energy company id supplied.  This method will throw an exception
+     * if you supply the default energy company or the main energy company.
      */
     public Integer getParentEnergyCompany(int energyCompanyId);
 
-    
+    /**
+     * This method returns the parent energy company id of the energy company id supplied.  This will return null
+     * if the energy company id is the default energy company or the main energy company.
+     */
+    public Integer findParentEnergyCompany(int energyCompanyId);
 }

@@ -8,9 +8,11 @@ import java.util.Map.Entry;
 import org.apache.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.dao.EmptyResultDataAccessException;
+import org.springframework.dao.IncorrectResultSizeDataAccessException;
 
 import com.cannontech.clientutils.YukonLogManager;
 import com.cannontech.common.util.SqlStatementBuilder;
+import com.cannontech.database.RowMapper;
 import com.cannontech.database.YukonJdbcTemplate;
 import com.cannontech.database.YukonResultSet;
 import com.cannontech.database.YukonRowCallbackHandler;
@@ -105,21 +107,31 @@ public class YukonEnergyCompanyServiceImpl implements YukonEnergyCompanyService 
     
     @Override
     public List<Integer> getChildEnergyCompanies(int energyCompanyId) {
+        Map<Integer, Integer> childToParentMap = getChildToParentEnergyCompanyHierarchy();
+        return getChildEnergyCompanies(energyCompanyId, childToParentMap);
+    }
+
+    /**
+     * This method is a helper method for getChildEnergyCompanies(energyCompanyId).  Using this method allows us to 
+     * make recursive calls without having to make repeated calls to the database to get the child to parent energy company map.
+     */
+    private List<Integer> getChildEnergyCompanies(int energyCompanyId, Map<Integer, Integer> childToParentMap) {
         List<Integer> result = Lists.newArrayList();
-        
-        List<Integer> directChildrenEnergyCompanyIds = getDirectChildEnergyCompanies(energyCompanyId);
+
+        List<Integer> directChildrenEnergyCompanyIds = getDirectChildEnergyCompanies(energyCompanyId, childToParentMap);
         result.addAll(directChildrenEnergyCompanyIds);
         for (int directChildEnergycompanyId : directChildrenEnergyCompanyIds) {
-            result.addAll(getChildEnergyCompanies(directChildEnergycompanyId));
+            result.addAll(getChildEnergyCompanies(directChildEnergycompanyId, childToParentMap));
         }
-                           
+
         return result;
     }
 
-    @Override
-    public List<Integer> getDirectChildEnergyCompanies(int energyCompanyId) {
-        Map<Integer, Integer> childToParentMap = getChildToParentEnergyCompanyHierarchy();
-        
+    /**
+     * This method is a helper method for getChildEnergyCompanies(energyCompanyId, childToParentMap).  Using this method allows us to 
+     * make recursive calls without having to make repeated calls to the database to get the child to parent energy company map.
+     */
+    private List<Integer> getDirectChildEnergyCompanies(int energyCompanyId, Map<Integer, Integer> childToParentMap) {
         // Getting the EnergyCompanyIds for this energy company's direct parent and children.
         List<Integer> childEnergyCompanyIds = Lists.newArrayList();
         for (Entry<Integer, Integer> childToParentEntry : childToParentMap.entrySet()) {
@@ -130,11 +142,35 @@ public class YukonEnergyCompanyServiceImpl implements YukonEnergyCompanyService 
         
         return childEnergyCompanyIds;
     }
+    
+    @Override
+    public List<Integer> getDirectChildEnergyCompanies(int energyCompanyId) {
+        SqlStatementBuilder sql = new SqlStatementBuilder();
+        sql.append("SELECT ItemId");
+        sql.append("FROM ECToGenericMapping");
+        sql.append("WHERE MappingCategory").eq_k(ECToGenericMapping.MAPPING_CATEGORY_MEMBER);
+        sql.append(  "AND EnergyCompanyId").eq(energyCompanyId);
+        
+        return yukonJdbcTemplate.query(sql, RowMapper.INTEGER);
+    }
 
     @Override
     public Integer getParentEnergyCompany(int energyCompanyId) {
-        Map<Integer, Integer> childToParentMap = getChildToParentEnergyCompanyHierarchy();
-        Integer parentEnergyCompanyId = childToParentMap.get(energyCompanyId);
-        return parentEnergyCompanyId;
+        SqlStatementBuilder sql = new SqlStatementBuilder();
+        sql.append("SELECT EnergyCompanyId");
+        sql.append("FROM ECToGenericMapping");
+        sql.append("WHERE MappingCategory").eq_k(ECToGenericMapping.MAPPING_CATEGORY_MEMBER);
+        sql.append(  "AND ItemId").eq(energyCompanyId);
+
+        return yukonJdbcTemplate.queryForInt(sql);
+    }
+    
+    @Override
+    public Integer findParentEnergyCompany(int energyCompanyId) {
+        try {
+            return getParentEnergyCompany(energyCompanyId);
+        } catch (IncorrectResultSizeDataAccessException e) {}
+        
+        return null;
     }
 }

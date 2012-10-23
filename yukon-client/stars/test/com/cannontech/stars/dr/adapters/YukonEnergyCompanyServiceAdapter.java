@@ -52,4 +52,9 @@ public class YukonEnergyCompanyServiceAdapter implements YukonEnergyCompanyServi
     public Integer getParentEnergyCompany(int energyCompanyId) {
         throw new UnsupportedOperationException("not implemented");
     }
+
+    @Override
+    public Integer findParentEnergyCompany(int energyCompanyId) {
+        throw new UnsupportedOperationException("not implemented");
+    }
 }
