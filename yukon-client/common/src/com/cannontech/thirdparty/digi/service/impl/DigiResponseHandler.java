@@ -34,7 +34,9 @@ import com.cannontech.i18n.YukonMessageSourceResolvable;
 import com.cannontech.thirdparty.digi.dao.GatewayDeviceDao;
 import com.cannontech.thirdparty.digi.dao.ZigbeeControlEventDao;
 import com.cannontech.thirdparty.digi.dao.ZigbeeDeviceDao;
+import com.cannontech.thirdparty.digi.exception.DigiKeyNotAuthorizedException;
 import com.cannontech.thirdparty.digi.exception.DigiNotConfiguredException;
+import com.cannontech.thirdparty.digi.exception.DigiWebServiceException;
 import com.cannontech.thirdparty.digi.model.DevConnectwareId;
 import com.cannontech.thirdparty.digi.model.DeviceCore;
 import com.cannontech.thirdparty.digi.model.FileData;
@@ -45,6 +47,9 @@ import com.cannontech.thirdparty.digi.model.NodeType;
 import com.cannontech.thirdparty.digi.model.XbeeCore;
 import com.cannontech.thirdparty.digi.service.errors.ZigbeePingResponse;
 import com.cannontech.thirdparty.exception.ZigbeeCommissionException;
+import com.cannontech.thirdparty.model.DRLCClusterAttribute;
+import com.cannontech.thirdparty.model.SEPAttributeValue;
+import com.cannontech.thirdparty.model.SEPConfig;
 import com.cannontech.thirdparty.model.ZigbeeDevice;
 import com.cannontech.thirdparty.model.ZigbeeEndpoint;
 import com.cannontech.thirdparty.model.ZigbeeEventAction;
@@ -152,6 +157,31 @@ public class DigiResponseHandler {
             Instant xpUpdateTime = new Instant(updateTime);
             
             return new XbeeCore(macAddress,devConnectwareId,nodeId,nodeType,nodeStatus,xpUpdateTime);
+        }
+    };
+    
+    private static ObjectMapper<Node, SEPAttributeValue> digiAttributeNodeMapper = new ObjectMapper<Node,SEPAttributeValue>() {
+
+        @Override
+        public SEPAttributeValue map(Node node) throws DOMException {
+            SimpleXPathTemplate template = YukonXml.getXPathTemplateForNode(node);
+
+            /*
+                <item type="ReadAttributeStatusRecord">
+                    <status type="int">0x0</status>
+                    <attribute_type type="int">0x20</attribute_type>
+                    <attribute_id type="int">0x0</attribute_id>
+                    <value type="int">0x3</value>
+                </item>
+             */
+            
+            String attributeIdStr = template.evaluateAsString("attribute_id");
+            int attributeId = Integer.decode(attributeIdStr);
+            DRLCClusterAttribute attribute = DRLCClusterAttribute.getForId(attributeId);
+            
+            String valueStr = template.evaluateAsString("value");
+            int value = Integer.decode(valueStr);
+            return new SEPAttributeValue(attribute,value);
         }
     };
     
@@ -298,7 +328,76 @@ public class DigiResponseHandler {
     }
     
     public void handleLoadGroupAddressingRead(String response, ZigbeeDevice endPoint, ZigbeeDevice gateway) {
-        //TODO
+        SimpleXPathTemplate template = new SimpleXPathTemplate();
+        template.setContext(response);
+              
+        /* Success Case
+        <sci_reply version="1.0">
+            <send_message>
+                <device id="00000000-00000000-00409DFF-FF3D7221">
+                    <rci_reply version="1.1">
+                        <do_command target="RPC_request">
+                            <responses remaining="0" timestamp="1351008766.0">
+                                <read_attributes_response timestamp="1351008765.0">
+                                    <source_endpoint_id type="int">0x1</source_endpoint_id>
+                                    <server_or_client type="int">0x1</server_or_client>
+                                    <record_list type="list">
+                                        <item type="ReadAttributeStatusRecord">
+         */
+        List<SEPAttributeValue> attibuteValues = template.evaluate("/sci_reply/send_message/device/rci_reply/do_command/responses/read_attributes_response/record_list/item", digiAttributeNodeMapper);
+
+        if (attibuteValues.isEmpty()) {
+            //Checking for Error
+            /* Error case:
+                <sci_reply version="1.0">
+                <send_message>
+                    <device id="00000000-00000000-00409DFF-FF3D7221">
+                        <rci_reply version="1.1">
+                            <do_command target="RPC_request">
+                                <responses remaining="0" timestamp="1351008382.0">
+                                    <message timestamp="1351008382.0">
+                                        <description type="string">Error during conversation with
+                                            (00:0C:C1:00:27:19:C4:D5, 0x1, 0x109, 0x701): Conversation received
+                                            unsuccessful TX status: 0xBB, Key not authorized
+                                        </description>
+             */
+            String errorString = template.evaluateAsString("/sci_reply/send_message/device/rci_reply/do_command/responses/message/description");
+            log.error(errorString);
+            
+            if (errorString.contains("Key not authorized")) {
+                throw new DigiKeyNotAuthorizedException(errorString);
+            }
+            throw new DigiWebServiceException("Unknown error reading attributes from iDigi.");
+        }
+        
+        String timestampStr = template.evaluateAsString("/sci_reply/send_message/device/rci_reply/do_command/responses/read_attributes_response/@timestamp");
+        long seconds = Long.decode(timestampStr.split("\\.")[0]);
+        Instant timestamp = new Instant(seconds*1000);
+
+        SEPConfig sepConfig = new SEPConfig();
+        sepConfig.setTimestamp(timestamp);
+        
+        sepConfig.setDeviceId(endPoint.getZigbeeDeviceId());
+        for (SEPAttributeValue value : attibuteValues) {
+            switch (value.getAttribute()) {
+            case UTILITY_ENROLLMENT_GROUP:
+                sepConfig.setUntilityEnrollmentGroup(value.getValue());
+                break;
+            case START_RANDOMIZE_MINUTES:
+                sepConfig.setRampStartTimeMinutes(value.getValue());
+                break;
+            case STOP_RANDOMIZE_MINTES:
+                sepConfig.setRampStopTimeMinutes(value.getValue());
+                break;
+            case DEVICE_CLASS:
+                sepConfig.setDeviceClass(value.getValue());
+                break;
+            default:
+                //Not throwing. Can't happen. The node mapper would have thrown converting the ID to an enum
+            }
+        }
+        
+        //Ready to be inserted into the database
     }
     
     public Map<PaoIdentifier,ZigbeePingResponse> handleXbeeCoreResponse(String source, List<ZigbeeDevice> expected) {        

@@ -1,5 +1,7 @@
 package com.cannontech.thirdparty.model;
 
+import com.cannontech.core.dao.NotFoundException;
+
 public enum DRLCClusterAttribute {
 
     UTILITY_ENROLLMENT_GROUP(0x00,0x20,true,true),
@@ -33,5 +35,14 @@ public enum DRLCClusterAttribute {
 
     public boolean isCanWrite() {
         return canWrite;
+    }
+    
+    public static DRLCClusterAttribute getForId(int id) {
+        for ( DRLCClusterAttribute attribute : values()) {
+            if (attribute.getId() == id) {
+                return attribute;
+            }
+        }
+        throw new NotFoundException("Attribute not found with id: " + id);
     }
 }
