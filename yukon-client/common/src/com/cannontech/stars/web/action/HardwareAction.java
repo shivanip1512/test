@@ -20,11 +20,11 @@ import com.cannontech.database.data.lite.LiteYukonUser;
 import com.cannontech.roles.yukon.EnergyCompanyRole;
 import com.cannontech.spring.YukonSpringHook;
 import com.cannontech.stars.core.dao.InventoryBaseDao;
+import com.cannontech.stars.database.data.lite.LiteAccountInfo;
 import com.cannontech.stars.database.data.lite.LiteInventoryBase;
 import com.cannontech.stars.database.data.lite.LiteLMConfiguration;
 import com.cannontech.stars.database.data.lite.LiteLmHardwareBase;
 import com.cannontech.stars.database.data.lite.LiteStarsAppliance;
-import com.cannontech.stars.database.data.lite.LiteAccountInfo;
 import com.cannontech.stars.database.data.lite.LiteStarsEnergyCompany;
 import com.cannontech.stars.database.data.lite.LiteStarsLMProgram;
 import com.cannontech.stars.database.data.lite.StarsLiteFactory;
@@ -141,7 +141,7 @@ public class HardwareAction {
                 
                 invDB.setAccountID( new Integer(CtiUtilities.NONE_ZERO_ID) );
                 invDB.setRemoveDate( removeDate );
-                invDB.setDeviceLabel( "" );
+                invDB.setDeviceLabel(CtiUtilities.STRING_NONE );
                 Transaction.createTransaction( Transaction.UPDATE, invDB ).execute();
                 
             }

@@ -19,6 +19,7 @@ public class LiteInventoryBase extends LiteBase {
     private int deviceID = CtiUtilities.NONE_ZERO_ID;
     private String deviceLabel = null;
     private int currentStateID = CtiUtilities.NONE_ZERO_ID;
+    private String manufacturerSerialNumber;
     
     private int energyCompanyId;
     
@@ -151,6 +152,14 @@ public class LiteInventoryBase extends LiteBase {
     
     public void setEnergyCompanyId(Integer energyCompanyId) {
         this.energyCompanyId = energyCompanyId;
+    }
+
+    public String getManufacturerSerialNumber() {
+        return manufacturerSerialNumber;
+    }
+
+    public void setManufacturerSerialNumber(String manufacturerSerialNumber) {
+        this.manufacturerSerialNumber = manufacturerSerialNumber;
     }
 
 }

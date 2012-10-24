@@ -489,7 +489,7 @@ public class StarsFactory {
 			starsInv.setInventoryID( -1 );
 			starsInv.setDeviceID( CtiUtilities.NONE_ZERO_ID );
 			starsInv.setDeviceType( (DeviceType) newEmptyStarsCustListEntry(DeviceType.class) );
-			starsInv.setDeviceLabel( "" );
+			starsInv.setDeviceLabel(CtiUtilities.STRING_NONE );
 			starsInv.setInstallationCompany( (InstallationCompany) newEmptyStarsCustListEntry(InstallationCompany.class) );
 			starsInv.setInstallDate( new java.util.Date() );
 			starsInv.setAltTrackingNumber( "" );

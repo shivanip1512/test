@@ -14,11 +14,11 @@ import com.cannontech.database.Transaction;
 import com.cannontech.spring.YukonSpringHook;
 import com.cannontech.stars.core.dao.InventoryBaseDao;
 import com.cannontech.stars.database.cache.StarsDatabaseCache;
-import com.cannontech.stars.database.data.lite.LiteInventoryBase;
-import com.cannontech.stars.database.data.lite.LiteStarsAppliance;
 import com.cannontech.stars.database.data.lite.LiteAccountInfo;
-import com.cannontech.stars.database.data.lite.LiteStarsEnergyCompany;
+import com.cannontech.stars.database.data.lite.LiteInventoryBase;
 import com.cannontech.stars.database.data.lite.LiteLmHardwareBase;
+import com.cannontech.stars.database.data.lite.LiteStarsAppliance;
+import com.cannontech.stars.database.data.lite.LiteStarsEnergyCompany;
 import com.cannontech.stars.database.data.lite.LiteStarsLMProgram;
 import com.cannontech.stars.database.data.lite.StarsLiteFactory;
 import com.cannontech.stars.dr.account.dao.CustomerAccountDao;
@@ -60,7 +60,8 @@ public class DeleteLMHardwareAction implements ActionBase {
 	/**
 	 * @see com.cannontech.stars.web.action.ActionBase#build(HttpServletRequest, HttpSession)
 	 */
-	public SOAPMessage build(HttpServletRequest req, HttpSession session) {
+	@Override
+    public SOAPMessage build(HttpServletRequest req, HttpSession session) {
 		try {
 			StarsYukonUser user = (StarsYukonUser) session.getAttribute( ServletUtils.ATT_STARS_YUKON_USER );
 			if (user == null) return null;
@@ -89,7 +90,8 @@ public class DeleteLMHardwareAction implements ActionBase {
 	/**
 	 * @see com.cannontech.stars.web.action.ActionBase#process(SOAPMessage, HttpSession)
 	 */
-	public SOAPMessage process(SOAPMessage reqMsg, HttpSession session) {
+	@Override
+    public SOAPMessage process(SOAPMessage reqMsg, HttpSession session) {
 		StarsOperation respOper = new StarsOperation();
         
 		try {
@@ -151,7 +153,8 @@ public class DeleteLMHardwareAction implements ActionBase {
 	/**
 	 * @see com.cannontech.stars.web.action.ActionBase#parse(SOAPMessage, SOAPMessage, HttpSession)
 	 */
-	public int parse(SOAPMessage reqMsg, SOAPMessage respMsg, HttpSession session) {
+	@Override
+    public int parse(SOAPMessage reqMsg, SOAPMessage respMsg, HttpSession session) {
 		try {
 			StarsOperation operation = SOAPUtil.parseSOAPMsgForOperation( respMsg );
 
@@ -262,7 +265,7 @@ public class DeleteLMHardwareAction implements ActionBase {
 				
 				invDB.setAccountID( new Integer(CtiUtilities.NONE_ZERO_ID) );
 				invDB.setRemoveDate( removeDate );
-				invDB.setDeviceLabel( "" );
+				invDB.setDeviceLabel(CtiUtilities.STRING_NONE );
 				Transaction.createTransaction( Transaction.UPDATE, invDB ).execute();
 				
 			}

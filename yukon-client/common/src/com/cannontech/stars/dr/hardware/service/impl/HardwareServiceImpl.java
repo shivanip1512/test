@@ -28,8 +28,8 @@ import com.cannontech.stars.core.service.YukonEnergyCompanyService;
 import com.cannontech.stars.database.cache.StarsDatabaseCache;
 import com.cannontech.stars.database.data.lite.LiteInventoryBase;
 import com.cannontech.stars.database.data.lite.LiteLMHardwareEvent;
-import com.cannontech.stars.database.data.lite.LiteStarsEnergyCompany;
 import com.cannontech.stars.database.data.lite.LiteLmHardwareBase;
+import com.cannontech.stars.database.data.lite.LiteStarsEnergyCompany;
 import com.cannontech.stars.dr.account.dao.CustomerAccountDao;
 import com.cannontech.stars.dr.account.model.CustomerAccount;
 import com.cannontech.stars.dr.appliance.dao.ApplianceDao;
@@ -51,7 +51,6 @@ import com.cannontech.stars.dr.optout.service.OptOutService;
 import com.cannontech.stars.energyCompany.model.YukonEnergyCompany;
 import com.cannontech.stars.util.EventUtils;
 import com.cannontech.stars.util.ObjectInOtherEnergyCompanyException;
-import com.cannontech.stars.util.WebClientException;
 import com.cannontech.stars.web.util.InventoryManagerUtil;
 import com.cannontech.user.YukonUserContext;
 import com.google.common.collect.Lists;
@@ -165,7 +164,7 @@ public class HardwareServiceImpl implements HardwareService {
         LiteInventoryBase inventoryBase = inventoryBaseDao.getByInventoryId(inventoryId);
         inventoryBase.setAccountID(CtiUtilities.NONE_ZERO_ID);
         inventoryBase.setRemoveDate(removeDate.getTime());
-        inventoryBase.setDeviceLabel("");
+        inventoryBase.setDeviceLabel(inventoryBase.getManufacturerSerialNumber());
         inventoryBaseDao.saveInventoryBase(inventoryBase, ec.getEnergyCompanyId());
         
         InventoryIdentifier id = inventoryDao.getYukonInventory(inventoryId);
