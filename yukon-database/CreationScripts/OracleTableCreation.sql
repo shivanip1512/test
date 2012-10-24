@@ -1,7 +1,7 @@
 /*==============================================================*/
 /* Database name:  YukonDatabase                                */
 /* DBMS name:      ORACLE Version 9i                            */
-/* Created on:     10/23/2012 1:13:05 AM                        */
+/* Created on:     10/23/2012 4:16:29 PM                        */
 /*==============================================================*/
 
 
@@ -7825,6 +7825,13 @@ create table UserGroup  (
 );
 
 INSERT INTO UserGroup VALUES(-1, 'Admin User Group', 'A user group with basic admin rights for configuring Yukon.');
+
+/*==============================================================*/
+/* Index: Indx_UserGroup_Name_UNQ                               */
+/*==============================================================*/
+create unique index Indx_UserGroup_Name_UNQ on UserGroup (
+   Name ASC
+);
 
 /*==============================================================*/
 /* Table: UserGroupToYukonGroupMapping                          */

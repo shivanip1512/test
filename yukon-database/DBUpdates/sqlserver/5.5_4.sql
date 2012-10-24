@@ -136,6 +136,7 @@ CREATE UNIQUE INDEX Indx_GlobalSetting_Name_UNQ ON GlobalSetting (
 GO
 
 /* Identify if we are going to have unique index violations in the GlobalSettings table */
+/* @start-block */
 DECLARE 
     @DistinctDuplicateSets NUMERIC;
 BEGIN
@@ -151,7 +152,9 @@ BEGIN
         RAISERROR('There are duplicate role property values for one or more role properties specified in the Yukon Grp role group. In order to continue, these duplicate conflicts must be resolved.  Please see YUK-11481 for an explanation of this process and for the queries needed to delete the duplicate values.', 16, 1);
     END
 END;
+/* @end-block */
 
+/* @start-block */
 BEGIN
     DECLARE 
         @maxId NUMERIC; 
@@ -174,6 +177,7 @@ BEGIN
             AND YRP.RoleID in (-4, -6, -104, -8, -7, -5, -105, -1));
     END;
 END;
+/* @end-block */
 
 DROP TABLE RolePropToSetting_Temp;
 
@@ -191,10 +195,12 @@ DELETE FROM YukonRole WHERE RoleID IN (-4, -6, -104, -8, -7, -5, -105, -1);
  * to discover which role properties still exist.  They can be deleted using queries
  * provided in YUK-11481. 
  */
+/* @start-block */
 IF 0 = (SELECT COUNT(*) FROM YukonGroupRole where GroupID = -1)
 BEGIN
     DELETE FROM YukonGroup WHERE GroupID = -1;
 END;
+/* @end-block */
 /* End YUK-11481 */
 
 /* Start YUK-11522 */
@@ -232,6 +238,28 @@ SET Value = 'false'
 WHERE LOWER(Value) != 'true' AND RolePropertyID = -20152;
 /* End YUK-11542 */
 
+/* Start YUK-11390 */
+/* Identify if we are going to have unique index violations with User Group names. */
+/* @start-block */
+DECLARE 
+    @NumberOfDuplicateUserGroups NUMERIC;
+BEGIN
+    SELECT @NumberOfDuplicateUserGroups = COUNT(*)
+    FROM (SELECT Name, COUNT(Name) AS NumberOfDuplicateUserGroups 
+          FROM UserGroup 
+          GROUP BY Name) T
+    WHERE T.NumberOfDuplicateUserGroups > 1;
+    
+    IF 0 < @NumberOfDuplicateUserGroups
+    BEGIN
+        RAISERROR('The database currently has multiple User Groups that have identical names.  Going forward this will no longer be possible.  Please see YUK-11390 for details on how to identify duplicate names and change them to remove the conflict(s).The database contains multiple User Groups that have identical names.  Going forward this will no longer be possible.  Please see YUK-11390 for details on how to identify duplicate names and change them to remove the conflict.', 16, 1);
+    END
+END;
+
+CREATE UNIQUE INDEX Indx_UserGroup_Name_UNQ on UserGroup (
+    Name ASC
+);
+/* End YUK-11390 */
 
 /**************************************************************/ 
 /* VERSION INFO                                               */ 
