@@ -26,14 +26,12 @@ public class LoginUsernameValidator extends SimpleValidator<LoginBackingBean> {
         if (user != null) {
             ValidationUtils.rejectIfEmpty(errors, "username", "yukon.web.modules.operator.account.loginInfoError.usernameRequired");
             YukonValidationUtils.checkExceedsMaxLength(errors, "username", loginBackingBean.getUsername(), 64);
+            
             LiteYukonUser usernameCheckUser = yukonUserDao.findUserByUsername(loginBackingBean.getUsername());
-            if (usernameCheckUser != null &&
-                user.getUserID() != usernameCheckUser.getUserID()) {
+            if (usernameCheckUser != null && user.getUserID() != usernameCheckUser.getUserID()) {
                 errors.rejectValue("username", "yukon.web.modules.operator.account.loginInfoError.usernameAlreadyExists");
                 return;
             }
         }
-
     }
-
 }
