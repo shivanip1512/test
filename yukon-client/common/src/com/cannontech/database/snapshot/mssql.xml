@@ -33194,6 +33194,20 @@
               <indexName>PK_UserGroup</indexName>
             </com.cariboulake.db.schemacompare.business.domain.db.Index>
           </entry>
+          <entry>
+            <string>Indx_UserGroup_Name_UNQ</string>
+            <com.cariboulake.db.schemacompare.business.domain.db.Index>
+              <indexSegments>
+                <com.cariboulake.db.schemacompare.business.domain.db.IndexSegment>
+                  <i__tableName>UserGroup</i__tableName>
+                  <i__ordinalPosition>1</i__ordinalPosition>
+                  <i__columnName>Name</i__columnName>
+                  <i__nonNonUnique>false</i__nonNonUnique>
+                </com.cariboulake.db.schemacompare.business.domain.db.IndexSegment>
+              </indexSegments>
+              <indexName>Indx_UserGroup_Name_UNQ</indexName>
+            </com.cariboulake.db.schemacompare.business.domain.db.Index>
+          </entry>
         </i__indexes>
       </com.cariboulake.db.schemacompare.business.domain.db.Table>
     </entry>
