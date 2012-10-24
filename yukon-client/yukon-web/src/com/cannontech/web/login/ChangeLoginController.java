@@ -4,6 +4,7 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.HttpSession;
 
+import org.apache.commons.lang.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.ModelMap;
@@ -98,14 +99,11 @@ public class ChangeLoginController {
                                                final AuthType type, boolean isValidPassword) {
         
         boolean supportsPasswordChange = authenticationService.supportsPasswordSet(type);
-        boolean hasRequiredFields = hasRequiredFields(oldPassword, newPassword, confirmPassword);
 
         if (!isValidPassword) {
             return ChangeLoginMessage.INVALID_CREDENTIALS_PASSWORD_CHANGE;
         } else if (!supportsPasswordChange) {
             return ChangeLoginMessage.PASSWORD_CHANGE_NOT_SUPPORTED;
-        } else if (!hasRequiredFields) {
-            return ChangeLoginMessage.REQUIRED_FIELDS_MISSING;
         } else if (!newPassword.equals(confirmPassword)) {
             return ChangeLoginMessage.NO_PASSWORDMATCH;
         } else {
@@ -137,17 +135,14 @@ public class ChangeLoginController {
         } catch (AuthenticationThrottleException e){
             retrySeconds = e.getThrottleSeconds();
         }        
-        final boolean hasRequiredFields = hasRequiredFields(username, oldPassword);
         
         ChangeLoginMessage loginMsg;
         
         if (!isValidPassword) {
             loginMsg = ChangeLoginMessage.INVALID_CREDENTIALS_USERNAME_CHANGE;
-        }
-        else if (!hasRequiredFields) {
+        } else if (StringUtils.isBlank(username)) {
             loginMsg = ChangeLoginMessage.REQUIRED_FIELDS_MISSING;
-        }
-        else {
+        } else {
             try {
                 saveUsernameChange(request, user, username);
                 loginMsg = ChangeLoginMessage.LOGIN_USERNAME_CHANGED;
@@ -158,13 +153,6 @@ public class ChangeLoginController {
         }
         
         return sendRedirect(request, redirectUrl, loginMsg, retrySeconds, success);
-    }
-    
-    private boolean hasRequiredFields(String... fields) {
-        for (final String field : fields) {
-            if ("".equals(field)) return false;
-        }
-        return true;
     }
     
     private boolean isValidPassword(String username, String password) 
