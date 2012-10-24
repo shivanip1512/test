@@ -2752,6 +2752,28 @@ void IVVCAlgorithm::calculateMultiTapOperation( PointValueMap & voltages,
 }
 
 
+double IVVCAlgorithm::getVmaxForPoint( const long pointID, CtiCCSubstationBusPtr subbus, IVVCStrategy * strategy ) const
+{
+    const bool isPeakTime = subbus->getPeakTimeFlag();
+    const std::map<long, CtiCCMonitorPointPtr> & monitorMap = subbus->getAllMonitorPoints();
+
+    double Vmax = strategy->getUpperVoltLimit(isPeakTime);
+
+    std::map<long, CtiCCMonitorPointPtr>::const_iterator iter = monitorMap.find( pointID );
+
+    if ( iter != monitorMap.end() )    // monitor point exists - use its bandwidth settings instead
+    {
+        CtiCCMonitorPointPtr    monitor = iter->second;
+
+        if ( monitor->getOverrideStrategy() )
+        {
+            Vmax = monitor->getUpperBandwidth();
+        }
+    }
+
+    return Vmax;
+}
+
 
 void IVVCAlgorithm::calculateMultiTapOperationHelper( const long zoneID,
                                                       PointValueMap & voltages,
@@ -2786,25 +2808,13 @@ void IVVCAlgorithm::calculateMultiTapOperationHelper( const long zoneID,
 
             if ( pointValue != voltages.end() )
             {
-                pointValue->second.value += cumulativeVoltageOffset;    // cumulativeVoltageOffset should be negative...
+                pointValue->second.value += cumulativeVoltageOffset;    // cumulativeVoltageOffset is <= 0.0
 
-                double Vmax = strategy->getUpperVoltLimit(isPeakTime);
-
-                std::map<long, CtiCCMonitorPointPtr>::const_iterator iter = monitorMap.find( pointValue->first );
-
-                if ( iter != monitorMap.end() )    // monitor point exists - use its bandwidth settings instead
-                {
-                    CtiCCMonitorPointPtr    monitor = iter->second;
-
-                    if ( monitor->getOverrideStrategy() )
-                    {
-                        Vmax = monitor->getUpperBandwidth();
-                    }
-                }
+                double Vmax = getVmaxForPoint( pointValue->first, subbus, strategy );
 
                 if ( pointValue->second.value >= Vmax )
                 {
-                    maxOvervoltage = std::max( maxOvervoltage, Vmax - pointValue->second.value );
+                    maxOvervoltage = std::max( maxOvervoltage, pointValue->second.value - Vmax );
                 }
             }
 
@@ -2826,25 +2836,13 @@ void IVVCAlgorithm::calculateMultiTapOperationHelper( const long zoneID,
 
                             if ( pointValue != voltages.end() )
                             {
-                                pointValue->second.value += cumulativeVoltageOffset;    // cumulativeVoltageOffset should be negative...
+                                pointValue->second.value += cumulativeVoltageOffset;
 
-                                double Vmax = strategy->getUpperVoltLimit(isPeakTime);
-
-                                std::map<long, CtiCCMonitorPointPtr>::const_iterator iter = monitorMap.find( pointValue->first );
-
-                                if ( iter != monitorMap.end() )    // monitor point exists - use its bandwidth settings instead
-                                {
-                                    CtiCCMonitorPointPtr    monitor = iter->second;
-
-                                    if ( monitor->getOverrideStrategy() )
-                                    {
-                                        Vmax = monitor->getUpperBandwidth();
-                                    }
-                                }
+                                double Vmax = getVmaxForPoint( pointValue->first, subbus, strategy );
 
                                 if ( pointValue->second.value >= Vmax )
                                 {
-                                    maxOvervoltage = std::max( maxOvervoltage, Vmax - pointValue->second.value );
+                                    maxOvervoltage = std::max( maxOvervoltage, pointValue->second.value - Vmax );
                                 }
                             }
                         }
@@ -2865,25 +2863,13 @@ void IVVCAlgorithm::calculateMultiTapOperationHelper( const long zoneID,
 
                     if ( pointValue != voltages.end() )
                     {
-                        pointValue->second.value += cumulativeVoltageOffset;    // cumulativeVoltageOffset should be negative...
+                        pointValue->second.value += cumulativeVoltageOffset;
 
-                        double Vmax = strategy->getUpperVoltLimit(isPeakTime);
-
-                        std::map<long, CtiCCMonitorPointPtr>::const_iterator iter = monitorMap.find( pointValue->first );
-
-                        if ( iter != monitorMap.end() )    // monitor point exists - use its bandwidth settings instead
-                        {
-                            CtiCCMonitorPointPtr    monitor = iter->second;
-
-                            if ( monitor->getOverrideStrategy() )
-                            {
-                                Vmax = monitor->getUpperBandwidth();
-                            }
-                        }
+                        double Vmax = getVmaxForPoint( pointValue->first, subbus, strategy );
 
                         if ( pointValue->second.value >= Vmax )
                         {
-                            maxOvervoltage = std::max( maxOvervoltage, Vmax - pointValue->second.value );
+                            maxOvervoltage = std::max( maxOvervoltage, pointValue->second.value - Vmax );
                         }
                     }
                 }

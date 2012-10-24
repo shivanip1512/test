@@ -105,6 +105,8 @@ class IVVCAlgorithm
                                                IVVCStrategy * strategy,
                                                IVVCState::TapOperationZoneMap & solution );
 
+        double getVmaxForPoint( const long pointID, CtiCCSubstationBusPtr subbus, IVVCStrategy * strategy ) const;
+
         PointDataRequestFactoryPtr _requestFactory;
 };
 
