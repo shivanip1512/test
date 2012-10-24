@@ -115,11 +115,6 @@ public class EnergyCompanyServiceImpl implements EnergyCompanyService {
             throw new EnergyCompanyNameUnavailableException();
         }
 
-        /* Check usernames availability */
-        if (yukonUserDao.findUserByUsername(energyCompanyDto.getAdminUsername()) != null) {
-            throw new UserNameUnavailableException("adminUsername");
-        }
-
         /* Create a privilege group with EnergyCompany and Administrator role */
         UserGroup ecAdminUserGrp = 
                 StarsAdminUtil.createOperatorAdminUserGroup(energyCompanyDto.getName(), energyCompanyDto.getPrimaryOperatorUserGroupId(), topLevelEc);
