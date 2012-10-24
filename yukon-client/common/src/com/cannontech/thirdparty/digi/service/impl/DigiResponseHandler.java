@@ -7,6 +7,7 @@ import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 import javax.activation.UnsupportedDataTypeException;
+import javax.jms.ConnectionFactory;
 
 import org.apache.commons.codec.binary.Base64;
 import org.apache.log4j.Logger;
@@ -15,9 +16,11 @@ import org.joda.time.Instant;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.MessageSourceResolvable;
 import org.springframework.dao.EmptyResultDataAccessException;
+import org.springframework.jms.core.JmsTemplate;
 import org.w3c.dom.DOMException;
 import org.w3c.dom.Node;
 
+import com.cannontech.clientutils.LogHelper;
 import com.cannontech.clientutils.YukonLogManager;
 import com.cannontech.common.pao.PaoIdentifier;
 import com.cannontech.common.pao.attribute.model.BuiltInAttribute;
@@ -30,6 +33,8 @@ import com.cannontech.common.util.xml.YukonXml;
 import com.cannontech.core.dynamic.PointValueHolder;
 import com.cannontech.database.db.point.stategroup.Commissioned;
 import com.cannontech.database.db.point.stategroup.PointStateHelper;
+import com.cannontech.dr.dao.SepReportedAddress;
+import com.cannontech.dr.dao.SepReportedAddressDao;
 import com.cannontech.i18n.YukonMessageSourceResolvable;
 import com.cannontech.thirdparty.digi.dao.GatewayDeviceDao;
 import com.cannontech.thirdparty.digi.dao.ZigbeeControlEventDao;
@@ -49,7 +54,6 @@ import com.cannontech.thirdparty.digi.service.errors.ZigbeePingResponse;
 import com.cannontech.thirdparty.exception.ZigbeeCommissionException;
 import com.cannontech.thirdparty.model.DRLCClusterAttribute;
 import com.cannontech.thirdparty.model.SEPAttributeValue;
-import com.cannontech.thirdparty.model.SEPConfig;
 import com.cannontech.thirdparty.model.ZigbeeDevice;
 import com.cannontech.thirdparty.model.ZigbeeEndpoint;
 import com.cannontech.thirdparty.model.ZigbeeEventAction;
@@ -61,15 +65,17 @@ import com.google.common.collect.Maps;
 public class DigiResponseHandler {
   
     private static final Logger log = YukonLogManager.getLogger(DigiResponseHandler.class);
+    private static final LogHelper logHelper = YukonLogManager.getLogHelper(DigiResponseHandler.class);
     
-    private ZigbeeDeviceDao zigbeeDeviceDao;
-    private GatewayDeviceDao gatewayDeviceDao;
-    private ZigbeeControlEventDao zigbeeControlEventDao;
-    private ZigbeeServiceHelper zigbeeServiceHelper;
-    private ZigbeeStateUpdaterService zigbeeStateUpdaterService;
-    
-    private AttributeDynamicDataSource attributeDynamicDataSource;
-    
+    @Autowired private ZigbeeDeviceDao zigbeeDeviceDao;
+    @Autowired private GatewayDeviceDao gatewayDeviceDao;
+    @Autowired private ZigbeeControlEventDao zigbeeControlEventDao;
+    @Autowired private ZigbeeServiceHelper zigbeeServiceHelper;
+    @Autowired private ZigbeeStateUpdaterService zigbeeStateUpdaterService;
+    @Autowired private AttributeDynamicDataSource attributeDynamicDataSource;
+    @Autowired private SepReportedAddressDao sepReportedAddressDao;
+
+    private JmsTemplate jmsTemplate;
     private static String regexForMac = "([\\da-fA-F]{2}:){7}[\\da-fA-F]{2}";
     private static Pattern macPattern = Pattern.compile(regexForMac);
     private static String regexNodeId = "NWK: ([\\da-fA-F]{4})";
@@ -375,30 +381,34 @@ public class DigiResponseHandler {
         long seconds = Long.decode(timestampStr.split("\\.")[0]);
         Instant timestamp = new Instant(seconds*1000);
 
-        SEPConfig sepConfig = new SEPConfig();
-        sepConfig.setTimestamp(timestamp);
+        SepReportedAddress address = new SepReportedAddress();
+        address.setTimestamp(timestamp);
         
-        sepConfig.setDeviceId(endPoint.getZigbeeDeviceId());
+        address.setDeviceId(endPoint.getZigbeeDeviceId());
         for (SEPAttributeValue value : attibuteValues) {
             switch (value.getAttribute()) {
             case UTILITY_ENROLLMENT_GROUP:
-                sepConfig.setUntilityEnrollmentGroup(value.getValue());
+                address.setUtilityEnrollmentGroup(value.getValue());
                 break;
             case START_RANDOMIZE_MINUTES:
-                sepConfig.setRampStartTimeMinutes(value.getValue());
+                address.setRandomStartTimeMinutes(value.getValue());
                 break;
             case STOP_RANDOMIZE_MINTES:
-                sepConfig.setRampStopTimeMinutes(value.getValue());
+                address.setRandomStopTimeMinutes(value.getValue());
                 break;
             case DEVICE_CLASS:
-                sepConfig.setDeviceClass(value.getValue());
+                address.setDeviceClass(value.getValue());
                 break;
             default:
                 //Not throwing. Can't happen. The node mapper would have thrown converting the ID to an enum
             }
         }
         
-        //Ready to be inserted into the database
+        
+        logHelper.debug("Received LM Address for %s - " + address, endPoint.getName());
+        sepReportedAddressDao.save(address);
+        
+        jmsTemplate.convertAndSend("yukon.notif.obj.dr.rfn.LmAddressNotification", address);
     }
     
     public Map<PaoIdentifier,ZigbeePingResponse> handleXbeeCoreResponse(String source, List<ZigbeeDevice> expected) {        
@@ -684,32 +694,10 @@ public class DigiResponseHandler {
     }
     
     @Autowired
-    public void setZigbeeDeviceDao(ZigbeeDeviceDao zigbeeDeviceDao) {
-        this.zigbeeDeviceDao = zigbeeDeviceDao;
+    public void setConnectionFactory(ConnectionFactory connectionFactory) {
+        jmsTemplate = new JmsTemplate(connectionFactory);
+        jmsTemplate.setExplicitQosEnabled(true);
+        jmsTemplate.setDeliveryPersistent(false);
     }
     
-    @Autowired
-    public void setGatewayDeviceDao(GatewayDeviceDao gatewayDeviceDao) {
-        this.gatewayDeviceDao = gatewayDeviceDao;
-    }
-    
-    @Autowired
-    public void setZigbeeControlEventDao(ZigbeeControlEventDao zigbeeControlEventDao) {
-        this.zigbeeControlEventDao = zigbeeControlEventDao;
-    }
-    
-    @Autowired
-    public void setZigbeeServiceHelper(ZigbeeServiceHelper zigbeeServiceHelper) {
-        this.zigbeeServiceHelper = zigbeeServiceHelper;
-    }
-    
-    @Autowired
-    public void setZigbeeStateUpdaterService(ZigbeeStateUpdaterService zigbeeStateUpdaterService) {
-        this.zigbeeStateUpdaterService = zigbeeStateUpdaterService;
-    }
-    
-    @Autowired
-    public void setAttributeDynamicDataSource(AttributeDynamicDataSource attributeDynamicDataSource) {
-        this.attributeDynamicDataSource = attributeDynamicDataSource;
-    }
 }

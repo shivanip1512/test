@@ -58,6 +58,10 @@
     <entry key="yukon.web.modules.operator.hardwareConfig.feeder">Feeder</entry>
     <entry key="yukon.web.modules.operator.hardwareConfig.zip">ZIP</entry>
     <entry key="yukon.web.modules.operator.hardwareConfig.userAddress">User Address</entry>
+    <entry key="yukon.web.modules.operator.hardwareConfig.deviceClass">Device Class</entry>
+    <entry key="yukon.web.modules.operator.hardwareConfig.utilityEnrollmentGroup">Utility Enrollment Group</entry>
+    <entry key="yukon.web.modules.operator.hardwareConfig.randomStartTimeMinutes">Random Start Time Minutes</entry>
+    <entry key="yukon.web.modules.operator.hardwareConfig.randomStopTimeMinutes">Random Stop Time Minutes</entry>
 
     <entry key="yukon.web.modules.operator.hardwareConfig.versaComAddresses.title">VERSACOM Addresses</entry>
     <entry key="yukon.web.modules.operator.hardwareConfig.utility">Utility</entry>

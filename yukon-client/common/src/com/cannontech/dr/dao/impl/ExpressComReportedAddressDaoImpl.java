@@ -19,29 +19,31 @@ import com.cannontech.database.YukonJdbcTemplate;
 import com.cannontech.database.YukonResultSet;
 import com.cannontech.database.YukonRowMapper;
 import com.cannontech.database.incrementer.NextValueHelper;
-import com.cannontech.dr.dao.LmDeviceReportedDataDao;
-import com.cannontech.dr.dao.LmReportedAddress;
-import com.cannontech.dr.dao.LmReportedAddressRelay;
+import com.cannontech.dr.dao.ExpressComReportedAddressDao;
+import com.cannontech.dr.dao.ExpressComReportedAddress;
+import com.cannontech.dr.dao.ExpressComReportedAddressRelay;
 import com.google.common.collect.Sets;
 
-public class LmDeviceReportedDataDaoImpl implements LmDeviceReportedDataDao {
+public class ExpressComReportedAddressDaoImpl implements ExpressComReportedAddressDao {
 
     @Autowired private YukonJdbcTemplate yukonJdbcTemplate;
     @Autowired private NextValueHelper nextValueHelper;
-    private SimpleTableAccessTemplate<LmReportedAddress> addressTemplate;
-    private final static FieldMapper<LmReportedAddress> fieldMapper = new FieldMapper<LmReportedAddress>() {
+    
+    private SimpleTableAccessTemplate<ExpressComReportedAddress> addressTemplate;
+    
+    private final static FieldMapper<ExpressComReportedAddress> fieldMapper = new FieldMapper<ExpressComReportedAddress>() {
         @Override
-        public Number getPrimaryKey(LmReportedAddress address) {
+        public Number getPrimaryKey(ExpressComReportedAddress address) {
             return address.getChangeId();
         }
 
         @Override
-        public void setPrimaryKey(LmReportedAddress address, int changeId) {
+        public void setPrimaryKey(ExpressComReportedAddress address, int changeId) {
             address.setChangeId(changeId);
         }
 
         @Override
-        public void extractValues(MapSqlParameterSource parameterHolder, LmReportedAddress address) {
+        public void extractValues(MapSqlParameterSource parameterHolder, ExpressComReportedAddress address) {
             parameterHolder.addValue("DeviceId", address.getDeviceId());
             parameterHolder.addValue("Timestamp", address.getTimestamp());
             parameterHolder.addValue("SPID", address.getSpid());
@@ -56,18 +58,18 @@ public class LmDeviceReportedDataDaoImpl implements LmDeviceReportedDataDao {
     
     @PostConstruct
     public void init() {
-        addressTemplate = new SimpleTableAccessTemplate<LmReportedAddress>(yukonJdbcTemplate, nextValueHelper);
+        addressTemplate = new SimpleTableAccessTemplate<ExpressComReportedAddress>(yukonJdbcTemplate, nextValueHelper);
         addressTemplate.setTableName("ReportedAddressExpressCom");
         addressTemplate.setFieldMapper(fieldMapper);
         addressTemplate.setPrimaryKeyField("ChangeId");
         addressTemplate.setPrimaryKeyValidOver(0);
     }
     
-    YukonRowMapper<LmReportedAddress> addressRowMapper = new YukonRowMapper<LmReportedAddress>() {
+    YukonRowMapper<ExpressComReportedAddress> addressRowMapper = new YukonRowMapper<ExpressComReportedAddress>() {
 
         @Override
-        public LmReportedAddress mapRow(YukonResultSet rs) throws SQLException {
-            LmReportedAddress address = new LmReportedAddress();
+        public ExpressComReportedAddress mapRow(YukonResultSet rs) throws SQLException {
+            ExpressComReportedAddress address = new ExpressComReportedAddress();
             
             address.setChangeId(rs.getInt("ChangeId"));
             address.setDeviceId(rs.getInt("DeviceId"));
@@ -85,11 +87,11 @@ public class LmDeviceReportedDataDaoImpl implements LmDeviceReportedDataDao {
         
     };
     
-    YukonRowMapper<LmReportedAddressRelay> relayMapper = new YukonRowMapper<LmReportedAddressRelay>() {
+    YukonRowMapper<ExpressComReportedAddressRelay> relayMapper = new YukonRowMapper<ExpressComReportedAddressRelay>() {
 
         @Override
-        public LmReportedAddressRelay mapRow(YukonResultSet rs) throws SQLException {
-            LmReportedAddressRelay relay = new LmReportedAddressRelay();
+        public ExpressComReportedAddressRelay mapRow(YukonResultSet rs) throws SQLException {
+            ExpressComReportedAddressRelay relay = new ExpressComReportedAddressRelay();
             
             relay.setRelayNumber(rs.getInt("RelayNumber"));
             relay.setProgram(rs.getInt("Program"));
@@ -102,9 +104,9 @@ public class LmDeviceReportedDataDaoImpl implements LmDeviceReportedDataDao {
     
     @Override
     @Transactional
-    public boolean save(LmReportedAddress address) {
+    public boolean save(ExpressComReportedAddress address) {
         try {
-            LmReportedAddress current = getCurrentAddress(address.getDeviceId());
+            ExpressComReportedAddress current = getCurrentAddress(address.getDeviceId());
             
             if (!address.isEquivalent(current)) {
                 insertAddress(address);
@@ -119,10 +121,10 @@ public class LmDeviceReportedDataDaoImpl implements LmDeviceReportedDataDao {
         }
     }
 
-    private void insertAddress(LmReportedAddress address) {
+    private void insertAddress(ExpressComReportedAddress address) {
         addressTemplate.insert(address);
         
-        for (LmReportedAddressRelay relay : address.getRelays()) {
+        for (ExpressComReportedAddressRelay relay : address.getRelays()) {
             SqlStatementBuilder sql = new SqlStatementBuilder();
             sql.append("INSERT INTO ReportedAddressRelayExpressCom");
             sql.values(address.getChangeId(), relay.getRelayNumber(), relay.getProgram(), relay.getSplinter());
@@ -132,22 +134,22 @@ public class LmDeviceReportedDataDaoImpl implements LmDeviceReportedDataDao {
     }
 
     @Override
-    public List<LmReportedAddress> getAllRecordedAddresses(int deviceId) {
+    public List<ExpressComReportedAddress> getAllRecordedAddresses(int deviceId) {
         SqlStatementBuilder sql = new SqlStatementBuilder();
         sql.append("SELECT ChangeId, DeviceId, Timestamp, SPID, GEO, Substation, Feeder, ZIP, UDA, Required");
         sql.append("FROM ReportedAddressExpressCom");
         sql.append("WHERE DeviceId").eq(deviceId);
         
-        List<LmReportedAddress> addresses = yukonJdbcTemplate.query(sql, addressRowMapper);
+        List<ExpressComReportedAddress> addresses = yukonJdbcTemplate.query(sql, addressRowMapper);
         
-        for (LmReportedAddress address : addresses) {
+        for (ExpressComReportedAddress address : addresses) {
             address.setRelays(getRelays(address.getChangeId()));
         }
         
         return addresses;
     }
 
-    private Set<LmReportedAddressRelay> getRelays(int changeId) {
+    private Set<ExpressComReportedAddressRelay> getRelays(int changeId) {
         SqlStatementBuilder sql = new SqlStatementBuilder();
         sql.append("SELECT ChangeId, RelayNumber, Program, Splinter");
         sql.append("FROM ReportedAddressRelayExpressCom");
@@ -157,7 +159,7 @@ public class LmDeviceReportedDataDaoImpl implements LmDeviceReportedDataDao {
     }
     
     @Override
-    public LmReportedAddress getCurrentAddress(int deviceId) throws NotFoundException {
+    public ExpressComReportedAddress getCurrentAddress(int deviceId) throws NotFoundException {
         SqlStatementBuilder sql = new SqlStatementBuilder();
         sql.append("SELECT ChangeId, RAEC.DeviceId, Timestamp, SPID, GEO, Substation, Feeder, ZIP, UDA, Required");
         sql.append("FROM ReportedAddressExpressCom lmra,");
@@ -166,7 +168,7 @@ public class LmDeviceReportedDataDaoImpl implements LmDeviceReportedDataDao {
         sql.append("AND RAEC.DeviceId").eq(deviceId);
         
         try {
-            LmReportedAddress address = yukonJdbcTemplate.queryForObject(sql, addressRowMapper);
+            ExpressComReportedAddress address = yukonJdbcTemplate.queryForObject(sql, addressRowMapper);
             address.setRelays(getRelays(address.getChangeId()));
             
             return address;
@@ -176,7 +178,7 @@ public class LmDeviceReportedDataDaoImpl implements LmDeviceReportedDataDao {
     }
 
     @Override
-    public Set<LmReportedAddress> getAllCurrentAddresses() {
+    public Set<ExpressComReportedAddress> getAllCurrentAddresses() {
         
         SqlStatementBuilder sql = new SqlStatementBuilder();
         sql.append("SELECT ChangeId, RAEC.DeviceId, Timestamp, SPID, GEO, Substation, Feeder, ZIP, UDA, Required");
@@ -184,8 +186,8 @@ public class LmDeviceReportedDataDaoImpl implements LmDeviceReportedDataDao {
         sql.append("(SELECT DeviceId, MAX(Timestamp) LatestTimestamp FROM ReportedAddressExpressCom GROUP BY DeviceId) RAEC");
         sql.append("WHERE lmra.ChangeId = (SELECT MAX(ChangeId) FROM ReportedAddressExpressCom RAEC2 WHERE RAEC2.DeviceId = RAEC.DeviceId  AND RAEC.LatestTimestamp = RAEC2.Timestamp)");
         
-        List<LmReportedAddress> addresses = yukonJdbcTemplate.query(sql, addressRowMapper);
-        for (LmReportedAddress address : addresses) {
+        List<ExpressComReportedAddress> addresses = yukonJdbcTemplate.query(sql, addressRowMapper);
+        for (ExpressComReportedAddress address : addresses) {
             address.setRelays(getRelays(address.getChangeId()));
         }
         

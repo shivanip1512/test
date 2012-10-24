@@ -26,9 +26,9 @@ import com.cannontech.common.util.xml.SimpleXPathTemplate;
 import com.cannontech.core.dao.NotFoundException;
 import com.cannontech.core.dao.PointDao;
 import com.cannontech.database.data.lite.LitePoint;
-import com.cannontech.dr.dao.LmDeviceReportedDataDao;
-import com.cannontech.dr.dao.LmReportedAddress;
-import com.cannontech.dr.dao.LmReportedAddressRelay;
+import com.cannontech.dr.dao.ExpressComReportedAddressDao;
+import com.cannontech.dr.dao.ExpressComReportedAddress;
+import com.cannontech.dr.dao.ExpressComReportedAddressRelay;
 import com.cannontech.dr.rfn.message.archive.RfnLcrReadingArchiveRequest;
 import com.cannontech.dr.rfn.model.RfnLcrPointDataMap;
 import com.cannontech.dr.rfn.model.RfnLcrRelayDataMap;
@@ -42,7 +42,7 @@ public class RfnLcrDataMappingServiceImpl implements RfnLcrDataMappingService {
     @Autowired private PointDao pointDao;
     @Autowired private AttributeService attributeService;
     @Autowired private RfnDeviceLookupService rfnDeviceLookupService;
-    @Autowired private LmDeviceReportedDataDao lmDeviceReportedDataDao;
+    @Autowired private ExpressComReportedAddressDao expressComReportedAddressDao;
 
     private static final Logger log = YukonLogManager.getLogger(RfnLcrDataMappingServiceImpl.class);
     private static final LogHelper logHelper = YukonLogManager.getLogHelper(RfnLcrDataMappingServiceImpl.class);
@@ -192,7 +192,7 @@ public class RfnLcrDataMappingServiceImpl implements RfnLcrDataMappingService {
 
     @Override
     public void storeAddressingData(JmsTemplate jmsTemplate, SimpleXPathTemplate data, RfnDevice device) {
-        LmReportedAddress address = new LmReportedAddress();
+        ExpressComReportedAddress address = new ExpressComReportedAddress();
         address.setDeviceId(device.getPaoIdentifier().getPaoId());
         
         address.setTimestamp(new Instant(data.evaluateAsLong("/DRReport/@utc") * 1000));
@@ -215,10 +215,10 @@ public class RfnLcrDataMappingServiceImpl implements RfnLcrDataMappingService {
          */
         
         List<Node> relaysNodes = data.evaluateAsNodeList("/DRReport/Relays/Relay");
-        Set<LmReportedAddressRelay> relays = Sets.newHashSet();
+        Set<ExpressComReportedAddressRelay> relays = Sets.newHashSet();
         for (Node relayNode : relaysNodes) {
             Element elem = (Element) relayNode;
-            LmReportedAddressRelay relay = new LmReportedAddressRelay();
+            ExpressComReportedAddressRelay relay = new ExpressComReportedAddressRelay();
             
             relay.setRelayNumber(Integer.parseInt(elem.getAttribute("id")));
             relay.setProgram(Integer.parseInt(elem.getElementsByTagName("Program").item(0).getTextContent()));
@@ -229,7 +229,7 @@ public class RfnLcrDataMappingServiceImpl implements RfnLcrDataMappingService {
         address.setRelays(relays);
         
         logHelper.debug("Received LM Address for %s - " + address, device.getName());
-        lmDeviceReportedDataDao.save(address);
+        expressComReportedAddressDao.save(address);
         
         jmsTemplate.convertAndSend("yukon.notif.obj.dr.rfn.LmAddressNotification", address);
     }

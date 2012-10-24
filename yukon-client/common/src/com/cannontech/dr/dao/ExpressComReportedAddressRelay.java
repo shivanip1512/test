@@ -2,7 +2,7 @@ package com.cannontech.dr.dao;
 
 import java.io.Serializable;
 
-public class LmReportedAddressRelay implements Serializable {
+public class ExpressComReportedAddressRelay implements Serializable {
 
     private int relayNumber;
     private int program;
@@ -34,7 +34,7 @@ public class LmReportedAddressRelay implements Serializable {
     
     @Override
     public String toString() {
-        return String.format("LmReportedAddressRelay [relayNumber=%s, program=%s, splinter=%s]",
+        return String.format("ExpressComReportedAddressRelay [relayNumber=%s, program=%s, splinter=%s]",
                     relayNumber,
                     program,
                     splinter);
@@ -58,7 +58,7 @@ public class LmReportedAddressRelay implements Serializable {
             return false;
         if (getClass() != obj.getClass())
             return false;
-        LmReportedAddressRelay other = (LmReportedAddressRelay) obj;
+        ExpressComReportedAddressRelay other = (ExpressComReportedAddressRelay) obj;
         if (program != other.program)
             return false;
         if (relayNumber != other.relayNumber)

@@ -325,7 +325,8 @@
     <bean class="com.cannontech.dr.rfn.service.impl.RfnLcrDataMappingServiceImpl"/>
     <bean class="com.cannontech.dr.rfn.service.impl.RawExpressComCommandBuilderImpl"/>
     <bean class="com.cannontech.common.rfn.service.impl.RfnDeviceMetadataServiceImpl"/>
-    <bean class="com.cannontech.dr.dao.impl.LmDeviceReportedDataDaoImpl"/>
+    <bean class="com.cannontech.dr.dao.impl.ExpressComReportedAddressDaoImpl"/>
+    <bean class="com.cannontech.dr.dao.impl.SepReportedAddressDaoImpl"/>
 
     <bean id="bulkPointDataInjectionService" class="com.cannontech.development.impl.BulkPointDataInjectionServiceImpl"/>
 </beans>

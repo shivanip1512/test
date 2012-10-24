@@ -45,8 +45,10 @@ import com.cannontech.core.roleproperties.dao.RolePropertyDao;
 import com.cannontech.database.data.lite.LitePoint;
 import com.cannontech.database.data.lite.LiteYukonPAObject;
 import com.cannontech.database.data.pao.RouteTypes;
-import com.cannontech.dr.dao.LmDeviceReportedDataDao;
+import com.cannontech.dr.dao.ExpressComReportedAddressDao;
+import com.cannontech.dr.dao.ExpressComReportedAddress;
 import com.cannontech.dr.dao.LmReportedAddress;
+import com.cannontech.dr.dao.SepReportedAddressDao;
 import com.cannontech.i18n.YukonMessageSourceResolvable;
 import com.cannontech.loadcontrol.loadgroup.dao.LoadGroupDao;
 import com.cannontech.loadcontrol.loadgroup.model.LoadGroup;
@@ -117,7 +119,8 @@ public class OperatorHardwareConfigController {
     @Autowired private MeterConfigValidator meterConfigValidator;
     @Autowired private LmHardwareBaseDao lmHardwareBaseDao;
     @Autowired private PaoDao paoDao;
-    @Autowired private LmDeviceReportedDataDao lmDeviceReportedDataDao;
+    @Autowired private ExpressComReportedAddressDao expressComReportedAddressDao;
+    @Autowired private SepReportedAddressDao sepReportedAddressDao;
     @Autowired private AttributeService attributeService;
     @Autowired private GlobalSettingDao globalSettingDao;
     @Autowired private YukonEnergyCompanyService yukonEnergyCompanyService;
@@ -231,19 +234,30 @@ public class OperatorHardwareConfigController {
         model.addAttribute("applianceCategories", applianceCategories);
         
         InventoryIdentifier inventory = inventoryDao.getYukonInventory(inventoryId);
-        if (!inventory.getHardwareType().isRf()) {
+        int deviceId = inventoryDao.getDeviceId(inventoryId);
+        
+        boolean supportsAddressReporting = inventory.getHardwareType().isRf() || inventory.getHardwareType().isZigbee();
+        boolean supportsServiceStatusReporting = inventory.getHardwareType().isRf();
+        
+        if (!supportsServiceStatusReporting) {
             model.addAttribute("showStaticServiceStatus", true);
         } else {
-            model.addAttribute("showDeviceReportedConfig", true);
-            int deviceId = inventoryDao.getDeviceId(inventoryId);
-            model.addAttribute("deviceId", deviceId);
-            
             LitePoint serviceStatusPoint = attributeService.getPointForAttribute(paoDao.getYukonPao(deviceId), BuiltInAttribute.SERVICE_STATUS);
             model.addAttribute("serviceStatusPointId", serviceStatusPoint.getPointID());
+        }
+        
+        if (supportsAddressReporting) {
+            model.addAttribute("showDeviceReportedConfig", true);
+            model.addAttribute("deviceId", deviceId);
             
-            try {
-                LmReportedAddress reportedConfig = lmDeviceReportedDataDao.getCurrentAddress(deviceId);
-                model.addAttribute("reportedConfig", reportedConfig);
+            try { //TODO replace this with a smart retriever similar to star lm hardware row mapper 
+                LmReportedAddress address = null;
+                if (inventory.getHardwareType().getHardwareConfigType() == HardwareConfigType.EXPRESSCOM) {
+                    address = expressComReportedAddressDao.getCurrentAddress(deviceId);
+                } else {
+                    address = sepReportedAddressDao.getCurrentAddress(deviceId);
+                }
+                model.addAttribute("reportedConfig", address);
             } catch (NotFoundException e) {/* Ignore */}
         }
 

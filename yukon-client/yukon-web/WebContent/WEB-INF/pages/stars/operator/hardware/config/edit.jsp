@@ -17,11 +17,17 @@
 
 <cti:msg2 key="yukon.web.components.button.readNow.labelBusy" var="reading"/>
 <cti:msg2 key="yukon.web.components.button.readNow.label" var="readNow"/>
+<c:if test="${hardware.hardwareType.rf}">
+    <c:set var="readPath" value="rf"/>
+</c:if>
+<c:if test="${hardware.hardwareType.zigbee}">
+    <c:set var="readPath" value="zb"/>
+</c:if>
 
 <script type="text/javascript">
 jQuery(function() {
     jQuery(document).delegate('#rfReadNow', 'click', function(event) {
-        var url = '<cti:url value="/spring/stars/operator/hardware/rf/readNow"/>';
+        var url = '<cti:url value="/spring/stars/operator/hardware/${readPath}/readNow"/>';
         
         jQuery("<a class=\"fl loading labeled_icon\"/>").insertBefore(jQuery("#rfReadNow span"));
         jQuery("#rfReadNow span").html('${reading}');
@@ -165,42 +171,12 @@ jQuery(function() {
                                 <div class="pointStat nonStatusPointStat reportedConfig_timestamp">
                                     <i:inline key=".configReportedAt"/><cti:dataUpdaterValue type="LM_REPORTED_ADDRESS" identifier="${deviceId}/TIMESTAMP"/>
                                 </div>
-                                <div class="reportedConfig">
-                                    <tags:nameValueContainer2 tableClass="sectionContainerNameValue">
-                                        <tags:nameValue2 nameKey=".serviceProvider" rowClass="first">
-                                            <cti:dataUpdaterValue type="LM_REPORTED_ADDRESS" identifier="${deviceId}/SPID"/>
-                                        </tags:nameValue2>
-                                        <tags:nameValue2 nameKey=".geo" rowClass="middle">
-                                            <cti:dataUpdaterValue type="LM_REPORTED_ADDRESS" identifier="${deviceId}/GEO"/>
-                                        </tags:nameValue2>
-                                        <tags:nameValue2 nameKey=".substation" rowClass="middle">
-                                            <i:inline key=".notReadable"/>
-                                            <!-- Revert once firmware is fixed to support substations -->
-                                            <%--<cti:dataUpdaterValue type="LM_REPORTED_ADDRESS" identifier="${deviceId}/SUB"/> --%>
-                                        </tags:nameValue2>
-                                        <tags:nameValue2 nameKey=".feeder" rowClass="middle">
-                                            <cti:dataUpdaterValue type="LM_REPORTED_ADDRESS" identifier="${deviceId}/FEEDER"/>
-                                        </tags:nameValue2>
-                                        <tags:nameValue2 nameKey=".zip" rowClass="middle">
-                                            <cti:dataUpdaterValue type="LM_REPORTED_ADDRESS" identifier="${deviceId}/ZIP"/>
-                                        </tags:nameValue2>
-                                        <tags:nameValue2 nameKey=".userAddress" rowClass="last">
-                                            <cti:dataUpdaterValue type="LM_REPORTED_ADDRESS" identifier="${deviceId}/UDA"/>
-                                        </tags:nameValue2>
-                                    </tags:nameValueContainer2>
-                                </div>
-                                <div class="reportedConfig relay">
-                                    <c:forEach begin="1" end="${fn:length(reportedConfig.relays)}"  varStatus="status">
-                                        <tags:nameValueContainer2 tableClass="sectionContainerNameValue">
-                                            <tags:nameValue2 nameKey=".relayProgram" argument="${status.index}" rowClass="first">
-                                                <cti:dataUpdaterValue type="LM_REPORTED_ADDRESS" identifier="${deviceId}/RELAY_${status.index}_PROGRAM"/>
-                                            </tags:nameValue2>
-                                            <tags:nameValue2 nameKey=".relaySplinter" argument="${status.index}"  rowClass="last">
-                                                <cti:dataUpdaterValue type="LM_REPORTED_ADDRESS" identifier="${deviceId}/RELAY_${status.index}_SPLINTER"/>
-                                            </tags:nameValue2>
-                                        </tags:nameValueContainer2>
-                                    </c:forEach>
-                                </div>
+                                <c:if test="${hardware.hardwareType.hardwareConfigType == 'EXPRESSCOM'}">
+                                    <%@ include file="xcomReportedAddress.jspf" %>
+                                </c:if>
+                                <c:if test="${hardware.hardwareType.hardwareConfigType == 'SEP'}">
+                                    <%@ include file="sepReportedAddress.jspf" %>
+                                </c:if>
                             </c:when>
                             <c:otherwise><i:inline key=".noDeviceReportedConfig"/></c:otherwise>
                         </c:choose>
@@ -231,8 +207,8 @@ jQuery(function() {
                                 </c:if>
                             </c:when>
                             <c:otherwise>
-                                    <cti:pointValue pointId="${serviceStatusPointId}" cssClass="pointStat" format="VALUE" colorForStatus="true"/>
-                                    <cti:pointValue pointId="${serviceStatusPointId}" cssClass="pointStat nonStatusPointStat" format="DATE"/>
+                                <cti:pointValue pointId="${serviceStatusPointId}" cssClass="pointStat" format="VALUE" colorForStatus="true"/>
+                                <cti:pointValue pointId="${serviceStatusPointId}" cssClass="pointStat nonStatusPointStat" format="DATE"/>
                             </c:otherwise>
                         </c:choose>
                     </div>

@@ -6,7 +6,7 @@ import org.springframework.jms.core.JmsTemplate;
 
 import com.cannontech.common.rfn.model.RfnDevice;
 import com.cannontech.common.util.xml.SimpleXPathTemplate;
-import com.cannontech.dr.dao.LmReportedAddress;
+import com.cannontech.dr.dao.ExpressComReportedAddress;
 import com.cannontech.dr.rfn.message.archive.RfnLcrReadingArchiveRequest;
 import com.cannontech.message.dispatch.message.PointData;
 
@@ -26,7 +26,7 @@ public interface RfnLcrDataMappingService {
      * Stores the LM addressing data reported by the device if it is not equivalent to the
      * current address recorded or no address is currently recorded.
      * @param jmsTemplate 
-     * @see {@link LmReportedAddress#isEquivalent}
+     * @see {@link ExpressComReportedAddress#isEquivalent}
      */
     public void storeAddressingData(JmsTemplate jmsTemplate, SimpleXPathTemplate data, RfnDevice device);
 

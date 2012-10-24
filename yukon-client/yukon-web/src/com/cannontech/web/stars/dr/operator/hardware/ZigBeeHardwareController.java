@@ -88,6 +88,30 @@ public class ZigBeeHardwareController {
     @Autowired private NextValueHelper nextValueHelper;
     
     @RequestMapping
+    public void readNow(HttpServletResponse resp, YukonUserContext context, int deviceId) throws IOException {
+        final MessageSourceAccessor accessor = messageSourceResolver.getMessageSourceAccessor(context);
+        final ZigbeeDevice device = zigbeeDeviceDao.getZigbeeDevice(deviceId);
+        final JSONObject json = new JSONObject();
+        
+        try {
+            zigbeeWebService.readLoadGroupAddressing(device); // TODO this should take a callback similar to rf and support timeout
+            
+            log.debug("Read now initiated for " + device);
+            json.put("success", true);
+            json.put("message", accessor.getMessage(keyPrefix + "readNowSuccess"));
+            
+        } catch (DigiWebServiceException e) {
+            log.debug("Read now failed for " + device);
+            json.put("success", false);
+            json.put("message", accessor.getMessage(keyPrefix + "error.readNowFailed", e.getMessage()));
+        }
+        
+        resp.setContentType("application/json");
+        resp.getWriter().print(json.toString());
+        resp.getWriter().close();
+    }
+    
+    @RequestMapping
     public void refresh(HttpServletResponse resp, YukonUserContext context, int deviceId) throws NoSuchMessageException, IOException {
         LiteYukonPAObject pao = paoDao.getLiteYukonPAO(deviceId);
         zigbeeEventLogService.zigbeeDeviceRefreshByOperator(context.getYukonUser(), pao.getPaoName());
