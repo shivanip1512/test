@@ -210,11 +210,11 @@
     <entry key="yukon.web.modules.support.setupDatabase.setupDevDatabase.option.stars.serialNumMin">Serial # Range Start</entry>
     <entry key="yukon.web.modules.support.setupDatabase.setupDevDatabase.option.stars.serialNumMax">Serial # Range End</entry>
     
-    <entry key="yukon.web.modules.support.setupDatabase.setupDdevDatabase.generic">{0}</entry>
-    <entry key="yukon.web.modules.support.setupDatabase.setupDdevDatabase.error.empty">Cannot be empty</entry>
-    <entry key="yukon.web.modules.support.setupDatabase.setupDdevDatabase.error.mustBePositive">Must be Positive</entry>
-    <entry key="yukon.web.modules.support.setupDatabase.setupDdevDatabase.error.unavailable">Unavailable</entry>
-    <entry key="yukon.web.modules.support.setupDatabase.setupDdevDatabase.error.accountExists">Account already exists: {0}</entry>
+    <entry key="yukon.web.modules.support.setupDatabase.setupDevDatabase.generic">{0}</entry>
+    <entry key="yukon.web.modules.support.setupDatabase.setupDevDatabase.error.empty">Cannot be empty</entry>
+    <entry key="yukon.web.modules.support.setupDatabase.setupDevDatabase.error.mustBePositive">Must be Positive</entry>
+    <entry key="yukon.web.modules.support.setupDatabase.setupDevDatabase.error.unavailable">Unavailable</entry>
+    <entry key="yukon.web.modules.support.setupDatabase.setupDevDatabase.error.accountExists">Account already exists: {0}</entry>
 
     <entry key="yukon.web.modules.support.miscellaneousMethod.pageName">Miscellaneous Methods</entry>
     <entry key="yukon.web.modules.support.miscellaneousMethod.insertProgramTypes.label">Insert Program Types</entry>

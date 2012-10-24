@@ -52,8 +52,8 @@ public class DevStarsCreationService extends DevObjectCreationBase {
     @Autowired private InventoryBaseDao inventoryBaseDao;
     @Autowired private UserGroupDao userGroupDao;
 
-    private static int complete = 1;
-    private static int total = 1;
+    private static int complete ;
+    private static int total;
     private static final ReentrantLock _lock = new ReentrantLock();
 
     public boolean isRunning() {
@@ -260,14 +260,12 @@ public class DevStarsCreationService extends DevObjectCreationBase {
         // Account Hardware
         for (UpdatableAccount updatableAccount: devStars.getDevStarsAccounts().getAccounts()) {
             if (createAccount(devStars, updatableAccount)) {
-                complete++; // account total
                 for (int i = 0; i < devStars.getDevStarsHardware().getNumPerAccount(); i++) {
                     for (DevHardwareType devHardwareType: devStars.getDevStarsHardware().getHardwareTypes()) {
                         if (devHardwareType.isCreate()) {
                             CustomerAccount customerAccount = customerAccountDao.getByAccountNumber(updatableAccount.getAccountNumber(), devStars.getEnergyCompany().getEnergyCompanyId());
                             createHardware(devStars, devHardwareType, customerAccount.getAccountId(), inventoryIdIterator);
                             inventoryIdIterator++;
-                            complete++; // hardware total
                         }
                     }
                 }
@@ -278,17 +276,27 @@ public class DevStarsCreationService extends DevObjectCreationBase {
         for (int i = 0; i < devStars.getDevStarsHardware().getNumExtra(); i++) {
             for (DevHardwareType devHardwareType: devStars.getDevStarsHardware().getHardwareTypes()) {
                 if (devHardwareType.isCreate()) {
+                    complete++; // account total
+                    log.info(complete + " / " + total);
                     createHardware(devStars, devHardwareType, 0, inventoryIdIterator);
                     inventoryIdIterator++;
-                    complete++; 
                 }
             }
         }
     }
 
     private boolean createAccount(DevStars devStars, UpdatableAccount updatableAccount) {
-        //        checkIsCancelled();
+        complete++; // account total
+        log.info(complete + " / " + total);
         LiteStarsEnergyCompany energyCompany = devStars.getEnergyCompany();
+        
+        for (DevHardwareType devHardwareType: devStars.getDevStarsHardware().getHardwareTypes()) {
+            if (devHardwareType.isCreate()) {
+                complete++; // account total
+                log.info(complete + " / " + total);
+            }
+        }
+        
         if (!canAddStarsAccount(devStars, updatableAccount, energyCompany.getEnergyCompanyId())) {
             devStars.addToFailureCount(devStars.getDevStarsHardware().getNumHardwarePerAccount() + 1);
             return false;
@@ -300,7 +308,6 @@ public class DevStarsCreationService extends DevObjectCreationBase {
     }
 
     private void createHardware(DevStars devStars, DevHardwareType devHardwareType, int accountId, int inventoryIdIterator) {
-        //        checkIsCancelled();
         LiteStarsEnergyCompany energyCompany = devStars.getEnergyCompany();
         Hardware hardware = getHardwareDto(devHardwareType, energyCompany, inventoryIdIterator);
         hardware.setAccountId(accountId);

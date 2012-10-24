@@ -46,12 +46,15 @@ public class DevStars extends DevObject {
         
         int accountHardware = hardwareTypes * accounts * devStarsHardware.getNumHardwarePerAccount();
         int total = accounts + accountHardware + extraHardware;
+        
+//        int total = accounts + extraHardware;
         return total;
     }
 
     public LiteUserGroup getUserGroupResidential() {
         return userGroupResidential;
     }
+    
     public void setUserGroupResidential(LiteUserGroup userGroupResidential) {
         this.userGroupResidential = userGroupResidential;
     }
@@ -59,6 +62,7 @@ public class DevStars extends DevObject {
     public LiteUserGroup getUserGroupOperator() {
         return userGroupOperator;
     }
+    
     public void setUserGroupOperator(LiteUserGroup userGroupOperator) {
         this.userGroupOperator = userGroupOperator;
     }
@@ -66,6 +70,7 @@ public class DevStars extends DevObject {
     public String getNewEnergyCompanyName() {
         return newEnergyCompanyName;
     }
+    
     public void setNewEnergyCompanyName(String newEnergyCompanyName) {
         this.newEnergyCompanyName = newEnergyCompanyName;
     }

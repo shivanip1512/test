@@ -27,9 +27,6 @@
                                 <tags:inputNameValue path="numCapBanks"
                                     nameKey=".setupDevDatabase.option.capcontrol.object.capBanks"
                                     size="2" />
-                                <tags:inputNameValue path="numRegulators"
-                                    nameKey=".setupDevDatabase.option.capcontrol.object.regulators"
-                                    size="2" />
                                 <tags:inputNameValue path="offset"
                                     nameKey=".setupDevDatabase.option.capcontrol.object.offset"
                                     size="10" />
@@ -56,6 +53,11 @@
                             </li>
                         <li>
                         <h4><i:inline key=".setupDevDatabase.option.capcontrol.regulatorTypes"/></h4>
+                            <tags:nameValueContainer2>
+                                <tags:inputNameValue path="numRegulators"
+                                    nameKey=".setupDevDatabase.option.capcontrol.object.regulators"
+                                    size="2" />
+                                </tags:nameValueContainer2>
                                 <ul>
                                     <c:forEach
                                         items="${devCapControl.regulatorTypes}"

@@ -35,8 +35,8 @@ public class DevCapControlCreationService extends DevObjectCreationBase {
     @Autowired private DeviceConfigurationDao deviceConfigurationDao;
 
     private static final ReentrantLock _lock = new ReentrantLock();
-    private static int complete = 1;
-    private static int total = 1;
+    private static int complete;
+    private static int total;
     
     public boolean isRunning() {
         return _lock.isLocked();
@@ -64,20 +64,15 @@ public class DevCapControlCreationService extends DevObjectCreationBase {
         log.info("Creating (and assigning) Cap Control Objects ...");
         for (int areaIndex = 0; areaIndex  < devCapControl.getNumAreas(); areaIndex++) { // Areas
             String areaName = createArea(devCapControl, areaIndex);
-            if (devCapControl.getNumSubs()==0) complete++;
             for (int subIndex = 0; subIndex < devCapControl.getNumSubs(); subIndex++) { // Substations
                 String subName = createSubstation(devCapControl, areaIndex, areaName, subIndex);
-                if (devCapControl.getNumSubBuses()==0) complete++;
                 for (int subBusIndex = 0; subBusIndex < devCapControl.getNumSubBuses(); subBusIndex++) { // Substations Buses
                     String subBusName = createAndAssignSubstationBus(devCapControl, areaIndex, subIndex, subName, subBusIndex);
-                    if (devCapControl.getNumFeeders()==0) complete++;
                     for (int feederIndex = 0; feederIndex < devCapControl.getNumFeeders(); feederIndex++) { // Feeders
                         String feederName = createAndAssignFeeder(devCapControl, areaIndex, subIndex, subBusIndex, subBusName, feederIndex);
-                        if (devCapControl.getNumCapBanks()==0) complete++;
                         for (int capBankIndex = 0; capBankIndex < devCapControl.getNumCapBanks(); capBankIndex++) { // CapBanks & CBCs
                             String capBankName = createAndAssignCapBank(devCapControl, areaIndex, subIndex, subBusIndex, feederIndex, feederName, capBankIndex);
                             createAndAssignCBC(devCapControl, areaIndex, subIndex, subBusIndex, feederIndex, feederName, capBankIndex, capBankName);
-                            complete++;
                         }
                     }
                 }
@@ -98,6 +93,8 @@ public class DevCapControlCreationService extends DevObjectCreationBase {
             if (regType.isCreate()) {
                 String regName = regType.getPaoType().getPaoTypeName() + " " + Integer.toString(regIndex);
                 createCapControlObject(devCapControl, regType.getPaoType(), regName, false, 0);
+//                complete++;
+//                log.info(complete + " / " + total);
             }
         }
     }
@@ -106,7 +103,8 @@ public class DevCapControlCreationService extends DevObjectCreationBase {
         try {
             LiteYukonPAObject litePao = getPaoByName(name);
             if (litePao != null) {
-                log.info("CapControl object with name " + name + " already exists. Skipping");
+                complete++;
+                log.info(complete + " / " + total + " CapControl object with name " + name + " already exists. Skipping...");
                 devCapControl.incrementFailureCount();
                 return;
             }
@@ -118,9 +116,11 @@ public class DevCapControlCreationService extends DevObjectCreationBase {
                 capControlCreationService.createCapControlObject(paoType, name, false);
             }
             devCapControl.incrementSuccessCount();
-            log.info("CapControl object with name " + name + " created.");
+            complete++;
+            log.info(complete + " / " + total + " CapControl object with name " + name + " created.");
         } catch(RuntimeException e) {
-            log.info("CapControl object with name " + name + " already exists. Skipping");
+            complete++;
+            log.info(complete + " / " + total + " CapControl object with name " + name + " already exists. Skipping");
             devCapControl.incrementFailureCount();
         }
     }
@@ -145,6 +145,8 @@ public class DevCapControlCreationService extends DevObjectCreationBase {
         int capBankPaoId = getPaoIdByName(capBankName);
         capbankDao.assignCapbank(capBankPaoId, feederName);
         logCapControlAssignment(capBankName, feederName);
+//        complete++;
+//        log.info(complete + " / " + total);
         return capBankName;
     }
 
@@ -154,6 +156,8 @@ public class DevCapControlCreationService extends DevObjectCreationBase {
         int feederPaoId = getPaoIdByName(feederName);
         feederDao.assignFeeder(feederPaoId, subBusName);
         logCapControlAssignment(feederName, subBusName);
+//        complete++;
+//        log.info(complete + " / " + total);
         return feederName;
     }
 
@@ -163,6 +167,8 @@ public class DevCapControlCreationService extends DevObjectCreationBase {
         int subBusPaoId = getPaoIdByName(subBusName);
         substationBusDao.assignSubstationBus(subBusPaoId, subName);
         logCapControlAssignment(subBusName, subName);
+//        complete++;
+//        log.info(complete + " / " + total);
         return subBusName;
     }
 
@@ -172,12 +178,16 @@ public class DevCapControlCreationService extends DevObjectCreationBase {
         int subPaoId = getPaoIdByName(subName);
         substationDao.assignSubstation(subPaoId, areaName);
         logCapControlAssignment(subName, areaName);
+//        complete++;
+//        log.info(complete + " / " + total);
         return subName;
     }
 
     private String createArea(DevCapControl devCapControl, int areaIndex) {
         String areaName = "Area " + devCapControl.getOffset() + "_" + Integer.toString(areaIndex);
         createCapControlObject(devCapControl, PaoType.CAP_CONTROL_AREA, areaName, false, 0);
+//        complete++;
+//        log.info(complete + " / " + total);
         return areaName;
     }
     
@@ -188,6 +198,8 @@ public class DevCapControlCreationService extends DevObjectCreationBase {
         }
         int portId = commChannels.get(0).getPaoIdentifier().getPaoId();
         createCapControlObject(devCapControl, paoType, name, disabled, portId);
+//        complete++;
+//        log.info(complete + " / " + total);
     }
     
     private void createCapControlSchedule(DevCapControl devCapControl, int type, String name, boolean disabled) {

@@ -214,7 +214,6 @@ public class SetupDevDbMethodController {
         List<LiteStarsEnergyCompany> allEnergyCompanies = starsDatabaseCache.getAllEnergyCompanies();
         model.addAttribute("allEnergyCompanies", allEnergyCompanies);
 
-
         return "development/setupDatabase/starsWidget.jsp";
     }
 
@@ -224,31 +223,31 @@ public class SetupDevDbMethodController {
         public void doValidation(DevCapControl devCapControl, Errors errors) {
             
             if (devCapControl.getNumAreas() == null || devCapControl.getNumAreas() < 0) {
-                errors.rejectValue("numAreas", "yukon.web.modules.support.setupDatabase.setupDdevDatabase.error.mustBePositive");
+                errors.rejectValue("numAreas", "yukon.web.modules.support.setupDatabase.setupDevDatabase.error.mustBePositive");
             }
             
             if (devCapControl.getNumSubs() == null || devCapControl.getNumSubs() < 0) {
-                errors.rejectValue("numSubs", "yukon.web.modules.support.setupDatabase.setupDdevDatabase.error.mustBePositive");
+                errors.rejectValue("numSubs", "yukon.web.modules.support.setupDatabase.setupDevDatabase.error.mustBePositive");
             }
             
             if (devCapControl.getNumSubBuses() == null || devCapControl.getNumSubBuses() < 0) {
-                errors.rejectValue("numSubBuses", "yukon.web.modules.support.setupDatabase.setupDdevDatabase.error.mustBePositive"); 
+                errors.rejectValue("numSubBuses", "yukon.web.modules.support.setupDatabase.setupDevDatabase.error.mustBePositive"); 
             }
             
             if (devCapControl.getNumFeeders() == null || devCapControl.getNumFeeders() < 0) {
-                errors.rejectValue("numFeeders", "yukon.web.modules.support.setupDatabase.setupDdevDatabase.error.mustBePositive");
+                errors.rejectValue("numFeeders", "yukon.web.modules.support.setupDatabase.setupDevDatabase.error.mustBePositive");
             }
             
             if (devCapControl.getNumCapBanks() == null || devCapControl.getNumCapBanks() < 0) {
-                errors.rejectValue("numCapBanks", "yukon.web.modules.support.setupDatabase.setupDdevDatabase.error.mustBePositive");
+                errors.rejectValue("numCapBanks", "yukon.web.modules.support.setupDatabase.setupDevDatabase.error.mustBePositive");
             }
             
             if (devCapControl.getNumRegulators() == null || devCapControl.getNumRegulators() < 0) {
-                errors.rejectValue("numRegulators", "yukon.web.modules.support.setupDatabase.setupDdevDatabase.error.mustBePositive"); 
+                errors.rejectValue("numRegulators", "yukon.web.modules.support.setupDatabase.setupDevDatabase.error.mustBePositive"); 
             }
             
             if (devCapControl.getOffset() == null || devCapControl.getOffset() < 0) {
-                errors.rejectValue("offset", "yukon.web.modules.support.setupDatabase.setupDdevDatabase.error.mustBePositive");
+                errors.rejectValue("offset", "yukon.web.modules.support.setupDatabase.setupDevDatabase.error.mustBePositive");
             }
         }
     };
@@ -260,23 +259,23 @@ public class SetupDevDbMethodController {
         public void doValidation(DevAMR devAMR, Errors errors) {
             
             if (devAMR.getNumAdditionalMeters() == null || devAMR.getNumAdditionalMeters() < 0) {
-                errors.rejectValue("numAdditionalMeters", "yukon.web.modules.support.setupDatabase.setupDdevDatabase.error.mustBePositive");
+                errors.rejectValue("numAdditionalMeters", "yukon.web.modules.support.setupDatabase.setupDevDatabase.error.mustBePositive");
             }
             
             if (devAMR.getAddressRangeMax() == null || devAMR.getAddressRangeMax() < 0) {
-                errors.rejectValue("addressRangeMax", "yukon.web.modules.support.setupDatabase.setupDdevDatabase.error.mustBePositive");
+                errors.rejectValue("addressRangeMax", "yukon.web.modules.support.setupDatabase.setupDevDatabase.error.mustBePositive");
             }
             
             if (devAMR.getAddressRangeMin() == null || devAMR.getAddressRangeMin() < 0) {
-                errors.rejectValue("addressRangeMin", "yukon.web.modules.support.setupDatabase.setupDdevDatabase.error.mustBePositive"); 
+                errors.rejectValue("addressRangeMin", "yukon.web.modules.support.setupDatabase.setupDevDatabase.error.mustBePositive"); 
             }
             
             if (devAMR.getAddressRangeMin() != null && devAMR.getAddressRangeMax() != null 
                     && devAMR.getAddressRangeMin() >= devAMR.getAddressRangeMax()) {
                 String[] arg = {"Must be smaller than Address Range Min"};
-                errors.rejectValue("addressRangeMin", "yukon.web.modules.support.setupDatabase.setupDdevDatabase.generic",arg,""); 
+                errors.rejectValue("addressRangeMin", "yukon.web.modules.support.setupDatabase.setupDevDatabase.generic",arg,""); 
                 String[] arg2 = {"Must be larger than Address Range Max"};
-                errors.rejectValue("addressRangeMax", "yukon.web.modules.support.setupDatabase.setupDdevDatabase.generic",arg2,""); 
+                errors.rejectValue("addressRangeMax", "yukon.web.modules.support.setupDatabase.setupDevDatabase.generic",arg2,""); 
             }
         }
     };
@@ -289,71 +288,71 @@ public class SetupDevDbMethodController {
             // ACCOUNTS
             
             if (devStars.getDevStarsAccounts().getAccountNumMax() == null) {
-                errors.rejectValue("devStarsAccounts.accountNumMax", "yukon.web.modules.support.setupDatabase.setupDdevDatabase.error.empty");
+                errors.rejectValue("devStarsAccounts.accountNumMax", "yukon.web.modules.support.setupDatabase.setupDevDatabase.error.empty");
             } else {
                 if (devStars.getDevStarsAccounts().getAccountNumMin() != null 
                             && devStars.getDevStarsAccounts().getAccountNumMin().intValue() >= devStars.getDevStarsAccounts().getAccountNumMax().intValue()) {
                     String[] arg = {"Must be smaller than Account Range # End"};
-                    errors.rejectValue("devStarsAccounts.accountNumMin", "yukon.web.modules.support.setupDatabase.setupDdevDatabase.generic",arg,""); 
+                    errors.rejectValue("devStarsAccounts.accountNumMin", "yukon.web.modules.support.setupDatabase.setupDevDatabase.generic",arg,""); 
                     String[] arg2 = {"Must be larger than Account Range # Start"};
-                    errors.rejectValue("devStarsAccounts.accountNumMax", "yukon.web.modules.support.setupDatabase.setupDdevDatabase.generic",arg2,""); 
+                    errors.rejectValue("devStarsAccounts.accountNumMax", "yukon.web.modules.support.setupDatabase.setupDevDatabase.generic",arg2,""); 
                 }
                 if (devStars.getDevStarsAccounts().getAccountNumMax() < 0) {
-                    errors.rejectValue("devStarsAccounts.accountNumMax", "yukon.web.modules.support.setupDatabase.setupDdevDatabase.error.mustBePositive");
+                    errors.rejectValue("devStarsAccounts.accountNumMax", "yukon.web.modules.support.setupDatabase.setupDevDatabase.error.mustBePositive");
                 }
             }
 
             if (devStars.getDevStarsAccounts().getAccountNumMin() == null) {
-                errors.rejectValue("devStarsAccounts.accountNumMin", "yukon.web.modules.support.setupDatabase.setupDdevDatabase.error.empty");
+                errors.rejectValue("devStarsAccounts.accountNumMin", "yukon.web.modules.support.setupDatabase.setupDevDatabase.error.empty");
             } else if (devStars.getDevStarsAccounts().getAccountNumMin() < 0) {
-                errors.rejectValue("devStarsAccounts.accountNumMin", "yukon.web.modules.support.setupDatabase.setupDdevDatabase.error.mustBePositive");
+                errors.rejectValue("devStarsAccounts.accountNumMin", "yukon.web.modules.support.setupDatabase.setupDevDatabase.error.mustBePositive");
             }
             
             if (devStars.getDevStarsAccounts().getNumAccounts() == null) {
-                errors.rejectValue("devStarsAccounts.numAccounts", "yukon.web.modules.support.setupDatabase.setupDdevDatabase.error.empty");
+                errors.rejectValue("devStarsAccounts.numAccounts", "yukon.web.modules.support.setupDatabase.setupDevDatabase.error.empty");
             } else if (devStars.getDevStarsAccounts().getNumAccounts() <= 0) {
-                errors.rejectValue("devStarsAccounts.numAccounts", "yukon.web.modules.support.setupDatabase.setupDdevDatabase.error.mustBePositive");
+                errors.rejectValue("devStarsAccounts.numAccounts", "yukon.web.modules.support.setupDatabase.setupDevDatabase.error.mustBePositive");
             }
             
             // HARDWARE
             if (devStars.getDevStarsHardware().getSerialNumMax() == null) {
-                errors.rejectValue("devStarsHardware.serialNumMax", "yukon.web.modules.support.setupDatabase.setupDdevDatabase.error.empty");
+                errors.rejectValue("devStarsHardware.serialNumMax", "yukon.web.modules.support.setupDatabase.setupDevDatabase.error.empty");
             } else {
                 if (devStars.getDevStarsHardware().getSerialNumMin() != null 
                             && devStars.getDevStarsHardware().getSerialNumMin().intValue() >= devStars.getDevStarsHardware().getSerialNumMax().intValue()) {
                     String[] arg = {"Must be smaller than Serial Range # End"};
-                    errors.rejectValue("devStarsHardware.serialNumMin", "yukon.web.modules.support.setupDatabase.setupDdevDatabase.generic",arg,""); 
+                    errors.rejectValue("devStarsHardware.serialNumMin", "yukon.web.modules.support.setupDatabase.setupDevDatabase.generic",arg,""); 
                     String[] arg2 = {"Must be larger than Serial Range # Start"};
-                    errors.rejectValue("devStarsHardware.serialNumMax", "yukon.web.modules.support.setupDatabase.setupDdevDatabase.generic",arg2,""); 
+                    errors.rejectValue("devStarsHardware.serialNumMax", "yukon.web.modules.support.setupDatabase.setupDevDatabase.generic",arg2,""); 
                 }
                 if (devStars.getDevStarsHardware().getSerialNumMax() <= 0) {
-                    errors.rejectValue("devStarsHardware.serialNumMax", "yukon.web.modules.support.setupDatabase.setupDdevDatabase.error.mustBePositive");
+                    errors.rejectValue("devStarsHardware.serialNumMax", "yukon.web.modules.support.setupDatabase.setupDevDatabase.error.mustBePositive");
                 }
             }
             
             if (devStars.getDevStarsHardware().getSerialNumMin() == null) {
-                errors.rejectValue("devStarsHardware.serialNumMin", "yukon.web.modules.support.setupDatabase.setupDdevDatabase.error.empty");
+                errors.rejectValue("devStarsHardware.serialNumMin", "yukon.web.modules.support.setupDatabase.setupDevDatabase.error.empty");
             } else if (devStars.getDevStarsHardware().getSerialNumMin() <= 0) {
-                errors.rejectValue("devStarsHardware.serialNumMin", "yukon.web.modules.support.setupDatabase.setupDdevDatabase.error.mustBePositive");
+                errors.rejectValue("devStarsHardware.serialNumMin", "yukon.web.modules.support.setupDatabase.setupDevDatabase.error.mustBePositive");
             }
             
             if (devStars.getDevStarsHardware().getNumPerAccount() == null) {
-                errors.rejectValue("devStarsHardware.numPerAccount", "yukon.web.modules.support.setupDatabase.setupDdevDatabase.error.empty");
-            } else if (devStars.getDevStarsHardware().getNumPerAccount() <= 0) {
-                errors.rejectValue("devStarsAccounts.numPerAccount", "yukon.web.modules.support.setupDatabase.setupDdevDatabase.error.mustBePositive");
+                errors.rejectValue("devStarsHardware.numPerAccount", "yukon.web.modules.support.setupDatabase.setupDevDatabase.error.empty");
+            } else if (devStars.getDevStarsHardware().getNumPerAccount() < 0) {
+                errors.rejectValue("devStarsHardware.numPerAccount", "yukon.web.modules.support.setupDatabase.setupDevDatabase.error.mustBePositive");
             }
             
             if (devStars.getDevStarsHardware().getNumExtra() == null) {
-                errors.rejectValue("devStarsHardware.numExtra", "yukon.web.modules.support.setupDatabase.setupDdevDatabase.error.empty");
-            } else if (devStars.getDevStarsHardware().getNumExtra() <= 0) {
-                errors.rejectValue("devStarsHardware.numExtra", "yukon.web.modules.support.setupDatabase.setupDdevDatabase.error.mustBePositive");
+                errors.rejectValue("devStarsHardware.numExtra", "yukon.web.modules.support.setupDatabase.setupDevDatabase.error.empty");
+            } else if (devStars.getDevStarsHardware().getNumExtra() < 0) {
+                errors.rejectValue("devStarsHardware.numExtra", "yukon.web.modules.support.setupDatabase.setupDevDatabase.error.mustBePositive");
             }
             
             if (devStars.getEnergyCompany() == null) {
                 if (StringUtils.isBlank(devStars.getNewEnergyCompanyName())) {
-                    errors.rejectValue("energyCompany", "yukon.web.modules.support.setupDatabase.setupDdevDatabase.error.empty");
+                    errors.rejectValue("energyCompany", "yukon.web.modules.support.setupDatabase.setupDevDatabase.error.empty");
                 } else if (ecDao.findEnergyCompanyByName(devStars.getNewEnergyCompanyName()) != null){
-                    errors.rejectValue("energyCompany", "yukon.web.modules.support.setupDatabase.setupDdevDatabase.error.unavailable");
+                    errors.rejectValue("energyCompany", "yukon.web.modules.support.setupDatabase.setupDevDatabase.error.unavailable");
                 }
                 
             }
@@ -366,7 +365,7 @@ public class SetupDevDbMethodController {
                 for (int accountId=initial;accountId<end;accountId++) {
                     if (devStarsCreationService.doesAccountExist(Integer.toString(accountId), devStars.getEnergyCompany().getEnergyCompanyId())) {
                         String[] arg = {Integer.toString(accountId)};
-                        errors.rejectValue("devStarsAccounts.accountNumMin", "yukon.web.modules.support.setupDatabase.setupDdevDatabase.error.accountExists",arg,"");
+                        errors.rejectValue("devStarsAccounts.accountNumMin", "yukon.web.modules.support.setupDatabase.setupDevDatabase.error.accountExists",arg,"");
                         break;
                     }
                 }

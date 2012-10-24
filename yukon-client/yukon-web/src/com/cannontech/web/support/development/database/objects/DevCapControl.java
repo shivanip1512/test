@@ -113,7 +113,7 @@ public class DevCapControl extends DevObject {
     }
 
     private int getNumRegulatorsToCreate() {
-        Integer num = 0;
+        int num = 0;
         for (DevPaoType type: regulatorTypes) {
             if (type.isCreate()) {
                 num += numRegulators;
@@ -124,13 +124,13 @@ public class DevCapControl extends DevObject {
     
     @Override
     public int getTotal() {
-        Integer numTotalSubs = numAreas * numSubs;
-        Integer numTotalSubBuses = numTotalSubs * numSubBuses;
-        Integer numTotalFeeders = numTotalSubBuses * numFeeders;
-        Integer numTotalCapBanks = numTotalFeeders * numCapBanks;
-        Integer numTotalCBCs = getCbcType() != null ? numTotalCapBanks : 0;
-        Integer numTotalRegulators = getNumRegulatorsToCreate();
-        Integer total = numAreas + numTotalSubs + numTotalSubBuses + numTotalFeeders + numTotalCapBanks + numTotalCBCs + numTotalRegulators;
+        int numTotalSubs = numAreas * numSubs;
+        int numTotalSubBuses = numTotalSubs * numSubBuses;
+        int numTotalFeeders = numTotalSubBuses * numFeeders;
+        int numTotalCapBanks = numTotalFeeders * numCapBanks;
+        int numTotalCBCs = getCbcType() != null ? numTotalCapBanks : 0;
+        int numTotalRegulators = getNumRegulatorsToCreate();
+        int total = numAreas + numTotalSubs + numTotalSubBuses + numTotalFeeders + numTotalCapBanks + numTotalCBCs + numTotalRegulators;
         return total;
     }
 }
