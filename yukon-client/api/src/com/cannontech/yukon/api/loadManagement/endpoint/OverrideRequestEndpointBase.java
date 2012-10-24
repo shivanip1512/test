@@ -28,10 +28,11 @@ public abstract class OverrideRequestEndpointBase {
     protected RolePropertyDao rolePropertyDao;
 
     protected CustomerAccount getCustomerAccount(String accountNumber, LiteYukonUser user) throws AccountNotFoundException {
+        int energyCompanyId = yukonEnergyCompanyService.getEnergyCompanyIdByOperator(user);
+        List<Integer> energyCompanyIds = yukonEnergyCompanyService.getChildEnergyCompanies(energyCompanyId);
+        energyCompanyIds.add(energyCompanyId);
+
         try {
-            int energyCompanyId = yukonEnergyCompanyService.getEnergyCompanyIdByOperator(user);
-            List<Integer> energyCompanyIds = yukonEnergyCompanyService.getChildEnergyCompanies(energyCompanyId);
-            energyCompanyIds.add(energyCompanyId);
             return customerAccountDao.getByAccountNumber(accountNumber, energyCompanyIds);
         } catch (NotFoundException e) {
             throw new AccountNotFoundException("Account " + accountNumber+ " couldn't be found.");
