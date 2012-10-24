@@ -2053,6 +2053,9 @@
                             <page name="changeWarehouse" type="BASIC">
                                 <menu>inventory|</menu>
                             </page>
+                            <page name="inventoryConfiguration" type="BASIC">
+                                <menu>inventory|</menu>
+                            </page>
                             <page name="saveToFile" type="BASIC">
                                 <menu>inventory|</menu>
                             </page>

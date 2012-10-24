@@ -32,7 +32,7 @@
                         <table>
                             <tr>
                                 <td class="actionCell">
-                                    <form action="deviceReconfig/setup" method="get">
+                                    <form action="inventoryConfiguration" method="get">
                                         <cti:inventoryCollection inventoryCollection="${inventoryCollection}"/>
                                         <cti:button nameKey="deviceReconfig" type="submit" styleClass="buttonGroup"/>
                                     </form>
@@ -130,22 +130,6 @@
                     </table>
                 </cti:dataGridCell>
             </c:if>
-        
-            <cti:checkRolesAndProperties value="DEVICE_RECONFIG">
-                <cti:dataGridCell>
-                        <table>
-                            <tr>
-                                <td class="actionCell">
-                                    <form action="resendConfig/view" method="get">
-                                        <cti:inventoryCollection inventoryCollection="${inventoryCollection}"/>
-                                        <cti:button nameKey="resendConfig" type="submit" styleClass="buttonGroup"/>
-                                    </form>
-                                </td>
-                                <td class="actionCell"><i:inline key=".resendConfigDescription"/></td>
-                            </tr>
-                        </table>
-                </cti:dataGridCell>
-            </cti:checkRolesAndProperties>
             
             <cti:dataGridCell>
                     <table>

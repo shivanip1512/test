@@ -184,6 +184,17 @@
     <entry key="yukon.common.collection.inventory.hardwareType">Type</entry>
     <entry key="yukon.common.collection.inventory.label">Label</entry>
     
+    <!-- /inventory/inventoryOperations/inventoryConfiguration.jsp -->
+    <entry key="yukon.web.modules.operator.inventoryConfiguration.pageName">Inventory Configuration</entry>
+    <entry key="yukon.web.modules.operator.inventoryConfiguration.pageDescription">Inventory Configuration</entry>
+    <entry key="yukon.web.modules.operator.inventoryConfiguration.actionsContainer.title">Select An Action To Perform On Selected Inventory</entry>
+    <entry key="yukon.web.modules.operator.inventoryConfiguration.instructionsLabel">Instructions:</entry>
+    <entry key="yukon.web.modules.operator.inventoryConfiguration.instructions">Selecting either of these options will not immediately make any changes.  You will be directed to a page with additional options and/or opportunity to confirm your action.</entry>
+    <entry key="yukon.web.modules.operator.inventoryConfiguration.resendConfig.label">Resend Config</entry>
+    <entry key="yukon.web.modules.operator.inventoryConfiguration.deviceReconfig.label">Inventory Configuration</entry>
+    <entry key="yukon.web.modules.operator.inventoryConfiguration.deviceReconfigDescription">Setup inventory configuration options.</entry>
+    <entry key="yukon.web.modules.operator.inventoryConfiguration.resendConfigDescription">Resend inventory configurations now.</entry>
+    
     <!-- /inventory/inventoryOperations/inventoryActions.jsp -->
     <entry key="yukon.web.modules.operator.inventoryActions.pageName">Inventory Actions</entry>
     <entry key="yukon.web.modules.operator.inventoryActions.pageDescription">Inventory Actions</entry>
@@ -204,10 +215,8 @@
     <entry key="yukon.web.modules.operator.inventoryActions.changeWarehouseDescription">Change the warehouse.</entry>
     <entry key="yukon.web.modules.operator.inventoryActions.saveToFile">Write collection to a batch configuration file.</entry>
     <entry key="yukon.web.modules.operator.inventoryActions.saveToFile.label">Save To File</entry>
-    <entry key="yukon.web.modules.operator.inventoryActions.resendConfig.label">Resend LM Config</entry>
-    <entry key="yukon.web.modules.operator.inventoryActions.resendConfigDescription">Resend configurations for LM devices.</entry>
-    <entry key="yukon.web.modules.operator.inventoryActions.controlAudit.label">LM Control Audit</entry>
-    <entry key="yukon.web.modules.operator.inventoryActions.controlAuditDescription">Run a LM control audit report of LM devices.</entry>
+    <entry key="yukon.web.modules.operator.inventoryActions.controlAudit.label">Control Audit</entry>
+    <entry key="yukon.web.modules.operator.inventoryActions.controlAuditDescription">Run a control audit report for two-way inventory.</entry>
 
     <!-- /inventory/inventoryOperations/saveBatchFile.jsp -->
     <entry key="yukon.web.modules.operator.saveToFile.pageName">Save To File</entry>
