@@ -10,6 +10,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.w3c.dom.DOMException;
 import org.w3c.dom.Node;
 
+import com.cannontech.capcontrol.dao.FeederDao;
 import com.cannontech.capcontrol.dao.SubstationBusDao;
 import com.cannontech.capcontrol.dao.ZoneDao;
 import com.cannontech.capcontrol.model.PointIdContainer;
@@ -35,6 +36,7 @@ public class CymeSimulationHelper {
     @Autowired private ZoneDao zoneDao;
     @Autowired private SimplePointAccessDao simplePointAccessDao;
     @Autowired private SubstationBusDao substationBusDao;
+    @Autowired private FeederDao feederDao;
     @Autowired private ExtraPaoPointAssignmentDao extraPaoPointAssignmentDao;
     
     private static final Logger log = YukonLogManager.getLogger(CymeSimulationHelper.class);
@@ -88,54 +90,61 @@ public class CymeSimulationHelper {
                             simplePointAccessDao.setPointValue(pointId, simulationTime, cymeObject.getPhaseC().getVoltage());
                         }
                     }
-                } else if (paoType == PaoType.CAP_CONTROL_SUBBUS) {
-                        PointIdContainer pointIds = substationBusDao.getSubstationBusPointIds(pao.getLiteID());
+                } else if (paoType == PaoType.CAP_CONTROL_SUBBUS || paoType == PaoType.CAP_CONTROL_FEEDER) {
                         
-                        int varTotalId = pointIds.getVarTotalId();
-                        int varAId = pointIds.getVarAId();
-                        int varBId = pointIds.getVarBId();
-                        int varCId = pointIds.getVarCId();
-                        int voltId = pointIds.getVoltId();
-                        int wattId = pointIds.getWattId();
-                        
-                        PhaseInformation phaseA = cymeObject.getPhaseA();
-                        PhaseInformation phaseB = cymeObject.getPhaseB();
-                        PhaseInformation phaseC = cymeObject.getPhaseC();
-                        
-                        float voltValue = (phaseA.getVoltage() + phaseB.getVoltage() + phaseC.getVoltage())/3.0f;
-                        float wattValue = phaseA.getkW() + phaseB.getkW()+phaseC.getkW();
+                    PointIdContainer pointIds;
+                    if (paoType == PaoType.CAP_CONTROL_SUBBUS) {
+                        pointIds = substationBusDao.getSubstationBusPointIds(pao.getLiteID());
+                    } else {
+                        //Feeder
+                        pointIds = feederDao.getFeederPointIds(pao.getLiteID());
+                    }
+                    
+                    int varTotalId = pointIds.getVarTotalId();
+                    int varAId = pointIds.getVarAId();
+                    int varBId = pointIds.getVarBId();
+                    int varCId = pointIds.getVarCId();
+                    int voltId = pointIds.getVoltId();
+                    int wattId = pointIds.getWattId();
+                    
+                    PhaseInformation phaseA = cymeObject.getPhaseA();
+                    PhaseInformation phaseB = cymeObject.getPhaseB();
+                    PhaseInformation phaseC = cymeObject.getPhaseC();
+                    
+                    float voltValue = (phaseA.getVoltage() + phaseB.getVoltage() + phaseC.getVoltage())/3.0f;
+                    float wattValue = phaseA.getkW() + phaseB.getkW()+phaseC.getkW();
 
-                        if (pointIds.isTotalizekVar()) {
-                            if (varTotalId == 0) {
-                                log.warn("CYME CONFIG: Missing Total kVar point on Subbus " + cymeObject.getEqNo() );
-                            } else {
-                                float varTotalValue = phaseA.getkVar() + phaseB.getkVar() + phaseC.getkVar();
-                                simplePointAccessDao.setPointValue(varTotalId, simulationTime, varTotalValue);
-                            }
+                    if (pointIds.isTotalizekVar()) {
+                        if (varTotalId == 0) {
+                            log.warn("CYME CONFIG: Missing Total kVar point on Subbus " + cymeObject.getEqNo() );
                         } else {
-                            if (varAId == 0 || varBId == 0 || varCId == 0) {
-                                log.warn("CYME CONFIG: Missing phase kVar point(s) on Subbus " + cymeObject.getEqNo() );
-                            } else {
-                                float varAValue = phaseA.getkVar();
-                                float varBValue = phaseB.getkVar();
-                                float varCValue = phaseC.getkVar();
-                                
-                                simplePointAccessDao.setPointValue(varAId, simulationTime, varAValue);
-                                simplePointAccessDao.setPointValue(varBId, simulationTime, varBValue);
-                                simplePointAccessDao.setPointValue(varCId, simulationTime, varCValue);
-                            }
+                            float varTotalValue = phaseA.getkVar() + phaseB.getkVar() + phaseC.getkVar();
+                            simplePointAccessDao.setPointValue(varTotalId, simulationTime, varTotalValue);
                         }
-                        
-                        if (voltId == 0) {
-                            log.warn("CYME CONFIG: Missing Volt point on Subbus " + cymeObject.getEqNo() );
+                    } else {
+                        if (varAId == 0 || varBId == 0 || varCId == 0) {
+                            log.warn("CYME CONFIG: Missing phase kVar point(s) on Subbus " + cymeObject.getEqNo() );
                         } else {
-                            simplePointAccessDao.setPointValue(voltId, simulationTime, voltValue);
+                            float varAValue = phaseA.getkVar();
+                            float varBValue = phaseB.getkVar();
+                            float varCValue = phaseC.getkVar();
+                            
+                            simplePointAccessDao.setPointValue(varAId, simulationTime, varAValue);
+                            simplePointAccessDao.setPointValue(varBId, simulationTime, varBValue);
+                            simplePointAccessDao.setPointValue(varCId, simulationTime, varCValue);
                         }
-                        if (wattId == 0) {
-                            log.warn("CYME CONFIG: Missing Watt point on Subbus " + cymeObject.getEqNo() );
-                        } else {
-                            simplePointAccessDao.setPointValue(wattId, simulationTime, wattValue);
-                        }
+                    }
+                    
+                    if (voltId == 0) {
+                        log.warn("CYME CONFIG: Missing Volt point on Subbus " + cymeObject.getEqNo() );
+                    } else {
+                        simplePointAccessDao.setPointValue(voltId, simulationTime, voltValue);
+                    }
+                    if (wattId == 0) {
+                        log.warn("CYME CONFIG: Missing Watt point on Subbus " + cymeObject.getEqNo() );
+                    } else {
+                        simplePointAccessDao.setPointValue(wattId, simulationTime, wattValue);
+                    }
                 } else if (paoType == PaoType.GANG_OPERATED) {
                     try {
                         LitePoint litePoint = extraPaoPointAssignmentDao.getLitePoint(pao, RegulatorPointMapping.VOLTAGE_Y);
@@ -165,6 +174,8 @@ public class CymeSimulationHelper {
             return PaoType.GANG_OPERATED;
         } else if ("Transformer".equals(eqCode)) {
             return PaoType.LOAD_TAP_CHANGER;
+        } else if ("Breaker".equals(eqCode)) {
+            return PaoType.CAP_CONTROL_FEEDER;
         }
         
         return null;

@@ -7,6 +7,7 @@ import java.util.List;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.jdbc.core.simple.ParameterizedRowMapper;
 
+import com.cannontech.capcontrol.dao.FeederDao;
 import com.cannontech.capcontrol.dao.SubstationBusDao;
 import com.cannontech.capcontrol.model.LiteCapControlObject;
 import com.cannontech.capcontrol.model.PointIdContainer;
@@ -23,8 +24,6 @@ import com.cannontech.database.IntegerRowMapper;
 import com.cannontech.database.PagingResultSetExtractor;
 import com.cannontech.database.SqlParameterSink;
 import com.cannontech.database.YukonJdbcTemplate;
-import com.cannontech.database.YukonResultSet;
-import com.cannontech.database.YukonRowMapper;
 import com.cannontech.message.dispatch.message.DbChangeType;
 import com.cannontech.util.Validator;
 
@@ -228,23 +227,7 @@ public class SubstationBusDaoImpl implements SubstationBusDao {
         sql.append("FROM CapControlSubstationBus");
         sql.append("WHERE SubstationBusId").eq(substationBusId);
         
-        PointIdContainer points = yukonJdbcTemplate.queryForObject(sql, new YukonRowMapper<PointIdContainer>() {
-
-            @Override
-            public PointIdContainer mapRow(YukonResultSet rs) throws SQLException {
-                PointIdContainer pc = new PointIdContainer();
-                
-                pc.setTotalizekVar(!"Y".equalsIgnoreCase(rs.getString("UsePhaseData")));
-                pc.setVarTotalId(rs.getInt("CurrentVarLoadPointId"));
-                pc.setVarAId(rs.getInt("CurrentVarLoadPointId"));
-                pc.setVarBId(rs.getInt("PhaseB"));
-                pc.setVarCId(rs.getInt("PhaseC"));
-                pc.setVoltId(rs.getInt("CurrentVoltLoadPointId"));
-                pc.setWattId(rs.getInt("CurrentWattLoadPointId"));
-                
-                return pc;
-            }
-        });
+        PointIdContainer points = yukonJdbcTemplate.queryForObject(sql, FeederDao.pointIdContainerMapper);
         
         return points;
 	}

@@ -11,6 +11,7 @@ import org.springframework.jdbc.core.simple.ParameterizedRowMapper;
 import com.cannontech.capcontrol.dao.FeederDao;
 import com.cannontech.capcontrol.model.FeederPhaseData;
 import com.cannontech.capcontrol.model.LiteCapControlObject;
+import com.cannontech.capcontrol.model.PointIdContainer;
 import com.cannontech.common.pao.PaoType;
 import com.cannontech.common.pao.YukonPao;
 import com.cannontech.common.pao.service.impl.PaoCreationHelper;
@@ -183,5 +184,18 @@ public class FeederDaoImpl implements FeederDao {
 		
 		boolean result = (rowsAffected == 1);
 		return result;
-	}
+    }
+
+    @Override
+    public PointIdContainer getFeederPointIds(int feederId) {
+        SqlStatementBuilder sql = new SqlStatementBuilder();
+                
+        sql.append("SELECT CurrentVarLoadPointId, CurrentWattLoadPointId, CurrentVoltLoadPointId, UsePhaseData, PhaseB, PhaseC");
+        sql.append("FROM CapControlFeeder");
+        sql.append("WHERE FeederId").eq(feederId);
+            
+        PointIdContainer points = yukonJdbcTemplate.queryForObject(sql, pointIdContainerMapper);
+            
+        return points;
+    }
 }
