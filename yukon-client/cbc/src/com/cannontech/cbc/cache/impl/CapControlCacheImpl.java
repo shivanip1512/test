@@ -5,7 +5,6 @@ package com.cannontech.cbc.cache.impl;
  */
 import java.util.ArrayList;
 import java.util.Collections;
-import java.util.Date;
 import java.util.HashMap;
 import java.util.Hashtable;
 import java.util.List;
@@ -647,25 +646,34 @@ public class CapControlCacheImpl implements MessageListener, CapControlCache {
     }
     
     private synchronized void logAllSubs(SubstationBuses busesMsg) {
+        if(!log.isDebugEnabled()) {
+            return;
+        }
+        
         for( int i = (busesMsg.getNumberOfBuses()-1); i >= 0; i-- ){
-        	log.debug( new Date().toString()
-        			+ " : Received SubBus - " + busesMsg.getSubBusAt(i).getCcName() 
+        	log.debug("Received SubBus - " + busesMsg.getSubBusAt(i).getCcName() 
         			+ "/" + busesMsg.getSubBusAt(i).getCcArea() );
         }
     }
     
     private synchronized void logAllSubStations(SubStations stationsMsg) {
+        if(!log.isDebugEnabled()) {
+            return;
+        }
+        
         for( int i = (stationsMsg.getNumberOfStations()-1); i >= 0; i-- ){
-        	log.debug( new Date().toString()
-        			+ " : Received SubStations - " + stationsMsg.getSubAt(i).getCcName() 
+        	log.debug("Received SubStations - " + stationsMsg.getSubAt(i).getCcName() 
         			+ "/" + stationsMsg.getSubAt(i).getCcArea() );
         }
     }  
     
     private synchronized void logAllAreas(SubAreas areasMsg) {
+        if(!log.isDebugEnabled()) {
+            return;
+        }
+        
         for( int i = (areasMsg.getNumberOfAreas()-1); i >= 0; i-- ){
-        	log.debug( new Date().toString()
-        			+ " : Received Areas - " + areasMsg.getArea(i).getCcName());
+        	log.debug("Received Areas - " + areasMsg.getArea(i).getCcName());
         }
     }   
     
