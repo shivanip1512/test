@@ -221,7 +221,7 @@
                   <i__tableName>GlobalSetting</i__tableName>
                   <i__ordinalPosition>1</i__ordinalPosition>
                   <i__columnName>Name</i__columnName>
-                  <i__nonNonUnique>true</i__nonNonUnique>
+                  <i__nonNonUnique>false</i__nonNonUnique>
                 </com.cariboulake.db.schemacompare.business.domain.db.IndexSegment>
               </indexSegments>
               <indexName>Indx_GlobalSetting_Name_UNQ</indexName>
