@@ -369,6 +369,8 @@ table.compactResultsTable td {
     padding: 3px 8px 2px 4px;
     font-size: 11px !important;
     vertical-align: top;
+}
+.compactResultsTable {
     color: #555;
 }
 
