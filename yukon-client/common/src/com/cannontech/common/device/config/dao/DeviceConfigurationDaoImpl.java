@@ -221,7 +221,7 @@ public class DeviceConfigurationDaoImpl implements DeviceConfigurationDao {
     public void delete(int id) {
         if (id == DNPConfiguration.DEFAULT_DNP_CONFIG_ID) {
             // Don't allow users to delete the default configuration under any circumstances.
-            throw new RuntimeException("Cannot delete the default DNP configuration!");
+            throw new InvalidConfigurationRemovalException("Cannot delete the default DNP configuration!");
         }
         
         ConfigurationBase configuration = getConfiguration(id);
@@ -229,7 +229,7 @@ public class DeviceConfigurationDaoImpl implements DeviceConfigurationDao {
             configuration.getType() == ConfigurationType.DNP && 
             !getAssignedDevices(configuration).isEmpty()) {
             // This is a DNP configuration with assigned devices. Deletion is not allowable.
-            throw new RuntimeException("Cannot delete a DNP configuration with assigned devices!");
+            throw new InvalidConfigurationRemovalException("Cannot delete a DNP configuration with assigned devices!");
         }
 
         // Remove any existing items

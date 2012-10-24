@@ -1,7 +1,5 @@
 package com.cannontech.database.data.device;
 
-import java.sql.SQLException;
-
 import com.cannontech.common.device.config.dao.DeviceConfigurationDao;
 import com.cannontech.common.device.config.model.DNPConfiguration;
 import com.cannontech.common.device.model.SimpleDevice;
@@ -13,20 +11,11 @@ import com.cannontech.spring.YukonSpringHook;
 public class DNPBase extends AddressBase implements DBCopiable {
     private DNPConfiguration dnpConfiguration = null;
 
-    public DNPBase() {
-        super();
-    }
-
     public void add() throws java.sql.SQLException {
         super.add();
 
         Object[] configValues = { getPAObjectID(), getDnpConfiguration().getId() };
         add("DeviceConfigurationDeviceMap", configValues);
-    }
-    
-    @Override
-    public void addPartial() throws SQLException {
-        super.addPartial();
     }
     
     public void retrieve() throws java.sql.SQLException {
@@ -46,5 +35,4 @@ public class DNPBase extends AddressBase implements DBCopiable {
     public DNPConfiguration getDnpConfiguration() {
         return dnpConfiguration;
     }
-
 }

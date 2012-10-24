@@ -13,6 +13,7 @@ import org.springframework.web.servlet.mvc.multiaction.MultiActionController;
 
 import com.cannontech.common.device.config.dao.ConfigurationType;
 import com.cannontech.common.device.config.dao.DeviceConfigurationDao;
+import com.cannontech.common.device.config.dao.InvalidConfigurationRemovalException;
 import com.cannontech.common.device.config.model.ConfigurationBase;
 import com.cannontech.common.device.config.model.ConfigurationTemplate;
 import com.cannontech.core.roleproperties.YukonRoleProperty;
@@ -102,7 +103,7 @@ public class DeviceConfigurationController extends MultiActionController {
         try {
             deviceConfigurationDao.delete(configId);
             flashScope.setConfirm(new YukonMessageSourceResolvable("yukon.web.modules.deviceConfig.removeSuccess", configName));
-        } catch (RuntimeException e) {
+        } catch (InvalidConfigurationRemovalException e) {
             flashScope.setError(new YukonMessageSourceResolvable("yukon.web.modules.deviceConfig.removeFail", configName, e.getMessage()));
         }
         
