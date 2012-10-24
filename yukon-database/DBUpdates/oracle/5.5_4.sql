@@ -280,6 +280,10 @@ CREATE UNIQUE INDEX Indx_UserGroup_Name_UNQ on UserGroup (
 );
 /* End YUK-11390 */
 
+/* Start YUK-11493 */
+DELETE FROM YukonServices WHERE ServiceID = 19;
+/* End YUK-11493 */
+
 /**************************************************************/ 
 /* VERSION INFO                                               */ 
 /*   Automatically gets inserted from build script            */ 
