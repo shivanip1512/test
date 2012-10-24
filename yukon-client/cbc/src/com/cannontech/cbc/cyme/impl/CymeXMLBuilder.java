@@ -52,7 +52,7 @@ public class CymeXMLBuilder {
                          "<Index>" + maxIndex + "</Index>" +    // Incremental number
                          "<ModifID>" + maxIndex++ +"</ModifID>" +   // Same as Index
                          "<Description>Disconnect ShuntCapacitor "+ bankName  +".</Description>" +
-                         "<SectionID>" + bankName.split("-")[0] + "</SectionID>" +
+                         "<SectionID>" + bankName + "</SectionID>" +
                          "<DeviceType>ShuntCapacitor</DeviceType>" + // See list at the end of document
                          "<DeviceNumber>" + bankName + "</DeviceNumber>" +
                          "<ConnectionStatus>" + convertBankStatus(state) + "</ConnectionStatus>" + // Connected, Disconnected 
