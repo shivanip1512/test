@@ -17,6 +17,11 @@ import com.cannontech.stars.database.data.lite.LiteStarsEnergyCompany;
 public class YukonListEntryListTag extends YukonTagSupport {
 
 	private String var;
+	/**
+	 * The following should NOT be defined as an int since passing in the empty
+	 * string in a jsp, tag, jpsf, etc. will result in the value being 0.  This
+	 * causes problems identified in YUK-10871.
+	 */
 	private String energyCompanyId;
 	private String listName;
 	private StarsDatabaseCache starsDatabaseCache;
