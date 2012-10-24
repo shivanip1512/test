@@ -284,6 +284,24 @@ CREATE UNIQUE INDEX Indx_UserGroup_Name_UNQ on UserGroup (
 DELETE FROM YukonServices WHERE ServiceID = 19;
 /* End YUK-11493 */
 
+/* Start YUK-11567 */
+CREATE TABLE ReportedAddressSep (
+   ChangeId                  NUMBER              NOT NULL,
+   DeviceId                  NUMBER              NOT NULL,
+   Timestamp                 DATE                NOT NULL,
+   UtilityEnrollmentGroup    NUMBER              NOT NULL,
+   RandomStartTimeMinutes    NUMBER              NOT NULL,
+   RandomStopTimeMinutes     NUMBER              NOT NULL,
+   DeviceClass               NUMBER              NOT NULL,
+   CONSTRAINT PK_ReportedAddressSep PRIMARY KEY (ChangeId)
+);
+ 
+ALTER TABLE ReportedAddressSep
+   ADD CONSTRAINT FK_ReportedAddressSep_Device FOREIGN KEY (DeviceId)
+      REFERENCES DEVICE (DEVICEID)
+         ON DELETE CASCADE;
+/* End YUK-11567 */
+
 /**************************************************************/ 
 /* VERSION INFO                                               */ 
 /*   Automatically gets inserted from build script            */ 

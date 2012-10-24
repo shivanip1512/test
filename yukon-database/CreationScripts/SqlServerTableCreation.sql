@@ -1,7 +1,7 @@
 /*==============================================================*/
 /* Database name:  YukonDatabase                                */
 /* DBMS name:      Microsoft SQL Server 2005                    */
-/* Created on:     10/24/2012 3:16:45 PM                        */
+/* Created on:     10/24/2012 4:26:09 PM                        */
 /*==============================================================*/
 
 /*==============================================================*/
@@ -7495,6 +7495,21 @@ create table ReportedAddressRelayExpressCom (
 go
 
 /*==============================================================*/
+/* Table: ReportedAddressSep                                    */
+/*==============================================================*/
+create table ReportedAddressSep (
+   ChangeId             numeric              not null,
+   DeviceId             numeric              not null,
+   Timestamp            datetime             not null,
+   UtilityEnrollmentGroup numeric              not null,
+   RandomStartTimeMinutes numeric              not null,
+   RandomStopTimeMinutes numeric              not null,
+   DeviceClass          numeric              not null,
+   constraint PK_ReportedAddressSep primary key (ChangeId)
+)
+go
+
+/*==============================================================*/
 /* Table: Route                                                 */
 /*==============================================================*/
 create table Route (
@@ -12826,6 +12841,12 @@ go
 alter table ReportedAddressRelayExpressCom
    add constraint FK_RepAddRelayExp_RepAddExpCom foreign key (ChangeId)
       references ReportedAddressExpressCom (ChangeId)
+         on delete cascade
+go
+
+alter table ReportedAddressSep
+   add constraint FK_ReportedAddressSep_Device foreign key (DeviceId)
+      references DEVICE (DEVICEID)
          on delete cascade
 go
 

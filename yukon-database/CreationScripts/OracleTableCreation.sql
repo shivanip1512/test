@@ -1,7 +1,7 @@
 /*==============================================================*/
 /* Database name:  YukonDatabase                                */
 /* DBMS name:      ORACLE Version 9i                            */
-/* Created on:     10/24/2012 3:00:04 PM                        */
+/* Created on:     10/24/2012 4:30:30 PM                        */
 /*==============================================================*/
 
 
@@ -7055,6 +7055,20 @@ create table ReportedAddressRelayExpressCom  (
 );
 
 /*==============================================================*/
+/* Table: ReportedAddressSep                                    */
+/*==============================================================*/
+create table ReportedAddressSep  (
+   ChangeId             NUMBER                          not null,
+   DeviceId             NUMBER                          not null,
+   Timestamp            DATE                            not null,
+   UtilityEnrollmentGroup NUMBER                          not null,
+   RandomStartTimeMinutes NUMBER                          not null,
+   RandomStopTimeMinutes NUMBER                          not null,
+   DeviceClass          NUMBER                          not null,
+   constraint PK_ReportedAddressSep primary key (ChangeId)
+);
+
+/*==============================================================*/
 /* Table: Route                                                 */
 /*==============================================================*/
 create table Route  (
@@ -11785,6 +11799,11 @@ alter table ReportedAddressExpressCom
 alter table ReportedAddressRelayExpressCom
    add constraint FK_RepAddRelayExp_RepAddExpCom foreign key (ChangeId)
       references ReportedAddressExpressCom (ChangeId)
+      on delete cascade;
+
+alter table ReportedAddressSep
+   add constraint FK_ReportedAddressSep_Device foreign key (DeviceId)
+      references DEVICE (DEVICEID)
       on delete cascade;
 
 alter table Route
