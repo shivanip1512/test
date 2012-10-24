@@ -1458,6 +1458,9 @@ public final class CtiUtilities {
     public final static Function<Instant, Date> DATE_FROM_INSTANT = new Function<Instant, Date>() {
         @Override
         public Date apply(Instant input) {
+            if (input == null) {
+                return null;
+            }
             return input.toDate();
         }
     };
@@ -1465,6 +1468,9 @@ public final class CtiUtilities {
     public final static Function<Date, Instant> INSTANT_FROM_DATE = new Function<Date, Instant>() {
         @Override
         public Instant apply(Date input) {
+            if (input == null) {
+                return null;
+            }
             return new Instant(input.getTime());
         }
     };
