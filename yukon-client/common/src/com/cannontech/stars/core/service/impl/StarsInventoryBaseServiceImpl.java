@@ -16,7 +16,6 @@ import com.cannontech.common.inventory.HardwareClass;
 import com.cannontech.common.inventory.InventoryIdentifier;
 import com.cannontech.common.rfn.message.RfnIdentifier;
 import com.cannontech.common.rfn.model.RfnDevice;
-import com.cannontech.common.util.CtiUtilities;
 import com.cannontech.common.version.VersionTools;
 import com.cannontech.core.dao.YukonListDao;
 import com.cannontech.database.data.device.DeviceTypesFuncs;
@@ -337,7 +336,7 @@ public class StarsInventoryBaseServiceImpl implements StarsInventoryBaseService 
             applianceDao.deleteAppliancesByAccountIdAndInventoryId(accountId, inventoryId);
         }
 
-        String removeLbl = CtiUtilities.STRING_NONE;
+        String removeLbl = lib.getManufacturerSerialNumber();
         // update the Inventory to remove it from the account
         inventoryBaseDao.removeInventoryFromAccount(inventoryId, removeInstant, removeLbl);
         
