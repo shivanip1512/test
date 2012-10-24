@@ -1,7 +1,7 @@
 /*==============================================================*/
 /* Database name:  YukonDatabase                                */
 /* DBMS name:      ORACLE Version 9i                            */
-/* Created on:     10/23/2012 4:16:29 PM                        */
+/* Created on:     10/24/2012 2:47:45 PM                        */
 /*==============================================================*/
 
 
@@ -4821,7 +4821,7 @@ create table GlobalSetting  (
 /*==============================================================*/
 /* Index: Indx_GlobalSetting_Name_UNQ                           */
 /*==============================================================*/
-create index Indx_GlobalSetting_Name_UNQ on GlobalSetting (
+create unique index Indx_GlobalSetting_Name_UNQ on GlobalSetting (
    Name ASC
 );
 

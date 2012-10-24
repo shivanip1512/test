@@ -1,7 +1,7 @@
 /*==============================================================*/
 /* Database name:  YukonDatabase                                */
 /* DBMS name:      Microsoft SQL Server 2005                    */
-/* Created on:     10/23/2012 4:15:03 PM                        */
+/* Created on:     10/24/2012 2:35:42 PM                        */
 /*==============================================================*/
 
 /*==============================================================*/
@@ -5072,7 +5072,7 @@ go
 /*==============================================================*/
 /* Index: Indx_GlobalSetting_Name_UNQ                           */
 /*==============================================================*/
-create index Indx_GlobalSetting_Name_UNQ on GlobalSetting (
+create unique index Indx_GlobalSetting_Name_UNQ on GlobalSetting (
 Name ASC
 )
 go
