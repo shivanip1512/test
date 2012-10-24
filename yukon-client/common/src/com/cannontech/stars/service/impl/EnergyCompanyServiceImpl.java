@@ -106,7 +106,7 @@ public class EnergyCompanyServiceImpl implements EnergyCompanyService {
     @Override
     @Transactional(rollbackFor = {ConfigurationException.class, RuntimeException.class})
     public LiteStarsEnergyCompany createEnergyCompany(EnergyCompanyDto energyCompanyDto, LiteYukonUser user, Integer parentId)
-    throws WebClientException, TransactionException, CommandExecutionException, ConfigurationException, SQLException {
+    throws TransactionException, CommandExecutionException, ConfigurationException, SQLException {
         
         boolean topLevelEc = parentId == null;
         
@@ -115,7 +115,6 @@ public class EnergyCompanyServiceImpl implements EnergyCompanyService {
             throw new EnergyCompanyNameUnavailableException();
         }
 
-        
         /* Check usernames availability */
         if (yukonUserDao.findUserByUsername(energyCompanyDto.getAdminUsername()) != null) {
             throw new UserNameUnavailableException("adminUsername");

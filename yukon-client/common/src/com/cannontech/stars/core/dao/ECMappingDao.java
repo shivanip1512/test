@@ -62,11 +62,14 @@ public interface ECMappingDao {
     public List<Integer> getSubstationIdsForEnergyCompanyId(int energycompanyId);
 
     /**
-     * Method to add an energy company to account mapping
-     * @param liteYukonUsr
-     * @param liteStarsEnergyCompany
+     * Method to add an energy company to operator mapping
      */
     public void addEnergyCompanyOperatorLoginListMapping(LiteYukonUser liteYukonUser, LiteStarsEnergyCompany liteStarsEnergyCompany);
+    
+    /**
+     * Method to add an energy company to operator mapping
+     */
+    public void addEnergyCompanyOperatorLoginListMapping(int userId, int energyCompanyId);
     
     /**
      * Method to add a yukon user to energy company as an operator login

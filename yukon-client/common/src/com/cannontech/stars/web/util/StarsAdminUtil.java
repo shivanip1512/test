@@ -27,7 +27,6 @@ import com.cannontech.core.roleproperties.YukonRoleProperty;
 import com.cannontech.core.users.dao.UserGroupDao;
 import com.cannontech.core.users.model.LiteUserGroup;
 import com.cannontech.database.PoolManager;
-import com.cannontech.database.SqlStatement;
 import com.cannontech.database.SqlUtils;
 import com.cannontech.database.Transaction;
 import com.cannontech.database.TransactionException;
@@ -47,6 +46,7 @@ import com.cannontech.message.dispatch.message.DbChangeType;
 import com.cannontech.roles.operator.AdministratorRole;
 import com.cannontech.roles.yukon.EnergyCompanyRole;
 import com.cannontech.spring.YukonSpringHook;
+import com.cannontech.stars.core.dao.ECMappingDao;
 import com.cannontech.stars.core.dao.StarsSearchDao;
 import com.cannontech.stars.database.cache.StarsDatabaseCache;
 import com.cannontech.stars.database.data.hardware.LMHardwareBase;
@@ -739,18 +739,13 @@ public class StarsAdminUtil {
 	}
 
 	public static LiteYukonUser createOperatorLogin(String username, String password, LoginStatusEnum status, com.cannontech.database.db.user.UserGroup liteUserGroup,
-		LiteStarsEnergyCompany energyCompany) throws TransactionException, WebClientException, CommandExecutionException
-	{
-	    AuthenticationService authenticationService = (AuthenticationService) YukonSpringHook.getBean("authenticationService");
+		LiteStarsEnergyCompany energyCompany) 
+    throws TransactionException, CommandExecutionException {
+
+	    AuthenticationService authenticationService = YukonSpringHook.getBean("authenticationService", AuthenticationService.class);
+	    ECMappingDao ecMappingDao = YukonSpringHook.getBean("ecMappingDao", ECMappingDao.class);
 
         AuthType defaultAuthType = authenticationService.getDefaultAuthType();
-		if (username.length() == 0)
-			throw new WebClientException( "Username cannot be empty" );
-		if (password.length() == 0)
-			throw new WebClientException( "Password cannot be empty" );
-		if (DaoFactory.getYukonUserDao().findUserByUsername( username ) != null)
-			throw new WebClientException( "Username already exists" );
-		
 		com.cannontech.database.data.user.YukonUser yukonUser = new com.cannontech.database.data.user.YukonUser();
 		com.cannontech.database.db.user.YukonUser userDB = yukonUser.getYukonUser();
 		
@@ -764,14 +759,10 @@ public class StarsAdminUtil {
 		yukonUser = Transaction.createTransaction(Transaction.INSERT, yukonUser).execute();
 		
 		if (energyCompany != null) {
-			SqlStatement stmt = new SqlStatement(
-					"INSERT INTO EnergyCompanyOperatorLoginList VALUES(" +
-						energyCompany.getEnergyCompanyId() + ", " + userDB.getUserID() + ")",
-					CtiUtilities.getDatabaseAlias()
-					);
-			stmt.execute();
+		    ecMappingDao.addEnergyCompanyOperatorLoginListMapping(userDB.getUserID(), energyCompany.getEnergyCompanyId());
 		}
 		
+		// Setting the password for the new account.
 		LiteYukonUser liteUser = new LiteYukonUser(userDB.getUserID().intValue(), userDB.getUsername(), userDB.getLoginStatus());
         liteUser.setAuthType(defaultAuthType);
 		handleDBChange( liteUser, DbChangeType.ADD );

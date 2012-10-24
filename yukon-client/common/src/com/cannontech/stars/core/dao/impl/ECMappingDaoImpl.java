@@ -134,11 +134,19 @@ public class ECMappingDaoImpl implements ECMappingDao, InitializingBean {
     }
     
     @Override
-    public void addEnergyCompanyOperatorLoginListMapping(LiteYukonUser liteYukonUsr,
-                                     LiteStarsEnergyCompany liteStarsEnergyCompany) {
-        String sql = "INSERT INTO EnergyCompanyOperatorLoginList VALUES (?,?)";
-        yukonJdbcTemplate.update(sql, liteStarsEnergyCompany.getEnergyCompanyId(), liteYukonUsr.getUserID());
+    public void addEnergyCompanyOperatorLoginListMapping(LiteYukonUser liteYukonUser, LiteStarsEnergyCompany liteStarsEnergyCompany) {
+        addEnergyCompanyOperatorLoginListMapping(liteYukonUser.getUserID(), liteStarsEnergyCompany.getEnergyCompanyId());
     }
+
+    @Override
+    public void addEnergyCompanyOperatorLoginListMapping(int userId, int energyCompanyId) {
+        SqlStatementBuilder sql = new SqlStatementBuilder();
+        sql.append("INSERT INTO EnergyCompanyOperatorLoginList");
+        sql.values(energyCompanyId, userId);
+        
+        yukonJdbcTemplate.update(sql);
+    }
+
     
     @Override
     @Transactional    
