@@ -1,7 +1,7 @@
 /*==============================================================*/
 /* Database name:  YukonDatabase                                */
 /* DBMS name:      Microsoft SQL Server 2005                    */
-/* Created on:     10/24/2012 4:26:09 PM                        */
+/* Created on:     10/24/2012 5:31:10 PM                        */
 /*==============================================================*/
 
 /*==============================================================*/
@@ -9201,7 +9201,7 @@ INSERT INTO YukonRoleProperty VALUES(-1107,-2,'track_hardware_addressing','false
 INSERT INTO YukonRoleProperty VALUES(-1108,-2,'single_energy_company','true','Indicates whether this is a single energy company system.');
 INSERT INTO YukonRoleProperty VALUES(-1109,-2,'z_optional_product_dev','00000000','This feature is for development purposes only');
 INSERT INTO YukonRoleProperty VALUES(-1110,-2,'Default Temperature Unit','F','Default temperature unit for an energy company, F(ahrenheit) or C(elsius)');
-INSERT INTO YukonRoleProperty VALUES(-1111,-2,'z_meter_mct_base_desig','yukon','Allow meters to be used general STARS entries versus Yukon MCTs');
+INSERT INTO YukonRoleProperty VALUES(-1111,-2,'z_meter_mct_base_desig','stars','Allow meters to be used general STARS entries versus Yukon MCTs');
 INSERT INTO YukonRoleProperty VALUES(-1112,-2,'applicable_point_type_key',' ','The name of the set of CICustomerPointData TYPES that should be set for customers.');
 INSERT INTO YukonRoleProperty VALUES(-1114,-2,'Inherit Parent App Cats','true','If part of a member structure, should appliance categories be inherited from the parent.');
 INSERT INTO YukonRoleProperty VALUES(-1115,-2,'Auto Create Login For Additional Contacts','true','Automatically create a default login for each additional contact created on a STARS account.');

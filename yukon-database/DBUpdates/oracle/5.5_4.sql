@@ -302,6 +302,26 @@ ALTER TABLE ReportedAddressSep
          ON DELETE CASCADE;
 /* End YUK-11567 */
 
+/* Start YUK-11553 */
+/* @error warn-once */
+/* @start-block */
+UPDATE YukonRoleProperty SET DefaultValue = 'stars' WHERE RolePropertyId = -1111;
+ 
+DECLARE
+    starsMctPaoCount INT;
+BEGIN
+    SELECT COUNT(*) INTO starsMctPaoCount
+    FROM InventoryBase 
+    WHERE CategoryID = 1033;
+ 
+    IF 0 < starsMctPaoCount THEN
+        RAISE_APPLICATION_ERROR(-20001, 'Your system currently has Yukon meters within STARS. If you are using STARS to track Yukon meters, then after upgrade is complete, log in to Yukon and set EnergyCompany > z_meter_mct_base_desig role property to ''yukon''. Reference YUK-11553');
+    END IF;
+END;
+/
+/* @end-block */
+/* End YUK-11553 */
+
 /**************************************************************/ 
 /* VERSION INFO                                               */ 
 /*   Automatically gets inserted from build script            */ 
