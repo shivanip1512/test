@@ -117,7 +117,6 @@
     <entry key="yukon.web.modules.operator.account.loginInfoError.invalidPasswordChange">User does not have access/permission to change password.</entry>
     <entry key="yukon.web.modules.operator.account.loginInfoError.passwordNoMatch">The passwords supplied do not match.</entry>
     <entry key="yukon.web.modules.operator.account.loginInfoError.passwordTooLong">Passwords can only be 64 characters or less.</entry>
-    <entry key="yukon.web.modules.operator.account.loginInfoError.passwordTooShort">Supplied password is too short.</entry>
     <entry key="yukon.web.modules.operator.account.passwordDialog.title">Change Password</entry>
     <entry key="yukon.web.modules.operator.account.passwordDialog.ok">Save</entry>
     

@@ -152,16 +152,11 @@
         
         function updatePassword(event){
             jQuery("#passwordDialog").removeMessage();
-            jQuery("#passwordDialog .error").removeClass('error');
+            jQuery("#passwordDialog .ERROR").removeClass('ERROR');
             
             prepPasswordFields();
             
-            if(jQuery("#password1").val().length == 0 && jQuery("#password2").val().length == 0){
-                jQuery("#passwordDialog").addMessage({
-                    message: '<cti:msg2 key=".loginInfoError.passwordTooShort" javaScriptEscape="true"/>', 
-                    messageClass: 'ERROR'});
-                jQuery("#password1, #password2").addClass('error');
-            }else if(jQuery("#password1").val() != jQuery("#password2").val()){
+ 			if(jQuery("#password1").val() != jQuery("#password2").val()){
                 jQuery("#passwordDialog").addMessage({
                     message: '<cti:msg2 key=".loginInfoError.passwordNoMatch" javaScriptEscape="true"/>', 
                     messageClass: 'ERROR'});
@@ -177,11 +172,11 @@
                     error:      function(xhr){
                         var data = jQuery.parseJSON(xhr.responseText);
                         data = data.fieldErrors;
+                        jQuery("#password1, #password2").addClass('error');
                         if(data.password1 == data.password2){
-                            jQuery("#password1, #password2").addClass('error');
                             delete data.password2;
                         }
-                        jQuery("#passwordDialog").addMessage({message: data, messageClass: 'error'});
+                        jQuery("#passwordDialog").addMessage({message: data, messageClass: 'ERROR'});
                 }});
             }
         }
