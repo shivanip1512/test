@@ -65,6 +65,11 @@ class IVVCAlgorithm
         double feederPFCorrectionCalculator( const double actualFeederPF,
                                              const IVVCStrategy * strategy, const bool isPeakTime ) const;
 
+        bool checkForMultiTapOperation( const PointValueMap & voltages,
+                                        const std::map<long, CtiCCMonitorPointPtr> & _monitorMap,
+                                        IVVCStrategy * strategy,
+                                        const bool isPeakTime ) const;
+
         void tapOperation(IVVCStatePtr state, CtiCCSubstationBusPtr subbus, IVVCStrategy* strategy, const PointValueMap & pointValues);
         void tapOpZoneNormalization(const long parentID, const Cti::CapControl::ZoneManager &zoneManager, IVVCState::TapOperationZoneMap &tapOp);
 
@@ -87,6 +92,18 @@ class IVVCAlgorithm
         bool hasTapOpsRemaining(const IVVCState::TapOperationZoneMap & tapOp) const;
 
         void updateCommsState( const long busCommsPointId, const bool isCommsLost ) const;
+
+        void calculateMultiTapOperation( PointValueMap & voltages,
+                                         CtiCCSubstationBusPtr subbus,                                   
+                                         IVVCStrategy * strategy,
+                                         IVVCState::TapOperationZoneMap & solution );
+
+        void calculateMultiTapOperationHelper( const long zoneID,
+                                               PointValueMap & voltages,
+                                               const double cumulativeVoltageOffset,
+                                               CtiCCSubstationBusPtr subbus,
+                                               IVVCStrategy * strategy,
+                                               IVVCState::TapOperationZoneMap & solution );
 
         PointDataRequestFactoryPtr _requestFactory;
 };

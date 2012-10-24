@@ -1744,7 +1744,11 @@ bool IVVCAlgorithm::busAnalysisState(IVVCStatePtr state, CtiCCSubstationBusPtr s
 
     // add in bus power factor component
 
-    currentBusWeight += strategy->getPFWeight( isPeakTime ) * calculatePowerFactorCost( PFBus, strategy, isPeakTime );
+    double pfCalc = strategy->getPFWeight( isPeakTime ) * calculatePowerFactorCost( PFBus, strategy, isPeakTime );
+
+    double powerFactorComponentMultiTap = pfCalc;
+
+    currentBusWeight += pfCalc;
 
     // report feeder stuff
 
@@ -1754,8 +1758,11 @@ bool IVVCAlgorithm::busAnalysisState(IVVCStatePtr state, CtiCCSubstationBusPtr s
 
         // add in each feeder power factor component
 
-        currentBusWeight += feederPFCorrectionCalculator( PFFeeder, strategy, isPeakTime )
-                                * calculatePowerFactorCost( PFFeeder, strategy, isPeakTime );
+        pfCalc = feederPFCorrectionCalculator( PFFeeder, strategy, isPeakTime )
+                    * calculatePowerFactorCost( PFFeeder, strategy, isPeakTime );
+
+        powerFactorComponentMultiTap += pfCalc;
+        currentBusWeight += pfCalc;
 
         if (_CC_DEBUG & CC_DEBUG_IVVC)
         {
@@ -1955,6 +1962,56 @@ bool IVVCAlgorithm::busAnalysisState(IVVCStatePtr state, CtiCCSubstationBusPtr s
         }
     }
 
+    // check for any potential multi-tap operation potential
+
+    const bool canDoMultiTap = checkForMultiTapOperation( pointValues, subbus->getAllMonitorPoints(), strategy, isPeakTime );
+
+    double multiTapEstBw = powerFactorComponentMultiTap;
+
+    if ( canDoMultiTap )
+    {
+        PointValueMap multiTapVoltages( pointValues );      // copy data
+
+        state->_tapOps.clear();
+
+        // we now have a tap solution for our over-voltage
+
+        calculateMultiTapOperation( multiTapVoltages, subbus, strategy, state->_tapOps );
+
+        // calculate the bus weight
+
+        if (_CC_DEBUG & CC_DEBUG_IVVC)
+        {
+            CtiLockGuard<CtiLogger> logger_guard(dout);
+
+            dout << CtiTime() << " - IVVC Algorithm: " << subbus->getPaoName() << " - Estimated voltages for Multi-Tap solution." << std::endl;
+            dout << "Estimated Voltages [ Point ID : Estimated Value ]" << std::endl;
+            for ( PointValueMap::const_iterator b = multiTapVoltages.begin(), e = multiTapVoltages.end(); b != e; ++b )
+            {
+                dout << b->first << " : " << b->second.value << std::endl;
+            }
+            dout << "Tap Operations [ Regulator ID : Operation ]" << std::endl;
+            for ( IVVCState::TapOperationZoneMap::const_iterator b = state->_tapOps.begin(), e = state->_tapOps.end(); b != e; ++b )
+            {
+                dout << b->first << " : " << b->second << std::endl;
+            }
+        }
+
+        double mt_Vf = calculateVf( multiTapVoltages );
+        double mt_violationCost = calculateVoltageViolation( multiTapVoltages, strategy, isPeakTime );
+
+        multiTapEstBw += ( strategy->getVoltWeight(isPeakTime) * mt_Vf ) + mt_violationCost;
+
+        if (_CC_DEBUG & CC_DEBUG_IVVC)
+        {
+            CtiLockGuard<CtiLogger> logger_guard(dout);
+
+            dout << "Estimated Subbus Flatness     : " << mt_Vf << std::endl;
+            dout << "Estimated Subbus ViolationCost: " << mt_violationCost << std::endl;
+            dout << "Estimated Subbus Weight       : " << multiTapEstBw << std::endl;
+        }
+    }
+
     //Store away the ids that responded for the POST SCAN LOOP state to use when it records deltas
     state->setReportedControllers(reportedIds);
 
@@ -1970,6 +2027,43 @@ bool IVVCAlgorithm::busAnalysisState(IVVCStatePtr state, CtiCCSubstationBusPtr s
             minimumEstBw = eb->second.busWeight;
             operatePaoId = eb->first;
         }
+    }
+
+    if ( canDoMultiTap
+         && ( ( currentBusWeight - strategy->getDecisionWeight(isPeakTime) ) > multiTapEstBw )
+         && ( minimumEstBw > multiTapEstBw ) )
+    {
+        // if there are tap ops remaining, set state to IVVC_OPERATE_TAP as long as all regulators are in 'remote' mode.
+        if ( hasTapOpsRemaining(state->_tapOps) )
+        {
+            if ( allRegulatorsInRemoteMode(subbus->getPaoId()) )
+            {
+                state->setState( IVVCState::IVVC_OPERATE_TAP );
+            }
+            else
+            {
+                state->setState(IVVCState::IVVC_WAIT);
+
+                if (_CC_DEBUG & CC_DEBUG_IVVC)
+                {
+                    CtiLockGuard<CtiLogger> logger_guard(dout);
+                    dout << CtiTime() << " - IVVC Algorithm: "<<subbus->getPaoName() <<"  No Operation - one or more voltage regulators in 'Auto' mode." << std::endl;
+                }
+            }
+        }
+        else
+        {
+            state->setState(IVVCState::IVVC_WAIT);
+
+            sendIVVCAnalysisMessage( IVVCAnalysisMessage::createNoTapOpNeededMessage( subbus->getPaoId(), CtiTime::now() ) );
+
+            if (_CC_DEBUG & CC_DEBUG_IVVC)
+            {
+                CtiLockGuard<CtiLogger> logger_guard(dout);
+                dout << CtiTime() << " - IVVC Algorithm: "<<subbus->getPaoName() <<"  No Tap Operations needed." << std::endl;
+            }
+        }
+        return true;
     }
 
     if ( ( operatePaoId != -1 ) &&
@@ -2437,6 +2531,38 @@ double IVVCAlgorithm::calculatePowerFactorCost( const double powerFactor,
 }
 
 
+// Is any voltage value >= its upper bandwidth (or the strategies if it doesn't override it)
+bool IVVCAlgorithm::checkForMultiTapOperation( const PointValueMap & voltages,
+                                               const std::map<long, CtiCCMonitorPointPtr> & _monitorMap,
+                                               IVVCStrategy * strategy,
+                                               const bool isPeakTime ) const
+{
+    for ( PointValueMap::const_iterator b = voltages.begin(), e = voltages.end(); b != e; ++b )
+    {
+        double Vmax = strategy->getUpperVoltLimit(isPeakTime);
+
+        std::map<long, CtiCCMonitorPointPtr>::const_iterator iter = _monitorMap.find( b->first );
+
+        if ( iter != _monitorMap.end() )    // monitor point exists - use its bandwidth settings instead
+        {
+            CtiCCMonitorPointPtr    monitor = iter->second;
+
+            if ( monitor->getOverrideStrategy() )
+            {
+                Vmax = monitor->getUpperBandwidth();
+            }
+        }
+
+        if ( b->second.value >= Vmax )
+        {
+            return true;
+        }
+    }
+
+    return false;
+}
+
+
 void IVVCAlgorithm::sendDisableRemoteControl( CtiCCSubstationBusPtr subbus )
 {
     CtiCCSubstationBusStore * store = CtiCCSubstationBusStore::getInstance();
@@ -2609,6 +2735,255 @@ void IVVCAlgorithm::updateCommsState( const long busCommsPointId, const bool isC
 
         dispatchConnection->WriteConnQue(
             new CtiPointDataMsg( busCommsPointId, isCommsLost ? 1.0 : 0.0 ) ); // NormalQuality, StatusPointType
+    }
+}
+
+
+void IVVCAlgorithm::calculateMultiTapOperation( PointValueMap & voltages,
+                                                CtiCCSubstationBusPtr subbus,                                   
+                                                IVVCStrategy * strategy,
+                                                IVVCState::TapOperationZoneMap & solution )
+{
+    ZoneManager & zoneManager = CtiCCSubstationBusStore::getInstance()->getZoneManager();
+
+    long rootZoneId = zoneManager.getRootZoneIdForSubbus( subbus->getPaoId() );
+
+    calculateMultiTapOperationHelper( rootZoneId, voltages, 0.0, subbus, strategy, solution );
+}
+
+
+
+void IVVCAlgorithm::calculateMultiTapOperationHelper( const long zoneID,
+                                                      PointValueMap & voltages,
+                                                      const double cumulativeVoltageOffset,
+                                                      CtiCCSubstationBusPtr subbus,
+                                                      IVVCStrategy * strategy,
+                                                      IVVCState::TapOperationZoneMap & solution )
+{
+    bool isPeakTime = subbus->getPeakTimeFlag();
+    const std::map<long, CtiCCMonitorPointPtr> & monitorMap = subbus->getAllMonitorPoints();
+
+    CtiCCSubstationBusStore* store = CtiCCSubstationBusStore::getInstance();
+
+    ZoneManager & zoneManager = store->getZoneManager();
+
+    try
+    {
+        ZoneManager::SharedPtr zone = zoneManager.getZone( zoneID );
+
+        for each ( const Zone::PhaseIdMap::value_type & mapping in zone->getRegulatorIds() )
+        {
+            double maxOvervoltage = 0.0;
+
+            VoltageRegulatorManager::SharedPtr regulator =
+                store->getVoltageRegulatorManager()->getVoltageRegulator( mapping.second );
+
+// 1.   add incoming (negative) voltages to all points in the zone
+// 2.   scan zone for overvoltages
+
+            PointValueMap::iterator pointValue
+                = voltages.find( regulator->getPointByAttribute(PointAttribute::VoltageY).getPointId() );
+
+            if ( pointValue != voltages.end() )
+            {
+                pointValue->second.value += cumulativeVoltageOffset;    // cumulativeVoltageOffset should be negative...
+
+                double Vmax = strategy->getUpperVoltLimit(isPeakTime);
+
+                std::map<long, CtiCCMonitorPointPtr>::const_iterator iter = monitorMap.find( pointValue->first );
+
+                if ( iter != monitorMap.end() )    // monitor point exists - use its bandwidth settings instead
+                {
+                    CtiCCMonitorPointPtr    monitor = iter->second;
+
+                    if ( monitor->getOverrideStrategy() )
+                    {
+                        Vmax = monitor->getUpperBandwidth();
+                    }
+                }
+
+                if ( pointValue->second.value >= Vmax )
+                {
+                    maxOvervoltage = std::max( maxOvervoltage, Vmax - pointValue->second.value );
+                }
+            }
+
+            // Capbanks
+
+            for each ( const Zone::IdSet::value_type & capBankId in zone->getBankIds() )
+            {
+                CtiCCCapBankPtr bank = store->getCapBankByPaoId( capBankId );
+                if ( bank )
+                {
+                    for each ( CtiCCMonitorPointPtr point in bank->getMonitorPoint() )
+                    {
+                        //  if our zone is gang operated we grab all bank monitor points despite their phase
+                        //  if phase operated zone we grab only the bank monitor points on the same phase as our regulator
+
+                        if ( zone->isGangOperated() || point->getPhase() == regulator->getPhase() )
+                        {
+                            PointValueMap::iterator pointValue = voltages.find( point->getPointId() );
+
+                            if ( pointValue != voltages.end() )
+                            {
+                                pointValue->second.value += cumulativeVoltageOffset;    // cumulativeVoltageOffset should be negative...
+
+                                double Vmax = strategy->getUpperVoltLimit(isPeakTime);
+
+                                std::map<long, CtiCCMonitorPointPtr>::const_iterator iter = monitorMap.find( pointValue->first );
+
+                                if ( iter != monitorMap.end() )    // monitor point exists - use its bandwidth settings instead
+                                {
+                                    CtiCCMonitorPointPtr    monitor = iter->second;
+
+                                    if ( monitor->getOverrideStrategy() )
+                                    {
+                                        Vmax = monitor->getUpperBandwidth();
+                                    }
+                                }
+
+                                if ( pointValue->second.value >= Vmax )
+                                {
+                                    maxOvervoltage = std::max( maxOvervoltage, Vmax - pointValue->second.value );
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+
+            // Other voltage points in this zone
+
+            for each ( const Zone::PhaseToVoltagePointIds::value_type & mapping in zone->getPointIds() )
+            {
+                //  if our zone is gang operated we grab all points despite their phase
+                //  if phase operated zone we grab only the points on the same phase as our regulator
+
+                if ( zone->isGangOperated() || mapping.first == regulator->getPhase() )
+                {
+                    PointValueMap::iterator pointValue = voltages.find( mapping.second );
+
+                    if ( pointValue != voltages.end() )
+                    {
+                        pointValue->second.value += cumulativeVoltageOffset;    // cumulativeVoltageOffset should be negative...
+
+                        double Vmax = strategy->getUpperVoltLimit(isPeakTime);
+
+                        std::map<long, CtiCCMonitorPointPtr>::const_iterator iter = monitorMap.find( pointValue->first );
+
+                        if ( iter != monitorMap.end() )    // monitor point exists - use its bandwidth settings instead
+                        {
+                            CtiCCMonitorPointPtr    monitor = iter->second;
+
+                            if ( monitor->getOverrideStrategy() )
+                            {
+                                Vmax = monitor->getUpperBandwidth();
+                            }
+                        }
+
+                        if ( pointValue->second.value >= Vmax )
+                        {
+                            maxOvervoltage = std::max( maxOvervoltage, Vmax - pointValue->second.value );
+                        }
+                    }
+                }
+            }
+
+// 3.   if (overvoltage)  calculate # of taps and change in voltage
+
+            double realVoltageChange = 0.0;
+
+            if ( maxOvervoltage > 0.0 )
+            {
+                double voltageChange = regulator->getVoltageChangePerTap();
+
+                // tapping down so this should be negative
+
+                solution[ regulator->getPaoId() ] = -std::ceil( maxOvervoltage / voltageChange );
+
+                // also negative
+
+                realVoltageChange = voltageChange * solution[ regulator->getPaoId() ];
+
+            }
+
+// 4.   subtract tap solution voltage from all members of the zone.
+
+            pointValue = voltages.find( regulator->getPointByAttribute(PointAttribute::VoltageY).getPointId() );
+
+            if ( pointValue != voltages.end() )
+            {
+                pointValue->second.value += realVoltageChange;
+            }
+
+            // Capbanks
+
+            for each ( const Zone::IdSet::value_type & capBankId in zone->getBankIds() )
+            {
+                CtiCCCapBankPtr bank = store->getCapBankByPaoId( capBankId );
+                if ( bank )
+                {
+                    for each ( CtiCCMonitorPointPtr point in bank->getMonitorPoint() )
+                    {
+                        //  if our zone is gang operated we grab all bank monitor points despite their phase
+                        //  if phase operated zone we grab only the bank monitor points on the same phase as our regulator
+
+                        if ( zone->isGangOperated() || point->getPhase() == regulator->getPhase() )
+                        {
+                            PointValueMap::iterator pointValue = voltages.find( point->getPointId() );
+
+                            if ( pointValue != voltages.end() )
+                            {
+                                pointValue->second.value += realVoltageChange;
+                            }
+                        }
+                    }
+                }
+            }
+
+            // Other voltage points in this zone
+
+            for each ( const Zone::PhaseToVoltagePointIds::value_type & mapping in zone->getPointIds() )
+            {
+                //  if our zone is gang operated we grab all points despite their phase
+                //  if phase operated zone we grab only the points on the same phase as our regulator
+
+                if ( zone->isGangOperated() || mapping.first == regulator->getPhase() )
+                {
+                    PointValueMap::iterator pointValue = voltages.find( mapping.second );
+
+                    if ( pointValue != voltages.end() )
+                    {
+                        pointValue->second.value += realVoltageChange;
+                    }
+                }
+            }
+
+// 5.   recursion!!!
+
+            Zone::IdSet immediateChildren = zoneManager.getZone(zoneID)->getChildIds();
+
+            for each ( const Zone::IdSet::value_type & ID in immediateChildren )
+            {
+                calculateMultiTapOperationHelper( ID, voltages, cumulativeVoltageOffset + realVoltageChange,
+                                                  subbus, strategy, solution );
+            }
+        }
+    }
+    catch ( const Cti::CapControl::NoVoltageRegulator & noRegulator )
+    {
+        CtiLockGuard<CtiLogger> logger_guard(dout);
+
+        dout << CtiTime() << " - ** " << noRegulator.what() << std::endl;
+    }
+    catch ( const Cti::CapControl::MissingPointAttribute & missingAttribute )
+    {
+        if (missingAttribute.complain())
+        {
+            CtiLockGuard<CtiLogger> logger_guard(dout);
+
+            dout << CtiTime() << " - ** " << missingAttribute.what() << std::endl;
+        }
     }
 }
 
