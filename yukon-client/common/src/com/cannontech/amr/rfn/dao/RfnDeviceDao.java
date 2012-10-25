@@ -21,6 +21,8 @@ public interface RfnDeviceDao {
      */
     public RfnDevice getDeviceForExactIdentifier(RfnIdentifier rfnIdentifier) throws NotFoundException;
     
+    public RfnMeter getMeterForExactIdentifier(RfnIdentifier rfnIdentifier) throws NotFoundException;
+    
     public RfnMeter getMeter(YukonPao pao) throws NotFoundException;
     
     public RfnDevice getDevice(YukonPao pao) throws NotFoundException;

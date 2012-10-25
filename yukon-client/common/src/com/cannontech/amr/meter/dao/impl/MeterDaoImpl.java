@@ -35,7 +35,7 @@ import com.cannontech.common.util.SqlStatementBuilder;
 import com.cannontech.core.dao.DBPersistentDao;
 import com.cannontech.core.dao.NotFoundException;
 import com.cannontech.core.dao.PaoDao;
-import com.cannontech.core.dao.impl.YukonPaoRowMapper;
+import com.cannontech.core.dao.impl.YukonMeterRowMapper;
 import com.cannontech.core.service.impl.PaoLoader;
 import com.cannontech.database.ListRowCallbackHandler;
 import com.cannontech.database.MaxRowCalbackHandlerRse;
@@ -63,14 +63,12 @@ public class MeterDaoImpl implements MeterDao, InitializingBean {
     
     private String retrieveOneByIdSql;
     private String retrieveOneByMeterNumberSql;
-    private String retrieveOneByPaoNameSql;
     private String retrieveOneByPhysicalAddressSql;
 
     @Override
     public void afterPropertiesSet() throws Exception {
         retrieveOneByIdSql = meterRowMapper.getSql() + "WHERE ypo.paObjectId = ? ";
         retrieveOneByMeterNumberSql = meterRowMapper.getSql() + "WHERE UPPER(DeviceMeterGroup.MeterNumber) = UPPER(?) ";
-        retrieveOneByPaoNameSql = meterRowMapper.getSql() + "WHERE UPPER(ypo.PaoName) = UPPER(?) ";
         retrieveOneByPhysicalAddressSql = meterRowMapper.getSql() + "WHERE DeviceCarrierSettings.Address = ? ";
     }
     
@@ -121,21 +119,12 @@ public class MeterDaoImpl implements MeterDao, InitializingBean {
     @Override
     public YukonMeter getYukonMeterForId(int id) {
         SqlStatementBuilder sql = new SqlStatementBuilder();
-        sql.append("SELECT ypo.PAObjectID, ypo.Type, MeterNumber");
+        sql.append("SELECT ypo.PAObjectID, ypo.Type, MeterNumber, ypo.PaoName, ypo.DisableFlag");
         sql.append("FROM YukonPaObject ypo");
         sql.append(  "JOIN DeviceMeterGroup dmg ON ypo.PAObjectID = dmg.DeviceId");
         sql.append("where ypo.PaobjectId").eq(id);
         
-        
-        YukonMeter yukonMeter = yukonJdbcTemplate.queryForObject(sql, new YukonRowMapper<YukonMeter>() {
-            public YukonMeter mapRow(YukonResultSet rs) throws SQLException {
-                PaoIdentifier paoIdentifier = rs.getPaoIdentifier("PAObjectID", "Type");
-                String meterNumber = rs.getString("MeterNumber").trim();
-                YukonMeter yukonMeter = new YukonMeter(paoIdentifier, meterNumber);
-                
-                return yukonMeter;
-            }
-        });
+        YukonMeter yukonMeter = yukonJdbcTemplate.queryForObject(sql, new YukonMeterRowMapper());
         return yukonMeter;
     }
     
@@ -163,14 +152,13 @@ public class MeterDaoImpl implements MeterDao, InitializingBean {
     @Override
     public YukonMeter getYukonMeterForMeterNumber(String meterNumber) {
         SqlStatementBuilder sql = new SqlStatementBuilder();
-        sql.append("SELECT ypo.PAObjectID, ypo.Type, MeterNumber");
+        sql.append("SELECT ypo.PAObjectID, ypo.Type, MeterNumber, ypo.PaoName, ypo.DisableFlag");
         sql.append("FROM YukonPaObject ypo");
         sql.append(  "JOIN DeviceMeterGroup dmg ON ypo.PAObjectID = dmg.DeviceId");
         sql.append("WHERE UPPER(dmg.MeterNumber)").eq(meterNumber.toUpperCase());
         
         try {
-            PaoIdentifier pao = yukonJdbcTemplate.queryForObject(sql, new YukonPaoRowMapper());
-            YukonMeter yukonMeter = new YukonMeter(pao, meterNumber);
+            YukonMeter yukonMeter = yukonJdbcTemplate.queryForObject(sql, new YukonMeterRowMapper());
             return yukonMeter;
         } catch (EmptyResultDataAccessException e) {
             throw new NotFoundException("no meter matches " + meterNumber);
@@ -190,11 +178,13 @@ public class MeterDaoImpl implements MeterDao, InitializingBean {
     }
 
     @Override
-    public Meter getForPaoName(String paoName) {
+    public YukonMeter getForPaoName(String paoName) {
         try {
-            Meter meter = yukonJdbcTemplate.queryForObject(retrieveOneByPaoNameSql,
-                                                            meterRowMapper,
-                                                            paoName);
+            SqlStatementBuilder sql = new SqlStatementBuilder();
+            sql.append(meterRowMapper.getSql());
+            sql.append("WHERE UPPER(ypo.PaoName)").eq(paoName.toUpperCase());
+            
+            YukonMeter meter = yukonJdbcTemplate.queryForObject(sql, new YukonMeterRowMapper());
             return meter;
         } catch (EmptyResultDataAccessException e) {
             throw new NotFoundException("Unknown pao name " + paoName);

@@ -6,15 +6,19 @@ import com.cannontech.common.pao.YukonDevice;
 public class YukonMeter implements YukonDevice {
     private PaoIdentifier paoIdentifier;
     private String meterNumber;
-
+    private String name;
+    private boolean disabled;
+    
     public YukonMeter() {
     }
     
-    public YukonMeter(PaoIdentifier paoIdentifier, String meterNumber) {
+    public YukonMeter(PaoIdentifier paoIdentifier, String meterNumber, String name, boolean disabled) {
         this.paoIdentifier = paoIdentifier;
         this.meterNumber = meterNumber;
+        this.name = name;
+        this.disabled = disabled;
     }
-    
+
     @Override
     public PaoIdentifier getPaoIdentifier() {
         return paoIdentifier;
@@ -31,4 +35,21 @@ public class YukonMeter implements YukonDevice {
     public void setMeterNumber(String meterNumber) {
         this.meterNumber = meterNumber;
     }
+    
+    public String getName() {
+        return name;
+    }
+
+    public void setName(String name) {
+        this.name = name;
+    }
+
+    public void setDisabled(boolean disabled) {
+        this.disabled = disabled;
+    }
+
+    public boolean isDisabled() {
+        return disabled;
+    }
+
 }

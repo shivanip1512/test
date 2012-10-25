@@ -9,8 +9,6 @@ import com.cannontech.common.pao.PaoType;
  * This is the "PLC" meter.
  */
 public class Meter extends YukonMeter { 
-    private String name;
-    private boolean disabled;
     private String route;
     private int routeId;
     private String address;
@@ -27,22 +25,6 @@ public class Meter extends YukonMeter {
 
     public void setAddress(String address) {
         this.address = address;
-    }
-
-    public String getName() {
-        return name;
-    }
-
-    public void setName(String name) {
-        this.name = name;
-    }
-
-    public void setDisabled(boolean disabled) {
-        this.disabled = disabled;
-    }
-
-    public boolean isDisabled() {
-        return disabled;
     }
 
     /**

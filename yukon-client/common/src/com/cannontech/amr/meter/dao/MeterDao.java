@@ -22,7 +22,7 @@ public interface MeterDao {
     
     public Meter getForPhysicalAddress(String address);
 
-    public Meter getForPaoName(String paoName);
+    public YukonMeter getForPaoName(String paoName);
 
     public Meter getForYukonDevice(YukonDevice yukonDevice);
     

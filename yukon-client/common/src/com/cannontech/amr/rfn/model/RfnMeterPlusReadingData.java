@@ -1,18 +1,19 @@
 package com.cannontech.amr.rfn.model;
 
 import com.cannontech.amr.rfn.message.read.RfnMeterReadingData;
+import com.cannontech.common.rfn.model.RfnDevice;
 
 public class RfnMeterPlusReadingData {
 
-    private RfnMeter rfnMeter;
+    private RfnDevice rfnDevice;
     private RfnMeterReadingData rfnMeterReadingData;
     
-    public RfnMeterPlusReadingData(RfnMeter rfnMeter, RfnMeterReadingData rfnMeterReadingData) {
-        this.rfnMeter = rfnMeter;
+    public RfnMeterPlusReadingData(RfnDevice rfnDevice, RfnMeterReadingData rfnMeterReadingData) {
+        this.rfnDevice = rfnDevice;
         this.rfnMeterReadingData = rfnMeterReadingData;
     }
-    public RfnMeter getRfnMeter() {
-        return rfnMeter;
+    public RfnDevice getRfnDevice() {
+        return rfnDevice;
     }
     public RfnMeterReadingData getRfnMeterReadingData() {
         return rfnMeterReadingData;

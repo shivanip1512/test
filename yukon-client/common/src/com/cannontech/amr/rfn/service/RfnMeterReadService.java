@@ -26,6 +26,7 @@ import com.cannontech.clientutils.LogHelper;
 import com.cannontech.clientutils.YukonLogManager;
 import com.cannontech.common.config.ConfigurationSource;
 import com.cannontech.common.point.PointQuality;
+import com.cannontech.common.rfn.model.RfnDevice;
 import com.cannontech.common.util.jms.JmsReplyReplyHandler;
 import com.cannontech.common.util.jms.RequestReplyReplyTemplate;
 import com.cannontech.core.dao.NotFoundException;
@@ -112,7 +113,8 @@ public class RfnMeterReadService {
                 } else {
                     /* Data response successful, process point data */
                     List<PointValueHolder> pointDatas = Lists.newArrayList();
-                    processMeterReadingDataMessage(new RfnMeterPlusReadingData(rfnMeter, dataReplyMessage.getData()), pointDatas);
+                    RfnDevice rfnDevice = new RfnDevice(rfnMeter.getPaoIdentifier(), rfnMeter.getRfnIdentifier());
+                    processMeterReadingDataMessage(new RfnMeterPlusReadingData(rfnDevice, dataReplyMessage.getData()), pointDatas);
 
                     for (PointValueHolder pointValueHolder : pointDatas) {
                         callback.receivedData(pointValueHolder);
@@ -152,8 +154,8 @@ public class RfnMeterReadService {
         Instant readingInstant = new Instant(meterReadingData.getRfnMeterReadingData().getTimeStamp());
         
         for (ChannelData channelData : allChannelData) {
-            RfnMeter rfnMeter = meterReadingData.getRfnMeter();
-            LogHelper.debug(log, "Processing %s for %s", channelData, rfnMeter);
+            RfnDevice rfnDevice= meterReadingData.getRfnDevice();
+            LogHelper.debug(log, "Processing %s for %s", channelData, rfnDevice);
             ChannelDataStatus status = channelData.getStatus();
             if (status == null) {
                 LogHelper.debug(log, "Received null status for channelData, skipping");
@@ -164,7 +166,7 @@ public class RfnMeterReadService {
                 continue;
             }
             
-            PointValueHandler pointValueHandler = unitOfMeasureToPointMapper.findMatch(rfnMeter, channelData);
+            PointValueHandler pointValueHandler = unitOfMeasureToPointMapper.findMatch(rfnDevice, channelData);
             if (pointValueHandler == null) {
                 log.debug("No PointValueHandler for this channelData");
                 continue;

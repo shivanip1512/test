@@ -5,8 +5,10 @@ import java.io.Serializable;
 import org.apache.commons.lang.StringUtils;
 
 public final class RfnIdentifier implements Serializable {
-    
+
     private static final long serialVersionUID = 1L;
+    
+    public final static RfnIdentifier BLANK = new RfnIdentifier(null,  null, null);
     
     private final String sensorManufacturer;
     private final String sensorModel;
