@@ -85,9 +85,30 @@ public class BootstrapUtils {
     }
 
     /**
-     * Get the directory for log files.  Despite this being called the "Server" log directory, client logs are stored
-     * here also.  This is used both to know where to put log files (e.g. in YukonFileAppender) and to know where to
-     * find log files (e.g. LogController.java).
+     * <p>
+     * Get the directory for log files. Despite this being called the "Server" log directory, client
+     * logs are stored here also. This is used both to know where to put log files (e.g. in
+     * YukonFileAppender) and to know where to find log files (e.g. LogController.java).
+     * </p>
+     * 
+     * <p>
+     * It will:
+     * <ol>
+     * <li>Check the system property yukon.logDir and use that if it's set. I don't see this ever
+     * being used except perhaps by a developer. It's mostly there to be consistent with
+     * {@link #getYukonBase(boolean)}.</li>
+     * <li>
+     * Check the YUKON_LOG_DIR environment variable. This allows customers to put the log directory
+     * outside the Yukon install directory. It should almost never (if not actually never) be
+     * necessary. It is NOT necessary to set this just because you install Yukon in a place other
+     * than C:\Yukon.
+     * </li>
+     * <li>
+     * Finally, the normal "Logs" under &lt;yukon base&gt; is used if neither of the previous
+     * values has been set.  This is the normal case.
+     * </li>
+     * </ol>
+     * </p>
      */
     public final static String getServerLogDir() {
         String serverLogDir = System.getProperty("yukon.logDir");
@@ -100,6 +121,7 @@ public class BootstrapUtils {
             return serverLogDir;
         }
 
+        // This is the normal case for 99 if not 100% of all customers.
         return CtiUtilities.getYukonBase() + "/Server/Log/";
     }
 
