@@ -25,8 +25,7 @@
 		</div>
 
 		<br>
-
-		<cti:dataGrid cols="2" tableClasses="twoColumnLayout split">
+		<cti:dataGrid cols="1" tableClasses="twoColumnLayout split">
 			<cti:dataGridCell>
 				<table>
 					<tr>
@@ -52,6 +51,10 @@
 						<td class="actionCell"><i:inline key=".resendConfigDescription" /></td>
 					</tr>
 				</table>
+			</cti:dataGridCell>
+			<cti:dataGridCell>
+				<cti:url value="/spring/stars/operator/inventory/inventoryActions?" var="cancelUrl" />
+				<cti:button href="${cancelUrl}${pageContext.request.queryString}" nameKey="cancel"/>
 			</cti:dataGridCell>
 		</cti:dataGrid>
 
