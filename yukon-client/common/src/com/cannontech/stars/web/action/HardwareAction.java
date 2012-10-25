@@ -141,7 +141,7 @@ public class HardwareAction {
                 
                 invDB.setAccountID( new Integer(CtiUtilities.NONE_ZERO_ID) );
                 invDB.setRemoveDate( removeDate );
-                invDB.setDeviceLabel(CtiUtilities.STRING_NONE );
+                invDB.setDeviceLabel(liteInv.getManufacturerSerialNumber());
                 Transaction.createTransaction( Transaction.UPDATE, invDB ).execute();
                 
             }

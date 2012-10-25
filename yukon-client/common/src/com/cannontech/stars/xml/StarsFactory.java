@@ -16,9 +16,6 @@ import com.cannontech.stars.database.db.report.CallReportBase;
 import com.cannontech.stars.util.StarsUtils;
 import com.cannontech.stars.xml.serialize.BillingAddress;
 import com.cannontech.stars.xml.serialize.CallType;
-import com.cannontech.stars.xml.serialize.DeviceStatus;
-import com.cannontech.stars.xml.serialize.DeviceType;
-import com.cannontech.stars.xml.serialize.InstallationCompany;
 import com.cannontech.stars.xml.serialize.PrimaryContact;
 import com.cannontech.stars.xml.serialize.StarsApp;
 import com.cannontech.stars.xml.serialize.StarsCallReport;
@@ -37,7 +34,6 @@ import com.cannontech.stars.xml.serialize.StarsUsr;
 import com.cannontech.stars.xml.serialize.StarsWebConfig;
 import com.cannontech.stars.xml.serialize.StreetAddress;
 import com.cannontech.stars.xml.serialize.Substation;
-import com.cannontech.stars.xml.serialize.Voltage;
 import com.cannontech.user.UserUtils;
 
 /**
@@ -481,31 +477,6 @@ public class StarsFactory {
     
     
 	/* StarsInventory factory methods */
-
-	public static StarsInv newStarsInv(Class type) {
-		try {
-			StarsInv starsInv = (StarsInv) type.newInstance();
-			
-			starsInv.setInventoryID( -1 );
-			starsInv.setDeviceID( CtiUtilities.NONE_ZERO_ID );
-			starsInv.setDeviceType( (DeviceType) newEmptyStarsCustListEntry(DeviceType.class) );
-			starsInv.setDeviceLabel(CtiUtilities.STRING_NONE );
-			starsInv.setInstallationCompany( (InstallationCompany) newEmptyStarsCustListEntry(InstallationCompany.class) );
-			starsInv.setInstallDate( new java.util.Date() );
-			starsInv.setAltTrackingNumber( "" );
-			starsInv.setVoltage( (Voltage) newEmptyStarsCustListEntry(Voltage.class) );
-			starsInv.setNotes( "" );
-			starsInv.setInstallationNotes( "" );
-			starsInv.setDeviceStatus( (DeviceStatus) newEmptyStarsCustListEntry(DeviceStatus.class) );
-			
-			return starsInv;
-		}
-		catch (Exception e) {
-			CTILogger.error( e.getMessage(), e );
-		}
-		
-		return null;
-	}
 
 	public static StarsInv newStarsInv(StarsInv inv, Class type) {
 		try {
