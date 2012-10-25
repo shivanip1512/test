@@ -111,17 +111,45 @@ Mct440_213xBDevice::FunctionReadValueMappings Mct440_213xBDevice::initReadValueM
 
         // 0x0F9 – Read Transmit Power (FIXME)
 
-        // 0x0D0 – Holiday 1
+        // 0x0D0 – Holiday 1 - 3
         { 0x0d0,  0, { 4, CtiTableDynamicPaoInfo::Key_MCT_Holiday1                  } },
         { 0x0d0,  4, { 4, CtiTableDynamicPaoInfo::Key_MCT_Holiday2                  } },
         { 0x0d0,  8, { 4, CtiTableDynamicPaoInfo::Key_MCT_Holiday3                  } },
 
-        // 0x0D4 – Holiday 2
-        { 0x0d4,  0, { 4, CtiTableDynamicPaoInfo::Key_MCT_Holiday2                  } },
-        { 0x0d4,  4, { 4, CtiTableDynamicPaoInfo::Key_MCT_Holiday3                  } },
+        // 0x0D1 – Holiday 4 - 6
+        { 0x0d1,  0, { 4, CtiTableDynamicPaoInfo::Key_MCT_Holiday4                  } },
+        { 0x0d1,  4, { 4, CtiTableDynamicPaoInfo::Key_MCT_Holiday5                  } },
+        { 0x0d1,  8, { 4, CtiTableDynamicPaoInfo::Key_MCT_Holiday6                  } },
 
-        // 0x0D8 – Holiday 3
-        { 0x0d8,  0, { 4, CtiTableDynamicPaoInfo::Key_MCT_Holiday3                  } },
+        // 0x0D2 – Holiday 7 - 9
+        { 0x0d2,  0, { 4, CtiTableDynamicPaoInfo::Key_MCT_Holiday7                  } },
+        { 0x0d2,  4, { 4, CtiTableDynamicPaoInfo::Key_MCT_Holiday8                  } },
+        { 0x0d2,  8, { 4, CtiTableDynamicPaoInfo::Key_MCT_Holiday9                  } },
+
+        // 0x0D3 – Holiday 10 - 12
+        { 0x0d3,  0, { 4, CtiTableDynamicPaoInfo::Key_MCT_Holiday10                 } },
+        { 0x0d3,  4, { 4, CtiTableDynamicPaoInfo::Key_MCT_Holiday11                 } },
+        { 0x0d3,  8, { 4, CtiTableDynamicPaoInfo::Key_MCT_Holiday12                 } },
+
+        // 0x0D4 – Holiday 13 - 15
+        { 0x0d4,  0, { 4, CtiTableDynamicPaoInfo::Key_MCT_Holiday13                 } },
+        { 0x0d4,  4, { 4, CtiTableDynamicPaoInfo::Key_MCT_Holiday14                 } },
+        { 0x0d4,  8, { 4, CtiTableDynamicPaoInfo::Key_MCT_Holiday15                 } },
+
+        // 0x0D5 – Holiday 16 - 18
+        { 0x0d5,  0, { 4, CtiTableDynamicPaoInfo::Key_MCT_Holiday16                 } },
+        { 0x0d5,  4, { 4, CtiTableDynamicPaoInfo::Key_MCT_Holiday17                 } },
+        { 0x0d5,  8, { 4, CtiTableDynamicPaoInfo::Key_MCT_Holiday18                 } },
+
+        // 0x0D6 – Holiday 19 - 21
+        { 0x0d6,  0, { 4, CtiTableDynamicPaoInfo::Key_MCT_Holiday19                 } },
+        { 0x0d6,  4, { 4, CtiTableDynamicPaoInfo::Key_MCT_Holiday20                 } },
+        { 0x0d6,  8, { 4, CtiTableDynamicPaoInfo::Key_MCT_Holiday21                 } },
+
+        // 0x0D7 – Holiday 22 - 24
+        { 0x0d7,  0, { 4, CtiTableDynamicPaoInfo::Key_MCT_Holiday22                 } },
+        { 0x0d7,  4, { 4, CtiTableDynamicPaoInfo::Key_MCT_Holiday23                 } },
+        { 0x0d7,  8, { 4, CtiTableDynamicPaoInfo::Key_MCT_Holiday24                 } },
 
         // 0x19D – Long Load Profile Status
         { 0x19d,  4, { 1, CtiTableDynamicPaoInfo::Key_MCT_LLPChannel1Len            } },
@@ -230,32 +258,9 @@ Mct440_213xBDevice::CommandSet Mct440_213xBDevice::initCommandStore()
 * Note(s)     :
 *********************************************************************************************************
 */
-const Mct440_213xBDevice::ReadDescriptor Mct440_213xBDevice::getDescriptorForRead(const unsigned char io, const unsigned function, const unsigned readLength) const
+const Mct440_213xBDevice::FunctionReadValueMappings *Mct440_213xBDevice::getReadValueMaps() const
 {
-    unsigned read = function;
-
-    switch( io )
-    {
-        case EmetconProtocol::IO_Function_Read:
-        {
-            read += 0x100;
-            // fall through
-        }
-        case EmetconProtocol::IO_Read:
-        {
-            if(const FunctionReadValueMappings *rm = &_readValueMaps)
-            {
-                FunctionReadValueMappings::const_iterator itr = rm->find(read);
-
-                if( itr != rm->end() )
-                {
-                    return getDescriptorFromMapping(itr->second, 0, readLength);
-                }
-            }
-        }
-    }
-
-    return ReadDescriptor();
+    return &_readValueMaps;
 }
 
 
@@ -287,7 +292,7 @@ bool Mct440_213xBDevice::getOperation( const UINT &cmd, BSTRUCT &bst ) const
 
 /*
 *********************************************************************************************************
-*                                          getOperation()
+*                                            isSupported()
 *
 * Description :
 *
@@ -302,6 +307,11 @@ bool Mct440_213xBDevice::getOperation( const UINT &cmd, BSTRUCT &bst ) const
 */
 bool Mct440_213xBDevice::isSupported(const Mct410Device::Features feature) const
 {
+    if (feature == Feature_DisconnectCollar)
+    {
+        return false;
+    }
+
     return Mct410Device::isSupported(feature);
 }
 
@@ -485,7 +495,7 @@ INT Mct440_213xBDevice::executeGetValue(CtiRequestMsg     *pReq,
 bool Mct440_213xBDevice::sspecValid(const unsigned sspec, const unsigned rev) const
 {
     //FIXME: check for revision possibilities
-    return (sspec == Mct440_213xBDevice::Sspec) || ((sspec / 10) == Mct440_213xBDevice::Sspec);
+    return (sspec == Mct440_213xBDevice::Sspec);
 }
 
 
@@ -530,6 +540,17 @@ INT Mct440_213xBDevice::ModelDecode(INMESS          *InMessage,
         status = decodeGetValueTOUkWh(InMessage, TimeNow, vgList, retList, outList);
         break;
 
+    case EmetconProtocol::GetValue_DailyRead:
+        if( _daily_read_info.request.type == daily_read_info_t::Request_Recent )
+        {
+            status = decodeGetValueDailyReadRecent(InMessage, TimeNow, vgList, retList, outList);
+        }
+        else
+        {
+            status = Inherited::ModelDecode(InMessage, TimeNow, vgList, retList, outList);
+        }
+        break;
+
     default:
         status = Inherited::ModelDecode(InMessage, TimeNow, vgList, retList, outList);
         if (status != NORMAL)
@@ -569,7 +590,7 @@ INT Mct440_213xBDevice::decodeGetValueInstantLineData(INMESS          *InMessage
     INT status = NORMAL;
     DSTRUCT *DSt = &InMessage->Buffer.DSt;
     CtiReturnMsg *ReturnMsg = NULL;
-    unsigned char *PhaseData = NULL;
+
 
     if((ReturnMsg = CTIDBG_new CtiReturnMsg(getID(), InMessage->Return.CommandStr)) == NULL)
     {
@@ -580,12 +601,13 @@ INT Mct440_213xBDevice::decodeGetValueInstantLineData(INMESS          *InMessage
 
     ReturnMsg->setUserMessageId(InMessage->Return.UserID);
 
+    int phase_cnt = getPhaseCount();
 
-    for (int i = 0; i < 3; i++)
+    for (int i = 0; i < phase_cnt; i++)
     {
         int pointOffset;
 
-        PhaseData = DSt->Message + (i*4);
+        unsigned char *PhaseData = DSt->Message + (i*4);
 
         point_info PhaseVoltage;
 
@@ -595,12 +617,12 @@ INT Mct440_213xBDevice::decodeGetValueInstantLineData(INMESS          *InMessage
         PhaseVoltage.freeze_bit  = false;
 
         switch (i) {
-            case 0: pointOffset = PointOffset_LineVoltagePhaseA; break;
-            case 1: pointOffset = PointOffset_LineVoltagePhaseB; break;
-            case 2: pointOffset = PointOffset_LineVoltagePhaseC; break;
+            case 0: pointOffset = PointOffset_PulseAcc_LineVoltagePhaseA; break;
+            case 1: pointOffset = PointOffset_PulseAcc_LineVoltagePhaseB; break;
+            case 2: pointOffset = PointOffset_PulseAcc_LineVoltagePhaseC; break;
         }
 
-        insertPointDataReport(DemandAccumulatorPointType,
+        insertPointDataReport(PulseAccumulatorPointType,
                               pointOffset,
                               ReturnMsg,
                               PhaseVoltage,
@@ -616,12 +638,12 @@ INT Mct440_213xBDevice::decodeGetValueInstantLineData(INMESS          *InMessage
         PhaseCurrent.freeze_bit  = false;
 
         switch (i) {
-            case 0: pointOffset = PointOffset_LineCurrentPhaseA; break;
-            case 1: pointOffset = PointOffset_LineCurrentPhaseB; break;
-            case 2: pointOffset = PointOffset_LineCurrentPhaseC; break;
+            case 0: pointOffset = PointOffset_PulseAcc_LineCurrentPhaseA; break;
+            case 1: pointOffset = PointOffset_PulseAcc_LineCurrentPhaseB; break;
+            case 2: pointOffset = PointOffset_PulseAcc_LineCurrentPhaseC; break;
         }
 
-        insertPointDataReport(DemandAccumulatorPointType,
+        insertPointDataReport(PulseAccumulatorPointType,
                               pointOffset,
                               ReturnMsg,
                               PhaseCurrent,
@@ -649,12 +671,12 @@ INT Mct440_213xBDevice::decodeGetValueInstantLineData(INMESS          *InMessage
         }
 
         switch (i) {
-            case 0: pointOffset = PointOffset_LinePowFactorPhaseA; break;
-            case 1: pointOffset = PointOffset_LinePowFactorPhaseB; break;
-            case 2: pointOffset = PointOffset_LinePowFactorPhaseC; break;
+            case 0: pointOffset = PointOffset_PulseAcc_LinePowFactPhaseA; break;
+            case 1: pointOffset = PointOffset_PulseAcc_LinePowFactPhaseB; break;
+            case 2: pointOffset = PointOffset_PulseAcc_LinePowFactPhaseC; break;
         }
 
-        insertPointDataReport(DemandAccumulatorPointType,
+        insertPointDataReport(PulseAccumulatorPointType,
                               pointOffset,
                               ReturnMsg,
                               PowerFactor,
@@ -776,11 +798,11 @@ INT Mct440_213xBDevice::decodeGetValueTOUkWh(INMESS          *InMessage,
             {
                 case EmetconProtocol::GetValue_TOUkWh:
                 case EmetconProtocol::GetValue_FrozenTOUkWh:
-                    point_offset = 1 + PointOffset_TOUBase + i * PointOffset_RateOffset;
+                    point_offset = 1 + PointOffset_PulseAcc_TOUBaseForward + i * PointOffset_RateOffset;
                     break;
                 case EmetconProtocol::GetValue_TOUkWhReverse:
                 case EmetconProtocol::GetValue_FrozenTOUkWhReverse:
-                    point_offset = 1 + PointOffset_TOUBaseReverse + i * PointOffset_RateOffset;
+                    point_offset = 1 + PointOffset_PulseAcc_TOUBaseReverse + i * PointOffset_RateOffset;
                     break;
             }
 
@@ -1429,6 +1451,285 @@ void Mct440_213xBDevice::createTOUDayScheduleString(string &schedule, long (&tim
         schedule += ', ';
     }
     schedule += CtiNumStr(rates[10]);
+}
+
+
+/*
+*********************************************************************************************************
+*                                   decodeGetValueDailyReadRecent()
+*
+* Description :
+*
+* Argument(s) :
+*
+* Return(s)   :
+*
+* Caller(s)   :
+*
+* Note(s)     :
+*********************************************************************************************************
+*/
+INT Mct440_213xBDevice::decodeGetValueDailyReadRecent(INMESS          *InMessage,
+                                                      CtiTime         &TimeNow,
+                                                      CtiMessageList  &vgList,
+                                                      CtiMessageList  &retList,
+                                                      OutMessageList  &outList)
+{
+    INT status = NORMAL;
+
+    string resultString;
+    bool expectMore = false;
+
+    const DSTRUCT * const DSt  = &InMessage->Buffer.DSt;
+
+    CtiReturnMsg    *ReturnMsg = new CtiReturnMsg(getID(), InMessage->Return.CommandStr);
+
+    ReturnMsg->setUserMessageId(InMessage->Return.UserID);
+
+    if( !hasDynamicInfo(CtiTableDynamicPaoInfo::Key_MCT_SSpecRevision) )
+    {
+        resultString = getName() + " / Daily read requires SSPEC rev 2.1 or higher, command could not automatically retrieve SSPEC; retry command or execute \"getconfig model\" to verify SSPEC";
+        status = ErrorVerifySSPEC;
+    }
+    else if( getDynamicInfo(CtiTableDynamicPaoInfo::Key_MCT_SSpecRevision) < SspecRev_DailyRead )
+    {
+        resultString = getName() + " / Daily read requires SSPEC rev 2.1 or higher; MCT reports " + CtiNumStr(getDynamicInfo(CtiTableDynamicPaoInfo::Key_MCT_SSpecRevision) / 10.0, 1);
+        status = ErrorInvalidSSPEC;
+        InMessage->Return.MacroOffset = 0;  //  stop the retries!
+    }
+    else
+    {
+        int channel = 1;
+        int month   = DSt->Message[9] & 0x0f;
+        int day     = DSt->Message[8];
+
+        setDynamicInfo(CtiTableDynamicPaoInfo::Key_MCT_DailyReadInterestChannel, channel);
+
+        //  These two need to be available to be checked against ErrorText_OutOfRange below
+        point_info pi_forward = getAccumulatorData(DSt->Message + 0, 3, 0);
+        point_info pi_reverse = getAccumulatorData(DSt->Message + 3, 3, 0);
+
+        if( channel != _daily_read_info.request.channel )
+        {
+            resultString  = getName() + " / Invalid channel returned by daily read ";
+            resultString += "(" + CtiNumStr(channel) + "), expecting (" + CtiNumStr(_daily_read_info.request.channel) + ")";
+
+            status = ErrorInvalidChannel;
+        }
+        else if( _daily_read_info.interest.needs_verification )
+        {
+            resultString  = getName() + " / Daily read period of interest date was not verified, try read again";
+
+            //  when they try the read again, it'll re-read the period of interest from the meter
+
+            status = ErrorInvalidTimestamp;
+        }
+        else if(  day        !=   _daily_read_info.request.begin.dayOfMonth() ||
+                 (month % 4) != ((_daily_read_info.request.begin.month() - 1) % 4) )
+        {
+            resultString  = getName() + " / Invalid day/month returned by daily read ";
+            resultString += "(" + CtiNumStr(day) + "/" + CtiNumStr(month + 1) + ", expecting " + CtiNumStr(_daily_read_info.request.begin.dayOfMonth()) + "/" + CtiNumStr(((_daily_read_info.request.begin.month() - 1) % 4) + 1) + ")";
+
+            //  These come back as 0x7ff.. if daily reads are disabled, but also if the request really was out of range
+            //  Ideally, this check would be against an enum or similar rather than a string,
+            //    but unless getAccumulatorData is refactored to provide more than a text description and quality, this will have to do.
+            if( pi_forward.description    == ErrorText_OutOfRange
+                && pi_reverse.description == ErrorText_OutOfRange )
+            {
+                resultString += "\n";
+                resultString += getName() + " / Daily reads might be disabled, check device configuration";
+            }
+
+            _daily_read_info.interest.date = DawnOfTime_Date;  //  reset it - it doesn't match what the MCT has
+
+            status = ErrorInvalidTimestamp;
+        }
+        else
+        {
+            point_info pi_outage_count = getData(DSt->Message + 6, 2, ValueType_OutageCount);
+
+            insertPointDataReport(PulseAccumulatorPointType,
+                                  PointOffset_Accumulator_Powerfail,
+                                  ReturnMsg,
+                                  pi_outage_count,
+                                  "Blink Counter",
+                                  CtiTime(_daily_read_info.request.begin + 1));  //  add on 24 hours - end of day
+
+            insertPointDataReport(PulseAccumulatorPointType,
+                                  PointOffset_PulseAcc_RecentkWhForward,
+                                  ReturnMsg,
+                                  pi_forward,
+                                  "forward active kWh",
+                                  CtiTime(_daily_read_info.request.begin + 1), //  add on 24 hours - end of day
+                                  TAG_POINT_MUST_ARCHIVE);
+
+            insertPointDataReport(PulseAccumulatorPointType,
+                                  PointOffset_PulseAcc_RecentkWhReverse,
+                                  ReturnMsg,
+                                  pi_reverse,
+                                  "reverse active kWh",
+                                  CtiTime(_daily_read_info.request.begin + 1), //  add on 24 hours - end of day
+                                  TAG_POINT_MUST_ARCHIVE);
+
+            InterlockedExchange(&_daily_read_info.request.in_progress, false);
+        }
+    }
+
+    //  this is gross
+    if( !ReturnMsg->ResultString().empty() )
+    {
+        resultString = ReturnMsg->ResultString() + "\n" + resultString;
+    }
+
+    ReturnMsg->setResultString(resultString);
+
+    retMsgHandler( InMessage->Return.CommandStr, status, ReturnMsg, vgList, retList, expectMore );
+
+    return status;
+}
+
+/*
+*********************************************************************************************************
+*                                       executePutConfig()
+*
+* Description :
+*
+* Argument(s) :
+*
+* Return(s)   :
+*
+* Caller(s)   :
+*
+* Note(s)     :
+*********************************************************************************************************
+*/
+INT Mct440_213xBDevice::executePutConfig(CtiRequestMsg     *pReq,
+                                         CtiCommandParser  &parse,
+                                         OUTMESS          *&OutMessage,
+                                         CtiMessageList    &vgList,
+                                         CtiMessageList    &retList,
+                                         OutMessageList    &outList)
+{
+    bool  found = false;
+    INT   nRet  = NoMethod;
+
+
+    if( parse.isKeyValid("holiday_offset") )
+    {
+        INT function = EmetconProtocol::PutConfig_Holiday;
+
+        if( found = getOperation(function, OutMessage->Buffer.BSt) )
+        {
+            unsigned long holidays[3];
+            int holiday_count = 0;
+
+            int holiday_offset = parse.getiValue("holiday_offset");
+
+            OutMessage->Sequence = Cti::Protocols::EmetconProtocol::PutConfig_Holiday;
+
+            //  grab up to three potential dates
+            for( int i = 0; i < 3 && parse.isKeyValid("holiday_date" + CtiNumStr(i)); i++ )
+            {
+                CtiTokenizer date_tokenizer(parse.getsValue("holiday_date" + CtiNumStr(i)));
+
+                int month = atoi(date_tokenizer("/").data()),
+                    day   = atoi(date_tokenizer("/").data()),
+                    year  = atoi(date_tokenizer("/").data());
+
+                if( year > 2000 )
+                {
+                    CtiDate holiday_date(day, month, year);
+
+                    if( holiday_date.isValid() && holiday_date > CtiDate::now() )
+                    {
+                        holidays[holiday_count++] = CtiTime(holiday_date).seconds();
+                    }
+                }
+            }
+
+            if( holiday_offset == 1  ||
+                holiday_offset == 4  ||
+                holiday_offset == 7  ||
+                holiday_offset == 10 ||
+                holiday_offset == 13 ||
+                holiday_offset == 16 ||
+                holiday_offset == 19 ||
+                holiday_offset == 22 )
+            {
+                if( holiday_count > 0 )
+                {
+                    //  change to 0-based offset;  it just makes things easier
+                    holiday_offset--;
+
+                    OutMessage->Buffer.BSt.Function += holiday_offset / 3;
+                    OutMessage->Buffer.BSt.Length    = holiday_count  * 4;
+
+                    for( int i = 0; i < holiday_count; i++ )
+                    {
+                        OutMessage->Buffer.BSt.Message[i*4+0] = holidays[i] >> 24;
+                        OutMessage->Buffer.BSt.Message[i*4+1] = holidays[i] >> 16;
+                        OutMessage->Buffer.BSt.Message[i*4+2] = holidays[i] >>  8;
+                        OutMessage->Buffer.BSt.Message[i*4+3] = holidays[i] >>  0;
+                    }
+                }
+                else
+                {
+                    found = false;
+
+                    CtiReturnMsg *errRet = CTIDBG_new CtiReturnMsg(getID( ),
+                                                                   string(OutMessage->Request.CommandStr),
+                                                                   string(),
+                                                                   nRet,
+                                                                   OutMessage->Request.RouteID,
+                                                                   OutMessage->Request.MacroOffset,
+                                                                   OutMessage->Request.Attempt,
+                                                                   OutMessage->Request.GrpMsgID,
+                                                                   OutMessage->Request.UserID,
+                                                                   OutMessage->Request.SOE,
+                                                                   CtiMultiMsg_vec( ));
+
+                    if( errRet )
+                    {
+                        errRet->setResultString("Specified dates are invalid");
+                        errRet->setStatus(NoMethod);
+                        retList.push_back(errRet);
+                    }
+                }
+            }
+            else
+            {
+                found = false;
+
+                CtiReturnMsg *errRet = CTIDBG_new CtiReturnMsg(getID( ),
+                                                               string(OutMessage->Request.CommandStr),
+                                                               string(),
+                                                               nRet,
+                                                               OutMessage->Request.RouteID,
+                                                               OutMessage->Request.MacroOffset,
+                                                               OutMessage->Request.Attempt,
+                                                               OutMessage->Request.GrpMsgID,
+                                                               OutMessage->Request.UserID,
+                                                               OutMessage->Request.SOE,
+                                                               CtiMultiMsg_vec( ));
+
+                if( errRet )
+                {
+                    errRet->setResultString("Invalid holiday offset specified, valid offset are {1,4,7,10,13,16,19,22}");
+                    errRet->setStatus(NoMethod);
+                    retList.push_back(errRet);
+                }
+            }
+        }
+    } else {
+        nRet = Inherited::executePutConfig(pReq, parse, OutMessage, vgList, retList, outList);
+    }
+
+    if( found )
+    {
+        nRet = NoError;
+    }
+
+    return nRet;
 }
 
 
