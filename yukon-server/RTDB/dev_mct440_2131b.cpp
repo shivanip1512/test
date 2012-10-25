@@ -10,7 +10,10 @@ using Cti::Protocols::EmetconProtocol;
 namespace Cti {
 namespace Devices {
 
-
+int Mct440_2131BDevice::getPhaseCount()
+{
+    return 1;
+}
 
 }
 }
