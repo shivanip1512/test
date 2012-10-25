@@ -2,6 +2,7 @@
 <%@ taglib uri="http://cannontech.com/tags/cti" prefix="cti"%>
 <%@ taglib prefix="tags" tagdir="/WEB-INF/tags" %>
 <%@ taglib prefix="i" tagdir="/WEB-INF/tags/i18n" %>
+<%@ taglib prefix="spring" uri="http://www.springframework.org/tags"%>
 
 <div class="accountInfoFragment">
 
@@ -23,7 +24,7 @@
 		<br>
 	</c:if>
 	
-	${accountInfoFragment.firstName} ${accountInfoFragment.lastName}
+	<spring:escapeBody htmlEscape="true" javaScriptEscape="true">${accountInfoFragment.firstName} ${accountInfoFragment.lastName}</spring:escapeBody>
 	<br>
 	
 	<tags:homeAndWorkPhone homePhoneNotif="${accountInfoFragment.homePhoneNotif}" workPhoneNotif="${accountInfoFragment.workPhoneNotif}"/>

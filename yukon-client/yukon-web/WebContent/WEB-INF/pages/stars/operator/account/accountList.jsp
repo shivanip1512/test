@@ -62,7 +62,7 @@
 		    			</td>
 		    			
 		    			<td>
-		    				${accountSearchResult.combinedName}
+                            <spring:escapeBody htmlEscape="true" javaScriptEscape="true">${accountSearchResult.combinedName}</spring:escapeBody>
 		    			</td>
 		    			
 		    			<td>

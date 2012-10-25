@@ -5,6 +5,7 @@ import java.io.IOException;
 import javax.servlet.jsp.JspException;
 import javax.servlet.jsp.JspWriter;
 
+import org.apache.commons.lang.StringEscapeUtils;
 import org.apache.commons.lang.StringUtils;
 import org.apache.ecs.html.Div;
 import org.springframework.beans.factory.annotation.Configurable;
@@ -96,7 +97,9 @@ public class CustomerAccountInfoTag extends YukonTagSupport {
     
     private void addNameDiv(final Div mainDiv, final CustomerInformation customer) {
         Div fullNameDiv = new Div();
-        fullNameDiv.addElement(customer.getContactFirstName() + " " + customer.getContactLastName());
+        String first = StringEscapeUtils.escapeJavaScript(StringEscapeUtils.escapeHtml(customer.getContactFirstName()));
+        String last = StringEscapeUtils.escapeJavaScript(StringEscapeUtils.escapeHtml(customer.getContactLastName()));
+        fullNameDiv.addElement(first + " " + last);
         mainDiv.addElement(fullNameDiv);    
     }
     
