@@ -2,6 +2,7 @@
 
 #include "ControlStrategy.h"
 #include "NoStrategy.h"
+#include "IVVCSTrategy.h"
 
 using namespace std;
 
@@ -86,6 +87,66 @@ BOOST_AUTO_TEST_CASE(test_NoStrategy_default_creation)
     BOOST_CHECK_EQUAL( noStrategy.getPeakStartTime(),           1000 );
     BOOST_CHECK_EQUAL( noStrategy.getPeakStopTime(),            2000 );
     BOOST_CHECK_EQUAL( noStrategy.getDaysOfWeek(),              "YYYYYYYY" );
+}
+
+
+BOOST_AUTO_TEST_CASE(test_IVVCStrategy_control_method_and_unit)
+{
+    IVVCStrategy    strategy( PointDataRequestFactoryPtr( new PointDataRequestFactory ) );
+
+    // Default
+
+    BOOST_CHECK_EQUAL( strategy.getControlUnits(),  ControlStrategy::IntegratedVoltVarControlUnit );
+    BOOST_CHECK_EQUAL( strategy.getUnitType(),      ControlStrategy::IntegratedVoltVar );
+
+    BOOST_CHECK_EQUAL( strategy.getControlMethod(), ControlStrategy::SubstationBusControlMethod );
+    BOOST_CHECK_EQUAL( strategy.getMethodType(),    ControlStrategy::SubstationBus );
+
+    // Change control method to 'BusOptimizedFeeder'
+
+    strategy.setControlMethod( ControlStrategy::BusOptimizedFeederControlMethod );
+
+    BOOST_CHECK_EQUAL( strategy.getControlMethod(), ControlStrategy::BusOptimizedFeederControlMethod );
+    BOOST_CHECK_EQUAL( strategy.getMethodType(),    ControlStrategy::BusOptimizedFeeder );
+
+    // Back to 'SubstationBus'
+
+    strategy.setControlMethod( ControlStrategy::SubstationBusControlMethod );
+
+    BOOST_CHECK_EQUAL( strategy.getControlMethod(), ControlStrategy::SubstationBusControlMethod );
+    BOOST_CHECK_EQUAL( strategy.getMethodType(),    ControlStrategy::SubstationBus );
+
+    // Any other inputs
+
+    strategy.setControlMethod( ControlStrategy::NoControlMethod );
+
+    BOOST_CHECK_EQUAL( strategy.getControlMethod(), ControlStrategy::SubstationBusControlMethod );
+    BOOST_CHECK_EQUAL( strategy.getMethodType(),    ControlStrategy::SubstationBus );
+
+    strategy.setControlMethod( ControlStrategy::IndividualFeederControlMethod );
+
+    BOOST_CHECK_EQUAL( strategy.getControlMethod(), ControlStrategy::SubstationBusControlMethod );
+    BOOST_CHECK_EQUAL( strategy.getMethodType(),    ControlStrategy::SubstationBus );
+
+    strategy.setControlMethod( ControlStrategy::ManualOnlyControlMethod );
+
+    BOOST_CHECK_EQUAL( strategy.getControlMethod(), ControlStrategy::SubstationBusControlMethod );
+    BOOST_CHECK_EQUAL( strategy.getMethodType(),    ControlStrategy::SubstationBus );
+
+    strategy.setControlMethod( ControlStrategy::TimeOfDayControlMethod );
+
+    BOOST_CHECK_EQUAL( strategy.getControlMethod(), ControlStrategy::SubstationBusControlMethod );
+    BOOST_CHECK_EQUAL( strategy.getMethodType(),    ControlStrategy::SubstationBus );
+
+    strategy.setControlMethod( "" );
+
+    BOOST_CHECK_EQUAL( strategy.getControlMethod(), ControlStrategy::SubstationBusControlMethod );
+    BOOST_CHECK_EQUAL( strategy.getMethodType(),    ControlStrategy::SubstationBus );
+
+    strategy.setControlMethod( "frobnoztication" );
+
+    BOOST_CHECK_EQUAL( strategy.getControlMethod(), ControlStrategy::SubstationBusControlMethod );
+    BOOST_CHECK_EQUAL( strategy.getMethodType(),    ControlStrategy::SubstationBus );
 }
 
 BOOST_AUTO_TEST_SUITE_END()

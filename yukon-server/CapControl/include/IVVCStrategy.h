@@ -109,6 +109,8 @@ private:
     double _powerFactorCorrectionCost;
     double _powerFactorCorrectionMaxCost;
 
+    std::string _controlMethod;
+
     typedef std::map<long, std::pair<unsigned, IVVCStatePtr> >   PaoToStateMap;     // PaoID -> { reference count, state }
 
     PaoToStateMap   _paoStateMap;

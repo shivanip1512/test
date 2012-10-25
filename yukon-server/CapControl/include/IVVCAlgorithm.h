@@ -44,10 +44,10 @@ class IVVCAlgorithm
         };
         typedef std::pair<DataStatus, double>   DataCheckResult;
 
-        virtual bool            hasValidData( const PointDataRequestPtr& request, CtiTime timeNow, CtiCCSubstationBusPtr subbus );
+        virtual bool            hasValidData( const PointDataRequestPtr& request, CtiTime timeNow, CtiCCSubstationBusPtr subbus, IVVCStrategy* strategy );
         virtual DataCheckResult hasEnoughRecentData(const PointDataRequestPtr& request, CtiTime timeNow, double desiredRatio, PointRequestType pointRequestType, const std::string & requestTypeString);
 
-        virtual bool determineWatchPoints(CtiCCSubstationBusPtr subbus, DispatchConnectionPtr conn, bool sendScan, std::set<PointRequest>& pointRequests);
+        virtual bool determineWatchPoints(CtiCCSubstationBusPtr subbus, DispatchConnectionPtr conn, bool sendScan, std::set<PointRequest>& pointRequests, IVVCStrategy* strategy);
 
         double calculateTargetPFVars(const double targetPF, const double wattValue);
         double calculateVf(const PointValueMap &voltages);

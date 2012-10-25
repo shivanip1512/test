@@ -39,7 +39,8 @@ IVVCStrategy::IVVCStrategy(const PointDataRequestFactoryPtr& factory)
     _emergencyHighVoltageViolationCost(300.0),
     _powerFactorCorrectionBandwidth(0.02),
     _powerFactorCorrectionCost(20.0),
-    _powerFactorCorrectionMaxCost(2.0)
+    _powerFactorCorrectionMaxCost(2.0),
+    _controlMethod(SubstationBusControlMethod)
 {
 }
 
@@ -231,33 +232,50 @@ const unsigned IVVCStrategy::getMaxConsecutiveCapBankOps(const bool isPeak) cons
 }
 
 
+/* 
+    Currently only 2 supported options for the control method:
+        SubstationBus       -- the default
+        BusOptimizedFeeder
+ 
+        Future enhancements will also allow IndividualFeeder
+*/
 const ControlStrategy::ControlMethodType IVVCStrategy::getMethodType() const
 {
-    return ControlStrategy::SubstationBus;
+    if ( _controlMethod == BusOptimizedFeederControlMethod )
+    {
+        return BusOptimizedFeeder;
+    }
+
+    return SubstationBus;
 }
 
 
 const std::string IVVCStrategy::getControlMethod() const
 {
-    return ControlStrategy::SubstationBusControlMethod;
+    return _controlMethod;
 }
 
 
 void IVVCStrategy::setControlMethod(const std::string & method)
 {
-    // empty!
+    _controlMethod = SubstationBusControlMethod;
+    
+    if ( method == BusOptimizedFeederControlMethod )
+    {
+        _controlMethod = BusOptimizedFeederControlMethod;
+    }
 }
 
 
 const ControlStrategy::ControlUnitType IVVCStrategy::getUnitType() const
 {
-    return ControlStrategy::IntegratedVoltVar;
+    return IntegratedVoltVar;
 }
 
 
 const std::string IVVCStrategy::getControlUnits() const
 {
-    return ControlStrategy::IntegratedVoltVarControlUnit;
+    return IntegratedVoltVarControlUnit;
 }
 
 
