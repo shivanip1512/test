@@ -303,10 +303,10 @@ ALTER TABLE ReportedAddressSep
 /* End YUK-11567 */
 
 /* Start YUK-11553 */
+UPDATE YukonRoleProperty SET DefaultValue = 'stars' WHERE RolePropertyId = -1111;
+
 /* @error warn-once */
 /* @start-block */
-UPDATE YukonRoleProperty SET DefaultValue = 'stars' WHERE RolePropertyId = -1111;
- 
 DECLARE
     starsMctPaoCount INT;
 BEGIN
