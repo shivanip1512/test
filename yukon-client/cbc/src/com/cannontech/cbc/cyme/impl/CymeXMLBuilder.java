@@ -5,24 +5,38 @@ import java.util.Collection;
 import java.util.List;
 import java.util.Map;
 
+import org.apache.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
 
+import com.cannontech.capcontrol.dao.CcMonitorBankListDao;
 import com.cannontech.capcontrol.model.BankState;
 import com.cannontech.capcontrol.model.PointPaoIdentifier;
 import com.cannontech.cbc.cyme.CymeConfigurationException;
+import com.cannontech.clientutils.YukonLogManager;
 import com.cannontech.common.config.ConfigurationSource;
 import com.cannontech.common.config.MasterConfigStringKeysEnum;
 import com.cannontech.common.config.UnknownKeyException;
 import com.cannontech.common.pao.PaoType;
+import com.cannontech.common.pao.YukonPao;
+import com.cannontech.core.dao.ExtraPaoPointAssignmentDao;
 import com.cannontech.core.dao.NotFoundException;
+import com.cannontech.core.dao.PaoDao;
 import com.cannontech.core.dynamic.PointValueQualityHolder;
+import com.cannontech.database.data.lite.LitePoint;
 import com.cannontech.database.db.point.stategroup.PointStateHelper;
+import com.cannontech.enums.Phase;
+import com.cannontech.enums.RegulatorPointMapping;
 import com.google.common.collect.Lists;
 
 public class CymeXMLBuilder {
 
     @Autowired private ConfigurationSource configurationSource;
-
+    @Autowired private CcMonitorBankListDao monitorBankListDao;
+    @Autowired private ExtraPaoPointAssignmentDao extraPaoPointAssignmentDao;
+    @Autowired private PaoDao paoDao;
+    
+    private static final Logger log = YukonLogManager.getLogger(CymeXMLBuilder.class);
+    
     public String generateStudy(Collection<PointPaoIdentifier> paosInSystem, Map<Integer,PointValueQualityHolder> currentPointValues, List<String> paoNames){
         
         List<String> modifDeviceStrings = Lists.newArrayList();
@@ -71,6 +85,39 @@ public class CymeXMLBuilder {
                           "<TapPositionC>"+ tapPosition +"</TapPositionC>" +
                           "</ModifRegulatorTapPosition>";
                 modifDeviceStrings.add(xml);
+            } else if (paoType == PaoType.PHASE_OPERATED) {
+
+                //This is a hack, we are going to look up all related regulators on the assumption
+                //  there is a regulator per phase using a PaoName of 'regName'_'Phase Letter'
+                List<String> tapStrings = Lists.newArrayList();
+                
+                //Strip of the phase from this regulator.
+                String regName = entry.getPaoName().substring(0, entry.getPaoName().lastIndexOf("_"));                
+                
+                String tapString = generateStringForTap(regName,Phase.A,currentPointValues);
+                if( tapString != null) {
+                    tapStrings.add(tapString);
+                }
+                
+                tapString = generateStringForTap(regName,Phase.B,currentPointValues);
+                if( tapString != null) {
+                    tapStrings.add(tapString);
+                }
+                
+                tapString = generateStringForTap(regName,Phase.C,currentPointValues);
+                if( tapString != null) {
+                    tapStrings.add(tapString);
+                }
+                
+                String xml =   "<ModifRegulatorTapPosition>" +
+                          "<ModifID>"+(maxIndex) + "</ModifID>" +
+                          "<Index>"+(maxIndex++) + "</Index>" +
+                          "<DeviceNumber>"+regName+"</DeviceNumber>";
+                          for(String tapPositionStr : tapStrings) {
+                              xml += tapPositionStr;
+                          }
+                          xml += "</ModifRegulatorTapPosition>";
+                modifDeviceStrings.add(xml);
             } else if (paoType == PaoType.LOAD_TAP_CHANGER) {
                 String regName = entry.getPaoName();
                 PointValueQualityHolder pointValueQualityHolder = currentPointValues.get(entry.getPointId());
@@ -89,7 +136,8 @@ public class CymeXMLBuilder {
         }
         
         if (loadFactor == null) {
-            throw new NotFoundException("Missing Load Factor value in the point data. Cannot generate CYME study data.");
+            log.error("Missing Load Factor value in the point data. Cannot generate CYME study data.");
+            throw new NotFoundException("LoadFactor not found.");
         }
          
         String xml = 
@@ -157,6 +205,28 @@ public class CymeXMLBuilder {
             "</Cyme>";
             
         return xml;
+    }
+
+    private String generateStringForTap(String regName, Phase phase, Map<Integer, PointValueQualityHolder> currentPointValues) {
+        //Lookup the regulator for phase
+        YukonPao regulator = paoDao.findYukonPao(regName+"_"+phase.name(), PaoType.PHASE_OPERATED);
+        //If null, there is no regulator for the phase. Omission results in a 0 in CYME
+        if (regulator != null) {
+            //Find the tap position value for each regulator
+            try{
+                LitePoint tapPositionPoint = extraPaoPointAssignmentDao.getLitePoint(regulator, RegulatorPointMapping.TAP_POSITION);
+                PointValueQualityHolder pointValueQualityHolder = currentPointValues.get(tapPositionPoint.getLiteID());
+                if (pointValueQualityHolder != null) {
+                    return new String("<TapPosition"+phase.name()+">"+ (int)pointValueQualityHolder.getValue() +"</TapPosition"+phase.name()+">");
+                }
+            } catch (NotFoundException e) {
+                //Point not attached to regulator
+                return null;
+            }
+        }
+        //No regulator.
+        //Not an error. this could be a single phase zone.
+        return null;
     }
     
     private String convertBankStatus(BankState state) {
