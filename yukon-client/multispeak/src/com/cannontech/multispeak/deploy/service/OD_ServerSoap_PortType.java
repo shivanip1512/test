@@ -177,7 +177,7 @@ public interface OD_ServerSoap_PortType extends java.rmi.Remote {
      * in seconds), then the publisher will discard the request and the requestor
      * should not expect a response.
      */
-    public com.cannontech.multispeak.deploy.service.ErrorObject[] initiateOutageDetectionEventRequest(java.lang.String[] meterNos, java.util.Calendar requestDate, java.lang.String responseURL, java.lang.String transactionID, float expirationTime) throws java.rmi.RemoteException;
+    public com.cannontech.multispeak.deploy.service.ErrorObject[] initiateOutageDetectionEventRequest(java.lang.String[] meterNos, java.util.Calendar requestDate, java.lang.String responseURL, java.lang.String transactionID, java.lang.Float expirationTime) throws java.rmi.RemoteException;
 
     /**
      * Client requests server to return only outage detection events

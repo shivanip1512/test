@@ -95,7 +95,7 @@ public class OD_ServerSoap_BindingImpl implements com.cannontech.multispeak.depl
 
     public ErrorObject[] initiateOutageDetectionEventRequest(String[] meterNos,
             Calendar requestDate, String responseURL, String transactionID,
-            float expirationTime) throws RemoteException {
+            Float expirationTime) throws RemoteException {
         return od_server.initiateOutageDetectionEventRequest(meterNos,
                                                              requestDate,
                                                              responseURL,

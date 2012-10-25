@@ -93,7 +93,7 @@ public class OD_ServerImpl implements OD_ServerSoap_PortType
     @Override
     public ErrorObject[] initiateOutageDetectionEventRequest(String[] meterNos,
             Calendar requestDate, String responseURL, String transactionID,
-            float expirationTime) throws RemoteException {
+            Float expirationTime) throws RemoteException {
         init();
         ErrorObject[] errorObjects = new ErrorObject[0];
         
