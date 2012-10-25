@@ -252,7 +252,7 @@ BEGIN
     
     IF 0 < @NumberOfDuplicateUserGroups
     BEGIN
-        RAISERROR('The database currently has multiple User Groups that have identical names.  Going forward this will no longer be possible.  Please see YUK-11390 for details on how to identify duplicate names and change them to remove the conflict(s).The database contains multiple User Groups that have identical names.  Going forward this will no longer be possible.  Please see YUK-11390 for details on how to identify duplicate names and change them to remove the conflict.', 16, 1);
+        RAISERROR('The database currently has multiple User Groups that have identical names.  Going forward this will no longer be possible.  Please see YUK-11390 for details on how to identify duplicate names and change them to remove the conflict(s).', 16, 1);
     END
 END;
 

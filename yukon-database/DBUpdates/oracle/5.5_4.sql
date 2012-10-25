@@ -269,7 +269,7 @@ BEGIN
     WHERE T.NumberOfDuplicateUserGroups > 1;
     
     IF 0 < v_NumberOfDuplicateUserGroups THEN
-      RAISE_APPLICATION_ERROR(-20001, 'The database currently has multiple User Groups that have identical names.  Going forward this will no longer be possible.  Please see YUK-11390 for details on how to identify duplicate names and change them to remove the conflict(s).The database contains multiple User Groups that have identical names.  Going forward this will no longer be possible.  Please see YUK-11390 for details on how to identify duplicate names and change them to remove the conflict.');
+      RAISE_APPLICATION_ERROR(-20001, 'The database currently has multiple User Groups that have identical names.  Going forward this will no longer be possible.  Please see YUK-11390 for details on how to identify duplicate names and change them to remove the conflict(s).');
     END IF;
 END;
 /
