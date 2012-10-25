@@ -26,7 +26,7 @@ public enum ControlMethod implements DisplayableEnum {
 	BUSOPTIMIZED_FEEDER("Bus Optimized Feeder",
 	                    true,
 	                    ControlAlgorithm.KVAR,
-	                    ControlAlgorithm.KVAR, ControlAlgorithm.PFACTOR_KW_KVAR, ControlAlgorithm.VOLTS),
+	                    ControlAlgorithm.KVAR, ControlAlgorithm.INTEGRATED_VOLT_VAR, ControlAlgorithm.PFACTOR_KW_KVAR, ControlAlgorithm.VOLTS),
 	                    
 	MANUAL_ONLY("Manual Only",
                 true,

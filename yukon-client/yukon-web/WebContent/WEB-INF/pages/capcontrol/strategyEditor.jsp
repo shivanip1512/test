@@ -277,9 +277,9 @@
 
 			</x:htmlTag>
             
-            <x:htmlTag value="br" rendered="#{capControlForm.strategy.ivvc}"/>
+            <x:htmlTag value="br" rendered="#{capControlForm.strategy.ivvc && capControlForm.strategy.busOptimized}"/>
             
-            <x:htmlTag value="fieldset" styleClass="fieldSet" rendered="#{capControlForm.strategy.ivvc}">
+            <x:htmlTag value="fieldset" styleClass="fieldSet" rendered="#{capControlForm.strategy.ivvc && capControlForm.strategy.busOptimized}">
                 <x:htmlTag value="legend">
                     <x:outputText value="Power Factor Correction Settings"/>
                 </x:htmlTag>

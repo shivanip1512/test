@@ -344,6 +344,10 @@ public class CapControlStrategy extends DBPersistent implements CTIDbChange {
         return controlUnits == ControlAlgorithm.INTEGRATED_VOLT_VAR;
     }
     
+    public boolean isBusOptimized() {
+        return controlMethod == ControlMethod.BUSOPTIMIZED_FEEDER;
+    }
+    
     public boolean isVoltStrat() {
         if (controlUnits == ControlAlgorithm.MULTI_VOLT)
             return true;
