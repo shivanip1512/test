@@ -25,7 +25,7 @@
     <tags:sectionContainer2 nameKey="primaryContact" >
 	   	<div class="contactCard">
 	    	<h3>
-	    		<spring:htmlEscape defaultHtmlEscape="">${primaryContact.contFirstName} ${primaryContact.contLastName}</spring:htmlEscape>
+	    		<spring:escapeBody javaScriptEscape="true" htmlEscape="true" >${primaryContact.contFirstName} ${primaryContact.contLastName}</spring:escapeBody>
 		    	<cti:url var="editUrl" value="/spring/stars/consumer/contacts/edit">
 					<cti:param name="contactId" value="${primaryContact.contactID}"/>
 				</cti:url>
@@ -36,7 +36,7 @@
 	    	</c:if>
 	    	<ul>
 		    	<c:forEach var="notification" items="${primaryContact.liteContactNotifications}">
-		    		<li><label><i:inline key="yukon.web.modules.operator.contactNotificationEnum.${notification.contactNotificationType}"/></label>${notification.notification}</li>
+		    		<li><label><i:inline key="yukon.web.modules.operator.contactNotificationEnum.${notification.contactNotificationType}"/></label><spring:escapeBody javaScriptEscape="true" htmlEscape="true" >${notification.notification}</spring:escapeBody></li>
 		    	</c:forEach>
 	    	</ul>
 	   	</div>
@@ -51,7 +51,7 @@
 				</cti:url>
 		    	<div class="contactCard">
 		    		<h3>
-		    			<spring:htmlEscape defaultHtmlEscape="">${contact.contFirstName} ${contact.contLastName}</spring:htmlEscape>
+		    			<spring:escapeBody javaScriptEscape="true" htmlEscape="true" >${contact.contFirstName} ${contact.contLastName}</spring:escapeBody>
 				    	<cti:url var="deleteUrl" value="/spring/stars/consumer/contacts/delete">
 							<cti:param name="contactId" value="${contact.contactID}"/>
 						</cti:url>
@@ -85,7 +85,7 @@
 						    		<li>
 						    			<label><i:inline key="yukon.web.modules.operator.contactNotificationEnum.${notification.contactNotificationType}"/></label>
 						    			<div class="fl">
-						    				<spring:escapeBody>
+						    				<spring:escapeBody javaScriptEscape="true" htmlEscape="true" >
 						    				${notification.notification}
 						    				</spring:escapeBody>
 						    			</div>
