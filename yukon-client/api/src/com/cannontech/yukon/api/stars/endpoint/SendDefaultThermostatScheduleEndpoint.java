@@ -4,12 +4,8 @@ import java.util.Collections;
 import java.util.List;
 import java.util.Map;
 
-import javax.annotation.PostConstruct;
-
 import org.apache.log4j.Logger;
-import org.jdom.Attribute;
 import org.jdom.Element;
-import org.jdom.JDOMException;
 import org.jdom.Namespace;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.ws.server.endpoint.annotation.Endpoint;
@@ -32,7 +28,6 @@ import com.cannontech.stars.dr.hardware.model.Thermostat;
 import com.cannontech.stars.dr.thermostat.dao.AccountThermostatScheduleDao;
 import com.cannontech.stars.dr.thermostat.model.AccountThermostatSchedule;
 import com.cannontech.stars.dr.thermostat.service.ThermostatService;
-import com.cannontech.stars.energyCompany.model.YukonEnergyCompany;
 import com.cannontech.yukon.api.util.XMLFailureGenerator;
 import com.cannontech.yukon.api.util.XmlVersionUtils;
 
@@ -49,9 +44,6 @@ public class SendDefaultThermostatScheduleEndpoint {
     
     private Namespace ns = YukonXml.getYukonNamespace();
     private Logger log = YukonLogManager.getLogger(SendDefaultThermostatScheduleEndpoint.class);
-    
-    @PostConstruct
-    public void initialize() throws JDOMException {}
     
     @PayloadRoot(namespace="http://yukon.cannontech.com/api", localPart="sendDefaultThermostatScheduleRequest")
     public Element invoke(Element sendDefaultThermostatSchedule, LiteYukonUser user) throws Exception {
@@ -78,8 +70,8 @@ public class SendDefaultThermostatScheduleEndpoint {
             rolePropertyDao.checkProperty(YukonRoleProperty.OPERATOR_CONSUMER_INFO_HARDWARES_THERMOSTAT, user);
             
             // Get the inventoryIds from the serial numbers supplied.
-            YukonEnergyCompany yukonEnergyCompany = yukonEnergyCompanyService.getEnergyCompanyByOperator(user);
-            List<Integer> inventoryIds = inventoryDao.getInventoryIds(serialNumbers, yukonEnergyCompany.getEnergyCompanyId());
+            int yukonEnergyCompanyId = yukonEnergyCompanyService.getEnergyCompanyIdByOperator(user);
+            List<Integer> inventoryIds = inventoryDao.getInventoryIds(serialNumbers, yukonEnergyCompanyId);
             
             // Send out default thermostat schedule
             Map<Integer, CustomerAccount> inventoryIdsToAccountMap = customerAccountDao.getInventoryIdsToAccountMap(inventoryIds);
