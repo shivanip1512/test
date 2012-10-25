@@ -9,7 +9,8 @@ import com.cannontech.common.dynamicBilling.Channel;
 import com.cannontech.common.dynamicBilling.ReadingType;
 import com.cannontech.common.dynamicBilling.model.BillableField;
 import com.cannontech.common.pao.definition.model.PointIdentifier;
-import com.cannontech.database.data.point.PointTypes;
+import com.cannontech.database.data.point.PointType;
+
 
 
 /**
@@ -30,9 +31,9 @@ public class MCT440 extends BillingDeviceBase {
 
         ReadingType readingType = getReadingType(unitOfMeasure);
 
-        switch (pointIdentifier.getType()) {
+        switch (pointIdentifier.getPointType()) {
 
-        case PointTypes.PULSE_ACCUMULATOR_POINT:
+        case PulseAccumulator:
 
             switch (pointIdentifier.getOffset()) {
 
@@ -60,7 +61,7 @@ public class MCT440 extends BillingDeviceBase {
 
             break;
 
-        case PointTypes.DEMAND_ACCUMULATOR_POINT:
+        case DemandAccumulator:
 
             switch (pointIdentifier.getOffset()) {
 
@@ -86,16 +87,16 @@ public class MCT440 extends BillingDeviceBase {
             }
 
             break;
+
         }        
     }
 
     @Override
     public boolean isEnergy(PointIdentifier pointIdentifier) {
-        switch (pointIdentifier.getType()) {
+        
+        if (pointIdentifier.getPointType() == PointType.PulseAccumulator) {
 
-        case PointTypes.PULSE_ACCUMULATOR_POINT:
-
-            switch (pointIdentifier.getType()) {
+            switch (pointIdentifier.getOffset()) {
 
             case 1:     // KWh
             case 101:   // Rate A KWh
@@ -108,18 +109,18 @@ public class MCT440 extends BillingDeviceBase {
             case 241:   // Reverse Rate C KWh
             case 261:   // Reverse Rate D KWh
                 return true;
+            default:
+                return false;
             }
-
-            break;
         }
+
         return false;
     }
 
     @Override
     public boolean isDemand(PointIdentifier pointIdentifier) {
-        switch (pointIdentifier.getType()) {
-
-        case PointTypes.DEMAND_ACCUMULATOR_POINT:
+        
+        if (pointIdentifier.getPointType() == PointType.DemandAccumulator) {
 
             switch (pointIdentifier.getOffset()) {
 
@@ -129,10 +130,11 @@ public class MCT440 extends BillingDeviceBase {
             case 151:   // Rate C KW
             case 171:   // Rate D KW
                 return true;
+            default:
+                return false;
             }
-
-            break;
         }
+
         return false;
     }
 }
