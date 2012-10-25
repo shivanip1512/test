@@ -255,6 +255,7 @@ BEGIN
         RAISERROR('The database currently has multiple User Groups that have identical names.  Going forward this will no longer be possible.  Please see YUK-11390 for details on how to identify duplicate names and change them to remove the conflict(s).', 16, 1);
     END
 END;
+/* @end-block */
 
 CREATE UNIQUE INDEX Indx_UserGroup_Name_UNQ on UserGroup (
     Name ASC

@@ -210,7 +210,7 @@ DELETE FROM YukonRole WHERE RoleId IN (-4, -6, -104, -8, -7, -5, -105, -1);
  */
 /* @start-block */
 DECLARE
-  v_RemainingYukonGrpRPs NUMERIC;
+  v_RemainingYukonGrpRPs NUMBER;
 BEGIN
   SELECT COUNT(*) INTO v_RemainingYukonGrpRPs FROM YukonGroupRole WHERE GroupId = -1;
   IF 0 = v_RemainingYukonGrpRPs THEN 
