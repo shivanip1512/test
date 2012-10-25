@@ -35,7 +35,7 @@
 				</c:forEach>
 			</select>
 			<div class="fl">
-				<input type="text" name="liteContactNotifications[0].notification"/>
+				<input type="text" name="liteContactNotifications[0].notification" maxlength="120"/>
 			</div>
 			<span class="icon icon_remove f_removeNotification" title="">::DELETE::</span>
 		</div>
@@ -65,13 +65,13 @@
 	
 	<div id="contactForm">
 		<form:form commandName="contact" action="${actionUrl}" >
-			<tags:sectionContainer2 nameKey="editContact">
+			<tags:sectionContainer2 nameKey="${mode}">
 				<form:hidden path="contactID"/>
 				<form:hidden path="loginID"/>
 				<form:hidden path="addressID"/>
 				<tags:nameValueContainer2>
-					<tags:inputNameValue nameKey=".firstName" path="contFirstName" maxlength="130"/>
-					<tags:inputNameValue nameKey=".lastName" path="contLastName" maxlength="130"/>
+					<tags:inputNameValue nameKey=".firstName" path="contFirstName" maxlength="120"/>
+					<tags:inputNameValue nameKey=".lastName" path="contLastName" maxlength="120"/>
 					<tags:nameValue2 nameKey=".notifications">
 						<div id="notifications">
 							<c:forEach var="notification" items="${contact.liteContactNotifications}" varStatus="row">
@@ -85,7 +85,7 @@
 									</form:select>
 									<div class="fl">
 										<p>
-											<form:input path="liteContactNotifications[${row.index}].notification" maxlength="130" cssClass="fl" cssErrorClass="error fl" />
+											<form:input path="liteContactNotifications[${row.index}].notification" maxlength="120" cssClass="fl" cssErrorClass="error fl" />
 											<span class="icon icon_remove f_removeNotification" title="">::DELETE::</span>
 										</p>
 										<p>

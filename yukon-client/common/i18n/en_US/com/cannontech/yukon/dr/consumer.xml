@@ -77,7 +77,8 @@
     
     <!--  contacts.jsp -->
     <entry key="yukon.web.modules.consumer.contacts.editContact">Edit Contact</entry>
-    <entry key="yukon.web.modules.consumer.contacts.editContact.title">Edit Contact</entry>
+    <entry key="yukon.web.modules.consumer.contacts.EDIT.title">Edit Contact</entry>
+    <entry key="yukon.web.modules.consumer.contacts.CREATE.title">Create New Contact</entry>
     <entry key="yukon.web.modules.consumer.contacts.noNotifications">This contact has no notifications</entry>
     <entry key="yukon.web.modules.consumer.contacts.removeContact">Remove Contact</entry>
     <entry key="yukon.web.modules.consumer.contacts.removeContact.title">Remove Contact?</entry>
