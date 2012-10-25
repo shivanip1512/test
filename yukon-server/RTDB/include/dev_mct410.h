@@ -23,6 +23,30 @@ private:
 
     static std::string describeStatusAndEvents(unsigned char *buf);
 
+    enum SspecInformation
+    {
+        Sspec = 1029,
+
+        SspecRev_NextGen = 40,
+
+        SspecRev_NewLLP_Min         =    9,  //  rev  0.9
+        SspecRev_TOUPeak_Min        =   13,  //  rev  1.3
+        SspecRev_NewOutage_Min      =    8,  //  rev  0.8
+        SspecRev_Disconnect_Cycle   =   12,  //  rev  1.2
+        SspecRev_Disconnect_ConfigReadEnhanced = 20,  //  rev 2.0
+        SspecRev_DailyRead          =   21,  //  rev  2.1
+        SspecRev_HourlyKwh          =   33,
+
+        SspecRev_BetaLo =    9,  //  rev  0.9
+        SspecRev_BetaHi =  200,  //  rev 20.0
+    };
+
+    void readSspec(const OUTMESS &OutMessage, std::list<OUTMESS *> &outList) const;
+
+    virtual unsigned getUsageReportDelay(const unsigned interval_length, const unsigned days) const;
+
+protected:
+
     struct daily_read_info_t
     {
         enum RequestType
@@ -57,30 +81,6 @@ private:
         } interest;
 
     } _daily_read_info;
-
-    enum SspecInformation
-    {
-        Sspec = 1029,
-
-        SspecRev_NextGen = 40,
-
-        SspecRev_NewLLP_Min         =    9,  //  rev  0.9
-        SspecRev_TOUPeak_Min        =   13,  //  rev  1.3
-        SspecRev_NewOutage_Min      =    8,  //  rev  0.8
-        SspecRev_Disconnect_Cycle   =   12,  //  rev  1.2
-        SspecRev_Disconnect_ConfigReadEnhanced = 20,  //  rev 2.0
-        SspecRev_DailyRead          =   21,  //  rev  2.1
-        SspecRev_HourlyKwh          =   33,
-
-        SspecRev_BetaLo =    9,  //  rev  0.9
-        SspecRev_BetaHi =  200,  //  rev 20.0
-    };
-
-    void readSspec(const OUTMESS &OutMessage, std::list<OUTMESS *> &outList) const;
-
-    virtual unsigned getUsageReportDelay(const unsigned interval_length, const unsigned days) const;
-
-protected:
 
     virtual bool sspecValid(const unsigned sspec, const unsigned rev) const;
 
