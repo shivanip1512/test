@@ -86,9 +86,9 @@ public class CymeSimulationHelper {
         updateRegulatorVoltagePoint(regulatorName,Phase.ALL,cymeObject.getPhaseA().getVoltage(),simulationTime);
         
         //Else it is some combinations of a phases, run em all.
-        updateRegulatorVoltagePoint(regulatorName+"+A",Phase.A,cymeObject.getPhaseA().getVoltage(),simulationTime);
-        updateRegulatorVoltagePoint(regulatorName+"+B",Phase.B,cymeObject.getPhaseB().getVoltage(),simulationTime);
-        updateRegulatorVoltagePoint(regulatorName+"+C",Phase.C,cymeObject.getPhaseC().getVoltage(),simulationTime);
+        updateRegulatorVoltagePoint(regulatorName+"_A",Phase.A,cymeObject.getPhaseA().getVoltage(),simulationTime);
+        updateRegulatorVoltagePoint(regulatorName+"_B",Phase.B,cymeObject.getPhaseB().getVoltage(),simulationTime);
+        updateRegulatorVoltagePoint(regulatorName+"_C",Phase.C,cymeObject.getPhaseC().getVoltage(),simulationTime);
     }
     
     private boolean updateRegulatorVoltagePoint(String regulatorName, Phase phase, float value, Instant timestamp) {
