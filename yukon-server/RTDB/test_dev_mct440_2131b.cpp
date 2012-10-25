@@ -44,6 +44,7 @@ struct test_Mct440_2131BDevice : Cti::Devices::Mct440_2131BDevice
     using Mct440_2131BDevice::decodeGetValueInstantLineData;
     using Mct440_2131BDevice::decodeGetValueTOUkWh;
     using Mct440_2131BDevice::executePutConfigTOU;
+    using Mct440_2131BDevice::executePutConfig;
     using MctDevice::updateFreezeInfo;
 
     enum test_Features
@@ -155,16 +156,11 @@ BOOST_AUTO_TEST_SUITE( test_dev_mct440_2131b )
 
 BOOST_AUTO_TEST_CASE(test_isSupported_DisconnectCollar)
 {
-    BOOST_CHECK_EQUAL(true,  test_Mct440_2131B().test_isSupported(test_Mct440_2131BDevice::test_Feature_DisconnectCollar));
+    BOOST_CHECK_EQUAL(false,  test_Mct440_2131B().test_isSupported(test_Mct440_2131BDevice::test_Feature_DisconnectCollar));
 }
 
 BOOST_AUTO_TEST_CASE(test_decodeDisconnectConfig)
 {
-    //  Test case permutations:
-    //    MCT type:  mct451CL, mct451CD, mct451FL, mct451FD
-    //    Config byte: autoreconnect disabled, autoreconnect enabled
-    //  Config byte cannot be missing when the SSPEC is > ConfigReadEnhanced, since it returns the config byte
-
     struct test_case
     {
         const int mct_type;
@@ -173,16 +169,12 @@ BOOST_AUTO_TEST_CASE(test_decodeDisconnectConfig)
     }
     test_cases[] =
     {
-        //  MCT-420CL
-        {TYPEMCT440_2131B,  0x00, "Disconnect receiver address: 131844\n"
-                                  "Disconnect load limit connect delay: 34 minutes\n"
+        {TYPEMCT440_2131B,  0x00, "Disconnect load limit connect delay: 34 minutes\n"
                                   "Disconnect verification threshold: 12.300 kW (205 Wh/minute)\n"
                                   "Disconnect demand threshold disabled\n"
                                   "Disconnect cycling mode disabled\n"},
-        {TYPEMCT440_2131B,  0x04, "Disconnect receiver address: 131844\n"
-                                  "Disconnect load limit connect delay: 34 minutes\n"
+        {TYPEMCT440_2131B,  0x04, "Disconnect load limit connect delay: 34 minutes\n"
                                   "Disconnect verification threshold: 12.300 kW (205 Wh/minute)\n"
-                                  "Autoreconnect enabled\n"
                                   "Disconnect demand threshold disabled\n"
                                   "Disconnect cycling mode disabled\n"},
     };
@@ -2286,15 +2278,15 @@ BOOST_AUTO_TEST_CASE(test_getValueMappingForRead_IO_Read_1Dword)
         (empty)
         (empty)
         (tuple_list_of(0,4,143))
-        (empty)
+        (tuple_list_of(0,4,243)) // holiday 4
         // memory read 210
+        (tuple_list_of(0,4,246)) // holiday 7
+        (tuple_list_of(0,4,249)) // holiday 10
+        (tuple_list_of(0,4,252)) // holiday 13
+        (tuple_list_of(0,4,255)) // holiday 16
+        (tuple_list_of(0,4,258)) // holiday 19
+        (tuple_list_of(0,4,261)) // holiday 22
         (empty)
-        (empty)
-        (tuple_list_of(0,4,144))
-        (empty)
-        (empty)
-        (empty)
-        (tuple_list_of(0,4,145))
         (empty)
         (empty)
         (empty)
@@ -2434,15 +2426,15 @@ BOOST_AUTO_TEST_CASE(test_getValueMappingForRead_IO_Read_2Dwords)
         (empty)
         (empty)
         (tuple_list_of(0,4,143)(4,4,144))
-        (empty)
+        (tuple_list_of(0,4,243)(4,4,244)) // holiday 4, 5
         // memory read 210
+        (tuple_list_of(0,4,246)(4,4,247)) // holiday 7, 8
+        (tuple_list_of(0,4,249)(4,4,250)) // holiday 10, 11
+        (tuple_list_of(0,4,252)(4,4,253)) // holiday 13, 14
+        (tuple_list_of(0,4,255)(4,4,256)) // holiday 16, 17
+        (tuple_list_of(0,4,258)(4,4,259)) // holiday 19, 20
+        (tuple_list_of(0,4,261)(4,4,262)) // holiday 22, 23
         (empty)
-        (empty)
-        (tuple_list_of(0,4,144)(4,4,145))
-        (empty)
-        (empty)
-        (empty)
-        (tuple_list_of(0,4,145))
         (empty)
         (empty)
         (empty)
@@ -2593,15 +2585,15 @@ BOOST_AUTO_TEST_CASE(test_getValueMappingForRead_IO_Read_3Dwords)
         (empty)
         (empty)
         (tuple_list_of(0,4,143)(4,4,144)(8,4,145))
-        (empty)
+        (tuple_list_of(0,4,243)(4,4,244)(8,4,245)) // holiday 4, 5, 6
         // memory read 210
+        (tuple_list_of(0,4,246)(4,4,247)(8,4,248)) // holiday 7, 8, 9
+        (tuple_list_of(0,4,249)(4,4,250)(8,4,251)) // holiday 10, 11, 12
+        (tuple_list_of(0,4,252)(4,4,253)(8,4,254)) // holiday 13, 14, 15
+        (tuple_list_of(0,4,255)(4,4,256)(8,4,257)) // holiday 16, 17, 18
+        (tuple_list_of(0,4,258)(4,4,259)(8,4,260)) // holiday 19, 20, 21
+        (tuple_list_of(0,4,261)(4,4,262)(8,4,263)) // holiday 22, 23, 24
         (empty)
-        (empty)
-        (tuple_list_of(0,4,144)(4,4,145))
-        (empty)
-        (empty)
-        (empty)
-        (tuple_list_of(0,4,145))
         (empty)
         (empty)
         (empty)
@@ -2842,7 +2834,7 @@ BOOST_AUTO_TEST_CASE(test_decodeGetValueInstantLineData)
 
     CtiMultiMsg_vec points = retMsg->PointData();
 
-    BOOST_REQUIRE_EQUAL(points.size(), 9);
+    BOOST_REQUIRE_EQUAL(points.size(), 3);
 
     {
         const CtiPointDataMsg *pdata = dynamic_cast<CtiPointDataMsg *>(points[0]);  // phase A Line Volage
@@ -2874,65 +2866,65 @@ BOOST_AUTO_TEST_CASE(test_decodeGetValueInstantLineData)
         //BOOST_CHECK_EQUAL( pdata->getTime(), t);
     }
 
-    {
-        const CtiPointDataMsg *pdata = dynamic_cast<CtiPointDataMsg *>(points[3]);  // phase B Line Volage
-
-        BOOST_REQUIRE( pdata );
-
-        BOOST_CHECK_EQUAL( pdata->getValue(), 80);
-        BOOST_CHECK_EQUAL( pdata->getQuality(), NormalQuality );
-        //BOOST_CHECK_EQUAL( pdata->getTime(), t);
-    }
-
-    {
-        const CtiPointDataMsg *pdata = dynamic_cast<CtiPointDataMsg *>(points[4]);  // phase B Line Current
-
-        BOOST_REQUIRE( pdata );
-
-        BOOST_CHECK_EQUAL( pdata->getValue(), 1543);
-        BOOST_CHECK_EQUAL( pdata->getQuality(), NormalQuality );
-        //BOOST_CHECK_EQUAL( pdata->getTime(), t);
-    }
-
-    {
-        const CtiPointDataMsg *pdata = dynamic_cast<CtiPointDataMsg *>(points[5]);  // phase B Power Factor
-
-        BOOST_REQUIRE( pdata );
-
-        BOOST_CHECK_EQUAL( pdata->getValue(), 8);
-        BOOST_CHECK_EQUAL( pdata->getQuality(), NormalQuality );
-        //BOOST_CHECK_EQUAL( pdata->getTime(), t);
-    }
-
-    {
-        const CtiPointDataMsg *pdata = dynamic_cast<CtiPointDataMsg *>(points[6]);  // phase C Line Volage
-
-        BOOST_REQUIRE( pdata );
-
-        BOOST_CHECK_EQUAL( pdata->getValue(), 144);
-        BOOST_CHECK_EQUAL( pdata->getQuality(), NormalQuality );
-        //BOOST_CHECK_EQUAL( pdata->getTime(), t);
-    }
-
-    {
-        const CtiPointDataMsg *pdata = dynamic_cast<CtiPointDataMsg *>(points[7]);  // phase C Line Current
-
-        BOOST_REQUIRE( pdata );
-
-        BOOST_CHECK_EQUAL( pdata->getValue(), 2571);
-        BOOST_CHECK_EQUAL( pdata->getQuality(), NormalQuality );
-        //BOOST_CHECK_EQUAL( pdata->getTime(), t);
-    }
-
-    {
-        const CtiPointDataMsg *pdata = dynamic_cast<CtiPointDataMsg *>(points[8]);  // phase C Power Factor
-
-        BOOST_REQUIRE( pdata );
-
-        BOOST_CHECK_EQUAL( pdata->getValue(), 12);
-        BOOST_CHECK_EQUAL( pdata->getQuality(), NormalQuality );
-        //BOOST_CHECK_EQUAL( pdata->getTime(), t);
-    }
+//    {
+//        const CtiPointDataMsg *pdata = dynamic_cast<CtiPointDataMsg *>(points[3]);  // phase B Line Volage
+//
+//        BOOST_REQUIRE( pdata );
+//
+//        BOOST_CHECK_EQUAL( pdata->getValue(), 80);
+//        BOOST_CHECK_EQUAL( pdata->getQuality(), NormalQuality );
+//        //BOOST_CHECK_EQUAL( pdata->getTime(), t);
+//    }
+//
+//    {
+//        const CtiPointDataMsg *pdata = dynamic_cast<CtiPointDataMsg *>(points[4]);  // phase B Line Current
+//
+//        BOOST_REQUIRE( pdata );
+//
+//        BOOST_CHECK_EQUAL( pdata->getValue(), 1543);
+//        BOOST_CHECK_EQUAL( pdata->getQuality(), NormalQuality );
+//        //BOOST_CHECK_EQUAL( pdata->getTime(), t);
+//    }
+//
+//    {
+//        const CtiPointDataMsg *pdata = dynamic_cast<CtiPointDataMsg *>(points[5]);  // phase B Power Factor
+//
+//        BOOST_REQUIRE( pdata );
+//
+//        BOOST_CHECK_EQUAL( pdata->getValue(), 8);
+//        BOOST_CHECK_EQUAL( pdata->getQuality(), NormalQuality );
+//        //BOOST_CHECK_EQUAL( pdata->getTime(), t);
+//    }
+//
+//    {
+//        const CtiPointDataMsg *pdata = dynamic_cast<CtiPointDataMsg *>(points[6]);  // phase C Line Volage
+//
+//        BOOST_REQUIRE( pdata );
+//
+//        BOOST_CHECK_EQUAL( pdata->getValue(), 144);
+//        BOOST_CHECK_EQUAL( pdata->getQuality(), NormalQuality );
+//        //BOOST_CHECK_EQUAL( pdata->getTime(), t);
+//    }
+//
+//    {
+//        const CtiPointDataMsg *pdata = dynamic_cast<CtiPointDataMsg *>(points[7]);  // phase C Line Current
+//
+//        BOOST_REQUIRE( pdata );
+//
+//        BOOST_CHECK_EQUAL( pdata->getValue(), 2571);
+//        BOOST_CHECK_EQUAL( pdata->getQuality(), NormalQuality );
+//        //BOOST_CHECK_EQUAL( pdata->getTime(), t);
+//    }
+//
+//    {
+//        const CtiPointDataMsg *pdata = dynamic_cast<CtiPointDataMsg *>(points[8]);  // phase C Power Factor
+//
+//        BOOST_REQUIRE( pdata );
+//
+//        BOOST_CHECK_EQUAL( pdata->getValue(), 12);
+//        BOOST_CHECK_EQUAL( pdata->getQuality(), NormalQuality );
+//        //BOOST_CHECK_EQUAL( pdata->getTime(), t);
+//    }
 
 }
 
@@ -3351,6 +3343,421 @@ BOOST_FIXTURE_TEST_SUITE(command_executions, executePutConfig_helper)
                &exp_msg_3[0], &exp_msg_3[14]);
 
         outList.pop_front();
+    }
+
+    BOOST_AUTO_TEST_CASE(test_executePutConfig)
+    {
+        test_Mct440_2131B test_dev;
+
+        {
+            CtiCommandParser parse("putconfig EMETCON holiday 1 01/20/2050");
+
+            CtiOutMessage *outmsg = CTIDBG_new OUTMESS;
+
+            BOOST_CHECK_EQUAL(NoError, test_dev.executePutConfig(&request, parse, outmsg, vgList, retList, outList));
+
+            BOOST_CHECK_EQUAL(outmsg->Buffer.BSt.Function, 0x0d0);
+            BOOST_CHECK_EQUAL(outmsg->Buffer.BSt.Length  , 4    );
+
+            unsigned char expmsg[4] = {0x96,0x93,0xc8,0xd0};
+
+            BOOST_CHECK_EQUAL_COLLECTIONS(
+                           &outmsg->Buffer.BSt.Message[0], &outmsg->Buffer.BSt.Message[3],
+                           &expmsg[0], &expmsg[3]);
+        }
+
+        {
+            CtiCommandParser parse("putconfig EMETCON holiday 4 01/20/2050");
+
+            CtiOutMessage *outmsg = CTIDBG_new OUTMESS;
+
+            BOOST_CHECK_EQUAL(NoError, test_dev.executePutConfig(&request, parse, outmsg, vgList, retList, outList));
+
+            BOOST_CHECK_EQUAL(outmsg->Buffer.BSt.Function, 0x0d1);
+            BOOST_CHECK_EQUAL(outmsg->Buffer.BSt.Length  , 4    );
+
+            unsigned char expmsg[4] = {0x96,0x93,0xc8,0xd0};
+
+            BOOST_CHECK_EQUAL_COLLECTIONS(
+                           &outmsg->Buffer.BSt.Message[0], &outmsg->Buffer.BSt.Message[3],
+                           &expmsg[0], &expmsg[3]);
+        }
+
+        {
+            CtiCommandParser parse("putconfig EMETCON holiday 7 01/20/2050");
+
+            CtiOutMessage *outmsg = CTIDBG_new OUTMESS;
+
+            BOOST_CHECK_EQUAL(NoError, test_dev.executePutConfig(&request, parse, outmsg, vgList, retList, outList));
+
+            BOOST_CHECK_EQUAL(outmsg->Buffer.BSt.Function, 0x0d2);
+            BOOST_CHECK_EQUAL(outmsg->Buffer.BSt.Length  , 4    );
+
+            unsigned char expmsg[4] = {0x96,0x93,0xc8,0xd0};
+
+            BOOST_CHECK_EQUAL_COLLECTIONS(
+                           &outmsg->Buffer.BSt.Message[0], &outmsg->Buffer.BSt.Message[3],
+                           &expmsg[0], &expmsg[3]);
+        }
+
+        {
+            CtiCommandParser parse("putconfig EMETCON holiday 10 01/20/2050");
+
+            CtiOutMessage *outmsg = CTIDBG_new OUTMESS;
+
+            BOOST_CHECK_EQUAL(NoError, test_dev.executePutConfig(&request, parse, outmsg, vgList, retList, outList));
+
+            BOOST_CHECK_EQUAL(outmsg->Buffer.BSt.Function, 0x0d3);
+            BOOST_CHECK_EQUAL(outmsg->Buffer.BSt.Length  , 4    );
+
+            unsigned char expmsg[4] = {0x96,0x93,0xc8,0xd0};
+
+            BOOST_CHECK_EQUAL_COLLECTIONS(
+                           &outmsg->Buffer.BSt.Message[0], &outmsg->Buffer.BSt.Message[3],
+                           &expmsg[0], &expmsg[3]);
+        }
+
+        {
+            CtiCommandParser parse("putconfig EMETCON holiday 13 01/20/2050");
+
+            CtiOutMessage *outmsg = CTIDBG_new OUTMESS;
+
+            BOOST_CHECK_EQUAL(NoError, test_dev.executePutConfig(&request, parse, outmsg, vgList, retList, outList));
+
+            BOOST_CHECK_EQUAL(outmsg->Buffer.BSt.Function, 0x0d4);
+            BOOST_CHECK_EQUAL(outmsg->Buffer.BSt.Length  , 4    );
+
+            unsigned char expmsg[4] = {0x96,0x93,0xc8,0xd0};
+
+            BOOST_CHECK_EQUAL_COLLECTIONS(
+                           &outmsg->Buffer.BSt.Message[0], &outmsg->Buffer.BSt.Message[3],
+                           &expmsg[0], &expmsg[3]);
+        }
+
+        {
+            CtiCommandParser parse("putconfig EMETCON holiday 16 01/20/2050");
+
+            CtiOutMessage *outmsg = CTIDBG_new OUTMESS;
+
+            BOOST_CHECK_EQUAL(NoError, test_dev.executePutConfig(&request, parse, outmsg, vgList, retList, outList));
+
+            BOOST_CHECK_EQUAL(outmsg->Buffer.BSt.Function, 0x0d5);
+            BOOST_CHECK_EQUAL(outmsg->Buffer.BSt.Length  , 4    );
+
+            unsigned char expmsg[4] = {0x96,0x93,0xc8,0xd0};
+
+            BOOST_CHECK_EQUAL_COLLECTIONS(
+                           &outmsg->Buffer.BSt.Message[0], &outmsg->Buffer.BSt.Message[3],
+                           &expmsg[0], &expmsg[3]);
+        }
+
+        {
+            CtiCommandParser parse("putconfig EMETCON holiday 19 01/20/2050");
+
+            CtiOutMessage *outmsg = CTIDBG_new OUTMESS;
+
+            BOOST_CHECK_EQUAL(NoError, test_dev.executePutConfig(&request, parse, outmsg, vgList, retList, outList));
+
+            BOOST_CHECK_EQUAL(outmsg->Buffer.BSt.Function, 0x0d6);
+            BOOST_CHECK_EQUAL(outmsg->Buffer.BSt.Length  , 4    );
+
+            unsigned char expmsg[4] = {0x96,0x93,0xc8,0xd0};
+
+            BOOST_CHECK_EQUAL_COLLECTIONS(
+                           &outmsg->Buffer.BSt.Message[0], &outmsg->Buffer.BSt.Message[3],
+                           &expmsg[0], &expmsg[3]);
+        }
+
+        {
+            CtiCommandParser parse("putconfig EMETCON holiday 22 01/20/2050");
+
+            CtiOutMessage *outmsg = CTIDBG_new OUTMESS;
+
+            BOOST_CHECK_EQUAL(NoError, test_dev.executePutConfig(&request, parse, outmsg, vgList, retList, outList));
+
+            BOOST_CHECK_EQUAL(outmsg->Buffer.BSt.Function, 0x0d7);
+            BOOST_CHECK_EQUAL(outmsg->Buffer.BSt.Length  , 4    );
+
+            unsigned char expmsg[4] = {0x96,0x93,0xc8,0xd0};
+
+            BOOST_CHECK_EQUAL_COLLECTIONS(
+                           &outmsg->Buffer.BSt.Message[0], &outmsg->Buffer.BSt.Message[3],
+                           &expmsg[0], &expmsg[3]);
+        }
+
+        {
+            CtiCommandParser parse("putconfig EMETCON holiday 1 01/20/2050 01/21/2050");
+
+            CtiOutMessage *outmsg = CTIDBG_new OUTMESS;
+
+            BOOST_CHECK_EQUAL(NoError, test_dev.executePutConfig(&request, parse, outmsg, vgList, retList, outList));
+
+            BOOST_CHECK_EQUAL(outmsg->Buffer.BSt.Function, 0x0d0);
+            BOOST_CHECK_EQUAL(outmsg->Buffer.BSt.Length  , 8    );
+
+            unsigned char expmsg[8] = {0x96,0x93,0xc8,0xd0,0x96,0x95,0x1A,0x50};
+
+            BOOST_CHECK_EQUAL_COLLECTIONS(
+                           &outmsg->Buffer.BSt.Message[0], &outmsg->Buffer.BSt.Message[7],
+                           &expmsg[0], &expmsg[7]);
+        }
+
+        {
+            CtiCommandParser parse("putconfig EMETCON holiday 4 01/20/2050 01/21/2050");
+
+            CtiOutMessage *outmsg = CTIDBG_new OUTMESS;
+
+            BOOST_CHECK_EQUAL(NoError, test_dev.executePutConfig(&request, parse, outmsg, vgList, retList, outList));
+
+            BOOST_CHECK_EQUAL(outmsg->Buffer.BSt.Function, 0x0d1);
+            BOOST_CHECK_EQUAL(outmsg->Buffer.BSt.Length  , 8    );
+
+            unsigned char expmsg[8] = {0x96,0x93,0xc8,0xd0,0x96,0x95,0x1A,0x50};
+
+            BOOST_CHECK_EQUAL_COLLECTIONS(
+                           &outmsg->Buffer.BSt.Message[0], &outmsg->Buffer.BSt.Message[7],
+                           &expmsg[0], &expmsg[7]);
+        }
+
+        {
+            CtiCommandParser parse("putconfig EMETCON holiday 7 01/20/2050 01/21/2050");
+
+            CtiOutMessage *outmsg = CTIDBG_new OUTMESS;
+
+            BOOST_CHECK_EQUAL(NoError, test_dev.executePutConfig(&request, parse, outmsg, vgList, retList, outList));
+
+            BOOST_CHECK_EQUAL(outmsg->Buffer.BSt.Function, 0x0d2);
+            BOOST_CHECK_EQUAL(outmsg->Buffer.BSt.Length  , 8    );
+
+            unsigned char expmsg[8] = {0x96,0x93,0xc8,0xd0,0x96,0x95,0x1A,0x50};
+
+            BOOST_CHECK_EQUAL_COLLECTIONS(
+                           &outmsg->Buffer.BSt.Message[0], &outmsg->Buffer.BSt.Message[7],
+                           &expmsg[0], &expmsg[7]);
+        }
+
+        {
+            CtiCommandParser parse("putconfig EMETCON holiday 10 01/20/2050 01/21/2050");
+
+            CtiOutMessage *outmsg = CTIDBG_new OUTMESS;
+
+            BOOST_CHECK_EQUAL(NoError, test_dev.executePutConfig(&request, parse, outmsg, vgList, retList, outList));
+
+            BOOST_CHECK_EQUAL(outmsg->Buffer.BSt.Function, 0x0d3);
+            BOOST_CHECK_EQUAL(outmsg->Buffer.BSt.Length  , 8    );
+
+            unsigned char expmsg[8] = {0x96,0x93,0xc8,0xd0,0x96,0x95,0x1A,0x50};
+
+            BOOST_CHECK_EQUAL_COLLECTIONS(
+                           &outmsg->Buffer.BSt.Message[0], &outmsg->Buffer.BSt.Message[7],
+                           &expmsg[0], &expmsg[7]);
+        }
+
+        {
+            CtiCommandParser parse("putconfig EMETCON holiday 13 01/20/2050 01/21/2050");
+
+            CtiOutMessage *outmsg = CTIDBG_new OUTMESS;
+
+            BOOST_CHECK_EQUAL(NoError, test_dev.executePutConfig(&request, parse, outmsg, vgList, retList, outList));
+
+            BOOST_CHECK_EQUAL(outmsg->Buffer.BSt.Function, 0x0d4);
+            BOOST_CHECK_EQUAL(outmsg->Buffer.BSt.Length  , 8    );
+
+            unsigned char expmsg[8] = {0x96,0x93,0xc8,0xd0,0x96,0x95,0x1A,0x50};
+
+            BOOST_CHECK_EQUAL_COLLECTIONS(
+                           &outmsg->Buffer.BSt.Message[0], &outmsg->Buffer.BSt.Message[7],
+                           &expmsg[0], &expmsg[7]);
+        }
+
+        {
+            CtiCommandParser parse("putconfig EMETCON holiday 16 01/20/2050 01/21/2050");
+
+            CtiOutMessage *outmsg = CTIDBG_new OUTMESS;
+
+            BOOST_CHECK_EQUAL(NoError, test_dev.executePutConfig(&request, parse, outmsg, vgList, retList, outList));
+
+            BOOST_CHECK_EQUAL(outmsg->Buffer.BSt.Function, 0x0d5);
+            BOOST_CHECK_EQUAL(outmsg->Buffer.BSt.Length  , 8    );
+
+            unsigned char expmsg[8] = {0x96,0x93,0xc8,0xd0,0x96,0x95,0x1A,0x50};
+
+            BOOST_CHECK_EQUAL_COLLECTIONS(
+                           &outmsg->Buffer.BSt.Message[0], &outmsg->Buffer.BSt.Message[7],
+                           &expmsg[0], &expmsg[7]);
+        }
+
+        {
+            CtiCommandParser parse("putconfig EMETCON holiday 19 01/20/2050 01/21/2050");
+
+            CtiOutMessage *outmsg = CTIDBG_new OUTMESS;
+
+            BOOST_CHECK_EQUAL(NoError, test_dev.executePutConfig(&request, parse, outmsg, vgList, retList, outList));
+
+            BOOST_CHECK_EQUAL(outmsg->Buffer.BSt.Function, 0x0d6);
+            BOOST_CHECK_EQUAL(outmsg->Buffer.BSt.Length  , 8    );
+
+            unsigned char expmsg[8] = {0x96,0x93,0xc8,0xd0,0x96,0x95,0x1A,0x50};
+
+            BOOST_CHECK_EQUAL_COLLECTIONS(
+                           &outmsg->Buffer.BSt.Message[0], &outmsg->Buffer.BSt.Message[3],
+                           &expmsg[0], &expmsg[3]);
+        }
+
+        {
+            CtiCommandParser parse("putconfig EMETCON holiday 22 01/20/2050 01/21/2050");
+
+            CtiOutMessage *outmsg = CTIDBG_new OUTMESS;
+
+            BOOST_CHECK_EQUAL(NoError, test_dev.executePutConfig(&request, parse, outmsg, vgList, retList, outList));
+
+            BOOST_CHECK_EQUAL(outmsg->Buffer.BSt.Function, 0x0d7);
+            BOOST_CHECK_EQUAL(outmsg->Buffer.BSt.Length  , 8    );
+
+            unsigned char expmsg[12] = {0x96,0x93,0xc8,0xd0,0x96,0x95,0x1A,0x50,0x96,0x96,0x6b,0xd0};
+
+            BOOST_CHECK_EQUAL_COLLECTIONS(
+                           &outmsg->Buffer.BSt.Message[0], &outmsg->Buffer.BSt.Message[7],
+                           &expmsg[0], &expmsg[7]);
+        }
+
+        {
+            CtiCommandParser parse("putconfig EMETCON holiday 1 01/20/2050 01/21/2050 01/22/2050");
+
+            CtiOutMessage *outmsg = CTIDBG_new OUTMESS;
+
+            BOOST_CHECK_EQUAL(NoError, test_dev.executePutConfig(&request, parse, outmsg, vgList, retList, outList));
+
+            BOOST_CHECK_EQUAL(outmsg->Buffer.BSt.Function, 0x0d0);
+            BOOST_CHECK_EQUAL(outmsg->Buffer.BSt.Length  , 12    );
+
+            unsigned char expmsg[12] = {0x96,0x93,0xc8,0xd0,0x96,0x95,0x1A,0x50,0x96,0x96,0x6b,0xd0};
+
+            BOOST_CHECK_EQUAL_COLLECTIONS(
+                           &outmsg->Buffer.BSt.Message[0], &outmsg->Buffer.BSt.Message[11],
+                           &expmsg[0], &expmsg[11]);
+        }
+
+        {
+            CtiCommandParser parse("putconfig EMETCON holiday 4 01/20/2050 01/21/2050 01/22/2050");
+
+            CtiOutMessage *outmsg = CTIDBG_new OUTMESS;
+
+            BOOST_CHECK_EQUAL(NoError, test_dev.executePutConfig(&request, parse, outmsg, vgList, retList, outList));
+
+            BOOST_CHECK_EQUAL(outmsg->Buffer.BSt.Function, 0x0d1);
+            BOOST_CHECK_EQUAL(outmsg->Buffer.BSt.Length  , 12    );
+
+            unsigned char expmsg[12] = {0x96,0x93,0xc8,0xd0,0x96,0x95,0x1A,0x50,0x96,0x96,0x6b,0xd0};
+
+            BOOST_CHECK_EQUAL_COLLECTIONS(
+                           &outmsg->Buffer.BSt.Message[0], &outmsg->Buffer.BSt.Message[11],
+                           &expmsg[0], &expmsg[11]);
+        }
+
+        {
+            CtiCommandParser parse("putconfig EMETCON holiday 7 01/20/2050 01/21/2050 01/22/2050");
+
+            CtiOutMessage *outmsg = CTIDBG_new OUTMESS;
+
+            BOOST_CHECK_EQUAL(NoError, test_dev.executePutConfig(&request, parse, outmsg, vgList, retList, outList));
+
+            BOOST_CHECK_EQUAL(outmsg->Buffer.BSt.Function, 0x0d2);
+            BOOST_CHECK_EQUAL(outmsg->Buffer.BSt.Length  , 12    );
+
+            unsigned char expmsg[12] = {0x96,0x93,0xc8,0xd0,0x96,0x95,0x1A,0x50,0x96,0x96,0x6b,0xd0};
+
+            BOOST_CHECK_EQUAL_COLLECTIONS(
+                           &outmsg->Buffer.BSt.Message[0], &outmsg->Buffer.BSt.Message[11],
+                           &expmsg[0], &expmsg[11]);
+        }
+
+        {
+            CtiCommandParser parse("putconfig EMETCON holiday 10 01/20/2050 01/21/2050 01/22/2050");
+
+            CtiOutMessage *outmsg = CTIDBG_new OUTMESS;
+
+            BOOST_CHECK_EQUAL(NoError, test_dev.executePutConfig(&request, parse, outmsg, vgList, retList, outList));
+
+            BOOST_CHECK_EQUAL(outmsg->Buffer.BSt.Function, 0x0d3);
+            BOOST_CHECK_EQUAL(outmsg->Buffer.BSt.Length  , 12   );
+
+            unsigned char expmsg[12] = {0x96,0x93,0xc8,0xd0,0x96,0x95,0x1A,0x50,0x96,0x96,0x6b,0xd0};
+
+            BOOST_CHECK_EQUAL_COLLECTIONS(
+                           &outmsg->Buffer.BSt.Message[0], &outmsg->Buffer.BSt.Message[11],
+                           &expmsg[0], &expmsg[11]);
+        }
+
+        {
+            CtiCommandParser parse("putconfig EMETCON holiday 13 01/20/2050 01/21/2050 01/22/2050");
+
+            CtiOutMessage *outmsg = CTIDBG_new OUTMESS;
+
+            BOOST_CHECK_EQUAL(NoError, test_dev.executePutConfig(&request, parse, outmsg, vgList, retList, outList));
+
+            BOOST_CHECK_EQUAL(outmsg->Buffer.BSt.Function, 0x0d4);
+            BOOST_CHECK_EQUAL(outmsg->Buffer.BSt.Length  , 12    );
+
+            unsigned char expmsg[12] = {0x96,0x93,0xc8,0xd0,0x96,0x95,0x1A,0x50,0x96,0x96,0x6b,0xd0};
+
+            BOOST_CHECK_EQUAL_COLLECTIONS(
+                           &outmsg->Buffer.BSt.Message[0], &outmsg->Buffer.BSt.Message[11],
+                           &expmsg[0], &expmsg[11]);
+        }
+
+        {
+            CtiCommandParser parse("putconfig EMETCON holiday 16 01/20/2050 01/21/2050 01/22/2050");
+
+            CtiOutMessage *outmsg = CTIDBG_new OUTMESS;
+
+            BOOST_CHECK_EQUAL(NoError, test_dev.executePutConfig(&request, parse, outmsg, vgList, retList, outList));
+
+            BOOST_CHECK_EQUAL(outmsg->Buffer.BSt.Function, 0x0d5);
+            BOOST_CHECK_EQUAL(outmsg->Buffer.BSt.Length  , 12    );
+
+            unsigned char expmsg[12] = {0x96,0x93,0xc8,0xd0,0x96,0x95,0x1A,0x50,0x96,0x96,0x6b,0xd0};
+
+            BOOST_CHECK_EQUAL_COLLECTIONS(
+                           &outmsg->Buffer.BSt.Message[0], &outmsg->Buffer.BSt.Message[11],
+                           &expmsg[0], &expmsg[11]);
+        }
+
+        {
+            CtiCommandParser parse("putconfig EMETCON holiday 19 01/20/2050 01/21/2050 01/22/2050");
+
+            CtiOutMessage *outmsg = CTIDBG_new OUTMESS;
+
+            BOOST_CHECK_EQUAL(NoError, test_dev.executePutConfig(&request, parse, outmsg, vgList, retList, outList));
+
+            BOOST_CHECK_EQUAL(outmsg->Buffer.BSt.Function, 0x0d6);
+            BOOST_CHECK_EQUAL(outmsg->Buffer.BSt.Length  , 12    );
+
+            unsigned char expmsg[12] = {0x96,0x93,0xc8,0xd0,0x96,0x95,0x1A,0x50,0x96,0x96,0x6b,0xd0};
+
+            BOOST_CHECK_EQUAL_COLLECTIONS(
+                           &outmsg->Buffer.BSt.Message[0], &outmsg->Buffer.BSt.Message[11],
+                           &expmsg[0], &expmsg[11]);
+        }
+
+        {
+            CtiCommandParser parse("putconfig EMETCON holiday 22 01/20/2050 01/21/2050 01/22/2050");
+
+            CtiOutMessage *outmsg = CTIDBG_new OUTMESS;
+
+            BOOST_CHECK_EQUAL(NoError, test_dev.executePutConfig(&request, parse, outmsg, vgList, retList, outList));
+
+            BOOST_CHECK_EQUAL(outmsg->Buffer.BSt.Function, 0x0d7);
+            BOOST_CHECK_EQUAL(outmsg->Buffer.BSt.Length  , 12    );
+
+            unsigned char expmsg[12] = {0x96,0x93,0xc8,0xd0,0x96,0x95,0x1A,0x50,0x96,0x96,0x6b,0xd0};
+
+            BOOST_CHECK_EQUAL_COLLECTIONS(
+                           &outmsg->Buffer.BSt.Message[0], &outmsg->Buffer.BSt.Message[11],
+                           &expmsg[0], &expmsg[11]);
+        }
+
+
     }
 
 }
