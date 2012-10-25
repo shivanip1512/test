@@ -83,11 +83,7 @@ public class CymeSimulationHelper {
         //We have a name, Determine what type of regulator this is.
         //Check Gang_Operated first, thats the simplest.
         String regulatorName = cymeObject.getEqNo();
-        boolean updated = updateRegulatorVoltagePoint(regulatorName,Phase.ALL,cymeObject.getPhaseA().getVoltage(),simulationTime);
-        if (updated) {
-            //It was gang operated. We are done
-            return;
-        }
+        updateRegulatorVoltagePoint(regulatorName,Phase.ALL,cymeObject.getPhaseA().getVoltage(),simulationTime);
         
         //Else it is some combinations of a phases, run em all.
         updateRegulatorVoltagePoint(regulatorName+"+A",Phase.A,cymeObject.getPhaseA().getVoltage(),simulationTime);
