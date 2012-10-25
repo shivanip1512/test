@@ -188,14 +188,13 @@ public interface RawPointHistoryDao {
      * 
      * @param paos The Iterable of PAOs
      * @param attribute The Attribute to return, this can either be a regular or a mapped attribute
-     * @param startDate The lower limit for the timestamp of the values to return, may be null
-     * @param stopDate The upper limit for the timestamp of the values to return, may be null
+     * @param dateRange The date range over which data should be retrieved.
+     * @param changeIdRange A range of changeIds to include.  This can be null (which will not filter
+     *            on changeId).
      * @param maxRows The maximum number of rows to return for each PAO
      * @param excludeDisabledPaos True if disabled PAOs should be omitted from the result
-     * @param clusivity - determines whether each end of range is inclusive or exclusive
      * @param order - controls ordering  [ASC, DESC]
      * @param orderBy - controls field to order by  [timestamp, value]
-     * @return
      */
     public ListMultimap<PaoIdentifier, PointValueQualityHolder> getLimitedAttributeData(
         Iterable<? extends YukonPao> paos, Attribute attribute, Range<Instant> dateRange,
