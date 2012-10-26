@@ -10,6 +10,7 @@ import javax.annotation.PostConstruct;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
 
+import com.cannontech.common.i18n.MessageSourceAccessor;
 import com.cannontech.common.util.DatedObject;
 import com.cannontech.core.service.DateFormattingService;
 import com.cannontech.core.service.DateFormattingService.DateFormatEnum;
@@ -19,11 +20,13 @@ import com.cannontech.dr.dao.ExpressComReportedAddressRelay;
 import com.cannontech.dr.dao.LmReportedAddress;
 import com.cannontech.dr.dao.SepReportedAddress;
 import com.cannontech.dr.dao.SepReportedAddressDao;
+import com.cannontech.i18n.YukonUserContextMessageSourceResolver;
 import com.cannontech.user.YukonUserContext;
 import com.cannontech.web.updater.UpdateBackingServiceBase;
 
 public class LmReportedDataBackingService extends UpdateBackingServiceBase<LmReportedAddress> {
 
+    @Autowired private YukonUserContextMessageSourceResolver resolver;
     @Autowired private DateFormattingService dateFormattingService;
     @Autowired private ExpressComReportedAddressDao expressComReportedAddressDao;
     @Autowired private SepReportedAddressDao sepReportedAddressDao;
@@ -112,7 +115,13 @@ public class LmReportedDataBackingService extends UpdateBackingServiceBase<LmRep
             break;
             
         case SUB:
-            value =  Integer.toString(address.getSubstation());
+            int substation = address.getSubstation();
+            if (substation == -1) {
+                MessageSourceAccessor accessor = resolver.getMessageSourceAccessor(context);
+                value = accessor.getMessage("yukon.web.modules.operator.hardwareConfig.notReadable"); 
+            } else {
+                value =  Integer.toString(substation);
+            }
             break;
             
         case FEEDER:

@@ -286,10 +286,10 @@
         <table name="ExternalToYukonMessageIdMapping" identitycolumn="YukonMessageId"/>
       </sequence>
       <sequence name="ReportedAddressExpressCom">
-        <table name="ReportedAddressExpressCom" identitycolumn="ChangeId"/>
+        <table name="ReportedAddressExpressCom" identitycolumn="ChangeId" initsequence="true"/>
       </sequence>
       <sequence name="ReportedAddressSep">
-        <table name="ReportedAddressSep" identitycolumn="ChangeId"/>
+        <table name="ReportedAddressSep" identitycolumn="ChangeId" initsequence="true"/>
       </sequence>
       <sequence name="EncryptionKey">
         <table name="EncryptionKey" identitycolumn="EncryptionKeyId"/>

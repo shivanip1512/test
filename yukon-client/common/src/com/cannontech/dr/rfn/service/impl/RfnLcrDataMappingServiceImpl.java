@@ -201,7 +201,7 @@ public class RfnLcrDataMappingServiceImpl implements RfnLcrDataMappingService {
         
         /** hack until Karl gets us some new firmware */
         Integer sub = data.evaluateAsInt("/DRReport/ExtendedAddresssing/Substation");
-        sub = sub == null ? 0 : sub;
+        sub = sub == null ? -1 : sub;
         address.setSubstation(sub);
             
         address.setFeeder(data.evaluateAsInt("/DRReport/ExtendedAddresssing/Feeder"));
