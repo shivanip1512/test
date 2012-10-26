@@ -345,6 +345,7 @@ INT Mct440_213xBDevice::executeGetValue(CtiRequestMsg     *pReq,
 
     static const string str_outage          = "outage";
     static const string str_instantlinedata = "instantlinedata";
+    static const string str_daily_read      = "daily_read";
 
                                                                 /* ------------ TOU KWH (FORWARD / REVERSE) ----------- */
     if( (parse.getFlags() & CMD_FLAG_GV_KWH) &&
@@ -446,6 +447,20 @@ INT Mct440_213xBDevice::executeGetValue(CtiRequestMsg     *pReq,
              **/
 
             OutMessage->Buffer.BSt.Function += ((outagenum - 1) / 2);
+        }
+    }
+
+                                                                /* ---------------- DAILY READ RECENT ----------------- */
+    else if( parse.isKeyValid(str_daily_read) )
+    {
+        nRet = Inherited::executeGetValue(pReq, parse, OutMessage, vgList, retList, outList);
+
+        if (nRet == NoError)
+        {
+            if(_daily_read_info.request.type == daily_read_info_t::Request_Recent)
+            {
+                OutMessage->Buffer.BSt.Length = FuncRead_Channel1SingleDayLen;
+            }
         }
     }
 
@@ -1506,8 +1521,8 @@ INT Mct440_213xBDevice::decodeGetValueDailyReadRecent(INMESS          *InMessage
         setDynamicInfo(CtiTableDynamicPaoInfo::Key_MCT_DailyReadInterestChannel, channel);
 
         //  These two need to be available to be checked against ErrorText_OutOfRange below
-        point_info pi_forward = getAccumulatorData(DSt->Message + 0, 3, 0);
-        point_info pi_reverse = getAccumulatorData(DSt->Message + 3, 3, 0);
+        point_info pi_forward = getAccumulatorData(DSt->Message + 0, 3, 0); //FIXME : see if we should replace this with getData()
+        point_info pi_reverse = getAccumulatorData(DSt->Message + 3, 3, 0); //FIXME : see if we should replace this with getData()
 
         if( channel != _daily_read_info.request.channel )
         {
@@ -1516,19 +1531,11 @@ INT Mct440_213xBDevice::decodeGetValueDailyReadRecent(INMESS          *InMessage
 
             status = ErrorInvalidChannel;
         }
-        else if( _daily_read_info.interest.needs_verification )
-        {
-            resultString  = getName() + " / Daily read period of interest date was not verified, try read again";
-
-            //  when they try the read again, it'll re-read the period of interest from the meter
-
-            status = ErrorInvalidTimestamp;
-        }
-        else if(  day        !=   _daily_read_info.request.begin.dayOfMonth() ||
-                 (month % 4) != ((_daily_read_info.request.begin.month() - 1) % 4) )
+        else if(  day    !=  _daily_read_info.request.begin.dayOfMonth() ||
+                  month  != (_daily_read_info.request.begin.month() - 1) )
         {
             resultString  = getName() + " / Invalid day/month returned by daily read ";
-            resultString += "(" + CtiNumStr(day) + "/" + CtiNumStr(month + 1) + ", expecting " + CtiNumStr(_daily_read_info.request.begin.dayOfMonth()) + "/" + CtiNumStr(((_daily_read_info.request.begin.month() - 1) % 4) + 1) + ")";
+            resultString += "(" + CtiNumStr(day) + "/" + CtiNumStr(month + 1) + ", expecting " + CtiNumStr(_daily_read_info.request.begin.dayOfMonth()) + "/" + CtiNumStr(_daily_read_info.request.begin.month()) + ")";
 
             //  These come back as 0x7ff.. if daily reads are disabled, but also if the request really was out of range
             //  Ideally, this check would be against an enum or similar rather than a string,

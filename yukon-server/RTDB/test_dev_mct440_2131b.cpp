@@ -43,6 +43,7 @@ struct test_Mct440_2131BDevice : Cti::Devices::Mct440_2131BDevice
 
     using Mct440_2131BDevice::decodeGetValueInstantLineData;
     using Mct440_2131BDevice::decodeGetValueTOUkWh;
+    using Mct440_2131BDevice::decodeGetValueDailyReadRecent;
     using Mct440_2131BDevice::executePutConfigTOU;
     using Mct440_2131BDevice::executePutConfig;
     using MctDevice::updateFreezeInfo;
@@ -1294,6 +1295,119 @@ BOOST_FIXTURE_TEST_SUITE(getvalue_daily_reads, getvalueDailyReads_helper)
             }
         }
     }
+
+
+
+    BOOST_AUTO_TEST_CASE(test_dev_mct440_2131b_getvalue_daily_read_recent)
+    {
+
+        test_dev.setDynamicInfo(CtiTableDynamicPaoInfo::Key_MCT_SSpecRevision, 21);  //  set the device to SSPEC revision 2.1
+        test_dev.setDynamicInfo(CtiTableDynamicPaoInfo::Key_MCT_DailyReadInterestChannel, 1);
+
+
+
+        for(int i = 0; i < 9; i++)
+        {
+            CtiTime timenow;
+            CtiDate today = timenow.date();
+
+            CtiDate date  = today;
+
+            /* iteration 0 -> test yesterday (no date specified)
+             *           1 -> test yesterday
+             *           2 -> test 2 days ago
+             *           3 -> test 3 days ago
+             *           4 -> test 4 days ago
+             *           5 -> test 5 days ago
+             *           6 -> test 6 days ago
+             *           7 -> test 7 days ago
+             *           8 -> test 8 days ago
+             */
+
+            date -= (i == 0) ? 1 : i;
+
+            {
+                string str_cmd( string("getvalue daily read") );
+
+                if (i != 0)
+                {
+                    str_cmd += " " + date.asStringUSFormat();
+                }
+
+                CtiCommandParser parse(str_cmd);
+
+                BOOST_CHECK_EQUAL( NoError , test_dev.executeGetValue(&request, parse, om, vgList, retList, outList) );
+
+                BOOST_CHECK_EQUAL( om->Buffer.BSt.IO,       Cti::Protocols::EmetconProtocol::IO_Function_Read);
+
+                /* iteration 0 -> func 0x30
+                 *           1 -> func 0x30
+                 *           2 -> func 0x31
+                 *           3 -> func 0x32
+                 *           4 -> func 0x33
+                 *           5 -> func 0x34
+                 *           6 -> func 0x35
+                 *           7 -> func 0x36
+                 *           8 -> func 0x37
+                 */
+
+                int exp_func = (i == 0) ? 0x30 : (0x30 + i - 1);
+
+                BOOST_CHECK_EQUAL( om->Buffer.BSt.Function, exp_func);
+                BOOST_CHECK_EQUAL( om->Buffer.BSt.Length,   10);
+
+                BOOST_CHECK( outList.empty() );
+            }
+
+
+            delete_container(vgList);
+            delete_container(retList);
+            delete_container(outList);
+
+            vgList.clear();
+            retList.clear();
+            outList.clear();
+
+            {
+                INMESS im;
+
+                unsigned char buf[10] = { 0x98, 0x96, 0x7e, 0x98, 0x96, 0x7e, 0x0, 0x3, 0x0, 0x0};
+
+                buf[8] = date.dayOfMonth();
+                buf[9] = date.month() - 1;
+
+                std::copy(buf,  buf + 10, im.Buffer.DSt.Message );
+
+                im.Buffer.DSt.Length = 10;
+                im.Buffer.DSt.Address = 0x1ffff;  //  CarrierAddress is -1 by default, so the lower 13 bits are all set
+
+                BOOST_CHECK_EQUAL( NoError , test_dev.decodeGetValueDailyReadRecent(&im, timenow, vgList, retList, outList) );
+
+                BOOST_REQUIRE_EQUAL(retList.size(), 1);
+
+                const CtiReturnMsg *retMsg = dynamic_cast<CtiReturnMsg *>(retList.front());
+
+                BOOST_REQUIRE(retMsg);
+
+                CtiMultiMsg_vec points = retMsg->PointData();
+
+                BOOST_REQUIRE_EQUAL(points.size(), 3);
+
+                {
+                    const CtiPointDataMsg *pdata = dynamic_cast<CtiPointDataMsg *>(points[0]);  // rate A
+
+                    BOOST_REQUIRE( pdata );
+
+                    CtiTime t_exp((date + 1), 0, 0, 0); // add 1 day
+
+                    BOOST_CHECK_EQUAL( pdata->getValue(), 3);
+                    BOOST_CHECK_EQUAL( pdata->getQuality(), NormalQuality );
+                    BOOST_CHECK_EQUAL( pdata->getTime().seconds(), t_exp.seconds());
+                }
+            }
+        }
+    }
+
 //}  Brace matching for BOOST_FIXTURE_TEST_SUITE
 BOOST_AUTO_TEST_SUITE_END()
 
