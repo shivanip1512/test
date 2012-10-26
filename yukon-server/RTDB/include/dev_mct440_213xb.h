@@ -28,23 +28,23 @@ protected:
 
     enum PointOffsets
     {
-        PointOffset_PulseAcc_LineVoltagePhaseA  = 0,
-        PointOffset_PulseAcc_LineVoltagePhaseB  = 0,
-        PointOffset_PulseAcc_LineVoltagePhaseC  = 0,
+        PointOffset_PulseAcc_LineVoltagePhaseA  = 801,
+        PointOffset_PulseAcc_LineVoltagePhaseB  = 802,
+        PointOffset_PulseAcc_LineVoltagePhaseC  = 803,
 
-        PointOffset_PulseAcc_LineCurrentPhaseA  = 0,
-        PointOffset_PulseAcc_LineCurrentPhaseB  = 0,
-        PointOffset_PulseAcc_LineCurrentPhaseC  = 0,
+        PointOffset_PulseAcc_LineCurrentPhaseA  = 811,
+        PointOffset_PulseAcc_LineCurrentPhaseB  = 812,
+        PointOffset_PulseAcc_LineCurrentPhaseC  = 813,
 
-        PointOffset_PulseAcc_LinePowFactPhaseA  = 0,
-        PointOffset_PulseAcc_LinePowFactPhaseB  = 0,
-        PointOffset_PulseAcc_LinePowFactPhaseC  = 0,
+        PointOffset_PulseAcc_LinePowFactPhaseA  = 821,
+        PointOffset_PulseAcc_LinePowFactPhaseB  = 822,
+        PointOffset_PulseAcc_LinePowFactPhaseC  = 823,
 
         PointOffset_PulseAcc_TOUBaseForward     = 100,
         PointOffset_PulseAcc_TOUBaseReverse     = 200,
 
-        PointOffset_PulseAcc_RecentkWhForward   = 0,
-        PointOffset_PulseAcc_RecentkWhReverse   = 0,
+        PointOffset_PulseAcc_RecentkWhForward   = 181,
+        PointOffset_PulseAcc_RecentkWhReverse   = 281,
     };
 
     enum Functions
@@ -58,6 +58,9 @@ protected:
         FuncRead_TOUSwitchSchedule12Part2Len    = 13,
         FuncRead_TOUSwitchSchedule34Part2Pos    = 0xb9,
         FuncRead_TOUSwitchSchedule34Part2Len    = 13,
+
+        FuncRead_Channel1SingleDayBasePos       = 0x30,
+        FuncRead_Channel1SingleDayLen           = 10,
     };
 
 
