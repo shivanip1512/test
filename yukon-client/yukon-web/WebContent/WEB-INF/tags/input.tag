@@ -11,21 +11,16 @@
 <%@ attribute name="maxlength" required="false" type="java.lang.String"%>
 <%@ attribute name="autocomplete" required="false" type="java.lang.Boolean"%>
 <%@ attribute name="inputClass" required="false" type="java.lang.String"%>
-<%@ attribute name="escapeHtml" required="false" type="java.lang.Boolean" %>
-<%@ attribute name="escapeJavascript" required="false" type="java.lang.Boolean" %>
 <%@ attribute name="id"%>
 <%@ attribute name="onkeyup"%>
 <%@ attribute name="onchange"%>
 <%@ attribute name="onblur"%>
 
-<cti:default var="escapeHtml" value="false"/>
-<cti:default var="escapeJavascript" value="false"/>
-
 <spring:bind path="${path}">
 
 <%-- VIEW MODE --%>
 <cti:displayForPageEditModes modes="VIEW">
-    <spring:escapeBody htmlEscape="${escapeHtml}" javaScriptEscape="${escapeJavascript}">${status.value}</spring:escapeBody>
+    <spring:escapeBody htmlEscape="true">${status.value}</spring:escapeBody>
 </cti:displayForPageEditModes>
 
 <%-- EDIT/CREATE MODE --%>

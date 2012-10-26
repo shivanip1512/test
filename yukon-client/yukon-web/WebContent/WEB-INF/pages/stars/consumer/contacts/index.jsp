@@ -85,7 +85,7 @@
 						    		<li>
 						    			<label><i:inline key="yukon.web.modules.operator.contactNotificationEnum.${notification.contactNotificationType}"/></label>
 						    			<div class="fl">
-						    				<spring:escapeBody javaScriptEscape="true" htmlEscape="true">${notification.notification}</spring:escapeBody>
+						    				<spring:escapeBody htmlEscape="true">${notification.notification}</spring:escapeBody>
 						    			</div>
 					    			</li>
 				    			</c:otherwise>

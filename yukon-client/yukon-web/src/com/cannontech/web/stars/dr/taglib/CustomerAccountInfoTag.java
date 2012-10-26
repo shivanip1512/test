@@ -97,8 +97,8 @@ public class CustomerAccountInfoTag extends YukonTagSupport {
     
     private void addNameDiv(final Div mainDiv, final CustomerInformation customer) {
         Div fullNameDiv = new Div();
-        String first = StringEscapeUtils.escapeJavaScript(StringEscapeUtils.escapeHtml(customer.getContactFirstName()));
-        String last = StringEscapeUtils.escapeJavaScript(StringEscapeUtils.escapeHtml(customer.getContactLastName()));
+        String first = StringEscapeUtils.escapeHtml(customer.getContactFirstName());
+        String last = StringEscapeUtils.escapeHtml(customer.getContactLastName());
         fullNameDiv.addElement(first + " " + last);
         mainDiv.addElement(fullNameDiv);    
     }

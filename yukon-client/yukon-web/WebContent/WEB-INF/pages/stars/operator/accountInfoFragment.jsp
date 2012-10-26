@@ -24,7 +24,7 @@
 		<br>
 	</c:if>
 	
-	<spring:escapeBody htmlEscape="true" javaScriptEscape="true">${accountInfoFragment.firstName} ${accountInfoFragment.lastName}</spring:escapeBody>
+	<spring:escapeBody htmlEscape="true">${accountInfoFragment.firstName} ${accountInfoFragment.lastName}</spring:escapeBody>
 	<br>
 	
 	<tags:homeAndWorkPhone homePhoneNotif="${accountInfoFragment.homePhoneNotif}" workPhoneNotif="${accountInfoFragment.workPhoneNotif}"/>

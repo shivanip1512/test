@@ -232,8 +232,8 @@
 	    					</c:if>
 	    					
 	    					<tags:inputNameValue nameKey=".customerNumberLabel" path="accountDto.customerNumber"/>
-	    					<tags:inputNameValue nameKey=".lastNameLabel" path="accountDto.lastName" escapeHtml="true" escapeJavascript="true"/>
-	    					<tags:inputNameValue nameKey=".firstNameLabel" path="accountDto.firstName" escapeHtml="true" escapeJavascript="true"/>
+	    					<tags:inputNameValue nameKey=".lastNameLabel" path="accountDto.lastName"/>
+	    					<tags:inputNameValue nameKey=".firstNameLabel" path="accountDto.firstName"/>
 	    					<tags:inputNameValue nameKey=".homePhoneLabel" path="accountDto.homePhone"/>
 	    					<tags:inputNameValue nameKey=".workPhoneLabel" path="accountDto.workPhone"/>
 	    					<tags:inputNameValue nameKey=".emailLabel" path="accountDto.emailAddress"/>
