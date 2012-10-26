@@ -85,7 +85,7 @@ public class CustomerAccountInfoTag extends YukonTagSupport {
         Div accountNumberDiv = new Div();
         accountNumberDiv.addAttribute("class", "accountNumber");
         String accountNumberLabel = messageSource.getMessage("yukon.dr.consumer.accountNumberLabel", account.getAccountNumber());
-        accountNumberDiv.addElement(accountNumberLabel);
+        accountNumberDiv.addElement(StringEscapeUtils.escapeHtml(accountNumberLabel));
         mainDiv.addElement(accountNumberDiv);    
     }
     
@@ -105,7 +105,7 @@ public class CustomerAccountInfoTag extends YukonTagSupport {
     
     private void addAddressDiv(final Div mainDiv, final LiteAddress address) {
         Div addressDiv = new Div();
-        String formattedAddressString = address.toFormattedString();
+        String formattedAddressString = StringEscapeUtils.escapeHtml(address.toFormattedString());
         formattedAddressString = formattedAddressString.replaceAll("\\n", "<br>");
         addressDiv.addElement(formattedAddressString);
         mainDiv.addElement(addressDiv);    
@@ -116,7 +116,7 @@ public class CustomerAccountInfoTag extends YukonTagSupport {
 			return;
 
         Div companyNameDiv = new Div();
-        companyNameDiv.addElement(customer.getCompanyName());
+        companyNameDiv.addElement(StringEscapeUtils.escapeHtml(customer.getCompanyName()));
         mainDiv.addElement(companyNameDiv);
     }
     

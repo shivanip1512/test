@@ -3,6 +3,7 @@
 <%@ taglib prefix="tags" tagdir="/WEB-INF/tags" %>
 <%@ taglib prefix="i" tagdir="/WEB-INF/tags/i18n" %>
 <%@ taglib prefix="spring" uri="http://www.springframework.org/tags"%>
+<%@ taglib prefix="fn" uri="http://java.sun.com/jsp/jstl/functions" %>
 
 <cti:standardPage module="operator" page="accountList">
 
@@ -57,12 +58,12 @@
 		    					<cti:param name="accountId" value="${accountSearchResult.accountId}"/>
 		    				</cti:url>
 		    				<a href="${accountEditUrl}">
-		   						${accountSearchResult.accountNumber}
+		   						${fn:escapeXml(accountSearchResult.accountNumber)}
 		   					</a>
 		    			</td>
 		    			
 		    			<td>
-                            <spring:escapeBody htmlEscape="true">${accountSearchResult.combinedName}</spring:escapeBody>
+                            ${fn:escapeXml(accountSearchResult.combinedName)}
 		    			</td>
 		    			
 		    			<td>
@@ -75,7 +76,7 @@
                         
                         <c:if test="${searchMembers}">
                             <td>
-                                <spring:escapeBody htmlEscape="true">${accountSearchResult.energyCompanyName}</spring:escapeBody>
+                                ${fn:escapeXml(accountSearchResult.energyCompanyName)}
                             </td>
                         </c:if>
 		    		

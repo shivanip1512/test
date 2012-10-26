@@ -5,6 +5,7 @@
 <%@ taglib tagdir="/WEB-INF/tags" prefix="tags"%>
 <%@ taglib tagdir="/WEB-INF/tags/i18n" prefix="i"%>
 <%@ taglib prefix="dialog" tagdir="/WEB-INF/tags/dialog"%>
+<%@ taglib prefix="fn" uri="http://java.sun.com/jsp/jstl/functions" %>
 
 <cti:standardPage module="operator" page="account.${mode}">
 
@@ -309,11 +310,11 @@
     					<form:hidden path="accountDto.billingAddress.county"/>
     					
     					<%-- for temporary storage of billing previous values, has no impact on actual form processing --%>
-    					<input type="hidden" id="temp_accountDto.billingAddress.locationAddress1" value="${accountGeneral.accountDto.billingAddress.locationAddress1}"> 
-    					<input type="hidden" id="temp_accountDto.billingAddress.locationAddress2" value="${accountGeneral.accountDto.billingAddress.locationAddress2}"> 
-    					<input type="hidden" id="temp_accountDto.billingAddress.cityName" value="${accountGeneral.accountDto.billingAddress.cityName}"> 
-    					<input type="hidden" id="temp_accountDto.billingAddress.stateCode" value="${accountGeneral.accountDto.billingAddress.stateCode}"> 
-    					<input type="hidden" id="temp_accountDto.billingAddress.zipCode" value="${accountGeneral.accountDto.billingAddress.zipCode}"> 
+    					<input type="hidden" id="temp_accountDto.billingAddress.locationAddress1" value="${fn:escapeXml(accountGeneral.accountDto.billingAddress.locationAddress1)}"/> 
+    					<input type="hidden" id="temp_accountDto.billingAddress.locationAddress2" value="${fn:escapeXml(accountGeneral.accountDto.billingAddress.locationAddress2)}"/> 
+    					<input type="hidden" id="temp_accountDto.billingAddress.cityName" value="${fn:escapeXml(accountGeneral.accountDto.billingAddress.cityName)}"/> 
+    					<input type="hidden" id="temp_accountDto.billingAddress.stateCode" value="${fn:escapeXml(accountGeneral.accountDto.billingAddress.stateCode)}"/> 
+    					<input type="hidden" id="temp_accountDto.billingAddress.zipCode" value="${fn:escapeXml(accountGeneral.accountDto.billingAddress.zipCode)}"/> 
     					
     				</tags:nameValueContainer2>
 	    			

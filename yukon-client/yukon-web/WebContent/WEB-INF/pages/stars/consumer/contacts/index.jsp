@@ -25,7 +25,7 @@
     <tags:sectionContainer2 nameKey="primaryContact" >
 	   	<div class="contactCard">
 	    	<h3>
-	    		<spring:escapeBody javaScriptEscape="true" htmlEscape="true" >${primaryContact.contFirstName} ${primaryContact.contLastName}</spring:escapeBody>
+	    		${fn:escapeXml(primaryContact.contFirstName)} ${fn:escapeXml(primaryContact.contLastName)}
 		    	<cti:url var="editUrl" value="/spring/stars/consumer/contacts/edit">
 					<cti:param name="contactId" value="${primaryContact.contactID}"/>
 				</cti:url>
@@ -51,7 +51,7 @@
 				</cti:url>
 		    	<div class="contactCard">
 		    		<h3>
-		    			<spring:escapeBody javaScriptEscape="true" htmlEscape="true" >${contact.contFirstName} ${contact.contLastName}</spring:escapeBody>
+		    			${fn:escapeXml(contact.contFirstName)} ${fn:escapeXml(contact.contLastName)}
 				    	<cti:url var="deleteUrl" value="/spring/stars/consumer/contacts/delete">
 							<cti:param name="contactId" value="${contact.contactID}"/>
 						</cti:url>
@@ -85,7 +85,7 @@
 						    		<li>
 						    			<label><i:inline key="yukon.web.modules.operator.contactNotificationEnum.${notification.contactNotificationType}"/></label>
 						    			<div class="fl">
-						    				<spring:escapeBody htmlEscape="true">${notification.notification}</spring:escapeBody>
+						    				${fn:escapeXml(notification.notification)}
 						    			</div>
 					    			</li>
 				    			</c:otherwise>
