@@ -16,7 +16,7 @@
 	          argument="${accountInfoFragment.alternateTrackingNumber}"/>
 	          
 	<c:if test="${not empty extraInfo}">
-		${fn:escapeXml(extraInfo}
+		${extraInfo}
 		<br>
 	</c:if>
 	
