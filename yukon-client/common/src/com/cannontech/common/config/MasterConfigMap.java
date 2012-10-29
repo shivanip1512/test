@@ -56,6 +56,7 @@ public class MasterConfigMap implements ConfigurationSource {
         Pattern spacePattern = Pattern.compile("\\p{Zs}");
         
         InputStream inputStream = FileUtils.openInputStream(masterCfgFile);
+        // Don't specify an encoding - read using the default system encoding.
         BufferedReader masterCfgReader = new BufferedReader(new InputStreamReader(inputStream));
         // As we are parsing master.cfg, we copy it into this temporary string.  If we come across
         // value which needs to be encrypted, we encrypt it and set updateFile to true.  Then, if
@@ -109,7 +110,8 @@ public class MasterConfigMap implements ConfigurationSource {
         }
         masterCfgReader.close();
         if (updateFile) {
-            FileUtils.writeStringToFile(masterCfgFile, tempWriter.toString(), Charsets.UTF_8.name());
+            // Don't specify an encoding - write using the default system encoding.
+            FileUtils.writeStringToFile(masterCfgFile, tempWriter.toString());
         }
     }
 
