@@ -616,7 +616,7 @@ INT Mct440_213xBDevice::decodeGetValueInstantLineData(INMESS          *InMessage
 
     ReturnMsg->setUserMessageId(InMessage->Return.UserID);
 
-    int phase_cnt = getPhaseCount();
+    const int phase_cnt = getPhaseCount();
 
     for (int i = 0; i < phase_cnt; i++)
     {
