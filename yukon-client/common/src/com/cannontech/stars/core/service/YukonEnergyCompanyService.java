@@ -20,6 +20,11 @@ public interface YukonEnergyCompanyService {
     public int getEnergyCompanyIdByOperator(LiteYukonUser operator);
     
     /**
+     * This method returns whether or not the operator provided is an Energy Company Operator
+     */
+    public boolean isEnergyCompanyOperator(LiteYukonUser operator);
+    
+    /**
      * This method gets the yukon energy company that is associated with the supplied account.  
      * This method should be used as the primary option when you are working with an account. 
      */

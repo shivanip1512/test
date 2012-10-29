@@ -64,6 +64,12 @@ public class YukonEnergyCompanyServiceImpl implements YukonEnergyCompanyService 
         }
         return energyCompanyId;
     }
+    
+    @Override
+	public boolean isEnergyCompanyOperator(LiteYukonUser operator) {
+    	int ecId = getEnergyCompanyIdByOperator(operator);
+		return ecId != StarsDatabaseCache.DEFAULT_ENERGY_COMPANY_ID;
+	}
 
     @Override
     public YukonEnergyCompany getEnergyCompanyByInventoryId(int inventoryId) {
@@ -173,4 +179,6 @@ public class YukonEnergyCompanyServiceImpl implements YukonEnergyCompanyService 
         
         return null;
     }
+
+	
 }
