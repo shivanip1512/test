@@ -18,6 +18,8 @@ class IM_EX_DEVDB Mct440_213xBDevice : public Mct420Device
 
     static CommandSet initCommandStore();
 
+    static string describeStatusAndEvents(unsigned char *buf);
+
     enum SspecInformation
     {
         Sspec                                   = 1030,
@@ -95,6 +97,9 @@ protected:
     virtual void createTOUDayScheduleString(string &schedule, long (&times)[10], long (&rates)[11]);
 
     virtual int getPhaseCount() = 0;
+
+    virtual INT decodeGetStatusInternal( INMESS *InMessage, CtiTime &TimeNow, CtiMessageList &vgList, CtiMessageList &retList, OutMessageList &outList );
+
 };
 
 
