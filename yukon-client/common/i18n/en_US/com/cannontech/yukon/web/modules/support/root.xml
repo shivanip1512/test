@@ -107,6 +107,8 @@
     <entry key="yukon.web.modules.support.supportBundle.writerName.userGroupDaoSource">User Group Data</entry>
     <entry key="yukon.web.modules.support.supportBundle.writerName.eventLogCsvSource">Event Log Data</entry>
     <entry key="yukon.web.modules.support.supportBundle.writerName.themeDirectory">Theme Directory</entry>
+    <entry key="yukon.web.modules.support.supportBundle.writerName.userGroupToYukonGroupMappingTableCsvSource">UserGroup to YukonGroup Mapping</entry>
+    <entry key="yukon.web.modules.support.supportBundle.writerName.userGroupTableCsvSource">UserGroup Table</entry>
 
     <entry key="yukon.web.modules.support.pointInjection.myPicker.label">Foo</entry>
     <entry key="yukon.web.modules.support.pointInjection.addRow.label">Add Row</entry>
