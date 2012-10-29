@@ -39,7 +39,8 @@
     <entry key="yukon.web.modules.adminSetup.security.removeEncryptionBtn.label">Remove</entry>
     <entry key="yukon.web.modules.adminSetup.security.removeEncryptionBtn.imageUrl">/WebConfig/yukon/Icons/lock_open.png</entry>
 
-    <entry key="yukon.web.modules.adminSetup.security.deleteKeyBtn.imageUrl">/WebConfig/yukon/Icons/delete.png</entry>
+    <entry key="yukon.web.modules.adminSetup.security.deleteKeyBtnTitle">Delete Key</entry>
+    <entry key="yukon.web.modules.adminSetup.security.deleteKeyBtnDisabledTitle">Cannot delete key while key is in use</entry>
     
     <entry key="yukon.web.modules.adminSetup.security.addKeyDialog.title">Add Key</entry>
     <entry key="yukon.web.modules.adminSetup.security.addKeyBtn.label">Add Key</entry>

@@ -96,8 +96,10 @@ public class EncryptedRouteDaoImpl implements EncryptedRouteDao {
         List<EncryptionKey> keyList = Lists.newArrayList();
 
         SqlStatementBuilder sql = new SqlStatementBuilder();
-        sql.append("SELECT EncryptionKeyId, Name, Value");
-        sql.append("FROM EncryptionKey ");
+        sql.append("SELECT ek.*, (CASE WHEN COUNT(ypoek.EncryptionKeyId) > 0 THEN 1 ELSE 0 END) as CurrentlyUsed");
+        sql.append("FROM EncryptionKey ek");
+        sql.append("LEFT JOIN YukonPAObjectEncryptionKey ypoek ON ek.EncryptionKeyId = ypoek.EncryptionKeyId");
+        sql.append("GROUP BY ek.EncryptionKeyId, ek.Name, ek.Value");
 
         keyList = yukonJdbcTemplate.query(sql, new YukonRowMapper<EncryptionKey>() {
             @Override
@@ -105,8 +107,9 @@ public class EncryptedRouteDaoImpl implements EncryptedRouteDao {
                 int id = rs.getInt("EncryptionKeyId");
                 String name = rs.getString("Name");
                 String value = rs.getString("Value");
+                boolean currentlyUsed = (rs.getInt("CurrentlyUsed") == 1 ? true : false);
 
-                return new EncryptionKey(id,name,value);
+                return new EncryptionKey(id, name, value, currentlyUsed);
             }
             
         });

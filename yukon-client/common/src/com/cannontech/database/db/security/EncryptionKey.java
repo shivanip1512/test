@@ -10,14 +10,11 @@ public class EncryptionKey {
     
     public EncryptionKey() { }
     
-    public EncryptionKey(Integer encryptionKeyId,String name, String value) {
+    public EncryptionKey(Integer encryptionKeyId, String name, String value, boolean currentlyUsed) {
         this.encryptionKeyId = encryptionKeyId;
         this.name = name;
         this.value = value;
-    }
-    
-    public EncryptionKey(int encryptionKeyId) {
-        this(encryptionKeyId, null, null);
+        this.currentlyUsed = currentlyUsed;
     }
     
     public Integer getEncryptionKeyId() {

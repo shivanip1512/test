@@ -120,7 +120,7 @@
         <cti:dataGridCell>
             <tags:boxContainer2 nameKey="keyBox" styleClass="largeContainer">
                 <c:if test="${fn:length(encryptionKeys) <= 0}">
-                    <i:inline key=".noKeysAvailable" />
+                    <div><i:inline key=".noKeysAvailable" /></div>
                 </c:if>
                 <c:if test="${fn:length(encryptionKeys) > 0}">
                     <table id="keyBoxTable" class="compactResultsTable rowHighlighting">
@@ -144,20 +144,39 @@
                                             <span class="errorMessage"><i:inline key=".invalidKey" /></span>
                                         </c:if>
                                     </td>
-                                    <td id="keyAssigned_${key.encryptionKeyId}">
-                                        <i:inline key=".unassignedKey" />
+                                    <td>
+                                        <c:choose>
+                                            <c:when test="${key.currentlyUsed}">
+                                                <i:inline key=".assignedKey" />
+                                            </c:when>
+                                            <c:otherwise>
+                                                <i:inline key=".unassignedKey" />
+                                            </c:otherwise>
+                                        </c:choose>
                                     </td>
                                     <td class="removeColumn">
-                                        <cti:button type="submit" id="deleteKeyBtn_${key.encryptionKeyId}" nameKey="deleteKeyBtn" href="javascript:submitForm('keys_${key.encryptionKeyId}')" styleClass="pointer icon icon_remove" />
-                                    </td>
+                                        <c:choose>
+	                                        <c:when test="${key.currentlyUsed}">
+												<a class="fr icon icon_remove_disabled"
+													title="<cti:msg2 key=".deleteKeyBtnDisabledTitle"/>" />
+											</c:when>
+	                                        <c:otherwise>
+												<a type="submit" id="deleteKeyBtn_${key.encryptionKeyId}"
+													href="javascript:submitForm('keys_${key.encryptionKeyId}')"
+													class="fr icon icon_remove"
+													title="<cti:msg2 key=".deleteKeyBtnTitle"/>" />
+											</c:otherwise>
+                                        </c:choose>
                                 </tr>
                             </form:form>
                         </c:forEach>
                     </table>
                 </c:if>
-                <cti:button id="addNewKeyBtn" nameKey="addKeyBtn" disabled="${blockingError}" />
-                <cti:button id="importKeyFileBtn" nameKey="importKeyFileBtn" disabled="${blockingError}" />
-                <cti:button id="viewPublicKeyBtn" nameKey="viewPublicKeyBtn"  styleClass="f_blocker2" />
+                <div class="pageActionArea">
+	                <cti:button id="addNewKeyBtn" nameKey="addKeyBtn" disabled="${blockingError}" />
+	                <cti:button id="importKeyFileBtn" nameKey="importKeyFileBtn" disabled="${blockingError}" />
+	                <cti:button id="viewPublicKeyBtn" nameKey="viewPublicKeyBtn"  styleClass="f_blocker2" />
+                </div>
             </tags:boxContainer2>
         </cti:dataGridCell>
     </cti:dataGrid>
@@ -170,12 +189,6 @@
         } else if ("${showDialog}" == "importKey") {
             jQuery('#importKeyFileBtn').trigger(jQuery.Event("click")); // Opens up importKey Dialog
         }
-        <c:forEach var="route" items="${encryptedRoutes}">
-        if (${route.encrypted}) {
-            jQuery("#keyAssigned_${route.encryptionKeyId}").html('<i:inline key=".assignedKey"/>');
-            jQuery("#deleteKeyBtn_${route.encryptionKeyId}").attr("hidden", "hidden");
-        } 
-        </c:forEach>
     });
     
     function submitForm(formId) {
