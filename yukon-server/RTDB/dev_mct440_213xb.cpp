@@ -12,6 +12,7 @@
 #include "ctistring.h"
 #include "config_data_mct.h"
 #include "portglob.h"
+#include "dllyukon.h"
 
 #include <stack>
 
@@ -320,7 +321,8 @@ bool Mct440_213xBDevice::isSupported(const Mct410Device::Features feature) const
 *********************************************************************************************************
 *                                          executeGetValue()
 *
-* Description :
+* Description : Redefines TOU / TOU frozen kWh, instant line data and outage command parsing. Other
+*               commands uses inheritance from mct420.
 *
 * Argument(s) :
 *
@@ -1595,6 +1597,7 @@ INT Mct440_213xBDevice::decodeGetValueDailyReadRecent(INMESS          *InMessage
     return status;
 }
 
+
 /*
 *********************************************************************************************************
 *                                       executePutConfig()
@@ -1738,6 +1741,144 @@ INT Mct440_213xBDevice::executePutConfig(CtiRequestMsg     *pReq,
 
     return nRet;
 }
+
+
+/*
+*********************************************************************************************************
+*                                       describeStatusAndEvents()
+*
+* Description :
+*
+* Argument(s) :
+*
+* Return(s)   :
+*
+* Caller(s)   :
+*
+* Note(s)     :
+*********************************************************************************************************
+*/
+string Mct440_213xBDevice::describeStatusAndEvents(unsigned char *buf)
+{
+    string descriptor;
+
+    if( buf )
+    {
+        // Point offset 10 - Event Flag (byte 1)
+        descriptor += (buf[1] & 0x01)?"Power Fail occurred\n":"";
+        // 0x02 - 0x80 is not used
+
+        // Point offset 20 - Event Flag (byte 0)
+        // 0x10 - 0x80 aren't used yet
+
+        // Starts at offset 30 - NOTE that this is byte 0 (Status)
+        descriptor += (buf[0] & 0x01)?"Group addressing disabled\n":"Group addressing enabled\n";
+        // 0x20 is not used
+        descriptor += (buf[0] & 0x04)?"DST active\n":"DST inactive\n";
+        descriptor += (buf[0] & 0x08)?"Holiday active\n":"Holiday inactive\n";
+        descriptor += (buf[0] & 0x10)?"TOU disabled\n":"TOU enabled\n";
+        descriptor += (buf[0] & 0x20)?"Clock error\n":"";
+        // 0x40 - 0x80 is not used
+    }
+
+    return descriptor;
+}
+
+
+/*
+*********************************************************************************************************
+*                                       decodeGetStatusInternal()
+*
+* Description :
+*
+* Argument(s) :
+*
+* Return(s)   :
+*
+* Caller(s)   :
+*
+* Note(s)     :
+*********************************************************************************************************
+*/
+INT Mct440_213xBDevice::decodeGetStatusInternal( INMESS *InMessage, CtiTime &TimeNow, CtiMessageList &vgList, CtiMessageList &retList, OutMessageList &outList )
+{
+    INT status = NORMAL;
+
+    INT ErrReturn  = InMessage->EventCode & 0x3fff;
+    DSTRUCT &DSt = InMessage->Buffer.DSt;
+
+    string resultString;
+
+    CtiReturnMsg         *ReturnMsg = NULL;    // Message sent to VanGogh, inherits from Multi
+
+    if((ReturnMsg = CTIDBG_new CtiReturnMsg(getID(), InMessage->Return.CommandStr)) == NULL)
+    {
+        CtiLockGuard<CtiLogger> doubt_guard(dout);
+        dout << CtiTime() << " Could NOT allocate memory " << __FILE__ << " (" << __LINE__ << ") " << endl;
+
+        return MEMORY;
+    }
+
+    ReturnMsg->setUserMessageId(InMessage->Return.UserID);
+
+    resultString  = getName() + " / Internal Status:\n";
+
+    //  point offsets 10-39
+    resultString += describeStatusAndEvents(DSt.Message);
+
+    // point offset 40 - Meter alarm (byte 1)
+    // 0x01 - 0x40 is not used
+    resultString += (DSt.Message[3] & 0x80)?"Current without voltage\n":"";
+
+    // point offset 50 - Meter alarm (byte 0)
+    resultString += (DSt.Message[4] & 0x01)?"Load side voltage detected\n":"";
+    resultString += (DSt.Message[4] & 0x02)?"Low battery\n":"";
+    resultString += (DSt.Message[4] & 0x04)?"Voltage out of limit\n":"";
+    resultString += (DSt.Message[4] & 0x08)?"Metal box cover removal\n":"";
+    resultString += (DSt.Message[4] & 0x10)?"Reverse Energy\n":"";
+    resultString += (DSt.Message[4] & 0x20)?"Terminal block cover removal\n":"";
+    resultString += (DSt.Message[4] & 0x40)?"Internal error\n":"";
+    resultString += (DSt.Message[4] & 0x80)?"Out of voltage\n":"";
+
+    ReturnMsg->setResultString(resultString);
+
+    for( int i = 0; i < 5; i++ )
+    {
+        int offset;
+        boost::shared_ptr<CtiPointStatus> point;
+        CtiPointDataMsg *pData;
+        string pointResult;
+
+        if( i == 0 )  offset = 30;
+        if( i == 1 )  offset = 10;
+        if( i == 2 )  offset = 20;
+        if( i == 3 )  offset = 40;
+        if( i == 4 )  offset = 50;
+
+        for( int j = 0; j < 8; j++ )
+        {
+            //  Don't send the powerfail status again - it's being sent by dev_mct in ResultDecode()
+            if( (offset + j != 10) && (point = boost::static_pointer_cast<CtiPointStatus>(getDevicePointOffsetTypeEqual( offset + j, StatusPointType ))) )
+            {
+                double value = (DSt.Message[i] >> j) & 0x01;
+
+                pointResult = getName() + " / " + point->getName() + ": " + ResolveStateName((point)->getStateGroupID(), value);
+
+                if( pData = CTIDBG_new CtiPointDataMsg(point->getPointID(), value, NormalQuality, StatusPointType, pointResult) )
+                {
+                    ReturnMsg->PointData().push_back(pData);
+                }
+            }
+        }
+    }
+
+    retMsgHandler( InMessage->Return.CommandStr, status, ReturnMsg, vgList, retList );
+
+    return status;
+}
+
+
+
 
 
 }
