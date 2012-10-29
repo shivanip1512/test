@@ -16,7 +16,6 @@ import org.apache.commons.lang.StringUtils;
 import org.apache.log4j.Logger;
 import org.jdom.JDOMException;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.context.MessageSourceResolvable;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.ModelMap;
 import org.springframework.validation.BindingResult;
@@ -31,6 +30,7 @@ import org.springframework.web.multipart.MultipartFile;
 import org.springframework.web.multipart.MultipartHttpServletRequest;
 
 import com.cannontech.clientutils.YukonLogManager;
+import com.cannontech.common.exception.NotAuthorizedException;
 import com.cannontech.common.validator.SimpleValidator;
 import com.cannontech.common.validator.YukonValidationUtils;
 import com.cannontech.core.roleproperties.YukonRoleProperty;
@@ -43,14 +43,15 @@ import com.cannontech.encryption.EncryptedRouteDao;
 import com.cannontech.encryption.RSAKeyfileService;
 import com.cannontech.encryption.impl.AESPasswordBasedCrypto;
 import com.cannontech.i18n.YukonMessageSourceResolvable;
+import com.cannontech.spring.CheckConfigParam;
 import com.cannontech.user.YukonUserContext;
 import com.cannontech.web.common.flashScope.FlashScope;
-import com.cannontech.web.common.flashScope.FlashScopeMessageType;
 import com.cannontech.web.security.annotation.CheckRoleProperty;
 import com.cannontech.web.util.WebFileUtils;
 
 @Controller
 @CheckRoleProperty(YukonRoleProperty.ADMIN_SUPER_USER)
+@CheckConfigParam(value="SHOW_ONE_WAY_ENCRYPT", expecting="true", throwable=NotAuthorizedException.class, errorMessage="User not authorized")
 @RequestMapping("/security/*")
 public class YukonSecurityController {
     

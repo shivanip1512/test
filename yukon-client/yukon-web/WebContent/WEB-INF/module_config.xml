@@ -1358,14 +1358,14 @@
                 </option>
                 <option name="system">
                     <requireRoleProperty value="ADMIN_SUPER_USER" />
-                    <link>/spring/adminSetup/security/view</link>
+                    <link>/spring/adminSetup/config/view</link>
                     <options>
+                        <option name="config">
+                            <link>/spring/adminSetup/config/view</link>
+                        </option>
                         <option name="security">
                             <requireRoleProperty value="SHOW_ONE_WAY_ENCRYPT"/>
                             <link>/spring/adminSetup/security/view</link>
-                        </option>
-                        <option name="config">
-                            <link>/spring/adminSetup/config/view</link>
                         </option>
                     </options>
                 </option>
