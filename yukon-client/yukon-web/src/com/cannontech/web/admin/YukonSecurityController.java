@@ -51,7 +51,6 @@ import com.cannontech.web.util.WebFileUtils;
 
 @Controller
 @CheckRoleProperty(YukonRoleProperty.ADMIN_SUPER_USER)
-@CheckConfigParam("SHOW_ONE_WAY_ENCRYPT")
 @RequestMapping("/security/*")
 public class YukonSecurityController {
     

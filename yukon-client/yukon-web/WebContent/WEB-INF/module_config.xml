@@ -1364,7 +1364,6 @@
                             <link>/spring/adminSetup/config/view</link>
                         </option>
                         <option name="security">
-                            <requireRoleProperty value="SHOW_ONE_WAY_ENCRYPT"/>
                             <link>/spring/adminSetup/security/view</link>
                         </option>
                     </options>

@@ -26,12 +26,10 @@
             <a href="${maintenance}"><i:inline key=".maintenance"/></a>
         </div></cti:checkRolesAndProperties>
         <cti:checkRolesAndProperties value="ADMIN_SUPER_USER">
-            <cti:checkGlobalRolesAndProperties value="SHOW_ONE_WAY_ENCRYPT">
-                <div>
-                	<cti:url var="security" value="/spring/adminSetup/security/view"/>
-                	<a href="${security}"><i:inline key=".security"/></a>
-             	</div>
-             </cti:checkGlobalRolesAndProperties>   
+            <div>
+            	<cti:url var="security" value="/spring/adminSetup/security/view"/>
+            	<a href="${security}"><i:inline key=".security"/></a>
+         	</div>
          </cti:checkRolesAndProperties>
          <cti:checkRolesAndProperties value="ADMIN_SUPER_USER">
             <div>
