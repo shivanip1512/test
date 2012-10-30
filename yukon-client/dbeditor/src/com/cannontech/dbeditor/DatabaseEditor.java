@@ -981,7 +981,9 @@ private void executeCopyButton_ActionPerformed(ActionEvent event)
 	{
 		//a DBPersistent must be created from the Lite object so you can copy it
 		DBPersistent toCopy = LiteFactory.createDBPersistent((LiteBase)node.getUserObject());
-            if (toCopy instanceof DeviceBase && !(toCopy instanceof LMGroup))
+            if (toCopy instanceof DeviceBase && 
+                    !(toCopy instanceof LMGroup) &&
+                    !(toCopy instanceof IPCMeter))
         {
             showCopyWizardPanel (toCopy);
         } else if(toCopy instanceof DeviceMeterGroupBase) {
