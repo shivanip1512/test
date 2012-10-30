@@ -3459,7 +3459,7 @@ BOOST_FIXTURE_TEST_SUITE(command_executions, executePutConfig_helper)
         outList.pop_front();
     }
 
-    BOOST_AUTO_TEST_CASE(test_executePutConfig)
+    BOOST_AUTO_TEST_CASE(test_executePutConfigHoliday)
     {
         test_Mct440_2131B test_dev;
 
@@ -3871,6 +3871,91 @@ BOOST_FIXTURE_TEST_SUITE(command_executions, executePutConfig_helper)
                            &expmsg[0], &expmsg[11]);
         }
 
+
+    }
+
+    BOOST_AUTO_TEST_CASE(test_executePutConfigTouDays)
+    {
+        test_Mct440_2131B test_dev;
+
+        {
+            CtiCommandParser parse("putconfig EMETCON tou 12341234 "
+                                   "schedule 1 a/00:00 b/01:00 c/01:05 d/01:10 a/01:15 b/01:20 c/01:25 d/01:30 a/01:35 b/01:40 c/01:45 "
+                                   "schedule 2 b/00:00 c/02:00 d/02:05 a/02:10 b/02:15 c/02:20 d/02:25 a/02:30 b/02:35 c/02:40 d/02:45 "
+                                   "schedule 3 c/00:00 d/03:00 a/03:05 b/03:10 c/03:15 d/03:20 a/03:25 b/03:30 c/03:35 d/03:40 a/03:45 "
+                                   "schedule 4 d/00:00 a/04:00 b/04:05 c/04:10 d/04:15 a/04:20 b/04:25 c/04:30 d/04:35 a/04:40 b/04:45 "
+                                   "default a");
+
+            CtiOutMessage *outmsg = CTIDBG_new OUTMESS;
+
+            BOOST_CHECK_EQUAL(NoError, test_dev.executePutConfig(&request, parse, outmsg, vgList, retList, outList));
+
+            BOOST_CHECK_EQUAL(outList.size(), 4);
+        }
+
+        {
+            OUTMESS* outmsg = outList.front();
+
+            BOOST_CHECK_EQUAL(outmsg->Sequence, Cti::Protocols::EmetconProtocol::PutConfig_TOU);
+            BOOST_CHECK_EQUAL(outmsg->Buffer.BSt.Function, 0x034);
+            BOOST_CHECK_EQUAL(outmsg->Buffer.BSt.Length  , 15   );
+
+            unsigned char expmsg[15] = {0x01,0x01,0x01,0x01,0x01,0x03,0x90,0x01,0x01,0x01,0x01,0x01,0x04,0xe4,0x00};
+
+            BOOST_CHECK_EQUAL_COLLECTIONS(
+                                       &outmsg->Buffer.BSt.Message[0], &outmsg->Buffer.BSt.Message[15],
+                                       &expmsg[0], &expmsg[15]);
+
+            outList.pop_front();
+        }
+
+        {
+            OUTMESS* outmsg = outList.front();
+
+            BOOST_CHECK_EQUAL(outmsg->Sequence, Cti::Protocols::EmetconProtocol::PutConfig_TOU);
+            BOOST_CHECK_EQUAL(outmsg->Buffer.BSt.Function, 0x033);
+            BOOST_CHECK_EQUAL(outmsg->Buffer.BSt.Length  , 15   );
+
+            unsigned char expmsg[15] = {0x01,0x01,0x01,0x01,0x01,0x09,0x38,0x01,0x01,0x01,0x01,0x01,0x0e,0x4c,0x00};
+
+            BOOST_CHECK_EQUAL_COLLECTIONS(
+                                       &outmsg->Buffer.BSt.Message[0], &outmsg->Buffer.BSt.Message[15],
+                                       &expmsg[0], &expmsg[15]);
+
+            outList.pop_front();
+        }
+
+        {
+            OUTMESS* outmsg = outList.front();
+
+            BOOST_CHECK_EQUAL(outmsg->Sequence, Cti::Protocols::EmetconProtocol::PutConfig_TOU);
+            BOOST_CHECK_EQUAL(outmsg->Buffer.BSt.Function, 0x031);
+            BOOST_CHECK_EQUAL(outmsg->Buffer.BSt.Length  , 15   );
+
+            unsigned char expmsg[15] = {0x24,0x01,0x01,0x01,0x01,0x0e,0x4e,0x30,0x01,0x01,0x01,0x01,0x03,0x93,0x00};
+
+            BOOST_CHECK_EQUAL_COLLECTIONS(
+                                       &outmsg->Buffer.BSt.Message[0], &outmsg->Buffer.BSt.Message[15],
+                                       &expmsg[0], &expmsg[15]);
+
+            outList.pop_front();
+        }
+
+        {
+            OUTMESS* outmsg = outList.front();
+
+            BOOST_CHECK_EQUAL(outmsg->Sequence, Cti::Protocols::EmetconProtocol::PutConfig_TOU);
+            BOOST_CHECK_EQUAL(outmsg->Buffer.BSt.Function, 0x030);
+            BOOST_CHECK_EQUAL(outmsg->Buffer.BSt.Length  , 15   );
+
+            unsigned char expmsg[15] = {0xe4,0xe4,0x0c,0x01,0x01,0x01,0x01,0x94,0xe4,0x18,0x01,0x01,0x01,0x01,0x39};
+
+            BOOST_CHECK_EQUAL_COLLECTIONS(
+                                       &outmsg->Buffer.BSt.Message[0], &outmsg->Buffer.BSt.Message[15],
+                                       &expmsg[0], &expmsg[15]);
+
+            outList.pop_front();
+        }
 
     }
 
