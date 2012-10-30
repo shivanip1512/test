@@ -222,7 +222,7 @@
             <fileset file="${basedir}/yukon-install/resources/shortcut_icons/YukonLogin.ico"/>       	
         </copy>
 				
-        <signjar alias="cannon3" storepass="cti123" keystore="${basedir}/yukon-client/build/keys/jarKeyStore">
+        <signjar alias="cannon4" storepass="cti123" keystore="${basedir}/yukon-client/build/keys/jarKeyStore">
 			<fileset dir="${client.bin}">
 				<include name="*.jar"/>
 			</fileset>
