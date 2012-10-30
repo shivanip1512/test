@@ -158,13 +158,17 @@
                                         <c:choose>
 	                                        <c:when test="${key.currentlyUsed}">
 												<a class="fr icon icon_remove_disabled"
-													title="<cti:msg2 key=".deleteKeyBtnDisabledTitle"/>" />
+													title="<cti:msg2 key=".deleteKeyBtnDisabledTitle"/>">
+                                                    <cti:msg2 key=".deleteKeyBtnDisabledTitle"/>
+                                                </a>
 											</c:when>
 	                                        <c:otherwise>
 												<a type="submit" id="deleteKeyBtn_${key.encryptionKeyId}"
 													href="javascript:submitForm('keys_${key.encryptionKeyId}')"
 													class="fr icon icon_remove"
-													title="<cti:msg2 key=".deleteKeyBtnTitle"/>" />
+													title="<cti:msg2 key=".deleteKeyBtnTitle"/>">
+													<cti:msg2 key=".deleteKeyBtnTitle"/>
+                                                </a>
 											</c:otherwise>
                                         </c:choose>
                                 </tr>

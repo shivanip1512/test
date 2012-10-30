@@ -4,6 +4,7 @@ import java.sql.SQLException;
 import java.util.List;
 import java.util.Set;
 
+import org.apache.commons.lang.BooleanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 
 import com.cannontech.common.pao.PaoType;
@@ -107,7 +108,7 @@ public class EncryptedRouteDaoImpl implements EncryptedRouteDao {
                 int id = rs.getInt("EncryptionKeyId");
                 String name = rs.getString("Name");
                 String value = rs.getString("Value");
-                boolean currentlyUsed = (rs.getInt("CurrentlyUsed") == 1 ? true : false);
+                boolean currentlyUsed = BooleanUtils.toBoolean(rs.getInt("CurrentlyUsed"));
 
                 return new EncryptionKey(id, name, value, currentlyUsed);
             }
