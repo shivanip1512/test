@@ -11,8 +11,8 @@
 <cti:includeScript link="/JavaScript/yukon/util/analytics_manager.js"/>
 
 <!-- Cooper Tracking Ids -->
-<!-- ------------------- -->
-<!-- **IMPORTANT** - New Ids need to be generated for every general release of Yukon -->
+<!-- ******************* -->
+<!-- **IMPORTANT** : New Ids need to be generated for every general release of Yukon -->
 <c:set var="cooperDev" value="UA-30935838-1"/>
 <c:set var="cooperProd" value="UA-30935838-2"/>
 
