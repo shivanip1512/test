@@ -1,5 +1,6 @@
 package com.cannontech.dbeditor;
 
+import java.awt.BorderLayout;
 import java.awt.Container;
 import java.awt.Cursor;
 import java.awt.Dimension;
@@ -13,10 +14,13 @@ import java.awt.event.MouseEvent;
 import java.awt.event.MouseListener;
 import java.awt.event.WindowEvent;
 import java.awt.event.WindowListener;
+import java.beans.PropertyVetoException;
 import java.net.URL;
+import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
+import java.util.Observer;
 import java.util.Vector;
 
 import javax.swing.ImageIcon;
@@ -36,6 +40,7 @@ import javax.swing.WindowConstants;
 import javax.swing.event.InternalFrameAdapter;
 import javax.swing.event.InternalFrameEvent;
 import javax.swing.event.PopupMenuEvent;
+import javax.swing.event.PopupMenuListener;
 import javax.swing.tree.DefaultMutableTreeNode;
 import javax.swing.tree.TreeSelectionModel;
 
@@ -43,6 +48,9 @@ import org.apache.log4j.Logger;
 import org.springframework.dao.DataAccessException;
 
 import com.cannontech.clientutils.YukonLogManager;
+import com.cannontech.clientutils.commonutils.GenericEvent;
+import com.cannontech.clientutils.popup.PopUpEventListener;
+import com.cannontech.clientutils.popup.PopUpMenuShower;
 import com.cannontech.common.device.config.dao.DeviceConfigurationDao;
 import com.cannontech.common.device.config.dao.InvalidDeviceTypeException;
 import com.cannontech.common.device.config.model.DNPConfiguration;
@@ -50,7 +58,9 @@ import com.cannontech.common.device.model.SimpleDevice;
 import com.cannontech.common.editor.EditorInputValidationException;
 import com.cannontech.common.editor.PropertyPanel;
 import com.cannontech.common.editor.PropertyPanelEvent;
+import com.cannontech.common.editor.PropertyPanelListener;
 import com.cannontech.common.gui.util.MessagePanel;
+import com.cannontech.common.gui.util.TreeViewPanel;
 import com.cannontech.common.login.ClientSession;
 import com.cannontech.common.login.ClientStartupHelper;
 import com.cannontech.common.pao.PaoCategory;
@@ -62,8 +72,10 @@ import com.cannontech.common.util.CtiUtilities;
 import com.cannontech.common.util.LoggerEventListener;
 import com.cannontech.common.util.MessageEvent;
 import com.cannontech.common.util.MessageEventListener;
+import com.cannontech.common.wizard.CancelInsertException;
 import com.cannontech.common.wizard.WizardPanel;
 import com.cannontech.common.wizard.WizardPanelEvent;
+import com.cannontech.common.wizard.WizardPanelListener;
 import com.cannontech.core.dao.DBDeleteResult;
 import com.cannontech.core.dao.DaoFactory;
 import com.cannontech.core.dao.DeviceDao;
@@ -71,22 +83,29 @@ import com.cannontech.core.dynamic.AsyncDynamicDataSource;
 import com.cannontech.database.DatabaseTypes;
 import com.cannontech.database.Transaction;
 import com.cannontech.database.TransactionException;
+import com.cannontech.database.cache.DBChangeLiteListener;
 import com.cannontech.database.cache.DefaultDatabaseCache;
 import com.cannontech.database.data.device.DNPBase;
 import com.cannontech.database.data.device.DeviceBase;
+import com.cannontech.database.data.device.DeviceTypesFuncs;
 import com.cannontech.database.data.device.IPCMeter;
 import com.cannontech.database.data.device.devicemetergroup.DeviceMeterGroupBase;
+import com.cannontech.database.data.device.lm.LMGroup;
+import com.cannontech.database.data.device.lm.LMProgramDirect;
 import com.cannontech.database.data.device.lm.LMScenario;
 import com.cannontech.database.data.lite.LiteAlarmCategory;
 import com.cannontech.database.data.lite.LiteBase;
 import com.cannontech.database.data.lite.LiteContactNotification;
 import com.cannontech.database.data.lite.LiteFactory;
 import com.cannontech.database.data.lite.LiteNotificationGroup;
+import com.cannontech.database.data.lite.LitePoint;
 import com.cannontech.database.data.lite.LiteYukonPAObject;
 import com.cannontech.database.data.multi.SmartMultiDBPersistent;
 import com.cannontech.database.data.pao.PAOFactory;
+import com.cannontech.database.data.pao.PAOGroups;
 import com.cannontech.database.data.pao.YukonPAObject;
 import com.cannontech.database.data.point.PointBase;
+import com.cannontech.database.data.point.PointTypes;
 import com.cannontech.database.data.tou.TOUSchedule;
 import com.cannontech.database.db.CTIDbChange;
 import com.cannontech.database.db.DBPersistent;
@@ -105,11 +124,37 @@ import com.cannontech.dbeditor.menu.HelpMenu;
 import com.cannontech.dbeditor.menu.LMCreateMenu;
 import com.cannontech.dbeditor.menu.SystemCreateMenu;
 import com.cannontech.dbeditor.menu.ViewMenu;
+import com.cannontech.dbeditor.wizard.baseline.BaselineWizardPanel;
+import com.cannontech.dbeditor.wizard.billing.BillingFileWizardPanel;
 import com.cannontech.dbeditor.wizard.changetype.device.DeviceChangeTypeWizardPanel;
+import com.cannontech.dbeditor.wizard.changetype.point.PointChangeTypeWizardPanel;
+import com.cannontech.dbeditor.wizard.config.ConfigWizardPanel;
+import com.cannontech.dbeditor.wizard.contact.ContactWizardPanel;
 import com.cannontech.dbeditor.wizard.copy.device.DeviceCopyWizardPanel;
+import com.cannontech.dbeditor.wizard.copy.lm.LMGroupCopyWizardPanel;
+import com.cannontech.dbeditor.wizard.copy.lm.LMProgramCopyWizardPanel;
+import com.cannontech.dbeditor.wizard.copy.lm.LMScenarioCopyWizardPanel;
+import com.cannontech.dbeditor.wizard.copy.point.PointCopyWizardPanel;
+import com.cannontech.dbeditor.wizard.customer.CustomerWizardPanel;
+import com.cannontech.dbeditor.wizard.device.DeviceWizardPanel;
+import com.cannontech.dbeditor.wizard.device.lmconstraint.LMConstraintWizardPanel;
+import com.cannontech.dbeditor.wizard.device.lmcontrolarea.LMControlAreaWizardPanel;
+import com.cannontech.dbeditor.wizard.device.lmgroup.LMGroupWizardPanel;
+import com.cannontech.dbeditor.wizard.device.lmprogram.LMProgramWizardPanel;
+import com.cannontech.dbeditor.wizard.device.lmscenario.LMScenarioWizardPanel;
+import com.cannontech.dbeditor.wizard.holidayschedule.HolidayScheduleWizardPanel;
+import com.cannontech.dbeditor.wizard.notification.group.NotificationGroupWizardPanel;
+import com.cannontech.dbeditor.wizard.point.PointWizardPanel;
+import com.cannontech.dbeditor.wizard.point.lm.LMPointWizardPanel;
+import com.cannontech.dbeditor.wizard.port.PortWizardPanel;
+import com.cannontech.dbeditor.wizard.route.RouteWizardPanel;
+import com.cannontech.dbeditor.wizard.season.SeasonScheduleWizardPanel;
+import com.cannontech.dbeditor.wizard.state.StateWizardPanel;
+import com.cannontech.dbeditor.wizard.tags.TagWizardPanel;
 import com.cannontech.dbeditor.wizard.tou.TOUScheduleWizardPanel;
 import com.cannontech.dbeditor.wizard.user.LoginGroupWizardPanel;
 import com.cannontech.dbeditor.wizard.user.UserGroupWizardPanel;
+import com.cannontech.dbeditor.wizard.user.YukonUserWizardPanel;
 import com.cannontech.debug.gui.AboutDialog;
 import com.cannontech.message.dispatch.ClientConnection;
 import com.cannontech.message.dispatch.message.DBChangeMsg;
@@ -119,20 +164,21 @@ import com.cannontech.roles.application.TDCRole;
 import com.cannontech.spring.YukonSpringHook;
 import com.cannontech.system.GlobalSettingType;
 import com.cannontech.system.dao.GlobalSettingDao;
+import com.cannontech.user.UserUtils;
 import com.cannontech.yukon.IServerConnection;
 import com.cannontech.yukon.conns.ConnPool;
 
 
 public class DatabaseEditor
 	implements
-		com.cannontech.common.editor.PropertyPanelListener,
-		com.cannontech.common.wizard.WizardPanelListener,
+		PropertyPanelListener,
+		WizardPanelListener,
 		ActionListener,
 		WindowListener,
-		java.util.Observer,
-		com.cannontech.clientutils.popup.PopUpEventListener,
-		javax.swing.event.PopupMenuListener,
-		com.cannontech.database.cache.DBChangeLiteListener 
+		Observer,
+		PopUpEventListener,
+		PopupMenuListener,
+		DBChangeLiteListener
 {
    //all editor frame sizes
    public static final Dimension EDITOR_FRAME_SIZE = new Dimension(435, 600);
@@ -164,7 +210,7 @@ public class DatabaseEditor
 	private JDesktopPane desktopPane;
 	private JScrollPane deskTopFrameScrollPane;
 	private MessagePanel messagePanel;
-	private com.cannontech.common.gui.util.TreeViewPanel treeViewPanel;
+	private TreeViewPanel treeViewPanel;
 	private JPanel contentPane;
 	private JSplitPane splitPane;
 	private FileMenu fileMenu;
@@ -174,7 +220,7 @@ public class DatabaseEditor
 	private SystemCreateMenu systemCreateMenu;
 	private ViewMenu viewMenu;
 	private HelpMenu helpMenu;
-	private java.awt.Frame owner = null;
+	private Frame owner = null;
 	//File logger
     private LoggerEventListener loggerEventListener;
 
@@ -307,10 +353,10 @@ public void actionPerformed(ActionEvent event)
 
 	if( item == viewMenu.coreRadioButtonMenuItem &&
 		currentDatabase != DatabaseTypes.CORE_DB ) {
-		java.awt.Frame f = CtiUtilities.getParentFrame(getContentPane());
-		java.awt.Cursor savedCursor = f.getCursor();
+		Frame f = CtiUtilities.getParentFrame(getContentPane());
+		Cursor savedCursor = f.getCursor();
 		try {
-			f.setCursor( new java.awt.Cursor( java.awt.Cursor.WAIT_CURSOR ) );		
+			f.setCursor(new Cursor(Cursor.WAIT_CURSOR ) );		
 	 
 			currentDatabase = DatabaseTypes.CORE_DB;
 			setDatabase(currentDatabase);
@@ -323,10 +369,10 @@ public void actionPerformed(ActionEvent event)
 		f.repaint();
 	} else if( item == viewMenu.lmRadioButtonMenuItem &&
 		currentDatabase != DatabaseTypes.LM_DB ) {
-		java.awt.Frame f = CtiUtilities.getParentFrame(getContentPane());
-		java.awt.Cursor savedCursor = f.getCursor();
+		Frame f = CtiUtilities.getParentFrame(getContentPane());
+		Cursor savedCursor = f.getCursor();
 		try {
-			f.setCursor( new java.awt.Cursor( java.awt.Cursor.WAIT_CURSOR ) );
+			f.setCursor( new Cursor( Cursor.WAIT_CURSOR ) );
 			
 			currentDatabase = DatabaseTypes.LM_DB;
 			setDatabase(currentDatabase);
@@ -339,10 +385,10 @@ public void actionPerformed(ActionEvent event)
 		f.repaint();
 	} else if( item == viewMenu.systemRadioButtonMenuItem &&
 		currentDatabase != DatabaseTypes.SYSTEM_DB ) {
-		java.awt.Frame f = CtiUtilities.getParentFrame(getContentPane());
-		java.awt.Cursor savedCursor = f.getCursor();
+		Frame f = CtiUtilities.getParentFrame(getContentPane());
+		Cursor savedCursor = f.getCursor();
 		try {
-			f.setCursor( new java.awt.Cursor( java.awt.Cursor.WAIT_CURSOR ) );
+			f.setCursor( new Cursor( Cursor.WAIT_CURSOR ) );
 			
 			currentDatabase = DatabaseTypes.SYSTEM_DB;
 			setDatabase(currentDatabase);
@@ -382,15 +428,15 @@ public void actionPerformed(ActionEvent event)
 	
 }
 public void viewMenuRefreshAction() {
-    java.awt.Frame f = CtiUtilities.getParentFrame(getContentPane());
-    java.awt.Cursor savedCursor = f.getCursor();
+    Frame f = CtiUtilities.getParentFrame(getContentPane());
+    Cursor savedCursor = f.getCursor();
     
     try
     {
-    	f.setCursor( new java.awt.Cursor( java.awt.Cursor.WAIT_CURSOR ) );
+    	f.setCursor( new Cursor( Cursor.WAIT_CURSOR ) );
     	
     	//refresh the cache and the connections state
-    	com.cannontech.database.cache.DefaultDatabaseCache.getInstance().releaseAllCache();
+    	DefaultDatabaseCache.getInstance().releaseAllCache();
     	
     	//grab the current selected object in the tree
     	Object holder = treeViewPanel.getSelectedItem();
@@ -435,8 +481,9 @@ public void viewMenuRefreshAction() {
  */
 public void addMessageListener(MessageEventListener listener) {
 
-	if( !messageListeners.contains(listener) )
-		messageListeners.addElement(listener);
+	if( !messageListeners.contains(listener) ) {
+        messageListeners.addElement(listener);
+    }
 }
 
 /**
@@ -470,15 +517,16 @@ private JTreeEditorFrame createInternalEditorFrame()
 				if( current != null && lastSelection != null && current.hasChanged() )
 				{
 					//prompt the user to save changes
-					int c = javax.swing.JOptionPane.showConfirmDialog(
+					int c = JOptionPane.showConfirmDialog(
 							getParentFrame(),
 							"Do you want to save changes made to '" + frame.getOwnerNode() + 
 							"'?", "Yukon Database Editor", JOptionPane.YES_NO_OPTION);
 										
-					if (c == JOptionPane.YES_OPTION)
-						current.fireOkButtonPressed();
-					else
-						current.fireCancelButtonPressed();
+					if (c == JOptionPane.YES_OPTION) {
+                        current.fireOkButtonPressed();
+                    } else {
+                        current.fireCancelButtonPressed();
+                    }
 				}
 				else if ( current != null && lastSelection != null )
 				{
@@ -498,108 +546,105 @@ private JTreeEditorFrame createInternalEditorFrame()
 /**
  * Insert the method's description here.
  * Creation date: (3/23/2001 3:14:22 PM)
- * @param item javax.swing.JMenuItem
+ * @param item JMenuItem
  */
 private void displayAWizardPanel(JMenuItem item)
 {
 	DefaultMutableTreeNode node = getTreeViewPanel().getSelectedNode();
-	com.cannontech.database.data.lite.LiteBase selectedItem = null;
-	if( node != null && node.getUserObject() instanceof com.cannontech.database.data.lite.LiteBase )
-		selectedItem = (com.cannontech.database.data.lite.LiteBase)node.getUserObject();
+	LiteBase selectedItem = null;
+	if( node != null && node.getUserObject() instanceof LiteBase ) {
+        selectedItem = (LiteBase)node.getUserObject();
+    }
 	
 	if (item == coreCreateMenu.portMenuItem)
 	{
-		showWizardPanel(new com.cannontech.dbeditor.wizard.port.PortWizardPanel());
+		showWizardPanel(new PortWizardPanel());
 	}
 	else if (item == coreCreateMenu.deviceMenuItem)
 	{
-		showWizardPanel(new com.cannontech.dbeditor.wizard.device.DeviceWizardPanel());
+		showWizardPanel(new DeviceWizardPanel());
 	}
 	else if (item == coreCreateMenu.routeMenuItem)
 	{
-		showWizardPanel(new com.cannontech.dbeditor.wizard.route.RouteWizardPanel());
+		showWizardPanel(new RouteWizardPanel());
 	}
 	else if( item == coreCreateMenu.pointMenuItem )
 	{
-		if (selectedItem instanceof com.cannontech.database.data.lite.LiteYukonPAObject )
+		if (selectedItem instanceof LiteYukonPAObject )
 		{
 			showWizardPanel(
-				new com.cannontech.dbeditor.wizard.point.PointWizardPanel(
-					new Integer( ((com.cannontech.database.data.lite.LiteYukonPAObject) selectedItem).getYukonID()) ) );
+				new PointWizardPanel(new Integer( ((LiteYukonPAObject) selectedItem).getYukonID()) ) );
 		}
-		else if (selectedItem instanceof com.cannontech.database.data.lite.LitePoint )
+		else if (selectedItem instanceof LitePoint )
 		{
 			showWizardPanel(
-				new com.cannontech.dbeditor.wizard.point.PointWizardPanel(
-					new Integer( ((com.cannontech.database.data.lite.LitePoint) selectedItem).getPaobjectID()) ) );
-		}
-		else //selectedItem == null  will go here
-			showWizardPanel(new com.cannontech.dbeditor.wizard.point.PointWizardPanel());
+				new PointWizardPanel(new Integer( ((LitePoint) selectedItem).getPaobjectID()) ) );
+		} else {
+            showWizardPanel(new PointWizardPanel());
+        }
 	}
 	else if (item == coreCreateMenu.stateGroupMenuItem)
 	{
-		showWizardPanel(new com.cannontech.dbeditor.wizard.state.StateWizardPanel());
+		showWizardPanel(new StateWizardPanel());
 	}
 	//new billing addition
 	else if (item == coreCreateMenu.billingGroupMenuItem)
 	{
-		showWizardPanel(new com.cannontech.dbeditor.wizard.billing.BillingFileWizardPanel());
+		showWizardPanel(new BillingFileWizardPanel());
 	}
 	
 	else if (item == coreCreateMenu.config2WayMenuItem)
 	{
-		showWizardPanel(new com.cannontech.dbeditor.wizard.config.ConfigWizardPanel());
+		showWizardPanel(new ConfigWizardPanel());
         
 	} 
 	else if (item == lmCreateMenu.lmGroupMenuItem)
 	{
-		showWizardPanel(new com.cannontech.dbeditor.wizard.device.lmgroup.LMGroupWizardPanel());
+		showWizardPanel(new LMGroupWizardPanel());
 	}
 	else if (item == lmCreateMenu.lmControlAreaMenuItem)
 	{
-		showWizardPanel(new com.cannontech.dbeditor.wizard.device.lmcontrolarea.LMControlAreaWizardPanel());
+		showWizardPanel(new LMControlAreaWizardPanel());
 	}
 	else if (item == lmCreateMenu.lmProgramMenuItem)
 	{
-		showWizardPanel(new com.cannontech.dbeditor.wizard.device.lmprogram.LMProgramWizardPanel());
+		showWizardPanel(new LMProgramWizardPanel());
 	}
 	else if( item == lmCreateMenu.pointMenuItem )
 	{
-		if (selectedItem instanceof com.cannontech.database.data.lite.LiteYukonPAObject )
+		if (selectedItem instanceof LiteYukonPAObject )
 		{
 			showWizardPanel(
-				new com.cannontech.dbeditor.wizard.point.lm.LMPointWizardPanel(
-					new Integer( ((com.cannontech.database.data.lite.LiteYukonPAObject) selectedItem).getYukonID()) ) );
+				new LMPointWizardPanel(new Integer( ((LiteYukonPAObject) selectedItem).getYukonID()) ) );
 		}
-		else if (selectedItem instanceof com.cannontech.database.data.lite.LitePoint )
+		else if (selectedItem instanceof LitePoint )
 		{
 			showWizardPanel(
-				new com.cannontech.dbeditor.wizard.point.lm.LMPointWizardPanel(
-					new Integer( ((com.cannontech.database.data.lite.LitePoint) selectedItem).getPointID()) ) );
-		}
-		else //selectedItem == null  will go here
-			showWizardPanel(new com.cannontech.dbeditor.wizard.point.lm.LMPointWizardPanel());
+				new LMPointWizardPanel(new Integer( ((LitePoint) selectedItem).getPointID()) ) );
+		} else {
+            showWizardPanel(new LMPointWizardPanel());
+        }
 
 	}
 	else if (item == lmCreateMenu.lmProgramConstraintMenuItem)
 	{
-		showWizardPanel(new com.cannontech.dbeditor.wizard.device.lmconstraint.LMConstraintWizardPanel());
+		showWizardPanel(new LMConstraintWizardPanel());
 	}
 	else if (item == lmCreateMenu.lmControlScenarioMenuItem)
 	{
-		showWizardPanel(new com.cannontech.dbeditor.wizard.device.lmscenario.LMScenarioWizardPanel());
+		showWizardPanel(new LMScenarioWizardPanel());
 	}
 	else if (item == systemCreateMenu.notificationGroupMenuItem)
 	{
-		showWizardPanel(new com.cannontech.dbeditor.wizard.notification.group.NotificationGroupWizardPanel());
+		showWizardPanel(new NotificationGroupWizardPanel());
 	}
 	else if (item == systemCreateMenu.contactMenuItem)
 	{
-		showWizardPanel(new com.cannontech.dbeditor.wizard.contact.ContactWizardPanel());
+		showWizardPanel(new ContactWizardPanel());
 	}
 	else if (item == systemCreateMenu.userMenuItem)
 	{
-		showWizardPanel(new com.cannontech.dbeditor.wizard.user.YukonUserWizardPanel());
+		showWizardPanel(new YukonUserWizardPanel());
 	}
     else if (item == systemCreateMenu.userGroupMenuItem)
     {
@@ -611,23 +656,23 @@ private void displayAWizardPanel(JMenuItem item)
 	}
 	else if (item == systemCreateMenu.holidayMenuItem)
 	{
-		showWizardPanel(new com.cannontech.dbeditor.wizard.holidayschedule.HolidayScheduleWizardPanel());
+		showWizardPanel(new HolidayScheduleWizardPanel());
 	}
 	else if (item == systemCreateMenu.customerMenuItem)
 	{
-		showWizardPanel(new com.cannontech.dbeditor.wizard.customer.CustomerWizardPanel());
+		showWizardPanel(new CustomerWizardPanel());
 	}
 	else if (item == systemCreateMenu.baselineMenuItem)
 	{
-		showWizardPanel(new com.cannontech.dbeditor.wizard.baseline.BaselineWizardPanel());
+		showWizardPanel(new BaselineWizardPanel());
 	}
 	else if (item == systemCreateMenu.seasonMenuItem) 
 	{
-		showWizardPanel(new com.cannontech.dbeditor.wizard.season.SeasonScheduleWizardPanel());
+		showWizardPanel(new SeasonScheduleWizardPanel());
 	}
 	else if (item == systemCreateMenu.tagMenuItem) 
 	{
-		showWizardPanel(new com.cannontech.dbeditor.wizard.tags.TagWizardPanel());
+		showWizardPanel(new TagWizardPanel());
 	}	
 	else if (item == systemCreateMenu.touMenuItem) 
 	{
@@ -635,15 +680,15 @@ private void displayAWizardPanel(JMenuItem item)
 	}
     else if (item == systemCreateMenu.systemPointMenuItem)
     {
-        showWizardPanel(new com.cannontech.dbeditor.wizard.point.PointWizardPanel(new Integer(0)));
+        showWizardPanel(new PointWizardPanel(new Integer(0)));
     }
 
 }
 /**
  * This method was created in VisualAge.
- * @param rPane javax.swing.JRootPane
+ * @param rPane JRootPane
  */
-public void displayDatabaseEditor(javax.swing.JRootPane rPane) {
+public void displayDatabaseEditor(JRootPane rPane) {
 	initialize(rPane);
 }
 /**
@@ -652,7 +697,7 @@ public void displayDatabaseEditor(javax.swing.JRootPane rPane) {
  */
 private void executeAboutButton_ActionPerformed( ActionEvent event )
 {
-	java.awt.Frame f = getParentFrame();
+	Frame f = getParentFrame();
 	AboutDialog aboutDialog = new AboutDialog( f, "About DBEditor", true );
 
 	aboutDialog.setLocationRelativeTo( f );
@@ -670,9 +715,8 @@ private boolean executeChangeObjectType(WizardPanelEvent event)
 	WizardPanel p = (WizardPanel) event.getSource();
 
 	DefaultMutableTreeNode node = getTreeViewPanel().getSelectedNode();
-	com.cannontech.database.data.lite.LiteBase liteObject = (com.cannontech.database.data.lite.LiteBase) node.getUserObject();
-	com.cannontech.database.db.DBPersistent selectedObject =
-		com.cannontech.database.data.lite.LiteFactory.createDBPersistent(liteObject);
+	LiteBase liteObject = (LiteBase) node.getUserObject();
+	DBPersistent selectedObject = LiteFactory.createDBPersistent(liteObject);
 
 	try
 	{
@@ -691,10 +735,10 @@ private boolean executeChangeObjectType(WizardPanelEvent event)
 	boolean checkConfigs = false;
 	int paoId = -1;
 	
-	if (selectedObject instanceof com.cannontech.database.data.device.DeviceBase)
+	if (selectedObject instanceof DeviceBase)
 	{
-		type = ((com.cannontech.database.data.device.DeviceBase) selectedObject).getPAOType();
-		currentType = com.cannontech.database.data.pao.PAOGroups.getDeviceType(type);
+		type = ((DeviceBase) selectedObject).getPAOType();
+		currentType = PAOGroups.getDeviceType(type);
 		newType = ((PaoType) p.getValue(null)).getDeviceTypeId();
 		checkConfigs = true;
 		paoId = ((DeviceBase) selectedObject).getPAObjectID();
@@ -707,10 +751,10 @@ private boolean executeChangeObjectType(WizardPanelEvent event)
         currentType = device.getType();
         newType = ((PaoType) p.getValue(null)).getDeviceTypeId();
     }
-	else if (selectedObject instanceof com.cannontech.database.data.point.PointBase)
+	else if (selectedObject instanceof PointBase)
 	{
-		type = ((com.cannontech.database.data.point.PointBase) selectedObject).getPoint().getPointType();
-		currentType = com.cannontech.database.data.point.PointTypes.getType(type);
+		type = ((PointBase) selectedObject).getPoint().getPointType();
+		currentType = PointTypes.getType(type);
 		newType = ((Integer) p.getValue(null)).intValue();
 	}
 
@@ -719,39 +763,41 @@ private boolean executeChangeObjectType(WizardPanelEvent event)
 	if (currentType == newType)
 	{
 		confirm =
-			javax.swing.JOptionPane.showConfirmDialog(
+			JOptionPane.showConfirmDialog(
 				getParentFrame(),
 				"Same type selected  '" + type + "'\n" + "  Continue to change type" + "?" + "\n" + "\n",
 				"Confirm Type Change",
 				JOptionPane.YES_NO_OPTION,
 				JOptionPane.WARNING_MESSAGE);
 
-		if (confirm == JOptionPane.NO_OPTION)
-			changeType = false;
+		if (confirm == JOptionPane.NO_OPTION) {
+            changeType = false;
+        }
 
 	}
 
-	if(com.cannontech.database.data.device.DeviceTypesFuncs.isTransmitter(currentType)
-		&& !(selectedObject instanceof com.cannontech.database.data.point.PointBase))
+	if(DeviceTypesFuncs.isTransmitter(currentType)
+		&& !(selectedObject instanceof PointBase))
 	{
 		String temp = "is a transmitter \n" + "and COULD be associated with a route." + '\n' + "Continuing may result in a route/device type mismatch." + '\n' + "Continue to change type?" + "\n" + "\n";  
 		confirm =
-			javax.swing.JOptionPane.showConfirmDialog(
+			JOptionPane.showConfirmDialog(
 				getParentFrame(),
 				"The device '" + type + " " + temp,
 				"Possible Device/Route Type Mismatch",
 				JOptionPane.YES_NO_OPTION,
 				JOptionPane.WARNING_MESSAGE);
 
-		if (confirm == JOptionPane.NO_OPTION)
-			changeType = false;
+		if (confirm == JOptionPane.NO_OPTION) {
+            changeType = false;
+        }
 	
 	}
 	
 	
 	if (changeType)
 	{
-		selectedObject = (com.cannontech.database.db.DBPersistent) p.getValue(selectedObject);
+		selectedObject = (DBPersistent) p.getValue(selectedObject);
 
 		try
 		{
@@ -761,11 +807,13 @@ private boolean executeChangeObjectType(WizardPanelEvent event)
 				
 				SmartMultiDBPersistent smarty = (SmartMultiDBPersistent)selectedObject;
 						
-				for( int i = 0; i < smarty.size(); i++ )
-					if( !smarty.getDBPersistent(i).equals(smarty.getOwnerDBPersistent()) )
-						generateDBChangeMsg( 
+				for( int i = 0; i < smarty.size(); i++ ) {
+                    if( !smarty.getDBPersistent(i).equals(smarty.getOwnerDBPersistent()) ) {
+                        generateDBChangeMsg( 
 								smarty.getDBPersistent(i),
 								DbChangeType.ADD );
+                    }
+                }
 								
 				selectedObject = smarty.getOwnerDBPersistent();
 			}			
@@ -801,15 +849,16 @@ private boolean executeChangeObjectType(WizardPanelEvent event)
 				PropertyPanel current = (PropertyPanel) getEditorFrame(node).getContentPane();
 
 				//just act as though the cancel button was pressed on the editor pane
-				if (current != null)
-					current.fireCancelButtonPressed();
+				if (current != null) {
+                    current.fireCancelButtonPressed();
+                }
 			}
 			
 			String messageString = selectedObject + " successfully changed Type.";
 			fireMessage(new MessageEvent(this, messageString));
 			success = true;
 		}
-		catch (com.cannontech.database.TransactionException e)
+		catch (TransactionException e)
 		{
 			log.error( e.getMessage(), e );
 
@@ -830,14 +879,11 @@ private boolean executeChangeObjectType(WizardPanelEvent event)
  */
 public void executeChangeTypeButton_ActionPerformed(ActionEvent event)
 {
-   int confirm = 0;
    DefaultMutableTreeNode node = getTreeViewPanel().getSelectedNode();
 	if (node != null)
    {
 	  //a DBPersistent must be created from the Lite object so you can copy it
-	  com.cannontech.database.db.DBPersistent userObject =
-		 com.cannontech.database.data.lite.LiteFactory.createDBPersistent(
-			(com.cannontech.database.data.lite.LiteBase) node.getUserObject());
+	  DBPersistent userObject = LiteFactory.createDBPersistent((LiteBase) node.getUserObject());
 
 	  try
 	  {
@@ -866,66 +912,60 @@ public void executeChangeTypeButton_ActionPerformed(ActionEvent event)
               showChangeTypeWizardPanel(new DeviceChangeTypeWizardPanel(yukonPAObject));
           }
       }
-	  else if (userObject instanceof com.cannontech.database.data.point.PointBase)
+	  else if (userObject instanceof PointBase)
 	  {
 		 try
 		 {
-			StringBuffer message =
-			   new StringBuffer(
+			new StringBuffer(
 				  "Are you sure you want to change the type of '"+node.toString() + "'?");
 
 
 		DBDeleteResult delRes = new DBDeleteResult(
-				((com.cannontech.database.data.point.PointBase) userObject).getPoint().getPointID().intValue(), DaoFactory.getDbDeletionDao().POINT_TYPE);
+				((PointBase) userObject).getPoint().getPointID().intValue(), DaoFactory.getDbDeletionDao().POINT_TYPE);
 			
          byte deleteVal = DaoFactory.getDbDeletionDao().deletionAttempted( delRes );
          
          if( deleteVal == DaoFactory.getDbDeletionDao().STATUS_ALLOW
              || deleteVal == DaoFactory.getDbDeletionDao().STATUS_CONFIRM )
          {
-			   showChangeTypeWizardPanel(
-				  new com.cannontech.dbeditor.wizard.changetype.point.PointChangeTypeWizardPanel(
-					 userObject));
+			   showChangeTypeWizardPanel(new PointChangeTypeWizardPanel(userObject));
 			}
 			else
 			{
 			  
-			   javax.swing.JOptionPane.showConfirmDialog(
+			   JOptionPane.showConfirmDialog(
 				  getParentFrame(),
 				  ("You cannot change this point '"+node.toString() + "'" + delRes.getDescriptionMsg().toString()),
 				  "Unable to change",
 				  JOptionPane.CLOSED_OPTION,
 				  JOptionPane.WARNING_MESSAGE);
-			   confirm = JOptionPane.NO_OPTION;
-			   //make it seem they clicked the NO to delete the Point 
 			}
 
 		 }
-		 catch (java.sql.SQLException e)
+		 catch (SQLException e)
 		 {
 			log.error( e.getMessage(), e );
-			confirm =
-			   javax.swing.JOptionPane.showConfirmDialog(
+			JOptionPane.showConfirmDialog(
 				  getParentFrame(),
 				  "Are you sure you want to change '" + node + "'?",
 				  "Confirm Delete",
 				  JOptionPane.YES_NO_OPTION,
 				  JOptionPane.WARNING_MESSAGE);
 		 }
-	  }
-	  else
-		 JOptionPane.showMessageDialog(
+	  } else {
+        JOptionPane.showMessageDialog(
 			getParentFrame(),
 			"Cannot currently change the type of this Object",
 			"ChangeType Error",
 			JOptionPane.INFORMATION_MESSAGE);
-   }
-   else
-	  JOptionPane.showMessageDialog(
-		 getParentFrame(),
-		 "You must select something to be changed",
-		 "ChangeType Error",
-		 JOptionPane.INFORMATION_MESSAGE);
+    }
+   } else {
+        JOptionPane.showMessageDialog(
+        	 getParentFrame(),
+        	 "You must select something to be changed",
+        	 "ChangeType Error",
+        	 JOptionPane.INFORMATION_MESSAGE);
+    }
 
 }
 /**
@@ -940,8 +980,8 @@ private void executeCopyButton_ActionPerformed(ActionEvent event)
 	if( node != null )
 	{
 		//a DBPersistent must be created from the Lite object so you can copy it
-		com.cannontech.database.db.DBPersistent toCopy = com.cannontech.database.data.lite.LiteFactory.createDBPersistent((com.cannontech.database.data.lite.LiteBase)node.getUserObject());
-		if(toCopy instanceof com.cannontech.database.data.device.DeviceBase && !(toCopy instanceof com.cannontech.database.data.device.lm.LMGroup))
+		DBPersistent toCopy = LiteFactory.createDBPersistent((LiteBase)node.getUserObject());
+            if (toCopy instanceof DeviceBase && !(toCopy instanceof LMGroup))
         {
             showCopyWizardPanel (toCopy);
         } else if(toCopy instanceof DeviceMeterGroupBase) {
@@ -949,27 +989,27 @@ private void executeCopyButton_ActionPerformed(ActionEvent event)
             YukonPAObject yukonPAObject = PAOFactory.createPAObject(deviceId);
             showCopyWizardPanel (yukonPAObject);
 		}
-        else if(toCopy instanceof com.cannontech.database.data.device.lm.LMProgramDirect)
-            showCopyWizardPanel( new com.cannontech.dbeditor.wizard.copy.lm.LMProgramCopyWizardPanel(toCopy), toCopy );
-        else if(toCopy instanceof com.cannontech.database.data.device.lm.LMGroup)
-            showCopyWizardPanel( new com.cannontech.dbeditor.wizard.copy.lm.LMGroupCopyWizardPanel(toCopy), toCopy );
-        else if(toCopy instanceof LMScenario)
-            showCopyWizardPanel( new com.cannontech.dbeditor.wizard.copy.lm.LMScenarioCopyWizardPanel(toCopy), toCopy );
-        else if( toCopy instanceof com.cannontech.database.data.point.PointBase )
+        else if(toCopy instanceof LMProgramDirect) {
+            showCopyWizardPanel( new LMProgramCopyWizardPanel(toCopy), toCopy );
+        } else if(toCopy instanceof LMGroup) {
+            showCopyWizardPanel( new LMGroupCopyWizardPanel(toCopy), toCopy );
+        } else if(toCopy instanceof LMScenario) {
+            showCopyWizardPanel( new LMScenarioCopyWizardPanel(toCopy), toCopy );
+        } else if( toCopy instanceof PointBase )
         {
-            showCopyWizardPanel( new com.cannontech.dbeditor.wizard.copy.point.PointCopyWizardPanel(toCopy, currentDatabase ), toCopy );
-        }
-        else
-			JOptionPane.showMessageDialog(
+            showCopyWizardPanel( new PointCopyWizardPanel(toCopy, currentDatabase ), toCopy );
+        } else {
+            JOptionPane.showMessageDialog(
 				getParentFrame(),
 				"Cannot currently copy that type of Object", "Copy Error", 
 				JOptionPane.INFORMATION_MESSAGE);
-	}
-	else
-		JOptionPane.showMessageDialog(
+        }
+	} else {
+        JOptionPane.showMessageDialog(
 				getParentFrame(),
 				"You must select something to be copied", "Copy Error", 
-				JOptionPane.INFORMATION_MESSAGE);  
+				JOptionPane.INFORMATION_MESSAGE);
+    }  
 }
 /**
  * @return
@@ -1002,7 +1042,7 @@ private void deleteDBPersistent( DBPersistent deletable )
 	
 		fireMessage(new MessageEvent(this, deletable + " deleted successfully from the database."));
 	}
-	catch (com.cannontech.database.TransactionException e)
+	catch (TransactionException e)
 	{
 		log.error(e.getCause(), e);
 		fireMessage(
@@ -1037,8 +1077,9 @@ private void executeDeleteButton_ActionPerformed(ActionEvent event)
 				PropertyPanel current = (PropertyPanel) getEditorFrame(nodes[i]).getContentPane();
 	
 				//just act as though the cancel button was pressed on the editor pane
-				if (current != null)
-					current.fireCancelButtonPressed();
+				if (current != null) {
+                    current.fireCancelButtonPressed();
+                }
 			}		
 
 
@@ -1070,13 +1111,13 @@ private void executeDeleteButton_ActionPerformed(ActionEvent event)
  */
 private void executeEditButton_ActionPerformed(ActionEvent event)
 {
-   java.awt.Frame owner = CtiUtilities.getParentFrame(getTree());   
-   java.awt.Cursor savedCursor = owner.getCursor();
+   Frame owner = CtiUtilities.getParentFrame(getTree());   
+   Cursor savedCursor = owner.getCursor();
 
 
    try
    {
-		owner.setCursor(new java.awt.Cursor(java.awt.Cursor.WAIT_CURSOR));
+		owner.setCursor(new Cursor(Cursor.WAIT_CURSOR));
 
 		DefaultMutableTreeNode[] nodes = getTreeViewPanel().getSelectedNodes();
 
@@ -1094,12 +1135,12 @@ private void executeEditButton_ActionPerformed(ActionEvent event)
 					continue;
 				}
 				
-				if (nodes[i].getUserObject() instanceof String)
-					continue;
+				if (nodes[i].getUserObject() instanceof String) {
+                    continue;
+                }
 
 				//do some mapping to get the compatible DBPersistent
-				com.cannontech.database.db.DBPersistent userObject = 
-					LiteFactory.convertLiteToDBPers( (LiteBase)nodes[i].getUserObject() );
+				DBPersistent userObject = LiteFactory.convertLiteToDBPers( (LiteBase)nodes[i].getUserObject() );
 
 	         try
 	         {
@@ -1139,7 +1180,7 @@ private void executeEditButton_ActionPerformed(ActionEvent event)
 	         {
 	            frame.setSelected(true);
 	         }
-	         catch (java.beans.PropertyVetoException e)
+	         catch (PropertyVetoException e)
 	         {
 	            log.error( e.getMessage(), e ); //when does this happen??
 	         }
@@ -1186,7 +1227,7 @@ private void showEditor(DBPersistent userObject) {
     try {
        frame.setSelected(true);
     }
-    catch (java.beans.PropertyVetoException e) {
+    catch (PropertyVetoException e) {
        log.error( e.getMessage(), e ); //when does this happen??
     }
     finally{
@@ -1202,19 +1243,20 @@ private void showEditor(DBPersistent userObject) {
  */
 public void executeFindButton_ActionPerformed(ActionEvent event)
 {
-	String value = javax.swing.JOptionPane.showInputDialog(
+	String value = JOptionPane.showInputDialog(
 		getParentFrame(), "Name of the item: ", "Search",
-		javax.swing.JOptionPane.QUESTION_MESSAGE );
+		JOptionPane.QUESTION_MESSAGE );
 
 	if( value != null )
 	{
 		boolean found = getTreeViewPanel().searchFirstLevelString(value);
 
-		if( !found )
-			javax.swing.JOptionPane.showMessageDialog(
+		if( !found ) {
+            JOptionPane.showMessageDialog(
 				getParentFrame(), 
 				"Unable to find your selected item", "Item Not Found",
-				javax.swing.JOptionPane.INFORMATION_MESSAGE );
+				JOptionPane.INFORMATION_MESSAGE );
+        }
 	}
 }
 
@@ -1276,7 +1318,7 @@ private boolean exitConfirm()
     			{
     				if( current.hasChanged() && lastSelection != null )
     				{
-    					int confirm = javax.swing.JOptionPane.showConfirmDialog(
+    					int confirm = JOptionPane.showConfirmDialog(
     							getParentFrame(),
     							"Do you want to save changes made to '" + getInternalEditorFrames()[i].getOwnerNode() + 
     							"'?", "Yukon Database Editor", JOptionPane.YES_NO_CANCEL_OPTION);
@@ -1289,12 +1331,12 @@ private boolean exitConfirm()
     					else if (confirm == JOptionPane.NO_OPTION)
     					{
     						current.fireCancelButtonPressed();
-    					}
-    					else
-    						retVal = false;
-    				}
-    				else    // act as though the cancel button has been pressed
-    					current.fireCancelButtonPressed();
+    					} else {
+                            retVal = false;
+                        }
+    				} else {
+                        current.fireCancelButtonPressed();
+                    }
     			}
     
     		}
@@ -1328,9 +1370,9 @@ public void fireMessage(MessageEvent event) {
  * @param changeType
  * @return
  */
-private DBChangeMsg[] getDBChangeMsgs(com.cannontech.database.db.DBPersistent object, DbChangeType dbChangeType) {
+private DBChangeMsg[] getDBChangeMsgs(DBPersistent object, DbChangeType dbChangeType) {
     
-    com.cannontech.message.dispatch.message.DBChangeMsg[] dbChanges = null;
+    DBChangeMsg[] dbChanges = null;
     
     if( object instanceof CTIDbChange ) {
         dbChanges = DefaultDatabaseCache.getInstance().createDBChangeMessages((CTIDbChange)object, dbChangeType );
@@ -1348,13 +1390,13 @@ private DBChangeMsg[] getDBChangeMsgs(com.cannontech.database.db.DBPersistent ob
  * @param changeType
  * @param dbChange
  */
-private void queueDBChangeMsgs(com.cannontech.database.db.DBPersistent object, DbChangeType dbChangeType, DBChangeMsg[] dbChange) 
+private void queueDBChangeMsgs(DBPersistent object, DbChangeType dbChangeType, DBChangeMsg[] dbChange) 
 {
 	for( int i = 0; i < dbChange.length; i++ )
 	{
 		//handle the DBChangeMsg locally
-		com.cannontech.database.data.lite.LiteBase lBase = 
-				com.cannontech.database.cache.DefaultDatabaseCache.getInstance().handleDBChangeMessage(dbChange[i]);
+		LiteBase lBase = 
+				DefaultDatabaseCache.getInstance().handleDBChangeMessage(dbChange[i]);
 
 		//if cache isn't able to return us the liteBase, then build it from the DBPersistent itself
 		if (lBase == null) {
@@ -1381,7 +1423,7 @@ private void queueDBChangeMsgs(com.cannontech.database.db.DBPersistent object, D
  * @param object
  * @param changeType
  */
-private void generateDBChangeMsg( com.cannontech.database.db.DBPersistent object, DbChangeType dbChangeType  ) {
+private void generateDBChangeMsg( DBPersistent object, DbChangeType dbChangeType  ) {
     
     DBChangeMsg[] msgs = getDBChangeMsgs(object, dbChangeType);
     queueDBChangeMsgs(object, dbChangeType, msgs);
@@ -1391,7 +1433,7 @@ private void generateDBChangeMsg( com.cannontech.database.db.DBPersistent object
 /**
  * Insert the method's description here.
  * Creation date: (3/13/2001 3:42:38 PM)
- * @return javax.swing.JInternalFrame
+ * @return JInternalFrame
  */
 public JTreeEditorFrame getAvailableEditorFrame() 
 {
@@ -1400,8 +1442,9 @@ public JTreeEditorFrame getAvailableEditorFrame()
 		int i = 0;
 		for( i = 0; i < getInternalEditorFrames().length; i++ )
 		{
-			if( !(getInternalEditorFrames()[i]).isVisible() )
-				return getInternalEditorFrames()[i];
+			if( !(getInternalEditorFrames()[i]).isVisible() ) {
+                return getInternalEditorFrames()[i];
+            }
 		}
 
 		// didnt find an available one, lets create a new one
@@ -1436,8 +1479,8 @@ private Container getContentPane() {
 
 	if( contentPane == null )
 	{
-		contentPane = new javax.swing.JPanel();
-		contentPane.setLayout( new java.awt.BorderLayout() );
+		contentPane = new JPanel();
+		contentPane.setLayout( new BorderLayout() );
 	
 		contentPane.add( getSplitPane() , "Center");
 		contentPane.add( getMessagePanel(), "South" );
@@ -1456,16 +1499,16 @@ public static int getDecimalPlaces()
 }
 /**
  * Return the DisplayTable property value.
- * @return javax.swing.JScrollPane
+ * @return JScrollPane
  */
-private javax.swing.JScrollPane getDeskTopFrameScrollPane() 
+private JScrollPane getDeskTopFrameScrollPane() 
 {
 	if ( deskTopFrameScrollPane == null) 
 	{
-		deskTopFrameScrollPane = new javax.swing.JScrollPane();
+		deskTopFrameScrollPane = new JScrollPane();
 		deskTopFrameScrollPane.setName("EditorFrameScrollPane");
-		deskTopFrameScrollPane.setVerticalScrollBarPolicy(javax.swing.JScrollPane.VERTICAL_SCROLLBAR_AS_NEEDED);
-		deskTopFrameScrollPane.setHorizontalScrollBarPolicy(javax.swing.JScrollPane.HORIZONTAL_SCROLLBAR_AS_NEEDED);
+		deskTopFrameScrollPane.setVerticalScrollBarPolicy(JScrollPane.VERTICAL_SCROLLBAR_AS_NEEDED);
+		deskTopFrameScrollPane.setHorizontalScrollBarPolicy(JScrollPane.HORIZONTAL_SCROLLBAR_AS_NEEDED);
 		getDeskTopFrameScrollPane().setViewportView( getDesktopPane() );
 	}
 	
@@ -1473,7 +1516,7 @@ private javax.swing.JScrollPane getDeskTopFrameScrollPane()
 }
 /**
  * This method was created in VisualAge.
- * @return javax.swing.JDesktopPane
+ * @return JDesktopPane
  */
 private JDesktopPane getDesktopPane() 
 {
@@ -1488,18 +1531,19 @@ private JDesktopPane getDesktopPane()
  * Insert the method's description here.
  * Creation date: (3/14/2001 2:10:16 PM)
  * @return com.cannontech.dbeditor.JTreeEditorFrame
- * @param ownerNode javax.swing.tree.DefaultMutableTreeNode
+ * @param ownerNode tree.DefaultMutableTreeNode
  */
 private JTreeEditorFrame getEditorFrame(DefaultMutableTreeNode ownerNode) 
 {
 	synchronized( getInternalEditorFrames() )
 	{
-		for( int i = 0; i < getInternalEditorFrames().length; i++ )
-			if( getInternalEditorFrames()[i].getOwnerNode() != null
+		for( int i = 0; i < getInternalEditorFrames().length; i++ ) {
+            if( getInternalEditorFrames()[i].getOwnerNode() != null
 				 && getInternalEditorFrames()[i].getOwnerNode().getUserObject().equals(ownerNode.getUserObject()) )
 			{
 				return getInternalEditorFrames()[i];
 			}
+        }
 	}
 	
 	return null;
@@ -1523,16 +1567,18 @@ private LoggerEventListener getLoggerEventListener() {
  * Insert the method's description here.
  * Creation date: (3/14/2001 10:14:25 AM)
  * @return int
- * @param panel com.cannontech.common.editor.PropertyPanel
+ * @param panel PropertyPanel
  */
 private int getFrameLocationByPanel(PropertyPanel panel) 
 {
 	//Loop through all the frames on the desktopPane
 	//and find out which one contains the PropertyPanel
     synchronized (getInternalEditorFrames()) {
-    	for( int i = 0; i < getInternalEditorFrames().length; i++ )
-    		if( getInternalEditorFrames()[i].getContentPane() == panel )
-    			return i;
+    	for( int i = 0; i < getInternalEditorFrames().length; i++ ) {
+            if( getInternalEditorFrames()[i].getContentPane() == panel ) {
+                return i;
+            }
+        }
     	//should never get here
         throw new RuntimeException("PropertyPanel '" + panel.toString() + "' found that does not have a parent JInternalFrame");
     }
@@ -1558,7 +1604,7 @@ private JTreeEditorFrame[] getInternalEditorFrames()
 }
 /**
  * This method was created in VisualAge.
- * @return javax.swing.JMenuBar
+ * @return JMenuBar
  */
 private JMenuBar getMenuBar(DatabaseTypes whichDatabase) {
 
@@ -1580,55 +1626,62 @@ private JMenuBar getMenuBar(DatabaseTypes whichDatabase) {
 		{
 			item = fileMenu.getItem(i);
 
-			if( item != null )
-				fileMenu.getItem(i).addActionListener(this);
+			if( item != null ) {
+                fileMenu.getItem(i).addActionListener(this);
+            }
 		}
 		
 		for( int i = 0; i < editMenu.getItemCount(); i++ )
 		{
 			item = editMenu.getItem(i);
 			
-			if( item != null )	
-			editMenu.getItem(i).addActionListener(this);
+			if( item != null ) {
+                editMenu.getItem(i).addActionListener(this);
+            }
 		}
 		
 		for( int i = 0; i < coreCreateMenu.getItemCount(); i++ )
 		{
 			item = coreCreateMenu.getItem(i);
 
-			if( item != null )
-				coreCreateMenu.getItem(i).addActionListener(this);
+			if( item != null ) {
+                coreCreateMenu.getItem(i).addActionListener(this);
+            }
 		}
 	
 		for( int i = 0; i < lmCreateMenu.getItemCount(); i++ )
 		{
 			item = lmCreateMenu.getItem(i);
 
-			if( item != null )
-				lmCreateMenu.getItem(i).addActionListener(this);
+			if( item != null ) {
+                lmCreateMenu.getItem(i).addActionListener(this);
+            }
 		}
 		for( int i = 0; i < systemCreateMenu.getItemCount(); i++ )
 		{
 			item = systemCreateMenu.getItem(i);
 
-			if( item != null )
-				systemCreateMenu.getItem(i).addActionListener(this);
+			if( item != null ) {
+                systemCreateMenu.getItem(i).addActionListener(this);
+            }
 		}
 
 		for( int i = 0; i < viewMenu.getItemCount() ; i++ )
 		{
 			item = viewMenu.getItem(i);
 
-			if( item != null )
-				viewMenu.getItem(i).addActionListener(this);
+			if( item != null ) {
+                viewMenu.getItem(i).addActionListener(this);
+            }
 		}
 		
 		for( int i = 0; i < helpMenu.getItemCount() ; i++ )
 		{
 			item = helpMenu.getItem(i);
 
-			if( item != null )
-				helpMenu.getItem(i).addActionListener(this);
+			if( item != null ) {
+                helpMenu.getItem(i).addActionListener(this);
+            }
 		}
 			
 		this.menuBar.add( fileMenu );
@@ -1664,7 +1717,7 @@ private JMenuBar getMenuBar(DatabaseTypes whichDatabase) {
 }
 /**
  * This method was created in VisualAge.
- * @return com.cannontech.common.gui.util.MessagePanel
+ * @return MessagePanel
  */
 private MessagePanel getMessagePanel() {
 	if( this.messagePanel == null )
@@ -1678,7 +1731,7 @@ private MessagePanel getMessagePanel() {
 /**
  * Insert the method's description here.
  * Creation date: (2/27/2002 11:45:12 AM)
- * @return javax.swing.JFrame
+ * @return JFrame
  */
 private JFrame getParentFrame() 
 {
@@ -1687,7 +1740,7 @@ private JFrame getParentFrame()
 }
 /**
  * This method was created in VisualAge.
- * @return javax.swing.JSplitPane
+ * @return JSplitPane
  */
 private JSplitPane getSplitPane() {
 	if( this.splitPane == null )
@@ -1702,7 +1755,7 @@ private JSplitPane getSplitPane() {
 }
 /**
  * This method was created in VisualAge.
- * @return javax.swing.JTree
+ * @return JTree
  */
 private JTree getTree() 
 {	
@@ -1725,13 +1778,13 @@ private DBEditorTreePopUpMenu getTreeNodePopupMenu()
 }
 /**
  * This method was created in VisualAge.
- * @return javax.swing.JPanel
+ * @return JPanel
  */
-private com.cannontech.common.gui.util.TreeViewPanel getTreeViewPanel() {
+private TreeViewPanel getTreeViewPanel() {
 
 	if( this.treeViewPanel == null )
 	{
-		treeViewPanel = new com.cannontech.common.gui.util.TreeViewPanel();
+		treeViewPanel = new TreeViewPanel();
 		getTree().getSelectionModel().setSelectionMode(TreeSelectionModel.DISCONTIGUOUS_TREE_SELECTION );
 		getTree().setLargeModel(true);
 	}
@@ -1748,9 +1801,11 @@ private int getVisibleEditorFrames()
 	synchronized( getInternalEditorFrames() )
 	{
 		int count = 0;
-		for( int i = 0; i < getInternalEditorFrames().length; i++ )
-			if( getInternalEditorFrames()[i].isVisible() )
-				count++;
+		for( int i = 0; i < getInternalEditorFrames().length; i++ ) {
+            if( getInternalEditorFrames()[i].isVisible() ) {
+                count++;
+            }
+        }
 		
 		return count;
 	}
@@ -1832,7 +1887,7 @@ private void handleException(Throwable exception)
  * @param event com.cannontech.clientutils.commonutils.GenericEvent
  */
 @Override
-public void handlePopUpEvent(com.cannontech.clientutils.commonutils.GenericEvent event) 
+public void handlePopUpEvent(GenericEvent event) 
 {
 	if( event.getSource() == DatabaseEditor.this.getTreeNodePopupMenu() )
 	{
@@ -1876,7 +1931,7 @@ public void handlePopUpEvent(com.cannontech.clientutils.commonutils.GenericEvent
 private void initConnections() 
 {
 	// add the listeners for our popUp menu
-	java.awt.event.MouseListener listener = new com.cannontech.clientutils.popup.PopUpMenuShower( getTreeNodePopupMenu() );
+	MouseListener listener = new PopUpMenuShower( getTreeNodePopupMenu() );
 	getTree().addMouseListener( listener );
 	getTreeNodePopupMenu().addPopupMenuListener( this );
 	getTreeNodePopupMenu().addPopUpEventListener( this );
@@ -1947,7 +2002,7 @@ private void initialize(JRootPane rootPane)
  * Insert the method's description here.
  * Creation date: (3/14/2001 3:08:19 PM)
  * @return boolean
- * @param node javax.swing.tree.DefaultMutableTreeNode
+ * @param node tree.DefaultMutableTreeNode
  */
 private boolean isEditorAlreadyShowing(DefaultMutableTreeNode node) 
 {
@@ -1970,7 +2025,7 @@ public static void main(String[] args) {
 
         // creates a stupid anonymous class to create a unique class name for the main frame
         // the ClientStartupHelper will use this for picking a Preference node
-        final javax.swing.JFrame f = new javax.swing.JFrame("Yukon Database Editor [Not Connected to Dispatch]") {};
+        final JFrame f = new JFrame("Yukon Database Editor [Not Connected to Dispatch]") {};
         clientStartupHelper.setParentFrame(f);
         f.setDefaultCloseOperation( WindowConstants.DO_NOTHING_ON_CLOSE );
 
@@ -1978,7 +2033,7 @@ public static void main(String[] args) {
 
         clientStartupHelper.doStartup();
 
-        if (ClientSession.getInstance().getUser().getUserID() == com.cannontech.user.UserUtils.USER_ADMIN_ID) {
+        if (ClientSession.getInstance().getUser().getUserID() == UserUtils.USER_ADMIN_ID) {
             isSuperuser = true;
         }	
 
@@ -1987,7 +2042,7 @@ public static void main(String[] args) {
 
         editor.displayDatabaseEditor( f.getRootPane() );
 
-        javax.swing.SwingUtilities.invokeLater(new Runnable() {
+        SwingUtilities.invokeLater(new Runnable() {
             @Override
             public void run() {
                 f.setVisible(true);
@@ -2019,21 +2074,21 @@ public void mouseClicked(MouseEvent event)
 /**
  * Insert the method's description here.
  * Creation date: (3/14/2001 2:39:23 PM)
- * @param event javax.swing.event.PopupMenuEvent
+ * @param event PopupMenuEvent
  */
 @Override
 public void popupMenuCanceled(PopupMenuEvent event) {}
 /**
  * Insert the method's description here.
  * Creation date: (3/14/2001 2:39:23 PM)
- * @param event javax.swing.event.PopupMenuEvent
+ * @param event PopupMenuEvent
  */
 @Override
 public void popupMenuWillBecomeInvisible(PopupMenuEvent event) {}
 /**
  * Insert the method's description here.
  * Creation date: (3/14/2001 2:39:23 PM)
- * @param event javax.swing.event.PopupMenuEvent
+ * @param event PopupMenuEvent
  */
 @Override
 public void popupMenuWillBecomeVisible(PopupMenuEvent event) 
@@ -2095,8 +2150,9 @@ public void popupMenuWillBecomeVisible(PopupMenuEvent event)
 	            editMenu.deleteMenuItem.setEnabled(false);
 	            editMenu.editMenuItem.setEnabled(false);
 	            
-	            if (!selectedNode.isRoot())
-	               getTreeNodePopupMenu().getJMenuSortAllPointsBy().setEnabled(true);
+	            if (!selectedNode.isRoot()) {
+                    getTreeNodePopupMenu().getJMenuSortAllPointsBy().setEnabled(true);
+                }
 	         }
 	         
 	         if (selectedNode.getUserObject() instanceof LiteYukonPAObject)
@@ -2170,8 +2226,9 @@ private void readConfigParameters()
 		log.error( e.getMessage(), e );
 	}
 		
-	if( !activateBilling )
-		coreCreateMenu.remove( coreCreateMenu.billingGroupMenuItem );
+	if( !activateBilling ) {
+        coreCreateMenu.remove( coreCreateMenu.billingGroupMenuItem );
+    }
 	
 	//Decide which items to put into the view menu
 	boolean showLm = false;
@@ -2216,11 +2273,13 @@ private void readConfigParameters()
         systemCreateMenu.remove( systemCreateMenu.userGroupMenuItem );
 	}
 	
-	if( !showLm )
-		viewMenu.remove( viewMenu.lmRadioButtonMenuItem );
+	if( !showLm ) {
+        viewMenu.remove( viewMenu.lmRadioButtonMenuItem );
+    }
 
-	if( !showSystem )
-		viewMenu.remove( viewMenu.systemRadioButtonMenuItem );
+	if( !showSystem ) {
+        viewMenu.remove( viewMenu.systemRadioButtonMenuItem );
+    }
 		
 }
 /**
@@ -2229,8 +2288,9 @@ private void readConfigParameters()
  */
 public void removeMessageListeners(MessageEventListener listener) {
 
-	if( messageListeners.contains(listener) )
-		messageListeners.removeElement(listener);
+	if( messageListeners.contains(listener) ) {
+        messageListeners.removeElement(listener);
+    }
 }
 /**
  * Insert the method's description here.
@@ -2244,13 +2304,14 @@ private void removeUnneededEditorFrames()
 		{
 			if( getInternalEditorFrames().length > INITIAL_EDITOR_COUNT )
 			{
-				if( (getInternalEditorFrames()[i]).isVisible() )
-					continue;
-				else
+				if( (getInternalEditorFrames()[i]).isVisible() ) {
+                    continue;
+                } else
 				{
-					java.util.ArrayList<JTreeEditorFrame> list = new java.util.ArrayList<JTreeEditorFrame>(getInternalEditorFrames().length);
-					for( int j = 0; j < getInternalEditorFrames().length; j++ )
-						list.add( getInternalEditorFrames()[j] );
+					ArrayList<JTreeEditorFrame> list = new ArrayList<JTreeEditorFrame>(getInternalEditorFrames().length);
+					for( int j = 0; j < getInternalEditorFrames().length; j++ ) {
+                        list.add( getInternalEditorFrames()[j] );
+                    }
 
 					// we removed the unneeded frame
 					list.remove(i);
@@ -2260,19 +2321,19 @@ private void removeUnneededEditorFrames()
 
 					editorFrames = list.toArray(frames);
 				}
-			}
-			else
-				return;
+			} else {
+                return;
+            }
 		}
 	}
 	
 }
 /**
  * This method was created in VisualAge.
- * @param event com.cannontech.common.editor.PropertyPanelEvent
+ * @param event PropertyPanelEvent
  */
 @Override
-public void selectionPerformed( PropertyPanelEvent event)
+public void selectionPerformed(PropertyPanelEvent event)
 {
 		
 	//these events tells us the user modified a DB object before clicking the OK/APPLY button
@@ -2303,7 +2364,7 @@ public void selectionPerformed( PropertyPanelEvent event)
 	if( (event.getID() == PropertyPanelEvent.APPLY_SELECTION ||
 		  event.getID() == PropertyPanelEvent.OK_SELECTION) && !panel.isInputValid() ) {
 		if( panel.getErrorString() != null ) {
-			javax.swing.JOptionPane.showMessageDialog( panel, panel.getErrorString(), "Input Error", javax.swing.JOptionPane.WARNING_MESSAGE );
+			JOptionPane.showMessageDialog( panel, panel.getErrorString(), "Input Error", JOptionPane.WARNING_MESSAGE );
 		}
 
 		return;
@@ -2317,7 +2378,7 @@ public void selectionPerformed( PropertyPanelEvent event)
 		 event.getID() == PropertyPanelEvent.OK_SELECTION		)
 	{
 	    try {
-	        final com.cannontech.database.db.DBPersistent object = (com.cannontech.database.db.DBPersistent) panel.getValue(null);
+	        final DBPersistent object = (DBPersistent) panel.getValue(null);
 		
     		if( panel.hasChanged() )
     		{
@@ -2355,10 +2416,10 @@ public void selectionPerformed( PropertyPanelEvent event)
     			}
     		}
 		} catch (EditorInputValidationException e) {
-            javax.swing.JOptionPane.showMessageDialog( panel, 
+            JOptionPane.showMessageDialog( panel, 
                                                        e.getMessage(), 
                                                        "Input Error", 
-                                                       javax.swing.JOptionPane.WARNING_MESSAGE );
+                                                       JOptionPane.WARNING_MESSAGE );
             return;
         }			
 	}
@@ -2377,8 +2438,9 @@ public void selectionPerformed( PropertyPanelEvent event)
 		synchronized (getInternalEditorFrames()) {
 		    getInternalEditorFrames()[frameLocation].setVisible(false); //.dispose() ?? not sure!!???
 		}
-		if( frameLocation >= INITIAL_EDITOR_COUNT )
-			removeUnneededEditorFrames();
+		if( frameLocation >= INITIAL_EDITOR_COUNT ) {
+            removeUnneededEditorFrames();
+        }
 		
 		desktopPane.repaint();
 	}
@@ -2404,7 +2466,7 @@ public boolean insertDBPersistent( DBPersistent newItem )
 		
 		success = true;
 	}
-	catch( com.cannontech.common.wizard.CancelInsertException ci )
+	catch( CancelInsertException ci )
 	{
 		//inside the getValue(), this exception was thrown
 	} catch (TransactionException e) {
@@ -2427,7 +2489,7 @@ public boolean insertDBPersistent( DBPersistent newItem )
 
 /**
  * This method was created in VisualAge.
- * @param event com.cannontech.common.wizard.WizardPanelEvent
+ * @param event WizardPanelEvent
  */
 @Override
 public void selectionPerformed(WizardPanelEvent event)
@@ -2455,8 +2517,9 @@ public void selectionPerformed(WizardPanelEvent event)
 	}
 	
 
-	if( !( event.getSource() instanceof WizardPanel) )
-		return;
+	if( !( event.getSource() instanceof WizardPanel) ) {
+        return;
+    }
 
 	boolean objTypeChange = false;
 	boolean successfullInsertion = false;
@@ -2583,10 +2646,11 @@ public void setDatabase(DatabaseTypes whichDatabase)
 				long show_protocol = Long.parseLong( 
 					ClientSession.getInstance().getRolePropertyValue(
 					DBEditorRole.OPTIONAL_PRODUCT_DEV, "0"), 16 );
-				if((show_protocol & ClientRights.SHOW_ADDITIONAL_PROTOCOLS) != 0)
-					models = LM_MODELS_WITH_SA;
-				else
-					models = LM_MODELS;
+				if((show_protocol & ClientRights.SHOW_ADDITIONAL_PROTOCOLS) != 0) {
+                    models = LM_MODELS_WITH_SA;
+                } else {
+                    models = LM_MODELS;
+                }
 				break;
 		case SYSTEM_DB:
 				this.menuBar = getMenuBar(whichDatabase);
@@ -2616,14 +2680,18 @@ public void setDatabase(DatabaseTypes whichDatabase)
 	}
     
 	getTreeViewPanel().setTreeModels(newModels);
-	if( models == CORE_MODELS )
-		getTreeViewPanel().setSelectedSortByIndex(Arrays.asList(models).indexOf(TreeModelEnum.DEVICE));
-	if( models == LM_MODELS || models == LM_MODELS_WITH_SA )
-		getTreeViewPanel().setSelectedSortByIndex(Arrays.asList(models).indexOf(TreeModelEnum.LMGROUPS));
-	if( models == SYSTEM_MODELS )
-		getTreeViewPanel().setSelectedSortByIndex(Arrays.asList(models).indexOf(TreeModelEnum.ROLE_GROUPS));
-    if( models == NONLOGIN_SYSTEM_MODELS )
+	if( models == CORE_MODELS ) {
+        getTreeViewPanel().setSelectedSortByIndex(Arrays.asList(models).indexOf(TreeModelEnum.DEVICE));
+    }
+	if( models == LM_MODELS || models == LM_MODELS_WITH_SA ) {
+        getTreeViewPanel().setSelectedSortByIndex(Arrays.asList(models).indexOf(TreeModelEnum.LMGROUPS));
+    }
+	if( models == SYSTEM_MODELS ) {
+        getTreeViewPanel().setSelectedSortByIndex(Arrays.asList(models).indexOf(TreeModelEnum.ROLE_GROUPS));
+    }
+    if( models == NONLOGIN_SYSTEM_MODELS ) {
         getTreeViewPanel().setSelectedSortByIndex(Arrays.asList(models).indexOf(TreeModelEnum.NOTIFICATION_GROUP));
+    }
 	
 	rPane.setJMenuBar( this.menuBar );
 	rPane.revalidate();
@@ -2631,18 +2699,18 @@ public void setDatabase(DatabaseTypes whichDatabase)
 }
 /**
  * This method was created in VisualAge.
- * @param wizard com.cannontech.common.wizard.WizardPanel
+ * @param wizard WizardPanel
  */
 private void showChangeTypeWizardPanel(WizardPanel wizard) {
 
 	//Set the cursor to wait
-	java.awt.Frame owner = CtiUtilities.getParentFrame(this.desktopPane);
-	java.awt.Cursor savedCursor = owner.getCursor();
-	owner.setCursor( new java.awt.Cursor( java.awt.Cursor.WAIT_CURSOR ) );
+	Frame owner = CtiUtilities.getParentFrame(this.desktopPane);
+	Cursor savedCursor = owner.getCursor();
+	owner.setCursor( new Cursor( Cursor.WAIT_CURSOR ) );
 
 	wizard.addWizardPanelListener(this);
 	
-	javax.swing.JInternalFrame f = new javax.swing.JInternalFrame();
+	JInternalFrame f = new JInternalFrame();
 	
 	f.setContentPane( wizard );
     f.setResizable(true);
@@ -2660,7 +2728,7 @@ private void showChangeTypeWizardPanel(WizardPanel wizard) {
 	{
 		f.setSelected(true);
 	}
-	catch(java.beans.PropertyVetoException e )
+	catch(PropertyVetoException e )
 	{
 		//?
 	}
@@ -2672,14 +2740,14 @@ private void showChangeTypeWizardPanel(WizardPanel wizard) {
 }
 /**
  * This method was created in VisualAge.
- * @param wizard com.cannontech.common.wizard.WizardPanel
+ * @param wizard WizardPanel
  */
 private void showCopyWizardPanel(WizardPanel wizard, DBPersistent toCopy) {
 
 	//Set the cursor to wait
-	java.awt.Frame owner = CtiUtilities.getParentFrame(this.desktopPane);
-	java.awt.Cursor savedCursor = owner.getCursor();
-	owner.setCursor( new java.awt.Cursor( java.awt.Cursor.WAIT_CURSOR ) );
+	Frame owner = CtiUtilities.getParentFrame(this.desktopPane);
+	Cursor savedCursor = owner.getCursor();
+	owner.setCursor( new Cursor( Cursor.WAIT_CURSOR ) );
 
 	wizard.addWizardPanelListener(this);
 	
@@ -2700,7 +2768,7 @@ private void showCopyWizardPanel(WizardPanel wizard, DBPersistent toCopy) {
 	{
 		f.setSelected(true);
 	}
-	catch(java.beans.PropertyVetoException e )
+	catch(PropertyVetoException e )
 	{
 		//?
 	}
@@ -2715,7 +2783,7 @@ private void showCopyWizardPanel(WizardPanel wizard, DBPersistent toCopy) {
  */
 public void showEditorSelectedObject()
 {
-	java.awt.Frame f = CtiUtilities.getParentFrame(this.desktopPane);
+	Frame f = CtiUtilities.getParentFrame(this.desktopPane);
 	f.validate();
 
 	try
@@ -2729,25 +2797,25 @@ public void showEditorSelectedObject()
 	}
 	finally
 	{
-		f.setCursor(new java.awt.Cursor(java.awt.Cursor.DEFAULT_CURSOR));
+		f.setCursor(new Cursor(Cursor.DEFAULT_CURSOR));
 	}
 
 }
 /**
  * This method was created in VisualAge.
- * @param wizard com.cannontech.common.wizard.WizardPanel
+ * @param wizard WizardPanel
  */
 private void showWizardPanel(WizardPanel wizard) {
 
 	//Set the cursor to wait
-	java.awt.Frame owner = CtiUtilities.getParentFrame(this.desktopPane);
-	java.awt.Cursor savedCursor = owner.getCursor();
-	owner.setCursor( new java.awt.Cursor( java.awt.Cursor.WAIT_CURSOR ) );
+	Frame owner = CtiUtilities.getParentFrame(this.desktopPane);
+	Cursor savedCursor = owner.getCursor();
+	owner.setCursor( new Cursor( Cursor.WAIT_CURSOR ) );
 
 	wizard.addWizardPanelListener(this);
 
 	
-	javax.swing.JInternalFrame f = new javax.swing.JInternalFrame();
+	JInternalFrame f = new JInternalFrame();
 	
 	f.setResizable( true );
 	f.setContentPane( wizard );
@@ -2765,7 +2833,7 @@ private void showWizardPanel(WizardPanel wizard) {
 	{
 		f.setSelected(true);
 	}
-	catch(java.beans.PropertyVetoException e )
+	catch(PropertyVetoException e )
 	{
 		//?
 	}
@@ -2799,15 +2867,17 @@ private void updateConnectionStatus(IServerConnection conn) {
 	{
 		connToVanGoghErrorMessageSent = false;
 		fireMessage( new MessageEvent( this, "Connection to Message Dispatcher Established.") );
-		if( owner != null )
-			owner.setTitle("Yukon Database Editor [Connected to Dispatch@" +
+		if( owner != null ) {
+            owner.setTitle("Yukon Database Editor [Connected to Dispatch@" +
 				 		 conn.getHost() + ":" +
 				 		 conn.getPort() + "]" );
+        }
 	}
 	else
 	{
-		if( owner != null )
-			owner.setTitle("Yukon Database Editor [Not Connected to Dispatch]");
+		if( owner != null ) {
+            owner.setTitle("Yukon Database Editor [Not Connected to Dispatch]");
+        }
 		if( !connToVanGoghErrorMessageSent )
 		{
 			connToVanGoghErrorMessageSent = true;
@@ -2858,7 +2928,7 @@ private void updateConnectionStatus(IServerConnection conn) {
      * @param lBase - LiteBase that has changed
      * @param changeType - Type of DBChange
      */
-    private void updateTreePanel(com.cannontech.database.data.lite.LiteBase lBase, DbChangeType dbChangeType) {
+    private void updateTreePanel(LiteBase lBase, DbChangeType dbChangeType) {
         getTreeViewPanel().processDBChange(dbChangeType, lBase);
         getTreeViewPanel().revalidate();
     }
@@ -2885,8 +2955,9 @@ public void windowClosed(WindowEvent event) {
 @Override
 public void windowClosing(WindowEvent event) 
 {
-	if( exitConfirm() )
-		exit();
+	if( exitConfirm() ) {
+        exit();
+    }
 }
 
 
