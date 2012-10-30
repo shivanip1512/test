@@ -322,13 +322,6 @@ END;
 /* @end-block */
 /* End YUK-11553 */
 
-/* Start YUK-11608 */
-/* @error ignore-begin */
-ALTER TABLE OptOutTemporaryOverride
-    MODIFY OptOutValue VARCHAR(25) NOT NULL;
-/* @error ignore-end */
-/* End YUK-11608 */
-
 /* Start YUK-11606 */
 /* @error ignore-begin */
 DROP INDEX Indx_YkUsIDNm;
