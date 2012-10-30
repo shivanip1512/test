@@ -66,10 +66,10 @@ public class YukonEnergyCompanyServiceImpl implements YukonEnergyCompanyService 
     }
     
     @Override
-	public boolean isEnergyCompanyOperator(LiteYukonUser operator) {
-    	int ecId = getEnergyCompanyIdByOperator(operator);
-		return ecId != StarsDatabaseCache.DEFAULT_ENERGY_COMPANY_ID;
-	}
+    public boolean isEnergyCompanyOperator(LiteYukonUser operator) {
+        int ecId = getEnergyCompanyIdByOperator(operator);
+        return ecId != StarsDatabaseCache.DEFAULT_ENERGY_COMPANY_ID;
+    }
 
     @Override
     public YukonEnergyCompany getEnergyCompanyByInventoryId(int inventoryId) {

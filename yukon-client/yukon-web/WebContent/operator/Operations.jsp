@@ -61,38 +61,34 @@
                     </tags:sectionLink>
                 </cti:checkRolesAndProperties>
                 
-                <cti:checkRolesAndProperties value="OPERATOR_IMPORT_CUSTOMER_ACCOUNT">
-                    <c:if test="${isEnergyCompanyOperator}">
+				<c:if test="${isEnergyCompanyOperator}">
+					<cti:checkRolesAndProperties value="OPERATOR_IMPORT_CUSTOMER_ACCOUNT">
                     	<c:set var="importUri" scope="page" value="/spring/stars/operator/account/accountImport" />
                     	<c:set var="importLabel" scope="page" value="Import Account" />
                     	<cti:msg key="yukon.web.importAccount" var="importLabel"/>
                     	<tags:sectionLink>
                         	    <a href="${pageScope.importUri}">${pageScope.importLabel}</a>
                     	</tags:sectionLink>
-                   	</c:if>
-                </cti:checkRolesAndProperties>
+        	        </cti:checkRolesAndProperties>
                 
-                <cti:checkRolesAndProperties value="ENABLE_MIGRATE_ENROLLMENT">
-                	<c:if test="${isEnergyCompanyOperator}">
-                    	<c:set var="importUri" scope="page" value="MigrateEnrollment.jsp" />
+					<cti:checkRolesAndProperties value="ENABLE_MIGRATE_ENROLLMENT">
+						<c:set var="importUri" scope="page" value="MigrateEnrollment.jsp" />
                     	<cti:msg key="yukon.web.migrateEnrollmentInformation" var="importLabel"/>
                     	<tags:sectionLink>
                     	    <a href="Consumer/${pageScope.importUri}">${pageScope.importLabel}</a>
                     	</tags:sectionLink>
-                    </c:if>
-                </cti:checkRolesAndProperties>
+            	    </cti:checkRolesAndProperties>
                 
-                <cti:checkRolesAndProperties value="ENABLE_GENERIC_UPLOAD">
-	                <c:if test="${isEnergyCompanyOperator}">
+                	<cti:checkRolesAndProperties value="ENABLE_GENERIC_UPLOAD">
 	                    <c:set var="importUri" scope="page" value="GenericUpload.jsp" />
 	                    <cti:msg key="yukon.web.migrateEnrollmentInformation" var="importLabel"/>
 	                    <c:set var="importLabel" scope="page" value="Upload File" />
 	                    <tags:sectionLink>
 	                        <a href="Consumer/${pageScope.importUri}">${pageScope.importLabel}</a>
 	                    </tags:sectionLink>
-	                </c:if>
-                </cti:checkRolesAndProperties>
-
+                	</cti:checkRolesAndProperties>
+				</c:if>
+				
                 <cti:checkMultiProperty
                     property="ConsumerInfoRole.OPT_OUT_ADMIN_STATUS,ConsumerInfoRole.OPT_OUT_ADMIN_CHANGE_ENABLE,ConsumerInfoRole.OPT_OUT_ADMIN_CANCEL_CURRENT,ConsumerInfoRole.OPT_OUT_ADMIN_CHANGE_COUNTS">
                     <tags:sectionLink>

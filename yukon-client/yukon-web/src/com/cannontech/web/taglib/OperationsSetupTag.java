@@ -37,7 +37,7 @@ public class OperationsSetupTag extends YukonTagSupport {
         }
         
         getJspContext().setAttribute("showSystemAdmin", showSystemAdmin);     
-		getJspContext().setAttribute("isEnergyCompanyOperator", isEnergyCompanyOperator);        
+        getJspContext().setAttribute("isEnergyCompanyOperator", isEnergyCompanyOperator);        
        
     }
     

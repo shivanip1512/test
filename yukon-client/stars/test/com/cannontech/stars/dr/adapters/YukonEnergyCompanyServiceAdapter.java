@@ -29,9 +29,9 @@ public class YukonEnergyCompanyServiceAdapter implements YukonEnergyCompanyServi
     }
     
     @Override
-	public boolean isEnergyCompanyOperator(LiteYukonUser operator) {
-		throw new UnsupportedOperationException("not implemented");
-	}
+    public boolean isEnergyCompanyOperator(LiteYukonUser operator) {
+        throw new UnsupportedOperationException("not implemented");
+    }
 
     @Override
     public int getEnergyCompanyIdByOperator(LiteYukonUser operator) {
@@ -63,8 +63,8 @@ public class YukonEnergyCompanyServiceAdapter implements YukonEnergyCompanyServi
         throw new UnsupportedOperationException("not implemented");
     }
 
-	@Override
-	public boolean isPrimaryOperator(int operatorLoginId) {
-		throw new UnsupportedOperationException("not implemented");
-	}
+    @Override
+    public boolean isPrimaryOperator(int operatorLoginId) {
+        throw new UnsupportedOperationException("not implemented");
+    }
 }
