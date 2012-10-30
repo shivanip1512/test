@@ -349,6 +349,20 @@ ALTER TABLE OptOutTemporaryOverride
 /* @error ignore-end */
 /* End YUK-11608 */
 
+/* Start YUK-11606 */
+/* @error ignore-begin */
+DROP INDEX Indx_YkUsIDNm;
+DROP INDEX Indx_YukonUser_Username;
+
+CREATE UNIQUE INDEX Indx_YukonUser_Username_UNQ on YukonUser (
+   UserName ASC
+);
+
+CREATE INDEX Indx_YukonUser_Username_FB ON YukonUser (
+    LOWER(Username)
+);
+/* @error ignore-end */
+/* End YUK-11606 */
 
 /**************************************************************/ 
 /* VERSION INFO                                               */ 
