@@ -779,15 +779,12 @@ public class StarsAdminUtil {
 	throws WebClientException, TransactionException {
 	    AuthenticationService authenticationService = (AuthenticationService) YukonSpringHook.getBean("authenticationService");
 	    
-		if (!liteUser.getUsername().equalsIgnoreCase(username) && DaoFactory.getYukonUserDao().findUserByUsername(username) != null)
-			throw new WebClientException( "Username '" + username + "' already exists" );
+		if (!liteUser.getUsername().equalsIgnoreCase(username) && DaoFactory.getYukonUserDao().findUserByUsername(username) != null){
+		    throw new WebClientException( "Username '" + username + "' already exists" );
+		}
 		
-		//only update try to update the password if specified
-		if (password != null && password.length() != 0) {
-			if (!authenticationService.supportsPasswordSet(liteUser.getAuthType())) {
-                throw new WebClientException( "Password cannot be changed when authentication type is " + liteUser.getAuthType() );
-            }
-            authenticationService.setPassword(liteUser, password);
+		if (password != null && password.length() != 0 && !authenticationService.supportsPasswordSet(liteUser.getAuthType())) {
+		    throw new WebClientException( "Password cannot be changed when authentication type is " + liteUser.getAuthType() );
 		}
 		
 		com.cannontech.database.data.user.YukonUser user = new com.cannontech.database.data.user.YukonUser();
@@ -810,6 +807,10 @@ public class StarsAdminUtil {
 		
 		Transaction.createTransaction( Transaction.UPDATE, dbUser ).execute();
 		handleDBChange( liteUser, DbChangeType.UPDATE );
+		//only update try to update the password if specified
+		if (password != null && password.length() != 0){
+		    authenticationService.setPassword(liteUser, password);
+		}
 	}
 	
 	public static void handleDBChange(LiteBase lite, DbChangeType dbChangeType) {

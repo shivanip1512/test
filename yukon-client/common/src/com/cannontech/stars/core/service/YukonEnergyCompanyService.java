@@ -71,4 +71,11 @@ public interface YukonEnergyCompanyService {
      * if the energy company id is the default energy company or the main energy company.
      */
     public Integer findParentEnergyCompany(int energyCompanyId);
+
+    /**
+     * This method returns "true" if this is a primary operator.
+     * 
+     * @param operatorLoginId
+     */
+    public boolean isPrimaryOperator(int operatorLoginId);
 }

@@ -49,7 +49,17 @@
             
         <tags:nameValueContainer2>
             <tags:hidden path="userId"/>
-            <tags:selectNameValue nameKey=".operatorGroup" items="${assignableGroups}" path="userGroupName"/>
+            <c:choose>
+                <c:when test="${isOperatorInOperatorUserGroup}">
+                    <tags:selectNameValue nameKey=".operatorGroup" items="${assignableGroups}" path="userGroupName"/>
+                </c:when>
+                <c:otherwise>
+                    <tags:hidden path="userGroupName"/>
+                    <tags:nameValue2 nameKey=".operatorGroup">
+                        <spring:escapeBody htmlEscape="true">${operatorLogin.userGroupName}</spring:escapeBody>
+                    </tags:nameValue2>
+                </c:otherwise>
+            </c:choose>
             <c:if test="${currentUserId != operatorLogin.userId}">
                 <tags:checkboxNameValue  checkBoxDescriptionNameKey=".loginEnabled.label" nameKey=".loginEnabled" path="loginEnabled"></tags:checkboxNameValue>
             </c:if>
@@ -105,8 +115,10 @@
             </cti:displayForPageEditModes>
 
             <cti:displayForPageEditModes modes="EDIT">
-                <cti:button nameKey="delete" name="delete" styleClass="delete"/>
-                <tags:confirmDialog nameKey="confirmDelete" id="delete" submitName="delete" on="button.delete" />
+                <c:if test="${!isPrimaryOperator}">
+                    <cti:button nameKey="delete" name="delete" styleClass="delete"/>
+                    <tags:confirmDialog nameKey="confirmDelete" id="delete" submitName="delete" on="button.delete" />
+                </c:if>
             </cti:displayForPageEditModes>
 
             <!-- Cancel -->

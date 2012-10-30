@@ -19,6 +19,7 @@ import com.cannontech.core.dao.impl.LiteYukonUserMapper;
 import com.cannontech.core.users.dao.impl.UserGroupDaoImpl;
 import com.cannontech.core.users.model.LiteUserGroup;
 import com.cannontech.database.IntegerRowMapper;
+import com.cannontech.database.RowMapper;
 import com.cannontech.database.YukonJdbcTemplate;
 import com.cannontech.database.data.lite.LiteYukonUser;
 import com.cannontech.stars.core.dao.ECMappingDao;
@@ -519,6 +520,21 @@ public class ECMappingDaoImpl implements ECMappingDao, InitializingBean {
     @Override
     public void afterPropertiesSet() throws Exception {
         chunkyJdbcTemplate= new ChunkingSqlTemplate(yukonJdbcTemplate);
+    }
+    
+    @Override
+    public boolean isOperatorInOperatorUserGroup(int operatorLoginId) {
+        SqlStatementBuilder sql = new SqlStatementBuilder();
+        sql.append("SELECT YU.UserID");
+        sql.append("FROM ECToOperatorGroupMapping ECTRM");
+        sql.append(  "JOIN YukonUser YU ON YU.UserGroupId = ECTRM.UserGroupId");
+        sql.append("WHERE YU.UserID").eq(operatorLoginId);
+        List<Integer> userIds = yukonJdbcTemplate.query(sql, RowMapper.INTEGER);
+                
+        if(userIds.isEmpty()){
+            return false;
+        }
+        return true;
     }
 
 }

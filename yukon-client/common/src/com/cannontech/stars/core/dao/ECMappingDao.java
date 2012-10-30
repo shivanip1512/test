@@ -236,4 +236,10 @@ public interface ECMappingDao {
      */
     public List<Integer> getAccountIds(int ecId);
 
+    /**
+     * This method returns "true" if the operator login is part of the operator user group.
+     * @param operatorLoginId
+     */
+    public boolean isOperatorInOperatorUserGroup(int operatorLoginId);
+
 }
