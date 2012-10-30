@@ -364,6 +364,16 @@ CREATE INDEX Indx_YukonUser_Username_FB ON YukonUser (
 /* @error ignore-end */
 /* End YUK-11606 */
 
+/* Start YUK-11588 */
+ALTER TABLE PointControl
+    DROP CONSTRAINT FK_PointCont_Point;
+ 
+ALTER TABLE PointControl
+    ADD CONSTRAINT FK_PointCont_Point FOREIGN KEY(PointId)
+        REFERENCES Point(PointId)
+            ON DELETE CASCADE;
+/* End YUK-11588 */
+
 /**************************************************************/ 
 /* VERSION INFO                                               */ 
 /*   Automatically gets inserted from build script            */ 
