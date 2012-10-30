@@ -322,6 +322,26 @@ END;
 /* @end-block */
 /* End YUK-11553 */
 
+/* Start YUK-11607 */
+ALTER TABLE AcctThermostatScheduleEntry
+    MODIFY CoolTemp FLOAT;
+
+/* The statement setting NOT NULL is separate from the data type change and
+ * is in an error ignore block because it would fail the entire UPDATE 
+ * statement if the column is already NOT NULL. */
+/* @error ignore-begin */
+ALTER TABLE AcctThermostatScheduleEntry
+    MODIFY CoolTemp NOT NULL;
+/* @error ignore-end */
+
+ALTER TABLE AcctThermostatScheduleEntry
+    MODIFY HeatTemp FLOAT;
+/* @error ignore-begin */
+ALTER TABLE AcctThermostatScheduleEntry
+    MODIFY HeatTemp NOT NULL;
+/* @error ignore-end */
+/* End YUK-11607 */
+
 /**************************************************************/ 
 /* VERSION INFO                                               */ 
 /*   Automatically gets inserted from build script            */ 

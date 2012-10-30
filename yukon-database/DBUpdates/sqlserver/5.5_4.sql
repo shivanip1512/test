@@ -305,6 +305,14 @@ END;
 /* @end-block */
 /* End YUK-11553 */
 
+/* Start YUK-11607 */
+ALTER TABLE AcctThermostatScheduleEntry
+    ALTER COLUMN CoolTemp FLOAT NOT NULL;
+
+ALTER TABLE AcctThermostatScheduleEntry
+    ALTER COLUMN HeatTemp FLOAT NOT NULL;
+/* End YUK-11607 */
+
 /**************************************************************/ 
 /* VERSION INFO                                               */ 
 /*   Automatically gets inserted from build script            */ 
