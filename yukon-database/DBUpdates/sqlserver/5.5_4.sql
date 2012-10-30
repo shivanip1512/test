@@ -349,7 +349,9 @@ ALTER TABLE PointStatusControl
 /* End YUK-11603 */
 
 /* Start YUK-11587 */
+/* @error ignore-begin */
 DROP VIEW CBCConfiguration2_View;
+/* @error ignore-end */
 GO
 
 CREATE VIEW CBCConfiguration2_View AS
