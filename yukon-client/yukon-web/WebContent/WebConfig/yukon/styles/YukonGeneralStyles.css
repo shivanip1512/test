@@ -2392,13 +2392,13 @@ table th.small_width {
 }
 
 .datetimeEntry_wrap.date {
-	width: 133px;
+	width: 135px;
 }
 .datetimeEntry_wrap.dateTime {
-	min-width: 169px;
+	min-width: 171px;
 }
 .datetimeEntry_wrap.time {
-	width: 100px;
+	width: 102px;
 }
 
 .datetimeEntry_wrap input {
