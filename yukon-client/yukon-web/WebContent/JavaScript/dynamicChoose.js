@@ -1,11 +1,9 @@
 function updateDynamicChoose(spanId) {
   //assumes data is of type Hash
+	//@todo: Prototype Hash rewrite
     return function(data) {
-        var showId = spanId + data.get('state');
-        
-        var children = $(spanId).immediateDescendants().each(function(childElement){
-        	childElement.hide();
-        });
-        $(showId).show();
+        var showId = document.getElementById(spanId + data.get('state'));
+        jQuery(document.getElementById(spanId)).children().hide();
+        jQuery(showId).show();
     };
 }

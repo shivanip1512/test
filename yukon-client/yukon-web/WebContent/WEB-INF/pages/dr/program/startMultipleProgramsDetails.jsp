@@ -86,9 +86,11 @@ gearChanged = function() {
     for (index = 0; index < numPrograms; index++) {
         var gearNum = $('programGear' + index).value;
         var programChecked = $('startProgramCheckbox' + index).checked;
-        if (targetPrograms[index][gearNum] && programChecked) {
-            adjustButtonShown = true;
-            break;
+        if(targetPrograms[index]) {
+	        if (targetPrograms[index][gearNum] && programChecked) {
+	            adjustButtonShown = true;
+	            break;
+	        }
         }
     }
 
