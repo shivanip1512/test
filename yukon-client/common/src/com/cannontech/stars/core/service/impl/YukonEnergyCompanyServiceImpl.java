@@ -182,14 +182,12 @@ public class YukonEnergyCompanyServiceImpl implements YukonEnergyCompanyService 
 
     public boolean isPrimaryOperator(int operatorLoginId){
         SqlStatementBuilder sql = new SqlStatementBuilder();
-        sql.append("SELECT EnergyCompanyID from EnergyCompany");
-        sql.append("WHERE UserID").eq(operatorLoginId);
-        List<Integer> energyCompanyIds = yukonJdbcTemplate.query(sql, RowMapper.INTEGER);
-        if(energyCompanyIds.isEmpty()){
-            return false;
-        }
+        sql.append("SELECT COUNT(EnergyCompanyId)");
+        sql.append("FROM EnergyCompany");
+        sql.append("WHERE UserId").eq(operatorLoginId);
         
-        return true;
+        int count = yukonJdbcTemplate.queryForInt(sql);
+        return count > 0;
     }
     
 }

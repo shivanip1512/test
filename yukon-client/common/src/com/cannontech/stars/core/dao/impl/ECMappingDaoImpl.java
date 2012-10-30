@@ -1,3 +1,5 @@
+
+
 package com.cannontech.stars.core.dao.impl;
 
 import java.util.Collection;
@@ -525,16 +527,13 @@ public class ECMappingDaoImpl implements ECMappingDao, InitializingBean {
     @Override
     public boolean isOperatorInOperatorUserGroup(int operatorLoginId) {
         SqlStatementBuilder sql = new SqlStatementBuilder();
-        sql.append("SELECT YU.UserID");
+        sql.append("SELECT COUNT(YU.UserID)");
         sql.append("FROM ECToOperatorGroupMapping ECTRM");
         sql.append(  "JOIN YukonUser YU ON YU.UserGroupId = ECTRM.UserGroupId");
         sql.append("WHERE YU.UserID").eq(operatorLoginId);
-        List<Integer> userIds = yukonJdbcTemplate.query(sql, RowMapper.INTEGER);
-                
-        if(userIds.isEmpty()){
-            return false;
-        }
-        return true;
+        
+        int count = yukonJdbcTemplate.queryForInt(sql);
+        return count > 0;
     }
 
 }

@@ -74,8 +74,6 @@ public interface YukonEnergyCompanyService {
 
     /**
      * This method returns "true" if this is a primary operator.
-     * 
-     * @param operatorLoginId
      */
     public boolean isPrimaryOperator(int operatorLoginId);
 }

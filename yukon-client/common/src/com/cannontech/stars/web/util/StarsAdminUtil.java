@@ -9,6 +9,7 @@ import java.util.Map;
 
 import javax.naming.ConfigurationException;
 
+import org.apache.commons.lang.StringUtils;
 import org.joda.time.Instant;
 
 import com.cannontech.clientutils.CTILogger;
@@ -783,7 +784,7 @@ public class StarsAdminUtil {
 		    throw new WebClientException( "Username '" + username + "' already exists" );
 		}
 		
-		if (password != null && password.length() != 0 && !authenticationService.supportsPasswordSet(liteUser.getAuthType())) {
+		if (StringUtils.isNotEmpty(password) && !authenticationService.supportsPasswordSet(liteUser.getAuthType())) {
 		    throw new WebClientException( "Password cannot be changed when authentication type is " + liteUser.getAuthType() );
 		}
 		
@@ -808,7 +809,7 @@ public class StarsAdminUtil {
 		Transaction.createTransaction( Transaction.UPDATE, dbUser ).execute();
 		handleDBChange( liteUser, DbChangeType.UPDATE );
 		//only update try to update the password if specified
-		if (password != null && password.length() != 0){
+		if (StringUtils.isNotEmpty(password)){
 		    authenticationService.setPassword(liteUser, password);
 		}
 	}
