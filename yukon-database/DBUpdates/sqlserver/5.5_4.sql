@@ -313,6 +313,11 @@ ALTER TABLE AcctThermostatScheduleEntry
     ALTER COLUMN HeatTemp FLOAT NOT NULL;
 /* End YUK-11607 */
 
+/* Start YUK-11608 */
+ALTER TABLE OptOutTemporaryOverride
+    ALTER COLUMN OptOutValue VARCHAR(25) NOT NULL;
+/* End YUK-11608 */
+
 /**************************************************************/ 
 /* VERSION INFO                                               */ 
 /*   Automatically gets inserted from build script            */ 

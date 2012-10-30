@@ -342,6 +342,14 @@ ALTER TABLE AcctThermostatScheduleEntry
 /* @error ignore-end */
 /* End YUK-11607 */
 
+/* Start YUK-11608 */
+/* @error ignore-begin */
+ALTER TABLE OptOutTemporaryOverride
+    MODIFY OptOutValue VARCHAR(25) NOT NULL;
+/* @error ignore-end */
+/* End YUK-11608 */
+
+
 /**************************************************************/ 
 /* VERSION INFO                                               */ 
 /*   Automatically gets inserted from build script            */ 
