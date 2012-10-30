@@ -73,7 +73,6 @@ import com.cannontech.common.pao.definition.dao.PaoDefinitionDao;
 import com.cannontech.common.pao.definition.model.PaoDefinition;
 import com.cannontech.common.pao.definition.model.PaoPointIdentifier;
 import com.cannontech.common.pao.definition.model.PaoTag;
-import com.cannontech.common.rfn.message.RfnIdentifier;
 import com.cannontech.common.search.SearchResult;
 import com.cannontech.common.util.CtiUtilities;
 import com.cannontech.core.dao.DeviceDao;
@@ -1938,7 +1937,15 @@ public class MultispeakMeterServiceImpl implements MultispeakMeterService, Messa
     private ErrorObject isValidTemplate(String templateName, String meterNumber, MultispeakVendor mspVendor ) {
         try {
             //Verify that a meter exists with templateName PaoName
-            meterDao.getForPaoName(templateName);
+            YukonMeter templateMeter = meterDao.getForPaoName(templateName);
+            if (templateMeter.getPaoIdentifier().getPaoType().isRfn()) {
+                ErrorObject err = mspObjectDao.getErrorObject(templateMeter.getMeterNumber(), 
+                                                              "Error: MeterNumber(" + templateMeter.getMeterNumber() + 
+                                                              ") - RFN Meter Type is not supported. Meter was NOT added or updated",
+                                                              "Meter", METER_ADD_STRING, mspVendor.getCompanyName());
+                return err;
+            }
+
         } catch (NotFoundException e) {
             ErrorObject err = mspObjectDao.getErrorObject(meterNumber, 
                                                           "Error: MeterNumber(" + meterNumber + ")- AMRMeterType(" + templateName + ") NOT found in Yukon.",
@@ -2026,7 +2033,13 @@ public class MultispeakMeterServiceImpl implements MultispeakMeterService, Messa
         }
         
         String logString = "";
-        if (!meter.getPaoIdentifier().getPaoType().isRfn()) {
+        if (meter.getPaoIdentifier().getPaoType().isRfn()) {
+            err = mspObjectDao.getErrorObject(meter.getMeterNumber(), 
+                                                          "Error: MeterNumber(" + meter.getMeterNumber() + 
+                                                          ") - RFN Meter Type is not supported. Meter was NOT added or updated",
+                                                          "Meter", METER_ADD_STRING, mspVendor.getCompanyName());
+            return err;
+        } else {  //assume PLC
             //update plc meter
             //Verify the meter to "update" does not have the same address as another enabled meter.
             String mspAddress = mspMeter.getNameplate().getTransponderID().trim();
