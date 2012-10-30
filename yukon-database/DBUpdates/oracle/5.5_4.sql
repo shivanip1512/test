@@ -374,6 +374,16 @@ ALTER TABLE PointControl
             ON DELETE CASCADE;
 /* End YUK-11588 */
 
+/* Start YUK-11603 */
+ALTER TABLE PointStatusControl
+    DROP CONSTRAINT FK_PointStatusCont_PointCont;
+ 
+ALTER TABLE PointStatusControl
+    ADD CONSTRAINT FK_PointStatusCont_PointCont FOREIGN KEY (PointId)
+        REFERENCES PointControl (PointId)
+            ON DELETE CASCADE;
+/* End YUK-11603 */
+            
 /**************************************************************/ 
 /* VERSION INFO                                               */ 
 /*   Automatically gets inserted from build script            */ 
