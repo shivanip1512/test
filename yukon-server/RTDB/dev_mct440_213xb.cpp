@@ -41,6 +41,27 @@ const Mct440_213xBDevice::FunctionReadValueMappings Mct440_213xBDevice::_readVal
 const Mct440_213xBDevice::CommandSet                Mct440_213xBDevice::_commandStore  = Mct440_213xBDevice::initCommandStore();
 
 
+// this is for TOU putconfig ease
+struct ratechange_t
+{
+    int schedule;
+    int time;
+    int rate;
+
+    bool operator<(const ratechange_t &rhs) const
+    {
+        bool retval = false;
+
+        if( schedule < rhs.schedule || (schedule == rhs.schedule && time < rhs.time) )
+        {
+            retval = true;
+        }
+
+        return retval;
+    }
+};
+
+
 /*
 *********************************************************************************************************
 *                                          initReadValueMaps()
@@ -852,7 +873,8 @@ INT Mct440_213xBDevice::decodeGetValueTOUkWh(INMESS          *InMessage,
 *********************************************************************************************************
 *                                       executePutConfigTOU()
 *
-* Description :
+* Description : Execute a putconfig install time of usage command: putconfig install tou [force] [verify]
+*               Command will install up to 10 rates and 11 schedule time.
 *
 * Argument(s) :
 *
@@ -1620,90 +1642,104 @@ INT Mct440_213xBDevice::executePutConfig(CtiRequestMsg     *pReq,
                                          CtiMessageList    &retList,
                                          OutMessageList    &outList)
 {
-    bool  found = false;
-    INT   nRet  = NoMethod;
-
+    INT nRet = NoMethod;
 
     if( parse.isKeyValid("holiday_offset") )
     {
-        INT function = EmetconProtocol::PutConfig_Holiday;
+        nRet = executePutConfigHoliday(pReq, parse, OutMessage, vgList, retList, outList);
+    }
+    else if( parse.isKeyValid("tou") )
+    {
+        nRet = executePutConfigTOUDays(pReq, parse, OutMessage, vgList, retList, outList);
+    }
+    else
+    {
+        nRet = Inherited::executePutConfig(pReq, parse, OutMessage, vgList, retList, outList);
+    }
 
-        if( found = getOperation(function, OutMessage->Buffer.BSt) )
+    return nRet;
+}
+
+
+/*
+*********************************************************************************************************
+*                                       executePutConfigHolidays()
+*
+* Description :
+*
+* Argument(s) :
+*
+* Return(s)   :
+*
+* Caller(s)   :
+*
+* Note(s)     :
+*********************************************************************************************************
+*/
+int Mct440_213xBDevice::executePutConfigHoliday(CtiRequestMsg     *pReq,
+                                                CtiCommandParser  &parse,
+                                                OUTMESS          *&OutMessage,
+                                                CtiMessageList    &vgList,
+                                                CtiMessageList    &retList,
+                                                OutMessageList    &outList)
+{
+    bool found    = false;
+    INT  nRet     = NoMethod;
+    INT  function = EmetconProtocol::PutConfig_Holiday;
+
+
+    if( found = getOperation(function, OutMessage->Buffer.BSt) )
+    {
+        unsigned long holidays[3];
+        int holiday_count = 0;
+
+        int holiday_offset = parse.getiValue("holiday_offset");
+
+        OutMessage->Sequence = Cti::Protocols::EmetconProtocol::PutConfig_Holiday;
+
+        //  grab up to three potential dates
+        for( int i = 0; i < 3 && parse.isKeyValid("holiday_date" + CtiNumStr(i)); i++ )
         {
-            unsigned long holidays[3];
-            int holiday_count = 0;
+            CtiTokenizer date_tokenizer(parse.getsValue("holiday_date" + CtiNumStr(i)));
 
-            int holiday_offset = parse.getiValue("holiday_offset");
+            int month = atoi(date_tokenizer("/").data()),
+                day   = atoi(date_tokenizer("/").data()),
+                year  = atoi(date_tokenizer("/").data());
 
-            OutMessage->Sequence = Cti::Protocols::EmetconProtocol::PutConfig_Holiday;
-
-            //  grab up to three potential dates
-            for( int i = 0; i < 3 && parse.isKeyValid("holiday_date" + CtiNumStr(i)); i++ )
+            if( year > 2000 )
             {
-                CtiTokenizer date_tokenizer(parse.getsValue("holiday_date" + CtiNumStr(i)));
+                CtiDate holiday_date(day, month, year);
 
-                int month = atoi(date_tokenizer("/").data()),
-                    day   = atoi(date_tokenizer("/").data()),
-                    year  = atoi(date_tokenizer("/").data());
-
-                if( year > 2000 )
+                if( holiday_date.isValid() && holiday_date > CtiDate::now() )
                 {
-                    CtiDate holiday_date(day, month, year);
-
-                    if( holiday_date.isValid() && holiday_date > CtiDate::now() )
-                    {
-                        holidays[holiday_count++] = CtiTime(holiday_date).seconds();
-                    }
+                    holidays[holiday_count++] = CtiTime(holiday_date).seconds();
                 }
             }
+        }
 
-            if( holiday_offset == 1  ||
-                holiday_offset == 4  ||
-                holiday_offset == 7  ||
-                holiday_offset == 10 ||
-                holiday_offset == 13 ||
-                holiday_offset == 16 ||
-                holiday_offset == 19 ||
-                holiday_offset == 22 )
+        if( holiday_offset == 1  ||
+            holiday_offset == 4  ||
+            holiday_offset == 7  ||
+            holiday_offset == 10 ||
+            holiday_offset == 13 ||
+            holiday_offset == 16 ||
+            holiday_offset == 19 ||
+            holiday_offset == 22 )
+        {
+            if( holiday_count > 0 )
             {
-                if( holiday_count > 0 )
+                //  change to 0-based offset;  it just makes things easier
+                holiday_offset--;
+
+                OutMessage->Buffer.BSt.Function += holiday_offset / 3;
+                OutMessage->Buffer.BSt.Length    = holiday_count  * 4;
+
+                for( int i = 0; i < holiday_count; i++ )
                 {
-                    //  change to 0-based offset;  it just makes things easier
-                    holiday_offset--;
-
-                    OutMessage->Buffer.BSt.Function += holiday_offset / 3;
-                    OutMessage->Buffer.BSt.Length    = holiday_count  * 4;
-
-                    for( int i = 0; i < holiday_count; i++ )
-                    {
-                        OutMessage->Buffer.BSt.Message[i*4+0] = holidays[i] >> 24;
-                        OutMessage->Buffer.BSt.Message[i*4+1] = holidays[i] >> 16;
-                        OutMessage->Buffer.BSt.Message[i*4+2] = holidays[i] >>  8;
-                        OutMessage->Buffer.BSt.Message[i*4+3] = holidays[i] >>  0;
-                    }
-                }
-                else
-                {
-                    found = false;
-
-                    CtiReturnMsg *errRet = CTIDBG_new CtiReturnMsg(getID( ),
-                                                                   string(OutMessage->Request.CommandStr),
-                                                                   string(),
-                                                                   nRet,
-                                                                   OutMessage->Request.RouteID,
-                                                                   OutMessage->Request.MacroOffset,
-                                                                   OutMessage->Request.Attempt,
-                                                                   OutMessage->Request.GrpMsgID,
-                                                                   OutMessage->Request.UserID,
-                                                                   OutMessage->Request.SOE,
-                                                                   CtiMultiMsg_vec( ));
-
-                    if( errRet )
-                    {
-                        errRet->setResultString("Specified dates are invalid");
-                        errRet->setStatus(NoMethod);
-                        retList.push_back(errRet);
-                    }
+                    OutMessage->Buffer.BSt.Message[i*4+0] = holidays[i] >> 24;
+                    OutMessage->Buffer.BSt.Message[i*4+1] = holidays[i] >> 16;
+                    OutMessage->Buffer.BSt.Message[i*4+2] = holidays[i] >>  8;
+                    OutMessage->Buffer.BSt.Message[i*4+3] = holidays[i] >>  0;
                 }
             }
             else
@@ -1724,14 +1760,464 @@ INT Mct440_213xBDevice::executePutConfig(CtiRequestMsg     *pReq,
 
                 if( errRet )
                 {
-                    errRet->setResultString("Invalid holiday offset specified, valid offset are {1,4,7,10,13,16,19,22}");
+                    errRet->setResultString("Specified dates are invalid");
                     errRet->setStatus(NoMethod);
                     retList.push_back(errRet);
                 }
             }
         }
-    } else {
-        nRet = Inherited::executePutConfig(pReq, parse, OutMessage, vgList, retList, outList);
+        else
+        {
+            found = false;
+
+            CtiReturnMsg *errRet = CTIDBG_new CtiReturnMsg(getID( ),
+                                                           string(OutMessage->Request.CommandStr),
+                                                           string(),
+                                                           nRet,
+                                                           OutMessage->Request.RouteID,
+                                                           OutMessage->Request.MacroOffset,
+                                                           OutMessage->Request.Attempt,
+                                                           OutMessage->Request.GrpMsgID,
+                                                           OutMessage->Request.UserID,
+                                                           OutMessage->Request.SOE,
+                                                           CtiMultiMsg_vec( ));
+
+            if( errRet )
+            {
+                errRet->setResultString("Invalid holiday offset specified, valid offset are {1,4,7,10,13,16,19,22}");
+                errRet->setStatus(NoMethod);
+                retList.push_back(errRet);
+            }
+        }
+    }
+
+    if( found )
+    {
+        nRet = NoError;
+    }
+
+    return nRet;
+}
+
+
+/*
+*********************************************************************************************************
+*                                       executePutConfigTOUDays()
+*
+* Description :
+*
+* Argument(s) :
+*
+* Return(s)   :
+*
+* Caller(s)   :
+*
+* Note(s)     :
+*********************************************************************************************************
+*/
+int Mct440_213xBDevice::executePutConfigTOUDays(CtiRequestMsg     *pReq,
+                                                CtiCommandParser  &parse,
+                                                OUTMESS          *&OutMessage,
+                                                CtiMessageList    &vgList,
+                                                CtiMessageList    &retList,
+                                                OutMessageList    &outList)
+{
+    bool  found    = false;
+    INT   nRet     = NoMethod;
+    INT   function = -1;
+
+
+    if( parse.isKeyValid("tou_enable") )
+    {
+        function             = EmetconProtocol::PutConfig_TOUEnable;
+        found                = getOperation(function, OutMessage->Buffer.BSt);
+        OutMessage->Sequence = function;
+    }
+    else if( parse.isKeyValid("tou_disable") )
+    {
+        function             = EmetconProtocol::PutConfig_TOUDisable;
+        found                = getOperation(function, OutMessage->Buffer.BSt);
+        OutMessage->Sequence = function;
+    }
+    else if( parse.isKeyValid("tou_days") )
+    {
+        set< ratechange_t > ratechanges;
+        int default_rate, day_schedules[8];
+
+        string schedule_name, change_name, daytable(parse.getsValue("tou_days"));
+
+        switch( parse.getsValue("tou_default").data()[0] )
+        {
+            case 'a':   default_rate =  0;  break;
+            case 'b':   default_rate =  1;  break;
+            case 'c':   default_rate =  2;  break;
+            case 'd':   default_rate =  3;  break;
+            default:    default_rate = -1;  break;
+        }
+
+        if( default_rate < 0 )
+        {
+            CtiReturnMsg *errRet = CTIDBG_new CtiReturnMsg(getID( ),
+                                                           string(OutMessage->Request.CommandStr),
+                                                           string(),
+                                                           nRet,
+                                                           OutMessage->Request.RouteID,
+                                                           OutMessage->Request.MacroOffset,
+                                                           OutMessage->Request.Attempt,
+                                                           OutMessage->Request.GrpMsgID,
+                                                           OutMessage->Request.UserID,
+                                                           OutMessage->Request.SOE,
+                                                           CtiMultiMsg_vec( ));
+
+            if( errRet )
+            {
+                errRet->setResultString("TOU default rate \"" + parse.getsValue("tou_default") + "\" specified is invalid for device \"" + getName() + "\"");
+                errRet->setStatus(NoMethod);
+                retList.push_back(errRet);
+            }
+        }
+        else
+        {
+            if( daytable.length() < 8 || daytable.find_first_not_of("1234") != string::npos )
+            {
+                CtiReturnMsg *errRet = CTIDBG_new CtiReturnMsg(getID( ),
+                                                               string(OutMessage->Request.CommandStr),
+                                                               string(),
+                                                               nRet,
+                                                               OutMessage->Request.RouteID,
+                                                               OutMessage->Request.MacroOffset,
+                                                               OutMessage->Request.Attempt,
+                                                               OutMessage->Request.GrpMsgID,
+                                                               OutMessage->Request.UserID,
+                                                               OutMessage->Request.SOE,
+                                                               CtiMultiMsg_vec( ));
+
+                if( errRet )
+                {
+                    errRet->setResultString("day table \"" + daytable + "\" specified is invalid for device \"" + getName() + "\"");
+                    errRet->setStatus(NoMethod);
+                    retList.push_back(errRet);
+                }
+            }
+            else
+            {
+                for( int day = 0; day < 8; day++ )
+                {
+                    day_schedules[day] = atoi(daytable.substr(day, 1).data()) - 1;
+                }
+
+                int schedulenum = 0;
+
+                schedule_name.assign("tou_schedule_");
+                schedule_name.append(CtiNumStr(schedulenum).zpad(2));
+
+                while(parse.isKeyValid(schedule_name.data()))
+                {
+                    int schedule_number = parse.getiValue(schedule_name.data());
+
+                    if( schedule_number > 0 && schedule_number <= TOU_SCHEDULE_NBR )
+                    {
+                        int changenum = 0;
+
+                        change_name.assign(schedule_name);
+                        change_name.append("_");
+                        change_name.append(CtiNumStr(changenum).zpad(2));
+
+                        while(parse.isKeyValid(change_name.data()))
+                        {
+                            string ratechangestr = parse.getsValue(change_name.data()).data();
+                            int rate, hour, minute;
+
+                            switch(ratechangestr.at(0))
+                            {
+                                case 'a':   rate =  0;  break;
+                                case 'b':   rate =  1;  break;
+                                case 'c':   rate =  2;  break;
+                                case 'd':   rate =  3;  break;
+                                default:    rate = -1;  break;
+                            }
+
+                            hour = atoi(ratechangestr.substr(2).data());
+                            int minute_index = ratechangestr.substr(4).find_first_not_of(":") + 4;
+                            minute = atoi(ratechangestr.substr(minute_index).data());
+
+                            if( rate   >= 0 &&
+                                hour   >= 0 && hour   < 24 &&
+                                minute >= 0 && minute < 60 )
+                            {
+                                ratechange_t ratechange;
+
+                                ratechange.schedule = schedule_number - 1;
+                                ratechange.rate = rate;
+                                ratechange.time = hour * 3600 + minute * 60;
+
+                                ratechanges.insert(ratechange);
+                            }
+                            else
+                            {
+                                {
+                                    CtiLockGuard<CtiLogger> doubt_guard(dout);
+                                    dout << CtiTime() << " **** Checkpoint - schedule \"" << schedule_number << "\" has invalid rate change \"" << ratechangestr << "\"for device \"" << getName() << "\" **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
+                                }
+                            }
+
+                            changenum++;
+                            change_name.assign(schedule_name);
+                            change_name.append("_");
+                            change_name.append(CtiNumStr(changenum).zpad(2));
+                        }
+                    }
+                    else
+                    {
+                        {
+                            CtiLockGuard<CtiLogger> doubt_guard(dout);
+                            dout << CtiTime() << " **** Checkpoint - schedule \"" << schedule_number << "\" specified is out of range for device \"" << getName() << "\" **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
+                        }
+                    }
+
+                    schedulenum++;
+                    schedule_name.assign("tou_schedule_");
+                    schedule_name.append(CtiNumStr(schedulenum).zpad(2));
+                }
+
+                OUTMESS *TOU_OutMessage1 = CTIDBG_new OUTMESS(*OutMessage), // Configure TOU Schedule Part 1
+                        *TOU_OutMessage2 = CTIDBG_new OUTMESS(*OutMessage), // Configure TOU Schedule Part 2
+                        *TOU_OutMessage3 = CTIDBG_new OUTMESS(*OutMessage), // Configure TOU Schedule Part 3
+                        *TOU_OutMessage4 = CTIDBG_new OUTMESS(*OutMessage); // Configure TOU Schedule Part 4
+
+                TOU_OutMessage1->Sequence = Cti::Protocols::EmetconProtocol::PutConfig_TOU;
+                TOU_OutMessage2->Sequence = Cti::Protocols::EmetconProtocol::PutConfig_TOU;
+                TOU_OutMessage3->Sequence = Cti::Protocols::EmetconProtocol::PutConfig_TOU;
+                TOU_OutMessage4->Sequence = Cti::Protocols::EmetconProtocol::PutConfig_TOU;
+
+                TOU_OutMessage1->Buffer.BSt.IO = Cti::Protocols::EmetconProtocol::IO_Function_Write;
+                TOU_OutMessage2->Buffer.BSt.IO = Cti::Protocols::EmetconProtocol::IO_Function_Write;
+                TOU_OutMessage3->Buffer.BSt.IO = Cti::Protocols::EmetconProtocol::IO_Function_Write;
+                TOU_OutMessage4->Buffer.BSt.IO = Cti::Protocols::EmetconProtocol::IO_Function_Write;
+
+                TOU_OutMessage1->Buffer.BSt.Function = FuncWrite_TOUSchedule1Pos;
+                TOU_OutMessage1->Buffer.BSt.Length   = FuncWrite_TOUSchedule1Len;
+
+                TOU_OutMessage2->Buffer.BSt.Function = FuncWrite_TOUSchedule2Pos;
+                TOU_OutMessage2->Buffer.BSt.Length   = FuncWrite_TOUSchedule2Len;
+
+                TOU_OutMessage3->Buffer.BSt.Function = FuncWrite_TOUSchedule3Pos;
+                TOU_OutMessage3->Buffer.BSt.Length   = FuncWrite_TOUSchedule3Len;
+
+                TOU_OutMessage4->Buffer.BSt.Function = FuncWrite_TOUSchedule4Pos;
+                TOU_OutMessage4->Buffer.BSt.Length   = FuncWrite_TOUSchedule4Len;
+
+
+                std::set< ratechange_t >::iterator itr;
+
+                //  There's much more intelligence and safeguarding that could be added to the below,
+                //  but it's a temporary fix, to be handled soon by the proper MCT Configs,
+                //  so I don't think it's worth it at the moment to add all of the smarts.
+                //  We'll handle a good string, and kick out on anything else.
+
+                int durations[TOU_SCHEDULE_NBR][TOU_SCHEDULE_TIME_NBR];
+                int rates[TOU_SCHEDULE_NBR][TOU_SCHEDULE_RATE_NBR];
+
+                for( int i = 0; i < TOU_SCHEDULE_NBR; i++ )
+                {
+                    for( int j = 0; j < TOU_SCHEDULE_RATE_NBR; j++ )
+                    {
+                        if( j < TOU_SCHEDULE_TIME_NBR )
+                        {
+                            durations[i][j] = 255;
+                        }
+
+                        rates[i][j] = default_rate;
+                    }
+                }
+
+                int current_schedule = -1;
+                int offset           =  0;
+                int time_offset      =  0;
+
+                for( itr = ratechanges.begin(); itr != ratechanges.end(); itr++ )
+                {
+                    ratechange_t &rc = *itr;
+
+                    if( rc.schedule != current_schedule )
+                    {
+                        offset           = 0;
+                        time_offset      = 0;
+                        current_schedule = rc.schedule;
+                    }
+                    else
+                    {
+                        offset++;
+                    }
+
+                    if( offset > TOU_SCHEDULE_TIME_NBR || rc.schedule < 0 || rc.schedule > (TOU_SCHEDULE_NBR-1) )
+                    {
+                        {
+                            CtiLockGuard<CtiLogger> doubt_guard(dout);
+                            dout << CtiTime() << " **** Checkpoint **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
+                        }
+
+                        continue;
+                    }
+
+                    if( offset == 0 && rc.time == 0 )
+                    {
+                        //  this is a special case, because we can't access
+                        //    durations[rc.schedule][offset-1] yet - offset isn't 1 yet
+
+                        rates[rc.schedule][0] = rc.rate;
+                    }
+                    else
+                    {
+                        if( offset == 0 )
+                        {
+                            {
+                                CtiLockGuard<CtiLogger> doubt_guard(dout);
+                                dout << CtiTime() << " **** Checkpoint - first rate change time for schedule (" << rc.schedule <<
+                                                    ") is not midnight, assuming default rate (" << default_rate <<
+                                                    ") for midnight until (" << rc.time << ") for device \"" << getName() << "\" **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
+                            }
+
+                            //  rates[rc.schedule][0] was already initialized to default_rate, so just move along
+                            offset++;
+                        }
+
+                        durations[rc.schedule][offset - 1] = (rc.time - time_offset) / 300;
+                        rates[rc.schedule][offset]         = rc.rate;
+
+                        if( (offset + 1) <= (TOU_SCHEDULE_RATE_NBR-1) )
+                        {
+                            //  this is to work around the 255 * 5 min limitation for switches - this way it doesn't
+                            //    jump back to the default rate if only a midnight rate is specified
+                            rates[rc.schedule][offset + 1] = rc.rate;
+                        }
+
+                        time_offset = rc.time - (rc.time % 300);  //  make sure we don't miss the 5-minute marks
+                    }
+                }
+
+
+                for( offset = 0; offset < 8; offset++ )
+                {
+                    //  write the day table
+
+                    int byte = 1 - (offset / 4);
+                    int bitoffset = (2 * offset) % 8;
+
+                    TOU_OutMessage1->Buffer.BSt.Message[byte] |= (day_schedules[offset] & 0x03) << bitoffset;
+                }
+
+                for( offset = 0; offset < 5; offset++ )
+                {
+                    //  write the durations for schedules 1 and 2 (time 1 to 5)
+                    TOU_OutMessage1->Buffer.BSt.Message[offset + 2] = durations[0][offset];
+                    TOU_OutMessage1->Buffer.BSt.Message[offset + 9] = durations[1][offset];
+
+                    //  write the durations for schedules 3 and 4 (time 1 to 5)
+                    TOU_OutMessage2->Buffer.BSt.Message[offset + 0] = durations[2][offset];
+                    TOU_OutMessage2->Buffer.BSt.Message[offset + 7] = durations[3][offset];
+
+                    //  write the durations for schedules 1 and 2 (time 6 to 10)
+                    TOU_OutMessage3->Buffer.BSt.Message[offset + 0] = durations[0][offset+5];
+                    TOU_OutMessage3->Buffer.BSt.Message[offset + 7] = durations[1][offset+5];
+
+                    //  write the durations for schedules 3 and 4 (time 6 to 10)
+                    TOU_OutMessage4->Buffer.BSt.Message[offset + 0] = durations[2][offset+5];
+                    TOU_OutMessage4->Buffer.BSt.Message[offset + 7] = durations[3][offset+5];
+                }
+
+
+                //  write the rates for schedules 1 and 2 (switch 1 to 5 + midnight)
+                TOU_OutMessage1->Buffer.BSt.Message[7]  = ((rates[1][5] & 0x03)  << 6) |
+                                                          ((rates[1][4] & 0x03)  << 4) |
+                                                          ((rates[0][5] & 0x03)  << 2) |
+                                                          ((rates[0][4] & 0x03)  << 0);
+
+                TOU_OutMessage1->Buffer.BSt.Message[8]  = ((rates[0][3] & 0x03)  << 6) |
+                                                          ((rates[0][2] & 0x03)  << 4) |
+                                                          ((rates[0][1] & 0x03)  << 2) |
+                                                          ((rates[0][0] & 0x03)  << 0);
+
+                TOU_OutMessage1->Buffer.BSt.Message[14] = ((rates[1][3] & 0x03)  << 6) |
+                                                          ((rates[1][2] & 0x03)  << 4) |
+                                                          ((rates[1][1] & 0x03)  << 2) |
+                                                          ((rates[1][0] & 0x03)  << 0);
+
+                //  write the rates for schedule 3 (switch 1 to 5 + midnight)
+                TOU_OutMessage2->Buffer.BSt.Message[5]  = ((rates[2][5] & 0x03)  << 2) |
+                                                          ((rates[2][4] & 0x03)  << 0);
+
+                TOU_OutMessage2->Buffer.BSt.Message[6]  = ((rates[2][3] & 0x03)  << 6) |
+                                                          ((rates[2][2] & 0x03)  << 4) |
+                                                          ((rates[2][1] & 0x03)  << 2) |
+                                                          ((rates[2][0] & 0x03)  << 0);
+
+                //  write the rates for schedule 4 (switch 1 to 5 + midnight)
+                TOU_OutMessage2->Buffer.BSt.Message[12] = ((rates[3][5] & 0x03)  << 2) |
+                                                          ((rates[3][4] & 0x03)  << 0);
+
+                TOU_OutMessage2->Buffer.BSt.Message[13] = ((rates[3][3] & 0x03)  << 6) |
+                                                          ((rates[3][2] & 0x03)  << 4) |
+                                                          ((rates[3][1] & 0x03)  << 2) |
+                                                          ((rates[3][0] & 0x03)  << 0);
+
+                // write default rate
+                TOU_OutMessage2->Buffer.BSt.Message[14] = default_rate;
+
+                //  write the rates for schedule 1 (switch 6 to 10)
+                TOU_OutMessage3->Buffer.BSt.Message[5]  = ((rates[0][10] & 0x03)  << 2) |
+                                                          ((rates[0][9] & 0x03)  << 0);
+
+                TOU_OutMessage3->Buffer.BSt.Message[6]  = ((rates[0][8] & 0x03)  << 6) |
+                                                          ((rates[0][7] & 0x03)  << 4) |
+                                                          ((rates[0][6] & 0x03)  << 2);
+
+                //  write the rates for schedule 2 (switch 6 to 10)
+                TOU_OutMessage3->Buffer.BSt.Message[12] = ((rates[1][10] & 0x03)  << 2) |
+                                                          ((rates[1][9] & 0x03)  << 0);
+
+                TOU_OutMessage3->Buffer.BSt.Message[13] = ((rates[1][8] & 0x03)  << 6) |
+                                                          ((rates[1][7] & 0x03)  << 4) |
+                                                          ((rates[1][6] & 0x03)  << 2);
+
+                // write default rate
+                TOU_OutMessage3->Buffer.BSt.Message[14] = default_rate;
+
+                //  write the rates for schedule 3 (switch 6 to 10)
+                TOU_OutMessage4->Buffer.BSt.Message[5]  = ((rates[2][10] & 0x03)  << 2) |
+                                                          ((rates[2][9] & 0x03)  << 0);
+
+                TOU_OutMessage4->Buffer.BSt.Message[6]  = ((rates[2][8] & 0x03)  << 6) |
+                                                          ((rates[2][7] & 0x03)  << 4) |
+                                                          ((rates[2][6] & 0x03)  << 2);
+
+                //  write the rates for schedule 4 (switch 6 to 10)
+                TOU_OutMessage4->Buffer.BSt.Message[12] = ((rates[3][10] & 0x03)  << 2) |
+                                                          ((rates[3][9] & 0x03)  << 0);
+
+                TOU_OutMessage4->Buffer.BSt.Message[13] = ((rates[3][8] & 0x03)  << 6) |
+                                                          ((rates[3][7] & 0x03)  << 4) |
+                                                          ((rates[3][6] & 0x03)  << 2);
+
+                // write default rate
+                TOU_OutMessage4->Buffer.BSt.Message[14] = default_rate;
+
+                outList.push_back(TOU_OutMessage4);
+                outList.push_back(TOU_OutMessage3);
+                outList.push_back(TOU_OutMessage2);
+                outList.push_back(TOU_OutMessage1);
+
+                TOU_OutMessage1 = 0;
+                TOU_OutMessage2 = 0;
+                TOU_OutMessage3 = 0;
+                TOU_OutMessage4 = 0;
+
+                delete OutMessage;  //  we didn't use it, we made our own
+                OutMessage = 0;
+
+                found = true;
+            }
+        }
     }
 
     if( found )
@@ -1876,9 +2362,6 @@ INT Mct440_213xBDevice::decodeGetStatusInternal( INMESS *InMessage, CtiTime &Tim
 
     return status;
 }
-
-
-
 
 
 }
