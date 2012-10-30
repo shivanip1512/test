@@ -384,6 +384,13 @@ ALTER TABLE PointStatusControl
             ON DELETE CASCADE;
 /* End YUK-11603 */
             
+/* Start YUK-11587 */
+CREATE OR REPLACE VIEW CBCConfiguration2_View AS
+SELECT YP.PAOName AS CBCName, D.* 
+FROM DynamicCCTwoWayCBC D, YukonPAObject YP
+WHERE YP.PAObjectId = D.DeviceId;
+/* End YUK-11587 */
+            
 /**************************************************************/ 
 /* VERSION INFO                                               */ 
 /*   Automatically gets inserted from build script            */ 
