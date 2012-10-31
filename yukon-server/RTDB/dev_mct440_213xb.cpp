@@ -112,10 +112,9 @@ Mct440_213xBDevice::FunctionReadValueMappings Mct440_213xBDevice::initReadValueM
         { 0x01a,  0, { 1, CtiTableDynamicPaoInfo::Key_MCT_DemandInterval            } },
         { 0x01a,  1, { 1, CtiTableDynamicPaoInfo::Key_MCT_LoadProfileInterval       } },
 
-        // 0x01E – Voltage Thresholds (FIXME)
-        { 0x01e,  0, { 2, CtiTableDynamicPaoInfo::Key_MCT_OverVoltageThreshold      } },
-        { 0x01e,  2, { 2, CtiTableDynamicPaoInfo::Key_MCT_UnderVoltageThreshold     } },
-        { 0x01e,  4, { 1, CtiTableDynamicPaoInfo::Key_MCT_OutageCycles              } },
+        // 0x01E – Thresholds
+        { 0x01e,  0, { 1, CtiTableDynamicPaoInfo::key_MCT_PhaseLossPercent          } },
+        { 0x01e,  1, { 2, CtiTableDynamicPaoInfo::key_MCT_PhaseLossSeconds          } },
 
         // 0x022 – Minimum Outage Cycles
         { 0x022,  0, { 1, CtiTableDynamicPaoInfo::Key_MCT_OutageCycles              } },
@@ -255,6 +254,8 @@ Mct440_213xBDevice::CommandSet Mct440_213xBDevice::initCommandStore()
     cs.insert(CommandStore(EmetconProtocol::GetValue_InstantLineData,       EmetconProtocol::IO_Function_Read,  0x9F,   12));
     cs.insert(CommandStore(EmetconProtocol::GetValue_TOUkWhReverse,         EmetconProtocol::IO_Function_Read,  0xE2,   13));
     cs.insert(CommandStore(EmetconProtocol::GetValue_FrozenTOUkWhReverse,   EmetconProtocol::IO_Function_Read,  0xE3,   13));
+    cs.insert(CommandStore(EmetconProtocol::GetConfig_Thresholds,           EmetconProtocol::IO_Read,           0x1E,    3));
+    cs.insert(CommandStore(EmetconProtocol::PutConfig_Thresholds,           EmetconProtocol::IO_Write,          0x1E,    3));
 
 //    cs.insert(CommandStore(EmetconProtocol::GetConfig_TOU,                  EmetconProtocol::IO_Function_Read,  FuncRead_TOUSwitchSchedule12Pos,       FuncRead_TOUSwitchSchedule12Len));
 //    cs.insert(CommandStore(EmetconProtocol::GetConfig_TOU,                  EmetconProtocol::IO_Function_Read,  FuncRead_TOUSwitchSchedule34Pos,       FuncRead_TOUSwitchSchedule34Len));
@@ -306,6 +307,11 @@ bool Mct440_213xBDevice::getOperation( const UINT &cmd, BSTRUCT &bst ) const
     if( getOperationFromStore(_commandStore, cmd, bst) )
     {
         return true;
+    }
+
+    if( cmd == EmetconProtocol::PutConfig_VThreshold )          /* check for commands no longer supported               */
+    {
+        return false;
     }
 
     return Inherited::getOperation(cmd, bst);
@@ -1075,7 +1081,7 @@ int Mct440_213xBDevice::executePutConfigTOU(CtiRequestMsg     *pReq,
                         // Im going to remove the :, get the remaining value, and do simple math on it. I think this
                         // results in less error checking needed.
                         timeStringValues[i][j].erase(timeStringValues[i][j].find(':'), 1);
-                        tempTime = strtol(timeStringValues[i][j].data(),NULL,10);
+                        tempTime    = strtol(timeStringValues[i][j].c_str(),NULL,10);
                         times[i][j] = ((tempTime/100) * 60) + (tempTime%100);
                     }
                 }
@@ -1652,6 +1658,10 @@ INT Mct440_213xBDevice::executePutConfig(CtiRequestMsg     *pReq,
     {
         nRet = executePutConfigTOUDays(pReq, parse, OutMessage, vgList, retList, outList);
     }
+    else if( parse.isKeyValid("phaseloss_percent_threshold"))
+    {
+        nRet = executePutConfigThresholds(pReq, parse, OutMessage, vgList, retList, outList);
+    }
     else
     {
         nRet = Inherited::executePutConfig(pReq, parse, OutMessage, vgList, retList, outList);
@@ -1702,9 +1712,9 @@ int Mct440_213xBDevice::executePutConfigHoliday(CtiRequestMsg     *pReq,
         {
             CtiTokenizer date_tokenizer(parse.getsValue("holiday_date" + CtiNumStr(i)));
 
-            int month = atoi(date_tokenizer("/").data()),
-                day   = atoi(date_tokenizer("/").data()),
-                year  = atoi(date_tokenizer("/").data());
+            int month = atoi(date_tokenizer("/").c_str()),
+                day   = atoi(date_tokenizer("/").c_str()),
+                year  = atoi(date_tokenizer("/").c_str());
 
             if( year > 2000 )
             {
@@ -1903,7 +1913,7 @@ int Mct440_213xBDevice::executePutConfigTOUDays(CtiRequestMsg     *pReq,
             {
                 for( int day = 0; day < 8; day++ )
                 {
-                    day_schedules[day] = atoi(daytable.substr(day, 1).data()) - 1;
+                    day_schedules[day] = atoi(daytable.substr(day, 1).c_str()) - 1;
                 }
 
                 int schedulenum = 0;
@@ -1911,9 +1921,9 @@ int Mct440_213xBDevice::executePutConfigTOUDays(CtiRequestMsg     *pReq,
                 schedule_name.assign("tou_schedule_");
                 schedule_name.append(CtiNumStr(schedulenum).zpad(2));
 
-                while(parse.isKeyValid(schedule_name.data()))
+                while(parse.isKeyValid(schedule_name.c_str()))
                 {
-                    int schedule_number = parse.getiValue(schedule_name.data());
+                    int schedule_number = parse.getiValue(schedule_name.c_str());
 
                     if( schedule_number > 0 && schedule_number <= TOU_SCHEDULE_NBR )
                     {
@@ -1923,9 +1933,9 @@ int Mct440_213xBDevice::executePutConfigTOUDays(CtiRequestMsg     *pReq,
                         change_name.append("_");
                         change_name.append(CtiNumStr(changenum).zpad(2));
 
-                        while(parse.isKeyValid(change_name.data()))
+                        while(parse.isKeyValid(change_name.c_str()))
                         {
-                            string ratechangestr = parse.getsValue(change_name.data()).data();
+                            string ratechangestr = parse.getsValue(change_name.c_str()).c_str();
                             int rate, hour, minute;
 
                             switch(ratechangestr.at(0))
@@ -1937,9 +1947,9 @@ int Mct440_213xBDevice::executePutConfigTOUDays(CtiRequestMsg     *pReq,
                                 default:    rate = -1;  break;
                             }
 
-                            hour = atoi(ratechangestr.substr(2).data());
+                            hour             = atoi(ratechangestr.substr(2).c_str());
                             int minute_index = ratechangestr.substr(4).find_first_not_of(":") + 4;
-                            minute = atoi(ratechangestr.substr(minute_index).data());
+                            minute           = atoi(ratechangestr.substr(minute_index).c_str());
 
                             if( rate   >= 0 &&
                                 hour   >= 0 && hour   < 24 &&
@@ -2265,7 +2275,7 @@ string Mct440_213xBDevice::describeStatusAndEvents(unsigned char *buf)
     // 0x20 is not used
     descriptor += (buf[0] & 0x04)?"DST active\n":"DST inactive\n";
     descriptor += (buf[0] & 0x08)?"Holiday active\n":"Holiday inactive\n";
-    descriptor += (buf[0] & 0x10)?"TOU disabled\n":"TOU enabled\n";
+    // 0x10 is not used
     descriptor += (buf[0] & 0x20)?"Clock error\n":"";
     // 0x40 - 0x80 is not used
 
@@ -2363,6 +2373,149 @@ INT Mct440_213xBDevice::decodeGetStatusInternal( INMESS *InMessage, CtiTime &Tim
     retMsgHandler( InMessage->Return.CommandStr, status, ReturnMsg, vgList, retList );
 
     return status;
+}
+
+
+/*
+*********************************************************************************************************
+*                                      decodeGetConfigThresholds()
+*
+* Description :
+*
+* Argument(s) :
+*
+* Return(s)   :
+*
+* Caller(s)   :
+*
+* Note(s)     :
+*********************************************************************************************************
+*/
+INT Mct440_213xBDevice::decodeGetConfigThresholds(INMESS *InMessage, CtiTime &TimeNow, CtiMessageList &vgList, CtiMessageList &retList, OutMessageList &outList)
+{
+    INT status = NORMAL;
+
+    INT ErrReturn  = InMessage->EventCode & 0x3fff;
+    DSTRUCT *DSt   = &InMessage->Buffer.DSt;
+
+    CtiReturnMsg *ReturnMsg = NULL;    // Message sent to VanGogh, inherits from Multi
+    string resultString;
+
+    int phase_loss_percent =  DSt->Message[0],
+        phase_loss_seconds = (DSt->Message[1]) << 8 | DSt->Message[2];
+
+    resultString  = getName() + " / Phase loss percent threshold: " + CtiNumStr(phase_loss_percent) + string(" %\n");
+    resultString += getName() + " / Phase loss seconds threshold: " + CtiNumStr(phase_loss_seconds) + string(" seconds\n");
+
+    if((ReturnMsg = CTIDBG_new CtiReturnMsg(getID(), InMessage->Return.CommandStr)) == NULL)
+    {
+        CtiLockGuard<CtiLogger> doubt_guard(dout);
+        dout << CtiTime() << " Could NOT allocate memory " << __FILE__ << " (" << __LINE__ << ") " << endl;
+
+        return MEMORY;
+    }
+
+    ReturnMsg->setUserMessageId(InMessage->Return.UserID);
+    ReturnMsg->setResultString(resultString);
+
+    retMsgHandler( InMessage->Return.CommandStr, status, ReturnMsg, vgList, retList );
+
+    return status;
+}
+
+
+/*
+*********************************************************************************************************
+*                                     executePutConfigThresholds()
+*
+* Description :
+*
+* Argument(s) :
+*
+* Return(s)   :
+*
+* Caller(s)   :
+*
+* Note(s)     :
+*********************************************************************************************************
+*/
+int Mct440_213xBDevice::executePutConfigThresholds(CtiRequestMsg     *pReq,
+                                                   CtiCommandParser  &parse,
+                                                   OUTMESS          *&OutMessage,
+                                                   CtiMessageList    &vgList,
+                                                   CtiMessageList    &retList,
+                                                   OutMessageList    &outList)
+{
+    bool found    = false;
+    INT  nRet     = NoMethod;
+    INT  function = EmetconProtocol::PutConfig_Thresholds;
+
+
+    if( found = getOperation(function, OutMessage->Buffer.BSt) )
+    {
+        OutMessage->Sequence = function;
+
+        int phaseloss_percent = parse.getiValue("phaseloss_percent_threshold", -1);
+
+        string durationstr = parse.getsValue("phaseloss_duration_threshold").c_str();
+
+        printf("duration= %s\n",durationstr.c_str());
+
+        int index1  = durationstr.find(":");
+        int index2  = durationstr.find(":", index1 + 1);
+
+        int hour   = atoi(durationstr.substr(        0,       index1 ).c_str()),
+            minute = atoi(durationstr.substr( index1+1,       index2 ).c_str()),
+            second = atoi(durationstr.substr( index2+1, string::npos ).c_str());
+
+        int phaseloss_seconds = -1;
+
+                                                                /* check hour:minute:second format                      */
+        if( hour   >= 0 && hour   < 24 &&
+            minute >= 0 && minute < 60 &&
+            second >= 0 && second < 60)
+        {
+            phaseloss_seconds = hour * 3600 + minute * 60 + second;
+        }
+
+                                                                /* check valid ranges                                   */
+        if( phaseloss_percent >= 0 && phaseloss_percent <= 100 &&
+            phaseloss_seconds >= 0 && phaseloss_seconds <= 0xFFFF)
+        {
+            OutMessage->Buffer.BSt.Message[0] = phaseloss_percent;
+            OutMessage->Buffer.BSt.Message[1] = (phaseloss_seconds >> 8);
+            OutMessage->Buffer.BSt.Message[2] = phaseloss_seconds & 0xff;
+        }
+        else
+        {
+            found = false;
+
+            CtiReturnMsg *errRet = CTIDBG_new CtiReturnMsg(getID( ),
+                                                           string(OutMessage->Request.CommandStr),
+                                                           string(),
+                                                           nRet,
+                                                           OutMessage->Request.RouteID,
+                                                           OutMessage->Request.MacroOffset,
+                                                           OutMessage->Request.Attempt,
+                                                           OutMessage->Request.GrpMsgID,
+                                                           OutMessage->Request.UserID,
+                                                           OutMessage->Request.SOE,
+                                                           CtiMultiMsg_vec( ));
+            if( errRet )
+            {
+                errRet->setResultString("Invalid phase loss thresholds for device \"" + getName() + "\" - Acceptable values: phase loss percent range: 0 - 100 ; phase loss max duration: 18:12:15 - ");
+                errRet->setStatus(NoMethod);
+                retList.push_back(errRet);
+            }
+        }
+    }
+
+    if( found )
+    {
+        nRet = NoError;
+    }
+
+    return nRet;
 }
 
 
