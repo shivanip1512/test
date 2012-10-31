@@ -174,6 +174,7 @@ public:
         PutConfig_Addressing,
         PutConfig_SPID,
         PutConfig_VThreshold,
+        PutConfig_Thresholds,
         PutConfig_DST,
         PutConfig_Holiday,
         PutConfig_Options,
