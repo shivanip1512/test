@@ -2246,26 +2246,28 @@ int Mct440_213xBDevice::executePutConfigTOUDays(CtiRequestMsg     *pReq,
 */
 string Mct440_213xBDevice::describeStatusAndEvents(unsigned char *buf)
 {
+    if( !buf )
+    {
+        return string("null buffer error");
+    }
+
     string descriptor;
 
-    if( buf )
-    {
-        // Point offset 10 - Event Flag (byte 1)
-        descriptor += (buf[1] & 0x01)?"Power Fail occurred\n":"";
-        // 0x02 - 0x80 is not used
+    // Point offset 10 - Event Flag (byte 1)
+    descriptor += (buf[1] & 0x01)?"Power Fail occurred\n":"";
+    // 0x02 - 0x80 is not used
 
-        // Point offset 20 - Event Flag (byte 0)
-        // 0x10 - 0x80 aren't used yet
+    // Point offset 20 - Event Flag (byte 0)
+    // 0x10 - 0x80 aren't used yet
 
-        // Starts at offset 30 - NOTE that this is byte 0 (Status)
-        descriptor += (buf[0] & 0x01)?"Group addressing disabled\n":"Group addressing enabled\n";
-        // 0x20 is not used
-        descriptor += (buf[0] & 0x04)?"DST active\n":"DST inactive\n";
-        descriptor += (buf[0] & 0x08)?"Holiday active\n":"Holiday inactive\n";
-        descriptor += (buf[0] & 0x10)?"TOU disabled\n":"TOU enabled\n";
-        descriptor += (buf[0] & 0x20)?"Clock error\n":"";
-        // 0x40 - 0x80 is not used
-    }
+    // Starts at offset 30 - NOTE that this is byte 0 (Status)
+    descriptor += (buf[0] & 0x01)?"Group addressing disabled\n":"Group addressing enabled\n";
+    // 0x20 is not used
+    descriptor += (buf[0] & 0x04)?"DST active\n":"DST inactive\n";
+    descriptor += (buf[0] & 0x08)?"Holiday active\n":"Holiday inactive\n";
+    descriptor += (buf[0] & 0x10)?"TOU disabled\n":"TOU enabled\n";
+    descriptor += (buf[0] & 0x20)?"Clock error\n":"";
+    // 0x40 - 0x80 is not used
 
     return descriptor;
 }
