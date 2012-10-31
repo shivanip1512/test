@@ -331,7 +331,8 @@ CREATE UNIQUE INDEX Indx_YukonUser_Username_UNQ on YukonUser (
 /* Start YUK-11588 */
 ALTER TABLE PointControl
     DROP CONSTRAINT FK_PointCont_Point;
- 
+GO
+
 ALTER TABLE PointControl
     ADD CONSTRAINT FK_PointCont_Point FOREIGN KEY(PointId)
         REFERENCES Point(PointId)
