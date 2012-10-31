@@ -223,6 +223,17 @@ public class CymeXMLBuilder {
         return xml;
     }
 
+    /**
+     * Private method to refactor out the code repetition for each generating the TapPosition tag for each phase.
+     * Expected result is <TapPosition'X'>int_value</TapPosition'X'>
+     * 
+     * Returns null if there is no regulator. This is valid since there can be any combination of phases, not for sure all 3.
+     * 
+     * @param regName
+     * @param phase
+     * @param currentPointValues
+     * @return
+     */
     private String generateStringForTap(String regName, Phase phase, Map<Integer, PointValueQualityHolder> currentPointValues) {
         //Lookup the regulator for phase
         YukonPao regulator = paoDao.findYukonPao(regName+"_"+phase.name(), PaoType.PHASE_OPERATED);
@@ -233,7 +244,7 @@ public class CymeXMLBuilder {
                 LitePoint tapPositionPoint = extraPaoPointAssignmentDao.getLitePoint(regulator, RegulatorPointMapping.TAP_POSITION);
                 PointValueQualityHolder pointValueQualityHolder = currentPointValues.get(tapPositionPoint.getLiteID());
                 if (pointValueQualityHolder != null) {
-                    return new String("<TapPosition"+phase.name()+">"+ (int)pointValueQualityHolder.getValue() +"</TapPosition"+phase.name()+">");
+                    return "<TapPosition"+phase.name()+">"+ (int)pointValueQualityHolder.getValue() +"</TapPosition"+phase.name()+">";
                 }
             } catch (NotFoundException e) {
                 //Point not attached to regulator

@@ -10,34 +10,42 @@ import java.util.concurrent.Executors;
 import java.util.concurrent.ScheduledExecutorService;
 import java.util.concurrent.TimeUnit;
 
+import javax.annotation.PostConstruct;
+
 import org.apache.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
 
 import com.cannontech.capcontrol.dao.SubstationBusDao;
 import com.cannontech.capcontrol.dao.ZoneDao;
 import com.cannontech.capcontrol.model.PointPaoIdentifier;
+import com.cannontech.capcontrol.model.Zone;
 import com.cannontech.cbc.cyme.CymeConfigurationException;
 import com.cannontech.cbc.cyme.CymePointDataCache;
 import com.cannontech.cbc.cyme.CymeSimulationListener;
 import com.cannontech.clientutils.YukonLogManager;
 import com.cannontech.common.pao.PaoIdentifier;
+import com.cannontech.common.pao.PaoType;
 import com.cannontech.common.pao.definition.model.PaoPointIdentifier;
 import com.cannontech.common.pao.definition.model.PointIdentifier;
 import com.cannontech.core.dao.NotFoundException;
+import com.cannontech.core.dao.PaoDao;
 import com.cannontech.core.dao.PointDao;
 import com.cannontech.core.dynamic.AsyncDynamicDataSource;
 import com.cannontech.core.dynamic.PointDataListener;
 import com.cannontech.core.dynamic.PointValueQualityHolder;
+import com.cannontech.database.cache.DBChangeListener;
 import com.cannontech.database.data.lite.LitePoint;
+import com.cannontech.database.data.lite.LiteYukonPAObject;
 import com.cannontech.database.data.point.PointType;
 import com.cannontech.database.db.point.stategroup.TrueFalse;
+import com.cannontech.message.dispatch.message.DBChangeMsg;
 import com.cannontech.yukon.IServerConnection;
 import com.google.common.collect.ImmutableList;
 import com.google.common.collect.ImmutableMap;
 import com.google.common.collect.Lists;
 import com.google.common.collect.Sets;
 
-public class CymePointDataCacheImpl implements CymePointDataCache, PointDataListener {
+public class CymePointDataCacheImpl implements CymePointDataCache, PointDataListener, DBChangeListener {
     
     private static final Logger log = YukonLogManager.getLogger(CymePointDataCacheImpl.class);
     
@@ -45,26 +53,65 @@ public class CymePointDataCacheImpl implements CymePointDataCache, PointDataList
     @Autowired private SubstationBusDao substationBusDao;
     @Autowired private PointDao pointDao;
     @Autowired private ZoneDao zoneDao;
+    @Autowired private PaoDao paoDao;
     @Autowired private IServerConnection dispatchConnection;
     
-    private Map<Integer,PointPaoIdentifier> pointIdToPointPaoIdentifier = new ConcurrentHashMap<Integer,PointPaoIdentifier>();
-    private Map<Integer,PointValueQualityHolder> pointIdToValue = new ConcurrentHashMap<Integer,PointValueQualityHolder>();
-    
-    private Map<Integer,Integer> busToEnabledPointIds = new ConcurrentHashMap<Integer,Integer>();
-    private Map<Integer,Integer> loadValuePointIdToBusId = new ConcurrentHashMap<Integer,Integer>();
-    private Map<Integer,Integer> simulationPointIdToBusId = new ConcurrentHashMap<Integer,Integer>();
-    private Map<Integer,Integer> bankStatusPointIdToBusId = new ConcurrentHashMap<Integer,Integer>();
-    
-    private Map<Integer,CymeSimulationListener> busIdtoListener = new ConcurrentHashMap<Integer,CymeSimulationListener>();
+    private ScheduledExecutorService scheduledExecutor = Executors.newScheduledThreadPool(1);
     private List<CymeSimulationListener> cymeListeners = Lists.newArrayList();
 
-    private ScheduledExecutorService scheduledExecutor = Executors.newScheduledThreadPool(1);
+    /* start Caching maps */
+    private Map<Integer,PointPaoIdentifier> pointIdToPointPaoIdentifier;
+    private Map<Integer,PointValueQualityHolder> pointIdToValue;
     
-    private Set<Integer> subBusPoints = Sets.newHashSet();
+    private Map<Integer,Integer> busToEnabledPointIds;
+    private Map<Integer,Integer> loadValuePointIdToBusId;
+    private Map<Integer,Integer> simulationPointIdToBusId;
+    private Map<Integer,Integer> bankStatusPointIdToBusId;
+    
+    
+    private Set<Integer> subBusPoints;
+    private Map<Integer,Integer> zoneIdToBusId;
+    private PaoIdentifier cacheBusPao;
+    
+    /* end Caching maps */
+    
+    private void resetEntireCache() {
+        pointIdToPointPaoIdentifier = new ConcurrentHashMap<Integer,PointPaoIdentifier>();
+        pointIdToValue = new ConcurrentHashMap<Integer,PointValueQualityHolder>();
+        
+        busToEnabledPointIds = new ConcurrentHashMap<Integer,Integer>();
+        loadValuePointIdToBusId = new ConcurrentHashMap<Integer,Integer>();
+        simulationPointIdToBusId = new ConcurrentHashMap<Integer,Integer>();
+        bankStatusPointIdToBusId = new ConcurrentHashMap<Integer,Integer>();
+        
+        subBusPoints = Sets.newHashSet();
+        zoneIdToBusId = new ConcurrentHashMap<Integer,Integer>();
+        asyncDynamicDataSource.unRegisterForPointData(this);
+        cacheBusPao = null;
+    }
+    
+    @PostConstruct
+    public void init() {
+        asyncDynamicDataSource.addDBChangeListener(this);
+    }
     
     @Override
-    public void registerPointsForSubStationBus(CymeSimulationListener listener, PaoIdentifier subbus) {
-        Set<Integer> pointsToRegister = loadCymeSimulationControlPoints(listener, subbus);
+    public void registerListener(CymeSimulationListener listener) { 
+        cymeListeners.add(listener);        
+    }
+    
+    @Override
+    public void registerPointsForSubStationBus(PaoIdentifier subbus) {
+        log.debug("Starting Registering for bus with paoId:" + subbus.getPaoId());
+        //TODO marker for YUK-11478
+        //Clean maps first.
+        resetEntireCache();
+        
+        //TODO marker for YUK-11478        
+        cacheBusPao = subbus;
+        
+        //Now Register
+        Set<Integer> pointsToRegister = loadCymeSimulationControlPoints(subbus);
         subBusPoints.addAll(pointsToRegister);
         
         // Determine the Bank Status points to watch for Capcontrol Server changes.
@@ -72,14 +119,20 @@ public class CymePointDataCacheImpl implements CymePointDataCache, PointDataList
         for ( PointPaoIdentifier pointPaoId : bankPoints) {
             pointIdToPointPaoIdentifier.put(pointPaoId.getPointId(), pointPaoId);
             bankStatusPointIdToBusId.put(pointPaoId.getPointId(),subbus.getPaoId());
-            busIdtoListener.put(subbus.getPaoId(),listener);
         }
         
         Collection<PointPaoIdentifier> regulatorPoints = zoneDao.getTapPointsBySubBusId(subbus.getPaoId());
-        for (PointPaoIdentifier zone : regulatorPoints) {
-            pointIdToPointPaoIdentifier.put(zone.getPointId(), zone);
+        for (PointPaoIdentifier regulator : regulatorPoints) {
+            pointIdToPointPaoIdentifier.put(regulator.getPointId(), regulator);
         }
-
+        
+        //TODO marker for YUK-11478
+        //May not need this later. Just tracking for DB change
+        List<Zone> zones = zoneDao.getZonesBySubBusId(subbus.getPaoId());
+        for(Zone zone : zones) {
+            zoneIdToBusId.put(zone.getId(),subbus.getPaoId());
+        }
+        
         scheduledExecutor.scheduleAtFixedRate(new Runnable() {            
             @Override
             public void run() {
@@ -92,7 +145,7 @@ public class CymePointDataCacheImpl implements CymePointDataCache, PointDataList
             }
         }, 0,30,TimeUnit.SECONDS);
         
-        cymeListeners.add(listener);
+        log.debug("Done Registering for bus with paoId:" + subbus.getPaoId());
     }
 
     private boolean registerPoints() {
@@ -104,14 +157,16 @@ public class CymePointDataCacheImpl implements CymePointDataCache, PointDataList
                 pointIdToValue.put(pvqh.getId(), pvqh);
             }
             
-            asyncDynamicDataSource.getAndRegisterForPointData(this, subBusPoints);
-            
+            pointValues = asyncDynamicDataSource.getAndRegisterForPointData(this, subBusPoints);
+            for (PointValueQualityHolder pvqh : pointValues) {
+                pointIdToValue.put(pvqh.getId(), pvqh);
+            }
             return true;
         }
         return false;
     }
     
-    private Set<Integer> loadCymeSimulationControlPoints(CymeSimulationListener listener, PaoIdentifier subbus) {
+    private Set<Integer> loadCymeSimulationControlPoints(PaoIdentifier subbus) {
         PointIdentifier cymeEnabled = new PointIdentifier(PointType.Status, 350);
         PointIdentifier startSimulation = new PointIdentifier(PointType.Status, 351);
         PointIdentifier loadFactor = new PointIdentifier(PointType.Analog, 352);
@@ -147,7 +202,7 @@ public class CymePointDataCacheImpl implements CymePointDataCache, PointDataList
         pointPaoIdentifier.setPaoName("LOADPOINT");//Not used by XMLBuilder in subbus case
         pointPaoIdentifier.setPointId(pointId);
         pointIdToPointPaoIdentifier.put(pointId, pointPaoIdentifier);
-        //NOT putting in pointIds because it will get registered above.
+        pointIds.add(pointId);
         
         return pointIds;
     }
@@ -184,20 +239,23 @@ public class CymePointDataCacheImpl implements CymePointDataCache, PointDataList
         
         Integer subbusId = loadValuePointIdToBusId.get(pointData.getId());
         if (subbusId != null) {
-            CymeSimulationListener listener = busIdtoListener.get(subbusId);
-            listener.notifyNewLoadFactor(pointData);
+            for (CymeSimulationListener listener : cymeListeners) {
+                listener.notifyNewLoadFactor(pointData);
+            }
         }
         
         subbusId = simulationPointIdToBusId.get(pointData.getId());
         if (subbusId != null) {
-            CymeSimulationListener listener = busIdtoListener.get(subbusId);
-            listener.notifyNewSimulation(pointData);
+            for (CymeSimulationListener listener : cymeListeners) {
+                listener.notifyNewSimulation(pointData);
+            }
         }
 
         subbusId = bankStatusPointIdToBusId.get(pointData.getId());
         if (subbusId != null) {
-            CymeSimulationListener listener = busIdtoListener.get(subbusId);
-            listener.notifyCbcControl(pointData);
+            for (CymeSimulationListener listener : cymeListeners) {
+                listener.notifyCbcControl(pointData);
+            }
         }
     }
 
@@ -220,5 +278,171 @@ public class CymePointDataCacheImpl implements CymePointDataCache, PointDataList
     @Override
     public void unRegisterCymeSimulationListener(int subbusId) {
         // TODO Unregister for pData for this listener?
+    }
+
+    @Override
+    public void dbChangeReceived(DBChangeMsg dbChange) {
+
+        DBChangeMsg.CAT_POINT.equals(dbChange.getCategory());
+        
+        switch (dbChange.getDatabase()) {
+            case DBChangeMsg.CHANGE_POINT_DB:
+                handlePointChange(dbChange);
+                break;
+            case DBChangeMsg.CHANGE_PAO_DB:
+                handlePaoChange(dbChange);
+                break;
+            case DBChangeMsg.CHANGE_IVVC_ZONE:
+                handleZoneChange(dbChange);
+                break;
+        }
+    }
+    
+    private void handlePointChange(DBChangeMsg dbChange) {
+        //CYME config points on a bus only.
+        int pointId = dbChange.getId();
+        switch (dbChange.getDbChangeType()) {
+            case DELETE:
+                if (! subBusPoints.contains(pointId)) {
+                    break;
+                } //Purposefully falling through to UPDATE
+            case UPDATE:
+                //Was this on our radar?
+                if (subBusPoints.contains(pointId)) {
+                    int busId = 0;
+                    if (busToEnabledPointIds.containsValue(pointId)) {
+                        for( Entry<Integer, Integer> entry : busToEnabledPointIds.entrySet()) {
+                             if (entry.getValue() == pointId) {
+                                 busId = entry.getKey();
+                                 break;
+                             }
+                        }
+                    } else if (loadValuePointIdToBusId.containsKey(pointId)) {
+                        busId = loadValuePointIdToBusId.get(pointId);
+                    } else if (simulationPointIdToBusId.containsKey(pointId)) {
+                        busId = simulationPointIdToBusId.get(pointId);
+                    } else {
+                        throw new NotFoundException("Expected to find a Subbus with a CYME point id:" + pointId);
+                    }
+
+                    //We are tracking this point.
+                    PaoIdentifier subBus = new PaoIdentifier(busId, PaoType.CAP_CONTROL_SUBBUS);
+                    registerPointsForSubStationBus(subBus);
+
+                    break;
+                } else {
+                    //Purposefully falling through
+                }                
+                //don't break!
+            case ADD:
+                //is this new point on our bus?
+                LitePoint litePoint = pointDao.getLitePoint(pointId);
+                if (litePoint.getPaobjectID() == cacheBusPao.getPaoId()) { 
+                    registerPointsForSubStationBus(new PaoIdentifier(litePoint.getPaobjectID(), PaoType.CAP_CONTROL_SUBBUS));
+                }
+            case NONE:
+                break;
+        }
+    }
+    
+    private void handlePaoChange(DBChangeMsg dbChange) {
+        int paoId = dbChange.getId();
+        LiteYukonPAObject liteYukonPAO = paoDao.getLiteYukonPAO(paoId);
+        //Only if it is one of these
+        if (liteYukonPAO.getPaoType() == PaoType.CAP_CONTROL_SUBBUS) {
+            switch (dbChange.getDbChangeType()) {
+                case DELETE:
+                case UPDATE:
+                    //Is this something we are already tracking?
+                    for (Entry<Integer,PointPaoIdentifier> entry : pointIdToPointPaoIdentifier.entrySet()) {
+                        if (entry.getValue().getPaoIdentifier().getPaoId() == paoId) {
+                            //TODO marker for YUK-11478
+                            //reload bus
+                            PaoIdentifier subBus = new PaoIdentifier(paoId, PaoType.CAP_CONTROL_SUBBUS);
+                            registerPointsForSubStationBus(subBus);
+                            return;
+                        }
+                    }                        
+                    break;
+                case ADD:
+                    //Only if we are a bus. Adding regs and zones will trigger updates
+                    try {
+                        substationBusDao.getSubstationBusPointIds(paoId);
+                        //If we are here, we are a bus. 
+                        PaoIdentifier subBus = new PaoIdentifier(paoId, PaoType.CAP_CONTROL_SUBBUS);
+                        if (isBusCymeEnabled(subBus)) {
+                            //reload bus
+                            registerPointsForSubStationBus(subBus);
+                        }
+                    } catch (NotFoundException e) {
+                        //Not a bus.
+                    }
+                    break;
+                case NONE:
+                    break;
+            }
+        } else if (liteYukonPAO.getPaoType() == PaoType.LOAD_TAP_CHANGER ||
+                    liteYukonPAO.getPaoType() == PaoType.GANG_OPERATED ||
+                    liteYukonPAO.getPaoType() == PaoType.PHASE_OPERATED) { 
+            switch (dbChange.getDbChangeType()) {
+                case DELETE:
+                case UPDATE:
+                    //Is this something we are already tracking?
+                    for (Entry<Integer,PointPaoIdentifier> entry : pointIdToPointPaoIdentifier.entrySet()) {
+                        if (entry.getValue().getPaoIdentifier().getPaoId() == paoId) {
+                            //Found a Reg with this ID. reload its bus.
+                            //TODO marker for YUK-11478
+                            registerPointsForSubStationBus(cacheBusPao);
+                            return;
+                        }
+                    }                        
+                    break;
+                case ADD:
+                    //Only if we are a bus. Adding regs and zones will trigger updates
+                case NONE:
+                    break;
+            }
+        }
+    }
+    
+    private void handleZoneChange(DBChangeMsg dbChange) {
+        switch (dbChange.getDbChangeType()) {
+            case DELETE:
+            case UPDATE:
+                //If on this bus, reload
+                Integer busId = zoneIdToBusId.get(dbChange.getId());
+                
+                if (busId != null) {
+                    //TODO marker for YUK-11478
+                    //reload bus
+                    PaoIdentifier subBus = new PaoIdentifier(busId, PaoType.CAP_CONTROL_SUBBUS);
+                    registerPointsForSubStationBus(subBus);
+                }
+                break;
+            case ADD:
+                Zone zone = zoneDao.getZoneById(dbChange.getId());
+                if (zone.getSubstationBusId() == cacheBusPao.getPaoId() ) {
+                    //reload bus
+                    registerPointsForSubStationBus(cacheBusPao);
+                }
+                break;
+            case NONE:
+                break;
+        }
+    }
+    
+    private boolean isBusCymeEnabled(PaoIdentifier subbus) {
+        PointIdentifier cymeEnabled = new PointIdentifier(PointType.Status, 350);
+        PointIdentifier startSimulation = new PointIdentifier(PointType.Status, 351);
+        PointIdentifier loadFactor = new PointIdentifier(PointType.Analog, 352);
+        
+        try {
+            pointDao.getLitePoint(new PaoPointIdentifier(subbus, cymeEnabled));
+            pointDao.getLitePoint(new PaoPointIdentifier(subbus, startSimulation));
+            pointDao.getLitePoint(new PaoPointIdentifier(subbus, loadFactor));
+        } catch (NotFoundException e) {
+            return false;
+        }
+        return true;
     }
 }

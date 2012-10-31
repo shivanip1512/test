@@ -101,7 +101,8 @@ public class CymeSimulatorServiceImpl implements CymeSimulatorService, CymeSimul
                 logger.info("CYME Simulator is configured for sub bus with name: " + subBusName);
               
                 //register with CymePointDataCache
-                cymePointDataCache.registerPointsForSubStationBus(this,substationBusPao.getPaoIdentifier());
+                cymePointDataCache.registerPointsForSubStationBus(substationBusPao.getPaoIdentifier());
+                cymePointDataCache.registerListener(this);
                 
                 return;
             } catch (UnknownKeyException e) {

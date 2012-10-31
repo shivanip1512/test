@@ -5,6 +5,7 @@ import java.sql.SQLException;
 import java.util.List;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.dao.EmptyResultDataAccessException;
 import org.springframework.jdbc.core.simple.ParameterizedRowMapper;
 
 import com.cannontech.capcontrol.dao.FeederDao;
@@ -19,6 +20,7 @@ import com.cannontech.common.pao.YukonPao;
 import com.cannontech.common.pao.service.impl.PaoCreationHelper;
 import com.cannontech.common.search.SearchResult;
 import com.cannontech.common.util.SqlStatementBuilder;
+import com.cannontech.core.dao.NotFoundException;
 import com.cannontech.core.dao.PaoDao;
 import com.cannontech.database.IntegerRowMapper;
 import com.cannontech.database.PagingResultSetExtractor;
@@ -227,9 +229,12 @@ public class SubstationBusDaoImpl implements SubstationBusDao {
         sql.append("FROM CapControlSubstationBus");
         sql.append("WHERE SubstationBusId").eq(substationBusId);
         
-        PointIdContainer points = yukonJdbcTemplate.queryForObject(sql, FeederDao.pointIdContainerMapper);
-        
-        return points;
+        try {
+            PointIdContainer points = yukonJdbcTemplate.queryForObject(sql, FeederDao.pointIdContainerMapper);
+            return points;
+        } catch (EmptyResultDataAccessException e) {
+            throw new NotFoundException("Bus not found with Id:" + substationBusId);
+        }        
 	}
 
 }

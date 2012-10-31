@@ -9,7 +9,8 @@ import com.cannontech.core.dynamic.PointValueQualityHolder;
 
 public interface CymePointDataCache {
 
-    public void registerPointsForSubStationBus(CymeSimulationListener listener, PaoIdentifier subbus);
+    public void registerListener(CymeSimulationListener listener);
+    public void registerPointsForSubStationBus(PaoIdentifier subbus);
     
     public Collection<PointPaoIdentifier> getPaosInSystem();
     
