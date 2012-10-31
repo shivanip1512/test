@@ -10,6 +10,8 @@ import com.cannontech.capcontrol.dao.CcMonitorBankListDao;
 import com.cannontech.capcontrol.dao.VoltageRegulatorDao;
 import com.cannontech.capcontrol.dao.ZoneDao;
 import com.cannontech.capcontrol.exception.OrphanedRegulatorException;
+import com.cannontech.capcontrol.model.AbstractZone;
+import com.cannontech.capcontrol.model.RegulatorToZoneMapping;
 import com.cannontech.capcontrol.model.Zone;
 import com.cannontech.capcontrol.service.VoltageRegulatorService;
 import com.cannontech.common.pao.PaoCategory;
@@ -25,6 +27,7 @@ import com.cannontech.core.dao.ExtraPaoPointAssignmentDao;
 import com.cannontech.core.dao.ExtraPaoPointMapping;
 import com.cannontech.core.dao.PaoDao;
 import com.cannontech.database.db.DBPersistent;
+import com.cannontech.enums.Phase;
 import com.cannontech.enums.RegulatorPointMapping;
 import com.cannontech.spring.YukonSpringHook;
 import com.google.common.collect.Lists;
@@ -131,6 +134,15 @@ public class VoltageRegulator extends CapControlYukonPAOBase implements YukonDev
         regulator.setVoltChangePerTap(voltChangePerTap);
         
         paoPersistenceService.updatePao(regulator);
+
+        AbstractZone abstractZone = null;
+        try {
+            ZoneDao zoneDao = YukonSpringHook.getBean(ZoneDao.class);
+            Zone zone = zoneDao.getZoneByRegulatorId(this.getCapControlPAOID());
+            abstractZone = AbstractZone.create(zone);
+        } catch(OrphanedRegulatorException e) {
+            // this regulator is not assigned to a zone - which is fine - move along
+        }
         
         //remove voltage Y CcMonitorBankList entry, if one exists and is different from the new one
         boolean isNewVoltageYPoint = false;
@@ -147,9 +159,16 @@ public class VoltageRegulator extends CapControlYukonPAOBase implements YukonDev
         pointMappings = null;
         
         //add voltage_y CcMonitorBankList entry, if a point is assigned
-        VoltageRegulatorDao voltageRegulatorDao = YukonSpringHook.getBean("voltageRegulatorDao", VoltageRegulatorDao.class);
-        if(isNewVoltageYPoint && !voltageRegulatorDao.isOrphan(getPAObjectID())) {
-            ccMonitorBankListDao.addRegulatorPoint(getPAObjectID());
+        if(isNewVoltageYPoint && abstractZone != null) {
+            Phase phase = null;
+            for (RegulatorToZoneMapping regToZone : abstractZone.getRegulatorsList()) {
+                if (regToZone.getRegulatorId() == getPAObjectID()) {
+                    phase = regToZone.getPhase();
+                    break;
+                }
+            }
+            // it's ok if phase is null here - that just means this is a gang regulator with no phase
+            ccMonitorBankListDao.addRegulatorPoint(getPAObjectID(), phase, abstractZone.getSubstationBusId());
         }
     }
 
