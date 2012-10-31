@@ -341,7 +341,8 @@ ALTER TABLE PointControl
 /* Start YUK-11603 */
 ALTER TABLE PointStatusControl
     DROP CONSTRAINT FK_PointStatusCont_PointCont;
- 
+GO
+
 ALTER TABLE PointStatusControl
     ADD CONSTRAINT FK_PointStatusCont_PointCont FOREIGN KEY (PointId)
         REFERENCES PointControl (PointId)
