@@ -2280,6 +2280,7 @@ void  CtiCommandParser::doParsePutConfigEmetcon(const string &_CmdStr)
                              " [0-9]+");
     static const boost::regex  re_interval("interval(s| lp| li)");  //  match "intervals", "interval lp" and "interval li"
     static const boost::regex  re_thresholds(CtiString("(outage|voltage) threshold ") + str_num);
+    static const boost::regex  re_thresholds_phaseloss("phaseloss thresholds [0-9]+ [0-9]+:[0-9]+:[0-9]+");
     static const boost::regex  re_multiplier("mult(iplier)? kyz *[0-9]+ [0-9]+(\\.[0-9]+)?");  //  match "mult kyz # #(.###)
     static const boost::regex  re_ied_class("ied class [0-9]+ [0-9]+");
     static const boost::regex  re_ied_scan ("ied scan [0-9]+ [0-9]+");
@@ -2525,10 +2526,20 @@ void  CtiCommandParser::doParsePutConfigEmetcon(const string &_CmdStr)
 
                 if( temp.contains("outage") )
                 {
-                    cmdtok();
+                    cmdtok(); // go past "threshold"
 
                     _cmd["outage_threshold"] = CtiParseValue( atoi( cmdtok().c_str() ) );
                 }
+            }
+            else if(!(token = CmdStr.match(re_thresholds_phaseloss)).empty())
+            {
+                CtiTokenizer cmdtok(token);
+
+                cmdtok(); // go past "phaseloss"
+                cmdtok(); // go past "thresholds"
+
+                _cmd["phaseloss_percent_threshold"]  = CtiParseValue( atoi( cmdtok().c_str() ) );
+                _cmd["phaseloss_duration_threshold"] = CtiParseValue( cmdtok() );
             }
         }
         if(CmdStr.contains(" centron") ||
