@@ -10,6 +10,7 @@ import com.cannontech.capcontrol.dao.CcMonitorBankListDao;
 import com.cannontech.capcontrol.dao.VoltageRegulatorDao;
 import com.cannontech.capcontrol.dao.ZoneDao;
 import com.cannontech.capcontrol.exception.OrphanedRegulatorException;
+import com.cannontech.capcontrol.model.Zone;
 import com.cannontech.capcontrol.service.VoltageRegulatorService;
 import com.cannontech.common.pao.PaoCategory;
 import com.cannontech.common.pao.PaoClass;
@@ -76,7 +77,7 @@ public class VoltageRegulator extends CapControlYukonPAOBase implements YukonDev
         super.setDbConnection( conn );
     }
     
-    private void validateBeforeUpdate() {
+    private void validateBeforeUpdate(int voltageYPointId) {
         List<String> errors = Lists.newArrayList();
         if (this.keepAliveConfig < 0) {
             errors.add("Keep Alive Config must be greater than or equal to zero");
@@ -87,12 +88,38 @@ public class VoltageRegulator extends CapControlYukonPAOBase implements YukonDev
         if (this.voltChangePerTap <= 0) {
             errors.add("Volt Change Per Tap must be greater than zero");
         }
+        
+        ZoneDao zoneDao = YukonSpringHook.getBean(ZoneDao.class);
+        Zone zone = null;
+        try {
+            zone = zoneDao.getZoneByRegulatorId(this.getCapControlPAOID());
+        } catch(OrphanedRegulatorException e) {}
+        // If this regulator is assigned to a Zone and the user just selected "No Point"
+        if(voltageYPointId == -1 && zone != null) {
+            errors.add("The "
+                       + RegulatorPointMapping.VOLTAGE_Y.name()
+                       + " point cannot be unassigned while the regulator is attached to a zone ("
+                       + zone.getName() + "). Please select a "
+                       + RegulatorPointMapping.VOLTAGE_Y.name()
+                       + " point or Return.");
+        }
         if (!errors.isEmpty()) throw new IllegalArgumentException(StringUtils.join(errors, ", "));
     }
 
     @Override
     public void update() throws java.sql.SQLException {
-        validateBeforeUpdate();
+        //Point Mappings
+        List<ExtraPaoPointMapping> eppMappings = Lists.newArrayList();
+        int voltageYPointId = 0;
+        for (VoltageRegulatorPointMapping mapping : pointMappings) {
+            eppMappings.add(mapping.getExtraPaoPointMapping());
+            //check to see if a voltage Y point is still attached
+            if (mapping.getRegulatorPointMapping() == RegulatorPointMapping.VOLTAGE_Y) {
+                voltageYPointId = mapping.getPointId();
+            }
+        }
+        
+        validateBeforeUpdate(voltageYPointId);
         super.update();
         
         PaoPersistenceService paoPersistenceService = YukonSpringHook.getBean(PaoPersistenceService.class);
@@ -104,17 +131,6 @@ public class VoltageRegulator extends CapControlYukonPAOBase implements YukonDev
         regulator.setVoltChangePerTap(voltChangePerTap);
         
         paoPersistenceService.updatePao(regulator);
-        
-        //Point Mappings
-        List<ExtraPaoPointMapping> eppMappings = Lists.newArrayList();
-        int voltageYPointId = 0;
-        for (VoltageRegulatorPointMapping mapping : pointMappings) {
-            eppMappings.add(mapping.getExtraPaoPointMapping());
-            //check to see if a voltage Y point is still attached
-            if (mapping.getRegulatorPointMapping() == RegulatorPointMapping.VOLTAGE_Y) {
-                voltageYPointId = mapping.getPointId();
-            }
-        }
         
         //remove voltage Y CcMonitorBankList entry, if one exists and is different from the new one
         boolean isNewVoltageYPoint = false;
