@@ -368,4 +368,4 @@ WHERE YP.PAObjectId = D.DeviceId;
 /* VERSION INFO                                               */ 
 /*   Automatically gets inserted from build script            */ 
 /**************************************************************/ 
-
+INSERT INTO CTIDatabase VALUES ('5.5', 'Garrett D', '30-OCT-2012', 'Latest Update', 4 );
