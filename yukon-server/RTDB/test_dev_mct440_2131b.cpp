@@ -46,6 +46,7 @@ struct test_Mct440_2131BDevice : Cti::Devices::Mct440_2131BDevice
     using Mct440_2131BDevice::decodeGetValueDailyReadRecent;
     using Mct440_2131BDevice::executePutConfigTOU;
     using Mct440_2131BDevice::executePutConfig;
+    using Mct440_2131BDevice::executeGetConfig;
     using MctDevice::updateFreezeInfo;
 
     enum test_Features
@@ -1861,7 +1862,7 @@ BOOST_FIXTURE_TEST_SUITE(test_getOperation, getOperation_helper)
         BOOST_REQUIRE(test_dev.getOperation(EmetconProtocol::GetConfig_Thresholds, BSt));
         BOOST_CHECK_EQUAL(BSt.IO, EmetconProtocol::IO_Read);
         BOOST_CHECK_EQUAL(BSt.Function, 0x1e);
-        BOOST_CHECK_EQUAL(BSt.Length,   5);
+        BOOST_CHECK_EQUAL(BSt.Length,   3);
     }
     BOOST_AUTO_TEST_CASE(test_getOperation_53)
     {
@@ -1973,10 +1974,10 @@ BOOST_FIXTURE_TEST_SUITE(test_getOperation, getOperation_helper)
     }
     BOOST_AUTO_TEST_CASE(test_getOperation_68)
     {
-        BOOST_REQUIRE(test_dev.getOperation(EmetconProtocol::PutConfig_VThreshold, BSt));
+        BOOST_REQUIRE(test_dev.getOperation(EmetconProtocol::PutConfig_Thresholds, BSt));
         BOOST_CHECK_EQUAL(BSt.IO, EmetconProtocol::IO_Write);
         BOOST_CHECK_EQUAL(BSt.Function, 0x1e);
-        BOOST_CHECK_EQUAL(BSt.Length,   4);
+        BOOST_CHECK_EQUAL(BSt.Length,   3);
     }
     BOOST_AUTO_TEST_CASE(test_getOperation_69)
     {
@@ -2324,7 +2325,7 @@ BOOST_AUTO_TEST_CASE(test_getValueMappingForRead_IO_Read_1Dword)
         (empty)
         (empty)
         // memory read 30
-        (tuple_list_of(0,2,111)(2,2,110))
+        (tuple_list_of(0,1,264)(1,2,265))
         (empty)
         (empty)
         (empty)
@@ -2463,7 +2464,7 @@ BOOST_AUTO_TEST_CASE(test_getValueMappingForRead_IO_Read_2Dwords)
         (empty)
         (empty)
         // memory read 30
-        (tuple_list_of(0,2,111)(2,2,110)(4,1,132))
+        (tuple_list_of(0,1,264)(1,2,265))
         (empty)
         (empty)
         (empty)
@@ -2611,7 +2612,7 @@ BOOST_AUTO_TEST_CASE(test_getValueMappingForRead_IO_Read_3Dwords)
         (empty)
         (empty)
         // memory read 30
-        (tuple_list_of(0,2,111)(2,2,110)(4,1,132))
+        (tuple_list_of(0,1,264)(1,2,265))
         (empty)
         (empty)
         (empty)
@@ -3959,4 +3960,26 @@ BOOST_FIXTURE_TEST_SUITE(command_executions, executePutConfig_helper)
 
     }
 
+    BOOST_AUTO_TEST_CASE(test_executePutConfigThresholds)
+    {
+        test_Mct440_2131B test_dev;
+
+        {
+            CtiCommandParser parse("putconfig EMETCON phaseloss thresholds 65 10:30:45");
+
+            CtiOutMessage *outmsg = CTIDBG_new OUTMESS;
+
+            BOOST_CHECK_EQUAL(NoError, test_dev.executePutConfig(&request, parse, outmsg, vgList, retList, outList));
+
+            BOOST_CHECK_EQUAL(outmsg->Sequence, Cti::Protocols::EmetconProtocol::PutConfig_Thresholds);
+            BOOST_CHECK_EQUAL(outmsg->Buffer.BSt.Function, 0x01E);
+            BOOST_CHECK_EQUAL(outmsg->Buffer.BSt.Length  , 3    );
+
+            unsigned char expmsg[3] = {0x41,0x93,0xd5};
+
+            BOOST_CHECK_EQUAL_COLLECTIONS(
+                                       &outmsg->Buffer.BSt.Message[0], &outmsg->Buffer.BSt.Message[3],
+                                       &expmsg[0], &expmsg[3]);
+        }
+    }
 }
