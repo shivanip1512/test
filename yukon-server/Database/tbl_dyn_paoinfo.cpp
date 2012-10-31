@@ -368,6 +368,10 @@ const CtiTableDynamicPaoInfo::key_map_t   CtiTableDynamicPaoInfo::_key_map =
             "mct holiday 23")
         (Key_MCT_Holiday24,
             "mct holiday 24")
+        (key_MCT_PhaseLossPercent,
+            "mct phase loss percent")
+        (key_MCT_PhaseLossSeconds,
+            "mct phase loss seconds")
         ;
 
 CtiTableDynamicPaoInfo::CtiTableDynamicPaoInfo() :

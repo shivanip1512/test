@@ -206,6 +206,8 @@ BOOST_AUTO_TEST_CASE(test_getKeyString)
         { CtiTableDynamicPaoInfo::Key_MCT_Holiday22,                                "mct holiday 22" },
         { CtiTableDynamicPaoInfo::Key_MCT_Holiday23,                                "mct holiday 23" },
         { CtiTableDynamicPaoInfo::Key_MCT_Holiday24,                                "mct holiday 24" },
+        { CtiTableDynamicPaoInfo::key_MCT_PhaseLossPercent,                         "mct phase loss percent" },
+        { CtiTableDynamicPaoInfo::key_MCT_PhaseLossSeconds,                         "mct phase loss seconds" },
     };
 
     std::vector<std::string> expected, results;
