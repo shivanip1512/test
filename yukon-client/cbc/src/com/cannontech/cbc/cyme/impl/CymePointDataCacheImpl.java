@@ -23,6 +23,8 @@ import com.cannontech.cbc.cyme.CymeConfigurationException;
 import com.cannontech.cbc.cyme.CymePointDataCache;
 import com.cannontech.cbc.cyme.CymeSimulationListener;
 import com.cannontech.clientutils.YukonLogManager;
+import com.cannontech.common.config.ConfigurationSource;
+import com.cannontech.common.config.MasterConfigBooleanKeysEnum;
 import com.cannontech.common.pao.PaoIdentifier;
 import com.cannontech.common.pao.PaoType;
 import com.cannontech.common.pao.definition.model.PaoPointIdentifier;
@@ -50,6 +52,7 @@ public class CymePointDataCacheImpl implements CymePointDataCache, PointDataList
     private static final Logger log = YukonLogManager.getLogger(CymePointDataCacheImpl.class);
     
     @Autowired private AsyncDynamicDataSource asyncDynamicDataSource;  
+    @Autowired private ConfigurationSource configurationSource;
     @Autowired private SubstationBusDao substationBusDao;
     @Autowired private PointDao pointDao;
     @Autowired private ZoneDao zoneDao;
@@ -67,7 +70,6 @@ public class CymePointDataCacheImpl implements CymePointDataCache, PointDataList
     private Map<Integer,Integer> loadValuePointIdToBusId;
     private Map<Integer,Integer> simulationPointIdToBusId;
     private Map<Integer,Integer> bankStatusPointIdToBusId;
-    
     
     private Set<Integer> subBusPoints;
     private Map<Integer,Integer> zoneIdToBusId;
@@ -92,7 +94,12 @@ public class CymePointDataCacheImpl implements CymePointDataCache, PointDataList
     
     @PostConstruct
     public void init() {
-        asyncDynamicDataSource.addDBChangeListener(this);
+        boolean enabled = configurationSource.getBoolean(MasterConfigBooleanKeysEnum.CYME_ENABLED,false);
+        if (enabled) {
+            asyncDynamicDataSource.addDBChangeListener(this);
+        } else {
+            log.debug("CYME_ENABLED CPARM is false. Ignoring DB Changes");            
+        }
     }
     
     @Override
