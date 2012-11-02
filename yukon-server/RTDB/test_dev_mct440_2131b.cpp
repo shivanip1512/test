@@ -4171,7 +4171,7 @@ BOOST_FIXTURE_TEST_SUITE(command_executions, executePutConfig_helper)
 
     }
 
-    BOOST_AUTO_TEST_CASE(test_executePutConfigPhaseLossThresholds)
+    BOOST_AUTO_TEST_CASE(test_executePutConfigPhaseLossThreshold)
     {
         test_Mct440_2131B test_dev;
 

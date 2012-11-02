@@ -601,7 +601,7 @@ INT Mct440_213xBDevice::ModelDecode(INMESS          *InMessage,
         break;
 
     case EmetconProtocol::GetConfig_Thresholds:
-        status = decodeGetConfigPhaseLossThresholds(InMessage, TimeNow, vgList, retList, outList);
+        status = decodeGetConfigPhaseLossThreshold(InMessage, TimeNow, vgList, retList, outList);
         break;
 
     default:
@@ -1717,7 +1717,7 @@ INT Mct440_213xBDevice::executePutConfig(CtiRequestMsg     *pReq,
     }
     else if( parse.isKeyValid("phaseloss_percent_threshold"))
     {
-        nRet = executePutConfigPhaseLossThresholds(pReq, parse, OutMessage, vgList, retList, outList);
+        nRet = executePutConfigPhaseLossThreshold(pReq, parse, OutMessage, vgList, retList, outList);
     }
     else
     {
@@ -2438,7 +2438,7 @@ INT Mct440_213xBDevice::decodeGetStatusInternal( INMESS *InMessage, CtiTime &Tim
 
 /*
 *********************************************************************************************************
-*                                  decodeGetConfigPhaseLossThresholds()
+*                                  decodeGetConfigPhaseLossThreshold()
 *
 * Description :
 *
@@ -2451,7 +2451,11 @@ INT Mct440_213xBDevice::decodeGetStatusInternal( INMESS *InMessage, CtiTime &Tim
 * Note(s)     :
 *********************************************************************************************************
 */
-INT Mct440_213xBDevice::decodeGetConfigPhaseLossThresholds(INMESS *InMessage, CtiTime &TimeNow, CtiMessageList &vgList, CtiMessageList &retList, OutMessageList &outList)
+INT Mct440_213xBDevice::decodeGetConfigPhaseLossThreshold(INMESS         *InMessage,
+                                                          CtiTime        &TimeNow,
+                                                          CtiMessageList &vgList,
+                                                          CtiMessageList &retList,
+                                                          OutMessageList &outList)
 {
     INT status = NORMAL;
 
@@ -2486,7 +2490,7 @@ INT Mct440_213xBDevice::decodeGetConfigPhaseLossThresholds(INMESS *InMessage, Ct
 
 /*
 *********************************************************************************************************
-*                                  executePutConfigPhaseLossThresholds()
+*                                  executePutConfigPhaseLossThreshold()
 *
 * Description :
 *
@@ -2499,12 +2503,12 @@ INT Mct440_213xBDevice::decodeGetConfigPhaseLossThresholds(INMESS *InMessage, Ct
 * Note(s)     :
 *********************************************************************************************************
 */
-int Mct440_213xBDevice::executePutConfigPhaseLossThresholds(CtiRequestMsg     *pReq,
-                                                            CtiCommandParser  &parse,
-                                                            OUTMESS          *&OutMessage,
-                                                            CtiMessageList    &vgList,
-                                                            CtiMessageList    &retList,
-                                                            OutMessageList    &outList)
+int Mct440_213xBDevice::executePutConfigPhaseLossThreshold(CtiRequestMsg     *pReq,
+                                                           CtiCommandParser  &parse,
+                                                           OUTMESS          *&OutMessage,
+                                                           CtiMessageList    &vgList,
+                                                           CtiMessageList    &retList,
+                                                           OutMessageList    &outList)
 {
     INT  nRet = NoMethod;
     const INT function = EmetconProtocol::PutConfig_Thresholds;
