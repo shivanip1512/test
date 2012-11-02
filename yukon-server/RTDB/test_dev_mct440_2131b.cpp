@@ -1859,13 +1859,13 @@ BOOST_FIXTURE_TEST_SUITE(test_getOperation, getOperation_helper)
         BOOST_CHECK_EQUAL(BSt.Function, 0x22);
         BOOST_CHECK_EQUAL(BSt.Length,   1);
     }
-    BOOST_AUTO_TEST_CASE(test_getOperation_52)
-    {
-        BOOST_REQUIRE(test_dev.getOperation(EmetconProtocol::GetConfig_Thresholds, BSt));
-        BOOST_CHECK_EQUAL(BSt.IO, EmetconProtocol::IO_Read);
-        BOOST_CHECK_EQUAL(BSt.Function, 0x1e);
-        BOOST_CHECK_EQUAL(BSt.Length,   3);
-    }
+//    BOOST_AUTO_TEST_CASE(test_getOperation_52)
+//    {
+//        BOOST_REQUIRE(test_dev.getOperation(EmetconProtocol::GetConfig_Thresholds, BSt));
+//        BOOST_CHECK_EQUAL(BSt.IO, EmetconProtocol::IO_Read);
+//        BOOST_CHECK_EQUAL(BSt.Function, 0x1e);
+//        BOOST_CHECK_EQUAL(BSt.Length,   3);
+//    }
     BOOST_AUTO_TEST_CASE(test_getOperation_53)
     {
         BOOST_REQUIRE(test_dev.getOperation(EmetconProtocol::GetConfig_DailyReadInterest, BSt));
@@ -1976,7 +1976,7 @@ BOOST_FIXTURE_TEST_SUITE(test_getOperation, getOperation_helper)
     }
     BOOST_AUTO_TEST_CASE(test_getOperation_68)
     {
-        BOOST_REQUIRE(test_dev.getOperation(EmetconProtocol::PutConfig_Thresholds, BSt));
+        BOOST_REQUIRE(test_dev.getOperation(EmetconProtocol::PutConfig_PhaseLossThreshold, BSt));
         BOOST_CHECK_EQUAL(BSt.IO, EmetconProtocol::IO_Write);
         BOOST_CHECK_EQUAL(BSt.Function, 0x1e);
         BOOST_CHECK_EQUAL(BSt.Length,   3);
@@ -3581,7 +3581,7 @@ BOOST_FIXTURE_TEST_SUITE(command_executions, executePutConfig_helper)
             BOOST_CHECK_EQUAL(outmsg->Buffer.BSt.IO      , EmetconProtocol::IO_Function_Write);
 
             BOOST_CHECK_EQUAL_COLLECTIONS(
-                   &outmsg->Buffer.BSt.Message[0],&outmsg->Buffer.BSt.Message[expected.size()],
+                   outmsg->Buffer.BSt.Message,outmsg->Buffer.BSt.Message + expected.size(),
                    expected.begin(), expected.end());
 
             outList.pop_front();
@@ -3598,7 +3598,7 @@ BOOST_FIXTURE_TEST_SUITE(command_executions, executePutConfig_helper)
             BOOST_CHECK_EQUAL(outmsg->Buffer.BSt.IO      , EmetconProtocol::IO_Function_Write);
 
             BOOST_CHECK_EQUAL_COLLECTIONS(
-                   &outmsg->Buffer.BSt.Message[0],&outmsg->Buffer.BSt.Message[expected.size()],
+                   outmsg->Buffer.BSt.Message,outmsg->Buffer.BSt.Message + expected.size(),
                    expected.begin(), expected.end());
 
             outList.pop_front();
@@ -3615,7 +3615,7 @@ BOOST_FIXTURE_TEST_SUITE(command_executions, executePutConfig_helper)
             BOOST_CHECK_EQUAL(outmsg->Buffer.BSt.IO      , EmetconProtocol::IO_Function_Write);
 
             BOOST_CHECK_EQUAL_COLLECTIONS(
-                   &outmsg->Buffer.BSt.Message[0],&outmsg->Buffer.BSt.Message[expected.size()],
+                   outmsg->Buffer.BSt.Message,outmsg->Buffer.BSt.Message + expected.size(),
                    expected.begin(), expected.end());
 
             outList.pop_front();
@@ -3632,7 +3632,7 @@ BOOST_FIXTURE_TEST_SUITE(command_executions, executePutConfig_helper)
             BOOST_CHECK_EQUAL(outmsg->Buffer.BSt.IO      , EmetconProtocol::IO_Function_Write);
 
             BOOST_CHECK_EQUAL_COLLECTIONS(
-                   &outmsg->Buffer.BSt.Message[0],&outmsg->Buffer.BSt.Message[expected.size()],
+                   outmsg->Buffer.BSt.Message,outmsg->Buffer.BSt.Message + expected.size(),
                    expected.begin(), expected.end());
 
             outList.pop_front();
@@ -3643,6 +3643,7 @@ BOOST_FIXTURE_TEST_SUITE(command_executions, executePutConfig_helper)
     {
         test_Mct440_2131B test_dev;
 
+
         {
             CtiCommandParser parse("putconfig EMETCON holiday 1 01/20/2050");
 
@@ -3651,140 +3652,14 @@ BOOST_FIXTURE_TEST_SUITE(command_executions, executePutConfig_helper)
             BOOST_CHECK_EQUAL(NoError, test_dev.executePutConfig(&request, parse, outmsg, vgList, retList, outList));
 
             std::vector<unsigned char> expected = boost::assign::list_of
-                    (0x96)(0x93)(0xc8)(0xd0);
+                    (0x00)(0x39)(0x25);
 
             BOOST_CHECK_EQUAL(outmsg->Buffer.BSt.Function, 0x0d0);
             BOOST_CHECK_EQUAL(outmsg->Buffer.BSt.Length  , expected.size());
 
             BOOST_CHECK_EQUAL_COLLECTIONS(
-                           &outmsg->Buffer.BSt.Message[0], &outmsg->Buffer.BSt.Message[expected.size()],
-                           expected.begin(), expected.end());
-        }
-
-        {
-            CtiCommandParser parse("putconfig EMETCON holiday 4 01/20/2050");
-
-            CtiOutMessage *outmsg = CTIDBG_new OUTMESS;
-
-            BOOST_CHECK_EQUAL(NoError, test_dev.executePutConfig(&request, parse, outmsg, vgList, retList, outList));
-
-            std::vector<unsigned char> expected = boost::assign::list_of
-                    (0x96)(0x93)(0xc8)(0xd0);
-
-            BOOST_CHECK_EQUAL(outmsg->Buffer.BSt.Function, 0x0d1);
-            BOOST_CHECK_EQUAL(outmsg->Buffer.BSt.Length  , expected.size());
-
-            BOOST_CHECK_EQUAL_COLLECTIONS(
-                           &outmsg->Buffer.BSt.Message[0], &outmsg->Buffer.BSt.Message[expected.size()],
-                           expected.begin(), expected.end());
-        }
-
-        {
-            CtiCommandParser parse("putconfig EMETCON holiday 7 01/20/2050");
-
-            CtiOutMessage *outmsg = CTIDBG_new OUTMESS;
-
-            BOOST_CHECK_EQUAL(NoError, test_dev.executePutConfig(&request, parse, outmsg, vgList, retList, outList));
-
-            std::vector<unsigned char> expected = boost::assign::list_of
-                    (0x96)(0x93)(0xc8)(0xd0);
-
-            BOOST_CHECK_EQUAL(outmsg->Buffer.BSt.Function, 0x0d2);
-            BOOST_CHECK_EQUAL(outmsg->Buffer.BSt.Length  , expected.size());
-
-            BOOST_CHECK_EQUAL_COLLECTIONS(
-                           &outmsg->Buffer.BSt.Message[0], &outmsg->Buffer.BSt.Message[expected.size()],
-                           expected.begin(), expected.end());
-        }
-
-        {
-            CtiCommandParser parse("putconfig EMETCON holiday 10 01/20/2050");
-
-            CtiOutMessage *outmsg = CTIDBG_new OUTMESS;
-
-            BOOST_CHECK_EQUAL(NoError, test_dev.executePutConfig(&request, parse, outmsg, vgList, retList, outList));
-
-            std::vector<unsigned char> expected = boost::assign::list_of
-                    (0x96)(0x93)(0xc8)(0xd0);
-
-            BOOST_CHECK_EQUAL(outmsg->Buffer.BSt.Function, 0x0d3);
-            BOOST_CHECK_EQUAL(outmsg->Buffer.BSt.Length  , expected.size());
-
-            BOOST_CHECK_EQUAL_COLLECTIONS(
-                           &outmsg->Buffer.BSt.Message[0], &outmsg->Buffer.BSt.Message[expected.size()],
-                           expected.begin(), expected.end());
-        }
-
-        {
-            CtiCommandParser parse("putconfig EMETCON holiday 13 01/20/2050");
-
-            CtiOutMessage *outmsg = CTIDBG_new OUTMESS;
-
-            BOOST_CHECK_EQUAL(NoError, test_dev.executePutConfig(&request, parse, outmsg, vgList, retList, outList));
-
-            std::vector<unsigned char> expected = boost::assign::list_of
-                    (0x96)(0x93)(0xc8)(0xd0);
-
-            BOOST_CHECK_EQUAL(outmsg->Buffer.BSt.Function, 0x0d4);
-            BOOST_CHECK_EQUAL(outmsg->Buffer.BSt.Length  , expected.size());
-
-            BOOST_CHECK_EQUAL_COLLECTIONS(
-                           &outmsg->Buffer.BSt.Message[0], &outmsg->Buffer.BSt.Message[expected.size()],
-                           expected.begin(), expected.end());
-        }
-
-        {
-            CtiCommandParser parse("putconfig EMETCON holiday 16 01/20/2050");
-
-            CtiOutMessage *outmsg = CTIDBG_new OUTMESS;
-
-            BOOST_CHECK_EQUAL(NoError, test_dev.executePutConfig(&request, parse, outmsg, vgList, retList, outList));
-
-            std::vector<unsigned char> expected = boost::assign::list_of
-                    (0x96)(0x93)(0xc8)(0xd0);
-
-            BOOST_CHECK_EQUAL(outmsg->Buffer.BSt.Function, 0x0d5);
-            BOOST_CHECK_EQUAL(outmsg->Buffer.BSt.Length  , expected.size());
-
-            BOOST_CHECK_EQUAL_COLLECTIONS(
-                           &outmsg->Buffer.BSt.Message[0], &outmsg->Buffer.BSt.Message[expected.size()],
-                           expected.begin(), expected.end());
-        }
-
-        {
-            CtiCommandParser parse("putconfig EMETCON holiday 19 01/20/2050");
-
-            CtiOutMessage *outmsg = CTIDBG_new OUTMESS;
-
-            BOOST_CHECK_EQUAL(NoError, test_dev.executePutConfig(&request, parse, outmsg, vgList, retList, outList));
-
-            std::vector<unsigned char> expected = boost::assign::list_of
-                    (0x96)(0x93)(0xc8)(0xd0);
-
-            BOOST_CHECK_EQUAL(outmsg->Buffer.BSt.Function, 0x0d6);
-            BOOST_CHECK_EQUAL(outmsg->Buffer.BSt.Length  , expected.size());
-
-            BOOST_CHECK_EQUAL_COLLECTIONS(
-                           &outmsg->Buffer.BSt.Message[0], &outmsg->Buffer.BSt.Message[expected.size()],
-                           expected.begin(), expected.end());
-        }
-
-        {
-            CtiCommandParser parse("putconfig EMETCON holiday 22 01/20/2050");
-
-            CtiOutMessage *outmsg = CTIDBG_new OUTMESS;
-
-            BOOST_CHECK_EQUAL(NoError, test_dev.executePutConfig(&request, parse, outmsg, vgList, retList, outList));
-
-            std::vector<unsigned char> expected = boost::assign::list_of
-                    (0x96)(0x93)(0xc8)(0xd0);
-
-            BOOST_CHECK_EQUAL(outmsg->Buffer.BSt.Function, 0x0d7);
-            BOOST_CHECK_EQUAL(outmsg->Buffer.BSt.Length  , expected.size());
-
-            BOOST_CHECK_EQUAL_COLLECTIONS(
-                           &outmsg->Buffer.BSt.Message[0], &outmsg->Buffer.BSt.Message[expected.size()],
-                           expected.begin(), expected.end());
+                    outmsg->Buffer.BSt.Message, outmsg->Buffer.BSt.Message + expected.size(),
+                    expected.begin(), expected.end());
         }
 
         {
@@ -3795,140 +3670,14 @@ BOOST_FIXTURE_TEST_SUITE(command_executions, executePutConfig_helper)
             BOOST_CHECK_EQUAL(NoError, test_dev.executePutConfig(&request, parse, outmsg, vgList, retList, outList));
 
             std::vector<unsigned char> expected = boost::assign::list_of
-                    (0x96)(0x93)(0xc8)(0xd0)(0x96)(0x95)(0x1A)(0x50);
+                    (0x00)(0x39)(0x25)(0x39)(0x26);
 
             BOOST_CHECK_EQUAL(outmsg->Buffer.BSt.Function, 0x0d0);
             BOOST_CHECK_EQUAL(outmsg->Buffer.BSt.Length  , expected.size());
 
             BOOST_CHECK_EQUAL_COLLECTIONS(
-                           &outmsg->Buffer.BSt.Message[0], &outmsg->Buffer.BSt.Message[expected.size()],
-                           expected.begin(), expected.end());
-        }
-
-        {
-            CtiCommandParser parse("putconfig EMETCON holiday 4 01/20/2050 01/21/2050");
-
-            CtiOutMessage *outmsg = CTIDBG_new OUTMESS;
-
-            BOOST_CHECK_EQUAL(NoError, test_dev.executePutConfig(&request, parse, outmsg, vgList, retList, outList));
-
-            std::vector<unsigned char> expected = boost::assign::list_of
-                    (0x96)(0x93)(0xc8)(0xd0)(0x96)(0x95)(0x1A)(0x50);
-
-            BOOST_CHECK_EQUAL(outmsg->Buffer.BSt.Function, 0x0d1);
-            BOOST_CHECK_EQUAL(outmsg->Buffer.BSt.Length  , expected.size());
-
-            BOOST_CHECK_EQUAL_COLLECTIONS(
-                           &outmsg->Buffer.BSt.Message[0], &outmsg->Buffer.BSt.Message[expected.size()],
-                           expected.begin(), expected.end());
-        }
-
-        {
-            CtiCommandParser parse("putconfig EMETCON holiday 7 01/20/2050 01/21/2050");
-
-            CtiOutMessage *outmsg = CTIDBG_new OUTMESS;
-
-            BOOST_CHECK_EQUAL(NoError, test_dev.executePutConfig(&request, parse, outmsg, vgList, retList, outList));
-
-            std::vector<unsigned char> expected = boost::assign::list_of
-                    (0x96)(0x93)(0xc8)(0xd0)(0x96)(0x95)(0x1A)(0x50);
-
-            BOOST_CHECK_EQUAL(outmsg->Buffer.BSt.Function, 0x0d2);
-            BOOST_CHECK_EQUAL(outmsg->Buffer.BSt.Length  , expected.size());
-
-            BOOST_CHECK_EQUAL_COLLECTIONS(
-                           &outmsg->Buffer.BSt.Message[0], &outmsg->Buffer.BSt.Message[expected.size()],
-                           expected.begin(), expected.end());
-        }
-
-        {
-            CtiCommandParser parse("putconfig EMETCON holiday 10 01/20/2050 01/21/2050");
-
-            CtiOutMessage *outmsg = CTIDBG_new OUTMESS;
-
-            BOOST_CHECK_EQUAL(NoError, test_dev.executePutConfig(&request, parse, outmsg, vgList, retList, outList));
-
-            std::vector<unsigned char> expected = boost::assign::list_of
-                    (0x96)(0x93)(0xc8)(0xd0)(0x96)(0x95)(0x1A)(0x50);
-
-            BOOST_CHECK_EQUAL(outmsg->Buffer.BSt.Function, 0x0d3);
-            BOOST_CHECK_EQUAL(outmsg->Buffer.BSt.Length  , expected.size());
-
-            BOOST_CHECK_EQUAL_COLLECTIONS(
-                           &outmsg->Buffer.BSt.Message[0], &outmsg->Buffer.BSt.Message[expected.size()],
-                           expected.begin(), expected.end());
-        }
-
-        {
-            CtiCommandParser parse("putconfig EMETCON holiday 13 01/20/2050 01/21/2050");
-
-            CtiOutMessage *outmsg = CTIDBG_new OUTMESS;
-
-            BOOST_CHECK_EQUAL(NoError, test_dev.executePutConfig(&request, parse, outmsg, vgList, retList, outList));
-
-            std::vector<unsigned char> expected = boost::assign::list_of
-                    (0x96)(0x93)(0xc8)(0xd0)(0x96)(0x95)(0x1A)(0x50);
-
-            BOOST_CHECK_EQUAL(outmsg->Buffer.BSt.Function, 0x0d4);
-            BOOST_CHECK_EQUAL(outmsg->Buffer.BSt.Length  , expected.size());
-
-            BOOST_CHECK_EQUAL_COLLECTIONS(
-                           &outmsg->Buffer.BSt.Message[0], &outmsg->Buffer.BSt.Message[expected.size()],
-                           expected.begin(), expected.end());
-        }
-
-        {
-            CtiCommandParser parse("putconfig EMETCON holiday 16 01/20/2050 01/21/2050");
-
-            CtiOutMessage *outmsg = CTIDBG_new OUTMESS;
-
-            BOOST_CHECK_EQUAL(NoError, test_dev.executePutConfig(&request, parse, outmsg, vgList, retList, outList));
-
-            std::vector<unsigned char> expected = boost::assign::list_of
-                    (0x96)(0x93)(0xc8)(0xd0)(0x96)(0x95)(0x1A)(0x50);
-
-            BOOST_CHECK_EQUAL(outmsg->Buffer.BSt.Function, 0x0d5);
-            BOOST_CHECK_EQUAL(outmsg->Buffer.BSt.Length  , expected.size());
-
-            BOOST_CHECK_EQUAL_COLLECTIONS(
-                           &outmsg->Buffer.BSt.Message[0], &outmsg->Buffer.BSt.Message[expected.size()],
-                           expected.begin(), expected.end());
-        }
-
-        {
-            CtiCommandParser parse("putconfig EMETCON holiday 19 01/20/2050 01/21/2050");
-
-            CtiOutMessage *outmsg = CTIDBG_new OUTMESS;
-
-            BOOST_CHECK_EQUAL(NoError, test_dev.executePutConfig(&request, parse, outmsg, vgList, retList, outList));
-
-            std::vector<unsigned char> expected = boost::assign::list_of
-                    (0x96)(0x93)(0xc8)(0xd0)(0x96)(0x95)(0x1A)(0x50);
-
-            BOOST_CHECK_EQUAL(outmsg->Buffer.BSt.Function, 0x0d6);
-            BOOST_CHECK_EQUAL(outmsg->Buffer.BSt.Length  , expected.size());
-
-            BOOST_CHECK_EQUAL_COLLECTIONS(
-                           &outmsg->Buffer.BSt.Message[0], &outmsg->Buffer.BSt.Message[expected.size()],
-                           expected.begin(), expected.end());
-        }
-
-        {
-            CtiCommandParser parse("putconfig EMETCON holiday 22 01/20/2050 01/21/2050");
-
-            CtiOutMessage *outmsg = CTIDBG_new OUTMESS;
-
-            BOOST_CHECK_EQUAL(NoError, test_dev.executePutConfig(&request, parse, outmsg, vgList, retList, outList));
-
-            std::vector<unsigned char> expected = boost::assign::list_of
-                    (0x96)(0x93)(0xc8)(0xd0)(0x96)(0x95)(0x1A)(0x50);
-
-            BOOST_CHECK_EQUAL(outmsg->Buffer.BSt.Function, 0x0d7);
-            BOOST_CHECK_EQUAL(outmsg->Buffer.BSt.Length  , expected.size());
-
-            BOOST_CHECK_EQUAL_COLLECTIONS(
-                           &outmsg->Buffer.BSt.Message[0], &outmsg->Buffer.BSt.Message[expected.size()],
-                           expected.begin(), expected.end());
+                    outmsg->Buffer.BSt.Message, outmsg->Buffer.BSt.Message + expected.size(),
+                    expected.begin(), expected.end());
         }
 
         {
@@ -3939,143 +3688,141 @@ BOOST_FIXTURE_TEST_SUITE(command_executions, executePutConfig_helper)
             BOOST_CHECK_EQUAL(NoError, test_dev.executePutConfig(&request, parse, outmsg, vgList, retList, outList));
 
             std::vector<unsigned char> expected = boost::assign::list_of
-                    (0x96)(0x93)(0xc8)(0xd0)(0x96)(0x95)(0x1A)(0x50)(0x96)(0x96)(0x6b)(0xd0);
+                    (0x00)(0x39)(0x25)(0x39)(0x26)(0x39)(0x27);
 
             BOOST_CHECK_EQUAL(outmsg->Buffer.BSt.Function, 0x0d0);
             BOOST_CHECK_EQUAL(outmsg->Buffer.BSt.Length  , expected.size());
 
             BOOST_CHECK_EQUAL_COLLECTIONS(
-                           &outmsg->Buffer.BSt.Message[0], &outmsg->Buffer.BSt.Message[expected.size()],
-                           expected.begin(), expected.end());
+                    outmsg->Buffer.BSt.Message, outmsg->Buffer.BSt.Message + expected.size(),
+                    expected.begin(), expected.end());
         }
 
         {
-            CtiCommandParser parse("putconfig EMETCON holiday 4 01/20/2050 01/21/2050 01/22/2050");
+            CtiCommandParser parse("putconfig EMETCON holiday 1 01/20/2050 01/21/2050 01/22/2050 01/23/2050");
 
             CtiOutMessage *outmsg = CTIDBG_new OUTMESS;
 
             BOOST_CHECK_EQUAL(NoError, test_dev.executePutConfig(&request, parse, outmsg, vgList, retList, outList));
 
             std::vector<unsigned char> expected = boost::assign::list_of
-                    (0x96)(0x93)(0xc8)(0xd0)(0x96)(0x95)(0x1A)(0x50)(0x96)(0x96)(0x6b)(0xd0);
+                    (0x00)(0x39)(0x25)(0x39)(0x26)(0x39)(0x27)(0x39)(0x28);
 
-            BOOST_CHECK_EQUAL(outmsg->Buffer.BSt.Function, 0x0d1);
+            BOOST_CHECK_EQUAL(outmsg->Buffer.BSt.Function, 0x0d0);
             BOOST_CHECK_EQUAL(outmsg->Buffer.BSt.Length  , expected.size());
 
             BOOST_CHECK_EQUAL_COLLECTIONS(
-                           &outmsg->Buffer.BSt.Message[0], &outmsg->Buffer.BSt.Message[expected.size()],
-                           expected.begin(), expected.end());
+                    outmsg->Buffer.BSt.Message, outmsg->Buffer.BSt.Message + expected.size(),
+                    expected.begin(), expected.end());
         }
 
         {
-            CtiCommandParser parse("putconfig EMETCON holiday 7 01/20/2050 01/21/2050 01/22/2050");
+            CtiCommandParser parse("putconfig EMETCON holiday 1 01/20/2050 01/21/2050 01/22/2050 01/23/2050 01/24/2050");
 
             CtiOutMessage *outmsg = CTIDBG_new OUTMESS;
 
             BOOST_CHECK_EQUAL(NoError, test_dev.executePutConfig(&request, parse, outmsg, vgList, retList, outList));
 
             std::vector<unsigned char> expected = boost::assign::list_of
-                    (0x96)(0x93)(0xc8)(0xd0)(0x96)(0x95)(0x1A)(0x50)(0x96)(0x96)(0x6b)(0xd0);
+                    (0x00)(0x39)(0x25)(0x39)(0x26)(0x39)(0x27)(0x39)(0x28)(0x39)(0x29);
 
-            BOOST_CHECK_EQUAL(outmsg->Buffer.BSt.Function, 0x0d2);
+            BOOST_CHECK_EQUAL(outmsg->Buffer.BSt.Function, 0x0d0);
             BOOST_CHECK_EQUAL(outmsg->Buffer.BSt.Length  , expected.size());
 
             BOOST_CHECK_EQUAL_COLLECTIONS(
-                           &outmsg->Buffer.BSt.Message[0], &outmsg->Buffer.BSt.Message[expected.size()],
-                           expected.begin(), expected.end());
+                    outmsg->Buffer.BSt.Message, outmsg->Buffer.BSt.Message + expected.size(),
+                    expected.begin(), expected.end());
         }
 
         {
-            CtiCommandParser parse("putconfig EMETCON holiday 10 01/20/2050 01/21/2050 01/22/2050");
+            CtiCommandParser parse("putconfig EMETCON holiday 1 01/20/2050 01/21/2050 01/22/2050 01/23/2050 01/24/2050 01/25/2050");
 
             CtiOutMessage *outmsg = CTIDBG_new OUTMESS;
 
             BOOST_CHECK_EQUAL(NoError, test_dev.executePutConfig(&request, parse, outmsg, vgList, retList, outList));
 
             std::vector<unsigned char> expected = boost::assign::list_of
-                    (0x96)(0x93)(0xc8)(0xd0)(0x96)(0x95)(0x1A)(0x50)(0x96)(0x96)(0x6b)(0xd0);
+                    (0x00)(0x39)(0x25)(0x39)(0x26)(0x39)(0x27)(0x39)(0x28)(0x39)(0x29)(0x39)(0x2A);
 
-            BOOST_CHECK_EQUAL(outmsg->Buffer.BSt.Function, 0x0d3);
+            BOOST_CHECK_EQUAL(outmsg->Buffer.BSt.Function, 0x0d0);
             BOOST_CHECK_EQUAL(outmsg->Buffer.BSt.Length  , expected.size());
 
             BOOST_CHECK_EQUAL_COLLECTIONS(
-                           &outmsg->Buffer.BSt.Message[0], &outmsg->Buffer.BSt.Message[expected.size()],
-                           expected.begin(), expected.end());
+                    outmsg->Buffer.BSt.Message, outmsg->Buffer.BSt.Message + expected.size(),
+                    expected.begin(), expected.end());
         }
 
         {
-            CtiCommandParser parse("putconfig EMETCON holiday 13 01/20/2050 01/21/2050 01/22/2050");
+            CtiCommandParser parse("putconfig EMETCON holiday 1 01/20/2050 01/21/2050 01/22/2050 01/23/2050 01/24/2050 01/25/2050 01/26/2050");
 
             CtiOutMessage *outmsg = CTIDBG_new OUTMESS;
 
             BOOST_CHECK_EQUAL(NoError, test_dev.executePutConfig(&request, parse, outmsg, vgList, retList, outList));
 
             std::vector<unsigned char> expected = boost::assign::list_of
-                    (0x96)(0x93)(0xc8)(0xd0)(0x96)(0x95)(0x1A)(0x50)(0x96)(0x96)(0x6b)(0xd0);
+                    (0x00)(0x39)(0x25)(0x39)(0x26)(0x39)(0x27)(0x39)(0x28)(0x39)(0x29)(0x39)(0x2A)(0x39)(0x2B);
 
-            BOOST_CHECK_EQUAL(outmsg->Buffer.BSt.Function, 0x0d4);
+            BOOST_CHECK_EQUAL(outmsg->Buffer.BSt.Function, 0x0d0);
             BOOST_CHECK_EQUAL(outmsg->Buffer.BSt.Length  , expected.size());
 
             BOOST_CHECK_EQUAL_COLLECTIONS(
-                           &outmsg->Buffer.BSt.Message[0], &outmsg->Buffer.BSt.Message[expected.size()],
-                           expected.begin(), expected.end());
+                    outmsg->Buffer.BSt.Message, outmsg->Buffer.BSt.Message + expected.size(),
+                    expected.begin(), expected.end());
         }
 
         {
-            CtiCommandParser parse("putconfig EMETCON holiday 16 01/20/2050 01/21/2050 01/22/2050");
+            CtiCommandParser parse("putconfig EMETCON holiday 8 01/20/2050 01/21/2050 01/22/2050 01/23/2050 01/24/2050 01/25/2050 01/26/2050");
 
             CtiOutMessage *outmsg = CTIDBG_new OUTMESS;
 
             BOOST_CHECK_EQUAL(NoError, test_dev.executePutConfig(&request, parse, outmsg, vgList, retList, outList));
 
             std::vector<unsigned char> expected = boost::assign::list_of
-                    (0x96)(0x93)(0xc8)(0xd0)(0x96)(0x95)(0x1A)(0x50)(0x96)(0x96)(0x6b)(0xd0);
+                    (0x07)(0x39)(0x25)(0x39)(0x26)(0x39)(0x27)(0x39)(0x28)(0x39)(0x29)(0x39)(0x2A)(0x39)(0x2B);
 
-            BOOST_CHECK_EQUAL(outmsg->Buffer.BSt.Function, 0x0d5);
+            BOOST_CHECK_EQUAL(outmsg->Buffer.BSt.Function, 0x0d0);
             BOOST_CHECK_EQUAL(outmsg->Buffer.BSt.Length  , expected.size());
 
             BOOST_CHECK_EQUAL_COLLECTIONS(
-                           &outmsg->Buffer.BSt.Message[0], &outmsg->Buffer.BSt.Message[expected.size()],
-                           expected.begin(), expected.end());
+                    outmsg->Buffer.BSt.Message, outmsg->Buffer.BSt.Message + expected.size(),
+                    expected.begin(), expected.end());
         }
 
         {
-            CtiCommandParser parse("putconfig EMETCON holiday 19 01/20/2050 01/21/2050 01/22/2050");
+            CtiCommandParser parse("putconfig EMETCON holiday 15 01/20/2050 01/21/2050 01/22/2050 01/23/2050 01/24/2050 01/25/2050 01/26/2050");
 
             CtiOutMessage *outmsg = CTIDBG_new OUTMESS;
 
             BOOST_CHECK_EQUAL(NoError, test_dev.executePutConfig(&request, parse, outmsg, vgList, retList, outList));
 
             std::vector<unsigned char> expected = boost::assign::list_of
-                    (0x96)(0x93)(0xc8)(0xd0)(0x96)(0x95)(0x1A)(0x50)(0x96)(0x96)(0x6b)(0xd0);
+                    (0x0E)(0x39)(0x25)(0x39)(0x26)(0x39)(0x27)(0x39)(0x28)(0x39)(0x29)(0x39)(0x2A)(0x39)(0x2B);
 
-            BOOST_CHECK_EQUAL(outmsg->Buffer.BSt.Function, 0x0d6);
+            BOOST_CHECK_EQUAL(outmsg->Buffer.BSt.Function, 0x0d0);
             BOOST_CHECK_EQUAL(outmsg->Buffer.BSt.Length  , expected.size());
 
             BOOST_CHECK_EQUAL_COLLECTIONS(
-                           &outmsg->Buffer.BSt.Message[0], &outmsg->Buffer.BSt.Message[expected.size()],
-                           expected.begin(), expected.end());
+                    outmsg->Buffer.BSt.Message, outmsg->Buffer.BSt.Message + expected.size(),
+                    expected.begin(), expected.end());
         }
 
         {
-            CtiCommandParser parse("putconfig EMETCON holiday 22 01/20/2050 01/21/2050 01/22/2050");
+            CtiCommandParser parse("putconfig EMETCON holiday 22 01/20/2050 01/21/2050 01/22/2050 01/23/2050 01/24/2050 01/25/2050 01/26/2050");
 
             CtiOutMessage *outmsg = CTIDBG_new OUTMESS;
 
             BOOST_CHECK_EQUAL(NoError, test_dev.executePutConfig(&request, parse, outmsg, vgList, retList, outList));
 
             std::vector<unsigned char> expected = boost::assign::list_of
-                    (0x96)(0x93)(0xc8)(0xd0)(0x96)(0x95)(0x1A)(0x50)(0x96)(0x96)(0x6b)(0xd0);
+                    (0x15)(0x39)(0x25)(0x39)(0x26)(0x39)(0x27)(0x39)(0x28)(0x39)(0x29)(0x39)(0x2A)(0x39)(0x2B);
 
-            BOOST_CHECK_EQUAL(outmsg->Buffer.BSt.Function, 0x0d7);
+            BOOST_CHECK_EQUAL(outmsg->Buffer.BSt.Function, 0x0d0);
             BOOST_CHECK_EQUAL(outmsg->Buffer.BSt.Length  , expected.size());
 
             BOOST_CHECK_EQUAL_COLLECTIONS(
-                           &outmsg->Buffer.BSt.Message[0], &outmsg->Buffer.BSt.Message[expected.size()],
-                           expected.begin(), expected.end());
+                    outmsg->Buffer.BSt.Message, outmsg->Buffer.BSt.Message + expected.size(),
+                    expected.begin(), expected.end());
         }
-
-
     }
 
     BOOST_AUTO_TEST_CASE(test_executePutConfigTouDays)
@@ -4109,7 +3856,7 @@ BOOST_FIXTURE_TEST_SUITE(command_executions, executePutConfig_helper)
             BOOST_CHECK_EQUAL(outmsg->Buffer.BSt.Length  , expected.size() );
 
             BOOST_CHECK_EQUAL_COLLECTIONS(
-                                       &outmsg->Buffer.BSt.Message[0], &outmsg->Buffer.BSt.Message[expected.size()],
+                                       outmsg->Buffer.BSt.Message, outmsg->Buffer.BSt.Message + expected.size(),
                                        expected.begin(), expected.end());
 
             outList.pop_front();
@@ -4127,7 +3874,7 @@ BOOST_FIXTURE_TEST_SUITE(command_executions, executePutConfig_helper)
             BOOST_CHECK_EQUAL(outmsg->Buffer.BSt.Length  , expected.size() );
 
             BOOST_CHECK_EQUAL_COLLECTIONS(
-                                       &outmsg->Buffer.BSt.Message[0], &outmsg->Buffer.BSt.Message[expected.size()],
+                                       outmsg->Buffer.BSt.Message, outmsg->Buffer.BSt.Message + expected.size(),
                                        expected.begin(), expected.end());
 
             outList.pop_front();
@@ -4145,7 +3892,7 @@ BOOST_FIXTURE_TEST_SUITE(command_executions, executePutConfig_helper)
             BOOST_CHECK_EQUAL(outmsg->Buffer.BSt.Length  , expected.size() );
 
             BOOST_CHECK_EQUAL_COLLECTIONS(
-                                       &outmsg->Buffer.BSt.Message[0], &outmsg->Buffer.BSt.Message[expected.size()],
+                                       outmsg->Buffer.BSt.Message, outmsg->Buffer.BSt.Message + expected.size(),
                                        expected.begin(), expected.end());
 
             outList.pop_front();
@@ -4163,7 +3910,7 @@ BOOST_FIXTURE_TEST_SUITE(command_executions, executePutConfig_helper)
             BOOST_CHECK_EQUAL(outmsg->Buffer.BSt.Length  , expected.size() );
 
             BOOST_CHECK_EQUAL_COLLECTIONS(
-                                       &outmsg->Buffer.BSt.Message[0], &outmsg->Buffer.BSt.Message[expected.size()],
+                                       outmsg->Buffer.BSt.Message, outmsg->Buffer.BSt.Message + expected.size(),
                                        expected.begin(), expected.end());
 
             outList.pop_front();
@@ -4182,7 +3929,7 @@ BOOST_FIXTURE_TEST_SUITE(command_executions, executePutConfig_helper)
 
             BOOST_CHECK_EQUAL(NoError, test_dev.executePutConfig(&request, parse, outmsg, vgList, retList, outList));
 
-            BOOST_CHECK_EQUAL(outmsg->Sequence, Cti::Protocols::EmetconProtocol::PutConfig_Thresholds);
+            BOOST_CHECK_EQUAL(outmsg->Sequence, Cti::Protocols::EmetconProtocol::PutConfig_PhaseLossThreshold);
 
             std::vector<unsigned char> expected = boost::assign::list_of
                     (0x41)(0x93)(0xd5);
@@ -4191,7 +3938,7 @@ BOOST_FIXTURE_TEST_SUITE(command_executions, executePutConfig_helper)
             BOOST_CHECK_EQUAL(outmsg->Buffer.BSt.Length  , expected.size() );
 
             BOOST_CHECK_EQUAL_COLLECTIONS(
-                                       &outmsg->Buffer.BSt.Message[0], &outmsg->Buffer.BSt.Message[expected.size()],
+                                       outmsg->Buffer.BSt.Message, outmsg->Buffer.BSt.Message + expected.size(),
                                        expected.begin(), expected.end());
         }
     }

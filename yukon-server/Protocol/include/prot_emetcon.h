@@ -144,6 +144,7 @@ public:
         GetConfig_Addressing,
         GetConfig_DailyReadInterest,
         GetConfig_WaterMeterReadInterval,
+        GetConfig_PhaseLossThreshold,
 
         // PutConfig commands
         PutConfig_Install,
@@ -175,7 +176,6 @@ public:
         PutConfig_Addressing,
         PutConfig_SPID,
         PutConfig_VThreshold,
-        PutConfig_Thresholds,
         PutConfig_DST,
         PutConfig_Holiday,
         PutConfig_Options,
@@ -197,6 +197,7 @@ public:
         PutConfig_IEDDNPAddress,
         PutConfig_WaterMeterReadInterval,
         PutConfig_Channel2NetMetering,      // GetConfig_Options was hijacked for the config byte/alarm mask in the 410....
+        PutConfig_PhaseLossThreshold,
 
         PutConfig_ARMC,
         PutConfig_ARML,

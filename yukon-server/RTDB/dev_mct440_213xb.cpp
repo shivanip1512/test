@@ -254,8 +254,8 @@ Mct440_213xBDevice::CommandSet Mct440_213xBDevice::initCommandStore()
     cs.insert(CommandStore(EmetconProtocol::GetValue_InstantLineData,       EmetconProtocol::IO_Function_Read,  0x9F,   12));
     cs.insert(CommandStore(EmetconProtocol::GetValue_TOUkWhReverse,         EmetconProtocol::IO_Function_Read,  0xE2,   13));
     cs.insert(CommandStore(EmetconProtocol::GetValue_FrozenTOUkWhReverse,   EmetconProtocol::IO_Function_Read,  0xE3,   13));
-    cs.insert(CommandStore(EmetconProtocol::GetConfig_Thresholds,           EmetconProtocol::IO_Read,           0x1E,    3));
-    cs.insert(CommandStore(EmetconProtocol::PutConfig_Thresholds,           EmetconProtocol::IO_Write,          0x1E,    3));
+    cs.insert(CommandStore(EmetconProtocol::GetConfig_PhaseLossThreshold,   EmetconProtocol::IO_Read,           0x1E,    3));
+    cs.insert(CommandStore(EmetconProtocol::PutConfig_PhaseLossThreshold,   EmetconProtocol::IO_Write,          0x1E,    3));
 
 //    cs.insert(CommandStore(EmetconProtocol::GetConfig_TOU,                  EmetconProtocol::IO_Function_Read,  FuncRead_TOUSwitchSchedule12Pos,       FuncRead_TOUSwitchSchedule12Len));
 //    cs.insert(CommandStore(EmetconProtocol::GetConfig_TOU,                  EmetconProtocol::IO_Function_Read,  FuncRead_TOUSwitchSchedule34Pos,       FuncRead_TOUSwitchSchedule34Len));
@@ -309,7 +309,8 @@ bool Mct440_213xBDevice::getOperation( const UINT &cmd, BSTRUCT &bst ) const
         return true;
     }
 
-    if( cmd == EmetconProtocol::PutConfig_VThreshold )          /* check for commands no longer supported               */
+    if( cmd == EmetconProtocol::PutConfig_VThreshold ||
+        cmd == EmetconProtocol::GetConfig_Thresholds)           /* check for commands no longer supported               */
     {
         return false;
     }
@@ -367,9 +368,9 @@ INT Mct440_213xBDevice::executeGetValue(CtiRequestMsg     *pReq,
                                         CtiMessageList    &retList,
                                         OutMessageList    &outList)
 {
-    INT nRet   = NoMethod;
-    bool found = false;
-    int function;
+    INT  nRet     = NoMethod;
+    bool found    = false;
+    int  function = -1;
 
 
     static const string str_outage          = "outage";
@@ -600,7 +601,7 @@ INT Mct440_213xBDevice::ModelDecode(INMESS          *InMessage,
         status = decodeGetConfigTOU(InMessage, TimeNow, vgList, retList, outList);
         break;
 
-    case EmetconProtocol::GetConfig_Thresholds:
+    case EmetconProtocol::GetConfig_PhaseLossThreshold:
         status = decodeGetConfigPhaseLossThreshold(InMessage, TimeNow, vgList, retList, outList);
         break;
 
@@ -1750,65 +1751,68 @@ int Mct440_213xBDevice::executePutConfigHoliday(CtiRequestMsg     *pReq,
                                                 CtiMessageList    &retList,
                                                 OutMessageList    &outList)
 {
-    bool found    = false;
-    INT  nRet     = NoMethod;
-    INT  function = EmetconProtocol::PutConfig_Holiday;
+    bool found = false;
+    INT  nRet  = NoMethod;
+    const INT function = EmetconProtocol::PutConfig_Holiday;
 
 
     if( found = getOperation(function, OutMessage->Buffer.BSt) )
     {
-        unsigned long holidays[3];
-        int holiday_count = 0;
-
+        unsigned long holidays[7];
+        int holiday_count  = 0;
         int holiday_offset = parse.getiValue("holiday_offset");
 
-        OutMessage->Sequence = Cti::Protocols::EmetconProtocol::PutConfig_Holiday;
+        OutMessage->Sequence = function;
 
-        //  grab up to three potential dates
-        for( int i = 0; i < 3 && parse.isKeyValid("holiday_date" + CtiNumStr(i)); i++ )
+                                                                /*  grab up to 7 potential dates                        */
+        for( int i = 0; i < 7 && parse.isKeyValid("holiday_date" + CtiNumStr(i)); i++ )
         {
-            CtiTokenizer date_tokenizer(parse.getsValue("holiday_date" + CtiNumStr(i)));
+            int month, day, year;
+            char sep1, sep2;
 
-            int month = atoi(date_tokenizer("/").c_str()),
-                day   = atoi(date_tokenizer("/").c_str()),
-                year  = atoi(date_tokenizer("/").c_str());
+            istringstream ss;
+            ss.str(parse.getsValue("holiday_date" + CtiNumStr(i)));
 
-            if( year > 2000 )
+            ss >> month >> sep1 >> day >> sep2 >> year;
+
+            CtiDate holiday_date(day, month, year);
+
+
+            if( holiday_date.isValid() && holiday_date > CtiDate::now() )
             {
-                CtiDate holiday_date(day, month, year);
-
-                if( holiday_date.isValid() && holiday_date > CtiDate::now() )
-                {
-                    holidays[holiday_count++] = CtiTime(holiday_date).seconds();
-                }
+                                                                /* get the number of days since Jan 1 2010              */
+                holidays[holiday_count++] = (CtiTime(holiday_date).seconds() - CtiTime(CtiDate(1,1,2010)).seconds()) / 86400;
+            }
+            else
+            {
+                holiday_count = 0;                              /* If the data is less then 2010, break                  */
+                break;
             }
         }
 
 
         /*
          * check to make sure that holiday_offset is:
-         * 1, 4, 7, 10, 13, 16, 19, 22
-         *
+         * 1, 8, 15, 22
          */
 
-        if( (holiday_offset % 3) == 1 &&
+        if( (holiday_offset % 7) == 1 &&
              holiday_offset      >= 1 &&
              holiday_offset      <= 22)
         {
-            if( holiday_count > 0 )
+            if( holiday_count >  0 ||
+                holiday_count <= 7)
             {
                 //  change to 0-based offset;  it just makes things easier
                 holiday_offset--;
 
-                OutMessage->Buffer.BSt.Function += holiday_offset / 3;
-                OutMessage->Buffer.BSt.Length    = holiday_count  * 4;
+                OutMessage->Buffer.BSt.Length     = (holiday_count  * 2) + 1;
+                OutMessage->Buffer.BSt.Message[0] =  holiday_offset;
 
                 for( int i = 0; i < holiday_count; i++ )
                 {
-                    OutMessage->Buffer.BSt.Message[i*4+0] = holidays[i] >> 24;
-                    OutMessage->Buffer.BSt.Message[i*4+1] = holidays[i] >> 16;
-                    OutMessage->Buffer.BSt.Message[i*4+2] = holidays[i] >>  8;
-                    OutMessage->Buffer.BSt.Message[i*4+3] = holidays[i] >>  0;
+                    OutMessage->Buffer.BSt.Message[i*2+1] = holidays[i] >> 8;
+                    OutMessage->Buffer.BSt.Message[i*2+2] = holidays[i]  & 0xff;
                 }
             }
             else
@@ -1853,7 +1857,7 @@ int Mct440_213xBDevice::executePutConfigHoliday(CtiRequestMsg     *pReq,
 
             if( errRet )
             {
-                errRet->setResultString("Invalid holiday offset specified, valid offset are {1,4,7,10,13,16,19,22}");
+                errRet->setResultString("Invalid holiday offset specified, valid offsets are: 1, 8, 15, 22");
                 errRet->setStatus(NoMethod);
                 retList.push_back(errRet);
             }
@@ -2014,8 +2018,7 @@ int Mct440_213xBDevice::executePutConfigTOUDays(CtiRequestMsg     *pReq,
 
                             if( rate   >= 0   &&
                                 hour   >= 0   && hour   <  24 &&
-                                minute >= 0   && minute <  60 &&
-                                sep1   == '/' && sep2   == ':')
+                                minute >= 0   && minute <  60)
                             {
                                 ratechange_t ratechange;
 
@@ -2513,7 +2516,7 @@ int Mct440_213xBDevice::executePutConfigPhaseLossThreshold(CtiRequestMsg     *pR
                                                            OutMessageList    &outList)
 {
     INT  nRet = NoMethod;
-    const INT function = EmetconProtocol::PutConfig_Thresholds;
+    const INT function = EmetconProtocol::PutConfig_PhaseLossThreshold;
 
 
     if( !getOperation(function, OutMessage->Buffer.BSt) )
@@ -2525,8 +2528,8 @@ int Mct440_213xBDevice::executePutConfigPhaseLossThreshold(CtiRequestMsg     *pR
     int phaseloss_percent = parse.getiValue("phaseloss_percent_threshold", -1);
     string durationstr    = parse.getsValue("phaseloss_duration_threshold");
 
-    stringstream ss;
-    ss << durationstr;
+    istringstream ss;
+    ss.str(durationstr);
 
     int hour, minute, second;
     char sep1, sep2;
@@ -2534,11 +2537,10 @@ int Mct440_213xBDevice::executePutConfigPhaseLossThreshold(CtiRequestMsg     *pR
 
     int phaseloss_seconds = -1;
 
-                                                            /* check hour:minute:second format                      */
+                                                            /* check for valid range of time units                  */
     if( hour   >= 0   && hour   <  24 &&
         minute >= 0   && minute <  60 &&
-        second >= 0   && second <  60 &&
-        sep1   == ':' && sep2   == ':')
+        second >= 0   && second <  60)
     {
         phaseloss_seconds = hour * 3600 + minute * 60 + second;
     }
@@ -2572,6 +2574,8 @@ int Mct440_213xBDevice::executePutConfigPhaseLossThreshold(CtiRequestMsg     *pR
             errRet->setStatus(NoMethod);
             retList.push_back(errRet);
         }
+
+        nRet = BADPARAM;
     }
 
     return nRet;
