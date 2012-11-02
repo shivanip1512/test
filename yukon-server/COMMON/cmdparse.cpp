@@ -1661,11 +1661,6 @@ void  CtiCommandParser::doParseGetConfig(const string &_CmdStr)
             {
                 _cmd["tou_schedule"] = CtiParseValue(atoi(token.data() + 13));
             }
-
-            if(CmdStr.contains(" continued"))
-            {
-                _cmd["continued"] = CtiParseValue(true);
-            }
         }
         if(CmdStr.contains(" holiday"))
         {
