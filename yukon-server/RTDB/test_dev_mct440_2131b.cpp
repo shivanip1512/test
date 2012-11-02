@@ -49,6 +49,8 @@ struct test_Mct440_2131BDevice : Cti::Devices::Mct440_2131BDevice
     using Mct440_2131BDevice::executeGetConfig;
     using MctDevice::updateFreezeInfo;
 
+    using Mct440_2131BDevice::decodeGetConfigTOU;
+
     enum test_Features
     {
         test_Feature_DisconnectCollar,
@@ -3043,6 +3045,168 @@ BOOST_AUTO_TEST_CASE(test_decodeGetValueInstantLineData)
 
 }
 
+
+BOOST_AUTO_TEST_CASE(test_decodeGetConfigTOU)
+{
+    INMESS                         InMessage;
+    CtiTime                        t(CtiDate(1, 1, 2011), 19, 16, 0);  //  1293930960 seconds (0x4D1FD1D0)
+    CtiDeviceBase::CtiMessageList  vgList;
+    CtiDeviceBase::CtiMessageList  retList;
+    CtiDeviceBase::OutMessageList  outList; // not use
+
+    string daySchedule1 = "10, 11, 12, 13, 14, 15, 16, 17, 18, 19, 0, 1, 2, 3, 0, 1, 2, 3, 0, 1, 2",
+           daySchedule2 = "20, 21, 22, 23, 24, 25, 26, 27, 28, 29, 1, 2, 3, 0, 1, 2, 3, 0, 1, 2, 3",
+           daySchedule3 = "30, 31, 32, 33, 34, 35, 36, 37, 38, 39, 2, 3, 0, 1, 2, 3, 0, 1, 2, 3, 0",
+           daySchedule4 = "40, 41, 42, 43, 44, 45, 46, 47, 48, 49, 3, 0, 1, 2, 3, 0, 1, 2, 3, 0, 1";
+
+    test_Mct440_2131B test_dev;
+
+    {
+        test_dev.setDynamicInfo(CtiTableDynamicPaoInfo::Key_MCT_DaySchedule1, daySchedule1);
+        test_dev.setDynamicInfo(CtiTableDynamicPaoInfo::Key_MCT_DaySchedule2, daySchedule2);
+        test_dev.setDynamicInfo(CtiTableDynamicPaoInfo::Key_MCT_DaySchedule3, daySchedule3);
+        test_dev.setDynamicInfo(CtiTableDynamicPaoInfo::Key_MCT_DaySchedule4, daySchedule4);
+
+        unsigned char test_data[13] = {50, 51, 52, 53, 54, 0xf0, 0x00, 60, 61, 62, 63, 64, 0xff};
+
+        memcpy(InMessage.Buffer.DSt.Message, test_data, 13);
+
+        InMessage.Return.UserID     = 0;
+        InMessage.Sequence          = EmetconProtocol::GetConfig_TOU;
+
+        string cmd = "getconfig tou schedule 1";
+        strcpy(InMessage.Return.CommandStr, cmd.c_str());
+
+        BOOST_CHECK_EQUAL(NoError, test_dev.decodeGetConfigTOU(&InMessage, t, vgList, retList, outList));
+
+        string result1, result2, result3, result4;
+
+        test_dev.getDynamicInfo(CtiTableDynamicPaoInfo::Key_MCT_DaySchedule1, result1);
+        test_dev.getDynamicInfo(CtiTableDynamicPaoInfo::Key_MCT_DaySchedule2, result2);
+        test_dev.getDynamicInfo(CtiTableDynamicPaoInfo::Key_MCT_DaySchedule3, result3);
+        test_dev.getDynamicInfo(CtiTableDynamicPaoInfo::Key_MCT_DaySchedule4, result4);
+
+        string expSchedule1 = "50, 51, 52, 53, 54, 15, 16, 17, 18, 19, 0, 0, 0, 0, 0, 1, 2, 3, 0, 1, 0",
+               expSchedule2 = "60, 61, 62, 63, 64, 25, 26, 27, 28, 29, 3, 3, 3, 3, 3, 2, 3, 0, 1, 2, 3",
+               expSchedule3 = "30, 31, 32, 33, 34, 35, 36, 37, 38, 39, 2, 3, 0, 1, 2, 3, 0, 1, 2, 3, 0",
+               expSchedule4 = "40, 41, 42, 43, 44, 45, 46, 47, 48, 49, 3, 0, 1, 2, 3, 0, 1, 2, 3, 0, 1";
+
+        BOOST_CHECK_EQUAL( expSchedule1, result1);
+        BOOST_CHECK_EQUAL( expSchedule2, result2);
+        BOOST_CHECK_EQUAL( expSchedule3, result3);
+        BOOST_CHECK_EQUAL( expSchedule4, result4);
+    }
+
+    {
+        test_dev.setDynamicInfo(CtiTableDynamicPaoInfo::Key_MCT_DaySchedule1, daySchedule1);
+        test_dev.setDynamicInfo(CtiTableDynamicPaoInfo::Key_MCT_DaySchedule2, daySchedule2);
+        test_dev.setDynamicInfo(CtiTableDynamicPaoInfo::Key_MCT_DaySchedule3, daySchedule3);
+        test_dev.setDynamicInfo(CtiTableDynamicPaoInfo::Key_MCT_DaySchedule4, daySchedule4);
+
+        unsigned char test_data[13] = {50, 51, 52, 53, 54, 0xf0, 0x00, 60, 61, 62, 63, 64, 0xff};
+
+        memcpy(InMessage.Buffer.DSt.Message, test_data, 13);
+
+        InMessage.Return.UserID     = 0;
+        InMessage.Sequence          = EmetconProtocol::GetConfig_TOUPart2;
+
+        string cmd = "getconfig tou schedule 1";
+        strcpy(InMessage.Return.CommandStr, cmd.c_str());
+
+        BOOST_CHECK_EQUAL(NoError, test_dev.decodeGetConfigTOU(&InMessage, t, vgList, retList, outList));
+
+        string result1, result2, result3, result4;
+
+        test_dev.getDynamicInfo(CtiTableDynamicPaoInfo::Key_MCT_DaySchedule1, result1);
+        test_dev.getDynamicInfo(CtiTableDynamicPaoInfo::Key_MCT_DaySchedule2, result2);
+        test_dev.getDynamicInfo(CtiTableDynamicPaoInfo::Key_MCT_DaySchedule3, result3);
+        test_dev.getDynamicInfo(CtiTableDynamicPaoInfo::Key_MCT_DaySchedule4, result4);
+
+        string expSchedule1 = "10, 11, 12, 13, 14, 50, 51, 52, 53, 54, 0, 1, 2, 3, 0, 0, 0, 0, 0, 0, 2",
+               expSchedule2 = "20, 21, 22, 23, 24, 60, 61, 62, 63, 64, 1, 2, 3, 0, 1, 3, 3, 3, 3, 3, 3",
+               expSchedule3 = "30, 31, 32, 33, 34, 35, 36, 37, 38, 39, 2, 3, 0, 1, 2, 3, 0, 1, 2, 3, 0",
+               expSchedule4 = "40, 41, 42, 43, 44, 45, 46, 47, 48, 49, 3, 0, 1, 2, 3, 0, 1, 2, 3, 0, 1";
+
+        BOOST_CHECK_EQUAL( expSchedule1, result1);
+        BOOST_CHECK_EQUAL( expSchedule2, result2);
+        BOOST_CHECK_EQUAL( expSchedule3, result3);
+        BOOST_CHECK_EQUAL( expSchedule4, result4);
+    }
+
+    {
+        test_dev.setDynamicInfo(CtiTableDynamicPaoInfo::Key_MCT_DaySchedule1, daySchedule1);
+        test_dev.setDynamicInfo(CtiTableDynamicPaoInfo::Key_MCT_DaySchedule2, daySchedule2);
+        test_dev.setDynamicInfo(CtiTableDynamicPaoInfo::Key_MCT_DaySchedule3, daySchedule3);
+        test_dev.setDynamicInfo(CtiTableDynamicPaoInfo::Key_MCT_DaySchedule4, daySchedule4);
+
+        unsigned char test_data[13] = {50, 51, 52, 53, 54, 0xf0, 0x00, 60, 61, 62, 63, 64, 0xff};
+
+        memcpy(InMessage.Buffer.DSt.Message, test_data, 13);
+
+        InMessage.Return.UserID     = 0;
+        InMessage.Sequence          = EmetconProtocol::GetConfig_TOU;
+
+        string cmd = "getconfig tou schedule 3";
+        strcpy(InMessage.Return.CommandStr, cmd.c_str());
+
+        BOOST_CHECK_EQUAL(NoError, test_dev.decodeGetConfigTOU(&InMessage, t, vgList, retList, outList));
+
+        string result1, result2, result3, result4;
+
+        test_dev.getDynamicInfo(CtiTableDynamicPaoInfo::Key_MCT_DaySchedule1, result1);
+        test_dev.getDynamicInfo(CtiTableDynamicPaoInfo::Key_MCT_DaySchedule2, result2);
+        test_dev.getDynamicInfo(CtiTableDynamicPaoInfo::Key_MCT_DaySchedule3, result3);
+        test_dev.getDynamicInfo(CtiTableDynamicPaoInfo::Key_MCT_DaySchedule4, result4);
+
+        string expSchedule1 = "10, 11, 12, 13, 14, 15, 16, 17, 18, 19, 0, 1, 2, 3, 0, 1, 2, 3, 0, 1, 2",
+               expSchedule2 = "20, 21, 22, 23, 24, 25, 26, 27, 28, 29, 1, 2, 3, 0, 1, 2, 3, 0, 1, 2, 3",
+               expSchedule3 = "50, 51, 52, 53, 54, 35, 36, 37, 38, 39, 0, 0, 0, 0, 0, 3, 0, 1, 2, 3, 0",
+               expSchedule4 = "60, 61, 62, 63, 64, 45, 46, 47, 48, 49, 3, 3, 3, 3, 3, 0, 1, 2, 3, 0, 3";
+
+        BOOST_CHECK_EQUAL( expSchedule1, result1);
+        BOOST_CHECK_EQUAL( expSchedule2, result2);
+        BOOST_CHECK_EQUAL( expSchedule3, result3);
+        BOOST_CHECK_EQUAL( expSchedule4, result4);
+    }
+
+    {
+        test_dev.setDynamicInfo(CtiTableDynamicPaoInfo::Key_MCT_DaySchedule1, daySchedule1);
+        test_dev.setDynamicInfo(CtiTableDynamicPaoInfo::Key_MCT_DaySchedule2, daySchedule2);
+        test_dev.setDynamicInfo(CtiTableDynamicPaoInfo::Key_MCT_DaySchedule3, daySchedule3);
+        test_dev.setDynamicInfo(CtiTableDynamicPaoInfo::Key_MCT_DaySchedule4, daySchedule4);
+
+        unsigned char test_data[13] = {50, 51, 52, 53, 54, 0xf0, 0x00, 60, 61, 62, 63, 64, 0xff};
+
+        memcpy(InMessage.Buffer.DSt.Message, test_data, 13);
+
+        InMessage.Return.UserID     = 0;
+        InMessage.Sequence          = EmetconProtocol::GetConfig_TOUPart2;
+
+        string cmd = "getconfig tou schedule 3";
+        strcpy(InMessage.Return.CommandStr, cmd.c_str());
+
+        BOOST_CHECK_EQUAL(NoError, test_dev.decodeGetConfigTOU(&InMessage, t, vgList, retList, outList));
+
+        string result1, result2, result3, result4;
+
+        test_dev.getDynamicInfo(CtiTableDynamicPaoInfo::Key_MCT_DaySchedule1, result1);
+        test_dev.getDynamicInfo(CtiTableDynamicPaoInfo::Key_MCT_DaySchedule2, result2);
+        test_dev.getDynamicInfo(CtiTableDynamicPaoInfo::Key_MCT_DaySchedule3, result3);
+        test_dev.getDynamicInfo(CtiTableDynamicPaoInfo::Key_MCT_DaySchedule4, result4);
+
+        string expSchedule1 = "10, 11, 12, 13, 14, 15, 16, 17, 18, 19, 0, 1, 2, 3, 0, 1, 2, 3, 0, 1, 2",
+               expSchedule2 = "20, 21, 22, 23, 24, 25, 26, 27, 28, 29, 1, 2, 3, 0, 1, 2, 3, 0, 1, 2, 3",
+               expSchedule3 = "30, 31, 32, 33, 34, 50, 51, 52, 53, 54, 2, 3, 0, 1, 2, 0, 0, 0, 0, 0, 0",
+               expSchedule4 = "40, 41, 42, 43, 44, 60, 61, 62, 63, 64, 3, 0, 1, 2, 3, 3, 3, 3, 3, 3, 1";
+
+        BOOST_CHECK_EQUAL( expSchedule1, result1);
+        BOOST_CHECK_EQUAL( expSchedule2, result2);
+        BOOST_CHECK_EQUAL( expSchedule3, result3);
+        BOOST_CHECK_EQUAL( expSchedule4, result4);
+    }
+}
+
+
 BOOST_AUTO_TEST_CASE(test_decodeGetValueTOUkWh)
 {
     INMESS                          InMessage;
@@ -3404,7 +3568,7 @@ BOOST_FIXTURE_TEST_SUITE(command_executions, executePutConfig_helper)
 
         BOOST_CHECK_EQUAL(NoError, test_dev.executePutConfigTOU(&request, parse, outMessage, vgList, retList, outList, false));
 
-        BOOST_CHECK_EQUAL(outList.size(), 8);
+        BOOST_CHECK_EQUAL(outList.size(), 9);
 
         OUTMESS* outmsg = outList.front();
 
@@ -3415,8 +3579,8 @@ BOOST_FIXTURE_TEST_SUITE(command_executions, executePutConfig_helper)
         unsigned char exp_msg_0[15] = {0xd3,0xd2,0x41,0xc,0xc,0xc,0xc,0x44,0xe6,0x46,0xc,0xc,0xc,0xc,0xe6};
 
         BOOST_CHECK_EQUAL_COLLECTIONS(
-               &outmsg->Buffer.BSt.Message[0],&outmsg->Buffer.BSt.Message[14],
-               &exp_msg_0[0], &exp_msg_0[14]);
+               &outmsg->Buffer.BSt.Message[0],&outmsg->Buffer.BSt.Message[15],
+               &exp_msg_0[0], &exp_msg_0[15]);
 
         outList.pop_front();
         outmsg = outList.front();
@@ -3428,8 +3592,8 @@ BOOST_FIXTURE_TEST_SUITE(command_executions, executePutConfig_helper)
         unsigned char exp_msg_1[15] = {0x4b,0xc,0xc,0xc,0xc,0x4,0xe6,0x50,0xc,0xc,0xc,0xc,0x4,0xe6,0x0};
 
         BOOST_CHECK_EQUAL_COLLECTIONS(
-               &outmsg->Buffer.BSt.Message[0],&outmsg->Buffer.BSt.Message[14],
-               &exp_msg_1[0], &exp_msg_1[14]);
+               &outmsg->Buffer.BSt.Message[0],&outmsg->Buffer.BSt.Message[15],
+               &exp_msg_1[0], &exp_msg_1[15]);
 
         outList.pop_front();
         outmsg = outList.front();
@@ -3441,8 +3605,8 @@ BOOST_FIXTURE_TEST_SUITE(command_executions, executePutConfig_helper)
         unsigned char exp_msg_2[15] = {0xc,0xc,0xc,0xc,0xc,0x9,0x38,0xc,0xc,0xc,0xc,0xc,0x9,0x38,0x0};
 
         BOOST_CHECK_EQUAL_COLLECTIONS(
-               &outmsg->Buffer.BSt.Message[0],&outmsg->Buffer.BSt.Message[14],
-               &exp_msg_2[0], &exp_msg_2[14]);
+               &outmsg->Buffer.BSt.Message[0],&outmsg->Buffer.BSt.Message[15],
+               &exp_msg_2[0], &exp_msg_2[15]);
 
         outList.pop_front();
         outmsg = outList.front();
@@ -3454,8 +3618,8 @@ BOOST_FIXTURE_TEST_SUITE(command_executions, executePutConfig_helper)
         unsigned char exp_msg_3[15] = {0xc,0xc,0xc,0xc,0xc,0x9,0x38,0xc,0xc,0xc,0xc,0xc,0x9,0x38,0x0};
 
         BOOST_CHECK_EQUAL_COLLECTIONS(
-               &outmsg->Buffer.BSt.Message[0],&outmsg->Buffer.BSt.Message[14],
-               &exp_msg_3[0], &exp_msg_3[14]);
+               &outmsg->Buffer.BSt.Message[0],&outmsg->Buffer.BSt.Message[15],
+               &exp_msg_3[0], &exp_msg_3[15]);
 
         outList.pop_front();
     }
@@ -3960,7 +4124,7 @@ BOOST_FIXTURE_TEST_SUITE(command_executions, executePutConfig_helper)
 
     }
 
-    BOOST_AUTO_TEST_CASE(test_executePutConfigThresholds)
+    BOOST_AUTO_TEST_CASE(test_executePutConfigPhaseLossThresholds)
     {
         test_Mct440_2131B test_dev;
 
