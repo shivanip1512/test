@@ -4176,7 +4176,7 @@ BOOST_FIXTURE_TEST_SUITE(command_executions, executePutConfig_helper)
         test_Mct440_2131B test_dev;
 
         {
-            CtiCommandParser parse("putconfig EMETCON phaseloss thresholds 65 10:30:45");
+            CtiCommandParser parse("putconfig EMETCON phaseloss threshold 65 duration 10:30:45");
 
             CtiOutMessage *outmsg = CTIDBG_new OUTMESS;
 
