@@ -1784,14 +1784,16 @@ int Mct440_213xBDevice::executePutConfigHoliday(CtiRequestMsg     *pReq,
             }
         }
 
-        if( holiday_offset == 1  ||
-            holiday_offset == 4  ||
-            holiday_offset == 7  ||
-            holiday_offset == 10 ||
-            holiday_offset == 13 ||
-            holiday_offset == 16 ||
-            holiday_offset == 19 ||
-            holiday_offset == 22 )
+
+        /*
+         * check to make sure that holiday_offset is:
+         * 1, 4, 7, 10, 13, 16, 19, 22
+         *
+         */
+
+        if( (holiday_offset % 3) == 1 &&
+             holiday_offset      >= 1 &&
+             holiday_offset      <= 22)
         {
             if( holiday_count > 0 )
             {
