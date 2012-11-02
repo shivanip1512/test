@@ -595,6 +595,10 @@ INT Mct440_213xBDevice::ModelDecode(INMESS          *InMessage,
         }
         break;
 
+    case EmetconProtocol::GetConfig_TOU:
+    case EmetconProtocol::GetConfig_TOUPart2:
+        status = decodeGetConfigTOU(InMessage, TimeNow, vgList, retList, outList);
+
     default:
         status = Inherited::ModelDecode(InMessage, TimeNow, vgList, retList, outList);
         if (status != NORMAL)
@@ -1264,30 +1268,40 @@ int Mct440_213xBDevice::executePutConfigTOU(CtiRequestMsg     *pReq,
             OutMessage->Buffer.BSt.Function    = FuncRead_TOUSwitchSchedule12Pos;
             OutMessage->Buffer.BSt.Length      = FuncRead_TOUSwitchSchedule12Len;
             OutMessage->Buffer.BSt.IO          = EmetconProtocol::IO_Function_Read;
+
             OUTMESS *touOutMessage             = CTIDBG_new OUTMESS(*OutMessage);
             touOutMessage->Priority           -= 1; //decrease for read. Only want read after a successful write.
-            touOutMessage->Sequence            = EmetconProtocol::GetConfig_TOU;
 
             strncpy(touOutMessage->Request.CommandStr, "getconfig tou schedule 1", COMMAND_STR_SIZE );
-            outList.push_back( CTIDBG_new OUTMESS(*touOutMessage) );
 
-            touOutMessage->Buffer.BSt.Function = FuncRead_TOUSwitchSchedule34Pos;
-            touOutMessage->Buffer.BSt.Length   = FuncRead_TOUSwitchSchedule34Len;
-
-            strncpy(touOutMessage->Request.CommandStr, "getconfig tou schedule 3", COMMAND_STR_SIZE );
+            touOutMessage->Buffer.BSt.Function = FuncRead_TOUSwitchSchedule12Pos;
+            touOutMessage->Buffer.BSt.Length   = FuncRead_TOUSwitchSchedule12Len;
+            touOutMessage->Sequence            = EmetconProtocol::GetConfig_TOU;
             outList.push_back( CTIDBG_new OUTMESS(*touOutMessage) );
 
             touOutMessage->Buffer.BSt.Function = FuncRead_TOUSwitchSchedule12Part2Pos;
             touOutMessage->Buffer.BSt.Length   = FuncRead_TOUSwitchSchedule12Part2Len;
+            touOutMessage->Sequence            = EmetconProtocol::GetConfig_TOUPart2;
+            outList.push_back( CTIDBG_new OUTMESS(*touOutMessage) );
 
-            strncpy(touOutMessage->Request.CommandStr, "getconfig tou schedule 1 continued", COMMAND_STR_SIZE );
+            strncpy(touOutMessage->Request.CommandStr, "getconfig tou schedule 3", COMMAND_STR_SIZE );
+
+            touOutMessage->Buffer.BSt.Function = FuncRead_TOUSwitchSchedule34Pos;
+            touOutMessage->Buffer.BSt.Length   = FuncRead_TOUSwitchSchedule34Len;
+            touOutMessage->Sequence            = EmetconProtocol::GetConfig_TOU;
             outList.push_back( CTIDBG_new OUTMESS(*touOutMessage) );
 
             touOutMessage->Buffer.BSt.Function = FuncRead_TOUSwitchSchedule34Part2Pos;
             touOutMessage->Buffer.BSt.Length   = FuncRead_TOUSwitchSchedule34Part2Len;
-
-            strncpy(touOutMessage->Request.CommandStr, "getconfig tou schedule 3 continued", COMMAND_STR_SIZE );
+            touOutMessage->Sequence            = EmetconProtocol::GetConfig_TOUPart2;
             outList.push_back( CTIDBG_new OUTMESS(*touOutMessage) );
+
+            strncpy(touOutMessage->Request.CommandStr, "getconfig tou", COMMAND_STR_SIZE );
+
+            touOutMessage->Buffer.BSt.Function = FuncRead_TOUStatusPos;
+            touOutMessage->Buffer.BSt.Length   = FuncRead_TOUStatusLen;
+            touOutMessage->Sequence            = EmetconProtocol::GetConfig_TOU;
+            outList.push_back( touOutMessage );
 
             touOutMessage = 0;
         }
@@ -1324,12 +1338,24 @@ INT Mct440_213xBDevice::executeGetConfig(CtiRequestMsg     *pReq,
                                          OutMessageList    &outList )
 {
     INT nRet = NoMethod;
-    bool found = false;
+    OUTMESS *TOU_OutMessage1 = 0;
+    OUTMESS *TOU_OutMessage2 = 0;
+
 
                                                                 /* ---------------------- TOU RATE -------------------- */
     if( parse.isKeyValid("tou") )
     {
-        found = true;
+        // Load all the other stuff that is needed
+        // FIXME: most of this is taken care of in propagateRequest - we could probably trim a lot of this out
+        OutMessage->DeviceID        = getID();
+        OutMessage->TargetID        = getID();
+        OutMessage->Port            = getPortID();
+        OutMessage->Remote          = getAddress();
+        OutMessage->TimeOut         = 2;
+        OutMessage->Retry           = 2;
+        OutMessage->Request.RouteID = getRouteID();
+
+        strncpy(OutMessage->Request.CommandStr, pReq->CommandString().c_str(), COMMAND_STR_SIZE);
 
         if( parse.isKeyValid("tou_schedule") )
         {
@@ -1337,42 +1363,48 @@ INT Mct440_213xBDevice::executeGetConfig(CtiRequestMsg     *pReq,
 
             if( schedulenum == 1 || schedulenum == 2 )
             {
-                if( parse.isKeyValid("continued") )
-                {
-                    OutMessage->Buffer.BSt.Function = FuncRead_TOUSwitchSchedule12Part2Pos;
-                    OutMessage->Buffer.BSt.Length   = FuncRead_TOUSwitchSchedule12Part2Len;
-                    OutMessage->Sequence            = EmetconProtocol::GetConfig_TOU;
-                    OutMessage->Buffer.BSt.IO       = EmetconProtocol::IO_Function_Read;
-                }
-                else
-                {
-                    OutMessage->Buffer.BSt.Function = FuncRead_TOUSwitchSchedule12Pos;
-                    OutMessage->Buffer.BSt.Length   = FuncRead_TOUSwitchSchedule12Len;
-                    OutMessage->Sequence            = EmetconProtocol::GetConfig_TOU;
-                    OutMessage->Buffer.BSt.IO       = EmetconProtocol::IO_Function_Read;
-                }
+                TOU_OutMessage1 = CTIDBG_new OUTMESS(*OutMessage);
+
+                TOU_OutMessage1->Buffer.BSt.Function = FuncRead_TOUSwitchSchedule12Pos;
+                TOU_OutMessage1->Buffer.BSt.Length   = FuncRead_TOUSwitchSchedule12Len;
+                TOU_OutMessage1->Sequence            = EmetconProtocol::GetConfig_TOU;
+                TOU_OutMessage1->Buffer.BSt.IO       = EmetconProtocol::IO_Function_Read;
+
+                TOU_OutMessage2 = CTIDBG_new OUTMESS(*OutMessage);
+
+                TOU_OutMessage2->Buffer.BSt.Function = FuncRead_TOUSwitchSchedule12Part2Pos;
+                TOU_OutMessage2->Buffer.BSt.Length   = FuncRead_TOUSwitchSchedule12Part2Len;
+                TOU_OutMessage2->Sequence            = EmetconProtocol::GetConfig_TOUPart2;
+                TOU_OutMessage2->Buffer.BSt.IO       = EmetconProtocol::IO_Function_Read;
+
+                delete OutMessage;  //  we didn't use it, we made our own
+                OutMessage = 0;
+
+                nRet = NoError;
             }
             else if( schedulenum == 3 || schedulenum == 4 )
             {
-                if( parse.isKeyValid("continued") )
-                {
-                    OutMessage->Buffer.BSt.Function = FuncRead_TOUSwitchSchedule34Part2Pos;
-                    OutMessage->Buffer.BSt.Length   = FuncRead_TOUSwitchSchedule34Part2Len;
-                    OutMessage->Sequence            = EmetconProtocol::GetConfig_TOU;
-                    OutMessage->Buffer.BSt.IO       = EmetconProtocol::IO_Function_Read;
-                }
-                else
-                {
-                    OutMessage->Buffer.BSt.Function = FuncRead_TOUSwitchSchedule34Pos;
-                    OutMessage->Buffer.BSt.Length   = FuncRead_TOUSwitchSchedule34Len;
-                    OutMessage->Sequence            = EmetconProtocol::GetConfig_TOU;
-                    OutMessage->Buffer.BSt.IO       = EmetconProtocol::IO_Function_Read;
-                }
+                TOU_OutMessage1 = CTIDBG_new OUTMESS(*OutMessage);
+
+                TOU_OutMessage1->Buffer.BSt.Function = FuncRead_TOUSwitchSchedule34Pos;
+                TOU_OutMessage1->Buffer.BSt.Length   = FuncRead_TOUSwitchSchedule34Len;
+                TOU_OutMessage1->Sequence            = EmetconProtocol::GetConfig_TOU;
+                TOU_OutMessage1->Buffer.BSt.IO       = EmetconProtocol::IO_Function_Read;
+
+                TOU_OutMessage2 = CTIDBG_new OUTMESS(*OutMessage);
+
+                TOU_OutMessage2->Buffer.BSt.Function = FuncRead_TOUSwitchSchedule34Part2Pos;
+                TOU_OutMessage2->Buffer.BSt.Length   = FuncRead_TOUSwitchSchedule34Part2Len;
+                TOU_OutMessage2->Sequence            = EmetconProtocol::GetConfig_TOUPart2;
+                TOU_OutMessage2->Buffer.BSt.IO       = EmetconProtocol::IO_Function_Read;
+
+                delete OutMessage;  //  we didn't use it, we made our own
+                OutMessage = 0;
+
+                nRet = NoError;
             }
             else
             {
-                found = false;
-
                 CtiReturnMsg *errRet = CTIDBG_new CtiReturnMsg(getID( ),
                                                                string(OutMessage->Request.CommandStr),
                                                                string(),
@@ -1406,23 +1438,6 @@ INT Mct440_213xBDevice::executeGetConfig(CtiRequestMsg     *pReq,
     else
     {
         nRet = Inherited::executeGetConfig(pReq, parse, OutMessage, vgList, retList, outList);
-    }
-
-    if( found )
-    {
-        // Load all the other stuff that is needed
-        // FIXME: most of this is taken care of in propagateRequest - we could probably trim a lot of this out
-        OutMessage->DeviceID  = getID();
-        OutMessage->TargetID  = getID();
-        OutMessage->Port      = getPortID();
-        OutMessage->Remote    = getAddress();
-        OutMessage->TimeOut   = 2;
-        OutMessage->Retry     = 2;
-
-        OutMessage->Request.RouteID   = getRouteID();
-        strncpy(OutMessage->Request.CommandStr, pReq->CommandString().c_str(), COMMAND_STR_SIZE);
-
-        nRet = NoError;
     }
 
     return nRet;
@@ -1488,15 +1503,52 @@ void Mct440_213xBDevice::createTOUDayScheduleString(string &schedule, long (&tim
     for( int i=0; i<10; i++ )
     {
         schedule += CtiNumStr(times[i]);
-        schedule += ', ';
+        schedule += ", ";
     }
     for( int i=0; i<10; i++ )
     {
         schedule += CtiNumStr(rates[i]);
-        schedule += ', ';
+        schedule += ", ";
     }
     schedule += CtiNumStr(rates[10]);
 }
+
+
+/*
+*********************************************************************************************************
+*                                    parseTOUDayScheduleString()
+*
+* Description :
+*
+* Argument(s) :
+*
+* Return(s)   :
+*
+* Caller(s)   :
+*
+* Note(s)     :
+*********************************************************************************************************
+*/
+void Mct440_213xBDevice::parseTOUDayScheduleString(string &schedule, long (&times)[10], long (&rates)[11])
+{
+    istringstream ss;
+    char sep[2];                                                /* expecting ", "                                       */
+
+    ss.str(schedule);
+
+    for( int i=0; i<10; i++ )
+    {
+        ss >> times[i] >> sep;
+    }
+
+    for( int i=0; i<10; i++ )
+    {
+        ss >> rates[i] >> sep;
+    }
+
+    ss >> rates[10];
+}
+
 
 
 /*
@@ -1935,10 +1987,16 @@ int Mct440_213xBDevice::executePutConfigTOUDays(CtiRequestMsg     *pReq,
 
                         while(parse.isKeyValid(change_name.c_str()))
                         {
-                            string ratechangestr = parse.getsValue(change_name.c_str()).c_str();
-                            int rate, hour, minute;
+                            string ratechangestr = parse.getsValue(change_name.c_str());
 
-                            switch(ratechangestr.at(0))
+                            istringstream ss;
+                            ss.str(ratechangestr);
+
+                            char rate_c, sep1, sep2;
+                            int rate, hour, minute;
+                            ss >> rate_c >> sep1 >> hour >> sep2 >> minute;
+
+                            switch(rate_c)
                             {
                                 case 'a':   rate =  0;  break;
                                 case 'b':   rate =  1;  break;
@@ -1947,19 +2005,16 @@ int Mct440_213xBDevice::executePutConfigTOUDays(CtiRequestMsg     *pReq,
                                 default:    rate = -1;  break;
                             }
 
-                            hour             = atoi(ratechangestr.substr(2).c_str());
-                            int minute_index = ratechangestr.substr(4).find_first_not_of(":") + 4;
-                            minute           = atoi(ratechangestr.substr(minute_index).c_str());
-
-                            if( rate   >= 0 &&
-                                hour   >= 0 && hour   < 24 &&
-                                minute >= 0 && minute < 60 )
+                            if( rate   >= 0   &&
+                                hour   >= 0   && hour   <  24 &&
+                                minute >= 0   && minute <  60 &&
+                                sep1   == '/' && sep2   == ':')
                             {
                                 ratechange_t ratechange;
 
                                 ratechange.schedule = schedule_number - 1;
-                                ratechange.rate = rate;
-                                ratechange.time = hour * 3600 + minute * 60;
+                                ratechange.rate     = rate;
+                                ratechange.time     = hour * 3600 + minute * 60;
 
                                 ratechanges.insert(ratechange);
                             }
@@ -2446,76 +2501,322 @@ int Mct440_213xBDevice::executePutConfigThresholds(CtiRequestMsg     *pReq,
                                                    CtiMessageList    &retList,
                                                    OutMessageList    &outList)
 {
-    bool found    = false;
-    INT  nRet     = NoMethod;
-    INT  function = EmetconProtocol::PutConfig_Thresholds;
+    INT  nRet = NoMethod;
+    const INT function = EmetconProtocol::PutConfig_Thresholds;
 
 
-    if( found = getOperation(function, OutMessage->Buffer.BSt) )
+    if( !getOperation(function, OutMessage->Buffer.BSt) )
     {
-        OutMessage->Sequence = function;
-
-        int phaseloss_percent = parse.getiValue("phaseloss_percent_threshold", -1);
-
-        string durationstr = parse.getsValue("phaseloss_duration_threshold").c_str();
-
-        printf("duration= %s\n",durationstr.c_str());
-
-        int index1  = durationstr.find(":");
-        int index2  = durationstr.find(":", index1 + 1);
-
-        int hour   = atoi(durationstr.substr(        0,       index1 ).c_str()),
-            minute = atoi(durationstr.substr( index1+1,       index2 ).c_str()),
-            second = atoi(durationstr.substr( index2+1, string::npos ).c_str());
-
-        int phaseloss_seconds = -1;
-
-                                                                /* check hour:minute:second format                      */
-        if( hour   >= 0 && hour   < 24 &&
-            minute >= 0 && minute < 60 &&
-            second >= 0 && second < 60)
-        {
-            phaseloss_seconds = hour * 3600 + minute * 60 + second;
-        }
-
-                                                                /* check valid ranges                                   */
-        if( phaseloss_percent >= 0 && phaseloss_percent <= 100 &&
-            phaseloss_seconds >= 0 && phaseloss_seconds <= 0xFFFF)
-        {
-            OutMessage->Buffer.BSt.Message[0] = phaseloss_percent;
-            OutMessage->Buffer.BSt.Message[1] = (phaseloss_seconds >> 8);
-            OutMessage->Buffer.BSt.Message[2] = phaseloss_seconds & 0xff;
-        }
-        else
-        {
-            found = false;
-
-            CtiReturnMsg *errRet = CTIDBG_new CtiReturnMsg(getID( ),
-                                                           string(OutMessage->Request.CommandStr),
-                                                           string(),
-                                                           nRet,
-                                                           OutMessage->Request.RouteID,
-                                                           OutMessage->Request.MacroOffset,
-                                                           OutMessage->Request.Attempt,
-                                                           OutMessage->Request.GrpMsgID,
-                                                           OutMessage->Request.UserID,
-                                                           OutMessage->Request.SOE,
-                                                           CtiMultiMsg_vec( ));
-            if( errRet )
-            {
-                errRet->setResultString("Invalid phase loss thresholds for device \"" + getName() + "\" - Acceptable values: phase loss percent range: 0 - 100 ; phase loss max duration: 18:12:15 - ");
-                errRet->setStatus(NoMethod);
-                retList.push_back(errRet);
-            }
-        }
+        return nRet;
     }
 
-    if( found )
+    OutMessage->Sequence  = function;
+    int phaseloss_percent = parse.getiValue("phaseloss_percent_threshold", -1);
+    string durationstr    = parse.getsValue("phaseloss_duration_threshold");
+
+    stringstream ss;
+    ss << durationstr;
+
+    int hour, minute, second;
+    char sep1, sep2;
+    ss >> hour >> sep1 >> minute >> sep2 >> second;
+
+    int phaseloss_seconds = -1;
+
+                                                            /* check hour:minute:second format                      */
+    if( hour   >= 0   && hour   <  24 &&
+        minute >= 0   && minute <  60 &&
+        second >= 0   && second <  60 &&
+        sep1   == ':' && sep2   == ':')
     {
+        phaseloss_seconds = hour * 3600 + minute * 60 + second;
+    }
+
+                                                            /* check valid ranges                                   */
+    if( phaseloss_percent >= 0 && phaseloss_percent <= 100 &&
+        phaseloss_seconds >= 0 && phaseloss_seconds <= 0xFFFF)
+    {
+        OutMessage->Buffer.BSt.Message[0] = phaseloss_percent;
+        OutMessage->Buffer.BSt.Message[1] = (phaseloss_seconds >> 8);
+        OutMessage->Buffer.BSt.Message[2] = phaseloss_seconds & 0xff;
+
         nRet = NoError;
+    }
+    else
+    {
+        CtiReturnMsg *errRet = CTIDBG_new CtiReturnMsg(getID( ),
+                                                       string(OutMessage->Request.CommandStr),
+                                                       string(),
+                                                       nRet,
+                                                       OutMessage->Request.RouteID,
+                                                       OutMessage->Request.MacroOffset,
+                                                       OutMessage->Request.Attempt,
+                                                       OutMessage->Request.GrpMsgID,
+                                                       OutMessage->Request.UserID,
+                                                       OutMessage->Request.SOE,
+                                                       CtiMultiMsg_vec( ));
+        if( errRet )
+        {
+            errRet->setResultString("Invalid phase loss thresholds for device \"" + getName() + "\" - Acceptable values: phase loss percent range: 0 - 100 ; phase loss max duration: 18:12:15 - ");
+            errRet->setStatus(NoMethod);
+            retList.push_back(errRet);
+        }
     }
 
     return nRet;
+}
+
+
+/*
+*********************************************************************************************************
+*                                       decodeGetConfigTOU()
+*
+* Description :
+*
+* Argument(s) :
+*
+* Return(s)   :
+*
+* Caller(s)   :
+*
+* Note(s)     :
+*********************************************************************************************************
+*/
+INT Mct440_213xBDevice::decodeGetConfigTOU(INMESS          *InMessage,
+                                           CtiTime         &TimeNow,
+                                           CtiMessageList  &vgList,
+                                           CtiMessageList  &retList,
+                                           OutMessageList  &outList)
+{
+    INT status = NORMAL;
+
+    INT ErrReturn  = InMessage->EventCode & 0x3fff;
+    DSTRUCT *DSt   = &InMessage->Buffer.DSt;
+
+    CtiCommandParser parse(InMessage->Return.CommandStr);
+
+    CtiReturnMsg *ReturnMsg = NULL;    // Message sent to VanGogh, inherits from Multi
+    string resultString;
+    unsigned long timestamp;
+    CtiTime tmpTime;
+
+    int schedulenum = parse.getiValue("tou_schedule");
+
+    if( schedulenum > 0 && schedulenum <= 4 )
+    {
+        long timeArray[2][5];
+        long rateArray[2][6];
+        schedulenum -= (schedulenum - 1) % 2;
+
+        for( int offset = 0; offset < 2; offset++ )
+        {
+            int rates, current_rate, previous_rate, byte_offset, time_offset;
+
+            resultString += getName() + " / TOU Schedule " + CtiNumStr(schedulenum + offset) + ":\n";
+
+            if( offset == 0 )
+            {
+                rates = ((InMessage->Buffer.DSt.Message[5] & 0x0f) << 8) | InMessage->Buffer.DSt.Message[6];
+                byte_offset = 0;
+            }
+            else
+            {
+                rates = ((InMessage->Buffer.DSt.Message[5] & 0xf0) << 4) | InMessage->Buffer.DSt.Message[12];
+                byte_offset = 7;
+            }
+
+            if( InMessage->Sequence == EmetconProtocol::GetConfig_TOU )
+            {
+                rateArray[offset][0] = (rates >> 2)  & 0x03;    /* Switch 1                                             */
+                rateArray[offset][1] = (rates >> 4)  & 0x03;    /* Switch 2                                             */
+                rateArray[offset][2] = (rates >> 6)  & 0x03;    /* Switch 3                                             */
+                rateArray[offset][3] = (rates >> 8)  & 0x03;    /* Switch 4                                             */
+                rateArray[offset][4] = (rates >> 10) & 0x03;    /* Switch 5                                             */
+                rateArray[offset][5] = (rates) & 0x03;          /* Midnight                                             */
+
+                current_rate = rateArray[offset][5];
+                resultString += string("00:00: ") + (char)('A' + current_rate) + "\n";
+            }
+            else                                                /* EmetconProtocol::GetConfig_TOUPart2                  */
+            {
+                rateArray[offset][0] = (rates) & 0x03;          /* switch 6                                             */
+                rateArray[offset][1] = (rates >> 2) & 0x03;     /* switch 7                                             */
+                rateArray[offset][2] = (rates >> 4) & 0x03;     /* switch 8                                             */
+                rateArray[offset][3] = (rates >> 6) & 0x03;     /* switch 9                                             */
+                rateArray[offset][4] = (rates >> 8) & 0x03;     /* switch 10                                            */
+
+                current_rate = -1;
+            }
+
+            time_offset = 0;
+            previous_rate = current_rate;
+            for( int switchtime = 0; switchtime < 5; switchtime++ )
+            {
+                int hour, minute;
+
+                time_offset += InMessage->Buffer.DSt.Message[byte_offset + switchtime] * 300;
+                timeArray[offset][switchtime] = InMessage->Buffer.DSt.Message[byte_offset + switchtime];
+
+                hour   = time_offset / 3600;
+                minute = (time_offset / 60) % 60;
+
+                current_rate = rateArray[offset][switchtime];
+
+                if( hour <= 23 && current_rate != previous_rate )
+                {
+                    resultString += CtiNumStr(hour).zpad(2) + ":" + CtiNumStr(minute).zpad(2) + ": " + (char)('A' + current_rate) + "\n";
+                }
+
+                previous_rate = current_rate;
+            }
+
+            if( InMessage->Sequence == EmetconProtocol::GetConfig_TOU )
+            {
+                resultString += "- end of switch 1-5 - \n\n";
+            }
+            else
+            {
+                resultString += "- end of day - \n\n";
+            }
+
+        }
+
+        string dynDayScheduleA,
+               dynDayScheduleB;
+
+        if( schedulenum < 2 )                                   /* Retrieve dynamic info for schedule 1 and 2           */
+        {
+            CtiDeviceBase::getDynamicInfo(CtiTableDynamicPaoInfo::Key_MCT_DaySchedule1, dynDayScheduleA);
+            CtiDeviceBase::getDynamicInfo(CtiTableDynamicPaoInfo::Key_MCT_DaySchedule2, dynDayScheduleB);
+        }
+        else                                                    /* Retrieve dynamic info for schedule 3 and 4           */
+        {
+            CtiDeviceBase::getDynamicInfo(CtiTableDynamicPaoInfo::Key_MCT_DaySchedule3, dynDayScheduleA);
+            CtiDeviceBase::getDynamicInfo(CtiTableDynamicPaoInfo::Key_MCT_DaySchedule4, dynDayScheduleB);
+        }
+
+        long times_schedule[2][10],
+             rates_schedule[2][11];
+                                                                /* parse dynamic info to get times and rate values      */
+        parseTOUDayScheduleString(dynDayScheduleA, times_schedule[0], rates_schedule[0]);
+        parseTOUDayScheduleString(dynDayScheduleB, times_schedule[1], rates_schedule[1]);
+
+                                                                /* copy the new data over the previous                  */
+        if( InMessage->Sequence == EmetconProtocol::GetConfig_TOU )
+        {
+            for( int i=0; i<2; i++ )                            /* switch 1 - 5 and midnight                            */
+            {
+                memcpy(&times_schedule[i][0], timeArray[i], sizeof(long)*5);
+                memcpy(&rates_schedule[i][0], rateArray[i], sizeof(long)*5);
+                rates_schedule[i][10] = rateArray[i][5];
+            }
+        }
+        else
+        {
+            for( int i=0; i<2; i++ )                            /* switch 6 - 10                                        */
+            {
+                memcpy(&times_schedule[i][5], timeArray[i], sizeof(long)*5);
+                memcpy(&rates_schedule[i][5], rateArray[i], sizeof(long)*5);
+            }
+        }
+
+        string dayScheduleA,
+               dayScheduleB;
+                                                                /* create new strings for all 10 switches               */
+        createTOUDayScheduleString(dayScheduleA, times_schedule[0], rates_schedule[0]);
+        createTOUDayScheduleString(dayScheduleB, times_schedule[1], rates_schedule[1]);
+
+        if( schedulenum < 2 )                                   /* Update dynamic info for schedule 1 and 2             */
+        {
+            CtiDeviceBase::setDynamicInfo(CtiTableDynamicPaoInfo::Key_MCT_DaySchedule1, dayScheduleA);
+            CtiDeviceBase::setDynamicInfo(CtiTableDynamicPaoInfo::Key_MCT_DaySchedule2, dayScheduleB);
+        }
+        else                                                    /* Update dynamic info for schedule 3 and 4             */
+        {
+            CtiDeviceBase::setDynamicInfo(CtiTableDynamicPaoInfo::Key_MCT_DaySchedule3, dayScheduleA);
+            CtiDeviceBase::setDynamicInfo(CtiTableDynamicPaoInfo::Key_MCT_DaySchedule4, dayScheduleB);
+        }
+    }
+    else
+    {
+        resultString = getName() + " / TOU Status:\n\n";
+
+        timestamp = InMessage->Buffer.DSt.Message[6] << 24 |
+                    InMessage->Buffer.DSt.Message[7] << 16 |
+                    InMessage->Buffer.DSt.Message[8] <<  8 |
+                    InMessage->Buffer.DSt.Message[9];
+
+        resultString += "Current time: " + CtiTime(timestamp).asString() + "\n";
+
+        int tz_offset = (char)InMessage->Buffer.DSt.Message[10] * 15;
+
+        resultString += "Time zone offset: " + CtiNumStr((float)tz_offset / 60.0, 1) + " hours ( " + CtiNumStr(tz_offset) + " minutes)\n";
+
+        if( InMessage->Buffer.DSt.Message[3] & 0x80 )
+        {
+            resultString += "Critical peak active\n";
+        }
+        if( InMessage->Buffer.DSt.Message[4] & 0x80 )
+        {
+            resultString += "Holiday active\n";
+        }
+        if( InMessage->Buffer.DSt.Message[4] & 0x40 )
+        {
+            resultString += "DST active\n";
+        }
+
+        resultString += "Current rate: " + string(1, (char)('A' + (InMessage->Buffer.DSt.Message[3] & 0x7f))) + "\n";
+
+        resultString += "Current schedule: " + CtiNumStr((int)(InMessage->Buffer.DSt.Message[4] & 0x03) + 1) + "\n";
+/*
+        resultString += "Current switch time: ";
+
+        if( InMessage->Buffer.DSt.Message[5] == 0xff )
+        {
+            resultString += "not active\n";
+        }
+        else
+        {
+             resultString += CtiNumStr((int)InMessage->Buffer.DSt.Message[5]) + "\n";
+        }
+*/
+        resultString += "Default rate: ";
+
+        if( InMessage->Buffer.DSt.Message[2] == 0xff )
+        {
+            resultString += "No TOU active\n";
+        }
+        else
+        {
+            resultString += string(1, (char)('A' + InMessage->Buffer.DSt.Message[2])) + "\n";
+        }
+
+        resultString += "\nDay table: \n";
+
+        char *(daynames[8]) = {"Sunday", "Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday", "Holiday"};
+
+        for( int i = 0; i < 8; i++ )
+        {
+            int dayschedule = InMessage->Buffer.DSt.Message[1 - i/4] >> ((i % 4) * 2) & 0x03;
+
+            resultString += "Schedule " + CtiNumStr(dayschedule + 1) + " - " + daynames[i] + "\n";
+        }
+    }
+
+    if((ReturnMsg = CTIDBG_new CtiReturnMsg(getID(), InMessage->Return.CommandStr)) == NULL)
+    {
+        CtiLockGuard<CtiLogger> doubt_guard(dout);
+        dout << CtiTime() << " Could NOT allocate memory " << __FILE__ << " (" << __LINE__ << ") " << endl;
+
+        return MEMORY;
+    }
+
+    ReturnMsg->setUserMessageId(InMessage->Return.UserID);
+    ReturnMsg->setResultString(resultString);
+
+    retMsgHandler( InMessage->Return.CommandStr, status, ReturnMsg, vgList, retList );
+
+    return status;
 }
 
 
