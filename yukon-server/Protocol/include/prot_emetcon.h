@@ -134,6 +134,7 @@ public:
         GetConfig_UniqueAddress,
         GetConfig_Disconnect,
         GetConfig_TOU,
+        GetConfig_TOUPart2,
         GetConfig_Holiday,
         GetConfig_MeterParameters,  //  not ideal - hopefully we can manage the InMessage->Sequence better for very specialized
         GetConfig_Freeze,           //    commands like this one, i don't like this being a big mess of non-general commands
