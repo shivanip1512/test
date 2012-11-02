@@ -113,8 +113,8 @@ Mct440_213xBDevice::FunctionReadValueMappings Mct440_213xBDevice::initReadValueM
         { 0x01a,  1, { 1, CtiTableDynamicPaoInfo::Key_MCT_LoadProfileInterval       } },
 
         // 0x01E – Thresholds
-        { 0x01e,  0, { 1, CtiTableDynamicPaoInfo::key_MCT_PhaseLossPercent          } },
-        { 0x01e,  1, { 2, CtiTableDynamicPaoInfo::key_MCT_PhaseLossSeconds          } },
+        { 0x01e,  0, { 1, CtiTableDynamicPaoInfo::Key_MCT_PhaseLossPercent          } },
+        { 0x01e,  1, { 2, CtiTableDynamicPaoInfo::Key_MCT_PhaseLossSeconds          } },
 
         // 0x022 – Minimum Outage Cycles
         { 0x022,  0, { 1, CtiTableDynamicPaoInfo::Key_MCT_OutageCycles              } },

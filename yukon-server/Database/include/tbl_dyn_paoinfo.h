@@ -192,8 +192,8 @@ public:
         Key_MCT_Holiday23,
         Key_MCT_Holiday24,
 
-        key_MCT_PhaseLossPercent,
-        key_MCT_PhaseLossSeconds,
+        Key_MCT_PhaseLossPercent,
+        Key_MCT_PhaseLossSeconds,
 
     };
 
