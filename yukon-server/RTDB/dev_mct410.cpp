@@ -3186,24 +3186,13 @@ INT Mct410Device::decodeGetValueOutage( INMESS *InMessage, CtiTime &TimeNow, Cti
         {
             int cycles;
 
-//            timestamp  = msgbuf[(i*6)+0] << 24;
-//            timestamp |= msgbuf[(i*6)+1] << 16;
-//            timestamp |= msgbuf[(i*6)+2] <<  8;
-//            timestamp |= msgbuf[(i*6)+3];
-//
-//            duration   = msgbuf[(i*6)+4] <<  8;
-//            duration  |= msgbuf[(i*6)+5];
+            timestamp  = msgbuf[(i*6)+0] << 24;
+            timestamp |= msgbuf[(i*6)+1] << 16;
+            timestamp |= msgbuf[(i*6)+2] <<  8;
+            timestamp |= msgbuf[(i*6)+3];
 
-            int tmp = outagenum+i;
-
-
-            CtiTime t(CtiDate(20-tmp, 1, 2011), 0, 0, 0);  //  1293930960 seconds (0x4D1FD1D0)
-            timestamp = t.seconds();
-
-            duration = tmp * 10;
-
-
-
+            duration   = msgbuf[(i*6)+4] <<  8;
+            duration  |= msgbuf[(i*6)+5];
 
             outageTime = CtiTime(timestamp);
 
