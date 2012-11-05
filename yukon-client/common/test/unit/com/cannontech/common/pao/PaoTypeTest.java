@@ -90,6 +90,8 @@ public class PaoTypeTest {
                             PaoType.MCT430A3,
                             PaoType.MCT430S4,
                             PaoType.MCT430SL,
+                            PaoType.MCT440_2131B,
+                            PaoType.MCT440_2133B,
                             PaoType.MCT470,
                             PaoType.RFN410FL,
                             PaoType.RFN410FX,
