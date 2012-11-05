@@ -50,6 +50,7 @@ struct test_Mct440_2131BDevice : Cti::Devices::Mct440_2131BDevice
     using MctDevice::updateFreezeInfo;
 
     using Mct440_2131BDevice::decodeGetConfigTOU;
+    using Mct440_2131BDevice::decodeGetConfig;
 
     enum test_Features
     {
@@ -2327,7 +2328,7 @@ BOOST_AUTO_TEST_CASE(test_getValueMappingForRead_IO_Read_1Dword)
         (empty)
         (empty)
         // memory read 30
-        (tuple_list_of(0,1,264)(1,2,265))
+        (tuple_list_of(0,1,268)(1,2,269))
         (empty)
         (empty)
         (empty)
@@ -2394,15 +2395,15 @@ BOOST_AUTO_TEST_CASE(test_getValueMappingForRead_IO_Read_1Dword)
         (empty)
         (empty)
         (empty)
-        (tuple_list_of(0,4,143))
-        (tuple_list_of(0,4,243)) // holiday 4
+        (tuple_list_of(0,2,143)(2,2,144)) // holiday 1 - 2
+        (tuple_list_of(0,2,247)(2,2,248)) // holiday 8 - 10
         // memory read 210
-        (tuple_list_of(0,4,246)) // holiday 7
-        (tuple_list_of(0,4,249)) // holiday 10
-        (tuple_list_of(0,4,252)) // holiday 13
-        (tuple_list_of(0,4,255)) // holiday 16
-        (tuple_list_of(0,4,258)) // holiday 19
-        (tuple_list_of(0,4,261)) // holiday 22
+        (tuple_list_of(0,2,254)(2,2,255)) // holiday 15 - 16
+        (tuple_list_of(0,2,261)(2,2,262)) // holiday 22 - 23
+        (empty)
+        (empty)
+        (empty)
+        (empty)
         (empty)
         (empty)
         (empty)
@@ -2466,7 +2467,7 @@ BOOST_AUTO_TEST_CASE(test_getValueMappingForRead_IO_Read_2Dwords)
         (empty)
         (empty)
         // memory read 30
-        (tuple_list_of(0,1,264)(1,2,265))
+        (tuple_list_of(0,1,268)(1,2,269))
         (empty)
         (empty)
         (empty)
@@ -2542,15 +2543,15 @@ BOOST_AUTO_TEST_CASE(test_getValueMappingForRead_IO_Read_2Dwords)
         (empty)
         (empty)
         (empty)
-        (tuple_list_of(0,4,143)(4,4,144))
-        (tuple_list_of(0,4,243)(4,4,244)) // holiday 4, 5
+        (tuple_list_of(0,2,143)(2,2,144)(4,2,145)(6,2,243)) // holiday 1 - 4
+        (tuple_list_of(0,2,247)(2,2,248)(4,2,249)(6,2,250)) // holiday 8 - 12
         // memory read 210
-        (tuple_list_of(0,4,246)(4,4,247)) // holiday 7, 8
-        (tuple_list_of(0,4,249)(4,4,250)) // holiday 10, 11
-        (tuple_list_of(0,4,252)(4,4,253)) // holiday 13, 14
-        (tuple_list_of(0,4,255)(4,4,256)) // holiday 16, 17
-        (tuple_list_of(0,4,258)(4,4,259)) // holiday 19, 20
-        (tuple_list_of(0,4,261)(4,4,262)) // holiday 22, 23
+        (tuple_list_of(0,2,254)(2,2,255)(4,2,256)(6,2,257)) // holiday 15 - 18
+        (tuple_list_of(0,2,261)(2,2,262)(4,2,263)(6,2,264)) // holiday 22 - 25
+        (empty)
+        (empty)
+        (empty)
+        (empty)
         (empty)
         (empty)
         (empty)
@@ -2614,7 +2615,7 @@ BOOST_AUTO_TEST_CASE(test_getValueMappingForRead_IO_Read_3Dwords)
         (empty)
         (empty)
         // memory read 30
-        (tuple_list_of(0,1,264)(1,2,265))
+        (tuple_list_of(0,1,268)(1,2,269))
         (empty)
         (empty)
         (empty)
@@ -2701,15 +2702,15 @@ BOOST_AUTO_TEST_CASE(test_getValueMappingForRead_IO_Read_3Dwords)
         (empty)
         (empty)
         (empty)
-        (tuple_list_of(0,4,143)(4,4,144)(8,4,145))
-        (tuple_list_of(0,4,243)(4,4,244)(8,4,245)) // holiday 4, 5, 6
+        (tuple_list_of(0,2,143)(2,2,144)(4,2,145)(6,2,243)(8,2,244)(10,2,245)(12,2,246)) // holiday 1 - 4
+        (tuple_list_of(0,2,247)(2,2,248)(4,2,249)(6,2,250)(8,2,251)(10,2,252)(12,2,253)) // holiday 8 - 12
         // memory read 210
-        (tuple_list_of(0,4,246)(4,4,247)(8,4,248)) // holiday 7, 8, 9
-        (tuple_list_of(0,4,249)(4,4,250)(8,4,251)) // holiday 10, 11, 12
-        (tuple_list_of(0,4,252)(4,4,253)(8,4,254)) // holiday 13, 14, 15
-        (tuple_list_of(0,4,255)(4,4,256)(8,4,257)) // holiday 16, 17, 18
-        (tuple_list_of(0,4,258)(4,4,259)(8,4,260)) // holiday 19, 20, 21
-        (tuple_list_of(0,4,261)(4,4,262)(8,4,263)) // holiday 22, 23, 24
+        (tuple_list_of(0,2,254)(2,2,255)(4,2,256)(6,2,257)(8,2,258)(10,2,259)(12,2,260)) // holiday 15 - 18
+        (tuple_list_of(0,2,261)(2,2,262)(4,2,263)(6,2,264)(8,2,265)(10,2,266)(12,2,267)) // holiday 22 - 25
+        (empty)
+        (empty)
+        (empty)
+        (empty)
         (empty)
         (empty)
         (empty)
@@ -3494,6 +3495,137 @@ BOOST_AUTO_TEST_CASE(test_decodeGetValueTOUkWhReverseFrozen)
         BOOST_CHECK_EQUAL( pdata->getValue(), 0x0A0B0C);
         BOOST_CHECK_EQUAL( pdata->getQuality(), NormalQuality );
         //BOOST_CHECK_EQUAL( pdata->getTime(), t);
+    }
+}
+
+BOOST_AUTO_TEST_CASE(test_decodeGetConfigHoliday)
+{
+    INMESS                          InMessage;
+    CtiTime                         t(CtiDate(1, 1, 2011), 19, 16, 0);  //  1293930960 seconds (0x4D1FD1D0)
+    CtiDeviceBase::CtiMessageList   vgList;
+    CtiDeviceBase::CtiMessageList   retList;
+    CtiDeviceBase::OutMessageList   outList; // not use
+
+    test_Mct440_2131B test_dev;
+
+    {
+        unsigned char test_data[] = {0x1,0x1,0x1,0x2,0x1,0x3,0x1,0x4,0x1,0x5,0x1,0x6,0x01,0x7};
+
+        memcpy(InMessage.Buffer.DSt.Message, test_data, sizeof(test_data));
+
+        InMessage.Return.UserID = 0;
+        InMessage.Sequence      = EmetconProtocol::GetConfig_Holiday1_7;
+
+        BOOST_CHECK_EQUAL(NoError, test_dev.decodeGetConfig(&InMessage, t, vgList, retList, outList));
+
+        BOOST_REQUIRE_EQUAL(retList.size(), 1);
+
+        const CtiReturnMsg *retMsg = dynamic_cast<CtiReturnMsg *>(retList.front());
+
+        BOOST_REQUIRE(retMsg);
+
+        string expected = "Test MCT-440-2131B / Holiday schedule:\n"
+                          "Holiday 1: 09/15/2010 00:00:00 GMT\n"
+                          "Holiday 2: 09/16/2010 00:00:00 GMT\n"
+                          "Holiday 3: 09/17/2010 00:00:00 GMT\n"
+                          "Holiday 4: 09/18/2010 00:00:00 GMT\n"
+                          "Holiday 5: 09/19/2010 00:00:00 GMT\n"
+                          "Holiday 6: 09/20/2010 00:00:00 GMT\n"
+                          "Holiday 7: 09/21/2010 00:00:00 GMT\n";
+
+        BOOST_REQUIRE_EQUAL(retMsg->ResultString(), expected);
+
+        retList.pop_front();
+    }
+
+    {
+        unsigned char test_data[] = {0x1,0x1,0x1,0x2,0x1,0x3,0x1,0x4,0x1,0x5,0x1,0x6,0x01,0x7};
+
+        memcpy(InMessage.Buffer.DSt.Message, test_data, sizeof(test_data));
+
+        InMessage.Return.UserID = 0;
+        InMessage.Sequence      = EmetconProtocol::GetConfig_Holiday8_14;
+
+        BOOST_CHECK_EQUAL(NoError, test_dev.decodeGetConfig(&InMessage, t, vgList, retList, outList));
+
+        BOOST_REQUIRE_EQUAL(retList.size(), 1);
+
+        const CtiReturnMsg *retMsg = dynamic_cast<CtiReturnMsg *>(retList.front());
+
+        BOOST_REQUIRE(retMsg);
+
+        string expected = "Test MCT-440-2131B / Holiday schedule:\n"
+                          "Holiday 8: 09/15/2010 00:00:00 GMT\n"
+                          "Holiday 9: 09/16/2010 00:00:00 GMT\n"
+                          "Holiday 10: 09/17/2010 00:00:00 GMT\n"
+                          "Holiday 11: 09/18/2010 00:00:00 GMT\n"
+                          "Holiday 12: 09/19/2010 00:00:00 GMT\n"
+                          "Holiday 13: 09/20/2010 00:00:00 GMT\n"
+                          "Holiday 14: 09/21/2010 00:00:00 GMT\n";
+
+        BOOST_REQUIRE_EQUAL(retMsg->ResultString(), expected);
+
+        retList.pop_front();
+    }
+
+    {
+        unsigned char test_data[] = {0x1,0x1,0x1,0x2,0x1,0x3,0x1,0x4,0x1,0x5,0x1,0x6,0x01,0x7};
+
+        memcpy(InMessage.Buffer.DSt.Message, test_data, sizeof(test_data));
+
+        InMessage.Return.UserID = 0;
+        InMessage.Sequence      = EmetconProtocol::GetConfig_Holiday15_21;
+
+        BOOST_CHECK_EQUAL(NoError, test_dev.decodeGetConfig(&InMessage, t, vgList, retList, outList));
+
+        BOOST_REQUIRE_EQUAL(retList.size(), 1);
+
+        const CtiReturnMsg *retMsg = dynamic_cast<CtiReturnMsg *>(retList.front());
+
+        BOOST_REQUIRE(retMsg);
+
+        string expected = "Test MCT-440-2131B / Holiday schedule:\n"
+                          "Holiday 15: 09/15/2010 00:00:00 GMT\n"
+                          "Holiday 16: 09/16/2010 00:00:00 GMT\n"
+                          "Holiday 17: 09/17/2010 00:00:00 GMT\n"
+                          "Holiday 18: 09/18/2010 00:00:00 GMT\n"
+                          "Holiday 19: 09/19/2010 00:00:00 GMT\n"
+                          "Holiday 20: 09/20/2010 00:00:00 GMT\n"
+                          "Holiday 21: 09/21/2010 00:00:00 GMT\n";
+
+        BOOST_REQUIRE_EQUAL(retMsg->ResultString(), expected);
+
+        retList.pop_front();
+    }
+
+    {
+        unsigned char test_data[] = {0x1,0x1,0x1,0x2,0x1,0x3,0x1,0x4,0x1,0x5,0x1,0x6,0x01,0x7};
+
+        memcpy(InMessage.Buffer.DSt.Message, test_data, sizeof(test_data));
+
+        InMessage.Return.UserID = 0;
+        InMessage.Sequence      = EmetconProtocol::GetConfig_Holiday22_28;
+
+        BOOST_CHECK_EQUAL(NoError, test_dev.decodeGetConfig(&InMessage, t, vgList, retList, outList));
+
+        BOOST_REQUIRE_EQUAL(retList.size(), 1);
+
+        const CtiReturnMsg *retMsg = dynamic_cast<CtiReturnMsg *>(retList.front());
+
+        BOOST_REQUIRE(retMsg);
+
+        string expected = "Test MCT-440-2131B / Holiday schedule:\n"
+                          "Holiday 22: 09/15/2010 00:00:00 GMT\n"
+                          "Holiday 23: 09/16/2010 00:00:00 GMT\n"
+                          "Holiday 24: 09/17/2010 00:00:00 GMT\n"
+                          "Holiday 25: 09/18/2010 00:00:00 GMT\n"
+                          "Holiday 26: 09/19/2010 00:00:00 GMT\n"
+                          "Holiday 27: 09/20/2010 00:00:00 GMT\n"
+                          "Holiday 28: 09/21/2010 00:00:00 GMT\n";
+
+        BOOST_REQUIRE_EQUAL(retMsg->ResultString(), expected);
+
+        retList.pop_front();
     }
 }
 
