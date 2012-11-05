@@ -145,6 +145,10 @@ public:
         GetConfig_DailyReadInterest,
         GetConfig_WaterMeterReadInterval,
         GetConfig_PhaseLossThreshold,
+        GetConfig_Holiday1_7,
+        GetConfig_Holiday8_14,
+        GetConfig_Holiday15_21,
+        GetConfig_Holiday22_28,
 
         // PutConfig commands
         PutConfig_Install,
