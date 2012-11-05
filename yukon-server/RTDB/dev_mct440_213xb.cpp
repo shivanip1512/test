@@ -32,6 +32,9 @@ using Cti::Protocols::EmetconProtocol;
 #define STR_EXPAND(x)              #x
 #define STR(x)                     STR_EXPAND(x)
 
+#define NBR_SECONDS_PER_DAY        86400
+#define UTC_TIMESTAMP_JAN_1_2010   0x4B3D3B00
+
 
 namespace Cti {
 namespace Devices {
@@ -132,45 +135,41 @@ Mct440_213xBDevice::FunctionReadValueMappings Mct440_213xBDevice::initReadValueM
 
         // 0x0F9 – Read Transmit Power (FIXME)
 
-        // 0x0D0 – Holiday 1 - 3
-        { 0x0d0,  0, { 4, CtiTableDynamicPaoInfo::Key_MCT_Holiday1                  } },
-        { 0x0d0,  4, { 4, CtiTableDynamicPaoInfo::Key_MCT_Holiday2                  } },
-        { 0x0d0,  8, { 4, CtiTableDynamicPaoInfo::Key_MCT_Holiday3                  } },
+        // 0x0D0 – Holiday 1 - 7
+        { 0x0d0,  0, { 2, CtiTableDynamicPaoInfo::Key_MCT_Holiday1                  } },
+        { 0x0d0,  2, { 2, CtiTableDynamicPaoInfo::Key_MCT_Holiday2                  } },
+        { 0x0d0,  4, { 2, CtiTableDynamicPaoInfo::Key_MCT_Holiday3                  } },
+        { 0x0d0,  6, { 2, CtiTableDynamicPaoInfo::Key_MCT_Holiday4                  } },
+        { 0x0d0,  8, { 2, CtiTableDynamicPaoInfo::Key_MCT_Holiday5                  } },
+        { 0x0d0, 10, { 2, CtiTableDynamicPaoInfo::Key_MCT_Holiday6                  } },
+        { 0x0d0, 12, { 2, CtiTableDynamicPaoInfo::Key_MCT_Holiday7                  } },
 
-        // 0x0D1 – Holiday 4 - 6
-        { 0x0d1,  0, { 4, CtiTableDynamicPaoInfo::Key_MCT_Holiday4                  } },
-        { 0x0d1,  4, { 4, CtiTableDynamicPaoInfo::Key_MCT_Holiday5                  } },
-        { 0x0d1,  8, { 4, CtiTableDynamicPaoInfo::Key_MCT_Holiday6                  } },
+        // 0x0D1 – Holiday 8 - 14
+        { 0x0d1,  0, { 2, CtiTableDynamicPaoInfo::Key_MCT_Holiday8                  } },
+        { 0x0d1,  2, { 2, CtiTableDynamicPaoInfo::Key_MCT_Holiday9                  } },
+        { 0x0d1,  4, { 2, CtiTableDynamicPaoInfo::Key_MCT_Holiday10                 } },
+        { 0x0d1,  6, { 2, CtiTableDynamicPaoInfo::Key_MCT_Holiday11                 } },
+        { 0x0d1,  8, { 2, CtiTableDynamicPaoInfo::Key_MCT_Holiday12                 } },
+        { 0x0d1, 10, { 2, CtiTableDynamicPaoInfo::Key_MCT_Holiday13                 } },
+        { 0x0d1, 12, { 2, CtiTableDynamicPaoInfo::Key_MCT_Holiday14                 } },
 
-        // 0x0D2 – Holiday 7 - 9
-        { 0x0d2,  0, { 4, CtiTableDynamicPaoInfo::Key_MCT_Holiday7                  } },
-        { 0x0d2,  4, { 4, CtiTableDynamicPaoInfo::Key_MCT_Holiday8                  } },
-        { 0x0d2,  8, { 4, CtiTableDynamicPaoInfo::Key_MCT_Holiday9                  } },
+        // 0x0D2 – Holiday 15 - 21
+        { 0x0d2,  0, { 2, CtiTableDynamicPaoInfo::Key_MCT_Holiday15                 } },
+        { 0x0d2,  2, { 2, CtiTableDynamicPaoInfo::Key_MCT_Holiday16                 } },
+        { 0x0d2,  4, { 2, CtiTableDynamicPaoInfo::Key_MCT_Holiday17                 } },
+        { 0x0d2,  6, { 2, CtiTableDynamicPaoInfo::Key_MCT_Holiday18                 } },
+        { 0x0d2,  8, { 2, CtiTableDynamicPaoInfo::Key_MCT_Holiday19                 } },
+        { 0x0d2, 10, { 2, CtiTableDynamicPaoInfo::Key_MCT_Holiday20                 } },
+        { 0x0d2, 12, { 2, CtiTableDynamicPaoInfo::Key_MCT_Holiday21                 } },
 
-        // 0x0D3 – Holiday 10 - 12
-        { 0x0d3,  0, { 4, CtiTableDynamicPaoInfo::Key_MCT_Holiday10                 } },
-        { 0x0d3,  4, { 4, CtiTableDynamicPaoInfo::Key_MCT_Holiday11                 } },
-        { 0x0d3,  8, { 4, CtiTableDynamicPaoInfo::Key_MCT_Holiday12                 } },
-
-        // 0x0D4 – Holiday 13 - 15
-        { 0x0d4,  0, { 4, CtiTableDynamicPaoInfo::Key_MCT_Holiday13                 } },
-        { 0x0d4,  4, { 4, CtiTableDynamicPaoInfo::Key_MCT_Holiday14                 } },
-        { 0x0d4,  8, { 4, CtiTableDynamicPaoInfo::Key_MCT_Holiday15                 } },
-
-        // 0x0D5 – Holiday 16 - 18
-        { 0x0d5,  0, { 4, CtiTableDynamicPaoInfo::Key_MCT_Holiday16                 } },
-        { 0x0d5,  4, { 4, CtiTableDynamicPaoInfo::Key_MCT_Holiday17                 } },
-        { 0x0d5,  8, { 4, CtiTableDynamicPaoInfo::Key_MCT_Holiday18                 } },
-
-        // 0x0D6 – Holiday 19 - 21
-        { 0x0d6,  0, { 4, CtiTableDynamicPaoInfo::Key_MCT_Holiday19                 } },
-        { 0x0d6,  4, { 4, CtiTableDynamicPaoInfo::Key_MCT_Holiday20                 } },
-        { 0x0d6,  8, { 4, CtiTableDynamicPaoInfo::Key_MCT_Holiday21                 } },
-
-        // 0x0D7 – Holiday 22 - 24
-        { 0x0d7,  0, { 4, CtiTableDynamicPaoInfo::Key_MCT_Holiday22                 } },
-        { 0x0d7,  4, { 4, CtiTableDynamicPaoInfo::Key_MCT_Holiday23                 } },
-        { 0x0d7,  8, { 4, CtiTableDynamicPaoInfo::Key_MCT_Holiday24                 } },
+        // 0x0D3 – Holiday 22 - 28
+        { 0x0d3,  0, { 2, CtiTableDynamicPaoInfo::Key_MCT_Holiday22                 } },
+        { 0x0d3,  2, { 2, CtiTableDynamicPaoInfo::Key_MCT_Holiday23                 } },
+        { 0x0d3,  4, { 2, CtiTableDynamicPaoInfo::Key_MCT_Holiday24                 } },
+        { 0x0d3,  6, { 2, CtiTableDynamicPaoInfo::Key_MCT_Holiday25                 } },
+        { 0x0d3,  8, { 2, CtiTableDynamicPaoInfo::Key_MCT_Holiday26                 } },
+        { 0x0d3, 10, { 2, CtiTableDynamicPaoInfo::Key_MCT_Holiday27                 } },
+        { 0x0d3, 12, { 2, CtiTableDynamicPaoInfo::Key_MCT_Holiday28                 } },
 
         // 0x19D – Long Load Profile Status
         { 0x19d,  4, { 1, CtiTableDynamicPaoInfo::Key_MCT_LLPChannel1Len            } },
@@ -1344,11 +1343,9 @@ INT Mct440_213xBDevice::executeGetConfig(CtiRequestMsg     *pReq,
                                          OutMessageList    &outList )
 {
     INT nRet = NoMethod;
-    OUTMESS *TOU_OutMessage1 = 0;
-    OUTMESS *TOU_OutMessage2 = 0;
 
 
-                                                                /* ---------------------- TOU RATE -------------------- */
+                                                                /* ------------ TOU RATE SCHEDULE / STATUS ------------ */
     if( parse.isKeyValid("tou") )
     {
         // Load all the other stuff that is needed
@@ -1369,19 +1366,19 @@ INT Mct440_213xBDevice::executeGetConfig(CtiRequestMsg     *pReq,
 
             if( schedulenum == 1 || schedulenum == 2 )
             {
-                TOU_OutMessage1 = CTIDBG_new OUTMESS(*OutMessage);
+                OutMessage->Buffer.BSt.IO       = EmetconProtocol::IO_Function_Read;
 
-                TOU_OutMessage1->Buffer.BSt.Function = FuncRead_TOUSwitchSchedule12Pos;
-                TOU_OutMessage1->Buffer.BSt.Length   = FuncRead_TOUSwitchSchedule12Len;
-                TOU_OutMessage1->Sequence            = EmetconProtocol::GetConfig_TOU;
-                TOU_OutMessage1->Buffer.BSt.IO       = EmetconProtocol::IO_Function_Read;
+                OutMessage->Buffer.BSt.Function = FuncRead_TOUSwitchSchedule12Pos;
+                OutMessage->Buffer.BSt.Length   = FuncRead_TOUSwitchSchedule12Len;
+                OutMessage->Sequence            = EmetconProtocol::GetConfig_TOU;
 
-                TOU_OutMessage2 = CTIDBG_new OUTMESS(*OutMessage);
+                outList.push_back(CTIDBG_new OUTMESS(*OutMessage));
 
-                TOU_OutMessage2->Buffer.BSt.Function = FuncRead_TOUSwitchSchedule12Part2Pos;
-                TOU_OutMessage2->Buffer.BSt.Length   = FuncRead_TOUSwitchSchedule12Part2Len;
-                TOU_OutMessage2->Sequence            = EmetconProtocol::GetConfig_TOUPart2;
-                TOU_OutMessage2->Buffer.BSt.IO       = EmetconProtocol::IO_Function_Read;
+                OutMessage->Buffer.BSt.Function = FuncRead_TOUSwitchSchedule12Part2Pos;
+                OutMessage->Buffer.BSt.Length   = FuncRead_TOUSwitchSchedule12Part2Len;
+                OutMessage->Sequence            = EmetconProtocol::GetConfig_TOUPart2;
+
+                outList.push_back(CTIDBG_new OUTMESS(*OutMessage));
 
                 delete OutMessage;  //  we didn't use it, we made our own
                 OutMessage = 0;
@@ -1390,19 +1387,19 @@ INT Mct440_213xBDevice::executeGetConfig(CtiRequestMsg     *pReq,
             }
             else if( schedulenum == 3 || schedulenum == 4 )
             {
-                TOU_OutMessage1 = CTIDBG_new OUTMESS(*OutMessage);
+                OutMessage->Buffer.BSt.IO       = EmetconProtocol::IO_Function_Read;
 
-                TOU_OutMessage1->Buffer.BSt.Function = FuncRead_TOUSwitchSchedule34Pos;
-                TOU_OutMessage1->Buffer.BSt.Length   = FuncRead_TOUSwitchSchedule34Len;
-                TOU_OutMessage1->Sequence            = EmetconProtocol::GetConfig_TOU;
-                TOU_OutMessage1->Buffer.BSt.IO       = EmetconProtocol::IO_Function_Read;
+                OutMessage->Buffer.BSt.Function = FuncRead_TOUSwitchSchedule34Pos;
+                OutMessage->Buffer.BSt.Length   = FuncRead_TOUSwitchSchedule34Len;
+                OutMessage->Sequence            = EmetconProtocol::GetConfig_TOU;
 
-                TOU_OutMessage2 = CTIDBG_new OUTMESS(*OutMessage);
+                outList.push_back(CTIDBG_new OUTMESS(*OutMessage));
 
-                TOU_OutMessage2->Buffer.BSt.Function = FuncRead_TOUSwitchSchedule34Part2Pos;
-                TOU_OutMessage2->Buffer.BSt.Length   = FuncRead_TOUSwitchSchedule34Part2Len;
-                TOU_OutMessage2->Sequence            = EmetconProtocol::GetConfig_TOUPart2;
-                TOU_OutMessage2->Buffer.BSt.IO       = EmetconProtocol::IO_Function_Read;
+                OutMessage->Buffer.BSt.Function = FuncRead_TOUSwitchSchedule34Part2Pos;
+                OutMessage->Buffer.BSt.Length   = FuncRead_TOUSwitchSchedule34Part2Len;
+                OutMessage->Sequence            = EmetconProtocol::GetConfig_TOUPart2;
+
+                outList.push_back(CTIDBG_new OUTMESS(*OutMessage));
 
                 delete OutMessage;  //  we didn't use it, we made our own
                 OutMessage = 0;
@@ -1437,7 +1434,55 @@ INT Mct440_213xBDevice::executeGetConfig(CtiRequestMsg     *pReq,
             OutMessage->Buffer.BSt.Length   = FuncRead_TOUStatusLen;
             OutMessage->Sequence            = EmetconProtocol::GetConfig_TOU;
             OutMessage->Buffer.BSt.IO       = EmetconProtocol::IO_Function_Read;
+
+            nRet = NoError;
         }
+    }
+
+                                                                /* -------------------- HOLIDAYS ---------------------- */
+    if( parse.isKeyValid("holiday") )
+    {
+        // Load all the other stuff that is needed
+        // FIXME: most of this is taken care of in propagateRequest - we could probably trim a lot of this out
+        OutMessage->DeviceID            = getID();
+        OutMessage->TargetID            = getID();
+        OutMessage->Port                = getPortID();
+        OutMessage->Remote              = getAddress();
+        OutMessage->TimeOut             = 2;
+        OutMessage->Retry               = 2;
+        OutMessage->Request.RouteID     = getRouteID();
+
+
+        OutMessage->Buffer.BSt.IO       = EmetconProtocol::IO_Read;
+
+        OutMessage->Buffer.BSt.Function = Memory_Holiday1_7Pos;
+        OutMessage->Buffer.BSt.Length   = Memory_Holiday1_7Len;
+        OutMessage->Sequence            = EmetconProtocol::GetConfig_Holiday1_7;
+
+        outList.push_back(CTIDBG_new OUTMESS(*OutMessage));
+
+        OutMessage->Buffer.BSt.Function = Memory_Holiday8_14Pos;
+        OutMessage->Buffer.BSt.Length   = Memory_Holiday8_14Len;
+        OutMessage->Sequence            = EmetconProtocol::GetConfig_Holiday8_14;
+
+        outList.push_back(CTIDBG_new OUTMESS(*OutMessage));
+
+        OutMessage->Buffer.BSt.Function = Memory_Holiday15_21Pos;
+        OutMessage->Buffer.BSt.Length   = Memory_Holiday15_21Len;
+        OutMessage->Sequence            = EmetconProtocol::GetConfig_Holiday15_21;
+
+        outList.push_back(CTIDBG_new OUTMESS(*OutMessage));
+
+        OutMessage->Buffer.BSt.Function = Memory_Holiday22_28Pos;
+        OutMessage->Buffer.BSt.Length   = Memory_Holiday22_28Len;
+        OutMessage->Sequence            = EmetconProtocol::GetConfig_Holiday22_28;
+
+        outList.push_back(CTIDBG_new OUTMESS(*OutMessage));
+
+        delete OutMessage;  //  we didn't use it, we made our own
+        OutMessage = 0;
+
+        nRet = NoError;
     }
 
                                                                 /* -------------- INHERITED FROM MCT-420 -------------- */
@@ -1764,6 +1809,8 @@ int Mct440_213xBDevice::executePutConfigHoliday(CtiRequestMsg     *pReq,
 
         OutMessage->Sequence = function;
 
+        CtiDate start_date = CtiDate(1,1,2010);
+
                                                                 /*  grab up to 7 potential dates                        */
         for( int i = 0; i < 7 && parse.isKeyValid("holiday_date" + CtiNumStr(i)); i++ )
         {
@@ -1781,7 +1828,7 @@ int Mct440_213xBDevice::executePutConfigHoliday(CtiRequestMsg     *pReq,
             if( holiday_date.isValid() && holiday_date > CtiDate::now() )
             {
                                                                 /* get the number of days since Jan 1 2010              */
-                holidays[holiday_count++] = (CtiTime(holiday_date).seconds() - CtiTime(CtiDate(1,1,2010)).seconds()) / 86400;
+                holidays[holiday_count++] = (holiday_date.daysFrom1970() - start_date.daysFrom1970());
             }
             else
             {
@@ -2832,6 +2879,171 @@ INT Mct440_213xBDevice::decodeGetConfigTOU(INMESS          *InMessage,
     retMsgHandler( InMessage->Return.CommandStr, status, ReturnMsg, vgList, retList );
 
     return status;
+}
+
+
+/*
+*********************************************************************************************************
+*                                       decodeGetConfigModel()
+*
+* Description :
+*
+* Argument(s) :
+*
+* Return(s)   :
+*
+* Caller(s)   :
+*
+* Note(s)     :
+*********************************************************************************************************
+*/
+int Mct440_213xBDevice::decodeGetConfigModel(INMESS              *InMessage,
+                                             CtiTime             &TimeNow,
+                                             list< CtiMessage* > &vgList,
+                                             list< CtiMessage* > &retList,
+                                             list< OUTMESS* >    &outList)
+{
+    DSTRUCT &DSt = InMessage->Buffer.DSt;
+
+    const unsigned revision = DSt.Message[0];
+    const unsigned sspec    = DSt.Message[1] << 8 |
+                              DSt.Message[2];
+    string descriptor;
+
+    descriptor += getName() + " / Model information:\n";
+    descriptor += "Software Specification " + CtiNumStr(sspec) + " rev ";
+
+    //  convert 10 to 1.0, 24 to 2.4
+    descriptor += CtiNumStr(((double)revision) / 10.0, 1);
+
+    descriptor += "\n";
+
+    CtiReturnMsg *ReturnMsg = new CtiReturnMsg(getID(), InMessage->Return.CommandStr);
+
+    ReturnMsg->setUserMessageId(InMessage->Return.UserID);
+    ReturnMsg->setResultString(descriptor);
+
+    retMsgHandler( InMessage->Return.CommandStr, NoError, ReturnMsg, vgList, retList, InMessage->MessageFlags & MessageFlag_ExpectMore );
+
+    return NoError;
+}
+
+
+/*
+*********************************************************************************************************
+*                                           decodeGetConfig()
+*
+* Description :
+*
+* Argument(s) :
+*
+* Return(s)   :
+*
+* Caller(s)   :
+*
+* Note(s)     :
+*********************************************************************************************************
+*/
+INT Mct440_213xBDevice::decodeGetConfig(INMESS          *InMessage,
+                                        CtiTime         &TimeNow,
+                                        CtiMessageList  &vgList,
+                                        CtiMessageList  &retList,
+                                        OutMessageList  &outList)
+{
+    INT status = NORMAL;
+
+
+    switch( InMessage->Sequence )
+    {
+        case EmetconProtocol::GetConfig_Holiday1_7:
+        case EmetconProtocol::GetConfig_Holiday8_14:
+        case EmetconProtocol::GetConfig_Holiday15_21:
+        case EmetconProtocol::GetConfig_Holiday22_28:
+        {
+            status = Mct440_213xBDevice::decodeGetConfigHoliday(InMessage, TimeNow, vgList, retList, outList);
+            break;
+        }
+        default:
+        {
+            status = Inherited::decodeGetConfig(InMessage, TimeNow, vgList, retList, outList);
+        }
+    }
+
+    return status;
+}
+
+
+/*
+*********************************************************************************************************
+*                                       decodeGetConfigHoliday()
+*
+* Description :
+*
+* Argument(s) :
+*
+* Return(s)   :
+*
+* Caller(s)   :
+*
+* Note(s)     :
+*********************************************************************************************************
+*/
+int Mct440_213xBDevice::decodeGetConfigHoliday(INMESS          *InMessage,
+                                               CtiTime         &TimeNow,
+                                               CtiMessageList  &vgList,
+                                               CtiMessageList  &retList,
+                                               OutMessageList  &outList)
+{
+    INT status = NORMAL;
+
+    CtiReturnMsg *ReturnMsg = NULL;    // Message sent to VanGogh, inherits from Multi
+
+    if((ReturnMsg = CTIDBG_new CtiReturnMsg(getID(), InMessage->Return.CommandStr)) == NULL)
+    {
+        CtiLockGuard<CtiLogger> doubt_guard(dout);
+        dout << CtiTime() << " Could NOT allocate memory " << __FILE__ << " (" << __LINE__ << ") " << endl;
+
+        return MEMORY;
+    }
+
+    DSTRUCT &DSt       = InMessage->Buffer.DSt;
+    string result      = getName() + " / Holiday schedule:\n";
+    CtiTime start_time = CtiTime(UTC_TIMESTAMP_JAN_1_2010);
+
+    int offset;
+
+    switch( InMessage->Sequence )
+    {
+        case EmetconProtocol::GetConfig_Holiday1_7:     offset = 1;  break;
+        case EmetconProtocol::GetConfig_Holiday8_14:    offset = 8;  break;
+        case EmetconProtocol::GetConfig_Holiday15_21:   offset = 15; break;
+        case EmetconProtocol::GetConfig_Holiday22_28:   offset = 22; break;
+        default:
+        {
+            CtiLockGuard<CtiLogger> doubt_guard(dout);
+            dout << CtiTime() << " InMessage->Sequence not supported " << __FILE__ << " (" << __LINE__ << ") " << endl;
+
+            return BADPARAM;
+        }
+    }
+
+    for( int i = 0; i < 7; i++ )
+    {
+        unsigned long days      = (DSt.Message[i*2] << 8) | DSt.Message[(i*2)+1];
+
+        unsigned long timestamp = (days * NBR_SECONDS_PER_DAY) + start_time.seconds();
+        CtiTime holiday         = CtiTime(timestamp);
+        ostringstream ss;
+        ss << (i + offset);
+
+        result += "Holiday " + ss.str() + ": " + (holiday.isValid()?holiday.asString(CtiTime::Gmt, CtiTime::OmitTimezone) + " GMT":"(invalid)") + "\n";
+    }
+
+    ReturnMsg->setResultString( result );
+
+    retMsgHandler( InMessage->Return.CommandStr, status, ReturnMsg, vgList, retList );
+
+    return NORMAL;
 }
 
 

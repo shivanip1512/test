@@ -65,6 +65,21 @@ protected:
         FuncRead_Channel1SingleDayLen           = 10,
     };
 
+    enum MemoryMap
+    {
+        Memory_Holiday1_7Pos                    = 0xd0,
+        Memory_Holiday1_7Len                    = 14,
+
+        Memory_Holiday8_14Pos                   = 0xd1,
+        Memory_Holiday8_14Len                   = 14,
+
+        Memory_Holiday15_21Pos                  = 0xd2,
+        Memory_Holiday15_21Len                  = 14,
+
+        Memory_Holiday22_28Pos                  = 0xd3,
+        Memory_Holiday22_28Len                  = 14,
+    };
+
 
     // overrite the MCT-420's function read definition
 
@@ -111,6 +126,12 @@ protected:
     virtual int executePutConfigPhaseLossThreshold(CtiRequestMsg *pReq, CtiCommandParser &parse, OUTMESS *&OutMessage, CtiMessageList &vgList, CtiMessageList &retList, OutMessageList &outList);
 
     virtual INT decodeGetConfigTOU(INMESS *InMessage, CtiTime &TimeNow, CtiMessageList &vgList, CtiMessageList &retList, OutMessageList &outList);
+
+    virtual int decodeGetConfigModel(INMESS *InMessage, CtiTime &TimeNow, std::list< CtiMessage* > &vgList, std::list< CtiMessage* > &retList, std::list< OUTMESS* > &outList);
+
+    virtual INT decodeGetConfig(INMESS *InMessage, CtiTime &TimeNow, CtiMessageList &vgList, CtiMessageList &retList, OutMessageList &outList);
+
+    virtual int decodeGetConfigHoliday(INMESS *InMessage, CtiTime &TimeNow, CtiMessageList &vgList, CtiMessageList &retList, OutMessageList &outList);
 
 };
 
