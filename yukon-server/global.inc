@@ -69,7 +69,7 @@ DBGHELP         = $(MICROSOFT)\dbghelp\6.12.2.633
 DBGHELP_LIBS =\
 $(DBGHELP)\lib\dbghelp.lib
 
-OPENSSL         = $(CPP_LIBRARIES)\openssl\1.0.1
+OPENSSL         = $(CPP_LIBRARIES)\openssl\1.0.1c
 OPENSSL_LIBS = \
 $(OPENSSL)\lib\libeay32.lib \
 $(OPENSSL)\lib\ssleay32.lib
