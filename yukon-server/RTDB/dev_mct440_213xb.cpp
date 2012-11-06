@@ -1341,18 +1341,20 @@ INT Mct440_213xBDevice::executeGetConfig(CtiRequestMsg     *pReq,
     INT nRet = NoMethod;
 
 
+    // Load all the other stuff that is needed
+    OutMessage->DeviceID        = getID();
+    OutMessage->TargetID        = getID();
+    OutMessage->Port            = getPortID();
+    OutMessage->Remote          = getAddress();
+    OutMessage->TimeOut         = 2;
+    OutMessage->Retry           = 2;
+    OutMessage->Request.RouteID = getRouteID();
+
+
                                                                 /* ------------ TOU RATE SCHEDULE / STATUS ------------ */
     if( parse.isKeyValid("tou") )
     {
-        // Load all the other stuff that is needed
-        // FIXME: most of this is taken care of in propagateRequest - we could probably trim a lot of this out
-        OutMessage->DeviceID        = getID();
-        OutMessage->TargetID        = getID();
-        OutMessage->Port            = getPortID();
-        OutMessage->Remote          = getAddress();
-        OutMessage->TimeOut         = 2;
-        OutMessage->Retry           = 2;
-        OutMessage->Request.RouteID = getRouteID();
+
 
         OutMessage->Sequence        = EmetconProtocol::GetConfig_TOU;
         OutMessage->Buffer.BSt.IO   = EmetconProtocol::IO_Function_Read;
@@ -1428,20 +1430,10 @@ INT Mct440_213xBDevice::executeGetConfig(CtiRequestMsg     *pReq,
                                                                 /* --------------- PHASE LOSS THRESHOLD --------------- */
     else if( parse.isKeyValid("phaseloss_threshold") )
     {
-        const int function = EmetconProtocol::GetConfig_PhaseLossThreshold;
-        if( getOperation(function, OutMessage->Buffer.BSt) )
-        {
-            OutMessage->Sequence            = function;
-            // Load all the other stuff that is needed
-            // FIXME: most of this is taken care of in propagateRequest - we could probably trim a lot of this out
-            OutMessage->DeviceID            = getID();
-            OutMessage->TargetID            = getID();
-            OutMessage->Port                = getPortID();
-            OutMessage->Remote              = getAddress();
-            OutMessage->TimeOut             = 2;
-            OutMessage->Retry               = 2;
-            OutMessage->Request.RouteID     = getRouteID();
+        OutMessage->Sequence = EmetconProtocol::GetConfig_PhaseLossThreshold;
 
+        if( getOperation(OutMessage->Sequence, OutMessage->Buffer.BSt) )
+        {
             nRet = NoError;
         }
     }
@@ -1450,16 +1442,6 @@ INT Mct440_213xBDevice::executeGetConfig(CtiRequestMsg     *pReq,
                                                                 /* --------------------- HOLIDAYS --------------------- */
     else if( parse.isKeyValid("holiday") )
     {
-        // Load all the other stuff that is needed
-        // FIXME: most of this is taken care of in propagateRequest - we could probably trim a lot of this out
-        OutMessage->DeviceID            = getID();
-        OutMessage->TargetID            = getID();
-        OutMessage->Port                = getPortID();
-        OutMessage->Remote              = getAddress();
-        OutMessage->TimeOut             = 2;
-        OutMessage->Retry               = 2;
-        OutMessage->Request.RouteID     = getRouteID();
-
         OutMessage->Buffer.BSt.IO       = EmetconProtocol::IO_Read;
         OutMessage->Sequence            = EmetconProtocol::GetConfig_Holiday;
 
@@ -1753,6 +1735,14 @@ INT Mct440_213xBDevice::executePutConfig(CtiRequestMsg     *pReq,
 {
     INT nRet = NoMethod;
 
+    // Load all the other stuff that is needed
+    OutMessage->DeviceID  = getID();
+    OutMessage->TargetID  = getID();
+    OutMessage->Port      = getPortID();
+    OutMessage->Remote    = getAddress();
+    OutMessage->TimeOut   = 2;
+    OutMessage->Retry     = 2;
+
     if( parse.isKeyValid("holiday_offset") )
     {
         nRet = executePutConfigHoliday(pReq, parse, OutMessage, vgList, retList, outList);
@@ -1796,99 +1786,78 @@ int Mct440_213xBDevice::executePutConfigHoliday(CtiRequestMsg     *pReq,
                                                 CtiMessageList    &retList,
                                                 OutMessageList    &outList)
 {
-    bool found = false;
-    INT  nRet  = NoMethod;
-    const INT function = EmetconProtocol::PutConfig_Holiday;
+    INT nRet = NoMethod;
 
 
-    if( found = getOperation(function, OutMessage->Buffer.BSt) )
+    OutMessage->Sequence = EmetconProtocol::PutConfig_Holiday;
+
+    if( !getOperation(OutMessage->Sequence, OutMessage->Buffer.BSt) )
     {
-        unsigned long holidays[7];
-        int holiday_count  = 0;
-        int holiday_offset = parse.getiValue("holiday_offset");
+        return nRet;
+    }
 
-        OutMessage->Sequence = function;
+    unsigned long holidays[7];
+    int holiday_count  = 0;
+    int holiday_offset = parse.getiValue("holiday_offset");
 
-        CtiDate start_date = CtiDate(1,1,2010);
+    CtiDate start_date = CtiDate(1,1,2010);
 
-                                                                /*  grab up to 7 potential dates                        */
-        for( int i = 0; i < 7 && parse.isKeyValid("holiday_date" + CtiNumStr(i)); i++ )
+                                                            /*  grab up to 7 potential dates                        */
+    for( int i = 0; i < 7 && parse.isKeyValid("holiday_date" + CtiNumStr(i)); i++ )
+    {
+        int month, day, year;
+        char sep1, sep2;
+
+        istringstream ss;
+        ss.str(parse.getsValue("holiday_date" + CtiNumStr(i)));
+
+        ss >> month >> sep1 >> day >> sep2 >> year;
+
+        CtiDate holiday_date(day, month, year);
+
+
+        if( holiday_date.isValid() && holiday_date > CtiDate::now() )
         {
-            int month, day, year;
-            char sep1, sep2;
-
-            istringstream ss;
-            ss.str(parse.getsValue("holiday_date" + CtiNumStr(i)));
-
-            ss >> month >> sep1 >> day >> sep2 >> year;
-
-            CtiDate holiday_date(day, month, year);
-
-
-            if( holiday_date.isValid() && holiday_date > CtiDate::now() )
-            {
-                                                                /* get the number of days since Jan 1 2010              */
-                holidays[holiday_count++] = (holiday_date.daysFrom1970() - start_date.daysFrom1970());
-            }
-            else
-            {
-                holiday_count = 0;                              /* If the data is less then 2010, break                  */
-                break;
-            }
-        }
-
-
-        /*
-         * check to make sure that holiday_offset is:
-         * 1, 8, 15, 22
-         */
-
-        if( (holiday_offset % 7) == 1 &&
-             holiday_offset      >= 1 &&
-             holiday_offset      <= 22)
-        {
-            if( holiday_count >  0 ||
-                holiday_count <= 7)
-            {
-                //  change to 0-based offset;  it just makes things easier
-                holiday_offset--;
-
-                OutMessage->Buffer.BSt.Length     = (holiday_count  * 2) + 1;
-                OutMessage->Buffer.BSt.Message[0] =  holiday_offset;
-
-                for( int i = 0; i < holiday_count; i++ )
-                {
-                    OutMessage->Buffer.BSt.Message[i*2+1] = holidays[i] >> 8;
-                    OutMessage->Buffer.BSt.Message[i*2+2] = holidays[i]  & 0xff;
-                }
-            }
-            else
-            {
-                found = false;
-
-                CtiReturnMsg *errRet = CTIDBG_new CtiReturnMsg(getID( ),
-                                                               string(OutMessage->Request.CommandStr),
-                                                               string(),
-                                                               nRet,
-                                                               OutMessage->Request.RouteID,
-                                                               OutMessage->Request.MacroOffset,
-                                                               OutMessage->Request.Attempt,
-                                                               OutMessage->Request.GrpMsgID,
-                                                               OutMessage->Request.UserID,
-                                                               OutMessage->Request.SOE,
-                                                               CtiMultiMsg_vec( ));
-
-                if( errRet )
-                {
-                    errRet->setResultString("Specified dates are invalid");
-                    errRet->setStatus(NoMethod);
-                    retList.push_back(errRet);
-                }
-            }
+                                                            /* get the number of days since Jan 1 2010              */
+            holidays[holiday_count++] = (holiday_date.daysFrom1970() - start_date.daysFrom1970());
         }
         else
         {
-            found = false;
+            holiday_count = 0;                              /* If the data is less then 2010, break                  */
+            break;
+        }
+    }
+
+
+    /*
+     * check to make sure that holiday_offset is:
+     * 1, 8, 15, 22
+     */
+
+    if( (holiday_offset % 7) == 1 &&
+         holiday_offset      >= 1 &&
+         holiday_offset      <= 22)
+    {
+        if( holiday_count >  0 ||
+            holiday_count <= 7)
+        {
+            //  change to 0-based offset;  it just makes things easier
+            holiday_offset--;
+
+            OutMessage->Buffer.BSt.Length     = (holiday_count  * 2) + 1;
+            OutMessage->Buffer.BSt.Message[0] =  holiday_offset;
+
+            for( int i = 0; i < holiday_count; i++ )
+            {
+                OutMessage->Buffer.BSt.Message[i*2+1] = holidays[i] >> 8;
+                OutMessage->Buffer.BSt.Message[i*2+2] = holidays[i]  & 0xff;
+            }
+
+            nRet = NoError;
+        }
+        else
+        {
+            nRet = BADPARAM;
 
             CtiReturnMsg *errRet = CTIDBG_new CtiReturnMsg(getID( ),
                                                            string(OutMessage->Request.CommandStr),
@@ -1904,16 +1873,34 @@ int Mct440_213xBDevice::executePutConfigHoliday(CtiRequestMsg     *pReq,
 
             if( errRet )
             {
-                errRet->setResultString("Invalid holiday offset specified, valid offsets are: 1, 8, 15, 22");
+                errRet->setResultString("Specified dates are invalid");
                 errRet->setStatus(NoMethod);
                 retList.push_back(errRet);
             }
         }
     }
-
-    if( found )
+    else
     {
-        nRet = NoError;
+        nRet = BADPARAM;
+
+        CtiReturnMsg *errRet = CTIDBG_new CtiReturnMsg(getID( ),
+                                                       string(OutMessage->Request.CommandStr),
+                                                       string(),
+                                                       nRet,
+                                                       OutMessage->Request.RouteID,
+                                                       OutMessage->Request.MacroOffset,
+                                                       OutMessage->Request.Attempt,
+                                                       OutMessage->Request.GrpMsgID,
+                                                       OutMessage->Request.UserID,
+                                                       OutMessage->Request.SOE,
+                                                       CtiMultiMsg_vec( ));
+
+        if( errRet )
+        {
+            errRet->setResultString("Invalid holiday offset specified, valid offsets are: 1, 8, 15, 22");
+            errRet->setStatus(NoMethod);
+            retList.push_back(errRet);
+        }
     }
 
     return nRet;
@@ -1942,22 +1929,19 @@ int Mct440_213xBDevice::executePutConfigTOUDays(CtiRequestMsg     *pReq,
                                                 CtiMessageList    &retList,
                                                 OutMessageList    &outList)
 {
-    bool  found    = false;
-    INT   nRet     = NoMethod;
-    INT   function = -1;
+    bool  found = false;
+    INT   nRet  = NoMethod;
 
 
     if( parse.isKeyValid("tou_enable") )
     {
-        function             = EmetconProtocol::PutConfig_TOUEnable;
-        found                = getOperation(function, OutMessage->Buffer.BSt);
-        OutMessage->Sequence = function;
+        OutMessage->Sequence = EmetconProtocol::PutConfig_TOUEnable;
+        found                = getOperation(OutMessage->Sequence, OutMessage->Buffer.BSt);
     }
     else if( parse.isKeyValid("tou_disable") )
     {
-        function             = EmetconProtocol::PutConfig_TOUDisable;
-        found                = getOperation(function, OutMessage->Buffer.BSt);
-        OutMessage->Sequence = function;
+        OutMessage->Sequence = EmetconProtocol::PutConfig_TOUDisable;
+        found                = getOperation(OutMessage->Sequence, OutMessage->Buffer.BSt);
     }
     else if( parse.isKeyValid("tou_days") )
     {
@@ -1977,6 +1961,8 @@ int Mct440_213xBDevice::executePutConfigTOUDays(CtiRequestMsg     *pReq,
 
         if( default_rate < 0 )
         {
+            nRet = BADPARAM;
+
             CtiReturnMsg *errRet = CTIDBG_new CtiReturnMsg(getID( ),
                                                            string(OutMessage->Request.CommandStr),
                                                            string(),
@@ -2000,6 +1986,8 @@ int Mct440_213xBDevice::executePutConfigTOUDays(CtiRequestMsg     *pReq,
         {
             if( daytable.length() < 8 || daytable.find_first_not_of("1234") != string::npos )
             {
+                nRet = BADPARAM;
+
                 CtiReturnMsg *errRet = CTIDBG_new CtiReturnMsg(getID( ),
                                                                string(OutMessage->Request.CommandStr),
                                                                string(),
@@ -2604,6 +2592,8 @@ int Mct440_213xBDevice::executePutConfigPhaseLossThreshold(CtiRequestMsg     *pR
     }
     else
     {
+        nRet = BADPARAM;
+
         CtiReturnMsg *errRet = CTIDBG_new CtiReturnMsg(getID( ),
                                                        string(OutMessage->Request.CommandStr),
                                                        string(),
@@ -2621,8 +2611,6 @@ int Mct440_213xBDevice::executePutConfigPhaseLossThreshold(CtiRequestMsg     *pR
             errRet->setStatus(NoMethod);
             retList.push_back(errRet);
         }
-
-        nRet = BADPARAM;
     }
 
     return nRet;
@@ -2980,9 +2968,9 @@ int Mct440_213xBDevice::decodeGetConfigHoliday(INMESS          *InMessage,
         default:
         {
             CtiLockGuard<CtiLogger> doubt_guard(dout);
-            dout << CtiTime() << " InMessage.Return.ProtocolInfo.Emetcon.Function not supported " << __FILE__ << " (" << __LINE__ << ") " << endl;
+            dout << CtiTime() << " Invalid InMessage.Return.ProtocolInfo.Emetcon.Function " << __FILE__ << " (" << __LINE__ << ") " << endl;
 
-            return BADPARAM;
+            return TYNF;
         }
     }
 
