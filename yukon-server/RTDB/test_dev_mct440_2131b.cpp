@@ -50,7 +50,7 @@ struct test_Mct440_2131BDevice : Cti::Devices::Mct440_2131BDevice
     using MctDevice::updateFreezeInfo;
 
     using Mct440_2131BDevice::decodeGetConfigTOU;
-    using Mct440_2131BDevice::decodeGetConfig;
+    using Mct440_2131BDevice::decodeGetConfigHoliday;
 
     enum test_Features
     {
@@ -3072,8 +3072,9 @@ BOOST_AUTO_TEST_CASE(test_decodeGetConfigTOU)
 
         memcpy(InMessage.Buffer.DSt.Message, test_data, 13);
 
-        InMessage.Return.UserID     = 0;
-        InMessage.Sequence          = EmetconProtocol::GetConfig_TOU;
+        InMessage.Return.UserID                        = 0;
+        InMessage.Sequence                             = EmetconProtocol::GetConfig_TOU;
+        InMessage.Return.ProtocolInfo.Emetcon.Function = 0xAE;
 
         string cmd = "getconfig tou schedule 1";
         strcpy(InMessage.Return.CommandStr, cmd.c_str());
@@ -3108,8 +3109,9 @@ BOOST_AUTO_TEST_CASE(test_decodeGetConfigTOU)
 
         memcpy(InMessage.Buffer.DSt.Message, test_data, 13);
 
-        InMessage.Return.UserID     = 0;
-        InMessage.Sequence          = EmetconProtocol::GetConfig_TOUPart2;
+        InMessage.Return.UserID                        = 0;
+        InMessage.Sequence                             = EmetconProtocol::GetConfig_TOU;
+        InMessage.Return.ProtocolInfo.Emetcon.Function = 0xB8;
 
         string cmd = "getconfig tou schedule 1";
         strcpy(InMessage.Return.CommandStr, cmd.c_str());
@@ -3144,8 +3146,9 @@ BOOST_AUTO_TEST_CASE(test_decodeGetConfigTOU)
 
         memcpy(InMessage.Buffer.DSt.Message, test_data, 13);
 
-        InMessage.Return.UserID     = 0;
-        InMessage.Sequence          = EmetconProtocol::GetConfig_TOU;
+        InMessage.Return.UserID                        = 0;
+        InMessage.Sequence                             = EmetconProtocol::GetConfig_TOU;
+        InMessage.Return.ProtocolInfo.Emetcon.Function = 0xAF;
 
         string cmd = "getconfig tou schedule 3";
         strcpy(InMessage.Return.CommandStr, cmd.c_str());
@@ -3180,8 +3183,9 @@ BOOST_AUTO_TEST_CASE(test_decodeGetConfigTOU)
 
         memcpy(InMessage.Buffer.DSt.Message, test_data, 13);
 
-        InMessage.Return.UserID     = 0;
-        InMessage.Sequence          = EmetconProtocol::GetConfig_TOUPart2;
+        InMessage.Return.UserID                        = 0;
+        InMessage.Sequence                             = EmetconProtocol::GetConfig_TOU;
+        InMessage.Return.ProtocolInfo.Emetcon.Function = 0xB9;
 
         string cmd = "getconfig tou schedule 3";
         strcpy(InMessage.Return.CommandStr, cmd.c_str());
@@ -3513,10 +3517,11 @@ BOOST_AUTO_TEST_CASE(test_decodeGetConfigHoliday)
 
         memcpy(InMessage.Buffer.DSt.Message, test_data, sizeof(test_data));
 
-        InMessage.Return.UserID = 0;
-        InMessage.Sequence      = EmetconProtocol::GetConfig_Holiday1_7;
+        InMessage.Return.UserID                        = 0;
+        InMessage.Sequence                             = EmetconProtocol::GetConfig_Holiday;
+        InMessage.Return.ProtocolInfo.Emetcon.Function = 0xd0;
 
-        BOOST_CHECK_EQUAL(NoError, test_dev.decodeGetConfig(&InMessage, t, vgList, retList, outList));
+        BOOST_CHECK_EQUAL(NoError, test_dev.decodeGetConfigHoliday(&InMessage, t, vgList, retList, outList));
 
         BOOST_REQUIRE_EQUAL(retList.size(), 1);
 
@@ -3543,10 +3548,11 @@ BOOST_AUTO_TEST_CASE(test_decodeGetConfigHoliday)
 
         memcpy(InMessage.Buffer.DSt.Message, test_data, sizeof(test_data));
 
-        InMessage.Return.UserID = 0;
-        InMessage.Sequence      = EmetconProtocol::GetConfig_Holiday8_14;
+        InMessage.Return.UserID                        = 0;
+        InMessage.Sequence                             = EmetconProtocol::GetConfig_Holiday;
+        InMessage.Return.ProtocolInfo.Emetcon.Function = 0xd1;
 
-        BOOST_CHECK_EQUAL(NoError, test_dev.decodeGetConfig(&InMessage, t, vgList, retList, outList));
+        BOOST_CHECK_EQUAL(NoError, test_dev.decodeGetConfigHoliday(&InMessage, t, vgList, retList, outList));
 
         BOOST_REQUIRE_EQUAL(retList.size(), 1);
 
@@ -3573,10 +3579,11 @@ BOOST_AUTO_TEST_CASE(test_decodeGetConfigHoliday)
 
         memcpy(InMessage.Buffer.DSt.Message, test_data, sizeof(test_data));
 
-        InMessage.Return.UserID = 0;
-        InMessage.Sequence      = EmetconProtocol::GetConfig_Holiday15_21;
+        InMessage.Return.UserID                        = 0;
+        InMessage.Sequence                             = EmetconProtocol::GetConfig_Holiday;
+        InMessage.Return.ProtocolInfo.Emetcon.Function = 0xd2;
 
-        BOOST_CHECK_EQUAL(NoError, test_dev.decodeGetConfig(&InMessage, t, vgList, retList, outList));
+        BOOST_CHECK_EQUAL(NoError, test_dev.decodeGetConfigHoliday(&InMessage, t, vgList, retList, outList));
 
         BOOST_REQUIRE_EQUAL(retList.size(), 1);
 
@@ -3603,10 +3610,11 @@ BOOST_AUTO_TEST_CASE(test_decodeGetConfigHoliday)
 
         memcpy(InMessage.Buffer.DSt.Message, test_data, sizeof(test_data));
 
-        InMessage.Return.UserID = 0;
-        InMessage.Sequence      = EmetconProtocol::GetConfig_Holiday22_28;
+        InMessage.Return.UserID                        = 0;
+        InMessage.Sequence                             = EmetconProtocol::GetConfig_Holiday;
+        InMessage.Return.ProtocolInfo.Emetcon.Function = 0xd3;
 
-        BOOST_CHECK_EQUAL(NoError, test_dev.decodeGetConfig(&InMessage, t, vgList, retList, outList));
+        BOOST_CHECK_EQUAL(NoError, test_dev.decodeGetConfigHoliday(&InMessage, t, vgList, retList, outList));
 
         BOOST_REQUIRE_EQUAL(retList.size(), 1);
 
