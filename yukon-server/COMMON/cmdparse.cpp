@@ -1867,6 +1867,10 @@ void  CtiCommandParser::doParseGetConfig(const string &_CmdStr)
         {
             flag |= CMD_FLAG_UPDATE;
         }
+        if(!CmdStr.match(" phaseloss threshold").empty())
+        {
+            _cmd["phaseloss_threshold"] = CtiParseValue("TRUE");
+        }
         setFlags(flag);
     }
     else
