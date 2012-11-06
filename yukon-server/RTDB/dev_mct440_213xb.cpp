@@ -251,15 +251,12 @@ Mct440_213xBDevice::CommandSet Mct440_213xBDevice::initCommandStore()
     CommandSet cs;
 
     cs.insert(CommandStore(EmetconProtocol::GetValue_InstantLineData,       EmetconProtocol::IO_Function_Read,  0x9F,   12));
+
     cs.insert(CommandStore(EmetconProtocol::GetValue_TOUkWhReverse,         EmetconProtocol::IO_Function_Read,  0xE2,   13));
     cs.insert(CommandStore(EmetconProtocol::GetValue_FrozenTOUkWhReverse,   EmetconProtocol::IO_Function_Read,  0xE3,   13));
+
     cs.insert(CommandStore(EmetconProtocol::GetConfig_PhaseLossThreshold,   EmetconProtocol::IO_Read,           0x1E,    3));
     cs.insert(CommandStore(EmetconProtocol::PutConfig_PhaseLossThreshold,   EmetconProtocol::IO_Write,          0x1E,    3));
-
-//    cs.insert(CommandStore(EmetconProtocol::GetConfig_TOU,                  EmetconProtocol::IO_Function_Read,  FuncRead_TOUSwitchSchedule12Pos,       FuncRead_TOUSwitchSchedule12Len));
-//    cs.insert(CommandStore(EmetconProtocol::GetConfig_TOU,                  EmetconProtocol::IO_Function_Read,  FuncRead_TOUSwitchSchedule34Pos,       FuncRead_TOUSwitchSchedule34Len));
-//    cs.insert(CommandStore(EmetconProtocol::GetConfig_TOU,                  EmetconProtocol::IO_Function_Read,  FuncRead_TOUSwitchSchedule12Part2Pos,  FuncRead_TOUSwitchSchedule12Part2Len));
-//    cs.insert(CommandStore(EmetconProtocol::GetConfig_TOU,                  EmetconProtocol::IO_Function_Read,  FuncRead_TOUSwitchSchedule34Part2Pos,  FuncRead_TOUSwitchSchedule34Part2Len));
 
     return cs;
 }
@@ -596,12 +593,15 @@ INT Mct440_213xBDevice::ModelDecode(INMESS          *InMessage,
         break;
 
     case EmetconProtocol::GetConfig_TOU:
-    case EmetconProtocol::GetConfig_TOUPart2:
         status = decodeGetConfigTOU(InMessage, TimeNow, vgList, retList, outList);
         break;
 
     case EmetconProtocol::GetConfig_PhaseLossThreshold:
         status = decodeGetConfigPhaseLossThreshold(InMessage, TimeNow, vgList, retList, outList);
+        break;
+
+    case EmetconProtocol::GetConfig_Holiday:
+        status = decodeGetConfigHoliday(InMessage, TimeNow, vgList, retList, outList);
         break;
 
     default:
@@ -1273,6 +1273,7 @@ int Mct440_213xBDevice::executePutConfigTOU(CtiRequestMsg     *pReq,
             OutMessage->Buffer.BSt.Function    = FuncRead_TOUSwitchSchedule12Pos;
             OutMessage->Buffer.BSt.Length      = FuncRead_TOUSwitchSchedule12Len;
             OutMessage->Buffer.BSt.IO          = EmetconProtocol::IO_Function_Read;
+            OutMessage->Sequence               = EmetconProtocol::GetConfig_TOU;
 
             OUTMESS *touOutMessage             = CTIDBG_new OUTMESS(*OutMessage);
             touOutMessage->Priority           -= 1; //decrease for read. Only want read after a successful write.
@@ -1281,31 +1282,26 @@ int Mct440_213xBDevice::executePutConfigTOU(CtiRequestMsg     *pReq,
 
             touOutMessage->Buffer.BSt.Function = FuncRead_TOUSwitchSchedule12Pos;
             touOutMessage->Buffer.BSt.Length   = FuncRead_TOUSwitchSchedule12Len;
-            touOutMessage->Sequence            = EmetconProtocol::GetConfig_TOU;
             outList.push_back( CTIDBG_new OUTMESS(*touOutMessage) );
 
             touOutMessage->Buffer.BSt.Function = FuncRead_TOUSwitchSchedule12Part2Pos;
             touOutMessage->Buffer.BSt.Length   = FuncRead_TOUSwitchSchedule12Part2Len;
-            touOutMessage->Sequence            = EmetconProtocol::GetConfig_TOUPart2;
             outList.push_back( CTIDBG_new OUTMESS(*touOutMessage) );
 
             strncpy(touOutMessage->Request.CommandStr, "getconfig tou schedule 3", COMMAND_STR_SIZE );
 
             touOutMessage->Buffer.BSt.Function = FuncRead_TOUSwitchSchedule34Pos;
             touOutMessage->Buffer.BSt.Length   = FuncRead_TOUSwitchSchedule34Len;
-            touOutMessage->Sequence            = EmetconProtocol::GetConfig_TOU;
             outList.push_back( CTIDBG_new OUTMESS(*touOutMessage) );
 
             touOutMessage->Buffer.BSt.Function = FuncRead_TOUSwitchSchedule34Part2Pos;
             touOutMessage->Buffer.BSt.Length   = FuncRead_TOUSwitchSchedule34Part2Len;
-            touOutMessage->Sequence            = EmetconProtocol::GetConfig_TOUPart2;
             outList.push_back( CTIDBG_new OUTMESS(*touOutMessage) );
 
             strncpy(touOutMessage->Request.CommandStr, "getconfig tou", COMMAND_STR_SIZE );
 
             touOutMessage->Buffer.BSt.Function = FuncRead_TOUStatusPos;
             touOutMessage->Buffer.BSt.Length   = FuncRead_TOUStatusLen;
-            touOutMessage->Sequence            = EmetconProtocol::GetConfig_TOU;
             outList.push_back( touOutMessage );
 
             touOutMessage = 0;
@@ -1358,6 +1354,9 @@ INT Mct440_213xBDevice::executeGetConfig(CtiRequestMsg     *pReq,
         OutMessage->Retry           = 2;
         OutMessage->Request.RouteID = getRouteID();
 
+        OutMessage->Sequence        = EmetconProtocol::GetConfig_TOU;
+        OutMessage->Buffer.BSt.IO   = EmetconProtocol::IO_Function_Read;
+
         strncpy(OutMessage->Request.CommandStr, pReq->CommandString().c_str(), COMMAND_STR_SIZE);
 
         if( parse.isKeyValid("tou_schedule") )
@@ -1366,18 +1365,12 @@ INT Mct440_213xBDevice::executeGetConfig(CtiRequestMsg     *pReq,
 
             if( schedulenum == 1 || schedulenum == 2 )
             {
-                OutMessage->Buffer.BSt.IO       = EmetconProtocol::IO_Function_Read;
-
                 OutMessage->Buffer.BSt.Function = FuncRead_TOUSwitchSchedule12Pos;
                 OutMessage->Buffer.BSt.Length   = FuncRead_TOUSwitchSchedule12Len;
-                OutMessage->Sequence            = EmetconProtocol::GetConfig_TOU;
-
                 outList.push_back(CTIDBG_new OUTMESS(*OutMessage));
 
                 OutMessage->Buffer.BSt.Function = FuncRead_TOUSwitchSchedule12Part2Pos;
                 OutMessage->Buffer.BSt.Length   = FuncRead_TOUSwitchSchedule12Part2Len;
-                OutMessage->Sequence            = EmetconProtocol::GetConfig_TOUPart2;
-
                 outList.push_back(CTIDBG_new OUTMESS(*OutMessage));
 
                 delete OutMessage;  //  we didn't use it, we made our own
@@ -1387,18 +1380,12 @@ INT Mct440_213xBDevice::executeGetConfig(CtiRequestMsg     *pReq,
             }
             else if( schedulenum == 3 || schedulenum == 4 )
             {
-                OutMessage->Buffer.BSt.IO       = EmetconProtocol::IO_Function_Read;
-
                 OutMessage->Buffer.BSt.Function = FuncRead_TOUSwitchSchedule34Pos;
                 OutMessage->Buffer.BSt.Length   = FuncRead_TOUSwitchSchedule34Len;
-                OutMessage->Sequence            = EmetconProtocol::GetConfig_TOU;
-
                 outList.push_back(CTIDBG_new OUTMESS(*OutMessage));
 
                 OutMessage->Buffer.BSt.Function = FuncRead_TOUSwitchSchedule34Part2Pos;
                 OutMessage->Buffer.BSt.Length   = FuncRead_TOUSwitchSchedule34Part2Len;
-                OutMessage->Sequence            = EmetconProtocol::GetConfig_TOUPart2;
-
                 outList.push_back(CTIDBG_new OUTMESS(*OutMessage));
 
                 delete OutMessage;  //  we didn't use it, we made our own
@@ -1432,15 +1419,36 @@ INT Mct440_213xBDevice::executeGetConfig(CtiRequestMsg     *pReq,
         {
             OutMessage->Buffer.BSt.Function = FuncRead_TOUStatusPos;
             OutMessage->Buffer.BSt.Length   = FuncRead_TOUStatusLen;
-            OutMessage->Sequence            = EmetconProtocol::GetConfig_TOU;
-            OutMessage->Buffer.BSt.IO       = EmetconProtocol::IO_Function_Read;
 
             nRet = NoError;
         }
     }
 
-                                                                /* -------------------- HOLIDAYS ---------------------- */
-    if( parse.isKeyValid("holiday") )
+
+                                                                /* --------------- PHASE LOSS THRESHOLD --------------- */
+    else if( parse.isKeyValid("phaseloss_threshold") )
+    {
+        const int function = EmetconProtocol::GetConfig_PhaseLossThreshold;
+        if( getOperation(function, OutMessage->Buffer.BSt) )
+        {
+            OutMessage->Sequence            = function;
+            // Load all the other stuff that is needed
+            // FIXME: most of this is taken care of in propagateRequest - we could probably trim a lot of this out
+            OutMessage->DeviceID            = getID();
+            OutMessage->TargetID            = getID();
+            OutMessage->Port                = getPortID();
+            OutMessage->Remote              = getAddress();
+            OutMessage->TimeOut             = 2;
+            OutMessage->Retry               = 2;
+            OutMessage->Request.RouteID     = getRouteID();
+
+            nRet = NoError;
+        }
+    }
+
+
+                                                                /* --------------------- HOLIDAYS --------------------- */
+    else if( parse.isKeyValid("holiday") )
     {
         // Load all the other stuff that is needed
         // FIXME: most of this is taken care of in propagateRequest - we could probably trim a lot of this out
@@ -1452,31 +1460,23 @@ INT Mct440_213xBDevice::executeGetConfig(CtiRequestMsg     *pReq,
         OutMessage->Retry               = 2;
         OutMessage->Request.RouteID     = getRouteID();
 
-
         OutMessage->Buffer.BSt.IO       = EmetconProtocol::IO_Read;
+        OutMessage->Sequence            = EmetconProtocol::GetConfig_Holiday;
 
         OutMessage->Buffer.BSt.Function = Memory_Holiday1_7Pos;
         OutMessage->Buffer.BSt.Length   = Memory_Holiday1_7Len;
-        OutMessage->Sequence            = EmetconProtocol::GetConfig_Holiday1_7;
-
         outList.push_back(CTIDBG_new OUTMESS(*OutMessage));
 
         OutMessage->Buffer.BSt.Function = Memory_Holiday8_14Pos;
         OutMessage->Buffer.BSt.Length   = Memory_Holiday8_14Len;
-        OutMessage->Sequence            = EmetconProtocol::GetConfig_Holiday8_14;
-
         outList.push_back(CTIDBG_new OUTMESS(*OutMessage));
 
         OutMessage->Buffer.BSt.Function = Memory_Holiday15_21Pos;
         OutMessage->Buffer.BSt.Length   = Memory_Holiday15_21Len;
-        OutMessage->Sequence            = EmetconProtocol::GetConfig_Holiday15_21;
-
         outList.push_back(CTIDBG_new OUTMESS(*OutMessage));
 
         OutMessage->Buffer.BSt.Function = Memory_Holiday22_28Pos;
         OutMessage->Buffer.BSt.Length   = Memory_Holiday22_28Len;
-        OutMessage->Sequence            = EmetconProtocol::GetConfig_Holiday22_28;
-
         outList.push_back(CTIDBG_new OUTMESS(*OutMessage));
 
         delete OutMessage;  //  we didn't use it, we made our own
@@ -2663,12 +2663,15 @@ INT Mct440_213xBDevice::decodeGetConfigTOU(INMESS          *InMessage,
     CtiTime tmpTime;
 
     int schedulenum = parse.getiValue("tou_schedule");
-
+    
     if( schedulenum > 0 && schedulenum <= 4 )
     {
         long timeArray[2][5];
         long rateArray[2][6];
         schedulenum -= (schedulenum - 1) % 2;
+
+        const bool switch1_5 = ( InMessage->Return.ProtocolInfo.Emetcon.Function == FuncRead_TOUSwitchSchedule12Pos ||
+                                 InMessage->Return.ProtocolInfo.Emetcon.Function == FuncRead_TOUSwitchSchedule34Pos );
 
         for( int offset = 0; offset < 2; offset++ )
         {
@@ -2687,7 +2690,7 @@ INT Mct440_213xBDevice::decodeGetConfigTOU(INMESS          *InMessage,
                 byte_offset = 7;
             }
 
-            if( InMessage->Sequence == EmetconProtocol::GetConfig_TOU )
+            if( switch1_5 )
             {
                 rateArray[offset][0] = (rates >> 2)  & 0x03;    /* Switch 1                                             */
                 rateArray[offset][1] = (rates >> 4)  & 0x03;    /* Switch 2                                             */
@@ -2699,7 +2702,7 @@ INT Mct440_213xBDevice::decodeGetConfigTOU(INMESS          *InMessage,
                 current_rate = rateArray[offset][5];
                 resultString += string("00:00: ") + (char)('A' + current_rate) + "\n";
             }
-            else                                                /* EmetconProtocol::GetConfig_TOUPart2                  */
+            else
             {
                 rateArray[offset][0] = (rates) & 0x03;          /* switch 6                                             */
                 rateArray[offset][1] = (rates >> 2) & 0x03;     /* switch 7                                             */
@@ -2732,7 +2735,7 @@ INT Mct440_213xBDevice::decodeGetConfigTOU(INMESS          *InMessage,
                 previous_rate = current_rate;
             }
 
-            if( InMessage->Sequence == EmetconProtocol::GetConfig_TOU )
+            if( switch1_5 )
             {
                 resultString += "- end of switch 1-5 - \n\n";
             }
@@ -2764,7 +2767,7 @@ INT Mct440_213xBDevice::decodeGetConfigTOU(INMESS          *InMessage,
         parseTOUDayScheduleString(dynDayScheduleB, times_schedule[1], rates_schedule[1]);
 
                                                                 /* copy the new data over the previous                  */
-        if( InMessage->Sequence == EmetconProtocol::GetConfig_TOU )
+        if( switch1_5 )
         {
             for( int i=0; i<2; i++ )                            /* switch 1 - 5 and midnight                            */
             {
@@ -2931,50 +2934,6 @@ int Mct440_213xBDevice::decodeGetConfigModel(INMESS              *InMessage,
 
 /*
 *********************************************************************************************************
-*                                           decodeGetConfig()
-*
-* Description :
-*
-* Argument(s) :
-*
-* Return(s)   :
-*
-* Caller(s)   :
-*
-* Note(s)     :
-*********************************************************************************************************
-*/
-INT Mct440_213xBDevice::decodeGetConfig(INMESS          *InMessage,
-                                        CtiTime         &TimeNow,
-                                        CtiMessageList  &vgList,
-                                        CtiMessageList  &retList,
-                                        OutMessageList  &outList)
-{
-    INT status = NORMAL;
-
-
-    switch( InMessage->Sequence )
-    {
-        case EmetconProtocol::GetConfig_Holiday1_7:
-        case EmetconProtocol::GetConfig_Holiday8_14:
-        case EmetconProtocol::GetConfig_Holiday15_21:
-        case EmetconProtocol::GetConfig_Holiday22_28:
-        {
-            status = Mct440_213xBDevice::decodeGetConfigHoliday(InMessage, TimeNow, vgList, retList, outList);
-            break;
-        }
-        default:
-        {
-            status = Inherited::decodeGetConfig(InMessage, TimeNow, vgList, retList, outList);
-        }
-    }
-
-    return status;
-}
-
-
-/*
-*********************************************************************************************************
 *                                       decodeGetConfigHoliday()
 *
 * Description :
@@ -3012,16 +2971,16 @@ int Mct440_213xBDevice::decodeGetConfigHoliday(INMESS          *InMessage,
 
     int offset;
 
-    switch( InMessage->Sequence )
+    switch( InMessage->Return.ProtocolInfo.Emetcon.Function )
     {
-        case EmetconProtocol::GetConfig_Holiday1_7:     offset = 1;  break;
-        case EmetconProtocol::GetConfig_Holiday8_14:    offset = 8;  break;
-        case EmetconProtocol::GetConfig_Holiday15_21:   offset = 15; break;
-        case EmetconProtocol::GetConfig_Holiday22_28:   offset = 22; break;
+        case Memory_Holiday1_7Pos  : offset = 1;  break;
+        case Memory_Holiday8_14Pos : offset = 8;  break;
+        case Memory_Holiday15_21Pos: offset = 15; break;
+        case Memory_Holiday22_28Pos: offset = 22; break;
         default:
         {
             CtiLockGuard<CtiLogger> doubt_guard(dout);
-            dout << CtiTime() << " InMessage->Sequence not supported " << __FILE__ << " (" << __LINE__ << ") " << endl;
+            dout << CtiTime() << " InMessage.Return.ProtocolInfo.Emetcon.Function not supported " << __FILE__ << " (" << __LINE__ << ") " << endl;
 
             return BADPARAM;
         }
@@ -3030,9 +2989,9 @@ int Mct440_213xBDevice::decodeGetConfigHoliday(INMESS          *InMessage,
     for( int i = 0; i < 7; i++ )
     {
         unsigned long days      = (DSt.Message[i*2] << 8) | DSt.Message[(i*2)+1];
-
         unsigned long timestamp = (days * NBR_SECONDS_PER_DAY) + start_time.seconds();
         CtiTime holiday         = CtiTime(timestamp);
+
         ostringstream ss;
         ss << (i + offset);
 
