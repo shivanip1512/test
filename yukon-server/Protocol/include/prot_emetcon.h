@@ -134,7 +134,6 @@ public:
         GetConfig_UniqueAddress,
         GetConfig_Disconnect,
         GetConfig_TOU,
-        GetConfig_TOUPart2,
         GetConfig_Holiday,
         GetConfig_MeterParameters,  //  not ideal - hopefully we can manage the InMessage->Sequence better for very specialized
         GetConfig_Freeze,           //    commands like this one, i don't like this being a big mess of non-general commands
@@ -145,10 +144,6 @@ public:
         GetConfig_DailyReadInterest,
         GetConfig_WaterMeterReadInterval,
         GetConfig_PhaseLossThreshold,
-        GetConfig_Holiday1_7,
-        GetConfig_Holiday8_14,
-        GetConfig_Holiday15_21,
-        GetConfig_Holiday22_28,
 
         // PutConfig commands
         PutConfig_Install,
