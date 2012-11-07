@@ -130,6 +130,10 @@ protected:
     virtual int decodeGetConfigModel(INMESS *InMessage, CtiTime &TimeNow, std::list< CtiMessage* > &vgList, std::list< CtiMessage* > &retList, std::list< OUTMESS* > &outList);
 
     virtual int decodeGetConfigHoliday(INMESS *InMessage, CtiTime &TimeNow, CtiMessageList &vgList, CtiMessageList &retList, OutMessageList &outList);
+
+    virtual INT decodeGetStatusFreeze(INMESS *InMessage, CtiTime &TimeNow, CtiMessageList &vgList, CtiMessageList  &retList, OutMessageList &outList);
+
+    virtual int executePutConfigAlarmMask(CtiRequestMsg *pReq, CtiCommandParser &parse, OUTMESS *&OutMessage, CtiMessageList &vgList, CtiMessageList &retList, OutMessageList &outList);
 };
 
 

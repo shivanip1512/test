@@ -258,6 +258,9 @@ Mct440_213xBDevice::CommandSet Mct440_213xBDevice::initCommandStore()
     cs.insert(CommandStore(EmetconProtocol::GetConfig_PhaseLossThreshold,   EmetconProtocol::IO_Read,           0x1E,    3));
     cs.insert(CommandStore(EmetconProtocol::PutConfig_PhaseLossThreshold,   EmetconProtocol::IO_Write,          0x1E,    3));
 
+    cs.insert(CommandStore(EmetconProtocol::GetStatus_Freeze,               EmetconProtocol::IO_Read,           0x26,    5));
+    cs.insert(CommandStore(EmetconProtocol::PutConfig_Options,              EmetconProtocol::IO_Function_Write, 0x01,    4));
+
     return cs;
 }
 
@@ -1350,7 +1353,6 @@ INT Mct440_213xBDevice::executeGetConfig(CtiRequestMsg     *pReq,
     OutMessage->Retry           = 2;
     OutMessage->Request.RouteID = getRouteID();
 
-
                                                                 /* ------------ TOU RATE SCHEDULE / STATUS ------------ */
     if( parse.isKeyValid("tou") )
     {
@@ -1397,24 +1399,10 @@ INT Mct440_213xBDevice::executeGetConfig(CtiRequestMsg     *pReq,
             }
             else
             {
-                CtiReturnMsg *errRet = CTIDBG_new CtiReturnMsg(getID( ),
-                                                               string(OutMessage->Request.CommandStr),
-                                                               string(),
-                                                               nRet,
-                                                               OutMessage->Request.RouteID,
-                                                               OutMessage->Request.MacroOffset,
-                                                               OutMessage->Request.Attempt,
-                                                               OutMessage->Request.GrpMsgID,
-                                                               OutMessage->Request.UserID,
-                                                               OutMessage->Request.SOE,
-                                                               CtiMultiMsg_vec( ));
+                returnErrorMessage(BADPARAM, OutMessage, retList,
+                                   "invalid schedule number " + CtiNumStr(schedulenum));
 
-                if( errRet )
-                {
-                    errRet->setResultString("invalid schedule number " + CtiNumStr(schedulenum));
-                    errRet->setStatus(NoMethod);
-                    retList.push_back(errRet);
-                }
+                nRet = ExecutionComplete;
             }
         }
         else
@@ -1426,7 +1414,6 @@ INT Mct440_213xBDevice::executeGetConfig(CtiRequestMsg     *pReq,
         }
     }
 
-
                                                                 /* --------------- PHASE LOSS THRESHOLD --------------- */
     else if( parse.isKeyValid("phaseloss_threshold") )
     {
@@ -1437,7 +1424,6 @@ INT Mct440_213xBDevice::executeGetConfig(CtiRequestMsg     *pReq,
             nRet = NoError;
         }
     }
-
 
                                                                 /* --------------------- HOLIDAYS --------------------- */
     else if( parse.isKeyValid("holiday") )
@@ -1581,7 +1567,6 @@ void Mct440_213xBDevice::parseTOUDayScheduleString(string &schedule, long (&time
 
     ss >> rates[10];
 }
-
 
 
 /*
@@ -1735,6 +1720,7 @@ INT Mct440_213xBDevice::executePutConfig(CtiRequestMsg     *pReq,
 {
     INT nRet = NoMethod;
 
+
     // Load all the other stuff that is needed
     OutMessage->DeviceID  = getID();
     OutMessage->TargetID  = getID();
@@ -1754,6 +1740,10 @@ INT Mct440_213xBDevice::executePutConfig(CtiRequestMsg     *pReq,
     else if( parse.isKeyValid("phaseloss_percent_threshold"))
     {
         nRet = executePutConfigPhaseLossThreshold(pReq, parse, OutMessage, vgList, retList, outList);
+    }
+    else if( parse.isKeyValid("alarm_mask") )
+    {
+        nRet = executePutConfigAlarmMask(pReq, parse, OutMessage, vgList, retList, outList);
     }
     else
     {
@@ -1786,14 +1776,10 @@ int Mct440_213xBDevice::executePutConfigHoliday(CtiRequestMsg     *pReq,
                                                 CtiMessageList    &retList,
                                                 OutMessageList    &outList)
 {
-    INT nRet = NoMethod;
-
-
     OutMessage->Sequence = EmetconProtocol::PutConfig_Holiday;
-
     if( !getOperation(OutMessage->Sequence, OutMessage->Buffer.BSt) )
     {
-        return nRet;
+        return NoMethod;
     }
 
     unsigned long holidays[7];
@@ -1853,57 +1839,23 @@ int Mct440_213xBDevice::executePutConfigHoliday(CtiRequestMsg     *pReq,
                 OutMessage->Buffer.BSt.Message[i*2+2] = holidays[i]  & 0xff;
             }
 
-            nRet = NoError;
+            return NoError;
         }
         else
         {
-            nRet = BADPARAM;
+            returnErrorMessage(BADPARAM, OutMessage, retList,
+                               "Specified dates are invalid");
 
-            CtiReturnMsg *errRet = CTIDBG_new CtiReturnMsg(getID( ),
-                                                           string(OutMessage->Request.CommandStr),
-                                                           string(),
-                                                           nRet,
-                                                           OutMessage->Request.RouteID,
-                                                           OutMessage->Request.MacroOffset,
-                                                           OutMessage->Request.Attempt,
-                                                           OutMessage->Request.GrpMsgID,
-                                                           OutMessage->Request.UserID,
-                                                           OutMessage->Request.SOE,
-                                                           CtiMultiMsg_vec( ));
-
-            if( errRet )
-            {
-                errRet->setResultString("Specified dates are invalid");
-                errRet->setStatus(NoMethod);
-                retList.push_back(errRet);
-            }
+            return ExecutionComplete;
         }
     }
     else
     {
-        nRet = BADPARAM;
+        returnErrorMessage(BADPARAM, OutMessage, retList,
+                           "Invalid holiday offset specified, valid offsets are: 1, 8, 15, 22");
 
-        CtiReturnMsg *errRet = CTIDBG_new CtiReturnMsg(getID( ),
-                                                       string(OutMessage->Request.CommandStr),
-                                                       string(),
-                                                       nRet,
-                                                       OutMessage->Request.RouteID,
-                                                       OutMessage->Request.MacroOffset,
-                                                       OutMessage->Request.Attempt,
-                                                       OutMessage->Request.GrpMsgID,
-                                                       OutMessage->Request.UserID,
-                                                       OutMessage->Request.SOE,
-                                                       CtiMultiMsg_vec( ));
-
-        if( errRet )
-        {
-            errRet->setResultString("Invalid holiday offset specified, valid offsets are: 1, 8, 15, 22");
-            errRet->setStatus(NoMethod);
-            retList.push_back(errRet);
-        }
+        return ExecutionComplete;
     }
-
-    return nRet;
 }
 
 
@@ -1961,51 +1913,19 @@ int Mct440_213xBDevice::executePutConfigTOUDays(CtiRequestMsg     *pReq,
 
         if( default_rate < 0 )
         {
-            nRet = BADPARAM;
+            returnErrorMessage(BADPARAM, OutMessage, retList,
+                               "TOU default rate \"" + parse.getsValue("tou_default") + "\" specified is invalid for device \"" + getName() + "\"");
 
-            CtiReturnMsg *errRet = CTIDBG_new CtiReturnMsg(getID( ),
-                                                           string(OutMessage->Request.CommandStr),
-                                                           string(),
-                                                           nRet,
-                                                           OutMessage->Request.RouteID,
-                                                           OutMessage->Request.MacroOffset,
-                                                           OutMessage->Request.Attempt,
-                                                           OutMessage->Request.GrpMsgID,
-                                                           OutMessage->Request.UserID,
-                                                           OutMessage->Request.SOE,
-                                                           CtiMultiMsg_vec( ));
-
-            if( errRet )
-            {
-                errRet->setResultString("TOU default rate \"" + parse.getsValue("tou_default") + "\" specified is invalid for device \"" + getName() + "\"");
-                errRet->setStatus(NoMethod);
-                retList.push_back(errRet);
-            }
+            return ExecutionComplete;
         }
         else
         {
             if( daytable.length() < 8 || daytable.find_first_not_of("1234") != string::npos )
             {
-                nRet = BADPARAM;
+                returnErrorMessage(BADPARAM, OutMessage, retList,
+                                   "day table \"" + daytable + "\" specified is invalid for device \"" + getName() + "\"");
 
-                CtiReturnMsg *errRet = CTIDBG_new CtiReturnMsg(getID( ),
-                                                               string(OutMessage->Request.CommandStr),
-                                                               string(),
-                                                               nRet,
-                                                               OutMessage->Request.RouteID,
-                                                               OutMessage->Request.MacroOffset,
-                                                               OutMessage->Request.Attempt,
-                                                               OutMessage->Request.GrpMsgID,
-                                                               OutMessage->Request.UserID,
-                                                               OutMessage->Request.SOE,
-                                                               CtiMultiMsg_vec( ));
-
-                if( errRet )
-                {
-                    errRet->setResultString("day table \"" + daytable + "\" specified is invalid for device \"" + getName() + "\"");
-                    errRet->setStatus(NoMethod);
-                    retList.push_back(errRet);
-                }
+                return ExecutionComplete;
             }
             else
             {
@@ -2550,16 +2470,12 @@ int Mct440_213xBDevice::executePutConfigPhaseLossThreshold(CtiRequestMsg     *pR
                                                            CtiMessageList    &retList,
                                                            OutMessageList    &outList)
 {
-    INT  nRet = NoMethod;
-    const INT function = EmetconProtocol::PutConfig_PhaseLossThreshold;
-
-
-    if( !getOperation(function, OutMessage->Buffer.BSt) )
+    OutMessage->Sequence = EmetconProtocol::PutConfig_PhaseLossThreshold;
+    if( !getOperation(OutMessage->Sequence, OutMessage->Buffer.BSt) )
     {
-        return nRet;
+        return NoMethod;
     }
 
-    OutMessage->Sequence  = function;
     int phaseloss_percent = parse.getiValue("phaseloss_percent_threshold", -1);
     string durationstr    = parse.getsValue("phaseloss_duration_threshold");
 
@@ -2588,32 +2504,71 @@ int Mct440_213xBDevice::executePutConfigPhaseLossThreshold(CtiRequestMsg     *pR
         OutMessage->Buffer.BSt.Message[1] = (phaseloss_seconds >> 8);
         OutMessage->Buffer.BSt.Message[2] = phaseloss_seconds & 0xff;
 
-        nRet = NoError;
+        return NoError;
     }
     else
     {
-        nRet = BADPARAM;
+        returnErrorMessage(BADPARAM, OutMessage, retList,
+                           "Invalid phase loss thresholds for device \"" + getName() + "\" - Acceptable values: phase loss percent range: 0 - 100 ; phase loss max duration: 18:12:15 - ");
 
-        CtiReturnMsg *errRet = CTIDBG_new CtiReturnMsg(getID( ),
-                                                       string(OutMessage->Request.CommandStr),
-                                                       string(),
-                                                       nRet,
-                                                       OutMessage->Request.RouteID,
-                                                       OutMessage->Request.MacroOffset,
-                                                       OutMessage->Request.Attempt,
-                                                       OutMessage->Request.GrpMsgID,
-                                                       OutMessage->Request.UserID,
-                                                       OutMessage->Request.SOE,
-                                                       CtiMultiMsg_vec( ));
-        if( errRet )
-        {
-            errRet->setResultString("Invalid phase loss thresholds for device \"" + getName() + "\" - Acceptable values: phase loss percent range: 0 - 100 ; phase loss max duration: 18:12:15 - ");
-            errRet->setStatus(NoMethod);
-            retList.push_back(errRet);
-        }
+        return ExecutionComplete;
     }
+}
 
-    return nRet;
+
+/*
+*********************************************************************************************************
+*                                      executePutConfigAlarmMask()
+*
+* Description :
+*
+* Argument(s) :
+*
+* Return(s)   :
+*
+* Caller(s)   :
+*
+* Note(s)     :
+*********************************************************************************************************
+*/
+int Mct440_213xBDevice::executePutConfigAlarmMask(CtiRequestMsg     *pReq,
+                                                  CtiCommandParser  &parse,
+                                                  OUTMESS          *&OutMessage,
+                                                  CtiMessageList    &vgList,
+                                                  CtiMessageList    &retList,
+                                                  OutMessageList    &outList)
+{
+    if( parse.isKeyValid("config_byte") ||
+        hasDynamicInfo(CtiTableDynamicPaoInfo::Key_MCT_Configuration))
+    {
+        int alarmMask = parse.getiValue("alarm_mask", 0);
+
+        OutMessage->Buffer.BSt.Message[0] = (alarmMask & 0xFF);
+        OutMessage->Buffer.BSt.Message[1] = ((alarmMask >> 8) & 0xFF);
+
+        if( parse.isKeyValid("alarm_mask_meter") )
+        {
+            int meterAlarmMask = parse.getiValue("alarm_mask_meter", 0);
+            OutMessage->Buffer.BSt.Message[2] = (meterAlarmMask & 0xFF);
+            OutMessage->Buffer.BSt.Message[3] = ((meterAlarmMask >> 8) & 0xFF);
+        }
+
+        if( !getOperation(EmetconProtocol::PutConfig_Options, OutMessage->Buffer.BSt) )
+        {
+            return NoMethod;
+        }
+
+        OutMessage->Sequence = EmetconProtocol::PutConfig_AlarmMask;
+
+        return NoError;
+    }
+    else
+    {
+        returnErrorMessage(MISPARAM, OutMessage, retList,
+                           "Invalid request: Config Byte needs to be specified");
+
+        return ExecutionComplete;
+    }
 }
 
 
@@ -2734,60 +2689,58 @@ INT Mct440_213xBDevice::decodeGetConfigTOU(INMESS          *InMessage,
 
         }
 
-        string dynDayScheduleA,
-               dynDayScheduleB;
+        PaoInfoKeys key[2];
 
-        if( schedulenum < 2 )                                   /* Retrieve dynamic info for schedule 1 and 2           */
+        if( schedulenum < 2 )
         {
-            CtiDeviceBase::getDynamicInfo(CtiTableDynamicPaoInfo::Key_MCT_DaySchedule1, dynDayScheduleA);
-            CtiDeviceBase::getDynamicInfo(CtiTableDynamicPaoInfo::Key_MCT_DaySchedule2, dynDayScheduleB);
-        }
-        else                                                    /* Retrieve dynamic info for schedule 3 and 4           */
-        {
-            CtiDeviceBase::getDynamicInfo(CtiTableDynamicPaoInfo::Key_MCT_DaySchedule3, dynDayScheduleA);
-            CtiDeviceBase::getDynamicInfo(CtiTableDynamicPaoInfo::Key_MCT_DaySchedule4, dynDayScheduleB);
-        }
-
-        long times_schedule[2][10],
-             rates_schedule[2][11];
-                                                                /* parse dynamic info to get times and rate values      */
-        parseTOUDayScheduleString(dynDayScheduleA, times_schedule[0], rates_schedule[0]);
-        parseTOUDayScheduleString(dynDayScheduleB, times_schedule[1], rates_schedule[1]);
-
-                                                                /* copy the new data over the previous                  */
-        if( switch1_5 )
-        {
-            for( int i=0; i<2; i++ )                            /* switch 1 - 5 and midnight                            */
-            {
-                memcpy(&times_schedule[i][0], timeArray[i], sizeof(long)*5);
-                memcpy(&rates_schedule[i][0], rateArray[i], sizeof(long)*5);
-                rates_schedule[i][10] = rateArray[i][5];
-            }
+            key[0] = CtiTableDynamicPaoInfo::Key_MCT_DaySchedule1;
+            key[1] = CtiTableDynamicPaoInfo::Key_MCT_DaySchedule2;
         }
         else
         {
-            for( int i=0; i<2; i++ )                            /* switch 6 - 10                                        */
+            key[0] = CtiTableDynamicPaoInfo::Key_MCT_DaySchedule3;
+            key[1] = CtiTableDynamicPaoInfo::Key_MCT_DaySchedule4;
+        }
+
+        for( int i = 0; i < 2; i++ )
+        {
+            string dynDaySchedule;
+                                                                /* Retrieve daily schedule dynamic info                 */
+            const bool ScheduleValid = CtiDeviceBase::getDynamicInfo(key[i], dynDaySchedule);
+
+            long times_schedule[10],
+                 rates_schedule[11];
+
+            if( ScheduleValid )
             {
-                memcpy(&times_schedule[i][5], timeArray[i], sizeof(long)*5);
-                memcpy(&rates_schedule[i][5], rateArray[i], sizeof(long)*5);
+                                                                /* parse dynamic info to get times and rate values      */
+                parseTOUDayScheduleString(dynDaySchedule, times_schedule, rates_schedule);
             }
-        }
+            else
+            {
+                                                                /* if the dynamic info doesn't exist, fill with -1      */
+                std::fill( times_schedule, times_schedule + (sizeof(times_schedule)/sizeof(times_schedule[0])) , -1 );
+                std::fill( rates_schedule, rates_schedule + (sizeof(rates_schedule)/sizeof(rates_schedule[0])) , -1 );
+            }
 
-        string dayScheduleA,
-               dayScheduleB;
+            if( switch1_5 )                                     /* switch 1 - 5 and midnight                            */
+            {
+                std::copy(timeArray[i], timeArray[i] + 5, times_schedule);
+                std::copy(rateArray[i], rateArray[i] + 5, rates_schedule);
+                rates_schedule[10] = rateArray[i][5];
+            }
+            else                                                /* switch 6 - 10                                        */
+            {
+               std::copy(timeArray[i], timeArray[i] + 5, times_schedule + 5);
+               std::copy(rateArray[i], rateArray[i] + 5, rates_schedule + 5);
+            }
+
+            string daySchedule;
                                                                 /* create new strings for all 10 switches               */
-        createTOUDayScheduleString(dayScheduleA, times_schedule[0], rates_schedule[0]);
-        createTOUDayScheduleString(dayScheduleB, times_schedule[1], rates_schedule[1]);
+            createTOUDayScheduleString(daySchedule, times_schedule, rates_schedule);
 
-        if( schedulenum < 2 )                                   /* Update dynamic info for schedule 1 and 2             */
-        {
-            CtiDeviceBase::setDynamicInfo(CtiTableDynamicPaoInfo::Key_MCT_DaySchedule1, dayScheduleA);
-            CtiDeviceBase::setDynamicInfo(CtiTableDynamicPaoInfo::Key_MCT_DaySchedule2, dayScheduleB);
-        }
-        else                                                    /* Update dynamic info for schedule 3 and 4             */
-        {
-            CtiDeviceBase::setDynamicInfo(CtiTableDynamicPaoInfo::Key_MCT_DaySchedule3, dayScheduleA);
-            CtiDeviceBase::setDynamicInfo(CtiTableDynamicPaoInfo::Key_MCT_DaySchedule4, dayScheduleB);
+                                                                /* Set daily schedule dynamic info                      */
+            CtiDeviceBase::setDynamicInfo(key[i], daySchedule);
         }
     }
     else
@@ -2993,6 +2946,80 @@ int Mct440_213xBDevice::decodeGetConfigHoliday(INMESS          *InMessage,
     return NORMAL;
 }
 
+
+/*
+*********************************************************************************************************
+*                                       decodeGetStatusFreeze()
+*
+* Description :
+*
+* Argument(s) :
+*
+* Return(s)   :
+*
+* Caller(s)   :
+*
+* Note(s)     :
+*********************************************************************************************************
+*/
+INT Mct440_213xBDevice::decodeGetStatusFreeze(INMESS          *InMessage,
+                                              CtiTime         &TimeNow,
+                                              CtiMessageList  &vgList,
+                                              CtiMessageList  &retList,
+                                              OutMessageList  &outList)
+{
+     INT status = NORMAL;
+
+     INT ErrReturn  = InMessage->EventCode & 0x3fff;
+     DSTRUCT *DSt  = &InMessage->Buffer.DSt;
+
+     string resultString;
+     unsigned long tmpTime;
+     CtiTime lpTime;
+
+     CtiReturnMsg         *ReturnMsg = NULL;    // Message sent to VanGogh, inherits from Multi
+     CtiPointDataMsg      *pData = NULL;
+
+     if((ReturnMsg = CTIDBG_new CtiReturnMsg(getID(), InMessage->Return.CommandStr)) == NULL)
+     {
+         CtiLockGuard<CtiLogger> doubt_guard(dout);
+         dout << CtiTime() << " Could NOT allocate memory " << __FILE__ << " (" << __LINE__ << ") " << endl;
+
+         return MEMORY;
+     }
+
+     ReturnMsg->setUserMessageId(InMessage->Return.UserID);
+
+     resultString += getName() + " / Freeze status:\n";
+
+     tmpTime = DSt->Message[0] << 24 |
+               DSt->Message[1] << 16 |
+               DSt->Message[2] <<  8 |
+               DSt->Message[3];
+
+     updateFreezeInfo(DSt->Message[4], tmpTime);
+
+     CtiTime lastFreeze(tmpTime);
+     if( lastFreeze.isValid() )
+     {
+         resultString += "Last freeze timestamp: " + lastFreeze.asString() + "\n";
+     }
+     else
+     {
+         resultString += "Last freeze timestamp: (no freeze recorded)\n";
+     }
+
+     resultString += "Freeze counter: " + CtiNumStr(getCurrentFreezeCounter()) + "\n";
+     resultString += "Next freeze expected: freeze ";
+     resultString += ((getCurrentFreezeCounter() % 2)?("two"):("one"));
+     resultString += "\n";
+
+     ReturnMsg->setResultString(resultString);
+
+     retMsgHandler( InMessage->Return.CommandStr, status, ReturnMsg, vgList, retList );
+
+     return status;
+}
 
 }
 }

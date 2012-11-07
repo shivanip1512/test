@@ -1767,7 +1767,7 @@ BOOST_FIXTURE_TEST_SUITE(test_getOperation, getOperation_helper)
         BOOST_REQUIRE(test_dev.getOperation(EmetconProtocol::GetStatus_Freeze, BSt));
         BOOST_CHECK_EQUAL(BSt.IO, EmetconProtocol::IO_Read);
         BOOST_CHECK_EQUAL(BSt.Function, 0x26);
-        BOOST_CHECK_EQUAL(BSt.Length,   10);
+        BOOST_CHECK_EQUAL(BSt.Length,   5);
     }
     BOOST_AUTO_TEST_CASE(test_getOperation_39)
     {
@@ -2001,7 +2001,7 @@ BOOST_FIXTURE_TEST_SUITE(test_getOperation, getOperation_helper)
         BOOST_REQUIRE(test_dev.getOperation(EmetconProtocol::PutConfig_Options, BSt));
         BOOST_CHECK_EQUAL(BSt.IO, EmetconProtocol::IO_Function_Write);
         BOOST_CHECK_EQUAL(BSt.Function, 0x01);
-        BOOST_CHECK_EQUAL(BSt.Length,   5);
+        BOOST_CHECK_EQUAL(BSt.Length,   4);
     }
     BOOST_AUTO_TEST_CASE(test_getOperation_72)
     {
