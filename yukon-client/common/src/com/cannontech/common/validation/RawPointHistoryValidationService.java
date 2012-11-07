@@ -56,12 +56,12 @@ import com.cannontech.database.vendor.VendorSpecificSqlBuilderFactory;
 import com.cannontech.user.UserUtils;
 import com.google.common.collect.HashMultimap;
 import com.google.common.collect.ImmutableList;
+import com.google.common.collect.ImmutableList.Builder;
 import com.google.common.collect.ImmutableSet;
-import com.google.common.collect.Iterables;
+import com.google.common.collect.Lists;
 import com.google.common.collect.Multimap;
 import com.google.common.collect.Ordering;
 import com.google.common.collect.SetMultimap;
-import com.google.common.collect.ImmutableList.Builder;
 
 @ManagedResource
 public class RawPointHistoryValidationService {
@@ -336,7 +336,7 @@ public class RawPointHistoryValidationService {
         List<RawPointHistoryWrapper> valuesAfter = yukonJdbcTemplate.query(builder2, rawPointHistoryRowMapper);
         
         Builder<RawPointHistoryWrapper> builder = ImmutableList.builder();
-        builder.addAll(Iterables.reverse(valuesAfter));
+        builder.addAll(Lists.reverse(valuesAfter));
         builder.add(workUnit.thisValue);
         builder.addAll(valuesBefore);
         

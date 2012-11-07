@@ -21,9 +21,8 @@ import com.cannontech.i18n.YukonMessageSourceResolvable;
 import com.cannontech.util.ServletUtil;
 import com.cannontech.web.menu.PageInfo;
 import com.google.common.collect.ImmutableMap;
-import com.google.common.collect.Iterables;
-import com.google.common.collect.Lists;
 import com.google.common.collect.ImmutableMap.Builder;
+import com.google.common.collect.Lists;
 
 public class PageDetailProducer {
     private static final Logger log = YukonLogManager.getLogger(PageDetailProducer.class);
@@ -83,7 +82,7 @@ public class PageDetailProducer {
         }
         
         PageContext pageToSelect = null;
-        for (PageContext pageToEvaluate : Iterables.reverse(pageContextsForMenu)) {
+        for (PageContext pageToEvaluate : Lists.reverse(pageContextsForMenu)) {
             if (isPageDescendantOf(pageContext.pageInfo, pageToEvaluate.pageInfo)) {
                 pageToSelect = pageToEvaluate;
                 break;

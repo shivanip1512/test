@@ -5,7 +5,6 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 import java.util.concurrent.ConcurrentHashMap;
-import java.util.concurrent.ConcurrentMap;
 import java.util.concurrent.TimeUnit;
 
 import javax.annotation.PostConstruct;
@@ -38,7 +37,8 @@ import com.cannontech.message.dispatch.message.DatabaseChangeEvent;
 import com.cannontech.message.dispatch.message.DbChangeCategory;
 import com.cannontech.message.dispatch.message.DbChangeType;
 import com.cannontech.message.dispatch.message.PointData;
-import com.google.common.collect.MapMaker;
+import com.google.common.cache.Cache;
+import com.google.common.cache.CacheBuilder;
 
 public class PorterResponseMessageListener implements MessageListener {
 
@@ -51,8 +51,8 @@ public class PorterResponseMessageListener implements MessageListener {
     private Map<Integer, PorterResponseMonitor> monitors = new ConcurrentHashMap<Integer, PorterResponseMonitor>();
 
     //Map entries will be removed after 12 hours
-    private ConcurrentMap<TransactionIdentifier, PorterResponseMonitorTransaction> transactions
-                = new MapMaker().expiration(12, TimeUnit.HOURS).makeMap();
+    private Cache<TransactionIdentifier, PorterResponseMonitorTransaction> transactions
+                = CacheBuilder.newBuilder().expireAfterWrite(12, TimeUnit.HOURS).build();
 
     @PostConstruct
     public void initialize() {
@@ -135,7 +135,8 @@ public class PorterResponseMessageListener implements MessageListener {
         TransactionIdentifier transactionId = new TransactionIdentifier(message);
 
         if (message.isFinalMsg()) {
-            PorterResponseMonitorTransaction transaction = transactions.remove(transactionId);
+            PorterResponseMonitorTransaction transaction = transactions.getIfPresent(transactionId);
+            transactions.invalidate(transactionId);
 
             if (transaction != null) {
                 if (transaction.getPaoId() != message.getPaoId()) {
@@ -147,7 +148,7 @@ public class PorterResponseMessageListener implements MessageListener {
             }
             processTransaction(transaction);
         } else {
-            PorterResponseMonitorTransaction transaction = transactions.get(transactionId);
+            PorterResponseMonitorTransaction transaction = transactions.getIfPresent(transactionId);
             if (transaction != null) {
                 if (transaction.getPaoId() != message.getPaoId()) {
                     LogHelper.warn(log, "PaoId stored in transaction [%s] does not match PaoId of message [%s]", transaction.getPaoId(), message.getPaoId());

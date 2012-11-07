@@ -22,7 +22,7 @@ import org.springframework.jmx.export.annotation.ManagedResource;
 import com.cannontech.clientutils.LogHelper;
 import com.cannontech.clientutils.YukonLogManager;
 import com.cannontech.yukon.IServerConnection;
-import com.google.common.collect.Iterables;
+import com.google.common.collect.Lists;
 import com.roguewave.vsj.CollectableStreamer;
 import com.roguewave.vsj.PortableInputStream;
 import com.roguewave.vsj.PortableOutputStream;
@@ -572,7 +572,7 @@ public class ClientConnection extends java.util.Observable implements Runnable, 
         // implementation could remove itself as a listener without causing a concurrent 
         // modification problem. That is no longer a problem, but just in case there is some code 
         // that relies on the reverse ordering, we'll keep it.
-        for (MessageListener ml : Iterables.reverse(messageListeners)) {
+        for (MessageListener ml : Lists.reverse(messageListeners)) {
             if (logger.isDebugEnabled()) {
                 logger.debug("sending MessageEvent to " + ml);
             }
