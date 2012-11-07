@@ -3382,6 +3382,8 @@ INT MctDevice::decodePutConfig(INMESS *InMessage, CtiTime &TimeNow, CtiMessageLi
         case EmetconProtocol::PutConfig_PhaseDetect:                resultString = getName() + " / Phase Detect test settings sent";    break;
         case EmetconProtocol::PutConfig_AutoReconnect:              resultString = getName() + " / Autoreconnect settings sent";    break;
 
+        case EmetconProtocol::PutConfig_PhaseLossThreshold          resultString = getName() + " / Phase loss settings sent";       break;
+
         case EmetconProtocol::PutConfig_Install:
         {
             int sspec;
