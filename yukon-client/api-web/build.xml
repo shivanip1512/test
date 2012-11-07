@@ -45,7 +45,7 @@
         <include name="dom4j-1.6.1.jar"/>
         <include name="ecs-1.4.2.jar"/>
         <include name="exificient.jar"/>
-        <include name="guava-11.0.1.jar"/>
+        <include name="guava-13.0.1.jar"/>
         <include name="i18n-en_US.jar"/>
         <include name="jasypt-1.9.0.jar"/>
         <include name="jaxen-1.1.1.jar"/>
