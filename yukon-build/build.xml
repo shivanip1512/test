@@ -324,6 +324,9 @@
         <copy todir="${temp.dir}/YukonMisc/YukonImages">
             <fileset dir="${basedir}/yukon-client/esub/images" />
         </copy>
+		<copy todir="${temp.dir}/YukonMisc/YukonDatabase/DatabaseValidation">
+			<fileset dir="${basedir}/yukon-client/common/src/com/cannontech/database/snapshot" />
+		</copy>
         <copy todir="${temp.dir}/YukonMisc/YukonDatabase/DatabaseCreation">
             <fileset dir="${basedir}/yukon-database/CreationScripts" />
         </copy>
