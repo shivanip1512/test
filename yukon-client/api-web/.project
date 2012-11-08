@@ -7,7 +7,6 @@
 		<project>web-common</project>
 		<project>yukonappserver</project>
 		<project>loadcontrol</project>
-		<project>stars</project>
 		<project>common</project>
 		<project>commander</project>
 		<project>notification</project>

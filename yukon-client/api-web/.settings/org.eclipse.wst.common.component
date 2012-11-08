@@ -16,9 +16,6 @@
         <dependent-module archiveName="loadcontrol.jar" deploy-path="/WEB-INF/lib" handle="module:/resource/loadcontrol/loadcontrol">
             <dependency-type>uses</dependency-type>
         </dependent-module>
-        <dependent-module archiveName="stars.jar" deploy-path="/WEB-INF/lib" handle="module:/resource/stars/stars">
-            <dependency-type>uses</dependency-type>
-        </dependent-module>
         <dependent-module archiveName="common.jar" deploy-path="/WEB-INF/lib" handle="module:/resource/common/common">
             <dependency-type>uses</dependency-type>
         </dependent-module>
