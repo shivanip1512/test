@@ -8,7 +8,7 @@ import java.io.Writer;
 import com.cannontech.clientutils.CTILogger;
 import com.cannontech.esub.Drawing;
 import com.cannontech.esub.util.HTMLGenerator;
-import com.cannontech.web.taglib.JsLibrary;
+import com.cannontech.web.JsLibrary;
 
 public class OnelineHTMLGenerator extends HTMLGenerator {
     private static final String NEW_LINE = "\n";

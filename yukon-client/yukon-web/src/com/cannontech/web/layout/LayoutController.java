@@ -42,6 +42,8 @@ import com.cannontech.system.dao.GlobalSettingDao;
 import com.cannontech.system.model.GlobalSetting;
 import com.cannontech.user.YukonUserContext;
 import com.cannontech.util.ServletUtil;
+import com.cannontech.web.JsLibrary;
+import com.cannontech.web.Writable;
 import com.cannontech.web.menu.CommonModuleBuilder;
 import com.cannontech.web.menu.LayoutSkinEnum;
 import com.cannontech.web.menu.ModuleBase;
@@ -49,10 +51,8 @@ import com.cannontech.web.menu.PageInfo;
 import com.cannontech.web.menu.renderer.LeftSideMenuRenderer;
 import com.cannontech.web.menu.renderer.MenuRenderer;
 import com.cannontech.web.menu.renderer.StandardMenuRenderer;
-import com.cannontech.web.taglib.JsLibrary;
 import com.cannontech.web.taglib.StandardPageInfo;
 import com.cannontech.web.taglib.StandardPageTag;
-import com.cannontech.web.taglib.Writable;
 import com.google.common.collect.ImmutableList;
 import com.google.common.collect.ImmutableList.Builder;
 
@@ -111,6 +111,7 @@ public class LayoutController {
         
         //create a callback for writing out the body (as opposed to just putting a string of the body in the model)
         map.addAttribute("bodyContent", new Writable() {
+            @Override
             public void write(Writer out) throws IOException {
                 bodyContent.writeOut(out);
             }
@@ -221,6 +222,7 @@ public class LayoutController {
             menuRenderer.setBreadCrumb(breadCrumbs);
             menuRenderer.setHomeUrl("/home");
             map.addAttribute("menuRenderer", new Writable() {
+                @Override
                 public void write(Writer out) throws IOException {
                     menuRenderer.renderMenu(out);
                 }

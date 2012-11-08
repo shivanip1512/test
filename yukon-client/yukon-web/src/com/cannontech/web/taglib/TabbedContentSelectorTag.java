@@ -8,6 +8,9 @@ import javax.servlet.jsp.JspException;
 import javax.servlet.jsp.tagext.BodyContent;
 import javax.servlet.jsp.tagext.BodyTagSupport;
 
+import com.cannontech.web.JsLibrary;
+
+
 public class TabbedContentSelectorTag extends BodyTagSupport {
 
     private String cssClass = "";
