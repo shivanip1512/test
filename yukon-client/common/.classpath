@@ -405,10 +405,12 @@
 			<attribute name="org.eclipse.jst.component.dependency" value="../"/>
 		</attributes>
 	</classpathentry>
+	<classpathentry kind="lib" path="/third-party/easymock-3.0.jar" sourcepath="/third-party/linked-sources/easymock-3.0-sources.jar"/>
 	<classpathentry exported="true" kind="lib" path="/third-party/guava-13.0.1.jar" sourcepath="/third-party/linked-sources/guava-13.0.1-sources.jar">
 		<attributes>
 			<attribute name="org.eclipse.jst.component.dependency" value="../"/>
 		</attributes>
 	</classpathentry>
+	<classpathentry kind="lib" path="/third-party/objenesis-1.2.jar"/>
 	<classpathentry kind="output" path="bin"/>
 </classpath>
