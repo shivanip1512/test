@@ -246,8 +246,6 @@
     
     <bean id="yukonEnergyCompanyService" class="com.cannontech.stars.core.service.impl.YukonEnergyCompanyServiceImpl"/>
     
-    <bean id="passwordResetService" class="com.cannontech.stars.core.login.service.impl.PasswordResetServiceImpl" />
-
     <bean id="controlHistoryDao" class="com.cannontech.stars.dr.controlHistory.dao.impl.ControlHistoryDaoImpl"/>
     
     <bean id="controlHistoryEventDao" class="com.cannontech.stars.dr.controlHistory.dao.impl.ControlHistoryEventDaoImpl"/>
