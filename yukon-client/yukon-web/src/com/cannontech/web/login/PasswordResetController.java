@@ -33,7 +33,6 @@ import com.cannontech.core.users.model.LiteUserGroup;
 import com.cannontech.database.data.lite.LiteYukonUser;
 import com.cannontech.i18n.YukonMessageSourceResolvable;
 import com.cannontech.stars.core.login.model.PasswordResetInfo;
-import com.cannontech.stars.core.login.service.PasswordResetService;
 import com.cannontech.system.GlobalSettingType;
 import com.cannontech.system.dao.GlobalSettingDao;
 import com.cannontech.tools.email.EmailException;
@@ -47,6 +46,7 @@ import com.cannontech.web.stars.dr.operator.model.LoginBackingBean;
 import com.cannontech.web.stars.dr.operator.validator.LoginPasswordValidator;
 import com.cannontech.web.stars.dr.operator.validator.LoginUsernameValidator;
 import com.cannontech.web.stars.dr.operator.validator.LoginValidatorFactory;
+import com.cannontech.web.stars.service.PasswordResetService;
 import com.cannontech.web.util.YukonUserContextResolver;
 
 @Controller

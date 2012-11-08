@@ -21,9 +21,9 @@ import com.cannontech.common.exception.PasswordExpiredException;
 import com.cannontech.core.roleproperties.YukonRoleProperty;
 import com.cannontech.core.roleproperties.dao.RolePropertyDao;
 import com.cannontech.database.data.lite.LiteYukonUser;
-import com.cannontech.stars.core.login.service.PasswordResetService;
 import com.cannontech.util.ServletUtil;
 import com.cannontech.web.login.access.UrlAccessChecker;
+import com.cannontech.web.stars.service.PasswordResetService;
 
 public class YukonLoginController extends MultiActionController {
     @Autowired private ConfigurationSource configurationSource;

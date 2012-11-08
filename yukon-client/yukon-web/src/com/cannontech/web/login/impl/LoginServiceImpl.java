@@ -33,12 +33,12 @@ import com.cannontech.core.roleproperties.YukonRoleProperty;
 import com.cannontech.core.roleproperties.dao.RolePropertyDao;
 import com.cannontech.database.data.lite.LiteContact;
 import com.cannontech.database.data.lite.LiteYukonUser;
-import com.cannontech.stars.core.login.service.PasswordResetService;
 import com.cannontech.stars.util.ServletUtils;
 import com.cannontech.util.ServletUtil;
 import com.cannontech.web.login.LoginService;
 import com.cannontech.web.login.SessionInitializer;
 import com.cannontech.web.navigation.CtiNavObject;
+import com.cannontech.web.stars.service.PasswordResetService;
 
 public class LoginServiceImpl implements LoginService {
     private static final String INVALID_PARAMS = "failed=true";

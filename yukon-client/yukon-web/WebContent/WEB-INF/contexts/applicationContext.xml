@@ -1367,6 +1367,8 @@
 
     <bean id="captchaService" class="com.cannontech.web.common.captcha.service.impl.CaptchaServiceImpl" />
 
+    <bean id="passwordResetService" class="com.cannontech.web.stars.service.impl.PasswordResetServiceImpl" />
+
     <bean id="loginService" class="com.cannontech.web.login.impl.LoginServiceImpl">
         <property name="sessionInitializers">
             <list>

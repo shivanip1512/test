@@ -13,8 +13,8 @@ import com.cannontech.common.constants.LoginController;
 import com.cannontech.common.exception.PasswordExpiredException;
 import com.cannontech.core.authentication.service.AuthenticationService;
 import com.cannontech.database.data.lite.LiteYukonUser;
-import com.cannontech.stars.core.login.service.PasswordResetService;
 import com.cannontech.user.checker.UserChecker;
+import com.cannontech.web.stars.service.PasswordResetService;
 
 /**
  * Interceptor used for authenticating remote requests.  Will not create a session.

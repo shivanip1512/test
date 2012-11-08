@@ -28,9 +28,9 @@ import com.cannontech.core.roleproperties.YukonRoleProperty;
 import com.cannontech.core.roleproperties.dao.RolePropertyDao;
 import com.cannontech.database.data.lite.LiteYukonUser;
 import com.cannontech.servlet.YukonUserContextUtils;
-import com.cannontech.stars.core.login.service.PasswordResetService;
 import com.cannontech.user.YukonUserContext;
 import com.cannontech.util.ServletUtil;
+import com.cannontech.web.stars.service.PasswordResetService;
 
 @Controller
 public class ChangeLoginController {
