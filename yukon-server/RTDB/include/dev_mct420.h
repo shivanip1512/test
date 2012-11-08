@@ -14,11 +14,11 @@ class IM_EX_DEVDB Mct420Device : public Mct410Device
 
     typedef Mct410Device Inherited;
 
-    virtual ConfigPartsList getPartsList();
-
     virtual unsigned getUsageReportDelay(const unsigned interval_length, const unsigned days) const;
 
 protected:
+
+    virtual ConfigPartsList getPartsList();
 
     virtual bool getOperation( const UINT &cmd, BSTRUCT &bst ) const;
 
