@@ -65,10 +65,6 @@ yukon-client/sensus-jms/build
 yukon-client/services/activemq-data
 yukon-client/services/bin
 yukon-client/services/build
-yukon-client/servlet/.cvsignore
-yukon-client/servlet/bin
-yukon-client/servlet/build
-yukon-client/servlet/work
 yukon-client/stars/bin
 yukon-client/stars/build
 yukon-client/tdc/.cvsignore
