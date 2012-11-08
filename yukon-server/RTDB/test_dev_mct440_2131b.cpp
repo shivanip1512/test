@@ -2396,11 +2396,11 @@ BOOST_AUTO_TEST_CASE(test_getValueMappingForRead_IO_Read_1Dword)
         (empty)
         (empty)
         (tuple_list_of(0,2,143)(2,2,144)) // holiday 1 - 2
-        (tuple_list_of(0,2,247)(2,2,248)) // holiday 8 - 10
+        (tuple_list_of(0,2,246)(2,2,247)) // holiday 7 - 9
         // memory read 210
-        (tuple_list_of(0,2,254)(2,2,255)) // holiday 15 - 16
-        (tuple_list_of(0,2,261)(2,2,262)) // holiday 22 - 23
-        (empty)
+        (tuple_list_of(0,2,252)(2,2,253)) // holiday 13 - 14
+        (tuple_list_of(0,2,258)(2,2,259)) // holiday 19 - 20
+        (tuple_list_of(0,2,264)(2,2,265)) // holiday 25 - 26
         (empty)
         (empty)
         (empty)
@@ -2544,11 +2544,11 @@ BOOST_AUTO_TEST_CASE(test_getValueMappingForRead_IO_Read_2Dwords)
         (empty)
         (empty)
         (tuple_list_of(0,2,143)(2,2,144)(4,2,145)(6,2,243)) // holiday 1 - 4
-        (tuple_list_of(0,2,247)(2,2,248)(4,2,249)(6,2,250)) // holiday 8 - 12
+        (tuple_list_of(0,2,246)(2,2,247)(4,2,248)(6,2,249)) // holiday 7 - 11
         // memory read 210
-        (tuple_list_of(0,2,254)(2,2,255)(4,2,256)(6,2,257)) // holiday 15 - 18
-        (tuple_list_of(0,2,261)(2,2,262)(4,2,263)(6,2,264)) // holiday 22 - 25
-        (empty)
+        (tuple_list_of(0,2,252)(2,2,253)(4,2,254)(6,2,255)) // holiday 13 - 16
+        (tuple_list_of(0,2,258)(2,2,259)(4,2,260)(6,2,261)) // holiday 19 - 22
+        (tuple_list_of(0,2,264)(2,2,265)(4,2,266)(6,2,267)) // holiday 25 - 28
         (empty)
         (empty)
         (empty)
@@ -2702,12 +2702,12 @@ BOOST_AUTO_TEST_CASE(test_getValueMappingForRead_IO_Read_3Dwords)
         (empty)
         (empty)
         (empty)
-        (tuple_list_of(0,2,143)(2,2,144)(4,2,145)(6,2,243)(8,2,244)(10,2,245)(12,2,246)) // holiday 1 - 4
-        (tuple_list_of(0,2,247)(2,2,248)(4,2,249)(6,2,250)(8,2,251)(10,2,252)(12,2,253)) // holiday 8 - 12
+        (tuple_list_of(0,2,143)(2,2,144)(4,2,145)(6,2,243)(8,2,244)(10,2,245)) // holiday 1 - 6
+        (tuple_list_of(0,2,246)(2,2,247)(4,2,248)(6,2,249)(8,2,250)(10,2,251)) // holiday 7 - 12
         // memory read 210
-        (tuple_list_of(0,2,254)(2,2,255)(4,2,256)(6,2,257)(8,2,258)(10,2,259)(12,2,260)) // holiday 15 - 18
-        (tuple_list_of(0,2,261)(2,2,262)(4,2,263)(6,2,264)(8,2,265)(10,2,266)(12,2,267)) // holiday 22 - 25
-        (empty)
+        (tuple_list_of(0,2,252)(2,2,253)(4,2,254)(6,2,255)(8,2,256)(10,2,257)) // holiday 13 - 18
+        (tuple_list_of(0,2,258)(2,2,259)(4,2,260)(6,2,261)(8,2,262)(10,2,263)) // holiday 19 - 24
+        (tuple_list_of(0,2,264)(2,2,265)(4,2,266)(6,2,267))                    // holiday 25 - 28                                                                // holiday 25 - 28
         (empty)
         (empty)
         (empty)
@@ -2837,7 +2837,7 @@ BOOST_AUTO_TEST_CASE(test_getValueMappingForRead_IO_Function_Read_2Dwords)
         (empty)
         (empty)
         (empty)
-        (tuple_list_of(5,2,133)(7,1,134))
+        (empty)
         (empty);
 
     const test_Mct440_2131B test_dev;
@@ -2907,7 +2907,7 @@ BOOST_AUTO_TEST_CASE(test_getValueMappingForRead_IO_Function_Read_3Dwords)
         (empty)
         (empty)
         (empty)
-        (tuple_list_of(5,2,133)(7,1,134)(9,1,135)(10,1,136)(11,1,127))
+        (empty)
         (empty);
 
     const test_Mct440_2131B test_dev;
@@ -3513,7 +3513,7 @@ BOOST_AUTO_TEST_CASE(test_decodeGetConfigHoliday)
     test_Mct440_2131B test_dev;
 
     {
-        unsigned char test_data[] = {0x1,0x1,0x1,0x2,0x1,0x3,0x1,0x4,0x1,0x5,0x1,0x6,0x01,0x7};
+        unsigned char test_data[] = {0x1,0x1,0x1,0x2,0x1,0x3,0x1,0x4,0x1,0x5,0x1,0x6};
 
         memcpy(InMessage.Buffer.DSt.Message, test_data, sizeof(test_data));
 
@@ -3535,8 +3535,7 @@ BOOST_AUTO_TEST_CASE(test_decodeGetConfigHoliday)
                           "Holiday 3: 09/17/2010 00:00:00 GMT\n"
                           "Holiday 4: 09/18/2010 00:00:00 GMT\n"
                           "Holiday 5: 09/19/2010 00:00:00 GMT\n"
-                          "Holiday 6: 09/20/2010 00:00:00 GMT\n"
-                          "Holiday 7: 09/21/2010 00:00:00 GMT\n";
+                          "Holiday 6: 09/20/2010 00:00:00 GMT\n";
 
         BOOST_REQUIRE_EQUAL(retMsg->ResultString(), expected);
 
@@ -3544,7 +3543,7 @@ BOOST_AUTO_TEST_CASE(test_decodeGetConfigHoliday)
     }
 
     {
-        unsigned char test_data[] = {0x1,0x1,0x1,0x2,0x1,0x3,0x1,0x4,0x1,0x5,0x1,0x6,0x01,0x7};
+        unsigned char test_data[] = {0x1,0x1,0x1,0x2,0x1,0x3,0x1,0x4,0x1,0x5,0x1,0x6};
 
         memcpy(InMessage.Buffer.DSt.Message, test_data, sizeof(test_data));
 
@@ -3561,13 +3560,12 @@ BOOST_AUTO_TEST_CASE(test_decodeGetConfigHoliday)
         BOOST_REQUIRE(retMsg);
 
         string expected = "Test MCT-440-2131B / Holiday schedule:\n"
-                          "Holiday 8: 09/15/2010 00:00:00 GMT\n"
-                          "Holiday 9: 09/16/2010 00:00:00 GMT\n"
-                          "Holiday 10: 09/17/2010 00:00:00 GMT\n"
-                          "Holiday 11: 09/18/2010 00:00:00 GMT\n"
-                          "Holiday 12: 09/19/2010 00:00:00 GMT\n"
-                          "Holiday 13: 09/20/2010 00:00:00 GMT\n"
-                          "Holiday 14: 09/21/2010 00:00:00 GMT\n";
+                          "Holiday 7: 09/15/2010 00:00:00 GMT\n"
+                          "Holiday 8: 09/16/2010 00:00:00 GMT\n"
+                          "Holiday 9: 09/17/2010 00:00:00 GMT\n"
+                          "Holiday 10: 09/18/2010 00:00:00 GMT\n"
+                          "Holiday 11: 09/19/2010 00:00:00 GMT\n"
+                          "Holiday 12: 09/20/2010 00:00:00 GMT\n";
 
         BOOST_REQUIRE_EQUAL(retMsg->ResultString(), expected);
 
@@ -3575,7 +3573,7 @@ BOOST_AUTO_TEST_CASE(test_decodeGetConfigHoliday)
     }
 
     {
-        unsigned char test_data[] = {0x1,0x1,0x1,0x2,0x1,0x3,0x1,0x4,0x1,0x5,0x1,0x6,0x01,0x7};
+        unsigned char test_data[] = {0x1,0x1,0x1,0x2,0x1,0x3,0x1,0x4,0x1,0x5,0x1,0x6};
 
         memcpy(InMessage.Buffer.DSt.Message, test_data, sizeof(test_data));
 
@@ -3592,13 +3590,12 @@ BOOST_AUTO_TEST_CASE(test_decodeGetConfigHoliday)
         BOOST_REQUIRE(retMsg);
 
         string expected = "Test MCT-440-2131B / Holiday schedule:\n"
-                          "Holiday 15: 09/15/2010 00:00:00 GMT\n"
-                          "Holiday 16: 09/16/2010 00:00:00 GMT\n"
-                          "Holiday 17: 09/17/2010 00:00:00 GMT\n"
-                          "Holiday 18: 09/18/2010 00:00:00 GMT\n"
-                          "Holiday 19: 09/19/2010 00:00:00 GMT\n"
-                          "Holiday 20: 09/20/2010 00:00:00 GMT\n"
-                          "Holiday 21: 09/21/2010 00:00:00 GMT\n";
+                          "Holiday 13: 09/15/2010 00:00:00 GMT\n"
+                          "Holiday 14: 09/16/2010 00:00:00 GMT\n"
+                          "Holiday 15: 09/17/2010 00:00:00 GMT\n"
+                          "Holiday 16: 09/18/2010 00:00:00 GMT\n"
+                          "Holiday 17: 09/19/2010 00:00:00 GMT\n"
+                          "Holiday 18: 09/20/2010 00:00:00 GMT\n";
 
         BOOST_REQUIRE_EQUAL(retMsg->ResultString(), expected);
 
@@ -3606,7 +3603,7 @@ BOOST_AUTO_TEST_CASE(test_decodeGetConfigHoliday)
     }
 
     {
-        unsigned char test_data[] = {0x1,0x1,0x1,0x2,0x1,0x3,0x1,0x4,0x1,0x5,0x1,0x6,0x01,0x7};
+        unsigned char test_data[] = {0x1,0x1,0x1,0x2,0x1,0x3,0x1,0x4,0x1,0x5,0x1,0x6};
 
         memcpy(InMessage.Buffer.DSt.Message, test_data, sizeof(test_data));
 
@@ -3623,13 +3620,39 @@ BOOST_AUTO_TEST_CASE(test_decodeGetConfigHoliday)
         BOOST_REQUIRE(retMsg);
 
         string expected = "Test MCT-440-2131B / Holiday schedule:\n"
-                          "Holiday 22: 09/15/2010 00:00:00 GMT\n"
-                          "Holiday 23: 09/16/2010 00:00:00 GMT\n"
-                          "Holiday 24: 09/17/2010 00:00:00 GMT\n"
-                          "Holiday 25: 09/18/2010 00:00:00 GMT\n"
-                          "Holiday 26: 09/19/2010 00:00:00 GMT\n"
-                          "Holiday 27: 09/20/2010 00:00:00 GMT\n"
-                          "Holiday 28: 09/21/2010 00:00:00 GMT\n";
+                          "Holiday 19: 09/15/2010 00:00:00 GMT\n"
+                          "Holiday 20: 09/16/2010 00:00:00 GMT\n"
+                          "Holiday 21: 09/17/2010 00:00:00 GMT\n"
+                          "Holiday 22: 09/18/2010 00:00:00 GMT\n"
+                          "Holiday 23: 09/19/2010 00:00:00 GMT\n"
+                          "Holiday 24: 09/20/2010 00:00:00 GMT\n";
+
+        BOOST_REQUIRE_EQUAL(retMsg->ResultString(), expected);
+
+        retList.pop_front();
+    }
+    {
+        unsigned char test_data[] = {0x1,0x1,0x1,0x2,0x1,0x3,0x1,0x4,0x1,0x5,0x1,0x6};
+
+        memcpy(InMessage.Buffer.DSt.Message, test_data, sizeof(test_data));
+
+        InMessage.Return.UserID                        = 0;
+        InMessage.Sequence                             = EmetconProtocol::GetConfig_Holiday;
+        InMessage.Return.ProtocolInfo.Emetcon.Function = 0xd4;
+
+        BOOST_CHECK_EQUAL(NoError, test_dev.decodeGetConfigHoliday(&InMessage, t, vgList, retList, outList));
+
+        BOOST_REQUIRE_EQUAL(retList.size(), 1);
+
+        const CtiReturnMsg *retMsg = dynamic_cast<CtiReturnMsg *>(retList.front());
+
+        BOOST_REQUIRE(retMsg);
+
+        string expected = "Test MCT-440-2131B / Holiday schedule:\n"
+                          "Holiday 25: 09/15/2010 00:00:00 GMT\n"
+                          "Holiday 26: 09/16/2010 00:00:00 GMT\n"
+                          "Holiday 27: 09/17/2010 00:00:00 GMT\n"
+                          "Holiday 28: 09/18/2010 00:00:00 GMT\n";
 
         BOOST_REQUIRE_EQUAL(retMsg->ResultString(), expected);
 
