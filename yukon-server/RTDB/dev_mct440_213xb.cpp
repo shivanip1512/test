@@ -42,7 +42,7 @@ namespace Devices {
 
 const Mct440_213xBDevice::FunctionReadValueMappings Mct440_213xBDevice::_readValueMaps = Mct440_213xBDevice::initReadValueMaps();
 const Mct440_213xBDevice::CommandSet                Mct440_213xBDevice::_commandStore  = Mct440_213xBDevice::initCommandStore();
-
+const Mct440_213xBDevice::ConfigPartsList           Mct440_213xBDevice::_config_parts  = Mct440_213xBDevice::initConfigParts();
 
 // this is for TOU putconfig ease
 struct ratechange_t
@@ -135,41 +135,43 @@ Mct440_213xBDevice::FunctionReadValueMappings Mct440_213xBDevice::initReadValueM
 
         // 0x0F9 – Read Transmit Power (FIXME)
 
-        // 0x0D0 – Holiday 1 - 7
+        // 0x0D0 – Holiday 1 - 6
         { 0x0d0,  0, { 2, CtiTableDynamicPaoInfo::Key_MCT_Holiday1                  } },
         { 0x0d0,  2, { 2, CtiTableDynamicPaoInfo::Key_MCT_Holiday2                  } },
         { 0x0d0,  4, { 2, CtiTableDynamicPaoInfo::Key_MCT_Holiday3                  } },
         { 0x0d0,  6, { 2, CtiTableDynamicPaoInfo::Key_MCT_Holiday4                  } },
         { 0x0d0,  8, { 2, CtiTableDynamicPaoInfo::Key_MCT_Holiday5                  } },
         { 0x0d0, 10, { 2, CtiTableDynamicPaoInfo::Key_MCT_Holiday6                  } },
-        { 0x0d0, 12, { 2, CtiTableDynamicPaoInfo::Key_MCT_Holiday7                  } },
 
-        // 0x0D1 – Holiday 8 - 14
-        { 0x0d1,  0, { 2, CtiTableDynamicPaoInfo::Key_MCT_Holiday8                  } },
-        { 0x0d1,  2, { 2, CtiTableDynamicPaoInfo::Key_MCT_Holiday9                  } },
-        { 0x0d1,  4, { 2, CtiTableDynamicPaoInfo::Key_MCT_Holiday10                 } },
-        { 0x0d1,  6, { 2, CtiTableDynamicPaoInfo::Key_MCT_Holiday11                 } },
-        { 0x0d1,  8, { 2, CtiTableDynamicPaoInfo::Key_MCT_Holiday12                 } },
-        { 0x0d1, 10, { 2, CtiTableDynamicPaoInfo::Key_MCT_Holiday13                 } },
-        { 0x0d1, 12, { 2, CtiTableDynamicPaoInfo::Key_MCT_Holiday14                 } },
+        // 0x0D1 – Holiday 7 - 12
+        { 0x0d1,  0, { 2, CtiTableDynamicPaoInfo::Key_MCT_Holiday7                  } },
+        { 0x0d1,  2, { 2, CtiTableDynamicPaoInfo::Key_MCT_Holiday8                  } },
+        { 0x0d1,  4, { 2, CtiTableDynamicPaoInfo::Key_MCT_Holiday9                  } },
+        { 0x0d1,  6, { 2, CtiTableDynamicPaoInfo::Key_MCT_Holiday10                 } },
+        { 0x0d1,  8, { 2, CtiTableDynamicPaoInfo::Key_MCT_Holiday11                 } },
+        { 0x0d1, 10, { 2, CtiTableDynamicPaoInfo::Key_MCT_Holiday12                 } },
 
-        // 0x0D2 – Holiday 15 - 21
-        { 0x0d2,  0, { 2, CtiTableDynamicPaoInfo::Key_MCT_Holiday15                 } },
-        { 0x0d2,  2, { 2, CtiTableDynamicPaoInfo::Key_MCT_Holiday16                 } },
-        { 0x0d2,  4, { 2, CtiTableDynamicPaoInfo::Key_MCT_Holiday17                 } },
-        { 0x0d2,  6, { 2, CtiTableDynamicPaoInfo::Key_MCT_Holiday18                 } },
-        { 0x0d2,  8, { 2, CtiTableDynamicPaoInfo::Key_MCT_Holiday19                 } },
-        { 0x0d2, 10, { 2, CtiTableDynamicPaoInfo::Key_MCT_Holiday20                 } },
-        { 0x0d2, 12, { 2, CtiTableDynamicPaoInfo::Key_MCT_Holiday21                 } },
+        // 0x0D2 – Holiday 13 - 18
+        { 0x0d2,  0, { 2, CtiTableDynamicPaoInfo::Key_MCT_Holiday13                 } },
+        { 0x0d2,  2, { 2, CtiTableDynamicPaoInfo::Key_MCT_Holiday14                 } },
+        { 0x0d2,  4, { 2, CtiTableDynamicPaoInfo::Key_MCT_Holiday15                 } },
+        { 0x0d2,  6, { 2, CtiTableDynamicPaoInfo::Key_MCT_Holiday16                 } },
+        { 0x0d2,  8, { 2, CtiTableDynamicPaoInfo::Key_MCT_Holiday17                 } },
+        { 0x0d2, 10, { 2, CtiTableDynamicPaoInfo::Key_MCT_Holiday18                 } },
 
-        // 0x0D3 – Holiday 22 - 28
-        { 0x0d3,  0, { 2, CtiTableDynamicPaoInfo::Key_MCT_Holiday22                 } },
-        { 0x0d3,  2, { 2, CtiTableDynamicPaoInfo::Key_MCT_Holiday23                 } },
-        { 0x0d3,  4, { 2, CtiTableDynamicPaoInfo::Key_MCT_Holiday24                 } },
-        { 0x0d3,  6, { 2, CtiTableDynamicPaoInfo::Key_MCT_Holiday25                 } },
-        { 0x0d3,  8, { 2, CtiTableDynamicPaoInfo::Key_MCT_Holiday26                 } },
-        { 0x0d3, 10, { 2, CtiTableDynamicPaoInfo::Key_MCT_Holiday27                 } },
-        { 0x0d3, 12, { 2, CtiTableDynamicPaoInfo::Key_MCT_Holiday28                 } },
+        // 0x0D3 – Holiday 19 - 24
+        { 0x0d3,  0, { 2, CtiTableDynamicPaoInfo::Key_MCT_Holiday19                 } },
+        { 0x0d3,  2, { 2, CtiTableDynamicPaoInfo::Key_MCT_Holiday20                 } },
+        { 0x0d3,  4, { 2, CtiTableDynamicPaoInfo::Key_MCT_Holiday21                 } },
+        { 0x0d3,  6, { 2, CtiTableDynamicPaoInfo::Key_MCT_Holiday22                 } },
+        { 0x0d3,  8, { 2, CtiTableDynamicPaoInfo::Key_MCT_Holiday23                 } },
+        { 0x0d3, 10, { 2, CtiTableDynamicPaoInfo::Key_MCT_Holiday24                 } },
+
+        // 0x0D4 – Holiday 25 - 28
+        { 0x0d4,  0, { 2, CtiTableDynamicPaoInfo::Key_MCT_Holiday25                 } },
+        { 0x0d4,  2, { 2, CtiTableDynamicPaoInfo::Key_MCT_Holiday26                 } },
+        { 0x0d4,  4, { 2, CtiTableDynamicPaoInfo::Key_MCT_Holiday27                 } },
+        { 0x0d4,  6, { 2, CtiTableDynamicPaoInfo::Key_MCT_Holiday28                 } },
 
         // 0x19D – Long Load Profile Status
         { 0x19d,  4, { 1, CtiTableDynamicPaoInfo::Key_MCT_LLPChannel1Len            } },
@@ -212,12 +214,8 @@ Mct440_213xBDevice::FunctionReadValueMappings Mct440_213xBDevice::initReadValueM
         { 0x1f7, 11, { 1, CtiTableDynamicPaoInfo::Key_MCT_LcdMetric25               } },
         { 0x1f7, 12, { 1, CtiTableDynamicPaoInfo::Key_MCT_LcdMetric26               } },
 
-        // 0x1FE – Disconnect Status
-        { 0x1fe,  5, { 2, CtiTableDynamicPaoInfo::Key_MCT_DemandThreshold           } },
-        { 0x1fe,  7, { 1, CtiTableDynamicPaoInfo::Key_MCT_ConnectDelay              } },
-        { 0x1fe,  9, { 1, CtiTableDynamicPaoInfo::Key_MCT_DisconnectMinutes         } },
-        { 0x1fe, 10, { 1, CtiTableDynamicPaoInfo::Key_MCT_ConnectMinutes            } },
-        { 0x1fe, 11, { 1, CtiTableDynamicPaoInfo::Key_MCT_Configuration             } },
+        // 0x1FE – Disconnect Status (FIXME)
+
     };
 
     FunctionReadValueMappings fr;
@@ -267,7 +265,59 @@ Mct440_213xBDevice::CommandSet Mct440_213xBDevice::initCommandStore()
 
 /*
 *********************************************************************************************************
-*                                     getDescriptorForRead()
+*                                         initConfigParts()
+*
+* Description :
+*
+* Argument(s) :
+*
+* Return(s)   :
+*
+* Caller(s)   :
+*
+* Note(s)     :
+*********************************************************************************************************
+*/
+Mct440_213xBDevice::ConfigPartsList Mct440_213xBDevice::initConfigParts()
+{
+    ConfigPartsList tempList;
+
+    tempList.push_back(Mct4xxDevice::PutConfigPart_tou);
+    tempList.push_back(Mct4xxDevice::PutConfigPart_dst);
+    tempList.push_back(Mct4xxDevice::PutConfigPart_timezone);
+    tempList.push_back(Mct4xxDevice::PutConfigPart_configbyte);
+    tempList.push_back(Mct4xxDevice::PutConfigPart_time_adjust_tolerance);
+    tempList.push_back(Mct4xxDevice::PutConfigPart_addressing);
+    tempList.push_back(Mct4xxDevice::PutConfigPart_holiday);
+
+    return tempList;
+}
+
+
+/*
+*********************************************************************************************************
+*                                           getPartsList()
+*
+* Description :
+*
+* Argument(s) :
+*
+* Return(s)   :
+*
+* Caller(s)   :
+*
+* Note(s)     :
+*********************************************************************************************************
+*/
+Mct440_213xBDevice::ConfigPartsList Mct440_213xBDevice::getPartsList()
+{
+    return _config_parts;
+}
+
+
+/*
+*********************************************************************************************************
+*                                         getReadValueMaps()
 *
 * Description :
 *
@@ -1124,6 +1174,8 @@ int Mct440_213xBDevice::executePutConfigTOU(CtiRequestMsg     *pReq,
                 }
                 else
                 {
+                    CtiLockGuard<CtiLogger> doubt_guard(dout);
+                    dout << CtiTime() << " **** Checkpoint - no default rate stored **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
                     nRet = NoConfigData;
                 }
             }
@@ -1312,6 +1364,8 @@ int Mct440_213xBDevice::executePutConfigTOU(CtiRequestMsg     *pReq,
     }
     else
     {
+        CtiLockGuard<CtiLogger> doubt_guard(dout);
+        dout << CtiTime() << " **** Checkpoint - deviceConfig is null **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
         nRet = NoConfigData;
     }
 
@@ -1431,20 +1485,24 @@ INT Mct440_213xBDevice::executeGetConfig(CtiRequestMsg     *pReq,
         OutMessage->Buffer.BSt.IO       = EmetconProtocol::IO_Read;
         OutMessage->Sequence            = EmetconProtocol::GetConfig_Holiday;
 
-        OutMessage->Buffer.BSt.Function = Memory_Holiday1_7Pos;
-        OutMessage->Buffer.BSt.Length   = Memory_Holiday1_7Len;
+        OutMessage->Buffer.BSt.Function = Memory_Holiday1_6Pos;
+        OutMessage->Buffer.BSt.Length   = Memory_Holiday1_6Len;
         outList.push_back(CTIDBG_new OUTMESS(*OutMessage));
 
-        OutMessage->Buffer.BSt.Function = Memory_Holiday8_14Pos;
-        OutMessage->Buffer.BSt.Length   = Memory_Holiday8_14Len;
+        OutMessage->Buffer.BSt.Function = Memory_Holiday7_12Pos;
+        OutMessage->Buffer.BSt.Length   = Memory_Holiday7_12Len;
         outList.push_back(CTIDBG_new OUTMESS(*OutMessage));
 
-        OutMessage->Buffer.BSt.Function = Memory_Holiday15_21Pos;
-        OutMessage->Buffer.BSt.Length   = Memory_Holiday15_21Len;
+        OutMessage->Buffer.BSt.Function = Memory_Holiday13_18Pos;
+        OutMessage->Buffer.BSt.Length   = Memory_Holiday13_18Len;
         outList.push_back(CTIDBG_new OUTMESS(*OutMessage));
 
-        OutMessage->Buffer.BSt.Function = Memory_Holiday22_28Pos;
-        OutMessage->Buffer.BSt.Length   = Memory_Holiday22_28Len;
+        OutMessage->Buffer.BSt.Function = Memory_Holiday19_24Pos;
+        OutMessage->Buffer.BSt.Length   = Memory_Holiday19_24Len;
+        outList.push_back(CTIDBG_new OUTMESS(*OutMessage));
+
+        OutMessage->Buffer.BSt.Function = Memory_Holiday25_28Pos;
+        OutMessage->Buffer.BSt.Length   = Memory_Holiday25_28Len;
         outList.push_back(CTIDBG_new OUTMESS(*OutMessage));
 
         delete OutMessage;  //  we didn't use it, we made our own
@@ -2911,13 +2969,15 @@ int Mct440_213xBDevice::decodeGetConfigHoliday(INMESS          *InMessage,
     CtiTime start_time = CtiTime(UTC_TIMESTAMP_JAN_1_2010);
 
     int offset;
+    int holiday_cnt;
 
     switch( InMessage->Return.ProtocolInfo.Emetcon.Function )
     {
-        case Memory_Holiday1_7Pos  : offset = 1;  break;
-        case Memory_Holiday8_14Pos : offset = 8;  break;
-        case Memory_Holiday15_21Pos: offset = 15; break;
-        case Memory_Holiday22_28Pos: offset = 22; break;
+        case Memory_Holiday1_6Pos  : offset = 0;  holiday_cnt = 6; break;
+        case Memory_Holiday7_12Pos : offset = 6;  holiday_cnt = 6; break;
+        case Memory_Holiday13_18Pos: offset = 12; holiday_cnt = 6; break;
+        case Memory_Holiday19_24Pos: offset = 18; holiday_cnt = 6; break;
+        case Memory_Holiday25_28Pos: offset = 24; holiday_cnt = 4; break;
         default:
         {
             CtiLockGuard<CtiLogger> doubt_guard(dout);
@@ -2927,14 +2987,14 @@ int Mct440_213xBDevice::decodeGetConfigHoliday(INMESS          *InMessage,
         }
     }
 
-    for( int i = 0; i < 7; i++ )
+    for( int i = 0; i < holiday_cnt; i++ )
     {
         unsigned long days      = (DSt.Message[i*2] << 8) | DSt.Message[(i*2)+1];
         unsigned long timestamp = (days * NBR_SECONDS_PER_DAY) + start_time.seconds();
         CtiTime holiday         = CtiTime(timestamp);
 
         ostringstream ss;
-        ss << (i + offset);
+        ss << (i + offset + 1);
 
         result += "Holiday " + ss.str() + ": " + (holiday.isValid()?holiday.asString(CtiTime::Gmt, CtiTime::OmitTimezone) + " GMT":"(invalid)") + "\n";
     }

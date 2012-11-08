@@ -11,12 +11,13 @@ class IM_EX_DEVDB Mct440_213xBDevice : public Mct420Device
     typedef Mct420Device Inherited;
 
     static const FunctionReadValueMappings _readValueMaps;
+    static FunctionReadValueMappings       initReadValueMaps();
 
     static const CommandSet _commandStore;
+    static       CommandSet initCommandStore();
 
-    static FunctionReadValueMappings initReadValueMaps();
-
-    static CommandSet initCommandStore();
+    static const ConfigPartsList _config_parts;
+    static       ConfigPartsList initConfigParts();
 
     static string describeStatusAndEvents(unsigned char *buf);
 
@@ -67,17 +68,20 @@ protected:
 
     enum MemoryMap
     {
-        Memory_Holiday1_7Pos                    = 0xd0,
-        Memory_Holiday1_7Len                    = 14,
+        Memory_Holiday1_6Pos                    = 0xd0,
+        Memory_Holiday1_6Len                    = 12,
 
-        Memory_Holiday8_14Pos                   = 0xd1,
-        Memory_Holiday8_14Len                   = 14,
+        Memory_Holiday7_12Pos                   = 0xd1,
+        Memory_Holiday7_12Len                   = 12,
 
-        Memory_Holiday15_21Pos                  = 0xd2,
-        Memory_Holiday15_21Len                  = 14,
+        Memory_Holiday13_18Pos                  = 0xd2,
+        Memory_Holiday13_18Len                  = 12,
 
-        Memory_Holiday22_28Pos                  = 0xd3,
-        Memory_Holiday22_28Len                  = 14,
+        Memory_Holiday19_24Pos                  = 0xd3,
+        Memory_Holiday19_24Len                  = 12,
+
+        Memory_Holiday25_28Pos                  = 0xd4,
+        Memory_Holiday25_28Len                  = 8,
     };
 
 
@@ -86,6 +90,8 @@ protected:
     virtual const FunctionReadValueMappings *getReadValueMaps() const;
 
     virtual bool getOperation(const UINT &cmd,  BSTRUCT &bst ) const;
+
+    virtual ConfigPartsList getPartsList();
 
     virtual bool isSupported(const Mct410Device::Features feature) const;
 
