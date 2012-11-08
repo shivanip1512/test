@@ -287,19 +287,17 @@
             <fileset dir="${install.bag}/Yukon Base/Client/bin" includes="*.exe,*.conf,*.dll"/>
         </copy>
         
-        <!-- This will be pointing to the install engine in yukon-install module -->
-        <!--  <property name="isshield" location="C:\Program Files\Macrovision\IS12\System\IsCmdBld.exe" /> -->
-        <property name="isshield" location="C:\Program Files (x86)\InstallShield\2010\System\IsCmdBld.exe" />
-        <!-- <property name="isfile" location="yukon-build/Yukon Installer/Yukon Installer.ism" /> -->
+        <!-- Location of the stand-alone build module -->
+        <property name="isshield" location="C:\Program Files (x86)\InstallShield\2012Spring SAB\System\IsCmdBld.exe" />
+        <!-- Location of the installer data file -->
         <property name="isfile" location='${basedir}\yukon-install\YukonSetupX\Yukon Installer.ism' />
-
+		
+		<!-- Build the installer -->
         <exec failonerror="false" executable="${isshield}" resultproperty="installererrorcode">
             <arg line="-p '${isfile}'" />
             <!-- Populate the YukonBuildVersion environment variable so installer version matches yukon version -->
             <env key="YukonBuildVersion" value="${internal}" />
         </exec>
-
-        <!-- NOT YET <delete dir="${install.lib}"/> NOT YET -->
 
         <condition property="out" value="${erroroutput}" else="">
             <length file="${log.dir}/install-error.log" when="ne" length="0" />

@@ -154,58 +154,58 @@
 		<col def="I4">ISControlId</col>
 		<col def="S255">ISBuildSourcePath</col>
 		<col def="S72">Binary_</col>
-		<row><td>DialogId_10105</td><td>ControlId_1</td><td>PushButton</td><td>242</td><td>239</td><td>56</td><td>17</td><td>3</td><td/><td>##IDS__DialogId_10105_ControlId_1##</td><td>ControlId_9</td><td/><td>0</td><td>1</td><td/><td/></row>
-		<row><td>DialogId_10105</td><td>ControlId_12</td><td>PushButton</td><td>187</td><td>239</td><td>56</td><td>17</td><td>3</td><td/><td>##IDS__DialogId_10105_ControlId_12##</td><td>ControlId_1</td><td/><td>131072</td><td>12</td><td/><td/></row>
-		<row><td>DialogId_10105</td><td>ControlId_1200</td><td>Text</td><td>0</td><td>0</td><td>374</td><td>44</td><td>65539</td><td/><td>##IDS__DialogId_10105_ControlId_1200##</td><td>ControlId_901</td><td/><td>131072</td><td>1200</td><td/><td/></row>
-		<row><td>DialogId_10105</td><td>ControlId_1300</td><td>Line</td><td>47</td><td>227</td><td>325</td><td>1</td><td>3</td><td/><td/><td>ControlId_7</td><td/><td>131079</td><td>1300</td><td/><td/></row>
-		<row><td>DialogId_10105</td><td>ControlId_1301</td><td>Line</td><td>0</td><td>44</td><td>374</td><td>1</td><td>3</td><td/><td/><td>ControlId_52</td><td/><td>131088</td><td>1301</td><td/><td/></row>
-		<row><td>DialogId_10105</td><td>ControlId_2</td><td>PushButton</td><td>185</td><td>274</td><td>56</td><td>17</td><td>2</td><td/><td>##IDS__DialogId_10105_ControlId_2##</td><td/><td/><td>131072</td><td>2</td><td/><td/></row>
-		<row><td>DialogId_10105</td><td>ControlId_50</td><td>Text</td><td>12</td><td>16</td><td>248</td><td>10</td><td>65539</td><td/><td>##IDS__DialogId_10105_ControlId_50##</td><td>ControlId_1301</td><td/><td>131072</td><td>50</td><td/><td/></row>
-		<row><td>DialogId_10105</td><td>ControlId_52</td><td>Text</td><td>0</td><td>0</td><td>374</td><td>44</td><td>3</td><td/><td/><td>ControlId_1200</td><td/><td>0</td><td>52</td><td/><td/></row>
-		<row><td>DialogId_10105</td><td>ControlId_601</td><td>CheckBox</td><td>19</td><td>79</td><td>171</td><td>15</td><td>3</td><td>Option1</td><td>##IDS__DialogId_10105_ControlId_601##</td><td>ControlId_602</td><td/><td>131075</td><td>601</td><td/><td/></row>
-		<row><td>DialogId_10105</td><td>ControlId_602</td><td>CheckBox</td><td>19</td><td>98</td><td>171</td><td>15</td><td>3</td><td>Option2</td><td>##IDS__DialogId_10105_ControlId_602##</td><td>ControlId_603</td><td/><td>3</td><td>602</td><td/><td/></row>
-		<row><td>DialogId_10105</td><td>ControlId_603</td><td>CheckBox</td><td>19</td><td>116</td><td>171</td><td>15</td><td>3</td><td>Option3</td><td>##IDS__DialogId_10105_ControlId_603##</td><td>ControlId_604</td><td/><td>3</td><td>603</td><td/><td/></row>
-		<row><td>DialogId_10105</td><td>ControlId_604</td><td>CheckBox</td><td>19</td><td>134</td><td>171</td><td>15</td><td>3</td><td>Option4</td><td>##IDS__DialogId_10105_ControlId_604##</td><td>ControlId_605</td><td/><td>3</td><td>604</td><td/><td/></row>
-		<row><td>DialogId_10105</td><td>ControlId_605</td><td>CheckBox</td><td>19</td><td>154</td><td>171</td><td>15</td><td>3</td><td>Option5</td><td>##IDS__DialogId_10105_ControlId_605##</td><td>ControlId_606</td><td/><td>3</td><td>605</td><td/><td/></row>
-		<row><td>DialogId_10105</td><td>ControlId_606</td><td>CheckBox</td><td>191</td><td>79</td><td>163</td><td>15</td><td>3</td><td>Option6</td><td>##IDS__DialogId_10105_ControlId_606##</td><td>ControlId_607</td><td/><td>3</td><td>606</td><td/><td/></row>
-		<row><td>DialogId_10105</td><td>ControlId_607</td><td>CheckBox</td><td>191</td><td>98</td><td>163</td><td>15</td><td>3</td><td>Option7</td><td>##IDS__DialogId_10105_ControlId_607##</td><td>ControlId_608</td><td/><td>3</td><td>607</td><td/><td/></row>
-		<row><td>DialogId_10105</td><td>ControlId_608</td><td>CheckBox</td><td>191</td><td>116</td><td>163</td><td>15</td><td>3</td><td>Option8</td><td>##IDS__DialogId_10105_ControlId_608##</td><td>ControlId_609</td><td/><td>3</td><td>608</td><td/><td/></row>
-		<row><td>DialogId_10105</td><td>ControlId_609</td><td>CheckBox</td><td>191</td><td>134</td><td>163</td><td>15</td><td>3</td><td>Option9</td><td>##IDS__DialogId_10105_ControlId_609##</td><td>ControlId_12</td><td/><td>3</td><td>609</td><td/><td/></row>
-		<row><td>DialogId_10105</td><td>ControlId_7</td><td>Text</td><td>2</td><td>222</td><td>45</td><td>12</td><td>2</td><td/><td/><td>ControlId_50</td><td/><td>131072</td><td>7</td><td/><td/></row>
-		<row><td>DialogId_10105</td><td>ControlId_9</td><td>PushButton</td><td>306</td><td>239</td><td>56</td><td>17</td><td>3</td><td/><td>##IDS__DialogId_10105_ControlId_9##</td><td>ControlId_1300</td><td/><td>0</td><td>9</td><td/><td/></row>
-		<row><td>DialogId_10105</td><td>ControlId_901</td><td>Text</td><td>19</td><td>49</td><td>330</td><td>20</td><td>131075</td><td/><td>##IDS__DialogId_10105_ControlId_901##</td><td>ControlId_601</td><td/><td>131072</td><td>901</td><td/><td/></row>
-		<row><td>OptionSelectDialog</td><td>CheckBox1</td><td>CheckBox</td><td>50</td><td>60</td><td>120</td><td>15</td><td>3</td><td/><td>##NEW_STRING1##</td><td>CheckBox2</td><td/><td>0</td><td>1302</td><td/><td/></row>
-		<row><td>OptionSelectDialog</td><td>CheckBox10</td><td>CheckBox</td><td>180</td><td>160</td><td>120</td><td>15</td><td>3</td><td/><td>##NEW_STRING10##</td><td>CheckBox11</td><td/><td>0</td><td>1311</td><td/><td/></row>
-		<row><td>OptionSelectDialog</td><td>CheckBox11</td><td>CheckBox</td><td>50</td><td>185</td><td>120</td><td>15</td><td>3</td><td/><td>##NEW_STRING11##</td><td>ControlId_52</td><td/><td>0</td><td>1312</td><td/><td/></row>
-		<row><td>OptionSelectDialog</td><td>CheckBox2</td><td>CheckBox</td><td>50</td><td>85</td><td>120</td><td>15</td><td>3</td><td/><td>##NEW_STRING2##</td><td>CheckBox3</td><td/><td>0</td><td>1303</td><td/><td/></row>
-		<row><td>OptionSelectDialog</td><td>CheckBox3</td><td>CheckBox</td><td>50</td><td>110</td><td>120</td><td>15</td><td>3</td><td/><td>##NEW_STRING3##</td><td>CheckBox4</td><td/><td>0</td><td>1304</td><td/><td/></row>
-		<row><td>OptionSelectDialog</td><td>CheckBox4</td><td>CheckBox</td><td>50</td><td>135</td><td>120</td><td>15</td><td>3</td><td/><td>##NEW_STRING4##</td><td>CheckBox5</td><td/><td>0</td><td>1305</td><td/><td/></row>
-		<row><td>OptionSelectDialog</td><td>CheckBox5</td><td>CheckBox</td><td>50</td><td>160</td><td>120</td><td>15</td><td>3</td><td/><td>##NEW_STRING5##</td><td>CheckBox6</td><td/><td>0</td><td>1306</td><td/><td/></row>
-		<row><td>OptionSelectDialog</td><td>CheckBox6</td><td>CheckBox</td><td>180</td><td>60</td><td>120</td><td>15</td><td>3</td><td/><td>##NEW_STRING6##</td><td>CheckBox7</td><td/><td>0</td><td>1307</td><td/><td/></row>
-		<row><td>OptionSelectDialog</td><td>CheckBox7</td><td>CheckBox</td><td>180</td><td>85</td><td>120</td><td>15</td><td>3</td><td/><td>##NEW_STRING7##</td><td>CheckBox8</td><td/><td>0</td><td>1308</td><td/><td/></row>
-		<row><td>OptionSelectDialog</td><td>CheckBox8</td><td>CheckBox</td><td>180</td><td>110</td><td>120</td><td>15</td><td>3</td><td/><td>##NEW_STRING8##</td><td>CheckBox9</td><td/><td>0</td><td>1309</td><td/><td/></row>
-		<row><td>OptionSelectDialog</td><td>CheckBox9</td><td>CheckBox</td><td>180</td><td>135</td><td>120</td><td>15</td><td>3</td><td/><td>##NEW_STRING9##</td><td>CheckBox10</td><td/><td>0</td><td>1310</td><td/><td/></row>
-		<row><td>OptionSelectDialog</td><td>ControlId_1</td><td>PushButton</td><td>242</td><td>239</td><td>56</td><td>17</td><td>3</td><td/><td>##IDS__NewDialog_ControlId_1##</td><td>ControlId_9</td><td/><td>131072</td><td>1</td><td/><td/></row>
-		<row><td>OptionSelectDialog</td><td>ControlId_12</td><td>PushButton</td><td>187</td><td>239</td><td>56</td><td>17</td><td>3</td><td/><td>##IDS__NewDialog_ControlId_12##</td><td>ControlId_1300</td><td/><td>0</td><td>12</td><td/><td/></row>
-		<row><td>OptionSelectDialog</td><td>ControlId_1200</td><td>Text</td><td>0</td><td>0</td><td>374</td><td>44</td><td>65539</td><td/><td>##IDS__NewDialog_ControlId_1200##</td><td>ControlId_1</td><td/><td>131072</td><td>1200</td><td/><td/></row>
-		<row><td>OptionSelectDialog</td><td>ControlId_1300</td><td>Line</td><td>47</td><td>227</td><td>325</td><td>1</td><td>3</td><td/><td/><td>ControlId_7</td><td/><td>131079</td><td>1300</td><td/><td/></row>
-		<row><td>OptionSelectDialog</td><td>ControlId_1301</td><td>Line</td><td>0</td><td>44</td><td>374</td><td>1</td><td>3</td><td/><td/><td>CheckBox1</td><td/><td>131088</td><td>1301</td><td/><td/></row>
-		<row><td>OptionSelectDialog</td><td>ControlId_2</td><td>PushButton</td><td>185</td><td>274</td><td>56</td><td>17</td><td>2</td><td/><td>##IDS__NewDialog_ControlId_2##</td><td/><td/><td>0</td><td>2</td><td/><td/></row>
-		<row><td>OptionSelectDialog</td><td>ControlId_50</td><td>Text</td><td>11</td><td>4</td><td>248</td><td>10</td><td>65539</td><td/><td>##IDS__NewDialog_ControlId_50##</td><td>ControlId_51</td><td/><td>131072</td><td>50</td><td/><td/></row>
-		<row><td>OptionSelectDialog</td><td>ControlId_51</td><td>Text</td><td>19</td><td>18</td><td>240</td><td>23</td><td>65539</td><td/><td>##IDS__NewDialog_ControlId_51##</td><td>ControlId_1301</td><td/><td>131072</td><td>51</td><td/><td/></row>
-		<row><td>OptionSelectDialog</td><td>ControlId_52</td><td>Text</td><td>0</td><td>0</td><td>374</td><td>44</td><td>3</td><td/><td/><td>ControlId_1200</td><td/><td>131072</td><td>52</td><td/><td/></row>
-		<row><td>OptionSelectDialog</td><td>ControlId_7</td><td>Text</td><td>2</td><td>222</td><td>45</td><td>12</td><td>2</td><td/><td/><td>ControlId_50</td><td/><td>131072</td><td>7</td><td/><td/></row>
-		<row><td>OptionSelectDialog</td><td>ControlId_9</td><td>PushButton</td><td>306</td><td>239</td><td>56</td><td>17</td><td>3</td><td/><td>##IDS__NewDialog_ControlId_9##</td><td>ControlId_12</td><td/><td>0</td><td>9</td><td/><td/></row>
-		<row><td>YesNoDialog</td><td>Bitmap1</td><td>Bitmap</td><td>0</td><td>0</td><td>374</td><td>44</td><td>1048577</td><td/><td/><td>Text1</td><td/><td>0</td><td>1305</td><td/><td>NewBinary2</td></row>
-		<row><td>YesNoDialog</td><td>Cancel</td><td>PushButton</td><td>306</td><td>239</td><td>56</td><td>17</td><td>3</td><td/><td>##NEW_STRING17##</td><td>Bitmap1</td><td/><td>0</td><td>9</td><td/><td/></row>
-		<row><td>YesNoDialog</td><td>ControlId_1300</td><td>Text</td><td>45</td><td>222</td><td>325</td><td>2</td><td>3</td><td/><td/><td/><td/><td>131079</td><td>1300</td><td/><td/></row>
-		<row><td>YesNoDialog</td><td>ControlId_7</td><td>Text</td><td>3</td><td>222</td><td>45</td><td>13</td><td>2</td><td/><td/><td/><td/><td>131072</td><td>7</td><td/><td/></row>
-		<row><td>YesNoDialog</td><td>Line1</td><td>Line</td><td>0</td><td>44</td><td>379</td><td>1</td><td>1</td><td/><td/><td/><td/><td>0</td><td>1301</td><td/><td/></row>
-		<row><td>YesNoDialog</td><td>Line2</td><td>Line</td><td>47</td><td>227</td><td>325</td><td>1</td><td>1</td><td/><td/><td/><td/><td>0</td><td>1304</td><td/><td/></row>
-		<row><td>YesNoDialog</td><td>No</td><td>PushButton</td><td>242</td><td>239</td><td>56</td><td>17</td><td>3</td><td/><td>##NEW_STRING16##</td><td>Cancel</td><td/><td>0</td><td>0</td><td/><td/></row>
-		<row><td>YesNoDialog</td><td>Text1</td><td>Text</td><td>12</td><td>16</td><td>67</td><td>10</td><td>65539</td><td/><td>##NEW_STRING23##</td><td>Yes</td><td/><td>0</td><td>1306</td><td/><td/></row>
-		<row><td>YesNoDialog</td><td>Text2</td><td>Text</td><td>48</td><td>65</td><td>271</td><td>128</td><td>65539</td><td/><td>##NEW_STRING13##</td><td/><td/><td>0</td><td>1303</td><td/><td/></row>
-		<row><td>YesNoDialog</td><td>Yes</td><td>PushButton</td><td>187</td><td>239</td><td>56</td><td>17</td><td>3</td><td/><td>##NEW_STRING14##</td><td>No</td><td/><td>0</td><td>1</td><td/><td/></row>
+		<row><td>DialogId_10105</td><td>ControlId_1</td><td>PushButton</td><td>215</td><td>196</td><td>50</td><td>14</td><td>3</td><td/><td>##IDS__DialogId_10105_ControlId_1##</td><td>ControlId_9</td><td/><td>0</td><td>1</td><td/><td/></row>
+		<row><td>DialogId_10105</td><td>ControlId_12</td><td>PushButton</td><td>166</td><td>196</td><td>50</td><td>14</td><td>3</td><td/><td>##IDS__DialogId_10105_ControlId_12##</td><td>ControlId_1</td><td/><td>131072</td><td>12</td><td/><td/></row>
+		<row><td>DialogId_10105</td><td>ControlId_1200</td><td>Text</td><td>0</td><td>0</td><td>332</td><td>36</td><td>65539</td><td/><td>##IDS__DialogId_10105_ControlId_1200##</td><td>ControlId_901</td><td/><td>131072</td><td>1200</td><td/><td/></row>
+		<row><td>DialogId_10105</td><td>ControlId_1300</td><td>Line</td><td>42</td><td>186</td><td>289</td><td>1</td><td>3</td><td/><td/><td>ControlId_7</td><td/><td>131079</td><td>1300</td><td/><td/></row>
+		<row><td>DialogId_10105</td><td>ControlId_1301</td><td>Line</td><td>0</td><td>36</td><td>332</td><td>1</td><td>3</td><td/><td/><td>ControlId_52</td><td/><td>131088</td><td>1301</td><td/><td/></row>
+		<row><td>DialogId_10105</td><td>ControlId_2</td><td>PushButton</td><td>164</td><td>225</td><td>50</td><td>14</td><td>2</td><td/><td>##IDS__DialogId_10105_ControlId_2##</td><td/><td/><td>131072</td><td>2</td><td/><td/></row>
+		<row><td>DialogId_10105</td><td>ControlId_50</td><td>Text</td><td>11</td><td>13</td><td>220</td><td>8</td><td>65539</td><td/><td>##IDS__DialogId_10105_ControlId_50##</td><td>ControlId_1301</td><td/><td>131072</td><td>50</td><td/><td/></row>
+		<row><td>DialogId_10105</td><td>ControlId_52</td><td>Text</td><td>0</td><td>0</td><td>332</td><td>36</td><td>3</td><td/><td/><td>ControlId_1200</td><td/><td>0</td><td>52</td><td/><td/></row>
+		<row><td>DialogId_10105</td><td>ControlId_601</td><td>CheckBox</td><td>17</td><td>65</td><td>152</td><td>12</td><td>3</td><td>Option1</td><td>##IDS__DialogId_10105_ControlId_601##</td><td>ControlId_602</td><td/><td>131075</td><td>601</td><td/><td/></row>
+		<row><td>DialogId_10105</td><td>ControlId_602</td><td>CheckBox</td><td>17</td><td>80</td><td>152</td><td>12</td><td>3</td><td>Option2</td><td>##IDS__DialogId_10105_ControlId_602##</td><td>ControlId_603</td><td/><td>3</td><td>602</td><td/><td/></row>
+		<row><td>DialogId_10105</td><td>ControlId_603</td><td>CheckBox</td><td>17</td><td>95</td><td>152</td><td>12</td><td>3</td><td>Option3</td><td>##IDS__DialogId_10105_ControlId_603##</td><td>ControlId_604</td><td/><td>3</td><td>603</td><td/><td/></row>
+		<row><td>DialogId_10105</td><td>ControlId_604</td><td>CheckBox</td><td>17</td><td>110</td><td>152</td><td>12</td><td>3</td><td>Option4</td><td>##IDS__DialogId_10105_ControlId_604##</td><td>ControlId_605</td><td/><td>3</td><td>604</td><td/><td/></row>
+		<row><td>DialogId_10105</td><td>ControlId_605</td><td>CheckBox</td><td>17</td><td>126</td><td>152</td><td>12</td><td>3</td><td>Option5</td><td>##IDS__DialogId_10105_ControlId_605##</td><td>ControlId_606</td><td/><td>3</td><td>605</td><td/><td/></row>
+		<row><td>DialogId_10105</td><td>ControlId_606</td><td>CheckBox</td><td>170</td><td>65</td><td>145</td><td>12</td><td>3</td><td>Option6</td><td>##IDS__DialogId_10105_ControlId_606##</td><td>ControlId_607</td><td/><td>3</td><td>606</td><td/><td/></row>
+		<row><td>DialogId_10105</td><td>ControlId_607</td><td>CheckBox</td><td>170</td><td>80</td><td>145</td><td>12</td><td>3</td><td>Option7</td><td>##IDS__DialogId_10105_ControlId_607##</td><td>ControlId_608</td><td/><td>3</td><td>607</td><td/><td/></row>
+		<row><td>DialogId_10105</td><td>ControlId_608</td><td>CheckBox</td><td>170</td><td>95</td><td>145</td><td>12</td><td>3</td><td>Option8</td><td>##IDS__DialogId_10105_ControlId_608##</td><td>ControlId_609</td><td/><td>3</td><td>608</td><td/><td/></row>
+		<row><td>DialogId_10105</td><td>ControlId_609</td><td>CheckBox</td><td>170</td><td>110</td><td>145</td><td>12</td><td>3</td><td>Option9</td><td>##IDS__DialogId_10105_ControlId_609##</td><td>ControlId_12</td><td/><td>3</td><td>609</td><td/><td/></row>
+		<row><td>DialogId_10105</td><td>ControlId_7</td><td>Text</td><td>2</td><td>182</td><td>40</td><td>10</td><td>2</td><td/><td/><td>ControlId_50</td><td/><td>131072</td><td>7</td><td/><td/></row>
+		<row><td>DialogId_10105</td><td>ControlId_9</td><td>PushButton</td><td>272</td><td>196</td><td>50</td><td>14</td><td>3</td><td/><td>##IDS__DialogId_10105_ControlId_9##</td><td>ControlId_1300</td><td/><td>0</td><td>9</td><td/><td/></row>
+		<row><td>DialogId_10105</td><td>ControlId_901</td><td>Text</td><td>17</td><td>40</td><td>293</td><td>16</td><td>131075</td><td/><td>##IDS__DialogId_10105_ControlId_901##</td><td>ControlId_601</td><td/><td>131072</td><td>901</td><td/><td/></row>
+		<row><td>OptionSelectDialog</td><td>CheckBox1</td><td>CheckBox</td><td>44</td><td>49</td><td>107</td><td>12</td><td>3</td><td/><td>##NEW_STRING1##</td><td>CheckBox2</td><td/><td>0</td><td>1302</td><td/><td/></row>
+		<row><td>OptionSelectDialog</td><td>CheckBox10</td><td>CheckBox</td><td>160</td><td>131</td><td>107</td><td>12</td><td>3</td><td/><td>##NEW_STRING10##</td><td>CheckBox11</td><td/><td>0</td><td>1311</td><td/><td/></row>
+		<row><td>OptionSelectDialog</td><td>CheckBox11</td><td>CheckBox</td><td>44</td><td>152</td><td>107</td><td>12</td><td>3</td><td/><td>##NEW_STRING11##</td><td>ControlId_52</td><td/><td>0</td><td>1312</td><td/><td/></row>
+		<row><td>OptionSelectDialog</td><td>CheckBox2</td><td>CheckBox</td><td>44</td><td>70</td><td>107</td><td>12</td><td>3</td><td/><td>##NEW_STRING2##</td><td>CheckBox3</td><td/><td>0</td><td>1303</td><td/><td/></row>
+		<row><td>OptionSelectDialog</td><td>CheckBox3</td><td>CheckBox</td><td>44</td><td>90</td><td>107</td><td>12</td><td>3</td><td/><td>##NEW_STRING3##</td><td>CheckBox4</td><td/><td>0</td><td>1304</td><td/><td/></row>
+		<row><td>OptionSelectDialog</td><td>CheckBox4</td><td>CheckBox</td><td>44</td><td>111</td><td>107</td><td>12</td><td>3</td><td/><td>##NEW_STRING4##</td><td>CheckBox5</td><td/><td>0</td><td>1305</td><td/><td/></row>
+		<row><td>OptionSelectDialog</td><td>CheckBox5</td><td>CheckBox</td><td>44</td><td>131</td><td>107</td><td>12</td><td>3</td><td/><td>##NEW_STRING5##</td><td>CheckBox6</td><td/><td>0</td><td>1306</td><td/><td/></row>
+		<row><td>OptionSelectDialog</td><td>CheckBox6</td><td>CheckBox</td><td>160</td><td>49</td><td>107</td><td>12</td><td>3</td><td/><td>##NEW_STRING6##</td><td>CheckBox7</td><td/><td>0</td><td>1307</td><td/><td/></row>
+		<row><td>OptionSelectDialog</td><td>CheckBox7</td><td>CheckBox</td><td>160</td><td>70</td><td>107</td><td>12</td><td>3</td><td/><td>##NEW_STRING7##</td><td>CheckBox8</td><td/><td>0</td><td>1308</td><td/><td/></row>
+		<row><td>OptionSelectDialog</td><td>CheckBox8</td><td>CheckBox</td><td>160</td><td>90</td><td>107</td><td>12</td><td>3</td><td/><td>##NEW_STRING8##</td><td>CheckBox9</td><td/><td>0</td><td>1309</td><td/><td/></row>
+		<row><td>OptionSelectDialog</td><td>CheckBox9</td><td>CheckBox</td><td>160</td><td>111</td><td>107</td><td>12</td><td>3</td><td/><td>##NEW_STRING9##</td><td>CheckBox10</td><td/><td>0</td><td>1310</td><td/><td/></row>
+		<row><td>OptionSelectDialog</td><td>ControlId_1</td><td>PushButton</td><td>215</td><td>196</td><td>50</td><td>14</td><td>3</td><td/><td>##IDS__NewDialog_ControlId_1##</td><td>ControlId_9</td><td/><td>131072</td><td>1</td><td/><td/></row>
+		<row><td>OptionSelectDialog</td><td>ControlId_12</td><td>PushButton</td><td>166</td><td>196</td><td>50</td><td>14</td><td>3</td><td/><td>##IDS__NewDialog_ControlId_12##</td><td>ControlId_1300</td><td/><td>0</td><td>12</td><td/><td/></row>
+		<row><td>OptionSelectDialog</td><td>ControlId_1200</td><td>Text</td><td>0</td><td>0</td><td>332</td><td>36</td><td>65539</td><td/><td>##IDS__NewDialog_ControlId_1200##</td><td>ControlId_1</td><td/><td>131072</td><td>1200</td><td/><td/></row>
+		<row><td>OptionSelectDialog</td><td>ControlId_1300</td><td>Line</td><td>42</td><td>186</td><td>289</td><td>1</td><td>3</td><td/><td/><td>ControlId_7</td><td/><td>131079</td><td>1300</td><td/><td/></row>
+		<row><td>OptionSelectDialog</td><td>ControlId_1301</td><td>Line</td><td>0</td><td>36</td><td>332</td><td>1</td><td>3</td><td/><td/><td>CheckBox1</td><td/><td>131088</td><td>1301</td><td/><td/></row>
+		<row><td>OptionSelectDialog</td><td>ControlId_2</td><td>PushButton</td><td>164</td><td>225</td><td>50</td><td>14</td><td>2</td><td/><td>##IDS__NewDialog_ControlId_2##</td><td/><td/><td>0</td><td>2</td><td/><td/></row>
+		<row><td>OptionSelectDialog</td><td>ControlId_50</td><td>Text</td><td>10</td><td>3</td><td>220</td><td>8</td><td>65539</td><td/><td>##IDS__NewDialog_ControlId_50##</td><td>ControlId_51</td><td/><td>131072</td><td>50</td><td/><td/></row>
+		<row><td>OptionSelectDialog</td><td>ControlId_51</td><td>Text</td><td>17</td><td>15</td><td>213</td><td>19</td><td>65539</td><td/><td>##IDS__NewDialog_ControlId_51##</td><td>ControlId_1301</td><td/><td>131072</td><td>51</td><td/><td/></row>
+		<row><td>OptionSelectDialog</td><td>ControlId_52</td><td>Text</td><td>0</td><td>0</td><td>332</td><td>36</td><td>3</td><td/><td/><td>ControlId_1200</td><td/><td>131072</td><td>52</td><td/><td/></row>
+		<row><td>OptionSelectDialog</td><td>ControlId_7</td><td>Text</td><td>2</td><td>182</td><td>40</td><td>10</td><td>2</td><td/><td/><td>ControlId_50</td><td/><td>131072</td><td>7</td><td/><td/></row>
+		<row><td>OptionSelectDialog</td><td>ControlId_9</td><td>PushButton</td><td>272</td><td>196</td><td>50</td><td>14</td><td>3</td><td/><td>##IDS__NewDialog_ControlId_9##</td><td>ControlId_12</td><td/><td>0</td><td>9</td><td/><td/></row>
+		<row><td>YesNoDialog</td><td>Bitmap1</td><td>Bitmap</td><td>0</td><td>0</td><td>332</td><td>36</td><td>1048577</td><td/><td/><td>Text1</td><td/><td>0</td><td>1305</td><td/><td>NewBinary2</td></row>
+		<row><td>YesNoDialog</td><td>Cancel</td><td>PushButton</td><td>272</td><td>196</td><td>50</td><td>14</td><td>3</td><td/><td>##NEW_STRING17##</td><td>Bitmap1</td><td/><td>0</td><td>9</td><td/><td/></row>
+		<row><td>YesNoDialog</td><td>ControlId_1300</td><td>Text</td><td>40</td><td>182</td><td>289</td><td>2</td><td>3</td><td/><td/><td/><td/><td>131079</td><td>1300</td><td/><td/></row>
+		<row><td>YesNoDialog</td><td>ControlId_7</td><td>Text</td><td>3</td><td>182</td><td>40</td><td>11</td><td>2</td><td/><td/><td/><td/><td>131072</td><td>7</td><td/><td/></row>
+		<row><td>YesNoDialog</td><td>Line1</td><td>Line</td><td>0</td><td>36</td><td>337</td><td>1</td><td>1</td><td/><td/><td/><td/><td>0</td><td>1301</td><td/><td/></row>
+		<row><td>YesNoDialog</td><td>Line2</td><td>Line</td><td>42</td><td>186</td><td>289</td><td>1</td><td>1</td><td/><td/><td/><td/><td>0</td><td>1304</td><td/><td/></row>
+		<row><td>YesNoDialog</td><td>No</td><td>PushButton</td><td>215</td><td>196</td><td>50</td><td>14</td><td>3</td><td/><td>##NEW_STRING16##</td><td>Cancel</td><td/><td>0</td><td>0</td><td/><td/></row>
+		<row><td>YesNoDialog</td><td>Text1</td><td>Text</td><td>11</td><td>13</td><td>60</td><td>8</td><td>65539</td><td/><td>##NEW_STRING23##</td><td>Yes</td><td/><td>0</td><td>1306</td><td/><td/></row>
+		<row><td>YesNoDialog</td><td>Text2</td><td>Text</td><td>43</td><td>53</td><td>241</td><td>105</td><td>65539</td><td/><td>##NEW_STRING13##</td><td/><td/><td>0</td><td>1303</td><td/><td/></row>
+		<row><td>YesNoDialog</td><td>Yes</td><td>PushButton</td><td>166</td><td>196</td><td>50</td><td>14</td><td>3</td><td/><td>##NEW_STRING14##</td><td>No</td><td/><td>0</td><td>1</td><td/><td/></row>
 	</table>
 
 	<table name="Dialog">
@@ -223,9 +223,9 @@
 		<col def="S72">TextStyle_</col>
 		<col def="I4">ISWindowStyle</col>
 		<col def="I4">ISResourceId</col>
-		<row><td>DialogId_10105</td><td>0</td><td>0</td><td>374</td><td>266</td><td>1</td><td>##IDS__DialogId_10105##</td><td>ControlId_52</td><td>ControlId_1</td><td>ControlId_2</td><td/><td>MSSansSerif8</td><td>-2134376256</td><td>10105</td></row>
-		<row><td>OptionSelectDialog</td><td>0</td><td>0</td><td>374</td><td>266</td><td>1</td><td>##IDS__NewDialog##</td><td>ControlId_52</td><td>ControlId_1</td><td>ControlId_2</td><td/><td>MSSansSerif8</td><td>-2134376256</td><td>1</td></row>
-		<row><td>YesNoDialog</td><td>50</td><td>50</td><td>374</td><td>266</td><td>3</td><td/><td>Yes</td><td/><td/><td/><td>MSSansSerif8</td><td>-2134376256</td><td>0</td></row>
+		<row><td>DialogId_10105</td><td>0</td><td>0</td><td>332</td><td>218</td><td>1</td><td>##IDS__DialogId_10105##</td><td>ControlId_52</td><td>ControlId_1</td><td>ControlId_2</td><td/><td>MSSansSerif8</td><td>-2134376256</td><td>10105</td></row>
+		<row><td>OptionSelectDialog</td><td>0</td><td>0</td><td>332</td><td>218</td><td>1</td><td>##IDS__NewDialog##</td><td>ControlId_52</td><td>ControlId_1</td><td>ControlId_2</td><td/><td>MSSansSerif8</td><td>-2134376256</td><td>1</td></row>
+		<row><td>YesNoDialog</td><td>50</td><td>50</td><td>332</td><td>218</td><td>3</td><td/><td>Yes</td><td/><td/><td/><td>MSSansSerif8</td><td>-2134376256</td><td>0</td></row>
 	</table>
 
 	<table name="Directory">
@@ -536,9 +536,9 @@
 		<row><td>{1BC2DA10-49B8-4B3F-A5F6-FEEE6749D422}</td><td/><td/><td/><td/><td/><td/><td/><td>##ID_STRING30##</td><td>36</td><td/><td/><td/></row>
 		<row><td>{1F1848AE-D3FB-4FAA-B9E0-F25793492913}</td><td/><td/><td/><td/><td/><td/><td/><td>##ID_STRING31##</td><td>36</td><td/><td/><td/></row>
 		<row><td>{1F756B02-5F9B-4D8E-879E-0DA0F7D93B09}</td><td/><td/><td/><td/><td/><td/><td/><td>##ID_STRING33##</td><td>36</td><td/><td/><td/></row>
-		<row><td>{203EE6F3-1C3B-4197-8429-9FBC5538167A}</td><td/><td/><td/><td/><td/><td/><td/><td/><td>20</td><td/><td/><td>@ismk16:C9FE0DD0-2F11-11D3-8B0C-00105A9846E9</td></row>
-		<row><td>{2986A945-3B51-4EAD-9C84-C56CD289E839}</td><td/><td/><td/><td/><td/><td/><td/><td/><td>20</td><td/><td/><td>@ismk16:C9FE0DD0-2F11-11D3-8B0C-00105A9846E9</td></row>
-		<row><td>{326803FA-65A3-4141-9031-81130DB3D955}</td><td/><td/><td/><td/><td/><td/><td/><td/><td>20</td><td/><td/><td>@ismk16:C9FE0DD0-2F11-11D3-8B0C-00105A9846E9</td></row>
+		<row><td>{203EE6F3-1C3B-4197-8429-9FBC5538167A}</td><td/><td/><td/><td/><td/><td/><td/><td/><td>20</td><td/><td/><td>@ismk19:C9FE0DD0-2F11-11D3-8B0C-00105A9846E9</td></row>
+		<row><td>{2986A945-3B51-4EAD-9C84-C56CD289E839}</td><td/><td/><td/><td/><td/><td/><td/><td/><td>20</td><td/><td/><td>@ismk19:C9FE0DD0-2F11-11D3-8B0C-00105A9846E9</td></row>
+		<row><td>{326803FA-65A3-4141-9031-81130DB3D955}</td><td/><td/><td/><td/><td/><td/><td/><td/><td>20</td><td/><td/><td>@ismk19:C9FE0DD0-2F11-11D3-8B0C-00105A9846E9</td></row>
 		<row><td>{37AA5718-AAED-4365-BC7A-BF934E7C0DDE}</td><td/><td/><td/><td/><td/><td/><td/><td>##ID_STRING70##</td><td>36</td><td/><td/><td/></row>
 		<row><td>{3AAABB93-964B-43CA-9691-90F8B5E7455A}</td><td/><td/><td/><td/><td/><td/><td/><td>##ID_STRING40##</td><td>36</td><td/><td/><td/></row>
 		<row><td>{3B752146-EC34-49F0-B636-E9DCA5C40CF6}</td><td/><td/><td/><td/><td/><td/><td/><td>##ID_STRING28##</td><td>36</td><td/><td/><td/></row>
@@ -547,13 +547,13 @@
 		<row><td>{461D2490-036C-4FBE-B04A-7B82E9AF225F}</td><td/><td/><td/><td/><td/><td/><td/><td>##ID_STRING68##</td><td>36</td><td/><td/><td/></row>
 		<row><td>{4ACFFB62-6E17-49AE-B063-E56B4FC5D9A5}</td><td/><td/><td/><td/><td/><td/><td/><td>##ID_STRING29##</td><td>36</td><td/><td/><td/></row>
 		<row><td>{54FF9F5F-5E39-45F8-B799-BA8F0AD883AD}</td><td>Tomcat_Installing</td><td>Tomcat_Installed</td><td>Tomcat_UnInstalling</td><td/><td/><td/><td/><td>##ID_STRING34##</td><td>36</td><td/><td/><td/></row>
-		<row><td>{592A3BB2-DCBB-4F07-950D-0A1F1946132A}</td><td/><td/><td/><td/><td/><td/><td/><td/><td>20</td><td/><td/><td>@ismk16:C9FE0DD0-2F11-11D3-8B0C-00105A9846E9</td></row>
-		<row><td>{5EE23F32-3F6D-491D-BB01-5FC720E46BB2}</td><td/><td/><td/><td/><td/><td/><td/><td/><td>20</td><td/><td/><td>@ismk16:C9FE0DD0-2F11-11D3-8B0C-00105A9846E9</td></row>
+		<row><td>{592A3BB2-DCBB-4F07-950D-0A1F1946132A}</td><td/><td/><td/><td/><td/><td/><td/><td/><td>20</td><td/><td/><td>@ismk19:C9FE0DD0-2F11-11D3-8B0C-00105A9846E9</td></row>
+		<row><td>{5EE23F32-3F6D-491D-BB01-5FC720E46BB2}</td><td/><td/><td/><td/><td/><td/><td/><td/><td>20</td><td/><td/><td>@ismk19:C9FE0DD0-2F11-11D3-8B0C-00105A9846E9</td></row>
 		<row><td>{7E0C5FC7-B54D-4F6D-8D1A-0946CFF2CE2E}</td><td/><td/><td/><td/><td/><td/><td/><td>##ID_STRING25##</td><td>36</td><td/><td/><td/></row>
-		<row><td>{96D828BE-45A9-4690-8AEF-1B5411483872}</td><td/><td/><td/><td/><td/><td/><td/><td/><td>20</td><td/><td/><td>@ismk16:C9FE0DD0-2F11-11D3-8B0C-00105A9846E9</td></row>
+		<row><td>{96D828BE-45A9-4690-8AEF-1B5411483872}</td><td/><td/><td/><td/><td/><td/><td/><td/><td>20</td><td/><td/><td>@ismk19:C9FE0DD0-2F11-11D3-8B0C-00105A9846E9</td></row>
 		<row><td>{9910613D-86BA-428E-8798-FD86096FFE62}</td><td/><td/><td/><td/><td/><td/><td/><td>##ID_STRING26##</td><td>36</td><td/><td/><td/></row>
 		<row><td>{9A11D821-45F6-4C85-9F68-BEE18E837F37}</td><td/><td/><td/><td/><td/><td/><td/><td>##ID_STRING27##</td><td>36</td><td/><td/><td/></row>
-		<row><td>{AE932E30-3CE2-490B-9BC2-A5D181CA68D2}</td><td/><td/><td/><td/><td/><td/><td/><td/><td>20</td><td/><td/><td>@ismk16:C9FE0DD0-2F11-11D3-8B0C-00105A9846E9</td></row>
+		<row><td>{AE932E30-3CE2-490B-9BC2-A5D181CA68D2}</td><td/><td/><td/><td/><td/><td/><td/><td/><td>20</td><td/><td/><td>@ismk19:C9FE0DD0-2F11-11D3-8B0C-00105A9846E9</td></row>
 		<row><td>{B5BF87E8-FF15-40CF-9003-838D672C71C8}</td><td/><td/><td/><td/><td/><td/><td/><td>##ID_STRING37##</td><td>36</td><td/><td/><td/></row>
 		<row><td>{CADF0B39-0005-47B0-A36A-33F801BE5E88}</td><td/><td/><td/><td/><td/><td/><td/><td>##ID_STRING43##</td><td>36</td><td/><td/><td/></row>
 		<row><td>{CAEEBC8B-716D-4DC2-A248-89CA71879A6B}</td><td/><td/><td/><td/><td/><td/><td/><td>##ID_STRING38##</td><td>36</td><td/><td/><td/></row>
@@ -562,7 +562,7 @@
 		<row><td>{E6E81A5E-ACA3-4C5B-8FD1-6A1881FCE8C6}</td><td/><td/><td/><td/><td/><td/><td/><td>##ID_STRING42##</td><td>36</td><td/><td/><td/></row>
 		<row><td>{FB0E9936-56A9-4E00-B8C9-E3E82682657B}</td><td/><td/><td/><td/><td/><td/><td/><td>##ID_STRING41##</td><td>36</td><td/><td/><td/></row>
 		<row><td>{FB279D35-43A8-441C-8B56-F98EC5504F2F}</td><td/><td/><td/><td/><td/><td/><td/><td>##ID_STRING39##</td><td>36</td><td/><td/><td/></row>
-		<row><td>{FF50F5E7-CE20-40A7-A694-6DE3E00212B8}</td><td/><td/><td/><td/><td/><td/><td/><td/><td>20</td><td/><td/><td>@ismk16:C9FE0DD0-2F11-11D3-8B0C-00105A9846E9</td></row>
+		<row><td>{FF50F5E7-CE20-40A7-A694-6DE3E00212B8}</td><td/><td/><td/><td/><td/><td/><td/><td/><td>20</td><td/><td/><td>@ismk19:C9FE0DD0-2F11-11D3-8B0C-00105A9846E9</td></row>
 	</table>
 
 	<table name="ISFeatureMergeModuleExcludes">
@@ -680,7 +680,7 @@
 	</table>
 
 	<table name="ISPathVariable">
-		<col key="yes" def="s32">ISPathVariable</col>
+		<col key="yes" def="s72">ISPathVariable</col>
 		<col def="S255">Value</col>
 		<col def="S255">TestValue</col>
 		<col def="i4">Type</col>
@@ -1109,8 +1109,9 @@
 		<col def="S0">Comments</col>
 		<col def="i2">ErrorHandling</col>
 		<col def="i2">Attributes</col>
-		<col def="S15">Version</col>
+		<col def="S255">Version</col>
 		<col def="S255">Condition</col>
+		<col def="S72">DisplayName</col>
 	</table>
 
 	<table name="ISSQLScriptImport">
@@ -1296,6 +1297,7 @@
 		<row><td>IDS_FEATURE_DISPLAY_NAME7</td><td>1033</td><td>Commander</td><td>0</td><td/><td>-1784867504</td></row>
 		<row><td>IDS_FEATURE_DISPLAY_NAME8</td><td>1033</td><td>Tabular Data Console</td><td>0</td><td/><td>-1784855216</td></row>
 		<row><td>IDS_FEATURE_DISPLAY_NAME9</td><td>1033</td><td>Trending</td><td>0</td><td/><td>-1784849072</td></row>
+		<row><td>IDS_SETUPEXE_EXPIRE_MSG</td><td>1033</td><td>This setup works until %s. The setup will now exit.</td><td>0</td><td/><td/></row>
 		<row><td>IDS_SQLSCRIPT_INSTALLING</td><td>1033</td><td>Executing SQL Install Script...</td><td>0</td><td/><td>1394439054</td></row>
 		<row><td>IDS_SQLSCRIPT_UNINSTALLING</td><td>1033</td><td>Executing SQL Uninstall Script...</td><td>0</td><td/><td>1394439054</td></row>
 		<row><td>IDS__DialogId_10105</td><td>1033</td><td>InstallShield Wizard</td><td>0</td><td/><td>287181007</td></row>
@@ -1529,6 +1531,7 @@
 		<row><td>CurrentMedia</td><td dt:dt="bin.base64" md5="d7601ea43fdc6ca1faf19ccdb166ed90">
 UgBlAGwAZQBhAHMAZQAgADEAAQBNAGUAZABpAGEA
 			</td></row>
+		<row><td>DialogSizeType</td><td>1</td></row>
 		<row><td>DoMaintenance</td><td>1</td></row>
 		<row><td>GenerateMIF</td><td>0</td></row>
 		<row><td>ISCompilerOption_CompileBeforeBuild</td><td>1</td></row>
@@ -1552,7 +1555,7 @@ UgBlAGwAZQBhAHMAZQAgADEAAQBNAGUAZABpAGEA
 		<row><td>SaveAsSchema</td><td/></row>
 		<row><td>SccEnabled</td><td>0</td></row>
 		<row><td>SccPath</td><td/></row>
-		<row><td>SchemaVersion</td><td>770</td></row>
+		<row><td>SchemaVersion</td><td>773</td></row>
 		<row><td>Script</td><td>1</td></row>
 		<row><td>SetupArguments</td><td/></row>
 		<row><td>TARGETDIR</td><td>C:\Yukon</td></row>
@@ -1579,7 +1582,7 @@ UgBlAGwAZQBhAHMAZQAgADEAAQBNAGUAZABpAGEA
 		<col def="s255">FileName</col>
 		<col def="i2">Attributes</col>
 		<col def="I4">MessageFilter</col>
-		<col def="v0">Data</col>
+		<col def="V0">Data</col>
 		<col def="S255">ISBuildSourcePath</col>
 	</table>
 
@@ -1951,7 +1954,7 @@ UgBlAGwAZQBhAHMAZQAgADEAAQBNAGUAZABpAGEA
 		<row><td>ISIISProperty</td><td>MetaDataValue</td><td>Y</td><td/><td/><td/><td/><td>Text</td><td/><td>IIS property value.</td></row>
 		<row><td>ISIISProperty</td><td>Order</td><td>Y</td><td/><td/><td/><td/><td/><td/><td>Order sequencing.</td></row>
 		<row><td>ISIISProperty</td><td>Schema</td><td>Y</td><td/><td/><td/><td/><td>Text</td><td/><td>IIS7 schema information.</td></row>
-		<row><td>ISLanguage</td><td>ISLanguage</td><td>N</td><td/><td/><td/><td/><td>Language</td><td/><td>This is the language ID.</td></row>
+		<row><td>ISLanguage</td><td>ISLanguage</td><td>N</td><td/><td/><td/><td/><td>Text</td><td/><td>This is the language ID.</td></row>
 		<row><td>ISLanguage</td><td>Included</td><td>Y</td><td/><td/><td/><td/><td/><td>0;1</td><td>Specify whether this language should be included.</td></row>
 		<row><td>ISLinkerLibrary</td><td>ISLinkerLibrary</td><td>N</td><td/><td/><td/><td/><td>Identifier</td><td/><td>Unique identifier for the link library.</td></row>
 		<row><td>ISLinkerLibrary</td><td>Library</td><td>N</td><td/><td/><td/><td/><td>Text</td><td/><td>Full path of the object library (.obl file).</td></row>
@@ -1962,18 +1965,18 @@ UgBlAGwAZQBhAHMAZQAgADEAAQBNAGUAZABpAGEA
 		<row><td>ISLocalControl</td><td>Dialog_</td><td>N</td><td/><td/><td>Dialog</td><td>1</td><td>Identifier</td><td/><td>External key to the Dialog table, name of the dialog.</td></row>
 		<row><td>ISLocalControl</td><td>Height</td><td>Y</td><td/><td/><td/><td/><td/><td/><td>Height of the bounding rectangle of the control.</td></row>
 		<row><td>ISLocalControl</td><td>ISBuildSourcePath</td><td>Y</td><td/><td/><td/><td/><td>Text</td><td/><td>Full path to .rtf file for scrollable text control</td></row>
-		<row><td>ISLocalControl</td><td>ISLanguage_</td><td>N</td><td/><td/><td>ISLanguage</td><td>1</td><td>Language</td><td/><td>This is a foreign key to the ISLanguage table.</td></row>
+		<row><td>ISLocalControl</td><td>ISLanguage_</td><td>N</td><td/><td/><td>ISLanguage</td><td>1</td><td>Text</td><td/><td>This is a foreign key to the ISLanguage table.</td></row>
 		<row><td>ISLocalControl</td><td>Width</td><td>Y</td><td/><td/><td/><td/><td/><td/><td>Width of the bounding rectangle of the control.</td></row>
 		<row><td>ISLocalControl</td><td>X</td><td>Y</td><td/><td/><td/><td/><td/><td/><td>Horizontal coordinate of the upper left corner of the bounding rectangle of the control.</td></row>
 		<row><td>ISLocalControl</td><td>Y</td><td>Y</td><td/><td/><td/><td/><td/><td/><td>Vertical coordinate of the upper left corner of the bounding rectangle of the control.</td></row>
 		<row><td>ISLocalDialog</td><td>Attributes</td><td>Y</td><td/><td/><td/><td/><td/><td/><td>A 32-bit word that specifies the attribute flags to be applied to this dialog.</td></row>
 		<row><td>ISLocalDialog</td><td>Dialog_</td><td>Y</td><td/><td/><td>Dialog</td><td>1</td><td>Identifier</td><td/><td>Name of the dialog.</td></row>
 		<row><td>ISLocalDialog</td><td>Height</td><td>N</td><td>0</td><td>32767</td><td/><td/><td/><td/><td>Height of the bounding rectangle of the dialog.</td></row>
-		<row><td>ISLocalDialog</td><td>ISLanguage_</td><td>Y</td><td/><td/><td>ISLanguage</td><td>1</td><td>Language</td><td/><td>This is a foreign key to the ISLanguage table.</td></row>
+		<row><td>ISLocalDialog</td><td>ISLanguage_</td><td>Y</td><td/><td/><td>ISLanguage</td><td>1</td><td>Text</td><td/><td>This is a foreign key to the ISLanguage table.</td></row>
 		<row><td>ISLocalDialog</td><td>TextStyle_</td><td>Y</td><td/><td/><td/><td/><td>Identifier</td><td/><td>Foreign Key into TextStyle table, only used in Script Based Projects.</td></row>
 		<row><td>ISLocalDialog</td><td>Width</td><td>N</td><td>0</td><td>32767</td><td/><td/><td/><td/><td>Width of the bounding rectangle of the dialog.</td></row>
 		<row><td>ISLocalRadioButton</td><td>Height</td><td>N</td><td>0</td><td>32767</td><td/><td/><td/><td/><td>The height of the button.</td></row>
-		<row><td>ISLocalRadioButton</td><td>ISLanguage_</td><td>N</td><td/><td/><td>ISLanguage</td><td>1</td><td>Language</td><td/><td>This is a foreign key to the ISLanguage table.</td></row>
+		<row><td>ISLocalRadioButton</td><td>ISLanguage_</td><td>N</td><td/><td/><td>ISLanguage</td><td>1</td><td>Text</td><td/><td>This is a foreign key to the ISLanguage table.</td></row>
 		<row><td>ISLocalRadioButton</td><td>Order</td><td>N</td><td>1</td><td>32767</td><td>RadioButton</td><td>2</td><td/><td/><td>A positive integer used to determine the ordering of the items within one list..The integers do not have to be consecutive.</td></row>
 		<row><td>ISLocalRadioButton</td><td>Property</td><td>N</td><td/><td/><td>RadioButton</td><td>1</td><td>Identifier</td><td/><td>A named property to be tied to this radio button. All the buttons tied to the same property become part of the same group.</td></row>
 		<row><td>ISLocalRadioButton</td><td>Width</td><td>N</td><td>0</td><td>32767</td><td/><td/><td/><td/><td>The width of the button.</td></row>
@@ -2017,7 +2020,7 @@ UgBlAGwAZQBhAHMAZQAgADEAAQBNAGUAZABpAGEA
 		<row><td>ISRelease</td><td>Attributes</td><td>N</td><td/><td/><td/><td/><td/><td/><td>Bitfield holding boolean values for various release attributes.</td></row>
 		<row><td>ISRelease</td><td>BuildLocation</td><td>Y</td><td/><td/><td/><td/><td>Text</td><td/><td>Build location.</td></row>
 		<row><td>ISRelease</td><td>CDBrowser</td><td>Y</td><td/><td/><td/><td/><td>Text</td><td/><td>Demoshield browser location.</td></row>
-		<row><td>ISRelease</td><td>DefaultLanguage</td><td>N</td><td/><td/><td/><td/><td>Language</td><td/><td>Default language for setup.</td></row>
+		<row><td>ISRelease</td><td>DefaultLanguage</td><td>N</td><td/><td/><td/><td/><td>Text</td><td/><td>Default language for setup.</td></row>
 		<row><td>ISRelease</td><td>DigitalPVK</td><td>Y</td><td/><td/><td/><td/><td>Text</td><td/><td>Digital signing private key (.pvk) file.</td></row>
 		<row><td>ISRelease</td><td>DigitalSPC</td><td>Y</td><td/><td/><td/><td/><td>Text</td><td/><td>Digital signing Software Publisher Certificate (.spc) file.</td></row>
 		<row><td>ISRelease</td><td>DigitalURL</td><td>Y</td><td/><td/><td/><td/><td>Text</td><td/><td>Digital signing URL.</td></row>
@@ -2161,15 +2164,16 @@ UgBlAGwAZQBhAHMAZQAgADEAAQBNAGUAZABpAGEA
 		<row><td>ISSQLScriptError</td><td>Message</td><td>Y</td><td/><td/><td/><td/><td>Text</td><td/><td>Custom end-user message. Reserved for future use.</td></row>
 		<row><td>ISSQLScriptFile</td><td>Attributes</td><td>N</td><td/><td/><td/><td/><td/><td/><td/></row>
 		<row><td>ISSQLScriptFile</td><td>Comments</td><td>Y</td><td/><td/><td/><td/><td>Text</td><td/><td>Comments</td></row>
-		<row><td>ISSQLScriptFile</td><td>Component_</td><td>N</td><td/><td/><td>Component</td><td>1</td><td>Identifier</td><td/><td>Foreign key referencing Component that controls the SQL script.</td></row>
+		<row><td>ISSQLScriptFile</td><td>Component_</td><td>N</td><td/><td/><td>Component</td><td>1</td><td>Text</td><td/><td>Foreign key referencing Component that controls the SQL script.</td></row>
 		<row><td>ISSQLScriptFile</td><td>Condition</td><td>Y</td><td/><td/><td/><td/><td>Condition</td><td/><td>A conditional statement that will disable this script if the specified condition evaluates to the 'False' state. If a script is disabled, it will not be installed regardless of the 'Action' state associated with the component.</td></row>
+		<row><td>ISSQLScriptFile</td><td>DisplayName</td><td>Y</td><td/><td/><td/><td/><td>Text</td><td/><td>Display name for the SQL script file.</td></row>
 		<row><td>ISSQLScriptFile</td><td>ErrorHandling</td><td>N</td><td/><td/><td/><td/><td/><td/><td/></row>
 		<row><td>ISSQLScriptFile</td><td>ISBuildSourcePath</td><td>Y</td><td/><td/><td/><td/><td>Text</td><td/><td>Full path, the category is of Text instead of Path because of potential use of path variables.</td></row>
 		<row><td>ISSQLScriptFile</td><td>ISSQLScriptFile</td><td>N</td><td/><td/><td/><td/><td>Identifier</td><td/><td>This is the primary key to the ISSQLScriptFile table</td></row>
 		<row><td>ISSQLScriptFile</td><td>InstallText</td><td>Y</td><td/><td/><td/><td/><td>Text</td><td/><td>Feedback end-user text at install</td></row>
 		<row><td>ISSQLScriptFile</td><td>Scheduling</td><td>N</td><td/><td/><td/><td/><td/><td/><td/></row>
 		<row><td>ISSQLScriptFile</td><td>UninstallText</td><td>Y</td><td/><td/><td/><td/><td>Text</td><td/><td>Feedback end-user text at Uninstall</td></row>
-		<row><td>ISSQLScriptFile</td><td>Version</td><td>Y</td><td/><td/><td/><td/><td>Text</td><td/><td>Schema Version (####.#####.####)</td></row>
+		<row><td>ISSQLScriptFile</td><td>Version</td><td>Y</td><td/><td/><td/><td/><td>Text</td><td/><td>Schema Version (#####.#####.#####.#####)</td></row>
 		<row><td>ISSQLScriptImport</td><td>Attributes</td><td>N</td><td/><td/><td/><td/><td/><td/><td/></row>
 		<row><td>ISSQLScriptImport</td><td>Authentication</td><td>N</td><td/><td/><td/><td/><td/><td/><td/></row>
 		<row><td>ISSQLScriptImport</td><td>Database</td><td>Y</td><td/><td/><td/><td/><td/><td/><td/></row>
@@ -2209,7 +2213,7 @@ UgBlAGwAZQBhAHMAZQAgADEAAQBNAGUAZABpAGEA
 		<row><td>ISStorages</td><td>Name</td><td>N</td><td/><td/><td/><td/><td/><td/><td>Name of the sub-storage key</td></row>
 		<row><td>ISString</td><td>Comment</td><td>Y</td><td/><td/><td/><td/><td>Text</td><td/><td>Comment</td></row>
 		<row><td>ISString</td><td>Encoded</td><td>Y</td><td/><td/><td/><td/><td/><td/><td>Encoding for multi-byte strings.</td></row>
-		<row><td>ISString</td><td>ISLanguage_</td><td>N</td><td/><td/><td/><td/><td>Language</td><td/><td>This is a foreign key to the ISLanguage table.</td></row>
+		<row><td>ISString</td><td>ISLanguage_</td><td>N</td><td/><td/><td/><td/><td>Text</td><td/><td>This is a foreign key to the ISLanguage table.</td></row>
 		<row><td>ISString</td><td>ISString</td><td>N</td><td/><td/><td/><td/><td>Text</td><td/><td>String id.</td></row>
 		<row><td>ISString</td><td>TimeStamp</td><td>Y</td><td/><td/><td/><td/><td>Time/Date</td><td/><td>Time Stamp. MSI's Time/Date column type is just an int, with bits packed in a certain order.</td></row>
 		<row><td>ISString</td><td>Value</td><td>Y</td><td/><td/><td/><td/><td>Text</td><td/><td>real string value.</td></row>
@@ -2270,7 +2274,7 @@ UgBlAGwAZQBhAHMAZQAgADEAAQBNAGUAZABpAGEA
 		<row><td>ListView</td><td>Text</td><td>Y</td><td/><td/><td/><td/><td>Text</td><td/><td>The visible text to be assigned to the item. Optional. If this entry or the entire column is missing, the text is the same as the value.</td></row>
 		<row><td>ListView</td><td>Value</td><td>N</td><td/><td/><td/><td/><td>Text</td><td/><td>The value string associated with this item. Selecting the line will set the associated property to this value.</td></row>
 		<row><td>MsiEmbeddedUI</td><td>Attributes</td><td>N</td><td>0</td><td>3</td><td/><td/><td>Integer</td><td/><td>Information about the data in the Data column.</td></row>
-		<row><td>MsiEmbeddedUI</td><td>Data</td><td>N</td><td/><td/><td/><td/><td>Binary</td><td/><td>This column contains binary information.</td></row>
+		<row><td>MsiEmbeddedUI</td><td>Data</td><td>Y</td><td/><td/><td/><td/><td>Binary</td><td/><td>This column contains binary information.</td></row>
 		<row><td>MsiEmbeddedUI</td><td>FileName</td><td>N</td><td/><td/><td/><td/><td>Filename</td><td/><td>The name of the file that receives the binary information in the Data column.</td></row>
 		<row><td>MsiEmbeddedUI</td><td>ISBuildSourcePath</td><td>Y</td><td/><td/><td/><td/><td>Text</td><td/><td/></row>
 		<row><td>MsiEmbeddedUI</td><td>MessageFilter</td><td>Y</td><td>0</td><td>234913791</td><td/><td/><td>Integer</td><td/><td>Specifies the types of messages that are sent to the user interface DLL. This column is only relevant for rows with the msidbEmbeddedUI attribute.</td></row>
