@@ -76,7 +76,6 @@
         <include name="spring-ws-1.5.6-all.jar"/>
         <include name="spring-*-3.0.5.jar"/>
         <include name="SqlServer.jar"/>
-        <include name="stars.jar"/>
         <include name="web-common.jar"/>
         <include name="wsdl4j.jar"/>
         <include name="xercesImpl.jar"/>

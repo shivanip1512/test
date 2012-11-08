@@ -121,7 +121,6 @@
         <ant dir="${esub-editor}" target="${dotarget}" />
         <ant dir="${cbc}" target="${dotarget}" />
         <ant dir="${macs}" target="${dotarget}" />
-        <ant dir="${stars}" target="${dotarget}" />
 
         <ant dir="${api}" target="${dotarget}" />
         <ant dir="${tools}" target="${dotarget}" />
