@@ -24,7 +24,6 @@ class IM_EX_DEVDB Mct440_213xBDevice : public Mct420Device
     enum SspecInformation
     {
         Sspec                                   = 1030,
-        SspecRev_DailyRead                      = 21,  //  rev  2.1
     };
 
 protected:
@@ -140,6 +139,12 @@ protected:
     virtual INT decodeGetStatusFreeze(INMESS *InMessage, CtiTime &TimeNow, CtiMessageList &vgList, CtiMessageList  &retList, OutMessageList &outList);
 
     virtual int executePutConfigAlarmMask(CtiRequestMsg *pReq, CtiCommandParser &parse, OUTMESS *&OutMessage, CtiMessageList &vgList, CtiMessageList &retList, OutMessageList &outList);
+
+    virtual INT decodeGetConfigIntervals(INMESS *InMessage, CtiTime &TimeNow, CtiMessageList &vgList, CtiMessageList  &retList, OutMessageList  &outList);
+
+    virtual INT executeControl(CtiRequestMsg *pReq, CtiCommandParser &parse, OUTMESS *&OutMessage, CtiMessageList &vgList, CtiMessageList &retList, OutMessageList &outList);
+
+    virtual int decodeGetConfigAlarmMask(INMESS *InMessage, CtiTime &TimeNow, CtiMessageList &vgList, CtiMessageList  &retList, OutMessageList  &outList);
 };
 
 

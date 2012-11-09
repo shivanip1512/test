@@ -259,6 +259,14 @@ Mct440_213xBDevice::CommandSet Mct440_213xBDevice::initCommandStore()
     cs.insert(CommandStore(EmetconProtocol::GetStatus_Freeze,               EmetconProtocol::IO_Read,           0x26,    5));
     cs.insert(CommandStore(EmetconProtocol::PutConfig_Options,              EmetconProtocol::IO_Function_Write, 0x01,    4));
 
+    cs.insert(CommandStore(EmetconProtocol::PutConfig_Intervals,            EmetconProtocol::IO_Function_Write, 0x03,    2));
+    cs.insert(CommandStore(EmetconProtocol::GetConfig_Intervals,            EmetconProtocol::IO_Read,           0x1A,    2));
+
+    cs.insert(CommandStore(EmetconProtocol::Control_SetTOUHolidayRate,      EmetconProtocol::IO_Write,          0xA4,    0));
+    cs.insert(CommandStore(EmetconProtocol::Control_ClearTOUHolidayRate,    EmetconProtocol::IO_Write,          0xA5,    0));
+
+    cs.insert(CommandStore(EmetconProtocol::GetConfig_AlarmMask,            EmetconProtocol::IO_Read,           0x01,    9));
+
     return cs;
 }
 
@@ -283,11 +291,11 @@ Mct440_213xBDevice::ConfigPartsList Mct440_213xBDevice::initConfigParts()
     ConfigPartsList tempList;
 
     tempList.push_back(Mct4xxDevice::PutConfigPart_tou);
-    tempList.push_back(Mct4xxDevice::PutConfigPart_dst);
+//    tempList.push_back(Mct4xxDevice::PutConfigPart_dst);
     tempList.push_back(Mct4xxDevice::PutConfigPart_timezone);
-    tempList.push_back(Mct4xxDevice::PutConfigPart_configbyte);
+//    tempList.push_back(Mct4xxDevice::PutConfigPart_configbyte);
     tempList.push_back(Mct4xxDevice::PutConfigPart_time_adjust_tolerance);
-    tempList.push_back(Mct4xxDevice::PutConfigPart_addressing);
+//    tempList.push_back(Mct4xxDevice::PutConfigPart_addressing);
     tempList.push_back(Mct4xxDevice::PutConfigPart_holiday);
 
     return tempList;
@@ -426,9 +434,19 @@ INT Mct440_213xBDevice::executeGetValue(CtiRequestMsg     *pReq,
     static const string str_instantlinedata = "instantlinedata";
     static const string str_daily_read      = "daily_read";
 
+                                                                /* ---------- GETVALUE COMMAND NOT SUPPORTED ---------- */
+    if( (parse.getFlags() &  CMD_FLAG_GV_KWH) &&
+        (parse.getFlags() & (CMD_FLAG_GV_RATEMASK ^ CMD_FLAG_GV_RATET)) )
+    {
+        returnErrorMessage(BADPARAM, OutMessage, retList,
+                           "Bad kwh command specification: rate parameter not supported");
+
+        nRet = ExecutionComplete;
+    }
+
                                                                 /* ------------ TOU KWH (FORWARD / REVERSE) ----------- */
-    if( (parse.getFlags() & CMD_FLAG_GV_KWH) &&
-        (parse.getFlags() & CMD_FLAG_GV_TOU) )
+    else if( (parse.getFlags() & CMD_FLAG_GV_KWH) &&
+             (parse.getFlags() & CMD_FLAG_GV_TOU) )
     {
         if (parse.getFlags() & CMD_FLAG_GV_REVERSE)
         {
@@ -490,26 +508,10 @@ INT Mct440_213xBDevice::executeGetValue(CtiRequestMsg     *pReq,
 
         if( outagenum < OUTAGE_NBR_MIN || outagenum > OUTAGE_NBR_MAX )
         {
-            found = false;
+            returnErrorMessage(BADPARAM, OutMessage, retList,
+                               "Bad outage specification - Acceptable values: "STR(OUTAGE_NBR_MIN)" - "STR(OUTAGE_NBR_MAX));
 
-            CtiReturnMsg *errRet = CTIDBG_new CtiReturnMsg(getID( ),
-                                                           string(OutMessage->Request.CommandStr),
-                                                           string(),
-                                                           nRet,
-                                                           OutMessage->Request.RouteID,
-                                                           OutMessage->Request.MacroOffset,
-                                                           OutMessage->Request.Attempt,
-                                                           OutMessage->Request.GrpMsgID,
-                                                           OutMessage->Request.UserID,
-                                                           OutMessage->Request.SOE,
-                                                           CtiMultiMsg_vec( ));
-
-            if( errRet )
-            {
-                errRet->setResultString("Bad outage specification - Acceptable values: "STR(OUTAGE_NBR_MIN)" - "STR(OUTAGE_NBR_MAX));
-                errRet->setStatus(NoMethod);
-                retList.push_back(errRet);
-            }
+            nRet = ExecutionComplete;
         }
         else
         {
@@ -532,15 +534,131 @@ INT Mct440_213xBDevice::executeGetValue(CtiRequestMsg     *pReq,
                                                                 /* ---------------- DAILY READ RECENT ----------------- */
     else if( parse.isKeyValid(str_daily_read) )
     {
-        nRet = Inherited::executeGetValue(pReq, parse, OutMessage, vgList, retList, outList);
-
-        if (nRet == NoError)
+        //  if a request is already in progress and we're not submitting a continuation/retry
+        if( InterlockedCompareExchange( &_daily_read_info.request.in_progress, true, false) &&
+            _daily_read_info.request.user_id != pReq->UserMessageId() )
         {
-            if(_daily_read_info.request.type == daily_read_info_t::Request_Recent)
+            string temp = getName() + " / Daily read request already in progress\n";
+
+            temp += "Channel " + CtiNumStr(_daily_read_info.request.channel) + ", ";
+
+            if( _daily_read_info.request.type == daily_read_info_t::Request_MultiDay )
             {
-                OutMessage->Buffer.BSt.Length = FuncRead_Channel1SingleDayLen;
+                temp += printDate(_daily_read_info.request.begin + 1) + " - " +
+                        printDate(_daily_read_info.request.end) + "\n";
+            }
+            else
+            {
+                temp += printDate(_daily_read_info.request.begin);
+            }
+
+            nRet  = ExecutionComplete;
+            returnErrorMessage(ErrorCommandAlreadyInProgress, OutMessage, retList, temp);
+        }
+        else
+        {
+            int channel = parse.getiValue("channel", 1);
+
+            const CtiDate Today     = CtiDate(),
+                          Yesterday = Today - 1;
+
+
+            // If the date is not specified, we use yesterday (last full day)
+            CtiDate date_begin = Yesterday;
+
+            //  grab the beginning date
+            if( parse.isKeyValid("daily_read_date_begin") )
+            {
+                date_begin = parseDateValue(parse.getsValue("daily_read_date_begin"));
+            }
+
+            if( channel < 1 || channel > 3 )
+            {
+                returnErrorMessage(BADPARAM, OutMessage, retList,
+                                   "Invalid channel for daily read request; must be 1-3 (" + CtiNumStr(channel) + ")");
+
+                nRet = ExecutionComplete;
+            }
+            else if( date_begin > Yesterday )  //  must begin on or before yesterday
+            {
+                returnErrorMessage(BADPARAM, OutMessage, retList,
+                                   "Invalid date for daily read request; must be before today (" + parse.getsValue("daily_read_date_begin") + ")");
+
+                nRet = ExecutionComplete;
+            }
+            else if( parse.isKeyValid("daily_read_detail") )
+            {
+                returnErrorMessage(BADPARAM, OutMessage, retList,
+                                   "Bad daily read detail not supported - Acceptable format: getvalue daily read mm/dd/yyyy");
+
+                nRet = ExecutionComplete;
+            }
+            else if( parse.isKeyValid("daily_read_date_end") ||
+                     parse.isKeyValid("daily_reads") )
+            {
+                returnErrorMessage(BADPARAM, OutMessage, retList,
+                                   "Bad multi-day read not supported - Acceptable format: getvalue daily read mm/dd/yyyy");
+
+                nRet = ExecutionComplete;
+            }
+            else if( channel != 1 )
+            {
+                returnErrorMessage(BADPARAM, OutMessage, retList,
+                                   "Invalid channel for recent daily read request; only valid for channel 1 (" + CtiNumStr(channel)  + ")");
+
+                nRet = ExecutionComplete;
+            }
+            else if( date_begin < Today - 8 )  //  must be no more than 8 days ago
+            {
+                returnErrorMessage(BADPARAM, OutMessage, retList,
+                                   "Invalid date for recent daily read request; must be less than 8 days ago (" + parse.getsValue("daily_read_date_begin") + ")");
+
+                nRet = ExecutionComplete;
+            }
+            else
+            {
+                unsigned long day_offset = Yesterday.daysFrom1970() - date_begin.daysFrom1970();
+
+                OutMessage->Buffer.BSt.Function = FuncRead_Channel1SingleDayBasePos + day_offset;
+                OutMessage->Buffer.BSt.Length   = FuncRead_Channel1SingleDayLen;
+
+                _daily_read_info.request.type    = daily_read_info_t::Request_Recent;
+                _daily_read_info.request.channel = 1;
+                _daily_read_info.request.begin   = date_begin;
+
+                found = true;
+            }
+
+            if( !found )
+            {
+                InterlockedExchange(&_daily_read_info.request.in_progress, false);
+            }
+            else
+            {
+                function                  = EmetconProtocol::GetValue_DailyRead;
+                OutMessage->Buffer.BSt.IO = EmetconProtocol::IO_Function_Read;
             }
         }
+
+
+//        nRet = Inherited::executeGetValue(pReq, parse, OutMessage, vgList, retList, outList);
+//
+//        if (nRet == NoError)
+//        {
+//                                                                /* only Channel 1 Single Day Reads is supported         */
+//            if(_daily_read_info.request.type == daily_read_info_t::Request_Recent)
+//            {
+//                OutMessage->Buffer.BSt.Length = FuncRead_Channel1SingleDayLen;
+//            }
+//            else
+//            {
+//                returnErrorMessage(BADPARAM, OutMessage, retList,
+//                                   "Bad daily read specification - Acceptable format: getvalue daily read mm/dd/yyyy");
+//
+//                nRet = ExecutionComplete;
+//            }
+//        }
+
     }
 
                                                                 /* -------------- INHERITED FROM MCT-420 -------------- */
@@ -655,6 +773,10 @@ INT Mct440_213xBDevice::ModelDecode(INMESS          *InMessage,
 
     case EmetconProtocol::GetConfig_Holiday:
         status = decodeGetConfigHoliday(InMessage, TimeNow, vgList, retList, outList);
+        break;
+
+    case EmetconProtocol::GetConfig_AlarmMask:
+        status = decodeGetConfigAlarmMask(InMessage, TimeNow, vgList, retList, outList);
         break;
 
     default:
@@ -1511,6 +1633,17 @@ INT Mct440_213xBDevice::executeGetConfig(CtiRequestMsg     *pReq,
         nRet = NoError;
     }
 
+                                                                /* -------------------- ALARM MASK -------------------- */
+    else if( parse.isKeyValid("alarm_mask") )
+    {
+        OutMessage->Sequence = EmetconProtocol::GetConfig_AlarmMask;
+
+        if( getOperation(OutMessage->Sequence, OutMessage->Buffer.BSt) )
+        {
+            nRet = NoError;
+        }
+    }
+
                                                                 /* -------------- INHERITED FROM MCT-420 -------------- */
     else
     {
@@ -1655,89 +1788,73 @@ INT Mct440_213xBDevice::decodeGetValueDailyReadRecent(INMESS          *InMessage
 
     const DSTRUCT * const DSt  = &InMessage->Buffer.DSt;
 
-    CtiReturnMsg    *ReturnMsg = new CtiReturnMsg(getID(), InMessage->Return.CommandStr);
+    CtiReturnMsg  *ReturnMsg = new CtiReturnMsg(getID(), InMessage->Return.CommandStr);
 
-    ReturnMsg->setUserMessageId(InMessage->Return.UserID);
+    int channel = 1;
+    int month   = DSt->Message[9] & 0x0f;
+    int day     = DSt->Message[8];
 
-    if( !hasDynamicInfo(CtiTableDynamicPaoInfo::Key_MCT_SSpecRevision) )
+    setDynamicInfo(CtiTableDynamicPaoInfo::Key_MCT_DailyReadInterestChannel, channel);
+
+    //  These two need to be available to be checked against ErrorText_OutOfRange below
+    point_info pi_forward = getAccumulatorData(DSt->Message + 0, 3, 0); //FIXME : see if we should replace this with getData()
+    point_info pi_reverse = getAccumulatorData(DSt->Message + 3, 3, 0); //FIXME : see if we should replace this with getData()
+
+    if( channel != _daily_read_info.request.channel )
     {
-        resultString = getName() + " / Daily read requires SSPEC rev 2.1 or higher, command could not automatically retrieve SSPEC; retry command or execute \"getconfig model\" to verify SSPEC";
-        status = ErrorVerifySSPEC;
+        resultString  = getName() + " / Invalid channel returned by daily read ";
+        resultString += "(" + CtiNumStr(channel) + "), expecting (" + CtiNumStr(_daily_read_info.request.channel) + ")";
+
+        status = ErrorInvalidChannel;
     }
-    else if( getDynamicInfo(CtiTableDynamicPaoInfo::Key_MCT_SSpecRevision) < SspecRev_DailyRead )
+    else if(  day    !=  _daily_read_info.request.begin.dayOfMonth() ||
+              month  != (_daily_read_info.request.begin.month() - 1) )
     {
-        resultString = getName() + " / Daily read requires SSPEC rev 2.1 or higher; MCT reports " + CtiNumStr(getDynamicInfo(CtiTableDynamicPaoInfo::Key_MCT_SSpecRevision) / 10.0, 1);
-        status = ErrorInvalidSSPEC;
-        InMessage->Return.MacroOffset = 0;  //  stop the retries!
+        resultString  = getName() + " / Invalid day/month returned by daily read ";
+        resultString += "(" + CtiNumStr(day) + "/" + CtiNumStr(month + 1) + ", expecting " + CtiNumStr(_daily_read_info.request.begin.dayOfMonth()) + "/" + CtiNumStr(_daily_read_info.request.begin.month()) + ")";
+
+        //  These come back as 0x7ff.. if daily reads are disabled, but also if the request really was out of range
+        //  Ideally, this check would be against an enum or similar rather than a string,
+        //    but unless getAccumulatorData is refactored to provide more than a text description and quality, this will have to do.
+        if( pi_forward.description    == ErrorText_OutOfRange
+            && pi_reverse.description == ErrorText_OutOfRange )
+        {
+            resultString += "\n";
+            resultString += getName() + " / Daily reads might be disabled, check device configuration";
+        }
+
+        _daily_read_info.interest.date = DawnOfTime_Date;  //  reset it - it doesn't match what the MCT has
+
+        status = ErrorInvalidTimestamp;
     }
     else
     {
-        int channel = 1;
-        int month   = DSt->Message[9] & 0x0f;
-        int day     = DSt->Message[8];
+        point_info pi_outage_count = getData(DSt->Message + 6, 2, ValueType_OutageCount);
 
-        setDynamicInfo(CtiTableDynamicPaoInfo::Key_MCT_DailyReadInterestChannel, channel);
+        insertPointDataReport(PulseAccumulatorPointType,
+                              PointOffset_Accumulator_Powerfail,
+                              ReturnMsg,
+                              pi_outage_count,
+                              "Blink Counter",
+                              CtiTime(_daily_read_info.request.begin + 1));  //  add on 24 hours - end of day
 
-        //  These two need to be available to be checked against ErrorText_OutOfRange below
-        point_info pi_forward = getAccumulatorData(DSt->Message + 0, 3, 0); //FIXME : see if we should replace this with getData()
-        point_info pi_reverse = getAccumulatorData(DSt->Message + 3, 3, 0); //FIXME : see if we should replace this with getData()
+        insertPointDataReport(PulseAccumulatorPointType,
+                              PointOffset_PulseAcc_RecentkWhForward,
+                              ReturnMsg,
+                              pi_forward,
+                              "forward active kWh",
+                              CtiTime(_daily_read_info.request.begin + 1), //  add on 24 hours - end of day
+                              TAG_POINT_MUST_ARCHIVE);
 
-        if( channel != _daily_read_info.request.channel )
-        {
-            resultString  = getName() + " / Invalid channel returned by daily read ";
-            resultString += "(" + CtiNumStr(channel) + "), expecting (" + CtiNumStr(_daily_read_info.request.channel) + ")";
+        insertPointDataReport(PulseAccumulatorPointType,
+                              PointOffset_PulseAcc_RecentkWhReverse,
+                              ReturnMsg,
+                              pi_reverse,
+                              "reverse active kWh",
+                              CtiTime(_daily_read_info.request.begin + 1), //  add on 24 hours - end of day
+                              TAG_POINT_MUST_ARCHIVE);
 
-            status = ErrorInvalidChannel;
-        }
-        else if(  day    !=  _daily_read_info.request.begin.dayOfMonth() ||
-                  month  != (_daily_read_info.request.begin.month() - 1) )
-        {
-            resultString  = getName() + " / Invalid day/month returned by daily read ";
-            resultString += "(" + CtiNumStr(day) + "/" + CtiNumStr(month + 1) + ", expecting " + CtiNumStr(_daily_read_info.request.begin.dayOfMonth()) + "/" + CtiNumStr(_daily_read_info.request.begin.month()) + ")";
-
-            //  These come back as 0x7ff.. if daily reads are disabled, but also if the request really was out of range
-            //  Ideally, this check would be against an enum or similar rather than a string,
-            //    but unless getAccumulatorData is refactored to provide more than a text description and quality, this will have to do.
-            if( pi_forward.description    == ErrorText_OutOfRange
-                && pi_reverse.description == ErrorText_OutOfRange )
-            {
-                resultString += "\n";
-                resultString += getName() + " / Daily reads might be disabled, check device configuration";
-            }
-
-            _daily_read_info.interest.date = DawnOfTime_Date;  //  reset it - it doesn't match what the MCT has
-
-            status = ErrorInvalidTimestamp;
-        }
-        else
-        {
-            point_info pi_outage_count = getData(DSt->Message + 6, 2, ValueType_OutageCount);
-
-            insertPointDataReport(PulseAccumulatorPointType,
-                                  PointOffset_Accumulator_Powerfail,
-                                  ReturnMsg,
-                                  pi_outage_count,
-                                  "Blink Counter",
-                                  CtiTime(_daily_read_info.request.begin + 1));  //  add on 24 hours - end of day
-
-            insertPointDataReport(PulseAccumulatorPointType,
-                                  PointOffset_PulseAcc_RecentkWhForward,
-                                  ReturnMsg,
-                                  pi_forward,
-                                  "forward active kWh",
-                                  CtiTime(_daily_read_info.request.begin + 1), //  add on 24 hours - end of day
-                                  TAG_POINT_MUST_ARCHIVE);
-
-            insertPointDataReport(PulseAccumulatorPointType,
-                                  PointOffset_PulseAcc_RecentkWhReverse,
-                                  ReturnMsg,
-                                  pi_reverse,
-                                  "reverse active kWh",
-                                  CtiTime(_daily_read_info.request.begin + 1), //  add on 24 hours - end of day
-                                  TAG_POINT_MUST_ARCHIVE);
-
-            InterlockedExchange(&_daily_read_info.request.in_progress, false);
-        }
+        InterlockedExchange(&_daily_read_info.request.in_progress, false);
     }
 
     //  this is gross
@@ -1746,6 +1863,7 @@ INT Mct440_213xBDevice::decodeGetValueDailyReadRecent(INMESS          *InMessage
         resultString = ReturnMsg->ResultString() + "\n" + resultString;
     }
 
+    ReturnMsg->setUserMessageId(InMessage->Return.UserID);
     ReturnMsg->setResultString(resultString);
 
     retMsgHandler( InMessage->Return.CommandStr, status, ReturnMsg, vgList, retList, expectMore );
@@ -2404,17 +2522,17 @@ INT Mct440_213xBDevice::decodeGetStatusInternal( INMESS *InMessage, CtiTime &Tim
 
     // point offset 40 - Meter alarm (byte 1)
     // 0x01 - 0x40 is not used
-    resultString += (DSt.Message[3] & 0x80)?"Current without voltage\n":"";
+    resultString += (DSt.Message[3] & 0x01)?"Current without voltage\n":"";
 
     // point offset 50 - Meter alarm (byte 0)
-    resultString += (DSt.Message[4] & 0x01)?"Load side voltage detected\n":"";
-    resultString += (DSt.Message[4] & 0x02)?"Low battery\n":"";
-    resultString += (DSt.Message[4] & 0x04)?"Voltage out of limit\n":"";
-    resultString += (DSt.Message[4] & 0x08)?"Metal box cover removal\n":"";
-    resultString += (DSt.Message[4] & 0x10)?"Reverse Energy\n":"";
-    resultString += (DSt.Message[4] & 0x20)?"Terminal block cover removal\n":"";
-    resultString += (DSt.Message[4] & 0x40)?"Internal error\n":"";
-    resultString += (DSt.Message[4] & 0x80)?"Out of voltage\n":"";
+    resultString += (DSt.Message[4] & 0x80)?"Load side voltage detected\n":"";
+    resultString += (DSt.Message[4] & 0x40)?"Low battery\n":"";
+    resultString += (DSt.Message[4] & 0x20)?"Voltage out of limit\n":"";
+    resultString += (DSt.Message[4] & 0x10)?"Metal box cover removal\n":"";
+    resultString += (DSt.Message[4] & 0x08)?"Reverse Energy\n":"";
+    resultString += (DSt.Message[4] & 0x04)?"Terminal block cover removal\n":"";
+    resultString += (DSt.Message[4] & 0x02)?"Internal error\n":"";
+    resultString += (DSt.Message[4] & 0x01)?"Out of voltage\n":"";
 
     ReturnMsg->setResultString(resultString);
 
@@ -2738,7 +2856,7 @@ INT Mct440_213xBDevice::decodeGetConfigTOU(INMESS          *InMessage,
 
             if( switch1_5 )
             {
-                resultString += "- end of switch 1-5 - \n\n";
+                resultString += "\n";
             }
             else
             {
@@ -2999,7 +3117,8 @@ int Mct440_213xBDevice::decodeGetConfigHoliday(INMESS          *InMessage,
         result += "Holiday " + ss.str() + ": " + (holiday.isValid()?holiday.asString(CtiTime::Gmt, CtiTime::OmitTimezone) + " GMT":"(invalid)") + "\n";
     }
 
-    ReturnMsg->setResultString( result );
+    ReturnMsg->setUserMessageId(InMessage->Return.UserID);
+    ReturnMsg->setResultString(result);
 
     retMsgHandler( InMessage->Return.CommandStr, status, ReturnMsg, vgList, retList );
 
@@ -3080,6 +3199,175 @@ INT Mct440_213xBDevice::decodeGetStatusFreeze(INMESS          *InMessage,
 
      return status;
 }
+
+
+/*
+*********************************************************************************************************
+*                                    decodeGetConfigIntervals()
+*
+* Description :
+*
+* Argument(s) :
+*
+* Return(s)   :
+*
+* Caller(s)   :
+*
+* Note(s)     :
+*********************************************************************************************************
+*/
+INT Mct440_213xBDevice::decodeGetConfigIntervals(INMESS          *InMessage,
+                                                 CtiTime         &TimeNow,
+                                                 CtiMessageList  &vgList,
+                                                 CtiMessageList  &retList,
+                                                 OutMessageList  &outList)
+{
+    INT status = NORMAL;
+
+    INT ErrReturn  = InMessage->EventCode & 0x3fff;
+    DSTRUCT *DSt   = &InMessage->Buffer.DSt;
+
+    CtiReturnMsg *ReturnMsg = NULL;    // Message sent to VanGogh, inherits from Multi
+    string resultString;
+
+    resultString  = getName() + " / Demand Interval:       " + CtiNumStr(DSt->Message[0]) + string(" minutes\n");
+    resultString += getName() + " / Load Profile Interval: " + CtiNumStr(DSt->Message[1]) + string(" minutes\n");
+
+    if((ReturnMsg = CTIDBG_new CtiReturnMsg(getID(), InMessage->Return.CommandStr)) == NULL)
+    {
+        CtiLockGuard<CtiLogger> doubt_guard(dout);
+        dout << CtiTime() << " Could NOT allocate memory " << __FILE__ << " (" << __LINE__ << ") " << endl;
+
+        return MEMORY;
+    }
+
+    ReturnMsg->setUserMessageId(InMessage->Return.UserID);
+    ReturnMsg->setResultString(resultString);
+
+    retMsgHandler( InMessage->Return.CommandStr, status, ReturnMsg, vgList, retList );
+
+    return status;
+}
+
+
+/*
+*********************************************************************************************************
+*                                        executeControl()
+*
+* Description :
+*
+* Argument(s) :
+*
+* Return(s)   :
+*
+* Caller(s)   :
+*
+* Note(s)     :
+*********************************************************************************************************
+*/
+INT Mct440_213xBDevice::executeControl(CtiRequestMsg     *pReq,
+                                       CtiCommandParser  &parse,
+                                       OUTMESS          *&OutMessage,
+                                       CtiMessageList    &vgList,
+                                       CtiMessageList    &retList,
+                                       OutMessageList    &outList)
+{
+    INT nRet = NoMethod;
+
+
+    // Load all the other stuff that is needed
+    OutMessage->DeviceID  = getID();
+    OutMessage->TargetID  = getID();
+    OutMessage->Port      = getPortID();
+    OutMessage->Remote    = getAddress();
+    OutMessage->TimeOut   = 2;
+    OutMessage->Retry     = 2;
+
+    if( parse.isKeyValid("set_tou_holiday_rate") )
+    {
+        OutMessage->Sequence = EmetconProtocol::Control_SetTOUHolidayRate;
+        if( getOperation(OutMessage->Sequence, OutMessage->Buffer.BSt) )
+        {
+            nRet = NoError;
+        }
+
+    }
+    else if( parse.isKeyValid("clear_tou_holiday_rate") )
+    {
+        OutMessage->Sequence = EmetconProtocol::Control_ClearTOUHolidayRate;
+        if( getOperation(OutMessage->Sequence, OutMessage->Buffer.BSt) )
+        {
+            nRet = NoError;
+        }
+    }
+    else
+    {
+        nRet = Inherited::executeControl(pReq, parse, OutMessage, vgList, retList, outList);
+    }
+
+    return nRet;
+}
+
+
+/*
+*********************************************************************************************************
+*                                       decodeGetConfigAlarmMask()
+*
+* Description :
+*
+* Argument(s) :
+*
+* Return(s)   :
+*
+* Caller(s)   :
+*
+* Note(s)     :
+*********************************************************************************************************
+*/
+int Mct440_213xBDevice::decodeGetConfigAlarmMask(INMESS          *InMessage,
+                                                 CtiTime         &TimeNow,
+                                                 CtiMessageList  &vgList,
+                                                 CtiMessageList  &retList,
+                                                 OutMessageList  &outList)
+{
+    INT status = NORMAL;
+
+    INT ErrReturn  = InMessage->EventCode & 0x3fff;
+    DSTRUCT *DSt   = &InMessage->Buffer.DSt;
+
+    CtiReturnMsg *ReturnMsg = NULL;    // Message sent to VanGogh, inherits from Multi
+    string resultString;
+
+    resultString  = getName() + " / Event Mask:\n";
+    resultString += string("Power Fail: ")                   + ((DSt->Message[1] & 0x01) ? "Enable" : "Disable") + "\n\n";
+
+    resultString += getName() + " / Meter Alarm Mask:\n";
+    resultString += string("Current Without Voltage: ")      + ((DSt->Message[3] & 0x01) ? "Enable" : "Disable") + "\n";
+    resultString += string("Load side voltage detected: ")   + ((DSt->Message[4] & 0x80) ? "Enable" : "Disable") + "\n";
+    resultString += string("Low Battery: ")                  + ((DSt->Message[4] & 0x40) ? "Enable" : "Disable") + "\n";
+    resultString += string("Voltage Out of Limits: ")        + ((DSt->Message[4] & 0x20) ? "Enable" : "Disable") + "\n";
+    resultString += string("Metal Box Cover Removal: ")      + ((DSt->Message[4] & 0x10) ? "Enable" : "Disable") + "\n";
+    resultString += string("Reverse Energy: ")               + ((DSt->Message[4] & 0x08) ? "Enable" : "Disable") + "\n";
+    resultString += string("Terminal Block Cover Removal: ") + ((DSt->Message[4] & 0x04) ? "Enable" : "Disable") + "\n";
+    resultString += string("Internal Error: ")               + ((DSt->Message[4] & 0x02) ? "Enable" : "Disable") + "\n";
+    resultString += string("Out of voltage: ")               + ((DSt->Message[4] & 0x01) ? "Enable" : "Disable") + "\n\n";
+
+    if((ReturnMsg = CTIDBG_new CtiReturnMsg(getID(), InMessage->Return.CommandStr)) == NULL)
+    {
+        CtiLockGuard<CtiLogger> doubt_guard(dout);
+        dout << CtiTime() << " Could NOT allocate memory " << __FILE__ << " (" << __LINE__ << ") " << endl;
+
+        return MEMORY;
+    }
+
+    ReturnMsg->setUserMessageId(InMessage->Return.UserID);
+    ReturnMsg->setResultString(resultString);
+
+    retMsgHandler( InMessage->Return.CommandStr, status, ReturnMsg, vgList, retList );
+
+    return status;
+}
+
 
 }
 }
