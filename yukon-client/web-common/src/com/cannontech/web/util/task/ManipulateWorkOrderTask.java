@@ -30,8 +30,8 @@ import com.cannontech.stars.util.EventUtils;
 import com.cannontech.stars.util.ServletUtils;
 import com.cannontech.stars.util.task.TimeConsumingTask;
 import com.cannontech.stars.web.bean.ManipulationBean;
-import com.cannontech.stars.web.bean.WorkOrderBean;
 import com.cannontech.stars.web.util.WorkOrderManagerUtil;
+import com.cannontech.web.bean.WorkOrderBean;
 
 public class ManipulateWorkOrderTask extends TimeConsumingTask {
 	

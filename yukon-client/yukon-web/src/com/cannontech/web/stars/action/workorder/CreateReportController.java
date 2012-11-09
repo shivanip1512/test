@@ -19,7 +19,7 @@ import com.cannontech.analysis.tablemodel.WorkOrderModel;
 import com.cannontech.stars.database.cache.StarsDatabaseCache;
 import com.cannontech.stars.database.data.lite.LiteStarsEnergyCompany;
 import com.cannontech.stars.web.StarsYukonUser;
-import com.cannontech.stars.web.bean.WorkOrderBean;
+import com.cannontech.web.bean.WorkOrderBean;
 import com.cannontech.web.stars.action.StarsWorkorderActionController;
 
 public class CreateReportController extends StarsWorkorderActionController {

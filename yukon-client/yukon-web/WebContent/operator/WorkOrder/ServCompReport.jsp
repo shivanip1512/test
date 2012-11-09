@@ -3,7 +3,7 @@
 <meta http-equiv="X-UA-Compatible" content="IE=EDGE" />
 <%@ include file="../Consumer/include/StarsHeader.jsp" %>
 <%@ taglib uri="http://java.sun.com/jsp/jstl/core" prefix="c" %>
-<%@ page import="com.cannontech.stars.web.bean.WorkOrderBean" %>
+<%@ page import="com.cannontech.web.bean.WorkOrderBean" %>
 <%@ page import="com.cannontech.stars.util.FilterWrapper" %>
 <%@ page import="com.cannontech.common.constants.YukonListEntryTypes" %>
 <%@ page import="com.cannontech.common.constants.YukonSelectionList" %>
@@ -12,7 +12,7 @@
 <%@ page import="com.cannontech.stars.web.bean.FilterBean" %>
 <%@ page import="java.util.ArrayList" %>
 
-<jsp:useBean id="workOrderBean" class="com.cannontech.stars.web.bean.WorkOrderBean" scope="session"/>
+<jsp:useBean id="workOrderBean" class="com.cannontech.web.bean.WorkOrderBean" scope="session"/>
 <%
     com.cannontech.stars.database.db.report.ServiceCompany serviceCompany = (com.cannontech.stars.database.db.report.ServiceCompany) session.getAttribute("ServiceCompany");
 	if(serviceCompany == null)

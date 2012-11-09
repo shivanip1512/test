@@ -12,8 +12,8 @@ import org.springframework.web.bind.ServletRequestUtils;
 import com.cannontech.stars.database.data.lite.LiteStarsEnergyCompany;
 import com.cannontech.stars.util.FilterWrapper;
 import com.cannontech.stars.web.StarsYukonUser;
-import com.cannontech.stars.web.bean.WorkOrderBean;
 import com.cannontech.util.ServletUtil;
+import com.cannontech.web.bean.WorkOrderBean;
 import com.cannontech.web.stars.action.StarsWorkorderActionController;
 
 public class UpdateFiltersController extends StarsWorkorderActionController {

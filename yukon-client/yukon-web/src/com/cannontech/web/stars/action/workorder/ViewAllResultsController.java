@@ -6,7 +6,7 @@ import javax.servlet.http.HttpSession;
 
 import com.cannontech.stars.database.data.lite.LiteStarsEnergyCompany;
 import com.cannontech.stars.web.StarsYukonUser;
-import com.cannontech.stars.web.bean.WorkOrderBean;
+import com.cannontech.web.bean.WorkOrderBean;
 import com.cannontech.web.stars.action.StarsWorkorderActionController;
 
 public class ViewAllResultsController extends StarsWorkorderActionController {

@@ -14,8 +14,8 @@ import com.cannontech.stars.util.ServletUtils;
 import com.cannontech.stars.util.task.TimeConsumingTask;
 import com.cannontech.stars.web.StarsYukonUser;
 import com.cannontech.stars.web.bean.ManipulationBean;
-import com.cannontech.stars.web.bean.WorkOrderBean;
 import com.cannontech.util.ServletUtil;
+import com.cannontech.web.bean.WorkOrderBean;
 import com.cannontech.web.stars.action.StarsWorkorderActionController;
 import com.cannontech.web.util.task.ManipulateWorkOrderTask;
 
