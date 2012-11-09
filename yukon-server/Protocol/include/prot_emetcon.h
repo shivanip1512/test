@@ -144,6 +144,7 @@ public:
         GetConfig_DailyReadInterest,
         GetConfig_WaterMeterReadInterval,
         GetConfig_PhaseLossThreshold,
+        GetConfig_AlarmMask,
 
         // PutConfig commands
         PutConfig_Install,
@@ -208,6 +209,9 @@ public:
         Control_Connect,
         Control_Disconnect,
         Control_Latch,
+        Control_SetTOUHolidayRate,                              /* Set TOU Holiday Rate Active                          */
+        Control_ClearTOUHolidayRate,                            /* Clear TOU Holiday Rate and Resort to Normal Rate...  */
+                                                                /* ... That Would Be Active For This Day.               */
 
         Command_Loop,
 
