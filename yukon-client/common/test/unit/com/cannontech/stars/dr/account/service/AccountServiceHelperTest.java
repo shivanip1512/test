@@ -1,4 +1,4 @@
-package com.cannontech.stars.dr.account;
+package com.cannontech.stars.dr.account.service;
 
 import junit.framework.Assert;
 
