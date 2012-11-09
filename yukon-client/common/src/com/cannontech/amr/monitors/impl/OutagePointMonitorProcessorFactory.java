@@ -55,7 +55,7 @@ public class OutagePointMonitorProcessorFactory extends MonitorProcessorFactoryB
                 int pointId = richPointData.getPointValue().getId();
                 Date currentTimeStamp = richPointData.getPointValue().getPointDataTimeStamp();
                 // get the one reading prior to this stopDate is exclusive, so we simply pass the current reading's time
-                List<PointValueHolder> previousPointDatas = rawPointHistoryDao.getLimitedPointData(pointId, null, currentTimeStamp, Clusivity.INCLUSIVE_EXCLUSIVE, Order.REVERSE, 1);
+                List<PointValueHolder> previousPointDatas = rawPointHistoryDao.getLimitedPointData(pointId, null, currentTimeStamp, Clusivity.INCLUSIVE_EXCLUSIVE, false, Order.REVERSE, 1);
                 if (previousPointDatas.isEmpty()) {
                     return handleNoPriorReading(richPointData.getPointValue());
                 }
@@ -84,7 +84,7 @@ public class OutagePointMonitorProcessorFactory extends MonitorProcessorFactoryB
                 }
 
                 // go back to the database
-                List<PointValueHolder> priorPointDatas = rawPointHistoryDao.getLimitedPointData(pointId, null, latestTimeOfPriorReading.toDate(), Clusivity.INCLUSIVE_EXCLUSIVE, Order.REVERSE, 1);
+                List<PointValueHolder> priorPointDatas = rawPointHistoryDao.getLimitedPointData(pointId, null, latestTimeOfPriorReading.toDate(), Clusivity.INCLUSIVE_EXCLUSIVE, false, Order.REVERSE, 1);
                 if (priorPointDatas.isEmpty()) {
                     return handleNoPriorReading(richPointData.getPointValue());
                 }

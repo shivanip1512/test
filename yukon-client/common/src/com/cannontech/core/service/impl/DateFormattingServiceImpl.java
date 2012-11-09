@@ -11,6 +11,7 @@ import java.util.Map;
 import org.apache.commons.lang.Validate;
 import org.apache.commons.lang.time.DateUtils;
 import org.joda.time.DateTimeZone;
+import org.joda.time.Instant;
 import org.joda.time.LocalDate;
 import org.joda.time.LocalTime;
 import org.joda.time.Period;
@@ -98,7 +99,18 @@ public class DateFormattingServiceImpl implements DateFormattingService {
         
         return formatter;
     }
+    
+    @Override
+    public synchronized Instant flexibleInstantParser(String dateStr,
+                                                DateOnlyMode mode, YukonUserContext userContext) throws ParseException {
+        
+        String parserName = messageSourceResolver.getMessageSourceAccessor(userContext).getMessage("yukon.common.dateFormatting.parserImplementation");
+        FlexibleDateParser flexibleDateParser = dateParserLookup.get(parserName);
+        Date result = flexibleDateParser.parseDate(dateStr, mode, userContext.getLocale(), userContext.getTimeZone());
+        return new Instant(result);
+    }
 
+    @Override
     public synchronized Date flexibleDateParser(String dateStr,
             DateOnlyMode mode, YukonUserContext userContext) throws ParseException {
 

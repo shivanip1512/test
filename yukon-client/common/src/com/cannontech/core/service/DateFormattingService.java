@@ -5,6 +5,7 @@ import java.text.ParseException;
 import java.util.Calendar;
 import java.util.Date;
 
+import org.joda.time.Instant;
 import org.joda.time.LocalDate;
 import org.joda.time.LocalTime;
 import org.joda.time.format.DateTimeFormatter;
@@ -98,6 +99,9 @@ public interface DateFormattingService {
      * @return Joda formatter
      */
     public DateTimeFormatter getDateTimeFormatter(DateFormatEnum type, YukonUserContext userContext);
+    
+    public Instant flexibleInstantParser(String dateStr, DateOnlyMode mode,
+                                         YukonUserContext userContext) throws ParseException;
 
     public Date flexibleDateParser(String dateStr, DateOnlyMode mode,
                                    YukonUserContext userContext) throws ParseException;

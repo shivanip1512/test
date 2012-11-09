@@ -52,4 +52,6 @@
   <bean id="tableToDBChangeMappingServiceImpl" class="com.cannontech.core.service.impl.TableToDBChangeMappingServiceImpl"/>
 
   <bean class="com.cannontech.common.token.service.impl.TokenServiceImpl"/>
+
+  <bean class="com.cannontech.core.service.impl.PaoPointValueServiceImpl"/>
 </beans>

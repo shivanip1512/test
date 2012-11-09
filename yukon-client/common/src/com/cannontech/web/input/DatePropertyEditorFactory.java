@@ -79,12 +79,19 @@ public class DatePropertyEditorFactory {
     
     
     private class InstantPropertyEditor extends PropertyEditorSupport {
+        private DateOnlyMode dateOnlyMode;
         private DateFormatEnum dateFormat;
         private YukonUserContext userContext;
         private BlankMode blankMode;
 
         private InstantPropertyEditor(DateFormatEnum dateFormat, YukonUserContext userContext,
                                       BlankMode blankMode) {
+            this(dateFormat, userContext, blankMode, DateOnlyMode.START_OF_DAY);
+        }
+        
+        private InstantPropertyEditor(DateFormatEnum dateFormat, YukonUserContext userContext,
+                                      BlankMode blankMode, DateOnlyMode dateOnlyMode) {
+            this.dateOnlyMode = dateOnlyMode;
             this.dateFormat = dateFormat;
             this.userContext = userContext;
             this.blankMode = blankMode;
@@ -107,6 +114,7 @@ public class DatePropertyEditorFactory {
 
             try {
                 Date date = dateFormattingService.flexibleDateParser(dateStr,
+                                                                     dateOnlyMode,
                                                                      userContext);
                 setValue(new Instant(date));
             } catch (ParseException exception) {
@@ -269,6 +277,11 @@ public class DatePropertyEditorFactory {
                                                    BlankMode blankMode) {
       return new InstantPropertyEditor(dateFormat, userContext, blankMode);
    }
+
+    public PropertyEditor getInstantPropertyEditor(DateFormatEnum dateFormat, YukonUserContext userContext,
+                                                   BlankMode blankMode, DateOnlyMode dateOnlyMode) {
+        return new InstantPropertyEditor(dateFormat, userContext, blankMode, dateOnlyMode);
+    }
 
     public void setupLocalDatePropertyEditor(DataBinder dataBinder, YukonUserContext userContext, 
                                              BlankMode blankMode) {

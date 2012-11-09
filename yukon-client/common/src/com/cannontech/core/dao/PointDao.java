@@ -95,6 +95,12 @@ public interface PointDao {
      */
     public Map<PaoPointIdentifier, PointInfo>
         getPointInfoById(Iterable<PaoPointIdentifier> paoPointIdentifiers);
+    
+    /**
+     * Look up point information for the given PointIds.  This method attempts to
+     * return as few instances of PointInfo as possible.
+     */
+    public List<PointInfo> getPointInfoByPointIds(Iterable<Integer> pointIds);
 
     public Map<PaoIdentifier, PointInfo> getPointInfoByPointName(Iterable<PaoIdentifier> paoIdentifiers,
                                                                  String pointName);

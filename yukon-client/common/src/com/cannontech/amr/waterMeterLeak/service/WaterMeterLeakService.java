@@ -13,12 +13,14 @@ public interface WaterMeterLeakService {
     List<WaterMeterLeak> getWaterMeterLeaks(Set<SimpleDevice> devices, Instant fromDate,
                                             Instant toDate, boolean includeDisabledPaos,
                                             double threshold,
-                                            YukonUserContext userContext);
+                                            YukonUserContext userContext,
+                                            boolean useOldMethod);
 
     List<WaterMeterLeak> getWaterMeterLeakIntervalData(Set<SimpleDevice> devices,
                                                        Instant fromDate,
                                                        Instant toDate,
                                                        boolean includeDisabledPaos,
                                                        double threshold,
-                                                       YukonUserContext userContext);
+                                                       YukonUserContext userContext,
+                                                       boolean useOldMethod);
 }

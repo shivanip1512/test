@@ -119,16 +119,26 @@ public class AttributeServiceImpl implements AttributeService {
 
     @Override
     public List<PaoMultiPointIdentifier> findPaoMultiPointIdentifiersForAttributes(Iterable<? extends YukonPao> devices, Set<? extends Attribute> attributes) {
-        return getPaoMultiPointIdentifiersForAttributes(devices,attributes,false);
+        return getPaoMultiPointIdentifiersForAttributesHelper(devices,attributes,false,true);
+    }
+
+    @Override
+    public List<PaoMultiPointIdentifier> findPaoMultiPointIdentifiersForAttributes(Iterable<? extends YukonPao> devices, Set<? extends Attribute> attributes, boolean throwException, boolean logWarning) {
+        return getPaoMultiPointIdentifiersForAttributesHelper(devices,attributes,throwException,logWarning);
     }
     
     @Override
     public List<PaoMultiPointIdentifier> getPaoMultiPointIdentifiersForAttributes(Iterable<? extends YukonPao> devices, Set<? extends Attribute> attributes) {
-        return  getPaoMultiPointIdentifiersForAttributes(devices,attributes, true);
+        return  getPaoMultiPointIdentifiersForAttributesHelper(devices,attributes,true,true);
     }
     
-    private  List<PaoMultiPointIdentifier> getPaoMultiPointIdentifiersForAttributes(Iterable<? extends YukonPao> devices,
-                                                               Set<? extends Attribute> attributes, boolean throwException){
+    @Override
+    public List<PaoMultiPointIdentifier> getPaoMultiPointIdentifiersForAttributes(Iterable<? extends YukonPao> devices, Set<? extends Attribute> attributes, boolean throwException, boolean logWarning) {
+        return  getPaoMultiPointIdentifiersForAttributesHelper(devices,attributes,throwException,logWarning);
+    }
+    
+    private  List<PaoMultiPointIdentifier> getPaoMultiPointIdentifiersForAttributesHelper(Iterable<? extends YukonPao> devices,
+                                                               Set<? extends Attribute> attributes, boolean throwException, boolean logWarning){
         List<PaoMultiPointIdentifier> devicesAndPoints = 
                 Lists.newArrayListWithCapacity(IterableUtils.guessSize(devices));
             for (YukonPao pao : devices) {
@@ -138,7 +148,7 @@ public class AttributeServiceImpl implements AttributeService {
                         PaoPointIdentifier paoPointIdentifier = getPaoPointIdentifierForAttribute(pao, attribute);
                         points.add(paoPointIdentifier);
                     } catch (IllegalUseOfAttribute e) {
-                        LogHelper.warn(log, "unable to look up values for %s on %s: %s", attribute, pao, e.toString());
+                        if (logWarning) LogHelper.warn(log, "unable to look up values for %s on %s: %s", attribute, pao, e.toString());
                         if(throwException){
                             throw e;
                         }else{
@@ -151,7 +161,6 @@ public class AttributeServiceImpl implements AttributeService {
                 }
             }
             return devicesAndPoints;
-        
     }
     
     @Override
@@ -299,7 +308,7 @@ public class AttributeServiceImpl implements AttributeService {
     }
     
     @Override
-    public BuiltInAttribute findAttributeForPoint(PaoTypePointIdentifier paoTypePointIdentifier, Set<BuiltInAttribute> possibleMatches) {
+    public BuiltInAttribute findAttributeForPoint(PaoTypePointIdentifier paoTypePointIdentifier, Set<? extends Attribute> possibleMatches) {
         
         BuiltInAttribute attribute = paoDefinitionDao.findAttributeForPaoTypeAndPoint(paoTypePointIdentifier); 
         

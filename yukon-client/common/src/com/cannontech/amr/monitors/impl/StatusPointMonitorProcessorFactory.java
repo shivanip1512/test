@@ -214,7 +214,7 @@ public class StatusPointMonitorProcessorFactory extends MonitorProcessorFactoryB
     private PointValueHolder getPreviousValueForPoint(PointValueHolder pointValueQualityHolder) {
         Date nextTimeStamp = pointValueQualityHolder.getPointDataTimeStamp();
         int pointId = pointValueQualityHolder.getId();
-        List<PointValueHolder> pointPrevValueList = rawPointHistoryDao.getLimitedPointData(pointId, null, nextTimeStamp, Clusivity.INCLUSIVE_EXCLUSIVE, Order.REVERSE, 1);
+        List<PointValueHolder> pointPrevValueList = rawPointHistoryDao.getLimitedPointData(pointId, null, nextTimeStamp, Clusivity.INCLUSIVE_EXCLUSIVE, false, Order.REVERSE, 1);
         
         if (pointPrevValueList.size() > 0) { 
             PointValueHolder pointValuePrev = pointPrevValueList.get(0);

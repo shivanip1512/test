@@ -16,7 +16,9 @@ import org.joda.time.format.ISOPeriodFormat;
 
 import com.cannontech.common.pao.PaoIdentifier;
 import com.cannontech.common.pao.PaoType;
+import com.cannontech.common.pao.definition.model.PointIdentifier;
 import com.cannontech.common.util.DatabaseRepresentationSource;
+import com.cannontech.database.data.point.PointType;
 import com.google.common.base.Function;
 import com.google.common.collect.ImmutableMap;
 import com.google.common.collect.ImmutableMap.Builder;
@@ -110,6 +112,13 @@ public class YukonResultSet {
         return new PaoIdentifier(paoId, paoType);
     }
     
+    public PointIdentifier getPointIdentifier(String pointTypeColumnLabel, String pointOffsetColumnLabel)
+            throws SQLException {
+        PointType pointType = getEnum(pointTypeColumnLabel, PointType.class);
+        int offset = getInt(pointOffsetColumnLabel);
+        return new PointIdentifier(pointType, offset);
+    }
+
     public Instant getInstant(String columnLabel) throws SQLException {
         Timestamp timestamp = rs.getTimestamp(columnLabel);
         if (timestamp == null) {

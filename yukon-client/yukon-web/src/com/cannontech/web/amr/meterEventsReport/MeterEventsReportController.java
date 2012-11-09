@@ -1,10 +1,6 @@
 package com.cannontech.web.amr.meterEventsReport;
 
-import java.io.BufferedWriter;
 import java.io.IOException;
-import java.io.OutputStream;
-import java.io.OutputStreamWriter;
-import java.io.Writer;
 import java.util.Collections;
 import java.util.Comparator;
 import java.util.Date;
@@ -22,6 +18,7 @@ import net.sf.json.JSONObject;
 
 import org.apache.commons.lang.StringUtils;
 import org.joda.time.DateTime;
+import org.joda.time.LocalDate;
 import org.joda.time.format.DateTimeFormat;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.MessageSourceResolvable;
@@ -41,6 +38,7 @@ import com.cannontech.amr.meter.dao.MeterDao;
 import com.cannontech.amr.meter.model.Meter;
 import com.cannontech.amr.meter.service.impl.MeterEventLookupService;
 import com.cannontech.amr.meter.service.impl.MeterEventStatusTypeGroupings;
+import com.cannontech.amr.paoPointValue.model.PaoPointValue;
 import com.cannontech.common.bulk.collection.device.DeviceCollection;
 import com.cannontech.common.bulk.collection.device.DeviceCollectionCreationException;
 import com.cannontech.common.bulk.collection.device.DeviceCollectionFactory;
@@ -57,18 +55,21 @@ import com.cannontech.core.dao.RawPointHistoryDao;
 import com.cannontech.core.dao.RawPointHistoryDao.Clusivity;
 import com.cannontech.core.dao.RawPointHistoryDao.Order;
 import com.cannontech.core.dynamic.PointValueQualityHolder;
+import com.cannontech.core.service.DateFormattingService;
+import com.cannontech.core.service.DateFormattingService.DateFormatEnum;
+import com.cannontech.core.service.PaoPointValueService;
 import com.cannontech.core.service.PointFormattingService;
 import com.cannontech.core.service.PointFormattingService.Format;
+import com.cannontech.database.db.point.stategroup.EventStatus;
+import com.cannontech.database.db.point.stategroup.OutageStatus;
 import com.cannontech.i18n.YukonUserContextMessageSourceResolver;
-import com.cannontech.tools.csv.CSVWriter;
 import com.cannontech.user.YukonUserContext;
-import com.cannontech.util.ServletUtil;
 import com.cannontech.web.amr.meterEventsReport.model.MeterEventsReportFilterBackingBean;
-import com.cannontech.web.amr.meterEventsReport.model.MeterReportEvent;
 import com.cannontech.web.common.flashScope.FlashScope;
 import com.cannontech.web.common.flashScope.FlashScopeMessageType;
 import com.cannontech.web.input.DatePropertyEditorFactory;
 import com.cannontech.web.input.DatePropertyEditorFactory.BlankMode;
+import com.cannontech.web.util.WebFileUtils;
 import com.google.common.base.Function;
 import com.google.common.collect.ImmutableMap;
 import com.google.common.collect.ImmutableMap.Builder;
@@ -84,6 +85,7 @@ public class MeterEventsReportController {
 	
 	@Autowired private DatePropertyEditorFactory datePropertyEditorFactory;
 	@Autowired private RawPointHistoryDao rawPointHistoryDao;
+	@Autowired private PaoPointValueService paoPointValueService;
 	@Autowired private PointFormattingService pointFormattingService;
 	@Autowired private YukonUserContextMessageSourceResolver messageSourceResolver;
 	@Autowired private DeviceCollectionFactory deviceCollectionFactory;
@@ -91,14 +93,18 @@ public class MeterEventsReportController {
 	@Autowired private PointDao pointDao;
 	@Autowired private MeterEventLookupService meterEventLookupService;
 	@Autowired private DeviceGroupCollectionHelper deviceGroupCollectionHelper;
+	@Autowired private DateFormattingService dateFormattingService;
 	
 	private final static String reportJspPath = "meterEventsReport/report.jsp";
 	private final static String baseKey = "yukon.web.modules.amr.meterEventsReport.report";
-	private Map<String, Comparator<MeterReportEvent>> sorters;
+	private Map<String, Comparator<PaoPointValue>> sorters;
+
+	private final static Set<String> NON_ABNORMAL_VALUES = Sets.newHashSet(OutageStatus.GOOD.name().toLowerCase(),
+	                                                                       EventStatus.CLEARED.name().toLowerCase());
 
     @PostConstruct
     public void initialize() {
-        Builder<String, Comparator<MeterReportEvent>> builder = ImmutableMap.builder();
+        Builder<String, Comparator<PaoPointValue>> builder = ImmutableMap.builder();
         builder.put("NAME", getMeterNameComparator());
         builder.put("METER_NUMBER", getMeterNumberComparator());
         builder.put("TYPE", getDeviceTypeComparator());
@@ -205,7 +211,7 @@ public class MeterEventsReportController {
         headerRow[4] = messageSourceAccessor.getMessage("yukon.web.modules.amr.meterEventsReport.report.tableHeader.value.linkText");
         
         //data rows
-        List<MeterReportEvent> events = getReportEvents(backingBean, userContext);
+        List<PaoPointValue> events = getReportEvents(backingBean, userContext); // TEMPORARY - USE THE OLD METHOD FOR VERIFICATION (CSV ONLY)
         if (backingBean.getSort() != null) {
             if (backingBean.getDescending()) {
                 Collections.sort(events, Collections.reverseOrder(sorters.get(backingBean.getSort())));
@@ -217,7 +223,7 @@ public class MeterEventsReportController {
         }
         
         List<String[]> dataRows = Lists.newArrayList();
-        for(MeterReportEvent event : events) {
+        for(PaoPointValue event : events) {
             String[] dataRow = new String[5];
             dataRow[0] = event.getMeter().getName();
             dataRow[1] = event.getMeter().getMeterNumber();
@@ -233,23 +239,8 @@ public class MeterEventsReportController {
             dataRows.add(dataRow);
         }
         
-        //set up output for CSV
-        response.setContentType("text/csv");
-        response.setHeader("Content-Type", "application/force-download");
-        String fileName = "MeterEvents.csv";
-        fileName = ServletUtil.makeWindowsSafeFileName(fileName);
-        response.setHeader("Content-Disposition", "attachment; filename=\"" + fileName);
-        OutputStream outputStream = response.getOutputStream();
-        
-        //write out the file
-        Writer writer = new BufferedWriter(new OutputStreamWriter(outputStream));
-        CSVWriter csvWriter = new CSVWriter(writer);
-        
-        csvWriter.writeNext(headerRow);
-        for (String[] line : dataRows) {
-            csvWriter.writeNext(line);
-        }
-        csvWriter.close();
+        String dateStr = dateFormattingService.format(new LocalDate(userContext.getJodaTimeZone()), DateFormatEnum.DATE, userContext);
+        WebFileUtils.writeToCSV(response, headerRow, dataRows, "MeterEvents_" + dateStr + ".csv");
         
         return null;
     }
@@ -288,11 +279,18 @@ public class MeterEventsReportController {
     private void setupReportFromFilter(MeterEventsReportFilterBackingBean backingBean,
                                      YukonUserContext userContext, ModelMap model) {
         
-        List<MeterReportEvent> events = getReportEvents(backingBean, userContext);
+        List<PaoPointValue> events = paoPointValueService.getPaoPointValuesForMeters(Sets.newHashSet(backingBean.getDeviceCollection().getDeviceList()),
+                                                                                     backingBean.getEnabledEventTypes(),
+                                                                                     backingBean.getFromInstant(),
+                                                                                     backingBean.getToInstant(),
+                                                                                     backingBean.isOnlyLatestEvent() ? 1 : null,
+                                                                                     backingBean.isIncludeDisabledPaos(),
+                                                                                     backingBean.isOnlyAbnormalEvents() ? NON_ABNORMAL_VALUES : null,
+                                                                                     userContext);
         
-        for (MeterReportEvent meterReportEvent : events) {
-            String valueString = pointFormattingService.getValueString(meterReportEvent.getPointValueHolder(), Format.VALUE, userContext);
-            meterReportEvent.setFormattedValue(valueString);
+        for (PaoPointValue paoPointValue : events) {
+            String valueString = pointFormattingService.getValueString(paoPointValue.getPointValueHolder(), Format.VALUE, userContext);
+            paoPointValue.setFormattedValue(valueString);
         }
 
         if (backingBean.getSort() != null) {
@@ -308,7 +306,7 @@ public class MeterEventsReportController {
         DeviceCollection collectionFromReportResults = getDeviceCollectionFromReportResults(events, userContext);
         model.addAttribute("collectionFromReportResults", collectionFromReportResults);
 
-        SearchResult<MeterReportEvent> filterResult = new SearchResult<MeterReportEvent>();
+        SearchResult<PaoPointValue> filterResult = new SearchResult<PaoPointValue>();
         filterResult.setBounds(backingBean.getStartIndex(),
                                backingBean.getItemsPerPage(),
                                events.size());
@@ -324,9 +322,9 @@ public class MeterEventsReportController {
         model.addAllAttributes(backingBean.getDeviceCollection().getCollectionParameters());
     }
     
-    private DeviceCollection getDeviceCollectionFromReportResults(List<MeterReportEvent> events, YukonUserContext userContext) {
+    private DeviceCollection getDeviceCollectionFromReportResults(List<PaoPointValue> events, YukonUserContext userContext) {
         Set<Meter> meters = Sets.newHashSet();
-        for (MeterReportEvent reportEvent : events) {
+        for (PaoPointValue reportEvent : events) {
             meters.add(reportEvent.getMeter());
         }
 
@@ -368,12 +366,12 @@ public class MeterEventsReportController {
         model.addAttribute("meteringEvents", getJSONArray(MeterEventStatusTypeGroupings.getMetering()));
     }
     
-    private List<MeterReportEvent> getReportEvents(MeterEventsReportFilterBackingBean backingBean, YukonUserContext userContext) {
+    private List<PaoPointValue> getReportEvents(MeterEventsReportFilterBackingBean backingBean, YukonUserContext userContext) {
         
         List<SimpleDevice> deviceList = backingBean.getDeviceCollection().getDeviceList();
         List<Meter> meters = meterDao.getMetersForYukonPaos(deviceList);
         
-        List<MeterReportEvent> events = Lists.newArrayList();
+        List<PaoPointValue> events = Lists.newArrayList();
         if (CollectionUtils.isEmpty(deviceList)) {
             return events;
         }
@@ -409,16 +407,16 @@ public class MeterEventsReportController {
                     // StateGroup: "Outage Status" has states "good", "questionable", and "bad"
                     if ("cleared".equalsIgnoreCase(valueString) || "good".equalsIgnoreCase(valueString)) continue;
                 }
-                MeterReportEvent meterReportEvent = new MeterReportEvent();
-                meterReportEvent.setAttribute(type.getKey());
+                PaoPointValue paoPointValue = new PaoPointValue();
+                paoPointValue.setAttribute(type.getKey());
                 Meter meter = getMeterFromPaoIdentifier(meters, entry.getKey());
-                meterReportEvent.setMeter(meter);
-                meterReportEvent.setPointValueHolder(pointValueHolder);
+                paoPointValue.setMeter(meter);
+                paoPointValue.setPointValueHolder(pointValueHolder);
                 
                 String pointName = pointDao.getPointName(pointValueHolder.getId());
-                meterReportEvent.setPointName(pointName);
+                paoPointValue.setPointName(pointName);
                 
-                events.add(meterReportEvent);
+                events.add(paoPointValue);
             }
         }
         return events;
@@ -447,68 +445,74 @@ public class MeterEventsReportController {
         return array;
     }
     
-    private static Comparator<MeterReportEvent> getMeterNameComparator() {
+    private static Comparator<PaoPointValue> getMeterNameComparator() {
         Ordering<String> normalStringComparer = Ordering.natural();
-        Ordering<MeterReportEvent> nameOrdering = normalStringComparer
-            .onResultOf(new Function<MeterReportEvent, String>() {
-                public String apply(MeterReportEvent from) {
+        Ordering<PaoPointValue> nameOrdering = normalStringComparer
+            .onResultOf(new Function<PaoPointValue, String>() {
+                @Override
+                public String apply(PaoPointValue from) {
                     return from.getMeter().getName();
                 }
             });
         return nameOrdering;
     }
     
-    private static Comparator<MeterReportEvent> getMeterNumberComparator() {
+    private static Comparator<PaoPointValue> getMeterNumberComparator() {
         Ordering<String> normalStringComparer = Ordering.natural().nullsLast();
-        Ordering<MeterReportEvent> meterNumberOrdering = normalStringComparer
-                .onResultOf(new Function<MeterReportEvent, String>() {
-                    public String apply(MeterReportEvent from) {
+        Ordering<PaoPointValue> meterNumberOrdering = normalStringComparer
+                .onResultOf(new Function<PaoPointValue, String>() {
+                    @Override
+                    public String apply(PaoPointValue from) {
                         return from.getMeter().getMeterNumber();
                     }
                 });
         return meterNumberOrdering;
     }
     
-    private static Comparator<MeterReportEvent> getDeviceTypeComparator() {
+    private static Comparator<PaoPointValue> getDeviceTypeComparator() {
         Ordering<String> normalStringComparer = Ordering.natural().nullsLast();
-        Ordering<MeterReportEvent> typeOrdering = normalStringComparer
-                .onResultOf(new Function<MeterReportEvent, String>() {
-                    public String apply(MeterReportEvent from) {
+        Ordering<PaoPointValue> typeOrdering = normalStringComparer
+                .onResultOf(new Function<PaoPointValue, String>() {
+                    @Override
+                    public String apply(PaoPointValue from) {
                         return from.getMeter().getPaoType().getDbString();
                     }
                 });
         return typeOrdering;
     }
     
-    private static Comparator<MeterReportEvent> getDateComparator() {
+    private static Comparator<PaoPointValue> getDateComparator() {
         Ordering<Date> dateComparer = Ordering.natural().nullsLast();
-        Ordering<MeterReportEvent> dateOrdering = dateComparer
-        .onResultOf(new Function<MeterReportEvent, Date>() {
-            public Date apply(MeterReportEvent from) {
+        Ordering<PaoPointValue> dateOrdering = dateComparer
+        .onResultOf(new Function<PaoPointValue, Date>() {
+            @Override
+            public Date apply(PaoPointValue from) {
                 return from.getPointValueHolder().getPointDataTimeStamp();
             }
         });
-        Ordering<MeterReportEvent> result = dateOrdering.compound(getMeterNameComparator());
+        Ordering<PaoPointValue> result = dateOrdering.compound(getMeterNameComparator());
         return result;
     }
     
-    private static Comparator<MeterReportEvent> getEventComparator() {
+    private static Comparator<PaoPointValue> getEventComparator() {
         Ordering<String> normalStringComparer = Ordering.natural().nullsLast();
-        Ordering<MeterReportEvent> attributeOrdering = normalStringComparer
-        .onResultOf(new Function<MeterReportEvent, String>() {
-            public String apply(MeterReportEvent from) {
+        Ordering<PaoPointValue> attributeOrdering = normalStringComparer
+        .onResultOf(new Function<PaoPointValue, String>() {
+            @Override
+            public String apply(PaoPointValue from) {
                 return from.getPointName();
             }
         });
-        Ordering<MeterReportEvent> result = attributeOrdering.compound(getMeterNameComparator());
+        Ordering<PaoPointValue> result = attributeOrdering.compound(getMeterNameComparator());
         return result;
     }
     
-    private static Comparator<MeterReportEvent> getFormattedValueComparator() {
+    private static Comparator<PaoPointValue> getFormattedValueComparator() {
         Ordering<String> normalStringComparer = Ordering.natural().nullsLast();
-        Ordering<MeterReportEvent> formattedValueOrdering = normalStringComparer
-            .onResultOf(new Function<MeterReportEvent, String>() {
-                public String apply(MeterReportEvent from) {
+        Ordering<PaoPointValue> formattedValueOrdering = normalStringComparer
+            .onResultOf(new Function<PaoPointValue, String>() {
+                @Override
+                public String apply(PaoPointValue from) {
                     return from.getFormattedValue();
                 }
             });

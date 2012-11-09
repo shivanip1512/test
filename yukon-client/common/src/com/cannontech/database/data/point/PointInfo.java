@@ -1,10 +1,22 @@
 package com.cannontech.database.data.point;
 
+import com.cannontech.common.pao.definition.model.PointIdentifier;
+
 public class PointInfo {
+    private int pointId;
     private String name;
     private PointType type;
+    private PointIdentifier pointIdentifier;
     private String unitOfMeasure;
     private int stateGroupId;
+
+    public int getPointId() {
+        return pointId;
+    }
+
+    public void setPointId(int pointId) {
+        this.pointId = pointId;
+    }
 
     public String getName() {
         return name;
@@ -20,6 +32,14 @@ public class PointInfo {
 
     public void setType(PointType type) {
         this.type = type;
+    }
+
+    public PointIdentifier getPointIdentifier() {
+        return pointIdentifier;
+    }
+
+    public void setPointIdentifier(PointIdentifier pointIdentifier) {
+        this.pointIdentifier = pointIdentifier;
     }
 
     public String getUnitOfMeasure() {
@@ -42,10 +62,7 @@ public class PointInfo {
     public int hashCode() {
         final int prime = 31;
         int result = 1;
-        result = prime * result + ((name == null) ? 0 : name.hashCode());
-        result = prime * result + stateGroupId;
-        result = prime * result + ((type == null) ? 0 : type.hashCode());
-        result = prime * result + ((unitOfMeasure == null) ? 0 : unitOfMeasure.hashCode());
+        result = prime * result + pointId;
         return result;
     }
 
@@ -62,6 +79,13 @@ public class PointInfo {
             if (other.name != null)
                 return false;
         } else if (!name.equals(other.name))
+            return false;
+        if (pointId != other.pointId)
+            return false;
+        if (pointIdentifier == null) {
+            if (other.pointIdentifier != null)
+                return false;
+        } else if (!pointIdentifier.equals(other.pointIdentifier))
             return false;
         if (stateGroupId != other.stateGroupId)
             return false;

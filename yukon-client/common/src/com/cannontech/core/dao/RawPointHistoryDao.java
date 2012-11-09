@@ -3,6 +3,7 @@ package com.cannontech.core.dao;
 import java.util.Date;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 
 import org.joda.time.Instant;
 
@@ -105,6 +106,18 @@ public interface RawPointHistoryDao {
      * @return List of values for the point
      */
     public List<PointValueHolder> getPointData(int pointId, Date startDate, Date stopDate, Clusivity clusivity, Order order);
+    
+    /**
+     * Method to get a list of point values for a given set of pointIds and time period.  
+     * @param pointIds - Id's of points to get values for
+     * @param startDate - Start time of period (this is always the first argument in SQL, either > or >=)
+     * @param stopDate - End time of period (this is always the second argument in SQL, either < or <=)
+     * @param excludeDisabledPaos - True if disabled PAOs should be omitted from the result 
+     * @param clusivity - determines whether each end of range is inclusive or exclusive
+     * @param order - controls ordering by timestamp and changeid
+     * @return List of values for the point
+     */
+    public List<PointValueHolder> getPointData(Set<Integer> pointIds, Date startDate, Date stopDate, boolean excludeDisabledPaos, Clusivity clusivity, Order order);
 
     /**
      * Method to get a list of point values for a given point and time period, 
@@ -119,7 +132,7 @@ public interface RawPointHistoryDao {
      * @param maxRows - Maximum number of rows to return
      * @return List of values for the point
      */
-    public List<PointValueHolder> getLimitedPointData(int pointId, Date startDate, Date stopDate, Clusivity clusivity, Order order, int maxRows);
+    public List<PointValueHolder> getLimitedPointData(int pointId, Date startDate, Date stopDate, Clusivity clusivity, boolean excludeDisabledPaos, Order order, int maxRows);
     
     /**
      * This method returns RawPointHistory data for a list of PAOs and a given Attribute. This data will be returned
@@ -179,6 +192,31 @@ public interface RawPointHistoryDao {
      */
     public ListMultimap<PaoIdentifier, PointValueQualityHolder> getLimitedAttributeData(Iterable<? extends YukonPao> paos, Attribute attribute, Date startDate, Date stopDate, int maxRows, boolean excludeDisabledPaos, Clusivity clusivity, Order order);
     
+    /**
+     * This method returns RawPointHistory data for a list of PAOs and a list of Attributes. This data will be returned as a ListMultimap
+     * such that the RPH values for each PAO will be accessible (and ordered) on their own. For any pao in "paos", the following will
+     * be true:
+     * 
+     * result.get(pao).size() <= maxRows
+     * 
+     * @param paos The Iterable of PAOs
+     * @param attribute The Iterable of Attributes to return, these can either be regular or mapped attributes
+     * @param startDate The lower limit for the timestamp of the values to return, may be null
+     * @param stopDate The upper limit for the timestamp of the values to return, may be null
+     * @param maxRows The maximum number of rows to return for each PAO
+     * @param excludeDisabledPaos True if disabled PAOs should be omitted from the result
+     * @param clusivity - determines whether each end of range is inclusive or exclusive
+     * @param order - controls ordering by timestamp (only affects the iteration order of the values)
+     * @return
+     */
+    public ListMultimap<PaoIdentifier, PointValueQualityHolder> getLimitedAttributeData(Iterable<? extends YukonPao> displayableDevices,
+                                                                                        Iterable<Attribute> attributes,
+                                                                                        Date startDate,
+                                                                                        Date stopDate,
+                                                                                        int maxRows,
+                                                                                        boolean excludeDisabledPaos,
+                                                                                        Clusivity clusivity,
+                                                                                        Order order);
     /**
      * This method returns RawPointHistory data for a list of PAOs and a given Attribute. This data will be returned as
      * a ListMultimap such that the RPH values for each PAO will be accessible (and ordered) on their own. For any pao

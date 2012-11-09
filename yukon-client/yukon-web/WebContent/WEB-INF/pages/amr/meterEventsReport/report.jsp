@@ -157,7 +157,7 @@
 						</tags:nameValue2>
 			
 						<tags:nameValue2 nameKey=".filter.dateTo">
-                            <dt:date path="toInstant" value="${backingBean.toInstant}"/>
+                            <dt:date path="toInstant" value="${backingBean.toInstantDisplayable}"/>
 						</tags:nameValue2>
 			
 						<tags:nameValue2 nameKey=".filter.onlyLatestEvent">

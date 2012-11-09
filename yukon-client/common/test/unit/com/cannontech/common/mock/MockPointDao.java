@@ -214,4 +214,9 @@ public class MockPointDao implements PointDao {
     public LitePoint findPointByNameAndType(YukonPao pao, String pointName, PointType pointType) {
         return null;
     }
+
+    @Override
+    public List<PointInfo> getPointInfoByPointIds(Iterable<Integer> pointIds) {
+        return null;
+    }
 }

@@ -31,6 +31,7 @@ import com.cannontech.common.pao.definition.model.PaoPointIdentifier;
 import com.cannontech.common.pao.definition.model.PointIdentifier;
 import com.cannontech.common.point.PointQuality;
 import com.cannontech.common.util.ChunkingMappedSqlTemplate;
+import com.cannontech.common.util.ChunkingSqlTemplate;
 import com.cannontech.common.util.CtiUtilities;
 import com.cannontech.common.util.IterableUtils;
 import com.cannontech.common.util.Range;
@@ -84,22 +85,22 @@ public class RawPointHistoryDaoImpl implements RawPointHistoryDao {
             }
         };
 
-    private SqlFragmentSource buildSql(Clusivity clusivity, List<Integer> pointIds, Date startDate,
-                                       Date stopDate, Order order) {
+    private SqlFragmentSource buildSql(Clusivity clusivity, Iterable<Integer> pointIds, Date startDate,
+                                       Date stopDate, Order order, boolean excludeDisabledPaos) {
         SqlStatementBuilder sql = new SqlStatementBuilder();
         sql.append("SELECT DISTINCT rph.pointid, rph.timestamp, rph.value, rph.quality, p.pointtype");
-        appendFromAndWhereClause(sql, pointIds, startDate, stopDate, clusivity);
+        appendFromAndWhereClause(sql, pointIds, startDate, stopDate, clusivity, excludeDisabledPaos);
         appendOrderByClause(sql, order);
 
         return sql;
     }
 
-    private SqlFragmentSource buildLimitedSql(Clusivity clusivity, int pointId, Date startDate, Date stopDate, int maxRows, Order order) {
+    private SqlFragmentSource buildLimitedSql(Clusivity clusivity, int pointId, Date startDate, Date stopDate, boolean excludeDisabledPaos, int maxRows, Order order) {
         VendorSpecificSqlBuilder builder = vendorSpecificSqlBuilderFactory.create();
         SqlBuilder sqla = builder.buildFor(DatabaseVendor.MS2000);
         sqla.append("SELECT DISTINCT TOP " + maxRows);
         sqla.append(  "rph.pointid, rph.timestamp, rph.value, rph.quality, p.pointtype");
-        appendFromAndWhereClause(sqla, pointId, startDate, stopDate, clusivity);
+        appendFromAndWhereClause(sqla, pointId, startDate, stopDate, clusivity, excludeDisabledPaos);
         appendOrderByClause(sqla, order);
 
         SqlBuilder sqlb = builder.buildOther();
@@ -109,7 +110,7 @@ public class RawPointHistoryDaoImpl implements RawPointHistoryDao {
         sqlb.append(    "ROW_NUMBER() over (");
         appendOrderByClause(sqlb, order);
         sqlb.append(    ") rn");
-        appendFromAndWhereClause(sqlb, pointId, startDate, stopDate, clusivity);
+        appendFromAndWhereClause(sqlb, pointId, startDate, stopDate, clusivity, excludeDisabledPaos);
         sqlb.append(") numberedRows");
         sqlb.append("where numberedRows.rn").lte(maxRows);
         sqlb.append("ORDER BY numberedRows.rn");
@@ -117,21 +118,34 @@ public class RawPointHistoryDaoImpl implements RawPointHistoryDao {
         return builder;
     }
 
-    private static void appendFromAndWhereClause(SqlBuilder sql, List<Integer> pointIds,
+    private static void appendFromAndWhereClause(SqlBuilder sql, Iterable<Integer> pointIds,
                                                  Date startDate, Date stopDate,
-                                                 Clusivity clusivity) {
+                                                 Clusivity clusivity,
+                                                 boolean excludeDisabledPaos) {
         sql.append("FROM rawpointhistory rph");
         sql.append(  "JOIN point p on rph.pointId = p.pointId");
+        if (excludeDisabledPaos) {
+            sql.append(  "JOIN YukonPaobject yp ON p.paobjectid = yp.paobjectid");
+        }
         sql.append("WHERE rph.pointid").in(pointIds);
+        if (excludeDisabledPaos) {
+            sql.append("AND yp.DisableFlag = 'N'");
+        }
 
         appendTimeStampClause(sql, startDate, stopDate, clusivity);
     }
 
     private static void appendFromAndWhereClause(SqlBuilder sql, int pointId, Date startDate,
-                                                 Date stopDate, Clusivity clusivity) {
+                                                 Date stopDate, Clusivity clusivity, boolean excludeDisabledPaos) {
         sql.append("FROM rawpointhistory rph");
         sql.append(  "JOIN point p on rph.pointId = p.pointId");
+        if (excludeDisabledPaos) {
+            sql.append(  "JOIN YukonPaobject yp ON p.paobjectid = yp.paobjectid");
+        }
         sql.append("WHERE rph.pointid").eq(pointId);
+        if (excludeDisabledPaos) {
+            sql.append("AND yp.DisableFlag = 'N'");
+        }
 
         appendTimeStampClause(sql, startDate, stopDate, clusivity);
     }
@@ -228,13 +242,27 @@ public class RawPointHistoryDaoImpl implements RawPointHistoryDao {
     public List<PointValueHolder> getPointData(int pointId, Date startDate, Date stopDate,
                                                Clusivity clusivity, Order order) {
         SqlFragmentSource sql =
-            buildSql(clusivity, Collections.singletonList(pointId), startDate, stopDate, order);
+            buildSql(clusivity, Collections.singleton(pointId), startDate, stopDate, order, true);
         return executeQuery(sql);
     }
 
     @Override
-    public List<PointValueHolder> getLimitedPointData(int pointId, Date startDate, Date stopDate, Clusivity clusivity, Order order, int maxRows) {
-        SqlFragmentSource sql = buildLimitedSql(clusivity, pointId, startDate, stopDate, maxRows, order);
+    public List<PointValueHolder> getPointData(Set<Integer> pointIds, final Date startDate, final Date stopDate, final boolean excludeDisabledPaos,
+                                               final Clusivity clusivity, final Order order) {
+        ChunkingSqlTemplate template = new ChunkingSqlTemplate(yukonTemplate);
+        SqlFragmentGenerator<Integer> sqlGenerator = new SqlFragmentGenerator<Integer>() {
+            
+            @Override
+            public SqlFragmentSource generate(List<Integer> subList) {
+                return buildSql(clusivity, subList, startDate, stopDate, order, excludeDisabledPaos);
+            }
+        };
+        return template.query(sqlGenerator, pointIds, new LiteRphRowMapper());
+    }
+
+    @Override
+    public List<PointValueHolder> getLimitedPointData(int pointId, Date startDate, Date stopDate, Clusivity clusivity, boolean excludeDisabledPaos, Order order, int maxRows) {
+        SqlFragmentSource sql = buildLimitedSql(clusivity, pointId, startDate, stopDate, excludeDisabledPaos, maxRows, order);
         return executeQuery(sql);
     }
     
@@ -302,6 +330,21 @@ public class RawPointHistoryDaoImpl implements RawPointHistoryDao {
         Range<Instant> dateRange = clusivity.makeRange(startDate, stopDate).translate(CtiUtilities.INSTANT_FROM_DATE);
         return getLimitedAttributeData(displayableDevices, attribute, dateRange, null,
             maxRows, excludeDisabledPaos, order, OrderBy.TIMESTAMP);
+    }
+    
+    @Override
+    public ListMultimap<PaoIdentifier, PointValueQualityHolder> getLimitedAttributeData(
+            Iterable<? extends YukonPao> displayableDevices, Iterable<Attribute> attributes, final Date startDate,
+            final Date stopDate, final int maxRows, final boolean excludeDisabledPaos, final Clusivity clusivity,
+            final Order order) {
+        Range<Instant> dateRange = clusivity.makeRange(startDate, stopDate).translate(CtiUtilities.INSTANT_FROM_DATE);
+        ListMultimap<PaoIdentifier, PointValueQualityHolder> limitedAttributeDatas = ArrayListMultimap.create(IterableUtils.guessSize(displayableDevices), 20); 
+        for (Attribute attribute : attributes) {
+            ListMultimap<PaoIdentifier, PointValueQualityHolder> limitedAttributeData = getLimitedAttributeData(displayableDevices, attribute, dateRange, null,
+                                    maxRows, excludeDisabledPaos, order, OrderBy.TIMESTAMP);
+            limitedAttributeDatas.putAll(limitedAttributeData);
+        }
+        return limitedAttributeDatas;
     }
 
     @Override
@@ -890,10 +933,10 @@ public class RawPointHistoryDaoImpl implements RawPointHistoryDao {
         int pointId = pvh.getId();
         Date centerDate = pvh.getPointDataTimeStamp();
         
-        List<PointValueHolder> precedingList = getLimitedPointData(pointId, null, centerDate, Clusivity.INCLUSIVE_EXCLUSIVE, Order.REVERSE, 1);
+        List<PointValueHolder> precedingList = getLimitedPointData(pointId, null, centerDate, Clusivity.INCLUSIVE_EXCLUSIVE, false, Order.REVERSE, 1);
         PointValueHolder preceding = Iterables.getOnlyElement(precedingList, null);
         
-        List<PointValueHolder> succeedingList = getLimitedPointData(pointId, centerDate, null, Clusivity.EXCLUSIVE_INCLUSIVE, Order.FORWARD, 1);
+        List<PointValueHolder> succeedingList = getLimitedPointData(pointId, centerDate, null, Clusivity.EXCLUSIVE_INCLUSIVE, false, Order.FORWARD, 1);
         PointValueHolder succeeding = Iterables.getOnlyElement(succeedingList, null);
         
         AdjacentPointValues result = new AdjacentPointValues(preceding, succeeding);

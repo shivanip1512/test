@@ -15,17 +15,20 @@ import org.springframework.util.CollectionUtils;
 
 import com.cannontech.amr.meter.dao.MeterDao;
 import com.cannontech.amr.meter.model.Meter;
+import com.cannontech.amr.paoPointValue.model.PaoPointValue;
 import com.cannontech.amr.waterMeterLeak.model.WaterMeterLeak;
 import com.cannontech.amr.waterMeterLeak.service.WaterMeterLeakService;
 import com.cannontech.common.chart.service.NormalizedUsageService;
 import com.cannontech.common.device.model.SimpleDevice;
 import com.cannontech.common.pao.PaoIdentifier;
+import com.cannontech.common.pao.attribute.model.Attribute;
 import com.cannontech.common.pao.attribute.model.BuiltInAttribute;
 import com.cannontech.core.dao.RawPointHistoryDao;
 import com.cannontech.core.dao.RawPointHistoryDao.Clusivity;
 import com.cannontech.core.dao.RawPointHistoryDao.Order;
 import com.cannontech.core.dynamic.PointValueHolder;
 import com.cannontech.core.dynamic.PointValueQualityHolder;
+import com.cannontech.core.service.PaoPointValueService;
 import com.cannontech.user.YukonUserContext;
 import com.google.common.base.Function;
 import com.google.common.collect.ListMultimap;
@@ -38,6 +41,7 @@ public class WaterMeterLeakServiceImpl implements WaterMeterLeakService {
     @Autowired private MeterDao meterDao;
     @Autowired private RawPointHistoryDao rawPointHistoryDao;
     @Autowired private NormalizedUsageService normalizedUsageService;
+    @Autowired private PaoPointValueService paoPointValueService;
 
     private static class MeterPointValueHolder {
         private Meter meter;
@@ -93,8 +97,9 @@ public class WaterMeterLeakServiceImpl implements WaterMeterLeakService {
                                                               Instant toDate,
                                                               boolean includeDisabledPaos,
                                                               double threshold,
-                                                              YukonUserContext userContext) {
-        return getLeaks(devices, fromDate, toDate, includeDisabledPaos, threshold, userContext, true);
+                                                              YukonUserContext userContext,
+                                                              boolean useOldMethod) { // TEMPORARY - FOR VERIFICATION PURPOSES ONLY
+        return getLeaks(devices, fromDate, toDate, includeDisabledPaos, threshold, userContext, true, useOldMethod);
     }
 
     @Override
@@ -103,8 +108,9 @@ public class WaterMeterLeakServiceImpl implements WaterMeterLeakService {
                                                    Instant toDate,
                                                    boolean includeDisabledPaos,
                                                    double threshold,
-                                                   YukonUserContext userContext) {
-        return getLeaks(devices, fromDate, toDate, includeDisabledPaos, threshold, userContext, false);
+                                                   YukonUserContext userContext,
+                                                   boolean useOldMethod) { // TEMPORARY - FOR VERIFICATION PURPOSES ONLY
+        return getLeaks(devices, fromDate, toDate, includeDisabledPaos, threshold, userContext, false, useOldMethod);
     }
 
     private List<WaterMeterLeak> getLeaks(Set<SimpleDevice> devices,
@@ -113,21 +119,31 @@ public class WaterMeterLeakServiceImpl implements WaterMeterLeakService {
                                           boolean includeDisabledPaos,
                                           double threshold,
                                           YukonUserContext userContext,
-                                          boolean getIntervalData) {
+                                          boolean getIntervalData,
+                                          boolean useOldMethod) { // TEMPORARY - FOR VERIFICATION PURPOSES ONLY
         
         if (CollectionUtils.isEmpty(devices)) {
             return new ArrayList<WaterMeterLeak>();
         }
 
-        List<Meter> meters = meterDao.getMetersForYukonPaos(devices);
         List<MeterPointValueHolder> intervalReadings = Lists.newArrayList();
         Set<Meter> reportingMeters = Sets.newHashSet();
-        populateMeterSetAndIntervalReadings(meters,
-                                            fromDate.toDate(),
-                                            toDate.toDate(),
-                                            includeDisabledPaos,
-                                            reportingMeters,
-                                            intervalReadings);
+        if (useOldMethod) {
+            List<Meter> meters = meterDao.getMetersForYukonPaos(devices);
+            populateMeterSetAndIntervalReadingsOldSlowMethod(meters,
+                                                fromDate.toDate(),
+                                                toDate.toDate(),
+                                                includeDisabledPaos,
+                                                reportingMeters,
+                                                intervalReadings);
+        } else {
+            populateMeterSetAndIntervalReadings(devices,
+                                                fromDate,
+                                                toDate,
+                                                includeDisabledPaos,
+                                                reportingMeters,
+                                                intervalReadings);
+        }
 
         List<WaterMeterLeak> leakingMeterIntervalData = Lists.newArrayListWithCapacity(reportingMeters.size());
         int numHours = Hours.hoursBetween(new Instant(fromDate), new Instant(toDate)).getHours();
@@ -157,7 +173,7 @@ public class WaterMeterLeakServiceImpl implements WaterMeterLeakService {
                                List<MeterPointValueHolder> intervalReadings) {
         Map<Date, Double> dateValueMap = Maps.newHashMapWithExpectedSize(numHours);
         for (MeterPointValueHolder meterValue : intervalReadings) {
-            if (meterValue.meter != meter)
+            if (meterValue.meter.getPaoIdentifier() != meter.getPaoIdentifier())
                 continue;
             dateValueMap.put(meterValue.pointValueHolder.getPointDataTimeStamp(),
                              meterValue.pointValueHolder.getValue());
@@ -189,7 +205,7 @@ public class WaterMeterLeakServiceImpl implements WaterMeterLeakService {
         return pointValueHolders;
     }
 
-    private void populateMeterSetAndIntervalReadings(List<Meter> allMeters, Date fromDate,
+    private void populateMeterSetAndIntervalReadingsOldSlowMethod(List<Meter> allMeters, Date fromDate,
                                                      Date toDate,
                                                      boolean includeDisabledPaos,
                                                      Set<Meter> reportingMeters,
@@ -226,6 +242,46 @@ public class WaterMeterLeakServiceImpl implements WaterMeterLeakService {
         for (PointValueHolder pvh : normalizedUsage) {
             PaoIdentifier paoIdentifier = idToPaoIdentifierMap.get(new PointIdTimestamp(pvh.getId(), pvh.getPointDataTimeStamp()));
             Meter meter = metersByPaoId.get(paoIdentifier);
+            reportingMeters.add(meter);
+            intervalReadings.add(new MeterPointValueHolder(meter, pvh));
+        }
+    }
+
+    private void populateMeterSetAndIntervalReadings(Set<SimpleDevice> allMeters, Instant fromDate,
+                                                     Instant toDate,
+                                                     boolean includeDisabledPaos,
+                                                     Set<Meter> reportingMeters,
+                                                     List<MeterPointValueHolder> intervalReadings) {
+        Set<Attribute> usageWaterAttrSet = Sets.newHashSetWithExpectedSize(1);
+        usageWaterAttrSet.add(BuiltInAttribute.USAGE_WATER);
+        List<PaoPointValue> meterPaoPointValues =
+            paoPointValueService.getPaoPointValuesForMeters(allMeters,
+                                                            usageWaterAttrSet,
+                                                            fromDate,
+                                                            toDate,
+                                                            null,
+                                                            includeDisabledPaos,
+                                                            null,
+                                                            null);
+
+        List<PointValueHolder> pvhs = Lists.newArrayList();
+        Map<PointIdTimestamp, PaoIdentifier> idToPaoIdentifierMap = Maps.newHashMap();
+        for (PaoPointValue ppv : meterPaoPointValues) {
+            pvhs.add(ppv.getPointValueHolder());
+            PointIdTimestamp pointIdTimestamp = new PointIdTimestamp(ppv.getPointValueHolder().getId(), ppv.getPointValueHolder().getPointDataTimeStamp());
+            idToPaoIdentifierMap.put(pointIdTimestamp, ppv.getMeter().getPaoIdentifier());
+        }
+
+        List<Meter> meters = meterDao.getMetersForYukonPaos(idToPaoIdentifierMap.values());
+        Map<PaoIdentifier, Meter> paoPointIdMeterMap = Maps.newHashMap();
+        for (Meter meter : meters) {
+            paoPointIdMeterMap.put(meter.getPaoIdentifier(), meter);
+        }
+
+        List<PointValueHolder> normalizedUsage = normalizedUsageService.getNormalizedUsage(pvhs, BuiltInAttribute.USAGE_WATER);
+        for (PointValueHolder pvh : normalizedUsage) {
+            PaoIdentifier paoIdentifier = idToPaoIdentifierMap.get(new PointIdTimestamp(pvh.getId(), pvh.getPointDataTimeStamp()));
+            Meter meter = paoPointIdMeterMap.get(paoIdentifier);
             reportingMeters.add(meter);
             intervalReadings.add(new MeterPointValueHolder(meter, pvh));
         }

@@ -66,10 +66,37 @@ public interface AttributeService {
      * Like the above method, this is a transitional method that assumes attributes are unmapped.
      * @param devices
      * @param attributes
+     * @param throwException
+     * @param logWarning
+     * @return list of PaoMultiPointIdentifiers
+     */
+    public List<PaoMultiPointIdentifier> findPaoMultiPointIdentifiersForAttributes(Iterable<? extends YukonPao> devices, Set<? extends Attribute> attributes, boolean throwException, boolean logWarning);
+    
+    /**
+     * This method returns a list of PaoMultiPointIdentifier objects for of the passed in PAO that has a point
+     * for at least one of the specified attributes.
+     * 
+     * Like the above method, this is a transitional method that assumes attributes are unmapped.
+     * @param devices
+     * @param attributes
      * @return list of PaoMultiPointIdentifiers
      * @throws IllegalUseOfAttribute if nothing is mapped for a mappable attribute
      */
     public List<PaoMultiPointIdentifier> getPaoMultiPointIdentifiersForAttributes(Iterable<? extends YukonPao> devices, Set<? extends Attribute> attributes) throws IllegalUseOfAttribute;
+    
+    /**
+     * This method returns a list of PaoMultiPointIdentifier objects for of the passed in PAO that has a point
+     * for at least one of the specified attributes.
+     * 
+     * Like the above method, this is a transitional method that assumes attributes are unmapped.
+     * @param devices
+     * @param attributes
+     * @param throwException
+     * @param logWarning
+     * @return list of PaoMultiPointIdentifiers
+     * @throws IllegalUseOfAttribute if nothing is mapped for a mappable attribute
+     */
+    public List<PaoMultiPointIdentifier> getPaoMultiPointIdentifiersForAttributes(Iterable<? extends YukonPao> devices, Set<? extends Attribute> attributes, boolean throwException, boolean logWarning) throws IllegalUseOfAttribute;
     
     /**
      * Method to get a set of attributes available for the given pao
@@ -169,7 +196,7 @@ public interface AttributeService {
      * @param possibleMatches
      * @return BuiltInAttribute
      */
-    public BuiltInAttribute findAttributeForPoint(PaoTypePointIdentifier paoTypePointIdentifier, Set<BuiltInAttribute> possibleMatches);
+    public BuiltInAttribute findAttributeForPoint(PaoTypePointIdentifier paoTypePointIdentifier, Set<? extends Attribute> possibleMatches);
 
     /**
      * Creates a map of AttributeGroup to list of BuiltInAttribute.  The resulting map contains only

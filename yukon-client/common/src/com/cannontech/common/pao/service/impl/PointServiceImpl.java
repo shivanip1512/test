@@ -91,7 +91,7 @@ public class PointServiceImpl implements PointService {
 
         // first 36 hours - all points
         Date sixMonthsAgo = DateUtils.addMonths(today, -6);
-        List<PointValueHolder> previous36 = rphDao.getLimitedPointData(lp.getPointID(), sixMonthsAgo, today, Clusivity.EXCLUSIVE_INCLUSIVE, Order.REVERSE, 36);
+        List<PointValueHolder> previous36 = rphDao.getLimitedPointData(lp.getPointID(), sixMonthsAgo, today, Clusivity.EXCLUSIVE_INCLUSIVE, false, Order.REVERSE, 36);
 
         List<PointValueHolder> previous3Months = Collections.emptyList();
         if (previous36.size() == 36) {

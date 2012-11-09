@@ -238,7 +238,8 @@ public class WaterLeakReportController {
                                                                                    backingBean.getToInstant(),
                                                                                    backingBean.isIncludeDisabledPaos(),
                                                                                    backingBean.getThreshold(),
-                                                                                   userContext);
+                                                                                   userContext,
+                                                                                   true);
         if (backingBean.getSort() != null) {
             if (backingBean.getDescending()) {
                 Collections.sort(waterLeaks, Collections.reverseOrder(sorters.get(backingBean.getSort())));
@@ -289,7 +290,8 @@ public class WaterLeakReportController {
                                                backingBean.getToInstant(),
                                                backingBean.isIncludeDisabledPaos(),
                                                backingBean.getThreshold(),
-                                               userContext);
+                                               userContext,
+                                               true);
         if (backingBean.getSort() != null) {
             if (backingBean.getDescending()) {
                 Collections.sort(waterLeaks, Collections.reverseOrder(sorters.get(backingBean.getSort())));
@@ -363,7 +365,8 @@ public class WaterLeakReportController {
                                                      backingBean.getToInstant(),
                                                      backingBean.isIncludeDisabledPaos(),
                                                      backingBean.getThreshold(),
-                                                     userContext);
+                                                     userContext,
+                                                     false);
         setupFilterResults(backingBean, userContext, model, waterLeaks);
     }
 
@@ -375,7 +378,8 @@ public class WaterLeakReportController {
                                                                     backingBean.getToInstant(),
                                                                     backingBean.isIncludeDisabledPaos(),
                                                                     backingBean.getThreshold(),
-                                                                    userContext);
+                                                                    userContext,
+                                                                    false);
         setupFilterResults(backingBean, userContext, model, waterLeaks);
     }
 
@@ -464,6 +468,7 @@ public class WaterLeakReportController {
         Ordering<String> normalStringComparer = Ordering.natural();
         Ordering<WaterMeterLeak> nameOrdering = normalStringComparer
             .onResultOf(new Function<WaterMeterLeak, String>() {
+                @Override
                 public String apply(WaterMeterLeak from) {
                     return from.getMeter().getName();
                 }
@@ -475,6 +480,7 @@ public class WaterLeakReportController {
         Ordering<String> normalStringComparer = Ordering.natural();
         Ordering<WaterMeterLeak> numberOrdering = normalStringComparer
             .onResultOf(new Function<WaterMeterLeak, String>() {
+                @Override
                 public String apply(WaterMeterLeak from) {
                     return from.getMeter().getMeterNumber();
                 }
@@ -486,6 +492,7 @@ public class WaterLeakReportController {
         Ordering<String> normalStringComparer = Ordering.natural().nullsLast();
         Ordering<WaterMeterLeak> typeOrdering = normalStringComparer
             .onResultOf(new Function<WaterMeterLeak, String>() {
+                @Override
                 public String apply(WaterMeterLeak from) {
                     return from.getMeter().getPaoType().getDbString();
                 }
@@ -497,6 +504,7 @@ public class WaterLeakReportController {
         Ordering<Double> normalComparer = Ordering.natural().nullsLast();
         Ordering<WaterMeterLeak> rateOrdering = normalComparer
             .onResultOf(new Function<WaterMeterLeak, Double>() {
+                @Override
                 public Double apply(WaterMeterLeak from) {
                     return from.getLeakRate();
                 }
@@ -509,6 +517,7 @@ public class WaterLeakReportController {
         Ordering<Double> normalComparer = Ordering.natural().nullsLast();
         Ordering<WaterMeterLeak> usageOrdering = normalComparer
             .onResultOf(new Function<WaterMeterLeak, Double>() {
+                @Override
                 public Double apply(WaterMeterLeak from) {
                     return from.getPointValueHolder().getValue();
                 }
@@ -521,6 +530,7 @@ public class WaterLeakReportController {
         Ordering<Date> normalComparer = Ordering.natural().nullsLast();
         Ordering<WaterMeterLeak> dateOrdering = normalComparer
             .onResultOf(new Function<WaterMeterLeak, Date>() {
+                @Override
                 public Date apply(WaterMeterLeak from) {
                     return from.getPointValueHolder().getPointDataTimeStamp();
                 }

@@ -164,7 +164,7 @@ public class HistoricalReadingsController {
             DateTime startDate = new DateTime(context.getJodaTimeZone());
             startDate = startDate.minusDays(30);
             DateTime endDate = new DateTime(context.getJodaTimeZone());
-            data = rawPointHistoryDao.getLimitedPointData(pointId, startDate.toDate(), endDate.toDate(), Clusivity.INCLUSIVE_EXCLUSIVE, order, MAX_ROWS_DISPLAY);
+            data = rawPointHistoryDao.getLimitedPointData(pointId, startDate.toDate(), endDate.toDate(), Clusivity.INCLUSIVE_EXCLUSIVE, false, order, MAX_ROWS_DISPLAY);
         }
         else if(period.equals(ONE_MONTH)){
             DateTime startDate = new DateTime(context.getJodaTimeZone());
