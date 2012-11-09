@@ -856,11 +856,12 @@ INT MctDevice::ModelDecode(INMESS *InMessage, CtiTime &TimeNow, CtiMessageList &
         case EmetconProtocol::Control_Restore:
         case EmetconProtocol::Control_Connect:
         case EmetconProtocol::Control_Disconnect:
+        case EmetconProtocol::Control_SetTOUHolidayRate:
+        case EmetconProtocol::Control_ClearTOUHolidayRate:
         {
             status = decodeControl(InMessage, TimeNow, vgList, retList, outList);
             break;
         }
-
 
         case EmetconProtocol::GetConfig_Time:
         case EmetconProtocol::GetConfig_TSync:
@@ -935,6 +936,7 @@ INT MctDevice::ModelDecode(INMESS *InMessage, CtiTime &TimeNow, CtiMessageList &
         case EmetconProtocol::PutConfig_PhaseDetect:
         case EmetconProtocol::PutConfig_AlarmMask:
         case EmetconProtocol::PutConfig_AutoReconnect:
+        case EmetconProtocol::PutConfig_PhaseLossThreshold:
         {
             status = decodePutConfig(InMessage, TimeNow, vgList, retList, outList);
             break;
