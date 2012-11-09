@@ -10,8 +10,10 @@
        http://www.springframework.org/schema/aop http://www.springframework.org/schema/aop/spring-aop-3.0.xsd
        http://www.springframework.org/schema/context http://www.springframework.org/schema/context/spring-context-3.0.xsd">
 
-    <!-- Loads all @Components from the specified packages. -->
-    <context:component-scan base-package="com.cannontech.stars.dr" />
+    <context:annotation-config/>
+    <bean class="com.cannontech.stars.dr.displayable.dao.impl.DisplayableProgramDaoImpl"/>
+    <bean class="com.cannontech.stars.dr.displayable.dao.impl.DisplayableEnrollmentDaoImpl"/>
+    <bean class="com.cannontech.stars.dr.displayable.dao.impl.DisplayableInventoryDaoImpl"/>
 
     <bean id="simpleCollectionFactory" class="com.cannontech.stars.web.collection.SimpleCollectionFactory"/>
 

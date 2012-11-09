@@ -7,7 +7,6 @@ import java.util.Map;
 import java.util.TreeSet;
 
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.stereotype.Repository;
 
 import com.cannontech.common.inventory.HardwareConfigType;
 import com.cannontech.common.inventory.HardwareType;
@@ -33,7 +32,6 @@ import com.google.common.collect.Iterables;
 import com.google.common.collect.Lists;
 import com.google.common.collect.Maps;
 
-@Repository
 public class DisplayableEnrollmentDaoImpl extends AbstractDisplayableDao implements DisplayableEnrollmentDao {
     
     @Autowired private EnrollmentDao enrollmentDao;

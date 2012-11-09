@@ -5,7 +5,6 @@ import java.util.Comparator;
 import java.util.List;
 
 import org.joda.time.Duration;
-import org.springframework.stereotype.Repository;
 
 import com.cannontech.stars.dr.appliance.model.Appliance;
 import com.cannontech.stars.dr.controlHistory.model.ControlHistory;
@@ -23,7 +22,6 @@ import com.google.common.collect.ListMultimap;
 import com.google.common.collect.Lists;
 import com.google.common.collect.Ordering;
 
-@Repository
 public class DisplayableProgramDaoImpl extends AbstractDisplayableDao implements DisplayableProgramDao {
     
     @Override

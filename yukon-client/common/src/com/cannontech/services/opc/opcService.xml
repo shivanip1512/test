@@ -7,7 +7,7 @@
   http://www.springframework.org/schema/context http://www.springframework.org/schema/context/spring-context-3.0.xsd
   http://www.springframework.org/schema/jms http://www.springframework.org/schema/jms/spring-jms-3.0.xsd">
 
-    <context:component-scan base-package="com.cannontech.services.opc"/>
+    <context:annotation-config/>
 
     <bean id="opcService" class="com.cannontech.common.opc.service.OpcService" scope="singleton" init-method="initialize">
         <property name="fdrTranslationDao" ref="fdrTranslationDao" />

@@ -14,7 +14,7 @@
         This file defines beans that live under the com.cannontech.thirdparty package
     </description>
 
-    <context:component-scan base-package="com.cannontech.thirdparty"/>
+    <context:annotation-config/>
 
     <bean id="digiWebService" class="com.cannontech.thirdparty.digi.service.impl.DigiWebServiceImpl"/>
     <bean id="digiXMLBuilder" class="com.cannontech.thirdparty.digi.service.impl.DigiXMLBuilder"/>

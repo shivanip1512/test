@@ -8,7 +8,6 @@ import java.util.List;
 import java.util.Map;
 
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.stereotype.Repository;
 
 import com.cannontech.stars.dr.appliance.model.Appliance;
 import com.cannontech.stars.dr.displayable.dao.AbstractDisplayableDao;
@@ -21,7 +20,6 @@ import com.google.common.base.Predicate;
 import com.google.common.collect.Iterables;
 import com.google.common.collect.Lists;
 
-@Repository("displayableInventoryDao")
 public class DisplayableInventoryDaoImpl extends AbstractDisplayableDao implements DisplayableInventoryDao {
     private static final Comparator<DisplayableInventory> displayableInventoryComparator = createComparator();
     private OptOutEventDao optOutEventDao;
