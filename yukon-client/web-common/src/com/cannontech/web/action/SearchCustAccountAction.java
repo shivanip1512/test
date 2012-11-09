@@ -1,4 +1,4 @@
-package com.cannontech.stars.web.action;
+package com.cannontech.web.action;
 
 import java.util.ArrayList;
 import java.util.Hashtable;

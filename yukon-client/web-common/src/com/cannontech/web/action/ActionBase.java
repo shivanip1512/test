@@ -1,4 +1,4 @@
-package com.cannontech.stars.web.action;
+package com.cannontech.web.action;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpSession;

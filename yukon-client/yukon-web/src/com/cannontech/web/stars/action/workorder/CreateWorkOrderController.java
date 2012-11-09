@@ -9,9 +9,9 @@ import com.cannontech.stars.database.data.lite.LiteStarsEnergyCompany;
 import com.cannontech.stars.util.ServletUtils;
 import com.cannontech.stars.util.WebClientException;
 import com.cannontech.stars.web.StarsYukonUser;
-import com.cannontech.stars.web.action.CreateServiceRequestAction;
 import com.cannontech.stars.web.util.WorkOrderManagerUtil;
 import com.cannontech.stars.xml.serialize.StarsOperation;
+import com.cannontech.web.action.CreateServiceRequestAction;
 import com.cannontech.web.stars.action.StarsWorkorderActionController;
 
 public class CreateWorkOrderController extends StarsWorkorderActionController {

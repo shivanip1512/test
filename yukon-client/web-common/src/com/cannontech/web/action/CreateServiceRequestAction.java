@@ -1,4 +1,4 @@
-package com.cannontech.stars.web.action;
+package com.cannontech.web.action;
 
 import java.util.Date;
 import java.util.TimeZone;
@@ -54,7 +54,7 @@ import com.cannontech.user.YukonUserContext;
 public class CreateServiceRequestAction implements ActionBase {
 
 	/**
-	 * @see com.cannontech.stars.web.action.ActionBase#build(HttpServletRequest, HttpSession)
+	 * @see com.cannontech.web.action.ActionBase#build(HttpServletRequest, HttpSession)
 	 */
 	public SOAPMessage build(HttpServletRequest req, HttpSession session) {
 		try {
@@ -80,7 +80,7 @@ public class CreateServiceRequestAction implements ActionBase {
 	}
 
 	/**
-	 * @see com.cannontech.stars.web.action.ActionBase#process(SOAPMessage, HttpSession)
+	 * @see com.cannontech.web.action.ActionBase#process(SOAPMessage, HttpSession)
 	 */
 	public SOAPMessage process(SOAPMessage reqMsg, HttpSession session) {
         StarsOperation respOper = new StarsOperation();
@@ -177,7 +177,7 @@ public class CreateServiceRequestAction implements ActionBase {
 	}
 
 	/**
-	 * @see com.cannontech.stars.web.action.ActionBase#parse(SOAPMessage, HttpSession)
+	 * @see com.cannontech.web.action.ActionBase#parse(SOAPMessage, HttpSession)
 	 */
 	public int parse(SOAPMessage reqMsg, SOAPMessage respMsg, HttpSession session) {
         try {

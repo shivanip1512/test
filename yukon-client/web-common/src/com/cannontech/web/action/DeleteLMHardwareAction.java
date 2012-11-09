@@ -1,4 +1,4 @@
-package com.cannontech.stars.web.action;
+package com.cannontech.web.action;
 
 import java.util.List;
 
@@ -58,7 +58,7 @@ import com.cannontech.stars.xml.util.StarsConstants;
 public class DeleteLMHardwareAction implements ActionBase {
 
 	/**
-	 * @see com.cannontech.stars.web.action.ActionBase#build(HttpServletRequest, HttpSession)
+	 * @see com.cannontech.web.action.ActionBase#build(HttpServletRequest, HttpSession)
 	 */
 	@Override
     public SOAPMessage build(HttpServletRequest req, HttpSession session) {
@@ -88,7 +88,7 @@ public class DeleteLMHardwareAction implements ActionBase {
 	}
 
 	/**
-	 * @see com.cannontech.stars.web.action.ActionBase#process(SOAPMessage, HttpSession)
+	 * @see com.cannontech.web.action.ActionBase#process(SOAPMessage, HttpSession)
 	 */
 	@Override
     public SOAPMessage process(SOAPMessage reqMsg, HttpSession session) {
@@ -151,7 +151,7 @@ public class DeleteLMHardwareAction implements ActionBase {
 	}
 
 	/**
-	 * @see com.cannontech.stars.web.action.ActionBase#parse(SOAPMessage, SOAPMessage, HttpSession)
+	 * @see com.cannontech.web.action.ActionBase#parse(SOAPMessage, SOAPMessage, HttpSession)
 	 */
 	@Override
     public int parse(SOAPMessage reqMsg, SOAPMessage respMsg, HttpSession session) {

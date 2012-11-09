@@ -1,4 +1,4 @@
-package com.cannontech.stars.web.action;
+package com.cannontech.web.action;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpSession;
@@ -38,7 +38,7 @@ import com.cannontech.stars.xml.util.StarsConstants;
 public class SendOddsForControlAction implements ActionBase {
 
 	/**
-	 * @see com.cannontech.stars.web.action.ActionBase#build(HttpServletRequest, HttpSession)
+	 * @see com.cannontech.web.action.ActionBase#build(HttpServletRequest, HttpSession)
 	 */
 	public SOAPMessage build(HttpServletRequest req, HttpSession session) {
 		try {
@@ -92,7 +92,7 @@ public class SendOddsForControlAction implements ActionBase {
 	}
 
 	/**
-	 * @see com.cannontech.stars.web.action.ActionBase#process(SOAPMessage, HttpSession)
+	 * @see com.cannontech.web.action.ActionBase#process(SOAPMessage, HttpSession)
 	 */
 	public SOAPMessage process(SOAPMessage reqMsg, HttpSession session) {
 		StarsOperation respOper = new StarsOperation();
@@ -169,7 +169,7 @@ public class SendOddsForControlAction implements ActionBase {
 	}
 
 	/**
-	 * @see com.cannontech.stars.web.action.ActionBase#parse(SOAPMessage, SOAPMessage, HttpSession)
+	 * @see com.cannontech.web.action.ActionBase#parse(SOAPMessage, SOAPMessage, HttpSession)
 	 */
 	public int parse(SOAPMessage reqMsg, SOAPMessage respMsg, HttpSession session) {
 		try {

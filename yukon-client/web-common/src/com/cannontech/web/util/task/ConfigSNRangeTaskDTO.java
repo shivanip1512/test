@@ -7,9 +7,9 @@ import org.springframework.web.bind.ServletRequestUtils;
 
 import com.cannontech.stars.util.ServletUtils;
 import com.cannontech.stars.util.WebClientException;
-import com.cannontech.stars.web.action.UpdateLMHardwareConfigAction;
 import com.cannontech.stars.xml.serialize.StarsLMConfiguration;
 import com.cannontech.util.ServletUtil;
+import com.cannontech.web.action.UpdateLMHardwareConfigAction;
 
 public class ConfigSNRangeTaskDTO {
     private boolean configNow;
