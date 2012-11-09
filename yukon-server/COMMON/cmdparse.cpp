@@ -1349,8 +1349,20 @@ void  CtiCommandParser::doParseControl(const string &_CmdStr)
                 _cmd["silver"] = CtiParseValue(atoi(addr_tok().c_str()));
             }
         }
+        if(CmdStr.contains(" tou holiday rate"))
+        {
+            if(!(token = CmdStr.match("set tou holiday rate")).empty())
+            {
+                _cmd["set_tou_holiday_rate"] = CtiParseValue( TRUE );
+            }
 
+            if(!(token = CmdStr.match("clear tou holiday rate")).empty())
+            {
+                _cmd["clear_tou_holiday_rate"] = CtiParseValue( TRUE );
+            }
+        }
     }
+
     else
     {
         // Something went WAY wrong....
@@ -1870,6 +1882,10 @@ void  CtiCommandParser::doParseGetConfig(const string &_CmdStr)
         if(!CmdStr.match(" phaseloss threshold").empty())
         {
             _cmd["phaseloss_threshold"] = CtiParseValue("TRUE");
+        }
+        if(!CmdStr.match(" alarm_mask").empty())
+        {
+            _cmd["alarm_mask"] = CtiParseValue("TRUE");
         }
         setFlags(flag);
     }
