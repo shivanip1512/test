@@ -11,13 +11,13 @@ import com.cannontech.database.data.lite.LiteYukonUser;
 import com.cannontech.stars.database.data.lite.LiteStarsEnergyCompany;
 import com.cannontech.stars.util.ProgressChecker;
 import com.cannontech.stars.util.ServletUtils;
-import com.cannontech.stars.util.task.ManipulateWorkOrderTask;
 import com.cannontech.stars.util.task.TimeConsumingTask;
 import com.cannontech.stars.web.StarsYukonUser;
 import com.cannontech.stars.web.bean.ManipulationBean;
 import com.cannontech.stars.web.bean.WorkOrderBean;
 import com.cannontech.util.ServletUtil;
 import com.cannontech.web.stars.action.StarsWorkorderActionController;
+import com.cannontech.web.util.task.ManipulateWorkOrderTask;
 
 public class ApplyActionsController extends StarsWorkorderActionController {
 

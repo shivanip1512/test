@@ -1,4 +1,4 @@
-package com.cannontech.stars.util.task;
+package com.cannontech.web.util.task;
 
 import java.util.ArrayList;
 import java.util.Date;
@@ -28,27 +28,25 @@ import com.cannontech.stars.database.data.report.WorkOrderBase;
 import com.cannontech.stars.database.db.integration.SAMToCRS_PTJ;
 import com.cannontech.stars.util.EventUtils;
 import com.cannontech.stars.util.ServletUtils;
+import com.cannontech.stars.util.task.TimeConsumingTask;
 import com.cannontech.stars.web.bean.ManipulationBean;
 import com.cannontech.stars.web.bean.WorkOrderBean;
 import com.cannontech.stars.web.util.WorkOrderManagerUtil;
 
-/**
- * @author jdayton
- */
 public class ManipulateWorkOrderTask extends TimeConsumingTask {
 	
-	LiteYukonUser liteYukonUser = null;
-    List<LiteWorkOrderBase> selectedWorkOrders = new ArrayList<LiteWorkOrderBase>();
-    Integer changeServiceCompanyID = null;
-    Integer changeServiceStatusID = null;
-    Integer changeServiceTypeID = null;
-    String statusMsg = null;
+    private LiteYukonUser liteYukonUser = null;
+    private List<LiteWorkOrderBase> selectedWorkOrders = new ArrayList<LiteWorkOrderBase>();
+    private Integer changeServiceCompanyID = null;
+    private Integer changeServiceStatusID = null;
+    private Integer changeServiceTypeID = null;
+    private String statusMsg = null;
     private final boolean confirmOnMessagePage;
     private final String redirect;
     private final HttpSession session;
 
-	ArrayList<String> failedWorkOrderMessages = new ArrayList<String>();
-	int numSuccess = 0, numFailure = 0;
+    private final ArrayList<String> failedWorkOrderMessages = new ArrayList<String>();
+    private int numSuccess = 0, numFailure = 0;
 
 	private final StarsCustAccountInformationDao starsCustAccountInformationDao = 
 	    YukonSpringHook.getBean("starsCustAccountInformationDao", StarsCustAccountInformationDao.class);
@@ -86,7 +84,8 @@ public class ManipulateWorkOrderTask extends TimeConsumingTask {
 	/* (non-Javadoc)
 	 * @see java.lang.Runnable#run()
 	 */
-	public void run() 
+	@Override
+    public void run() 
     {
 		status = STATUS_RUNNING;
 		

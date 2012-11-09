@@ -1,10 +1,4 @@
-/*
- * Created on Apr 27, 2004
- *
- * To change the template for this generated file go to
- * Window>Preferences>Java>Code Generation>Code and Comments
- */
-package com.cannontech.stars.util.task;
+package com.cannontech.web.util.task;
 
 import java.util.ArrayList;
 import java.util.Date;
@@ -23,40 +17,37 @@ import com.cannontech.database.Transaction;
 import com.cannontech.database.data.activity.ActivityLogActions;
 import com.cannontech.spring.YukonSpringHook;
 import com.cannontech.stars.core.dao.StarsSearchDao;
-import com.cannontech.stars.database.data.lite.LiteStarsEnergyCompany;
 import com.cannontech.stars.database.data.lite.LiteLmHardwareBase;
+import com.cannontech.stars.database.data.lite.LiteStarsEnergyCompany;
 import com.cannontech.stars.dr.util.YukonListEntryHelper;
 import com.cannontech.stars.energyCompany.model.YukonEnergyCompany;
 import com.cannontech.stars.util.EventUtils;
 import com.cannontech.stars.util.InventoryUtils;
 import com.cannontech.stars.util.ServletUtils;
+import com.cannontech.stars.util.task.TimeConsumingTask;
 import com.cannontech.stars.web.StarsYukonUser;
 import com.cannontech.stars.web.util.InventoryManagerUtil;
 import com.google.common.collect.Lists;
 
-/**
- * @author yao
- *
- * To change the template for this generated type comment go to
- * Window>Preferences>Java>Code Generation>Code and Comments
- */
 public class AddSNRangeTask extends TimeConsumingTask {
 
-	LiteStarsEnergyCompany energyCompany = null;
-	long snFrom = 0, snTo = 0;
-	Integer devTypeID = null;
-    Integer devStateID = null;
-	Date recvDate = null;
-	Integer voltageID = null;
-	Integer companyID = null;
-	Integer routeID = null;
-	boolean confirmOnMessagePage;
-	String redirect;
-	HttpSession session;
+	private LiteStarsEnergyCompany energyCompany = null;
+	private long snFrom = 0;
+	private long snTo = 0;
+	private Integer devTypeID = null;
+	private Integer devStateID = null;
+	private Date recvDate = null;
+	private Integer voltageID = null;
+	private Integer companyID = null;
+	private Integer routeID = null;
+	private final boolean confirmOnMessagePage;
+	private final String redirect;
+	private final HttpSession session;
 	
-	List<LiteLmHardwareBase> hardwareSet = new ArrayList<LiteLmHardwareBase>();
-	List<String> serialNoSet = new ArrayList<String>();
-	int numSuccess = 0, numFailure = 0;
+	private final List<LiteLmHardwareBase> hardwareSet = new ArrayList<LiteLmHardwareBase>();
+	private final List<String> serialNoSet = new ArrayList<String>();
+	private int numSuccess = 0;
+	private int numFailure = 0;
 	
 	public AddSNRangeTask(LiteStarsEnergyCompany energyCompany, long snFrom, long snTo, Integer devTypeID, Integer devStateID,
 		Date recvDate, Integer voltageID, Integer companyID, Integer routeID, boolean confirmOnMessagePage, 
@@ -87,7 +78,8 @@ public class AddSNRangeTask extends TimeConsumingTask {
 	/* (non-Javadoc)
 	 * @see java.lang.Runnable#run()
 	 */
-	public void run() {
+	@Override
+    public void run() {
 		if (devTypeID == null) {
 			status = STATUS_ERROR;
 			errorMsg = "Device type cannot be null";
@@ -132,8 +124,7 @@ public class AddSNRangeTask extends TimeConsumingTask {
 			String serialNo = String.valueOf(sn);
 			
 			LiteLmHardwareBase existingHw = foundMap.get(serialNo);
-			if (existingHw != null) 
-            {
+			if (existingHw != null) {
 				hardwareSet.add( existingHw );
 				numFailure++;
 				continue;
@@ -148,8 +139,9 @@ public class AddSNRangeTask extends TimeConsumingTask {
 				invDB.setInstallationCompanyID( companyID );
 				invDB.setCategoryID( categoryID );
                 invDB.setCurrentStateID( devStateID );
-				if (recvDate != null)
+				if (recvDate != null) {
 					invDB.setReceiveDate( recvDate );
+				}
 				invDB.setVoltageID( voltageID );
 				hwDB.setManufacturerSerialNumber( serialNo );
 				hwDB.setLMHardwareTypeID( devTypeID );
@@ -161,8 +153,7 @@ public class AddSNRangeTask extends TimeConsumingTask {
 				Integer inventoryID = hardware.getLMHardwareBase().getInventoryID();
                 EventUtils.logSTARSEvent(user.getUserID(), EventUtils.EVENT_CATEGORY_INVENTORY, devStateID, inventoryID, session);
                 numSuccess++;
-			}
-			catch (com.cannontech.database.TransactionException e) {
+			} catch (com.cannontech.database.TransactionException e) {
 				CTILogger.error( e.getMessage(), e );
 				serialNoSet.add( serialNo );
 				numFailure++;
@@ -195,11 +186,13 @@ public class AddSNRangeTask extends TimeConsumingTask {
 			}
 			
 			session.setAttribute(InventoryManagerUtil.INVENTORY_SET_DESC, resultDesc);
-			if (hardwareSet.size() > 0)
+			if (hardwareSet.size() > 0) {
 				session.setAttribute(InventoryManagerUtil.INVENTORY_SET, hardwareSet);
+			}
 			session.setAttribute(ServletUtils.ATT_REDIRECT, redirect);
-			if (confirmOnMessagePage)
+			if (confirmOnMessagePage) {
 				session.setAttribute(ServletUtils.ATT_REFERRER, session.getAttribute(ServletUtils.ATT_MSG_PAGE_REFERRER));
+			}
 		}
 	}
 

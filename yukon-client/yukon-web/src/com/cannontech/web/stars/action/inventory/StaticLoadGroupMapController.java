@@ -10,12 +10,12 @@ import com.cannontech.core.roleproperties.YukonRoleProperty;
 import com.cannontech.stars.database.data.lite.LiteStarsEnergyCompany;
 import com.cannontech.stars.util.ProgressChecker;
 import com.cannontech.stars.util.ServletUtils;
-import com.cannontech.stars.util.task.AddSNRangeTask;
-import com.cannontech.stars.util.task.AdjustStaticLoadGroupMappingsTask;
 import com.cannontech.stars.util.task.TimeConsumingTask;
 import com.cannontech.stars.web.StarsYukonUser;
 import com.cannontech.util.ServletUtil;
 import com.cannontech.web.stars.action.StarsInventoryActionController;
+import com.cannontech.web.util.task.AddSNRangeTask;
+import com.cannontech.web.util.task.AdjustStaticLoadGroupMappingsTask;
 
 public class StaticLoadGroupMapController extends StarsInventoryActionController {
 

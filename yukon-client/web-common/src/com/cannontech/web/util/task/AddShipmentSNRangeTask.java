@@ -1,10 +1,4 @@
-/*
- * Created on Apr 27, 2004
- *
- * To change the template for this generated file go to
- * Window>Preferences>Java>Code Generation>Code and Comments
- */
-package com.cannontech.stars.util.task;
+package com.cannontech.web.util.task;
 
 import java.util.ArrayList;
 import java.util.Date;
@@ -22,36 +16,30 @@ import com.cannontech.stars.database.db.hardware.Warehouse;
 import com.cannontech.stars.util.EventUtils;
 import com.cannontech.stars.util.InventoryUtils;
 import com.cannontech.stars.util.ServletUtils;
+import com.cannontech.stars.util.task.TimeConsumingTask;
 import com.cannontech.stars.web.StarsYukonUser;
 import com.cannontech.stars.web.util.InventoryManagerUtil;
 
-/**
- * @author yao
- *
- * To change the template for this generated type comment go to
- * Window>Preferences>Java>Code Generation>Code and Comments
- */
 public class AddShipmentSNRangeTask extends TimeConsumingTask {
 
-	LiteStarsEnergyCompany energyCompany = null;
-	/*TODO: We have a problem if they want to bring in non-numeric serial numbers as an add.
-     * 
-	 */
-    long snFrom = 0, snTo = 0;
-	Integer devTypeID = null;
-    Integer devStateID = null;
-	Date recvDate = null;
-	Integer voltageID = 0;
-	Integer companyID = 0;
-	Integer routeID = 0;
-    Integer warehouseID = 0;
-	HttpSession session;
+    private LiteStarsEnergyCompany energyCompany = null;
+	/*TODO: We have a problem if they want to bring in non-numeric serial numbers as an add.*/
+    private long snFrom = 0;
+    private long snTo = 0;
+    private Integer devTypeID = null;
+	private Integer devStateID = null;
+    private final Date recvDate = null;
+	private final Integer voltageID = 0;
+	private final Integer companyID = 0;
+	private Integer warehouseID = 0;
+    private final HttpSession session;
 	
-	List<String> serialNoSet = new ArrayList<String>();
-	int numSuccess = 0, numFailure = 0;
+    private final List<String> serialNoSet = new ArrayList<String>();
+    private int numSuccess = 0;
+    private int numFailure = 0;
 	
-	public AddShipmentSNRangeTask(LiteStarsEnergyCompany energyCompany, String snFrom, String snTo, Integer devTypeID, Integer devStateID, Integer warehouseID, HttpSession session)
-	{
+	public AddShipmentSNRangeTask(LiteStarsEnergyCompany energyCompany, String snFrom, String snTo, 
+	                              Integer devTypeID, Integer devStateID, Integer warehouseID, HttpSession session) {
 		this.energyCompany = energyCompany;
 		this.snFrom = Long.parseLong(snFrom);
 		this.snTo = Long.parseLong(snTo);
@@ -73,7 +61,8 @@ public class AddShipmentSNRangeTask extends TimeConsumingTask {
 	/* (non-Javadoc)
 	 * @see java.lang.Runnable#run()
 	 */
-	public void run() {
+	@Override
+    public void run() {
 		if (devTypeID == null) {
 			status = STATUS_ERROR;
 			errorMsg = "Device type cannot be null";
@@ -89,8 +78,7 @@ public class AddShipmentSNRangeTask extends TimeConsumingTask {
 		for (long sn = snFrom; sn <= snTo; sn++) {
 			String serialNo = String.valueOf(sn);
 			
-			try 
-            {
+			try  {
 				com.cannontech.stars.database.data.hardware.LMHardwareBase hardware =
 						new com.cannontech.stars.database.data.hardware.LMHardwareBase();
 				com.cannontech.stars.database.db.hardware.LMHardwareBase hwDB = hardware.getLMHardwareBase();
@@ -112,16 +100,14 @@ public class AddShipmentSNRangeTask extends TimeConsumingTask {
 				Integer inventoryID = hardware.getLMHardwareBase().getInventoryID();
                 EventUtils.logSTARSEvent(user.getUserID(), EventUtils.EVENT_CATEGORY_INVENTORY, devTypeID, inventoryID, session);
                 
-                if(warehouseID.intValue() > 0)
-                {
+                if(warehouseID.intValue() > 0) {
                    Warehouse house = new Warehouse();
                    house.setWarehouseID(warehouseID);
                    house.setInventoryID(inventoryID);
                    Transaction.createTransaction( Transaction.ADD_PARTIAL, house ).execute();
                 }
 				numSuccess++;
-			}
-			catch (com.cannontech.database.TransactionException e) {
+			} catch (com.cannontech.database.TransactionException e) {
 				CTILogger.error( e.getMessage(), e );
 				serialNoSet.add( serialNo );
 				numFailure++;

@@ -1,10 +1,4 @@
-/*
- * Created on Apr 28, 2004
- *
- * To change the template for this generated file go to
- * Window>Preferences>Java>Code Generation>Code and Comments
- */
-package com.cannontech.stars.util.task;
+package com.cannontech.web.util.task;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -23,9 +17,9 @@ import com.cannontech.database.data.lite.LiteCustomer;
 import com.cannontech.roles.operator.AdministratorRole;
 import com.cannontech.spring.YukonSpringHook;
 import com.cannontech.stars.core.dao.InventoryBaseDao;
+import com.cannontech.stars.database.data.lite.LiteAccountInfo;
 import com.cannontech.stars.database.data.lite.LiteLmHardwareBase;
 import com.cannontech.stars.database.data.lite.LiteStarsAppliance;
-import com.cannontech.stars.database.data.lite.LiteAccountInfo;
 import com.cannontech.stars.database.data.lite.LiteStarsEnergyCompany;
 import com.cannontech.stars.database.data.lite.StarsLiteFactory;
 import com.cannontech.stars.database.db.hardware.LMHardwareConfiguration;
@@ -38,32 +32,29 @@ import com.cannontech.stars.util.ECUtils;
 import com.cannontech.stars.util.ServletUtils;
 import com.cannontech.stars.util.StarsUtils;
 import com.cannontech.stars.util.WebClientException;
+import com.cannontech.stars.util.task.TimeConsumingTask;
 import com.cannontech.stars.web.StarsYukonUser;
 import com.cannontech.stars.web.util.InventoryManagerUtil;
 import com.cannontech.stars.xml.serialize.StarsCustAccountInformation;
 import com.cannontech.stars.xml.serialize.StarsInventory;
 import com.google.common.collect.Lists;
 
-/**
- * @author yao
- *
- * TODO: See YUK-3063 for details on this topic at Xcel
- */
 public class AdjustStaticLoadGroupMappingsTask extends TimeConsumingTask {
 	
-	LiteStarsEnergyCompany energyCompany = null;
-	boolean fullReset = false;
-    boolean sendConfig = true;
+    private LiteStarsEnergyCompany energyCompany = null;
+    private boolean fullReset = false;
+    private boolean sendConfig = true;
     String redirect;
-	HttpSession session;
+    private final HttpSession session;
 	
-	List<StaticLoadGroupMapping> mappingsToAdjust = null;
-	List<LiteLmHardwareBase> hwsToAdjust = null;
-	List<LiteLmHardwareBase> configurationSet = new ArrayList<LiteLmHardwareBase>();
-    List<String> failureInfo = new ArrayList<String>();
+    private List<StaticLoadGroupMapping> mappingsToAdjust = null;
+    private List<LiteLmHardwareBase> hwsToAdjust = null;
+    private final List<LiteLmHardwareBase> configurationSet = new ArrayList<LiteLmHardwareBase>();
+    private final List<String> failureInfo = new ArrayList<String>();
     //don't need since liteHw already has the config loaded....HashMap<Integer, com.cannontech.database.db.stars.hardware.LMHardwareConfiguration> existingConfigEntries;
-	int numSuccess = 0, numFailure = 0;
-	int numToBeConfigured = 0;
+    private int numSuccess = 0;
+    private int numFailure = 0;
+    private int numToBeConfigured = 0;
 	
 	public AdjustStaticLoadGroupMappingsTask(LiteStarsEnergyCompany energyCompany, boolean fullReset, boolean sendConfig, String redirect, HttpSession session)
 	{
@@ -94,7 +85,8 @@ public class AdjustStaticLoadGroupMappingsTask extends TimeConsumingTask {
 		}
 	}
 
-	public void run() {
+	@Override
+    public void run() {
 		StarsYukonUser user = (StarsYukonUser) session.getAttribute( ServletUtils.ATT_STARS_YUKON_USER );
         
         StringBuffer logEntry = new StringBuffer();

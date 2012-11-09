@@ -1,4 +1,4 @@
-package com.cannontech.stars.util.task;
+package com.cannontech.web.util.task;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -16,8 +16,8 @@ import com.cannontech.database.data.activity.ActivityLogActions;
 import com.cannontech.stars.database.cache.StarsDatabaseCache;
 import com.cannontech.stars.database.data.hardware.LMHardwareBase;
 import com.cannontech.stars.database.data.lite.LiteInventoryBase;
-import com.cannontech.stars.database.data.lite.LiteStarsEnergyCompany;
 import com.cannontech.stars.database.data.lite.LiteLmHardwareBase;
+import com.cannontech.stars.database.data.lite.LiteStarsEnergyCompany;
 import com.cannontech.stars.database.data.lite.StarsLiteFactory;
 import com.cannontech.stars.database.db.hardware.InventoryBase;
 import com.cannontech.stars.database.db.hardware.Warehouse;
@@ -25,6 +25,7 @@ import com.cannontech.stars.util.ECUtils;
 import com.cannontech.stars.util.EventUtils;
 import com.cannontech.stars.util.InventoryUtils;
 import com.cannontech.stars.util.ServletUtils;
+import com.cannontech.stars.util.task.TimeConsumingTask;
 import com.cannontech.stars.web.StarsYukonUser;
 import com.cannontech.stars.web.bean.InventoryBean;
 import com.cannontech.stars.web.bean.ManipulationBean;
@@ -34,29 +35,26 @@ import com.cannontech.stars.xml.serialize.StarsInventory;
 import com.google.common.collect.Maps;
 
 public class ManipulateInventoryTask extends TimeConsumingTask {
-    LiteStarsEnergyCompany currentCompany = null;
-    Integer newEnergyCompanyID = null;
-    Integer newDevTypeID = null;
-    List<LiteInventoryBase> selectedInventory = new ArrayList<LiteInventoryBase>();
-    String invenStatus = null;
-    Integer newDevStateID = null;
-    Integer newServiceCompanyID = null;
-    Integer newWarehouseID = null;
-    String serialFrom = null;
-    String serialTo = null;
-    boolean hasChanged = false;
-    boolean devTypeChanged = false;
-    boolean stateChanged = false;
-    boolean warehouseChanged = false;
+    private LiteStarsEnergyCompany currentCompany = null;
+    private Integer newEnergyCompanyID = null;
+    private Integer newDevTypeID = null;
+    private List<LiteInventoryBase> selectedInventory = new ArrayList<LiteInventoryBase>();
+    private String invenStatus = null;
+    private Integer newDevStateID = null;
+    private Integer newServiceCompanyID = null;
+    private Integer newWarehouseID = null;
+    private boolean hasChanged = false;
+    private boolean stateChanged = false;
+    private boolean warehouseChanged = false;
     private final boolean confirmOnMessagePage;
     private final String redirect;
     private final HttpSession session;
 
-    List<LiteLmHardwareBase> hardwareSet = new ArrayList<LiteLmHardwareBase>();
-    int numSuccess = 0, numFailure = 0;
-    int numToBeUpdated = 0;
+    private final List<LiteLmHardwareBase> hardwareSet = new ArrayList<LiteLmHardwareBase>();
+    private int numSuccess = 0, numFailure = 0;
+    private int numToBeUpdated = 0;
 
-    List<String> failedSerialNumbers = new ArrayList<String>();
+    private final List<String> failedSerialNumbers = new ArrayList<String>();
 
     public ManipulateInventoryTask(LiteStarsEnergyCompany currentCompany, Integer newEnergyCompanyID,
                                    List<LiteInventoryBase> selectedInventory, Integer newDevTypeID,
@@ -93,6 +91,7 @@ public class ManipulateInventoryTask extends TimeConsumingTask {
         }
     }
 
+    @Override
     public void run() {
         status = STATUS_RUNNING;
 

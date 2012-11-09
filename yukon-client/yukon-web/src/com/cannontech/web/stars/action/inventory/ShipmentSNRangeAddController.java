@@ -10,12 +10,12 @@ import com.cannontech.stars.database.data.lite.LiteStarsEnergyCompany;
 import com.cannontech.stars.database.db.purchasing.Shipment;
 import com.cannontech.stars.util.ProgressChecker;
 import com.cannontech.stars.util.ServletUtils;
-import com.cannontech.stars.util.task.AddSNRangeTask;
-import com.cannontech.stars.util.task.AddShipmentSNRangeTask;
 import com.cannontech.stars.util.task.TimeConsumingTask;
 import com.cannontech.stars.web.StarsYukonUser;
 import com.cannontech.stars.web.bean.PurchaseBean;
 import com.cannontech.web.stars.action.StarsInventoryActionController;
+import com.cannontech.web.util.task.AddSNRangeTask;
+import com.cannontech.web.util.task.AddShipmentSNRangeTask;
 
 public class ShipmentSNRangeAddController extends StarsInventoryActionController {
 

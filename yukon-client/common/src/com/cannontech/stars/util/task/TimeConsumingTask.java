@@ -21,9 +21,9 @@ public abstract class TimeConsumingTask implements Runnable {
 	public static final int STATUS_CANCELED = 3;
 	public static final int STATUS_ERROR = 4;
 	
-	int status = STATUS_NOT_INIT;
-	boolean isCanceled = false;
-	String errorMsg = null;
+	protected int status = STATUS_NOT_INIT;
+	protected boolean isCanceled = false;
+	protected String errorMsg = null;
 	
 	/**
 	 * Return the current status of the task, the return value
