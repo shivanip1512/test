@@ -1205,6 +1205,10 @@
         <property name="deviceDao" ref="deviceDao" />
         <property name="attributeService" ref="attributeService"/>
     </bean>
+
+    <bean id="globalSettingTagPrototype" class="com.cannontech.web.taglib.GlobalSettingTag">
+        <property name="globalSettingDao" ref="globalSettingDao" />
+    </bean>
     
     <bean id="formatDateTagPrototype" class="com.cannontech.web.taglib.FormatDateTag">
         <property name="dateFormattingService" ref="dateFormattingService"/>
