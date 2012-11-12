@@ -4,7 +4,7 @@ import java.util.HashMap;
 
 import javax.servlet.http.HttpServletRequest;
 
-import com.cannontech.util.ParamUtil;
+import com.cannontech.web.util.ParamUtil;
 
 
 /**

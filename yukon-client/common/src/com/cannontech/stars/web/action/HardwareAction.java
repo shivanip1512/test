@@ -3,8 +3,6 @@ package com.cannontech.stars.web.action;
 import java.util.ArrayList;
 import java.util.List;
 
-import javax.servlet.http.HttpSession;
-
 import com.cannontech.clientutils.ActivityLogger;
 import com.cannontech.clientutils.CTILogger;
 import com.cannontech.common.constants.YukonListEntryTypes;
@@ -44,10 +42,8 @@ import com.cannontech.stars.dr.program.service.ProgramEnrollment;
 import com.cannontech.stars.dr.program.service.ProgramEnrollmentService;
 import com.cannontech.stars.util.InventoryUtils;
 import com.cannontech.stars.util.ServletUtils;
-import com.cannontech.stars.util.StarsUtils;
 import com.cannontech.stars.util.SwitchCommandQueue;
 import com.cannontech.stars.util.WebClientException;
-import com.cannontech.stars.web.StarsYukonUser;
 import com.cannontech.stars.web.util.InventoryManagerUtil;
 import com.cannontech.stars.xml.serialize.StarsAppliances;
 import com.cannontech.stars.xml.serialize.StarsCustAccountInformation;
@@ -184,70 +180,37 @@ public class HardwareAction {
     /* from UpdateLMHardwareAction
      * formerly name parseResponse()
      */
-    public static void removeRouteResponse(int origInvID, StarsInventory starsInv, StarsCustAccountInformation starsAcctInfo, HttpSession session) {
-              StarsInventories starsInvs = starsAcctInfo.getStarsInventories();
-    
-              for (int i = 0; i < starsInvs.getStarsInventoryCount(); i++) {
-                  if (starsInvs.getStarsInventory(i).getInventoryID() == origInvID) {
-                      starsInvs.removeStarsInventory(i);
-                      break;
-                  }
-              }
-    
-              StarsAppliances starsApps = starsAcctInfo.getStarsAppliances();
-              if (starsApps != null) {
-                  for (int i = 0; i < starsApps.getStarsApplianceCount(); i++) {
-                      if (starsApps.getStarsAppliance(i).getInventoryID() == origInvID) {
-                        starsApps.getStarsAppliance(i).setInventoryID(starsInv.getInventoryID());
-                    }
-                  }
-              }
-    
-              String deviceLabel = ServletUtils.getInventoryLabel(starsInv);
-              int invNo = 0;
-              for (; invNo < starsInvs.getStarsInventoryCount(); invNo++) {
-                  String label = ServletUtils.getInventoryLabel(starsInvs.getStarsInventory(invNo));
-                  if (label.compareTo(deviceLabel) > 0) {
-                    break;
-                }
-              }
-    
-              starsInvs.addStarsInventory(invNo, starsInv);
-    
-              if (session != null) {
-                  String redirect = (String) session.getAttribute(ServletUtils.ATT_REDIRECT);
-                  if (redirect != null) {
-                      // redirect should ends with "InvNo=X" or "Item=X", replace "X"
-                      // with the new location
-                      int pos = redirect.lastIndexOf("InvNo=");
-                      if (pos >= 0) {
-                          // Request from Inventory.jsp
-                          session.setAttribute(ServletUtils.ATT_REDIRECT, redirect.substring(0, pos + 6) + invNo);
-                      } else {
-                          pos = redirect.lastIndexOf("Item=");
-                          if (pos >= 0) {
-                              // Request from NewLabel.jsp, only count thermostats
-                              int itemNo = 0;
-                              for (int i = 0; i < invNo; i++) {
-                                  StarsInventory inv = starsInvs.getStarsInventory(i);
-                                  if (inv.getLMHardware() != null && inv.getLMHardware().getStarsThermostatSettings() != null) {
-                                    itemNo++;
-                                }
-                              }
-    
-                              session.setAttribute(ServletUtils.ATT_REDIRECT, redirect.substring(0, pos + 5) + itemNo);
-                          }
-                      }
-                  }
-    
-                  StarsYukonUser user = (StarsYukonUser) session.getAttribute(ServletUtils.ATT_STARS_YUKON_USER);
-                  if (StarsUtils.isOperator(user.getYukonUser())) {
-                    session.setAttribute(ServletUtils.ATT_CONFIRM_MESSAGE, "Hardware information updated successfully");
-                } else {
-                    session.setAttribute(ServletUtils.ATT_CONFIRM_MESSAGE, "Thermostat name updated successfully");
-                }
-              }
-          }
+    public static void removeRouteResponse(int origInvID, StarsInventory starsInv, StarsCustAccountInformation starsAcctInfo) {
+        StarsInventories starsInvs = starsAcctInfo.getStarsInventories();
+
+        for (int i = 0; i < starsInvs.getStarsInventoryCount(); i++) {
+            if (starsInvs.getStarsInventory(i).getInventoryID() == origInvID) {
+                starsInvs.removeStarsInventory(i);
+                break;
+            }
+        }
+
+        StarsAppliances starsApps = starsAcctInfo.getStarsAppliances();
+        if (starsApps != null) {
+            for (int i = 0; i < starsApps.getStarsApplianceCount(); i++) {
+                if (starsApps.getStarsAppliance(i).getInventoryID() == origInvID) {
+                    starsApps.getStarsAppliance(i).setInventoryID(starsInv.getInventoryID());
+                } 
+            }
+        }
+
+        String deviceLabel = ServletUtils.getInventoryLabel(starsInv);
+        int invNo;
+        for (invNo = 0; invNo < starsInvs.getStarsInventoryCount(); invNo++) {
+            String label = ServletUtils.getInventoryLabel(starsInvs.getStarsInventory(invNo));
+            if (label.compareTo(deviceLabel) > 0) {
+                break;
+            }
+        }
+
+        starsInvs.addStarsInventory(invNo, starsInv);
+
+    }
 
     /* from UpdateLMHardwareConfigAction */
     public static void saveSwitchCommand(LiteLmHardwareBase liteHw, String commandType, LiteStarsEnergyCompany energyCompany) {
@@ -256,7 +219,7 @@ public class HardwareAction {
         cmd.setAccountID(liteHw.getAccountID());
         cmd.setInventoryID(liteHw.getInventoryID());
         cmd.setCommandType(commandType);
-    
+
         SwitchCommandQueue.getInstance().addCommand(cmd, true);
     }
 

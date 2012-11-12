@@ -566,8 +566,7 @@ public class StarsAdminUtil {
 	                                                                                energyCompany);
 	                HardwareAction.removeRouteResponse(liteHw.getInventoryID(), 
 	                                                   starsInv, 
-	                                                   starsAcctInfo, 
-	                                                   null);
+	                                                   starsAcctInfo);
 	            }
 	        }
 	    }

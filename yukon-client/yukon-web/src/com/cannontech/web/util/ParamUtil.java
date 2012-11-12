@@ -1,10 +1,12 @@
-package com.cannontech.util;
+package com.cannontech.web.util;
 
 import java.text.DateFormat;
 import java.util.Date;
 import java.util.Enumeration;
 
 import javax.servlet.ServletRequest;
+
+import com.cannontech.util.GetterUtil;
 
 /**
  * Util for getting parameters from the request object allowing for

@@ -25,9 +25,9 @@ import com.cannontech.message.capcontrol.streamable.SubBus;
 import com.cannontech.servlet.nav.CBCNavigationUtil;
 import com.cannontech.spring.YukonSpringHook;
 import com.cannontech.user.YukonUserContext;
-import com.cannontech.util.ParamUtil;
 import com.cannontech.util.ServletUtil;
 import com.cannontech.web.capcontrol.CBCWebUtils;
+import com.cannontech.web.util.ParamUtil;
 
 @SuppressWarnings("serial")
 public class OnelineCBCServlet extends HttpServlet {

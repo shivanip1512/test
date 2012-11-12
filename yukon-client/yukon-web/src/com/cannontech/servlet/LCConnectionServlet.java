@@ -37,13 +37,13 @@ import com.cannontech.message.dispatch.message.Multi;
 import com.cannontech.roles.loadcontrol.DirectLoadcontrolRole;
 import com.cannontech.spring.YukonSpringHook;
 import com.cannontech.user.YukonUserContext;
-import com.cannontech.util.ParamUtil;
 import com.cannontech.util.ServletUtil;
 import com.cannontech.web.loadcontrol.ILCCmds;
 import com.cannontech.web.loadcontrol.LMCmdMsgFactory;
 import com.cannontech.web.loadcontrol.LMSession;
 import com.cannontech.web.loadcontrol.LoadcontrolCache;
 import com.cannontech.web.loadcontrol.WebCmdMsg;
+import com.cannontech.web.util.ParamUtil;
 
 public class LCConnectionServlet extends ErrorAwareInitializingServlet implements java.util.Observer {
 		

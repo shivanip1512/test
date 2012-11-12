@@ -37,13 +37,13 @@ import com.cannontech.i18n.YukonUserContextMessageSourceResolver;
 import com.cannontech.message.capcontrol.streamable.StreamableCapObject;
 import com.cannontech.servlet.nav.CBCNavigationUtil;
 import com.cannontech.user.YukonUserContext;
-import com.cannontech.util.ParamUtil;
 import com.cannontech.util.ServletUtil;
 import com.cannontech.web.capcontrol.models.ControlEventSet;
 import com.cannontech.web.capcontrol.models.ResultRow;
 import com.cannontech.web.lite.LiteBaseResults;
 import com.cannontech.web.lite.LiteWrapper;
 import com.cannontech.web.security.annotation.CheckRoleProperty;
+import com.cannontech.web.util.ParamUtil;
 import com.google.common.collect.Lists;
 
 @Controller

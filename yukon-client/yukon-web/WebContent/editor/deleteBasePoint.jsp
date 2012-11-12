@@ -2,7 +2,7 @@
 <jsp:directive.page import="com.cannontech.web.delete.DeleteFormPoint"/>
 <jsp:directive.page import="com.cannontech.web.util.JSFUtil"/>
 <jsp:directive.page import="com.cannontech.web.util.JSFParamUtil"/>
-<jsp:directive.page import="com.cannontech.util.ParamUtil"/>
+<jsp:directive.page import="com.cannontech.web.util.ParamUtil"/>
 <%@ page import="com.cannontech.web.editor.*" %>
 <%@ taglib uri="http://java.sun.com/jsf/html" prefix="h"%>
 <%@ taglib uri="http://java.sun.com/jsf/core" prefix="f"%>
