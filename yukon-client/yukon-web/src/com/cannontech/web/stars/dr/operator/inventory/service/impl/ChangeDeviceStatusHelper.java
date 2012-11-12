@@ -8,6 +8,7 @@ import com.cannontech.stars.util.ObjectInOtherEnergyCompanyException;
 import com.cannontech.user.YukonUserContext;
 import com.cannontech.web.stars.dr.operator.inventory.service.CollectionBasedInventoryTask;
 import com.cannontech.web.stars.dr.operator.inventory.service.InventoryActionsHelper;
+import com.cannontech.web.util.SessionUtil;
 
 public class ChangeDeviceStatusHelper extends InventoryActionsHelper {
 
@@ -38,6 +39,7 @@ public class ChangeDeviceStatusHelper extends InventoryActionsHelper {
             this.statusEntryId = statusEntryId;
         }
         
+        @Override
         public Runnable getProcessor() {
             return new Runnable() {
                 @Override
@@ -45,7 +47,8 @@ public class ChangeDeviceStatusHelper extends InventoryActionsHelper {
                     for (InventoryIdentifier inv : collection.getList()) {
                         if (canceled) break;
                         try {
-                            hardwareService.changeDeviceStatus(context, inv, statusEntryId, session);
+                            int userId = SessionUtil.getParentLoginUserId(session, context.getYukonUser().getUserID());
+                            hardwareService.changeDeviceStatus(context, inv, statusEntryId, userId);
                             successCount++;
                         } catch (ObjectInOtherEnergyCompanyException e) {
                             /* Inventory was probably in a member energy comany */

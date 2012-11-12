@@ -57,6 +57,7 @@ public SAMToCRS_PTJ(Integer ptjID, Integer premiseNumber, String debtorNumber, S
 	this.starsUserName = starsUserName;
 }
 
+@Override
 public void add() throws java.sql.SQLException 
 {
 	if (getPTJID() == null)
@@ -68,6 +69,7 @@ public void add() throws java.sql.SQLException
     add( TABLE_NAME, setValues );
 }
 
+@Override
 public void delete() throws java.sql.SQLException 
 {
     Object constraintValues[] = { getPTJID() };
@@ -76,6 +78,7 @@ public void delete() throws java.sql.SQLException
 }
 
 
+@Override
 public void retrieve() throws java.sql.SQLException 
 {
     Object constraintValues[] = { getPTJID() };
@@ -97,6 +100,7 @@ public void retrieve() throws java.sql.SQLException
 }
 
 
+@Override
 public void update() throws java.sql.SQLException 
 {
     Object setValues[] = { getPTJID(), getPremiseNumber(), getDebtorNumber(), 
@@ -316,9 +320,9 @@ public static void handleCRSIntegration(int stateYukDefID, WorkOrderBase workOrd
                 YukonSelectionList invDevStateList = liteStarsEC.getYukonSelectionList(YukonSelectionListDefs.YUK_LIST_NAME_DEVICE_STATUS);
                 for (int i = 0; i < invDevStateList.getYukonListEntries().size(); i++)
                 {
-                    if( ((YukonListEntry)invDevStateList.getYukonListEntries().get(i)).getYukonDefID() == devStatYukDefID)
+                    if( invDevStateList.getYukonListEntries().get(i).getYukonDefID() == devStatYukDefID)
                     {
-                        devStateEntry = (YukonListEntry)invDevStateList.getYukonListEntries().get(i);
+                        devStateEntry = invDevStateList.getYukonListEntries().get(i);
                         break;
                     }
                     
@@ -331,14 +335,14 @@ public static void handleCRSIntegration(int stateYukDefID, WorkOrderBase workOrd
                         com.cannontech.stars.database.data.hardware.LMHardwareBase lmHardwareBase = new com.cannontech.stars.database.data.hardware.LMHardwareBase();
                         lmHardwareBase.setInventoryID(hardware.getInventoryID());
                         lmHardwareBase.setLMHardwareBase(hardware);
-                        lmHardwareBase = (com.cannontech.stars.database.data.hardware.LMHardwareBase)Transaction.createTransaction(Transaction.RETRIEVE, lmHardwareBase).execute();
+                        lmHardwareBase = Transaction.createTransaction(Transaction.RETRIEVE, lmHardwareBase).execute();
                         
                         //Update the lmHardwareBase data object
                         lmHardwareBase.getInventoryBase().setCurrentStateID(new Integer(devStateEntry.getEntryID()));
-                        lmHardwareBase = (com.cannontech.stars.database.data.hardware.LMHardwareBase)Transaction.createTransaction(Transaction.UPDATE, lmHardwareBase).execute();
+                        lmHardwareBase = Transaction.createTransaction(Transaction.UPDATE, lmHardwareBase).execute();
                         
                         //Log the inventory (lmHardwarebase) state change.
-                        EventUtils.logSTARSEvent(userID, EventUtils.EVENT_CATEGORY_INVENTORY, lmHardwareBase.getInventoryBase().getCurrentStateID().intValue(), lmHardwareBase.getInventoryBase().getInventoryID().intValue(), null);
+                        EventUtils.logSTARSEvent(userID, EventUtils.EVENT_CATEGORY_INVENTORY, lmHardwareBase.getInventoryBase().getCurrentStateID().intValue(), lmHardwareBase.getInventoryBase().getInventoryID().intValue());
 
                         //Add a config to the queue to deactivate the switch
                         SwitchCommand switchCommand = new SwitchCommandQueue.SwitchCommand();

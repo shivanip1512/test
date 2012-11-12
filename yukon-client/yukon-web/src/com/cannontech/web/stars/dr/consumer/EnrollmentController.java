@@ -32,6 +32,7 @@ import com.cannontech.stars.util.EventUtils;
 import com.cannontech.user.YukonUserContext;
 import com.cannontech.web.security.WebSecurityChecker;
 import com.cannontech.web.security.annotation.CheckRoleProperty;
+import com.cannontech.web.util.SessionUtil;
 import com.google.common.collect.Lists;
 import com.google.common.collect.Sets;
 
@@ -208,11 +209,10 @@ public class EnrollmentController extends AbstractConsumerController {
 
         model.addAttribute("enrollmentResult", ProgramEnrollmentResultEnum.SUCCESS);
 
-        EventUtils.logSTARSEvent(userContext.getYukonUser().getUserID(),
-                                 EventUtils.EVENT_CATEGORY_ACCOUNT,
+        int userId = SessionUtil.getParentLoginUserId(session, userContext.getYukonUser().getUserID());
+        EventUtils.logSTARSEvent(userId, EventUtils.EVENT_CATEGORY_ACCOUNT,
                                  YukonListEntryTypes.EVENT_ACTION_CUST_ACCT_UPDATED,
-                                 accountId,
-                                 session);
+                                 accountId);
 
         return "consumer/enrollment/enrollmentResult.jsp";
     }

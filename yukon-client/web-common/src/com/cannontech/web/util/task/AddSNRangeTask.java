@@ -27,6 +27,7 @@ import com.cannontech.stars.util.ServletUtils;
 import com.cannontech.stars.util.task.TimeConsumingTask;
 import com.cannontech.stars.web.StarsYukonUser;
 import com.cannontech.stars.web.util.InventoryManagerUtil;
+import com.cannontech.web.util.SessionUtil;
 import com.google.common.collect.Lists;
 
 public class AddSNRangeTask extends TimeConsumingTask {
@@ -151,7 +152,8 @@ public class AddSNRangeTask extends TimeConsumingTask {
 				hardware = Transaction.createTransaction( Transaction.INSERT, hardware ).execute();
 				
 				Integer inventoryID = hardware.getLMHardwareBase().getInventoryID();
-                EventUtils.logSTARSEvent(user.getUserID(), EventUtils.EVENT_CATEGORY_INVENTORY, devStateID, inventoryID, session);
+				int userId = SessionUtil.getParentLoginUserId(session, user.getUserID());
+                EventUtils.logSTARSEvent(userId, EventUtils.EVENT_CATEGORY_INVENTORY, devStateID, inventoryID);
                 numSuccess++;
 			} catch (com.cannontech.database.TransactionException e) {
 				CTILogger.error( e.getMessage(), e );

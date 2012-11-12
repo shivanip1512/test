@@ -2,8 +2,6 @@ package com.cannontech.stars.dr.hardware.service;
 
 import java.sql.SQLException;
 
-import javax.servlet.http.HttpSession;
-
 import com.cannontech.common.constants.YukonListEntry;
 import com.cannontech.common.device.commands.exception.CommandCompletionException;
 import com.cannontech.common.inventory.InventoryIdentifier;
@@ -33,16 +31,17 @@ public interface HardwareService {
     public void changeType(YukonUserContext context, InventoryIdentifier inv, YukonListEntry typeEntry) throws ObjectInOtherEnergyCompanyException;
     
     /**
-     * Change the device status of the inventory, The session is needed since
-     * this change will spawn an event and the event needs to be attached to the
-     * parent energy company user if they are managing a member.
+     * Change the device status of the inventory.
+     * 
+     * The userId is needed as this change will spawn an event which needs to be attached
+     * to the parent energy company user if they are managing a member (not necessarily same as context user).
+     * 
      * @param context
      * @param inv
      * @param statusEntryId The new device status yukon list entry id
-     * @param session 
      * @throws ObjectInOtherEnergyCompanyException 
      */
-    public void changeDeviceStatus(YukonUserContext context, InventoryIdentifier inv, int statusEntryId, HttpSession session) throws ObjectInOtherEnergyCompanyException;
+    public void changeDeviceStatus(YukonUserContext context, InventoryIdentifier inv, int statusEntryId, int userId) throws ObjectInOtherEnergyCompanyException;
 
     /**
      * Change the service company of the inventory

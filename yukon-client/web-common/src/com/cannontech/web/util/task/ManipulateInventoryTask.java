@@ -32,6 +32,7 @@ import com.cannontech.stars.web.bean.ManipulationBean;
 import com.cannontech.stars.web.util.InventoryManagerUtil;
 import com.cannontech.stars.xml.serialize.StarsCustAccountInformation;
 import com.cannontech.stars.xml.serialize.StarsInventory;
+import com.cannontech.web.util.SessionUtil;
 import com.google.common.collect.Maps;
 
 public class ManipulateInventoryTask extends TimeConsumingTask {
@@ -254,12 +255,12 @@ public class ManipulateInventoryTask extends TimeConsumingTask {
                             }
                         }
                     }
-                    if (stateChanged)
-                        EventUtils.logSTARSEvent(user.getUserID(),
-                                                 EventUtils.EVENT_CATEGORY_INVENTORY,
+                    if (stateChanged) {
+                        int userId = SessionUtil.getParentLoginUserId(session, user.getUserID());
+                        EventUtils.logSTARSEvent(userId,  EventUtils.EVENT_CATEGORY_INVENTORY,
                                                  invDB.getCurrentStateID().intValue(),
-                                                 invDB.getInventoryID().intValue(),
-                                                 session);
+                                                 invDB.getInventoryID().intValue());
+                    }
                 }
 
                 if (warehouseChanged) {

@@ -67,8 +67,8 @@ import com.cannontech.stars.core.service.YukonEnergyCompanyService;
 import com.cannontech.stars.database.cache.StarsDatabaseCache;
 import com.cannontech.stars.database.data.event.EventInventory;
 import com.cannontech.stars.database.data.lite.LiteInventoryBase;
-import com.cannontech.stars.database.data.lite.LiteStarsEnergyCompany;
 import com.cannontech.stars.database.data.lite.LiteLmHardwareBase;
+import com.cannontech.stars.database.data.lite.LiteStarsEnergyCompany;
 import com.cannontech.stars.database.db.hardware.Warehouse;
 import com.cannontech.stars.dr.account.dao.CustomerAccountDao;
 import com.cannontech.stars.dr.account.model.CustomerAccount;
@@ -101,6 +101,7 @@ import com.cannontech.web.stars.dr.operator.hardware.service.ZigbeeDeviceService
 import com.cannontech.web.stars.dr.operator.hardware.validator.SerialNumberValidator;
 import com.cannontech.web.stars.dr.operator.service.AccountInfoFragmentHelper;
 import com.cannontech.web.stars.dr.operator.service.OperatorAccountService;
+import com.cannontech.web.util.SessionUtil;
 import com.google.common.base.Predicate;
 import com.google.common.collect.ArrayListMultimap;
 import com.google.common.collect.Iterables;
@@ -228,7 +229,7 @@ public class OperatorHardwareController {
         }
         
         try {
-            LiteLmHardwareBase possibleDuplicate = (LiteLmHardwareBase) starsSearchDao.searchLmHardwareBySerialNumber(serialNumber.getSerialNumber(), fragment.getEnergyCompanyId());
+            LiteLmHardwareBase possibleDuplicate = starsSearchDao.searchLmHardwareBySerialNumber(serialNumber.getSerialNumber(), fragment.getEnergyCompanyId());
 
             InventoryCheckingAddDto inventoryCheckingAddDto = new InventoryCheckingAddDto(serialNumber.getSerialNumber());
             inventoryCheckingAddDto.setHardwareTypeId(hardwareTypeId);
@@ -427,7 +428,8 @@ public class OperatorHardwareController {
         
         /* If the device status was changed, spawn an event for it */
         if (statusChange) {
-            EventUtils.logSTARSEvent(user.getUserID(), EventUtils.EVENT_CATEGORY_INVENTORY, hardware.getDeviceStatusEntryId(), inventoryId, request.getSession());
+            int userId = SessionUtil.getParentLoginUserId(request.getSession(), user.getUserID());
+            EventUtils.logSTARSEvent(userId, EventUtils.EVENT_CATEGORY_INVENTORY, hardware.getDeviceStatusEntryId(), inventoryId);
         }
         
         /* Flash hardware updated */

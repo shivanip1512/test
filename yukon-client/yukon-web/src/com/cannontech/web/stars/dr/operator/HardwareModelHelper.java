@@ -26,6 +26,7 @@ import com.cannontech.stars.dr.hardware.service.HardwareUiService;
 import com.cannontech.stars.util.EventUtils;
 import com.cannontech.stars.util.ObjectInOtherEnergyCompanyException;
 import com.cannontech.web.stars.dr.operator.hardware.validator.HardwareValidator;
+import com.cannontech.web.util.SessionUtil;
 
 public class HardwareModelHelper {
     
@@ -73,7 +74,8 @@ public class HardwareModelHelper {
             /* If the device status was set, spawn an event for it. */
             /* This is within the try block because it relies on inventoryId being set */
             if (hardware.getDeviceStatusEntryId() != null && hardware.getDeviceStatusEntryId() != 0) {
-                EventUtils.logSTARSEvent(user.getUserID(), EventUtils.EVENT_CATEGORY_INVENTORY, hardware.getDeviceStatusEntryId(), inventoryId, session);
+                int userId = SessionUtil.getParentLoginUserId(session, user.getUserID());
+                EventUtils.logSTARSEvent(userId, EventUtils.EVENT_CATEGORY_INVENTORY, hardware.getDeviceStatusEntryId(), inventoryId);
             }
         } catch (BadTemplateDeviceCreationException e) {
             result.rejectValue("serialNumber", "yukon.web.modules.operator.hardware.error.rfCreationError");

@@ -38,7 +38,6 @@ import org.springframework.web.servlet.ModelAndView;
 import com.cannontech.common.constants.YukonListEntryTypes;
 import com.cannontech.common.events.loggers.AccountEventLogService;
 import com.cannontech.common.events.loggers.SystemEventLogService;
-import com.cannontech.common.exception.NotAuthorizedException;
 import com.cannontech.common.i18n.MessageSourceAccessor;
 import com.cannontech.common.model.Substation;
 import com.cannontech.common.util.RecentResultsCache;
@@ -97,6 +96,7 @@ import com.cannontech.web.stars.dr.operator.validator.LoginPasswordValidator;
 import com.cannontech.web.stars.dr.operator.validator.LoginUsernameValidator;
 import com.cannontech.web.stars.dr.operator.validator.LoginValidatorFactory;
 import com.cannontech.web.util.JsonView;
+import com.cannontech.web.util.SessionUtil;
 import com.cannontech.web.util.TextView;
 import com.google.common.collect.Lists;
 
@@ -426,8 +426,9 @@ public class OperatorAccountController {
             	            residentialLoginService.createResidentialLogin(accountGeneral.getLoginBackingBean(), user, accountId, energyCompany.getEnergyCompanyId());
             	            /* Added Event Log Message */
             	        }
-            	        EventUtils.logSTARSEvent(user.getUserID(), EventUtils.EVENT_CATEGORY_ACCOUNT, 
-            	                                 YukonListEntryTypes.EVENT_ACTION_CUST_ACCT_CREATED, accountId, session);
+            	        int userId = SessionUtil.getParentLoginUserId(session, user.getUserID());
+            	        EventUtils.logSTARSEvent(userId, EventUtils.EVENT_CATEGORY_ACCOUNT, 
+            	                                 YukonListEntryTypes.EVENT_ACTION_CUST_ACCT_CREATED, accountId);
             	        return accountId;
     	            }
     	        });
@@ -587,10 +588,11 @@ public class OperatorAccountController {
             
             /* ensure that we are only updating passwords on existing accounts */
             residentialLoginService.updateResidentialPassword(loginBackingBean, userContext, residentialUser);
-            
+          
             /* Added Event Log Message */
-            EventUtils.logSTARSEvent(userContext.getYukonUser().getUserID(), EventUtils.EVENT_CATEGORY_ACCOUNT, 
-                                     YukonListEntryTypes.EVENT_ACTION_CUST_ACCT_UPDATED, accountInfoFragment.getAccountId(), session);
+            int userId = SessionUtil.getParentLoginUserId(session, userContext.getYukonUser().getUserID());
+            EventUtils.logSTARSEvent(userId, EventUtils.EVENT_CATEGORY_ACCOUNT, 
+                                     YukonListEntryTypes.EVENT_ACTION_CUST_ACCT_UPDATED, accountInfoFragment.getAccountId());
             
             /* tell the browser this action passed */
             response.setStatus(HttpServletResponse.SC_OK);
@@ -702,9 +704,11 @@ public class OperatorAccountController {
                                                                                residentialUser,
                                                                                accountInfoFragment.getEnergyCompanyId());
                             }
+                            
                             /* Added Event Log Message */
-                            EventUtils.logSTARSEvent(userContext.getYukonUser().getUserID(), EventUtils.EVENT_CATEGORY_ACCOUNT, 
-                                                     YukonListEntryTypes.EVENT_ACTION_CUST_ACCT_UPDATED, accountInfoFragment.getAccountId(), session);
+                            int userId = SessionUtil.getParentLoginUserId(session, userContext.getYukonUser().getUserID());
+                            EventUtils.logSTARSEvent(userId, EventUtils.EVENT_CATEGORY_ACCOUNT, 
+                                                     YukonListEntryTypes.EVENT_ACTION_CUST_ACCT_UPDATED, accountInfoFragment.getAccountId());
         				}
                         return null;
                     }

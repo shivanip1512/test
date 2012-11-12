@@ -4,8 +4,6 @@ import java.sql.SQLException;
 import java.util.Date;
 import java.util.List;
 
-import javax.servlet.http.HttpSession;
-
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -205,13 +203,13 @@ public class HardwareServiceImpl implements HardwareService {
     }
 
     @Override
-    public void changeDeviceStatus(YukonUserContext context, InventoryIdentifier inv, int statusEntryId, HttpSession session) throws ObjectInOtherEnergyCompanyException {
+    public void changeDeviceStatus(YukonUserContext context, InventoryIdentifier inv, int statusEntryId, int userId) throws ObjectInOtherEnergyCompanyException {
         Hardware hardware = hardwareUiService.getHardware(inv.getInventoryId());
         if (hardware.getDeviceStatusEntryId() != statusEntryId) {
             hardware.setDeviceStatusEntryId(statusEntryId);
             boolean changed = hardwareUiService.updateHardware(context.getYukonUser(), hardware);
             if (changed) {
-                EventUtils.logSTARSEvent(context.getYukonUser().getUserID(), EventUtils.EVENT_CATEGORY_INVENTORY, hardware.getDeviceStatusEntryId(), inv.getInventoryId(), session);
+                EventUtils.logSTARSEvent(userId, EventUtils.EVENT_CATEGORY_INVENTORY, hardware.getDeviceStatusEntryId(), inv.getInventoryId());
             }
         }
     }

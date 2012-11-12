@@ -43,6 +43,7 @@ import com.cannontech.web.stars.dr.operator.HardwareModelHelper;
 import com.cannontech.web.stars.dr.operator.general.AccountInfoFragment;
 import com.cannontech.web.stars.dr.operator.service.AccountInfoFragmentHelper;
 import com.cannontech.web.stars.dr.operator.service.OperatorAccountService;
+import com.cannontech.web.util.SessionUtil;
 import com.google.common.collect.Sets;
 
 @RequestMapping("/operator/hardware/mp/*")
@@ -114,7 +115,8 @@ public class MeterProfileController {
         
         /* If the device status was changed, spawn an event for it */
         if (statusChange) {
-            EventUtils.logSTARSEvent(user.getUserID(), EventUtils.EVENT_CATEGORY_INVENTORY, hardware.getDeviceStatusEntryId(), inventoryId, request.getSession());
+            int userId = SessionUtil.getParentLoginUserId(request.getSession(), user.getUserID());
+            EventUtils.logSTARSEvent(userId, EventUtils.EVENT_CATEGORY_INVENTORY, hardware.getDeviceStatusEntryId(), inventoryId);
         }
         
         /* Flash hardware updated */

@@ -19,6 +19,7 @@ import com.cannontech.stars.util.ServletUtils;
 import com.cannontech.stars.util.task.TimeConsumingTask;
 import com.cannontech.stars.web.StarsYukonUser;
 import com.cannontech.stars.web.util.InventoryManagerUtil;
+import com.cannontech.web.util.SessionUtil;
 
 public class AddShipmentSNRangeTask extends TimeConsumingTask {
 
@@ -98,7 +99,9 @@ public class AddShipmentSNRangeTask extends TimeConsumingTask {
 				hardware = Transaction.createTransaction( Transaction.INSERT, hardware ).execute();
 				
 				Integer inventoryID = hardware.getLMHardwareBase().getInventoryID();
-                EventUtils.logSTARSEvent(user.getUserID(), EventUtils.EVENT_CATEGORY_INVENTORY, devTypeID, inventoryID, session);
+
+				int userId = SessionUtil.getParentLoginUserId(session, user.getUserID());
+                EventUtils.logSTARSEvent(userId, EventUtils.EVENT_CATEGORY_INVENTORY, devTypeID, inventoryID);
                 
                 if(warehouseID.intValue() > 0) {
                    Warehouse house = new Warehouse();

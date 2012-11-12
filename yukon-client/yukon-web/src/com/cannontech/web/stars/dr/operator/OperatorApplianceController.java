@@ -51,6 +51,7 @@ import com.cannontech.web.stars.dr.operator.model.DisplayableApplianceListEntry;
 import com.cannontech.web.stars.dr.operator.service.AccountInfoFragmentHelper;
 import com.cannontech.web.stars.dr.operator.service.DisplayableApplianceService;
 import com.cannontech.web.stars.dr.operator.validator.ApplianceValidator;
+import com.cannontech.web.util.SessionUtil;
 
 @Controller
 @CheckRoleProperty(YukonRoleProperty.OPERATOR_CONSUMER_INFO_APPLIANCES)
@@ -170,11 +171,11 @@ public class OperatorApplianceController {
                                                            accountInfoFragment.getEnergyCompanyId(),
                                                            accountInfoFragment.getAccountId(),
                                                            userContext.getYukonUser());
-                EventUtils.logSTARSEvent(userContext.getYukonUser().getUserID(),
-                                         EventUtils.EVENT_CATEGORY_ACCOUNT,
+                
+                int userId = SessionUtil.getParentLoginUserId(session, userContext.getYukonUser().getUserID());
+                EventUtils.logSTARSEvent(userId, EventUtils.EVENT_CATEGORY_ACCOUNT,
                                          YukonListEntryTypes.EVENT_ACTION_CUST_ACCT_UPDATED,
-                                         accountInfoFragment.getAccountId(),
-                                         session);
+                                         accountInfoFragment.getAccountId());
             }
         } finally {
 
@@ -291,11 +292,10 @@ public class OperatorApplianceController {
                                                            accountInfoFragment.getEnergyCompanyId(),
                                                            userContext.getYukonUser());
 
-                EventUtils.logSTARSEvent(userContext.getYukonUser().getUserID(),
-                                         EventUtils.EVENT_CATEGORY_ACCOUNT,
+                int userId = SessionUtil.getParentLoginUserId(session, userContext.getYukonUser().getUserID());
+                EventUtils.logSTARSEvent(userId, EventUtils.EVENT_CATEGORY_ACCOUNT,
                                          YukonListEntryTypes.EVENT_ACTION_CUST_ACCT_UPDATED,
-                                         accountInfoFragment.getAccountId(),
-                                         session);
+                                         accountInfoFragment.getAccountId());
             }
         } finally {
 
@@ -361,10 +361,11 @@ public class OperatorApplianceController {
                                                    accountInfoFragment.getEnergyCompanyId(),
                                                    accountInfoFragment.getAccountNumber(),
                                                    userContext.getYukonUser());
-        EventUtils.logSTARSEvent(userContext.getYukonUser().getUserID(),
-                                 EventUtils.EVENT_CATEGORY_ACCOUNT,
+
+        int userId = SessionUtil.getParentLoginUserId(session, userContext.getYukonUser().getUserID());
+        EventUtils.logSTARSEvent(userId, EventUtils.EVENT_CATEGORY_ACCOUNT,
                                  YukonListEntryTypes.EVENT_ACTION_CUST_ACCT_UPDATED,
-                                 accountInfoFragment.getAccountId(), session);
+                                 accountInfoFragment.getAccountId());
 
         flashScope.setConfirm(new YukonMessageSourceResolvable(
                                       "yukon.web.modules.operator.appliance.applianceDeleted"));
