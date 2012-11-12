@@ -37,9 +37,6 @@ import com.cannontech.servlet.YukonUserContextUtils;
 import com.cannontech.stars.core.service.YukonEnergyCompanyService;
 import com.cannontech.stars.database.cache.StarsDatabaseCache;
 import com.cannontech.stars.energyCompany.model.YukonEnergyCompany;
-import com.cannontech.system.GlobalSettingType;
-import com.cannontech.system.dao.GlobalSettingDao;
-import com.cannontech.system.model.GlobalSetting;
 import com.cannontech.user.YukonUserContext;
 import com.cannontech.util.ServletUtil;
 import com.cannontech.web.JsLibrary;
@@ -64,7 +61,6 @@ public class LayoutController {
     @Autowired private PageDetailProducer pageDetailProducer;
     @Autowired private ConfigurationSource configurationSource;
     @Autowired private YukonEnergyCompanyService yukonEnergyCompanyService;
-    @Autowired private GlobalSettingDao globalSettingDao;
     
     private List<String> layoutScriptFiles;
     
@@ -257,20 +253,6 @@ public class LayoutController {
 
         // prevent Firefox "back-forward cache" http://developer.mozilla.org/en/docs/Using_Firefox_1.5_caching
         response.addHeader("Cache-Control", "no-store");   
-        
-        // get google analytics global settings
-        GlobalSetting enabledSetting = globalSettingDao.getSetting(GlobalSettingType.GOOGLE_ANALYTICS_ENABLED);
-        Boolean analyticsEnabled = (Boolean) enabledSetting.getValue();
-        GlobalSetting additionalTrackingIdsSetting = globalSettingDao.getSetting(GlobalSettingType.GOOGLE_ANALYTICS_TRACKING_IDS);
-        String additionalTrackingIds = null;
-        if (additionalTrackingIdsSetting.getValue() != null) {
-            additionalTrackingIds = (String) additionalTrackingIdsSetting.getValue();
-        }
-        /* remove whitespace since this string can be stored in the db with it...
-         * and GA doesn't like whitespace in it's tracking ids */
-        additionalTrackingIds = StringUtils.deleteWhitespace(additionalTrackingIds);
-        map.addAttribute("analyticsEnabled", analyticsEnabled);
-        map.addAttribute("additionalTrackingIds", additionalTrackingIds);
         
         return skin.getViewName();
     }
