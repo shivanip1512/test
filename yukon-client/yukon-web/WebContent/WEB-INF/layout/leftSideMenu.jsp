@@ -93,6 +93,6 @@
             </tr>
         </table>
 
-        <ct:analyticsTrackPage enabled="${analyticsEnabled}" additionalTrackingIds="${additionalTrackingIds}"/>
+        <ct:analyticsTrackPage/>
 	</body>
 </html>
