@@ -30,17 +30,17 @@ protected:
 
     enum PointOffsets
     {
-        PointOffset_PulseAcc_LineVoltagePhaseA  = 801,
-        PointOffset_PulseAcc_LineVoltagePhaseB  = 802,
-        PointOffset_PulseAcc_LineVoltagePhaseC  = 803,
+        PointOffset_Analog_LineVoltagePhaseA    = 801,
+        PointOffset_Analog_LineVoltagePhaseB    = 802,
+        PointOffset_Analog_LineVoltagePhaseC    = 803,
 
-        PointOffset_PulseAcc_LineCurrentPhaseA  = 811,
-        PointOffset_PulseAcc_LineCurrentPhaseB  = 812,
-        PointOffset_PulseAcc_LineCurrentPhaseC  = 813,
+        PointOffset_Analog_LineCurrentPhaseA    = 811,
+        PointOffset_Analog_LineCurrentPhaseB    = 812,
+        PointOffset_Analog_LineCurrentPhaseC    = 813,
 
-        PointOffset_PulseAcc_LinePowFactPhaseA  = 821,
-        PointOffset_PulseAcc_LinePowFactPhaseB  = 822,
-        PointOffset_PulseAcc_LinePowFactPhaseC  = 823,
+        PointOffset_Analog_LinePowFactPhaseA    = 821,
+        PointOffset_Analog_LinePowFactPhaseB    = 822,
+        PointOffset_Analog_LinePowFactPhaseC    = 823,
 
         PointOffset_PulseAcc_TOUBaseForward     = 100,
         PointOffset_PulseAcc_TOUBaseReverse     = 200,

@@ -845,12 +845,12 @@ INT Mct440_213xBDevice::decodeGetValueInstantLineData(INMESS          *InMessage
         PhaseVoltage.freeze_bit  = false;
 
         switch (i) {
-            case 0: pointOffset = PointOffset_PulseAcc_LineVoltagePhaseA; break;
-            case 1: pointOffset = PointOffset_PulseAcc_LineVoltagePhaseB; break;
-            case 2: pointOffset = PointOffset_PulseAcc_LineVoltagePhaseC; break;
+            case 0: pointOffset = PointOffset_Analog_LineVoltagePhaseA; break;
+            case 1: pointOffset = PointOffset_Analog_LineVoltagePhaseB; break;
+            case 2: pointOffset = PointOffset_Analog_LineVoltagePhaseC; break;
         }
 
-        insertPointDataReport(PulseAccumulatorPointType,
+        insertPointDataReport(AnalogPointType,
                               pointOffset,
                               ReturnMsg,
                               PhaseVoltage,
@@ -866,12 +866,12 @@ INT Mct440_213xBDevice::decodeGetValueInstantLineData(INMESS          *InMessage
         PhaseCurrent.freeze_bit  = false;
 
         switch (i) {
-            case 0: pointOffset = PointOffset_PulseAcc_LineCurrentPhaseA; break;
-            case 1: pointOffset = PointOffset_PulseAcc_LineCurrentPhaseB; break;
-            case 2: pointOffset = PointOffset_PulseAcc_LineCurrentPhaseC; break;
+            case 0: pointOffset = PointOffset_Analog_LineCurrentPhaseA; break;
+            case 1: pointOffset = PointOffset_Analog_LineCurrentPhaseB; break;
+            case 2: pointOffset = PointOffset_Analog_LineCurrentPhaseC; break;
         }
 
-        insertPointDataReport(PulseAccumulatorPointType,
+        insertPointDataReport(AnalogPointType,
                               pointOffset,
                               ReturnMsg,
                               PhaseCurrent,
@@ -899,12 +899,12 @@ INT Mct440_213xBDevice::decodeGetValueInstantLineData(INMESS          *InMessage
         }
 
         switch (i) {
-            case 0: pointOffset = PointOffset_PulseAcc_LinePowFactPhaseA; break;
-            case 1: pointOffset = PointOffset_PulseAcc_LinePowFactPhaseB; break;
-            case 2: pointOffset = PointOffset_PulseAcc_LinePowFactPhaseC; break;
+            case 0: pointOffset = PointOffset_Analog_LinePowFactPhaseA; break;
+            case 1: pointOffset = PointOffset_Analog_LinePowFactPhaseB; break;
+            case 2: pointOffset = PointOffset_Analog_LinePowFactPhaseC; break;
         }
 
-        insertPointDataReport(PulseAccumulatorPointType,
+        insertPointDataReport(AnalogPointType,
                               pointOffset,
                               ReturnMsg,
                               PowerFactor,
