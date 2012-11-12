@@ -3746,15 +3746,15 @@ BOOST_FIXTURE_TEST_SUITE(command_executions, executePutConfig_helper)
             OUTMESS* outmsg = outList.front();
 
             std::vector<unsigned char> expected = boost::assign::list_of
-                    (0xd3)(0xd2)(0x41)(0xc)(0xc)(0xc)(0xc)(0x44)(0xe6)(0x46)(0xc)(0xc)(0xc)(0xc)(0xe6);
+                    (0xd3)(0xd2)(0x41)(0x0c)(0x0c)(0x0c)(0x0c)(0x99)(0x39)(0x46)(0x0c)(0x0c)(0x0c)(0x0c)(0x39);
 
             BOOST_CHECK_EQUAL(outmsg->Buffer.BSt.Function, 0x30);
             BOOST_CHECK_EQUAL(outmsg->Buffer.BSt.Length  , expected.size());
             BOOST_CHECK_EQUAL(outmsg->Buffer.BSt.IO      , EmetconProtocol::IO_Function_Write);
 
             BOOST_CHECK_EQUAL_COLLECTIONS(
-                   outmsg->Buffer.BSt.Message,outmsg->Buffer.BSt.Message + expected.size(),
-                   expected.begin(), expected.end());
+                    outmsg->Buffer.BSt.Message,outmsg->Buffer.BSt.Message + expected.size(),
+                    expected.begin(), expected.end());
 
             outList.pop_front();
         }
@@ -3763,7 +3763,7 @@ BOOST_FIXTURE_TEST_SUITE(command_executions, executePutConfig_helper)
             OUTMESS* outmsg = outList.front();
 
             std::vector<unsigned char> expected = boost::assign::list_of
-                    (0x4b)(0xc)(0xc)(0xc)(0xc)(0x4)(0xe6)(0x50)(0xc)(0xc)(0xc)(0xc)(0x4)(0xe6)(0x0);
+                    (0x4b)(0x0c)(0x0c)(0x0c)(0x0c)(0x09)(0x39)(0x50)(0x0c)(0x0c)(0x0c)(0x0c)(0x09)(0x39)(0x00);
 
             BOOST_CHECK_EQUAL(outmsg->Buffer.BSt.Function, 0x31);
             BOOST_CHECK_EQUAL(outmsg->Buffer.BSt.Length  , expected.size());
@@ -3780,7 +3780,7 @@ BOOST_FIXTURE_TEST_SUITE(command_executions, executePutConfig_helper)
             OUTMESS* outmsg = outList.front();
 
             std::vector<unsigned char> expected = boost::assign::list_of
-                    (0xc)(0xc)(0xc)(0xc)(0xc)(0x9)(0x38)(0xc)(0xc)(0xc)(0xc)(0xc)(0x9)(0x38)(0x0);
+                    (0x0c)(0x0c)(0x0c)(0x0c)(0x0c)(0x02)(0x4c)(0x0c)(0x0c)(0x0c)(0x0c)(0x0c)(0x02)(0x4c)(0x00);
 
             BOOST_CHECK_EQUAL(outmsg->Buffer.BSt.Function, 0x33);
             BOOST_CHECK_EQUAL(outmsg->Buffer.BSt.Length  , expected.size());
@@ -3797,7 +3797,7 @@ BOOST_FIXTURE_TEST_SUITE(command_executions, executePutConfig_helper)
             OUTMESS* outmsg = outList.front();
 
             std::vector<unsigned char> expected = boost::assign::list_of
-                    (0xc)(0xc)(0xc)(0xc)(0xc)(0x9)(0x38)(0xc)(0xc)(0xc)(0xc)(0xc)(0x9)(0x38)(0x0);
+                    (0x0c)(0x0c)(0x0c)(0x0c)(0x0c)(0x02)(0x4c)(0x0c)(0x0c)(0x0c)(0x0c)(0x0c)(0x02)(0x4c)(0x00);
 
             BOOST_CHECK_EQUAL(outmsg->Buffer.BSt.Function, 0x34);
             BOOST_CHECK_EQUAL(outmsg->Buffer.BSt.Length  , expected.size());
@@ -4022,27 +4022,9 @@ BOOST_FIXTURE_TEST_SUITE(command_executions, executePutConfig_helper)
             BOOST_CHECK_EQUAL(outmsg->Sequence, Cti::Protocols::EmetconProtocol::PutConfig_TOU);
 
             std::vector<unsigned char> expected = boost::assign::list_of
-                    (0x01)(0x01)(0x01)(0x01)(0x01)(0x03)(0x90)(0x01)(0x01)(0x01)(0x01)(0x01)(0x04)(0xe4)(0x00);
+                    (0xe4)(0xe4)(0x0c)(0x01)(0x01)(0x01)(0x01)(0x94)(0xe4)(0x18)(0x01)(0x01)(0x01)(0x01)(0x39);
 
-            BOOST_CHECK_EQUAL(outmsg->Buffer.BSt.Function, 0x034           );
-            BOOST_CHECK_EQUAL(outmsg->Buffer.BSt.Length  , expected.size() );
-
-            BOOST_CHECK_EQUAL_COLLECTIONS(
-                                       outmsg->Buffer.BSt.Message, outmsg->Buffer.BSt.Message + expected.size(),
-                                       expected.begin(), expected.end());
-
-            outList.pop_front();
-        }
-
-        {
-            OUTMESS* outmsg = outList.front();
-
-            BOOST_CHECK_EQUAL(outmsg->Sequence, Cti::Protocols::EmetconProtocol::PutConfig_TOU);
-
-            std::vector<unsigned char> expected = boost::assign::list_of
-                    (0x01)(0x01)(0x01)(0x01)(0x01)(0x09)(0x38)(0x01)(0x01)(0x01)(0x01)(0x01)(0x0e)(0x4c)(0x00);
-
-            BOOST_CHECK_EQUAL(outmsg->Buffer.BSt.Function, 0x033           );
+            BOOST_CHECK_EQUAL(outmsg->Buffer.BSt.Function, 0x030           );
             BOOST_CHECK_EQUAL(outmsg->Buffer.BSt.Length  , expected.size() );
 
             BOOST_CHECK_EQUAL_COLLECTIONS(
@@ -4076,9 +4058,27 @@ BOOST_FIXTURE_TEST_SUITE(command_executions, executePutConfig_helper)
             BOOST_CHECK_EQUAL(outmsg->Sequence, Cti::Protocols::EmetconProtocol::PutConfig_TOU);
 
             std::vector<unsigned char> expected = boost::assign::list_of
-                    (0xe4)(0xe4)(0x0c)(0x01)(0x01)(0x01)(0x01)(0x94)(0xe4)(0x18)(0x01)(0x01)(0x01)(0x01)(0x39);
+                    (0x01)(0x01)(0x01)(0x01)(0x01)(0x09)(0x38)(0x01)(0x01)(0x01)(0x01)(0x01)(0x0e)(0x4c)(0x00);
 
-            BOOST_CHECK_EQUAL(outmsg->Buffer.BSt.Function, 0x030           );
+            BOOST_CHECK_EQUAL(outmsg->Buffer.BSt.Function, 0x033           );
+            BOOST_CHECK_EQUAL(outmsg->Buffer.BSt.Length  , expected.size() );
+
+            BOOST_CHECK_EQUAL_COLLECTIONS(
+                                       outmsg->Buffer.BSt.Message, outmsg->Buffer.BSt.Message + expected.size(),
+                                       expected.begin(), expected.end());
+
+            outList.pop_front();
+        }
+
+        {
+            OUTMESS* outmsg = outList.front();
+
+            BOOST_CHECK_EQUAL(outmsg->Sequence, Cti::Protocols::EmetconProtocol::PutConfig_TOU);
+
+            std::vector<unsigned char> expected = boost::assign::list_of
+                    (0x01)(0x01)(0x01)(0x01)(0x01)(0x03)(0x90)(0x01)(0x01)(0x01)(0x01)(0x01)(0x04)(0xe4)(0x00);
+
+            BOOST_CHECK_EQUAL(outmsg->Buffer.BSt.Function, 0x034           );
             BOOST_CHECK_EQUAL(outmsg->Buffer.BSt.Length  , expected.size() );
 
             BOOST_CHECK_EQUAL_COLLECTIONS(
