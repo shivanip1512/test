@@ -1347,89 +1347,19 @@ int Mct440_213xBDevice::executePutConfigTOU(CtiRequestMsg     *pReq,
                 {
                     if( !parse.isKeyValid("verify") )
                     {
-                        OutMessage->Buffer.BSt.Function   = FuncWrite_TOUSchedule1Pos;
-                        OutMessage->Buffer.BSt.Length     = FuncWrite_TOUSchedule1Len;
-                        OutMessage->Buffer.BSt.IO         = EmetconProtocol::IO_Function_Write;
-                        OutMessage->Buffer.BSt.Message[0] = (char)(dayTable>>8);
-                        OutMessage->Buffer.BSt.Message[1] = (char)dayTable;
-                        OutMessage->Buffer.BSt.Message[2] = (char)times[0][0];
-                        OutMessage->Buffer.BSt.Message[3] = (char)times[0][1];
-                        OutMessage->Buffer.BSt.Message[4] = (char)times[0][2];
-                        OutMessage->Buffer.BSt.Message[5] = (char)times[0][3];
-                        OutMessage->Buffer.BSt.Message[6] = (char)times[0][4];
-                        OutMessage->Buffer.BSt.Message[7] = (char)( ((rates[1][4]<<6)&0xC0) | ((rates[1][3]<<4)&0x30) | ((rates[0][4]<<2)&0x0C) | (rates[0][3]&0x03) );
-                        OutMessage->Buffer.BSt.Message[8] = (char)( ((rates[0][2]<<6)&0xC0) | ((rates[0][1]<<4)&0x30) | ((rates[0][0]<<2)&0x0C) | (rates[0][5]&0x03) );
-                        OutMessage->Buffer.BSt.Message[9] =  (char)times[1][0];
-                        OutMessage->Buffer.BSt.Message[10] = (char)times[1][1];
-                        OutMessage->Buffer.BSt.Message[11] = (char)times[1][2];
-                        OutMessage->Buffer.BSt.Message[12] = (char)times[1][3];
-                        OutMessage->Buffer.BSt.Message[13] = (char)times[1][4];
-                        OutMessage->Buffer.BSt.Message[14] = (char)( ((rates[1][2]<<6)&0xC0) | ((rates[1][1]<<4)&0x30) | ((rates[1][0]<<2)&0x0C) | (rates[1][5]&0x03) );
+                        long daySchedule[8];
 
-                        outList.push_back( CTIDBG_new OUTMESS(*OutMessage) );
+                        for (int i = 0; i < 8; i++)
+                        {
+                            daySchedule[i] = (dayTable >> (i*2)) & 0x03;
+                        }
 
-                        OutMessage->Buffer.BSt.Function   = FuncWrite_TOUSchedule2Pos;
-                        OutMessage->Buffer.BSt.Length     = FuncWrite_TOUSchedule2Len;
-                        OutMessage->Buffer.BSt.IO         = EmetconProtocol::IO_Function_Write;
-                        OutMessage->Buffer.BSt.Message[0] = (char)times[2][0];
-                        OutMessage->Buffer.BSt.Message[1] = (char)times[2][1];
-                        OutMessage->Buffer.BSt.Message[2] = (char)times[2][2];
-                        OutMessage->Buffer.BSt.Message[3] = (char)times[2][3];
-                        OutMessage->Buffer.BSt.Message[4] = (char)times[2][4];
-                        OutMessage->Buffer.BSt.Message[5] = (char)( ((rates[2][4]<<2)&0x0C) | (rates[2][3]&0x03) );
-                        OutMessage->Buffer.BSt.Message[6] = (char)( ((rates[2][2]<<6)&0xC0) | ((rates[2][1]<<4)&0x30) | ((rates[2][0]<<2)&0x0C) | (rates[2][5]&0x03) );
-                        OutMessage->Buffer.BSt.Message[7] = (char)times[3][0];
-                        OutMessage->Buffer.BSt.Message[8] = (char)times[3][1];
-                        OutMessage->Buffer.BSt.Message[9] = (char)times[3][2];
-                        OutMessage->Buffer.BSt.Message[10] = (char)times[3][3];
-                        OutMessage->Buffer.BSt.Message[11] = (char)times[3][4];
-                        OutMessage->Buffer.BSt.Message[12] = (char)( ((rates[3][4]<<2)&0x0C) | (rates[3][3]&0x03) );
-                        OutMessage->Buffer.BSt.Message[13] = (char)( ((rates[3][2]<<6)&0xC0) | ((rates[3][1]<<4)&0x30) | ((rates[3][0]<<2)&0x0C) | (rates[3][5]&0x03) );
-                        OutMessage->Buffer.BSt.Message[14] = (char)(defaultTOURate);
-
-                        outList.push_back( CTIDBG_new OUTMESS(*OutMessage) );
-
-                        OutMessage->Buffer.BSt.Function   = FuncWrite_TOUSchedule3Pos;
-                        OutMessage->Buffer.BSt.Length     = FuncWrite_TOUSchedule3Len;
-                        OutMessage->Buffer.BSt.IO         = EmetconProtocol::IO_Function_Write;
-                        OutMessage->Buffer.BSt.Message[0] = (char)times[0][5];
-                        OutMessage->Buffer.BSt.Message[1] = (char)times[0][6];
-                        OutMessage->Buffer.BSt.Message[2] = (char)times[0][7];
-                        OutMessage->Buffer.BSt.Message[3] = (char)times[0][8];
-                        OutMessage->Buffer.BSt.Message[4] = (char)times[0][9];
-                        OutMessage->Buffer.BSt.Message[5] = (char)( ((rates[0][9]<<2)&0x0C) | (rates[0][8]&0x03) );
-                        OutMessage->Buffer.BSt.Message[6] = (char)( ((rates[0][7]<<6)&0xC0) | ((rates[0][6]<<4)&0x30) | ((rates[0][5]<<2)&0x0C) | (rates[0][10]&0x03) );
-                        OutMessage->Buffer.BSt.Message[7] = (char)times[1][5];
-                        OutMessage->Buffer.BSt.Message[8] = (char)times[1][6];
-                        OutMessage->Buffer.BSt.Message[9] = (char)times[1][7];
-                        OutMessage->Buffer.BSt.Message[10] = (char)times[1][8];
-                        OutMessage->Buffer.BSt.Message[11] = (char)times[1][9];
-                        OutMessage->Buffer.BSt.Message[12] = (char)( ((rates[1][9]<<2)&0x0C) | (rates[1][8]&0x03) );
-                        OutMessage->Buffer.BSt.Message[13] = (char)( ((rates[1][7]<<6)&0xC0) | ((rates[1][6]<<4)&0x30) | ((rates[1][5]<<2)&0x0C) | (rates[1][10]&0x03) );
-                        OutMessage->Buffer.BSt.Message[14] = (char)(defaultTOURate);
-
-                        outList.push_back( CTIDBG_new OUTMESS(*OutMessage) );
-
-                        OutMessage->Buffer.BSt.Function   = FuncWrite_TOUSchedule4Pos;
-                        OutMessage->Buffer.BSt.Length     = FuncWrite_TOUSchedule4Len;
-                        OutMessage->Buffer.BSt.IO         = EmetconProtocol::IO_Function_Write;
-                        OutMessage->Buffer.BSt.Message[0] = (char)times[2][5];
-                        OutMessage->Buffer.BSt.Message[1] = (char)times[2][6];
-                        OutMessage->Buffer.BSt.Message[2] = (char)times[2][7];
-                        OutMessage->Buffer.BSt.Message[3] = (char)times[2][8];
-                        OutMessage->Buffer.BSt.Message[4] = (char)times[2][9];
-                        OutMessage->Buffer.BSt.Message[5] = (char)( ((rates[2][9]<<2)&0x0C) | (rates[2][8]&0x03) );
-                        OutMessage->Buffer.BSt.Message[6] = (char)( ((rates[2][7]<<6)&0xC0) | ((rates[2][6]<<4)&0x30) | ((rates[2][5]<<2)&0x0C) | (rates[2][10]&0x03) );
-                        OutMessage->Buffer.BSt.Message[7] = (char)times[3][5];
-                        OutMessage->Buffer.BSt.Message[8] = (char)times[3][6];
-                        OutMessage->Buffer.BSt.Message[9] = (char)times[3][7];
-                        OutMessage->Buffer.BSt.Message[10] = (char)times[3][8];
-                        OutMessage->Buffer.BSt.Message[11] = (char)times[3][9];
-                        OutMessage->Buffer.BSt.Message[12] = (char)( ((rates[3][9]<<2)&0x0C) | (rates[3][8]&0x03) );
-                        OutMessage->Buffer.BSt.Message[13] = (char)( ((rates[3][7]<<6)&0xC0) | ((rates[3][6]<<4)&0x30) | ((rates[3][5]<<2)&0x0C) | (rates[3][10]&0x03) );
-                        OutMessage->Buffer.BSt.Message[14] = (char)(defaultTOURate);
-
-                        outList.push_back( CTIDBG_new OUTMESS(*OutMessage) );
+                        createTOUScheduleConfig(daySchedule,
+                                                times,
+                                                rates,
+                                                defaultTOURate,
+                                                OutMessage,
+                                                outList);
                     }
                     else
                     {
@@ -1443,45 +1373,41 @@ int Mct440_213xBDevice::executePutConfigTOU(CtiRequestMsg     *pReq,
             }
         }
 
-        //Either we sent the put ok, or we are doing a read to get into here.
+        // Either we sent the put ok, or we are doing a read to get into here.
         if (nRet == NORMAL)
         {
-            // Set up the reads here
-            OutMessage->Buffer.BSt.Function    = FuncRead_TOUSwitchSchedule12Pos;
-            OutMessage->Buffer.BSt.Length      = FuncRead_TOUSwitchSchedule12Len;
-            OutMessage->Buffer.BSt.IO          = EmetconProtocol::IO_Function_Read;
-            OutMessage->Sequence               = EmetconProtocol::GetConfig_TOU;
+            OutMessage->Buffer.BSt.IO       = EmetconProtocol::IO_Function_Read;
+            OutMessage->Sequence            = EmetconProtocol::GetConfig_TOU;
+            OutMessage->Priority           -= 1; //decrease for read. Only want read after a successful write.
 
-            OUTMESS *touOutMessage             = CTIDBG_new OUTMESS(*OutMessage);
-            touOutMessage->Priority           -= 1; //decrease for read. Only want read after a successful write.
+            strncpy(OutMessage->Request.CommandStr, "getconfig tou schedule 1", COMMAND_STR_SIZE );
 
-            strncpy(touOutMessage->Request.CommandStr, "getconfig tou schedule 1", COMMAND_STR_SIZE );
+            OutMessage->Buffer.BSt.Function = FuncRead_TOUSwitchSchedule12Pos;
+            OutMessage->Buffer.BSt.Length   = FuncRead_TOUSwitchSchedule12Len;
+            outList.push_back( CTIDBG_new OUTMESS(*OutMessage) );
 
-            touOutMessage->Buffer.BSt.Function = FuncRead_TOUSwitchSchedule12Pos;
-            touOutMessage->Buffer.BSt.Length   = FuncRead_TOUSwitchSchedule12Len;
-            outList.push_back( CTIDBG_new OUTMESS(*touOutMessage) );
+            OutMessage->Buffer.BSt.Function = FuncRead_TOUSwitchSchedule12Part2Pos;
+            OutMessage->Buffer.BSt.Length   = FuncRead_TOUSwitchSchedule12Part2Len;
+            outList.push_back( CTIDBG_new OUTMESS(*OutMessage) );
 
-            touOutMessage->Buffer.BSt.Function = FuncRead_TOUSwitchSchedule12Part2Pos;
-            touOutMessage->Buffer.BSt.Length   = FuncRead_TOUSwitchSchedule12Part2Len;
-            outList.push_back( CTIDBG_new OUTMESS(*touOutMessage) );
+            strncpy(OutMessage->Request.CommandStr, "getconfig tou schedule 3", COMMAND_STR_SIZE );
 
-            strncpy(touOutMessage->Request.CommandStr, "getconfig tou schedule 3", COMMAND_STR_SIZE );
+            OutMessage->Buffer.BSt.Function = FuncRead_TOUSwitchSchedule34Pos;
+            OutMessage->Buffer.BSt.Length   = FuncRead_TOUSwitchSchedule34Len;
+            outList.push_back( CTIDBG_new OUTMESS(*OutMessage) );
 
-            touOutMessage->Buffer.BSt.Function = FuncRead_TOUSwitchSchedule34Pos;
-            touOutMessage->Buffer.BSt.Length   = FuncRead_TOUSwitchSchedule34Len;
-            outList.push_back( CTIDBG_new OUTMESS(*touOutMessage) );
+            OutMessage->Buffer.BSt.Function = FuncRead_TOUSwitchSchedule34Part2Pos;
+            OutMessage->Buffer.BSt.Length   = FuncRead_TOUSwitchSchedule34Part2Len;
+            outList.push_back( CTIDBG_new OUTMESS(*OutMessage) );
 
-            touOutMessage->Buffer.BSt.Function = FuncRead_TOUSwitchSchedule34Part2Pos;
-            touOutMessage->Buffer.BSt.Length   = FuncRead_TOUSwitchSchedule34Part2Len;
-            outList.push_back( CTIDBG_new OUTMESS(*touOutMessage) );
+            strncpy(OutMessage->Request.CommandStr, "getconfig tou", COMMAND_STR_SIZE );
 
-            strncpy(touOutMessage->Request.CommandStr, "getconfig tou", COMMAND_STR_SIZE );
+            OutMessage->Buffer.BSt.Function = FuncRead_TOUStatusPos;
+            OutMessage->Buffer.BSt.Length   = FuncRead_TOUStatusLen;
+            outList.push_back( CTIDBG_new OUTMESS(*OutMessage) );
 
-            touOutMessage->Buffer.BSt.Function = FuncRead_TOUStatusPos;
-            touOutMessage->Buffer.BSt.Length   = FuncRead_TOUStatusLen;
-            outList.push_back( touOutMessage );
-
-            touOutMessage = 0;
+            delete OutMessage;
+            OutMessage = 0;
         }
     }
     else
@@ -2074,7 +2000,7 @@ int Mct440_213xBDevice::executePutConfigTOUDays(CtiRequestMsg     *pReq,
     else if( parse.isKeyValid("tou_days") )
     {
         set< ratechange_t > ratechanges;
-        int default_rate, day_schedules[8];
+        long default_rate, day_schedules[8];
 
         string schedule_name, change_name, daytable(parse.getsValue("tou_days"));
 
@@ -2186,43 +2112,13 @@ int Mct440_213xBDevice::executePutConfigTOUDays(CtiRequestMsg     *pReq,
                     schedule_name.append(CtiNumStr(schedulenum).zpad(2));
                 }
 
-                OUTMESS *TOU_OutMessage1 = CTIDBG_new OUTMESS(*OutMessage), // Configure TOU Schedule Part 1
-                        *TOU_OutMessage2 = CTIDBG_new OUTMESS(*OutMessage), // Configure TOU Schedule Part 2
-                        *TOU_OutMessage3 = CTIDBG_new OUTMESS(*OutMessage), // Configure TOU Schedule Part 3
-                        *TOU_OutMessage4 = CTIDBG_new OUTMESS(*OutMessage); // Configure TOU Schedule Part 4
-
-                TOU_OutMessage1->Sequence = Cti::Protocols::EmetconProtocol::PutConfig_TOU;
-                TOU_OutMessage2->Sequence = Cti::Protocols::EmetconProtocol::PutConfig_TOU;
-                TOU_OutMessage3->Sequence = Cti::Protocols::EmetconProtocol::PutConfig_TOU;
-                TOU_OutMessage4->Sequence = Cti::Protocols::EmetconProtocol::PutConfig_TOU;
-
-                TOU_OutMessage1->Buffer.BSt.IO = Cti::Protocols::EmetconProtocol::IO_Function_Write;
-                TOU_OutMessage2->Buffer.BSt.IO = Cti::Protocols::EmetconProtocol::IO_Function_Write;
-                TOU_OutMessage3->Buffer.BSt.IO = Cti::Protocols::EmetconProtocol::IO_Function_Write;
-                TOU_OutMessage4->Buffer.BSt.IO = Cti::Protocols::EmetconProtocol::IO_Function_Write;
-
-                TOU_OutMessage1->Buffer.BSt.Function = FuncWrite_TOUSchedule1Pos;
-                TOU_OutMessage1->Buffer.BSt.Length   = FuncWrite_TOUSchedule1Len;
-
-                TOU_OutMessage2->Buffer.BSt.Function = FuncWrite_TOUSchedule2Pos;
-                TOU_OutMessage2->Buffer.BSt.Length   = FuncWrite_TOUSchedule2Len;
-
-                TOU_OutMessage3->Buffer.BSt.Function = FuncWrite_TOUSchedule3Pos;
-                TOU_OutMessage3->Buffer.BSt.Length   = FuncWrite_TOUSchedule3Len;
-
-                TOU_OutMessage4->Buffer.BSt.Function = FuncWrite_TOUSchedule4Pos;
-                TOU_OutMessage4->Buffer.BSt.Length   = FuncWrite_TOUSchedule4Len;
-
-
-                std::set< ratechange_t >::iterator itr;
-
                 //  There's much more intelligence and safeguarding that could be added to the below,
                 //  but it's a temporary fix, to be handled soon by the proper MCT Configs,
                 //  so I don't think it's worth it at the moment to add all of the smarts.
                 //  We'll handle a good string, and kick out on anything else.
 
-                int durations[TOU_SCHEDULE_NBR][TOU_SCHEDULE_TIME_NBR];
-                int rates[TOU_SCHEDULE_NBR][TOU_SCHEDULE_RATE_NBR];
+                long times[TOU_SCHEDULE_NBR][TOU_SCHEDULE_TIME_NBR];
+                long rates[TOU_SCHEDULE_NBR][TOU_SCHEDULE_RATE_NBR];
 
                 for( int i = 0; i < TOU_SCHEDULE_NBR; i++ )
                 {
@@ -2230,7 +2126,7 @@ int Mct440_213xBDevice::executePutConfigTOUDays(CtiRequestMsg     *pReq,
                     {
                         if( j < TOU_SCHEDULE_TIME_NBR )
                         {
-                            durations[i][j] = 255;
+                            times[i][j] = 255;
                         }
 
                         rates[i][j] = default_rate;
@@ -2240,6 +2136,8 @@ int Mct440_213xBDevice::executePutConfigTOUDays(CtiRequestMsg     *pReq,
                 int current_schedule = -1;
                 int offset           =  0;
                 int time_offset      =  0;
+
+                std::set< ratechange_t >::iterator itr;
 
                 for( itr = ratechanges.begin(); itr != ratechanges.end(); itr++ )
                 {
@@ -2288,8 +2186,8 @@ int Mct440_213xBDevice::executePutConfigTOUDays(CtiRequestMsg     *pReq,
                             offset++;
                         }
 
-                        durations[rc.schedule][offset - 1] = (rc.time - time_offset) / 300;
-                        rates[rc.schedule][offset]         = rc.rate;
+                        times[rc.schedule][offset - 1] = (rc.time - time_offset) / 300;
+                        rates[rc.schedule][offset]     = rc.rate;
 
                         if( (offset + 1) <= (TOU_SCHEDULE_RATE_NBR-1) )
                         {
@@ -2302,121 +2200,12 @@ int Mct440_213xBDevice::executePutConfigTOUDays(CtiRequestMsg     *pReq,
                     }
                 }
 
-
-                for( offset = 0; offset < 8; offset++ )
-                {
-                    //  write the day table
-
-                    int byte = 1 - (offset / 4);
-                    int bitoffset = (2 * offset) % 8;
-
-                    TOU_OutMessage1->Buffer.BSt.Message[byte] |= (day_schedules[offset] & 0x03) << bitoffset;
-                }
-
-                for( offset = 0; offset < 5; offset++ )
-                {
-                    //  write the durations for schedules 1 and 2 (time 1 to 5)
-                    TOU_OutMessage1->Buffer.BSt.Message[offset + 2] = durations[0][offset];
-                    TOU_OutMessage1->Buffer.BSt.Message[offset + 9] = durations[1][offset];
-
-                    //  write the durations for schedules 3 and 4 (time 1 to 5)
-                    TOU_OutMessage2->Buffer.BSt.Message[offset + 0] = durations[2][offset];
-                    TOU_OutMessage2->Buffer.BSt.Message[offset + 7] = durations[3][offset];
-
-                    //  write the durations for schedules 1 and 2 (time 6 to 10)
-                    TOU_OutMessage3->Buffer.BSt.Message[offset + 0] = durations[0][offset+5];
-                    TOU_OutMessage3->Buffer.BSt.Message[offset + 7] = durations[1][offset+5];
-
-                    //  write the durations for schedules 3 and 4 (time 6 to 10)
-                    TOU_OutMessage4->Buffer.BSt.Message[offset + 0] = durations[2][offset+5];
-                    TOU_OutMessage4->Buffer.BSt.Message[offset + 7] = durations[3][offset+5];
-                }
-
-
-                //  write the rates for schedules 1 and 2 (switch 1 to 5 + midnight)
-                TOU_OutMessage1->Buffer.BSt.Message[7]  = ((rates[1][5] & 0x03)  << 6) |
-                                                          ((rates[1][4] & 0x03)  << 4) |
-                                                          ((rates[0][5] & 0x03)  << 2) |
-                                                          ((rates[0][4] & 0x03)  << 0);
-
-                TOU_OutMessage1->Buffer.BSt.Message[8]  = ((rates[0][3] & 0x03)  << 6) |
-                                                          ((rates[0][2] & 0x03)  << 4) |
-                                                          ((rates[0][1] & 0x03)  << 2) |
-                                                          ((rates[0][0] & 0x03)  << 0);
-
-                TOU_OutMessage1->Buffer.BSt.Message[14] = ((rates[1][3] & 0x03)  << 6) |
-                                                          ((rates[1][2] & 0x03)  << 4) |
-                                                          ((rates[1][1] & 0x03)  << 2) |
-                                                          ((rates[1][0] & 0x03)  << 0);
-
-                //  write the rates for schedule 3 (switch 1 to 5 + midnight)
-                TOU_OutMessage2->Buffer.BSt.Message[5]  = ((rates[2][5] & 0x03)  << 2) |
-                                                          ((rates[2][4] & 0x03)  << 0);
-
-                TOU_OutMessage2->Buffer.BSt.Message[6]  = ((rates[2][3] & 0x03)  << 6) |
-                                                          ((rates[2][2] & 0x03)  << 4) |
-                                                          ((rates[2][1] & 0x03)  << 2) |
-                                                          ((rates[2][0] & 0x03)  << 0);
-
-                //  write the rates for schedule 4 (switch 1 to 5 + midnight)
-                TOU_OutMessage2->Buffer.BSt.Message[12] = ((rates[3][5] & 0x03)  << 2) |
-                                                          ((rates[3][4] & 0x03)  << 0);
-
-                TOU_OutMessage2->Buffer.BSt.Message[13] = ((rates[3][3] & 0x03)  << 6) |
-                                                          ((rates[3][2] & 0x03)  << 4) |
-                                                          ((rates[3][1] & 0x03)  << 2) |
-                                                          ((rates[3][0] & 0x03)  << 0);
-
-                // write default rate
-                TOU_OutMessage2->Buffer.BSt.Message[14] = default_rate;
-
-                //  write the rates for schedule 1 (switch 6 to 10)
-                TOU_OutMessage3->Buffer.BSt.Message[5]  = ((rates[0][10] & 0x03)  << 2) |
-                                                          ((rates[0][9] & 0x03)  << 0);
-
-                TOU_OutMessage3->Buffer.BSt.Message[6]  = ((rates[0][8] & 0x03)  << 6) |
-                                                          ((rates[0][7] & 0x03)  << 4) |
-                                                          ((rates[0][6] & 0x03)  << 2);
-
-                //  write the rates for schedule 2 (switch 6 to 10)
-                TOU_OutMessage3->Buffer.BSt.Message[12] = ((rates[1][10] & 0x03)  << 2) |
-                                                          ((rates[1][9] & 0x03)  << 0);
-
-                TOU_OutMessage3->Buffer.BSt.Message[13] = ((rates[1][8] & 0x03)  << 6) |
-                                                          ((rates[1][7] & 0x03)  << 4) |
-                                                          ((rates[1][6] & 0x03)  << 2);
-
-                // write default rate
-                TOU_OutMessage3->Buffer.BSt.Message[14] = default_rate;
-
-                //  write the rates for schedule 3 (switch 6 to 10)
-                TOU_OutMessage4->Buffer.BSt.Message[5]  = ((rates[2][10] & 0x03)  << 2) |
-                                                          ((rates[2][9] & 0x03)  << 0);
-
-                TOU_OutMessage4->Buffer.BSt.Message[6]  = ((rates[2][8] & 0x03)  << 6) |
-                                                          ((rates[2][7] & 0x03)  << 4) |
-                                                          ((rates[2][6] & 0x03)  << 2);
-
-                //  write the rates for schedule 4 (switch 6 to 10)
-                TOU_OutMessage4->Buffer.BSt.Message[12] = ((rates[3][10] & 0x03)  << 2) |
-                                                          ((rates[3][9] & 0x03)  << 0);
-
-                TOU_OutMessage4->Buffer.BSt.Message[13] = ((rates[3][8] & 0x03)  << 6) |
-                                                          ((rates[3][7] & 0x03)  << 4) |
-                                                          ((rates[3][6] & 0x03)  << 2);
-
-                // write default rate
-                TOU_OutMessage4->Buffer.BSt.Message[14] = default_rate;
-
-                outList.push_back(TOU_OutMessage4);
-                outList.push_back(TOU_OutMessage3);
-                outList.push_back(TOU_OutMessage2);
-                outList.push_back(TOU_OutMessage1);
-
-                TOU_OutMessage1 = 0;
-                TOU_OutMessage2 = 0;
-                TOU_OutMessage3 = 0;
-                TOU_OutMessage4 = 0;
+                createTOUScheduleConfig(day_schedules,
+                                        times,
+                                        rates,
+                                        default_rate,
+                                        OutMessage,
+                                        outList);
 
                 delete OutMessage;  //  we didn't use it, we made our own
                 OutMessage = 0;
@@ -2714,37 +2503,34 @@ int Mct440_213xBDevice::executePutConfigAlarmMask(CtiRequestMsg     *pReq,
                                                   CtiMessageList    &retList,
                                                   OutMessageList    &outList)
 {
-    if( parse.isKeyValid("config_byte") ||
-        hasDynamicInfo(CtiTableDynamicPaoInfo::Key_MCT_Configuration))
+    if( parse.isKeyValid("config_byte") )
     {
-        int alarmMask = parse.getiValue("alarm_mask", 0);
-
-        OutMessage->Buffer.BSt.Message[0] = (alarmMask & 0xFF);
-        OutMessage->Buffer.BSt.Message[1] = ((alarmMask >> 8) & 0xFF);
-
-        if( parse.isKeyValid("alarm_mask_meter") )
-        {
-            int meterAlarmMask = parse.getiValue("alarm_mask_meter", 0);
-            OutMessage->Buffer.BSt.Message[2] = (meterAlarmMask & 0xFF);
-            OutMessage->Buffer.BSt.Message[3] = ((meterAlarmMask >> 8) & 0xFF);
-        }
-
-        if( !getOperation(EmetconProtocol::PutConfig_Options, OutMessage->Buffer.BSt) )
-        {
-            return NoMethod;
-        }
-
-        OutMessage->Sequence = EmetconProtocol::PutConfig_AlarmMask;
-
-        return NoError;
-    }
-    else
-    {
-        returnErrorMessage(MISPARAM, OutMessage, retList,
-                           "Invalid request: Config Byte needs to be specified");
+        returnErrorMessage(BADPARAM, OutMessage, retList,
+                           "Device \"" + getName() + "\" does not support the \"configbyte\" parameter");
 
         return ExecutionComplete;
     }
+
+    int alarmMask = parse.getiValue("alarm_mask", 0);
+
+    OutMessage->Buffer.BSt.Message[0] = (alarmMask & 0xFF);
+    OutMessage->Buffer.BSt.Message[1] = ((alarmMask >> 8) & 0xFF);
+
+    if( parse.isKeyValid("alarm_mask_meter") )
+    {
+        int meterAlarmMask = parse.getiValue("alarm_mask_meter", 0);
+        OutMessage->Buffer.BSt.Message[2] = (meterAlarmMask & 0xFF);
+        OutMessage->Buffer.BSt.Message[3] = ((meterAlarmMask >> 8) & 0xFF);
+    }
+
+    if( !getOperation(EmetconProtocol::PutConfig_Options, OutMessage->Buffer.BSt) )
+    {
+        return NoMethod;
+    }
+
+    OutMessage->Sequence = EmetconProtocol::PutConfig_AlarmMask;
+
+    return NoError;
 }
 
 
@@ -3338,19 +3124,19 @@ int Mct440_213xBDevice::decodeGetConfigAlarmMask(INMESS          *InMessage,
     CtiReturnMsg *ReturnMsg = NULL;    // Message sent to VanGogh, inherits from Multi
     string resultString;
 
-    resultString  = getName() + " / Event Mask:\n";
-    resultString += string("Power Fail: ")                   + ((DSt->Message[1] & 0x01) ? "Enable" : "Disable") + "\n\n";
+    resultString  = getName() + " / Event Flags Mask:\n";
+    resultString += string("Power fail ")                   + ((DSt->Message[1] & 0x01) ? "enabled" : "disabled") + "\n\n";
 
     resultString += getName() + " / Meter Alarm Mask:\n";
-    resultString += string("Current Without Voltage: ")      + ((DSt->Message[3] & 0x01) ? "Enable" : "Disable") + "\n";
-    resultString += string("Load side voltage detected: ")   + ((DSt->Message[4] & 0x80) ? "Enable" : "Disable") + "\n";
-    resultString += string("Low Battery: ")                  + ((DSt->Message[4] & 0x40) ? "Enable" : "Disable") + "\n";
-    resultString += string("Voltage Out of Limits: ")        + ((DSt->Message[4] & 0x20) ? "Enable" : "Disable") + "\n";
-    resultString += string("Metal Box Cover Removal: ")      + ((DSt->Message[4] & 0x10) ? "Enable" : "Disable") + "\n";
-    resultString += string("Reverse Energy: ")               + ((DSt->Message[4] & 0x08) ? "Enable" : "Disable") + "\n";
-    resultString += string("Terminal Block Cover Removal: ") + ((DSt->Message[4] & 0x04) ? "Enable" : "Disable") + "\n";
-    resultString += string("Internal Error: ")               + ((DSt->Message[4] & 0x02) ? "Enable" : "Disable") + "\n";
-    resultString += string("Out of voltage: ")               + ((DSt->Message[4] & 0x01) ? "Enable" : "Disable") + "\n\n";
+    resultString += string("Current without voltage ")      + ((DSt->Message[3] & 0x01) ? "enabled" : "disabled") + "\n";
+    resultString += string("Load side voltage detected ")   + ((DSt->Message[4] & 0x80) ? "enabled" : "disabled") + "\n";
+    resultString += string("Low battery ")                  + ((DSt->Message[4] & 0x40) ? "enabled" : "disabled") + "\n";
+    resultString += string("Voltage out of limits ")        + ((DSt->Message[4] & 0x20) ? "enabled" : "disabled") + "\n";
+    resultString += string("Metal box cover removal ")      + ((DSt->Message[4] & 0x10) ? "enabled" : "disabled") + "\n";
+    resultString += string("Reverse energy ")               + ((DSt->Message[4] & 0x08) ? "enabled" : "disabled") + "\n";
+    resultString += string("Terminal block cover removal ") + ((DSt->Message[4] & 0x04) ? "enabled" : "disabled") + "\n";
+    resultString += string("Internal error ")               + ((DSt->Message[4] & 0x02) ? "enabled" : "disabled") + "\n";
+    resultString += string("Out of voltage ")               + ((DSt->Message[4] & 0x01) ? "enabled" : "disabled") + "\n\n";
 
     if((ReturnMsg = CTIDBG_new CtiReturnMsg(getID(), InMessage->Return.CommandStr)) == NULL)
     {
@@ -3366,6 +3152,182 @@ int Mct440_213xBDevice::decodeGetConfigAlarmMask(INMESS          *InMessage,
     retMsgHandler( InMessage->Return.CommandStr, status, ReturnMsg, vgList, retList );
 
     return status;
+}
+
+
+/*
+*********************************************************************************************************
+*                                       createTOUScheduleConfig()
+*
+* Description :
+*
+* Argument(s) :
+*
+* Return(s)   :
+*
+* Caller(s)   :
+*
+* Note(s)     :
+*********************************************************************************************************
+*/
+void Mct440_213xBDevice::createTOUScheduleConfig(long           (&daySchedule)[8],
+                                                 long           (&times)[4][10],
+                                                 long           (&rates)[4][11],
+                                                 long            defaultRate,
+                                                 OUTMESS        *&OutMessage,
+                                                 OutMessageList  &outList)
+{
+    OUTMESS *TOU_OutMessage = 0;
+
+
+                                                                /* ----------- CONFIGURE TOU SCHEDULE PART 1 ---------- */
+    TOU_OutMessage                      = CTIDBG_new OUTMESS(*OutMessage),
+    TOU_OutMessage->Sequence            = Cti::Protocols::EmetconProtocol::PutConfig_TOU;
+    TOU_OutMessage->Buffer.BSt.IO       = Cti::Protocols::EmetconProtocol::IO_Function_Write;
+    TOU_OutMessage->Buffer.BSt.Function = FuncWrite_TOUSchedule1Pos;
+    TOU_OutMessage->Buffer.BSt.Length   = FuncWrite_TOUSchedule1Len;
+
+    // write the day table
+    for( int offset = 0; offset < 8; offset++ )
+    {
+        int byte      = 1 - (offset / 4);
+        int bitoffset = (2 * offset) % 8;
+
+        TOU_OutMessage->Buffer.BSt.Message[byte] |= (daySchedule[offset] & 0x03) << bitoffset;
+    }
+
+    // write the durations for schedules 1 and 2 (time 1 to 5)
+    for( int offset = 0; offset < 5; offset++ )
+    {
+        TOU_OutMessage->Buffer.BSt.Message[offset + 2] = times[0][offset];
+        TOU_OutMessage->Buffer.BSt.Message[offset + 9] = times[1][offset];
+    }
+
+    // write the rates for schedules 1 and 2 (switch 1 to 5 + midnight)
+    TOU_OutMessage->Buffer.BSt.Message[7]  = ((rates[1][5]  & 0x03) << 6) |
+                                             ((rates[1][4]  & 0x03) << 4) |
+                                             ((rates[0][5]  & 0x03) << 2) |
+                                             ((rates[0][4]  & 0x03));
+
+    TOU_OutMessage->Buffer.BSt.Message[8]  = ((rates[0][3]  & 0x03) << 6) |
+                                             ((rates[0][2]  & 0x03) << 4) |
+                                             ((rates[0][1]  & 0x03) << 2) |
+                                             ((rates[0][0]  & 0x03));
+
+    TOU_OutMessage->Buffer.BSt.Message[14] = ((rates[1][3]  & 0x03) << 6) |
+                                             ((rates[1][2]  & 0x03) << 4) |
+                                             ((rates[1][1]  & 0x03) << 2) |
+                                             ((rates[1][0]  & 0x03));
+
+    outList.push_back(TOU_OutMessage);
+    TOU_OutMessage = 0;
+
+                                                                /* ----------- CONFIGURE TOU SCHEDULE PART 2 ---------- */
+    TOU_OutMessage                      = CTIDBG_new OUTMESS(*OutMessage);
+    TOU_OutMessage->Sequence            = Cti::Protocols::EmetconProtocol::PutConfig_TOU;
+    TOU_OutMessage->Buffer.BSt.IO       = Cti::Protocols::EmetconProtocol::IO_Function_Write;
+    TOU_OutMessage->Buffer.BSt.Function = FuncWrite_TOUSchedule2Pos;
+    TOU_OutMessage->Buffer.BSt.Length   = FuncWrite_TOUSchedule2Len;
+
+    // write the durations for schedules 3 and 4 (time 1 to 5)
+    for( int offset = 0; offset < 5; offset++ )
+    {
+        TOU_OutMessage->Buffer.BSt.Message[offset + 0] = times[2][offset];
+        TOU_OutMessage->Buffer.BSt.Message[offset + 7] = times[3][offset];
+    }
+
+    // write the rates for schedule 3 (switch 1 to 5 + midnight)
+    TOU_OutMessage->Buffer.BSt.Message[5]  = ((rates[2][5]  & 0x03) << 2) |
+                                             ((rates[2][4]  & 0x03) << 0);
+
+    TOU_OutMessage->Buffer.BSt.Message[6]  = ((rates[2][3]  & 0x03) << 6) |
+                                             ((rates[2][2]  & 0x03) << 4) |
+                                             ((rates[2][1]  & 0x03) << 2) |
+                                             ((rates[2][0]  & 0x03));
+
+    // write the rates for schedule 4 (switch 1 to 5 + midnight)
+    TOU_OutMessage->Buffer.BSt.Message[12] = ((rates[3][5]  & 0x03) << 2) |
+                                             ((rates[3][4]  & 0x03));
+
+    TOU_OutMessage->Buffer.BSt.Message[13] = ((rates[3][3]  & 0x03) << 6) |
+                                             ((rates[3][2]  & 0x03) << 4) |
+                                             ((rates[3][1]  & 0x03) << 2) |
+                                             ((rates[3][0]  & 0x03));
+
+    outList.push_back(TOU_OutMessage);
+    TOU_OutMessage = 0;
+
+                                                                /* ----------- CONFIGURE TOU SCHEDULE PART 3 ---------- */
+    TOU_OutMessage                      = CTIDBG_new OUTMESS(*OutMessage);
+    TOU_OutMessage->Sequence            = Cti::Protocols::EmetconProtocol::PutConfig_TOU;
+    TOU_OutMessage->Buffer.BSt.IO       = Cti::Protocols::EmetconProtocol::IO_Function_Write;
+    TOU_OutMessage->Buffer.BSt.Function = FuncWrite_TOUSchedule3Pos;
+    TOU_OutMessage->Buffer.BSt.Length   = FuncWrite_TOUSchedule3Len;
+
+    // write the durations for schedules 1 and 2 (time 6 to 10)
+    for( int offset = 0; offset < 5; offset++ )
+    {
+        TOU_OutMessage->Buffer.BSt.Message[offset + 0] = times[0][offset+5];
+        TOU_OutMessage->Buffer.BSt.Message[offset + 7] = times[1][offset+5];
+    }
+
+    // write the rates for schedule 1 (switch 6 to 10)
+    TOU_OutMessage->Buffer.BSt.Message[5]  = ((rates[0][10] & 0x03) << 2) |
+                                             ((rates[0][9]  & 0x03));
+
+    TOU_OutMessage->Buffer.BSt.Message[6]  = ((rates[0][8]  & 0x03) << 6) |
+                                             ((rates[0][7]  & 0x03) << 4) |
+                                             ((rates[0][6]  & 0x03) << 2);
+
+    // write the rates for schedule 2 (switch 6 to 10)
+    TOU_OutMessage->Buffer.BSt.Message[12] = ((rates[1][10] & 0x03) << 2) |
+                                             ((rates[1][9]  & 0x03));
+
+    TOU_OutMessage->Buffer.BSt.Message[13] = ((rates[1][8]  & 0x03) << 6) |
+                                             ((rates[1][7]  & 0x03) << 4) |
+                                             ((rates[1][6]  & 0x03) << 2);
+
+    // write default rate
+    TOU_OutMessage->Buffer.BSt.Message[14] = defaultRate;
+
+    outList.push_back(TOU_OutMessage);
+    TOU_OutMessage = 0;
+
+                                                                /* ----------- CONFIGURE TOU SCHEDULE PART 4 ---------- */
+    TOU_OutMessage                      = CTIDBG_new OUTMESS(*OutMessage);
+    TOU_OutMessage->Sequence            = Cti::Protocols::EmetconProtocol::PutConfig_TOU;
+    TOU_OutMessage->Buffer.BSt.IO       = Cti::Protocols::EmetconProtocol::IO_Function_Write;
+    TOU_OutMessage->Buffer.BSt.Function = FuncWrite_TOUSchedule4Pos;
+    TOU_OutMessage->Buffer.BSt.Length   = FuncWrite_TOUSchedule4Len;
+
+    // write the durations for schedules 3 and 4 (time 6 to 10)
+    for( int offset = 0; offset < 5; offset++ )
+    {
+        TOU_OutMessage->Buffer.BSt.Message[offset + 0] = times[2][offset+5];
+        TOU_OutMessage->Buffer.BSt.Message[offset + 7] = times[3][offset+5];
+    }
+
+    // write the rates for schedule 3 (switch 6 to 10)
+    TOU_OutMessage->Buffer.BSt.Message[5]  = ((rates[2][10] & 0x03) << 2) |
+                                             ((rates[2][9]  & 0x03) << 0);
+
+    TOU_OutMessage->Buffer.BSt.Message[6]  = ((rates[2][8]  & 0x03) << 6) |
+                                             ((rates[2][7]  & 0x03) << 4) |
+                                             ((rates[2][6]  & 0x03) << 2);
+
+    // write the rates for schedule 4 (switch 6 to 10)
+    TOU_OutMessage->Buffer.BSt.Message[12] = ((rates[3][10] & 0x03) << 2) |
+                                             ((rates[3][9]  & 0x03));
+
+    TOU_OutMessage->Buffer.BSt.Message[13] = ((rates[3][8]  & 0x03) << 6) |
+                                             ((rates[3][7]  & 0x03) << 4) |
+                                             ((rates[3][6]  & 0x03) << 2);
+
+    // write default rate
+    TOU_OutMessage->Buffer.BSt.Message[14] = defaultRate;
+
+    outList.push_back(TOU_OutMessage);
+    TOU_OutMessage = 0;
 }
 
 

@@ -145,6 +145,9 @@ protected:
     virtual INT executeControl(CtiRequestMsg *pReq, CtiCommandParser &parse, OUTMESS *&OutMessage, CtiMessageList &vgList, CtiMessageList &retList, OutMessageList &outList);
 
     virtual int decodeGetConfigAlarmMask(INMESS *InMessage, CtiTime &TimeNow, CtiMessageList &vgList, CtiMessageList  &retList, OutMessageList  &outList);
+
+    virtual void createTOUScheduleConfig(long (&daySchedule)[8], long (&times)[4][10], long (&rates)[4][11], long defaultRate, OUTMESS *&OutMessage, OutMessageList &outList);
+
 };
 
 
