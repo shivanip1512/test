@@ -106,7 +106,7 @@
   </bean>
   <bean id="pointDao" class="com.cannontech.core.dao.impl.PointDaoImpl"/>
   <bean id="roleDao" class="com.cannontech.core.dao.impl.RoleDaoImpl" />
-  <bean class="com.cannontech.system.dao.impl.GlobalSettingDaoImpl"/>
+  <bean id="globalSettingDao" class="com.cannontech.system.dao.impl.GlobalSettingDaoImpl"/>
   <bean class="com.cannontech.system.dao.impl.GlobalSettingEditorDaoImpl"/>
   <bean class="com.cannontech.system.dao.impl.GlobalSettingUpdateDaoImpl"/>
 

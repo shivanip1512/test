@@ -703,6 +703,22 @@
   </tag>
   
   <tag>
+    <name>globalSetting</name>
+    <tag-class>com.cannontech.web.taglib.GlobalSettingTag</tag-class>
+    <body-content>empty</body-content>
+    <attribute>
+      <name>globalSettingType</name>
+      <required>true</required>
+      <rtexprvalue>true</rtexprvalue>
+    </attribute>
+    <attribute>
+      <name>var</name>
+      <required>true</required>
+      <rtexprvalue>true</rtexprvalue>
+    </attribute>
+  </tag>
+
+  <tag>
     <name>pointValueFormatter</name>
     <tag-class>com.cannontech.web.taglib.PointValueFormatterTag</tag-class>
     <body-content>empty</body-content>
