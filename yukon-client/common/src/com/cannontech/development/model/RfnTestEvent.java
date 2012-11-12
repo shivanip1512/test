@@ -1,11 +1,11 @@
-package com.cannontech.web.support.development.model;
+package com.cannontech.development.model;
 
 import org.joda.time.Instant;
 
 import com.cannontech.amr.rfn.message.event.Direction;
 import com.cannontech.amr.rfn.message.event.RfnConditionType;
 
-public class TestEvent {
+public class RfnTestEvent {
     private int serialFrom = 1000;
     private int serialTo = 1000;
     private String manufacturer;

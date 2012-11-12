@@ -1,4 +1,4 @@
-package com.cannontech.development;
+package com.cannontech.development.model;
 
 import java.util.List;
 

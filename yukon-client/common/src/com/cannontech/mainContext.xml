@@ -328,5 +328,6 @@
     <bean class="com.cannontech.dr.dao.impl.ExpressComReportedAddressDaoImpl"/>
     <bean class="com.cannontech.dr.dao.impl.SepReportedAddressDaoImpl"/>
 
-    <bean id="bulkPointDataInjectionService" class="com.cannontech.development.impl.BulkPointDataInjectionServiceImpl"/>
+    <bean id="bulkPointDataInjectionService" class="com.cannontech.development.service.impl.BulkPointDataInjectionServiceImpl"/>
+    <bean class="com.cannontech.development.service.impl.RfnEventTestingServiceImpl"/>
 </beans>

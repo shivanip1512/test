@@ -1,4 +1,4 @@
-package com.cannontech.development.impl;
+package com.cannontech.development.service.impl;
 
 import java.util.Collections;
 import java.util.List;
@@ -21,8 +21,8 @@ import com.cannontech.common.pao.attribute.service.AttributeService;
 import com.cannontech.core.dao.PaoDao;
 import com.cannontech.core.dynamic.DynamicDataSource;
 import com.cannontech.database.data.lite.LitePoint;
-import com.cannontech.development.BulkFakePointInjectionDto;
-import com.cannontech.development.BulkPointDataInjectionService;
+import com.cannontech.development.model.BulkFakePointInjectionDto;
+import com.cannontech.development.service.BulkPointDataInjectionService;
 import com.cannontech.message.dispatch.message.PointData;
 import com.google.common.collect.Lists;
 import com.google.common.collect.Maps;

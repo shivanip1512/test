@@ -82,5 +82,18 @@ public class DevStarsHardware {
         }
         return hardwareTypes;
     }
+    public void setHardwareTypeCreate(Iterable<HardwareType> typesToCreate, boolean create) {
+        for (HardwareType hwType : typesToCreate) {
+            setHardwareTypeCreate(hwType, create);
+        }
+    }
+    public void setHardwareTypeCreate(HardwareType type, boolean create) {
+        for (DevHardwareType devType : hardwareTypes) {
+            if (devType.getHardwareType() == type) {
+                devType.setCreate(create);
+                return;
+            }
+        }
+    }
     
 }
