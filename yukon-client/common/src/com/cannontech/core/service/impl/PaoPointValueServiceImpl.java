@@ -92,8 +92,8 @@ public class PaoPointValueServiceImpl implements PaoPointValueService {
             ListMultimap<PaoIdentifier, PointValueQualityHolder> limitedAttributeDatas =
                 rawPointHistoryDao.getLimitedAttributeData(devices,
                                                            attributes,
-                                                           from.toDate(),
-                                                           to.toDate(),
+                                                           from != null ? from.toDate() : null,
+                                                           to != null ? to.toDate() : null,
                                                            maxRows,
                                                            !includeDisabledPaos,
                                                            Clusivity.INCLUSIVE_INCLUSIVE,
@@ -142,8 +142,8 @@ public class PaoPointValueServiceImpl implements PaoPointValueService {
             }
 
             pointData = rawPointHistoryDao.getPointData(pointIdsSet,
-                                                        from.toDate(),
-                                                        to.toDate(),
+                                                        from != null ? from.toDate() : null,
+                                                        to != null ? to.toDate() : null,
                                                         !includeDisabledPaos,
                                                         Clusivity.INCLUSIVE_INCLUSIVE,
                                                         Order.FORWARD);

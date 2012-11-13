@@ -1,8 +1,9 @@
 package com.cannontech.web.widget;
 
 import java.util.Collections;
+import java.util.Comparator;
+import java.util.Date;
 import java.util.List;
-import java.util.Map.Entry;
 import java.util.Set;
 
 import javax.servlet.http.HttpServletRequest;
@@ -15,47 +16,37 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import com.cannontech.amr.meter.dao.MeterDao;
 import com.cannontech.amr.meter.model.Meter;
 import com.cannontech.amr.meter.service.impl.MeterEventLookupService;
-import com.cannontech.common.pao.PaoIdentifier;
-import com.cannontech.common.pao.attribute.model.BuiltInAttribute;
-import com.cannontech.core.dao.PointDao;
-import com.cannontech.core.dao.RawPointHistoryDao;
-import com.cannontech.core.dao.RawPointHistoryDao.Clusivity;
-import com.cannontech.core.dao.RawPointHistoryDao.Order;
-import com.cannontech.core.dynamic.PointValueQualityHolder;
+import com.cannontech.amr.paoPointValue.model.PaoPointValue;
+import com.cannontech.common.pao.attribute.model.Attribute;
+import com.cannontech.core.service.PaoPointValueService;
 import com.cannontech.web.widget.support.AdvancedWidgetControllerBase;
 import com.cannontech.web.widget.support.WidgetParameterHelper;
-import com.google.common.collect.ListMultimap;
-import com.google.common.collect.Lists;
+import com.google.common.base.Function;
+import com.google.common.collect.Ordering;
 
 public class MeterEventsWidget extends AdvancedWidgetControllerBase {
     
-    @Autowired RawPointHistoryDao rawPointHistoryDao;
     @Autowired MeterDao meterDao;
     @Autowired MeterEventLookupService meterEventLookupService;
-    @Autowired PointDao pointDao;
+    @Autowired PaoPointValueService paoPointValueService;
 
-    public class EventHolder implements Comparable<EventHolder> {
-        private PointValueQualityHolder pointValueQualityHolder;
-        private String pointName;
-        
-        private EventHolder(PointValueQualityHolder pvqh, String name) {
-            this.pointValueQualityHolder = pvqh;
-            this.pointName = name;
-        }
-
-        public PointValueQualityHolder getPointValueQualityHolder() {
-            return pointValueQualityHolder;
-        }
-
-        public String getPointName() {
-            return pointName;
-        }
-
-        @Override
-        public int compareTo(EventHolder o) {
-            return pointValueQualityHolder.getPointDataTimeStamp().compareTo(o
-                .getPointValueQualityHolder().getPointDataTimeStamp());
-        }
+    private static Comparator<PaoPointValue> getDateComparator() {
+        Ordering<PaoPointValue> dateOrdering = Ordering.natural().nullsLast()
+                .onResultOf(new Function<PaoPointValue, Date>() {
+                    @Override
+                    public Date apply(PaoPointValue from) {
+                        return from.getPointValueHolder().getPointDataTimeStamp();
+                    }
+                });
+        Ordering<PaoPointValue> attributeOrdering = Ordering.natural().nullsLast()
+                .onResultOf(new Function<PaoPointValue, String>() {
+                    @Override
+                    public String apply(PaoPointValue from) {
+                        return from.getPointName();
+                    }
+                });
+        Ordering<PaoPointValue> result = dateOrdering.compound(attributeOrdering.reverse());
+        return result;
     }
 
     @RequestMapping
@@ -68,34 +59,26 @@ public class MeterEventsWidget extends AdvancedWidgetControllerBase {
 
     public void setupModel(int deviceId, ModelMap model) {
         Meter meter = meterDao.getForId(deviceId);
-        List<EventHolder> sortedLimitedAttributeValueMap = getRphSortedLimitedAttributeValueMap(meter);
+        List<PaoPointValue> sortedLimitedAttributeValueMap = getRphSortedLimitedAttributeValueMap(meter);
         model.addAttribute("valueMap", sortedLimitedAttributeValueMap);
         model.addAttribute("deviceId", deviceId);
         model.addAttribute("meter", meter);
     }
     
-    private List<EventHolder> getRphSortedLimitedAttributeValueMap(Meter meter) {
-        Set<BuiltInAttribute> availableEventAttributes =
+    private List<PaoPointValue> getRphSortedLimitedAttributeValueMap(Meter meter) {
+        Set<Attribute> availableEventAttributes =
             meterEventLookupService.getAvailableEventAttributes(Collections.singletonList(meter));
-        List<EventHolder> events = Lists.newArrayList();
+        
+        List<PaoPointValue> events = paoPointValueService.getPaoPointValuesForMeters(Collections.singletonList(meter),
+                                                        availableEventAttributes,
+                                                        null,
+                                                        null,
+                                                        10,
+                                                        meter.isDisabled(),
+                                                        null,
+                                                        null);
 
-        for (BuiltInAttribute attribute : availableEventAttributes) {
-            ListMultimap<PaoIdentifier, PointValueQualityHolder> attributeData =
-                rawPointHistoryDao.getLimitedAttributeData(Collections.singleton(meter),
-                                                    attribute,
-                                                    null,
-                                                    null,
-                                                    10,
-                                                    false,
-                                                    Clusivity.INCLUSIVE_INCLUSIVE,
-                                                    Order.REVERSE);
-            for (Entry<PaoIdentifier, PointValueQualityHolder> entry : attributeData.entries()) {
-                String pointName = pointDao.getPointName(entry.getValue().getId());
-                events.add(new EventHolder(entry.getValue(), pointName));
-            }
-        }
-
-        Collections.sort(events, Collections.reverseOrder());
+        Collections.sort(events, Collections.reverseOrder(getDateComparator()));
         events = events.subList(0, 10 > events.size() ? events.size() : 10);
 
         return events;

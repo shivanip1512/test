@@ -24,10 +24,10 @@
                 <tbody>
                     <c:forEach items="${valueMap}" var="entry">
                         <tr class="<tags:alternateRow odd="" even="altRow"/>">
-                            <td><cti:formatDate type="BOTH" value="${entry.pointValueQualityHolder.pointDataTimeStamp}"/></td>
+                            <td><cti:formatDate type="BOTH" value="${entry.pointValueHolder.pointDataTimeStamp}"/></td>
                             <td><spring:escapeBody>${entry.pointName}</spring:escapeBody></td>
-                            <td class="eventStatus<cti:pointValueFormatter value="${entry.pointValueQualityHolder}" format="VALUE"/>">
-                                <cti:pointValueFormatter value="${entry.pointValueQualityHolder}" format="VALUE"/>
+                            <td class="eventStatus<cti:pointValueFormatter value="${entry.pointValueHolder}" format="VALUE"/>">
+                                <cti:pointValueFormatter value="${entry.pointValueHolder}" format="VALUE"/>
                             </td>
                         </tr>
                     </c:forEach>

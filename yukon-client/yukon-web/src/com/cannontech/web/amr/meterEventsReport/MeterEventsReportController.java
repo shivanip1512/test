@@ -19,6 +19,7 @@ import net.sf.json.JSONObject;
 
 import org.apache.commons.lang.StringUtils;
 import org.joda.time.DateTime;
+import org.joda.time.Duration;
 import org.joda.time.Instant;
 import org.joda.time.LocalDate;
 import org.joda.time.format.DateTimeFormat;
@@ -48,6 +49,7 @@ import com.cannontech.common.bulk.collection.device.DeviceGroupCollectionHelper;
 import com.cannontech.common.device.model.SimpleDevice;
 import com.cannontech.common.i18n.MessageSourceAccessor;
 import com.cannontech.common.pao.PaoIdentifier;
+import com.cannontech.common.pao.attribute.model.Attribute;
 import com.cannontech.common.pao.attribute.model.BuiltInAttribute;
 import com.cannontech.common.search.SearchResult;
 import com.cannontech.common.validator.SimpleValidator;
@@ -172,9 +174,10 @@ public class MeterEventsReportController {
     public String reportAll(HttpServletRequest request, ModelMap model, YukonUserContext userContext, boolean includeDisabledPaos)
             throws ServletRequestBindingException, DeviceCollectionCreationException {
         MeterEventsReportFilterBackingBean backingBean = new MeterEventsReportFilterBackingBean(userContext);
-        backingBean.setFromInstant(null);
-        backingBean.setToInstant(null);
+        backingBean.setFromInstant(backingBean.getFromInstant().minus(Duration.standardDays(30)));
         backingBean.setIncludeDisabledPaos(includeDisabledPaos);
+        backingBean.setOnlyAbnormalEvents(false);
+        backingBean.setOnlyLatestEvent(false);
         setupModelMap(backingBean, request, model, null, null, userContext, null);
         return reportJspPath;
     }
@@ -265,7 +268,7 @@ public class MeterEventsReportController {
             backingBean.setEventTypesAllTrue();
         }
 
-        Set<BuiltInAttribute> availableEventAttributes =
+        Set<Attribute> availableEventAttributes =
             meterEventLookupService.getAvailableEventAttributes(backingBean.getDeviceCollection()
                 .getDeviceList());
 
