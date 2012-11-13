@@ -18,8 +18,12 @@ public class Tou {
     private String holiday = null;
 
     public Tou() {
+        this(5);
+    }
+
+    public Tou(final int numberOfTimeRate) {
         for (int i = 0; i < 4; i++) {
-            scheduleList.add(new Schedule());
+            scheduleList.add(new Schedule(numberOfTimeRate));
         }
     }
 
