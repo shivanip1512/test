@@ -3,6 +3,24 @@
 #define WM_SETTINGCHANGE 0x001A 
 //////////////////////////////////////////////////////////////
 
+//constants
+#define SCANNER_DESC	"Collects real-time and interval data from a list of devices."
+#define PORTER_DESC		"Controls communication channel and field hardware communications."
+#define MACS_DESC		"Runs scheduled meter data collection and basic control operation."
+#define LM_DESC			"Runs Demand Response operations based on data gathered by the Yukon system."
+#define	FDR_DESC		"Transmits and receives data to and from other systems outside of Yukon.\""
+#define	DISPATCH_DESC	"Transmits and receives real-time data to and from the Yukon server and client application"
+#define	CC_DESC			"Runs Distribution Automation operations based on data gathered by the system."
+#define	CALC_DESC		"Processes real-time and historical calculations on data gathered by the system."
+#define PORTER_NAME		"Yukon Port Control Service"
+#define SCANNER_NAME	"Yukon Real-Time Scan Service"
+#define MACS_NAME		"Yukon MAC Scheduler Service"
+#define LM_NAME			"Yukon Load Management Service"
+#define FDR_NAME		"Yukon Foreign Data Service"
+#define DISPATCH_NAME	"Yukon Dispatch Service"
+#define CC_NAME			"Yukon Cap Control Service"
+#define CALC_NAME		"Yukon Calc-Logic Service"
+
 //---------------------------------------------------------------------------
 // The Installed event is sent after the feature Notification Server
 // is installed.
@@ -126,4 +144,181 @@ begin
 	sPathAndFile = TARGETDIR + "\\client\\bin\\wrapper.exe";
 	sCMD = "-r appserver.conf";
 	LaunchApplication(sPathAndFile, sCMD, "", SW_HIDE, 0, LAAW_OPTION_HIDDEN | LAAW_OPTION_WAIT);	
+end;
+
+//---------------------------------------------------------------------------
+// The Installed event is sent after the feature Yukon Server\Port Control
+// is installed.
+//---------------------------------------------------------------------------
+export prototype PortControl_Installed();
+function PortControl_Installed()
+string sServicePathFile;
+begin
+	//Install Porter service
+	sServicePathFile = TARGETDIR + "\\Server\\bin\\porter.exe";
+	ServiceAddService(PORTER_NAME, PORTER_NAME, PORTER_DESC, sServicePathFile, FALSE, "");
+end;
+
+//---------------------------------------------------------------------------
+// The UnInstalling event is sent just before the feature 
+// Yukon Server\Port Control is uninstalled.
+//---------------------------------------------------------------------------
+export prototype PortControl_UnInstalling();
+function PortControl_UnInstalling()
+begin
+	ServiceRemoveService(PORTER_NAME);
+end;
+
+//---------------------------------------------------------------------------
+// The Installed event is sent after the feature Yukon Server\Dispatch
+// is installed.
+//---------------------------------------------------------------------------
+export prototype Dispatch_Installed();
+function Dispatch_Installed()
+string sServicePathFile;
+begin
+	sServicePathFile = TARGETDIR + "\\Server\\bin\\dispatch.exe";
+	ServiceAddService(DISPATCH_NAME, DISPATCH_NAME, DISPATCH_DESC, sServicePathFile, FALSE, "");
+end;
+
+//---------------------------------------------------------------------------
+// The UnInstalling event is sent just before the feature 
+// Yukon Server\Dispatch is uninstalled.
+//---------------------------------------------------------------------------
+export prototype Dispatch_UnInstalling();
+function Dispatch_UnInstalling()
+begin
+	ServiceRemoveService(DISPATCH_NAME);
+end;
+
+//---------------------------------------------------------------------------
+// The Installed event is sent after the feature Yukon Server\Real-Time Scanner
+// is installed.
+//---------------------------------------------------------------------------
+export prototype RealTimeScanner_Installed();
+function RealTimeScanner_Installed()
+string sServicePathFile;
+begin
+	sServicePathFile = TARGETDIR + "\\Server\\bin\\scanner.exe";
+	ServiceAddService(SCANNER_NAME, SCANNER_NAME, SCANNER_DESC, sServicePathFile, FALSE, "");
+end;
+
+//---------------------------------------------------------------------------
+// The UnInstalling event is sent just before the feature 
+// Yukon Server\Real-Time Scanner is uninstalled.
+//---------------------------------------------------------------------------
+export prototype RealTimeScanner_UnInstalling();
+function RealTimeScanner_UnInstalling()
+begin
+	ServiceRemoveService(SCANNER_NAME);
+end;
+
+//---------------------------------------------------------------------------
+// The Installed event is sent after the feature Yukon Server\MAC Scheduler
+// is installed.
+//---------------------------------------------------------------------------
+export prototype MACScheduler_Installed();
+function MACScheduler_Installed()
+string sServicePathFile;
+begin
+	sServicePathFile = TARGETDIR + "\\Server\\bin\\macs.exe";	
+	ServiceAddService(MACS_NAME, MACS_NAME, MACS_DESC, sServicePathFile, FALSE, "");
+end;
+
+//---------------------------------------------------------------------------
+// The UnInstalling event is sent just before the feature 
+// Yukon Server\MAC Scheduler is uninstalled.
+//---------------------------------------------------------------------------
+export prototype MACScheduler_UnInstalling();
+function MACScheduler_UnInstalling()
+begin
+	ServiceRemoveService(MACS_NAME);
+end;
+
+//---------------------------------------------------------------------------
+// The Installed event is sent after the feature Yukon Server\Capacitor Control
+// is installed.
+//---------------------------------------------------------------------------
+export prototype CapacitorControl_Installed();
+function CapacitorControl_Installed()
+string sServicePathFile;
+begin
+	sServicePathFile = TARGETDIR + "\\Server\\bin\\capcontrol.exe";
+	ServiceAddService(CALC_NAME, CALC_NAME, CC_DESC, sServicePathFile, FALSE, "");
+end;
+
+//---------------------------------------------------------------------------
+// The UnInstalling event is sent just before the feature 
+// Yukon Server\Capacitor Control is uninstalled.
+//---------------------------------------------------------------------------
+export prototype CapacitorControl_UnInstalling();
+function CapacitorControl_UnInstalling()
+begin
+	ServiceRemoveService(CALC_NAME);
+end;
+
+//---------------------------------------------------------------------------
+// The Installed event is sent after the feature Yukon Server\Foreign Data Router
+// is installed.
+//---------------------------------------------------------------------------
+export prototype ForeignDataRouter_Installed();
+function ForeignDataRouter_Installed()
+string sServicePathFile;
+begin
+	sServicePathFile = TARGETDIR + "\\Server\\bin\\fdr.exe";
+	ServiceAddService(FDR_NAME, FDR_NAME, FDR_DESC, sServicePathFile, FALSE, "");
+end;
+
+//---------------------------------------------------------------------------
+// The UnInstalling event is sent just before the feature 
+// Yukon Server\Foreign Data Router is uninstalled.
+//---------------------------------------------------------------------------
+export prototype ForeignDataRouter_UnInstalling();
+function ForeignDataRouter_UnInstalling()
+begin
+	ServiceRemoveService(FDR_NAME);
+end;
+
+//---------------------------------------------------------------------------
+// The Installed event is sent after the feature Yukon Server\Calc-Logic
+// is installed.
+//---------------------------------------------------------------------------
+export prototype CalcLogic_Installed();
+function CalcLogic_Installed()
+string sServicePathFile;
+begin
+	sServicePathFile = TARGETDIR + "\\Server\\bin\\calc_logic.exe";
+	ServiceAddService(CALC_NAME, CALC_NAME, CALC_DESC, sServicePathFile, FALSE, "");
+end;
+
+//---------------------------------------------------------------------------
+// The UnInstalling event is sent just before the feature 
+// Yukon Server\Calc-Logic is uninstalled.
+//---------------------------------------------------------------------------
+export prototype CalcLogic_UnInstalling();
+function CalcLogic_UnInstalling()
+begin
+	ServiceRemoveService(CALC_NAME);
+end;
+
+//---------------------------------------------------------------------------
+// The Installed event is sent after the feature Yukon Server\Load Management
+// is installed.
+//---------------------------------------------------------------------------
+export prototype LoadManagement_Installed();
+function LoadManagement_Installed()
+string sServicePathFile;
+begin
+	sServicePathFile = TARGETDIR + "\\Server\\bin\\loadmanagement.exe";
+	ServiceAddService(LM_NAME, LM_NAME, LM_DESC, sServicePathFile, FALSE, "");
+end;
+
+//---------------------------------------------------------------------------
+// The UnInstalling event is sent just before the feature 
+// Yukon Server\Load Management is uninstalled.
+//---------------------------------------------------------------------------
+export prototype LoadManagement_UnInstalling();
+function LoadManagement_UnInstalling()
+begin
+	ServiceRemoveService(LM_NAME);
 end;

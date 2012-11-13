@@ -8,22 +8,6 @@
 #define WM_SETTINGCHANGE 		0x001A
 
 //constants
-#define SCANNER_DESC	"Collects real-time and interval data from a list of devices."
-#define PORTER_DESC		"Controls communication channel and field hardware communications."
-#define MACS_DESC		"Runs scheduled meter data collection and basic control operation."
-#define LM_DESC			"Runs Demand Response operations based on data gathered by the Yukon system."
-#define	FDR_DESC		"Transmits and receives data to and from other systems outside of Yukon.\""
-#define	DISPATCH_DESC	"Transmits and receives real-time data to and from the Yukon server and client application"
-#define	CC_DESC			"Runs Distribution Automation operations based on data gathered by the system."
-#define	CALC_DESC		"Processes real-time and historical calculations on data gathered by the system."
-#define PORTER_NAME		"Yukon Port Control Service"
-#define SCANNER_NAME	"Yukon Real-Time Scan Service"
-#define MACS_NAME		"Yukon MAC Scheduler Service"
-#define LM_NAME			"Yukon Load Management Service"
-#define FDR_NAME		"Yukon Foreign Data Service"
-#define DISPATCH_NAME	"Yukon Dispatch Service"
-#define CC_NAME			"Yukon Cap Control Service"
-#define CALC_NAME		"Yukon Calc-Logic Service"
 #define SYS32			"C:\\WINDOWS\\System32\\"
 #define SERVICE_WARNING	"Setup detected a Yukon service still running.\nPlease make sure that all Yukon services are stopped before continuing."   
 
@@ -123,32 +107,6 @@ begin
 	sEnv = "Environment";
 	pEnv = &sEnv;
 	SendMessage(HWND_BROADCAST, WM_SETTINGCHANGE, 0, pEnv);
-	
-	//check to see if any yukon services were installed
-	if (FeatureIsItemSelected(MEDIA, "Yukon Server")) then	
-		//let the user know we're working, as this might take a little while
-		SdShowMsg("Configuring Yukon Services. Please wait...", TRUE);
-	    sProg = SYS32 + "sc.exe";
-	    //attempt to set the description field on each service now that they are 
-		//installed. NT Service object can't do this. (Wrapper takes care of the
-		//java services for us though)
-	    //IMPORTANT NOTE: using LaunchApplication with the SW_HIDDEN flag will
-	    //cause ALL APPLICATIONS LAUNCHED HENCEFORTH to be hidden! Even if they
-	    //are launched through LaunchApp or LaunchAppAndWait.  You must call
-	    //LaunchApplication with the SW_NORMAL flag to un-hide launched apps.
-	    LaunchApplication(sProg, "description \"" + SCANNER_NAME + "\" \"" + SCANNER_DESC + "\"", "", SW_HIDE, 0,LAAW_OPTION_HIDDEN | LAAW_OPTION_WAIT);
-	    LaunchApplication(sProg, "description \"" + PORTER_NAME + "\" \"" + PORTER_DESC + "\"", "", SW_HIDE, 0,LAAW_OPTION_HIDDEN | LAAW_OPTION_WAIT);
-		LaunchApplication(sProg, "description \"" + MACS_NAME + "\" \"" + MACS_DESC + "\"", "", SW_HIDE, 0,LAAW_OPTION_HIDDEN | LAAW_OPTION_WAIT);
-		LaunchApplication(sProg, "description \"" + LM_NAME + "\" \"" + LM_DESC + "\"", "", SW_HIDE, 0,LAAW_OPTION_HIDDEN | LAAW_OPTION_WAIT);
-		LaunchApplication(sProg, "description \"" + FDR_NAME + "\" \"" + FDR_DESC + "\"", "", SW_HIDE, 0,LAAW_OPTION_HIDDEN | LAAW_OPTION_WAIT);
-		LaunchApplication(sProg, "description \"" + DISPATCH_NAME + "\" \"" + DISPATCH_DESC + "\"", "", SW_HIDE, 0,LAAW_OPTION_HIDDEN | LAAW_OPTION_WAIT);
-		LaunchApplication(sProg, "description \"" + CC_NAME + "\" \"" + CC_DESC + "\"", "", SW_HIDE, 0,LAAW_OPTION_HIDDEN | LAAW_OPTION_WAIT);
-		LaunchApplication(sProg, "description \"" + CALC_NAME + "\" \"" + CALC_DESC + "\"", "", SW_HIDE, 0,LAAW_OPTION_HIDDEN | LAAW_OPTION_WAIT);
-		//get out of "hidden" app-launch mode
-		LaunchApplication("", "", "", SW_NORMAL, 0, LAAW_OPTION_WAIT);
-		//hide the "Configuring Yukon Services" popup
-	    SdShowMsg("", FALSE);
-    endif;
     
     AllowWriteAccessForUsers(TARGETDIR ^ "Server\\Config\\master.cfg");
     AllowWriteAccessForUsers(TARGETDIR ^ "Server\\Config\\remoteLogging.xml");
