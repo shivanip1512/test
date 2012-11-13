@@ -2825,11 +2825,11 @@ INT Mct440_213xBDevice::decodeGetConfigTOU(INMESS          *InMessage,
 * Note(s)     :
 *********************************************************************************************************
 */
-int Mct440_213xBDevice::decodeGetConfigModel(INMESS              *InMessage,
-                                             CtiTime             &TimeNow,
-                                             list< CtiMessage* > &vgList,
-                                             list< CtiMessage* > &retList,
-                                             list< OUTMESS* >    &outList)
+int Mct440_213xBDevice::decodeGetConfigModel(INMESS         *InMessage,
+                                             CtiTime        &TimeNow,
+                                             CtiMessageList &vgList,
+                                             CtiMessageList &retList,
+                                             OutMessageList &outList)
 {
     DSTRUCT &DSt = InMessage->Buffer.DSt;
 
