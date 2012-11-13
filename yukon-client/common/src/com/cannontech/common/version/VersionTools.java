@@ -3,6 +3,7 @@ package com.cannontech.common.version;
 import java.io.IOException;
 import java.io.InputStream;
 import java.net.URL;
+import java.util.Date;
 import java.util.Enumeration;
 import java.util.Map;
 import java.util.jar.Manifest;
@@ -36,8 +37,11 @@ public final class VersionTools {
     // we need a set of query strings for backward compatibility
     // since this is used in DBUpdates that get executed before
     // the DB structure is changed
-    public static final String[] QUERY_STRS = {
+    private static final String[] QUERY_STRS = {
         // latest query string is first!
+    	"select Version, BuildDate, Notes, Build from " + CTIDatabase.TABLE_NAME
+    			+ " where BuildDate is not null order by Version desc, Build desc",
+    			
         "select Version, CTIEmployeeName, DateApplied, Notes, Build from " + CTIDatabase.TABLE_NAME
                 + " where DateApplied is not null " + "order by Version desc, Build desc",
 
@@ -90,12 +94,14 @@ public final class VersionTools {
             rs.next();
 
             db_obj.setVersion(rs.getString("Version"));
-            db_obj.setCtiEmployeeName(rs.getString("CTIEmployeeName"));
-            db_obj.setDateApplied(new java.util.Date(rs.getTimestamp("DateApplied").getTime()));
+            // If the most recent QUERY_STRS query (index i==0) returned results, use the column new name 'BuildDate'.
+            // If any other QUERY_STRS query (index i > 0) was used, then use the historical column name 'DateApplied'.
+            db_obj.setBuildDate(new Date(rs.getTimestamp(i == 0 ? "BuildDate":"DateApplied").getTime()));
             db_obj.setNotes(rs.getString("Notes"));
-
-            if (i == 0) { // zeroth query string has the build column
-                db_obj.setBuild(new Integer(rs.getInt("Build")));
+            // Only the two most recent queries in QUERY_STRS return the Build,
+            // column, so only read it if one of those queries was used.
+            if (i < 2) {
+                db_obj.setBuild(rs.getInt("Build"));
             }
         } catch (java.sql.SQLException e) {
             CTILogger.error(e.getMessage(), e);

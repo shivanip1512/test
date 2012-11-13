@@ -1,18 +1,19 @@
 package com.cannontech.database.db.version;
 
+import java.util.Date;
+
 /**
  * This type was created in VisualAge.
  */
 public class CTIDatabase extends com.cannontech.database.db.DBPersistent {
     private String version = null;
-    private String ctiEmployeeName = null;
-    private java.util.Date dateApplied = null;
+    private Date buildDate = null;
     private String notes = null;
     private Integer build = null;
 
-    public static final String SETTER_COLUMNS[] = { "CTIEmployeeName", "DateApplied", "Notes", "Build" };
+    public static final String SETTER_COLUMNS[] = { "BuildDate", "Notes", "Build" };
 
-    public static final String CONSTRAINT_COLUMNS[] = { "version" };
+    public static final String CONSTRAINT_COLUMNS[] = { "Version" };
 
     public static final String TABLE_NAME = "CTIDatabase";
 
@@ -22,7 +23,7 @@ public class CTIDatabase extends com.cannontech.database.db.DBPersistent {
 
     @Override
     public void add() throws java.sql.SQLException {
-        Object setValues[] = { getVersion(), getCtiEmployeeName(), getDateApplied(), getNotes(), getBuild() };
+        Object setValues[] = { getVersion(), getBuildDate(), getNotes(), getBuild() };
 
         add(TABLE_NAME, setValues);
     }
@@ -34,12 +35,8 @@ public class CTIDatabase extends com.cannontech.database.db.DBPersistent {
         delete(TABLE_NAME, CONSTRAINT_COLUMNS, constraintValues);
     }
 
-    public java.lang.String getCtiEmployeeName() {
-        return ctiEmployeeName;
-    }
-
-    public java.util.Date getDateApplied() {
-        return dateApplied;
+    public java.util.Date getBuildDate() {
+        return buildDate;
     }
 
     public java.lang.String getNotes() {
@@ -57,20 +54,16 @@ public class CTIDatabase extends com.cannontech.database.db.DBPersistent {
         Object results[] = retrieve(SETTER_COLUMNS, TABLE_NAME, CONSTRAINT_COLUMNS, constraintValues);
 
         if (results.length == SETTER_COLUMNS.length) {
-            setCtiEmployeeName((String) results[0]);
-            setDateApplied((java.util.Date) results[1]);
-            setNotes((String) results[2]);
+            setBuildDate((Date) results[0]);
+            setNotes((String) results[1]);
+            setBuild((Integer) results[2]);
         } else {
             throw new Error(getClass() + "::retrieve - Incorrect number of results");
         }
     }
 
-    public void setCtiEmployeeName(java.lang.String newCtiEmployeeName) {
-        ctiEmployeeName = newCtiEmployeeName;
-    }
-
-    public void setDateApplied(java.util.Date newDateApplied) {
-        dateApplied = newDateApplied;
+    public void setBuildDate(java.util.Date newBuildDate) {
+        buildDate = newBuildDate;
     }
 
     public void setNotes(java.lang.String newNotes) {
@@ -83,7 +76,7 @@ public class CTIDatabase extends com.cannontech.database.db.DBPersistent {
 
     @Override
     public void update() throws java.sql.SQLException {
-        Object setValues[] = { getCtiEmployeeName(), getDateApplied(), getNotes(), getBuild() };
+        Object setValues[] = { getBuildDate(), getNotes(), getBuild() };
 
         Object constraintValues[] = { getVersion() };
 
