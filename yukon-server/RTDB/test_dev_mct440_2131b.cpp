@@ -1722,7 +1722,7 @@ BOOST_FIXTURE_TEST_SUITE(test_getOperation, getOperation_helper)
         BOOST_CHECK_EQUAL(BSt.Function, 0x92);
         BOOST_CHECK_EQUAL(BSt.Length,   10);
     }
-    BOOST_AUTO_TEST_CASE(test_getOperation_31)
+/*    BOOST_AUTO_TEST_CASE(test_getOperation_31)
     {
         BOOST_REQUIRE(test_dev.getOperation(EmetconProtocol::GetValue_PeakDemand, BSt));
         BOOST_CHECK_EQUAL(BSt.IO, EmetconProtocol::IO_Function_Read);
@@ -1750,7 +1750,7 @@ BOOST_FIXTURE_TEST_SUITE(test_getOperation, getOperation_helper)
         BOOST_CHECK_EQUAL(BSt.Function, 0x96);
         BOOST_CHECK_EQUAL(BSt.Length,   13);
     }
-    BOOST_AUTO_TEST_CASE(test_getOperation_35)
+ */ BOOST_AUTO_TEST_CASE(test_getOperation_35)
     {
         BOOST_REQUIRE(test_dev.getOperation(EmetconProtocol::GetValue_Outage, BSt));
         BOOST_CHECK_EQUAL(BSt.IO, EmetconProtocol::IO_Function_Read);
