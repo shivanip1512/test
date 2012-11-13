@@ -244,7 +244,7 @@ function CapacitorControl_Installed()
 string sServicePathFile;
 begin
 	sServicePathFile = TARGETDIR + "\\Server\\bin\\capcontrol.exe";
-	ServiceAddService(CALC_NAME, CALC_NAME, CC_DESC, sServicePathFile, FALSE, "");
+	ServiceAddService(CC_NAME, CC_NAME, CC_DESC, sServicePathFile, FALSE, "");
 end;
 
 //---------------------------------------------------------------------------
@@ -254,7 +254,7 @@ end;
 export prototype CapacitorControl_UnInstalling();
 function CapacitorControl_UnInstalling()
 begin
-	ServiceRemoveService(CALC_NAME);
+	ServiceRemoveService(CC_NAME);
 end;
 
 //---------------------------------------------------------------------------
