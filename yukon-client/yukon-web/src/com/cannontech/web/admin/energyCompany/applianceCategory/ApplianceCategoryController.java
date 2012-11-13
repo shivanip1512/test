@@ -1,5 +1,6 @@
 package com.cannontech.web.admin.energyCompany.applianceCategory;
 
+import java.io.IOException;
 import java.util.List;
 import java.util.Map;
 
@@ -50,6 +51,7 @@ import com.cannontech.stars.dr.appliance.service.ApplianceCategoryService;
 import com.cannontech.stars.dr.appliance.service.AssignedProgramService;
 import com.cannontech.stars.energyCompany.model.YukonEnergyCompany;
 import com.cannontech.stars.service.EnergyCompanyService;
+import com.cannontech.stars.util.ServletUtils;
 import com.cannontech.stars.xml.serialize.StarsCustSelectionList;
 import com.cannontech.stars.xml.serialize.StarsSelectionListEntry;
 import com.cannontech.user.YukonUserContext;
@@ -418,10 +420,10 @@ public class ApplianceCategoryController {
     }
 
     @RequestMapping
-    public String saveAssignedProgram(ModelMap model, int ecId,
+    public String saveAssignedProgram(HttpServletResponse response, ModelMap model, int ecId,
                                       @ModelAttribute("backingBean") AssignProgramBackingBean backingBean,
                                       BindingResult bindingResult, YukonUserContext context,
-                                      FlashScope flashScope) {
+                                      FlashScope flashScope) throws IOException {
         int applianceCategoryId = backingBean.getAssignedProgram().getApplianceCategoryId();
         verifyApplianceCategoryEC(applianceCategoryId, ecId);
         int assignedProgramId = backingBean.getAssignedProgram().getAssignedProgramId();
@@ -458,7 +460,10 @@ public class ApplianceCategoryController {
         } else {
             throw new RuntimeException("invalid form values");
         }
-        return closeDialog(model);
+
+        ServletUtils.closePopup(response, "acDialog");
+
+        return null;
     }
 
     @RequestMapping
@@ -488,14 +493,17 @@ public class ApplianceCategoryController {
     }
 
     @RequestMapping
-    public String unassignProgram(ModelMap model, int applianceCategoryId, int assignedProgramId,
-                                  YukonUserContext context) {
+    public String unassignProgram(HttpServletResponse response, ModelMap model, int applianceCategoryId, 
+                                  int assignedProgramId, YukonUserContext context) throws IOException {
         verifyAssignedProgramAC(assignedProgramId, applianceCategoryId);
         ApplianceCategory applianceCategory = applianceCategoryDao.getById(applianceCategoryId);
         energyCompanyService.verifyEditPageAccess(context.getYukonUser(),
                                                   applianceCategory.getEnergyCompanyId());
         applianceCategoryService.unassignProgram(applianceCategoryId, assignedProgramId, context);
-        return closeDialog(model);
+
+        ServletUtils.closePopup(response, "acDialog");
+
+        return null;
     }
 
     @RequestMapping
@@ -522,18 +530,6 @@ public class ApplianceCategoryController {
 
         response.addHeader("X-JSON", object.toString());
         response.setContentType("text/plain");
-    }
-
-    private String closeDialog(ModelMap model) {
-        return closeDialog(model, null);
-    }
-
-    private String closeDialog(ModelMap model, String newLocation) {
-        model.addAttribute("popupId", "acDialog");
-        if (newLocation != null) {
-            model.addAttribute("newLocation", newLocation);
-        }
-        return "closePopup.jsp";
     }
 
     /**

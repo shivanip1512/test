@@ -1,5 +1,6 @@
 package com.cannontech.web.stars.dr.operator.enrollment;
 
+import java.io.IOException;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
@@ -39,6 +40,7 @@ import com.cannontech.stars.dr.hardware.dao.LMHardwareControlGroupDao;
 import com.cannontech.stars.dr.hardware.dao.StaticLoadGroupMappingDao;
 import com.cannontech.stars.dr.hardware.model.HardwareConfigAction;
 import com.cannontech.stars.energyCompany.model.YukonEnergyCompany;
+import com.cannontech.stars.util.ServletUtils;
 import com.cannontech.stars.util.StarsUtils;
 import com.cannontech.system.GlobalSettingType;
 import com.cannontech.system.dao.GlobalSettingDao;
@@ -212,22 +214,22 @@ public class OperatorEnrollmentController {
     }
 
     @RequestMapping
-    public String save(ModelMap model, int assignedProgramId, boolean isAdd,
+    public String save(HttpServletResponse resp, ModelMap model, int assignedProgramId, boolean isAdd,
             @ModelAttribute ProgramEnrollment programEnrollment,
             YukonUserContext userContext,
-            AccountInfoFragment accountInfoFragment, FlashScope flashScope) {
+            AccountInfoFragment accountInfoFragment, FlashScope flashScope) throws IOException {
         
-        return save(model, assignedProgramId, programEnrollment,
+        return save(resp, model, assignedProgramId, programEnrollment,
                     isAdd ? "enrollCompleted" : "enrollmentUpdated",
                             userContext, accountInfoFragment, flashScope);
     }
 
-    private String save(ModelMap model, int assignedProgramId,
+    private String save(HttpServletResponse resp, ModelMap model, int assignedProgramId,
             @ModelAttribute ProgramEnrollment programEnrollment,
             String saveTypeKey,
             YukonUserContext userContext,
             AccountInfoFragment accountInfoFragment,
-            FlashScope flashScope) {
+            FlashScope flashScope) throws IOException {
         
         // Log enrollment/unenrollment attempts
         accountEventLogService.enrollmentModificationAttemptedByOperator(userContext.getYukonUser(), 
@@ -261,7 +263,8 @@ public class OperatorEnrollmentController {
             flashScope.setError(message);
         }
      
-        return closeDialog(model);
+        ServletUtils.closePopup(resp, "peDialog");
+        return null;
     }
 
     @RequestMapping
@@ -277,9 +280,9 @@ public class OperatorEnrollmentController {
     }
 
     @RequestMapping
-    public String unenroll(ModelMap model, int assignedProgramId,
+    public String unenroll(HttpServletResponse resp, ModelMap model, int assignedProgramId,
             YukonUserContext userContext,
-            AccountInfoFragment accountInfoFragment, FlashScope flashScope) {
+            AccountInfoFragment accountInfoFragment, FlashScope flashScope) throws IOException {
         DisplayableEnrollmentProgram displayableEnrollmentProgram =
             displayableEnrollmentDao.getProgram(accountInfoFragment.getAccountId(), assignedProgramId);
         ProgramEnrollment programEnrollment = new ProgramEnrollment(displayableEnrollmentProgram);
@@ -289,7 +292,7 @@ public class OperatorEnrollmentController {
             enrollment.setEnrolled(false);
         }
 
-        return save(model, assignedProgramId, programEnrollment, "unenrollCompleted", userContext, 
+        return save(resp, model, assignedProgramId, programEnrollment, "unenrollCompleted", userContext, 
                     accountInfoFragment, flashScope);
     }
 
@@ -308,11 +311,6 @@ public class OperatorEnrollmentController {
         }
 
         return conflictingEnrollments;
-    }
-
-    private String closeDialog(ModelMap model) {
-        model.addAttribute("popupId", "peDialog");
-        return "closePopup.jsp";
     }
 
     private void validateAccountEditing(YukonUserContext userContext) {

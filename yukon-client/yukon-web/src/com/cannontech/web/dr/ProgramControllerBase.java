@@ -47,11 +47,6 @@ public class ProgramControllerBase {
         modelMap.addAttribute("currentGear", currentGear);
     }
     
-    protected String closeDialog(ModelMap model) {
-        model.addAttribute("popupId", "drDialog");
-        return "common/closePopup.jsp";
-    }
-
     protected static void validate(Validator validator,
             ModelMap model, Object backingBean, BindingResult bindingResult) {
         validator.validate(backingBean, bindingResult);

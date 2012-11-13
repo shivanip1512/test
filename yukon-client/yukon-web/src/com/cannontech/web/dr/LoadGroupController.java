@@ -1,8 +1,11 @@
 package com.cannontech.web.dr;
 
 
+import java.io.IOException;
 import java.util.Map;
 import java.util.TreeMap;
+
+import javax.servlet.http.HttpServletResponse;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
@@ -27,6 +30,7 @@ import com.cannontech.dr.loadgroup.filter.LoadGroupsForMacroLoadGroupFilter;
 import com.cannontech.dr.loadgroup.service.LoadGroupService;
 import com.cannontech.dr.program.service.ProgramService;
 import com.cannontech.i18n.YukonMessageSourceResolvable;
+import com.cannontech.stars.util.ServletUtils;
 import com.cannontech.user.YukonUserContext;
 import com.cannontech.web.common.flashScope.FlashScope;
 import com.cannontech.web.security.annotation.CheckRoleProperty;
@@ -116,9 +120,9 @@ public class LoadGroupController {
     }
 
     @RequestMapping("/loadGroup/sendShed")
-    public String sendShed(ModelMap modelMap, int loadGroupId,
+    public String sendShed(HttpServletResponse resp, ModelMap modelMap, int loadGroupId,
             int durationInSeconds, YukonUserContext userContext,
-            FlashScope flashScope) {
+            FlashScope flashScope) throws IOException {
 
         DisplayablePao loadGroup = loadGroupService.getLoadGroup(loadGroupId);
         LiteYukonUser yukonUser = userContext.getYukonUser();
@@ -134,8 +138,8 @@ public class LoadGroupController {
                                                              durationInSeconds);
         flashScope.setConfirm(new YukonMessageSourceResolvable("yukon.web.modules.dr.loadGroup.sendShedConfirm.shedSent"));
         
-        modelMap.addAttribute("popupId", "drDialog");
-        return "common/closePopup.jsp";
+        ServletUtils.closePopup(resp, "drDialog");
+        return null;
     }
     
     @RequestMapping("/loadGroup/sendRestoreConfirm")
@@ -153,8 +157,8 @@ public class LoadGroupController {
     }
 
     @RequestMapping("/loadGroup/sendRestore")
-    public String sendRestore(ModelMap modelMap, int loadGroupId, YukonUserContext userContext,
-                              FlashScope flashScope) {
+    public String sendRestore(HttpServletResponse resp, ModelMap modelMap, int loadGroupId, YukonUserContext userContext,
+                              FlashScope flashScope) throws IOException {
 
         DisplayablePao loadGroup = loadGroupService.getLoadGroup(loadGroupId);
         LiteYukonUser yukonUser = userContext.getYukonUser();
@@ -168,8 +172,8 @@ public class LoadGroupController {
         demandResponseEventLogService.threeTierLoadGroupRestore(yukonUser, loadGroup.getName());
         flashScope.setConfirm(new YukonMessageSourceResolvable("yukon.web.modules.dr.loadGroup.sendRestoreConfirm.restoreSent"));
         
-        modelMap.addAttribute("popupId", "drDialog");
-        return "common/closePopup.jsp";
+        ServletUtils.closePopup(resp, "drDialog");
+        return null;
     }
 
     @RequestMapping("/loadGroup/sendEnableConfirm")
@@ -188,8 +192,9 @@ public class LoadGroupController {
     }
     
     @RequestMapping("/loadGroup/setEnabled")
-    public String setEnabled(ModelMap modelMap, int loadGroupId, boolean isEnabled,
-            YukonUserContext userContext, FlashScope flashScope) {
+    public String setEnabled(HttpServletResponse resp, ModelMap modelMap, int loadGroupId,
+                             boolean isEnabled, YukonUserContext userContext,
+                             FlashScope flashScope) throws IOException {
 
         DisplayablePao loadGroup = loadGroupService.getLoadGroup(loadGroupId);
         LiteYukonUser yukonUser = userContext.getYukonUser();
@@ -208,8 +213,8 @@ public class LoadGroupController {
             flashScope.setConfirm(new YukonMessageSourceResolvable("yukon.web.modules.dr.loadGroup.sendEnableConfirm.disabled"));
         }
 
-        modelMap.addAttribute("popupId", "drDialog");
-        return "common/closePopup.jsp";
+        ServletUtils.closePopup(resp, "drDialog");
+        return null;
     }
 
     @InitBinder

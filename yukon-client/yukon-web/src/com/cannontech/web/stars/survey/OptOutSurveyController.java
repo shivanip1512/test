@@ -1,10 +1,13 @@
 package com.cannontech.web.stars.survey;
 
 import java.beans.PropertyEditor;
+import java.io.IOException;
 import java.util.Date;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
+
+import javax.servlet.http.HttpServletResponse;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.MessageSourceResolvable;
@@ -24,7 +27,6 @@ import com.cannontech.common.survey.dao.SurveyDao;
 import com.cannontech.common.survey.model.Survey;
 import com.cannontech.common.validator.SimpleValidator;
 import com.cannontech.common.validator.YukonValidationUtils;
-import com.cannontech.stars.energyCompany.dao.EnergyCompanyDao;
 import com.cannontech.core.dao.PaoDao;
 import com.cannontech.core.roleproperties.YukonRoleProperty;
 import com.cannontech.core.service.DateFormattingService.DateFormatEnum;
@@ -33,6 +35,8 @@ import com.cannontech.i18n.YukonMessageSourceResolvable;
 import com.cannontech.stars.dr.optout.dao.OptOutSurveyDao;
 import com.cannontech.stars.dr.optout.model.OptOutSurvey;
 import com.cannontech.stars.dr.optout.service.OptOutSurveyService;
+import com.cannontech.stars.energyCompany.dao.EnergyCompanyDao;
+import com.cannontech.stars.util.ServletUtils;
 import com.cannontech.user.YukonUserContext;
 import com.cannontech.web.common.flashScope.FlashScope;
 import com.cannontech.web.common.flashScope.FlashScopeMessageType;
@@ -124,8 +128,8 @@ public class OptOutSurveyController {
     }
 
     @RequestMapping
-    public String delete(ModelMap model, int optOutSurveyId, FlashScope flashScope,
-            YukonUserContext userContext) {
+    public String delete(HttpServletResponse resp, ModelMap model, int optOutSurveyId, FlashScope flashScope,
+            YukonUserContext userContext) throws IOException {
         OptOutSurvey optOutSurvey =
             optOutSurveyDao.getOptOutSurveyById(optOutSurveyId);
         verifyEditable(optOutSurvey.getEnergyCompanyId(), userContext);
@@ -136,7 +140,9 @@ public class OptOutSurveyController {
                                              "List.optOutSurveyDeleted",
                                              survey.getSurveyName());
         flashScope.setConfirm(confirmMsg);
-        return closeDialog(model);
+
+        ServletUtils.closePopup(resp, "ajaxDialog");
+        return null;
     }
 
     @RequestMapping
@@ -167,10 +173,10 @@ public class OptOutSurveyController {
     }
 
     @RequestMapping
-    public String save(ModelMap model,
+    public String save(HttpServletResponse resp, ModelMap model,
             @ModelAttribute OptOutSurveyDto optOutSurveyDto,
             BindingResult bindingResult, YukonUserContext userContext,
-            FlashScope flashScope) {
+            FlashScope flashScope) throws IOException {
         verifyEditable(optOutSurveyDto.getEnergyCompanyId(), userContext);
 
         validator.validate(optOutSurveyDto, bindingResult);
@@ -192,19 +198,8 @@ public class OptOutSurveyController {
                                              survey.getSurveyName());
         flashScope.setConfirm(confirmMsg);
 
-        return closeDialog(model);
-    }
-
-    private String closeDialog(ModelMap model) {
-        return closeDialog(model, null);
-    }
-
-    private String closeDialog(ModelMap model, String newLocation) {
-        model.addAttribute("popupId", "ajaxDialog");
-        if (newLocation != null) {
-            model.addAttribute("newLocation", newLocation);
-        }
-        return "closePopup.jsp";
+        ServletUtils.closePopup(resp, "ajaxDialog");
+        return null;
     }
 
     @InitBinder

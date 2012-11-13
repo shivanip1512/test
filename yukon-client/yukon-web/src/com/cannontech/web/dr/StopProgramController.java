@@ -1,10 +1,13 @@
 package com.cannontech.web.dr;
 
 
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 import java.util.Map;
+
+import javax.servlet.http.HttpServletResponse;
 
 import org.joda.time.Duration;
 import org.springframework.stereotype.Controller;
@@ -32,6 +35,7 @@ import com.cannontech.dr.program.service.ConstraintViolations;
 import com.cannontech.dr.scenario.model.ScenarioProgram;
 import com.cannontech.i18n.YukonMessageSourceResolvable;
 import com.cannontech.loadcontrol.messages.LMManualControlRequest;
+import com.cannontech.stars.util.ServletUtils;
 import com.cannontech.user.YukonUserContext;
 import com.cannontech.web.common.flashScope.FlashScope;
 import com.cannontech.web.security.annotation.CheckRoleProperty;
@@ -120,10 +124,10 @@ public class StopProgramController extends ProgramControllerBase {
     }
 
     @RequestMapping
-    public String stop(ModelMap model, Boolean overrideConstraints,
+    public String stop(HttpServletResponse resp, ModelMap model, Boolean overrideConstraints,
             @ModelAttribute("backingBean") StopProgramBackingBean backingBean,
             BindingResult bindingResult, YukonUserContext userContext,
-            FlashScope flashScope) {
+            FlashScope flashScope) throws IOException {
     	
         validate(validator, model, backingBean, bindingResult);
         if (bindingResult.hasErrors()) {
@@ -164,7 +168,8 @@ public class StopProgramController extends ProgramControllerBase {
         }
         flashScope.setConfirm(new YukonMessageSourceResolvable("yukon.web.modules.dr.program.stopProgram.programStopRequested"));
         
-        return closeDialog(model);
+        ServletUtils.closePopup(resp, "drDialog");
+        return null;
     }
 
     @RequestMapping
@@ -250,10 +255,10 @@ public class StopProgramController extends ProgramControllerBase {
     }
 
     @RequestMapping
-    public String stopMultiple(ModelMap model, Boolean overrideConstraints,
+    public String stopMultiple(HttpServletResponse resp, ModelMap model, Boolean overrideConstraints,
             @ModelAttribute("backingBean") StopMultipleProgramsBackingBean backingBean,
             BindingResult bindingResult, YukonUserContext userContext,
-            FlashScope flashScope) {
+            FlashScope flashScope) throws IOException {
     	
         validate(validator, model, backingBean, bindingResult);
         if (bindingResult.hasErrors()) {
@@ -339,14 +344,15 @@ public class StopProgramController extends ProgramControllerBase {
             flashScope.setConfirm(new YukonMessageSourceResolvable("yukon.web.modules.dr.program.stopMultiplePrograms.scenarioStopRequested"));
         }
         
-        return closeDialog(model);
+        ServletUtils.closePopup(resp, "drDialog");
+        return null;
     }
 
     @RequestMapping
-    public String stopMultipleConstraints(ModelMap model,
+    public String stopMultipleConstraints(HttpServletResponse resp, ModelMap model,
             @ModelAttribute("backingBean") StopMultipleProgramsBackingBean backingBean,
             BindingResult bindingResult, YukonUserContext userContext,
-            FlashScope flashScope) {
+            FlashScope flashScope) throws IOException {
 
         LiteYukonUser user = userContext.getYukonUser();
 
@@ -373,7 +379,7 @@ public class StopProgramController extends ProgramControllerBase {
             rolePropertyDao.checkProperty(YukonRoleProperty.ALLOW_CHECK_CONSTRAINTS, user);
 
         if (autoObserveConstraintsAllowed && (!checkConstraintsAllowed || backingBean.isAutoObserveConstraints())) {
-            return stopMultiple(model, checkConstraintsAllowed, backingBean, bindingResult, userContext, flashScope);
+            return stopMultiple(resp, model, checkConstraintsAllowed, backingBean, bindingResult, userContext, flashScope);
         }
 
         boolean overrideAllowed =

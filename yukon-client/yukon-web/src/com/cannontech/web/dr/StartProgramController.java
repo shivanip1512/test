@@ -1,11 +1,14 @@
 package com.cannontech.web.dr;
 
 
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Date;
 import java.util.List;
 import java.util.Map;
+
+import javax.servlet.http.HttpServletResponse;
 
 import org.apache.commons.lang.StringUtils;
 import org.joda.time.DateTime;
@@ -38,6 +41,7 @@ import com.cannontech.loadcontrol.data.IGearProgram;
 import com.cannontech.loadcontrol.data.LMProgramBase;
 import com.cannontech.loadcontrol.data.LMProgramDirectGear;
 import com.cannontech.loadcontrol.messages.LMManualControlRequest;
+import com.cannontech.stars.util.ServletUtils;
 import com.cannontech.user.YukonUserContext;
 import com.cannontech.web.common.flashScope.FlashScope;
 import com.cannontech.web.security.annotation.CheckRoleProperty;
@@ -127,10 +131,10 @@ public class StartProgramController extends ProgramControllerBase {
     }
 
     @RequestMapping
-    public String constraints(ModelMap model, String from,
+    public String constraints(HttpServletResponse resp, ModelMap model, String from,
             @ModelAttribute("backingBean") StartProgramBackingBean backingBean,
             BindingResult bindingResult, YukonUserContext userContext, 
-            FlashScope flashScope) {
+            FlashScope flashScope) throws IOException {
     	
         if (backingBean.isStartNow()) {
             backingBean.setStartDate(backingBean.getNow());
@@ -163,13 +167,14 @@ public class StartProgramController extends ProgramControllerBase {
             rolePropertyDao.checkProperty(YukonRoleProperty.ALLOW_CHECK_CONSTRAINTS, user);
 
         if (autoObserveConstraintsAllowed && (!checkConstraintsAllowed || backingBean.isAutoObserveConstraints())) {
-            return start(model, from, backingBean, bindingResult, false, userContext, flashScope);
+            return start(resp, model, from, backingBean, bindingResult, false, userContext, flashScope);
         }
 
         if (!checkConstraintsAllowed) {
             // they're not allowed to do anything...they got here by hacking
             // (or a bug)
-            return closeDialog(model);
+            ServletUtils.closePopup(resp, "drDialog");
+            return null;
         }
 
         boolean overrideAllowed =
@@ -192,10 +197,10 @@ public class StartProgramController extends ProgramControllerBase {
     }
 
     @RequestMapping
-    public String start(ModelMap model, String from,
+    public String start(HttpServletResponse resp, ModelMap model, String from,
             @ModelAttribute("backingBean") StartProgramBackingBean backingBean,
             BindingResult bindingResult, Boolean overrideConstraints,
-            YukonUserContext userContext, FlashScope flashScope) {
+            YukonUserContext userContext, FlashScope flashScope) throws IOException {
     	
         validate(datesValidator, model, backingBean, bindingResult);
         if (backingBean.isAddAdjustments()) {
@@ -235,7 +240,8 @@ public class StartProgramController extends ProgramControllerBase {
                                                                 startDate);
         flashScope.setConfirm(new YukonMessageSourceResolvable("yukon.web.modules.dr.program.startProgram.programStartRequested"));
         
-        return closeDialog(model);
+        ServletUtils.closePopup(resp, "drDialog");
+        return null;
     }
 
     @RequestMapping
@@ -386,10 +392,10 @@ public class StartProgramController extends ProgramControllerBase {
     }
 
     @RequestMapping
-    public String multipleConstraints(ModelMap model, String from,
+    public String multipleConstraints(HttpServletResponse resp, ModelMap model, String from,
             @ModelAttribute("backingBean") StartMultipleProgramsBackingBean backingBean,
             BindingResult bindingResult, YukonUserContext userContext,
-            FlashScope flashScope) {
+            FlashScope flashScope) throws IOException {
     	
         if (backingBean.isStartNow()) {
             backingBean.setStartDate(backingBean.getNow());
@@ -433,13 +439,14 @@ public class StartProgramController extends ProgramControllerBase {
             rolePropertyDao.checkProperty(YukonRoleProperty.ALLOW_CHECK_CONSTRAINTS, user);
 
         if (autoObserveConstraintsAllowed && (!checkConstraintsAllowed || backingBean.isAutoObserveConstraints())) {
-            return multipleStart(model, from, backingBean, bindingResult, userContext, flashScope);
+            return multipleStart(resp, model, from, backingBean, bindingResult, userContext, flashScope);
         }
 
         if (!checkConstraintsAllowed) {
             // they're not allowed to do anything...they got here by hacking
             // (or a bug)
-            return closeDialog(model);
+            ServletUtils.closePopup(resp, "drDialog");
+            return null;
         }
 
         boolean overrideAllowed =
@@ -506,10 +513,10 @@ public class StartProgramController extends ProgramControllerBase {
     }
 
     @RequestMapping
-    public String multipleStart(ModelMap model, String from,
+    public String multipleStart(HttpServletResponse resp, ModelMap model, String from,
             @ModelAttribute("backingBean") StartMultipleProgramsBackingBean backingBean,
             BindingResult bindingResult, YukonUserContext userContext,
-            FlashScope flashScope) {
+            FlashScope flashScope) throws IOException {
     	
         validate(datesValidator, model, backingBean, bindingResult);
         if (backingBean.isAddAdjustments()) {
@@ -592,7 +599,8 @@ public class StartProgramController extends ProgramControllerBase {
         if(backingBean.getControlAreaId() != null){
             flashScope.setConfirm(new YukonMessageSourceResolvable("yukon.web.modules.dr.program.startMultiplePrograms.controlAreaStartRequested"));
         }
-        return closeDialog(model);
+        ServletUtils.closePopup(resp, "drDialog");
+        return null;
     }
 
     @InitBinder

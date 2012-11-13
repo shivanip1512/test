@@ -1,8 +1,10 @@
 package com.cannontech.web.capcontrol.ivvc;
 
+import java.io.IOException;
 import java.util.List;
 
 import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.MessageSourceResolvable;
@@ -37,6 +39,7 @@ import com.cannontech.enums.Phase;
 import com.cannontech.i18n.YukonMessageSourceResolvable;
 import com.cannontech.i18n.YukonUserContextMessageSourceResolver;
 import com.cannontech.message.capcontrol.streamable.SubBus;
+import com.cannontech.stars.util.ServletUtils;
 import com.cannontech.user.YukonUserContext;
 import com.cannontech.web.PageEditMode;
 import com.cannontech.web.capcontrol.ivvc.validators.ZoneDtoValidator;
@@ -152,8 +155,8 @@ public class ZoneWizardController {
     }
     
     @RequestMapping
-    public String createZone(ModelMap model, HttpServletRequest request, FlashScope flashScope, 
-                             YukonUserContext userContext, ZoneType zoneType) {
+    public String createZone(HttpServletResponse resp, ModelMap model, HttpServletRequest request, FlashScope flashScope, 
+                             YukonUserContext userContext, ZoneType zoneType) throws IOException {
         AbstractZone zoneDto = AbstractZone.create(zoneType);
         BindingResult bindingResult = bind(model, request, zoneDto, "zoneDto", userContext);
 
@@ -175,7 +178,8 @@ public class ZoneWizardController {
         if (noErrors) {
             //Close normally
             flashScope.setConfirm(new YukonMessageSourceResolvable("yukon.web.modules.capcontrol.ivvc.zoneWizard.success.saved"));
-            return closeDialog(model);                
+            ServletUtils.closePopup(resp, "zoneWizardPopup");
+            return null;                
         } else {
             setupZoneCreation(model, userContext, zoneDto);
             
@@ -257,8 +261,8 @@ public class ZoneWizardController {
     }
 
     @RequestMapping
-    public String updateZone(ModelMap model, HttpServletRequest request, FlashScope flashScope, 
-                             YukonUserContext userContext, ZoneType zoneType) {
+    public String updateZone(HttpServletResponse resp, ModelMap model, HttpServletRequest request, FlashScope flashScope, 
+                             YukonUserContext userContext, ZoneType zoneType) throws IOException {
 
         AbstractZone zoneDto = AbstractZone.create(zoneType);
         BindingResult bindingResult = bind(model, request, zoneDto, "zoneDto", userContext);
@@ -281,7 +285,8 @@ public class ZoneWizardController {
         if (noErrors) {
             //Close normally
             flashScope.setConfirm(new YukonMessageSourceResolvable("yukon.web.modules.capcontrol.ivvc.zoneWizard.success.saved"));
-            return closeDialog(model); 
+            ServletUtils.closePopup(resp, "zoneWizardPopup");
+            return null; 
         } else {
             bindingResult.reject("yukon.web.modules.capcontrol.ivvc.zoneWizard.error.problemSavingZone");
 
@@ -333,11 +338,6 @@ public class ZoneWizardController {
             zoneService.saveZone(zoneDto);
         }
         return true;
-    }
-    
-    private String closeDialog(ModelMap modelMap) {
-        modelMap.addAttribute("popupId", "zoneWizardPopup");
-        return "ivvc/closePopup.jsp";
     }
     
     @RequestMapping
