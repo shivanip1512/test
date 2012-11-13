@@ -366,8 +366,12 @@ bool Mct440_213xBDevice::getOperation( const UINT &cmd, BSTRUCT &bst ) const
         return true;
     }
 
-    if( cmd == EmetconProtocol::PutConfig_VThreshold ||
-        cmd == EmetconProtocol::GetConfig_Thresholds)           /* check for commands no longer supported               */
+    if( cmd == EmetconProtocol::PutConfig_VThreshold
+        || cmd == EmetconProtocol::GetConfig_Thresholds
+        || cmd == EmetconProtocol::GetValue_PeakDemand
+        || cmd == EmetconProtocol::GetValue_FrozenPeakDemand
+        || cmd == EmetconProtocol::GetValue_Voltage
+        || cmd == EmetconProtocol::GetValue_FrozenVoltage)      /* check for commands no longer supported               */
     {
         return false;
     }
@@ -741,53 +745,59 @@ INT Mct440_213xBDevice::ModelDecode(INMESS          *InMessage,
 
     switch(InMessage->Sequence)
     {
-    case EmetconProtocol::GetValue_InstantLineData:
-        status = decodeGetValueInstantLineData(InMessage, TimeNow, vgList, retList, outList);
-        break;
+        case EmetconProtocol::GetValue_InstantLineData:
+            status = decodeGetValueInstantLineData(InMessage, TimeNow, vgList, retList, outList);
+            break;
 
-    case EmetconProtocol::GetValue_TOUkWh:
-    case EmetconProtocol::GetValue_FrozenTOUkWh:
-    case EmetconProtocol::GetValue_TOUkWhReverse:
-    case EmetconProtocol::GetValue_FrozenTOUkWhReverse:
-        status = decodeGetValueTOUkWh(InMessage, TimeNow, vgList, retList, outList);
-        break;
+        case EmetconProtocol::Scan_Accum:
+        case EmetconProtocol::GetValue_KWH:
+        case EmetconProtocol::GetValue_FrozenKWH:
+            status = decodeGetValueKWH(InMessage, TimeNow, vgList, retList, outList);
+            break;
 
-    case EmetconProtocol::GetValue_DailyRead:
-        if( _daily_read_info.request.type == daily_read_info_t::Request_Recent )
-        {
-            status = decodeGetValueDailyReadRecent(InMessage, TimeNow, vgList, retList, outList);
-        }
-        else
-        {
+        case EmetconProtocol::GetValue_TOUkWh:
+        case EmetconProtocol::GetValue_FrozenTOUkWh:
+        case EmetconProtocol::GetValue_TOUkWhReverse:
+        case EmetconProtocol::GetValue_FrozenTOUkWhReverse:
+            status = decodeGetValueTOUkWh(InMessage, TimeNow, vgList, retList, outList);
+            break;
+
+        case EmetconProtocol::GetValue_DailyRead:
+            if( _daily_read_info.request.type == daily_read_info_t::Request_Recent )
+            {
+                status = decodeGetValueDailyReadRecent(InMessage, TimeNow, vgList, retList, outList);
+            }
+            else
+            {
+                status = Inherited::ModelDecode(InMessage, TimeNow, vgList, retList, outList);
+            }
+            break;
+
+        case EmetconProtocol::GetConfig_TOU:
+            status = decodeGetConfigTOU(InMessage, TimeNow, vgList, retList, outList);
+            break;
+
+        case EmetconProtocol::GetConfig_PhaseLossThreshold:
+            status = decodeGetConfigPhaseLossThreshold(InMessage, TimeNow, vgList, retList, outList);
+            break;
+
+        case EmetconProtocol::GetConfig_Holiday:
+            status = decodeGetConfigHoliday(InMessage, TimeNow, vgList, retList, outList);
+            break;
+
+        case EmetconProtocol::GetConfig_AlarmMask:
+            status = decodeGetConfigAlarmMask(InMessage, TimeNow, vgList, retList, outList);
+            break;
+
+        default:
             status = Inherited::ModelDecode(InMessage, TimeNow, vgList, retList, outList);
-        }
-        break;
-
-    case EmetconProtocol::GetConfig_TOU:
-        status = decodeGetConfigTOU(InMessage, TimeNow, vgList, retList, outList);
-        break;
-
-    case EmetconProtocol::GetConfig_PhaseLossThreshold:
-        status = decodeGetConfigPhaseLossThreshold(InMessage, TimeNow, vgList, retList, outList);
-        break;
-
-    case EmetconProtocol::GetConfig_Holiday:
-        status = decodeGetConfigHoliday(InMessage, TimeNow, vgList, retList, outList);
-        break;
-
-    case EmetconProtocol::GetConfig_AlarmMask:
-        status = decodeGetConfigAlarmMask(InMessage, TimeNow, vgList, retList, outList);
-        break;
-
-    default:
-        status = Inherited::ModelDecode(InMessage, TimeNow, vgList, retList, outList);
-        if (status != NORMAL)
-        {
-            CtiLockGuard<CtiLogger> doubt_guard(dout);
-            dout << CtiTime() << " **** Checkpoint **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
-            dout << " IM->Sequence = " << InMessage->Sequence << " " << getName() << endl;
-        }
-        break;
+            if (status != NORMAL)
+            {
+                CtiLockGuard<CtiLogger> doubt_guard(dout);
+                dout << CtiTime() << " **** Checkpoint **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
+                dout << " IM->Sequence = " << InMessage->Sequence << " " << getName() << endl;
+            }
+            break;
     }
 
     return status;
@@ -829,13 +839,13 @@ INT Mct440_213xBDevice::decodeGetValueInstantLineData(INMESS          *InMessage
 
     ReturnMsg->setUserMessageId(InMessage->Return.UserID);
 
-    const int phase_cnt = getPhaseCount();
+    const int phase_count = getPhaseCount();
 
-    for (int i = 0; i < phase_cnt; i++)
+    for( int phase_nbr = 0; phase_nbr < phase_count; phase_nbr++ )
     {
         int pointOffset;
 
-        unsigned char *PhaseData = DSt->Message + (i*4);
+        unsigned char *PhaseData = DSt->Message + (phase_nbr*4);
 
         point_info PhaseVoltage;
 
@@ -844,7 +854,8 @@ INT Mct440_213xBDevice::decodeGetValueInstantLineData(INMESS          *InMessage
         PhaseVoltage.quality     = NormalQuality;
         PhaseVoltage.freeze_bit  = false;
 
-        switch (i) {
+        switch( phase_nbr ) 
+        {
             case 0: pointOffset = PointOffset_Analog_LineVoltagePhaseA; break;
             case 1: pointOffset = PointOffset_Analog_LineVoltagePhaseB; break;
             case 2: pointOffset = PointOffset_Analog_LineVoltagePhaseC; break;
@@ -865,7 +876,8 @@ INT Mct440_213xBDevice::decodeGetValueInstantLineData(INMESS          *InMessage
         PhaseCurrent.quality     = NormalQuality;
         PhaseCurrent.freeze_bit  = false;
 
-        switch (i) {
+        switch( phase_nbr ) 
+        {
             case 0: pointOffset = PointOffset_Analog_LineCurrentPhaseA; break;
             case 1: pointOffset = PointOffset_Analog_LineCurrentPhaseB; break;
             case 2: pointOffset = PointOffset_Analog_LineCurrentPhaseC; break;
@@ -898,7 +910,8 @@ INT Mct440_213xBDevice::decodeGetValueInstantLineData(INMESS          *InMessage
             status = ErrorInvalidData;
         }
 
-        switch (i) {
+        switch( phase_nbr ) 
+        {
             case 0: pointOffset = PointOffset_Analog_LinePowFactPhaseA; break;
             case 1: pointOffset = PointOffset_Analog_LinePowFactPhaseB; break;
             case 2: pointOffset = PointOffset_Analog_LinePowFactPhaseC; break;
@@ -942,7 +955,6 @@ INT Mct440_213xBDevice::decodeGetValueTOUkWh(INMESS          *InMessage,
 {
     INT status = NORMAL;
     CtiTime point_time;
-    int point_offset = 0;
 
     INT ErrReturn  = InMessage->EventCode & 0x3fff;
     DSTRUCT *DSt   = &InMessage->Buffer.DSt;
@@ -979,9 +991,9 @@ INT Mct440_213xBDevice::decodeGetValueTOUkWh(INMESS          *InMessage,
 
     if( !status )
     {
-        for( int i = 0; i < 4; i++ )
+        for( int rate_nbr = 0; rate_nbr < 4; rate_nbr++ )
         {
-            int offset = (i * 3);
+            int offset = (rate_nbr * 3);
 
             if( InMessage->Sequence == EmetconProtocol::GetValue_TOUkWh ||
                 InMessage->Sequence == EmetconProtocol::GetValue_TOUkWhReverse)
@@ -1020,19 +1032,28 @@ INT Mct440_213xBDevice::decodeGetValueTOUkWh(INMESS          *InMessage,
                 }
             }
 
-            string point_name = string("TOU rate ") + (char)('A' + i) + " kWh";
+            string point_name;
+            int    point_offset = -1;
 
             switch (InMessage->Sequence)
             {
                 case EmetconProtocol::GetValue_TOUkWh:
+                    point_offset = (rate_nbr * PointOffset_RateOffset) + 1 + PointOffset_PulseAcc_TOUBaseFwd;
+                    break;
                 case EmetconProtocol::GetValue_FrozenTOUkWh:
-                    point_offset = 1 + PointOffset_PulseAcc_TOUBaseForward + i * PointOffset_RateOffset;
+                    point_name   = "Frozen ";
+                    point_offset = (rate_nbr * PointOffset_RateOffset) + 1 + PointOffset_PulseAcc_TOUBaseFwdFrozen;
                     break;
                 case EmetconProtocol::GetValue_TOUkWhReverse:
+                    point_offset = (rate_nbr * PointOffset_RateOffset) + 1 + PointOffset_PulseAcc_TOUBaseRev;
+                    break;
                 case EmetconProtocol::GetValue_FrozenTOUkWhReverse:
-                    point_offset = 1 + PointOffset_PulseAcc_TOUBaseReverse + i * PointOffset_RateOffset;
+                    point_name   = "Frozen ";
+                    point_offset = (rate_nbr * PointOffset_RateOffset) + 1 + PointOffset_PulseAcc_TOUBaseRevFrozen;
                     break;
             }
+
+            point_name += string("TOU rate ") + (char)('A' + rate_nbr) + " kWh";
 
             //  if kWh was returned as units, we could get rid of the default multiplier - it's messy
             insertPointDataReport(PulseAccumulatorPointType,
@@ -1216,11 +1237,11 @@ int Mct440_213xBDevice::executePutConfigTOU(CtiRequestMsg     *pReq,
 
             string defaultTOURateString = deviceConfig->getValueFromKey(MCTStrings::DefaultTOURate);
 
-            for( int i = 0; i < TOU_SCHEDULE_NBR; i++ )
+            for( int schedule = 0; schedule < TOU_SCHEDULE_NBR; schedule++ )
             {
-                for( int j = 0; j < TOU_SCHEDULE_RATE_NBR; j++ )
+                for( int rate = 0; rate < TOU_SCHEDULE_RATE_NBR; rate++ )
                 {
-                    if( rateStringValues[i][j].empty() )
+                    if( rateStringValues[schedule][rate].empty() )
                     {
                         CtiLockGuard<CtiLogger> doubt_guard(dout);
                         dout << CtiTime() << " **** Checkpoint - bad rate string stored **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
@@ -1229,11 +1250,11 @@ int Mct440_213xBDevice::executePutConfigTOU(CtiRequestMsg     *pReq,
                 }
             }
 
-            for( int i = 0; i < TOU_SCHEDULE_NBR; i++ )
+            for( int schedule = 0; schedule < TOU_SCHEDULE_NBR; schedule++ )
             {
-                for( int j = 0; j < TOU_SCHEDULE_TIME_NBR; j++ )
+                for( int time = 0; time < TOU_SCHEDULE_TIME_NBR; time++ )
                 {
-                    if( timeStringValues[i][j].length() < 4 ) //A time needs at least 4 digits X:XX
+                    if( timeStringValues[schedule][time].length() < 4 ) //A time needs at least 4 digits X:XX
                     {
                         CtiLockGuard<CtiLogger> doubt_guard(dout);
                         dout << CtiTime() << " **** Checkpoint - bad time string stored **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
@@ -1245,12 +1266,12 @@ int Mct440_213xBDevice::executePutConfigTOU(CtiRequestMsg     *pReq,
             if( nRet != NoConfigData )
             {
                 //Do conversions from strings to longs here.
-                for( int i = 0; i < TOU_SCHEDULE_NBR; i++ )
+                for( int schedule = 0; schedule < TOU_SCHEDULE_NBR; schedule++ )
                 {
-                    for( int j = 0; j < TOU_SCHEDULE_RATE_NBR; j++ )
+                    for( int rate = 0; rate < TOU_SCHEDULE_RATE_NBR; rate++ )
                     {
-                        rates[i][j] = rateStringValues[i][j][0] - 'A';
-                        if( rates[i][j] < 0 || rates[i][j] > 3 )
+                        rates[schedule][rate] = rateStringValues[schedule][rate][0] - 'A';
+                        if( rates[schedule][rate] < 0 || rates[schedule][rate] > 3 )
                         {
                             CtiLockGuard<CtiLogger> doubt_guard(dout);
                             dout << CtiTime() << " **** Checkpoint - bad rate string stored **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
@@ -1258,25 +1279,25 @@ int Mct440_213xBDevice::executePutConfigTOU(CtiRequestMsg     *pReq,
                         }
                     }
                 }
-                for( int i = 0; i < TOU_SCHEDULE_NBR; i++ )
+                for( int schedule = 0; schedule < TOU_SCHEDULE_NBR; schedule++ )
                 {
-                    for( int j = 0; j < TOU_SCHEDULE_TIME_NBR; j++ )
+                    for( int time = 0; time < TOU_SCHEDULE_TIME_NBR; time++ )
                     {
                         // Im going to remove the :, get the remaining value, and do simple math on it. I think this
                         // results in less error checking needed.
-                        timeStringValues[i][j].erase(timeStringValues[i][j].find(':'), 1);
-                        tempTime    = strtol(timeStringValues[i][j].c_str(),NULL,10);
-                        times[i][j] = ((tempTime/100) * 60) + (tempTime%100);
+                        timeStringValues[schedule][time].erase(timeStringValues[schedule][time].find(':'), 1);
+                        tempTime              = strtol(timeStringValues[schedule][time].c_str(),NULL,10);
+                        times[schedule][time] = ((tempTime/100) * 60) + (tempTime%100);
                     }
                 }
                 // Time is currently the actual minutes, we need the difference. Also the MCT has 5 minute resolution.
-                for( int i = 0; i < TOU_SCHEDULE_NBR; i++ )
+                for( int schedule = 0; schedule < TOU_SCHEDULE_NBR; schedule++ )
                 {
-                    for( int j = (TOU_SCHEDULE_TIME_NBR-1); j > 0; j-- )
+                    for( int time = (TOU_SCHEDULE_TIME_NBR-1); time > 0; time-- )
                     {
-                        times[i][j] = times[i][j]-times[i][j-1];
-                        times[i][j] = times[i][j]/5;
-                        if( times[i][j] < 0 || times[i][j] > 255 )
+                        times[schedule][time] = times[schedule][time]-times[schedule][time-1];
+                        times[schedule][time] = times[schedule][time]/5;
+                        if( times[schedule][time] < 0 || times[schedule][time] > 255 )
                         {
                             CtiLockGuard<CtiLogger> doubt_guard(dout);
                             dout << CtiTime() << " **** Checkpoint - time sequencing **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
@@ -1636,16 +1657,18 @@ long Mct440_213xBDevice::resolveScheduleName(const string & scheduleName)
 */
 void Mct440_213xBDevice::createTOUDayScheduleString(string &schedule, long (&times)[10], long (&rates)[11])
 {
-    for( int i=0; i<10; i++ )
+    for( int time_nbr=0; time_nbr<10; time_nbr++ )
     {
-        schedule += CtiNumStr(times[i]);
+        schedule += CtiNumStr(times[time_nbr]);
         schedule += ", ";
     }
-    for( int i=0; i<10; i++ )
+
+    for( int rate_nbr=0; rate_nbr<10; rate_nbr++ )
     {
-        schedule += CtiNumStr(rates[i]);
+        schedule += CtiNumStr(rates[rate_nbr]);
         schedule += ", ";
     }
+
     schedule += CtiNumStr(rates[10]);
 }
 
@@ -1672,14 +1695,14 @@ void Mct440_213xBDevice::parseTOUDayScheduleString(string &schedule, long (&time
 
     ss.str(schedule);
 
-    for( int i=0; i<10; i++ )
+    for( int time_nbr=0; time_nbr<10; time_nbr++ )
     {
-        ss >> times[i] >> sep;
+        ss >> times[time_nbr] >> sep;
     }
 
-    for( int i=0; i<10; i++ )
+    for( int rate_nbr=0; rate_nbr<10; rate_nbr++ )
     {
-        ss >> rates[i] >> sep;
+        ss >> rates[rate_nbr] >> sep;
     }
 
     ss >> rates[10];
@@ -1891,13 +1914,13 @@ int Mct440_213xBDevice::executePutConfigHoliday(CtiRequestMsg     *pReq,
     CtiDate start_date = CtiDate(1,1,2010);
 
                                                             /*  grab up to 7 potential dates                        */
-    for( int i = 0; i < 7 && parse.isKeyValid("holiday_date" + CtiNumStr(i)); i++ )
+    for( int date_nbr = 0; date_nbr < 7 && parse.isKeyValid("holiday_date" + CtiNumStr(date_nbr)); date_nbr++ )
     {
         int month, day, year;
         char sep1, sep2;
 
         istringstream ss;
-        ss.str(parse.getsValue("holiday_date" + CtiNumStr(i)));
+        ss.str(parse.getsValue("holiday_date" + CtiNumStr(date_nbr)));
 
         ss >> month >> sep1 >> day >> sep2 >> year;
 
@@ -1935,10 +1958,10 @@ int Mct440_213xBDevice::executePutConfigHoliday(CtiRequestMsg     *pReq,
             OutMessage->Buffer.BSt.Length     = (holiday_count  * 2) + 1;
             OutMessage->Buffer.BSt.Message[0] =  holiday_offset;
 
-            for( int i = 0; i < holiday_count; i++ )
+            for( int holiday_nbr = 0; holiday_nbr < holiday_count; holiday_nbr++ )
             {
-                OutMessage->Buffer.BSt.Message[i*2+1] = holidays[i] >> 8;
-                OutMessage->Buffer.BSt.Message[i*2+2] = holidays[i]  & 0xff;
+                OutMessage->Buffer.BSt.Message[holiday_nbr*2+1] = holidays[holiday_nbr] >> 8;
+                OutMessage->Buffer.BSt.Message[holiday_nbr*2+2] = holidays[holiday_nbr]  & 0xff;
             }
 
             return NoError;
@@ -2120,16 +2143,16 @@ int Mct440_213xBDevice::executePutConfigTOUDays(CtiRequestMsg     *pReq,
                 long times[TOU_SCHEDULE_NBR][TOU_SCHEDULE_TIME_NBR];
                 long rates[TOU_SCHEDULE_NBR][TOU_SCHEDULE_RATE_NBR];
 
-                for( int i = 0; i < TOU_SCHEDULE_NBR; i++ )
+                for( int schedule_nbr = 0; schedule_nbr < TOU_SCHEDULE_NBR; schedule_nbr++ )
                 {
-                    for( int j = 0; j < TOU_SCHEDULE_RATE_NBR; j++ )
+                    for( int rate_nbr = 0; rate_nbr < TOU_SCHEDULE_RATE_NBR; rate_nbr++ )
                     {
-                        if( j < TOU_SCHEDULE_TIME_NBR )
+                        if( rate_nbr < TOU_SCHEDULE_TIME_NBR )
                         {
-                            times[i][j] = 255;
+                            times[schedule_nbr][rate_nbr] = 255;
                         }
 
-                        rates[i][j] = default_rate;
+                        rates[schedule_nbr][rate_nbr] = default_rate;
                     }
                 }
 
@@ -2325,25 +2348,25 @@ INT Mct440_213xBDevice::decodeGetStatusInternal( INMESS *InMessage, CtiTime &Tim
 
     ReturnMsg->setResultString(resultString);
 
-    for( int i = 0; i < 5; i++ )
+    for( int byteoffset = 0; byteoffset < 5; byteoffset++ )
     {
-        int offset;
+        int pointoffset;
         boost::shared_ptr<CtiPointStatus> point;
         CtiPointDataMsg *pData;
         string pointResult;
 
-        if( i == 0 )  offset = 30;
-        if( i == 1 )  offset = 10;
-        if( i == 2 )  offset = 20;
-        if( i == 3 )  offset = 40;
-        if( i == 4 )  offset = 50;
+        if( byteoffset == 0 )  pointoffset = 30;
+        if( byteoffset == 1 )  pointoffset = 10;
+        if( byteoffset == 2 )  pointoffset = 20;
+        if( byteoffset == 3 )  pointoffset = 40;
+        if( byteoffset == 4 )  pointoffset = 50;
 
-        for( int j = 0; j < 8; j++ )
+        for( int bitoffset = 0; bitoffset < 8; bitoffset++ )
         {
             //  Don't send the powerfail status again - it's being sent by dev_mct in ResultDecode()
-            if( (offset + j != 10) && (point = boost::static_pointer_cast<CtiPointStatus>(getDevicePointOffsetTypeEqual( offset + j, StatusPointType ))) )
+            if( (pointoffset + bitoffset != 10) && (point = boost::static_pointer_cast<CtiPointStatus>(getDevicePointOffsetTypeEqual( pointoffset + bitoffset, StatusPointType ))) )
             {
-                double value = (DSt.Message[i] >> j) & 0x01;
+                double value = (DSt.Message[byteoffset] >> bitoffset) & 0x01;
 
                 pointResult = getName() + " / " + point->getName() + ": " + ResolveStateName((point)->getStateGroupID(), value);
 
@@ -2642,13 +2665,12 @@ INT Mct440_213xBDevice::decodeGetConfigTOU(INMESS          *InMessage,
 
             if( switch1_5 )
             {
-                resultString += "\n";
+                resultString += "\n\n";
             }
             else
             {
                 resultString += "- end of day - \n\n";
             }
-
         }
 
         PaoInfoKeys key[2];
@@ -2664,11 +2686,11 @@ INT Mct440_213xBDevice::decodeGetConfigTOU(INMESS          *InMessage,
             key[1] = CtiTableDynamicPaoInfo::Key_MCT_DaySchedule4;
         }
 
-        for( int i = 0; i < 2; i++ )
+        for( int schedule_nbr = 0; schedule_nbr < 2; schedule_nbr++ )
         {
             string dynDaySchedule;
                                                                 /* Retrieve daily schedule dynamic info                 */
-            const bool ScheduleValid = CtiDeviceBase::getDynamicInfo(key[i], dynDaySchedule);
+            const bool ScheduleValid = CtiDeviceBase::getDynamicInfo(key[schedule_nbr], dynDaySchedule);
 
             long times_schedule[10],
                  rates_schedule[11];
@@ -2687,14 +2709,14 @@ INT Mct440_213xBDevice::decodeGetConfigTOU(INMESS          *InMessage,
 
             if( switch1_5 )                                     /* switch 1 - 5 and midnight                            */
             {
-                std::copy(timeArray[i], timeArray[i] + 5, times_schedule);
-                std::copy(rateArray[i], rateArray[i] + 5, rates_schedule);
-                rates_schedule[10] = rateArray[i][5];
+                std::copy(timeArray[schedule_nbr], timeArray[schedule_nbr] + 5, times_schedule);
+                std::copy(rateArray[schedule_nbr], rateArray[schedule_nbr] + 5, rates_schedule);
+                rates_schedule[10] = rateArray[schedule_nbr][5];
             }
             else                                                /* switch 6 - 10                                        */
             {
-               std::copy(timeArray[i], timeArray[i] + 5, times_schedule + 5);
-               std::copy(rateArray[i], rateArray[i] + 5, rates_schedule + 5);
+               std::copy(timeArray[schedule_nbr], timeArray[schedule_nbr] + 5, times_schedule + 5);
+               std::copy(rateArray[schedule_nbr], rateArray[schedule_nbr] + 5, rates_schedule + 5);
             }
 
             string daySchedule;
@@ -2702,7 +2724,7 @@ INT Mct440_213xBDevice::decodeGetConfigTOU(INMESS          *InMessage,
             createTOUDayScheduleString(daySchedule, times_schedule, rates_schedule);
 
                                                                 /* Set daily schedule dynamic info                      */
-            CtiDeviceBase::setDynamicInfo(key[i], daySchedule);
+            CtiDeviceBase::setDynamicInfo(key[schedule_nbr], daySchedule);
         }
     }
     else
@@ -2763,11 +2785,11 @@ INT Mct440_213xBDevice::decodeGetConfigTOU(INMESS          *InMessage,
 
         char *(daynames[8]) = {"Sunday", "Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday", "Holiday"};
 
-        for( int i = 0; i < 8; i++ )
+        for( int day_nbr = 0; day_nbr < 8; day_nbr++ )
         {
-            int dayschedule = InMessage->Buffer.DSt.Message[1 - i/4] >> ((i % 4) * 2) & 0x03;
+            int dayschedule = InMessage->Buffer.DSt.Message[1 - day_nbr/4] >> ((day_nbr % 4) * 2) & 0x03;
 
-            resultString += "Schedule " + CtiNumStr(dayschedule + 1) + " - " + daynames[i] + "\n";
+            resultString += "Schedule " + CtiNumStr(dayschedule + 1) + " - " + daynames[day_nbr] + "\n";
         }
     }
 
@@ -2872,16 +2894,16 @@ int Mct440_213xBDevice::decodeGetConfigHoliday(INMESS          *InMessage,
     string result      = getName() + " / Holiday schedule:\n";
     CtiTime start_time = CtiTime(UTC_TIMESTAMP_JAN_1_2010);
 
-    int offset;
+    int holiday_offset;
     int holiday_cnt;
 
     switch( InMessage->Return.ProtocolInfo.Emetcon.Function )
     {
-        case Memory_Holiday1_6Pos  : offset = 0;  holiday_cnt = 6; break;
-        case Memory_Holiday7_12Pos : offset = 6;  holiday_cnt = 6; break;
-        case Memory_Holiday13_18Pos: offset = 12; holiday_cnt = 6; break;
-        case Memory_Holiday19_24Pos: offset = 18; holiday_cnt = 6; break;
-        case Memory_Holiday25_28Pos: offset = 24; holiday_cnt = 4; break;
+        case Memory_Holiday1_6Pos  : holiday_offset = 0;  holiday_cnt = 6; break;
+        case Memory_Holiday7_12Pos : holiday_offset = 6;  holiday_cnt = 6; break;
+        case Memory_Holiday13_18Pos: holiday_offset = 12; holiday_cnt = 6; break;
+        case Memory_Holiday19_24Pos: holiday_offset = 18; holiday_cnt = 6; break;
+        case Memory_Holiday25_28Pos: holiday_offset = 24; holiday_cnt = 4; break;
         default:
         {
             CtiLockGuard<CtiLogger> doubt_guard(dout);
@@ -2891,14 +2913,14 @@ int Mct440_213xBDevice::decodeGetConfigHoliday(INMESS          *InMessage,
         }
     }
 
-    for( int i = 0; i < holiday_cnt; i++ )
+    for( int holiday_nbr = 0; holiday_nbr < holiday_cnt; holiday_nbr++ )
     {
-        unsigned long days      = (DSt.Message[i*2] << 8) | DSt.Message[(i*2)+1];
+        unsigned long days      = (DSt.Message[holiday_nbr*2] << 8) | DSt.Message[(holiday_nbr*2)+1];
         unsigned long timestamp = (days * NBR_SECONDS_PER_DAY) + start_time.seconds();
         CtiTime holiday         = CtiTime(timestamp);
 
         ostringstream ss;
-        ss << (i + offset + 1);
+        ss << (holiday_nbr + holiday_offset + 1);
 
         result += "Holiday " + ss.str() + ": " + (holiday.isValid()?holiday.asString(CtiTime::Gmt, CtiTime::OmitTimezone) + " GMT":"(invalid)") + "\n";
     }
@@ -3328,6 +3350,175 @@ void Mct440_213xBDevice::createTOUScheduleConfig(long           (&daySchedule)[8
 
     outList.push_back(TOU_OutMessage);
     TOU_OutMessage = 0;
+}
+
+
+/*
+*********************************************************************************************************
+*                                         decodeGetValueKWH()
+*
+* Description :
+*
+* Argument(s) :
+*
+* Return(s)   :
+*
+* Caller(s)   :
+*
+* Note(s)     :
+*********************************************************************************************************
+*/
+INT Mct440_213xBDevice::decodeGetValueKWH(INMESS         *InMessage,
+                                          CtiTime        &TimeNow,
+                                          CtiMessageList &vgList,
+                                          CtiMessageList &retList,
+                                          OutMessageList &outList)
+{
+    INT status = NORMAL;
+    CtiTime pointTime;
+    bool valid_data = true;
+
+    INT ErrReturn  = InMessage->EventCode & 0x3fff;
+    DSTRUCT *DSt   = &InMessage->Buffer.DSt;
+
+    point_info pi, pi_freezecount;
+
+    CtiPointSPtr   pPoint;
+    CtiReturnMsg  *ReturnMsg = NULL;    // Message sent to VanGogh, inherits from Multi
+
+    if( getMCTDebugLevel(DebugLevel_Scanrates) )
+    {
+        CtiLockGuard<CtiLogger> doubt_guard(dout);
+        dout << CtiTime() << " **** Accumulator Decode for \"" << getName() << "\" **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
+    }
+
+    if( InMessage->Sequence == EmetconProtocol::Scan_Accum )
+    {
+        setScanFlag(ScanRateAccum, false);
+    }
+
+    if((ReturnMsg = CTIDBG_new CtiReturnMsg(getID(), InMessage->Return.CommandStr)) == NULL)
+    {
+        CtiLockGuard<CtiLogger> doubt_guard(dout);
+        dout << CtiTime() << " Could NOT allocate memory " << __FILE__ << " (" << __LINE__ << ") " << endl;
+
+        return MEMORY;
+    }
+
+    ReturnMsg->setUserMessageId(InMessage->Return.UserID);
+
+    unsigned char *p_freeze_counter = 0;
+
+    if( InMessage->Sequence == Cti::Protocols::EmetconProtocol::GetValue_FrozenKWH )
+    {
+        string freeze_error_str;
+
+        p_freeze_counter = DSt->Message + 3;
+
+        if( status = checkFreezeLogic(TimeNow, *p_freeze_counter, freeze_error_str) )
+        {
+            ReturnMsg->setResultString(freeze_error_str);
+        }
+    }
+
+    if( !status )
+    {
+        const int channels = ChannelCount;
+/*
+        //  cheaper than looking for parse.getFlags() & CMD_FLAG_GV_KWH
+        if( stringContainsIgnoreCase(InMessage->Return.CommandStr, " kwh") )
+        {
+            channels = 1;
+        }
+*/
+        for( int chan_nbr = 0; chan_nbr < channels; chan_nbr++ )
+        {
+            int offset = (chan_nbr * 3);
+
+            if( !chan_nbr || getDevicePointOffsetTypeEqual(chan_nbr + 1, PulseAccumulatorPointType) )
+            {
+                if( InMessage->Sequence == Cti::Protocols::EmetconProtocol::Scan_Accum ||
+                    InMessage->Sequence == Cti::Protocols::EmetconProtocol::GetValue_KWH )
+                {
+                    pi = getAccumulatorData(DSt->Message + offset, 3, 0);
+
+                    pointTime -= pointTime.seconds() % 60;
+                }
+                else if( InMessage->Sequence == Cti::Protocols::EmetconProtocol::GetValue_FrozenKWH )
+                {
+                    if( chan_nbr ) offset++;  //  so that, for the frozen read, it goes 0, 4, 7 to step past the freeze counter in position 3
+
+                    pi = getAccumulatorData(DSt->Message + offset, 3, p_freeze_counter);
+
+                    if( pi.freeze_bit != getExpectedFreezeParity() )
+                    {
+                        {
+                            CtiLockGuard<CtiLogger> doubt_guard(dout);
+                            dout << CtiTime() << " **** Checkpoint - incoming freeze parity bit (" << pi.freeze_bit <<
+                                                ") does not match expected freeze bit (" << getExpectedFreezeParity() <<
+                                                "/" << getExpectedFreezeCounter() << ") on device \"" << getName() << "\", not sending data **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
+                        }
+
+                        pi.description  = "Freeze parity does not match (";
+                        pi.description += CtiNumStr(pi.freeze_bit) + " != " + CtiNumStr(getExpectedFreezeParity());
+                        pi.description += "/" + CtiNumStr(getExpectedFreezeCounter()) + ")";
+                        pi.quality = InvalidQuality;
+                        pi.value = 0;
+
+                        ReturnMsg->setResultString("Invalid freeze parity; last recorded freeze sent at " + getLastFreezeTimestamp(TimeNow).asString());
+                        status = ErrorInvalidFrozenReadingParity;
+                    }
+                    else
+                    {
+                        pointTime  = getLastFreezeTimestamp(TimeNow);
+                        pointTime -= pointTime.seconds() % 60;
+                    }
+                }
+
+                string point_name;
+                int    point_offset = -1;
+
+                switch( InMessage->Sequence )
+                {
+                    case Cti::Protocols::EmetconProtocol::GetValue_KWH:
+                         point_offset = chan_nbr + 1 + PointOffset_PulseAcc_BaseMRead;
+                         break;
+                    case Cti::Protocols::EmetconProtocol::GetValue_FrozenKWH:
+                         point_offset = chan_nbr + 1 + PointOffset_PulseAcc_BaseMReadFrozen;
+                         point_name  += "Frozen ";
+                         break;
+                }
+
+                switch( chan_nbr )
+                {
+                    case 0: point_name += "kWh";                       break;
+                    case 1: point_name += "Reverse kWh";               break;
+                    case 2: point_name += "Reactive Inductive Energy"; break;
+                }
+
+                //  if kWh was returned as units, we could get rid of the default multiplier - it's messy
+                insertPointDataReport(PulseAccumulatorPointType,
+                                      point_offset,
+                                      ReturnMsg,
+                                      pi,
+                                      point_name,
+                                      pointTime,
+                                      0.1,
+                                      TAG_POINT_MUST_ARCHIVE);
+
+                //  if the quality's invalid, throw the status to abnormal if it's the first channel OR there's a point defined
+                if( pi.quality == InvalidQuality && !status && (!chan_nbr || getDevicePointOffsetTypeEqual(chan_nbr + 1, PulseAccumulatorPointType)) )
+                {
+                    ReturnMsg->setResultString("Invalid data returned for channel " + CtiNumStr(chan_nbr + 1) + "\n" + ReturnMsg->ResultString());
+                    status = ErrorInvalidData;
+                }
+            }
+        }
+    }
+
+    retMsgHandler( InMessage->Return.CommandStr, status, ReturnMsg, vgList, retList );
+
+    return status;
 }
 
 

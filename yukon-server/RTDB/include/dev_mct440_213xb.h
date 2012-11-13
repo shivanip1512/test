@@ -42,8 +42,14 @@ protected:
         PointOffset_Analog_LinePowFactPhaseB    = 822,
         PointOffset_Analog_LinePowFactPhaseC    = 823,
 
-        PointOffset_PulseAcc_TOUBaseForward     = 100,
-        PointOffset_PulseAcc_TOUBaseReverse     = 200,
+        PointOffset_PulseAcc_TOUBaseFwd         = 100,
+        PointOffset_PulseAcc_TOUBaseRev         = 200,
+
+        PointOffset_PulseAcc_TOUBaseFwdFrozen   = 600,
+        PointOffset_PulseAcc_TOUBaseRevFrozen   = 700,
+
+        PointOffset_PulseAcc_BaseMRead          = 0,
+        PointOffset_PulseAcc_BaseMReadFrozen    = 500,
 
         PointOffset_PulseAcc_RecentkWhForward   = 181,
         PointOffset_PulseAcc_RecentkWhReverse   = 281,
@@ -147,6 +153,8 @@ protected:
     virtual int decodeGetConfigAlarmMask(INMESS *InMessage, CtiTime &TimeNow, CtiMessageList &vgList, CtiMessageList  &retList, OutMessageList  &outList);
 
     virtual void createTOUScheduleConfig(long (&daySchedule)[8], long (&times)[4][10], long (&rates)[4][11], long defaultRate, OUTMESS *&OutMessage, OutMessageList &outList);
+
+    virtual INT decodeGetValueKWH(INMESS *InMessage, CtiTime &TimeNow, CtiMessageList &vgList, CtiMessageList &retList, OutMessageList &outList);
 
 };
 
