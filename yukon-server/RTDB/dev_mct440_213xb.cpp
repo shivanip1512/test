@@ -184,36 +184,6 @@ Mct440_213xBDevice::FunctionReadValueMappings Mct440_213xBDevice::initReadValueM
         { 0x1ad,  2, { 1, CtiTableDynamicPaoInfo::Key_MCT_DefaultTOURate            } },
         { 0x1ad, 10, { 1, CtiTableDynamicPaoInfo::Key_MCT_TimeZoneOffset            } },
 
-        // 0x1F6 – LCD Configuration 1
-        { 0x1f6,  0, { 1, CtiTableDynamicPaoInfo::Key_MCT_LcdMetric01               } },
-        { 0x1f6,  1, { 1, CtiTableDynamicPaoInfo::Key_MCT_LcdMetric02               } },
-        { 0x1f6,  2, { 1, CtiTableDynamicPaoInfo::Key_MCT_LcdMetric03               } },
-        { 0x1f6,  3, { 1, CtiTableDynamicPaoInfo::Key_MCT_LcdMetric04               } },
-        { 0x1f6,  4, { 1, CtiTableDynamicPaoInfo::Key_MCT_LcdMetric05               } },
-        { 0x1f6,  5, { 1, CtiTableDynamicPaoInfo::Key_MCT_LcdMetric06               } },
-        { 0x1f6,  6, { 1, CtiTableDynamicPaoInfo::Key_MCT_LcdMetric07               } },
-        { 0x1f6,  7, { 1, CtiTableDynamicPaoInfo::Key_MCT_LcdMetric08               } },
-        { 0x1f6,  8, { 1, CtiTableDynamicPaoInfo::Key_MCT_LcdMetric09               } },
-        { 0x1f6,  9, { 1, CtiTableDynamicPaoInfo::Key_MCT_LcdMetric10               } },
-        { 0x1f6, 10, { 1, CtiTableDynamicPaoInfo::Key_MCT_LcdMetric11               } },
-        { 0x1f6, 11, { 1, CtiTableDynamicPaoInfo::Key_MCT_LcdMetric12               } },
-        { 0x1f6, 12, { 1, CtiTableDynamicPaoInfo::Key_MCT_LcdMetric13               } },
-
-        // 0x1F7 – LCD Configuration 2
-        { 0x1f7,  0, { 1, CtiTableDynamicPaoInfo::Key_MCT_LcdMetric14               } },
-        { 0x1f7,  1, { 1, CtiTableDynamicPaoInfo::Key_MCT_LcdMetric15               } },
-        { 0x1f7,  2, { 1, CtiTableDynamicPaoInfo::Key_MCT_LcdMetric16               } },
-        { 0x1f7,  3, { 1, CtiTableDynamicPaoInfo::Key_MCT_LcdMetric17               } },
-        { 0x1f7,  4, { 1, CtiTableDynamicPaoInfo::Key_MCT_LcdMetric18               } },
-        { 0x1f7,  5, { 1, CtiTableDynamicPaoInfo::Key_MCT_LcdMetric19               } },
-        { 0x1f7,  6, { 1, CtiTableDynamicPaoInfo::Key_MCT_LcdMetric20               } },
-        { 0x1f7,  7, { 1, CtiTableDynamicPaoInfo::Key_MCT_LcdMetric21               } },
-        { 0x1f7,  8, { 1, CtiTableDynamicPaoInfo::Key_MCT_LcdMetric22               } },
-        { 0x1f7,  9, { 1, CtiTableDynamicPaoInfo::Key_MCT_LcdMetric23               } },
-        { 0x1f7, 10, { 1, CtiTableDynamicPaoInfo::Key_MCT_LcdMetric24               } },
-        { 0x1f7, 11, { 1, CtiTableDynamicPaoInfo::Key_MCT_LcdMetric25               } },
-        { 0x1f7, 12, { 1, CtiTableDynamicPaoInfo::Key_MCT_LcdMetric26               } },
-
         // 0x1FE – Disconnect Status (FIXME)
 
     };
@@ -485,6 +455,9 @@ INT Mct440_213xBDevice::executeGetValue(CtiRequestMsg     *pReq,
     {
         function = EmetconProtocol::GetValue_InstantLineData;
         found    = getOperation(function, OutMessage->Buffer.BSt);
+
+        // adjust message length request according to the number of phase
+        OutMessage->Buffer.BSt.Length = getPhaseCount() * 4;
     }
 
                                                                 /* ----------------------- OUTAGE --------------------- */
