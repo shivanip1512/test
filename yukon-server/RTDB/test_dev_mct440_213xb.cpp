@@ -227,26 +227,22 @@ BOOST_AUTO_TEST_CASE(test_dev_mct440_213xb_decodeDisconnectStatus)
     struct test_case
     {
         const unsigned char dst_message_0;
-        const unsigned char dst_message_1;
-        const unsigned char dst_message_8;
         const string expected;
     }
     test_cases[] =
     {
-        {0x3c, 0x02, 123, "Load limiting mode active\n"
-                          "Cycling mode active, currently connected\n"
-                          "Disconnect state uncertain (powerfail during disconnect)\n"
-                          "Disconnect error - demand detected after disconnect command sent to collar\n"
-                          "Disconnect load limit count: 123\n"},
-        {0x7c, 0x02, 124, "Load side voltage detected\n"
-                          "Load limiting mode active\n"
-                          "Cycling mode active, currently connected\n"
-                          "Disconnect state uncertain (powerfail during disconnect)\n"
-                          "Disconnect error - demand detected after disconnect command sent to collar\n"
-                          "Disconnect load limit count: 124\n"},
-        {0x10, 0x00, 125, "Disconnect load limit count: 125\n"},
-        {0x50, 0x00, 126, "Load side voltage detected\n"
-                          "Disconnect load limit count: 126\n"},
+        {0x23,  "Disconnect state uncertain\n"
+                "Control output status open\n"
+                "Disconnect sensor open\n"},
+
+        {0x43,  "Load side voltage detected\n"
+                "Control output status open\n"
+                "Disconnect sensor open\n"
+                "Disconnect locked open\n"},
+
+        {0x0C,  "Control output status closed\n"
+                "Disconnect sensor closed\n"
+                "Disconnect not locked\n"},
     };
 
     std::vector<std::string> expected, results;
@@ -261,8 +257,6 @@ BOOST_AUTO_TEST_CASE(test_dev_mct440_213xb_decodeDisconnectStatus)
             DSTRUCT DSt;
 
             DSt.Message[0] = tc.dst_message_0;
-            DSt.Message[1] = tc.dst_message_1;
-            DSt.Message[8] = tc.dst_message_8;
 
             results.push_back(test_dev.decodeDisconnectStatus(DSt));
         }
@@ -1797,20 +1791,20 @@ BOOST_FIXTURE_TEST_SUITE(test_getOperation, getOperation_helper)
         BOOST_CHECK_EQUAL(BSt.Function, 0xfe);
         BOOST_CHECK_EQUAL(BSt.Length,   1);
     }
-    BOOST_AUTO_TEST_CASE(test_getOperation_42)
-    {
-        BOOST_REQUIRE(test_dev.getOperation(EmetconProtocol::GetConfig_Disconnect, BSt));
-        BOOST_CHECK_EQUAL(BSt.IO, EmetconProtocol::IO_Function_Read);
-        BOOST_CHECK_EQUAL(BSt.Function, 0xfe);
-        BOOST_CHECK_EQUAL(BSt.Length,   11);
-    }
-    BOOST_AUTO_TEST_CASE(test_getOperation_43)
-    {
-        BOOST_REQUIRE(test_dev.getOperation(EmetconProtocol::PutConfig_Disconnect, BSt));
-        BOOST_CHECK_EQUAL(BSt.IO, EmetconProtocol::IO_Function_Write);
-        BOOST_CHECK_EQUAL(BSt.Function, 0xfe);
-        BOOST_CHECK_EQUAL(BSt.Length,   8);
-    }
+//    BOOST_AUTO_TEST_CASE(test_getOperation_42)
+//    {
+//        BOOST_REQUIRE(test_dev.getOperation(EmetconProtocol::GetConfig_Disconnect, BSt));
+//        BOOST_CHECK_EQUAL(BSt.IO, EmetconProtocol::IO_Function_Read);
+//        BOOST_CHECK_EQUAL(BSt.Function, 0xfe);
+//        BOOST_CHECK_EQUAL(BSt.Length,   11);
+//    }
+//    BOOST_AUTO_TEST_CASE(test_getOperation_43)
+//    {
+//        BOOST_REQUIRE(test_dev.getOperation(EmetconProtocol::PutConfig_Disconnect, BSt));
+//        BOOST_CHECK_EQUAL(BSt.IO, EmetconProtocol::IO_Function_Write);
+//        BOOST_CHECK_EQUAL(BSt.Function, 0xfe);
+//        BOOST_CHECK_EQUAL(BSt.Length,   8);
+//    }
     BOOST_AUTO_TEST_CASE(test_getOperation_44)
     {
         BOOST_REQUIRE(test_dev.getOperation(EmetconProtocol::PutConfig_Raw, BSt));
