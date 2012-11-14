@@ -3135,28 +3135,6 @@ INT MctDevice::decodeGetStatusDisconnect(INMESS *InMessage, CtiTime &TimeNow, Ct
 
             break;
         }
-        case TYPEMCT440_2131B:
-        case TYPEMCT440_2133B:
-        {
-            switch( DSt.Message[0] & 0x03 )
-            {
-                case Mct410Device::RawStatus_Connected:
-                {
-                    Value = Mct410Device::StateGroup_Connected;                   defaultStateName = "Connected";                 break;
-                }
-                case Mct410Device::RawStatus_DisconnectedConfirmed:
-                {
-                    Value = Mct410Device::StateGroup_DisconnectedConfirmed;       defaultStateName = "Confirmed disconnected";    break;
-                }
-                default:
-                {
-                    Value = -1;
-                    defaultStateName = "Invalid raw value from 440";
-                }
-            }
-
-            break;
-        }
         default:
         {
             Value = INDETERMINATE;
