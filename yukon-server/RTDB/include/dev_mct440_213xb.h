@@ -114,6 +114,7 @@ protected:
     virtual int decodeGetConfigAlarmMask           (INMESS *InMessage, CtiTime &TimeNow, CtiMessageList &vgList, CtiMessageList &retList, OutMessageList &outList);
     virtual INT decodeGetStatusFreeze              (INMESS *InMessage, CtiTime &TimeNow, CtiMessageList &vgList, CtiMessageList &retList, OutMessageList &outList);
     virtual INT decodeGetStatusInternal            (INMESS *InMessage, CtiTime &TimeNow, CtiMessageList &vgList, CtiMessageList &retList, OutMessageList &outList);
+    virtual INT decodeGetStatusDisconnect          (INMESS *InMessage, CtiTime &TimeNow, CtiMessageList &vgList, CtiMessageList &retList, OutMessageList &outList);
 
     virtual INT executeGetValue                    (CtiRequestMsg *pReq, CtiCommandParser &parse, OUTMESS *&OutMessage, CtiMessageList &vgList, CtiMessageList &retList, OutMessageList &outList);
     virtual INT executePutConfig                   (CtiRequestMsg *pReq, CtiCommandParser &parse, OUTMESS *&OutMessage, CtiMessageList &vgList, CtiMessageList &retList, OutMessageList &outList);
@@ -126,6 +127,7 @@ protected:
     virtual int executePutConfigAlarmMask          (CtiRequestMsg *pReq, CtiCommandParser &parse, OUTMESS *&OutMessage, CtiMessageList &vgList, CtiMessageList &retList, OutMessageList &outList);
 
     virtual long resolveScheduleName(const string & scheduleName);
+    virtual string decodeDisconnectStatus(const DSTRUCT &DSt);
 
     virtual void createTOUDayScheduleString (string &schedule, long (&times)[10], long (&rates)[11]);
     virtual void parseTOUDayScheduleString  (string &schedule, long (&times)[10], long (&rates)[11]);

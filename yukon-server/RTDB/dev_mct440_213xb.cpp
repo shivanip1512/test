@@ -337,7 +337,9 @@ bool Mct440_213xBDevice::getOperation( const UINT &cmd, BSTRUCT &bst ) const
     }
 
     if( cmd == EmetconProtocol::PutConfig_VThreshold
+        || cmd == EmetconProtocol::PutConfig_Disconnect
         || cmd == EmetconProtocol::GetConfig_Thresholds
+        || cmd == EmetconProtocol::GetConfig_Disconnect
         || cmd == EmetconProtocol::GetValue_PeakDemand
         || cmd == EmetconProtocol::GetValue_FrozenPeakDemand
         || cmd == EmetconProtocol::GetValue_Voltage
@@ -3494,6 +3496,109 @@ INT Mct440_213xBDevice::decodeGetValueKWH(INMESS         *InMessage,
     return status;
 }
 
+
+/*
+*********************************************************************************************************
+*                                      decodeGetConfigDisconnect()
+*
+* Description :
+*
+* Argument(s) :
+*
+* Return(s)   :
+*
+* Caller(s)   :
+*
+* Note(s)     :
+*********************************************************************************************************
+*/
+INT Mct440_213xBDevice::decodeGetStatusDisconnect(INMESS         *InMessage,
+                                                  CtiTime        &TimeNow,
+                                                  CtiMessageList &vgList,
+                                                  CtiMessageList &retList,
+                                                  OutMessageList &outList)
+{
+    INT status = NORMAL, state = 0;
+
+    INT ErrReturn  = InMessage->EventCode & 0x3fff;
+    DSTRUCT *DSt   = &InMessage->Buffer.DSt;
+
+    string resultStr, stateName;
+
+    CtiReturnMsg *ReturnMsg = CTIDBG_new CtiReturnMsg(getID(), InMessage->Return.CommandStr);
+
+    ReturnMsg->setUserMessageId(InMessage->Return.UserID);
+
+    if( DSt->Message[0] & 0x01 )
+    {
+        state     = Mct410Device::StateGroup_DisconnectedConfirmed;
+        stateName = "Disconnected confirmed";
+    }
+    else
+    {
+        state     = Mct410Device::StateGroup_Connected;
+        stateName = "Connected confirmed";
+    }
+
+    point_info pi_disconnect;
+    pi_disconnect.value   = state;
+    pi_disconnect.quality = NormalQuality;
+
+    string pointName = getName() + " / Disconnect Status: " + stateName;
+
+    insertPointDataReport(StatusPointType,
+                          1,
+                          ReturnMsg,
+                          pi_disconnect,
+                          pointName,
+                          CtiTime(),
+                          1.0,
+                          TAG_POINT_MUST_ARCHIVE);
+
+    resultStr  = getName() + " / Disconnect Info:\n";
+
+    resultStr += decodeDisconnectStatus(*DSt);
+
+    ReturnMsg->setResultString(resultStr);
+
+    retMsgHandler( InMessage->Return.CommandStr, status, ReturnMsg, vgList, retList );
+
+    return status;
+}
+
+
+/*
+*********************************************************************************************************
+*                                       decodeDisconnectStatus()
+*
+* Description :
+*
+* Argument(s) :
+*
+* Return(s)   :
+*
+* Caller(s)   :
+*
+* Note(s)     :
+*********************************************************************************************************
+*/
+string Mct440_213xBDevice::decodeDisconnectStatus(const DSTRUCT &DSt)
+{
+    string resultStr;
+
+
+    resultStr += ( DSt.Message[0] & 0x20 ) ? "Disconnect state uncertain\n"   : "";
+    resultStr += ( DSt.Message[0] & 0x40 ) ? "Load side voltage detected\n"   : "";
+    resultStr += ( DSt.Message[0] & 0x08 ) ? "Control output status closed\n" : "Control output status open\n";
+    resultStr += ( DSt.Message[0] & 0x04 ) ? "Disconnect sensor closed\n"     : "Disconnect sensor open\n";
+
+    if( (DSt.Message[0] & 0x20) == 0 )                                 /* check if Disconnect State is Uncertain               */
+    {
+        resultStr += ( DSt.Message[0] & 0x02 ) ? "Disconnect locked open\n"   : "Disconnect not locked\n";
+    }
+
+    return resultStr;
+}
 
 }
 }
