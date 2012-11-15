@@ -26,10 +26,10 @@ public class SessionUtil {
     public static int getParentLoginUserId(HttpSession session, int defaultUserId) {
         int userId = defaultUserId;
         if (session != null) {
-            Pair p = (Pair) session.getAttribute(LoginController.SAVED_YUKON_USERS);
+            Pair<?,?> p = (Pair<?,?>) session.getAttribute(LoginController.SAVED_YUKON_USERS);
             if (p != null) {
                 Properties oldContext = (Properties) p.getFirst();
-                Enumeration attNames = oldContext.propertyNames();
+                Enumeration<?> attNames = oldContext.propertyNames();
                 while (attNames.hasMoreElements()) {
                     String attName = (String) attNames.nextElement();
                     if(attName.compareTo( ServletUtils.ATT_STARS_YUKON_USER ) == 0) {
@@ -41,5 +41,4 @@ public class SessionUtil {
         }
         return userId;
     }
-
 }

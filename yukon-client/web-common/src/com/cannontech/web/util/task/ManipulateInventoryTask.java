@@ -258,8 +258,7 @@ public class ManipulateInventoryTask extends TimeConsumingTask {
                     if (stateChanged) {
                         int userId = SessionUtil.getParentLoginUserId(session, user.getUserID());
                         EventUtils.logSTARSEvent(userId,  EventUtils.EVENT_CATEGORY_INVENTORY,
-                                                 invDB.getCurrentStateID().intValue(),
-                                                 invDB.getInventoryID().intValue());
+                                                 invDB.getCurrentStateID(), invDB.getInventoryID());
                     }
                 }
 

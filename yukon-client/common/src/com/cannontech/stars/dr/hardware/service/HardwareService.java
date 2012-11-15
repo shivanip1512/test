@@ -36,9 +36,13 @@ public interface HardwareService {
      * The userId is needed as this change will spawn an event which needs to be attached
      * to the parent energy company user if they are managing a member (not necessarily same as context user).
      * 
+     * Logging requirements from Xcel indicate that we need to track the parent login in case 
+     * this was from an internal login through the member management interface. See SessionUtil.getParentLoginUserId()
+     * 
      * @param context
      * @param inv
      * @param statusEntryId The new device status yukon list entry id
+     * @param userId The userid used for EventUtils.logSTARSEvent() should be the parent login.
      * @throws ObjectInOtherEnergyCompanyException 
      */
     public void changeDeviceStatus(YukonUserContext context, InventoryIdentifier inv, int statusEntryId, int userId) throws ObjectInOtherEnergyCompanyException;
