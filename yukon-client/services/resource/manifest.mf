@@ -1,7 +1,6 @@
 Manifest-Version: 1.0
 Main-Class: com.cannontech.services.server.YukonServicesServer
 Class-Path: ./ 
- stars.jar 
  graph.jar 
  esub.jar 
  notification.jar 
