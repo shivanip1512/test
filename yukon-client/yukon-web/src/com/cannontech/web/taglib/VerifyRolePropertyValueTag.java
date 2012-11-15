@@ -1,11 +1,10 @@
-package com.cannontech.web.util;
+package com.cannontech.web.taglib;
 
 import org.springframework.beans.factory.annotation.Configurable;
 
 import com.cannontech.common.exception.NotAuthorizedException;
 import com.cannontech.core.roleproperties.YukonRoleProperty;
 import com.cannontech.core.roleproperties.dao.RolePropertyDao;
-import com.cannontech.web.taglib.YukonTagSupport;
 
 /**
  * Checks that the value of the specified 

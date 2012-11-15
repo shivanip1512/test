@@ -1064,15 +1064,15 @@
     
     <bean id="checkYukonVersionUndefinedTagPrototype" class="com.cannontech.web.taglib.CheckYukonVersionUndefinedTag"/>
 
-    <bean id="verifyRolesAndPropertiesTagPrototype" class="com.cannontech.web.util.VerifyRolesAndPropertiesTag">
+    <bean id="verifyRolesAndPropertiesTagPrototype" class="com.cannontech.web.taglib.VerifyRolesAndPropertiesTag">
         <property name="descriptionService" ref="roleAndPropertyDescriptionService"/>
     </bean>
     
-    <bean id="verifyRolePropertyValueTagPrototype" class="com.cannontech.web.util.VerifyRolePropertyValueTag">
+    <bean id="verifyRolePropertyValueTagPrototype" class="com.cannontech.web.taglib.VerifyRolePropertyValueTag">
     	<property name="rolePropertyDao" ref="rolePropertyDao"/>
     </bean>
     
-    <bean id="verifyGlobalRolesAndPropertiesTagPrototype" class="com.cannontech.web.util.VerifyGlobalRolesAndPropertiesTag">
+    <bean id="verifyGlobalRolesAndPropertiesTagPrototype" class="com.cannontech.web.taglib.VerifyGlobalRolesAndPropertiesTag">
         <property name="descriptionService" ref="roleAndPropertyDescriptionService"/>
     </bean>
     

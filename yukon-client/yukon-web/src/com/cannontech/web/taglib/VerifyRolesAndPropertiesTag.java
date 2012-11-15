@@ -1,4 +1,4 @@
-package com.cannontech.web.util;
+package com.cannontech.web.taglib;
 
 import java.io.IOException;
 
@@ -8,10 +8,9 @@ import org.springframework.beans.factory.annotation.Configurable;
 
 import com.cannontech.common.exception.NotAuthorizedException;
 import com.cannontech.core.authorization.service.RoleAndPropertyDescriptionService;
-import com.cannontech.web.taglib.YukonTagSupport;
 
 /**
- * This will check that a given global role\s exists
+ * This will check that the user has the given roles
  * or has a true value for the given role properties.
  * Roles and properties are specified as a comma-separated
  * list of partially qualified class and field names. 
@@ -32,8 +31,8 @@ import com.cannontech.web.taglib.YukonTagSupport;
  * absence of a role or the false value of a role property)
  * preceded the name of the role or property with a ! character.
  */
-@Configurable("verifyGlobalRolesAndPropertiesTagPrototype")
-public class VerifyGlobalRolesAndPropertiesTag extends YukonTagSupport {
+@Configurable("verifyRolesAndPropertiesTagPrototype")
+public class VerifyRolesAndPropertiesTag extends YukonTagSupport {
 
     private String value;
     
@@ -43,7 +42,7 @@ public class VerifyGlobalRolesAndPropertiesTag extends YukonTagSupport {
     @Override
     public void doTag() throws JspException, IOException {
         
-        boolean checkIfAtLeaseOneExists = descriptionService.checkIfAtLeaseOneExists(value, null);
+        boolean checkIfAtLeaseOneExists = descriptionService.checkIfAtLeaseOneExists(value, getYukonUser());
         if (!checkIfAtLeaseOneExists) {
             throw new NotAuthorizedException("Missing a required role or property to view this page: " + value);
         }
