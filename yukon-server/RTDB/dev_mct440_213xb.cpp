@@ -32,17 +32,17 @@ using Cti::Protocols::EmetconProtocol;
 #define STR_EXPAND(x)              #x
 #define STR(x)                     STR_EXPAND(x)
 
-#define NBR_SECONDS_PER_DAY        86400
-#define UTC_TIMESTAMP_JAN_1_2010   0x4B3D3B00
-
 
 namespace Cti {
 namespace Devices {
 
 
-const Mct440_213xBDevice::FunctionReadValueMappings Mct440_213xBDevice::_readValueMaps = Mct440_213xBDevice::initReadValueMaps();
-const Mct440_213xBDevice::CommandSet                Mct440_213xBDevice::_commandStore  = Mct440_213xBDevice::initCommandStore();
-const Mct440_213xBDevice::ConfigPartsList           Mct440_213xBDevice::_config_parts  = Mct440_213xBDevice::initConfigParts();
+const Mct440_213xBDevice::FunctionReadValueMappings Mct440_213xBDevice::_readValueMaps      = Mct440_213xBDevice::initReadValueMaps();
+const Mct440_213xBDevice::CommandSet                Mct440_213xBDevice::_commandStore       = Mct440_213xBDevice::initCommandStore();
+const Mct440_213xBDevice::ConfigPartsList           Mct440_213xBDevice::_config_parts       = Mct440_213xBDevice::initConfigParts();
+const std::set<UINT>                                Mct440_213xBDevice::_excludedCommands   = Mct440_213xBDevice::initExcludedCommands();
+const CtiDate                                       Mct440_213xBDevice::holidayBaseDate     = CtiDate(1,1,2010);
+
 
 // this is for TOU putconfig ease
 struct ratechange_t
@@ -232,8 +232,8 @@ Mct440_213xBDevice::CommandSet Mct440_213xBDevice::initCommandStore()
     cs.insert(CommandStore(EmetconProtocol::PutConfig_Intervals,            EmetconProtocol::IO_Function_Write, 0x03,    2));
     cs.insert(CommandStore(EmetconProtocol::GetConfig_Intervals,            EmetconProtocol::IO_Read,           0x1A,    2));
 
-    cs.insert(CommandStore(EmetconProtocol::Control_SetTOUHolidayRate,      EmetconProtocol::IO_Write,          0xA4,    0));
-    cs.insert(CommandStore(EmetconProtocol::Control_ClearTOUHolidayRate,    EmetconProtocol::IO_Write,          0xA5,    0));
+    cs.insert(CommandStore(EmetconProtocol::PutStatus_SetTOUHolidayRate,    EmetconProtocol::IO_Write,          0xA4,    0));
+    cs.insert(CommandStore(EmetconProtocol::PutStatus_ClearTOUHolidayRate,  EmetconProtocol::IO_Write,          0xA5,    0));
 
     cs.insert(CommandStore(EmetconProtocol::GetConfig_AlarmMask,            EmetconProtocol::IO_Read,           0x01,    9));
 
@@ -269,6 +269,38 @@ Mct440_213xBDevice::ConfigPartsList Mct440_213xBDevice::initConfigParts()
     tempList.push_back(Mct4xxDevice::PutConfigPart_holiday);
 
     return tempList;
+}
+
+
+/*
+*********************************************************************************************************
+*                                        initExcludedCommands()
+*
+* Description :
+*
+* Argument(s) :
+*
+* Return(s)   :
+*
+* Caller(s)   :
+*
+* Note(s)     :
+*********************************************************************************************************
+*/
+std::set<UINT> Mct440_213xBDevice::initExcludedCommands()
+{
+    std::set<UINT> cs;
+
+    cs.insert(EmetconProtocol::PutConfig_VThreshold);
+    cs.insert(EmetconProtocol::PutConfig_Disconnect);
+    cs.insert(EmetconProtocol::GetConfig_Thresholds);
+    cs.insert(EmetconProtocol::GetConfig_Disconnect);
+    cs.insert(EmetconProtocol::GetValue_PeakDemand);
+    cs.insert(EmetconProtocol::GetValue_FrozenPeakDemand);
+    cs.insert(EmetconProtocol::GetValue_Voltage);
+    cs.insert(EmetconProtocol::GetValue_FrozenVoltage);
+
+    return cs;
 }
 
 
@@ -316,6 +348,56 @@ const Mct440_213xBDevice::FunctionReadValueMappings *Mct440_213xBDevice::getRead
 
 /*
 *********************************************************************************************************
+*                                         getExcludedCommands()
+*
+* Description :
+*
+* Argument(s) :
+*
+* Return(s)   :
+*
+* Caller(s)   :
+*
+* Note(s)     :
+*********************************************************************************************************
+*/
+const std::set<UINT> *Mct440_213xBDevice::getExcludedCommands() const
+{
+    return &_excludedCommands;
+}
+
+
+/*
+*********************************************************************************************************
+*                                         getExcludedCommands()
+*
+* Description :
+*
+* Argument(s) :
+*
+* Return(s)   :
+*
+* Caller(s)   :
+*
+* Note(s)     :
+*********************************************************************************************************
+*/
+bool Mct440_213xBDevice::isCommandExcluded(const UINT &cmd) const
+{
+    const std::set<UINT>         *p_cs = getExcludedCommands();
+    std::set<UINT>::const_iterator itr = p_cs->find(cmd);
+
+    if( itr != p_cs->end() )
+    {
+        return true;
+    }
+
+    return false;
+}
+
+
+/*
+*********************************************************************************************************
 *                                          getOperation()
 *
 * Description :
@@ -331,19 +413,12 @@ const Mct440_213xBDevice::FunctionReadValueMappings *Mct440_213xBDevice::getRead
 */
 bool Mct440_213xBDevice::getOperation( const UINT &cmd, BSTRUCT &bst ) const
 {
-    if( getOperationFromStore(_commandStore, cmd, bst) )
+    if( getOperationFromStore(_commandStore, cmd, bst) )        /* check for commands added for mct440_213xb            */
     {
         return true;
     }
 
-    if( cmd == EmetconProtocol::PutConfig_VThreshold
-        || cmd == EmetconProtocol::PutConfig_Disconnect
-        || cmd == EmetconProtocol::GetConfig_Thresholds
-        || cmd == EmetconProtocol::GetConfig_Disconnect
-        || cmd == EmetconProtocol::GetValue_PeakDemand
-        || cmd == EmetconProtocol::GetValue_FrozenPeakDemand
-        || cmd == EmetconProtocol::GetValue_Voltage
-        || cmd == EmetconProtocol::GetValue_FrozenVoltage)      /* check for commands no longer supported               */
+    if( isCommandExcluded(cmd) )                                /* check for commands no longer supported               */
     {
         return false;
     }
@@ -618,26 +693,6 @@ INT Mct440_213xBDevice::executeGetValue(CtiRequestMsg     *pReq,
                 OutMessage->Buffer.BSt.IO = EmetconProtocol::IO_Function_Read;
             }
         }
-
-
-//        nRet = Inherited::executeGetValue(pReq, parse, OutMessage, vgList, retList, outList);
-//
-//        if (nRet == NoError)
-//        {
-//                                                                /* only Channel 1 Single Day Reads is supported         */
-//            if(_daily_read_info.request.type == daily_read_info_t::Request_Recent)
-//            {
-//                OutMessage->Buffer.BSt.Length = FuncRead_Channel1SingleDayLen;
-//            }
-//            else
-//            {
-//                returnErrorMessage(BADPARAM, OutMessage, retList,
-//                                   "Bad daily read specification - Acceptable format: getvalue daily read mm/dd/yyyy");
-//
-//                nRet = ExecutionComplete;
-//            }
-//        }
-
     }
 
                                                                 /* -------------- INHERITED FROM MCT-420 -------------- */
@@ -1227,9 +1282,9 @@ int Mct440_213xBDevice::executePutConfigTOU(CtiRequestMsg     *pReq,
 
             for( int schedule = 0; schedule < TOU_SCHEDULE_NBR; schedule++ )
             {
-                for( int time = 0; time < TOU_SCHEDULE_TIME_NBR; time++ )
+                for( int switchtime = 0; switchtime < TOU_SCHEDULE_TIME_NBR; switchtime++ )
                 {
-                    if( timeStringValues[schedule][time].length() < 4 ) //A time needs at least 4 digits X:XX
+                    if( timeStringValues[schedule][switchtime].length() < 4 ) //A time needs at least 4 digits X:XX
                     {
                         CtiLockGuard<CtiLogger> doubt_guard(dout);
                         dout << CtiTime() << " **** Checkpoint - bad time string stored **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
@@ -1256,23 +1311,23 @@ int Mct440_213xBDevice::executePutConfigTOU(CtiRequestMsg     *pReq,
                 }
                 for( int schedule = 0; schedule < TOU_SCHEDULE_NBR; schedule++ )
                 {
-                    for( int time = 0; time < TOU_SCHEDULE_TIME_NBR; time++ )
+                    for( int switchtime = 0; switchtime < TOU_SCHEDULE_TIME_NBR; switchtime++ )
                     {
                         // Im going to remove the :, get the remaining value, and do simple math on it. I think this
                         // results in less error checking needed.
-                        timeStringValues[schedule][time].erase(timeStringValues[schedule][time].find(':'), 1);
-                        tempTime              = strtol(timeStringValues[schedule][time].c_str(),NULL,10);
-                        times[schedule][time] = ((tempTime/100) * 60) + (tempTime%100);
+                        timeStringValues[schedule][switchtime].erase(timeStringValues[schedule][switchtime].find(':'), 1);
+                        tempTime                    = strtol(timeStringValues[schedule][switchtime].c_str(),NULL,10);
+                        times[schedule][switchtime] = ((tempTime/100) * 60) + (tempTime%100);
                     }
                 }
                 // Time is currently the actual minutes, we need the difference. Also the MCT has 5 minute resolution.
                 for( int schedule = 0; schedule < TOU_SCHEDULE_NBR; schedule++ )
                 {
-                    for( int time = (TOU_SCHEDULE_TIME_NBR-1); time > 0; time-- )
+                    for( int switchtime = (TOU_SCHEDULE_TIME_NBR-1); switchtime > 0; switchtime-- )
                     {
-                        times[schedule][time] = times[schedule][time]-times[schedule][time-1];
-                        times[schedule][time] = times[schedule][time]/5;
-                        if( times[schedule][time] < 0 || times[schedule][time] > 255 )
+                        times[schedule][switchtime] = times[schedule][switchtime]-times[schedule][switchtime-1];
+                        times[schedule][switchtime] = times[schedule][switchtime]/5;
+                        if( times[schedule][switchtime] < 0 || times[schedule][switchtime] > 255 )
                         {
                             CtiLockGuard<CtiLogger> doubt_guard(dout);
                             dout << CtiTime() << " **** Checkpoint - time sequencing **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
@@ -1886,8 +1941,6 @@ int Mct440_213xBDevice::executePutConfigHoliday(CtiRequestMsg     *pReq,
     int holiday_count  = 0;
     int holiday_offset = parse.getiValue("holiday_offset");
 
-    CtiDate start_date = CtiDate(1,1,2010);
-
                                                             /*  grab up to 7 potential dates                        */
     for( int date_nbr = 0; date_nbr < 7 && parse.isKeyValid("holiday_date" + CtiNumStr(date_nbr)); date_nbr++ )
     {
@@ -1905,7 +1958,7 @@ int Mct440_213xBDevice::executePutConfigHoliday(CtiRequestMsg     *pReq,
         if( holiday_date.isValid() && holiday_date > CtiDate::now() )
         {
                                                             /* get the number of days since Jan 1 2010              */
-            holidays[holiday_count++] = (holiday_date.daysFrom1970() - start_date.daysFrom1970());
+            holidays[holiday_count++] = (holiday_date.daysFrom1970() - holidayBaseDate.daysFrom1970());
         }
         else
         {
@@ -2620,13 +2673,11 @@ INT Mct440_213xBDevice::decodeGetConfigTOU(INMESS          *InMessage,
             previous_rate = current_rate;
             for( int switchtime = 0; switchtime < 5; switchtime++ )
             {
-                int hour, minute;
-
                 time_offset += InMessage->Buffer.DSt.Message[byte_offset + switchtime] * 300;
                 timeArray[offset][switchtime] = InMessage->Buffer.DSt.Message[byte_offset + switchtime];
 
-                hour   = time_offset / 3600;
-                minute = (time_offset / 60) % 60;
+                const int hour   = time_offset / 3600;
+                const int minute = (time_offset / 60) % 60;
 
                 current_rate = rateArray[offset][switchtime];
 
@@ -2733,20 +2784,19 @@ INT Mct440_213xBDevice::decodeGetConfigTOU(INMESS          *InMessage,
         resultString += "Current rate: " + string(1, (char)('A' + (InMessage->Buffer.DSt.Message[3] & 0x7f))) + "\n";
 
         resultString += "Current schedule: " + CtiNumStr((int)(InMessage->Buffer.DSt.Message[4] & 0x03) + 1) + "\n";
-/*
-        resultString += "Current switch time: ";
 
+
+        resultString += "Current switch time: ";
         if( InMessage->Buffer.DSt.Message[5] == 0xff )
         {
             resultString += "not active\n";
         }
         else
         {
-             resultString += CtiNumStr((int)InMessage->Buffer.DSt.Message[5]) + "\n";
+            resultString += CtiNumStr((int)InMessage->Buffer.DSt.Message[5]) + "\n";
         }
-*/
-        resultString += "Default rate: ";
 
+        resultString += "Default rate: ";
         if( InMessage->Buffer.DSt.Message[2] == 0xff )
         {
             resultString += "No TOU active\n";
@@ -2758,7 +2808,7 @@ INT Mct440_213xBDevice::decodeGetConfigTOU(INMESS          *InMessage,
 
         resultString += "\nDay table: \n";
 
-        char *(daynames[8]) = {"Sunday", "Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday", "Holiday"};
+        const char *(daynames[8]) = {"Sunday", "Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday", "Holiday"};
 
         for( int day_nbr = 0; day_nbr < 8; day_nbr++ )
         {
@@ -2865,10 +2915,6 @@ int Mct440_213xBDevice::decodeGetConfigHoliday(INMESS          *InMessage,
         return MEMORY;
     }
 
-    DSTRUCT &DSt       = InMessage->Buffer.DSt;
-    string result      = getName() + " / Holiday schedule:\n";
-    CtiTime start_time = CtiTime(UTC_TIMESTAMP_JAN_1_2010);
-
     int holiday_offset;
     int holiday_cnt;
 
@@ -2888,16 +2934,21 @@ int Mct440_213xBDevice::decodeGetConfigHoliday(INMESS          *InMessage,
         }
     }
 
+    DSTRUCT &DSt  = InMessage->Buffer.DSt;
+    string result = getName() + " / Holiday schedule:\n";
+
     for( int holiday_nbr = 0; holiday_nbr < holiday_cnt; holiday_nbr++ )
     {
-        unsigned long days      = (DSt.Message[holiday_nbr*2] << 8) | DSt.Message[(holiday_nbr*2)+1];
-        unsigned long timestamp = (days * NBR_SECONDS_PER_DAY) + start_time.seconds();
-        CtiTime holiday         = CtiTime(timestamp);
+        CtiDate holiday_date(holidayBaseDate);
+
+        const int days = (DSt.Message[holiday_nbr*2] << 8) | DSt.Message[(holiday_nbr*2)+1];
+
+        holiday_date += days;
 
         ostringstream ss;
         ss << (holiday_nbr + holiday_offset + 1);
 
-        result += "Holiday " + ss.str() + ": " + (holiday.isValid()?holiday.asString(CtiTime::Gmt, CtiTime::OmitTimezone) + " GMT":"(invalid)") + "\n";
+        result += "Holiday " + ss.str() + ": " + holiday_date.asStringUSFormat() + "\n";
     }
 
     ReturnMsg->setUserMessageId(InMessage->Return.UserID);
@@ -3035,7 +3086,7 @@ INT Mct440_213xBDevice::decodeGetConfigIntervals(INMESS          *InMessage,
 
 /*
 *********************************************************************************************************
-*                                        executeControl()
+*                                        executePutStatus()
 *
 * Description :
 *
@@ -3048,12 +3099,12 @@ INT Mct440_213xBDevice::decodeGetConfigIntervals(INMESS          *InMessage,
 * Note(s)     :
 *********************************************************************************************************
 */
-INT Mct440_213xBDevice::executeControl(CtiRequestMsg     *pReq,
-                                       CtiCommandParser  &parse,
-                                       OUTMESS          *&OutMessage,
-                                       CtiMessageList    &vgList,
-                                       CtiMessageList    &retList,
-                                       OutMessageList    &outList)
+INT Mct440_213xBDevice::executePutStatus(CtiRequestMsg     *pReq,
+                                         CtiCommandParser  &parse,
+                                         OUTMESS          *&OutMessage,
+                                         CtiMessageList    &vgList,
+                                         CtiMessageList    &retList,
+                                         OutMessageList    &outList)
 {
     INT nRet = NoMethod;
 
@@ -3068,7 +3119,7 @@ INT Mct440_213xBDevice::executeControl(CtiRequestMsg     *pReq,
 
     if( parse.isKeyValid("set_tou_holiday_rate") )
     {
-        OutMessage->Sequence = EmetconProtocol::Control_SetTOUHolidayRate;
+        OutMessage->Sequence = EmetconProtocol::PutStatus_SetTOUHolidayRate;
         if( getOperation(OutMessage->Sequence, OutMessage->Buffer.BSt) )
         {
             nRet = NoError;
@@ -3077,7 +3128,7 @@ INT Mct440_213xBDevice::executeControl(CtiRequestMsg     *pReq,
     }
     else if( parse.isKeyValid("clear_tou_holiday_rate") )
     {
-        OutMessage->Sequence = EmetconProtocol::Control_ClearTOUHolidayRate;
+        OutMessage->Sequence = EmetconProtocol::PutStatus_ClearTOUHolidayRate;
         if( getOperation(OutMessage->Sequence, OutMessage->Buffer.BSt) )
         {
             nRet = NoError;
@@ -3085,7 +3136,7 @@ INT Mct440_213xBDevice::executeControl(CtiRequestMsg     *pReq,
     }
     else
     {
-        nRet = Inherited::executeControl(pReq, parse, OutMessage, vgList, retList, outList);
+        nRet = Inherited::executePutStatus(pReq, parse, OutMessage, vgList, retList, outList);
     }
 
     return nRet;
@@ -3174,11 +3225,10 @@ void Mct440_213xBDevice::createTOUScheduleConfig(long           (&daySchedule)[8
                                                  OUTMESS        *&OutMessage,
                                                  OutMessageList  &outList)
 {
-    OUTMESS *TOU_OutMessage = 0;
-
 
                                                                 /* ----------- CONFIGURE TOU SCHEDULE PART 1 ---------- */
-    TOU_OutMessage                      = CTIDBG_new OUTMESS(*OutMessage),
+    auto_ptr<OUTMESS> TOU_OutMessage( CTIDBG_new OUTMESS(*OutMessage) );
+
     TOU_OutMessage->Sequence            = Cti::Protocols::EmetconProtocol::PutConfig_TOU;
     TOU_OutMessage->Buffer.BSt.IO       = Cti::Protocols::EmetconProtocol::IO_Function_Write;
     TOU_OutMessage->Buffer.BSt.Function = FuncWrite_TOUSchedule1Pos;
@@ -3216,11 +3266,11 @@ void Mct440_213xBDevice::createTOUScheduleConfig(long           (&daySchedule)[8
                                              ((rates[1][1]  & 0x03) << 2) |
                                              ((rates[1][0]  & 0x03));
 
-    outList.push_back(TOU_OutMessage);
-    TOU_OutMessage = 0;
+    outList.push_back( TOU_OutMessage.release() );
 
                                                                 /* ----------- CONFIGURE TOU SCHEDULE PART 2 ---------- */
-    TOU_OutMessage                      = CTIDBG_new OUTMESS(*OutMessage);
+    TOU_OutMessage.reset( CTIDBG_new OUTMESS(*OutMessage) );
+
     TOU_OutMessage->Sequence            = Cti::Protocols::EmetconProtocol::PutConfig_TOU;
     TOU_OutMessage->Buffer.BSt.IO       = Cti::Protocols::EmetconProtocol::IO_Function_Write;
     TOU_OutMessage->Buffer.BSt.Function = FuncWrite_TOUSchedule2Pos;
@@ -3251,11 +3301,11 @@ void Mct440_213xBDevice::createTOUScheduleConfig(long           (&daySchedule)[8
                                              ((rates[3][1]  & 0x03) << 2) |
                                              ((rates[3][0]  & 0x03));
 
-    outList.push_back(TOU_OutMessage);
-    TOU_OutMessage = 0;
+    outList.push_back( TOU_OutMessage.release() );
 
                                                                 /* ----------- CONFIGURE TOU SCHEDULE PART 3 ---------- */
-    TOU_OutMessage                      = CTIDBG_new OUTMESS(*OutMessage);
+    TOU_OutMessage.reset( CTIDBG_new OUTMESS(*OutMessage) );
+
     TOU_OutMessage->Sequence            = Cti::Protocols::EmetconProtocol::PutConfig_TOU;
     TOU_OutMessage->Buffer.BSt.IO       = Cti::Protocols::EmetconProtocol::IO_Function_Write;
     TOU_OutMessage->Buffer.BSt.Function = FuncWrite_TOUSchedule3Pos;
@@ -3287,11 +3337,11 @@ void Mct440_213xBDevice::createTOUScheduleConfig(long           (&daySchedule)[8
     // write default rate
     TOU_OutMessage->Buffer.BSt.Message[14] = defaultRate;
 
-    outList.push_back(TOU_OutMessage);
-    TOU_OutMessage = 0;
+    outList.push_back( TOU_OutMessage.release() );
 
                                                                 /* ----------- CONFIGURE TOU SCHEDULE PART 4 ---------- */
-    TOU_OutMessage                      = CTIDBG_new OUTMESS(*OutMessage);
+    TOU_OutMessage.reset( CTIDBG_new OUTMESS(*OutMessage) );
+
     TOU_OutMessage->Sequence            = Cti::Protocols::EmetconProtocol::PutConfig_TOU;
     TOU_OutMessage->Buffer.BSt.IO       = Cti::Protocols::EmetconProtocol::IO_Function_Write;
     TOU_OutMessage->Buffer.BSt.Function = FuncWrite_TOUSchedule4Pos;
@@ -3323,8 +3373,7 @@ void Mct440_213xBDevice::createTOUScheduleConfig(long           (&daySchedule)[8
     // write default rate
     TOU_OutMessage->Buffer.BSt.Message[14] = defaultRate;
 
-    outList.push_back(TOU_OutMessage);
-    TOU_OutMessage = 0;
+    outList.push_back( TOU_OutMessage.release() );
 }
 
 

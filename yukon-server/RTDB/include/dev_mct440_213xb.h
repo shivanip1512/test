@@ -10,14 +10,19 @@ class IM_EX_DEVDB Mct440_213xBDevice : public Mct420Device
 {
     typedef Mct420Device Inherited;
 
-    static const FunctionReadValueMappings _readValueMaps;
-    static FunctionReadValueMappings       initReadValueMaps();
+    static const FunctionReadValueMappings  _readValueMaps;
+    static FunctionReadValueMappings        initReadValueMaps();
 
-    static const CommandSet _commandStore;
-    static       CommandSet initCommandStore();
+    static const CommandSet                 _commandStore;
+    static       CommandSet                 initCommandStore();
 
-    static const ConfigPartsList _config_parts;
-    static       ConfigPartsList initConfigParts();
+    static const ConfigPartsList            _config_parts;
+    static       ConfigPartsList            initConfigParts();
+
+    static const std::set<UINT>             _excludedCommands;
+    static       std::set<UINT>             initExcludedCommands();
+
+    static const CtiDate                    holidayBaseDate;
 
     static string describeStatusAndEvents(unsigned char *buf);
 
@@ -89,15 +94,14 @@ protected:
         Memory_Holiday25_28Len                  = 8,
     };
 
-    virtual const FunctionReadValueMappings *getReadValueMaps() const;
+    virtual const FunctionReadValueMappings  *getReadValueMaps() const;
+    virtual const std::set<UINT>             *getExcludedCommands() const;
+    virtual ConfigPartsList                   getPartsList();
 
-    virtual bool getOperation(const UINT &cmd,  BSTRUCT &bst) const;
-
-    virtual ConfigPartsList getPartsList();
-
-    virtual bool isSupported(const Mct410Device::Features feature) const;
-
-    virtual bool sspecValid(const unsigned sspec, const unsigned rev) const;
+    virtual bool getOperation                      (const UINT &cmd,  BSTRUCT &bst) const;
+    virtual bool isSupported                       (const Mct410Device::Features feature) const;
+    virtual bool isCommandExcluded                 (const UINT &cmd) const;
+    virtual bool sspecValid                        (const unsigned sspec, const unsigned rev) const;
 
     virtual int getPhaseCount() = 0;
 
@@ -117,22 +121,22 @@ protected:
     virtual INT decodeGetStatusDisconnect          (INMESS *InMessage, CtiTime &TimeNow, CtiMessageList &vgList, CtiMessageList &retList, OutMessageList &outList);
 
     virtual INT executeGetValue                    (CtiRequestMsg *pReq, CtiCommandParser &parse, OUTMESS *&OutMessage, CtiMessageList &vgList, CtiMessageList &retList, OutMessageList &outList);
+    virtual INT executeGetConfig                   (CtiRequestMsg *pReq, CtiCommandParser &parse, OUTMESS *&OutMessage, CtiMessageList &vgList, CtiMessageList &retList, OutMessageList &outList);
     virtual INT executePutConfig                   (CtiRequestMsg *pReq, CtiCommandParser &parse, OUTMESS *&OutMessage, CtiMessageList &vgList, CtiMessageList &retList, OutMessageList &outList);
     virtual int executePutConfigTOU                (CtiRequestMsg *pReq, CtiCommandParser &parse, OUTMESS *&OutMessage, CtiMessageList &vgList, CtiMessageList &retList, OutMessageList &outList, bool readsOnly);
     virtual int executePutConfigTOUDays            (CtiRequestMsg *pReq, CtiCommandParser &parse, OUTMESS *&OutMessage, CtiMessageList &vgList, CtiMessageList &retList, OutMessageList &outList);
     virtual int executePutConfigHoliday            (CtiRequestMsg *pReq, CtiCommandParser &parse, OUTMESS *&OutMessage, CtiMessageList &vgList, CtiMessageList &retList, OutMessageList &outList);
     virtual int executePutConfigPhaseLossThreshold (CtiRequestMsg *pReq, CtiCommandParser &parse, OUTMESS *&OutMessage, CtiMessageList &vgList, CtiMessageList &retList, OutMessageList &outList);
-    virtual INT executeGetConfig                   (CtiRequestMsg *pReq, CtiCommandParser &parse, OUTMESS *&OutMessage, CtiMessageList &vgList, CtiMessageList &retList, OutMessageList &outList);
-    virtual INT executeControl                     (CtiRequestMsg *pReq, CtiCommandParser &parse, OUTMESS *&OutMessage, CtiMessageList &vgList, CtiMessageList &retList, OutMessageList &outList);
     virtual int executePutConfigAlarmMask          (CtiRequestMsg *pReq, CtiCommandParser &parse, OUTMESS *&OutMessage, CtiMessageList &vgList, CtiMessageList &retList, OutMessageList &outList);
+    virtual INT executePutStatus                   (CtiRequestMsg *pReq, CtiCommandParser &parse, OUTMESS *&OutMessage, CtiMessageList &vgList, CtiMessageList &retList, OutMessageList &outList);
 
-    virtual long resolveScheduleName(const string & scheduleName);
-    virtual string decodeDisconnectStatus(const DSTRUCT &DSt);
+    virtual long   resolveScheduleName             (const string & scheduleName);
+    virtual string decodeDisconnectStatus          (const DSTRUCT &DSt);
 
-    virtual void createTOUDayScheduleString (string &schedule, long (&times)[10], long (&rates)[11]);
-    virtual void parseTOUDayScheduleString  (string &schedule, long (&times)[10], long (&rates)[11]);
+    virtual void createTOUDayScheduleString        (string &schedule, long (&times)[10], long (&rates)[11]);
+    virtual void parseTOUDayScheduleString         (string &schedule, long (&times)[10], long (&rates)[11]);
 
-    virtual void createTOUScheduleConfig(long (&daySchedule)[8], long (&times)[4][10], long (&rates)[4][11], long defaultRate, OUTMESS *&OutMessage, OutMessageList &outList);
+    virtual void createTOUScheduleConfig           (long (&daySchedule)[8], long (&times)[4][10], long (&rates)[4][11], long defaultRate, OUTMESS *&OutMessage, OutMessageList &outList);
 };
 
 
