@@ -46,8 +46,7 @@ struct test_Mct440_213xBDevice : Cti::Devices::Mct440_213xBDevice
     using Mct440_213xBDevice::executeGetConfig;
     using Mct440_213xBDevice::decodeGetConfigTOU;
     using Mct440_213xBDevice::decodeGetConfigHoliday;
-
-    using Mct440_213xBDevice::executeControl;
+    using Mct440_213xBDevice::executePutStatus;
 
     enum test_Features
     {
@@ -2938,9 +2937,75 @@ BOOST_AUTO_TEST_CASE(test_decodeGetConfigTOU)
            daySchedule3 = "30, 31, 32, 33, 34, 35, 36, 37, 38, 39, 2, 3, 0, 1, 2, 3, 0, 1, 2, 3, 0",
            daySchedule4 = "40, 41, 42, 43, 44, 45, 46, 47, 48, 49, 3, 0, 1, 2, 3, 0, 1, 2, 3, 0, 1";
 
-    test_Mct440_213xB test_dev;
+    {
+        test_Mct440_213xB test_dev;
+
+        unsigned char test_data[13] = {50, 51, 52, 53, 54, 0xf0, 0x00, 60, 61, 62, 63, 64, 0xff};
+
+        memcpy(InMessage.Buffer.DSt.Message, test_data, 13);
+
+        InMessage.Return.UserID                        = 0;
+        InMessage.Sequence                             = EmetconProtocol::GetConfig_TOU;
+        InMessage.Return.ProtocolInfo.Emetcon.Function = 0xAE;
+
+        string cmd = "getconfig tou schedule 1";
+        strcpy(InMessage.Return.CommandStr, cmd.c_str());
+
+        BOOST_CHECK_EQUAL(NoError, test_dev.decodeGetConfigTOU(&InMessage, t, vgList, retList, outList));
+
+        string result1, result2, result3, result4;
+
+        test_dev.getDynamicInfo(CtiTableDynamicPaoInfo::Key_MCT_DaySchedule1, result1);
+        test_dev.getDynamicInfo(CtiTableDynamicPaoInfo::Key_MCT_DaySchedule2, result2);
+
+        string expSchedule1 = "50, 51, 52, 53, 54, -1, -1, -1, -1, -1, 0, 0, 0, 0, 0, -1, -1, -1, -1, -1, 0",
+               expSchedule2 = "60, 61, 62, 63, 64, -1, -1, -1, -1, -1, 3, 3, 3, 3, 3, -1, -1, -1, -1, -1, 3",
+               expSchedule3 = "",
+               expSchedule4 = "";
+
+        BOOST_CHECK_EQUAL( expSchedule1, result1);
+        BOOST_CHECK_EQUAL( expSchedule2, result2);
+        BOOST_CHECK_EQUAL( expSchedule3, result3);
+        BOOST_CHECK_EQUAL( expSchedule4, result4);
+    }
 
     {
+        test_Mct440_213xB test_dev;
+
+        unsigned char test_data[13] = {50, 51, 52, 53, 54, 0xf0, 0x00, 60, 61, 62, 63, 64, 0xff};
+
+        memcpy(InMessage.Buffer.DSt.Message, test_data, 13);
+
+        InMessage.Return.UserID                        = 0;
+        InMessage.Sequence                             = EmetconProtocol::GetConfig_TOU;
+        InMessage.Return.ProtocolInfo.Emetcon.Function = 0xB8;
+
+        string cmd = "getconfig tou schedule 1";
+        strcpy(InMessage.Return.CommandStr, cmd.c_str());
+
+        BOOST_CHECK_EQUAL(NoError, test_dev.decodeGetConfigTOU(&InMessage, t, vgList, retList, outList));
+
+        string result1, result2, result3, result4;
+
+        test_dev.getDynamicInfo(CtiTableDynamicPaoInfo::Key_MCT_DaySchedule1, result1);
+        test_dev.getDynamicInfo(CtiTableDynamicPaoInfo::Key_MCT_DaySchedule2, result2);
+        test_dev.getDynamicInfo(CtiTableDynamicPaoInfo::Key_MCT_DaySchedule3, result3);
+        test_dev.getDynamicInfo(CtiTableDynamicPaoInfo::Key_MCT_DaySchedule4, result4);
+
+        string expSchedule1 = "-1, -1, -1, -1, -1, 50, 51, 52, 53, 54, -1, -1, -1, -1, -1, 0, 0, 0, 0, 0, -1",
+               expSchedule2 = "-1, -1, -1, -1, -1, 60, 61, 62, 63, 64, -1, -1, -1, -1, -1, 3, 3, 3, 3, 3, -1",
+               expSchedule3 = "",
+               expSchedule4 = "";
+
+        BOOST_CHECK_EQUAL( expSchedule1, result1);
+        BOOST_CHECK_EQUAL( expSchedule2, result2);
+        BOOST_CHECK_EQUAL( expSchedule3, result3);
+        BOOST_CHECK_EQUAL( expSchedule4, result4);
+    }
+
+    {
+        test_Mct440_213xB test_dev;
+
         test_dev.setDynamicInfo(CtiTableDynamicPaoInfo::Key_MCT_DaySchedule1, daySchedule1);
         test_dev.setDynamicInfo(CtiTableDynamicPaoInfo::Key_MCT_DaySchedule2, daySchedule2);
         test_dev.setDynamicInfo(CtiTableDynamicPaoInfo::Key_MCT_DaySchedule3, daySchedule3);
@@ -2978,6 +3043,8 @@ BOOST_AUTO_TEST_CASE(test_decodeGetConfigTOU)
     }
 
     {
+        test_Mct440_213xB test_dev;
+
         test_dev.setDynamicInfo(CtiTableDynamicPaoInfo::Key_MCT_DaySchedule1, daySchedule1);
         test_dev.setDynamicInfo(CtiTableDynamicPaoInfo::Key_MCT_DaySchedule2, daySchedule2);
         test_dev.setDynamicInfo(CtiTableDynamicPaoInfo::Key_MCT_DaySchedule3, daySchedule3);
@@ -3015,6 +3082,8 @@ BOOST_AUTO_TEST_CASE(test_decodeGetConfigTOU)
     }
 
     {
+        test_Mct440_213xB test_dev;
+
         test_dev.setDynamicInfo(CtiTableDynamicPaoInfo::Key_MCT_DaySchedule1, daySchedule1);
         test_dev.setDynamicInfo(CtiTableDynamicPaoInfo::Key_MCT_DaySchedule2, daySchedule2);
         test_dev.setDynamicInfo(CtiTableDynamicPaoInfo::Key_MCT_DaySchedule3, daySchedule3);
@@ -3052,6 +3121,8 @@ BOOST_AUTO_TEST_CASE(test_decodeGetConfigTOU)
     }
 
     {
+        test_Mct440_213xB test_dev;
+
         test_dev.setDynamicInfo(CtiTableDynamicPaoInfo::Key_MCT_DaySchedule1, daySchedule1);
         test_dev.setDynamicInfo(CtiTableDynamicPaoInfo::Key_MCT_DaySchedule2, daySchedule2);
         test_dev.setDynamicInfo(CtiTableDynamicPaoInfo::Key_MCT_DaySchedule3, daySchedule3);
@@ -3408,12 +3479,12 @@ BOOST_AUTO_TEST_CASE(test_decodeGetConfigHoliday)
         BOOST_REQUIRE(retMsg);
 
         string expected = "Test MCT-440-213xB / Holiday schedule:\n"
-                          "Holiday 1: 09/15/2010 00:00:00 GMT\n"
-                          "Holiday 2: 09/16/2010 00:00:00 GMT\n"
-                          "Holiday 3: 09/17/2010 00:00:00 GMT\n"
-                          "Holiday 4: 09/18/2010 00:00:00 GMT\n"
-                          "Holiday 5: 09/19/2010 00:00:00 GMT\n"
-                          "Holiday 6: 09/20/2010 00:00:00 GMT\n";
+                          "Holiday 1: 09/15/2010\n"
+                          "Holiday 2: 09/16/2010\n"
+                          "Holiday 3: 09/17/2010\n"
+                          "Holiday 4: 09/18/2010\n"
+                          "Holiday 5: 09/19/2010\n"
+                          "Holiday 6: 09/20/2010\n";
 
         BOOST_REQUIRE_EQUAL(retMsg->ResultString(), expected);
 
@@ -3438,12 +3509,12 @@ BOOST_AUTO_TEST_CASE(test_decodeGetConfigHoliday)
         BOOST_REQUIRE(retMsg);
 
         string expected = "Test MCT-440-213xB / Holiday schedule:\n"
-                          "Holiday 7: 09/15/2010 00:00:00 GMT\n"
-                          "Holiday 8: 09/16/2010 00:00:00 GMT\n"
-                          "Holiday 9: 09/17/2010 00:00:00 GMT\n"
-                          "Holiday 10: 09/18/2010 00:00:00 GMT\n"
-                          "Holiday 11: 09/19/2010 00:00:00 GMT\n"
-                          "Holiday 12: 09/20/2010 00:00:00 GMT\n";
+                          "Holiday 7: 09/15/2010\n"
+                          "Holiday 8: 09/16/2010\n"
+                          "Holiday 9: 09/17/2010\n"
+                          "Holiday 10: 09/18/2010\n"
+                          "Holiday 11: 09/19/2010\n"
+                          "Holiday 12: 09/20/2010\n";
 
         BOOST_REQUIRE_EQUAL(retMsg->ResultString(), expected);
 
@@ -3468,12 +3539,12 @@ BOOST_AUTO_TEST_CASE(test_decodeGetConfigHoliday)
         BOOST_REQUIRE(retMsg);
 
         string expected = "Test MCT-440-213xB / Holiday schedule:\n"
-                          "Holiday 13: 09/15/2010 00:00:00 GMT\n"
-                          "Holiday 14: 09/16/2010 00:00:00 GMT\n"
-                          "Holiday 15: 09/17/2010 00:00:00 GMT\n"
-                          "Holiday 16: 09/18/2010 00:00:00 GMT\n"
-                          "Holiday 17: 09/19/2010 00:00:00 GMT\n"
-                          "Holiday 18: 09/20/2010 00:00:00 GMT\n";
+                          "Holiday 13: 09/15/2010\n"
+                          "Holiday 14: 09/16/2010\n"
+                          "Holiday 15: 09/17/2010\n"
+                          "Holiday 16: 09/18/2010\n"
+                          "Holiday 17: 09/19/2010\n"
+                          "Holiday 18: 09/20/2010\n";
 
         BOOST_REQUIRE_EQUAL(retMsg->ResultString(), expected);
 
@@ -3498,12 +3569,12 @@ BOOST_AUTO_TEST_CASE(test_decodeGetConfigHoliday)
         BOOST_REQUIRE(retMsg);
 
         string expected = "Test MCT-440-213xB / Holiday schedule:\n"
-                          "Holiday 19: 09/15/2010 00:00:00 GMT\n"
-                          "Holiday 20: 09/16/2010 00:00:00 GMT\n"
-                          "Holiday 21: 09/17/2010 00:00:00 GMT\n"
-                          "Holiday 22: 09/18/2010 00:00:00 GMT\n"
-                          "Holiday 23: 09/19/2010 00:00:00 GMT\n"
-                          "Holiday 24: 09/20/2010 00:00:00 GMT\n";
+                          "Holiday 19: 09/15/2010\n"
+                          "Holiday 20: 09/16/2010\n"
+                          "Holiday 21: 09/17/2010\n"
+                          "Holiday 22: 09/18/2010\n"
+                          "Holiday 23: 09/19/2010\n"
+                          "Holiday 24: 09/20/2010\n";
 
         BOOST_REQUIRE_EQUAL(retMsg->ResultString(), expected);
 
@@ -3527,10 +3598,10 @@ BOOST_AUTO_TEST_CASE(test_decodeGetConfigHoliday)
         BOOST_REQUIRE(retMsg);
 
         string expected = "Test MCT-440-213xB / Holiday schedule:\n"
-                          "Holiday 25: 09/15/2010 00:00:00 GMT\n"
-                          "Holiday 26: 09/16/2010 00:00:00 GMT\n"
-                          "Holiday 27: 09/17/2010 00:00:00 GMT\n"
-                          "Holiday 28: 09/18/2010 00:00:00 GMT\n";
+                          "Holiday 25: 09/15/2010\n"
+                          "Holiday 26: 09/16/2010\n"
+                          "Holiday 27: 09/17/2010\n"
+                          "Holiday 28: 09/18/2010\n";
 
         BOOST_REQUIRE_EQUAL(retMsg->ResultString(), expected);
 
@@ -3988,13 +4059,13 @@ BOOST_FIXTURE_TEST_SUITE(command_executions, executePutConfig_helper)
     {
         test_Mct440_213xB test_dev;
 
-        CtiCommandParser parse("control set tou holiday rate");
+        CtiCommandParser parse("putstatus EMETCON set tou holiday rate");
 
         CtiOutMessage *outmsg = CTIDBG_new OUTMESS;
 
-        BOOST_CHECK_EQUAL(NoError, test_dev.executeControl(&request, parse, outmsg, vgList, retList, outList));
+        BOOST_CHECK_EQUAL(NoError, test_dev.executePutStatus(&request, parse, outmsg, vgList, retList, outList));
 
-        BOOST_CHECK_EQUAL(outmsg->Sequence, Cti::Protocols::EmetconProtocol::Control_SetTOUHolidayRate);
+        BOOST_CHECK_EQUAL(outmsg->Sequence, Cti::Protocols::EmetconProtocol::PutStatus_SetTOUHolidayRate);
         BOOST_CHECK_EQUAL(outmsg->Buffer.BSt.Function, 0x0A4  );
         BOOST_CHECK_EQUAL(outmsg->Buffer.BSt.Length  , 0      );
     }
@@ -4003,13 +4074,13 @@ BOOST_FIXTURE_TEST_SUITE(command_executions, executePutConfig_helper)
     {
         test_Mct440_213xB test_dev;
 
-        CtiCommandParser parse("control clear tou holiday rate");
+        CtiCommandParser parse("putstatus EMETCON clear tou holiday rate");
 
         CtiOutMessage *outmsg = CTIDBG_new OUTMESS;
 
-        BOOST_CHECK_EQUAL(NoError, test_dev.executeControl(&request, parse, outmsg, vgList, retList, outList));
+        BOOST_CHECK_EQUAL(NoError, test_dev.executePutStatus(&request, parse, outmsg, vgList, retList, outList));
 
-        BOOST_CHECK_EQUAL(outmsg->Sequence, Cti::Protocols::EmetconProtocol::Control_ClearTOUHolidayRate);
+        BOOST_CHECK_EQUAL(outmsg->Sequence, Cti::Protocols::EmetconProtocol::PutStatus_ClearTOUHolidayRate);
         BOOST_CHECK_EQUAL(outmsg->Buffer.BSt.Function, 0x0A5  );
         BOOST_CHECK_EQUAL(outmsg->Buffer.BSt.Length  , 0      );
     }
