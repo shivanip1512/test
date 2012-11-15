@@ -106,6 +106,8 @@ public:
         PutStatus_ResetOverride,
         PutStatus_PeakOn,
         PutStatus_PeakOff,
+        PutStatus_SetTOUHolidayRate,                            /* Set TOU Holiday Rate Active                          */
+        PutStatus_ClearTOUHolidayRate,                          /* Clear TOU Holiday Rate and Resort to Normal Rate     */
 
         // GetConfig commands
         GetConfig_Default,
@@ -209,9 +211,6 @@ public:
         Control_Connect,
         Control_Disconnect,
         Control_Latch,
-        Control_SetTOUHolidayRate,                              /* Set TOU Holiday Rate Active                          */
-        Control_ClearTOUHolidayRate,                            /* Clear TOU Holiday Rate and Resort to Normal Rate...  */
-                                                                /* ... That Would Be Active For This Day.               */
 
         Command_Loop,
 
