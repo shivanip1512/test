@@ -26,8 +26,8 @@ import com.cannontech.common.util.xml.SimpleXPathTemplate;
 import com.cannontech.core.dao.NotFoundException;
 import com.cannontech.core.dao.PointDao;
 import com.cannontech.database.data.lite.LitePoint;
-import com.cannontech.dr.dao.ExpressComReportedAddressDao;
 import com.cannontech.dr.dao.ExpressComReportedAddress;
+import com.cannontech.dr.dao.ExpressComReportedAddressDao;
 import com.cannontech.dr.dao.ExpressComReportedAddressRelay;
 import com.cannontech.dr.rfn.message.archive.RfnLcrReadingArchiveRequest;
 import com.cannontech.dr.rfn.model.RfnLcrPointDataMap;
@@ -105,9 +105,10 @@ public class RfnLcrDataMappingServiceImpl implements RfnLcrDataMappingService {
         return messagesToSend;
     }
 
-
-    private List<PointData> mapIntervalData(RfnLcrReadingArchiveRequest archiveRequest, 
+    private List<PointData> mapIntervalData(RfnLcrReadingArchiveRequest request, 
             SimpleXPathTemplate data, RfnDevice device) {
+        
+        int intervalLengthMinutes = evaluateArchiveReadValue(data, RfnLcrPointDataMap.RECORDING_INTERVAL).intValue();
         
         List<PointData> intervalPointData = Lists.newArrayListWithExpectedSize(16);
         Set<RfnLcrRelayDataMap> rfnLcrRelayDataMap = Sets.newHashSet();
@@ -130,14 +131,20 @@ public class RfnLcrDataMappingServiceImpl implements RfnLcrDataMappingService {
             LitePoint runTimePoint = attributeService.getPointForAttribute(device, relay.getRunTimeAttribute());
             LitePoint shedTimePoint = attributeService.getPointForAttribute(device, relay.getShedTimeAttribute());
 
-            Long firstIntervalTimestamp = data.evaluateAsLong("/DRReport/Relays/Relay" + relay.getRelayIdXPathString() + "/IntervalData/@startTime");
-            Instant currentIntervalTimestamp = new Instant(firstIntervalTimestamp * 1000); // Oldest first to newest, 36 intervals in total
+            Long intervalStartTime = data.evaluateAsLong("/DRReport/Relays/Relay" + relay.getRelayIdXPathString() + "/IntervalData/@startTime");
+            Instant firstIntervalTimestamp = new Instant(intervalStartTime * 1000);
+            
+            int minutes = new Duration(firstIntervalTimestamp, timeOfReading).toStandardMinutes().getMinutes();
+            int recordedIntervals = (minutes / intervalLengthMinutes);
+            int minutesToAdd = recordedIntervals * intervalLengthMinutes;
+            
+            Instant currentIntervalTimestamp = new Instant(firstIntervalTimestamp).plus(Duration.standardMinutes(minutesToAdd));
             
             for (Integer interval : intervalData) {
                 
                 /** Skip all intervals occuring in the future since the device sends us 36
                  * intervals every time even if they have not happened yet. */
-                if (currentIntervalTimestamp.isAfter(timeOfReading)) continue;
+                if (currentIntervalTimestamp.isBefore(firstIntervalTimestamp)) continue;
                 
                 Integer runTime = (interval & 0xFF00) >>> 8;
                 Integer shedTime = interval & 0xFF;
@@ -149,8 +156,8 @@ public class RfnLcrDataMappingServiceImpl implements RfnLcrDataMappingService {
 
                 intervalPointData.add(runTimePointData);
                 intervalPointData.add(shedTimePointData);
-                currentIntervalTimestamp = currentIntervalTimestamp
-                        .withDurationAdded(Duration.standardHours(1), 1);
+                
+                currentIntervalTimestamp = currentIntervalTimestamp.minus(Duration.standardMinutes(intervalLengthMinutes));
             }
         }
         

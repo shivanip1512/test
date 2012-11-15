@@ -121,6 +121,8 @@ public class PointFormattingServiceImpl implements PointFormattingService {
 	                        stateColor = new Color(0,102, 51); //#006633
 	                    } else if (stateColor == Color.red) {
 	                        stateColor = new Color(204, 0, 0); //#CC0000
+	                    } else if (stateColor == Color.orange) {
+	                        stateColor = new Color(255, 153, 25); //#FF9919
 	                    }
 	                }
                 }
