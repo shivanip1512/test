@@ -1349,18 +1349,6 @@ void  CtiCommandParser::doParseControl(const string &_CmdStr)
                 _cmd["silver"] = CtiParseValue(atoi(addr_tok().c_str()));
             }
         }
-        if(CmdStr.contains(" tou holiday rate"))
-        {
-            if(!(token = CmdStr.match("set tou holiday rate")).empty())
-            {
-                _cmd["set_tou_holiday_rate"] = CtiParseValue( TRUE );
-            }
-
-            if(!(token = CmdStr.match("clear tou holiday rate")).empty())
-            {
-                _cmd["clear_tou_holiday_rate"] = CtiParseValue( TRUE );
-            }
-        }
     }
 
     else
@@ -3956,6 +3944,18 @@ void  CtiCommandParser::doParsePutStatusEmetcon(const string &_CmdStr)
             if(CmdStr.contains(" voltage"))
             {
                 _cmd["voltage"] = CtiParseValue(TRUE);
+            }
+        }
+        if(CmdStr.contains(" tou holiday rate"))
+        {
+            if(CmdStr.contains("set tou holiday rate"))
+            {
+                _cmd["set_tou_holiday_rate"] = CtiParseValue( TRUE );
+            }
+
+            if(CmdStr.contains("clear tou holiday rate"))
+            {
+                _cmd["clear_tou_holiday_rate"] = CtiParseValue( TRUE );
             }
         }
     }

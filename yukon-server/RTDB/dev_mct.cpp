@@ -856,8 +856,6 @@ INT MctDevice::ModelDecode(INMESS *InMessage, CtiTime &TimeNow, CtiMessageList &
         case EmetconProtocol::Control_Restore:
         case EmetconProtocol::Control_Connect:
         case EmetconProtocol::Control_Disconnect:
-        case EmetconProtocol::Control_SetTOUHolidayRate:
-        case EmetconProtocol::Control_ClearTOUHolidayRate:
         {
             status = decodeControl(InMessage, TimeNow, vgList, retList, outList);
             break;
@@ -962,6 +960,8 @@ INT MctDevice::ModelDecode(INMESS *InMessage, CtiTime &TimeNow, CtiMessageList &
         case EmetconProtocol::PutStatus_FreezeTwo:
         case EmetconProtocol::PutStatus_FreezeVoltageOne:
         case EmetconProtocol::PutStatus_FreezeVoltageTwo:
+        case EmetconProtocol::PutStatus_SetTOUHolidayRate:
+        case EmetconProtocol::PutStatus_ClearTOUHolidayRate:
         {
             status = decodePutStatus(InMessage, TimeNow, vgList, retList, outList);
             break;
