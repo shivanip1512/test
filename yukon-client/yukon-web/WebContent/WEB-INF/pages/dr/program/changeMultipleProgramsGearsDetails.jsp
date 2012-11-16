@@ -91,7 +91,7 @@ jQuery(function() {
                             <label for="changeGearCheckboxUnavailable${status.index}"><spring:escapeBody htmlEscape="true">${program.name}</spring:escapeBody></label>
                         </td>
                         <td>
-                            <cti:msg key="yukon.web.modules.dr.program.stopMultiplePrograms.gearChangeUnavailable" argument="${program.name}"/>
+                            <cti:msg key="yukon.web.modules.dr.program.stopMultiplePrograms.gearChangeUnavailable"/>
                         </td>
                         <td><cti:dataUpdaterValue identifier="${programId}/STATE" type="DR_PROGRAM"/></td>
                     </c:if>

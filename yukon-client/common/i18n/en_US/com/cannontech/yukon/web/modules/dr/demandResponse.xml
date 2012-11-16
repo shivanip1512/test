@@ -314,6 +314,7 @@
 <entry key="yukon.web.modules.dr.program.sendDisableProgramsConfirm.programsDisabledConfirmation">{0} programs disabled.</entry>
 
 <!-- getChangeGearValue.jsp -->
+<entry key="yukon.web.modules.dr.program.getChangeGearValue.notEnoughGears">Program {0} does not have multiple gears.</entry>
 <entry key="yukon.web.modules.dr.program.getChangeGearValue.title">Send Change Gear</entry>
 <entry key="yukon.web.modules.dr.program.getChangeGearValue.instructions">Please select the gear to change to for program {0}.</entry>
 <entry key="yukon.web.modules.dr.program.getChangeGearValue.gearSelect">Select Gear:</entry>
