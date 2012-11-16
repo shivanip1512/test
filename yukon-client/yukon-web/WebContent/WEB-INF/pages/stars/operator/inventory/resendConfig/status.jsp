@@ -23,7 +23,6 @@ jQuery(document).delegate('a.failedItems', 'click', function() {
 
 function taskFinished() {
     jQuery('#cancelTaskBtn').hide();
-    jQuery('#homeLink').show();
 }
 </script>
 
