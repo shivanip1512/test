@@ -369,7 +369,7 @@ const std::set<UINT> *Mct440_213xBDevice::getExcludedCommands() const
 
 /*
 *********************************************************************************************************
-*                                         getExcludedCommands()
+*                                         isCommandExcluded()
 *
 * Description :
 *
@@ -2562,14 +2562,13 @@ int Mct440_213xBDevice::executePutConfigAlarmMask(CtiRequestMsg     *pReq,
         return ExecutionComplete;
     }
 
-    int alarmMask = parse.getiValue("alarm_mask", 0);
-
+    const int alarmMask = parse.getiValue("alarm_mask", 0);
     OutMessage->Buffer.BSt.Message[0] = (alarmMask & 0xFF);
     OutMessage->Buffer.BSt.Message[1] = ((alarmMask >> 8) & 0xFF);
 
     if( parse.isKeyValid("alarm_mask_meter") )
     {
-        int meterAlarmMask = parse.getiValue("alarm_mask_meter", 0);
+        const int meterAlarmMask = parse.getiValue("alarm_mask_meter", 0);
         OutMessage->Buffer.BSt.Message[2] = (meterAlarmMask & 0xFF);
         OutMessage->Buffer.BSt.Message[3] = ((meterAlarmMask >> 8) & 0xFF);
     }
@@ -2626,8 +2625,21 @@ INT Mct440_213xBDevice::decodeGetConfigTOU(INMESS          *InMessage,
         long rateArray[2][6];
         schedulenum -= (schedulenum - 1) % 2;
 
-        const bool switch1_5 = ( InMessage->Return.ProtocolInfo.Emetcon.Function == FuncRead_TOUSwitchSchedule12Pos ||
-                                 InMessage->Return.ProtocolInfo.Emetcon.Function == FuncRead_TOUSwitchSchedule34Pos );
+                                                                /* get expected functions                               */
+        const int function_switch1_5  = (schedulenum < 2) ? FuncRead_TOUSwitchSchedule12Pos      : FuncRead_TOUSwitchSchedule34Pos;
+        const int function_switch6_10 = (schedulenum < 2) ? FuncRead_TOUSwitchSchedule12Part2Pos : FuncRead_TOUSwitchSchedule34Part2Pos;
+
+                                                                /* check that function must is part 1 or part 2         */
+        if( InMessage->Return.ProtocolInfo.Emetcon.Function != function_switch1_5 &&
+            InMessage->Return.ProtocolInfo.Emetcon.Function != function_switch6_10 )
+        {
+            CtiLockGuard<CtiLogger> doubt_guard(dout);
+            dout << CtiTime() << " Invalid InMessage.Return.ProtocolInfo.Emetcon.Function " << __FILE__ << " (" << __LINE__ << ") " << endl;
+
+            return TYNF;
+        }
+
+        const bool switch1_5 = ( InMessage->Return.ProtocolInfo.Emetcon.Function == function_switch1_5 );
 
         for( int offset = 0; offset < 2; offset++ )
         {
