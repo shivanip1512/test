@@ -47,6 +47,7 @@ struct test_Mct440_213xBDevice : Cti::Devices::Mct440_213xBDevice
     using Mct440_213xBDevice::decodeGetConfigTOU;
     using Mct440_213xBDevice::decodeGetConfigHoliday;
     using Mct440_213xBDevice::executePutStatus;
+    using Mct440_213xBDevice::decodeGetStatusDisconnect;
 
     enum test_Features
     {
@@ -3409,6 +3410,173 @@ BOOST_AUTO_TEST_CASE(test_decodeGetConfigHoliday)
         retList.pop_front();
     }
 }
+
+
+BOOST_AUTO_TEST_CASE(test_decodeGetStatusDisconnect)
+{
+    INMESS                          InMessage;
+    CtiTime                         t(CtiDate(1, 1, 2011), 19, 16, 0);  //  1293930960 seconds (0x4D1FD1D0)
+    CtiDeviceBase::CtiMessageList   vgList;
+    CtiDeviceBase::CtiMessageList   retList;
+    CtiDeviceBase::OutMessageList   outList; // not use
+
+    test_Mct440_213xB test_dev;
+
+    {
+        unsigned char test_data[] = {0x00,0x00,0x00};
+
+        memcpy(InMessage.Buffer.DSt.Message, test_data, sizeof(test_data));
+
+        InMessage.Return.UserID                        = 0;
+        InMessage.Sequence                             = EmetconProtocol::GetStatus_Disconnect;
+        InMessage.Return.ProtocolInfo.Emetcon.Function = 0x1FE;
+
+        BOOST_CHECK_EQUAL(NoError, test_dev.decodeGetStatusDisconnect(&InMessage, t, vgList, retList, outList));
+
+        BOOST_REQUIRE_EQUAL(retList.size(), 1);
+
+        const CtiReturnMsg *retMsg = dynamic_cast<CtiReturnMsg *>(retList.front());
+
+        BOOST_REQUIRE(retMsg);
+
+        string expected = "Test MCT-440-213xB / Disconnect Info:\n"
+                          "Control output status open\n"
+                          "Disconnect sensor open\n"
+                          "Disconnect not locked\n";
+
+        BOOST_REQUIRE_EQUAL(retMsg->ResultString(), expected);
+
+        CtiMultiMsg_vec points = retMsg->PointData();
+
+        BOOST_REQUIRE_EQUAL(points.size(), 1);
+
+        const CtiPointDataMsg *pdata = dynamic_cast<CtiPointDataMsg *>(points[0]);  // rate A
+
+        BOOST_REQUIRE( pdata );
+
+        BOOST_CHECK_EQUAL( pdata->getValue(), 1); // connected
+        BOOST_CHECK_EQUAL( pdata->getQuality(), NormalQuality );
+
+        retList.pop_front();
+    }
+
+    {
+        unsigned char test_data[] = {0x01,0x00,0x00};
+
+        memcpy(InMessage.Buffer.DSt.Message, test_data, sizeof(test_data));
+
+        InMessage.Return.UserID                        = 0;
+        InMessage.Sequence                             = EmetconProtocol::GetStatus_Disconnect;
+        InMessage.Return.ProtocolInfo.Emetcon.Function = 0x1FE;
+
+        BOOST_CHECK_EQUAL(NoError, test_dev.decodeGetStatusDisconnect(&InMessage, t, vgList, retList, outList));
+
+        BOOST_REQUIRE_EQUAL(retList.size(), 1);
+
+        const CtiReturnMsg *retMsg = dynamic_cast<CtiReturnMsg *>(retList.front());
+
+        BOOST_REQUIRE(retMsg);
+
+        string expected = "Test MCT-440-213xB / Disconnect Info:\n"
+                          "Control output status open\n"
+                          "Disconnect sensor open\n"
+                          "Disconnect not locked\n";
+
+        BOOST_REQUIRE_EQUAL(retMsg->ResultString(), expected);
+
+        CtiMultiMsg_vec points = retMsg->PointData();
+
+        BOOST_REQUIRE_EQUAL(points.size(), 1);
+
+        const CtiPointDataMsg *pdata = dynamic_cast<CtiPointDataMsg *>(points[0]);  // rate A
+
+        BOOST_REQUIRE( pdata );
+
+        BOOST_CHECK_EQUAL( pdata->getValue(), 0); // disconnected
+        BOOST_CHECK_EQUAL( pdata->getQuality(), NormalQuality );
+
+        retList.pop_front();
+    }
+
+    {
+        unsigned char test_data[] = {0x6E,0x00,0x00};
+
+        memcpy(InMessage.Buffer.DSt.Message, test_data, sizeof(test_data));
+
+        InMessage.Return.UserID                        = 0;
+        InMessage.Sequence                             = EmetconProtocol::GetStatus_Disconnect;
+        InMessage.Return.ProtocolInfo.Emetcon.Function = 0x1FE;
+
+        BOOST_CHECK_EQUAL(NoError, test_dev.decodeGetStatusDisconnect(&InMessage, t, vgList, retList, outList));
+
+        BOOST_REQUIRE_EQUAL(retList.size(), 1);
+
+        const CtiReturnMsg *retMsg = dynamic_cast<CtiReturnMsg *>(retList.front());
+
+        BOOST_REQUIRE(retMsg);
+
+        string expected = "Test MCT-440-213xB / Disconnect Info:\n"
+                          "Disconnect state uncertain\n"
+                          "Load side voltage detected\n"
+                          "Control output status closed\n"
+                          "Disconnect sensor closed\n";
+
+        BOOST_REQUIRE_EQUAL(retMsg->ResultString(), expected);
+
+        CtiMultiMsg_vec points = retMsg->PointData();
+
+        BOOST_REQUIRE_EQUAL(points.size(), 1);
+
+        const CtiPointDataMsg *pdata = dynamic_cast<CtiPointDataMsg *>(points[0]);  // rate A
+
+        BOOST_REQUIRE( pdata );
+
+        BOOST_CHECK_EQUAL( pdata->getValue(), 1); // connected
+        BOOST_CHECK_EQUAL( pdata->getQuality(), NormalQuality );
+
+        retList.pop_front();
+    }
+
+    {
+        unsigned char test_data[] = {0x6F,0x00,0x00};
+
+        memcpy(InMessage.Buffer.DSt.Message, test_data, sizeof(test_data));
+
+        InMessage.Return.UserID                        = 0;
+        InMessage.Sequence                             = EmetconProtocol::GetStatus_Disconnect;
+        InMessage.Return.ProtocolInfo.Emetcon.Function = 0x1FE;
+
+        BOOST_CHECK_EQUAL(NoError, test_dev.decodeGetStatusDisconnect(&InMessage, t, vgList, retList, outList));
+
+        BOOST_REQUIRE_EQUAL(retList.size(), 1);
+
+        const CtiReturnMsg *retMsg = dynamic_cast<CtiReturnMsg *>(retList.front());
+
+        BOOST_REQUIRE(retMsg);
+
+        string expected = "Test MCT-440-213xB / Disconnect Info:\n"
+                          "Disconnect state uncertain\n"
+                          "Load side voltage detected\n"
+                          "Control output status closed\n"
+                          "Disconnect sensor closed\n";
+
+        BOOST_REQUIRE_EQUAL(retMsg->ResultString(), expected);
+
+        CtiMultiMsg_vec points = retMsg->PointData();
+
+        BOOST_REQUIRE_EQUAL(points.size(), 1);
+
+        const CtiPointDataMsg *pdata = dynamic_cast<CtiPointDataMsg *>(points[0]);  // rate A
+
+        BOOST_REQUIRE( pdata );
+
+        BOOST_CHECK_EQUAL( pdata->getValue(), 0); // disconnected
+        BOOST_CHECK_EQUAL( pdata->getQuality(), NormalQuality );
+
+        retList.pop_front();
+    }
+}
+
 
 struct executePutConfig_helper
 {
