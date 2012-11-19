@@ -27,7 +27,6 @@ import com.cannontech.common.util.SqlStatementBuilder;
 import com.cannontech.core.dao.AddressDao;
 import com.cannontech.core.dao.ContactDao;
 import com.cannontech.core.dao.ContactNotificationDao;
-import com.cannontech.core.dao.DBPersistentDao;
 import com.cannontech.core.dao.YukonListDao;
 import com.cannontech.core.dao.YukonUserDao;
 import com.cannontech.database.AbstractRowCallbackHandler;
@@ -45,27 +44,24 @@ import com.cannontech.database.data.lite.LiteYukonUser;
 import com.cannontech.database.db.contact.Contact;
 import com.cannontech.database.db.customer.Customer;
 import com.cannontech.database.incrementer.NextValueHelper;
+import com.cannontech.message.DbChangeManager;
 import com.cannontech.message.dispatch.message.DBChangeMsg;
 import com.cannontech.message.dispatch.message.DbChangeType;
 import com.cannontech.yukon.IDatabaseCache;
 
-/**
- * Insert the type's description here.
- * Creation date: (3/26/2001 9:40:33 AM)
- * @author: 
- */
 public final class ContactDaoImpl implements ContactDao {
-    private AddressDao addressDao;
-    private YukonListDao yukonListDao;
-    private ContactNotificationDao contactNotificationDao;
-    private YukonUserDao yukonUserDao;
-    private IDatabaseCache databaseCache;
-
-    private YukonJdbcTemplate yukonJdbcTemplate;
-    private NextValueHelper nextValueHelper;
+    
+    @Autowired private AddressDao addressDao;
+    @Autowired private YukonListDao yukonListDao;
+    @Autowired private ContactNotificationDao contactNotificationDao;
+    @Autowired private YukonUserDao yukonUserDao;
+    @Autowired private IDatabaseCache databaseCache;
+    @Autowired private YukonJdbcTemplate yukonJdbcTemplate;
+    @Autowired private NextValueHelper nextValueHelper;
+    @Autowired private DbChangeManager dbChangeManager;
+    
     private final ParameterizedRowMapper<LiteContact> rowMapper = new LiteContactRowMapper();
 
-    private DBPersistentDao dbPersistantDao;
     
 	/**
 	 * ContactFuncs constructor comment.
@@ -75,6 +71,7 @@ public final class ContactDaoImpl implements ContactDao {
 		super();
 	}
 
+    @Override
     public LiteContact getContact(int contactId) {
 
         StringBuilder sql = new StringBuilder("SELECT *");
@@ -97,6 +94,7 @@ public final class ContactDaoImpl implements ContactDao {
         return contactList;
     }
     
+    @Override
     public Map<Integer, LiteContact> getContacts(List<Integer> contactIds) {
         ChunkingSqlTemplate template = new ChunkingSqlTemplate(yukonJdbcTemplate);
 
@@ -180,7 +178,8 @@ public final class ContactDaoImpl implements ContactDao {
 	/* (non-Javadoc)
      * @see com.cannontech.core.dao.ContactDao#getContactsByPhoneNo(java.lang.String, int[], boolean)
      */
-	public LiteContact[] getContactsByPhoneNo(String phoneNo, int[] phoneNotifCatIDs, boolean partialMatch) {
+	@Override
+    public LiteContact[] getContactsByPhoneNo(String phoneNo, int[] phoneNotifCatIDs, boolean partialMatch) {
 		if (phoneNo == null) return null;
 		
 		//java.util.Arrays.sort( phoneNotifCatIDs );
@@ -221,14 +220,16 @@ public final class ContactDaoImpl implements ContactDao {
 	/* (non-Javadoc)
      * @see com.cannontech.core.dao.ContactDao#getContactsByPhoneNo(java.lang.String, int[])
      */
-	public LiteContact[] getContactsByPhoneNo(String phoneNo, int[] phoneNotifCatIDs) {
+	@Override
+    public LiteContact[] getContactsByPhoneNo(String phoneNo, int[] phoneNotifCatIDs) {
 		return getContactsByPhoneNo( phoneNo, phoneNotifCatIDs, false );
 	}
 
 	/* (non-Javadoc)
      * @see com.cannontech.core.dao.ContactDao#getContactByEmailNotif(java.lang.String)
      */
-	public LiteContact getContactByEmailNotif( String email_ ) 
+	@Override
+    public LiteContact getContactByEmailNotif( String email_ ) 
 	{
 		if( email_ == null )
 			return null;
@@ -242,7 +243,8 @@ public final class ContactDaoImpl implements ContactDao {
 	/* (non-Javadoc)
      * @see com.cannontech.core.dao.ContactDao#getUnassignedContacts()
      */
-	public LiteContact[] getUnassignedContacts() {
+	@Override
+    public LiteContact[] getUnassignedContacts() {
 
 		int[] contIDs = new int[0];
 		try {
@@ -263,7 +265,8 @@ public final class ContactDaoImpl implements ContactDao {
 	/* (non-Javadoc)
      * @see com.cannontech.core.dao.ContactDao#getAllEmailAddresses(int)
      */
-	public String[] getAllEmailAddresses( int contactId ) {
+	@Override
+    public String[] getAllEmailAddresses( int contactId ) {
 		LiteContact contact = getContact( contactId );
 		List<String> strList = new ArrayList<String>();
 
@@ -278,7 +281,8 @@ public final class ContactDaoImpl implements ContactDao {
 	/* (non-Javadoc)
      * @see com.cannontech.core.dao.ContactDao#getAllPINNotifDestinations(int)
      */
-	public LiteContactNotification[] getAllPINNotifDestinations( int contactId )
+	@Override
+    public LiteContactNotification[] getAllPINNotifDestinations( int contactId )
 	{
 		LiteContact contact = getContact( contactId );
 		List<LiteContactNotification> notificationsForContactByType = contactNotificationDao.getNotificationsForContactByType(contact, ContactNotificationType.VOICE_PIN);
@@ -288,6 +292,7 @@ public final class ContactDaoImpl implements ContactDao {
     /* (non-Javadoc)
      * @see com.cannontech.core.dao.ContactDao#getAllPhonesNumbers(int)
      */
+    @Override
     public LiteContactNotification[] getAllPhonesNumbers( int contactID_ )
     {
         LiteContact contact = getContact( contactID_ );
@@ -308,7 +313,8 @@ public final class ContactDaoImpl implements ContactDao {
 	/* (non-Javadoc)
      * @see com.cannontech.core.dao.ContactDao#getAllContactNotifications()
      */
-	public List<LiteContactNotification> getAllContactNotifications() 
+	@Override
+    public List<LiteContactNotification> getAllContactNotifications() 
 	{
 		return contactNotificationDao.getAllContactNotifications();
 	}
@@ -317,7 +323,8 @@ public final class ContactDaoImpl implements ContactDao {
 	/* (non-Javadoc)
      * @see com.cannontech.core.dao.ContactDao#getOwnerCICustomer(int)
      */
-	public LiteCICustomer getOwnerCICustomer( int addtlContactID_ ) 
+	@Override
+    public LiteCICustomer getOwnerCICustomer( int addtlContactID_ ) 
 	{
 		int customerId = -1;
         String sql = "SELECT c.CustomerID " 
@@ -344,7 +351,8 @@ public final class ContactDaoImpl implements ContactDao {
 	/* (non-Javadoc)
      * @see com.cannontech.core.dao.ContactDao#getPrimaryContactCICustomer(int)
      */
-	public LiteCICustomer getPrimaryContactCICustomer( int primaryContactID_ ) 
+	@Override
+    public LiteCICustomer getPrimaryContactCICustomer( int primaryContactID_ ) 
 	{
 	    LiteCICustomer liteCICust = null;
         LiteCustomer liteCust = databaseCache.getACustomerByPrimaryContactID(primaryContactID_);
@@ -357,7 +365,8 @@ public final class ContactDaoImpl implements ContactDao {
 	/* (non-Javadoc)
      * @see com.cannontech.core.dao.ContactDao#getCICustomer(int)
      */
-	public LiteCICustomer getCICustomer (int contactID_)
+	@Override
+    public LiteCICustomer getCICustomer (int contactID_)
 	{
 		LiteCICustomer liteCICust = getPrimaryContactCICustomer(contactID_);
 		if( liteCICust == null)
@@ -369,7 +378,8 @@ public final class ContactDaoImpl implements ContactDao {
 	/* (non-Javadoc)
      * @see com.cannontech.core.dao.ContactDao#getCustomer(int)
      */
-	public LiteCustomer getCustomer(int contactID) {
+	@Override
+    public LiteCustomer getCustomer(int contactID) {
 	    LiteCustomer liteCust = databaseCache.getACustomerByPrimaryContactID(contactID);
         if( liteCust == null) {
             liteCust = getOwnerCICustomer(contactID);
@@ -380,7 +390,8 @@ public final class ContactDaoImpl implements ContactDao {
 	/* (non-Javadoc)
      * @see com.cannontech.core.dao.ContactDao#isPrimaryContact(int)
      */
-	public boolean isPrimaryContact(int contactId) {
+	@Override
+    public boolean isPrimaryContact(int contactId) {
 	    String sql = "SELECT PrimaryContactId FROM " + Customer.TABLE_NAME + " WHERE PrimaryContactId = " + contactId;
 	    try {
 	    	yukonJdbcTemplate.queryForInt(sql);
@@ -393,7 +404,8 @@ public final class ContactDaoImpl implements ContactDao {
 	/* (non-Javadoc)
      * @see com.cannontech.core.dao.ContactDao#getYukonUser(int)
      */
-	public LiteYukonUser getYukonUser(int contactID_) 
+	@Override
+    public LiteYukonUser getYukonUser(int contactID_) 
 	{
 		synchronized(databaseCache) 
 		{
@@ -409,6 +421,7 @@ public final class ContactDaoImpl implements ContactDao {
     /* (non-Javadoc)
      * @see com.cannontech.core.dao.ContactDao#hasPin(int)
      */
+    @Override
     public boolean hasPin(int contactId) {
         
         List<LiteContactNotification> liteContactNotifications = contactNotificationDao.getNotificationsForContact(contactId);
@@ -499,6 +512,7 @@ public final class ContactDaoImpl implements ContactDao {
 
         final LiteContactNoNotificationsRowMapper liteContactNoNotificationsRowMapper = new LiteContactNoNotificationsRowMapper();
         yukonJdbcTemplate.getJdbcOperations().query(sqlString, new AbstractRowCallbackHandler() {
+            @Override
             public void processRow(ResultSet rs, int rowNum) throws SQLException {
                 LiteContact lc = liteContactNoNotificationsRowMapper.mapRow(rs, rowNum);
                 try {
@@ -568,14 +582,11 @@ public final class ContactDaoImpl implements ContactDao {
         contactNotificationDao.saveNotificationsForContact(contactId,
                                                            contact.getLiteContactNotifications());
         
-        DBChangeMsg changeMsg = new DBChangeMsg(contactId,
-            DBChangeMsg.CHANGE_CONTACT_DB,
-            DBChangeMsg.CAT_CUSTOMERCONTACT,
-            DBChangeMsg.CAT_CUSTOMERCONTACT,
-            dbChangeType);
-        
-        dbPersistantDao.processDBChange(changeMsg);
-
+        dbChangeManager.processDbChange(contactId,
+                                        DBChangeMsg.CHANGE_CONTACT_DB,
+                                        DBChangeMsg.CAT_CUSTOMERCONTACT,
+                                        DBChangeMsg.CAT_CUSTOMERCONTACT,
+                                        dbChangeType);
     }
     
     @Override
@@ -614,12 +625,11 @@ public final class ContactDaoImpl implements ContactDao {
         }
 
         // db change
-    	DBChangeMsg changeMsg = new DBChangeMsg(contactId,
-                DBChangeMsg.CHANGE_CONTACT_DB,
-                DBChangeMsg.CAT_CUSTOMERCONTACT,
-                DBChangeMsg.CAT_CUSTOMERCONTACT,
-                DbChangeType.DELETE);
-        dbPersistantDao.processDBChange(changeMsg);
+        dbChangeManager.processDbChange(contactId,
+                                        DBChangeMsg.CHANGE_CONTACT_DB,
+                                        DBChangeMsg.CAT_CUSTOMERCONTACT,
+                                        DBChangeMsg.CAT_CUSTOMERCONTACT,
+                                        DbChangeType.DELETE);
     }
     
     @Override
@@ -652,13 +662,11 @@ public final class ContactDaoImpl implements ContactDao {
         
         yukonJdbcTemplate.update(sql.toString(), customerId, contactId, order);
         
-        DBChangeMsg changeMsg = new DBChangeMsg(contactId,
-                                                DBChangeMsg.CHANGE_CONTACT_DB,
-                                                DBChangeMsg.CAT_CUSTOMERCONTACT,
-                                                DBChangeMsg.CAT_CUSTOMERCONTACT,
-                                                DbChangeType.UPDATE);
-        
-        dbPersistantDao.processDBChange(changeMsg);
+        dbChangeManager.processDbChange(contactId,
+                                        DBChangeMsg.CHANGE_CONTACT_DB,
+                                        DBChangeMsg.CAT_CUSTOMERCONTACT,
+                                        DBChangeMsg.CAT_CUSTOMERCONTACT,
+                                        DbChangeType.UPDATE);
     	
     }
 
@@ -670,7 +678,7 @@ public final class ContactDaoImpl implements ContactDao {
     private class LiteContactRowMapper implements
             ParameterizedRowMapper<LiteContact> {
         
-        private LiteContactNoNotificationsRowMapper baseMapper = new LiteContactNoNotificationsRowMapper();
+        private final LiteContactNoNotificationsRowMapper baseMapper = new LiteContactNoNotificationsRowMapper();
 
         @Override
         public LiteContact mapRow(ResultSet rs, int rowNum) throws SQLException {
@@ -687,6 +695,7 @@ public final class ContactDaoImpl implements ContactDao {
     }
     
     private class LiteContactNoNotificationsRowMapper implements ParameterizedRowMapper<LiteContact> {
+        @Override
         public LiteContact mapRow(ResultSet rs, int rowNum) throws SQLException {
             int id = rs.getInt("ContactId");
             int loginId = rs.getInt("LoginId");
@@ -703,40 +712,4 @@ public final class ContactDaoImpl implements ContactDao {
             return contact;
         }
     }
-    
-    @Autowired
-    public void setAddressDao(AddressDao addressDao) {
-        this.addressDao = addressDao;
-    }
-    
-    public void setContactNotificationDao(
-            ContactNotificationDao contactNotificationDao) {
-        this.contactNotificationDao = contactNotificationDao;
-    }
-
-    public void setDatabaseCache(IDatabaseCache databaseCache) {
-        this.databaseCache = databaseCache;
-    }
-
-    public void setYukonListDao(YukonListDao yukonListDao) {
-        this.yukonListDao = yukonListDao;
-    }
-
-    public void setYukonUserDao(YukonUserDao yukonUserDao) {
-        this.yukonUserDao = yukonUserDao;
-    }
-
-    @Autowired
-    public void setYukonJdbcTemplate(YukonJdbcTemplate yukonJdbcTemplate) {
-		this.yukonJdbcTemplate = yukonJdbcTemplate;
-	}
-    
-    public void setNextValueHelper(NextValueHelper nextValueHelper) {
-        this.nextValueHelper = nextValueHelper;
-    }
-    
-    public void setDbPersistantDao(DBPersistentDao dbPersistantDao) {
-        this.dbPersistantDao = dbPersistantDao;
-    }
-    
 }

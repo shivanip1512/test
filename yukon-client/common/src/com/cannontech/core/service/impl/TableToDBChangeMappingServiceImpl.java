@@ -7,21 +7,21 @@ import org.springframework.beans.factory.annotation.Autowired;
 import com.cannontech.common.databaseMigration.TableChangeCallback;
 import com.cannontech.common.databaseMigration.service.DatabaseMigrationService;
 import com.cannontech.common.pao.PaoType;
-import com.cannontech.core.dao.DBPersistentDao;
 import com.cannontech.core.dao.PointDao;
 import com.cannontech.core.service.TableToDBChangeMappingService;
 import com.cannontech.database.data.lite.LitePoint;
 import com.cannontech.database.data.pao.PAOGroups;
 import com.cannontech.database.data.point.PointTypes;
+import com.cannontech.message.DbChangeManager;
 import com.cannontech.message.dispatch.message.DBChangeMsg;
 import com.cannontech.message.dispatch.message.DbChangeCategory;
 import com.cannontech.message.dispatch.message.DbChangeType;
 
 public class TableToDBChangeMappingServiceImpl implements TableToDBChangeMappingService{
     
-    private DatabaseMigrationService databaseMigrationService;
-    private DBPersistentDao dbPersistentDao;
-    private PointDao pointDao;
+    @Autowired private DatabaseMigrationService databaseMigrationService;
+    @Autowired private DbChangeManager dbChangeManager;
+    @Autowired private PointDao pointDao;
     
     @PostConstruct
     public void startup() {
@@ -32,82 +32,68 @@ public class TableToDBChangeMappingServiceImpl implements TableToDBChangeMapping
         addDBTableListener("YukonGroup", 10, DBChangeMsg.CAT_YUKON_USER_GROUP, DBChangeMsg.CAT_YUKON_USER);
         addDBTableListener("YukonWebConfiguration", DBChangeMsg.CHANGE_WEB_CONFIG_DB, DBChangeMsg.CAT_WEB_CONFIG, DBChangeMsg.CAT_WEB_CONFIG);
         addPointDBTableListener("Point", 1, DBChangeMsg.CAT_POINT);
-        
     }
 
     private void addDBTableListener(final String tableName, final DbChangeCategory changeCategory) {
         databaseMigrationService.addDBTableListener(tableName, new TableChangeCallback() {
+            @Override
             public void rowInserted(int primaryKey) {
-                dbPersistentDao.processDatabaseChange(DbChangeType.ADD, changeCategory, primaryKey);
+                dbChangeManager.processDbChange(DbChangeType.ADD, changeCategory, primaryKey);
             }
 
+            @Override
             public void rowUpdated(int primaryKey) {
-                dbPersistentDao.processDatabaseChange(DbChangeType.UPDATE, changeCategory, primaryKey);
+                dbChangeManager.processDbChange(DbChangeType.UPDATE, changeCategory, primaryKey);
             }
 
+            @Override
             public void rowDeleted(int primaryKey) {
-                dbPersistentDao.processDatabaseChange(DbChangeType.DELETE, changeCategory, primaryKey);
+                dbChangeManager.processDbChange(DbChangeType.DELETE, changeCategory, primaryKey);
             }
         });
     }
 
     private void addDBTableListener(final String tableName, final int database, final String category, final String objectType) {
         databaseMigrationService.addDBTableListener(tableName, new TableChangeCallback() {
+            @Override
             public void rowInserted(int primaryKey) {
-                DBChangeMsg dbChangeMsg = new DBChangeMsg(primaryKey, database, category, objectType, DbChangeType.ADD);
-                dbPersistentDao.processDBChange(dbChangeMsg);
+                dbChangeManager.processDbChange(primaryKey, database, category, objectType, DbChangeType.ADD);
             }
 
+            @Override
             public void rowUpdated(int primaryKey) {
-                DBChangeMsg dbChangeMsg = new DBChangeMsg(primaryKey, database, category, objectType, DbChangeType.UPDATE);
-                dbPersistentDao.processDBChange(dbChangeMsg);
+                dbChangeManager.processDbChange(primaryKey, database, category, objectType, DbChangeType.UPDATE);
             }
 
+            @Override
             public void rowDeleted(int primaryKey) {
-                DBChangeMsg dbChangeMsg = new DBChangeMsg(primaryKey, database, category, objectType, DbChangeType.DELETE);
-                dbPersistentDao.processDBChange(dbChangeMsg);
+                dbChangeManager.processDbChange(primaryKey, database, category, objectType, DbChangeType.DELETE);
             }
         });
     }
 
     private void addPointDBTableListener(final String tableName, final int database, final String category) {
         databaseMigrationService.addDBTableListener(tableName, new TableChangeCallback() {
+            @Override
             public void rowInserted(int primaryKey) {
                 LitePoint litePoint = pointDao.getLitePoint(primaryKey);
                 String pointType = PointTypes.getType(litePoint.getLiteType());
-                DBChangeMsg dbChangeMsg = new DBChangeMsg(primaryKey, database, category, pointType, DbChangeType.ADD);
-                dbPersistentDao.processDBChange(dbChangeMsg);
+                dbChangeManager.processDbChange(primaryKey, database, category, pointType, DbChangeType.ADD);
             }
 
+            @Override
             public void rowUpdated(int primaryKey) {
                 LitePoint litePoint = pointDao.getLitePoint(primaryKey);
                 String pointType = PointTypes.getType(litePoint.getLiteType());
-                DBChangeMsg dbChangeMsg = new DBChangeMsg(primaryKey, database, category, pointType, DbChangeType.UPDATE);
-                dbPersistentDao.processDBChange(dbChangeMsg);
+                dbChangeManager.processDbChange(primaryKey, database, category, pointType, DbChangeType.UPDATE);
             }
 
+            @Override
             public void rowDeleted(int primaryKey) {
                 LitePoint litePoint = pointDao.getLitePoint(primaryKey);
                 String pointType = PointTypes.getType(litePoint.getLiteType());
-                DBChangeMsg dbChangeMsg = new DBChangeMsg(primaryKey, database, category, pointType, DbChangeType.DELETE);
-                dbPersistentDao.processDBChange(dbChangeMsg);
+                dbChangeManager.processDbChange(primaryKey, database, category, pointType, DbChangeType.DELETE);
             }
         });
     }
-    
-    @Autowired
-    public void setDatabaseMigrationService(DatabaseMigrationService databaseMigrationService) {
-        this.databaseMigrationService = databaseMigrationService;
-    }
-    
-    @Autowired
-    public void setDbPersistentDao(DBPersistentDao dbPersistentDao) {
-        this.dbPersistentDao = dbPersistentDao;
-    }
-    
-    @Autowired
-    public void setPointDao(PointDao pointDao) {
-        this.pointDao = pointDao;
-    }
-    
 }

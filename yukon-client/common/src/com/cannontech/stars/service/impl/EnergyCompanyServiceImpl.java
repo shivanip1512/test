@@ -28,9 +28,7 @@ import com.cannontech.core.dao.ContactNotificationDao;
 import com.cannontech.core.dao.DBPersistentDao;
 import com.cannontech.core.dao.DaoFactory;
 import com.cannontech.core.dao.EnergyCompanyNameUnavailableException;
-import com.cannontech.core.dao.UserNameUnavailableException;
 import com.cannontech.core.dao.YukonListDao;
-import com.cannontech.core.dao.YukonUserDao;
 import com.cannontech.core.dao.impl.LoginStatusEnum;
 import com.cannontech.core.roleproperties.YukonRole;
 import com.cannontech.core.roleproperties.YukonRoleProperty;
@@ -50,6 +48,7 @@ import com.cannontech.database.data.user.YukonGroup;
 import com.cannontech.database.data.user.YukonUser;
 import com.cannontech.database.db.company.EnergyCompany;
 import com.cannontech.database.db.user.UserGroup;
+import com.cannontech.message.DbChangeManager;
 import com.cannontech.message.dispatch.message.DBChangeMsg;
 import com.cannontech.message.dispatch.message.DbChangeCategory;
 import com.cannontech.message.dispatch.message.DbChangeType;
@@ -86,6 +85,7 @@ public class EnergyCompanyServiceImpl implements EnergyCompanyService {
     @Autowired private ContactDao contactDao;
     @Autowired private ContactNotificationDao contactNotificationDao;
     @Autowired private DBPersistentDao dbPersistentDao;
+    @Autowired private DbChangeManager dbChangeManager;
     @Autowired private DefaultRouteService defaultRouteService;
     @Autowired private ECMappingDao ecMappingDao;
     @Autowired private EnergyCompanyDao energyCompanyDao;
@@ -95,7 +95,6 @@ public class EnergyCompanyServiceImpl implements EnergyCompanyService {
     @Autowired private StarsDatabaseCache starsDatabaseCache;
     @Autowired private StarsEventLogService starsEventLogService;
     @Autowired private YukonListDao yukonListDao;
-    @Autowired private YukonUserDao yukonUserDao;
     @Autowired private ConfigurationSource configurationSource;
     @Autowired private YukonEnergyCompanyService yukonEnergyCompanyService;
     @Autowired private WarehouseDao warehouseDao;
@@ -143,8 +142,10 @@ public class EnergyCompanyServiceImpl implements EnergyCompanyService {
         LiteStarsEnergyCompany liteEnergyCompany = energyCompanyFactory.createEnergyCompany(energyCompany);
         
         /* This does nothing to StarsDatabaseCache,  I don't know who else would care. */
-        dbPersistentDao.processDBChange(new DBChangeMsg(energyCompany.getEnergyCompanyId(), DBChangeMsg.CHANGE_ENERGY_COMPANY_DB,
-                            DBChangeMsg.CAT_ENERGY_COMPANY,DbChangeType.ADD));
+        dbChangeManager.processDbChange(energyCompany.getEnergyCompanyId(), 
+                                        DBChangeMsg.CHANGE_ENERGY_COMPANY_DB,
+                                        DBChangeMsg.CAT_ENERGY_COMPANY,
+                                        DbChangeType.ADD);
 
         /* Set Default Route */
         defaultRouteService.updateDefaultRoute(liteEnergyCompany, energyCompanyDto.getDefaultRouteId(), user);
@@ -374,12 +375,11 @@ public class EnergyCompanyServiceImpl implements EnergyCompanyService {
                 defaultUserId != com.cannontech.user.UserUtils.USER_DEFAULT_ID) {
             
             YukonUser.deleteOperatorLogin(defaultUserId);
-            DBChangeMsg dbChange = new DBChangeMsg(defaultUserId,
-                                   DBChangeMsg.CHANGE_YUKON_USER_DB,
-                                   DBChangeMsg.CAT_YUKON_USER,
-                                   DBChangeMsg.CAT_YUKON_USER,
-                                   DbChangeType.DELETE);
-            dbPersistentDao.processDBChange(dbChange);
+            dbChangeManager.processDbChange(defaultUserId,
+                                            DBChangeMsg.CHANGE_YUKON_USER_DB,
+                                            DBChangeMsg.CAT_YUKON_USER,
+                                            DBChangeMsg.CAT_YUKON_USER,
+                                            DbChangeType.DELETE);
         }
         
         // Delete the privilege group of the default operator login as long as it's not a system group and ends with with 'Admin Grp' 
@@ -446,12 +446,11 @@ public class EnergyCompanyServiceImpl implements EnergyCompanyService {
         if (energyCompany.getPrimaryContactID() != CtiUtilities.NONE_ZERO_ID) {
             try {
                 LiteContact liteContact = DaoFactory.getContactDao().getContact(energyCompany.getPrimaryContactID());
-                DBChangeMsg dbChange = new DBChangeMsg(liteContact.getContactID(),
-                                                       DBChangeMsg.CHANGE_CONTACT_DB,
-                                                       DBChangeMsg.CAT_CUSTOMERCONTACT,
-                                                       DBChangeMsg.CAT_CUSTOMERCONTACT,
-                                                       DbChangeType.DELETE);
-                dbPersistentDao.processDBChange(dbChange);
+                dbChangeManager.processDbChange(liteContact.getContactID(),
+                                                DBChangeMsg.CHANGE_CONTACT_DB,
+                                                DBChangeMsg.CAT_CUSTOMERCONTACT,
+                                                DBChangeMsg.CAT_CUSTOMERCONTACT,
+                                                DbChangeType.DELETE);
             }catch(EmptyResultDataAccessException ignore) {}
         }
         return liteGroup;
@@ -657,18 +656,18 @@ public class EnergyCompanyServiceImpl implements EnergyCompanyService {
                 // we don't want the full behavior of removeRouteFromEnergyCompany
                 // because it is okay if our children still map routeId as the default
                 ecMappingDao.deleteECToRouteMapping(item.getEnergyCompanyId(), routeId);
-                dbPersistentDao.processDatabaseChange(DbChangeType.DELETE, 
-                                                      DbChangeCategory.ENERGY_COMPANY_ROUTE,
-                                                      item.getEnergyCompanyId());
+                dbChangeManager.processDbChange(DbChangeType.DELETE, 
+                                                DbChangeCategory.ENERGY_COMPANY_ROUTE,
+                                                item.getEnergyCompanyId());
             }
             
         });
         
         ecMappingDao.addEcToRouteMapping(energyCompanyId, routeId);
         
-        dbPersistentDao.processDatabaseChange(DbChangeType.ADD, 
-                                              DbChangeCategory.ENERGY_COMPANY_ROUTE,
-                                              energyCompanyId);
+        dbChangeManager.processDbChange(DbChangeType.ADD, 
+                                        DbChangeCategory.ENERGY_COMPANY_ROUTE,
+                                        energyCompanyId);
 
     }
 
@@ -688,9 +687,9 @@ public class EnergyCompanyServiceImpl implements EnergyCompanyService {
         });
         int rowsDeleted = ecMappingDao.deleteECToRouteMapping(energyCompanyId, routeId);
         
-        dbPersistentDao.processDatabaseChange(DbChangeType.DELETE, 
-                                              DbChangeCategory.ENERGY_COMPANY_ROUTE,
-                                              energyCompanyId);
+        dbChangeManager.processDbChange(DbChangeType.DELETE, 
+                                        DbChangeCategory.ENERGY_COMPANY_ROUTE,
+                                        energyCompanyId);
 
         return rowsDeleted;
     }
@@ -700,9 +699,9 @@ public class EnergyCompanyServiceImpl implements EnergyCompanyService {
         
         ecMappingDao.addECToSubstationMapping(energyCompanyId, substationId);
         
-        dbPersistentDao.processDatabaseChange(DbChangeType.ADD, 
-                                              DbChangeCategory.ENERGY_COMPANY_SUBSTATIONS,
-                                              energyCompanyId);
+        dbChangeManager.processDbChange(DbChangeType.ADD, 
+                                        DbChangeCategory.ENERGY_COMPANY_SUBSTATIONS,
+                                        energyCompanyId);
 
     }
     
@@ -713,9 +712,9 @@ public class EnergyCompanyServiceImpl implements EnergyCompanyService {
         int rowsDeleted = ecMappingDao.deleteECToSubstationMapping(energyCompanyId, substationId);
         siteInformationDao.resetSubstation(substationId);
         
-        dbPersistentDao.processDatabaseChange(DbChangeType.DELETE, 
-                                              DbChangeCategory.ENERGY_COMPANY_SUBSTATIONS,
-                                              energyCompanyId);
+        dbChangeManager.processDbChange(DbChangeType.DELETE, 
+                                        DbChangeCategory.ENERGY_COMPANY_SUBSTATIONS,
+                                        energyCompanyId);
 
         return rowsDeleted;
     }

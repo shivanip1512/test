@@ -17,7 +17,6 @@ import com.cannontech.capcontrol.model.SubstationBus;
 import com.cannontech.common.pao.PaoIdentifier;
 import com.cannontech.common.pao.PaoType;
 import com.cannontech.common.pao.YukonPao;
-import com.cannontech.common.pao.service.impl.PaoCreationHelper;
 import com.cannontech.common.search.SearchResult;
 import com.cannontech.common.util.SqlStatementBuilder;
 import com.cannontech.core.dao.NotFoundException;
@@ -26,14 +25,15 @@ import com.cannontech.database.IntegerRowMapper;
 import com.cannontech.database.PagingResultSetExtractor;
 import com.cannontech.database.SqlParameterSink;
 import com.cannontech.database.YukonJdbcTemplate;
+import com.cannontech.message.DbChangeManager;
 import com.cannontech.message.dispatch.message.DbChangeType;
 import com.cannontech.util.Validator;
 
 public class SubstationBusDaoImpl implements SubstationBusDao {
     private static final ParameterizedRowMapper<LiteCapControlObject> liteCapControlObjectRowMapper;
     
-    @Autowired private PaoCreationHelper paoCreationHelper;
     @Autowired private PaoDao paoDao;
+    @Autowired private DbChangeManager dbChangeManager;
     @Autowired private YukonJdbcTemplate yukonJdbcTemplate;
     
     static {
@@ -41,6 +41,7 @@ public class SubstationBusDaoImpl implements SubstationBusDao {
     }
     
     private static final ParameterizedRowMapper<SubstationBus> rowMapper = new ParameterizedRowMapper<SubstationBus>() {
+        @Override
         public SubstationBus mapRow(ResultSet rs, int rowNum) throws SQLException {
         	PaoIdentifier paoIdentifier = new PaoIdentifier(rs.getInt("SubstationBusID"), PaoType.CAP_CONTROL_SUBBUS);
             SubstationBus bus = new SubstationBus(paoIdentifier);
@@ -71,6 +72,7 @@ public class SubstationBusDaoImpl implements SubstationBusDao {
         }
     };
     
+    @Override
     public SubstationBus findSubBusById(int id){
         SqlStatementBuilder sql = new SqlStatementBuilder();
         
@@ -86,6 +88,7 @@ public class SubstationBusDaoImpl implements SubstationBusDao {
         return sub;
     }
     
+    @Override
     public List<Integer> getAllUnassignedBuses () {        
         SqlStatementBuilder sql = new SqlStatementBuilder();
         
@@ -125,7 +128,7 @@ public class SubstationBusDaoImpl implements SubstationBusDao {
         PagingResultSetExtractor<LiteCapControlObject> orphanExtractor = new PagingResultSetExtractor<LiteCapControlObject>(start, count, liteCapControlObjectRowMapper);
         yukonJdbcTemplate.getJdbcOperations().query(sql.getSql(), sql.getArguments(), orphanExtractor);
         
-        List<LiteCapControlObject> unassignedBuses = (List<LiteCapControlObject>) orphanExtractor.getResultList();
+        List<LiteCapControlObject> unassignedBuses = orphanExtractor.getResultList();
         
         SearchResult<LiteCapControlObject> searchResult = new SearchResult<LiteCapControlObject>();
         searchResult.setResultList(unassignedBuses);
@@ -167,8 +170,8 @@ public class SubstationBusDaoImpl implements SubstationBusDao {
 		if (result) {
 		    YukonPao subBus = paoDao.getYukonPao(substationBusId);
 		    YukonPao substation = paoDao.getYukonPao(substationId);
-		    paoCreationHelper.processDbChange(subBus, DbChangeType.UPDATE);
-		    paoCreationHelper.processDbChange(substation, DbChangeType.UPDATE);
+		    dbChangeManager.processPaoDbChange(subBus, DbChangeType.UPDATE);
+		    dbChangeManager.processPaoDbChange(substation, DbChangeType.UPDATE);
 		}
 		
 		return result;

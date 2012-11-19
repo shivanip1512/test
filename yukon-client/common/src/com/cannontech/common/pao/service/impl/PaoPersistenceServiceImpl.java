@@ -46,6 +46,7 @@ import com.cannontech.database.YukonJdbcTemplate;
 import com.cannontech.database.YukonResultSet;
 import com.cannontech.database.YukonRowCallbackHandler;
 import com.cannontech.database.data.point.PointBase;
+import com.cannontech.message.DbChangeManager;
 import com.cannontech.message.dispatch.message.DbChangeType;
 import com.google.common.collect.Iterables;
 import com.google.common.collect.Lists;
@@ -57,6 +58,7 @@ public class PaoPersistenceServiceImpl implements PaoPersistenceService {
     
     @Autowired private YukonJdbcTemplate jdbcTemplate;
     @Autowired private PaoDao paoDao;
+    @Autowired private DbChangeManager dbChangeManager;
     @Autowired private PaoCreationHelper paoCreationHelper;
 
     /**
@@ -64,16 +66,16 @@ public class PaoPersistenceServiceImpl implements PaoPersistenceService {
      * These lists are used to tell the DAO how to access (in the correct order) the data
      * in (or required for) a PAO.
      */
-    private Map<PaoType, List<CompletePaoMetaData>> paoTypeToTableMapping = Maps.newHashMap();
+    private final Map<PaoType, List<CompletePaoMetaData>> paoTypeToTableMapping = Maps.newHashMap();
     
     /**
      * This map stores a set of supported PaoTypes that are represented by a class.
      */
-    private Map<Class<?>, Set<PaoType>> classToPaoTypeMapping = Maps.newHashMap();
+    private final Map<Class<?>, Set<PaoType>> classToPaoTypeMapping = Maps.newHashMap();
     
     @PostConstruct
     public void init() throws IOException, ClassNotFoundException {
-     // Scan the package for classes to populate the dbTableMappings map.
+        // Scan the package for classes to populate the dbTableMappings map.
         Map<Class<?>, CompletePaoMetaData> metaDataMappings = scanForYukonPaos();
 
         // Build the maps required for later use in the DAO methods.
@@ -418,7 +420,7 @@ public class PaoPersistenceServiceImpl implements PaoPersistenceService {
         paoCreationHelper.addDefaultPointsToPao(pao.getPaoIdentifier());
             
         // DB change message. Process Device dbChange AFTER PAO AND points have been inserted into DB.
-        paoCreationHelper.processDbChange(pao.getPaoIdentifier(), DbChangeType.ADD);
+        dbChangeManager.processPaoDbChange(pao.getPaoIdentifier(), DbChangeType.ADD);
     }
     
     @Override
@@ -431,7 +433,7 @@ public class PaoPersistenceServiceImpl implements PaoPersistenceService {
         paoCreationHelper.applyPoints(pao.getPaoIdentifier(), points);
         
         // Send DB change message
-        paoCreationHelper.processDbChange(pao.getPaoIdentifier(), DbChangeType.ADD);
+        dbChangeManager.processPaoDbChange(pao.getPaoIdentifier(), DbChangeType.ADD);
     }
     
     /**
@@ -459,7 +461,7 @@ public class PaoPersistenceServiceImpl implements PaoPersistenceService {
     public void updatePao(CompleteYukonPao pao) {
         insertOrUpdatePao(pao, true);
         
-        paoCreationHelper.processDbChange(pao.getPaoIdentifier(), DbChangeType.UPDATE);
+        dbChangeManager.processPaoDbChange(pao.getPaoIdentifier(), DbChangeType.UPDATE);
     }
     
     @Override
@@ -485,7 +487,7 @@ public class PaoPersistenceServiceImpl implements PaoPersistenceService {
         }
         
         // Send DB change message
-        paoCreationHelper.processDbChange(paoIdentifier, DbChangeType.DELETE);
+        dbChangeManager.processPaoDbChange(paoIdentifier, DbChangeType.DELETE);
     }
 
     /**

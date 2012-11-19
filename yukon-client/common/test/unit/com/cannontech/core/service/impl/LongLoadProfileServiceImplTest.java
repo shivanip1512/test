@@ -34,9 +34,6 @@ import com.cannontech.database.data.lite.LiteYukonPAObject;
 import com.cannontech.database.data.lite.LiteYukonUser;
 import com.cannontech.database.db.DBPersistent;
 import com.cannontech.database.db.device.DeviceLoadProfile;
-import com.cannontech.message.dispatch.message.DBChangeMsg;
-import com.cannontech.message.dispatch.message.DbChangeCategory;
-import com.cannontech.message.dispatch.message.DbChangeType;
 import com.cannontech.message.porter.message.Request;
 import com.cannontech.message.porter.message.Return;
 import com.cannontech.message.util.ConnectionException;
@@ -50,30 +47,35 @@ import com.cannontech.yukon.BasicServerConnection;
 public class LongLoadProfileServiceImplTest {
     private final class PorterConnection implements BasicServerConnection {
         public Set<MessageListener> listeners = new HashSet<MessageListener>();
-        private BlockingQueue<Message> writtenOut = new LinkedBlockingQueue<Message>();
+        private final BlockingQueue<Message> writtenOut = new LinkedBlockingQueue<Message>();
         private boolean failMode = false;
 
+        @Override
         public void addMessageListener(MessageListener listener) {
             listeners.add(listener);
         }
 
+        @Override
         public boolean isValid() {
             return false;
         }
 
+        @Override
         public void queue(Message o) {
-            writtenOut.add((Message)o);
+            writtenOut.add(o);
         }
 
+        @Override
         public void removeMessageListener(MessageListener l) {
             listeners.remove(l);
         }
 
+        @Override
         public void write(Message o) {
             if (failMode) {
                 throw new ConnectionException("Unable to write message");
             } else {
-                writtenOut.add((Message)o);
+                writtenOut.add(o);
             }
             
         }
@@ -90,6 +92,7 @@ public class LongLoadProfileServiceImplTest {
         public void setReturnValue(long returnValue) {
             this.returnValue = returnValue;
         }
+        @Override
         public long getMessageCountForRequest(long requestId) {
             return returnValue;
         }
@@ -101,17 +104,20 @@ public class LongLoadProfileServiceImplTest {
     private int successRan = 0;
     private int failureRan = 0;
     private int cancelRan = 0;
-    private YukonUserContext userContext = new SystemUserContext();
+    private final YukonUserContext userContext = new SystemUserContext();
     
-    private LoadProfileService.CompletionCallback incrementingRunner = new LoadProfileService.CompletionCallback() {
+    private final LoadProfileService.CompletionCallback incrementingRunner = new LoadProfileService.CompletionCallback() {
+        @Override
         public void onFailure(int returnStatus, String resultString) {
             failureRan++;
         }
 
+        @Override
         public void onSuccess(String successInfo) {
             successRan++;
         }
         
+        @Override
         public void onCancel(LiteYukonUser cancelUser) {
             cancelRan++;
         }
@@ -132,9 +138,11 @@ public class LongLoadProfileServiceImplTest {
         
         serviceDebug.setDbPersistentDao(new DBPersistentDao(){
 
+            @Override
             public void performDBChange(DBPersistent item, int transactionType) {
             }
 
+            @Override
             public DBPersistent retrieveDBPersistent(LiteBase liteObject) {
                 
 
@@ -156,10 +164,6 @@ public class LongLoadProfileServiceImplTest {
             @Override
 			public void performDBChangeWithNoMsg(List<DBPersistent> items, TransactionType transactionType) {
 			}
-			
-			@Override
-			public void processDBChange(DBChangeMsg dbChange) {
-			}
 
             @Override
             public void performDBChangeWithNoMsg(
@@ -171,9 +175,6 @@ public class LongLoadProfileServiceImplTest {
                     throws PersistenceException {
             }
 
-            @Override
-            public void processDatabaseChange(DbChangeType type, DbChangeCategory category, int primaryKey) {
-            }
 
             @Override
             public DBPersistent retrieveDBPersistent(DBPersistent dbPersistent) {
@@ -196,6 +197,7 @@ public class LongLoadProfileServiceImplTest {
         
         serviceDebug.setActivityLoggerService(new ActivityLoggerServiceImpl(){
             
+            @Override
             public void logEvent(int userID, String action, String description){
                 // do nothing
             }

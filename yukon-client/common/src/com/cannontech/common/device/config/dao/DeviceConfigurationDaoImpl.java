@@ -25,10 +25,10 @@ import com.cannontech.common.pao.YukonDevice;
 import com.cannontech.common.pao.definition.dao.PaoDefinitionDao;
 import com.cannontech.common.pao.definition.model.PaoTag;
 import com.cannontech.common.util.SqlStatementBuilder;
-import com.cannontech.core.dao.DBPersistentDao;
 import com.cannontech.database.SqlParameterSink;
 import com.cannontech.database.YukonJdbcTemplate;
 import com.cannontech.database.incrementer.NextValueHelper;
+import com.cannontech.message.DbChangeManager;
 import com.cannontech.message.dispatch.message.DBChangeMsg;
 import com.cannontech.message.dispatch.message.DbChangeType;
 import com.cannontech.web.input.InputBeanWrapperImpl;
@@ -41,7 +41,7 @@ public class DeviceConfigurationDaoImpl implements DeviceConfigurationDao {
     
     @Autowired private YukonJdbcTemplate jdbcTemplate;
     @Autowired private NextValueHelper nextValueHelper;
-    @Autowired private DBPersistentDao dbPersistentDao;
+    @Autowired private DbChangeManager dbChangeManager;
     @Autowired private PaoDefinitionDao paoDefinitionDao;
     
     private List<ConfigurationTemplate> configurationTemplateList;
@@ -135,14 +135,11 @@ public class DeviceConfigurationDaoImpl implements DeviceConfigurationDao {
             }
         }
 
-        DBChangeMsg dbChange = new DBChangeMsg(configuration.getId(),
-                                               DBChangeMsg.CHANGE_CONFIG_DB,
-                                               DBChangeMsg.CAT_DEVICE_CONFIG,
-                                               DB_CHANGE_OBJECT_TYPE,
-                                               dbChangeType);
-
-        dbPersistentDao.processDBChange(dbChange);
-
+        dbChangeManager.processDbChange(configuration.getId(),
+                                        DBChangeMsg.CHANGE_CONFIG_DB,
+                                        DBChangeMsg.CAT_DEVICE_CONFIG,
+                                        DB_CHANGE_OBJECT_TYPE,
+                                        dbChangeType);
     }
 
     @Override
@@ -241,14 +238,11 @@ public class DeviceConfigurationDaoImpl implements DeviceConfigurationDao {
         sql.append("DELETE FROM DeviceConfiguration WHERE DeviceConfigurationId").eq(id);
         jdbcTemplate.update(sql);
 
-        DBChangeMsg dbChange = 
-                new DBChangeMsg(id,
-                                DBChangeMsg.CHANGE_CONFIG_DB,
-                                DBChangeMsg.CAT_DEVICE_CONFIG,
-                                DB_CHANGE_OBJECT_TYPE,
-                                DbChangeType.DELETE);
-
-        dbPersistentDao.processDBChange(dbChange);
+        dbChangeManager.processDbChange(id,
+                                        DBChangeMsg.CHANGE_CONFIG_DB,
+                                        DBChangeMsg.CAT_DEVICE_CONFIG,
+                                        DB_CHANGE_OBJECT_TYPE,
+                                        DbChangeType.DELETE);
     }
 
     @Override
@@ -298,13 +292,12 @@ public class DeviceConfigurationDaoImpl implements DeviceConfigurationDao {
         
         jdbcTemplate.update(sql);
 
-        DBChangeMsg dbChange = new DBChangeMsg(device.getPaoIdentifier().getPaoId(),
-                                               DBChangeMsg.CHANGE_CONFIG_DB,
-                                               DBChangeMsg.CAT_DEVICE_CONFIG,
-                                               "device",
-                                               dbChangeType);
         // Send DBChangeMsgs
-        dbPersistentDao.processDBChange(dbChange);
+        dbChangeManager.processDbChange(device.getPaoIdentifier().getPaoId(),
+                                        DBChangeMsg.CHANGE_CONFIG_DB,
+                                        DBChangeMsg.CAT_DEVICE_CONFIG,
+                                        "device",
+                                        dbChangeType);
     }
 
     @Override
@@ -324,13 +317,12 @@ public class DeviceConfigurationDaoImpl implements DeviceConfigurationDao {
         
         jdbcTemplate.update(removeSql);
         
-        DBChangeMsg dbChange = new DBChangeMsg(device.getPaoIdentifier().getPaoId(),
-                                               DBChangeMsg.CHANGE_CONFIG_DB,
-                                               DBChangeMsg.CAT_DEVICE_CONFIG,
-                                               "device",
-                                               DbChangeType.DELETE);
         // Send DBChangeMsgs
-        dbPersistentDao.processDBChange(dbChange);
+        dbChangeManager.processDbChange(device.getPaoIdentifier().getPaoId(),
+                                        DBChangeMsg.CHANGE_CONFIG_DB,
+                                        DBChangeMsg.CAT_DEVICE_CONFIG,
+                                        "device",
+                                        DbChangeType.DELETE);
     }
 
     /**
@@ -355,6 +347,7 @@ public class DeviceConfigurationDaoImpl implements DeviceConfigurationDao {
         JdbcOperations ops = jdbcTemplate.getJdbcOperations();
         ops.query(itemSql, new Object[] { configuration.getId() }, new RowCallbackHandler() {
 
+            @Override
             public void processRow(ResultSet rs) throws SQLException {
 
                 String field = rs.getString("FieldName");
@@ -400,6 +393,7 @@ public class DeviceConfigurationDaoImpl implements DeviceConfigurationDao {
     public static class ConfigurationBaseRowMapper implements
             ParameterizedRowMapper<ConfigurationBase> {
 
+        @Override
         public ConfigurationBase mapRow(ResultSet rs, int rowNum) throws SQLException {
 
             String type = rs.getString("type");

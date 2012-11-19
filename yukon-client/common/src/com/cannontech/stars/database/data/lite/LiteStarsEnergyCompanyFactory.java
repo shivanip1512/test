@@ -14,6 +14,7 @@ import com.cannontech.core.roleproperties.dao.EnergyCompanyRolePropertyDao;
 import com.cannontech.core.service.SystemDateFormattingService;
 import com.cannontech.database.YukonJdbcTemplate;
 import com.cannontech.database.db.company.EnergyCompany;
+import com.cannontech.message.DbChangeManager;
 import com.cannontech.message.dispatch.message.DatabaseChangeEvent;
 import com.cannontech.message.dispatch.message.DbChangeCategory;
 import com.cannontech.stars.core.dao.ECMappingDao;
@@ -31,6 +32,7 @@ public class LiteStarsEnergyCompanyFactory {
     @Autowired private AddressDao addressDao;
     @Autowired private AsyncDynamicDataSource asyncDynamicDataSource;
     @Autowired private DBPersistentDao dbPersistentDao;
+    @Autowired private DbChangeManager dbChangeManager;
     @Autowired private DefaultRouteService defaultRouteService;
     @Autowired private ECMappingDao ecMappingDao;
     @Autowired private EnergyCompanyDao energyCompanyDao;
@@ -64,6 +66,7 @@ public class LiteStarsEnergyCompanyFactory {
     private void applyPropertySetters(final LiteStarsEnergyCompany energyCompany) {
         energyCompany.setAddressDao(addressDao);
         energyCompany.setDbPersistentDao(dbPersistentDao);
+        energyCompany.setDbChangeManager(dbChangeManager);
         energyCompany.setEcMappingDao(ecMappingDao);
         energyCompany.setEnergyCompanyRolePropertyDao(energyCompanyRolePropertyDao);
         energyCompany.setDefaultRouteService(defaultRouteService);

@@ -11,7 +11,6 @@ import org.apache.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
 
 import com.cannontech.clientutils.YukonLogManager;
-import com.cannontech.common.pao.PaoIdentifier;
 import com.cannontech.common.pao.YukonPao;
 import com.cannontech.common.pao.definition.service.PaoDefinitionService;
 import com.cannontech.core.dao.DBPersistentDao;
@@ -24,8 +23,6 @@ import com.cannontech.database.data.point.PointBase;
 import com.cannontech.database.data.point.PointFactory;
 import com.cannontech.database.db.DBPersistent;
 import com.cannontech.database.db.point.calculation.CalcComponent;
-import com.cannontech.message.dispatch.message.DBChangeMsg;
-import com.cannontech.message.dispatch.message.DbChangeType;
 import com.google.common.collect.Maps;
 import com.google.common.collect.Sets;
 
@@ -68,18 +65,6 @@ public class PaoCreationHelper {
     public void addAllPointsToPao(YukonPao pao) {
         List<PointBase> pointsToCreate = paoDefinitionService.createAllPointsForPao(pao);
         applyPointsForNewPao(pointsToCreate);
-    }
-    
-    public void processDbChange(YukonPao pao, DbChangeType changeType) {
-        PaoIdentifier paoIdentifier = pao.getPaoIdentifier();
-        
-        DBChangeMsg msg = new DBChangeMsg(paoIdentifier.getPaoId(),
-                                           DBChangeMsg.CHANGE_PAO_DB,
-                                           paoIdentifier.getPaoType().getPaoCategory().getDbString(),
-                                           paoIdentifier.getPaoType().getDbString(),
-                                           changeType);
-        
-        dbPersistentDao.processDBChange(msg);
     }
 
     /**

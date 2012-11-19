@@ -11,7 +11,6 @@ import com.cannontech.common.pao.PaoType;
 import com.cannontech.common.pao.definition.dao.PaoDefinitionDao;
 import com.cannontech.common.pao.definition.model.PaoTag;
 import com.cannontech.common.util.SqlStatementBuilder;
-import com.cannontech.core.dao.DBPersistentDao;
 import com.cannontech.database.YukonJdbcTemplate;
 import com.cannontech.database.YukonResultSet;
 import com.cannontech.database.YukonRowCallbackHandler;
@@ -21,6 +20,7 @@ import com.cannontech.database.db.pao.EncryptedRoute;
 import com.cannontech.database.db.security.EncryptionKey;
 import com.cannontech.database.incrementer.NextValueHelper;
 import com.cannontech.encryption.EncryptedRouteDao;
+import com.cannontech.message.DbChangeManager;
 import com.cannontech.message.dispatch.message.DBChangeMsg;
 import com.cannontech.message.dispatch.message.DbChangeType;
 import com.cannontech.spring.YukonSpringHook;
@@ -29,7 +29,7 @@ import com.google.common.collect.Lists;
 public class EncryptedRouteDaoImpl implements EncryptedRouteDao {
     @Autowired private YukonJdbcTemplate yukonJdbcTemplate;
     @Autowired private PaoDefinitionDao paoDefinitionDao;
-    @Autowired private DBPersistentDao dbPersistentDao;
+    @Autowired private DbChangeManager dbChangeManager;
 
     @Override
     public List<EncryptedRoute> getAllEncryptedRoutes() {
@@ -71,25 +71,24 @@ public class EncryptedRouteDaoImpl implements EncryptedRouteDao {
 
         yukonJdbcTemplate.update(sql);
 
-        dbPersistentDao.processDBChange(new DBChangeMsg(encryptedRoute.getPaobjectId(),
-                                                        DBChangeMsg.CHANGE_YUKON_PAOBJECT_ENCRYPTION_KEY_DB,
-                                                        PAOGroups.STRING_CAT_ROUTE,
-                                                        DbChangeType.UPDATE));
+        dbChangeManager.processDbChange(encryptedRoute.getPaobjectId(),
+                                        DBChangeMsg.CHANGE_YUKON_PAOBJECT_ENCRYPTION_KEY_DB,
+                                        PAOGroups.STRING_CAT_ROUTE,
+                                        DbChangeType.UPDATE);
     }
 
     @Override
     public void deleteEncryptedRoute(EncryptedRoute encryptedRoute) {
-
         SqlStatementBuilder sql = new SqlStatementBuilder();
         sql.append("DELETE");
         sql.append("FROM YukonPAObjectEncryptionKey");
         sql.append("WHERE PAOBjectId").eq(encryptedRoute.getPaobjectId());
 
         yukonJdbcTemplate.update(sql);
-        dbPersistentDao.processDBChange(new DBChangeMsg(encryptedRoute.getPaobjectId(),
-                                                        DBChangeMsg.CHANGE_YUKON_PAOBJECT_ENCRYPTION_KEY_DB,
-                                                        PAOGroups.STRING_CAT_ROUTE,
-                                                        DbChangeType.UPDATE));    
+        dbChangeManager.processDbChange(encryptedRoute.getPaobjectId(),
+                                        DBChangeMsg.CHANGE_YUKON_PAOBJECT_ENCRYPTION_KEY_DB,
+                                        PAOGroups.STRING_CAT_ROUTE,
+                                        DbChangeType.UPDATE);    
     }
 
     @Override
@@ -128,10 +127,10 @@ public class EncryptedRouteDaoImpl implements EncryptedRouteDao {
 
             yukonJdbcTemplate.update(sql);
 
-            dbPersistentDao.processDBChange(new DBChangeMsg(encryptionKeyId,
-                                                            DBChangeMsg.CHANGE_ENCRYPTION_KEY_DB,
-                                                            DBChangeMsg.CAT_ENCRYPTION_KEY_DB,
-                                                            DbChangeType.ADD));
+            dbChangeManager.processDbChange(encryptionKeyId,
+                                            DBChangeMsg.CHANGE_ENCRYPTION_KEY_DB,
+                                            DBChangeMsg.CAT_ENCRYPTION_KEY_DB,
+                                            DbChangeType.ADD);
             
     }
 
@@ -144,10 +143,10 @@ public class EncryptedRouteDaoImpl implements EncryptedRouteDao {
 
             yukonJdbcTemplate.update(sql);
             
-            dbPersistentDao.processDBChange(new DBChangeMsg(encryptionKeyId,
-                                                            DBChangeMsg.CHANGE_ENCRYPTION_KEY_DB,
-                                                            DBChangeMsg.CAT_ENCRYPTION_KEY_DB,
-                                                            DbChangeType.DELETE));   
+            dbChangeManager.processDbChange(encryptionKeyId,
+                                            DBChangeMsg.CHANGE_ENCRYPTION_KEY_DB,
+                                            DBChangeMsg.CAT_ENCRYPTION_KEY_DB,
+                                            DbChangeType.DELETE);   
             
     }
 

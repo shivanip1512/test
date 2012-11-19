@@ -19,29 +19,30 @@ import com.cannontech.amr.porterResponseMonitor.model.PorterResponseMonitorRule;
 import com.cannontech.common.pao.attribute.model.Attribute;
 import com.cannontech.common.pao.attribute.service.AttributeService;
 import com.cannontech.common.util.SqlStatementBuilder;
-import com.cannontech.core.dao.DBPersistentDao;
 import com.cannontech.core.dao.DuplicateException;
 import com.cannontech.core.dao.NotFoundException;
 import com.cannontech.core.dao.StateDao;
 import com.cannontech.database.AdvancedFieldMapper;
-import com.cannontech.database.SqlParameterChildSink;
 import com.cannontech.database.SimpleTableAccessTemplate;
 import com.cannontech.database.SimpleTableAccessTemplate.CascadeMode;
+import com.cannontech.database.SqlParameterChildSink;
 import com.cannontech.database.YNBoolean;
 import com.cannontech.database.YukonJdbcTemplate;
 import com.cannontech.database.YukonResultSet;
 import com.cannontech.database.YukonRowMapper;
 import com.cannontech.database.incrementer.NextValueHelper;
+import com.cannontech.message.DbChangeManager;
 import com.cannontech.message.dispatch.message.DbChangeCategory;
 import com.cannontech.message.dispatch.message.DbChangeType;
 
 public class PorterResponseMonitorDaoImpl implements PorterResponseMonitorDao, InitializingBean {
 
-    private AttributeService attributeService;
-    private StateDao stateDao;
-    private DBPersistentDao dbPersistentDao;
-	private YukonJdbcTemplate yukonJdbcTemplate;
-	private NextValueHelper nextValueHelper;
+    @Autowired private AttributeService attributeService;
+    @Autowired private StateDao stateDao;
+    @Autowired private DbChangeManager dbChangeManager;
+	@Autowired private YukonJdbcTemplate yukonJdbcTemplate;
+	@Autowired private NextValueHelper nextValueHelper;
+	
 	private SimpleTableAccessTemplate<PorterResponseMonitor> monitorTemplate;
 	private SimpleTableAccessTemplate<PorterResponseMonitorRule> ruleTemplate;
 	private SimpleTableAccessTemplate<PorterResponseMonitorErrorCode> errorCodeTemplate;
@@ -162,8 +163,9 @@ public class PorterResponseMonitorDaoImpl implements PorterResponseMonitorDao, I
 		sql.append("WHERE MonitorId").eq(monitorId);
 		int rowsAffected = yukonJdbcTemplate.update(sql);
 
-        dbPersistentDao.processDatabaseChange(DbChangeType.DELETE, DbChangeCategory.PORTER_RESPONSE_MONITOR, 
-                                              monitorId);
+		dbChangeManager.processDbChange(DbChangeType.DELETE, 
+		                                DbChangeCategory.PORTER_RESPONSE_MONITOR, 
+                                        monitorId);
 
 		return rowsAffected > 0;
 	}
@@ -173,16 +175,18 @@ public class PorterResponseMonitorDaoImpl implements PorterResponseMonitorDao, I
 	public void save(PorterResponseMonitor monitor) {
 		try {
 			monitorTemplate.save(monitor);
-			dbPersistentDao.processDatabaseChange(DbChangeType.UPDATE, DbChangeCategory.PORTER_RESPONSE_MONITOR, 
-			                                      monitor.getMonitorId());
+			dbChangeManager.processDbChange(DbChangeType.UPDATE, 
+			                                DbChangeCategory.PORTER_RESPONSE_MONITOR, 
+			                                monitor.getMonitorId());
 		} catch (DataIntegrityViolationException e) {
 			throw new DuplicateException(
 					"Unable to save Porter Response Monitor.", e);
 		}
 	}
 
-	private AdvancedFieldMapper<PorterResponseMonitor> monitorFieldMapper = new AdvancedFieldMapper<PorterResponseMonitor>() {
-		public void extractValues(SqlParameterChildSink p, PorterResponseMonitor monitor) {
+	private final AdvancedFieldMapper<PorterResponseMonitor> monitorFieldMapper = new AdvancedFieldMapper<PorterResponseMonitor>() {
+		@Override
+        public void extractValues(SqlParameterChildSink p, PorterResponseMonitor monitor) {
 			p.addValue("Name", monitor.getName());
 			p.addValue("GroupName", monitor.getGroupName());
 			p.addValue("StateGroupId", monitor.getStateGroup().getStateGroupID());
@@ -191,16 +195,18 @@ public class PorterResponseMonitorDaoImpl implements PorterResponseMonitorDao, I
 			p.addChildren(ruleTemplate, monitor.getRules());
 		}
 
-		public Number getPrimaryKey(PorterResponseMonitor monitor) {
+		@Override
+        public Number getPrimaryKey(PorterResponseMonitor monitor) {
 			return monitor.getMonitorId();
 		}
 
-		public void setPrimaryKey(PorterResponseMonitor monitor, int value) {
+		@Override
+        public void setPrimaryKey(PorterResponseMonitor monitor, int value) {
 			monitor.setMonitorId(value);
 		}
 	};
 
-	private AdvancedFieldMapper<PorterResponseMonitorRule> ruleFieldMapper = new AdvancedFieldMapper<PorterResponseMonitorRule>() {
+	private final AdvancedFieldMapper<PorterResponseMonitorRule> ruleFieldMapper = new AdvancedFieldMapper<PorterResponseMonitorRule>() {
 	    @Override
 	    public void extractValues(SqlParameterChildSink p, PorterResponseMonitorRule rule) {
 			p.addValue("RuleOrder", rule.getRuleOrder());
@@ -210,25 +216,30 @@ public class PorterResponseMonitorDaoImpl implements PorterResponseMonitorDao, I
 			p.addChildren(errorCodeTemplate, rule.getErrorCodes());
 		}
 
-		public Number getPrimaryKey(PorterResponseMonitorRule rule) {
+		@Override
+        public Number getPrimaryKey(PorterResponseMonitorRule rule) {
 			return rule.getRuleId();
 		}
 
-		public void setPrimaryKey(PorterResponseMonitorRule rule, int value) {
+		@Override
+        public void setPrimaryKey(PorterResponseMonitorRule rule, int value) {
 			rule.setRuleId(value);
 		}
 	};
 
-	private AdvancedFieldMapper<PorterResponseMonitorErrorCode> errorCodeFieldMapper = new AdvancedFieldMapper<PorterResponseMonitorErrorCode>() {
-		public void extractValues(SqlParameterChildSink p, PorterResponseMonitorErrorCode errorCode) {
+	private final AdvancedFieldMapper<PorterResponseMonitorErrorCode> errorCodeFieldMapper = new AdvancedFieldMapper<PorterResponseMonitorErrorCode>() {
+		@Override
+        public void extractValues(SqlParameterChildSink p, PorterResponseMonitorErrorCode errorCode) {
 			p.addValue("ErrorCode", errorCode.getErrorCode());
 		}
 
-		public Number getPrimaryKey(PorterResponseMonitorErrorCode errorCode) {
+		@Override
+        public Number getPrimaryKey(PorterResponseMonitorErrorCode errorCode) {
 			return errorCode.getErrorCodeId();
 		}
 
-		public void setPrimaryKey(PorterResponseMonitorErrorCode errorCode, int value) {
+		@Override
+        public void setPrimaryKey(PorterResponseMonitorErrorCode errorCode, int value) {
 			errorCode.setErrorCodeId(value);
 		}
 	};
@@ -251,30 +262,5 @@ public class PorterResponseMonitorDaoImpl implements PorterResponseMonitorDao, I
 		errorCodeTemplate.setPrimaryKeyField("ErrorCodeId");
 		errorCodeTemplate.setParentForeignKeyField("RuleId", CascadeMode.DELETE_ALL_CHILDREN_BEFORE_UPDATE);
 		errorCodeTemplate.setAdvancedFieldMapper(errorCodeFieldMapper);
-	}
-
-	@Autowired
-	public void setStateDao(StateDao stateDao) {
-        this.stateDao = stateDao;
-    }
-
-	@Autowired
-	public void setDbPersistentDao(DBPersistentDao dbPersistentDao) {
-        this.dbPersistentDao = dbPersistentDao;
-    }
-
-	@Autowired
-	public void setAttributeService(AttributeService attributeService) {
-        this.attributeService = attributeService;
-    }
-
-	@Autowired
-	public void setYukonJdbcTemplate(YukonJdbcTemplate yukonJdbcTemplate) {
-		this.yukonJdbcTemplate = yukonJdbcTemplate;
-	}
-
-	@Autowired
-	public void setNextValueHelper(NextValueHelper nextValueHelper) {
-		this.nextValueHelper = nextValueHelper;
 	}
 }

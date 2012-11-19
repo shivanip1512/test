@@ -14,7 +14,6 @@ import org.springframework.context.MessageSourceResolvable;
 import org.springframework.transaction.annotation.Transactional;
 
 import com.cannontech.common.util.SqlStatementBuilder;
-import com.cannontech.core.dao.DBPersistentDao;
 import com.cannontech.core.dao.RoleDao;
 import com.cannontech.core.roleproperties.DescriptiveRoleProperty;
 import com.cannontech.core.roleproperties.GroupRolePropertyValueCollection;
@@ -32,6 +31,7 @@ import com.cannontech.database.YukonRowCallbackHandler;
 import com.cannontech.database.data.lite.LiteYukonGroup;
 import com.cannontech.database.incrementer.NextValueHelper;
 import com.cannontech.i18n.YukonMessageSourceResolvable;
+import com.cannontech.message.DbChangeManager;
 import com.cannontech.message.dispatch.message.DBChangeMsg;
 import com.cannontech.message.dispatch.message.DbChangeType;
 import com.google.common.base.Predicate;
@@ -52,12 +52,13 @@ public class RolePropertyEditorDaoImpl implements RolePropertyEditorDao {
             this.role = role;
         }
 
+        @Override
         public boolean apply(YukonRoleProperty input) {
             return input.getRole() == role;
         }
     }
 
-    @Autowired private DBPersistentDao dbPersistentDao;
+    @Autowired private DbChangeManager dbChangeManager;
     @Autowired private NextValueHelper nextValueHelper;
     @Autowired private RoleDao roleDao;
     @Autowired private RolePropertyDaoImpl rolePropertyDao;
@@ -77,6 +78,7 @@ public class RolePropertyEditorDaoImpl implements RolePropertyEditorDao {
         sql.append("FROM YukonRoleProperty");
         
         yukonJdbcOperations.query(sql, new YukonRowCallbackHandler() {
+            @Override
             public void processRow(YukonResultSet rs) throws SQLException {
                 int rolePropertyId = rs.getInt("rolePropertyId");
                 String keyName = rs.getString("keyName");
@@ -116,6 +118,7 @@ public class RolePropertyEditorDaoImpl implements RolePropertyEditorDao {
     @Override
     public Map<YukonRoleProperty, DescriptiveRoleProperty> getDescriptiveRoleProperties(final YukonRole role) {
         Map<YukonRoleProperty, DescriptiveRoleProperty> result = Maps.filterKeys(descriptiveRoleProperties, new Predicate<YukonRoleProperty>() {
+            @Override
             public boolean apply(YukonRoleProperty input) {
                 return input.getRole() == role;
             }
@@ -131,6 +134,7 @@ public class RolePropertyEditorDaoImpl implements RolePropertyEditorDao {
         return result;
     }
     
+    @Override
     public GroupRolePropertyValueCollection getForGroupAndPredicate(LiteYukonGroup group, boolean defaultForBlank, Predicate<YukonRoleProperty> predicate) {
         final Map<YukonRoleProperty, Object> actualValueLookup = Maps.newHashMap();
         
@@ -140,6 +144,7 @@ public class RolePropertyEditorDaoImpl implements RolePropertyEditorDao {
         sql.append("where ygr.GroupId").eq(group.getGroupID());
         
         yukonJdbcOperations.query(sql, new YukonRowCallbackHandler() {
+            @Override
             public void processRow(YukonResultSet rs) throws SQLException {
                 YukonRoleProperty property = YukonRoleProperty.getForId(rs.getInt("rolePropertyId"));
                 String value = rs.getStringSafe("value");
@@ -200,7 +205,11 @@ public class RolePropertyEditorDaoImpl implements RolePropertyEditorDao {
             insertGroupRoleProperty(liteYukonGroup, yukonRoleProperty, dbTextValue);
         }
         
-        sendGroupDbChange(liteYukonGroup.getGroupID(), DbChangeType.UPDATE);
+        dbChangeManager.processDbChange(liteYukonGroup.getGroupID(),
+                                        DBChangeMsg.CHANGE_YUKON_USER_DB,
+                                        DBChangeMsg.CAT_YUKON_USER_GROUP,
+                                        "",
+                                        DbChangeType.UPDATE);
     }
     
     @Override
@@ -212,7 +221,12 @@ public class RolePropertyEditorDaoImpl implements RolePropertyEditorDao {
         sql.append(  "AND RoleId").eq(roleId);
         
         yukonJdbcOperations.update(sql);
-        sendGroupDbChange(groupId, DbChangeType.UPDATE);
+        
+        dbChangeManager.processDbChange(groupId,
+                                        DBChangeMsg.CHANGE_YUKON_USER_DB,
+                                        DBChangeMsg.CAT_YUKON_USER_GROUP,
+                                        "",
+                                        DbChangeType.UPDATE);
     }
     
     @Override
@@ -224,12 +238,11 @@ public class RolePropertyEditorDaoImpl implements RolePropertyEditorDao {
             save(collection.getLiteYukonGroup(), rolePropertyValue);
         }
         
-        DBChangeMsg dbChangeMsg = new DBChangeMsg(collection.getLiteYukonGroup().getGroupID(),
-                        DBChangeMsg.CHANGE_YUKON_USER_DB,
-                        DBChangeMsg.CAT_YUKON_USER_GROUP,
-                        "",
-                        DbChangeType.UPDATE);
-        dbPersistentDao.processDBChange(dbChangeMsg);
+        dbChangeManager.processDbChange(collection.getLiteYukonGroup().getGroupID(),
+                                        DBChangeMsg.CHANGE_YUKON_USER_DB,
+                                        DBChangeMsg.CAT_YUKON_USER_GROUP,
+                                        "",
+                                        DbChangeType.UPDATE);
     }
     
     private void save(LiteYukonGroup liteYukonGroup, RolePropertyValue rolePropertyValue) {
@@ -271,14 +284,5 @@ public class RolePropertyEditorDaoImpl implements RolePropertyEditorDao {
         String dbTextValue = InputTypeFactory.convertPropertyValue(valueToStore, descriptiveRoleProperty.getYukonRoleProperty().getType());
         dbTextValue = SqlUtils.convertStringToDbValue(dbTextValue);
         return dbTextValue;
-    }
-    
-    private void sendGroupDbChange(int groupId, DbChangeType type) {
-        DBChangeMsg dbChangeMsg = new DBChangeMsg(groupId,
-                                                  DBChangeMsg.CHANGE_YUKON_USER_DB,
-                                                  DBChangeMsg.CAT_YUKON_USER_GROUP,
-                                                  "",
-                                                  type);
-        dbPersistentDao.processDBChange(dbChangeMsg);
     }
 }

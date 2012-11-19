@@ -12,10 +12,10 @@ import com.cannontech.common.model.ServiceCompanyDto;
 import com.cannontech.core.dao.AddressDao;
 import com.cannontech.core.dao.ContactDao;
 import com.cannontech.core.dao.ContactNotificationDao;
-import com.cannontech.core.dao.DBPersistentDao;
 import com.cannontech.core.dao.DesignationCodeDao;
 import com.cannontech.core.dao.ServiceCompanyDao;
 import com.cannontech.database.data.lite.LiteContactNotification;
+import com.cannontech.message.DbChangeManager;
 import com.cannontech.message.dispatch.message.DbChangeCategory;
 import com.cannontech.message.dispatch.message.DbChangeType;
 import com.cannontech.stars.database.data.lite.LiteInventoryBase;
@@ -24,12 +24,12 @@ import com.cannontech.web.admin.energyCompany.serviceCompany.service.ServiceComp
 
 public class ServiceCompanyServiceImpl implements ServiceCompanyService {
     
-    private ServiceCompanyDao serviceCompanyDao = null;
-    private AddressDao addressDao = null;
-    private DesignationCodeDao designationCodeDao = null;
-    private ContactDao contactDao = null;
-    private DBPersistentDao dbPersistantDao = null;
-    private ContactNotificationDao contactNotificationDao = null;
+    @Autowired private ServiceCompanyDao serviceCompanyDao;
+    @Autowired private AddressDao addressDao;
+    @Autowired private DesignationCodeDao designationCodeDao;
+    @Autowired private ContactDao contactDao;
+    @Autowired private DbChangeManager dbChangeManager;
+    @Autowired private ContactNotificationDao contactNotificationDao;
 
     @Override
     public ServiceCompanyDto getServiceCompany(int serviceCompanyId) {
@@ -187,37 +187,8 @@ public class ServiceCompanyServiceImpl implements ServiceCompanyService {
     }
     
     private void sendServiceCompanyChangeMessage(Integer serviceCompanyId, DbChangeType dbChangeType) {
-        dbPersistantDao.processDatabaseChange(dbChangeType, DbChangeCategory.SERVICE_COMPANY, serviceCompanyId);
-    }
-    
-
-    @Autowired
-    public void setServiceCompanyDao(ServiceCompanyDao serviceCompanyDao) {
-        this.serviceCompanyDao = serviceCompanyDao;
-    }
-    
-    @Autowired
-    public void setAddressDao(AddressDao addressDao) {
-        this.addressDao = addressDao;
-    }
-    
-    @Autowired
-    public void setDesignationCodeDao(DesignationCodeDao designationCodeDao) {
-        this.designationCodeDao = designationCodeDao;
-    }
-    
-    @Autowired
-    public void setContactDao(ContactDao contactDao) {
-        this.contactDao = contactDao;
-    }
-    
-    @Autowired
-    public void setContactNotificationDao(ContactNotificationDao contactNotificationDao) {
-        this.contactNotificationDao = contactNotificationDao;
-    }
-    
-    @Autowired
-    public void setDbPersistantDao(DBPersistentDao dbPersistantDao) {
-        this.dbPersistantDao = dbPersistantDao;
+        dbChangeManager.processDbChange(dbChangeType, 
+                                        DbChangeCategory.SERVICE_COMPANY, 
+                                        serviceCompanyId);
     }
 }

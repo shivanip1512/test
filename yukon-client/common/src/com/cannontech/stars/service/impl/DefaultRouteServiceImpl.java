@@ -28,6 +28,7 @@ import com.cannontech.database.data.device.lm.MacroGroup;
 import com.cannontech.database.data.lite.LiteYukonUser;
 import com.cannontech.database.db.macro.GenericMacro;
 import com.cannontech.database.db.macro.MacroTypes;
+import com.cannontech.message.DbChangeManager;
 import com.cannontech.message.dispatch.message.DbChangeCategory;
 import com.cannontech.message.dispatch.message.DbChangeType;
 import com.cannontech.stars.database.data.lite.LiteStarsEnergyCompany;
@@ -36,11 +37,13 @@ import com.cannontech.stars.service.DefaultRouteService;
 public class DefaultRouteServiceImpl implements DefaultRouteService {
     private static final Logger log = YukonLogManager.getLogger(DefaultRouteServiceImpl.class);
     
-    private DBPersistentDao dbPersistentDao;
-    private StarsEventLogService starsEventLogService;
-    private PaoPermissionService paoPermissionService;
-    private YukonJdbcOperations yukonJdbcTemplate;
+    @Autowired private DBPersistentDao dbPersistentDao;
+    @Autowired private DbChangeManager dbChangeManager;
+    @Autowired private StarsEventLogService starsEventLogService;
+    @Autowired private PaoPermissionService paoPermissionService;
+    @Autowired private YukonJdbcOperations yukonJdbcTemplate;
     
+    @Override
     public int getDefaultRoute(LiteStarsEnergyCompany energyCompany) {
         Set<Integer> permittedPaoIds = paoPermissionService.getPaoIdsForUserPermission(energyCompany.getEnergyCompanyUser(), Permission.DEFAULT_ROUTE);
         if(permittedPaoIds.isEmpty()) {
@@ -85,6 +88,7 @@ public class DefaultRouteServiceImpl implements DefaultRouteService {
 
     }
     
+    @Override
     public void updateDefaultRoute(LiteStarsEnergyCompany energyCompany, int routeId, LiteYukonUser user) {
         
         int previousRouteId = energyCompany.getDefaultRouteId();
@@ -99,9 +103,9 @@ public class DefaultRouteServiceImpl implements DefaultRouteService {
             }
             
             // Sending out DB change to notify possible other servers.
-            dbPersistentDao.processDatabaseChange(DbChangeType.UPDATE, 
-                                                  DbChangeCategory.ENERGY_COMPANY_ROUTE, 
-                                                  energyCompany.getEnergyCompanyId());
+            dbChangeManager.processDbChange(DbChangeType.UPDATE, 
+                                            DbChangeCategory.ENERGY_COMPANY_ROUTE, 
+                                            energyCompany.getEnergyCompanyId());
 
             // Logging Default Route Id
             starsEventLogService.energyCompanyDefaultRouteChanged(user, energyCompany.getName(),
@@ -210,6 +214,7 @@ public class DefaultRouteServiceImpl implements DefaultRouteService {
         return paoObjectIds;
     }
     
+    @Override
     public void removeDefaultRoute(final LiteStarsEnergyCompany energyCompany) {
         Set<Integer> permittedPaoIds = paoPermissionService.getPaoIdsForUserPermission(energyCompany.getUser(), Permission.DEFAULT_ROUTE);
         if (!permittedPaoIds.isEmpty()) {
@@ -244,25 +249,5 @@ public class DefaultRouteServiceImpl implements DefaultRouteService {
                 }
             });
         }
-    }
-    
-    @Autowired
-    public void setDbPersistentDao(DBPersistentDao dbPersistentDao) {
-        this.dbPersistentDao = dbPersistentDao;
-    }
-    
-    @Autowired
-    public void setStarsEventLogService(StarsEventLogService starsEventLogService) {
-        this.starsEventLogService = starsEventLogService;
-    }
-
-    @Autowired
-    public void setPaoPermissionService(PaoPermissionService paoPermissionService) {
-        this.paoPermissionService = paoPermissionService;
-    }
-    
-    @Autowired
-    public void setYukonJdbcTemplate(YukonJdbcOperations yukonJdbcTemplate) {
-        this.yukonJdbcTemplate = yukonJdbcTemplate;
     }
 }

@@ -15,7 +15,6 @@ import com.cannontech.common.pao.PaoType;
 import com.cannontech.common.pao.definition.dao.PaoDefinitionDao;
 import com.cannontech.common.pao.definition.model.PaoTag;
 import com.cannontech.common.util.SqlStatementBuilder;
-import com.cannontech.core.dao.DBPersistentDao;
 import com.cannontech.core.dao.PointDao;
 import com.cannontech.database.IntegerRowMapper;
 import com.cannontech.database.SqlParameterSink;
@@ -25,6 +24,7 @@ import com.cannontech.database.YukonResultSet;
 import com.cannontech.database.YukonRowMapper;
 import com.cannontech.enums.Phase;
 import com.cannontech.enums.RegulatorPointMapping;
+import com.cannontech.message.DbChangeManager;
 import com.cannontech.message.dispatch.message.DbChangeCategory;
 import com.cannontech.message.dispatch.message.DbChangeType;
 import com.google.common.collect.Iterables;
@@ -34,7 +34,7 @@ public class CcMonitorBankListDaoImpl implements CcMonitorBankListDao {
     @Autowired private StrategyDao strategyDao;
     @Autowired private PointDao pointDao;
     @Autowired private PaoDefinitionDao paoDefinitionDao;
-    @Autowired private DBPersistentDao dbPersistentDao;
+    @Autowired private DbChangeManager dbChangeManager;
 
     private final YukonRowMapper<ZonePointPhaseHolder> regulatorPointRowMapper = new YukonRowMapper<ZonePointPhaseHolder>() {
         @Override
@@ -116,7 +116,9 @@ public class CcMonitorBankListDaoImpl implements CcMonitorBankListDao {
         sql.append("AND PointId").eq(deviceInfo.getPointId());
         yukonJdbcTemplate.update(sql);
 
-        dbPersistentDao.processDatabaseChange(DbChangeType.UPDATE, DbChangeCategory.CC_MONITOR_BANK_LIST, deviceInfo.getPointId());
+        dbChangeManager.processDbChange(DbChangeType.UPDATE, 
+                                        DbChangeCategory.CC_MONITOR_BANK_LIST, 
+                                        deviceInfo.getPointId());
     }
     
     @Override

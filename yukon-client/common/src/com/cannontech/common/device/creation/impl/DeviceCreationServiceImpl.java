@@ -32,19 +32,22 @@ import com.cannontech.database.data.device.DeviceFactory;
 import com.cannontech.database.data.device.RfnBase;
 import com.cannontech.database.data.point.PointBase;
 import com.cannontech.device.range.DlcAddressRangeService;
+import com.cannontech.message.DbChangeManager;
 import com.cannontech.message.dispatch.message.DbChangeType;
 
 public class DeviceCreationServiceImpl implements DeviceCreationService {
 
-    @Autowired private DeviceDao deviceDao = null;
-    @Autowired private PaoDao paoDao = null;
-    @Autowired private PointDao pointDao = null;
-    @Autowired private DeviceGroupEditorDao deviceGroupEditorDao = null;
+    @Autowired private DeviceDao deviceDao;
+    @Autowired private PaoDao paoDao;
+    @Autowired private PointDao pointDao;
+    @Autowired private DeviceGroupEditorDao deviceGroupEditorDao;
     @Autowired private DeviceGroupMemberEditorDao deviceGroupMemberEditorDao;
     @Autowired private DlcAddressRangeService dlcAddressRangeService;
     @Autowired private PaoCreationHelper paoCreationHelper;
-    @Autowired private DBPersistentDao dbPersistentDao = null;
+    @Autowired private DBPersistentDao dbPersistentDao;
+    @Autowired private DbChangeManager dbChangeManager;
     
+    @Override
     @Transactional
     public SimpleDevice createDeviceByTemplate(String templateName, String newDeviceName, boolean copyPoints) {
 
@@ -65,6 +68,7 @@ public class DeviceCreationServiceImpl implements DeviceCreationService {
 
     }
   
+    @Override
     @Transactional
     public SimpleDevice createRfnDeviceByTemplate(String templateName, String newDeviceName, String model, String manufacturer, String serialNumber, boolean copyPoints)
             throws DeviceCreationException, BadConfigurationException {
@@ -97,6 +101,7 @@ public class DeviceCreationServiceImpl implements DeviceCreationService {
         return newYukonDevice;
     }
     
+    @Override
     @Transactional
     public SimpleDevice createCarrierDeviceByDeviceType(int deviceType, String name, int address, int routeId, boolean createPoints) throws DeviceCreationException {
 
@@ -122,6 +127,7 @@ public class DeviceCreationServiceImpl implements DeviceCreationService {
 
     }
 
+    @Override
     @Transactional
     public SimpleDevice createRfnDeviceByDeviceType(PaoType type, String name, String model, String manufacturer, String serialNumber, boolean createPoints) throws DeviceCreationException {
         
@@ -157,7 +163,8 @@ public class DeviceCreationServiceImpl implements DeviceCreationService {
                 paoCreationHelper.addDefaultPointsToPao(yukonDevice);
             }
             // db change msg.  Process Device dbChange AFTER device AND points have been inserted into DB.
-            paoCreationHelper.processDbChange(yukonDevice, DbChangeType.ADD);
+            dbChangeManager.processPaoDbChange(yukonDevice, DbChangeType.ADD);
+            
             return yukonDevice;
         } catch (PersistenceException e) {
             throw new DeviceCreationException("Could not create new device.", e);
@@ -182,7 +189,7 @@ public class DeviceCreationServiceImpl implements DeviceCreationService {
             }
 
             // db change msg. Process Device dbChange AFTER device AND points have been inserted into DB.
-            paoCreationHelper.processDbChange(newYukonDevice, DbChangeType.ADD);
+            dbChangeManager.processPaoDbChange(newYukonDevice, DbChangeType.ADD);
 
             SimpleDevice templateYukonDevice = new SimpleDevice(templateIdentifier);
 

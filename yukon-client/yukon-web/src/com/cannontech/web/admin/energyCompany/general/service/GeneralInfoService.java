@@ -10,10 +10,10 @@ import com.cannontech.common.util.CommandExecutionException;
 import com.cannontech.core.dao.AddressDao;
 import com.cannontech.core.dao.ContactDao;
 import com.cannontech.core.dao.ContactNotificationDao;
-import com.cannontech.core.dao.DBPersistentDao;
 import com.cannontech.database.data.lite.LiteContact;
 import com.cannontech.database.data.lite.LiteContactNotification;
 import com.cannontech.database.data.lite.LiteYukonUser;
+import com.cannontech.message.DbChangeManager;
 import com.cannontech.message.dispatch.message.DBChangeMsg;
 import com.cannontech.message.dispatch.message.DbChangeType;
 import com.cannontech.stars.core.dao.ECMappingDao;
@@ -26,14 +26,14 @@ import com.cannontech.web.admin.energyCompany.general.model.GeneralInfo;
 
 public class GeneralInfoService {
 
-    private ContactDao contactDao;
-    private ContactNotificationDao contactNotificationDao;
-    private AddressDao addressDao;
-    private StarsDatabaseCache starsDatabaseCache;
-    private EnergyCompanyDao energyCompanyDao;
-    private ECMappingDao ecMappingDao;
-    private DefaultRouteService defaultRouteService;
-    private DBPersistentDao dbPersistentDao;
+    @Autowired private ContactDao contactDao;
+    @Autowired private ContactNotificationDao contactNotificationDao;
+    @Autowired private AddressDao addressDao;
+    @Autowired private StarsDatabaseCache starsDatabaseCache;
+    @Autowired private EnergyCompanyDao energyCompanyDao;
+    @Autowired private ECMappingDao ecMappingDao;
+    @Autowired private DefaultRouteService defaultRouteService;
+    @Autowired private DbChangeManager dbChangeManager;
     
     public GeneralInfo getGeneralInfo(LiteStarsEnergyCompany energyCompany) {
         GeneralInfo info = new GeneralInfo();
@@ -81,13 +81,6 @@ public class GeneralInfoService {
         /* Name */
         energyCompanyDao.updateCompanyName(generalInfo.getName(), generalInfo.getEcId());
         
-        dbPersistentDao.processDBChange(new DBChangeMsg(
-                                                        energyCompany.getEnergyCompanyId(),
-                                                        DBChangeMsg.CHANGE_ENERGY_COMPANY_DB,
-                                                        DBChangeMsg.CAT_ENERGY_COMPANY,
-                                                        DBChangeMsg.CAT_ENERGY_COMPANY,
-                                                        DbChangeType.UPDATE));
-        
         /* Phone */
         updateNotification(generalInfo.getPhone(), ContactNotificationType.PHONE, contactId);
         
@@ -100,11 +93,11 @@ public class GeneralInfoService {
         /* Address */
         addressDao.update(generalInfo.getAddress().getLiteAddress(addressId));
 
-        dbPersistentDao.processDBChange(new DBChangeMsg(contactId,
-                                                        DBChangeMsg.CHANGE_CONTACT_DB,
-                                                        DBChangeMsg.CAT_CUSTOMERCONTACT,
-                                                        DBChangeMsg.CAT_CUSTOMERCONTACT,
-                                                        DbChangeType.UPDATE));
+        dbChangeManager.processDbChange(contactId,
+                                        DBChangeMsg.CHANGE_CONTACT_DB,
+                                        DBChangeMsg.CAT_CUSTOMERCONTACT,
+                                        DBChangeMsg.CAT_CUSTOMERCONTACT,
+                                        DbChangeType.UPDATE);
         
         /* Route */
         defaultRouteService.updateDefaultRoute(energyCompany, generalInfo.getDefaultRouteId(), user);
@@ -143,47 +136,4 @@ public class GeneralInfoService {
         }
         
     }
-    
-    /* Dependencies */
-    
-    @Autowired
-    public void setContactDao(ContactDao contactDao) {
-        this.contactDao = contactDao;
-    }
-    
-    @Autowired
-    public void setContactNotificationDao(ContactNotificationDao contactNotificationDao) {
-        this.contactNotificationDao = contactNotificationDao;
-    }
-    
-    @Autowired
-    public void setAddressDao(AddressDao addressDao) {
-        this.addressDao = addressDao;
-    }
-    
-    @Autowired
-    public void setStarsDatabaseCache(StarsDatabaseCache starsDatabaseCache) {
-        this.starsDatabaseCache = starsDatabaseCache;
-    }
-    
-    @Autowired
-    public void setEnergyCompanyDao(EnergyCompanyDao energyCompanyDao) {
-        this.energyCompanyDao = energyCompanyDao;
-    }
-    
-    @Autowired
-    public void setEcMappingDao(ECMappingDao ecMappingDao) {
-        this.ecMappingDao = ecMappingDao;
-    }
-    
-    @Autowired
-    public void setDefaultRouteService(DefaultRouteService defaultRouteService) {
-        this.defaultRouteService = defaultRouteService;
-    }
-    
-    @Autowired
-    public void setDbPersistentDao(DBPersistentDao dbPersistentDao) {
-        this.dbPersistentDao = dbPersistentDao;
-    }
-    
 }

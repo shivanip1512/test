@@ -41,6 +41,7 @@ import com.cannontech.database.data.lite.LiteYukonRole;
 import com.cannontech.database.data.lite.LiteYukonRoleProperty;
 import com.cannontech.database.data.lite.LiteYukonUser;
 import com.cannontech.database.data.user.UserGroup;
+import com.cannontech.message.DbChangeManager;
 import com.cannontech.message.dispatch.message.DBChangeMsg;
 import com.cannontech.message.dispatch.message.DbChangeCategory;
 import com.cannontech.message.dispatch.message.DbChangeType;
@@ -576,7 +577,11 @@ public class StarsAdminUtil {
 	    map.setItemID(routeId);
 	    map.setMappingCategory(ECToGenericMapping.MAPPING_CATEGORY_ROUTE);
 	    dbPersistentDao.performDBChangeWithNoMsg(map, TransactionType.DELETE);
-	    dbPersistentDao.processDatabaseChange(DbChangeType.DELETE, DbChangeCategory.ENERGY_COMPANY_ROUTE, energyCompany.getEnergyCompanyId());
+	    
+	    DbChangeManager dbChangeManager = YukonSpringHook.getBean(DbChangeManager.class);
+	    dbChangeManager.processDbChange(DbChangeType.DELETE, 
+	                                    DbChangeCategory.ENERGY_COMPANY_ROUTE, 
+	                                    energyCompany.getEnergyCompanyId());
 	}
 	
 	public static void addMember(LiteStarsEnergyCompany energyCompany, LiteStarsEnergyCompany member, int loginID) throws TransactionException {
@@ -814,86 +819,67 @@ public class StarsAdminUtil {
 	}
 	
 	public static void handleDBChange(LiteBase lite, DbChangeType dbChangeType) {
-        DBChangeMsg msg = null;
+        DbChangeManager dbChangeManager = YukonSpringHook.getBean(DbChangeManager.class);
         
         if (lite == null) {
-            msg = new DBChangeMsg( 0, Integer.MAX_VALUE, "", "", dbChangeType);
+            dbChangeManager.processDbChange(0, Integer.MAX_VALUE, "", "", dbChangeType);
         }
         else if (lite.getLiteType() == LiteTypes.STARS_CUST_ACCOUNT_INFO) {
-            msg = new DBChangeMsg(
-                lite.getLiteID(),
-                DBChangeMsg.CHANGE_CUSTOMER_ACCOUNT_DB,
-                DBChangeMsg.CAT_CUSTOMER_ACCOUNT,
-                DBChangeMsg.CAT_CUSTOMER_ACCOUNT,
-                dbChangeType
-                );
+            dbChangeManager.processDbChange(lite.getLiteID(),
+                                            DBChangeMsg.CHANGE_CUSTOMER_ACCOUNT_DB,
+                                            DBChangeMsg.CAT_CUSTOMER_ACCOUNT,
+                                            DBChangeMsg.CAT_CUSTOMER_ACCOUNT,
+                                            dbChangeType);
+            
         }
         else if (lite.getLiteType() == LiteTypes.YUKON_USER) {
-            msg = new DBChangeMsg(
-                lite.getLiteID(),
-                DBChangeMsg.CHANGE_YUKON_USER_DB,
-                DBChangeMsg.CAT_YUKON_USER,
-                DBChangeMsg.CAT_YUKON_USER,
-                dbChangeType
-                );
+            dbChangeManager.processDbChange(lite.getLiteID(),
+                                            DBChangeMsg.CHANGE_YUKON_USER_DB,
+                                            DBChangeMsg.CAT_YUKON_USER,
+                                            DBChangeMsg.CAT_YUKON_USER,
+                                            dbChangeType);
         }
         else if (lite.getLiteType() == LiteTypes.CONTACT) {
-            msg = new DBChangeMsg(
-                lite.getLiteID(),
-                DBChangeMsg.CHANGE_CONTACT_DB,
-                DBChangeMsg.CAT_CUSTOMERCONTACT,
-                DBChangeMsg.CAT_CUSTOMERCONTACT,
-                dbChangeType
-                );
+            dbChangeManager.processDbChange(lite.getLiteID(),
+                                            DBChangeMsg.CHANGE_CONTACT_DB,
+                                            DBChangeMsg.CAT_CUSTOMERCONTACT,
+                                            DBChangeMsg.CAT_CUSTOMERCONTACT,
+                                            dbChangeType);
         }
         else if (lite.getLiteType() == LiteTypes.YUKON_GROUP) {
-            msg = new DBChangeMsg(
-                lite.getLiteID(),
-                DBChangeMsg.CHANGE_YUKON_USER_DB,
-                DBChangeMsg.CAT_YUKON_USER_GROUP,
-                DBChangeMsg.CAT_YUKON_USER_GROUP,
-                dbChangeType
-                );
+            dbChangeManager.processDbChange(lite.getLiteID(),
+                                            DBChangeMsg.CHANGE_YUKON_USER_DB,
+                                            DBChangeMsg.CAT_YUKON_USER_GROUP,
+                                            DBChangeMsg.CAT_YUKON_USER_GROUP,
+                                            dbChangeType);
         }
         else if (lite.getLiteType() == LiteTypes.ENERGY_COMPANY) {
-            msg = new DBChangeMsg(
-                lite.getLiteID(),
-                DBChangeMsg.CHANGE_ENERGY_COMPANY_DB,
-                DBChangeMsg.CAT_ENERGY_COMPANY,
-                DBChangeMsg.CAT_ENERGY_COMPANY,
-                dbChangeType
-                );
+            dbChangeManager.processDbChange(lite.getLiteID(),
+                                            DBChangeMsg.CHANGE_ENERGY_COMPANY_DB,
+                                            DBChangeMsg.CAT_ENERGY_COMPANY,
+                                            DBChangeMsg.CAT_ENERGY_COMPANY,
+                                            dbChangeType);
         }
         else if (lite.getLiteType() == LiteTypes.CUSTOMER) {
-            msg = new DBChangeMsg(
-                lite.getLiteID(),
-                DBChangeMsg.CHANGE_CUSTOMER_DB,
-                DBChangeMsg.CAT_CUSTOMER,
-                DBChangeMsg.CAT_CUSTOMER,
-                dbChangeType
-                );
+            dbChangeManager.processDbChange(lite.getLiteID(),
+                                            DBChangeMsg.CHANGE_CUSTOMER_DB,
+                                            DBChangeMsg.CAT_CUSTOMER,
+                                            DBChangeMsg.CAT_CUSTOMER,
+                                            dbChangeType);
         }
         else if (lite.getLiteType() == LiteTypes.CUSTOMER_CI) {
-            msg = new DBChangeMsg(
-                lite.getLiteID(),
-                DBChangeMsg.CHANGE_CUSTOMER_DB,
-                DBChangeMsg.CAT_CI_CUSTOMER,
-                DBChangeMsg.CAT_CI_CUSTOMER,
-                dbChangeType
-                );
+            dbChangeManager.processDbChange(lite.getLiteID(),
+                                            DBChangeMsg.CHANGE_CUSTOMER_DB,
+                                            DBChangeMsg.CAT_CI_CUSTOMER,
+                                            DBChangeMsg.CAT_CI_CUSTOMER,
+                                            dbChangeType);
         }
         else if( lite.getLiteType() == LiteTypes.STARS_SERVICE_COMPANY_DESIGNATION_CODE){
-            msg = new DBChangeMsg(
-                lite.getLiteID(),
-                DBChangeMsg.CHANGE_SERVICE_COMPANY_DESIGNATION_CODE_DB,
-                DBChangeMsg.CAT_SERVICE_COMPANY_DESIGNATION_CODE,
-                DBChangeMsg.CAT_SERVICE_COMPANY_DESIGNATION_CODE,
-                dbChangeType
-                );
+            dbChangeManager.processDbChange(lite.getLiteID(),
+                                            DBChangeMsg.CHANGE_SERVICE_COMPANY_DESIGNATION_CODE_DB,
+                                            DBChangeMsg.CAT_SERVICE_COMPANY_DESIGNATION_CODE,
+                                            DBChangeMsg.CAT_SERVICE_COMPANY_DESIGNATION_CODE,
+                                            dbChangeType);
         }
-
-        DBPersistentDao dbPersistentDao = YukonSpringHook.getBean("dbPersistentDao", DBPersistentDao.class);
-        dbPersistentDao.processDBChange(msg);
     }
-	
 }

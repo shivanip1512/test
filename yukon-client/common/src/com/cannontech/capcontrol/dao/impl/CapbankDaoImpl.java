@@ -15,7 +15,6 @@ import com.cannontech.capcontrol.model.LiteCapControlObject;
 import com.cannontech.common.pao.PaoIdentifier;
 import com.cannontech.common.pao.PaoType;
 import com.cannontech.common.pao.YukonPao;
-import com.cannontech.common.pao.service.impl.PaoCreationHelper;
 import com.cannontech.common.search.SearchResult;
 import com.cannontech.common.util.SqlStatementBuilder;
 import com.cannontech.core.dao.PaoDao;
@@ -24,14 +23,15 @@ import com.cannontech.database.SqlParameterSink;
 import com.cannontech.database.YukonJdbcTemplate;
 import com.cannontech.database.YukonResultSet;
 import com.cannontech.database.YukonRowMapper;
+import com.cannontech.message.DbChangeManager;
 import com.cannontech.message.dispatch.message.DbChangeType;
 
 public class CapbankDaoImpl implements CapbankDao {    
     private static final ParameterizedRowMapper<LiteCapControlObject> liteCapControlObjectRowMapper;
     
-    private YukonJdbcTemplate yukonJdbcTemplate;
-    private PaoCreationHelper paoCreationHelper;
-    private PaoDao paoDao;
+    @Autowired private YukonJdbcTemplate yukonJdbcTemplate;
+    @Autowired private PaoDao paoDao;
+    @Autowired private DbChangeManager dbChangeManager;
     
     static {        
         liteCapControlObjectRowMapper = CapbankControllerDaoImpl.createLiteCapControlObjectRowMapper();
@@ -71,6 +71,7 @@ public class CapbankDaoImpl implements CapbankDao {
      * This method returns all the CapBank IDs that are not assigned
      *  to a Feeder.
      */
+    @Override
     public List<Integer> getUnassignedCapBankIds() {
         SqlStatementBuilder sql = new SqlStatementBuilder();
         
@@ -82,6 +83,7 @@ public class CapbankDaoImpl implements CapbankDao {
         sql.append("ORDER BY DeviceID");
         
         ParameterizedRowMapper<Integer> mapper = new ParameterizedRowMapper<Integer>() {
+            @Override
             public Integer mapRow(ResultSet rs, int num) throws SQLException{
                 Integer i = new Integer ( rs.getInt("DEVICEID") );
                 return i;
@@ -118,7 +120,7 @@ public class CapbankDaoImpl implements CapbankDao {
         PagingResultSetExtractor<LiteCapControlObject> orphanExtractor = new PagingResultSetExtractor<LiteCapControlObject>(start, count, liteCapControlObjectRowMapper);
         yukonJdbcTemplate.getJdbcOperations().query(sql.getSql(), sql.getArguments(), orphanExtractor);
         
-        List<LiteCapControlObject> unassignedBanks = (List<LiteCapControlObject>) orphanExtractor.getResultList();
+        List<LiteCapControlObject> unassignedBanks = orphanExtractor.getResultList();
         
         SearchResult<LiteCapControlObject> searchResult = new SearchResult<LiteCapControlObject>();
         searchResult.setResultList(unassignedBanks);
@@ -143,6 +145,7 @@ public class CapbankDaoImpl implements CapbankDao {
         return new PaoIdentifier(feederId, PaoType.CAP_CONTROL_FEEDER);
     }   
     
+    @Override
     public boolean isSwitchedBank( Integer paoID ){
         //TODO untested
     	SqlStatementBuilder sql = new SqlStatementBuilder();
@@ -219,8 +222,8 @@ public class CapbankDaoImpl implements CapbankDao {
 		if (result) {
 		    YukonPao capBank = paoDao.getYukonPao(capbankId);
 		    YukonPao feeder = paoDao.getYukonPao(feederId);
-		    paoCreationHelper.processDbChange(capBank, DbChangeType.UPDATE);
-		    paoCreationHelper.processDbChange(feeder, DbChangeType.UPDATE);
+		    dbChangeManager.processPaoDbChange(capBank, DbChangeType.UPDATE);
+		    dbChangeManager.processPaoDbChange(feeder, DbChangeType.UPDATE);
 		}
 		
 		return result;
@@ -271,19 +274,4 @@ public class CapbankDaoImpl implements CapbankDao {
 		
 		return capbankAdditional;
 	}
-    
-    @Autowired
-    public void setYukonJdbcTemplate(final YukonJdbcTemplate yukonJdbcTemplate) {
-        this.yukonJdbcTemplate = yukonJdbcTemplate;
-    }    
-	
-	@Autowired
-	public void setPaoCreationHelper(PaoCreationHelper paoCreationHelper) {
-        this.paoCreationHelper = paoCreationHelper;
-    }
-	
-	@Autowired
-	public void setPaoDao(PaoDao paoDao) {
-        this.paoDao = paoDao;
-    }
 }

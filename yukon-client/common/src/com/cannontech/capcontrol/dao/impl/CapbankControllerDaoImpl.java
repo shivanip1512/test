@@ -15,7 +15,6 @@ import com.cannontech.common.pao.PaoType;
 import com.cannontech.common.pao.YukonPao;
 import com.cannontech.common.pao.attribute.model.BuiltInAttribute;
 import com.cannontech.common.pao.attribute.service.AttributeService;
-import com.cannontech.common.pao.service.impl.PaoCreationHelper;
 import com.cannontech.common.search.SearchResult;
 import com.cannontech.common.util.SqlStatementBuilder;
 import com.cannontech.core.dao.PaoDao;
@@ -24,14 +23,15 @@ import com.cannontech.database.PagingResultSetExtractor;
 import com.cannontech.database.SqlParameterSink;
 import com.cannontech.database.YukonJdbcTemplate;
 import com.cannontech.database.data.lite.LitePoint;
+import com.cannontech.message.DbChangeManager;
 import com.cannontech.message.dispatch.message.DbChangeType;
 
 public class CapbankControllerDaoImpl implements CapbankControllerDao {
     
-    private YukonJdbcTemplate yukonJdbcTemplate;
-    private PaoDao paoDao;
-    private AttributeService attributeService;
-    private PaoCreationHelper paoCreationHelper;
+    @Autowired private YukonJdbcTemplate yukonJdbcTemplate;
+    @Autowired private PaoDao paoDao;
+    @Autowired private DbChangeManager dbChangeManager;
+    @Autowired private AttributeService attributeService;
 
     private static final ParameterizedRowMapper<LiteCapControlObject> liteCapControlObjectRowMapper;
 
@@ -43,6 +43,7 @@ public class CapbankControllerDaoImpl implements CapbankControllerDao {
     public static final ParameterizedRowMapper<LiteCapControlObject> createLiteCapControlObjectRowMapper() {
         ParameterizedRowMapper<LiteCapControlObject> rowMapper =
             new ParameterizedRowMapper<LiteCapControlObject>() {
+                @Override
                 public LiteCapControlObject mapRow(ResultSet rs, int rowNum) throws SQLException {
 
                     LiteCapControlObject lco = new LiteCapControlObject();
@@ -89,8 +90,8 @@ public class CapbankControllerDaoImpl implements CapbankControllerDao {
 
         if (result) {
             YukonPao capBank = paoDao.getYukonPao(capbankId);
-            paoCreationHelper.processDbChange(controller, DbChangeType.UPDATE);
-            paoCreationHelper.processDbChange(capBank, DbChangeType.UPDATE);
+            dbChangeManager.processPaoDbChange(controller, DbChangeType.UPDATE);
+            dbChangeManager.processPaoDbChange(capBank, DbChangeType.UPDATE);
         }
 
         return result;
@@ -145,7 +146,7 @@ public class CapbankControllerDaoImpl implements CapbankControllerDao {
                                                     sql.getArguments(),
                                                     cbcOrphanExtractor);
 
-        List<LiteCapControlObject> unassignedCbcs = (List<LiteCapControlObject>) cbcOrphanExtractor.getResultList();
+        List<LiteCapControlObject> unassignedCbcs = cbcOrphanExtractor.getResultList();
 
         SearchResult<LiteCapControlObject> searchResult = new SearchResult<LiteCapControlObject>();
         searchResult.setResultList(unassignedCbcs);
@@ -164,25 +165,5 @@ public class CapbankControllerDaoImpl implements CapbankControllerDao {
         List<Integer> serialNumbers = yukonJdbcTemplate.query(sql, new IntegerRowMapper());
         
         return !serialNumbers.contains(serialNumber);
-    }
-    
-    @Autowired
-    public void setYukonJdbcTemplate(YukonJdbcTemplate yukonJdbcTemplate) {
-        this.yukonJdbcTemplate = yukonJdbcTemplate;
-    }
-    
-    @Autowired
-    public void setPaoDao(PaoDao paoDao) {
-        this.paoDao = paoDao;
-    }
-    
-    @Autowired
-    public void setAttributeService(AttributeService attributeService) {
-        this.attributeService = attributeService;
-    }
-    
-    @Autowired
-    public void setPaoCreationHelper(PaoCreationHelper paoCreationHelper) {
-        this.paoCreationHelper = paoCreationHelper;
     }
 }

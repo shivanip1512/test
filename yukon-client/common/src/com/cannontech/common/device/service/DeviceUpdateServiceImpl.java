@@ -33,7 +33,6 @@ import com.cannontech.common.pao.service.PointCreationService;
 import com.cannontech.common.pao.service.PointService;
 import com.cannontech.common.util.CtiUtilities;
 import com.cannontech.common.util.SimpleCallback;
-import com.cannontech.core.dao.DBPersistentDao;
 import com.cannontech.core.dao.DeviceDao;
 import com.cannontech.core.dao.PaoDao;
 import com.cannontech.core.dao.PersistenceException;
@@ -63,6 +62,7 @@ import com.cannontech.database.data.point.PointBase;
 import com.cannontech.database.data.point.PointUtil;
 import com.cannontech.database.db.DBPersistent;
 import com.cannontech.device.range.DlcAddressRangeService;
+import com.cannontech.message.DbChangeManager;
 import com.cannontech.message.dispatch.message.DBChangeMsg;
 import com.cannontech.message.dispatch.message.DbChangeType;
 
@@ -75,13 +75,14 @@ public class DeviceUpdateServiceImpl implements DeviceUpdateService {
     @Autowired private PaoDefinitionService paoDefinitionService;
     @Autowired private PointService pointService;
     @Autowired private PointCreationService pointCreationService;
-    @Autowired private DBPersistentDao dbPersistentDao;
+    @Autowired private DbChangeManager dbChangeManager;
     @Autowired private DlcAddressRangeService dlcAddressRangeService;
     @Autowired private DeviceConfigurationDao deviceConfigurationDao;
     @Autowired private PaoDefinitionDao paoDefinitionDao;
     
-    private Logger log = YukonLogManager.getLogger(DeviceUpdateServiceImpl.class);
+    private final Logger log = YukonLogManager.getLogger(DeviceUpdateServiceImpl.class);
     
+    @Override
     public void changeAddress(YukonDevice device, int newAddress) throws IllegalArgumentException {
     
         if (!dlcAddressRangeService.isEnforcedAddress(device.getPaoIdentifier().getPaoType(), newAddress)) {
@@ -91,6 +92,7 @@ public class DeviceUpdateServiceImpl implements DeviceUpdateService {
         deviceDao.changeAddress(device, newAddress);
     }
 
+    @Override
     public void changeRoute(YukonDevice device, String newRouteName) throws IllegalArgumentException {
 
         Integer routeId = paoDao.getRouteIdForRouteName(newRouteName);
@@ -102,11 +104,13 @@ public class DeviceUpdateServiceImpl implements DeviceUpdateService {
         deviceDao.changeRoute(device, routeId);
     }
 
+    @Override
     public void changeRoute(YukonDevice device, int newRouteId) throws IllegalArgumentException {
 
         deviceDao.changeRoute(device, newRouteId);
     }
 
+    @Override
     public void changeMeterNumber(YukonDevice device, String newMeterNumber) throws IllegalArgumentException {
     
         if (StringUtils.isBlank(newMeterNumber)) {
@@ -116,6 +120,7 @@ public class DeviceUpdateServiceImpl implements DeviceUpdateService {
         deviceDao.changeMeterNumber(device, newMeterNumber);
     }
     
+    @Override
     public void routeDiscovery(final YukonDevice device, List<Integer> routeIds, final LiteYukonUser liteYukonUser) {
         
         // callback to set routeId and do putconfig when route is discovered
@@ -153,6 +158,7 @@ public class DeviceUpdateServiceImpl implements DeviceUpdateService {
         routeDiscoveryService.routeDiscovery(device, routeIds, routeFoundCallback, liteYukonUser);
     }
     
+    @Override
     @Transactional
     public SimpleDevice changeDeviceType(YukonDevice currentDevice,
             PaoDefinition newDefinition) {
@@ -198,12 +204,13 @@ public class DeviceUpdateServiceImpl implements DeviceUpdateService {
         DBChangeMsg[] changeMsgs = changedDevice.getDBChangeMsgs(DbChangeType.UPDATE);
         // Send DBChangeMsgs
         for (DBChangeMsg msg : changeMsgs) {
-            dbPersistentDao.processDBChange(msg);
+            dbChangeManager.processDbChange(msg);
         }
         
         return new SimpleDevice(changedDevice.getDevice().getDeviceID(), PaoType.getForDbString(changedDevice.getPAOType()));
     }
 
+    @Override
     @SuppressWarnings("unchecked")
     @Transactional
     public DeviceBase changeDeviceType(DeviceBase currentDevice, PaoDefinition newDefinition) {

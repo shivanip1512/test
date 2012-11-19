@@ -14,7 +14,6 @@ import com.cannontech.capcontrol.model.LiteCapControlObject;
 import com.cannontech.capcontrol.model.PointIdContainer;
 import com.cannontech.common.pao.PaoType;
 import com.cannontech.common.pao.YukonPao;
-import com.cannontech.common.pao.service.impl.PaoCreationHelper;
 import com.cannontech.common.search.SearchResult;
 import com.cannontech.common.util.SqlStatementBuilder;
 import com.cannontech.core.dao.PaoDao;
@@ -22,13 +21,14 @@ import com.cannontech.database.IntegerRowMapper;
 import com.cannontech.database.PagingResultSetExtractor;
 import com.cannontech.database.SqlParameterSink;
 import com.cannontech.database.YukonJdbcTemplate;
+import com.cannontech.message.DbChangeManager;
 import com.cannontech.message.dispatch.message.DbChangeType;
 
 public class FeederDaoImpl implements FeederDao {    
     private static final ParameterizedRowMapper<LiteCapControlObject> liteCapControlObjectRowMapper;
     
     @Autowired private PaoDao paoDao;
-    @Autowired private PaoCreationHelper paoCreationHelper;
+    @Autowired private DbChangeManager dbChangeManager;
     @Autowired private YukonJdbcTemplate yukonJdbcTemplate;
     
     static {
@@ -39,6 +39,7 @@ public class FeederDaoImpl implements FeederDao {
      * This method returns all the Feeder IDs that are not assigned
      *  to a SubBus.
      */
+    @Override
     public List<Integer> getUnassignedFeederIds() {
     	SqlStatementBuilder sql = new SqlStatementBuilder();
     	
@@ -57,6 +58,7 @@ public class FeederDaoImpl implements FeederDao {
      * This method returns all the Feeder IDs that are assigned
      *  to the SubBus passed in.
      */
+    @Override
     public List<Integer> getFeederIdBySubstationBus(YukonPao subbus) {
         SqlStatementBuilder sql = new SqlStatementBuilder();
         
@@ -111,7 +113,7 @@ public class FeederDaoImpl implements FeederDao {
         																													liteCapControlObjectRowMapper);
         yukonJdbcTemplate.getJdbcOperations().query(sql.getSql(), sql.getArguments(), orphanExtractor);
         
-        List<LiteCapControlObject> unassignedFeeders = (List<LiteCapControlObject>) orphanExtractor.getResultList();
+        List<LiteCapControlObject> unassignedFeeders = orphanExtractor.getResultList();
         
         SearchResult<LiteCapControlObject> searchResult = new SearchResult<LiteCapControlObject>();
         searchResult.setResultList(unassignedFeeders);
@@ -123,6 +125,7 @@ public class FeederDaoImpl implements FeederDao {
     /**
      * This method returns the SubBus ID that owns the given feeder ID.
      */
+    @Override
     public int getParentSubBusID( int feederID ) throws EmptyResultDataAccessException {
     	SqlStatementBuilder sql = new SqlStatementBuilder();
     	
@@ -166,8 +169,8 @@ public class FeederDaoImpl implements FeederDao {
 		if (result) {
 		    YukonPao feeder = paoDao.getYukonPao(feederId);
 		    YukonPao subBus = paoDao.getYukonPao(substationBusId);
-		    paoCreationHelper.processDbChange(feeder, DbChangeType.UPDATE);
-		    paoCreationHelper.processDbChange(subBus, DbChangeType.UPDATE);
+		    dbChangeManager.processPaoDbChange(feeder, DbChangeType.UPDATE);
+		    dbChangeManager.processPaoDbChange(subBus, DbChangeType.UPDATE);
 		}
 		
 		return result;

@@ -9,7 +9,6 @@ import org.springframework.jdbc.core.namedparam.MapSqlParameterSource;
 
 import com.cannontech.common.model.DesignationCodeDto;
 import com.cannontech.common.util.SqlStatementBuilder;
-import com.cannontech.core.dao.DBPersistentDao;
 import com.cannontech.core.dao.DesignationCodeDao;
 import com.cannontech.database.FieldMapper;
 import com.cannontech.database.SimpleTableAccessTemplate;
@@ -17,18 +16,20 @@ import com.cannontech.database.YukonJdbcTemplate;
 import com.cannontech.database.YukonResultSet;
 import com.cannontech.database.YukonRowMapper;
 import com.cannontech.database.incrementer.NextValueHelper;
+import com.cannontech.message.DbChangeManager;
 import com.cannontech.message.dispatch.message.DbChangeCategory;
 import com.cannontech.message.dispatch.message.DbChangeType;
 
 public class DesignationCodeDaoImpl implements DesignationCodeDao, InitializingBean {
     
-    private NextValueHelper nextValueHelper;
-    private YukonJdbcTemplate yukonJdbcTemplate;
+    @Autowired private NextValueHelper nextValueHelper;
+    @Autowired private YukonJdbcTemplate yukonJdbcTemplate;
+    @Autowired private DbChangeManager dbChangeManager;
+
     private SimpleTableAccessTemplate<DesignationCodeDto> designationCodeTemplate;
-    private DBPersistentDao dbPersistantDao = null;
 
     // DesignationCodeDto -> to -> sql
-    private FieldMapper<DesignationCodeDto> designationCodeDtoFieldMapper = new FieldMapper<DesignationCodeDto>() {
+    private final FieldMapper<DesignationCodeDto> designationCodeDtoFieldMapper = new FieldMapper<DesignationCodeDto>() {
 
         @Override
         public void extractValues(MapSqlParameterSource p, DesignationCodeDto designationCodeDto) {
@@ -144,22 +145,8 @@ public class DesignationCodeDaoImpl implements DesignationCodeDao, InitializingB
     }
     
     private void sendDesignationCodeChangeMessage(Integer designationCodeId, DbChangeType dbChangeType) {
-        dbPersistantDao.processDatabaseChange(dbChangeType, DbChangeCategory.SERVICE_COMPANY_DESIGNATION_CODE, designationCodeId);
-    }
-    
- // DI
-    @Autowired
-    public void setYukonJdbcTemplate(YukonJdbcTemplate yukonJdbcTemplate) {
-        this.yukonJdbcTemplate = yukonJdbcTemplate;
-    }
-
-    @Autowired
-    public void setNextValueHelper(NextValueHelper nextValueHelper) {
-        this.nextValueHelper = nextValueHelper;
-    }
-
-    @Autowired
-    public void setDbPersistantDao(DBPersistentDao dbPersistantDao) {
-        this.dbPersistantDao = dbPersistantDao;
+        dbChangeManager.processDbChange(dbChangeType, 
+                                        DbChangeCategory.SERVICE_COMPANY_DESIGNATION_CODE, 
+                                        designationCodeId);
     }
 }

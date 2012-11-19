@@ -9,11 +9,11 @@ import javax.servlet.http.HttpSession;
 import com.cannontech.clientutils.CTILogger;
 import com.cannontech.common.constants.YukonListEntry;
 import com.cannontech.common.version.VersionTools;
-import com.cannontech.core.dao.DBPersistentDao;
 import com.cannontech.core.dao.DaoFactory;
 import com.cannontech.database.Transaction;
 import com.cannontech.database.TransactionException;
 import com.cannontech.database.data.lite.LiteYukonUser;
+import com.cannontech.message.DbChangeManager;
 import com.cannontech.message.dispatch.message.DBChangeMsg;
 import com.cannontech.message.dispatch.message.DbChangeType;
 import com.cannontech.spring.YukonSpringHook;
@@ -50,7 +50,7 @@ public class ManipulateWorkOrderTask extends TimeConsumingTask {
 
 	private final StarsCustAccountInformationDao starsCustAccountInformationDao = 
 	    YukonSpringHook.getBean("starsCustAccountInformationDao", StarsCustAccountInformationDao.class);
-	private final DBPersistentDao dbPersistentDao = YukonSpringHook.getBean("dbPersistentDao", DBPersistentDao.class);
+	private final DbChangeManager dbChangeManager = YukonSpringHook.getBean("dbChangeManager", DbChangeManager.class);
 	
 	public ManipulateWorkOrderTask(LiteYukonUser liteYukonuser, List<LiteWorkOrderBase> workOrderList, Integer changeServiceCompanyID, Integer changeServiceStatusID, Integer changeServiceTypeID, 
 	        boolean confirmOnMessagePage, String redirect, HttpSession session) {
@@ -168,7 +168,7 @@ public class ManipulateWorkOrderTask extends TimeConsumingTask {
 		    			);
 		    		//Change the dbChangeMessage source so the stars message handler will handle it instead of ignore it.
 					dbChangeMessage.setSource("ManipulateWorkOrder:ForceHandleDBChange");
-					dbPersistentDao.processDBChange(dbChangeMessage);
+					dbChangeManager.processDbChange(dbChangeMessage);
 	                StarsLiteFactory.setLiteWorkOrderBase(liteWorkOrder, workOrderBase);
 				}
 				numSuccess++;

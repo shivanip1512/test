@@ -12,7 +12,6 @@ import com.cannontech.capcontrol.model.Substation;
 import com.cannontech.common.pao.PaoIdentifier;
 import com.cannontech.common.pao.PaoType;
 import com.cannontech.common.pao.YukonPao;
-import com.cannontech.common.pao.service.impl.PaoCreationHelper;
 import com.cannontech.common.search.SearchResult;
 import com.cannontech.common.util.SqlStatementBuilder;
 import com.cannontech.core.dao.PaoDao;
@@ -23,22 +22,18 @@ import com.cannontech.database.YNBoolean;
 import com.cannontech.database.YukonJdbcTemplate;
 import com.cannontech.database.YukonResultSet;
 import com.cannontech.database.YukonRowMapper;
+import com.cannontech.message.DbChangeManager;
 import com.cannontech.message.dispatch.message.DbChangeType;
 
 public class SubstationDaoImpl implements SubstationDao {	
     private static final ParameterizedRowMapper<LiteCapControlObject> liteCapControlObjectRowMapper;
     
-    private PaoCreationHelper paoCreationHelper;
-    private YukonJdbcTemplate yukonJdbcTemplate;
-    private PaoDao paoDao;
+    @Autowired private YukonJdbcTemplate yukonJdbcTemplate;
+    @Autowired private DbChangeManager dbChangeManager;
+    @Autowired private PaoDao paoDao;
     
     static {
         liteCapControlObjectRowMapper = CapbankControllerDaoImpl.createLiteCapControlObjectRowMapper();
-    }
-    
-    @Autowired
-    public void setYukonJdbcTemplate(final YukonJdbcTemplate yukonJdbcTemplate) {
-        this.yukonJdbcTemplate = yukonJdbcTemplate;
     }
     
     @Override
@@ -96,8 +91,8 @@ public class SubstationDaoImpl implements SubstationDao {
 		if (result) {
 		    YukonPao substation = paoDao.getYukonPao(substationId);
 		    YukonPao area = paoDao.getYukonPao(areaId);
-		    paoCreationHelper.processDbChange(substation, DbChangeType.UPDATE);
-		    paoCreationHelper.processDbChange(area, DbChangeType.UPDATE);
+		    dbChangeManager.processPaoDbChange(substation, DbChangeType.UPDATE);
+		    dbChangeManager.processPaoDbChange(area, DbChangeType.UPDATE);
 		}
 		
 		return result;
@@ -117,6 +112,7 @@ public class SubstationDaoImpl implements SubstationDao {
 		return result;
 	}
     
+    @Override
     public List<Integer> getAllUnassignedSubstationIds() {
         SqlStatementBuilder sql = new SqlStatementBuilder();
         
@@ -157,7 +153,7 @@ public class SubstationDaoImpl implements SubstationDao {
         PagingResultSetExtractor<LiteCapControlObject> orphanExtractor = new PagingResultSetExtractor<LiteCapControlObject>(start, count, liteCapControlObjectRowMapper);
         yukonJdbcTemplate.getJdbcOperations().query(sql.getSql(), sql.getArguments(), orphanExtractor);
         
-        List<LiteCapControlObject> unassignedSubstations = (List<LiteCapControlObject>) orphanExtractor.getResultList();
+        List<LiteCapControlObject> unassignedSubstations = orphanExtractor.getResultList();
         
         SearchResult<LiteCapControlObject> searchResult = new SearchResult<LiteCapControlObject>();
         searchResult.setResultList(unassignedSubstations);
@@ -182,15 +178,5 @@ public class SubstationDaoImpl implements SubstationDao {
         List<Integer> listmap = yukonJdbcTemplate.query(sql, new IntegerRowMapper());
         
         return listmap;
-    }
-    
-    @Autowired
-    public void setPaoDao(PaoDao paoDao) {
-        this.paoDao = paoDao;
-    }
-    
-    @Autowired
-    public void setPaoCreationHelper(PaoCreationHelper paoCreationHelper) {
-        this.paoCreationHelper = paoCreationHelper;
     }
 }

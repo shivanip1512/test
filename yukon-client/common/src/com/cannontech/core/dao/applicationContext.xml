@@ -34,19 +34,8 @@
   	<property name="databaseCache" ref="databaseCache" />
   	<property name="paoCommandAuthorizationService" ref="paoCommandAuthorizationService" />
   </bean>
-  <bean id="contactDao" class="com.cannontech.core.dao.impl.ContactDaoImpl" >
-  	<property name="yukonListDao" ref="yukonListDao"/>
-  	<property name="contactNotificationDao" ref="contactNotificationDao"/>
-  	<property name="yukonUserDao" ref="yukonUserDao"/>
-  	<property name="databaseCache" ref="databaseCache"/>
-     <property name="nextValueHelper" ref="nextValueHelper" />
-     <property name="dbPersistantDao" ref="dbPersistentDao" />
-  </bean>
-  <bean id="contactNotificationDao" class="com.cannontech.core.dao.impl.ContactNotificationDaoImpl" >
-    <property name="databaseCache" ref="databaseCache"/>
-    <property name="simpleJdbcTemplate" ref="simpleJdbcTemplate" />
-    <property name="nextValueHelper" ref="nextValueHelper" />
-  </bean>
+  <bean id="contactDao" class="com.cannontech.core.dao.impl.ContactDaoImpl" />
+  <bean id="contactNotificationDao" class="com.cannontech.core.dao.impl.ContactNotificationDaoImpl" />
   <bean id="customerDao" class="com.cannontech.core.dao.impl.CustomerDaoImpl" >
   	<property name="contactDao" ref="contactDao"/>
   	<property name="yukonUserDao" ref="yukonUserDao"/>
@@ -61,22 +50,12 @@
     <property name="macScheduleDao" ref="macScheduleDao"/>
   </bean>
   <bean id="dbPersistentDao" class="com.cannontech.core.dao.impl.DBPersistentDaoImpl" />	
-  <bean id="deviceDao" class="com.cannontech.core.dao.impl.DeviceDaoImpl" >
-    <property name="paoDao" ref="paoDao"/>
-    <property name="jdbcOps" ref="jdbcTemplate"/>
-    <property name="yukonJdbcTemplate" ref="simpleJdbcTemplate"/>
-    <property name="databaseCache" ref="databaseCache"/>
-    <property name="dbPersistantDao" ref="dbPersistentDao" />
-    <property name="meterDao" ref="meterDao"/>
-  </bean>
+  <bean id="deviceDao" class="com.cannontech.core.dao.impl.DeviceDaoImpl" />
   <bean id="dynamicBillingFileDao" class="com.cannontech.common.dynamicBilling.dao.impl.DynamicBillingFileDaoImpl" >
    	<property name="simpleJdbcTemplate" ref="simpleJdbcTemplate" />
    	<property name="nextValueHelper" ref="nextValueHelper"/>
   </bean>
-  <bean id="energyCompanyDao" class="com.cannontech.stars.energyCompany.dao.impl.EnergyCompanyDaoImpl" >
-  	<property name="yukonUserDao" ref="yukonUserDao"/>
-    <property name="databaseCache" ref="databaseCache"/>
-  </bean>	
+  <bean id="energyCompanyDao" class="com.cannontech.stars.energyCompany.dao.impl.EnergyCompanyDaoImpl" />
   <bean id="graphDao" class="com.cannontech.core.dao.impl.GraphDaoImpl" >
     <property name="paoDao" ref="paoDao"/>  
     <property name="databaseCache" ref="databaseCache"/>    
@@ -128,10 +107,7 @@
      <property name="databaseCache" ref="databaseCache"/>      
   </bean>
   <bean id="yukonListDao" class="com.cannontech.core.dao.impl.YukonListDaoImpl" />
-  <bean id="yukonUserDao" class="com.cannontech.core.dao.impl.YukonUserDaoImpl" >
-     <property name="databaseCache" ref="databaseCache"/>
-     <property name="userPaoPermissionDao" ref="userPaoPermissionDao" />
-  </bean>
+  <bean id="yukonUserDao" class="com.cannontech.core.dao.impl.YukonUserDaoImpl" />
   <bean class="com.cannontech.core.service.impl.YukonUserServiceImpl"/>
 
   <bean id="userGroupDao" class="com.cannontech.core.users.dao.impl.UserGroupDaoImpl" />

@@ -11,21 +11,21 @@ import com.cannontech.common.constants.YukonListEntry;
 import com.cannontech.common.constants.YukonSelectionList;
 import com.cannontech.common.util.IterableUtils;
 import com.cannontech.common.util.SqlStatementBuilder;
-import com.cannontech.core.dao.DBPersistentDao;
 import com.cannontech.database.AdvancedFieldMapper;
 import com.cannontech.database.SimpleTableAccessTemplate;
 import com.cannontech.database.SqlParameterChildSink;
 import com.cannontech.database.YNBoolean;
 import com.cannontech.database.YukonJdbcTemplate;
 import com.cannontech.database.incrementer.NextValueHelper;
+import com.cannontech.message.DbChangeManager;
 import com.cannontech.message.dispatch.message.DbChangeCategory;
 import com.cannontech.message.dispatch.message.DbChangeType;
 import com.cannontech.stars.dr.selectionList.dao.SelectionListDao;
 
 public class SelectionListDaoImpl implements SelectionListDao {
-    private YukonJdbcTemplate yukonJdbcTemplate;
-    private NextValueHelper nextValueHelper;
-    private DBPersistentDao dbPersistentDao;
+    @Autowired private YukonJdbcTemplate yukonJdbcTemplate;
+    @Autowired private NextValueHelper nextValueHelper;
+    @Autowired private DbChangeManager dbChangeManager;
 
     private SimpleTableAccessTemplate<YukonSelectionList> listTemplate;
     private final static AdvancedFieldMapper<YukonSelectionList> listFieldMapper =
@@ -89,9 +89,9 @@ public class SelectionListDaoImpl implements SelectionListDao {
             yukonJdbcTemplate.update(sql);
         }
 
-        dbPersistentDao.processDatabaseChange(DbChangeType.UPDATE,
-                                              DbChangeCategory.YUKON_SELECTION_LIST,
-                                              list.getListId());
+        dbChangeManager.processDbChange(DbChangeType.UPDATE,
+                                        DbChangeCategory.YUKON_SELECTION_LIST,
+                                        list.getListId());
     }
 
     @PostConstruct
@@ -109,20 +109,5 @@ public class SelectionListDaoImpl implements SelectionListDao {
         entryTemplate.setAdvancedFieldMapper(entryFieldMapper);
         entryTemplate.setPrimaryKeyField("EntryId");
         entryTemplate.setPrimaryKeyValidOver(0);
-    }
-
-    @Autowired
-    public void setYukonJdbcTemplate(YukonJdbcTemplate yukonJdbcTemplate) {
-        this.yukonJdbcTemplate = yukonJdbcTemplate;
-    }
-
-    @Autowired
-    public void setNextValueHelper(NextValueHelper nextValueHelper) {
-        this.nextValueHelper = nextValueHelper;
-    }
-
-    @Autowired
-    public void setDBPersistentDao(DBPersistentDao dbPersistentDao) {
-        this.dbPersistentDao = dbPersistentDao;
     }
 }

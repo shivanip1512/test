@@ -57,6 +57,7 @@ import com.cannontech.database.data.lite.LiteYukonUser;
 import com.cannontech.database.db.contact.Contact;
 import com.cannontech.database.db.customer.Customer;
 import com.cannontech.database.db.user.YukonGroup;
+import com.cannontech.message.DbChangeManager;
 import com.cannontech.message.dispatch.message.DBChangeMsg;
 import com.cannontech.message.dispatch.message.DbChangeType;
 import com.cannontech.roles.operator.ConsumerInfoRole;
@@ -99,6 +100,7 @@ public class LiteStarsEnergyCompany extends LiteBase implements YukonEnergyCompa
     private AddressDao addressDao;
     private PaoDao paoDao;
     private DBPersistentDao dbPersistentDao;
+    private DbChangeManager dbChangeManager;
     private ECMappingDao ecMappingDao;
     private EnergyCompanyRolePropertyDao energyCompanyRolePropertyDao;
     private DefaultRouteService defaultRouteService;
@@ -237,6 +239,7 @@ public class LiteStarsEnergyCompany extends LiteBase implements YukonEnergyCompa
     	initApplianceCategories();
     }
     
+    @Override
     public int getEnergyCompanyId() {
         return getLiteID();
     }
@@ -250,6 +253,7 @@ public class LiteStarsEnergyCompany extends LiteBase implements YukonEnergyCompa
      * Returns the name.
      * @return String
      */
+    @Override
     public String getName() {
         if (name == null) {
             setName(energyCompanyDao.retrieveCompanyName(getEnergyCompanyId()));
@@ -359,6 +363,7 @@ public class LiteStarsEnergyCompany extends LiteBase implements YukonEnergyCompa
         return timeZone;
     }
     
+    @Override
     public DateTimeZone getDefaultDateTimeZone() {
         return DateTimeZone.forTimeZone(getDefaultTimeZone()); 
     }
@@ -1120,12 +1125,11 @@ public class LiteStarsEnergyCompany extends LiteBase implements YukonEnergyCompa
         if (liteAcctInfo == null) return;
         
         // Remove customer from the cache
-        DBChangeMsg dbChange = new DBChangeMsg(liteAcctInfo.getCustomer().getLiteID(),
-                              DBChangeMsg.CHANGE_CUSTOMER_DB,
-                              DBChangeMsg.CAT_CUSTOMER,
-                              DBChangeMsg.CAT_CUSTOMER,
-                              DbChangeType.DELETE);
-        dbPersistentDao.processDBChange(dbChange);
+        dbChangeManager.processDbChange(liteAcctInfo.getCustomer().getLiteID(),
+                                        DBChangeMsg.CHANGE_CUSTOMER_DB,
+                                        DBChangeMsg.CAT_CUSTOMER,
+                                        DBChangeMsg.CAT_CUSTOMER,
+                                        DbChangeType.DELETE);
     }
     
     /**
@@ -1876,6 +1880,10 @@ public class LiteStarsEnergyCompany extends LiteBase implements YukonEnergyCompa
     
     public void setDbPersistentDao(DBPersistentDao dbPersistentDao) {
         this.dbPersistentDao = dbPersistentDao;
+    }
+    
+    public void setDbChangeManager(DbChangeManager dbChangeManager) {
+        this.dbChangeManager = dbChangeManager;
     }
     
     public void setEcMappingDao(ECMappingDao ecMappingDao) {

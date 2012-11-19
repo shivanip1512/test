@@ -15,7 +15,6 @@ import com.cannontech.common.util.ChunkingMappedSqlTemplate;
 import com.cannontech.common.util.SqlFragmentGenerator;
 import com.cannontech.common.util.SqlFragmentSource;
 import com.cannontech.common.util.SqlStatementBuilder;
-import com.cannontech.core.dao.DBPersistentDao;
 import com.cannontech.core.dao.NotFoundException;
 import com.cannontech.core.dao.YukonGroupDao;
 import com.cannontech.database.FieldMapper;
@@ -26,6 +25,7 @@ import com.cannontech.database.YukonRowMapper;
 import com.cannontech.database.data.lite.LiteYukonGroup;
 import com.cannontech.database.data.lite.LiteYukonUser;
 import com.cannontech.database.incrementer.NextValueHelper;
+import com.cannontech.message.DbChangeManager;
 import com.cannontech.message.dispatch.message.DBChangeMsg;
 import com.cannontech.message.dispatch.message.DbChangeType;
 import com.google.common.base.Function;
@@ -34,7 +34,7 @@ import com.google.common.collect.Maps;
 
 public class YukonGroupDaoImpl implements YukonGroupDao {
 
-    @Autowired private DBPersistentDao dbPersistantDao;
+    @Autowired private DbChangeManager dbChangeManager;
     @Autowired private NextValueHelper nextValueHelper;
     @Autowired private YukonJdbcTemplate yukonJdbcTemplate;
 
@@ -58,8 +58,9 @@ public class YukonGroupDaoImpl implements YukonGroupDao {
         }
     };
     
-    private YukonRowMapper<Map.Entry<Integer, LiteYukonGroup>> mapEntryRowMapper =
+    private final YukonRowMapper<Map.Entry<Integer, LiteYukonGroup>> mapEntryRowMapper =
         new YukonRowMapper<Map.Entry<Integer, LiteYukonGroup>>() {
+        @Override
         public Map.Entry<Integer, LiteYukonGroup> mapRow(YukonResultSet rs) throws SQLException {
             int groupId = rs.getInt("groupId");
             String groupName = rs.getString("groupName");
@@ -148,6 +149,7 @@ public class YukonGroupDaoImpl implements YukonGroupDao {
             new ChunkingMappedSqlTemplate(yukonJdbcTemplate);
 
         SqlFragmentGenerator<Integer> sqlGenerator = new SqlFragmentGenerator<Integer>() {
+            @Override
             public SqlFragmentSource generate(List<Integer> subList) {
                 SqlStatementBuilder sql = new SqlStatementBuilder();
                 sql.append("SELECT groupId, groupName FROM yukonGroup");
@@ -195,7 +197,12 @@ public class YukonGroupDaoImpl implements YukonGroupDao {
         simpleTableTemplate.save(group);
         
         DbChangeType changeType = update ? DbChangeType.UPDATE : DbChangeType.ADD;
-        sendGroupDbChangeMsg(group.getGroupID(), changeType);
+        
+        dbChangeManager.processDbChange(group.getGroupID(),
+                                        DBChangeMsg.CHANGE_YUKON_USER_DB,
+                                        DBChangeMsg.CAT_YUKON_USER_GROUP,
+                                        DBChangeMsg.CAT_YUKON_USER,
+                                        changeType);
     }
     
     @Override
@@ -213,7 +220,11 @@ public class YukonGroupDaoImpl implements YukonGroupDao {
         sql.append("WHERE GroupId").eq(groupId);
         yukonJdbcTemplate.update(sql);
         
-        sendGroupDbChangeMsg(groupId, DbChangeType.DELETE);
+        dbChangeManager.processDbChange(groupId,
+                                        DBChangeMsg.CHANGE_YUKON_USER_DB,
+                                        DBChangeMsg.CAT_YUKON_USER_GROUP,
+                                        DBChangeMsg.CAT_YUKON_USER,
+                                        DbChangeType.DELETE);
     }
     
     @Override
@@ -238,14 +249,5 @@ public class YukonGroupDaoImpl implements YukonGroupDao {
 
         List<LiteYukonGroup> roleGroupList = yukonJdbcTemplate.query(sql, liteYukonGroupRowMapper);
         return roleGroupList;
-    }
-    
-    private void sendGroupDbChangeMsg(Integer groupId, DbChangeType dbChangeType) {
-        DBChangeMsg changeMsg = new DBChangeMsg(groupId,
-                                                DBChangeMsg.CHANGE_YUKON_USER_DB,
-                                                DBChangeMsg.CAT_YUKON_USER_GROUP,
-                                                DBChangeMsg.CAT_YUKON_USER,
-                                                dbChangeType);
-        dbPersistantDao.processDBChange(changeMsg);
     }
 }

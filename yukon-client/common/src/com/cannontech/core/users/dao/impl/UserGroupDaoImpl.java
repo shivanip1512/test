@@ -13,7 +13,6 @@ import org.springframework.jdbc.core.namedparam.MapSqlParameterSource;
 
 import com.cannontech.clientutils.YukonLogManager;
 import com.cannontech.common.util.SqlStatementBuilder;
-import com.cannontech.core.dao.DBPersistentDao;
 import com.cannontech.core.dao.RoleDao;
 import com.cannontech.core.roleproperties.YukonRole;
 import com.cannontech.core.users.dao.UserGroupDao;
@@ -26,6 +25,7 @@ import com.cannontech.database.YukonRowMapper;
 import com.cannontech.database.data.lite.LiteYukonGroup;
 import com.cannontech.database.data.user.UserGroup;
 import com.cannontech.database.incrementer.NextValueHelper;
+import com.cannontech.message.DbChangeManager;
 import com.cannontech.message.dispatch.message.DBChangeMsg;
 import com.cannontech.message.dispatch.message.DbChangeType;
 import com.google.common.collect.Multimap;
@@ -33,14 +33,14 @@ import com.google.common.collect.Multimap;
 public class UserGroupDaoImpl implements UserGroupDao, InitializingBean {
     private static final Logger log = YukonLogManager.getLogger(UserGroupDaoImpl.class);
     
-    @Autowired private DBPersistentDao dbPersistentDao;
+    @Autowired private DbChangeManager dbChangeManager;
     @Autowired private NextValueHelper nextValueHelper;
     @Autowired private RoleDao roleDao;
     @Autowired private YukonJdbcTemplate yukonJdbcTemplate;
         
     private SimpleTableAccessTemplate<com.cannontech.database.db.user.UserGroup> userGroupTemplate;
     
-    private FieldMapper<com.cannontech.database.db.user.UserGroup> userGroupFieldMapper = new FieldMapper<com.cannontech.database.db.user.UserGroup>() {
+    private final FieldMapper<com.cannontech.database.db.user.UserGroup> userGroupFieldMapper = new FieldMapper<com.cannontech.database.db.user.UserGroup>() {
         @Override
         public void extractValues(MapSqlParameterSource p, com.cannontech.database.db.user.UserGroup userGroup) {
             p.addValue("Name", userGroup.getUserGroupName());
@@ -121,7 +121,11 @@ public class UserGroupDaoImpl implements UserGroupDao, InitializingBean {
     public void update(com.cannontech.database.db.user.UserGroup userGroup) {
         userGroupTemplate.update(userGroup);
         
-        dbPersistentDao.processDBChange(getDbChangeMessage(userGroup.getUserGroupId(), DbChangeType.UPDATE));
+        dbChangeManager.processDbChange(userGroup.getUserGroupId(), 
+                                        DBChangeMsg.CHANGE_USER_GROUP_DB,
+                                        DBChangeMsg.CAT_USER_GROUP, 
+                                        DBChangeMsg.CAT_USER_GROUP, 
+                                        DbChangeType.UPDATE);
     }
 
     @Override
@@ -132,7 +136,11 @@ public class UserGroupDaoImpl implements UserGroupDao, InitializingBean {
         
         yukonJdbcTemplate.update(sql);
         
-        dbPersistentDao.processDBChange(getDbChangeMessage(userGroupId, DbChangeType.DELETE));
+        dbChangeManager.processDbChange(userGroupId, 
+                                        DBChangeMsg.CHANGE_USER_GROUP_DB,
+                                        DBChangeMsg.CAT_USER_GROUP, 
+                                        DBChangeMsg.CAT_USER_GROUP, 
+                                        DbChangeType.DELETE);
     }
     
     @Override
@@ -275,7 +283,11 @@ public class UserGroupDaoImpl implements UserGroupDao, InitializingBean {
 
         yukonJdbcTemplate.update(sql);
         
-        dbPersistentDao.processDBChange(getDbChangeMessage(userGroupId, DbChangeType.UPDATE));
+        dbChangeManager.processDbChange(userGroupId, 
+                                        DBChangeMsg.CHANGE_USER_GROUP_DB,
+                                        DBChangeMsg.CAT_USER_GROUP, 
+                                        DBChangeMsg.CAT_USER_GROUP, 
+                                        DbChangeType.UPDATE);
     }
 
     @Override
@@ -287,11 +299,10 @@ public class UserGroupDaoImpl implements UserGroupDao, InitializingBean {
 
         yukonJdbcTemplate.update(sql);
         
-        dbPersistentDao.processDBChange(getDbChangeMessage(userGroupId, DbChangeType.UPDATE));
-    }
-    
-    private DBChangeMsg getDbChangeMessage(int userGroupId, DbChangeType dbChangeType) {
-        return new DBChangeMsg(userGroupId, DBChangeMsg.CHANGE_USER_GROUP_DB,
-                                       DBChangeMsg.CAT_USER_GROUP, DBChangeMsg.CAT_USER_GROUP,  dbChangeType);
+        dbChangeManager.processDbChange(userGroupId, 
+                                        DBChangeMsg.CHANGE_USER_GROUP_DB,
+                                        DBChangeMsg.CAT_USER_GROUP, 
+                                        DBChangeMsg.CAT_USER_GROUP, 
+                                        DbChangeType.UPDATE);
     }
 }

@@ -36,6 +36,7 @@ import com.cannontech.database.data.lite.LiteYukonUser;
 import com.cannontech.database.data.user.YukonUser;
 import com.cannontech.database.db.user.UserGroup;
 import com.cannontech.database.incrementer.NextValueHelper;
+import com.cannontech.message.DbChangeManager;
 import com.cannontech.message.dispatch.message.DBChangeMsg;
 import com.cannontech.message.dispatch.message.DbChangeType;
 import com.cannontech.user.UserUtils;
@@ -44,12 +45,13 @@ import com.cannontech.yukon.IDatabaseCache;
 public class YukonUserDaoImpl implements YukonUserDao {
 
     @Autowired private DBPersistentDao dbPersistantDao;
+    @Autowired private DbChangeManager dbChangeManager;
     @Autowired private NextValueHelper nextValueHelper;
     @Autowired private SystemEventLogService systemEventLogService;
     @Autowired private YukonJdbcTemplate yukonJdbcTemplate;
-    
-    private PaoPermissionDao<LiteYukonUser> userPaoPermissionDao;
-    private IDatabaseCache databaseCache;
+    @Autowired private PaoPermissionDao<LiteYukonUser> userPaoPermissionDao;
+    @Autowired private IDatabaseCache databaseCache;
+
     private SimpleTableAccessTemplate<LiteYukonUser> simpleTableTemplate;
     
     private final static FieldMapper<LiteYukonUser> fieldMapper = new FieldMapper<LiteYukonUser>() {
@@ -101,7 +103,12 @@ public class YukonUserDaoImpl implements YukonUserDao {
 	    yukonJdbcTemplate.update(sql, newUsername, modifiedUserId);
 
 	    systemEventLogService.usernameChanged(changingUser, modifiedUser.getUsername(), newUsername);
-	    sendUserDbChangeMsg(modifiedUserId, DbChangeType.UPDATE);
+	    
+	    dbChangeManager.processDbChange(modifiedUserId,
+                                        DBChangeMsg.CHANGE_YUKON_USER_DB,
+                                        DBChangeMsg.CAT_YUKON_USER,
+                                        DBChangeMsg.CAT_YUKON_USER,
+                                        DbChangeType.UPDATE);
 	}
 	
 	@Override
@@ -122,7 +129,13 @@ public class YukonUserDaoImpl implements YukonUserDao {
 	        yukonJdbcTemplate.update(sql);
 	    }
 
-	    sendUserDbChangeMsg(user.getUserID(), update ? DbChangeType.UPDATE : DbChangeType.ADD);
+	    DbChangeType changeType = update ? DbChangeType.UPDATE : DbChangeType.ADD;
+	    
+	    dbChangeManager.processDbChange(user.getUserID(),
+                                        DBChangeMsg.CHANGE_YUKON_USER_DB,
+                                        DBChangeMsg.CAT_YUKON_USER,
+                                        DBChangeMsg.CAT_YUKON_USER,
+                                        changeType);
     }
 	
 	@Override
@@ -262,9 +275,12 @@ public class YukonUserDaoImpl implements YukonUserDao {
         
         String deleteYukonUser = "DELETE FROM YukonUser WHERE UserId = ?";
         yukonJdbcTemplate.update(deleteYukonUser, userId);
-
         
-        sendUserDbChangeMsg(userId, DbChangeType.DELETE);        
+        dbChangeManager.processDbChange(userId,
+                                        DBChangeMsg.CHANGE_YUKON_USER_DB,
+                                        DBChangeMsg.CAT_YUKON_USER,
+                                        DBChangeMsg.CAT_YUKON_USER,
+                                        DbChangeType.DELETE);       
 	}
 
 	@Override
@@ -317,7 +333,11 @@ public class YukonUserDaoImpl implements YukonUserDao {
 	    sql.append("WHERE UserId").eq(userId);
 	    yukonJdbcTemplate.update(sql);
 	    
-        sendUserDbChangeMsg(userId, DbChangeType.UPDATE);
+	    dbChangeManager.processDbChange(userId,
+                                        DBChangeMsg.CHANGE_YUKON_USER_DB,
+                                        DBChangeMsg.CAT_YUKON_USER,
+                                        DBChangeMsg.CAT_YUKON_USER,
+                                        DbChangeType.UPDATE);
     }
 
     @Override
@@ -332,7 +352,11 @@ public class YukonUserDaoImpl implements YukonUserDao {
             yukonJdbcTemplate.update(sql.toString(), userId, groupId);
         }
 
-        sendUserDbChangeMsg(userId, DbChangeType.ADD);
+        dbChangeManager.processDbChange(userId,
+                                        DBChangeMsg.CHANGE_YUKON_USER_DB,
+                                        DBChangeMsg.CAT_YUKON_USER,
+                                        DBChangeMsg.CAT_YUKON_USER,
+                                        DbChangeType.ADD);
     }
     
     @Override
@@ -360,18 +384,6 @@ public class YukonUserDaoImpl implements YukonUserDao {
         searchResult.setBounds(start, count, totalCount);
         
         return searchResult;
-    }
-
-    /**
-     * @param userId
-     */
-    private void sendUserDbChangeMsg(Integer userId, DbChangeType dbChangeType) {
-        DBChangeMsg changeMsg = new DBChangeMsg(userId,
-                                                DBChangeMsg.CHANGE_YUKON_USER_DB,
-                                                DBChangeMsg.CAT_YUKON_USER,
-                                                DBChangeMsg.CAT_YUKON_USER,
-                                                dbChangeType);
-        dbPersistantDao.processDBChange(changeMsg);
     }
 	
     @Override
@@ -437,15 +449,5 @@ public class YukonUserDaoImpl implements YukonUserDao {
         sql.append("WHERE UserId").in(userIdsByGroupIdSql);
         
         yukonJdbcTemplate.update(sql);
-    }
-
-    /* Dependency Injections */
-    public void setDatabaseCache(IDatabaseCache databaseCache) {
-        this.databaseCache = databaseCache;
-    }
-    
-    @Autowired
-    public void setUserPaoPermissionDao(PaoPermissionDao<LiteYukonUser> userPaoPermissionDao) {
-        this.userPaoPermissionDao = userPaoPermissionDao;
     }
 }

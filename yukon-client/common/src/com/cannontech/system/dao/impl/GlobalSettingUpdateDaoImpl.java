@@ -11,12 +11,12 @@ import org.springframework.transaction.annotation.Transactional;
 
 import com.cannontech.clientutils.YukonLogManager;
 import com.cannontech.common.events.loggers.SystemEventLogService;
-import com.cannontech.core.dao.DBPersistentDao;
 import com.cannontech.database.FieldMapper;
 import com.cannontech.database.SimpleTableAccessTemplate;
 import com.cannontech.database.YukonJdbcTemplate;
 import com.cannontech.database.data.lite.LiteYukonUser;
 import com.cannontech.database.incrementer.NextValueHelper;
+import com.cannontech.message.DbChangeManager;
 import com.cannontech.message.dispatch.message.DbChangeCategory;
 import com.cannontech.message.dispatch.message.DbChangeType;
 import com.cannontech.system.GlobalSettingType;
@@ -28,7 +28,7 @@ import com.cannontech.user.UserUtils;
 public class GlobalSettingUpdateDaoImpl implements GlobalSettingUpdateDao {
     
     @Autowired private YukonJdbcTemplate yukonJdbcTemplate;
-    @Autowired private DBPersistentDao dbPersistentDao;
+    @Autowired private DbChangeManager dbChangeManager;
     @Autowired private NextValueHelper nextValueHelper;
     @Autowired private GlobalSettingDao globalSettingDao;
     @Autowired private SystemEventLogService systemEventLogService;
@@ -105,10 +105,14 @@ public class GlobalSettingUpdateDaoImpl implements GlobalSettingUpdateDao {
             
             if (insertTemplate.saveWillUpdate(setting)) {
                 insertTemplate.save(setting);
-                dbPersistentDao.processDatabaseChange(DbChangeType.UPDATE, DbChangeCategory.GLOBAL_SETTING, setting.getId());
+                dbChangeManager.processDbChange(DbChangeType.UPDATE, 
+                                                DbChangeCategory.GLOBAL_SETTING, 
+                                                setting.getId());
             } else {
                 insertTemplate.save(setting);
-                dbPersistentDao.processDatabaseChange(DbChangeType.ADD, DbChangeCategory.GLOBAL_SETTING, setting.getId());
+                dbChangeManager.processDbChange(DbChangeType.ADD, 
+                                                DbChangeCategory.GLOBAL_SETTING, 
+                                                setting.getId());
             }
             if (changedValue) {
                 log.debug(setting.getType() + " changed from (" + currentValue + ") to (" + value + ")");

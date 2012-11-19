@@ -27,6 +27,9 @@ import com.cannontech.database.data.lite.LiteEnergyCompany;
 import com.cannontech.database.data.lite.LiteYukonUser;
 import com.cannontech.database.db.company.EnergyCompany;
 import com.cannontech.database.incrementer.NextValueHelper;
+import com.cannontech.message.DbChangeManager;
+import com.cannontech.message.dispatch.message.DBChangeMsg;
+import com.cannontech.message.dispatch.message.DbChangeType;
 import com.cannontech.stars.energyCompany.dao.EnergyCompanyDao;
 import com.cannontech.yukon.IDatabaseCache;
 import com.google.common.collect.Lists;
@@ -39,11 +42,13 @@ public final class EnergyCompanyDaoImpl implements EnergyCompanyDao {
     // the following is a duplicate of StarsDatabaseCache.DEFAULT_ENERGY_COMPANY_ID
     public final int DEFAULT_ENERGY_COMPANY_ID = -1;
 
-    private RolePropertyDao rolePropertyDao;
-    private YukonUserDao yukonUserDao;
-    private IDatabaseCache databaseCache;
-    private YukonJdbcTemplate yukonJdbcTemplate;
-    private NextValueHelper nextValueHelper;
+    @Autowired private RolePropertyDao rolePropertyDao;
+    @Autowired private YukonUserDao yukonUserDao;
+    @Autowired private IDatabaseCache databaseCache;
+    @Autowired private YukonJdbcTemplate yukonJdbcTemplate;
+    @Autowired private NextValueHelper nextValueHelper;
+    @Autowired private DbChangeManager dbChangeManager;
+    
     private SimpleTableAccessTemplate<EnergyCompany> simpleTableTemplate;
     private final static FieldMapper<EnergyCompany> fieldMapper = new FieldMapper<EnergyCompany>() {
         @Override
@@ -152,6 +157,7 @@ public final class EnergyCompanyDaoImpl implements EnergyCompanyDao {
      * (non-Javadoc)
      * @see com.cannontech.core.dao.EnergyCompanyDao#getEnergyCompany(int)
      */
+    @Override
     public LiteEnergyCompany getEnergyCompany(int energyCompanyID) {
         for (Iterator<LiteEnergyCompany> i = databaseCache.getAllEnergyCompanies().iterator(); i.hasNext();) {
             LiteEnergyCompany e = i.next();
@@ -168,6 +174,7 @@ public final class EnergyCompanyDaoImpl implements EnergyCompanyDao {
      * com.cannontech.core.dao.EnergyCompanyDao#getEnergyCompany(com.cannontech
      * .database.data.lite.LiteYukonUser)
      */
+    @Override
     public LiteEnergyCompany getEnergyCompany(LiteYukonUser user) {
         LiteEnergyCompany liteEnergyCompany = databaseCache.getALiteEnergyCompanyByUserID(user);
         if (liteEnergyCompany == null) {
@@ -203,6 +210,7 @@ public final class EnergyCompanyDaoImpl implements EnergyCompanyDao {
      * com.cannontech.core.dao.EnergyCompanyDao#getEnergyCompaniesByCustomer
      * (int)
      */
+    @Override
     public LiteEnergyCompany[] getEnergyCompaniesByCustomer(int customerID_) {
         List<LiteEnergyCompany> enrgComps = new ArrayList<LiteEnergyCompany>(16);
         for (int i = 0; i < databaseCache.getAllEnergyCompanies().size(); i++) {
@@ -226,6 +234,7 @@ public final class EnergyCompanyDaoImpl implements EnergyCompanyDao {
      * com.cannontech.core.dao.EnergyCompanyDao#getEnergyCompanyUser(com.cannontech
      * .database.data.lite.LiteEnergyCompany)
      */
+    @Override
     public LiteYukonUser getEnergyCompanyUser(LiteEnergyCompany company) {
         return yukonUserDao.getLiteYukonUser(company.getUserID());
     }
@@ -234,6 +243,7 @@ public final class EnergyCompanyDaoImpl implements EnergyCompanyDao {
      * (non-Javadoc)
      * @see com.cannontech.core.dao.EnergyCompanyDao#getEnergyCompanyUser(int)
      */
+    @Override
     public LiteYukonUser getEnergyCompanyUser(int energyCompanyID) {
         LiteEnergyCompany ec = getEnergyCompany(energyCompanyID);
         return (ec == null ? null : getEnergyCompanyUser(ec));
@@ -245,6 +255,7 @@ public final class EnergyCompanyDaoImpl implements EnergyCompanyDao {
      * com.cannontech.core.dao.EnergyCompanyDao#getEnergyCompanyProperty(com
      * .cannontech.database.data.lite.LiteYukonUser, int)
      */
+    @Override
     public String getEnergyCompanyProperty(LiteYukonUser user,
             int rolePropertyID) {
         LiteEnergyCompany ec = getEnergyCompany(user);
@@ -259,6 +270,7 @@ public final class EnergyCompanyDaoImpl implements EnergyCompanyDao {
      * com.cannontech.core.dao.EnergyCompanyDao#getEnergyCompanyProperty(com
      * .cannontech.database.data.lite.LiteEnergyCompany, int)
      */
+    @Override
     public String getEnergyCompanyProperty(LiteEnergyCompany ec,
             int rolePropertyID) {
         return rolePropertyDao.getPropertyStringValue(YukonRoleProperty.getForId(rolePropertyID),
@@ -280,6 +292,12 @@ public final class EnergyCompanyDaoImpl implements EnergyCompanyDao {
         sql.append("WHERE EnergyCompanyId").eq_k(energyCompanyId);
         
         yukonJdbcTemplate.update(sql);
+        
+        dbChangeManager.processDbChange(energyCompanyId,
+                                        DBChangeMsg.CHANGE_ENERGY_COMPANY_DB,
+                                        DBChangeMsg.CAT_ENERGY_COMPANY,
+                                        DBChangeMsg.CAT_ENERGY_COMPANY,
+                                        DbChangeType.UPDATE);
     }
     
     @Override
@@ -308,28 +326,5 @@ public final class EnergyCompanyDaoImpl implements EnergyCompanyDao {
     @Override
     public List<LiteEnergyCompany> getAllEnergyCompanies() {
         return databaseCache.getAllEnergyCompanies();
-    }
-
-    @Autowired
-    public void setYukonJdbcTemplate(YukonJdbcTemplate yukonJdbcTemplate) {
-        this.yukonJdbcTemplate = yukonJdbcTemplate;
-    }
-
-    public void setDatabaseCache(IDatabaseCache databaseCache) {
-        this.databaseCache = databaseCache;
-    }
-
-    @Autowired
-    public void setRolePropertyDao(RolePropertyDao rolePropertyDao) {
-        this.rolePropertyDao = rolePropertyDao;
-    }
-
-    public void setYukonUserDao(YukonUserDao yukonUserDao) {
-        this.yukonUserDao = yukonUserDao;
-    }
-    
-    @Autowired
-    public void setNextValueHelper(NextValueHelper nextValueHelper) {
-        this.nextValueHelper = nextValueHelper;
     }
 }

@@ -24,8 +24,8 @@ import com.cannontech.capcontrol.model.ZoneAssignmentPointRow;
 import com.cannontech.capcontrol.model.ZoneHierarchy;
 import com.cannontech.capcontrol.service.ZoneService;
 import com.cannontech.common.pao.PaoCategory;
-import com.cannontech.core.dao.DBPersistentDao;
 import com.cannontech.enums.Phase;
+import com.cannontech.message.DbChangeManager;
 import com.cannontech.message.dispatch.message.DBChangeMsg;
 import com.cannontech.message.dispatch.message.DbChangeType;
 import com.google.common.collect.ArrayListMultimap;
@@ -34,7 +34,7 @@ import com.google.common.collect.Multimap;
 
 public class ZoneServiceImpl implements ZoneService {
     @Autowired private ZoneDao zoneDao;
-    @Autowired private DBPersistentDao dbPersistantDao;
+    @Autowired private DbChangeManager dbChangeManager;
     @Autowired private CcMonitorBankListDao ccMonitorBankListDao;
     
     @Override
@@ -289,23 +289,24 @@ public class ZoneServiceImpl implements ZoneService {
     }
     
     private void sendZoneChangeDbMessage(int zoneId, DbChangeType dbChangeType) {
-        DBChangeMsg msg = new DBChangeMsg(zoneId,
-                                          DBChangeMsg.CHANGE_IVVC_ZONE,
-                                          PaoCategory.CAPCONTROL.getDbString(),
-                                          "Zone",
-                                          dbChangeType);
-        
-        dbPersistantDao.processDBChange(msg);
+        dbChangeManager.processDbChange(zoneId,
+                                        DBChangeMsg.CHANGE_IVVC_ZONE,
+                                        PaoCategory.CAPCONTROL.getDbString(),
+                                        "Zone",
+                                        dbChangeType);
     }
     
+    @Override
     public List<CapBankPointDelta> getAllPointDeltasForBankIds(List<Integer> bankIds) {
         return zoneDao.getAllPointDeltasForBankIds(bankIds);
     }
     
+    @Override
     public List<Integer> getMonitorPointsForBank(int bankId) {
         return zoneDao.getMonitorPointsForBank(bankId);
     }
     
+    @Override
     public Map<Integer, Phase> getMonitorPointsForBankAndPhase(int bankId) {
         return zoneDao.getMonitorPointsForBankAndPhase(bankId);
     }
