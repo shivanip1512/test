@@ -197,7 +197,7 @@ public class AccountServiceTest extends EasyMockSupport {
         ReflectionTestUtils.setField(accountService, "accountThermostatScheduleDao", accountThermostatScheduleDaoMock);
         ReflectionTestUtils.setField(accountService, "eventAccountDao", eventAccountDaoMock);
         ReflectionTestUtils.setField(accountService, "starsCustAccountInformationDao", starsCustAccountInformationDaoMock);
-        ReflectionTestUtils.setField(accountService, "dbPersistentDao", dbChangeManager);
+        ReflectionTestUtils.setField(accountService, "dbChangeManager", dbChangeManager);
         ReflectionTestUtils.setField(accountService, "yukonEnergyCompanyService", yukonEnergyCompanyServiceMock);
         ReflectionTestUtils.setField(accountService, "accountEventLogService", accountEventLogServiceMock);
         ReflectionTestUtils.setField(accountService, "starsDatabaseCache", starsDatabaseCacheMock);
