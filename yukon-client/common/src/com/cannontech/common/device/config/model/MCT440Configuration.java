@@ -11,14 +11,21 @@ public class MCT440Configuration extends ConfigurationBase {
     }
 
     // DST
-    private Integer timeZoneOffset = null;
+    private Integer timeZoneOffset = 0;
 
     // Addressing
+    private Integer bronzeAddress = 0;
+    private Integer leadAddress = 0;
+    private Integer collectionAddress = 0;
     private Integer serviceProviderId = 0;
 
     // Configuration
     private Boolean enableDst = true;
     private Integer timeAdjustTolerance = 15;
+    
+    // Phase Loss
+    private Integer phaseLossThreshold = 95;
+    private Integer phaseLossDuration = 5;
 
     // Demand and LP
     private Integer demandInterval = 5;
@@ -34,6 +41,30 @@ public class MCT440Configuration extends ConfigurationBase {
 
     public void setTimeZoneOffset(Integer timeZoneOffset) {
         this.timeZoneOffset = timeZoneOffset;
+    }
+
+    public Integer getBronzeAddress() {
+        return bronzeAddress;
+    }
+
+    public void setBronzeAddress(Integer bronzeAddress) {
+        this.bronzeAddress = bronzeAddress;
+    }
+
+    public Integer getLeadAddress() {
+        return leadAddress;
+    }
+
+    public void setLeadAddress(Integer leadAddress) {
+        this.leadAddress = leadAddress;
+    }
+
+    public Integer getCollectionAddress() {
+        return collectionAddress;
+    }
+
+    public void setCollectionAddress(Integer collectionAddress) {
+        this.collectionAddress = collectionAddress;
     }
 
     public Integer getServiceProviderId() {
@@ -58,29 +89,6 @@ public class MCT440Configuration extends ConfigurationBase {
 
     public void setTimeAdjustTolerance(Integer timeAdjustTolerance) {
         this.timeAdjustTolerance = timeAdjustTolerance;
-    }
-
-    public int getConfiguration() {
-        // Get the bits and mask them to throw out erroneous values, also shift
-        // them to their correct position
-
-        // bit 0
-        int enableDst = (getEnableDst()) ? 1 : 0;
-        enableDst = (0x01 & enableDst);
-
-        // Combine the bits to make the full value
-        int configurationValue = enableDst;
-
-        return configurationValue;
-
-    }
-
-    public void setConfiguration(int configuration) {
-        // Unmask and shift the bits and set them to the correct param
-
-        // bit 0
-        int enableDst = (0x01 & configuration);
-        this.setEnableDst(enableDst == 1);
     }
 
     public Integer getDemandInterval() {
@@ -113,5 +121,21 @@ public class MCT440Configuration extends ConfigurationBase {
 
     public void setTou(Tou tou) {
         this.tou = tou;
+    }
+
+    public Integer getPhaseLossThreshold() {
+        return phaseLossThreshold;
+    }
+
+    public void setPhaseLossThreshold(Integer phaseLossThreshold) {
+        this.phaseLossThreshold = phaseLossThreshold;
+    }
+
+    public Integer getPhaseLossDuration() {
+        return phaseLossDuration;
+    }
+
+    public void setPhaseLossDuration(Integer phaseLossDuration) {
+        this.phaseLossDuration = phaseLossDuration;
     }
 }

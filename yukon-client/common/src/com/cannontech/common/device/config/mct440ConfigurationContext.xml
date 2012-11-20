@@ -5,6 +5,11 @@
        http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans-3.0.xsd">
 
     <!-- This file is included in deviceConfigurationContext.xml -->
+    
+    <!--
+        NOTE: Modifications in this files should be reflected in 
+        com.cannontech.common.device.config.model.MCT440Configuration
+     -->
 
     <bean id="mct440Config" class="com.cannontech.common.device.config.model.ConfigurationTemplate">
         <property name="name" value="MCT 440 Configuration" />
@@ -15,8 +20,9 @@
             <list>
                 <ref bean="dst430_470Category"/>
                 <ref bean="mct440DemandLoadProfileCategory"/>
-                <ref bean="mct440ConfigurationByte"/>
-                <ref bean="addressingCategory"/>
+                <ref bean="mct440Configuration"/>
+                <ref bean="mct440PhaseLossCategory"/>
+                <ref bean="mct440AddressingCategory"/>
                 <ref bean="mct440TouCategory"/>
             </list>
         </property>
@@ -26,14 +32,20 @@
                 <!-- dst430_470Category -->
                 <prop key="Time Zone Offset">timeZoneOffset</prop>
                 <!-- addressingCategory -->
+                <prop key="Bronze Address">bronzeAddress</prop>
+                <prop key="Lead Address">leadAddress</prop>
+                <prop key="Collection Address">collectionAddress</prop>
                 <prop key="Service Provider ID">serviceProviderId</prop>
                 <!-- mct440DemandLoadProfileCategory -->
                 <prop key="kW/kVar Profile Interval">kwProfileInterval</prop>
                 <prop key="Voltage Profile Interval">voltageProfileInterval</prop>
                 <prop key="Demand Interval">demandInterval</prop>
-                <!-- mct440ConfigurationByte -->
+                <!-- mct440Configuration -->
                 <prop key="Time Adjust Tolerance">timeAdjustTolerance</prop>
-                <prop key="Configuration">configuration</prop>
+                <prop key="Enable DST">enableDst</prop>
+                <!-- mct440PhaseLossCategory -->
+                <prop key="Phase Loss Threshold">phaseLossThreshold</prop>
+                <prop key="Phase Loss Duration">phaseLossDuration</prop>
                 <!-- touWith10RatesCategory -->
                 <prop key="Default Rate">tou.defaultRate</prop>
                 <prop key="Monday">tou.monday</prop>
@@ -133,6 +145,71 @@
                 <prop key="Schedule4Time10">tou.scheduleList[3].timeRateList[10].time</prop>
                 <prop key="Schedule4Rate10">tou.scheduleList[3].timeRateList[10].rate</prop>
             </props>
+        </property>
+    </bean>
+
+    <bean id="mct440AddressingCategory" class="com.cannontech.common.device.config.model.CategoryTemplate">
+        <property name="name" value="MCT Addressing" />
+        <property name="inputList">
+            <list>
+                <bean class="com.cannontech.web.input.InputBase">
+                    <property name="displayName" value="Bronze Address" />
+                    <property name="field" value="bronzeAddress" />
+                    <property name="type" ref="inputIntegerType" />
+                    <property name="validatorList">
+                        <list>
+                            <bean class="com.cannontech.web.input.validate.IntegerRangeValidator">
+                                <property name="minValue" value="0" />
+                                <property name="maxValue" value="255" />
+                            </bean>
+                        </list>
+                    </property>
+                    <property name="security" ref="configEditSecurity" />
+                </bean>
+                <bean class="com.cannontech.web.input.InputBase">
+                    <property name="displayName" value="Lead Address" />
+                    <property name="field" value="leadAddress" />
+                    <property name="type" ref="inputIntegerType" />
+                    <property name="validatorList">
+                        <list>
+                            <bean class="com.cannontech.web.input.validate.IntegerRangeValidator">
+                                <property name="minValue" value="0" />
+                                <property name="maxValue" value="4095" />
+                            </bean>
+                            <ref bean="requiredInputValidator"/>
+                        </list>
+                    </property>
+                    <property name="security" ref="configEditSecurity" />
+                </bean>
+                <bean class="com.cannontech.web.input.InputBase">
+                    <property name="displayName" value="Collection Address" />
+                    <property name="field" value="collectionAddress" />
+                    <property name="type" ref="inputIntegerType" />
+                    <property name="validatorList">
+                        <list>
+                            <bean class="com.cannontech.web.input.validate.IntegerRangeValidator">
+                                <property name="minValue" value="0" />
+                                <property name="maxValue" value="4095" />
+                            </bean>
+                        </list>
+                    </property>
+                    <property name="security" ref="configEditSecurity" />
+                </bean>
+                <bean class="com.cannontech.web.input.InputBase">
+                    <property name="displayName" value="Service Provider Id" />
+                    <property name="field" value="serviceProviderId" />
+                    <property name="type" ref="inputIntegerType" />
+                    <property name="validatorList">
+                        <list>
+                            <bean class="com.cannontech.web.input.validate.IntegerRangeValidator">
+                                <property name="minValue" value="0" />
+                                <property name="maxValue" value="254" />
+                            </bean>
+                        </list>
+                    </property>
+                    <property name="security" ref="configEditSecurity" />
+                </bean>
+            </list>
         </property>
     </bean>
 
@@ -237,7 +314,7 @@
         </property>
     </bean>
 
-    <bean id="mct440ConfigurationByte"
+    <bean id="mct440Configuration"
         class="com.cannontech.common.device.config.model.CategoryTemplate">
         <property name="name" value="MCT Configuration" />
         <property name="inputList">
@@ -269,6 +346,53 @@
                             <bean class="com.cannontech.web.input.validate.IntegerRangeValidator">
                                 <property name="minValue" value="15" />
                                 <property name="maxValue" value="255" />
+                            </bean>
+                        </list>
+                    </property>
+                    <property name="security" ref="configEditSecurity" />
+                </bean>
+            </list>
+        </property>
+    </bean>
+
+    <bean id="mct440PhaseLossCategory" class="com.cannontech.common.device.config.model.CategoryTemplate">
+        <property name="name" value="MCT Phase Loss" />
+        <property name="inputList">
+            <list>
+                <bean class="com.cannontech.web.input.InputBase">
+                    <property name="displayName" value="Phase Loss Threshold" />
+                    <property name="field" value="phaseLossThreshold" />
+                    <property name="description">
+                        <value>
+                            Phase loss threshold in percentage.
+                        </value>
+                    </property>
+                    <property name="type" ref="inputIntegerType" />
+                    <property name="validatorList">
+                        <list>
+                            <bean class="com.cannontech.web.input.validate.IntegerRangeValidator">
+                                <property name="minValue" value="0" />
+                                <property name="maxValue" value="100" />
+                            </bean>
+                        </list>
+                    </property>
+                    <property name="security" ref="configEditSecurity" />
+                </bean>
+
+                <bean class="com.cannontech.web.input.InputBase">
+                    <property name="displayName" value="Phase Loss Duration" />
+                    <property name="field" value="phaseLossDuration" />
+                    <property name="description">
+                        <value>
+                            Phase loss duration in seconds.
+                        </value>
+                    </property>
+                    <property name="type" ref="inputIntegerType" />
+                    <property name="validatorList">
+                        <list>
+                            <bean class="com.cannontech.web.input.validate.IntegerRangeValidator">
+                                <property name="minValue" value="0" />
+                                <property name="maxValue" value="65535" />
                             </bean>
                         </list>
                     </property>
