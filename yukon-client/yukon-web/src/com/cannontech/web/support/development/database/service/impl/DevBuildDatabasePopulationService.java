@@ -5,8 +5,10 @@ import java.util.Map;
 import java.util.Map.Entry;
 
 import org.apache.log4j.Logger;
+import org.joda.time.DateTimeZone;
 import org.joda.time.Duration;
 import org.joda.time.Instant;
+import org.joda.time.LocalDate;
 import org.joda.time.Period;
 
 import com.cannontech.amr.rfn.message.event.RfnConditionType;
@@ -14,6 +16,7 @@ import com.cannontech.clientutils.YukonLogManager;
 import com.cannontech.common.device.groups.editor.dao.SystemGroupEnum;
 import com.cannontech.common.pao.PaoType;
 import com.cannontech.common.pao.attribute.model.BuiltInAttribute;
+import com.cannontech.common.util.TimeUtil;
 import com.cannontech.development.model.BulkFakePointInjectionDto;
 import com.cannontech.development.model.RfnTestEvent;
 import com.cannontech.development.service.BulkPointDataInjectionService;
@@ -70,7 +73,7 @@ public class DevBuildDatabasePopulationService {
             dpt.setCreate(true);
         }
         task.getDevAMR().setMeterTypes(meters);
-        task.getDevAMR().setNumAdditionalMeters(2);
+        task.getDevAMR().setNumAdditionalMeters(1000);
         task.getDevStars().setNewEnergyCompanyName("Cooper EC");
 
         log.info("executing initial database population...");
@@ -137,9 +140,13 @@ public class DevBuildDatabasePopulationService {
         bulkInjection.setDecimalPlaces(3);
         bulkInjection.setPeriod(Period.hours(1));
         bulkInjection.setPeriodWindow(Period.seconds(0));
-        bulkInjection.setStart(new Instant().minus(Duration.standardDays(3)));
-        bulkInjection.setStop(new Instant().plus(Duration.standardDays(1)));
         
+        LocalDate nowLocalDate = new LocalDate();
+        Instant start = TimeUtil.toMidnightAtBeginningOfDay(nowLocalDate, DateTimeZone.UTC).minus(Duration.standardDays(5));
+        bulkInjection.setStart(start);
+        Instant stop = TimeUtil.toMidnightAtBeginningOfDay(nowLocalDate, DateTimeZone.UTC).plus(Duration.standardDays(1));
+        bulkInjection.setStop(stop);
+
         log.info("inserting water usage point data...");
         bulkPointDataInjectionService.excecuteInjection(bulkInjection);
     }
