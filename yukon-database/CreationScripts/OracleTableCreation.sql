@@ -1,7 +1,7 @@
 /*==============================================================*/
 /* Database name:  YukonDatabase                                */
 /* DBMS name:      ORACLE Version 9i                            */
-/* Created on:     10/24/2012 5:30:14 PM                        */
+/* Created on:     11/20/2012 10:19:55 AM                       */
 /*==============================================================*/
 
 
@@ -1237,10 +1237,10 @@ insert into columntype values (15, 'QualityCount' );
 /*==============================================================*/
 create table CTIDatabase  (
    Version              VARCHAR2(6)                     not null,
-   CTIEmployeeName      VARCHAR2(30)                    not null,
-   DateApplied          DATE,
+   BuildDate            DATE,
    Notes                VARCHAR2(300),
    Build                NUMBER                          not null,
+   InstallDate          DATE,
    constraint PK_CTIDATABASE primary key (Version, Build)
 );
 

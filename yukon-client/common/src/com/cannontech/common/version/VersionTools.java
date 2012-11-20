@@ -3,7 +3,10 @@ package com.cannontech.common.version;
 import java.io.IOException;
 import java.io.InputStream;
 import java.net.URL;
-import java.util.Date;
+import java.sql.Connection;
+import java.sql.PreparedStatement;
+import java.sql.ResultSet;
+import java.sql.SQLException;
 import java.util.Enumeration;
 import java.util.Map;
 import java.util.jar.Manifest;
@@ -12,6 +15,7 @@ import org.springframework.jdbc.BadSqlGrammarException;
 import org.springframework.jdbc.core.JdbcOperations;
 
 import com.cannontech.clientutils.CTILogger;
+import com.cannontech.common.util.CtiUtilities;
 import com.cannontech.database.JdbcTemplateHelper;
 import com.cannontech.database.PoolManager;
 import com.cannontech.database.SqlUtils;
@@ -39,14 +43,9 @@ public final class VersionTools {
     // the DB structure is changed
     private static final String[] QUERY_STRS = {
         // latest query string is first!
-    	"select Version, BuildDate, Notes, Build from " + CTIDatabase.TABLE_NAME
-    			+ " where BuildDate is not null order by Version desc, Build desc",
-    			
-        "select Version, CTIEmployeeName, DateApplied, Notes, Build from " + CTIDatabase.TABLE_NAME
-                + " where DateApplied is not null " + "order by Version desc, Build desc",
-
-        "select Version, CTIEmployeeName, DateApplied, Notes from " + CTIDatabase.TABLE_NAME
-                + " where DateApplied is not null " + "order by Version desc"
+    	"SELECT Version, Build FROM CTIDatabase ORDER BY Version DESC, Build DESC",
+    	// really old databases may not have the Build column
+        "SELECT Version FROM CTIDatabase ORDER BY Version DESC"
     };
 
     /**
@@ -70,41 +69,30 @@ public final class VersionTools {
         }
 
         db_obj = new CTIDatabase();
-        java.sql.Connection conn =
-            PoolManager.getInstance().getConnection(com.cannontech.common.util.CtiUtilities.getDatabaseAlias());
-        java.sql.PreparedStatement stat = null;
-        java.sql.ResultSet rs = null;
+        Connection conn =
+            PoolManager.getInstance().getConnection(CtiUtilities.getDatabaseAlias());
+        PreparedStatement stat = null;
+        ResultSet rs = null;
 
         try {
-            int i = 0;
-            for (i = 0; i < QUERY_STRS.length; i++) {
+            for (int i = 0; i < QUERY_STRS.length; i++) {
                 try {
-                    // get the latest version
+                    // get the most recent query string
                     stat = conn.prepareStatement(QUERY_STRS[i]);
-
-                    // chucks if columns are not up to date
+                    // rs remains null if columns are not up to date
                     rs = stat.executeQuery();
-                } catch (Exception exx) {}
-
-                if (rs != null) {
-                    break;
+                    if (rs != null) {
+                        rs.next();
+                        db_obj.setVersion(rs.getString("Version"));
+                        if (i == 0) {
+                            db_obj.setBuild(rs.getInt("Build"));
+                        }
+                        break;
+                    }
+                } catch (SQLException e) {
+                    CTILogger.error(e.getMessage(), e);
                 }
             }
-
-            rs.next();
-
-            db_obj.setVersion(rs.getString("Version"));
-            // If the most recent QUERY_STRS query (index i==0) returned results, use the column new name 'BuildDate'.
-            // If any other QUERY_STRS query (index i > 0) was used, then use the historical column name 'DateApplied'.
-            db_obj.setBuildDate(new Date(rs.getTimestamp(i == 0 ? "BuildDate":"DateApplied").getTime()));
-            db_obj.setNotes(rs.getString("Notes"));
-            // Only the two most recent queries in QUERY_STRS return the Build,
-            // column, so only read it if one of those queries was used.
-            if (i < 2) {
-                db_obj.setBuild(rs.getInt("Build"));
-            }
-        } catch (java.sql.SQLException e) {
-            CTILogger.error(e.getMessage(), e);
         } finally {
             SqlUtils.close(rs, stat, conn);
         }

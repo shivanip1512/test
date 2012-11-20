@@ -4,22 +4,19 @@
 
 /* Start YUK-11288 */
 sp_rename 'CTIDatabase.DateApplied', 'BuildDate', 'COLUMN';
+GO
 
 ALTER TABLE CTIDatabase
 DROP COLUMN CTIEmployeeName;
+GO
 
 ALTER TABLE CTIDatabase
 ADD InstallDate DATETIME;
-
-UPDATE CTIDatabase
-SET InstallDate = '2000-01-01';
-
-ALTER TABLE CTIDatabase
-ALTER COLUMN InstallDate DATETIME NOT NULL;
+GO
 /* End YUK-11288 */
 
 /**************************************************************/
 /* VERSION INFO                                               */
 /* Inserted when update script is run                         */
 /**************************************************************/
-/*INSERT INTO CTIDatabase VALUES ('5.5', '05-DEC-2012', 'Latest Update', 5, GETDATE());*/
+/*INSERT INTO CTIDatabase VALUES ('5.6', '05-DEC-2012', 'Latest Update', 0, GETDATE());*/

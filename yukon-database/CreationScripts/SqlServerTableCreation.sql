@@ -1,7 +1,7 @@
 /*==============================================================*/
 /* Database name:  YukonDatabase                                */
 /* DBMS name:      Microsoft SQL Server 2005                    */
-/* Created on:     10/24/2012 5:31:10 PM                        */
+/* Created on:     11/20/2012 10:18:39 AM                       */
 /*==============================================================*/
 
 /*==============================================================*/
@@ -1329,10 +1329,10 @@ insert into columntype values (15, 'QualityCount' );
 /*==============================================================*/
 create table CTIDatabase (
    Version              varchar(6)           not null,
-   CTIEmployeeName      varchar(30)          not null,
-   DateApplied          datetime             null,
+   BuildDate            datetime             null,
    Notes                varchar(300)         null,
    Build                numeric              not null,
+   InstallDate          datetime             null,
    constraint PK_CTIDATABASE primary key (Version, Build)
 )
 go

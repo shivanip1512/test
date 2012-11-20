@@ -134,7 +134,7 @@ public class UpdateDB
 
         try {
 
-            String sql = "select max(version) as version from " + CTIDatabase.TABLE_NAME;
+            String sql = "select max(version) as version from CTIDatabase";
 
             conn = PoolManager.getInstance().getConnection(CtiUtilities.getDatabaseAlias());
             stmt = conn.prepareStatement(sql);
@@ -178,7 +178,7 @@ public class UpdateDB
 
         try {
 
-            String sql = "select max(build) as build from " + CTIDatabase.TABLE_NAME
+            String sql = "select max(build) as build from CTIDatabase"
                     + " where version = ?";
 
             conn = PoolManager.getInstance().getConnection(CtiUtilities.getDatabaseAlias());
