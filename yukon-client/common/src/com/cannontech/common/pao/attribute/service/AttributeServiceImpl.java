@@ -98,6 +98,7 @@ public class AttributeServiceImpl implements AttributeService {
         this.advancedReadableAttributes = ImmutableSet.<Attribute>copyOf(advancedReadableAttributes);
     }
 
+    @Override
     public LitePoint getPointForAttribute(YukonPao pao, Attribute attribute) throws IllegalUseOfAttribute {
         try {
             PaoPointIdentifier paoPointIdentifier = getPaoPointIdentifierForAttribute(pao, attribute);
@@ -119,26 +120,16 @@ public class AttributeServiceImpl implements AttributeService {
 
     @Override
     public List<PaoMultiPointIdentifier> findPaoMultiPointIdentifiersForAttributes(Iterable<? extends YukonPao> devices, Set<? extends Attribute> attributes) {
-        return getPaoMultiPointIdentifiersForAttributesHelper(devices,attributes,false,true);
+        return getPaoMultiPointIdentifiersForAttributesHelper(devices,attributes,false);
     }
 
     @Override
-    public List<PaoMultiPointIdentifier> findPaoMultiPointIdentifiersForAttributes(Iterable<? extends YukonPao> devices, Set<? extends Attribute> attributes, boolean throwException, boolean logWarning) {
-        return getPaoMultiPointIdentifiersForAttributesHelper(devices,attributes,throwException,logWarning);
-    }
-    
-    @Override
     public List<PaoMultiPointIdentifier> getPaoMultiPointIdentifiersForAttributes(Iterable<? extends YukonPao> devices, Set<? extends Attribute> attributes) {
-        return  getPaoMultiPointIdentifiersForAttributesHelper(devices,attributes,true,true);
-    }
-    
-    @Override
-    public List<PaoMultiPointIdentifier> getPaoMultiPointIdentifiersForAttributes(Iterable<? extends YukonPao> devices, Set<? extends Attribute> attributes, boolean throwException, boolean logWarning) {
-        return  getPaoMultiPointIdentifiersForAttributesHelper(devices,attributes,throwException,logWarning);
+        return  getPaoMultiPointIdentifiersForAttributesHelper(devices,attributes,true);
     }
     
     private  List<PaoMultiPointIdentifier> getPaoMultiPointIdentifiersForAttributesHelper(Iterable<? extends YukonPao> devices,
-                                                               Set<? extends Attribute> attributes, boolean throwException, boolean logWarning){
+                                                               Set<? extends Attribute> attributes, boolean throwException){
         List<PaoMultiPointIdentifier> devicesAndPoints = 
                 Lists.newArrayListWithCapacity(IterableUtils.guessSize(devices));
             for (YukonPao pao : devices) {
@@ -148,10 +139,11 @@ public class AttributeServiceImpl implements AttributeService {
                         PaoPointIdentifier paoPointIdentifier = getPaoPointIdentifierForAttribute(pao, attribute);
                         points.add(paoPointIdentifier);
                     } catch (IllegalUseOfAttribute e) {
-                        if (logWarning) LogHelper.warn(log, "unable to look up values for %s on %s: %s", attribute, pao, e.toString());
                         if(throwException){
+                            log.error("unable to look up values for " + attribute + " on " + pao);
                             throw e;
                         }else{
+                            LogHelper.debug(log, "unable to look up values for %s on %s: %s", attribute, pao, e.toString());
                             continue; // This device does not support the selected attribute.
                         }
                     }
@@ -181,6 +173,7 @@ public class AttributeServiceImpl implements AttributeService {
         return result;
     }
 
+    @Override
     public Set<Attribute> getAllExistingAttributes(YukonPao pao) {
         Set<Attribute> result = Sets.newHashSet();
         Set<Attribute> availableAttribute = this.getAvailableAttributes(pao);
@@ -194,16 +187,19 @@ public class AttributeServiceImpl implements AttributeService {
         return result;
     }
     
+    @Override
     public Attribute resolveAttributeName(String name) {
         // some day this should also "lookup" user defined attributes
         return BuiltInAttribute.valueOf(name);
     }
 
+    @Override
     public boolean isAttributeSupported(YukonPao pao, Attribute attribute) {
         boolean result = getAvailableAttributes(pao).contains(attribute);
         return result;
     }
 
+    @Override
     public boolean pointExistsForAttribute(YukonPao pao, Attribute attribute) throws IllegalUseOfAttribute {
 
         AttributeDefinition attributeDefinition = paoDefinitionDao.getAttributeLookup(pao.getPaoIdentifier().getPaoType(), (BuiltInAttribute) attribute);
@@ -215,6 +211,7 @@ public class AttributeServiceImpl implements AttributeService {
         return pointService.pointExistsForPao(paoPointIdentifier);
     }
 
+    @Override
     public PaoPointTemplate getPaoPointTemplateForAttribute(YukonPao pao, Attribute attribute) throws IllegalUseOfAttribute {
         BuiltInAttribute builtInAttribute = (BuiltInAttribute) attribute;
         AttributeDefinition attributeDefinition = paoDefinitionDao.getAttributeLookup(pao.getPaoIdentifier().getPaoType(), builtInAttribute);
@@ -242,6 +239,7 @@ public class AttributeServiceImpl implements AttributeService {
         return devices;
     }
 
+    @Override
     public void createPointForAttribute(YukonPao pao, Attribute attribute) throws IllegalUseOfAttribute {
         boolean pointExists = this.pointExistsForAttribute(pao, attribute);
         if (!pointExists) {

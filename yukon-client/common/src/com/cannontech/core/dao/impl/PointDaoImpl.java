@@ -26,7 +26,6 @@ import com.cannontech.common.pao.definition.dao.PaoDefinitionDao;
 import com.cannontech.common.pao.definition.model.PaoPointIdentifier;
 import com.cannontech.common.pao.definition.model.PointIdentifier;
 import com.cannontech.common.util.ChunkingMappedSqlTemplate;
-import com.cannontech.common.util.ChunkingSqlTemplate;
 import com.cannontech.common.util.CtiUtilities;
 import com.cannontech.common.util.SqlFragmentGenerator;
 import com.cannontech.common.util.SqlFragmentSource;
@@ -60,6 +59,7 @@ import com.cannontech.database.incrementer.NextValueHelper;
 import com.cannontech.enums.Phase;
 import com.cannontech.yukon.IDatabaseCache;
 import com.google.common.base.Function;
+import com.google.common.base.Functions;
 import com.google.common.collect.ImmutableCollection;
 import com.google.common.collect.ImmutableMultimap;
 import com.google.common.collect.Maps;
@@ -341,7 +341,6 @@ public final class PointDaoImpl implements PointDao {
 	    pointInfo.setPointId(rs.getInt("PointId"));
 	    pointInfo.setName(rs.getString("PointName"));
 	    pointInfo.setStateGroupId(rs.getInt("StateGroupId"));
-	    pointInfo.setType(rs.getEnum("PointType", PointType.class));
 	    pointInfo.setPointIdentifier(rs.getPointIdentifier("PointType", "PointOffset"));
 	    pointInfo.setUnitOfMeasure(rs.getString("UomName"));
 	    PointInfo retVal = alreadyCreated.get(pointInfo);
@@ -364,13 +363,15 @@ public final class PointDaoImpl implements PointDao {
         }
     }
     
-    private static class PointInfoRowMapper implements YukonRowMapper<PointInfo> {
+    private static class PointIdToPointInfoRowMapper implements YukonRowMapper<Map.Entry<Integer, PointInfo>> {
         private Map<PointInfo, PointInfo> alreadyCreated = Maps.newHashMap();
         
         @Override
-        public PointInfo mapRow(YukonResultSet rs)
+        public Map.Entry<Integer, PointInfo> mapRow(YukonResultSet rs)
                 throws SQLException {
-            return createPointInfo(alreadyCreated, rs);
+            int pointId = rs.getInt("PointId");
+            PointInfo pointInfo = createPointInfo(alreadyCreated, rs);
+            return Maps.immutableEntry(pointId, pointInfo);
         }
     }
 
@@ -415,7 +416,7 @@ public final class PointDaoImpl implements PointDao {
     }
 	
 	@Override
-	public List<PointInfo> getPointInfoByPointIds(final Iterable<Integer> pointIds) {
+	public Map<Integer, PointInfo> getPointInfoByPointIds(final Iterable<Integer> pointIds) {
         SqlFragmentGenerator<Integer> sqlGenerator =
                 new SqlFragmentGenerator<Integer>() {
             @Override
@@ -430,9 +431,9 @@ public final class PointDaoImpl implements PointDao {
                 return sql;
             }
         };
-        
-        ChunkingSqlTemplate template = new ChunkingSqlTemplate(yukonJdbcTemplate);
-        return template.query(sqlGenerator, pointIds, new PointInfoRowMapper());
+        Function<Integer, Integer> identityFunc = Functions.identity();
+        ChunkingMappedSqlTemplate template = new ChunkingMappedSqlTemplate(yukonJdbcTemplate);
+        return template.mappedQuery(sqlGenerator, pointIds, new PointIdToPointInfoRowMapper(), identityFunc);
 	}
 
     @Override

@@ -2,7 +2,6 @@ package com.cannontech.core.service.impl;
 
 import java.util.Collections;
 import java.util.Comparator;
-import java.util.Date;
 import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
@@ -14,7 +13,7 @@ import org.springframework.util.CollectionUtils;
 
 import com.cannontech.amr.meter.dao.MeterDao;
 import com.cannontech.amr.meter.model.Meter;
-import com.cannontech.amr.paoPointValue.model.PaoPointValue;
+import com.cannontech.amr.paoPointValue.model.MeterPointValue;
 import com.cannontech.common.pao.PaoIdentifier;
 import com.cannontech.common.pao.YukonPao;
 import com.cannontech.common.pao.attribute.model.Attribute;
@@ -22,9 +21,9 @@ import com.cannontech.common.pao.attribute.model.BuiltInAttribute;
 import com.cannontech.common.pao.attribute.service.AttributeService;
 import com.cannontech.common.pao.definition.model.PaoMultiPointIdentifier;
 import com.cannontech.common.pao.definition.model.PaoPointIdentifier;
+import com.cannontech.common.util.Range;
 import com.cannontech.core.dao.PointDao;
 import com.cannontech.core.dao.RawPointHistoryDao;
-import com.cannontech.core.dao.RawPointHistoryDao.Clusivity;
 import com.cannontech.core.dao.RawPointHistoryDao.Order;
 import com.cannontech.core.dynamic.PointValueHolder;
 import com.cannontech.core.dynamic.PointValueQualityHolder;
@@ -33,11 +32,9 @@ import com.cannontech.core.service.PointFormattingService;
 import com.cannontech.core.service.PointFormattingService.Format;
 import com.cannontech.database.data.point.PointInfo;
 import com.cannontech.user.YukonUserContext;
-import com.google.common.base.Function;
 import com.google.common.collect.ListMultimap;
 import com.google.common.collect.Lists;
 import com.google.common.collect.Maps;
-import com.google.common.collect.Ordering;
 import com.google.common.collect.Sets;
 
 public class PaoPointValueServiceImpl implements PaoPointValueService {
@@ -48,55 +45,31 @@ public class PaoPointValueServiceImpl implements PaoPointValueService {
     @Autowired PointFormattingService pointFormattingService;
     @Autowired RawPointHistoryDao rawPointHistoryDao;
     
-    private static Comparator<PaoPointValue> getPaoPointValueComparator() {
-        Ordering<Integer> naturalIntOrdering = Ordering.natural().nullsLast();
-        Ordering<PaoPointValue> paoIdOrdering = naturalIntOrdering
-                .onResultOf(new Function<PaoPointValue, Integer>() {
-                    @Override
-                    public Integer apply(PaoPointValue from) {
-                        return from.getPaoIdentifier().getPaoId();
-                    }
-                });
-        Ordering<PaoPointValue> pointIdOrdering = naturalIntOrdering
-                .onResultOf(new Function<PaoPointValue, Integer>() {
-                    @Override
-                    public Integer apply(PaoPointValue from) {
-                        return from.getPointValueHolder().getId();
-                    }
-                });
-        Ordering<PaoPointValue> dateOrdering = Ordering.natural().nullsLast()
-            .onResultOf(new Function<PaoPointValue, Date>() {
-                @Override
-                public Date apply(PaoPointValue from) {
-                    return from.getPointValueHolder().getPointDataTimeStamp();
-                }
-            });
-        return paoIdOrdering.compound(pointIdOrdering).compound(dateOrdering);
+    private static Comparator<MeterPointValue> getMeterPointValueComparator() {
+        return MeterPointValue.getPaoIdOrdering().compound(MeterPointValue.getPointIdOrdering())
+            .compound(MeterPointValue.getDateOrdering());
     }
     
     @Override
-    public <P extends YukonPao> List<PaoPointValue> getPaoPointValuesForMeters(Iterable<P> devices,
-                                                                               Set<Attribute> attributes,
-                                                                               Instant from,
-                                                                               Instant to,
-                                                                               Integer maxRows,
-                                                                               boolean includeDisabledPaos,
-                                                                               Set<String> discludedPointStateValues,
-                                                                               YukonUserContext userContext) {
+    public <P extends YukonPao> List<MeterPointValue> getMeterPointValues(Iterable<P> devices,
+                                                                                Set<Attribute> attributes,
+                                                                                Range<Instant> range,
+                                                                                Integer maxRows,
+                                                                                boolean includeDisabledPaos,
+                                                                                Set<String> discludedPointStateValues,
+                                                                                YukonUserContext userContext) {
 
         Set<? extends Attribute> attributeSet = Sets.newHashSet(attributes);
         List<? extends PointValueHolder> pointData = null;
         Map<PaoPointIdentifier, PointInfo> paoPointInfoMap;
-        Set<PointInfo> pointInfos;
+        Map<Integer, PointInfo> pointIdsToPointInfos;
         if (maxRows != null) {
             ListMultimap<PaoIdentifier, PointValueQualityHolder> limitedAttributeDatas =
                 rawPointHistoryDao.getLimitedAttributeData(devices,
                                                            attributes,
-                                                           from != null ? from.toDate() : null,
-                                                           to != null ? to.toDate() : null,
+                                                           range,
                                                            maxRows,
                                                            !includeDisabledPaos,
-                                                           Clusivity.INCLUSIVE_INCLUSIVE,
                                                            Order.REVERSE);
             pointData = Lists.newArrayList(limitedAttributeDatas.values());
 
@@ -105,16 +78,11 @@ public class PaoPointValueServiceImpl implements PaoPointValueService {
                 pointIdsSet.add(pvqh.getId());
             }
 
-            pointInfos = Sets.newHashSet(pointDao.getPointInfoByPointIds(pointIdsSet));
+            pointIdsToPointInfos = pointDao.getPointInfoByPointIds(pointIdsSet);
             Map<PointValueQualityHolder, PointInfo> pvqhPointInfoMap =
                 Maps.newHashMapWithExpectedSize(limitedAttributeDatas.values().size());
             for (PointValueQualityHolder pvqh : limitedAttributeDatas.values()) {
-                for (PointInfo pointInfo : pointInfos) {
-                    if (pvqh.getId() == pointInfo.getPointId()) {
-                        pvqhPointInfoMap.put(pvqh, pointInfo);
-                        break;
-                    }
-                }
+                pvqhPointInfoMap.put(pvqh, pointIdsToPointInfos.get(pvqh.getId()));
             }
 
             paoPointInfoMap = Maps.newHashMap();
@@ -127,7 +95,7 @@ public class PaoPointValueServiceImpl implements PaoPointValueService {
         } else {
             // get the PaoPointIdentifiers for the devices & attributes
             List<PaoMultiPointIdentifier> paoMultiPointIdentifiersForAttributes =
-                attributeService.findPaoMultiPointIdentifiersForAttributes(devices, attributeSet, false, false);
+                attributeService.findPaoMultiPointIdentifiersForAttributes(devices, attributeSet);
             Set<PaoPointIdentifier> paoPointIdentifiers = Sets.newHashSet();
             for (PaoMultiPointIdentifier paoMultiPointIdentifier : paoMultiPointIdentifiersForAttributes) {
                 paoPointIdentifiers.addAll(paoMultiPointIdentifier.getPaoPointIdentifiers());
@@ -135,30 +103,22 @@ public class PaoPointValueServiceImpl implements PaoPointValueService {
 
             // get the pointIds for the PaoPointIdentifiers
             paoPointInfoMap = pointDao.getPointInfoById(paoPointIdentifiers);
-            pointInfos = Sets.newHashSet(paoPointInfoMap.values());
             Set<Integer> pointIdsSet = Sets.newHashSet();
+            pointIdsToPointInfos = Maps.newHashMapWithExpectedSize(paoPointInfoMap.size());
             for (PointInfo pointInfo : paoPointInfoMap.values()) {
                 pointIdsSet.add(pointInfo.getPointId());
+                pointIdsToPointInfos.put(pointInfo.getPointId(), pointInfo);
             }
 
             pointData = rawPointHistoryDao.getPointData(pointIdsSet,
-                                                        from != null ? from.toDate() : null,
-                                                        to != null ? to.toDate() : null,
+                                                        range,
                                                         !includeDisabledPaos,
-                                                        Clusivity.INCLUSIVE_INCLUSIVE,
                                                         Order.FORWARD);
         }
 
-        Map<Integer, PointInfo> pointIdPointInfoMap = Maps.newHashMap();
         Map<Integer, PaoPointIdentifier> pointIdPaoPointIdMap = Maps.newHashMap();
         Set<PaoIdentifier> retrievedPaoIds = Sets.newHashSet();
         for (PointValueHolder pointValueHolder : pointData) {
-            for (PointInfo pointInfo : pointInfos) {
-                if (pointInfo.getPointId() == pointValueHolder.getId()) {
-                    pointIdPointInfoMap.put(pointValueHolder.getId(), pointInfo);
-                    break;
-                }
-            }
             for (Entry<PaoPointIdentifier, PointInfo> entry : paoPointInfoMap.entrySet()) {
                 if (entry.getValue().getPointId() == pointValueHolder.getId()) {
                     pointIdPaoPointIdMap.put(pointValueHolder.getId(), entry.getKey());
@@ -180,29 +140,29 @@ public class PaoPointValueServiceImpl implements PaoPointValueService {
         }
 
         // put it all together into our return list
-        List<PaoPointValue> paoPointValues = Lists.newArrayList();
+        List<MeterPointValue> meterPointValues = Lists.newArrayListWithExpectedSize(pointData.size());
         for (PointValueHolder pointValueHolder : pointData) {
+            String valueString = pointFormattingService.getValueString(pointValueHolder, Format.VALUE, userContext);
             if (!CollectionUtils.isEmpty(discludedPointStateValues)) {
-                String valueString = pointFormattingService.getValueString(pointValueHolder, Format.VALUE, userContext);
                 if (discludedPointStateValues.contains(valueString.toLowerCase())) continue;
             }
-            PointInfo pointInfo = pointIdPointInfoMap.get(pointValueHolder.getId());
+            PointInfo pointInfo = pointIdsToPointInfos.get(pointValueHolder.getId());
             PaoPointIdentifier paoPointIdentifier = pointIdPaoPointIdMap.get(pointValueHolder.getId());
             Meter meter = paoPointIdMeterMap.get(paoPointIdentifier.getPaoIdentifier());
             BuiltInAttribute attribute = attributeService.findAttributeForPoint(paoPointIdentifier.getPaoTypePointIdentifier(), attributeSet);
 
-            PaoPointValue paoPointValue = new PaoPointValue();
-            paoPointValue.setPaoPointIdentifier(paoPointIdentifier);
-            paoPointValue.setAttribute(attribute);
-            paoPointValue.setMeter(meter);
-            paoPointValue.setPointValueHolder(pointValueHolder);
-            paoPointValue.setPointName(pointInfo.getName());
-
-            paoPointValues.add(paoPointValue);
+            MeterPointValue meterPointValue =
+                new MeterPointValue(meter,
+                                    paoPointIdentifier,
+                                    attribute,
+                                    pointValueHolder,
+                                    pointInfo.getName(),
+                                    valueString);
+            meterPointValues.add(meterPointValue);
         }
 
-        Collections.sort(paoPointValues, getPaoPointValueComparator());
-        return paoPointValues;
+        Collections.sort(meterPointValues, getMeterPointValueComparator());
+        return meterPointValues;
     }
 
 }

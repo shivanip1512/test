@@ -5,6 +5,8 @@ import org.joda.time.Duration;
 import org.joda.time.Instant;
 
 import com.cannontech.common.bulk.collection.device.DeviceCollection;
+import com.cannontech.common.util.Range;
+import com.cannontech.core.dao.RawPointHistoryDao.Clusivity;
 import com.cannontech.web.util.ListBackingBean;
 
 public class WaterLeakReportFilterBackingBean extends ListBackingBean {
@@ -62,6 +64,10 @@ public class WaterLeakReportFilterBackingBean extends ListBackingBean {
 
     public void setToInstant(Instant toInstant) {
         this.toInstant = toInstant;
+    }
+
+    public Range<Instant> getRange() {
+        return Clusivity.INCLUSIVE_INCLUSIVE.makeRange(fromInstant, toInstant);
     }
 
     public double getThreshold() {

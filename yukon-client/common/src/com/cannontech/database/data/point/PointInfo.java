@@ -5,7 +5,6 @@ import com.cannontech.common.pao.definition.model.PointIdentifier;
 public class PointInfo {
     private int pointId;
     private String name;
-    private PointType type;
     private PointIdentifier pointIdentifier;
     private String unitOfMeasure;
     private int stateGroupId;
@@ -27,11 +26,7 @@ public class PointInfo {
     }
 
     public PointType getType() {
-        return type;
-    }
-
-    public void setType(PointType type) {
-        this.type = type;
+        return pointIdentifier.getPointType();
     }
 
     public PointIdentifier getPointIdentifier() {
@@ -88,8 +83,6 @@ public class PointInfo {
         } else if (!pointIdentifier.equals(other.pointIdentifier))
             return false;
         if (stateGroupId != other.stateGroupId)
-            return false;
-        if (type != other.type)
             return false;
         if (unitOfMeasure == null) {
             if (other.unitOfMeasure != null)

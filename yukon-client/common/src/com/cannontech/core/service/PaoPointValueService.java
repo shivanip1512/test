@@ -5,15 +5,16 @@ import java.util.Set;
 
 import org.joda.time.Instant;
 
-import com.cannontech.amr.paoPointValue.model.PaoPointValue;
+import com.cannontech.amr.paoPointValue.model.MeterPointValue;
 import com.cannontech.common.pao.YukonPao;
 import com.cannontech.common.pao.attribute.model.Attribute;
+import com.cannontech.common.util.Range;
 import com.cannontech.user.YukonUserContext;
 
 public interface PaoPointValueService {
     
     /**
-     * Method to get a list of PaoPointValue objects for a given list of YukonPaos & attributes within a give time range. 
+     * Method to get a list of MeterPointValue objects for a given list of YukonPaos & attributes within a give time range. 
      * StartDate and StopDate are inclusive.
      * Ordering is timestamp asc if maxRows is NOT passed in, and timestamp desc if it IS passed in
      * @param devices The Iterable of YukonPao objects
@@ -25,12 +26,11 @@ public interface PaoPointValueService {
      * @param discludedPointStateValues - the String representation of any PointState value's that should not be included in the results
      * @return List of values for the point
      */
-    <P extends YukonPao> List<PaoPointValue> getPaoPointValuesForMeters(Iterable<P> devices,
-                                                                        Set<Attribute> attributes,
-                                                                        Instant from,
-                                                                        Instant to,
-                                                                        Integer maxRows,
-                                                                        boolean includeDisabledPaos,
-                                                                        Set<String> discludedPointStateValues,
-                                                                        YukonUserContext userContext);
+    <P extends YukonPao> List<MeterPointValue> getMeterPointValues(Iterable<P> devices,
+                                                                   Set<Attribute> attributes,
+                                                                   Range<Instant> range,
+                                                                   Integer maxRows,
+                                                                   boolean includeDisabledPaos,
+                                                                   Set<String> discludedPointStateValues,
+                                                                   YukonUserContext userContext);
 }

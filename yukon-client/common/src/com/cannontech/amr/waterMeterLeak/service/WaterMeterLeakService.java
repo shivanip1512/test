@@ -7,20 +7,18 @@ import org.joda.time.Instant;
 
 import com.cannontech.amr.waterMeterLeak.model.WaterMeterLeak;
 import com.cannontech.common.device.model.SimpleDevice;
+import com.cannontech.common.util.Range;
 import com.cannontech.user.YukonUserContext;
 
 public interface WaterMeterLeakService {
-    List<WaterMeterLeak> getWaterMeterLeaks(Set<SimpleDevice> devices, Instant fromDate,
-                                            Instant toDate, boolean includeDisabledPaos,
+    List<WaterMeterLeak> getWaterMeterLeaks(Set<SimpleDevice> devices, Range<Instant> range,
+                                            boolean includeDisabledPaos,
                                             double threshold,
-                                            YukonUserContext userContext,
-                                            boolean useOldMethod);
+                                            YukonUserContext userContext);
 
     List<WaterMeterLeak> getWaterMeterLeakIntervalData(Set<SimpleDevice> devices,
-                                                       Instant fromDate,
-                                                       Instant toDate,
+                                                       Range<Instant> range,
                                                        boolean includeDisabledPaos,
                                                        double threshold,
-                                                       YukonUserContext userContext,
-                                                       boolean useOldMethod);
+                                                       YukonUserContext userContext);
 }

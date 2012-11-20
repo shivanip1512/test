@@ -43,6 +43,7 @@ import com.cannontech.core.dao.RawPointHistoryDao;
 import com.cannontech.core.dynamic.PointValueBuilder;
 import com.cannontech.core.dynamic.PointValueHolder;
 import com.cannontech.core.dynamic.PointValueQualityHolder;
+import com.cannontech.database.YNBoolean;
 import com.cannontech.database.YukonJdbcTemplate;
 import com.cannontech.database.YukonResultSet;
 import com.cannontech.database.YukonRowMapper;
@@ -87,9 +88,14 @@ public class RawPointHistoryDaoImpl implements RawPointHistoryDao {
 
     private SqlFragmentSource buildSql(Clusivity clusivity, Iterable<Integer> pointIds, Date startDate,
                                        Date stopDate, Order order, boolean excludeDisabledPaos) {
+        Range<Instant> range = clusivity.makeRange(startDate,  stopDate).translate(CtiUtilities.INSTANT_FROM_DATE);
+        return buildSql(pointIds, range, order, excludeDisabledPaos);
+    }
+    
+    private SqlFragmentSource buildSql(Iterable<Integer> pointIds, Range<Instant> range, Order order, boolean excludeDisabledPaos) {
         SqlStatementBuilder sql = new SqlStatementBuilder();
         sql.append("SELECT DISTINCT rph.pointid, rph.timestamp, rph.value, rph.quality, p.pointtype");
-        appendFromAndWhereClause(sql, pointIds, startDate, stopDate, clusivity, excludeDisabledPaos);
+        appendFromAndWhereClause(sql, pointIds, range, excludeDisabledPaos);
         appendOrderByClause(sql, order);
 
         return sql;
@@ -119,8 +125,7 @@ public class RawPointHistoryDaoImpl implements RawPointHistoryDao {
     }
 
     private static void appendFromAndWhereClause(SqlBuilder sql, Iterable<Integer> pointIds,
-                                                 Date startDate, Date stopDate,
-                                                 Clusivity clusivity,
+                                                 Range<Instant> range,
                                                  boolean excludeDisabledPaos) {
         sql.append("FROM rawpointhistory rph");
         sql.append(  "JOIN point p on rph.pointId = p.pointId");
@@ -129,42 +134,16 @@ public class RawPointHistoryDaoImpl implements RawPointHistoryDao {
         }
         sql.append("WHERE rph.pointid").in(pointIds);
         if (excludeDisabledPaos) {
-            sql.append("AND yp.DisableFlag = 'N'");
+            sql.append("AND yp.DisableFlag").eq(YNBoolean.NO);
         }
 
-        appendTimeStampClause(sql, startDate, stopDate, clusivity);
+        appendTimeStampClause(sql, range);
     }
 
     private static void appendFromAndWhereClause(SqlBuilder sql, int pointId, Date startDate,
                                                  Date stopDate, Clusivity clusivity, boolean excludeDisabledPaos) {
-        sql.append("FROM rawpointhistory rph");
-        sql.append(  "JOIN point p on rph.pointId = p.pointId");
-        if (excludeDisabledPaos) {
-            sql.append(  "JOIN YukonPaobject yp ON p.paobjectid = yp.paobjectid");
-        }
-        sql.append("WHERE rph.pointid").eq(pointId);
-        if (excludeDisabledPaos) {
-            sql.append("AND yp.DisableFlag = 'N'");
-        }
-
-        appendTimeStampClause(sql, startDate, stopDate, clusivity);
-    }
-
-    private static void appendTimeStampClause(SqlBuilder sql, Date startDate, Date stopDate, Clusivity clusivity) {
-        if (startDate != null) {
-            if (clusivity.isStartInclusive()) {
-                sql.append("AND rph.timestamp").gte(startDate);
-            } else {
-                sql.append("AND rph.timestamp").gt(startDate);
-            }
-        }
-        if (stopDate != null) {
-            if (clusivity.isEndInclusive()) {
-                sql.append("AND rph.timestamp").lte(stopDate);
-            } else {
-                sql.append("AND rph.timestamp").lt(stopDate);
-            }
-        }
+        Range<Instant> range = clusivity.makeRange(startDate,  stopDate).translate(CtiUtilities.INSTANT_FROM_DATE);
+        appendFromAndWhereClause(sql, Collections.singletonList(pointId), range, excludeDisabledPaos);
     }
 
     private static void appendTimeStampClause(SqlBuilder sql, Range<Instant> dateRange) {
@@ -247,14 +226,14 @@ public class RawPointHistoryDaoImpl implements RawPointHistoryDao {
     }
 
     @Override
-    public List<PointValueHolder> getPointData(Set<Integer> pointIds, final Date startDate, final Date stopDate, final boolean excludeDisabledPaos,
-                                               final Clusivity clusivity, final Order order) {
+    public List<PointValueHolder> getPointData(Set<Integer> pointIds, final Range<Instant> range,
+                                               final boolean excludeDisabledPaos, final Order order) {
         ChunkingSqlTemplate template = new ChunkingSqlTemplate(yukonTemplate);
         SqlFragmentGenerator<Integer> sqlGenerator = new SqlFragmentGenerator<Integer>() {
             
             @Override
             public SqlFragmentSource generate(List<Integer> subList) {
-                return buildSql(clusivity, subList, startDate, stopDate, order, excludeDisabledPaos);
+                return buildSql(subList, range, order, excludeDisabledPaos);
             }
         };
         return template.query(sqlGenerator, pointIds, new LiteRphRowMapper());
@@ -307,7 +286,7 @@ public class RawPointHistoryDaoImpl implements RawPointHistoryDao {
                         appendChangeIdClause(sql, changeIdRange);
                         sql.append("AND yp.PAObjectID").in(subList);
                         if (excludeDisabledPaos) {
-                            sql.append("AND yp.DisableFlag = 'N'");
+                            sql.append("AND yp.DisableFlag").eq(YNBoolean.NO);
                         }
                         sql.append(") numberedRows");
                         sql.append("WHERE numberedRows.rn").lte(maxRows);
@@ -333,11 +312,12 @@ public class RawPointHistoryDaoImpl implements RawPointHistoryDao {
     }
     
     @Override
-    public ListMultimap<PaoIdentifier, PointValueQualityHolder> getLimitedAttributeData(
-            Iterable<? extends YukonPao> displayableDevices, Iterable<Attribute> attributes, final Date startDate,
-            final Date stopDate, final int maxRows, final boolean excludeDisabledPaos, final Clusivity clusivity,
-            final Order order) {
-        Range<Instant> dateRange = clusivity.makeRange(startDate, stopDate).translate(CtiUtilities.INSTANT_FROM_DATE);
+    public ListMultimap<PaoIdentifier, PointValueQualityHolder> getLimitedAttributeData(Iterable<? extends YukonPao> displayableDevices,
+                                                                                        Iterable<Attribute> attributes,
+                                                                                        Range<Instant> dateRange,
+                                                                                        final int maxRows,
+                                                                                        final boolean excludeDisabledPaos,
+                                                                                        final Order order) {
         ListMultimap<PaoIdentifier, PointValueQualityHolder> limitedAttributeDatas = ArrayListMultimap.create(IterableUtils.guessSize(displayableDevices), 20); 
         for (Attribute attribute : attributes) {
             ListMultimap<PaoIdentifier, PointValueQualityHolder> limitedAttributeData = getLimitedAttributeData(displayableDevices, attribute, dateRange, null,
@@ -368,7 +348,7 @@ public class RawPointHistoryDaoImpl implements RawPointHistoryDao {
                         appendChangeIdClause(sql, changeIdRange);
                         appendTimeStampClause(sql, dateRange);
                         if (excludeDisabledPaos) {
-                            sql.append(  "AND yp.DisableFlag = 'N'");
+                            sql.append(  "AND yp.DisableFlag").eq(YNBoolean.NO);
                         }
                         appendOrderByClause(sql, order);
 
@@ -410,7 +390,7 @@ public class RawPointHistoryDaoImpl implements RawPointHistoryDao {
                         appendChangeIdClause(sql, changeIdRange);
                         sql.append(  "AND yp.PAObjectID").in(subList);
                         if (excludeDisabledPaos) {
-                            sql.append(  "AND yp.DisableFlag = 'N'");
+                            sql.append(  "AND yp.DisableFlag").eq(YNBoolean.NO);
                         }
                         appendOrderByClause(sql, order);
                         

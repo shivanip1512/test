@@ -234,12 +234,10 @@ public class WaterLeakReportController {
 
         // data rows
         List<WaterMeterLeak> waterLeaks = waterMeterLeakService.getWaterMeterLeaks(Sets.newHashSet(backingBean.getDeviceCollection().getDeviceList()),
-                                                                                   backingBean.getFromInstant(),
-                                                                                   backingBean.getToInstant(),
+                                                                                   backingBean.getRange(),
                                                                                    backingBean.isIncludeDisabledPaos(),
                                                                                    backingBean.getThreshold(),
-                                                                                   userContext,
-                                                                                   true);
+                                                                                   userContext);
         if (backingBean.getSort() != null) {
             if (backingBean.getDescending()) {
                 Collections.sort(waterLeaks, Collections.reverseOrder(sorters.get(backingBean.getSort())));
@@ -286,12 +284,10 @@ public class WaterLeakReportController {
         // data rows
         List<WaterMeterLeak> waterLeaks = waterMeterLeakService
                 .getWaterMeterLeakIntervalData(Sets.newHashSet(backingBean.getDeviceCollection().getDeviceList()),
-                                               backingBean.getFromInstant(),
-                                               backingBean.getToInstant(),
+                                               backingBean.getRange(),
                                                backingBean.isIncludeDisabledPaos(),
                                                backingBean.getThreshold(),
-                                               userContext,
-                                               true);
+                                               userContext);
         if (backingBean.getSort() != null) {
             if (backingBean.getDescending()) {
                 Collections.sort(waterLeaks, Collections.reverseOrder(sorters.get(backingBean.getSort())));
@@ -361,12 +357,10 @@ public class WaterLeakReportController {
             throws ServletRequestBindingException, DeviceCollectionCreationException {
         List<WaterMeterLeak> waterLeaks =
             waterMeterLeakService.getWaterMeterLeaks(Sets.newHashSet(backingBean.getDeviceCollection().getDeviceList()),
-                                                     backingBean.getFromInstant(),
-                                                     backingBean.getToInstant(),
+                                                     backingBean.getRange(),
                                                      backingBean.isIncludeDisabledPaos(),
                                                      backingBean.getThreshold(),
-                                                     userContext,
-                                                     false);
+                                                     userContext);
         setupFilterResults(backingBean, userContext, model, waterLeaks);
     }
 
@@ -374,12 +368,10 @@ public class WaterLeakReportController {
                                                   YukonUserContext userContext, ModelMap model) {
         List<WaterMeterLeak> waterLeaks = 
                 waterMeterLeakService.getWaterMeterLeakIntervalData(Sets.newHashSet(backingBean.getDeviceCollection().getDeviceList()),
-                                                                    backingBean.getFromInstant(),
-                                                                    backingBean.getToInstant(),
+                                                                    backingBean.getRange(),
                                                                     backingBean.isIncludeDisabledPaos(),
                                                                     backingBean.getThreshold(),
-                                                                    userContext,
-                                                                    false);
+                                                                    userContext);
         setupFilterResults(backingBean, userContext, model, waterLeaks);
     }
 
