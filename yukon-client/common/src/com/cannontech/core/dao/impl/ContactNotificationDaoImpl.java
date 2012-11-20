@@ -33,26 +33,14 @@ import com.cannontech.yukon.IDatabaseCache;
  * 
  */
 public final class ContactNotificationDaoImpl implements ContactNotificationDao, InitializingBean{
-    private IDatabaseCache databaseCache;
-    
-    private SimpleJdbcTemplate simpleJdbcTemplate;
-    private YukonJdbcOperations yukonJdbcOperations;
-    private ChunkingSqlTemplate chunkyJdbcTemplate;
-    private NextValueHelper nextValueHelper;
-    private PhoneNumberFormattingService phoneNumberFormattingService;
+    @Autowired private IDatabaseCache databaseCache;
+    @Autowired private SimpleJdbcTemplate simpleJdbcTemplate;
+    @Autowired private YukonJdbcOperations yukonJdbcOperations;
+    @Autowired private NextValueHelper nextValueHelper;
+    @Autowired private PhoneNumberFormattingService phoneNumberFormattingService;
     @Autowired private YukonJdbcTemplate yukonJdbcTemplate;
     
-	public void setDatabaseCache(IDatabaseCache databaseCache) {
-        this.databaseCache = databaseCache;
-    }
-	
-	public void setSimpleJdbcTemplate(SimpleJdbcTemplate simpleJdbcTemplate) {
-        this.simpleJdbcTemplate = simpleJdbcTemplate;
-    }
-	
-	public void setNextValueHelper(NextValueHelper nextValueHelper) {
-        this.nextValueHelper = nextValueHelper;
-    }
+    private ChunkingSqlTemplate chunkyJdbcTemplate;
 
     /**
 	 * ContactFuncs constructor comment.
@@ -62,7 +50,8 @@ public final class ContactNotificationDaoImpl implements ContactNotificationDao,
 		super();
 	}
 
-	public LiteContactNotification getContactNotification( int contactNotifID ) 
+	@Override
+    public LiteContactNotification getContactNotification( int contactNotifID ) 
 	{
 		synchronized( databaseCache )
 		{
@@ -70,7 +59,8 @@ public final class ContactNotificationDaoImpl implements ContactNotificationDao,
 		}
 	}
 
-	public List<LiteContactNotification> getAllContactNotifications() 
+	@Override
+    public List<LiteContactNotification> getAllContactNotifications() 
 	{
 		synchronized( databaseCache )		
 		{
@@ -334,14 +324,4 @@ public final class ContactNotificationDaoImpl implements ContactNotificationDao,
     public void afterPropertiesSet() throws Exception {
         chunkyJdbcTemplate= new ChunkingSqlTemplate(simpleJdbcTemplate);
     }
-    
-    @Autowired
-    public void setYukonJdbcOperations(YukonJdbcOperations yukonJdbcOperations) {
-		this.yukonJdbcOperations = yukonJdbcOperations;
-	}
-    
-    @Autowired
-    public void setPhoneNumberFormattingService(PhoneNumberFormattingService phoneNumberFormattingService) {
-		this.phoneNumberFormattingService = phoneNumberFormattingService;
-	}
 }
