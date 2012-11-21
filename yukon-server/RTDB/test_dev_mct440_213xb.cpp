@@ -2102,7 +2102,7 @@ BOOST_AUTO_TEST_CASE(test_getValueMappingForRead_IO_Read_1Dword)
         (empty)
         (empty)
         (empty)
-        (empty)
+        (tuple_list_of(0,1,270))
         (empty)
         (empty)
         (empty)
@@ -2241,7 +2241,7 @@ BOOST_AUTO_TEST_CASE(test_getValueMappingForRead_IO_Read_2Dwords)
         (empty)
         (empty)
         (empty)
-        (tuple_list_of(5,1,128)(6,1,129)(7,2,130))
+        (tuple_list_of(0,1,270)(5,1,128)(6,1,129)(7,2,130))
         (empty)
         (empty)
         (empty)
@@ -2389,7 +2389,7 @@ BOOST_AUTO_TEST_CASE(test_getValueMappingForRead_IO_Read_3Dwords)
         (empty)
         (empty)
         (empty)
-        (tuple_list_of(5,1,128)(6,1,129)(7,2,130))
+        (tuple_list_of(0,1,270)(5,1,128)(6,1,129)(7,2,130))
         (empty)
         (empty)
         (empty)
@@ -3439,13 +3439,6 @@ BOOST_AUTO_TEST_CASE(test_decodeGetStatusDisconnect)
 
         BOOST_REQUIRE(retMsg);
 
-        string expected = "Test MCT-440-213xB / Disconnect Info:\n"
-                          "Control output status open\n"
-                          "Disconnect sensor open\n"
-                          "Disconnect not locked\n";
-
-        BOOST_REQUIRE_EQUAL(retMsg->ResultString(), expected);
-
         CtiMultiMsg_vec points = retMsg->PointData();
 
         BOOST_REQUIRE_EQUAL(points.size(), 1);
@@ -3476,13 +3469,6 @@ BOOST_AUTO_TEST_CASE(test_decodeGetStatusDisconnect)
         const CtiReturnMsg *retMsg = dynamic_cast<CtiReturnMsg *>(retList.front());
 
         BOOST_REQUIRE(retMsg);
-
-        string expected = "Test MCT-440-213xB / Disconnect Info:\n"
-                          "Control output status open\n"
-                          "Disconnect sensor open\n"
-                          "Disconnect not locked\n";
-
-        BOOST_REQUIRE_EQUAL(retMsg->ResultString(), expected);
 
         CtiMultiMsg_vec points = retMsg->PointData();
 
@@ -3515,14 +3501,6 @@ BOOST_AUTO_TEST_CASE(test_decodeGetStatusDisconnect)
 
         BOOST_REQUIRE(retMsg);
 
-        string expected = "Test MCT-440-213xB / Disconnect Info:\n"
-                          "Disconnect state uncertain\n"
-                          "Load side voltage detected\n"
-                          "Control output status closed\n"
-                          "Disconnect sensor closed\n";
-
-        BOOST_REQUIRE_EQUAL(retMsg->ResultString(), expected);
-
         CtiMultiMsg_vec points = retMsg->PointData();
 
         BOOST_REQUIRE_EQUAL(points.size(), 1);
@@ -3553,14 +3531,6 @@ BOOST_AUTO_TEST_CASE(test_decodeGetStatusDisconnect)
         const CtiReturnMsg *retMsg = dynamic_cast<CtiReturnMsg *>(retList.front());
 
         BOOST_REQUIRE(retMsg);
-
-        string expected = "Test MCT-440-213xB / Disconnect Info:\n"
-                          "Disconnect state uncertain\n"
-                          "Load side voltage detected\n"
-                          "Control output status closed\n"
-                          "Disconnect sensor closed\n";
-
-        BOOST_REQUIRE_EQUAL(retMsg->ResultString(), expected);
 
         CtiMultiMsg_vec points = retMsg->PointData();
 
@@ -3649,7 +3619,7 @@ BOOST_FIXTURE_TEST_SUITE(command_executions, executePutConfig_helper)
 
         BOOST_CHECK_EQUAL(NoError, test_dev.executePutConfigTOU(&request, parse, outMessage, vgList, retList, outList, false));
 
-        BOOST_CHECK_EQUAL(outList.size(), 9);
+        BOOST_CHECK_EQUAL(outList.size(), 4);
 
         {
             OUTMESS* outmsg = outList.front();
