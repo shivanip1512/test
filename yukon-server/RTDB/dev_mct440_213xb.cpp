@@ -1,6 +1,5 @@
 #include "precompiled.h"
 
-
 #include "logger.h"
 #include "numstr.h"
 #include "dev_mct440_213xb.h"
@@ -16,21 +15,21 @@
 
 #include <stack>
 
-using namespace std;
 
+using namespace std;
 using namespace Cti::Devices::Commands;
 using namespace Cti::Config;
 using Cti::Protocols::EmetconProtocol;
 
-#define TOU_SCHEDULE_NBR            4
-#define TOU_SCHEDULE_TIME_NBR      10
-#define TOU_SCHEDULE_RATE_NBR      11
 
-#define OUTAGE_NBR_MIN              1
-#define OUTAGE_NBR_MAX             10
+#define TOU_SCHEDULE_NBR                4
+#define TOU_SCHEDULE_TIME_NBR          10
+#define TOU_SCHEDULE_RATE_NBR          11
 
-#define STR_EXPAND(x)              #x
-#define STR(x)                     STR_EXPAND(x)
+#define OUTAGE_NBR_MIN                  1
+#define OUTAGE_NBR_MAX                 10
+
+#define DEFAULT_INSTALL_READ_DELAY     20   // TODO set default delay
 
 
 namespace Cti {
@@ -95,6 +94,7 @@ Mct440_213xBDevice::FunctionReadValueMappings Mct440_213xBDevice::initReadValueM
         { 0x000,  1, { 2, CtiTableDynamicPaoInfo::Key_MCT_SSpec                     } },
 
         // 0x005 – Status and Event Flags and Masks
+        { 0x005,  0, { 1, CtiTableDynamicPaoInfo::Key_MCT_StatusFlags                    } },
         { 0x005,  5, { 1, CtiTableDynamicPaoInfo::Key_MCT_EventFlagsMask1           } },
         { 0x005,  6, { 1, CtiTableDynamicPaoInfo::Key_MCT_EventFlagsMask2           } },
         { 0x005,  7, { 2, CtiTableDynamicPaoInfo::Key_MCT_MeterAlarmMask            } },
@@ -237,6 +237,15 @@ Mct440_213xBDevice::CommandSet Mct440_213xBDevice::initCommandStore()
 
     cs.insert(CommandStore(EmetconProtocol::GetConfig_AlarmMask,            EmetconProtocol::IO_Read,           0x01,    9));
 
+    cs.insert(CommandStore(EmetconProtocol::GetConfig_Addressing,           EmetconProtocol::IO_Read,           0x13,    6));
+    cs.insert(CommandStore(EmetconProtocol::PutConfig_Addressing,           EmetconProtocol::IO_Read,           0x13,    6));
+
+    cs.insert(CommandStore(EmetconProtocol::PutStatus_SetDSTActive,         EmetconProtocol::IO_Write,          0xA6,    0));
+    cs.insert(CommandStore(EmetconProtocol::PutStatus_SetDSTInactive,       EmetconProtocol::IO_Write,          0xA7,    0));
+
+    cs.insert(CommandStore(EmetconProtocol::GetConfig_TimeZoneOffset,       EmetconProtocol::IO_Read,           0x3F,    1));
+    cs.insert(CommandStore(EmetconProtocol::GetConfig_TimeAdjustTolerance,  EmetconProtocol::IO_Read,           0x36,    1));
+
     return cs;
 }
 
@@ -245,28 +254,27 @@ Mct440_213xBDevice::CommandSet Mct440_213xBDevice::initCommandStore()
 *********************************************************************************************************
 *                                         initConfigParts()
 *
-* Description :
+* Description : Initialize config parts supported for the MCT440_213xB device
 *
-* Argument(s) :
+* Argument(s) : None.
 *
-* Return(s)   :
+* Return(s)   : ConfigPartsList
 *
-* Caller(s)   :
+* Caller(s)   : At initialization of the class
 *
-* Note(s)     :
+* Note(s)     : None.
 *********************************************************************************************************
 */
 Mct440_213xBDevice::ConfigPartsList Mct440_213xBDevice::initConfigParts()
 {
-    ConfigPartsList tempList;
+    Mct440_213xBDevice::ConfigPartsList tempList;
 
     tempList.push_back(Mct4xxDevice::PutConfigPart_tou);
-//    tempList.push_back(Mct4xxDevice::PutConfigPart_dst);
+    tempList.push_back(Mct4xxDevice::PutConfigPart_dst);
     tempList.push_back(Mct4xxDevice::PutConfigPart_timezone);
-//    tempList.push_back(Mct4xxDevice::PutConfigPart_configbyte);
     tempList.push_back(Mct4xxDevice::PutConfigPart_time_adjust_tolerance);
-//    tempList.push_back(Mct4xxDevice::PutConfigPart_addressing);
-    tempList.push_back(Mct4xxDevice::PutConfigPart_holiday);
+    tempList.push_back(Mct4xxDevice::PutConfigPart_addressing);
+    tempList.push_back(Mct4xxDevice::PutConfigPart_phaseloss);
 
     return tempList;
 }
@@ -276,15 +284,15 @@ Mct440_213xBDevice::ConfigPartsList Mct440_213xBDevice::initConfigParts()
 *********************************************************************************************************
 *                                        initExcludedCommands()
 *
-* Description :
+* Description : Initialize list of excluded commands
 *
-* Argument(s) :
+* Argument(s) : None.
 *
-* Return(s)   :
+* Return(s)   : std::set<UINT>
 *
-* Caller(s)   :
+* Caller(s)   : At initialization of the class
 *
-* Note(s)     :
+* Note(s)     : None.
 *********************************************************************************************************
 */
 std::set<UINT> Mct440_213xBDevice::initExcludedCommands()
@@ -294,7 +302,6 @@ std::set<UINT> Mct440_213xBDevice::initExcludedCommands()
     cs.insert(EmetconProtocol::PutConfig_VThreshold);
     cs.insert(EmetconProtocol::PutConfig_Disconnect);
     cs.insert(EmetconProtocol::GetConfig_Thresholds);
-    cs.insert(EmetconProtocol::GetConfig_Disconnect);
     cs.insert(EmetconProtocol::GetValue_PeakDemand);
     cs.insert(EmetconProtocol::GetValue_FrozenPeakDemand);
     cs.insert(EmetconProtocol::GetValue_Voltage);
@@ -563,7 +570,7 @@ INT Mct440_213xBDevice::executeGetValue(CtiRequestMsg     *pReq,
         if( outagenum < OUTAGE_NBR_MIN || outagenum > OUTAGE_NBR_MAX )
         {
             returnErrorMessage(BADPARAM, OutMessage, retList,
-                               "Bad outage specification - Acceptable values: "STR(OUTAGE_NBR_MIN)" - "STR(OUTAGE_NBR_MAX));
+                               "Bad outage specification - Acceptable values: " + CtiNumStr(OUTAGE_NBR_MIN) + " - " + CtiNumStr(OUTAGE_NBR_MAX));
 
             nRet = ExecutionComplete;
         }
@@ -1138,140 +1145,176 @@ int Mct440_213xBDevice::executePutConfigTOU(CtiRequestMsg     *pReq,
     long value, tempTime;
     DeviceConfigSPtr deviceConfig = getDeviceConfig();
 
-
-    if(deviceConfig)
+    if( !deviceConfig )
     {
-        if( ! readsOnly )
+        CtiLockGuard<CtiLogger> doubt_guard(dout);
+        dout << CtiTime() << " **** Checkpoint - deviceConfig is null **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
+        nRet = NoConfigData;
+    }
+                                                                /* overwrite the request command                        */
+    strncpy(OutMessage->Request.CommandStr, pReq->CommandString().c_str(), COMMAND_STR_SIZE);
+
+    if( !readsOnly )
+    {
+        long times[TOU_SCHEDULE_NBR][TOU_SCHEDULE_TIME_NBR];
+        long rates[TOU_SCHEDULE_NBR][TOU_SCHEDULE_RATE_NBR];
+        string rateStringValues[TOU_SCHEDULE_NBR][TOU_SCHEDULE_RATE_NBR],
+               timeStringValues[TOU_SCHEDULE_NBR][TOU_SCHEDULE_TIME_NBR],
+               daySchedule1, daySchedule2, daySchedule3, daySchedule4,
+               dynDaySchedule1, dynDaySchedule2, dynDaySchedule3, dynDaySchedule4;
+        long defaultTOURate;
+        long dayTable;
+
+        // Unfortunatelly the arrays have a 0 offset, while the schedules times/rates are referenced with a 1 offset
+        // Also note that rate "0" is the midnight rate.
+        string mondayScheduleStr    = deviceConfig->getValueFromKey(MCTStrings::MondaySchedule);
+        string tuesdayScheduleStr   = deviceConfig->getValueFromKey(MCTStrings::TuesdaySchedule);
+        string wednesdayScheduleStr = deviceConfig->getValueFromKey(MCTStrings::WednesdaySchedule);
+        string thursdayScheduleStr  = deviceConfig->getValueFromKey(MCTStrings::ThursdaySchedule);
+        string fridayScheduleStr    = deviceConfig->getValueFromKey(MCTStrings::FridaySchedule);
+        string saturdayScheduleStr  = deviceConfig->getValueFromKey(MCTStrings::SaturdaySchedule);
+        string sundayScheduleStr    = deviceConfig->getValueFromKey(MCTStrings::SundaySchedule);
+        string holidayScheduleStr   = deviceConfig->getValueFromKey(MCTStrings::HolidaySchedule);
+
+        long mondaySchedule    = resolveScheduleName(mondayScheduleStr);
+        long tuesdaySchedule   = resolveScheduleName(tuesdayScheduleStr);
+        long wednesdaySchedule = resolveScheduleName(wednesdayScheduleStr);
+        long thursdaySchedule  = resolveScheduleName(thursdayScheduleStr);
+        long fridaySchedule    = resolveScheduleName(fridayScheduleStr);
+        long saturdaySchedule  = resolveScheduleName(saturdayScheduleStr);
+        long sundaySchedule    = resolveScheduleName(sundayScheduleStr);
+        long holidaySchedule   = resolveScheduleName(holidayScheduleStr);
+
+        //These are all string values
+        timeStringValues[0][0] = deviceConfig->getValueFromKey(MCTStrings::Schedule1Time1);
+        timeStringValues[0][1] = deviceConfig->getValueFromKey(MCTStrings::Schedule1Time2);
+        timeStringValues[0][2] = deviceConfig->getValueFromKey(MCTStrings::Schedule1Time3);
+        timeStringValues[0][3] = deviceConfig->getValueFromKey(MCTStrings::Schedule1Time4);
+        timeStringValues[0][4] = deviceConfig->getValueFromKey(MCTStrings::Schedule1Time5);
+        timeStringValues[0][5] = deviceConfig->getValueFromKey(MCTStrings::Schedule1Time6);
+        timeStringValues[0][6] = deviceConfig->getValueFromKey(MCTStrings::Schedule1Time7);
+        timeStringValues[0][7] = deviceConfig->getValueFromKey(MCTStrings::Schedule1Time8);
+        timeStringValues[0][8] = deviceConfig->getValueFromKey(MCTStrings::Schedule1Time9);
+        timeStringValues[0][9] = deviceConfig->getValueFromKey(MCTStrings::Schedule1Time10);
+
+        timeStringValues[1][0] = deviceConfig->getValueFromKey(MCTStrings::Schedule2Time1);
+        timeStringValues[1][1] = deviceConfig->getValueFromKey(MCTStrings::Schedule2Time2);
+        timeStringValues[1][2] = deviceConfig->getValueFromKey(MCTStrings::Schedule2Time3);
+        timeStringValues[1][3] = deviceConfig->getValueFromKey(MCTStrings::Schedule2Time4);
+        timeStringValues[1][4] = deviceConfig->getValueFromKey(MCTStrings::Schedule2Time5);
+        timeStringValues[1][5] = deviceConfig->getValueFromKey(MCTStrings::Schedule2Time6);
+        timeStringValues[1][6] = deviceConfig->getValueFromKey(MCTStrings::Schedule2Time7);
+        timeStringValues[1][7] = deviceConfig->getValueFromKey(MCTStrings::Schedule2Time8);
+        timeStringValues[1][8] = deviceConfig->getValueFromKey(MCTStrings::Schedule2Time9);
+        timeStringValues[1][9] = deviceConfig->getValueFromKey(MCTStrings::Schedule2Time10);
+
+        timeStringValues[2][0] = deviceConfig->getValueFromKey(MCTStrings::Schedule3Time1);
+        timeStringValues[2][1] = deviceConfig->getValueFromKey(MCTStrings::Schedule3Time2);
+        timeStringValues[2][2] = deviceConfig->getValueFromKey(MCTStrings::Schedule3Time3);
+        timeStringValues[2][3] = deviceConfig->getValueFromKey(MCTStrings::Schedule3Time4);
+        timeStringValues[2][4] = deviceConfig->getValueFromKey(MCTStrings::Schedule3Time5);
+        timeStringValues[2][5] = deviceConfig->getValueFromKey(MCTStrings::Schedule3Time6);
+        timeStringValues[2][6] = deviceConfig->getValueFromKey(MCTStrings::Schedule3Time7);
+        timeStringValues[2][7] = deviceConfig->getValueFromKey(MCTStrings::Schedule3Time8);
+        timeStringValues[2][8] = deviceConfig->getValueFromKey(MCTStrings::Schedule3Time9);
+        timeStringValues[2][9] = deviceConfig->getValueFromKey(MCTStrings::Schedule3Time10);
+
+        timeStringValues[3][0] = deviceConfig->getValueFromKey(MCTStrings::Schedule4Time1);
+        timeStringValues[3][1] = deviceConfig->getValueFromKey(MCTStrings::Schedule4Time2);
+        timeStringValues[3][2] = deviceConfig->getValueFromKey(MCTStrings::Schedule4Time3);
+        timeStringValues[3][3] = deviceConfig->getValueFromKey(MCTStrings::Schedule4Time4);
+        timeStringValues[3][4] = deviceConfig->getValueFromKey(MCTStrings::Schedule4Time5);
+        timeStringValues[3][5] = deviceConfig->getValueFromKey(MCTStrings::Schedule4Time6);
+        timeStringValues[3][6] = deviceConfig->getValueFromKey(MCTStrings::Schedule4Time7);
+        timeStringValues[3][7] = deviceConfig->getValueFromKey(MCTStrings::Schedule4Time8);
+        timeStringValues[3][8] = deviceConfig->getValueFromKey(MCTStrings::Schedule4Time9);
+        timeStringValues[3][9] = deviceConfig->getValueFromKey(MCTStrings::Schedule4Time10);
+
+        rateStringValues[0][0] = deviceConfig->getValueFromKey(MCTStrings::Schedule1Rate1);
+        rateStringValues[0][1] = deviceConfig->getValueFromKey(MCTStrings::Schedule1Rate2);
+        rateStringValues[0][2] = deviceConfig->getValueFromKey(MCTStrings::Schedule1Rate3);
+        rateStringValues[0][3] = deviceConfig->getValueFromKey(MCTStrings::Schedule1Rate4);
+        rateStringValues[0][4] = deviceConfig->getValueFromKey(MCTStrings::Schedule1Rate5);
+        rateStringValues[0][5] = deviceConfig->getValueFromKey(MCTStrings::Schedule1Rate6);
+        rateStringValues[0][6] = deviceConfig->getValueFromKey(MCTStrings::Schedule1Rate7);
+        rateStringValues[0][7] = deviceConfig->getValueFromKey(MCTStrings::Schedule1Rate8);
+        rateStringValues[0][8] = deviceConfig->getValueFromKey(MCTStrings::Schedule1Rate9);
+        rateStringValues[0][9] = deviceConfig->getValueFromKey(MCTStrings::Schedule1Rate10);
+        rateStringValues[0][10] = deviceConfig->getValueFromKey(MCTStrings::Schedule1Rate0);
+
+        rateStringValues[1][0] = deviceConfig->getValueFromKey(MCTStrings::Schedule2Rate1);
+        rateStringValues[1][1] = deviceConfig->getValueFromKey(MCTStrings::Schedule2Rate2);
+        rateStringValues[1][2] = deviceConfig->getValueFromKey(MCTStrings::Schedule2Rate3);
+        rateStringValues[1][3] = deviceConfig->getValueFromKey(MCTStrings::Schedule2Rate4);
+        rateStringValues[1][4] = deviceConfig->getValueFromKey(MCTStrings::Schedule2Rate5);
+        rateStringValues[1][5] = deviceConfig->getValueFromKey(MCTStrings::Schedule2Rate6);
+        rateStringValues[1][6] = deviceConfig->getValueFromKey(MCTStrings::Schedule2Rate7);
+        rateStringValues[1][7] = deviceConfig->getValueFromKey(MCTStrings::Schedule2Rate8);
+        rateStringValues[1][8] = deviceConfig->getValueFromKey(MCTStrings::Schedule2Rate9);
+        rateStringValues[1][9] = deviceConfig->getValueFromKey(MCTStrings::Schedule2Rate10);
+        rateStringValues[1][10] = deviceConfig->getValueFromKey(MCTStrings::Schedule2Rate0);
+
+        rateStringValues[2][0] = deviceConfig->getValueFromKey(MCTStrings::Schedule3Rate1);
+        rateStringValues[2][1] = deviceConfig->getValueFromKey(MCTStrings::Schedule3Rate2);
+        rateStringValues[2][2] = deviceConfig->getValueFromKey(MCTStrings::Schedule3Rate3);
+        rateStringValues[2][3] = deviceConfig->getValueFromKey(MCTStrings::Schedule3Rate4);
+        rateStringValues[2][4] = deviceConfig->getValueFromKey(MCTStrings::Schedule3Rate5);
+        rateStringValues[2][5] = deviceConfig->getValueFromKey(MCTStrings::Schedule3Rate6);
+        rateStringValues[2][6] = deviceConfig->getValueFromKey(MCTStrings::Schedule3Rate7);
+        rateStringValues[2][7] = deviceConfig->getValueFromKey(MCTStrings::Schedule3Rate8);
+        rateStringValues[2][8] = deviceConfig->getValueFromKey(MCTStrings::Schedule3Rate9);
+        rateStringValues[2][9] = deviceConfig->getValueFromKey(MCTStrings::Schedule3Rate10);
+        rateStringValues[2][10] = deviceConfig->getValueFromKey(MCTStrings::Schedule3Rate0);
+
+        rateStringValues[3][0] = deviceConfig->getValueFromKey(MCTStrings::Schedule4Rate1);
+        rateStringValues[3][1] = deviceConfig->getValueFromKey(MCTStrings::Schedule4Rate2);
+        rateStringValues[3][2] = deviceConfig->getValueFromKey(MCTStrings::Schedule4Rate3);
+        rateStringValues[3][3] = deviceConfig->getValueFromKey(MCTStrings::Schedule4Rate4);
+        rateStringValues[3][4] = deviceConfig->getValueFromKey(MCTStrings::Schedule4Rate5);
+        rateStringValues[3][5] = deviceConfig->getValueFromKey(MCTStrings::Schedule4Rate6);
+        rateStringValues[3][6] = deviceConfig->getValueFromKey(MCTStrings::Schedule4Rate7);
+        rateStringValues[3][7] = deviceConfig->getValueFromKey(MCTStrings::Schedule4Rate8);
+        rateStringValues[3][8] = deviceConfig->getValueFromKey(MCTStrings::Schedule4Rate9);
+        rateStringValues[3][9] = deviceConfig->getValueFromKey(MCTStrings::Schedule4Rate10);
+        rateStringValues[3][10] = deviceConfig->getValueFromKey(MCTStrings::Schedule4Rate0);
+
+        string defaultTOURateString = deviceConfig->getValueFromKey(MCTStrings::DefaultTOURate);
+
+        for( int schedule = 0; schedule < TOU_SCHEDULE_NBR; schedule++ )
         {
-            long times[TOU_SCHEDULE_NBR][TOU_SCHEDULE_TIME_NBR];
-            long rates[TOU_SCHEDULE_NBR][TOU_SCHEDULE_RATE_NBR];
-            string rateStringValues[TOU_SCHEDULE_NBR][TOU_SCHEDULE_RATE_NBR],
-                   timeStringValues[TOU_SCHEDULE_NBR][TOU_SCHEDULE_TIME_NBR],
-                   daySchedule1, daySchedule2, daySchedule3, daySchedule4,
-                   dynDaySchedule1, dynDaySchedule2, dynDaySchedule3, dynDaySchedule4;
-            long defaultTOURate;
-            long dayTable;
+            for( int rate = 0; rate < TOU_SCHEDULE_RATE_NBR; rate++ )
+            {
+                if( rateStringValues[schedule][rate].empty() )
+                {
+                    CtiLockGuard<CtiLogger> doubt_guard(dout);
+                    dout << CtiTime() << " **** Checkpoint - bad rate string stored **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
+                    nRet = NoConfigData;
+                }
+            }
+        }
 
-            // Unfortunatelly the arrays have a 0 offset, while the schedules times/rates are referenced with a 1 offset
-            // Also note that rate "0" is the midnight rate.
-            string mondayScheduleStr    = deviceConfig->getValueFromKey(MCTStrings::MondaySchedule);
-            string tuesdayScheduleStr   = deviceConfig->getValueFromKey(MCTStrings::TuesdaySchedule);
-            string wednesdayScheduleStr = deviceConfig->getValueFromKey(MCTStrings::WednesdaySchedule);
-            string thursdayScheduleStr  = deviceConfig->getValueFromKey(MCTStrings::ThursdaySchedule);
-            string fridayScheduleStr    = deviceConfig->getValueFromKey(MCTStrings::FridaySchedule);
-            string saturdayScheduleStr  = deviceConfig->getValueFromKey(MCTStrings::SaturdaySchedule);
-            string sundayScheduleStr    = deviceConfig->getValueFromKey(MCTStrings::SundaySchedule);
-            string holidayScheduleStr   = deviceConfig->getValueFromKey(MCTStrings::HolidaySchedule);
+        for( int schedule = 0; schedule < TOU_SCHEDULE_NBR; schedule++ )
+        {
+            for( int switchtime = 0; switchtime < TOU_SCHEDULE_TIME_NBR; switchtime++ )
+            {
+                if( timeStringValues[schedule][switchtime].length() < 4 ) //A time needs at least 4 digits X:XX
+                {
+                    CtiLockGuard<CtiLogger> doubt_guard(dout);
+                    dout << CtiTime() << " **** Checkpoint - bad time string stored **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
+                    nRet = NoConfigData;
+                }
+            }
+        }
 
-            long mondaySchedule    = resolveScheduleName(mondayScheduleStr);
-            long tuesdaySchedule   = resolveScheduleName(tuesdayScheduleStr);
-            long wednesdaySchedule = resolveScheduleName(wednesdayScheduleStr);
-            long thursdaySchedule  = resolveScheduleName(thursdayScheduleStr);
-            long fridaySchedule    = resolveScheduleName(fridayScheduleStr);
-            long saturdaySchedule  = resolveScheduleName(saturdayScheduleStr);
-            long sundaySchedule    = resolveScheduleName(sundayScheduleStr);
-            long holidaySchedule   = resolveScheduleName(holidayScheduleStr);
-
-            //These are all string values
-            timeStringValues[0][0] = deviceConfig->getValueFromKey(MCTStrings::Schedule1Time1);
-            timeStringValues[0][1] = deviceConfig->getValueFromKey(MCTStrings::Schedule1Time2);
-            timeStringValues[0][2] = deviceConfig->getValueFromKey(MCTStrings::Schedule1Time3);
-            timeStringValues[0][3] = deviceConfig->getValueFromKey(MCTStrings::Schedule1Time4);
-            timeStringValues[0][4] = deviceConfig->getValueFromKey(MCTStrings::Schedule1Time5);
-            timeStringValues[0][5] = deviceConfig->getValueFromKey(MCTStrings::Schedule1Time6);
-            timeStringValues[0][6] = deviceConfig->getValueFromKey(MCTStrings::Schedule1Time7);
-            timeStringValues[0][7] = deviceConfig->getValueFromKey(MCTStrings::Schedule1Time8);
-            timeStringValues[0][8] = deviceConfig->getValueFromKey(MCTStrings::Schedule1Time9);
-            timeStringValues[0][9] = deviceConfig->getValueFromKey(MCTStrings::Schedule1Time10);
-
-            timeStringValues[1][0] = deviceConfig->getValueFromKey(MCTStrings::Schedule2Time1);
-            timeStringValues[1][1] = deviceConfig->getValueFromKey(MCTStrings::Schedule2Time2);
-            timeStringValues[1][2] = deviceConfig->getValueFromKey(MCTStrings::Schedule2Time3);
-            timeStringValues[1][3] = deviceConfig->getValueFromKey(MCTStrings::Schedule2Time4);
-            timeStringValues[1][4] = deviceConfig->getValueFromKey(MCTStrings::Schedule2Time5);
-            timeStringValues[1][5] = deviceConfig->getValueFromKey(MCTStrings::Schedule2Time6);
-            timeStringValues[1][6] = deviceConfig->getValueFromKey(MCTStrings::Schedule2Time7);
-            timeStringValues[1][7] = deviceConfig->getValueFromKey(MCTStrings::Schedule2Time8);
-            timeStringValues[1][8] = deviceConfig->getValueFromKey(MCTStrings::Schedule2Time9);
-            timeStringValues[1][9] = deviceConfig->getValueFromKey(MCTStrings::Schedule2Time10);
-
-            timeStringValues[2][0] = deviceConfig->getValueFromKey(MCTStrings::Schedule3Time1);
-            timeStringValues[2][1] = deviceConfig->getValueFromKey(MCTStrings::Schedule3Time2);
-            timeStringValues[2][2] = deviceConfig->getValueFromKey(MCTStrings::Schedule3Time3);
-            timeStringValues[2][3] = deviceConfig->getValueFromKey(MCTStrings::Schedule3Time4);
-            timeStringValues[2][4] = deviceConfig->getValueFromKey(MCTStrings::Schedule3Time5);
-            timeStringValues[2][5] = deviceConfig->getValueFromKey(MCTStrings::Schedule3Time6);
-            timeStringValues[2][6] = deviceConfig->getValueFromKey(MCTStrings::Schedule3Time7);
-            timeStringValues[2][7] = deviceConfig->getValueFromKey(MCTStrings::Schedule3Time8);
-            timeStringValues[2][8] = deviceConfig->getValueFromKey(MCTStrings::Schedule3Time9);
-            timeStringValues[2][9] = deviceConfig->getValueFromKey(MCTStrings::Schedule3Time10);
-
-            timeStringValues[3][0] = deviceConfig->getValueFromKey(MCTStrings::Schedule4Time1);
-            timeStringValues[3][1] = deviceConfig->getValueFromKey(MCTStrings::Schedule4Time2);
-            timeStringValues[3][2] = deviceConfig->getValueFromKey(MCTStrings::Schedule4Time3);
-            timeStringValues[3][3] = deviceConfig->getValueFromKey(MCTStrings::Schedule4Time4);
-            timeStringValues[3][4] = deviceConfig->getValueFromKey(MCTStrings::Schedule4Time5);
-            timeStringValues[3][5] = deviceConfig->getValueFromKey(MCTStrings::Schedule4Time6);
-            timeStringValues[3][6] = deviceConfig->getValueFromKey(MCTStrings::Schedule4Time7);
-            timeStringValues[3][7] = deviceConfig->getValueFromKey(MCTStrings::Schedule4Time8);
-            timeStringValues[3][8] = deviceConfig->getValueFromKey(MCTStrings::Schedule4Time9);
-            timeStringValues[3][9] = deviceConfig->getValueFromKey(MCTStrings::Schedule4Time10);
-
-            rateStringValues[0][0] = deviceConfig->getValueFromKey(MCTStrings::Schedule1Rate1);
-            rateStringValues[0][1] = deviceConfig->getValueFromKey(MCTStrings::Schedule1Rate2);
-            rateStringValues[0][2] = deviceConfig->getValueFromKey(MCTStrings::Schedule1Rate3);
-            rateStringValues[0][3] = deviceConfig->getValueFromKey(MCTStrings::Schedule1Rate4);
-            rateStringValues[0][4] = deviceConfig->getValueFromKey(MCTStrings::Schedule1Rate5);
-            rateStringValues[0][5] = deviceConfig->getValueFromKey(MCTStrings::Schedule1Rate6);
-            rateStringValues[0][6] = deviceConfig->getValueFromKey(MCTStrings::Schedule1Rate7);
-            rateStringValues[0][7] = deviceConfig->getValueFromKey(MCTStrings::Schedule1Rate8);
-            rateStringValues[0][8] = deviceConfig->getValueFromKey(MCTStrings::Schedule1Rate9);
-            rateStringValues[0][9] = deviceConfig->getValueFromKey(MCTStrings::Schedule1Rate10);
-            rateStringValues[0][10] = deviceConfig->getValueFromKey(MCTStrings::Schedule1Rate0);
-
-            rateStringValues[1][0] = deviceConfig->getValueFromKey(MCTStrings::Schedule2Rate1);
-            rateStringValues[1][1] = deviceConfig->getValueFromKey(MCTStrings::Schedule2Rate2);
-            rateStringValues[1][2] = deviceConfig->getValueFromKey(MCTStrings::Schedule2Rate3);
-            rateStringValues[1][3] = deviceConfig->getValueFromKey(MCTStrings::Schedule2Rate4);
-            rateStringValues[1][4] = deviceConfig->getValueFromKey(MCTStrings::Schedule2Rate5);
-            rateStringValues[1][5] = deviceConfig->getValueFromKey(MCTStrings::Schedule2Rate6);
-            rateStringValues[1][6] = deviceConfig->getValueFromKey(MCTStrings::Schedule2Rate7);
-            rateStringValues[1][7] = deviceConfig->getValueFromKey(MCTStrings::Schedule2Rate8);
-            rateStringValues[1][8] = deviceConfig->getValueFromKey(MCTStrings::Schedule2Rate9);
-            rateStringValues[1][9] = deviceConfig->getValueFromKey(MCTStrings::Schedule2Rate10);
-            rateStringValues[1][10] = deviceConfig->getValueFromKey(MCTStrings::Schedule2Rate0);
-
-            rateStringValues[2][0] = deviceConfig->getValueFromKey(MCTStrings::Schedule3Rate1);
-            rateStringValues[2][1] = deviceConfig->getValueFromKey(MCTStrings::Schedule3Rate2);
-            rateStringValues[2][2] = deviceConfig->getValueFromKey(MCTStrings::Schedule3Rate3);
-            rateStringValues[2][3] = deviceConfig->getValueFromKey(MCTStrings::Schedule3Rate4);
-            rateStringValues[2][4] = deviceConfig->getValueFromKey(MCTStrings::Schedule3Rate5);
-            rateStringValues[2][5] = deviceConfig->getValueFromKey(MCTStrings::Schedule3Rate6);
-            rateStringValues[2][6] = deviceConfig->getValueFromKey(MCTStrings::Schedule3Rate7);
-            rateStringValues[2][7] = deviceConfig->getValueFromKey(MCTStrings::Schedule3Rate8);
-            rateStringValues[2][8] = deviceConfig->getValueFromKey(MCTStrings::Schedule3Rate9);
-            rateStringValues[2][9] = deviceConfig->getValueFromKey(MCTStrings::Schedule3Rate10);
-            rateStringValues[2][10] = deviceConfig->getValueFromKey(MCTStrings::Schedule3Rate0);
-
-            rateStringValues[3][0] = deviceConfig->getValueFromKey(MCTStrings::Schedule4Rate1);
-            rateStringValues[3][1] = deviceConfig->getValueFromKey(MCTStrings::Schedule4Rate2);
-            rateStringValues[3][2] = deviceConfig->getValueFromKey(MCTStrings::Schedule4Rate3);
-            rateStringValues[3][3] = deviceConfig->getValueFromKey(MCTStrings::Schedule4Rate4);
-            rateStringValues[3][4] = deviceConfig->getValueFromKey(MCTStrings::Schedule4Rate5);
-            rateStringValues[3][5] = deviceConfig->getValueFromKey(MCTStrings::Schedule4Rate6);
-            rateStringValues[3][6] = deviceConfig->getValueFromKey(MCTStrings::Schedule4Rate7);
-            rateStringValues[3][7] = deviceConfig->getValueFromKey(MCTStrings::Schedule4Rate8);
-            rateStringValues[3][8] = deviceConfig->getValueFromKey(MCTStrings::Schedule4Rate9);
-            rateStringValues[3][9] = deviceConfig->getValueFromKey(MCTStrings::Schedule4Rate10);
-            rateStringValues[3][10] = deviceConfig->getValueFromKey(MCTStrings::Schedule4Rate0);
-
-            string defaultTOURateString = deviceConfig->getValueFromKey(MCTStrings::DefaultTOURate);
-
+        if( nRet != NoConfigData )
+        {
+            //Do conversions from strings to longs here.
             for( int schedule = 0; schedule < TOU_SCHEDULE_NBR; schedule++ )
             {
                 for( int rate = 0; rate < TOU_SCHEDULE_RATE_NBR; rate++ )
                 {
-                    if( rateStringValues[schedule][rate].empty() )
+                    rates[schedule][rate] = rateStringValues[schedule][rate][0] - 'A';
+                    if( rates[schedule][rate] < 0 || rates[schedule][rate] > 3 )
                     {
                         CtiLockGuard<CtiLogger> doubt_guard(dout);
                         dout << CtiTime() << " **** Checkpoint - bad rate string stored **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
@@ -1279,193 +1322,143 @@ int Mct440_213xBDevice::executePutConfigTOU(CtiRequestMsg     *pReq,
                     }
                 }
             }
-
             for( int schedule = 0; schedule < TOU_SCHEDULE_NBR; schedule++ )
             {
                 for( int switchtime = 0; switchtime < TOU_SCHEDULE_TIME_NBR; switchtime++ )
                 {
-                    if( timeStringValues[schedule][switchtime].length() < 4 ) //A time needs at least 4 digits X:XX
+                    // Im going to remove the :, get the remaining value, and do simple math on it. I think this
+                    // results in less error checking needed.
+                    timeStringValues[schedule][switchtime].erase(timeStringValues[schedule][switchtime].find(':'), 1);
+                    tempTime                    = strtol(timeStringValues[schedule][switchtime].c_str(),NULL,10);
+                    times[schedule][switchtime] = ((tempTime/100) * 60) + (tempTime%100);
+                }
+            }
+            // Time is currently the actual minutes, we need the difference. Also the MCT has 5 minute resolution.
+            for( int schedule = 0; schedule < TOU_SCHEDULE_NBR; schedule++ )
+            {
+                for( int switchtime = (TOU_SCHEDULE_TIME_NBR-1); switchtime > 0; switchtime-- )
+                {
+                    times[schedule][switchtime] = times[schedule][switchtime]-times[schedule][switchtime-1];
+                    times[schedule][switchtime] = times[schedule][switchtime]/5;
+                    if( times[schedule][switchtime] < 0 || times[schedule][switchtime] > 255 )
                     {
                         CtiLockGuard<CtiLogger> doubt_guard(dout);
-                        dout << CtiTime() << " **** Checkpoint - bad time string stored **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
+                        dout << CtiTime() << " **** Checkpoint - time sequencing **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
                         nRet = NoConfigData;
                     }
                 }
             }
-
-            if( nRet != NoConfigData )
+            if( !defaultTOURateString.empty() )
             {
-                //Do conversions from strings to longs here.
-                for( int schedule = 0; schedule < TOU_SCHEDULE_NBR; schedule++ )
-                {
-                    for( int rate = 0; rate < TOU_SCHEDULE_RATE_NBR; rate++ )
-                    {
-                        rates[schedule][rate] = rateStringValues[schedule][rate][0] - 'A';
-                        if( rates[schedule][rate] < 0 || rates[schedule][rate] > 3 )
-                        {
-                            CtiLockGuard<CtiLogger> doubt_guard(dout);
-                            dout << CtiTime() << " **** Checkpoint - bad rate string stored **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
-                            nRet = NoConfigData;
-                        }
-                    }
-                }
-                for( int schedule = 0; schedule < TOU_SCHEDULE_NBR; schedule++ )
-                {
-                    for( int switchtime = 0; switchtime < TOU_SCHEDULE_TIME_NBR; switchtime++ )
-                    {
-                        // Im going to remove the :, get the remaining value, and do simple math on it. I think this
-                        // results in less error checking needed.
-                        timeStringValues[schedule][switchtime].erase(timeStringValues[schedule][switchtime].find(':'), 1);
-                        tempTime                    = strtol(timeStringValues[schedule][switchtime].c_str(),NULL,10);
-                        times[schedule][switchtime] = ((tempTime/100) * 60) + (tempTime%100);
-                    }
-                }
-                // Time is currently the actual minutes, we need the difference. Also the MCT has 5 minute resolution.
-                for( int schedule = 0; schedule < TOU_SCHEDULE_NBR; schedule++ )
-                {
-                    for( int switchtime = (TOU_SCHEDULE_TIME_NBR-1); switchtime > 0; switchtime-- )
-                    {
-                        times[schedule][switchtime] = times[schedule][switchtime]-times[schedule][switchtime-1];
-                        times[schedule][switchtime] = times[schedule][switchtime]/5;
-                        if( times[schedule][switchtime] < 0 || times[schedule][switchtime] > 255 )
-                        {
-                            CtiLockGuard<CtiLogger> doubt_guard(dout);
-                            dout << CtiTime() << " **** Checkpoint - time sequencing **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
-                            nRet = NoConfigData;
-                        }
-                    }
-                }
-                if( !defaultTOURateString.empty() )
-                {
-                    defaultTOURate = defaultTOURateString[0] - 'A';
-                    if( defaultTOURate < 0 || defaultTOURate > 3 )
-                    {
-                        CtiLockGuard<CtiLogger> doubt_guard(dout);
-                        dout << CtiTime() << " **** Checkpoint - bad default rate **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
-                        nRet = NoConfigData;
-                    }
-                }
-                else
+                defaultTOURate = defaultTOURateString[0] - 'A';
+                if( defaultTOURate < 0 || defaultTOURate > 3 )
                 {
                     CtiLockGuard<CtiLogger> doubt_guard(dout);
-                    dout << CtiTime() << " **** Checkpoint - no default rate stored **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
+                    dout << CtiTime() << " **** Checkpoint - bad default rate **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
                     nRet = NoConfigData;
                 }
             }
-
-            if( nRet == NoConfigData
-                || mondaySchedule    == std::numeric_limits<long>::min()
-                || tuesdaySchedule   == std::numeric_limits<long>::min()
-                || fridaySchedule    == std::numeric_limits<long>::min()
-                || saturdaySchedule  == std::numeric_limits<long>::min()
-                || sundaySchedule    == std::numeric_limits<long>::min()
-                || holidaySchedule   == std::numeric_limits<long>::min()
-                || wednesdaySchedule == std::numeric_limits<long>::min()
-                || thursdaySchedule  == std::numeric_limits<long>::min() )
-            {
-                CtiLockGuard<CtiLogger> doubt_guard(dout);
-                dout << CtiTime() << " **** Checkpoint - no or bad value stored **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
-                nRet = NoConfigData;
-            }
             else
             {
-                dayTable = holidaySchedule    << 14;
-                dayTable |= saturdaySchedule  << 12;
-                dayTable |= fridaySchedule    << 10;
-                dayTable |= thursdaySchedule  << 8;
-                dayTable |= wednesdaySchedule << 6;
-                dayTable |= tuesdaySchedule   << 4;
-                dayTable |= mondaySchedule    << 2;
-                dayTable |= sundaySchedule;
+                CtiLockGuard<CtiLogger> doubt_guard(dout);
+                dout << CtiTime() << " **** Checkpoint - no default rate stored **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
+                nRet = NoConfigData;
+            }
+        }
 
-                createTOUDayScheduleString(daySchedule1, times[0], rates[0]);
-                createTOUDayScheduleString(daySchedule2, times[1], rates[1]);
-                createTOUDayScheduleString(daySchedule3, times[2], rates[2]);
-                createTOUDayScheduleString(daySchedule4, times[3], rates[3]);
+        if( nRet == NoConfigData
+            || mondaySchedule    == std::numeric_limits<long>::min()
+            || tuesdaySchedule   == std::numeric_limits<long>::min()
+            || fridaySchedule    == std::numeric_limits<long>::min()
+            || saturdaySchedule  == std::numeric_limits<long>::min()
+            || sundaySchedule    == std::numeric_limits<long>::min()
+            || holidaySchedule   == std::numeric_limits<long>::min()
+            || wednesdaySchedule == std::numeric_limits<long>::min()
+            || thursdaySchedule  == std::numeric_limits<long>::min() )
+        {
+            CtiLockGuard<CtiLogger> doubt_guard(dout);
+            dout << CtiTime() << " **** Checkpoint - no or bad value stored **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
+            nRet = NoConfigData;
+        }
+        else
+        {
+            dayTable = holidaySchedule    << 14;
+            dayTable |= saturdaySchedule  << 12;
+            dayTable |= fridaySchedule    << 10;
+            dayTable |= thursdaySchedule  << 8;
+            dayTable |= wednesdaySchedule << 6;
+            dayTable |= tuesdaySchedule   << 4;
+            dayTable |= mondaySchedule    << 2;
+            dayTable |= sundaySchedule;
 
-                CtiDeviceBase::getDynamicInfo(CtiTableDynamicPaoInfo::Key_MCT_DaySchedule1, dynDaySchedule1);
-                CtiDeviceBase::getDynamicInfo(CtiTableDynamicPaoInfo::Key_MCT_DaySchedule2, dynDaySchedule2);
-                CtiDeviceBase::getDynamicInfo(CtiTableDynamicPaoInfo::Key_MCT_DaySchedule3, dynDaySchedule3);
-                CtiDeviceBase::getDynamicInfo(CtiTableDynamicPaoInfo::Key_MCT_DaySchedule4, dynDaySchedule4);
+            createTOUDayScheduleString(daySchedule1, times[0], rates[0]);
+            createTOUDayScheduleString(daySchedule2, times[1], rates[1]);
+            createTOUDayScheduleString(daySchedule3, times[2], rates[2]);
+            createTOUDayScheduleString(daySchedule4, times[3], rates[3]);
 
-                if (parse.isKeyValid("force")
-                    || CtiDeviceBase::getDynamicInfo(CtiTableDynamicPaoInfo::Key_MCT_DayTable) != dayTable
-                    || CtiDeviceBase::getDynamicInfo(CtiTableDynamicPaoInfo::Key_MCT_DefaultTOURate) != defaultTOURate
-                    || dynDaySchedule1 != daySchedule1
-                    || dynDaySchedule2 != daySchedule2
-                    || dynDaySchedule3 != daySchedule3
-                    || dynDaySchedule4 != daySchedule4)
+            CtiDeviceBase::getDynamicInfo(CtiTableDynamicPaoInfo::Key_MCT_DaySchedule1, dynDaySchedule1);
+            CtiDeviceBase::getDynamicInfo(CtiTableDynamicPaoInfo::Key_MCT_DaySchedule2, dynDaySchedule2);
+            CtiDeviceBase::getDynamicInfo(CtiTableDynamicPaoInfo::Key_MCT_DaySchedule3, dynDaySchedule3);
+            CtiDeviceBase::getDynamicInfo(CtiTableDynamicPaoInfo::Key_MCT_DaySchedule4, dynDaySchedule4);
+
+            if (parse.isKeyValid("force")
+                || CtiDeviceBase::getDynamicInfo(CtiTableDynamicPaoInfo::Key_MCT_DayTable) != dayTable
+                || CtiDeviceBase::getDynamicInfo(CtiTableDynamicPaoInfo::Key_MCT_DefaultTOURate) != defaultTOURate
+                || dynDaySchedule1 != daySchedule1
+                || dynDaySchedule2 != daySchedule2
+                || dynDaySchedule3 != daySchedule3
+                || dynDaySchedule4 != daySchedule4)
+            {
+                if( !parse.isKeyValid("verify") )
                 {
-                    if( !parse.isKeyValid("verify") )
-                    {
-                        long daySchedule[8];
+                    long daySchedule[8];
 
-                        for (int i = 0; i < 8; i++)
-                        {
-                            daySchedule[i] = (dayTable >> (i*2)) & 0x03;
-                        }
-
-                        createTOUScheduleConfig(daySchedule,
-                                                times,
-                                                rates,
-                                                defaultTOURate,
-                                                OutMessage,
-                                                outList);
-                    }
-                    else
+                    for (int i = 0; i < 8; i++)
                     {
-                        nRet = ConfigNotCurrent;
+                        daySchedule[i] = (dayTable >> (i*2)) & 0x03;
                     }
+
+                    createTOUScheduleConfig(daySchedule,
+                                            times,
+                                            rates,
+                                            defaultTOURate,
+                                            OutMessage,
+                                            outList);
                 }
                 else
                 {
-                    nRet = ConfigCurrent;
+                    nRet = ConfigNotCurrent;
                 }
             }
-        }
-
-        // Either we sent the put ok, or we are doing a read to get into here.
-        if (nRet == NORMAL)
-        {
-            OutMessage->Buffer.BSt.IO       = EmetconProtocol::IO_Function_Read;
-            OutMessage->Sequence            = EmetconProtocol::GetConfig_TOU;
-            OutMessage->Priority           -= 1; //decrease for read. Only want read after a successful write.
-
-            strncpy(OutMessage->Request.CommandStr, "getconfig tou schedule 1", COMMAND_STR_SIZE );
-
-            OutMessage->Buffer.BSt.Function = FuncRead_TOUSwitchSchedule12Pos;
-            OutMessage->Buffer.BSt.Length   = FuncRead_TOUSwitchSchedule12Len;
-            outList.push_back( CTIDBG_new OUTMESS(*OutMessage) );
-
-            OutMessage->Buffer.BSt.Function = FuncRead_TOUSwitchSchedule12Part2Pos;
-            OutMessage->Buffer.BSt.Length   = FuncRead_TOUSwitchSchedule12Part2Len;
-            outList.push_back( CTIDBG_new OUTMESS(*OutMessage) );
-
-            strncpy(OutMessage->Request.CommandStr, "getconfig tou schedule 3", COMMAND_STR_SIZE );
-
-            OutMessage->Buffer.BSt.Function = FuncRead_TOUSwitchSchedule34Pos;
-            OutMessage->Buffer.BSt.Length   = FuncRead_TOUSwitchSchedule34Len;
-            outList.push_back( CTIDBG_new OUTMESS(*OutMessage) );
-
-            OutMessage->Buffer.BSt.Function = FuncRead_TOUSwitchSchedule34Part2Pos;
-            OutMessage->Buffer.BSt.Length   = FuncRead_TOUSwitchSchedule34Part2Len;
-            outList.push_back( CTIDBG_new OUTMESS(*OutMessage) );
-
-            strncpy(OutMessage->Request.CommandStr, "getconfig tou", COMMAND_STR_SIZE );
-
-            OutMessage->Buffer.BSt.Function = FuncRead_TOUStatusPos;
-            OutMessage->Buffer.BSt.Length   = FuncRead_TOUStatusLen;
-            outList.push_back( CTIDBG_new OUTMESS(*OutMessage) );
-
-            delete OutMessage;
-            OutMessage = 0;
+            else
+            {
+                nRet = ConfigCurrent;
+            }
         }
     }
-    else
+    else // getconfig install
     {
-        CtiLockGuard<CtiLogger> doubt_guard(dout);
-        dout << CtiTime() << " **** Checkpoint - deviceConfig is null **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
-        nRet = NoConfigData;
+        OutMessage->Buffer.BSt.IO       = EmetconProtocol::IO_Function_Read;
+
+        OutMessage->Buffer.BSt.Function = FuncRead_TOUSwitchSchedule12Pos;
+        OutMessage->Buffer.BSt.Length   = FuncRead_TOUSwitchSchedule12Len;
+        outList.push_back( CTIDBG_new OUTMESS(*OutMessage) );
+
+        OutMessage->Buffer.BSt.Function = FuncRead_TOUSwitchSchedule12Part2Pos;
+        OutMessage->Buffer.BSt.Length   = FuncRead_TOUSwitchSchedule12Part2Len;
+        outList.push_back( CTIDBG_new OUTMESS(*OutMessage) );
+
+        OutMessage->Buffer.BSt.Function = FuncRead_TOUSwitchSchedule34Pos;
+        OutMessage->Buffer.BSt.Length   = FuncRead_TOUSwitchSchedule34Len;
+        outList.push_back( CTIDBG_new OUTMESS(*OutMessage) );
+
+        OutMessage->Buffer.BSt.Function = FuncRead_TOUSwitchSchedule34Part2Pos;
+        OutMessage->Buffer.BSt.Length   = FuncRead_TOUSwitchSchedule34Part2Len;
+        outList.push_back( CTIDBG_new OUTMESS(*OutMessage) );
+
+        OutMessage->Buffer.BSt.Function = FuncRead_TOUStatusPos;
+        OutMessage->Buffer.BSt.Length   = FuncRead_TOUStatusLen;
+        outList.push_back( CTIDBG_new OUTMESS(*OutMessage) );
     }
 
     return nRet;
@@ -1506,11 +1499,15 @@ INT Mct440_213xBDevice::executeGetConfig(CtiRequestMsg     *pReq,
     OutMessage->Retry           = 2;
     OutMessage->Request.RouteID = getRouteID();
 
-                                                                /* ------------ TOU RATE SCHEDULE / STATUS ------------ */
-    if( parse.isKeyValid("tou") )
+                                                                /* --------------- INSTALL CONFIG PART  --------------- */
+    if( parse.isKeyValid("install") )
     {
+        nRet = Mct4xxDevice::executeGetConfig(pReq, parse, OutMessage, vgList, retList, outList);
+    }
 
-
+                                                                /* ------------ TOU RATE SCHEDULE / STATUS ------------ */
+    else if( parse.isKeyValid("tou") )
+    {
         OutMessage->Sequence        = EmetconProtocol::GetConfig_TOU;
         OutMessage->Buffer.BSt.IO   = EmetconProtocol::IO_Function_Read;
 
@@ -1833,6 +1830,8 @@ INT Mct440_213xBDevice::decodeGetValueDailyReadRecent(INMESS          *InMessage
                               CtiTime(_daily_read_info.request.begin + 1), //  add on 24 hours - end of day
                               TAG_POINT_MUST_ARCHIVE);
 
+        // TODO echo forward active kWh and reverse active kWh to pulse acc 1 and 2
+
         InterlockedExchange(&_daily_read_info.request.in_progress, false);
     }
 
@@ -1875,7 +1874,6 @@ INT Mct440_213xBDevice::executePutConfig(CtiRequestMsg     *pReq,
 {
     INT nRet = NoMethod;
 
-
     // Load all the other stuff that is needed
     OutMessage->DeviceID  = getID();
     OutMessage->TargetID  = getID();
@@ -1884,7 +1882,11 @@ INT Mct440_213xBDevice::executePutConfig(CtiRequestMsg     *pReq,
     OutMessage->TimeOut   = 2;
     OutMessage->Retry     = 2;
 
-    if( parse.isKeyValid("holiday_offset") )
+    if( parse.isKeyValid("install") )
+    {
+        nRet = Mct4xxDevice::executePutConfig(pReq, parse, OutMessage, vgList, retList, outList);
+    }
+    else if( parse.isKeyValid("holiday_offset") )
     {
         nRet = executePutConfigHoliday(pReq, parse, OutMessage, vgList, retList, outList);
     }
@@ -2250,6 +2252,8 @@ int Mct440_213xBDevice::executePutConfigTOUDays(CtiRequestMsg     *pReq,
                         time_offset = rc.time - (rc.time % 300);  //  make sure we don't miss the 5-minute marks
                     }
                 }
+
+                OutMessage->Sequence = EmetconProtocol::PutConfig_TOU;
 
                 createTOUScheduleConfig(day_schedules,
                                         times,
@@ -3241,8 +3245,7 @@ void Mct440_213xBDevice::createTOUScheduleConfig(long           (&daySchedule)[8
                                                                 /* ----------- CONFIGURE TOU SCHEDULE PART 1 ---------- */
     auto_ptr<OUTMESS> TOU_OutMessage( CTIDBG_new OUTMESS(*OutMessage) );
 
-    TOU_OutMessage->Sequence            = Cti::Protocols::EmetconProtocol::PutConfig_TOU;
-    TOU_OutMessage->Buffer.BSt.IO       = Cti::Protocols::EmetconProtocol::IO_Function_Write;
+    TOU_OutMessage->Buffer.BSt.IO       = EmetconProtocol::IO_Function_Write;
     TOU_OutMessage->Buffer.BSt.Function = FuncWrite_TOUSchedule1Pos;
     TOU_OutMessage->Buffer.BSt.Length   = FuncWrite_TOUSchedule1Len;
 
@@ -3283,8 +3286,7 @@ void Mct440_213xBDevice::createTOUScheduleConfig(long           (&daySchedule)[8
                                                                 /* ----------- CONFIGURE TOU SCHEDULE PART 2 ---------- */
     TOU_OutMessage.reset( CTIDBG_new OUTMESS(*OutMessage) );
 
-    TOU_OutMessage->Sequence            = Cti::Protocols::EmetconProtocol::PutConfig_TOU;
-    TOU_OutMessage->Buffer.BSt.IO       = Cti::Protocols::EmetconProtocol::IO_Function_Write;
+    TOU_OutMessage->Buffer.BSt.IO       = EmetconProtocol::IO_Function_Write;
     TOU_OutMessage->Buffer.BSt.Function = FuncWrite_TOUSchedule2Pos;
     TOU_OutMessage->Buffer.BSt.Length   = FuncWrite_TOUSchedule2Len;
 
@@ -3318,8 +3320,7 @@ void Mct440_213xBDevice::createTOUScheduleConfig(long           (&daySchedule)[8
                                                                 /* ----------- CONFIGURE TOU SCHEDULE PART 3 ---------- */
     TOU_OutMessage.reset( CTIDBG_new OUTMESS(*OutMessage) );
 
-    TOU_OutMessage->Sequence            = Cti::Protocols::EmetconProtocol::PutConfig_TOU;
-    TOU_OutMessage->Buffer.BSt.IO       = Cti::Protocols::EmetconProtocol::IO_Function_Write;
+    TOU_OutMessage->Buffer.BSt.IO       = EmetconProtocol::IO_Function_Write;
     TOU_OutMessage->Buffer.BSt.Function = FuncWrite_TOUSchedule3Pos;
     TOU_OutMessage->Buffer.BSt.Length   = FuncWrite_TOUSchedule3Len;
 
@@ -3354,10 +3355,10 @@ void Mct440_213xBDevice::createTOUScheduleConfig(long           (&daySchedule)[8
                                                                 /* ----------- CONFIGURE TOU SCHEDULE PART 4 ---------- */
     TOU_OutMessage.reset( CTIDBG_new OUTMESS(*OutMessage) );
 
-    TOU_OutMessage->Sequence            = Cti::Protocols::EmetconProtocol::PutConfig_TOU;
-    TOU_OutMessage->Buffer.BSt.IO       = Cti::Protocols::EmetconProtocol::IO_Function_Write;
+    TOU_OutMessage->Buffer.BSt.IO       = EmetconProtocol::IO_Function_Write;
     TOU_OutMessage->Buffer.BSt.Function = FuncWrite_TOUSchedule4Pos;
     TOU_OutMessage->Buffer.BSt.Length   = FuncWrite_TOUSchedule4Len;
+    TOU_OutMessage->Priority           -= 1;    // decrease priority of the last schedule to make sure we process it last
 
     // write the durations for schedules 3 and 4 (time 6 to 10)
     for( int offset = 0; offset < 5; offset++ )
@@ -3616,6 +3617,70 @@ INT Mct440_213xBDevice::decodeGetStatusDisconnect(INMESS         *InMessage,
                           1.0,
                           TAG_POINT_MUST_ARCHIVE);
 
+    retMsgHandler( InMessage->Return.CommandStr, status, ReturnMsg, vgList, retList );
+
+    return status;
+}
+
+
+/*
+*********************************************************************************************************
+*                                      decodeGetConfigDisconnect()
+*
+* Description :
+*
+* Argument(s) :
+*
+* Return(s)   :
+*
+* Caller(s)   :
+*
+* Note(s)     :
+*********************************************************************************************************
+*/
+INT Mct440_213xBDevice::decodeGetConfigDisconnect(INMESS         *InMessage,
+                                                  CtiTime        &TimeNow,
+                                                  CtiMessageList &vgList,
+                                                  CtiMessageList &retList,
+                                                  OutMessageList &outList)
+{
+    INT status = NORMAL, state = 0;
+
+    INT ErrReturn  = InMessage->EventCode & 0x3fff;
+    DSTRUCT *DSt   = &InMessage->Buffer.DSt;
+
+    string resultStr, stateName;
+
+    CtiReturnMsg *ReturnMsg = CTIDBG_new CtiReturnMsg(getID(), InMessage->Return.CommandStr);
+
+    ReturnMsg->setUserMessageId(InMessage->Return.UserID);
+
+    if( DSt->Message[0] & 0x01 )
+    {
+        state     = Mct410Device::StateGroup_DisconnectedConfirmed;
+        stateName = "Disconnected confirmed";
+    }
+    else
+    {
+        state     = Mct410Device::StateGroup_Connected;
+        stateName = "Connected confirmed";
+    }
+
+    point_info pi_disconnect;
+    pi_disconnect.value   = state;
+    pi_disconnect.quality = NormalQuality;
+
+    string pointName = getName() + " / Disconnect Status: " + stateName;
+
+    insertPointDataReport(StatusPointType,
+                          1,
+                          ReturnMsg,
+                          pi_disconnect,
+                          pointName,
+                          CtiTime(),
+                          1.0,
+                          TAG_POINT_MUST_ARCHIVE);
+
     resultStr  = getName() + " / Disconnect Info:\n";
 
     resultStr += decodeDisconnectStatus(*DSt);
@@ -3660,6 +3725,587 @@ string Mct440_213xBDevice::decodeDisconnectStatus(const DSTRUCT &DSt)
 
     return resultStr;
 }
+
+
+/*
+*********************************************************************************************************
+*                                     executePutConfigPhaseLossInstall()
+*
+* Description :
+*
+* Argument(s) :
+*
+* Return(s)   :
+*
+* Caller(s)   :
+*
+* Note(s)     :
+*********************************************************************************************************
+*/
+int Mct440_213xBDevice::executePutConfigInstallPhaseLoss(CtiRequestMsg     *pReq,
+                                                         CtiCommandParser  &parse,
+                                                         OUTMESS          *&OutMessage,
+                                                         CtiMessageList    &vgList,
+                                                         CtiMessageList    &retList,
+                                                         OutMessageList    &outList,
+                                                         bool               readsOnly)
+{
+    DeviceConfigSPtr deviceConfig = getDeviceConfig();
+
+    if( !deviceConfig )
+    {
+        CtiLockGuard<CtiLogger> doubt_guard(dout);
+        dout << CtiTime() << " **** Checkpoint - deviceConfig not found **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
+        return NoConfigData;
+    }
+                                                                /* overwrite the request command                        */
+    strncpy(OutMessage->Request.CommandStr, pReq->CommandString().c_str(), COMMAND_STR_SIZE);
+
+    if( !readsOnly )
+    {
+        const int phaseloss_percent = deviceConfig->getLongValueFromKey(MCTStrings::PhaseLossThreshold);
+        const int phaseloss_seconds = deviceConfig->getLongValueFromKey(MCTStrings::PhaseLossDuration);
+
+        if( phaseloss_percent < 0 || phaseloss_percent > 100 ||
+            phaseloss_seconds < 0 || phaseloss_seconds > 0xFFFF )
+        {
+            CtiLockGuard<CtiLogger> doubt_guard(dout);
+            dout << CtiTime() << " **** Checkpoint - no or bad value stored **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
+            return NoConfigData;
+        }
+
+        if( parse.isKeyValid("force")
+            || (int)CtiDeviceBase::getDynamicInfo(CtiTableDynamicPaoInfo::Key_MCT_PhaseLossPercent) != phaseloss_percent
+            || (int)CtiDeviceBase::getDynamicInfo(CtiTableDynamicPaoInfo::Key_MCT_PhaseLossSeconds) != phaseloss_seconds )
+        {
+            if( !parse.isKeyValid("verify") )
+            {
+                if( !getOperation(EmetconProtocol::PutConfig_PhaseLossThreshold, OutMessage->Buffer.BSt) )
+                {
+                    CtiLockGuard<CtiLogger> doubt_guard(dout);
+                    dout << CtiTime() << " **** Checkpoint - Operation PutConfig_PhaseLossThreshold not found **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
+                    return NoConfigData;
+                }
+
+                OutMessage->Buffer.BSt.Message[0] = phaseloss_percent;
+                OutMessage->Buffer.BSt.Message[1] = (phaseloss_seconds >> 8);
+                OutMessage->Buffer.BSt.Message[2] = phaseloss_seconds & 0xff;
+
+                outList.push_back( CTIDBG_new OUTMESS(*OutMessage) );
+            }
+            else
+            {
+                return ConfigNotCurrent;
+            }
+        }
+        else
+        {
+            return ConfigCurrent;
+        }
+    }
+    else
+    {
+        if( !getOperation(EmetconProtocol::GetConfig_PhaseLossThreshold, OutMessage->Buffer.BSt) )
+        {
+            CtiLockGuard<CtiLogger> doubt_guard(dout);
+            dout << CtiTime() << " **** Checkpoint - Operation PutConfig_PhaseLossThreshold not found **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
+            return NoConfigData;
+        }
+
+        outList.push_back( CTIDBG_new OUTMESS(*OutMessage) );
+    }
+
+    return NORMAL;
+}
+
+
+/*
+*********************************************************************************************************
+*                                     executePutConfigInstallAddressing()
+*
+* Description :
+*
+* Argument(s) :
+*
+* Return(s)   :
+*
+* Caller(s)   :
+*
+* Note(s)     :
+*********************************************************************************************************
+*/
+int Mct440_213xBDevice::executePutConfigInstallAddressing(CtiRequestMsg     *pReq,
+                                                          CtiCommandParser  &parse,
+                                                          OUTMESS          *&OutMessage,
+                                                          CtiMessageList    &vgList,
+                                                          CtiMessageList    &retList,
+                                                          OutMessageList    &outList,
+                                                          bool               readsOnly)
+{
+    DeviceConfigSPtr deviceConfig = getDeviceConfig();
+
+    if( !deviceConfig )
+    {
+        CtiLockGuard<CtiLogger> doubt_guard(dout);
+        dout << CtiTime() << " **** Checkpoint - deviceConfig not found **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
+        return NoConfigData;
+    }
+                                                                /* overwrite the request command                        */
+    strncpy(OutMessage->Request.CommandStr, pReq->CommandString().c_str(), COMMAND_STR_SIZE);
+
+    if( !readsOnly )
+    {
+        const int bronze     = deviceConfig->getLongValueFromKey(MCTStrings::Bronze);
+        const int lead       = deviceConfig->getLongValueFromKey(MCTStrings::Lead);
+        const int collection = deviceConfig->getLongValueFromKey(MCTStrings::Collection);
+        const int spid       = deviceConfig->getLongValueFromKey(MCTStrings::ServiceProviderID);
+
+        if( bronze      < 0x0 || bronze     > 0xFF   ||         /* check that bronze address is on 8-bit                */
+            lead        < 0x0 || lead       > 0x0FFF ||         /* check that lead address is on 12-bit                 */
+            collection  < 0x0 || collection > 0x0FFF ||         /* check that collection address is on 12-bit           */
+            spid        < 0x0 || spid       > 0xFF )            /* check that service provider id is on 8-bit           */
+        {
+            CtiLockGuard<CtiLogger> doubt_guard(dout);
+            dout << CtiTime() << " **** Checkpoint - no or bad value stored **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
+            return NoConfigData;
+        }
+
+        if( parse.isKeyValid("force")
+            || (int)CtiDeviceBase::getDynamicInfo(CtiTableDynamicPaoInfo::Key_MCT_AddressBronze)            != bronze
+            || (int)CtiDeviceBase::getDynamicInfo(CtiTableDynamicPaoInfo::Key_MCT_AddressLead)              != lead
+            || (int)CtiDeviceBase::getDynamicInfo(CtiTableDynamicPaoInfo::Key_MCT_AddressCollection)        != collection
+            || (int)CtiDeviceBase::getDynamicInfo(CtiTableDynamicPaoInfo::Key_MCT_AddressServiceProviderID) != spid )
+        {
+            if( !parse.isKeyValid("verify") )
+            {
+                if( !getOperation(EmetconProtocol::PutConfig_Addressing, OutMessage->Buffer.BSt) )
+                {
+                    CtiLockGuard<CtiLogger> doubt_guard(dout);
+                    dout << CtiTime() << " **** Checkpoint - Operation PutConfig_Addressing not found **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
+                    return NoConfigData;
+                }
+
+                OutMessage->Buffer.BSt.Message[0] = bronze;
+                OutMessage->Buffer.BSt.Message[1] = (lead >> 8);
+                OutMessage->Buffer.BSt.Message[2] = lead & 0xff;
+                OutMessage->Buffer.BSt.Message[3] = (collection >> 8);
+                OutMessage->Buffer.BSt.Message[4] = collection & 0xff;
+                OutMessage->Buffer.BSt.Message[5] = spid;
+
+                outList.push_back( CTIDBG_new OUTMESS(*OutMessage) );
+            }
+            else
+            {
+                return ConfigNotCurrent;
+            }
+        }
+        else
+        {
+            return ConfigCurrent;
+        }
+    }
+    else // getconfig install
+    {
+        if( !getOperation(EmetconProtocol::GetConfig_Addressing, OutMessage->Buffer.BSt) )
+        {
+            CtiLockGuard<CtiLogger> doubt_guard(dout);
+            dout << CtiTime() << " **** Checkpoint - Operation GetConfig_Addressing not found **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
+            return NoConfigData;
+        }
+
+        outList.push_back( CTIDBG_new OUTMESS(*OutMessage) );
+    }
+
+    return NORMAL;
+}
+
+
+/*
+*********************************************************************************************************
+*                                     executePutConfigInstallDST()
+*
+* Description :
+*
+* Argument(s) :
+*
+* Return(s)   :
+*
+* Caller(s)   :
+*
+* Note(s)     :
+*********************************************************************************************************
+*/
+int Mct440_213xBDevice::executePutConfigInstallDST(CtiRequestMsg     *pReq,
+                                                   CtiCommandParser  &parse,
+                                                   OUTMESS          *&OutMessage,
+                                                   CtiMessageList    &vgList,
+                                                   CtiMessageList    &retList,
+                                                   OutMessageList    &outList,
+                                                   bool               readsOnly)
+{
+    DeviceConfigSPtr deviceConfig = getDeviceConfig();
+
+    if( !deviceConfig )
+    {
+        CtiLockGuard<CtiLogger> doubt_guard(dout);
+        dout << CtiTime() << " **** Checkpoint - deviceConfig not found **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
+        return NoConfigData;
+    }
+                                                                /* overwrite the request command                        */
+    strncpy(OutMessage->Request.CommandStr, pReq->CommandString().c_str(), COMMAND_STR_SIZE);
+
+    if( !readsOnly )
+    {
+        string enable_dst_str = deviceConfig->getValueFromKey(MCTStrings::EnableDst);
+        std::transform(enable_dst_str.begin(), enable_dst_str.end(), enable_dst_str.begin(), tolower);
+
+        const bool   enable_dst     = (enable_dst_str.compare("true") == 0);
+        const int    status_flags   = (int)CtiDeviceBase::getDynamicInfo(CtiTableDynamicPaoInfo::Key_MCT_StatusFlags);
+        const bool   dyn_enable_dst = ((status_flags >> 2) & 0x1 != 0x0);
+
+        if( parse.isKeyValid("force") || enable_dst != dyn_enable_dst )
+        {
+            if( !parse.isKeyValid("verify") )
+            {
+                const int function = (enable_dst) ? EmetconProtocol::PutStatus_SetDSTActive : EmetconProtocol::PutStatus_SetDSTInactive;
+
+                if( !getOperation(function, OutMessage->Buffer.BSt) )
+                {
+                    CtiLockGuard<CtiLogger> doubt_guard(dout);
+                    dout << CtiTime() << " **** Checkpoint - Operation " << ((enable_dst) ? "PutStatus_SetDSTActive" : "PutStatus_SetDSTInactive") << " not found **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
+                    return NoConfigData;
+                }
+
+                outList.push_back( CTIDBG_new OUTMESS(*OutMessage) );
+            }
+            else
+            {
+                return ConfigNotCurrent;
+            }
+        }
+        else
+        {
+            return ConfigCurrent;
+        }
+    }
+    else // getconfig install
+    {
+        if( !getOperation(EmetconProtocol::GetStatus_Internal, OutMessage->Buffer.BSt) )
+        {
+            CtiLockGuard<CtiLogger> doubt_guard(dout);
+            dout << CtiTime() << " **** Checkpoint - Operation GetStatus_Internal not found **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
+            return NoConfigData;
+        }
+
+        outList.push_back( CTIDBG_new OUTMESS(*OutMessage) );
+    }
+
+    return NORMAL;
+}
+
+
+/*
+*********************************************************************************************************
+*                                     executePutConfigTimezone()
+*
+* Description :
+*
+* Argument(s) :
+*
+* Return(s)   :
+*
+* Caller(s)   :
+*
+* Note(s)     :
+*********************************************************************************************************
+*/
+int Mct440_213xBDevice::executePutConfigTimezone(CtiRequestMsg     *pReq,
+                                                 CtiCommandParser  &parse,
+                                                 OUTMESS          *&OutMessage,
+                                                 CtiMessageList    &vgList,
+                                                 CtiMessageList    &retList,
+                                                 OutMessageList    &outList,
+                                                 bool               readsOnly)
+{
+    DeviceConfigSPtr deviceConfig = getDeviceConfig();
+
+    if( !deviceConfig )
+    {
+        CtiLockGuard<CtiLogger> doubt_guard(dout);
+        dout << CtiTime() << " **** Checkpoint - deviceConfig not found **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
+        return NoConfigData;
+    }
+                                                                /* overwrite the request command                        */
+    strncpy(OutMessage->Request.CommandStr, pReq->CommandString().c_str(), COMMAND_STR_SIZE);
+
+    if( !readsOnly )
+    {
+        char timezoneOffset = deviceConfig->getLongValueFromKey(MCTStrings::TimeZoneOffset);
+
+        if( timezoneOffset == std::numeric_limits<long>::min() )
+        {
+            CtiLockGuard<CtiLogger> doubt_guard(dout);
+            dout << CtiTime() << " **** Checkpoint - no or bad value stored **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
+            return NoConfigData;
+        }
+
+        timezoneOffset *= 4; // The timezone offset in the mct is in 15 minute increments.
+
+        if(parse.isKeyValid("force")
+           || (char)CtiDeviceBase::getDynamicInfo(CtiTableDynamicPaoInfo::Key_MCT_TimeZoneOffset) != timezoneOffset)
+        {
+            if( !parse.isKeyValid("verify") )
+            {
+                if( !getOperation(EmetconProtocol::PutConfig_TimeZoneOffset, OutMessage->Buffer.BSt) )
+                {
+                    CtiLockGuard<CtiLogger> doubt_guard(dout);
+                    dout << CtiTime() << " **** Checkpoint - Operation PutConfig_TimeZoneOffset not found **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
+                    return NoConfigData;
+                }
+
+                //  the bstruct IO is set above by getOperation()
+                OutMessage->Buffer.BSt.Message[0] = timezoneOffset;
+                outList.push_back( CTIDBG_new OUTMESS(*OutMessage) );
+            }
+            else
+            {
+                return ConfigNotCurrent;
+            }
+        }
+        else
+        {
+            return ConfigCurrent;
+        }
+    }
+    else // getconfig install
+    {
+        if( !getOperation(EmetconProtocol::GetConfig_TimeZoneOffset, OutMessage->Buffer.BSt) )
+        {
+            CtiLockGuard<CtiLogger> doubt_guard(dout);
+            dout << CtiTime() << " **** Checkpoint - Operation GetConfig_TimeZoneOffset not found **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
+            return NoConfigData;
+        }
+
+        outList.push_back( CTIDBG_new OUTMESS(*OutMessage) );
+    }
+
+    return NORMAL;
+}
+
+
+/*
+*********************************************************************************************************
+*                                  executePutConfigTimeAdjustTolerance()
+*
+* Description :
+*
+* Argument(s) :
+*
+* Return(s)   :
+*
+* Caller(s)   :
+*
+* Note(s)     :
+*********************************************************************************************************
+*/
+int Mct440_213xBDevice::executePutConfigTimeAdjustTolerance(CtiRequestMsg     *pReq,
+                                                            CtiCommandParser  &parse,
+                                                            OUTMESS          *&OutMessage,
+                                                            CtiMessageList    &vgList,
+                                                            CtiMessageList    &retList,
+                                                            OutMessageList    &outList,
+                                                            bool               readsOnly)
+{
+    DeviceConfigSPtr deviceConfig = getDeviceConfig();
+
+    if( !deviceConfig )
+    {
+        CtiLockGuard<CtiLogger> doubt_guard(dout);
+        dout << CtiTime() << " **** Checkpoint - deviceConfig not found **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
+        return NoConfigData;
+    }
+                                                                /* overwrite the request command                        */
+    strncpy(OutMessage->Request.CommandStr, pReq->CommandString().c_str(), COMMAND_STR_SIZE);
+
+    if( !readsOnly )
+    {
+        long timeAdjustTolerance = deviceConfig->getLongValueFromKey(MCTStrings::TimeAdjustTolerance);
+
+        if( timeAdjustTolerance == std::numeric_limits<long>::min() )
+        {
+            CtiLockGuard<CtiLogger> doubt_guard(dout);
+            dout << CtiTime() << " **** Checkpoint - no or bad value stored **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
+            return NoConfigData;
+        }
+
+        if( parse.isKeyValid("force") ||
+            CtiDeviceBase::getDynamicInfo(CtiTableDynamicPaoInfo::Key_MCT_TimeAdjustTolerance) != timeAdjustTolerance )
+        {
+            if( !parse.isKeyValid("verify") )
+            {
+                if( !getOperation(EmetconProtocol::PutConfig_TimeAdjustTolerance, OutMessage->Buffer.BSt) )
+                {
+                    CtiLockGuard<CtiLogger> doubt_guard(dout);
+                    dout << CtiTime() << " **** Checkpoint - Operation PutConfig_TimeAdjustTolerance not found **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
+                    return NoConfigData;
+                }
+
+                //the bstruct IO is set above by getOperation()
+                OutMessage->Buffer.BSt.Message[0] = timeAdjustTolerance;
+                outList.push_back( CTIDBG_new OUTMESS(*OutMessage) );
+            }
+            else
+            {
+                return ConfigNotCurrent;
+            }
+        }
+        else
+        {
+            return ConfigCurrent;
+        }
+    }
+    else // getconfig install
+    {
+        if( !getOperation(EmetconProtocol::GetConfig_TimeAdjustTolerance, OutMessage->Buffer.BSt) )
+        {
+            CtiLockGuard<CtiLogger> doubt_guard(dout);
+            dout << CtiTime() << " **** Checkpoint - Operation GetConfig_TimeAdjustTolerance not found **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
+            return NoConfigData;
+        }
+
+        outList.push_back( CTIDBG_new OUTMESS(*OutMessage) );
+    }
+
+    return NORMAL;
+}
+
+
+/*
+*********************************************************************************************************
+*                                        decodePutConfig()
+*
+* Description :
+*
+* Argument(s) :
+*
+* Return(s)   :
+*
+* Caller(s)   :
+*
+* Note(s)     :
+*********************************************************************************************************
+*/
+INT Mct440_213xBDevice::decodePutConfig(INMESS         *InMessage,
+                                        CtiTime        &TimeNow,
+                                        CtiMessageList &vgList,
+                                        CtiMessageList &retList,
+                                        OutMessageList &outList)
+{
+    INT status = NoError;
+    string resultString;
+
+    std::auto_ptr<CtiReturnMsg> ReturnMsg(CTIDBG_new CtiReturnMsg(getID(), InMessage->Return.CommandStr));
+
+                                                                /* ---------------- PUTCONFIG INSTALL ----------------- */
+    if( InMessage->Sequence == EmetconProtocol::PutConfig_Install )
+    {
+        CtiCommandParser parse(InMessage->Return.CommandStr);
+
+        string part = parse.getsValue("installvalue");
+
+        Mct440_213xBDevice::ConfigPartsList supported_parts = getPartsList();
+
+        // check if config part is supported by this device
+        if( std::find(supported_parts.begin(), supported_parts.end(), part) == supported_parts.end() )
+        {
+            CtiLockGuard<CtiLogger> doubt_guard(dout);
+            dout << CtiTime() << " **** Checkpoint - unsupported config part \"" << part << "\" **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
+            return ErrorInvalidRequest;
+        }
+
+        //note that at the moment only putconfig install will ever have a group message count.
+        decrementGroupMessageCount(InMessage->Return.UserID, (long)InMessage->Return.Connection);
+
+        if( InMessage->MessageFlags & MessageFlag_ExpectMore ||
+            getGroupMessageCount(InMessage->Return.UserID, (long)InMessage->Return.Connection) != 0)
+        {
+            ReturnMsg->setExpectMore(true);
+        }
+
+                                                                /* ------------- PUTCONFIG INSTALL READ  -------------- */
+        if( InMessage->Return.ProtocolInfo.Emetcon.IO == EmetconProtocol::IO_Read ||
+            InMessage->Return.ProtocolInfo.Emetcon.IO == EmetconProtocol::IO_Function_Read )
+        {
+            resultString = getName() + " / Config \"" + part + "\" data received: ";
+
+            if( InMessage->Buffer.DSt.Length > 0 )
+            {
+                for( int byte_nbr = 0; byte_nbr < InMessage->Buffer.DSt.Length; byte_nbr++ )
+                {
+                    resultString.append((CtiNumStr(InMessage->Buffer.DSt.Message[byte_nbr]).hex().zpad(2)).toString(), 0, 2);
+                }
+            }
+            else
+            {
+                resultString += "(no data)";
+            }
+        }
+
+                                                                /* -------------- PUTCONFIG INSTALL WRITE ------------- */
+        else // IO_Write or IO_Function_Write
+        {
+            bool do_readback = true;
+
+            if( part == Mct4xxDevice::PutConfigPart_tou && InMessage->Return.ProtocolInfo.Emetcon.Function != FuncWrite_TOUSchedule4Pos )
+            {
+                do_readback = false; // putconfig install tou read only done for schedule 4
+            }
+
+            if( do_readback )
+            {
+                resultString = getName() + " / Config \"" + part + "\" date sent\n";
+
+                string getconfig_cmd = string("getconfig install ") + part;
+
+                CtiRequestMsg *newReq = new CtiRequestMsg(getID(),
+                                                          getconfig_cmd,
+                                                          InMessage->Return.UserID,
+                                                          InMessage->Return.GrpMsgID,
+                                                          InMessage->Return.RouteID,
+                                                          0,  //  PIL will recalculate this;  if we include it, we will potentially be bypassing the initial macro routes
+                                                          0,
+                                                          InMessage->Return.OptionsField,
+                                                          InMessage->Priority);
+
+                newReq->setConnectionHandle((void *)InMessage->Return.Connection);
+
+                // the master can overwrite the default delay
+                const unsigned long delay = gConfigParms.getValueAsULong("PORTER_MCT440_INSTALL_READ_DELAY", DEFAULT_INSTALL_READ_DELAY);
+
+                // set it to execute in the future
+                newReq->setMessageTime(CtiTime::now().seconds() + delay);
+
+                resultString += getName() + " / delaying " + CtiNumStr(delay)
+                             + " seconds for config \"" + part + "\" install read (until "
+                             + newReq->getMessageTime().asString() + ")";
+
+                retList.push_back(newReq);
+            }
+        }
+
+        ReturnMsg->setUserMessageId(InMessage->Return.UserID);
+        ReturnMsg->setResultString(resultString);
+
+        retMsgHandler(InMessage->Return.CommandStr, status, ReturnMsg.release(), vgList, retList);
+    }
+    else
+    {
+        status = Inherited::decodePutConfig(InMessage,TimeNow,vgList,retList,outList);
+    }
+
+    return status;
+}
+
 
 }
 }
