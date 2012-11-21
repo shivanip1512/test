@@ -53,8 +53,8 @@ protected:
         PointOffset_PulseAcc_TOUBaseFwdFrozen   = 600,
         PointOffset_PulseAcc_TOUBaseRevFrozen   = 700,
 
-        PointOffset_PulseAcc_BaseMRead          = 0,
-        PointOffset_PulseAcc_BaseMReadFrozen    = 500,
+        PointOffset_PulseAcc_BaseMRead          = 1,
+        PointOffset_PulseAcc_BaseMReadFrozen    = 501,
 
         PointOffset_PulseAcc_RecentkWhForward   = 181,
         PointOffset_PulseAcc_RecentkWhReverse   = 281,

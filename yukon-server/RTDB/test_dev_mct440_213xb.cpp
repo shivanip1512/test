@@ -1376,7 +1376,7 @@ BOOST_FIXTURE_TEST_SUITE(getvalue_daily_reads, getvalueDailyReads_helper)
             {
                 INMESS im;
 
-                unsigned char buf[10] = { 0x98, 0x96, 0x7e, 0x98, 0x96, 0x7e, 0x0, 0x3, 0x0, 0x0};
+                unsigned char buf[10] = { 0x98, 0x96, 0x7e, 0x88, 0x86, 0x8e, 0x0, 0x3, 0x0, 0x0};
 
                 buf[8] = date.dayOfMonth();
                 buf[9] = date.month() - 1;
@@ -1396,16 +1396,64 @@ BOOST_FIXTURE_TEST_SUITE(getvalue_daily_reads, getvalueDailyReads_helper)
 
                 CtiMultiMsg_vec points = retMsg->PointData();
 
-                BOOST_REQUIRE_EQUAL(points.size(), 3);
+                BOOST_REQUIRE_EQUAL(points.size(), 5);
 
                 {
-                    const CtiPointDataMsg *pdata = dynamic_cast<CtiPointDataMsg *>(points[0]);  // rate A
+                    const CtiPointDataMsg *pdata = dynamic_cast<CtiPointDataMsg *>(points[0]);  // number of outage
 
                     BOOST_REQUIRE( pdata );
 
                     CtiTime t_exp((date + 1), 0, 0, 0); // add 1 day
 
                     BOOST_CHECK_EQUAL( pdata->getValue(), 3);
+                    BOOST_CHECK_EQUAL( pdata->getQuality(), NormalQuality );
+                    BOOST_CHECK_EQUAL( pdata->getTime().seconds(), t_exp.seconds());
+                }
+
+                {
+                    const CtiPointDataMsg *pdata = dynamic_cast<CtiPointDataMsg *>(points[1]);  // forward active energy
+
+                    BOOST_REQUIRE( pdata );
+
+                    CtiTime t_exp((date + 1), 0, 0, 0); // add 1 day
+
+                    BOOST_CHECK_EQUAL( pdata->getValue(), 0x98967e);
+                    BOOST_CHECK_EQUAL( pdata->getQuality(), NormalQuality );
+                    BOOST_CHECK_EQUAL( pdata->getTime().seconds(), t_exp.seconds());
+                }
+
+                {
+                    const CtiPointDataMsg *pdata = dynamic_cast<CtiPointDataMsg *>(points[2]);  // reverse active energy
+
+                    BOOST_REQUIRE( pdata );
+
+                    CtiTime t_exp((date + 1), 0, 0, 0); // add 1 day
+
+                    BOOST_CHECK_EQUAL( pdata->getValue(), 0x88868e);
+                    BOOST_CHECK_EQUAL( pdata->getQuality(), NormalQuality );
+                    BOOST_CHECK_EQUAL( pdata->getTime().seconds(), t_exp.seconds());
+                }
+
+                {
+                    const CtiPointDataMsg *pdata = dynamic_cast<CtiPointDataMsg *>(points[3]);  // forward active energy echoed
+
+                    BOOST_REQUIRE( pdata );
+
+                    CtiTime t_exp((date + 1), 0, 0, 0); // add 1 day
+
+                    BOOST_CHECK_EQUAL( pdata->getValue(), 0x98967e);
+                    BOOST_CHECK_EQUAL( pdata->getQuality(), NormalQuality );
+                    BOOST_CHECK_EQUAL( pdata->getTime().seconds(), t_exp.seconds());
+                }
+
+                {
+                    const CtiPointDataMsg *pdata = dynamic_cast<CtiPointDataMsg *>(points[4]);  // reverse active energy echoed
+
+                    BOOST_REQUIRE( pdata );
+
+                    CtiTime t_exp((date + 1), 0, 0, 0); // add 1 day
+
+                    BOOST_CHECK_EQUAL( pdata->getValue(), 0x88868e);
                     BOOST_CHECK_EQUAL( pdata->getQuality(), NormalQuality );
                     BOOST_CHECK_EQUAL( pdata->getTime().seconds(), t_exp.seconds());
                 }

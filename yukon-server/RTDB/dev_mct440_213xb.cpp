@@ -1792,8 +1792,8 @@ INT Mct440_213xBDevice::decodeGetValueDailyReadRecent(INMESS          *InMessage
         //  These come back as 0x7ff.. if daily reads are disabled, but also if the request really was out of range
         //  Ideally, this check would be against an enum or similar rather than a string,
         //    but unless getAccumulatorData is refactored to provide more than a text description and quality, this will have to do.
-        if( pi_forward.description    == ErrorText_OutOfRange
-            && pi_reverse.description == ErrorText_OutOfRange )
+        if( pi_forward.description == ErrorText_OutOfRange &&
+            pi_reverse.description == ErrorText_OutOfRange )
         {
             resultString += "\n";
             resultString += getName() + " / Daily reads might be disabled, check device configuration";
@@ -1830,7 +1830,23 @@ INT Mct440_213xBDevice::decodeGetValueDailyReadRecent(INMESS          *InMessage
                               CtiTime(_daily_read_info.request.begin + 1), //  add on 24 hours - end of day
                               TAG_POINT_MUST_ARCHIVE);
 
-        // TODO echo forward active kWh and reverse active kWh to pulse acc 1 and 2
+        // echo forward active kWh and reverse active kWh to pulse acc 1 and 2
+
+        insertPointDataReport(PulseAccumulatorPointType,
+                              PointOffset_PulseAcc_BaseMRead,
+                              ReturnMsg,
+                              pi_forward,
+                              "forward active kWh",
+                              CtiTime(_daily_read_info.request.begin + 1), //  add on 24 hours - end of day
+                              TAG_POINT_MUST_ARCHIVE);
+
+        insertPointDataReport(PulseAccumulatorPointType,
+                              PointOffset_PulseAcc_BaseMRead + 1,
+                              ReturnMsg,
+                              pi_reverse,
+                              "reverse active kWh",
+                              CtiTime(_daily_read_info.request.begin + 1), //  add on 24 hours - end of day
+                              TAG_POINT_MUST_ARCHIVE);
 
         InterlockedExchange(&_daily_read_info.request.in_progress, false);
     }
@@ -3518,10 +3534,10 @@ INT Mct440_213xBDevice::decodeGetValueKWH(INMESS         *InMessage,
                 switch( InMessage->Sequence )
                 {
                     case Cti::Protocols::EmetconProtocol::GetValue_KWH:
-                         point_offset = chan_nbr + 1 + PointOffset_PulseAcc_BaseMRead;
+                         point_offset = chan_nbr + PointOffset_PulseAcc_BaseMRead;
                          break;
                     case Cti::Protocols::EmetconProtocol::GetValue_FrozenKWH:
-                         point_offset = chan_nbr + 1 + PointOffset_PulseAcc_BaseMReadFrozen;
+                         point_offset = chan_nbr + PointOffset_PulseAcc_BaseMReadFrozen;
                          point_name  += "Frozen ";
                          break;
                 }
