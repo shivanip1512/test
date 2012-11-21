@@ -48,6 +48,7 @@ const char *Mct4xxDevice::PutConfidPart_spid            = "spid";
 const char *Mct4xxDevice::PutConfigPart_centron         = "centron";
 const char *Mct4xxDevice::PutConfigPart_dnp             = "dnp";
 const char *Mct4xxDevice::PutConfigPart_display         = "display";
+const char *Mct4xxDevice::PutConfigPart_phaseloss       = "phaseloss";
 
 
 const std::string Mct4xxDevice::ErrorText_OutOfRange = "Requested interval outside of valid range";
@@ -1978,6 +1979,18 @@ int Mct4xxDevice::executePutConfigSingle(CtiRequestMsg *pReq,
     {
         nRet = executePutConfigDisplay(pReq,parse,OutMessage,vgList,retList,outList,readsOnly);
     }
+    else if (installValue == PutConfigPart_phaseloss)
+    {
+        nRet = executePutConfigInstallPhaseLoss(pReq,parse,OutMessage,vgList,retList,outList,readsOnly);
+    }
+    else if (installValue == PutConfigPart_addressing)
+    {
+        nRet = executePutConfigInstallAddressing(pReq,parse,OutMessage,vgList,retList,outList,readsOnly);
+    }
+    else if (installValue == PutConfigPart_dst)
+    {
+        nRet = executePutConfigInstallDST(pReq,parse,OutMessage,vgList,retList,outList,readsOnly);
+    }
     else
     {   //Not sure if this is correct, this could just return NoMethod. This is here
         //just in case anyone wants to use a putconfig install  for anything but configs.
@@ -2248,6 +2261,21 @@ int Mct4xxDevice::executePutConfigLoadProfileChannel (CtiRequestMsg *pReq, CtiCo
 }
 
 int Mct4xxDevice::executePutConfigDisplay (CtiRequestMsg *pReq, CtiCommandParser &parse, OUTMESS *&OutMessage, CtiMessageList &vgList, CtiMessageList &retList, OutMessageList &outList, bool readsOnly)
+{
+    return NoMethod;
+}
+
+int Mct4xxDevice::executePutConfigInstallPhaseLoss (CtiRequestMsg *pReq, CtiCommandParser &parse, OUTMESS *&OutMessage, CtiMessageList &vgList, CtiMessageList &retList, OutMessageList &outList, bool readsOnly)
+{
+    return NoMethod;
+}
+
+int Mct4xxDevice::executePutConfigInstallAddressing (CtiRequestMsg *pReq, CtiCommandParser &parse, OUTMESS *&OutMessage, CtiMessageList &vgList, CtiMessageList &retList, OutMessageList &outList, bool readsOnly)
+{
+    return NoMethod;
+}
+
+int Mct4xxDevice::executePutConfigInstallDST (CtiRequestMsg *pReq, CtiCommandParser &parse, OUTMESS *&OutMessage, CtiMessageList &vgList, CtiMessageList &retList, OutMessageList &outList, bool readsOnly)
 {
     return NoMethod;
 }
