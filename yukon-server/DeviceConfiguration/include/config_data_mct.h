@@ -210,6 +210,11 @@ public:
     static const std::string DNPAccumulator8;
     static const std::string DNPBinaryByte1A;
     static const std::string DNPBinaryByte1B;
+
+    static const std::string PhaseLossThreshold;
+    static const std::string PhaseLossDuration;
+
+    static const std::string EnableDST;
 };
 
 }

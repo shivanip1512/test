@@ -213,6 +213,11 @@ const string MCTStrings::DNPAccumulator8 = "accumulator 8";
 const string MCTStrings::DNPBinaryByte1A = "binary byte 1a";
 const string MCTStrings::DNPBinaryByte1B = "binary byte 1b";
 
+const string MCTStrings::PhaseLossThreshold = "phase loss threshold";
+const string MCTStrings::PhaseLossDuration  = "phase loss duration";
+
+const string MCTStrings::EnableDST          = "enable dst";
+
 //CBC
 
 const string CBCStrings::ActiveSettings = "active setting";
