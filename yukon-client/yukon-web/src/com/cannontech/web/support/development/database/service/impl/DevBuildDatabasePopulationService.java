@@ -73,7 +73,7 @@ public class DevBuildDatabasePopulationService {
             dpt.setCreate(true);
         }
         task.getDevAMR().setMeterTypes(meters);
-        task.getDevAMR().setNumAdditionalMeters(1000);
+        task.getDevAMR().setNumAdditionalMeters(50);
         task.getDevStars().setNewEnergyCompanyName("Cooper EC");
 
         log.info("executing initial database population...");
