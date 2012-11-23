@@ -198,9 +198,6 @@ public:
 
         Key_MCT_PhaseLossPercent,
         Key_MCT_PhaseLossSeconds,
-
-        Key_MCT_StatusFlags,
-
     };
 
 protected:
