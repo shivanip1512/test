@@ -23,8 +23,8 @@ using Cti::Protocols::EmetconProtocol;
 
 
 #define TOU_SCHEDULE_NBR                4
-#define TOU_SCHEDULE_TIME_NBR          10
-#define TOU_SCHEDULE_RATE_NBR          11
+#define TOU_SCHEDULE_TIME_NBR           9
+#define TOU_SCHEDULE_RATE_NBR          10
 
 #define OUTAGE_NBR_MIN                  1
 #define OUTAGE_NBR_MAX                 10
@@ -181,7 +181,6 @@ Mct440_213xBDevice::FunctionReadValueMappings Mct440_213xBDevice::initReadValueM
 
         // 0x1AD – TOU Day Schedule
         { 0x1ad,  0, { 2, CtiTableDynamicPaoInfo::Key_MCT_DayTable                  } },
-        { 0x1ad,  2, { 1, CtiTableDynamicPaoInfo::Key_MCT_DefaultTOURate            } },
         { 0x1ad, 10, { 1, CtiTableDynamicPaoInfo::Key_MCT_TimeZoneOffset            } },
 
         // 0x1FE – Disconnect Status (FIXME)
@@ -552,8 +551,7 @@ INT Mct440_213xBDevice::executeGetValue(CtiRequestMsg     *pReq,
             {
                 getOperation(EmetconProtocol::GetConfig_Model, sspec_om->Buffer.BSt);
 
-                sspec_om->Sequence = EmetconProtocol::GetConfig_Model;
-
+                sspec_om->Sequence      = EmetconProtocol::GetConfig_Model;
                 sspec_om->MessageFlags |= MessageFlag_ExpectMore;
 
                 outList.push_back(sspec_om);
@@ -1126,7 +1124,7 @@ INT Mct440_213xBDevice::decodeGetValueTOUkWh(INMESS          *InMessage,
 *                                       executePutConfigTOU()
 *
 * Description : Execute a putconfig install time of usage command: putconfig install tou [force] [verify]
-*               Command will install up to 10 rates and 11 schedule time.
+*               Command will install up to 10 rates and 9 schedule time.
 *
 * Argument(s) :
 *
@@ -1166,28 +1164,9 @@ int Mct440_213xBDevice::executePutConfigTOU(CtiRequestMsg     *pReq,
                timeStringValues[TOU_SCHEDULE_NBR][TOU_SCHEDULE_TIME_NBR],
                daySchedule1, daySchedule2, daySchedule3, daySchedule4,
                dynDaySchedule1, dynDaySchedule2, dynDaySchedule3, dynDaySchedule4;
-        long defaultTOURate;
-        long dayTable;
 
         // Unfortunatelly the arrays have a 0 offset, while the schedules times/rates are referenced with a 1 offset
         // Also note that rate "0" is the midnight rate.
-        string mondayScheduleStr    = deviceConfig->getValueFromKey(MCTStrings::MondaySchedule);
-        string tuesdayScheduleStr   = deviceConfig->getValueFromKey(MCTStrings::TuesdaySchedule);
-        string wednesdayScheduleStr = deviceConfig->getValueFromKey(MCTStrings::WednesdaySchedule);
-        string thursdayScheduleStr  = deviceConfig->getValueFromKey(MCTStrings::ThursdaySchedule);
-        string fridayScheduleStr    = deviceConfig->getValueFromKey(MCTStrings::FridaySchedule);
-        string saturdayScheduleStr  = deviceConfig->getValueFromKey(MCTStrings::SaturdaySchedule);
-        string sundayScheduleStr    = deviceConfig->getValueFromKey(MCTStrings::SundaySchedule);
-        string holidayScheduleStr   = deviceConfig->getValueFromKey(MCTStrings::HolidaySchedule);
-
-        long mondaySchedule    = resolveScheduleName(mondayScheduleStr);
-        long tuesdaySchedule   = resolveScheduleName(tuesdayScheduleStr);
-        long wednesdaySchedule = resolveScheduleName(wednesdayScheduleStr);
-        long thursdaySchedule  = resolveScheduleName(thursdayScheduleStr);
-        long fridaySchedule    = resolveScheduleName(fridayScheduleStr);
-        long saturdaySchedule  = resolveScheduleName(saturdayScheduleStr);
-        long sundaySchedule    = resolveScheduleName(sundayScheduleStr);
-        long holidaySchedule   = resolveScheduleName(holidayScheduleStr);
 
         //These are all string values
         timeStringValues[0][0] = deviceConfig->getValueFromKey(MCTStrings::Schedule1Time1);
@@ -1199,7 +1178,6 @@ int Mct440_213xBDevice::executePutConfigTOU(CtiRequestMsg     *pReq,
         timeStringValues[0][6] = deviceConfig->getValueFromKey(MCTStrings::Schedule1Time7);
         timeStringValues[0][7] = deviceConfig->getValueFromKey(MCTStrings::Schedule1Time8);
         timeStringValues[0][8] = deviceConfig->getValueFromKey(MCTStrings::Schedule1Time9);
-        timeStringValues[0][9] = deviceConfig->getValueFromKey(MCTStrings::Schedule1Time10);
 
         timeStringValues[1][0] = deviceConfig->getValueFromKey(MCTStrings::Schedule2Time1);
         timeStringValues[1][1] = deviceConfig->getValueFromKey(MCTStrings::Schedule2Time2);
@@ -1210,7 +1188,6 @@ int Mct440_213xBDevice::executePutConfigTOU(CtiRequestMsg     *pReq,
         timeStringValues[1][6] = deviceConfig->getValueFromKey(MCTStrings::Schedule2Time7);
         timeStringValues[1][7] = deviceConfig->getValueFromKey(MCTStrings::Schedule2Time8);
         timeStringValues[1][8] = deviceConfig->getValueFromKey(MCTStrings::Schedule2Time9);
-        timeStringValues[1][9] = deviceConfig->getValueFromKey(MCTStrings::Schedule2Time10);
 
         timeStringValues[2][0] = deviceConfig->getValueFromKey(MCTStrings::Schedule3Time1);
         timeStringValues[2][1] = deviceConfig->getValueFromKey(MCTStrings::Schedule3Time2);
@@ -1221,7 +1198,6 @@ int Mct440_213xBDevice::executePutConfigTOU(CtiRequestMsg     *pReq,
         timeStringValues[2][6] = deviceConfig->getValueFromKey(MCTStrings::Schedule3Time7);
         timeStringValues[2][7] = deviceConfig->getValueFromKey(MCTStrings::Schedule3Time8);
         timeStringValues[2][8] = deviceConfig->getValueFromKey(MCTStrings::Schedule3Time9);
-        timeStringValues[2][9] = deviceConfig->getValueFromKey(MCTStrings::Schedule3Time10);
 
         timeStringValues[3][0] = deviceConfig->getValueFromKey(MCTStrings::Schedule4Time1);
         timeStringValues[3][1] = deviceConfig->getValueFromKey(MCTStrings::Schedule4Time2);
@@ -1232,7 +1208,6 @@ int Mct440_213xBDevice::executePutConfigTOU(CtiRequestMsg     *pReq,
         timeStringValues[3][6] = deviceConfig->getValueFromKey(MCTStrings::Schedule4Time7);
         timeStringValues[3][7] = deviceConfig->getValueFromKey(MCTStrings::Schedule4Time8);
         timeStringValues[3][8] = deviceConfig->getValueFromKey(MCTStrings::Schedule4Time9);
-        timeStringValues[3][9] = deviceConfig->getValueFromKey(MCTStrings::Schedule4Time10);
 
         rateStringValues[0][0] = deviceConfig->getValueFromKey(MCTStrings::Schedule1Rate0); // midnight rate schedule 1
         rateStringValues[0][1] = deviceConfig->getValueFromKey(MCTStrings::Schedule1Rate1);
@@ -1244,7 +1219,6 @@ int Mct440_213xBDevice::executePutConfigTOU(CtiRequestMsg     *pReq,
         rateStringValues[0][7] = deviceConfig->getValueFromKey(MCTStrings::Schedule1Rate7);
         rateStringValues[0][8] = deviceConfig->getValueFromKey(MCTStrings::Schedule1Rate8);
         rateStringValues[0][9] = deviceConfig->getValueFromKey(MCTStrings::Schedule1Rate9);
-        rateStringValues[0][10] = deviceConfig->getValueFromKey(MCTStrings::Schedule1Rate10);
 
         rateStringValues[1][0] = deviceConfig->getValueFromKey(MCTStrings::Schedule2Rate0); // midnight rate schedule 2
         rateStringValues[1][1] = deviceConfig->getValueFromKey(MCTStrings::Schedule2Rate1);
@@ -1256,7 +1230,6 @@ int Mct440_213xBDevice::executePutConfigTOU(CtiRequestMsg     *pReq,
         rateStringValues[1][7] = deviceConfig->getValueFromKey(MCTStrings::Schedule2Rate7);
         rateStringValues[1][8] = deviceConfig->getValueFromKey(MCTStrings::Schedule2Rate8);
         rateStringValues[1][9] = deviceConfig->getValueFromKey(MCTStrings::Schedule2Rate9);
-        rateStringValues[1][10] = deviceConfig->getValueFromKey(MCTStrings::Schedule2Rate10);
 
         rateStringValues[2][0] = deviceConfig->getValueFromKey(MCTStrings::Schedule3Rate0); // midnight rate schedule 3
         rateStringValues[2][1] = deviceConfig->getValueFromKey(MCTStrings::Schedule3Rate1);
@@ -1268,7 +1241,6 @@ int Mct440_213xBDevice::executePutConfigTOU(CtiRequestMsg     *pReq,
         rateStringValues[2][7] = deviceConfig->getValueFromKey(MCTStrings::Schedule3Rate7);
         rateStringValues[2][8] = deviceConfig->getValueFromKey(MCTStrings::Schedule3Rate8);
         rateStringValues[2][9] = deviceConfig->getValueFromKey(MCTStrings::Schedule3Rate9);
-        rateStringValues[2][10] = deviceConfig->getValueFromKey(MCTStrings::Schedule3Rate10);
 
         rateStringValues[3][0] = deviceConfig->getValueFromKey(MCTStrings::Schedule4Rate0); // midnight rate schedule 4
         rateStringValues[3][1] = deviceConfig->getValueFromKey(MCTStrings::Schedule4Rate1);
@@ -1280,9 +1252,6 @@ int Mct440_213xBDevice::executePutConfigTOU(CtiRequestMsg     *pReq,
         rateStringValues[3][7] = deviceConfig->getValueFromKey(MCTStrings::Schedule4Rate7);
         rateStringValues[3][8] = deviceConfig->getValueFromKey(MCTStrings::Schedule4Rate8);
         rateStringValues[3][9] = deviceConfig->getValueFromKey(MCTStrings::Schedule4Rate9);
-        rateStringValues[3][10] = deviceConfig->getValueFromKey(MCTStrings::Schedule4Rate10);
-        
-        string defaultTOURateString = deviceConfig->getValueFromKey(MCTStrings::DefaultTOURate);
 
         for( int schedule = 0; schedule < TOU_SCHEDULE_NBR; schedule++ )
         {
@@ -1352,33 +1321,18 @@ int Mct440_213xBDevice::executePutConfigTOU(CtiRequestMsg     *pReq,
                     }
                 }
             }
-            if( !defaultTOURateString.empty() )
-            {
-                defaultTOURate = defaultTOURateString[0] - 'A';
-                if( defaultTOURate < 0 || defaultTOURate > 3 )
-                {
-                    CtiLockGuard<CtiLogger> doubt_guard(dout);
-                    dout << CtiTime() << " **** Checkpoint - bad default rate **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
-                    nRet = NoConfigData;
-                }
-            }
-            else
-            {
-                CtiLockGuard<CtiLogger> doubt_guard(dout);
-                dout << CtiTime() << " **** Checkpoint - no default rate stored **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
-                nRet = NoConfigData;
-            }
         }
 
+        const long sundaySchedule   = resolveScheduleName(deviceConfig->getValueFromKey(MCTStrings::SundaySchedule  )),
+                   weekdaysSchedule = resolveScheduleName(deviceConfig->getValueFromKey(MCTStrings::WeekdaysSchedule)),
+                   saturdaySchedule = resolveScheduleName(deviceConfig->getValueFromKey(MCTStrings::SaturdaySchedule)),
+                   holidaySchedule  = resolveScheduleName(deviceConfig->getValueFromKey(MCTStrings::HolidaySchedule ));
+
         if( nRet == NoConfigData
-            || mondaySchedule    < 0 || mondaySchedule    > 3
-            || tuesdaySchedule   < 0 || tuesdaySchedule   > 3
-            || fridaySchedule    < 0 || fridaySchedule    > 3
-            || saturdaySchedule  < 0 || saturdaySchedule  > 3
-            || sundaySchedule    < 0 || sundaySchedule    > 3
-            || holidaySchedule   < 0 || holidaySchedule   > 3
-            || wednesdaySchedule < 0 || wednesdaySchedule > 3
-            || thursdaySchedule  < 0 || thursdaySchedule  > 3 )
+            || sundaySchedule   < 0 || sundaySchedule   > 3
+            || weekdaysSchedule < 0 || weekdaysSchedule > 3
+            || saturdaySchedule < 0 || saturdaySchedule > 3
+            || holidaySchedule  < 0 || holidaySchedule  > 3 )
         {
             CtiLockGuard<CtiLogger> doubt_guard(dout);
             dout << CtiTime() << " **** Checkpoint - no or bad value stored **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
@@ -1386,13 +1340,11 @@ int Mct440_213xBDevice::executePutConfigTOU(CtiRequestMsg     *pReq,
         }
         else
         {
-            dayTable = holidaySchedule    << 14;
-            dayTable |= saturdaySchedule  << 12;
-            dayTable |= fridaySchedule    << 10;
-            dayTable |= thursdaySchedule  << 8;
-            dayTable |= wednesdaySchedule << 6;
-            dayTable |= tuesdaySchedule   << 4;
-            dayTable |= mondaySchedule    << 2;
+            long dayTable = 0;
+
+            dayTable |= holidaySchedule  << 14;
+            dayTable |= saturdaySchedule << 12;
+            dayTable |= weekdaysSchedule << 2;
             dayTable |= sundaySchedule;
 
             createTOUDayScheduleString(daySchedule1, times[0], rates[0]);
@@ -1407,7 +1359,6 @@ int Mct440_213xBDevice::executePutConfigTOU(CtiRequestMsg     *pReq,
 
             if( parse.isKeyValid("force")
                 || CtiDeviceBase::getDynamicInfo(CtiTableDynamicPaoInfo::Key_MCT_DayTable) != dayTable
-                || CtiDeviceBase::getDynamicInfo(CtiTableDynamicPaoInfo::Key_MCT_DefaultTOURate) != defaultTOURate
                 || dynDaySchedule1 != daySchedule1
                 || dynDaySchedule2 != daySchedule2
                 || dynDaySchedule3 != daySchedule3
@@ -1425,7 +1376,6 @@ int Mct440_213xBDevice::executePutConfigTOU(CtiRequestMsg     *pReq,
                     createTOUScheduleConfig(daySchedule,
                                             times,
                                             rates,
-                                            defaultTOURate,
                                             OutMessage,
                                             outList);
                 }
@@ -1442,6 +1392,7 @@ int Mct440_213xBDevice::executePutConfigTOU(CtiRequestMsg     *pReq,
     }
     else // getconfig install
     {
+        const int priority              = OutMessage->Priority;
         OutMessage->Buffer.BSt.IO       = EmetconProtocol::IO_Function_Read;
         OutMessage->Sequence            = EmetconProtocol::GetConfig_TOU;
 
@@ -1451,22 +1402,26 @@ int Mct440_213xBDevice::executePutConfigTOU(CtiRequestMsg     *pReq,
         OutMessage->Buffer.BSt.Length   = FuncRead_TOUSwitchSchedule12Len;
         outList.push_back( CTIDBG_new OUTMESS(*OutMessage) );
 
+        OutMessage->Priority            = priority - 1; // decrease priority for part 2 to make sure we process it after part 1
         OutMessage->Buffer.BSt.Function = FuncRead_TOUSwitchSchedule12Part2Pos;
         OutMessage->Buffer.BSt.Length   = FuncRead_TOUSwitchSchedule12Part2Len;
         outList.push_back( CTIDBG_new OUTMESS(*OutMessage) );
 
         strncpy(OutMessage->Request.CommandStr, "getconfig tou schedule 3", COMMAND_STR_SIZE );
 
+        OutMessage->Priority            = priority;
         OutMessage->Buffer.BSt.Function = FuncRead_TOUSwitchSchedule34Pos;
         OutMessage->Buffer.BSt.Length   = FuncRead_TOUSwitchSchedule34Len;
         outList.push_back( CTIDBG_new OUTMESS(*OutMessage) );
 
+        OutMessage->Priority            = priority - 1; // decrease priority for part 2 to make sure we process it after part 1
         OutMessage->Buffer.BSt.Function = FuncRead_TOUSwitchSchedule34Part2Pos;
         OutMessage->Buffer.BSt.Length   = FuncRead_TOUSwitchSchedule34Part2Len;
         outList.push_back( CTIDBG_new OUTMESS(*OutMessage) );
 
         strncpy(OutMessage->Request.CommandStr, "getconfig tou", COMMAND_STR_SIZE );
 
+        OutMessage->Priority            = priority;
         OutMessage->Buffer.BSt.Function = FuncRead_TOUStatusPos;
         OutMessage->Buffer.BSt.Length   = FuncRead_TOUStatusLen;
         outList.push_back( CTIDBG_new OUTMESS(*OutMessage) );
@@ -1534,6 +1489,7 @@ INT Mct440_213xBDevice::executeGetConfig(CtiRequestMsg     *pReq,
                 OutMessage->Buffer.BSt.Length   = FuncRead_TOUSwitchSchedule12Len;
                 outList.push_back(CTIDBG_new OUTMESS(*OutMessage));
 
+                OutMessage->Priority           -= 1; // decrease priority for part 2 to make sure we process it after part 1
                 OutMessage->Buffer.BSt.Function = FuncRead_TOUSwitchSchedule12Part2Pos;
                 OutMessage->Buffer.BSt.Length   = FuncRead_TOUSwitchSchedule12Part2Len;
                 outList.push_back(CTIDBG_new OUTMESS(*OutMessage));
@@ -1549,6 +1505,7 @@ INT Mct440_213xBDevice::executeGetConfig(CtiRequestMsg     *pReq,
                 OutMessage->Buffer.BSt.Length   = FuncRead_TOUSwitchSchedule34Len;
                 outList.push_back(CTIDBG_new OUTMESS(*OutMessage));
 
+                OutMessage->Priority           -= 1; // decrease priority for part 2 to make sure we process it after part 1
                 OutMessage->Buffer.BSt.Function = FuncRead_TOUSwitchSchedule34Part2Pos;
                 OutMessage->Buffer.BSt.Length   = FuncRead_TOUSwitchSchedule34Part2Len;
                 outList.push_back(CTIDBG_new OUTMESS(*OutMessage));
@@ -1695,7 +1652,7 @@ long Mct440_213xBDevice::resolveScheduleName(const string & scheduleName)
 * Note(s)     :
 *********************************************************************************************************
 */
-void Mct440_213xBDevice::createTOUDayScheduleString(string &schedule, long (&times)[10], long (&rates)[11])
+void Mct440_213xBDevice::createTOUDayScheduleString(string &schedule, long (&times)[9], long (&rates)[10])
 {
     for( int time_nbr = 0; time_nbr < COUNT_OF(times); time_nbr++ )
     {
@@ -1726,7 +1683,7 @@ void Mct440_213xBDevice::createTOUDayScheduleString(string &schedule, long (&tim
 * Note(s)     :
 *********************************************************************************************************
 */
-void Mct440_213xBDevice::parseTOUDayScheduleString(string &schedule, long (&times)[10], long (&rates)[11])
+void Mct440_213xBDevice::parseTOUDayScheduleString(string &schedule, long (&times)[9], long (&rates)[10])
 {
     char sep[2]; // expecting 2 characters: ", "
     istringstream ss(schedule);
@@ -2076,28 +2033,19 @@ int Mct440_213xBDevice::executePutConfigTOUDays(CtiRequestMsg     *pReq,
     else if( parse.isKeyValid("tou_days") )
     {
         set< ratechange_t > ratechanges;
-        long default_rate, day_schedules[8];
+        long day_schedules[8] = {0};
 
-        string schedule_name, change_name, daytable(parse.getsValue("tou_days"));
+        string schedule_name, daytable(parse.getsValue("tou_days"));
 
-        switch( parse.getsValue("tou_default").data()[0] )
-        {
-            case 'a':   default_rate =  0;  break;
-            case 'b':   default_rate =  1;  break;
-            case 'c':   default_rate =  2;  break;
-            case 'd':   default_rate =  3;  break;
-            default:    default_rate = -1;  break;
-        }
-
-        if( default_rate < 0 )
+        if( parse.isKeyValid("tou_default") )
         {
             returnErrorMessage(BADPARAM, OutMessage, retList,
                                "TOU default rate \"" + parse.getsValue("tou_default") + "\" specified is invalid for device \"" + getName() + "\"");
 
-            return ExecutionComplete;
+             return ExecutionComplete;
         }
         
-        if( daytable.length() != 8 || daytable.find_first_not_of("1234") != string::npos )
+        if( daytable.length() != 4 || daytable.find_first_not_of("1234") != string::npos )
         {
             returnErrorMessage(BADPARAM, OutMessage, retList,
                                "day table \"" + daytable + "\" specified is invalid for device \"" + getName() + "\"");
@@ -2105,10 +2053,10 @@ int Mct440_213xBDevice::executePutConfigTOUDays(CtiRequestMsg     *pReq,
             return ExecutionComplete;
         }
 
-        for( int day = 0; day < 8; day++ )
-        {
-        	day_schedules[day] = atoi(daytable.substr(day, 1).c_str()) - 1;
-        }
+        day_schedules[0] = atoi(daytable.substr(0, 1).c_str()) - 1; // sunday
+        day_schedules[1] = atoi(daytable.substr(1, 1).c_str()) - 1; // weekdays
+        day_schedules[6] = atoi(daytable.substr(2, 1).c_str()) - 1; // saturday
+        day_schedules[7] = atoi(daytable.substr(3, 1).c_str()) - 1; // holiday
 
         int schedulenum = 0;
 
@@ -2191,8 +2139,8 @@ int Mct440_213xBDevice::executePutConfigTOUDays(CtiRequestMsg     *pReq,
 
         for( int schedule_nbr = 0; schedule_nbr < TOU_SCHEDULE_NBR; schedule_nbr++ )
         {
-            std::fill(times[schedule_nbr], times[schedule_nbr] + TOU_SCHEDULE_TIME_NBR,          255);
-            std::fill(rates[schedule_nbr], rates[schedule_nbr] + TOU_SCHEDULE_RATE_NBR, default_rate);
+            std::fill(times[schedule_nbr], times[schedule_nbr] + TOU_SCHEDULE_TIME_NBR, 255);
+            std::fill(rates[schedule_nbr], rates[schedule_nbr] + TOU_SCHEDULE_RATE_NBR,   0);
         }
 
         int current_schedule = -1;
@@ -2235,15 +2183,10 @@ int Mct440_213xBDevice::executePutConfigTOUDays(CtiRequestMsg     *pReq,
             {
                 if( offset == 0 )
                 {
-                    {
-                        CtiLockGuard<CtiLogger> doubt_guard(dout);
-                        dout << CtiTime() << " **** Checkpoint - first rate change time for schedule (" << rc.schedule <<
-                                             ") is not midnight, assuming default rate (" << default_rate <<
-                                             ") for midnight until (" << rc.time << ") for device \"" << getName() << "\" **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
-                     }
+                    returnErrorMessage(BADPARAM, OutMessage, retList,
+                                       "Invalid rate change time for device \"" + getName() + "\"; first rate change time for schedule (" + CtiNumStr(rc.schedule) + ") is not midnight");
 
-                     //  rates[rc.schedule][0] was already initialized to default_rate, so just move along
-                     offset++;
+                    return ExecutionComplete;
                 }
 
                 times[rc.schedule][offset - 1] = (rc.time - time_offset) / 300;
@@ -2265,7 +2208,6 @@ int Mct440_213xBDevice::executePutConfigTOUDays(CtiRequestMsg     *pReq,
         createTOUScheduleConfig(day_schedules,
                                 times,
                                 rates,
-                                default_rate,
                                 OutMessage,
                                 outList);
 
@@ -2650,42 +2592,56 @@ INT Mct440_213xBDevice::decodeGetConfigTOU(INMESS          *InMessage,
         const bool first_part = ( InMessage->Return.ProtocolInfo.Emetcon.Function == function_part1 );
 
         resultString = getName() + " / Received TOU schedule " + CtiNumStr(schedulenum) + " and " + CtiNumStr(schedulenum + 1)
-                                 + (( first_part ) ? " switch time 1-5" : " switch time 6-10") + "\n";
+                                 + (( first_part ) ? " switch time 1-5" : " switch time 6-9") + "\n";
 
         for( int offset = 0; offset < 2; offset++ )
         {
-            int rates_raw, byte_offset;
-
-            if( offset == 0 )
-            {
-                rates_raw   = ((InMessage->Buffer.DSt.Message[5] & 0x0f) << 8) | InMessage->Buffer.DSt.Message[6];
-                byte_offset = 0;
-            }
-            else
-            {
-                rates_raw   = ((InMessage->Buffer.DSt.Message[5] & 0xf0) << 4) | InMessage->Buffer.DSt.Message[12];
-                byte_offset = 7;
-            }
+            int rates_raw, byte_offset, switch_count;
 
             if( first_part )
             {
+                if( offset == 0 )
+                {
+                    rates_raw   = ((InMessage->Buffer.DSt.Message[5] & 0x0f) << 8) | InMessage->Buffer.DSt.Message[6];
+                    byte_offset = 0;
+                }
+                else
+                {
+                    rates_raw   = ((InMessage->Buffer.DSt.Message[5] & 0xf0) << 4) | InMessage->Buffer.DSt.Message[12];
+                    byte_offset = 7;
+                }
+
                 rates[offset][0] = (rates_raw) & 0x03;          /* Midnight                                             */
                 rates[offset][1] = (rates_raw >> 2)  & 0x03;    /* Switch 1                                             */
                 rates[offset][2] = (rates_raw >> 4)  & 0x03;    /* Switch 2                                             */
                 rates[offset][3] = (rates_raw >> 6)  & 0x03;    /* Switch 3                                             */
                 rates[offset][4] = (rates_raw >> 8)  & 0x03;    /* Switch 4                                             */
                 rates[offset][5] = (rates_raw >> 10) & 0x03;    /* Switch 5                                             */
+
+                switch_count = 5;
             }
             else
             {
+                if( offset == 0 )
+                {
+                    rates_raw   = InMessage->Buffer.DSt.Message[4];
+                    byte_offset = 0;
+                }
+                else
+                {
+                    rates_raw   = InMessage->Buffer.DSt.Message[9];
+                    byte_offset = 5;
+                }
+
                 rates[offset][0] = (rates_raw) & 0x03;          /* switch 6                                             */
                 rates[offset][1] = (rates_raw >> 2) & 0x03;     /* switch 7                                             */
                 rates[offset][2] = (rates_raw >> 4) & 0x03;     /* switch 8                                             */
                 rates[offset][3] = (rates_raw >> 6) & 0x03;     /* switch 9                                             */
-                rates[offset][4] = (rates_raw >> 8) & 0x03;     /* switch 9                                             */
+
+                switch_count = 4;
             }
 
-            for( int switchtime = 0; switchtime < 5; switchtime++ )
+            for( int switchtime = 0; switchtime < switch_count; switchtime++ )
             {
                 times[offset][switchtime] = InMessage->Buffer.DSt.Message[byte_offset + switchtime];
             }
@@ -2732,8 +2688,8 @@ INT Mct440_213xBDevice::decodeGetConfigTOU(INMESS          *InMessage,
             }
             else                                                /* switch 6 - 9                                         */
             {
-                std::copy(times[schedule_nbr], times[schedule_nbr] + 5, times_schedule + 5);
-                std::copy(rates[schedule_nbr], rates[schedule_nbr] + 5, rates_schedule + 6);
+                std::copy(times[schedule_nbr], times[schedule_nbr] + 4, times_schedule + 5);
+                std::copy(rates[schedule_nbr], rates[schedule_nbr] + 4, rates_schedule + 6);
             }
 
             string daySchedule;
@@ -2815,7 +2771,7 @@ INT Mct440_213xBDevice::decodeGetConfigTOU(INMESS          *InMessage,
         {
             resultString += CtiNumStr((int)InMessage->Buffer.DSt.Message[5]) + "\n";
         }
-
+/*
         resultString += "Default rate: ";
         if( InMessage->Buffer.DSt.Message[2] == 0xff )
         {
@@ -2825,16 +2781,21 @@ INT Mct440_213xBDevice::decodeGetConfigTOU(INMESS          *InMessage,
         {
             resultString += string(1, (char)('A' + InMessage->Buffer.DSt.Message[2])) + "\n";
         }
+*/
+        resultString += "Day table: \n";
 
-        resultString += "\nDay table: \n";
+        const char *(daynames[4]) = {"Sunday", "Monday-Friday", "Saturday", "Holiday"};
 
-        const char *(daynames[8]) = {"Sunday", "Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday", "Holiday"};
+        long schedules[4];
 
-        for( int day_nbr = 0; day_nbr < 8; day_nbr++ )
+        schedules[0] = (InMessage->Buffer.DSt.Message[1] >> 0) & 0x03;  // Sunday
+        schedules[1] = (InMessage->Buffer.DSt.Message[1] >> 2) & 0x03;  // Monday-Friday
+        schedules[2] = (InMessage->Buffer.DSt.Message[0] >> 4) & 0x03;  // Saturday
+        schedules[3] = (InMessage->Buffer.DSt.Message[0] >> 6) & 0x03;  // Holiday
+
+        for( int day_nbr = 0; day_nbr < 4; day_nbr++ )
         {
-            int dayschedule = InMessage->Buffer.DSt.Message[1 - day_nbr/4] >> ((day_nbr % 4) * 2) & 0x03;
-
-            resultString += "Schedule " + CtiNumStr(dayschedule + 1) + " - " + daynames[day_nbr] + "\n";
+            resultString += "Schedule " + CtiNumStr(schedules[day_nbr]) + " - " + daynames[day_nbr] + "\n";
         }
     }
 
@@ -3238,10 +3199,9 @@ int Mct440_213xBDevice::decodeGetConfigAlarmMask(INMESS          *InMessage,
 * Note(s)     :
 *********************************************************************************************************
 */
-void Mct440_213xBDevice::createTOUScheduleConfig(long           (&daySchedule)[8],
-                                                 long           (&times)[4][10],
-                                                 long           (&rates)[4][11],
-                                                 long            defaultRate,
+void Mct440_213xBDevice::createTOUScheduleConfig(const long     (&daySchedule)[8],
+                                                 const long     (&times)[4][9],
+                                                 const long     (&rates)[4][10],
                                                  OUTMESS        *&OutMessage,
                                                  OutMessageList  &outList)
 {
@@ -3319,9 +3279,6 @@ void Mct440_213xBDevice::createTOUScheduleConfig(long           (&daySchedule)[8
                                              ((rates[3][1] & 0x03) << 2) | // switch rate 1 schedule 4
                                              ((rates[3][0] & 0x03));       // midnight rate schedule 4
 
-    // write default rate
-    TOU_OutMessage->Buffer.BSt.Message[14] = defaultRate;
-
     outList.push_back( TOU_OutMessage.release() );
 
                                                                 /* ----------- CONFIGURE TOU SCHEDULE PART 3 ---------- */
@@ -3331,31 +3288,24 @@ void Mct440_213xBDevice::createTOUScheduleConfig(long           (&daySchedule)[8
     TOU_OutMessage->Buffer.BSt.Function = FuncWrite_TOUSchedule3Pos;
     TOU_OutMessage->Buffer.BSt.Length   = FuncWrite_TOUSchedule3Len;
 
-    // write the durations for schedules 1 and 2 (switch 6 to 10)
+    // write the durations for schedules 1 and 2 (switch 6 to 9)
     for( int offset = 0; offset < 4; offset++ )
     {
         TOU_OutMessage->Buffer.BSt.Message[offset + 0] = times[0][offset + 5];
-        TOU_OutMessage->Buffer.BSt.Message[offset + 7] = times[1][offset + 5];
+        TOU_OutMessage->Buffer.BSt.Message[offset + 5] = times[1][offset + 5];
     }
 
-    // write the rates for schedule 1 (switch 6 to 10)
-    TOU_OutMessage->Buffer.BSt.Message[5]  = ((rates[0][10] & 0x03) << 2) | // switch rate 10 schedule 1
-                                             ((rates[0][9]  & 0x03));		// switch rate 9  schedule 1
-
-    TOU_OutMessage->Buffer.BSt.Message[6]  = ((rates[0][8]  & 0x03) << 6) | // switch rate 8  schedule 1
-                                             ((rates[0][7]  & 0x03) << 4) | // switch rate 7  schedule 1
-                                             ((rates[0][6]  & 0x03) << 2);  // switch rate 6  schedule 1
+    // write the rates for schedule 1 (switch 6 to 9)
+    TOU_OutMessage->Buffer.BSt.Message[4]  = ((rates[0][9] & 0x03) << 6) | // switch rate 9 schedule 1
+                                             ((rates[0][8] & 0x03) << 4) | // switch rate 8 schedule 1
+                                             ((rates[0][7] & 0x03) << 2) | // switch rate 7 schedule 1
+                                             ((rates[0][6] & 0x03));       // switch rate 6 schedule 1
 
     // write the rates for schedule 2 (switch 6 to 9)
-    TOU_OutMessage->Buffer.BSt.Message[12] = ((rates[1][10] & 0x03) << 2) | // switch rate 10 schedule 2
-                                             ((rates[1][9]  & 0x03));       // switch rate 9  schedule 2
-
-    TOU_OutMessage->Buffer.BSt.Message[13] = ((rates[1][8]  & 0x03) << 6) | // switch rate 8  schedule 2
-                                             ((rates[1][7]  & 0x03) << 4) | // switch rate 7  schedule 2
-                                             ((rates[1][6]  & 0x03) << 2);  // switch rate 6  schedule 2
-
-    // write default rate
-    TOU_OutMessage->Buffer.BSt.Message[14] = defaultRate;
+    TOU_OutMessage->Buffer.BSt.Message[9]  = ((rates[1][9] & 0x03) << 6) | // switch rate 9 schedule 2
+                                             ((rates[1][8] & 0x03) << 4) | // switch rate 8 schedule 2
+                                             ((rates[1][7] & 0x03) << 2) | // switch rate 7 schedule 2
+                                             ((rates[1][6] & 0x03));       // switch rate 6 schedule 2
 
     outList.push_back( TOU_OutMessage.release() );
 
@@ -3367,30 +3317,24 @@ void Mct440_213xBDevice::createTOUScheduleConfig(long           (&daySchedule)[8
     TOU_OutMessage->Buffer.BSt.Length   = FuncWrite_TOUSchedule4Len;
     TOU_OutMessage->Priority           -= 1; // decrease priority of the last schedule to make sure we process it last
 
-    // write the durations for schedules 3 and 4 (switch 6 to 10)
+    // write the durations for schedules 3 and 4 (switch 6 to 9)
     for( int offset = 0; offset < 4; offset++ )
     {
         TOU_OutMessage->Buffer.BSt.Message[offset + 0] = times[2][offset + 5];
         TOU_OutMessage->Buffer.BSt.Message[offset + 5] = times[3][offset + 5];
     }
 
-    // write the rates for schedule 3 (switch 6 to 10)
-    TOU_OutMessage->Buffer.BSt.Message[5]  = ((rates[2][10] & 0x03) << 2) | // switch rate 10 schedule 3
-                                             ((rates[2][9]  & 0x03) << 0);  // switch rate  9 schedule 3
+    // write the rates for schedule 4 (switch 6 to 9)
+    TOU_OutMessage->Buffer.BSt.Message[4]  = ((rates[2][9] & 0x03) << 6) | // switch rate 9 schedule 3
+                                             ((rates[2][8] & 0x03) << 4) | // switch rate 8 schedule 3
+                                             ((rates[2][7] & 0x03) << 2) | // switch rate 7 schedule 3
+                                             ((rates[2][6] & 0x03));       // switch rate 6 schedule 3
 
-    TOU_OutMessage->Buffer.BSt.Message[6]  = ((rates[2][8]  & 0x03) << 6) | // switch rate  8 schedule 3
-                                             ((rates[2][7]  & 0x03) << 4) | // switch rate  7 schedule 3
-                                             ((rates[2][6]  & 0x03) << 2);  // switch rate  6 schedule 3
-
-    // write the rates for schedule 4 (switch 6 to 10)
-    TOU_OutMessage->Buffer.BSt.Message[12] = ((rates[3][10] & 0x03) << 2) | // switch rate 10 schedule 4
-                                             ((rates[3][9]  & 0x03));       // switch rate  9 schedule 4
-
-    TOU_OutMessage->Buffer.BSt.Message[13] = ((rates[3][8]  & 0x03) << 6) | // switch rate  8 schedule 4
-                                             ((rates[3][7]  & 0x03) << 4) | // switch rate  7 schedule 4
-                                             ((rates[3][6]  & 0x03) << 2);  // switch rate  6 schedule 4
-    // write default rate
-    TOU_OutMessage->Buffer.BSt.Message[14] = defaultRate;
+    // write the rates for schedule 4 (switch 6 to 9)
+    TOU_OutMessage->Buffer.BSt.Message[9]  = ((rates[3][9] & 0x03) << 6) | // switch rate 9 schedule 4
+                                             ((rates[3][8] & 0x03) << 4) | // switch rate 8 schedule 4
+                                             ((rates[3][7] & 0x03) << 2) | // switch rate 7 schedule 4
+                                             ((rates[3][6] & 0x03));       // switch rate 6 schedule 4
 
     outList.push_back( TOU_OutMessage.release() );
 }

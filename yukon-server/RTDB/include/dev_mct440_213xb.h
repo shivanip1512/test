@@ -62,10 +62,14 @@ protected:
 
     enum Functions
     {
+        FuncWrite_TOUSchedule1Pos               = 0x30,
+        FuncWrite_TOUSchedule1Len               = 15,
+        FuncWrite_TOUSchedule2Pos               = 0x31,
+        FuncWrite_TOUSchedule2Len               = 14,
         FuncWrite_TOUSchedule3Pos               = 0x33,
-        FuncWrite_TOUSchedule3Len               = 15,
+        FuncWrite_TOUSchedule3Len               = 10,
         FuncWrite_TOUSchedule4Pos               = 0x34,
-        FuncWrite_TOUSchedule4Len               = 15,
+        FuncWrite_TOUSchedule4Len               = 10,
 
         FuncRead_TOUSwitchSchedule12Part2Pos    = 0xb8,
         FuncRead_TOUSwitchSchedule12Part2Len    = 13,
@@ -143,10 +147,10 @@ protected:
     virtual long   resolveScheduleName             (const string & scheduleName);
     virtual string decodeDisconnectStatus          (const DSTRUCT &DSt);
 
-    virtual void createTOUDayScheduleString        (string &schedule, long (&times)[10], long (&rates)[11]);
-    virtual void parseTOUDayScheduleString         (string &schedule, long (&times)[10], long (&rates)[11]);
+    virtual void createTOUDayScheduleString        (string &schedule, long (&times)[9], long (&rates)[10]);
+    virtual void parseTOUDayScheduleString         (string &schedule, long (&times)[9], long (&rates)[10]);
 
-    virtual void createTOUScheduleConfig           (long (&daySchedule)[8], long (&times)[4][10], long (&rates)[4][11], long defaultRate, OUTMESS *&OutMessage, OutMessageList &outList);
+    virtual void createTOUScheduleConfig           (const long (&daySchedule)[8], const long (&times)[4][9], const long (&rates)[4][10], OUTMESS *&OutMessage, OutMessageList &outList);
 };
 
 
