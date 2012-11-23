@@ -2150,7 +2150,7 @@ BOOST_AUTO_TEST_CASE(test_getValueMappingForRead_IO_Read_1Dword)
         (empty)
         (empty)
         (empty)
-        (tuple_list_of(0,1,270))
+        (empty)
         (empty)
         (empty)
         (empty)
@@ -2289,7 +2289,7 @@ BOOST_AUTO_TEST_CASE(test_getValueMappingForRead_IO_Read_2Dwords)
         (empty)
         (empty)
         (empty)
-        (tuple_list_of(0,1,270)(5,1,128)(6,1,129)(7,2,130))
+        (tuple_list_of(5,1,128)(6,1,129)(7,2,130))
         (empty)
         (empty)
         (empty)
@@ -2437,7 +2437,7 @@ BOOST_AUTO_TEST_CASE(test_getValueMappingForRead_IO_Read_3Dwords)
         (empty)
         (empty)
         (empty)
-        (tuple_list_of(0,1,270)(5,1,128)(6,1,129)(7,2,130))
+        (tuple_list_of(5,1,128)(6,1,129)(7,2,130))
         (empty)
         (empty)
         (empty)
@@ -2597,7 +2597,7 @@ BOOST_AUTO_TEST_CASE(test_getValueMappingForRead_IO_Function_Read_1Dword)
         (empty)
         (empty)
         (empty)
-        (tuple_list_of(0,2,117)(2,1,122))
+        (tuple_list_of(0,2,117))
         (empty)
         (empty)
         (empty)
@@ -2662,7 +2662,7 @@ BOOST_AUTO_TEST_CASE(test_getValueMappingForRead_IO_Function_Read_2Dwords)
         (empty)
         (empty)
         (empty)
-        (tuple_list_of(0,2,117)(2,1,122))
+        (tuple_list_of(0,2,117))
         (empty)
         (empty)
         (empty)
@@ -2732,7 +2732,7 @@ BOOST_AUTO_TEST_CASE(test_getValueMappingForRead_IO_Function_Read_3Dwords)
         (empty)
         (empty)
         (empty)
-        (tuple_list_of(0,2,117)(2,1,122)(10,1,109))
+        (tuple_list_of(0,2,117)(10,1,109))
         (empty)
         (empty)
         (empty)
@@ -2782,10 +2782,10 @@ BOOST_AUTO_TEST_CASE(test_decodeGetConfigTOU)
     CtiDeviceBase::CtiMessageList  retList;
     CtiDeviceBase::OutMessageList  outList; // not use
 
-    string daySchedule1 = "10, 11, 12, 13, 14, 15, 16, 17, 18, 19, 0, 1, 2, 3, 0, 1, 2, 3, 0, 1, 2",
-           daySchedule2 = "20, 21, 22, 23, 24, 25, 26, 27, 28, 29, 1, 2, 3, 0, 1, 2, 3, 0, 1, 2, 3",
-           daySchedule3 = "30, 31, 32, 33, 34, 35, 36, 37, 38, 39, 2, 3, 0, 1, 2, 3, 0, 1, 2, 3, 0",
-           daySchedule4 = "40, 41, 42, 43, 44, 45, 46, 47, 48, 49, 3, 0, 1, 2, 3, 0, 1, 2, 3, 0, 1";
+    string daySchedule1 = "10, 11, 12, 13, 14, 15, 16, 17, 18, 0, 1, 2, 3, 0, 1, 2, 3, 0, 1",
+           daySchedule2 = "20, 21, 22, 23, 24, 25, 26, 27, 28, 1, 2, 3, 0, 1, 2, 3, 0, 1, 2",
+           daySchedule3 = "30, 31, 32, 33, 34, 35, 36, 37, 38, 2, 3, 0, 1, 2, 3, 0, 1, 2, 3",
+           daySchedule4 = "40, 41, 42, 43, 44, 45, 46, 47, 48, 3, 0, 1, 2, 3, 0, 1, 2, 3, 0";
 
     {
         test_Mct440_213xB test_dev;
@@ -2808,8 +2808,8 @@ BOOST_AUTO_TEST_CASE(test_decodeGetConfigTOU)
         test_dev.getDynamicInfo(CtiTableDynamicPaoInfo::Key_MCT_DaySchedule1, result1);
         test_dev.getDynamicInfo(CtiTableDynamicPaoInfo::Key_MCT_DaySchedule2, result2);
 
-        string expSchedule1 = "50, 51, 52, 53, 54, -1, -1, -1, -1, -1, 0, 0, 0, 0, 0, -1, -1, -1, -1, -1, 0",
-               expSchedule2 = "60, 61, 62, 63, 64, -1, -1, -1, -1, -1, 3, 3, 3, 3, 3, -1, -1, -1, -1, -1, 3",
+        string expSchedule1 = "50, 51, 52, 53, 54, -1, -1, -1, -1, 0, 0, 0, 0, 0, 0, -1, -1, -1, -1",
+               expSchedule2 = "60, 61, 62, 63, 64, -1, -1, -1, -1, 3, 3, 3, 3, 3, 3, -1, -1, -1, -1",
                expSchedule3 = "",
                expSchedule4 = "";
 
@@ -2822,7 +2822,7 @@ BOOST_AUTO_TEST_CASE(test_decodeGetConfigTOU)
     {
         test_Mct440_213xB test_dev;
 
-        unsigned char test_data[13] = {50, 51, 52, 53, 54, 0xf0, 0x00, 60, 61, 62, 63, 64, 0xff};
+        unsigned char test_data[13] = {50, 51, 52, 53, 0x00, 60, 61, 62, 63, 0xff};
 
         memcpy(InMessage.Buffer.DSt.Message, test_data, 13);
 
@@ -2842,8 +2842,8 @@ BOOST_AUTO_TEST_CASE(test_decodeGetConfigTOU)
         test_dev.getDynamicInfo(CtiTableDynamicPaoInfo::Key_MCT_DaySchedule3, result3);
         test_dev.getDynamicInfo(CtiTableDynamicPaoInfo::Key_MCT_DaySchedule4, result4);
 
-        string expSchedule1 = "-1, -1, -1, -1, -1, 50, 51, 52, 53, 54, -1, -1, -1, -1, -1, 0, 0, 0, 0, 0, -1",
-               expSchedule2 = "-1, -1, -1, -1, -1, 60, 61, 62, 63, 64, -1, -1, -1, -1, -1, 3, 3, 3, 3, 3, -1",
+        string expSchedule1 = "-1, -1, -1, -1, -1, 50, 51, 52, 53, -1, -1, -1, -1, -1, -1, 0, 0, 0, 0",
+               expSchedule2 = "-1, -1, -1, -1, -1, 60, 61, 62, 63, -1, -1, -1, -1, -1, -1, 3, 3, 3, 3",
                expSchedule3 = "",
                expSchedule4 = "";
 
@@ -2881,10 +2881,10 @@ BOOST_AUTO_TEST_CASE(test_decodeGetConfigTOU)
         test_dev.getDynamicInfo(CtiTableDynamicPaoInfo::Key_MCT_DaySchedule3, result3);
         test_dev.getDynamicInfo(CtiTableDynamicPaoInfo::Key_MCT_DaySchedule4, result4);
 
-        string expSchedule1 = "50, 51, 52, 53, 54, 15, 16, 17, 18, 19, 0, 0, 0, 0, 0, 1, 2, 3, 0, 1, 0",
-               expSchedule2 = "60, 61, 62, 63, 64, 25, 26, 27, 28, 29, 3, 3, 3, 3, 3, 2, 3, 0, 1, 2, 3",
-               expSchedule3 = "30, 31, 32, 33, 34, 35, 36, 37, 38, 39, 2, 3, 0, 1, 2, 3, 0, 1, 2, 3, 0",
-               expSchedule4 = "40, 41, 42, 43, 44, 45, 46, 47, 48, 49, 3, 0, 1, 2, 3, 0, 1, 2, 3, 0, 1";
+        string expSchedule1 = "50, 51, 52, 53, 54, 15, 16, 17, 18, 0, 0, 0, 0, 0, 0, 2, 3, 0, 1",
+               expSchedule2 = "60, 61, 62, 63, 64, 25, 26, 27, 28, 3, 3, 3, 3, 3, 3, 3, 0, 1, 2",
+               expSchedule3 = "30, 31, 32, 33, 34, 35, 36, 37, 38, 2, 3, 0, 1, 2, 3, 0, 1, 2, 3",
+               expSchedule4 = "40, 41, 42, 43, 44, 45, 46, 47, 48, 3, 0, 1, 2, 3, 0, 1, 2, 3, 0";
 
         BOOST_CHECK_EQUAL( expSchedule1, result1);
         BOOST_CHECK_EQUAL( expSchedule2, result2);
@@ -2900,7 +2900,7 @@ BOOST_AUTO_TEST_CASE(test_decodeGetConfigTOU)
         test_dev.setDynamicInfo(CtiTableDynamicPaoInfo::Key_MCT_DaySchedule3, daySchedule3);
         test_dev.setDynamicInfo(CtiTableDynamicPaoInfo::Key_MCT_DaySchedule4, daySchedule4);
 
-        unsigned char test_data[13] = {50, 51, 52, 53, 54, 0xf0, 0x00, 60, 61, 62, 63, 64, 0xff};
+        unsigned char test_data[13] = {50, 51, 52, 53, 0x00, 60, 61, 62, 63, 0xff};
 
         memcpy(InMessage.Buffer.DSt.Message, test_data, 13);
 
@@ -2920,10 +2920,10 @@ BOOST_AUTO_TEST_CASE(test_decodeGetConfigTOU)
         test_dev.getDynamicInfo(CtiTableDynamicPaoInfo::Key_MCT_DaySchedule3, result3);
         test_dev.getDynamicInfo(CtiTableDynamicPaoInfo::Key_MCT_DaySchedule4, result4);
 
-        string expSchedule1 = "10, 11, 12, 13, 14, 50, 51, 52, 53, 54, 0, 1, 2, 3, 0, 0, 0, 0, 0, 0, 2",
-               expSchedule2 = "20, 21, 22, 23, 24, 60, 61, 62, 63, 64, 1, 2, 3, 0, 1, 3, 3, 3, 3, 3, 3",
-               expSchedule3 = "30, 31, 32, 33, 34, 35, 36, 37, 38, 39, 2, 3, 0, 1, 2, 3, 0, 1, 2, 3, 0",
-               expSchedule4 = "40, 41, 42, 43, 44, 45, 46, 47, 48, 49, 3, 0, 1, 2, 3, 0, 1, 2, 3, 0, 1";
+        string expSchedule1 = "10, 11, 12, 13, 14, 50, 51, 52, 53, 0, 1, 2, 3, 0, 1, 0, 0, 0, 0",
+               expSchedule2 = "20, 21, 22, 23, 24, 60, 61, 62, 63, 1, 2, 3, 0, 1, 2, 3, 3, 3, 3",
+               expSchedule3 = "30, 31, 32, 33, 34, 35, 36, 37, 38, 2, 3, 0, 1, 2, 3, 0, 1, 2, 3",
+               expSchedule4 = "40, 41, 42, 43, 44, 45, 46, 47, 48, 3, 0, 1, 2, 3, 0, 1, 2, 3, 0";
 
         BOOST_CHECK_EQUAL( expSchedule1, result1);
         BOOST_CHECK_EQUAL( expSchedule2, result2);
@@ -2959,10 +2959,10 @@ BOOST_AUTO_TEST_CASE(test_decodeGetConfigTOU)
         test_dev.getDynamicInfo(CtiTableDynamicPaoInfo::Key_MCT_DaySchedule3, result3);
         test_dev.getDynamicInfo(CtiTableDynamicPaoInfo::Key_MCT_DaySchedule4, result4);
 
-        string expSchedule1 = "10, 11, 12, 13, 14, 15, 16, 17, 18, 19, 0, 1, 2, 3, 0, 1, 2, 3, 0, 1, 2",
-               expSchedule2 = "20, 21, 22, 23, 24, 25, 26, 27, 28, 29, 1, 2, 3, 0, 1, 2, 3, 0, 1, 2, 3",
-               expSchedule3 = "50, 51, 52, 53, 54, 35, 36, 37, 38, 39, 0, 0, 0, 0, 0, 3, 0, 1, 2, 3, 0",
-               expSchedule4 = "60, 61, 62, 63, 64, 45, 46, 47, 48, 49, 3, 3, 3, 3, 3, 0, 1, 2, 3, 0, 3";
+        string expSchedule1 = "10, 11, 12, 13, 14, 15, 16, 17, 18, 0, 1, 2, 3, 0, 1, 2, 3, 0, 1",
+               expSchedule2 = "20, 21, 22, 23, 24, 25, 26, 27, 28, 1, 2, 3, 0, 1, 2, 3, 0, 1, 2",
+               expSchedule3 = "50, 51, 52, 53, 54, 35, 36, 37, 38, 0, 0, 0, 0, 0, 0, 0, 1, 2, 3",
+               expSchedule4 = "60, 61, 62, 63, 64, 45, 46, 47, 48, 3, 3, 3, 3, 3, 3, 1, 2, 3, 0";
 
         BOOST_CHECK_EQUAL( expSchedule1, result1);
         BOOST_CHECK_EQUAL( expSchedule2, result2);
@@ -2978,7 +2978,7 @@ BOOST_AUTO_TEST_CASE(test_decodeGetConfigTOU)
         test_dev.setDynamicInfo(CtiTableDynamicPaoInfo::Key_MCT_DaySchedule3, daySchedule3);
         test_dev.setDynamicInfo(CtiTableDynamicPaoInfo::Key_MCT_DaySchedule4, daySchedule4);
 
-        unsigned char test_data[13] = {50, 51, 52, 53, 54, 0xf0, 0x00, 60, 61, 62, 63, 64, 0xff};
+        unsigned char test_data[13] = {50, 51, 52, 53, 0x00, 60, 61, 62, 63, 0xff};
 
         memcpy(InMessage.Buffer.DSt.Message, test_data, 13);
 
@@ -2998,10 +2998,10 @@ BOOST_AUTO_TEST_CASE(test_decodeGetConfigTOU)
         test_dev.getDynamicInfo(CtiTableDynamicPaoInfo::Key_MCT_DaySchedule3, result3);
         test_dev.getDynamicInfo(CtiTableDynamicPaoInfo::Key_MCT_DaySchedule4, result4);
 
-        string expSchedule1 = "10, 11, 12, 13, 14, 15, 16, 17, 18, 19, 0, 1, 2, 3, 0, 1, 2, 3, 0, 1, 2",
-               expSchedule2 = "20, 21, 22, 23, 24, 25, 26, 27, 28, 29, 1, 2, 3, 0, 1, 2, 3, 0, 1, 2, 3",
-               expSchedule3 = "30, 31, 32, 33, 34, 50, 51, 52, 53, 54, 2, 3, 0, 1, 2, 0, 0, 0, 0, 0, 0",
-               expSchedule4 = "40, 41, 42, 43, 44, 60, 61, 62, 63, 64, 3, 0, 1, 2, 3, 3, 3, 3, 3, 3, 1";
+        string expSchedule1 = "10, 11, 12, 13, 14, 15, 16, 17, 18, 0, 1, 2, 3, 0, 1, 2, 3, 0, 1",
+               expSchedule2 = "20, 21, 22, 23, 24, 25, 26, 27, 28, 1, 2, 3, 0, 1, 2, 3, 0, 1, 2",
+               expSchedule3 = "30, 31, 32, 33, 34, 50, 51, 52, 53, 2, 3, 0, 1, 2, 3, 0, 0, 0, 0",
+               expSchedule4 = "40, 41, 42, 43, 44, 60, 61, 62, 63, 3, 0, 1, 2, 3, 0, 3, 3, 3, 3";
 
         BOOST_CHECK_EQUAL( expSchedule1, result1);
         BOOST_CHECK_EQUAL( expSchedule2, result2);
@@ -3616,22 +3616,17 @@ BOOST_FIXTURE_TEST_SUITE(command_executions, executePutConfig_helper)
     {
         test_DeviceConfig   test_cfg;
 
-        test_cfg.insertValue("monday",   "schedule 1");
-        test_cfg.insertValue("tuesday",  "schedule 2");
-        test_cfg.insertValue("wenesday", "schedule 3");
-        test_cfg.insertValue("thursday", "schedule 4");
-        test_cfg.insertValue("friday",   "schedule 1");
-        test_cfg.insertValue("saturday", "schedule 2");
-        test_cfg.insertValue("sunday",   "schedule 3");
+        test_cfg.insertValue("sunday",   "schedule 1");
+        test_cfg.insertValue("weekdays", "schedule 2");
+        test_cfg.insertValue("saturday", "schedule 3");
         test_cfg.insertValue("holiday",  "schedule 4");
-
 
         char cfg_key[20];
         char cfg_val[10];
 
         for (int i=1; i<=4; i++)
         {
-            for (int j=1; j<=10; j++)
+            for (int j=1; j<=9; j++)
             {
                 sprintf(cfg_key, "schedule%itime%i",i,j);
                 sprintf(cfg_val, "%i:%02i",j,i*5);
@@ -3642,11 +3637,13 @@ BOOST_FIXTURE_TEST_SUITE(command_executions, executePutConfig_helper)
 
         for (int i=1; i<=4; i++)
         {
-            for (int j=0; j<=10; j++)
+            for (int j=0; j<=9; j++)
             {
                 sprintf(cfg_key, "schedule%irate%i",i,j);
 
-                switch(j%4)
+                int offset = (i-1) % 2;
+
+                switch((j+offset)%4)
                 {
                 case 0:  test_cfg.insertValue(cfg_key, "A"); break;
                 case 1:  test_cfg.insertValue(cfg_key, "B"); break;
@@ -3673,7 +3670,7 @@ BOOST_FIXTURE_TEST_SUITE(command_executions, executePutConfig_helper)
             OUTMESS* outmsg = outList.front();
 
             std::vector<unsigned char> expected = boost::assign::list_of
-                    (0xd3)(0xd2)(0x41)(0x0c)(0x0c)(0x0c)(0x0c)(0x99)(0x39)(0x46)(0x0c)(0x0c)(0x0c)(0x0c)(0x39);
+                    (0xe0)(0x04)(0x41)(0x0c)(0x0c)(0x0c)(0x0c)(0x94)(0xe4)(0x46)(0x0c)(0x0c)(0x0c)(0x0c)(0x39);
 
             BOOST_CHECK_EQUAL(outmsg->Buffer.BSt.Function, 0x30);
             BOOST_CHECK_EQUAL(outmsg->Buffer.BSt.Length  , expected.size());
@@ -3690,7 +3687,7 @@ BOOST_FIXTURE_TEST_SUITE(command_executions, executePutConfig_helper)
             OUTMESS* outmsg = outList.front();
 
             std::vector<unsigned char> expected = boost::assign::list_of
-                    (0x4b)(0x0c)(0x0c)(0x0c)(0x0c)(0x09)(0x39)(0x50)(0x0c)(0x0c)(0x0c)(0x0c)(0x09)(0x39)(0x00);
+                    (0x4b)(0x0c)(0x0c)(0x0c)(0x0c)(0x04)(0xe4)(0x50)(0x0c)(0x0c)(0x0c)(0x0c)(0x09)(0x39);
 
             BOOST_CHECK_EQUAL(outmsg->Buffer.BSt.Function, 0x31);
             BOOST_CHECK_EQUAL(outmsg->Buffer.BSt.Length  , expected.size());
@@ -3707,7 +3704,7 @@ BOOST_FIXTURE_TEST_SUITE(command_executions, executePutConfig_helper)
             OUTMESS* outmsg = outList.front();
 
             std::vector<unsigned char> expected = boost::assign::list_of
-                    (0x0c)(0x0c)(0x0c)(0x0c)(0x0c)(0x02)(0x4c)(0x0c)(0x0c)(0x0c)(0x0c)(0x0c)(0x02)(0x4c)(0x00);
+                    (0x0c)(0x0c)(0x0c)(0x0c)(0x4e)(0x0c)(0x0c)(0x0c)(0x0c)(0x93);
 
             BOOST_CHECK_EQUAL(outmsg->Buffer.BSt.Function, 0x33);
             BOOST_CHECK_EQUAL(outmsg->Buffer.BSt.Length  , expected.size());
@@ -3724,7 +3721,7 @@ BOOST_FIXTURE_TEST_SUITE(command_executions, executePutConfig_helper)
             OUTMESS* outmsg = outList.front();
 
             std::vector<unsigned char> expected = boost::assign::list_of
-                    (0x0c)(0x0c)(0x0c)(0x0c)(0x0c)(0x02)(0x4c)(0x0c)(0x0c)(0x0c)(0x0c)(0x0c)(0x02)(0x4c)(0x00);
+                    (0x0c)(0x0c)(0x0c)(0x0c)(0x4e)(0x0c)(0x0c)(0x0c)(0x0c)(0x93);
 
             BOOST_CHECK_EQUAL(outmsg->Buffer.BSt.Function, 0x34);
             BOOST_CHECK_EQUAL(outmsg->Buffer.BSt.Length  , expected.size());
@@ -3929,12 +3926,11 @@ BOOST_FIXTURE_TEST_SUITE(command_executions, executePutConfig_helper)
         test_Mct440_213xB test_dev;
 
         {
-            CtiCommandParser parse("putconfig EMETCON tou 12341234 "
-                                   "schedule 1 a/00:00 b/01:00 c/01:05 d/01:10 a/01:15 b/01:20 c/01:25 d/01:30 a/01:35 b/01:40 c/01:45 "
-                                   "schedule 2 b/00:00 c/02:00 d/02:05 a/02:10 b/02:15 c/02:20 d/02:25 a/02:30 b/02:35 c/02:40 d/02:45 "
-                                   "schedule 3 c/00:00 d/03:00 a/03:05 b/03:10 c/03:15 d/03:20 a/03:25 b/03:30 c/03:35 d/03:40 a/03:45 "
-                                   "schedule 4 d/00:00 a/04:00 b/04:05 c/04:10 d/04:15 a/04:20 b/04:25 c/04:30 d/04:35 a/04:40 b/04:45 "
-                                   "default a");
+            CtiCommandParser parse("putconfig EMETCON tou 1234 "
+                                   "schedule 1 a/00:00 b/01:00 c/01:05 d/01:10 a/01:15 b/01:20 c/01:25 d/01:30 a/01:35 b/01:40 "
+                                   "schedule 2 b/00:00 c/02:00 d/02:05 a/02:10 b/02:15 c/02:20 d/02:25 a/02:30 b/02:35 c/02:40 "
+                                   "schedule 3 c/00:00 d/03:00 a/03:05 b/03:10 c/03:15 d/03:20 a/03:25 b/03:30 c/03:35 d/03:40 "
+                                   "schedule 4 d/00:00 a/04:00 b/04:05 c/04:10 d/04:15 a/04:20 b/04:25 c/04:30 d/04:35 a/04:40");
 
             CtiOutMessage *outmsg = CTIDBG_new OUTMESS;
 
@@ -3949,7 +3945,7 @@ BOOST_FIXTURE_TEST_SUITE(command_executions, executePutConfig_helper)
             BOOST_CHECK_EQUAL(outmsg->Sequence, Cti::Protocols::EmetconProtocol::PutConfig_TOU);
 
             std::vector<unsigned char> expected = boost::assign::list_of
-                    (0xe4)(0xe4)(0x0c)(0x01)(0x01)(0x01)(0x01)(0x94)(0xe4)(0x18)(0x01)(0x01)(0x01)(0x01)(0x39);
+                    (0xe0)(0x04)(0x0c)(0x01)(0x01)(0x01)(0x01)(0x94)(0xe4)(0x18)(0x01)(0x01)(0x01)(0x01)(0x39);
 
             BOOST_CHECK_EQUAL(outmsg->Buffer.BSt.Function, 0x030           );
             BOOST_CHECK_EQUAL(outmsg->Buffer.BSt.Length  , expected.size() );
@@ -3967,7 +3963,7 @@ BOOST_FIXTURE_TEST_SUITE(command_executions, executePutConfig_helper)
             BOOST_CHECK_EQUAL(outmsg->Sequence, Cti::Protocols::EmetconProtocol::PutConfig_TOU);
 
             std::vector<unsigned char> expected = boost::assign::list_of
-                    (0x24)(0x01)(0x01)(0x01)(0x01)(0x0e)(0x4e)(0x30)(0x01)(0x01)(0x01)(0x01)(0x03)(0x93)(0x00);
+                    (0x24)(0x01)(0x01)(0x01)(0x01)(0x0e)(0x4e)(0x30)(0x01)(0x01)(0x01)(0x01)(0x03)(0x93);
 
             BOOST_CHECK_EQUAL(outmsg->Buffer.BSt.Function, 0x031           );
             BOOST_CHECK_EQUAL(outmsg->Buffer.BSt.Length  , expected.size() );
@@ -3985,7 +3981,7 @@ BOOST_FIXTURE_TEST_SUITE(command_executions, executePutConfig_helper)
             BOOST_CHECK_EQUAL(outmsg->Sequence, Cti::Protocols::EmetconProtocol::PutConfig_TOU);
 
             std::vector<unsigned char> expected = boost::assign::list_of
-                    (0x01)(0x01)(0x01)(0x01)(0x01)(0x09)(0x38)(0x01)(0x01)(0x01)(0x01)(0x01)(0x0e)(0x4c)(0x00);
+                    (0x01)(0x01)(0x01)(0x01)(0x4e)(0x01)(0x01)(0x01)(0x01)(0x93);
 
             BOOST_CHECK_EQUAL(outmsg->Buffer.BSt.Function, 0x033           );
             BOOST_CHECK_EQUAL(outmsg->Buffer.BSt.Length  , expected.size() );
@@ -4003,7 +3999,7 @@ BOOST_FIXTURE_TEST_SUITE(command_executions, executePutConfig_helper)
             BOOST_CHECK_EQUAL(outmsg->Sequence, Cti::Protocols::EmetconProtocol::PutConfig_TOU);
 
             std::vector<unsigned char> expected = boost::assign::list_of
-                    (0x01)(0x01)(0x01)(0x01)(0x01)(0x03)(0x90)(0x01)(0x01)(0x01)(0x01)(0x01)(0x04)(0xe4)(0x00);
+                    (0x01)(0x01)(0x01)(0x01)(0xe4)(0x01)(0x01)(0x01)(0x01)(0x39);
 
             BOOST_CHECK_EQUAL(outmsg->Buffer.BSt.Function, 0x034           );
             BOOST_CHECK_EQUAL(outmsg->Buffer.BSt.Length  , expected.size() );
