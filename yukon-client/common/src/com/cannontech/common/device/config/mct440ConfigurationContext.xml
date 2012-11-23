@@ -47,15 +47,10 @@
                 <prop key="Phase Loss Threshold">phaseLossThreshold</prop>
                 <prop key="Phase Loss Duration">phaseLossDuration</prop>
                 <!-- touWith10RatesCategory -->
-                <prop key="Default Rate">tou.defaultRate</prop>
-                <prop key="Monday">tou.monday</prop>
-                <prop key="Tuesday">tou.tuesday</prop>
-                <prop key="Wednesday">tou.wednesday</prop>
-                <prop key="Thursday">tou.thursday</prop>
-                <prop key="Friday">tou.friday</prop>
-                <prop key="Saturday">tou.saturday</prop>
-                <prop key="sunday">tou.sunday</prop>
-                <prop key="holiday">tou.holiday</prop>
+                <prop key="Weekdays">tou.days.values[weekdays]</prop>
+                <prop key="Saturday">tou.days.values[saturday]</prop>
+                <prop key="Sunday">tou.days.values[sunday]</prop>
+                <prop key="Holiday">tou.days.values[holiday]</prop>
                 <prop key="Schedule1Time0">tou.scheduleList[0].timeRateList[0].time</prop>
                 <prop key="Schedule1Rate0">tou.scheduleList[0].timeRateList[0].rate</prop>
                 <prop key="Schedule1Time1">tou.scheduleList[0].timeRateList[1].time</prop>
@@ -76,8 +71,6 @@
                 <prop key="Schedule1Rate8">tou.scheduleList[0].timeRateList[8].rate</prop>
                 <prop key="Schedule1Time9">tou.scheduleList[0].timeRateList[9].time</prop>
                 <prop key="Schedule1Rate9">tou.scheduleList[0].timeRateList[9].rate</prop>
-                <prop key="Schedule1Time10">tou.scheduleList[0].timeRateList[10].time</prop>
-                <prop key="Schedule1Rate10">tou.scheduleList[0].timeRateList[10].rate</prop>
                 <prop key="Schedule2Time0">tou.scheduleList[1].timeRateList[0].time</prop>
                 <prop key="Schedule2Rate0">tou.scheduleList[1].timeRateList[0].rate</prop>
                 <prop key="Schedule2Time1">tou.scheduleList[1].timeRateList[1].time</prop>
@@ -98,8 +91,6 @@
                 <prop key="Schedule2Rate8">tou.scheduleList[1].timeRateList[8].rate</prop>
                 <prop key="Schedule2Time9">tou.scheduleList[1].timeRateList[9].time</prop>
                 <prop key="Schedule2Rate9">tou.scheduleList[1].timeRateList[9].rate</prop>
-                <prop key="Schedule2Time10">tou.scheduleList[1].timeRateList[10].time</prop>
-                <prop key="Schedule2Rate10">tou.scheduleList[1].timeRateList[10].rate</prop>
                 <prop key="Schedule3Time0">tou.scheduleList[2].timeRateList[0].time</prop>
                 <prop key="Schedule3Rate0">tou.scheduleList[2].timeRateList[0].rate</prop>
                 <prop key="Schedule3Time1">tou.scheduleList[2].timeRateList[1].time</prop>
@@ -120,8 +111,6 @@
                 <prop key="Schedule3Rate8">tou.scheduleList[2].timeRateList[8].rate</prop>
                 <prop key="Schedule3Time9">tou.scheduleList[2].timeRateList[9].time</prop>
                 <prop key="Schedule3Rate9">tou.scheduleList[2].timeRateList[9].rate</prop>
-                <prop key="Schedule3Time10">tou.scheduleList[2].timeRateList[10].time</prop>
-                <prop key="Schedule3Rate10">tou.scheduleList[2].timeRateList[10].rate</prop>
                 <prop key="Schedule4Time0">tou.scheduleList[3].timeRateList[0].time</prop>
                 <prop key="Schedule4Rate0">tou.scheduleList[3].timeRateList[0].rate</prop>
                 <prop key="Schedule4Time1">tou.scheduleList[3].timeRateList[1].time</prop>
@@ -142,8 +131,6 @@
                 <prop key="Schedule4Rate8">tou.scheduleList[3].timeRateList[8].rate</prop>
                 <prop key="Schedule4Time9">tou.scheduleList[3].timeRateList[9].time</prop>
                 <prop key="Schedule4Rate9">tou.scheduleList[3].timeRateList[9].rate</prop>
-                <prop key="Schedule4Time10">tou.scheduleList[3].timeRateList[10].time</prop>
-                <prop key="Schedule4Rate10">tou.scheduleList[3].timeRateList[10].rate</prop>
             </props>
         </property>
     </bean>
@@ -408,110 +395,58 @@
             <list>
                 <bean class="com.cannontech.web.input.InputGroup">
                     <property name="field" value="tou" />
-                    <property name="renderer" value="touType.jsp" />
+                    <property name="renderer" value="flexibleTouType.jsp" />
                     <property name="inputMap">
                         <map>
                             <entry key="scheduleList[0]" value-ref="mct440Schedule" />
                             <entry key="scheduleList[1]" value-ref="mct440Schedule" />
                             <entry key="scheduleList[2]" value-ref="mct440Schedule" />
                             <entry key="scheduleList[3]" value-ref="mct440Schedule" />
-                            
-                            <entry key="defaultRate">
-                                <bean class="com.cannontech.web.input.InputBase">
-                                    <property name="displayName" value="Default Rate" />
-                                    <property name="field" value="defaultRate" />
-                                    <property name="type">
-                                        <bean class="com.cannontech.web.input.type.DelegatingEnumeratedType">
-                                            <property name="enumeratedType" ref="inputStringType" />
-                                            <property name="optionList">
-                                                <list>
-                                                    <bean class="com.cannontech.web.input.type.InputOption">
-                                                        <property name="value" value="A" />
-                                                    </bean>
-                                                    <bean class="com.cannontech.web.input.type.InputOption">
-                                                        <property name="value" value="B" />
-                                                    </bean>
-                                                    <bean class="com.cannontech.web.input.type.InputOption">
-                                                        <property name="value" value="C" />
-                                                    </bean>
-                                                    <bean class="com.cannontech.web.input.type.InputOption">
-                                                        <property name="value" value="D" />
-                                                    </bean>
-                                                </list>
-                                            </property>
-                                        </bean>
-                                    </property>
-                                    <property name="security" ref="configEditSecurity" />
-                                </bean>
-                            </entry>
-                            <entry key="holiday">
-                                <bean class="com.cannontech.web.input.InputBase">
-                                    <property name="displayName" value="Holiday" />
-                                    <property name="field" value="holiday" />
-                                    <property name="type" ref="scheduleList" />
-                                    <property name="security" ref="configEditSecurity" />
-                                </bean>
-                            </entry>
-                            <entry key="monday">
-                                <bean class="com.cannontech.web.input.InputBase">
-                                    <property name="displayName" value="Monday" />
-                                    <property name="field" value="monday" />
-                                    <property name="type" ref="scheduleList" />
-                                    <property name="security" ref="configEditSecurity" />
-                                </bean>
-                            </entry>
-                            <entry key="tuesday">
-                                <bean class="com.cannontech.web.input.InputBase">
-                                    <property name="displayName" value="Tuesday" />
-                                    <property name="field" value="tuesday" />
-                                    <property name="type" ref="scheduleList" />
-                                    <property name="security" ref="configEditSecurity" />
-                                </bean>
-                            </entry>
-                            <entry key="wednesday">
-                                <bean class="com.cannontech.web.input.InputBase">
-                                    <property name="displayName" value="Wednesday" />
-                                    <property name="field" value="wednesday" />
-                                    <property name="type" ref="scheduleList" />
-                                    <property name="security" ref="configEditSecurity" />
-                                </bean>
-                            </entry>
-                            <entry key="thursday">
-                                <bean class="com.cannontech.web.input.InputBase">
-                                    <property name="displayName" value="Thursday" />
-                                    <property name="field" value="thursday" />
-                                    <property name="type" ref="scheduleList" />
-                                    <property name="security" ref="configEditSecurity" />
-                                </bean>
-                            </entry>
-                            <entry key="friday">
-                                <bean class="com.cannontech.web.input.InputBase">
-                                    <property name="displayName" value="Friday" />
-                                    <property name="field" value="friday" />
-                                    <property name="type" ref="scheduleList" />
-                                    <property name="security" ref="configEditSecurity" />
-                                </bean>
-                            </entry>
-                            <entry key="saturday">
-                                <bean class="com.cannontech.web.input.InputBase">
-                                    <property name="displayName" value="Saturday" />
-                                    <property name="field" value="saturday" />
-                                    <property name="type" ref="scheduleList" />
-                                    <property name="security" ref="configEditSecurity" />
-                                </bean>
-                            </entry>
-                            <entry key="sunday">
-                                <bean class="com.cannontech.web.input.InputBase">
-                                    <property name="displayName" value="Sunday" />
-                                    <property name="field" value="sunday" />
-                                    <property name="type" ref="scheduleList" />
-                                    <property name="security" ref="configEditSecurity" />
-                                </bean>
-                            </entry>
+                            <entry key="days" value-ref="mct440TouDays"/>
                         </map>
                     </property>
                 </bean>
             </list>
+        </property>
+    </bean>
+
+    <bean id="mct440TouDays" class="com.cannontech.web.input.InputGroup">
+        <property name="renderer" value="touDaysType.jsp" />
+        <property name="inputMap">
+            <map>
+                <entry key="values[holiday]">
+                    <bean class="com.cannontech.web.input.InputBase">
+                        <property name="displayName" value="Holiday" />
+                        <property name="field" value="values[holiday]" />
+                        <property name="type" ref="scheduleList" />
+                        <property name="security" ref="configEditSecurity" />
+                    </bean>
+                </entry>
+                <entry key="values[weekdays]">
+                    <bean class="com.cannontech.web.input.InputBase">
+                        <property name="displayName" value="Monday-Friday" />
+                        <property name="field" value="values[weekdays]" />
+                        <property name="type" ref="scheduleList" />
+                        <property name="security" ref="configEditSecurity" />
+                    </bean>
+                </entry>
+                <entry key="values[saturday]">
+                    <bean class="com.cannontech.web.input.InputBase">
+                        <property name="displayName" value="Saturday" />
+                        <property name="field" value="values[saturday]" />
+                        <property name="type" ref="scheduleList" />
+                        <property name="security" ref="configEditSecurity" />
+                    </bean>
+                </entry>
+                <entry key="values[sunday]">
+                    <bean class="com.cannontech.web.input.InputBase">
+                        <property name="displayName" value="Sunday" />
+                        <property name="field" value="values[sunday]" />
+                        <property name="type" ref="scheduleList" />
+                        <property name="security" ref="configEditSecurity" />
+                    </bean>
+                </entry>
+            </map>
         </property>
     </bean>
 
@@ -579,7 +514,6 @@
                 <entry key="timeRateList[7]" value-ref="timeRate" />
                 <entry key="timeRateList[8]" value-ref="timeRate" />
                 <entry key="timeRateList[9]" value-ref="timeRate" />
-                <entry key="timeRateList[10]" value-ref="timeRate" />
             </map>
         </property>
     </bean>

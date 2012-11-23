@@ -1,7 +1,7 @@
 package com.cannontech.common.device.config.model;
 
 import com.cannontech.common.device.config.dao.ConfigurationType;
-import com.cannontech.common.device.config.model.tou.Tou;
+import com.cannontech.common.device.config.model.tou.FlexibleTou;
 
 public class MCT440Configuration extends ConfigurationBase {
 
@@ -33,7 +33,7 @@ public class MCT440Configuration extends ConfigurationBase {
     private Integer voltageProfileInterval = 60;
 
     // TOU
-    private Tou tou = new Tou(10);
+    private FlexibleTou tou = new FlexibleTou(9);
 
     public Integer getTimeZoneOffset() {
         return timeZoneOffset;
@@ -115,11 +115,11 @@ public class MCT440Configuration extends ConfigurationBase {
         this.voltageProfileInterval = voltageProfileInterval;
     }
 
-    public Tou getTou() {
+    public FlexibleTou getTou() {
         return tou;
     }
 
-    public void setTou(Tou tou) {
+    public void setTou(FlexibleTou tou) {
         this.tou = tou;
     }
 
