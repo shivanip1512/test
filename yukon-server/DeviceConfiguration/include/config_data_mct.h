@@ -23,6 +23,7 @@ public:
     static const std::string SaturdaySchedule;
     static const std::string SundaySchedule;
     static const std::string HolidaySchedule;
+    static const std::string WeekdaysSchedule;
     static const std::string DefaultTOURate;
 
     static const std::string Schedule1Time1;

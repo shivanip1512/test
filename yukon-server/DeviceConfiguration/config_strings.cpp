@@ -21,6 +21,7 @@ const string MCTStrings::FridaySchedule = "friday";
 const string MCTStrings::SaturdaySchedule = "saturday";
 const string MCTStrings::SundaySchedule = "sunday";
 const string MCTStrings::HolidaySchedule = "holiday";
+const string MCTStrings::WeekdaysSchedule = "weekdays";
 const string MCTStrings::DefaultTOURate = "default rate";
 
 const string MCTStrings::Schedule1Time1 = "schedule1time1";
