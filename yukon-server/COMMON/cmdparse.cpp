@@ -1889,7 +1889,7 @@ void  CtiCommandParser::doParseGetConfig(const string &_CmdStr)
 
 void  CtiCommandParser::doParsePutConfig(const string &_CmdStr)
 {
-    static const boost::regex re_tou("tou [0-9]+( schedule [0-9]+( [a-z]/[0-9]+:[0-9]+)*)* default [a-z]");
+    static const boost::regex re_tou("tou [0-9]+( schedule [0-9]+( [a-z]/[0-9]+:[0-9]+)*)*( default [a-z])?");
 
     CtiString CmdStr(_CmdStr);
     CtiString   temp2;
