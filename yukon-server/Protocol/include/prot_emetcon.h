@@ -108,8 +108,6 @@ public:
         PutStatus_PeakOff,
         PutStatus_SetTOUHolidayRate,                            /* Set TOU Holiday Rate Active                          */
         PutStatus_ClearTOUHolidayRate,                          /* Clear TOU Holiday Rate and Resort to Normal Rate     */
-        PutStatus_SetDSTActive,
-        PutStatus_SetDSTInactive,
 
         // GetConfig commands
         GetConfig_Default,
@@ -149,7 +147,6 @@ public:
         GetConfig_WaterMeterReadInterval,
         GetConfig_PhaseLossThreshold,
         GetConfig_AlarmMask,
-        GetConfig_TimeZoneOffset,
         GetConfig_TimeAdjustTolerance,
 
         // PutConfig commands
