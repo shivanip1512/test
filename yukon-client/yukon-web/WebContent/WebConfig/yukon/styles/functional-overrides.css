@@ -2,7 +2,7 @@
 /* This style sheet describes the typical formatting of all HTML 4.0 ([HTML40]) elements based on extensive research into current UA practice. */
 /* Developers are encouraged to use it as a default style sheet in their implementations. */
 
-table {display:table;border-collapse:separate;border-spacing:none}
+table {display:table;border-collapse:collapse;border-spacing:none}
 tbody {display:table-row-group}
 tr{display:table-row}
 td {display:table-cell;vertical-align:top}

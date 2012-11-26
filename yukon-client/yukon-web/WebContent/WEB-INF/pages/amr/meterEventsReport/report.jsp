@@ -199,7 +199,7 @@
 					<jsTree:inlineTree id="eventTree"
 						treeCss="/WebConfig/yukon/styles/lib/dynatree/deviceGroup.css"
 						treeParameters="{checkbox: true, selectMode: 3, onPostInit: treeInit()}"
-						width="500" height="300" includeControlBar="true" />
+						width="500" includeControlBar="true" />
 		
 					<div class="actionArea">
 						<cti:button nameKey="ok" onclick="updateEventTypesNum()" />

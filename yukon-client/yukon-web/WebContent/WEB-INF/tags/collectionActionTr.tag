@@ -12,7 +12,7 @@
         <form method="get" action="${action}">
             <input type="hidden" name="${pageScope.inputName}" value="${pageScope.inputValue}" />
             <cti:deviceCollection deviceCollection="${deviceCollection}" />
-            <input type="submit" value="${buttonValue}" style="width:140px;"/>
+            <input type="submit" value="${buttonValue}"/>
         </form>
     </td>
     <td style="vertical-align: top;padding-right: 1px;padding-bottom: 10px;">${description}</td>

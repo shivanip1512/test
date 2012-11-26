@@ -12,8 +12,6 @@
 <cti:standardPage module="operator" page="callList">
 <tags:setFormEditMode mode="${mode}"/>
 
-	<cti:includeCss link="/WebConfig/yukon/styles/operator/callTracking.css"/>
-
 	<tags:boxContainer2 nameKey="callsBox">
 	<table class="compactResultsTable callListTable rowHighlighting">
 	

@@ -59,7 +59,7 @@
         <%-- DATA ROWS --%>
     <c:if test="${meterSearchResults.hitCount > 0}">
         <c:set var="linkHeaderHtml">
-            <span class="navLink"> 
+            <span class="navLink fr"> 
                 <cti:link href="/spring/bulk/collectionActions" key="yukon.web.modules.amr.deviceSelection.performCollectionAction">
                     <cti:mapParam value="${deviceGroupCollection.collectionParameters}" />
                 </cti:link> 

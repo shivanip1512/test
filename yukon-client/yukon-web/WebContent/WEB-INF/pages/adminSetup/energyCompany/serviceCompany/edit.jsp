@@ -8,7 +8,6 @@
 
 <cti:standardPage module="adminSetup" page="serviceCompany.${mode}">
     <cti:url var="userInfoUrl" value="${baseUrl}/userInfo"/>
-    <cti:includeCss link="/WebConfig/yukon/styles/admin/energy-company.css"/>
     
         <script>
         

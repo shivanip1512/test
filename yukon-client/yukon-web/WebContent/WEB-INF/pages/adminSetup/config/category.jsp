@@ -59,17 +59,20 @@ jQuery(function(){
     <form:form action="/spring/adminSetup/config/update" id="settingsForm" method="post">
         <form:hidden path="category"/>
         
-        <div class="category">
-            <cti:url value="edit" var="category_url"><cti:param name="category" value="${category}"/></cti:url>
-            <a href="${category_url}" class="medium_icon fl ${category_icon}"></a>
-            <div class="box fl meta">
-                <a class="title" href="javascript:void(0);"><i:inline key="yukon.common.setting.subcategory.${category}"/></a>
-                <br/>
-                <span class="detail"><i:inline key="yukon.common.setting.subcategory.${category}.description"/></span>
-            </div>
-        </div>
         
-        <div class="default_indicator_legend secondary_emphasis"><i:inline key=".legend"/></div>
+        <div class="clear_both oh">
+	        <div class="category">
+	            <cti:url value="edit" var="category_url"><cti:param name="category" value="${category}"/></cti:url>
+	            <a href="${category_url}" class="medium_icon fl ${category_icon}"></a>
+	            <div class="box fl meta">
+	                <a class="title" href="javascript:void(0);"><i:inline key="yukon.common.setting.subcategory.${category}"/></a>
+	                <br/>
+	                <span class="detail"><i:inline key="yukon.common.setting.subcategory.${category}.description"/></span>
+	            </div>
+	        </div>
+	        
+	        <div class="highlight fr clear"><i:inline key=".legend"/></div>
+        </div>
         
         <div class="box liteContainer">
         
@@ -84,7 +87,7 @@ jQuery(function(){
                 <div class="setting box ${rowClass}">
                     <div class="setting_name box fl"><i:inline key="${setting.extra.type}"/></div>
                     <div class="setting_default_indicator fl">
-                        <span class="secondary_emphasis">
+                        <span class="highlight">
                             <c:if test="${setting.extra.nonDefault}">
                                 <i:inline key=".nonDefault"/>
                             </c:if>
@@ -93,7 +96,7 @@ jQuery(function(){
                     <div class="setting_details box detail fl">
                         <div>
                             <tags:simpleInputType id="${setting.extra.type}" input="${setting.valueType}" path="${setting.path}"/>
-                            <span class="detail updated"><i:inline key=".updated"/>&nbsp;
+                            <span class="detail updated fr"><i:inline key=".updated"/>&nbsp;
                                 <span>
                                     <c:choose>
                                         <c:when test="${not empty setting.extra.lastChanged}">

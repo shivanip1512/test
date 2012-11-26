@@ -38,7 +38,7 @@ If it's "javascript", nextUrl and previousUrl are required.
 <c:set var="disabledPreviousStyle" value=" style=\"display: none;\""/>
 </c:if>
 
-<div>
+<div class="fr">
     <table>
         <tr>
             <td class="previousLink">
@@ -62,7 +62,7 @@ If it's "javascript", nextUrl and previousUrl are required.
                 </c:if>
             </td>
 
-            <td class="pageNumText">
+            <td class="pageNumText no_padding" >
 			    <c:if test="${!empty pageScope.searchResult && pageScope.searchResult.hitCount > 0}">
 			        <cti:msg key="yukon.common.paging.viewing"
 			            arguments="${pageScope.searchResult.startIndex + 1},${pageScope.searchResult.endIndex},${pageScope.searchResult.hitCount}"/>

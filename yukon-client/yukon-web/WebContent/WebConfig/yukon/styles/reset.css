@@ -29,7 +29,7 @@ footer, header, hgroup, menu, nav, section {
     display: block;
 }
 body {
-    font-size: 16px;
+    font-size: 14px;
     line-height: 1em;
 }
 ol, ul {
@@ -43,4 +43,3 @@ q:before, q:after {
     content: '';
     content: none;
 }
-

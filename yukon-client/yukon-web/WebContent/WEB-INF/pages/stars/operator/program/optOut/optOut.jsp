@@ -9,7 +9,6 @@
 <%@ taglib prefix="dt" tagdir="/WEB-INF/tags/dateTime" %>
 
 <cti:standardPage module="operator" page="optOut.main">
-<cti:includeCss link="/WebConfig/yukon/styles/operator/optOut.css"/>
 
 <!-- Helper Popup -->
 <c:url var="help" value="/WebConfig/yukon/Icons/help.gif"/>

@@ -1,0 +1,127 @@
+/* 
+	Only iconography specific styles go here.  The icon structures should
+	remain unchanged (first part).  Icons themselves should be added alphabetically
+	to the main list (second part).
+*/
+
+/* ICON STRUCTURES */
+.icon {float:left; overflow:hidden; height: 1px; width: 16px; padding-top: 16px; margin-left: -20px; background-repeat: no-repeat; background-position: top left;}
+.labeled_icon_right {width: auto; padding-right:20px; background-position: top right; background-repeat:no-repeat;}
+.icon,.large_icon,.medium_icon {overflow: hidden; float: left; position: relative; height: 1px; border: none; mainly for inputs background : transparent; -webkit-user-select: none; -khtml-user-select: none; -moz-user-select: none; -ms-user-select: none; -o-user-select: none; user-select: none; width: 16px; padding-top: 16px; background-repeat: no-repeat;}
+.medium_icon {width: 32px; padding-top: 31px;}
+.ex_large_icon {padding-top: 64px; width: 64px;}
+.large_icon {width: 128px; padding-top: 128px;}
+a.icon {margin: 0 5px 0 0;}
+.labeled_icon,.labeled_icon_right {background-repeat: no-repeat; padding: 0 0 0 20px; overflow: hidden; float: left; line-height: 16px; /*since the 'icon' will be positioned top left*/ min-height: 16px; /*don't cut off the 'icon'*/ cursor: pointer;}
+.labeled_icon_right,.labeled_icon_right:hover {background-position: top right !important; padding: 0 20px 0 0;}
+
+
+/* ICON BACKGROUNDS HERE */
+.access_point {background-image: url(../Icons/32/access_point.png);}
+.arrow_bidirectional {background-image: url(../Icons/32/arrow_bidirectional.png);}
+
+.calculator {background-image: url(../Icons/32/calculator.png);}
+.cog_go {background-image: url(../Icons/cog_go.gif);}
+.cog_go:hover {background-image: url(../Icons/cog_go_over.gif);}
+.cog_go_disabled {background-image: url(../Icons/cog_go_disabled.gif); cursor: not-allowed;}
+.cog {background-color: transparent; background-image: url(../Icons/cog.png); background-position: top left; background-repeat: no-repeat;}
+.cog:hover {background-image: url(../Icons/cog_over.png);}
+.connect {background-image: url(../Icons/32/connect.png);}
+.csv {background-image: url(../Icons/excel.gif);}
+.csv:hover {background-image: url(../Icons/excel_over.gif);}
+.csv_disabled {background-image: url(../Icons/excel_disabled.gif); cursor: not-allowed;}
+
+.disable {background-image: url(../Icons/disable.gif);}
+.disable:hover {background-image: url(../Icons/disable_over.gif);}
+.disable_disabled {background-image: url(../Icons/disable_disabled.gif); cursor: not-allowed;}
+.DISABLED {background: transparent url(../Icons/disable.gif) top left no-repeat;}
+.document {background-image: url(../Icons/32/document.png);}
+
+.electric_meter {background-image:url("../Icons/electric_16.png")}
+.enable {background-image: url(../Icons/enable.gif);}
+.enable:hover {background-image: url(../Icons/enable_over.gif);}
+.enable_disabled {background-image: url(../Icons/enable_disabled.gif); cursor: not-allowed;}
+.ENABLED {background: transparent url(../Icons/enable.gif) top left no-repeat;}
+.enabled_false {background: transparent url(../Icons/gray_circle.png) left top no-repeat;}
+.enabled_true {background: transparent url(../Icons/green_circle.png) left top no-repeat;}
+
+.fail {background: transparent url(../Icons/cross.png) top left no-repeat;}
+.file {background-image: url(../Icons/32/file.png);}
+.firewall {background-image: url(../Icons/32/firewall.png);}
+.folder {background-image: url(../Icons/32/folder.png);}
+
+.gear {background-image: url(../Icons/32/gear.png);}
+
+.history {background-image:url("../Icons/time.gif")}
+.home {background-image: url(../Icons/32/home.png);}
+
+.icon_copy {background: transparent url(../Icons/copy.gif) top left no-repeat;}
+.icon_copy_hovered,.icon_copy:hover {background: transparent url(../Icons/copy_over.gif) top left no-repeat;}
+.icon_create {background: transparent url(../Icons/wand.png) top left no-repeat;}
+.icon_create_hovered,.icon_create:hover {background: transparent url(../Icons/wand_over.png) top left no-repeat;}
+.icon_folder_edit {background: transparent url(../Icons/folder_edit.gif) top left no-repeat;}
+.icon_folder_edit_hovered,.icon_folder_edit:hover {background: transparent url(../Icons/folder_edit_over.gif) top left no-repeat;}
+.icon_remove {background: transparent url(../Icons/delete.png) top left no-repeat;}
+.icon_remove:hover {background: transparent url(../Icons/delete_over.png) top left no-repeat;}
+.icon_remove_disabled {background: transparent url(../Icons/delete_disabled_gray.gif) top left no-repeat; cursor: not-allowed;}
+.icon_small_clear {position: relative; top: 2px; right: 1px; height: 11px; margin-left: 5px; padding: 0 0 0 11px; background: transparent url(../Icons/circle_clear_small.png) top left no-repeat; background-position: 0 -11px;}
+.icon_small_clear:hover {background-position: 0 0px;}
+.icon_with_chevron {width: 30px; /*this style has a down chevron with it*/}
+.inputWithIcon {margin-right: 5px;}
+.icon_pencil {background: transparent url(../Icons/pencil.png) top left no-repeat;}
+.icon_pencil:hover {background: transparent url(../Icons/pencil_over.png) top left no-repeat;}
+.icon_pencil_disabled {background: transparent url(../Icons/pencil_disabled_gray.gif) top left no-repeat; cursor: not-allowed;}
+.icon_filter {background: transparent url(../Icons/filter.gif) top left no-repeat;}
+.icon_filter:hover {background: transparent url(../Icons/filter_over.gif) top left no-repeat;}
+.icon_script {background: transparent url(../Icons/script.gif) top left no-repeat;}
+.icon_script:hover {background: transparent url(../Icons/script_over.gif) top left no-repeat;}
+.icon_help {background: transparent url(../Icons/help.gif) top left no-repeat;}
+.icon_help:hover {background: transparent url(../Icons/help_over.gif) top left no-repeat;}
+.item {background-image: url(../Icons/32/item.png);}
+
+.lightbulb {background-image: url(../Icons/32/lightbulb.png);}
+.list {background-image: url(../Icons/32/list.png);}
+.loading {background: transparent url(../Icons/indicator_arrows.gif) top left no-repeat;}
+.lock {background-image: url(../Icons/32/lock.png);}
+.lock_open {background-image: url(../Icons/32/lock_open.png);}
+
+.magnifier {background: transparent url(../Icons/magnifier.gif) top left no-repeat;}
+.magnifier_hovered,.magnifier:hover {background: transparent url(../Icons/magnifier_over.gif) top left no-repeat;}
+.meter1 {background-image: url(../Icons/32/meter1.png);}
+.money_bag {background-image: url(../Icons/32/money_bag.png);}
+.monitor {background-image: url(../Icons/32/monitor.png);}
+
+.next {background-image: url(../Icons/resultset_next.gif);}
+.next:hover {background-image: url(../Icons/resultset_next.gif);}
+.next_disabled {background-image: url(../Icons/resultset_next_disabled.gif);}
+
+.page_help,.page_warning,.page_error {font-size: 12px; padding: 5px 10px 5px 25px; border-radius: 2px; border-width: 1px; border-style: solid; margin-bottom: 10px;}
+.page_help ul,.page_warning ul,.page_error ul {list-style: disc inside none;}
+.page_help {border-color: #06C; background: #EAF1FD url('/WebConfig/yukon/Icons/information.gif') 5px 4px no-repeat;}
+.page_warning {border-color: #FBB117; background: #FFFFDA url('/WebConfig/yukon/Icons/warning.gif') 5px 4px no-repeat;}
+.page_error {border-color: #CC0000; background: #FFDDDD url('/WebConfig/yukon/Icons/error.gif') 5px 4px no-repeat;}
+.pass {background: transparent url(../Icons/tick.png) top left no-repeat}
+.phone {background-image: url(../Icons/32/phone.png);}
+.prev, .prev_disabled, .next, .next_disabled {line-height:15px;}
+.prev {background-image: url(../Icons/resultset_previous.gif);}
+.prev:hover {background-image: url(../Icons/resultset_previous.gif);}
+.prev_disabled {background-image: url(../Icons/resultset_previous_disabled.gif);}
+
+.random {background-image: url(../Icons/32/random.png);}
+
+.search_button {background: transparent url(../Buttons/GoButtonGray.gif) top left no-repeat; padding-top: 20px; width: 23px;}
+.search_button:hover,.search_button:active {background: transparent url(../Buttons/GoButton.gif) top left no-repeat;}
+.search {background:url("data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAA8AAAAPCAYAAAA71pVKAAAAGXRFWHRTb2Z0d2FyZQBBZG9iZSBJbWFnZVJlYWR5ccllPAAAAyJpVFh0WE1MOmNvbS5hZG9iZS54bXAAAAAAADw/eHBhY2tldCBiZWdpbj0i77u/IiBpZD0iVzVNME1wQ2VoaUh6cmVTek5UY3prYzlkIj8+IDx4OnhtcG1ldGEgeG1sbnM6eD0iYWRvYmU6bnM6bWV0YS8iIHg6eG1wdGs9IkFkb2JlIFhNUCBDb3JlIDUuMC1jMDYwIDYxLjEzNDc3NywgMjAxMC8wMi8xMi0xNzozMjowMCAgICAgICAgIj4gPHJkZjpSREYgeG1sbnM6cmRmPSJodHRwOi8vd3d3LnczLm9yZy8xOTk5LzAyLzIyLXJkZi1zeW50YXgtbnMjIj4gPHJkZjpEZXNjcmlwdGlvbiByZGY6YWJvdXQ9IiIgeG1sbnM6eG1wPSJodHRwOi8vbnMuYWRvYmUuY29tL3hhcC8xLjAvIiB4bWxuczp4bXBNTT0iaHR0cDovL25zLmFkb2JlLmNvbS94YXAvMS4wL21tLyIgeG1sbnM6c3RSZWY9Imh0dHA6Ly9ucy5hZG9iZS5jb20veGFwLzEuMC9zVHlwZS9SZXNvdXJjZVJlZiMiIHhtcDpDcmVhdG9yVG9vbD0iQWRvYmUgUGhvdG9zaG9wIENTNSBNYWNpbnRvc2giIHhtcE1NOkluc3RhbmNlSUQ9InhtcC5paWQ6NDJCNEUwNzM4OTY0MTFFMEE0MDNEODlCOThCNUNBOTgiIHhtcE1NOkRvY3VtZW50SUQ9InhtcC5kaWQ6NDJCNEUwNzQ4OTY0MTFFMEE0MDNEODlCOThCNUNBOTgiPiA8eG1wTU06RGVyaXZlZEZyb20gc3RSZWY6aW5zdGFuY2VJRD0ieG1wLmlpZDo0MkI0RTA3MTg5NjQxMUUwQTQwM0Q4OUI5OEI1Q0E5OCIgc3RSZWY6ZG9jdW1lbnRJRD0ieG1wLmRpZDo0MkI0RTA3Mjg5NjQxMUUwQTQwM0Q4OUI5OEI1Q0E5OCIvPiA8L3JkZjpEZXNjcmlwdGlvbj4gPC9yZGY6UkRGPiA8L3g6eG1wbWV0YT4gPD94cGFja2V0IGVuZD0iciI/Po7ONFMAAADISURBVHjanFJBCsIwEFzrF7z04h9E/Efx5MEHePHmr4T6hFLwF6G/sKW0lLixEwh1AtGB6SaZne22G7HWCrhT1sqXneHiE+fC6BcX5Wg5RujU7CoPSDTKs3KLaHA+sA7co0JCE2mvgV4xcwuxiJgL6C0zTxDziDmHPi21TER6mbEXDn/efykYT8o316ztQzAm93dPyg2iCUZ2/WfOIe7M7DtwN6pDYof9LVZAYldvwZIVSDXTApmk46h8BPv16vP631D6Ym8BBgAsamp63yCdlAAAAABJRU5ErkJggg==");}
+.security {background-image: url(../Icons/32/security.png);}
+.stats_bars {background-image: url(../Icons/32/stats_bars.png);}
+.stats_lines {background-image: url(../Icons/32/stats_lines.png);}
+.stats_pie {background-image: url(../Icons/32/stats_pie.png);}
+.sun {background-image: url(../Icons/32/sun.png);}
+
+.ui-icon.excel {background-image: url("/WebConfig/yukon/Icons/excel.gif") !important;}
+.ui-icon.pdf {background-image: url("/WebConfig/yukon/Icons/pdf.gif") !important;}
+.ui-icon.refresh {background-image: url("/WebConfig/yukon/Icons/table_refresh.gif") !important;}
+.ui-icon.refresh:hover {background-image: url("/WebConfig/yukon/Icons/table_refresh_over.gif") !important;}
+
+.window {background-image: url(../Icons/32/window.png);}
+.world {background-image: url(../Icons/32/world.png);}

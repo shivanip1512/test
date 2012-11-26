@@ -11,7 +11,6 @@
     <cti:includeScript link="/JavaScript/thermostatScheduleEditor.js"/>
     <cti:includeCss link="/WebConfig/yukon/styles/consumer/StarsConsumerStyles.css"/>
     <cti:includeCss link="/WebConfig/yukon/styles/operator/thermostat.css"/>
-    <cti:includeCss link="/WebConfig/yukon/styles/shared/thermostat.css"/>
     
     <cti:msg2 var="degreesCelsius" key="yukon.web.modules.operator.thermostatManual.degreesCelsius"/>
     <cti:msg2 var="degreesFahrenheit" key="yukon.web.modules.operator.thermostatManual.degreesFahrenheit"/>

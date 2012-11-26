@@ -10,7 +10,6 @@
 
 <cti:standardPage module="survey" page="edit">
 
-<cti:includeCss link="/WebConfig/yukon/styles/operator/survey.css"/>
 <cti:includeScript link="/JavaScript/ajaxDialog.js"/>
 <cti:includeScript link="/JavaScript/stars/surveyQuestionEdit.js"/>
 

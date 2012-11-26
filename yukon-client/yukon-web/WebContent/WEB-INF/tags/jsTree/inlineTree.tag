@@ -158,7 +158,7 @@
 
     <%-- THE TREE GOES HERE --%>
     <div class="tree_container">
-        <div id="${id}" class="fl treeCanvas" style="height: ${height - 25}px; width:100%; overflow:auto;"></div>
+        <div id="${id}" class="fl treeCanvas" style="height: ${height - 27}px; width:100%; overflow:auto;"></div>
     </div>
 
 </div>

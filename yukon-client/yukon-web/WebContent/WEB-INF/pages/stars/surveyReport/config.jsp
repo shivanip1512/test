@@ -10,8 +10,6 @@
 
 <cti:standardPage module="survey" page="reportConfig">
 
-<cti:includeCss link="/WebConfig/yukon/styles/operator/survey.css"/>
-
 <c:set var="baseKey" value="yukon.web.surveys.${survey.surveyKey}"/>
 <script type="text/javascript">
 var answerMessagesById = {};

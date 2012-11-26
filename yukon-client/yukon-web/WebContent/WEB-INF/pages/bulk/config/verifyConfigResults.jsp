@@ -14,7 +14,7 @@
 <cti:msg var="verifyResultsColumn" key="yukon.common.device.bulk.verifyConfigResults.verifyResultsColumn"/>
 
 <cti:standardPage title="${pageTitle}" module="amr">
-    <cti:includeCss link="/WebConfig/yukon/styles/YukonGeneralStyles.css"/>
+    <cti:includeCss link="/WebConfig/yukon/styles/yukon.css"/>
     <cti:standardMenu menuSelection="" />
 
     <%-- BREAD CRUMBS --%>

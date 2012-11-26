@@ -15,8 +15,6 @@
         <title><cti:msg2 key=".pageTitle"/></title>
 
         <link rel="stylesheet" type="text/css" href="/WebConfig/yukon/styles/functional-overrides.css">
-        <link rel="stylesheet" type="text/css" href="/WebConfig/yukon/styles/StandardStyles.css">
-        <link rel="stylesheet" type="text/css" href="/WebConfig/yukon/styles/YukonGeneralStyles.css">
         <link rel="stylesheet" type="text/css" href="/WebConfig/yukon/styles/shared/loginStyles.css">
 
         <script type="text/javascript" src="/JavaScript/lib/jQuery/1.6.4/jquery.min.js"></script>

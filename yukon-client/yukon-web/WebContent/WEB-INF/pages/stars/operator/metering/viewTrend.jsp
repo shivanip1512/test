@@ -27,7 +27,6 @@ final SimpleDateFormat datePart = new java.text.SimpleDateFormat("MM/dd/yyyy");
 <cti:standardPage module="operator" page="metering">
 
 	<%@ include file="/include/trending_functions.jspf" %>
-	<cti:includeCss link="/WebConfig/yukon/styles/operator/metering.css"/>
 	<cti:includeCss link="/WebConfig/yukon/CannonStyle.css"/>
 	
 	<c:set var="gdefid" value="<%=graphBean.getGdefid()%>"/>

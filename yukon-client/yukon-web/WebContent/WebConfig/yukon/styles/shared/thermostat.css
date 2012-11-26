@@ -2,457 +2,87 @@
 .fl {float:left;}
 .fr {float:right;}
 .vh {visibility: hidden;}
-.labels {
-	display:none;
-}
-
-.periods, .labels {
-	overflow:hidden;
-	float: left;
-}
-
-.small .labels {
-	display: inherit;
-}
-
-.period, .info {
-	float: left;
-}
-
-.period {
-	margin-left: -1px;
-}
+.labels {display:none;}
+.periods, .labels {overflow:hidden; float: left;}
+.small .labels {display: inherit;}
+.period, .info {float: left;}
+.period {margin-left: -1px;}
 
 /*LARGE FORMAT*/
-
-.F span.C, .C span.F {
-    display: none;
-}
-
-.info {
-	width: 70px;
-}
-
-.temp small {
-	float:none;
-	display: block;
-}
-
-.heat {
-	background-color: orange;
-	border-radius: 5px 0 0 5px;
-	-moz-border-radius: 5px 0 0 5px;
-	-webkit-border-radius: 5px 0 0 5px;
-}
-
-.schedule_editor .heat {
-    border-radius: 0;
-    -moz-border-radius: 0;
-    -webkit-border-radius: 0;
-}
-
-.cool {
-	background-color: lightBlue;
-	border-radius: 0 5px 5px 0;
-	-moz-border-radius: 0 5px 5px 0;
-	-webkit-border-radius: 0 5px 5px 0;
-}
-.name {
-	color: green;
-	font-size: 12px;
-}
-
-.time {
-	font-size: 18px;
-}
-
-.small .days{
-    margin: 10px 0;
-    width: 615px;
-    overflow: hidden;
-}
-
-.day {
-    clear: both;
-    display: block;
-    overflow:hidden;
-}
-
-.actions {
-	overflow: hidden;
-	clear: both;
-	margin: 10px 0;
-	max-width: 560px;
-}
-
-.schedule .actions {
-	margin: 10px 0 10px 38px;
-}
-
-.actions button {
-    font-size: 12px;
-}
-
-.period {
-	padding: 10px;
-	width: 180px;
-}
-
-
-.labels .period {
-	border-bottom: dotted 1px #ccc;
-	color: green;
-	font-size: 12px;
-	padding: 10px 10px 5px;
-}
-
-.small .label {
-	padding: 0;
-	margin-top: 5px;
-	margin-right: 5px;
-	font-size: 10px;
-    text-align:right;
-    height: 1em;
-    width: 33px;
-}
-
-.label {
-	color: green;
-	font-size: 12px;
-	
-}
-
-.odd .period {
-    background: #efefef;
-}
-
-.even .period {
-    background: white;
-}
+.F span.C, .C span.F {display: none;}
+.info {width: 70px;}
+.temp small {float:none; display: block;}
+.heat {background-color: orange; border-radius: 5px 0 0 5px; -moz-border-radius: 5px 0 0 5px; -webkit-border-radius: 5px 0 0 5px;}
+.schedule_editor .heat {border-radius: 0; -moz-border-radius: 0; -webkit-border-radius: 0;}
+.cool {background-color: lightBlue; border-radius: 0 5px 5px 0; -moz-border-radius: 0 5px 5px 0; -webkit-border-radius: 0 5px 5px 0;}
+.name {color: green; font-size: 12px;}
+.time {font-size: 18px;}
+.small .days{margin: 10px 0; width: 615px; overflow: hidden;}
+.day {clear: both; display: block; overflow:hidden;}
+.actions {overflow: hidden; clear: both; margin: 10px 0; max-width: 560px;}
+.schedule .actions {margin: 10px 0 10px 38px;}
+.actions button {font-size: 12px;}
+.period {padding: 10px; width: 180px;}
+.labels .period {border-bottom: dotted 1px #ccc; color: green; font-size: 12px; padding: 10px 10px 5px;}
+.small .label {padding: 0; margin-top: 5px; margin-right: 5px; font-size: 10px; text-align:right; height: 1em; width: 33px;}
+.label {color: green; font-size: 12px;}
+.odd .period {background: #efefef;}
+.even .period {background: white;}
 
 /*SMALL FORMAT*/
-.temp {
-	float: left;
-	padding: 2px 2px;
-	border: solid 1px #CCC;
-	color: #fff;
-	text-align: center;
-	width: 30px;
-	font-size: 10px;
-}
-
-.small .labels .temp {
-    border: none;
-    background: white;
-    color: green;
-}
-
-.small .labels * {
-    border: none !important;
-    padding-top: 0 !important;
-    padding-bottom: 0 !important;
-}
-
-.small .temp input {
-	font-size: 10px;
-	width: 23px;
-	text-align:right;
-	border: none;
-	padding: 0;
-}
-
-.small .info {
-	width:60px;
-	float: left;
-}
-
-.small .info input {
-	font-size: 10px;
-	width: 55px;
-	text-align: right;
-}
-
-.small .temp small {
-	display: none;
-}
-
-.small .heat {
-	background-color: orange;
-	padding-left: 4px;
-}
-
-.small .cool {
-	background-color: lightBlue;
-	padding-right: 4px;
-}
-.small .name {
-	color: green;
-	font-size: 10px;
-}
-
-.small .time {
-	font-size: 10px;
-	text-align:right;
-	padding: 3px 2px 2px 0;
-}
-
-.schedule_editor .time{
-    padding: 0;
-}
-
-.schedule_editor .time input {
-    padding: 2px 2px;
-    border-radius: 5px 0 0 5px;
-    -moz-border-radius: 5px 0 0 5px;
-    -webkit-border-radius: 5px 0 0 5px;
-    border: solid 1px #ccc;
-}
-
-.small .schedule {
-    margin-top: -1px;
-    border-top: dotted 1px #ccc;
-    padding: 20px;
-    display: inline-block;
-}
-
-.small .period {
-	padding: 2px 0;
-	width: 145px;
-}
-
-.small .period .name {
-	display:none;
-}
-
-ul.schedules > li {
-	position: relative;
-	float: left;
-	display: block;
-	clear: both;
-	margin-bottom: 20px;
-	padding: 10px 10px 0;
-}
-
-.heading {
-	font-size: 16px;
-	margin: 0 0 5px 38px;
-	border-bottom: solid 1px #DDD; 
-}
-
-li.current {
-    border: solid 1px #666;
-}
-
-li.current .helper {
-    margin: 0 0 15px;
-    background: lightYellow;
-    font-style: italic;
-    padding: 5px 10px;
-    font-size: 12px;
-    border: solid 1px orange;
-}
-
-.type {
-/* 	margin-left: 200px; */
-	font-size: 12px;
-	position: absolute;
-	top: 8px;
-	right: 14px;
-}
-
-.heading .editor {
-	float: left;
-}
-
-.schedules {
-	margin-bottom: 45px;
-	overflow:hidden;
-}
-
-.schedule {
-    overflow: hidden;
-    float: left;
-    clear: both;
-    padding-bottom: 20px;
-    margin-bottom: 20px;
-}
-
-.schedule div.simplePopup {
-    width: 630px;
-}
-
-.title.current small {
-	color: green;
-	font-style:normal;
-	font-weight:bold;
-}
-
-.icon_labeled{
-	padding: 2px 0 5px 20px;
-	margin-right: 10px;
-	text-decoration: none !important;
-	font-size: 12px;
-	cursor: pointer;
-	color: #666 !important;
-}
-
-.icon_labeled:hover {
-	color: #000 !important;
-}
-
-a.edit {
-	background: transparent url(../../Icons/edit.gif) top left no-repeat;
-}
-
-a.send {
-	background: transparent url(../../Icons/lightning_go.gif) top left no-repeat;
-}
-
-a.save {
-	background: transparent url(../../Icons/accept.gif) top left no-repeat;
-}
-
-a.cancel {
-	background: transparent url(../../Icons/cancel.gif) left top no-repeat;
-}
-
-a.default {
-	background: transparent url('http://cdn5.iconfinder.com/data/icons/fugue/bonus/icons-24/ui-color-picker-default.png') left top no-repeat;
-}
-
-.editing .editor {
-	display: inherit;
-}
-	
-.slider {
-	position: fixed;
-	width: 250px;
-	height: 29px;
-	background: white;
-	border: solid 4px #333;
-	box-shadow: 0 0 5px rgba(0,0,0,0.5);
-	z-index: 200;
-	left:-999em;   /* scriptaculous in all its wonderfulness can't handle elements being hidden on creation. */
-	border-radius: 8px;
-	-moz-border-radius: 8px;
-	-webkit-border-radius: 8px;
-	font-size: 10px;
-}
-
-.slider .ui-slider-handle {
-    height: 20px;
-    width: 20px;
-    background: transparent url(../../Icons/slider-handle.png) top left no-repeat;
-    margin-top: -7px;
-    margin-left: -10px;
-}
-
-.slider .track {
-    width: 230px;
-    height: 1px;
-    border: solid 1px #666;
-    background-color: #999;
-    position: absolute;
-    left: 9px;
-    top: 19px;
-}
-
-.slider .label {
-    margin: 0 5px;
-}
-
-.slider .startLabel, .slider .endLabel {
-	margin: 0 5px;
-}
-
-
-.chevron {
-    font-size: 0;
-    height: 0;
-    line-height: 0;
-    border-style: solid;
-    border-color: transparent;
-    /* chevron color */
-    border-bottom-color: #333;
-    /* for left pointers, right border is 0 */
-    border-width: 0 23px 16px;
-    float: left;
-    margin: -20px 100px;
-}
-
-.pad {
-    padding: 15px;
-}
-
-.help ol {
-    list-style: decimal;
-    padding-left: 20px;
-}
-.help ol li {
-    margin: 0 0 15px;
-}
-
-.tempControls {
-    padding: 5px;
-}
-
-.tempLabel {
-    border: none;
-    color: #333;
-    font-size: 12px;
-    float: right;
-}
-
-.manualThermostat {
-    margin-right: 20px;
-}
-
-.manualThermostat ul {
-    padding: 0;
-    margin: 0;
-    line-height: 1.1em;
-}
-
-.manualThermostat input:disabled {
-    background-color: #f0f0f0;
-    color: #ccc;
-}
-
-.manualThermostat .thermostatModes {
-    margin: 0 18px;
-}
-
-.manualThermostat h2 {
-    font-weight: bold;
-    font-size: 1em;
-}
-
-.manualThermostat li {
-    font-size: 12px;
-    padding-left: 20px;
-    cursor: pointer;
-    list-style: none;
-}
-
-.manualThermostat .pipes li {
-    padding-left: 8px;
-}
-
-.manualThermostat .mode.selected, .manualThermostat .state.selected {
-    background: transparent url(../../Icons/triangle-right.gif) 5px 3px no-repeat;
-}
-
-.manualThermostat .temperature {
-    border-radius: 8px;   
-}
-
-.manualThermostat .unit.selected {
-    color: black;
-    text-decoration: none;
-    cursor: default;
-}
-
-.manualThermostat .unit{
-    color: #0000EE;
-    text-decoration: underline;
-}
+.temp {float: left; padding: 2px 2px; border: solid 1px #CCC; color: #fff; text-align: center; width: 30px; font-size: 10px;}
+.small .labels .temp {border: none; background: white; color: green;}
+.small .labels * {border: none !important; padding-top: 0 !important; padding-bottom: 0 !important;}
+.small .temp input {font-size: 10px; width: 23px; text-align:right; border: none; padding: 0;}
+.small .info {width:60px; float: left;}
+.small .info input {font-size: 10px; width: 55px; text-align: right;}
+.small .temp small {display: none;}
+.small .heat {background-color: orange; padding-left: 4px;}
+.small .cool {background-color: lightBlue; padding-right: 4px;}
+.small .name {color: green; font-size: 10px;}
+.small .time {font-size: 10px; text-align:right; padding: 3px 2px 2px 0;}
+.schedule_editor .time{padding: 0;}
+.schedule_editor .time input {padding: 2px 2px; border-radius: 5px 0 0 5px; -moz-border-radius: 5px 0 0 5px; -webkit-border-radius: 5px 0 0 5px; border: solid 1px #ccc;}
+.small .schedule {margin-top: -1px; border-top: dotted 1px #ccc; padding: 20px; display: inline-block;}
+.small .period {padding: 2px 0; width: 145px;}
+.small .period .name {display:none;}
+ul.schedules > li {position: relative; float: left; display: block; clear: both; margin-bottom: 20px; padding: 10px 10px 0;}
+.heading {font-size: 16px; margin: 0 0 5px 38px; border-bottom: solid 1px #DDD;}
+li.current {border: solid 1px #666;}
+li.current .helper {margin: 0 0 15px; background: lightYellow; font-style: italic; padding: 5px 10px; font-size: 12px; border: solid 1px orange;}
+.type {font-size: 12px; position: absolute; top: 8px; right: 14px;}
+.heading .editor {float: left;}
+.schedules {margin-bottom: 45px; overflow:hidden;}
+.schedule {overflow: hidden; float: left; clear: both; padding-bottom: 20px; margin-bottom: 20px;}
+.schedule div.simplePopup {width: 630px;}
+.title.current small {color: green; font-style:normal; font-weight:bold;}
+.icon_labeled{padding: 2px 0 5px 20px; margin-right: 10px; text-decoration: none !important; font-size: 12px; cursor: pointer; color: #666 !important;}
+.icon_labeled:hover {color: #000 !important;}
+a.edit {background: transparent url(../../Icons/edit.gif) top left no-repeat;}
+a.send {background: transparent url(../../Icons/lightning_go.gif) top left no-repeat;}
+a.save {background: transparent url(../../Icons/accept.gif) top left no-repeat;}
+a.cancel {background: transparent url(../../Icons/cancel.gif) left top no-repeat;}
+a.default {background: transparent url('http://cdn5.iconfinder.com/data/icons/fugue/bonus/icons-24/ui-color-picker-default.png') left top no-repeat;}
+.editing .editor {display: inherit;}
+.slider {position: fixed; width: 250px; height: 29px; background: white; border: solid 4px #333; box-shadow: 0 0 5px rgba(0,0,0,0.5); z-index: 200; left:-999em;   /* scriptaculous in all its wonderfulness can't handle elements being hidden on creation. */ border-radius: 8px; -moz-border-radius: 8px; -webkit-border-radius: 8px; font-size: 10px;}
+.slider .ui-slider-handle {height: 20px; width: 20px; background: transparent url(../../Icons/slider-handle.png) top left no-repeat; margin-top: -7px; margin-left: -10px;}
+.slider .track {width: 230px; height: 1px; border: solid 1px #666; background-color: #999; position: absolute; left: 9px; top: 19px;}
+.slider .label {margin: 0 5px;}
+.slider .startLabel, .slider .endLabel {margin: 0 5px;}
+.chevron {font-size: 0; height: 0; line-height: 0; border-style: solid; border-color: transparent; /* chevron color */ border-bottom-color: #333; /* for left pointers, right border is 0 */ border-width: 0 23px 16px; float: left; margin: -20px 100px;}
+.pad {padding: 15px;}
+.help ol {list-style: decimal; padding-left: 20px;}
+.help ol li {margin: 0 0 15px;}
+.tempControls {padding: 5px;}
+.tempLabel {border: none; color: #333; font-size: 12px; float: right;}
+.manualThermostat {margin-right: 20px;}
+.manualThermostat ul {padding: 0; margin: 0; line-height: 1.1em;}
+.manualThermostat input:disabled {background-color: #f0f0f0; color: #ccc;}
+.manualThermostat .thermostatModes {margin: 0 18px;}
+.manualThermostat h2 {font-weight: bold; font-size: 1em;}
+.manualThermostat li {font-size: 12px; padding-left: 20px; cursor: pointer; list-style: none;}
+.manualThermostat .pipes li {padding-left: 8px;}
+.manualThermostat .mode.selected, .manualThermostat .state.selected {background: transparent url(../../Icons/triangle-right.gif) 5px 3px no-repeat;}
+.manualThermostat .temperature {border-radius: 8px;}
+.manualThermostat .unit.selected {color: black; text-decoration: none; cursor: default;}
+.manualThermostat .unit{color: #0000EE; text-decoration: underline;}

@@ -10,7 +10,6 @@
 <cti:standardPage module="dr" page="surveyList">
     <tags:simpleDialog id="ajaxDialog"/>
     <cti:includeCss link="/WebConfig/yukon/styles/calendarControl.css"/>
-    <cti:includeCss link="/WebConfig/yukon/styles/operator/survey.css"/>
     <cti:includeScript link="/JavaScript/calendarControl.js"/>
     <cti:includeScript link="/JavaScript/calendarTagFuncs.js"/>
     <cti:includeScript link="/JavaScript/picker.js"/>

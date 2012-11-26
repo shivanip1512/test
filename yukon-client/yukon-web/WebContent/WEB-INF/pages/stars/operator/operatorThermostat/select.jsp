@@ -7,8 +7,6 @@
 
 <cti:standardPage module="operator" page="thermostatSelect">
 
-	<cti:includeCss link="/WebConfig/yukon/styles/operator/thermostat.css"/>
-	
 	<script>
 
 	    function checkboxChanged(this_cb) {

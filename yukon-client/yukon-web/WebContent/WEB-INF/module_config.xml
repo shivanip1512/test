@@ -856,7 +856,6 @@
     
     <skin name="STANDARD" />
     <css file="/capcontrol/css/CapcontrolGeneralStyles.css" />
-    <css file="/WebConfig/yukon/styles/capcontrollogos.css" />
     <pages>
         <page name="areas.normal" type="LANDING">
             <menu></menu>
@@ -1308,7 +1307,6 @@
 
     <module name="adminSetup">
         <skin name="STANDARD" />
-        <css file="/WebConfig/yukon/styles/admin/admin-setup.css"/>
         <menu>
             <options>
                 <option name="energyCompanySetup">
@@ -2077,7 +2075,7 @@
   
   <module name="userlm">
     <skin name="STANDARD" />
-    <css file="/WebConfig/yukon/styles/YukonGeneralStyles.css" />
+    <css file="/WebConfig/yukon/styles/yukon.css" />
   </module>
 
   <module name="commander">

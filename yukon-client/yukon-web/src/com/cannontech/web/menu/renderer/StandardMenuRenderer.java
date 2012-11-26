@@ -16,10 +16,12 @@ import org.apache.ecs.html.Button;
 import org.apache.ecs.html.Div;
 import org.apache.ecs.html.Form;
 import org.apache.ecs.html.Input;
+import org.apache.ecs.html.LI;
 import org.apache.ecs.html.Option;
 import org.apache.ecs.html.Script;
 import org.apache.ecs.html.Select;
 import org.apache.ecs.html.Span;
+import org.apache.ecs.html.UL;
 import org.springframework.context.MessageSourceResolvable;
 import org.springframework.context.NoSuchMessageException;
 
@@ -103,6 +105,7 @@ public class StandardMenuRenderer implements MenuRenderer {
         Div topDiv = new Div();
         topDiv.setPrettyPrint(true);
         topDiv.setID("topMenu");
+        topDiv.setClass("box primary_background");
         Div insideDiv = new Div();
         topDiv.addElement(insideDiv);
         menuDiv.addElement(topDiv);
@@ -132,18 +135,19 @@ public class StandardMenuRenderer implements MenuRenderer {
     private Div buildTopLeftSide() {
         Div leftDiv = new Div();
         leftDiv.setPrettyPrint(true);
-        leftDiv.setClass("stdhdr_leftSide");
+        leftDiv.setClass("stdhdr_leftSide fl box");
         MenuBase menuBase = moduleBase.getMenuBase();
         List<MenuOption> topLevelOptions = menuBase.getMenuOptions(userContext);
         Iterator<MenuOption> topLevelOptionIterator = topLevelOptions.iterator();
         boolean first = true;
+        UL ul = new UL();
+        ul.setClass("pipes");
         while (topLevelOptionIterator.hasNext()) {
             if (!first) {
                 leftDiv.addElement(SEPERATOR);
             }
             first = false;
             MenuOption option = topLevelOptionIterator.next();
-            boolean notLast = topLevelOptionIterator.hasNext();
             
             A link;
             if (option instanceof SimpleMenuOption) {
@@ -182,9 +186,10 @@ public class StandardMenuRenderer implements MenuRenderer {
             } else {
                 throw new CommonMenuException("Unknown MenuOption type encountered: " + option.getClass());
             }
-            link.setClass("stdhdr_menuLink" + ((isOptionSelected(option, 0))? " selected":"") + (notLast ? " border_menuLink" : ""));
-            leftDiv.addElement(link);
+            link.setClass("stdhdr_menuLink" + ((isOptionSelected(option, 0))? " selected highlight":""));
+            ul.addElement(new LI(link));
         }
+        leftDiv.addElement(ul);
         return leftDiv;
     }
 
@@ -232,7 +237,9 @@ public class StandardMenuRenderer implements MenuRenderer {
         for (int optionIndex = 0; optionIndex < subMenuParents.size(); ++optionIndex) {
             SubMenuOption optionParent = subMenuParents.get(optionIndex);
 
-            Div thisMenu = new Div();
+            UL thisMenu = new UL();
+            thisMenu.setClass("pipes");
+            
             String jsId = generateIdForString(optionIndex);
             thisMenu.setID(jsId);
             
@@ -241,13 +248,7 @@ public class StandardMenuRenderer implements MenuRenderer {
             }
             Iterator<MenuOption> subLevelOptionIterator = optionParent.getMenuOptions(userContext)
                                                                       .iterator();
-            boolean first = true;
             while (subLevelOptionIterator.hasNext()) {
-                if (!first) {
-                    thisMenu.addElement(SEPERATOR);
-                }
-                first = false;
-
                 MenuOption option = subLevelOptionIterator.next();
                 boolean notLast = subLevelOptionIterator.hasNext();
                 
@@ -267,7 +268,7 @@ public class StandardMenuRenderer implements MenuRenderer {
                         link.setClass(anchorClass);
                     }
                     link.setHref(buildUrl(simpleSubOption.getUrl()));
-                    thisMenu.addElement(link);
+                    thisMenu.addElement(new LI(link));
                 } else {
                     // multiple menu levels aren't supported here
                     throw new CommonMenuException("StandardMenuRenderer only supports two level menus");
@@ -282,7 +283,7 @@ public class StandardMenuRenderer implements MenuRenderer {
         
         Div right = new Div();
         right.setPrettyPrint(true);
-        right.setClass("stdhdr_rightSide");
+        right.setClass("stdhdr_rightSide fr box");
         
         Span alertSpan = new Span();
         alertSpan.setID("alertSpan");
@@ -310,16 +311,19 @@ public class StandardMenuRenderer implements MenuRenderer {
     		selectMenuConfiguration.setHeaderKey("yukon.web.menu.locationSelect");
     		SelectMenuOptionRenderer selectMenuOptionRenderer = new SelectMenuOptionRenderer();
     		Select select = selectMenuOptionRenderer.generateSelect(selectMenuConfiguration, messageSource, userContext);
+    		select.setClass("fl");
             
             right.addElement(select);
         }
 
         right.addElement("&nbsp;&nbsp;");
+        UL ul = new UL();
+        ul.setClass("pipes fl");
+        
         A homeLink = createLink("yukon.web.menu.home", "");
         homeLink.setHref(homeUrl);
         homeLink.setClass("stdhdr_menuLink border_menuLink");
-        right.addElement(homeLink);
-        right.addElement(" ");
+        ul.addElement(new LI(homeLink));
         
         A logoutLink;
         HttpSession session = httpServletRequest.getSession(false);
@@ -335,8 +339,8 @@ public class StandardMenuRenderer implements MenuRenderer {
         
         logoutLink.setHref(buildUrl("/servlet/LoginController?ACTION=LOGOUT"));
         logoutLink.setClass("stdhdr_menuLink");
-        right.addElement(logoutLink);
-        right.addElement(" ");
+        ul.addElement(new LI(logoutLink));
+        right.addElement(ul);
         return right;
     }
 
@@ -346,7 +350,7 @@ public class StandardMenuRenderer implements MenuRenderer {
         
         if (breadCrumbs != null) {
             Div left = new Div();
-            left.setClass("stdhdr_leftSide");
+            left.setClass("stdhdr_leftSide fl");
             left.addElement(breadCrumbs);
             wrapper.addElement(left);
         }
@@ -360,7 +364,7 @@ public class StandardMenuRenderer implements MenuRenderer {
             
             
             Div right = new Div();
-            right.setClass("stdhdr_rightSide");
+            right.setClass("stdhdr_rightSide fr");
             Form searchForm = new Form(formData.getFormAction(), formData.getFormMethod());
             searchForm.setAcceptCharset("ISO-8859-1");
             

@@ -6,8 +6,6 @@
 
 <cti:standardPage module="operator" page="selectTrends">
 
-	<cti:includeCss link="/WebConfig/yukon/styles/operator/metering.css"/>
-
 	<tags:formElementContainer nameKey="availableTrends">
 	
 		<c:choose>

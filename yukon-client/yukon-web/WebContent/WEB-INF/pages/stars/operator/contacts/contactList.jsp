@@ -8,8 +8,6 @@
 
 	<tags:setFormEditMode mode="${mode}"/>
 	
-	<cti:includeCss link="/WebConfig/yukon/styles/operator/contacts.css"/>
-
 	<script type="text/javascript">
 	
 		function deleteAdditionalContact(id) {

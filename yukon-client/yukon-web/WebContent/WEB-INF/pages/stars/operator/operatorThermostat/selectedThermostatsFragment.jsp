@@ -5,8 +5,6 @@
 <%@ taglib uri="http://www.springframework.org/tags" prefix="spring" %>
 <%@ taglib prefix="i" tagdir="/WEB-INF/tags/i18n" %>
 
-<cti:includeCss link="/WebConfig/yukon/styles/operator/thermostat.css"/>
-
 <cti:msgScope paths="modules.operator.selectedThermostatsFragment">
 
 <%-- THERMOSTAT SELECT PAGE URL --%>

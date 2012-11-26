@@ -12,7 +12,6 @@
 <cti:standardPage module="adminSetup" page="schedules.${mode}">
 
     <cti:includeCss link="/WebConfig/yukon/styles/consumer/StarsConsumerStyles.css"/>
-    <cti:includeCss link="/WebConfig/yukon/styles/shared/thermostat.css"/>
     
     <!-- Add language specific time formatter -->
     <cti:msg var="timeFormatter" key="yukon.common.timeFormatter" />

@@ -42,8 +42,6 @@ YEvent.observeSelectorClick('#confirmCancel', function(event) {
 
 <tags:setFormEditMode mode="${mode}"/>
 
-    <cti:includeCss link="/WebConfig/yukon/styles/operator/callTracking.css"/>
-  
     <tags:boxContainer2 nameKey="workOrdersBox">
     <table class="compactResultsTable callListTable rowHighlighting">
     

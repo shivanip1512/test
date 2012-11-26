@@ -43,34 +43,30 @@ will be used.
     <c:if test="${pageScope.enabled}">
         <a href="${pageUrl}">
             <span style="white-space: nowrap;">
-                <span>
+                <span class="labeled_icon_right next">
                     <cti:msg key="yukon.common.paging.next"/>
                 </span>
-                <cti:logo key="yukon.common.paging.nextIcon"/>
             </span>
         </a>
     </c:if>
     <c:if test="${!pageScope.enabled}">
         <span style="white-space: nowrap;">
-            <span>
+            <span class="labeled_icon_right next_disabled">
                 <cti:msg key="yukon.common.paging.next"/>
             </span>
-            <cti:logo key="yukon.common.paging.nextIcon.disabled"/></a>
         </span>
     </c:if>
 </c:if>
 <c:if test="${pageScope.direction == 'previous'}">
     <c:if test="${pageScope.enabled}">
         <a href="${pageUrl}">
-            <span style="white-space: nowrap;">
-                <cti:logo key="yukon.common.paging.previousIcon"/>
+            <span class="labeled_icon prev">
                 <span><cti:msg key="yukon.common.paging.previous"/></span>
             </span>
         </a>
     </c:if>
     <c:if test="${!pageScope.enabled}">
-        <span style="white-space: nowrap;">
-            <cti:logo key="yukon.common.paging.previousIcon.disabled"/>
+        <span class="labeled_icon prev_disabled">
             <span><cti:msg key="yukon.common.paging.previous"/></span>
         </span>
     </c:if>

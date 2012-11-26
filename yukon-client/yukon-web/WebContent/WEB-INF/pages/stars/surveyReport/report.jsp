@@ -9,8 +9,6 @@
 
 <cti:standardPage module="survey" page="report">
 
-<cti:includeCss link="/WebConfig/yukon/styles/operator/survey.css"/>
-
 <tags:nameValueContainer2>
     <tags:nameValue2 nameKey=".startDate">
         <c:if test="${empty reportConfig.startDate}">

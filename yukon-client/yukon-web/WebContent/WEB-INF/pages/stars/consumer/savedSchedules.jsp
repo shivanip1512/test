@@ -11,8 +11,6 @@
 <cti:standardMenu/>
 
 <cti:includeCss link="/WebConfig/yukon/styles/shared/thermostat.css"/>
-<cti:includeCss link="/WebConfig/yukon/styles/yukonUIToolkit/yukonUiToolkit.css"/>
-
 <cti:msg var="timeFormatter" key="yukon.common.timeFormatter" />
 <cti:includeScript link="${timeFormatter}"/>
 <cti:includeScript link="/JavaScript/temperature.js"/>

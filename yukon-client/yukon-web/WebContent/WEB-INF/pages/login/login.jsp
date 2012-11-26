@@ -9,8 +9,8 @@
     <meta http-equiv="X-UA-Compatible" content="IE=EDGE" />
         <title><cti:msg key="yukon.web.login.pageTitle"/></title>
 
-        <link rel="stylesheet" type="text/css" href="WebConfig/yukon/styles/StandardStyles.css">
-        <link rel="stylesheet" type="text/css" href="WebConfig/yukon/styles/YukonGeneralStyles.css">
+        <link rel="stylesheet" type="text/css" href="WebConfig/yukon/styles/reset.css">
+        <link rel="stylesheet" type="text/css" href="WebConfig/yukon/styles/yukon.css">
         <link rel="stylesheet" type="text/css" href="WebConfig/yukon/styles/shared/loginStyles.css">
             
         <cti:css key="yukon.web.login.loginStyles"/>

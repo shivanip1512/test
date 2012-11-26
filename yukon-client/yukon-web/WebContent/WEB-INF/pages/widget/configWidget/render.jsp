@@ -4,7 +4,7 @@
 <%@ taglib prefix="fn" uri="http://java.sun.com/jsp/jstl/functions" %>
 <%@ taglib prefix="i" tagdir="/WEB-INF/tags/i18n"%>
 
-<cti:includeCss link="/WebConfig/yukon/styles/YukonGeneralStyles.css"/>
+<cti:includeCss link="/WebConfig/yukon/styles/yukon.css"/>
     <div>
         <ct:nameValueContainer2>
             

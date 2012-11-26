@@ -8,8 +8,6 @@
 
 <cti:standardPage module="operator" page="optOut.confirm">
 
-<cti:includeCss link="/WebConfig/yukon/styles/operator/optOut.css"/>
-
 <form:form commandName="optOutBackingBean" method="POST"
     action="/spring/stars/operator/program/optOut/optOutQuestions">
 

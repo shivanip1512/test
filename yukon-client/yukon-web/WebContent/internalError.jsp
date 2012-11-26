@@ -50,7 +50,8 @@ String friendlyExceptionMessage = ErrorHelperFilter.getFriendlyExceptionMessage(
 <html>
 <head>
 <title>Yukon Error Page</title>
-<link rel="stylesheet" href="<cti:url value="/WebConfig/yukon/styles/StandardStyles.css"/>" type="text/css">
+<link rel="stylesheet" href="<cti:url value="/WebConfig/yukon/styles/reset.css"/>" type="text/css">
+<link rel="stylesheet" href="<cti:url value="/WebConfig/yukon/styles/yukon.css"/>" type="text/css">
 <cti:css key="yukon.web.error.errorStyles"/>
 
 </head>

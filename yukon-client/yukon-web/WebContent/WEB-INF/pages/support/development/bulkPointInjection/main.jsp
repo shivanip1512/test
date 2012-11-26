@@ -1,6 +1,7 @@
 <%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core" %>
 <%@ taglib prefix="cti" uri="http://cannontech.com/tags/cti" %>
 <%@ taglib prefix="tags" tagdir="/WEB-INF/tags" %>
+<%@ taglib prefix="date" tagdir="/WEB-INF/tags/dateTime" %>
 <%@ taglib prefix="form" uri="http://www.springframework.org/tags/form" %>
 
 <cti:standardPage module="support" page="bulkPointInjection">
@@ -36,10 +37,13 @@ YEvent.observeSelectorClick('.bulkInject', function(event) {
                 is the point we will push at dispatch to save to the db.</span>
         </tags:nameValue2>
         <tags:nameValue2 nameKey=".startTime">
-            <tags:dateTimeInput path="start" fieldValue="${bulkInjection.start}" />
+<%--             <tags:dateTimeInput path="start" fieldValue="${bulkInjection.start}" /> --%>
+            <date:dateTime path="start" value="${bulkInjection.start}" />
         </tags:nameValue2>
         <tags:nameValue2 nameKey=".stopTime">
-            <tags:dateTimeInput path="stop" fieldValue="${bulkInjection.stop}" />
+<%--             <tags:dateTimeInput path="stop" fieldValue="${bulkInjection.stop}" /> --%>
+            <date:dateTime path="stop" value="${bulkInjection.stop}" />
+            
         </tags:nameValue2>
         <tags:nameValue2 nameKey=".period">
             <span class="focusableFieldHolder">

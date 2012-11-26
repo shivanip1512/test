@@ -13,8 +13,6 @@
         <cti:includeScript link="/JavaScript/thermostatScheduleEditor.js"/>
         
         <cti:includeCss link="/WebConfig/yukon/styles/shared/thermostat.css"/>
-        <cti:includeCss link="/WebConfig/yukon/styles/yukonUIToolkit/yukonUiToolkit.css"/>
-        
         <cti:flashScopeMessages/>
         
         <script type="text/javascript">

@@ -8,8 +8,6 @@
 
 <cti:standardPage module="operator" page="optOut.inventoryList">
 
-<cti:includeCss link="/WebConfig/yukon/styles/operator/optOut.css"/>
-
 <c:set var="showNextButton" value="false" />
 
 <form:form id="form" commandName="optOutBackingBean" action="/spring/stars/operator/program/optOut/optOutQuestions" 
