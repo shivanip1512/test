@@ -11,18 +11,19 @@ import com.cannontech.common.device.groups.model.DeviceGroupHierarchy;
 import com.cannontech.common.device.groups.service.DeviceGroupPredicateEnum;
 import com.cannontech.common.util.predicate.AggregateAndPredicate;
 import com.cannontech.common.util.predicate.Predicate;
+import com.cannontech.user.YukonUserContext;
 import com.cannontech.web.util.JsTreeNode;
 
 public class DeviceGroupTreeUtils {
 
-    public static JsTreeNode makeDeviceGroupJsTree(DeviceGroupHierarchy dgh, String rootName, NodeAttributeSettingCallback<DeviceGroup> nodeCallback) {
+    public static JsTreeNode makeDeviceGroupJsTree(DeviceGroupHierarchy dgh, String rootName, NodeAttributeSettingCallback<DeviceGroup> nodeCallback, YukonUserContext context) {
     
         DeviceGroupJsTreeBuilder builder = new DeviceGroupJsTreeBuilder();
         
-        return builder.doMakeDeviceGroupJsTree(dgh, rootName, nodeCallback, "");
+        return builder.doMakeDeviceGroupJsTree(dgh, rootName, nodeCallback, "", context);
     }
     
-    public static void setupNodeAttributes(JsTreeNode node, DeviceGroup deviceGroup, String nodeId, String rootName, String href) {
+    public static void setupNodeAttributes(JsTreeNode node, DeviceGroup deviceGroup, String nodeId, String rootName, String href, YukonUserContext context) {
         
         // set id
         node.setAttribute("id", nodeId);
@@ -40,7 +41,7 @@ public class DeviceGroupTreeUtils {
             node.setAttribute("text", rootName);
         }
         else {
-            node.setAttribute("text", deviceGroup.getName());
+            node.setAttribute("text",deviceGroup.getName(context, deviceGroup.getName()));
         }
         
         // set href

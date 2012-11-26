@@ -1,6 +1,7 @@
 package com.cannontech.web.amr.meterEventsReport.model;
 
 import java.util.Collections;
+import java.util.Comparator;
 import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
@@ -14,7 +15,6 @@ import org.joda.time.LocalDate;
 import com.cannontech.amr.meter.service.impl.MeterEventStatusTypeGroupings;
 import com.cannontech.common.bulk.collection.device.DeviceCollection;
 import com.cannontech.common.pao.attribute.model.Attribute;
-import com.cannontech.common.pao.attribute.model.AttributeNameComparator;
 import com.cannontech.common.pao.attribute.model.BuiltInAttribute;
 import com.cannontech.common.util.Range;
 import com.cannontech.common.util.TimeUtil;
@@ -125,8 +125,8 @@ public class MeterEventsReportFilterBackingBean extends ListBackingBean {
         return events;
     }
 
-    public Set<Attribute> getEnabledEventTypes() {
-        SortedSet<Attribute> events = Sets.newTreeSet(AttributeNameComparator.attributeComparator());
+    public Set<Attribute> getEnabledEventTypes(Comparator<Attribute> c) {
+        SortedSet<Attribute> events = Sets.newTreeSet(c);
         for(Entry<BuiltInAttribute, Boolean> event : meterEventTypesMap.entrySet()) {
             if (event.getValue()) {
                 events.add(event.getKey());

@@ -56,7 +56,7 @@
                         </form:select>
                     </tags:nameValue2>
                     
-                    <tags:selectNameValue nameKey=".attributes" path="selectedAttribute" items="${groupedAttributes}" itemLabel="description" itemValue="key" groupItems="true"/>
+                    <tags:selectNameValue nameKey=".attributes" path="selectedAttribute" items="${groupedAttributes}" itemValue="key" groupItems="true"/>
                     
                     <tags:checkboxNameValue id="" path="excludeBadQualities" nameKey=".empty" excludeColon="true" checkBoxDescriptionNameKey=".normalQualitiesOnly"/>
                 </tags:nameValueContainer2>

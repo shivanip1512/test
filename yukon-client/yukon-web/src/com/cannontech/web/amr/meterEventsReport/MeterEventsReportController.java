@@ -47,9 +47,11 @@ import com.cannontech.common.bulk.collection.device.DeviceCollectionFactory;
 import com.cannontech.common.bulk.collection.device.DeviceGroupCollectionHelper;
 import com.cannontech.common.device.model.SimpleDevice;
 import com.cannontech.common.i18n.MessageSourceAccessor;
+import com.cannontech.common.i18n.ObjectFormattingService;
 import com.cannontech.common.pao.PaoIdentifier;
 import com.cannontech.common.pao.attribute.model.Attribute;
 import com.cannontech.common.pao.attribute.model.BuiltInAttribute;
+import com.cannontech.common.pao.attribute.service.AttributeService;
 import com.cannontech.common.search.SearchResult;
 import com.cannontech.common.validator.SimpleValidator;
 import com.cannontech.common.validator.YukonValidationUtils;
@@ -95,7 +97,9 @@ public class MeterEventsReportController {
 	@Autowired private PointDao pointDao;
 	@Autowired private MeterEventLookupService meterEventLookupService;
 	@Autowired private DeviceGroupCollectionHelper deviceGroupCollectionHelper;
-	@Autowired private DateFormattingService dateFormattingService;
+    @Autowired private DateFormattingService dateFormattingService;
+    @Autowired private AttributeService attributeService;
+    @Autowired private ObjectFormattingService objectFormatingService;
 	
 	private final static String reportJspPath = "meterEventsReport/report.jsp";
 	private final static String baseKey = "yukon.web.modules.amr.meterEventsReport.report";
@@ -158,7 +162,7 @@ public class MeterEventsReportController {
         if (bindingResult.hasErrors()) {
             List<MessageSourceResolvable> messages = YukonValidationUtils.errorsForBindingResult(bindingResult);
             flashScope.setMessage(messages, FlashScopeMessageType.ERROR);
-            setupBackingBean(backingBean, request, attrNames);
+            setupBackingBean(backingBean, request, attrNames, userContext);
             setupCommonPageAttributes(backingBean, bindingResult, flashScope, userContext, model);
             return reportJspPath;
         }
@@ -184,7 +188,7 @@ public class MeterEventsReportController {
                                BindingResult bindingResult, FlashScope flashScope,
                                YukonUserContext userContext, String attrNames)
                                        throws ServletRequestBindingException, DeviceCollectionCreationException {
-        setupBackingBean(backingBean, request, attrNames);
+        setupBackingBean(backingBean, request, attrNames, userContext);
         setupCommonPageAttributes(backingBean, bindingResult, flashScope, userContext, model);
         setupReportFromFilter(backingBean, userContext, model);
     }
@@ -202,7 +206,7 @@ public class MeterEventsReportController {
                       YukonUserContext userContext, String attrNames) throws IOException,
                           ServletRequestBindingException, DeviceCollectionCreationException {
 
-        setupBackingBean(backingBean, request, attrNames);
+        setupBackingBean(backingBean, request, attrNames, userContext);
         MessageSourceAccessor messageSourceAccessor = messageSourceResolver.getMessageSourceAccessor(userContext);
         
         //header row
@@ -249,15 +253,17 @@ public class MeterEventsReportController {
     }
     
     private void setupBackingBean(MeterEventsReportFilterBackingBean backingBean,
-                                  HttpServletRequest request, String attrNames)
+                                  HttpServletRequest request, String attrNames, YukonUserContext userContext)
             throws ServletRequestBindingException, DeviceCollectionCreationException {
         DeviceCollection deviceCollection = deviceCollectionFactory.createDeviceCollection(request);
         backingBean.setDeviceCollection(deviceCollection);
         
         if (attrNames != null) {
             List<String> attrNamesList = Lists.newArrayList(StringUtils.split(attrNames, ","));
+            String attrName;
             for (Entry<BuiltInAttribute, Boolean> type : backingBean.getMeterEventTypesMap().entrySet()) {
-                if (attrNamesList.contains(type.getKey().name())) {
+                attrName = objectFormatingService.formatObjectAsString(type.getKey().getMessage(), userContext);
+                if (attrNamesList.contains(attrName)) {
                     type.setValue(true);
                 }
             }
@@ -283,7 +289,7 @@ public class MeterEventsReportController {
                                      YukonUserContext userContext, ModelMap model) {
         
         List<MeterPointValue> events = paoPointValueService.getMeterPointValues(Sets.newHashSet(backingBean.getDeviceCollection().getDeviceList()),
-                                                                                backingBean.getEnabledEventTypes(),
+                                                                                backingBean.getEnabledEventTypes(attributeService.getNameComparator(userContext)),
                                                                                 backingBean.getRange(),
                                                                                 backingBean.isOnlyLatestEvent() ? 1 : null,
                                                                                 backingBean.isIncludeDisabledPaos(),
@@ -331,10 +337,12 @@ public class MeterEventsReportController {
         return resultsDeviceCollection;
     }
 
-    private JSONObject getJSONObject(Map<BuiltInAttribute, Boolean> meterEventsMap) {
+    private JSONObject getJSONObject(Map<BuiltInAttribute, Boolean> meterEventsMap, YukonUserContext context) {
         JSONObject retVal = new JSONObject();
+        String attrName;
         for (Entry<BuiltInAttribute, Boolean> entry : meterEventsMap.entrySet()) {
-            retVal.put(entry.getKey().toString(), entry.getValue());
+            attrName = objectFormatingService.formatObjectAsString(entry.getKey().getMessage(),context);
+            retVal.put(attrName, entry.getValue());
         }
         return retVal;
     }
@@ -353,13 +361,13 @@ public class MeterEventsReportController {
         }
         
         model.addAttribute("backingBean", backingBean);
-        model.addAttribute("meterEventTypesMap", getJSONObject(backingBean.getMeterEventTypesMap()));
+        model.addAttribute("meterEventTypesMap", getJSONObject(backingBean.getMeterEventTypesMap(),userContext));
         
-        model.addAttribute("generalEvents", getJSONArray(MeterEventStatusTypeGroupings.getGeneral()));
-        model.addAttribute("hardwareEvents", getJSONArray(MeterEventStatusTypeGroupings.getHardware()));
-        model.addAttribute("tamperEvents", getJSONArray(MeterEventStatusTypeGroupings.getTamper()));
-        model.addAttribute("outageEvents", getJSONArray(MeterEventStatusTypeGroupings.getOutage()));
-        model.addAttribute("meteringEvents", getJSONArray(MeterEventStatusTypeGroupings.getMetering()));
+        model.addAttribute("generalEvents", getJSONArray(MeterEventStatusTypeGroupings.getGeneral(), userContext));
+        model.addAttribute("hardwareEvents", getJSONArray(MeterEventStatusTypeGroupings.getHardware(), userContext));
+        model.addAttribute("tamperEvents", getJSONArray(MeterEventStatusTypeGroupings.getTamper(), userContext));
+        model.addAttribute("outageEvents", getJSONArray(MeterEventStatusTypeGroupings.getOutage(), userContext));
+        model.addAttribute("meteringEvents", getJSONArray(MeterEventStatusTypeGroupings.getMetering(), userContext));
     }
     
     private List<MeterPointValue> getReportEvents(MeterEventsReportFilterBackingBean backingBean, YukonUserContext userContext) {
@@ -422,10 +430,10 @@ public class MeterEventsReportController {
         return null;
     }
     
-    private JSONArray getJSONArray(Set<BuiltInAttribute> originalSet) {
+    private JSONArray getJSONArray(Set<BuiltInAttribute> originalSet, YukonUserContext context) {
         List<String> strList = Lists.newArrayList();
         for (BuiltInAttribute attr: originalSet) {
-            strList.add(attr.name());
+            strList.add(objectFormatingService.formatObjectAsString(attr.getMessage(),context));
         }
         Collections.sort(strList);
         

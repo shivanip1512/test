@@ -2,13 +2,13 @@
 <%@ taglib prefix="tags" tagdir="/WEB-INF/tags" %>
 <%@ taglib prefix="i" tagdir="/WEB-INF/tags/i18n" %>
 
-<%@ attribute name="nameKey" required="true" rtexprvalue="true" %>
-<%@ attribute name="argument" required="false" type="java.lang.Object"%>
-<%@ attribute name="label" required="false" type="java.lang.Object"%>
+<%@ attribute name="nameKey" %>
+<%@ attribute name="argument" required="false" type="java.lang.Object" %>
+<%@ attribute name="label" required="false" type="java.lang.Object" %>
 <%@ attribute name="labelForId" required="false" %>
 <%@ attribute name="excludeColon" required="false" %>
-<%@ attribute name="rowId" rtexprvalue="true" %>
-<%@ attribute name="rowClass" rtexprvalue="true" %>
+<%@ attribute name="rowId" %>
+<%@ attribute name="rowClass" %>
 
 <c:choose>
 	<c:when test="${nameValueContainter2}">

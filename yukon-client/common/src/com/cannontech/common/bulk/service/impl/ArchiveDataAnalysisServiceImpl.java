@@ -59,8 +59,8 @@ import com.cannontech.core.dao.ArchiveDataAnalysisDao;
 import com.cannontech.database.data.lite.LitePoint;
 import com.cannontech.database.data.lite.LiteYukonUser;
 import com.google.common.collect.ImmutableMap;
-import com.google.common.collect.Lists;
 import com.google.common.collect.ImmutableMap.Builder;
+import com.google.common.collect.Lists;
 
 public class ArchiveDataAnalysisServiceImpl implements ArchiveDataAnalysisService {
     private Logger log = YukonLogManager.getLogger(ArchiveDataAnalysisService.class);
@@ -78,7 +78,7 @@ public class ArchiveDataAnalysisServiceImpl implements ArchiveDataAnalysisServic
     private ConfigurationSource configurationSource;
     private ArchiveDataAnalysisCollectionProducer adaCollectionProducer;
     private ArchiveDataAnalysisHelper archiveDataAnalysisHelper;
-    
+
     static {
         Builder<BuiltInAttribute, Integer> builder = ImmutableMap.builder();
         builder.put(BuiltInAttribute.LOAD_PROFILE, 1);
@@ -204,7 +204,7 @@ public class ArchiveDataAnalysisServiceImpl implements ArchiveDataAnalysisServic
             BuiltInAttribute attribute = (BuiltInAttribute)data.getAttribute();
             if(!attribute.isProfile()) {
                 throw new IllegalArgumentException("Cannot create a pofile request for non-profile attribute \"" 
-                                                       + attribute.getDescription() + "\"");
+                                                       + attribute + "\"");
             }
             
             int channel = lpAttributeChannelMap.get(attribute);
@@ -347,6 +347,7 @@ public class ArchiveDataAnalysisServiceImpl implements ArchiveDataAnalysisServic
         
         ArchiveDataAnalysisCallbackResult callbackResult = 
             new ArchiveDataAnalysisCallbackResult(resultsId, deviceCollection) {
+                @Override
                 public void doOnComplete() {
                     archiveDataAnalysisDao.updateStatus(analysisId, AdaStatus.COMPLETE, null);
                 }

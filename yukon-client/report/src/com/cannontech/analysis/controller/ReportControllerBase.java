@@ -26,6 +26,7 @@ import com.cannontech.web.util.ServletRequestEnumUtils;
 public abstract class ReportControllerBase implements ReportController {
     protected BareReportModel model = null;
     protected YukonReportBase report = null;
+    protected YukonUserContext userContext = null;
     
     public LinkedHashMap<ReportFilter,List<? extends Object>> getFilterObjectsMap(int userId) {
         LinkedHashMap<ReportFilter, List<? extends Object>> result = new LinkedHashMap<ReportFilter, List<? extends Object>>();
@@ -52,6 +53,9 @@ public abstract class ReportControllerBase implements ReportController {
     }
     
     public void setRequestParameters(HttpServletRequest req) {
+        
+        userContext = YukonUserContextUtils.getYukonUserContext(req);
+        
         if (model instanceof EnergyCompanyModelAttributes) {
             EnergyCompanyModelAttributes commonModel = (EnergyCompanyModelAttributes)model;
             commonModel.setEnergyCompanyId(report.getModel().getEnergyCompanyID());
@@ -93,6 +97,10 @@ public abstract class ReportControllerBase implements ReportController {
         }
     }
     
+    public YukonUserContext getUserContext() {
+        return userContext;
+    }
+
     @Override
     public boolean useStartStopTimes() {
         return false;

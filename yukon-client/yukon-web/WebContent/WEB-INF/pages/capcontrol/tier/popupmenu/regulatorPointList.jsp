@@ -22,7 +22,7 @@
             <c:forEach var="point" items="${mappings}">
                 <tr class="<tags:alternateRow odd="" even="altRow"/>">
                     <td>
-                        ${point.attribute.description}
+                        <cti:msg2 key="${point.attribute}"/>
                     </td>
                     <td>
                         ${point.paoName}

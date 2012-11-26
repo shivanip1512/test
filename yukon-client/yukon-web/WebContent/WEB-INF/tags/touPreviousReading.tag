@@ -24,13 +24,13 @@ table.compactResultsTable tr.vertical-middle td.name {
 		<tr class="vertical-middle">
 			<td>
 				<tags:nameValueContainer2>
-					<tags:nameValue2 nameKey=".currentReading" argument="${attributeReadings.attribute.description}">
+					<tags:nameValue2 nameKey=".currentReading" argument="<cti:msg2 key='${attributeReadings.attribute}'/>">
 						<span id="${attributeReadings.attribute.key}_latestReading">
                             <cti:pointValueFormatter format="FULL" value="${attributeReadings.previous36[0]}" />
                         </span>
 					</tags:nameValue2>
 			 		<tags:nameValueGap2 gapHeight="6px" />
-                    <tags:nameValue2 nameKey=".previousReadings" argument="${attributeReadings.attribute.description}">
+                    <tags:nameValue2 nameKey=".previousReadings" argument="<cti:msg2 key='${attributeReadings.attribute}'/>">
 					 	<select id="${attributeReadings.attribute.key}_previousReading" 
 					 	        onchange="calculatePreviousReadingDifference('${attributeReadings.attribute.key}',${attributeReadings.previous36[0].value}) ">
 					        <cti:formatDate type="DATE" var="cutOff" value="${attributeReadings.cutoffDate}" />

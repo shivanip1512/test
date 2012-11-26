@@ -6,7 +6,7 @@
         <form:hidden path="exportAttribute.attributeId"/>
         <form:hidden path="pageNameKey"/>
         <tags:nameValueContainer2>
-            <tags:selectNameValue nameKey=".attribute" path="exportAttribute.attribute" items="${groupedAttributes}" itemLabel="description" itemValue="key" groupItems="true"/>
+            <tags:selectNameValue nameKey=".attribute" path="exportAttribute.attribute" items="${groupedAttributes}" itemLabel="message" itemValue="key" groupItems="true"/>
             <tags:selectNameValue items="${dataSelection}" nameKey=".dataSelection" path="exportAttribute.dataSelection"/>
             <tags:inputNameValue nameKey=".daysPrevious" path="exportAttribute.daysPrevious"></tags:inputNameValue>
         </tags:nameValueContainer2>

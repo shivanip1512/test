@@ -23,7 +23,7 @@
                     <cti:url var="showHistoricalReadingsUrl" value="/spring/meter/historicalReadings/view">
                         <cti:param name="div_id" value="${uid}" />
                         <cti:param name="pointId" value="${pointId}" />
-                        <cti:param name="attribute" value="${attribute.key}" />
+                        <cti:param name="attribute" value="${attribute}" />
                     </cti:url>
                     <a class="f_ajaxPage pv_history labeled_icon_right history" 
                         data-selector="#${uid}" 

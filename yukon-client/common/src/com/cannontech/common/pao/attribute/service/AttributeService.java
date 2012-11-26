@@ -1,9 +1,11 @@
 package com.cannontech.common.pao.attribute.service;
 
 import java.util.Collection;
+import java.util.Comparator;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
+import java.util.SortedMap;
 
 import com.cannontech.common.device.groups.model.DeviceGroup;
 import com.cannontech.common.device.model.SimpleDevice;
@@ -179,5 +181,21 @@ public interface AttributeService {
      */
     public Map<AttributeGroup, List<BuiltInAttribute>> getGroupedAttributeMapFromCollection(
             Collection<? extends Attribute> attributes, YukonUserContext userContext);
-    
+
+    /**
+     * Returns a comparator for attributes resolved name
+     * 
+     * @param context
+     * @return
+     */
+    public Comparator<Attribute> getNameComparator(YukonUserContext context);
+
+    /**
+     * Resolves all BuiltInAttributes and returns a sorted map
+     * 
+     * @param bins
+     * @param context
+     * @return
+     */
+    public SortedMap<BuiltInAttribute, String> resolveAllToString(Set<BuiltInAttribute> bins, YukonUserContext context);
 }

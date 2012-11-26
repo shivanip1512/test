@@ -10,17 +10,17 @@
     <c:forEach items="${attributes}" var="attribute">
         <c:choose>
             <c:when test="${not supportedAttributes[attribute]}">
-	            <ct:nameValue2 nameKey=".argumentStub" argument="${attribute.description}">
+	            <ct:nameValue2 label="${attribute}">
 				    <i:inline key=".unsupported"/>
         		</ct:nameValue2>
 			</c:when>
 	        <c:when test="${not existingAttributes[attribute]}">
-    			<ct:nameValue2 nameKey=".argumentStub" argument="${attribute.description}">
+    			<ct:nameValue2 label="${attribute}">
 			        <i:inline key=".notConfigured"/>
 	    		</ct:nameValue2>
     		</c:when>
             <c:otherwise>
-            	<ct:nameValue2 nameKey=".argumentStub" argument="${attribute.description}">
+            	<ct:nameValue2 label="${attribute}">
                     <ct:attributeValue device="${device}" attribute="${attribute}"/>
 				</ct:nameValue2>
                 <c:if test="${attribute == previousReadingsAttribute}">
@@ -115,4 +115,3 @@ function ${widgetParameters.widgetId}_updateDifference() {
 <div style="text-align: right">
 	<ct:widgetActionUpdate hide="${!readable}" method="read" nameKey="readNow" container="${widgetParameters.widgetId}_results"/>
 </div>
-

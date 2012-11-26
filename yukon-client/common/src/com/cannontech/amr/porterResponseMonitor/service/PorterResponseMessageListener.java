@@ -195,7 +195,7 @@ public class PorterResponseMessageListener implements MessageListener {
             litePoint = attributeService.getPointForAttribute(yukonPao, monitor.getAttribute());
         } catch (IllegalUseOfAttribute e) {
             LogHelper.trace(log, "Attribute %s configured on PorterResponseMonitor [monitorId: %s] " +
-            		"could not be found on yukonPao [paoId: %s, paoType: %s]", monitor.getAttribute().getDescription(), 
+            		"could not be found on yukonPao [paoId: %s, paoType: %s]", monitor.getAttribute(), 
             		monitor.getMonitorId(), yukonPao.getPaoIdentifier().getPaoId(), yukonPao.getPaoIdentifier().getPaoType());
             return;
         }

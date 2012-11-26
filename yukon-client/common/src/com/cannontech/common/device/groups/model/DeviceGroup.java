@@ -4,6 +4,7 @@ import org.apache.commons.lang.Validate;
 import org.springframework.core.style.ToStringCreator;
 
 import com.cannontech.common.device.groups.dao.DeviceGroupType;
+import com.cannontech.user.YukonUserContext;
 import com.cannontech.util.NaturalOrderComparator;
 
 public abstract class DeviceGroup implements Comparable<DeviceGroup> {
@@ -25,7 +26,20 @@ public abstract class DeviceGroup implements Comparable<DeviceGroup> {
     
     public abstract boolean isHidden();
 
+    /**
+     * Method to return name of this device. If YukonUserContext is available it is preferred to use
+     * getName(context, defaultName) over this method to i18n.
+     * 
+     * @return name of device
+     * */
     public abstract String getName();
+    
+    /**
+     * Method to return name of this device. This method is preferred over getName().
+     * 
+     * @return name of device
+     * */
+    public abstract String getName(YukonUserContext context, String defaultName);
 
     public abstract DeviceGroup getParent();
 

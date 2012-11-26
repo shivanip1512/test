@@ -42,6 +42,7 @@ public class DeviceGroupUiServiceImpl implements DeviceGroupUiService {
         return hierarchy;
     }
     
+    @Override
     public DeviceGroupHierarchy getFilteredDeviceGroupHierarchy(DeviceGroupHierarchy hierarchy, Predicate<DeviceGroup> deviceGroupPredicate) {
         // recurse through children
         List<DeviceGroupHierarchy> childGroupList = Lists.newArrayListWithExpectedSize(hierarchy.getChildGroupList().size());

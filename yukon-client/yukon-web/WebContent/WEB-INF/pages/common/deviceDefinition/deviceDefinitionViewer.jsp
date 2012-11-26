@@ -104,10 +104,10 @@
 					<c:forEach var="attribute" items="${allAttributes}" >
 						<c:choose>
 							<c:when test="${attributeParam == attribute.key}">
-								<option value="${attribute.key}" selected>${attribute.description}</option>
+								<option value="${attribute.key}" selected><cti:msg2 key="${attribute}"/></option>
 							</c:when>
 							<c:otherwise>
-								<option value="${attribute.key}">${attribute.description}</option>
+								<option value="${attribute.key}"><cti:msg2 key="${attribute}"/></option>
 							</c:otherwise>
 						</c:choose>
 					</c:forEach>
@@ -214,7 +214,7 @@
 							<c:forEach var="attribute" items="${deviceInfo.attributes}" varStatus="status">
 								<tr class="<tags:alternateRow odd="" even="altRow"/>">
                                     <td>${status.index +1}</td>
-									<td>${attribute.attribute.attribute.description}</td>
+									<td><cti:msg2 key="${attribute.attribute.attribute}"/></td>
 									<td>basicLookup</td>
 									<td>Point = ${attribute.pointTemplateWrapper.pointTemplate.name}</td>
 								</tr>

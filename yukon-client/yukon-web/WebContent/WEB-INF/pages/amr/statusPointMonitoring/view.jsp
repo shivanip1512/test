@@ -28,7 +28,7 @@
             </tags:nameValue2>
             
             <tags:nameValue2 nameKey=".attribute">
-                <i:inline key="${statusPointMonitor.attribute.formatKey}"/>
+                <i:inline key="${statusPointMonitor.attribute}"/>
             </tags:nameValue2>
             
             <tags:nameValue2 nameKey=".stateGroup">

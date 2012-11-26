@@ -21,7 +21,7 @@ jQuery(document).delegate('#refreshLogs', 'click', loadOutageTable);
 
 <tags:nameValueContainer2>
     <c:forEach var="attribute" items="${attributes}">
-        <tags:nameValue2 nameKey=".argumentStub" argument="${attribute.description}">
+        <tags:nameValue2 label="${attribute}">
             <tags:attributeValue device="${meter}" attribute="${attribute}" />
         </tags:nameValue2>
     </c:forEach>

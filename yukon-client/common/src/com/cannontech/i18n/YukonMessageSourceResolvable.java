@@ -93,7 +93,6 @@ public class YukonMessageSourceResolvable extends DefaultMessageSourceResolvable
         return new YukonMessageSourceResolvable(toArray(codes, String.class), toArray(arguments, Object.class));
     }
     
-    @SuppressWarnings("unchecked")
     public static <T> T[] toArray(Iterable<? extends T> iterable, Class<T> type) {
         Collection<? extends T> collection = (iterable instanceof Collection)
         ? (Collection<? extends T>) iterable

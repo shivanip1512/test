@@ -55,6 +55,7 @@ public class TrendWidget extends WidgetControllerBase {
      * (non-Javadoc)
      * @see com.cannontech.web.widget.support.WidgetController#render(javax.servlet.http.HttpServletRequest, javax.servlet.http.HttpServletResponse)
      */
+    @Override
     public ModelAndView render(HttpServletRequest request,
             HttpServletResponse response) throws Exception {
 
@@ -183,7 +184,7 @@ public class TrendWidget extends WidgetControllerBase {
         	
         	MessageSourceResolvable chartPeriodResolvable = new YukonMessageSourceResolvable(chartPeriod.getFormatKey());
         	MessageSourceResolvable converterTypeResolvable = new YukonMessageSourceResolvable(attributeGraphType.getConverterType().getFormatKey() + ".label");
-        	MessageSourceResolvable attributeResolvable = new YukonMessageSourceResolvable(attribute.getFormatKey());
+        	MessageSourceResolvable attributeResolvable = attribute.getMessage();
         	
         	String title = accessor.getMessage("yukon.web.widgetClasses.TrendWidget.hasPeriod", 
         			accessor.getMessage(chartPeriodResolvable),
@@ -193,7 +194,7 @@ public class TrendWidget extends WidgetControllerBase {
 			mav.addObject("title", title);
         } else {
         	MessageSourceResolvable converterTypeResolvable = new YukonMessageSourceResolvable(attributeGraphType.getConverterType().getFormatKey() + ".label");
-        	MessageSourceResolvable attributeResolvable = new YukonMessageSourceResolvable(attribute.getFormatKey());
+        	MessageSourceResolvable attributeResolvable = attribute.getMessage();
         	
         	String title = accessor.getMessage("yukon.web.widgetClasses.TrendWidget.noPeriod",
         			accessor.getMessage(converterTypeResolvable),

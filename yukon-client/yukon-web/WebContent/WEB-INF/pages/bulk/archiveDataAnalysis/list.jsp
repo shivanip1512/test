@@ -56,7 +56,7 @@
                             <cti:formatDate value="${analysisEntry.key.runDate}" type="DATEHM"/>
                         </td>
                         <td>
-                            <cti:formatObject value="${analysisEntry.key.attribute.description}"/>
+                            <cti:msg2 key="${analysisEntry.key.attribute}"/>
                         </td>
                         <td>
                             ${analysisEntry.value}

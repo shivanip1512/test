@@ -7,7 +7,9 @@ import java.util.Set;
 import org.apache.commons.lang.StringUtils;
 
 import com.cannontech.amr.deviceread.service.GroupMeterReadResult;
+import com.cannontech.common.i18n.ObjectFormattingService;
 import com.cannontech.common.pao.attribute.model.Attribute;
+import com.cannontech.user.YukonUserContext;
 
 public class GroupMeterReadResultWrapper {
 
@@ -21,12 +23,14 @@ public class GroupMeterReadResultWrapper {
 		return this.result;
 	}
 	
-	public String getAttributesDescription() {
+	public String getAttributesDescription(YukonUserContext userContext, ObjectFormattingService objectFormattingService) {
 
 		Set<? extends Attribute> attributes = this.result.getAttributes();
 		List<String> descriptions = new ArrayList<String>();
+		String name;
 		for (Attribute attribute : attributes) {
-			descriptions.add(attribute.getDescription());
+		    name = objectFormattingService.formatObjectAsString(attribute.getMessage(), userContext);
+			descriptions.add(name);
 		}
 		
 		return StringUtils.join(descriptions, ", ");

@@ -32,6 +32,9 @@
     <entry key="yukon.common.point.pointFormatting.shortQuality.Uninitialized">!</entry>
     
     <!-- BuiltInAttribute-->
+    <!-- NOTE Changing any of the below builtInAttribute key values will directly affect dynamic Device Group names.
+          Some features store Device Groups values by name directly in the database. 
+          Therefore, changing these values will break those references. -->
     <entry key="yukon.common.attribute.builtInAttribute.BLINK_COUNT">Blink Count</entry>
     <entry key="yukon.common.attribute.builtInAttribute.CONNECTION_STATUS">Connection Status</entry>
     <entry key="yukon.common.attribute.builtInAttribute.CONTROL_POINT">Control Point</entry>
@@ -157,4 +160,5 @@
     <entry key="yukon.common.attribute.builtInAttribute.VOLTAGE_PHASE_B_OUT">Voltage Phase B Out</entry>
     <entry key="yukon.common.attribute.builtInAttribute.VOLTAGE_PHASE_C_OUT">Voltage Phase C Out</entry>
     <entry key="yukon.common.attribute.builtInAttribute.VOLTAGE_PHASE_ERROR">Voltage Phase Error</entry>
+    <!-- BuiltInAttribute see note above about changing values-->
 </properties>

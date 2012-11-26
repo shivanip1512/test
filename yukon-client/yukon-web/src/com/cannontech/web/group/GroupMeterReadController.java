@@ -31,6 +31,7 @@ import com.cannontech.common.bulk.mapper.ObjectMappingException;
 import com.cannontech.common.device.DeviceRequestType;
 import com.cannontech.common.device.groups.model.DeviceGroup;
 import com.cannontech.common.device.groups.service.DeviceGroupService;
+import com.cannontech.common.i18n.ObjectFormattingService;
 import com.cannontech.common.pao.attribute.model.Attribute;
 import com.cannontech.common.pao.attribute.model.AttributeGroup;
 import com.cannontech.common.pao.attribute.model.BuiltInAttribute;
@@ -46,14 +47,15 @@ import com.cannontech.web.util.AttributeSelectorHelperService;
 
 public class GroupMeterReadController extends MultiActionController {
 
-	private PlcDeviceAttributeReadService plcDeviceAttributeReadService;
-	private AlertService alertService;
-	private DeviceGroupService deviceGroupService;
-	private DeviceGroupCollectionHelper deviceGroupCollectionHelper;
-	private DeviceCollectionFactory deviceCollectionFactory;
-	private AttributeSelectorHelperService attributeSelectorHelperService;
-	private AttributeService attributeService;
-	
+    @Autowired private PlcDeviceAttributeReadService plcDeviceAttributeReadService;
+	@Autowired private AlertService alertService;
+	@Autowired private DeviceGroupService deviceGroupService;
+	@Autowired private DeviceGroupCollectionHelper deviceGroupCollectionHelper;
+	@Autowired private AttributeSelectorHelperService attributeSelectorHelperService;
+	@Autowired private AttributeService attributeService;
+    @Autowired private ObjectFormattingService objectFormattingService;
+    private DeviceCollectionFactory deviceCollectionFactory;
+
 	// HOME (GROUP)
 	public ModelAndView homeGroup(HttpServletRequest request, HttpServletResponse response) throws ServletException {
 		
@@ -143,7 +145,7 @@ public class GroupMeterReadController extends MultiActionController {
 		
 		ModelAndView mav = new ModelAndView("redirect:resultDetail");
 		ModelAndView errorMav = new ModelAndView("redirect:" + errorPage);
-		YukonUserContext userContext = YukonUserContextUtils.getYukonUserContext(request);
+		final YukonUserContext userContext = YukonUserContextUtils.getYukonUserContext(request);
 		
 		// attribute
 		Set<Attribute> selectedAttributes = attributeSelectorHelperService.getAttributeSet(request, null, null);
@@ -175,7 +177,7 @@ public class GroupMeterReadController extends MultiActionController {
                 
                 resolvableTemplate.addData("completedCount", completedCount);
                 resolvableTemplate.addData("percentSuccess", (float)successCount *100 / completedCount);
-                resolvableTemplate.addData("attributesDescription", resultWrapper.getAttributesDescription());
+                resolvableTemplate.addData("attributesDescription", resultWrapper.getAttributesDescription(userContext, objectFormattingService));
                 resolvableTemplate.addData("resultKey", result.getKey());
                 
                 if (result.isExceptionOccured()) {
@@ -291,39 +293,9 @@ public class GroupMeterReadController extends MultiActionController {
     private String makeSelectedAttributeStrsParameter(Set<Attribute> attributeParameters) {
         return StringUtils.join(attributeParameters, ",");
     }
-	
-	@Autowired
-	public void setPlcDeviceAttributeReadService(PlcDeviceAttributeReadService plcDeviceAttributeReadService) {
-		this.plcDeviceAttributeReadService = plcDeviceAttributeReadService;
-	}
-	
-	@Autowired
-	public void setAlertService(AlertService alertService) {
-		this.alertService = alertService;
-	}
-	
-	@Autowired
-	public void setDeviceGroupService(DeviceGroupService deviceGroupService) {
-		this.deviceGroupService = deviceGroupService;
-	}
-	
-	@Autowired
-	public void setDeviceGroupCollectionHelper(DeviceGroupCollectionHelper deviceGroupCollectionHelper) {
-		this.deviceGroupCollectionHelper = deviceGroupCollectionHelper;
-	}
-	
-	@Resource(name="deviceCollectionFactory")
-	public void setDeviceCollectionFactory(DeviceCollectionFactory deviceCollectionFactory) {
-		this.deviceCollectionFactory = deviceCollectionFactory;
-	}
-	
-	@Autowired
-	public void setAttributeSelectorHelperService(AttributeSelectorHelperService attributeSelectorHelperService) {
-        this.attributeSelectorHelperService = attributeSelectorHelperService;
+    
+    @Resource(name="deviceCollectionFactory")
+    public void setDeviceCollectionFactory(DeviceCollectionFactory deviceCollectionFactory) {
+        this.deviceCollectionFactory = deviceCollectionFactory;
     }
-	
-	@Autowired
-	public void setAttributeService(AttributeService attributeService) {
-		this.attributeService = attributeService;
-	}
 }

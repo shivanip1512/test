@@ -59,22 +59,5 @@
         <property name="dateFormattingService" ref="dateFormattingService" />
     </bean>    
     
-    <bean id="HighBillController" class="com.cannontech.web.highBill.HighBillController" >
-        <property name="deviceDao" ref="deviceDao"/>
-        <property name="paoDao" ref="paoDao"/>
-        <property name="attributeService" ref="attributeService" />
-        <property name="peakReportService" ref="peakReportService" />
-        <property name="dateFormattingService" ref="dateFormattingService"/>
-        <property name="meterDao" ref="meterDao"/>
-        <property name="commandAuthorizationService" ref="paoCommandAuthorizationService" />
-        <property name="loadProfileService" ref="loadProfileService" />
-        <property name="friendlyExceptionResolver" ref="friendlyExceptionResolver"/>
-        <property name="simpleReportService" ref="simpleReportService"/>
-        <property name="emailService" ref="emailService"/>
-        <property name="deviceErrorTranslatorDao" ref="deviceErrorTranslator"/>
-        <property name="yukonUserDao" ref="yukonUserDao"/>
-        <property name="contactDao" ref="contactDao"/>
-        <property name="rphDao" ref="rphDao"/>
-        <property name="templateProcessorFactory" ref="templateProcessorFactory"/>
-    </bean>    
+    <bean id="HighBillController" class="com.cannontech.web.highBill.HighBillController" />
 </beans>

@@ -15,7 +15,6 @@ import javax.servlet.http.HttpServletResponse;
 
 import org.apache.commons.lang.time.DateUtils;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.beans.factory.annotation.Required;
 import org.springframework.web.bind.ServletRequestBindingException;
 import org.springframework.web.bind.ServletRequestUtils;
 import org.springframework.web.servlet.ModelAndView;
@@ -35,6 +34,7 @@ import com.cannontech.common.device.peakReport.service.PeakReportService;
 import com.cannontech.common.exception.InitiateLoadProfileRequestException;
 import com.cannontech.common.exception.PeakSummaryReportRequestException;
 import com.cannontech.common.i18n.MessageSourceAccessor;
+import com.cannontech.common.i18n.ObjectFormattingService;
 import com.cannontech.common.pao.attribute.model.BuiltInAttribute;
 import com.cannontech.common.pao.attribute.service.AttributeService;
 import com.cannontech.common.util.FriendlyExceptionResolver;
@@ -66,24 +66,26 @@ import com.cannontech.web.util.JsonView;
 @CheckRoleProperty(YukonRoleProperty.HIGH_BILL_COMPLAINT)
 public class HighBillController extends MultiActionController {
 
-    private DeviceDao deviceDao = null;
-    private PaoDao paoDao = null;
-    private AttributeService attributeService = null;
-    private PeakReportService peakReportService = null;
-    private DateFormattingService dateFormattingService = null;
-    private MeterDao meterDao = null;
-    private PaoCommandAuthorizationService commandAuthorizationService = null;
-    private LoadProfileService loadProfileService = null;
-    private FriendlyExceptionResolver friendlyExceptionResolver = null;
-    private SimpleReportService simpleReportService = null;
-    private EmailService emailService = null;
-    private DeviceErrorTranslatorDao deviceErrorTranslatorDao = null;
-    private YukonUserDao yukonUserDao = null;
-    private ContactDao contactDao = null;
-    private RawPointHistoryDao rphDao = null;
-    private TemplateProcessorFactory templateProcessorFactory = null;
-    private YukonUserContextMessageSourceResolver messageSourceResolver = null;
-    
+    // These were all @Required
+    @Autowired private DeviceDao deviceDao;
+    @Autowired private PaoDao paoDao;
+    @Autowired private AttributeService attributeService;
+    @Autowired private PeakReportService peakReportService;
+    @Autowired private DateFormattingService dateFormattingService;
+    @Autowired private MeterDao meterDao;
+    @Autowired private PaoCommandAuthorizationService commandAuthorizationService;
+    @Autowired private LoadProfileService loadProfileService;
+    @Autowired private FriendlyExceptionResolver friendlyExceptionResolver;
+    @Autowired private SimpleReportService simpleReportService;
+    @Autowired private EmailService emailService;
+    @Autowired private DeviceErrorTranslatorDao deviceErrorTranslatorDao;
+    @Autowired private YukonUserDao yukonUserDao;
+    @Autowired private ContactDao contactDao;
+    @Autowired private RawPointHistoryDao rphDao;
+    @Autowired private TemplateProcessorFactory templateProcessorFactory;
+    @Autowired private YukonUserContextMessageSourceResolver messageSourceResolver;
+    @Autowired private ObjectFormattingService objectFormattingService;
+
     final long MS_IN_A_DAY = 1000 * 60 * 60 * 24;
     
     public ModelAndView view(HttpServletRequest request, HttpServletResponse response) throws Exception, ServletException {
@@ -494,7 +496,8 @@ public class HighBillController extends MultiActionController {
             msgData.put("stopDate", stopDate);
             long numDays = (stopDate.getTime() - startDate.getTime()) / MS_IN_A_DAY;
             msgData.put("totalDays", Long.toString(numDays));
-            msgData.put("channelName", BuiltInAttribute.LOAD_PROFILE.getDescription());
+            String channelName = objectFormattingService.formatObjectAsString(BuiltInAttribute.LOAD_PROFILE.getMessage(), userContext);
+            msgData.put("channelName", channelName);
             
             // determine pointId in order to build report URL
             LitePoint litePoint = attributeService.getPointForAttribute(deviceDao.getYukonDevice(device), BuiltInAttribute.LOAD_PROFILE);
@@ -597,92 +600,4 @@ public class HighBillController extends MultiActionController {
         return days;
     }
     
-    
-    @Required
-    public void setDeviceDao(DeviceDao deviceDao) {
-        this.deviceDao = deviceDao;
-    }
-
-    @Required
-    public void setPaoDao(PaoDao paoDao) {
-        this.paoDao = paoDao;
-    }
-    
-    @Required
-    public void setAttributeService(AttributeService attributeService) {
-        this.attributeService = attributeService;
-    }
-
-    @Required
-    public void setPeakReportService(PeakReportService peakReportService) {
-        this.peakReportService = peakReportService;
-    }
-
-    @Required
-    public void setDateFormattingService(DateFormattingService dateFormattingService) {
-        this.dateFormattingService = dateFormattingService;
-    }
-
-    @Required
-    public void setMeterDao(MeterDao meterDao) {
-        this.meterDao = meterDao;
-    }
-
-    @Required
-    public void setCommandAuthorizationService(PaoCommandAuthorizationService commandAuthorizationService) {
-        this.commandAuthorizationService = commandAuthorizationService;
-    }
-
-    @Required
-    public void setLoadProfileService(LoadProfileService loadProfileService) {
-        this.loadProfileService = loadProfileService;
-    }
-    
-    @Required
-    public void setFriendlyExceptionResolver(FriendlyExceptionResolver friendlyExceptionResolver) {
-        this.friendlyExceptionResolver = friendlyExceptionResolver;
-    }
-    
-    @Required
-    public void setSimpleReportService(SimpleReportService simpleReportService) {
-        this.simpleReportService = simpleReportService;
-    }
-    
-    @Required
-    public void setEmailService(EmailService emailService) {
-        this.emailService = emailService;
-    }
-    
-    @Required
-    public void setDeviceErrorTranslatorDao(
-            DeviceErrorTranslatorDao deviceErrorTranslatorDao) {
-        this.deviceErrorTranslatorDao = deviceErrorTranslatorDao;
-    }
-    
-    @Required
-    public void setYukonUserDao(YukonUserDao yukonUserDao) {
-        this.yukonUserDao = yukonUserDao;
-    }
-    
-    @Required
-    public void setContactDao(ContactDao contactDao) {
-        this.contactDao = contactDao;
-    }
-
-    @Required
-    public void setRphDao(RawPointHistoryDao rphDao) {
-        this.rphDao = rphDao;
-    }
-    
-    @Required
-    public void setTemplateProcessorFactory(
-            TemplateProcessorFactory templateProcessorFactory) {
-        this.templateProcessorFactory = templateProcessorFactory;
-    }
-    
-    @Autowired
-    public void setMessageSourceResolver(
-            YukonUserContextMessageSourceResolver messageSourceResolver) {
-        this.messageSourceResolver = messageSourceResolver;
-    }
 }

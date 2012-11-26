@@ -14,6 +14,7 @@ import com.cannontech.amr.deviceread.dao.PlcDeviceAttributeReadService;
 import com.cannontech.amr.deviceread.service.GroupMeterReadResult;
 import com.cannontech.common.device.model.SimpleDevice;
 import com.cannontech.common.i18n.MessageSourceAccessor;
+import com.cannontech.common.i18n.ObjectFormattingService;
 import com.cannontech.common.pao.YukonDevice;
 import com.cannontech.common.pao.attribute.model.Attribute;
 import com.cannontech.core.dao.PaoDao;
@@ -36,7 +37,8 @@ public class GroupMeterReadSuccessResultsModel extends BareReportModelBase<Group
     private String resultKey;
     private List<ModelRow> data = new ArrayList<ModelRow>();
     private Set<? extends Attribute> attributes;
-    
+    @Autowired private ObjectFormattingService objectFormattingService;
+
     static public class ModelRow {
         public String deviceName;
         public String pointName;
@@ -46,6 +48,7 @@ public class GroupMeterReadSuccessResultsModel extends BareReportModelBase<Group
         public String lastResult;
     }
     
+    @Override
     public void doLoadData() {
         
         GroupMeterReadResult result = plcDeviceAttributeReadService.getResult(resultKey);
@@ -103,13 +106,13 @@ public class GroupMeterReadSuccessResultsModel extends BareReportModelBase<Group
     }
     
     @Override
-    public LinkedHashMap<String, String> getMetaInfo(YukonUserContext context) {
+    public LinkedHashMap<String, String> getMetaInfo(final YukonUserContext context) {
         MessageSourceAccessor accessor = messageSourceResolver.getMessageSourceAccessor(context);
         LinkedHashMap<String, String> info = new LinkedHashMap<String, String>();
         Function<Attribute, String> attrDesc = new Function<Attribute, String>() {
             @Override
             public String apply(Attribute from) {
-                return from.getDescription();
+                return objectFormattingService.formatObjectAsString(from.getMessage(), context);
             }
         };
         
@@ -135,10 +138,12 @@ public class GroupMeterReadSuccessResultsModel extends BareReportModelBase<Group
         return ModelRow.class;
     }
 
+    @Override
     public int getRowCount() {
         return data.size();
     }
 
+    @Override
     public String getTitle() {
         return title;
     }

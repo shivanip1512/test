@@ -15,6 +15,7 @@ import org.springframework.util.CollectionUtils;
 import com.cannontech.amr.scheduledGroupRequestExecution.dao.ScheduledGroupRequestExecutionStatus;
 import com.cannontech.amr.scheduledGroupRequestExecution.service.ScheduledGroupRequestExecutionStatusService;
 import com.cannontech.amr.scheduledGroupRequestExecution.tasks.ScheduledGroupRequestExecutionTask;
+import com.cannontech.common.i18n.ObjectFormattingService;
 import com.cannontech.common.pao.attribute.model.Attribute;
 import com.cannontech.jobs.dao.JobStatusDao;
 import com.cannontech.jobs.model.ScheduledRepeatingJob;
@@ -27,11 +28,12 @@ import com.google.common.collect.Ordering;
 
 public class ScheduledGroupRequestExecutionJobWrapperFactory {
 
-	private ScheduledGroupRequestExecutionStatusService executionStatusService;
-	private JobStatusDao jobStatusDao;
-	private JobManager jobManager;
-	private CronExpressionTagService cronExpressionTagService;
-	
+    @Autowired private ScheduledGroupRequestExecutionStatusService executionStatusService;
+	@Autowired private JobStatusDao jobStatusDao;
+	@Autowired private CronExpressionTagService cronExpressionTagService;
+    @Autowired private ObjectFormattingService objectFormattingService;
+    private JobManager jobManager;
+    
 	public ScheduledGroupRequestExecutionJobWrapper createJobWrapper(ScheduledRepeatingJob job, Date startTime, Date stopTime, YukonUserContext userContext) {
 		return new ScheduledGroupRequestExecutionJobWrapper(job, startTime, stopTime, userContext);
 	}
@@ -94,8 +96,10 @@ public class ScheduledGroupRequestExecutionJobWrapperFactory {
 		}
 		public String getAttributeDescriptions() {
 		    List<String> attrDescriptions = new ArrayList<String>();
+		    String description;
 		    for (Attribute attr : getAttributes()) {
-		        attrDescriptions.add(attr.getDescription());
+		        description = objectFormattingService.formatObjectAsString(attr.getMessage(), userContext);
+		        attrDescriptions.add(description);
 		    }
 		    return StringUtils.join(attrDescriptions, ", ");
 		}
@@ -139,6 +143,7 @@ public class ScheduledGroupRequestExecutionJobWrapperFactory {
         Ordering<Date> dateComparer = Ordering.natural().nullsLast();
         Ordering<ScheduledGroupRequestExecutionJobWrapper> jobNextRunOrdering = dateComparer
             .onResultOf(new Function<ScheduledGroupRequestExecutionJobWrapper, Date>() {
+                @Override
                 public Date apply(ScheduledGroupRequestExecutionJobWrapper from) {
                     return from.getNextRun();
                 }
@@ -151,7 +156,8 @@ public class ScheduledGroupRequestExecutionJobWrapperFactory {
 		Ordering<String> normalStringComparer = Ordering.natural();
 		Ordering<ScheduledGroupRequestExecutionJobWrapper> jobNameOrdering = normalStringComparer
 			.onResultOf(new Function<ScheduledGroupRequestExecutionJobWrapper, String>() {
-				public String apply(ScheduledGroupRequestExecutionJobWrapper from) {
+				@Override
+                public String apply(ScheduledGroupRequestExecutionJobWrapper from) {
 					return from.getName();
 				}
 			});
@@ -162,7 +168,8 @@ public class ScheduledGroupRequestExecutionJobWrapperFactory {
 	    Ordering<String> normalStringComparer = Ordering.natural().nullsFirst();
 	    Ordering<ScheduledGroupRequestExecutionJobWrapper> jobNameOrdering = normalStringComparer
 	    .onResultOf(new Function<ScheduledGroupRequestExecutionJobWrapper, String>() {
-	        public String apply(ScheduledGroupRequestExecutionJobWrapper from) {
+	        @Override
+            public String apply(ScheduledGroupRequestExecutionJobWrapper from) {
 	            return from.getDeviceGroupName();
 	        }
 	    });
@@ -173,7 +180,8 @@ public class ScheduledGroupRequestExecutionJobWrapperFactory {
 	    Ordering<String> normalStringComparer = Ordering.natural();
 	    Ordering<ScheduledGroupRequestExecutionJobWrapper> jobAttributeCommandOrdering = normalStringComparer
 	    .onResultOf(new Function<ScheduledGroupRequestExecutionJobWrapper, String>() {
-	        public String apply(ScheduledGroupRequestExecutionJobWrapper from) {
+	        @Override
+            public String apply(ScheduledGroupRequestExecutionJobWrapper from) {
 	            if (!CollectionUtils.isEmpty(from.getAttributes())) {
 	                return from.getAttributeDescriptions();
 	            }
@@ -188,7 +196,8 @@ public class ScheduledGroupRequestExecutionJobWrapperFactory {
 	    Ordering<String> normalStringComparer = Ordering.natural();
 	    Ordering<ScheduledGroupRequestExecutionJobWrapper> jobRunScheduleOrdering = normalStringComparer
 	    .onResultOf(new Function<ScheduledGroupRequestExecutionJobWrapper, String>() {
-	        public String apply(ScheduledGroupRequestExecutionJobWrapper from) {
+	        @Override
+            public String apply(ScheduledGroupRequestExecutionJobWrapper from) {
 	            return from.getScheduleDescription();
 	        }
 	    });
@@ -200,7 +209,8 @@ public class ScheduledGroupRequestExecutionJobWrapperFactory {
 	    Ordering<Date> dateComparer = Ordering.natural().nullsLast();
 	    Ordering<ScheduledGroupRequestExecutionJobWrapper> jobNextRunOrdering = dateComparer
 	    .onResultOf(new Function<ScheduledGroupRequestExecutionJobWrapper, Date>() {
-	        public Date apply(ScheduledGroupRequestExecutionJobWrapper from) {
+	        @Override
+            public Date apply(ScheduledGroupRequestExecutionJobWrapper from) {
 	            return from.getNextRun();
 	        }
 	    });
@@ -212,6 +222,7 @@ public class ScheduledGroupRequestExecutionJobWrapperFactory {
         Ordering<String> normalStringComparer = Ordering.natural();
         Ordering<ScheduledGroupRequestExecutionJobWrapper> jobStatusOrdering = normalStringComparer
         .onResultOf(new Function<ScheduledGroupRequestExecutionJobWrapper, String>() {
+            @Override
             public String apply(ScheduledGroupRequestExecutionJobWrapper from) {
                 return from.getJobStatus().name();
             }
@@ -220,23 +231,9 @@ public class ScheduledGroupRequestExecutionJobWrapperFactory {
         return result;
     }
     
-	@Autowired
-	public void setExecutionStatusService(ScheduledGroupRequestExecutionStatusService executionStatusService) {
-        this.executionStatusService = executionStatusService;
+    @Resource(name="jobManager")
+    public void setJobManager(JobManager jobManager) {
+        this.jobManager = jobManager;
     }
-	
-	@Autowired
-	public void setJobStatusDao(JobStatusDao jobStatusDao) {
-		this.jobStatusDao = jobStatusDao;
-	}
-	
-	@Resource(name="jobManager")
-	public void setJobManager(JobManager jobManager) {
-		this.jobManager = jobManager;
-	}
-	
-	@Autowired
-	public void setCronExpressionTagService(CronExpressionTagService cronExpressionTagService) {
-        this.cronExpressionTagService = cronExpressionTagService;
-    }
+    
 }

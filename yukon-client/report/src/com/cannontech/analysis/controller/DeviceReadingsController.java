@@ -1,6 +1,7 @@
 package com.cannontech.analysis.controller;
 
-import java.util.List;
+import java.util.Map;
+import java.util.Set;
 import java.util.TimeZone;
 
 import javax.servlet.http.HttpServletRequest;
@@ -18,15 +19,14 @@ import com.cannontech.analysis.report.DeviceReadingsReport;
 import com.cannontech.analysis.report.YukonReportBase;
 import com.cannontech.analysis.tablemodel.DeviceReadingsModel;
 import com.cannontech.analysis.tablemodel.ReportModelBase;
-import com.cannontech.common.i18n.MessageSourceAccessor;
 import com.cannontech.common.pao.attribute.model.Attribute;
 import com.cannontech.common.pao.attribute.model.BuiltInAttribute;
+import com.cannontech.common.pao.attribute.service.AttributeService;
 import com.cannontech.i18n.YukonUserContextMessageSourceResolver;
 import com.cannontech.servlet.YukonUserContextUtils;
 import com.cannontech.spring.YukonSpringHook;
 import com.cannontech.user.YukonUserContext;
 import com.cannontech.util.ServletUtil;
-import com.google.common.collect.Lists;
 import com.google.common.collect.Sets;
 
 public class DeviceReadingsController extends ReportControllerBase {
@@ -37,11 +37,14 @@ public class DeviceReadingsController extends ReportControllerBase {
     
 	private ReportFilter[] filterModelTypes = new ReportFilter[] {ReportFilter.GROUPS, ReportFilter.DEVICE};
 
+	private AttributeService attributeService;
+	
     public DeviceReadingsController() {
         super();
         model = YukonSpringHook.getBean("deviceReadingsModel", DeviceReadingsModel.class);
         report = new DeviceReadingsReport(model);
         resolver = YukonSpringHook.getBean("yukonUserContextMessageSourceResolver", YukonUserContextMessageSourceResolver.class);
+        attributeService = YukonSpringHook.getBean(AttributeService.class);
     }
 
     @Override
@@ -112,13 +115,11 @@ public class DeviceReadingsController extends ReportControllerBase {
 
     @Override
     public String getHTMLOptionsTable() {
-        DeviceReadingsModel contextModel = (DeviceReadingsModel) model;
-        final MessageSourceAccessor accessor = resolver.getMessageSourceAccessor(contextModel.getUserContext());
         
-        List<BuiltInAttribute> measuredAttributes = Lists.newArrayList(Sets.difference(Sets.newHashSet(BuiltInAttribute.values()), BuiltInAttribute.getRfnEventTypes()));
-        BuiltInAttribute.sort(measuredAttributes, accessor);
-        List<BuiltInAttribute> eventAttributes = Lists.newArrayList(BuiltInAttribute.getRfnEventTypes());
-        BuiltInAttribute.sort(eventAttributes, accessor);
+        Set<BuiltInAttribute> measuredAttributeSet= Sets.difference(Sets.newHashSet(BuiltInAttribute.values()), BuiltInAttribute.getRfnEventTypes());
+        
+        Map<BuiltInAttribute, String> measuredAttributes =  attributeService.resolveAllToString(measuredAttributeSet, super.getUserContext());
+        Map<BuiltInAttribute, String> eventAttributes =  attributeService.resolveAllToString(BuiltInAttribute.getRfnEventTypes(), super.getUserContext());
         
         final StringBuilder sb = new StringBuilder();
         sb.append("<table style='padding: 10px;' class='TableCell'>" + LINE_SEPARATOR);
@@ -128,13 +129,13 @@ public class DeviceReadingsController extends ReportControllerBase {
         sb.append("    <td class='main'>" + LINE_SEPARATOR);
         sb.append("      <select id=\"dataAttribute\" name=\"dataAttribute\">" + LINE_SEPARATOR);
         sb.append("        <optgroup label=\"Measured Attributes\">" + LINE_SEPARATOR);
-        for (BuiltInAttribute attribute : measuredAttributes) {
-            sb.append("        <option value=\"" + attribute + "\">" + attribute.getDescription() + "</option>" + LINE_SEPARATOR);
+        for (BuiltInAttribute attribute : measuredAttributes.keySet()) {
+            sb.append("        <option value=\"" + attribute + "\">" + measuredAttributes.get(attribute) + "</option>" + LINE_SEPARATOR);
         }
         sb.append("        </optgroup>" + LINE_SEPARATOR);
         sb.append("        <optgroup label=\"Event Attributes\">" + LINE_SEPARATOR);
-        for (BuiltInAttribute attribute : eventAttributes) {
-            sb.append("        <option value=\"" + attribute + "\">" + attribute.getDescription() + "</option>" + LINE_SEPARATOR);
+        for (BuiltInAttribute attribute : eventAttributes.keySet()) {
+            sb.append("        <option value=\"" + attribute + "\">" + eventAttributes.get(attribute) + "</option>" + LINE_SEPARATOR);
         }
         sb.append("        </optgroup>" + LINE_SEPARATOR);
         sb.append("      </select>" + LINE_SEPARATOR);

@@ -9,7 +9,6 @@ import java.util.Set;
 import org.springframework.context.MessageSourceResolvable;
 
 import com.cannontech.common.i18n.Displayable;
-import com.cannontech.common.i18n.DisplayableEnum;
 import com.cannontech.common.i18n.MessageSourceAccessor;
 import com.cannontech.i18n.YukonMessageSourceResolvable;
 import com.google.common.collect.ImmutableMap;
@@ -18,7 +17,7 @@ import com.google.common.collect.ImmutableSet.Builder;
 import com.google.common.collect.Sets;
 
 
-public enum BuiltInAttribute implements Attribute, DisplayableEnum {
+public enum BuiltInAttribute implements Attribute {
 
     /* NOTE: Remember to add any new attributes to point.xml for i18n'ing, too */
     
@@ -527,17 +526,12 @@ public enum BuiltInAttribute implements Attribute, DisplayableEnum {
         allGroupedAttributes = allGroupedBuilder.build();
     }
     
-    private String description;
+    private String defaultDescription;
     
-    private BuiltInAttribute(String description) {
-        this.description = description;
+    private BuiltInAttribute(String defaultDescription) {
+        this.defaultDescription = defaultDescription;
     }
-    
-    @Override
-    public String getDescription() {
-        return description;
-    }
-    
+
     public boolean isProfile() {
         return profileAttributes.contains(this);
     }
@@ -558,6 +552,10 @@ public enum BuiltInAttribute implements Attribute, DisplayableEnum {
         return allGroupedAttributes;
     }
 
+    public static Set<BuiltInAttribute> getAccumulatorAttributes() {
+        return accumulatorAttributes;
+    }
+    
     public static Set<BuiltInAttribute> getRfnEventStatusTypes() {
         return rfnEventStatusTypes;
     }
@@ -597,7 +595,7 @@ public enum BuiltInAttribute implements Attribute, DisplayableEnum {
 
     @Override
     public MessageSourceResolvable getMessage() {
-        return YukonMessageSourceResolvable.createDefault(keyPrefix + name(), description);
+        return YukonMessageSourceResolvable.createDefault(keyPrefix + name(), defaultDescription);
     }
     
     public static void sort(List<BuiltInAttribute> attributes, final MessageSourceAccessor accessor) {
@@ -610,9 +608,12 @@ public enum BuiltInAttribute implements Attribute, DisplayableEnum {
         Collections.sort(attributes, comparator);
     }
 
-    @Override
-    public String getFormatKey() {
-        return keyPrefix + name();
+    @Deprecated
+    /**
+     * Deprecated in favor of i18n of attribute names. No new references of this method should be used.
+     */
+    public String getDescription() {
+        return defaultDescription;
     }
     
 }

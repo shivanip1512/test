@@ -100,7 +100,7 @@ public class DeviceGroupWidget extends WidgetControllerBase {
         
         YukonUserContext userContext = YukonUserContextUtils.getYukonUserContext(request);
         String groupsLabel = messageSourceResolver.getMessageSourceAccessor(userContext).getMessage("yukon.web.deviceGroups.widget.groupTree.rootName");
-        JsTreeNode root = DeviceGroupTreeUtils.makeDeviceGroupJsTree(groupHierarchy, groupsLabel, new AddGroupIdInfoAndDisableCurrentGroups());
+        JsTreeNode root = DeviceGroupTreeUtils.makeDeviceGroupJsTree(groupHierarchy, groupsLabel, new AddGroupIdInfoAndDisableCurrentGroups(), userContext);
         
         JSONObject jsonObj = new JSONObject(root.toMap());
         String dataJson = jsonObj.toString();

@@ -17,13 +17,13 @@
 			<td>
 				<ct:nameValueContainer2>
 					<c:if test="${not empty usageAttribute}" >
-						<ct:nameValue2 nameKey="${usageAttribute.formatKey}" >
+						<ct:nameValue2 label="${usageAttribute}" >
 							<ct:attributeValue device="${meter}" attribute="${usageAttribute}" />
 						</ct:nameValue2>
 						<ct:nameValueGap2 gapHeight="6px" />
 					</c:if>
 					<c:if test="${not empty peakAttribute}" >
-						<ct:nameValue2 nameKey="${peakAttribute.formatKey}" >
+						<ct:nameValue2 label="${peakAttribute}" >
 							<ct:attributeValue device="${meter}" attribute="${peakAttribute}" />
 						</ct:nameValue2>
 						<ct:nameValueGap2 gapHeight="6px" />

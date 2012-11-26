@@ -52,7 +52,7 @@ public class DeviceGroupHierarchyJsonTag extends YukonTagSupport{
         	}
         }
         
-        JsTreeNode root = DeviceGroupTreeUtils.makeDeviceGroupJsTree(groupHierarchy, rootName, nodeCallback);
+        JsTreeNode root = DeviceGroupTreeUtils.makeDeviceGroupJsTree(groupHierarchy, rootName, nodeCallback, getUserContext());
         JSONObject jsonObj = new JSONObject(root.toMap());
         
         String extSelectedNodePath = null;

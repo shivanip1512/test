@@ -1,5 +1,7 @@
 package com.cannontech.analysis.controller;
 
+import java.util.Map;
+
 import javax.servlet.http.HttpServletRequest;
 
 import com.cannontech.analysis.ReportFilter;
@@ -9,6 +11,7 @@ import com.cannontech.analysis.tablemodel.MeterUsageModel;
 import com.cannontech.analysis.tablemodel.ReportModelBase;
 import com.cannontech.common.pao.attribute.model.Attribute;
 import com.cannontech.common.pao.attribute.model.BuiltInAttribute;
+import com.cannontech.common.pao.attribute.service.AttributeService;
 import com.cannontech.common.util.CtiUtilities;
 import com.cannontech.spring.YukonSpringHook;
 import com.cannontech.web.util.ServletRequestEnumUtils;
@@ -20,10 +23,13 @@ public class MeterUsageController extends ReportControllerBase {
 	private static final String ATT_EXCLUDE_DISABLED_DEVICES = "excludeDisabledDevices";
 	private static final String LINE_SEPARATOR = System.getProperty("line.separator");
 	
+	private AttributeService attributeService;
+	
 	public MeterUsageController() {
 		super();
 		model = YukonSpringHook.getBean("meterUsageModel", MeterUsageModel.class);
 		report = new MeterUsageReport(model);
+		attributeService = YukonSpringHook.getBean(AttributeService.class);
 	}
 
 	@Override
@@ -50,6 +56,7 @@ public class MeterUsageController extends ReportControllerBase {
         if (attribute != null){
             meterUsageModel.setAttribute(attribute);
         }
+        
 	}
 
 	@Override
@@ -65,7 +72,9 @@ public class MeterUsageController extends ReportControllerBase {
     @Override
     public String getHTMLOptionsTable() {
 	    final StringBuilder sb = new StringBuilder();
-        
+	    
+	    Map<BuiltInAttribute, String> accumulatorAttributes =  attributeService.resolveAllToString(BuiltInAttribute.getAccumulatorAttributes(), super.getUserContext());
+	    
 	    sb.append("<table align='center' width='90%' border='0' cellspacing='0' cellpadding='0' class='TableCell'>" + LINE_SEPARATOR);
         sb.append("  <tr>" + LINE_SEPARATOR);
         sb.append("    <td valign='top'>" + LINE_SEPARATOR);
@@ -77,10 +86,8 @@ public class MeterUsageController extends ReportControllerBase {
         sb.append("        <tr>" + LINE_SEPARATOR);
         sb.append("    		 <td class='main'>" + LINE_SEPARATOR);
         sb.append("      	   <select id=\"dataAttribute\" name=\"dataAttribute\">" + LINE_SEPARATOR);
-        for (BuiltInAttribute attribute : BuiltInAttribute.values()) {
-        	if (attribute.isAccumulator()) {
-		        sb.append("        	     <option value=\"" + attribute + "\">" + attribute.getDescription() + "</option>" + LINE_SEPARATOR);
-        	}
+        for (BuiltInAttribute attribute : accumulatorAttributes.keySet()) {
+	        sb.append("        	     <option value=\"" + attribute + "\">" + accumulatorAttributes.get(attribute) + "</option>" + LINE_SEPARATOR);
 		}
         sb.append("      	   </select>" + LINE_SEPARATOR);
         sb.append("    		 </td>" + LINE_SEPARATOR);

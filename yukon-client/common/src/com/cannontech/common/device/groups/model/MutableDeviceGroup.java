@@ -3,6 +3,7 @@ package com.cannontech.common.device.groups.model;
 import org.apache.commons.lang.Validate;
 
 import com.cannontech.common.device.groups.dao.DeviceGroupType;
+import com.cannontech.user.YukonUserContext;
 
 /**
  * This is meant as a base class for a groups that are "mutable".
@@ -47,6 +48,11 @@ public abstract class MutableDeviceGroup extends DeviceGroup {
 
     public String getName() {
         return name;
+    }
+
+    // Intentionally calling getName(), not using context or default
+    public String getName(YukonUserContext context, String defaultName) {
+        return getName();
     }
 
     public DeviceGroup getParent() {

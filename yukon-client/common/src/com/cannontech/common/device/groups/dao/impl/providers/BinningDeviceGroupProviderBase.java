@@ -12,12 +12,15 @@ import com.cannontech.common.device.groups.editor.dao.impl.YukonDeviceRowMapper;
 import com.cannontech.common.device.groups.model.DeviceGroup;
 import com.cannontech.common.device.groups.model.MutableDeviceGroup;
 import com.cannontech.common.device.model.SimpleDevice;
+import com.cannontech.common.i18n.ObjectFormattingService;
 import com.cannontech.common.pao.YukonDevice;
+import com.cannontech.common.pao.attribute.model.BuiltInAttribute;
 import com.cannontech.common.util.MappingList;
 import com.cannontech.common.util.ObjectMapper;
 import com.cannontech.common.util.SimpleSqlFragment;
 import com.cannontech.common.util.SqlFragmentSource;
 import com.cannontech.common.util.SqlStatementBuilder;
+import com.cannontech.user.YukonUserContext;
 
 /**
  * This provides support for creating "binning" dynamic device groups. A binning
@@ -32,6 +35,7 @@ import com.cannontech.common.util.SqlStatementBuilder;
  */
 public abstract class BinningDeviceGroupProviderBase<T> extends DeviceGroupProviderSqlBase {
     private SimpleJdbcOperations jdbcTemplate;
+    @Autowired private ObjectFormattingService objectFormatingService;
     
     @Override
     public Set<SimpleDevice> getChildDevices(DeviceGroup group) {
@@ -103,6 +107,9 @@ public abstract class BinningDeviceGroupProviderBase<T> extends DeviceGroupProvi
      * @return
      */
     protected String getGroupName(T bin) {
+        if (bin instanceof BuiltInAttribute) {
+            return ((BuiltInAttribute) bin).getDescription();
+        }
         return bin.toString();
     }
 
@@ -193,6 +200,14 @@ public abstract class BinningDeviceGroupProviderBase<T> extends DeviceGroupProvi
         @Override
         public boolean isHidden() {
             return false;
+        }
+
+        @Override
+        public String getName(YukonUserContext context, String defaultName) {
+            if (bin instanceof BuiltInAttribute) {
+                return objectFormatingService.formatObjectAsString(((BuiltInAttribute)bin).getMessage(), context);
+            } 
+            return defaultName;
         }
     }
 

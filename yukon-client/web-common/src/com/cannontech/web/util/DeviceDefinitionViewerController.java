@@ -3,7 +3,6 @@ package com.cannontech.web.util;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
-import java.util.Comparator;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.LinkedHashMap;
@@ -24,6 +23,7 @@ import org.springframework.web.servlet.mvc.AbstractController;
 
 import com.cannontech.common.pao.PaoType;
 import com.cannontech.common.pao.attribute.model.Attribute;
+import com.cannontech.common.pao.attribute.service.AttributeService;
 import com.cannontech.common.pao.definition.attribute.lookup.AttributeDefinition;
 import com.cannontech.common.pao.definition.dao.PaoDefinitionDao;
 import com.cannontech.common.pao.definition.model.CommandDefinition;
@@ -36,33 +36,24 @@ import com.cannontech.core.dao.StateDao;
 import com.cannontech.core.dao.UnitMeasureDao;
 import com.cannontech.database.data.lite.LiteStateGroup;
 import com.cannontech.database.data.point.PointType;
-import com.google.common.base.Function;
-import com.google.common.collect.Ordering;
+import com.cannontech.servlet.YukonUserContextUtils;
+import com.cannontech.user.YukonUserContext;
 import com.google.common.collect.Sets;
 
 public class DeviceDefinitionViewerController extends AbstractController {
 
-	private PaoDefinitionDao paoDefinitionDao;
-	private UnitMeasureDao unitMeasureDao;
-	private StateDao stateDao;
-	
+    @Autowired private PaoDefinitionDao paoDefinitionDao;
+	@Autowired private UnitMeasureDao unitMeasureDao;
+	@Autowired private StateDao stateDao;
+    @Autowired private AttributeService attributeService;
+
 	private static String[] DISPLAY_GROUP_ORDER = {"MCT", "Two Way LCR", "Signal Transmitters", "Electronic Meters", "RTU", "Virtual", "Grid Advisor", ""};
-	
-    private static Comparator<Attribute> attributeComparator() {
-        Ordering<Attribute> descriptionOrdering = Ordering.natural()
-            .onResultOf(new Function<Attribute, String>() {
-                public String apply(Attribute from) {
-                    return from.getDescription();
-                }
-            });
-        return descriptionOrdering;
-    }
 	
 	@Override
     protected ModelAndView handleRequestInternal(HttpServletRequest request, HttpServletResponse response) throws Exception {
 
+	    YukonUserContext context = YukonUserContextUtils.getYukonUserContext(request);
         ModelAndView mav = new ModelAndView("deviceDefinition/deviceDefinitionViewer.jsp");
-        
         // init
         Set<PaoDefinition> allDefinitions = paoDefinitionDao.getAllPaoDefinitions();
         Map<String, Set<PaoDefinition>> allDeviceTypes = new LinkedHashMap<String, Set<PaoDefinition>>();
@@ -70,7 +61,7 @@ public class DeviceDefinitionViewerController extends AbstractController {
         
         Set<String> allDisplayGroups = new LinkedHashSet<String>();
         Set<String> allChangeGroups = new HashSet<String>();
-        SortedSet<Attribute> allAttributes = Sets.newTreeSet(attributeComparator());
+        SortedSet<Attribute> allAttributes = Sets.newTreeSet(attributeService.getNameComparator(context));
         Set<PaoTag> allTags = new HashSet<PaoTag>();
         
         // parameters
@@ -328,7 +319,7 @@ public class DeviceDefinitionViewerController extends AbstractController {
 			
 			this.attribute = attribute;
 			if (attribute instanceof AttributeDefinition) {
-                AttributeDefinition basicAttributeLookup = (AttributeDefinition) attribute;
+                AttributeDefinition basicAttributeLookup = attribute;
                 
                 this.pointTemplateWrapper = new PointTemplateWrapper(deviceDefiniton, basicAttributeLookup.getPointTemplate());
             }
@@ -369,19 +360,5 @@ public class DeviceDefinitionViewerController extends AbstractController {
 		public List<String> getPointNames() {
 			return pointNames;
 		}
-	}
-	
-	
-	@Autowired
-	public void setPaoDefinitionDao(PaoDefinitionDao paoDefinitionDao) {
-		this.paoDefinitionDao = paoDefinitionDao;
-	}
-	@Autowired
-	public void setUnitMeasureDao(UnitMeasureDao unitMeasureDao) {
-		this.unitMeasureDao = unitMeasureDao;
-	}
-	@Autowired
-	public void setStateDao(StateDao stateDao) {
-		this.stateDao = stateDao;
 	}
 }

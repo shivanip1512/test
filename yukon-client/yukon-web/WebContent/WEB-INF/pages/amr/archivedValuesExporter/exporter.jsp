@@ -478,7 +478,7 @@
                         <tr data-row-index="${row.index}">
                             <td class="nonwrapping"><tags:hidden path="format.attributes[${row.index}].attributeId" /> <tags:hidden path="format.attributes[${row.index}].formatId" /> <tags:hidden
                                     path="format.attributes[${row.index}].attribute" /> <tags:hidden path="format.attributes[${row.index}].dataSelection" /> <tags:hidden
-                                    path="format.attributes[${row.index}].daysPrevious" /> ${fn:escapeXml(attribute.attribute.description)}</td>
+                                    path="format.attributes[${row.index}].daysPrevious" /> <i:inline key="${attribute.attribute}" /></td>
                             <td class="nonwrapping"><cti:msg2 key="${attribute.dataSelection}" />
                             </td>
                             <td class="nonwrapping">${fn:escapeXml(attribute.daysPrevious)}</td>

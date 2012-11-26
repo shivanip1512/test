@@ -7,6 +7,4 @@ import com.cannontech.common.i18n.Displayable;
  */
 public interface Attribute extends Displayable {
     public String getKey();
-
-    public String getDescription();
 }

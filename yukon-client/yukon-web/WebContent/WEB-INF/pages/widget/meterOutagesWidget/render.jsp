@@ -4,7 +4,7 @@
 <%@ taglib prefix="i" tagdir="/WEB-INF/tags/i18n"%>
 
 <ct:nameValueContainer>
-	<cti:msg2 key="${attribute.formatKey}" var="attributeName" />
+<cti:msg2 key="${attribute}" var="attributeName" />
   <ct:nameValue name="${attributeName}">
     <c:if test="${not isBlinkConfigured}">
     	<i:inline key=".blinkCountNotConfigured"/>

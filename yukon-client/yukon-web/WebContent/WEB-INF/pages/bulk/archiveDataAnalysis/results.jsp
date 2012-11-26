@@ -32,7 +32,7 @@
                 <tags:nameValueContainer2>
                     
                     <tags:nameValue2 nameKey=".attribute">
-                        ${result.analysis.attribute.description}
+                        <cti:msg2 key="${result.analysis.attribute}"/>
                     </tags:nameValue2>
                     
                     <tags:nameValue2 nameKey=".dateRange">

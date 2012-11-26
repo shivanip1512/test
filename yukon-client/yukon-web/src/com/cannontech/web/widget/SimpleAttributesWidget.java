@@ -19,11 +19,14 @@ import com.cannontech.amr.meter.dao.MeterDao;
 import com.cannontech.amr.meter.model.Meter;
 import com.cannontech.common.device.DeviceRequestType;
 import com.cannontech.common.device.model.SimpleDevice;
+import com.cannontech.common.i18n.ObjectFormattingService;
 import com.cannontech.common.pao.attribute.model.Attribute;
 import com.cannontech.common.pao.attribute.model.BuiltInAttribute;
 import com.cannontech.common.pao.attribute.service.AttributeService;
 import com.cannontech.core.dao.DeviceDao;
 import com.cannontech.database.data.lite.LiteYukonUser;
+import com.cannontech.servlet.YukonUserContextUtils;
+import com.cannontech.user.YukonUserContext;
 import com.cannontech.util.ServletUtil;
 import com.cannontech.web.widget.support.WidgetControllerBase;
 import com.cannontech.web.widget.support.WidgetParameterHelper;
@@ -35,12 +38,15 @@ public class SimpleAttributesWidget extends WidgetControllerBase {
     @Autowired private DeviceAttributeReadService deviceAttributeReadService;
     @Autowired private DeviceDao deviceDao;
     @Autowired private MeterDao meterDao;
-    
+    @Autowired private ObjectFormattingService objectFormattingService;
+
+    @Override
     public ModelAndView render(HttpServletRequest request, HttpServletResponse response) throws ServletException, Exception {
 
         ModelAndView mav = new ModelAndView("simpleAttributesWidget/render.jsp");
         LiteYukonUser user = ServletUtil.getYukonUser(request);
-        
+        YukonUserContext context = YukonUserContextUtils.getYukonUserContext(request);
+
         // device
         int deviceId = WidgetParameterHelper.getRequiredIntParameter(request, "deviceId");
         SimpleDevice device = deviceDao.getYukonDevice(deviceId);
@@ -54,6 +60,7 @@ public class SimpleAttributesWidget extends WidgetControllerBase {
         }
         
         // build infos
+        String attributeName;
         List<AttributeInfo> attributeInfos = new ArrayList<AttributeInfo>();
         for (Attribute attr : attributes) {
             
@@ -68,8 +75,8 @@ public class SimpleAttributesWidget extends WidgetControllerBase {
                 exists = attributeService.pointExistsForAttribute(device, attr);
             }
             attrInfo.setExists(exists);
-            
-            attrInfo.setDescription(attr.getDescription());
+            attributeName = objectFormattingService.formatObjectAsString(attr.getMessage(), context);
+            attrInfo.setDescription(attributeName);
             
             attributeInfos.add(attrInfo);
         }

@@ -141,7 +141,7 @@ public class ComposedGroupController {
         
         YukonUserContext userContext = YukonUserContextUtils.getYukonUserContext(request);
         String groupsLabel = messageSourceResolver.getMessageSourceAccessor(userContext).getMessage("yukon.web.deviceGroups.widget.groupTree.rootName");
-        JsTreeNode groupExtRoot = DeviceGroupTreeUtils.makeDeviceGroupJsTree(groupHierarchy, groupsLabel, null);
+        JsTreeNode groupExtRoot = DeviceGroupTreeUtils.makeDeviceGroupJsTree(groupHierarchy, groupsLabel, null, userContext);
         
         JSONObject chooseGrouptreeJsonObj = new JSONObject(groupExtRoot.toMap());
         String chooseGroupTreeJson = chooseGrouptreeJsonObj.toString();
@@ -150,12 +150,11 @@ public class ComposedGroupController {
         return "composedGroup/create.jsp";
     }
     
-    @SuppressWarnings("unchecked")
     private List<DisplayableComposedGroup> getGroupsFromPage(HttpServletRequest request) throws ServletRequestBindingException, NotFoundException {
         
         List<DisplayableComposedGroup> newDisplayableComposedGroups = new ArrayList<DisplayableComposedGroup>(2);
         
-        Enumeration parameterNames = request.getParameterNames();
+        Enumeration<?> parameterNames = request.getParameterNames();
         while (parameterNames.hasMoreElements()) {
             
             String parameterName = (String)parameterNames.nextElement();

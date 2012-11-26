@@ -47,7 +47,7 @@
                     </c:choose>
                 </tags:nameValue2>
                 <tags:nameValue2 nameKey=".attribute">
-                    ${analysis.attribute.description}
+                    <i:inline key ="${analysis.attribute}"/>
                 </tags:nameValue2>
             </tags:nameValueContainer2>
         </div>

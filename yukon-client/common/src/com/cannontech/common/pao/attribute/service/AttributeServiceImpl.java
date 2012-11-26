@@ -3,10 +3,13 @@ package com.cannontech.common.pao.attribute.service;
 import java.util.Arrays;
 import java.util.Collection;
 import java.util.Collections;
+import java.util.Comparator;
 import java.util.List;
 import java.util.Map;
+import java.util.TreeMap;
 import java.util.Map.Entry;
 import java.util.Set;
+import java.util.SortedMap;
 
 import org.apache.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -46,6 +49,7 @@ import com.cannontech.database.YukonJdbcTemplate;
 import com.cannontech.database.data.lite.LitePoint;
 import com.cannontech.database.data.point.PointBase;
 import com.cannontech.user.YukonUserContext;
+import com.google.common.base.Function;
 import com.google.common.base.Predicate;
 import com.google.common.collect.HashMultimap;
 import com.google.common.collect.ImmutableMap;
@@ -55,6 +59,7 @@ import com.google.common.collect.Lists;
 import com.google.common.collect.Maps;
 import com.google.common.collect.Multimap;
 import com.google.common.collect.Multimaps;
+import com.google.common.collect.Ordering;
 import com.google.common.collect.SetMultimap;
 import com.google.common.collect.Sets;
 
@@ -70,6 +75,7 @@ public class AttributeServiceImpl implements AttributeService {
 
     private Logger log = YukonLogManager.getLogger(AttributeServiceImpl.class);
     
+
     private Set<Attribute> readableAttributes;
     {
         Iterable<BuiltInAttribute> readableAttributes = Iterables.filter(Arrays.asList(BuiltInAttribute.values()), new Predicate<BuiltInAttribute>() {
@@ -107,7 +113,7 @@ public class AttributeServiceImpl implements AttributeService {
         
             return litePoint;
         } catch (NotFoundException nfe) {
-            throw new IllegalUseOfAttribute("Illegal use of attribute (no point): " + attribute.getDescription());
+            throw new IllegalUseOfAttribute("Illegal use of attribute (no point): " + attribute.getKey());
         }
     }
 
@@ -326,6 +332,17 @@ public class AttributeServiceImpl implements AttributeService {
     }
     
     @Override
+    public SortedMap<BuiltInAttribute, String> resolveAllToString(Set<BuiltInAttribute> bins, final YukonUserContext context) {
+        
+        SortedMap<BuiltInAttribute, String> sortedAttributes = new TreeMap<BuiltInAttribute, String>(getNameComparator(context));
+        for (BuiltInAttribute bin : bins) {
+            sortedAttributes.put(bin, objectFormattingService.formatObjectAsString(bin, context));
+        }
+        
+        return sortedAttributes;
+    }
+    
+    @Override
     public Map<AttributeGroup, List<BuiltInAttribute>> getGroupedAttributeMapFromCollection(
             Collection<? extends Attribute> attributes, YukonUserContext userContext) {
         
@@ -347,5 +364,19 @@ public class AttributeServiceImpl implements AttributeService {
         }
         return objectFormattingService.sortDisplayableValues(
                 groupedAttributesMap, userContext);
+    }
+
+    @Override
+    public Comparator<Attribute> getNameComparator(final YukonUserContext context) {
+
+        Ordering<Attribute> descriptionOrdering = Ordering.natural()
+                .onResultOf(new Function<Attribute, String>() {
+                    @Override
+                    public String apply(Attribute from) {
+                        return objectFormattingService.formatObjectAsString(from.getMessage(), context);
+                    }
+                });
+        return descriptionOrdering;
+
     }
 }

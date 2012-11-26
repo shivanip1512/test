@@ -32,7 +32,7 @@
 <ct:simpleDialog id="disconnectInfo"/>
 
 <ct:nameValueContainer altRowOn="true">
-  <ct:nameValue name="${attribute.description}">
+  <ct:nameValue2 label="${attribute}">
   <c:if test="${isConfigured}">
     <ct:attributeValue device="${device}" attribute="${attribute}" />
   </c:if>

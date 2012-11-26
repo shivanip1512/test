@@ -43,6 +43,7 @@ public abstract class DeviceGroupProviderBase implements DeviceGroupProvider {
     
     public abstract boolean isChildDevice(DeviceGroup group, YukonDevice device);
     
+    @Override
     public Set<DeviceGroup> getGroupMembership(DeviceGroup base,
             YukonDevice device) {
         Set<DeviceGroup> result = new HashSet<DeviceGroup>();

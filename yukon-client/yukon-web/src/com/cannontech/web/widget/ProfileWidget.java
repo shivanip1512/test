@@ -31,6 +31,7 @@ import com.cannontech.amr.meter.model.Meter;
 import com.cannontech.amr.toggleProfiling.service.ProfilingService;
 import com.cannontech.common.device.model.SimpleDevice;
 import com.cannontech.common.i18n.MessageSourceAccessor;
+import com.cannontech.common.i18n.ObjectFormattingService;
 import com.cannontech.common.pao.PaoType;
 import com.cannontech.common.pao.attribute.model.Attribute;
 import com.cannontech.common.pao.attribute.model.BuiltInAttribute;
@@ -86,6 +87,7 @@ public class ProfileWidget extends WidgetControllerBase {
     @Autowired private TemplateProcessorFactory templateProcessorFactory;
     @Autowired private RolePropertyDao rolePropertyDao;
     @Autowired private YukonUserContextMessageSourceResolver messageSourceResolver;
+    @Autowired private ObjectFormattingService objectFormattingService;
 
     /*
      * Long load profile email message format NOTE: Outlook will sometimes strip
@@ -150,6 +152,7 @@ public class ProfileWidget extends WidgetControllerBase {
         return supportedProfileAttributes;
     }
 
+    @Override
     public ModelAndView render(HttpServletRequest request,
                                HttpServletResponse response) throws Exception {
 
@@ -269,7 +272,7 @@ public class ProfileWidget extends WidgetControllerBase {
 
             ProfileAttributeChannel profileAttributeChannel = ProfileAttributeChannel.getForChannel(channel);
             attribute = profileAttributeChannel.getAttribute();
-            channelName = profileAttributeChannel.getAttribute().getDescription();
+            channelName = objectFormattingService.formatObjectAsString(profileAttributeChannel.getAttribute().getMessage(), userContext);
 
             LitePoint litePoint = attributeService.getPointForAttribute(deviceDao.getYukonDevice(device), attribute);
             msgData.put("channelName", channelName);
