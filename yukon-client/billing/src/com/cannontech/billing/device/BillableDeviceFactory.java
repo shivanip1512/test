@@ -52,6 +52,13 @@ public class BillableDeviceFactory {
             device = new MCT410();
             break;
 
+        case DeviceTypes.MCT420CD:
+        case DeviceTypes.MCT420CL:
+        case DeviceTypes.MCT420FD:
+        case DeviceTypes.MCT420FL:
+            device = new MCT410();  // The 420 billable fields are the same as the 410, let's just use that object
+            break;
+            
         case DeviceTypes.MCT430A:
         case DeviceTypes.MCT430S4:
         case DeviceTypes.MCT430SL:
