@@ -1,5 +1,7 @@
 package com.cannontech.dbconverter.pthistory;
 
+import com.google.common.io.LittleEndianDataInputStream;
+
 /**
  * A single timestamp of DSM2 point data.
  * @author: Aaron Lauinger
@@ -26,8 +28,7 @@ public static DSM2PointData[] loadPointData(String file) throws java.io.FileNotF
 		long fileLength = f.length();
 		
 		bin = new java.io.BufferedInputStream(new java.io.FileInputStream(f));		
-		cmp.LEDataStream.LEDataInputStream in = new cmp.LEDataStream.LEDataInputStream(bin);
-		
+		LittleEndianDataInputStream in = new LittleEndianDataInputStream(bin);
 		data = new DSM2PointData[(int) (fileLength / (4+4+2))]; //int*float*short
 				
 		for( int i = 0; i < data.length; i++ ) {

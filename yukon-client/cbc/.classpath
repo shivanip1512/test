@@ -6,7 +6,6 @@
 	<classpathentry kind="lib" path="/third-party/jaxm-api.jar"/>
 	<classpathentry kind="lib" path="/third-party/jcfield401K.jar"/>
 	<classpathentry kind="lib" path="/third-party/jcpagelayout450K.jar"/>
-	<classpathentry kind="lib" path="/third-party/led.jar"/>
 	<classpathentry kind="lib" path="/third-party/rwav.jar"/>
 	<classpathentry kind="lib" path="/third-party/saaj.jar"/>
 	<classpathentry kind="src" path="/common"/>
