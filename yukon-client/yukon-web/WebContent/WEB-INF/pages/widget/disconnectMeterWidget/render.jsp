@@ -39,7 +39,7 @@
   <c:if test="${not isConfigured}">
     <cti:msg2 key=".notConfigured" />
   </c:if>
-  </ct:nameValue>
+  </ct:nameValue2>
 </ct:nameValueContainer>
 <br>
 <div style="text-align: right">
