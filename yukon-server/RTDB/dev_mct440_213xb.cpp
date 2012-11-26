@@ -482,11 +482,6 @@ INT Mct440_213xBDevice::executeGetValue(CtiRequestMsg     *pReq,
     bool found    = false;
     int  function = -1;
 
-
-    static const string str_outage          = "outage";
-    static const string str_instantlinedata = "instantlinedata";
-    static const string str_daily_read      = "daily_read";
-
                                                                 /* ---------- GETVALUE COMMAND NOT SUPPORTED ---------- */
     if( (parse.getFlags() &  CMD_FLAG_GV_KWH) &&
         (parse.getFlags() & (CMD_FLAG_GV_RATEMASK ^ CMD_FLAG_GV_RATET)) )
@@ -530,7 +525,7 @@ INT Mct440_213xBDevice::executeGetValue(CtiRequestMsg     *pReq,
     }
 
                                                                 /* ----------------- INSTANT LINE DATA ---------------- */
-    else if( parse.isKeyValid(str_instantlinedata) )
+    else if( parse.isKeyValid("instantlinedata") )
     {
         function = EmetconProtocol::GetValue_InstantLineData;
         found    = getOperation(function, OutMessage->Buffer.BSt);
@@ -540,22 +535,30 @@ INT Mct440_213xBDevice::executeGetValue(CtiRequestMsg     *pReq,
     }
 
                                                                 /* ----------------------- OUTAGE --------------------- */
-    else if( parse.isKeyValid(str_outage) )
+    else if( parse.isKeyValid("outage") )
     {
         if( !hasDynamicInfo(CtiTableDynamicPaoInfo::Key_MCT_SSpec) )
         {
             //  we need to set it to the requested interval
             std::auto_ptr<CtiOutMessage> sspec_om(CTIDBG_new CtiOutMessage(*OutMessage));
 
-            getOperation(EmetconProtocol::GetConfig_Model, sspec_om->Buffer.BSt);
+            if( !getOperation(EmetconProtocol::GetConfig_Model, sspec_om->Buffer.BSt) )
+            {
+                CtiLockGuard<CtiLogger> doubt_guard(dout);
+                dout << CtiTime() << " **** Checkpoint - Operation GetConfig_Model not found **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
+                return NoMethod;
+            }
 
             sspec_om->Sequence      = EmetconProtocol::GetConfig_Model;
             sspec_om->MessageFlags |= MessageFlag_ExpectMore;
 
+            // make this return message disappear so it doesn't confuse the client
+            sspec_om->Request.Connection = 0;
+
             outList.push_back(sspec_om.release());
         }
 
-        int outagenum = parse.getiValue(str_outage);
+        const int outagenum = parse.getiValue("outage");
 
         if( outagenum < OUTAGE_NBR_MIN || outagenum > OUTAGE_NBR_MAX )
         {
@@ -583,7 +586,7 @@ INT Mct440_213xBDevice::executeGetValue(CtiRequestMsg     *pReq,
     }
 
                                                                 /* ---------------- DAILY READ RECENT ----------------- */
-    else if( parse.isKeyValid(str_daily_read) )
+    else if( parse.isKeyValid("daily_read") )
     {
         //  if a request is already in progress and we're not submitting a continuation/retry
         if( InterlockedCompareExchange( &_daily_read_info.request.in_progress, true, false) &&
@@ -603,8 +606,9 @@ INT Mct440_213xBDevice::executeGetValue(CtiRequestMsg     *pReq,
                 temp += printDate(_daily_read_info.request.begin);
             }
 
-            nRet  = ExecutionComplete;
             returnErrorMessage(ErrorCommandAlreadyInProgress, OutMessage, retList, temp);
+
+            nRet = ExecutionComplete;
         }
         else
         {
