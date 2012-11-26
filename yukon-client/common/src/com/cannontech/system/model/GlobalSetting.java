@@ -12,6 +12,19 @@ public class GlobalSetting {
     private String comments;
     private Instant lastChanged;
     
+    public GlobalSetting(GlobalSetting other) {
+        this.comments = other.getComments();
+        this.id = other.getId();
+        this.lastChanged = other.getLastChanged();
+        this.type = other.getType();
+        this.value = other.getValue();
+    }
+
+    public GlobalSetting(GlobalSettingType type, Object value) {
+        this.type = type;
+        this.value = value;
+    }
+
     public Integer getId() {
         return id;
     }
@@ -58,5 +71,4 @@ public class GlobalSetting {
         }
         return !value.equals(type.getDefaultValue());
     }
-
 }

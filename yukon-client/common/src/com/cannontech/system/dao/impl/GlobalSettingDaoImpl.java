@@ -99,10 +99,8 @@ public class GlobalSettingDaoImpl implements GlobalSettingDao {
             setting = findSetting(type);
             if (setting == null) {
                 // Not in Db. Need to create one for cache
-                setting = new GlobalSetting();
-                setting.setType(type);
-                setting.setValue(type.getDefaultValue());
-            } 
+                setting = new GlobalSetting(type, type.getDefaultValue());
+            }
             cache.put(type, setting);
             if (log.isDebugEnabled()) {
                 log.debug("Updating cache for " + type);
@@ -111,7 +109,7 @@ public class GlobalSettingDaoImpl implements GlobalSettingDao {
             log.debug("Cache hit for " + type);
         }
         
-        return setting;
+        return new GlobalSetting(setting);
     }
 
     /**
@@ -166,14 +164,16 @@ public class GlobalSettingDaoImpl implements GlobalSettingDao {
     private final YukonRowMapper<GlobalSetting> settingMapper = new YukonRowMapper<GlobalSetting>() {
         @Override
         public GlobalSetting mapRow(YukonResultSet rs) throws SQLException {
-            GlobalSetting setting = new GlobalSetting();
-            setting.setId(rs.getInt("GlobalSettingId"));
+            
             GlobalSettingType type = rs.getEnum(("Name"), GlobalSettingType.class);
-            setting.setType(type);
-            String value = rs.getString("Value");
-            if (value != null) {
-                setting.setValue(InputTypeFactory.convertPropertyValue(type.getType(), value));
+            Object value = null;
+            String valueStr = rs.getString("Value");
+            if (valueStr != null) {
+                value = InputTypeFactory.convertPropertyValue(type.getType(), valueStr);
             }
+            
+            GlobalSetting setting = new GlobalSetting(type, value);
+            setting.setId(rs.getInt("GlobalSettingId"));
             setting.setComments(rs.getString("Comments"));
             setting.setLastChanged(rs.getInstant("LastChangedDate"));
             

@@ -362,7 +362,7 @@ public class MultispeakController {
             LiteYukonUser user = yukonUserContext.getYukonUser();
             // update Primary CIS Vendor
             if (oldMspPrimaryCIS != mspPrimaryCIS) {
-                globalSettingUpdateDao.updateSettingValue(GlobalSettingType.MSP_PRIMARY_CB_VENDORID, String.valueOf(mspPrimaryCIS), user);
+                globalSettingUpdateDao.updateSettingValue(GlobalSettingType.MSP_PRIMARY_CB_VENDORID, mspPrimaryCIS, user);
                 //reload the search field methods since primaryCIS has changed
                 mspMeterSearchService.loadMspSearchFields(mspPrimaryCIS);
             }

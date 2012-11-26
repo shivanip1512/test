@@ -39,11 +39,12 @@ public class GlobalSettingEditorDaoImpl implements GlobalSettingEditorDao {
         yukonJdbcOperations.query(sql, new YukonRowCallbackHandler() {
             public void processRow(YukonResultSet rs) throws SQLException {
 
-                GlobalSetting setting = new GlobalSetting();
-                setting.setId(rs.getInt("GlobalSettingId"));
                 GlobalSettingType type = rs.getEnum(("Name"), GlobalSettingType.class);
-                setting.setType(type);
-                setting.setValue(InputTypeFactory.convertPropertyValue(type.getType(), rs.getString("Value")));
+                Object value = InputTypeFactory.convertPropertyValue(type.getType(), rs.getString("Value"));
+
+                GlobalSetting setting = new GlobalSetting(type,value);
+
+                setting.setId(rs.getInt("GlobalSettingId"));
                 setting.setComments(rs.getString("Comments"));
                 setting.setLastChanged(rs.getInstant("LastChangedDate"));
                 
@@ -54,9 +55,7 @@ public class GlobalSettingEditorDaoImpl implements GlobalSettingEditorDao {
         
         Set<GlobalSettingType> missing = Sets.difference(all, found);
         for (GlobalSettingType type : missing) {
-            GlobalSetting setting = new GlobalSetting();
-            setting.setType(type);
-            setting.setValue(type.getDefaultValue());
+            GlobalSetting setting = new GlobalSetting(type, type.getDefaultValue());
             settings.put(type, setting);
         }
         
