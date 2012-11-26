@@ -27,7 +27,7 @@ YEvent.observeSelectorClick('.bulkInject', function(event) {
             <span class="focusableFieldHolder">
                 <form:select path="attribute">
                     <c:forEach items="${allAttributes}" var="attribute">
-                        <form:option value="${attribute}"><cti:msg2 key="${attribute}/></form:option>
+                        <form:option value="${attribute}"><cti:msg2 key="${attribute}"/></form:option>
                     </c:forEach>
                 </form:select>
             </span>
