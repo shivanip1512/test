@@ -6,6 +6,6 @@
 	<classpathentry kind="lib" path="/third-party/altova.jar"/>
 	<classpathentry kind="src" path="/common"/>
 	<classpathentry kind="src" path="/yukonappserver"/>
-	<classpathentry kind="lib" path="/third-party/servlet-api.jar" sourcepath="/TOMCAT_SOURCE_HOME/apache-tomcat-7.0.27-src.zip"/>
+	<classpathentry kind="lib" path="/third-party/servlet-api.jar" sourcepath="/TOMCAT_SOURCE_HOME/apache-tomcat-7.0.32-src.zip"/>
 	<classpathentry kind="output" path="bin"/>
 </classpath>

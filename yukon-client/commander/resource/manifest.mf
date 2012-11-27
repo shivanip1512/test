@@ -7,7 +7,6 @@ Class-Path: ./
  loadcontrol.jar 
  yukonappserver.jar 
  SqlServer.jar 
- jtds.jar 
  ojdbc6.jar 
  servlet-api.jar 
  ../log/ 

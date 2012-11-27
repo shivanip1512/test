@@ -9,7 +9,6 @@
 	<classpathentry kind="lib" path="/third-party/saaj.jar"/>
 	<classpathentry kind="lib" path="/third-party/jfreechart.jar"/>
 	<classpathentry kind="lib" path="/third-party/jcommon.jar"/>
-	<classpathentry kind="lib" path="/third-party/jtds.jar"/>
 	<classpathentry kind="lib" path="resource"/>
 	<classpathentry kind="lib" path="/common/resource"/>
 	<classpathentry combineaccessrules="false" kind="src" path="/trending"/>

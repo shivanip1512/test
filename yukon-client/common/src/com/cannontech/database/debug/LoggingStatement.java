@@ -9,9 +9,7 @@ import java.sql.Statement;
 import org.apache.log4j.Logger;
 
 public class LoggingStatement implements Statement {
-
     private static final Logger log = DatabaseDebugHelper.getMainLogger();
-    private static final Logger logStack = DatabaseDebugHelper.getStackTraceLogger();
 
     private final Statement delegate;
 
@@ -196,5 +194,11 @@ public class LoggingStatement implements Statement {
         return delegate.unwrap(iface);
     }
 
- 
+    public void closeOnCompletion() throws SQLException {
+        delegate.closeOnCompletion();
+    }
+
+    public boolean isCloseOnCompletion() throws SQLException {
+        return delegate.isCloseOnCompletion();
+    }
 }

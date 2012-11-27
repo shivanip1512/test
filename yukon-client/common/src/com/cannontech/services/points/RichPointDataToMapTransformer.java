@@ -3,8 +3,8 @@ package com.cannontech.services.points;
 import java.util.Map;
 
 import org.springframework.integration.annotation.Transformer;
-import org.springframework.integration.core.Message;
-import org.springframework.integration.message.MessageBuilder;
+import org.springframework.integration.Message;
+import org.springframework.integration.support.MessageBuilder;
 
 import com.cannontech.core.dynamic.RichPointData;
 import com.google.common.collect.Maps;
@@ -19,7 +19,7 @@ public class RichPointDataToMapTransformer {
         result.put("paoCategory", richPointData.getPaoPointIdentifier().getPaoIdentifier().getPaoType().getPaoCategory().name());
         
         result.put("pointOffset", richPointData.getPaoPointIdentifier().getPointIdentifier().getOffset());
-        result.put("pointTypeId", richPointData.getPaoPointIdentifier().getPointIdentifier().getType());
+        result.put("pointTypeId", richPointData.getPaoPointIdentifier().getPointIdentifier().getPointType().getPointTypeId());
         
         result.put("pointId", richPointData.getPointValue().getId());
         result.put("pointValue", richPointData.getPointValue().getValue());

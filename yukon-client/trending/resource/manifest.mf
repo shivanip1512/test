@@ -11,7 +11,6 @@ Class-Path: ./
  rwav.jar 
  batik.jar 
  junit.jar 
- jtds.jar 
  SqlServer.jar 
  ojdbc6.jar 
  servlet-api.jar 

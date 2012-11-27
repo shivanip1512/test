@@ -225,6 +225,10 @@
         <signjar alias="cannon4" storepass="cti123" keystore="${basedir}/yukon-client/build/keys/jarKeyStore">
 			<fileset dir="${client.bin}">
 				<include name="*.jar"/>
+				<exclude name="activation.jar"/>
+				<exclude name="bcpkix-jdk15on-147.jar"/>
+				<exclude name="bcprov-jdk15on-147.jar"/>
+				<exclude name="mail.jar"/>
 			</fileset>
 		</signjar>
        	    

@@ -1,2 +1,2 @@
 call setjavapath.bat
-java -classpath .;%YUKON_BASE%/server/web;tools.jar;common.jar;log4j-1.2.4.jar;ojdbc6.jar;jtds.jar;SqlServer.jar;yukonappserver.jar;j2ee.jar com.cannontech.dbtools.image.ImageInserter %1
+java -classpath .;%YUKON_BASE%/server/web;tools.jar;common.jar;log4j-1.2.4.jar;yukonappserver.jar com.cannontech.dbtools.image.ImageInserter %1

@@ -1,2 +1,2 @@
 call setjavapath.bat
-java -Dsun.java2d.noddraw=true -Djava.class.path=.;%YUKON_BASE%/server/web;ojdbc6.jar;common.jar;tools.jar;jtds.jar;SqlServer.jar;yukonappserver.jar;log4j-1.2.4.jar;j2ee.jar; com.cannontech.tools.gui.DBToolsFrame
+java -Dsun.java2d.noddraw=true -classpath %YUKON_BASE%/Client/bin/tools.jar com.cannontech.tools.gui.DBToolsFrame

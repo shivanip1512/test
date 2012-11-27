@@ -9,7 +9,6 @@
 	<classpathentry kind="lib" path="/third-party/saaj.jar"/>
 	<classpathentry kind="lib" path="/third-party/jfreechart.jar"/>
 	<classpathentry kind="lib" path="/third-party/jcommon.jar"/>
-	<classpathentry kind="lib" path="/third-party/jtds.jar"/>
 	<classpathentry combineaccessrules="false" kind="src" path="/resource"/>
 	<classpathentry combineaccessrules="false" kind="src" path="/yukonappserver"/>
 	<classpathentry combineaccessrules="false" kind="src" path="/loadcontrol"/>

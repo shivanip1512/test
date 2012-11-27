@@ -23,7 +23,7 @@ import com.siemens.ct.exi.EXIFactory;
 import com.siemens.ct.exi.GrammarFactory;
 import com.siemens.ct.exi.api.sax.EXISource;
 import com.siemens.ct.exi.exceptions.EXIException;
-import com.siemens.ct.exi.grammar.Grammar;
+import com.siemens.ct.exi.grammars.Grammars;
 import com.siemens.ct.exi.helpers.DefaultEXIFactory;
 
 public class ExiParsingServiceImpl implements ExiParsingService {
@@ -48,8 +48,8 @@ public class ExiParsingServiceImpl implements ExiParsingService {
         GrammarFactory grammarFactory = GrammarFactory.newInstance();
         EXISource exiSource = null;
         try {
-            Grammar g = grammarFactory.createGrammar(informingSchema);
-            exiFactory.setGrammar(g);
+            Grammars g = grammarFactory.createGrammars(informingSchema);
+            exiFactory.setGrammars(g);
             exiSource = new EXISource(exiFactory);
         } catch (EXIException e) {
             log.error("Unable to create EXI source from informing schema: " + informingSchema.toString(), e);

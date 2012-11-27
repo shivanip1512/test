@@ -9,7 +9,6 @@ Class-Path: ./
  jcfield401K.jar 
  jcpagelayout450K.jar 
  ojdbc6.jar 
- jtds.jar 
  SqlServer.jar 
  ../log/ 
  ../export/ 

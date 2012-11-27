@@ -1,2 +1,2 @@
 call setjavapath.bat
-java -Djava.class.path=.;%YUKON_BASE%/server/web;report.jar;common.jar;ojdbc6.jar;database.jar;log4j-1.2.4.jar;jcchart401K.jar;jcfield401K.jar;jcpagelayout450k.jar;jtds.jar;SqlServer.jar;yukonappserver.jar;j2ee.jar; com.cannontech.report.mainprograms.ReportCommandLine type=daily_peaks print
+java -Djava.class.path=.;%YUKON_BASE%/server/web;report.jar;common.jar;database.jar;log4j-1.2.4.jar;jcchart401K.jar;jcfield401K.jar;jcpagelayout450k.jar;yukonappserver.jar com.cannontech.report.mainprograms.ReportCommandLine type=daily_peaks print

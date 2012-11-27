@@ -22,7 +22,6 @@
 	<classpathentry kind="lib" path="/third-party/saaj.jar"/>
 	<classpathentry kind="lib" path="/third-party/jaxm-runtime.jar"/>
 	<classpathentry kind="lib" path="/third-party/batik.jar"/>
-	<classpathentry kind="lib" path="/third-party/jtds.jar"/>
 	<classpathentry kind="lib" path="/third-party/activation.jar"/>
 	<classpathentry kind="lib" path="/third-party/mail.jar"/>
 	<classpathentry kind="lib" path="/third-party/mx4j.jar"/>

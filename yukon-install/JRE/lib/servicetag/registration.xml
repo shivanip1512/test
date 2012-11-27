@@ -11,18 +11,18 @@
       <cpuManufacturer>GenuineIntel</cpuManufacturer>
       <serialNumber>1QW25Q1</serialNumber>
    </environment>
-   <registry urn="urn:st:ea4139c4-a67c-448a-9fb9-755f9d07db7f" version="1.0">
+   <registry urn="urn:st:464cf6c1-5f4f-452f-80c7-559b809158a3" version="1.0">
       <service_tag>
-         <instance_urn>urn:st:e493bffd-d3bc-4407-8f9e-3dac647caf58</instance_urn>
-         <product_name>Java SE 6 Runtime Environment</product_name>
-         <product_version>1.6.0_31</product_version>
-         <product_urn>urn:uuid:92d1de8c-1e59-42c6-a280-1c379526bcbc</product_urn>
-         <product_parent_urn>urn:uuid:fdc90b21-018d-4cab-b866-612c7c119ed3</product_parent_urn>
-         <product_parent>Java Platform Standard Edition 6 (Java SE 6)</product_parent>
-         <product_defined_inst_id>id=1.6.0_31-b05 x86,dir=C:\Program Files (x86)\Java\jre6</product_defined_inst_id>
-         <product_vendor>Sun Microsystems</product_vendor>
+         <instance_urn>urn:st:5137c8b9-b35e-4961-8634-d43030207281</instance_urn>
+         <product_name>Java SE 7 Runtime Environment</product_name>
+         <product_version>1.7.0_09</product_version>
+         <product_urn>JSERE-007-ZZZZ</product_urn>
+         <product_parent_urn>urn:uuid:dc1704fe-264f-11dc-9482-080020a9ed93</product_parent_urn>
+         <product_parent>Java Platform Standard Edition 7 (Java SE 7)</product_parent>
+         <product_defined_inst_id>id=1.7.0_09-b05 x86,dir=C:\Program Files (x86)\Java\jre7</product_defined_inst_id>
+         <product_vendor>Oracle Corporation</product_vendor>
          <platform_arch>x86</platform_arch>
-         <timestamp>2012-04-06 14:52:25 GMT</timestamp>
+         <timestamp>2012-11-08 21:47:04 GMT</timestamp>
          <container>global</container>
          <source>Windows JRE installer</source>
          <installer_uid>-1</installer_uid>

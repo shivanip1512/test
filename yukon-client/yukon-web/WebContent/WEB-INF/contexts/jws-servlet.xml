@@ -46,22 +46,126 @@
     <!--  Any instance of JnlpController will be automatically found by the menu
           controller and the mapping handler. Defining a new JWS Client only
           requires adding a bean in this section. -->
-    
-    <bean id="jnlpTemplate" abstract="true">
-        <property name="excludedJars">
+
+    <bean class="com.cannontech.web.jws.JnlpExtensionController">
+        <property name="path" value="mail.jnlp"/>
+        <property name="title" value="Mail Libraries"/>
+        <property name="description" value="Mail libraries"/>
+        <property name="jars">
             <set>
-                <value>activation.jar</value>
-                <value>jsp-api.jar</value>
-                <value>lucene-core-2.0.0.jar</value>
-                <value>yukon-web.jar</value>
+                <value>mail.jar</value>
             </set>
         </property>
     </bean>
-    
-    <bean class="com.cannontech.web.jws.JnlpController" parent="jnlpTemplate">
+
+    <bean class="com.cannontech.web.jws.JnlpExtensionController">
+        <property name="path" value="bc.jnlp"/>
+        <property name="title" value="Bouncy Castle Libraries"/>
+        <property name="description" value="Bouncy Castle libraries"/>
+        <property name="jars">
+            <set>
+                <value>bcpkix-jdk15on-147.jar</value>
+                <value>bcprov-jdk15on-147.jar</value>
+            </set>
+        </property>
+    </bean>
+
+    <bean class="com.cannontech.web.jws.JnlpExtensionController">
+        <property name="path" value="client_libs.jnlp"/>
+        <property name="title" value="Client Libraries"/>
+        <property name="description" value="Libraries shared by all web start clients."/>
+        <property name="jars">
+            <set>
+                <value>common.jar</value>
+                <value>i18n-en_US.jar</value>
+                <value>commons-lang-2.3.jar</value>
+                <value>commons-collections-3.2.jar</value>
+                <value>commons-logging-1.1.jar</value>
+                <value>commons-dbcp-1.2.1.jar</value>
+                <value>commons-pool-1.4.jar</value>
+                <value>commons-codec-1.3.jar</value>
+                <value>xercesImpl.jar</value>
+                <value>ecs-1.4.2.jar</value>
+                <value>jdom.jar</value>
+                <value>aopalliance.jar</value>
+                <value>org.springframework.aop-3.1.3.RELEASE.jar</value>
+                <value>org.springframework.asm-3.1.3.RELEASE.jar</value>
+                <value>org.springframework.aspects-3.1.3.RELEASE.jar</value>
+                <value>org.springframework.beans-3.1.3.RELEASE.jar</value>
+                <value>org.springframework.context-3.1.3.RELEASE.jar</value>
+                <value>org.springframework.context.support-3.1.3.RELEASE.jar</value>
+                <value>org.springframework.core-3.1.3.RELEASE.jar</value>
+                <value>org.springframework.expression-3.1.3.RELEASE.jar</value>
+                <value>org.springframework.instrument-3.1.3.RELEASE.jar</value>
+                <value>org.springframework.instrument.tomcat-3.1.3.RELEASE.jar</value>
+                <value>org.springframework.jdbc-3.1.3.RELEASE.jar</value>
+                <value>org.springframework.jms-3.1.3.RELEASE.jar</value>
+                <value>org.springframework.orm-3.1.3.RELEASE.jar</value>
+                <value>org.springframework.oxm-3.1.3.RELEASE.jar</value>
+                <value>org.springframework.test-3.1.3.RELEASE.jar</value>
+                <value>org.springframework.transaction-3.1.3.RELEASE.jar</value>
+                <value>org.springframework.web-3.1.3.RELEASE.jar</value>
+                <value>org.springframework.web.portlet-3.1.3.RELEASE.jar</value>
+                <value>org.springframework.web.servlet-3.1.3.RELEASE.jar</value>
+                <value>spring-ws-1.5.6-all.jar</value>
+                <value>dom4j-1.6.1.jar</value>
+                <value>cglib-2.1.3.jar</value>
+                <value>asm.jar</value>
+                <value>asm-attrs.jar</value>
+                <value>antlr-2.7.6rc1.jar</value>
+                <value>lucene-core-3.4.0.jar</value>
+                <value>log4j-1.2.14.jar</value>
+                <value>guava-13.0.1.jar</value>
+                <value>rwav.jar</value>
+                <value>SqlServer.jar</value>
+                <value>jtds-1.3.0.jar</value>
+                <value>ojdbc6.jar</value>
+                <value>jta.jar</value>
+                <value>yukon-help.jar</value>
+                <value>commons-fileupload-1.2.1.jar</value>
+                <value>commons-io-1.3.2.jar</value>
+                <value>commons-httpclient.jar</value>
+                <value>quartz-all-1.6.0.jar</value>
+                <value>aspectjrt.jar</value>
+                <value>aspectjweaver.jar</value>
+                <value>joda-time-2.1.jar</value>
+                <value>activemq-core-5.7.0.jar</value>
+                <value>slf4j-log4j12-1.7.2.jar</value>
+                <value>kahadb-5.7.0.jar</value>
+                <value>geronimo-j2ee-management_1.1_spec-1.0.1.jar</value>
+                <value>geronimo-jms_1.1_spec-1.1.1.jar</value>
+                <value>slf4j-api-1.6.6.jar</value>
+                <value>org.osgi.core-4.1.0.jar</value>
+                <value>spring-integration-core-2.1.4.RELEASE.jar</value>
+                <value>spring-integration-jms-2.1.4.RELEASE.jar</value>
+                <value>xbean-spring-3.4.jar</value>
+                <value>jaxb-api.jar</value>
+                <value>jaxb-impl.jar</value>
+                <value>xml-apis.jar</value>
+                <value>jasypt-1.9.0.jar</value>
+                <value>jradius-client.jar</value>
+                <value>billing.jar</value>
+                <value>loadcontrol.jar</value>
+                <value>yukonappserver.jar</value>
+                <value>axis.jar</value>
+                <value>batik.jar</value>
+                <value>commons-discovery.jar</value>
+                <value>jaxm-api.jar</value>
+                <value>jaxrpc.jar</value>
+                <value>jcfield401K.jar</value>
+                <value>jcpagelayout450K.jar</value>
+                <value>saaj.jar</value>
+                <value>wsdl4j.jar</value>
+                <value>servlet-api.jar</value>
+                <value>exificient.jar</value>
+            </set>
+        </property>
+    </bean>
+
+    <bean class="com.cannontech.web.jws.JnlpController">
         <property name="path" value="dbeditor.jnlp"/>
-        <property name="appTitle" value="Database Editor"/>
-        <property name="appDescription" value="Allows users to add, modify, or remove database items in the Yukon database."/>
+        <property name="title" value="Database Editor"/>
+        <property name="description" value="Allows users to add, modify, or remove database items in the Yukon database."/>
         <property name="appMainClass" value="com.cannontech.dbeditor.DatabaseEditor"/>
         <property name="appMainClassJar" value="dbeditor.jar"/>
         <property name="appIcon" value="/WebConfig/yukon/Icons/DatabaseEditor64.gif" />
@@ -72,10 +176,10 @@
         </property>
     </bean>
     
-    <bean class="com.cannontech.web.jws.JnlpController" parent="jnlpTemplate">
+    <bean class="com.cannontech.web.jws.JnlpController">
         <property name="path" value="tdc.jnlp"/>
-        <property name="appTitle" value="Tabular Data Console"/>
-        <property name="appDescription" value="Allows users to view real-time data in tabular format."/>
+        <property name="title" value="Tabular Data Console"/>
+        <property name="description" value="Allows users to view real-time data in tabular format."/>
         <property name="appMainClass" value="com.cannontech.tdc.TDCMainFrame"/>
         <property name="appMainClassJar" value="tdc.jar"/>
         <property name="appIcon" value="/WebConfig/yukon/Icons/TDC64.gif" />
@@ -86,10 +190,10 @@
         </property>
     </bean>
     
-    <bean class="com.cannontech.web.jws.JnlpController" parent="jnlpTemplate">
+    <bean class="com.cannontech.web.jws.JnlpController">
         <property name="path" value="trending.jnlp"/>
-        <property name="appTitle" value="Trending"/>
-        <property name="appDescription" value="Allows users to view real-time data in graphical format."/>
+        <property name="title" value="Trending"/>
+        <property name="description" value="Allows users to view real-time data in graphical format."/>
         <property name="appMainClass" value="com.cannontech.graph.GraphClient"/>
         <property name="appMainClassJar" value="graph.jar"/>
         <property name="appIcon" value="/WebConfig/yukon/Icons/GraphTrending64.gif" />
@@ -100,10 +204,10 @@
         </property>
     </bean>
     
-    <bean class="com.cannontech.web.jws.JnlpController" parent="jnlpTemplate">
+    <bean class="com.cannontech.web.jws.JnlpController">
         <property name="path" value="esub.jnlp"/>
-        <property name="appTitle" value="eSubstation Editor"/>
-        <property name="appDescription" value="Allows users to create, modify, and save eSubstation drawings."/>
+        <property name="title" value="eSubstation Editor"/>
+        <property name="description" value="Allows users to create, modify, and save eSubstation drawings."/>
         <property name="appMainClass" value="com.cannontech.esub.editor.Editor"/>
         <property name="appMainClassJar" value="esub-editor.jar"/>
         <property name="appIcon" value="/WebConfig/yukon/Icons/Esubstation64.gif" />
@@ -114,10 +218,10 @@
         </property>
     </bean>
     
-    <bean class="com.cannontech.web.jws.JnlpController" parent="jnlpTemplate">
+    <bean class="com.cannontech.web.jws.JnlpController">
         <property name="path" value="commander.jnlp"/>
-        <property name="appTitle" value="Commander"/>
-        <property name="appDescription" value="Allows users to send commands to field devices."/>
+        <property name="title" value="Commander"/>
+        <property name="description" value="Allows users to send commands to field devices."/>
         <property name="appMainClass" value="com.cannontech.clientutils.commander.YukonCommander"/>
         <property name="appMainClassJar" value="yc.jar"/>
         <property name="appIcon" value="/WebConfig/yukon/Icons/Commander64.gif" />

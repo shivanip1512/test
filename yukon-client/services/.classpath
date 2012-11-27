@@ -15,7 +15,6 @@
 	<classpathentry kind="lib" path="/third-party/mx4j-jmx.jar"/>
 	<classpathentry kind="lib" path="/third-party/mx4j-tools.jar"/>
 	<classpathentry kind="src" path="/calchist"/>
-	<classpathentry kind="lib" path="/third-party/jtds.jar"/>
 	<classpathentry kind="src" path="/cbc"/>
 	<classpathentry kind="src" path="/tools"/>
 	<classpathentry kind="lib" path="/third-party/mx4j-impl.jar"/>
@@ -23,9 +22,8 @@
 	<classpathentry kind="lib" path="/third-party/mx4j-rimpl.jar"/>
 	<classpathentry kind="lib" path="/third-party/mx4j-rjmx.jar"/>
 	<classpathentry kind="lib" path="/third-party/xbean-spring-3.4.jar"/>
-	<classpathentry kind="lib" path="/third-party/org.springframework.integration-1.0.3.RELEASE.jar"/>
-	<classpathentry kind="lib" path="/third-party/org.springframework.integration.adapter-1.0.3.RELEASE.jar"/>
-	<classpathentry kind="lib" path="/third-party/org.springframework.integration.jms-1.0.3.RELEASE.jar"/>
+	<classpathentry kind="lib" path="/third-party/spring-integration-core-2.1.4.RELEASE.jar"/>
+	<classpathentry kind="lib" path="/third-party/spring-integration-jms-2.1.4.RELEASE.jar"/>
 	<classpathentry combineaccessrules="false" kind="src" path="/loadcontrol"/>
 	<classpathentry kind="output" path="bin"/>
 </classpath>

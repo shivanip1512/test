@@ -24,7 +24,6 @@ Class-Path: ./
  jcchart401K.jar 
  batik.jar 
  SqlServer.jar 
- jtds.jar 
  ojdbc6.jar 
  axis.jar 
  jaxrpc.jar 

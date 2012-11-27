@@ -17,14 +17,11 @@ import java.sql.Statement;
 import java.sql.Struct;
 import java.util.Map;
 import java.util.Properties;
+import java.util.concurrent.Executor;
 
-import org.apache.commons.lang.StringUtils;
 import org.apache.log4j.Logger;
 
-import com.cannontech.clientutils.YukonLogManager;
-
 public class LoggingConnection implements Connection {
-
     private final Connection delegate;
     private static final Logger log = DatabaseDebugHelper.getMainLogger();
     private static final Logger logStack = DatabaseDebugHelper.getStackTraceLogger();
@@ -235,5 +232,23 @@ public class LoggingConnection implements Connection {
         return delegate.unwrap(iface);
     }
 
+    public void setSchema(String schema) throws SQLException {
+        delegate.setSchema(schema);
+    }
 
+    public String getSchema() throws SQLException {
+        return delegate.getSchema();
+    }
+
+    public void abort(Executor executor) throws SQLException {
+        delegate.abort(executor);
+    }
+
+    public void setNetworkTimeout(Executor executor, int milliseconds) throws SQLException {
+        delegate.setNetworkTimeout(executor, milliseconds);
+    }
+
+    public int getNetworkTimeout() throws SQLException {
+        return delegate.getNetworkTimeout();
+    }
 }

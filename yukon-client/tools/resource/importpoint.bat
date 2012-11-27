@@ -1,2 +1,2 @@
 call setjavapath.bat
-java -Dsun.java2d.noddraw=true -classpath .;%YUKON_BASE%/server/web;tools.jar;common.jar;log4j-1.2.4.jar;ojdbc6.jar;jtds.jar;SqlServer.jar;yukonappserver.jar;j2ee.jar com.cannontech.importer.point.PointImportUtilityPanel %1
+java -Dsun.java2d.noddraw=true -classpath .;%YUKON_BASE%/server/web;tools.jar;common.jar;log4j-1.2.4.jar;yukonappserver.jar com.cannontech.importer.point.PointImportUtilityPanel %1

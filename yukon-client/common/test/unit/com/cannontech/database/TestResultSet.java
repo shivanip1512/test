@@ -23,7 +23,6 @@ import java.util.Calendar;
 import java.util.Map;
 
 public class TestResultSet implements ResultSet {
-
     @Override
     public boolean absolute(int row) throws SQLException {
         return false;
@@ -883,4 +882,13 @@ public class TestResultSet implements ResultSet {
         return null;
     }
 
+    @Override
+    public <T> T getObject(int columnIndex, Class<T> type) throws SQLException {
+        return null;
+    }
+
+    @Override
+    public <T> T getObject(String columnLabel, Class<T> type) throws SQLException {
+        return null;
+    }
 }

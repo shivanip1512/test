@@ -1,2 +1,2 @@
 call setjavapath.bat
-java -cp .;%YUKON_BASE%/server/web;tools.jar;common.jar;ojdbc6.jar;jtds.jar;SqlServer.jar;log4j-1.2.4.jar;yukonappserver.jar;mail.jar;rwav.jar;j2ee.jar com.cannontech.tools.email.Rat
+java -cp .;%YUKON_BASE%/server/web;tools.jar;common.jar;log4j-1.2.4.jar;yukonappserver.jar;mail.jar;rwav.jar com.cannontech.tools.email.Rat

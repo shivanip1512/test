@@ -5,7 +5,6 @@ Class-Path: ./
  jradius-client.jar 
  rwav.jar 
  ojdbc6.jar 
- jtds.jar 
  SqlServer.jar 
  monitor.jar 
  yukonappserver.jar 

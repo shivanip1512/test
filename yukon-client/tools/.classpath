@@ -13,7 +13,6 @@
 	<classpathentry exported="true" kind="lib" path="/third-party/jfreechart.jar"/>
 	<classpathentry exported="true" kind="lib" path="/third-party/jcommon.jar"/>
 	<classpathentry exported="true" kind="lib" path="/third-party/jloox30.jar"/>
-	<classpathentry exported="true" kind="lib" path="/third-party/jtds.jar"/>
 	<classpathentry exported="true" kind="src" path="/common"/>
 	<classpathentry kind="src" path="/esub"/>
 	<classpathentry kind="lib" path="/third-party/commons-discovery.jar"/>

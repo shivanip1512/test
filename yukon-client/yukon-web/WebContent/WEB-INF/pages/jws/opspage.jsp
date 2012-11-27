@@ -9,7 +9,7 @@
 	<tags:operationSection sectionName="Client Launcher" sectionImageName="ClientLauncherLogo">
 	    <c:forEach items="${jnlpList}" var="jnlp">
 	        <tags:sectionLink>
-	            <a href="javascript:jwsLaunch('<cti:url value="/jws/${jnlp.path}"/>')">${jnlp.appTitle}</a>
+	            <a href="javascript:jwsLaunch('<cti:url value="/jws/${jnlp.path}"/>')">${jnlp.title}</a>
 	        </tags:sectionLink>
 	    </c:forEach>
 	</tags:operationSection>

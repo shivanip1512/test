@@ -3,7 +3,6 @@ Main-Class: com.cannontech.palm.client.ClientFrame
 Class-Path: ./ 
  common.jar 
  yukonappserver.jar 
- jtds.jar 
  SqlServer.jar 
  ojdbc6.jar 
  ../log/ 

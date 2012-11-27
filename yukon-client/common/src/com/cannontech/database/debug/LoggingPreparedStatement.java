@@ -26,9 +26,7 @@ import java.util.Calendar;
 import org.apache.log4j.Logger;
 
 public class LoggingPreparedStatement implements PreparedStatement {
-
     private static final Logger log = DatabaseDebugHelper.getMainLogger();
-    private static final Logger logStack = DatabaseDebugHelper.getStackTraceLogger();
 
     private final PreparedStatement delegate;
     private String initialSql = "";
@@ -342,6 +340,7 @@ public class LoggingPreparedStatement implements PreparedStatement {
         delegate.setTimestamp(parameterIndex, x);
     }
 
+    @SuppressWarnings("deprecation")
     public void setUnicodeStream(int parameterIndex, InputStream x, int length) throws SQLException {
         delegate.setUnicodeStream(parameterIndex, x, length);
     }
@@ -456,5 +455,11 @@ public class LoggingPreparedStatement implements PreparedStatement {
         return delegate.unwrap(iface);
     }
 
- 
+    public void closeOnCompletion() throws SQLException {
+        delegate.closeOnCompletion();
+    }
+
+    public boolean isCloseOnCompletion() throws SQLException {
+        return delegate.isCloseOnCompletion();
+    }
 }

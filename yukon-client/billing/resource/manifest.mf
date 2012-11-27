@@ -16,7 +16,6 @@ Class-Path: ./
  jcfield401K.jar 
  jcpagelayout450K.jar 
  jradius-client.jar 
- jtds.jar 
  junit.jar 
  mail.jar 
  rwav.jar 

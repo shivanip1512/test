@@ -12,7 +12,6 @@ Class-Path: ./
  yukonappserver.jar 
  rwav.jar 
  ojdbc6.jar 
- jtds.jar 
  SqlServer.jar 
  servlet-api.jar 
  ../images 

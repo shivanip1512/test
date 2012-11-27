@@ -14,10 +14,10 @@
 
 <td>
 <a href="${jnlp.path}">
-  ${jnlp.appTitle}
+  ${jnlp.title}
 </a>
 <br>
-<span class="description">${jnlp.appDescription}</span>
+<span class="description">${jnlp.description}</span>
 </td>
 </tr>
 </c:forEach>
