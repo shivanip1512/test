@@ -94,7 +94,7 @@ treeInit = function() {
         </tags:nameValueContainer2>
     
         <tags:boxContainer2 nameKey="feedersContainer" hideEnabled="false" styleClass="padBottom bankMoveContainer">
-            <jsTree:inlineTree id="feederTree" width="500" treeParameters="{onPostInit: treeInit()}"/>
+            <jsTree:inlineTree id="feederTree" width="500" height="300" treeParameters="{onPostInit: treeInit()}"/>
         </tags:boxContainer2>
 
         <div id="controlOrders" class="padBottom clear"></div>
