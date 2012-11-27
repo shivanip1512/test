@@ -33,7 +33,7 @@ import com.google.common.collect.ImmutableSet;
 
 public class DigiGatewayBuilder implements HardwareTypeExtensionProvider {
 
-    private Logger log = YukonLogManager.getLogger(DigiGatewayBuilder.class);
+    private final Logger log = YukonLogManager.getLogger(DigiGatewayBuilder.class);
     
     private @Autowired PaoPersistenceService paoPersistenceService;
     private @Autowired GatewayDeviceDao gatewayDeviceDao;
@@ -72,7 +72,7 @@ public class DigiGatewayBuilder implements HardwareTypeExtensionProvider {
         digiGateway.setFirmwareVersion(hardware.getFirmwareVersion());
         digiGateway.setMacAddress(hardware.getMacAddress());
         
-        paoPersistenceService.createPao(digiGateway, PaoType.DIGIGATEWAY);
+        paoPersistenceService.createPaoWithDefaultPoints(digiGateway, PaoType.DIGIGATEWAY);
         
         //Update the Stars table with the device id
         inventoryBaseDao.updateInventoryBaseDeviceId(hardware.getInventoryId(), 

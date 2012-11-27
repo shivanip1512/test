@@ -18,11 +18,11 @@ public interface PaoPersistenceService {
     public <T extends CompleteYukonPao> T retreivePao(PaoIdentifier paoIdentifier, Class<T> klass);
     
     /**
-     * This method is used to create a PAO of a specific type using default points for that type.
+     * This method is used to create a PAO of a specific type with default set of points.
      * @param pao The PAO to be inserted into the database.
      * @param paoType The PaoType of the object being inserted.
      */
-    public void createPao(CompleteYukonPao pao, PaoType paoType);
+    public void createPaoWithDefaultPoints(CompleteYukonPao pao, PaoType paoType);
     
     /**
      * This method is used to create a PAO of a specific type using custom points. This method is 

@@ -26,9 +26,9 @@ import com.cannontech.common.pao.service.PaoPersistenceService;
 public class CapControlCreationServiceImpl implements CapControlCreationService {
     private static final Logger log = YukonLogManager.getLogger(CapControlCreationServiceImpl.class);
 
-    private @Autowired PaoPersistenceService paoPersistenceService;
-    private @Autowired DeviceConfigurationDao deviceConfigurationDao;
-    private @Autowired PaoDefinitionDao paoDefinitionDao;
+    @Autowired private PaoPersistenceService paoPersistenceService;
+    @Autowired private DeviceConfigurationDao deviceConfigurationDao;
+    @Autowired private PaoDefinitionDao paoDefinitionDao;
 	
     @Override
     @Transactional
@@ -48,7 +48,7 @@ public class CapControlCreationServiceImpl implements CapControlCreationService 
         pao.setDisabled(disabled);
         pao.setPaoName(name);
         
-        paoPersistenceService.createPao(pao, paoType);
+        paoPersistenceService.createPaoWithDefaultPoints(pao, paoType);
         
         if (paoDefinitionDao.isTagSupported(paoType, PaoTag.DEVICE_CONFIGURATION_DNP)) {
             if (config == null || config.getType() != ConfigurationType.DNP) {
@@ -98,7 +98,7 @@ public class CapControlCreationServiceImpl implements CapControlCreationService 
             }
         }
         
-        paoPersistenceService.createPao(pao, paoType);
+        paoPersistenceService.createPaoWithDefaultPoints(pao, paoType);
         
         return pao.getPaoIdentifier();
     }

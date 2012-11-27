@@ -221,7 +221,7 @@ public class CapControlImportServiceImpl implements CapControlImportService {
         pao.setSerialNumber(cbcImportData.getCbcSerialNumber());
         pao.setPaoName(cbcImportData.getCbcName());
         
-        paoPersistenceService.createPao(pao, cbcImportData.getCbcType());
+        paoPersistenceService.createPaoWithDefaultPoints(pao, cbcImportData.getCbcType());
         
         if (commChannel != null && commChannel.getPaoIdentifier().getPaoType() == PaoType.TCPPORT) {
             // In this case we need to add some PaoProperty entries.
@@ -498,7 +498,7 @@ public class CapControlImportServiceImpl implements CapControlImportService {
         }
 
         CompleteYukonPao pao = createHierarchyCompletePao(hierarchyImportData, results);
-        paoPersistenceService.createPao(pao, hierarchyImportData.getPaoType());
+        paoPersistenceService.createPaoWithDefaultPoints(pao, hierarchyImportData.getPaoType());
         int childId = pao.getPaObjectId();
         
         // This will throw if the parent doesn't exist, preventing creation of the child, as

@@ -9,8 +9,9 @@
     </description>
 
     <bean class="com.cannontech.common.pao.service.impl.PaoPersistenceServiceImpl"/>
-    
     <bean class="com.cannontech.common.pao.service.impl.PaoCreationHelper"/>
-    <bean class="com.cannontech.common.pao.dao.impl.PaoSelectionDaoImpl"/>
     <bean class="com.cannontech.common.pao.service.impl.PaoSelectionServiceImpl"/>
+    
+    <bean class="com.cannontech.common.pao.dao.impl.PaoPersistenceDaoImpl"/>
+    <bean class="com.cannontech.common.pao.dao.impl.PaoSelectionDaoImpl"/>
 </beans>

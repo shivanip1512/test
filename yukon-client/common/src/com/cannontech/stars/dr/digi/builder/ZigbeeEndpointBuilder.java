@@ -31,7 +31,7 @@ import com.google.common.collect.ImmutableSet.Builder;
 
 public class ZigbeeEndpointBuilder implements HardwareTypeExtensionProvider {
 
-    private Logger log = YukonLogManager.getLogger(ZigbeeEndpointBuilder.class);
+    private final Logger log = YukonLogManager.getLogger(ZigbeeEndpointBuilder.class);
     
     private @Autowired PaoPersistenceService paoPersistenceService;
     private @Autowired ZigbeeDeviceDao zigbeeDeviceDao;
@@ -97,7 +97,7 @@ public class ZigbeeEndpointBuilder implements HardwareTypeExtensionProvider {
         zbEndpoint.setInstallCode(hardware.getInstallCode());
         zbEndpoint.setMacAddress(hardware.getMacAddress());
 
-        paoPersistenceService.createPao(zbEndpoint, PaoType.ZIGBEE_ENDPOINT);
+        paoPersistenceService.createPaoWithDefaultPoints(zbEndpoint, PaoType.ZIGBEE_ENDPOINT);
         
         //Update the Stars table with the device id
         inventoryBaseDao.updateInventoryBaseDeviceId(hardware.getInventoryId(), 

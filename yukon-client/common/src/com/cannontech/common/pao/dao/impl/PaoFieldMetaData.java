@@ -1,4 +1,4 @@
-package com.cannontech.common.pao.service.impl;
+package com.cannontech.common.pao.dao.impl;
 
 import java.beans.PropertyDescriptor;
 import java.lang.reflect.InvocationTargetException;
@@ -12,7 +12,6 @@ import org.joda.time.Instant;
 import com.cannontech.clientutils.YukonLogManager;
 import com.cannontech.common.pao.annotation.YukonPaoField;
 import com.cannontech.common.pao.annotation.YukonPaoPart;
-import com.cannontech.common.pao.service.PaoPersistenceService;
 import com.cannontech.database.YNBoolean;
 import com.cannontech.database.YukonResultSet;
 import com.google.common.base.Function;
@@ -45,7 +44,7 @@ import com.google.common.base.Function;
      * {@link YukonPaoField} annotation. In many cases, it is omitted on the YukonPaoField 
      * annotation and the default value of <code>propertyDescriptor.getName()</code> is used,
      * but in special cases where the column name doesn't match what we refer to the field
-     * as in the code, dbColumnName tells the {@link PaoPersistenceService} how to get the 
+     * as in the code, dbColumnName tells the PaoPersistenceDao how to get the 
      * data from the Complete object to its rightful column in the database.
      */
     private String dbColumnName;

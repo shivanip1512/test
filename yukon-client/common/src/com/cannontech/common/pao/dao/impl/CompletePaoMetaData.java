@@ -1,16 +1,15 @@
-package com.cannontech.common.pao.service.impl;
+package com.cannontech.common.pao.dao.impl;
 
 import java.beans.PropertyDescriptor;
 
 import com.cannontech.common.pao.annotation.YukonPao;
 import com.cannontech.common.pao.annotation.YukonPaoField;
 import com.cannontech.common.pao.annotation.YukonPaoPart;
-import com.cannontech.common.pao.service.PaoPersistenceService;
 import com.google.common.collect.Lists;
 
 /**
  * This class is used to represent the metadata in the {@link YukonPao} or 
- * {@link YukonPaoPart} annotations of classes used with the {@link PaoPersistenceService}. 
+ * {@link YukonPaoPart} annotations of classes used with the PaoPersistenceDao. 
  * 
  * The purpose of this class is to be used in an ordered list of CompletePaoMetaData objects
  * as a way of defining an entire Complete object for database retrieval, insertions, updates,

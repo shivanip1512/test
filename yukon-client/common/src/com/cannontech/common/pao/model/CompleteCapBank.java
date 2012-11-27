@@ -131,7 +131,7 @@ public class CompleteCapBank extends CompleteDevice {
 
     @Override
     public String toString() {
-        return "CompleteCapBankBase [operationalState=" + operationalState + ", controlDeviceId="
+        return "CompleteCapBank [operationalState=" + operationalState + ", controlDeviceId="
                + controlDeviceId + ", controlPointId=" + controlPointId + ", bankSize=" + bankSize
                + ", recloseDelay=" + recloseDelay + ", maxDailyOps=" + maxDailyOps
                + ", typeOfSwitch=" + typeOfSwitch + ", controllerType=" + controllerType

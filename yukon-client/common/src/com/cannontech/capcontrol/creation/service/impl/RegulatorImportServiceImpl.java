@@ -6,15 +6,15 @@ import org.springframework.beans.factory.annotation.Autowired;
 
 import com.cannontech.capcontrol.creation.service.RegulatorImportService;
 import com.cannontech.capcontrol.dao.VoltageRegulatorDao;
+import com.cannontech.common.csvImport.CsvImportResult;
+import com.cannontech.common.csvImport.CsvImportResultType;
+import com.cannontech.common.csvImport.ImportAction;
 import com.cannontech.common.csvImport.ImportData;
 import com.cannontech.common.csvImport.ImportFileFormat;
 import com.cannontech.common.csvImport.ImportFileValidator;
-import com.cannontech.common.csvImport.CsvImportResult;
-import com.cannontech.common.csvImport.CsvImportResultType;
+import com.cannontech.common.csvImport.ImportResult;
 import com.cannontech.common.csvImport.ImportRow;
 import com.cannontech.common.csvImport.ImportValidationResult;
-import com.cannontech.common.csvImport.ImportAction;
-import com.cannontech.common.csvImport.ImportResult;
 import com.cannontech.common.csvImport.types.RegulatorType;
 import com.cannontech.common.csvImport.types.StrictBoolean;
 import com.cannontech.common.pao.YukonPao;
@@ -47,6 +47,7 @@ public class RegulatorImportServiceImpl implements RegulatorImportService {
     /**
      * Retrieves the format for regulator import files.
      */
+    @Override
     public ImportFileFormat getFormat() {
         return importFormat;
     }
@@ -55,6 +56,7 @@ public class RegulatorImportServiceImpl implements RegulatorImportService {
      * Runs an import of the supplied import data. Each row is validated, then imported if there are
      * no validation errors.
      */
+    @Override
     public List<ImportResult> startImport(ImportData importData) {
         List<ImportResult> results = Lists.newArrayList();
         
@@ -111,7 +113,7 @@ public class RegulatorImportServiceImpl implements RegulatorImportService {
         }
         
         RegulatorType type = RegulatorType.valueOf(row.getValue("TYPE"));
-        paoPersistenceService.createPao(regulator, type.getPaoType());
+        paoPersistenceService.createPaoWithDefaultPoints(regulator, type.getPaoType());
         return new CsvImportResult(ImportAction.ADD, CsvImportResultType.SUCCESS, name);
     }
     

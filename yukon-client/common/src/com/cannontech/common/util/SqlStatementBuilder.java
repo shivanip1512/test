@@ -48,10 +48,10 @@ import com.google.common.collect.Lists;
  *   sql.append("  and id").in(idList); // appends "in (...)", handles arguments like appendArgumentList
  */
 public class SqlStatementBuilder implements SqlFragmentSource, SqlBuilder {
-    private DeferedSqlFragmentHelper base = new DeferedSqlFragmentHelper();
+    private final DeferedSqlFragmentHelper base = new DeferedSqlFragmentHelper();
     
     private static class SpaceAppendingSqlFragmentSource implements SqlFragmentSource {
-        private SqlFragmentSource delegate;
+        private final SqlFragmentSource delegate;
         public SpaceAppendingSqlFragmentSource(SqlFragmentSource delegate) {
             this.delegate = delegate;
         }
@@ -90,6 +90,7 @@ public class SqlStatementBuilder implements SqlFragmentSource, SqlBuilder {
         base.appendArgument(arg);
     }
     
+    @Override
     public SqlStatementBuilder appendFragment(SqlFragmentSource fragment) {
         base.appendFragment(new SpaceAppendingSqlFragmentSource(fragment));
         return this;
@@ -99,6 +100,7 @@ public class SqlStatementBuilder implements SqlFragmentSource, SqlBuilder {
     /* (non-Javadoc)
      * @see com.cannontech.common.util.SqlBuilder#appendList(java.lang.Object[])
      */
+    @Override
     public SqlStatementBuilder appendList(Object[] array) {
         addString(convertToSqlLikeList(Arrays.asList(array)));
         appendSpace();
@@ -108,6 +110,7 @@ public class SqlStatementBuilder implements SqlFragmentSource, SqlBuilder {
     /* (non-Javadoc)
      * @see com.cannontech.common.util.SqlBuilder#appendList(java.util.Collection)
      */
+    @Override
     public SqlStatementBuilder appendList(Collection<?> array) {
         addString(convertToSqlLikeList(array));
         appendSpace();
@@ -117,6 +120,7 @@ public class SqlStatementBuilder implements SqlFragmentSource, SqlBuilder {
     /* (non-Javadoc)
      * @see com.cannontech.common.util.SqlBuilder#append(java.lang.Object)
      */
+    @Override
     public SqlStatementBuilder append(Object... args) {
         for (int i = 0; i < args.length; i++) {
             Object object = args[i];
@@ -193,6 +197,7 @@ public class SqlStatementBuilder implements SqlFragmentSource, SqlBuilder {
         addString(" ");
     }
     
+    @Override
     public SqlStatementBuilder eq(Object argument) {
         addString("= ");
         appendArgument(argument);
@@ -222,6 +227,7 @@ public class SqlStatementBuilder implements SqlFragmentSource, SqlBuilder {
         return this;
     }
     
+    @Override
     public SqlStatementBuilder neq(Object argument) {
         addString("!= ");
         appendArgument(argument);
@@ -246,35 +252,46 @@ public class SqlStatementBuilder implements SqlFragmentSource, SqlBuilder {
         return this;
     }
     
+    @Override
     public SqlStatementBuilder lt(Object argument) {
         addString("< ");
         appendArgument(argument);
         return this;
     }
     
+    @Override
     public SqlStatementBuilder gt(Object argument) {
         addString("> ");
         appendArgument(argument);
         return this;
     }
     
+    @Override
     public SqlStatementBuilder gte(Object argument) {
         addString(">= ");
         appendArgument(argument);
         return this;
     }
     
+    @Override
     public SqlStatementBuilder lte(Object argument) {
         addString("<= ");
         appendArgument(argument);
         return this;
     }
     
+    @Override
     public SqlStatementBuilder in(Iterable<?> list) {
         addString("in (");
         appendArgumentList(list);
         addString(") ");
         return this;
+    }
+    
+    @Override
+    public SqlStatementBuilder notIn(Iterable<?> list) {
+        addString("not ");
+        return in(list);
     }
 
     public SqlStatementBuilder set(String columnName, Object value, Object... remaining) {
@@ -308,6 +325,7 @@ public class SqlStatementBuilder implements SqlFragmentSource, SqlBuilder {
         return this;
     }
     
+    @Override
     public SqlStatementBuilder in(SqlFragmentSource sqlFragmentSource) {
         addString("in (");
         appendFragment(sqlFragmentSource);
@@ -315,18 +333,27 @@ public class SqlStatementBuilder implements SqlFragmentSource, SqlBuilder {
         return this;
     }
     
+    @Override
+    public SqlStatementBuilder notIn(SqlFragmentSource sqlFragmentSource) {
+        addString("not ");
+        return in(sqlFragmentSource);
+    }
+    
+    @Override
     public SqlStatementBuilder startsWith(String argument) {
         addString("like ");
         appendArgument(argument + "%");
         return this;
     }
     
+    @Override
     public SqlStatementBuilder endsWith(String argument) {
         addString("like ");
         appendArgument("%" + argument);
         return this;
     }
     
+    @Override
     public SqlStatementBuilder contains(String argument) {
         addString("like ");
         appendArgument("%" + argument + "%");
@@ -336,6 +363,7 @@ public class SqlStatementBuilder implements SqlFragmentSource, SqlBuilder {
     /* (non-Javadoc)
      * @see com.cannontech.common.util.SqlBuilder#appendArgument(java.lang.Object)
      */
+    @Override
     public SqlStatementBuilder appendArgument(Object argument) {
         addString("? ");
     	addArgument(argument);
@@ -345,6 +373,7 @@ public class SqlStatementBuilder implements SqlFragmentSource, SqlBuilder {
     /* (non-Javadoc)
      * @see com.cannontech.common.util.SqlBuilder#appendArgumentList(java.util.Collection)
      */
+    @Override
     public SqlStatementBuilder appendArgumentList(Iterable<?> objects) {
         Iterator<?> iter = objects.iterator();
         if(!iter.hasNext()) {
@@ -495,6 +524,7 @@ public class SqlStatementBuilder implements SqlFragmentSource, SqlBuilder {
     	return base.getSql();
     }
     
+    @Override
     public List<Object> getArgumentList() {
     	return Collections.unmodifiableList(base.getArgumentList());
     }
