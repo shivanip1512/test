@@ -50,6 +50,7 @@ public class VendorSpecificSqlBuilderFactory implements InitializingBean {
             /* (non-Javadoc)
              * @see com.cannontech.database.vendor.VendorSpecificSqlBuilder#buildFor(com.cannontech.database.vendor.DatabaseVendor)
              */
+            @Override
             public SqlBuilder buildFor(DatabaseVendor ... vendors) {
                 boolean isUsefulForMyDb = Arrays.asList(vendors).contains(currentVendor);
                 
@@ -67,6 +68,7 @@ public class VendorSpecificSqlBuilderFactory implements InitializingBean {
             /* (non-Javadoc)
              * @see com.cannontech.database.vendor.VendorSpecificSqlBuilder#buildOther()
              */
+            @Override
             public SqlBuilder buildOther() {
                 if (usefulSqlSource != null) {
                     // we already found our match
@@ -136,6 +138,16 @@ public class VendorSpecificSqlBuilderFactory implements InitializingBean {
         @Override
         public SqlBuilder in(Iterable<?> list) {
             return this;
+        }
+        
+        @Override
+        public SqlBuilder notIn(Iterable<?> list) {
+            return null;
+        }
+        
+        @Override
+        public SqlBuilder notIn(SqlFragmentSource sqlFragmentSource) {
+            return null;
         }
 
         @Override

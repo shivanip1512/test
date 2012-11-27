@@ -79,6 +79,10 @@ public interface SqlBuilder {
     
     public SqlBuilder in(SqlFragmentSource sqlFragmentSource);
     
+    public SqlBuilder notIn(Iterable<?> list);
+    
+    public SqlBuilder notIn(SqlFragmentSource sqlFragmentSource);
+    
     public SqlBuilder startsWith(String argument);
     
     public SqlBuilder endsWith(String argument);

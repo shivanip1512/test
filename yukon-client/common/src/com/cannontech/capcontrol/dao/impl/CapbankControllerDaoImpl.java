@@ -6,11 +6,10 @@ import java.util.List;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.jdbc.core.simple.ParameterizedRowMapper;
+import org.springframework.transaction.annotation.Transactional;
 
 import com.cannontech.capcontrol.dao.CapbankControllerDao;
 import com.cannontech.capcontrol.model.LiteCapControlObject;
-import com.cannontech.common.pao.PaoCategory;
-import com.cannontech.common.pao.PaoClass;
 import com.cannontech.common.pao.PaoType;
 import com.cannontech.common.pao.YukonPao;
 import com.cannontech.common.pao.attribute.model.BuiltInAttribute;
@@ -115,15 +114,18 @@ public class CapbankControllerDaoImpl implements CapbankControllerDao {
     }
 
     @Override
+    @Transactional
     public SearchResult<LiteCapControlObject> getOrphans(final int start, final int count) {
+        SqlStatementBuilder controlSql = new SqlStatementBuilder();
+        controlSql.append("SELECT DISTINCT ControlDeviceId");
+        controlSql.append("FROM CapBank");
+        
         /* Get the unordered total count */
         SqlStatementBuilder sql = new SqlStatementBuilder();
         sql.append("SELECT COUNT(*)");
         sql.append("FROM YukonPAObject");
-        sql.append("  WHERE Category").eq(PaoCategory.DEVICE);
-        sql.append("    AND PAOClass").eq(PaoClass.CAPCONTROL);
-        sql.append("    AND type like 'CBC%'");
-        sql.append("    AND PAObjectID not in (SELECT ControlDeviceID FROM CAPBANK)");
+        sql.append("WHERE Type").in(PaoType.getCbcTypes());
+        sql.append("    AND PAObjectID").notIn(controlSql);
 
         int orphanCount = yukonJdbcTemplate.queryForInt(sql.getSql(), sql.getArguments());
 
@@ -131,10 +133,8 @@ public class CapbankControllerDaoImpl implements CapbankControllerDao {
         sql = new SqlStatementBuilder();
         sql.append("SELECT PAObjectID, PAOName, Type, Description");
         sql.append("FROM YukonPAObject");
-        sql.append("  WHERE Category").eq(PaoCategory.DEVICE);
-        sql.append("    AND PAOClass").eq(PaoClass.CAPCONTROL);
-        sql.append("    AND type like 'CBC%'");
-        sql.append("    AND PAObjectID not in (SELECT ControlDeviceID FROM CAPBANK)");
+        sql.append("WHERE Type").in(PaoType.getCbcTypes());
+        sql.append("    AND PAObjectID").notIn(controlSql);
         sql.append("ORDER BY PAOName");
 
         PagingResultSetExtractor<LiteCapControlObject> cbcOrphanExtractor =

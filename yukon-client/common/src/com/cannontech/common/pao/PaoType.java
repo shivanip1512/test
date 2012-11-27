@@ -389,4 +389,7 @@ public enum PaoType implements DatabaseRepresentationSource {
     	return getDbString();
     }
 
+    public static ImmutableSet<PaoType> getCbcTypes() {
+        return cbcTypes;
+    }
 }
