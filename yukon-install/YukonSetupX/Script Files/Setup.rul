@@ -141,7 +141,7 @@ begin
     	goto Dialog_MasterConfig;
     endif;
     if(bOptYes) then
-    	sProg = TARGETDIR ^ "\\client\\bin\\DBToolsFrame.bat";
+    	sProg = TARGETDIR ^ "\\Client\\bin\\DBToolsFrame.bat";
 		LaunchAppAndWait(sProg, "", LAAW_OPTION_WAIT);
     endif;
     
@@ -400,7 +400,7 @@ begin
     	//make sure CMD window is not hidden, so we can see logs
    		LaunchApplication("", "", "", SW_NORMAL, 0, LAAW_OPTION_WAIT);
    		//launch DBTF
-    	sProg = TARGETDIR ^ "\\client\\bin\\DBToolsFrame.bat";
+    	sProg = TARGETDIR ^ "\\Client\\bin\\DBToolsFrame.bat";
 		LaunchAppAndWait(sProg, "", LAAW_OPTION_WAIT);
     endif;
     Enable(BACKBUTTON);
