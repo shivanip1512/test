@@ -4,8 +4,6 @@ public class CTIDatabase {
     private String version = null;
     private Integer build = null;
     
-    public CTIDatabase() { }
-    
     public CTIDatabase(String version, Integer build) {
         this.version = version;
         this.build = build;

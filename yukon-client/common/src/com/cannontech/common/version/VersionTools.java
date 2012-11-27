@@ -3,23 +3,24 @@ package com.cannontech.common.version;
 import java.io.IOException;
 import java.io.InputStream;
 import java.net.URL;
-import java.sql.Connection;
-import java.sql.PreparedStatement;
-import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.Enumeration;
+import java.util.List;
 import java.util.Map;
 import java.util.jar.Manifest;
 
+import org.springframework.dao.DataAccessException;
 import org.springframework.jdbc.BadSqlGrammarException;
 import org.springframework.jdbc.core.JdbcOperations;
 
 import com.cannontech.clientutils.CTILogger;
-import com.cannontech.common.util.CtiUtilities;
+import com.cannontech.common.util.SqlStatementBuilder;
 import com.cannontech.database.JdbcTemplateHelper;
-import com.cannontech.database.PoolManager;
-import com.cannontech.database.SqlUtils;
+import com.cannontech.database.YukonJdbcTemplate;
+import com.cannontech.database.YukonResultSet;
+import com.cannontech.database.YukonRowMapper;
 import com.cannontech.database.db.version.CTIDatabase;
+import com.cannontech.spring.YukonSpringHook;
 import com.google.common.collect.Maps;
 
 public final class VersionTools {
@@ -37,16 +38,6 @@ public final class VersionTools {
 
     public static final String VERSION_UNKNOWN = "unknown";
     public static final String VERSION_UNDEFINED = "undefined";
-
-    // we need a set of query strings for backward compatibility
-    // since this is used in DBUpdates that get executed before
-    // the DB structure is changed
-    private static final String[] QUERY_STRS = {
-        // latest query string is first!
-    	"SELECT Version, Build FROM CTIDatabase ORDER BY Version DESC, Build DESC",
-    	// really old databases may not have the Build column
-        "SELECT Version FROM CTIDatabase ORDER BY Version DESC"
-    };
 
     /**
      * VersionTools constructor comment.
@@ -68,33 +59,46 @@ public final class VersionTools {
             return db_obj;
         }
 
-        db_obj = new CTIDatabase();
-        Connection conn =
-            PoolManager.getInstance().getConnection(CtiUtilities.getDatabaseAlias());
-        PreparedStatement stat = null;
-        ResultSet rs = null;
+        YukonJdbcTemplate yukonJdbcTemplate = YukonSpringHook.getBean("simpleJdbcTemplate", YukonJdbcTemplate.class);
+        
+        // Lets get their version and build using the latest CTIDatabase structure.
+        SqlStatementBuilder sqlVersionAndBuild = new SqlStatementBuilder();
+        sqlVersionAndBuild.append("SELECT Version, Build");
+        sqlVersionAndBuild.append("FROM CTIDatabase");
+        sqlVersionAndBuild.append("ORDER BY Version DESC, Build DESC");
 
         try {
-            for (int i = 0; i < QUERY_STRS.length; i++) {
-                try {
-                    // get the most recent query string
-                    stat = conn.prepareStatement(QUERY_STRS[i]);
-                    // rs remains null if columns are not up to date
-                    rs = stat.executeQuery();
-                    if (rs != null) {
-                        rs.next();
-                        db_obj.setVersion(rs.getString("Version"));
-                        if (i == 0) {
-                            db_obj.setBuild(rs.getInt("Build"));
-                        }
-                        break;
-                    }
-                } catch (SQLException e) {
-                    CTILogger.error(e.getMessage(), e);
+             List<CTIDatabase> ctiDatabases = yukonJdbcTemplate.query(sqlVersionAndBuild, new YukonRowMapper<CTIDatabase>() {
+                @Override
+                public CTIDatabase mapRow(YukonResultSet rs) throws SQLException {
+                    return new CTIDatabase(rs.getString("Version"), rs.getInt("Build"));
                 }
-            }
-        } finally {
-            SqlUtils.close(rs, stat, conn);
+            });
+            
+             db_obj = ctiDatabases.get(0);
+            return db_obj;
+        } catch (DataAccessException e) {
+            CTILogger.debug(e.getMessage(), e);
+        }
+        
+        // Now that we know the latest version doesn't work, lets try an older version.
+        SqlStatementBuilder sqlVersion = new SqlStatementBuilder();
+        sqlVersion.append("SELECT Version");
+        sqlVersion.append("FROM CTIDatabase");
+        sqlVersion.append("ORDER BY Version DESC");
+
+        try {
+            List<CTIDatabase> ctiDatabases = yukonJdbcTemplate.query(sqlVersion, new YukonRowMapper<CTIDatabase>() {
+                @Override
+                public CTIDatabase mapRow(YukonResultSet rs) throws SQLException {
+                    return new CTIDatabase(rs.getString("Version"), null);
+                }
+            });
+            
+            db_obj = ctiDatabases.get(0);
+            return db_obj;
+        } catch (DataAccessException e) {
+            CTILogger.error(e.getMessage(), e);
         }
 
         return db_obj;
