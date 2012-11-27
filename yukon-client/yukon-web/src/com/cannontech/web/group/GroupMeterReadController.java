@@ -44,6 +44,7 @@ import com.cannontech.common.util.SimpleCallback;
 import com.cannontech.servlet.YukonUserContextUtils;
 import com.cannontech.user.YukonUserContext;
 import com.cannontech.web.util.AttributeSelectorHelperService;
+import com.google.common.collect.Maps;
 
 public class GroupMeterReadController extends MultiActionController {
 
@@ -244,7 +245,15 @@ public class GroupMeterReadController extends MultiActionController {
 			}
 		};
 		List<GroupMeterReadResultWrapper> resultWrappers = new MappingList<GroupMeterReadResult, GroupMeterReadResultWrapper>(allReads, mapper);
-		mav.addObject("resultWrappers", resultWrappers);
+
+		YukonUserContext context = YukonUserContextUtils.getYukonUserContext(request);
+		Map<GroupMeterReadResultWrapper,String> attributeDescriptions = Maps.newHashMap();
+
+		for (GroupMeterReadResultWrapper wrapper : resultWrappers) {
+		    attributeDescriptions.put(wrapper, wrapper.getAttributesDescription(context, objectFormattingService));
+		}
+
+		mav.addObject("resultWrappers",attributeDescriptions);
 		
 		return mav;
 	}
@@ -264,6 +273,7 @@ public class GroupMeterReadController extends MultiActionController {
 		}
 		
 		GroupMeterReadResultWrapper resultWrapper = new GroupMeterReadResultWrapper(result);
+		mav.addObject("attributesDescription", resultWrapper.getAttributesDescription(YukonUserContextUtils.getYukonUserContext(request), objectFormattingService));
 		mav.addObject("resultWrapper", resultWrapper);
 		return mav;
 	}

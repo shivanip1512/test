@@ -49,6 +49,14 @@ public abstract class DeviceGroup implements Comparable<DeviceGroup> {
         cachedFullNameInternal = null;
     }
 
+    public String getFullName(YukonUserContext context) {
+        if (getParent() == null) {
+            return "/";
+        } else {
+            return getFullNameInternal(context);
+        }
+    }
+
     public String getFullName() {
         if (getParent() == null) {
             return "/";
@@ -57,6 +65,17 @@ public abstract class DeviceGroup implements Comparable<DeviceGroup> {
         }
     }
 
+    private String getFullNameInternal(YukonUserContext context) {
+        if (getParent() == null) {
+            return "";
+        }
+
+        if (cachedFullNameInternal == null) {
+            cachedFullNameInternal = getParent().getFullNameInternal(context) + "/" + getName(context, getName());
+        }
+        return cachedFullNameInternal;
+    }
+    
     private String getFullNameInternal() {
         if (getParent() == null) {
             return "";

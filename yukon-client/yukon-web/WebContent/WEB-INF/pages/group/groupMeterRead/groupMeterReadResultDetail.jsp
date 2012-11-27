@@ -62,7 +62,7 @@
     <tags:boxContainer id="readLogsDetailContainer" hideEnabled="false">
     
     	<jsp:attribute name="title">
-            Reading '${resultWrapper.attributesDescription}' on <cti:msg key="${resultWrapper.result.deviceCollection.description}"/>
+            Reading '${attributesDescription}' on <cti:msg key="${resultWrapper.result.deviceCollection.description}"/>
         </jsp:attribute>
         
         <jsp:body>

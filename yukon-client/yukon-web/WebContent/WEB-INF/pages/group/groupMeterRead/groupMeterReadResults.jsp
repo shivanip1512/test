@@ -43,15 +43,15 @@
             
             <c:forEach var="resultWrapper" items="${resultWrappers}">
             
-            	<c:set var="resultKey" value="${resultWrapper.result.key}"/>
+            	<c:set var="resultKey" value="${resultWrapper.key.result.key}"/>
             
                 <cti:url var="resultDetailUrl" value="/spring/group/groupMeterRead/resultDetail">
                     <cti:param name="resultKey" value="${resultKey}" />
                 </cti:url>
             
                 <tr>
-                    <td>${resultWrapper.attributesDescription}</td>
-                    <td><cti:msg key="${resultWrapper.result.deviceCollection.description}"/></td>
+                    <td>${resultWrapper.value}</td>
+                    <td><cti:msg key="${resultWrapper.key.result.deviceCollection.description}"/></td>
                     <td style="text-align:right;"><cti:dataUpdaterValue type="GROUP_METER_READ" identifier="${resultKey}/SUCCESS_COUNT"/></td>
                     <td style="text-align:right;"><cti:dataUpdaterValue type="GROUP_METER_READ" identifier="${resultKey}/FAILURE_COUNT"/></td>
                     <td style="text-align:right;"><cti:dataUpdaterValue type="GROUP_METER_READ" identifier="${resultKey}/UNSUPPORTED_COUNT"/></td>
