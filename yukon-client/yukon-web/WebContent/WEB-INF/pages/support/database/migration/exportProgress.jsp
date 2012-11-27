@@ -14,8 +14,8 @@
 
     <cti:breadCrumbs>
 	    <cti:crumbLink url="/operator/Operations.jsp" title="Operations Home"  />
-	    <cti:crumbLink url="/spring/support/" title="Support" />
-	    <cti:crumbLink url="/spring/support/database/migration/home" title="${homePageTitle}" />
+	    <cti:crumbLink url="/support/" title="Support" />
+	    <cti:crumbLink url="/support/database/migration/home" title="${homePageTitle}" />
 	    <cti:crumbLink>${pageTitle}</cti:crumbLink>
 	</cti:breadCrumbs>
 	
@@ -68,7 +68,7 @@
 		
 		<%-- DOWNLOAD --%>	
 		<br>
-		<form id="downloadExportFileForm" action="/spring/support/database/migration/downloadExportFile" method="post">
+		<form id="downloadExportFileForm" action="/support/database/migration/downloadExportFile" method="post">
 	    	<input type="hidden" name="fileKey" value="${migrationStatus.id}">
 	    </form>
 	    

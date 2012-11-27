@@ -6,7 +6,7 @@
 <cti:standardMenu menuSelection="other|threadDump"/>
 <cti:breadCrumbs>
     <cti:crumbLink url="/operator/Operations.jsp" title="Operations Home"  />
-    <cti:crumbLink url="/spring/support/" title="Support" />
+    <cti:crumbLink url="/support/" title="Support" />
     <cti:crumbLink>Thread Dump</cti:crumbLink>
 </cti:breadCrumbs>
 

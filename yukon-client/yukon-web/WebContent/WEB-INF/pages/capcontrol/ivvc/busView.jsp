@@ -16,7 +16,7 @@
 	<%@include file="/capcontrol/capcontrolHeader.jspf"%>
     <cti:includeCss link="/capcontrol/css/ivvc.css"/>
     
-    <cti:url var="zoneCreatorUrl" value="/spring/capcontrol/ivvc/wizard/zoneCreationWizard">
+    <cti:url var="zoneCreatorUrl" value="/capcontrol/ivvc/wizard/zoneCreationWizard">
     	<cti:param name="subBusId" value="${subBusId}"/>
     </cti:url>
 
@@ -118,14 +118,14 @@
                         <th><i:inline key="modules.capcontrol.actions"/></th>
                     </tr>
     				<cti:navigableHierarchy var="zone" depth="depth" hierarchy="${zones}">
-    					<cti:url var="zoneDetailUrl" value="/spring/capcontrol/ivvc/zone/detail">
+    					<cti:url var="zoneDetailUrl" value="/capcontrol/ivvc/zone/detail">
     				    	<cti:param name="zoneId" value="${zone.zoneId}"/>
     				    	<cti:param name="isSpecialArea" value="${isSpecialArea}"/>
     				    </cti:url>
-    				    <cti:url var="zoneEditorUrl" value="/spring/capcontrol/ivvc/wizard/zoneEditor">
+    				    <cti:url var="zoneEditorUrl" value="/capcontrol/ivvc/wizard/zoneEditor">
        						<cti:param name="zoneId" value="${zone.zoneId}"/>
     				    </cti:url>
-    					<cti:url var="zoneDeleteUrl" value="/spring/capcontrol/ivvc/wizard/deleteZone">
+    					<cti:url var="zoneDeleteUrl" value="/capcontrol/ivvc/wizard/deleteZone">
        						<cti:param name="zoneId" value="${zone.zoneId}"/>
     				    </cti:url>
                 
@@ -262,7 +262,7 @@
 
 					<c:set var="chartId" value="subBus_${subBusId}_IVVCGraph" />
 					<input type="hidden" value="${chartId}" id="ivvcChartIdValue" />
-					<c:url var="amChartFile" scope="page" value="/spring/capcontrol/ivvc/bus/chart">
+					<c:url var="amChartFile" scope="page" value="/capcontrol/ivvc/bus/chart">
 						<cti:param name="subBusId" value="${subBusId}" />
 					</c:url>
 					<tags:amchart chartType="amline" settingsUrl="${amChartFile}" chartId="${chartId}" cssClass="ivvcGraphContainer"/>
@@ -273,10 +273,10 @@
 					<div class="largeDialogScrollArea">
 						<c:forEach items="${zoneVoltagePointsHolders}" var="zoneVoltagePointsHolder">
 							<c:set var="zoneName" value="${zoneVoltagePointsHolder.zoneName}"/>
-	    					<cti:url var="zoneDetailUrl" value="/spring/capcontrol/ivvc/zone/detail">
+	    					<cti:url var="zoneDetailUrl" value="/capcontrol/ivvc/zone/detail">
 	    				    	<cti:param name="zoneId" value="${zoneVoltagePointsHolder.zoneId}"/>
 	    				    </cti:url>
-							<cti:url var="zoneVoltagePointsUrl" value="/spring/capcontrol/ivvc/zone/voltagePoints">
+							<cti:url var="zoneVoltagePointsUrl" value="/capcontrol/ivvc/zone/voltagePoints">
 						    	<cti:param name="zoneId" value="${zoneVoltagePointsHolder.zoneId}"/>
 						    </cti:url>
 							<%@ include file="voltagePoints.jspf" %>

@@ -96,12 +96,12 @@
 		}
 	</script>
 
-	<cti:url var="baseUrl" value="/spring/capcontrol/ivvc/zone/voltageDeltas" />
+	<cti:url var="baseUrl" value="/capcontrol/ivvc/zone/voltageDeltas" />
 	<tags:pagedBox2 nameKey="deltas" searchResult="${searchResults}"
 		baseUrl="${baseUrl}" showAllUrl="${baseUrl}">
 		<tags:alternateRowReset />
 
-		<form:form id="deltaForm" action="/spring/capcontrol/ivvc/zone/deltaUpdate" method="POST" commandName="zoneVoltageDeltas">
+		<form:form id="deltaForm" action="/capcontrol/ivvc/zone/deltaUpdate" method="POST" commandName="zoneVoltageDeltas">
 			<input type="hidden" name="zoneId" id="zoneId" value="${zoneId}">
 
 			<table id="deltaTable" class="compactResultsTable">

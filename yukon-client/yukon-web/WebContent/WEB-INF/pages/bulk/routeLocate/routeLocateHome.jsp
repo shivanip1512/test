@@ -15,11 +15,11 @@
         
         <%-- bulk home --%>
         <cti:msg var="bulkOperationsPageTitle" key="yukon.common.device.bulk.bulkHome.pageTitle"/>
-        <cti:crumbLink url="/spring/bulk/bulkHome" title="${bulkOperationsPageTitle}" />
+        <cti:crumbLink url="/bulk/bulkHome" title="${bulkOperationsPageTitle}" />
         
         <%-- device selection --%>
         <cti:msg var="deviceSelectionPageTitle" key="yukon.common.device.bulk.deviceSelection.pageTitle"/>
-        <cti:crumbLink url="/spring/bulk/deviceSelection" title="${deviceSelectionPageTitle}"/>
+        <cti:crumbLink url="/bulk/deviceSelection" title="${deviceSelectionPageTitle}"/>
         
         <%-- collection actions --%>
         <tags:collectionActionsCrumbLink deviceCollection="${deviceCollection}" />
@@ -46,7 +46,7 @@
             <div class="formErrorSummary">${errorMsg}</div><br>
         </c:if>
         
-        <form id="executeLocateForm" action="<cti:url value="/spring/bulk/routeLocate/executeRouteLocation" />">
+        <form id="executeLocateForm" action="<cti:url value="/bulk/routeLocate/executeRouteLocation" />">
         
             <%-- DEVICE COLLECTION --%>
             <cti:deviceCollection deviceCollection="${deviceCollection}" />
@@ -116,7 +116,7 @@
                             <a href="javascript:submitForm('${successFormName}');" class="small" title="${performNewActionLinkTitle}"><cti:dataUpdaterValue type="ROUTELOCATE" identifier="${b.resultId}/LOCATED_COUNT"/></a> 
                             <tags:selectedDevicesPopup deviceCollection="${b.successDeviceCollection}" />
                             
-                            <form id="${successFormName}" method="post" action="/spring/bulk/collectionActions">
+                            <form id="${successFormName}" method="post" action="/bulk/collectionActions">
                                 <cti:deviceCollection deviceCollection="${b.successDeviceCollection}" />
                             </form>
                         </td>
@@ -132,7 +132,7 @@
                             
                             <tags:selectedDevicesPopup deviceCollection="${b.failureDeviceCollection}" />
                             
-                            <form id="${notFoundCollectionActionFormName}" method="post" action="/spring/bulk/collectionActions">
+                            <form id="${notFoundCollectionActionFormName}" method="post" action="/bulk/collectionActions">
                                 <cti:deviceCollection deviceCollection="${b.failureDeviceCollection}" />
                             </form>
                             
@@ -140,7 +140,7 @@
                         
                         
                         <%-- DEATIL LINK --%>
-                        <cti:url var="resultDetailUrl" value="/spring/bulk/routeLocate/results">
+                        <cti:url var="resultDetailUrl" value="/bulk/routeLocate/results">
                             <cti:param name="resultId" value="${b.resultId}" />
                         </cti:url>
                 

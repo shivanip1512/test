@@ -155,7 +155,7 @@
 
                             <%-- Actions shown when the Control Area is enabled but not fully active --%>
                             <tags:dynamicChooseOption optionId="enabled">
-                                <cti:url var="startControlAreaUrl" value="/spring/dr/program/start/multipleDetails">
+                                <cti:url var="startControlAreaUrl" value="/dr/program/start/multipleDetails">
                                     <cti:param name="controlAreaId" value="${controlAreaId}"/>
                                 </cti:url>
                                 <tags:simpleDialogLink titleKey="yukon.web.modules.dr.program.startMultiplePrograms.title"
@@ -163,7 +163,7 @@
                                     logoKey="yukon.web.modules.dr.controlAreaDetail.actions.startIcon"
                                     labelKey="yukon.web.modules.dr.controlAreaDetail.actions.start"/>
                                 <br>
-                                <cti:url var="stopControlAreaUrl" value="/spring/dr/program/stop/multipleDetails">
+                                <cti:url var="stopControlAreaUrl" value="/dr/program/stop/multipleDetails">
                                     <cti:param name="controlAreaId" value="${controlAreaId}"/>
                                 </cti:url>
                                 <tags:simpleDialogLink titleKey="yukon.web.modules.dr.program.stopMultiplePrograms.title"
@@ -174,7 +174,7 @@
                                     <c:choose>
                                         <%-- Trigger actions are only active for Control Areas with at least one threshold trigger --%>
                                         <c:when test="${controlArea.hasThresholdTrigger}">
-                                            <cti:url var="sendTriggerChangeUrl" value="/spring/dr/controlArea/getTriggerChangeValues">
+                                            <cti:url var="sendTriggerChangeUrl" value="/dr/controlArea/getTriggerChangeValues">
                                                 <cti:param name="controlAreaId" value="${controlAreaId}"/>
                                             </cti:url>
                                             <tags:simpleDialogLink titleKey="yukon.web.modules.dr.controlArea.getChangeTriggerValues.title"
@@ -191,7 +191,7 @@
                                         </c:otherwise>
                                     </c:choose>
                                 <br>
-                                <cti:url var="sendChangeTimeWindowUrl" value="/spring/dr/controlArea/getChangeTimeWindowValues">
+                                <cti:url var="sendChangeTimeWindowUrl" value="/dr/controlArea/getChangeTimeWindowValues">
                                     <cti:param name="controlAreaId" value="${controlAreaId}"/>
                                 </cti:url>
                                 <tags:simpleDialogLink titleKey="yukon.web.modules.dr.controlArea.getChangeTimeWindowValues.title"
@@ -199,7 +199,7 @@
                                     logoKey="yukon.web.modules.dr.controlAreaDetail.actions.dailyTimeChangeIcon"
                                     labelKey="yukon.web.modules.dr.controlAreaDetail.actions.dailyTimeChange"/>
                                 <br>
-                                <cti:url var="sendDisableUrl" value="/spring/dr/controlArea/sendEnableConfirm">
+                                <cti:url var="sendDisableUrl" value="/dr/controlArea/sendEnableConfirm">
                                     <cti:param name="controlAreaId" value="${controlAreaId}"/>
                                     <cti:param name="isEnabled" value="false"/>
                                 </cti:url>
@@ -209,7 +209,7 @@
                                     labelKey="yukon.web.modules.dr.controlAreaDetail.actions.disable"/>
                                 <br>
                                 
-                                <cti:url var="changeScenarioGearsUrl" value="/spring/dr/program/changeGearMultiplePopup">
+                                <cti:url var="changeScenarioGearsUrl" value="/dr/program/changeGearMultiplePopup">
                                      <cti:param name="controlAreaId" value="${controlAreaId}"/>
                                 </cti:url>
                                 <tags:simpleDialogLink titleKey="yukon.web.modules.dr.program.getChangeGearValue.title" 
@@ -219,7 +219,7 @@
                                             labelKey="yukon.web.modules.dr.programDetail.actions.changeGears"/>
                                 <br>
                                 
-                                <cti:url var="sendEnableProgramsUrl" value="/spring/dr/program/sendEnableDisableProgramsConfirm">
+                                <cti:url var="sendEnableProgramsUrl" value="/dr/program/sendEnableDisableProgramsConfirm">
                                     <cti:param name="controlAreaId" value="${controlAreaId}"/>
                                     <cti:param name="enable" value="true"/>
                                 </cti:url>
@@ -228,7 +228,7 @@
                                     logoKey="yukon.web.modules.dr.controlAreaDetail.actions.enableProgramsIcon"
                                     labelKey="yukon.web.modules.dr.controlAreaDetail.actions.enablePrograms"/>
                                 <br>
-                                <cti:url var="sendDisableProgramsUrl" value="/spring/dr/program/sendEnableDisableProgramsConfirm">
+                                <cti:url var="sendDisableProgramsUrl" value="/dr/program/sendEnableDisableProgramsConfirm">
                                     <cti:param name="controlAreaId" value="${controlAreaId}"/>
                                     <cti:param name="enable" value="false"/>
                                 </cti:url>
@@ -240,7 +240,7 @@
                                 <c:choose>
                                     <%-- Trigger actions are only active for Control Areas with at least one trigger --%>
                                     <c:when test="${!empty controlArea.triggers}">
-                                        <cti:url var="sendResetPeakUrl" value="/spring/dr/controlArea/sendResetPeakConfirm">
+                                        <cti:url var="sendResetPeakUrl" value="/dr/controlArea/sendResetPeakConfirm">
                                             <cti:param name="controlAreaId" value="${controlAreaId}"/>
                                         </cti:url>
                                         <tags:simpleDialogLink titleKey="yukon.web.modules.dr.controlArea.sendResetPeakConfirm.title"
@@ -261,7 +261,7 @@
 
                             <%-- Actions shown when the Control Area is fully active and enabled --%>
                             <tags:dynamicChooseOption optionId="fullyActiveEnabled">
-                                <cti:url var="startControlAreaUrl" value="/spring/dr/program/start/multipleDetails">
+                                <cti:url var="startControlAreaUrl" value="/dr/program/start/multipleDetails">
                                     <cti:param name="controlAreaId" value="${controlAreaId}"/>
                                 </cti:url>
                                 <tags:simpleDialogLink titleKey="yukon.web.modules.dr.program.startMultiplePrograms.title"
@@ -269,7 +269,7 @@
                                     logoKey="yukon.web.modules.dr.controlAreaDetail.actions.startIcon"
                                     labelKey="yukon.web.modules.dr.controlAreaDetail.actions.start"/>
                                 <br>
-                                <cti:url var="stopControlAreaUrl" value="/spring/dr/program/stop/multipleDetails">
+                                <cti:url var="stopControlAreaUrl" value="/dr/program/stop/multipleDetails">
                                     <cti:param name="controlAreaId" value="${controlAreaId}"/>
                                 </cti:url>
                                 <tags:simpleDialogLink titleKey="yukon.web.modules.dr.program.stopMultiplePrograms.title"
@@ -280,7 +280,7 @@
                                     <c:choose>
                                         <%-- Trigger actions are only active for Control Areas with at least one threshold trigger --%>
                                         <c:when test="${controlArea.hasThresholdTrigger}">
-                                            <cti:url var="sendTriggerChangeUrl" value="/spring/dr/controlArea/getTriggerChangeValues">
+                                            <cti:url var="sendTriggerChangeUrl" value="/dr/controlArea/getTriggerChangeValues">
                                                 <cti:param name="controlAreaId" value="${controlAreaId}"/>
                                             </cti:url>
                                             <tags:simpleDialogLink titleKey="yukon.web.modules.dr.controlArea.getChangeTriggerValues.title"
@@ -297,7 +297,7 @@
                                         </c:otherwise>
                                     </c:choose>
                                 <br>
-                                <cti:url var="sendChangeTimeWindowUrl" value="/spring/dr/controlArea/getChangeTimeWindowValues">
+                                <cti:url var="sendChangeTimeWindowUrl" value="/dr/controlArea/getChangeTimeWindowValues">
                                     <cti:param name="controlAreaId" value="${controlAreaId}"/>
                                 </cti:url>
                                 <tags:simpleDialogLink titleKey="yukon.web.modules.dr.controlArea.getChangeTimeWindowValues.title"
@@ -305,7 +305,7 @@
                                     logoKey="yukon.web.modules.dr.controlAreaDetail.actions.dailyTimeChangeIcon"
                                     labelKey="yukon.web.modules.dr.controlAreaDetail.actions.dailyTimeChange"/>
                                 <br>
-                                <cti:url var="sendDisableUrl" value="/spring/dr/controlArea/sendEnableConfirm">
+                                <cti:url var="sendDisableUrl" value="/dr/controlArea/sendEnableConfirm">
                                     <cti:param name="controlAreaId" value="${controlAreaId}"/>
                                     <cti:param name="isEnabled" value="false"/>
                                 </cti:url>
@@ -315,7 +315,7 @@
                                     labelKey="yukon.web.modules.dr.controlAreaDetail.actions.disable"/>
                                 <br>
                                 
-                                <cti:url var="changeScenarioGearsUrl" value="/spring/dr/program/changeGearMultiplePopup">
+                                <cti:url var="changeScenarioGearsUrl" value="/dr/program/changeGearMultiplePopup">
                                      <cti:param name="controlAreaId" value="${controlAreaId}"/>
                                 </cti:url>
                                 <tags:simpleDialogLink titleKey="yukon.web.modules.dr.program.getChangeGearValue.title" 
@@ -325,7 +325,7 @@
                                             labelKey="yukon.web.modules.dr.programDetail.actions.changeGears"/>
                                 <br>
                                 
-                                <cti:url var="sendEnableProgramsUrl" value="/spring/dr/program/sendEnableDisableProgramsConfirm">
+                                <cti:url var="sendEnableProgramsUrl" value="/dr/program/sendEnableDisableProgramsConfirm">
                                     <cti:param name="controlAreaId" value="${controlAreaId}"/>
                                     <cti:param name="enable" value="true"/>
                                 </cti:url>
@@ -334,7 +334,7 @@
                                     logoKey="yukon.web.modules.dr.controlAreaDetail.actions.enableProgramsIcon"
                                     labelKey="yukon.web.modules.dr.controlAreaDetail.actions.enablePrograms"/>
                                 <br>
-                                <cti:url var="sendDisableProgramsUrl" value="/spring/dr/program/sendEnableDisableProgramsConfirm">
+                                <cti:url var="sendDisableProgramsUrl" value="/dr/program/sendEnableDisableProgramsConfirm">
                                     <cti:param name="controlAreaId" value="${controlAreaId}"/>
                                     <cti:param name="enable" value="false"/>
                                 </cti:url>
@@ -346,7 +346,7 @@
                                 <c:choose>
                                     <%-- Trigger actions are only active for Control Areas with at least one trigger --%>
                                     <c:when test="${!empty controlArea.triggers}">
-                                        <cti:url var="sendResetPeakUrl" value="/spring/dr/controlArea/sendResetPeakConfirm">
+                                        <cti:url var="sendResetPeakUrl" value="/dr/controlArea/sendResetPeakConfirm">
                                             <cti:param name="controlAreaId" value="${controlAreaId}"/>
                                         </cti:url>
                                         <tags:simpleDialogLink titleKey="yukon.web.modules.dr.controlArea.sendResetPeakConfirm.title"
@@ -367,7 +367,7 @@
 
                             <%-- Actions shown when the Control Area is disabled but not fully active --%>
                             <tags:dynamicChooseOption optionId="disabled">
-                                <cti:url var="startControlAreaUrl" value="/spring/dr/program/start/multipleDetails">
+                                <cti:url var="startControlAreaUrl" value="/dr/program/start/multipleDetails">
                                     <cti:param name="controlAreaId" value="${controlAreaId}"/>
                                 </cti:url>
                                 <tags:simpleDialogLink titleKey="yukon.web.modules.dr.program.startMultiplePrograms.title"
@@ -375,7 +375,7 @@
                                     logoKey="yukon.web.modules.dr.controlAreaDetail.actions.startIcon"
                                     labelKey="yukon.web.modules.dr.controlAreaDetail.actions.start"/>
                                 <br>
-                                <cti:url var="stopControlAreaUrl" value="/spring/dr/program/stop/multipleDetails">
+                                <cti:url var="stopControlAreaUrl" value="/dr/program/stop/multipleDetails">
                                     <cti:param name="controlAreaId" value="${controlAreaId}"/>
                                 </cti:url>
                                 <tags:simpleDialogLink titleKey="yukon.web.modules.dr.program.stopMultiplePrograms.title"
@@ -386,7 +386,7 @@
                                     <c:choose>
                                         <%-- Trigger actions are only active for Control Areas with at least one threshold trigger --%>
                                         <c:when test="${controlArea.hasThresholdTrigger}">
-                                            <cti:url var="sendTriggerChangeUrl" value="/spring/dr/controlArea/getTriggerChangeValues">
+                                            <cti:url var="sendTriggerChangeUrl" value="/dr/controlArea/getTriggerChangeValues">
                                                 <cti:param name="controlAreaId" value="${controlAreaId}"/>
                                             </cti:url>
                                             <tags:simpleDialogLink titleKey="yukon.web.modules.dr.controlArea.getChangeTriggerValues.title"
@@ -403,7 +403,7 @@
                                         </c:otherwise>
                                     </c:choose>
                                 <br>
-                                <cti:url var="sendChangeTimeWindowUrl" value="/spring/dr/controlArea/getChangeTimeWindowValues">
+                                <cti:url var="sendChangeTimeWindowUrl" value="/dr/controlArea/getChangeTimeWindowValues">
                                     <cti:param name="controlAreaId" value="${controlAreaId}"/>
                                 </cti:url>
                                 <tags:simpleDialogLink titleKey="yukon.web.modules.dr.controlArea.getChangeTimeWindowValues.title"
@@ -411,7 +411,7 @@
                                     logoKey="yukon.web.modules.dr.controlAreaDetail.actions.dailyTimeChangeIcon"
                                     labelKey="yukon.web.modules.dr.controlAreaDetail.actions.dailyTimeChange"/>
                                 <br>
-                                <cti:url var="sendEnableUrl" value="/spring/dr/controlArea/sendEnableConfirm">
+                                <cti:url var="sendEnableUrl" value="/dr/controlArea/sendEnableConfirm">
                                     <cti:param name="controlAreaId" value="${controlAreaId}"/>
                                     <cti:param name="isEnabled" value="true"/>
                                 </cti:url>
@@ -420,7 +420,7 @@
                                     logoKey="yukon.web.modules.dr.controlAreaDetail.actions.enableIcon"
                                     labelKey="yukon.web.modules.dr.controlAreaDetail.actions.enable"/>
                                 <br>
-                                <cti:url var="sendEnableProgramsUrl" value="/spring/dr/program/sendEnableDisableProgramsConfirm">
+                                <cti:url var="sendEnableProgramsUrl" value="/dr/program/sendEnableDisableProgramsConfirm">
                                     <cti:param name="controlAreaId" value="${controlAreaId}"/>
                                     <cti:param name="enable" value="true"/>
                                 </cti:url>
@@ -429,7 +429,7 @@
                                     logoKey="yukon.web.modules.dr.controlAreaDetail.actions.enableProgramsIcon"
                                     labelKey="yukon.web.modules.dr.controlAreaDetail.actions.enablePrograms"/>
                                 <br>
-                                <cti:url var="sendDisableProgramsUrl" value="/spring/dr/program/sendEnableDisableProgramsConfirm">
+                                <cti:url var="sendDisableProgramsUrl" value="/dr/program/sendEnableDisableProgramsConfirm">
                                     <cti:param name="controlAreaId" value="${controlAreaId}"/>
                                     <cti:param name="enable" value="false"/>
                                 </cti:url>
@@ -441,7 +441,7 @@
                                 <c:choose>
                                     <%-- Trigger actions are only active for Control Areas with at least one trigger --%>
                                     <c:when test="${!empty controlArea.triggers}">
-                                        <cti:url var="sendResetPeakUrl" value="/spring/dr/controlArea/sendResetPeakConfirm">
+                                        <cti:url var="sendResetPeakUrl" value="/dr/controlArea/sendResetPeakConfirm">
                                             <cti:param name="controlAreaId" value="${controlAreaId}"/>
                                         </cti:url>
                                         <tags:simpleDialogLink titleKey="yukon.web.modules.dr.controlArea.sendResetPeakConfirm.title"
@@ -468,7 +468,7 @@
                                     <cti:msg key="yukon.web.modules.dr.controlAreaDetail.actions.start"/>
                                 </span>
                                 <br>
-                                <cti:url var="stopControlAreaUrl" value="/spring/dr/program/stop/multipleDetails">
+                                <cti:url var="stopControlAreaUrl" value="/dr/program/stop/multipleDetails">
                                     <cti:param name="controlAreaId" value="${controlAreaId}"/>
                                 </cti:url>
                                 <tags:simpleDialogLink titleKey="yukon.web.modules.dr.program.stopMultiplePrograms.title"
@@ -479,7 +479,7 @@
                                     <c:choose>
                                         <%-- Trigger actions are only active for Control Areas with at least one threshold trigger --%>
                                         <c:when test="${controlArea.hasThresholdTrigger}">
-                                            <cti:url var="sendTriggerChangeUrl" value="/spring/dr/controlArea/getTriggerChangeValues">
+                                            <cti:url var="sendTriggerChangeUrl" value="/dr/controlArea/getTriggerChangeValues">
                                                 <cti:param name="controlAreaId" value="${controlAreaId}"/>
                                             </cti:url>
                                             <tags:simpleDialogLink titleKey="yukon.web.modules.dr.controlArea.getChangeTriggerValues.title"
@@ -496,7 +496,7 @@
                                         </c:otherwise>
                                     </c:choose>
                                 <br>
-                                <cti:url var="sendChangeTimeWindowUrl" value="/spring/dr/controlArea/getChangeTimeWindowValues">
+                                <cti:url var="sendChangeTimeWindowUrl" value="/dr/controlArea/getChangeTimeWindowValues">
                                     <cti:param name="controlAreaId" value="${controlAreaId}"/>
                                 </cti:url>
                                 <tags:simpleDialogLink titleKey="yukon.web.modules.dr.controlArea.getChangeTimeWindowValues.title"
@@ -504,7 +504,7 @@
                                     logoKey="yukon.web.modules.dr.controlAreaDetail.actions.dailyTimeChangeIcon"
                                     labelKey="yukon.web.modules.dr.controlAreaDetail.actions.dailyTimeChange"/>
                                 <br>
-                                <cti:url var="sendEnableUrl" value="/spring/dr/controlArea/sendEnableConfirm">
+                                <cti:url var="sendEnableUrl" value="/dr/controlArea/sendEnableConfirm">
                                     <cti:param name="controlAreaId" value="${controlAreaId}"/>
                                     <cti:param name="isEnabled" value="true"/>
                                 </cti:url>
@@ -513,7 +513,7 @@
                                     logoKey="yukon.web.modules.dr.controlAreaDetail.actions.enableIcon"
                                     labelKey="yukon.web.modules.dr.controlAreaDetail.actions.enable"/>
                                 <br>
-                                <cti:url var="sendEnableProgramsUrl" value="/spring/dr/program/sendEnableDisableProgramsConfirm">
+                                <cti:url var="sendEnableProgramsUrl" value="/dr/program/sendEnableDisableProgramsConfirm">
                                     <cti:param name="controlAreaId" value="${controlAreaId}"/>
                                     <cti:param name="enable" value="true"/>
                                 </cti:url>
@@ -522,7 +522,7 @@
                                     logoKey="yukon.web.modules.dr.controlAreaDetail.actions.enableProgramsIcon"
                                     labelKey="yukon.web.modules.dr.controlAreaDetail.actions.enablePrograms"/>
                                 <br>
-                                <cti:url var="sendDisableProgramsUrl" value="/spring/dr/program/sendEnableDisableProgramsConfirm">
+                                <cti:url var="sendDisableProgramsUrl" value="/dr/program/sendEnableDisableProgramsConfirm">
                                     <cti:param name="controlAreaId" value="${controlAreaId}"/>
                                     <cti:param name="enable" value="false"/>
                                 </cti:url>
@@ -534,7 +534,7 @@
                                 <c:choose>
                                     <%-- Trigger actions are only active for Control Areas with at least one trigger --%>
                                     <c:when test="${!empty controlArea.triggers}">
-                                        <cti:url var="sendResetPeakUrl" value="/spring/dr/controlArea/sendResetPeakConfirm">
+                                        <cti:url var="sendResetPeakUrl" value="/dr/controlArea/sendResetPeakConfirm">
                                             <cti:param name="controlAreaId" value="${controlAreaId}"/>
                                         </cti:url>
                                         <tags:simpleDialogLink titleKey="yukon.web.modules.dr.controlArea.sendResetPeakConfirm.title"
@@ -555,7 +555,7 @@
 
                             <%-- Actions shown when the Control Area is inactive and disabled --%>
                             <tags:dynamicChooseOption optionId="inactiveDisabled">
-                                <cti:url var="startControlAreaUrl" value="/spring/dr/program/start/multipleDetails">
+                                <cti:url var="startControlAreaUrl" value="/dr/program/start/multipleDetails">
                                     <cti:param name="controlAreaId" value="${controlAreaId}"/>
                                 </cti:url>
                                 <tags:simpleDialogLink titleKey="yukon.web.modules.dr.program.startMultiplePrograms.title"
@@ -572,7 +572,7 @@
                                     <c:choose>
                                         <%-- Trigger actions are only active for Control Areas with at least one threshold trigger --%>
                                         <c:when test="${controlArea.hasThresholdTrigger}">
-                                            <cti:url var="sendTriggerChangeUrl" value="/spring/dr/controlArea/getTriggerChangeValues">
+                                            <cti:url var="sendTriggerChangeUrl" value="/dr/controlArea/getTriggerChangeValues">
                                                 <cti:param name="controlAreaId" value="${controlAreaId}"/>
                                             </cti:url>
                                             <tags:simpleDialogLink titleKey="yukon.web.modules.dr.controlArea.getChangeTriggerValues.title"
@@ -589,7 +589,7 @@
                                         </c:otherwise>
                                     </c:choose>
                                 <br>
-                                <cti:url var="sendChangeTimeWindowUrl" value="/spring/dr/controlArea/getChangeTimeWindowValues">
+                                <cti:url var="sendChangeTimeWindowUrl" value="/dr/controlArea/getChangeTimeWindowValues">
                                     <cti:param name="controlAreaId" value="${controlAreaId}"/>
                                 </cti:url>
                                 <tags:simpleDialogLink titleKey="yukon.web.modules.dr.controlArea.getChangeTimeWindowValues.title"
@@ -597,7 +597,7 @@
                                     logoKey="yukon.web.modules.dr.controlAreaDetail.actions.dailyTimeChangeIcon"
                                     labelKey="yukon.web.modules.dr.controlAreaDetail.actions.dailyTimeChange"/>
                                 <br>
-                                <cti:url var="sendEnableUrl" value="/spring/dr/controlArea/sendEnableConfirm">
+                                <cti:url var="sendEnableUrl" value="/dr/controlArea/sendEnableConfirm">
                                     <cti:param name="controlAreaId" value="${controlAreaId}"/>
                                     <cti:param name="isEnabled" value="true"/>
                                 </cti:url>
@@ -606,7 +606,7 @@
                                     logoKey="yukon.web.modules.dr.controlAreaDetail.actions.enableIcon"
                                     labelKey="yukon.web.modules.dr.controlAreaDetail.actions.enable"/>
                                 <br>
-                                <cti:url var="sendEnableProgramsUrl" value="/spring/dr/program/sendEnableDisableProgramsConfirm">
+                                <cti:url var="sendEnableProgramsUrl" value="/dr/program/sendEnableDisableProgramsConfirm">
                                     <cti:param name="controlAreaId" value="${controlAreaId}"/>
                                     <cti:param name="enable" value="true"/>
                                 </cti:url>
@@ -615,7 +615,7 @@
                                     logoKey="yukon.web.modules.dr.controlAreaDetail.actions.enableProgramsIcon"
                                     labelKey="yukon.web.modules.dr.controlAreaDetail.actions.enablePrograms"/>
                                 <br>
-                                <cti:url var="sendDisableProgramsUrl" value="/spring/dr/program/sendEnableDisableProgramsConfirm">
+                                <cti:url var="sendDisableProgramsUrl" value="/dr/program/sendEnableDisableProgramsConfirm">
                                     <cti:param name="controlAreaId" value="${controlAreaId}"/>
                                     <cti:param name="enable" value="false"/>
                                 </cti:url>
@@ -627,7 +627,7 @@
                                 <c:choose>
                                     <%-- Trigger actions are only active for Control Areas with at least one trigger --%>
                                     <c:when test="${!empty controlArea.triggers}">
-                                        <cti:url var="sendResetPeakUrl" value="/spring/dr/controlArea/sendResetPeakConfirm">
+                                        <cti:url var="sendResetPeakUrl" value="/dr/controlArea/sendResetPeakConfirm">
                                             <cti:param name="controlAreaId" value="${controlAreaId}"/>
                                         </cti:url>
                                         <tags:simpleDialogLink titleKey="yukon.web.modules.dr.controlArea.sendResetPeakConfirm.title"
@@ -648,7 +648,7 @@
 
                             <%-- Actions shown when the Control Area is inactive and enabled --%>
                             <tags:dynamicChooseOption optionId="inactiveEnabled">
-                                <cti:url var="startControlAreaUrl" value="/spring/dr/program/start/multipleDetails">
+                                <cti:url var="startControlAreaUrl" value="/dr/program/start/multipleDetails">
                                     <cti:param name="controlAreaId" value="${controlAreaId}"/>
                                 </cti:url>
                                 <tags:simpleDialogLink titleKey="yukon.web.modules.dr.program.startMultiplePrograms.title"
@@ -665,7 +665,7 @@
                                     <c:choose>
                                         <%-- Trigger actions are only active for Control Areas with at least one threshold trigger --%>
                                         <c:when test="${controlArea.hasThresholdTrigger}">
-                                            <cti:url var="sendTriggerChangeUrl" value="/spring/dr/controlArea/getTriggerChangeValues">
+                                            <cti:url var="sendTriggerChangeUrl" value="/dr/controlArea/getTriggerChangeValues">
                                                 <cti:param name="controlAreaId" value="${controlAreaId}"/>
                                             </cti:url>
                                             <tags:simpleDialogLink titleKey="yukon.web.modules.dr.controlArea.getChangeTriggerValues.title"
@@ -682,7 +682,7 @@
                                         </c:otherwise>
                                     </c:choose>
                                 <br>
-                                <cti:url var="sendChangeTimeWindowUrl" value="/spring/dr/controlArea/getChangeTimeWindowValues">
+                                <cti:url var="sendChangeTimeWindowUrl" value="/dr/controlArea/getChangeTimeWindowValues">
                                     <cti:param name="controlAreaId" value="${controlAreaId}"/>
                                 </cti:url>
                                 <tags:simpleDialogLink titleKey="yukon.web.modules.dr.controlArea.getChangeTimeWindowValues.title"
@@ -690,7 +690,7 @@
                                     logoKey="yukon.web.modules.dr.controlAreaDetail.actions.dailyTimeChangeIcon"
                                     labelKey="yukon.web.modules.dr.controlAreaDetail.actions.dailyTimeChange"/>
                                 <br>
-                                <cti:url var="sendDisableUrl" value="/spring/dr/controlArea/sendEnableConfirm">
+                                <cti:url var="sendDisableUrl" value="/dr/controlArea/sendEnableConfirm">
                                     <cti:param name="controlAreaId" value="${controlAreaId}"/>
                                     <cti:param name="isEnabled" value="false"/>
                                 </cti:url>
@@ -699,7 +699,7 @@
                                     logoKey="yukon.web.modules.dr.controlAreaDetail.actions.disableIcon"
                                     labelKey="yukon.web.modules.dr.controlAreaDetail.actions.disable"/>
                                 <br>
-                                <cti:url var="sendEnableProgramsUrl" value="/spring/dr/program/sendEnableDisableProgramsConfirm">
+                                <cti:url var="sendEnableProgramsUrl" value="/dr/program/sendEnableDisableProgramsConfirm">
                                     <cti:param name="controlAreaId" value="${controlAreaId}"/>
                                     <cti:param name="enable" value="true"/>
                                 </cti:url>
@@ -708,7 +708,7 @@
                                     logoKey="yukon.web.modules.dr.controlAreaDetail.actions.enableProgramsIcon"
                                     labelKey="yukon.web.modules.dr.controlAreaDetail.actions.enablePrograms"/>
                                 <br>
-                                <cti:url var="sendDisableProgramsUrl" value="/spring/dr/program/sendEnableDisableProgramsConfirm">
+                                <cti:url var="sendDisableProgramsUrl" value="/dr/program/sendEnableDisableProgramsConfirm">
                                     <cti:param name="controlAreaId" value="${controlAreaId}"/>
                                     <cti:param name="enable" value="false"/>
                                 </cti:url>
@@ -720,7 +720,7 @@
                                 <c:choose>
                                     <%-- Trigger actions are only active for Control Areas with at least one trigger --%>
                                     <c:when test="${!empty controlArea.triggers}">
-                                        <cti:url var="sendResetPeakUrl" value="/spring/dr/controlArea/sendResetPeakConfirm">
+                                        <cti:url var="sendResetPeakUrl" value="/dr/controlArea/sendResetPeakConfirm">
                                             <cti:param name="controlAreaId" value="${controlAreaId}"/>
                                         </cti:url>
                                         <tags:simpleDialogLink titleKey="yukon.web.modules.dr.controlArea.sendResetPeakConfirm.title"
@@ -780,7 +780,7 @@
         <tr>
             <td class="widgetColumnCell" colspan="2">
                 <div class="widgetContainer">
-				    <c:set var="baseUrl" value="/spring/dr/controlArea/detail"/>
+				    <c:set var="baseUrl" value="/dr/controlArea/detail"/>
 				    <%@ include file="../program/programList.jspf" %>
                 </div>
             </td>

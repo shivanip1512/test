@@ -13,7 +13,7 @@
 
     <div class="padBottom">
         <i:inline key=".filterByDate"/>
-        <form action="/spring/capcontrol/search/recentEvents" id="daysFilterForm">
+        <form action="/capcontrol/search/recentEvents" id="daysFilterForm">
             <input type="hidden" name="value" value="${paoIdString}">
             <select id="rcDateFilter" name="dayCnt" onchange="$('daysFilterForm').submit()">
                 <c:forEach var="i" begin="1" end="7">

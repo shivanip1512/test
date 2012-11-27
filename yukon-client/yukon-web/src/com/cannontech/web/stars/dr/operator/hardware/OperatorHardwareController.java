@@ -350,7 +350,7 @@ public class OperatorHardwareController {
         setupHardwareViewEditModel(fragment, hardware, model, context);
         
         if(hardware.getHardwareType() == HardwareType.NON_YUKON_METER){
-            return "redirect:/spring/stars/operator/hardware/mp/view";
+            return "redirect:/stars/operator/hardware/mp/view";
         }
         return "operator/hardware/hardware.jsp";
     }

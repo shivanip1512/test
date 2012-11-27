@@ -14,7 +14,7 @@
 
         <cti:dataGridCell>
 
-            <form:form commandName="group" action="/spring/adminSetup/roleGroup/edit" method="post">
+            <form:form commandName="group" action="/adminSetup/roleGroup/edit" method="post">
                 <form:hidden path="groupID"/>
                 <input type="hidden" value="${group.groupID}" name="roleGroupId">
                 
@@ -70,7 +70,7 @@
                                             <ul class="role">
                                                 <c:forEach var="role" items="${category.value}">
                                                     <li>
-                                                        <cti:url value="/spring/adminSetup/roleEditor/view" var="roleUrl">
+                                                        <cti:url value="/adminSetup/roleEditor/view" var="roleUrl">
                                                             <cti:param name="roleId" value="${role.roleId}"/>
                                                             <cti:param name="roleGroupId" value="${roleGroupId}"/>
                                                         </cti:url>
@@ -85,7 +85,7 @@
                         </c:otherwise>
                     </c:choose>
                     <div class="actionArea">
-                        <form action="/spring/adminSetup/roleGroup/addRole" method="post">
+                        <form action="/adminSetup/roleGroup/addRole" method="post">
                             <input type="hidden" value="${roleGroupId}" name="roleGroupId">
                             <select name="newRoleId">
                                 <c:forEach var="availableCategory" items="${availableRolesMap}">

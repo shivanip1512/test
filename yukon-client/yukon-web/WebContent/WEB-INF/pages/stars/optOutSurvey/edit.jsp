@@ -24,7 +24,7 @@ submitForm = function() {
 
 <cti:flashScopeMessages/>
 
-<cti:url var="submitUrl" value="/spring/stars/optOutSurvey/save"/>
+<cti:url var="submitUrl" value="/stars/optOutSurvey/save"/>
 <form:form id="inputForm" commandName="optOutSurveyDto" action="${submitUrl}"
     onsubmit="return submitForm()">
     <form:hidden path="optOutSurveyId"/>

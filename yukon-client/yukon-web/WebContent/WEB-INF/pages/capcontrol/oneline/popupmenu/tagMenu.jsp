@@ -5,8 +5,8 @@
 <%@ taglib prefix="i" tagdir="/WEB-INF/tags/i18n"%>
 <%@ taglib prefix="spring" uri="http://www.springframework.org/tags"%>
 
-<cti:url var="url" value="/spring/capcontrol/command/commandOneLineTag" />
-<cti:url var="commentsUrl" value="/spring/capcontrol/comments/paoCommentsForOneline">
+<cti:url var="url" value="/capcontrol/command/commandOneLineTag" />
+<cti:url var="commentsUrl" value="/capcontrol/comments/paoCommentsForOneline">
     <cti:param name="paoId" value="${paoId}"/>
 </cti:url>
 <c:set var="maxCommentLength" value="35"/>

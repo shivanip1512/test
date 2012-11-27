@@ -38,7 +38,7 @@ import com.cannontech.web.common.flashScope.FlashScopeMessageType;
 @Controller
 public class ServiceCompanyController {
     
-    private static final String baseUrl = "/spring/adminSetup/energyCompany/serviceCompany";
+    private static final String baseUrl = "/adminSetup/energyCompany/serviceCompany";
     @Autowired private EnergyCompanyService energyCompanyService;
     @Autowired private RolePropertyDao rolePropertyDao;
     @Autowired private ServiceCompanyService serviceCompanyService;

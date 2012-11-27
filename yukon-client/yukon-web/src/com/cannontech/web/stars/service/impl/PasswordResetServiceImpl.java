@@ -118,7 +118,7 @@ public class PasswordResetServiceImpl implements PasswordResetService {
         }
         String baseurl = configurationSource.getString(MasterConfigStringKeysEnum.YUKON_EXTERNAL_URL, defaultYukonExternalUrl.toString());
         url.append(baseurl);
-        url.append("/spring/login/changePassword?k="+passwordResetKey);
+        url.append("/login/changePassword?k="+passwordResetKey);
         
         return url.toString();
     }

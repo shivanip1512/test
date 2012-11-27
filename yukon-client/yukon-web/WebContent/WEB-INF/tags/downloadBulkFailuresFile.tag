@@ -24,6 +24,6 @@
     <img src="${downloadImg}" onmouseover="this.src='${downloadImgOver}'" onmouseout="this.src='${downloadImg}'">
 </a> 
 
-<form id="${formName}" method="post" action="/spring/bulk/processingExceptionFileDownload">
+<form id="${formName}" method="post" action="/bulk/processingExceptionFileDownload">
     <input type="hidden" name="resultsId" value="${resultsId}">
 </form>

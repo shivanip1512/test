@@ -245,7 +245,7 @@ public class SurveyController {
                 boolean wasNew = survey.getSurveyId() == 0;
                 surveyDao.saveSurvey(survey);
                 if (wasNew) {
-                    newLocation = "'/spring/stars/survey/edit?surveyId=" +
+                    newLocation = "'/stars/survey/edit?surveyId=" +
                         survey.getSurveyId() + "'";
                 }
             } catch (DuplicateException duplicateException) {

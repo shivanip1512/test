@@ -18,8 +18,8 @@ import com.cannontech.util.ServletUtil;
 
 public class PWordRequest extends javax.servlet.http.HttpServlet 
 {
-	private static final String INVALID_URI = "/spring/login/forgotPassword?failedMsg=";
-	private static final String SUCCESS_URI = "/spring/login/forgotPassword?success=true";
+	private static final String INVALID_URI = "/login/forgotPassword?failedMsg=";
+	private static final String SUCCESS_URI = "/login/forgotPassword?success=true";
 
 	
 	/**

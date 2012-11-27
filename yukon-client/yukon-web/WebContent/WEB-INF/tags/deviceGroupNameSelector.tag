@@ -33,14 +33,14 @@
 
 <script>
     jQuery(document).delegate("#viewSelectedDevices_${uniqueId}", "click", function() {
-        var url = '<cti:url value="/spring/bulk/selectedDevicesTableForGroupName"/>' + '?groupName=' + encodeURIComponent($('${fieldName}').value);
+        var url = '<cti:url value="/bulk/selectedDevicesTableForGroupName"/>' + '?groupName=' + encodeURIComponent($('${fieldName}').value);
         showSelectedDevices(this, 'showSelectedDevices_${uniqueId}', 'showSelectedDevices_innerDiv_${uniqueId}', url);
     });
     
     jQuery(document).delegate(".deviceGroupLink_${uniqueId}", "click", function() {
         // ugly? but we can't sumbit a real form since the tag will most likely appear within a form already.
         // this should be safe though, it is the same way that a redirecting ext tree works (ha).
-        var url = '<cti:url value="/spring/group/editor/home"/>' + '?groupName=' + encodeURIComponent($('${fieldName}').value);
+        var url = '<cti:url value="/group/editor/home"/>' + '?groupName=' + encodeURIComponent($('${fieldName}').value);
         window.location.href = url;
     });
     

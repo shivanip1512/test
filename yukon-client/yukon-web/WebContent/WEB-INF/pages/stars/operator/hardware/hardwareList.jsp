@@ -9,19 +9,19 @@
 <cti:standardPage module="operator" page="hardware.list">
 <cti:includeCss link="/WebConfig/yukon/styles/operator/hardware.css"/>
 
-<cti:url var="hardwareListUrl" value="/spring/stars/operator/hardware/list?accountId=${accountId}"/>
-<cti:url var="createUrl" value="/spring/stars/operator/hardware/createPage"/>
-<cti:url var="checkSnUrl" value="/spring/stars/operator/hardware/checkSerialNumber"/>
-<cti:url var="addDevice" value="/spring/stars/operator/hardware/addDeviceToAccount"/>
-<cti:url var="viewUrl" value="/spring/stars/operator/hardware/view?accountId=${accountId}&amp;inventoryId="/>
-<cti:url var="editConfigUrl" value="/spring/stars/operator/hardware/config/edit?accountId=${accountId}&amp;inventoryId="/>
-<cti:url var="editMeterConfigUrl" value="/spring/stars/operator/hardware/config/meterConfig?accountId=${accountId}&amp;meterId="/>
-<cti:url var="savedSchedulesUrl" value="/spring/stars/operator/thermostatSchedule/savedSchedules?accountId=${accountId}&amp;thermostatIds="/>
-<cti:url var="selectMultipleUrl" value="/spring/stars/operator/thermostatSelect/select?accountId=${accountId}"/>
-<cti:url var="editManualUrl" value="/spring/stars/operator/thermostatManual/view?accountId=${accountId}&amp;thermostatIds="/>
-<cti:url var="thermostatHistoryUrl" value="/spring/stars/operator/thermostat/history/view?accountId=${accountId}&amp;thermostatIds="/>
+<cti:url var="hardwareListUrl" value="/stars/operator/hardware/list?accountId=${accountId}"/>
+<cti:url var="createUrl" value="/stars/operator/hardware/createPage"/>
+<cti:url var="checkSnUrl" value="/stars/operator/hardware/checkSerialNumber"/>
+<cti:url var="addDevice" value="/stars/operator/hardware/addDeviceToAccount"/>
+<cti:url var="viewUrl" value="/stars/operator/hardware/view?accountId=${accountId}&amp;inventoryId="/>
+<cti:url var="editConfigUrl" value="/stars/operator/hardware/config/edit?accountId=${accountId}&amp;inventoryId="/>
+<cti:url var="editMeterConfigUrl" value="/stars/operator/hardware/config/meterConfig?accountId=${accountId}&amp;meterId="/>
+<cti:url var="savedSchedulesUrl" value="/stars/operator/thermostatSchedule/savedSchedules?accountId=${accountId}&amp;thermostatIds="/>
+<cti:url var="selectMultipleUrl" value="/stars/operator/thermostatSelect/select?accountId=${accountId}"/>
+<cti:url var="editManualUrl" value="/stars/operator/thermostatManual/view?accountId=${accountId}&amp;thermostatIds="/>
+<cti:url var="thermostatHistoryUrl" value="/stars/operator/thermostat/history/view?accountId=${accountId}&amp;thermostatIds="/>
 
-<form id="changeOutForm" action="/spring/stars/operator/hardware/changeOut">
+<form id="changeOutForm" action="/stars/operator/hardware/changeOut">
     <input type="hidden" name="accountId" value="${accountId}">
     <input type="hidden" name="newInventoryId" id="newInventoryId">
     <input type="hidden" name="oldInventoryId" id="oldInventoryId">
@@ -29,17 +29,17 @@
     <input type="hidden" name="redirect" value="list">
 </form>
 
-<form id="addMeterForm" action="/spring/stars/operator/hardware/addMeter">
+<form id="addMeterForm" action="/stars/operator/hardware/addMeter">
     <input type="hidden" name="accountId" value="${accountId}">
     <input type="hidden" name="meterId" id="meterId">
 </form>
 
 <c:choose>
     <c:when test="${starsMeters}">
-        <cti:url var="meterUrl" value="/spring/stars/operator/hardware/mp/view?accountId=${accountId}&amp;inventoryId="/>
+        <cti:url var="meterUrl" value="/stars/operator/hardware/mp/view?accountId=${accountId}&amp;inventoryId="/>
     </c:when>
     <c:otherwise>
-        <cti:url var="meterUrl" value="/spring/stars/operator/hardware/view?accountId=${accountId}&amp;inventoryId="/>
+        <cti:url var="meterUrl" value="/stars/operator/hardware/view?accountId=${accountId}&amp;inventoryId="/>
     </c:otherwise>
 </c:choose>
 
@@ -636,7 +636,7 @@
             
                 <br>
                 
-                <form action="/spring/stars/operator/hardware/mp/create" method="get">
+                <form action="/stars/operator/hardware/mp/create" method="get">
                     <input type="hidden" name="accountId" value="${accountId}">
                     <table class="popupButtonTable">
                         <tr>

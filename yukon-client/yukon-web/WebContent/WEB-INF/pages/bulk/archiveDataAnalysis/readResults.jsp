@@ -7,13 +7,13 @@
         <cti:crumbLink url="/operator/Operations.jsp" title="Operations Home" />
         <%-- metering --%>
         <cti:msg var="metersPageTitle" key="yukon.web.modules.amr.meteringStart.pageName" />
-        <cti:crumbLink url="/spring/meter/start" title="${metersPageTitle}" />
+        <cti:crumbLink url="/meter/start" title="${metersPageTitle}" />
         <%-- ADA List --%>
         <cti:msg var="adaListPageTitle" key="yukon.web.modules.amr.analysis.list.pageName" />
-        <cti:crumbLink url="/spring/bulk/archiveDataAnalysis/list/view" title="${adaListPageTitle}" />
+        <cti:crumbLink url="/bulk/archiveDataAnalysis/list/view" title="${adaListPageTitle}" />
         <%-- ADA Results --%>
         <cti:msg var="adaResultsPageTitle" key="yukon.web.modules.amr.analysis.results.pageName"/>
-        <cti:crumbLink url="/spring/bulk/archiveDataAnalysis/results/view?analysisId=${analysisId}" title="${adaResultsPageTitle}"/>
+        <cti:crumbLink url="/bulk/archiveDataAnalysis/results/view?analysisId=${analysisId}" title="${adaResultsPageTitle}"/>
         <%-- ADA Read Results --%>
         <cti:crumbLink><i:inline key="yukon.web.modules.amr.analysis.readResults.pageName"/></cti:crumbLink>
     </cti:breadCrumbs>
@@ -41,7 +41,7 @@
             </span>
         </div>
         <div id="successActionsDiv" style="padding:10px;display:none;">
-            <cti:link href="/spring/bulk/collectionActions" key="yukon.web.modules.amr.analysis.readResults.collectionActionOnDevicesLabel" class="small">
+            <cti:link href="/bulk/collectionActions" key="yukon.web.modules.amr.analysis.readResults.collectionActionOnDevicesLabel" class="small">
                 <cti:mapParam value="${result.successDeviceCollection.collectionParameters}"/>
             </cti:link>
             <tags:selectedDevicesPopup deviceCollection="${result.successDeviceCollection}"/>
@@ -55,7 +55,7 @@
             </span>
         </div>
         <div id="failureActionsDiv" style="padding:10px;display:none;">
-            <cti:link href="/spring/bulk/collectionActions" key="yukon.web.modules.amr.analysis.readResults.collectionActionOnDevicesLabel" class="small">
+            <cti:link href="/bulk/collectionActions" key="yukon.web.modules.amr.analysis.readResults.collectionActionOnDevicesLabel" class="small">
                 <cti:mapParam value="${result.failureDeviceCollection.collectionParameters}"/>
             </cti:link>
             <tags:selectedDevicesPopup deviceCollection="${result.failureDeviceCollection}" />

@@ -387,7 +387,7 @@ public class OptOutController extends AbstractConsumerController {
 
         if (optOut == null) {
             // the opt out has disappeared since they clicked cancel
-            return "/spring/stars/consumer/optout";
+            return "/stars/consumer/optout";
         }
         model.addAttribute("optOut", optOut);
 
@@ -418,7 +418,7 @@ public class OptOutController extends AbstractConsumerController {
     	
     	optOutService.cancelOptOut(Collections.singletonList(eventId), user);
         
-    	return "redirect:/spring/stars/consumer/optout";
+    	return "redirect:/stars/consumer/optout";
     }
 
     private void validateStartDate(LocalDate startDate,

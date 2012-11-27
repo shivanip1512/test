@@ -37,7 +37,7 @@ updateOKButton = function() {
 
 <div><i:inline key=".headerMessage" arguments="${assignedProgram.displayName}"/></div>
 
-<cti:url var="submitUrl" value="/spring/stars/operator/enrollment/confirmSave">
+<cti:url var="submitUrl" value="/stars/operator/enrollment/confirmSave">
     <cti:param name="isAdd" value="${isAdd}"/>
 </cti:url>
 <form:form id="inputForm" commandName="programEnrollment" action="${submitUrl}"

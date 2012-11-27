@@ -29,10 +29,10 @@ import com.cannontech.util.ServletUtil;
 public class ParentStringPrinter {
     private HttpServletRequest request;
     public static final String ORPH_STRING = "---";
-    private static final String FEEDER_URL = "/spring/capcontrol/tier/feeders";
-    private static final String AREA_URL = "/spring/capcontrol/tier/areas";
-    private static final String SPECIAL_AREA_URL = "/spring/capcontrol/tier/areas?isSpecialArea=true";
-    private static final String ZONE_DETAIL_URL = "/spring/capcontrol/ivvc/zone/detail";
+    private static final String FEEDER_URL = "/capcontrol/tier/feeders";
+    private static final String AREA_URL = "/capcontrol/tier/areas";
+    private static final String SPECIAL_AREA_URL = "/capcontrol/tier/areas?isSpecialArea=true";
+    private static final String ZONE_DETAIL_URL = "/capcontrol/ivvc/zone/detail";
     
     private CapbankDao capbankDao = YukonSpringHook.getBean("capbankDao",CapbankDao.class);
     private PointDao pointDao;

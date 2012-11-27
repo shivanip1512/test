@@ -18,7 +18,7 @@ public class SearchFormData {
     /**
      * Get the search form's action path.
      * @return A URL path to the search controller. Example:
-     *         "/spring/stars/operator/account/search"
+     *         "/stars/operator/account/search"
      */
     public String getFormMethod() {
         return formMethod;

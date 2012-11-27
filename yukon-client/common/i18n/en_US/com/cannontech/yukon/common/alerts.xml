@@ -7,7 +7,7 @@
 <entry key="yukon.common.alerts.commandCompletion"><![CDATA[
 
 Command "{command}" completed with {percentSuccess|#0.0#}% success of the {completedCount} sent.
-  <a href="/spring/group/commander/resultDetail?resultKey={resultKey}" title="Click to see complete details">
+  <a href="/group/commander/resultDetail?resultKey={resultKey}" title="Click to see complete details">
     <img src="/WebConfig/yukon/Icons/magnifier_zoom_in.gif" alt="detail" style="border-style: none; vertical-align:middle">
   </a>
 ]]></entry>
@@ -17,7 +17,7 @@ Command "{command}" completed with {percentSuccess|#0.0#}% success of the {compl
 Command "{command}" was canceled before completion.
 <br>
 {notCompletedCount} commands did not complete. {percentSuccess|#0.0#}% of the {completedCount} commands that were completed succeeded.
-  <a href="/spring/group/commander/resultDetail?resultKey={resultKey}" title="Click to see complete details">
+  <a href="/group/commander/resultDetail?resultKey={resultKey}" title="Click to see complete details">
     <img src="/WebConfig/yukon/Icons/magnifier_zoom_in.gif" alt="detail" style="border-style: none; vertical-align:middle">
   </a>
 ]]></entry>
@@ -27,7 +27,7 @@ Command "{command}" was canceled before completion.
 Command "{command}" failed. Reason: {exceptionReason}
 <br>
 {notCompletedCount} commands did not complete. {percentSuccess|#0.0#}% of the {completedCount} commands that were completed succeeded.
-  <a href="/spring/group/commander/resultDetail?resultKey={resultKey}" title="Click to see complete details">
+  <a href="/group/commander/resultDetail?resultKey={resultKey}" title="Click to see complete details">
     <img src="/WebConfig/yukon/Icons/magnifier_zoom_in.gif" alt="detail" style="border-style: none; vertical-align:middle">
   </a>
 ]]></entry>
@@ -35,7 +35,7 @@ Command "{command}" failed. Reason: {exceptionReason}
 <entry key="yukon.common.alerts.groupMeterReadCompletion"><![CDATA[
 
 Group Attribute Read "{attributesDescription}" completed with {percentSuccess|#0.0#}% success of the {completedCount} sent.
-  <a href="/spring/group/groupMeterRead/resultDetail?resultKey={resultKey}" title="Click to see complete details">
+  <a href="/group/groupMeterRead/resultDetail?resultKey={resultKey}" title="Click to see complete details">
     <img src="/WebConfig/yukon/Icons/magnifier_zoom_in.gif" alt="detail" style="border-style: none; vertical-align:middle">
   </a>
 ]]></entry>
@@ -45,7 +45,7 @@ Group Attribute Read "{attributesDescription}" completed with {percentSuccess|#0
 Group Attribute Read "{attributesDescription}" failed. Reason: {exceptionReason}
 <br>
 {notCompletedCount} commands did not complete. {percentSuccess|#0.0#}% of the {completedCount} commands that were completed succeeded.
-  <a href="/spring/group/groupMeterRead/resultDetail?resultKey={resultKey}" title="Click to see complete details">
+  <a href="/group/groupMeterRead/resultDetail?resultKey={resultKey}" title="Click to see complete details">
     <img src="/WebConfig/yukon/Icons/magnifier_zoom_in.gif" alt="detail" style="border-style: none; vertical-align:middle">
   </a>
 ]]></entry>

@@ -103,7 +103,7 @@
 
                                 <%-- Actions shown when the Load Group is enabled --%>
 
-                                <cti:url var="sendShedUrl" value="/spring/dr/loadGroup/sendShedConfirm">
+                                <cti:url var="sendShedUrl" value="/dr/loadGroup/sendShedConfirm">
                                     <cti:param name="loadGroupId" value="${loadGroupId}"/>
                                 </cti:url>
                                 <tags:simpleDialogLink titleKey="yukon.web.modules.dr.loadGroup.sendShedConfirm.title"
@@ -113,7 +113,7 @@
                                                        labelKey="yukon.web.modules.dr.loadGroupDetail.actions.sendShed"/>
                                 <br>
 
-                                <cti:url var="sendRestoreUrl" value="/spring/dr/loadGroup/sendRestoreConfirm">
+                                <cti:url var="sendRestoreUrl" value="/dr/loadGroup/sendRestoreConfirm">
                                     <cti:param name="loadGroupId" value="${loadGroupId}"/>
                                 </cti:url>
                                 <tags:simpleDialogLink titleKey="yukon.web.modules.dr.loadGroup.sendRestoreConfirm.title"
@@ -123,7 +123,7 @@
                                                        labelKey="yukon.web.modules.dr.loadGroupDetail.actions.sendRestore"/>
                                 <br>
 
-                                <cti:url var="sendDisableUrl" value="/spring/dr/loadGroup/sendEnableConfirm">
+                                <cti:url var="sendDisableUrl" value="/dr/loadGroup/sendEnableConfirm">
                                     <cti:param name="loadGroupId" value="${loadGroupId}"/>
                                     <cti:param name="isEnabled" value="false"/>
                                 </cti:url>
@@ -138,7 +138,7 @@
 
                                 <%-- Actions shown when the Load Group is disabled --%>
 
-                                <cti:url var="sendEnableUrl" value="/spring/dr/loadGroup/sendEnableConfirm">
+                                <cti:url var="sendEnableUrl" value="/dr/loadGroup/sendEnableConfirm">
                                     <cti:param name="loadGroupId" value="${loadGroupId}"/>
                                     <cti:param name="isEnabled" value="true"/>
                                 </cti:url>
@@ -183,7 +183,7 @@
                     <p><cti:msg key="yukon.web.modules.dr.loadGroupDetail.note.macroLoadGroup"/></p><br>
 
                     <cti:msg var="boxTitle" key="yukon.web.modules.dr.loadGroupDetail.heading.loadGroups"/>
-                    <c:set var="baseUrl" value="/spring/dr/loadGroup/detail"/>
+                    <c:set var="baseUrl" value="/dr/loadGroup/detail"/>
                     <%@ include file="../loadGroup/loadGroupList.jspf" %>
                 </div>
             </td>
@@ -202,7 +202,7 @@
                         <c:if test="${!empty parentPrograms}">
                             <c:forEach var="parentProgram" items="${parentPrograms}">
                                 <cti:checkPaoAuthorization permission="LM_VISIBLE" pao="${parentProgram}">
-                                    <c:url var="programURL" value="/spring/dr/program/detail">
+                                    <c:url var="programURL" value="/dr/program/detail">
                                         <c:param name="programId" value="${parentProgram.paoIdentifier.paoId}"/>
                                     </c:url>
                                     <a href="${programURL}"><spring:escapeBody htmlEscape="true">${parentProgram.name}</spring:escapeBody></a><br>
@@ -228,7 +228,7 @@
                         <c:if test="${!empty parentLoadGroups}">
                             <c:forEach var="parentLoadGroup" items="${parentLoadGroups}">
                                 <cti:checkPaoAuthorization permission="LM_VISIBLE" pao="${parentLoadGroup}">
-                                    <c:url var="loadGroupURL" value="/spring/dr/loadGroup/detail">
+                                    <c:url var="loadGroupURL" value="/dr/loadGroup/detail">
                                         <c:param name="loadGroupId" value="${parentLoadGroup.paoIdentifier.paoId}"/>
                                     </c:url>
                                     <a href="${loadGroupURL}"><spring:escapeBody htmlEscape="true">${parentLoadGroup.name}</spring:escapeBody></a><br>

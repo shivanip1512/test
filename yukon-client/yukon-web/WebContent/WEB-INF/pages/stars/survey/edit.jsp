@@ -122,7 +122,7 @@ moveDownDisabledIcon = templateIcons[4];
                         </li>
                         <c:if test="${hasBeenTaken}">
                             <cti:url var="reportUrl"
-                                value="/spring/stars/surveyReport/config">
+                                value="/stars/surveyReport/config">
                                 <cti:param name="surveyId" value="${surveyId}"/>
                             </cti:url>
                             <li>

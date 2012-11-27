@@ -2,7 +2,7 @@
 YEvent.observeSelectorClick('#recentEventsView', function(){
     $('recentEventsOptions').hide();
     var values = $$('table.recentEventsCheckboxes input:checkbox:checked').pluck('value').join(',');
-    window.location.href = '/spring/capcontrol/search/recentEvents?value=' + encodeURIComponent(values);
+    window.location.href = '/capcontrol/search/recentEvents?value=' + encodeURIComponent(values);
 });
 </script>
 

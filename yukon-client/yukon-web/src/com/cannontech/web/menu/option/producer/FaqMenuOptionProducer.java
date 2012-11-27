@@ -15,7 +15,7 @@ import com.google.common.collect.Lists;
 public class FaqMenuOptionProducer extends DynamicMenuOptionProducer {
     private RolePropertyDao rolePropertyDao;
 
-    private static final String defaultLink = "/spring/stars/consumer/faq";
+    private static final String defaultLink = "/stars/consumer/faq";
     private static final String labelKey = "faq";
     private static final String menuTextKey = "yukon.web.menu.config.consumer.questions.faq";
     

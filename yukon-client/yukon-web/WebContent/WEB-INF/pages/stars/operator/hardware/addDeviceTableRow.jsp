@@ -4,7 +4,7 @@
 <%@ taglib prefix="i" tagdir="/WEB-INF/tags/i18n"%>
 <%@ taglib prefix="spring" uri="http://www.springframework.org/tags"%>
 
-<cti:url var="gatewayControllerUrl" value="/spring/stars/operator/hardware/gateway/"/>
+<cti:url var="gatewayControllerUrl" value="/stars/operator/hardware/gateway/"/>
 <cti:url var="gatewayControllerUrlParameters" value="?accountId=${accountId}&inventoryId=${inventoryId}"/>
 
 

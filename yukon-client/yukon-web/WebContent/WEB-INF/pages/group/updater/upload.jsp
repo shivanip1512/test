@@ -8,7 +8,7 @@
 
    	<cti:breadCrumbs>
 	   <cti:crumbLink url="/operator/Operations.jsp" title="Operations Home" />
-	   <cti:crumbLink url="/spring/group/editor/home" title="Device Groups" />
+	   <cti:crumbLink url="/group/editor/home" title="Device Groups" />
 	   &gt; File Upload
   	</cti:breadCrumbs>
         
@@ -21,7 +21,7 @@
 			<tr valign="top">
 				<td width="30%" style="padding-right:20px;">
 	
-					<form id="uploadForm" method="post" action="/spring/group/updater/parseUpload" enctype="multipart/form-data">
+					<form id="uploadForm" method="post" action="/group/updater/parseUpload" enctype="multipart/form-data">
 					
 					<%-- options --%>
                     <table>

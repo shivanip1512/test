@@ -23,7 +23,7 @@
 <tags:nameValueContainer>
 	
 	<tags:nameValue name="Local File" nameColumnWidth="100px">
-		<form id="loadLocalFileForm" action="/spring/support/database/migration/loadLocalFile" method="post" enctype="multipart/form-data">
+		<form id="loadLocalFileForm" action="/support/database/migration/loadLocalFile" method="post" enctype="multipart/form-data">
 			<input type="file" name="dataFile" size="30px">
             <cti:button nameKey="load" type="submit"/>
 		</form>
@@ -32,7 +32,7 @@
 	<tags:nameValueGap gapHeight="15px"/>
 	
 	<tags:nameValue name="Server File">
-		<form id="loadServerFileForm" action="/spring/support/database/migration/loadServerFile" method="post">
+		<form id="loadServerFileForm" action="/support/database/migration/loadServerFile" method="post">
 			<select name="dataFilePath">
 				<c:forEach var="serverFile" items="${serverFiles}">
 					<option value="${serverFile}">${serverFile}</option>
@@ -72,7 +72,7 @@
 				
 				<td>
 					
-					<cti:url var="progressUrl" value="/spring/support/database/migration/importProgress">
+					<cti:url var="progressUrl" value="/support/database/migration/importProgress">
 						<cti:param name="statusKey" value="${recentImport.status.id}"/>
 					</cti:url>
 					
@@ -108,11 +108,11 @@
 				
 				<td>
 					
-					<cti:url var="progressUrl" value="/spring/support/database/migration/importProgress">
+					<cti:url var="progressUrl" value="/support/database/migration/importProgress">
 						<cti:param name="statusKey" value="${recentValidation.status.id}"/>
 					</cti:url>
 					
-					<cti:url var="validateUrl" value="/spring/support/database/migration/importValidate">
+					<cti:url var="validateUrl" value="/support/database/migration/importValidate">
 						<cti:param name="statusKey" value="${recentValidation.status.id}"/>
 					</cti:url>
 					

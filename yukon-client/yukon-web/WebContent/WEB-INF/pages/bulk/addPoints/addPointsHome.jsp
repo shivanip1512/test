@@ -16,11 +16,11 @@
         
         <%-- bulk home --%>
         <cti:msg var="bulkOperationsPageTitle" key="yukon.common.device.bulk.bulkHome.pageTitle"/>
-        <cti:crumbLink url="/spring/bulk/bulkHome" title="${bulkOperationsPageTitle}" />
+        <cti:crumbLink url="/bulk/bulkHome" title="${bulkOperationsPageTitle}" />
         
         <%-- device selection --%>
         <cti:msg var="deviceSelectionPageTitle" key="yukon.common.device.bulk.deviceSelection.pageTitle"/>
-        <cti:crumbLink url="/spring/bulk/deviceSelection" title="${deviceSelectionPageTitle}"/>
+        <cti:crumbLink url="/bulk/deviceSelection" title="${deviceSelectionPageTitle}"/>
         
         <%-- collection actions --%>
         <tags:collectionActionsCrumbLink deviceCollection="${deviceCollection}" />
@@ -49,7 +49,7 @@
                 
     <tags:bulkActionContainer key="yukon.common.device.bulk.addPointsHome" deviceCollection="${deviceCollection}">
         
-        <form id="executeAddPointsForm" action="<cti:url value="/spring/bulk/addPoints/execute" />">
+        <form id="executeAddPointsForm" action="<cti:url value="/bulk/addPoints/execute" />">
         
             <%-- DEVICE COLLECTION --%>
             <cti:deviceCollection deviceCollection="${deviceCollection}" />

@@ -85,7 +85,7 @@ public class GroupEditorController extends MultiActionController {
         	try {
         		group = deviceGroupService.resolveGroupName(groupName);
         	} catch (NotFoundException e) {
-        		mav.setViewName("redirect:/spring/group/editor/home");
+        		mav.setViewName("redirect:/group/editor/home");
         		mav.addObject("errorMessage", e.getMessage());
         		return mav;
         	}
@@ -209,7 +209,7 @@ public class GroupEditorController extends MultiActionController {
         YukonUserContext userContext = YukonUserContextUtils.getYukonUserContext(request);
         rolePropertyDao.verifyProperty(YukonRoleProperty.DEVICE_GROUP_EDIT, userContext.getYukonUser());
         
-        ModelAndView mav = new ModelAndView("redirect:/spring/group/editor/home");
+        ModelAndView mav = new ModelAndView("redirect:/group/editor/home");
 
         String groupName = ServletRequestUtils.getStringParameter(request, "groupName");
         String newGroupName = ServletRequestUtils.getStringParameter(request, "newGroupName");
@@ -248,8 +248,8 @@ public class GroupEditorController extends MultiActionController {
         YukonUserContext userContext = YukonUserContextUtils.getYukonUserContext(request);
         rolePropertyDao.verifyProperty(YukonRoleProperty.DEVICE_GROUP_MODIFY, userContext.getYukonUser());
         
-        ModelAndView deviceGroupMav = new ModelAndView("redirect:/spring/group/editor/home");
-        ModelAndView composedGroupMav = new ModelAndView("redirect:/spring/group/composedGroup/build");
+        ModelAndView deviceGroupMav = new ModelAndView("redirect:/group/editor/home");
+        ModelAndView composedGroupMav = new ModelAndView("redirect:/group/composedGroup/build");
 
         String groupName = ServletRequestUtils.getStringParameter(request, "groupName");
         DeviceGroupType subGroupType = DeviceGroupType.valueOf(ServletRequestUtils.getStringParameter(request, "subGroupType"));
@@ -364,7 +364,7 @@ public class GroupEditorController extends MultiActionController {
         YukonUserContext userContext = YukonUserContextUtils.getYukonUserContext(request);
         rolePropertyDao.verifyProperty(YukonRoleProperty.DEVICE_GROUP_MODIFY, userContext.getYukonUser());
         
-        ModelAndView mav = new ModelAndView("redirect:/spring/group/editor/home");
+        ModelAndView mav = new ModelAndView("redirect:/group/editor/home");
         
         String groupName = ServletRequestUtils.getStringParameter(request, "groupName");
         mav.addObject("groupName", groupName);
@@ -385,7 +385,7 @@ public class GroupEditorController extends MultiActionController {
         YukonUserContext userContext = YukonUserContextUtils.getYukonUserContext(request);
         rolePropertyDao.verifyProperty(YukonRoleProperty.DEVICE_GROUP_MODIFY, userContext.getYukonUser());
         
-        ModelAndView mav = new ModelAndView("redirect:/spring/group/editor/home");
+        ModelAndView mav = new ModelAndView("redirect:/group/editor/home");
 
         String groupName = ServletRequestUtils.getStringParameter(request, "groupName");
         mav.addObject("groupName", groupName);
@@ -414,7 +414,7 @@ public class GroupEditorController extends MultiActionController {
         YukonUserContext userContext = YukonUserContextUtils.getYukonUserContext(request);
         rolePropertyDao.verifyProperty(YukonRoleProperty.DEVICE_GROUP_EDIT, userContext.getYukonUser());
         
-        ModelAndView mav = new ModelAndView("redirect:/spring/group/editor/home");
+        ModelAndView mav = new ModelAndView("redirect:/group/editor/home");
 
         String groupName = ServletRequestUtils.getStringParameter(request, "groupName");
 
@@ -452,7 +452,7 @@ public class GroupEditorController extends MultiActionController {
         YukonUserContext userContext = YukonUserContextUtils.getYukonUserContext(request);
         rolePropertyDao.verifyProperty(YukonRoleProperty.DEVICE_GROUP_MODIFY, userContext.getYukonUser());
         
-        ModelAndView mav = new ModelAndView("redirect:/spring/group/editor/home");
+        ModelAndView mav = new ModelAndView("redirect:/group/editor/home");
         
         // names
         String groupName = ServletRequestUtils.getStringParameter(request, "groupName");
@@ -508,7 +508,7 @@ public class GroupEditorController extends MultiActionController {
         YukonUserContext userContext = YukonUserContextUtils.getYukonUserContext(request);
         rolePropertyDao.verifyProperty(YukonRoleProperty.DEVICE_GROUP_EDIT, userContext.getYukonUser());
         
-        ModelAndView mav = new ModelAndView("redirect:/spring/group/editor/home");
+        ModelAndView mav = new ModelAndView("redirect:/group/editor/home");
 
         String groupName = ServletRequestUtils.getStringParameter(request, "groupName");
         mav.addObject("groupName", groupName);

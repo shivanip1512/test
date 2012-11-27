@@ -13,7 +13,7 @@
 	
 	<cti:includeScript link="/JavaScript/yukonGeneral.js"/>
 
-    <cti:url var="deleteUrl" value="/spring/stars/operator/account/deleteAccount">
+    <cti:url var="deleteUrl" value="/stars/operator/account/deleteAccount">
         <cti:param name="accountId" value="${accountId}"/>
     </cti:url>
     
@@ -25,7 +25,7 @@
         </div>
     </i:simplePopup>
 
-    <cti:url var="deleteLoginUrl" value="/spring/stars/operator/account/deleteLogin">
+    <cti:url var="deleteLoginUrl" value="/stars/operator/account/deleteLogin">
         <cti:param name="accountId" value="${accountId}"/>
         <cti:param name="loginMode" value="${loginMode}"/>
     </cti:url>
@@ -37,7 +37,7 @@
         </div>
     </i:simplePopup>
 
-    <cti:url var="generatedPasswordUrl" value="/spring/stars/operator/account/generatePassword" />
+    <cti:url var="generatedPasswordUrl" value="/stars/operator/account/generatePassword" />
 
     <script type="text/javascript">
 
@@ -204,10 +204,10 @@
 	<cti:msg2 var="naLabel" key="defaults.na"/>
     
     <cti:displayForPageEditModes modes="EDIT">
-        <cti:url value="/spring/stars/operator/account/updateAccount" var="action"/>
+        <cti:url value="/stars/operator/account/updateAccount" var="action"/>
     </cti:displayForPageEditModes>
     <cti:displayForPageEditModes modes="CREATE">
-        <cti:url value="/spring/stars/operator/account/createAccount" var="action"/>
+        <cti:url value="/stars/operator/account/createAccount" var="action"/>
     </cti:displayForPageEditModes>
     
     <form:form id="updateForm" commandName="accountGeneral" action="${action}">
@@ -410,7 +410,7 @@
                 <cti:displayForPageEditModes modes="EDIT">
                     <cti:button nameKey="save" type="submit" styleClass="f_blocker f_prepPasswordFields"/>
                     <button type="button" onclick="jQuery('#confirmDeleteDialog').show()"><cti:msg2 key=".delete"/></button>
- 		            <cti:url value="/spring/stars/operator/account/view" var="viewUrl">
+ 		            <cti:url value="/stars/operator/account/view" var="viewUrl">
 			            <cti:param name="accountId" value="${accountId}"/>
 			        </cti:url>
             		<cti:button nameKey="cancel" href="${viewUrl}"/>
@@ -424,7 +424,7 @@
         
         <cti:displayForPageEditModes modes="VIEW">
             <cti:checkRolesAndProperties value="OPERATOR_ALLOW_ACCOUNT_EDITING">
-                <cti:url value="/spring/stars/operator/account/edit" var="editUrl">
+                <cti:url value="/stars/operator/account/edit" var="editUrl">
                     <cti:param name="accountId" value="${accountId}"/>
                 </cti:url>
                 <cti:button nameKey="edit" href="${editUrl}"/>
@@ -437,7 +437,7 @@
         <cti:checkRolesAndProperties value="OPERATOR_CONSUMER_INFO_ADMIN_CHANGE_LOGIN_PASSWORD">
             <c:if test="${supportsPasswordSet and not empty passwordBean}">
                 <dialog:inline id="passwordDialog" okEvent="e_updatePassword" on="a.f_editPassword" nameKey="passwordDialog">
-                    <form:form id="updatePasswordForm" commandName="passwordBean" action="/spring/stars/operator/account/updatePassword">
+                    <form:form id="updatePasswordForm" commandName="passwordBean" action="/stars/operator/account/updatePassword">
                         <input type="hidden" name="accountId" value="${accountId}">
                         <input type="hidden" name="loginMode" value="${loginMode}">
 

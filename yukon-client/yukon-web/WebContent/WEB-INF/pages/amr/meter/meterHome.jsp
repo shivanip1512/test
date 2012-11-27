@@ -47,12 +47,12 @@
 	                
 	                    <!-- Actions: Move In/Out -->
                         <c:if test="${moveSupported}">
-                            <cti:url var="moveInUrl" value="/spring/meter/moveIn">
+                            <cti:url var="moveInUrl" value="/meter/moveIn">
                                 <cti:param name="deviceId" value="${deviceId}" />
                             </cti:url>
                             <a href="${moveInUrl}"><i:inline key=".moveIn"/></a><br/>
 
-                            <cti:url var="moveOutUrl" value="/spring/meter/moveOut">
+                            <cti:url var="moveOutUrl" value="/meter/moveOut">
                                 <cti:param name="deviceId" value="${deviceId}" />
                             </cti:url>
                             <a href="${moveOutUrl}"><i:inline key=".moveOut"/></a><br/>
@@ -61,7 +61,7 @@
 						<!-- Actions: High Bill Complaint -->
 	                    <cti:checkProperty property="operator.MeteringRole.HIGH_BILL_COMPLAINT">
 	                        <c:if test="${highBillSupported}">
-	                            <cti:url var="highBillUrl" value="/spring/meter/highBill/view">
+	                            <cti:url var="highBillUrl" value="/meter/highBill/view">
 	                                <cti:param name="deviceId" value="${deviceId}" />
 	                            </cti:url>
 	                            <a href="${highBillUrl}"><i:inline key=".highBill"/></a><br/>
@@ -71,7 +71,7 @@
                         <!-- Actions: Profile -->
                         <%-- need one of these at least for the profile page to display anything --%>
                         <c:if test="${lpSupported || peakReportSupported}">
-        					<cti:url var="profileUrl" value="/spring/amr/profile/home">
+        					<cti:url var="profileUrl" value="/amr/profile/home">
         						<cti:param name="deviceId" value="${deviceId}" />
 							</cti:url>
                             <a href="${profileUrl}"><i:inline key=".profile"/></a><br/>
@@ -79,7 +79,7 @@
 	                        
 						<!-- Actions: Voltage & TOU -->
 						<c:if test="${showVoltageAndTou}">
-							<cti:url var="voltageTouUrl" value="/spring/amr/voltageAndTou/home">
+							<cti:url var="voltageTouUrl" value="/amr/voltageAndTou/home">
 								<cti:param name="deviceId" value="${deviceId}" />
 							</cti:url>
        						<a href="${voltageTouUrl}"><i:inline key=".voltageAndTou"/></a><br/>
@@ -88,7 +88,7 @@
 						<!-- Actions: Manual Commander -->
 						<cti:checkProperty property="CommanderRole.ENABLE_WEB_COMMANDER">
                         	<c:if test="${porterCommandRequestsSupported}">
-								<cti:url var="commanderUrl" value="/spring/amr/manualCommand/home">
+								<cti:url var="commanderUrl" value="/amr/manualCommand/home">
         							<cti:param name="deviceId" value="${deviceId}" />
         						</cti:url>
         						<a href="${commanderUrl}"><i:inline key=".manualCommander"/></a><br/>
@@ -98,7 +98,7 @@
                         <!-- Actions: Locate Route -->
                         <cti:checkProperty property="operator.DeviceActionsRole.LOCATE_ROUTE">
 							<c:if test="${porterCommandRequestsSupported}">
-								<cti:url var="routeLocateUrl" value="/spring/bulk/routeLocate/home">
+								<cti:url var="routeLocateUrl" value="/bulk/routeLocate/home">
         	                    	<cti:param name="collectionType" value="idList" />
         	                        <cti:param name="idList.ids" value="${deviceId}" />
 								</cti:url>
@@ -107,7 +107,7 @@
 						</cti:checkProperty>
 
 	                    <!-- Actions: Other Collection actions -->
-	                    <cti:url var="collectionActionsUrl" value="/spring/bulk/collectionActions">
+	                    <cti:url var="collectionActionsUrl" value="/bulk/collectionActions">
 	                        <cti:param name="collectionType" value="idList" />
 	                        <cti:param name="idList.ids" value="${deviceId}" />
 	                    </cti:url>

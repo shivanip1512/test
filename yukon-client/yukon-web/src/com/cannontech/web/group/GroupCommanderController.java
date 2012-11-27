@@ -274,7 +274,7 @@ public class GroupCommanderController implements InitializingBean {
             String subject = messageSourceAccessor.getMessage("yukon.web.commander.groupCommander.completionEmail.subject");
             
             // figure out URL
-            String resultUrl = hostUrl.toExternalForm() + "/spring/group/commander/resultDetail?resultKey=" + result.getKey();
+            String resultUrl = hostUrl.toExternalForm() + "/group/commander/resultDetail?resultKey=" + result.getKey();
             
             int successCount = result.getResultHolder().getSuccessfulDevices().size();
             int failureCount = result.getResultHolder().getFailedDevices().size();

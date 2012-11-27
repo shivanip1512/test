@@ -5,7 +5,7 @@
 <%@ taglib uri="http://www.springframework.org/tags" prefix="spring"%>
 
 
-<c:set var="actionUrl" value="/spring/stars/consumer/optout/deviceSelection"/>
+<c:set var="actionUrl" value="/stars/consumer/optout/deviceSelection"/>
 
 <cti:standardPage module="consumer" page="confirmCancel">
     <cti:standardMenu/>
@@ -16,10 +16,10 @@
         <cti:msg htmlEscape="true" key="yukon.dr.consumer.optout.confirmCancel.question" argument="${optOut.inventory.displayName}"/>
 
         <br><br>
-		<form action="/spring/stars/consumer/optout/cancel" method="post">
+		<form action="/stars/consumer/optout/cancel" method="post">
 			<input type="hidden" name="eventId" value="${optOut.eventId}">
 			<input type="submit" name="submit" value="<cti:msg key="yukon.dr.consumer.optout.cancelOptOut"/>" class="formSubmit">
-			<input type="button" value="<cti:msg key="yukon.dr.consumer.optout.noCancelOptOut"/>" class="formSubmit" onclick="window.location='/spring/stars/consumer/optout'">
+			<input type="button" value="<cti:msg key="yukon.dr.consumer.optout.noCancelOptOut"/>" class="formSubmit" onclick="window.location='/stars/consumer/optout'">
 		</form>
     </div>     
 </cti:standardPage>    

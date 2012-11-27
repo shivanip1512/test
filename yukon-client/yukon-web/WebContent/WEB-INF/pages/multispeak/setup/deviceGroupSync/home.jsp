@@ -34,7 +34,7 @@
 				<%-- sync now --%>
 				<td class="syncNow">
 					<br>
-					<form id="startForm" action="/spring/multispeak/setup/deviceGroupSync/start" method="post">
+					<form id="startForm" action="/multispeak/setup/deviceGroupSync/start" method="post">
 						<span id="syncNowContent" class="nonwrapping">
 			    		<select name="deviceGroupSyncType" id="deviceGroupSyncTypeSelect">
 			    			<c:forEach var="type" items="${deviceGroupSyncTypes}">

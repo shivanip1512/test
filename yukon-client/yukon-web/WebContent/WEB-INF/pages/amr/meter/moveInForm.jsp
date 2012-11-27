@@ -8,7 +8,7 @@
     <br />
 </c:forEach>
 
-<form action="/spring/meter/moveInRequest?deviceId=${meter.deviceId}" id="moveInForm" method="post">
+<form action="/meter/moveInRequest?deviceId=${meter.deviceId}" id="moveInForm" method="post">
     
 	<tags:boxContainer2 nameKey="moveInForm" hideEnabled="false">
 

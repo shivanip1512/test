@@ -25,7 +25,7 @@
         }
 	</script>
     
-    <form action="/spring/amr/phaseDetect/saveBroadcastRoutes" method="post">
+    <form action="/amr/phaseDetect/saveBroadcastRoutes" method="post">
         <tags:sectionContainer2 nameKey="selectBroadcastRoutes">
             <table style="padding-bottom: 5px;">
                 <tr>

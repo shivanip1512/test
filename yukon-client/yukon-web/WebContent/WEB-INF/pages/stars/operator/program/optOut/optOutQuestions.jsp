@@ -9,7 +9,7 @@
 <cti:standardPage module="operator" page="optOut.confirm">
 
 <form:form commandName="optOutBackingBean" method="POST"
-    action="/spring/stars/operator/program/optOut/optOutQuestions">
+    action="/stars/operator/program/optOut/optOutQuestions">
 
     <form:hidden path="durationInDays" />
     <form:hidden path="startDate" />

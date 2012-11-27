@@ -56,14 +56,14 @@
             <tags:operationSection sectionName="Consumer Account Information" sectionImageName="ConsumerLogo">
                 <cti:checkRolesAndProperties value="OPERATOR_NEW_ACCOUNT_WIZARD">
                     <tags:sectionLink>
-                        <a href="/spring/stars/operator/account/accountCreate"><cti:msg key="yukon.web.menu.portal.consumerAccountInformation.newAccount" />
+                        <a href="/stars/operator/account/accountCreate"><cti:msg key="yukon.web.menu.portal.consumerAccountInformation.newAccount" />
                         </a>
                     </tags:sectionLink>
                 </cti:checkRolesAndProperties>
                 
 				<c:if test="${isEnergyCompanyOperator}">
 					<cti:checkRolesAndProperties value="OPERATOR_IMPORT_CUSTOMER_ACCOUNT">
-                    	<c:set var="importUri" scope="page" value="/spring/stars/operator/account/accountImport" />
+                    	<c:set var="importUri" scope="page" value="/stars/operator/account/accountImport" />
                     	<c:set var="importLabel" scope="page" value="Import Account" />
                     	<cti:msg key="yukon.web.importAccount" var="importLabel"/>
                     	<tags:sectionLink>
@@ -92,7 +92,7 @@
                 <cti:checkMultiProperty
                     property="ConsumerInfoRole.OPT_OUT_ADMIN_STATUS,ConsumerInfoRole.OPT_OUT_ADMIN_CHANGE_ENABLE,ConsumerInfoRole.OPT_OUT_ADMIN_CANCEL_CURRENT,ConsumerInfoRole.OPT_OUT_ADMIN_CHANGE_COUNTS">
                     <tags:sectionLink>
-                        <a href="/spring/stars/operator/optOut/admin"><cti:msg key="yukon.web.menu.portal.consumerAccountInformation.optOutAdmin" />
+                        <a href="/stars/operator/optOut/admin"><cti:msg key="yukon.web.menu.portal.consumerAccountInformation.optOutAdmin" />
                         </a>
                     </tags:sectionLink>
                 </cti:checkMultiProperty>
@@ -100,7 +100,7 @@
                 <!-- Customer search form -->
                 <cti:checkRolesAndProperties value="OPERATOR_ACCOUNT_SEARCH">
                     <div class="sectionForm">
-                        <form id="accountSearchForm" action="/spring/stars/operator/account/search" method="get">
+                        <form id="accountSearchForm" action="/stars/operator/account/search" method="get">
                             <div class="sectionFormLabel">
                                 <cti:msg key="yukon.web.modules.operator.search.searchPrompt" />
                             </div>
@@ -133,19 +133,19 @@
                 <cti:checkRole role="MeteringRole.ROLEID">
                     <cti:checkProperty property="operator.MeteringRole.IMPORTER_ENABLED">
                         <tags:sectionLink>
-                            <a href="/spring/amr/bulkimporter/home"><cti:msg key="yukon.web.bulkImporter"/></a>
+                            <a href="/amr/bulkimporter/home"><cti:msg key="yukon.web.bulkImporter"/></a>
                         </tags:sectionLink>
                     </cti:checkProperty>
                 </cti:checkRole>
                 <cti:checkMultiRole roles="operator.MeteringRole.ROLEID,application.BillingRole.ROLEID,SchedulerRole.ROLEID">
                     <tags:sectionLink>
-                        <a href="<cti:url value="/spring/meter/start"/>"><cti:msg key="yukon.web.metering"/></a>
+                        <a href="<cti:url value="/meter/start"/>"><cti:msg key="yukon.web.metering"/></a>
                     </tags:sectionLink>
                 </cti:checkMultiRole>
 
                 <cti:checkRole role="operator.DeviceActionsRole.ROLEID">
                     <tags:sectionLink>
-                        <a href="<cti:url value="/spring/bulk/bulkHome"/>"><cti:msg key="yukon.web.bulkOperations"/></a>
+                        <a href="<cti:url value="/bulk/bulkHome"/>"><cti:msg key="yukon.web.bulkOperations"/></a>
                     </tags:sectionLink>
                 </cti:checkRole>
 
@@ -182,7 +182,7 @@
                 </cti:checkRole>
                 <cti:isPropertyTrue property="loadcontrol.DirectLoadcontrolRole.DEMAND_RESPONSE">
                     <tags:sectionLink>
-                        <a href="/spring/dr/home"><cti:msg key="yukon.web.operations.demandResponse" /></a>
+                        <a href="/dr/home"><cti:msg key="yukon.web.operations.demandResponse" /></a>
                     </tags:sectionLink>
                 </cti:isPropertyTrue>
             </tags:operationSection>
@@ -195,7 +195,7 @@
             <tags:operationSection sectionName="${sectionTitle}" sectionImageName="DistributionAutomationLogo">
                 <cti:checkRolesAndProperties value="CAP_CONTROL_ACCESS">
                     <tags:sectionLink>
-                        <a href="/spring/capcontrol/tier/areas"><cti:msg key="yukon.web.voltVarManagement"/></a>
+                        <a href="/capcontrol/tier/areas"><cti:msg key="yukon.web.voltVarManagement"/></a>
                     </tags:sectionLink>
                 </cti:checkRolesAndProperties>
                 <cti:checkRolesAndProperties value="OPERATOR_ESUBSTATION_DRAWINGS_VIEW">
@@ -205,7 +205,7 @@
                 </cti:checkRolesAndProperties>
                 <cti:checkRolesAndProperties value="CAP_CONTROL_IMPORTER">
                     <tags:sectionLink>
-                        <a href="<cti:url value="/spring/capcontrol/import/view"/>"><cti:msg key="yukon.web.voltVarImporter"/></a>
+                        <a href="<cti:url value="/capcontrol/import/view"/>"><cti:msg key="yukon.web.voltVarImporter"/></a>
                     </tags:sectionLink>
                 </cti:checkRolesAndProperties>
             </tags:operationSection>
@@ -218,7 +218,7 @@
             <tags:operationSection sectionName="${sectionTitle}" sectionImageName="HardwareInventoryLogo">
                 <cti:checkRole role="InventoryRole.ROLEID">
                     <tags:sectionLink>
-                        <a href="/spring/stars/operator/inventory/home"><cti:msg key="yukon.web.operations.inventory"/></a>
+                        <a href="/stars/operator/inventory/home"><cti:msg key="yukon.web.operations.inventory"/></a>
                     </tags:sectionLink>
                 </cti:checkRole>
                 <cti:checkProperty property="InventoryRole.PURCHASING_ACCESS">
@@ -232,7 +232,7 @@
 				<cti:checkRolesAndProperties value="INVENTORY_SEARCH">
 					<div class="sectionForm">
 						<form id="invSearchForm"
-							action="/spring/stars/operator/inventory/search" method="get">
+							action="/stars/operator/inventory/search" method="get">
 						  <div class="sectionFormLabel">
                                 <cti:msg key="yukon.web.modules.operator.search.hardwareSearchPrompt" />
                             </div>
@@ -300,18 +300,18 @@
                 </cti:checkProperty>
                 <cti:checkRolesAndProperties value="ARCHIVED_DATA_EXPORT">
                     <tags:sectionLink>
-                        <a href="/spring/amr/archivedValuesExporter/view"><cti:msg key="yukon.web.archivedDataExport"/></a>
+                        <a href="/amr/archivedValuesExporter/view"><cti:msg key="yukon.web.archivedDataExport"/></a>
                     </tags:sectionLink>
                 </cti:checkRolesAndProperties>
                 <cti:checkGlobalSetting setting="MSP_LM_MAPPING_SETUP">
                     <tags:sectionLink>
-                        <a href="/spring/multispeak/visualDisplays/loadManagement/home"><cti:msg key="yukon.web.menu.portal.analysis.visualDisplays" />
+                        <a href="/multispeak/visualDisplays/loadManagement/home"><cti:msg key="yukon.web.menu.portal.analysis.visualDisplays" />
                         </a>
                     </tags:sectionLink>
                 </cti:checkGlobalSetting>
                 <cti:checkRolesAndProperties value="OPERATOR_SURVEY_EDIT">
                     <tags:sectionLink>
-                        <a href="/spring/stars/survey/list"><cti:msg key="yukon.web.menu.portal.analysis.surveys" />
+                        <a href="/stars/survey/list"><cti:msg key="yukon.web.menu.portal.analysis.surveys" />
                         </a>
                     </tags:sectionLink>
                 </cti:checkRolesAndProperties>
@@ -326,7 +326,7 @@
 
                 <c:if test="${showSystemAdmin}">
                     <tags:sectionLink>
-                        <a href="/spring/adminSetup/systemAdmin"> <cti:msg key="yukon.web.menu.portal.administration.systemAdministration" /> </a>
+                        <a href="/adminSetup/systemAdmin"> <cti:msg key="yukon.web.menu.portal.administration.systemAdministration" /> </a>
                     </tags:sectionLink>
                 </c:if>
 
@@ -339,20 +339,20 @@
 				<cti:checkRole role="ConsumerInfoRole.ROLEID">
 	                <cti:checkProperty property="operator.AdministratorRole.ADMIN_VIEW_OPT_OUT_EVENTS">
 	                    <tags:sectionLink>
-	                        <a href="/spring/stars/operator/optOut/admin/viewScheduled"> <cti:msg key="yukon.web.menu.portal.administration.viewScheduledOptOutEvents" /> </a>
+	                        <a href="/stars/operator/optOut/admin/viewScheduled"> <cti:msg key="yukon.web.menu.portal.administration.viewScheduledOptOutEvents" /> </a>
 	                    </tags:sectionLink>
 	                </cti:checkProperty>
 				</cti:checkRole>
 
                 <cti:checkRolesAndProperties value="OPERATOR_ADMINISTRATOR">
                     <tags:sectionLink>
-                        <a href="/spring/support/"><cti:msg key="yukon.web.support"/></a>
+                        <a href="/support/"><cti:msg key="yukon.web.support"/></a>
                     </tags:sectionLink>
                 </cti:checkRolesAndProperties>
 
                 <cti:checkRolesAndProperties value="ADMIN_VIEW_LOGS">
                     <tags:sectionLink>
-                        <a href="/spring/support/logging/menu?file=/"><cti:msg key="yukon.web.viewLogs"/></a>
+                        <a href="/support/logging/menu?file=/"><cti:msg key="yukon.web.viewLogs"/></a>
                     </tags:sectionLink>
                 </cti:checkRolesAndProperties>
 
@@ -364,7 +364,7 @@
 
                 <cti:checkProperty property="AdministratorRole.ADMIN_VIEW_CONFIG">
                     <tags:sectionLink>
-                        <a href="<cti:url value="/spring/deviceConfiguration?home"/>"><cti:msg key="yukon.web.deviceConfiguration"/></a>
+                        <a href="<cti:url value="/deviceConfiguration?home"/>"><cti:msg key="yukon.web.deviceConfiguration"/></a>
                     </tags:sectionLink>
                 </cti:checkProperty>
 

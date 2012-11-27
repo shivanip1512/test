@@ -222,7 +222,7 @@ public class IvvcAnalysisScenarioProcessor {
         argMap.put("isSpecialArea", "false");
         
         String name = zone.getName();
-        String html = getLinkHtml("/spring/capcontrol/ivvc/zone/detail", name, argMap);
+        String html = getLinkHtml("/capcontrol/ivvc/zone/detail", name, argMap);
         return html;
     }
     

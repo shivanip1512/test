@@ -248,9 +248,9 @@ public class CommandController {
             if (oneline) {
                 model.addAttribute("bankid", bank.getCcId());
                 model.addAttribute("oneline", oneline);
-                return "redirect:/spring/capcontrol/move/bankMove";
+                return "redirect:/capcontrol/move/bankMove";
             } else {
-                return "redirect:/spring/capcontrol/tier/feeders";
+                return "redirect:/capcontrol/tier/feeders";
             }
         }
         
@@ -293,9 +293,9 @@ public class CommandController {
         if (oneline) {
             model.addAttribute("bankid", bank.getCcId());
             model.addAttribute("oneline", oneline);
-            return "redirect:/spring/capcontrol/move/bankMove";
+            return "redirect:/capcontrol/move/bankMove";
         } else {
-            return "redirect:/spring/capcontrol/tier/feeders";
+            return "redirect:/capcontrol/tier/feeders";
         }
     }
     
@@ -356,7 +356,7 @@ public class CommandController {
         
         model.addAttribute("substationId", cache.getParentSubStationId(bankId));
         model.addAttribute("areaId", cache.getParentAreaID(bankId));
-        return "redirect:/spring/capcontrol/tier/feeders";
+        return "redirect:/capcontrol/tier/feeders";
     }
     
     @RequestMapping

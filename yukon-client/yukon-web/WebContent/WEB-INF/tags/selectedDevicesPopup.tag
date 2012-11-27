@@ -16,7 +16,7 @@
 <%-- CREATE URL --%>
 <c:choose>
 	<c:when test="${not empty pageScope.deviceCollection}">
-		<c:url var="selectedDevicesTableUrl" value="/spring/bulk/selectedDevicesTableForDeviceCollection">
+		<c:url var="selectedDevicesTableUrl" value="/bulk/selectedDevicesTableForDeviceCollection">
 		    <c:forEach var="deviceCollectionParam" items="${pageScope.deviceCollection.collectionParameters}">
 		        <c:param name="${deviceCollectionParam.key}" value="${fn:escapeXml(deviceCollectionParam.value)}"/>
 		    </c:forEach>
@@ -24,7 +24,7 @@
 	</c:when>
 
 	<c:when test="${not empty pageScope.groupName}">
-		<c:url var="selectedDevicesTableUrl" value="/spring/bulk/selectedDevicesTableForGroupName">
+		<c:url var="selectedDevicesTableUrl" value="/bulk/selectedDevicesTableForGroupName">
 	        <c:param name="groupName" value="${fn:escapeXml(pageScope.groupName)}"/>
 		</c:url>
 	</c:when>

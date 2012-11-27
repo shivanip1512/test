@@ -101,8 +101,8 @@
             <div class="smallBoldLabel fl" style="display:inline;"><i:inline key=".endDate"/> </div>
 			<dt:date name="getReportStopDate" value="${stopDate}"/>
             <c:if test="${readable}">
-                <cti:url var="getReportUrl" value="/spring/meter/highBill/getReport"/>
-                <cti:url var="hbcRedirectUrl" value="/spring/meter/highBill/view"/>
+                <cti:url var="getReportUrl" value="/meter/highBill/getReport"/>
+                <cti:url var="hbcRedirectUrl" value="/meter/highBill/view"/>
                 
                 
                 <input type="button" id="getReportButton" value="<cti:msg2 key=".getReport"/>" onclick="getReport('${getReportUrl}', '${hbcRedirectUrl}');" class="formSubmit fl"> 
@@ -117,7 +117,7 @@
                         <c:when test="${not empty preResult && !preResult.noData && preResult.deviceError == ''}">
                         <c:set var="reportHeader">
                             <jsp:attribute name="value">
-                                <cti:url var="analyzeThisDataUrl" value="/spring/meter/highBill/view">
+                                <cti:url var="analyzeThisDataUrl" value="/meter/highBill/view">
                                     <cti:param name="deviceId" value="${deviceId}"/>
                                     <cti:param name="analyze" value="true"/>
                                     <cti:param name="getReportStartDate" value="${formattedStartDate}"/>
@@ -180,7 +180,7 @@
         <cti:msg2 var="plusMinus3days" key=".plusMinus3days"/>
         <tags:sectionContainer title="${step3}" id="hbcStep3">  
             
-            <cti:url var="chartUrlPrefix" value="/spring/meter/highBill/view">
+            <cti:url var="chartUrlPrefix" value="/meter/highBill/view">
                 <cti:param name="deviceId" value="${deviceId}"/>
                 <cti:param name="analyze" value="true"/>
                 <cti:param name="getReportStartDate" value="${formattedStartDate}"/>
@@ -236,7 +236,7 @@
                 <%-- tabular data links --%>
                 <div class="smallBoldLabel" style="display:inline;"><i:inline key=".tabularData"/> </div>
                 
-                <cti:url var="preHbcArchivedDataReportUrl" value="/spring/amr/reports/hbcArchivedDataReport">
+                <cti:url var="preHbcArchivedDataReportUrl" value="/amr/reports/hbcArchivedDataReport">
                     <cti:param name="def" value="rawPointHistoryDefinition"/>
                     <cti:param name="pointId" value="${pointId}"/>
                     <cti:param name="startDate" value="${preChartStartDateMillis}"/>
@@ -293,7 +293,7 @@
                 <%-- tabular data links --%>
                 <div class="smallBoldLabel" style="display:inline;"><i:inline key=".tabularData"/> </div>
                 
-                <cti:url var="postHbcArchivedDataReportUrl" value="/spring/amr/reports/hbcArchivedDataReport">
+                <cti:url var="postHbcArchivedDataReportUrl" value="/amr/reports/hbcArchivedDataReport">
                     <cti:param name="def" value="rawPointHistoryDefinition"/>
                     <cti:param name="pointId" value="${pointId}"/>
                     <cti:param name="startDate" value="${postChartStartDateMillis}"/>
@@ -331,7 +331,7 @@
         
         <%-- CREATE LM POINT --%>
         <c:otherwise>
-            <cti:url var="highBillUrl" value="/spring/meter/highBill/view">
+            <cti:url var="highBillUrl" value="/meter/highBill/view">
                 <cti:param name="deviceId" value="${deviceId}" />
                 <cti:param name="createLPPoint" value="true" />
             </cti:url>

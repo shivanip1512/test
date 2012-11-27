@@ -111,7 +111,7 @@ public class StandardPageTag extends BodyTagSupport {
                 // has a tag to include the content in the middle of itself). We don't use
                 // pageContext.include() here because that flushes the output which makes error
                 // handling very difficult.
-                RequestDispatcher requestDispatcher = pageContext.getServletContext().getRequestDispatcher("/spring/layout/");
+                RequestDispatcher requestDispatcher = pageContext.getServletContext().getRequestDispatcher("/layout/");
                 
                 //forward the contents to the LayoutController
                 requestDispatcher.forward(pageContext.getRequest(), pageContext.getResponse());

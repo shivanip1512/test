@@ -9,7 +9,7 @@
 
 	<%-- SEACRH WIDGET --%>
     <cti:checkRolesAndProperties value="OPERATOR_ACCOUNT_SEARCH">
-    	<form id="searchForm" action="/spring/stars/operator/account/search" method="get">
+    	<form id="searchForm" action="/stars/operator/account/search" method="get">
     		
     		<div style="padding-top:8px;padding-bottom:8px;">
     			
@@ -35,7 +35,7 @@
 	<c:if test="${accountSearchResultHolder.accountSearchResults.hitCount > 0}">
 	
 		<cti:msg2 var="resultBoxtitleText" key=".resultBoxtitle" arguments="${searchResultTitleArguments}"/>
-		<tags:pagedBox searchResult="${accountSearchResultHolder.accountSearchResults}" baseUrl="/spring/stars/operator/account/search" title="${resultBoxtitleText}">
+		<tags:pagedBox searchResult="${accountSearchResultHolder.accountSearchResults}" baseUrl="/stars/operator/account/search" title="${resultBoxtitleText}">
 		
 			<table class="compactResultsTable rowHighlighting" style="width:100%;">
 	            
@@ -54,7 +54,7 @@
 	    			<tr style="vertical-align:top;" class="<tags:alternateRow odd="" even="altRow"/>">
 		    		
 		    			<td>
-		    				<cti:url var="accountEditUrl" value="/spring/stars/operator/account/view">
+		    				<cti:url var="accountEditUrl" value="/stars/operator/account/view">
 		    					<cti:param name="accountId" value="${accountSearchResult.accountId}"/>
 		    				</cti:url>
 		    				<a href="${accountEditUrl}">

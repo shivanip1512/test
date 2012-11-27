@@ -11,7 +11,7 @@ function saveOldPoint ()
 
 function attachPoint (selected) 
 {
-	   new Ajax.Request ('/spring/capcontrol/checkCapPoint', 
+	   new Ajax.Request ('/capcontrol/checkCapPoint', 
 			{	 
 				 method:'post', 
 				 parameters:'pointID='+selected.pointId, 

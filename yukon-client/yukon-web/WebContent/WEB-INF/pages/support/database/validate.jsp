@@ -6,7 +6,7 @@
 <cti:standardMenu menuSelection="database|compare"/>
 <cti:breadCrumbs>
     <cti:crumbLink url="/operator/Operations.jsp" title="Operations Home"  />
-	<cti:crumbLink url="/spring/support/" title="Support" />
+	<cti:crumbLink url="/support/" title="Support" />
     <cti:crumbLink>Database Validate</cti:crumbLink>
 </cti:breadCrumbs>
 
@@ -18,7 +18,7 @@
 
 		<script>
             jQuery(function() {
-				new Ajax.Updater('compareResults', '/spring/support/database/validate/results');
+				new Ajax.Updater('compareResults', '/support/database/validate/results');
 			});
 		</script>
 		

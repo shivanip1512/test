@@ -9,12 +9,12 @@
 <cti:standardPage module="operator" page="deviceReconfigStatus">
     <cti:includeCss link="/WebConfig/yukon/styles/operator/inventory.css"/>
     
-    <cti:url var="newOperationFailed" value="/spring/stars/operator/inventory/deviceReconfig/newOperation">
+    <cti:url var="newOperationFailed" value="/stars/operator/inventory/deviceReconfig/newOperation">
         <cti:param name="type" value="FAIL"/>
         <cti:param name="taskId" value="${task.inventoryConfigTaskId}"/>
     </cti:url>
     
-    <cti:url var="newOperationSuccess" value="/spring/stars/operator/inventory/deviceReconfig/newOperation">
+    <cti:url var="newOperationSuccess" value="/stars/operator/inventory/deviceReconfig/newOperation">
         <cti:param name="type" value="SUCCESS"/>
         <cti:param name="taskId" value="${task.inventoryConfigTaskId}"/>
     </cti:url>
@@ -83,9 +83,9 @@
             <br>
             
             <cti:button nameKey="delete" styleClass="f_open_delete_confirm_dialog"/>
-            <cti:url value="/spring/stars/operator/inventory/home" var="inventory_home_url"></cti:url>
+            <cti:url value="/stars/operator/inventory/home" var="inventory_home_url"></cti:url>
             <cti:button nameKey="cancel" href="${inventory_home_url}"/>
-            <form action="/spring/stars/operator/inventory/inventoryActions/deviceReconfig/delete" method="post">
+            <form action="/stars/operator/inventory/inventoryActions/deviceReconfig/delete" method="post">
                 <input type="hidden" value="${task.inventoryConfigTaskId}" name="taskId">
                 <tags:confirmDialog on=".f_open_delete_confirm_dialog" nameKey=".confirmDelete" argument="${task.taskName}"/>
             </form>

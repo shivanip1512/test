@@ -4,7 +4,7 @@
 <%@ taglib tagdir="/WEB-INF/tags" prefix="ct"%>
 
 <cti:url var="optOutUrl" value="/operator/Consumer/OptOut.jsp" />
-<cti:url var="actionUrl" value="/spring/stars/operator/optout/update" />
+<cti:url var="actionUrl" value="/stars/operator/optout/update" />
 
 <script type="text/javascript">
 function createJSON() {

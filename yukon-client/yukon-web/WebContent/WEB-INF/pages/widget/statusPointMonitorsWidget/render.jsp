@@ -33,7 +33,7 @@
         			<c:set var="tdClass" value="subtleGray"/>
         		</c:if>
         		<tr>
-        			<cti:url var="viewStatusPointMonitoringUrl" value="/spring/amr/statusPointMonitoring/viewPage">
+        			<cti:url var="viewStatusPointMonitoringUrl" value="/amr/statusPointMonitoring/viewPage">
         				<cti:param name="statusPointMonitorId" value="${monitorId}"/>
         			</cti:url>
         				
@@ -77,7 +77,7 @@
 
 <div style="text-align:right;padding-top:5px;">
     <%-- CREATE NEW STATUS POINT MONITOR FORM --%>
-    <form action="/spring/amr/statusPointMonitoring/creationPage" method="get">
+    <form action="/amr/statusPointMonitoring/creationPage" method="get">
         <cti:button nameKey="create" type="submit" styleClass="f_blocker"/>
         <input type="hidden" value="0" name="statusPointMonitorId">
     </form>

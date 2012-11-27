@@ -2,7 +2,7 @@
 <%@ taglib uri="http://java.sun.com/jsp/jstl/functions" prefix="fn"%>
 <%@ taglib uri="http://cannontech.com/tags/cti" prefix="cti"%>
 
-<cti:url var="generalUrl" value="/spring/stars/consumer/general"/>
+<cti:url var="generalUrl" value="/stars/consumer/general"/>
 
 <cti:standardPage module="consumer" page="optoutresult">
     <cti:standardMenu />
@@ -17,7 +17,7 @@
         <br>
     
         <input type="button" value='<cti:msg key="yukon.dr.consumer.optoutresult.ok"/>'
-               onclick="location.href='/spring/stars/consumer/optout';"></input>
+               onclick="location.href='/stars/consumer/optout';"></input>
     </div>
     
     

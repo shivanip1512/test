@@ -34,19 +34,19 @@
 	    </c:if>
     
     	<%-- MISC FORMS --%>
-		<form id="monitorDeleteForm" action="/spring/amr/tamperFlagProcessing/delete" method="post">
+		<form id="monitorDeleteForm" action="/amr/tamperFlagProcessing/delete" method="post">
 			<input type="hidden" id="deleteTamperFlagMonitorId" name="deleteTamperFlagMonitorId" value="">
 		</form>
 		
-		<form id="toggleEnabledForm" action="/spring/amr/tamperFlagProcessing/toggleEnabled" method="post">
+		<form id="toggleEnabledForm" action="/amr/tamperFlagProcessing/toggleEnabled" method="post">
 			<input type="hidden" name="tamperFlagMonitorId" value="${tamperFlagMonitorId}">
 		</form>
 		
-		<form id="cancelForm" action="/spring/meter/start" method="get">
+		<form id="cancelForm" action="/meter/start" method="get">
 		</form>
 		
 		<%-- UPDATE FORM --%>
-		<form id="updateForm" action="/spring/amr/tamperFlagProcessing/update" method="post">
+		<form id="updateForm" action="/amr/tamperFlagProcessing/update" method="post">
 		
 			<input type="hidden" name="tamperFlagMonitorId" value="${tamperFlagMonitorId}">
 			

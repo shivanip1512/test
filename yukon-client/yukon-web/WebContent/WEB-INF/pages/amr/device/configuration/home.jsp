@@ -34,7 +34,7 @@
 	</c:if>
 	
     <c:if test="${editConfig}">
-        <form name="configTemplateForm" action="/spring/deviceConfiguration">
+        <form name="configTemplateForm" action="/deviceConfiguration">
             <tags:sectionContainer title="Create New Configuration">
                 <tags:nameValueContainer style="width: 350px;">
                     <tags:nameValue name="Configuration Type">
@@ -55,7 +55,7 @@
 	
 	<c:choose>
 		<c:when test="${fn:length(existingConfigs) > 0}">
-            <form name="configForm" action="/spring/deviceConfiguration">
+            <form name="configForm" action="/deviceConfiguration">
                 <tags:sectionContainer title="${editConfig ? 'Manage' : 'View'} Existing Configurations">
                     <tags:nameValueContainer style="width: 380px;">
                         <tags:nameValue name="Existing Configurations">
@@ -67,7 +67,7 @@
     				    </tags:nameValue>
                     </tags:nameValueContainer>
                     <br>
-                    <a href="/spring/bulk/deviceSelection">Manage Device Configuration Assignments</a>
+                    <a href="/bulk/deviceSelection">Manage Device Configuration Assignments</a>
                 </tags:sectionContainer>
                 <input type="submit" name="editConfig" value="${editConfig ? 'Edit' : 'View'}" class="formSubmit"/>
                 <c:if test="${editConfig}">

@@ -20,7 +20,7 @@
     
        	<cti:breadCrumbs>
     	    <cti:crumbLink url="/operator/Operations.jsp" title="Operations Home" />
-   	        <cti:crumbLink url="/spring/group/commander/groupProcessing" title="${groupMeterReadHomePageTitle}" />
+   	        <cti:crumbLink url="/group/commander/groupProcessing" title="${groupMeterReadHomePageTitle}" />
             <cti:crumbLink title="${pageTitle}"/>
     	</cti:breadCrumbs>
 
@@ -45,7 +45,7 @@
             
             	<c:set var="resultKey" value="${resultWrapper.key.result.key}"/>
             
-                <cti:url var="resultDetailUrl" value="/spring/group/groupMeterRead/resultDetail">
+                <cti:url var="resultDetailUrl" value="/group/groupMeterRead/resultDetail">
                     <cti:param name="resultKey" value="${resultKey}" />
                 </cti:url>
             

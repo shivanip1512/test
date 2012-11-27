@@ -13,8 +13,8 @@
 
     </script>
     
-    <cti:url var="clearURL" value="/spring/amr/phaseDetect/clear"/>
-    <form action="/spring/amr/phaseDetect/clear" method="post">
+    <cti:url var="clearURL" value="/amr/phaseDetect/clear"/>
+    <form action="/amr/phaseDetect/clear" method="post">
         <tags:sectionContainer2 nameKey="clearData">
 	        <table>
 	            <tr>

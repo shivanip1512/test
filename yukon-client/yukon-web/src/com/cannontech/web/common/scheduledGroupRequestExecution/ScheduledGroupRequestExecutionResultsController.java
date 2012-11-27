@@ -131,7 +131,7 @@ public class ScheduledGroupRequestExecutionResultsController extends MultiAction
 	public String viewLastRun(int jobId, ModelMap model) {
 		CommandRequestExecution lastCre = scheduledGroupRequestExecutionDao.findLatestCommandRequestExecutionForJobId(jobId, null);
 		model.addAttribute("commandRequestExecutionId", lastCre.getId());
-		return "redirect:/spring/common/commandRequestExecutionResults/detail";
+		return "redirect:/common/commandRequestExecutionResults/detail";
 	}
 
     private void setupJobsFromFilter(ScheduledJobsFilterBackingBean backingBean,

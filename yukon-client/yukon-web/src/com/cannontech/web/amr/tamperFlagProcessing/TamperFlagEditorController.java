@@ -175,7 +175,7 @@ public class TamperFlagEditorController {
     		tamperFlagMonitorId = tamperFlagMonitor.getTamperFlagMonitorId();
         	
     		// redirect to edit page with processor
-    		return "redirect:/spring/meter/start";
+    		return "redirect:/meter/start";
         }
 	}
 	
@@ -192,7 +192,7 @@ public class TamperFlagEditorController {
         	return "redirect:edit"; 
         }
         
-        return "redirect:/spring/meter/start";
+        return "redirect:/meter/start";
 	}
 	
 	// TOGGLE MONITOR EVALUATION SERVICE ENABLED/DISABLED

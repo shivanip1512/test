@@ -15,11 +15,11 @@
         
         <%-- bulk home --%>
         <cti:msg var="bulkOperationsPageTitle" key="yukon.common.device.bulk.bulkHome.pageTitle"/>
-        <cti:crumbLink url="/spring/bulk/bulkHome" title="${bulkOperationsPageTitle}" />
+        <cti:crumbLink url="/bulk/bulkHome" title="${bulkOperationsPageTitle}" />
         
         <%-- device selection --%>
         <cti:msg var="deviceSelectionPageTitle" key="yukon.common.device.bulk.deviceSelection.pageTitle"/>
-        <cti:crumbLink url="/spring/bulk/deviceSelection" title="${deviceSelectionPageTitle}"/>
+        <cti:crumbLink url="/bulk/deviceSelection" title="${deviceSelectionPageTitle}"/>
         
         <%-- collection actions --%>
         <cti:msg var="collectionActionsPageTitle" key="yukon.common.device.bulk.collectionActions.pageTitle"/>
@@ -80,13 +80,13 @@
                                 <%-- ADD TO GROUP --%>
                                 <cti:checkProperty property="operator.DeviceActionsRole.DEVICE_GROUP_MODIFY">
                                     <tags:collectionActionTr inputValue="ADD" buttonValue="${addToGroupLabel}" inputName="addRemove" 
-                                        description="${addToGroupDescription}" action="/spring/bulk/group/selectGroup" deviceCollection="${deviceCollection}"/>
+                                        description="${addToGroupDescription}" action="/bulk/group/selectGroup" deviceCollection="${deviceCollection}"/>
                                 </cti:checkProperty>
                                 
                                 <%-- REMOVE FROM GROUP --%>
                                 <cti:checkProperty property="operator.DeviceActionsRole.DEVICE_GROUP_MODIFY">
 	                                <tags:collectionActionTr inputValue="REMOVE" buttonValue="${removeFromGroupLabel}" inputName="addRemove" 
-	                                        description="${removeFromGroupDescription}" action="/spring/bulk/group/selectGroup" deviceCollection="${deviceCollection}"/>
+	                                        description="${removeFromGroupDescription}" action="/bulk/group/selectGroup" deviceCollection="${deviceCollection}"/>
                                 </cti:checkProperty>
                             </table>
                         </tags:sectionContainer>
@@ -100,17 +100,17 @@
                                 <%-- MASS CHANGE --%>
                                 <cti:checkProperty property="operator.DeviceActionsRole.MASS_CHANGE">
                                     <tags:collectionActionTr buttonValue="${massChangeLabel}" description="${massChangeDescription}"
-                                        action="/spring/bulk/massChange/massChangeSelect" deviceCollection="${deviceCollection}"/>
+                                        action="/bulk/massChange/massChangeSelect" deviceCollection="${deviceCollection}"/>
                                     
                                     <%-- CHANGE TYPE --%>
                                     <tags:collectionActionTr buttonValue="${changeDeviceTypeLabel}" description="${changeDeviceTypeDescription}"
-                                        action="/spring/bulk/changeDeviceType/chooseDeviceType" deviceCollection="${deviceCollection}"/>
+                                        action="/bulk/changeDeviceType/chooseDeviceType" deviceCollection="${deviceCollection}"/>
                                 </cti:checkProperty>
                                 
                                 <%-- MASS DELETE --%>
                                 <cti:checkProperty property="operator.DeviceActionsRole.MASS_DELETE">
                                     <tags:collectionActionTr buttonValue="${massDeleteLabel}" description="${massDeleteDescription}"
-                                        action="/spring/bulk/massDelete/massDelete" deviceCollection="${deviceCollection}"/>
+                                        action="/bulk/massDelete/massDelete" deviceCollection="${deviceCollection}"/>
                                 </cti:checkProperty>
                             </table>
                         </tags:sectionContainer>
@@ -123,17 +123,17 @@
                             <%-- GROUP COMMANDER --%>
                             <cti:checkProperty property="operator.DeviceActionsRole.GROUP_COMMANDER">
                                 <tags:collectionActionTr buttonValue="${sendCommandLabel}" description="${sendCommandDescription}"
-                                    action="/spring/group/commander/collectionProcessing" deviceCollection="${deviceCollection}"/>
+                                    action="/group/commander/collectionProcessing" deviceCollection="${deviceCollection}"/>
                             </cti:checkProperty>
                             
                             <%-- GROUP ATTRIBUTE READ --%>
                             <tags:collectionActionTr buttonValue="${readAttributeLabel}" description="${readAttributeDescription}"
-                                    action="/spring/group/groupMeterRead/homeCollection" deviceCollection="${deviceCollection}"/>
+                                    action="/group/groupMeterRead/homeCollection" deviceCollection="${deviceCollection}"/>
                             
                             <%-- LOCATE ROUTE --%>
                             <cti:checkProperty property="operator.DeviceActionsRole.LOCATE_ROUTE">
                                 <tags:collectionActionTr buttonValue="${routeLocateLabel}" description="${routeLocateDescription}"
-                                    action="/spring/bulk/routeLocate/home" deviceCollection="${deviceCollection}"/>
+                                    action="/bulk/routeLocate/home" deviceCollection="${deviceCollection}"/>
                             </cti:checkProperty>
                         </table>
                     </tags:sectionContainer>
@@ -145,22 +145,22 @@
                             <%-- ASSIGN CONFIG --%>
                             <cti:checkRolesAndProperties value="ASSIGN_CONFIG">
                                 <tags:collectionActionTr buttonValue="${assignConfigLabel}" description="${assignConfigDescription}"
-                                    action="/spring/bulk/config/assignConfig" deviceCollection="${deviceCollection}"/>
+                                    action="/bulk/config/assignConfig" deviceCollection="${deviceCollection}"/>
                             </cti:checkRolesAndProperties>
                             
                             <%-- SEND CONFIG --%>
                             <cti:checkRolesAndProperties value="SEND_READ_CONFIG">
                                 <tags:collectionActionTr buttonValue="${sendConfigLabel}" description="${sendConfigDescription}"
-                                    action="/spring/bulk/config/sendConfig" deviceCollection="${deviceCollection}"/>
+                                    action="/bulk/config/sendConfig" deviceCollection="${deviceCollection}"/>
                             
                             <%-- READ CONFIG --%>
                                 <tags:collectionActionTr buttonValue="${readConfigLabel}" description="${readConfigDescription}"
-                                    action="/spring/bulk/config/readConfig" deviceCollection="${deviceCollection}"/>
+                                    action="/bulk/config/readConfig" deviceCollection="${deviceCollection}"/>
                             </cti:checkRolesAndProperties>
                             
                             <%-- VERIFY CONFIG --%>
                             <tags:collectionActionTr buttonValue="${verifyConfigLabel}" description="${verifyConfigDescription}"
-                                action="/spring/bulk/config/verifyConfig" deviceCollection="${deviceCollection}"/>
+                                action="/bulk/config/verifyConfig" deviceCollection="${deviceCollection}"/>
                         </table>
                     </tags:sectionContainer>
                 </cti:dataGridCell>
@@ -170,15 +170,15 @@
                     <table>
                         <%-- DEVICE REPORT --%>
                         <tags:collectionActionTr buttonValue="${deviceCollectionReportLabel}" description="${deviceCollectionReportDescription}"
-                            action="/spring/bulk/deviceCollectionReport" deviceCollection="${deviceCollection}"/>
+                            action="/bulk/deviceCollectionReport" deviceCollection="${deviceCollection}"/>
                         <%-- DATA ANALYSIS --%>
                         <cti:checkProperty property="operator.DeviceActionsRole.ARCHIVED_DATA_ANALYSIS">
                             <tags:collectionActionTr buttonValue="${dataAnalysisLabel}" description="${dataAnalysisDiscription}"
-                                action="/spring/bulk/archiveDataAnalysis/home/setup" deviceCollection="${deviceCollection}"/>
+                                action="/bulk/archiveDataAnalysis/home/setup" deviceCollection="${deviceCollection}"/>
                         </cti:checkProperty>        
                        <cti:checkRolesAndProperties value="ARCHIVED_DATA_EXPORT">
                             <tags:collectionActionTr buttonValue="${archivedValueDataExporterLabel}" description="${archivedValueDataExporterDescription}"
-                                action="/spring/amr/archivedValuesExporter/view" deviceCollection="${deviceCollection}"/>
+                                action="/amr/archivedValuesExporter/view" deviceCollection="${deviceCollection}"/>
                        </cti:checkRolesAndProperties>
                     </table>
                 </tags:sectionContainer>
@@ -190,15 +190,15 @@
                             <table>
                                 <%-- ADD POINTS --%>
                                 <tags:collectionActionTr buttonValue="${addPointsLabel}" description="${addPointsDescription}"
-                                    action="/spring/bulk/addPoints/home" deviceCollection="${deviceCollection}"/>
+                                    action="/bulk/addPoints/home" deviceCollection="${deviceCollection}"/>
                                 
                                 <%-- UPDATE POINTS --%>
                                 <tags:collectionActionTr buttonValue="${updatePointsLabel}" description="${updatePointsDescription}"
-                                    action="/spring/bulk/updatePoints/home" deviceCollection="${deviceCollection}"/>
+                                    action="/bulk/updatePoints/home" deviceCollection="${deviceCollection}"/>
                                 
                                 <%-- REMOVE POINTS --%>
                                 <tags:collectionActionTr buttonValue="${removePointsLabel}" description="${removePointsDescription}"
-                                    action="/spring/bulk/removePoints/home" deviceCollection="${deviceCollection}"/>
+                                    action="/bulk/removePoints/home" deviceCollection="${deviceCollection}"/>
                             </table>
                         </tags:sectionContainer>
                     </cti:dataGridCell>

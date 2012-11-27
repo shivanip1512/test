@@ -4,9 +4,9 @@
     <meta http-equiv="X-UA-Compatible" content="IE=EDGE" />
 <%@ taglib uri="http://java.sun.com/jsp/jstl/core" prefix="c"%>
 <%@ taglib uri="http://cannontech.com/tags/cti" prefix="cti"%>
-<cti:url var="url" value="/spring/stars/hardware/deviceverification" />
+<cti:url var="url" value="/stars/hardware/deviceverification" />
 <cti:url var="activationUrl"
-    value="/spring/stars/hardware/deviceactivation" />
+    value="/stars/hardware/deviceactivation" />
 
 <cti:includeScript link="PROTOTYPE" force="true"/>
 <script langauge="JavaScript" type="text/javascript">

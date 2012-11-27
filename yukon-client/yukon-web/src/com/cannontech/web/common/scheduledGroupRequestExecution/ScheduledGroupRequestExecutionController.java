@@ -363,7 +363,7 @@ public class ScheduledGroupRequestExecutionController extends MultiActionControl
 	private ModelAndView scheduleAttributeRead(HttpServletRequest request, String scheduleName, String cronExpression, String deviceGroupName, int editJobId, 
 	                                           boolean retryCheckbox, int retryCount, Integer stopRetryAfterHoursCount, Integer turnOffQueuingAfterRetryCount) throws ServletException {
 	
-		ModelAndView mav = new ModelAndView("redirect:/spring/group/scheduledGroupRequestExecutionResults/detail");
+		ModelAndView mav = new ModelAndView("redirect:/group/scheduledGroupRequestExecutionResults/detail");
 		YukonUserContext userContext = YukonUserContextUtils.getYukonUserContext(request);
         
 		// attribute
@@ -391,7 +391,7 @@ public class ScheduledGroupRequestExecutionController extends MultiActionControl
 	private ModelAndView scheduleCommand(HttpServletRequest request, String scheduleName, String cronExpression, String deviceGroupName, int editJobId, 
 	                                     boolean retryCheckbox, int retryCount, Integer stopRetryAfterHoursCount, Integer turnOffQueuingAfterRetryCount) throws ServletException {
 	
-		ModelAndView mav = new ModelAndView("redirect:/spring/group/scheduledGroupRequestExecutionResults/detail");
+		ModelAndView mav = new ModelAndView("redirect:/group/scheduledGroupRequestExecutionResults/detail");
 		YukonUserContext userContext = YukonUserContextUtils.getYukonUserContext(request);
 		
 		String errorReason = null;
@@ -489,7 +489,7 @@ public class ScheduledGroupRequestExecutionController extends MultiActionControl
     // DELETE JOB (not really a hard delete, but set Job.Disabled = 'D' to hide it)
     public ModelAndView deleteJob(HttpServletRequest request, HttpServletResponse response) throws ServletException {
         
-        ModelAndView mav = new ModelAndView("redirect:/spring/group/scheduledGroupRequestExecutionResults/jobs");
+        ModelAndView mav = new ModelAndView("redirect:/group/scheduledGroupRequestExecutionResults/jobs");
         
         int deleteJobId = ServletRequestUtils.getRequiredIntParameter(request, "deleteJobId");
         

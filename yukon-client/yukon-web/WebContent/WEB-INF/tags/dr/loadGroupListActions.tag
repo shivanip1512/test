@@ -19,7 +19,7 @@
             </span>
         </tags:dynamicChooseOption>
         <tags:dynamicChooseOption optionId="enabled">
-            <cti:url var="sendShedUrl" value="/spring/dr/loadGroup/sendShedConfirm">
+            <cti:url var="sendShedUrl" value="/dr/loadGroup/sendShedConfirm">
                 <cti:param name="loadGroupId" value="${paoId}"/>
             </cti:url>
             <tags:simpleDialogLink titleKey="yukon.web.modules.dr.loadGroup.sendShedConfirm.title" 
@@ -27,7 +27,7 @@
                                    actionUrl="${sendShedUrl}" 
                                    logoKey="yukon.web.modules.dr.loadGroupDetail.actions.sendShedIcon"/>
 
-            <cti:url var="sendRestoreUrl" value="/spring/dr/loadGroup/sendRestoreConfirm">
+            <cti:url var="sendRestoreUrl" value="/dr/loadGroup/sendRestoreConfirm">
                 <cti:param name="loadGroupId" value="${paoId}"/>
             </cti:url>
             <tags:simpleDialogLink titleKey="yukon.web.modules.dr.loadGroup.sendRestoreConfirm.title" 

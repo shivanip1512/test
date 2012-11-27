@@ -16,14 +16,14 @@
 <script language="JavaScript">
 
 	function forwardToUserEdit(selectedItems) {
-		window.location = "/spring/editor/user/editUser?userId=" +
+		window.location = "/editor/user/editUser?userId=" +
 		    $('userIdSelected').value;
 		window.event.returnValue = false;
 		return true;
 	}
 
 	function forwardToGroupEdit(selectedItems) {
-		window.location = "/spring/editor/group/editGroup?groupId=" +
+		window.location = "/editor/group/editGroup?groupId=" +
 		    $('loginGroupIdSelected').value;
 		window.event.returnValue = false;
 		return true;

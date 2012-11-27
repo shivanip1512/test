@@ -8,10 +8,10 @@
 <script type="text/javascript">
 submitForm = function() {
     combineDateAndTimeFields('stopDate');
-    url = '<cti:url value="/spring/dr/program/stop/stop"/>';
+    url = '<cti:url value="/dr/program/stop/stop"/>';
     <c:if test="${stopGearAllowed}">
         if (!$('stopNowCheckbox').checked && $('useStopGearCheckbox').checked) {
-            url = '<cti:url value="/spring/dr/program/stop/constraints"/>';
+            url = '<cti:url value="/dr/program/stop/constraints"/>';
         }
     </c:if>
     return submitFormViaAjax('drDialog', 'stopProgramForm', url);

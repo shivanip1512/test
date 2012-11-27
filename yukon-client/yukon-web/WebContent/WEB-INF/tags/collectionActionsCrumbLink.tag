@@ -2,6 +2,6 @@
 
 <%@ attribute name="deviceCollection" required="true" type="com.cannontech.common.bulk.collection.device.DeviceCollection"%>
 
-<tags:crumbLinkByMap url="/spring/bulk/collectionActions"
+<tags:crumbLinkByMap url="/bulk/collectionActions"
                      parameterMap="${deviceCollection.collectionParameters}" 
                      titleKey="yukon.common.device.bulk.collectionActions.pageTitle" />

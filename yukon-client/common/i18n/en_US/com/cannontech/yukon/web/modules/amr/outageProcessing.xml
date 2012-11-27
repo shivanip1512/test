@@ -149,7 +149,7 @@
     <entry key="yukon.web.modules.amr.outageProcessing.options.otherActions">Other Actions</entry>
 	<entry key="yukon.web.modules.amr.outageProcessing.readOutagesLog.completionAlert"><![CDATA[
 	Outage Logs read has completed for Outage Monitor "{outageMonitorName}" with {percentSuccess|#0.0#}% success 
-	  <a href="/spring/group/groupMeterRead/resultDetail?resultKey={resultKey}" title="Click to see complete details">
+	  <a href="/group/groupMeterRead/resultDetail?resultKey={resultKey}" title="Click to see complete details">
 	    <img src="/WebConfig/yukon/Icons/magnifier_zoom_in.gif" alt="detail" style="border-style: none; vertical-align:middle">
 	  </a>
 	]]></entry>

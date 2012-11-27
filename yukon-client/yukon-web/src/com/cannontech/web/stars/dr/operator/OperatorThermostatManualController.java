@@ -184,7 +184,7 @@ public class OperatorThermostatManualController {
         }
 
 	    setConfirmationMessage(flashScope, thermostatIdsList, result);
-	    return "redirect:/spring/stars/operator/thermostatSchedule/savedSchedules";
+	    return "redirect:/stars/operator/thermostatSchedule/savedSchedules";
     }
 	
     private void executeManualEvent(String thermostatIds, String mode, String fan, String temperatureUnit, Temperature heatTemp, 

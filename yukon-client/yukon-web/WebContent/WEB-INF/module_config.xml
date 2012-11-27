@@ -27,14 +27,14 @@
         <options>
           <option name="newAccount">
             <requireRoleProperty value="OPERATOR_NEW_ACCOUNT_WIZARD" />
-            <link>/spring/stars/operator/account/accountCreate</link>
+            <link>/stars/operator/account/accountCreate</link>
           </option>
           <option name="accountImport">
             <requireRoleProperty value="OPERATOR_IMPORT_CUSTOMER_ACCOUNT" />
-            <link>/spring/stars/operator/account/accountImport</link>
+            <link>/stars/operator/account/accountImport</link>
           </option>          
           <option name="optOutAdmin">
-            <link>/spring/stars/operator/optOut/admin</link>
+            <link>/stars/operator/optOut/admin</link>
           </option>
         </options>
       </option>
@@ -50,18 +50,18 @@
           </option>
 
           <option name="bulkImporter">
-            <link>/spring/amr/bulkimporter/home</link>
+            <link>/amr/bulkimporter/home</link>
             <requireRoleProperty value="METERING" />
             <requireRoleProperty value="IMPORTER_ENABLED" />
           </option>
 
           <option name="metering">
-            <link>/spring/meter/start</link>
+            <link>/meter/start</link>
             <requireRoleProperty value="METERING,APPLICATION_BILLING,SCHEDULER" />
           </option>
 
           <option name="bulkOperations">
-            <link>/spring/bulk/bulkHome</link>
+            <link>/bulk/bulkHome</link>
             <requireRoleProperty value="DEVICE_ACTIONS" />
           </option>
         </options>
@@ -89,7 +89,7 @@
           </option>
 
           <option name="demandResponse">
-            <link>/spring/dr/home</link>
+            <link>/dr/home</link>
             <requireRoleProperty value="LM_DIRECT_LOADCONTROL" />
             <requireRoleProperty value="DEMAND_RESPONSE" />
           </option>
@@ -101,14 +101,14 @@
         <options>
           <option name="capControl">
             <requireRoleProperty value="CBC_SETTINGS" />
-            <link>/spring/capcontrol/tier/areas</link>
+            <link>/capcontrol/tier/areas</link>
           </option>
           <option name="eSub">
             <requireRoleProperty value="OPERATOR_ESUBSTATION_DRAWINGS_VIEW" />
             <link>/esub/home</link>
           </option>
           <option name="importer">
-            <link>/spring/capcontrol/import/view</link>
+            <link>/capcontrol/import/view</link>
             <requireRoleProperty value="CAP_CONTROL_IMPORTER" />
           </option>
         </options>
@@ -136,7 +136,7 @@
             <requireRoleProperty value="PURCHASING_ACCESS" />
           </option>
           <option name="inventory">
-            <link>/spring/stars/operator/inventory/home</link>
+            <link>/stars/operator/inventory/home</link>
           </option>
 
         </options>
@@ -156,16 +156,16 @@
             <requireRoleProperty value="ENABLE_WEB_COMMANDER" />
           </option>
           <option name="archivedDateExport">
-            <link>/spring/amr/archivedValuesExporter/view</link>
+            <link>/amr/archivedValuesExporter/view</link>
             <requireRoleProperty value="ARCHIVED_DATA_EXPORT"/>
           </option>
           <option name="visualDisplays">
-            <link>/spring/multispeak/visualDisplays/loadManagement/home</link>
+            <link>/multispeak/visualDisplays/loadManagement/home</link>
             <requireRoleProperty value="MSP_LM_MAPPING_SETUP" />
           </option>
 
           <option name="surveys">
-            <link>/spring/stars/survey/list</link>
+            <link>/stars/survey/list</link>
             <requireRoleProperty value="OPERATOR_SURVEY_EDIT" />
           </option>
 
@@ -178,7 +178,7 @@
 
         <options>
           <option name="systemAdministration">
-            <link>/spring/adminSetup/systemAdmin</link>
+            <link>/adminSetup/systemAdmin</link>
           </option>
           <option name="viewBatchCommands">
             <link>/operator/Admin/SwitchCommands.jsp</link>
@@ -186,17 +186,17 @@
           </option>
 
           <option name="viewScheduledOptOutEvents">
-            <link>/spring/stars/operator/optOut/admin/viewScheduled</link>
+            <link>/stars/operator/optOut/admin/viewScheduled</link>
             <requireRoleProperty value="ADMIN_VIEW_OPT_OUT_EVENTS" />
           </option>
 
           <option name="support">
-            <link>/spring/support/</link>
+            <link>/support/</link>
             <requireRoleProperty value="OPERATOR_ADMINISTRATOR" />
           </option>
 
           <option name="viewLogs">
-            <link>/spring/support/logging/menu</link>
+            <link>/support/logging/menu</link>
             <requireRoleProperty value="ADMIN_VIEW_LOGS" />
           </option>
 
@@ -206,7 +206,7 @@
           </option>
 
           <option name="deviceConfiguration">
-            <link>/spring/deviceConfiguration?home</link>
+            <link>/deviceConfiguration?home</link>
             <requireRoleProperty value="ADMIN_VIEW_CONFIG" />
           </option>
 
@@ -223,7 +223,7 @@
     <menu>
       <options>
         <option name="meters">
-          <link>/spring/meter/start</link>
+          <link>/meter/start</link>
         </option>
         <option name="billing">
           <requireRoleProperty value="APPLICATION_BILLING" />
@@ -234,43 +234,43 @@
             </option>
             <option name="setup">
               <requireRoleProperty value="DYNAMIC_BILLING_FILE_SETUP" />
-              <link>/spring/dynamicBilling/overview</link>
+              <link>/dynamicBilling/overview</link>
             </option>
           </options>
         </option>
         <option name="scheduler">
           <requireRoleProperty value="SCHEDULER" />
-          <link>/spring/macsscheduler/schedules/view</link>
+          <link>/macsscheduler/schedules/view</link>
         </option>
         <option name="devicegroups">
-          <link>/spring/group/editor/home</link>
+          <link>/group/editor/home</link>
           <options>
             <option name="home">
-              <link>/spring/group/editor/home</link>
+              <link>/group/editor/home</link>
             </option>
             <option name="commander">
-              <link>/spring/group/commander/groupProcessing</link>
+              <link>/group/commander/groupProcessing</link>
               <requireRoleProperty value="GROUP_COMMANDER" />
             </option>
             <option name="groupMeterRead">
-              <link>/spring/group/groupMeterRead/homeGroup</link>
+              <link>/group/groupMeterRead/homeGroup</link>
             </option>
             <option name="updater">
-              <link>/spring/group/updater/upload</link>
+              <link>/group/updater/upload</link>
 			  <requireRoleProperty value="BULK_UPDATE_OPERATION" />
             </option>
           </options>
         </option>
         <option name="commandRequestExecution">
           <requireRoleProperty value="SCHEDULER" />
-          <link>/spring/group/scheduledGroupRequestExecutionResults/jobs</link>
+          <link>/group/scheduledGroupRequestExecutionResults/jobs</link>
           <options>
             <option name="scheduleLogs">
-              <link>/spring/group/scheduledGroupRequestExecutionResults/jobs</link>
+              <link>/group/scheduledGroupRequestExecutionResults/jobs</link>
             </option>
             <option name="createSchedule">
               <requireRoleProperty value="MANAGE_SCHEDULES" />
-              <link>/spring/group/scheduledGroupRequestExecution/home</link>
+              <link>/group/scheduledGroupRequestExecution/home</link>
             </option>
           </options>
         </option>
@@ -279,7 +279,7 @@
     <search bean="amrSearchProducer" />
 	<pages>
         <page name="meteringStart" type="BASIC">
-            <link>/spring/meter/start</link>
+            <link>/meter/start</link>
             <menu>meters</menu>
             <pages>
                 <page name="outageProcessingParent" type="BASIC">
@@ -371,7 +371,7 @@
                         </page>
                         <page name="scheduledGroupRequestAllJobs">
                             <menu>commandRequestExecution|scheduleLogs</menu>
-                            <link>/spring/group/scheduledGroupRequestExecutionResults/jobs</link>
+                            <link>/group/scheduledGroupRequestExecutionResults/jobs</link>
                             <pages>
                                 <page name="scheduledGroupRequestDetail" type="DETAIL">
                                     <menu>commandRequestExecution|scheduledGroupCommands</menu>
@@ -387,7 +387,7 @@
                         <page name="meterDetail.electric" type="DETAIL">
                             <menu>meters</menu>
                             <labelArgument>${deviceName}</labelArgument>
-                            <link>/spring/meter/home?deviceId=${deviceId}</link>
+                            <link>/meter/home?deviceId=${deviceId}</link>
                             <pages>
                                 <page name="moveIn" type="BASIC">
                                     <menu>meters</menu>
@@ -415,7 +415,7 @@
                         <page name="meterDetail.water" type="DETAIL">
                             <menu>meters</menu>
                             <labelArgument>${deviceName}</labelArgument>
-                            <link>/spring/meter/water/home?deviceId=${deviceId}</link>
+                            <link>/meter/water/home?deviceId=${deviceId}</link>
                         </page>
                     </pages>
                 </page>
@@ -447,7 +447,7 @@
                 </page>
 		        <page name="meterEventsReport.selectDevices" type="BASIC">
 		            <menu>meters</menu>
-					<link>/spring/amr/meterEventsReport/selectDevices</link>
+					<link>/amr/meterEventsReport/selectDevices</link>
 					<pages>
 		                <page name="meterEventsReport.report" type="DETAIL">
 		                    <menu>meters</menu>
@@ -466,7 +466,7 @@
         </page>
         <page name="archivedValueExporter.VIEW" type="BASIC">
             <menu></menu>
-            <link>/spring/amr/archivedValuesExporter/view</link>
+            <link>/amr/archivedValuesExporter/view</link>
             <pages>
                 <page name="archivedValueExporter.EDIT" type="DETAIL">
                     <menu></menu>
@@ -476,7 +476,7 @@
                 </page>
                 <page name="archivedValueExporter.selectDevices" type="BASIC">
                     <menu></menu>
-                    <link>/spring/amr/archivedValueExporter/selectDevices</link>
+                    <link>/amr/archivedValueExporter/selectDevices</link>
                 </page>
             </pages>
         </page>
@@ -504,7 +504,7 @@
         </page>
         <page name="bulkOperations" type="BASIC">
             <menu></menu>
-            <link>/spring/bulk/bulkHome</link>
+            <link>/bulk/bulkHome</link>
             <pages>
                 <page name="fdrTranslationManagement" type="BASIC">
                     <menu></menu>
@@ -516,7 +516,7 @@
                 </page>
                 <page name="pointImport" type="BASIC">
                     <menu></menu>
-                    <link>/spring/bulk/pointImport/upload</link>
+                    <link>/bulk/pointImport/upload</link>
                     <pages>
                         <page name="pointImport.results" type="DETAIL">
                             <menu></menu>
@@ -535,10 +535,10 @@
         <option name="validation">
           <options>
             <option name="review">
-              <link>/spring/common/veeReview/home</link>
+              <link>/common/veeReview/home</link>
             </option>
             <option name="helper">
-              <link>/spring/common/vee/helper/menu</link>
+              <link>/common/vee/helper/menu</link>
             </option>
           </options>
         </option>
@@ -551,21 +551,21 @@
     <menu>
       <options>
         <option name="home">
-          <link>/spring/dr/home</link>
+          <link>/dr/home</link>
           <options>
             <option name="scenarios">
               <requireRoleProperty value="SHOW_SCENARIOS" />
-              <link>/spring/dr/scenario/list</link>
+              <link>/dr/scenario/list</link>
             </option>
             <option name="controlareas">
               <requireRoleProperty value="SHOW_CONTROL_AREAS" />
-              <link>/spring/dr/controlArea/list</link>
+              <link>/dr/controlArea/list</link>
             </option>
             <option name="programs">
-              <link>/spring/dr/program/list</link>
+              <link>/dr/program/list</link>
             </option>
             <option name="loadgroups">
-              <link>/spring/dr/loadGroup/list</link>
+              <link>/dr/loadGroup/list</link>
             </option>
           </options>
         </option>
@@ -576,67 +576,67 @@
     <pages>
     	<page name="home" type="LANDING">
     		<menu>home</menu>
-    		<link>/spring/dr/home</link>
+    		<link>/dr/home</link>
     		<pages>
     			<page name="scenarioList" type="BASIC">
     				<menu>home|scenarios</menu>
-    				<link>/spring/dr/scenario/list</link>
+    				<link>/dr/scenario/list</link>
     				<pages>
     					<page name="scenarioDetail" type="DETAIL">
     						<menu>home|scenarios</menu>
-    						<link>/spring/dr/scenario/detail</link>
+    						<link>/dr/scenario/detail</link>
     						<labelArgument>${scenario.name}</labelArgument>
     					</page>
     				</pages>
     			</page>
     			<page name="controlAreaList" type="BASIC">
     				<menu>home|controlareas</menu>
-    				<link>/spring/dr/controlArea/list</link>
+    				<link>/dr/controlArea/list</link>
     				<pages>
     					<page name="controlAreaDetail" type="DETAIL">
     						<menu>home|controlareas</menu>
-    						<link>/spring/dr/controlArea/detail</link>
+    						<link>/dr/controlArea/detail</link>
     						<labelArgument>${controlArea.name}</labelArgument>
     					</page>
     				</pages>
     			</page>
     			<page name="programList" type="BASIC">
     				<menu>home|programs</menu>
-    				<link>/spring/dr/program/list</link>
+    				<link>/dr/program/list</link>
     				<pages>
     					<page name="programDetail" type="DETAIL">
     						<menu>home|programs</menu>
-    						<link>/spring/dr/program/detail</link>
+    						<link>/dr/program/detail</link>
     						<labelArgument>${program.name}</labelArgument>
     					</page>
     				</pages>
     			</page>
     			<page name="loadGroupList" type="BASIC">
     				<menu>home|loadgroups</menu>
-    				<link>/spring/dr/loadGroup/list</link>
+    				<link>/dr/loadGroup/list</link>
     				<pages>
     					<page name="loadGroupDetail" type="DETAIL">
     						<menu>home|loadgroups</menu>
-    						<link>/spring/dr/loadGroup/detail</link>
+    						<link>/dr/loadGroup/detail</link>
     						<labelArgument>${loadGroup.name}</labelArgument>
     					</page>
     				</pages>
     			</page>
     			<page name="searchResults" type="BASIC" hideSearch="true">
     				<menu>home</menu>
-    				<link>/spring/dr/search</link>
+    				<link>/dr/search</link>
     			</page>
     			<page name="optOutAdmin" type="BASIC">
     				<menu>optout|admin</menu>
-    				<link>/spring/stars/operator/optOut/admin</link>
+    				<link>/stars/operator/optOut/admin</link>
     			</page>
     			<page name="optOutScheduledEvents" type="BASIC">
     				<menu>optout|scheduledevents</menu>
-    				<link>/spring/stars/operator/optOut/admin/viewScheduled</link>
+    				<link>/stars/operator/optOut/admin/viewScheduled</link>
     			</page>
                 <page name="surveyList" type="BASIC">
                     <menu>optout|surveyList</menu>
-                    <link>/spring/stars/optOutSurvey/list</link>
+                    <link>/stars/optOutSurvey/list</link>
                 </page>
     		</pages>
     	</page>
@@ -649,7 +649,7 @@
     <menu>
       <options>
         <option name="list">
-          <link>/spring/stars/survey/list</link>
+          <link>/stars/survey/list</link>
         </option>
       </options>
     </menu>
@@ -657,25 +657,25 @@
     <pages>
       <page name="list" type="BASIC">
         <menu>list</menu>
-        <link>/spring/stars/survey/list</link>
+        <link>/stars/survey/list</link>
         <pages>
           <page name="add" type="BASIC">
             <menu>survey</menu>
-            <link>/spring/stars/survey/create</link>
+            <link>/stars/survey/create</link>
           </page>
           <page name="edit" type="DETAIL">
             <menu>survey</menu>
-            <link>/spring/stars/survey/edit?surveyId=${survey.surveyId}</link>
+            <link>/stars/survey/edit?surveyId=${survey.surveyId}</link>
             <labelArgument>${survey.surveyName}</labelArgument>
             <pages>
               <page name="reportConfig" type="DETAIL_CHILD">
                 <menu>survey</menu>
-                <link>/spring/stars/surveyReport/config?surveyId=${survey.surveyId}</link>
+                <link>/stars/surveyReport/config?surveyId=${survey.surveyId}</link>
                 <labelArgument>${survey.surveyName}</labelArgument>
                 <pages>
                   <page name="report" type="DETAIL_CHILD">
                     <menu>survey</menu>
-                    <link>/spring/stars/surveyReport/report?surveyId=${survey.surveyId}</link>
+                    <link>/stars/surveyReport/report?surveyId=${survey.surveyId}</link>
                     <labelArgument>${survey.surveyName}</labelArgument>
                   </page>
                 </pages>
@@ -698,11 +698,11 @@
         <option name="account">
           <options>
             <option name="general">
-              <link>/spring/stars/consumer/general</link>
+              <link>/stars/consumer/general</link>
             </option>
             <option name="contacts">
               <requireRoleProperty value="RESIDENTIAL_CONTACTS_ACCESS" />
-              <link>/spring/stars/consumer/contacts</link>
+              <link>/stars/consumer/contacts</link>
             </option>
           </options>
         </option>
@@ -717,7 +717,7 @@
             <option name="controlHistory">
               <requireRoleProperty
                 value="RESIDENTIAL_CONSUMER_INFO_PROGRAMS_CONTROL_HISTORY" />
-                <link>/spring/stars/consumer/controlhistory</link>
+                <link>/stars/consumer/controlhistory</link>
             </option>
             <dynamicOptions bean="enrollmentMenuOption">
               <requireRoleProperty
@@ -745,7 +745,7 @@
             <option name="contactUs">
               <requireRoleProperty
                 value="RESIDENTIAL_CONSUMER_INFO_QUESTIONS_UTIL" />
-              <link>/spring/stars/consumer/contactus</link>
+              <link>/stars/consumer/contactus</link>
             </option>
             <dynamicOptions id="faq" bean="faqMenuOption">
               <requireRoleProperty value="RESIDENTIAL_CONSUMER_INFO_QUESTIONS_FAQ" />
@@ -757,7 +757,7 @@
             value="RESIDENTIAL_CONSUMER_INFO_CHANGE_LOGIN_USERNAME, RESIDENTIAL_CONSUMER_INFO_CHANGE_LOGIN_PASSWORD" />
           <options>
             <option name="changeLogin">
-              <link>/spring/stars/consumer/changelogin</link>
+              <link>/stars/consumer/changelogin</link>
             </option>
           </options>
         </option>
@@ -810,19 +810,19 @@
         <option name="view">
           <options>
             <option name="schedules">
-              <link>/spring/capcontrol/schedule/schedules</link>
+              <link>/capcontrol/schedule/schedules</link>
             </option>
             <option name="strategies">
-              <link>/spring/capcontrol/strategy/strategies</link>
+              <link>/capcontrol/strategy/strategies</link>
             </option>
             <option name="scheduleassignment">
-              <link>/spring/capcontrol/schedule/scheduleAssignments</link>
+              <link>/capcontrol/schedule/scheduleAssignments</link>
             </option>
             <option name="recentcapbankmoves">
-              <link>/spring/capcontrol/move/movedCapBanks</link>
+              <link>/capcontrol/move/movedCapBanks</link>
             </option>
             <option name="specialareas">
-              <link>/spring/capcontrol/tier/areas?isSpecialArea=true</link>
+              <link>/capcontrol/tier/areas?isSpecialArea=true</link>
             </option>
           </options>
         </option>
@@ -830,22 +830,22 @@
         <option name="orphans">
           <options>
             <option name="orphanedsubstations">
-              <link>/spring/capcontrol/search/searchResults?cbc_lastSearch=__cti_oSubstations__</link>
+              <link>/capcontrol/search/searchResults?cbc_lastSearch=__cti_oSubstations__</link>
             </option>
             <option name="orphanedsubstationbuses">
-              <link>/spring/capcontrol/search/searchResults?cbc_lastSearch=__cti_oSubBuses__</link>
+              <link>/capcontrol/search/searchResults?cbc_lastSearch=__cti_oSubBuses__</link>
             </option>
             <option name="orphanedfeeders">
-              <link>/spring/capcontrol/search/searchResults?cbc_lastSearch=__cti_oFeeders__</link>
+              <link>/capcontrol/search/searchResults?cbc_lastSearch=__cti_oFeeders__</link>
             </option>
             <option name="orphanedcapbanks">
-              <link>/spring/capcontrol/search/searchResults?cbc_lastSearch=__cti_oBanks__</link>
+              <link>/capcontrol/search/searchResults?cbc_lastSearch=__cti_oBanks__</link>
             </option>
             <option name="orphanedcbcs">
-              <link>/spring/capcontrol/search/searchResults?cbc_lastSearch=__cti_oCBCs__</link>
+              <link>/capcontrol/search/searchResults?cbc_lastSearch=__cti_oCBCs__</link>
             </option>
             <option name="orphanedregulators">
-              <link>/spring/capcontrol/search/searchResults?cbc_lastSearch=__cti_oRegulators__</link>
+              <link>/capcontrol/search/searchResults?cbc_lastSearch=__cti_oRegulators__</link>
             </option>
           </options>
         </option>
@@ -859,19 +859,19 @@
     <pages>
         <page name="areas.normal" type="LANDING">
             <menu></menu>
-            <link>/spring/capcontrol/tier/areas</link>
+            <link>/capcontrol/tier/areas</link>
             <pages>
                 <page name="areas.special" type="BASIC">
                     <menu></menu>
                 </page>
                 <page name="area" type="DETAIL">
                     <menu></menu>
-                    <link>/spring/capcontrol/tier/substations?isSpecialArea=${isSpecialArea}&amp;bc_areaId=${bc_areaId}</link>
+                    <link>/capcontrol/tier/substations?isSpecialArea=${isSpecialArea}&amp;bc_areaId=${bc_areaId}</link>
                     <labelArgument>${bc_areaName}</labelArgument>
                     <pages>
                         <page name="substation" type="DETAIL">
                             <menu></menu>
-                            <link>/spring/capcontrol/tier/feeders?isSpecialArea=${isSpecialArea}&amp;substationId=${substationId}</link>
+                            <link>/capcontrol/tier/feeders?isSpecialArea=${isSpecialArea}&amp;substationId=${substationId}</link>
                             <labelArgument>${substationName}</labelArgument>
                             <pages>
                                 <page name="capbankLocations" type="DETAIL_CHILD">
@@ -880,21 +880,21 @@
                                 </page>
                                 <page name="ivvc.busView" type="DETAIL">
                                     <menu></menu>
-                                    <link>/spring/capcontrol/ivvc/bus/detail?subBusId=${subBusId}&amp;isSpecialArea=${isSpecialArea}</link>
+                                    <link>/capcontrol/ivvc/bus/detail?subBusId=${subBusId}&amp;isSpecialArea=${isSpecialArea}</link>
                                     <labelArgument>${subBusName}</labelArgument>
                                     <pages>
 		                                <page name="ivvc.zoneDetail" type="DETAIL">
 		                                    <menu></menu>
-											<link>/spring/capcontrol/ivvc/zone/detail?zoneId=${zoneId}&amp;isSpecialArea=${isSpecialArea}</link>
+											<link>/capcontrol/ivvc/zone/detail?zoneId=${zoneId}&amp;isSpecialArea=${isSpecialArea}</link>
 		                                    <labelArgument>${zoneName}</labelArgument>
 		                                    <pages>
 				                                <page name="ivvc.voltagePoints" type="DETAIL">
 				                                    <menu></menu>
-													<link>/spring/capcontrol/ivvc/zone/voltagePoints?zoneId=${zoneId}&amp;isSpecialArea=${isSpecialArea}</link>
+													<link>/capcontrol/ivvc/zone/voltagePoints?zoneId=${zoneId}&amp;isSpecialArea=${isSpecialArea}</link>
 				                                </page>
 				                                <page name="ivvc.zoneVoltageDeltas" type="DETAIL">
 				                                    <menu></menu>
-													<link>/spring/capcontrol/ivvc/zone/voltageDeltas?zoneId=${zoneId}&amp;isSpecialArea=${isSpecialArea}</link>
+													<link>/capcontrol/ivvc/zone/voltageDeltas?zoneId=${zoneId}&amp;isSpecialArea=${isSpecialArea}</link>
 				                                </page>
 		                                    </pages>
 		                                </page>
@@ -906,19 +906,19 @@
                 </page>
                 <page name="scheduleAssignments" type="BASIC">
                     <menu>view|scheduleassignment</menu>
-                    <link>/spring/capcontrol/schedule/scheduleAssignments</link>
+                    <link>/capcontrol/schedule/scheduleAssignments</link>
                 </page>
                 <page name="schedules" type="BASIC">
                     <menu>view|schedules</menu>
-                    <link>/spring/capcontrol/schedule/schedules</link>
+                    <link>/capcontrol/schedule/schedules</link>
                 </page>
                 <page name="strategies" type="BASIC">
                     <menu>view|strategies</menu>
-                    <link>/spring/capcontrol/strategy/strategies</link>
+                    <link>/capcontrol/strategy/strategies</link>
                 </page>
                 <page name="movedCapBanks" type="BASIC">
                     <menu>view|recentcapbankmoves</menu>
-                    <link>/spring/capcontrol/move/movedCapBanks</link>
+                    <link>/capcontrol/move/movedCapBanks</link>
                 </page>
                 <page name="search.general" type="BASIC">
                     <menu></menu>
@@ -1073,118 +1073,118 @@
     <menu>
       <options>
         <option name="information">
-          <link>/spring/support/</link>
+          <link>/support/</link>
           <options>
             <option name="system">
-              <link>/spring/support/</link>
+              <link>/support/</link>
             </option>
             <option name="deviceDef">
-              <link>/spring/common/deviceDefinition.xml</link>
+              <link>/common/deviceDefinition.xml</link>
             </option>
             <option name="errorCodes">
-              <link>/spring/support/errorCodes/view</link>
+              <link>/support/errorCodes/view</link>
             </option>
             <option name="supportBundle">
-              <link>/spring/support/supportBundle/view</link>
+              <link>/support/supportBundle/view</link>
             </option>
           </options>
         </option>
         <option name="logs">
           <requireRoleProperty value="ADMIN_VIEW_LOGS" />
-          <link>/spring/support/logging/menu?file=/</link>
+          <link>/support/logging/menu?file=/</link>
         </option>
         <option name="database">
-          <link>/spring/support/database/info</link>
+          <link>/support/database/info</link>
           <options>
             <option name="info">
-              <link>/spring/support/database/info</link>
+              <link>/support/database/info</link>
             </option>
             <option name="compare">
               <requireRoleProperty value="ADMIN_VIEW_LOGS" />
-              <link>/spring/support/database/validate/home</link>
+              <link>/support/database/validate/home</link>
             </option>
             <option name="migration">
-              <link>/spring/support/database/migration/home</link>
+              <link>/support/database/migration/home</link>
               <requireRoleProperty value="ADMIN_DATABASE_MIGRATION" />
             </option>
           </options>
         </option>
         <option name="scheduler">
-          <link>/spring/support/scheduler/active</link>
+          <link>/support/scheduler/active</link>
           <options>
             <option name="active">
-              <link>/spring/support/scheduler/active</link>
+              <link>/support/scheduler/active</link>
             </option>
             <option name="status">
-              <link>/spring/support/scheduler/status</link>
+              <link>/support/scheduler/status</link>
             </option>
             <option name="jobs">
-              <link>/spring/support/scheduler/jobs</link>
+              <link>/support/scheduler/jobs</link>
             </option>
           </options>
         </option>
         <option name="events">
-          <link>/spring/common/eventLog/viewByCategory</link>
+          <link>/common/eventLog/viewByCategory</link>
           <requireRoleProperty value="ADMIN_EVENT_LOGS" />
           <options>
             <option name="byCategory">
-              <link>/spring/common/eventLog/viewByCategory</link>
+              <link>/common/eventLog/viewByCategory</link>
             </option>
             <option name="byType">
-              <link>/spring/common/eventLog/viewByType</link>
+              <link>/common/eventLog/viewByType</link>
             </option>
           </options>
         </option>
         <option name="development">
           <requireRoleProperty value="DEVELOPMENT_MODE" />
-          <link>/spring/support/development/pointInjection/main</link>
+          <link>/support/development/pointInjection/main</link>
           <options>
             <option name="pointInjection">
-              <link>/spring/support/development/pointInjection/main</link>
+              <link>/support/development/pointInjection/main</link>
             </option>
             <option name="bulkPointInjection">
-              <link>/spring/support/development/bulkPointInjection/main</link>
+              <link>/support/development/bulkPointInjection/main</link>
             </option>
             <option name="uiToolkitDemo">
-              <link>/spring/support/development/uiToolkitDemo/main</link>
+              <link>/support/development/uiToolkitDemo/main</link>
             </option>
             <option name="uiDemos">
-              <link>/spring/support/development/uiDemos/main</link>
+              <link>/support/development/uiDemos/main</link>
             </option>
             <option name="setupDatabase">
-              <link>/spring/support/development/setupDatabase/main</link>
+              <link>/support/development/setupDatabase/main</link>
             </option>
             <option name="miscellaneousMethods">
-              <link>/spring/support/development/miscellaneousMethod/main</link>
+              <link>/support/development/miscellaneousMethod/main</link>
             </option>
             <option name="rfn">
-              <link>/spring/support/development/rfn/viewBase</link>
+              <link>/support/development/rfn/viewBase</link>
             </option>
           </options>
         </option> 
         <option name="webServices">
           <requireRoleProperty value="ENABLE_WEB_DEBUG_PAGES" />
-          <link>/spring/support/development/eimTest/main</link>
+          <link>/support/development/eimTest/main</link>
           <options>
             <option name="eimTest">
-              <link>/spring/support/development/eimTest/main</link>
+              <link>/support/development/eimTest/main</link>
             </option>
             <option name="loadControl">
-              <link>/spring/debug/loadControlService/inputs/home</link>
+              <link>/debug/loadControlService/inputs/home</link>
             </option>
             <option name="account">
-              <link>/spring/debug/accountService/inputs/home</link>
+              <link>/debug/accountService/inputs/home</link>
             </option>
           </options>
         </option>
         <option name="other">
-          <link>/spring/support/threadDump</link>
+          <link>/support/threadDump</link>
           <options>
             <option name="threadDump">
-              <link>/spring/support/threadDump</link>
+              <link>/support/threadDump</link>
             </option>
             <option name="routeUsage">
-              <link>/spring/support/routeUsage</link>
+              <link>/support/routeUsage</link>
             </option>
           </options>
         </option>
@@ -1196,16 +1196,16 @@
             <pages>
                 <page name="logLanding" type="BASIC">
                     <requireRoleProperty value="ADMIN_EVENT_LOGS" />
-                    <link>/spring/support/logging/menu?file=/</link>
+                    <link>/support/logging/menu?file=/</link>
                     <pages>
                         <page name="logMenu" type="DETAIL">
                             <menu>logs</menu>
-                            <link>/spring/support/logging/menu?file=${rootlessDirFileString}</link>
+                            <link>/support/logging/menu?file=${rootlessDirFileString}</link>
                             <labelArgument>${rootlessDirFileString}</labelArgument>
                             <pages>
                                 <page name="logTail" type="DETAIL">
                                     <menu>logs</menu>
-                                    <link>/spring/support/logging/tail?file=${rootlessDirFileString}${logFileName}</link>
+                                    <link>/support/logging/tail?file=${rootlessDirFileString}${logFileName}</link>
                                     <labelArgument>${logFileName}</labelArgument>
                                     <pages>
                                         <page name="logView" type="DETAIL_CHILD">
@@ -1281,7 +1281,7 @@
                     </pages>
                 </page>
             </pages>
-            <link>/spring/support/</link>
+            <link>/support/</link>
         </page>
     </pages>
     
@@ -1311,58 +1311,58 @@
             <options>
                 <option name="energyCompanySetup">
                     <requireEcOperator/>
-                    <link>/spring/adminSetup/energyCompany/home</link>
+                    <link>/adminSetup/energyCompany/home</link>
                     <options>
                         <option name="home">
-                            <link>/spring/adminSetup/energyCompany/home</link>
+                            <link>/adminSetup/energyCompany/home</link>
                         </option>
                     </options>
                 </option>
                 <option name="multispeak">
                     <requireRoleProperty value="ADMIN_MULTISPEAK_SETUP" />
-                    <link>/spring/multispeak/setup/home</link>
+                    <link>/multispeak/setup/home</link>
                     <options>
                         <option name="interfaces">
-                            <link>/spring/multispeak/setup/home</link>
+                            <link>/multispeak/setup/home</link>
                         </option>
                         <option name="lmMappings">
-                            <link>/spring/multispeak/setup/lmMappings/home</link>
+                            <link>/multispeak/setup/lmMappings/home</link>
                         </option>
                         <option name="synchronization">
-                            <link>/spring/multispeak/setup/deviceGroupSync/home</link>
+                            <link>/multispeak/setup/deviceGroupSync/home</link>
                         </option>
                     </options>
                 </option>
                 <option name="usersEditor">
                     <requireRoleProperty value="ADMIN_SUPER_USER" />
-                    <link>/spring/adminSetup/userEditor/home</link>
+                    <link>/adminSetup/userEditor/home</link>
                     <options>
                         <option name="home">
-                            <link>/spring/adminSetup/userEditor/home</link>
+                            <link>/adminSetup/userEditor/home</link>
                         </option>
                     </options>
                 </option>
                 <option name="substationToRouteMapping">
-                    <link>/spring/adminSetup/substations/routeMapping/view</link>
+                    <link>/adminSetup/substations/routeMapping/view</link>
                     <options>
                         <option name="home">
-                            <link>/spring/adminSetup/substations/routeMapping/view</link>
+                            <link>/adminSetup/substations/routeMapping/view</link>
                         </option>
                     </options>
                 </option>
                 <option name="maintenance">
                     <requireRoleProperty value="ADMIN_SUPER_USER" />
-                    <link>/spring/adminSetup/maintenance/view</link>
+                    <link>/adminSetup/maintenance/view</link>
                 </option>
                 <option name="system">
                     <requireRoleProperty value="ADMIN_SUPER_USER" />
-                    <link>/spring/adminSetup/config/view</link>
+                    <link>/adminSetup/config/view</link>
                     <options>
                         <option name="config">
-                            <link>/spring/adminSetup/config/view</link>
+                            <link>/adminSetup/config/view</link>
                         </option>
                         <option name="security">
-                            <link>/spring/adminSetup/security/view</link>
+                            <link>/adminSetup/security/view</link>
                         </option>
                     </options>
                 </option>
@@ -1373,50 +1373,50 @@
             <page name="systemAdministration" type="LANDING">
                 <requireRoleProperty value="OPERATOR_ADMINISTRATOR" />
                 <menu>adminSetup</menu>
-                <link>/spring/adminSetup/systemAdmin</link>
+                <link>/adminSetup/systemAdmin</link>
                 <pages>
                     <page name="security" type="BASIC">
                         <menu>system|security</menu>
                     </page>
                     <page name="config" type="BASIC">
                         <menu>system|config</menu>
-                        <link>/spring/adminSetup/config/view</link>
+                        <link>/adminSetup/config/view</link>
                         <pages>
                             <page name="config.category" type="BLANK">
                                 <menu>system|config</menu>
-                                <link>/spring/adminSetup/config/category</link>
+                                <link>/adminSetup/config/category</link>
                             </page>
                         </pages>
                     </page>
                     
                     <page name="substationToRouteMapping" type="BASIC">
                         <menu>substationToRouteMapping|home</menu>
-                        <link>/spring/multispeak/setup/routemapping/mappings</link>
+                        <link>/multispeak/setup/routemapping/mappings</link>
                     </page>
                 
                     <page name="multispeak" type="BASIC">
                         <requireRoleProperty value="ADMIN_MULTISPEAK_SETUP" />
                         <menu>multispeak|interfaces</menu>
-                        <link>/spring/multispeak/setup/home</link>
+                        <link>/multispeak/setup/home</link>
                         <pages>
                             <page name="interfaces" type="BASIC">
                                 <requireRoleProperty value="MSP_LM_MAPPING_SETUP" />
                                 <menu>multispeak|interfaces</menu>
-                                <link>/spring/multispeak/setup/home</link>
+                                <link>/multispeak/setup/home</link>
                             </page>
                             <page name="lmMappings" type="BASIC">
                                 <requireRoleProperty value="MSP_LM_MAPPING_SETUP" />
                                 <menu>multispeak|lmMappings</menu>
-                                <link>/spring/multispeak/setup/lmMappings/home</link>
+                                <link>/multispeak/setup/lmMappings/home</link>
                             </page>
                             <page name="deviceGroupSyncHome" type="BASIC">
                                 <menu>multispeak|synchronization</menu>
-                                <link>/spring/multispeak/setup/deviceGroupSync/home</link>
+                                <link>/multispeak/setup/deviceGroupSync/home</link>
                                 <pages>
                                 	<page name="deviceGroupSyncProgress" type="BASIC">
                                 		<requireRoleProperty value="ADMIN_MULTISPEAK_SETUP" />
                                 		<menu>multispeak|synchronization</menu>
-										<link>/spring/multispeak/setup/deviceGroupSync/progress</link>
+										<link>/multispeak/setup/deviceGroupSync/progress</link>
 									</page>
 								</pages>
                             </page>
@@ -1425,80 +1425,80 @@
                     <page name="userEditor" type="BASIC">
                         <requireRoleProperty value="ADMIN_SUPER_USER" />
                         <menu>userEditor|user</menu>
-                        <link>/spring/adminSetup/userEditor/home</link>
+                        <link>/adminSetup/userEditor/home</link>
                         <pages>
                             <page name="roleGroupEditor.VIEW" type="DETAIL_WITH_INFO" navigationMenuRoot="true" contributeToMenu="true">
                                 <menu>userEditor|home</menu>
-                                <link>/spring/adminSetup/roleGroup/view?roleGroupId=${roleGroupId}</link>
+                                <link>/adminSetup/roleGroup/view?roleGroupId=${roleGroupId}</link>
                                 <labelArgument>${roleGroupName}</labelArgument>
                                 <infoInclude>/WEB-INF/pages/adminSetup/userGroupEditor/roleGroupInfoFragment.jsp</infoInclude>
                                 <pages>
                                     <page name="roleGroupEditor.EDIT" type="DETAIL_CHILD">
                                         <menu>userEditor|home</menu>
-                                        <link>/spring/adminSetup/roleGroup/edit?roleGroupId=${roleGroupId}</link>
+                                        <link>/adminSetup/roleGroup/edit?roleGroupId=${roleGroupId}</link>
                                         <labelArgument>${roleGroupName}</labelArgument>
                                     </page>
                                     <page name="userGroups" type="DETAIL_CHILD_WITH_INFO" contributeToMenu="true">
                                         <menu>userEditor|home</menu>
-                                        <link>/spring/adminSetup/roleGroup/userGroups?roleGroupId=${roleGroupId}</link>
+                                        <link>/adminSetup/roleGroup/userGroups?roleGroupId=${roleGroupId}</link>
                                         <labelArgument>${roleGroupName}</labelArgument>
                                     </page>
                                     <page name="roles" type="DETAIL">
                                         <menu>userEditor|home</menu>
-                                        <link>/spring/adminSetup/roleEditor/view?roleGroupId=${roleGroupId}&amp;roleId=${roleId}</link>
+                                        <link>/adminSetup/roleEditor/view?roleGroupId=${roleGroupId}&amp;roleId=${roleId}</link>
                                         <labelArgument>${roleName}</labelArgument>
                                     </page>
                                 </pages>
                             </page>
                             <page name="userEditor.VIEW" type="DETAIL_WITH_INFO" navigationMenuRoot="true" contributeToMenu="true">
                                 <menu>userEditor|home</menu>
-                                <link>/spring/adminSetup/user/view?userId=${userId}</link>
+                                <link>/adminSetup/user/view?userId=${userId}</link>
                                 <labelArgument>${editingUsername}</labelArgument>
                                 <infoInclude>/WEB-INF/pages/adminSetup/userGroupEditor/userInfoFragment.jsp</infoInclude>
                                 <pages>
                                     <page name="userEditor.EDIT" type="DETAIL_CHILD">
                                         <menu>userEditor|home</menu>
-                                        <link>/spring/adminSetup/user/edit?userId=${userId}</link>
+                                        <link>/adminSetup/user/edit?userId=${userId}</link>
                                         <labelArgument>${editingUsername}</labelArgument>
                                     </page>
                                     <page name="userPermissions" type="DETAIL_CHILD_WITH_INFO" contributeToMenu="true">
                                     	<requireRoleProperty value="ADMIN_LM_USER_ASSIGN"/>
                                         <menu>userEditor|home</menu>
-                                        <link>/spring/editor/user/editUser?userId=${userId}</link>
+                                        <link>/editor/user/editUser?userId=${userId}</link>
                                         <labelArgument>${editingUsername}</labelArgument>
                                     </page>
                                 </pages>
                             </page>
                             <page name="userGroupEditor.VIEW" type="DETAIL_WITH_INFO" navigationMenuRoot="true" contributeToMenu="true">
                                 <menu>userEditor|home</menu>
-                                <link>/spring/adminSetup/userGroup/view?userGroupId=${userGroupId}</link>
+                                <link>/adminSetup/userGroup/view?userGroupId=${userGroupId}</link>
                                 <labelArgument>${userGroupName}</labelArgument>
                                 <infoInclude>/WEB-INF/pages/adminSetup/userGroupEditor/userGroupInfoFragment.jsp</infoInclude>
                                 <pages>
                                     <page name="userGroupEditor.EDIT" type="DETAIL_CHILD">
                                         <menu>userEditor|home</menu>
-                                        <link>/spring/adminSetup/userGroup/edit?userId=${userId}</link>
+                                        <link>/adminSetup/userGroup/edit?userId=${userId}</link>
                                         <labelArgument>${userGroupName}</labelArgument>
                                     </page>
                                     <page name="userGroupAssociation" type="DETAIL_CHILD">
                                         <menu>userEditor|home</menu>
-                                        <link>/spring/adminSetup/userGroup/association</link>
+                                        <link>/adminSetup/userGroup/association</link>
                                         <labelArgument>${userGroupName}</labelArgument>
                                     </page>
                                     <page name="users" type="DETAIL_CHILD_WITH_INFO" contributeToMenu="true">
                                         <menu>userEditor|home</menu>
-                                        <link>/spring/adminSetup/userGroup/users?userGroupId=${userGroupId}</link>
+                                        <link>/adminSetup/userGroup/users?userGroupId=${userGroupId}</link>
                                         <labelArgument>${userGroupName}</labelArgument>
                                     </page>
                                     <page name="roleGroups" type="DETAIL_CHILD_WITH_INFO" contributeToMenu="true">
                                         <menu>userEditor|home</menu>
-                                        <link>/spring/adminSetup/userGroup/roleGroups?userGroupId=${userGroupId}</link>
+                                        <link>/adminSetup/userGroup/roleGroups?userGroupId=${userGroupId}</link>
                                         <labelArgument>${userGroupName}</labelArgument>
                                     </page>
                                     <page name="groupPermissions" type="DETAIL_CHILD_WITH_INFO" contributeToMenu="true">
                                         <requireRoleProperty value="ADMIN_LM_USER_ASSIGN"/>
                                         <menu>userEditor|home</menu>
-                                        <link>/spring/editor/group/editGroup?userGroupId=${userGroupId}</link>
+                                        <link>/editor/group/editGroup?userGroupId=${userGroupId}</link>
                                         <labelArgument>${userGroupName}</labelArgument>
                                     </page>
                                 </pages>
@@ -1508,32 +1508,32 @@
                     <page name="maintenance" type="BASIC">
                         <requireRoleProperty value="ADMIN_SUPER_USER" />
                         <menu>maintenance|home</menu>
-                        <link>/spring/adminSetup/maintenance/view</link>
+                        <link>/adminSetup/maintenance/view</link>
                         <pages>
                             <page name="maintenance.EDIT" type="DETAIL_WITH_INFO">
                                 <menu>maintenance|home</menu>
-                                <link>/spring/adminSetup/maintenance/edit</link>
+                                <link>/adminSetup/maintenance/edit</link>
                                 <labelArgument>${jobNameMsg}</labelArgument>
                             </page>
                         </pages>
                     </page>
                     <page name="home" type="BASIC">
                         <menu>energyCompanySetup|home"</menu>
-                        <link>/spring/adminSetup/energyCompany/home?ecId=${ecId}</link>
+                        <link>/adminSetup/energyCompany/home?ecId=${ecId}</link>
                         <pages>
                             <page name="createEnergyCompany" type="BASIC">
                                 <menu>energyCompanySetup|home</menu>
-                                <link>/spring/adminSetup/energyCompany/new</link>
+                                <link>/adminSetup/energyCompany/new</link>
                             </page>
                             <page name="generalInfo.VIEW" type="DETAIL_WITH_INFO" navigationMenuRoot="true" contributeToMenu="true">
                                 <menu>energyCompanySetup|home</menu>
-                                <link>/spring/adminSetup/energyCompany/general/view?ecId=${ecId}</link>
+                                <link>/adminSetup/energyCompany/general/view?ecId=${ecId}</link>
                                 <labelArgument>${energyCompanyName}</labelArgument>
                                 <infoInclude>/WEB-INF/pages/adminSetup/energyCompany/ecInfoFragment.jsp</infoInclude>
                                 <pages>
                                     <page name="generalInfo.EDIT" type="DETAIL_CHILD_WITH_INFO">
                                         <menu>energyCompanySetup|home</menu>
-                                        <link>/spring/adminSetup/energyCompany/generalInfo?ecId=${ecId}</link>
+                                        <link>/adminSetup/energyCompany/generalInfo?ecId=${ecId}</link>
                                         <labelArgument>${energyCompanyName}</labelArgument>
                                     </page>
                                     <page name="deleteEnergyCompanyConfirm" type="DETAIL_CHILD_WITH_INFO">
@@ -1542,12 +1542,12 @@
                                     </page>
                                     <page name="operatorLogin.home" type="DETAIL_CHILD_WITH_INFO" contributeToMenu="true">
                                         <menu>energyCompany|home</menu>
-                                        <link>/spring/adminSetup/energyCompany/operatorLogin/home?ecId=${ecId}</link>
+                                        <link>/adminSetup/energyCompany/operatorLogin/home?ecId=${ecId}</link>
                                         <labelArgument>${energyCompanyName}</labelArgument>
                                         <pages>
                                             <page name="operatorLogin.VIEW" type="DETAIL">
                                                 <menu>energyCompany|home</menu>
-                                                <link>/spring/adminSetup/energyCompany/operatorLogin/view?operatorLoginId=${operatorLogin.userId}&amp;ecId=${ecId}</link>
+                                                <link>/adminSetup/energyCompany/operatorLogin/view?operatorLoginId=${operatorLogin.userId}&amp;ecId=${ecId}</link>
                                                 <labelArgument>${operatorLogin.username}</labelArgument>
                                                 <pages>
                                                     <page name="operatorLogin.EDIT" type="DETAIL_CHILD">
@@ -1563,105 +1563,105 @@
                                     </page>
                                     <page name="applianceCategory.list" type="DETAIL_CHILD_WITH_INFO" contributeToMenu="true">
                                         <menu>energyCompanySetup|home</menu>
-                                        <link>/spring/adminSetup/energyCompany/applianceCategory/list?ecId=${ecId}</link>
+                                        <link>/adminSetup/energyCompany/applianceCategory/list?ecId=${ecId}</link>
                                         <labelArgument>${energyCompanyName}</labelArgument>
                                         <pages>
                                             <page name="applianceCategory.VIEW" type="DETAIL">
                                                 <menu>energyCompanySetup|home</menu>
-                                                <link>/spring/adminSetup/energyCompany/applianceCategory/view?ecId=${ecId}&amp;applianceCategoryId=${applianceCategory.applianceCategoryId}</link>
+                                                <link>/adminSetup/energyCompany/applianceCategory/view?ecId=${ecId}&amp;applianceCategoryId=${applianceCategory.applianceCategoryId}</link>
                                                 <labelArgument>${applianceCategory.categoryLabel}</labelArgument>
                                                 <pages>
                                                     <page name="applianceCategory.EDIT" type="DETAIL_CHILD">
                                                         <menu>energyCompanySetup|home</menu>
-                                                        <link>/spring/adminSetup/energyCompany/applianceCategory/edit?ecId=${ecId}&amp;applianceCategoryId=${applianceCategory.applianceCategoryId}</link>
+                                                        <link>/adminSetup/energyCompany/applianceCategory/edit?ecId=${ecId}&amp;applianceCategoryId=${applianceCategory.applianceCategoryId}</link>
                                                         <labelArgument>${applianceCategory.categoryLabel}</labelArgument>
                                                     </page>
                                                 </pages>
                                             </page>
                                             <page name="applianceCategory.CREATE" type="BASIC">
                                                 <menu>energyCompanySetup|home</menu>
-                                                <link>/spring/adminSetup/energyCompany/applianceCategory/create?ecId=${ecId}</link>
+                                                <link>/adminSetup/energyCompany/applianceCategory/create?ecId=${ecId}</link>
                                             </page>
                                         </pages>
                                     </page>
                                     <page name="applianceCategory.PROGRAMS" type="DETAIL_CHILD_WITH_INFO" contributeToMenu="true">
-                                        <link>/spring/adminSetup/energyCompany/applianceCategory/programs?ecId=${ecId}</link>
+                                        <link>/adminSetup/energyCompany/applianceCategory/programs?ecId=${ecId}</link>
                                         <menu>energyCompanySetup|home</menu>
                                         <labelArgument>${energyCompanyName}</labelArgument>
                                     </page>
                                     <page name="serviceCompany.list" type="DETAIL_CHILD_WITH_INFO" contributeToMenu="true">
                                         <requireRoleProperty value="OPERATOR_CONSUMER_INFO_HARDWARES, OPERATOR_CONSUMER_INFO_WORK_ORDERS"/>
-                                        <link>/spring/adminSetup/energyCompany/serviceCompany/list?ecId=${ecId}</link>
+                                        <link>/adminSetup/energyCompany/serviceCompany/list?ecId=${ecId}</link>
                                         <labelArgument>${energyCompanyName}</labelArgument>
                                         <menu>energyCompanySetup|home</menu>
                                         <pages>
                                             <page name="serviceCompany.VIEW" type="DETAIL" contributeToMenu="false">
                                                 <menu>energyCompanySetup|home</menu>
-                                                <link>/spring/adminSetup/energyCompany/serviceCompany/view?serviceCompanyId=${serviceCompany.companyId}&amp;ecId=${ecId}</link>
+                                                <link>/adminSetup/energyCompany/serviceCompany/view?serviceCompanyId=${serviceCompany.companyId}&amp;ecId=${ecId}</link>
                                                 <labelArgument>${serviceCompany.companyName}</labelArgument>
                                                 <pages>
                                                     <page name="serviceCompany.EDIT" type="DETAIL_CHILD_WITH_INFO" contributeToMenu="false">
                                                         <menu>energyCompanySetup|home</menu>
-                                                        <link>/spring/adminSetup/energyCompany/serviceCompany/edit?serviceCompany=${serviceCompanyId}</link>
+                                                        <link>/adminSetup/energyCompany/serviceCompany/edit?serviceCompany=${serviceCompanyId}</link>
                                                         <labelArgument>${serviceCompany.companyName}</labelArgument>
                                                     </page>
                                                 </pages>
                                             </page>
                                             <page name="serviceCompany.CREATE" type="DETAIL_CHILD_WITH_INFO" contributeToMenu="false">
                                                 <menu>energyCompanySetup|home</menu>
-                                                <link>/spring/adminSetup/energyCompany/serviceCompany/create?ecId=${ecId}</link>
+                                                <link>/adminSetup/energyCompany/serviceCompany/create?ecId=${ecId}</link>
                                             </page>
                                         </pages>
                                     </page>
                                     <page name="warehouse.home" type="DETAIL_CHILD_WITH_INFO" contributeToMenu="true">
                                         <requireRoleProperty value="ADMIN_MULTI_WAREHOUSE"/>
                                         <menu>energyCompany|home</menu>
-                                        <link>/spring/adminSetup/energyCompany/warehouse/home?ecId=${ecId}</link>
+                                        <link>/adminSetup/energyCompany/warehouse/home?ecId=${ecId}</link>
                                         <labelArgument>${energyCompanyName}</labelArgument>
                                         <pages>
                                             <page name="warehouse.VIEW" type="DETAIL">
                                                 <menu>energyCompany|home</menu>
-                                                <link>/spring/adminSetup/energyCompany/warehouse/view?warehouseId=${warehouseDto.warehouse.warehouseID}&amp;ecId=${ecId}</link>
+                                                <link>/adminSetup/energyCompany/warehouse/view?warehouseId=${warehouseDto.warehouse.warehouseID}&amp;ecId=${ecId}</link>
                                                 <labelArgument>${warehouseDto.warehouse.warehouseName}</labelArgument>
                                                 <pages>
                                                     <page name="warehouse.EDIT" type="DETAIL_CHILD">
                                                         <menu>energyCompany|home</menu>
-                                                        <link>/spring/adminSetup/energyCompany/warehouse/edit?warehouseId=${warehouseId}</link>
+                                                        <link>/adminSetup/energyCompany/warehouse/edit?warehouseId=${warehouseId}</link>
                                                         <labelArgument>${warehouseDto.warehouse.warehouseName}</labelArgument>
                                                     </page>
                                                 </pages>
                                             </page>
                                             <page name="warehouse.CREATE" type="DETAIL" contributeToMenu="false">
                                                 <menu>energyCompany|home</menu>
-                                                <link>/spring/adminSetup/energyCompany/warehouse/create?id=${id}</link>
+                                                <link>/adminSetup/energyCompany/warehouse/create?id=${id}</link>
                                             </page>
                                         </pages>
                                     </page>
                                     <page name="routesAndSubstations.VIEW" type="DETAIL_CHILD_WITH_INFO" contributeToMenu="true">
                                         <menu>energyCompanySetup|home</menu>
-                                        <link>/spring/adminSetup/energyCompany/routesAndSubstations/view?ecId=${ecId}</link>
+                                        <link>/adminSetup/energyCompany/routesAndSubstations/view?ecId=${ecId}</link>
                                         <labelArgument>${energyCompanyName}</labelArgument>
                                         <pages>
                                             <page name="routesAndSubstations.EDIT" type="DETAIL_CHILD_WITH_INFO">
                                                 <menu>energyCompanySetup|home</menu>
-                                                <link>/spring/adminSetup/energyCompany/routesAndSubstations/edit?ecId=${ecId}</link>
+                                                <link>/adminSetup/energyCompany/routesAndSubstations/edit?ecId=${ecId}</link>
                                                 <labelArgument>${energyCompanyName}</labelArgument>
                                             </page>
                                         </pages>
                                     </page>
                                     <page name="list.list" type="DETAIL_CHILD_WITH_INFO" contributeToMenu="true">
                                         <menu>energyCompanySetup|home</menu>
-                                        <link>/spring/adminSetup/energyCompany/list/list?ecId=${ecId}</link>
+                                        <link>/adminSetup/energyCompany/list/list?ecId=${ecId}</link>
                                         <labelArgument>${energyCompanyName}</labelArgument>
                                         <pages>
                                             <page name="list.VIEW" type="DETAIL">
                                                 <menu>energyCompanySetup|home</menu>
-                                                <link>/spring/adminSetup/energyCompany/list/view?ecId=${ecId}&amp;listId=${list.listId}</link>
+                                                <link>/adminSetup/energyCompany/list/view?ecId=${ecId}&amp;listId=${list.listId}</link>
                                                 <labelArgument>${list.type}</labelArgument>
                                                 <pages>
                                                     <page name="list.EDIT" type="DETAIL_CHILD">
                                                         <menu>energyCompanySetup|home</menu>
-                                                        <link>/spring/adminSetup/energyCompany/list/edit?ecId=${ecId}&amp;listId=${list.listId}</link>
+                                                        <link>/adminSetup/energyCompany/list/edit?ecId=${ecId}&amp;listId=${list.listId}</link>
                                                         <labelArgument>${list.type}</labelArgument>
                                                     </page>
                                                 </pages>
@@ -1671,12 +1671,12 @@
                                     <page name="schedules.VIEW" type="DETAIL_CHILD_WITH_INFO" contributeToMenu="true">
                                         <requireRoleProperty value="OPERATOR_CONSUMER_INFO_HARDWARES_THERMOSTAT"/>
                                         <menu>energyCompanySetup|home</menu>
-                                        <link>/spring/adminSetup/energyCompany/schedules/view?ecId=${ecId}</link>
+                                        <link>/adminSetup/energyCompany/schedules/view?ecId=${ecId}</link>
                                         <labelArgument>${energyCompanyName}</labelArgument>
                                         <pages>
                                             <page name="schedules.EDIT" type="DETAIL_CHILD">
                                                 <menu>energyCompanySetup|home</menu>
-                                                <link>/spring/adminSetup/energyCompany/schedules/edit?ecId=${ecId}&amp;type=${type}</link>
+                                                <link>/adminSetup/energyCompany/schedules/edit?ecId=${ecId}&amp;type=${type}</link>
                                                 <labelArgument>${typeStr}</labelArgument>
                                             </page>
                                         </pages>
@@ -1684,12 +1684,12 @@
                                     <page name="settlements.list" type="DETAIL_CHILD_WITH_INFO" contributeToMenu="true">
                                         <requireRoleProperty value="ENABLE_SETTLEMENTS"/>
                                         <menu>energyCompanySetup|home</menu>
-                                        <link>/spring/adminSetup/energyCompany/settlement/list?ecId=${ecId}</link>
+                                        <link>/adminSetup/energyCompany/settlement/list?ecId=${ecId}</link>
                                         <labelArgument>${energyCompanyName}</labelArgument>
                                         <pages>
                                             <page name="settlements.EDIT" type="DETAIL">
                                                 <menu>energyCompanySetup|home</menu>
-                                                <link>/spring/adminSetup/energyCompany/settlement/edit?ecId=${ecId}</link>
+                                                <link>/adminSetup/energyCompany/settlement/edit?ecId=${ecId}</link>
                                                 <labelArgument>${settlementName}</labelArgument>
                                             </page>
                                         </pages>
@@ -1710,15 +1710,15 @@
         <menu>
             <options>
                 <option name="account">
-                    <link>/spring/stars/operator/home</link>
+                    <link>/stars/operator/home</link>
                     <options>
                         <option name="accounts">
-                            <link>/spring/stars/operator/account/search</link>
+                            <link>/stars/operator/account/search</link>
                         </option>
                     </options>
                 </option>
                 <option name="inventory">
-                    <link>/spring/stars/operator/inventory/home</link>
+                    <link>/stars/operator/inventory/home</link>
                 </option>
             </options>
         </menu>
@@ -1726,46 +1726,46 @@
         <pages>
             <page name="home" type="LANDING" hideSearch="true">
                 <menu>account|accounts</menu>
-                <link>/spring/stars/operator/home</link>
+                <link>/stars/operator/home</link>
             </page>
             <page name="accountImport" type="BASIC" hideSearch="true">
                 <menu>account|accounts</menu>
-                <link>/spring/stars/operator/account/import</link>
+                <link>/stars/operator/account/import</link>
             </page>
             <page name="accountList" type="BASIC" hideSearch="true">
                 <menu>account|accounts</menu>
-                <link>/spring/stars/operator/account/search</link>
+                <link>/stars/operator/account/search</link>
                 <pages>
                     <page name="account.CREATE" type="BASIC" hideSearch="true">
                         <menu>account|accounts</menu>
-                        <link>/spring/stars/operator/account/accountCreate</link>
+                        <link>/stars/operator/account/accountCreate</link>
                     </page>
                     <page name="account.VIEW" type="DETAIL_WITH_INFO" navigationMenuRoot="true" contributeToMenu="true">
                         <menu>account|accounts</menu>
-                        <link>/spring/stars/operator/account/view?accountId=${accountId}</link>
+                        <link>/stars/operator/account/view?accountId=${accountId}</link>
                         <labelArgument>${accountNumber}</labelArgument>
                         <infoInclude>/WEB-INF/pages/stars/operator/accountInfoFragment.jsp</infoInclude>
                         <pages>
                             <page name="account.EDIT" type="DETAIL_CHILD_WITH_INFO">
                                 <menu>account|accounts</menu>
-                                <link>/spring/stars/operator/account/edit?accountId=${accountId}</link>
+                                <link>/stars/operator/account/edit?accountId=${accountId}</link>
                                 <labelArgument>${accountNumber}</labelArgument>
                                 <infoInclude>/WEB-INF/pages/stars/operator/accountInfoFragment.jsp</infoInclude>
                             </page>
                             <page name="contactList" type="DETAIL_CHILD_WITH_INFO" contributeToMenu="true">
                                 <menu>account|accounts</menu>
-                                <link>/spring/stars/operator/contacts/contactList?accountId=${accountId}</link>
+                                <link>/stars/operator/contacts/contactList?accountId=${accountId}</link>
                                 <labelArgument>${accountNumber}</labelArgument>
                                 <pages>
                                     <page name="contact.VIEW" type="DETAIL">
                                         <menu>account|accounts</menu>
-                                        <link>/spring/stars/operator/contacts/view?accountId=${accountId}&amp;contactId=${contactId}</link>
+                                        <link>/stars/operator/contacts/view?accountId=${accountId}&amp;contactId=${contactId}</link>
                                         <labelArgument>${firstName}</labelArgument>
                                         <labelArgument>${lastName}</labelArgument>
                                         <pages>
                                             <page name="contact.EDIT" type="DETAIL_CHILD">
                                                 <menu>account|accounts</menu>
-                                                <link>/spring/stars/operator/contacts/edit?accountId=${accountId}&amp;contactId=${contactId}</link>
+                                                <link>/stars/operator/contacts/edit?accountId=${accountId}&amp;contactId=${contactId}</link>
                                                 <labelArgument>${firstName}</labelArgument>
                                                 <labelArgument>${lastName}</labelArgument>
                                             </page>
@@ -1773,7 +1773,7 @@
                                     </page>
                                     <page name="contact.CREATE" type="BASIC">
                                         <menu>account|accounts</menu>
-                                        <link>/spring/stars/operator/contacts/create?accountId=${accountId}&amp;contactId=0</link>
+                                        <link>/stars/operator/contacts/create?accountId=${accountId}&amp;contactId=0</link>
                                         <labelArgument>${firstName}</labelArgument>
                                         <labelArgument>${lastName}</labelArgument>
                                     </page>
@@ -1782,31 +1782,31 @@
                             <page name="residence" type="DETAIL_CHILD_WITH_INFO" contributeToMenu="true">
                                 <requireRoleProperty value="OPERATOR_CONSUMER_INFO_ACCOUNT_RESIDENCE" />
                                 <menu>account|accounts</menu>
-                                <link>/spring/stars/operator/residence/view?accountId=${accountId}</link>
+                                <link>/stars/operator/residence/view?accountId=${accountId}</link>
                                 <labelArgument>${accountNumber}</labelArgument>
                             </page>
                             <page name="callList" type="DETAIL_CHILD_WITH_INFO" contributeToMenu="true">
                                 <requireRoleProperty value="OPERATOR_CONSUMER_INFO_ACCOUNT_CALL_TRACKING" />
                                 <menu>account|accounts</menu>
-                                <link>/spring/stars/operator/callTracking/callList?accountId=${accountId}</link>
+                                <link>/stars/operator/callTracking/callList?accountId=${accountId}</link>
                                 <labelArgument>${accountNumber}</labelArgument>
                                 <pages>
                                     <page name="viewCall.CREATE" type="BASIC">
                                         <requireRoleProperty value="OPERATOR_CONSUMER_INFO_ACCOUNT_CALL_TRACKING" />
                                         <menu>account|accounts</menu>
-                                        <link>/spring/stars/operator/callTracking/viewCall?accountId=${accountId}</link>
+                                        <link>/stars/operator/callTracking/viewCall?accountId=${accountId}</link>
                                         <labelArgument>${callNumber}</labelArgument>
                                     </page>
                                     <page name="viewCall.VIEW" type="DETAIL">
                                         <requireRoleProperty value="OPERATOR_CONSUMER_INFO_ACCOUNT_CALL_TRACKING" />
                                         <menu>account|accounts</menu>
-                                        <link>/spring/stars/operator/callTracking/view?accountId=${accountId}</link>
+                                        <link>/stars/operator/callTracking/view?accountId=${accountId}</link>
                                         <labelArgument>${callNumber}</labelArgument>
                                         <pages>
                                             <page name="viewCall.EDIT" type="DETAIL_CHILD">
                                                 <requireRoleProperty value="OPERATOR_CONSUMER_INFO_ACCOUNT_CALL_TRACKING" />
                                                 <menu>account|accounts</menu>
-                                                <link>/spring/stars/operator/callTracking/edit?accountId=${accountId}</link>
+                                                <link>/stars/operator/callTracking/edit?accountId=${accountId}</link>
                                                 <labelArgument>${callNumber}</labelArgument>
                                             </page>
                                         </pages>
@@ -1816,24 +1816,24 @@
                             <page name="metering" type="DETAIL_CHILD_WITH_INFO" contributeToMenu="true">
                                 <requireRoleProperty value="OPERATOR_CONSUMER_INFO_METERING_INTERVAL_DATA, OPERATOR_CONSUMER_INFO_METERING_CREATE" />
                                 <menu>account|accounts</menu>
-                                <link>/spring/stars/operator/metering/viewTrend?accountId=${accountId}</link>
+                                <link>/stars/operator/metering/viewTrend?accountId=${accountId}</link>
                                 <labelArgument>${accountNumber}</labelArgument>
                                 <pages>
                                     <page name="selectTrends" type="DETAIL_CHILD_WITH_INFO">
                                         <menu>account|accounts</menu>
-                                        <link>/spring/stars/operator/metering/selectTrends?accountId=${accountId}&amp;trendId={trendId}</link>
+                                        <link>/stars/operator/metering/selectTrends?accountId=${accountId}&amp;trendId={trendId}</link>
                                         <labelArgument>${accountNumber}</labelArgument>
                                     </page>
                                 </pages>
                             </page>
                             <page name="controlHistory" type="DETAIL_CHILD_WITH_INFO" contributeToMenu="true">
                                 <menu>account|accounts</menu>
-                                <link>/spring/stars/operator/program/controlHistory?accountId=${accountId}</link>
+                                <link>/stars/operator/program/controlHistory?accountId=${accountId}</link>
                                 <labelArgument>${accountNumber}</labelArgument>
                                 <pages>
                                     <page name="completeControlHistory" type="DETAIL">
                                         <menu>account|accounts</menu>
-                                        <link>/spring/stars/operator/program/completeControlHistory?accountId=${accountId}</link>
+                                        <link>/stars/operator/program/completeControlHistory?accountId=${accountId}</link>
                                         <labelArgument>${program.programName}</labelArgument>
                                     </page>
                                 </pages>
@@ -1841,18 +1841,18 @@
                             <page name="enrollmentList" type="DETAIL_CHILD_WITH_INFO" contributeToMenu="true">
                                 <requireRoleProperty value="OPERATOR_CONSUMER_INFO_PROGRAMS_ENROLLMENT" />
                                 <menu>account|accounts</menu>
-                                <link>/spring/stars/operator/enrollment/list?accountId=${accountId}</link>
+                                <link>/stars/operator/enrollment/list?accountId=${accountId}</link>
                                 <labelArgument>${accountNumber}</labelArgument>
                                 <pages>
                                     <page name="enrollmentHistory" type="DETAIL_CHILD_WITH_INFO">
                                         <menu>account|accounts</menu>
-                                        <link>/spring/stars/operator/enrollment/history?accountId=${accountId}</link>
+                                        <link>/stars/operator/enrollment/history?accountId=${accountId}</link>
                                     </page>
                                 </pages>
                             </page>
                             <page name="optOut.main" type="DETAIL_CHILD_WITH_INFO" contributeToMenu="true">
                                 <menu>account|accounts</menu>
-                                <link>/spring/stars/operator/program/optOut/view?accountId=${accountId}</link>
+                                <link>/stars/operator/program/optOut/view?accountId=${accountId}</link>
                                 <labelArgument>${accountNumber}</labelArgument>
                                 <pages>
                                     <page name="optOut.inventoryList" type="DETAIL_CHILD_WITH_INFO">
@@ -1870,7 +1870,7 @@
                             <page name="appliance.list" type="DETAIL_CHILD_WITH_INFO" contributeToMenu="true">
                                 <requireRoleProperty value="OPERATOR_CONSUMER_INFO_APPLIANCES" />
                                 <menu>account|accounts</menu>
-                                <link>/spring/stars/operator/appliances/applianceList?accountId=${accountId}</link>
+                                <link>/stars/operator/appliances/applianceList?accountId=${accountId}</link>
                                 <labelArgument>${accountNumber}</labelArgument>
                                 <pages>
                                     <page name="appliance.edit" type="DETAIL">
@@ -1885,7 +1885,7 @@
                             <page name="hardware.list" type="DETAIL_CHILD_WITH_INFO" contributeToMenu="true">
                                 <requireRoleProperty value="OPERATOR_CONSUMER_INFO_HARDWARES" />
                                 <menu>account|accounts</menu>
-                                <link>/spring/stars/operator/hardware/list?accountId=${accountId}</link>
+                                <link>/stars/operator/hardware/list?accountId=${accountId}</link>
                                 <labelArgument>${accountNumber}</labelArgument>
                                 <pages>
                                     <page name="hardware.CREATE" type="BASIC">
@@ -1895,7 +1895,7 @@
                                     <page name="hardware.VIEW" type="DETAIL">
                                         <menu>account|accounts</menu>
                                         <labelArgument>${displayName}</labelArgument>
-                                        <link>/spring/stars/operator/hardware/view?accountId=${accountId}&amp;inventoryId=${inventoryId}</link>
+                                        <link>/stars/operator/hardware/view?accountId=${accountId}&amp;inventoryId=${inventoryId}</link>
                                         <pages>
                                             <page name="hardware.EDIT" type="DETAIL_CHILD">
                                                 <menu>account|accounts</menu>
@@ -1921,7 +1921,7 @@
                                     <page name="meterProfile.VIEW" type="DETAIL">
                                         <menu>account|accounts</menu>
                                         <labelArgument>${displayName}</labelArgument>
-                                        <link>/spring/stars/operator/hardware/viewMeterProfile?accountId=${accountId}&amp;inventoryId=${inventoryId}</link>
+                                        <link>/stars/operator/hardware/viewMeterProfile?accountId=${accountId}&amp;inventoryId=${inventoryId}</link>
                                         <pages>
                                             <page name="meterProfile.EDIT" type="DETAIL_CHILD">
                                                 <menu>account|accounts</menu>
@@ -1939,7 +1939,7 @@
                                     </page>
                                     <page name="thermostatSelect" type="DETAIL_CHILD">
                                         <menu>account|accounts</menu>
-                                        <link>/spring/stars/operator/thermostatSelect/select?accountId=${accountId}</link>
+                                        <link>/stars/operator/thermostatSelect/select?accountId=${accountId}</link>
                                         <labelArgument>${accountNumber}</labelArgument>
                                         <pages>
                                             <page name="thermostat.schedules.multiple" type="BASIC">
@@ -1961,7 +1961,7 @@
                             <page name="workOrder.list" type="DETAIL_CHILD_WITH_INFO" contributeToMenu="true">
                                 <requireRoleProperty value="OPERATOR_CONSUMER_INFO_WORK_ORDERS" />
                                 <menu>account|accounts</menu>
-                                <link>/spring/stars/operator/workOrder/workOrderList?accountId=${accountId}</link>
+                                <link>/stars/operator/workOrder/workOrderList?accountId=${accountId}</link>
                                 <labelArgument>${accountNumber}</labelArgument>
                                 <pages>
                                     <page name="workOrder.VIEW" type="DETAIL">
@@ -1982,7 +1982,7 @@
                             </page>
                             <page name="accountLog" type="DETAIL_CHILD_WITH_INFO" contributeToMenu="true">
                                 <menu>account|accounts</menu>
-                                <link>/spring/stars/operator/account/accountLog?accountId=${accountId}</link>
+                                <link>/stars/operator/account/accountLog?accountId=${accountId}</link>
                                 <labelArgument>${accountNumber}</labelArgument>
                             </page>
                         </pages>
@@ -1991,7 +1991,7 @@
             </page>
             <page name="inventory.home" type="BLANK">
                 <menu>inventory|</menu>
-                <link>/spring/stars/operator/inventory/home</link>
+                <link>/stars/operator/inventory/home</link>
                 <pages>
                     <page name="inventory.list" type="BASIC">
                         <menu>inventory|</menu>
@@ -2018,7 +2018,7 @@
                     </page>
                     <page name="filterSelection" type="DETAIL">
                         <menu>inventory|</menu>
-                        <link>/spring/stars/operator/inventory/setupFilterRules</link>
+                        <link>/stars/operator/inventory/setupFilterRules</link>
                     </page>
                     <page name="commandSchedule.CREATE" type="BASIC">
                         <menu>inventory|</menu>
@@ -2030,7 +2030,7 @@
                     </page>
                     <page name="inventoryActions" type="DETAIL">
                         <menu>inventory|</menu>
-                        <link>/spring/stars/operator/inventory/inventoryActions?${local:convertMapToQueryHtml(inventoryCollection.collectionParameters)}</link>
+                        <link>/stars/operator/inventory/inventoryActions?${local:convertMapToQueryHtml(inventoryCollection.collectionParameters)}</link>
                         <pages>
                             <page name="deviceReconfig" type="BASIC">
                                 <menu>inventory|</menu>
@@ -2112,7 +2112,7 @@
               <link>SelectDevice.jsp?SortBy=1000</link>
             </option>
             <option name="group">
-              <link>/spring/group/commander/groupProcessing</link>
+              <link>/group/commander/groupProcessing</link>
               <requireRoleProperty value="GROUP_COMMANDER" />
             </option>
           </options>
@@ -2158,11 +2158,11 @@
     <menu>
       <options>
         <option name="loadManagement">
-          <link>/spring/multispeak/visualDisplays/loadManagement/home</link>
+          <link>/multispeak/visualDisplays/loadManagement/home</link>
         </option>
 
         <option name="probabilityForPeakLoad">
-          <link>/spring/multispeak/visualDisplays/probabilityForPeak/home</link>
+          <link>/multispeak/visualDisplays/probabilityForPeak/home</link>
         </option>
       </options>
     </menu>

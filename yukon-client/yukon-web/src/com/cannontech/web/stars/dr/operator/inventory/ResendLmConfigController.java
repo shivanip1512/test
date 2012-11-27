@@ -72,7 +72,7 @@ public class ResendLmConfigController {
             flash.setWarning(new YukonMessageSourceResolvable("yukon.web.modules.operator.resendConfig.canceled", processed));
         } else {
             inventoryCollectionFactory.addCollectionToModelMap(request, model);
-            return "redirect:/spring/stars/operator/inventory/inventoryActions";
+            return "redirect:/stars/operator/inventory/inventoryActions";
         }
         return "redirect:../home";
     }

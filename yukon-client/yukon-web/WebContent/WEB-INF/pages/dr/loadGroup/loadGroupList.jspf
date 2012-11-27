@@ -168,7 +168,7 @@
 				</tr>
 				<c:forEach var="loadGroup" items="${loadGroups}">
 					<c:set var="loadGroupId" value="${loadGroup.paoIdentifier.paoId}" />
-					<c:url var="loadGroupURL" value="/spring/dr/loadGroup/detail">
+					<c:url var="loadGroupURL" value="/dr/loadGroup/detail">
 						<c:param name="loadGroupId" value="${loadGroupId}" />
 					</c:url>
 					<tr id="loadGroupRow${loadGroupId}"

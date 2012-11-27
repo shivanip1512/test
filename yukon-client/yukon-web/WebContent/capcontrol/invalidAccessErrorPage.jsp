@@ -6,7 +6,7 @@
 <cti:standardMenu/>
 
 <cti:breadCrumbs>
-    <cti:crumbLink url="/spring/capcontrol/tier/areas" title="Home" />
+    <cti:crumbLink url="/capcontrol/tier/areas" title="Home" />
 </cti:breadCrumbs>
 
 <cti:yukonUser var="user"/>

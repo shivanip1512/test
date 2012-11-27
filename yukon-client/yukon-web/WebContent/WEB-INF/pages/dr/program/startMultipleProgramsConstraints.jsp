@@ -37,7 +37,7 @@ singleOverrideChecked = function(boxChecked) {
 }
 </script>
 
-<cti:url var="submitUrl" value="/spring/dr/program/start/multipleStart"/>
+<cti:url var="submitUrl" value="/dr/program/start/multipleStart"/>
 <form:form id="startMultipleProgramsForm" commandName="backingBean" action="${submitUrl}"
     onsubmit="return submitFormViaAjax('drDialog', 'startMultipleProgramsForm');">
     <form:hidden path="controlAreaId"/>
@@ -148,11 +148,11 @@ singleOverrideChecked = function(boxChecked) {
     <br>
 
     <div class="actionArea">
-        <cti:url var="backUrl" value="/spring/dr/program/start/multipleDetails">
+        <cti:url var="backUrl" value="/dr/program/start/multipleDetails">
             <cti:param name="fromBack" value="true"/>
         </cti:url>
         <c:if test="${backingBean.addAdjustments}">
-            <cti:url var="backUrl" value="/spring/dr/program/start/multipleGearAdjustments">
+            <cti:url var="backUrl" value="/dr/program/start/multipleGearAdjustments">
                 <cti:param name="fromBack" value="true"/>
             </cti:url>
         </c:if>

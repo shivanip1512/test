@@ -17,7 +17,7 @@
 
        	<cti:breadCrumbs>
     	    <cti:crumbLink url="/operator/Operations.jsp" title="Operations Home" />
-    	    <cti:crumbLink url="/spring/group/editor/home" title="Device Groups" />
+    	    <cti:crumbLink url="/group/editor/home" title="Device Groups" />
     	    <cti:crumbLink title="${pageTitle}"/>
     	</cti:breadCrumbs>
         
@@ -35,7 +35,7 @@
 	
     	<br>
         
-		<form id="groupMeterReadForm" action="/spring/group/groupMeterRead/readGroup" method="post">
+		<form id="groupMeterReadForm" action="/group/groupMeterRead/readGroup" method="post">
 		
 			<%-- SELECT ATTRIBUTE --%>
 	        <div class="largeBoldLabel">${selectAttributeLabel}:</div>
@@ -69,7 +69,7 @@
 			<%-- RECENT RESULTS --%>
 			<br><br>
 			<span class="largeBoldLabel">${recentResultLinkLabel}</span> 
-			<a href="/spring/group/groupMeterRead/resultsList">${recentResultLink}</a>
+			<a href="/group/groupMeterRead/resultsList">${recentResultLink}</a>
 			 
 		</form>
 	

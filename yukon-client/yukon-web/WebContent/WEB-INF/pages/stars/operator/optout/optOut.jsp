@@ -17,7 +17,7 @@
 <c:if test="${!allOptedOut}">
 	<cti:msg key="yukon.dr.operator.optout.description"/><br><br>
 
-	<form action="/spring/stars/operator/optout/optout2" method="POST">
+	<form action="/stars/operator/optout/optout2" method="POST">
 	    <table>
 	        <tr>
 	            <td align="right">
@@ -100,12 +100,12 @@
                         <cti:formatDate value="${optOut.startDate}" type="DATEHM"/>
                     </td>
                     <td>
-                        <form action="/spring/stars/operator/optout/cancel" method="post">
+                        <form action="/stars/operator/optout/cancel" method="post">
                             <input type="hidden" name="eventId" value="${optOut.eventId}">
                             <input type="submit" name="submit" value="<cti:msg key="yukon.dr.operator.optout.cancel"/>" class="formSubmit">
                         </form>
                         <c:if test="${optOut.state == 'START_OPT_OUT_SENT'}">
-                            <form action="/spring/stars/operator/optout/repeat" method="post">
+                            <form action="/stars/operator/optout/repeat" method="post">
                                 <input type="hidden" name="inventoryId" value="${optOut.inventory.inventoryId}">
                                 <input type="submit" name="submit" value="<cti:msg key="yukon.dr.operator.optout.repeat"/>" class="formSubmit">
                             </form>
@@ -143,7 +143,7 @@
             <td>${optOutCounts[inventory.inventoryId].usedOptOuts}</td>
             <c:if test="${!noOptOutLimits}">
 	            <td>
-	                <form action="/spring/stars/operator/optOut/allowAnother" method="post">
+	                <form action="/stars/operator/optOut/allowAnother" method="post">
 	                    <input type="hidden" name="inventoryId" value="${inventory.inventoryId}">
 	                    <input type="submit" name="submit" value="<cti:msg key="yukon.dr.operator.optout.allowAnother"/>" class="formSubmit">
 	                </form>
@@ -166,7 +166,7 @@
 	                       <cti:msg key="yukon.dr.operator.optout.atLimit"/>
 	                   </c:when>
 	                   <c:otherwise>
-			                <form action="/spring/stars/operator/optOut/resetToLimit" method="post">
+			                <form action="/stars/operator/optOut/resetToLimit" method="post">
 			                    <input type="hidden" name="inventoryId" value="${inventory.inventoryId}">
 			                    <input type="submit" name="submit" value="<cti:msg key="yukon.dr.operator.optout.clear"/>" class="formSubmit">
 			                </form>

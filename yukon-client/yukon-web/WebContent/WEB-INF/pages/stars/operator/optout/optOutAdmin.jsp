@@ -79,7 +79,7 @@
                         </table>
                         <br>
                     
-                        <form action="/spring/stars/operator/optOut/admin/setDisabled" method="post">
+                        <form action="/stars/operator/optOut/admin/setDisabled" method="post">
                             <table style="padding:10px;background-color:#EEE;width:100%;">
                                 <tr><td>
                                     <b><i:inline key=".countOptOuts.byProgramName.label"/></b> <i:inline key=".countOptOuts.byProgramName.instruction"/>
@@ -128,7 +128,7 @@
 				        <cti:msg key="yukon.web.modules.dr.optOutAdmin.cancelOptOuts.cancelOptOutsWarning" />
 				        <br><br>
 				        
-				        <form action="/spring/stars/operator/optOut/admin/cancelAllOptOuts" method="post">
+				        <form action="/stars/operator/optOut/admin/cancelAllOptOuts" method="post">
 				        
 				        	<table style="padding:10px;background-color:#EEE;width:100%;">
 				        		<tr><td>
@@ -199,7 +199,7 @@
 			        	</table>
 			        	<br>
 			        
-			        	<form action="/spring/stars/operator/optOut/admin/setCounts" method="post">
+			        	<form action="/stars/operator/optOut/admin/setCounts" method="post">
 				                
 		                	<table style="padding:10px;background-color:#EEE;width:100%;">
 				        		<tr><td>

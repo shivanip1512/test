@@ -30,7 +30,7 @@
 				</c:if>
 
 				<tr>
-					<cti:url var="viewMonitorUrl" value="/spring/amr/porterResponseMonitor/viewPage">
+					<cti:url var="viewMonitorUrl" value="/amr/porterResponseMonitor/viewPage">
 						<cti:param name="monitorId" value="${monitor.monitorId}" />
 					</cti:url>
 
@@ -70,7 +70,7 @@
 
 <div class="widgetActionArea">
 	<%-- CREATE NEW MONITOR FORM --%>
-	<form action="/spring/amr/porterResponseMonitor/createPage" method="get">
+	<form action="/amr/porterResponseMonitor/createPage" method="get">
         <cti:button nameKey="create" type="submit" styleClass="f_blocker"/>
 	</form>
 </div>

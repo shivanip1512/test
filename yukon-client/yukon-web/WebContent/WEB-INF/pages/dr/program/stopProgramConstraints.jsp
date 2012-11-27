@@ -11,7 +11,7 @@ overrideConstraintsChecked = function() {
 }
 </script>
 
-<cti:url var="submitUrl" value="/spring/dr/program/stop/stop"/>
+<cti:url var="submitUrl" value="/dr/program/stop/stop"/>
 <form:form id="stopProgramForm" commandName="backingBean" action="${submitUrl}"
     onsubmit="return submitFormViaAjax('drDialog', 'stopProgramForm');">
     <form:hidden path="programId"/>
@@ -59,7 +59,7 @@ overrideConstraintsChecked = function() {
     <br>
 
     <div class="actionArea">
-        <cti:url var="backUrl" value="/spring/dr/program/stop/details"/>
+        <cti:url var="backUrl" value="/dr/program/stop/details"/>
         <input type="button" value="<cti:msg key="yukon.web.modules.dr.program.stopProgram.backButton"/>"
             onclick="submitFormViaAjax('drDialog', 'stopProgramForm', '${backUrl}')"/>
         <c:if test="${empty violations.constraintContainers || overrideAllowed}">

@@ -18,7 +18,7 @@ function peakDayProfile_start(divId, profileRequestOrigin) {
     args.afterDays = $F(divId + '_afterDays');
     args.profileRequestOrigin = profileRequestOrigin;
     
-    var url = '/spring/meter/highBill/initiateLoadProfile';
+    var url = '/meter/highBill/initiateLoadProfile';
     new Ajax.Request(url, {'method': 'post', 'evalScripts': true, 'onComplete': initiateComplete, 'onFailure': initiateComplete, 'parameters': args});
   
 }

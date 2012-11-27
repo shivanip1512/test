@@ -16,7 +16,7 @@
         
         <%-- bulk home --%>
         <cti:msg var="bulkOperationsPageTitle" key="yukon.common.device.bulk.bulkHome.pageTitle"/>
-        <cti:crumbLink url="/spring/bulk/bulkHome" title="${bulkOperationsPageTitle}" />
+        <cti:crumbLink url="/bulk/bulkHome" title="${bulkOperationsPageTitle}" />
         
         <%-- upload --%>
         <cti:crumbLink>${pageTitle}</cti:crumbLink>
@@ -34,7 +34,7 @@
             
                 <%-- UPLOAD FIELD --%>
                 <td>
-                    <form id="uploadForm" method="post" action="/spring/bulk/update/parseUpload" enctype="multipart/form-data">
+                    <form id="uploadForm" method="post" action="/bulk/update/parseUpload" enctype="multipart/form-data">
                 
                         <%-- note --%>
                         <table>

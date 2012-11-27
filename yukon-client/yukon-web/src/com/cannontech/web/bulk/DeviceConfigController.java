@@ -256,7 +256,7 @@ public class DeviceConfigController extends BulkControllerBase {
         
         String key = deviceConfigService.readConfigs(deviceCollection, callback, user);
         model.addAttribute("resultKey", key);
-        return "redirect:/spring/group/commander/resultDetail";
+        return "redirect:/group/commander/resultDetail";
     }
     
     /**
@@ -283,7 +283,7 @@ public class DeviceConfigController extends BulkControllerBase {
         
         String key = deviceConfigService.sendConfigs(deviceCollection, method, callback, user);
         model.addAttribute("resultKey", key);
-        return "redirect:/spring/group/commander/resultDetail";
+        return "redirect:/group/commander/resultDetail";
     }
     
     @Required

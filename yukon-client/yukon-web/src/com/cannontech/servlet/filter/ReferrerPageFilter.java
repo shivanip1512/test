@@ -28,13 +28,13 @@ public class ReferrerPageFilter implements Filter {
     // setup ant-style paths
     // all paths should start with a slash because that's just the way it works
     private final static ImmutableList<String> excludedPages =
-        ImmutableList.of("/spring/capcontrol/ivvc/zone/chart",
-                         "/spring/capcontrol/ivvc/bus/chart",
+        ImmutableList.of("/capcontrol/ivvc/zone/chart",
+                         "/capcontrol/ivvc/bus/chart",
                          "/capcontrol/cbcPointTimestamps.jsp",
                          "/capcontrol/standardPageWrapper.jsp",
-                         "/spring/capcontrol/move/bankMove",
-                         "/spring/capcontrol/capAddInfo",
-                         "/spring/capcontrol/oneline/popupmenu/*");
+                         "/capcontrol/move/bankMove",
+                         "/capcontrol/capAddInfo",
+                         "/capcontrol/oneline/popupmenu/*");
     
     public void init(FilterConfig fc) throws ServletException {
         config = fc;

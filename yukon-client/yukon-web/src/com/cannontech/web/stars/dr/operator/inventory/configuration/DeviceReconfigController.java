@@ -123,7 +123,7 @@ public class DeviceReconfigController {
 
         inventoryCollectionFactory.addCollectionToModelMap(request, modelMap);
         
-        return "redirect:/spring/stars/operator/inventory/inventoryActions";
+        return "redirect:/stars/operator/inventory/inventoryActions";
     }
     
     @RequestMapping(value="/operator/inventory/deviceReconfig/status", method=RequestMethod.GET)
@@ -158,7 +158,7 @@ public class DeviceReconfigController {
         InventoryCollection temporaryCollection = memoryCollectionProducer.createCollection(inventory.iterator(), descriptionHint);
         modelMap.addAllAttributes(temporaryCollection.getCollectionParameters());
         
-        return "redirect:/spring/stars/operator/inventory/inventoryActions";
+        return "redirect:/stars/operator/inventory/inventoryActions";
     }
     
     @RequestMapping(value="/operator/inventory/inventoryActions/deviceReconfig/delete", method=RequestMethod.POST)
@@ -167,7 +167,7 @@ public class DeviceReconfigController {
         inventoryConfigTaskDao.delete(taskId);
         inventoryConfigEventLogService.taskDeleted(userContext.getYukonUser(), task.getTaskName());
         flashScope.setConfirm(new YukonMessageSourceResolvable("yukon.web.modules.operator.deviceReconfig.deletionSuccessful", task.getTaskName()));
-        return "redirect:/spring/stars/operator/inventory/home";
+        return "redirect:/stars/operator/inventory/home";
     }
     
     @Autowired

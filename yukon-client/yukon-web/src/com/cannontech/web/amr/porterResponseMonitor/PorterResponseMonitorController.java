@@ -212,7 +212,7 @@ public class PorterResponseMonitorController {
 
     @RequestMapping(params = "cancel")
     public String cancel(ModelMap modelMap, HttpServletRequest request) {
-        return "redirect:/spring/meter/start";
+        return "redirect:/meter/start";
     }
 
 	@RequestMapping(params = "cancelToView")
@@ -296,7 +296,7 @@ public class PorterResponseMonitorController {
                                                            monitorDto.getEvaluatorStatus().getDescription(),
 														   userContext.getYukonUser());
 
-		return "redirect:/spring/meter/start";
+		return "redirect:/meter/start";
 	}
 
 	@RequestMapping(params = "toggleEnabled")
@@ -310,7 +310,7 @@ public class PorterResponseMonitorController {
 			status = porterResponseMonitorService.toggleEnabled(monitorDto.getMonitorId());
 			modelMap.addAttribute("monitorId", monitorDto.getMonitorId());
 		} catch (NotFoundException e) {
-			return "redirect:/spring/meter/start";
+			return "redirect:/meter/start";
 		}
 
 		outageEventLogService.porterResponseMonitorEnableDisable(monitorDto.getMonitorId(), status.name(), userContext.getYukonUser());

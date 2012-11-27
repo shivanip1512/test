@@ -252,7 +252,7 @@ public class OutageMonitorEditorController extends MultiActionController {
     		outageMonitorId = outageMonitor.getOutageMonitorId();
         	
     		// redirect to edit page with processor
-    		return new ModelAndView("redirect:/spring/meter/start");
+    		return new ModelAndView("redirect:/meter/start");
         }
 	}
 	
@@ -263,7 +263,7 @@ public class OutageMonitorEditorController extends MultiActionController {
         
         try {
         	outageMonitorService.deleteOutageMonitor(outageMonitorId);
-        	return new ModelAndView("redirect:/spring/meter/start");
+        	return new ModelAndView("redirect:/meter/start");
         } catch (OutageMonitorNotFoundException e) {
         	ModelAndView mav = new ModelAndView("redirect:edit");
         	mav.addObject("editError", e.getMessage());

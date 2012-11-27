@@ -169,7 +169,7 @@ public class OptOutAdminController {
             flashScope.setConfirm(new YukonMessageSourceResolvable("yukon.web.modules.dr.byProgramName.confirm."+ optOutEnabled.toString() +".allPrograms"));
         }
         
-        return "redirect:/spring/stars/operator/optOut/admin";
+        return "redirect:/stars/operator/optOut/admin";
     }
 
     @RequestMapping(value = "/operator/optOut/admin/cancelAllOptOuts", method = RequestMethod.POST)
@@ -199,7 +199,7 @@ public class OptOutAdminController {
 			flashScope.setConfirm(new YukonMessageSourceResolvable("yukon.web.modules.dr.byProgramName.confirm.successfullyCanceledCurrentOptOuts.allPrograms"));
 		}
 
-    	return "redirect:/spring/stars/operator/optOut/admin";
+    	return "redirect:/stars/operator/optOut/admin";
     }
     
     @RequestMapping(value = "/operator/optOut/admin/setCounts", method = RequestMethod.POST)
@@ -247,7 +247,7 @@ public class OptOutAdminController {
         	}
 		}
     	
-    	return "redirect:/spring/stars/operator/optOut/admin";
+    	return "redirect:/stars/operator/optOut/admin";
     }
     
     @RequestMapping(value = "/operator/optOut/admin/viewScheduled", method = RequestMethod.GET)

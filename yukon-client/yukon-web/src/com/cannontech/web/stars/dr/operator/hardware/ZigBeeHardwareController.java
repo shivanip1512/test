@@ -510,6 +510,6 @@ public class ZigBeeHardwareController {
         model.addAttribute("inventoryId", inventoryId);
         model.addAttribute("accountId", accountId);
         
-        return "redirect:/spring/stars/operator/hardware/view";
+        return "redirect:/stars/operator/hardware/view";
     }
 }

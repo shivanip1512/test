@@ -6,7 +6,7 @@
 <%@ taglib prefix="i" tagdir="/WEB-INF/tags/i18n" %>
 
 
-<cti:url var="viewUrl" value="/spring/meter/historicalReadings/view"/>
+<cti:url var="viewUrl" value="/meter/historicalReadings/view"/>
 <dialog:ajaxPage nameKey="popup" title="${title}" module="amr"
     page="widgetClasses.MeterReadingsWidget.historicalReadings" id="${dialogId}" okEvent="none"
     options="{'buttons': [

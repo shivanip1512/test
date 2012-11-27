@@ -32,7 +32,7 @@
    	
    	<tags:bulkActionContainer key="yukon.common.device.groupMeterRead.home" deviceCollection="${deviceCollection}">
    	
-   		<form id="groupMeterReadForm" action="/spring/group/groupMeterRead/readCollection" method="post">
+   		<form id="groupMeterReadForm" action="/group/groupMeterRead/readCollection" method="post">
    		
 	   		<cti:deviceCollection deviceCollection="${deviceCollection}" />
 	   		

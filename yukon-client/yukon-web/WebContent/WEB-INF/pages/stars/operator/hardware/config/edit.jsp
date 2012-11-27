@@ -27,7 +27,7 @@
 <script type="text/javascript">
 jQuery(function() {
     jQuery(document).delegate('#rfReadNow', 'click', function(event) {
-        var url = '<cti:url value="/spring/stars/operator/hardware/${readPath}/readNow"/>';
+        var url = '<cti:url value="/stars/operator/hardware/${readPath}/readNow"/>';
         
         jQuery("<a class=\"fl loading labeled_icon\"/>").insertBefore(jQuery("#rfReadNow span"));
         jQuery("#rfReadNow span").html('${reading}');
@@ -64,7 +64,7 @@ jQuery(function() {
 });
 </script>
 
-<cti:url var="submitUrl" value="/spring/stars/operator/hardware/config/commit"/>
+<cti:url var="submitUrl" value="/stars/operator/hardware/config/commit"/>
 
 <div class="threeQuarterLayout">
     <div class="primary">
@@ -156,7 +156,7 @@ jQuery(function() {
                                    onclick="$('actionInput').value = 'saveConfigOnly';" class="formSubmit">
                         </c:if>
                     </cti:checkRolesAndProperties>
-                    <cti:url var="cancelUrl" value="/spring/stars/operator/hardware/list">
+                    <cti:url var="cancelUrl" value="/stars/operator/hardware/list">
                         <cti:param name="accountId" value="${accountId}"/>
                     </cti:url>
                 </div>
@@ -214,7 +214,7 @@ jQuery(function() {
                     </div>
                     <ul class="labeledImageStack">
                         <li>
-                            <cti:url var="enableUrl" value="/spring/stars/operator/hardware/config/enable">
+                            <cti:url var="enableUrl" value="/stars/operator/hardware/config/enable">
                                <cti:param name="accountId" value="${accountId}"/>
                                <cti:param name="inventoryId" value="${param.inventoryId}"/>
                             </cti:url>
@@ -222,7 +222,7 @@ jQuery(function() {
                         </li>
                         
                         <li>
-                            <cti:url var="disableUrl" value="/spring/stars/operator/hardware/config/disable">
+                            <cti:url var="disableUrl" value="/stars/operator/hardware/config/disable">
                                <cti:param name="accountId" value="${accountId}"/>
                                <cti:param name="inventoryId" value="${param.inventoryId}"/>
                             </cti:url>

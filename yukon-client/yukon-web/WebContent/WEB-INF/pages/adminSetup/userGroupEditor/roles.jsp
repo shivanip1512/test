@@ -18,7 +18,7 @@
 
 </script>
 
-    <form:form action="/spring/adminSetup/roleEditor/update" id="loginGroupRoleForm" method="post">
+    <form:form action="/adminSetup/roleEditor/update" id="loginGroupRoleForm" method="post">
         <input type="hidden" name="roleId" value="${roleId}">
         <input type="hidden" name="roleGroupId" value="${roleGroupId}">
         <table class="nameValueTable naturalWidth">

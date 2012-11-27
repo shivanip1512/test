@@ -26,7 +26,7 @@
 	   	<div class="contactCard">
 	    	<h3>
 	    		${fn:escapeXml(primaryContact.contFirstName)} ${fn:escapeXml(primaryContact.contLastName)}
-		    	<cti:url var="editUrl" value="/spring/stars/consumer/contacts/edit">
+		    	<cti:url var="editUrl" value="/stars/consumer/contacts/edit">
 					<cti:param name="contactId" value="${primaryContact.contactID}"/>
 				</cti:url>
 	    		<a href="${editUrl}" class="fr labeled_icon icon_pencil"><i:inline key=".editContact"/></a>
@@ -46,13 +46,13 @@
     <c:if test="${fn:length(additionalContacts) > 0}">
 	    <tags:sectionContainer2 nameKey="additionalContacts" >
 		    <c:forEach var="contact" items="${additionalContacts}">
-		    	<cti:url var="contactEditUrl" value="/spring/stars/consumer/contacts/edit">
+		    	<cti:url var="contactEditUrl" value="/stars/consumer/contacts/edit">
 					<cti:param name="contactId" value="${contact.contactID}"/>
 				</cti:url>
 		    	<div class="contactCard">
 		    		<h3>
 		    			${fn:escapeXml(contact.contFirstName)} ${fn:escapeXml(contact.contLastName)}
-				    	<cti:url var="deleteUrl" value="/spring/stars/consumer/contacts/delete">
+				    	<cti:url var="deleteUrl" value="/stars/consumer/contacts/delete">
 							<cti:param name="contactId" value="${contact.contactID}"/>
 						</cti:url>
 			    		<form action="${deleteUrl}" method="POST">
@@ -61,7 +61,7 @@
 							<tags:confirmDialog nameKey=".removeContact" on="#contact_${contact.contactID}" argument="${contact.contFirstName} ${contact.contLastName}" />
 						</form>
 						
-				    	<cti:url var="editUrl" value="/spring/stars/consumer/contacts/edit">
+				    	<cti:url var="editUrl" value="/stars/consumer/contacts/edit">
 							<cti:param name="contactId" value="${contact.contactID}"/>
 						</cti:url>
 			    		<a href="${editUrl}" class="fr labeled_icon icon_pencil"><i:inline key=".editContact"/></a>
@@ -97,6 +97,6 @@
 	    </tags:sectionContainer2>
     </c:if>
     
-    <cti:url value="/spring/stars/consumer/contacts/new" var="newContactUrl" />
+    <cti:url value="/stars/consumer/contacts/new" var="newContactUrl" />
     <cti:button nameKey="createNewContact" href="${newContactUrl}"/>
 </cti:standardPage>

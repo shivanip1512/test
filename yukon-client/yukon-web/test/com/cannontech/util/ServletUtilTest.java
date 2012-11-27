@@ -45,7 +45,7 @@ public class ServletUtilTest {
     @Test
     public void test_safeUrls_createSafeRedirectUrl() {
         String[] safeUrls = new String[] {
-                "/spring/stars/consumer/general",
+                "/stars/consumer/general",
                 "/Operations.jsp"
         };
         

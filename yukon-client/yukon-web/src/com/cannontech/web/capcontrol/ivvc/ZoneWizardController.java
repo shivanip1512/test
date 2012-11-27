@@ -352,7 +352,7 @@ public class ZoneWizardController {
 
         modelMap.addAttribute("subBusId", zone.getSubstationBusId());
         
-        return "redirect:/spring/capcontrol/ivvc/bus/detail";
+        return "redirect:/capcontrol/ivvc/bus/detail";
     }
     
     @RequestMapping

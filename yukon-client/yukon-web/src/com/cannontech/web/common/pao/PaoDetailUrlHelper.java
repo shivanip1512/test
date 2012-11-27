@@ -22,32 +22,32 @@ public class PaoDetailUrlHelper {
         Builder<PaoTag, Function<YukonPao, String>> tagBuilder = ImmutableMap.builder();
         tagBuilder.put(PaoTag.METER_DETAIL_DISPLAYABLE, new Function<YukonPao, String>() {
             public String apply(YukonPao pao) {
-                return "/spring/meter/home?deviceId=" + pao.getPaoIdentifier().getPaoId();
+                return "/meter/home?deviceId=" + pao.getPaoIdentifier().getPaoId();
             }
         });
         tagBuilder.put(PaoTag.WATER_METER_DETAIL_DISPLAYABLE, new Function<YukonPao, String>() {
             public String apply(YukonPao pao) {
-                return "/spring/meter/water/home?deviceId=" + pao.getPaoIdentifier().getPaoId();
+                return "/meter/water/home?deviceId=" + pao.getPaoIdentifier().getPaoId();
             }
         });
         tagBuilder.put(PaoTag.LM_SCENARIO, new Function<YukonPao, String>() {
             public String apply(YukonPao pao) {
-            	return "/spring/dr/scenario/detail?scenarioId=" + pao.getPaoIdentifier().getPaoId();
+            	return "/dr/scenario/detail?scenarioId=" + pao.getPaoIdentifier().getPaoId();
             }
         });
         tagBuilder.put(PaoTag.LM_CONTROL_AREA, new Function<YukonPao, String>() {
             public String apply(YukonPao pao) {
-            	return "/spring/dr/controlArea/detail?controlAreaId=" + pao.getPaoIdentifier().getPaoId();
+            	return "/dr/controlArea/detail?controlAreaId=" + pao.getPaoIdentifier().getPaoId();
             }
         });
         tagBuilder.put(PaoTag.LM_PROGRAM, new Function<YukonPao, String>() {
             public String apply(YukonPao pao) {
-            	return "/spring/dr/program/detail?programId=" + pao.getPaoIdentifier().getPaoId();
+            	return "/dr/program/detail?programId=" + pao.getPaoIdentifier().getPaoId();
             }
         });
         tagBuilder.put(PaoTag.LM_GROUP, new Function<YukonPao, String>() {
             public String apply(YukonPao pao) {
-                return "/spring/dr/loadGroup/detail?loadGroupId=" + pao.getPaoIdentifier().getPaoId();
+                return "/dr/loadGroup/detail?loadGroupId=" + pao.getPaoIdentifier().getPaoId();
             }
         });
         

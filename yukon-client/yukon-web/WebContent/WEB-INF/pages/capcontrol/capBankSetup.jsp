@@ -7,7 +7,7 @@
 <%@ page import="com.cannontech.web.util.*" %>
 <%@ page import="com.cannontech.web.editor.CapControlForm" %>
 <%@ page import="com.cannontech.web.editor.CapBankEditorForm" %>
-<cti:url var="orphanURL" value="/spring/capcontrol/tier/cceditorpopup/orphans"/>
+<cti:url var="orphanURL" value="/capcontrol/tier/cceditorpopup/orphans"/>
 
 <% /*TODO This probably isn't necessary!  */
 	CapControlForm capControlForm = (CapControlForm)JSFParamUtil.getJSFVar( "capControlForm" );

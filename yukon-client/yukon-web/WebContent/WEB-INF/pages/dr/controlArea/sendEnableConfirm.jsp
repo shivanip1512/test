@@ -14,7 +14,7 @@
         </c:choose>
     </h1>
 
-    <cti:url var="submitUrl" value="/spring/dr/controlArea/setEnabled"/>
+    <cti:url var="submitUrl" value="/dr/controlArea/setEnabled"/>
     <form id="sendEnableForm" action="${submitUrl}"
         onsubmit="return submitFormViaAjax('drDialog', 'sendEnableForm');">
         <input type="hidden" name="controlAreaId" value="${controlArea.paoIdentifier.paoId}"/>

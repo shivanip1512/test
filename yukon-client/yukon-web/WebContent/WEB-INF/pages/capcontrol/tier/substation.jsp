@@ -18,7 +18,7 @@
 <jsp:setProperty name="CtiNavObject" property="moduleExitPage" value=""/>
 
 <cti:url var="onelineCBCServlet" value="/capcontrol/oneline/OnelineCBCServlet"/>
-<cti:url var="stateMenuUrl" value="/spring/capcontrol/menu/capBankState"/>
+<cti:url var="stateMenuUrl" value="/capcontrol/menu/capBankState"/>
 
 <cti:msg2 var="moveBank" key="yukon.web.modules.capcontrol.substation.moveBank"/>
 <c:set var="substationId" value="${substation.id}"/>
@@ -186,7 +186,7 @@ function applyCapBankFilter(feederIds) {
                     </tags:nameValueContainer2>
                 </div>
                 <div class="clear actionArea fl">
-                    <cti:button nameKey="location" href="/spring/capcontrol/capbank/capBankLocations?value=${substationId}&amp;specialArea=${isSpecialArea}"/>
+                    <cti:button nameKey="location" href="/capcontrol/capbank/capBankLocations?value=${substationId}&amp;specialArea=${isSpecialArea}"/>
                 </div>
                 
                 <div class="actionArea fr">

@@ -23,7 +23,7 @@
 Java must be installed on this computer for the application to launch.<br>
 Try to <c:choose>
     <c:when test='${jreInstaller != null}'>
-        <a href="<cti:url value="/spring/static/JRE/${jreInstaller}"/>" onclick="jwsClosePopup()">install Java</a> 
+        <a href="<cti:url value="/static/JRE/${jreInstaller}"/>" onclick="jwsClosePopup()">install Java</a> 
     </c:when>
     <c:otherwise>
         <a href="http://www.java.com/getjava/" onclick="jwsClosePopup()">install Java</a>

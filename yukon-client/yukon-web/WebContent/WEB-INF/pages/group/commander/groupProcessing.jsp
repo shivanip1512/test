@@ -12,7 +12,7 @@
 
        	<cti:breadCrumbs>
     	    <cti:crumbLink url="/operator/Operations.jsp" title="Operations Home" />
-    	    <cti:crumbLink url="/spring/group/editor/home" title="Device Groups" />
+    	    <cti:crumbLink url="/group/editor/home" title="Device Groups" />
     	    <cti:crumbLink title="Group Command Processing"/>
     	</cti:breadCrumbs>
         
@@ -44,7 +44,7 @@
 	
     	<div style="width: 700px;">
         
-            <form id="groupCommanderForm" action="<cti:url value="/spring/group/commander/executeGroupCommand" />" method="post">
+            <form id="groupCommanderForm" action="<cti:url value="/group/commander/executeGroupCommand" />" method="post">
         
             <%-- SELECT COMMAND --%>
             <cti:msg var="selectCommandLabel" key="yukon.common.device.commander.commandSelector.selectCommand"/>
@@ -82,7 +82,7 @@
             
             <br><br>
             <span class="largeBoldLabel">Recent Results: </span> 
-            <a href="/spring/group/commander/resultList">View</a>
+            <a href="/group/commander/resultList">View</a>
     			 
     		</form>
     	</div>

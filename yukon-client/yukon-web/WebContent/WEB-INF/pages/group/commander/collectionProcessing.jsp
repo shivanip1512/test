@@ -27,7 +27,7 @@
     </c:if>
 	
 	<div style="width: 700px;">
-		<form id="collectionProcessingForm" action="<cti:url value="/spring/group/commander/executeCollectionCommand" />" method="post">
+		<form id="collectionProcessingForm" action="<cti:url value="/group/commander/executeCollectionCommand" />" method="post">
         
 			<cti:deviceCollection deviceCollection="${deviceCollection}" />
       

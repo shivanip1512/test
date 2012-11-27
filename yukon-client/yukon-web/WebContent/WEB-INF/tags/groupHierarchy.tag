@@ -23,7 +23,7 @@
 			</div>
 			<div style="float: left;margin-left: 5px;">
 				
-				<c:url var="homeUrl" value="/spring/group/home">
+				<c:url var="homeUrl" value="/group/home">
 					<c:param name="groupName" value="${hierarchy.group.fullName}" />
 				</c:url>
 			

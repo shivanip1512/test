@@ -4,7 +4,7 @@
 <%@ taglib prefix="i" tagdir="/WEB-INF/tags/i18n" %>
 
 <cti:checkRolesAndProperties value="OPERATOR_ACCOUNT_SEARCH">
-    <cti:url var="submitUrl" value="/spring/stars/operator/account/search"/>
+    <cti:url var="submitUrl" value="/stars/operator/account/search"/>
     <form action="${submitUrl}" method="get">
 
     	<div style="padding-top:8px;padding-bottom:8px;">

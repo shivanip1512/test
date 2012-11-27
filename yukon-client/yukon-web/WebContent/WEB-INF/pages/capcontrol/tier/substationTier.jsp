@@ -51,7 +51,7 @@
                 <cti:url var="deleteUrl" value="/editor/deleteBasePAO.jsf">
                     <cti:param name="value" value="${substationId}"/>
                 </cti:url>
-                <cti:url value="/spring/capcontrol/tier/feeders" var="feederLink">
+                <cti:url value="/capcontrol/tier/feeders" var="feederLink">
                     <cti:param name="substationId" value="${substationId}"/>
                     <cti:param name="isSpecialArea" value="${isSpecialArea}"/>
                 </cti:url>

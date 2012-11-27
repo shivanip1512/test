@@ -50,7 +50,7 @@
                             </tags:dynamicChooseOption>
                             <tags:dynamicChooseOption optionId="enabled">
                             
-                                <cti:url var="startScenarioUrl" value="/spring/dr/program/start/multipleDetails">
+                                <cti:url var="startScenarioUrl" value="/dr/program/start/multipleDetails">
                                     <cti:param name="scenarioId" value="${scenarioId}"/>
                                 </cti:url>
                                 <tags:simpleDialogLink titleKey="yukon.web.modules.dr.program.startMultiplePrograms.title"
@@ -60,7 +60,7 @@
                                                labelKey="yukon.web.modules.dr.scenarioDetail.actions.start"/>
                                 <br>
         
-                                <cti:url var="stopScenarioUrl" value="/spring/dr/program/stop/multipleDetails">
+                                <cti:url var="stopScenarioUrl" value="/dr/program/stop/multipleDetails">
                                     <cti:param name="scenarioId" value="${scenarioId}"/>
                                 </cti:url>
                                 <tags:simpleDialogLink titleKey="yukon.web.modules.dr.program.stopMultiplePrograms.title"
@@ -70,7 +70,7 @@
                                                labelKey="yukon.web.modules.dr.scenarioDetail.actions.stop"/>
                                 <br>
                                 
-                                <cti:url var="changeScenarioGearsUrl" value="/spring/dr/program/changeGearMultiplePopup">
+                                <cti:url var="changeScenarioGearsUrl" value="/dr/program/changeGearMultiplePopup">
                                     <cti:param name="scenarioId" value="${scenarioId}"/>
                                 </cti:url>
                                 <tags:simpleDialogLink titleKey="yukon.web.modules.dr.program.getChangeGearValue.title" 
@@ -80,7 +80,7 @@
                                             labelKey="yukon.web.modules.dr.programDetail.actions.changeGears"/>
                                 <br>
                                 
-                                <cti:url var="sendEnableProgramsUrl" value="/spring/dr/program/sendEnableDisableProgramsConfirm">
+                                <cti:url var="sendEnableProgramsUrl" value="/dr/program/sendEnableDisableProgramsConfirm">
                                     <cti:param name="scenarioId" value="${scenarioId}"/>
                                     <cti:param name="enable" value="true"/>
                                 </cti:url>
@@ -89,7 +89,7 @@
                                     logoKey="yukon.web.modules.dr.scenarioDetail.actions.enableProgramsIcon"
                                     labelKey="yukon.web.modules.dr.scenarioDetail.actions.enablePrograms"/>
                                 <br>
-                                <cti:url var="sendDisableProgramsUrl" value="/spring/dr/program/sendEnableDisableProgramsConfirm">
+                                <cti:url var="sendDisableProgramsUrl" value="/dr/program/sendEnableDisableProgramsConfirm">
                                     <cti:param name="scenarioId" value="${scenarioId}"/>
                                     <cti:param name="enable" value="false"/>
                                 </cti:url>
@@ -122,7 +122,7 @@
         <tr>
             <td class="widgetColumnCell" colspan="2">
                 <div class="widgetContainer">
-                    <c:set var="baseUrl" value="/spring/dr/scenario/detail"/>
+                    <c:set var="baseUrl" value="/dr/scenario/detail"/>
                     <%@ include file="../program/programList.jspf" %>
                 </div>
             </td>

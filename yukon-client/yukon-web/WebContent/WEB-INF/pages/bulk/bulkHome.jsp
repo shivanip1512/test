@@ -37,34 +37,34 @@
         <cti:checkRole role="operator.DeviceActionsRole.ROLEID">
             <cti:checkProperty property="operator.DeviceActionsRole.BULK_IMPORT_OPERATION">
                 <div class="marginBottomSmall">
-                    <button type="button" data-href="/spring/bulk/import/upload" class="wideButton">Bulk Import</button>
+                    <button type="button" data-href="/bulk/import/upload" class="wideButton">Bulk Import</button>
                     Import a file to create meters.
                 </div>
             </cti:checkProperty>
             
             <cti:checkProperty property="operator.DeviceActionsRole.BULK_UPDATE_OPERATION">
                 <div class="marginBottomSmall">
-                    <button type="button" data-href="/spring/bulk/update/upload" class="wideButton">Bulk Update</button>
+                    <button type="button" data-href="/bulk/update/upload" class="wideButton">Bulk Update</button>
                     Import a file to update existing meters.
                 </div>
             </cti:checkProperty>
             
             <cti:checkProperty property="operator.DeviceActionsRole.ADD_REMOVE_POINTS">
                 <div class="marginBottomSmall">
-                    <button type="button" data-href="/spring/bulk/pointImport/upload" class="wideButton">Bulk Point Import</button>
+                    <button type="button" data-href="/bulk/pointImport/upload" class="wideButton">Bulk Point Import</button>
                     Import a file to create points on existing devices.
                 </div>
             </cti:checkProperty>
         </cti:checkRole>
             
         <div class="marginBottomSmall">
-            <button type="button" data-href="/spring/bulk/deviceSelection" class="wideButton">Create Collection</button>
+            <button type="button" data-href="/bulk/deviceSelection" class="wideButton">Create Collection</button>
             Create a collection of devices to perform actions upon.
         </div>
 
         <cti:checkProperty property="operator.DeviceActionsRole.FDR_TRANSLATION_MANAGER">
             <div class="marginBottomSmall">
-                <button type="button" data-href="/spring/bulk/fdrTranslationManager/home" class="wideButton">Manage FDR Translations</button>
+                <button type="button" data-href="/bulk/fdrTranslationManager/home" class="wideButton">Manage FDR Translations</button>
                 Import, export or delete FDR translations.
             </div>
         </cti:checkProperty>   
@@ -139,7 +139,7 @@
                                     <a href="javascript:submitForm('${successFormName}');" class="small" title="${performNewActionLinkTitle}"><cti:dataUpdaterValue type="BACKGROUNDPROCESS" identifier="${resultsId}/SUCCESS_COUNT"/></a> 
                                     <tags:selectedDevicesPopup deviceCollection="${callbackResult.successDeviceCollection}" />
                                     
-                                    <form id="${successFormName}" method="post" action="/spring/bulk/collectionActions">
+                                    <form id="${successFormName}" method="post" action="/bulk/collectionActions">
                                         <cti:deviceCollection deviceCollection="${callbackResult.successDeviceCollection}" />
                                     </form>
                                     
@@ -179,7 +179,7 @@
 	                                    
 	                                    <tags:selectedDevicesPopup deviceCollection="${callbackResult.failureDeviceCollection}" />
 	                                    
-	                                    <form id="${processingExceptionCollectionActionFormName}" method="post" action="/spring/bulk/collectionActions">
+	                                    <form id="${processingExceptionCollectionActionFormName}" method="post" action="/bulk/collectionActions">
 	                                        <cti:deviceCollection deviceCollection="${callbackResult.failureDeviceCollection}" />
 	                                    </form>
 	                                    </td>
@@ -217,7 +217,7 @@
                         <%-- DEATIL LINK --%>
                         <c:choose>
                             <c:when test="${detailViewable}">
-                                <cti:url var="resultDetailUrl" value="/spring/bulk/${callbackResult.backgroundProcessType.pathValue}/${callbackResult.backgroundProcessType.pathValue}Results">
+                                <cti:url var="resultDetailUrl" value="/bulk/${callbackResult.backgroundProcessType.pathValue}/${callbackResult.backgroundProcessType.pathValue}Results">
                                     <cti:param name="resultsId" value="${resultsId}" />
                                 </cti:url>
                                 <td>

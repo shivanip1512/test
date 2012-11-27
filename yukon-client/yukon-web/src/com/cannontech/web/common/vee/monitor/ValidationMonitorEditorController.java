@@ -158,7 +158,7 @@ public class ValidationMonitorEditorController {
             validationMonitorDao.saveOrUpdate(validationMonitor);
             validationMonitorId = validationMonitor.getValidationMonitorId();
             
-            return "redirect:/spring/meter/start";
+            return "redirect:/meter/start";
         }
     }
     
@@ -170,7 +170,7 @@ public class ValidationMonitorEditorController {
             return "redirect:edit";
         }
         
-        return "redirect:/spring/meter/start";
+        return "redirect:/meter/start";
     }
     
     @RequestMapping(method=RequestMethod.POST)

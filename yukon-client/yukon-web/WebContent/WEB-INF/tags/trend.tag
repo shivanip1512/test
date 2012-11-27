@@ -24,7 +24,7 @@
 	</c:when>
 </c:choose>
 
-<c:url var="amSettingsFile" scope="page" value="/spring/chart/settings">
+<c:url var="amSettingsFile" scope="page" value="/chart/settings">
 	<c:param name="amChartsProduct" value="${amChartsProduct}" />
 	<c:param name="title" value="${title}" />
 	<c:param name="converterType" value="${converterType}" />
@@ -47,7 +47,7 @@
     
 </c:url>
 
-<c:url var="amDataFile" scope="page" value="/spring/chart/chart">
+<c:url var="amDataFile" scope="page" value="/chart/chart">
 	<c:param name="amChartsProduct" value="${amChartsProduct}" />
 	<c:param name="pointIds" value="${pointIds}" />
 	<c:param name="startDate" value="${startDate}" />

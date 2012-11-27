@@ -14,9 +14,9 @@
     
     <tags:pagedBox2 nameKey="strategyContainer" 
             searchResult="${searchResult}"
-            baseUrl="/spring/capcontrol/strategy/strategies"
+            baseUrl="/capcontrol/strategy/strategies"
             isFiltered="false" 
-            showAllUrl="/spring/capcontrol/strategy/strategies"
+            showAllUrl="/capcontrol/strategy/strategies"
             styleClass="padBottom">
         
         <c:choose>

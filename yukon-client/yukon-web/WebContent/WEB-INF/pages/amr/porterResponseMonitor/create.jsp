@@ -10,7 +10,7 @@
 
 	<%-- CREATE FORM --%>
 	<form:form commandName="monitor" id="basicInfoForm"
-		action="/spring/amr/porterResponseMonitor/create" method="post">
+		action="/amr/porterResponseMonitor/create" method="post">
 
         <input type="hidden" name="stateGroup" value="${monitor.stateGroup}">
 

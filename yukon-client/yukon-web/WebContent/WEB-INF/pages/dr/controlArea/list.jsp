@@ -14,7 +14,7 @@
 	<cti:includeScript link="/JavaScript/calendarTagFuncs.js" />
 	<dr:favoriteIconSetup />
 
-	<c:set var="baseUrl" value="/spring/dr/controlArea/list" />
+	<c:set var="baseUrl" value="/dr/controlArea/list" />
 	<cti:url var="submitUrl" value="${baseUrl}" />
 	<cti:url var="clearFilterUrl" value="${baseUrl}">
 		<c:if test="${!empty param.itemsPerPage}">
@@ -181,7 +181,7 @@
 
 						<c:set var="controlAreaId"
 							value="${controlArea.paoIdentifier.paoId}" />
-						<c:url var="controlAreaUrl" value="/spring/dr/controlArea/detail">
+						<c:url var="controlAreaUrl" value="/dr/controlArea/detail">
 							<c:param name="controlAreaId" value="${controlAreaId}" />
 						</c:url>
 						<tr class="<tags:alternateRow odd="" even="altRow"/>">

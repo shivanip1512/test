@@ -13,7 +13,7 @@
         
         <%-- bulk home --%>
         <cti:msg var="bulkOperationsPageTitle" key="yukon.common.device.bulk.bulkHome.pageTitle"/>
-        <cti:crumbLink url="/spring/bulk/bulkHome" title="${bulkOperationsPageTitle}" />
+        <cti:crumbLink url="/bulk/bulkHome" title="${bulkOperationsPageTitle}" />
         
         <%-- device selection --%>
         <cti:msg var="deviceSelectionPageTitle" key="yukon.common.device.bulk.deviceSelection.pageTitle"/>
@@ -33,7 +33,7 @@
     <tags:boxContainer title="${headerTitle}" id="updateConfirmContainer" hideEnabled="false">
         
         <cti:deviceGroupHierarchyJson predicates="NON_HIDDEN" var="groupDataJson"/>
-        <tags:deviceSelection action="/spring/bulk/deviceSelectionGetDevices"
+        <tags:deviceSelection action="/bulk/deviceSelectionGetDevices"
             groupDataJson="${groupDataJson}"
             pickerType="devicePicker"/>
     

@@ -1,8 +1,8 @@
 <%@ taglib uri="http://java.sun.com/jsp/jstl/core" prefix="c"%>
 <%@ taglib uri="http://cannontech.com/tags/cti" prefix="cti"%>
 
-<cti:url var="changeLoginUrl" value="/spring/login/changelogin"/>
-<cti:url var="consumerChangeLoginUrl" value="/spring/stars/consumer/changelogin"/>
+<cti:url var="changeLoginUrl" value="/login/changelogin"/>
+<cti:url var="consumerChangeLoginUrl" value="/stars/consumer/changelogin"/>
 
 <cti:standardPage module="consumer" page="changelogin">
     <cti:standardMenu />

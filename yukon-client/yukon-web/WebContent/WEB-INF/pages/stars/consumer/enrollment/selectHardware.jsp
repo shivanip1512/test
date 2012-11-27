@@ -17,7 +17,7 @@
     <cti:msg var="programName" key="${displayableEnrollmentProgram.program.displayName}"/>
     <p><cti:msg key="yukon.dr.consumer.selectHardware.query" argument="${programName}"/></p>
 
-    <cti:url var="submitUrl" value="/spring/stars/consumer/enrollment/enrollSelectedHardware"/>
+    <cti:url var="submitUrl" value="/stars/consumer/enrollment/enrollSelectedHardware"/>
     <form method="POST" action="${submitUrl}">
         <input type="hidden" name="assignedProgramId" value="${displayableEnrollmentProgram.program.programId}"/>
 		<c:forEach var="inventory" items="${displayableEnrollmentProgram.inventory}">
@@ -31,7 +31,7 @@
         <div align="center">
             <input type="submit"
                 value="<cti:msg key="yukon.dr.consumer.selectHardware.ok"/>">
-            <cti:url var="cancelUrl" value="/spring/stars/consumer/enrollment"/>
+            <cti:url var="cancelUrl" value="/stars/consumer/enrollment"/>
             <input type="button"
                 value="<cti:msg key="yukon.dr.consumer.selectHardware.cancel"/>"
                 onclick="location.href='${cancelUrl}';">

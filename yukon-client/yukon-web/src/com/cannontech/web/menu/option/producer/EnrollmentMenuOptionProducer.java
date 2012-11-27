@@ -28,7 +28,7 @@ public class EnrollmentMenuOptionProducer extends DynamicMenuOptionProducer {
                 new YukonMessageSourceResolvable("yukon.web.menu.config.consumer.programs.enrollment");
             
             SimpleMenuOptionLink optionLink = new SimpleMenuOptionLink("enrollment", resolvable);
-            optionLink.setLinkUrl("/spring/stars/consumer/enrollment");
+            optionLink.setLinkUrl("/stars/consumer/enrollment");
             
             menuOptions.add(optionLink);
         }

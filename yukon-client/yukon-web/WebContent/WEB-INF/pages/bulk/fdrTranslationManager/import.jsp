@@ -2,7 +2,7 @@
 <%@ taglib uri="http://cannontech.com/tags/cti" prefix="cti"%>
 <%@ taglib prefix="tags" tagdir="/WEB-INF/tags"%>
 <%@ taglib prefix="i" tagdir="/WEB-INF/tags/i18n"%>
-<cti:url var="updateUrl" value="/spring/bulk/fdrTranslationManager/updateLog">
+<cti:url var="updateUrl" value="/bulk/fdrTranslationManager/updateLog">
     <cti:param name="resultId" value="${resultId}" />
 </cti:url>
 
@@ -11,10 +11,10 @@
         <cti:crumbLink url="/operator/Operations.jsp" title="Operations Home" />
         <%-- bulk home --%>
         <cti:msg var="bulkOperationsPageTitle" key="yukon.common.device.bulk.bulkHome.pageTitle"/>
-        <cti:crumbLink url="/spring/bulk/bulkHome" title="${bulkOperationsPageTitle}" />
+        <cti:crumbLink url="/bulk/bulkHome" title="${bulkOperationsPageTitle}" />
         <%-- fdr translations --%>
         <cti:msg var="translationManagementPageTitle" key="yukon.web.modules.amr.fdrTranslationManagement.pageName"/>
-        <cti:crumbLink url="/spring/bulk/fdrTranslationManager/home" title="${translationManagementPageTitle}"/>
+        <cti:crumbLink url="/bulk/fdrTranslationManager/home" title="${translationManagementPageTitle}"/>
         <%-- fdr translation import --%>
         <cti:crumbLink><i:inline key="yukon.web.modules.amr.fdrTranslationManagement.import.pageName"/></cti:crumbLink>
     </cti:breadCrumbs>
@@ -47,7 +47,7 @@
         <br>
         <div id="downloadFailedSection" style="display:none">
             <i:inline key="yukon.web.modules.amr.fdrTranslationManagement.import.downloadFailed"/>
-            <cti:url var="downloadUrl" value="/spring/bulk/fdrTranslationManager/downloadFailed">
+            <cti:url var="downloadUrl" value="/bulk/fdrTranslationManager/downloadFailed">
                 <cti:param name="resultId" value="${resultId}"/>
             </cti:url>
             <cti:button href="${downloadUrl}" nameKey="downloadFailedButton"/>

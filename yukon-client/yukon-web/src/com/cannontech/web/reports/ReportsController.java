@@ -82,7 +82,7 @@ public class ReportsController extends MultiActionController  {
         //-----------------------------------------------------------------------------------------
         Map<String, String> inputMap = (Map<String, String>)mav.getModelMap().get("inputMap");
         String queryString = ServletUtil.buildSafeQueryStringFromMap(inputMap, true);
-        String dataUrl = "/spring/reports/simple/jsonData?" + queryString;
+        String dataUrl = "/reports/simple/jsonData?" + queryString;
         dataUrl = ServletUtil.createSafeUrl(request, dataUrl);
         mav.addObject("dataUrl", dataUrl);
         

@@ -11,7 +11,7 @@
             $('cancelButton').disable();
 
             var params = {'resultId': '${resultId}'};
-            new Ajax.Request('/spring/stars/operator/account/importResult', {
+            new Ajax.Request('/stars/operator/account/importResult', {
                 method: 'get',
                 parameters: params,
                 onSuccess: function(resp, json) {
@@ -27,7 +27,7 @@
 
         function showErrorsTable() {
             var params = {'resultId': '${resultId}'};
-            new Ajax.Updater('importErrorsDiv', '/spring/stars/operator/account/importErrors', {method: 'get', evalScripts: 'true', parameters: params});
+            new Ajax.Updater('importErrorsDiv', '/stars/operator/account/importErrors', {method: 'get', evalScripts: 'true', parameters: params});
             $('importErrorsDiv').show();
         }
     </script>
@@ -99,10 +99,10 @@
         
         <c:choose>
             <c:when test="${prescan}">
-                <c:set var="action" value="/spring/stars/operator/account/doAccountImport"/>
+                <c:set var="action" value="/stars/operator/account/doAccountImport"/>
             </c:when>
             <c:otherwise>
-                <c:set var="action" value="/spring/stars/operator/account/accountImport"/>
+                <c:set var="action" value="/stars/operator/account/accountImport"/>
             </c:otherwise>
         </c:choose>
         
@@ -120,7 +120,7 @@
     <br>
     <br>
     
-    <a href="/spring/stars/operator/account/accountImport"><i:inline key=".backLink"/></a>
+    <a href="/stars/operator/account/accountImport"><i:inline key=".backLink"/></a>
     
     <br>
     <br>

@@ -1,4 +1,4 @@
-var alertUrl = '/spring/common/alert';
+var alertUrl = '/common/alert';
 var viewAlertUrl = alertUrl + '/view';
 var clearAlertUrl = alertUrl + '/clear';
 

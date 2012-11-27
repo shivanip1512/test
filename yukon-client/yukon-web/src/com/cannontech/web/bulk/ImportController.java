@@ -88,7 +88,7 @@ public class ImportController extends MultiActionController {
         Boolean ignoreInvalidCols = ServletRequestUtils.getBooleanParameter(request, "ignoreInvalidCols", false);
         
         // error mav
-        ModelAndView errorMav = new ModelAndView("redirect:/spring/bulk/import/upload");
+        ModelAndView errorMav = new ModelAndView("redirect:/bulk/import/upload");
         errorMav.addObject("ignoreInvalidCols", ignoreInvalidCols);
         
         // detect file
@@ -110,7 +110,7 @@ public class ImportController extends MultiActionController {
         bulkImportFileInfoMap.put(fileInfoId, bulkImportFileInfo);
             
         // confirm
-        ModelAndView mav = new ModelAndView("redirect:/spring/bulk/import/importConfirm");
+        ModelAndView mav = new ModelAndView("redirect:/bulk/import/importConfirm");
         mav.addObject("fileInfoId", fileInfoId);
         mav.addObject("bulkImportType", importTypeSelector);
         
@@ -153,7 +153,7 @@ public class ImportController extends MultiActionController {
     // DO IMPORT
     public ModelAndView doImport(HttpServletRequest request, HttpServletResponse response) throws ServletException, FileNotFoundException, IOException {
         
-        ModelAndView mav = new ModelAndView("redirect:/spring/bulk/import/importResults");
+        ModelAndView mav = new ModelAndView("redirect:/bulk/import/importResults");
         
         BulkImportType bulkImportType = BulkImportType.valueOf(ServletRequestUtils.getStringParameter(request, "bulkImportType"));
      

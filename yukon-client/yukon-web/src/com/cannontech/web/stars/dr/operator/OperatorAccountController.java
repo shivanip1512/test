@@ -769,7 +769,7 @@ public class OperatorAccountController {
 		accountService.deleteAccount(accountId, userContext.getYukonUser());
 		
 		flashScope.setConfirm(new YukonMessageSourceResolvable("yukon.web.modules.operator.account.accountDeleted"));
-		return "redirect:/spring/stars/operator/home";
+		return "redirect:/stars/operator/home";
 	}
 	
 	// ACCOUNT LOG

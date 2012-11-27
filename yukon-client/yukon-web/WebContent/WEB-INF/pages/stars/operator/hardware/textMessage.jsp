@@ -10,7 +10,7 @@
 <script type="text/javascript">
 submitForm = function() {
     combineDateAndTimeFields('startTime');
-    return submitFormViaAjax('ajaxDialog', 'myform', '/spring/stars/operator/hardware/zb/sendTextMessage');
+    return submitFormViaAjax('ajaxDialog', 'myform', '/stars/operator/hardware/zb/sendTextMessage');
 }
 </script>
 

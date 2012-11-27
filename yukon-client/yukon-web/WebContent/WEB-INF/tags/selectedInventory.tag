@@ -13,7 +13,7 @@
 
 <%-- CREATE URL --%>
 <c:if test="${count > 0}">
-    <cti:url var="selectedInventoryTableUrl" value="/spring/stars/operator/inventory/selectedInventoryTable">
+    <cti:url var="selectedInventoryTableUrl" value="/stars/operator/inventory/selectedInventoryTable">
         <c:forEach var="inventoryCollectionParam" items="${pageScope.inventoryCollection.collectionParameters}">
             <cti:param name="${inventoryCollectionParam.key}" value="${fn:escapeXml(inventoryCollectionParam.value)}"/>
         </c:forEach>

@@ -119,12 +119,12 @@
                 <c:if test="${hasEditingRole}">
 					<cti:button nameKey="save" type="submit"/>
 					
-					<cti:url var="zoneVoltagePointsUrl" value="/spring/capcontrol/ivvc/zone/voltagePoints">
+					<cti:url var="zoneVoltagePointsUrl" value="/capcontrol/ivvc/zone/voltagePoints">
 				    	<cti:param name="zoneId" value="${zoneId}"/>
 				    </cti:url>
 					<cti:button nameKey="reset" href="${zoneVoltagePointsUrl}"/>
 		
-					<cti:url var="zoneDetailUrl" value="/spring/capcontrol/ivvc/zone/detail">
+					<cti:url var="zoneDetailUrl" value="/capcontrol/ivvc/zone/detail">
 				    	<cti:param name="zoneId" value="${zoneId}"/>
 				    </cti:url>
 					<cti:button nameKey="back" id="backBtn" href="${zoneDetailUrl}"/>

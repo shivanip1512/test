@@ -104,7 +104,7 @@ public class RouteLocateController extends BulkControllerBase {
         // NO ROUTES SELECTED
         if (selectedRouteIds.size() < 1) {
             
-            ModelAndView mav = new ModelAndView("redirect:/spring/bulk/routeLocate/home");
+            ModelAndView mav = new ModelAndView("redirect:/bulk/routeLocate/home");
             for (String param : deviceCollection.getCollectionParameters().keySet()) {
                 mav.addObject(param, deviceCollection.getCollectionParameters().get(param));
             }
@@ -133,7 +133,7 @@ public class RouteLocateController extends BulkControllerBase {
         String resultId = routeLocateExecutor.execute(deviceCollection, selectedRouteIds, autoUpdateRoute, executorCallback, userContext.getYukonUser());
         
         
-        ModelAndView mav = new ModelAndView("redirect:/spring/bulk/routeLocate/results");
+        ModelAndView mav = new ModelAndView("redirect:/bulk/routeLocate/results");
         mav.addObject("resultId", resultId);
         
         return mav;

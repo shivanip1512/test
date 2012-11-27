@@ -8,7 +8,7 @@
 <cti:includeScript link="/JavaScript/scheduledJobs.js"/>
 
 <%-- TABLE --%>
-<cti:url var="submitUrl" value="/spring/group/scheduledGroupRequestExecution/home"/>
+<cti:url var="submitUrl" value="/group/scheduledGroupRequestExecution/home"/>
 <form action="${submitUrl}" method="get">
 <c:choose>
 <c:when test="${fn:length(jobWrappers) > 0}">
@@ -37,7 +37,7 @@
 
 	<c:forEach var="jobWrapper" items="${jobWrappers}">
 	
-		<cti:url var="viewScheduleDetailsUrl" value="/spring/group/scheduledGroupRequestExecutionResults/detail" >
+		<cti:url var="viewScheduleDetailsUrl" value="/group/scheduledGroupRequestExecutionResults/detail" >
 			<cti:param name="jobId" value="${jobWrapper.job.id}"/>
 		</cti:url>
 		
@@ -105,7 +105,7 @@
 </c:choose>
 
     <div class="additionalSchedulerJobs fl">
-        <a href="/spring/group/scheduledGroupRequestExecutionResults/jobs">
+        <a href="/group/scheduledGroupRequestExecutionResults/jobs">
         	<c:choose>
 				<c:when test="${numAdditionalJobs != null}">
 	            	<i:inline key=".viewDetailsWithAdditional" arguments="${numAdditionalJobs}"/>

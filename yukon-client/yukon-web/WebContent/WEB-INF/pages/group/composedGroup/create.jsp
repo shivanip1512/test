@@ -27,8 +27,8 @@
     <cti:breadCrumbs>
     
         <cti:crumbLink url="/operator/Operations.jsp" title="Operations Home" />
-        <cti:crumbLink url="/spring/meter/start" title="Metering" />
-        <cti:url var="groupHomeUrl" value="/spring/group/editor/home">
+        <cti:crumbLink url="/meter/start" title="Metering" />
+        <cti:url var="groupHomeUrl" value="/group/editor/home">
         	<cti:param name="groupName" value="${groupName}"/>
         </cti:url>
         <cti:crumbLink url="${groupHomeUrl}" title="Device Groups" />
@@ -53,7 +53,7 @@
 		<br>
 	</c:if>
     
-    <form id="buildForm" action="/spring/group/composedGroup/build" method="post">
+    <form id="buildForm" action="/group/composedGroup/build" method="post">
     
     <input type="hidden" name="groupName" value="${fn:escapeXml(groupName)}">
     <input type="hidden" name="firstLoad" value="false">

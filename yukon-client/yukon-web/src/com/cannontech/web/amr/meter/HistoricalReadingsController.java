@@ -189,7 +189,7 @@ public class HistoricalReadingsController {
     }
     
     private String getDownloadUrl(String period, int pointId, Order order, OrderBy orderBy){
-        return "/spring/meter/historicalReadings/download?" + PERIOD +"="+ period+"&pointId="+pointId+"&orderBy="+orderBy+"&order="+order;
+        return "/meter/historicalReadings/download?" + PERIOD +"="+ period+"&pointId="+pointId+"&orderBy="+orderBy+"&order="+order;
     }
 
     private List<PointValueHolder> sort(List<PointValueHolder> data, final Order order, OrderBy orderBy) {

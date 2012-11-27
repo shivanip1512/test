@@ -243,7 +243,7 @@ public class OnelineUtil {
     }
     
     public static String createBookmarkLink(int id) {
-        String link = "/spring/capcontrol/onelineBookmark/mark?itemid=" + id;
+        String link = "/capcontrol/onelineBookmark/mark?itemid=" + id;
         return link;
     }
     

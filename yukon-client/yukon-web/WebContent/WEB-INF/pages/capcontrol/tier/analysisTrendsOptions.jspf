@@ -51,8 +51,8 @@ function loadPointChartGreyBox(title, url) {
 </tags:formElementContainer>
 
 <div class="actionArea">
-    <cti:button nameKey="todayKvarWatt" onclick="loadPointChartGreyBox('${todayKvarWatt}', '/spring/reports/cbcAnalysisChart/cbcChart?analysisType=VW&amp;period=DAY')"/>
-    <cti:button nameKey="thirtyDayKvarWatt" onclick="loadPointChartGreyBox('${thirtyDayKvarWatt}', '/spring/reports/cbcAnalysisChart/cbcChart?analysisType=VW&amp;period=MONTH')"/>
-    <cti:button nameKey="todayPf" onclick="loadPointChartGreyBox('${todayPf}', '/spring/reports/cbcAnalysisChart/cbcChart?analysisType=PF&amp;period=DAY')"/>
-    <cti:button nameKey="thirtyDayPf" onclick="loadPointChartGreyBox('${thirtyDayPf}', '/spring/reports/cbcAnalysisChart/cbcChart?analysisType=PF&amp;period=MONTH')"/>
+    <cti:button nameKey="todayKvarWatt" onclick="loadPointChartGreyBox('${todayKvarWatt}', '/reports/cbcAnalysisChart/cbcChart?analysisType=VW&amp;period=DAY')"/>
+    <cti:button nameKey="thirtyDayKvarWatt" onclick="loadPointChartGreyBox('${thirtyDayKvarWatt}', '/reports/cbcAnalysisChart/cbcChart?analysisType=VW&amp;period=MONTH')"/>
+    <cti:button nameKey="todayPf" onclick="loadPointChartGreyBox('${todayPf}', '/reports/cbcAnalysisChart/cbcChart?analysisType=PF&amp;period=DAY')"/>
+    <cti:button nameKey="thirtyDayPf" onclick="loadPointChartGreyBox('${thirtyDayPf}', '/reports/cbcAnalysisChart/cbcChart?analysisType=PF&amp;period=MONTH')"/>
 </div>

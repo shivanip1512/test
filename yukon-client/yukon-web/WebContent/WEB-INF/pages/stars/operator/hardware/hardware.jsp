@@ -17,7 +17,7 @@
 jQuery(function(){
     
     jQuery(document).delegate('#refresh, button[name=commissionSubmit], button[name=decommissionSubmit]', 'click', function(event) {
-        var url = '/spring/stars/operator/hardware/zb/';
+        var url = '/stars/operator/hardware/zb/';
         var button = event.currentTarget;
         if (button.id == 'refresh') {
             url += 'refresh';
@@ -52,7 +52,7 @@ jQuery(function(){
     });
     
     jQuery(document).delegate('button[name^=assignedDevicesCommissionSubmit_], button[name^=assignedDevicesDecommissionSubmit_]', 'click', function(event) {
-        var url = '/spring/stars/operator/hardware/zb/';
+        var url = '/stars/operator/hardware/zb/';
         var button = event.currentTarget;
         
         var name = button.name.split('_')[0];
@@ -161,7 +161,7 @@ function getEndpointCommissionConfirmationCallback(deviceId) {
 
     <!-- Changeout Form -->
     <cti:displayForPageEditModes modes="VIEW">
-        <form id="changeOutForm" action="/spring/stars/operator/hardware/changeOut">
+        <form id="changeOutForm" action="/stars/operator/hardware/changeOut">
             <input type="hidden" name="accountId" value="${accountId}">
             <input type="hidden" name="newInventoryId" id="newInventoryId">
             <input type="hidden" name="oldInventoryId" id="oldInventoryId">
@@ -172,7 +172,7 @@ function getEndpointCommissionConfirmationCallback(deviceId) {
     
     <!-- Delete Hardware Popup -->
     <i:simplePopup styleClass="mediumSimplePopup" titleKey=".deleteDevice" id="deleteHardwarePopup" arguments="${hardware.displayName}">
-        <form id="deleteForm" action="/spring/stars/operator/hardware/delete" method="post">
+        <form id="deleteForm" action="/stars/operator/hardware/delete" method="post">
             <input type="hidden" name="inventoryId" value="${inventoryId}">
             <input type="hidden" name="accountId" value="${accountId}">
             <c:choose>
@@ -229,7 +229,7 @@ function getEndpointCommissionConfirmationCallback(deviceId) {
                         
                         <%-- COMMON ACTIONS --%>
                         <c:if test="${showSwitchAndTstatConfigAction}">
-                            <cti:url var="configUrl" value="/spring/stars/operator/hardware/config/edit">
+                            <cti:url var="configUrl" value="/stars/operator/hardware/config/edit">
                                 <cti:param name="accountId" value="${accountId}"/>
                                 <cti:param name="inventoryId" value="${inventoryId}"/>
                             </cti:url>
@@ -270,7 +270,7 @@ function getEndpointCommissionConfirmationCallback(deviceId) {
                         </c:if>
                         
                         <c:if test="${showScheduleActions}">
-                            <cti:url var="savedSchedulesUrl" value="/spring/stars/operator/thermostatSchedule/savedSchedules">
+                            <cti:url var="savedSchedulesUrl" value="/stars/operator/thermostatSchedule/savedSchedules">
                                 <cti:param name="accountId" value="${accountId}"/>
                                 <cti:param name="thermostatIds" value="${inventoryId}"/>
                             </cti:url>
@@ -280,7 +280,7 @@ function getEndpointCommissionConfirmationCallback(deviceId) {
                         </c:if>
                         
                         <c:if test="${showManualAction}">
-                            <cti:url var="editManualUrl" value="/spring/stars/operator/thermostatManual/view">
+                            <cti:url var="editManualUrl" value="/stars/operator/thermostatManual/view">
                                 <cti:param name="accountId" value="${accountId}"/>
                                 <cti:param name="thermostatIds" value="${inventoryId}"/>
                             </cti:url>
@@ -290,7 +290,7 @@ function getEndpointCommissionConfirmationCallback(deviceId) {
                         </c:if>
                         
                         <c:if test="${showThermostatHistoryAction}">
-                            <cti:url var="historyUrl" value="/spring/stars/operator/thermostat/history/view">
+                            <cti:url var="historyUrl" value="/stars/operator/thermostat/history/view">
                                 <cti:param name="accountId" value="${accountId}" />
                                 <cti:param name="thermostatIds" value="${inventoryId}"/>
                             </cti:url>
@@ -301,7 +301,7 @@ function getEndpointCommissionConfirmationCallback(deviceId) {
                         
                         <%-- METER ACTIONS --%>
                         <c:if test="${showMeterConfigAction}">
-                            <cti:url var="configUrl" value="/spring/stars/operator/hardware/config/meterConfig">
+                            <cti:url var="configUrl" value="/stars/operator/hardware/config/meterConfig">
                                 <cti:param name="accountId" value="${accountId}"/>
                                 <cti:param name="meterId" value="${hardware.deviceId}"/>
                             </cti:url>
@@ -440,7 +440,7 @@ function getEndpointCommissionConfirmationCallback(deviceId) {
                                         </tr>
                                         <c:forEach var="device" items="${assignedDevices}">
                                             <tr>
-                                                <cti:url value="/spring/stars/operator/hardware/view" var="viewUrl">
+                                                <cti:url value="/stars/operator/hardware/view" var="viewUrl">
                                                     <cti:param name="accountId" value="${accountId}"/>
                                                     <cti:param name="inventoryId" value="${device.inventoryIdentifier.inventoryId}"/>
                                                 </cti:url>
@@ -475,7 +475,7 @@ function getEndpointCommissionConfirmationCallback(deviceId) {
                                                         styleClass="commissionConfirmationMsg smallSimplePopup" on="#assignedDevicesDecommission_${device.deviceId}"
                                                         endAction="hide" />
                                                     
-                                                    <cti:url value="/spring/stars/operator/hardware/zb/removeDeviceFromGateway" var="removeUrl">
+                                                    <cti:url value="/stars/operator/hardware/zb/removeDeviceFromGateway" var="removeUrl">
                                                         <cti:param name="accountId" value="${accountId}"/>
                                                         <cti:param name="inventoryId" value="${inventoryId}"/>
                                                         <cti:param name="gatewayId" value="${hardware.deviceId}"/>
@@ -497,7 +497,7 @@ function getEndpointCommissionConfirmationCallback(deviceId) {
                         
                         <c:if test="${not empty availableDevices}">
                             <div class="actionArea">
-                                <form action="/spring/stars/operator/hardware/zb/addDeviceToGateway" method="post">
+                                <form action="/stars/operator/hardware/zb/addDeviceToGateway" method="post">
                                     <input type="hidden" name="accountId" value="${accountId}">
                                     <input type="hidden" name="inventoryId" value="${inventoryId}">
                                     <input type="hidden" name="gatewayId" value="${hardware.deviceId}">
@@ -532,7 +532,7 @@ function getEndpointCommissionConfirmationCallback(deviceId) {
         
     <cti:displayForPageEditModes modes="VIEW">
         <cti:checkRolesAndProperties value="${editingRoleProperty}">
-            <cti:url value="/spring/stars/operator/hardware/edit" var="editUrl">
+            <cti:url value="/stars/operator/hardware/edit" var="editUrl">
                 <cti:param name="accountId" value="${accountId}"/>
                 <cti:param name="inventoryId" value="${inventoryId}"/>
             </cti:url>

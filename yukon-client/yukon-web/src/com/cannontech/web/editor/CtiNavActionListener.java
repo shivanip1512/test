@@ -42,7 +42,7 @@ public class CtiNavActionListener implements ActionListener {
 				}
 
 			    if( "".equalsIgnoreCase(red) ) {
-					red = "/spring/capcontrol/tier/areas";
+					red = "/capcontrol/tier/areas";
 				}
 			    
 				if (usingExitPage && ctiNav.getPreservedAddress() != null) {

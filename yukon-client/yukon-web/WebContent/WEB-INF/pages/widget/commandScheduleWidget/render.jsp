@@ -22,7 +22,7 @@
             <c:forEach var="schedule" items="${schedules}">
                 <tr>
                     <td>
-                        <cti:url var="editUrl" value="/spring/stars/operator/inventory/commandSchedule">
+                        <cti:url var="editUrl" value="/stars/operator/inventory/commandSchedule">
                             <cti:param name="scheduleId" value="${schedule.commandScheduleId}" />
                         </cti:url>
                         <a href="${editUrl}">
@@ -55,7 +55,7 @@
 </c:choose>
 
 <div class="actionArea">
-    <form id="createNewScheduleForm_${widgetParameters.widgetId}" action="/spring/stars/operator/inventory/commandSchedule" method="get">
+    <form id="createNewScheduleForm_${widgetParameters.widgetId}" action="/stars/operator/inventory/commandSchedule" method="get">
         <tags:widgetActionRefresh nameKey="disableAll" method="disableAll"/>
         <input type="hidden" value="0" name="scheduleId">
         <cti:button nameKey="create" type="submit"/>

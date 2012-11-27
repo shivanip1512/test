@@ -54,11 +54,11 @@
         <cti:deviceGroupHierarchyJson predicates="NON_HIDDEN" var="groupDataJson" selectGroupName="${deviceGroupName}" selectedNodePathVar="selectedNodePath" />
         
         <%-- TOGGLE/DELETE FORMS --%>
-        <form id="toggleJobEnabledForm" action="/spring/group/scheduledGroupRequestExecution/toggleJobEnabled" method="post">
+        <form id="toggleJobEnabledForm" action="/group/scheduledGroupRequestExecution/toggleJobEnabled" method="post">
 			<input type="hidden" name="toggleJobId" value="${editJobId}">
 		</form>
 		
-		<form id="disabledAndDeleteJobForm" action="/spring/group/scheduledGroupRequestExecution/deleteJob" method="post">
+		<form id="disabledAndDeleteJobForm" action="/group/scheduledGroupRequestExecution/deleteJob" method="post">
 			<input type="hidden" name="deleteJobId" value="${editJobId}">
 		</form>
 							
@@ -68,7 +68,7 @@
 			<%-- ATTRIBUTE TAB --%>
 			<cti:tabbedContentSelectorContent selectorName="${attibuteRequestTypeLabel}" initiallySelected="${empty requestType || requestType == 'SCHEDULED_GROUP_ATTRIBUTE_READ'}">
         		
-				<form id="scheduledGroupRequestExecutionForm_attr" action="/spring/group/scheduledGroupRequestExecution/schedule" method="post" >
+				<form id="scheduledGroupRequestExecutionForm_attr" action="/group/scheduledGroupRequestExecution/schedule" method="post" >
         		 
         		 	<input type="hidden" name="editJobId" value="${editJobId}">
         		 	<input type="hidden" name="requestType" value="SCHEDULED_GROUP_ATTRIBUTE_READ">
@@ -154,7 +154,7 @@
         	<%-- COMMAND TAB --%>
         	<cti:tabbedContentSelectorContent selectorName="${commandRequestTypeLabel}" initiallySelected="${requestType == 'SCHEDULED_GROUP_COMMAND'}">
         	
-        		<form id="scheduledGroupRequestExecutionForm_cmd" action="/spring/group/scheduledGroupRequestExecution/schedule" method="post" >
+        		<form id="scheduledGroupRequestExecutionForm_cmd" action="/group/scheduledGroupRequestExecution/schedule" method="post" >
         		 
         		 	<input type="hidden" name="editJobId" value="${editJobId}">
         		 	<input type="hidden" name="requestType" value="SCHEDULED_GROUP_COMMAND">

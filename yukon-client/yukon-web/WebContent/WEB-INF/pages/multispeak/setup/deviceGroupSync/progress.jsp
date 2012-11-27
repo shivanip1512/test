@@ -49,7 +49,7 @@
 		<br>
 		
 		<%-- BACK/CANCEL BUTTONS --%>
-		<form id="backToHomeForm" action="/spring/multispeak/setup/deviceGroupSync/done" method="post">
+		<form id="backToHomeForm" action="/multispeak/setup/deviceGroupSync/done" method="post">
 		
 			<button name="backToHome" class="formSubmit">
 				<i:inline key=".backToHomeButton"/>

@@ -52,8 +52,8 @@ jQuery(function(){
             <td>
                 <cti:msg2 var="historyTableTitle" key=".historyTableTitle"/>
                 <tags:pagedBox title="${historyTableTitle}" searchResult="${searchResult}"
-                    filterDialog="" baseUrl="/spring/stars/operator/thermostat/history/view"
-                    isFiltered="false" showAllUrl="/spring/stars/operator/thermostat/history/view">
+                    filterDialog="" baseUrl="/stars/operator/thermostat/history/view"
+                    isFiltered="false" showAllUrl="/stars/operator/thermostat/history/view">
                     <c:choose>
                         <c:when test="${searchResult.hitCount == 0}">
                             <i:inline key="yukon.web.modules.operator.thermostatManual.noItems"/>
@@ -126,7 +126,7 @@ jQuery(function(){
                                                             <i:inline key="yukon.web.modules.operator.thermostatManual.deletedSchedule"/>, 
                                                         </c:when>
                                                         <c:otherwise>
-                                                            <cti:url var="savedSchedulesUrl" value="/spring/stars/operator/thermostatSchedule/savedSchedules">
+                                                            <cti:url var="savedSchedulesUrl" value="/stars/operator/thermostatSchedule/savedSchedules">
                                                                 <cti:param name="accountId" value="${accountId}"/>
                                                                 <cti:param name="thermostatIds" value="${thermostatIds}"/>
                                                                 <cti:param name="scheduleId" value="${historyItem.scheduleId}"/>

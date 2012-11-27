@@ -137,7 +137,7 @@
                     </c:choose>
                 </td>
                 <td>
-                    <a href="<cti:url value="/spring/amr/reports/${tabularDataViewer}?def=rawPointHistoryDefinition&pointId=${pointId}&startDate=${startDateMillis}&stopDate=${stopDateMillis}" />"><i:inline key="yukon.web.modules.amr.fileFormatHtml"/></a>
+                    <a href="<cti:url value="/amr/reports/${tabularDataViewer}?def=rawPointHistoryDefinition&pointId=${pointId}&startDate=${startDateMillis}&stopDate=${stopDateMillis}" />"><i:inline key="yukon.web.modules.amr.fileFormatHtml"/></a>
                     |
                     <cti:simpleReportLinkFromNameTag definitionName="rawPointHistoryDefinition" viewType="csvView" pointId="${pointId}" startDate="${startDateMillis}" stopDate="${stopDateMillis}"><i:inline key="yukon.web.modules.amr.fileFormatCsv"/></cti:simpleReportLinkFromNameTag>
                     |
@@ -150,7 +150,7 @@
     	            <td class="label"><b><i:inline key=".normalizedUsageData"/></b></td>
     	            
     	            <td>
-    	                <a href="<cti:url value="/spring/amr/reports/${tabularDataViewer}?def=normalizedUsageDefinition&pointId=${pointId}&startDate=${startDateMillis}&stopDate=${stopDateMillis}&attribute=${attributeGraphType.attribute}" />"><i:inline key="yukon.web.modules.amr.fileFormatHtml"/></a>
+    	                <a href="<cti:url value="/amr/reports/${tabularDataViewer}?def=normalizedUsageDefinition&pointId=${pointId}&startDate=${startDateMillis}&stopDate=${stopDateMillis}&attribute=${attributeGraphType.attribute}" />"><i:inline key="yukon.web.modules.amr.fileFormatHtml"/></a>
     	                |
     	                <cti:simpleReportLinkFromNameTag definitionName="normalizedUsageDefinition" viewType="csvView" pointId="${pointId}" startDate="${startDateMillis}" stopDate="${stopDateMillis}" attribute="${attributeGraphType.attribute}"><i:inline key="yukon.web.modules.amr.fileFormatCsv"/></cti:simpleReportLinkFromNameTag>
     	                |

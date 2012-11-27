@@ -2,10 +2,10 @@
 <%@ taglib uri="http://java.sun.com/jsp/jstl/core" prefix="c"%>
 <%@ taglib uri="http://cannontech.com/tags/cti" prefix="cti"%>
 
-<cti:url var="controlUrl" value="/spring/macsscheduler/schedules/controlView"/>
-<cti:url var="toggleUrl" value="/spring/macsscheduler/schedules/toggleUrl"/>
-<cti:url var="viewUrl" value="/spring/macsscheduler/schedules/view" />
-<cti:url var="toggleUrl" value="/spring/macsscheduler/schedules/toggleState" />
+<cti:url var="controlUrl" value="/macsscheduler/schedules/controlView"/>
+<cti:url var="toggleUrl" value="/macsscheduler/schedules/toggleUrl"/>
+<cti:url var="viewUrl" value="/macsscheduler/schedules/view" />
+<cti:url var="toggleUrl" value="/macsscheduler/schedules/toggleState" />
 
 <cti:msgScope paths="yukon.web.modules.amr.macsscheduler.innerView">
 

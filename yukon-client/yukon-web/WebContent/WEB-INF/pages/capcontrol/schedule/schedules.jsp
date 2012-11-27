@@ -21,13 +21,13 @@ jQuery(document).ready(function () {
 
 </script>
 
-<cti:url var="action" value="/spring/capcontrol/schedule/deleteSchedule"/>
+<cti:url var="action" value="/capcontrol/schedule/deleteSchedule"/>
 
     <tags:pagedBox2 nameKey="scheduleContainer" 
             searchResult="${searchResult}"
-            baseUrl="/spring/capcontrol/schedule/schedules"
+            baseUrl="/capcontrol/schedule/schedules"
             isFiltered="false" 
-            showAllUrl="/spring/capcontrol/schedule/schedules"
+            showAllUrl="/capcontrol/schedule/schedules"
             styleClass="padBottom">
         
         <c:choose>

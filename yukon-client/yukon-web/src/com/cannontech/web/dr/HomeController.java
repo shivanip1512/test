@@ -101,12 +101,12 @@ public class HomeController {
         // The Details link defaults to control area list, if control areas are hidden,
         // goes to scenarios, if they are hidden goes to programs
         
-        String link = "/spring/dr/controlArea/list";
+        String link = "/dr/controlArea/list";
         if(!showControlAreas) {
             if(showScenarios) {
-                link = "/spring/dr/scenario/list"; 
+                link = "/dr/scenario/list"; 
             } else {
-                link = "/spring/dr/program/list";
+                link = "/dr/program/list";
             }
         }
 

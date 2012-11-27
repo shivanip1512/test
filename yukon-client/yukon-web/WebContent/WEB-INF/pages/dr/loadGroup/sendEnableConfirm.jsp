@@ -14,7 +14,7 @@
         </c:choose>
     </h1>
 
-    <cti:url var="submitUrl" value="/spring/dr/loadGroup/setEnabled"/>
+    <cti:url var="submitUrl" value="/dr/loadGroup/setEnabled"/>
     <form id="sendEnableForm" action="${submitUrl}"
         onsubmit="return submitFormViaAjax('drDialog', 'sendEnableForm');">
         <input type="hidden" name="loadGroupId" value="${loadGroup.paoIdentifier.paoId}"/>

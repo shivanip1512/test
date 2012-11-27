@@ -24,7 +24,7 @@
         </tags:dynamicChooseOption>
         <tags:dynamicChooseOption optionId="enabled">
         
-            <cti:url var="startScenarioUrl" value="/spring/dr/program/start/multipleDetails">
+            <cti:url var="startScenarioUrl" value="/dr/program/start/multipleDetails">
                 <cti:param name="scenarioId" value="${paoId}"/>
             </cti:url>
             <tags:simpleDialogLink titleKey="yukon.web.modules.dr.program.startMultiplePrograms.title" 
@@ -32,7 +32,7 @@
                                    actionUrl="${startScenarioUrl}" 
                                    logoKey="yukon.web.modules.dr.scenarioDetail.actions.startIcon"/>
         
-            <cti:url var="stopScenarioUrl" value="/spring/dr/program/stop/multipleDetails">
+            <cti:url var="stopScenarioUrl" value="/dr/program/stop/multipleDetails">
                 <cti:param name="scenarioId" value="${paoId}"/>
             </cti:url>
             <tags:simpleDialogLink titleKey="yukon.web.modules.dr.program.stopMultiplePrograms.title" 

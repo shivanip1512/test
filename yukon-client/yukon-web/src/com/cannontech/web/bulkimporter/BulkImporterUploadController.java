@@ -48,7 +48,7 @@ public class BulkImporterUploadController extends MultiActionController  {
     public ModelAndView importFile(HttpServletRequest request, HttpServletResponse response) throws Exception {
         
         // mav
-        ModelAndView mav = new ModelAndView("redirect:/spring/amr/bulkimporter/home");
+        ModelAndView mav = new ModelAndView("redirect:/amr/bulkimporter/home");
         
         // check if file is ok, process file if it good
         Map<String, List<String>> msgs = new HashMap<String, List<String>>();
@@ -106,7 +106,7 @@ public class BulkImporterUploadController extends MultiActionController  {
     public ModelAndView forceManualImportEvent(HttpServletRequest request, HttpServletResponse response) throws Exception {
         
         // mav
-        ModelAndView mav = new ModelAndView("redirect:/spring/amr/bulkimporter/home");
+        ModelAndView mav = new ModelAndView("redirect:/amr/bulkimporter/home");
         
         // check if force manual import event button was clicked
         DBFuncs.forceImport();
@@ -127,7 +127,7 @@ public class BulkImporterUploadController extends MultiActionController  {
     public ModelAndView clearImports(HttpServletRequest request, HttpServletResponse response) throws Exception {
         
         // mav
-        ModelAndView mav = new ModelAndView("redirect:/spring/amr/bulkimporter/home");
+        ModelAndView mav = new ModelAndView("redirect:/amr/bulkimporter/home");
         
         // check if force manual import event button was clicked
         String clearImportsSelect = ServletRequestUtils.getStringParameter(request, "clearImportsSelect");

@@ -14,14 +14,14 @@
 	<cti:includeScript link="/JavaScript/calendarTagFuncs.js" />
 	<dr:favoriteIconSetup />
 
-	<c:set var="baseUrl" value="/spring/dr/search" />
+	<c:set var="baseUrl" value="/dr/search" />
 	<cti:msg var="submitButtonSrc"
 		key="yukon.web.modules.dr.searchResults.searchBoxSubmitImg" />
 	<cti:msg var="submitButtonAlt"
 		key="yukon.web.modules.dr.searchResults.searchBoxSubmitAlt" />
         
 	<div id="findForm" class="box">
-	   <form accept-charset="ISO-8859-1" method="get" action="/spring/dr/search" enctype="application/x-www-form-urlencoded">
+	   <form accept-charset="ISO-8859-1" method="get" action="/dr/search" enctype="application/x-www-form-urlencoded">
             <label class="box fl">
                 <cti:msg key="yukon.web.modules.dr.searchResults.searchBoxLabel" />
                 <input type="text" id="textinput" class="search_text" value="${quickSearchBean.name}" name="name" />

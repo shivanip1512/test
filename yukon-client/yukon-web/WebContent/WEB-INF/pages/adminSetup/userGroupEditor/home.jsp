@@ -10,9 +10,9 @@
 
     <cti:includeScript link="JQUERY_COOKIE"/>
     
-    <cti:url value="/spring/adminSetup/user/view" var="userUrl"/>
-    <cti:url value="/spring/adminSetup/userGroup/view" var="userGroupUrl"/>
-    <cti:url value="/spring/adminSetup/roleGroup/view" var="roleGroupUrl"/>
+    <cti:url value="/adminSetup/user/view" var="userUrl"/>
+    <cti:url value="/adminSetup/userGroup/view" var="userGroupUrl"/>
+    <cti:url value="/adminSetup/roleGroup/view" var="roleGroupUrl"/>
 
     <script type="text/javascript">
         jQuery(function() {

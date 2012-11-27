@@ -218,7 +218,7 @@ public class YukonConfigurationController {
         String categoryName = accessor.getMessage(category);
         flashScope.setConfirm(new YukonMessageSourceResolvable("yukon.web.modules.adminSetup.config.updateSuccessful", categoryName));
         setupModelMap(context, map, category);
-        return "redirect:/spring/adminSetup/config/view";
+        return "redirect:/adminSetup/config/view";
     }
     
     private List<GlobalSetting> adjustSettings(final GlobalSettingsEditorBean command ) throws ExecutionException {

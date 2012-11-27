@@ -5,14 +5,14 @@
 <%-- MODULE, MENU --%>
 <cti:standardPage page="bulkImporter" module="blank">
 
-<div class="notAuthorized">Note: <a href="/spring/bulk/bulkHome">Bulk Operations</a> is the preferred method of importing or updating meters.</div>
+<div class="notAuthorized">Note: <a href="/bulk/bulkHome">Bulk Operations</a> is the preferred method of importing or updating meters.</div>
 <br>
 
 <cti:includeScript link="/JavaScript/bulkImporter.js"/>
 
 <script type="text/javascript">
 
-    <cti:url var="refreshUrl" value="/spring/amr/bulkimporter/refreshResults" />
+    <cti:url var="refreshUrl" value="/amr/bulkimporter/refreshResults" />
     
     setupRefreshStuff("${refreshUrl}", "${refreshRate}");
     
@@ -22,7 +22,7 @@
     
 </script>
 
-<form id="actionsForm" method="post" action="/spring/amr/bulkimporter/upload" enctype="multipart/form-data">
+<form id="actionsForm" method="post" action="/amr/bulkimporter/upload" enctype="multipart/form-data">
 <tags:boxContainer title="Actions" hideEnabled="false">
 
     <tags:nameValueContainer>
@@ -121,21 +121,21 @@
             
             <tags:nameValue name="Tabular Data">
                 <div id="failed_reports">
-                        <a href="<cti:url value="/spring/amr/reports/bulkImportResultsReport?def=bulkImportResultsDefinition&reportType=FAILURES" />">HTML</a>
+                        <a href="<cti:url value="/amr/reports/bulkImportResultsReport?def=bulkImportResultsDefinition&reportType=FAILURES" />">HTML</a>
                         |
                         <cti:simpleReportLinkFromNameTag definitionName="bulkImportResultsDefinition" viewType="csvView" reportType="FAILURES">CSV</cti:simpleReportLinkFromNameTag>
                         |
                         <cti:simpleReportLinkFromNameTag definitionName="bulkImportResultsDefinition" viewType="pdfView" reportType="FAILURES">PDF</cti:simpleReportLinkFromNameTag>
                     </div>
                     <div id="pendingComm_reports" style="display:none;">
-                        <a href="<cti:url value="/spring/amr/reports/bulkImportResultsReport?def=bulkImportResultsDefinition&reportType=PENDING_COMMS" />">HTML</a>
+                        <a href="<cti:url value="/amr/reports/bulkImportResultsReport?def=bulkImportResultsDefinition&reportType=PENDING_COMMS" />">HTML</a>
                         |
                         <cti:simpleReportLinkFromNameTag definitionName="bulkImportResultsDefinition" viewType="csvView" reportType="PENDING_COMMS">CSV</cti:simpleReportLinkFromNameTag>
                         |
                         <cti:simpleReportLinkFromNameTag definitionName="bulkImportResultsDefinition" viewType="pdfView" reportType="PENDING_COMMS">PDF</cti:simpleReportLinkFromNameTag>
                     </div>
                     <div id="failedComm_reports" style="display:none;">
-                        <a href="<cti:url value="/spring/amr/reports/bulkImportResultsReport?def=bulkImportResultsDefinition&reportType=FAILED_COMMS" />">HTML</a>
+                        <a href="<cti:url value="/amr/reports/bulkImportResultsReport?def=bulkImportResultsDefinition&reportType=FAILED_COMMS" />">HTML</a>
                         |
                         <cti:simpleReportLinkFromNameTag definitionName="bulkImportResultsDefinition" viewType="csvView" reportType="FAILED_COMMS">CSV</cti:simpleReportLinkFromNameTag>
                         |

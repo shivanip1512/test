@@ -75,7 +75,7 @@ public class MspSubstationsController {
     @RequestMapping
     public ModelAndView add(HttpServletRequest request, HttpServletResponse response) {
         
-        ModelAndView mav = new ModelAndView("redirect:/spring/adminSetup/substations/routeMapping/view");
+        ModelAndView mav = new ModelAndView("redirect:/adminSetup/substations/routeMapping/view");
 
         Map<String, String> substatioNamesMap = ServletUtil.getStringParameters(request, "substationName_");
 

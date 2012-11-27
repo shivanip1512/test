@@ -5,7 +5,7 @@
 <%@ taglib prefix="spring" uri="http://www.springframework.org/tags"%>
 
 <cti:msgScope paths="yukon.web.modules.capcontrol.comments">
-    <cti:url var="commentsURL" value="/spring/capcontrol/comments/"/>
+    <cti:url var="commentsURL" value="/capcontrol/comments/"/>
     
     <script type="text/javascript">
     
@@ -109,7 +109,7 @@
     </script>
     
     <div style="max-height:400px;overflow-x:hidden;overflow-y:auto;" class="boxContainer">
-        <form id="commentForm" action="/spring/capcontrol/comments/" method="POST">
+        <form id="commentForm" action="/capcontrol/comments/" method="POST">
             <input type="hidden" name="paoId" value="${paoId}">
             <input type="hidden" name="commentId" id="commentId" value="">
             <input type="hidden" name="comment" id="comment">

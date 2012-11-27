@@ -5,7 +5,7 @@
 <%@ taglib prefix="spring" uri="http://www.springframework.org/tags"%>
 
 <cti:msgScope paths="yukon.web.modules.capcontrol.scheduleAssignments">
-<form name="startMultipleSchedulesForm" id="startMultipleSchedulesForm" action="/spring/capcontrol/schedule/startMultiple">
+<form name="startMultipleSchedulesForm" id="startMultipleSchedulesForm" action="/capcontrol/schedule/startMultiple">
     
     <tags:nameValueContainer2>
         <tags:nameValue2 nameKey=".schedules">

@@ -10,7 +10,7 @@
 jQuery(function() {
    
     submitForm = function() {
-        return submitFormViaAjax('drDialog', 'changeGearForm', '<cti:url value="/spring/dr/program/changeMultipleGears"/>');
+        return submitFormViaAjax('drDialog', 'changeGearForm', '<cti:url value="/dr/program/changeMultipleGears"/>');
     }
     
     singleProgramChecked = function(event) {
@@ -45,7 +45,7 @@ jQuery(function() {
     </c:if>
 </h1>
 
-<cti:url var="submitUrl" value="/spring/dr/program/changeMultipleGears"/>
+<cti:url var="submitUrl" value="/dr/program/changeMultipleGears"/>
 <form:form id="changeGearForm" commandName="backingBean" action="${submitUrl}" onsubmit="return submitForm();">
     <form:hidden path="controlAreaId"/>
     <form:hidden path="scenarioId"/>

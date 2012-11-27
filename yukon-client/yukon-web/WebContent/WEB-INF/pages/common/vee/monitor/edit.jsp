@@ -85,19 +85,19 @@
     </c:if>
     
     <%-- MISC FORMS --%>
-    <form id="configDeleteForm" action="/spring/common/vee/monitor/delete" method="post">
+    <form id="configDeleteForm" action="/common/vee/monitor/delete" method="post">
         <input type="hidden" id="deleteValidationMonitorId" name="deleteValidationMonitorId" value="">
     </form>
     
-    <form id="toggleEnabledForm" action="/spring/common/vee/monitor/toggleEnabled" method="post">
+    <form id="toggleEnabledForm" action="/common/vee/monitor/toggleEnabled" method="post">
         <input type="hidden" name="validationMonitorId" value="${validationMonitorId}">
     </form>
     
-    <form id="cancelForm" action="/spring/meter/start" method="get">
+    <form id="cancelForm" action="/meter/start" method="get">
 	</form>
     
     <%-- UPDATE FORM --%>
-    <form id="updateForm" action="/spring/common/vee/monitor/update" method="post">
+    <form id="updateForm" action="/common/vee/monitor/update" method="post">
     
         <input type="hidden" name="validationMonitorId" value="${validationMonitorId}">
         

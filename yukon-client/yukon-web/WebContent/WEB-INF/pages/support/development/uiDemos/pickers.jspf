@@ -478,7 +478,7 @@ This page should be tested at 1024x768.
   <br>
   <br>
 
-  <form id="pickerSelectForm" action="/spring/support/development/pickerTest/main">
+  <form id="pickerSelectForm" action="/support/development/pickerTest/main">
     <c:if test="${!empty param.pickerType}">
       <input type="hidden" name="pickerType" value="${param.pickerType}"/>
     </c:if>

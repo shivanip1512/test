@@ -20,7 +20,7 @@ jQuery(document).delegate('#cancelDeleteBtn', 'click', function() {
     
     <!-- Delete Hardware Popup -->
     <i:simplePopup titleKey=".delete" id="deleteHardwarePopup" arguments="${hardware.displayName}" styleClass="smallSimplePopup">
-        <form id="deleteForm" action="/spring/stars/operator/hardware/delete" method="post">
+        <form id="deleteForm" action="/stars/operator/hardware/delete" method="post">
             <input type="hidden" name="inventoryId" value="${hardware.inventoryId}">
             <input type="hidden" name="accountId" value="${accountId}">
             <input type="hidden" name="deleteOption" value="delete">
@@ -124,7 +124,7 @@ jQuery(document).delegate('#cancelDeleteBtn', 'click', function() {
         <div class="pageActionArea">
             <cti:displayForPageEditModes modes="VIEW">
                 <cti:checkRolesAndProperties value="${editingRoleProperty}">
-                    <cti:url value="/spring/stars/operator/hardware/mp/edit" var="editUrl">
+                    <cti:url value="/stars/operator/hardware/mp/edit" var="editUrl">
                         <cti:param name="accountId" value="${accountId}"/>
                         <cti:param name="inventoryId" value="${inventoryId}"/>
                     </cti:url>

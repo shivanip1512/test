@@ -20,9 +20,9 @@ submitForm = function() {
     combineDateAndTimeFields('startDate');
     combineDateAndTimeFields('stopDate');
     if (targetCycleGears[$('gearNumber').value] && $('addAdjustmentsCheckbox').checked) {
-        url = '<cti:url value="/spring/dr/program/start/gearAdjustments"/>';
+        url = '<cti:url value="/dr/program/start/gearAdjustments"/>';
     } else {
-        url = '<cti:url value="/spring/dr/program/start/constraints"/>';
+        url = '<cti:url value="/dr/program/start/constraints"/>';
     }
     return submitFormViaAjax('drDialog', 'startProgramForm', url);
 }

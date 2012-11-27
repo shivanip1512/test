@@ -54,7 +54,7 @@
 					        </tags:boxContainer2>
                             <c:if test="${phaseACollection.deviceCount > 0}">
                                 <div id="phaseAActionsDiv" style="padding:5px;">
-                                    <cti:link href="/spring/bulk/collectionActions" key=".phaseA.collectionActionLabel" class="small">
+                                    <cti:link href="/bulk/collectionActions" key=".phaseA.collectionActionLabel" class="small">
                                         <cti:mapParam value="${phaseACollection.collectionParameters}"/>
                                     </cti:link>
                                     <tags:selectedDevicesPopup deviceCollection="${phaseACollection}" />
@@ -97,7 +97,7 @@
 		                    </tags:boxContainer2>
                             <c:if test="${phaseBCollection.deviceCount > 0}">
                                 <div id="phaseBActionsDiv" style="padding:5px;">
-                                    <cti:link href="/spring/bulk/collectionActions" key=".phaseB.collectionActionLabel" class="small">
+                                    <cti:link href="/bulk/collectionActions" key=".phaseB.collectionActionLabel" class="small">
                                         <cti:mapParam value="${phaseBCollection.collectionParameters}"/>
                                     </cti:link>
                                     <tags:selectedDevicesPopup deviceCollection="${phaseBCollection}" />
@@ -140,7 +140,7 @@
 		                    </tags:boxContainer2>
                             <c:if test="${phaseCCollection.deviceCount > 0}">
                                 <div id="phaseCActionsDiv" style="padding:5px;">
-                                    <cti:link href="/spring/bulk/collectionActions" key=".phaseC.collectionActionLabel" class="small">
+                                    <cti:link href="/bulk/collectionActions" key=".phaseC.collectionActionLabel" class="small">
                                         <cti:mapParam value="${phaseCCollection.collectionParameters}"/>
                                     </cti:link>
                                     <tags:selectedDevicesPopup deviceCollection="${phaseCCollection}" />
@@ -196,7 +196,7 @@
 	                            </tags:boxContainer2>
                                 <c:if test="${phaseABCollection.deviceCount > 0}">
                                     <div id="phaseABActionsDiv" style="padding:5px;">
-                                        <cti:link href="/spring/bulk/collectionActions" key=".phaseAB.collectionActionLabel" class="small">
+                                        <cti:link href="/bulk/collectionActions" key=".phaseAB.collectionActionLabel" class="small">
                                             <cti:mapParam value="${phaseABCollection.collectionParameters}"/>
                                         </cti:link>
                                         <tags:selectedDevicesPopup deviceCollection="${phaseABCollection}" />
@@ -250,7 +250,7 @@
 	                            </tags:boxContainer2>
                                 <c:if test="${phaseACCollection.deviceCount > 0}">
                                     <div id="phaseACActionsDiv" style="padding:5px;">
-                                        <cti:link href="/spring/bulk/collectionActions" key=".phaseAC.collectionActionLabel" class="small">
+                                        <cti:link href="/bulk/collectionActions" key=".phaseAC.collectionActionLabel" class="small">
                                             <cti:mapParam value="${phaseACCollection.collectionParameters}"/>
                                         </cti:link>
                                         <tags:selectedDevicesPopup deviceCollection="${phaseACCollection}" />
@@ -304,7 +304,7 @@
 	                            </tags:boxContainer2>
                                 <c:if test="${phaseBCCollection.deviceCount > 0}">
                                     <div id="phaseBCActionsDiv" style="padding:5px;">
-                                        <cti:link href="/spring/bulk/collectionActions" key=".phaseBC.collectionActionLabel" class="small">
+                                        <cti:link href="/bulk/collectionActions" key=".phaseBC.collectionActionLabel" class="small">
                                             <cti:mapParam value="${phaseBCCollection.collectionParameters}"/>
                                         </cti:link>
                                         <tags:selectedDevicesPopup deviceCollection="${phaseBCCollection}" />
@@ -371,7 +371,7 @@
 	                            </tags:boxContainer2>
                                 <c:if test="${phaseABCCollection.deviceCount > 0}">
                                     <div id="phaseABCActionsDiv" style="padding:5px;">
-                                        <cti:link href="/spring/bulk/collectionActions" key=".phaseABC.collectionActionLabel" class="small">
+                                        <cti:link href="/bulk/collectionActions" key=".phaseABC.collectionActionLabel" class="small">
                                             <cti:mapParam value="${phaseABCCollection.collectionParameters}"/>
                                         </cti:link>
                                         <tags:selectedDevicesPopup deviceCollection="${phaseABCCollection}" />
@@ -394,7 +394,7 @@
 		                    </tags:boxContainer2>
                             <c:if test="${undefinedCollection.deviceCount > 0}">
                                 <div id="undefinedActionsDiv" style="padding:5px;">
-                                    <cti:link href="/spring/bulk/collectionActions" key=".undefined.collectionActionLabel" class="small">
+                                    <cti:link href="/bulk/collectionActions" key=".undefined.collectionActionLabel" class="small">
                                         <cti:mapParam value="${undefinedCollection.collectionParameters}"/>
                                     </cti:link>
                                     <tags:selectedDevicesPopup deviceCollection="${undefinedCollection}" />
@@ -421,7 +421,7 @@
                             </tags:boxContainer2>
                             <c:if test="${failureCollection.deviceCount > 0}">
                                 <div id="failureActionsDiv" style="padding:5px;">
-                                    <cti:link href="/spring/bulk/collectionActions" key=".failure.collectionActionLabel" class="small">
+                                    <cti:link href="/bulk/collectionActions" key=".failure.collectionActionLabel" class="small">
                                         <cti:mapParam value="${failureCollection.collectionParameters}"/>
                                     </cti:link>
                                     <tags:selectedDevicesPopup deviceCollection="${failureCollection}" />
@@ -433,8 +433,8 @@
                 <td height="100%" width="50%" valign="top">
                     <!-- Pie Chart -->
 			        <c:set var="amChartsProduct" value="ampie"/>
-			        <c:url var="amDataFile" scope="page" value="/spring/amr/phaseDetect/chartData"/>
-			        <c:url var="amSettingsFile" scope="page" value="/spring/amr/phaseDetect/chartSettings"/>
+			        <c:url var="amDataFile" scope="page" value="/amr/phaseDetect/chartData"/>
+			        <c:url var="amSettingsFile" scope="page" value="/amr/phaseDetect/chartSettings"/>
 			        <c:url var="amSrc" scope="page" value="/JavaScript/amChart/${amChartsProduct}.swf">
 			            <c:param name="${amChartsProduct}_path" value="/JavaScript/amChart/" />
 			            <c:param name="${amChartsProduct}_flashWidth" value="100%" />

@@ -17,14 +17,14 @@
         }
     };
     backToParentSelect = function() {
-        submitFormViaAjax('zoneWizardPopup', 'zoneTypeForm', '/spring/capcontrol/ivvc/wizard/wizardSelectParent', false);
+        submitFormViaAjax('zoneWizardPopup', 'zoneTypeForm', '/capcontrol/ivvc/wizard/wizardSelectParent', false);
     };
     submitTypeSelect = function() {
         submitFormViaAjax('zoneWizardPopup', 'zoneTypeForm', null, false);
     };
 </script>
 
-<form:form id="zoneTypeForm" commandName="zoneDto" action="/spring/capcontrol/ivvc/wizard/wizardTypeSelected" >
+<form:form id="zoneTypeForm" commandName="zoneDto" action="/capcontrol/ivvc/wizard/wizardTypeSelected" >
     <form:hidden path="substationBusId"/>
     <form:hidden path="parentId"/>
 

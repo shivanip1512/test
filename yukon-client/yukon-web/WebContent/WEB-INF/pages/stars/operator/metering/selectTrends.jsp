@@ -16,7 +16,7 @@
 			
 			<c:otherwise>
 
-                <cti:url var="submitUrl" value="/spring/stars/operator/metering/saveSelectedTrends"/>
+                <cti:url var="submitUrl" value="/stars/operator/metering/saveSelectedTrends"/>
 				<form action="${submitUrl}">
 
 					<input type="hidden" name="accountId" value="${accountId}">

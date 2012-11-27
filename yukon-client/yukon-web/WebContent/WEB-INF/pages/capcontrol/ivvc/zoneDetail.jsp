@@ -58,7 +58,7 @@
 
                     var bankState = row.down('a[id^="capbankState"]');
                     bankState.observe('click', function(event) {
-                        getMenuFromURL('/spring/capcontrol/menu/capBankState?id=' + encodeURIComponent(bankId), event);
+                        getMenuFromURL('/capcontrol/menu/capBankState?id=' + encodeURIComponent(bankId), event);
                         return false;
                     });
                 });
@@ -111,7 +111,7 @@
         });
     </script>
 
-	<cti:url var="zoneEditorUrl" value="/spring/capcontrol/ivvc/wizard/zoneEditor">
+	<cti:url var="zoneEditorUrl" value="/capcontrol/ivvc/wizard/zoneEditor">
     	<cti:param name="zoneId" value="${zoneId}"/>
     </cti:url>
     
@@ -405,7 +405,7 @@
             </c:choose>
             <br>
             <tags:boxContainer2 nameKey="otherActions" hideEnabled="true" showInitially="true">
-				<cti:url var="zoneVoltageDeltasUrl" value="/spring/capcontrol/ivvc/zone/voltageDeltas">
+				<cti:url var="zoneVoltageDeltasUrl" value="/capcontrol/ivvc/zone/voltageDeltas">
 			    	<cti:param name="zoneId" value="${zoneId}"/>
 			    </cti:url>
             	<a href="${zoneVoltageDeltasUrl}"><i:inline key=".otherActions.voltageDeltas"/></a>
@@ -420,7 +420,7 @@
 
 					<c:set var="chartId" value="zone_${subBusId}_IVVCGraph" />
 					<input type="hidden" value="${chartId}" id="ivvcChartIdValue" />
-					<c:url var="amChartFile" value="/spring/capcontrol/ivvc/zone/chart">
+					<c:url var="amChartFile" value="/capcontrol/ivvc/zone/chart">
 						<cti:param name="zoneId" value="${zoneId}" />
 					</c:url>
 					<tags:amchart chartType="amline" settingsUrl="${amChartFile}" chartId="${chartId}" cssClass="ivvcGraphContainer" />
@@ -432,7 +432,7 @@
 				<cti:msg2 var="voltagePointsTab" key=".voltagePoints.title" />
 				<cti:tabbedContentSelectorContent selectorName="${voltagePointsTab}">
 					<div class="largeDialogScrollArea">
-						<cti:url var="zoneVoltagePointsUrl" value="/spring/capcontrol/ivvc/zone/voltagePoints">
+						<cti:url var="zoneVoltagePointsUrl" value="/capcontrol/ivvc/zone/voltagePoints">
 					    	<cti:param name="zoneId" value="${zoneId}"/>
 					    </cti:url>
 						<%@ include file="voltagePoints.jspf" %>

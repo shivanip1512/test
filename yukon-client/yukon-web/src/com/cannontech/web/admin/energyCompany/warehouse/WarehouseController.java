@@ -43,7 +43,7 @@ public class WarehouseController {
     @Autowired private StarsEventLogService starsEventLogService;
     @Autowired private WarehouseService warehouseService;
     
-    private final String baseUrl = "/spring/adminSetup/energyCompany/warehouse";
+    private final String baseUrl = "/adminSetup/energyCompany/warehouse";
     
     /* Main page */
     @RequestMapping

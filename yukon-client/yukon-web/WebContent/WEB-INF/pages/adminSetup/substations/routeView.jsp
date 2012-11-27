@@ -2,9 +2,9 @@
 <%@ taglib uri="http://cannontech.com/tags/cti" prefix="cti"%>
 <%@ taglib uri="http://java.sun.com/jsp/jstl/functions" prefix="fn" %>
 
-<cti:url var="routeUrl" value="/spring/adminSetup/substations/routeMapping/viewRoute" />
-<cti:url var="deleteUrl" value="/spring/adminSetup/substations/routeMapping/removeRoute" />
-<cti:url var="updateUrl" value="/spring/adminSetup/substations/routeMapping/update" />
+<cti:url var="routeUrl" value="/adminSetup/substations/routeMapping/viewRoute" />
+<cti:url var="deleteUrl" value="/adminSetup/substations/routeMapping/removeRoute" />
+<cti:url var="updateUrl" value="/adminSetup/substations/routeMapping/update" />
 
 <b>Assigned Routes</b>
 <form name="routeform" action="${routeUrl}" method="post">

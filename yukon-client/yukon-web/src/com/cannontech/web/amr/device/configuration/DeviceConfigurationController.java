@@ -60,7 +60,7 @@ public class DeviceConfigurationController extends MultiActionController {
 
         ConfigurationTemplate template = deviceConfigurationDao.getConfigurationTemplate(configTemplate);
 
-        String viewPath = new String("redirect:/spring/deviceConfiguration/" + template.getView());
+        String viewPath = new String("redirect:/deviceConfiguration/" + template.getView());
 
         ModelAndView mav = new ModelAndView(viewPath);
 
@@ -78,7 +78,7 @@ public class DeviceConfigurationController extends MultiActionController {
         String templateName = type.getConfigurationTemplateName();
         ConfigurationTemplate template = deviceConfigurationDao.getConfigurationTemplate(templateName);
 
-        String viewPath = new String("redirect:/spring/deviceConfiguration/" + template.getView());
+        String viewPath = new String("redirect:/deviceConfiguration/" + template.getView());
 
         ModelAndView mav = new ModelAndView(viewPath);
 
@@ -96,7 +96,7 @@ public class DeviceConfigurationController extends MultiActionController {
         if (config != null) {
             configName = config.getName();
         }
-        String viewPath = new String("redirect:/spring/deviceConfiguration?home");
+        String viewPath = new String("redirect:/deviceConfiguration?home");
         ModelAndView mav = new ModelAndView(viewPath);
         FlashScope flashScope = new FlashScope(request);
         
@@ -130,7 +130,7 @@ public class DeviceConfigurationController extends MultiActionController {
         String templateName = type.getConfigurationTemplateName();
         ConfigurationTemplate template = deviceConfigurationDao.getConfigurationTemplate(templateName);
 
-        String viewPath = new String("redirect:/spring/deviceConfiguration/" + template.getView());
+        String viewPath = new String("redirect:/deviceConfiguration/" + template.getView());
 
         ModelAndView mav = new ModelAndView(viewPath);
 

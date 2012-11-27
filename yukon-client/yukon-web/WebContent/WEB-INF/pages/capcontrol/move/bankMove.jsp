@@ -10,7 +10,7 @@
 
 <cti:msgScope paths="yukon.web.modules.capcontrol.bankMove">
 
-<cti:url var="controlOrderPage" value="/spring/capcontrol/move/feederBankInfo"/>
+<cti:url var="controlOrderPage" value="/capcontrol/move/feederBankInfo"/>
 
 <script type="text/javascript"> 
 updateFeederBankInfo = function () {
@@ -75,7 +75,7 @@ treeInit = function() {
 </script>
 
 <div style="padding: 5px;">
-    <form:form commandName="bankMoveBean" action="/spring/capcontrol/command/bankMove">
+    <form:form commandName="bankMoveBean" action="/capcontrol/command/bankMove">
         <input type="hidden" name="oneline" value="${oneline}">
         <input type="hidden" name="substationId" value="${substationId}">
         <input type="hidden" name="selectedFeeder" value="${oldFeederId}" id="selectedFeeder">

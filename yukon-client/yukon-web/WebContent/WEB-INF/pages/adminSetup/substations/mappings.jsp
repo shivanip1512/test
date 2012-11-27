@@ -9,7 +9,7 @@
             
             <td valign="top">
                 <div id="sub_element">
-                    <jsp:include page="/spring/adminSetup/substations/routeMapping/viewSubstation">
+                    <jsp:include page="/adminSetup/substations/routeMapping/viewSubstation">
                         <jsp:param name="view" value="" />
                     </jsp:include>
                 </div>
@@ -19,7 +19,7 @@
             
             <td valign="top">
                 <div id="route_element">
-                    <jsp:include page="/spring/adminSetup/substations/routeMapping/viewRoute">
+                    <jsp:include page="/adminSetup/substations/routeMapping/viewRoute">
                         <jsp:param name="view" value="" />
                     </jsp:include>
                 </div>

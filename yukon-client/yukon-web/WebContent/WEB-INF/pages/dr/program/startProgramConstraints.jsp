@@ -5,7 +5,7 @@
 <%@ taglib prefix="tags" tagdir="/WEB-INF/tags" %>
 <%@ taglib prefix="dr" tagdir="/WEB-INF/tags/dr" %>
 
-<cti:url var="submitUrl" value="/spring/dr/program/start/start"/>
+<cti:url var="submitUrl" value="/dr/program/start/start"/>
 <form:form id="startProgramForm" commandName="backingBean" action="${submitUrl}"
     onsubmit="return submitFormViaAjax('drDialog', 'startProgramForm');">
     <form:hidden path="programId"/>
@@ -55,11 +55,11 @@
     <br>
 
     <div class="actionArea">
-        <cti:url var="backUrl" value="/spring/dr/program/start/details">
+        <cti:url var="backUrl" value="/dr/program/start/details">
             <cti:param name="fromBack" value="true"/>
         </cti:url>
         <c:if test="${backingBean.addAdjustments}">
-            <cti:url var="backUrl" value="/spring/dr/program/start/gearAdjustments"/>
+            <cti:url var="backUrl" value="/dr/program/start/gearAdjustments"/>
         </c:if>
         <input type="button" value="<cti:msg key="yukon.web.modules.dr.program.startProgram.backButton"/>"
             onclick="submitFormViaAjax('drDialog', 'startProgramForm', '${backUrl}')"/>

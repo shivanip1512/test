@@ -55,7 +55,7 @@
 							<c:choose>
 								<c:when test="${group.modifiable}">
 									<cti:uniqueIdentifier prefix="groupHierarchy_" var="thisId"/>
-									<form style="display: inline;" id="${thisId}_removeDevice" action="/spring/group/editor/removeDevice" method="post">
+									<form style="display: inline;" id="${thisId}_removeDevice" action="/group/editor/removeDevice" method="post">
 										<input type="hidden" name="deviceId" value="${device.paoIdentifier.paoId}" />
 										<input type="hidden" name="groupName" value="${fn:escapeXml(group.fullName)}" />
 										<input type="hidden" name="showDevices" value="true" />

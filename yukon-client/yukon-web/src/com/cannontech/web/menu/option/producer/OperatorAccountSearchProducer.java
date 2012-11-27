@@ -16,7 +16,7 @@ public class OperatorAccountSearchProducer implements SearchProducer {
     
     public SearchFormData getSearchProducer(YukonUserContext userContext) {
         if (rolePropertyDao.checkProperty(YukonRoleProperty.OPERATOR_ACCOUNT_SEARCH, userContext.getYukonUser())) {
-            SearchFormData formData = new SearchFormData("/spring/stars/operator/account/search", "searchValue");
+            SearchFormData formData = new SearchFormData("/stars/operator/account/search", "searchValue");
             formData.setTypeName("searchBy");
             OperatorAccountSearchBy[] searchBys = OperatorAccountSearchBy.values();
             List<SearchType> searchTypes = Lists.newArrayListWithExpectedSize(searchBys.length);

@@ -112,7 +112,7 @@ public class ComposedGroupController {
                 
                 if (errorMsg == null) {
                     model.addAttribute("groupName", groupName);
-                    return "redirect:/spring/group/editor/home";
+                    return "redirect:/group/editor/home";
                 } else {
                     displayableComposedGroups = getCurrentGroupsForComposedGroup(composedGroup);
                 }

@@ -354,7 +354,7 @@ public class OperatorHardwareConfigController {
             flashScope.setError(errorMessage);
         }
 
-        return "redirect:/spring/stars/operator/hardware/config/edit?accountId=" +
+        return "redirect:/stars/operator/hardware/config/edit?accountId=" +
             accountInfo.getAccountId() + "&inventoryId=" + inventoryId;
     }
 
@@ -389,7 +389,7 @@ public class OperatorHardwareConfigController {
             flashScope.setError(errorMessage);
         }
 
-        return "redirect:/spring/stars/operator/hardware/config/edit";
+        return "redirect:/stars/operator/hardware/config/edit";
     }
 
     @RequestMapping
@@ -424,7 +424,7 @@ public class OperatorHardwareConfigController {
             flashScope.setError(errorMessage);
         }
 
-        return "redirect:/spring/stars/operator/hardware/config/edit";
+        return "redirect:/stars/operator/hardware/config/edit";
     }
 
     private void verifyHardwareIsForAccount(int inventoryId,
@@ -482,7 +482,7 @@ public class OperatorHardwareConfigController {
         }
 
         flashScope.setConfirm(new YukonMessageSourceResolvable("yukon.web.modules.operator.hardwareConfig.meterConfigUpdated"));
-        return "redirect:/spring/stars/operator/hardware/list";
+        return "redirect:/stars/operator/hardware/list";
     }
 
     @RequestMapping(params="cancel")
@@ -492,7 +492,7 @@ public class OperatorHardwareConfigController {
                           HttpSession session) {
 
         AccountInfoFragmentHelper.setupModelMapBasics(accountInfoFragment, modelMap);
-        return "redirect:/spring/stars/operator/hardware/list";
+        return "redirect:/stars/operator/hardware/list";
     }
 
     private void setPageMode(ModelMap modelMap, YukonUserContext userContext) {

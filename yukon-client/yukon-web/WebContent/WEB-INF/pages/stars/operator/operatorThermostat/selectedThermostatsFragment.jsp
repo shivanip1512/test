@@ -8,7 +8,7 @@
 <cti:msgScope paths="modules.operator.selectedThermostatsFragment">
 
 <%-- THERMOSTAT SELECT PAGE URL --%>
-<cti:url var="changeSelectedUrl" value="/spring/stars/operator/thermostatSelect/select">
+<cti:url var="changeSelectedUrl" value="/stars/operator/thermostatSelect/select">
  	<cti:param name="accountId" value="${accountId}"/>
  </cti:url>
  

@@ -71,7 +71,7 @@ public class UpdateController extends MultiActionController {
         Boolean ignoreInvalidIdentifiers = ServletRequestUtils.getBooleanParameter(request, "ignoreInvalidIdentifiers", false);
         
         // error mav
-        ModelAndView errorMav = new ModelAndView("redirect:/spring/bulk/update/upload");
+        ModelAndView errorMav = new ModelAndView("redirect:/bulk/update/upload");
         errorMav.addObject("ignoreInvalidCols", ignoreInvalidCols);
         errorMav.addObject("ignoreInvalidIdentifiers", ignoreInvalidIdentifiers);
         
@@ -92,7 +92,7 @@ public class UpdateController extends MultiActionController {
         bulkUpdateFileInfoMap.put(fileInfoId, bulkUpdateFileInfo);
         
         // confirm
-        ModelAndView mav = new ModelAndView("redirect:/spring/bulk/update/updateConfirm");
+        ModelAndView mav = new ModelAndView("redirect:/bulk/update/updateConfirm");
         mav.addObject("fileInfoId", fileInfoId);
         
         return mav;
@@ -136,7 +136,7 @@ public class UpdateController extends MultiActionController {
     // DO UPDATE
     public ModelAndView doUpdate(HttpServletRequest request, HttpServletResponse response) throws ServletException, FileNotFoundException, IOException {
         
-        ModelAndView mav = new ModelAndView("redirect:/spring/bulk/update/updateResults");
+        ModelAndView mav = new ModelAndView("redirect:/bulk/update/updateResults");
         
         // open file as csv
         String fileInfoId = ServletRequestUtils.getRequiredStringParameter(request, "fileInfoId");

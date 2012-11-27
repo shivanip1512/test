@@ -11,7 +11,7 @@
 </c:if>
         
 <%-- TABLE --%>
-<cti:url var="submitUrl" value="/spring/common/vee/monitor/edit"/>
+<cti:url var="submitUrl" value="/common/vee/monitor/edit"/>
 <form action="${submitUrl}" method="get">
 <c:choose>
 <c:when test="${fn:length(monitors) > 0}">
@@ -33,7 +33,7 @@
         <c:if test="${monitor.evaluatorStatus == 'DISABLED'}">
             <c:set var="tdClass" value="subtleGray"/>
         </c:if>
-        <cti:url var="viewValidationMonitorEditorUrl" value="/spring/common/vee/monitor/edit">
+        <cti:url var="viewValidationMonitorEditorUrl" value="/common/vee/monitor/edit">
             <cti:param name="validationMonitorId" value="${monitorId}"/>
         </cti:url>
         
@@ -90,7 +90,7 @@
 <table class="noStyle" cellpadding="0" cellspacing="0" style="width:100%;">
 	<tr>
 		<td align="left">
-			<cti:url var="reviewUrl" value="/spring/common/veeReview/home"/>
+			<cti:url var="reviewUrl" value="/common/veeReview/home"/>
     		<a href="${reviewUrl}"><i:inline key=".review"/></a>
 		</td>
 		<td align="right">

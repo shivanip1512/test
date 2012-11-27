@@ -149,7 +149,7 @@ public class EnergyCompanyController {
             LiteStarsEnergyCompany energyCompany = energyCompanyService.createEnergyCompany(energyCompanyDto, userContext.getYukonUser(), parentId);
             flashScope.setConfirm(new YukonMessageSourceResolvable("yukon.web.modules.adminSetup.createEnergyCompany.creationSuccessful", energyCompanyDto.getName()));
             modelMap.addAttribute("ecId", energyCompany.getEnergyCompanyId());
-            return "redirect:/spring/adminSetup/energyCompany/general/view";
+            return "redirect:/adminSetup/energyCompany/general/view";
             
         } catch (EnergyCompanyNameUnavailableException e) {
             bindingResult.rejectValue("name", "yukon.web.modules.adminSetup.createEnergyCompany.name.unavailable");

@@ -32,7 +32,7 @@ public class OptOutMenuOptionProducer extends DynamicMenuOptionProducer {
     			new YukonMessageSourceResolvable("yukon.web.menu.config.consumer.programs.optOut");
     		
     		SimpleMenuOptionLink optionLink = new SimpleMenuOptionLink("optOut", resolvable);
-    		optionLink.setLinkUrl("/spring/stars/consumer/optout");
+    		optionLink.setLinkUrl("/stars/consumer/optout");
     		
     		menuOptions.add(optionLink);
     	}

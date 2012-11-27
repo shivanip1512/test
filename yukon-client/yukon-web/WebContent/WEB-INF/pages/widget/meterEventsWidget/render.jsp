@@ -36,7 +36,7 @@
         </c:otherwise>
     </c:choose>
     <div class="actionArea">
-    	<cti:url value="/spring/amr/meterEventsReport/reportAll" var="meterEventsReportUrl">
+    	<cti:url value="/amr/meterEventsReport/reportAll" var="meterEventsReportUrl">
     		<cti:param name="collectionType" value="idList"/>
     		<cti:param name="idList.ids" value="${deviceId}"/>
     		<cti:param name="includeDisabledPaos" value="${meter.disabled}"/>

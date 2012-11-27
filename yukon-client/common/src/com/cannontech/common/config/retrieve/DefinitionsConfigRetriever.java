@@ -31,7 +31,7 @@ private static final Logger log = YukonLogManager.getLogger(DefinitionsConfigRet
         
         if (isJavaWebstart) {
             log.info("Loading pao/device definitons xml for webstart client.");
-            String location = host + "/spring/common/config/deviceDefinition";
+            String location = host + "/common/config/deviceDefinition";
             try {
                 location += "?" + "USERNAME=" + URLEncoder.encode(username, "UTF-8") + "&PASSWORD=" + URLEncoder.encode(password, "UTF-8") + "&noLoginRedirect=true";
                 Resource resource = loader.getResource(location);

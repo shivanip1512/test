@@ -3,7 +3,7 @@
 <%@ taglib prefix="tags" tagdir="/WEB-INF/tags"%>
 <%@ taglib prefix="i" tagdir="/WEB-INF/tags/i18n"%>
 
-<cti:url var="updateUrl" value="/spring/bulk/pointImport/updateLog">
+<cti:url var="updateUrl" value="/bulk/pointImport/updateLog">
     <cti:param name="resultId" value="${resultId}" />
 </cti:url>
 
@@ -37,7 +37,7 @@
         <br>
         <div id="downloadFailedSection" style="display:none">
             <i:inline key=".downloadFailedLabel"/>
-            <cti:url var="downloadUrl" value="/spring/bulk/pointImport/downloadFailed">
+            <cti:url var="downloadUrl" value="/bulk/pointImport/downloadFailed">
                 <cti:param name="resultId" value="${resultId}"/>
             </cti:url>
             <cti:button href="${downloadUrl}" nameKey="downloadFailedButton"/>

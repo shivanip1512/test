@@ -22,7 +22,7 @@
         <td rowspan="3" valign="top">
             <tags:formElementContainer nameKey="applianceInfo">
 
-                <form:form commandName="starsAppliance" action="/spring/stars/operator/appliances/applianceUpdate">
+                <form:form commandName="starsAppliance" action="/stars/operator/appliances/applianceUpdate">
                     <tags:nameValueContainer2>
                         <input type="hidden" name="applianceId" value="${starsAppliance.applianceID}">
                         <input type="hidden" name="accountId" value="${accountId}">
@@ -117,7 +117,7 @@
                     <cti:displayForPageEditModes modes="CREATE,EDIT">
                         <cti:displayForPageEditModes modes="CREATE">
                             <cti:button nameKey="save" name="create" type="submit"/>
-                            <cti:url value="/spring/stars/operator/appliances/applianceList" var="cancelUrl">
+                            <cti:url value="/stars/operator/appliances/applianceList" var="cancelUrl">
                                 <cti:param name="accountId" value="${accountId}"/>
                             </cti:url>
                         </cti:displayForPageEditModes>
@@ -125,7 +125,7 @@
                         <cti:displayForPageEditModes modes="EDIT">
                             <cti:button nameKey="save" name="update" type="submit"/>
                             <cti:button nameKey="delete" name="delete" type="submit"/>
-                            <cti:url value="/spring/stars/operator/appliances/view" var="cancelUrl">
+                            <cti:url value="/stars/operator/appliances/view" var="cancelUrl">
                                 <cti:param name="accountId" value="${accountId}"/>
                                 <cti:param name="applianceId" value="${starsAppliance.applianceID}"/>
                             </cti:url>
@@ -136,7 +136,7 @@
                     
                     <cti:displayForPageEditModes modes="VIEW">
                         <cti:checkRolesAndProperties value="OPERATOR_ALLOW_ACCOUNT_EDITING">
-                            <cti:url value="/spring/stars/operator/appliances/edit" var="editUrl">
+                            <cti:url value="/stars/operator/appliances/edit" var="editUrl">
                                 <cti:param name="accountId" value="${accountId}"/>
                                 <cti:param name="applianceId" value="${starsAppliance.applianceID}"/>
                             </cti:url>

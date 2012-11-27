@@ -55,8 +55,8 @@ jQuery(function() {
         <cti:dataGridCell>
             <!-- Pie Chart -->
             <c:set var="amChartsProduct" value="ampie"/>
-            <c:url var="amDataFile" scope="page" value="/spring/stars/operator/inventory/controlAudit/chartData?auditId=${auditId}"/>
-            <c:url var="amSettingsFile" scope="page" value="/spring/stars/operator/inventory/controlAudit/chartSettings"/>
+            <c:url var="amDataFile" scope="page" value="/stars/operator/inventory/controlAudit/chartData?auditId=${auditId}"/>
+            <c:url var="amSettingsFile" scope="page" value="/stars/operator/inventory/controlAudit/chartSettings"/>
             <c:url var="amSrc" scope="page" value="/JavaScript/amChart/${amChartsProduct}.swf">
                 <c:param name="${amChartsProduct}_path" value="/JavaScript/amChart/" />
                 <c:param name="${amChartsProduct}_flashWidth" value="100%" />

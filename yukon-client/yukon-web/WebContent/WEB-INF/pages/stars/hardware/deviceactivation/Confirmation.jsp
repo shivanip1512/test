@@ -6,7 +6,7 @@
 <%@ taglib uri="http://cannontech.com/tags/cti" prefix="cti"%>
 <%@ taglib tagdir="/WEB-INF/tags" prefix="ct"%>
 
-<cti:url var="url" value="/spring/stars/hardware/deviceactivation" />
+<cti:url var="url" value="/stars/hardware/deviceactivation" />
 
         <title>Device Activation Confirmation</title>
     </head>

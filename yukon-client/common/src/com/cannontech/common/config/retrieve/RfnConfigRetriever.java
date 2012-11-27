@@ -31,7 +31,7 @@ public class RfnConfigRetriever implements ConfigFileRetriever {
         
         if (isJavaWebstart) {
             log.info("Loading rfnPointMapping.xml for webstart client.");
-            String location = host + "/spring/common/config/rfn";
+            String location = host + "/common/config/rfn";
             try {
                 location += "?" + "USERNAME=" + URLEncoder.encode(username, "UTF-8") + "&PASSWORD=" + URLEncoder.encode(password, "UTF-8") + "&noLoginRedirect=true";
                 return loader.getResource(location);

@@ -46,7 +46,7 @@
 
                     <br>
           
-                    <form id="${exportTypeName}exportForm" action="/spring/support/database/migration/export" method="post">
+                    <form id="${exportTypeName}exportForm" action="/support/database/migration/export" method="post">
                         <input type="hidden" name="exportIds" id="${exportTypeName}exportIds" value="" />
                         <input type="hidden" name="exportType" value="${exportTypeName}" />
                     </form>

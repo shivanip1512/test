@@ -15,11 +15,11 @@
         
         <%-- bulk home --%>
         <cti:msg var="bulkOperationsPageTitle" key="yukon.common.device.bulk.bulkHome.pageTitle"/>
-        <cti:crumbLink url="/spring/bulk/bulkHome" title="${bulkOperationsPageTitle}" />
+        <cti:crumbLink url="/bulk/bulkHome" title="${bulkOperationsPageTitle}" />
         
         <%-- import --%>
         <cti:msg var="importUploadPageTitle" key="yukon.common.device.bulk.importUpload.pageTitle"/>
-        <cti:crumbLink url="/spring/bulk/import/upload" title="${importUploadPageTitle}" />
+        <cti:crumbLink url="/bulk/import/upload" title="${importUploadPageTitle}" />
         
         <%-- confirm --%>
         <cti:crumbLink>${pageTitle}</cti:crumbLink>
@@ -32,7 +32,7 @@
     <cti:msg var="headerTitle" key="yukon.common.device.bulk.importConfirm.header"/>
     <tags:boxContainer title="${headerTitle}" id="importConfirmContainer" hideEnabled="false">
     
-        <form id="importConfirmForm" action="/spring/bulk/import/doImport" method="post">
+        <form id="importConfirmForm" action="/bulk/import/doImport" method="post">
 
             <input type="hidden" value="${bulkImportType}" name="bulkImportType" />
             
@@ -70,7 +70,7 @@
             <%-- SUBMIT BUTTONS --%>
             <cti:msg var="importButton" key="yukon.common.device.bulk.importConfirm.importButton"/>
             <cti:msg var="cancelButton" key="yukon.common.device.bulk.importConfirm.cancelButton"/>
-            <cti:url var="cancelUrl" value="/spring/bulk/import/upload"/>
+            <cti:url var="cancelUrl" value="/bulk/import/upload"/>
             
             <br>
             <input type="button" id="cancelButton" value="${cancelButton}" onclick="window.location='${cancelUrl}'" class="formSubmit">

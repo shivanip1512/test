@@ -42,7 +42,7 @@
 
         function forwardToCreDetail(row, id) {
             $('cresTable').removeClassName('activeResultsTable');
-            window.location = "/spring/common/commandRequestExecutionResults/detail?commandRequestExecutionId=" + id + "&jobId=" + ${jobId};
+            window.location = "/common/commandRequestExecutionResults/detail?commandRequestExecutionId=" + id + "&jobId=" + ${jobId};
         }
     
     </script>
@@ -68,10 +68,10 @@
     <%-- FILTER POPUP --%>
     <tags:simplePopup id="filterPopup" title="${filterSectionText}" on="#filterButton">
     
-        <form name="clearForm" id="clearForm" action="/spring/common/commandRequestExecutionResults/list" method="get">
+        <form name="clearForm" id="clearForm" action="/common/commandRequestExecutionResults/list" method="get">
         </form>
     
-        <form name="filterForm" id="filterForm" action="/spring/common/commandRequestExecutionResults/list" method="get">
+        <form name="filterForm" id="filterForm" action="/common/commandRequestExecutionResults/list" method="get">
         
             <c:if test="${not empty error}">
                 <div class="errorRed">${error}</div><br>

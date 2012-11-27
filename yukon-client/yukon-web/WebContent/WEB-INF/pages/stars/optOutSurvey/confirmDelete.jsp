@@ -8,7 +8,7 @@
     <cti:msg2 key=".confirmDelete" arguments="${optOutSurvey.surveyName}"/>
 </h1>
 
-<cti:url var="deleteUrl" value="/spring/stars/optOutSurvey/delete"/>
+<cti:url var="deleteUrl" value="/stars/optOutSurvey/delete"/>
 <form id="confirmForm" action="${deleteUrl}">
     <input type="hidden" name="optOutSurveyId" value="${optOutSurvey.optOutSurveyId}"/>
 

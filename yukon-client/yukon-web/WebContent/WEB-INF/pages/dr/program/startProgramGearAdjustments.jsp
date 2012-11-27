@@ -11,14 +11,14 @@
         <cti:msg key="yukon.web.modules.dr.program.startProgram.enterAdjustments"
 			htmlEscape="true" argument="${program.name}"/>
     </h1>
-    <cti:url var="submitUrl" value="/spring/dr/program/start/constraints"/>
+    <cti:url var="submitUrl" value="/dr/program/start/constraints"/>
     <dr:programStartInfo page="startProgram"/>
 </c:if>
 <c:if test="${empty program}">
     <h1 class="dialogQuestion">
         <cti:msg key="yukon.web.modules.dr.program.startProgram.enterMultipleAdjustments"/>
     </h1>
-    <cti:url var="submitUrl" value="/spring/dr/program/start/multipleConstraints"/>
+    <cti:url var="submitUrl" value="/dr/program/start/multipleConstraints"/>
     <dr:programStartInfo page="startMultiplePrograms"/>
 </c:if>
 
@@ -84,11 +84,11 @@
     </c:if>
     <div class="actionArea">
         <c:if test="${empty errors}">
-            <cti:url var="backUrl" value="/spring/dr/program/start/details">
+            <cti:url var="backUrl" value="/dr/program/start/details">
                 <cti:param name="fromBack" value="true"/>
             </cti:url>
             <c:if test="${empty program}">
-                <cti:url var="backUrl" value="/spring/dr/program/start/multipleDetails">
+                <cti:url var="backUrl" value="/dr/program/start/multipleDetails">
                     <cti:param name="fromBack" value="true"/>
                 </cti:url>
             </c:if>

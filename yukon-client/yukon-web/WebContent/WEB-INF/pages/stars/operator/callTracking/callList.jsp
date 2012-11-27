@@ -42,7 +42,7 @@
 				<td>
 					<%-- callNumber with edit link --%>
 					<cti:displayForPageEditModes modes="EDIT,CREATE,VIEW">
-						<cti:url var="viewCallUrl" value="/spring/stars/operator/callTracking/view">
+						<cti:url var="viewCallUrl" value="/stars/operator/callTracking/view">
 							<cti:param name="accountId">${accountId}</cti:param>
 							<cti:param name="callId">${callReportWrapper.callReport.callId}</cti:param>
 						</cti:url>
@@ -57,7 +57,7 @@
 				<%-- delete icon --%>
 				<cti:displayForPageEditModes modes="EDIT,CREATE">
 					<td class="removeCol">
-						<form id="deleteCallForm" action="/spring/stars/operator/callTracking/deleteCall" method="post">
+						<form id="deleteCallForm" action="/stars/operator/callTracking/deleteCall" method="post">
 							<input type="hidden" name="accountId" value="${accountId}">
 							<input type="hidden" name="deleteCallId" value="${callReportWrapper.callReport.callId}">
                             <div class="dib">
@@ -74,7 +74,7 @@
     <%-- create button --%>
     <cti:displayForPageEditModes modes="CREATE">
         <div class="actionArea">
-            <form id="createCallForm" action="/spring/stars/operator/callTracking/create" method="get">
+            <form id="createCallForm" action="/stars/operator/callTracking/create" method="get">
                 <input type="hidden" name="accountId" value="${accountId}">
                 <cti:button nameKey="create" type="submit"/>
             </form>

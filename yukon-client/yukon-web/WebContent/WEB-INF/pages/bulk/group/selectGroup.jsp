@@ -9,14 +9,14 @@
     <c:set var="containerKey" value="yukon.common.device.bulk.addToGroup"/>
     <cti:msg var="buttonText" key="yukon.common.device.bulk.addToGroup.addToGroupButtonText"/>
     <cti:msg var="noDeviceGroupSelectedAlertText" key="yukon.common.device.bulk.addToGroup.noDeviceGroupSelectedAlertText"/>
-    <c:set var="formAction" value="/spring/bulk/group/addToGroup"/>
+    <c:set var="formAction" value="/bulk/group/addToGroup"/>
 </c:when>
 <c:when test="${addRemove eq 'REMOVE'}">
     <cti:msg var="pageTitle" key="yukon.common.device.bulk.removeFromGroup.pageTitle"/>
     <c:set var="containerKey" value="yukon.common.device.bulk.removeFromGroup"/>
     <cti:msg var="buttonText" key="yukon.common.device.bulk.removeFromGroup.removeFromGroupButtonText"/>
     <cti:msg var="noDeviceGroupSelectedAlertText" key="yukon.common.device.bulk.removeFromGroup.noDeviceGroupSelectedAlertText"/>
-    <c:set var="formAction" value="/spring/bulk/group/removeFromGroup"/>
+    <c:set var="formAction" value="/bulk/group/removeFromGroup"/>
 </c:when>
 </c:choose>
 
@@ -31,11 +31,11 @@
         
         <%-- bulk home --%>
         <cti:msg var="bulkOperationsPageTitle" key="yukon.common.device.bulk.bulkHome.pageTitle"/>
-        <cti:crumbLink url="/spring/bulk/bulkHome" title="${bulkOperationsPageTitle}" />
+        <cti:crumbLink url="/bulk/bulkHome" title="${bulkOperationsPageTitle}" />
         
         <%-- device selection --%>
         <cti:msg var="deviceSelectionPageTitle" key="yukon.common.device.bulk.deviceSelection.pageTitle"/>
-        <cti:crumbLink url="/spring/bulk/deviceSelection" title="${deviceSelectionPageTitle}"/>
+        <cti:crumbLink url="/bulk/deviceSelection" title="${deviceSelectionPageTitle}"/>
         
         <%-- collection actions --%>
         <tags:collectionActionsCrumbLink deviceCollection="${deviceCollection}" />

@@ -6,7 +6,7 @@
 
 <cti:standardPage module="amr" page="meterSearchResults">
 
-<cti:url value="/spring/meter/home" var="meterHomeUrl"/>
+<cti:url value="/meter/home" var="meterHomeUrl"/>
 
     <script type="text/javascript">
     
@@ -26,9 +26,9 @@
     	
     </script>
 	
-    <c:set var="baseUrl" value="/spring/meter/search"/>
+    <c:set var="baseUrl" value="/meter/search"/>
 
-    <form id="filterForm" action="/spring/meter/search">
+    <form id="filterForm" action="/meter/search">
         <tags:boxContainer2 nameKey="meterSearch">
             <input type="hidden" name="startIndex" value="${meterSearchResults.startIndex}" />
             <input type="hidden" name="itemsPerPage" value="${meterSearchResults.count}" />
@@ -60,7 +60,7 @@
     <c:if test="${meterSearchResults.hitCount > 0}">
         <c:set var="linkHeaderHtml">
             <span class="navLink fr"> 
-                <cti:link href="/spring/bulk/collectionActions" key="yukon.web.modules.amr.deviceSelection.performCollectionAction">
+                <cti:link href="/bulk/collectionActions" key="yukon.web.modules.amr.deviceSelection.performCollectionAction">
                     <cti:mapParam value="${deviceGroupCollection.collectionParameters}" />
                 </cti:link> 
             </span>

@@ -73,7 +73,7 @@ YEvent.observeSelectorClick('#confirmCancel', function(event) {
            
             <tr>
                 <td>
-                    <cti:url var="viewWorkOrderUrl" value="/spring/stars/operator/workOrder/view">
+                    <cti:url var="viewWorkOrderUrl" value="/stars/operator/workOrder/view">
                         <cti:param name="accountId">${accountId}</cti:param>
                         <cti:param name="workOrderId">${workOrder.workOrderBase.orderId}</cti:param>
                     </cti:url>
@@ -109,7 +109,7 @@ YEvent.observeSelectorClick('#confirmCancel', function(event) {
     <%-- Confirm Dialog for delete work order --%>
     <cti:msg2 key=".deleteWorkOrderConfirmation.title" var="confirmDialogTitle"/>
     <tags:simplePopup title="${confirmDialogTitle}" id="confirmPopup" styleClass="smallSimplePopup">
-        <form action="/spring/stars/operator/workOrder/deleteWorkOrder" method="post">
+        <form action="/stars/operator/workOrder/deleteWorkOrder" method="post">
             <input type="hidden" name="accountId" value="">
             <input type="hidden" name="deleteWorkOrderId" value="">
             <div id="confirmMessage"></div>
@@ -123,7 +123,7 @@ YEvent.observeSelectorClick('#confirmCancel', function(event) {
     <%-- create button --%>
     <cti:displayForPageEditModes modes="CREATE">
         <div class="actionArea">
-            <form id="createWorkOrderForm" action="/spring/stars/operator/workOrder/create" method="get">
+            <form id="createWorkOrderForm" action="/stars/operator/workOrder/create" method="get">
                 <input type="hidden" name="accountId" value="${accountId}">
                 <cti:button nameKey="create" type="submit"/>
             </form>

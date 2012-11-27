@@ -57,7 +57,7 @@ jQuery(function(){
    				
    					<%-- INSTRUCTIONS --%>
 				    <div class="plainText">
-				    	<cti:url var="scheduleUrl" value="/spring/stars/operator/thermostatSchedule/savedSchedules">
+				    	<cti:url var="scheduleUrl" value="/stars/operator/thermostatSchedule/savedSchedules">
 				    		<cti:param name="accountId" value="${accountId}"/>
 				    		<cti:param name="thermostatIds" value="${thermostatIds}"/>
 				    	</cti:url>
@@ -85,7 +85,7 @@ jQuery(function(){
 							    </c:choose>
                                 
                                 <tags:thermostatManualEditor thermostat="${thermostat}"
-                                                             actionPath="/spring/stars/operator/thermostatManual/save" 
+                                                             actionPath="/stars/operator/thermostatManual/save" 
                                                              temperatureUnit="${temperatureUnit}"
                                                              event="${event}"
                                                              thermostatIds="${thermostatIds}"
@@ -101,7 +101,7 @@ jQuery(function(){
                                 <%-- Auto Enabled Manual Page --%>
                                 <c:if test="${!autoModeEnabledCommandView && autoModeEnabled}">
                                     <br><br>
-                                    <cti:url var="autoEnabledManualUrl" value="/spring/stars/operator/thermostatManual/autoEnabledView">
+                                    <cti:url var="autoEnabledManualUrl" value="/stars/operator/thermostatManual/autoEnabledView">
                                         <cti:param name="accountId" value="${accountId}" />
                                         <cti:param name="thermostatIds" value="${thermostatIds}"/>
                                     </cti:url>
@@ -110,7 +110,7 @@ jQuery(function(){
                                 
 				                <%-- RUN PROGRAM BUTTON --%>
 				                <br><br>
-				                <form action="/spring/stars/operator/thermostatManual/runProgram" method="post" >
+				                <form action="/stars/operator/thermostatManual/runProgram" method="post" >
 				                	<input name="accountId" type="hidden" value="${accountId}" />
 				                    <input name="thermostatIds" type="hidden" value="${thermostatIds}" />
 				                    <cti:msg var="runProgramText" key="yukon.web.modules.operator.thermostatManual.runProgram" />
@@ -118,7 +118,7 @@ jQuery(function(){
 				                    <input name="runProgram" type="submit" value="${runProgramText}" style="width:100px;"/>
 				                </form>
                                 <br>
-                                <cti:url var="historyUrl" value="/spring/stars/operator/thermostat/history/view">
+                                <cti:url var="historyUrl" value="/stars/operator/thermostat/history/view">
                                     <cti:param name="accountId" value="${accountId}" />
                                     <cti:param name="thermostatIds" value="${thermostatIds}"/>
                                 </cti:url>

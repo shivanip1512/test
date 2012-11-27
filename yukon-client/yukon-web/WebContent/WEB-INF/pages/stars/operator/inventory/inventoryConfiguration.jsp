@@ -53,7 +53,7 @@
 				</table>
 			</cti:dataGridCell>
 			<cti:dataGridCell>
-				<cti:url value="/spring/stars/operator/inventory/inventoryActions?" var="cancelUrl" />
+				<cti:url value="/stars/operator/inventory/inventoryActions?" var="cancelUrl" />
 				<cti:button href="${cancelUrl}${pageContext.request.queryString}" nameKey="cancel"/>
 			</cti:dataGridCell>
 		</cti:dataGrid>

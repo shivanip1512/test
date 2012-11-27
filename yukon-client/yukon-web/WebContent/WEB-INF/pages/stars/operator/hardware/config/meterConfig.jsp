@@ -9,7 +9,7 @@
     
     <cti:includeCss link="/WebConfig/yukon/styles/operator/hardwareConfig.css"/>
 
-    <form:form commandName="meter" action="/spring/stars/operator/hardware/config/updateMeterConfig">
+    <form:form commandName="meter" action="/stars/operator/hardware/config/updateMeterConfig">
         <input type="hidden" name="accountId" value="${accountId}"/>
         <form:hidden path="deviceId"/>
         <form:hidden path="disabled"/>

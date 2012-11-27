@@ -10,7 +10,7 @@
     
     <jsp:setProperty name="CtiNavObject" property="moduleExitPage" value=""/>
     
-    <c:set var="baseUrl" value="/spring/capcontrol/search/searchResults"/>
+    <c:set var="baseUrl" value="/capcontrol/search/searchResults"/>
     
     <form id="parentForm" action="feeders.jsp" method="post">
         <input type="hidden" name="${lastAreaKey}" />

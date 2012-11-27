@@ -6,7 +6,7 @@
         		htmlEscape="true" argument="${controlArea.name}" />
     </h1>
 
-    <cti:url var="submitUrl" value="/spring/dr/controlArea/resetPeak"/>
+    <cti:url var="submitUrl" value="/dr/controlArea/resetPeak"/>
     <form id="sendResetPeakForm" action="${submitUrl}"
         onsubmit="return submitFormViaAjax('drDialog', 'sendResetPeakForm');">
         <input type="hidden" name="controlAreaId" value="${controlArea.paoIdentifier.paoId}"/>

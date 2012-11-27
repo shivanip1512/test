@@ -123,7 +123,7 @@
     </cti:checkRole>
     
     <%-- DAILY USAGE REPORT --%>
-    <form id="reportForm" action="/spring/widget/profileWidget/viewDailyUsageReport">
+    <form id="reportForm" action="/widget/profileWidget/viewDailyUsageReport">
     
     <input type="hidden" name="deviceId" value="${deviceId}">
     

@@ -53,7 +53,7 @@
         <property name="commandName" value="deviceConfiguration" />
         <property name="commandClass" value="com.cannontech.common.device.config.model.MCT470Configuration" />
         <property name="formView" value="edit" />
-        <property name="successView" value="redirect:/spring/deviceConfiguration?home" />
+        <property name="successView" value="redirect:/deviceConfiguration?home" />
         
         <property name="configurationTemplate" ref="mct470Config" />
 		<property name="deviceConfigurationDao" ref="deviceConfigurationDao"/>
@@ -74,7 +74,7 @@
         <property name="commandName" value="deviceConfiguration" />
         <property name="commandClass" value="com.cannontech.common.device.config.model.MCT430Configuration" />
         <property name="formView" value="edit" />
-        <property name="successView" value="redirect:/spring/deviceConfiguration?home" />
+        <property name="successView" value="redirect:/deviceConfiguration?home" />
         
         <property name="configurationTemplate" ref="mct430Config" />
 		<property name="deviceConfigurationDao" ref="deviceConfigurationDao"/>
@@ -94,7 +94,7 @@
         <property name="commandName" value="deviceConfiguration" />
         <property name="commandClass" value="com.cannontech.common.device.config.model.MCT420Configuration" />
         <property name="formView" value="edit" />
-        <property name="successView" value="redirect:/spring/deviceConfiguration?home" />
+        <property name="successView" value="redirect:/deviceConfiguration?home" />
         <property name="configurationTemplate" ref="mct420Config" />
 		<property name="deviceConfigurationDao" ref="deviceConfigurationDao"/>
 		<property name="inputRoot" ref="deviceConfigInputRoot" />
@@ -114,7 +114,7 @@
         <property name="commandName" value="deviceConfiguration" />
         <property name="commandClass" value="com.cannontech.common.device.config.model.MCT410Configuration" />
         <property name="formView" value="edit" />
-        <property name="successView" value="redirect:/spring/deviceConfiguration?home" />
+        <property name="successView" value="redirect:/deviceConfiguration?home" />
 
         <property name="configurationTemplate" ref="mct410Config" />        
 		<property name="deviceConfigurationDao" ref="deviceConfigurationDao"/>
@@ -134,7 +134,7 @@
         <property name="commandName" value="deviceConfiguration" />
         <property name="commandClass" value="com.cannontech.common.device.config.model.DNPConfiguration" />
         <property name="formView" value="edit" />
-        <property name="successView" value="redirect:/spring/deviceConfiguration?home" />
+        <property name="successView" value="redirect:/deviceConfiguration?home" />
         <property name="configurationTemplate" ref="dnpConfig" />        
         <property name="deviceConfigurationDao" ref="deviceConfigurationDao"/>
         <property name="inputRoot" ref="deviceConfigInputRoot" />

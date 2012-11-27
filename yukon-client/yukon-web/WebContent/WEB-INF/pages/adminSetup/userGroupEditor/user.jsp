@@ -108,7 +108,7 @@ jQuery(function() {
                                 path="userGroupId" defaultItemLabel="${none}" defaultItemValue="" />
                         </cti:displayForPageEditModes>
                         <cti:displayForPageEditModes modes="VIEW">
-                            <cti:url value="/spring/adminSetup/userGroup/view" var="userGroupUrl">
+                            <cti:url value="/adminSetup/userGroup/view" var="userGroupUrl">
                                 <cti:param name="userGroupId" value="${user.userGroupId}" />
                             </cti:url>
                             <tags:nameValue2 nameKey=".userGroup">

@@ -10,7 +10,7 @@
 <c:choose>
 	<c:when test="${touAttributesAvailable}">
 		<div id="popupDiv" style="text-align:right;font-size:12px;">
-			<cti:url var="touSpecificsUrl" value="/spring/meter/touPreviousReadings">
+			<cti:url var="touSpecificsUrl" value="/meter/touPreviousReadings">
 		    	<cti:param name="deviceId" value="${meter.deviceId}"/>
 		    </cti:url>
 		    <a id="touPopupLink" href="javascript:void(0)"

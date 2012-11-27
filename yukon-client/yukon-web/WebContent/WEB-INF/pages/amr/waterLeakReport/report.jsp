@@ -148,7 +148,7 @@
         <tags:dropdownActions>
             <c:if test="${collectionFromReportResults != null && filterResult.hitCount > 0}">
                 <li>
-                    <cti:link href="/spring/bulk/collectionActions"
+                    <cti:link href="/bulk/collectionActions"
                         key="yukon.web.modules.amr.waterLeakReport.report.performCollectionAction">
                         <cti:mapParam value="${collectionFromReportResults.collectionParameters}"/>
                     </cti:link>

@@ -15,13 +15,13 @@ function addUsers() {
 }
 </script>
     
-    <cti:url value="/spring/adminSetup/userGroup/users" var="usersUrl"/>
+    <cti:url value="/adminSetup/userGroup/users" var="usersUrl"/>
     <cti:msg2 var="usersContainerTitle" key=".usersContainer"/>
     
     <tags:pagedBox title="${usersContainerTitle}" searchResult="${searchResult}" isFiltered="false" baseUrl="${usersUrl}" styleClass="usersContainer">
         <c:choose>
             <c:when test="${!empty users}">
-                <form action="/spring/adminSetup/userGroup/removeUser" method="post">
+                <form action="/adminSetup/userGroup/removeUser" method="post">
                     <input type="hidden" name="userGroupId" value="${userGroupId}">
                     <div class="usersContainer">
                         <table class="compactResultsTable rowHighlighting">
@@ -32,7 +32,7 @@ function addUsers() {
                                 <th class="removeColumn"><i:inline key=".remove"/></th>
                             </tr>
                             <c:forEach items="${users}" var="user">
-                                <cti:url value="/spring/adminSetup/user/view" var="editUserUrl">
+                                <cti:url value="/adminSetup/user/view" var="editUserUrl">
                                     <cti:param name="userId" value="${user.userID}"/>
                                 </cti:url>
                                 <c:choose>
@@ -65,7 +65,7 @@ function addUsers() {
             </c:otherwise>
         </c:choose>
         <div class="actionArea">
-            <form id="addUsersForm" action="/spring/adminSetup/userGroup/addUsers" method="post">
+            <form id="addUsersForm" action="/adminSetup/userGroup/addUsers" method="post">
                 <input type="hidden" name="userIds" id="userIds">
                 <input type="hidden" name="userGroupId" value="${userGroupId}">
                 <tags:pickerDialog type="userPicker" id="userPicker" destinationFieldId="userIds" excludeIds="${alreadyAssignedUserIds}" linkType="button" 

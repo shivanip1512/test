@@ -14,7 +14,7 @@
         </c:choose>
     </h1>
 
-    <form id="sendEnableForm" action="/spring/dr/program/setEnabled">
+    <form id="sendEnableForm" action="/dr/program/setEnabled">
         <input type="hidden" name="programId" value="${program.paoIdentifier.paoId}"/>
         <input type="hidden" name="isEnabled" value="${isEnabled}"/>
         <div class="actionArea">

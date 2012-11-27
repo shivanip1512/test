@@ -1332,25 +1332,27 @@
                 <value>ALLOW|/|WEB_CLIENT</value>
                 <value>ALLOW|/index.jsp|WEB_CLIENT</value>
                 <value>ALLOW|/home|WEB_CLIENT</value>
-                <value>DENY|/spring/debug/**|!ENABLE_WEB_DEBUG_PAGES</value>
+                <value>DENY|/debug/**|!ENABLE_WEB_DEBUG_PAGES</value>
                                                 
-                <value>ALLOW|/spring/stars/consumer/**|RESIDENTIAL_CUSTOMER</value>
-                <value>ALLOW|/spring/login/changelogin/updateusername|RESIDENTIAL_CUSTOMER</value>
-                <value>ALLOW|/spring/login/changelogin/updatepassword|RESIDENTIAL_CUSTOMER</value>                                
+                <value>ALLOW|/stars/consumer/**|RESIDENTIAL_CUSTOMER</value>
+                <value>ALLOW|/login/changelogin/updateusername|RESIDENTIAL_CUSTOMER</value>
+                <value>ALLOW|/login/changelogin/updatepassword|RESIDENTIAL_CUSTOMER</value>                                
                 <!-- Allow for Trending -->
                 <value>ALLOW|/servlet/GraphGenerator|RESIDENTIAL_CUSTOMER</value>
                 <value>ALLOW|/servlet/Download|RESIDENTIAL_CUSTOMER</value>
                 <value>ALLOW|/include/trending_print.jsp|RESIDENTIAL_CUSTOMER</value>
                 <value>ALLOW|/include/options_popup.jsp|RESIDENTIAL_CUSTOMER</value>
                 <value>ALLOW|/JavaScript/yukon/ui/dateTimePickers.js.jsp|RESIDENTIAL_CUSTOMER</value>
-                               
+
+                <value>ALLOW|/spring/**|RESIDENTIAL_CUSTOMER</value>
+
                 <value>DENY|/**|RESIDENTIAL_CUSTOMER</value>
                 
                 <!-- Deny Capacitor Control to all except CBCSettingsRole role -->
-                <value>DENY|/spring/capcontrol/**|!CBC_SETTINGS</value>            
+                <value>DENY|/capcontrol/**|!CBC_SETTINGS</value>            
                 <value>DENY|/capcontrol/**|!CBC_SETTINGS</value>
                 
-                <value>DENY|/spring/support/**|!OPERATOR_ADMINISTRATOR</value>
+                <value>DENY|/support/**|!OPERATOR_ADMINISTRATOR</value>
                 
                 <!-- Allow explicit access to each Admin page.  Default DENY to all pages unless ADMIN_EDIT_ENERGY_COMPANY -->
                 <!-- These should be removed with the rewrite of Energy Company configuration pages. -->

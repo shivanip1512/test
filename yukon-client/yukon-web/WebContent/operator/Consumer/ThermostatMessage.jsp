@@ -37,7 +37,7 @@
               <div style="margin: 10px"> 
                 <!-- Don't have to include the 'message' param in this url because it is already
                      on the request (message param is used by controller) -->
-                <cti:url var="completeUrl" value="/spring/stars/operator/manualComplete">
+                <cti:url var="completeUrl" value="/stars/operator/manualComplete">
                     <cti:param name="thermostatIds" value="${param.thermostatIds}" />
                 </cti:url>
                 <jsp:include page="${completeUrl}"></jsp:include>

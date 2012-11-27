@@ -38,7 +38,7 @@
         <tags:boxContainer2 nameKey="promptForEmail" hideEnabled="false">
             <cti:msg2 key=".promptForEmail"/>
             <div class="fr">
-            	<cti:url value="/spring/stars/consumer/contacts/edit" var="editUrl">
+            	<cti:url value="/stars/consumer/contacts/edit" var="editUrl">
             		<cti:param name="contactId">${contactId}</cti:param>
             	</cti:url>
 	            <cti:button nameKey="promptForEmail" href="${editUrl}" />
@@ -122,7 +122,7 @@
         <c:if test="${showNotification}">
 	        <cti:msg key="yukon.dr.consumer.general.oddsForControlTitle" var="oddsTitle" />
 	        <tags:boxContainer title="${oddsTitle}" hideEnabled="false">
-	            <form action="/spring/stars/consumer/general/updateOddsForControlNotification" method="post" onsubmit="checkOddsForControlEmail()">
+	            <form action="/stars/consumer/general/updateOddsForControlNotification" method="post" onsubmit="checkOddsForControlEmail()">
 	                <input id="oddsForControlNotification" type="checkbox" name="oddsForControlNotification" ${(emailEnabled)?'checked':''}/>
 	                <label for="oddsForControlNotification">
 				        <cti:msg key="yukon.dr.consumer.general.enableOddsForControl"/>

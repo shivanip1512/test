@@ -4,7 +4,7 @@
 <%@ taglib prefix="i" tagdir="/WEB-INF/tags/i18n"%>
 <%@ taglib prefix="jqGrid" tagdir="/WEB-INF/tags/jqGrid" %>
 
-<cti:url var="dataUrl" value="/spring/widget/rfnOutagesWidget/outageData"><cti:param name="deviceId" value="${deviceId}"/></cti:url>
+<cti:url var="dataUrl" value="/widget/rfnOutagesWidget/outageData"><cti:param name="deviceId" value="${deviceId}"/></cti:url>
 <script type="text/javascript">
 var loadOutageTable = function() {
     var extraParameters = {'deviceId': '${deviceId}'};

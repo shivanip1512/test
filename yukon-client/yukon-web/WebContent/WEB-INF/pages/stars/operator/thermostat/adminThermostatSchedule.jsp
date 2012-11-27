@@ -121,7 +121,7 @@
     
     <div align="center">
     
-        <form id="scheduleForm" name="scheduleForm" method="POST" action="/spring/stars/admin/thermostat/schedule/save">
+        <form id="scheduleForm" name="scheduleForm" method="POST" action="/stars/admin/thermostat/schedule/save">
 
             <input id="temperatureUnit" type="hidden" name="temperatureUnit" value="${temperatureUnit}">
             <input id="schedules" type="hidden" name="schedules">

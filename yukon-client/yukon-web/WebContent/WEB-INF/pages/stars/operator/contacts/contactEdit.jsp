@@ -29,7 +29,7 @@
 	<cti:url var="delete" value="/WebConfig/yukon/Icons/delete.gif"/>
 	<cti:url var="deleteOver" value="/WebConfig/yukon/Icons/delete_over.gif"/>
 	
-	<form:form id="contactsUpdateForm" commandName="contactDto" action="/spring/stars/operator/contacts/contactUpdate" method="post">
+	<form:form id="contactsUpdateForm" commandName="contactDto" action="/stars/operator/contacts/contactUpdate" method="post">
 	
 		<input type="hidden" name="contactId" value="${contactDto.contactId}">
 		<input type="hidden" name="accountId" value="${accountId}"/>
@@ -127,13 +127,13 @@
             <cti:button nameKey="save" type="submit" styleClass="f_blocker"/>
             
             <cti:displayForPageEditModes modes="EDIT">
-                <cti:url value="/spring/stars/operator/contacts/view" var="cancelUrl">
+                <cti:url value="/stars/operator/contacts/view" var="cancelUrl">
                     <cti:param name="accountId" value="${accountId}"/>
                     <cti:param name="contactId" value="${contactId}"/>
                 </cti:url>
             </cti:displayForPageEditModes>
             <cti:displayForPageEditModes modes="CREATE">
-                <cti:url value="/spring/stars/operator/contacts/contactList" var="cancelUrl">
+                <cti:url value="/stars/operator/contacts/contactList" var="cancelUrl">
                     <cti:param name="accountId" value="${accountId}"/>
                 </cti:url>
             </cti:displayForPageEditModes>
@@ -143,7 +143,7 @@
         </cti:displayForPageEditModes>
         <cti:displayForPageEditModes modes="VIEW">
             <cti:checkRolesAndProperties value="OPERATOR_ALLOW_ACCOUNT_EDITING">
-                <cti:url value="/spring/stars/operator/contacts/edit" var="editUrl">
+                <cti:url value="/stars/operator/contacts/edit" var="editUrl">
                     <cti:param name="accountId" value="${accountId}"/>
                     <cti:param name="contactId" value="${contactId}"/>
                 </cti:url>

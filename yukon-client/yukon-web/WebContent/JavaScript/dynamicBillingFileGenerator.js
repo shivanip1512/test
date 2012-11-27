@@ -230,7 +230,7 @@ function getAttributeValue(option, attribute){
 }
 
 function cancelButton() {
-	window.location = "/spring/dynamicBilling/overview";
+	window.location = "/dynamicBilling/overview";
 }
 
 function deleteButton(){

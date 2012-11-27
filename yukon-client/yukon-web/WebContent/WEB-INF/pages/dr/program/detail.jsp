@@ -123,7 +123,7 @@
                                     <cti:msg key="yukon.web.modules.dr.programDetail.actions.start"/>
                                 </span>
                                 <br>
-                                <cti:url var="stopProgramUrl" value="/spring/dr/program/stop/details">
+                                <cti:url var="stopProgramUrl" value="/dr/program/stop/details">
                                     <cti:param name="programId" value="${programId}"/>
                                 </cti:url>
                                 <tags:simpleDialogLink titleKey="yukon.web.modules.dr.program.stopProgram.title" 
@@ -131,7 +131,7 @@
                                     logoKey="yukon.web.modules.dr.programDetail.actions.stopIcon"
                                     labelKey="yukon.web.modules.dr.programDetail.actions.stop"/>
                                 <br>
-                                <cti:url var="changeGearsUrl" value="/spring/dr/program/getChangeGearValue">
+                                <cti:url var="changeGearsUrl" value="/dr/program/getChangeGearValue">
                                     <cti:param name="programId" value="${programId}"/>
                                 </cti:url>
                                 <tags:simpleDialogLink titleKey="yukon.web.modules.dr.program.getChangeGearValue.title" 
@@ -139,7 +139,7 @@
                                     logoKey="yukon.web.modules.dr.programDetail.actions.changeGearsIcon"
                                     labelKey="yukon.web.modules.dr.programDetail.actions.changeGears"/>
                                 <br>
-                                <cti:url var="sendDisableUrl" value="/spring/dr/program/sendEnableConfirm">
+                                <cti:url var="sendDisableUrl" value="/dr/program/sendEnableConfirm">
                                     <cti:param name="programId" value="${programId}"/>
                                     <cti:param name="isEnabled" value="false"/>
                                 </cti:url>
@@ -151,7 +151,7 @@
                             </tags:dynamicChooseOption>
 
                             <tags:dynamicChooseOption optionId="scheduledEnabled">
-                                <cti:url var="startProgramUrl" value="/spring/dr/program/start/details">
+                                <cti:url var="startProgramUrl" value="/dr/program/start/details">
                                     <cti:param name="programId" value="${programId}"/>
                                 </cti:url>
                                 <tags:simpleDialogLink titleKey="yukon.web.modules.dr.program.startProgram.title" 
@@ -159,7 +159,7 @@
                                     logoKey="yukon.web.modules.dr.programDetail.actions.startIcon"
                                     labelKey="yukon.web.modules.dr.programDetail.actions.start"/>
                                 <br>
-                                <cti:url var="stopProgramUrl" value="/spring/dr/program/stop/details">
+                                <cti:url var="stopProgramUrl" value="/dr/program/stop/details">
                                     <cti:param name="programId" value="${programId}"/>
                                 </cti:url>
                                 <tags:simpleDialogLink titleKey="yukon.web.modules.dr.program.stopProgram.title" 
@@ -175,7 +175,7 @@
                                 </span>
                                 <br>
                                 
-                                <cti:url var="sendDisableUrl" value="/spring/dr/program/sendEnableConfirm">
+                                <cti:url var="sendDisableUrl" value="/dr/program/sendEnableConfirm">
                                     <cti:param name="programId" value="${programId}"/>
                                     <cti:param name="isEnabled" value="false"/>
                                 </cti:url>
@@ -187,7 +187,7 @@
                             </tags:dynamicChooseOption>
 
                             <tags:dynamicChooseOption optionId="enabled">
-                                <cti:url var="startProgramUrl" value="/spring/dr/program/start/details">
+                                <cti:url var="startProgramUrl" value="/dr/program/start/details">
                                     <cti:param name="programId" value="${programId}"/>
                                 </cti:url>
                                 <tags:simpleDialogLink titleKey="yukon.web.modules.dr.program.startProgram.title" 
@@ -207,7 +207,7 @@
                                     <cti:msg key="yukon.web.modules.dr.programDetail.actions.changeGears"/>
                                 </span>
                                 <br>
-                                <cti:url var="sendDisableUrl" value="/spring/dr/program/sendEnableConfirm">
+                                <cti:url var="sendDisableUrl" value="/dr/program/sendEnableConfirm">
                                     <cti:param name="programId" value="${programId}"/>
                                     <cti:param name="isEnabled" value="false"/>
                                 </cti:url>
@@ -225,7 +225,7 @@
                                     <cti:msg key="yukon.web.modules.dr.programDetail.actions.start"/>
                                 </span>
                                 <br>
-                                <cti:url var="stopProgramUrl" value="/spring/dr/program/stop/details">
+                                <cti:url var="stopProgramUrl" value="/dr/program/stop/details">
                                     <cti:param name="programId" value="${programId}"/>
                                 </cti:url>
                                 <tags:simpleDialogLink titleKey="yukon.web.modules.dr.program.stopProgram.title" 
@@ -233,7 +233,7 @@
                                     logoKey="yukon.web.modules.dr.programDetail.actions.stopIcon"
                                     labelKey="yukon.web.modules.dr.programDetail.actions.stop"/>
                                 <br>
-                                <cti:url var="changeGearsUrl" value="/spring/dr/program/getChangeGearValue">
+                                <cti:url var="changeGearsUrl" value="/dr/program/getChangeGearValue">
                                     <cti:param name="programId" value="${programId}"/>
                                 </cti:url>
                                 <tags:simpleDialogLink titleKey="yukon.web.modules.dr.program.getChangeGearValue.title" 
@@ -241,7 +241,7 @@
                                     logoKey="yukon.web.modules.dr.programDetail.actions.changeGearsIcon"
                                     labelKey="yukon.web.modules.dr.programDetail.actions.changeGears"/>
                                 <br>
-                                <cti:url var="sendEnableUrl" value="/spring/dr/program/sendEnableConfirm">
+                                <cti:url var="sendEnableUrl" value="/dr/program/sendEnableConfirm">
                                     <cti:param name="programId" value="${programId}"/>
                                     <cti:param name="isEnabled" value="true"/>
                                 </cti:url>
@@ -253,7 +253,7 @@
                             </tags:dynamicChooseOption>
 
                             <tags:dynamicChooseOption optionId="scheduledDisabled">
-                                <cti:url var="startProgramUrl" value="/spring/dr/program/start/details">
+                                <cti:url var="startProgramUrl" value="/dr/program/start/details">
                                     <cti:param name="programId" value="${programId}"/>
                                 </cti:url>
                                 <tags:simpleDialogLink titleKey="yukon.web.modules.dr.program.startProgram.title" 
@@ -261,7 +261,7 @@
                                     logoKey="yukon.web.modules.dr.programDetail.actions.startIcon"
                                     labelKey="yukon.web.modules.dr.programDetail.actions.start"/>
                                 <br>
-                                <cti:url var="stopProgramUrl" value="/spring/dr/program/stop/details">
+                                <cti:url var="stopProgramUrl" value="/dr/program/stop/details">
                                     <cti:param name="programId" value="${programId}"/>
                                 </cti:url>
                                 <tags:simpleDialogLink titleKey="yukon.web.modules.dr.program.stopProgram.title" 
@@ -275,7 +275,7 @@
                                     <cti:msg key="yukon.web.modules.dr.programDetail.actions.changeGears"/>
                                 </span>
                                 <br>
-                                <cti:url var="sendEnableUrl" value="/spring/dr/program/sendEnableConfirm">
+                                <cti:url var="sendEnableUrl" value="/dr/program/sendEnableConfirm">
                                     <cti:param name="programId" value="${programId}"/>
                                     <cti:param name="isEnabled" value="true"/>
                                 </cti:url>
@@ -287,7 +287,7 @@
                             </tags:dynamicChooseOption>
 
                             <tags:dynamicChooseOption optionId="disabled">
-                                <cti:url var="startProgramUrl" value="/spring/dr/program/start/details">
+                                <cti:url var="startProgramUrl" value="/dr/program/start/details">
                                     <cti:param name="programId" value="${programId}"/>
                                 </cti:url>
                                 <tags:simpleDialogLink titleKey="yukon.web.modules.dr.program.startProgram.title" 
@@ -307,7 +307,7 @@
                                     <cti:msg key="yukon.web.modules.dr.programDetail.actions.changeGears"/>
                                 </span>
                                 <br>
-                                <cti:url var="sendEnableUrl" value="/spring/dr/program/sendEnableConfirm">
+                                <cti:url var="sendEnableUrl" value="/dr/program/sendEnableConfirm">
                                     <cti:param name="programId" value="${programId}"/>
                                     <cti:param name="isEnabled" value="true"/>
                                 </cti:url>
@@ -351,7 +351,7 @@
             <td class="widgetColumnCell" colspan="2">
                 <div class="widgetContainer">
                     <cti:msg var="boxTitle" key="yukon.web.modules.dr.programDetail.heading.loadGroups"/>
-                    <c:set var="baseUrl" value="/spring/dr/program/detail"/>
+                    <c:set var="baseUrl" value="/dr/program/detail"/>
                     <%@ include file="../loadGroup/loadGroupList.jspf" %>
                 </div>
             </td>
@@ -382,7 +382,7 @@
                         </c:if>
                         <c:if test="${!empty parentControlArea}">
                             <cti:checkPaoAuthorization permission="LM_VISIBLE" pao="${parentControlArea}">
-                                <c:url var="controlAreaURL" value="/spring/dr/controlArea/detail">
+                                <c:url var="controlAreaURL" value="/dr/controlArea/detail">
                                     <c:param name="controlAreaId" value="${parentControlArea.paoIdentifier.paoId}"/>
                                 </c:url>
                                 <a href="${controlAreaURL}"><spring:escapeBody htmlEscape="true">${parentControlArea.name}</spring:escapeBody></a><br>
@@ -413,7 +413,7 @@
                         <c:if test="${!empty parentScenarios}">
                             <c:forEach var="parentScenario" items="${parentScenarios}">
                                 <cti:checkPaoAuthorization permission="LM_VISIBLE" pao="${parentScenario}">
-                                    <c:url var="scenarioURL" value="/spring/dr/scenario/detail">
+                                    <c:url var="scenarioURL" value="/dr/scenario/detail">
                                         <c:param name="scenarioId" value="${parentScenario.paoIdentifier.paoId}"/>
                                     </c:url>
                                     <a href="${scenarioURL}"><spring:escapeBody htmlEscape="true">${parentScenario.name}</spring:escapeBody></a><br>

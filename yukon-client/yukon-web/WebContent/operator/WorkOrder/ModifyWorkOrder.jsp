@@ -430,7 +430,7 @@ function sendWorkOrder() {
                               <tr> 
                                 <td class="TableCell">
                                 <c:set var="accountId" value="<%= liteAccount.getAccountID() %>" />
-                                <cti:url var="accountEditUrl" value="/spring/stars/operator/account/view">
+                                <cti:url var="accountEditUrl" value="/stars/operator/account/view">
                                     <cti:param name="accountId" value="${accountId}"/>
                                 </cti:url>
                                 <a href="${accountEditUrl}">Account # <%= liteAccount.getAccountNumber() %></a><BR>

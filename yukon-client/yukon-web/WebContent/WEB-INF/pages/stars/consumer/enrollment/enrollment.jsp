@@ -99,7 +99,7 @@
                                             <c:if test="${enrollmentProgram.enrolled}">
                                                 <c:set var="enrollType" value="unenroll"/>
                                             </c:if>
-                                            <cti:url var="enrollUrl" value="/spring/stars/consumer/enrollment/${enrollType}">
+                                            <cti:url var="enrollUrl" value="/stars/consumer/enrollment/${enrollType}">
                                                 <cti:param name="assignedProgramId" value="${assignedProgramId}"/>
                                             </cti:url>
                                             <a href="${enrollUrl}"><cti:msg key="yukon.dr.consumer.enrollment.${enrollType}"/></a>

@@ -111,7 +111,7 @@ public class StatusPointMonitorController {
     
     @RequestMapping(params="cancel")
     public String cancel(ModelMap modelMap, HttpServletRequest request) {
-        return "redirect:/spring/meter/start";
+        return "redirect:/meter/start";
     }
     
     @RequestMapping
@@ -153,7 +153,7 @@ public class StatusPointMonitorController {
                                                         statusPointMonitor.getEvaluatorStatus().getDescription(), 
                                                         userContext.getYukonUser());
 
-        return "redirect:/spring/amr/statusPointMonitoring/editPage";
+        return "redirect:/amr/statusPointMonitoring/editPage";
     }
     
     @RequestMapping
@@ -193,7 +193,7 @@ public class StatusPointMonitorController {
                                                         statusPointMonitor.getEvaluatorStatus().getDescription(), 
                                                         userContext.getYukonUser());
         
-        return "redirect:/spring/meter/start";
+        return "redirect:/meter/start";
     }
     
 
@@ -227,7 +227,7 @@ public class StatusPointMonitorController {
                                                         statusPointMonitor.getEvaluatorStatus().getDescription(), 
                                                         userContext.getYukonUser());
         
-        return "redirect:/spring/meter/start";
+        return "redirect:/meter/start";
 	}
 	
 	@RequestMapping
@@ -242,7 +242,7 @@ public class StatusPointMonitorController {
             status = statusPointMonitorService.toggleEnabled(statusPointMonitorId);
 	        modelMap.addAttribute("statusPointMonitorId", statusPointMonitorId);
         } catch (NotFoundException e) {
-            return "redirect:/spring/meter/start";
+            return "redirect:/meter/start";
         }
         
         outageEventLogService.statusPointMonitorEnableDisable(statusPointMonitorId, 

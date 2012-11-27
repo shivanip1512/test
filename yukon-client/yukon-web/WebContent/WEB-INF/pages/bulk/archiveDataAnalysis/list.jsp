@@ -9,7 +9,7 @@
         <cti:crumbLink url="/operator/Operations.jsp" title="Operations Home" />
         <%-- metering --%>
         <cti:msg var="metersPageTitle" key="yukon.web.modules.amr.meteringStart.pageName" />
-        <cti:crumbLink url="/spring/meter/start" title="${metersPageTitle}" />
+        <cti:crumbLink url="/meter/start" title="${metersPageTitle}" />
         <%-- ADA List --%>
         <cti:crumbLink><i:inline key="yukon.web.modules.amr.analysis.list.pageName"/></cti:crumbLink>
     </cti:breadCrumbs>
@@ -24,7 +24,7 @@
     
     function deleteAnalysis() {
         $('deleteConfirmationPopup').hide();
-        var url = "/spring/bulk/archiveDataAnalysis/list/delete?analysisId=" + deleteConfirmAnalysisId;
+        var url = "/bulk/archiveDataAnalysis/list/delete?analysisId=" + deleteConfirmAnalysisId;
         window.location = url;
     }
     
@@ -81,7 +81,7 @@
                             <%--if analyzing, disable view button, enable delete, status links to progress page--%>
                             <c:when test="${analysisEntry.key.status == 'RUNNING'}">
                                 <td>
-                                    <cti:url var="analysisProgressUrl" value="/spring/bulk/archiveDataAnalysis/home/processing">
+                                    <cti:url var="analysisProgressUrl" value="/bulk/archiveDataAnalysis/home/processing">
                                         <cti:param name="resultsId" value="${analysisEntry.key.statusId}"/>
                                         <cti:param name="analysisId" value="${analysisEntry.key.analysisId}"/>
                                     </cti:url>
@@ -105,7 +105,7 @@
                                             <cti:button id="deleteButton" nameKey="remove" renderMode="image"/>
                                         </c:when>
                                         <c:otherwise>
-                                            <cti:url var="viewUrl" value="/spring/bulk/archiveDataAnalysis/results/view">
+                                            <cti:url var="viewUrl" value="/bulk/archiveDataAnalysis/results/view">
                                                 <cti:param name="analysisId" value="${analysisEntry.key.analysisId}"/>
                                             </cti:url>
                                             <cti:button nameKey="viewButton" renderMode="image" href="${viewUrl}"/>
@@ -117,14 +117,14 @@
                             <%--if reading, enable view, enable delete, status links to read progress--%>
                             <c:when test="${analysisEntry.key.status == 'READING'}">
                                 <td>
-                                    <cti:url var="readProgressUrl" value="/spring/bulk/archiveDataAnalysis/read/readResults">
+                                    <cti:url var="readProgressUrl" value="/bulk/archiveDataAnalysis/read/readResults">
                                         <cti:param name="resultId" value="${analysisEntry.key.statusId}"/>
                                         <cti:param name="analysisId" value="${analysisEntry.key.analysisId}"/>
                                     </cti:url>
                                     <cti:link href="${readProgressUrl}" key="${analysisEntry.key.status.formatKey}"/>
                                 </td>
                                 <td>
-                                    <cti:url var="viewUrl" value="/spring/bulk/archiveDataAnalysis/results/view">
+                                    <cti:url var="viewUrl" value="/bulk/archiveDataAnalysis/results/view">
                                         <cti:param name="analysisId" value="${analysisEntry.key.analysisId}"/>
                                     </cti:url>
                                     <cti:button nameKey="viewButton" renderMode="image" href="${viewUrl}"/>

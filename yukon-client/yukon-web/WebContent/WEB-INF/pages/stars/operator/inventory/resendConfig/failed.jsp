@@ -12,7 +12,7 @@
                 <th><i:inline key=".reason"/></th>
             </tr>
             <c:forEach var="failure" items="${failed}">
-                <cti:url var="viewLink" value="/spring/stars/operator/inventory/view"><cti:param name="inventoryId" value="${failure.identifier.inventoryId}"/></cti:url>
+                <cti:url var="viewLink" value="/stars/operator/inventory/view"><cti:param name="inventoryId" value="${failure.identifier.inventoryId}"/></cti:url>
                 <tr>
                     <td><a href="${viewLink}">${failure.lmHardware}</a></td>
                     <td><i:inline key="${failure.failureReason}"/></td>

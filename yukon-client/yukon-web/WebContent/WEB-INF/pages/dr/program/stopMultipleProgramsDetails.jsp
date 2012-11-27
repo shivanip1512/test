@@ -16,9 +16,9 @@ jQuery(function(){
         if (jQuery("#autoObserveConstraints").is(":checked") 
                 || jQuery("#autoObserveConstraints").is(":disabled")
                 || ${!checkConstraintsAllowed}) {
-            url = '<cti:url value="/spring/dr/program/stop/stopMultiple"/>';
+            url = '<cti:url value="/dr/program/stop/stopMultiple"/>';
         } else {
-            url = '<cti:url value="/spring/dr/program/stop/stopMultipleConstraints"/>';
+            url = '<cti:url value="/dr/program/stop/stopMultipleConstraints"/>';
         }
         return submitFormViaAjax('drDialog', 'stopProgramForm',url);
     }
@@ -212,7 +212,7 @@ jQuery(function(){
     </c:if>
 </h1>
 
-<cti:url var="submitUrl" value="/spring/dr/program/stop/stopMultiple"/>
+<cti:url var="submitUrl" value="/dr/program/stop/stopMultiple"/>
 <form:form id="stopProgramForm" commandName="backingBean" onsubmit="return submitForm();">
     <form:hidden path="controlAreaId"/>
     <form:hidden path="scenarioId"/>

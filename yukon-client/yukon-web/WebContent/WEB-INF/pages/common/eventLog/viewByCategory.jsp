@@ -9,11 +9,11 @@
 
 <cti:standardPage title="Event Log" module="support" page="eventViewer.byCategory">
     <cti:standardMenu menuSelection="events|byCategory" />
-    <c:set var="baseUrl" value="/spring/common/eventLog/viewByCategory"/>
+    <c:set var="baseUrl" value="/common/eventLog/viewByCategory"/>
     
     <%-- Filter Options --%>
     <tags:sectionContainer title="Filter Options">
-        <form:form id="byCategoryForm" action="/spring/common/eventLog/viewByCategory" 
+        <form:form id="byCategoryForm" action="/common/eventLog/viewByCategory" 
                    commandName="eventLogCategoryBackingBean" method="get">
             <tags:hidden path="itemsPerPage"/>
  

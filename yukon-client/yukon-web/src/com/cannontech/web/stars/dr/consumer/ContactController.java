@@ -148,12 +148,12 @@ public class ContactController extends AbstractConsumerController {
         if(bindingResult.hasErrors()) {
         	flashScope.setError(YukonValidationUtils.errorsForBindingResult(bindingResult));
         	setupPageMode(user, map, PageEditMode.CREATE, contact.getContactID(), false);
-        	map.addAttribute("actionUrl", "/spring/stars/consumer/contacts/create");
+        	map.addAttribute("actionUrl", "/stars/consumer/contacts/create");
         	return "consumer/contacts/edit.jsp";
         } else {
         	flashScope.setConfirm(new YukonMessageSourceResolvable("yukon.web.modules.operator.contact.contactCreated"));
         	contactDao.addAdditionalContact(contact, customer);
-			return "redirect:/spring/stars/consumer/contacts";
+			return "redirect:/stars/consumer/contacts";
         }
     }
     
@@ -215,7 +215,7 @@ public class ContactController extends AbstractConsumerController {
         flashScope.setConfirm(new YukonMessageSourceResolvable("yukon.web.modules.consumer.contacts.contactSaved"));
         contactDao.saveContact(contact);
     	
-    	return "redirect:/spring/stars/consumer/contacts";
+    	return "redirect:/stars/consumer/contacts";
     }
     
     @RequestMapping(value="/consumer/contacts/delete", method=RequestMethod.POST)
@@ -231,7 +231,7 @@ public class ContactController extends AbstractConsumerController {
     	//check that they are not trying to delete the primary contact
         if(checkPrimaryContact(customerAccount, contact.getContactID())) {
         	flashScope.setError(new YukonMessageSourceResolvable("yukon.dr.consumer.contacts.cannotDeletePrimaryContact"));
-        	return "redirect:/spring/stars/consumer/contacts";
+        	return "redirect:/stars/consumer/contacts";
         }
     	
     	contactDao.deleteContact(contact.getContactID());
@@ -240,7 +240,7 @@ public class ContactController extends AbstractConsumerController {
             yukonUserDao.deleteUser(contact.getLoginID());
         }
         flashScope.setConfirm(new YukonMessageSourceResolvable("yukon.web.modules.operator.contact.contactDeleted"));
-    	return "redirect:/spring/stars/consumer/contacts";
+    	return "redirect:/stars/consumer/contacts";
     }
     
     /**
@@ -276,10 +276,10 @@ public class ContactController extends AbstractConsumerController {
     	case VIEW:
     		break;
     	case CREATE:
-    		map.put("actionUrl", "/spring/stars/consumer/contacts/create");
+    		map.put("actionUrl", "/stars/consumer/contacts/create");
     		break;
     	case EDIT:
-    		map.put("actionUrl", "/spring/stars/consumer/contacts/updateContact");
+    		map.put("actionUrl", "/stars/consumer/contacts/updateContact");
     		break;
 		default: break;
     	}

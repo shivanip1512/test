@@ -205,7 +205,7 @@ function openPopupWin(elem, compositeIdType) {
     	menuName = 'warningInfoPopop';
     } else if (type == ALL_POPUP_TYPES.alertsPopup) {
         jQuery.ajax({
-            url: '/spring/common/alert/view?style=onelineAlertView',
+            url: '/common/alert/view?style=onelineAlertView',
             method: 'post',
             success: function(data) {
                 showPopup(data);
@@ -215,7 +215,7 @@ function openPopupWin(elem, compositeIdType) {
         return;
     } else if (type == ALL_POPUP_TYPES.legend) {
         jQuery.ajax({
-            url: '/spring/capcontrol/oneline/legend/view',
+            url: '/capcontrol/oneline/legend/view',
             method: 'get',
             success: function(data) {
                 currentPopup.offsetX = window.innerWidth/2;
@@ -226,7 +226,7 @@ function openPopupWin(elem, compositeIdType) {
         return;
     }
 
-    var url = '/spring/capcontrol/oneline/popupmenu/' + menuName + '?id=' + id + '&returnUrl=' + window.location;
+    var url = '/capcontrol/oneline/popupmenu/' + menuName + '?id=' + id + '&returnUrl=' + window.location;
     getFromURL(url);
 }
 
@@ -264,7 +264,7 @@ function closePopupWindow() {
 
 function showPointTimestamps (cbcID) {
 	
-	var url = '/spring/capcontrol/oneline/popupmenu/pointTimestamp?cbcID=';
+	var url = '/capcontrol/oneline/popupmenu/pointTimestamp?cbcID=';
 	url += cbcID;
 
 	return GB_show('', url, 520, 700);
@@ -324,7 +324,7 @@ function PopupWindow_showPopup (anchorname) {
 }
 
 function showMoveBankPage(paoId) {
-    window.location = '/spring/capcontrol/move/bankMove?bankid=' + paoId + '&oneline=true';
+    window.location = '/capcontrol/move/bankMove?bankid=' + paoId + '&oneline=true';
 }
 
 /**

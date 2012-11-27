@@ -6,7 +6,7 @@
 			htmlEscape="true" arguments="${controlAreaTimeWindowDto.startTime},${controlAreaTimeWindowDto.stopTime},${controlArea.name}" />
     </h1>
 
-    <cti:url var="submitUrl" value="/spring/dr/controlArea/changeTimeWindow"/>
+    <cti:url var="submitUrl" value="/dr/controlArea/changeTimeWindow"/>
     <form id="sendChangeTimeWindowForm" action="${submitUrl}"
         onsubmit="return submitFormViaAjax('drDialog', 'sendChangeTimeWindowForm');">
         <input type="hidden" name="controlAreaId" value="${controlArea.paoIdentifier.paoId}"/>

@@ -41,7 +41,7 @@
 <div id="widgetWrapper_${widgetParameters.widgetId}" class="widgetWrapper" style="width: ${widgetParameters.width};">
     <c:set var="showIdentity" value="${widgetParameters.identify and beanInst.hasIdentity}"/>
     <c:if test="${showIdentity}">
-        <c:import var="widgetIdentity" url="/spring/widget/${beanInst.shortName}/identity" scope="page"/>
+        <c:import var="widgetIdentity" url="/widget/${beanInst.shortName}/identity" scope="page"/>
         <cti:msg2 var="containerTitle" key="${beanInst.titleKey}.widgetIdentity" argument="${widgetIdentity}"/>
     </c:if>
     <c:if test="${not showIdentity}">
@@ -57,7 +57,7 @@
                 <img src="<c:url value="/WebConfig/yukon/Icons/indicator_arrows.gif"/>">
             </c:when>
             <c:otherwise>
-                <jsp:include flush="false" page="/spring/widget/${beanInst.shortName}/render"/>
+                <jsp:include flush="false" page="/widget/${beanInst.shortName}/render"/>
             </c:otherwise>
             </c:choose>
         </div>

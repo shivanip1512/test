@@ -108,7 +108,7 @@ public abstract class SimpleReportLinkFromNameTagBase extends YukonTagSupport im
         String queryString = ServletUtil.buildSafeQueryStringFromMap(propertiesMap, htmlOutput);
         
         // complete URL
-        String url = "/spring/reports/simple/" + viewType + "?" + queryString;
+        String url = "/reports/simple/" + viewType + "?" + queryString;
         url = ServletUtil.createSafeUrl(httpRequest, url);
         
         return url;

@@ -9,7 +9,7 @@
 
 <cti:msgScope paths="modules.operator.enrollmentList">
 
-<cti:url var="submitUrl" value="/spring/stars/operator/enrollment/save"/>
+<cti:url var="submitUrl" value="/stars/operator/enrollment/save"/>
 <form:form id="inputForm" commandName="programEnrollment" action="${submitUrl}"
     onsubmit="return submitFormViaAjax('peDialog', 'inputForm')">
     <input type="hidden" name="isAdd" value="${isAdd}"/>

@@ -69,7 +69,7 @@
     </c:forEach>
 </table>
 
-<cti:url var="submitUrl" value="/spring/stars/surveyReport/config"/>
+<cti:url var="submitUrl" value="/stars/surveyReport/config"/>
 <form:form action="${submitUrl}" commandName="reportConfig">
     <form:hidden path="accountNumber"/>
     <c:forEach var="answer" items="${reportConfig.answerIds}">

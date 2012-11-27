@@ -22,7 +22,7 @@
         var addSurveyTitle = '${addSurveyTitle}';
 	</script>
 
-    <c:set var="baseUrl" value="/spring/stars/optOutSurvey/list"/>
+    <c:set var="baseUrl" value="/stars/optOutSurvey/list"/>
     <cti:url var="submitUrl" value="${baseUrl}"/>
 
     <cti:msg2 var="boxTitle" key=".optOutSurveys"/>
@@ -51,7 +51,7 @@
                                 <spring:escapeBody htmlEscape="true">${programNamesById[programId]}</spring:escapeBody><br>
 						    </c:forEach>
 				            <c:if test="${fn:length(optOutSurvey.programIds) > 3}">
-				                <cti:url var="programListUrl" value="/spring/stars/optOutSurvey/programList">
+				                <cti:url var="programListUrl" value="/stars/optOutSurvey/programList">
 				                    <cti:param name="optOutSurveyId" value="${optOutSurveyId}"/>
 				                </cti:url>
 
@@ -66,14 +66,14 @@
                                 nullText="${noStopDate}"/>
                         </td>
                         <td>
-                            <cti:url var="editUrl" value="/spring/stars/optOutSurvey/edit">
+                            <cti:url var="editUrl" value="/stars/optOutSurvey/edit">
                                 <cti:param name="optOutSurveyId"
                                     value="${optOutSurvey.optOutSurveyId}"/>
                             </cti:url>
                             <tags:simpleDialogLink2 dialogId="ajaxDialog"
                                 nameKey="edit" skipLabel="true" 
                                 actionUrl="${editUrl}"/>
-                            <cti:url var="deleteUrl" value="/spring/stars/optOutSurvey/confirmDelete">
+                            <cti:url var="deleteUrl" value="/stars/optOutSurvey/confirmDelete">
                                 <cti:param name="optOutSurveyId" value="${optOutSurveyId}"/>
                             </cti:url>
                             <tags:simpleDialogLink2 dialogId="ajaxDialog"
@@ -85,10 +85,10 @@
             </table>
         </c:if>
 
-        <cti:url var="addUrl" value="/spring/stars/optOutSurvey/edit"/>
+        <cti:url var="addUrl" value="/stars/optOutSurvey/edit"/>
         <form id="addForm" action="${addUrl}">
             <div class="actionArea">
-                <cti:url var="addUrl" value="/spring/stars/optOutSurvey/edit"/>
+                <cti:url var="addUrl" value="/stars/optOutSurvey/edit"/>
                 <cti:button nameKey="add" onclick="openSimpleDialog('ajaxDialog', '${addUrl}', addSurveyTitle)"/>
             </div>
         </form>

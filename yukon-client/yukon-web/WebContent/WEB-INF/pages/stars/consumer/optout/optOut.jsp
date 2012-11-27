@@ -5,7 +5,7 @@
 <%@ taglib uri="http://www.springframework.org/tags" prefix="spring"%>
 <%@ taglib prefix="dt" tagdir="/WEB-INF/tags/dateTime" %>
 
-<c:set var="actionUrl" value="/spring/stars/consumer/optout/deviceSelection"/>
+<c:set var="actionUrl" value="/stars/consumer/optout/deviceSelection"/>
 
 <cti:standardPage module="consumer" page="optout">
     <cti:standardMenu />
@@ -111,7 +111,7 @@
                             </td>
 			        		<td>
                                 <c:if test="${optOut.state == 'SCHEDULED'}">
-			                        <form action="/spring/stars/consumer/optout/confirmCancel" method="post">
+			                        <form action="/stars/consumer/optout/confirmCancel" method="post">
 				        				<input type="hidden" name="eventId" value="${optOut.eventId}">
 				        				<input type="submit" name="submit" value="<cti:msg key="yukon.dr.consumer.optout.cancel"/>" class="formSubmit">
 				        			</form>

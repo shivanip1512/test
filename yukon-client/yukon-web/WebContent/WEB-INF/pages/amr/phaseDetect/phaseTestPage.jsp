@@ -17,7 +17,7 @@
 
             var params = {'phase': $F('phase')};
             
-            new Ajax.Request('/spring/amr/phaseDetect/startTest', {
+            new Ajax.Request('/amr/phaseDetect/startTest', {
                 method: 'post',
                 parameters: params,
                 onSuccess: function(resp, json) {
@@ -97,7 +97,7 @@
 
         function sendRead(){
             $('actionResultDiv').show();
-            new Ajax.Updater('actionResultDiv', '/spring/amr/phaseDetect/readPhase', {method: 'post', evalScripts: 'true',
+            new Ajax.Updater('actionResultDiv', '/amr/phaseDetect/readPhase', {method: 'post', evalScripts: 'true',
             	onSuccess: function(resp, json) {
 		            if(json.success){
 		            	$('readButton').value = readingMsg;
@@ -199,7 +199,7 @@
         </tags:nameValueContainer2>
     </tags:sectionContainer2>
     <br>
-    <form action="/spring/amr/phaseDetect/phaseDetectResults" method="get">
+    <form action="/amr/phaseDetect/phaseDetectResults" method="get">
         <cti:button nameKey="cancelTest" name="cancel" type="submit"/>
         <cti:button nameKey="phaseDetectResults" id="resultsButton" disabled="${testStep != 'results'}" type="submit"/>
     </form>

@@ -5,7 +5,7 @@ import com.cannontech.user.YukonUserContext;
 public class DrSearchProducer implements SearchProducer {
     
     public SearchFormData getSearchProducer(YukonUserContext userContext) {
-        return new SearchFormData("/spring/dr/search", "name");
+        return new SearchFormData("/dr/search", "name");
     }
 }
 

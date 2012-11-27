@@ -12,10 +12,10 @@
     <tags:setFormEditMode mode="${mode}"/>
     
     <cti:displayForPageEditModes modes="EDIT">
-        <cti:url value="/spring/stars/operator/inventory/update" var="action"/>
+        <cti:url value="/stars/operator/inventory/update" var="action"/>
     </cti:displayForPageEditModes>
     <cti:displayForPageEditModes modes="CREATE">
-        <cti:url value="/spring/stars/operator/inventory/create" var="action"/>
+        <cti:url value="/stars/operator/inventory/create" var="action"/>
     </cti:displayForPageEditModes>
     
     <cti:dataGrid cols="2" tableClasses="twoColumnLayout hardwareTable">
@@ -38,7 +38,7 @@
     
     <cti:displayForPageEditModes modes="VIEW">
         <cti:checkRolesAndProperties value="${editingRoleProperty}">
-            <cti:url value="/spring/stars/operator/inventory/edit" var="editUrl">
+            <cti:url value="/stars/operator/inventory/edit" var="editUrl">
                 <cti:param name="inventoryId" value="${hardware.inventoryId}"/>
             </cti:url>
             <cti:button nameKey="edit" href="${editUrl}"/>

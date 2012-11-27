@@ -54,7 +54,7 @@
         
             <br>
             
-            <a href="/spring/stars/operator/inventory/home"><i:inline key=".inventoryHome"/></a>
+            <a href="/stars/operator/inventory/home"><i:inline key=".inventoryHome"/></a>
         </c:if>
      </tags:boxContainer2>
 </cti:standardPage>

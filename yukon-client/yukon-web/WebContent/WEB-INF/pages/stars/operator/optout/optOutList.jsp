@@ -4,7 +4,7 @@
 <%@ taglib uri="http://www.springframework.org/tags" prefix="spring"%>
 <%@ taglib tagdir="/WEB-INF/tags" prefix="ct"%>
 
-<cti:url var="actionUrl" value="/spring/stars/operator/optout/optoutQuestions"/>
+<cti:url var="actionUrl" value="/stars/operator/optout/optoutQuestions"/>
 
 <script type="text/javascript">
 function createJSON() {

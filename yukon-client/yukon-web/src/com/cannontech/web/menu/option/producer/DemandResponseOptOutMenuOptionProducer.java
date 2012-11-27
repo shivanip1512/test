@@ -18,9 +18,9 @@ import com.cannontech.web.menu.option.SubMenuOption;
  * Dynamic MenuOptionProducer for thermostats
  */
 public class DemandResponseOptOutMenuOptionProducer extends DynamicMenuOptionProducer {
-    private final static String adminUrl = "/spring/stars/operator/optOut/admin";
-    private final static String scheduledEventsUrl = "/spring/stars/operator/optOut/admin/viewScheduled";
-    private final static String surveyListUrl = "/spring/stars/optOutSurvey/list";
+    private final static String adminUrl = "/stars/operator/optOut/admin";
+    private final static String scheduledEventsUrl = "/stars/operator/optOut/admin/viewScheduled";
+    private final static String surveyListUrl = "/stars/optOutSurvey/list";
     private final static String baseKey = "yukon.web.menu.config.dr.optout";
 
     private RolePropertyDao rolePropertyDao;

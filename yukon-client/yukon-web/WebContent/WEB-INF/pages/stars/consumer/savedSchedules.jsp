@@ -78,7 +78,7 @@ jQuery(function(){
         </div>
         <br>
         <div class="tempControls fl">
-                    <form method="post" action="/spring/stars/consumer/thermostat/schedule/updateTemperaturePreference">
+                    <form method="post" action="/stars/consumer/thermostat/schedule/updateTemperaturePreference">
                         <label><input name="units" type="radio" value="C" <c:if test="${temperatureUnit eq 'C'}" >checked="checked"</c:if>><i:inline key="yukon.web.defaults.celsius"/></label>
                         <label><input name="units" type="radio" value="F" <c:if test="${temperatureUnit eq 'F'}" >checked="checked"</c:if>><i:inline key="yukon.web.defaults.fahrenheit"/></label>
                     </form>
@@ -98,7 +98,7 @@ jQuery(function(){
 	                        thermostatIds="${thermostatIds}"
 	                        accountId="${customerAccount.accountId}"
 	                        temperatureUnit="${temperatureUnit}"
-	                        actionPath="/spring/stars/consumer/thermostat/schedule/saveJSON"
+	                        actionPath="/stars/consumer/thermostat/schedule/saveJSON"
 	                        thermostatType="${thermostatType}"
 	                        styleClass="vh"/>
 	                </div>
@@ -110,7 +110,7 @@ jQuery(function(){
                     <cti:button nameKey="help" styleClass="help fl"/>
                 </div>
                 <div class="tempControls fl">
-                    <form method="post" action="/spring/stars/consumer/thermostat/schedule/updateTemperaturePreference">
+                    <form method="post" action="/stars/consumer/thermostat/schedule/updateTemperaturePreference">
                         <label><input name="units" type="radio" value="C" <c:if test="${temperatureUnit eq 'C'}" >checked="checked"</c:if>><i:inline key="yukon.web.defaults.celsius"/></label>
                         <label><input name="units" type="radio" value="F" <c:if test="${temperatureUnit eq 'F'}" >checked="checked"</c:if>><i:inline key="yukon.web.defaults.fahrenheit"/></label>
                     </form>
@@ -125,7 +125,7 @@ jQuery(function(){
                             thermostatIds="${thermostatIds}"
                             accountId="${customerAccount.accountId}"
                             temperatureUnit="${temperatureUnit}"
-                            actionPath="/spring/stars/consumer/thermostat/schedule/saveJSON"
+                            actionPath="/stars/consumer/thermostat/schedule/saveJSON"
                             thermostatType="${thermostatType}"
                             styleClass="vh"/>
                     </c:forEach>    
@@ -166,7 +166,7 @@ jQuery(function(){
                                                     thermostatIds="${thermostatIds}"
                                                     accountId="${customerAccount.accountId}"
                                                     temperatureUnit="${temperatureUnit}"
-                                                    actionPath="/spring/stars/consumer/thermostat/schedule/saveJSON"
+                                                    actionPath="/stars/consumer/thermostat/schedule/saveJSON"
                                                     thermostatType="${thermostatType}"/>
                 </c:forEach>
             </div>
@@ -194,7 +194,7 @@ jQuery(function(){
 </i:simplePopup>
 
 <!-- shared action forms -->
-<form name="deleteSchedule" method="POST" action="/spring/stars/consumer/thermostat/schedule/delete">
+<form name="deleteSchedule" method="POST" action="/stars/consumer/thermostat/schedule/delete">
     <input type="hidden" name="scheduleId">
     <input type="hidden" name="thermostatIds" value="${thermostatIds}">
     <cti:msg2 var="delete_message" key="yukon.web.modules.consumer.thermostat.deleteConfirm" />
@@ -202,7 +202,7 @@ jQuery(function(){
     <tags:confirmDialog nameKey=".deleteConfirm" styleClass="smallSimplePopup f_blocker" submitName="delete" on=".delete"/>
 </form>
 
-<form name="sendSchedule" method="POST" action="/spring/stars/consumer/thermostat/schedule/send">
+<form name="sendSchedule" method="POST" action="/stars/consumer/thermostat/schedule/send">
     <input type="hidden" name="scheduleId">
     <input type="hidden" name="thermostatIds" value="${thermostatIds}">
     <input type="hidden" name="temperatureUnit" value="${temperatureUnit}">

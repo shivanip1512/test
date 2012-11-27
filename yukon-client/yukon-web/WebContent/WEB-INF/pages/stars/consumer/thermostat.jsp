@@ -48,7 +48,7 @@
         
         <div style="text-align: center;">
             <c:if test="${multipleThermostatsSelected}">
-                <cti:url var="allUrl" value="/spring/stars/consumer/thermostat/view/all">
+                <cti:url var="allUrl" value="/stars/consumer/thermostat/view/all">
                     <cti:param name="thermostatIds" value="${thermostatIds}"></cti:param>
                 </cti:url>
                 <a href="${allUrl}"><cti:msg key="yukon.web.modules.consumer.thermostat.changeSelected" /></a><br><br>
@@ -73,7 +73,7 @@
         <!-- Thermostat settings table -->
         <div class="fl oh">
             <tags:thermostatManualEditor thermostat="${thermostat}"
-                                         actionPath="/spring/stars/consumer/thermostat/manual" 
+                                         actionPath="/stars/consumer/thermostat/manual" 
                                          temperatureUnit="${temperatureUnit}"
                                          event="${event}"
                                          thermostatIds="${thermostatIds}"
@@ -89,7 +89,7 @@
             
             <%-- Auto Enabled Manual Page --%>
             <c:if test="${!autoModeEnabledCommandView && autoModeEnabled}">
-                <cti:url var="autoEnabledManualUrl" value="/spring/stars/consumer/thermostat/autoEnabledView">
+                <cti:url var="autoEnabledManualUrl" value="/stars/consumer/thermostat/autoEnabledView">
                     <cti:param name="thermostatIds" value="${thermostatIds}"/>
                 </cti:url>
                 <cti:button nameKey="autoEnabledManual" href="${autoEnabledManualUrl}" />
@@ -97,7 +97,7 @@
             </c:if>
                                 
             
-            <form action="/spring/stars/consumer/thermostat/runProgram" method="post" >
+            <form action="/stars/consumer/thermostat/runProgram" method="post" >
                 <input name="thermostatIds" type="hidden" value="${thermostatIds}" />
                 <cti:msg var="runProgramText" key="yukon.web.modules.consumer.thermostat.runProgram" />
                 <input id="temperatureUnitRun" type="hidden" name="temperatureUnit" value="F">

@@ -68,7 +68,7 @@ Event.observe(window, "load", function() {
                                 <cti:button nameKey="edit" type="submit" name="edit"/>
                             </c:if>
                             <c:if test="${canEditRoles}">
-                                <cti:url var="editRolesUrl" value="/spring/adminSetup/roleGroup/view">
+                                <cti:url var="editRolesUrl" value="/adminSetup/roleGroup/view">
                                     <cti:param name="roleGroupId" value="${roleGroupId}"/>
                                 </cti:url>
                                 <cti:button nameKey="editRoles" name="editRoles" type="button" href="${editRolesUrl}"/>
@@ -113,7 +113,7 @@ Event.observe(window, "load", function() {
                                             </tr>
                                             
                                             <c:forEach var="company" items="${members}">
-                                                <cti:url value="/spring/adminSetup/energyCompany/general/view" var="viewEcUrl">
+                                                <cti:url value="/adminSetup/energyCompany/general/view" var="viewEcUrl">
                                                     <cti:param name="ecId" value="${company.energyCompanyId}"/>
                                                 </cti:url>
                                                 <tr>

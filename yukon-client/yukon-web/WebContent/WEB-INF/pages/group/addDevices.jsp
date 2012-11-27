@@ -7,7 +7,7 @@
 <cti:standardPage title="Add multiple devices to group" module="amr">
 <cti:standardMenu menuSelection="devicegroups|commander"/>
    	
-   	<cti:url var="homeUrl" value="/spring/group/editor/home">
+   	<cti:url var="homeUrl" value="/group/editor/home">
 		<cti:param name="groupName" value="${group.fullName}" />
 	</cti:url>
    	
@@ -33,7 +33,7 @@
         <cti:msg key="yukon.common.device.group.addMultipleDevices" var="title"/>
 		<tags:boxContainer title="${title}" hideEnabled="false">
 
-            <tags:deviceSelection action="/spring/group/editor/addDevicesByCollection" 
+            <tags:deviceSelection action="/group/editor/addDevicesByCollection" 
                 groupDataJson="${groupDataJson}"
                 groupName="${groupName}"
                 pickerType="devicePicker"/>

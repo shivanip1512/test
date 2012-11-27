@@ -23,7 +23,7 @@
     <%-- FILTER POPUP --%>
 	<i:simplePopup titleKey=".filter.section" id="filterPopup" styleClass="smallSimplePopup">
         <cti:flashScopeMessages/>
-        <form:form id="filterForm" action="/spring/group/scheduledGroupRequestExecutionResults/jobs"
+        <form:form id="filterForm" action="/group/scheduledGroupRequestExecutionResults/jobs"
             method="get" commandName="backingBean">
             <tags:sortFields backingBean="${backingBean}" />
 
@@ -97,7 +97,7 @@
 			<tr id="tr_${jobWrapper.job.id}" class="<tags:alternateRow odd="" even="altRow"/> ${trClass}"
                 title="Job ID: ${jobWrapper.job.id}">
 				<td>
-                    <cti:url var="jobDetailUrl" value="/spring/group/scheduledGroupRequestExecutionResults/detail">
+                    <cti:url var="jobDetailUrl" value="/group/scheduledGroupRequestExecutionResults/detail">
                         <cti:param name="jobId" value="${jobWrapper.job.id}"/>
                     </cti:url>
                     <a href="${jobDetailUrl}">
@@ -107,7 +107,7 @@
                 <td>
                     <c:choose>
                         <c:when test="${not empty jobWrapper.deviceGroupName}">
-                            <cti:url var="deviceGroupUrl" value="/spring/group/editor/home">
+                            <cti:url var="deviceGroupUrl" value="/group/editor/home">
                                 <cti:param name="groupName" value="${jobWrapper.deviceGroupName}"/>
                             </cti:url>
                             <a href="${deviceGroupUrl}">

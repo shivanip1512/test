@@ -34,7 +34,7 @@ jQuery(document).delegate('button.loginButton','click',function() {
                         <c:forEach items="${companies}" var="company" varStatus="status">
                             <tr>
                                 <td>
-                                    <a href="/spring/adminSetup/energyCompany/general/view?ecId=${company.energyCompanyId}">
+                                    <a href="/adminSetup/energyCompany/general/view?ecId=${company.energyCompanyId}">
                                         <spring:escapeBody htmlEscape="true">${company.name}</spring:escapeBody>
                                     </a>
                                 </td>
@@ -53,7 +53,7 @@ jQuery(document).delegate('button.loginButton','click',function() {
                 
                 <cti:checkRolesAndProperties value="ADMIN_SUPER_USER">
                     <div class="actionArea">
-                        <form action="/spring/adminSetup/energyCompany/new">
+                        <form action="/adminSetup/energyCompany/new">
                             <cti:button nameKey="create" type="submit" name="create"/>
                         </form>
                     </div>

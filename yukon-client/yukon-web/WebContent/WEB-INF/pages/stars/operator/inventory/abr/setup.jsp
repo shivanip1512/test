@@ -88,7 +88,7 @@ function taskFinished() {
     
             <cti:displayForPageEditModes modes="VIEW">
                 
-                <cti:url var="newOperationSuccess" value="/spring/stars/operator/inventory/abr/newOperation">
+                <cti:url var="newOperationSuccess" value="/stars/operator/inventory/abr/newOperation">
                     <cti:param name="taskId" value="${task.taskId}"/>
                 </cti:url>
             
@@ -136,7 +136,7 @@ function taskFinished() {
                                 <c:set var="linkClass" value="db"/>
                             </c:if>
                             <cti:button nameKey="cancel" type="sumbit" name="cancel" id="cancelTaskBtn" styleClass="${buttonClass}"/>
-                            <a id="homeLink" href="/spring/stars/operator/inventory/home" class="${linkClass}"><i:inline key=".inventoryHome"/></a>
+                            <a id="homeLink" href="/stars/operator/inventory/home" class="${linkClass}"><i:inline key=".inventoryHome"/></a>
                         </div>
                         <cti:dataUpdaterEventCallback function="taskFinished" id="INVENTORY_TASK/${task.taskId}/IS_COMPLETE" />
                         

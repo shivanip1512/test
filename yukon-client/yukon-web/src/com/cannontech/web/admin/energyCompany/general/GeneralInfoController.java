@@ -127,7 +127,7 @@ public class GeneralInfoController {
         energyCompanyService.deleteEnergyCompany(user, ecId);
 
         flashScope.setConfirm(new YukonMessageSourceResolvable("yukon.web.modules.adminSetup.deleteEnergyCompanyConfirm.deletedMsg", fragment.getCompanyName()));
-        return "redirect:/spring/adminSetup/energyCompany/home";
+        return "redirect:/adminSetup/energyCompany/home";
     }
 
     /* Cancel Delete Energy Company */
@@ -214,7 +214,7 @@ public class GeneralInfoController {
         }
         
         model.addAttribute("parentId", ecId);
-        return "redirect:/spring/adminSetup/energyCompany/newMember";
+        return "redirect:/adminSetup/energyCompany/newMember";
     }
     
     /* Add Operator Group */

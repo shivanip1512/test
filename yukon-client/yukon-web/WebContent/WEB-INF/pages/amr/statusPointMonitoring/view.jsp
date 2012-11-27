@@ -20,7 +20,7 @@
             </tags:nameValue2>
             
             <tags:nameValue2 nameKey=".deviceGroup">
-                <cti:url var="deviceGroupUrl" value="/spring/group/editor/home">
+                <cti:url var="deviceGroupUrl" value="/group/editor/home">
                     <cti:param name="groupName">${statusPointMonitor.groupName}</cti:param>
                 </cti:url>
                 
@@ -65,7 +65,7 @@
         </c:choose>
         
         <div class="pageActionArea">        
-            <form action="/spring/amr/statusPointMonitoring/editPage" method="get">
+            <form action="/amr/statusPointMonitoring/editPage" method="get">
                 <input type="hidden" name="statusPointMonitorId" value="${statusPointMonitor.statusPointMonitorId}">
                 <cti:button nameKey="edit" type="submit" styleClass="f_blocker"/>
             </form>

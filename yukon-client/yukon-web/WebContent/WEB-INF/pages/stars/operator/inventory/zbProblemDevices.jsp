@@ -8,7 +8,7 @@
 <cti:standardPage module="operator" page="zbProblemDevices">
 
     <div class="exportLink">
-        <cti:button nameKey="csv" renderMode="labeledImage" href="/spring/stars/operator/inventory/zbProblemDevices/csv"/>
+        <cti:button nameKey="csv" renderMode="labeledImage" href="/stars/operator/inventory/zbProblemDevices/csv"/>
     </div>
     
     <table class="resultsTable" style="width:100%;">
@@ -23,15 +23,15 @@
         
         <c:forEach var="device" items="${devices}">
             <tr>
-                <cti:url value="/spring/stars/operator/hardware/view" var="hardwareUrl">
+                <cti:url value="/stars/operator/hardware/view" var="hardwareUrl">
                     <cti:param name="inventoryId" value="${device.first.identifier.inventoryId}"/>
                     <cti:param name="accountId" value="${device.first.accountId}"/>
                     <cti:param name="energyCompanyId" value="${device.first.energyCompanyId}"/>
                 </cti:url>
-				<cti:url value="/spring/stars/operator/inventory/view" var="invDetailUrl">
+				<cti:url value="/stars/operator/inventory/view" var="invDetailUrl">
                     <cti:param name="inventoryId" value="${device.first.identifier.inventoryId}"/>
                 </cti:url>
-                <cti:url value="/spring/stars/operator/account/view" var="accountUrl">
+                <cti:url value="/stars/operator/account/view" var="accountUrl">
                     <cti:param name="accountId" value="${device.first.accountId}"/>
                 </cti:url>
                 

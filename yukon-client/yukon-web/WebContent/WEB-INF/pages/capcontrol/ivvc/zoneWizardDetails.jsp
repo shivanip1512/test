@@ -17,7 +17,7 @@
     };
     
     addBankHandler = function (selectedPaoInfo, picker) {
-        var args = buildArgs('/spring/capcontrol/ivvc/wizard/addCapBank');
+        var args = buildArgs('/capcontrol/ivvc/wizard/addCapBank');
         
         for(var i = 0; i < selectedPaoInfo.length; i++) {
             var request = buildRequest(selectedPaoInfo[i].paoId);
@@ -29,7 +29,7 @@
     };
     
     addPointHandler = function(selectedPointInfo, picker) {
-        var args = buildArgs('/spring/capcontrol/ivvc/wizard/addVoltagePoint');
+        var args = buildArgs('/capcontrol/ivvc/wizard/addVoltagePoint');
         
         for(var i = 0; i < selectedPointInfo.length; i++) {
             var request = buildRequest(selectedPointInfo[i].pointId);
@@ -66,7 +66,7 @@
     };
     
     backToTypeSelect = function() {
-        submitFormViaAjax('zoneWizardPopup', 'zoneDetailsForm', '/spring/capcontrol/ivvc/wizard/wizardParentSelected', false);
+        submitFormViaAjax('zoneWizardPopup', 'zoneDetailsForm', '/capcontrol/ivvc/wizard/wizardParentSelected', false);
     };
 
     zoneSubmit = function() {
@@ -78,10 +78,10 @@
 <tags:setFormEditMode mode="${mode}"/>
 
 <cti:displayForPageEditModes modes="EDIT">
-	<cti:url var="action"  value="/spring/capcontrol/ivvc/wizard/updateZone"/>
+	<cti:url var="action"  value="/capcontrol/ivvc/wizard/updateZone"/>
 </cti:displayForPageEditModes>
 <cti:displayForPageEditModes modes="CREATE">
-	<cti:url var="action" value="/spring/capcontrol/ivvc/wizard/createZone"/>
+	<cti:url var="action" value="/capcontrol/ivvc/wizard/createZone"/>
 </cti:displayForPageEditModes>
 
 <form:form id="zoneDetailsForm" commandName="zoneDto" action="${action}" >

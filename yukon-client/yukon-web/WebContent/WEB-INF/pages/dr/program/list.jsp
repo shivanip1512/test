@@ -12,7 +12,7 @@
     <cti:includeScript link="/JavaScript/calendarTagFuncs.js"/>
     <dr:favoriteIconSetup/>
 
-    <c:set var="baseUrl" value="/spring/dr/program/list"/>
+    <c:set var="baseUrl" value="/dr/program/list"/>
     <%@ include file="programList.jspf" %>
 
 </cti:standardPage>

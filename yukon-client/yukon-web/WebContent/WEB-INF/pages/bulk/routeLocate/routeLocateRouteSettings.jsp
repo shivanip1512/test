@@ -17,24 +17,24 @@
         
         <%-- bulk home --%>
         <cti:msg var="bulkOperationsPageTitle" key="yukon.common.device.bulk.bulkHome.pageTitle"/>
-        <cti:crumbLink url="/spring/bulk/bulkHome" title="${bulkOperationsPageTitle}" />
+        <cti:crumbLink url="/bulk/bulkHome" title="${bulkOperationsPageTitle}" />
         
         <%-- device selection --%>
         <cti:msg var="deviceSelectionPageTitle" key="yukon.common.device.bulk.deviceSelection.pageTitle"/>
-        <cti:crumbLink url="/spring/bulk/deviceSelection" title="${deviceSelectionPageTitle}"/>
+        <cti:crumbLink url="/bulk/deviceSelection" title="${deviceSelectionPageTitle}"/>
         
         <%-- collection actions --%>
         <tags:collectionActionsCrumbLink deviceCollection="${result.deviceCollection}" />
         
         <%-- locate route --%>
-        <cti:url var="routeLocateHomeUrl" value="/spring/bulk/routeLocate/home">
+        <cti:url var="routeLocateHomeUrl" value="/bulk/routeLocate/home">
             <cti:mapParam value="${result.deviceCollection.collectionParameters}"/>
         </cti:url>
         <cti:msg var="routeLocateHomePageTitle" key="yukon.web.modules.amr.routeLocateHome.pageTitle"/>
         <cti:crumbLink url="${routeLocateHomeUrl}" title="${routeLocateHomePageTitle}" />
         
         <%-- results --%>
-        <cti:url var="routeLocateResultsUrl" value="/spring/bulk/routeLocate/results">
+        <cti:url var="routeLocateResultsUrl" value="/bulk/routeLocate/results">
             <cti:param name="resultId" value="${resultId}" />
         </cti:url>
         <cti:msg var="routeLocateResultsPageTitle" key="yukon.web.modules.amr.routeLocateResults.pageTitle"/>
@@ -52,7 +52,7 @@
             buttonObj.disabled = true;
             $('waitImg' + deviceRouteLocationId).show();
         
-            var url = '/spring/bulk/routeLocate/setRoute';
+            var url = '/bulk/routeLocate/setRoute';
             var args = {};
             args.deviceId = deviceId;
             args.routeId = routeId;
@@ -84,7 +84,7 @@
             <td style="padding-right:16px;"><h3 >Found Routes</h3></td>
             <td>
                 <c:if test="${fn:length(foundRoutes) > 0}">
-                    <cti:link href="/spring/bulk/collectionActions" key="yukon.web.modules.amr.routeLocate.results.collectionActionOnDevicesLabel" class="small">
+                    <cti:link href="/bulk/collectionActions" key="yukon.web.modules.amr.routeLocate.results.collectionActionOnDevicesLabel" class="small">
                         <cti:mapParam value="${result.successDeviceCollection.collectionParameters}"/>
                     </cti:link>
                     <tags:selectedDevicesPopup deviceCollection="${result.successDeviceCollection}" />
@@ -161,7 +161,7 @@
             <td style="padding-right:16px;"><h3 >Not Found</h3></td>
             <td>
                 <c:if test="${fn:length(notFoundRoutes) > 0}">
-                    <cti:link href="/spring/bulk/collectionActions" key="yukon.web.modules.amr.routeLocate.results.collectionActionOnDevicesLabel" class="small">
+                    <cti:link href="/bulk/collectionActions" key="yukon.web.modules.amr.routeLocate.results.collectionActionOnDevicesLabel" class="small">
                         <cti:mapParam value="${result.failureDeviceCollection.collectionParameters}"/>
                     </cti:link>
                     <tags:selectedDevicesPopup deviceCollection="${result.failureDeviceCollection}" />

@@ -5,7 +5,7 @@
 <cti:standardMenu menuSelection="information|system"/>
 <cti:breadCrumbs>
     <cti:crumbLink url="/operator/Operations.jsp" title="Operations Home"  />
-    <cti:crumbLink url="/spring/support/" title="Support" />
+    <cti:crumbLink url="/support/" title="Support" />
     <cti:crumbLink>System</cti:crumbLink>
 </cti:breadCrumbs>
 

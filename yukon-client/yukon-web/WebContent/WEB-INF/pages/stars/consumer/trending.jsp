@@ -51,8 +51,8 @@
                                           <INPUT TYPE="hidden" NAME="view" VALUE="<%=graphBean.getViewType()%>">
                                           <INPUT TYPE="hidden" NAME="option" VALUE = "<%=graphBean.getOption()%>" >
                                           <INPUT TYPE="hidden" NAME="action" VALUE = "updateOptions" >
-                                          <input type="hidden" name="REDIRECT" value="/spring/stars/consumer/trending/view?gdefid=<%=graphBean.getGdefid()%>">
-                                          <input type="hidden" name="REFERRER" value="/spring/stars/consumer/trending/view?gdefid=<%= graphBean.getGdefid()%>">
+                                          <input type="hidden" name="REDIRECT" value="/stars/consumer/trending/view?gdefid=<%=graphBean.getGdefid()%>">
+                                          <input type="hidden" name="REFERRER" value="/stars/consumer/trending/view?gdefid=<%= graphBean.getGdefid()%>">
                                           
 <%
     boolean isEvent = com.cannontech.util.ServletUtil.EVENT.equals(graphBean.getPeriod());

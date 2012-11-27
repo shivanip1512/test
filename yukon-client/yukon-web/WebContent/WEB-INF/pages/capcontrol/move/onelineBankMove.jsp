@@ -6,7 +6,7 @@
     <cti:includeCss link="/capcontrol/css/CapcontrolGeneralStyles.css"/>
     <cti:url value="/capcontrol/oneline/OnelineCBCServlet" var="returnUrl">
         <cti:param name="id" value="${subBusId}"/>
-        <cti:param name="redirectURL" value="/spring/capcontrol/tier/feeders?isSpecialArea=false&substationId=${substationId}"/>
+        <cti:param name="redirectURL" value="/capcontrol/tier/feeders?isSpecialArea=false&substationId=${substationId}"/>
     </cti:url>
     <cti:breadCrumbs>
         <cti:crumbLink url="${returnUrl}" title="Return" />

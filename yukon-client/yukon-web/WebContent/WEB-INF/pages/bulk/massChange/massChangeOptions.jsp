@@ -16,17 +16,17 @@
         
         <%-- bulk home --%>
         <cti:msg var="bulkOperationsPageTitle" key="yukon.common.device.bulk.bulkHome.pageTitle"/>
-        <cti:crumbLink url="/spring/bulk/bulkHome" title="${bulkOperationsPageTitle}" />
+        <cti:crumbLink url="/bulk/bulkHome" title="${bulkOperationsPageTitle}" />
         
         <%-- device selection --%>
         <cti:msg var="deviceSelectionPageTitle" key="yukon.common.device.bulk.deviceSelection.pageTitle"/>
-        <cti:crumbLink url="/spring/bulk/deviceSelection" title="${deviceSelectionPageTitle}"/>
+        <cti:crumbLink url="/bulk/deviceSelection" title="${deviceSelectionPageTitle}"/>
         
         <%-- collection actions --%>
         <tags:collectionActionsCrumbLink deviceCollection="${deviceCollection}" />
         
         <%-- mass change options --%>
-        <cti:url var="massChangeSelectUrl" value="/spring/bulk/massChange/massChangeSelect">
+        <cti:url var="massChangeSelectUrl" value="/bulk/massChange/massChangeSelect">
             <cti:param name="selectedBulkFieldName" value="${massChangeBulkFieldName}"/>
             <c:forEach var="deviceCollectionParam" items="${deviceCollection.collectionParameters}">
                 <cti:param name="${deviceCollectionParam.key}" value="${deviceCollectionParam.value}"/>
@@ -53,7 +53,7 @@
             <br>
         </c:if>
         
-        <form id="massChangeOptionsForm" method="post" action="/spring/bulk/massChangeOptions">
+        <form id="massChangeOptionsForm" method="post" action="/bulk/massChangeOptions">
         <spring:nestedPath path="massChangeOptions">
         
             <%-- DEVICE COLLECTION --%>

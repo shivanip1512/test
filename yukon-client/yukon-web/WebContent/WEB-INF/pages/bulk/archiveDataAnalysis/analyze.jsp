@@ -11,10 +11,10 @@
         <cti:crumbLink url="/operator/Operations.jsp" title="Operations Home" />
         <%-- bulk home --%>
         <cti:msg var="bulkOperationsPageTitle" key="yukon.common.device.bulk.bulkHome.pageTitle" />
-        <cti:crumbLink url="/spring/bulk/bulkHome" title="${bulkOperationsPageTitle}" />
+        <cti:crumbLink url="/bulk/bulkHome" title="${bulkOperationsPageTitle}" />
         <%-- device selection --%>
         <cti:msg var="deviceSelectionPageTitle" key="yukon.common.device.bulk.deviceSelection.pageTitle" />
-        <cti:crumbLink url="/spring/bulk/deviceSelection" title="${deviceSelectionPageTitle}" />
+        <cti:crumbLink url="/bulk/deviceSelection" title="${deviceSelectionPageTitle}" />
         <%-- collection actions --%>
         <tags:collectionActionsCrumbLink deviceCollection="${deviceCollection}" />      
         <%-- ADA Progress --%>
@@ -77,7 +77,7 @@
         </div>
         
         <div id="viewResultsDiv" style="display:none;">
-            <cti:url var="resultsUrl" value="/spring/bulk/archiveDataAnalysis/results/view">
+            <cti:url var="resultsUrl" value="/bulk/archiveDataAnalysis/results/view">
                 <cti:param name="analysisId" value="${analysis.analysisId}"/>
             </cti:url>
             <cti:button nameKey="viewResultsButton" href="${resultsUrl}"/>

@@ -15,17 +15,17 @@
         
         <%-- bulk home --%>
         <cti:msg var="bulkOperationsPageTitle" key="yukon.common.device.bulk.bulkHome.pageTitle"/>
-        <cti:crumbLink url="/spring/bulk/bulkHome" title="${bulkOperationsPageTitle}" />
+        <cti:crumbLink url="/bulk/bulkHome" title="${bulkOperationsPageTitle}" />
         
         <%-- device selection --%>
         <cti:msg var="deviceSelectionPageTitle" key="yukon.common.device.bulk.deviceSelection.pageTitle"/>
-        <cti:crumbLink url="/spring/bulk/deviceSelection" title="${deviceSelectionPageTitle}"/>
+        <cti:crumbLink url="/bulk/deviceSelection" title="${deviceSelectionPageTitle}"/>
         
         <%-- collection actions --%>
         <tags:collectionActionsCrumbLink deviceCollection="${result.deviceCollection}" />
         
         <%-- locate route --%>
-        <cti:url var="routeLocateHomeUrl" value="/spring/bulk/routeLocate/home">
+        <cti:url var="routeLocateHomeUrl" value="/bulk/routeLocate/home">
             <cti:mapParam value="${result.deviceCollection.collectionParameters}"/>
         </cti:url>
         <cti:msg var="routeLocateHomePageTitle" key="yukon.web.modules.amr.routeLocateHome.pageTitle"/>
@@ -81,12 +81,12 @@
                                  isAbortedKey="ROUTELOCATE/${resultId}/IS_CANCELED">
             <%-- set/view routes --%>
             <br>
-            <form id="routeLocateSettingsForm" action="<cti:url value="/spring/bulk/routeLocate/routeSettings" />" method="get">
+            <form id="routeLocateSettingsForm" action="<cti:url value="/bulk/routeLocate/routeSettings" />" method="get">
                 <input type="hidden" name="resultId" value="${resultId}">
                 
                 <%-- cancel commands --%>
                 <div id="cancelLocateDiv" style="margin-bottom:20px;">
-                    <c:url var="cancelUrl" value="/spring/bulk/routeLocate/cancelCommands" />
+                    <c:url var="cancelUrl" value="/bulk/routeLocate/cancelCommands" />
                     <cti:msg var="cancelText" key="yukon.web.modules.amr.routeLocateResults.cancelLocateButtonLabel" />
                     <tags:cancelCommands resultId="${resultId}"
                                          cancelUrl="${cancelUrl}"
@@ -113,7 +113,7 @@
 
         <div id="AllDevicesActionsDiv" style="padding:10px;display:none;">
             <%-- device collection action --%>
-            <cti:link href="/spring/bulk/collectionActions" key="yukon.web.modules.amr.routeLocateResults.collectionActionOnAllDevicesLabel" class="small">
+            <cti:link href="/bulk/collectionActions" key="yukon.web.modules.amr.routeLocateResults.collectionActionOnAllDevicesLabel" class="small">
                 <cti:mapParam value="${result.deviceCollection.collectionParameters}"/>
             </cti:link>
             <tags:selectedDevicesPopup deviceCollection="${result.deviceCollection}" />
@@ -127,7 +127,7 @@
         <div id="successActionsDiv" style="padding:10px;display:none;">
         
             <%-- device collection action --%>
-            <cti:link href="/spring/bulk/collectionActions" key="yukon.web.modules.amr.routeLocateResults.collectionActionOnDevicesLabel" class="small">
+            <cti:link href="/bulk/collectionActions" key="yukon.web.modules.amr.routeLocateResults.collectionActionOnDevicesLabel" class="small">
                 <cti:mapParam value="${result.successDeviceCollection.collectionParameters}"/>
             </cti:link>
             <tags:selectedDevicesPopup deviceCollection="${result.successDeviceCollection}" />
@@ -145,7 +145,7 @@
         <div id="errorActionsDiv" style="padding:10px;display:none;">
         
             <%-- device collection action --%>
-            <cti:link href="/spring/bulk/collectionActions" key="yukon.web.modules.amr.routeLocateResults.collectionActionOnDevicesLabel" class="small">
+            <cti:link href="/bulk/collectionActions" key="yukon.web.modules.amr.routeLocateResults.collectionActionOnDevicesLabel" class="small">
                 <cti:mapParam value="${result.failureDeviceCollection.collectionParameters}"/>
             </cti:link>
             <tags:selectedDevicesPopup deviceCollection="${result.failureDeviceCollection}" />

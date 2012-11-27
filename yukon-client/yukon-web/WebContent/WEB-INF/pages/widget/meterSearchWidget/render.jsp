@@ -8,7 +8,7 @@
 	});
 </script>
 
-    <form id="filterForm" action="/spring/meter/search">
+    <form id="filterForm" action="/meter/search">
         <tags:nameValueContainer altRowOn="false" tableClass="nonwrapping">
 	        <c:forEach var="filter" items="${filterByList}" varStatus="status">
 	        	<cti:msg2 key="${filter.formatKey}" var="filterName"/>

@@ -206,7 +206,7 @@
 				</tr>
 				<c:forEach var="program" items="${programs}">
 					<c:set var="programId" value="${program.paoIdentifier.paoId}" />
-					<c:url var="programURL" value="/spring/dr/program/detail">
+					<c:url var="programURL" value="/dr/program/detail">
 						<c:param name="programId" value="${programId}" />
 					</c:url>
 					<tr id="programRow${programId}"

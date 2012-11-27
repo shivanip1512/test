@@ -2,12 +2,12 @@
 <%@ taglib uri="http://java.sun.com/jsp/jstl/core" prefix="c"%>
 <%@ taglib prefix="tags" tagdir="/WEB-INF/tags" %>
 
-<cti:url var="submitUrl" value="/spring/macsscheduler/schedules" />
+<cti:url var="submitUrl" value="/macsscheduler/schedules" />
 <cti:standardPage title="Scheduled Scripts" module="amr">
     <cti:standardMenu />
    	<cti:breadCrumbs>
 	    <cti:crumbLink url="/operator/Operations.jsp" title="Operations Home" />
-  	    <cti:crumbLink url="/spring/macsscheduler/schedules/view" title="Scheduler" />
+  	    <cti:crumbLink url="/macsscheduler/schedules/view" title="Scheduler" />
 	    &gt; Stop Schedule
 	</cti:breadCrumbs>
     <cti:includeScript link="/JavaScript/macsscheduledscripts.js" />

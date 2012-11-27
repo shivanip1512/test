@@ -32,7 +32,7 @@
 		
         <tags:nameValue2 nameKey=".section.mainDetail.deviceGroup">
 			
-			<cti:url var="deviceGroupUrl" value="/spring/group/editor/home">
+			<cti:url var="deviceGroupUrl" value="/group/editor/home">
 				<cti:param name="groupName">${tamperFlagMonitor.groupName}</cti:param>
 			</cti:url>
 			
@@ -42,7 +42,7 @@
 		</tags:nameValue2>
 		<tags:nameValue2 nameKey=".section.mainDetail.tamperFlagGroup">
 			
-			<cti:url var="tamperFlagGroupUrl" value="/spring/group/editor/home">
+			<cti:url var="tamperFlagGroupUrl" value="/group/editor/home">
 				<cti:param name="groupName">${tamperFlagGroupBase}${fn:escapeXml(tamperFlagMonitor.tamperFlagMonitorName)}</cti:param>
 			</cti:url>
 			
@@ -50,7 +50,7 @@
 			
 			<%-- tamper flag group report --%>
 			<br><br>
-			<cti:url var="tamperFlagGroupReportUrl" value="/spring/amr/reports/groupDevicesReport">
+			<cti:url var="tamperFlagGroupReportUrl" value="/amr/reports/groupDevicesReport">
 				<cti:param name="groupName" value="${tamperFlagGroupBase}${fn:escapeXml(tamperFlagMonitor.tamperFlagMonitorName)}"/>
 			</cti:url>
 			<a href="${tamperFlagGroupReportUrl}"><i:inline key=".section.options.tamperFlagGroupReport"/></a>
@@ -59,7 +59,7 @@
 		
 	</tags:nameValueContainer2>
 	
-	<form id="editMonitorForm" action="/spring/amr/tamperFlagProcessing/edit" method="get">
+	<form id="editMonitorForm" action="/amr/tamperFlagProcessing/edit" method="get">
 		<input type="hidden" name="tamperFlagMonitorId" value="${tamperFlagMonitor.tamperFlagMonitorId}">
 	</form>
 	<cti:msg2 var="mainDetailEditText" key=".section.mainDetail.edit"/>
@@ -71,7 +71,7 @@
 	<%-- READ INTERNAL FLAGS --%>
     <tags:sectionContainer2 id="readInternalFlagsSection" nameKey="section.readInternalFlags">
 	
-		<form id="readInternalFlagsForm" action="/spring/amr/tamperFlagProcessing/process/readFlags">
+		<form id="readInternalFlagsForm" action="/amr/tamperFlagProcessing/process/readFlags">
 
 			<input type="hidden" name="tamperFlagMonitorId" value="${tamperFlagMonitor.tamperFlagMonitorId}">
 	
@@ -84,7 +84,7 @@
 	                <td style="font-size:11px;">
                         <cti:msg2 key=".section.readInternalFlags.noteBody"/>
 	                	<br>
-	                	<cti:url var="viewPointsUrl" value="/spring/bulk/addPoints/home">
+	                	<cti:url var="viewPointsUrl" value="/bulk/addPoints/home">
 	                		<cti:mapParam value="${tamperFlagGroupDeviceCollection.collectionParameters}"/>
 	                	</cti:url>
                         <i:inline key=".section.readInternalFlags.viewPointsDescription"/>
@@ -138,7 +138,7 @@
 								<cti:dataUpdaterValue type="GROUP_METER_READ" identifier="${result.key}/UNSUPPORTED_COUNT"/>
 							</td>
 							<td>
-								<cti:url var="readLogsDetailUrl" value="/spring/group/groupMeterRead/resultDetail">
+								<cti:url var="readLogsDetailUrl" value="/group/groupMeterRead/resultDetail">
 									<cti:param name="resultKey" value="${result.key}"/>
 								</cti:url>
 								<a href="${readLogsDetailUrl}"><i:inline key=".section.readFlags.recentReadFlagsResults.viewDetailLink"/></a>
@@ -161,7 +161,7 @@
 	<%-- RESET INTERNAL FLAGS --%>
     <tags:sectionContainer2 id="resetInternalFlagsSection" nameKey="section.resetInternalFlags">
 	
-		<form id="resetInternalFlagsForm" action="/spring/amr/tamperFlagProcessing/process/resetFlags">
+		<form id="resetInternalFlagsForm" action="/amr/tamperFlagProcessing/process/resetFlags">
 
 			<input type="hidden" name="tamperFlagMonitorId" value="${tamperFlagMonitor.tamperFlagMonitorId}">
 	
@@ -216,7 +216,7 @@
 								<cti:dataUpdaterValue type="COMMANDER" identifier="${result.key}/FAILURE_COUNT"/>
 							</td>
 							<td>
-								<cti:url var="resetLogsDetailUrl" value="/spring/group/commander/resultDetail">
+								<cti:url var="resetLogsDetailUrl" value="/group/commander/resultDetail">
 									<cti:param name="resultKey" value="${result.key}"/>
 								</cti:url>
 								<a href="${resetLogsDetailUrl}"><i:inline key=".section.resetFlags.recentResetFlagsResults.viewDetailLink"/></a>
@@ -240,14 +240,14 @@
     <tags:sectionContainer2 id="optionsSection" nameKey="section.options">
 	
 		<%-- clear tamper flag group --%>
-		<cti:url var="clearTamperFlagGroupUrl" value="/spring/amr/tamperFlagProcessing/process/clearTamperFlagGroup">
+		<cti:url var="clearTamperFlagGroupUrl" value="/amr/tamperFlagProcessing/process/clearTamperFlagGroup">
 			<cti:param name="tamperFlagMonitorId" value="${tamperFlagMonitor.tamperFlagMonitorId}"/>
 		</cti:url>
 		<a href="${clearTamperFlagGroupUrl}"><i:inline key=".section.options.clearTamperFlagGroup"/></a>
 		<br>
 		
 		<%-- other actions --%>
-		<cti:url var="otherActionsUrl" value="/spring/bulk/collectionActions" htmlEscape="true">
+		<cti:url var="otherActionsUrl" value="/bulk/collectionActions" htmlEscape="true">
 			<cti:param name="collectionType" value="group"/>
 			<cti:param name="group.name" value="${tamperFlagGroupBase}${tamperFlagMonitor.tamperFlagMonitorName}"/>
 		</cti:url>

@@ -6,11 +6,11 @@
 
 <cti:msgScope paths="yukon.web.modules.capcontrol.menu">
 
-    <cti:url var="assignUrl" value="/spring/capcontrol/command/returnBank">
+    <cti:url var="assignUrl" value="/capcontrol/command/returnBank">
         <cti:param name="bankId" value="${paoId}"/>
         <cti:param name="assignHere" value="true"/>
     </cti:url>
-    <cti:url var="returnUrl" value="/spring/capcontrol/command/returnBank">
+    <cti:url var="returnUrl" value="/capcontrol/command/returnBank">
         <cti:param name="bankId" value="${paoId}"/>
         <cti:param name="assignHere" value="false"/>
     </cti:url>

@@ -11,10 +11,10 @@
         <cti:crumbLink url="/operator/Operations.jsp" title="Operations Home" />
         <%-- bulk home --%>
         <cti:msg var="bulkOperationsPageTitle" key="yukon.common.device.bulk.bulkHome.pageTitle"/>
-        <cti:crumbLink url="/spring/bulk/bulkHome" title="${bulkOperationsPageTitle}" />
+        <cti:crumbLink url="/bulk/bulkHome" title="${bulkOperationsPageTitle}" />
         <%-- device selection --%>
         <cti:msg var="deviceSelectionPageTitle" key="yukon.common.device.bulk.deviceSelection.pageTitle"/>
-        <cti:crumbLink url="/spring/bulk/deviceSelection" title="${deviceSelectionPageTitle}"/>
+        <cti:crumbLink url="/bulk/deviceSelection" title="${deviceSelectionPageTitle}"/>
         <%-- collection actions --%>
         <tags:collectionActionsCrumbLink deviceCollection="${deviceCollection}" />
         <%-- archive data analysis --%>
@@ -31,7 +31,7 @@
     </script>
 
     <tags:bulkActionContainer key="yukon.web.modules.amr.analysis.home" deviceCollection="${deviceCollection}">
-        <form:form id="analyzeIntervalDataForm" commandName="backingBean" action="/spring/bulk/archiveDataAnalysis/home/analyze" onsubmit="prepareDateTimeFields();">
+        <form:form id="analyzeIntervalDataForm" commandName="backingBean" action="/bulk/archiveDataAnalysis/home/analyze" onsubmit="prepareDateTimeFields();">
             <cti:deviceCollection deviceCollection="${deviceCollection}" />            
             
             <div class="bottomPadded">

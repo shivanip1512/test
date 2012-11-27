@@ -39,8 +39,8 @@
                 
                             <input type="hidden" name="deviceID" value="${device.yukonID}">
                             <input type="hidden" name="timeOut" value="8000">
-                            <input id="redirect" type="hidden" name="REDIRECT" value="/spring/amr/manualCommand/home?deviceId=${deviceId}">
-                            <input id="referrer" type="hidden" name="REFERRER" value="/spring/amr/manualCommand/home?deviceId=${deviceId}">
+                            <input id="redirect" type="hidden" name="REDIRECT" value="/amr/manualCommand/home?deviceId=${deviceId}">
+                            <input id="referrer" type="hidden" name="REFERRER" value="/amr/manualCommand/home?deviceId=${deviceId}">
                 
                             <tags:nameValueContainer2> <!--  altRowOn="true"> -->
                                 <tags:nameValue2 nameKey=".commonCommands">

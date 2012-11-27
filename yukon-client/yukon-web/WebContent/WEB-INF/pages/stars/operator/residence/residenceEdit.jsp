@@ -7,7 +7,7 @@
 <cti:standardPage module="operator" page="residence">
 <tags:setFormEditMode mode="${mode}"/>
 
-    <cti:url var="submitUrl" value="/spring/stars/operator/residence/residenceUpdate"/>
+    <cti:url var="submitUrl" value="/stars/operator/residence/residenceUpdate"/>
 	<form:form commandName="customerResidence" action="${submitUrl}" method="POST">
 	
 		<input type="hidden" name="accountId" value="${accountId}"/>
@@ -57,14 +57,14 @@
         <div class="pageActionArea">
 		<cti:displayForPageEditModes modes="EDIT">
             <cti:button nameKey="save" type="submit" styleClass="f_blocker"/>
-            <cti:url value="/spring/stars/operator/residence/view" var="viewUrl">
+            <cti:url value="/stars/operator/residence/view" var="viewUrl">
                 <cti:param name="accountId" value="${accountId}"/>
             </cti:url>
 			<cti:button nameKey="cancel" href="${viewUrl}"/>
 		</cti:displayForPageEditModes>
         <cti:displayForPageEditModes modes="VIEW">
             <cti:checkRolesAndProperties value="OPERATOR_ALLOW_ACCOUNT_EDITING">
-                <cti:url value="/spring/stars/operator/residence/edit" var="editUrl">
+                <cti:url value="/stars/operator/residence/edit" var="editUrl">
                     <cti:param name="accountId" value="${accountId}"/>
                 </cti:url>
                 <cti:button nameKey="edit" href="${editUrl}"/>

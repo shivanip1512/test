@@ -1,7 +1,7 @@
 <%@ taglib uri="http://cannontech.com/tags/cti" prefix="cti" %>
 <%@ taglib uri="http://java.sun.com/jsp/jstl/core" prefix="c"%>
 <%@ taglib prefix="tags" tagdir="/WEB-INF/tags" %>
-<cti:url var="updateUrl" value='/spring/support/logging/tail/update?file=/${file}' />
+<cti:url var="updateUrl" value='/support/logging/tail/update?file=/${file}' />
 
 <cti:standardPage module="support" page="logTail">
 

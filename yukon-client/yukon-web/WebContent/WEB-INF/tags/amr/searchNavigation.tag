@@ -7,7 +7,7 @@
 <%@ taglib uri="http://cannontech.com/tags/cti" prefix="cti"%>
 <%@ taglib prefix="amr" tagdir="/WEB-INF/tags/amr" %>
 
-<c:url  var="url" scope="page" value="/spring/meter/search">
+<c:url  var="url" scope="page" value="/meter/search">
 	<c:param name="count" value="${results.count}" />
 	<c:param name="orderBy" value="${orderBy.field}" />
 	<c:if test="${orderBy.descending}">
@@ -99,7 +99,7 @@
         
         <td>
             <span class="navLink">
-                <cti:link href="/spring/bulk/collectionActions" key="yukon.web.metering.deviceSelection.performCollectionAction">
+                <cti:link href="/bulk/collectionActions" key="yukon.web.metering.deviceSelection.performCollectionAction">
                     <cti:mapParam value="${pageScope.deviceCollection.collectionParameters}"/>
                 </cti:link>
             </span>

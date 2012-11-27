@@ -6,7 +6,7 @@
 
 <%-- Filtering popup --%>
 <i:simplePopup id="filterPopup" titleKey=".filterTitle">
-	<form name="filterForm" action="/spring/capcontrol/schedule/scheduleAssignments">
+	<form name="filterForm" action="/capcontrol/schedule/scheduleAssignments">
 		<tags:nameValueContainer2>
             <tags:nameValue2 nameKey=".schedules">
                 <select name="schedule" id="scheduleSelection">

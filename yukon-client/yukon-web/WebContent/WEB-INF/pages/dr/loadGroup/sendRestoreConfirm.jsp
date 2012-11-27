@@ -6,7 +6,7 @@
     		htmlEscape="true" argument="${loadGroup.name}"/>
     </h1>
 
-    <cti:url var="submitUrl" value="/spring/dr/loadGroup/sendRestore"/>
+    <cti:url var="submitUrl" value="/dr/loadGroup/sendRestore"/>
     <form id="sendRestoreForm" action="${submitUrl}"
         onsubmit="return submitFormViaAjax('drDialog', 'sendRestoreForm');">
         <input type="hidden" name="loadGroupId" value="${loadGroup.paoIdentifier.paoId}"/>

@@ -10,7 +10,7 @@
     <tags:simpleDialog id="drDialog"/>
     <dr:favoriteIconSetup/>
 
-    <c:set var="baseUrl" value="/spring/dr/loadGroup/list"/>
+    <c:set var="baseUrl" value="/dr/loadGroup/list"/>
     <%@ include file="loadGroupList.jspf" %>
 
 </cti:standardPage>

@@ -15,11 +15,11 @@
         
         <%-- bulk home --%>
         <cti:msg var="bulkOperationsPageTitle" key="yukon.common.device.bulk.bulkHome.pageTitle"/>
-        <cti:crumbLink url="/spring/bulk/bulkHome" title="${bulkOperationsPageTitle}" />
+        <cti:crumbLink url="/bulk/bulkHome" title="${bulkOperationsPageTitle}" />
         
         <%-- upload --%>
         <cti:msg var="updateUploadPageTitle" key="yukon.common.device.bulk.updateUpload.pageTitle"/>
-        <cti:crumbLink url="/spring/bulk/update/upload" title="${updateUploadPageTitle}" />
+        <cti:crumbLink url="/bulk/update/upload" title="${updateUploadPageTitle}" />
         
         <%-- confirm --%>
         <cti:crumbLink>${pageTitle}</cti:crumbLink>
@@ -32,7 +32,7 @@
     <cti:msg var="headerTitle" key="yukon.common.device.bulk.updateConfirm.header"/>
     <tags:boxContainer title="${headerTitle}" id="updateConfirmContainer" hideEnabled="false">
     
-        <form id="updateConfirmForm" action="/spring/bulk/update/doUpdate" method="post">
+        <form id="updateConfirmForm" action="/bulk/update/doUpdate" method="post">
             
             <%-- CONFIRMATION INFO --%>
             <cti:msg var="rows" key="yukon.common.device.bulk.updateConfirm.rows"/>
@@ -61,7 +61,7 @@
             <%-- SUBMIT BUTTONS --%>
             <cti:msg var="updateButton" key="yukon.common.device.bulk.updateConfirm.updateButton"/>
             <cti:msg var="cancelButton" key="yukon.common.device.bulk.updateConfirm.cancelButton"/>
-            <cti:url var="cancelUrl" value="/spring/bulk/update/upload"/>
+            <cti:url var="cancelUrl" value="/bulk/update/upload"/>
             
             <br>
             <input type="button" id="cancelButton" value="${cancelButton}" onclick="window.location='${cancelUrl}'"  class="formSubmit">

@@ -11,7 +11,7 @@
 </span>
 
 <span id="hasLinkableProgressLinkSpan${uniqueId}" style="display:none;">
-	<cti:url var="progressUrl" value="/spring/multispeak/setup/deviceGroupSync/progress"/>
+	<cti:url var="progressUrl" value="/multispeak/setup/deviceGroupSync/progress"/>
 	<a href="${progressUrl}"><cti:dataUpdaterValue type="MSP_DEVICE_GROUP_SYNC" identifier="STATUS_TEXT_OR_LAST_SYNC_${lastRunTimestampValue.type}"/></a>
 </span>
 

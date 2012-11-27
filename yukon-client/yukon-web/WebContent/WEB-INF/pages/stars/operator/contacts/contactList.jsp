@@ -21,7 +21,7 @@
 	<cti:url var="add" value="/WebConfig/yukon/Icons/add.gif"/>
 	<cti:url var="addOver" value="/WebConfig/yukon/Icons/add_over.gif"/>
 	
-	<form id="deleteAdditionalContactForm" action="/spring/stars/operator/contacts/deleteAdditionalContact" method="post">
+	<form id="deleteAdditionalContactForm" action="/stars/operator/contacts/deleteAdditionalContact" method="post">
 		<input type="hidden" name="deleteAdditionalContactId" id="deleteAdditionalContactId"/>
 		<input type="hidden" name="accountId" value="${accountId}"/>
 	</form>
@@ -45,7 +45,7 @@
     				<td class="nameCol">
     				
     					<cti:displayForPageEditModes modes="EDIT,CREATE,VIEW">
-    						<cti:url var="contactEditUrl" value="/spring/stars/operator/contacts/view">
+    						<cti:url var="contactEditUrl" value="/stars/operator/contacts/view">
     							<cti:param name="accountId" value="${accountId}"/>
     							<cti:param name="contactId" value="${contact.contactId}"/>
     						</cti:url>
@@ -113,7 +113,7 @@
             <tfoot>
                 <tr>
                     <td colspan="3">
-                        <form id="addContactForm" action="/spring/stars/operator/contacts/create" method="get">
+                        <form id="addContactForm" action="/stars/operator/contacts/create" method="get">
                             <input type="hidden" name="contactId" value="0"/>
                             <input type="hidden" name="accountId" value="${accountId}"/>
                             <cti:button nameKey="create" type="submit"/>

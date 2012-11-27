@@ -44,7 +44,7 @@
                     <c:if test="${hasEditingRole}">
                         <cti:img nameKey="remove" href="/editor/deleteBasePAO.jsf?value=${feederId}" styleClass="tierIconLink"/>
                     </c:if>
-                    <cti:img nameKey="location" href="/spring/capcontrol/capbank/capBankLocations?value=${feederId}&amp;specialArea=${isSpecialArea}" styleClass="tierIconLink"/>
+                    <cti:img nameKey="location" href="/capcontrol/capbank/capBankLocations?value=${feederId}&amp;specialArea=${isSpecialArea}" styleClass="tierIconLink"/>
                 </td>
                 
                 <%-- State --%>

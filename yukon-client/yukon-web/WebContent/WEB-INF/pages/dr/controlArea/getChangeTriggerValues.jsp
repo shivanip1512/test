@@ -13,7 +13,7 @@
         <i:inline key=".instructions" arguments="${controlArea.name}" />
     </h1>
 
-    <cti:url var="submitUrl" value="/spring/dr/controlArea/triggerChange"/>
+    <cti:url var="submitUrl" value="/dr/controlArea/triggerChange"/>
         
     <form:form id="getChangeTimeWindowValues" commandName="triggersDto" action="${submitUrl}" onsubmit="submitFormViaAjax('drDialog', 'getChangeTimeWindowValues');return false;">
         

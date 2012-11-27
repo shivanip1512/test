@@ -73,7 +73,7 @@
     <td>
         
     
-    <form id="scheduleForm" name="scheduleForm" method="POST" action="/spring/adminSetup/energyCompany/schedules/saveDefaultThermostatSchedule">
+    <form id="scheduleForm" name="scheduleForm" method="POST" action="/adminSetup/energyCompany/schedules/saveDefaultThermostatSchedule">
     </form>
     
     <div class="schedule small vh <c:if test="${schedule.accountThermostatScheduleId eq currentScheduleId }">current titledContainer boxContainer</c:if>" id="scheduleId_${schedule.accountThermostatScheduleId}">
@@ -90,7 +90,7 @@
                                     thermostatIds=""
                                     accountId=""
                                     temperatureUnit="${temperatureUnit}"
-                                    actionPath="/spring/adminSetup/energyCompany/schedules/saveDefaultThermostatSchedule"
+                                    actionPath="/adminSetup/energyCompany/schedules/saveDefaultThermostatSchedule"
                                     thermostatType="${schedule.thermostatType}"
                                     styleClass="vh"
                                     customActions="true"
@@ -133,7 +133,7 @@
                                             thermostatIds="${thermostatIds}"
                                             accountId="${accountId}"
                                             temperatureUnit="${temperatureUnit}"
-                                            actionPath="/spring/adminSetup/energyCompany/schedules/saveDefaultThermostatSchedule?ecId=${ecId}"
+                                            actionPath="/adminSetup/energyCompany/schedules/saveDefaultThermostatSchedule?ecId=${ecId}"
                                             thermostatType="${thermostatType}"/>
                         </c:forEach>
                     </div>

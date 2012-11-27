@@ -29,7 +29,7 @@
 
     <cti:breadCrumbs>
 	    <cti:crumbLink url="/operator/Operations.jsp" title="Operations Home"  />
-	    <cti:crumbLink url="/spring/common/veeReview/home" title="${pageTitle}" />
+	    <cti:crumbLink url="/common/veeReview/home" title="${pageTitle}" />
 	</cti:breadCrumbs>
 	
 	<cti:includeScript link="/JavaScript/veeReview.js"/>
@@ -62,7 +62,7 @@
     
     </script>
     
-    <form id="reloadForm" action="/spring/common/veeReview/home" method="get">
+    <form id="reloadForm" action="/common/veeReview/home" method="get">
    		<c:if test="${!noPoints}">
    			<input type="hidden" name="afterPaoId" value="${afterPaoId}">
    		</c:if>
@@ -76,7 +76,7 @@
 			<br>
 			<b>No More Points to Review<b>
 			<br><br>
-			<a href="/spring/common/veeReview/home">Reload to check for unreviewed points.</a> 
+			<a href="/common/veeReview/home">Reload to check for unreviewed points.</a> 
 			<br><br>
 		</td></tr>
 		</table>
@@ -84,7 +84,7 @@
 
 	<c:otherwise>
 	
-    <form id="saveForm" action="/spring/common/veeReview/save" method="post">
+    <form id="saveForm" action="/common/veeReview/save" method="post">
     
     	<input type="hidden" name="afterPaoId" value="${nextPaoId}">
     	<input type="hidden" id="checkAllState" value="">

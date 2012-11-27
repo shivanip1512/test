@@ -9,7 +9,7 @@
         <cti:msg key="yukon.web.modules.dr.controlArea.getChangeTimeWindowValues.instructions" argument="${controlArea.name}" />
     </p>
 
-    <cti:url var="submitUrl" value="/spring/dr/controlArea/sendChangeTimeWindowConfirm"/>
+    <cti:url var="submitUrl" value="/dr/controlArea/sendChangeTimeWindowConfirm"/>
     
    
     <form:form id="getChangeTimeWindowValues" commandName="controlAreaTimeWindowDto" action="${submitUrl}" onsubmit="return submitFormViaAjax('drDialog', 'getChangeTimeWindowValues');">

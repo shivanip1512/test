@@ -103,7 +103,7 @@
 		
 			<cti:displayForPageEditModes modes="EDIT,CREATE">
 		           <cti:button nameKey="save" type="submit"/>
-		           <cti:url value="/spring/stars/consumer/contacts" var="cancelUrl" />
+		           <cti:url value="/stars/consumer/contacts" var="cancelUrl" />
 		           <a href="${cancelUrl}"><i:inline key="yukon.common.cancel"/></a>
 		       </cti:displayForPageEditModes>
 		</form:form>

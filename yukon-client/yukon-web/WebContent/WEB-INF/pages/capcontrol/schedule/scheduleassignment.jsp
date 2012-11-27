@@ -20,10 +20,10 @@
 <cti:msg2 var="confirmCommand" key=".confirmCommand"/>
 <cti:msg2 var="sendTimeSyncsCommand" key=".sendTimeSyncsCommand"/>
 
-<cti:url var="baseUrl" value="/spring/capcontrol/schedule/scheduleAssignments" />
-<cti:url var="startMultiUrl" value="/spring/capcontrol/schedule/startMultiple" />
+<cti:url var="baseUrl" value="/capcontrol/schedule/scheduleAssignments" />
+<cti:url var="startMultiUrl" value="/capcontrol/schedule/startMultiple" />
 
-<form id="removeAssignmentForm" action="/spring/capcontrol/schedule/removePao" method="post">
+<form id="removeAssignmentForm" action="/capcontrol/schedule/removePao" method="post">
     <input type="hidden" name="eventId">
 </form> 
     
@@ -33,7 +33,7 @@ YEvent.observeSelectorClick('button.deleteAssignment', function(event) {
     var eventId = row.id.split('_')[1];
     var confirmMsg = event.findElement().next('span.dn').innerHTML;
     if (confirm(confirmMsg)) {
-        var url = "/spring/capcontrol/schedule/removePao?eventId=" + eventId;
+        var url = "/capcontrol/schedule/removePao?eventId=" + eventId;
         var removeForm = $('removeAssignmentForm');
         removeForm.down('input').value = eventId;
         removeForm.submit();
@@ -46,7 +46,7 @@ YEvent.observeSelectorClick('button.runSchedule', function(event) {
     var scheduleName = scheduleNameCell.innerHTML;
     var deviceName = scheduleNameCell.next().innerHTML;
     var eventId = row.id.split('_')[1];
-    var url = "/spring/capcontrol/schedule/startSchedule";
+    var url = "/capcontrol/schedule/startSchedule";
     new Ajax.Request(url, {'parameters': {'eventId': eventId, 'deviceName': deviceName},
         onComplete: function(transport, json) {
             if (!json.success) {
@@ -61,7 +61,7 @@ YEvent.observeSelectorClick('button.stopSchedule', function(event) {
     var row = event.findElement('tr');
     var deviceName = row.down('td', 1).innerHTML;
     var deviceId = event.findElement().name;
-    var url = "/spring/capcontrol/schedule/stopSchedule";
+    var url = "/capcontrol/schedule/stopSchedule";
     new Ajax.Request(url, {'parameters': {'deviceId': deviceId, 'deviceName': deviceName},
         onComplete: function(transport, json) {
             if(!json.success) {
@@ -73,7 +73,7 @@ YEvent.observeSelectorClick('button.stopSchedule', function(event) {
 });
 
 function setOvUv(eventId, ovuv) {
-    var url = "/spring/capcontrol/schedule/setOvUv";
+    var url = "/capcontrol/schedule/setOvUv";
     new Ajax.Request(url, {'parameters': {'eventId': eventId, 'ovuv': ovuv}, 
         onComplete: function(transport, json) {
             if (!json.success) {
@@ -88,7 +88,7 @@ function clearFilter() {
 }
 
 function startMultiScheduleAssignmentPopup(schedule, command) {
-    var url = '/spring/capcontrol/schedule/startMultiScheduleAssignmentPopup';
+    var url = '/capcontrol/schedule/startMultiScheduleAssignmentPopup';
     var title = '<cti:msg2 key=".play.label" javaScriptEscape="true"/>';
     var parameters = {'schedule': schedule, 'command': command};
     openSimpleDialog('contentPopup', url, title, parameters, null, 'get');
@@ -96,14 +96,14 @@ function startMultiScheduleAssignmentPopup(schedule, command) {
 }
 
 function stopMultiScheduleAssignmentPopup(schedule, command) {
-    var url = '/spring/capcontrol/schedule/stopMultiScheduleAssignmentPopup';
+    var url = '/capcontrol/schedule/stopMultiScheduleAssignmentPopup';
     var title = '<cti:msg2 key=".stop.label" javaScriptEscape="true"/>';
     var parameters = {'schedule': schedule, 'command': command};
     openSimpleDialog('contentPopup', url, title, parameters, null, 'get'); 
 }
 
 function newScheduleAssignmentPopup(schedule, command) {
-    var url = '/spring/capcontrol/schedule/newScheduleAssignmentPopup';
+    var url = '/capcontrol/schedule/newScheduleAssignmentPopup';
     var title = '<cti:msg2 key=".add.label" javaScriptEscape="true"/>';
     var parameters = {'schedule': schedule, 'command': command};
     openSimpleDialog('contentPopup', url, title, parameters, null, 'get'); 

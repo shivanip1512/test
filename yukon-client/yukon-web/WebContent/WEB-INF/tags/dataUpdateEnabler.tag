@@ -2,7 +2,7 @@
 <%@ taglib uri="http://java.sun.com/jsp/jstl/core" prefix="c" %>
 
 <cti:includeScript link="/JavaScript/dataUpdater.js"/>
-<c:url var="updateUrl" value="/spring/updater/update" />
+<c:url var="updateUrl" value="/updater/update" />
 
 <script type="text/javascript">
 initiateCannonDataUpdate("${updateUrl}", <cti:getProperty property="WebClientRole.DATA_UPDATER_DELAY_MS"/>);

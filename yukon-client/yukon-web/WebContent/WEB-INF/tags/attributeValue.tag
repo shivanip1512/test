@@ -20,7 +20,7 @@
             <c:choose>
                 <c:when test="${empty pageScope.showHistoricalReadings || pageScope.showHistoricalReadings}">
                     <cti:uniqueIdentifier var="uid" prefix="historicalReadings_" />
-                    <cti:url var="showHistoricalReadingsUrl" value="/spring/meter/historicalReadings/view">
+                    <cti:url var="showHistoricalReadingsUrl" value="/meter/historicalReadings/view">
                         <cti:param name="div_id" value="${uid}" />
                         <cti:param name="pointId" value="${pointId}" />
                         <cti:param name="attribute" value="${attribute}" />

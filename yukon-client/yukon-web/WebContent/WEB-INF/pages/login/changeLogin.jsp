@@ -4,7 +4,7 @@
 <%@ taglib tagdir="/WEB-INF/tags" prefix="ct"%>
 
 <link rel="stylesheet" href="../../WebConfig/yukon/CannonStyle.css" type="text/css">
-<cti:url var="actionUrl" value="/spring/login/changelogin"/>
+<cti:url var="actionUrl" value="/login/changelogin"/>
 <cti:url var="usernameActionUrl" value="${actionUrl}/updateusername"/>
 <cti:url var="passwordActionUrl" value="${actionUrl}/updatepassword"/>
 

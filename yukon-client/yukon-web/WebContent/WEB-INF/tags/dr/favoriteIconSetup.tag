@@ -7,8 +7,8 @@
 <cti:includeScript link="/JavaScript/drFavoriteFuncs.js"/>
 
 <script type="text/javascript">
-var addFavoriteUrl = '<cti:url value="/spring/dr/addFavorite"/>';
-var removeFavoriteUrl = '<cti:url value="/spring/dr/removeFavorite"/>';
+var addFavoriteUrl = '<cti:url value="/dr/addFavorite"/>';
+var removeFavoriteUrl = '<cti:url value="/dr/removeFavorite"/>';
 </script>
 
 <a id="removeFavoriteTemplate" href="javascript:void(0)" class="simpleLink" style="display: none">

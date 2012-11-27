@@ -540,7 +540,7 @@ public class ProfileWidget extends WidgetControllerBase {
             propertiesMap.put("stopDate", reportStopDateStr);
 
             String queryString = ServletUtil.buildSafeQueryStringFromMap(propertiesMap, true);
-            String url = "/spring/reports/simple/extView?" + queryString;
+            String url = "/reports/simple/extView?" + queryString;
             url = ServletUtil.createSafeUrl(request, url);
             mav.addObject("reportQueryString", url);
         } else {

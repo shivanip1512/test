@@ -7,6 +7,6 @@ public class MeteringSearchProducer implements SearchProducer {
 
     @Override
     public SearchFormData getSearchProducer(YukonUserContext userContext) {
-        return new SearchFormData("/spring/meter/search", "quickSearch");
+        return new SearchFormData("/meter/search", "quickSearch");
     }
 }

@@ -20,7 +20,7 @@ jQuery(function() {
                 parentFeeder.observe('mouseover', function() {statusMsgAbove(parentFeeder, '${moveBank}'); return false});
                 parentFeeder.observe('mouseout', function() {nd(); return false});
                 var title = parentFeeder.down('span.moveBankTitle').innerHTML;
-                parentFeeder.observe('click', function() {showDialog(title, '/spring/capcontrol/move/bankMove?bankid=' + encodeURIComponent(bankId)); return false});
+                parentFeeder.observe('click', function() {showDialog(title, '/capcontrol/move/bankMove?bankid=' + encodeURIComponent(bankId)); return false});
             }
             
             // Add menus

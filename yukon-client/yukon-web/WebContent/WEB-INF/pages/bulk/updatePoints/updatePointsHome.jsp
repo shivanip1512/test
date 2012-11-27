@@ -16,11 +16,11 @@
         
         <%-- bulk home --%>
         <cti:msg var="bulkOperationsPageTitle" key="yukon.common.device.bulk.bulkHome.pageTitle"/>
-        <cti:crumbLink url="/spring/bulk/bulkHome" title="${bulkOperationsPageTitle}" />
+        <cti:crumbLink url="/bulk/bulkHome" title="${bulkOperationsPageTitle}" />
         
         <%-- device selection --%>
         <cti:msg var="deviceSelectionPageTitle" key="yukon.common.device.bulk.deviceSelection.pageTitle"/>
-        <cti:crumbLink url="/spring/bulk/deviceSelection" title="${deviceSelectionPageTitle}"/>
+        <cti:crumbLink url="/bulk/deviceSelection" title="${deviceSelectionPageTitle}"/>
         
         <%-- collection actions --%>
         <tags:collectionActionsCrumbLink deviceCollection="${deviceCollection}" />
@@ -41,7 +41,7 @@
         );
 
         function fieldToModifyChanged() {
-        	new Ajax.Updater('fieldSpecificOptions', '/spring/bulk/updatePoints/getSpecificOptions', {method: 'get'});
+        	new Ajax.Updater('fieldSpecificOptions', '/bulk/updatePoints/getSpecificOptions', {method: 'get'});
         }
         
     </script>
@@ -51,7 +51,7 @@
                 
     <tags:bulkActionContainer key="yukon.common.device.bulk.updatePointsHome" deviceCollection="${deviceCollection}">
         
-        <form id="executeUpdatePointsForm" action="<cti:url value="/spring/bulk/updatePoints/execute" />">
+        <form id="executeUpdatePointsForm" action="<cti:url value="/bulk/updatePoints/execute" />">
         
             <%-- DEVICE COLLECTION --%>
             <cti:deviceCollection deviceCollection="${deviceCollection}" />

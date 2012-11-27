@@ -3,9 +3,9 @@
 <%@ taglib uri="http://java.sun.com/jsp/jstl/functions" prefix="fn" %>
 <%@ taglib tagdir="/WEB-INF/tags" prefix="tags" %>
 
-<cti:url var="routeUrl" value="/spring/adminSetup/substations/routeMapping/viewRoute" />
-<cti:url var="subUrl" value="/spring/adminSetup/substations/routeMapping/edit" />
-<cti:url var="removeAllUrl" value="/spring/adminSetup/substations/routeMapping/removeAll">
+<cti:url var="routeUrl" value="/adminSetup/substations/routeMapping/viewRoute" />
+<cti:url var="subUrl" value="/adminSetup/substations/routeMapping/edit" />
+<cti:url var="removeAllUrl" value="/adminSetup/substations/routeMapping/removeAll">
 	<cti:param name="removeAll" value=""/>
 </cti:url>
 
@@ -55,7 +55,7 @@
     		
     		<c:if test="${hasVendorId}"> 
 		    	
-		    	<cti:url var="mspAddUrl" value="/spring/adminSetup/substations/routemapping/multispeak/choose"/>
+		    	<cti:url var="mspAddUrl" value="/adminSetup/substations/routemapping/multispeak/choose"/>
 		    	<input id="mspAddButton" type="button" value="MSP" onclick="SubstationToRouteMappings_disableInputs(true);openSimpleDialog('mspAddDialog', '${mspAddUrl}', 'Choose Substations');" class="formSubmit">
 		    </c:if>
     

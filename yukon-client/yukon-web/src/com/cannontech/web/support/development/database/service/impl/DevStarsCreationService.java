@@ -180,7 +180,7 @@ public class DevStarsCreationService extends DevObjectCreationBase {
                 yukonGroupDao.save(roleGroup);
             }
 
-            setRoleProperty(roleGroup, YukonRoleProperty.HOME_URL, "/spring/stars/consumer/general");
+            setRoleProperty(roleGroup, YukonRoleProperty.HOME_URL, "/stars/consumer/general");
             setRoleProperty(roleGroup, YukonRoleProperty.STYLE_SHEET, " ");
             setRoleProperty(roleGroup, YukonRoleProperty.NAV_BULLET_EXPAND, " ");
             setRoleProperty(roleGroup, YukonRoleProperty.NAV_BULLET_SELECTED, " ");

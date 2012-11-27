@@ -3,7 +3,7 @@
 <%@ taglib tagdir="/WEB-INF/tags/i18n" prefix="i"%>
 <%@ taglib tagdir="/WEB-INF/tags" prefix="tags"%>
 
-<cti:url var="controlHistoryView" value="/spring/stars/consumer/controlhistory"/>
+<cti:url var="controlHistoryView" value="/stars/consumer/controlhistory"/>
 <cti:url var="innerViewUrl" value="${controlHistoryView}/innerCompleteHistoryView"/>
 
 <cti:standardPage module="consumer" page="completecontrolhistory">

@@ -8,7 +8,7 @@
         <cti:crumbLink url="/operator/Operations.jsp" title="Operations Home" />
         <%-- bulk home --%>
         <cti:msg var="bulkOperationsPageTitle" key="yukon.common.device.bulk.bulkHome.pageTitle"/>
-        <cti:crumbLink url="/spring/bulk/bulkHome" title="${bulkOperationsPageTitle}" />
+        <cti:crumbLink url="/bulk/bulkHome" title="${bulkOperationsPageTitle}" />
         <%-- fdr translations --%>
         <cti:crumbLink><i:inline key="yukon.web.modules.amr.fdrTranslationManagement.pageName"/></cti:crumbLink>
     </cti:breadCrumbs>
@@ -28,7 +28,7 @@
                     if(data.error) {
                         Yukon.ui.flashError(data.error);
                     } else {
-                        var url = '/spring/bulk/fdrTranslationManager/importResults?';
+                        var url = '/bulk/fdrTranslationManager/importResults?';
                         url += 'resultId=' + data.resultId;
                         url += '&fileName=' + data.fileName;
                         url += '&ignoreInvalidColumns=' + data.ignoreInvalidColumns;
@@ -61,7 +61,7 @@
                 </div>
                 <div class="bottomPadded">
                     <%-- This form submitted through ajax --%>
-                    <form id="importForm" method="post" action="/spring/bulk/fdrTranslationManager/submitImport" enctype="multipart/form-data">
+                    <form id="importForm" method="post" action="/bulk/fdrTranslationManager/submitImport" enctype="multipart/form-data">
                         <cti:url var="folderImg" value="/WebConfig/yukon/Icons/folder_edit.gif"/>
                         <img src="${folderImg}">&nbsp;<input type="file" name="importFile"><br>
                         <input type="checkbox" name="ignoreInvalidColumns">&nbsp;<i:inline key="yukon.web.modules.amr.fdrTranslationManagement.ignoreInvalidText"/>
@@ -73,7 +73,7 @@
                     <h3><i:inline key="yukon.web.modules.amr.fdrTranslationManagement.reportTitle"/></h3>
                     <i:inline key="yukon.web.modules.amr.fdrTranslationManagement.reportText"/>
                 </div>
-                <form id="downloadReportForm" method="post" action="/spring/bulk/fdrTranslationManager/report">
+                <form id="downloadReportForm" method="post" action="/bulk/fdrTranslationManager/report">
                     <i:inline key="yukon.web.modules.amr.fdrTranslationManagement.interfaceFilterLabel"/>
                     <select name="reportInterface">
                         <option value="AllInterfaces"><i:inline key="yukon.web.modules.amr.fdrTranslationManagement.allInterfaces"/></option>

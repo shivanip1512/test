@@ -222,7 +222,7 @@
 							<c:if test="${backingBean.deviceCollection.deviceCount > 0}">
 								<c:if test="${isDeviceGroup}">
 									<span class="viewGroupLink fr">
-										<cti:url var="deviceGroupUrl" value="/spring/group/editor/home">
+										<cti:url var="deviceGroupUrl" value="/group/editor/home">
 											<cti:param name="groupName">${backingBean.deviceCollection.collectionParameters['group.name']}</cti:param>
 										</cti:url>
 										(<a href="${deviceGroupUrl}"><i:inline key=".filter.viewDeviceGroup"/></a>)
@@ -275,7 +275,7 @@
     <c:if test="${collectionFromReportResults != null && filterResult.hitCount > 0}">
 		<c:set var="linkHeaderHtml">
 			<span class="navLink"> <cti:link
-					href="/spring/bulk/collectionActions"
+					href="/bulk/collectionActions"
 					key="yukon.web.modules.amr.deviceSelection.performCollectionAction">
 					<cti:mapParam value="${collectionFromReportResults.collectionParameters}" />
 				</cti:link> </span>

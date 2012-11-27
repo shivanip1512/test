@@ -12,7 +12,7 @@
             <h3><i:inline key=".importHeader"/></h3>
             <i:inline key=".importDescription"/>
             </div>
-            <form id="importForm" method="post" action="/spring/bulk/pointImport/submitImport" enctype="multipart/form-data">
+            <form id="importForm" method="post" action="/bulk/pointImport/submitImport" enctype="multipart/form-data">
                 <tags:nameValueContainer2>
                     <tags:nameValue2 nameKey=".importTypeSelectLabel">
                         <select name="importType" id="importTypeSelect">

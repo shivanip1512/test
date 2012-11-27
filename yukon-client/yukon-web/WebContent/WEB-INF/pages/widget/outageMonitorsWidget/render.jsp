@@ -35,7 +35,7 @@
 			<c:set var="tdClass" value="subtleGray"/>
 		</c:if>
 		<tr>
-			<cti:url var="viewOutageProcessingUrl" value="/spring/amr/outageProcessing/process/process">
+			<cti:url var="viewOutageProcessingUrl" value="/amr/outageProcessing/process/process">
 				<cti:param name="outageMonitorId" value="${monitorId}"/>
 			</cti:url>
 				
@@ -83,7 +83,7 @@
 </c:choose>
 
 <div style="text-align:right;padding-top:5px;">
-    <form action="/spring/amr/outageProcessing/monitorEditor/edit" method="get">
+    <form action="/amr/outageProcessing/monitorEditor/edit" method="get">
         <cti:button nameKey="create" type="submit" styleClass="f_blocker"/>
     </form>
 </div>

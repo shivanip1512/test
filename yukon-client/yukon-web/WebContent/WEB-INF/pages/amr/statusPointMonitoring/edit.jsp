@@ -36,7 +36,7 @@
         </h1>
 
         <div class="actionArea">
-            <cti:url var="submitUrl" value="/spring/amr/statusPointMonitoring/delete"/>
+            <cti:url var="submitUrl" value="/amr/statusPointMonitoring/delete"/>
             <form action="${submitUrl}" method="post">
                 <input type="hidden" name="statusPointMonitorId" value="${statusPointMonitorId}">
                 <cti:button nameKey="ok" type="submit" styleClass="f_blocker"/>
@@ -46,12 +46,12 @@
     </i:simplePopup>
 
 	<%-- MISC FORMS --%>
-	<form id="toggleEnabledForm" action="/spring/amr/statusPointMonitoring/toggleEnabled" method="post">
+	<form id="toggleEnabledForm" action="/amr/statusPointMonitoring/toggleEnabled" method="post">
 		<input type="hidden" name="statusPointMonitorId" value="${statusPointMonitorId}">
 	</form>
 	
 	<%-- UPDATE FORM --%>
-    <cti:url var="submitUrl" value="/spring/amr/statusPointMonitoring/update"/>
+    <cti:url var="submitUrl" value="/amr/statusPointMonitoring/update"/>
 	<form:form commandName="statusPointMonitor" action="${submitUrl}" method="post">
 	
 		<form:hidden path="statusPointMonitorId"/>

@@ -10,31 +10,31 @@
 <c:if test="${showLocalControl}">
 jQuery('#localControlsOption').click(function(event) {
     hideMenu();
-    getMenuFromURL('/spring/capcontrol/menu/localControl?id=${paoId}', event, {position: "center", modal: true});
+    getMenuFromURL('/capcontrol/menu/localControl?id=${paoId}', event, {position: "center", modal: true});
 });
 </c:if>
 <c:if test="${showChangeOpState}">
 jQuery('#changeOpStateOption').click(function(event) {
     hideMenu();
-    getMenuFromURL('/spring/capcontrol/menu/opStateChange?bankId=${paoId}', event, {position: "center", modal: true});
+    getMenuFromURL('/capcontrol/menu/opStateChange?bankId=${paoId}', event, {position: "center", modal: true});
 });
 </c:if>
 <c:if test="${showResetBankOpCount}">
 jQuery('#resetBankOpCountOption').click(function(event) {
     hideMenu();
-    getMenuFromURL('/spring/capcontrol/menu/resetBankOpCount?bankId=${paoId}', event, {position: "center", modal: true});
+    getMenuFromURL('/capcontrol/menu/resetBankOpCount?bankId=${paoId}', event, {position: "center", modal: true});
 });
 </c:if>
 <c:if test="${showRecentCommands}">
 jQuery('#recentEventsOption').click(function(event) {
     hideMenu();
-    window.location = '/spring/capcontrol/search/recentEvents?value=${paoId}';
+    window.location = '/capcontrol/search/recentEvents?value=${paoId}';
 });
 </c:if>
 <c:if test="${showComments}">
 jQuery('#viewCommentsOption').click(function(event) {
     hideMenu();
-    showDialog(jQuery(event.currentTarget).find('input').val(), '/spring/capcontrol/comments/paoComments?paoId=${paoId}');
+    showDialog(jQuery(event.currentTarget).find('input').val(), '/capcontrol/comments/paoComments?paoId=${paoId}');
 });
 </c:if>
 </script>

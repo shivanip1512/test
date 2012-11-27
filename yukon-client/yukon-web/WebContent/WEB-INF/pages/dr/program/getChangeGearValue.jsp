@@ -8,7 +8,7 @@
         <cti:msg key="yukon.web.modules.dr.program.getChangeGearValue.instructions" argument="${program.name}"/>
     </h1>
 
-    <form id="sendEnableForm" action="/spring/dr/program/changeGear">
+    <form id="sendEnableForm" action="/dr/program/changeGear">
         <input type="hidden" name="programId" value="${program.paoIdentifier.paoId}"/>
         <cti:msg key="yukon.web.modules.dr.program.getChangeGearValue.gearSelect"/>
         <select name="gearNumber">

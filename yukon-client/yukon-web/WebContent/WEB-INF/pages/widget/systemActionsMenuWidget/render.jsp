@@ -1,10 +1,10 @@
 <%@ taglib prefix="cti" uri="http://cannontech.com/tags/cti"%>
 <%@ taglib prefix="i" tagdir="/WEB-INF/tags/i18n"%>
 
-<cti:url var="phaseDetectUrl" value="/spring/amr/phaseDetect/home"/>
-<cti:url var="archiveDataAnalysesUrl" value="/spring/bulk/archiveDataAnalysis/list/view"/>
-<cti:url var="meterEventsReportUrl" value="/spring/amr/meterEventsReport/selectDevices"/>
-<cti:url var="waterLeakReportUrl" value="/spring/amr/waterLeakReport/report">
+<cti:url var="phaseDetectUrl" value="/amr/phaseDetect/home"/>
+<cti:url var="archiveDataAnalysesUrl" value="/bulk/archiveDataAnalysis/list/view"/>
+<cti:url var="meterEventsReportUrl" value="/amr/meterEventsReport/selectDevices"/>
+<cti:url var="waterLeakReportUrl" value="/amr/waterLeakReport/report">
     <cti:param name="initReport" value="true"/>
 </cti:url>
 <div>

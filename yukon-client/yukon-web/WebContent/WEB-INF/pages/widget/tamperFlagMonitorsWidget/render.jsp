@@ -15,7 +15,7 @@
 </c:if>
 
 <%-- TABLE --%>
-<cti:url var="submitUrl" value="/spring/amr/tamperFlagProcessing/edit"/>
+<cti:url var="submitUrl" value="/amr/tamperFlagProcessing/edit"/>
 <form action="${submitUrl}" method="get">
 <c:choose>
 <c:when test="${fn:length(monitors) > 0}">
@@ -41,7 +41,7 @@
 		
 		<tr>
 			
-			<cti:url var="viewTamperFlagProcessingUrl" value="/spring/amr/tamperFlagProcessing/process/process">
+			<cti:url var="viewTamperFlagProcessingUrl" value="/amr/tamperFlagProcessing/process/process">
 				<cti:param name="tamperFlagMonitorId" value="${monitorId}"/>
 			</cti:url>
 				

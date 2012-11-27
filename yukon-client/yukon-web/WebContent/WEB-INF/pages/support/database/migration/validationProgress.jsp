@@ -12,8 +12,8 @@
 
     <cti:breadCrumbs>
 	    <cti:crumbLink url="/operator/Operations.jsp" title="Operations Home"  />
-	    <cti:crumbLink url="/spring/support/" title="Support" />
-	    <cti:crumbLink url="/spring/support/database/migration/home" title="${homePageTitle}">
+	    <cti:crumbLink url="/support/" title="Support" />
+	    <cti:crumbLink url="/support/database/migration/home" title="${homePageTitle}">
 	    	<cti:param name="import" value="true"/>
 	    </cti:crumbLink>
 	    <cti:crumbLink>${pageTitle}</cti:crumbLink>
@@ -64,7 +64,7 @@
 	        						 
 	    <%-- VALIDATE --%>
 	    <br>
-		<form id="importValidateForm" action="/spring/support/database/migration/importValidate" method="get">
+		<form id="importValidateForm" action="/support/database/migration/importValidate" method="get">
 	    	<input type="hidden" name="statusKey" value="${status.id}">
 	    </form>
 	    

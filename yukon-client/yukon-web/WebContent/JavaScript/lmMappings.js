@@ -31,7 +31,7 @@ var setMappedNameId = function() {
 	
 		if (overwrite) {
 	
-			var url = '/spring/multispeak/setup/lmMappings/addOrUpdateMapping';
+			var url = '/multispeak/setup/lmMappings/addOrUpdateMapping';
 			var params = $H({
 			    'strategyName': $('strategyName').value,
 			    'substationName': $('substationName').value,
@@ -65,7 +65,7 @@ var setMappedNameId = function() {
 
 function getMappedName(callback) {
 
-	var url = '/spring/multispeak/setup/lmMappings/findMapping';
+	var url = '/multispeak/setup/lmMappings/findMapping';
 	var params = $H({
 	    'strategyName': $('strategyName').value,
 	    'substationName': $('substationName').value
@@ -116,7 +116,7 @@ function reloadAllMappingsTable(col, isReorder) {
 	}
 
 	// call reload
-	var url = '/spring/multispeak/setup/lmMappings/reloadAllMappingsTable';
+	var url = '/multispeak/setup/lmMappings/reloadAllMappingsTable';
 	var params = $H({
 	    'col': currentOrderByColum,
 	    'ascending': currentAscendingOrder
@@ -139,7 +139,7 @@ function removeLmMapping(mspLMInterfaceMappingId) {
 		return;
 	}
 	
-	var url = '/spring/multispeak/setup/lmMappings/removeMapping';
+	var url = '/multispeak/setup/lmMappings/removeMapping';
 	var params = $H({
 	    'mspLMInterfaceMappingId': mspLMInterfaceMappingId
 	});

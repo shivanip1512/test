@@ -5,7 +5,7 @@ function checkPageExpire() {
 	});
     
     jQuery.ajax({
-        url: "/spring/capcontrol/pageExpire",
+        url: "/capcontrol/pageExpire",
         data: {"paoIds": paoIds},
         success: function(data) {
             var expired = eval(data);
@@ -19,7 +19,7 @@ function checkPageExpire() {
 }
 
 function getCommandMenu(id, event) {
-    getMenuFromURL('/spring/capcontrol/menu/commandMenu?id=' + id, event);
+    getMenuFromURL('/capcontrol/menu/commandMenu?id=' + id, event);
 }
 
 function showDialog(title, url) {
@@ -47,7 +47,7 @@ function showDialog(title, url) {
 }
 
 function getMovedBankMenu(id, event) {
-    getMenuFromURL('/spring/capcontrol/menu/movedBankMenu?id=' + id, event);
+    getMenuFromURL('/capcontrol/menu/movedBankMenu?id=' + id, event);
 }
 
 function getMenuFromURL(url, event, params) {

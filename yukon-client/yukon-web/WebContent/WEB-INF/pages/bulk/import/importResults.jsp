@@ -15,11 +15,11 @@
         
         <%-- bulk home --%>
         <cti:msg var="bulkOperationsPageTitle" key="yukon.common.device.bulk.bulkHome.pageTitle"/>
-        <cti:crumbLink url="/spring/bulk/bulkHome" title="${bulkOperationsPageTitle}" />
+        <cti:crumbLink url="/bulk/bulkHome" title="${bulkOperationsPageTitle}" />
         
         <%-- import --%>
         <cti:msg var="importUploadPageTitle" key="yukon.common.device.bulk.importUpload.pageTitle"/>
-        <cti:crumbLink url="/spring/bulk/import/upload" title="${importUploadPageTitle}" />
+        <cti:crumbLink url="/bulk/import/upload" title="${importUploadPageTitle}" />
         
         <%-- results --%>
         <cti:crumbLink>${pageTitle}</cti:crumbLink>
@@ -41,7 +41,7 @@
             
             <%-- BACK BUTTON --%>
             <br>
-            <form id="importResultsForm" type="post" action="/spring/bulk/import/upload">
+            <form id="importResultsForm" type="post" action="/bulk/import/upload">
                 
                 <cti:msg var="backToUploadButton" key="yukon.common.device.bulk.importResults.backToUpload"/>
                 <br>

@@ -9,7 +9,7 @@
 <cti:standardPage module="operator" page="optOut.confirm">
 
 <form:form id="form" commandName="optOutBackingBean" method="POST"
-    action="/spring/stars/operator/program/optOut/optOutQuestions">
+    action="/stars/operator/program/optOut/optOutQuestions">
 
     <tags:formElementContainer nameKey="optOuts">
         <input type="hidden" name="accountId" value="${accountId}"/>

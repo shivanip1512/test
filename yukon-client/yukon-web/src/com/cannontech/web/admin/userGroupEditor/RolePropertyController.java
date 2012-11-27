@@ -137,7 +137,7 @@ public class RolePropertyController {
         
         flashScope.setConfirm(new YukonMessageSourceResolvable("yukon.web.modules.adminSetup.roles.loginGroupRoleUpdated"));
         setupModelMap(context, map, liteYukonGroup, role);
-        return "redirect:/spring/adminSetup/roleGroup/view";
+        return "redirect:/adminSetup/roleGroup/view";
     }
     
     @RequestMapping(value="update", method=RequestMethod.POST, params="delete")
@@ -145,13 +145,13 @@ public class RolePropertyController {
         rolePropertyEditorDao.removeRoleFromGroup(roleGroupId, roleId);
         map.addAttribute("roleGroupId", roleGroupId);
         flash.setConfirm(new YukonMessageSourceResolvable("yukon.web.modules.adminSetup.roleGroupEditor.updateSuccessful"));
-        return "redirect:/spring/adminSetup/roleGroup/view";
+        return "redirect:/adminSetup/roleGroup/view";
     }
     
     @RequestMapping(value="update", method=RequestMethod.POST, params="cancel")
     public String cancel(ModelMap map, FlashScope flash, int roleGroupId, int roleId) {
         map.addAttribute("roleGroupId", roleGroupId);
-        return "redirect:/spring/adminSetup/roleGroup/view";
+        return "redirect:/adminSetup/roleGroup/view";
     }
     
     public static class GroupRolePropertyEditorBean {

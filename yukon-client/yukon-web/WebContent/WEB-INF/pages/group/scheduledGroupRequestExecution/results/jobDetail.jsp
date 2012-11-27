@@ -87,7 +87,7 @@
 			<tags:nameValue name="${deviceGroupText}">
 				<c:choose>
 					<c:when test="${not empty jobWrapper.deviceGroupName}">
-						<cti:url var="deviceGroupUrl" value="/spring/group/editor/home">
+						<cti:url var="deviceGroupUrl" value="/group/editor/home">
 							<cti:param name="groupName" value="${jobWrapper.deviceGroupName}"/>
 						</cti:url>
 						<a href="${deviceGroupUrl}">
@@ -167,7 +167,7 @@
 				</span>
 				
 				<span id="hasLastRunSpan" style="${hasLastRunSpanInitialStyle}">
-					<cti:url var="lastRunUrl" value="/spring/group/scheduledGroupRequestExecutionResults/viewLastRun">
+					<cti:url var="lastRunUrl" value="/group/scheduledGroupRequestExecutionResults/viewLastRun">
 						<cti:param name="jobId" value="${jobWrapper.job.id}"/>
 					</cti:url>
 					<a href="${lastRunUrl}"><cti:dataUpdaterValue type="SCHEDULED_GROUP_REQUEST_EXECUTION" identifier="${jobWrapper.job.id}/LAST_RUN_DATE"/></a>
@@ -200,9 +200,9 @@
 			
 			<%-- all executions button --%>
 			<tags:nameValue name="${executionsText}">
-				<form name="viewAllExecutionsForm" action="/spring/common/commandRequestExecutionResults/list" method="get">
+				<form name="viewAllExecutionsForm" action="/common/commandRequestExecutionResults/list" method="get">
 				
-					<cti:url var="creListUrl" value="/spring/common/commandRequestExecutionResults/list">
+					<cti:url var="creListUrl" value="/common/commandRequestExecutionResults/list">
 						<cti:param name="jobId" value="${jobWrapper.job.id}"/>
 					</cti:url>
 				
@@ -224,7 +224,7 @@
 		
 		<%-- EDIT --%>
 		<br>
-		<form id="editScheduledGroupRequestExecutionForm" action="/spring/group/scheduledGroupRequestExecution/home" method="get">
+		<form id="editScheduledGroupRequestExecutionForm" action="/group/scheduledGroupRequestExecution/home" method="get">
 			<input type="hidden" name="editJobId" value="${jobWrapper.job.id}">
 		</form>
 		

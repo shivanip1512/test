@@ -48,7 +48,7 @@
         });
     </script>
 
-    <cti:url var="fullErrorCodesURL" value="/spring/support/errorCodes/view" />
+    <cti:url var="fullErrorCodesURL" value="/support/errorCodes/view" />
 
     <i:simplePopup titleKey=".supportedDevicesHelpPopup" id="supportedDevicesHelpPopup">
         <spring:escapeBody htmlEscape="true">${supportedDevicesHelpText}</spring:escapeBody>
@@ -85,7 +85,7 @@
 			</tags:nameValue2>
 
             <tags:nameValue2 nameKey=".deviceGroup">
-                <cti:url var="deviceGroupUrl" value="/spring/group/editor/home">
+                <cti:url var="deviceGroupUrl" value="/group/editor/home">
                     <cti:param name="groupName">${monitorDto.groupName}</cti:param>
                 </cti:url>
                 <a href="${deviceGroupUrl}">${monitorDto.groupName}</a>
@@ -101,7 +101,7 @@
                 <span id="supportedDevicesMsg"></span>
                 <span id="addPointsSpan" style="display: none;">
                 <c:if test="${deviceCollection != null}">
-                    <cti:url value="/spring/bulk/addPoints/home" var="addPointsLink">
+                    <cti:url value="/bulk/addPoints/home" var="addPointsLink">
                         <cti:mapParam value="${deviceCollection.collectionParameters}"/>
                     </cti:url>
                     <span> - </span>
@@ -155,7 +155,7 @@
 	</c:choose>
 
 	<div class="pageActionArea">
-		<form id="editMonitorForm" action="/spring/amr/porterResponseMonitor/editPage" method="get">
+		<form id="editMonitorForm" action="/amr/porterResponseMonitor/editPage" method="get">
 			<input type="hidden" name="monitorId" value="${monitorDto.monitorId}">
             <cti:button nameKey="edit" type="submit" styleClass="f_blocker"/>
 		</form>

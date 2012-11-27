@@ -210,11 +210,11 @@ public class InventoryController {
                 if (inventory.getAccountId() > 0) {
                     model.addAttribute("inventoryId", inventory.getInventoryIdentifier().getInventoryId());
                     model.addAttribute("accountId", inventory.getAccountId());
-                    return "redirect:/spring/stars/operator/hardware/view";
+                    return "redirect:/stars/operator/hardware/view";
                 }
                 else {
                     model.addAttribute("inventoryId", inventory.getInventoryIdentifier().getInventoryId());
-                    return "redirect:/spring/stars/operator/inventory/view";
+                    return "redirect:/stars/operator/inventory/view";
                 }
             }
             model.addAttribute("results", results);
@@ -272,7 +272,7 @@ public class InventoryController {
         if (accountId > 0) {
             model.addAttribute("inventoryId", inventoryId);
             model.addAttribute("accountId", accountId);
-            return "redirect:/spring/stars/operator/hardware/view";
+            return "redirect:/stars/operator/hardware/view";
         }
         Hardware hardware = hardwareUiService.getHardware(inventoryId);
         setupModel(model, context, hardware);

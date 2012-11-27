@@ -55,7 +55,7 @@ jQuery(function () {
 });
 </script>
 
-<cti:url var="submitUrl" value="/spring/dr/program/stop/stopMultiple"/>
+<cti:url var="submitUrl" value="/dr/program/stop/stopMultiple"/>
 <form:form id="stopMultipleProgramsForm" commandName="backingBean" action="${submitUrl}"
     onsubmit="return submitFormViaAjax('drDialog', 'stopMultipleProgramsForm')">
     <form:hidden path="controlAreaId"/>
@@ -153,7 +153,7 @@ jQuery(function () {
     <br>
 
     <div class="actionArea">
-        <cti:url var="backUrl" value="/spring/dr/program/stop/multipleDetails">
+        <cti:url var="backUrl" value="/dr/program/stop/multipleDetails">
         </cti:url>
         <input type="button" value="<cti:msg key="yukon.web.modules.dr.program.stopMultiplePrograms.backButton"/>"
             onclick="submitFormViaAjax('drDialog', 'stopMultipleProgramsForm', '${backUrl}')"/>

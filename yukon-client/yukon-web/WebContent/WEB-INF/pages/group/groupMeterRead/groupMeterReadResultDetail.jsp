@@ -30,7 +30,7 @@
         <cti:crumbLink url="/operator/Operations.jsp" title="Operations Home" />
         
         <%-- results list --%>
-        <cti:crumbLink url="/spring/group/groupMeterRead/resultsList">${recentResultsTitle}</cti:crumbLink>
+        <cti:crumbLink url="/group/groupMeterRead/resultsList">${recentResultsTitle}</cti:crumbLink>
         
         <%-- read logs detail --%>
         <cti:crumbLink>${pageTitle}</cti:crumbLink>
@@ -45,7 +45,7 @@
 
             if (theDiv.visible()) {
             
-                var url = '/spring/group/groupMeterRead/' + kind;
+                var url = '/group/groupMeterRead/' + kind;
 
                 var params = $H({
                     'resultKey': '${resultWrapper.result.key}'
@@ -90,7 +90,7 @@
             <%-- device collection action --%>
             <div id="allDevicesActionsDiv" style="display:none;">
                 <br>
-                <cti:link href="/spring/bulk/collectionActions" key="yukon.common.device.groupMeterRead.resultDetail.allResults" class="small">
+                <cti:link href="/bulk/collectionActions" key="yukon.common.device.groupMeterRead.resultDetail.allResults" class="small">
                     <cti:mapParam value="${resultWrapper.result.originalDeviceCollectionCopy.collectionParameters}"/>
                 </cti:link>
                 <tags:selectedDevicesPopup deviceCollection="${resultWrapper.result.originalDeviceCollectionCopy}" />
@@ -105,7 +105,7 @@
 	                
 	                <cti:msg var="creResultsText" key="yukon.common.device.groupMeterRead.resultDetail.creResults"/>
 	                
-	                <cti:url var="creResultsUrl" value="/spring/common/commandRequestExecutionResults/detail">
+	                <cti:url var="creResultsUrl" value="/common/commandRequestExecutionResults/detail">
 	                	<cti:param name="commandRequestExecutionId" value="${resultWrapper.result.commandRequestExecutionIdentifier.commandRequestExecutionId}"/>
 	                </cti:url>
 	                
@@ -124,7 +124,7 @@
         <div id="successActionsDiv" style="padding:10px;display:none;">
         
             <%-- device collection action --%>
-            <cti:link href="/spring/bulk/collectionActions" key="yukon.common.device.groupMeterRead.resultDetail.successResults" class="small">
+            <cti:link href="/bulk/collectionActions" key="yukon.common.device.groupMeterRead.resultDetail.successResults" class="small">
                 <cti:mapParam value="${resultWrapper.result.successCollection.collectionParameters}"/>
             </cti:link>
             <tags:selectedDevicesPopup deviceCollection="${resultWrapper.result.successCollection}" />
@@ -144,7 +144,7 @@
         <div id="errorActionsDiv" style="padding:10px;display:none;">
         
             <%-- device collection action --%>
-            <cti:link href="/spring/bulk/collectionActions" key="yukon.common.device.groupMeterRead.resultDetail.failureResults" class="small">
+            <cti:link href="/bulk/collectionActions" key="yukon.common.device.groupMeterRead.resultDetail.failureResults" class="small">
                 <cti:mapParam value="${resultWrapper.result.failureCollection.collectionParameters}"/>
             </cti:link>
             <tags:selectedDevicesPopup deviceCollection="${resultWrapper.result.failureCollection}" />
@@ -163,7 +163,7 @@
         <div id="unsupportedActionsDiv" style="padding:10px;display:none;">
         
             <%-- device collection action --%>
-            <cti:link href="/spring/bulk/collectionActions" key="yukon.common.device.groupMeterRead.resultDetail.unsupportedResults" class="small">
+            <cti:link href="/bulk/collectionActions" key="yukon.common.device.groupMeterRead.resultDetail.unsupportedResults" class="small">
                 <cti:mapParam value="${resultWrapper.result.unsupportedCollection.collectionParameters}"/>
             </cti:link>
             <tags:selectedDevicesPopup deviceCollection="${resultWrapper.result.unsupportedCollection}" />

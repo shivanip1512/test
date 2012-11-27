@@ -7,7 +7,7 @@
 
 <cti:standardPage module="amr" page="porterResponseMonitor.${mode}">
 
-    <cti:url var="fullErrorCodesURL" value="/spring/support/errorCodes/view"/>
+    <cti:url var="fullErrorCodesURL" value="/support/errorCodes/view"/>
 
     <i:simplePopup titleKey=".errorCodesPopup" id="errorCodesHelpPopup" on="#errorHelp">
         <div class="largeDialogScrollArea">
@@ -82,7 +82,7 @@ YEvent.observeSelectorClick('.addRuleTableRow', function(event) {
 </script>
 
 	<form:form id="updateForm" commandName="monitorDto"
-		action="/spring/amr/porterResponseMonitor/update" method="post">
+		action="/amr/porterResponseMonitor/update" method="post">
 
 		<form:hidden path="monitorId" />
         <form:hidden path="stateGroup"/>

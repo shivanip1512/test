@@ -308,7 +308,7 @@ public class MACSScheduleController extends MultiActionController {
         model.put("sortBy", sortBy);
         model.put("descending", descending);
         
-        RedirectView redirect = new RedirectView("/spring/macsscheduler/schedules/view");
+        RedirectView redirect = new RedirectView("/macsscheduler/schedules/view");
         redirect.setAttributesMap(model);
         return redirect;
     }
@@ -321,7 +321,7 @@ public class MACSScheduleController extends MultiActionController {
         model.put("descending", descending);
         model.put("errorMsg", errorMsg);
         
-        RedirectView redirect = new RedirectView("/spring/macsscheduler/schedules/controlView");
+        RedirectView redirect = new RedirectView("/macsscheduler/schedules/controlView");
         redirect.setAttributesMap(model);
         return redirect;
     }

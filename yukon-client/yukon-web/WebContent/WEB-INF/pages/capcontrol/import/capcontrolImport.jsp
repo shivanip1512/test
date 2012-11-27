@@ -11,7 +11,7 @@
             //get the import type value, remove spaces, lowercase
             var importType = jQuery('#importTypeSelector').val().replace(/_/g, '')
             importType = importType.toLowerCase();
-            jQuery("#importForm").attr("action", "/spring/capcontrol/import/" + importType + "File");
+            jQuery("#importForm").attr("action", "/capcontrol/import/" + importType + "File");
         });
     });
     </script>
@@ -27,7 +27,7 @@
             </c:forEach>
         </select>
         <br><br>
-        <form id="importForm" method="post" action="/spring/capcontrol/import/cbcFile" enctype="multipart/form-data">
+        <form id="importForm" method="post" action="/capcontrol/import/cbcFile" enctype="multipart/form-data">
             <cti:url var="folderImg" value="/WebConfig/yukon/Icons/folder_edit.gif"/>
             <img src="${folderImg}">&nbsp;<input type="file" name="dataFile"><br>
             <div style="float:right">

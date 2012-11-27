@@ -122,7 +122,7 @@ public class BulkController extends BulkControllerBase {
         
             if (request.getMethod().equals("POST")) {
                 // if we got here from a post (like the file upload), let's redirect
-                mav = new ModelAndView("redirect:/spring/bulk/collectionActions");
+                mav = new ModelAndView("redirect:/bulk/collectionActions");
                 Map<String, String> collectionParameters = this.getDeviceCollection(request).getCollectionParameters();
                 mav.addAllObjects(collectionParameters);
             } else {
@@ -141,7 +141,7 @@ public class BulkController extends BulkControllerBase {
             }
         } catch (ObjectMappingException e) {
             
-            mav = new ModelAndView("redirect:/spring/bulk/deviceSelection");
+            mav = new ModelAndView("redirect:/bulk/deviceSelection");
             mav.addObject("errorMsg", e.getMessage());
         }
         
@@ -165,7 +165,7 @@ public class BulkController extends BulkControllerBase {
     	try {
     		return collectionActions(request, response);
     	} catch (DeviceCollectionCreationException e) {
-    		ModelAndView mav = new ModelAndView("redirect:/spring/bulk/deviceSelection");
+    		ModelAndView mav = new ModelAndView("redirect:/bulk/deviceSelection");
             mav.addObject("errorMsg", e.getMessage());
             return mav;
     	}

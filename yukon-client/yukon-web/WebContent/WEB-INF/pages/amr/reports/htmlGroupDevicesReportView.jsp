@@ -10,8 +10,8 @@
 
     <cti:breadCrumbs>
         <cti:crumbLink url="/operator/Operations.jsp" title="Operations Home" />
-        <cti:crumbLink url="/spring/group/editor/home" title="Groups Home" />
-        <cti:crumbLink url="/spring/group/editor/home" title="${deviceGroup.fullName}">
+        <cti:crumbLink url="/group/editor/home" title="Groups Home" />
+        <cti:crumbLink url="/group/editor/home" title="${deviceGroup.fullName}">
            <cti:param name="groupName" value="${deviceGroup.fullName}"/>
         </cti:crumbLink>
         <cti:crumbLink>${reportTitle}</cti:crumbLink>

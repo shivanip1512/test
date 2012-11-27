@@ -23,7 +23,7 @@ function doItemCommand(itemId, commandId, event, reason, onReasonMenu) {
     if (onReasonMenu) parameters.onReasonMenu = onReasonMenu;
     
     jQuery.ajax({
-        url: '/spring/capcontrol/command/itemCommand',
+        url: '/capcontrol/command/itemCommand',
         type: "POST",
         data: parameters,
         dataType: "html",
@@ -41,7 +41,7 @@ function doItemCommand(itemId, commandId, event, reason, onReasonMenu) {
 
 function doSystemCommand(commandId) {
     jQuery.ajax({
-        url: '/spring/capcontrol/command/system',
+        url: '/capcontrol/command/system',
 		type: 'POST',
         data: {'commandId' : commandId},
         success: function(response) {
@@ -52,7 +52,7 @@ function doSystemCommand(commandId) {
 
 function doChangeState(itemId, stateId) {
     jQuery.ajax({
-        url: '/spring/capcontrol/command/manualStateChange',
+        url: '/capcontrol/command/manualStateChange',
 		type: 'POST',
         data: {'paoId' : itemId, 'rawStateId' : stateId},
         success: function(response) {
@@ -64,7 +64,7 @@ function doChangeState(itemId, stateId) {
 function doResetBankOpCount(itemId, newOpCount) {
     hideMenu();
     jQuery.ajax({
-        url: '/spring/capcontrol/command/resetBankOpCount',
+        url: '/capcontrol/command/resetBankOpCount',
         type: 'POST',
         data: {'bankId' : itemId, 'newOpCount' : newOpCount},
         success: function(response) {
@@ -79,7 +79,7 @@ function doChangeOpState(bankId, stateId, reason, onReasonMenu) {
     if (onReasonMenu) parameters.onReasonMenu = onReasonMenu;
     
     jQuery.ajax({
-        url: '/spring/capcontrol/command/changeOpState',
+        url: '/capcontrol/command/changeOpState',
         type: 'POST',
         data: parameters,
         success: function(response) {

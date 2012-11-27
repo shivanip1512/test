@@ -46,7 +46,7 @@ jQuery(function() {
     ${dialogHeader}
 </h1>
 <br>
-<cti:url var="submitUrl" value="/spring/dr/program/enableDisablePrograms"/>
+<cti:url var="submitUrl" value="/dr/program/enableDisablePrograms"/>
 <form id="disableProgramsForm" action="${submitUrl}" onsubmit="return submitFormViaAjax('drDialog', 'disableProgramsForm');">
     <input type="hidden" name="enable" value="${enable}">
     <tags:abstractContainer type="box" title="${boxTitle}">

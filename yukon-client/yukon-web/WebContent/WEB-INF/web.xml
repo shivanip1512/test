@@ -177,7 +177,7 @@
 
 	<filter-mapping>
 		<filter-name>referrerPageFilter</filter-name>
-		<url-pattern>/spring/capcontrol/*</url-pattern>
+		<url-pattern>/capcontrol/*</url-pattern>
 	</filter-mapping>
 
 	<filter-mapping>
@@ -499,6 +499,13 @@
 		<load-on-startup>3</load-on-startup>
 	</servlet>
 
+    <servlet>
+        <servlet-name>springRedirect</servlet-name>
+        <servlet-class>
+            com.cannontech.web.spring.SpringRedirectServlet
+        </servlet-class>
+    </servlet>
+
 	<servlet>
 		<description>
 			Returns an xml config file for log4j logging
@@ -796,7 +803,7 @@
 
     <servlet-mapping>
         <servlet-name>common</servlet-name>
-        <url-pattern>/spring/common/*</url-pattern>
+        <url-pattern>/common/*</url-pattern>
     </servlet-mapping>
 
     <servlet-mapping>
@@ -826,7 +833,7 @@
     
     <servlet-mapping>
         <servlet-name>login</servlet-name>
-        <url-pattern>/spring/login/*</url-pattern>
+        <url-pattern>/login/*</url-pattern>
     </servlet-mapping>
 
     <servlet-mapping>
@@ -836,12 +843,12 @@
 
 	<servlet-mapping>
 		<servlet-name>bulk</servlet-name>
-		<url-pattern>/spring/bulk/*</url-pattern>
+		<url-pattern>/bulk/*</url-pattern>
 	</servlet-mapping>
 	
 	<servlet-mapping>
 		<servlet-name>deviceConfiguration</servlet-name>
-		<url-pattern>/spring/deviceConfiguration/*</url-pattern>
+		<url-pattern>/deviceConfiguration/*</url-pattern>
 	</servlet-mapping>
 
 	<servlet-mapping>
@@ -856,7 +863,7 @@
 
 	<servlet-mapping>
 		<servlet-name>support</servlet-name>
-		<url-pattern>/spring/support/*</url-pattern>
+		<url-pattern>/support/*</url-pattern>
 	</servlet-mapping>
 
 	<servlet-mapping>
@@ -866,32 +873,32 @@
 
 	<servlet-mapping>
 		<servlet-name>editor</servlet-name>
-		<url-pattern>/spring/editor/*</url-pattern>
+		<url-pattern>/editor/*</url-pattern>
 	</servlet-mapping>
 
 	<servlet-mapping>
 		<servlet-name>dynamicBilling </servlet-name>
-		<url-pattern>/spring/dynamicBilling/* </url-pattern>
+		<url-pattern>/dynamicBilling/* </url-pattern>
 	</servlet-mapping>
 
 	<servlet-mapping>
 		<servlet-name>amr</servlet-name>
-		<url-pattern>/spring/amr/*</url-pattern>
+		<url-pattern>/amr/*</url-pattern>
 	</servlet-mapping>
 	
 	<servlet-mapping>
 		<servlet-name>meter</servlet-name>
-		<url-pattern>/spring/meter/*</url-pattern>
+		<url-pattern>/meter/*</url-pattern>
 	</servlet-mapping>
 
 	<servlet-mapping>
 		<servlet-name>chart</servlet-name>
-		<url-pattern>/spring/chart/*</url-pattern>
+		<url-pattern>/chart/*</url-pattern>
 	</servlet-mapping>
 
 	<servlet-mapping>
 		<servlet-name>group</servlet-name>
-		<url-pattern>/spring/group/*</url-pattern>
+		<url-pattern>/group/*</url-pattern>
 	</servlet-mapping>
 
 	<servlet-mapping>
@@ -901,17 +908,17 @@
 
 	<servlet-mapping>
 		<servlet-name>macsscheduler</servlet-name>
-		<url-pattern>/spring/macsscheduler/*</url-pattern>
+		<url-pattern>/macsscheduler/*</url-pattern>
 	</servlet-mapping>
 
     <servlet-mapping>
         <servlet-name>stars</servlet-name>
-        <url-pattern>/spring/stars/*</url-pattern>
+        <url-pattern>/stars/*</url-pattern>
     </servlet-mapping>
 
     <servlet-mapping>
         <servlet-name>starsDemandResponseAdmin</servlet-name>
-        <url-pattern>/spring/stars/dr/admin/*</url-pattern>
+        <url-pattern>/stars/dr/admin/*</url-pattern>
     </servlet-mapping>
 
 	<servlet-mapping>
@@ -946,47 +953,47 @@
 
 	<servlet-mapping>
 		<servlet-name>multispeak</servlet-name>
-		<url-pattern>/spring/multispeak/*</url-pattern>
+		<url-pattern>/multispeak/*</url-pattern>
 	</servlet-mapping>
 
 	<servlet-mapping>
 		<servlet-name>debug</servlet-name>
-		<url-pattern>/spring/debug/*</url-pattern>
+		<url-pattern>/debug/*</url-pattern>
 	</servlet-mapping>
 
     <servlet-mapping>
         <servlet-name>dr</servlet-name>
-        <url-pattern>/spring/dr/*</url-pattern>
+        <url-pattern>/dr/*</url-pattern>
     </servlet-mapping>
 
 	<servlet-mapping>
 		<servlet-name>reports</servlet-name>
-		<url-pattern>/spring/reports/*</url-pattern>
+		<url-pattern>/reports/*</url-pattern>
 	</servlet-mapping>
 	
 	<servlet-mapping>
 		<servlet-name>capcontrol</servlet-name>
-		<url-pattern>/spring/capcontrol/*</url-pattern>
+		<url-pattern>/capcontrol/*</url-pattern>
 	</servlet-mapping>
 
 	<servlet-mapping>
 		<servlet-name>widgetDispatcher</servlet-name>
-		<url-pattern>/spring/widget/*</url-pattern>
+		<url-pattern>/widget/*</url-pattern>
 	</servlet-mapping>
 
 	<servlet-mapping>
 		<servlet-name>componentDispatcher</servlet-name>
-		<url-pattern>/spring/component/*</url-pattern>
+		<url-pattern>/component/*</url-pattern>
 	</servlet-mapping>
 
 	<servlet-mapping>
 		<servlet-name>dataUpdater</servlet-name>
-		<url-pattern>/spring/updater/*</url-pattern>
+		<url-pattern>/updater/*</url-pattern>
 	</servlet-mapping>
 
 	<servlet-mapping>
 		<servlet-name>static</servlet-name>
-		<url-pattern>/spring/static/*</url-pattern>
+		<url-pattern>/static/*</url-pattern>
 	</servlet-mapping>
 
 	<!--  The following mappings used to be handled by the invoker servlet -->
@@ -1096,12 +1103,17 @@
 
 	<servlet-mapping>
 		<servlet-name>layout</servlet-name>
-		<url-pattern>/spring/layout/*</url-pattern>
+		<url-pattern>/layout/*</url-pattern>
 	</servlet-mapping>
 
     <servlet-mapping>
+        <servlet-name>springRedirect</servlet-name>
+        <url-pattern>/spring/*</url-pattern>
+    </servlet-mapping>
+
+    <servlet-mapping>
         <servlet-name>adminSetup</servlet-name>
-        <url-pattern>/spring/adminSetup/*</url-pattern>
+        <url-pattern>/adminSetup/*</url-pattern>
     </servlet-mapping>
 
 	<session-config>

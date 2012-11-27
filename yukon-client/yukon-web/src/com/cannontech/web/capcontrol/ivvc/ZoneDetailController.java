@@ -163,7 +163,7 @@ public class ZoneDetailController {
             flashScope.setError(errorMessage);
         }
 
-        return "redirect:/spring/capcontrol/ivvc/zone/voltagePoints";
+        return "redirect:/capcontrol/ivvc/zone/voltagePoints";
     }
 
     private void setupVoltagePointAttributes(ZoneVoltagePointsHolder zoneVoltagePointsHolder, ModelMap model,
@@ -271,7 +271,7 @@ public class ZoneDetailController {
 
         model.addAttribute("isSpecialArea", isSpecialArea);
         model.addAttribute("zoneId", zoneId);
-        return "redirect:/spring/capcontrol/ivvc/zone/voltageDeltas";
+        return "redirect:/capcontrol/ivvc/zone/voltageDeltas";
     }
     
     @RequestMapping

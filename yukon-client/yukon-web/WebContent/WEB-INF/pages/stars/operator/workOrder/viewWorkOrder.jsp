@@ -52,7 +52,7 @@
 
     <i:simplePopup titleKey=".deleteWorkOrderConfirmation.title" id="confirmDeleteWorkOrderDialog" styleClass="mediumSimplePopup" on="#confirmDelete">
         <cti:msg2 key=".deleteWorkOrderConfirmation.message" arguments="${workOrderDto.workOrderBase.orderNumber}"/>
-         <form id="deleteForm" action="/spring/stars/operator/workOrder/deleteWorkOrder" method="post">
+         <form id="deleteForm" action="/stars/operator/workOrder/deleteWorkOrder" method="post">
           <input type="hidden" name="accountId" value="${accountId}">
           <input type="hidden" name="deleteWorkOrderId" value="${workOrderDto.workOrderBase.orderId}">
           <div class="actionArea">
@@ -62,7 +62,7 @@
         </form>
     </i:simplePopup>
 
-    <cti:url var="submitUrl" value="/spring/stars/operator/workOrder/updateWorkOrder"/>
+    <cti:url var="submitUrl" value="/stars/operator/workOrder/updateWorkOrder"/>
     <form:form commandName="workOrderDto" action="${submitUrl}" onsubmit="combineDateAndTimeFieldsAndSubmit()">
         <input type="hidden" name="accountId" value="${accountId}">
         <form:hidden path="workOrderBase.accountId"/>
@@ -144,7 +144,7 @@
                         <br>
                         <div style="text-align: right;">
                             <%-- GENERATE REPORTS --%>
-                            <cti:url var="pdfExportUrl" value="/spring/stars/operator/workOrder/generateWorkOrderReport">
+                            <cti:url var="pdfExportUrl" value="/stars/operator/workOrder/generateWorkOrderReport">
                                 <cti:param name="export" value="PDF"/>
                                 <cti:param name="accountId" value="${accountId}"/>
                                 <cti:param name="workOrderId" value="${workOrderDto.workOrderBase.orderId}"/>
@@ -180,13 +180,13 @@
         <cti:displayForPageEditModes modes="CREATE,EDIT">
             <cti:button nameKey="save" type="submit" styleClass="f_blocker"/>
             <cti:displayForPageEditModes modes="CREATE">
-                <cti:url value="/spring/stars/operator/workOrder/workOrderList" var="cancelUrl">
+                <cti:url value="/stars/operator/workOrder/workOrderList" var="cancelUrl">
                     <cti:param name="accountId" value="${accountId}"/>
                 </cti:url>
             </cti:displayForPageEditModes>
            
             <cti:displayForPageEditModes modes="EDIT">
-                <cti:url value="/spring/stars/operator/workOrder/view" var="cancelUrl">
+                <cti:url value="/stars/operator/workOrder/view" var="cancelUrl">
                     <cti:param name="accountId" value="${accountId}"/>
                     <cti:param name="workOrderId" value="${workOrderDto.workOrderBase.orderId}"/>
                 </cti:url>
@@ -199,7 +199,7 @@
        
         <cti:displayForPageEditModes modes="VIEW">
             <cti:checkRolesAndProperties value="OPERATOR_ALLOW_ACCOUNT_EDITING">
-                <cti:url value="/spring/stars/operator/workOrder/edit" var="editUrl">
+                <cti:url value="/stars/operator/workOrder/edit" var="editUrl">
                     <cti:param name="accountId" value="${accountId}"/>
                     <cti:param name="workOrderId" value="${workOrderDto.workOrderBase.orderId}"/>
                 </cti:url>

@@ -39,7 +39,7 @@
 					<ct:boxContainer2 nameKey="actions" styleClass="widgetContainer">
 	                
 	                    <!-- Actions: Other Collection actions -->
-	                    <cti:url var="collectionActionsUrl" value="/spring/bulk/collectionActions">
+	                    <cti:url var="collectionActionsUrl" value="/bulk/collectionActions">
 	                        <cti:param name="collectionType" value="idList" />
 	                        <cti:param name="idList.ids" value="${deviceId}" />
 	                    </cti:url>

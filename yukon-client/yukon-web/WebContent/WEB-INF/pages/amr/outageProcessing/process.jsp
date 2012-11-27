@@ -51,7 +51,7 @@
 		<tags:nameValueGap2 gapHeight="20px"/>
 		
 		<tags:nameValue2 nameKey=".mainDetail.deviceGroup">
-			<cti:url var="deviceGroupUrl" value="/spring/group/editor/home">
+			<cti:url var="deviceGroupUrl" value="/group/editor/home">
 				<cti:param name="groupName">${outageMonitor.groupName}</cti:param>
 			</cti:url>
 			<a href="${deviceGroupUrl}">${outageMonitor.groupName}</a>
@@ -59,14 +59,14 @@
 		</tags:nameValue2>
 		
 		<tags:nameValue2 nameKey=".mainDetail.outagesGroup">
-			<cti:url var="outageGroupUrl" value="/spring/group/editor/home">
+			<cti:url var="outageGroupUrl" value="/group/editor/home">
 				<cti:param name="groupName">${outageGroupBase}${outageMonitor.outageMonitorName}</cti:param>
 			</cti:url>
 			
 			<a href="${outageGroupUrl}">${outageGroupBase}${outageMonitor.outageMonitorName}</a>
 			
 			<br><br>
-			<cti:url var="outagesGroupReportUrl" value="/spring/amr/reports/groupDevicesReport">
+			<cti:url var="outagesGroupReportUrl" value="/amr/reports/groupDevicesReport">
 				<cti:param name="groupName" value="${outageGroupBase}${outageMonitor.outageMonitorName}"/>
 			</cti:url>
 			
@@ -76,7 +76,7 @@
 		
 	</tags:nameValueContainer2>
 	<br>
-	<form id="editMonitorForm" action="/spring/amr/outageProcessing/monitorEditor/edit" method="get">
+	<form id="editMonitorForm" action="/amr/outageProcessing/monitorEditor/edit" method="get">
 		<input type="hidden" name="outageMonitorId" value="${outageMonitor.outageMonitorId}">
 	</form>
     <cti:msg2 var="mainDetailEditText" key=".mainDetail.edit"/>
@@ -88,7 +88,7 @@
     <cti:msg2 var="readOutageLogsSectionTitleText" key=".readOutageLogs.title" />
     <tags:sectionContainer id="readOutageLogsSection" title="${readOutageLogsSectionTitleText}">
 	
-		<form id="readOutagesForm" action="/spring/amr/outageProcessing/process/readOutageLogs">
+		<form id="readOutagesForm" action="/amr/outageProcessing/process/readOutageLogs">
 
 			<input type="hidden" name="outageMonitorId" value="${outageMonitor.outageMonitorId}">
 	
@@ -152,7 +152,7 @@
 								<cti:dataUpdaterValue type="GROUP_METER_READ" identifier="${result.key}/UNSUPPORTED_COUNT"/>
 							</td>
 							<td>
-								<cti:url var="readLogsDetailUrl" value="/spring/group/groupMeterRead/resultDetail">
+								<cti:url var="readLogsDetailUrl" value="/group/groupMeterRead/resultDetail">
 									<cti:param name="resultKey" value="${result.key}"/>
 								</cti:url>
 								<a href="${readLogsDetailUrl}"><i:inline key=".recentReadLogsResults.viewDetailLink"/></a>
@@ -189,14 +189,14 @@
 		<br>
 		
 		<%-- clear outages group --%>
-		<cti:url var="clearOutagesGroupUrl" value="/spring/amr/outageProcessing/process/clearOutagesGroup">
+		<cti:url var="clearOutagesGroupUrl" value="/amr/outageProcessing/process/clearOutagesGroup">
 			<cti:param name="outageMonitorId" value="${outageMonitor.outageMonitorId}"/>
 		</cti:url>
 		<a href="${clearOutagesGroupUrl}"><i:inline key=".options.clearOutagesGroup"/></a>
 		<br>
 		
 		<%-- other actions --%>
-		<cti:url var="otherActionsUrl" value="/spring/bulk/collectionActions">
+		<cti:url var="otherActionsUrl" value="/bulk/collectionActions">
 			<cti:param name="collectionType" value="group"/>
 			<cti:param name="group.name" value="${outageGroupBase}${outageMonitor.outageMonitorName}"/>
 		</cti:url>

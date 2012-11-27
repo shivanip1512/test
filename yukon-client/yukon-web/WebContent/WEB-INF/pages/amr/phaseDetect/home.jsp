@@ -7,7 +7,7 @@
     
     <cti:includeCss link="/WebConfig/yukon/styles/yukon.css"/>
 
-    <cti:url var="routesUrl" value="/spring/amr/phaseDetect/routes"/>
+    <cti:url var="routesUrl" value="/amr/phaseDetect/routes"/>
 
 	<script type="text/javascript">
         function selectThisSub() {
@@ -61,7 +61,7 @@
         }
 	</script>
 
-    <form action="/spring/amr/phaseDetect/saveSubstationAndReadMethod" method=post>
+    <form action="/amr/phaseDetect/saveSubstationAndReadMethod" method=post>
         <tags:sectionContainer2 nameKey="selectSubstation">
             <table style="padding-bottom: 5px;">
                 <tr>

@@ -34,7 +34,7 @@
                 </c:choose>
                 <tr class="${rowClass}">
                     <td>
-                        <cti:url value="/spring/stars/operator/inventory/view" var="hardwareUrl">
+                        <cti:url value="/stars/operator/inventory/view" var="hardwareUrl">
                             <cti:param name="inventoryId" value="${row.hardware.identifier.inventoryId}"/>
                         </cti:url>
                         <a href="${hardwareUrl}">${fn:escapeXml(row.hardware.serialNumber)}</a>
@@ -42,7 +42,7 @@
                     <td><i:inline key="${row.hardware.identifier.hardwareType}"/></td>
                     <td>
                         <c:if test="${row.hardware.accountId > 0}">
-                            <cti:url value="/spring/stars/operator/account/view" var="accountUrl">
+                            <cti:url value="/stars/operator/account/view" var="accountUrl">
                                 <cti:param name="accountId" value="${row.hardware.accountId}"/>
                             </cti:url>
                             <a href="${accountUrl}">${fn:escapeXml(row.hardware.accountNo)}</a>

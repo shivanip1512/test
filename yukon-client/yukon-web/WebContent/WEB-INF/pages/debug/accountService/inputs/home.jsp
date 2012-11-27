@@ -42,7 +42,7 @@
             <td class="functionality"><i:inline key=".deleteAccount"/></td>
             <td class="doc"><i:inline key=".section3"/></td>
             <td class="inputTest">
-                <form action="/spring/debug/accountService/inputs/deleteAccount" method="post">
+                <form action="/debug/accountService/inputs/deleteAccount" method="post">
                     <tags:nameValueContainer2>
                         <tags:nameValue2 nameKey=".accountNumber" >
                             <input type="text" name="delete_accountNumber" value="${delete_accountNumber}">
@@ -65,7 +65,7 @@
             <td class="functionality"><i:inline key=".addAccount"/></td>
             <td class="doc"></td>
             <td class="inputTest">
-                <form action="/spring/debug/accountService/inputs/addAccount" method="post">
+                <form action="/debug/accountService/inputs/addAccount" method="post">
                     <tags:nameValueContainer2>
                         <tags:nameValue2 nameKey=".operator" >
                             <input type="text" name="add_user" value="${add_user}">
@@ -177,7 +177,7 @@
             <td class="functionality"><i:inline key=".updateAccount"/></td>
             <td class="doc"></td>
             <td class="inputTest">
-                <form action="/spring/debug/accountService/inputs/updateAccount" method="post">
+                <form action="/debug/accountService/inputs/updateAccount" method="post">
                     <tags:nameValueContainer2>
                         <tags:nameValue2 nameKey=".operator" >
                             <input type="text" name="update_user" value="${update_user}">

@@ -47,7 +47,7 @@ public class AddRemoveCollectionToGroupController extends MultiActionController 
         // add devices to group
         deviceCollectionDeviceGroupHelper.addCollectionToGroup(groupName, deviceCollection);
         
-        ModelAndView mav = new ModelAndView("redirect:/spring/group/editor/home");
+        ModelAndView mav = new ModelAndView("redirect:/group/editor/home");
         mav.addObject("groupName", groupName);
         
         return mav;
@@ -62,7 +62,7 @@ public class AddRemoveCollectionToGroupController extends MultiActionController 
         // remove devices from group
         deviceCollectionDeviceGroupHelper.removeCollectionFromGroup(groupName, deviceCollection);
         
-        ModelAndView mav = new ModelAndView("redirect:/spring/group/editor/home");
+        ModelAndView mav = new ModelAndView("redirect:/group/editor/home");
         mav.addObject("groupName", groupName);
         mav.addObject("t", (new Date()).getTime());
         

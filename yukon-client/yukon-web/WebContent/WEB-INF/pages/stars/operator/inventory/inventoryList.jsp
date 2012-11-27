@@ -88,10 +88,10 @@
 
                         <tr style="vertical-align: top;" class="<tags:alternateRow odd="" even="altRow"/>">
 
-                            <td><cti:url var="inventoryUrl" value="/spring/stars/operator/inventory/view">
+                            <td><cti:url var="inventoryUrl" value="/stars/operator/inventory/view">
                                     <cti:param name="inventoryId" value="${result.identifier.inventoryId}" />
                                 </cti:url> <c:if test="${result.accountId > 0}">
-                                    <cti:url var="inventoryUrl" value="/spring/stars/operator/hardware/view">
+                                    <cti:url var="inventoryUrl" value="/stars/operator/hardware/view">
                                         <cti:param name="inventoryId" value="${result.identifier.inventoryId}" />
                                         <cti:param name="accountId" value="${result.accountId}" />
                                     </cti:url>
@@ -118,7 +118,7 @@
                             <c:if test="${showAccountNumber}">
                                 <c:choose>
                                     <c:when test="${result.accountId > 0}">
-                                        <td><cti:url var="accountUrl" value="/spring/stars/operator/account/view">
+                                        <td><cti:url var="accountUrl" value="/stars/operator/account/view">
                                                 <cti:param name="accountId" value="${result.accountId}" />
                                             </cti:url> <a href="${accountUrl}"><spring:escapeBody htmlEscape="true">${result.accountNumber}</spring:escapeBody>
                                         </a>

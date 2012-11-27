@@ -7,7 +7,7 @@ public class CapControlSearchProducer implements SearchProducer {
 
     @Override
     public SearchFormData getSearchProducer(YukonUserContext userContext) {
-        return new SearchFormData("/spring/capcontrol/search/searchResults", "cbc_lastSearch");
+        return new SearchFormData("/capcontrol/search/searchResults", "cbc_lastSearch");
     }
 
 }

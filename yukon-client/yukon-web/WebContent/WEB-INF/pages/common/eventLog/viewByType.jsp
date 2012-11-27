@@ -12,7 +12,7 @@
 
 <cti:standardPage title="Event Log" module="support" page="eventViewer.byType">
     <cti:standardMenu menuSelection="events|byType" />
-    <c:set var="baseUrl" value="/spring/common/eventLog/viewByType"/>
+    <c:set var="baseUrl" value="/common/eventLog/viewByType"/>
     
     <%-- Filtering popup --%>
     <cti:msg2 var="eventLogFiltersTitle" key=".eventLogFilters" />

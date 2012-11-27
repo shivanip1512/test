@@ -35,7 +35,7 @@
 		                
 		                    <tr class="<tags:alternateRow odd="" even="altRow"/>">
 		                        <td style="border: none">
-		                           <cti:url value="/spring/group/editor/home" var="groupEditorUrl">
+		                           <cti:url value="/group/editor/home" var="groupEditorUrl">
 		                             <cti:param name="groupName" value="${group.fullName}"/>
 		                           </cti:url>
 		            

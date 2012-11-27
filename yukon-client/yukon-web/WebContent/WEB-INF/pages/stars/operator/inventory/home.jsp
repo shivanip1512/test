@@ -7,7 +7,7 @@
 <%@ taglib prefix="i" tagdir="/WEB-INF/tags/i18n" %>
 <%@ taglib prefix="spring" uri="http://www.springframework.org/tags"%>
 
-<cti:url var="action" value="/spring/stars/operator/inventory/setupFilterRules"/>
+<cti:url var="action" value="/stars/operator/inventory/setupFilterRules"/>
 
 <cti:standardPage module="operator" page="inventory.home">
 
@@ -46,7 +46,7 @@
                         <%-- INVENTORY PICKER--%>
                         <tr>
                             <td class="button top">
-                                <form id="selectByInventoryPickerForm" action="/spring/stars/operator/inventory/inventoryActions" method="post">
+                                <form id="selectByInventoryPickerForm" action="/stars/operator/inventory/inventoryActions" method="post">
                                     <input type="hidden" name="collectionType" value="idList"/>
                                     <input type="hidden" name="idList.ids" id="inventoryIds"/>
                                     <tags:pickerDialog type="lmHardwareBasePicker" extraArgs="${energyCompanyId}" id="inventoryPicker" multiSelectMode="true" 
@@ -60,7 +60,7 @@
                         <%-- INVENTORY FILTER --%>
                         <tr>
                             <td class="button middle">
-                                <form id="selectByFilterForm" action="/spring/stars/operator/inventory/setupFilterRules" method="get">
+                                <form id="selectByFilterForm" action="/stars/operator/inventory/setupFilterRules" method="get">
                                     <cti:button nameKey="selectFilterButton" type="submit" styleClass="buttonGroup" name="filterButton"/>
                                 </form>
                             </td>
@@ -73,7 +73,7 @@
                             <td class="button">
                                 <cti:button nameKey="selectFileButton" type="button" styleClass="buttonGroup" name="fileButton" onclick="showFileUpload()"/>
                                 <tags:simplePopup id="fileUploadPopup" title="${fileUploadTitle}" styleClass="mediumSimplePopup">
-                                    <cti:url var="submitUrl" value="/spring/stars/operator/inventory/uploadFile"/>
+                                    <cti:url var="submitUrl" value="/stars/operator/inventory/uploadFile"/>
                                     <form method="post" action="${submitUrl}" enctype="multipart/form-data">
                                         <tags:nameValueContainer2>
                                             <tags:nameValue2 nameKey=".fileLabel">
@@ -166,7 +166,7 @@
                     <br>
                     
                     <tags:boxContainer2 nameKey="links">
-                        <a href="/spring/stars/operator/inventory/zbProblemDevices/view"><i:inline key=".zbProblemDevices" /></a>
+                        <a href="/stars/operator/inventory/zbProblemDevices/view"><i:inline key=".zbProblemDevices" /></a>
                     </tags:boxContainer2>
                 </c:if>
                 

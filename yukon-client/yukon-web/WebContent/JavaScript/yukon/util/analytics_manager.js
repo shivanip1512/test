@@ -20,7 +20,7 @@ if(typeof(Yukon.Util.AnalyticsManager) === 'undefined'){
         _initialized: false,
         _cooper_tracking_id: null,
         _additional_tracking_ids: [],
-        _updater_url: "/spring/updater/update",
+        _updater_url: "/updater/update",
         
         /*---------------------*/
         /* 'PUBLIC' functions */

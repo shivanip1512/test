@@ -113,7 +113,7 @@ public class ChangeDeviceTypeController {
     @RequestMapping(value="do", params="cancel")
     public String cancel(HttpServletRequest request, YukonUserContext context, ModelMap model) throws ServletRequestBindingException {
         inventoryCollectionFactory.addCollectionToModelMap(request, model);
-        return "redirect:/spring/stars/operator/inventory/inventoryActions";
+        return "redirect:/stars/operator/inventory/inventoryActions";
     }
     
     @Resource(name="inventoryTaskResultsCache")

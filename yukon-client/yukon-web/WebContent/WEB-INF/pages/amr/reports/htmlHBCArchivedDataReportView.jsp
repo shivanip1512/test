@@ -10,15 +10,15 @@
 
     <cti:breadCrumbs>
 		<cti:crumbLink url="/operator/Operations.jsp" title="Operations Home" />
-		<cti:crumbLink url="/spring/meter/start" title="Metering" />
+		<cti:crumbLink url="/meter/start" title="Metering" />
 		<c:if test="${searchResults != null}">
 			<cti:crumbLink url="${searchResults}" title="Search" />
 		</c:if>
-        <cti:crumbLink url="/spring/meter/home?deviceId=${deviceId}">
+        <cti:crumbLink url="/meter/home?deviceId=${deviceId}">
             <cti:deviceName deviceId="${deviceId}"></cti:deviceName>
         </cti:crumbLink>
         
-        <cti:url var="hbcUrl" value="/spring/meter/highBill/view">
+        <cti:url var="hbcUrl" value="/meter/highBill/view">
             <cti:param name="deviceId" value="${deviceId}"/>
             <cti:param name="analyze" value="${analyze}"/>
             <cti:param name="getReportStartDate" value="${getReportStartDate}"/>

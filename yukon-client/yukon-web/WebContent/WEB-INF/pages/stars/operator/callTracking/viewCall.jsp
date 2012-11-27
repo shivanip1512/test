@@ -16,7 +16,7 @@
 
 	</script>
 
-    <cti:url var="submitUrl" value="/spring/stars/operator/callTracking/updateCall"/>
+    <cti:url var="submitUrl" value="/stars/operator/callTracking/updateCall"/>
 	<form:form commandName="callReport" action="${submitUrl}" onsubmit="combineDateAndTimeFieldsAndSubmit()">
 	
 		<input type="hidden" name="accountId" value="${accountId}">
@@ -57,14 +57,14 @@
             <cti:button nameKey="save" type="submit" styleClass="f_blocker"/>
             
             <cti:displayForPageEditModes modes="EDIT">
-                <cti:url value="/spring/stars/operator/callTracking/view" var="cancelUrl">
+                <cti:url value="/stars/operator/callTracking/view" var="cancelUrl">
                     <cti:param name="accountId" value="${accountId}"/>
                     <cti:param name="callId" value="${callReport.callId}"/>
                 </cti:url>
             </cti:displayForPageEditModes>
         
             <cti:displayForPageEditModes modes="CREATE">
-                <cti:url value="/spring/stars/operator/callTracking/callList" var="cancelUrl">
+                <cti:url value="/stars/operator/callTracking/callList" var="cancelUrl">
                     <cti:param name="accountId" value="${accountId}"/>
                 </cti:url>
             </cti:displayForPageEditModes>
@@ -75,7 +75,7 @@
 		
         <cti:displayForPageEditModes modes="VIEW">
             <cti:checkRolesAndProperties value="OPERATOR_ALLOW_ACCOUNT_EDITING">
-                <cti:url value="/spring/stars/operator/callTracking/edit" var="editUrl">
+                <cti:url value="/stars/operator/callTracking/edit" var="editUrl">
                     <cti:param name="accountId" value="${accountId}"/>
                     <cti:param name="callId" value="${callReport.callId}"/>
                 </cti:url>

@@ -57,19 +57,19 @@
 	    </c:if>
     
     	<%-- MISC FORMS --%>
-		<form id="configDeleteForm" action="/spring/amr/outageProcessing/monitorEditor/delete" method="post">
+		<form id="configDeleteForm" action="/amr/outageProcessing/monitorEditor/delete" method="post">
 			<input type="hidden" id="deleteOutageMonitorId" name="deleteOutageMonitorId" value="">
 		</form>
 		
-		<form id="toggleEnabledForm" action="/spring/amr/outageProcessing/monitorEditor/toggleEnabled" method="post">
+		<form id="toggleEnabledForm" action="/amr/outageProcessing/monitorEditor/toggleEnabled" method="post">
 			<input type="hidden" name="outageMonitorId" value="${outageMonitorId}">
 		</form>
 		
-		<form id="cancelForm" action="/spring/meter/start" method="get">
+		<form id="cancelForm" action="/meter/start" method="get">
 		</form>
 		
 		<%-- UPDATE FORM --%>
-		<form id="updateForm" action="/spring/amr/outageProcessing/monitorEditor/update" method="post">
+		<form id="updateForm" action="/amr/outageProcessing/monitorEditor/update" method="post">
 		
 			<input type="hidden" name="outageMonitorId" value="${outageMonitorId}">
 			

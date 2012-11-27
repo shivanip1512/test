@@ -44,8 +44,8 @@
 
     <cti:breadCrumbs>
 	    <cti:crumbLink url="/operator/Operations.jsp" title="Operations Home"  />
-	    <cti:crumbLink url="/spring/support/" title="Support" />
-	    <cti:crumbLink url="/spring/support/database/migration/home" title="${homePageTitle}">
+	    <cti:crumbLink url="/support/" title="Support" />
+	    <cti:crumbLink url="/support/database/migration/home" title="${homePageTitle}">
 	    	<cti:param name="import" value="true"/>
 	    </cti:crumbLink>
 	    <cti:crumbLink>${pageTitle}</cti:crumbLink>
@@ -93,7 +93,7 @@
 				<tags:nameValue name="${orgSchemaUser}">${orgDbUsername}</tags:nameValue>
 				<tags:nameValueGap gapHeight="15px;"/>
 				<tags:nameValue name="${filePathLabel}">
-  					<form id="openFileForm" action="/spring/support/database/migration/downloadExportFile" method="post">
+  					<form id="openFileForm" action="/support/database/migration/downloadExportFile" method="post">
   						<input type="hidden" name="fileKey" value="${status.id}">
   			    	</form>
                     <div>
@@ -114,7 +114,7 @@
                 <cti:msg var="exportTypeName" key="${exportType.typeKey}"/>
                 <tags:nameValue name="${exportTypeName}" nameColumnWidth="200px">
         			${status.labelCount}
-        			<cti:url var="componentName_1_objects_url" value="/spring/support/database/migration/objectsViewPopup">
+        			<cti:url var="componentName_1_objects_url" value="/support/database/migration/objectsViewPopup">
         				<cti:param name="fileKey" value="${status.id}"/>
         			</cti:url>
         			<tags:simpleDialogLink titleKey="yukon.web.modules.support.databaseMigration.importValidate.componentsInfoSection.header.objects" 
@@ -123,7 +123,7 @@
                                                  logoKey="yukon.web.modules.support.databaseMigration.importValidate.mag.img"/>
                 </tags:nameValue>
                 <tags:nameValue name="${warnings}">
-                    <cti:url var="componentName_1_warnings_url" value="/spring/support/database/migration/warningsViewPopup">
+                    <cti:url var="componentName_1_warnings_url" value="/support/database/migration/warningsViewPopup">
                         <cti:param name="fileKey" value="${status.id}"/>
                     </cti:url>
                     ${status.warningCount}
@@ -144,7 +144,7 @@
                 </tags:nameValue>
                 <tags:nameValue name="${errors}">
                     ${status.errorCount}
-                    <cti:url var="componentName_1_errors_url" value="/spring/support/database/migration/errorsViewPopup">
+                    <cti:url var="componentName_1_errors_url" value="/support/database/migration/errorsViewPopup">
                         <cti:param name="fileKey" value="${status.id}"/>
                     </cti:url>
                     <c:if test="${status.errorCount > 0}">
@@ -164,11 +164,11 @@
         <br><br>
 		
 		<%-- COMMIT --%>
-		<form id="cancelForm" action="/spring/support/database/migration/home" method="post">
+		<form id="cancelForm" action="/support/database/migration/home" method="post">
 			<input type="hidden" name="import" value="true">
     	</form>
     
-		<form id="confirmForm" action="/spring/support/database/migration/importConfirm" method="post">
+		<form id="confirmForm" action="/support/database/migration/importConfirm" method="post">
 	    	<input type="hidden" name="fileKey" value="${status.id}">
 	    	<input type="hidden" id="warningProcessingValue" name="warningProcessingValue" value="USE_EXISTING">
 	    </form>

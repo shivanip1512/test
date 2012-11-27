@@ -78,7 +78,7 @@ public class ThermostatMenuOptionProducer extends DynamicMenuOptionProducer {
             if(showAllLink && optionList.size() > 1) {
     	        String menuTextKey = "yukon.web.menu.config.consumer.thermostat.all";
     	        SimpleMenuOptionLink option = new SimpleMenuOptionLink("allThermostats", menuTextKey);
-    	        option.setLinkUrl("/spring/stars/consumer/thermostat/view/all");
+    	        option.setLinkUrl("/stars/consumer/thermostat/view/all");
     	        optionList.add(0, option);
             }
         }
@@ -93,15 +93,15 @@ public class ThermostatMenuOptionProducer extends DynamicMenuOptionProducer {
 
         // Create saved schedules menu option
         int inventoryId = thermSummary.getInventoryId();
-        producer = createLink("savedSchedules", "/spring/stars/consumer/thermostat/schedule/view/saved?thermostatIds=" + inventoryId);
+        producer = createLink("savedSchedules", "/stars/consumer/thermostat/schedule/view/saved?thermostatIds=" + inventoryId);
         producerList.add(producer);
         
         // Create manual menu option
-        producer = createLink("manual", "/spring/stars/consumer/thermostat/view?thermostatIds=" + inventoryId);
+        producer = createLink("manual", "/stars/consumer/thermostat/view?thermostatIds=" + inventoryId);
         producerList.add(producer);
         
         // Create history menu option
-        producer = createLink("history", "/spring/stars/consumer/thermostat/schedule/history?thermostatIds=" + inventoryId);
+        producer = createLink("history", "/stars/consumer/thermostat/schedule/history?thermostatIds=" + inventoryId);
         producerList.add(producer);
 
         return producerList;

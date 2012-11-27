@@ -58,7 +58,7 @@
                                                 <ul class="role">
                                                     <c:forEach var="roleGroupPair" items="${category.value}">
                                                         <li>
-                                                            <cti:url value="/spring/adminSetup/roleGroup/view" var="roleGroupUrl">
+                                                            <cti:url value="/adminSetup/roleGroup/view" var="roleGroupUrl">
                                                                 <cti:param name="roleGroupId" value="${roleGroupPair.second.groupID}"/>
                                                             </cti:url>
                                                             <cti:formatObject value="${roleGroupPair.first}"/>

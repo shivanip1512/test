@@ -58,7 +58,7 @@ public class ThermostatController extends AbstractThermostatController {
         }
         
         if(StringUtils.isBlank(thermostatIds.toString())) {
-            return "redirect:/spring/stars/consumer/thermostat/view/all";
+            return "redirect:/stars/consumer/thermostat/view/all";
         }
         
         accountCheckerService.checkInventory(user, 
@@ -72,10 +72,10 @@ public class ThermostatController extends AbstractThermostatController {
                                                                          null) != null;
 
         if (scheduleClicked) {
-            return "redirect:/spring/stars/consumer/thermostat/schedule/view/saved";
+            return "redirect:/stars/consumer/thermostat/schedule/view/saved";
         }
         
-        return "redirect:/spring/stars/consumer/thermostat/view";
+        return "redirect:/stars/consumer/thermostat/view";
     }
     
     private boolean isCommunicationDisabled(LiteYukonUser user){

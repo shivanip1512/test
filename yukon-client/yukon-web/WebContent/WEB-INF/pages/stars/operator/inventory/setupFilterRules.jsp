@@ -34,7 +34,7 @@
     
     <tags:simpleDialog id="addRuleDialog" styleClass="smallSimplePopup"/>
     
-    <form:form id="selectionForm" cssClass="f_preventSubmitViaEnterKey" commandName="filterModel" action="/spring/stars/operator/inventory/applyFilter" method="post">
+    <form:form id="selectionForm" cssClass="f_preventSubmitViaEnterKey" commandName="filterModel" action="/stars/operator/inventory/applyFilter" method="post">
         <input type="hidden" name="removeRule" id="removeRule">
         
         <tags:nameValueContainer2>

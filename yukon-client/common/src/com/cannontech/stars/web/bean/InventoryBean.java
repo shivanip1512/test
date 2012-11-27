@@ -405,9 +405,9 @@ public class InventoryBean {
 	        
 			htmlBuf.append("          <td class='TableCell' width='17%'>");
 			if (liteInv.getAccountID() == 0) {
-                htmlBuf.append("<a href='").append(req.getContextPath()).append("/spring/stars/operator/inventory/view?inventoryId=").append(liteInv.getInventoryID()).append("'>").append(deviceName).append("</a>");
+                htmlBuf.append("<a href='").append(req.getContextPath()).append("/stars/operator/inventory/view?inventoryId=").append(liteInv.getInventoryID()).append("'>").append(deviceName).append("</a>");
 			} else if (!showEnergyCompany || member.equals(energyCompany) || isManagable) {
-			    htmlBuf.append("<a href='").append(req.getContextPath()).append("/spring/stars/operator/hardware/edit?accountId=").append(liteInv.getAccountID()).append("&inventoryId=").append(liteInv.getInventoryID()).append("'>").append(deviceName).append("</a>");
+			    htmlBuf.append("<a href='").append(req.getContextPath()).append("/stars/operator/hardware/edit?accountId=").append(liteInv.getAccountID()).append("&inventoryId=").append(liteInv.getInventoryID()).append("'>").append(deviceName).append("</a>");
 			} else {
 				htmlBuf.append(deviceName);
 			}
@@ -437,7 +437,7 @@ public class InventoryBean {
 				String address = ServletUtils.getOneLineAddress( starsAddr );
             	
             	if (!showEnergyCompany || member.equals(energyCompany) || isManagable) {
-            	        htmlBuf.append("<a href='/spring/stars/operator/account/view?accountId=").append(liteAcctInfo.getAccountID()).append("' class='Link1'>")
+            	        htmlBuf.append("<a href='/stars/operator/account/view?accountId=").append(liteAcctInfo.getAccountID()).append("' class='Link1'>")
                         .append("Acct # ").append(liteAcctInfo.getCustomerAccount().getAccountNumber()).append("</a>");
             	}
 				else

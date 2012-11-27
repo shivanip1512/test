@@ -10,7 +10,7 @@
 
 <c:set var="showNextButton" value="false" />
 
-<form:form id="form" commandName="optOutBackingBean" action="/spring/stars/operator/program/optOut/optOutQuestions" 
+<form:form id="form" commandName="optOutBackingBean" action="/stars/operator/program/optOut/optOutQuestions" 
            method="POST" onsubmit="createJSON();">
            
     <input type="hidden" name="accountId" value="${accountId}" />

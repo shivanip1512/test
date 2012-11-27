@@ -13,7 +13,7 @@
 <cti:breadCrumbs>
 	<cti:msg key="yukon.web.components.button.home.label" var="homeLabel"/>
     <cti:crumbLink url="/operator/Operations.jsp" title="${homeLabel}" />
-    <cti:crumbLink url="/spring/dynamicBilling/overview" title="Billing Setup" />
+    <cti:crumbLink url="/dynamicBilling/overview" title="Billing Setup" />
     &gt; <cti:msg2 key=".contextualPageName"/>
 </cti:breadCrumbs>
 

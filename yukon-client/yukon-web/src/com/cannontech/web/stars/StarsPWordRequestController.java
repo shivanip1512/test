@@ -16,8 +16,8 @@ import com.cannontech.system.dao.GlobalSettingDao;
 import com.cannontech.util.ServletUtil;
 
 public class StarsPWordRequestController implements Controller {
-    private static final String INVALID_URI = "/spring/login/forgotPassword?failedMsg=";
-    private static final String SUCCESS_URI = "/spring/login/forgotPassword?success=true";
+    private static final String INVALID_URI = "/login/forgotPassword?failedMsg=";
+    private static final String SUCCESS_URI = "/login/forgotPassword?success=true";
     private StarsCustAccountInformationDao starsCustAccountInformationDao;
     
     public ModelAndView handleRequest(HttpServletRequest request, HttpServletResponse response) throws Exception {

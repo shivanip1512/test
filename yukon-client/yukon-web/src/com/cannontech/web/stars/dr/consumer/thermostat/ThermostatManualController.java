@@ -162,7 +162,7 @@ public class ThermostatManualController extends AbstractThermostatController {
 
         map.addAttribute("thermostatIds", inventoryId);
 
-        return "redirect:/spring/stars/consumer/thermostat/view";
+        return "redirect:/stars/consumer/thermostat/view";
     }
 
     @RequestMapping(value = "/consumer/thermostat/manual", method = RequestMethod.POST)
@@ -188,10 +188,10 @@ public class ThermostatManualController extends AbstractThermostatController {
         executeManualEvent(thermostatIds, mode, fan, temperatureUnit, heatTemp, coolTemp, autoModeEnabledCommand, userContext, request, flashScope, map);
         
         if (autoModeEnabledCommand) {
-            return "redirect:/spring/stars/consumer/thermostat/autoEnabledView";
+            return "redirect:/stars/consumer/thermostat/autoEnabledView";
         }
         
-        return "redirect:/spring/stars/consumer/thermostat/view";
+        return "redirect:/stars/consumer/thermostat/view";
     }
     
     @RequestMapping(value = "/consumer/thermostat/runProgram", method = RequestMethod.POST)
@@ -222,7 +222,7 @@ public class ThermostatManualController extends AbstractThermostatController {
         setConfirmationMessage(flashScope, thermostatIds, result);
         
         //redirect to the list of saved schedules as the restored program MAY be on this page
-        return "redirect:/spring/stars/consumer/thermostat/schedule/view/saved";
+        return "redirect:/stars/consumer/thermostat/schedule/view/saved";
     }
 
 	private void executeManualEvent(List<Integer> thermostatIds, String mode, String fan, String temperatureUnit,

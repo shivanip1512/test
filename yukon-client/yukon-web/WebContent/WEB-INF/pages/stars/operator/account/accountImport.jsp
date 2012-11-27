@@ -16,7 +16,7 @@
     
             <cti:dataGridCell>
     
-                <form:form id="importForm" commandName="accountImportData" action="/spring/stars/operator/account/uploadImportFiles" enctype="multipart/form-data">
+                <form:form id="importForm" commandName="accountImportData" action="/stars/operator/account/uploadImportFiles" enctype="multipart/form-data">
                 
                     <%-- note --%>
                     <table>

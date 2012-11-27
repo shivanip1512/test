@@ -1,8 +1,8 @@
 <%@ taglib uri="http://java.sun.com/jsp/jstl/core" prefix="c" %>
 <%@ taglib uri="http://cannontech.com/tags/cti" prefix="cti"%>
 
-<cti:url var="manualUrl" value="/spring/capcontrol/command/manualStateChange" />
-<cti:url var="url" value="/spring/capcontrol/command/commandOneLine"/>
+<cti:url var="manualUrl" value="/capcontrol/command/manualStateChange" />
+<cti:url var="url" value="/capcontrol/command/commandOneLine"/>
 
 <div>
     <table>

@@ -12,5 +12,5 @@
 <cti:uniqueIdentifier var="componentId" prefix="component_"/>
 <c:set target="${componentParameters}" property="componentId" value="${componentId}"/>
 
-<jsp:include flush="false" page="/spring/component/${name}"/>
+<jsp:include flush="false" page="/component/${name}"/>
 

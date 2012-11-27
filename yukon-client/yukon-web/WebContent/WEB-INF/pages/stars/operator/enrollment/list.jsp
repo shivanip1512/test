@@ -89,14 +89,14 @@ var programIdsAlreadyEnrolled = [];
                 </td>
                 <cti:checkRolesAndProperties value="OPERATOR_ALLOW_ACCOUNT_EDITING">
                     <td class="actions">
-                        <cti:url var="editUrl" value="/spring/stars/operator/enrollment/edit">
+                        <cti:url var="editUrl" value="/stars/operator/enrollment/edit">
                             <cti:param name="accountId" value="${accountId}"/>
                             <cti:param name="assignedProgramId" value="${programId}"/>
                         </cti:url>
                         <tags:simpleDialogLink2 dialogId="peDialog" nameKey="edit"
                             skipLabel="true" actionUrl="${editUrl}"/>
 
-                        <cti:url var="unenrollUrl" value="/spring/stars/operator/enrollment/confirmUnenroll">
+                        <cti:url var="unenrollUrl" value="/stars/operator/enrollment/confirmUnenroll">
                             <cti:param name="accountId" value="${accountId}"/>
                             <cti:param name="assignedProgramId" value="${programId}"/>
                         </cti:url>
@@ -119,7 +119,7 @@ var programIdsAlreadyEnrolled = [];
         }
         </script>
 
-        <cti:url var="editUrl" value="/spring/stars/operator/enrollment/add"/>
+        <cti:url var="editUrl" value="/stars/operator/enrollment/add"/>
         <form id="addEnrollmentForm" action="${editUrl}">
             <input type="hidden" name="accountId" value="${accountId}"/>
             <div class="actionArea">

@@ -71,7 +71,7 @@ jQuery(function(){
                     <br>
                     <cti:button nameKey="help" styleClass="help fl"/>
                     <cti:button nameKey="create" styleClass="create fl"/>
-                    <cti:url var="historyUrl" value="/spring/stars/operator/thermostat/history/view">
+                    <cti:url var="historyUrl" value="/stars/operator/thermostat/history/view">
                         <cti:param name="accountId" value="${accountId}" />
                         <cti:param name="thermostatIds" value="${thermostatIds}"/>
                     </cti:url>
@@ -89,7 +89,7 @@ jQuery(function(){
 	                                    thermostatIds="${thermostatIds}"
 	                                    accountId="${accountId}"
 	                                    temperatureUnit="${temperatureUnit}"
-	                                    actionPath="/spring/stars/operator/thermostatSchedule/save"
+	                                    actionPath="/stars/operator/thermostatSchedule/save"
 	                                    thermostatType="${thermostatType}"
 	                                    styleClass="vh"/>
 	                            </div>
@@ -99,14 +99,14 @@ jQuery(function(){
                             <div class="fr">
                                 <cti:button nameKey="create" styleClass="create fl"/>
                                 <cti:button nameKey="help" styleClass="help fl"/>
-                                <cti:url var="historyUrl" value="/spring/stars/operator/thermostat/history/view">
+                                <cti:url var="historyUrl" value="/stars/operator/thermostat/history/view">
                                     <cti:param name="accountId" value="${accountId}" />
                                     <cti:param name="thermostatIds" value="${thermostatIds}"/>
                                 </cti:url>
                                 <cti:button nameKey="history" href="${historyUrl}" />
                             </div>
                             <div class="tempControls fl">
-                                <form method="post" action="/spring/stars/operator/thermostatSchedule/updateTemperaturePreference">
+                                <form method="post" action="/stars/operator/thermostatSchedule/updateTemperaturePreference">
                                     <input type="hidden" name="accountId" value="${accountId}"/>
                                     <label><input name="units" type="radio" value="C" <c:if test="${temperatureUnit eq 'C'}" >checked="checked"</c:if>><i:inline key="yukon.web.defaults.celsius"/></label>
                                     <label><input name="units" type="radio" value="F" <c:if test="${temperatureUnit eq 'F'}" >checked="checked"</c:if>><i:inline key="yukon.web.defaults.fahrenheit"/></label>
@@ -122,7 +122,7 @@ jQuery(function(){
                                         thermostatIds="${thermostatIds}"
                                         accountId="${accountId}"
                                         temperatureUnit="${temperatureUnit}"
-                                        actionPath="/spring/stars/operator/thermostatSchedule/save"
+                                        actionPath="/stars/operator/thermostatSchedule/save"
                                         thermostatType="${thermostatType}"
                                         styleClass="vh"/>
                                 </c:forEach>    
@@ -167,7 +167,7 @@ jQuery(function(){
                                         thermostatIds="${thermostatIds}"
                                         accountId="${accountId}"
                                         temperatureUnit="${temperatureUnit}"
-                                        actionPath="/spring/stars/operator/thermostatSchedule/save"
+                                        actionPath="/stars/operator/thermostatSchedule/save"
                                         thermostatType="${thermostatType}"/>
                     </c:forEach>
                 </div>
@@ -194,7 +194,7 @@ jQuery(function(){
 </i:simplePopup>
 
 <!-- shared action forms -->
-<form name="deleteSchedule" method="POST" action="/spring/stars/operator/thermostatSchedule/delete">
+<form name="deleteSchedule" method="POST" action="/stars/operator/thermostatSchedule/delete">
     <input type="hidden" name="scheduleId">
     <input type="hidden" name="thermostatId" value="${thermostatId}">
     <input type="hidden" name="thermostatIds" value="${thermostatIds}">
@@ -204,7 +204,7 @@ jQuery(function(){
     <tags:confirmDialog nameKey=".deleteConfirm" styleClass="smallSimplePopup f_blocker" submitName="delete" on=".delete"/>
 </form>
 
-<form name="sendSchedule" method="POST" action="/spring/stars/operator/thermostatSchedule/send">
+<form name="sendSchedule" method="POST" action="/stars/operator/thermostatSchedule/send">
     <input type="hidden" name="scheduleId">
     <input type="hidden" name="thermostatIds" value="${thermostatIds}">
     <input type="hidden" name="accountId" value="${accountId}">

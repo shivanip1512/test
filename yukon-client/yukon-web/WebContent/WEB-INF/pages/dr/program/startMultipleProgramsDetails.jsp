@@ -16,9 +16,9 @@ submitForm = function() {
     combineDateAndTimeFields('stopDate');
 
     if ($('addAdjustmentsCheckbox').checked) {
-        url = '<cti:url value="/spring/dr/program/start/multipleGearAdjustments"/>';
+        url = '<cti:url value="/dr/program/start/multipleGearAdjustments"/>';
     } else {
-        url = '<cti:url value="/spring/dr/program/start/multipleConstraints"/>';
+        url = '<cti:url value="/dr/program/start/multipleConstraints"/>';
     }
 
     return submitFormViaAjax('drDialog', 'startMultipleProgramsForm', url);

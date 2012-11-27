@@ -41,7 +41,7 @@ public class AdaListController {
     public String delete(ModelMap model, int analysisId) {
         archiveDataAnalysisDao.deleteAnalysis(analysisId);
         
-        return "redirect:/spring/bulk/archiveDataAnalysis/list/view";
+        return "redirect:/bulk/archiveDataAnalysis/list/view";
     }
     
     @Autowired

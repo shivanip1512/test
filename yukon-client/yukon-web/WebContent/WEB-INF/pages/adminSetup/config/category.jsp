@@ -56,7 +56,7 @@ jQuery(function(){
 --%>
 
 <div class="centeredContainer twoThirds box clear dashboard">
-    <form:form action="/spring/adminSetup/config/update" id="settingsForm" method="post">
+    <form:form action="/adminSetup/config/update" id="settingsForm" method="post">
         <form:hidden path="category"/>
         
         

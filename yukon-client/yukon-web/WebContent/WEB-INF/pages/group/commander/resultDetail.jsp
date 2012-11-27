@@ -17,7 +17,7 @@
         <cti:crumbLink url="/operator/Operations.jsp" title="Operations Home" />
         
         <%-- commander from location --%>
-        <cti:crumbLink url="/spring/group/commander/resultList" title="Recent Group Command Processing Results" />
+        <cti:crumbLink url="/group/commander/resultList" title="Recent Group Command Processing Results" />
         
         <%-- this result --%>
         <cti:crumbLink title="Group Command Processing Result Detail"/>
@@ -40,7 +40,7 @@
 
             if (theDiv.visible()) {
             
-                var url = '/spring/group/commander/' + kind;
+                var url = '/group/commander/' + kind;
                 
                 var params = $H({
                     'resultKey': '${result.key}'
@@ -69,7 +69,7 @@
                 <td valign="top" class="smallBoldLabel">Note:</td>
                 <td style="font-size:11px;">
                     Progress is updated periodically. Processing will continue if you wish to navigate away from this page at any time.<br>
-                    You may view the progress of all recent and ongoing processes from the <a href="/spring/group/commander/resultList">Group Command Processing Results</a> page.<br><br>
+                    You may view the progress of all recent and ongoing processes from the <a href="/group/commander/resultList">Group Command Processing Results</a> page.<br><br>
                 </td>
             </tr>
         </table>
@@ -86,7 +86,7 @@
             <%-- cancel commands --%>
             <div id="cancelCommandsDiv">
                 <br>
-                <c:url var="cancelUrl" value="/spring/group/commander/cancelCommands" />
+                <c:url var="cancelUrl" value="/group/commander/cancelCommands" />
                 <cti:msg var="cancelText" key="yukon.common.device.commander.collectionActionOnDevicesLabel.cancelLocateButtonLabel" />
                 <tags:cancelCommands resultId="${result.key}" 
                                      cancelUrl="${cancelUrl}"
@@ -96,7 +96,7 @@
             <%-- device collection action --%>
             <div id="allDevicesActionsDiv" style="display:none;">
                 <br>
-                <cti:link href="/spring/bulk/collectionActions" key="yukon.common.device.commander.collectionActionOnDevicesLabel.allResults" class="small">
+                <cti:link href="/bulk/collectionActions" key="yukon.common.device.commander.collectionActionOnDevicesLabel.allResults" class="small">
                     <cti:mapParam value="${result.deviceCollection.collectionParameters}"/>
                 </cti:link>
                 <tags:selectedDevicesPopup deviceCollection="${result.deviceCollection}" />
@@ -108,7 +108,7 @@
                 
                 <cti:msg var="creResultsText" key="yukon.common.device.commander.collectionActionOnDevicesLabel.creResults"/>
                 
-                <cti:url var="creResultsUrl" value="/spring/common/commandRequestExecutionResults/detail">
+                <cti:url var="creResultsUrl" value="/common/commandRequestExecutionResults/detail">
                 	<cti:param name="commandRequestExecutionId" value="${result.commandRequestExecutionIdentifier.commandRequestExecutionId}"/>
                 </cti:url>
                 
@@ -125,7 +125,7 @@
         <div id="successActionsDiv" style="padding:10px;display:none;">
         
             <%-- device collection action --%>
-            <cti:link href="/spring/bulk/collectionActions" key="yukon.common.device.commander.collectionActionOnDevicesLabel.successResults" class="small">
+            <cti:link href="/bulk/collectionActions" key="yukon.common.device.commander.collectionActionOnDevicesLabel.successResults" class="small">
                 <cti:mapParam value="${result.successCollection.collectionParameters}"/>
             </cti:link>
             <tags:selectedDevicesPopup deviceCollection="${result.successCollection}" />
@@ -153,7 +153,7 @@
             <cti:dataUpdaterCallback function="showCmdCanceldMsg()" initialize="true" isCanceled="COMMANDER/${result.key}/IS_CANCELED" />
             
             <%-- device collection action --%>
-            <cti:link href="/spring/bulk/collectionActions" key="yukon.common.device.commander.collectionActionOnDevicesLabel.failureResults" class="small">
+            <cti:link href="/bulk/collectionActions" key="yukon.common.device.commander.collectionActionOnDevicesLabel.failureResults" class="small">
                 <cti:mapParam value="${result.failureCollection.collectionParameters}"/>
             </cti:link>
             <tags:selectedDevicesPopup deviceCollection="${result.failureCollection}" />
@@ -174,7 +174,7 @@
 		        <div id="unsupportedActionsDiv" style="padding:10px;">
 		        
 		            <%-- device collection action --%>
-		            <cti:link href="/spring/bulk/collectionActions" key="yukon.common.device.commander.collectionActionOnDevicesLabel.unsupportedResults" class="small">
+		            <cti:link href="/bulk/collectionActions" key="yukon.common.device.commander.collectionActionOnDevicesLabel.unsupportedResults" class="small">
 		                <cti:mapParam value="${result.unsupportedCollection.collectionParameters}"/>
 		            </cti:link>
 		            <tags:selectedDevicesPopup deviceCollection="${result.unsupportedCollection}" />

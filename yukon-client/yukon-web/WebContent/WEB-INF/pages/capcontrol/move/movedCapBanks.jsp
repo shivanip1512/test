@@ -15,7 +15,7 @@
     });
     </script>
 
-	<cti:url var="movedCapBanksUrl" value="/spring/capcontrol/move/movedCapBanks" />
+	<cti:url var="movedCapBanksUrl" value="/capcontrol/move/movedCapBanks" />
 	
     <jsp:setProperty name="CtiNavObject" property="moduleExitPage" value="" />
 	

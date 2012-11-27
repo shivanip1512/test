@@ -29,16 +29,16 @@
                 <cti:param name="id" value="${subbusId}"/>
                 <cti:param name="redirectURL" value="${fullURL}"/>
             </cti:url>
-            <cti:url value="/spring/capcontrol/ivvc/bus/detail" var="ivvcLink" htmlEscape="true">
+            <cti:url value="/capcontrol/ivvc/bus/detail" var="ivvcLink" htmlEscape="true">
                 <cti:param name="subBusId" value="${subbusId}"/>
                 <cti:param name="isSpecialArea" value="${isSpecialArea}"/>
             </cti:url>
-            <cti:url value="/spring/capcontrol/tier/feeders" var="dualBusLink" htmlEscape="true">
+            <cti:url value="/capcontrol/tier/feeders" var="dualBusLink" htmlEscape="true">
                 <cti:param name="isSpecialArea" value="${isSpecialArea}"/>
                 <cti:param name="substationId" value="${viewableSubBus.alternateStationId}"/>
                 <cti:param name="areaId" value="${viewableSubBus.alternateAreaId}"/>
             </cti:url>
-            <cti:url value="/spring/capcontrol/capbank/capBankLocations" var="locationLink" htmlEscape="true">
+            <cti:url value="/capcontrol/capbank/capBankLocations" var="locationLink" htmlEscape="true">
                 <cti:param name="value" value="${subbusId}"/>
                 <cti:param name="specialArea" value="${isSpecialArea}"/>
             </cti:url>

@@ -11,10 +11,10 @@
         <cti:crumbLink url="/operator/Operations.jsp" title="Operations Home" />
         <%-- metering --%>
         <cti:msg var="metersPageTitle" key="yukon.web.modules.amr.meteringStart.pageName" />
-        <cti:crumbLink url="/spring/meter/start" title="${metersPageTitle}" />
+        <cti:crumbLink url="/meter/start" title="${metersPageTitle}" />
         <%-- ADA List --%>
         <cti:msg var="adaListPageTitle" key="yukon.web.modules.amr.analysis.list.pageName" />
-        <cti:crumbLink url="/spring/bulk/archiveDataAnalysis/list/view" title="${adaListPageTitle}" />
+        <cti:crumbLink url="/bulk/archiveDataAnalysis/list/view" title="${adaListPageTitle}" />
         <%-- ADA Results --%>
         <cti:crumbLink><i:inline key="yukon.web.modules.amr.analysis.results.pageName"/></cti:crumbLink>
     </cti:breadCrumbs>
@@ -66,7 +66,7 @@
                 <ul class="buttonStack">
                     <%-- READ LP BUTTON --%>
                     <c:if test="${showReadOption}">
-                        <c:url var="readUrl" value="/spring/bulk/archiveDataAnalysis/read/readNow">
+                        <c:url var="readUrl" value="/bulk/archiveDataAnalysis/read/readNow">
                             <c:param name="analysisId" value="${result.analysis.analysisId}"/>
                         </c:url>
                         <li><cti:button nameKey="read" renderMode="labeledImage" href="${readUrl}"/></li>
@@ -77,7 +77,7 @@
                     </c:if>
                     
                     <%-- CSV BUTTON --%>
-                    <c:url var="csvUrl" value="/spring/bulk/archiveDataAnalysis/tabular/csv">
+                    <c:url var="csvUrl" value="/bulk/archiveDataAnalysis/tabular/csv">
                         <c:param name="analysisId" value="${result.analysis.analysisId}"/>
                     </c:url>
                     <li><cti:button nameKey="csv" renderMode="labeledImage" href="${csvUrl}"/></li>
@@ -85,7 +85,7 @@
                     <%-- TABULAR BUTTON --%>
                     <c:choose>
                         <c:when test="${underTabularSizeLimit}">
-                            <c:url var="tabularUrl" value="/spring/bulk/archiveDataAnalysis/tabular/view">
+                            <c:url var="tabularUrl" value="/bulk/archiveDataAnalysis/tabular/view">
                                 <c:param name="analysisId" value="${result.analysis.analysisId}"/>
                             </c:url>
                             <li><cti:button nameKey="viewTabular" renderMode="labeledImage" href="${tabularUrl}"/></li>
@@ -96,13 +96,13 @@
                     </c:choose>
                     
                     <%-- RE-ANALYZE BUTTON --%>
-                    <c:url var="reanalyzeUrl" value="/spring/bulk/archiveDataAnalysis/home/reanalyze">
+                    <c:url var="reanalyzeUrl" value="/bulk/archiveDataAnalysis/home/reanalyze">
                         <c:param name="oldAnalysisId" value="${result.analysis.analysisId}"/>
                     </c:url>
                     <li><cti:button nameKey="reanalyze" renderMode="labeledImage" href="${reanalyzeUrl}"/></li>
                     
                     <%-- COLLECTION ACTIONS BUTTON --%>
-                    <c:url var="collectionActionsUrl" value="/spring/bulk/collectionActions">
+                    <c:url var="collectionActionsUrl" value="/bulk/collectionActions">
                         <c:forEach var="p" items="${deviceCollection.collectionParameters}">
                             <c:param name="${p.key}" value="${p.value}"/>
                         </c:forEach>

@@ -7,7 +7,7 @@
 	<cti:standardMenu/>
 	<cti:breadCrumbs>
 		<cti:crumbLink url="/operator/Operations.jsp" title="Operations Home"  />
-	    <cti:crumbLink url="/spring/deviceConfiguration?home" title="Device Configuration Home"  />
+	    <cti:crumbLink url="/deviceConfiguration?home" title="Device Configuration Home"  />
 	    &gt; Device Configuration
 	</cti:breadCrumbs>
 	
@@ -26,7 +26,7 @@
 		}
 	
 		function cancel(){
-			window.location = '/spring/deviceConfiguration?home';
+			window.location = '/deviceConfiguration?home';
 			window.event.returnValue = false;
 		}
 		

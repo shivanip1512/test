@@ -47,7 +47,7 @@
     </h3>
     
     <div class="message">
-        <form method="post" action="/spring/stars/consumer/thermostat/view/allSelected" onsubmit="return checkSelected()">
+        <form method="post" action="/stars/consumer/thermostat/view/allSelected" onsubmit="return checkSelected()">
             
             <input type="hidden" id="thermostatIds" name="thermostatIds" value="${param.thermostatIds}">
             

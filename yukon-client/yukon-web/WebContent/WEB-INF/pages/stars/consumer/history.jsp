@@ -28,8 +28,8 @@ jQuery(function() {
 <c:set var="multipleThermostatsSelected" value="false"></c:set>
 <cti:msg2 var="historyTableTitle" key=".historyTableTitle"/>
             <tags:pagedBox2 nameKey="${historyTableTitle}" searchResult="${searchResult}"
-                filterDialog="" baseUrl="/spring/stars/consumer/thermostat/schedule/history"
-                isFiltered="false" showAllUrl="/spring/stars/consumer/thermostat/schedule/history">
+                filterDialog="" baseUrl="/stars/consumer/thermostat/schedule/history"
+                isFiltered="false" showAllUrl="/stars/consumer/thermostat/schedule/history">
                 <c:choose>
                     <c:when test="${searchResult.hitCount == 0}">
                         <cti:msg key="yukon.web.modules.operator.thermostatManual.noItems"/>
@@ -97,7 +97,7 @@ jQuery(function() {
                                                         <cti:msg key="yukon.web.modules.operator.thermostatManual.deletedSchedule"/>, 
                                                     </c:when>
                                                     <c:otherwise>
-                                                        <a href="/spring/stars/consumer/thermostat/schedule/view/saved?thermostatIds=${thermostatIds}&scheduleId=${historyItem.scheduleId}"><cti:msg key="yukon.web.modules.operator.thermostatManual.scheduleDetails" arguments="${historyItem.scheduleName}"/></a>,
+                                                        <a href="/stars/consumer/thermostat/schedule/view/saved?thermostatIds=${thermostatIds}&scheduleId=${historyItem.scheduleId}"><cti:msg key="yukon.web.modules.operator.thermostatManual.scheduleDetails" arguments="${historyItem.scheduleName}"/></a>,
                                                     </c:otherwise>
                                                 </c:choose> 
                                                 <!-- Schedule Day Mode -->

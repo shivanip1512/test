@@ -50,7 +50,7 @@
 	
 	</script>
 
-   	<form id="themostatSelectForm" method="post" action="/spring/stars/operator/thermostatSelect/selectRedirect">
+   	<form id="themostatSelectForm" method="post" action="/stars/operator/thermostatSelect/selectRedirect">
     <tags:boxContainer2 nameKey="chooseThermostats" hideEnabled="false">
     	
     	

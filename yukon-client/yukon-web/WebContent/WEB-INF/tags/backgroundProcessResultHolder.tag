@@ -15,7 +15,7 @@
 
         if (theDiv.visible()) {
         
-            var url = '/spring/bulk/processingExceptionErrorsRefresh';
+            var url = '/bulk/processingExceptionErrorsRefresh';
             
             var params = $H({
                 'resultsId': '${resultsId}'
@@ -75,7 +75,7 @@
     	
     	<%-- device collection action --%>
     	<li>
-        <cti:link href="/spring/bulk/collectionActions" key="yukon.common.device.bulk.${resultsTypeMsgKey}Results.collectionActionOnDevicesLabel" class="small">
+        <cti:link href="/bulk/collectionActions" key="yukon.common.device.bulk.${resultsTypeMsgKey}Results.collectionActionOnDevicesLabel" class="small">
             <cti:mapParam value="${callbackResult.successDeviceCollection.collectionParameters}"/>
         </cti:link>
         <tags:selectedDevicesPopup deviceCollection="${callbackResult.successDeviceCollection}" />
@@ -103,7 +103,7 @@
     <%-- FAILURE DEVICE COLLECTION --%> 
     <c:if test="${callbackResult.failureDevicesSupported}">
     	<li style="padding-bottom:4px;">
-		<cti:link href="/spring/bulk/collectionActions" key="yukon.common.device.bulk.${resultsTypeMsgKey}Results.collectionActionOnDevicesLabel" class="small">
+		<cti:link href="/bulk/collectionActions" key="yukon.common.device.bulk.${resultsTypeMsgKey}Results.collectionActionOnDevicesLabel" class="small">
 			<cti:mapParam value="${callbackResult.failureDeviceCollection.collectionParameters}"/>
         </cti:link>
         <tags:selectedDevicesPopup deviceCollection="${callbackResult.failureDeviceCollection}" /><br>

@@ -42,7 +42,7 @@
 		function serviceSubmit(service, value)
 		{
 		  document.mspForm.actionService.value=service;
-		  document.mspForm.action = "/spring/multispeak/setup/" + value;
+		  document.mspForm.action = "/multispeak/setup/" + value;
 		  document.mspForm.submit();
 		}
 		
@@ -53,7 +53,7 @@
 		
 		function vendorChanged()
 		{
-			document.mspForm.action = "/spring/multispeak/setup/home";
+			document.mspForm.action = "/multispeak/setup/home";
 			document.mspForm.submit();
 		}
 
@@ -62,7 +62,7 @@
     	<tags:formElementContainer nameKey="mspSetup">	
 			<cti:dataGrid cols="2" rowStyle="vertical-align:top;" cellStyle="padding-right:40px;">
 			<cti:dataGridCell>
-			<form name="mspForm" method="post" action="/spring/multispeak/setup/save">
+			<form name="mspForm" method="post" action="/multispeak/setup/save">
 				<input type="hidden" name="actionEndpoint">
 				<input type="hidden" name="actionService">
 				
@@ -241,14 +241,14 @@
 			</form>
 				<c:if test="${!isCreateNew }">				  
 				<td>
-				  <form name="mspDeleteForm" method="post" action="/spring/multispeak/setup/delete">
+				  <form name="mspDeleteForm" method="post" action="/multispeak/setup/delete">
 				    <input type="hidden" name="mspVendorId" value="${mspVendor.vendorID}">
 				    <input type="submit" name="Delete" value="Delete" class="formSubmit" onclick="return confirmDelete()">
 				  </form>
 				</td>
 				</c:if>
 				<td>
-				  <form name="mspCreateForm" method="post" action="/spring/multispeak/setup/home">				      
+				  <form name="mspCreateForm" method="post" action="/multispeak/setup/home">				      
 				    <input type="submit" name="New" value="New" class="formSubmit">
 				  </form>
 				</td>

@@ -10,7 +10,7 @@
        	<cti:breadCrumbs>
     	    <cti:crumbLink url="/operator/Operations.jsp" title="Operations Home" />
             
-   	        <cti:crumbLink url="/spring/group/commander/groupProcessing" title="Group Command Processing" />
+   	        <cti:crumbLink url="/group/commander/groupProcessing" title="Group Command Processing" />
             
             <cti:crumbLink title="Group Command Processing Results"/>
     	</cti:breadCrumbs>
@@ -34,7 +34,7 @@
             
             <c:forEach items="${resultList}" var="result">
             
-                <cti:url var="resultDetailUrl" value="/spring/group/commander/resultDetail">
+                <cti:url var="resultDetailUrl" value="/group/commander/resultDetail">
                     <cti:param name="resultKey" value="${result.key}" />
                 </cti:url>
             

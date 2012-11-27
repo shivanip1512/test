@@ -92,11 +92,11 @@ public abstract class DeleteForm extends DBEditorForm {
                             CtiNavObject navObject = (CtiNavObject) session.getAttribute("CtiNavObject");
                             String currentPage = navObject.getCurrentPage();
                             if(currentPage.contains("feeders")) {
-                                navObject.setModuleExitPage(ServletUtil.createSafeUrl((ServletRequest)ex.getRequest(), "/spring/capcontrol/tier/areas"));
+                                navObject.setModuleExitPage(ServletUtil.createSafeUrl((ServletRequest)ex.getRequest(), "/capcontrol/tier/areas"));
                             }else {
                                 
                                 if(area.getStations().length < 1) {
-                                    navObject.setModuleExitPage(ServletUtil.createSafeUrl((ServletRequest)ex.getRequest(), "/spring/capcontrol/tier/areas"));
+                                    navObject.setModuleExitPage(ServletUtil.createSafeUrl((ServletRequest)ex.getRequest(), "/capcontrol/tier/areas"));
                                 }
                             }
                         }

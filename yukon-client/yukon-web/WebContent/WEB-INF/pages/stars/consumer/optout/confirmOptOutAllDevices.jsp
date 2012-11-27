@@ -5,7 +5,7 @@
 <%@ taglib prefix="spring" uri="http://www.springframework.org/tags" %>
 <%@ taglib prefix="tags" tagdir="/WEB-INF/tags" %>
 
-<cti:url var="actionUrl" value="/spring/stars/consumer/optout/optOutQuestions"/>
+<cti:url var="actionUrl" value="/stars/consumer/optout/optOutQuestions"/>
 
 <cti:standardPage module="consumer" page="optoutlist">
     <cti:standardMenu/>
@@ -61,7 +61,7 @@
                 <input type="submit" value="<cti:msg key='yukon.dr.consumer.confirmOptOutAllDevices.save'/>"></input>
             </span>
 
-            <cti:url var="optOutUrl" value="/spring/stars/consumer/optout" />
+            <cti:url var="optOutUrl" value="/stars/consumer/optout" />
             <input type="button" value="<cti:msg key='yukon.dr.consumer.confirmOptOutAllDevices.cancel'/>"
                    onclick="javascript:location.href='${optOutUrl}';"></input>
 

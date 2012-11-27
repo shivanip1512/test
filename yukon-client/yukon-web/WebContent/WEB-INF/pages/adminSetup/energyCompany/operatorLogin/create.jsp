@@ -6,7 +6,7 @@
 
 <cti:standardPage module="adminSetup" page="operatorLogin.${mode}">
 
-    <cti:url var="generatedPasswordUrl" value="/spring/stars/operator/account/generatePassword" />
+    <cti:url var="generatedPasswordUrl" value="/stars/operator/account/generatePassword" />
     
     <script>
         function generatePassword() {

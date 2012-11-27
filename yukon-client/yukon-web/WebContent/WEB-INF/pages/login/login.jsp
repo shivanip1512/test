@@ -120,12 +120,12 @@
                                 <cti:msg var="forgotPasswordText" key="yukon.web.login.forgotPassword"/>
                                 <c:choose>
                                     <c:when test="${useOldForgottenPasswordPage}">
-                                        <a href="<cti:url value="/spring/login/forgotPassword"/>">
+                                        <a href="<cti:url value="/login/forgotPassword"/>">
             		                        ${forgotPasswordText}
                                         </a>
                                     </c:when>
                                     <c:otherwise>
-                                        <a href="<cti:url value="/spring/login/forgottenPassword"/>">
+                                        <a href="<cti:url value="/login/forgottenPassword"/>">
                                             ${forgotPasswordText}
                                         </a>
                                     </c:otherwise>

@@ -182,7 +182,7 @@ public class CommandRequestExecutionResultsController extends MultiActionControl
 	// PROCESS DEVICES
 	public ModelAndView processDevices(HttpServletRequest request, HttpServletResponse response) throws ServletException {
 		
-		ModelAndView mav = new ModelAndView("redirect:/spring/bulk/collectionActions");
+		ModelAndView mav = new ModelAndView("redirect:/bulk/collectionActions");
 		
 		int commandRequestExecutionId = ServletRequestUtils.getRequiredIntParameter(request, "commandRequestExecutionId");
 		String commandRequestExecutionUpdaterTypeStr = ServletRequestUtils.getRequiredStringParameter(request, "commandRequestExecutionUpdaterType");

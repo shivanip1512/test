@@ -166,6 +166,6 @@ public class GeneralController extends AbstractConsumerController {
         
         contactNotificationDao.saveNotification(emailNotification);
     	
-    	return "redirect:/spring/stars/consumer/general";
+    	return "redirect:/stars/consumer/general";
     }
 }

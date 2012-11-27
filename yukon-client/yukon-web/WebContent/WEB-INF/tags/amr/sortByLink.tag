@@ -6,7 +6,7 @@
 
 <%@ taglib uri="http://java.sun.com/jsp/jstl/core" prefix="c" %>
 
-<c:url  var="url" scope="page" value="/spring/meter/search">
+<c:url  var="url" scope="page" value="/meter/search">
 	<c:param name="startIndex" value="${results.startIndex}" />
 	<c:param name="count" value="${results.count}" />
 	<c:param name="orderBy" value="${field.name}" />

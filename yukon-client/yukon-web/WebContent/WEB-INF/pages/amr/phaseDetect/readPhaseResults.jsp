@@ -27,7 +27,7 @@
             </div>
         </div>
         <div style="float: left;" id ="cancelReadDiv">
-            <form action="/spring/amr/phaseDetect/cancelRead" method="get">
+            <form action="/amr/phaseDetect/cancelRead" method="get">
                 <cti:msg2 var="cancelRead" key="yukon.web.modules.amr.phaseDetect.cancelRead"/>
                 <input type="submit" value="${cancelRead}" <c:if test="${readComplete}">disabled</c:if> id="cancelReadButton">
             </form>

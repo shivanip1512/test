@@ -80,7 +80,7 @@
                         <cti:param name="value" value="${thisAreaId}"/>
                     </cti:url>
                     
-                    <cti:url var="substationUrl" value="/spring/capcontrol/tier/substations">
+                    <cti:url var="substationUrl" value="/capcontrol/tier/substations">
                         <cti:param name="bc_areaId" value="${thisAreaId}"/>
                         <cti:param name="isSpecialArea" value="${isSpecialArea}"/>
                     </cti:url>

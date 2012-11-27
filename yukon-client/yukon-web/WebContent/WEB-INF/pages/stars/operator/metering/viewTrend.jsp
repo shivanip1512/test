@@ -30,7 +30,7 @@ final SimpleDateFormat datePart = new java.text.SimpleDateFormat("MM/dd/yyyy");
 	<cti:includeCss link="/WebConfig/yukon/CannonStyle.css"/>
 	
 	<c:set var="gdefid" value="<%=graphBean.getGdefid()%>"/>
-	<cti:url var="thisUrl" value="/spring/stars/operator/metering/viewTrend">
+	<cti:url var="thisUrl" value="/stars/operator/metering/viewTrend">
 		<cti:param name="accountId" value="${accountId}"/>
 		<cti:param name="gdefid" value="${gdefid}"/>
 	</cti:url>
@@ -123,7 +123,7 @@ final SimpleDateFormat datePart = new java.text.SimpleDateFormat("MM/dd/yyyy");
 					<c:forEach var="customerGraphWrapper" items="${customerGraphWrappers}" varStatus="status">
 						<tr>
 							<td class="nameCol">
-								<cti:url var="trendUrl" value="/spring/stars/operator/metering/viewTrend">
+								<cti:url var="trendUrl" value="/stars/operator/metering/viewTrend">
 									<cti:param name="accountId" value="${accountId}"/>
 									<cti:param name="gdefid" value="${customerGraphWrapper.customerGraph.graphDefinitionId}"/>
 								</cti:url>
@@ -134,7 +134,7 @@ final SimpleDateFormat datePart = new java.text.SimpleDateFormat("MM/dd/yyyy");
 							<td class="editCol">
 							<c:choose>
 								<c:when test="${status.count == 1}">
-									<cti:url var="selectTrendsUrl" value="/spring/stars/operator/metering/selectTrends">
+									<cti:url var="selectTrendsUrl" value="/stars/operator/metering/selectTrends">
 										<cti:param name="accountId" value="${accountId}"/>
 									</cti:url>
 									<a href="${selectTrendsUrl}"><i:inline key=".trends.selectTrends"/></a>

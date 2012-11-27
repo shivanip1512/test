@@ -87,7 +87,7 @@
             // escape the group name to escape problem characters
             var groupName = '${cti:escapeJavaScript(group.fullName)}';
             var params = {'groupName': groupName};
-            new Ajax.Updater('deviceMembers', '/spring/group/editor/getDevicesForGroup', {method: 'post', parameters: params});
+            new Ajax.Updater('deviceMembers', '/group/editor/getDevicesForGroup', {method: 'post', parameters: params});
             
         }
         
@@ -102,7 +102,7 @@
             
                 var groupName = '${cti:escapeJavaScript(group.fullName)}';
                 var params = {'groupName': groupName};
-                new Ajax.Updater('deviceMembers', '/spring/group/editor/removeAllDevicesFromGroup', {method: 'post', parameters: params});
+                new Ajax.Updater('deviceMembers', '/group/editor/removeAllDevicesFromGroup', {method: 'post', parameters: params});
             }
         }
     
@@ -144,7 +144,7 @@
             </c:set>
                                                 
             <jsTree:nodeValueRedirectingInlineTree name="groupName"
-                                                hrefBase="/spring/group/editor/home"
+                                                hrefBase="/group/editor/home"
                                                 otherHrefParameters=""
                                                 id="deviceGroupEditorTree"
                                                 dataJson="${allGroupsDataJson}"
@@ -210,7 +210,7 @@
                         
                         <tags:simplePopup id="${editGroupNamePopupId}" title="${editGroupNameText}" styleClass="groupEditorPopup"  onClose="showGroupPopup('${editGroupNamePopupId}');">
                             
-                            <form id="editGroupNameForm" method="post" action="/spring/group/editor/updateGroupName" onsubmit="return changeGroupName();">
+                            <form id="editGroupNameForm" method="post" action="/group/editor/updateGroupName" onsubmit="return changeGroupName();">
                             
                                 <input type="hidden" name="groupName" value="${fn:escapeXml(group.fullName)}">
                                 
@@ -230,7 +230,7 @@
                         </tags:simplePopup>
                         
                         <%-- REMOVE --%>
-                        <form id="removeGroupForm" action="/spring/group/editor/removeGroup" method="post">
+                        <form id="removeGroupForm" action="/group/editor/removeGroup" method="post">
                             <input type="hidden" name="removeGroupName" value="${fn:escapeXml(group.fullName)}">
                             <cti:link key="yukon.web.deviceGroups.editor.operationsContainer.removeGroup" href="javascript:removeGroup('removeGroupForm')"/>
                         </form>
@@ -239,7 +239,7 @@
                         <div>
                         <cti:link id="moveGroupLink" href="javascript:void(0);" key="yukon.web.deviceGroups.editor.operationsContainer.moveGroup"/>
                         
-                        <form id="moveGroupForm" action="/spring/group/editor/moveGroup" method="post">
+                        <form id="moveGroupForm" action="/group/editor/moveGroup" method="post">
                             
                             <cti:msg var="moveGroupPopupTitle" key="yukon.web.deviceGroups.editor.operationsContainer.moveGroupPopup.title"/>
                             <cti:msg var="moveGroupPopupSubmitButtonText" key="yukon.web.deviceGroups.editor.operationsContainer.moveGroupPopup.submitButtonText"/>
@@ -285,7 +285,7 @@
                     	<cti:msg var="editComposedLinkText" key="yukon.web.deviceGroups.editor.operationsContainer.editComposed.linkText"/>
                     	<cti:msg var="editComposedLinkTitle" key="yukon.web.deviceGroups.editor.operationsContainer.editComposed.linkTitle"/>
                     
-                        <cti:url var="editComposedGroupUrl" value="/spring/group/composedGroup/build">
+                        <cti:url var="editComposedGroupUrl" value="/group/composedGroup/build">
                             <cti:param name="groupName" value="${group.fullName}" />
                         </cti:url>
                         <a title="${editComposedLinkTitle}" href="${editComposedGroupUrl}">
@@ -316,7 +316,7 @@
                             
                             <tags:simplePopup id="${addSubGroupPopupId}" title="${addSubgroupText}" styleClass="groupEditorPopup"  onClose="showGroupPopup('${addSubGroupPopupId}');">
                             
-                                <form id="addSubGroupForm" method="post" action="/spring/group/editor/addChild" onsubmit="return changeGroupName();">
+                                <form id="addSubGroupForm" method="post" action="/group/editor/addChild" onsubmit="return changeGroupName();">
                                 	
                                 	<input type="hidden" name="groupName" value="${fn:escapeXml(group.fullName)}">
                                 	
@@ -358,7 +358,7 @@
                     <br>
                     <c:choose>
                         <c:when test="${groupModifiable}">
-                            <cti:url var="addByDeviceCollectionUrl" value="/spring/group/editor/showAddDevicesByCollection">
+                            <cti:url var="addByDeviceCollectionUrl" value="/group/editor/showAddDevicesByCollection">
                                 <cti:param name="groupName" value="${group.fullName}" />
                             </cti:url>
                             <a title="Click to add multiple devices" href="${addByDeviceCollectionUrl}">
@@ -376,7 +376,7 @@
                     <cti:msg var="copyContentsLinkTitle" key="yukon.web.deviceGroups.editor.operationsContainer.copyContents.linkTitle"/>
                     <a title="${copyContentsLinkTitle}" href="javascript:void(0);" id="copyContentsToGroupLink">${copyContentsLinkText}</a>
                     
-                    <form id="copyContentsToGroupForm" action="/spring/group/editor/copyContentsToGroup">
+                    <form id="copyContentsToGroupForm" action="/group/editor/copyContentsToGroup">
                         
                         <cti:msg var="copyContentsPopupTitle" key="yukon.web.deviceGroups.editor.operationsContainer.copyContents.popupTree.title"/>
                         <cti:msg var="copyContentsPopupSubmitText" key="yukon.web.deviceGroups.editor.operationsContainer.copyContents.popupTree.submitButtonText"/>
@@ -411,7 +411,7 @@
                     <h3><cti:msg key="yukon.web.deviceGroups.editor.operationsContainer.generateReportsLabel"/></h3>
                     <div class="groupEditorContentDetail">
                     
-                    <cti:url value="/spring/amr/reports/groupDevicesReport" var="htmlUrl">
+                    <cti:url value="/amr/reports/groupDevicesReport" var="htmlUrl">
                         <cti:param name="groupName" value="${group.fullName}"/>
                     </cti:url>
                     <c:choose>
@@ -439,20 +439,20 @@
                         <c:when test="${deviceCount > 0}">
                             
                             <cti:checkProperty property="operator.DeviceActionsRole.GROUP_COMMANDER">
-                            <cti:link href="/spring/group/commander/collectionProcessing" key="yukon.web.deviceGroups.editor.operationsContainer.sendCommand">
+                            <cti:link href="/group/commander/collectionProcessing" key="yukon.web.deviceGroups.editor.operationsContainer.sendCommand">
                                 <cti:mapParam value="${deviceCollection.collectionParameters}"/>
                             </cti:link>
                             <br>
                             </cti:checkProperty>
                             
                             <cti:checkProperty property="operator.DeviceActionsRole.MASS_CHANGE">
-                            <cti:link href="/spring/bulk/massChange/massChangeSelect" key="yukon.web.deviceGroups.editor.operationsContainer.massChange">
+                            <cti:link href="/bulk/massChange/massChangeSelect" key="yukon.web.deviceGroups.editor.operationsContainer.massChange">
                                 <cti:mapParam value="${deviceCollection.collectionParameters}"/>
                             </cti:link>
                             <br>
                             </cti:checkProperty>
                             
-                            <cti:link href="/spring/bulk/collectionActions" key="yukon.web.deviceGroups.editor.operationsContainer.otherActions">
+                            <cti:link href="/bulk/collectionActions" key="yukon.web.deviceGroups.editor.operationsContainer.otherActions">
                                 <cti:mapParam value="${deviceCollection.collectionParameters}"/>
                             </cti:link>
                             
@@ -509,7 +509,7 @@
                                 <c:forEach var="subGroup" items="${subGroups}">
                                     <tr class="<tags:alternateRow odd="" even="altRow"/>">
                                         <td style="border: none;">
-                                            <cti:url var="homeUrl" value="/spring/group/editor/home">
+                                            <cti:url var="homeUrl" value="/group/editor/home">
                                                 <cti:param name="groupName" value="${subGroup.fullName}" />
                                             </cti:url>
                                         
@@ -526,7 +526,7 @@
                                                     <c:when test="${groupModifiable}">
                                             
                                                         <cti:uniqueIdentifier prefix="subGroup_" var="subId"/>
-                                                        <form style="display: inline;" id="${subId}removeSubGroupForm" action="/spring/group/editor/removeGroup" method="post">
+                                                        <form style="display: inline;" id="${subId}removeSubGroupForm" action="/group/editor/removeGroup" method="post">
                                                             <input type="hidden" name="removeGroupName" value="${fn:escapeXml(subGroup.fullName)}">
                                                             <input type="hidden" name="groupName" value="${fn:escapeXml(group.fullName)}">
                                                             <div class="dib">

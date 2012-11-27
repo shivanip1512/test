@@ -21,7 +21,7 @@ function previewByLoadGroup(previewImgId) {
 		return;
 	}
 	
-	var url = '/spring/stars/operator/deviceReconfig/preview?selectionType=LOAD_GROUP&loadGroupPaoIds=' + $('loadGroupPaoIds').value;
+	var url = '/stars/operator/deviceReconfig/preview?selectionType=LOAD_GROUP&loadGroupPaoIds=' + $('loadGroupPaoIds').value;
 	
 	openSimpleDialog('deviceReconfigSharedPreviewDialog', url, 'Inventory By Load Group');
 }
@@ -41,7 +41,7 @@ function previewByProgram() {
 		return;
 	}
 	
-	var url = '/spring/stars/operator/deviceReconfig/preview?selectionType=PROGRAM&loadProgramPaoIds=' + $('loadProgramPaoIds').value;
+	var url = '/stars/operator/deviceReconfig/preview?selectionType=PROGRAM&loadProgramPaoIds=' + $('loadProgramPaoIds').value;
 	
 	openSimpleDialog('deviceReconfigSharedPreviewDialog', url, 'Inventory By Program');
 }
@@ -98,7 +98,7 @@ function recalcBatch() {
 // PREVIEW SCHEDULE
 function previewSchedule() {
 	
-	var url = '/spring/stars/operator/deviceReconfig/previewSchedule?';
+	var url = '/stars/operator/deviceReconfig/previewSchedule?';
 	url += 'inventoryIdsCount=' + $('inventoryIdsCount').value + '&';
 	url += 'startDate=' + $('startDate').value + '&';
 	url += 'startHour=' + $('startHour').options[$('startHour').selectedIndex].value + '&';

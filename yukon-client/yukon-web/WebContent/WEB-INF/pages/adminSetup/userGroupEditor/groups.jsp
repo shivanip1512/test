@@ -17,7 +17,7 @@
     <tags:boxContainer2 nameKey="groupsContainer" styleClass="groupsContainer">
         <c:choose>
             <c:when test="${!empty groups}">
-                <form action="/spring/adminSetup/userGroup/removeRoleGroup" method="post">
+                <form action="/adminSetup/userGroup/removeRoleGroup" method="post">
                     <input type="hidden" name="userGroupId" value="${userGroupId}">
                     <table class="compactResultsTable rowHighlighting">
                         <tr>
@@ -26,7 +26,7 @@
                             <th class="removeColumn"><i:inline key=".remove"/></th>
                         </tr>
                         <c:forEach items="${groups}" var="group">
-                            <cti:url value="/spring/adminSetup/roleGroup/view" var="editGroupUrl">
+                            <cti:url value="/adminSetup/roleGroup/view" var="editGroupUrl">
                                 <cti:param name="roleGroupId" value="${group.groupID}"/>
                             </cti:url>
                             <tr class="<tags:alternateRow odd="" even="altTableCell"/>">
@@ -47,7 +47,7 @@
             </c:otherwise>
         </c:choose>
         <div class="actionArea">
-            <form id="addGroupsForm" action="/spring/adminSetup/userGroup/addRoleGroups" method="post">
+            <form id="addGroupsForm" action="/adminSetup/userGroup/addRoleGroups" method="post">
                 <input type="hidden" name="roleGroupIds" id="roleGroupIds">
                 <input type="hidden" name="userGroupId" value="${userGroupId}">
                 <tags:pickerDialog type="loginGroupPicker" id="loginGroupPicker" destinationFieldId="roleGroupIds" excludeIds="${alreadyAssignedRoleGroupIds}" 

@@ -71,16 +71,16 @@
                 <cti:msg var="boxTitle" key="yukon.web.modules.dr.home.quickSearches"/>
                 <tags:abstractContainer type="box" title="${boxTitle}">
                     <cti:checkRolesAndProperties value="SHOW_CONTROL_AREAS">
-                        <cti:url var="quickLinkUrl" value="/spring/dr/controlArea/list">
+                        <cti:url var="quickLinkUrl" value="/dr/controlArea/list">
                             <cti:param name="state" value="active"/>
                         </cti:url>
                         <a href="${quickLinkUrl}"><cti:msg key="yukon.web.modules.dr.home.activeControlAreasQuickSearch"/></a><br>
                     </cti:checkRolesAndProperties>
-                    <cti:url var="quickLinkUrl" value="/spring/dr/program/list">
+                    <cti:url var="quickLinkUrl" value="/dr/program/list">
                         <cti:param name="state" value="ACTIVE"/>
                     </cti:url>
                     <a href="${quickLinkUrl}"><cti:msg key="yukon.web.modules.dr.home.activeProgramsQuickSearch"/></a><br>
-                    <cti:url var="quickLinkUrl" value="/spring/dr/loadGroup/list">
+                    <cti:url var="quickLinkUrl" value="/dr/loadGroup/list">
                         <cti:param name="state" value="active"/>
                     </cti:url>
                     <a href="${quickLinkUrl}"><cti:msg key="yukon.web.modules.dr.home.activeLoadGroupsQuickSearch"/></a><br>

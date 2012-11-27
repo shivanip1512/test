@@ -18,7 +18,7 @@
         
         <%-- bulk home --%>
         <cti:msg var="bulkOperationsPageTitle" key="yukon.common.device.bulk.bulkHome.pageTitle"/>
-        <cti:crumbLink url="/spring/bulk/bulkHome" title="${bulkOperationsPageTitle}" />
+        <cti:crumbLink url="/bulk/bulkHome" title="${bulkOperationsPageTitle}" />
         
         <%-- import --%>
         <cti:crumbLink>${pageTitle}</cti:crumbLink>
@@ -47,7 +47,7 @@
 
     <cti:msg var="headerTitle" key="yukon.common.device.bulk.importUpload.header"/>
     <tags:boxContainer title="${headerTitle}" id="importUploadContainer" hideEnabled="false">
-        <form id="uploadForm" method="post" action="/spring/bulk/import/parseUpload" enctype="multipart/form-data">
+        <form id="uploadForm" method="post" action="/bulk/import/parseUpload" enctype="multipart/form-data">
         <table>
                 
             <tr valign="top">

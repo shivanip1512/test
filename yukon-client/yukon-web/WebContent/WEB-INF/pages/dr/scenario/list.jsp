@@ -14,7 +14,7 @@
 	<cti:includeScript link="/JavaScript/calendarTagFuncs.js" />
 	<dr:favoriteIconSetup />
 
-	<c:set var="baseUrl" value="/spring/dr/scenario/list" />
+	<c:set var="baseUrl" value="/dr/scenario/list" />
 	<cti:url var="submitUrl" value="${baseUrl}" />
 	<cti:url var="clearFilterUrl" value="${baseUrl}">
 		<c:if test="${!empty param.itemsPerPage}">
@@ -80,7 +80,7 @@
 					</tr>
 					<c:forEach var="scenario" items="${scenarios}">
 						<c:set var="scenarioId" value="${scenario.paoIdentifier.paoId}" />
-						<c:url var="scenarioUrl" value="/spring/dr/scenario/detail">
+						<c:url var="scenarioUrl" value="/dr/scenario/detail">
 							<c:param name="scenarioId" value="${scenarioId}" />
 						</c:url>
 						<tr class="<tags:alternateRow odd="" even="altRow"/>">

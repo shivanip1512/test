@@ -22,7 +22,7 @@
             <i:simplePopup titleKey=".createAppliancePopup.title" id="createAppliancePopup" 
                            styleClass="smallSimplePopup" 
                            showImmediately="${param.showSwitchCheckingPopup}">
-                <form action="/spring/stars/operator/appliances/applianceNew">
+                <form action="/stars/operator/appliances/applianceNew">
                     <input type="hidden" name="accountId" value="${accountId}"/>
                     <input type="hidden" name="new" />
 
@@ -64,7 +64,7 @@
                      <c:forEach var="displayableApplianceListEntry" items="${displayableApplianceListEntries}">
                          <tr class="<ct:alternateRow odd="" even="altRow"/>">
                              <td>
-                                 <cti:url var="editApplianceUrl" value="/spring/stars/operator/appliances/view">
+                                 <cti:url var="editApplianceUrl" value="/stars/operator/appliances/view">
                                      <cti:param name="accountId" value="${accountId}"/>
                                      <cti:param name="applianceId" value="${displayableApplianceListEntry.applianceId}" />
                                  </cti:url>
@@ -100,7 +100,7 @@
                              </td>
                              <cti:checkRolesAndProperties value="OPERATOR_ALLOW_ACCOUNT_EDITING" >
                                  <td class="removeColumn">
-                                    <cti:url var="deleteApplianceUrl" value="/spring/stars/operator/appliances/applianceDelete">
+                                    <cti:url var="deleteApplianceUrl" value="/stars/operator/appliances/applianceDelete">
                                         <cti:param name="accountId" value="${accountId}" />
                                         <cti:param name="applianceId" value="${displayableApplianceListEntry.applianceId}" />
                                         <cti:param name="delete" />

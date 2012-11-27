@@ -133,7 +133,7 @@ public class RoleGroupEditorController {
         yukonGroupDao.delete(roleGroupId);
         
         flash.setConfirm(new YukonMessageSourceResolvable("yukon.web.modules.adminSetup.roleGroupEditor.deletedSuccessful"));
-        return "redirect:/spring/adminSetup/userEditor/home";
+        return "redirect:/adminSetup/userEditor/home";
     }
 
     /* User Groups */
@@ -207,7 +207,7 @@ public class RoleGroupEditorController {
         model.addAttribute("roleGroupId", roleGroupId);
         model.addAttribute("roleId", newRoleId);
         flash.setConfirm(new YukonMessageSourceResolvable("yukon.web.modules.adminSetup.roleGroupEditor.updateSuccessful"));
-        return "redirect:/spring/adminSetup/roleEditor/view";
+        return "redirect:/adminSetup/roleEditor/view";
     }
     
     private class YukonGroupValidator extends SimpleValidator<LiteYukonGroup> {

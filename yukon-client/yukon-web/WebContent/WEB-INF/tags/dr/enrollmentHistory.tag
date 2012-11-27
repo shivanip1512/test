@@ -55,7 +55,7 @@
             </c:forEach>
         </table>
         <c:if test="${!isHistoryPage && fn:length(hardwareConfigActions) > 6}">
-            <cti:url var="showCompleteHistoryUrl" value="/spring/stars/operator/enrollment/history">
+            <cti:url var="showCompleteHistoryUrl" value="/stars/operator/enrollment/history">
                 <cti:param name="accountId" value="${accountId}"/>
             </cti:url>
             <div class="pageActionArea">

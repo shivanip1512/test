@@ -15,16 +15,16 @@
         
         <%-- bulk home --%>
         <cti:msg var="bulkOperationsPageTitle" key="yukon.common.device.bulk.bulkHome.pageTitle"/>
-        <cti:crumbLink url="/spring/bulk/bulkHome" title="${bulkOperationsPageTitle}" />
+        <cti:crumbLink url="/bulk/bulkHome" title="${bulkOperationsPageTitle}" />
         
         <%-- device selection --%>
         <cti:msg var="deviceSelectionPageTitle" key="yukon.common.device.bulk.deviceSelection.pageTitle"/>
-        <cti:crumbLink url="/spring/bulk/deviceSelection" title="${deviceSelectionPageTitle}"/>
+        <cti:crumbLink url="/bulk/deviceSelection" title="${deviceSelectionPageTitle}"/>
         
         <%-- collection actions --%>
         <tags:collectionActionsCrumbLink deviceCollection="${deviceCollection}" />
         
-        <cti:url var="assignConfigUrl" value="/spring/bulk/config/assignConfig">
+        <cti:url var="assignConfigUrl" value="/bulk/config/assignConfig">
             <c:forEach var="deviceCollectionParam" items="${deviceCollection.collectionParameters}">
                 <cti:param name="${deviceCollectionParam.key}" value="${deviceCollectionParam.value}"/>
             </c:forEach>
