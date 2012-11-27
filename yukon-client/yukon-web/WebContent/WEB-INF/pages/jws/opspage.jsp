@@ -5,10 +5,8 @@
 
 <script type="text/javascript" src="/JavaScript/javaWebStartLauncher.js"></script>
 
-<cti:url var="imagePath" value="/WebConfig/yukon"/>
-
 <c:if test="${jnlpListSize > 0}">
-	<tags:operationSection sectionName="Client Launcher" sectionImageSrc="${imagePath }/Keyboard.jpg">
+	<tags:operationSection sectionName="Client Launcher" sectionImageName="ClientLauncherLogo">
 	    <c:forEach items="${jnlpList}" var="jnlp">
 	        <tags:sectionLink>
 	            <a href="javascript:jwsLaunch('<cti:url value="/jws/${jnlp.path}"/>')">${jnlp.appTitle}</a>
