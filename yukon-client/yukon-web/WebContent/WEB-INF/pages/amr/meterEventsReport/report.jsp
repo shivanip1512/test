@@ -284,43 +284,48 @@
 
 	<tags:pagedBox2 nameKey="tableTitle" searchResult="${filterResult}" baseUrl="report" titleLinkHtml="${linkHeaderHtml}">
 		<table id="eventsTable" class="compactResultsTable">
-			<tr>
-				<th><tags:sortLink nameKey="tableHeader.deviceName" baseUrl="report" fieldName="NAME" isDefault="false" /></th>
-				<th><tags:sortLink nameKey="tableHeader.meterNumber" baseUrl="report" fieldName="METER_NUMBER" isDefault="false" /></th>
-				<th><tags:sortLink nameKey="tableHeader.deviceType" baseUrl="report" fieldName="TYPE" /></th>
-				<th><tags:sortLink nameKey="tableHeader.date" baseUrl="report" fieldName="DATE" isDefault="true" /></th>
-				<th><tags:sortLink nameKey="tableHeader.event" baseUrl="report" fieldName="EVENT" /></th>
-				<th><tags:sortLink nameKey="tableHeader.value" baseUrl="report" fieldName="VALUE" /></th>
-			</tr>
-			<c:forEach var="event" items="${filterResult.resultList}">
-		    	<c:set var="trClass" value=""/>
-				<c:if test="${event.meter.disabled}">
-					<c:set var="trClass" value="subtleGray"/>
-				</c:if>
-				<tr class="<tags:alternateRow odd="" even="altRow"/> ${trClass}">
-					<td>
-						<cti:paoDetailUrl  yukonPao="${event.meter}" >
-						    <c:choose>
-						        <c:when test="${empty event.meter.name}"></c:when>
-						        <c:otherwise><spring:escapeBody>${event.meter.name}</spring:escapeBody></c:otherwise>
-						    </c:choose>
-						</cti:paoDetailUrl>
-					</td>
-                    <td>${event.meter.meterNumber}</td>
-					<td><tags:paoType yukonPao="${event.meter}"/></td>
-					<td><cti:formatDate type="BOTH" value="${event.pointValueHolder.pointDataTimeStamp}"/></td>
-	                <td><spring:escapeBody>${event.pointName}</spring:escapeBody></td>
-					<td class="eventStatus${event.formattedValue}">${event.formattedValue}</td>
-				</tr>
-			</c:forEach>
-			
-			<c:if test="${fn:length(filterResult.resultList) == 0}">
-				<tr>
-					<td class="noResults subtleGray" colspan="6">
-						<i:inline key=".noEvents"/>
-					</td>
-				</tr>
-			</c:if>
+            <thead>
+    			<tr>
+    				<th><tags:sortLink nameKey="tableHeader.deviceName" baseUrl="report" fieldName="NAME" isDefault="false" /></th>
+    				<th><tags:sortLink nameKey="tableHeader.meterNumber" baseUrl="report" fieldName="METER_NUMBER" isDefault="false" /></th>
+    				<th><tags:sortLink nameKey="tableHeader.deviceType" baseUrl="report" fieldName="TYPE" /></th>
+    				<th><tags:sortLink nameKey="tableHeader.date" baseUrl="report" fieldName="DATE" isDefault="true" /></th>
+    				<th><tags:sortLink nameKey="tableHeader.event" baseUrl="report" fieldName="EVENT" /></th>
+    				<th><tags:sortLink nameKey="tableHeader.value" baseUrl="report" fieldName="VALUE" /></th>
+    			</tr>
+            </thead>
+            <tfoot></tfoot>
+            <tbody>
+    			<c:forEach var="event" items="${filterResult.resultList}">
+    		    	<c:set var="trClass" value=""/>
+    				<c:if test="${event.meter.disabled}">
+    					<c:set var="trClass" value="subtleGray"/>
+    				</c:if>
+    				<tr class="<tags:alternateRow odd="" even="altRow"/> ${trClass}">
+    					<td>
+    						<cti:paoDetailUrl  yukonPao="${event.meter}" >
+    						    <c:choose>
+    						        <c:when test="${empty event.meter.name}"></c:when>
+    						        <c:otherwise><spring:escapeBody>${event.meter.name}</spring:escapeBody></c:otherwise>
+    						    </c:choose>
+    						</cti:paoDetailUrl>
+    					</td>
+                        <td>${event.meter.meterNumber}</td>
+    					<td><tags:paoType yukonPao="${event.meter}"/></td>
+    					<td><cti:formatDate type="BOTH" value="${event.pointValueHolder.pointDataTimeStamp}"/></td>
+    	                <td><spring:escapeBody>${event.pointName}</spring:escapeBody></td>
+    					<td class="eventStatus${event.formattedValue}">${event.formattedValue}</td>
+    				</tr>
+    			</c:forEach>
+                
+    			<c:if test="${fn:length(filterResult.resultList) == 0}">
+    				<tr>
+    					<td class="noResults subtleGray" colspan="6">
+    						<i:inline key=".noEvents"/>
+    					</td>
+    				</tr>
+    			</c:if>
+            </tbody>
 		</table>
 	</tags:pagedBox2>
 </cti:standardPage>

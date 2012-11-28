@@ -228,13 +228,10 @@
 		                    <c:if test="${hasVendorId}"><th><i:inline key=".tableHeader.cisDetails"/></th></c:if>
 						</tr>
 					</thead>
+					<tfoot></tfoot>
 					<tbody>
 						<c:forEach var="row" items="${filterResult.resultList}">
-							<c:set var="trClass" value=""/>
-							<c:if test="${row.meter.disabled}">
-								<c:set var="trClass" value="subtleGray"/>
-							</c:if>
-							<tr class="<tags:alternateRow odd="" even="altRow"/> ${trClass}">
+							<tr>
 								<cti:url var="accountInfoUrl" value="cisDetails">
 									<cti:param name="paoId" value="${row.meter.paoIdentifier.paoId}"/>
 								</cti:url>
@@ -262,7 +259,7 @@
                 </c:when>
                 <c:otherwise>
 					<tr>
-						<td class="noResults subtleGray" colspan="3">
+						<td class="noResults" colspan="3">
 	                        <i:inline key=".noLeaks"/>
 	                    </td>
 					</tr>

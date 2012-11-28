@@ -82,7 +82,7 @@
 </c:otherwise>
 </c:choose>
 
-<div style="text-align:right;padding-top:5px;">
+<div class="actionArea">
     <form action="/amr/outageProcessing/monitorEditor/edit" method="get">
         <cti:button nameKey="create" type="submit" styleClass="f_blocker"/>
     </form>

@@ -71,25 +71,29 @@
         pageByHundereds="true" titleLinkHtml="${linkHeaderHtml}">
         <table class="compactResultsTable rowHighlighting">
             <c:if test="${meterSearchResults.hitCount > 0}">
-                <tr>
-                    <th><tags:sortLink nameKey="columnHeader.deviceName" baseUrl="${baseUrl}" fieldName="PAONAME"
-                            sortParam="orderBy" isDefault="${defaultSearchField == 'PAONAME'}"/>
-                    </th>
-                    <th><tags:sortLink nameKey="columnHeader.meterNumber" baseUrl="${baseUrl}"
-                            fieldName="METERNUMBER" sortParam="orderBy"
-                            isDefault="${defaultSearchField == 'METERNUMBER'}" />
-                    </th>
-                    <th><tags:sortLink nameKey="columnHeader.deviceType" baseUrl="${baseUrl}" fieldName="TYPE"
-                            sortParam="orderBy" />
-                    </th>
-                    <th><tags:sortLink nameKey="columnHeader.address" baseUrl="${baseUrl}" fieldName="ADDRESS"
-                            sortParam="orderBy"/>
-                    </th>
-                    <th><tags:sortLink nameKey="columnHeader.route" baseUrl="${baseUrl}" fieldName="ROUTE"
-                            sortParam="orderBy" />
-                   </th>
-                </tr>
+                <thead>
+                    <tr>
+                        <th><tags:sortLink nameKey="columnHeader.deviceName" baseUrl="${baseUrl}" fieldName="PAONAME"
+                                sortParam="orderBy" isDefault="${defaultSearchField == 'PAONAME'}"/>
+                        </th>
+                        <th><tags:sortLink nameKey="columnHeader.meterNumber" baseUrl="${baseUrl}"
+                                fieldName="METERNUMBER" sortParam="orderBy"
+                                isDefault="${defaultSearchField == 'METERNUMBER'}" />
+                        </th>
+                        <th><tags:sortLink nameKey="columnHeader.deviceType" baseUrl="${baseUrl}" fieldName="TYPE"
+                                sortParam="orderBy" />
+                        </th>
+                        <th><tags:sortLink nameKey="columnHeader.address" baseUrl="${baseUrl}" fieldName="ADDRESS"
+                                sortParam="orderBy"/>
+                        </th>
+                        <th><tags:sortLink nameKey="columnHeader.route" baseUrl="${baseUrl}" fieldName="ROUTE"
+                                sortParam="orderBy" />
+                       </th>
+                    </tr>
+                </thead>
+                <tfoot></tfoot>
             </c:if>
+            <tbody>
             <c:forEach var="searchResultRow" items="${meterSearchResults.resultList}">
                 <tr class="<tags:alternateRow odd="" even="altRow"/>">
                     <td><cti:paoDetailUrl yukonPao="${searchResultRow}">
@@ -122,7 +126,7 @@
                     <td colspan="5"><i:inline key=".notFound" /></td>
                 </tr>
             </c:if>
-
+			</tbody>
         </table>
 
     </tags:pagedBox>

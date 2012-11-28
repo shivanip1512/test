@@ -42,7 +42,7 @@
     		<cti:param name="includeDisabledPaos" value="${meter.disabled}"/>
     	</cti:url>
 		<c:if test="${not empty valueMap}">
-	    	<a href="${meterEventsReportUrl}" class="showAll">
+	    	<a href="${meterEventsReportUrl}" class="showAll fl">
 	    		<i:inline key=".allEvents"/>
 	   		</a>
    		</c:if>

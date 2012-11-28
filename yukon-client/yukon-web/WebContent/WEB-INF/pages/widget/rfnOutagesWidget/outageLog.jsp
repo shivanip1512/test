@@ -8,46 +8,42 @@ jQuery(document).ready(flashYellow(jQuery('#reloadedAt')[0], 2));
 </script>
 
 <cti:msgScope paths="widgets.rfnOutagesWidget">
-<tags:nameValueContainer2>
-    <tags:nameValue2 nameKey=".outageLog">
-        <div id="reloadedAt" class="fl" style="margin-right: 5px;">
-            <cti:formatDate type="BOTH" value="${logLoadedAt}"/>
-        </div>
-        <button id="refreshLogs" class="icon ui-icon refresh pointer "/>
-    </tags:nameValue2>
-</tags:nameValueContainer2>
-<div class="smallDialogScrollArea">
-    <table class="miniResultsTable boxContainer_miniResultsTable">
-        <tr>
-            <th><i:inline key=".start"/></th>
-            <th><i:inline key=".end"/></th>
-            <th><i:inline key=".duration"/></th>
-        </tr>
+
+<tags:sectionContainer2 nameKey="outageLog">
+    <div class="smallDialogScrollArea">
         <c:choose>
-            <c:when test="${empty logs}">
-                <tr>
-                    <td colspan="3" class="subtleGray"><i><i:inline key=".noLogs"/></i></td>
-                </tr>
-            </c:when>
+            <c:when test="${empty logs}"><i><i:inline key=".noLogs"/></i></c:when>
             <c:otherwise>
-                <c:forEach items="${logs}" var="log">
-                    <tr class="<tags:alternateRow odd="" even="altRow"/>">
-                        <c:choose>
-	                        <c:when test="${!log.invalid}">
-		                        <td><cti:formatDate value="${log.start}" type="BOTH"/></td>
-		                        <td><cti:formatDate value="${log.end}" type="BOTH"/></td>
-		                        <td><cti:formatDuration type="DHMS_REDUCED" startDate="${log.start}" endDate="${log.end}"/></td>
-	                        </c:when>
-	                        <c:otherwise>
-                                <td><i:inline key=".unknown"/></td>
-                                <td><cti:formatDate value="${log.end}" type="BOTH"/></td>
-                                <td><i:inline key=".unknown"/></td>
-	                        </c:otherwise>
-                        </c:choose>
+                <table class="miniResultsTable boxContainer_miniResultsTable">
+                	<thead>
+                    <tr>
+                        <th><i:inline key=".start"/></th>
+                        <th><i:inline key=".end"/></th>
+                        <th><i:inline key=".duration"/></th>
                     </tr>
-                </c:forEach>
+                    </thead>
+                    <tfoot></tfoot>
+                    <tbody>
+                    <c:forEach items="${logs}" var="log">
+                        <tr class="<tags:alternateRow odd="" even="altRow"/>">
+                            <c:choose>
+    	                        <c:when test="${!log.invalid}">
+    		                        <td><cti:formatDate value="${log.start}" type="BOTH"/></td>
+    		                        <td><cti:formatDate value="${log.end}" type="BOTH"/></td>
+    		                        <td><cti:formatDuration type="DHMS_REDUCED" startDate="${log.start}" endDate="${log.end}"/></td>
+    	                        </c:when>
+    	                        <c:otherwise>
+                                    <td><i:inline key=".unknown"/></td>
+                                    <td><cti:formatDate value="${log.end}" type="BOTH"/></td>
+                                    <td><i:inline key=".unknown"/></td>
+    	                        </c:otherwise>
+                            </c:choose>
+                        </tr>
+                    </c:forEach>
+                    </tbody>
+                </table>
             </c:otherwise>
         </c:choose>
-    </table>
+    </div>
+</tags:sectionContainer2>
 </cti:msgScope>
-</div>

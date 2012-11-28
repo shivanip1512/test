@@ -7,7 +7,6 @@
 
 <cti:standardPage module="adminSetup"  page="interfaces">
 	<cti:includeCss link="/WebConfig/yukon/CannonStyle.css"/>
-	<cti:includeCss link="/WebConfig/yukon/StandardStyles.css"/>
 
 	<c:set var="interfaceListLength" value="${fn:length(possibleInterfaces)}" />
 	

@@ -126,7 +126,7 @@ function taskFinished() {
                             
                         </tags:nameValueContainer2>
                         
-                        <div class="pageActionArea marginBottom">
+                        <div class="pageActionArea stacked">
                             <c:if test="${!task.complete}">
                                 <c:set var="buttonClass" value="db"/>
                                 <c:set var="linkClass" value="dn"/>

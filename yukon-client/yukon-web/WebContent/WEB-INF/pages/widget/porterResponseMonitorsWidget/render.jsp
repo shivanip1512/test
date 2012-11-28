@@ -68,7 +68,7 @@
     </c:otherwise>
 </c:choose>
 
-<div class="widgetActionArea">
+<div class="actionArea">
 	<%-- CREATE NEW MONITOR FORM --%>
 	<form action="/amr/porterResponseMonitor/createPage" method="get">
         <cti:button nameKey="create" type="submit" styleClass="f_blocker"/>

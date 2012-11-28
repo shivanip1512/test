@@ -365,7 +365,7 @@
 
         <cti:displayForPageEditModes modes="VIEW">
 
-            <div class="smallBoldLabel notesSection marginBottom">
+            <div class="smallBoldLabel notesSection stacked">
                 <c:choose>
                     <c:when test="${deviceCollection ==  null}">
                         <i:inline key=".noSelectedDevice" />
@@ -382,8 +382,8 @@
                     <cti:button id="selectDevicesBtn1" nameKey="selectDevices" />
                 </c:if>
             </div>
-            <tags:boxContainer2 nameKey="generateReport" styleClass="marginBottom">
-                <tags:nameValueContainer2 id="formatContainer" tableClass="marginBottom clear">
+            <tags:boxContainer2 nameKey="generateReport" styleClass="stacked">
+                <tags:nameValueContainer2 id="formatContainer" tableClass="stacked clear">
                     <tags:nameValue2 nameKey=".format">
                         <c:if test="${not empty backingBean.allFormats}">
                             <form:select path="selectedFormatId" onchange="submitForm(-1, 'view')" cssClass="fl" cssStyle="margin-right:5px;">
@@ -420,7 +420,7 @@
             </tags:boxContainer2>
 
             <c:if test="${not empty backingBean.allFormats}">
-            <tags:boxContainer2 nameKey="preview" styleClass="marginBottom">
+            <tags:boxContainer2 nameKey="preview" styleClass="stacked">
                 <div class="code">
                 <!-- Please do not format this code -->
                     <pre><c:forEach var="preview" items="${backingBean.preview}">${preview}
@@ -432,7 +432,7 @@
 
 
         <cti:displayForPageEditModes modes="EDIT,CREATE">
-            <tags:boxContainer2 nameKey="formatSettings" styleClass="marginBottom">
+            <tags:boxContainer2 nameKey="formatSettings" styleClass="stacked">
                 <tags:nameValueContainer2>
                     <tags:inputNameValue nameKey=".nameOfFormat" path="format.formatName" size="50" maxlength="100" />
                     <tags:nameValue2 nameKey=".delimiter">
@@ -460,7 +460,7 @@
 
 
 
-            <tags:boxContainer2 nameKey="attributeSetup" id="attributes" styleClass="marginBottom attributeSetupContainer">
+            <tags:boxContainer2 nameKey="attributeSetup" id="attributes" styleClass="stacked attributeSetupContainer">
                 <table class="compactResultsTable">
                     <tr>
                         <th class="nonwrapping"><i:inline key=".attribute" /></th>
@@ -500,7 +500,7 @@
         </cti:displayForPageEditModes>
 
         <c:if test="${(not empty backingBean.allFormats && mode == 'VIEW') || (mode != 'VIEW')}">
-            <tags:boxContainer2 nameKey="fieldSetup" id="selectedFields" styleClass="marginBottom">
+            <tags:boxContainer2 nameKey="fieldSetup" id="selectedFields" styleClass="stacked">
                 <table class="compactResultsTable">
                     <tr>
                         <th class="nonwrapping"><i:inline key=".field" /></th>

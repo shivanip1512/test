@@ -22,7 +22,7 @@
         <span class="pagingArea fr">
             <tags:nextPrevLinks searchResult="${pageScope.searchResult}" baseUrl="${pageScope.baseUrl}" mode="jsp"/>
         </span>
-        <span class="contextArea">
+        <span class="contextArea fr">
 	        <span class="filterArea">
 	            <c:if test="${!empty pageScope.filterDialog}">
                     <cti:button nameKey="filter" styleClass="navlink"

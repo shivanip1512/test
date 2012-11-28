@@ -7,13 +7,13 @@
             </c:when>
             <c:when test="${pair.first == 'COMM_STATUS'}">
                 <c:if test="${pair.second == 'UNKNOWN'}">
-                    <c:set var="colorClass" value="warningColor"/> 
+                    <c:set var="colorClass" value="warning"/> 
                 </c:if>
                 <c:if test="${pair.second == 'READY'}">
-                    <c:set var="colorClass" value="successMessage"/> 
+                    <c:set var="colorClass" value="success"/> 
                 </c:if>
                 <c:if test="${pair.second == 'NOT_READY'}">
-                    <c:set var="colorClass" value="errorMessage"/> 
+                    <c:set var="colorClass" value="error"/> 
                 </c:if>
                 <c:set var="valueKey">${pair.first.formatKey}.value.${pair.second}</c:set>
                 <span class="${colorClass}"><i:inline key="${valueKey}"/></span>

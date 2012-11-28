@@ -14,10 +14,8 @@
         <!-- Layout CSS files -->
         <link rel="shortcut icon" href="/favicon.ico" type="image/x-icon">
         <link rel="stylesheet" type="text/css" href="<cti:url value="/WebConfig/yukon/styles/reset.css"/>" >
-        
-        <link rel="stylesheet" type="text/css" href="<cti:url value="/WebConfig/yukon/CannonStyle.css"/>" >
-        <link rel="stylesheet" type="text/css" href="<cti:url value="/WebConfig/yukon/styles/StandardStyles.css"/>" >
         <link rel="stylesheet" type="text/css" href="<cti:url value="/WebConfig/yukon/styles/yukon.css"/>" >
+        <link rel="stylesheet" type="text/css" href="<cti:url value="/WebConfig/yukon/styles/icons.css"/>" >
         <link rel="stylesheet" type="text/css" href="<cti:url value="/WebConfig/yukon/styles/lib/jQuery/yukon/jquery-ui-1.8.16.custom.css"/>" >
         
         
@@ -69,6 +67,19 @@
 
 <div id="MainContainer" class="${showContextualNavigation ? "StandardWithNavLayout" : "StandardLayout"}">
 
+<!-- Start Left -->
+<c:if test="${showContextualNavigation}">
+    <div id="LeftColumn">
+        <div class="detail">
+            <jsp:include page="${pageDetail.detailInfoIncludePath}" />
+        </div>
+        <div class="contextualMenu vertical_menu">
+            <cti:outputContent writable="${contextualNavigationMenu}" />
+        </div>
+    </div>
+</c:if>
+<!-- End Left -->
+
 <div id="ContentWrapper">
 <div id="Content">
 <c:if test="${not empty pageDetail.pageHeading}">
@@ -87,24 +98,6 @@
 <cti:outputContent writable="${bodyContent}"/>
 </div> <!-- Content -->
 </div> <!-- ContentWrapper -->
-
-<!-- Start Left -->
-<c:if test="${showContextualNavigation}">
-<div id="LeftColumn">
-<div class="innertube">
-<div id="detailAdditionalInfo">
-<div id="detailAdditionalInfoBlock">
-<jsp:include page="${pageDetail.detailInfoIncludePath}"/>
-</div>
-</div>
-<div class="contextualMenu">
-<cti:outputContent writable="${contextualNavigationMenu}"/>
-</div>
-</div>
-
-</div>
-</c:if>
-<!-- End Left -->
 
 <div id="CopyRight">
     <ul class="pipes">
@@ -166,6 +159,6 @@
 <cti:dataUpdaterCallback function="alert_handleCountUpdate" initialize="true" count="ALERT/COUNT" lastId="ALERT/LASTID"/>
 
 <tags:analyticsTrackPage/>
-
+<%-- <tags:feedback/> TODO: uncomment when ready for feedback --%>
 </body>
 </html>

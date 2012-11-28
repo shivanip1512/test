@@ -83,7 +83,7 @@ treeInit = function() {
         <form:hidden path="oldFeederId"/>
         <form:hidden path="newFeederId" id="newFeederId"/>
         
-        <tags:nameValueContainer2 tableClass="marginBottomSmall">
+        <tags:nameValueContainer2 tableClass="stacked">
             <tags:nameValue2 nameKey=".capbank">
                 <span style="font-size: 12px;"><spring:escapeBody htmlEscape="true">${bankName}</spring:escapeBody></span>
             </tags:nameValue2>

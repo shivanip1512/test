@@ -36,34 +36,34 @@
     <tags:boxContainer title="${headerTitle}" id="bulkHomeContainer" hideEnabled="false">
         <cti:checkRole role="operator.DeviceActionsRole.ROLEID">
             <cti:checkProperty property="operator.DeviceActionsRole.BULK_IMPORT_OPERATION">
-                <div class="marginBottomSmall">
+                <div class="stacked">
                     <button type="button" data-href="/bulk/import/upload" class="wideButton">Bulk Import</button>
                     Import a file to create meters.
                 </div>
             </cti:checkProperty>
             
             <cti:checkProperty property="operator.DeviceActionsRole.BULK_UPDATE_OPERATION">
-                <div class="marginBottomSmall">
+                <div class="stacked">
                     <button type="button" data-href="/bulk/update/upload" class="wideButton">Bulk Update</button>
                     Import a file to update existing meters.
                 </div>
             </cti:checkProperty>
             
             <cti:checkProperty property="operator.DeviceActionsRole.ADD_REMOVE_POINTS">
-                <div class="marginBottomSmall">
+                <div class="stacked">
                     <button type="button" data-href="/bulk/pointImport/upload" class="wideButton">Bulk Point Import</button>
                     Import a file to create points on existing devices.
                 </div>
             </cti:checkProperty>
         </cti:checkRole>
             
-        <div class="marginBottomSmall">
+        <div class="stacked">
             <button type="button" data-href="/bulk/deviceSelection" class="wideButton">Create Collection</button>
             Create a collection of devices to perform actions upon.
         </div>
 
         <cti:checkProperty property="operator.DeviceActionsRole.FDR_TRANSLATION_MANAGER">
-            <div class="marginBottomSmall">
+            <div class="stacked">
                 <button type="button" data-href="/bulk/fdrTranslationManager/home" class="wideButton">Manage FDR Translations</button>
                 Import, export or delete FDR translations.
             </div>

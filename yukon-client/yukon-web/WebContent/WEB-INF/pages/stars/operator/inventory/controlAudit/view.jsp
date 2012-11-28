@@ -32,7 +32,7 @@ jQuery(function() {
 });
 </script>
 
-<cti:dataGrid cols="2" tableClasses="marginBottom twoColumnLayout split">
+<cti:dataGrid cols="2" tableClasses="stacked twoColumnLayout split">
 
     <cti:dataGridCell>
         <tags:formElementContainer nameKey="settings">
@@ -95,14 +95,14 @@ jQuery(function() {
 </cti:dataGrid>
 
 <c:if test="${fn:length(audit.uncontrolledRows) > 0}">
-    <tags:formElementContainer nameKey="uncontrolledDevices" styleClass="box cl marginBottom" hideEnabled="true">
+    <tags:formElementContainer nameKey="uncontrolledDevices" styleClass="box cl stacked" hideEnabled="true">
         <div class="threeQuarterLayout">
             <div class="primary">
                 <dr:controlAuditResult result="${audit.uncontrolledPaged}" type="UNCONTROLLED" auditId="${auditId}"/>
             </div>
             <div class="secondary">
                 <div class="columnContent">
-                    <tags:nameValueContainer2 tableClass="sectionContainerNameValue stats marginBottom">
+                    <tags:nameValueContainer2 tableClass="sectionContainerNameValue stats stacked">
                         <c:set var="percent" value="${fn:length(audit.uncontrolledRows) / fn:length(settings.collection.list)}"/>
                         <tags:nameValue2 nameKey=".deviceCount">${fn:length(audit.uncontrolledRows)} (<fmt:formatNumber value="${percent}" type="percent" maxFractionDigits="1"/>)</tags:nameValue2>
                     </tags:nameValueContainer2>
@@ -129,14 +129,14 @@ jQuery(function() {
 </c:if>
     
 <c:if test="${fn:length(audit.unknownRows) > 0}">
-    <tags:formElementContainer nameKey="unknownDevices" styleClass="box cl marginBottom" hideEnabled="true">
+    <tags:formElementContainer nameKey="unknownDevices" styleClass="box cl stacked" hideEnabled="true">
         <div class="threeQuarterLayout">
             <div class="primary">
                 <dr:controlAuditResult result="${audit.unknownPaged}" type="UNKNOWN" auditId="${auditId}"/>
             </div>
             <div class="secondary">
                 <div class="columnContent">
-                        <tags:nameValueContainer2 tableClass="sectionContainerNameValue stats marginBottom">
+                        <tags:nameValueContainer2 tableClass="sectionContainerNameValue stats stacked">
                             <c:set var="percent" value="${fn:length(audit.unknownRows) / fn:length(settings.collection.list)}"/>
                             <tags:nameValue2 nameKey=".deviceCount">${fn:length(audit.unknownRows)} (<fmt:formatNumber value="${percent}" type="percent" maxFractionDigits="1"/>)</tags:nameValue2>
                         </tags:nameValueContainer2>
@@ -163,14 +163,14 @@ jQuery(function() {
 </c:if>
 
 <c:if test="${fn:length(audit.controlledRows) > 0}">
-    <tags:formElementContainer nameKey="controlledDevices" styleClass="box marginBottom" hideEnabled="true">
+    <tags:formElementContainer nameKey="controlledDevices" styleClass="box stacked" hideEnabled="true">
         <div class="threeQuarterLayout">
             <div class="primary">
                 <dr:controlAuditResult result="${audit.controlledPaged}" type="CONTROLLED" auditId="${auditId}"/>
             </div>
             <div class="secondary">
                 <div class="columnContent">
-                    <tags:nameValueContainer2 tableClass="sectionContainerNameValue stats marginBottom">
+                    <tags:nameValueContainer2 tableClass="sectionContainerNameValue stats stacked">
                         <c:set var="percent" value="${fn:length(audit.controlledRows) / fn:length(settings.collection.list)}"/>
                         <tags:nameValue2 nameKey=".deviceCount">${fn:length(audit.controlledRows)} (<fmt:formatNumber value="${percent}" type="percent" maxFractionDigits="1"/>)</tags:nameValue2>
                     </tags:nameValueContainer2>
@@ -197,14 +197,14 @@ jQuery(function() {
 </c:if>
     
 <c:if test="${fn:length(audit.unsupportedRows) > 0}">
-    <tags:formElementContainer nameKey="unsupportedDevices" styleClass="box cl marginBottom" hideEnabled="true">
+    <tags:formElementContainer nameKey="unsupportedDevices" styleClass="box cl stacked" hideEnabled="true">
         <div class="threeQuarterLayout">
             <div class="primary">
                 <dr:controlAuditResult result="${audit.unsupportedPaged}" type="UNSUPPORTED" auditId="${auditId}"/>
             </div>
             <div class="secondary">
                 <div class="columnContent">
-                    <tags:nameValueContainer2 tableClass="sectionContainerNameValue stats marginBottom">
+                    <tags:nameValueContainer2 tableClass="sectionContainerNameValue stats stacked">
                         <c:set var="percent" value="${fn:length(audit.unsupportedRows) / fn:length(settings.collection.list)}"/>
                         <tags:nameValue2 nameKey=".deviceCount">${fn:length(audit.unsupportedRows)} (<fmt:formatNumber value="${percent}" type="percent" maxFractionDigits="1"/>)</tags:nameValue2>
                     </tags:nameValueContainer2>

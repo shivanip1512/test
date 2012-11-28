@@ -11,7 +11,7 @@
     <entry key="yukon.web.modules.amr.waterLeakReport.report.pageName">Water Leak Report</entry>
     <entry key="yukon.web.modules.amr.waterLeakReport.report.pageDescription">Water Leak Report</entry>
     <entry key="yukon.web.modules.amr.waterLeakReport.report.firstVisit"><![CDATA[
-        Welcome to the Water Leak Report! Below is a report based on default filter values using our {0}
+        Below is a report based on default filter values using our {0}.
         <ul>
         <li>To change the filter click the cog button on the right or {1}</li>
         <li>To view interval data check the respective checkbox in the table below, then click the "View Interval Data" button</li>

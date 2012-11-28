@@ -75,7 +75,7 @@
     </c:otherwise>
 </c:choose>
 
-<div style="text-align:right;padding-top:5px;">
+<div class="actionArea">
     <%-- CREATE NEW STATUS POINT MONITOR FORM --%>
     <form action="/amr/statusPointMonitoring/creationPage" method="get">
         <cti:button nameKey="create" type="submit" styleClass="f_blocker"/>

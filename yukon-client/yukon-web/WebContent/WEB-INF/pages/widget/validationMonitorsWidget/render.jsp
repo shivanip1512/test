@@ -86,7 +86,7 @@
 </c:otherwise>
 </c:choose>
 
-<div style="padding-top:5px;">
+<div class="actionArea">
 <table class="noStyle" cellpadding="0" cellspacing="0" style="width:100%;">
 	<tr>
 		<td align="left">

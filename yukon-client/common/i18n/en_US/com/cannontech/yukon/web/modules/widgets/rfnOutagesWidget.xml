@@ -10,7 +10,7 @@
 <entry key="yukon.web.widgets.rfnOutagesWidget.argumentStub">{0}</entry>
 <entry key="yukon.web.widgets.rfnOutagesWidget.read.label">Read Now</entry>
 <entry key="yukon.web.widgets.rfnOutagesWidget.read.labelBusy">Reading</entry>
-<entry key="yukon.web.widgets.rfnOutagesWidget.outageLog">RFN Outages Log Since</entry>
+<entry key="yukon.web.widgets.rfnOutagesWidget.outageLog.title">RFN Outages Log</entry>
 <entry key="yukon.web.widgets.rfnOutagesWidget.noLogs">No Outage Logs</entry>
 <entry key="yukon.web.widgets.rfnOutagesWidget.unknown">Unknown</entry>
 

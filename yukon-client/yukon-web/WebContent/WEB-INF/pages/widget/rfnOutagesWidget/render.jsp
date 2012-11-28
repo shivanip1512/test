@@ -29,7 +29,7 @@ jQuery(document).delegate('#refreshLogs', 'click', loadOutageTable);
 
 <div id="${widgetParameters.widgetId}_results"></div>
 
-<div class="actionArea marginBottom">
+<div class="actionArea stacked">
     <tags:widgetActionUpdate container="${widgetParameters.widgetId}_results" method="read" nameKey="read"/>
 </div>
 

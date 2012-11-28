@@ -140,7 +140,7 @@ jQuery(function() {
                     </cti:checkEnergyCompanySetting>
                 </cti:checkRolesAndProperties>
             
-                <div class="pageActionArea marginBottom">
+                <div class="pageActionArea stacked">
                     <cti:checkRolesAndProperties value="OPERATOR_ALLOW_ACCOUNT_EDITING">
                         <c:if test="${fn:length(enrollments) > 0}">
                             <c:if test="${configurable}">
@@ -165,7 +165,7 @@ jQuery(function() {
             <c:if test="${showDeviceReportedConfig}">
                 <!-- Reported Addressing -->
                 <tags:formElementContainer nameKey="deviceReportedConfig">
-                    <div class="marginBottom">
+                    <div class="stacked">
                         <c:choose>
                             <c:when test="${not empty reportedConfig}">
                                 <div class="pointStat nonStatusPointStat reportedConfig_timestamp">
@@ -196,7 +196,7 @@ jQuery(function() {
         <div class="columnContent">
             <c:if test="${configurable}">
                 <tags:formElementContainer nameKey="serviceStatus">
-                    <div class="wsnp marginBottom">
+                    <div class="wsnp stacked">
                         <c:choose>
                             <c:when test="${showStaticServiceStatus}">
                                 <c:if test="${inService}">

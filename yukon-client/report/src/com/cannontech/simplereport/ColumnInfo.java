@@ -6,12 +6,11 @@ public class ColumnInfo {
     private Integer width;
     private String align;
     private Integer columnWidthPercentage;
+    private SortType sortType;
     
-    public ColumnInfo() {
-    }
+    public ColumnInfo() {}
 
     public ColumnInfo(String columnName, Integer columnWidth, String columnAlignment) {
-        
         this.label = columnName;
         this.width = columnWidth;
         this.align = columnAlignment;
@@ -21,13 +20,14 @@ public class ColumnInfo {
         setColumnWidthPercentage(Math.round((width / (float)totalWidth) * 100));
     }
     
-    
     public String getLabel() {
         return label;
     }
+    
     public void setLabel(String columnName) {
         this.label = columnName;
     }
+    
     public String getName() {
         
         String columnId = this.label.replaceAll("/", "");
@@ -44,22 +44,37 @@ public class ColumnInfo {
 
         return returnString;
     }
+    
     public int getWidth() {
         return width;
     }
+    
     public void setWidth(int columnWidth) {
         this.width = columnWidth;
     }
+    
     public String getAlign() {
         return align;
     }
+    
     public void setAlign(String columnAlignment) {
         this.align = columnAlignment;
     }
+    
     public Integer getColumnWidthPercentage() {
         return columnWidthPercentage;
     }
+    
     public void setColumnWidthPercentage(Integer columnWidthPercentage) {
         this.columnWidthPercentage = columnWidthPercentage;
     }
+    
+    public SortType getSortType() {
+        return sortType;
+    }
+    
+    public void setSortType(SortType sortType) {
+        this.sortType = sortType;
+    }
+    
 }

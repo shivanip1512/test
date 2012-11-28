@@ -33,7 +33,7 @@
                 <%-- Name --%>
                 <td class="wsnw">
                     <input type="hidden" id="paoId_${feederId}" value="${feederId}">
-                    <span <c:if test="${viewfeeder.movedFeeder}">class="warningColor"</c:if> >
+                    <span <c:if test="${viewfeeder.movedFeeder}">class="warning"</c:if> >
                         <spring:escapeBody htmlEscape="true">${viewfeeder.feeder.ccName}</spring:escapeBody>
                     </span>
                 </td>

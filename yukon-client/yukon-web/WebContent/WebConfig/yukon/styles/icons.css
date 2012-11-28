@@ -5,9 +5,9 @@
 */
 
 /* ICON STRUCTURES */
-.icon {float:left; overflow:hidden; height: 1px; width: 16px; padding-top: 16px; margin-left: -20px; background-repeat: no-repeat; background-position: top left;}
+.icon {float:left; overflow:hidden; height: 1px; width: 16px; padding-top: 16px; background-repeat: no-repeat; background-position: top left;}
 .labeled_icon_right {width: auto; padding-right:20px; background-position: top right; background-repeat:no-repeat;}
-.icon,.large_icon,.medium_icon {overflow: hidden; float: left; position: relative; height: 1px; border: none; mainly for inputs background : transparent; -webkit-user-select: none; -khtml-user-select: none; -moz-user-select: none; -ms-user-select: none; -o-user-select: none; user-select: none; width: 16px; padding-top: 16px; background-repeat: no-repeat;}
+.icon,.large_icon,.medium_icon {overflow: hidden; float: left; position: relative; height: 1px; border: none; /*mainly for inputs*/ background : transparent; -webkit-user-select: none; -khtml-user-select: none; -moz-user-select: none; -ms-user-select: none; -o-user-select: none; user-select: none; width: 16px; padding-top: 16px; background-repeat: no-repeat;}
 .medium_icon {width: 32px; padding-top: 31px;}
 .ex_large_icon {padding-top: 64px; width: 64px;}
 .large_icon {width: 128px; padding-top: 128px;}
@@ -67,6 +67,10 @@ a.icon {margin: 0 5px 0 0;}
 .icon_small_clear {position: relative; top: 2px; right: 1px; height: 11px; margin-left: 5px; padding: 0 0 0 11px; background: transparent url(../Icons/circle_clear_small.png) top left no-repeat; background-position: 0 -11px;}
 .icon_small_clear:hover {background-position: 0 0px;}
 .icon_with_chevron {width: 30px; /*this style has a down chevron with it*/}
+.arrow-up {width: 0; height: 0; border-left: 5px solid transparent; border-right: 5px solid transparent; border-bottom: 5px solid black;}
+.arrow-down {width: 0; height: 0; border-left: 5px solid transparent; border-right: 5px solid transparent; border-top: 5px solid #999;}
+.icon_with_chevron:hover .arrow-down {border-top: 5px solid #444;}
+.icon_with_chevron .arrow-down {position: relative; top: -6px; left: 18px; /* icon width + 3px space*/}
 .inputWithIcon {margin-right: 5px;}
 .icon_pencil {background: transparent url(../Icons/pencil.png) top left no-repeat;}
 .icon_pencil:hover {background: transparent url(../Icons/pencil_over.png) top left no-repeat;}
@@ -95,11 +99,6 @@ a.icon {margin: 0 5px 0 0;}
 .next:hover {background-image: url(../Icons/resultset_next.gif);}
 .next_disabled {background-image: url(../Icons/resultset_next_disabled.gif);}
 
-.page_help,.page_warning,.page_error {font-size: 12px; padding: 5px 10px 5px 25px; border-radius: 2px; border-width: 1px; border-style: solid; margin-bottom: 10px;}
-.page_help ul,.page_warning ul,.page_error ul {list-style: disc inside none;}
-.page_help {border-color: #06C; background: #EAF1FD url('/WebConfig/yukon/Icons/information.gif') 5px 4px no-repeat;}
-.page_warning {border-color: #FBB117; background: #FFFFDA url('/WebConfig/yukon/Icons/warning.gif') 5px 4px no-repeat;}
-.page_error {border-color: #CC0000; background: #FFDDDD url('/WebConfig/yukon/Icons/error.gif') 5px 4px no-repeat;}
 .pass {background: transparent url(../Icons/tick.png) top left no-repeat}
 .phone {background-image: url(../Icons/32/phone.png);}
 .prev, .prev_disabled, .next, .next_disabled {line-height:15px;}

@@ -32,7 +32,7 @@
     
     <div class="actionArea">
         <c:if test="${showAll}">
-            <a class="showAll" id="showAll"><i:inline key=".showAll.label"/></a>
+            <a class="showAll fl" id="showAll"><i:inline key=".showAll.label"/></a>
         </c:if>
         <tags:widgetActionUpdate hide="false" method="render" nameKey="refresh" container="metadata_content"/>
     </div>

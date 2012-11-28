@@ -23,8 +23,8 @@
     <entry key="yukon.web.modules.adminSetup.config.APPLICATION.title">Application</entry>
     <entry key="yukon.web.modules.adminSetup.config.INTEGRATION.title">Integration</entry>
     <entry key="yukon.web.modules.adminSetup.config.OTHER.title">Other</entry>
-    <entry key="yukon.web.modules.adminSetup.config.legend">* - non default value</entry>
-    <entry key="yukon.web.modules.adminSetup.config.nonDefault">*</entry>
+    <entry key="yukon.web.modules.adminSetup.config.legend"><![CDATA[<b>*</b> - non default value]]></entry>
+    <entry key="yukon.web.modules.adminSetup.config.nonDefault"><![CDATA[<b>*</b>]]></entry>
     <entry key="yukon.web.modules.adminSetup.config.updated">updated:</entry>
     <entry key="yukon.web.modules.adminSetup.config.never">never</entry>
     <entry key="yukon.web.modules.adminSetup.config.updateSuccessful">Settings for {0} saved successfully.</entry>

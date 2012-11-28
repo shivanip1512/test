@@ -91,7 +91,7 @@
 </c:otherwise>
 </c:choose>
 
-<div style="text-align:right;padding-top:5px;">
+<div class="actionArea">
     <cti:button nameKey="create" type="submit" styleClass="f_blocker"/>
 </div>
 </form>

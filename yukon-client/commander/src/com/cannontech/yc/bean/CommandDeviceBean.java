@@ -699,10 +699,10 @@ public class CommandDeviceBean implements DBChangeListener
 		if( endIndex > listSize)
 			endIndex = listSize;
 
-		html += "<table width='95%' border='0' cellspacing='0' cellpadding='3'>" + LINE_SEPARATOR;
+		html += "<table class='full_width' border='0' cellspacing='0' cellpadding='3'>" + LINE_SEPARATOR;
 		html += "  <tr>" + LINE_SEPARATOR; 
 		html += "    <td>" + LINE_SEPARATOR;
-		html += "      <table width='100%' border='0' cellspacing='0' cellpadding='3' class='TableCell'>";
+		html += "      <table border='0' cellspacing='0' cellpadding='3' class='TableCell full_width'>";
 		html += "        <tr>";
 		html += "          <td colspan=2 align='right'>Entries per Page:" + LINE_SEPARATOR;
 		html += "            <input type='text' id='PageSize' style='border:1px solid #0066CC; font:11px' size='1' value='" + getPageSize() +"'>" + LINE_SEPARATOR;
@@ -746,7 +746,7 @@ public class CommandDeviceBean implements DBChangeListener
 		html += "  <tr>" + LINE_SEPARATOR;
 		html += "    <td>" + LINE_SEPARATOR;
        
-		html += "      <table width=\'100%\' class=\"resultsTable\">" + LINE_SEPARATOR;
+		html += "      <table class=\"resultsTable full_width\">" + LINE_SEPARATOR;
 		html += "        <tr>" + LINE_SEPARATOR;
 		String [] columns = getColumnStrings();
 		for (int i = 0; i < columns.length; i++)
@@ -777,7 +777,7 @@ public class CommandDeviceBean implements DBChangeListener
 		html += "  </tr>" + LINE_SEPARATOR;
 		html += "  <tr>" + LINE_SEPARATOR;
 		html += "    <td>" + LINE_SEPARATOR;
-		html += "      <table width='100%' border='0' cellspacing='0' cellpadding='3' class='TableCell'>" + LINE_SEPARATOR;
+		html += "      <table border='0' cellspacing='0' cellpadding='3' class='TableCell full_width'>" + LINE_SEPARATOR;
 		html += "        <tr>" + LINE_SEPARATOR;
 		html += "          <td>" + (startIndex+1) + "-" + endIndex + " of " + listSize + " | ";
         
