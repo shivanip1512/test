@@ -89,7 +89,6 @@ public class JnlpController extends JnlpControllerBase {
         }
 
         addExtension(request, resourcesElem, "bc");
-        addExtension(request, resourcesElem, "mail");
         addExtension(request, resourcesElem, "client_libs");
 
         // add some properties to ease log in

@@ -48,17 +48,6 @@
           requires adding a bean in this section. -->
 
     <bean class="com.cannontech.web.jws.JnlpExtensionController">
-        <property name="path" value="mail.jnlp"/>
-        <property name="title" value="Mail Libraries"/>
-        <property name="description" value="Mail libraries"/>
-        <property name="jars">
-            <set>
-                <value>mail.jar</value>
-            </set>
-        </property>
-    </bean>
-
-    <bean class="com.cannontech.web.jws.JnlpExtensionController">
         <property name="path" value="bc.jnlp"/>
         <property name="title" value="Bouncy Castle Libraries"/>
         <property name="description" value="Bouncy Castle libraries"/>
@@ -114,7 +103,7 @@
                 <value>asm-attrs.jar</value>
                 <value>antlr-2.7.6rc1.jar</value>
                 <value>lucene-core-3.4.0.jar</value>
-                <value>log4j-1.2.14.jar</value>
+                <value>log4j-1.2.17.jar</value>
                 <value>guava-13.0.1.jar</value>
                 <value>rwav.jar</value>
                 <value>SqlServer.jar</value>
@@ -157,6 +146,7 @@
                 <value>saaj.jar</value>
                 <value>wsdl4j.jar</value>
                 <value>servlet-api.jar</value>
+                <value>mail.jar</value>
                 <value>exificient.jar</value>
             </set>
         </property>

@@ -228,7 +228,6 @@
 				<exclude name="activation.jar"/>
 				<exclude name="bcpkix-jdk15on-147.jar"/>
 				<exclude name="bcprov-jdk15on-147.jar"/>
-				<exclude name="mail.jar"/>
 			</fileset>
 		</signjar>
        	    

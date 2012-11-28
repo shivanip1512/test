@@ -77,7 +77,6 @@ public class LoginFilter implements Filter {
                          "/**/*.html",
                          "/jws/*.jar",
                          "/jws/bc.jnlp",
-                         "/jws/mail.jnlp",
                          "/jws/client_libs.jnlp",
                          "/remote/**",
                          "/favicon.ico");
