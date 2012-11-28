@@ -46,6 +46,7 @@
         <include name="ecs-1.4.2.jar"/>
         <include name="exificient.jar"/>
         <include name="geronimo-j2ee-management_1.1_spec-1.0.1.jar"/>
+        <include name="geronimo-jms_1.1_spec-1.1.1.jar"/>
         <include name="guava-13.0.1.jar"/>
         <include name="i18n-en_US.jar"/>
         <include name="jasypt-1.9.0.jar"/>
@@ -75,6 +76,8 @@
         <include name="quartz-all-1.6.0.jar"/>
         <include name="rwav.jar"/>
         <include name="saaj.jar"/>
+        <include name="slf4j-api-1.6.6.jar"/>
+        <include name="slf4j-log4j12-1.7.2.jar"/>
         <include name="spring-ws-1.5.6-all.jar"/>
         <include name="org.springframework.*-3.1.3.RELEASE.jar"/>
         <include name="SqlServer.jar"/>
