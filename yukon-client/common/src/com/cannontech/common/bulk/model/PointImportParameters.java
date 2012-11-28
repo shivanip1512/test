@@ -6,9 +6,9 @@ import com.cannontech.common.pao.ImportPaoType;
 import com.cannontech.common.point.AccumulatorType;
 import com.cannontech.common.util.PositiveDouble;
 import com.cannontech.common.util.PositiveInteger;
-import com.cannontech.database.data.point.ControlType;
 import com.cannontech.database.data.point.PointArchiveType;
 import com.cannontech.database.data.point.StateControlType;
+import com.cannontech.database.data.point.StatusControlType;
 
 public enum PointImportParameters {
     ACTION("ACTION", ImportAction.class, "yukon.web.modules.amr.pointImport.column.action", "yukon.web.modules.amr.pointImport.validValues.action"),
@@ -35,7 +35,7 @@ public enum PointImportParameters {
     MULTIPLIER("MULTIPLIER", PositiveDouble.class, "yukon.web.modules.amr.pointImport.column.multiplier"),
     DATA_OFFSET("DATA OFFSET", Double.class, "yukon.web.modules.amr.pointImport.column.dataOffset"),
     METER_DIALS("METER DIALS", PositiveInteger.class, "yukon.web.modules.amr.pointImport.column.meterDials"),
-    CONTROL_TYPE("CONTROL TYPE", ControlType.class, "yukon.web.modules.amr.pointImport.column.controlType"),
+    CONTROL_TYPE("CONTROL TYPE", StatusControlType.class, "yukon.web.modules.amr.pointImport.column.controlType"),
     ARCHIVE_DATA("ARCHIVE DATA", StrictBoolean.class, "yukon.web.modules.amr.pointImport.column.archiveData"),
     CONTROL_INHIBIT("CONTROL INHIBIT", StrictBoolean.class, "yukon.web.modules.amr.pointImport.column.controlInhibit"),
     STATE_GROUP("STATE GROUP", String.class, "yukon.web.modules.amr.pointImport.column.stateGroup", "yukon.web.modules.amr.pointImport.validValues.stateGroup"),

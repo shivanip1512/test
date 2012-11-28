@@ -7,13 +7,16 @@ package com.cannontech.dbeditor.editor.point;
 import java.util.List;
 import java.util.Vector;
 
+import javax.swing.JComboBox;
+
 import com.cannontech.common.gui.util.TextFieldDocument;
 import com.cannontech.common.util.CtiUtilities;
 import com.cannontech.core.dao.DaoFactory;
 import com.cannontech.database.data.lite.LitePoint;
+import com.cannontech.database.data.lite.LiteState;
 import com.cannontech.database.data.lite.LiteStateGroup;
-import com.cannontech.database.data.point.ControlType;
 import com.cannontech.database.data.point.PointTypes;
+import com.cannontech.database.data.point.StatusControlType;
 import com.cannontech.yukon.IDatabaseCache;
 
 public class PointStatusPhysicalSettingsEditorPanel extends com.cannontech.common.gui.util.DataInputPanel implements com.klg.jclass.util.value.JCValueListener, java.awt.event.ActionListener, java.awt.event.ItemListener, javax.swing.event.CaretListener {
@@ -30,7 +33,7 @@ public class PointStatusPhysicalSettingsEditorPanel extends com.cannontech.commo
 	private javax.swing.JLabel ivjControlPointOffsetLabel = null;
 	private com.klg.jclass.field.JCSpinField ivjControlPointOffsetSpinner = null;
 	private javax.swing.JPanel ivjControlSettingsPanel = null;
-	private javax.swing.JComboBox ivjControlTypeComboBox = null;
+	private javax.swing.JComboBox<String> ivjControlTypeComboBox = null;
 	private javax.swing.JLabel ivjControlTypeLabel = null;
 	private javax.swing.JLabel ivjJLabelControlOne = null;
 	private javax.swing.JLabel ivjJLabelControlZero = null;
@@ -56,6 +59,7 @@ public PointStatusPhysicalSettingsEditorPanel() {
  * @param e java.awt.event.ActionEvent
  */
 /* WARNING: THIS METHOD WILL BE REGENERATED. */
+@Override
 public void actionPerformed(java.awt.event.ActionEvent e) {
 	// user code begin {1}
 	// user code end
@@ -71,6 +75,7 @@ public void actionPerformed(java.awt.event.ActionEvent e) {
  * @param e javax.swing.event.CaretEvent
  */
 /* WARNING: THIS METHOD WILL BE REGENERATED. */
+@Override
 public void caretUpdate(javax.swing.event.CaretEvent e) {
 	// user code begin {1}
 	// user code end
@@ -201,7 +206,7 @@ public void controlTypeComboBox_ActionPerformed(java.awt.event.ActionEvent actio
 {
 	Object controlType = getControlTypeComboBox().getSelectedItem();
 
-	boolean value = ! controlType.toString().equalsIgnoreCase(ControlType.NONE.getControlName());
+	boolean value = ! controlType.toString().equalsIgnoreCase(StatusControlType.NONE.getControlName());
 
 	getControlInhibitCheckBox().setEnabled(value);
 	
@@ -514,10 +519,10 @@ private javax.swing.JPanel getControlSettingsPanel() {
  * @return javax.swing.JComboBox
  */
 /* WARNING: THIS METHOD WILL BE REGENERATED. */
-private javax.swing.JComboBox getControlTypeComboBox() {
+private JComboBox<String> getControlTypeComboBox() {
 	if (ivjControlTypeComboBox == null) {
 		try {
-			ivjControlTypeComboBox = new javax.swing.JComboBox();
+			ivjControlTypeComboBox = new JComboBox<String>();
 			ivjControlTypeComboBox.setName("ControlTypeComboBox");
 			ivjControlTypeComboBox.setPreferredSize(new java.awt.Dimension(85, 24));
 			ivjControlTypeComboBox.setFont(new java.awt.Font("dialog", 0, 14));
@@ -525,12 +530,12 @@ private javax.swing.JComboBox getControlTypeComboBox() {
 			// user code begin {1}
 
 			//Load default possibilites into control type combo box
-			ivjControlTypeComboBox.addItem(ControlType.NONE.getControlName());
-			ivjControlTypeComboBox.addItem(ControlType.LATCH.getControlName());
-			ivjControlTypeComboBox.addItem(ControlType.NORMAL.getControlName());
-			ivjControlTypeComboBox.addItem(ControlType.PSEUDO.getControlName());
-			ivjControlTypeComboBox.addItem(ControlType.SBOLATCH.getControlName());
-			ivjControlTypeComboBox.addItem(ControlType.SBOPULSE.getControlName());
+			ivjControlTypeComboBox.addItem(StatusControlType.NONE.getControlName());
+			ivjControlTypeComboBox.addItem(StatusControlType.LATCH.getControlName());
+			ivjControlTypeComboBox.addItem(StatusControlType.NORMAL.getControlName());
+			ivjControlTypeComboBox.addItem(StatusControlType.PSEUDO.getControlName());
+			ivjControlTypeComboBox.addItem(StatusControlType.SBOLATCH.getControlName());
+			ivjControlTypeComboBox.addItem(StatusControlType.SBOPULSE.getControlName());
 			
 			// user code end
 		} catch (java.lang.Throwable ivjExc) {
@@ -1034,6 +1039,7 @@ private javax.swing.JLabel getUsedPointOffsetLabel() {
  * @return java.lang.Object
  * @param val java.lang.Object
  */
+@Override
 public Object getValue(Object val) {
 	//Assume that commonObject is an instance of com.cannontech.database.data.point.StatusPoint
 	com.cannontech.database.data.point.StatusPoint point = (com.cannontech.database.data.point.StatusPoint) val;
@@ -1210,6 +1216,7 @@ private boolean isPointOffsetInUse(int pointOffset) {
 
 }
 
+@Override
 public boolean isInputValid() {
     if (getPhysicalPointOffsetCheckBox().isSelected()) {
         Object value = this.getPointOffsetSpinner().getValue();
@@ -1231,6 +1238,7 @@ public boolean isInputValid() {
  * @param e java.awt.event.ItemEvent
  */
 /* WARNING: THIS METHOD WILL BE REGENERATED. */
+@Override
 public void itemStateChanged(java.awt.event.ItemEvent e) {
 	// user code begin {1}
 	// user code end
@@ -1247,7 +1255,7 @@ public static void main(java.lang.String[] args) {
 	try {
 		java.awt.Frame frame;
 		try {
-			Class aFrameClass = Class.forName("com.ibm.uvm.abt.edit.TestFrame");
+			Class<?> aFrameClass = Class.forName("com.ibm.uvm.abt.edit.TestFrame");
 			frame = (java.awt.Frame)aFrameClass.newInstance();
 		} catch (java.lang.Throwable ivjExc) {
 			frame = new java.awt.Frame();
@@ -1266,6 +1274,7 @@ public static void main(java.lang.String[] args) {
  * This method was created in VisualAge.
  * @param val java.lang.Object
  */
+@Override
 public void setValue(Object val) 
 {	
 	//Assume defaultObject is an instance of com.cannontech.database.data.point.StatusPoint
@@ -1329,19 +1338,18 @@ public void setValue(Object val)
 	cache = com.cannontech.database.cache.DefaultDatabaseCache.getInstance();
 	synchronized(cache)
 	{
-		LiteStateGroup stateGroup = (LiteStateGroup)
-			cache.getAllStateGroupMap().get( new Integer(stateGroupID) );
+		LiteStateGroup stateGroup = cache.getAllStateGroupMap().get( new Integer(stateGroupID) );
 
-		java.util.List statesList = stateGroup.getStatesList();
+		List<LiteState> statesList = stateGroup.getStatesList();
 		
 		//Select the appropriate rawstate
 		for( int y = 0; y < statesList.size(); y++ )
 		{
-			if( ((com.cannontech.database.data.lite.LiteState)statesList.get(y)).getStateRawState() == 0 )
-				getJLabelControlZero().setText( ((com.cannontech.database.data.lite.LiteState)statesList.get(y)).getStateText() );
+			if( statesList.get(y).getStateRawState() == 0 )
+				getJLabelControlZero().setText( statesList.get(y).getStateText() );
 				
-			if( ((com.cannontech.database.data.lite.LiteState)statesList.get(y)).getStateRawState() == 1 )
-				getJLabelControlOne().setText( ((com.cannontech.database.data.lite.LiteState)statesList.get(y)).getStateText() );
+			if( statesList.get(y).getStateRawState() == 1 )
+				getJLabelControlOne().setText( statesList.get(y).getStateText() );
 		}
 	}
 
@@ -1357,6 +1365,7 @@ public void setValue(Object val)
  * Method to handle events for the JCValueListener interface.
  * @param arg1 com.klg.jclass.util.value.JCValueEvent
  */
+@Override
 public void valueChanged(com.klg.jclass.util.value.JCValueEvent arg1) 
 {
 	fireInputUpdate();
@@ -1365,6 +1374,7 @@ public void valueChanged(com.klg.jclass.util.value.JCValueEvent arg1)
  * Method to handle events for the JCValueListener interface.
  * @param arg1 com.klg.jclass.util.value.JCValueEvent
  */
+@Override
 public void valueChanging(com.klg.jclass.util.value.JCValueEvent arg1) 
 {
 }

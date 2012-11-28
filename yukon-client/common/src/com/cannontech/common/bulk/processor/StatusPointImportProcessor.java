@@ -1,5 +1,7 @@
 package com.cannontech.common.bulk.processor;
 
+import static com.cannontech.common.bulk.model.PointImportParameters.*;
+
 import com.cannontech.common.bulk.model.StaleDataUpdateStyle;
 import com.cannontech.common.csvImport.ImportFileFormat;
 import com.cannontech.common.csvImport.ImportRow;
@@ -12,10 +14,8 @@ import com.cannontech.common.point.StatusPointBuilder;
 import com.cannontech.core.dao.DBPersistentDao;
 import com.cannontech.core.dao.PaoDao;
 import com.cannontech.core.dao.PointDao;
-import com.cannontech.database.data.point.ControlType;
 import com.cannontech.database.data.point.StateControlType;
-
-import static com.cannontech.common.bulk.model.PointImportParameters.*;
+import com.cannontech.database.data.point.StatusControlType;
 
 public class StatusPointImportProcessor extends PointImportProcessor {
     
@@ -26,6 +26,7 @@ public class StatusPointImportProcessor extends PointImportProcessor {
         super(format, messageSourceAccessor, paoDao, pointDao, dbPersistentDao, pointBuilderFactory);
     }
     
+    @Override
     protected void createPoint(ImportRow row) {
         String deviceName = row.getValue(DEVICE_NAME.NAME);
         PaoType paoType = ImportPaoType.valueOf(row.getValue(DEVICE_TYPE.NAME));
@@ -56,9 +57,9 @@ public class StatusPointImportProcessor extends PointImportProcessor {
             builder.setStaleDataUpdate(dataUpdateStyle.getIndex());
         }
         
-        ControlType controlType = null;
+        StatusControlType controlType = null;
         if(row.hasValue(CONTROL_TYPE.NAME)) {
-            controlType = ControlType.valueOf(row.getValue(CONTROL_TYPE.NAME));
+            controlType = StatusControlType.valueOf(row.getValue(CONTROL_TYPE.NAME));
             builder.setControlType(controlType);
         }
         

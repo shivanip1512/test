@@ -12,11 +12,11 @@ import com.cannontech.database.data.device.DeviceTypesFuncs;
 import com.cannontech.database.data.lite.LitePoint;
 import com.cannontech.database.data.lite.LiteYukonPAObject;
 import com.cannontech.database.data.multi.SmartMultiDBPersistent;
-import com.cannontech.database.data.point.ControlType;
 import com.cannontech.database.data.point.PointBase;
 import com.cannontech.database.data.point.PointFactory;
 import com.cannontech.database.data.point.PointOffsets;
 import com.cannontech.database.data.point.PointTypes;
+import com.cannontech.database.data.point.StatusControlType;
 import com.cannontech.database.data.point.StatusPoint;
 import com.cannontech.database.data.point.UnitOfMeasure;
 import com.cannontech.database.db.state.StateGroupUtils;
@@ -45,7 +45,8 @@ public class LoadGroup_ControlPointCreate extends PointCreate
 	/**
 	 * @see com.cannontech.datagenerator.point.PointCreate#create()
 	 */
-	public boolean create() {
+	@Override
+    public boolean create() {
 		//Points are going to be added to every load group.
 		CTILogger.info("Starting Load Group Point creation process...");
 
@@ -128,7 +129,7 @@ public class LoadGroup_ControlPointCreate extends PointCreate
 						new Integer(0) );
 				pointBase.getPoint().setStateGroupID(new Integer(com.cannontech.database.db.state.StateGroupUtils.STATEGROUP_TWO_STATE_STATUS));
 				((StatusPoint)pointBase).getPointStatusControl().setControlOffset(1);
-				((StatusPoint)pointBase).getPointStatusControl().setControlType(ControlType.NORMAL.getControlName());
+				((StatusPoint)pointBase).getPointStatusControl().setControlType(StatusControlType.NORMAL.getControlName());
 				multi.addDBPersistent(pointBase);
 				CTILogger.info("Adding CONTROL_STATUS PointId " + pointID + " to Device: " + litePaobject.getPaoName());
 	
@@ -168,7 +169,8 @@ public class LoadGroup_ControlPointCreate extends PointCreate
 	 * @param _type int
 	 * @return boolean
 	 */
-	public boolean isDeviceValid( LiteYukonPAObject litePaobject_ )
+	@Override
+    public boolean isDeviceValid( LiteYukonPAObject litePaobject_ )
 	{
 		//All Groups except Macro groups //
 		return
@@ -183,7 +185,8 @@ public class LoadGroup_ControlPointCreate extends PointCreate
 	 * @param pointType_ int
 	 * @return boolean
 	 */
-	public boolean isPointCreated( com.cannontech.database.data.lite.LitePoint lp)
+	@Override
+    public boolean isPointCreated( com.cannontech.database.data.lite.LitePoint lp)
 	{
 		if( lp.getPointOffset() == PointOffsets.PT_OFFSET_DAILY_HISTORY && lp.getPointType() == PointTypes.ANALOG_POINT)
 			createPointHashtable.get(new Integer(lp.getPaobjectID())).dailyhistory = false;

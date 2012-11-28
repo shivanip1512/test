@@ -22,12 +22,9 @@ import java.util.HashMap;
 import java.util.List;
 
 import com.cannontech.clientutils.CTILogger;
-
 import com.cannontech.core.dao.DaoFactory;
 import com.cannontech.database.SqlUtils;
 import com.cannontech.database.data.lite.LiteAlarmCategory;
-import com.cannontech.database.data.point.CalculatedPoint;
-import com.cannontech.database.data.point.ControlType;
 import com.cannontech.database.db.point.PointAlarming;
 import com.cannontech.database.db.point.PointLimit;
 import com.cannontech.database.db.point.calculation.CalcComponent;
@@ -446,9 +443,9 @@ public class PointImportUtility
 										
 					for( int j = 0; j < liteAlarms.size(); j++ )
 					{
-						if(((com.cannontech.database.data.lite.LiteAlarmCategory)liteAlarms.get(j)).getCategoryName().compareTo(alarmCategory) == 0)
+						if(liteAlarms.get(j).getCategoryName().compareTo(alarmCategory) == 0)
 						{
-							alarmCategoryID = ((com.cannontech.database.data.lite.LiteAlarmCategory)liteAlarms.get(j)).getAlarmStateID();
+							alarmCategoryID = liteAlarms.get(j).getAlarmStateID();
 							break;
 						}
 					}
@@ -861,9 +858,9 @@ public class PointImportUtility
                                         
                     for( int j = 0; j < liteAlarms.size(); j++ )
                     {
-                        if(((com.cannontech.database.data.lite.LiteAlarmCategory)liteAlarms.get(j)).getCategoryName().compareTo(alarmCategory) == 0)
+                        if(liteAlarms.get(j).getCategoryName().compareTo(alarmCategory) == 0)
                         {
-                            alarmCategoryID = ((com.cannontech.database.data.lite.LiteAlarmCategory)liteAlarms.get(j)).getAlarmStateID();
+                            alarmCategoryID = liteAlarms.get(j).getAlarmStateID();
                             break;
                         }
                     }
@@ -1147,25 +1144,25 @@ public class PointImportUtility
             tokenCounter++;
             if(emptyField(tokenHolder))
             {
-                ((CalculatedPoint)calcPoint).getCalcBase().setPeriodicRate(new Integer(1));
+                calcPoint.getCalcBase().setPeriodicRate(new Integer(1));
             }
-            ((CalculatedPoint)calcPoint).getCalcBase().setPeriodicRate(new Integer(tokenHolder));
+            calcPoint.getCalcBase().setPeriodicRate(new Integer(tokenHolder));
             
             tokenHolder = tokenizer.nextElement().toString();
             tokenCounter++;
             if(emptyField(tokenHolder))
             {
-                ((CalculatedPoint)calcPoint).getCalcBase().setCalculateQuality(new Character('c'));
+                calcPoint.getCalcBase().setCalculateQuality(new Character('c'));
             }
-            ((CalculatedPoint)calcPoint).getCalcBase().setCalculateQuality(tokenHolder);
+            calcPoint.getCalcBase().setCalculateQuality(tokenHolder);
 
             tokenHolder = tokenizer.nextElement().toString();
             tokenCounter++;
             if(emptyField(tokenHolder))
             {
-                ((CalculatedPoint)calcPoint).getCalcBase().setUpdateType(null);
+                calcPoint.getCalcBase().setUpdateType(null);
             }
-            ((CalculatedPoint)calcPoint).getCalcBase().setUpdateType(tokenHolder);
+            calcPoint.getCalcBase().setUpdateType(tokenHolder);
 
             //this is a little out of place...one last pointunit field that needs to be grabbed
             String decimalPlaces = tokenizer.nextElement().toString();
@@ -1278,9 +1275,9 @@ public class PointImportUtility
                                         
                     for( int j = 0; j < liteAlarms.size(); j++ )
                     {
-                        if(((com.cannontech.database.data.lite.LiteAlarmCategory)liteAlarms.get(j)).getCategoryName().compareTo(alarmCategory) == 0)
+                        if(liteAlarms.get(j).getCategoryName().compareTo(alarmCategory) == 0)
                         {
-                            alarmCategoryID = ((com.cannontech.database.data.lite.LiteAlarmCategory)liteAlarms.get(j)).getAlarmStateID();
+                            alarmCategoryID = liteAlarms.get(j).getAlarmStateID();
                             break;
                         }
                     }
@@ -1575,9 +1572,9 @@ public class PointImportUtility
 					{
 						alarmCategoryID = com.cannontech.database.db.point.PointAlarming.NONE_NOTIFICATIONID;
 						
-						if(((LiteAlarmCategory)liteAlarms.get(j)).getCategoryName().compareTo(alarmCategory) == 0)
+						if(liteAlarms.get(j).getCategoryName().compareTo(alarmCategory) == 0)
 						{
-							alarmCategoryID = ((LiteAlarmCategory)liteAlarms.get(j)).getAlarmStateID();
+							alarmCategoryID = liteAlarms.get(j).getAlarmStateID();
 							break;
 						}
 					}
@@ -1652,10 +1649,9 @@ public class PointImportUtility
 		//write all the collected data to the SQL database
 		try
 		{
-		  multi = (com.cannontech.database.data.multi.MultiDBPersistent)
-			com.cannontech.database.Transaction.createTransaction(
-				   com.cannontech.database.Transaction.INSERT, 
-				   multi).execute();
+		  multi = com.cannontech.database.Transaction.createTransaction(
+        	   com.cannontech.database.Transaction.INSERT, 
+        	   multi).execute();
 
 			return true;
 		}

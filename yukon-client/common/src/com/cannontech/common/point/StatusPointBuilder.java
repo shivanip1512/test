@@ -7,11 +7,11 @@ import org.apache.log4j.Logger;
 import com.cannontech.clientutils.YukonLogManager;
 import com.cannontech.common.point.alarm.dao.PointPropertyValueDao;
 import com.cannontech.common.util.CtiUtilities;
-import com.cannontech.database.data.point.ControlType;
 import com.cannontech.database.data.point.PointArchiveInterval;
 import com.cannontech.database.data.point.PointArchiveType;
 import com.cannontech.database.data.point.PointFactory;
 import com.cannontech.database.data.point.StateControlType;
+import com.cannontech.database.data.point.StatusControlType;
 import com.cannontech.database.data.point.StatusPoint;
 import com.cannontech.database.db.state.State;
 import com.cannontech.database.db.state.StateGroup;
@@ -21,7 +21,7 @@ public class StatusPointBuilder extends PointBuilder {
     private int pointOffset = 0; //no physical point offset unless specified
     private String stateGroupName = "TwoStateStatus";
     private String initialStateName = "Open";
-    private ControlType controlType = ControlType.NONE;
+    private StatusControlType controlType = StatusControlType.NONE;
     private boolean isArchive = false;
     private boolean isControlInhibit = false;
     
@@ -137,7 +137,7 @@ public class StatusPointBuilder extends PointBuilder {
         this.controlOffset = controlOffset;
     }
     
-    public void setControlType(ControlType controlType) {
+    public void setControlType(StatusControlType controlType) {
         if(controlType == null) throw new IllegalArgumentException("Control Type cannot be null.");
         this.controlType = controlType;
     }

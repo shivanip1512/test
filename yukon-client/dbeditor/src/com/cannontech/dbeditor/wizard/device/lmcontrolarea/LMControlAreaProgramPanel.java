@@ -24,11 +24,11 @@ import com.cannontech.core.dao.PaoDao;
 import com.cannontech.database.data.lite.LiteBase;
 import com.cannontech.database.data.lite.LiteYukonPAObject;
 import com.cannontech.database.data.multi.SmartMultiDBPersistent;
-import com.cannontech.database.data.point.ControlType;
 import com.cannontech.database.data.point.PointArchiveInterval;
 import com.cannontech.database.data.point.PointArchiveType;
 import com.cannontech.database.data.point.PointBase;
 import com.cannontech.database.data.point.PointTypes;
+import com.cannontech.database.data.point.StatusControlType;
 import com.cannontech.database.db.device.lm.LMControlAreaProgram;
 import com.cannontech.database.db.device.lm.LMProgram;
 import com.cannontech.database.db.point.PointUnit;
@@ -59,7 +59,8 @@ public class LMControlAreaProgramPanel extends com.cannontech.common.gui.util.Da
     private Integer myDeviceID;
 
 class IvjEventHandler implements java.awt.event.ActionListener {
-		public void actionPerformed(java.awt.event.ActionEvent e) {
+		@Override
+        public void actionPerformed(java.awt.event.ActionEvent e) {
 			if (e.getSource() == LMControlAreaProgramPanel.this.getJButtonAdd()) 
 				connEtoC1(e);
 			if (e.getSource() == LMControlAreaProgramPanel.this.getJButtonRemove()) 
@@ -79,6 +80,7 @@ public LMControlAreaProgramPanel() {
  * @param e java.awt.event.ActionEvent
  */
 /* WARNING: THIS METHOD WILL BE REGENERATED. */
+@Override
 public void actionPerformed(java.awt.event.ActionEvent e) {
 	// user code begin {1}
 	// user code end
@@ -563,7 +565,8 @@ private javax.swing.JTable getJTableProgram() {
 			javax.swing.JTextField field = new javax.swing.JTextField();
 			field.addKeyListener(new java.awt.event.KeyAdapter() 
 			{
-				public void keyTyped(java.awt.event.KeyEvent e) 
+				@Override
+                public void keyTyped(java.awt.event.KeyEvent e) 
 				{
 					fireInputUpdate();
 				};
@@ -644,12 +647,14 @@ private Integer getNextStopOrder()
  * This method was created in VisualAge.
  * @return java.awt.Dimension
  */
+@Override
 public Dimension getPreferredSize() {
 	return null;
 }
 /**
  * getValue method comment.
  */
+@Override
 public Object getValue(Object o)
 {
 	if( getJTableProgram().isEditing() )
@@ -684,7 +689,7 @@ public Object getValue(Object o)
                                                            StateGroupUtils.STATEGROUP_TWO_STATE_ACTIVE,
                                                            StateGroupUtils.DEFAULT_STATE,
                                                            PointUnit.DEFAULT_DECIMAL_PLACES,
-                                                           ControlType.NONE,
+                                                           StatusControlType.NONE,
                                                            PointArchiveType.NONE,
                                                            PointArchiveInterval.ZERO);
 
@@ -722,7 +727,8 @@ private void initConnections() throws java.lang.Exception {
 	
 	final AbstractAction searchAction = new AbstractAction()
 	{
-		public void actionPerformed(java.awt.event.ActionEvent e)
+		@Override
+        public void actionPerformed(java.awt.event.ActionEvent e)
 		{
 			if( !dialog.isShowing() )
 			{
@@ -780,7 +786,8 @@ private void initConnections() throws java.lang.Exception {
 	
 	final AbstractAction searchActionComboBox = new AbstractAction()
 	{
-		public void actionPerformed(java.awt.event.ActionEvent e)
+		@Override
+        public void actionPerformed(java.awt.event.ActionEvent e)
 		{
 			if( !dialog.isShowing() )
 			{
@@ -907,6 +914,7 @@ private void initialize() {
  * This method was created in VisualAge.
  * @return boolean
  */
+@Override
 public boolean isInputValid() {
     // check to see if any of our programs are already assigned to another
     boolean ret = true;
@@ -1074,7 +1082,8 @@ public static void main(java.lang.String[] args) {
 		frame.setContentPane(aLMControlAreaProgramPanel);
 		frame.setSize(aLMControlAreaProgramPanel.getSize());
 		frame.addWindowListener(new java.awt.event.WindowAdapter() {
-			public void windowClosing(java.awt.event.WindowEvent e) {
+			@Override
+            public void windowClosing(java.awt.event.WindowEvent e) {
 				System.exit(0);
 			};
 		});
@@ -1090,6 +1099,7 @@ public static void main(java.lang.String[] args) {
 /**
  * setValue method comment.
  */
+@Override
 public void setValue(Object o) 
 {
 	if( o == null )
@@ -1119,11 +1129,13 @@ public void setValue(Object o)
 	//getJCSpinFieldStopOrder().setValue( new Integer(getJTableModel().getRowCount()+1) );
 }
 
+@Override
 public void setFirstFocus() 
 {
     // Make sure that when its time to display this panel, the focus starts in the top component
     javax.swing.SwingUtilities.invokeLater( new Runnable() 
         { 
+        @Override
         public void run() 
             { 
             getJComboBoxLMProgram().requestFocus(); 

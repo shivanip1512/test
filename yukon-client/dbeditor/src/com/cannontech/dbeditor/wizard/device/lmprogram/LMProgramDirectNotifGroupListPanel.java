@@ -6,11 +6,11 @@ import com.cannontech.common.pao.service.PointCreationService;
 import com.cannontech.core.dao.PaoDao;
 import com.cannontech.database.data.lite.LiteNotificationGroup;
 import com.cannontech.database.data.multi.SmartMultiDBPersistent;
-import com.cannontech.database.data.point.ControlType;
 import com.cannontech.database.data.point.PointArchiveInterval;
 import com.cannontech.database.data.point.PointArchiveType;
 import com.cannontech.database.data.point.PointBase;
 import com.cannontech.database.data.point.PointTypes;
+import com.cannontech.database.data.point.StatusControlType;
 import com.cannontech.database.db.device.lm.LMProgramDirect;
 import com.cannontech.database.db.point.PointUnit;
 import com.cannontech.database.db.state.StateGroupUtils;
@@ -36,7 +36,8 @@ public class LMProgramDirectNotifGroupListPanel extends com.cannontech.common.gu
 	
 	class IvjEventHandler implements javax.swing.event.CaretListener, java.awt.event.ActionListener 
 	{
-			public void caretUpdate(javax.swing.event.CaretEvent e) 
+			@Override
+            public void caretUpdate(javax.swing.event.CaretEvent e) 
 			{
 				if (e.getSource() == getJTextFieldNotifyActiveOffset())
 					fireInputUpdate();
@@ -44,7 +45,8 @@ public class LMProgramDirectNotifGroupListPanel extends com.cannontech.common.gu
 					fireInputUpdate();
 			};
 			
-			public void actionPerformed(java.awt.event.ActionEvent e) 
+			@Override
+            public void actionPerformed(java.awt.event.ActionEvent e) 
 			{ 
 				if (e.getSource() == getJCheckBoxEnableStart()) 
 					handleOffsetEnabling(getJCheckBoxEnableStart().isSelected(), getJCheckBoxEnableStop().isSelected());
@@ -69,6 +71,7 @@ public LMProgramDirectNotifGroupListPanel() {
  * @param newEvent java.util.EventObject
  */
 /* WARNING: THIS METHOD WILL BE REGENERATED. */
+@Override
 public void addButtonAction_actionPerformed(java.util.EventObject newEvent) {
 	// user code begin {1}
 	// user code end
@@ -142,6 +145,7 @@ private com.cannontech.common.gui.util.AddRemovePanel getAddRemovePanel() {
 /**
  * getValue method comment.
  */
+@Override
 @SuppressWarnings("unchecked")
 public Object getValue(Object o) 
 {
@@ -212,7 +216,7 @@ public Object getValue(Object o)
                                                    StateGroupUtils.STATEGROUP_TWO_STATE_ACTIVE,
                                                    StateGroupUtils.DEFAULT_STATE,
                                                    PointUnit.DEFAULT_DECIMAL_PLACES,
-                                                   ControlType.NONE,
+                                                   StatusControlType.NONE,
                                                    PointArchiveType.NONE,
                                                    PointArchiveInterval.ZERO);
 
@@ -373,6 +377,7 @@ private void initializeAddPanel()
  * @param newEvent java.util.EventObject
  */
 /* WARNING: THIS METHOD WILL BE REGENERATED. */
+@Override
 public void leftListListSelection_valueChanged(java.util.EventObject newEvent) {
 	// user code begin {1}
 	// user code end
@@ -391,7 +396,8 @@ public static void main(java.lang.String[] args) {
 		frame.setContentPane(aLMProgramBasePanel);
 		frame.setSize(aLMProgramBasePanel.getSize());
 		frame.addWindowListener(new java.awt.event.WindowAdapter() {
-			public void windowClosing(java.awt.event.WindowEvent e) {
+			@Override
+            public void windowClosing(java.awt.event.WindowEvent e) {
 				System.exit(0);
 			};
 		});
@@ -409,6 +415,7 @@ public static void main(java.lang.String[] args) {
  * @param newEvent java.util.EventObject
  */
 /* WARNING: THIS METHOD WILL BE REGENERATED. */
+@Override
 public void removeButtonAction_actionPerformed(java.util.EventObject newEvent) {
 	// user code begin {1}
 	// user code end
@@ -422,6 +429,7 @@ public void removeButtonAction_actionPerformed(java.util.EventObject newEvent) {
  * @param newEvent java.util.EventObject
  */
 /* WARNING: THIS METHOD WILL BE REGENERATED. */
+@Override
 public void rightListListSelection_valueChanged(java.util.EventObject newEvent) {
 	// user code begin {1}
 	// user code end
@@ -433,6 +441,7 @@ public void rightListListSelection_valueChanged(java.util.EventObject newEvent) 
  * @param newEvent java.util.EventObject
  */
 /* WARNING: THIS METHOD WILL BE REGENERATED. */
+@Override
 public void rightListMouse_mouseClicked(java.util.EventObject newEvent) {
 	// user code begin {1}
 	// user code end
@@ -444,6 +453,7 @@ public void rightListMouse_mouseClicked(java.util.EventObject newEvent) {
  * @param newEvent java.util.EventObject
  */
 /* WARNING: THIS METHOD WILL BE REGENERATED. */
+@Override
 public void rightListMouse_mouseEntered(java.util.EventObject newEvent) {
 	// user code begin {1}
 	// user code end
@@ -455,6 +465,7 @@ public void rightListMouse_mouseEntered(java.util.EventObject newEvent) {
  * @param newEvent java.util.EventObject
  */
 /* WARNING: THIS METHOD WILL BE REGENERATED. */
+@Override
 public void rightListMouse_mouseExited(java.util.EventObject newEvent) {
 	// user code begin {1}
 	// user code end
@@ -466,6 +477,7 @@ public void rightListMouse_mouseExited(java.util.EventObject newEvent) {
  * @param newEvent java.util.EventObject
  */
 /* WARNING: THIS METHOD WILL BE REGENERATED. */
+@Override
 public void rightListMouse_mousePressed(java.util.EventObject newEvent) {
 	// user code begin {1}
 	// user code end
@@ -477,6 +489,7 @@ public void rightListMouse_mousePressed(java.util.EventObject newEvent) {
  * @param newEvent java.util.EventObject
  */
 /* WARNING: THIS METHOD WILL BE REGENERATED. */
+@Override
 public void rightListMouse_mouseReleased(java.util.EventObject newEvent) {
 	// user code begin {1}
 	// user code end
@@ -488,6 +501,7 @@ public void rightListMouse_mouseReleased(java.util.EventObject newEvent) {
  * @param newEvent java.util.EventObject
  */
 /* WARNING: THIS METHOD WILL BE REGENERATED. */
+@Override
 public void rightListMouseMotion_mouseDragged(java.util.EventObject newEvent) {
 	// user code begin {1}
 	// user code end
@@ -497,6 +511,7 @@ public void rightListMouseMotion_mouseDragged(java.util.EventObject newEvent) {
 /**
  * setValue method comment.
  */
+@Override
 @SuppressWarnings("unchecked")
 public void setValue(Object o) 
 {
@@ -511,7 +526,7 @@ public void setValue(Object o)
 
 	for( int i = 0; i < program.getLmProgramDirectNotifyGroupVector().size(); i++ )
 	{
-		com.cannontech.database.db.device.lm.LMDirectNotificationGroupList aNotificationGroup = (com.cannontech.database.db.device.lm.LMDirectNotificationGroupList)program.getLmProgramDirectNotifyGroupVector().get(i);
+		com.cannontech.database.db.device.lm.LMDirectNotificationGroupList aNotificationGroup = program.getLmProgramDirectNotifyGroupVector().get(i);
 		
 		for( int j = 0; j < allItems.size(); j++ )
 		{
@@ -549,11 +564,13 @@ public void setValue(Object o)
 	}
 }
 
+@Override
 public void setFirstFocus() 
 {
     // Make sure that when its time to display this panel, the focus starts in the top component
     javax.swing.SwingUtilities.invokeLater( new Runnable() 
         { 
+        @Override
         public void run() 
             { 
             getJCheckBoxEnableStart().requestFocus(); 

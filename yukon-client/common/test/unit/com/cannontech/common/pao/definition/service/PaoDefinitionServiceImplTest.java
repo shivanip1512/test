@@ -30,11 +30,11 @@ import com.cannontech.common.pao.service.impl.PointCreationServiceImpl;
 import com.cannontech.common.pao.service.impl.PointServiceImpl;
 import com.cannontech.core.dao.PointDao;
 import com.cannontech.database.data.pao.DeviceTypes;
-import com.cannontech.database.data.point.ControlType;
 import com.cannontech.database.data.point.PointArchiveInterval;
 import com.cannontech.database.data.point.PointArchiveType;
 import com.cannontech.database.data.point.PointBase;
 import com.cannontech.database.data.point.PointType;
+import com.cannontech.database.data.point.StatusControlType;
 import com.cannontech.database.incrementer.NextValueHelper;
 import com.google.common.collect.Sets;
 
@@ -95,9 +95,9 @@ public class PaoDefinitionServiceImplTest {
 
         // Test with supported device
         List<PointBase> expectedPoints = new ArrayList<PointBase>();
-        expectedPoints.add(pointCreationService.createPoint(2, "pulse1", new PaoIdentifier(1, PaoType.MCT310), 1, 1.0, 1, 0, 0, 3, ControlType.NONE, PointArchiveType.NONE, PointArchiveInterval.ZERO));
-        expectedPoints.add(pointCreationService.createPoint(3, "demand1", new PaoIdentifier(1, PaoType.MCT310), 1, 1.0, 0, 0, 0, 3, ControlType.NONE, PointArchiveType.NONE, PointArchiveInterval.ZERO));
-        expectedPoints.add(pointCreationService.createPoint(1, "analog1", new PaoIdentifier(1, PaoType.MCT310), 1, 1.0, 1, 0, 0, 3, ControlType.NONE, PointArchiveType.NONE, PointArchiveInterval.ZERO));
+        expectedPoints.add(pointCreationService.createPoint(2, "pulse1", new PaoIdentifier(1, PaoType.MCT310), 1, 1.0, 1, 0, 0, 3, StatusControlType.NONE, PointArchiveType.NONE, PointArchiveInterval.ZERO));
+        expectedPoints.add(pointCreationService.createPoint(3, "demand1", new PaoIdentifier(1, PaoType.MCT310), 1, 1.0, 0, 0, 0, 3, StatusControlType.NONE, PointArchiveType.NONE, PointArchiveInterval.ZERO));
+        expectedPoints.add(pointCreationService.createPoint(1, "analog1", new PaoIdentifier(1, PaoType.MCT310), 1, 1.0, 1, 0, 0, 3, StatusControlType.NONE, PointArchiveType.NONE, PointArchiveInterval.ZERO));
 
         List<PointBase> actualPoints = service.createDefaultPointsForPao(device);
 
@@ -183,11 +183,11 @@ public class PaoDefinitionServiceImplTest {
 
         // Test with supported device
         List<PointBase> expectedPoints = new ArrayList<PointBase>();
-        expectedPoints.add(pointCreationService.createPoint(0, "status1", new PaoIdentifier(1, PaoType.MCT310), 1, 1.0, 0, 0, 0, 3, ControlType.NONE, PointArchiveType.NONE, PointArchiveInterval.ZERO));
-        expectedPoints.add(pointCreationService.createPoint(2, "pulse1", new PaoIdentifier(1, PaoType.MCT310), 1, 1.0, 1, 0, 0, 3, ControlType.NONE, PointArchiveType.NONE, PointArchiveInterval.ZERO));
-        expectedPoints.add(pointCreationService.createPoint(2, "pulse2", new PaoIdentifier(1, PaoType.MCT310), 2, 0.1, 1, 0, 0, 3, ControlType.NONE, PointArchiveType.NONE, PointArchiveInterval.ZERO));
-        expectedPoints.add(pointCreationService.createPoint(3, "demand1", new PaoIdentifier(1, PaoType.MCT310), 1, 1.0, 0, 0, 0, 3, ControlType.NONE, PointArchiveType.NONE, PointArchiveInterval.ZERO));
-        expectedPoints.add(pointCreationService.createPoint(1, "analog1", new PaoIdentifier(1, PaoType.MCT310), 1, 1.0, 1, 0, 0, 3, ControlType.NONE, PointArchiveType.NONE, PointArchiveInterval.ZERO));
+        expectedPoints.add(pointCreationService.createPoint(0, "status1", new PaoIdentifier(1, PaoType.MCT310), 1, 1.0, 0, 0, 0, 3, StatusControlType.NONE, PointArchiveType.NONE, PointArchiveInterval.ZERO));
+        expectedPoints.add(pointCreationService.createPoint(2, "pulse1", new PaoIdentifier(1, PaoType.MCT310), 1, 1.0, 1, 0, 0, 3, StatusControlType.NONE, PointArchiveType.NONE, PointArchiveInterval.ZERO));
+        expectedPoints.add(pointCreationService.createPoint(2, "pulse2", new PaoIdentifier(1, PaoType.MCT310), 2, 0.1, 1, 0, 0, 3, StatusControlType.NONE, PointArchiveType.NONE, PointArchiveInterval.ZERO));
+        expectedPoints.add(pointCreationService.createPoint(3, "demand1", new PaoIdentifier(1, PaoType.MCT310), 1, 1.0, 0, 0, 0, 3, StatusControlType.NONE, PointArchiveType.NONE, PointArchiveInterval.ZERO));
+        expectedPoints.add(pointCreationService.createPoint(1, "analog1", new PaoIdentifier(1, PaoType.MCT310), 1, 1.0, 1, 0, 0, 3, StatusControlType.NONE, PointArchiveType.NONE, PointArchiveInterval.ZERO));
 
         List<PointBase> actualPoints = service.createAllPointsForPao(device);
 

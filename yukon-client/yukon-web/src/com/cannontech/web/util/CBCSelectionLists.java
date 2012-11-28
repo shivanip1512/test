@@ -23,9 +23,10 @@ import com.cannontech.database.data.lite.LiteYukonUser;
 import com.cannontech.database.data.pao.CapControlType;
 import com.cannontech.database.data.pao.DBEditorTypes;
 import com.cannontech.database.data.pao.DeviceTypes;
-import com.cannontech.database.data.point.ControlType;
+import com.cannontech.database.data.point.AnalogControlType;
 import com.cannontech.database.data.point.PointArchiveType;
 import com.cannontech.database.data.point.PointTypes;
+import com.cannontech.database.data.point.StatusControlType;
 import com.cannontech.database.db.point.PointAlarming;
 import com.cannontech.enums.Phase;
 import com.cannontech.i18n.YukonUserContextMessageSourceResolver;
@@ -292,18 +293,18 @@ public class CBCSelectionLists {
 
     private static final SelectItem[] ptStatusControlTypes =  {
         //value, label
-        new SelectItem( ControlType.NONE.getControlName(),     ControlType.NONE.getControlName()),
-        new SelectItem( ControlType.LATCH.getControlName(),    ControlType.LATCH.getControlName()),
-        new SelectItem( ControlType.NORMAL.getControlName(),   ControlType.NORMAL.getControlName()),
-        new SelectItem( ControlType.PSEUDO.getControlName(),   ControlType.PSEUDO.getControlName()),
-        new SelectItem( ControlType.SBOLATCH.getControlName(), ControlType.SBOLATCH.getControlName()),
-        new SelectItem( ControlType.SBOPULSE.getControlName(), ControlType.SBOPULSE.getControlName())
+        new SelectItem( StatusControlType.NONE.getControlName(),     StatusControlType.NONE.getControlName()),
+        new SelectItem( StatusControlType.LATCH.getControlName(),    StatusControlType.LATCH.getControlName()),
+        new SelectItem( StatusControlType.NORMAL.getControlName(),   StatusControlType.NORMAL.getControlName()),
+        new SelectItem( StatusControlType.PSEUDO.getControlName(),   StatusControlType.PSEUDO.getControlName()),
+        new SelectItem( StatusControlType.SBOLATCH.getControlName(), StatusControlType.SBOLATCH.getControlName()),
+        new SelectItem( StatusControlType.SBOPULSE.getControlName(), StatusControlType.SBOPULSE.getControlName())
     };
     
     private static final SelectItem[] ptAnalogControlTypes =  {
         //value, label
-        new SelectItem( ControlType.NONE.getControlName(),     ControlType.NONE.getControlName()),
-        new SelectItem( ControlType.NORMAL.getControlName(),   ControlType.NORMAL.getControlName())
+        new SelectItem( AnalogControlType.NONE.getControlName(),     AnalogControlType.NONE.getControlName()),
+        new SelectItem( AnalogControlType.NORMAL.getControlName(),   AnalogControlType.NORMAL.getControlName())
     };
     
 	private static YukonUserContext userContext;

@@ -11,9 +11,11 @@ import javax.faces.event.ValueChangeEvent;
 import javax.faces.model.SelectItem;
 import javax.servlet.http.HttpSession;
 
+import org.apache.log4j.Logger;
+
 import com.cannontech.clientutils.CTILogger;
+import com.cannontech.clientutils.YukonLogManager;
 import com.cannontech.clientutils.tags.IAlarmDefs;
-import com.cannontech.common.constants.YukonListEntryTypes;
 import com.cannontech.common.exception.NotAuthorizedException;
 import com.cannontech.common.util.CtiUtilities;
 import com.cannontech.core.dao.DaoFactory;
@@ -22,8 +24,6 @@ import com.cannontech.core.roleproperties.dao.RolePropertyDao;
 import com.cannontech.database.TransactionException;
 import com.cannontech.database.cache.DefaultDatabaseCache;
 import com.cannontech.database.data.lite.LiteAlarmCategory;
-import com.cannontech.database.data.lite.LiteContact;
-import com.cannontech.database.data.lite.LiteContactNotification;
 import com.cannontech.database.data.lite.LiteFactory;
 import com.cannontech.database.data.lite.LiteNotificationGroup;
 import com.cannontech.database.data.lite.LitePoint;
@@ -56,12 +56,9 @@ import com.cannontech.web.util.JSFParamUtil;
 import com.cannontech.web.wizard.PointWizardModel;
 import com.cannontech.yukon.IDatabaseCache;
 
-/**
- * @author ryan
- *
- */
-public class PointForm extends DBEditorForm
-{
+public class PointForm extends DBEditorForm {
+    private static final Logger log = YukonLogManager.getLogger(PointForm.class);
+    
     private SelectItem[] stateGroups = null;
     private SelectItem[] initialStates = null;
     private SelectItem[] decimalDigits = null;
@@ -85,7 +82,8 @@ public class PointForm extends DBEditorForm
     private PointFDREntry pointFDREntry = null;
     
     //control point specific editor
-    private PointControlEntry pointControlEntry = null;
+    private PointAnalogControlEntry analogControlEntry = null;
+    private PointStatusControlEntry statusControlEntry = null;
     
     private StaleData staleData = null;
 
@@ -238,6 +236,9 @@ public class PointForm extends DBEditorForm
     }
 
 
+    /*
+     * Unused. Remove?
+     * 
     private int findEmailContact( LiteContact contact ) {
 
         if( contact != null )
@@ -258,6 +259,7 @@ public class PointForm extends DBEditorForm
         //no e-mail notif found
         return CtiUtilities.NONE_ZERO_ID;
     }
+    */
 
     /**
      * initializes model data. sets parent id of the point
@@ -297,6 +299,7 @@ public class PointForm extends DBEditorForm
      * Reset any data structures and allow the parent to do its thing
      * 
      */
+    @Override
     public void resetForm() {
         stateGroups = null;
         initialStates = null;
@@ -307,7 +310,8 @@ public class PointForm extends DBEditorForm
         alarmTableEntries = null;
         pointLimitEntry = null;
         pointFDREntry = null;
-        pointControlEntry = null;
+        analogControlEntry = null;
+        statusControlEntry = null;
         staleData = null;
     }
     
@@ -663,29 +667,31 @@ public class PointForm extends DBEditorForm
 
         return staleData;
     }
-
-    /**
-     * @return
-     */
-    public PointControlEntry getPointControlEntry() {
-        
-        if( pointControlEntry == null ) {
-        
-            if( getPointBase() instanceof StatusPoint ) {
-                
-                pointControlEntry = new PointControlEntry( ((StatusPoint)getPointBase()).getPointStatusControl() );
-                
-            } else if( getPointBase() instanceof AnalogPoint ) {
-                
-                pointControlEntry = new PointControlEntry( ((AnalogPoint)getPointBase()).getPointAnalogControl() );
-                
+    
+    public PointAnalogControlEntry getPointAnalogControlEntry() {
+        if (analogControlEntry == null) {
+            if (getPointBase() instanceof AnalogPoint) {
+                AnalogPoint analogPoint = (AnalogPoint)getPointBase();
+                analogControlEntry = new PointAnalogControlEntry(analogPoint.getPointAnalogControl());
             } else {
-                
-                CTILogger.warn("Attempting to create a PointControl editor for a non-controllable point");
+                log.warn("Attempting to create a PointControl editor for a non-controllable point or for an invalid point type");
             }
         }
-
-        return pointControlEntry;
+        
+        return analogControlEntry;
+    }
+    
+    public PointStatusControlEntry getPointStatusControlEntry() {
+        if (statusControlEntry == null) {
+            if (getPointBase() instanceof StatusPoint) {
+                StatusPoint statusPoint = (StatusPoint)getPointBase();
+                statusControlEntry = new PointStatusControlEntry(statusPoint.getPointStatusControl());
+            } else {
+                log.warn("Attempting to create a PointControl editor for a non-controllable point or for an invalid point type");
+            }
+        }
+        
+        return statusControlEntry;
     }
 
     /**
@@ -740,6 +746,7 @@ public class PointForm extends DBEditorForm
         this.wizData = wizData;
     }
 
+    @Override
     protected void checkForErrors() throws InvalidPointOffsetException, InvalidPointLimits {
         int offset = getPointBase().getPoint().getPointOffset().intValue();
         int type = PointTypes.getType (getPointBase().getPoint().getPointType());

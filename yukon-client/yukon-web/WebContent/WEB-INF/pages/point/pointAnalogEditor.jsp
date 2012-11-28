@@ -59,7 +59,7 @@
                 <x:htmlTag value="legend"><x:outputText value="Control Settings"/></x:htmlTag>
 
                 <h:selectBooleanCheckbox id="Control_Inhibit" 
-                        disabled="#{!ptEditorForm.pointControlEntry.controlAvailable}"
+                        disabled="#{!ptEditorForm.pointAnalogControlEntry.controlAvailable}"
                         value="#{ptEditorForm.pointBase.pointAnalogControl.controlInhibited}" />
                 <x:outputLabel for="Control_Inhibit" value="Control Inhibit" 
                         title="Check this box to disble control for this point" />
@@ -76,8 +76,8 @@
             
                     <x:outputLabel for="Control_Pt_Offset" value="Control Pt. Offset: "
                             title="Specifies the physical location used for wiring the relay point" />
-                    <x:inputText id="Control_Pt_Offset" required="#{ptEditorForm.pointControlEntry.controlAvailable}" 
-                            disabled="#{!ptEditorForm.pointControlEntry.controlAvailable}"
+                    <x:inputText id="Control_Pt_Offset" required="#{ptEditorForm.pointAnalogControlEntry.controlAvailable}" 
+                            disabled="#{!ptEditorForm.pointAnalogControlEntry.controlAvailable}"
                             maxlength="8" styleClass="char8Label"
                             value="#{ptEditorForm.pointBase.pointAnalogControl.controlOffset}" >
                         <f:validateLongRange minimum="-99999999" maximum="99999999" />

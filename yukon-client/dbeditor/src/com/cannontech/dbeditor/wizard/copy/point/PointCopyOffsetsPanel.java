@@ -1,30 +1,32 @@
 package com.cannontech.dbeditor.wizard.copy.point;
 
 import java.util.List;
+import java.util.Vector;
+
+import javax.swing.JCheckBox;
+import javax.swing.JComboBox;
+import javax.swing.JFrame;
+import javax.swing.JLabel;
 
 import com.cannontech.core.dao.DaoFactory;
 import com.cannontech.database.data.lite.LitePoint;
 import com.cannontech.database.data.point.AccumulatorPoint;
 import com.cannontech.database.data.point.AnalogPoint;
-import com.cannontech.database.data.point.ControlType;
 import com.cannontech.database.data.point.PointBase;
 import com.cannontech.database.data.point.PointTypes;
+import com.cannontech.database.data.point.StatusControlType;
 import com.cannontech.database.data.point.StatusPoint;
 
-/**
- * This type was created in VisualAge.
- */
-
 public class PointCopyOffsetsPanel extends com.cannontech.common.gui.util.DataInputPanel implements com.klg.jclass.util.value.JCValueListener, java.awt.event.ItemListener {
-	private javax.swing.JLabel ivjControlOffsetLabel = null;
-	private javax.swing.JLabel ivjPointOffsetLabel = null;
-	private javax.swing.JComboBox ivjControlTypeComboBox = null;
-	private javax.swing.JLabel ivjControlTypeLabel = null;
-	private javax.swing.JCheckBox ivjPhysicalPointOffsetCheckBox = null;
+	private JLabel ivjControlOffsetLabel = null;
+	private JLabel ivjPointOffsetLabel = null;
+	private JComboBox<String> ivjControlTypeComboBox = null;
+	private JLabel ivjControlTypeLabel = null;
+	private JCheckBox ivjPhysicalPointOffsetCheckBox = null;
 	private com.klg.jclass.field.JCSpinField ivjControlOffsetSpinner = null;
 	private com.klg.jclass.field.JCSpinField ivjPointOffsetSpinner = null;
-	private java.util.Vector usedPointOffsetsVector = null;
-	private javax.swing.JLabel ivjUsedPointOffsetLabel = null;
+	private Vector<LitePoint> usedPointOffsetsVector = null;
+	private JLabel ivjUsedPointOffsetLabel = null;
 /**
  * Constructor
  */
@@ -92,7 +94,7 @@ private void connEtoC3(com.klg.jclass.util.value.JCValueEvent arg1) {
  */
 public void controlTypeComboBox_ItemStateChanged(java.awt.event.ItemEvent itemEvent) 
 {
-    boolean isControlTypeNone = getControlTypeComboBox().getSelectedItem().toString().equalsIgnoreCase(ControlType.NONE.getControlName());
+    boolean isControlTypeNone = getControlTypeComboBox().getSelectedItem().toString().equalsIgnoreCase(StatusControlType.NONE.getControlName());
 
 	getControlOffsetLabel().setEnabled( ! isControlTypeNone );
 	
@@ -104,13 +106,13 @@ public void controlTypeComboBox_ItemStateChanged(java.awt.event.ItemEvent itemEv
 }
 /**
  * Return the ControlOffsetLabel property value.
- * @return javax.swing.JLabel
+ * @return JLabel
  */
 /* WARNING: THIS METHOD WILL BE REGENERATED. */
-private javax.swing.JLabel getControlOffsetLabel() {
+private JLabel getControlOffsetLabel() {
 	if (ivjControlOffsetLabel == null) {
 		try {
-			ivjControlOffsetLabel = new javax.swing.JLabel();
+			ivjControlOffsetLabel = new JLabel();
 			ivjControlOffsetLabel.setName("ControlOffsetLabel");
 			ivjControlOffsetLabel.setFont(new java.awt.Font("dialog", 0, 14));
 			ivjControlOffsetLabel.setText("Control Offset:  ");
@@ -158,13 +160,13 @@ private com.klg.jclass.field.JCSpinField getControlOffsetSpinner() {
 }
 /**
  * Return the ControlTypeComboBox property value.
- * @return javax.swing.JComboBox
+ * @return JComboBox
  */
 /* WARNING: THIS METHOD WILL BE REGENERATED. */
-private javax.swing.JComboBox getControlTypeComboBox() {
+private JComboBox<String> getControlTypeComboBox() {
 	if (ivjControlTypeComboBox == null) {
 		try {
-			ivjControlTypeComboBox = new javax.swing.JComboBox();
+			ivjControlTypeComboBox = new JComboBox<String>();
 			ivjControlTypeComboBox.setName("ControlTypeComboBox");
 			ivjControlTypeComboBox.setFont(new java.awt.Font("dialog", 0, 14));
 			// user code begin {1}
@@ -179,13 +181,13 @@ private javax.swing.JComboBox getControlTypeComboBox() {
 }
 /**
  * Return the ControlTypeLabel property value.
- * @return javax.swing.JLabel
+ * @return JLabel
  */
 /* WARNING: THIS METHOD WILL BE REGENERATED. */
-private javax.swing.JLabel getControlTypeLabel() {
+private JLabel getControlTypeLabel() {
 	if (ivjControlTypeLabel == null) {
 		try {
-			ivjControlTypeLabel = new javax.swing.JLabel();
+			ivjControlTypeLabel = new JLabel();
 			ivjControlTypeLabel.setName("ControlTypeLabel");
 			ivjControlTypeLabel.setFont(new java.awt.Font("dialog", 0, 14));
 			ivjControlTypeLabel.setText("Control Type:  ");
@@ -201,13 +203,13 @@ private javax.swing.JLabel getControlTypeLabel() {
 }
 /**
  * Return the PhysicalPointOffsetCheckBox property value.
- * @return javax.swing.JCheckBox
+ * @return JCheckBox
  */
 /* WARNING: THIS METHOD WILL BE REGENERATED. */
-private javax.swing.JCheckBox getPhysicalPointOffsetCheckBox() {
+private JCheckBox getPhysicalPointOffsetCheckBox() {
 	if (ivjPhysicalPointOffsetCheckBox == null) {
 		try {
-			ivjPhysicalPointOffsetCheckBox = new javax.swing.JCheckBox();
+			ivjPhysicalPointOffsetCheckBox = new JCheckBox();
 			ivjPhysicalPointOffsetCheckBox.setName("PhysicalPointOffsetCheckBox");
 			ivjPhysicalPointOffsetCheckBox.setSelected(true);
 			ivjPhysicalPointOffsetCheckBox.setText("Physical Point Offset");
@@ -224,13 +226,13 @@ private javax.swing.JCheckBox getPhysicalPointOffsetCheckBox() {
 }
 /**
  * Return the PointOffsetLabel property value.
- * @return javax.swing.JLabel
+ * @return JLabel
  */
 /* WARNING: THIS METHOD WILL BE REGENERATED. */
-private javax.swing.JLabel getPointOffsetLabel() {
+private JLabel getPointOffsetLabel() {
 	if (ivjPointOffsetLabel == null) {
 		try {
-			ivjPointOffsetLabel = new javax.swing.JLabel();
+			ivjPointOffsetLabel = new JLabel();
 			ivjPointOffsetLabel.setName("PointOffsetLabel");
 			ivjPointOffsetLabel.setFont(new java.awt.Font("dialog", 0, 14));
 			ivjPointOffsetLabel.setText("Point Offset:  ");
@@ -270,13 +272,13 @@ private com.klg.jclass.field.JCSpinField getPointOffsetSpinner() {
 }
 /**
  * Return the InvalidPointOffsetLabel property value.
- * @return javax.swing.JLabel
+ * @return JLabel
  */
 /* WARNING: THIS METHOD WILL BE REGENERATED. */
-private javax.swing.JLabel getUsedPointOffsetLabel() {
+private JLabel getUsedPointOffsetLabel() {
 	if (ivjUsedPointOffsetLabel == null) {
 		try {
-			ivjUsedPointOffsetLabel = new javax.swing.JLabel();
+			ivjUsedPointOffsetLabel = new JLabel();
 			ivjUsedPointOffsetLabel.setName("UsedPointOffsetLabel");
 			ivjUsedPointOffsetLabel.setText("Offset Used");
 			ivjUsedPointOffsetLabel.setMaximumSize(new java.awt.Dimension(180, 20));
@@ -298,6 +300,7 @@ private javax.swing.JLabel getUsedPointOffsetLabel() {
  * @return java.lang.Object
  * @param val java.lang.Object
  */
+@Override
 public Object getValue(Object val) 
 {
 	//Assume val is of PointBase
@@ -434,14 +437,14 @@ private void initialize() {
 		handleException(ivjExc);
 	}
 	// user code begin {2}
-	getControlTypeComboBox().addItem(ControlType.NONE.getControlName());
-	getControlTypeComboBox().addItem(ControlType.LATCH.getControlName());
-	getControlTypeComboBox().addItem(ControlType.NORMAL.getControlName());
-	getControlTypeComboBox().addItem(ControlType.PSEUDO.getControlName());
-	getControlTypeComboBox().addItem(ControlType.SBOLATCH.getControlName());
-	getControlTypeComboBox().addItem(ControlType.SBOPULSE.getControlName());
+	getControlTypeComboBox().addItem(StatusControlType.NONE.getControlName());
+	getControlTypeComboBox().addItem(StatusControlType.LATCH.getControlName());
+	getControlTypeComboBox().addItem(StatusControlType.NORMAL.getControlName());
+	getControlTypeComboBox().addItem(StatusControlType.PSEUDO.getControlName());
+	getControlTypeComboBox().addItem(StatusControlType.SBOLATCH.getControlName());
+	getControlTypeComboBox().addItem(StatusControlType.SBOPULSE.getControlName());
 
-	getControlTypeComboBox().setSelectedItem(ControlType.NONE.getControlName());
+	getControlTypeComboBox().setSelectedItem(StatusControlType.NONE.getControlName());
 	
 	// user code end
 }
@@ -450,6 +453,7 @@ private void initialize() {
  * @param e java.awt.event.ItemEvent
  */
 /* WARNING: THIS METHOD WILL BE REGENERATED. */
+@Override
 public void itemStateChanged(java.awt.event.ItemEvent e) {
 	// user code begin {1}
 	// user code end
@@ -466,7 +470,7 @@ public void itemStateChanged(java.awt.event.ItemEvent e) {
  */
 public static void main(java.lang.String[] args) {
 	try {
-		javax.swing.JFrame frame = new javax.swing.JFrame();
+		JFrame frame = new JFrame();
 		PointCopyOffsetsPanel aPointStatusPhysicalSettingsPanel;
 		aPointStatusPhysicalSettingsPanel = new PointCopyOffsetsPanel();
 		frame.getContentPane().add("Center", aPointStatusPhysicalSettingsPanel);
@@ -524,10 +528,10 @@ public void pointOffsetSpinner_ValueChanged(com.klg.jclass.util.value.JCValueEve
 				{
 					if (((Long) pointOffsetSpinVal).longValue() != 0
 						&& (((Long) pointOffsetSpinVal).longValue()
-							== ((com.cannontech.database.data.lite.LitePoint) usedPointOffsetsVector.elementAt(i)).getPointOffset()))
+							== usedPointOffsetsVector.elementAt(i).getPointOffset()))
 					{
 						getUsedPointOffsetLabel().setText(
-							"Used by " + ((com.cannontech.database.data.lite.LitePoint) usedPointOffsetsVector.elementAt(i)).getPointName());
+							"Used by " + usedPointOffsetsVector.elementAt(i).getPointName());
 						break;
 					}
 				}
@@ -535,10 +539,10 @@ public void pointOffsetSpinner_ValueChanged(com.klg.jclass.util.value.JCValueEve
 				{
 					if (((Integer) pointOffsetSpinVal).intValue() != 0
 						&& (((Integer) pointOffsetSpinVal).intValue()
-							== ((com.cannontech.database.data.lite.LitePoint) usedPointOffsetsVector.elementAt(i)).getPointOffset()))
+							== usedPointOffsetsVector.elementAt(i).getPointOffset()))
 					{
 						getUsedPointOffsetLabel().setText(
-							"Used by " + ((com.cannontech.database.data.lite.LitePoint) usedPointOffsetsVector.elementAt(i)).getPointName());
+							"Used by " + usedPointOffsetsVector.elementAt(i).getPointName());
 						break;
 					}
 				}
@@ -554,6 +558,7 @@ public void pointOffsetSpinner_ValueChanged(com.klg.jclass.util.value.JCValueEve
  * This method was created in VisualAge.
  * @param val java.lang.Object
  */
+@Override
 public void setValue(Object val) 
 {
 }
@@ -580,7 +585,7 @@ public void setCopyValue(Object val, int newDeviceID)
 		thePoint = (AnalogPoint)val;
 		
 	getUsedPointOffsetLabel().setText("");
-	usedPointOffsetsVector = new java.util.Vector();
+	usedPointOffsetsVector = new Vector<LitePoint>();
 
     List<LitePoint> points = DaoFactory.getPointDao().getLitePointsByPaObjectId(newDeviceID);
     for (LitePoint point : points) {
@@ -598,7 +603,7 @@ public void setCopyValue(Object val, int newDeviceID)
 			if (pointOffsetSpinVal instanceof Long)
 			{
 				if (((Long) pointOffsetSpinVal).intValue()
-					== ((com.cannontech.database.data.lite.LitePoint) usedPointOffsetsVector.elementAt(i)).getPointOffset())
+					== usedPointOffsetsVector.elementAt(i).getPointOffset())
 						getPointOffsetSpinner().setValue(new Integer(((Long) pointOffsetSpinVal).intValue() + 1));
 				else
 					break;
@@ -606,7 +611,7 @@ public void setCopyValue(Object val, int newDeviceID)
 			else if (pointOffsetSpinVal instanceof Integer)
 			{
 				if (((Integer) pointOffsetSpinVal).intValue()
-					== ((com.cannontech.database.data.lite.LitePoint) usedPointOffsetsVector.elementAt(i)).getPointOffset())
+					== usedPointOffsetsVector.elementAt(i).getPointOffset())
 				{
 					getPointOffsetSpinner().setValue(new Integer(((Integer) pointOffsetSpinVal).intValue() + 1));
 					i = -1;
@@ -623,6 +628,7 @@ public void setCopyValue(Object val, int newDeviceID)
  * @param arg1 com.klg.jclass.util.value.JCValueEvent
  */
 /* WARNING: THIS METHOD WILL BE REGENERATED. */
+@Override
 public void valueChanged(com.klg.jclass.util.value.JCValueEvent arg1) {
 	// user code begin {1}
 	// user code end
@@ -636,6 +642,7 @@ public void valueChanged(com.klg.jclass.util.value.JCValueEvent arg1) {
  * @param arg1 com.klg.jclass.util.value.JCValueEvent
  */
 /* WARNING: THIS METHOD WILL BE REGENERATED. */
+@Override
 public void valueChanging(com.klg.jclass.util.value.JCValueEvent arg1) {
 	// user code begin {1}
 	// user code end

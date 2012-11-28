@@ -22,9 +22,9 @@ import com.cannontech.database.data.device.lm.MacroGroup;
 import com.cannontech.database.data.lite.LiteYukonPAObject;
 import com.cannontech.database.data.multi.SmartMultiDBPersistent;
 import com.cannontech.database.data.pao.PAOGroups;
-import com.cannontech.database.data.point.ControlType;
 import com.cannontech.database.data.point.PointFactory;
 import com.cannontech.database.data.point.PointOffsets;
+import com.cannontech.database.data.point.StatusControlType;
 import com.cannontech.database.data.point.UnitOfMeasure;
 import com.cannontech.database.db.state.StateGroupUtils;
 import com.cannontech.yukon.IDatabaseCache;
@@ -81,6 +81,7 @@ public LMGroupBaseWizardPanel( boolean showHistory )
  * @param e java.awt.event.ActionEvent
  */
 /* WARNING: THIS METHOD WILL BE REGENERATED. */
+@Override
 public void actionPerformed(java.awt.event.ActionEvent e) {
 	// user code begin {1}
 	// user code end
@@ -111,6 +112,7 @@ public void actionPerformed(java.awt.event.ActionEvent e) {
  * @param e javax.swing.event.CaretEvent
  */
 /* WARNING: THIS METHOD WILL BE REGENERATED. */
+@Override
 public void caretUpdate(javax.swing.event.CaretEvent e) {
 	// user code begin {1}
 	// user code end
@@ -338,7 +340,7 @@ private void createExtraObjects( LMGroup lmGroup, SmartMultiDBPersistent smartDB
 				new Integer(1) );
 
 		((com.cannontech.database.data.point.StatusPoint) historyPoint).getPointStatusControl().setControlType(
-				ControlType.NORMAL.getControlName());
+				StatusControlType.NORMAL.getControlName());
 
 
 		smartDB.addDBPersistent(historyPoint);
@@ -909,6 +911,7 @@ private javax.swing.JTextField getJTextFieldKWCapacity() {
             // user code begin {1}
             SwingUtilities.invokeLater( new Runnable() 
             { 
+                @Override
                 public void run() 
                 { 
                     ivjJTextFieldKWCapacity.setText(String.valueOf(0.0));
@@ -1055,6 +1058,7 @@ private JLabel getJLabelErrorMessage()
  * @return java.lang.Object
  * @param val java.lang.Object
  */
+@Override
 public Object getValue(Object val) 
 {	
 	LMGroup lmGroup = (LMGroup)val;
@@ -1204,6 +1208,7 @@ private void initialize() {
  * This method must be implemented if a notion of data validity needs to be supported.
  * @return boolean
  */
+@Override
 public boolean isInputValid() 
 {
 	boolean isValid;
@@ -1257,7 +1262,8 @@ public static void main(java.lang.String[] args) {
 		frame.setContentPane(aLMGroupBasePanel);
 		frame.setSize(aLMGroupBasePanel.getSize());
 		frame.addWindowListener(new java.awt.event.WindowAdapter() {
-			public void windowClosing(java.awt.event.WindowEvent e) {
+			@Override
+            public void windowClosing(java.awt.event.WindowEvent e) {
 				System.exit(0);
 			};
 		});
@@ -1312,6 +1318,7 @@ public void setSwitchType(String type)
  * This method was created in VisualAge.
  * @param val java.lang.Object
  */
+@Override
 public void setValue(Object val)  
 {
 	LMGroup lmGroup = (LMGroup)val;
@@ -1341,8 +1348,8 @@ public void setValue(Object val)
 			int assignedRouteID = ((IGroupRoute)lmGroup).getRouteID().intValue();
 
 			for( int i = 0 ; i < routes.size(); i++ )
-				if( ((com.cannontech.database.data.lite.LiteYukonPAObject)routes.get(i)).getYukonID() == assignedRouteID )
-					getRouteComboBox().setSelectedItem((com.cannontech.database.data.lite.LiteYukonPAObject)routes.get(i));
+				if( routes.get(i).getYukonID() == assignedRouteID )
+					getRouteComboBox().setSelectedItem(routes.get(i));
       }
 	}
 	
@@ -1356,11 +1363,13 @@ public void setValue(Object val)
 	setSwitchType( lmGroup.getPAOType() );	
 }
 
+@Override
 public void setFirstFocus() 
 {
     // Make sure that when its time to display this panel, the focus starts in the top component
     javax.swing.SwingUtilities.invokeLater( new Runnable() 
         { 
+        @Override
         public void run() 
             { 
             getJTextFieldName().requestFocus(); 

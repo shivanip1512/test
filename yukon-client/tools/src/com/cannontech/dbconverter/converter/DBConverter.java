@@ -8,7 +8,6 @@ import com.cannontech.common.util.CtiUtilities;
 import com.cannontech.database.PoolManager;
 import com.cannontech.database.data.device.MCTIEDBase;
 import com.cannontech.database.data.pao.PAOGroups;
-import com.cannontech.database.data.point.ControlType;
 import com.cannontech.database.data.point.PointFactory;
 import com.cannontech.database.data.point.PointTypes;
 import com.cannontech.database.db.device.DeviceGroupMember;
@@ -25,46 +24,46 @@ public class DBConverter extends MessageFrameAdaptor
 {
 	private static final int MAX_DSM2_MACRO_COUNT = 30;
 	
-	private String stateGroupFileName = "stategrp.txt";
+	private final String stateGroupFileName = "stategrp.txt";
 	public static final int STATE_TOKEN_COUNT = 3;
 		
-	private String portFileName = "port.txt";
+	private final String portFileName = "port.txt";
 	public static final int PORT_TOKEN_COUNT = 12;
 	
-	private String transmitterFileName = "trxmiter.txt";
+	private final String transmitterFileName = "trxmiter.txt";
 	public static final int TRANSMITTER_TOKEN_COUNT = 6;
 
-	private String virtualDeviceFileName = "pseudo.txt";
+	private final String virtualDeviceFileName = "pseudo.txt";
 	public static final int VIRTUALDEV_TOKEN_COUNT = 3;
 
-	private String baseRouteFileName = "route";
+	private final String baseRouteFileName = "route";
 	public static final int SINGLE_ROUTE_TOKEN_COUNT = 5;
 
-	private String baseRepeaterFileName = "rptdev";
+	private final String baseRepeaterFileName = "rptdev";
 	public static final int REPEATER_TOKEN_COUNT = 5;
 
-	private String RouteMacroFileName = "routemac.txt";
+	private final String RouteMacroFileName = "routemac.txt";
 	public static final int ROUTE_MACRO_TOKEN_COUNT = 4;
 
-	private String CBCFileName = "cbc.txt";
+	private final String CBCFileName = "cbc.txt";
 	public static final int CBC_TOKEN_COUNT = 5;
 
-	private String LMGroupFileName = "lmgroup.txt";
+	private final String LMGroupFileName = "lmgroup.txt";
 	public static final int LMGROUP_TOKEN_COUNT = 6;
 	
-	private String MCTFileName = "mct.txt";
+	private final String MCTFileName = "mct.txt";
 	public static final int MCT_TOKEN_COUNT = 7;
 
-	private String RTUFileName = "rtus.txt";
+	private final String RTUFileName = "rtus.txt";
 	public static final int RTU_TOKEN_COUNT = 5;
 
-	private String StatusPointFileName = "ptstatus.txt";
+	private final String StatusPointFileName = "ptstatus.txt";
 	public static final int STATUS_PT_TOKEN_COUNT = 13;
 
-	private String AnalogPointFileName = "ptanalog.txt";
+	private final String AnalogPointFileName = "ptanalog.txt";
 	public static final int ANALOG_PT_TOKEN_COUNT = 13;	
 	
-	private String AccumPointFileName = "ptaccum.txt";
+	private final String AccumPointFileName = "ptaccum.txt";
 	public static final int ACCUM_PT_TOKEN_COUNT = 13;	
 
 /**
@@ -75,17 +74,20 @@ public DBConverter()
 	super();
 }
 
+@Override
 public String getName()
 {
 	return "DSM2/Converter";
 }
 
+@Override
 public String getParamText()
 {
 	return "Src-Directory:";
 }
 
 
+@Override
 public void run()
 {
 	boolean s = processStateGroupFile();
@@ -177,6 +179,7 @@ public static synchronized PtUnitRets[] getAllPointUnitd()
 	return (PtUnitRets[])list.toArray();
 }
 
+@Override
 public String getDefaultValue()
 {
 	return CtiUtilities.CURRENT_DIR;
@@ -1697,10 +1700,10 @@ public boolean processSingleRouteFile()
 			default:
 				// private void handleRouteType(com.cannontech.database.data.route.CCURoute aRoute, java.util.StringTokenizer tokenizer) 
 
-				((com.cannontech.database.data.route.RouteBase)route).setDeviceID( new Integer( Integer.parseInt(tokenizer.nextElement().toString())) );
+				route.setDeviceID( new Integer( Integer.parseInt(tokenizer.nextElement().toString())) );
 				
 				// not sure if this will work every	time???
-				( (com.cannontech.database.data.route.RouteBase)route).setDefaultRoute( tokenizer.nextElement().toString() );//guesswork again
+				route.setDefaultRoute( tokenizer.nextElement().toString() );//guesswork again
 				break;
 		}
 		multi.getDBPersistentVector().add( route );
@@ -2078,10 +2081,9 @@ private boolean writeToSQLDatabase(com.cannontech.database.data.multi.MultiDBPer
 	//write all the collected data to the SQL database
 	try
 	{
-      multi = (com.cannontech.database.data.multi.MultiDBPersistent)
-   		com.cannontech.database.Transaction.createTransaction(
-               com.cannontech.database.Transaction.INSERT, 
-               multi).execute();
+      multi = com.cannontech.database.Transaction.createTransaction(
+           com.cannontech.database.Transaction.INSERT, 
+           multi).execute();
 
 		return true;
 	}

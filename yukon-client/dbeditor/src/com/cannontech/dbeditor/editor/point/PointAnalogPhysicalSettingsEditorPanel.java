@@ -8,11 +8,13 @@ import java.awt.Insets;
 import java.util.List;
 import java.util.Vector;
 
+import javax.swing.JComboBox;
+
 import com.cannontech.common.pao.PaoType;
 import com.cannontech.core.dao.DaoFactory;
 import com.cannontech.database.data.lite.LitePoint;
 import com.cannontech.database.data.lite.LiteYukonPAObject;
-import com.cannontech.database.data.point.ControlType;
+import com.cannontech.database.data.point.AnalogControlType;
 import com.cannontech.database.data.point.PointTypes;
 
 public class PointAnalogPhysicalSettingsEditorPanel extends com.cannontech.common.gui.util.DataInputPanel implements java.awt.event.ActionListener, java.awt.event.ItemListener, javax.swing.event.CaretListener, com.klg.jclass.util.value.JCValueListener
@@ -31,7 +33,7 @@ public class PointAnalogPhysicalSettingsEditorPanel extends com.cannontech.commo
 	private javax.swing.JTextField ivjMultiplierTextField = null;
     private javax.swing.JPanel ivjRawValuePanel = null;
     private javax.swing.JPanel ivjControlSettingsPanel = null;
-    private javax.swing.JComboBox ivjControlTypeComboBox = null;
+    private javax.swing.JComboBox<String> ivjControlTypeComboBox = null;
     private javax.swing.JLabel ivjControlTypeLabel = null;
     private javax.swing.JLabel ivjControlPointOffsetLabel = null;
     private com.klg.jclass.field.JCSpinField ivjControlPointOffsetSpinner = null;
@@ -49,6 +51,7 @@ public PointAnalogPhysicalSettingsEditorPanel() {
  * @param e java.awt.event.ActionEvent
  */
 /* WARNING: THIS METHOD WILL BE REGENERATED. */
+@Override
 public void actionPerformed(java.awt.event.ActionEvent e) {
 	// user code begin {1}
 	// user code end
@@ -64,6 +67,7 @@ public void actionPerformed(java.awt.event.ActionEvent e) {
  * @param e javax.swing.event.CaretEvent
  */
 /* WARNING: THIS METHOD WILL BE REGENERATED. */
+@Override
 public void caretUpdate(javax.swing.event.CaretEvent e) {
 	// user code begin {1}
 	// user code end
@@ -207,7 +211,7 @@ public void controlTypeComboBox_ActionPerformed(java.awt.event.ActionEvent actio
 {
     Object controlType = getControlTypeComboBox().getSelectedItem();
 
-    boolean enabled = ! controlType.toString().equals(ControlType.NONE.getControlName());
+    boolean enabled = ! controlType.toString().equals(AnalogControlType.NONE.getControlName());
 
     getControlPointOffsetLabel().setEnabled(enabled);
     getControlPointOffsetSpinner().setEnabled(enabled);
@@ -314,15 +318,15 @@ private javax.swing.JPanel getControlSettingsPanel() {
     }
     return ivjControlSettingsPanel;
 }
-private javax.swing.JComboBox getControlTypeComboBox() {
+private JComboBox<String> getControlTypeComboBox() {
     if (ivjControlTypeComboBox == null) {
         try {
-            ivjControlTypeComboBox = new javax.swing.JComboBox();
+            ivjControlTypeComboBox = new JComboBox<String>();
             ivjControlTypeComboBox.setName("ControlTypeComboBox");
             ivjControlTypeComboBox.setFont(new java.awt.Font("dialog", 0, 14));
 
-            ivjControlTypeComboBox.addItem( ControlType.NONE.getControlName() );
-            ivjControlTypeComboBox.addItem( ControlType.NORMAL.getControlName() );
+            ivjControlTypeComboBox.addItem( AnalogControlType.NONE.getControlName() );
+            ivjControlTypeComboBox.addItem( AnalogControlType.NORMAL.getControlName() );
         } catch (java.lang.Throwable ivjExc) {
             handleException(ivjExc);
         }
@@ -676,6 +680,7 @@ private javax.swing.JLabel getUsedPointOffsetLabel() {
  * @return java.lang.Object
  * @param val java.lang.Object
  */
+@Override
 public Object getValue(Object val) 
 {
 	Integer pointOffset = null;
@@ -877,6 +882,7 @@ private boolean isPointOffsetInUse(int pointOffset) {
  * Creation date: (5/1/2001 9:11:36 AM)
  * @return boolean
  */
+@Override
 public boolean isInputValid() 
 {
 	if( getMultiplierTextField().getText() != null
@@ -940,6 +946,7 @@ public boolean isInputValid()
  * @param e java.awt.event.ItemEvent
  */
 /* WARNING: THIS METHOD WILL BE REGENERATED. */
+@Override
 public void itemStateChanged(java.awt.event.ItemEvent e) {
 	// user code begin {1}
 	// user code end
@@ -958,7 +965,7 @@ public static void main(java.lang.String[] args) {
 	try {
 		java.awt.Frame frame;
 		try {
-			Class aFrameClass = Class.forName("com.ibm.uvm.abt.edit.TestFrame");
+			Class<?> aFrameClass = Class.forName("com.ibm.uvm.abt.edit.TestFrame");
 			frame = (java.awt.Frame)aFrameClass.newInstance();
 		} catch (java.lang.Throwable ivjExc) {
 			frame = new java.awt.Frame();
@@ -977,6 +984,7 @@ public static void main(java.lang.String[] args) {
  * This method was created in VisualAge.
  * @param val java.lang.Object
  */
+@Override
 public void setValue(Object val) 
 {
 	com.cannontech.database.data.point.AnalogPoint point = (com.cannontech.database.data.point.AnalogPoint) val;
@@ -1046,6 +1054,7 @@ public void setValue(Object val)
  * Method to handle events for the JCValueListener interface.
  * @param arg1 com.klg.jclass.util.value.JCValueEvent
  */
+@Override
 public void valueChanged(com.klg.jclass.util.value.JCValueEvent arg1) 
 {
 	if (arg1.getSource() == getDeadbandSpinner())
@@ -1067,6 +1076,7 @@ public void valueChanged(com.klg.jclass.util.value.JCValueEvent arg1)
  * Method to handle events for the JCValueListener interface.
  * @param arg1 com.klg.jclass.util.value.JCValueEvent
  */
+@Override
 public void valueChanging(com.klg.jclass.util.value.JCValueEvent arg1) 
 {
 }

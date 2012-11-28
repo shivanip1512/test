@@ -1,10 +1,12 @@
 package com.cannontech.database.db.point;
 
-import com.cannontech.database.data.point.ControlType;
-import com.cannontech.database.data.point.StateControlType;
+import java.util.List;
 
-public class PointStatusControl extends PointControl 
-{
+import com.cannontech.database.data.point.StateControlType;
+import com.cannontech.database.data.point.StatusControlType;
+import com.google.common.collect.Lists;
+
+public class PointStatusControl extends PointControl {
 	public static final int DEFAULT_CMD_TIMEOUT = 0;
 	
 	private Integer pointID = null;
@@ -13,6 +15,14 @@ public class PointStatusControl extends PointControl
 	private String stateZeroControl = StateControlType.OPEN.getControlCommand();
 	private String stateOneControl = StateControlType.CLOSE.getControlCommand();
 	private Integer commandTimeOut = DEFAULT_CMD_TIMEOUT;
+	private String controlType = StatusControlType.NONE.getControlName();
+	
+	private final List<String> validControlTypes = 
+	        Lists.newArrayList(StatusControlType.NORMAL.getControlName(),
+	                           StatusControlType.LATCH.getControlName(),
+	                           StatusControlType.PSEUDO.getControlName(), 
+	                           StatusControlType.SBOPULSE.getControlName(),
+	                           StatusControlType.SBOLATCH.getControlName());
 
 	public static final String CONSTRAINT_COLUMNS[] = { "POINTID" };
 
@@ -22,10 +32,9 @@ public class PointStatusControl extends PointControl
 		"StateZeroControl", "StateOneControl", "CommandTimeOut"
 	};
 
-	public static final String TABLE_NAME = "PointStatusControl";	
+	public static final String TABLE_NAME = "PointStatusControl";
 
-    public PointStatusControl() 
-    {
+    public PointStatusControl() {
         super();
     }
     
@@ -47,7 +56,6 @@ public class PointStatusControl extends PointControl
 
     @Override
     public void delete() throws java.sql.SQLException {
-    
         if (getPointID() != null) {
             
             delete( TABLE_NAME, CONSTRAINT_COLUMNS[0], getPointID() );
@@ -68,6 +76,7 @@ public class PointStatusControl extends PointControl
     	return commandTimeOut;
     }
 
+    @Override
     public Integer getPointID() {
     	return pointID;
     }
@@ -116,6 +125,7 @@ public class PointStatusControl extends PointControl
     	commandTimeOut = newCommandTimeOut;
     }
 
+    @Override
     public void setPointID(Integer newValue) {
         super.setPointID(newValue);
     	
@@ -132,18 +142,36 @@ public class PointStatusControl extends PointControl
 
     @Override
     public void update() throws java.sql.SQLException {
-        
         delete();
         add();
     }
     
+    @Override
     protected boolean isValidControlType(String controlType) {
-        
-        return 
-            controlType.equalsIgnoreCase(ControlType.NORMAL.getControlName()) ||
-            controlType.equalsIgnoreCase(ControlType.LATCH.getControlName()) ||
-            controlType.equalsIgnoreCase(ControlType.PSEUDO.getControlName()) ||
-            controlType.equalsIgnoreCase(ControlType.SBOPULSE.getControlName()) ||
-            controlType.equalsIgnoreCase(ControlType.SBOLATCH.getControlName());
+        return validControlTypes.contains(controlType);
+    }
+    
+    @Override
+    public String getControlType() {
+        return controlType;
+    }
+    
+    @Override
+    public void setControlType(String newValue) {
+        if (isValidControlType(newValue)) {
+            this.controlType = newValue;
+        } else {
+            this.controlType = StatusControlType.NONE.getControlName();
+        }
+    }
+    
+    @Override
+    public boolean hasControl() {
+        return ! controlType.equalsIgnoreCase(StatusControlType.NONE.getControlName());
+    }
+    
+    @Override
+    protected String getNormalType() {
+        return StatusControlType.NORMAL.getControlName();
     }
 }

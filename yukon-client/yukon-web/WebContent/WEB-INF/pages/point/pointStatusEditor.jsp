@@ -26,7 +26,7 @@
 	
 			<h:column>
                 <h:selectBooleanCheckbox id="Control_Inhibit" 
-                        disabled="#{!ptEditorForm.pointControlEntry.controlAvailable}" 
+                        disabled="#{!ptEditorForm.pointStatusControlEntry.controlAvailable}" 
                         value="#{ptEditorForm.pointBase.pointStatusControl.controlInhibited}" />
                 <x:outputLabel for="Control_Inhibit" value="Control Inhibit" title="Check this box to disble control for this point" />
 
@@ -41,7 +41,7 @@
 					<x:outputLabel for="Control_Pt_Offset" value="Control Pt. Offset: "
 							title="Specifies the physical location used for wiring the relay point" />
 					<x:inputText id="Control_Pt_Offset" required="true" 
-							disabled="#{!ptEditorForm.pointControlEntry.controlAvailable}"
+							disabled="#{!ptEditorForm.pointStatusControlEntry.controlAvailable}"
 							maxlength="8" styleClass="char8Label"
 							value="#{ptEditorForm.pointBase.pointStatusControl.controlOffset}" >
 						<f:validateDoubleRange minimum="-99999999" maximum="99999999" />
@@ -52,7 +52,7 @@
 					<x:panelGroup>
 						<x:inputText id="Close_Time_1" required="true" 
 								maxlength="8" styleClass="char8Label"
-								disabled="#{!ptEditorForm.pointControlEntry.controlAvailable}"
+								disabled="#{!ptEditorForm.pointStatusControlEntry.controlAvailable}"
 								value="#{ptEditorForm.pointBase.pointStatusControl.closeTime1}" >
 							<f:validateDoubleRange minimum="0" maximum="99999" />
 						</x:inputText>
@@ -64,7 +64,7 @@
 					<x:panelGroup>
 						<x:inputText id="Close_Time_2" required="true" 
 								maxlength="8" styleClass="char8Label"
-								disabled="#{!ptEditorForm.pointControlEntry.controlAvailable}"
+								disabled="#{!ptEditorForm.pointStatusControlEntry.controlAvailable}"
 								value="#{ptEditorForm.pointBase.pointStatusControl.closeTime2}" >
 							<f:validateDoubleRange minimum="0" maximum="99999" />
 						</x:inputText>
@@ -77,7 +77,7 @@
 					<x:panelGroup>
 						<x:inputText id="Command_Timeout" required="true" 
 								maxlength="8" styleClass="char8Label"
-								disabled="#{!ptEditorForm.pointControlEntry.controlAvailable}"
+								disabled="#{!ptEditorForm.pointStatusControlEntry.controlAvailable}"
 								value="#{ptEditorForm.pointBase.pointStatusControl.commandTimeOut}" >
 							<f:validateDoubleRange minimum="0" maximum="9999999" />
 						</x:inputText>
@@ -90,13 +90,13 @@
                 <x:panelGrid columns="2">
 					<x:outputLabel for="Open_Command" value="Open Command String: " title="The OPEN command string sent out when Yukon controls this point" />
 					<x:inputText id="Open_Command"
-						disabled="#{!ptEditorForm.pointControlEntry.controlAvailable}"
+						disabled="#{!ptEditorForm.pointStatusControlEntry.controlAvailable}"
 						value="#{ptEditorForm.pointBase.pointStatusControl.stateZeroControl}" 
 						required="true" maxlength="100" styleClass="char64Label" />
 			
 					<x:outputLabel for="Close_Command" value="Close Command String: " title="The CLOSE command string sent out when Yukon controls this point" />
 					<x:inputText id="Close_Command"
-						disabled="#{!ptEditorForm.pointControlEntry.controlAvailable}"
+						disabled="#{!ptEditorForm.pointStatusControlEntry.controlAvailable}"
 						value="#{ptEditorForm.pointBase.pointStatusControl.stateOneControl}" 
 						required="true" maxlength="100" styleClass="char64Label" />
                 </x:panelGrid>

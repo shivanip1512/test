@@ -2,11 +2,11 @@ package com.cannontech.common.pao.definition.model;
 
 import org.springframework.core.style.ToStringCreator;
 
-import com.cannontech.database.data.point.ControlType;
 import com.cannontech.database.data.point.PointArchiveInterval;
 import com.cannontech.database.data.point.PointArchiveType;
 import com.cannontech.database.data.point.PointType;
 import com.cannontech.database.data.point.StateControlType;
+import com.cannontech.database.data.point.StatusControlType;
 import com.cannontech.database.data.point.UnitOfMeasure;
 import com.cannontech.database.db.point.PointUnit;
 import com.cannontech.database.db.state.StateGroupUtils;
@@ -16,7 +16,7 @@ import com.cannontech.database.db.state.StateGroupUtils;
  * instances
  */
 public class PointTemplate implements Comparable<PointTemplate> {
-    private PointIdentifier pointIdentifier;
+    private final PointIdentifier pointIdentifier;
     private String name = null;
     private double multiplier = 1.0;
     private int unitOfMeasure = UnitOfMeasure.INVALID.getId();
@@ -28,7 +28,7 @@ public class PointTemplate implements Comparable<PointTemplate> {
     // Only valid for Status points
     private int initialState = StateGroupUtils.DEFAULT_STATE;
     private int controlOffset = 1;
-    private ControlType controlType = ControlType.NONE;
+    private StatusControlType controlType = StatusControlType.NONE;
     private StateControlType stateZeroControl = StateControlType.OPEN;
     private StateControlType stateOneControl = StateControlType.CLOSE;
 
@@ -143,11 +143,11 @@ public class PointTemplate implements Comparable<PointTemplate> {
         this.controlOffset = controlOffset;
     }
 
-    public ControlType getControlType() {
+    public StatusControlType getControlType() {
         return controlType;
     }
 
-    public void setControlType(ControlType controlType) {
+    public void setControlType(StatusControlType controlType) {
         this.controlType = controlType;
     }
 
@@ -191,6 +191,7 @@ public class PointTemplate implements Comparable<PointTemplate> {
         this.calcPointInfo = calcPointInfo;
     }
 
+    @Override
     public int compareTo(PointTemplate o) {
         
         if (o == null) {

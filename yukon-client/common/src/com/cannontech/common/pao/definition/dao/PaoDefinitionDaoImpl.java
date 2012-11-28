@@ -86,11 +86,11 @@ import com.cannontech.core.roleproperties.InputTypeFactory;
 import com.cannontech.database.data.lite.LiteState;
 import com.cannontech.database.data.lite.LiteStateGroup;
 import com.cannontech.database.data.lite.LiteUnitMeasure;
-import com.cannontech.database.data.point.ControlType;
 import com.cannontech.database.data.point.PointArchiveInterval;
 import com.cannontech.database.data.point.PointArchiveType;
 import com.cannontech.database.data.point.PointType;
 import com.cannontech.database.data.point.StateControlType;
+import com.cannontech.database.data.point.StatusControlType;
 import com.cannontech.database.data.point.UnitOfMeasure;
 import com.cannontech.database.db.point.PointUnit;
 import com.cannontech.database.db.state.StateGroupUtils;
@@ -120,7 +120,7 @@ public class PaoDefinitionDaoImpl implements PaoDefinitionDao {
     private Resource schemaFile = null;
     private Resource customInputFile = null;
     private Resource pointLegendFile = null;
-    private Logger log = YukonLogManager.getLogger(PaoDefinitionDaoImpl.class);
+    private final Logger log = YukonLogManager.getLogger(PaoDefinitionDaoImpl.class);
 
     // Maps containing all of the data in the paoDefinition.xml file
     private Map<PaoType, Map<Attribute, AttributeDefinition>> paoAttributeAttrDefinitionMap = null;
@@ -213,6 +213,7 @@ public class PaoDefinitionDaoImpl implements PaoDefinitionDao {
         return paoTypeAttributesMultiMap;
     }
 
+    @Override
     public Set<AttributeDefinition> getDefinedAttributes(PaoType paoType) {
         Map<Attribute, AttributeDefinition> attributeLookupsForPao = paoAttributeAttrDefinitionMap.get(paoType);
         if (attributeLookupsForPao == null) {
@@ -308,6 +309,7 @@ public class PaoDefinitionDaoImpl implements PaoDefinitionDao {
         return typesBySupportedTag.get(tag);
     }
     
+    @Override
     public Set<PaoTag> getSupportedTags(PaoType paoType) {
         // no need to wrap, already immutable
     	return getSupportedTagsForPaoType(paoType).keySet();
@@ -942,7 +944,7 @@ public class PaoDefinitionDaoImpl implements PaoDefinitionDao {
                 template.setControlOffset(point.getControlOffset().getValue());
             }
             if (point.getControlType() != null) {
-                ControlType controlType = ControlType.valueOf(point.getControlType().getValue().toString());
+                StatusControlType controlType = StatusControlType.valueOf(point.getControlType().getValue().toString());
                 template.setControlType(controlType);
             }
             if (point.getStateZeroControl() != null) {

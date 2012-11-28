@@ -1,11 +1,11 @@
 package com.cannontech.common.bulk.model;
 
+import static com.cannontech.common.bulk.model.PointImportParameters.*;
+
 import com.cannontech.common.csvImport.ImportAction;
 import com.cannontech.common.csvImport.ImportFileFormat;
-import com.cannontech.database.data.point.ControlType;
 import com.cannontech.database.data.point.PointArchiveType;
-
-import static com.cannontech.common.bulk.model.PointImportParameters.*;
+import com.cannontech.database.data.point.StatusControlType;
 
 /**
  * ImportFileFormats for each type of point import.
@@ -101,7 +101,7 @@ public class PointImportFormats {
         STATUS_POINT_FORMAT.addValueDependentColumn(STATE_GROUP.NAME, STATE_GROUP.CLASS, ACTION.NAME, ImportAction.ADD);
         STATUS_POINT_FORMAT.addValueDependentColumn(INITIAL_STATE.NAME, INITIAL_STATE.CLASS, ACTION.NAME, ImportAction.ADD);
         //CONTROL TYPE dependent
-        Object[] dependentTypes = {ControlType.NORMAL, ControlType.LATCH, ControlType.PSEUDO, ControlType.SBOLATCH, ControlType.SBOPULSE};
+        Object[] dependentTypes = {StatusControlType.NORMAL, StatusControlType.LATCH, StatusControlType.PSEUDO, StatusControlType.SBOLATCH, StatusControlType.SBOPULSE};
         STATUS_POINT_FORMAT.addValueDependentColumn(CONTROL_POINT_OFFSET.NAME, CONTROL_POINT_OFFSET.CLASS, CONTROL_TYPE.NAME, dependentTypes);
         STATUS_POINT_FORMAT.addValueDependentColumn(CLOSE_TIME_1.NAME, CLOSE_TIME_1.CLASS, CONTROL_TYPE.NAME, dependentTypes);
         STATUS_POINT_FORMAT.addValueDependentColumn(CLOSE_TIME_2.NAME, CLOSE_TIME_2.CLASS, CONTROL_TYPE.NAME, dependentTypes);
