@@ -139,7 +139,7 @@
             
             <c:set var="selectedGroupParam">
                 <jsp:attribute name="value">
-                    "${fn:escapeXml(group.fullName)}"
+                    "${fn:escapeXml(groupFullName)}"
                 </jsp:attribute>
             </c:set>
                                                 
@@ -177,7 +177,7 @@
                                     [ ${topLevelLabel} ]
                                 </c:when>
                                 <c:otherwise>
-                                    ${fn:escapeXml(group.fullName)}
+                                    ${fn:escapeXml(groupFullName)}
                                 </c:otherwise>
                             </c:choose>
                         </td>
@@ -481,7 +481,7 @@
                             <cti:msg key="yukon.web.deviceGroups.editor.membersContainer.membersLabel"/>
                         </td>
                         <td valign="top">
-                            ${fn:escapeXml((empty group.name)? '[ Top Level ]' : group.fullName)}
+                            ${fn:escapeXml((empty group.name)? '[ Top Level ]' : groupFullName)}
                         </td>
                     </tr>
                 </table>
@@ -497,7 +497,7 @@
                    	<div class="groupEditorContentDetail">
                     <table style="width: 95%; padding-bottom: 10px;" >
                         <c:choose>
-                            <c:when test="${fn:length(subGroups) > 0}">
+                            <c:when test="${fn:length(subGroupMap) > 0}">
                             
                                 <%-- User must have DEVICE_GROUP_EDIT to delete groups. Set once for use in loop. --%>
                                 <cti:checkRole role="operator.DeviceActionsRole.ROLEID">
@@ -506,15 +506,15 @@
                                 </cti:checkProperty>
                                 </cti:checkRole>
                             
-                                <c:forEach var="subGroup" items="${subGroups}">
+                                <c:forEach var="subGroup" items="${subGroupMap}">
                                     <tr class="<tags:alternateRow odd="" even="altRow"/>">
                                         <td style="border: none;">
                                             <cti:url var="homeUrl" value="/group/editor/home">
-                                                <cti:param name="groupName" value="${subGroup.fullName}" />
+                                                <cti:param name="groupName" value="${subGroup.value}" />
                                             </cti:url>
                                         
-                                            <span title="${fn:escapeXml(subGroup.fullName)}">
-                                                <a href="${homeUrl}"><c:out value="${subGroup.name}"/></a>
+                                            <span title="${fn:escapeXml(subGroup.value)}">
+                                                <a href="${homeUrl}"><c:out value="${subGroup.value}"/></a>
                                             </span>
                                         </td>
                                         
@@ -527,7 +527,7 @@
                                             
                                                         <cti:uniqueIdentifier prefix="subGroup_" var="subId"/>
                                                         <form style="display: inline;" id="${subId}removeSubGroupForm" action="/group/editor/removeGroup" method="post">
-                                                            <input type="hidden" name="removeGroupName" value="${fn:escapeXml(subGroup.fullName)}">
+                                                            <input type="hidden" name="removeGroupName" value="${fn:escapeXml(subGroup.key.fullName)}">
                                                             <input type="hidden" name="groupName" value="${fn:escapeXml(group.fullName)}">
                                                             <div class="dib">
                                                                 <a href="#" class="icon icon_remove" onclick="this.event.stop(); removeGroup('${subId}removeSubGroupForm');">remove</a>

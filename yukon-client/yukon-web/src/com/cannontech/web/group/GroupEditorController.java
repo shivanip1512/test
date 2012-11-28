@@ -2,7 +2,9 @@ package com.cannontech.web.group;
 
 import java.util.ArrayList;
 import java.util.Collections;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServletRequest;
@@ -73,6 +75,7 @@ public class GroupEditorController extends MultiActionController {
             throws Exception, ServletException {
 
         ModelAndView mav = new ModelAndView("home.jsp");
+        YukonUserContext userContext = YukonUserContextUtils.getYukonUserContext(request);
 
         String groupName = ServletRequestUtils.getStringParameter(request, "groupName");
 
@@ -94,11 +97,18 @@ public class GroupEditorController extends MultiActionController {
             group = rootGroup;
         }
         mav.addObject("group", group);
+        mav.addObject("groupFullName", group.getFullName(userContext));
         
         // sub groups (child groups)
         List<DeviceGroup> childGroups = deviceGroupDao.getChildGroups(group);
-        mav.addObject("subGroups", childGroups);
 
+        Map<DeviceGroup,String> subGroupMap = new HashMap<>();
+        
+        for (DeviceGroup childGroup : childGroups) {
+            subGroupMap.put(childGroup, childGroup.getName(userContext, childGroup.getName()));
+        }
+        
+        mav.addObject("subGroupMap",subGroupMap);
         Boolean showDevices = ServletRequestUtils.getBooleanParameter(request, "showDevices", false);
         mav.addObject("showDevices", showDevices);
         
@@ -133,7 +143,6 @@ public class GroupEditorController extends MultiActionController {
         // this path will be used to expand the tree to the selected node and ensure it is visible.
         final DeviceGroup selectedDeviceGroup = group;
         
-        YukonUserContext userContext = YukonUserContextUtils.getYukonUserContext(request);
         String groupsLabel = messageSourceResolver.getMessageSourceAccessor(userContext).getMessage("yukon.web.deviceGroups.widget.groupTree.rootName");
         
         // ALL GROUPS TREE JSON
