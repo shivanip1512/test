@@ -4,7 +4,7 @@ set MSP_URL=--timeout -1 http://www.multispeak.org/interface/30v/
 set MSP_URL=--timeout -1 C:\eclipsesvn\branch_4_2\multispeak\wsdl\
 set MSP_DEPLOY_FILE=com\cannontech\multispeak\deploy\service\deploy.wsdd
 set AXIS_LIB=C:\eclipsesvn\branch_4_2\third-party\
-set AXISCLASSPATH=%AXIS_LIB%\axis.jar;%AXIS_LIB%\commons-discovery.jar;%AXIS_LIB%\commons-logging-1.1.jar;%AXIS_LIB%\jaxrpc.jar;%AXIS_LIB%\saaj.jar;%AXIS_LIB%\log4j-1.2.14.jar;C:\axis1_2\lib\xml-apis.jar;C:\axis1_2\lib\xercesImpl.jar;%AXIS_LIB%\wsdl4j.jar;%AXIS_LIB%\mail.jar;%AXIS_LIB%\activation.jar;
+set AXISCLASSPATH=%AXIS_LIB%\axis.jar;%AXIS_LIB%\commons-discovery.jar;%AXIS_LIB%\commons-logging-1.1.jar;%AXIS_LIB%\jaxrpc.jar;%AXIS_LIB%\saaj.jar;%AXIS_LIB%\log4j-1.2.17.jar;C:\axis1_2\lib\xml-apis.jar;C:\axis1_2\lib\xercesImpl.jar;%AXIS_LIB%\wsdl4j.jar;%AXIS_LIB%\mail.jar;%AXIS_LIB%\activation.jar;
 set URL_EXT=.asmx?WSDL
 set URL_EXT=.wsdl
 REM Client side implementations

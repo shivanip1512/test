@@ -66,7 +66,7 @@
         <include name="junit-4.8.2.jar"/>
         <include name="kahadb-5.7.0.jar"/>
         <include name="loadcontrol.jar"/>
-        <include name="log4j-1.2.14.jar"/>
+        <include name="log4j-1.2.17.jar"/>
         <include name="lucene-core-3.4.0.jar"/>
         <include name="mail.jar"/>
         <include name="mx4j-tools.jar"/>

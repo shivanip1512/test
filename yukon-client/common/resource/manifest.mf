@@ -38,7 +38,7 @@ Class-Path: ./
  asm-attrs.jar 
  antlr-2.7.6rc1.jar 
  lucene-core-3.4.0.jar 
- log4j-1.2.14.jar 
+ log4j-1.2.17.jar 
  guava-13.0.1.jar 
  rwav.jar 
  SqlServer.jar 

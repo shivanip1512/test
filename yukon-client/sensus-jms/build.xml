@@ -80,7 +80,7 @@
 	    </copy>
    	
 	    <copy todir="dist/lib">
-	      <fileset file="${yukon.lib}/log4j-1.2.14.jar"/>
+	      <fileset file="${yukon.lib}/log4j-1.2.17.jar"/>
 	      <fileset file="${yukon.lib}/commons-lang-2.3.jar"/>
 	      <fileset file="${yukon.lib}/org.springframework.aop-3.1.3.RELEASE.jar"/>
 	      <fileset file="${yukon.lib}/org.springframework.asm-3.1.3.RELEASE.jar"/>

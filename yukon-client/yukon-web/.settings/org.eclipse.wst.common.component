@@ -158,7 +158,7 @@
         <dependent-module archiveName="commons-dbcp-1.2.1.jar" deploy-path="/WEB-INF/lib" handle="module:/classpath/lib/third-party/commons-dbcp-1.2.1.jar">
             <dependency-type>uses</dependency-type>
         </dependent-module>
-        <dependent-module archiveName="log4j-1.2.14.jar" deploy-path="/WEB-INF/lib" handle="module:/classpath/lib/third-party/log4j-1.2.14.jar">
+        <dependent-module archiveName="log4j-1.2.17.jar" deploy-path="/WEB-INF/lib" handle="module:/classpath/lib/third-party/log4j-1.2.17.jar">
             <dependency-type>uses</dependency-type>
         </dependent-module>
         <dependent-module archiveName="commons-el-1.0.jar" deploy-path="/WEB-INF/lib" handle="module:/classpath/lib/yukon-web/WebContent/WEB-INF/lib/commons-el-1.0.jar">
