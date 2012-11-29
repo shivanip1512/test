@@ -31,7 +31,8 @@ public class FlexibleDateParserTest {
     @Resource(name="ymdDateParser")
     private FlexibleDateParser ymd_en;
     
-    private DateFormat standardFormat = SimpleDateFormat.getInstance();
+    //Using this DateFormat so that the date and time are being parsed the same regardless of locale
+    private DateFormat standardFormat = new SimpleDateFormat("MM/dd/yy hh:mm a");
 
     @Test
     public void testFlexibleDateParserYMD_en() {
