@@ -13,7 +13,8 @@ a:hover, a:focus {text-decoration:underline;outline:0;}
 
 /* primary color */
 a, .primary_color, .vertical_menu li.selected a, .vertical_menu a:hover, .ui-widget-content a {color:#06C;}
-::-moz-selection, .primary_background {background-color:#06c; color:white;}
+.primary_background {background-color:#06c; color:white;}
+::-moz-selection, ::selection {background-color:#06c; color:white;} /* separate rule until IE does not trash rules with pseudo selectors */
 .primary_background a, .primary_background a:visited {color:white}
 
 a:visited {color: purple;}
@@ -26,18 +27,19 @@ h1 {font-size: 1.3em;font-weight:bold;}
 h1,h2,h3,h4 {margin-bottom:.8em;}
 
 /* shared form field attributes */
-input[type=submit], input[type=button], input[type=text], button, textarea, select {border:solid 1px #ccc; border-radius:2px; color:#555;}
+input, button, textarea, select {border:solid 1px #ccc; border-radius:2px; color:#555;}
 input, button, textarea {padding:2px 5px;}
 input:focus, button:focus, textarea:focus, select:focus, button:hover, input[type=submit]:hover, input[type=submit]:focus, input[type=button]:hover, input[type=button]:focus {border:solid 1px #4373A3;box-shadow:0 0 5px lightBlue;outline:0;color:black;}
 input::-moz-focus-inner, button::-moz-focus-inner, textarea::-moz-focus-inner, select::-moz-focus-inner {border:0}
 
-input[type=submit], input[type=button], input[type=text] {background:white;padding:2px 5px;}
+input {background:white;padding:2px 5px;}
 button, input[type=submit], input[type=button] {color:#333;border:solid 1px #888; cursor:pointer; background-color:#efefef; background:linear-gradient(#efefef, #cccccc); text-shadow: 1px 1px 0 white;}
 
 button:hover, input[type=submit]:hover, input[type=button]:hover {color:black; background:linear-gradient(#efefef, #bbbbbb);text-shadow:1px 1px 0 #eeeeee;}
 button:active, input[type=submit]:active, input[type=button]:active {color:black; background:#cccccc;text-shadow:1px 1px 0 #eeeeee;}
 button:disabled, input[type=submit]:disabled, input[type=button]:disabled {color: #999; border:solid 1px #CCC !important; background:linear-gradient(#efefef, #DEDEDE); text-shadow: 1px 1px 0 white;box-shadow:none;cursor:not-allowed;}
 button .hoverableImage {margin-top:-2px; top: 2px; margin-right: 5px; position:relative;}
+button.image {padding: 0; width: 16px; height: 16px;}
 
 button.danger {color:white;background:#DA4F49 linear-gradient(#EE5F5B, #BD362F); text-shadow: 0 -1px 0 rgba(0, 0, 0, 0.25); border-color:#802D2D;}
 button.danger:hover {background:#BD362F; border-color:#802D2D;box-shadow:0 0 5px red;}
@@ -67,7 +69,6 @@ button.naked, button.naked:hover {border:none; background:transparent; box-shado
 .vertical_menu li.selected {border-left:solid 5px #ccc;}
 .vertical_menu a {color:inherit; display:block; word-wrap:break-word;text-shadow: 1px 1px 0 white;}
 
-
 /* Copyright */
 #CopyRight {width:960px; margin: 0 auto; padding: 20px 0; clear:both; font-size: .8em; color: #888; text-align:center;}
 
@@ -84,7 +85,7 @@ table.naturalWidth {width: auto;}
 .nameValueTable .name {font-size: .9em;}
 .nameValueTable .value {color: #333;}
 /* END Table Styles */
-.rowHighlighting tr:hover {background-color:#FFF465 !important;}
+.rowHighlighting tr:hover, .highlighted {background-color:#FFF465 !important;}
 
 /* CONTAINERS */
 .titledContainer, .pagedBox, .sectionContainer {margin-bottom: 20px;}
@@ -97,7 +98,7 @@ table.naturalWidth {width: auto;}
 .pagedBox > .title, .pagedBox > .footer, .boxContainer_titleBar, .resultsTable th {background-color:#efefef;} /* .titledContainer > .titleBar, */
 .titledContainer > .content, .pagedBox > .content, .pagedBox > .footer, .sectionContainer > .content, .sectionContainer > .footer {border-top: solid 1px #ccc;}
 .titledContainer > .titleBar, .pagedBox > .title, .pagedBox > .footer, .ui-dialog .ui-dialog-title {font-weight:bold; text-shadow:1px 1px 0 white;border-radius: 3px 3px 0 0;}
-.actionArea {text-align:right; margin-top: 10px;}
+.actionArea {text-align:right; margin-top: 20px;}
 .pageActionArea {margin: 20px 0;}
 .pagingArea, .perPageArea {font-weight: normal;} /* TODO: change title span to h3 to avoid this 'undo' css rule, move bottom-margin on h's to new rule .page-title */
 

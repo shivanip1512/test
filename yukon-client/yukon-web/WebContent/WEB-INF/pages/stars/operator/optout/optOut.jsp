@@ -78,41 +78,45 @@
 
 <c:choose>
     <c:when test="${fn:length(currentOptOutList) > 0}">
-        <table id="deviceTable" class="miniResultsTable">
-            <tr class="<ct:alternateRow odd="" even="altRow"/>">
-                <th><cti:msg key="yukon.dr.operator.optout.device"/></th>
-                <th><cti:msg key="yukon.dr.operator.optout.program"/></th>
-                <th><cti:msg key="yukon.dr.operator.optout.status"/></th>
-                <th><cti:msg key="yukon.dr.operator.optout.dateActive"/></th>
-                <th><cti:msg key="yukon.dr.operator.optout.actions"/></th>
-            </tr>
-            
-            <c:forEach var="optOut" items="${currentOptOutList}">
-                <tr class="<ct:alternateRow odd="" even="altRow"/>">
-                    <td><spring:escapeBody htmlEscape="true">${optOut.inventory.displayName}</spring:escapeBody></td>
-                    <td>
-                        <c:forEach var="program" items="${optOut.programList}">
-                            <spring:escapeBody htmlEscape="true">${program.programName}</spring:escapeBody>
-                        </c:forEach>
-                    </td>
-                    <td><cti:msg key="${optOut.state.formatKey}"/></td>
-                    <td>
-                        <cti:formatDate value="${optOut.startDate}" type="DATEHM"/>
-                    </td>
-                    <td>
-                        <form action="/stars/operator/optout/cancel" method="post">
-                            <input type="hidden" name="eventId" value="${optOut.eventId}">
-                            <input type="submit" name="submit" value="<cti:msg key="yukon.dr.operator.optout.cancel"/>" class="formSubmit">
-                        </form>
-                        <c:if test="${optOut.state == 'START_OPT_OUT_SENT'}">
-                            <form action="/stars/operator/optout/repeat" method="post">
-                                <input type="hidden" name="inventoryId" value="${optOut.inventory.inventoryId}">
-                                <input type="submit" name="submit" value="<cti:msg key="yukon.dr.operator.optout.repeat"/>" class="formSubmit">
-                            </form>
-                        </c:if>
-                    </td>
+        <table id="deviceTable" class="resultsTable">
+            <thead>
+                <tr>
+                    <th><cti:msg key="yukon.dr.operator.optout.device"/></th>
+                    <th><cti:msg key="yukon.dr.operator.optout.program"/></th>
+                    <th><cti:msg key="yukon.dr.operator.optout.status"/></th>
+                    <th><cti:msg key="yukon.dr.operator.optout.dateActive"/></th>
+                    <th><cti:msg key="yukon.dr.operator.optout.actions"/></th>
                 </tr>
-            </c:forEach>
+            </thead>
+            <tfoot></tfoot>
+            <tbody>
+                <c:forEach var="optOut" items="${currentOptOutList}">
+                    <tr class="<ct:alternateRow odd="" even="altRow"/>">
+                        <td><spring:escapeBody htmlEscape="true">${optOut.inventory.displayName}</spring:escapeBody></td>
+                        <td>
+                            <c:forEach var="program" items="${optOut.programList}">
+                                <spring:escapeBody htmlEscape="true">${program.programName}</spring:escapeBody>
+                            </c:forEach>
+                        </td>
+                        <td><cti:msg key="${optOut.state.formatKey}"/></td>
+                        <td>
+                            <cti:formatDate value="${optOut.startDate}" type="DATEHM"/>
+                        </td>
+                        <td>
+                            <form action="/stars/operator/optout/cancel" method="post">
+                                <input type="hidden" name="eventId" value="${optOut.eventId}">
+                                <input type="submit" name="submit" value="<cti:msg key="yukon.dr.operator.optout.cancel"/>" class="formSubmit">
+                            </form>
+                            <c:if test="${optOut.state == 'START_OPT_OUT_SENT'}">
+                                <form action="/stars/operator/optout/repeat" method="post">
+                                    <input type="hidden" name="inventoryId" value="${optOut.inventory.inventoryId}">
+                                    <input type="submit" name="submit" value="<cti:msg key="yukon.dr.operator.optout.repeat"/>" class="formSubmit">
+                                </form>
+                            </c:if>
+                        </td>
+                    </tr>
+                </c:forEach>
+            </tbody>
         </table>
     </c:when>
     <c:otherwise>
@@ -124,58 +128,62 @@
 <!-- Opt Out Limits -->
 <cti:msg key="yukon.dr.operator.optout.optOutLimits"/>
 
-<table id="deviceTable" class="miniResultsTable">
-    <tr class="<ct:alternateRow odd="" even="altRow"/>">
-        <th><cti:msg key="yukon.dr.operator.optout.device"/></th>
-        <th><cti:msg key="yukon.dr.operator.optout.used"/></th>
-        <c:if test="${!noOptOutLimits}">
-            <th><cti:msg key="yukon.dr.operator.optout.allowAdditional"/></th>
-        </c:if>
-        <th><cti:msg key="yukon.dr.operator.optout.remaining"/></th>
-        <c:if test="${!noOptOutLimits}">
-            <th><cti:msg key="yukon.dr.operator.optout.reset"/></th>
-        </c:if>
-    </tr>
-    
-    <c:forEach var="inventory" items="${displayableInventories}">
-        <tr class="<ct:alternateRow odd="" even="altRow"/>">
-            <td><spring:escapeBody htmlEscape="true">${inventory.displayName}</spring:escapeBody></td>
-            <td>${optOutCounts[inventory.inventoryId].usedOptOuts}</td>
+<table id="deviceTable" class="resultsTable">
+    <thead>
+        <tr>
+            <th><cti:msg key="yukon.dr.operator.optout.device"/></th>
+            <th><cti:msg key="yukon.dr.operator.optout.used"/></th>
             <c:if test="${!noOptOutLimits}">
-	            <td>
-	                <form action="/stars/operator/optOut/allowAnother" method="post">
-	                    <input type="hidden" name="inventoryId" value="${inventory.inventoryId}">
-	                    <input type="submit" name="submit" value="<cti:msg key="yukon.dr.operator.optout.allowAnother"/>" class="formSubmit">
-	                </form>
-	            </td>
-	        </c:if>
-            <td>
-                <c:choose>
-                    <c:when test="${noOptOutLimits}">
-                        <cti:msg key="yukon.dr.operator.optout.unlimitedRemaining"/>
-                    </c:when>
-                    <c:otherwise>
-                        ${optOutCounts[inventory.inventoryId].remainingOptOuts}
-                    </c:otherwise>
-                </c:choose>
-            </td>
+                <th><cti:msg key="yukon.dr.operator.optout.allowAdditional"/></th>
+            </c:if>
+            <th><cti:msg key="yukon.dr.operator.optout.remaining"/></th>
             <c:if test="${!noOptOutLimits}">
-	            <td>
-	               <c:choose>
-	                   <c:when test="${optOutLimit <= optOutCounts[inventory.inventoryId].remainingOptOuts}">
-	                       <cti:msg key="yukon.dr.operator.optout.atLimit"/>
-	                   </c:when>
-	                   <c:otherwise>
-			                <form action="/stars/operator/optOut/resetToLimit" method="post">
-			                    <input type="hidden" name="inventoryId" value="${inventory.inventoryId}">
-			                    <input type="submit" name="submit" value="<cti:msg key="yukon.dr.operator.optout.clear"/>" class="formSubmit">
-			                </form>
-	                   </c:otherwise>
-	               </c:choose>
-	            </td>
-	        </c:if>
+                <th><cti:msg key="yukon.dr.operator.optout.reset"/></th>
+            </c:if>
         </tr>
-    </c:forEach>
+    </thead>
+    <tfoot></tfoot>
+    <tbody>
+        <c:forEach var="inventory" items="${displayableInventories}">
+            <tr class="<ct:alternateRow odd="" even="altRow"/>">
+                <td><spring:escapeBody htmlEscape="true">${inventory.displayName}</spring:escapeBody></td>
+                <td>${optOutCounts[inventory.inventoryId].usedOptOuts}</td>
+                <c:if test="${!noOptOutLimits}">
+    	            <td>
+    	                <form action="/stars/operator/optOut/allowAnother" method="post">
+    	                    <input type="hidden" name="inventoryId" value="${inventory.inventoryId}">
+    	                    <input type="submit" name="submit" value="<cti:msg key="yukon.dr.operator.optout.allowAnother"/>" class="formSubmit">
+    	                </form>
+    	            </td>
+    	        </c:if>
+                <td>
+                    <c:choose>
+                        <c:when test="${noOptOutLimits}">
+                            <cti:msg key="yukon.dr.operator.optout.unlimitedRemaining"/>
+                        </c:when>
+                        <c:otherwise>
+                            ${optOutCounts[inventory.inventoryId].remainingOptOuts}
+                        </c:otherwise>
+                    </c:choose>
+                </td>
+                <c:if test="${!noOptOutLimits}">
+    	            <td>
+    	               <c:choose>
+    	                   <c:when test="${optOutLimit <= optOutCounts[inventory.inventoryId].remainingOptOuts}">
+    	                       <cti:msg key="yukon.dr.operator.optout.atLimit"/>
+    	                   </c:when>
+    	                   <c:otherwise>
+    			                <form action="/stars/operator/optOut/resetToLimit" method="post">
+    			                    <input type="hidden" name="inventoryId" value="${inventory.inventoryId}">
+    			                    <input type="submit" name="submit" value="<cti:msg key="yukon.dr.operator.optout.clear"/>" class="formSubmit">
+    			                </form>
+    	                   </c:otherwise>
+    	               </c:choose>
+    	            </td>
+    	        </c:if>
+            </tr>
+        </c:forEach>
+    </tbody>
 </table>
 
 <br><br>

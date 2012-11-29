@@ -1,8 +1,3 @@
-div.hardwareListContainer {
-    padding-bottom: 18px;
-    padding-right: 8px;
-}
-
 div.hardwarePageContainer {
     max-height: 112px;
     overflow: auto;
@@ -41,22 +36,6 @@ table.hardwareListTable th.actions {
 td.serviceCompanyInfo {
     padding-top: 0px !important;
     vertical-align: top;
-}
-
-table.invCheckingTable td {
-    font-size: 12px;
-}
-
-table.theremostatActionTable {
-    width: 100%;
-}
-
-table.theremostatActionTable td {
-    vertical-align: bottom;
-}
-
-table.theremostatActionTable td.buttonCell {
-    text-align: right;
 }
 
 #hardwareConfigEditDialog #editArea {

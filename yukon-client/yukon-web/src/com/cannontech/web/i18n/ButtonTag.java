@@ -17,6 +17,7 @@ import com.cannontech.web.taglib.UniqueIdentifierTag;
 import com.cannontech.web.taglib.YukonTagSupport;
 
 public class ButtonTag extends YukonTagSupport {
+    
     protected String id = null;
     protected String nameKey = null;
     protected String arguments = null;
@@ -103,10 +104,6 @@ public class ButtonTag extends YukonTagSupport {
 
         if (!disabled) {
             classes += " hoverableImageContainer";
-        }
-
-        if (!renderMode.equalsIgnoreCase("image")) {
-            classes += " formSubmit"; // adds padding to left and right inside button tag
         }
 
         if (renderMode.equalsIgnoreCase("labeledImage") || renderMode.equalsIgnoreCase("image")) {
@@ -238,6 +235,9 @@ public class ButtonTag extends YukonTagSupport {
                 if (hasImage) {
                     out.write(" class=\"");
                     out.write(imageOnRight ? "leftOfImageLabel" : "rightOfImageLabel");
+                    if (renderMode.equalsIgnoreCase("labeledImage")) {
+                        out.write(" primary_color");
+                    }
                     out.write("\"");
                 }
                 out.write(">");

@@ -207,19 +207,24 @@
         
         <div style="padding:10px;"><i:inline key=".serialNumber.inWarehouse"/></div>
         
-        <table class="miniResultsTable invCheckingTable" align="center">
-            <tr>
-                <th nowrap="nowrap"><i:inline key=".serialNumberShort"/></th>
-                <th nowrap="nowrap"><i:inline key=".altTrackingNumber"/></th>
-                <th nowrap="nowrap"><i:inline key=".deviceType"/></th>
-                <th nowrap="nowrap"><i:inline key=".warehouse"/></th>
-            </tr>
-            <tr>
-                <td><spring:escapeBody htmlEscape="true">${checkingAdd.serialNumber}</spring:escapeBody></td>
-                <td><spring:escapeBody htmlEscape="true">${checkingAdd.altTrackingNumber}</spring:escapeBody></td>
-                <td><spring:escapeBody htmlEscape="true">${checkingAdd.deviceType}</spring:escapeBody></td>
-                <td><spring:escapeBody htmlEscape="true">${checkingAdd.warehouse}</spring:escapeBody></td>
-            </tr>
+        <table class="compactResultsTable invCheckingTable" align="center">
+            <thead>
+                <tr>
+                    <th nowrap="nowrap"><i:inline key=".serialNumberShort"/></th>
+                    <th nowrap="nowrap"><i:inline key=".altTrackingNumber"/></th>
+                    <th nowrap="nowrap"><i:inline key=".deviceType"/></th>
+                    <th nowrap="nowrap"><i:inline key=".warehouse"/></th>
+                </tr>
+            </thead>
+            <tfoot></tfoot>
+            <tbody>
+                <tr>
+                    <td><spring:escapeBody htmlEscape="true">${checkingAdd.serialNumber}</spring:escapeBody></td>
+                    <td><spring:escapeBody htmlEscape="true">${checkingAdd.altTrackingNumber}</spring:escapeBody></td>
+                    <td><spring:escapeBody htmlEscape="true">${checkingAdd.deviceType}</spring:escapeBody></td>
+                    <td><spring:escapeBody htmlEscape="true">${checkingAdd.warehouse}</spring:escapeBody></td>
+                </tr>
+            </tbody>
         </table>
         
         <div style="padding:10px;"><i:inline key=".serialNumber.addToAccount"/></div>
@@ -248,21 +253,24 @@
         
         <div class="hardwarePopup"><i:inline key=".serialNumber.foundOnAnotherAccount"/></div>
         
-        <table class="miniResultsTable invCheckingTable" align="center">
-            <tr>
-                <th nowrap="nowrap"><i:inline key=".accountNumber"/></th>
-                <th nowrap="nowrap"><i:inline key=".name"/></th>
-                <th nowrap="nowrap"><i:inline key=".serialNumberShort"/></th>
-                <th nowrap="nowrap"><i:inline key=".deviceType"/></th>
-            </tr>
-            <tr title="<tags:address address="${checkingAdd.address}" inLine="true"/>">
-            
-                <td><spring:escapeBody htmlEscape="true">${checkingAdd.accountNumber}</spring:escapeBody></td>
-                <td><spring:escapeBody htmlEscape="true">${checkingAdd.name}</spring:escapeBody></td>
-                <td><spring:escapeBody htmlEscape="true">${checkingAdd.serialNumber}</spring:escapeBody></td>
-                <td><spring:escapeBody htmlEscape="true">${checkingAdd.deviceType}</spring:escapeBody></td>
-                
-            </tr>
+        <table class="compactResultsTable invCheckingTable" align="center">
+            <thead>
+                <tr>
+                    <th nowrap="nowrap"><i:inline key=".accountNumber"/></th>
+                    <th nowrap="nowrap"><i:inline key=".name"/></th>
+                    <th nowrap="nowrap"><i:inline key=".serialNumberShort"/></th>
+                    <th nowrap="nowrap"><i:inline key=".deviceType"/></th>
+                </tr>
+            </thead>
+            <tfoot></tfoot>
+            <tbody>
+                <tr title="<tags:address address="${checkingAdd.address}" inLine="true"/>">
+                    <td><spring:escapeBody htmlEscape="true">${checkingAdd.accountNumber}</spring:escapeBody></td>
+                    <td><spring:escapeBody htmlEscape="true">${checkingAdd.name}</spring:escapeBody></td>
+                    <td><spring:escapeBody htmlEscape="true">${checkingAdd.serialNumber}</spring:escapeBody></td>
+                    <td><spring:escapeBody htmlEscape="true">${checkingAdd.deviceType}</spring:escapeBody></td>
+                </tr>
+            </tbody>
         </table>
         
         <div class="hardwarePopup">
@@ -373,41 +381,45 @@
             </c:when>
             <c:otherwise>
                 <table class="compactResultsTable hardwareListTable">
-                    <tr>
-                        <th class="name"><i:inline key=".serialNumber"/></th>
-                        <th class="type"><i:inline key=".displayType.SWITCH"/></th>
-                        <th class="label"><i:inline key=".label"/></th>
-                        <th class="actions"><i:inline key=".actions"/></th>
-                    </tr>
-                    
-                    <c:forEach var="hwSwitch" items="${switches}">
-                        <tr class="<tags:alternateRow odd="" even="altRow"/>">
-                            <td>
-                                <a href="${viewUrl}${hwSwitch.inventoryId}">
-                                    <spring:escapeBody htmlEscape="true">${hwSwitch.serialNumber}</spring:escapeBody>
-                                </a>
-                            </td>
-                            <td><spring:escapeBody htmlEscape="true">${hwSwitch.displayType}</spring:escapeBody></td>
-                            <td><spring:escapeBody htmlEscape="true">${hwSwitch.displayLabel}</spring:escapeBody></td>
-                            <td nowrap="nowrap">
-                                <cti:checkRolesAndProperties value="OPERATOR_ALLOW_ACCOUNT_EDITING">
-                                    <c:if test="${inventoryChecking}">
-                                        <tags:pickerDialog extraArgs="${energyCompanyId}" 
-                                                id="availableSwitchPicker${hwSwitch.inventoryId}" 
-                                                type="availableSwitchPicker" 
-                                                destinationFieldId="newInventoryId" 
-                                                immediateSelectMode="true"
-                                                endAction="function(items) { return changeOut(${hwSwitch.inventoryId}, false); }" 
-                                                linkType="button"
-                                                buttonRenderMode="image"
-                                                styleClass="vam"
-                                                nameKey="changeOut"/>
-                                    </c:if>
-                                </cti:checkRolesAndProperties>
-                                <cti:img nameKey="editConfig" href="${editConfigUrl}${hwSwitch.inventoryId}"/>
-                            </td>
+                    <thead>
+                        <tr>
+                            <th class="name"><i:inline key=".serialNumber"/></th>
+                            <th class="type"><i:inline key=".displayType.SWITCH"/></th>
+                            <th class="label"><i:inline key=".label"/></th>
+                            <th class="actions"><i:inline key=".actions"/></th>
                         </tr>
-                    </c:forEach>
+                    </thead>
+                    <tfoot></tfoot>
+                    <tbody>
+                        <c:forEach var="hwSwitch" items="${switches}">
+                            <tr>
+                                <td>
+                                    <a href="${viewUrl}${hwSwitch.inventoryId}">
+                                        <spring:escapeBody htmlEscape="true">${hwSwitch.serialNumber}</spring:escapeBody>
+                                    </a>
+                                </td>
+                                <td><spring:escapeBody htmlEscape="true">${hwSwitch.displayType}</spring:escapeBody></td>
+                                <td><spring:escapeBody htmlEscape="true">${hwSwitch.displayLabel}</spring:escapeBody></td>
+                                <td nowrap="nowrap">
+                                    <cti:checkRolesAndProperties value="OPERATOR_ALLOW_ACCOUNT_EDITING">
+                                        <c:if test="${inventoryChecking}">
+                                            <tags:pickerDialog extraArgs="${energyCompanyId}" 
+                                                    id="availableSwitchPicker${hwSwitch.inventoryId}" 
+                                                    type="availableSwitchPicker" 
+                                                    destinationFieldId="newInventoryId" 
+                                                    immediateSelectMode="true"
+                                                    endAction="function(items) { return changeOut(${hwSwitch.inventoryId}, false); }" 
+                                                    linkType="button"
+                                                    buttonRenderMode="image"
+                                                    styleClass="vat"
+                                                    nameKey="changeOut"/>
+                                        </c:if>
+                                    </cti:checkRolesAndProperties>
+                                    <cti:img nameKey="editConfig" href="${editConfigUrl}${hwSwitch.inventoryId}"/>
+                                </td>
+                            </tr>
+                        </c:forEach>
+                    </tbody>
                 </table>
                 
             </c:otherwise>
@@ -455,97 +467,98 @@
             <c:otherwise>
                 <tags:alternateRowReset/>
                 <table class="compactResultsTable hardwareListTable">
-                    <tr>
-                        <th class="name"><i:inline key=".serialNumber"/></th>
-                        <th class="type"><i:inline key=".displayType.THERMOSTAT"/></th>
-                        <th class="label"><i:inline key=".label"/></th>
-                        <th class="actions"><i:inline key=".actions"/></th>
-                    </tr>
-                    
-                    <c:forEach var="thermostat" items="${thermostats}">
-                        <tr class="<tags:alternateRow odd="" even="altRow"/>">
-                            <td>
-                                <a href="${viewUrl}${thermostat.inventoryId}">
-                                    <spring:escapeBody htmlEscape="true">${thermostat.serialNumber}</spring:escapeBody>
-                                </a>
-                            </td>
-                            <td><spring:escapeBody htmlEscape="true">${thermostat.displayType}</spring:escapeBody></td>
-                            <td><spring:escapeBody htmlEscape="true">${thermostat.displayLabel}</spring:escapeBody></td>
-                            <td nowrap="nowrap">
-                                <cti:checkRolesAndProperties value="OPERATOR_ALLOW_ACCOUNT_EDITING">
-                                    <c:if test="${inventoryChecking}">
-                                        <tags:pickerDialog extraArgs="${energyCompanyId}" 
-                                                id="availableThermostatPicker${thermostat.inventoryId}" 
-                                                type="availableThermostatPicker" 
-                                                destinationFieldId="newInventoryId" 
-                                                immediateSelectMode="true"
-                                                endAction="function(items) { return changeOut(${thermostat.inventoryId}, false); }" 
-                                                linkType="button"
-                                                buttonRenderMode="image"
-                                                nameKey="changeOut"/>
-                                    </c:if>
-                                </cti:checkRolesAndProperties>
-                                
-                                <cti:img nameKey="editConfig" href="${editConfigUrl}${thermostat.inventoryId}"/>
-                                
-                                <cti:checkRolesAndProperties value="OPERATOR_CONSUMER_INFO_HARDWARES_THERMOSTAT">
-                                    <c:if test="${thermostat.hardwareType.supportsSchedules}">
-                                        <cti:img nameKey="savedSchedules" href="${savedSchedulesUrl}${thermostat.inventoryId}"/>
-                                    </c:if>
-                                    <c:if test="${thermostat.hardwareType.supportsManualAdjustment}">
-                                        <cti:img nameKey="manual" href="${editManualUrl}${thermostat.inventoryId}"/>
-                                    </c:if>
-                                </cti:checkRolesAndProperties>
-                                <cti:img nameKey="history" href="${thermostatHistoryUrl}${thermostat.inventoryId}" />
-                                    
-                            </td>
+                    <thead>
+                        <tr>
+                            <th class="name"><i:inline key=".serialNumber"/></th>
+                            <th class="type"><i:inline key=".displayType.THERMOSTAT"/></th>
+                            <th class="label"><i:inline key=".label"/></th>
+                            <th class="actions"><i:inline key=".actions"/></th>
                         </tr>
-                    </c:forEach>
+                    </thead>
+                    <tfoot></tfoot>
+                    <tbody>
+                        <c:forEach var="thermostat" items="${thermostats}">
+                            <tr>
+                                <td>
+                                    <a href="${viewUrl}${thermostat.inventoryId}">
+                                        <spring:escapeBody htmlEscape="true">${thermostat.serialNumber}</spring:escapeBody>
+                                    </a>
+                                </td>
+                                <td><spring:escapeBody htmlEscape="true">${thermostat.displayType}</spring:escapeBody></td>
+                                <td><spring:escapeBody htmlEscape="true">${thermostat.displayLabel}</spring:escapeBody></td>
+                                <td nowrap="nowrap">
+                                    <cti:checkRolesAndProperties value="OPERATOR_ALLOW_ACCOUNT_EDITING">
+                                        <c:if test="${inventoryChecking}">
+                                            <tags:pickerDialog extraArgs="${energyCompanyId}" 
+                                                    id="availableThermostatPicker${thermostat.inventoryId}" 
+                                                    type="availableThermostatPicker" 
+                                                    destinationFieldId="newInventoryId" 
+                                                    immediateSelectMode="true"
+                                                    endAction="function(items) { return changeOut(${thermostat.inventoryId}, false); }" 
+                                                    linkType="button"
+                                                    buttonRenderMode="image"
+                                                    nameKey="changeOut"/>
+                                        </c:if>
+                                    </cti:checkRolesAndProperties>
+                                    
+                                    <cti:img nameKey="editConfig" href="${editConfigUrl}${thermostat.inventoryId}"/>
+                                    
+                                    <cti:checkRolesAndProperties value="OPERATOR_CONSUMER_INFO_HARDWARES_THERMOSTAT">
+                                        <c:if test="${thermostat.hardwareType.supportsSchedules}">
+                                            <cti:img nameKey="savedSchedules" href="${savedSchedulesUrl}${thermostat.inventoryId}"/>
+                                        </c:if>
+                                        <c:if test="${thermostat.hardwareType.supportsManualAdjustment}">
+                                            <cti:img nameKey="manual" href="${editManualUrl}${thermostat.inventoryId}"/>
+                                        </c:if>
+                                    </cti:checkRolesAndProperties>
+                                    <cti:img nameKey="history" href="${thermostatHistoryUrl}${thermostat.inventoryId}" />
+                                        
+                                </td>
+                            </tr>
+                        </c:forEach>
+                    </tbody>
                 </table>
                 
             </c:otherwise>
         </c:choose>
         
-        <br>
-        
-        <table class="theremostatActionTable">
-            <tr>
-                <cti:checkRolesAndProperties value="OPERATOR_CONSUMER_INFO_THERMOSTATS_ALL">
-                    <c:if test="${showSelectAll}">
-                        <td>
-                            <a href="${selectMultipleUrl}"><i:inline key=".thermostats.selectMultiple"/></a>
-                        </td>
-                    </c:if>
-                </cti:checkRolesAndProperties>
-                <td class="buttonCell">
-                    <cti:checkRolesAndProperties value="OPERATOR_ALLOW_ACCOUNT_EDITING">
-                            <form action="${createUrl}">
-                                <input type="hidden" name="accountId" value="${accountId}">
-                                <input type="hidden" name="hardwareClass" value="${thermostatClass}">
+        <div class="actionArea">
+            <cti:checkRolesAndProperties value="OPERATOR_CONSUMER_INFO_THERMOSTATS_ALL">
+                <c:if test="${showSelectAll}">
+                    <span class="fl">
+                        <a href="${selectMultipleUrl}"><i:inline key=".thermostats.selectMultiple"/></a>
+                    </span>
+                </c:if>
+            </cti:checkRolesAndProperties>
+                
+            <cti:checkRolesAndProperties value="OPERATOR_ALLOW_ACCOUNT_EDITING">
+                <span class="fr">
+                    <form action="${createUrl}">
+                        <input type="hidden" name="accountId" value="${accountId}">
+                        <input type="hidden" name="hardwareClass" value="${thermostatClass}">
 
-                                <select name="hardwareTypeId" id="tstatTypeToAdd" <c:if test="${fn:length(tstatTypes) < 2}">class="dn"</c:if>>
-                                    <c:forEach var="deviceType" items="${tstatTypes}">
-                                        <option value="${deviceType.hardwareTypeEntryId}">
-                                            <spring:escapeBody htmlEscape="true">${deviceType.displayName}</spring:escapeBody>
-                                        </option>
-                                    </c:forEach> 
-                                </select>
-                            
-                                <c:choose>
-                                    <c:when test="${not inventoryChecking}">
-                                        <cti:checkRolesAndProperties value="OPERATOR_CONSUMER_INFO_HARDWARES_CREATE">
-                                            <cti:button nameKey="add" type="submit"/>
-                                        </cti:checkRolesAndProperties>
-                                    </c:when>
-                                    <c:otherwise>
-                                        <cti:button nameKey="add" onclick="showInvCheckingPopup('thermostat');" dialogButton="true"/>
-                                    </c:otherwise>
-                                </c:choose>
-                            </form>
-                    </cti:checkRolesAndProperties>
-                </td>
-            </tr>
-        </table>
+                        <select name="hardwareTypeId" id="tstatTypeToAdd" <c:if test="${fn:length(tstatTypes) < 2}">class="dn"</c:if>>
+                            <c:forEach var="deviceType" items="${tstatTypes}">
+                                <option value="${deviceType.hardwareTypeEntryId}">
+                                    <spring:escapeBody htmlEscape="true">${deviceType.displayName}</spring:escapeBody>
+                                </option>
+                            </c:forEach> 
+                        </select>
+                    
+                        <c:choose>
+                            <c:when test="${not inventoryChecking}">
+                                <cti:checkRolesAndProperties value="OPERATOR_CONSUMER_INFO_HARDWARES_CREATE">
+                                    <cti:button nameKey="add" type="submit"/>
+                                </cti:checkRolesAndProperties>
+                            </c:when>
+                            <c:otherwise>
+                                <cti:button nameKey="add" onclick="showInvCheckingPopup('thermostat');" dialogButton="true"/>
+                            </c:otherwise>
+                        </c:choose>
+                    </form>
+                </span>
+            </cti:checkRolesAndProperties>
+        </div>
         
     </tags:boxContainer2>
 </c:if>
@@ -561,71 +574,75 @@
             <c:otherwise>
                 <tags:alternateRowReset/>
                 <table class="compactResultsTable hardwareListTable">
-                    <tr>
-                        <th class="name">
-                            <c:choose>
-                                <c:when test="${starsMeters}">
-                                    <i:inline key=".meters.meterNumber"/>
-                                </c:when>
-                                <c:otherwise>
-                                    <i:inline key=".displayName"/>
-                                </c:otherwise>
-                            </c:choose>
-                        </th>
-                        <c:if test="${not starsMeters}">
-                            <th class="type"><i:inline key=".displayType.METER"/></th>
-                        </c:if>
-                        <th class="label"><i:inline key=".label"/></th>
-                        <c:if test="${not starsMeters}">
-                            <th class="actions"><i:inline key=".actions"/></th>
-                        </c:if>
-                    </tr>
-                    
-                    <c:forEach var="meter" items="${meters}">
-                        <tr class="<tags:alternateRow odd="" even="altRow"/>">
-                            
-                            <td>
-                                <a href="${meterUrl}${meter.inventoryId}">
-                                    <spring:escapeBody htmlEscape="true">${meter.displayName}</spring:escapeBody>
-                                </a>
-                            </td>
-                            
+                    <thead>
+                        <tr>
+                            <th class="name">
+                                <c:choose>
+                                    <c:when test="${starsMeters}">
+                                        <i:inline key=".meters.meterNumber"/>
+                                    </c:when>
+                                    <c:otherwise>
+                                        <i:inline key=".displayName"/>
+                                    </c:otherwise>
+                                </c:choose>
+                            </th>
                             <c:if test="${not starsMeters}">
-                                <td><spring:escapeBody htmlEscape="true">${meter.displayType}</spring:escapeBody></td>
+                                <th class="type"><i:inline key=".displayType.METER"/></th>
                             </c:if>
-                            
-                            <td><spring:escapeBody htmlEscape="true">${meter.displayLabel}</spring:escapeBody></td>
-                            
+                            <th class="label"><i:inline key=".label"/></th>
                             <c:if test="${not starsMeters}">
-                                <td nowrap="nowrap">
-                                    <cti:checkRolesAndProperties value="OPERATOR_ALLOW_ACCOUNT_EDITING">
-                                        
-                                        <c:if test="${inventoryChecking}">
-                                            <tags:pickerDialog extraArgs="${energyCompanyId}" 
-                                                    id="availableMeterPicker${meter.inventoryId}" 
-                                                    type="availableMctPicker" 
-                                                    destinationFieldId="newInventoryId" 
-                                                    immediateSelectMode="true" 
-                                                    endAction="function(items) { return changeOut(${meter.inventoryId}, true); }" 
-                                                    linkType="button"
-                                                    buttonRenderMode="image"
-                                                    nameKey="changeOut"/>
-                                        </c:if>
-                                        
-                                    </cti:checkRolesAndProperties>
-                                    
-                                    <cti:img nameKey="editConfig" href="${editMeterConfigUrl}${meter.deviceId}"/>
-                                    
-                                    <cti:checkRolesAndProperties value="METERING">
-                                        <cti:paoDetailUrl  yukonPao="${meter.yukonPao}">
-                                            <cti:img nameKey="meterDetail" />
-                                        </cti:paoDetailUrl>
-                                    </cti:checkRolesAndProperties>
-                                </td>
+                                <th class="actions"><i:inline key=".actions"/></th>
                             </c:if>
-                            
                         </tr>
-                    </c:forEach>
+                    </thead>
+                    <tfoot></tfoot>
+                    <tbody>
+                        <c:forEach var="meter" items="${meters}">
+                            <tr>
+                                
+                                <td>
+                                    <a href="${meterUrl}${meter.inventoryId}">
+                                        <spring:escapeBody htmlEscape="true">${meter.displayName}</spring:escapeBody>
+                                    </a>
+                                </td>
+                                
+                                <c:if test="${not starsMeters}">
+                                    <td><spring:escapeBody htmlEscape="true">${meter.displayType}</spring:escapeBody></td>
+                                </c:if>
+                                
+                                <td><spring:escapeBody htmlEscape="true">${meter.displayLabel}</spring:escapeBody></td>
+                                
+                                <c:if test="${not starsMeters}">
+                                    <td nowrap="nowrap">
+                                        <cti:checkRolesAndProperties value="OPERATOR_ALLOW_ACCOUNT_EDITING">
+                                            
+                                            <c:if test="${inventoryChecking}">
+                                                <tags:pickerDialog extraArgs="${energyCompanyId}" 
+                                                        id="availableMeterPicker${meter.inventoryId}" 
+                                                        type="availableMctPicker" 
+                                                        destinationFieldId="newInventoryId" 
+                                                        immediateSelectMode="true" 
+                                                        endAction="function(items) { return changeOut(${meter.inventoryId}, true); }" 
+                                                        linkType="button"
+                                                        buttonRenderMode="image"
+                                                        nameKey="changeOut"/>
+                                            </c:if>
+                                            
+                                        </cti:checkRolesAndProperties>
+                                        
+                                        <cti:img nameKey="editConfig" href="${editMeterConfigUrl}${meter.deviceId}"/>
+                                        
+                                        <cti:checkRolesAndProperties value="METERING">
+                                            <cti:paoDetailUrl  yukonPao="${meter.yukonPao}">
+                                                <cti:img nameKey="meterDetail" />
+                                            </cti:paoDetailUrl>
+                                        </cti:checkRolesAndProperties>
+                                    </td>
+                                </c:if>
+                                
+                            </tr>
+                        </c:forEach>
+                    </tbody>
                 </table>
                 
             </c:otherwise>
@@ -678,43 +695,47 @@
             <c:otherwise>
                 <tags:alternateRowReset/>
                 <table class="compactResultsTable hardwareListTable">
-                    <tr>
-                        <th class="name"><i:inline key=".displayName"/></th>
-                        <th class="type"><i:inline key=".displayType.GATEWAY"/></th>
-                        <th class="label"><i:inline key=".gateways.commStatus"/></th>
-                        <th class="actions"><i:inline key=".actions"/></th>
-                    </tr>
-                    
-                    <c:forEach var="gateway" items="${gateways}">
-                        <tr class="<tags:alternateRow odd="" even="altRow"/>">
-                            <td>
-                                <a href="${viewUrl}${gateway.inventoryId}">
-                                    <spring:escapeBody htmlEscape="true">${gateway.serialNumber}</spring:escapeBody>
-                                </a>
-                            </td>
-                            <td><spring:escapeBody htmlEscape="true">${gateway.displayType}</spring:escapeBody></td>
-                            <td class="pointStateColumn">
-                                <cti:pointStatusColor pointId="${gateway.commissionedId}" >
-                                    <cti:pointValue pointId="${gateway.commissionedId}" format="VALUE"/>
-                                </cti:pointStatusColor>
-                            </td>
-                            <td nowrap="nowrap">
-                                <cti:checkRolesAndProperties value="OPERATOR_ALLOW_ACCOUNT_EDITING">
-                                    <c:if test="${inventoryChecking}">
-                                        <tags:pickerDialog extraArgs="${energyCompanyId}" 
-                                                id="availableGatewayPicker${gateway.inventoryId}" 
-                                                type="availableGatewayPicker" 
-                                                destinationFieldId="newInventoryId"
-                                                immediateSelectMode="true"
-                                                endAction="function(items) { return changeOut(${gateway.inventoryId}, false); }" 
-                                                nameKey="changeOut"
-                                                linkType="button"
-                                                buttonRenderMode="image"/>
-                                    </c:if>
-                                </cti:checkRolesAndProperties>
-                            </td>
+                    <thead>
+                        <tr>
+                            <th class="name"><i:inline key=".displayName"/></th>
+                            <th class="type"><i:inline key=".displayType.GATEWAY"/></th>
+                            <th class="label"><i:inline key=".gateways.commStatus"/></th>
+                            <th class="actions"><i:inline key=".actions"/></th>
                         </tr>
-                    </c:forEach>
+                    </thead>
+                    <tfoot></tfoot>
+                    <tbody>
+                        <c:forEach var="gateway" items="${gateways}">
+                            <tr>
+                                <td>
+                                    <a href="${viewUrl}${gateway.inventoryId}">
+                                        <spring:escapeBody htmlEscape="true">${gateway.serialNumber}</spring:escapeBody>
+                                    </a>
+                                </td>
+                                <td><spring:escapeBody htmlEscape="true">${gateway.displayType}</spring:escapeBody></td>
+                                <td class="pointStateColumn">
+                                    <cti:pointStatusColor pointId="${gateway.commissionedId}" >
+                                        <cti:pointValue pointId="${gateway.commissionedId}" format="VALUE"/>
+                                    </cti:pointStatusColor>
+                                </td>
+                                <td nowrap="nowrap">
+                                    <cti:checkRolesAndProperties value="OPERATOR_ALLOW_ACCOUNT_EDITING">
+                                        <c:if test="${inventoryChecking}">
+                                            <tags:pickerDialog extraArgs="${energyCompanyId}" 
+                                                    id="availableGatewayPicker${gateway.inventoryId}" 
+                                                    type="availableGatewayPicker" 
+                                                    destinationFieldId="newInventoryId"
+                                                    immediateSelectMode="true"
+                                                    endAction="function(items) { return changeOut(${gateway.inventoryId}, false); }" 
+                                                    nameKey="changeOut"
+                                                    linkType="button"
+                                                    buttonRenderMode="image"/>
+                                        </c:if>
+                                    </cti:checkRolesAndProperties>
+                                </td>
+                            </tr>
+                        </c:forEach>
+                    </tbody>
                     
                 </table>
             </c:otherwise>

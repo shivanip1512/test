@@ -36,10 +36,9 @@ Picker.alreadySelectedHoverMessage = '<cti:msg2 key=".alreadySelectedHover"/>';
         <div id="picker_${id}_noResults" style="display: none" class="pickerResults"><i:inline key=".noResults"/></div>
     </div>
 
-    <table class="actionArea">
-        <tr>
+    <div class="actionArea">
             <c:if test="${multiSelectMode}">
-                <td class="leftActions">
+                <span class="leftActions fl">
                     <input class="notButton" id="picker_${id}_selectAll" type="checkbox"
                         onclick="javascript:${id}.selectAll()">
                     <label for="picker_${id}_selectAll" class="simpleLink pointer"><i:inline key=".selectAll"/></label>
@@ -60,18 +59,17 @@ Picker.alreadySelectedHoverMessage = '<cti:msg2 key=".alreadySelectedHover"/>';
                     <span id="picker_${id}_entireSelectionCleared" style="display: none">
                         <i:inline key=".entireSelectionCleared"/>
                     </span>
-                </td>
+                </span>
             </c:if>
-            <td class="rightActions">
+            <span class="rightActions fr">
                 <c:if test="${!immediateSelectMode}">
                     <input type="button" onclick="${id}.okPressed()"
                         value="<cti:msg2 key=".ok"/>"/>
                 </c:if>
                 <input type="button" onclick="${id}.cancel()"
                     value="<cti:msg2 key=".cancel"/>"/>
-            </td>
-        </tr>
-    </table>
+            </span>
+    </div>
 
 </tags:simplePopup>
 </cti:msgScope>
