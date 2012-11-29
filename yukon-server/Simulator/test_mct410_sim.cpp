@@ -195,7 +195,12 @@ BOOST_AUTO_TEST_CASE( test_fill_load_profile )
     byte_appender result_oitr = byte_appender(resultBytes);
 
     const bytes expected = boost::assign::list_of
-        (0x26)(0xc3)(0x26)(0xc2)(0x26)(0xa0)(0x26)(0x5f)(0x26)(0x02)(0x25)(0x91);
+        (0x26)(0xc3)  // 07:00-08:00 dynamic demand
+        (0x26)(0xc2)  // 06:00-07:00 dynamic demand
+        (0x26)(0xa0)  // 05:00-06:00 dynamic demand
+        (0x26)(0x5f)  // 04:00-05:00 dynamic demand
+        (0x26)(0x02)  // 03:00-04:00 dynamic demand
+        (0x25)(0x91); // 02:00-03:00 dynamic demand
 
     testMct410Sim::fillLoadProfile(address, blockStart, 3600, result_oitr);
 
@@ -215,7 +220,12 @@ BOOST_AUTO_TEST_CASE( test_fill_long_load_profile )
         byte_appender result_oitr = byte_appender(resultBytes);
 
         const bytes expected = boost::assign::list_of
-            (0x25)(0x91)(0x26)(0x02)(0x26)(0x5f)(0x26)(0xa0)(0x26)(0xc2)(0x26)(0xc3);
+            (0x25)(0x91)  // 02:00-03:00 dynamic demand
+            (0x26)(0x02)  // 03:00-04:00 dynamic demand
+            (0x26)(0x5f)  // 04:00-05:00 dynamic demand
+            (0x26)(0xa0)  // 05:00-06:00 dynamic demand
+            (0x26)(0xc2)  // 06:00-07:00 dynamic demand
+            (0x26)(0xc3); // 07:00-08:00 dynamic demand
 
         testMct410Sim::fillLongLoadProfile(address, blockStart, interval, result_oitr);
 
@@ -230,7 +240,12 @@ BOOST_AUTO_TEST_CASE( test_fill_long_load_profile )
         byte_appender result_oitr = byte_appender(resultBytes);
 
         const bytes expected = boost::assign::list_of
-            (0x26)(0xc2)(0x26)(0xc3)(0x26)(0xa2)(0x26)(0x61)(0x26)(0x06)(0x25)(0x95);
+            (0x26)(0xc2)  // 06:00-07:00 dynamic demand
+            (0x26)(0xc3)  // 07:00-08:00 dynamic demand
+            (0x26)(0xa2)  // 08:00-09:00 dynamic demand
+            (0x26)(0x61)  // 09:00-10:00 dynamic demand
+            (0x26)(0x06)  // 10:00-11:00 dynamic demand
+            (0x25)(0x95); // 11:00-12:00 dynamic demand
 
         testMct410Sim::fillLongLoadProfile(address, blockStart, interval, result_oitr);
 

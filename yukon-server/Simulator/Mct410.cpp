@@ -1109,7 +1109,11 @@ void Mct410Sim::fillLoadProfile(const unsigned address, const CtiTime &blockStar
 {
     for( unsigned interval = 0; interval < LoadProfile_IntervalsPerBlock; ++interval )
     {   
-        double consumptionWs = makeValueConsumption(address, blockStart - (interval + 1) * interval_length, interval_length);
+        // How long ago did this interval start? Start with the most recent interval and work backward.
+        const int intervalOffset = (interval + 1) * interval_length;
+        const CtiTime intervalStart = blockStart - intervalOffset;
+
+        const double consumptionWs = makeValueConsumption(address, intervalStart, interval_length);
 
         appendCalculatedLpValue(consumptionWs, out_itr);
     }
@@ -1119,7 +1123,11 @@ void Mct410Sim::fillLongLoadProfile(const unsigned address, const CtiTime &block
 {
     for( unsigned interval = 0; interval < LoadProfile_IntervalsPerBlock; ++interval )
     {   
-        double consumptionWs = makeValueConsumption(address, blockStart - (LoadProfile_IntervalsPerBlock - interval) * interval_length, interval_length);
+        // How long ago did this interval start? Start with the most distant interval and work forward.
+        const int intervalOffset = (LoadProfile_IntervalsPerBlock - interval) * interval_length;
+        const CtiTime intervalStart = blockStart - intervalOffset;
+
+        const double consumptionWs = makeValueConsumption(address, intervalStart, interval_length);
 
         appendCalculatedLpValue(consumptionWs, out_itr);
     }
