@@ -4,9 +4,11 @@ import static org.junit.Assert.fail;
 
 import java.text.DateFormat;
 import java.text.ParseException;
+import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.HashSet;
 import java.util.List;
+import java.util.Locale;
 import java.util.Set;
 import java.util.TimeZone;
 import java.util.concurrent.BlockingQueue;
@@ -224,7 +226,8 @@ public class LongLoadProfileServiceImplTest {
     }
     
     @Test
-    public void testCommandStringWithStart() throws ParseException {
+    public void testCommandStringWithStart_en_US() throws ParseException {
+        Locale.setDefault(Locale.US);
         LiteYukonPAObject myDevice = 
         	new LiteYukonPAObject(5, 
         			"Test Device Id:5", 
@@ -233,7 +236,65 @@ public class LongLoadProfileServiceImplTest {
         			"N");	 // five is arbitrary
 
         int channel = 4;
-        DateFormat dateTimeInstance = DateFormat.getDateTimeInstance(DateFormat.SHORT, DateFormat.SHORT);
+        
+        //Using this DateFormat so that the date and time are being parsed the way porter would, regardless of locale
+        DateFormat dateTimeInstance = new SimpleDateFormat("MM/dd/yy hh:mm a");
+        Date start = dateTimeInstance.parse("5/5/05 4:30 pm");
+        Date stop = dateTimeInstance.parse("10/9/06 1:50 am");
+        service.initiateLoadProfile(myDevice, channel, start, stop, incrementingRunner, userContext);
+        
+        // get message that was written
+        Message message = porterConnection.writtenOut.remove();
+        Request reqMsg = (Request)message; // implicit instanceof check
+        
+        // check command string
+        String expectedCmd = "getvalue lp channel 4 05/05/2005 16:30 10/09/2006 01:50";
+        Assert.assertEquals("command is different than expected", expectedCmd, reqMsg.getCommandString());
+    }
+    
+    //Same test performed in multiple locales to ensure same functionality
+    
+    @Test
+    public void testCommandStringWithStart_fr_CA() throws ParseException {
+        Locale.setDefault(Locale.CANADA_FRENCH);
+        LiteYukonPAObject myDevice = 
+            new LiteYukonPAObject(5, 
+                    "Test Device Id:5", 
+                    PaoType.MCT410IL,
+                    CtiUtilities.STRING_NONE,
+                    "N");    // five is arbitrary
+
+        int channel = 4;
+        
+        //Using this DateFormat so that the date and time are being parsed the way porter would, regardless of locale
+        DateFormat dateTimeInstance = new SimpleDateFormat("MM/dd/yy hh:mm a");
+        Date start = dateTimeInstance.parse("5/5/05 4:30 pm");
+        Date stop = dateTimeInstance.parse("10/9/06 1:50 am");
+        service.initiateLoadProfile(myDevice, channel, start, stop, incrementingRunner, userContext);
+        
+        // get message that was written
+        Message message = porterConnection.writtenOut.remove();
+        Request reqMsg = (Request)message; // implicit instanceof check
+        
+        // check command string
+        String expectedCmd = "getvalue lp channel 4 05/05/2005 16:30 10/09/2006 01:50";
+        Assert.assertEquals("command is different than expected", expectedCmd, reqMsg.getCommandString());
+    }
+    
+    @Test
+    public void testCommandStringWithStart_pt_BR() throws ParseException {
+        Locale.setDefault(new Locale("pt", "BR"));
+        LiteYukonPAObject myDevice = 
+            new LiteYukonPAObject(5, 
+                    "Test Device Id:5", 
+                    PaoType.MCT410IL,
+                    CtiUtilities.STRING_NONE,
+                    "N");    // five is arbitrary
+
+        int channel = 4;
+        
+        //Using this DateFormat so that the date and time are being parsed the way porter would, regardless of locale
+        DateFormat dateTimeInstance = new SimpleDateFormat("MM/dd/yy hh:mm a");
         Date start = dateTimeInstance.parse("5/5/05 4:30 pm");
         Date stop = dateTimeInstance.parse("10/9/06 1:50 am");
         service.initiateLoadProfile(myDevice, channel, start, stop, incrementingRunner, userContext);
@@ -248,18 +309,119 @@ public class LongLoadProfileServiceImplTest {
     }
 
     @Test
-    public void testInitiateLongLoadProfileBasic() throws ParseException {
+    public void testInitiateLongLoadProfileBasic_en_US() throws ParseException {
+        Locale.setDefault(Locale.US);
         // check that outQueue is empty
         Assert.assertEquals("out queue should be empty", 0, porterConnection.writtenOut.size());
         LiteYukonPAObject myDevice = 
-        	new LiteYukonPAObject(5, 
-        			"Test Device Id:5", 
-        			PaoType.MCT410IL,
-        			CtiUtilities.STRING_NONE,
-        			"N");	 // five is arbitrary
+            new LiteYukonPAObject(5, 
+                    "Test Device Id:5", 
+                    PaoType.MCT410IL,
+                    CtiUtilities.STRING_NONE,
+                    "N");    // five is arbitrary
 
         int channel = 1;
-        DateFormat dateTimeInstance = DateFormat.getDateTimeInstance(DateFormat.SHORT, DateFormat.SHORT);
+        
+        //Using this DateFormat so that the date and time are being parsed the way porter would, regardless of locale
+        DateFormat dateTimeInstance = new SimpleDateFormat("MM/dd/yy hh:mm a");
+        Date start = dateTimeInstance.parse("10/13/06 1:50 pm");
+        Date stop = dateTimeInstance.parse("12/13/06 1:50 pm");
+        service.initiateLoadProfile(myDevice, channel, start, stop, incrementingRunner, userContext);
+        
+        // check that outQueue has one message
+        Assert.assertEquals("out queue should have one message", 1, porterConnection.writtenOut.size());
+        
+        // check that runner hasn't run
+        Assert.assertEquals("runner should not have run", 0, successRan);
+        
+        // get message that was written
+        Message message = porterConnection.writtenOut.remove();
+        Request reqMsg = (Request)message; // implicit instanceof check
+        
+        // check command string
+        String expectedCmd = "getvalue lp channel 1 10/13/2006 13:50 12/13/2006 13:50";
+        Assert.assertEquals("command is different than expected", expectedCmd, reqMsg.getCommandString());
+        
+        // send expect more response
+        Return retMsg = createReturn(reqMsg, true);
+        porterConnection.respond(retMsg);
+        
+        // check that runner hasn't run
+        Assert.assertEquals("runner should not have run", 0, successRan);
+        
+        // send final response
+        retMsg.setExpectMore(0);
+        porterConnection.respond(retMsg);
+        
+        // check that runner has run
+        Assert.assertEquals("runner should have run", 1, successRan);
+    }
+    
+    @Test
+    public void testInitiateLongLoadProfileBasic_fr_CA() throws ParseException {
+        Locale.setDefault(Locale.CANADA_FRENCH);
+        // check that outQueue is empty
+        Assert.assertEquals("out queue should be empty", 0, porterConnection.writtenOut.size());
+        LiteYukonPAObject myDevice = 
+            new LiteYukonPAObject(5, 
+                    "Test Device Id:5", 
+                    PaoType.MCT410IL,
+                    CtiUtilities.STRING_NONE,
+                    "N");    // five is arbitrary
+
+        int channel = 1;
+        
+        //Using this DateFormat so that the date and time are being parsed the way porter would, regardless of locale
+        DateFormat dateTimeInstance = new SimpleDateFormat("MM/dd/yy hh:mm a");
+        Date start = dateTimeInstance.parse("10/13/06 1:50 pm");
+        Date stop = dateTimeInstance.parse("12/13/06 1:50 pm");
+        service.initiateLoadProfile(myDevice, channel, start, stop, incrementingRunner, userContext);
+        
+        // check that outQueue has one message
+        Assert.assertEquals("out queue should have one message", 1, porterConnection.writtenOut.size());
+        
+        // check that runner hasn't run
+        Assert.assertEquals("runner should not have run", 0, successRan);
+        
+        // get message that was written
+        Message message = porterConnection.writtenOut.remove();
+        Request reqMsg = (Request)message; // implicit instanceof check
+        
+        // check command string
+        String expectedCmd = "getvalue lp channel 1 10/13/2006 13:50 12/13/2006 13:50";
+        Assert.assertEquals("command is different than expected", expectedCmd, reqMsg.getCommandString());
+        
+        // send expect more response
+        Return retMsg = createReturn(reqMsg, true);
+        porterConnection.respond(retMsg);
+        
+        // check that runner hasn't run
+        Assert.assertEquals("runner should not have run", 0, successRan);
+        
+        // send final response
+        retMsg.setExpectMore(0);
+        porterConnection.respond(retMsg);
+        
+        // check that runner has run
+        Assert.assertEquals("runner should have run", 1, successRan);
+    }
+    
+    @Test
+    public void testInitiateLongLoadProfileBasic_pt_BR() throws ParseException {
+        Locale.setDefault(new Locale("pt", "BR"));
+        // check that outQueue is empty
+        Assert.assertEquals("out queue should be empty", 0, porterConnection.writtenOut.size());
+        LiteYukonPAObject myDevice = 
+            new LiteYukonPAObject(5, 
+                    "Test Device Id:5", 
+                    PaoType.MCT410IL,
+                    CtiUtilities.STRING_NONE,
+                    "N");    // five is arbitrary
+
+        int channel = 1;
+        
+        //Using this DateFormat so that the date and time are being parsed the way porter would, regardless of locale
+        DateFormat dateTimeInstance = new SimpleDateFormat("MM/dd/yy hh:mm a");
         Date start = dateTimeInstance.parse("10/13/06 1:50 pm");
         Date stop = dateTimeInstance.parse("12/13/06 1:50 pm");
         service.initiateLoadProfile(myDevice, channel, start, stop, incrementingRunner, userContext);
