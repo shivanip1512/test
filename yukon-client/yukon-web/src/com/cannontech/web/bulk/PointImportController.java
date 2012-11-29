@@ -1,11 +1,7 @@
 package com.cannontech.web.bulk;
 
-import java.io.BufferedWriter;
 import java.io.IOException;
-import java.io.OutputStream;
-import java.io.OutputStreamWriter;
 import java.io.PrintWriter;
-import java.io.Writer;
 import java.util.List;
 import java.util.Map;
 
@@ -45,12 +41,12 @@ import com.cannontech.i18n.YukonMessageSourceResolvable;
 import com.cannontech.tools.csv.CSVReader;
 import com.cannontech.tools.csv.CSVWriter;
 import com.cannontech.user.YukonUserContext;
-import com.cannontech.util.ServletUtil;
 import com.cannontech.web.common.flashScope.FlashScope;
 import com.cannontech.web.exceptions.EmptyImportFileException;
 import com.cannontech.web.exceptions.NoImportFileException;
 import com.cannontech.web.security.annotation.CheckRoleProperty;
 import com.cannontech.web.util.WebFileUtils;
+import com.cannontech.web.util.WebFileUtils.CSVDataWriter;
 import com.google.common.collect.Lists;
 
 @Controller
@@ -176,34 +172,29 @@ public class PointImportController {
     public String downloadFailed(HttpServletResponse response, String resultId) throws IOException {
         //get the required data
         PointImportCallbackResult result = recentResultsCache.getResult(resultId);
-        List<List<String>> originalData = result.getImportData().getOriginalDataAsLists();
-        List<Integer> failedRowNums = result.getFailedRowNumbers();
-        List<String> log = result.getLog();
-        
-        //Set up CSV stream
-        response.setContentType("text/csv");
-        response.setHeader("Content-Type", "application/force-download");
-        String fileName = ServletUtil.makeWindowsSafeFileName("FailedPointImports.csv");
-        response.setHeader("Content-Disposition", "attachment; filename=\"" + fileName);
-        OutputStream outputStream = response.getOutputStream();
-        Writer writer = new BufferedWriter(new OutputStreamWriter(outputStream));
-        CSVWriter csvWriter = new CSVWriter(writer);
+        final List<List<String>> originalData = result.getImportData().getOriginalDataAsLists();
+        final List<Integer> failedRowNums = result.getFailedRowNumbers();
+        final List<String> log = result.getLog();
         
         //write headers
         List<String> headers = originalData.get(0);
         headers.add("FAIL REASON");
-        csvWriter.writeNext(headers.toArray(new String[0]));
         
         //write data rows
-        for(int i = 0; i < originalData.size(); i++) {
-            if(failedRowNums.contains(i)) {
-                List<String> line = originalData.get(i+1); //(add one to account for header row)
-                line.add(log.get(i)); //add failed reason from log to each failed line
-                csvWriter.writeNext(line.toArray(new String[0]));
+        WebFileUtils.writeToCSV(response, headers.toArray(new String[0]), "FailedPointImports.csv", new CSVDataWriter() {
+            @Override
+            public void writeData(CSVWriter csvWriter) {
+                for(int i = 0; i < originalData.size(); i++) {
+                    if(failedRowNums.contains(i)) {
+                        List<String> line = originalData.get(i+1); //(add one to account for header row)
+                        line.add(log.get(i)); //add failed reason from log to each failed line
+                        csvWriter.writeNext(line.toArray(new String[0]));
+                    }
+                }
             }
-        }
-        csvWriter.close();
-        return "";
+        });
+        
+        return null;
     }
     
     @RequestMapping

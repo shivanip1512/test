@@ -1,12 +1,8 @@
 package com.cannontech.web.bulk;
 
 import java.io.BufferedReader;
-import java.io.BufferedWriter;
 import java.io.IOException;
 import java.io.InputStreamReader;
-import java.io.OutputStream;
-import java.io.OutputStreamWriter;
-import java.io.Writer;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
@@ -50,9 +46,8 @@ import com.cannontech.core.service.PaoLoadingService;
 import com.cannontech.database.data.lite.LiteYukonUser;
 import com.cannontech.servlet.YukonUserContextUtils;
 import com.cannontech.tools.csv.CSVReader;
-import com.cannontech.tools.csv.CSVWriter;
 import com.cannontech.user.YukonUserContext;
-import com.cannontech.util.ServletUtil;
+import com.cannontech.web.util.WebFileUtils;
 
 /**
  * Spring controller class for bulk operations
@@ -266,19 +261,7 @@ public class BulkController extends BulkControllerBase {
         // failed lines
         List<String[]> fileLines = callback.getProcesingExceptionObjects();
         
-        response.setContentType("text/csv");
-        response.setHeader("Content-Type", "application/force-download");
-        response.setHeader("Content-Disposition","attachment; filename=\"" + ServletUtil.makeWindowsSafeFileName("ExceptionsFile_" + resultsId) + ".csv\"");
-        OutputStream outputStream = response.getOutputStream();
-        
-        Writer writer = new BufferedWriter(new OutputStreamWriter(outputStream));
-        CSVWriter csvWriter = new CSVWriter(writer);
-        
-        csvWriter.writeNext(headerRow);
-        for (String[] line : fileLines) {
-            csvWriter.writeNext(line);
-        }
-        csvWriter.close();
+        WebFileUtils.writeToCSV(response, headerRow, fileLines, "ExceptionsFile_" + resultsId + ".csv");
         
         return null;
     }

@@ -1,10 +1,6 @@
 package com.cannontech.web.bulk;
 
-import java.io.BufferedWriter;
 import java.io.IOException;
-import java.io.OutputStream;
-import java.io.OutputStreamWriter;
-import java.io.Writer;
 import java.util.List;
 
 import javax.servlet.http.HttpServletResponse;
@@ -23,13 +19,12 @@ import com.cannontech.core.dao.ArchiveDataAnalysisDao;
 import com.cannontech.core.dynamic.PointValueHolder;
 import com.cannontech.core.roleproperties.YukonRoleProperty;
 import com.cannontech.core.service.DateFormattingService;
-import com.cannontech.core.service.PointFormattingService;
 import com.cannontech.core.service.DateFormattingService.DateFormatEnum;
+import com.cannontech.core.service.PointFormattingService;
 import com.cannontech.i18n.YukonUserContextMessageSourceResolver;
-import com.cannontech.tools.csv.CSVWriter;
 import com.cannontech.user.YukonUserContext;
-import com.cannontech.util.ServletUtil;
 import com.cannontech.web.security.annotation.CheckRoleProperty;
+import com.cannontech.web.util.WebFileUtils;
 import com.google.common.collect.Lists;
 
 @CheckRoleProperty(YukonRoleProperty.ARCHIVED_DATA_ANALYSIS)
@@ -91,25 +86,10 @@ public class AdaTabularController {
             dataRows.add(dataRow);
         }
         
-        //set up output for CSV
-        response.setContentType("text/csv");
-        response.setHeader("Content-Type", "application/force-download");
-        String fileName = "ArchiveDataAnalysisResults.csv";
-        fileName = ServletUtil.makeWindowsSafeFileName(fileName);
-        response.setHeader("Content-Disposition", "attachment; filename=\"" + fileName);
-        OutputStream outputStream = response.getOutputStream();
-        
         //write out the file
-        Writer writer = new BufferedWriter(new OutputStreamWriter(outputStream));
-        CSVWriter csvWriter = new CSVWriter(writer);
+        WebFileUtils.writeToCSV(response, headerRow, dataRows, "ArchiveDataAnalysisResults.csv");
         
-        csvWriter.writeNext(headerRow);
-        for (String[] line : dataRows) {
-            csvWriter.writeNext(line);
-        }
-        csvWriter.close();
-        
-        return "";
+        return null;
     }
     
     @Autowired

@@ -1,10 +1,6 @@
 package com.cannontech.web.amr.meter;
 
-import java.io.BufferedWriter;
 import java.io.IOException;
-import java.io.OutputStream;
-import java.io.OutputStreamWriter;
-import java.io.Writer;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Comparator;
@@ -33,10 +29,8 @@ import com.cannontech.core.dynamic.PointValueHolder;
 import com.cannontech.core.service.PointFormattingService;
 import com.cannontech.core.service.PointFormattingService.Format;
 import com.cannontech.i18n.YukonUserContextMessageSourceResolver;
-import com.cannontech.stars.dr.hardware.model.HardwareConfigAction;
-import com.cannontech.tools.csv.CSVWriter;
 import com.cannontech.user.YukonUserContext;
-import com.cannontech.util.ServletUtil;
+import com.cannontech.web.util.WebFileUtils;
 import com.google.common.base.Function;
 import com.google.common.collect.Lists;
 
@@ -123,7 +117,7 @@ public class HistoricalReadingsController {
         
         buildCsv(context, points, response);
 
-        return "";
+        return null;
     }
     
     private void buildCsv(YukonUserContext userContext, List<List<String>> points, HttpServletResponse response) throws IOException{
@@ -139,23 +133,9 @@ public class HistoricalReadingsController {
                 return row;
             }
         });
-  
-        response.setContentType("text/csv");
-        response.setHeader("Content-Type", "application/force-download");
-        String fileName = "HistoryReadings.csv";
-        fileName = ServletUtil.makeWindowsSafeFileName(fileName);
-        response.setHeader("Content-Disposition", "attachment; filename=\"" + fileName);
-        OutputStream outputStream = response.getOutputStream();
         
         //write out the file
-        Writer writer = new BufferedWriter(new OutputStreamWriter(outputStream));
-        CSVWriter csvWriter = new CSVWriter(writer);
-        
-        csvWriter.writeNext(headerRow);
-        for (String[] line : dataRows) {
-            csvWriter.writeNext(line);
-        }
-        csvWriter.close();
+        WebFileUtils.writeToCSV(response, headerRow, dataRows, "HistoryReadings.csv");
     }
         
     private List<List<String>> getLimitedPointData(String period, final YukonUserContext context, Order order, OrderBy orderBy, int pointId){

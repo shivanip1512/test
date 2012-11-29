@@ -1,11 +1,7 @@
 package com.cannontech.web.bulk;
 
-import java.io.BufferedWriter;
 import java.io.IOException;
-import java.io.OutputStream;
-import java.io.OutputStreamWriter;
 import java.io.PrintWriter;
-import java.io.Writer;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
@@ -49,11 +45,11 @@ import com.cannontech.i18n.YukonUserContextMessageSourceResolver;
 import com.cannontech.tools.csv.CSVReader;
 import com.cannontech.tools.csv.CSVWriter;
 import com.cannontech.user.YukonUserContext;
-import com.cannontech.util.ServletUtil;
 import com.cannontech.web.exceptions.EmptyImportFileException;
 import com.cannontech.web.exceptions.NoImportFileException;
 import com.cannontech.web.security.annotation.CheckRoleProperty;
 import com.cannontech.web.util.WebFileUtils;
+import com.cannontech.web.util.WebFileUtils.CSVDataWriter;
 import com.google.common.collect.Lists;
 import com.google.common.collect.Maps;
 
@@ -89,33 +85,28 @@ public class FdrTranslationManagerController {
         //Add all headers for each translation type to the headers list
         fdrTranslationManagerCsvHelper.addHeadersFromTranslations(formattedHeaders, filteredTranslationsList);
         
-        FdrExportData exportData = new FdrExportData();
+        final FdrExportData exportData = new FdrExportData();
         exportData.setHeaderRow(formattedHeaders);
         
         //Insert translation data
         fdrTranslationManagerCsvHelper.populateExportData(exportData, filteredTranslationsList);
         
-        //Set up CSV stream
-        response.setContentType("text/csv");
-        response.setHeader("Content-Type", "application/force-download");
-        String fileName = ServletUtil.makeWindowsSafeFileName("FdrTranslationsReport.csv");
-        response.setHeader("Content-Disposition", "attachment; filename=\"" + fileName);
-        OutputStream outputStream = response.getOutputStream();
-        Writer writer = new BufferedWriter(new OutputStreamWriter(outputStream));
-        CSVWriter csvWriter = new CSVWriter(writer);
-        
         //Write array values to csv
-        for(String[] line : exportData.asArrays()) {
-            for(int i=0; i<line.length; i++) {
-                if ( "".equals(line[i]) ) {
-                    line[i] = FdrUtils.EMPTY;
+        WebFileUtils.writeToCSV(response, null, "FdrTranslationsReport.csv", new CSVDataWriter() {
+            @Override
+            public void writeData(CSVWriter csvWriter) {
+                for(String[] line : exportData.asArrays()) {
+                    for(int i=0; i<line.length; i++) {
+                        if ( "".equals(line[i]) ) {
+                            line[i] = FdrUtils.EMPTY;
+                        }
+                    }
+                    csvWriter.writeNext(line);
                 }
             }
-            csvWriter.writeNext(line);
-        }
-        csvWriter.close();
+        });
         
-        return "";
+        return null;
     }
     
     @RequestMapping
@@ -223,14 +214,10 @@ public class FdrTranslationManagerController {
         headers.add("FAIL_REASON");
         
         //build 2D array with appropriate width and height
-        String[][] dataGrid = new String[failedRowNums.size()+1][];
+        final String[][] dataGrid = new String[failedRowNums.size()][];
         for(int i = 0; i < dataGrid.length; i++) {
             dataGrid[i] = new String[headers.size()];
         }
-        
-        //add headers
-        dataGrid[0] = headers.toArray(new String[headers.size()]);
-        int dataGridIndex = 1;
         
         //add the rest of the rows
         for(int i = 0; i < importRows.size(); i++) {
@@ -238,35 +225,30 @@ public class FdrTranslationManagerController {
                 String[] row = importRows.get(i);
                 
                 for(int j = 0; j < row.length; j++) {
-                    dataGrid[dataGridIndex][j] = row[j];
+                    dataGrid[i][j] = row[j];
                     
                 }
-                dataGrid[dataGridIndex][row.length] = log.get(i);
-                dataGridIndex++;
+                dataGrid[i][row.length] = log.get(i);
+                i++;
             }
         }
-
-        //Set up CSV stream
-        response.setContentType("text/csv");
-        response.setHeader("Content-Type", "application/force-download");
-        String fileName = ServletUtil.makeWindowsSafeFileName("FailedFdrTranslationImports.csv");
-        response.setHeader("Content-Disposition", "attachment; filename=\"" + fileName);
-        OutputStream outputStream = response.getOutputStream();
-        Writer writer = new BufferedWriter(new OutputStreamWriter(outputStream));
-        CSVWriter csvWriter = new CSVWriter(writer);
         
         //Write array values to csv
-        for(String[] line : dataGrid) {
-            for( int i=0; i<line.length; i++){
-                if ( "".equals(line[i]) ) {
-                    line[i] = FdrUtils.EMPTY;
+        WebFileUtils.writeToCSV(response, headers.toArray(new String[0]), "FailedFdrTranslationImports.csv", new CSVDataWriter() {
+            @Override
+            public void writeData(CSVWriter csvWriter) {
+                for(String[] line : dataGrid) {
+                    for( int i=0; i<line.length; i++){
+                        if ( "".equals(line[i]) ) {
+                            line[i] = FdrUtils.EMPTY;
+                        }
+                    }
+                    csvWriter.writeNext(line);
                 }
             }
-            csvWriter.writeNext(line);
-        }
-        csvWriter.close();
+        });
         
-        return "";
+        return null;
     }
     
     @RequestMapping

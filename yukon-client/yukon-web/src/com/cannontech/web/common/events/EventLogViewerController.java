@@ -1,19 +1,15 @@
 package com.cannontech.web.common.events;
 
 import java.beans.PropertyEditorSupport;
-import java.io.BufferedWriter;
 import java.io.IOException;
-import java.io.OutputStream;
-import java.io.OutputStreamWriter;
-import java.io.Writer;
 import java.text.ParseException;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Date;
 import java.util.List;
 import java.util.Map;
-import java.util.Set;
 import java.util.Map.Entry;
+import java.util.Set;
 
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServletRequest;
@@ -61,7 +57,6 @@ import com.cannontech.core.service.DateFormattingService;
 import com.cannontech.core.service.DateFormattingService.DateFormatEnum;
 import com.cannontech.i18n.YukonMessageSourceResolvable;
 import com.cannontech.i18n.YukonUserContextMessageSourceResolver;
-import com.cannontech.tools.csv.CSVWriter;
 import com.cannontech.user.YukonUserContext;
 import com.cannontech.util.ServletUtil;
 import com.cannontech.web.common.events.model.EventLogCategoryBackingBean;
@@ -74,6 +69,7 @@ import com.cannontech.web.security.annotation.CheckRoleProperty;
 import com.cannontech.web.stars.dr.operator.validator.EventLogCategoryValidator;
 import com.cannontech.web.stars.dr.operator.validator.EventLogTypeValidator;
 import com.cannontech.web.util.JsTreeNode;
+import com.cannontech.web.util.WebFileUtils;
 import com.google.common.collect.HashMultimap;
 import com.google.common.collect.ImmutableList;
 import com.google.common.collect.ListMultimap;
@@ -169,12 +165,7 @@ public class EventLogViewerController {
         
         // Build and write csv report
         String categoryCsvFileName = messageSourceAccessor.getMessage("yukon.web.modules.support.eventViewer.byCategory.csvExport.fileName");
-        response.setContentType("text/csv");
-        response.setHeader("Content-Disposition",
-                           "filename=\"" + ServletUtil.makeWindowsSafeFileName(categoryCsvFileName)+ ".csv\"");
-        OutputStream outputStream = response.getOutputStream();
-        generateCsvReport(columnNames, dataGrid, outputStream, userContext);
-        
+        WebFileUtils.writeToCSV(response, columnNames, dataGrid, categoryCsvFileName + ".csv");
     }
 
     
@@ -285,12 +276,7 @@ public class EventLogViewerController {
             eventLogUIService.getDataGridRowByType(searchResult, userContext);
         
         // Build and write csv report
-        response.setContentType("text/csv");
-        response.setHeader("Content-Disposition",
-                           "filename=\"" + ServletUtil.makeWindowsSafeFileName(eventLogTypeBackingBean.getEventLogType()) + ".csv\"");
-        OutputStream outputStream = response.getOutputStream();
-        generateCsvReport(columnNames, dataGrid, outputStream, userContext);
-        
+        WebFileUtils.writeToCSV(response, columnNames, dataGrid, eventLogTypeBackingBean.getEventLogType() + ".csv");
     }
 
     /**
@@ -374,28 +360,6 @@ public class EventLogViewerController {
         }
     }
 
-    private void generateCsvReport(List<String> columnNames,
-                                    List<List<String>> dataGrid,
-                                    OutputStream outputStream,
-                                    YukonUserContext userContext) throws IOException {
-
-        // csv writer setup
-        //-----------------------------------------------------------------------------------------
-        Writer writer = new BufferedWriter(new OutputStreamWriter(outputStream));
-        CSVWriter csvWriter = new CSVWriter(writer);
-         
-        
-        // write to csv
-        //-----------------------------------------------------------------------------------------
-        csvWriter.writeNext((String[])columnNames.toArray(new String[columnNames.size()]));
-        for (List<String> dataRow : dataGrid) {
-            csvWriter.writeNext((String[])dataRow.toArray(new String[dataRow.size()]));
-        }
-        
-        csvWriter.close();
-            
-    }
-    
     /**
      * Builds up the model map for the tree structure for selecting an event type.
      */

@@ -75,24 +75,52 @@ public class WebFileUtils {
         BufferedReader bufferedReader = new BufferedReader(inputStreamReader);
         return new CSVReader(bufferedReader);
     }
-    
-    public static void writeToCSV(HttpServletResponse response, String[] headerRow, List<String[]> dataRows, String fileName)
+
+    public static void writeToCSV(HttpServletResponse response, List<String> headerRow, final List<List<String>> dataRows, String fileName)
             throws IOException {
+        writeToCSV(response, headerRow.toArray(new String[0]), fileName, new CSVDataWriter() {
+            @Override
+            public void writeData(CSVWriter csvWriter) {
+                for (List<String> line : dataRows) {
+                    csvWriter.writeNext(line.toArray(new String[0]));
+                }
+            }
+        });
+    }
+
+    public static void writeToCSV(HttpServletResponse response, String[] headerRow, final List<String[]> dataRows, String fileName)
+            throws IOException {
+        writeToCSV(response, headerRow, fileName, new CSVDataWriter() {
+            @Override
+            public void writeData(CSVWriter csvWriter) {
+                csvWriter.writeAll(dataRows);
+            }
+        });
+    }
+    
+    public static void writeToCSV(HttpServletResponse response, String[] headerRow, String fileName, CSVDataWriter dataWriter)
+        throws IOException {
         // set up output for CSV
         response.setContentType("text/csv");
         response.setHeader("Content-Type", "application/force-download");
         fileName = ServletUtil.makeWindowsSafeFileName(fileName);
-        response.setHeader("Content-Disposition", "attachment; filename=\"" + fileName);
+        response.setHeader("Content-Disposition", "attachment; filename=\"" + fileName +"\"");
         OutputStream outputStream = response.getOutputStream();
-
+        
         // write out the file
         Writer writer = new BufferedWriter(new OutputStreamWriter(outputStream));
         CSVWriter csvWriter = new CSVWriter(writer);
-
-        csvWriter.writeNext(headerRow);
-        for (String[] line : dataRows) {
-            csvWriter.writeNext(line);
+        
+        if(headerRow != null) {
+            csvWriter.writeNext(headerRow);
         }
+        
+        dataWriter.writeData(csvWriter);
+        
         csvWriter.close();
+    }
+    
+    public interface CSVDataWriter {
+        public void writeData(CSVWriter csvWriter);
     }
 }

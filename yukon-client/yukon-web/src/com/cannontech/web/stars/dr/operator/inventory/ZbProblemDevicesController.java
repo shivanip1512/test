@@ -1,10 +1,6 @@
 package com.cannontech.web.stars.dr.operator.inventory;
 
-import java.io.BufferedWriter;
 import java.io.IOException;
-import java.io.OutputStream;
-import java.io.OutputStreamWriter;
-import java.io.Writer;
 import java.util.List;
 import java.util.Map;
 
@@ -30,10 +26,9 @@ import com.cannontech.i18n.YukonUserContextMessageSourceResolver;
 import com.cannontech.stars.dr.account.dao.CustomerAccountDao;
 import com.cannontech.stars.dr.hardware.dao.InventoryDao;
 import com.cannontech.stars.model.LiteLmHardware;
-import com.cannontech.tools.csv.CSVWriter;
 import com.cannontech.user.YukonUserContext;
-import com.cannontech.util.ServletUtil;
 import com.cannontech.web.security.annotation.CheckRole;
+import com.cannontech.web.util.WebFileUtils;
 import com.google.common.collect.Lists;
 import com.google.common.collect.Maps;
 
@@ -109,24 +104,10 @@ public class ZbProblemDevicesController {
             dataRows.add(dataRow);
         }
         
-        //set up output for CSV
-        response.setContentType("text/csv");
-        response.setHeader("Content-Type", "application/force-download");
-        String fileName = "ZigBeeProblemDevices.csv";
-        fileName = ServletUtil.makeWindowsSafeFileName(fileName);
-        response.setHeader("Content-Disposition", "attachment; filename=\"" + fileName);
-        OutputStream outputStream = response.getOutputStream();
-        
         //write out the file
-        Writer writer = new BufferedWriter(new OutputStreamWriter(outputStream));
-        CSVWriter csvWriter = new CSVWriter(writer);
+        WebFileUtils.writeToCSV(response, headerRow, dataRows, "ZigBeeProblemDevices.csv");
         
-        csvWriter.writeNext(headerRow);
-        for (String[] line : dataRows) {
-            csvWriter.writeNext(line);
-        }
-        csvWriter.close();
-        return "";
+        return null;
     }
     
     @Autowired
