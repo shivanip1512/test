@@ -49,6 +49,7 @@ int main(int argc, char* argv[] )
    dout.start();     // fire up the logger thread
    dout.setOwnerInfo(CompileInfo);
    dout.setOutputPath(gLogDirectory);
+   dout.setRetentionLength(gLogRetention);
    dout.setOutputFile("porter");
    dout.setToStdOut(true);
    dout.setWriteInterval(15000);
@@ -60,6 +61,7 @@ int main(int argc, char* argv[] )
    slog.start();     // fire up the simulator thread
    slog.setOwnerInfo(CompileInfo);
    slog.setOutputPath(dbglogdir.c_str());
+   slog.setRetentionLength(gLogRetention);
    slog.setOutputFile("simulate");
    slog.setToStdOut( (bool)(gConfigParms.getValueAsInt("YUKON_SIMULATE_TOSTDOUT",0)) );
    slog.setWriteInterval(15000);
@@ -67,6 +69,7 @@ int main(int argc, char* argv[] )
    blog.start();
    blog.setOwnerInfo(CompileInfo);
    blog.setOutputPath(dbglogdir.c_str());
+   blog.setRetentionLength(gLogRetention);
    blog.setOutputFile("comstats");
    blog.setToStdOut( false );
    blog.setWriteInterval(15000);

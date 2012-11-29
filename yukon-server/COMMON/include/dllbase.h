@@ -56,6 +56,7 @@ IM_EX_CTIBASE extern std::string      VanGoghMachine;
 IM_EX_CTIBASE extern std::string      NotificationMachine;
 IM_EX_CTIBASE extern int              NotificationPort;
 IM_EX_CTIBASE extern std::string      gLogDirectory;
+IM_EX_CTIBASE extern unsigned long    gLogRetention;
 
 IM_EX_CTIBASE extern bool           gLogPorts;                    // Write port data to portname.dayofmonth
 IM_EX_CTIBASE extern bool           gDoPrefix;                    // Attach a prefix to TAP transmissions

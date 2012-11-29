@@ -67,6 +67,7 @@ void UnsolicitedHandler::startLog( void )
         _portLog.setToStdOut(false);  // Not to std out.
         _portLog.setOwnerInfo(CompileInfo);
         _portLog.setOutputPath(comlogdir);
+        _portLog.setRetentionLength(gLogRetention);
         _portLog.setOutputFile(of);
         _portLog.setWriteInterval(10000);                   // 7/23/01 CGP.
 

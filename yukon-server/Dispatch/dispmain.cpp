@@ -62,6 +62,7 @@ int main(int argc, char* argv[] )
    dout.start();     // fire up the logger thread
    dout.setOwnerInfo(CompileInfo);
    dout.setOutputPath(gLogDirectory);
+   dout.setRetentionLength(gLogRetention);
    dout.setOutputFile("dispatch");
    dout.setToStdOut(true);
    dout.setWriteInterval(15000);

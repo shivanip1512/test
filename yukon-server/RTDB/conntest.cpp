@@ -277,6 +277,7 @@ void main(void)
 
     dout.start();     // fire up the logger thread
     dout.setOutputPath(gLogDirectory);
+    dout.setRetentionLength(gLogRetention);
     dout.setOutputFile("conntest");
     dout.setToStdOut(true);
     dout.setWriteInterval(1000);

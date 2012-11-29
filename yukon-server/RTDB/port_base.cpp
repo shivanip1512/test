@@ -438,6 +438,7 @@ void CtiPort::DecodeDatabaseReader(Cti::RowReader &rdr)
             _portLog.setToStdOut(false);  // Not to std out.
             _portLog.setOwnerInfo(CompileInfo);
             _portLog.setOutputPath(comlogdir.c_str());
+            _portLog.setRetentionLength(gLogRetention);
             _portLog.setOutputFile( of.c_str() );
             _portLog.setWriteInterval(10000);                   // 7/23/01 CGP.
 

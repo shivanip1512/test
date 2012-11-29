@@ -105,6 +105,7 @@ void CtiCCService::Init()
     dout.setOwnerInfo(CompileInfo);
     dout.setOutputFile("capcontrol");
     dout.setOutputPath(gLogDirectory);
+    dout.setRetentionLength(gLogRetention);
     dout.setToStdOut(true);
     dout.setWriteInterval(1);
     dout.start();     // fire up the logger thread

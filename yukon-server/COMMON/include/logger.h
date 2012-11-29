@@ -44,6 +44,7 @@ public:
     CtiLogger& setOwnerInfo(const compileinfo_t &ownerinfo);
     CtiLogger& setWriteInterval(long millis);
     CtiLogger& setToStdOut(bool to_stdout);
+    CtiLogger& setRetentionLength(const unsigned long days_to_keep);
 
     //Immediately write out everything in the queue waiting
     // to be written
@@ -87,9 +88,8 @@ protected:
 
     static std::string   scrub(std::string filename);
     static unsigned secondsUntilMidnight(const tm &tm_now);
-    static bool     fileDateMatches(const std::string &filename, const unsigned month);
 
-    std::string dayFilename(const unsigned day_of_month);
+    std::string logFilename(const tm &tm_now);
 
 private:
     char    _fill;
@@ -112,9 +112,14 @@ private:
 
     std::strstream* _current_stream;
 
+    unsigned long _days_to_keep;
+
     void doOutput();
     void initStream();
-    bool tryOpenOutputFile(std::ofstream& stream, bool append);
+    bool tryOpenOutputFile(std::ofstream& stream);
+
+    void cleanupOldFiles();
+    void deleteOldFile( const std::string &file_to_delete, const std::string &cut_off );
 };
 
 

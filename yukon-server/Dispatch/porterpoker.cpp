@@ -77,6 +77,7 @@ void main(int argc, char **argv)
 {
     dout.start();     // fire up the logger thread
     dout.setOutputPath(gLogDirectory.c_str());
+    dout.setRetentionLength(gLogRetention);
     dout.setOutputFile(argv[0]);
     dout.setToStdOut(true);
     dout.setWriteInterval(0);

@@ -58,6 +58,7 @@ IM_EX_CTIBASE string     VanGoghMachine("127.0.0.1");     // Connect locally if 
 IM_EX_CTIBASE string     NotificationMachine("127.0.0.1");     // Connect locally if we don't know any better
 IM_EX_CTIBASE INT        NotificationPort = NOTIFICATIONNEXUS;
 IM_EX_CTIBASE string     gLogDirectory("\\yukon\\server\\log");
+IM_EX_CTIBASE unsigned long gLogRetention = 0;      // 0 == keep forever
 IM_EX_CTIBASE bool          gLogPorts = false;
 IM_EX_CTIBASE bool          gOptimizeVersacom = false;
 IM_EX_CTIBASE bool          gDoPrefix = false;
@@ -293,6 +294,19 @@ DLLEXPORT void InitYukonBaseGlobals(void)
 
     gLogDirectory = gConfigParms.getValueAsPath("LOG_DIRECTORY", "server\\log");
     if(DebugLevel & 0x0001) cout << "Yukon Log Directory " << gLogDirectory << endl;
+
+    gLogRetention = gConfigParms.getValueAsULong("LOG_FILE_RETENTION", 90ul);   // 90 day default
+    if(DebugLevel & 0x0001)
+    {
+        if ( gLogRetention )
+        {
+            cout << "Yukon Log Retention: " << gLogRetention << " days" << endl;
+        }
+        else
+        {
+            cout << "Yukon Log Retention: forever" << endl;
+        }
+    }
 
     if(gConfigParms.isOpt("PORTER_ADD_TAP_PREFIX"))
     {

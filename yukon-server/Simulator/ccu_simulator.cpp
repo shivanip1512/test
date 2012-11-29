@@ -97,6 +97,7 @@ int SimulatorMainFunction(int argc, char **argv)
 
     dout.start();     // fire up the logger thread
     dout.setOutputPath(gLogDirectory);
+    dout.setRetentionLength(gLogRetention);
     dout.setOutputFile("ccu_simulator");
     dout.setToStdOut(true);
     dout.setWriteInterval(1000);
