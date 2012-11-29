@@ -149,15 +149,15 @@ jQuery(function() {
                             <i:inline key=".noRoles"/>
                         </c:when>
                         <c:otherwise>
-                            <div class="rolesContainer">
+                            <div class="rolesContainer wsnw">
                                 <c:forEach var="category" items="${roles}">
-                                    <ul class="category">
-                                        <li><span class="categoryLabel">${category.key}</span>
-                                            <ul class="role">
+                                    <ul class="groupedList">
+                                        <li><span class="group detail">${category.key}</span>
+                                            <ul class="groupedItem">
                                                 <c:forEach var="roleGroupPair" items="${category.value}">
-                                                    <li>
+                                                    <li class="detail">
                                                         <cti:formatObject value="${roleGroupPair.first}"/>
-                                                        &nbsp;<span class="subtleGray"><spring:escapeBody htmlEscape="true">(${roleGroupPair.second})</spring:escapeBody></span>
+                                                        &nbsp;<span><spring:escapeBody htmlEscape="true">(${roleGroupPair.second})</spring:escapeBody></span>
                                                     </li>
                                                 </c:forEach>
                                             </ul>

@@ -50,14 +50,14 @@
                             <i:inline key=".noRoles"/>
                         </c:when>
                         <c:otherwise>
-                            <div class="rolesContainer">
+                            <div class="rolesContainer wsnw">
                                 <c:forEach var="category" items="${roles}">
                                     <c:if test="${not empty category.key}">
-                                        <ul class="category">
-                                            <li><span class="categoryLabel">${category.key}</span>
-                                                <ul class="role">
+                                        <ul class="groupedList">
+                                            <li><span class="group detail">${category.key}</span>
+                                                <ul class="groupedItem">
                                                     <c:forEach var="roleGroupPair" items="${category.value}">
-                                                        <li>
+                                                        <li class="detail">
                                                             <cti:url value="/adminSetup/roleGroup/view" var="roleGroupUrl">
                                                                 <cti:param name="roleGroupId" value="${roleGroupPair.second.groupID}"/>
                                                             </cti:url>

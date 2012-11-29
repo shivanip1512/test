@@ -20,25 +20,30 @@
                 <form action="/adminSetup/userGroup/removeRoleGroup" method="post">
                     <input type="hidden" name="userGroupId" value="${userGroupId}">
                     <table class="compactResultsTable rowHighlighting">
-                        <tr>
-                            <th><i:inline key=".groupName"/></th>
-                            <th><i:inline key=".description"/></th>
-                            <th class="removeColumn"><i:inline key=".remove"/></th>
-                        </tr>
-                        <c:forEach items="${groups}" var="group">
-                            <cti:url value="/adminSetup/roleGroup/view" var="editGroupUrl">
-                                <cti:param name="roleGroupId" value="${group.groupID}"/>
-                            </cti:url>
-                            <tr class="<tags:alternateRow odd="" even="altTableCell"/>">
-                                <td><a href="${editGroupUrl}">${fn:escapeXml(group.groupName)}</a></td>
-                                <td>${fn:escapeXml(group.groupDescription)}</td>
-                                <td class="removeColumn">
-                                    <div class="dib">
-                                        <input type="submit" name="remove" value="${group.groupID}" class="pointer icon icon_remove">
-                                    </div>
-                                </td>
+                        <thead>
+                            <tr>
+                                <th><i:inline key=".groupName"/></th>
+                                <th><i:inline key=".description"/></th>
+                                <th class="removeColumn"><i:inline key=".remove"/></th>
                             </tr>
-                        </c:forEach>
+                        </thead>
+                        <tfoot></tfoot>
+                        <tbody>
+                            <c:forEach items="${groups}" var="group">
+                                <cti:url value="/adminSetup/roleGroup/view" var="editGroupUrl">
+                                    <cti:param name="roleGroupId" value="${group.groupID}"/>
+                                </cti:url>
+                                <tr class="<tags:alternateRow odd="" even="altTableCell"/>">
+                                    <td><a href="${editGroupUrl}">${fn:escapeXml(group.groupName)}</a></td>
+                                    <td>${fn:escapeXml(group.groupDescription)}</td>
+                                    <td class="removeColumn">
+                                        <div class="dib">
+                                            <cti:button nameKey="remove" name="remove" value="${group.groupID}" type="submit" renderMode="image"/>
+                                        </div>
+                                    </td>
+                                </tr>
+                            </c:forEach>
+                        </tbody>
                     </table>
                 </form>
             </c:when>

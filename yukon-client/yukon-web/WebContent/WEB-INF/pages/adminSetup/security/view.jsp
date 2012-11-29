@@ -52,68 +52,68 @@
     <cti:dataGrid cols="2" tableClasses="collectionActionAlignment collectionActionCellPadding">
         <cti:dataGridCell>
             <tags:boxContainer2 nameKey="routesBox" styleClass="largeContainer">
-                <table id="routesBoxTable"
-                    class="compactResultsTable rowHighlighting">
-                    <tr>
-                        <th><i:inline key=".paoName" />
-                        </th>
-                        <th><i:inline key=".paoType" />
-                        </th>
-                        <th style="width: 50%"><i:inline key=".CPSkey" />
-                        </th>
-                        <th><i:inline key=".action" />
-                        </th>
-                    </tr>
-                    <c:forEach var="route" items="${encryptedRoutes}">
-                        <c:set var="actionUrl" value="add" />
-                        <c:if test="${route.encrypted}">
-                            <c:set var="actionUrl" value="remove" />
-                        </c:if>
+                <table id="routesBoxTable" class="compactResultsTable rowHighlighting">
+                    <thead>
                         <tr>
-                            <td>${fn:escapeXml(route.paoName)}</td>
-                            <td>${fn:escapeXml(route.type.paoTypeName)}</td>
-                            <form:form id="routes_${route.paobjectId}" commandName="encryptedRoute" method="POST" autocomplete="off" action="${actionUrl}">
-                                <c:set var="btnAction" value="add" />
-                                <c:if test="${route.encrypted}">
-                                    <c:set var="btnAction" value="remove" />
-                                </c:if>
-                                <td>
-                                    <form:input path="paoName" type="hidden" value="${route.paoName}" /> 
-                                    <form:input path="type" type="hidden" value="${route.type}" /> 
-                                    <form:input path="paobjectId" type="hidden" value="${route.paobjectId}" />
+                            <th><i:inline key=".paoName" /></th>
+                            <th><i:inline key=".paoType" /></th>
+                            <th style="width: 50%"><i:inline key=".CPSkey" /></th>
+                            <th><i:inline key=".action" /></th>
+                        </tr>
+                    </thead>
+                    <tfoot></tfoot>
+                    <tbody>
+                        <c:forEach var="route" items="${encryptedRoutes}">
+                            <c:set var="actionUrl" value="add" />
+                            <c:if test="${route.encrypted}">
+                                <c:set var="actionUrl" value="remove" />
+                            </c:if>
+                            <tr>
+                                <td>${fn:escapeXml(route.paoName)}</td>
+                                <td>${fn:escapeXml(route.type.paoTypeName)}</td>
+                                <form:form id="routes_${route.paobjectId}" commandName="encryptedRoute" method="POST" autocomplete="off" action="${actionUrl}">
+                                    <c:set var="btnAction" value="add" />
                                     <c:if test="${route.encrypted}">
-                                        <form:input path="encryptionKeyId" type="hidden" value="${route.encryptionKeyId}" />
-                                        <form:input path="encryptionKeyName" type="hidden" value="${route.encryptionKeyName}" />
-                                        <dialog:confirm on="#remove_EncryptionBtn_${route.paobjectId}" nameKey="confirmRemove" argument="${fn:escapeXml(route.paoName)}" />
-                                        <select disabled="disabled" style="width: 100%">
-                                            <option>${fn:escapeXml(route.encryptionKeyName)}</option>
-                                        <select>
-                                    </c:if> 
-                                    <c:if test="${!route.encrypted}">
-                                        <c:if test="${fn:length(encryptionKeys) > 0}">
-                                            <dialog:confirm on="#add_EncryptionBtn_${route.paobjectId}" nameKey="confirmAdd" argument="${fn:escapeXml(route.paoName)}" />
-                                            <form:select id="keyNameSelect${route.paobjectId}" path="encryptionKeyId" style="width:100%">
-                                                <c:forEach items="${encryptionKeys}" var="key">
-                                                    <form:option value="${key.encryptionKeyId}">${fn:escapeXml(key.name)}</form:option>
-                                                </c:forEach>
-                                            </form:select>
-                                        </c:if>
-                                        <c:if test="${fn:length(encryptionKeys) <= 0}">
-                                            <i:inline key=".noKeysAvailable" />
-                                        </c:if>
+                                        <c:set var="btnAction" value="remove" />
                                     </c:if>
-                                </td>
-                                <td>
-                                    <cti:button id="${btnAction}_EncryptionBtn_${route.paobjectId}" nameKey="${btnAction}EncryptionBtn" href="javascript:submitForm('routes_${route.paobjectId}')" disabled="${fn:length(encryptionKeys) <= 0}" />
-                                </td>
-                            </form:form>
-                        </tr>
-                    </c:forEach>
-                    <c:if test="${empty encryptedRoutes}">
-                        <tr>
-                            <td colspan="4"><i:inline key=".noRoutesMsg" /></td>
-                        </tr>
-                    </c:if>
+                                    <td>
+                                        <form:input path="paoName" type="hidden" value="${route.paoName}" /> 
+                                        <form:input path="type" type="hidden" value="${route.type}" /> 
+                                        <form:input path="paobjectId" type="hidden" value="${route.paobjectId}" />
+                                        <c:if test="${route.encrypted}">
+                                            <form:input path="encryptionKeyId" type="hidden" value="${route.encryptionKeyId}" />
+                                            <form:input path="encryptionKeyName" type="hidden" value="${route.encryptionKeyName}" />
+                                            <dialog:confirm on="#remove_EncryptionBtn_${route.paobjectId}" nameKey="confirmRemove" argument="${fn:escapeXml(route.paoName)}" />
+                                            <select disabled="disabled" style="width: 100%">
+                                                <option>${fn:escapeXml(route.encryptionKeyName)}</option>
+                                            <select>
+                                        </c:if> 
+                                        <c:if test="${!route.encrypted}">
+                                            <c:if test="${fn:length(encryptionKeys) > 0}">
+                                                <dialog:confirm on="#add_EncryptionBtn_${route.paobjectId}" nameKey="confirmAdd" argument="${fn:escapeXml(route.paoName)}" />
+                                                <form:select id="keyNameSelect${route.paobjectId}" path="encryptionKeyId" style="width:100%">
+                                                    <c:forEach items="${encryptionKeys}" var="key">
+                                                        <form:option value="${key.encryptionKeyId}">${fn:escapeXml(key.name)}</form:option>
+                                                    </c:forEach>
+                                                </form:select>
+                                            </c:if>
+                                            <c:if test="${fn:length(encryptionKeys) <= 0}">
+                                                <i:inline key=".noKeysAvailable" />
+                                            </c:if>
+                                        </c:if>
+                                    </td>
+                                    <td>
+                                        <cti:button id="${btnAction}_EncryptionBtn_${route.paobjectId}" nameKey="${btnAction}EncryptionBtn" href="javascript:submitForm('routes_${route.paobjectId}')" disabled="${fn:length(encryptionKeys) <= 0}" />
+                                    </td>
+                                </form:form>
+                            </tr>
+                        </c:forEach>
+                        <c:if test="${empty encryptedRoutes}">
+                            <tr>
+                                <td colspan="4"><i:inline key=".noRoutesMsg" /></td>
+                            </tr>
+                        </c:if>
+                    </tbody>
                 </table>
             </tags:boxContainer2>
         </cti:dataGridCell>

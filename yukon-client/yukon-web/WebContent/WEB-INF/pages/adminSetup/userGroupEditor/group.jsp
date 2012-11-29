@@ -57,19 +57,19 @@
             
             <cti:displayForPageEditModes modes="VIEW">
                 
-                <tags:boxContainer2 nameKey="rolesContainer" styleClass="">
+                <tags:boxContainer2 nameKey="rolesContainer">
                     <c:choose>
                         <c:when test="${empty categoryRoleMap}">
                             <i:inline key=".noRoles"/>
                         </c:when>
                         <c:otherwise>
-                            <div class="rolesContainer">
+                            <div class="rolesContainer wsnw">
                                 <c:forEach var="category" items="${categoryRoleMap}">
-                                    <ul class="category">
-                                        <li><span class="categoryLabel">${category.key}</span>
-                                            <ul class="role">
+                                    <ul class="groupedList">
+                                        <li><span class="group detail">${category.key}</span>
+                                            <ul class="groupedItem">
                                                 <c:forEach var="role" items="${category.value}">
-                                                    <li>
+                                                    <li class="detail">
                                                         <cti:url value="/adminSetup/roleEditor/view" var="roleUrl">
                                                             <cti:param name="roleId" value="${role.roleId}"/>
                                                             <cti:param name="roleGroupId" value="${roleGroupId}"/>

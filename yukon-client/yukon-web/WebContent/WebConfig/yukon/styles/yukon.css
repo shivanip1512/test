@@ -12,26 +12,26 @@ a, .vertical_menu a:hover {text-decoration:none;}
 a:hover, a:focus {text-decoration:underline;outline:0;}
 
 /* primary color */
-a, .primary_color, .vertical_menu li.selected a, .vertical_menu a:hover, .ui-widget-content a {color:#06C /*#663300*/;}
-::-moz-selection, .primary_background {background-color:#06c /*#663300*/; color:white;}
+a, .primary_color, .vertical_menu li.selected a, .vertical_menu a:hover, .ui-widget-content a {color:#06C;}
+::-moz-selection, .primary_background {background-color:#06c; color:white;}
 .primary_background a, .primary_background a:visited {color:white}
 
 a:visited {color: purple;}
 
 /* highlight color */
-.highlight, .primary_background .highlight, #topMenu a:hover, #topMenu a:focus, #subMenu a.selected, .breadCrumbs a, .breadCrumbs {color: #FF9900;}
+.highlight, .primary_background .highlight, #topMenu a:hover, #topMenu a:focus, #subMenu a.selected, #topMenu a.selected, .breadCrumbs a, .breadCrumbs {color: #FF9900;}
 
 /* headings */
 h1 {font-size: 1.3em;font-weight:bold;}
 h1,h2,h3,h4 {margin-bottom:.8em;}
 
 /* shared form field attributes */
-input, button, textarea, select {border:solid 1px #ccc; border-radius:2px; color:#555;}
+input[type=submit], input[type=button], input[type=text], button, textarea, select {border:solid 1px #ccc; border-radius:2px; color:#555;}
 input, button, textarea {padding:2px 5px;}
 input:focus, button:focus, textarea:focus, select:focus, button:hover, input[type=submit]:hover, input[type=submit]:focus, input[type=button]:hover, input[type=button]:focus {border:solid 1px #4373A3;box-shadow:0 0 5px lightBlue;outline:0;color:black;}
 input::-moz-focus-inner, button::-moz-focus-inner, textarea::-moz-focus-inner, select::-moz-focus-inner {border:0}
 
-input {background:white;padding:2px 5px;}
+input[type=submit], input[type=button], input[type=text] {background:white;padding:2px 5px;}
 button, input[type=submit], input[type=button] {color:#333;border:solid 1px #888; cursor:pointer; background-color:#efefef; background:linear-gradient(#efefef, #cccccc); text-shadow: 1px 1px 0 white;}
 
 button:hover, input[type=submit]:hover, input[type=button]:hover {color:black; background:linear-gradient(#efefef, #bbbbbb);text-shadow:1px 1px 0 #eeeeee;}
@@ -58,6 +58,7 @@ button.naked, button.naked:hover {border:none; background:transparent; box-shado
 .StandardWithNavLayout #ContentWrapper {margin-left:139px; padding-left: 10px;border-left: solid 1px #ccc; min-height:600px; /*I guess... but specifying a height here just feels wrong*/}
 #LeftColumn {float:left; width: 140px;}
 #LeftColumn .detail {margin-bottom:10px;}
+#alertSpan a, #alertSpan a:hover, #alertSpan a:focus {color: #FF5555;}
 
 /* vertical menus */
 .vertical_menu {background:#EEE; border:solid 1px #ccc; border-style:solid none solid solid; overflow:hidden; z-index:100;}
@@ -159,7 +160,7 @@ input.error {background: pink;border-color:red;}
 /* END Color Coding */
 
 /* Dialogs */
-.popUpDiv, .widgetPopup, .ui-dialog {background:white;position:absolute;box-shadow:0 10px 30px black; border:solid 1px #999; border-radius:3px; z-index: 1000;}
+.popUpDiv, .widgetPopup, .ui-dialog {background:white;position:absolute;box-shadow:0 10px 30px black; border:solid 1px #999; border-radius:3px; z-index: 1000; top:100px; left:200px;max-width:800px;} /* TODO: replace old popups so that size and position is not hardcoded */ 
 .widgetPopup {padding: 10px 20px;}
 .popUpDiv .controls, .titledContainer .controls, .pagedBox .controls {float:right;cursor:pointer;}
 .popUpDiv > .titledContainer {margin-bottom: 0;}
@@ -205,7 +206,7 @@ operations: operationsStyles.css to be moved here later when we redo operations 
 .category .medium_icon {margin: 5px 15px 15px 5px; }
 .category .meta {margin-top: 5px;}
 
-strong, span.smallBoldLabel {font-weight: bold; color}
+strong, span.smallBoldLabel, .groupedList .group {font-weight: bold;}
 .notes, .smallBoldLabel {font-size: 11px;}
 
 .monospace, .code {font-family: Courier,monospace; font-size: 12px;}
@@ -229,6 +230,8 @@ strong, span.smallBoldLabel {font-weight: bold; color}
 .setting_comments {width:250px;}
 .setting_name {width:192px;}
 .setting .detail {color: #888; font-size: 90%}
+.groupedList .group {font-weight: bold;}
+.groupedList .groupedItem {margin: 2px 0 0 20px;}
  
  /* dateTime Pickers */
 .datetimeEntry_wrap {display: inline-block; overflow: hidden; background: #ccc; -webkit-border-radius: 2px; -moz-border-radius: 2px; border-radius: 2px; border: solid 1px #999; float: left; margin-right: 5px;}
@@ -274,8 +277,8 @@ input.dateTimePicker {margin: 0;}
 
 #modal_glass {padding-bottom: 100px; text-align:center;}
 #modal_glass, #modal_glass .tint {position: fixed; top:0; left:0; z-index:100000; /*hahah*/ height: 100%; width: 100%;}
-#modal_glass .loading {padding: 20px 20px 20px 40px; display:inline-block; border: solid 1px #CCCCCC; background: #FFF url(../../Icons/busy_rotation.gif) 14px /* (padding - image.height)/2 */ center no-repeat; margin: 70px auto 0; -moz-box-shadow: 0 0 100px #666; -webkit-box-shadow: 0 0 100px #666; box-shadow: 0 0 100px #666; -moz-border-radius: 8px; -webkit-border-radius: 8px; border-radius: 8px 8px 8px 8px; /* yea! IE9 support requires all corners be specified */ opacity: 1; filter:alpha(opacity=100); z-index:100001; /*hahah*/position: relative; font-size: 16px; color: #666;}
-.glass {background: #000 url(../../Icons/busy_rotation.gif) center no-repeat; opacity: 0.1; filter: alpha(opacity=10); position: absolute;}
+#modal_glass .loading {padding: 20px 20px 20px 40px; display:inline-block; border: solid 1px #CCCCCC; background: #FFF url(../Icons/busy_rotation.gif) 14px /* (padding - image.height)/2 */ center no-repeat; margin: 70px auto 0; -moz-box-shadow: 0 0 100px #666; -webkit-box-shadow: 0 0 100px #666; box-shadow: 0 0 100px #666; -moz-border-radius: 8px; -webkit-border-radius: 8px; border-radius: 8px 8px 8px 8px; /* yea! IE9 support requires all corners be specified */ opacity: 1; filter:alpha(opacity=100); z-index:100001; /*hahah*/position: relative; font-size: 16px; color: #666;}
+.glass {background: #000 url(../Icons/busy_rotation.gif) center no-repeat; opacity: 0.1; filter: alpha(opacity=10); position: absolute;}
 .message {padding: 5px 20px;}
 .loading .message {padding: 0 0 0 20px; border: none;}
 div.toggle {padding-left: 30px;}

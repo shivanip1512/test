@@ -64,6 +64,7 @@
                     <th><i:inline key=".pfactorEstimated"/></th>
             	</tr>
         	</thead>
+            <tfoot></tfoot>
             
         	<tbody>
         		<c:forEach var="viewableArea" items="${ccAreas}">
@@ -85,7 +86,7 @@
                         <cti:param name="isSpecialArea" value="${isSpecialArea}"/>
                     </cti:url>
                     
-        			<tr class="<tags:alternateRow odd="tableCell" even="altTableCell"/>">
+        			<tr>
 	        			
                         <td>
 							<input type="image" id="showAreas${thisAreaId}" src="/capcontrol/images/nav-plus.gif" <c:if test="${empty viewableArea.subStations}">style="visibility: hidden;"</c:if> 

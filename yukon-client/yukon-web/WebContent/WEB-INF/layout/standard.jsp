@@ -144,13 +144,9 @@
 <cti:msg key="yukon.web.alerts.heading" var="alertTitle"/>
 <tags:simplePopup title="${alertTitle}" id="alertContent" onClose="javascript:alert_closeAlertWindow();">
     <div id="alertBody"></div>
-    <div style="padding-top: 5px">
-    <table cellspacing="0" width="100%" >
-        <tr>
-            <td align="left"><tags:stickyCheckbox id="alert_autoPopup" defaultValue="false"><cti:msg key="yukon.web.alerts.autopopup"/></tags:stickyCheckbox></td>
-            <td align="right"><input type="button" value="<cti:msg key="yukon.web.alerts.clearall"/>" onclick="javascript:alert_clearAlert();"></td>
-        </tr>
-    </table>
+    <div class="actionArea">
+        <span class="fl"><tags:stickyCheckbox id="alert_autoPopup" defaultValue="false"><cti:msg key="yukon.web.alerts.autopopup"/></tags:stickyCheckbox></span>
+        <span class="fr"><input type="button" value="<cti:msg key="yukon.web.alerts.clearall"/>" onclick="javascript:alert_clearAlert();"></span>
     </div>
 
 </tags:simplePopup>

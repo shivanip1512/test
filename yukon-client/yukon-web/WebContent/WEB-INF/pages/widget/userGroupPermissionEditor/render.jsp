@@ -31,25 +31,30 @@ ${pageScope.addPao} = function() {
             <c:otherwise>
                 <div class="permissionsContainer">
                     <table class="compactResultsTable rowHighlighting">
-                        <tr>
-                            <th>Name</th>
-                            <th>Type</th>
-                            <th class="removeColumn">Remove</th>
-                        </tr>
-                        <c:forEach var="pao" items="${paoList}">
-                            <tr class="<tags:alternateRow odd="" even="altRow"/>">
-                                <td>
-                                    <c:out value="${pao.paoName}" />
-                                </td>
-                                <td>
-                                    <c:out value="${pao.type}" />
-                                </td>
-                                <td class="removeColumn">
-                                    <tags:widgetActionRefreshImage nameKey="remove" method="removePao" paoId="${pao.paoId}"/>
-                                </td>
+                        <thead>
+                            <tr>
+                                <th>Name</th>
+                                <th>Type</th>
+                                <th class="removeColumn">Remove</th>
                             </tr>
-                            
-                        </c:forEach>
+                        </thead>
+                        <tfoot></tfoot>
+                        <tbody>
+                            <c:forEach var="pao" items="${paoList}">
+                                <tr>
+                                    <td>
+                                        <c:out value="${pao.paoName}" />
+                                    </td>
+                                    <td>
+                                        <c:out value="${pao.type}" />
+                                    </td>
+                                    <td class="removeColumn">
+                                        <tags:widgetActionRefreshImage nameKey="remove" method="removePao" paoId="${pao.paoId}"/>
+                                    </td>
+                                </tr>
+                                
+                            </c:forEach>
+                        </tbody>
                     </table>
                 </div>
             </c:otherwise>

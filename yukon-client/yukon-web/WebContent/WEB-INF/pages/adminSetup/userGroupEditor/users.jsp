@@ -25,37 +25,42 @@ function addUsers() {
                     <input type="hidden" name="userGroupId" value="${userGroupId}">
                     <div class="usersContainer">
                         <table class="compactResultsTable rowHighlighting">
-                            <tr>
-                                <th><i:inline key=".username"/></th>
-                                <th><i:inline key=".authentication"/></th>
-                                <th><i:inline key=".userStatus"/></th>
-                                <th class="removeColumn"><i:inline key=".remove"/></th>
-                            </tr>
-                            <c:forEach items="${users}" var="user">
-                                <cti:url value="/adminSetup/user/view" var="editUserUrl">
-                                    <cti:param name="userId" value="${user.userID}"/>
-                                </cti:url>
-                                <c:choose>
-                                    <c:when test="${user.loginStatus == 'ENABLED'}">
-                                        <c:set  var="styleClass" value="successMessage"/>
-                                    </c:when>
-                                    <c:otherwise>
-                                        <c:set  var="styleClass" value="errorMessage"/>
-                                    </c:otherwise>
-                                </c:choose>
-                                <tr class="<tags:alternateRow odd="" even="altTableCell"/>">
-                                    <td><a href="${editUserUrl}">${fn:escapeXml(user.username)}</a></td>
-                                    <td><cti:formatObject value="${user.authenticationCategory}"/></td>
-                                    <td><span class="${styleClass}"><cti:formatObject value="${user.loginStatus}"/></span></td>
-
-                                    <dialog:confirm on="#remove_${user.userID}" nameKey="confirmRemove" argument="${fn:escapeXml(user.username)}" />
-                                    <td class="removeColumn">
-                                        <div class="dib">
-                                            <input id="remove_${user.userID}" name="remove" value="${user.userID}" class="pointer icon icon_remove" type="submit">
-                                        </div>
-                                    </td>
+                            <thead>
+                                <tr>
+                                    <th><i:inline key=".username"/></th>
+                                    <th><i:inline key=".authentication"/></th>
+                                    <th><i:inline key=".userStatus"/></th>
+                                    <th class="removeColumn"><i:inline key=".remove"/></th>
                                 </tr>
-                            </c:forEach>
+                            </thead>
+                            <tfoot></tfoot>
+                            <tbody>
+                                <c:forEach items="${users}" var="user">
+                                    <cti:url value="/adminSetup/user/view" var="editUserUrl">
+                                        <cti:param name="userId" value="${user.userID}"/>
+                                    </cti:url>
+                                    <c:choose>
+                                        <c:when test="${user.loginStatus == 'ENABLED'}">
+                                            <c:set  var="styleClass" value="successMessage"/>
+                                        </c:when>
+                                        <c:otherwise>
+                                            <c:set  var="styleClass" value="errorMessage"/>
+                                        </c:otherwise>
+                                    </c:choose>
+                                    <tr>
+                                        <td><a href="${editUserUrl}">${fn:escapeXml(user.username)}</a></td>
+                                        <td><cti:formatObject value="${user.authenticationCategory}"/></td>
+                                        <td><span class="${styleClass}"><cti:formatObject value="${user.loginStatus}"/></span></td>
+    
+                                        <dialog:confirm on="#remove_${user.userID}" nameKey="confirmRemove" argument="${fn:escapeXml(user.username)}" />
+                                        <td class="removeColumn">
+                                            <div class="dib">
+                                                <cti:button id="remove_${user.userID}" nameKey="remove" name="remove" value="${user.userID}" type="submit" renderMode="image"/>
+                                            </div>
+                                        </td>
+                                    </tr>
+                                </c:forEach>
+                            </tbody>
                         </table>
                     </div>
                 </form>
