@@ -1067,7 +1067,7 @@ bytes Mct410Sim::formatLongLoadProfile(const unsigned offset, const unsigned add
         return result_bytes;
     }
 
-    fillLoadProfile(address, blockStart, lpIntervalSeconds, result_oitr);
+    fillLongLoadProfile(address, blockStart, lpIntervalSeconds, result_oitr);
 
     return result_bytes;
 }
@@ -1109,15 +1109,30 @@ void Mct410Sim::fillLoadProfile(const unsigned address, const CtiTime &blockStar
 {
     for( unsigned interval = 0; interval < LoadProfile_IntervalsPerBlock; ++interval )
     {   
-        double conumptionWs = makeValueConsumption(address, blockStart - (interval + 1) * interval_length, interval_length);
+        double consumptionWs = makeValueConsumption(address, blockStart - (interval + 1) * interval_length, interval_length);
 
-        double conumptionWh = conumptionWs / SecondsPerHour;
-
-        int dynamicDemand = mct410_utility::makeDynamicDemand(conumptionWh);
-
-        *out_itr++ = dynamicDemand >> 8;
-        *out_itr++ = dynamicDemand >> 0;
+        appendCalculatedLpValue(consumptionWs, out_itr);
     }
+}
+
+void Mct410Sim::fillLongLoadProfile(const unsigned address, const CtiTime &blockStart, const unsigned interval_length, byte_appender &out_itr)
+{
+    for( unsigned interval = 0; interval < LoadProfile_IntervalsPerBlock; ++interval )
+    {   
+        double consumptionWs = makeValueConsumption(address, blockStart - (LoadProfile_IntervalsPerBlock - interval) * interval_length, interval_length);
+
+        appendCalculatedLpValue(consumptionWs, out_itr);
+    }
+}
+
+void Mct410Sim::appendCalculatedLpValue(const double consumptionWs, byte_appender &out_itr)
+{
+    double consumptionWh = consumptionWs / SecondsPerHour;
+
+    int dynamicDemand = mct410_utility::makeDynamicDemand(consumptionWh);
+
+    *out_itr++ = dynamicDemand >> 8;
+    *out_itr++ = dynamicDemand >> 0;
 }
 
 void Mct410Sim::putPointOfInterest(const bytes &payload)

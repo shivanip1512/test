@@ -238,6 +238,8 @@ private:
     static unsigned int mctGetValue(int mctAddress, CtiTime c_time);
     unsigned char *getLongLoadProfileData(int function, int bytesToReturn);
 
+    static void appendCalculatedLpValue(const double consumptionWs, byte_appender &out_itr);
+
 public:
 
     Mct410Sim(int address);
@@ -266,7 +268,8 @@ protected:
 
     static unsigned getHectoWattHours(const unsigned address, const CtiTime c_time);
 
-    static void fillLoadProfile(const unsigned address, const CtiTime &blockStart, const unsigned interval_length, byte_appender &out_itr);
+    static void fillLoadProfile    (const unsigned address, const CtiTime &blockStart, const unsigned interval_length, byte_appender &out_itr);
+    static void fillLongLoadProfile(const unsigned address, const CtiTime &blockStart, const unsigned interval_length, byte_appender &out_itr);
 
     static bytes formatAllFrozenChannel1Readings(const unsigned long frozenRead, const unsigned long frozenTime, 
                                                  const unsigned hwh, const unsigned freezeCounter, const short peakDemand);

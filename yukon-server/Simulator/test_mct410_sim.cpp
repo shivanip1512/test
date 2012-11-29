@@ -19,6 +19,7 @@ struct testMct410Sim : Mct410Sim
     using Mct410Sim::makeValueConsumption;
     using Mct410Sim::getHectoWattHours;
     using Mct410Sim::fillLoadProfile;
+    using Mct410Sim::fillLongLoadProfile;
     using Mct410Sim::getTablePointer;
     using Mct410Sim::checkForNewPeakDemand;
     using Mct410Sim::peak_demand_t;
@@ -199,6 +200,42 @@ BOOST_AUTO_TEST_CASE( test_fill_load_profile )
     testMct410Sim::fillLoadProfile(address, blockStart, 3600, result_oitr);
 
     BOOST_CHECK_EQUAL_COLLECTIONS(resultBytes.begin(), resultBytes.end(), expected.begin(), expected.end());
+}
+
+BOOST_AUTO_TEST_CASE( test_fill_long_load_profile )
+{
+    const unsigned address(0);
+    const unsigned interval(3600);
+    const CtiDate startDate(4, 4, 2012);
+
+    {
+        const CtiTime blockStart = CtiTime(startDate, 8, 0, 0); // 08:00 4/4/2012
+
+        bytes resultBytes;
+        byte_appender result_oitr = byte_appender(resultBytes);
+
+        const bytes expected = boost::assign::list_of
+            (0x25)(0x91)(0x26)(0x02)(0x26)(0x5f)(0x26)(0xa0)(0x26)(0xc2)(0x26)(0xc3);
+
+        testMct410Sim::fillLongLoadProfile(address, blockStart, interval, result_oitr);
+
+        BOOST_CHECK_EQUAL_COLLECTIONS(resultBytes.begin(), resultBytes.end(), expected.begin(), expected.end());
+    }
+
+    // Test overlap
+    {
+        const CtiTime blockStart = CtiTime(startDate, 12, 0, 0); // 12:00 4/4/2012
+
+        bytes resultBytes;
+        byte_appender result_oitr = byte_appender(resultBytes);
+
+        const bytes expected = boost::assign::list_of
+            (0x26)(0xc2)(0x26)(0xc3)(0x26)(0xa2)(0x26)(0x61)(0x26)(0x06)(0x25)(0x95);
+
+        testMct410Sim::fillLongLoadProfile(address, blockStart, interval, result_oitr);
+
+        BOOST_CHECK_EQUAL_COLLECTIONS(resultBytes.begin(), resultBytes.end(), expected.begin(), expected.end());
+    }
 }
 
 BOOST_AUTO_TEST_CASE( test_peak_demand )
