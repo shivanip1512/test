@@ -11,9 +11,14 @@
 #define NOTIF_NAME		"YukonNotificationServer"
 #define SM_NAME			"YukonServiceMgr"
 #define SYS32			"C:\\WINDOWS\\System32\\"
+#define TOMCAT_REG_KEY	"SOFTWARE\\Apache Software Foundation\\Procrun 2.0\\YukonWebApplicationService\\Parameters\\Java"
+#define JVM_MX			"JvmMx"
+#define JVM_OPTIONS		"Options"
 
 //global variable used to store service settings across the upgrade process
 string sServiceSettings(11);
+string sJvmMx, sJvmOptions;
+number nTomcatSettingsExist, nJvmOptionsSize;
 
 //-------------------------------------------------------
 // Helper function to build up a list of the Yukon
@@ -301,6 +306,51 @@ begin
 			FileInsertLine(sFile, sGrepReturnLine, nGrepLineNumber, REPLACE);
 		endif;
 	endwhile;
+end;
+
+//-------------------------------------------------------
+// Save memory settings and jvm parameters for Tomcat,
+// if they exist.
+//-------------------------------------------------------
+export prototype void SaveJvmParams();
+function void SaveJvmParams()
+string sConfPath, sMemReturnLine, sParamReturnLine, sError, sResult;
+number nLooping, nType, nSize, nResult, nMemLineNumber, nParamLineNumber, nParamsSize;
+begin
+	//TOMCAT SETTINGS - from registry
+	RegDBSetDefaultRoot(HKEY_LOCAL_MACHINE); //set registry root
+	
+	nTomcatSettingsExist = RegDBKeyExist(TOMCAT_REG_KEY);
+	
+	if(nTomcatSettingsExist) then
+		RegDBGetKeyValueEx(TOMCAT_REG_KEY, JVM_MX, nType, sJvmMx, nSize);
+		RegDBGetKeyValueEx(TOMCAT_REG_KEY, JVM_OPTIONS, nType, sJvmOptions, nJvmOptionsSize);
+	else
+		//error - no tomcat settings found, update manually
+		MessageBox("Unable to save web server JVM settings. Settings will reset to default values.", WARNING);
+	endif;
+	RegDBSetDefaultRoot(HKEY_CLASSES_ROOT); //set back to default
+end;
+
+//------------------------------------------------------------
+// Restore saved memory settings and jvm parameters for Tomcat
+//------------------------------------------------------------
+export prototype void LoadJvmParams();
+function void LoadJvmParams()
+string sConfPath, sReturnLine, sTemp;
+number nResult, nLineNumber, i;
+begin
+	//restore Tomcat settings to registry
+	NumToStr(sTemp, nTomcatSettingsExist);//TEST
+	MessageBox("Tomcat settings exist? " + sTemp, WARNING);//TEST 
+	if(nTomcatSettingsExist) then
+		NumToStr(sTemp, nJvmOptionsSize);//TEST
+		MessageBox("Setting tomcat mx: " + sJvmMx + ", options: " + sJvmOptions + " Size: " + sTemp, WARNING);//TEST
+		RegDBSetDefaultRoot(HKEY_LOCAL_MACHINE); //set registry root
+		RegDBSetKeyValueEx(TOMCAT_REG_KEY, JVM_MX, REGDB_NUMBER, sJvmMx, -1);
+		RegDBSetKeyValueEx(TOMCAT_REG_KEY, JVM_OPTIONS, REGDB_STRING_MULTI, sJvmOptions, nJvmOptionsSize);
+		RegDBSetDefaultRoot(HKEY_CLASSES_ROOT); //set back to default
+	endif;
 end;
 
 //------------------------------------------------------------

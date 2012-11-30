@@ -322,6 +322,9 @@ begin
 	//to re-populate the settings lost in the upgrade
 	SaveServiceSettings();
 	
+	//Save the jvm memory and options parameters for Tomcat
+	SaveJvmParams();
+	
 	//remove the YukonWebApplicationService, if it exists (i.e. upgrade install)
 	//so the new service installs correctly
 	sCMD = SYS32 ^ "sc.exe";
@@ -383,6 +386,9 @@ begin
 	
 	//reapply old settings to newly updated services
 	LoadServiceSettings();
+	
+	//Load the jvm memory and options parameters for Tomcat
+	LoadJvmParams();
 	
 	Dialog_DBToolsFrame:
 	Disable(BACKBUTTON);
