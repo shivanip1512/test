@@ -469,13 +469,13 @@
     <entry key="yukon.web.modules.capcontrol.scheduleAssignments.stopDisabled.hoverText">You do not have permission to perform this action.</entry>
     <entry key="yukon.web.modules.capcontrol.scheduleAssignments.stopDisabled.label">Stop Multiple Schedule Assignment Commands</entry>
     
-    <entry key="yukon.web.modules.capcontrol.scheduleAssignments.add.imageUrl">/WebConfig/yukon/Icons/add.gif</entry>
-    <entry key="yukon.web.modules.capcontrol.scheduleAssignments.add.hoverUrl">/WebConfig/yukon/Icons/add_over.gif</entry>
+    <entry key="yukon.web.modules.capcontrol.scheduleAssignments.add.imageUrl">/WebConfig/yukon/Icons/add.png</entry>
+    <entry key="yukon.web.modules.capcontrol.scheduleAssignments.add.hoverUrl">/WebConfig/yukon/Icons/add_over.png</entry>
     <entry key="yukon.web.modules.capcontrol.scheduleAssignments.add.hoverText">Create a new schedule assignment</entry>
     <entry key="yukon.web.modules.capcontrol.scheduleAssignments.add.label">New Schedule Assignment </entry>
     
-    <entry key="yukon.web.modules.capcontrol.scheduleAssignments.addDisabled.imageUrl">/WebConfig/yukon/Icons/add_disabled_gray.gif</entry>
-    <entry key="yukon.web.modules.capcontrol.scheduleAssignments.addDisabled.hoverUrl">/WebConfig/yukon/Icons/add_disabled_gray.gif</entry>
+    <entry key="yukon.web.modules.capcontrol.scheduleAssignments.addDisabled.imageUrl">/WebConfig/yukon/Icons/add_disabled_gray.png</entry>
+    <entry key="yukon.web.modules.capcontrol.scheduleAssignments.addDisabled.hoverUrl">/WebConfig/yukon/Icons/add_disabled_gray.png</entry>
     <entry key="yukon.web.modules.capcontrol.scheduleAssignments.addDisabled.hoverText">You do not have permission to perform this action.</entry>
     <entry key="yukon.web.modules.capcontrol.scheduleAssignments.addDisabled.label">New Schedule Assignment </entry>
     

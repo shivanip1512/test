@@ -72,8 +72,8 @@
     <entry key="yukon.web.modules.amr.statusPointMonitorEditor.addAction.hoverText">Add a processing action.</entry>
     <entry key="yukon.web.modules.amr.statusPointMonitorEditor.addAction.label">Add Action</entry>
     <entry key="yukon.web.modules.amr.statusPointMonitorEditor.addAction.title">Add Action</entry>
-    <entry key="yukon.web.modules.amr.statusPointMonitorEditor.deleteAction.imageUrl">/WebConfig/yukon/Icons/delete.gif</entry>
-    <entry key="yukon.web.modules.amr.statusPointMonitorEditor.deleteAction.hoverUrl">/WebConfig/yukon/Icons/delete_over.gif</entry>
+    <entry key="yukon.web.modules.amr.statusPointMonitorEditor.deleteAction.imageUrl">/WebConfig/yukon/Icons/delete.png</entry>
+    <entry key="yukon.web.modules.amr.statusPointMonitorEditor.deleteAction.hoverUrl">/WebConfig/yukon/Icons/delete_over.png</entry>
     <entry key="yukon.web.modules.amr.statusPointMonitorEditor.deleteAction.hoverText">Delete Action</entry>
     <entry key="yukon.web.modules.amr.statusPointMonitorEditor.deleteAction.title">Delete Action</entry>
     <entry key="yukon.web.modules.amr.statusPointMonitorEditor.popupInfo.deviceGroup.title">Device Group Picker Help</entry>

@@ -16,8 +16,8 @@
     <entry key="yukon.web.modules.operator.appliance.list.notApplicable">N/A</entry>
     
     <!-- Appliance Icon Links -->
-    <entry key="yukon.web.modules.operator.appliance.list.deleteAppliance.imageUrl">/WebConfig/yukon/Icons/delete.gif</entry>
-	<entry key="yukon.web.modules.operator.appliance.list.deleteAppliance.hoverUrl">/WebConfig/yukon/Icons/delete_over.gif</entry>
+    <entry key="yukon.web.modules.operator.appliance.list.deleteAppliance.imageUrl">/WebConfig/yukon/Icons/delete.png</entry>
+	<entry key="yukon.web.modules.operator.appliance.list.deleteAppliance.hoverUrl">/WebConfig/yukon/Icons/delete_over.png</entry>
 	<entry key="yukon.web.modules.operator.appliance.list.deleteAppliance.hoverText">Delete this appliance</entry>
 	
 	<entry key="yukon.web.modules.operator.appliance.list.createAppliancePopup.title">Choose Appliance Name</entry>

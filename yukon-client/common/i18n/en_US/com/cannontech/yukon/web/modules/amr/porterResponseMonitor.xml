@@ -27,8 +27,8 @@
 	<entry key="yukon.web.modules.amr.porterResponseMonitor.EDIT.rulesTable.add.imageUrl">/WebConfig/yukon/Icons/add.png</entry>
 	<entry key="yukon.web.modules.amr.porterResponseMonitor.EDIT.rulesTable.add.hoverUrl">/WebConfig/yukon/Icons/add_over.png</entry>
 	<entry key="yukon.web.modules.amr.porterResponseMonitor.EDIT.rulesTable.add.hoverText">Click to add rule</entry>
-	<entry key="yukon.web.modules.amr.porterResponseMonitor.EDIT.rulesTable.delete.imageUrl">/WebConfig/yukon/Icons/delete.gif</entry>
-	<entry key="yukon.web.modules.amr.porterResponseMonitor.EDIT.rulesTable.delete.hoverUrl">/WebConfig/yukon/Icons/delete_over.gif</entry>
+	<entry key="yukon.web.modules.amr.porterResponseMonitor.EDIT.rulesTable.delete.imageUrl">/WebConfig/yukon/Icons/delete.png</entry>
+	<entry key="yukon.web.modules.amr.porterResponseMonitor.EDIT.rulesTable.delete.hoverUrl">/WebConfig/yukon/Icons/delete_over.png</entry>
 	<entry key="yukon.web.modules.amr.porterResponseMonitor.EDIT.rulesTable.delete.hoverText">Click to remove</entry>
 	<entry key="yukon.web.modules.amr.porterResponseMonitor.EDIT.deleteConfirmation.title">Delete Porter Response Monitor</entry>
     <entry key="yukon.web.modules.amr.porterResponseMonitor.EDIT.deleteConfirmation.message">Are you sure you want to delete {0}?</entry>
@@ -103,8 +103,8 @@
 
     <!-- PorterResponseMonitorController addRuleTableRow.jsp -->
     <entry key="yukon.web.modules.amr.porterResponseMonitor.addRule.rule.success">Success</entry>
-    <entry key="yukon.web.modules.amr.porterResponseMonitor.addRule.delete.imageUrl">/WebConfig/yukon/Icons/delete.gif</entry>
-    <entry key="yukon.web.modules.amr.porterResponseMonitor.addRule.delete.hoverUrl">/WebConfig/yukon/Icons/delete_over.gif</entry>
+    <entry key="yukon.web.modules.amr.porterResponseMonitor.addRule.delete.imageUrl">/WebConfig/yukon/Icons/delete.png</entry>
+    <entry key="yukon.web.modules.amr.porterResponseMonitor.addRule.delete.hoverUrl">/WebConfig/yukon/Icons/delete_over.png</entry>
     <entry key="yukon.web.modules.amr.porterResponseMonitor.addRule.delete.hoverText">Click to remove</entry>
     <entry key="yukon.web.modules.amr.porterResponseMonitor.addRule.rulesTable.removedRow">This rule will be removed.</entry>
     <entry key="yukon.web.modules.amr.porterResponseMonitor.addRule.rulesTable.undoLink">Undo</entry>

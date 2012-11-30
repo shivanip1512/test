@@ -23,7 +23,7 @@
                                                         destinationFieldId="loadProgramId"
                                                         selectionProperty="paoName"
                                                         linkType="selection">
-                        <img src="/WebConfig/yukon/Icons/add.gif">
+                        <img src="/WebConfig/yukon/Icons/add.png">
                         Choose Program
                    </tags:pickerDialog>
                 <cti:button nameKey="sendTestTextMessage" type="submit"/>
@@ -37,7 +37,7 @@
                                                         destinationFieldId="loadProgramId2"
                                                         selectionProperty="paoName"
                                                         linkType="selection">
-                        <img src="/WebConfig/yukon/Icons/add.gif"> 
+                        <img src="/WebConfig/yukon/Icons/add.png"> 
                         Choose Program
                     </tags:pickerDialog>
                 <cti:button nameKey="sendTestCancelMessage" type="submit"/>
@@ -54,7 +54,7 @@
                                                         destinationFieldId="loadProgramId3"
                                                         selectionProperty="paoName"
                                                         linkType="selection">
-                        <img src="/WebConfig/yukon/Icons/add.gif">
+                        <img src="/WebConfig/yukon/Icons/add.png">
                         Choose Program
                     </tags:pickerDialog>
                 <cti:button nameKey="sendControlStartNotificationMessage" type="submit"/>
@@ -68,7 +68,7 @@
                                                         destinationFieldId="loadProgramId4"
                                                         selectionProperty="paoName"
                                                         linkType="selection">
-                        <img src="/WebConfig/yukon/Icons/add.gif">
+                        <img src="/WebConfig/yukon/Icons/add.png">
                         Choose Program
                     </tags:pickerDialog>
                 <cti:button nameKey="sendControlStopNotificationMessage" type="submit"/>

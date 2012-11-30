@@ -107,8 +107,8 @@
 
 	<entry key="yukon.web.modules.operator.optOut.main.confirmCancelOptOut.title">Confirm Cancel Opt Out</entry>
 	<entry key="yukon.web.modules.operator.optOut.main.confirmCancelOptOut.message">Are you sure you want to cancel the opt out for {0}?</entry>
-	<entry key="yukon.web.modules.operator.optOut.main.cancelOptOut.imageUrl">/WebConfig/yukon/Icons/delete.gif</entry>
-    <entry key="yukon.web.modules.operator.optOut.main.cancelOptOut.hoverUrl">/WebConfig/yukon/Icons/delete_over.gif</entry>
+	<entry key="yukon.web.modules.operator.optOut.main.cancelOptOut.imageUrl">/WebConfig/yukon/Icons/delete.png</entry>
+    <entry key="yukon.web.modules.operator.optOut.main.cancelOptOut.hoverUrl">/WebConfig/yukon/Icons/delete_over.png</entry>
 	<entry key="yukon.web.modules.operator.optOut.main.cancelOptOut.hoverText">Cancels an existing or scheduled opt out.</entry>
     <entry key="yukon.web.modules.operator.optOut.main.cancelOptOut.successText">Opt Out Canceled </entry>
 

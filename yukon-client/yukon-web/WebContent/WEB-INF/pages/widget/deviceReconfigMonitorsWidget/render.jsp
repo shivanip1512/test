@@ -4,8 +4,8 @@
 <%@ taglib prefix="i" tagdir="/WEB-INF/tags/i18n"%>
 <%@ taglib prefix="spring" uri="http://www.springframework.org/tags"%>
 
-<c:set var="removeImg" value="/WebConfig/yukon/Icons/delete.gif"/>
-<c:set var="removeImgHover" value="/WebConfig/yukon/Icons/delete_over.gif"/>
+<c:set var="removeImg" value="/WebConfig/yukon/Icons/delete.png"/>
+<c:set var="removeImgHover" value="/WebConfig/yukon/Icons/delete_over.png"/>
 
 <c:choose>
     <c:when test="${empty tasks}">

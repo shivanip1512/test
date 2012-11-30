@@ -89,7 +89,7 @@
     <entry key="yukon.web.modules.consumer.contacts.firstName">First Name</entry>
     <entry key="yukon.web.modules.consumer.contacts.lastName">Last Name</entry>
     <entry key="yukon.web.modules.consumer.contacts.addNotification.label">Add Notification</entry>
-    <entry key="yukon.web.modules.consumer.contacts.addNotification.imageUrl">/WebConfig/yukon/Icons/add.gif</entry>
+    <entry key="yukon.web.modules.consumer.contacts.addNotification.imageUrl">/WebConfig/yukon/Icons/add.png</entry>
     <entry key="yukon.web.modules.consumer.contacts.contactSaved">Contact Saved</entry>
     <entry key="yukon.web.modules.consumer.contacts.createNewContact.label">Create New Contact</entry>
     <entry key="yukon.web.modules.consumer.contacts.createNewContact.imageUrl">/WebConfig/yukon/Icons/wand.png</entry>

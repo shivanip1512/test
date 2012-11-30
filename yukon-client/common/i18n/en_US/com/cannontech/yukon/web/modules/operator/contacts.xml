@@ -32,8 +32,8 @@
 	<entry key="yukon.web.modules.operator.contact.notificationTable.removeHeader">Remove</entry>
 	<entry key="yukon.web.modules.operator.contact.notificationTable.none">Choose Notification Method</entry>
 	
-    <entry key="yukon.web.modules.operator.contact.addNotification.imageUrl">/WebConfig/yukon/Icons/add.gif</entry>
-    <entry key="yukon.web.modules.operator.contact.addNotification.hoverUrl">/WebConfig/yukon/Icons/add_over.gif</entry>
+    <entry key="yukon.web.modules.operator.contact.addNotification.imageUrl">/WebConfig/yukon/Icons/add.png</entry>
+    <entry key="yukon.web.modules.operator.contact.addNotification.hoverUrl">/WebConfig/yukon/Icons/add_over.png</entry>
 	<entry key="yukon.web.modules.operator.contact.addNotification.hoverText">Add an additional notification</entry>
 	<entry key="yukon.web.modules.operator.contact.addNotification.label">Add Notification</entry>
 

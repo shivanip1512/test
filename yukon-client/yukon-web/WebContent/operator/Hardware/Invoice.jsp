@@ -62,7 +62,7 @@
 	                  <input id="dateSubmitted" type="text" name="dateSubmitted" maxlength="40" size="24" value='<cti:formatDate value="${purchaseBean.currentInvoice.dateSubmitted}" type="DATE"/>' onchange="setContentChanged(true)">
 	   				  	<a href="javascript:void(0);" onclick="javascript:showCalendarControl($('dateSubmitted'), '${months}', '${days}', '${clear}', '${close}');"
 							onMouseOver="window.status='Date Submitted Calendar';return true;"
-							onMouseOut="window.status='';return true;"> <img src="<%= request.getContextPath() %>/WebConfig/yukon/Icons/StartCalendar.gif" width="20" height="15" align="absmiddle" border="0"> 
+							onMouseOut="window.status='';return true;"> <img src="<%= request.getContextPath() %>/WebConfig/yukon/Icons/StartCalendar.png" width="20" height="15" align="absmiddle" border="0"> 
                         </a>
 	                </td>
 	          	</tr>
@@ -100,7 +100,7 @@
 						<input id="datePaid" type="text" name="datePaid" maxlength="40" size="24" value='<cti:formatDate value="${purchaseBean.currentInvoice.datePaid}" type="DATE"/>' onchange="setContentChanged(true)">
 	   				  	<a href="javascript:void(0);" onclick="javascript:showCalendarControl($('datePaid'), '${months}', '${days}', '${clear}', '${close}');"
 							onMouseOver="window.status='Date Paid Calendar';return true;"
-							onMouseOut="window.status='';return true;"> <img src="<%= request.getContextPath() %>/WebConfig/yukon/Icons/StartCalendar.gif" width="20" height="15" align="absmiddle" border="0"> 
+							onMouseOut="window.status='';return true;"> <img src="<%= request.getContextPath() %>/WebConfig/yukon/Icons/StartCalendar.png" width="20" height="15" align="absmiddle" border="0"> 
                         </a>
 		            </td>
 		        </tr>

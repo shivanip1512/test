@@ -234,7 +234,7 @@
     <entry key="yukon.web.modules.operator.saveToFile.useCurrentConfiguration">Use devices' currently assigned configuration.</entry>
     <entry key="yukon.web.modules.operator.saveToFile.selectGroup">Assign configuration from group:</entry>
     <entry key="yukon.web.modules.operator.saveToFile.groupPicker.label">Choose Load Group</entry>
-    <entry key="yukon.web.modules.operator.saveToFile.groupPicker.imageUrl">/WebConfig/yukon/Icons/add.gif</entry>
+    <entry key="yukon.web.modules.operator.saveToFile.groupPicker.imageUrl">/WebConfig/yukon/Icons/add.png</entry>
     <entry key="yukon.web.modules.operator.saveToFile.progress">Progress</entry>
     
     <!-- /inventory/deleteInventory.jsp -->

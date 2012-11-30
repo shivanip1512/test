@@ -164,8 +164,8 @@
     <entry key="yukon.web.modules.operator.hardware.switches.title">Switches</entry>
     <entry key="yukon.web.modules.operator.hardware.displayType.SWITCH">Switch Type</entry>
     <entry key="yukon.web.modules.operator.hardware.switches.none">No Switches</entry>
-    <entry key="yukon.web.modules.operator.hardware.switches.add.imageUrl">/WebConfig/yukon/Icons/add.gif</entry>
-    <entry key="yukon.web.modules.operator.hardware.switches.add.hoverUrl">/WebConfig/yukon/Icons/add_over.gif</entry>
+    <entry key="yukon.web.modules.operator.hardware.switches.add.imageUrl">/WebConfig/yukon/Icons/add.png</entry>
+    <entry key="yukon.web.modules.operator.hardware.switches.add.hoverUrl">/WebConfig/yukon/Icons/add_over.png</entry>
     <entry key="yukon.web.modules.operator.hardware.switches.add.hoverText">Add a switch to this account.</entry>
     <entry key="yukon.web.modules.operator.hardware.switches.add">Add Switch</entry>
     
@@ -173,8 +173,8 @@
     <entry key="yukon.web.modules.operator.hardware.thermostats.title">Thermostats</entry>
     <entry key="yukon.web.modules.operator.hardware.displayType.THERMOSTAT">Thermostat Type</entry>
     <entry key="yukon.web.modules.operator.hardware.thermostats.none">No Thermostats</entry>
-    <entry key="yukon.web.modules.operator.hardware.thermostats.add.imageUrl">/WebConfig/yukon/Icons/add.gif</entry>
-    <entry key="yukon.web.modules.operator.hardware.thermostats.add.hoverUrl">/WebConfig/yukon/Icons/add_over.gif</entry>
+    <entry key="yukon.web.modules.operator.hardware.thermostats.add.imageUrl">/WebConfig/yukon/Icons/add.png</entry>
+    <entry key="yukon.web.modules.operator.hardware.thermostats.add.hoverUrl">/WebConfig/yukon/Icons/add_over.png</entry>
     <entry key="yukon.web.modules.operator.hardware.thermostats.add.hoverText">Add a thermostat to this account.</entry>
     <entry key="yukon.web.modules.operator.hardware.thermostats.add">Add Thermostat</entry>
     <entry key="yukon.web.modules.operator.hardware.thermostats.selectMultiple">Select Multiple</entry>
@@ -236,8 +236,8 @@
     <entry key="yukon.web.modules.operator.hardware.displayType.METER">Meter Type</entry>
     <entry key="yukon.web.modules.operator.hardware.meters.none">No Meters</entry>
     <entry key="yukon.web.modules.operator.hardware.meters.meterNumber">Meter Number</entry>
-    <entry key="yukon.web.modules.operator.hardware.meters.add.imageUrl">/WebConfig/yukon/Icons/add.gif</entry>
-	<entry key="yukon.web.modules.operator.hardware.meters.add.hoverUrl">/WebConfig/yukon/Icons/add_over.gif</entry>
+    <entry key="yukon.web.modules.operator.hardware.meters.add.imageUrl">/WebConfig/yukon/Icons/add.png</entry>
+	<entry key="yukon.web.modules.operator.hardware.meters.add.hoverUrl">/WebConfig/yukon/Icons/add_over.png</entry>
 	<entry key="yukon.web.modules.operator.hardware.meters.add.hoverText">Add a meter to this account.</entry>
 	<entry key="yukon.web.modules.operator.hardware.meters.add">Add Meter</entry>
     
@@ -248,8 +248,8 @@
     <entry key="yukon.web.modules.operator.hardware.gateways.connectedDevice">Connected Device</entry>
     <entry key="yukon.web.modules.operator.hardware.gateways.none">No Gateways</entry>
     <entry key="yukon.web.modules.operator.hardware.gateways.gatewayMac">Gateway Mac</entry>
-    <entry key="yukon.web.modules.operator.hardware.gateways.add.imageUrl">/WebConfig/yukon/Icons/add.gif</entry>
-	<entry key="yukon.web.modules.operator.hardware.gateways.add.hoverUrl">/WebConfig/yukon/Icons/add_over.gif</entry>
+    <entry key="yukon.web.modules.operator.hardware.gateways.add.imageUrl">/WebConfig/yukon/Icons/add.png</entry>
+	<entry key="yukon.web.modules.operator.hardware.gateways.add.hoverUrl">/WebConfig/yukon/Icons/add_over.png</entry>
 	<entry key="yukon.web.modules.operator.hardware.gateways.add.hoverText">Add a gateway to this account.</entry>
 	<entry key="yukon.web.modules.operator.hardware.gateways.add">Add Gateway</entry>
     

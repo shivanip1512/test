@@ -55,7 +55,7 @@
 	            
 	            <form:input  path="${fieldName}" id="${fieldName}" size="10" maxlength="10" cssClass="calendarInput ${statusError} ${inputClass}"/>
 	            
-	            <c:url var="calImgUrl" value="/WebConfig/yukon/Icons/StartCalendar.gif"/>
+	            <c:url var="calImgUrl" value="/WebConfig/yukon/Icons/StartCalendar.png"/>
 	            <span onclick="javascript:showCalendarControl('${uniqueId}', '${months}', '${days}', '${clear}', '${close}');" style="cursor:pointer;">
 	                <img id="calImg_${uniqueId}" src="${calImgUrl}" width="20" height="15" border="0" />
 	            </span>
@@ -78,7 +78,7 @@
         <!-- Normal Input Version -->
         <input id="${uniqueId}" name="${fieldName}"${disabledStr} type="text" size="10" maxlength="10" value="${pageScope.fieldValue}" class="calendarInput ${inputClass}">&nbsp;
         
-        <c:url var="calImgUrl" value="/WebConfig/yukon/Icons/StartCalendar.gif"/>
+        <c:url var="calImgUrl" value="/WebConfig/yukon/Icons/StartCalendar.png"/>
         <span onclick="javascript:showCalendarControl('${uniqueId}', '${months}', '${days}', '${clear}', '${close}');" style="cursor:pointer;">
             <img id="calImg_${uniqueId}" src="${calImgUrl}" width="20" height="15" border="0" />
         </span>

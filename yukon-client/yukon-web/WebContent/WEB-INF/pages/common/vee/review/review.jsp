@@ -19,8 +19,8 @@
 <cti:msg var="reloading" key="yukon.web.modules.common.vee.review.home.reloading"/>
 <cti:msg var="instructionsHeader" key="yukon.web.modules.common.vee.review.home.instructions.header"/>
 
-<cti:url var="deleteImg" value="/WebConfig/yukon/Icons/delete.gif"/>
-<cti:url var="acceptImg" value="/WebConfig/yukon/Icons/tick.gif"/>
+<cti:url var="deleteImg" value="/WebConfig/yukon/Icons/delete.png"/>
+<cti:url var="acceptImg" value="/WebConfig/yukon/Icons/tick.png"/>
 <cti:url var="deleteDisabledImg" value="/WebConfig/yukon/Icons/delete_disabled_gray.gif"/>
 <cti:url var="acceptDisabledImg" value="/WebConfig/yukon/Icons/tick_disabled_gray.gif"/>
 	

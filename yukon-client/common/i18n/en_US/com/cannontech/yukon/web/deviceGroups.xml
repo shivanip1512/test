@@ -113,8 +113,8 @@ Group names may not be blank or contain slashes.
 <!-- ================================================================================================================================================= -->
 <!-- ================================================================================================================================================= -->
 <entry key="yukon.web.deviceGroups.composedGroup.pageTitle">Composed Device Group Setup</entry>
-<entry key="yukon.web.deviceGroups.composedGroup.addAnotherDeviceGroup.imageUrl">/WebConfig/yukon/Icons/add.gif</entry>
-<entry key="yukon.web.deviceGroups.composedGroup.addAnotherDeviceGroup.hoverUrl">/WebConfig/yukon/Icons/add_over.gif</entry>
+<entry key="yukon.web.deviceGroups.composedGroup.addAnotherDeviceGroup.imageUrl">/WebConfig/yukon/Icons/add.png</entry>
+<entry key="yukon.web.deviceGroups.composedGroup.addAnotherDeviceGroup.hoverUrl">/WebConfig/yukon/Icons/add_over.png</entry>
 <entry key="yukon.web.deviceGroups.composedGroup.addAnotherDeviceGroup.label">Add Another Device Group</entry>
 <entry key="yukon.web.deviceGroups.composedGroup.nameLabel">Name</entry>
 <entry key="yukon.web.deviceGroups.composedGroup.header.rules">Rules</entry>

@@ -6,8 +6,8 @@
 <%@ taglib prefix="fn" uri="http://java.sun.com/jsp/jstl/functions"%>
 <%@ taglib prefix="spring" uri="http://www.springframework.org/tags"  %>
 
-<cti:url var="delete" value="/WebConfig/yukon/Icons/delete.gif"/>
-<cti:url var="deleteOver" value="/WebConfig/yukon/Icons/delete_over.gif"/>
+<cti:url var="delete" value="/WebConfig/yukon/Icons/delete.png"/>
+<cti:url var="deleteOver" value="/WebConfig/yukon/Icons/delete_over.png"/>
     
 <cti:standardPage module="operator" page="workOrder.list">
 

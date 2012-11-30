@@ -38,8 +38,8 @@
 	<entry key="yukon.web.components.slowInput.cancel.label">Cancel</entry>
 	<entry key="yukon.web.components.slowInput.cancel.labelBusy">Canceling</entry>
 
-    <entry key="yukon.web.components.image.edit.imageUrl">/WebConfig/yukon/Icons/pencil.gif</entry>
-    <entry key="yukon.web.components.image.edit.hoverUrl">/WebConfig/yukon/Icons/pencil_over.gif</entry>
+    <entry key="yukon.web.components.image.edit.imageUrl">/WebConfig/yukon/Icons/pencil.png</entry>
+    <entry key="yukon.web.components.image.edit.hoverUrl">/WebConfig/yukon/Icons/pencil_over.png</entry>
     <entry key="yukon.web.components.image.edit.hoverText">Edit</entry>
     <entry key="yukon.web.components.image.edit.label">Edit</entry>
     

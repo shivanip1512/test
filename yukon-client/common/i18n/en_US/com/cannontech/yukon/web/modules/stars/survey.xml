@@ -61,13 +61,13 @@
 <entry key="yukon.web.modules.survey.edit.addAnswer.hoverText">Add an answer to the question.</entry>
 <entry key="yukon.web.modules.survey.edit.addAnswer.label">Add Answer</entry>
 <entry key="yukon.web.modules.survey.edit.addAnswer.title">Add Answer</entry>
-<entry key="yukon.web.modules.survey.edit.deleteAnswer.imageUrl">/WebConfig/yukon/Icons/delete.gif</entry>
-<entry key="yukon.web.modules.survey.edit.deleteAnswer.hoverUrl">/WebConfig/yukon/Icons/delete_over.gif</entry>
+<entry key="yukon.web.modules.survey.edit.deleteAnswer.imageUrl">/WebConfig/yukon/Icons/delete.png</entry>
+<entry key="yukon.web.modules.survey.edit.deleteAnswer.hoverUrl">/WebConfig/yukon/Icons/delete_over.png</entry>
 <entry key="yukon.web.modules.survey.edit.deleteAnswer.hoverText">Delete Answer</entry>
 <entry key="yukon.web.modules.survey.edit.deleteAnswer.title">Delete Answer</entry>
 
-<entry key="yukon.web.modules.survey.edit.edit.imageUrl">/WebConfig/yukon/Icons/pencil.gif</entry>
-<entry key="yukon.web.modules.survey.edit.edit.hoverUrl">/WebConfig/yukon/Icons/pencil_over.gif</entry>
+<entry key="yukon.web.modules.survey.edit.edit.imageUrl">/WebConfig/yukon/Icons/pencil.png</entry>
+<entry key="yukon.web.modules.survey.edit.edit.hoverUrl">/WebConfig/yukon/Icons/pencil_over.png</entry>
 <entry key="yukon.web.modules.survey.edit.edit.hoverText">Edit detailed information for this survey.</entry>
 <entry key="yukon.web.modules.survey.edit.edit.label">Edit Detail Information</entry>
 <entry key="yukon.web.modules.survey.edit.edit.title">Survey Details</entry>
@@ -84,23 +84,23 @@
 <entry key="yukon.web.modules.survey.edit.sampleXml.label">Sample XML</entry>
 <entry key="yukon.web.modules.survey.edit.sampleXml.title">Sample XML</entry>
 
-<entry key="yukon.web.modules.survey.edit.report.imageUrl">/WebConfig/yukon/Icons/application_view_columns.gif</entry>
-<entry key="yukon.web.modules.survey.edit.report.hoverUrl">/WebConfig/yukon/Icons/application_view_columns_over.gif</entry>
+<entry key="yukon.web.modules.survey.edit.report.imageUrl">/WebConfig/yukon/Icons/application_view_columns.png</entry>
+<entry key="yukon.web.modules.survey.edit.report.hoverUrl">/WebConfig/yukon/Icons/application_view_columns_over.png</entry>
 <entry key="yukon.web.modules.survey.edit.report.hoverText">Generate a report.</entry>
 <entry key="yukon.web.modules.survey.edit.report.label">Report</entry>
 <entry key="yukon.web.modules.survey.edit.report.title">Report</entry>
 
 <entry key="yukon.web.modules.survey.edit.noQuestions">This survey does not have any questions yet.</entry>
 
-<entry key="yukon.web.modules.survey.edit.editQuestion.imageUrl">/WebConfig/yukon/Icons/pencil.gif</entry>
-<entry key="yukon.web.modules.survey.edit.editQuestion.hoverUrl">/WebConfig/yukon/Icons/pencil_over.gif</entry>
+<entry key="yukon.web.modules.survey.edit.editQuestion.imageUrl">/WebConfig/yukon/Icons/pencil.png</entry>
+<entry key="yukon.web.modules.survey.edit.editQuestion.hoverUrl">/WebConfig/yukon/Icons/pencil_over.png</entry>
 <entry key="yukon.web.modules.survey.edit.editQuestion.hoverText">Edit question.</entry>
 <entry key="yukon.web.modules.survey.edit.editQuestion.title">Edit Survey Question</entry>
 
 <entry key="yukon.web.modules.survey.edit.surveyQuestionSaved">Successfully saved {0}.</entry>
 
-<entry key="yukon.web.modules.survey.edit.deleteQuestion.imageUrl">/WebConfig/yukon/Icons/delete.gif</entry>
-<entry key="yukon.web.modules.survey.edit.deleteQuestion.hoverUrl">/WebConfig/yukon/Icons/delete_over.gif</entry>
+<entry key="yukon.web.modules.survey.edit.deleteQuestion.imageUrl">/WebConfig/yukon/Icons/delete.png</entry>
+<entry key="yukon.web.modules.survey.edit.deleteQuestion.hoverUrl">/WebConfig/yukon/Icons/delete_over.png</entry>
 <entry key="yukon.web.modules.survey.edit.deleteQuestion.hoverText">Delete Question</entry>
 <entry key="yukon.web.modules.survey.edit.deleteQuestion.title">Delete Question</entry>
 <entry key="yukon.web.modules.survey.edit.confirmDeleteQuestion">Are you sure you want to delete {0}.</entry>
@@ -216,15 +216,15 @@
 <entry key="yukon.web.modules.dr.surveyList.programName">Name</entry>
 
 <entry key="yukon.web.modules.dr.surveyList.addSurveyTitle">Add Opt Out Survey</entry>
-<entry key="yukon.web.modules.dr.surveyList.edit.imageUrl">/WebConfig/yukon/Icons/pencil.gif</entry>
-<entry key="yukon.web.modules.dr.surveyList.edit.hoverUrl">/WebConfig/yukon/Icons/pencil_over.gif</entry>
+<entry key="yukon.web.modules.dr.surveyList.edit.imageUrl">/WebConfig/yukon/Icons/pencil.png</entry>
+<entry key="yukon.web.modules.dr.surveyList.edit.hoverUrl">/WebConfig/yukon/Icons/pencil_over.png</entry>
 <entry key="yukon.web.modules.dr.surveyList.edit.hoverText">Edit Opt Out Survey.</entry>
 <entry key="yukon.web.modules.dr.surveyList.edit.title">Edit Opt Out Survey</entry>
 
 <entry key="yukon.web.modules.dr.surveyList.optOutSurveySaved">Successfully saved {0}.</entry>
 
-<entry key="yukon.web.modules.dr.surveyList.delete.imageUrl">/WebConfig/yukon/Icons/delete.gif</entry>
-<entry key="yukon.web.modules.dr.surveyList.delete.hoverUrl">/WebConfig/yukon/Icons/delete_over.gif</entry>
+<entry key="yukon.web.modules.dr.surveyList.delete.imageUrl">/WebConfig/yukon/Icons/delete.png</entry>
+<entry key="yukon.web.modules.dr.surveyList.delete.hoverUrl">/WebConfig/yukon/Icons/delete_over.png</entry>
 <entry key="yukon.web.modules.dr.surveyList.delete.hoverText">Delete Opt Out Survey</entry>
 <entry key="yukon.web.modules.dr.surveyList.delete.title">Delete Opt Out Survey</entry>
 <entry key="yukon.web.modules.dr.surveyList.confirmDelete">Are you sure you want to delete {0}.</entry>

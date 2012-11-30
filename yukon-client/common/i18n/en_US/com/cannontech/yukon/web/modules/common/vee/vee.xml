@@ -41,17 +41,17 @@
     
     <entry key="yukon.web.modules.common.vee.review.home.header.delete.popupInfo"><![CDATA[
     	&bull; Mark flagged values that you would like to remove from the database.
-    	<br>&bull; To mark a row for deletion, change its delete icon from <img src="/WebConfig/yukon/Icons/delete_disabled_gray.gif"> to <img src="/WebConfig/yukon/Icons/delete.gif"> by clicking on it.
+    	<br>&bull; To mark a row for deletion, change its delete icon from <img src="/WebConfig/yukon/Icons/delete_disabled_gray.gif"> to <img src="/WebConfig/yukon/Icons/delete.png"> by clicking on it.
     	<br>&bull; You may un-mark a row by clicking its icon again.
-    	<br>&bull; To mark/unmark all rows, click the <img src="/WebConfig/yukon/Icons/delete.gif"> icon in the column header.
+    	<br>&bull; To mark/unmark all rows, click the <img src="/WebConfig/yukon/Icons/delete.png"> icon in the column header.
     	<br><br>
     ]]></entry>
     
     <entry key="yukon.web.modules.common.vee.review.home.header.accept.popupInfo"><![CDATA[
     	&bull; Mark flagged values that you would like to unflag by marking them as accepted values.
-    	<br>&bull; To mark a row as accepted, change its accept icon from <img src="/WebConfig/yukon/Icons/tick_disabled_gray.gif"> to <img src="/WebConfig/yukon/Icons/tick.gif"> by clicking on it.
+    	<br>&bull; To mark a row as accepted, change its accept icon from <img src="/WebConfig/yukon/Icons/tick_disabled_gray.gif"> to <img src="/WebConfig/yukon/Icons/tick.png"> by clicking on it.
     	<br>&bull; You may un-mark a row by clicking its icon again.
-    	<br>&bull; To mark/unmark all rows, click the <img src="/WebConfig/yukon/Icons/tick.gif"> icon in the column header.
+    	<br>&bull; To mark/unmark all rows, click the <img src="/WebConfig/yukon/Icons/tick.png"> icon in the column header.
     	<br><br>
     ]]></entry>
     

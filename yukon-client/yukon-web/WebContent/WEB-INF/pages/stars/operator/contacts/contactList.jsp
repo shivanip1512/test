@@ -18,8 +18,8 @@
 		
 	</script>
 	
-	<cti:url var="add" value="/WebConfig/yukon/Icons/add.gif"/>
-	<cti:url var="addOver" value="/WebConfig/yukon/Icons/add_over.gif"/>
+	<cti:url var="add" value="/WebConfig/yukon/Icons/add.png"/>
+	<cti:url var="addOver" value="/WebConfig/yukon/Icons/add_over.png"/>
 	
 	<form id="deleteAdditionalContactForm" action="/stars/operator/contacts/deleteAdditionalContact" method="post">
 		<input type="hidden" name="deleteAdditionalContactId" id="deleteAdditionalContactId"/>

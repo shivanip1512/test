@@ -70,7 +70,7 @@
 	                  <input id="shipDate" type="text" name="shipDate" maxlength="40" size="24" value='<cti:formatDate value="${purchaseBean.currentTimePeriod.predictedShipDate}" type="DATE"/>' onchange="setContentChanged(true)">
 	   				  	<a href="javascript:void(0);" onclick="javascript:showCalendarControl($('shipDate'), '${months}', '${days}', '${clear}', '${close}');"
 							onMouseOver="window.status='Ship Date Calendar';return true;"
-							onMouseOut="window.status='';return true;"> <img src="<%= request.getContextPath() %>/WebConfig/yukon/Icons/StartCalendar.gif" width="20" height="15" align="absmiddle" border="0"> 
+							onMouseOut="window.status='';return true;"> <img src="<%= request.getContextPath() %>/WebConfig/yukon/Icons/StartCalendar.png" width="20" height="15" align="absmiddle" border="0"> 
                         </a>
 	                </td>
 	          	</tr>

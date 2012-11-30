@@ -44,20 +44,20 @@
                                         <c:when test="${row.paobject}">
                                             <cti:checkProperty property="CBCSettingsRole.CBC_DATABASE_EDIT">
                                                 <a href="/editor/cbcBase.jsf?type=2&itemid=${row.itemId}" class="tierIconLink">
-                                                    <img class="tierImg" src="/WebConfig/yukon/Icons/pencil.gif"/>
+                                                    <img class="tierImg" src="/WebConfig/yukon/Icons/pencil.png"/>
                                                 </a>
                                                 <a href="/editor/deleteBasePAO.jsf?value=${row.itemId}" class="tierIconLink">
-                                                    <img class="tierImg" src="/WebConfig/yukon/Icons/delete.gif" />
+                                                    <img class="tierImg" src="/WebConfig/yukon/Icons/delete.png" />
                                                 </a>
                                             </cti:checkProperty>
                                         </c:when>
                                         <c:otherwise>
                                             <cti:checkProperty property="CBCSettingsRole.CBC_DATABASE_EDIT">
                                                 <a href="/editor/pointBase.jsf?parentId=${row.parentId}&itemid=${row.itemId}" class="tierIconLink">
-                                                    <img class="tierImg" src="/WebConfig/yukon/Icons/pencil.gif"/>
+                                                    <img class="tierImg" src="/WebConfig/yukon/Icons/pencil.png"/>
                                                 </a>
                                                 <a href="/editor/deleteBasePoint.jsf?value=${row.itemId}" class="tierIconLink">
-                                                    <img class="tierImg" src="/WebConfig/yukon/Icons/delete.gif" height="16" width="16"/>
+                                                    <img class="tierImg" src="/WebConfig/yukon/Icons/delete.png" height="16" width="16"/>
                                                 </a>
                                             </cti:checkProperty>
                                         </c:otherwise>

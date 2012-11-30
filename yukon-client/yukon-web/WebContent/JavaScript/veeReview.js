@@ -58,12 +58,12 @@ function resetDeleteAccept(action, deleteImgEl, acceptImgEl) {
 function toggleDeleteAccept(action, deleteImgEl, acceptImgEl) {
 	
 	if (action == 'DELETE') {
-		deleteImgEl.setAttribute('src', '/WebConfig/yukon/Icons/delete.gif');
+		deleteImgEl.setAttribute('src', '/WebConfig/yukon/Icons/delete.png');
 		acceptImgEl.setAttribute('src', '/WebConfig/yukon/Icons/tick_disabled_gray.gif');
 	}
 	if (action == 'ACCEPT') {
 		deleteImgEl.setAttribute('src', '/WebConfig/yukon/Icons/delete_disabled_gray.gif');
-		acceptImgEl.setAttribute('src', '/WebConfig/yukon/Icons/tick.gif');
+		acceptImgEl.setAttribute('src', '/WebConfig/yukon/Icons/tick.png');
 	}
 }
 

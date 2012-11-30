@@ -62,7 +62,7 @@
                             disabled="#{!capControlForm.editingAuthorized}"
 							title="Edit this FDR translation entry"
 							action="#{ptEditorForm.pointFDREntry.showTranslation}" >
-	              	<x:graphicImage value="/WebConfig/yukon/Icons/pencil.gif" height="15" width="15" border="0" />
+	              	<x:graphicImage value="/WebConfig/yukon/Icons/pencil.png" height="15" width="15" border="0" />
 					<f:param name="fdrInterface" value="#{fdrTranslation.interfaceType}" />
 					<f:param name="rowNumber" value="#{rowNum}" />
 				</x:commandLink>
@@ -70,7 +70,7 @@
                             disabled="#{!capControlForm.editingAuthorized}"
 							title="Delete this FDR translation entry"
 							action="#{ptEditorForm.pointFDREntry.deleteTranslation}" >
-	              	<x:graphicImage value="/WebConfig/yukon/Icons/delete.gif" height="15" width="15" border="0" />
+	              	<x:graphicImage value="/WebConfig/yukon/Icons/delete.png" height="15" width="15" border="0" />
 					<f:param name="rowNumber" value="#{rowNum}" />
 				</x:commandLink>
 			</h:column>	

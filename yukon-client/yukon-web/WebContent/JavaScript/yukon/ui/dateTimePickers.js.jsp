@@ -26,7 +26,7 @@ if(typeof(Yukon.ui.dateTimePickers) == 'undefined') {
     	init: function(){
    			//default aruguments
    			var datetimepickerArgs = {
-  					buttonImage: "/WebConfig/yukon/Icons/StartCalendar.gif",
+  					buttonImage: "/WebConfig/yukon/Icons/StartCalendar.png",
   					buttonImageOnly: true,
   					hideIfNoPrevNext:true,
   					showButtonPanel: true,

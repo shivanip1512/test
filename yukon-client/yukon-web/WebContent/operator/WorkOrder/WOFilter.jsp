@@ -209,7 +209,7 @@
                             <a id="startCalHRef" href="javascript:;" style="cursor: default" 
                                onMouseOver="window.status='Start Date Calendar';return true;"
                                onMouseOut="window.status='';return true;"> <img
-                               src="<%=request.getContextPath()%>/WebConfig/yukon/Icons/StartCalendar.gif"
+                               src="<%=request.getContextPath()%>/WebConfig/yukon/Icons/StartCalendar.png"
                                width="20" height="15" align="ABSMIDDLE" border="0"/>
                             </a>
                         </input>
@@ -221,7 +221,7 @@
                             <a id="stopCalHRef" href="javascript:;" style="cursor:default"
                                onMouseOver="window.status='Stop Date Calendar';return true;"
                                onMouseOut="window.status='';return true;"> 
-                                <img src="<%=request.getContextPath()%>/WebConfig/yukon/Icons/StartCalendar.gif" width="20" height="15" align="ABSMIDDLE" border="0"/> 
+                                <img src="<%=request.getContextPath()%>/WebConfig/yukon/Icons/StartCalendar.png" width="20" height="15" align="ABSMIDDLE" border="0"/> 
                             </a>
                         </input>    
                         </div>    

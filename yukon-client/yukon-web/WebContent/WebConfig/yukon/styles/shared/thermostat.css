@@ -60,7 +60,7 @@ li.current .helper {margin: 0 0 15px; background: lightYellow; font-style: itali
 .icon_labeled:hover {color: #000 !important;}
 a.edit {background: transparent url(../../Icons/edit.gif) top left no-repeat;}
 a.send {background: transparent url(../../Icons/lightning_go.gif) top left no-repeat;}
-a.save {background: transparent url(../../Icons/accept.gif) top left no-repeat;}
+a.save {background: transparent url(../../Icons/accept.png) top left no-repeat;}
 a.cancel {background: transparent url(../../Icons/cancel.gif) left top no-repeat;}
 a.default {background: transparent url('http://cdn5.iconfinder.com/data/icons/fugue/bonus/icons-24/ui-color-picker-default.png') left top no-repeat;}
 .editing .editor {display: inherit;}

@@ -157,8 +157,8 @@
 	<entry key="yukon.web.modules.capcontrol.ivvc.zoneWizard.picker.imageUrl">/WebConfig/yukon/Icons/folder_edit.gif</entry>
 	<entry key="yukon.web.modules.capcontrol.ivvc.zoneWizard.picker.hoverUrl">/WebConfig/yukon/Icons/folder_edit_over.gif</entry>
 	<entry key="yukon.web.modules.capcontrol.ivvc.zoneWizard.picker.hoverText">Click To Select Regulator</entry>
-	<entry key="yukon.web.modules.capcontrol.ivvc.zoneWizard.delete.imageUrl">/WebConfig/yukon/Icons/delete.gif</entry>
-	<entry key="yukon.web.modules.capcontrol.ivvc.zoneWizard.delete.hoverUrl">/WebConfig/yukon/Icons/delete_over.gif</entry>
+	<entry key="yukon.web.modules.capcontrol.ivvc.zoneWizard.delete.imageUrl">/WebConfig/yukon/Icons/delete.png</entry>
+	<entry key="yukon.web.modules.capcontrol.ivvc.zoneWizard.delete.hoverUrl">/WebConfig/yukon/Icons/delete_over.png</entry>
 	<entry key="yukon.web.modules.capcontrol.ivvc.zoneWizard.delete.hoverText">Click to remove</entry>
 	<entry key="yukon.web.modules.capcontrol.ivvc.zoneWizard.error.required.zoneName">A zone name is required.</entry>
 	<entry key="yukon.web.modules.capcontrol.ivvc.zoneWizard.error.required.substationBusId">A Substation Bus is required.</entry>
