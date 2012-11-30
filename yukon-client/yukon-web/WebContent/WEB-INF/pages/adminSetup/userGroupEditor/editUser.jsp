@@ -34,7 +34,7 @@
   <c:if test="${!empty authThrottleDto}">
     <br/>
     <div style="width: 600px;">
-      <cti:url var="removeLoginWaitUrl" value="/editor/user/removeLoginWait"/>
+      <cti:url var="removeLoginWaitUrl" value="/adminSetup/user/removeLoginWait"/>
       <tags:boxContainer title="Failed Login Information for: ${user.username}" hideEnabled="false">
 	    <form action="${removeLoginWaitUrl}" method="POST">
 	    <table>
