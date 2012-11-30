@@ -17,7 +17,7 @@ INCLPATHS+= \
 -I$(BOOST_INCLUDE) \
 -I$(SQLAPI)\include \
 -I$(RW) \
--I$(ACTIVEMQ) \
+-I$(ACTIVEMQ)\include \
 
 
 .PATH.H = \
@@ -36,11 +36,6 @@ INCLPATHS+= \
 ;$(DISPATCH)\include \
 ;$(MSG)\include \
 ;$(SIGNAL)\include \
-;$(BOOST_INCLUDE) \
-;$(RW) \
-;$(ACTIVEMQ) \
-;$(ACTIVEMQ)\cms \
-;$(ACTIVEMQ)\activemq\library \
 
 
 
@@ -186,12 +181,12 @@ ctivangogh.obj:	precompiled.h collectable.h counter.h guard.h \
 		tbl_pt_analog.h dev_base.h cmdparse.h ctitokenizer.h \
 		parsevalue.h dev_exclusion.h tbl_paoexclusion.h \
 		config_device.h rte_base.h tbl_pao_lite.h tbl_rtcomm.h \
-		tbl_static_paoinfo.h tbl_base.h tbl_scanrate.h \
+		tbl_static_paoinfo.h encryption.h tbl_base.h tbl_scanrate.h \
 		tbl_dyn_paoinfo.h tbl_dyn_ptalarming.h thread_monitor.h \
 		thread_register_data.h ThreadStatusKeeper.h mgr_ptclients.h \
-		ptconnect.h tbl_pt_property.h database_writer.h row_writer.h \
-		dllvg.h dllyukon.h ctidate.h debug_timer.h \
-		millisecond_timer.h
+		ptconnect.h tbl_pt_property.h database_transaction.h \
+		database_writer.h row_writer.h dllvg.h dllyukon.h ctidate.h \
+		debug_timer.h millisecond_timer.h
 dispmain.obj:	precompiled.h ctitime.h dlldefs.h dispsvc.h cservice.h \
 		dllvg.h CServiceConfig.h dllbase.h dsm2.h cticonnect.h \
 		yukon.h types.h ctidbgmem.h netports.h mutex.h guard.h \
@@ -278,13 +273,13 @@ mgr_ptclients.obj:	precompiled.h dllvg.h dlldefs.h pt_base.h \
 		queue.h cparms.h configkey.h configval.h ctibase.h ctinexus.h \
 		server_b.h pt_dyn_dispatch.h tbl_pt_alarm.h tbl_ptdispatch.h \
 		tbl_pt_limit.h rtdb.h tbl_rawpthistory.h tbl_pt_property.h \
-		devicetypes.h msg_pcreturn.h msg_signal.h pt_analog.h \
-		pt_numeric.h tbl_pt_unit.h tbl_unitmeasure.h tbl_pt_analog.h \
-		tbl_pt_control.h pt_accum.h tbl_pt_accum.h \
-		tbl_pt_accumhistory.h pt_status.h tbl_pt_status.h \
-		tbl_pt_status_control.h debug_timer.h con_mgr_vg.h \
-		vgexe_factory.h executor.h exe_ptchg.h executorfactory.h \
-		exe_cmd.h exe_reg.h msg_cmd.h
+		database_transaction.h devicetypes.h msg_pcreturn.h \
+		msg_signal.h pt_analog.h pt_numeric.h tbl_pt_unit.h \
+		tbl_unitmeasure.h tbl_pt_analog.h tbl_pt_control.h pt_accum.h \
+		tbl_pt_accum.h tbl_pt_accumhistory.h pt_status.h \
+		tbl_pt_status.h tbl_pt_status_control.h debug_timer.h \
+		con_mgr_vg.h vgexe_factory.h executor.h exe_ptchg.h \
+		executorfactory.h exe_cmd.h exe_reg.h msg_cmd.h
 pendingopthread.obj:	precompiled.h counter.h guard.h utility.h \
 		ctitime.h dlldefs.h queues.h cticalls.h os2_2w32.h types.h \
 		numstr.h mutex.h cparms.h rwutil.h yukon.h ctidbgmem.h \
@@ -304,8 +299,8 @@ pendingopthread.obj:	precompiled.h counter.h guard.h utility.h \
 		msg_cmd.h pendingopthread.h pendable.h pending_info.h \
 		msg_signal.h tbl_lm_controlhist.h pt_numeric.h tbl_pt_unit.h \
 		tbl_unitmeasure.h signalmanager.h millisecond_timer.h \
-		control_history_association.h amq_connection.h activemqcpp.h \
-		ControlHistoryAssociationResponse.h
+		database_transaction.h control_history_association.h \
+		amq_connection.h ControlHistoryAssociationResponse.h
 pending_info.obj:	precompiled.h logger.h dlldefs.h thread.h mutex.h \
 		guard.h utility.h ctitime.h queues.h cticalls.h os2_2w32.h \
 		types.h numstr.h CtiPCPtrQueue.h pending_info.h msg_pdata.h \
@@ -350,7 +345,8 @@ signalmanager.obj:	precompiled.h dbaccess.h dllbase.h dsm2.h \
 		database_connection.h database_reader.h row_reader.h \
 		boost_time.h boostutil.h msg_multi.h msg_pdata.h pointtypes.h \
 		tbl_dyn_ptalarming.h ctibase.h ctinexus.h dbmemobject.h \
-		tbl_pt_alarm.h resolvers.h db_entry_defines.h desolvers.h
+		tbl_pt_alarm.h resolvers.h db_entry_defines.h desolvers.h \
+		database_transaction.h
 sigsrctest.obj:	precompiled.h queue.h cparms.h dlldefs.h rwutil.h \
 		yukon.h types.h ctidbgmem.h database_connection.h dbaccess.h \
 		dllbase.h dsm2.h cticonnect.h netports.h mutex.h guard.h \
@@ -380,7 +376,8 @@ tagmanager.obj:	precompiled.h dbaccess.h dllbase.h dsm2.h cticonnect.h \
 		database_reader.h row_reader.h boost_time.h boostutil.h \
 		msg_multi.h msg_pdata.h pointtypes.h queue.h cparms.h \
 		configkey.h configval.h string_utility.h tbl_dyn_pttag.h \
-		ctibase.h ctinexus.h dbmemobject.h tbl_tag.h tbl_taglog.h
+		ctibase.h ctinexus.h dbmemobject.h tbl_tag.h tbl_taglog.h \
+		database_transaction.h
 test_mgr_ptclients.obj:	mgr_ptclients.h dlldefs.h mgr_point.h \
 		pt_base.h dbmemobject.h tbl_pt_base.h row_reader.h ctitime.h \
 		dllbase.h dsm2.h cticonnect.h yukon.h types.h ctidbgmem.h \

@@ -185,8 +185,9 @@ attributeservice.obj:	precompiled.h AttributeService.h LitePoint.h \
 		guard.h utility.h ctitime.h queues.h cticalls.h os2_2w32.h \
 		dsm2err.h words.h optional.h database_reader.h \
 		database_connection.h row_reader.h
-BeatThePeakAlertLevel.obj:	precompiled.h dlldefs.h \
-		BeatThePeakAlertLevel.h
+beatthepeakalertlevel.obj:	precompiled.h BeatThePeakAlertLevel.h \
+		dlldefs.h utility.h ctitime.h queues.h cticalls.h os2_2w32.h \
+		types.h numstr.h
 bfexec.obj:	precompiled.h bfexec.h
 cmdparse.obj:	precompiled.h cmdparse.h ctitokenizer.h dlldefs.h \
 		parsevalue.h cparms.h rwutil.h yukon.h types.h ctidbgmem.h \
@@ -257,6 +258,11 @@ database_reader.obj:	precompiled.h database_reader.h \
 		mutex.h guard.h utility.h ctitime.h queues.h cticalls.h \
 		os2_2w32.h numstr.h dsm2err.h words.h optional.h row_reader.h \
 		logger.h thread.h CtiPCPtrQueue.h
+database_transaction.obj:	precompiled.h database_transaction.h \
+		database_connection.h dbaccess.h dllbase.h dsm2.h \
+		cticonnect.h yukon.h types.h ctidbgmem.h dlldefs.h netports.h \
+		mutex.h guard.h utility.h ctitime.h queues.h cticalls.h \
+		os2_2w32.h numstr.h dsm2err.h words.h optional.h
 database_writer.obj:	precompiled.h database_writer.h ctitime.h \
 		dlldefs.h database_connection.h dbaccess.h dllbase.h dsm2.h \
 		cticonnect.h yukon.h types.h ctidbgmem.h netports.h mutex.h \
@@ -327,7 +333,7 @@ logger.obj:	precompiled.h utility.h ctitime.h dlldefs.h queues.h \
 		dllbase.h dsm2.h cticonnect.h netports.h mutex.h guard.h \
 		dsm2err.h words.h optional.h database_reader.h row_reader.h \
 		boost_time.h boostutil.h configkey.h configval.h logger.h \
-		thread.h CtiPCPtrQueue.h
+		thread.h CtiPCPtrQueue.h ctidate.h
 master.obj:	precompiled.h os2_2w32.h dlldefs.h types.h cticalls.h \
 		cti_asmc.h queues.h dsm2.h cticonnect.h yukon.h ctidbgmem.h \
 		netports.h mutex.h guard.h utility.h ctitime.h numstr.h \
@@ -491,9 +497,9 @@ utility.obj:	precompiled.h dbaccess.h dllbase.h dsm2.h cticonnect.h \
 		yukon.h types.h ctidbgmem.h dlldefs.h netports.h mutex.h \
 		guard.h utility.h ctitime.h queues.h cticalls.h os2_2w32.h \
 		numstr.h dsm2err.h words.h optional.h database_reader.h \
-		database_connection.h row_reader.h database_writer.h \
-		row_writer.h logger.h thread.h CtiPCPtrQueue.h pointdefs.h \
-		ctidate.h devicetypes.h
+		database_connection.h row_reader.h database_transaction.h \
+		database_writer.h row_writer.h logger.h thread.h \
+		CtiPCPtrQueue.h pointdefs.h ctidate.h devicetypes.h
 verification_objects.obj:	precompiled.h verification_objects.h \
 		dlldefs.h dsm2.h cticonnect.h yukon.h types.h ctidbgmem.h \
 		netports.h mutex.h guard.h utility.h ctitime.h queues.h \

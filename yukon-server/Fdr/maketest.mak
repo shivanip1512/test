@@ -164,8 +164,8 @@ test_fdrdnpslave.obj:	fdrdnpslave.h dlldefs.h queues.h cticalls.h \
 		dnp_object_analoginput.h dnp_objects.h prot_base.h xfer.h \
 		dnp_object_time.h prot_dnp.h packet_finder.h \
 		dnp_application.h dnp_transport.h dnp_datalink.h \
-		dnp_datalink_packet.h dnp_object_binaryoutput.h \
-		boost_test_helpers.h
+		dnp_datalink_packet.h dnp_configuration.h \
+		dnp_object_binaryoutput.h boost_test_helpers.h
 test_fdrtelegyr.obj:	fdrtelegyr.h dlldefs.h fdrinterface.h message.h \
 		ctitime.h ctidbgmem.h collectable.h rwutil.h yukon.h types.h \
 		database_connection.h dbaccess.h dllbase.h dsm2.h \

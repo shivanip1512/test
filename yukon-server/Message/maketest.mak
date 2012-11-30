@@ -378,6 +378,13 @@ test_message.obj:	message.h ctitime.h dlldefs.h ctidbgmem.h \
 		boost_time.h boostutil.h queue.h cparms.h configkey.h \
 		configval.h logger.h thread.h CtiPCPtrQueue.h \
 		string_utility.h
+test_multi_msg.obj:	msg_multi.h collectable.h dlldefs.h msg_pdata.h \
+		yukon.h types.h ctidbgmem.h pointdefs.h pointtypes.h \
+		message.h ctitime.h rwutil.h database_connection.h dbaccess.h \
+		dllbase.h dsm2.h cticonnect.h netports.h mutex.h guard.h \
+		utility.h queues.h cticalls.h os2_2w32.h numstr.h dsm2err.h \
+		words.h optional.h database_reader.h row_reader.h \
+		boost_time.h boostutil.h
 test_pointdatarequest.obj:	PointDataRequestFactory.h \
 		PointDataRequest.h yukon.h types.h ctidbgmem.h ctitime.h \
 		dlldefs.h DispatchConnection.h connection.h exchange.h \

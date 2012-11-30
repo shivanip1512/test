@@ -112,11 +112,11 @@ mccmd.obj:	precompiled.h mccmd.h msg_pcrequest.h dlldefs.h message.h \
 		database_reader.h row_reader.h boost_time.h boostutil.h \
 		msg_pcreturn.h msg_multi.h msg_pdata.h pointdefs.h \
 		pointtypes.h logger.h thread.h CtiPCPtrQueue.h ctdpcptrq.h \
-		tbl_meterreadlog.h connection.h exchange.h string_utility.h \
-		msg_ptreg.h msg_reg.h queue.h cparms.h configkey.h \
-		configval.h cmdparse.h ctitokenizer.h parsevalue.h \
-		msg_requestcancel.h msg_queuedata.h msg_signal.h msg_dbchg.h \
-		msg_notif_email.h msg_notif_email_attachment.h \
+		tbl_meterreadlog.h database_transaction.h connection.h \
+		exchange.h string_utility.h msg_ptreg.h msg_reg.h queue.h \
+		cparms.h configkey.h configval.h cmdparse.h ctitokenizer.h \
+		parsevalue.h msg_requestcancel.h msg_queuedata.h msg_signal.h \
+		msg_dbchg.h msg_notif_email.h msg_notif_email_attachment.h \
 		tbl_devicereadrequestlog.h ctibase.h ctinexus.h ctistring.h \
 		mgr_holiday.h ctidate.h wpsc.h xcel.h decodetextcmdfile.h
 mcsh.obj:	precompiled.h mcsh.h logger.h dlldefs.h thread.h mutex.h \

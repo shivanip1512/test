@@ -15,7 +15,7 @@ INCLPATHS+= \
 -I$(RW) \
 -I$(BOOST_INCLUDE) \
 -I$(SQLAPI)\include \
--I$(ACTIVEMQ) \
+-I$(ACTIVEMQ)\include \
 -I$(DEVICECONFIGURATION)\include \
 -I$(PROT)\include \
 
@@ -29,10 +29,6 @@ INCLPATHS+= \
 ;$(RTDB)\include \
 ;$(SERVER)\include \
 ;$(MSG)\include \
-;$(RW) \
-;$(ACTIVEMQ) \
-;$(ACTIVEMQ)\cms \
-;$(ACTIVEMQ)\activemq\library \
 ;$(DEVICECONFIGURATION)\include \
 ;$(PROT)\include \
 
@@ -217,16 +213,17 @@ capcontroldispatchconnection.obj:	precompiled.h \
 		ccfeeder.h ccmonitorpoint.h msg_cmd.h ctidate.h ccutil.h \
 		pointattribute.h devicetypes.h msg_pcrequest.h mgr_paosched.h \
 		pao_schedule.h ctibase.h ctinexus.h pao_event.h dbmemobject.h \
+		amq_connection.h critical_section.h \
+		CapControlOperationMessage.h StreamableMessage.h \
 		ccoriginalparent.h cccapbank.h cctwowaycbcpoints.h \
 		AttributeService.h LitePoint.h PointValueHolder.h \
 		ccoperationstats.h ccConfirmationStats.h cctypes.h \
 		CapControlPao.h PointResponse.h PointResponseManager.h \
 		Exceptions.h StrategyManager.h readers_writer_lock.h \
-		critical_section.h ControlStrategy.h sorted_vector.h \
-		regression.h Controllable.h TimeOfDayStrategy.h ccareabase.h \
-		ccsparea.h ccid.h ccstate.h ccmessage.h \
-		MsgCapControlCommand.h ccsubstation.h MsgItemCommand.h \
-		EventTypes.h MsgBankMove.h MsgObjectMove.h \
+		ControlStrategy.h sorted_vector.h regression.h Controllable.h \
+		TimeOfDayStrategy.h ccareabase.h ccsparea.h ccid.h ccstate.h \
+		ccmessage.h MsgCapControlCommand.h ccsubstation.h \
+		MsgItemCommand.h EventTypes.h MsgBankMove.h MsgObjectMove.h \
 		MsgCapControlMessage.h MsgSubstationBus.h \
 		MsgCapControlEventLog.h MsgCapBankStates.h MsgAreas.h \
 		MsgSpecialAreas.h MsgSubstations.h MsgVoltageRegulator.h \
@@ -252,27 +249,29 @@ capcontroller.obj:	precompiled.h dbaccess.h dllbase.h dsm2.h \
 		ccfeeder.h ccmonitorpoint.h msg_cmd.h ctidate.h ccutil.h \
 		pointattribute.h devicetypes.h msg_pcrequest.h mgr_paosched.h \
 		pao_schedule.h ctibase.h ctinexus.h pao_event.h dbmemobject.h \
+		amq_connection.h critical_section.h \
+		CapControlOperationMessage.h StreamableMessage.h \
 		ccoriginalparent.h cccapbank.h cctwowaycbcpoints.h \
 		AttributeService.h LitePoint.h PointValueHolder.h \
 		ccoperationstats.h ccConfirmationStats.h cctypes.h \
 		CapControlPao.h PointResponse.h PointResponseManager.h \
 		Exceptions.h StrategyManager.h readers_writer_lock.h \
-		critical_section.h ControlStrategy.h sorted_vector.h \
-		regression.h Controllable.h ccsubstationbus.h \
-		TimeOfDayStrategy.h ccarea.h ccareabase.h ccsparea.h \
-		ccstate.h MsgItemCommand.h EventTypes.h MsgBankMove.h \
-		MsgObjectMove.h MsgCapControlMessage.h MsgSubstationBus.h \
-		MsgCapControlEventLog.h MsgCapBankStates.h MsgAreas.h \
-		MsgSpecialAreas.h MsgSubstations.h MsgVoltageRegulator.h \
-		VoltageRegulator.h UpdatablePao.h ccid.h MsgDeleteItem.h \
-		MsgSystemStatus.h MsgCapControlServerResponse.h \
-		MsgCapControlShutdown.h msg_signal.h msg_tag.h msg_pcreturn.h \
-		msg_dbchg.h MsgVerifyBanks.h capcontroller.h \
-		DispatchConnection.h MessageListener.h \
-		CapControlDispatchConnection.h ccsubstationbusstore.h \
-		ccstatsobject.h CapControlPointDataHandler.h \
-		PointDataHandler.h PointDataListener.h StrategyLoader.h \
-		ZoneManager.h Zone.h ZoneLoader.h VoltageRegulatorManager.h \
+		ControlStrategy.h sorted_vector.h regression.h Controllable.h \
+		ccsubstationbus.h TimeOfDayStrategy.h ccarea.h ccareabase.h \
+		ccsparea.h ccstate.h MsgItemCommand.h EventTypes.h \
+		MsgBankMove.h MsgObjectMove.h MsgCapControlMessage.h \
+		MsgSubstationBus.h MsgCapControlEventLog.h MsgCapBankStates.h \
+		MsgAreas.h MsgSpecialAreas.h MsgSubstations.h \
+		MsgVoltageRegulator.h VoltageRegulator.h UpdatablePao.h \
+		ccid.h MsgDeleteItem.h MsgSystemStatus.h \
+		MsgCapControlServerResponse.h MsgCapControlShutdown.h \
+		msg_signal.h msg_tag.h msg_pcreturn.h msg_dbchg.h \
+		MsgVerifyBanks.h capcontroller.h DispatchConnection.h \
+		MessageListener.h CapControlDispatchConnection.h \
+		ccsubstationbusstore.h ccstatsobject.h \
+		CapControlPointDataHandler.h PointDataHandler.h \
+		PointDataListener.h StrategyLoader.h ZoneManager.h Zone.h \
+		ZoneLoader.h VoltageRegulatorManager.h \
 		VoltageRegulatorLoader.h DatabaseDaoFactory.h \
 		PointResponseDao.h PointResponseDatabaseDao.h \
 		database_writer.h row_writer.h ccexecutor.h ctdpcptrq.h \
@@ -295,15 +294,17 @@ capcontrolpao.obj:	precompiled.h CapControlPao.h yukon.h types.h \
 		ccsubstationbus.h ccfeeder.h ccmonitorpoint.h ctidate.h \
 		ccutil.h pointattribute.h devicetypes.h msg_pcrequest.h \
 		mgr_paosched.h pao_schedule.h ctibase.h ctinexus.h \
-		pao_event.h dbmemobject.h ccoriginalparent.h cccapbank.h \
-		cctwowaycbcpoints.h AttributeService.h LitePoint.h \
-		PointValueHolder.h ccoperationstats.h ccConfirmationStats.h \
-		PointResponse.h PointResponseManager.h Exceptions.h \
-		StrategyManager.h readers_writer_lock.h critical_section.h \
-		ControlStrategy.h sorted_vector.h regression.h Controllable.h \
-		TimeOfDayStrategy.h ccareabase.h ccsparea.h ccid.h ccstate.h \
-		ccmessage.h MsgCapControlCommand.h ccsubstation.h \
-		MsgItemCommand.h EventTypes.h MsgBankMove.h MsgObjectMove.h \
+		pao_event.h dbmemobject.h amq_connection.h critical_section.h \
+		CapControlOperationMessage.h StreamableMessage.h \
+		ccoriginalparent.h cccapbank.h cctwowaycbcpoints.h \
+		AttributeService.h LitePoint.h PointValueHolder.h \
+		ccoperationstats.h ccConfirmationStats.h PointResponse.h \
+		PointResponseManager.h Exceptions.h StrategyManager.h \
+		readers_writer_lock.h ControlStrategy.h sorted_vector.h \
+		regression.h Controllable.h TimeOfDayStrategy.h ccareabase.h \
+		ccsparea.h ccid.h ccstate.h ccmessage.h \
+		MsgCapControlCommand.h ccsubstation.h MsgItemCommand.h \
+		EventTypes.h MsgBankMove.h MsgObjectMove.h \
 		MsgCapControlMessage.h MsgSubstationBus.h \
 		MsgCapControlEventLog.h MsgCapBankStates.h MsgAreas.h \
 		MsgSpecialAreas.h MsgSubstations.h MsgVoltageRegulator.h \
@@ -334,16 +335,17 @@ capcontrolpointdatahandler.obj:	precompiled.h \
 		ccfeeder.h ccmonitorpoint.h ctidate.h ccutil.h \
 		pointattribute.h devicetypes.h msg_pcrequest.h mgr_paosched.h \
 		pao_schedule.h ctibase.h ctinexus.h pao_event.h dbmemobject.h \
+		amq_connection.h critical_section.h \
+		CapControlOperationMessage.h StreamableMessage.h \
 		ccoriginalparent.h cccapbank.h cctwowaycbcpoints.h \
 		AttributeService.h LitePoint.h PointValueHolder.h \
 		ccoperationstats.h ccConfirmationStats.h cctypes.h \
 		CapControlPao.h PointResponse.h PointResponseManager.h \
 		Exceptions.h StrategyManager.h readers_writer_lock.h \
-		critical_section.h ControlStrategy.h sorted_vector.h \
-		regression.h Controllable.h TimeOfDayStrategy.h ccareabase.h \
-		ccsparea.h ccid.h ccstate.h ccmessage.h \
-		MsgCapControlCommand.h ccsubstation.h MsgItemCommand.h \
-		EventTypes.h MsgBankMove.h MsgObjectMove.h \
+		ControlStrategy.h sorted_vector.h regression.h Controllable.h \
+		TimeOfDayStrategy.h ccareabase.h ccsparea.h ccid.h ccstate.h \
+		ccmessage.h MsgCapControlCommand.h ccsubstation.h \
+		MsgItemCommand.h EventTypes.h MsgBankMove.h MsgObjectMove.h \
 		MsgCapControlMessage.h MsgSubstationBus.h \
 		MsgCapControlEventLog.h MsgCapBankStates.h MsgAreas.h \
 		MsgSpecialAreas.h MsgSubstations.h MsgVoltageRegulator.h \
@@ -368,14 +370,16 @@ ccarea.obj:	precompiled.h dbaccess.h dllbase.h dsm2.h cticonnect.h \
 		ccfeeder.h ccmonitorpoint.h msg_cmd.h ctidate.h ccutil.h \
 		pointattribute.h devicetypes.h msg_pcrequest.h mgr_paosched.h \
 		pao_schedule.h ctibase.h ctinexus.h pao_event.h dbmemobject.h \
+		amq_connection.h critical_section.h \
+		CapControlOperationMessage.h StreamableMessage.h \
 		ccoriginalparent.h cccapbank.h cctwowaycbcpoints.h \
 		AttributeService.h LitePoint.h PointValueHolder.h \
 		ccoperationstats.h ccConfirmationStats.h cctypes.h \
 		CapControlPao.h PointResponse.h PointResponseManager.h \
 		Exceptions.h StrategyManager.h readers_writer_lock.h \
-		critical_section.h ControlStrategy.h sorted_vector.h \
-		regression.h Controllable.h TimeOfDayStrategy.h ccareabase.h \
-		ccid.h capcontroller.h DispatchConnection.h MessageListener.h \
+		ControlStrategy.h sorted_vector.h regression.h Controllable.h \
+		TimeOfDayStrategy.h ccareabase.h ccid.h capcontroller.h \
+		DispatchConnection.h MessageListener.h \
 		CapControlDispatchConnection.h msg_dbchg.h \
 		ccsubstationbusstore.h ccsparea.h ccstate.h ccmessage.h \
 		MsgCapControlCommand.h ccsubstation.h MsgItemCommand.h \
@@ -406,14 +410,16 @@ ccareabase.obj:	precompiled.h dbaccess.h dllbase.h dsm2.h cticonnect.h \
 		ccfeeder.h ccmonitorpoint.h msg_cmd.h ctidate.h ccutil.h \
 		pointattribute.h devicetypes.h msg_pcrequest.h mgr_paosched.h \
 		pao_schedule.h ctibase.h ctinexus.h pao_event.h dbmemobject.h \
+		amq_connection.h critical_section.h \
+		CapControlOperationMessage.h StreamableMessage.h \
 		ccoriginalparent.h cccapbank.h cctwowaycbcpoints.h \
 		AttributeService.h LitePoint.h PointValueHolder.h \
 		ccoperationstats.h ccConfirmationStats.h cctypes.h \
 		CapControlPao.h PointResponse.h PointResponseManager.h \
 		Exceptions.h StrategyManager.h readers_writer_lock.h \
-		critical_section.h ControlStrategy.h sorted_vector.h \
-		regression.h Controllable.h TimeOfDayStrategy.h ccid.h \
-		capcontroller.h DispatchConnection.h MessageListener.h \
+		ControlStrategy.h sorted_vector.h regression.h Controllable.h \
+		TimeOfDayStrategy.h ccid.h capcontroller.h \
+		DispatchConnection.h MessageListener.h \
 		CapControlDispatchConnection.h msg_dbchg.h \
 		ccsubstationbusstore.h ccarea.h ccsparea.h ccstate.h \
 		ccmessage.h MsgCapControlCommand.h ccsubstation.h \
@@ -441,14 +447,15 @@ cccapbank.obj:	precompiled.h dbaccess.h dllbase.h dsm2.h cticonnect.h \
 		observe.h ctidate.h logger.h thread.h CtiPCPtrQueue.h \
 		ccutil.h pointattribute.h devicetypes.h msg_pcrequest.h \
 		mgr_paosched.h pao_schedule.h ctibase.h ctinexus.h \
-		pao_event.h dbmemobject.h cctwowaycbcpoints.h msg_ptreg.h \
-		AttributeService.h LitePoint.h PointValueHolder.h \
-		ccoperationstats.h ccConfirmationStats.h ccoriginalparent.h \
-		cctypes.h CapControlPao.h PointResponse.h \
-		PointResponseManager.h Exceptions.h ccid.h resolvers.h \
-		db_entry_defines.h database_writer.h row_writer.h \
-		PointResponseDao.h DatabaseDaoFactory.h \
-		PointResponseDatabaseDao.h
+		pao_event.h dbmemobject.h amq_connection.h critical_section.h \
+		CapControlOperationMessage.h StreamableMessage.h \
+		cctwowaycbcpoints.h msg_ptreg.h AttributeService.h \
+		LitePoint.h PointValueHolder.h ccoperationstats.h \
+		ccConfirmationStats.h ccoriginalparent.h cctypes.h \
+		CapControlPao.h PointResponse.h PointResponseManager.h \
+		Exceptions.h ccid.h resolvers.h db_entry_defines.h \
+		database_writer.h row_writer.h PointResponseDao.h \
+		DatabaseDaoFactory.h PointResponseDatabaseDao.h
 ccclientconn.obj:	precompiled.h ccclientconn.h ctdpcptrq.h dlldefs.h \
 		CtiPCPtrQueue.h mutex.h guard.h utility.h ctitime.h queues.h \
 		cticalls.h os2_2w32.h types.h numstr.h observe.h ccmessage.h \
@@ -462,31 +469,32 @@ ccclientconn.obj:	precompiled.h ccclientconn.h ctdpcptrq.h dlldefs.h \
 		configkey.h configval.h ccfeeder.h ccmonitorpoint.h msg_cmd.h \
 		ctidate.h ccutil.h pointattribute.h devicetypes.h \
 		msg_pcrequest.h mgr_paosched.h pao_schedule.h ctibase.h \
-		ctinexus.h pao_event.h dbmemobject.h ccoriginalparent.h \
-		cccapbank.h cctwowaycbcpoints.h AttributeService.h \
-		LitePoint.h PointValueHolder.h ccoperationstats.h \
-		ccConfirmationStats.h cctypes.h CapControlPao.h \
-		PointResponse.h PointResponseManager.h Exceptions.h \
-		StrategyManager.h readers_writer_lock.h critical_section.h \
-		ControlStrategy.h sorted_vector.h regression.h Controllable.h \
-		ccsubstationbus.h TimeOfDayStrategy.h ccarea.h ccareabase.h \
-		ccsparea.h ccstate.h MsgItemCommand.h EventTypes.h \
-		MsgBankMove.h MsgObjectMove.h MsgCapControlMessage.h \
-		MsgSubstationBus.h MsgCapControlEventLog.h MsgCapBankStates.h \
-		MsgAreas.h MsgSpecialAreas.h MsgSubstations.h \
-		MsgVoltageRegulator.h VoltageRegulator.h UpdatablePao.h \
-		ccid.h MsgDeleteItem.h MsgSystemStatus.h \
-		MsgCapControlServerResponse.h MsgCapControlShutdown.h \
-		ccexecutor.h msg_signal.h VoltageRegulatorManager.h \
-		CapControlPointDataHandler.h PointDataHandler.h \
-		PointDataListener.h MessageListener.h ccsubstationbusstore.h \
-		ccstatsobject.h StrategyLoader.h ZoneManager.h Zone.h \
-		ZoneLoader.h VoltageRegulatorLoader.h DatabaseDaoFactory.h \
-		PointResponseDao.h PointResponseDatabaseDao.h \
-		database_writer.h row_writer.h capcontroller.h \
-		DispatchConnection.h CapControlDispatchConnection.h \
-		msg_dbchg.h thread_monitor.h smartmap.h \
-		thread_register_data.h
+		ctinexus.h pao_event.h dbmemobject.h amq_connection.h \
+		critical_section.h CapControlOperationMessage.h \
+		StreamableMessage.h ccoriginalparent.h cccapbank.h \
+		cctwowaycbcpoints.h AttributeService.h LitePoint.h \
+		PointValueHolder.h ccoperationstats.h ccConfirmationStats.h \
+		cctypes.h CapControlPao.h PointResponse.h \
+		PointResponseManager.h Exceptions.h StrategyManager.h \
+		readers_writer_lock.h ControlStrategy.h sorted_vector.h \
+		regression.h Controllable.h ccsubstationbus.h \
+		TimeOfDayStrategy.h ccarea.h ccareabase.h ccsparea.h \
+		ccstate.h MsgItemCommand.h EventTypes.h MsgBankMove.h \
+		MsgObjectMove.h MsgCapControlMessage.h MsgSubstationBus.h \
+		MsgCapControlEventLog.h MsgCapBankStates.h MsgAreas.h \
+		MsgSpecialAreas.h MsgSubstations.h MsgVoltageRegulator.h \
+		VoltageRegulator.h UpdatablePao.h ccid.h MsgDeleteItem.h \
+		MsgSystemStatus.h MsgCapControlServerResponse.h \
+		MsgCapControlShutdown.h ccexecutor.h msg_signal.h \
+		VoltageRegulatorManager.h CapControlPointDataHandler.h \
+		PointDataHandler.h PointDataListener.h MessageListener.h \
+		ccsubstationbusstore.h ccstatsobject.h StrategyLoader.h \
+		ZoneManager.h Zone.h ZoneLoader.h VoltageRegulatorLoader.h \
+		DatabaseDaoFactory.h PointResponseDao.h \
+		PointResponseDatabaseDao.h database_writer.h row_writer.h \
+		capcontroller.h DispatchConnection.h \
+		CapControlDispatchConnection.h msg_dbchg.h thread_monitor.h \
+		smartmap.h thread_register_data.h
 ccclientlistener.obj:	precompiled.h ccclientlistener.h ccclientconn.h \
 		ctdpcptrq.h dlldefs.h CtiPCPtrQueue.h mutex.h guard.h \
 		utility.h ctitime.h queues.h cticalls.h os2_2w32.h types.h \
@@ -502,16 +510,17 @@ ccclientlistener.obj:	precompiled.h ccclientlistener.h ccclientconn.h \
 		ccmonitorpoint.h msg_cmd.h ctidate.h ccutil.h \
 		pointattribute.h devicetypes.h msg_pcrequest.h mgr_paosched.h \
 		pao_schedule.h ctibase.h ctinexus.h pao_event.h dbmemobject.h \
+		amq_connection.h critical_section.h \
+		CapControlOperationMessage.h StreamableMessage.h \
 		ccoriginalparent.h cccapbank.h cctwowaycbcpoints.h \
 		AttributeService.h LitePoint.h PointValueHolder.h \
 		ccoperationstats.h ccConfirmationStats.h cctypes.h \
 		CapControlPao.h PointResponse.h PointResponseManager.h \
 		Exceptions.h StrategyManager.h readers_writer_lock.h \
-		critical_section.h ControlStrategy.h sorted_vector.h \
-		regression.h Controllable.h ccsubstationbus.h \
-		TimeOfDayStrategy.h ccarea.h ccareabase.h ccsparea.h \
-		MsgItemCommand.h EventTypes.h MsgBankMove.h MsgObjectMove.h \
-		MsgCapControlMessage.h MsgSubstationBus.h \
+		ControlStrategy.h sorted_vector.h regression.h Controllable.h \
+		ccsubstationbus.h TimeOfDayStrategy.h ccarea.h ccareabase.h \
+		ccsparea.h MsgItemCommand.h EventTypes.h MsgBankMove.h \
+		MsgObjectMove.h MsgCapControlMessage.h MsgSubstationBus.h \
 		MsgCapControlEventLog.h MsgCapBankStates.h MsgAreas.h \
 		MsgSpecialAreas.h MsgSubstations.h MsgVoltageRegulator.h \
 		VoltageRegulator.h UpdatablePao.h ccid.h MsgDeleteItem.h \
@@ -536,7 +545,8 @@ ccconfirmationstats.obj:	precompiled.h msg_signal.h message.h \
 		ccconfirmationstats.h msg_cmd.h observe.h ccoperationstats.h \
 		ccutil.h pointattribute.h devicetypes.h msg_pcrequest.h \
 		mgr_paosched.h pao_schedule.h ctibase.h ctinexus.h \
-		pao_event.h dbmemobject.h
+		pao_event.h dbmemobject.h amq_connection.h critical_section.h \
+		CapControlOperationMessage.h StreamableMessage.h
 ccexecutor.obj:	precompiled.h AttributeService.h LitePoint.h dlldefs.h \
 		pointtypes.h PointAttribute.h yukon.h types.h ctidbgmem.h \
 		ccclientlistener.h ccclientconn.h ctdpcptrq.h CtiPCPtrQueue.h \
@@ -552,15 +562,17 @@ ccexecutor.obj:	precompiled.h AttributeService.h LitePoint.h dlldefs.h \
 		ccsubstation.h ccfeeder.h ccmonitorpoint.h msg_cmd.h \
 		ctidate.h ccutil.h devicetypes.h msg_pcrequest.h \
 		mgr_paosched.h pao_schedule.h ctibase.h ctinexus.h \
-		pao_event.h dbmemobject.h ccoriginalparent.h cccapbank.h \
-		cctwowaycbcpoints.h PointValueHolder.h ccoperationstats.h \
-		ccConfirmationStats.h cctypes.h CapControlPao.h \
-		PointResponse.h PointResponseManager.h Exceptions.h \
-		StrategyManager.h readers_writer_lock.h critical_section.h \
-		ControlStrategy.h sorted_vector.h regression.h Controllable.h \
-		ccsubstationbus.h TimeOfDayStrategy.h ccarea.h ccareabase.h \
-		ccsparea.h MsgItemCommand.h EventTypes.h MsgBankMove.h \
-		MsgObjectMove.h MsgCapControlMessage.h MsgSubstationBus.h \
+		pao_event.h dbmemobject.h amq_connection.h critical_section.h \
+		CapControlOperationMessage.h StreamableMessage.h \
+		ccoriginalparent.h cccapbank.h cctwowaycbcpoints.h \
+		PointValueHolder.h ccoperationstats.h ccConfirmationStats.h \
+		cctypes.h CapControlPao.h PointResponse.h \
+		PointResponseManager.h Exceptions.h StrategyManager.h \
+		readers_writer_lock.h ControlStrategy.h sorted_vector.h \
+		regression.h Controllable.h ccsubstationbus.h \
+		TimeOfDayStrategy.h ccarea.h ccareabase.h ccsparea.h \
+		MsgItemCommand.h EventTypes.h MsgBankMove.h MsgObjectMove.h \
+		MsgCapControlMessage.h MsgSubstationBus.h \
 		MsgCapControlEventLog.h MsgCapBankStates.h MsgAreas.h \
 		MsgSpecialAreas.h MsgSubstations.h MsgVoltageRegulator.h \
 		VoltageRegulator.h UpdatablePao.h ccid.h MsgDeleteItem.h \
@@ -586,6 +598,8 @@ ccfeeder.obj:	precompiled.h dbaccess.h dllbase.h dsm2.h cticonnect.h \
 		thread.h CtiPCPtrQueue.h ccutil.h pointattribute.h \
 		devicetypes.h msg_pcrequest.h mgr_paosched.h pao_schedule.h \
 		ctibase.h ctinexus.h pao_event.h dbmemobject.h \
+		amq_connection.h critical_section.h \
+		CapControlOperationMessage.h StreamableMessage.h \
 		cctwowaycbcpoints.h msg_ptreg.h AttributeService.h \
 		LitePoint.h PointValueHolder.h ccoperationstats.h \
 		ccConfirmationStats.h ccoriginalparent.h cctypes.h \
@@ -593,8 +607,8 @@ ccfeeder.obj:	precompiled.h dbaccess.h dllbase.h dsm2.h cticonnect.h \
 		Exceptions.h ccfeeder.h connection.h exchange.h \
 		string_utility.h msg_multi.h msg_reg.h queue.h cparms.h \
 		configkey.h configval.h StrategyManager.h \
-		readers_writer_lock.h critical_section.h ControlStrategy.h \
-		sorted_vector.h regression.h Controllable.h capcontroller.h \
+		readers_writer_lock.h ControlStrategy.h sorted_vector.h \
+		regression.h Controllable.h capcontroller.h \
 		DispatchConnection.h MessageListener.h \
 		CapControlDispatchConnection.h msg_dbchg.h \
 		ccsubstationbusstore.h ccarea.h ccsubstationbus.h \
@@ -628,16 +642,17 @@ ccmain.obj:	precompiled.h ccsubstationbusstore.h observe.h types.h \
 		ccmonitorpoint.h msg_cmd.h ctidate.h ccutil.h \
 		pointattribute.h devicetypes.h msg_pcrequest.h mgr_paosched.h \
 		pao_schedule.h ctibase.h ctinexus.h pao_event.h dbmemobject.h \
+		amq_connection.h critical_section.h \
+		CapControlOperationMessage.h StreamableMessage.h \
 		ccoriginalparent.h cccapbank.h cctwowaycbcpoints.h \
 		AttributeService.h LitePoint.h PointValueHolder.h \
 		ccoperationstats.h ccConfirmationStats.h cctypes.h \
 		CapControlPao.h PointResponse.h PointResponseManager.h \
 		Exceptions.h StrategyManager.h readers_writer_lock.h \
-		critical_section.h ControlStrategy.h sorted_vector.h \
-		regression.h Controllable.h TimeOfDayStrategy.h ccareabase.h \
-		ccsparea.h ccid.h ccstate.h ccmessage.h \
-		MsgCapControlCommand.h ccsubstation.h MsgItemCommand.h \
-		EventTypes.h MsgBankMove.h MsgObjectMove.h \
+		ControlStrategy.h sorted_vector.h regression.h Controllable.h \
+		TimeOfDayStrategy.h ccareabase.h ccsparea.h ccid.h ccstate.h \
+		ccmessage.h MsgCapControlCommand.h ccsubstation.h \
+		MsgItemCommand.h EventTypes.h MsgBankMove.h MsgObjectMove.h \
 		MsgCapControlMessage.h MsgSubstationBus.h \
 		MsgCapControlEventLog.h MsgCapBankStates.h MsgAreas.h \
 		MsgSpecialAreas.h MsgSubstations.h MsgVoltageRegulator.h \
@@ -663,6 +678,8 @@ ccmonitorpoint.obj:	precompiled.h dbaccess.h dllbase.h dsm2.h \
 		database_reader.h row_reader.h boost_time.h boostutil.h \
 		mgr_paosched.h pao_schedule.h ctibase.h ctinexus.h logger.h \
 		thread.h CtiPCPtrQueue.h pao_event.h dbmemobject.h \
+		amq_connection.h critical_section.h \
+		CapControlOperationMessage.h StreamableMessage.h \
 		ccmonitorpoint.h msg_cmd.h observe.h ctidate.h pointdefs.h \
 		resolvers.h pointtypes.h db_entry_defines.h database_writer.h \
 		row_writer.h
@@ -676,8 +693,10 @@ ccoperationstats.obj:	precompiled.h msg_signal.h message.h ctitime.h \
 		CtiPCPtrQueue.h resolvers.h db_entry_defines.h ccid.h \
 		ccutil.h pointattribute.h devicetypes.h msg_pcrequest.h \
 		mgr_paosched.h pao_schedule.h ctibase.h ctinexus.h \
-		pao_event.h dbmemobject.h ccoperationstats.h msg_cmd.h \
-		observe.h database_writer.h row_writer.h
+		pao_event.h dbmemobject.h amq_connection.h critical_section.h \
+		CapControlOperationMessage.h StreamableMessage.h \
+		ccoperationstats.h msg_cmd.h observe.h database_writer.h \
+		row_writer.h
 ccoriginalparent.obj:	precompiled.h ccoriginalparent.h dbaccess.h \
 		dllbase.h dsm2.h cticonnect.h yukon.h types.h ctidbgmem.h \
 		dlldefs.h netports.h mutex.h guard.h utility.h ctitime.h \
@@ -687,8 +706,9 @@ ccoriginalparent.obj:	precompiled.h ccoriginalparent.h dbaccess.h \
 		msg_pcrequest.h message.h collectable.h rwutil.h \
 		database_connection.h database_reader.h boost_time.h \
 		boostutil.h mgr_paosched.h pao_schedule.h ctibase.h \
-		ctinexus.h pao_event.h dbmemobject.h database_writer.h \
-		row_writer.h
+		ctinexus.h pao_event.h dbmemobject.h amq_connection.h \
+		critical_section.h CapControlOperationMessage.h \
+		StreamableMessage.h database_writer.h row_writer.h
 ccserver.obj:	precompiled.h ccserver.h ccclientlistener.h \
 		ccclientconn.h ctdpcptrq.h dlldefs.h CtiPCPtrQueue.h mutex.h \
 		guard.h utility.h ctitime.h queues.h cticalls.h os2_2w32.h \
@@ -704,16 +724,17 @@ ccserver.obj:	precompiled.h ccserver.h ccclientlistener.h \
 		ccmonitorpoint.h msg_cmd.h ctidate.h ccutil.h \
 		pointattribute.h devicetypes.h msg_pcrequest.h mgr_paosched.h \
 		pao_schedule.h ctibase.h ctinexus.h pao_event.h dbmemobject.h \
+		amq_connection.h critical_section.h \
+		CapControlOperationMessage.h StreamableMessage.h \
 		ccoriginalparent.h cccapbank.h cctwowaycbcpoints.h \
 		AttributeService.h LitePoint.h PointValueHolder.h \
 		ccoperationstats.h ccConfirmationStats.h cctypes.h \
 		CapControlPao.h PointResponse.h PointResponseManager.h \
 		Exceptions.h StrategyManager.h readers_writer_lock.h \
-		critical_section.h ControlStrategy.h sorted_vector.h \
-		regression.h Controllable.h ccsubstationbus.h \
-		TimeOfDayStrategy.h ccarea.h ccareabase.h ccsparea.h \
-		MsgItemCommand.h EventTypes.h MsgBankMove.h MsgObjectMove.h \
-		MsgCapControlMessage.h MsgSubstationBus.h \
+		ControlStrategy.h sorted_vector.h regression.h Controllable.h \
+		ccsubstationbus.h TimeOfDayStrategy.h ccarea.h ccareabase.h \
+		ccsparea.h MsgItemCommand.h EventTypes.h MsgBankMove.h \
+		MsgObjectMove.h MsgCapControlMessage.h MsgSubstationBus.h \
 		MsgCapControlEventLog.h MsgCapBankStates.h MsgAreas.h \
 		MsgSpecialAreas.h MsgSubstations.h MsgVoltageRegulator.h \
 		VoltageRegulator.h UpdatablePao.h ccid.h MsgDeleteItem.h \
@@ -736,16 +757,18 @@ ccservice.obj:	precompiled.h id_capcontrol.h utility.h ctitime.h \
 		ccmonitorpoint.h ctidate.h ccutil.h pointattribute.h \
 		devicetypes.h msg_pcrequest.h mgr_paosched.h pao_schedule.h \
 		ctibase.h ctinexus.h pao_event.h dbmemobject.h \
+		amq_connection.h critical_section.h \
+		CapControlOperationMessage.h StreamableMessage.h \
 		ccoriginalparent.h cccapbank.h cctwowaycbcpoints.h \
 		AttributeService.h LitePoint.h PointValueHolder.h \
 		ccoperationstats.h ccConfirmationStats.h cctypes.h \
 		CapControlPao.h PointResponse.h PointResponseManager.h \
 		Exceptions.h StrategyManager.h readers_writer_lock.h \
-		critical_section.h ControlStrategy.h sorted_vector.h \
-		regression.h Controllable.h TimeOfDayStrategy.h ccareabase.h \
-		ccsparea.h ccid.h ccmessage.h MsgCapControlCommand.h \
-		ccsubstation.h MsgItemCommand.h EventTypes.h MsgBankMove.h \
-		MsgObjectMove.h MsgCapControlMessage.h MsgSubstationBus.h \
+		ControlStrategy.h sorted_vector.h regression.h Controllable.h \
+		TimeOfDayStrategy.h ccareabase.h ccsparea.h ccid.h \
+		ccmessage.h MsgCapControlCommand.h ccsubstation.h \
+		MsgItemCommand.h EventTypes.h MsgBankMove.h MsgObjectMove.h \
+		MsgCapControlMessage.h MsgSubstationBus.h \
 		MsgCapControlEventLog.h MsgCapBankStates.h MsgAreas.h \
 		MsgSpecialAreas.h MsgSubstations.h MsgVoltageRegulator.h \
 		VoltageRegulator.h UpdatablePao.h MsgDeleteItem.h \
@@ -775,12 +798,13 @@ ccsparea.obj:	precompiled.h dbaccess.h dllbase.h dsm2.h cticonnect.h \
 		CapControlPao.h ccareabase.h ccsubstationbus.h ccfeeder.h \
 		ccmonitorpoint.h ctidate.h ccutil.h pointattribute.h \
 		devicetypes.h mgr_paosched.h pao_schedule.h ctibase.h \
-		ctinexus.h pao_event.h dbmemobject.h ccoriginalparent.h \
-		cccapbank.h cctwowaycbcpoints.h AttributeService.h \
-		LitePoint.h PointValueHolder.h PointResponse.h \
-		PointResponseManager.h Exceptions.h sorted_vector.h \
-		regression.h TimeOfDayStrategy.h ccid.h capcontroller.h \
-		DispatchConnection.h MessageListener.h \
+		ctinexus.h pao_event.h dbmemobject.h amq_connection.h \
+		CapControlOperationMessage.h StreamableMessage.h \
+		ccoriginalparent.h cccapbank.h cctwowaycbcpoints.h \
+		AttributeService.h LitePoint.h PointValueHolder.h \
+		PointResponse.h PointResponseManager.h Exceptions.h \
+		sorted_vector.h regression.h TimeOfDayStrategy.h ccid.h \
+		capcontroller.h DispatchConnection.h MessageListener.h \
 		CapControlDispatchConnection.h msg_dbchg.h \
 		ccsubstationbusstore.h ccarea.h ccstate.h ccmessage.h \
 		MsgCapControlCommand.h ccsubstation.h MsgItemCommand.h \
@@ -828,14 +852,15 @@ ccsubstation.obj:	precompiled.h dbaccess.h dllbase.h dsm2.h \
 		ccmonitorpoint.h msg_cmd.h ctidate.h ccutil.h \
 		pointattribute.h devicetypes.h msg_pcrequest.h mgr_paosched.h \
 		pao_schedule.h ctibase.h ctinexus.h pao_event.h dbmemobject.h \
+		amq_connection.h critical_section.h \
+		CapControlOperationMessage.h StreamableMessage.h \
 		ccoriginalparent.h cccapbank.h cctwowaycbcpoints.h \
 		AttributeService.h LitePoint.h PointValueHolder.h \
 		ccoperationstats.h ccConfirmationStats.h cctypes.h \
 		CapControlPao.h PointResponse.h PointResponseManager.h \
 		Exceptions.h StrategyManager.h readers_writer_lock.h \
-		critical_section.h ControlStrategy.h sorted_vector.h \
-		regression.h Controllable.h ccsubstationbus.h \
-		TimeOfDayStrategy.h ccid.h capcontroller.h \
+		ControlStrategy.h sorted_vector.h regression.h Controllable.h \
+		ccsubstationbus.h TimeOfDayStrategy.h ccid.h capcontroller.h \
 		DispatchConnection.h MessageListener.h \
 		CapControlDispatchConnection.h msg_dbchg.h \
 		ccsubstationbusstore.h ccarea.h ccareabase.h ccsparea.h \
@@ -867,14 +892,16 @@ ccsubstationbus.obj:	precompiled.h dbaccess.h dllbase.h dsm2.h \
 		ccmonitorpoint.h msg_cmd.h ctidate.h ccutil.h \
 		pointattribute.h devicetypes.h msg_pcrequest.h mgr_paosched.h \
 		pao_schedule.h ctibase.h ctinexus.h pao_event.h dbmemobject.h \
+		amq_connection.h critical_section.h \
+		CapControlOperationMessage.h StreamableMessage.h \
 		ccoriginalparent.h cccapbank.h cctwowaycbcpoints.h \
 		AttributeService.h LitePoint.h PointValueHolder.h \
 		ccoperationstats.h ccConfirmationStats.h cctypes.h \
 		CapControlPao.h PointResponse.h PointResponseManager.h \
 		Exceptions.h StrategyManager.h readers_writer_lock.h \
-		critical_section.h ControlStrategy.h sorted_vector.h \
-		regression.h Controllable.h TimeOfDayStrategy.h ccid.h \
-		capcontroller.h DispatchConnection.h MessageListener.h \
+		ControlStrategy.h sorted_vector.h regression.h Controllable.h \
+		TimeOfDayStrategy.h ccid.h capcontroller.h \
+		DispatchConnection.h MessageListener.h \
 		CapControlDispatchConnection.h msg_dbchg.h \
 		ccsubstationbusstore.h ccarea.h ccareabase.h ccsparea.h \
 		ccstate.h ccmessage.h MsgCapControlCommand.h ccsubstation.h \
@@ -907,16 +934,18 @@ ccsubstationbusstore.obj:	precompiled.h ccsubstationbusstore.h \
 		ccsubstationbus.h ccfeeder.h ccmonitorpoint.h msg_cmd.h \
 		ctidate.h ccutil.h pointattribute.h devicetypes.h \
 		msg_pcrequest.h mgr_paosched.h pao_schedule.h ctibase.h \
-		ctinexus.h pao_event.h dbmemobject.h ccoriginalparent.h \
-		cccapbank.h cctwowaycbcpoints.h AttributeService.h \
-		LitePoint.h PointValueHolder.h ccoperationstats.h \
-		ccConfirmationStats.h cctypes.h CapControlPao.h \
-		PointResponse.h PointResponseManager.h Exceptions.h \
-		StrategyManager.h readers_writer_lock.h critical_section.h \
-		ControlStrategy.h sorted_vector.h regression.h Controllable.h \
-		TimeOfDayStrategy.h ccareabase.h ccsparea.h ccid.h ccstate.h \
-		ccmessage.h MsgCapControlCommand.h ccsubstation.h \
-		MsgItemCommand.h EventTypes.h MsgBankMove.h MsgObjectMove.h \
+		ctinexus.h pao_event.h dbmemobject.h amq_connection.h \
+		critical_section.h CapControlOperationMessage.h \
+		StreamableMessage.h ccoriginalparent.h cccapbank.h \
+		cctwowaycbcpoints.h AttributeService.h LitePoint.h \
+		PointValueHolder.h ccoperationstats.h ccConfirmationStats.h \
+		cctypes.h CapControlPao.h PointResponse.h \
+		PointResponseManager.h Exceptions.h StrategyManager.h \
+		readers_writer_lock.h ControlStrategy.h sorted_vector.h \
+		regression.h Controllable.h TimeOfDayStrategy.h ccareabase.h \
+		ccsparea.h ccid.h ccstate.h ccmessage.h \
+		MsgCapControlCommand.h ccsubstation.h MsgItemCommand.h \
+		EventTypes.h MsgBankMove.h MsgObjectMove.h \
 		MsgCapControlMessage.h MsgSubstationBus.h \
 		MsgCapControlEventLog.h MsgCapBankStates.h MsgAreas.h \
 		MsgSpecialAreas.h MsgSubstations.h MsgVoltageRegulator.h \
@@ -932,8 +961,8 @@ ccsubstationbusstore.obj:	precompiled.h ccsubstationbusstore.h \
 		db_entry_defines.h msg_dbchg.h msg_signal.h capcontroller.h \
 		DispatchConnection.h CapControlDispatchConnection.h \
 		ccexecutor.h ctdpcptrq.h mgr_holiday.h thread_monitor.h \
-		smartmap.h thread_register_data.h ctistring.h \
-		ThreadStatusKeeper.h ExecutorFactory.h
+		smartmap.h thread_register_data.h database_transaction.h \
+		ctistring.h ThreadStatusKeeper.h ExecutorFactory.h
 cctwowaycbcpoints.obj:	precompiled.h cctwowaycbcpoints.h msg_cmd.h \
 		message.h ctitime.h dlldefs.h ctidbgmem.h collectable.h \
 		rwutil.h yukon.h types.h database_connection.h dbaccess.h \
@@ -949,17 +978,20 @@ cctwowaycbcpoints.obj:	precompiled.h cctwowaycbcpoints.h msg_cmd.h \
 		CtiPCPtrQueue.h hashkey.h hash_functions.h rte_base.h \
 		dbmemobject.h ctibase.h ctinexus.h tbl_pao_lite.h \
 		tbl_rtcomm.h resolvers.h db_entry_defines.h desolvers.h \
-		msg_signal.h string_utility.h tbl_static_paoinfo.h tbl_base.h \
-		tbl_scanrate.h tbl_dyn_paoinfo.h pt_base.h tbl_pt_base.h \
-		msg_pcrequest.h msg_pcreturn.h msg_multi.h tbl_dv_scandata.h \
-		tbl_dv_wnd.h connection.h exchange.h msg_reg.h queue.h \
-		cparms.h configkey.h configval.h prot_base.h xfer.h \
-		tbl_dialup.h tbl_direct.h prot_dnp.h packet_finder.h \
-		dnp_application.h dnp_objects.h dnp_transport.h \
-		dnp_datalink.h dnp_datalink_packet.h \
-		dnp_object_binaryoutput.h tbl_dv_address.h config_data_cbc.h \
-		dev_cbc8020.h database_writer.h row_writer.h ccutil.h \
-		devicetypes.h mgr_paosched.h pao_schedule.h pao_event.h
+		msg_signal.h string_utility.h tbl_static_paoinfo.h \
+		encryption.h tbl_base.h tbl_scanrate.h tbl_dyn_paoinfo.h \
+		pt_base.h tbl_pt_base.h msg_pcrequest.h msg_pcreturn.h \
+		msg_multi.h tbl_dv_scandata.h tbl_dv_wnd.h connection.h \
+		exchange.h msg_reg.h queue.h cparms.h configkey.h configval.h \
+		prot_base.h xfer.h tbl_dialup.h tbl_direct.h prot_dnp.h \
+		packet_finder.h dnp_application.h dnp_objects.h \
+		dnp_transport.h dnp_datalink.h dnp_datalink_packet.h \
+		dnp_configuration.h dnp_object_binaryoutput.h \
+		tbl_dv_address.h config_data_cbc.h dev_cbc8020.h \
+		database_writer.h row_writer.h ccutil.h devicetypes.h \
+		mgr_paosched.h pao_schedule.h pao_event.h amq_connection.h \
+		critical_section.h CapControlOperationMessage.h \
+		StreamableMessage.h
 ccutil.obj:	precompiled.h ccutil.h pointattribute.h yukon.h types.h \
 		ctidbgmem.h dlldefs.h devicetypes.h msg_pcrequest.h message.h \
 		ctitime.h collectable.h rwutil.h database_connection.h \
@@ -968,13 +1000,14 @@ ccutil.obj:	precompiled.h ccutil.h pointattribute.h yukon.h types.h \
 		dsm2err.h words.h optional.h database_reader.h row_reader.h \
 		boost_time.h boostutil.h mgr_paosched.h pao_schedule.h \
 		ctibase.h ctinexus.h logger.h thread.h CtiPCPtrQueue.h \
-		pao_event.h dbmemobject.h pointdefs.h cccapbank.h msg_cmd.h \
-		msg_pdata.h pointtypes.h ccmonitorpoint.h observe.h ctidate.h \
-		cctwowaycbcpoints.h msg_ptreg.h AttributeService.h \
-		LitePoint.h PointValueHolder.h ccoperationstats.h \
-		ccConfirmationStats.h ccoriginalparent.h cctypes.h \
-		CapControlPao.h PointResponse.h PointResponseManager.h \
-		Exceptions.h
+		pao_event.h dbmemobject.h amq_connection.h critical_section.h \
+		CapControlOperationMessage.h StreamableMessage.h pointdefs.h \
+		cccapbank.h msg_cmd.h msg_pdata.h pointtypes.h \
+		ccmonitorpoint.h observe.h ctidate.h cctwowaycbcpoints.h \
+		msg_ptreg.h AttributeService.h LitePoint.h PointValueHolder.h \
+		ccoperationstats.h ccConfirmationStats.h ccoriginalparent.h \
+		cctypes.h CapControlPao.h PointResponse.h \
+		PointResponseManager.h Exceptions.h
 controllable.obj:	precompiled.h ControlStrategy.h NoStrategy.h \
 		Controllable.h CapControlPao.h yukon.h types.h ctidbgmem.h \
 		row_reader.h ctitime.h dlldefs.h rwutil.h \
@@ -1008,28 +1041,29 @@ dynamiccommandexecutor.obj:	precompiled.h DynamicCommandExecutor.h \
 		ccfeeder.h ccmonitorpoint.h msg_cmd.h ctidate.h ccutil.h \
 		pointattribute.h devicetypes.h msg_pcrequest.h mgr_paosched.h \
 		pao_schedule.h ctibase.h ctinexus.h pao_event.h dbmemobject.h \
+		amq_connection.h critical_section.h \
+		CapControlOperationMessage.h StreamableMessage.h \
 		ccoriginalparent.h cccapbank.h cctwowaycbcpoints.h \
 		AttributeService.h LitePoint.h PointValueHolder.h \
 		ccoperationstats.h ccConfirmationStats.h cctypes.h \
 		CapControlPao.h PointResponse.h PointResponseManager.h \
 		Exceptions.h StrategyManager.h readers_writer_lock.h \
-		critical_section.h ControlStrategy.h sorted_vector.h \
-		regression.h Controllable.h ccsubstationbus.h \
-		TimeOfDayStrategy.h ccarea.h ccareabase.h ccsparea.h \
-		ccstate.h MsgItemCommand.h EventTypes.h MsgBankMove.h \
-		MsgObjectMove.h MsgCapControlMessage.h MsgSubstationBus.h \
-		MsgCapControlEventLog.h MsgCapBankStates.h MsgAreas.h \
-		MsgSpecialAreas.h MsgSubstations.h MsgVoltageRegulator.h \
-		VoltageRegulator.h UpdatablePao.h ccid.h MsgDeleteItem.h \
-		MsgSystemStatus.h MsgCapControlServerResponse.h \
-		MsgCapControlShutdown.h msg_signal.h \
-		VoltageRegulatorManager.h CapControlPointDataHandler.h \
-		PointDataHandler.h PointDataListener.h MessageListener.h \
-		ccsubstationbusstore.h ccstatsobject.h StrategyLoader.h \
-		ZoneManager.h Zone.h ZoneLoader.h VoltageRegulatorLoader.h \
-		DatabaseDaoFactory.h PointResponseDao.h \
-		PointResponseDatabaseDao.h database_writer.h row_writer.h \
-		ExecutorFactory.h
+		ControlStrategy.h sorted_vector.h regression.h Controllable.h \
+		ccsubstationbus.h TimeOfDayStrategy.h ccarea.h ccareabase.h \
+		ccsparea.h ccstate.h MsgItemCommand.h EventTypes.h \
+		MsgBankMove.h MsgObjectMove.h MsgCapControlMessage.h \
+		MsgSubstationBus.h MsgCapControlEventLog.h MsgCapBankStates.h \
+		MsgAreas.h MsgSpecialAreas.h MsgSubstations.h \
+		MsgVoltageRegulator.h VoltageRegulator.h UpdatablePao.h \
+		ccid.h MsgDeleteItem.h MsgSystemStatus.h \
+		MsgCapControlServerResponse.h MsgCapControlShutdown.h \
+		msg_signal.h VoltageRegulatorManager.h \
+		CapControlPointDataHandler.h PointDataHandler.h \
+		PointDataListener.h MessageListener.h ccsubstationbusstore.h \
+		ccstatsobject.h StrategyLoader.h ZoneManager.h Zone.h \
+		ZoneLoader.h VoltageRegulatorLoader.h DatabaseDaoFactory.h \
+		PointResponseDao.h PointResponseDatabaseDao.h \
+		database_writer.h row_writer.h ExecutorFactory.h
 execchangeopstate.obj:	precompiled.h ExecChangeOpState.h \
 		MsgChangeOpState.h MsgItemCommand.h MsgCapControlCommand.h \
 		message.h ctitime.h dlldefs.h ctidbgmem.h collectable.h \
@@ -1045,16 +1079,17 @@ execchangeopstate.obj:	precompiled.h ExecChangeOpState.h \
 		ccmonitorpoint.h msg_cmd.h ctidate.h ccutil.h \
 		pointattribute.h devicetypes.h msg_pcrequest.h mgr_paosched.h \
 		pao_schedule.h ctibase.h ctinexus.h pao_event.h dbmemobject.h \
+		amq_connection.h critical_section.h \
+		CapControlOperationMessage.h StreamableMessage.h \
 		ccoriginalparent.h cccapbank.h cctwowaycbcpoints.h \
 		AttributeService.h LitePoint.h PointValueHolder.h \
 		ccoperationstats.h ccConfirmationStats.h cctypes.h \
 		CapControlPao.h PointResponse.h PointResponseManager.h \
 		Exceptions.h StrategyManager.h readers_writer_lock.h \
-		critical_section.h ControlStrategy.h sorted_vector.h \
-		regression.h Controllable.h ccsubstationbus.h \
-		TimeOfDayStrategy.h ccarea.h ccareabase.h ccsparea.h \
-		ccstate.h EventTypes.h MsgBankMove.h MsgObjectMove.h \
-		MsgCapControlMessage.h MsgSubstationBus.h \
+		ControlStrategy.h sorted_vector.h regression.h Controllable.h \
+		ccsubstationbus.h TimeOfDayStrategy.h ccarea.h ccareabase.h \
+		ccsparea.h ccstate.h EventTypes.h MsgBankMove.h \
+		MsgObjectMove.h MsgCapControlMessage.h MsgSubstationBus.h \
 		MsgCapControlEventLog.h MsgCapBankStates.h MsgAreas.h \
 		MsgSpecialAreas.h MsgSubstations.h MsgVoltageRegulator.h \
 		VoltageRegulator.h UpdatablePao.h ccid.h MsgDeleteItem.h \
@@ -1083,26 +1118,28 @@ executorfactory.obj:	precompiled.h DynamicCommandExecutor.h \
 		ccfeeder.h ccmonitorpoint.h msg_cmd.h ctidate.h ccutil.h \
 		pointattribute.h devicetypes.h msg_pcrequest.h mgr_paosched.h \
 		pao_schedule.h ctibase.h ctinexus.h pao_event.h dbmemobject.h \
+		amq_connection.h critical_section.h \
+		CapControlOperationMessage.h StreamableMessage.h \
 		ccoriginalparent.h cccapbank.h cctwowaycbcpoints.h \
 		AttributeService.h LitePoint.h PointValueHolder.h \
 		ccoperationstats.h ccConfirmationStats.h cctypes.h \
 		CapControlPao.h PointResponse.h PointResponseManager.h \
 		Exceptions.h StrategyManager.h readers_writer_lock.h \
-		critical_section.h ControlStrategy.h sorted_vector.h \
-		regression.h Controllable.h ccsubstationbus.h \
-		TimeOfDayStrategy.h ccarea.h ccareabase.h ccsparea.h \
-		ccstate.h MsgItemCommand.h EventTypes.h MsgBankMove.h \
-		MsgObjectMove.h MsgCapControlMessage.h MsgSubstationBus.h \
-		MsgCapControlEventLog.h MsgCapBankStates.h MsgAreas.h \
-		MsgSpecialAreas.h MsgSubstations.h MsgVoltageRegulator.h \
-		VoltageRegulator.h UpdatablePao.h ccid.h MsgDeleteItem.h \
-		MsgSystemStatus.h MsgCapControlServerResponse.h \
-		MsgCapControlShutdown.h msg_signal.h \
-		VoltageRegulatorManager.h CapControlPointDataHandler.h \
-		PointDataHandler.h PointDataListener.h MessageListener.h \
-		ExecutorFactory.h ExecVerification.h MsgVerifyBanks.h \
-		MsgVerifyInactiveBanks.h MsgVerifySelectedBank.h \
-		ExecChangeOpState.h MsgChangeOpState.h
+		ControlStrategy.h sorted_vector.h regression.h Controllable.h \
+		ccsubstationbus.h TimeOfDayStrategy.h ccarea.h ccareabase.h \
+		ccsparea.h ccstate.h MsgItemCommand.h EventTypes.h \
+		MsgBankMove.h MsgObjectMove.h MsgCapControlMessage.h \
+		MsgSubstationBus.h MsgCapControlEventLog.h MsgCapBankStates.h \
+		MsgAreas.h MsgSpecialAreas.h MsgSubstations.h \
+		MsgVoltageRegulator.h VoltageRegulator.h UpdatablePao.h \
+		ccid.h MsgDeleteItem.h MsgSystemStatus.h \
+		MsgCapControlServerResponse.h MsgCapControlShutdown.h \
+		msg_signal.h VoltageRegulatorManager.h \
+		CapControlPointDataHandler.h PointDataHandler.h \
+		PointDataListener.h MessageListener.h ExecutorFactory.h \
+		ExecVerification.h MsgVerifyBanks.h MsgVerifyInactiveBanks.h \
+		MsgVerifySelectedBank.h ExecChangeOpState.h \
+		MsgChangeOpState.h
 execverification.obj:	precompiled.h ExecVerification.h \
 		MsgVerifyBanks.h MsgItemCommand.h MsgCapControlCommand.h \
 		message.h ctitime.h dlldefs.h ctidbgmem.h collectable.h \
@@ -1119,16 +1156,17 @@ execverification.obj:	precompiled.h ExecVerification.h \
 		ccmonitorpoint.h msg_cmd.h ctidate.h ccutil.h \
 		pointattribute.h devicetypes.h msg_pcrequest.h mgr_paosched.h \
 		pao_schedule.h ctibase.h ctinexus.h pao_event.h dbmemobject.h \
+		amq_connection.h critical_section.h \
+		CapControlOperationMessage.h StreamableMessage.h \
 		ccoriginalparent.h cccapbank.h cctwowaycbcpoints.h \
 		AttributeService.h LitePoint.h PointValueHolder.h \
 		ccoperationstats.h ccConfirmationStats.h cctypes.h \
 		CapControlPao.h PointResponse.h PointResponseManager.h \
 		Exceptions.h StrategyManager.h readers_writer_lock.h \
-		critical_section.h ControlStrategy.h sorted_vector.h \
-		regression.h Controllable.h ccsubstationbus.h \
-		TimeOfDayStrategy.h ccarea.h ccareabase.h ccsparea.h \
-		ccstate.h EventTypes.h MsgBankMove.h MsgObjectMove.h \
-		MsgCapControlMessage.h MsgSubstationBus.h \
+		ControlStrategy.h sorted_vector.h regression.h Controllable.h \
+		ccsubstationbus.h TimeOfDayStrategy.h ccarea.h ccareabase.h \
+		ccsparea.h ccstate.h EventTypes.h MsgBankMove.h \
+		MsgObjectMove.h MsgCapControlMessage.h MsgSubstationBus.h \
 		MsgCapControlEventLog.h MsgCapBankStates.h MsgAreas.h \
 		MsgSpecialAreas.h MsgSubstations.h MsgVoltageRegulator.h \
 		VoltageRegulator.h UpdatablePao.h ccid.h MsgDeleteItem.h \
@@ -1155,7 +1193,9 @@ gangoperatedvoltageregulator.obj:	precompiled.h logger.h dlldefs.h \
 		collectable.h LitePoint.h PointValueHolder.h \
 		AttributeService.h PointAttribute.h ccid.h ccutil.h \
 		devicetypes.h msg_pcrequest.h mgr_paosched.h pao_schedule.h \
-		ctibase.h ctinexus.h pao_event.h dbmemobject.h EventTypes.h \
+		ctibase.h ctinexus.h pao_event.h dbmemobject.h \
+		amq_connection.h critical_section.h \
+		CapControlOperationMessage.h StreamableMessage.h EventTypes.h \
 		capcontroller.h connection.h exchange.h string_utility.h \
 		msg_multi.h msg_ptreg.h msg_reg.h queue.h cparms.h \
 		configkey.h configval.h DispatchConnection.h \
@@ -1165,11 +1205,10 @@ gangoperatedvoltageregulator.obj:	precompiled.h logger.h dlldefs.h \
 		ccoriginalparent.h cccapbank.h cctwowaycbcpoints.h \
 		ccoperationstats.h ccConfirmationStats.h PointResponse.h \
 		PointResponseManager.h Exceptions.h StrategyManager.h \
-		readers_writer_lock.h critical_section.h ControlStrategy.h \
-		sorted_vector.h regression.h Controllable.h \
-		TimeOfDayStrategy.h ccareabase.h ccsparea.h ccstate.h \
-		ccmessage.h MsgCapControlCommand.h ccsubstation.h \
-		MsgItemCommand.h MsgBankMove.h MsgObjectMove.h \
+		readers_writer_lock.h ControlStrategy.h sorted_vector.h \
+		regression.h Controllable.h TimeOfDayStrategy.h ccareabase.h \
+		ccsparea.h ccstate.h ccmessage.h MsgCapControlCommand.h \
+		ccsubstation.h MsgItemCommand.h MsgBankMove.h MsgObjectMove.h \
 		MsgCapControlMessage.h MsgSubstationBus.h \
 		MsgCapControlEventLog.h MsgCapBankStates.h MsgAreas.h \
 		MsgSpecialAreas.h MsgSubstations.h MsgVoltageRegulator.h \
@@ -1194,21 +1233,23 @@ ivvcalgorithm.obj:	precompiled.h IVVCAlgorithm.h ccsubstationbus.h \
 		configkey.h configval.h observe.h ccfeeder.h ccmonitorpoint.h \
 		msg_cmd.h ctidate.h ccutil.h pointattribute.h devicetypes.h \
 		msg_pcrequest.h mgr_paosched.h pao_schedule.h ctibase.h \
-		ctinexus.h pao_event.h dbmemobject.h ccoriginalparent.h \
-		cccapbank.h cctwowaycbcpoints.h AttributeService.h \
-		LitePoint.h PointValueHolder.h ccoperationstats.h \
-		ccConfirmationStats.h cctypes.h CapControlPao.h \
-		PointResponse.h PointResponseManager.h Exceptions.h \
-		StrategyManager.h readers_writer_lock.h critical_section.h \
-		ControlStrategy.h sorted_vector.h regression.h Controllable.h \
-		TimeOfDayStrategy.h IVVCState.h PointDataRequest.h \
-		PointDataRequestFactory.h DispatchConnection.h \
-		MessageListener.h ZoneManager.h Zone.h IVVCStrategy.h \
-		capcontroller.h CapControlDispatchConnection.h msg_dbchg.h \
-		ccsubstationbusstore.h ccarea.h ccareabase.h ccsparea.h \
-		ccid.h ccstate.h ccmessage.h MsgCapControlCommand.h \
-		ccsubstation.h MsgItemCommand.h EventTypes.h MsgBankMove.h \
-		MsgObjectMove.h MsgCapControlMessage.h MsgSubstationBus.h \
+		ctinexus.h pao_event.h dbmemobject.h amq_connection.h \
+		critical_section.h CapControlOperationMessage.h \
+		StreamableMessage.h ccoriginalparent.h cccapbank.h \
+		cctwowaycbcpoints.h AttributeService.h LitePoint.h \
+		PointValueHolder.h ccoperationstats.h ccConfirmationStats.h \
+		cctypes.h CapControlPao.h PointResponse.h \
+		PointResponseManager.h Exceptions.h StrategyManager.h \
+		readers_writer_lock.h ControlStrategy.h sorted_vector.h \
+		regression.h Controllable.h TimeOfDayStrategy.h IVVCState.h \
+		PointDataRequest.h PointDataRequestFactory.h \
+		DispatchConnection.h MessageListener.h ZoneManager.h Zone.h \
+		IVVCStrategy.h capcontroller.h CapControlDispatchConnection.h \
+		msg_dbchg.h ccsubstationbusstore.h ccarea.h ccareabase.h \
+		ccsparea.h ccid.h ccstate.h ccmessage.h \
+		MsgCapControlCommand.h ccsubstation.h MsgItemCommand.h \
+		EventTypes.h MsgBankMove.h MsgObjectMove.h \
+		MsgCapControlMessage.h MsgSubstationBus.h \
 		MsgCapControlEventLog.h MsgCapBankStates.h MsgAreas.h \
 		MsgSpecialAreas.h MsgSubstations.h MsgVoltageRegulator.h \
 		VoltageRegulator.h UpdatablePao.h MsgDeleteItem.h \
@@ -1220,8 +1261,7 @@ ivvcalgorithm.obj:	precompiled.h IVVCAlgorithm.h ccsubstationbus.h \
 		DatabaseDaoFactory.h PointResponseDao.h \
 		PointResponseDatabaseDao.h database_writer.h row_writer.h \
 		ccexecutor.h msg_signal.h ctdpcptrq.h ExecutorFactory.h \
-		MsgVerifyBanks.h amq_connection.h activemqcpp.h \
-		IVVCAnalysisMessage.h StreamableMessage.h
+		MsgVerifyBanks.h IVVCAnalysisMessage.h
 ivvcstate.obj:	precompiled.h IVVCState.h yukon.h types.h ctidbgmem.h \
 		ctitime.h dlldefs.h cccapbank.h msg_cmd.h message.h \
 		collectable.h rwutil.h database_connection.h dbaccess.h \
@@ -1232,8 +1272,10 @@ ivvcstate.obj:	precompiled.h IVVCState.h yukon.h types.h ctidbgmem.h \
 		ccmonitorpoint.h observe.h ctidate.h logger.h thread.h \
 		CtiPCPtrQueue.h ccutil.h pointattribute.h devicetypes.h \
 		msg_pcrequest.h mgr_paosched.h pao_schedule.h ctibase.h \
-		ctinexus.h pao_event.h dbmemobject.h cctwowaycbcpoints.h \
-		msg_ptreg.h AttributeService.h LitePoint.h PointValueHolder.h \
+		ctinexus.h pao_event.h dbmemobject.h amq_connection.h \
+		critical_section.h CapControlOperationMessage.h \
+		StreamableMessage.h cctwowaycbcpoints.h msg_ptreg.h \
+		AttributeService.h LitePoint.h PointValueHolder.h \
 		ccoperationstats.h ccConfirmationStats.h ccoriginalparent.h \
 		cctypes.h CapControlPao.h PointResponse.h \
 		PointResponseManager.h Exceptions.h PointDataRequest.h
@@ -1250,19 +1292,21 @@ ivvcstrategy.obj:	precompiled.h IVVCStrategy.h IVVCAlgorithm.h \
 		ccfeeder.h ccmonitorpoint.h msg_cmd.h ctidate.h ccutil.h \
 		pointattribute.h devicetypes.h msg_pcrequest.h mgr_paosched.h \
 		pao_schedule.h ctibase.h ctinexus.h pao_event.h dbmemobject.h \
+		amq_connection.h critical_section.h \
+		CapControlOperationMessage.h StreamableMessage.h \
 		ccoriginalparent.h cccapbank.h cctwowaycbcpoints.h \
 		AttributeService.h LitePoint.h PointValueHolder.h \
 		ccoperationstats.h ccConfirmationStats.h cctypes.h \
 		CapControlPao.h PointResponse.h PointResponseManager.h \
 		Exceptions.h StrategyManager.h readers_writer_lock.h \
-		critical_section.h ControlStrategy.h sorted_vector.h \
-		regression.h Controllable.h TimeOfDayStrategy.h IVVCState.h \
-		PointDataRequest.h PointDataRequestFactory.h \
-		DispatchConnection.h MessageListener.h ZoneManager.h Zone.h \
-		ccsubstationbusstore.h ccarea.h ccareabase.h ccsparea.h \
-		ccid.h ccstate.h ccmessage.h MsgCapControlCommand.h \
-		ccsubstation.h MsgItemCommand.h EventTypes.h MsgBankMove.h \
-		MsgObjectMove.h MsgCapControlMessage.h MsgSubstationBus.h \
+		ControlStrategy.h sorted_vector.h regression.h Controllable.h \
+		TimeOfDayStrategy.h IVVCState.h PointDataRequest.h \
+		PointDataRequestFactory.h DispatchConnection.h \
+		MessageListener.h ZoneManager.h Zone.h ccsubstationbusstore.h \
+		ccarea.h ccareabase.h ccsparea.h ccid.h ccstate.h ccmessage.h \
+		MsgCapControlCommand.h ccsubstation.h MsgItemCommand.h \
+		EventTypes.h MsgBankMove.h MsgObjectMove.h \
+		MsgCapControlMessage.h MsgSubstationBus.h \
 		MsgCapControlEventLog.h MsgCapBankStates.h MsgAreas.h \
 		MsgSpecialAreas.h MsgSubstations.h MsgVoltageRegulator.h \
 		VoltageRegulator.h UpdatablePao.h MsgDeleteItem.h \
@@ -1290,16 +1334,17 @@ mgr_paosched.obj:	precompiled.h mgr_paosched.h pao_schedule.h \
 		ccsubstationbusstore.h observe.h ccarea.h ccsubstationbus.h \
 		ccfeeder.h ccmonitorpoint.h ctidate.h ccutil.h \
 		pointattribute.h devicetypes.h msg_pcrequest.h \
+		amq_connection.h critical_section.h \
+		CapControlOperationMessage.h StreamableMessage.h \
 		ccoriginalparent.h cccapbank.h cctwowaycbcpoints.h \
 		AttributeService.h LitePoint.h PointValueHolder.h \
 		ccoperationstats.h ccConfirmationStats.h cctypes.h \
 		CapControlPao.h PointResponse.h PointResponseManager.h \
 		Exceptions.h StrategyManager.h readers_writer_lock.h \
-		critical_section.h ControlStrategy.h sorted_vector.h \
-		regression.h Controllable.h TimeOfDayStrategy.h ccareabase.h \
-		ccsparea.h ccid.h ccstate.h ccmessage.h \
-		MsgCapControlCommand.h ccsubstation.h MsgItemCommand.h \
-		EventTypes.h MsgBankMove.h MsgObjectMove.h \
+		ControlStrategy.h sorted_vector.h regression.h Controllable.h \
+		TimeOfDayStrategy.h ccareabase.h ccsparea.h ccid.h ccstate.h \
+		ccmessage.h MsgCapControlCommand.h ccsubstation.h \
+		MsgItemCommand.h EventTypes.h MsgBankMove.h MsgObjectMove.h \
 		MsgCapControlMessage.h MsgSubstationBus.h \
 		MsgCapControlEventLog.h MsgCapBankStates.h MsgAreas.h \
 		MsgSpecialAreas.h MsgSubstations.h MsgVoltageRegulator.h \
@@ -1313,8 +1358,8 @@ mgr_paosched.obj:	precompiled.h mgr_paosched.h pao_schedule.h \
 		PointResponseDao.h PointResponseDatabaseDao.h \
 		database_writer.h row_writer.h ccexecutor.h msg_signal.h \
 		ctdpcptrq.h ctitokenizer.h thread_monitor.h smartmap.h \
-		thread_register_data.h ctistring.h ThreadStatusKeeper.h \
-		ExecutorFactory.h MsgVerifyBanks.h
+		thread_register_data.h ctistring.h database_transaction.h \
+		ThreadStatusKeeper.h ExecutorFactory.h MsgVerifyBanks.h
 msgareas.obj:	precompiled.h MsgAreas.h MsgCapControlMessage.h \
 		message.h ctitime.h dlldefs.h ctidbgmem.h collectable.h \
 		rwutil.h yukon.h types.h database_connection.h dbaccess.h \
@@ -1328,14 +1373,16 @@ msgareas.obj:	precompiled.h MsgAreas.h MsgCapControlMessage.h \
 		ccsubstationbus.h ccfeeder.h ccmonitorpoint.h msg_cmd.h \
 		ctidate.h ccutil.h pointattribute.h devicetypes.h \
 		msg_pcrequest.h mgr_paosched.h pao_schedule.h ctibase.h \
-		ctinexus.h pao_event.h dbmemobject.h ccoriginalparent.h \
-		cccapbank.h cctwowaycbcpoints.h AttributeService.h \
-		LitePoint.h PointValueHolder.h ccoperationstats.h \
-		ccConfirmationStats.h cctypes.h CapControlPao.h \
-		PointResponse.h PointResponseManager.h Exceptions.h \
-		StrategyManager.h readers_writer_lock.h critical_section.h \
-		ControlStrategy.h sorted_vector.h regression.h Controllable.h \
-		TimeOfDayStrategy.h ccareabase.h ccid.h
+		ctinexus.h pao_event.h dbmemobject.h amq_connection.h \
+		critical_section.h CapControlOperationMessage.h \
+		StreamableMessage.h ccoriginalparent.h cccapbank.h \
+		cctwowaycbcpoints.h AttributeService.h LitePoint.h \
+		PointValueHolder.h ccoperationstats.h ccConfirmationStats.h \
+		cctypes.h CapControlPao.h PointResponse.h \
+		PointResponseManager.h Exceptions.h StrategyManager.h \
+		readers_writer_lock.h ControlStrategy.h sorted_vector.h \
+		regression.h Controllable.h TimeOfDayStrategy.h ccareabase.h \
+		ccid.h
 msgbankmove.obj:	precompiled.h MsgBankMove.h MsgItemCommand.h \
 		MsgCapControlCommand.h message.h ctitime.h dlldefs.h \
 		ctidbgmem.h collectable.h rwutil.h yukon.h types.h \
@@ -1441,11 +1488,12 @@ msgspecialareas.obj:	precompiled.h MsgSpecialAreas.h \
 		CapControlPao.h ccareabase.h ccsubstationbus.h ccfeeder.h \
 		ccmonitorpoint.h ctidate.h ccutil.h pointattribute.h \
 		devicetypes.h mgr_paosched.h pao_schedule.h ctibase.h \
-		ctinexus.h pao_event.h dbmemobject.h ccoriginalparent.h \
-		cccapbank.h cctwowaycbcpoints.h AttributeService.h \
-		LitePoint.h PointValueHolder.h PointResponse.h \
-		PointResponseManager.h Exceptions.h sorted_vector.h \
-		regression.h TimeOfDayStrategy.h ccid.h
+		ctinexus.h pao_event.h dbmemobject.h amq_connection.h \
+		CapControlOperationMessage.h StreamableMessage.h \
+		ccoriginalparent.h cccapbank.h cctwowaycbcpoints.h \
+		AttributeService.h LitePoint.h PointValueHolder.h \
+		PointResponse.h PointResponseManager.h Exceptions.h \
+		sorted_vector.h regression.h TimeOfDayStrategy.h ccid.h
 msgsubstationbus.obj:	precompiled.h MsgSubstationBus.h \
 		MsgCapControlMessage.h message.h ctitime.h dlldefs.h \
 		ctidbgmem.h collectable.h rwutil.h yukon.h types.h \
@@ -1460,13 +1508,15 @@ msgsubstationbus.obj:	precompiled.h MsgSubstationBus.h \
 		ccmonitorpoint.h msg_cmd.h ctidate.h ccutil.h \
 		pointattribute.h devicetypes.h msg_pcrequest.h mgr_paosched.h \
 		pao_schedule.h ctibase.h ctinexus.h pao_event.h dbmemobject.h \
+		amq_connection.h critical_section.h \
+		CapControlOperationMessage.h StreamableMessage.h \
 		ccoriginalparent.h cccapbank.h cctwowaycbcpoints.h \
 		AttributeService.h LitePoint.h PointValueHolder.h \
 		ccoperationstats.h ccConfirmationStats.h cctypes.h \
 		CapControlPao.h PointResponse.h PointResponseManager.h \
 		Exceptions.h StrategyManager.h readers_writer_lock.h \
-		critical_section.h ControlStrategy.h sorted_vector.h \
-		regression.h Controllable.h TimeOfDayStrategy.h ccid.h
+		ControlStrategy.h sorted_vector.h regression.h Controllable.h \
+		TimeOfDayStrategy.h ccid.h
 msgsubstations.obj:	precompiled.h MsgSubstations.h \
 		MsgCapControlMessage.h message.h ctitime.h dlldefs.h \
 		ctidbgmem.h collectable.h rwutil.h yukon.h types.h \
@@ -1481,14 +1531,15 @@ msgsubstations.obj:	precompiled.h MsgSubstations.h \
 		ccmonitorpoint.h msg_cmd.h ctidate.h ccutil.h \
 		pointattribute.h devicetypes.h msg_pcrequest.h mgr_paosched.h \
 		pao_schedule.h ctibase.h ctinexus.h pao_event.h dbmemobject.h \
+		amq_connection.h critical_section.h \
+		CapControlOperationMessage.h StreamableMessage.h \
 		ccoriginalparent.h cccapbank.h cctwowaycbcpoints.h \
 		AttributeService.h LitePoint.h PointValueHolder.h \
 		ccoperationstats.h ccConfirmationStats.h cctypes.h \
 		CapControlPao.h PointResponse.h PointResponseManager.h \
 		Exceptions.h StrategyManager.h readers_writer_lock.h \
-		critical_section.h ControlStrategy.h sorted_vector.h \
-		regression.h Controllable.h ccsubstationbus.h \
-		TimeOfDayStrategy.h ccid.h
+		ControlStrategy.h sorted_vector.h regression.h Controllable.h \
+		ccsubstationbus.h TimeOfDayStrategy.h ccid.h
 msgsystemstatus.obj:	precompiled.h MsgSystemStatus.h \
 		MsgCapControlMessage.h message.h ctitime.h dlldefs.h \
 		ctidbgmem.h collectable.h rwutil.h yukon.h types.h \
@@ -1533,7 +1584,9 @@ msgvoltageregulator.obj:	precompiled.h MsgVoltageRegulator.h \
 		PointValueHolder.h AttributeService.h PointAttribute.h ccid.h \
 		ccutil.h devicetypes.h msg_pcrequest.h mgr_paosched.h \
 		pao_schedule.h ctibase.h ctinexus.h logger.h thread.h \
-		CtiPCPtrQueue.h pao_event.h dbmemobject.h EventTypes.h
+		CtiPCPtrQueue.h pao_event.h dbmemobject.h amq_connection.h \
+		critical_section.h CapControlOperationMessage.h \
+		StreamableMessage.h EventTypes.h
 multivoltstrategy.obj:	precompiled.h MultiVoltStrategy.h \
 		ControlStrategy.h
 multivoltvarstrategy.obj:	precompiled.h MultiVoltVarStrategy.h \
@@ -1554,16 +1607,17 @@ pao_event.obj:	precompiled.h dbaccess.h dllbase.h dsm2.h cticonnect.h \
 		ccfeeder.h ccmonitorpoint.h ctidate.h ccutil.h \
 		pointattribute.h devicetypes.h msg_pcrequest.h mgr_paosched.h \
 		pao_schedule.h ctibase.h ctinexus.h pao_event.h dbmemobject.h \
+		amq_connection.h critical_section.h \
+		CapControlOperationMessage.h StreamableMessage.h \
 		ccoriginalparent.h cccapbank.h cctwowaycbcpoints.h \
 		AttributeService.h LitePoint.h PointValueHolder.h \
 		ccoperationstats.h ccConfirmationStats.h cctypes.h \
 		CapControlPao.h PointResponse.h PointResponseManager.h \
 		Exceptions.h StrategyManager.h readers_writer_lock.h \
-		critical_section.h ControlStrategy.h sorted_vector.h \
-		regression.h Controllable.h TimeOfDayStrategy.h ccareabase.h \
-		ccsparea.h ccid.h ccstate.h ccmessage.h \
-		MsgCapControlCommand.h ccsubstation.h MsgItemCommand.h \
-		EventTypes.h MsgBankMove.h MsgObjectMove.h \
+		ControlStrategy.h sorted_vector.h regression.h Controllable.h \
+		TimeOfDayStrategy.h ccareabase.h ccsparea.h ccid.h ccstate.h \
+		ccmessage.h MsgCapControlCommand.h ccsubstation.h \
+		MsgItemCommand.h EventTypes.h MsgBankMove.h MsgObjectMove.h \
 		MsgCapControlMessage.h MsgSubstationBus.h \
 		MsgCapControlEventLog.h MsgCapBankStates.h MsgAreas.h \
 		MsgSpecialAreas.h MsgSubstations.h MsgVoltageRegulator.h \
@@ -1592,16 +1646,17 @@ pao_schedule.obj:	precompiled.h dbaccess.h dllbase.h dsm2.h \
 		ccfeeder.h ccmonitorpoint.h ctidate.h ccutil.h \
 		pointattribute.h devicetypes.h msg_pcrequest.h mgr_paosched.h \
 		pao_schedule.h ctibase.h ctinexus.h pao_event.h dbmemobject.h \
+		amq_connection.h critical_section.h \
+		CapControlOperationMessage.h StreamableMessage.h \
 		ccoriginalparent.h cccapbank.h cctwowaycbcpoints.h \
 		AttributeService.h LitePoint.h PointValueHolder.h \
 		ccoperationstats.h ccConfirmationStats.h cctypes.h \
 		CapControlPao.h PointResponse.h PointResponseManager.h \
 		Exceptions.h StrategyManager.h readers_writer_lock.h \
-		critical_section.h ControlStrategy.h sorted_vector.h \
-		regression.h Controllable.h TimeOfDayStrategy.h ccareabase.h \
-		ccsparea.h ccid.h ccstate.h ccmessage.h \
-		MsgCapControlCommand.h ccsubstation.h MsgItemCommand.h \
-		EventTypes.h MsgBankMove.h MsgObjectMove.h \
+		ControlStrategy.h sorted_vector.h regression.h Controllable.h \
+		TimeOfDayStrategy.h ccareabase.h ccsparea.h ccid.h ccstate.h \
+		ccmessage.h MsgCapControlCommand.h ccsubstation.h \
+		MsgItemCommand.h EventTypes.h MsgBankMove.h MsgObjectMove.h \
 		MsgCapControlMessage.h MsgSubstationBus.h \
 		MsgCapControlEventLog.h MsgCapBankStates.h MsgAreas.h \
 		MsgSpecialAreas.h MsgSubstations.h MsgVoltageRegulator.h \
@@ -1631,7 +1686,9 @@ phaseoperatedvoltageregulator.obj:	precompiled.h logger.h dlldefs.h \
 		collectable.h LitePoint.h PointValueHolder.h \
 		AttributeService.h PointAttribute.h ccid.h ccutil.h \
 		devicetypes.h msg_pcrequest.h mgr_paosched.h pao_schedule.h \
-		ctibase.h ctinexus.h pao_event.h dbmemobject.h EventTypes.h \
+		ctibase.h ctinexus.h pao_event.h dbmemobject.h \
+		amq_connection.h critical_section.h \
+		CapControlOperationMessage.h StreamableMessage.h EventTypes.h \
 		ccmessage.h MsgCapControlCommand.h ccsubstation.h \
 		connection.h exchange.h string_utility.h msg_multi.h \
 		msg_ptreg.h msg_reg.h queue.h cparms.h configkey.h \
@@ -1639,8 +1696,8 @@ phaseoperatedvoltageregulator.obj:	precompiled.h logger.h dlldefs.h \
 		ctidate.h ccoriginalparent.h cccapbank.h cctwowaycbcpoints.h \
 		ccoperationstats.h ccConfirmationStats.h PointResponse.h \
 		PointResponseManager.h Exceptions.h StrategyManager.h \
-		readers_writer_lock.h critical_section.h ControlStrategy.h \
-		sorted_vector.h regression.h Controllable.h ccsubstationbus.h \
+		readers_writer_lock.h ControlStrategy.h sorted_vector.h \
+		regression.h Controllable.h ccsubstationbus.h \
 		TimeOfDayStrategy.h ccarea.h ccareabase.h ccsparea.h \
 		ccstate.h MsgItemCommand.h MsgBankMove.h MsgObjectMove.h \
 		MsgCapControlMessage.h MsgSubstationBus.h \
@@ -1669,7 +1726,9 @@ pointresponsemanager.obj:	precompiled.h PointResponseManager.h \
 		boost_time.h boostutil.h observe.h ctidate.h logger.h \
 		thread.h CtiPCPtrQueue.h ccutil.h pointattribute.h \
 		devicetypes.h msg_pcrequest.h mgr_paosched.h pao_schedule.h \
-		ctibase.h ctinexus.h pao_event.h dbmemobject.h
+		ctibase.h ctinexus.h pao_event.h dbmemobject.h \
+		amq_connection.h critical_section.h \
+		CapControlOperationMessage.h StreamableMessage.h
 pointvalueholder.obj:	precompiled.h PointValueHolder.h yukon.h types.h \
 		ctidbgmem.h pointtypes.h ctitime.h dlldefs.h msg_pdata.h \
 		pointdefs.h message.h collectable.h rwutil.h \
@@ -1692,16 +1751,18 @@ strategyloader.obj:	precompiled.h ccid.h logger.h dlldefs.h thread.h \
 		ccfeeder.h ccmonitorpoint.h msg_cmd.h ctidate.h ccutil.h \
 		pointattribute.h devicetypes.h msg_pcrequest.h mgr_paosched.h \
 		pao_schedule.h ctibase.h ctinexus.h pao_event.h dbmemobject.h \
-		ccoriginalparent.h cccapbank.h cctwowaycbcpoints.h \
-		AttributeService.h LitePoint.h PointValueHolder.h \
-		ccoperationstats.h ccConfirmationStats.h cctypes.h \
-		CapControlPao.h PointResponse.h PointResponseManager.h \
-		Exceptions.h sorted_vector.h regression.h Controllable.h \
-		TimeOfDayStrategy.h IVVCState.h PointDataRequest.h \
-		PointDataRequestFactory.h DispatchConnection.h \
-		MessageListener.h ZoneManager.h Zone.h KVarStrategy.h \
-		MultiVoltStrategy.h MultiVoltVarStrategy.h NoStrategy.h \
-		PFactorKWKVarStrategy.h PFactorKWKQStrategy.h VoltStrategy.h
+		amq_connection.h CapControlOperationMessage.h \
+		StreamableMessage.h ccoriginalparent.h cccapbank.h \
+		cctwowaycbcpoints.h AttributeService.h LitePoint.h \
+		PointValueHolder.h ccoperationstats.h ccConfirmationStats.h \
+		cctypes.h CapControlPao.h PointResponse.h \
+		PointResponseManager.h Exceptions.h sorted_vector.h \
+		regression.h Controllable.h TimeOfDayStrategy.h IVVCState.h \
+		PointDataRequest.h PointDataRequestFactory.h \
+		DispatchConnection.h MessageListener.h ZoneManager.h Zone.h \
+		KVarStrategy.h MultiVoltStrategy.h MultiVoltVarStrategy.h \
+		NoStrategy.h PFactorKWKVarStrategy.h PFactorKWKQStrategy.h \
+		VoltStrategy.h
 strategymanager.obj:	precompiled.h StrategyManager.h \
 		readers_writer_lock.h dlldefs.h critical_section.h guard.h \
 		utility.h ctitime.h queues.h cticalls.h os2_2w32.h types.h \
@@ -1718,15 +1779,16 @@ test_ccfeeder.obj:	ccfeeder.h dbaccess.h dllbase.h dsm2.h cticonnect.h \
 		ccmonitorpoint.h msg_cmd.h ctidate.h ccutil.h \
 		pointattribute.h devicetypes.h msg_pcrequest.h mgr_paosched.h \
 		pao_schedule.h ctibase.h ctinexus.h pao_event.h dbmemobject.h \
+		amq_connection.h critical_section.h \
+		CapControlOperationMessage.h StreamableMessage.h \
 		ccoriginalparent.h cccapbank.h cctwowaycbcpoints.h \
 		AttributeService.h LitePoint.h PointValueHolder.h \
 		ccoperationstats.h ccConfirmationStats.h cctypes.h \
 		CapControlPao.h PointResponse.h PointResponseManager.h \
 		Exceptions.h StrategyManager.h readers_writer_lock.h \
-		critical_section.h ControlStrategy.h sorted_vector.h \
-		regression.h Controllable.h ccsubstationbus.h \
-		TimeOfDayStrategy.h ccsubstationbusstore.h ccarea.h \
-		ccareabase.h ccsparea.h ccid.h ccstate.h ccmessage.h \
+		ControlStrategy.h sorted_vector.h regression.h Controllable.h \
+		ccsubstationbus.h TimeOfDayStrategy.h ccsubstationbusstore.h \
+		ccarea.h ccareabase.h ccsparea.h ccid.h ccstate.h ccmessage.h \
 		MsgCapControlCommand.h ccsubstation.h MsgItemCommand.h \
 		EventTypes.h MsgBankMove.h MsgObjectMove.h \
 		MsgCapControlMessage.h MsgSubstationBus.h \
@@ -1757,18 +1819,19 @@ test_ccsubstationbus.obj:	ccsubstationbus.h dbaccess.h dllbase.h \
 		configkey.h configval.h observe.h ccfeeder.h ccmonitorpoint.h \
 		msg_cmd.h ctidate.h ccutil.h pointattribute.h devicetypes.h \
 		msg_pcrequest.h mgr_paosched.h pao_schedule.h ctibase.h \
-		ctinexus.h pao_event.h dbmemobject.h ccoriginalparent.h \
-		cccapbank.h cctwowaycbcpoints.h AttributeService.h \
-		LitePoint.h PointValueHolder.h ccoperationstats.h \
-		ccConfirmationStats.h cctypes.h CapControlPao.h \
-		PointResponse.h PointResponseManager.h Exceptions.h \
-		StrategyManager.h readers_writer_lock.h critical_section.h \
-		ControlStrategy.h sorted_vector.h regression.h Controllable.h \
-		TimeOfDayStrategy.h ccsubstationbusstore.h ccarea.h \
-		ccareabase.h ccsparea.h ccid.h ccstate.h ccmessage.h \
-		MsgCapControlCommand.h ccsubstation.h MsgItemCommand.h \
-		EventTypes.h MsgBankMove.h MsgObjectMove.h \
-		MsgCapControlMessage.h MsgSubstationBus.h \
+		ctinexus.h pao_event.h dbmemobject.h amq_connection.h \
+		critical_section.h CapControlOperationMessage.h \
+		StreamableMessage.h ccoriginalparent.h cccapbank.h \
+		cctwowaycbcpoints.h AttributeService.h LitePoint.h \
+		PointValueHolder.h ccoperationstats.h ccConfirmationStats.h \
+		cctypes.h CapControlPao.h PointResponse.h \
+		PointResponseManager.h Exceptions.h StrategyManager.h \
+		readers_writer_lock.h ControlStrategy.h sorted_vector.h \
+		regression.h Controllable.h TimeOfDayStrategy.h \
+		ccsubstationbusstore.h ccarea.h ccareabase.h ccsparea.h \
+		ccid.h ccstate.h ccmessage.h MsgCapControlCommand.h \
+		ccsubstation.h MsgItemCommand.h EventTypes.h MsgBankMove.h \
+		MsgObjectMove.h MsgCapControlMessage.h MsgSubstationBus.h \
 		MsgCapControlEventLog.h MsgCapBankStates.h MsgAreas.h \
 		MsgSpecialAreas.h MsgSubstations.h MsgVoltageRegulator.h \
 		VoltageRegulator.h UpdatablePao.h MsgDeleteItem.h \
@@ -1785,7 +1848,30 @@ test_ccsubstationbus.obj:	ccsubstationbus.h dbaccess.h dllbase.h \
 		msg_signal.h ctdpcptrq.h PointDataRequest.h \
 		PointDataRequestFactory.h PFactorKWKVarStrategy.h \
 		ExecutorFactory.h MsgVerifyBanks.h
-test_controlstrategies.obj:	ControlStrategy.h NoStrategy.h
+test_controlstrategies.obj:	ControlStrategy.h NoStrategy.h \
+		IVVCSTrategy.h IVVCAlgorithm.h ccsubstationbus.h dbaccess.h \
+		dllbase.h dsm2.h cticonnect.h yukon.h types.h ctidbgmem.h \
+		dlldefs.h netports.h mutex.h guard.h utility.h ctitime.h \
+		queues.h cticalls.h os2_2w32.h numstr.h dsm2err.h words.h \
+		optional.h connection.h exchange.h logger.h thread.h \
+		CtiPCPtrQueue.h string_utility.h message.h collectable.h \
+		rwutil.h database_connection.h database_reader.h row_reader.h \
+		boost_time.h boostutil.h msg_multi.h msg_pdata.h pointdefs.h \
+		pointtypes.h msg_ptreg.h msg_reg.h queue.h cparms.h \
+		configkey.h configval.h observe.h ccfeeder.h ccmonitorpoint.h \
+		msg_cmd.h ctidate.h ccutil.h pointattribute.h devicetypes.h \
+		msg_pcrequest.h mgr_paosched.h pao_schedule.h ctibase.h \
+		ctinexus.h pao_event.h dbmemobject.h amq_connection.h \
+		critical_section.h CapControlOperationMessage.h \
+		StreamableMessage.h ccoriginalparent.h cccapbank.h \
+		cctwowaycbcpoints.h AttributeService.h LitePoint.h \
+		PointValueHolder.h ccoperationstats.h ccConfirmationStats.h \
+		cctypes.h CapControlPao.h PointResponse.h \
+		PointResponseManager.h Exceptions.h StrategyManager.h \
+		readers_writer_lock.h sorted_vector.h regression.h \
+		Controllable.h TimeOfDayStrategy.h IVVCState.h \
+		PointDataRequest.h PointDataRequestFactory.h \
+		DispatchConnection.h MessageListener.h ZoneManager.h Zone.h
 test_gangoperatedvoltageregulator.obj:	capcontroller.h dbaccess.h \
 		dllbase.h dsm2.h cticonnect.h yukon.h types.h ctidbgmem.h \
 		dlldefs.h netports.h mutex.h guard.h utility.h ctitime.h \
@@ -1801,13 +1887,14 @@ test_gangoperatedvoltageregulator.obj:	capcontroller.h dbaccess.h \
 		ccsubstationbus.h ccfeeder.h ccmonitorpoint.h ctidate.h \
 		ccutil.h pointattribute.h devicetypes.h msg_pcrequest.h \
 		mgr_paosched.h pao_schedule.h ctibase.h ctinexus.h \
-		pao_event.h dbmemobject.h ccoriginalparent.h cccapbank.h \
-		cctwowaycbcpoints.h AttributeService.h LitePoint.h \
-		PointValueHolder.h ccoperationstats.h ccConfirmationStats.h \
-		cctypes.h CapControlPao.h PointResponse.h \
-		PointResponseManager.h Exceptions.h StrategyManager.h \
-		readers_writer_lock.h critical_section.h ControlStrategy.h \
-		sorted_vector.h regression.h Controllable.h \
+		pao_event.h dbmemobject.h amq_connection.h critical_section.h \
+		CapControlOperationMessage.h StreamableMessage.h \
+		ccoriginalparent.h cccapbank.h cctwowaycbcpoints.h \
+		AttributeService.h LitePoint.h PointValueHolder.h \
+		ccoperationstats.h ccConfirmationStats.h cctypes.h \
+		CapControlPao.h PointResponse.h PointResponseManager.h \
+		Exceptions.h StrategyManager.h readers_writer_lock.h \
+		ControlStrategy.h sorted_vector.h regression.h Controllable.h \
 		TimeOfDayStrategy.h ccareabase.h ccsparea.h ccid.h ccstate.h \
 		ccmessage.h MsgCapControlCommand.h ccsubstation.h \
 		MsgItemCommand.h EventTypes.h MsgBankMove.h MsgObjectMove.h \
@@ -1837,16 +1924,18 @@ test_ivvcalgorithm.obj:	ccUnitTestUtil.h ccsubstationbusstore.h \
 		ccsubstationbus.h ccfeeder.h ccmonitorpoint.h msg_cmd.h \
 		ctidate.h ccutil.h pointattribute.h devicetypes.h \
 		msg_pcrequest.h mgr_paosched.h pao_schedule.h ctibase.h \
-		ctinexus.h pao_event.h dbmemobject.h ccoriginalparent.h \
-		cccapbank.h cctwowaycbcpoints.h AttributeService.h \
-		LitePoint.h PointValueHolder.h ccoperationstats.h \
-		ccConfirmationStats.h cctypes.h CapControlPao.h \
-		PointResponse.h PointResponseManager.h Exceptions.h \
-		StrategyManager.h readers_writer_lock.h critical_section.h \
-		ControlStrategy.h sorted_vector.h regression.h Controllable.h \
-		TimeOfDayStrategy.h ccareabase.h ccsparea.h ccid.h ccstate.h \
-		ccmessage.h MsgCapControlCommand.h ccsubstation.h \
-		MsgItemCommand.h EventTypes.h MsgBankMove.h MsgObjectMove.h \
+		ctinexus.h pao_event.h dbmemobject.h amq_connection.h \
+		critical_section.h CapControlOperationMessage.h \
+		StreamableMessage.h ccoriginalparent.h cccapbank.h \
+		cctwowaycbcpoints.h AttributeService.h LitePoint.h \
+		PointValueHolder.h ccoperationstats.h ccConfirmationStats.h \
+		cctypes.h CapControlPao.h PointResponse.h \
+		PointResponseManager.h Exceptions.h StrategyManager.h \
+		readers_writer_lock.h ControlStrategy.h sorted_vector.h \
+		regression.h Controllable.h TimeOfDayStrategy.h ccareabase.h \
+		ccsparea.h ccid.h ccstate.h ccmessage.h \
+		MsgCapControlCommand.h ccsubstation.h MsgItemCommand.h \
+		EventTypes.h MsgBankMove.h MsgObjectMove.h \
 		MsgCapControlMessage.h MsgSubstationBus.h \
 		MsgCapControlEventLog.h MsgCapBankStates.h MsgAreas.h \
 		MsgSpecialAreas.h MsgSubstations.h MsgVoltageRegulator.h \
@@ -1875,18 +1964,19 @@ test_likedaycontrol.obj:	ccfeeder.h dbaccess.h dllbase.h dsm2.h \
 		ccmonitorpoint.h msg_cmd.h ctidate.h ccutil.h \
 		pointattribute.h devicetypes.h msg_pcrequest.h mgr_paosched.h \
 		pao_schedule.h ctibase.h ctinexus.h pao_event.h dbmemobject.h \
+		amq_connection.h critical_section.h \
+		CapControlOperationMessage.h StreamableMessage.h \
 		ccoriginalparent.h cccapbank.h cctwowaycbcpoints.h \
 		AttributeService.h LitePoint.h PointValueHolder.h \
 		ccoperationstats.h ccConfirmationStats.h cctypes.h \
 		CapControlPao.h PointResponse.h PointResponseManager.h \
 		Exceptions.h StrategyManager.h readers_writer_lock.h \
-		critical_section.h ControlStrategy.h sorted_vector.h \
-		regression.h Controllable.h ccsubstationbus.h \
-		TimeOfDayStrategy.h ccUnitTestUtil.h ccsubstationbusstore.h \
-		ccarea.h ccareabase.h ccsparea.h ccid.h ccstate.h ccmessage.h \
-		MsgCapControlCommand.h ccsubstation.h MsgItemCommand.h \
-		EventTypes.h MsgBankMove.h MsgObjectMove.h \
-		MsgCapControlMessage.h MsgSubstationBus.h \
+		ControlStrategy.h sorted_vector.h regression.h Controllable.h \
+		ccsubstationbus.h TimeOfDayStrategy.h ccUnitTestUtil.h \
+		ccsubstationbusstore.h ccarea.h ccareabase.h ccsparea.h \
+		ccid.h ccstate.h ccmessage.h MsgCapControlCommand.h \
+		ccsubstation.h MsgItemCommand.h EventTypes.h MsgBankMove.h \
+		MsgObjectMove.h MsgCapControlMessage.h MsgSubstationBus.h \
 		MsgCapControlEventLog.h MsgCapBankStates.h MsgAreas.h \
 		MsgSpecialAreas.h MsgSubstations.h MsgVoltageRegulator.h \
 		VoltageRegulator.h UpdatablePao.h MsgDeleteItem.h \
@@ -1917,13 +2007,14 @@ test_phaseoperatedvoltageregulator.obj:	capcontroller.h dbaccess.h \
 		ccsubstationbus.h ccfeeder.h ccmonitorpoint.h ctidate.h \
 		ccutil.h pointattribute.h devicetypes.h msg_pcrequest.h \
 		mgr_paosched.h pao_schedule.h ctibase.h ctinexus.h \
-		pao_event.h dbmemobject.h ccoriginalparent.h cccapbank.h \
-		cctwowaycbcpoints.h AttributeService.h LitePoint.h \
-		PointValueHolder.h ccoperationstats.h ccConfirmationStats.h \
-		cctypes.h CapControlPao.h PointResponse.h \
-		PointResponseManager.h Exceptions.h StrategyManager.h \
-		readers_writer_lock.h critical_section.h ControlStrategy.h \
-		sorted_vector.h regression.h Controllable.h \
+		pao_event.h dbmemobject.h amq_connection.h critical_section.h \
+		CapControlOperationMessage.h StreamableMessage.h \
+		ccoriginalparent.h cccapbank.h cctwowaycbcpoints.h \
+		AttributeService.h LitePoint.h PointValueHolder.h \
+		ccoperationstats.h ccConfirmationStats.h cctypes.h \
+		CapControlPao.h PointResponse.h PointResponseManager.h \
+		Exceptions.h StrategyManager.h readers_writer_lock.h \
+		ControlStrategy.h sorted_vector.h regression.h Controllable.h \
 		TimeOfDayStrategy.h ccareabase.h ccsparea.h ccid.h ccstate.h \
 		ccmessage.h MsgCapControlCommand.h ccsubstation.h \
 		MsgItemCommand.h EventTypes.h MsgBankMove.h MsgObjectMove.h \
@@ -1964,15 +2055,16 @@ test_voltageregulatormanager.obj:	GangOperatedVoltageRegulator.h \
 		AttributeService.h PointAttribute.h ccid.h ccutil.h \
 		devicetypes.h msg_pcrequest.h mgr_paosched.h pao_schedule.h \
 		ctibase.h ctinexus.h logger.h thread.h CtiPCPtrQueue.h \
-		pao_event.h dbmemobject.h EventTypes.h ccsubstationbusstore.h \
-		observe.h ccarea.h connection.h exchange.h string_utility.h \
-		msg_multi.h msg_ptreg.h msg_reg.h queue.h cparms.h \
-		configkey.h configval.h ccsubstationbus.h ccfeeder.h \
-		ccmonitorpoint.h msg_cmd.h ctidate.h ccoriginalparent.h \
-		cccapbank.h cctwowaycbcpoints.h ccoperationstats.h \
-		ccConfirmationStats.h PointResponse.h PointResponseManager.h \
-		Exceptions.h StrategyManager.h readers_writer_lock.h \
-		critical_section.h ControlStrategy.h sorted_vector.h \
+		pao_event.h dbmemobject.h amq_connection.h critical_section.h \
+		CapControlOperationMessage.h StreamableMessage.h EventTypes.h \
+		ccsubstationbusstore.h observe.h ccarea.h connection.h \
+		exchange.h string_utility.h msg_multi.h msg_ptreg.h msg_reg.h \
+		queue.h cparms.h configkey.h configval.h ccsubstationbus.h \
+		ccfeeder.h ccmonitorpoint.h msg_cmd.h ctidate.h \
+		ccoriginalparent.h cccapbank.h cctwowaycbcpoints.h \
+		ccoperationstats.h ccConfirmationStats.h PointResponse.h \
+		PointResponseManager.h Exceptions.h StrategyManager.h \
+		readers_writer_lock.h ControlStrategy.h sorted_vector.h \
 		regression.h Controllable.h TimeOfDayStrategy.h ccareabase.h \
 		ccsparea.h ccstate.h ccmessage.h MsgCapControlCommand.h \
 		ccsubstation.h MsgItemCommand.h MsgBankMove.h MsgObjectMove.h \
@@ -1996,7 +2088,9 @@ test_zonemanager.obj:	ZoneManager.h Zone.h ccutil.h pointattribute.h \
 		database_reader.h row_reader.h boost_time.h boostutil.h \
 		mgr_paosched.h pao_schedule.h ctibase.h ctinexus.h logger.h \
 		thread.h CtiPCPtrQueue.h pao_event.h dbmemobject.h \
-		readers_writer_lock.h critical_section.h ZoneLoader.h
+		amq_connection.h critical_section.h \
+		CapControlOperationMessage.h StreamableMessage.h \
+		readers_writer_lock.h ZoneLoader.h
 timeofdaystrategy.obj:	precompiled.h TimeOfDayStrategy.h \
 		ControlStrategy.h utility.h ctitime.h dlldefs.h queues.h \
 		cticalls.h os2_2w32.h types.h numstr.h
@@ -2011,21 +2105,21 @@ voltageregulator.obj:	precompiled.h VoltageRegulator.h yukon.h types.h \
 		AttributeService.h PointAttribute.h ccid.h ccutil.h \
 		devicetypes.h msg_pcrequest.h mgr_paosched.h pao_schedule.h \
 		ctibase.h ctinexus.h logger.h thread.h CtiPCPtrQueue.h \
-		pao_event.h dbmemobject.h EventTypes.h msg_signal.h \
-		Capcontroller.h connection.h exchange.h string_utility.h \
-		msg_multi.h msg_ptreg.h msg_reg.h queue.h cparms.h \
-		configkey.h configval.h DispatchConnection.h \
+		pao_event.h dbmemobject.h amq_connection.h critical_section.h \
+		CapControlOperationMessage.h StreamableMessage.h EventTypes.h \
+		msg_signal.h Capcontroller.h connection.h exchange.h \
+		string_utility.h msg_multi.h msg_ptreg.h msg_reg.h queue.h \
+		cparms.h configkey.h configval.h DispatchConnection.h \
 		MessageListener.h CapControlDispatchConnection.h msg_cmd.h \
 		msg_dbchg.h ccsubstationbusstore.h observe.h ccarea.h \
 		ccsubstationbus.h ccfeeder.h ccmonitorpoint.h ctidate.h \
 		ccoriginalparent.h cccapbank.h cctwowaycbcpoints.h \
 		ccoperationstats.h ccConfirmationStats.h PointResponse.h \
 		PointResponseManager.h Exceptions.h StrategyManager.h \
-		readers_writer_lock.h critical_section.h ControlStrategy.h \
-		sorted_vector.h regression.h Controllable.h \
-		TimeOfDayStrategy.h ccareabase.h ccsparea.h ccstate.h \
-		ccmessage.h MsgCapControlCommand.h ccsubstation.h \
-		MsgItemCommand.h MsgBankMove.h MsgObjectMove.h \
+		readers_writer_lock.h ControlStrategy.h sorted_vector.h \
+		regression.h Controllable.h TimeOfDayStrategy.h ccareabase.h \
+		ccsparea.h ccstate.h ccmessage.h MsgCapControlCommand.h \
+		ccsubstation.h MsgItemCommand.h MsgBankMove.h MsgObjectMove.h \
 		MsgCapControlMessage.h MsgSubstationBus.h \
 		MsgCapControlEventLog.h MsgCapBankStates.h MsgAreas.h \
 		MsgSpecialAreas.h MsgSubstations.h MsgVoltageRegulator.h \
@@ -2050,7 +2144,8 @@ voltageregulatorloader.obj:	precompiled.h ccid.h logger.h dlldefs.h \
 		collectable.h LitePoint.h PointValueHolder.h \
 		AttributeService.h PointAttribute.h ccutil.h devicetypes.h \
 		msg_pcrequest.h mgr_paosched.h pao_schedule.h ctibase.h \
-		ctinexus.h pao_event.h dbmemobject.h EventTypes.h \
+		ctinexus.h pao_event.h dbmemobject.h amq_connection.h \
+		CapControlOperationMessage.h StreamableMessage.h EventTypes.h \
 		CapControlPointDataHandler.h PointDataHandler.h \
 		PointDataListener.h MessageListener.h ccmessage.h \
 		MsgCapControlCommand.h ccsubstation.h connection.h exchange.h \
@@ -2083,7 +2178,8 @@ voltageregulatormanager.obj:	precompiled.h VoltageRegulatorManager.h \
 		PointValueHolder.h AttributeService.h PointAttribute.h ccid.h \
 		ccutil.h devicetypes.h msg_pcrequest.h mgr_paosched.h \
 		pao_schedule.h ctibase.h ctinexus.h logger.h thread.h \
-		CtiPCPtrQueue.h pao_event.h dbmemobject.h EventTypes.h \
+		CtiPCPtrQueue.h pao_event.h dbmemobject.h amq_connection.h \
+		CapControlOperationMessage.h StreamableMessage.h EventTypes.h \
 		CapControlPointDataHandler.h PointDataHandler.h \
 		PointDataListener.h MessageListener.h ccmessage.h \
 		MsgCapControlCommand.h ccsubstation.h connection.h exchange.h \
@@ -2111,7 +2207,9 @@ zone.obj:	precompiled.h Zone.h ccutil.h pointattribute.h yukon.h \
 		cticalls.h os2_2w32.h numstr.h dsm2err.h words.h optional.h \
 		database_reader.h row_reader.h boost_time.h boostutil.h \
 		mgr_paosched.h pao_schedule.h ctibase.h ctinexus.h logger.h \
-		thread.h CtiPCPtrQueue.h pao_event.h dbmemobject.h
+		thread.h CtiPCPtrQueue.h pao_event.h dbmemobject.h \
+		amq_connection.h critical_section.h \
+		CapControlOperationMessage.h StreamableMessage.h
 zoneloader.obj:	precompiled.h ccid.h logger.h dlldefs.h thread.h \
 		mutex.h guard.h utility.h ctitime.h queues.h cticalls.h \
 		os2_2w32.h types.h numstr.h CtiPCPtrQueue.h \
@@ -2121,22 +2219,23 @@ zoneloader.obj:	precompiled.h ccid.h logger.h dlldefs.h thread.h \
 		ZoneManager.h Zone.h ccutil.h pointattribute.h devicetypes.h \
 		msg_pcrequest.h message.h collectable.h rwutil.h boost_time.h \
 		boostutil.h mgr_paosched.h pao_schedule.h ctibase.h \
-		ctinexus.h pao_event.h dbmemobject.h readers_writer_lock.h \
-		critical_section.h ccsubstationbusstore.h observe.h ccarea.h \
-		connection.h exchange.h string_utility.h msg_multi.h \
-		msg_pdata.h pointdefs.h pointtypes.h msg_ptreg.h msg_reg.h \
-		queue.h cparms.h configkey.h configval.h ccsubstationbus.h \
-		ccfeeder.h ccmonitorpoint.h msg_cmd.h ctidate.h \
-		ccoriginalparent.h cccapbank.h cctwowaycbcpoints.h \
-		AttributeService.h LitePoint.h PointValueHolder.h \
-		ccoperationstats.h ccConfirmationStats.h cctypes.h \
-		CapControlPao.h PointResponse.h PointResponseManager.h \
-		Exceptions.h StrategyManager.h ControlStrategy.h \
-		sorted_vector.h regression.h Controllable.h \
-		TimeOfDayStrategy.h ccareabase.h ccsparea.h ccstate.h \
-		ccmessage.h MsgCapControlCommand.h ccsubstation.h \
-		MsgItemCommand.h EventTypes.h MsgBankMove.h MsgObjectMove.h \
-		MsgCapControlMessage.h MsgSubstationBus.h \
+		ctinexus.h pao_event.h dbmemobject.h amq_connection.h \
+		critical_section.h CapControlOperationMessage.h \
+		StreamableMessage.h readers_writer_lock.h \
+		ccsubstationbusstore.h observe.h ccarea.h connection.h \
+		exchange.h string_utility.h msg_multi.h msg_pdata.h \
+		pointdefs.h pointtypes.h msg_ptreg.h msg_reg.h queue.h \
+		cparms.h configkey.h configval.h ccsubstationbus.h ccfeeder.h \
+		ccmonitorpoint.h msg_cmd.h ctidate.h ccoriginalparent.h \
+		cccapbank.h cctwowaycbcpoints.h AttributeService.h \
+		LitePoint.h PointValueHolder.h ccoperationstats.h \
+		ccConfirmationStats.h cctypes.h CapControlPao.h \
+		PointResponse.h PointResponseManager.h Exceptions.h \
+		StrategyManager.h ControlStrategy.h sorted_vector.h \
+		regression.h Controllable.h TimeOfDayStrategy.h ccareabase.h \
+		ccsparea.h ccstate.h ccmessage.h MsgCapControlCommand.h \
+		ccsubstation.h MsgItemCommand.h EventTypes.h MsgBankMove.h \
+		MsgObjectMove.h MsgCapControlMessage.h MsgSubstationBus.h \
 		MsgCapControlEventLog.h MsgCapBankStates.h MsgAreas.h \
 		MsgSpecialAreas.h MsgSubstations.h MsgVoltageRegulator.h \
 		VoltageRegulator.h UpdatablePao.h MsgDeleteItem.h \
@@ -2156,7 +2255,8 @@ zonemanager.obj:	precompiled.h ZoneManager.h Zone.h ccutil.h \
 		words.h optional.h database_reader.h row_reader.h \
 		boost_time.h boostutil.h mgr_paosched.h pao_schedule.h \
 		ctibase.h ctinexus.h logger.h thread.h CtiPCPtrQueue.h \
-		pao_event.h dbmemobject.h readers_writer_lock.h \
-		critical_section.h ZoneLoader.h
+		pao_event.h dbmemobject.h amq_connection.h critical_section.h \
+		CapControlOperationMessage.h StreamableMessage.h \
+		readers_writer_lock.h ZoneLoader.h
 #ENDUPDATE#
 

@@ -754,5 +754,6 @@ test_tbl_dyn_paoinfo.obj:	tbl_dyn_paoinfo.h dlldefs.h dbmemobject.h \
 		database_connection.h dbaccess.h dllbase.h dsm2.h \
 		cticonnect.h yukon.h types.h ctidbgmem.h netports.h mutex.h \
 		guard.h utility.h ctitime.h queues.h cticalls.h os2_2w32.h \
-		numstr.h dsm2err.h words.h optional.h row_reader.h
+		numstr.h dsm2err.h words.h optional.h row_reader.h \
+		boostutil.h
 #ENDUPDATE#

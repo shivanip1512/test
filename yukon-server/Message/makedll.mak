@@ -8,7 +8,7 @@ INCLPATHS+= \
 -I$(BOOST_INCLUDE) \
 -I$(SQLAPI)\include \
 -I$(RW) \
--I$(ACTIVEMQ) \
+-I$(ACTIVEMQ)\include \
 
 
 .PATH.H = \
@@ -24,11 +24,6 @@ INCLPATHS+= \
 ;$(PROTOCOL)\include \
 ;$(DISPATCH)\include \
 ;$(MSG)\include \
-;$(BOOST_INCLUDE) \
-;$(RW) \
-;$(ACTIVEMQ) \
-;$(ACTIVEMQ)\cms \
-;$(ACTIVEMQ)\activemq\library \
 
 
 
@@ -153,9 +148,8 @@ id_ctimsg.obj:    id_ctimsg.cpp include\id_ctimsg.h
 #UPDATE#
 amq_connection.obj:	precompiled.h amq_connection.h thread.h mutex.h \
 		dlldefs.h guard.h utility.h ctitime.h queues.h cticalls.h \
-		os2_2w32.h types.h numstr.h critical_section.h activemqcpp.h \
-		connection.h StreamableMessage.h connectionfactory.h logger.h \
-		CtiPCPtrQueue.h
+		os2_2w32.h types.h numstr.h critical_section.h \
+		StreamableMessage.h logger.h CtiPCPtrQueue.h
 capcontroloperationmessage.obj:	precompiled.h CtiTime.h dlldefs.h \
 		CapControlOperationMessage.h StreamableMessage.h
 connection.obj:	precompiled.h collectable.h connection.h dlldefs.h \
@@ -197,8 +191,7 @@ dll_msg.obj:	precompiled.h utility.h ctitime.h dlldefs.h queues.h \
 		dllbase.h dsm2.h cticonnect.h netports.h mutex.h guard.h \
 		dsm2err.h words.h optional.h database_reader.h row_reader.h \
 		boost_time.h boostutil.h configkey.h configval.h \
-		amq_connection.h thread.h critical_section.h activemqcpp.h \
-		connection.h
+		amq_connection.h thread.h critical_section.h
 id_ctimsg.obj:	precompiled.h utility.h ctitime.h dlldefs.h queues.h \
 		cticalls.h os2_2w32.h types.h numstr.h id_ctimsg.h
 ivvcanalysismessage.obj:	precompiled.h CtiTime.h dlldefs.h \
@@ -430,6 +423,13 @@ test_message.obj:	message.h ctitime.h dlldefs.h ctidbgmem.h \
 		boost_time.h boostutil.h queue.h cparms.h configkey.h \
 		configval.h logger.h thread.h CtiPCPtrQueue.h \
 		string_utility.h
+test_multi_msg.obj:	msg_multi.h collectable.h dlldefs.h msg_pdata.h \
+		yukon.h types.h ctidbgmem.h pointdefs.h pointtypes.h \
+		message.h ctitime.h rwutil.h database_connection.h dbaccess.h \
+		dllbase.h dsm2.h cticonnect.h netports.h mutex.h guard.h \
+		utility.h queues.h cticalls.h os2_2w32.h numstr.h dsm2err.h \
+		words.h optional.h database_reader.h row_reader.h \
+		boost_time.h boostutil.h
 test_pointdatarequest.obj:	PointDataRequestFactory.h \
 		PointDataRequest.h yukon.h types.h ctidbgmem.h ctitime.h \
 		dlldefs.h DispatchConnection.h connection.h exchange.h \

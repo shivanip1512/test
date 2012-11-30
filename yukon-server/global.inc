@@ -59,7 +59,7 @@ BOOST           = $(CPP_LIBRARIES)\boost\1.49.0
 BOOST_INCLUDE   = $(CPP_LIBRARIES)\boost\1.49.0\include\boost-1_49
 
 SQLAPI          = $(CPP_LIBRARIES)\sqlapi\4.0.1
-ACTIVEMQ        = $(CPP_LIBRARIES)\activemq-cpp\3.2.4
+ACTIVEMQ        = $(CPP_LIBRARIES)\activemq-cpp\3.4.5
 
 MICROSOFT       = $(CPP_LIBRARIES)\microsoft
 MICROSOFT_VC    = $(MICROSOFT)\vc\9.0

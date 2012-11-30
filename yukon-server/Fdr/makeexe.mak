@@ -200,7 +200,7 @@ fdrclientserverconnection.obj:	precompiled.h logger.h dlldefs.h \
 		serverconnection.h prot_dnp.h prot_base.h xfer.h \
 		packet_finder.h dnp_application.h dnp_objects.h \
 		dnp_transport.h dnp_datalink.h dnp_datalink_packet.h \
-		dnp_object_binaryoutput.h
+		dnp_configuration.h dnp_object_binaryoutput.h
 fdrcygnet.obj:	precompiled.h ctitime.h dlldefs.h cparms.h rwutil.h \
 		yukon.h types.h ctidbgmem.h database_connection.h dbaccess.h \
 		dllbase.h dsm2.h cticonnect.h netports.h mutex.h guard.h \
@@ -238,7 +238,7 @@ fdrdnphelper.obj:	precompiled.h msg_cmd.h message.h ctitime.h \
 		configval.h dnp_object_analoginput.h dnp_objects.h \
 		prot_base.h xfer.h dnp_object_time.h prot_dnp.h \
 		packet_finder.h dnp_application.h dnp_transport.h \
-		dnp_datalink.h dnp_datalink_packet.h \
+		dnp_datalink.h dnp_datalink_packet.h dnp_configuration.h \
 		dnp_object_binaryoutput.h
 fdrdnpslave.obj:	precompiled.h ctidate.h dlldefs.h logger.h thread.h \
 		mutex.h guard.h utility.h ctitime.h queues.h cticalls.h \
@@ -258,7 +258,7 @@ fdrdnpslave.obj:	precompiled.h ctidate.h dlldefs.h logger.h thread.h \
 		fdrdnpslave.h dnp_object_analoginput.h dnp_objects.h \
 		prot_base.h xfer.h dnp_object_time.h prot_dnp.h \
 		packet_finder.h dnp_application.h dnp_transport.h \
-		dnp_datalink.h dnp_datalink_packet.h \
+		dnp_datalink.h dnp_datalink_packet.h dnp_configuration.h \
 		dnp_object_binaryoutput.h dnp_object_binaryinput.h \
 		dnp_object_counter.h
 fdrdsm2filein.obj:	precompiled.h ctitime.h dlldefs.h ctidate.h \
@@ -521,8 +521,8 @@ fdrscadahelper.obj:	precompiled.h msg_cmd.h message.h ctitime.h \
 		dnp_object_analoginput.h dnp_objects.h prot_base.h xfer.h \
 		dnp_object_time.h prot_dnp.h packet_finder.h \
 		dnp_application.h dnp_transport.h dnp_datalink.h \
-		dnp_datalink_packet.h dnp_object_binaryoutput.h \
-		fdrvalmetmulti.h
+		dnp_datalink_packet.h dnp_configuration.h \
+		dnp_object_binaryoutput.h fdrvalmetmulti.h
 fdrscadaserver.obj:	precompiled.h fdrscadaserver.h dlldefs.h \
 		fdrsocketserver.h queues.h cticalls.h os2_2w32.h types.h \
 		fdrclientserverconnection.h serverconnection.h fdrinterface.h \
@@ -863,8 +863,8 @@ test_fdrdnpslave.obj:	fdrdnpslave.h dlldefs.h queues.h cticalls.h \
 		dnp_object_analoginput.h dnp_objects.h prot_base.h xfer.h \
 		dnp_object_time.h prot_dnp.h packet_finder.h \
 		dnp_application.h dnp_transport.h dnp_datalink.h \
-		dnp_datalink_packet.h dnp_object_binaryoutput.h \
-		boost_test_helpers.h
+		dnp_datalink_packet.h dnp_configuration.h \
+		dnp_object_binaryoutput.h boost_test_helpers.h
 test_fdrtelegyr.obj:	fdrtelegyr.h dlldefs.h fdrinterface.h message.h \
 		ctitime.h ctidbgmem.h collectable.h rwutil.h yukon.h types.h \
 		database_connection.h dbaccess.h dllbase.h dsm2.h \
