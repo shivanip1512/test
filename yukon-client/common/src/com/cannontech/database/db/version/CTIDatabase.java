@@ -1,8 +1,8 @@
 package com.cannontech.database.db.version;
 
-public class CTIDatabase {
-    private String version = null;
-    private Integer build = null;
+public final class CTIDatabase {
+    private final String version;
+    private final Integer build;
     
     public CTIDatabase(String version, Integer build) {
         this.version = version;
@@ -12,17 +12,9 @@ public class CTIDatabase {
     public String getVersion() {
         return version;
     }
-    
-    public void setVersion(String version) {
-        this.version = version;
-    }
 
     public Integer getBuild() {
         return build;
     }
-    
-    public void setBuild(Integer build) {
-        this.build = build;
-    }
-    
+
 }
