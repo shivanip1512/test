@@ -24,6 +24,7 @@ public interface PointFormattingService {
         DATE,
         RAWVALUE,
         VALUE,
+        VALUE_UNIT,
         UNIT,
         QUALITY;
         

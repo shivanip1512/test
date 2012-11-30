@@ -5,7 +5,8 @@
 <%@ attribute name="destinationFieldName"  description="Name of field to place selected items on picker close"%>
 <%@ attribute name="multiSelectMode" type="java.lang.Boolean" description="True if this picker allows selection of multiple items"%>
 <%@ attribute name="immediateSelectMode" type="java.lang.Boolean" description="True if picker should select and close when an item is clicked"%>
-<%@ attribute name="endAction" description="Javascript function to call on picker close"%>
+<%@ attribute name="endAction" description="Javascript function to call on picker ok button press"%>
+<%@ attribute name="cancelAction" description="Javascript function to call on picker cancel button press"%>
 <%@ attribute name="memoryGroup" description="Adds the picker to the memory group - picker will open up with previous search text populated (as long as no page refresh between)"%>
 <%@ attribute name="linkType" description="Type of link to create which can be 'normal' (the default--a plain anchor tag link), 'button', 'selection' or 'none'"%>
 <%@ attribute name="nameKey" description="i18n key; required if linkType is 'button'; unused for 'none' or 'link'"%>
@@ -52,6 +53,9 @@
         </c:if>
         <c:if test="${!empty pageScope.endAction}">
             ${id}.endAction = ${pageScope.endAction};
+        </c:if>
+        <c:if test="${!empty pageScope.cancelAction}">
+            ${id}.cancelAction = ${pageScope.cancelAction};
         </c:if>
         <c:if test="${!empty pageScope.destinationFieldId}">
             ${id}.destinationFieldId = '${pageScope.destinationFieldId}';

@@ -13,7 +13,7 @@
     <cti:includeScript link="/JavaScript/ivvcAmCharts.js" />
 
 	<%@include file="/capcontrol/capcontrolHeader.jspf"%>
-	<cti:includeCss link="/capcontrol/css/ivvc.css"/>
+	<cti:includeCss link="/WebConfig/yukon/styles/da/ivvc.css"/>
 
     <cti:msg2 key="yukon.web.modules.capcontrol.ivvc.zoneWizard.editor.title" var="zoneWizardTitle"/>
 

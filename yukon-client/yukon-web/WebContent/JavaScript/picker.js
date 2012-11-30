@@ -325,6 +325,9 @@ Picker.prototype = {
 		if (!this.containerDiv) {
 		    $(this.pickerId).hide();
 		}
+		if (this.cancelAction) {
+            this.cancelAction(this);
+        }
 	},
 
 	okPressed: function() {

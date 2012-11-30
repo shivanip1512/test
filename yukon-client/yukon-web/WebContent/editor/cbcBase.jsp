@@ -19,7 +19,7 @@
 
 <cti:includeScript link="/JavaScript/tableCreation.js"/>
 <cti:includeScript link="/JavaScript/scrollDiv.js"/>
-<cti:includeScript link="/capcontrol/js/capcontrolGeneral.js"/>
+<cti:includeScript link="/JavaScript/da/capcontrolGeneral.js"/>
 <cti:includeScript link="/JavaScript/GreyBox/AmiJS.js"/>
 <cti:includeScript link="/JavaScript/GreyBox/greybox.js"/>
 

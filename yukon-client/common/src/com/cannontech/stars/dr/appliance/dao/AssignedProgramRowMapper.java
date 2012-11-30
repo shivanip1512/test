@@ -78,8 +78,8 @@ public class AssignedProgramRowMapper extends
     }
 
     @Override
-    public AssignedProgram mapRow(YukonResultSet rs)
-            throws SQLException {
+    public AssignedProgram mapRow(YukonResultSet rs) throws SQLException {
+        
         int applianceCategoryId = rs.getInt("applianceCategoryId");
         int assignedProgramId = rs.getInt("programId");
         int programId = rs.getInt("deviceId");
@@ -95,10 +95,16 @@ public class AssignedProgramRowMapper extends
         // isLast and highestProgramOrder only make sense when looking at a full appliance category.
         boolean isLast = highestProgramOrder != null && programOrder == highestProgramOrder;
 
-        AssignedProgram assignedProgram =
-            new AssignedProgram(applianceCategoryId, assignedProgramId, programId, programName,
-                                chanceOfControlId, programOrder, isLast, webConfigurationId,
-                                webConfiguration);
+        AssignedProgram assignedProgram = new AssignedProgram(applianceCategoryId, 
+                                                              assignedProgramId, 
+                                                              programId, 
+                                                              null, //TODO set actual seasonal override program id
+                                                              programName,
+                                                              chanceOfControlId, 
+                                                              programOrder, 
+                                                              isLast, 
+                                                              webConfigurationId, 
+                                                              webConfiguration);
 
         return assignedProgram;
     }

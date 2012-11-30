@@ -20,6 +20,7 @@ import org.springframework.validation.Validator;
 import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
+import org.springframework.web.bind.annotation.RequestParam;
 
 import com.cannontech.common.bulk.filter.UiFilter;
 import com.cannontech.common.bulk.filter.service.UiFilterList;
@@ -75,9 +76,9 @@ public class ApplianceCategoryController {
     @Autowired private ApplianceCategoryDao applianceCategoryDao;
     @Autowired private ApplianceCategoryService applianceCategoryService;
     @Autowired private ObjectFormattingService objectFormattingService;
-    @Autowired private StarsDatabaseCache starsDatabaseCache;
+    @Autowired private StarsDatabaseCache cache;
     @Autowired private PaoDao paoDao;
-    @Autowired private YukonEnergyCompanyService yukonEnergyCompanyService;
+    @Autowired private YukonEnergyCompanyService yecService;
     @Autowired private EnergyCompanyService energyCompanyService;
     @Autowired private ConfigurationSource configurationSource;
 
@@ -357,46 +358,45 @@ public class ApplianceCategoryController {
     }
 
     @RequestMapping
-    public String editAssignedProgram(ModelMap model, int ecId, int applianceCategoryId,
-                                      int assignedProgramId, YukonUserContext context) {
-        verifyAssignedProgramAC(assignedProgramId, applianceCategoryId);
-        AssignedProgram assignedProgram =
-            assignedProgramDao.getById(assignedProgramId);
-        AssignProgramBackingBean backingBean =
-            new AssignProgramBackingBean(assignedProgram.getProgramId() == 0,
-                                         false, null, assignedProgram);
-        return editAssignedProgram(model, ecId, applianceCategoryId, backingBean,
-                                   context, PageEditMode.EDIT);
+    public String editAssignedProgram(ModelMap model, 
+                                      int ecId, 
+                                      @RequestParam("applianceCategoryId") int acId, 
+                                      int assignedProgramId, 
+                                      YukonUserContext context) {
+        
+        verifyAssignedProgramAC(assignedProgramId, acId);
+        AssignedProgram program = assignedProgramDao.getById(assignedProgramId);
+        boolean virtual = program.getProgramId() == 0;
+        AssignProgramBackingBean bean = new AssignProgramBackingBean(virtual, false, null, program);
+        
+        return editAssignedProgram(model, ecId, acId, bean, context, PageEditMode.EDIT);
     }
 
-    private String editAssignedProgram(ModelMap model, int ecId, int applianceCategoryId,
-                                       AssignProgramBackingBean backingBean,
-                                       YukonUserContext context, PageEditMode pageEditMode) {
-        ApplianceCategory applianceCategory =
-            applianceCategoryDao.getById(applianceCategoryId);
+    private String editAssignedProgram(ModelMap model, int ecId, int acId, AssignProgramBackingBean bean, 
+                                       YukonUserContext context, PageEditMode mode) {
+        
+        ApplianceCategory applianceCategory = applianceCategoryDao.getById(acId);
         model.addAttribute("applianceCategory", applianceCategory);
 
-        backingBean.getAssignedProgram().setApplianceCategoryId(applianceCategoryId);
-        model.addAttribute("backingBean", backingBean);
+        bean.getAssignedProgram().setApplianceCategoryId(acId);
+        model.addAttribute("backingBean", bean);
 
-        YukonEnergyCompany yukonEnergyCompany =
-            yukonEnergyCompanyService.getEnergyCompanyByOperator(context.getYukonUser());
-        LiteStarsEnergyCompany energyCompany =
-            starsDatabaseCache.getEnergyCompany(yukonEnergyCompany);
-        StarsCustSelectionList chanceOfControlList =
-            energyCompany.getStarsCustSelectionList(YukonSelectionListDefs.YUK_LIST_NAME_CHANCE_OF_CONTROL);
+        YukonEnergyCompany yec = yecService.getEnergyCompanyByOperator(context.getYukonUser());
+        LiteStarsEnergyCompany ec = cache.getEnergyCompany(yec);
+        StarsCustSelectionList chanceOfControlList = ec.getStarsCustSelectionList(YukonSelectionListDefs.YUK_LIST_NAME_CHANCE_OF_CONTROL);
         List<ChanceOfControl> chanceOfControls = Lists.newArrayList();
 
         String chanceOfControl = "Not Specified";
         chanceOfControls.add(0, new ChanceOfControl(0, chanceOfControl));
         for (StarsSelectionListEntry cocEntry : chanceOfControlList.getStarsSelectionListEntry()) {
             chanceOfControls.add(new ChanceOfControl(cocEntry.getEntryID(), cocEntry.getContent()));
-            if (cocEntry.getEntryID() == backingBean.getAssignedProgram().getChanceOfControlId()) {
+            if (cocEntry.getEntryID() == bean.getAssignedProgram().getChanceOfControlId()) {
                 chanceOfControl = cocEntry.getContent();
             }
         }
+        
         model.addAttribute("chanceOfControls", chanceOfControls);
-        if (pageEditMode == PageEditMode.VIEW) {
+        if (mode == PageEditMode.VIEW) {
             model.addAttribute("chanceOfControl", chanceOfControl);
         }
 
@@ -410,12 +410,12 @@ public class ApplianceCategoryController {
         model.addAttribute("environmentIcons", environmentIcons);
 
         boolean isEditable = applianceCategory.getEnergyCompanyId() == ecId;
-        if (!isEditable && pageEditMode == PageEditMode.EDIT) {
-            pageEditMode = PageEditMode.VIEW;
+        if (!isEditable && mode == PageEditMode.EDIT) {
+            mode = PageEditMode.VIEW;
         }
+        model.addAttribute("mode", mode);
         model.addAttribute("isEditable", isEditable);
-        model.addAttribute("mode", pageEditMode);
-
+        
         return "applianceCategory/editAssignedProgram.jsp";
     }
 

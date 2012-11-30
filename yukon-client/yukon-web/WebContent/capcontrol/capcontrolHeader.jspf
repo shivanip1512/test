@@ -16,9 +16,9 @@
 </cti:isPropertyFalse>
 
 <!-- Included JavaScript -->
-<cti:includeScript link="/capcontrol/js/capcontrolCommand.js"/>
-<cti:includeScript link="/capcontrol/js/capcontrolGeneral.js"/>
-<cti:includeScript link="/capcontrol/js/updaterFunctions.js"/>
+<cti:includeScript link="/JavaScript/da/capcontrolCommand.js"/>
+<cti:includeScript link="/JavaScript/da/capcontrolGeneral.js"/>
+<cti:includeScript link="/JavaScript/da/updaterFunctions.js"/>
 <cti:includeScript link="/JavaScript/cconelinepopup.js"/>
 <cti:includeScript link="/JavaScript/simpleDialog.js"/>
 <cti:includeScript link="/JavaScript/ol/overlib_mini.js"/>

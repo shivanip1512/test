@@ -7,7 +7,7 @@
                     
 <span id="verification_span_${paoId}" style="display: none;">
     <span class="helpImg" onmouseover="statusMsgAbove(this, 'Currently being used in a Verification schedule');">
-        <img src="/capcontrol/images/flag_red.gif" class="tierImg" alt="">
+        <img src="/WebConfig/yukon/da/flag_red.gif" class="tierImg" alt="">
     </span>
 </span>                    
                     

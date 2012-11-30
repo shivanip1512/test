@@ -89,7 +89,7 @@
         			<tr>
 	        			
                         <td>
-							<input type="image" id="showAreas${thisAreaId}" src="/capcontrol/images/nav-plus.gif" <c:if test="${empty viewableArea.subStations}">style="visibility: hidden;"</c:if> 
+							<input type="image" id="showAreas${thisAreaId}" src="/WebConfig/yukon/da/nav-plus.gif" <c:if test="${empty viewableArea.subStations}">style="visibility: hidden;"</c:if> 
 								 onclick="expandRow( 'allAreas${thisAreaId}', 'showAreas${thisAreaId}'); return false;" class="tierImg">
 	        				<a href="${substationUrl}">
 	        					<spring:escapeBody htmlEscape="true">${viewableArea.area.ccName}</spring:escapeBody>

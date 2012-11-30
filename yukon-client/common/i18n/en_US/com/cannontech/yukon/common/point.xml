@@ -25,6 +25,7 @@
     <entry key="yukon.common.point.pointFormatting.formats.DATE">{time|BOTH}</entry>
     <entry key="yukon.common.point.pointFormatting.formats.RAWVALUE">{rawValue}</entry>
     <entry key="yukon.common.point.pointFormatting.formats.VALUE">{default}</entry>
+    <entry key="yukon.common.point.pointFormatting.formats.VALUE_UNIT">{default} {status||{unit}}</entry>
     <entry key="yukon.common.point.pointFormatting.formats.QUALITY">{quality}</entry>
 
     <entry key="yukon.common.point.pointFormatting.shortQuality.Questionable">?</entry>

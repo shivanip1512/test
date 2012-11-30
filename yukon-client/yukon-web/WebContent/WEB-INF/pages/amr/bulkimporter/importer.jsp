@@ -152,49 +152,44 @@
     <div id="failed_title" style="display:none;"><h4>Failed Entries</h4></div>
     <div id="pendingComm_title" style="display:none;"><h4>Pending Communications</h4></div>
     <div id="failedComm_title" style="display:none;"><h4>Failed Communications</h4></div>
-    <table width="100%" border="0" cellspacing="0" cellpadding="0">
-        <tr>
-        <td valign="top" width="100%">
+    <div class="box">
             
-            <%-- FAILURES --%>
-            <div id="failed_data" style="display:none;">
-                <table id="failed_table" class="resultsTable">
-                    <thead>
-                        <tr>
-                            <c:forEach var="colName" items="${failureColumnNames}">
-                                <th>${colName}</th>
-                            </c:forEach>
-                        </tr>
-                    </thead>
-                </table>
-            </div>
-            
-            <%-- PENDING COMMS --%>
-            <div id="pendingComm_data" style="display:none;">
-                <table id="pendingComm_table" class="resultsTable">
+        <%-- FAILURES --%>
+        <div id="failed_data" style="display:none;">
+            <table id="failed_table" class="resultsTable">
+                <thead>
                     <tr>
-                        <c:forEach var="colName" items="${pendingCommsColumnNames}">
+                        <c:forEach var="colName" items="${failureColumnNames}">
                             <th>${colName}</th>
                         </c:forEach>
                     </tr>
-                </table>
-            </div>
+                </thead>
+            </table>
+        </div>
+        
+        <%-- PENDING COMMS --%>
+        <div id="pendingComm_data" style="display:none;">
+            <table id="pendingComm_table" class="resultsTable">
+                <tr>
+                    <c:forEach var="colName" items="${pendingCommsColumnNames}">
+                        <th>${colName}</th>
+                    </c:forEach>
+                </tr>
+            </table>
+        </div>
+        
+        <%-- FAILURE COMMS --%>
+        <div id="failedComm_data" style="display:none;">
+            <table id="failedComm_table" class="resultsTable">
+                <tr>
+                    <c:forEach var="colName" items="${failureCommsColumnNames}">
+                        <th>${colName}</th>
+                    </c:forEach>
+                </tr>
+            </table>
+        </div>
             
-            <%-- FAILURE COMMS --%>
-            <div id="failedComm_data" style="display:none;">
-                <table id="failedComm_table" class="resultsTable">
-                    <tr>
-                        <c:forEach var="colName" items="${failureCommsColumnNames}">
-                            <th>${colName}</th>
-                        </c:forEach>
-                    </tr>
-                </table>
-            </div>
-            
-        </td>
-        </tr>
-    </table>
-    
+    </div>    
 </tags:boxContainer>
 </form>
 

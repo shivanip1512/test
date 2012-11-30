@@ -20,10 +20,48 @@
     </layout>
   </appender>
   
+  <appender class="org.apache.log4j.RollingFileAppender" name="kahadb">
+        <param value="true" name="append"/>
+        <param value="${activemq.base}/data/kahadb.log" name="file"/>
+        <param value="5" name="maxBackupIndex"/>
+        <param value="1024KB" name="maxFileSize"/>
+        <layout class="org.apache.log4j.PatternLayout">
+            <param value="%d [%-15.15t] %-5p" name="ConversionPattern"/>
+        </layout>
+    </appender>
+    <logger name="org.apache.activemq.store.kahadb.MessageDatabase">
+        <level value="error"/>
+        <appender-ref ref="kahadb"/>
+    </logger>
+  
   <!-- package level loggers -->
   <!-- Adjust the following logger levels to fine-tune logging output -->
   <!-- To turn of logging for any package use: level value="off"  -->
   <!-- Possible levels: OFF, FATAL, ERROR, WARN, INFO, DEBUG, OFF -->
+  
+  <logger name="com.cannontech.common.rfn.service">
+  	<level value="debug"/>
+  </logger>
+  
+  <logger name="com.cannontech.common.rfn.endpoint">
+  	<level value="debug"/>
+  </logger>
+  
+  <logger name="com.cannontech.amr.rfn.service">
+  	<level value="debug"/>
+  </logger>
+  
+  <logger name="com.cannontech.amr.rfn.endpoint">
+  	<level value="debug"/>
+  </logger>
+  
+  <logger name="com.cannontech.dr.rfn.service">
+  	<level value="debug"/>
+  </logger>
+  
+  <logger name="com.cannontech.stars.dr.hardware.service">
+  	<level value="debug"/>
+  </logger>
   
   <logger name="com.cannontech" >
   	<level value="info"/>
@@ -47,5 +85,5 @@
     <level value ="info"/>
     <appender-ref ref="yukonFileAppender" />
     <appender-ref ref="consoleAppender" />
-  </root>  
+  </root>
 </log4j:configuration>

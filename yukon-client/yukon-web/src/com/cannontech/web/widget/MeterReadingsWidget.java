@@ -21,8 +21,10 @@ import com.cannontech.common.pao.attribute.model.Attribute;
 import com.cannontech.common.pao.attribute.model.BuiltInAttribute;
 import com.cannontech.common.pao.attribute.service.AttributeService;
 import com.cannontech.common.pao.service.PointService;
+import com.cannontech.core.dao.PointDao;
 import com.cannontech.database.data.lite.LitePoint;
 import com.cannontech.database.data.lite.LiteYukonUser;
+import com.cannontech.database.data.point.PointBase;
 import com.cannontech.util.ServletUtil;
 import com.cannontech.web.widget.support.WidgetControllerBase;
 
@@ -36,6 +38,7 @@ public class MeterReadingsWidget extends WidgetControllerBase {
     @Autowired private AttributeService attributeService;
     @Autowired private MeteringEventLogService meteringEventLogService;
     @Autowired private PointService pointService;
+    @Autowired private PointDao pointDao;
     
     private List<? extends Attribute> attributesToShow;
     private Attribute previousReadingsAttributeToShow;
@@ -84,6 +87,9 @@ public class MeterReadingsWidget extends WidgetControllerBase {
         
         boolean readable = deviceAttributeReadService.isReadable(Collections.singleton(meter), allExistingAttributes, user);
         mav.addObject("readable", readable);
+        
+        List<LitePoint> points = pointDao.getLitePointsByPaObjectId(meter.getDeviceId());
+        mav.addObject("points", points);
         
         return mav;
     }

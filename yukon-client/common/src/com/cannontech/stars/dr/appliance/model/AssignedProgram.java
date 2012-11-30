@@ -9,6 +9,7 @@ public class AssignedProgram {
     private int applianceCategoryId;
     private int assignedProgramId;
     private int programId;
+    private Integer seasonalOverrideProgramId;
     private int chanceOfControlId;
     private int programOrder;
     private boolean isLast;
@@ -27,13 +28,15 @@ public class AssignedProgram {
         name = new AssignedProgramName();
     }
 
-    public AssignedProgram(int applianceCategoryId, int assignedProgramId, int programId,
-            String programName, int chanceOfControlId, int programOrder, boolean isLast,
-            int webConfigurationId, WebConfiguration webConfiguration) {
+    public AssignedProgram(int applianceCategoryId, int assignedProgramId, int programId, Integer seasonalOverrideProgramId,
+                           String programName, int chanceOfControlId, int programOrder, 
+                           boolean isLast, int webConfigurationId, WebConfiguration webConfiguration) {
+        
         this.applianceCategoryId = applianceCategoryId;
         this.assignedProgramId = assignedProgramId;
         this.programId = programId;
-        name = new AssignedProgramName(programName); 
+        this.seasonalOverrideProgramId = seasonalOverrideProgramId;
+        this.name = new AssignedProgramName(programName); 
         this.chanceOfControlId = chanceOfControlId;
         this.programOrder = programOrder;
         this.isLast = isLast;
@@ -71,6 +74,14 @@ public class AssignedProgram {
 
     public void setProgramId(int programId) {
         this.programId = programId;
+    }
+    
+    public Integer getSeasonalOverrideProgramId() {
+        return seasonalOverrideProgramId;
+    }
+    
+    public void setSeasonalOverrideProgramId(Integer seasonalOverrideProgramId) {
+        this.seasonalOverrideProgramId = seasonalOverrideProgramId;
     }
 
     /**

@@ -20,7 +20,7 @@
 		    deleteForm.initItem();
 		%>
 	
-	    <cti:includeScript link="/capcontrol/js/capcontrolGeneral.js"/>
+	    <cti:includeScript link="/JavaScript/da/capcontrolGeneral.js"/>
 		<f:verbatim>
 			<script type="text/JavaScript">
 			    addLockButtonForButtonGroup("buttons");

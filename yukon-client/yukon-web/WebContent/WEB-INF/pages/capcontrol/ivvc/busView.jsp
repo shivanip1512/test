@@ -14,7 +14,7 @@
     <cti:includeScript link="/JavaScript/ivvcAmCharts.js" />
 	
 	<%@include file="/capcontrol/capcontrolHeader.jspf"%>
-    <cti:includeCss link="/capcontrol/css/ivvc.css"/>
+    <cti:includeCss link="/WebConfig/yukon/styles/da/ivvc.css"/>
     
     <cti:url var="zoneCreatorUrl" value="/capcontrol/ivvc/wizard/zoneCreationWizard">
     	<cti:param name="subBusId" value="${subBusId}"/>

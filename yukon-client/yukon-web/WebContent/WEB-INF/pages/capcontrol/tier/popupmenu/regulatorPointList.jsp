@@ -3,7 +3,7 @@
 <%@ taglib uri="http://java.sun.com/jsp/jstl/core" prefix="c" %>
 
 <cti:standardPage title="Regulator Points and TS" module="capcontrol_internal">
-<cti:includeCss link="/capcontrol/css/CapcontrolGeneralStyles.css"/>     
+<cti:includeCss link="/WebConfig/yukon/styles/da/CapcontrolGeneralStyles.css"/>     
     <input id="regulatorName" type="hidden" value="${regulatorName}"/>
     <c:if test="${oneline}">
         <center><span style="font-weight: bold; font-size: 16;">${regulatorName}</span></center>

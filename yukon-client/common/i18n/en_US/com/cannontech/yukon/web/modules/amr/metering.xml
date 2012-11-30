@@ -33,6 +33,7 @@
     <entry key="yukon.web.widgetClasses.MeterReadingsWidget.threePhaseVoltage">Phase A Voltage</entry>
     <entry key="yukon.web.widgetClasses.MeterReadingsWidget.recentReadings">Recent Readings (since {0})</entry>
     <entry key="yukon.web.widgetClasses.MeterReadingsWidget.dailyReadings">Daily readings (before {0})</entry>
+    <entry key="yukon.web.widgetClasses.MeterReadingsWidget.points.title">Points</entry>
 
     <!-- accountInformationWidget/accountInfo.jsp -->
     <entry key="yukon.web.widgets.accountInformationWidget.noVendor">No primary CIS vendor set.</entry>

@@ -723,6 +723,9 @@
               <requireRoleProperty
                 value="RESIDENTIAL_CONSUMER_INFO_PROGRAMS_ENROLLMENT" />
             </dynamicOptions>
+            <option name="seasonalOverride">
+                <link>/spring/stars/consumer/so</link>
+            </option>
             <dynamicOptions bean="optOutMenuOption">
               <requireRoleProperty
                 value="RESIDENTIAL_CONSUMER_INFO_PROGRAMS_OPT_OUT" />
@@ -855,7 +858,7 @@
     <search bean="capControlSearchProducer" />
     
     <skin name="STANDARD" />
-    <css file="/capcontrol/css/CapcontrolGeneralStyles.css" />
+    <css file="/WebConfig/yukon/styles/da/CapcontrolGeneralStyles.css" />
     <pages>
         <page name="areas.normal" type="LANDING">
             <menu></menu>
@@ -958,7 +961,7 @@
       control pages.
     -->
     <skin name="INNER" />
-    <css file="/capcontrol/css/CapcontrolGeneralStyles.css" />
+    <css file="/WebConfig/yukon/styles/da/CapcontrolGeneralStyles.css" />
   </module>
 
   <module name="commercialcurtailment">

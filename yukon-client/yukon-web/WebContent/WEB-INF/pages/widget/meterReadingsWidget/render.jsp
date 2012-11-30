@@ -1,43 +1,45 @@
-<%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core"%>
+<%@ taglib prefix="tags" tagdir="/WEB-INF/tags"%>
 <%@ taglib prefix="cti" uri="http://cannontech.com/tags/cti"%>
-<%@ taglib prefix="ct" tagdir="/WEB-INF/tags"%>
+<%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core"%>
 <%@ taglib prefix="i" tagdir="/WEB-INF/tags/i18n"%>
-<%@ taglib prefix="amr" tagdir="/WEB-INF/tags/amr"%>
+<%@ taglib prefix="spring" uri="http://www.springframework.org/tags"%>
+<%@ taglib prefix="dialog" tagdir="/WEB-INF/tags/dialog"%>
+<%@ taglib prefix="fn" uri="http://java.sun.com/jsp/jstl/functions"%>
 
 <cti:url var="previousReadingOptionsUrl" value="/WEB-INF/pages/point/previousReadingsOptions.jsp" />
 
-<ct:nameValueContainer2>
+<tags:nameValueContainer2>
     <c:forEach items="${attributes}" var="attribute">
         <c:choose>
             <c:when test="${not supportedAttributes[attribute]}">
-	            <ct:nameValue2 label="${attribute}">
+	            <tags:nameValue2 label="${attribute}">
 				    <i:inline key=".unsupported"/>
-        		</ct:nameValue2>
+        		</tags:nameValue2>
 			</c:when>
 	        <c:when test="${not existingAttributes[attribute]}">
-    			<ct:nameValue2 label="${attribute}">
+    			<tags:nameValue2 label="${attribute}">
 			        <i:inline key=".notConfigured"/>
-	    		</ct:nameValue2>
+	    		</tags:nameValue2>
     		</c:when>
             <c:otherwise>
-            	<ct:nameValue2 label="${attribute}">
-                    <ct:attributeValue device="${device}" attribute="${attribute}"/>
-				</ct:nameValue2>
+            	<tags:nameValue2 label="${attribute}">
+                    <tags:attributeValue device="${device}" attribute="${attribute}"/>
+				</tags:nameValue2>
                 <c:if test="${attribute == previousReadingsAttribute}">
-                    <ct:nameValue2 nameKey=".previousUsage">
+                    <tags:nameValue2 nameKey=".previousUsage">
                         <select onChange="${widgetParameters.widgetId}_usageSelection()"
                                 id="${widgetParameters.widgetId}_prevSelect">
                            <jsp:include page="${previousReadingOptionsUrl}" />
                         </select>
-                    </ct:nameValue2>
-                    <ct:nameValue2 nameKey=".totalConsumption">
+                    </tags:nameValue2>
+                    <tags:nameValue2 nameKey=".totalConsumption">
                         <div id="${widgetParameters.widgetId}_totalConsumption" class="untouched"></div>
-                    </ct:nameValue2>
+                    </tags:nameValue2>
                 </c:if>
             </c:otherwise>
         </c:choose>
     </c:forEach>
-</ct:nameValueContainer2>
+</tags:nameValueContainer2>
 
 <%-- The following js and dataUpdaters are for updating the USAGE values, don't write unless USAGE is supported and exists --%>
 <c:if test="${usageAttributeExists}">
@@ -110,8 +112,36 @@ function ${widgetParameters.widgetId}_updateDifference() {
     
 </c:if>
 
-<br>
 <div id="${widgetParameters.widgetId}_results"></div>
-<div style="text-align: right">
-	<ct:widgetActionUpdate hide="${!readable}" method="read" nameKey="readNow" container="${widgetParameters.widgetId}_results"/>
+<div class="actionArea">
+    <a id="readings_showAll" class="showAll fl">Show All</a>
+	<tags:widgetActionUpdate hide="${!readable}" method="read" nameKey="readNow" container="${widgetParameters.widgetId}_results"/>
 </div>
+
+<dialog:inline id="readings_showAll_popup" nameKey="points" okEvent="none" on="#readings_showAll" options="{'modal' : false, 'width' : 800, 'height' : 500}">
+    <table class="compactResultsTable rowHighlighting" style="width:100%;">
+        <tr>
+            <th>Name</th>
+            <th>Value/State</th>
+            <th>Qaulity</th>
+            <th>Timestamp</th>
+        </tr>
+        <c:forEach var="point" items="${points}">
+            <tr class="<tags:alternateRow odd="" even="altRow"/>">
+                <td>${fn:escapeXml(point.pointName)}</td>
+                <c:if test="${point.pointTypeEnum.status}">
+                    <td>
+                        <cti:pointStatusColor var="stateColor" pointId="${point.liteID}"/>
+                        <div class="box stateBox" style="background-color: ${stateColor};"></div>
+                        <cti:pointValue pointId="${point.liteID}" format="{state}"/>
+                    </td>
+                </c:if>
+                <c:if test="${!point.pointTypeEnum.status}">
+                    <td><cti:pointValue pointId="${point.liteID}" format="VALUE_UNIT"/></td>
+                </c:if>
+                <td><cti:pointValue pointId="${point.liteID}" format="{quality}"/></td>
+                <td><cti:pointValue pointId="${point.liteID}" format="DATE"/></td>
+            </tr>
+        </c:forEach>
+    </table>
+</dialog:inline>

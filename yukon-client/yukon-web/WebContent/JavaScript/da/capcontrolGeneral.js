@@ -112,9 +112,9 @@ function expandRow(itemId, imgId) {
     var img = jQuery("#" + imgId)[0];
     var expand = false;
     if (img.src.indexOf('nav-minus.gif') > 0) {
-        img.src='/capcontrol/images/nav-plus.gif';
+        img.src='/WebConfig/yukon/da/nav-plus.gif';
     } else {
-        img.src = '/capcontrol/images/nav-minus.gif';
+        img.src = '/WebConfig/yukon/da/nav-minus.gif';
         expand = true;
     }
 

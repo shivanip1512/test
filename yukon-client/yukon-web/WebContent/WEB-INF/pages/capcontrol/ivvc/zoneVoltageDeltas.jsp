@@ -7,7 +7,7 @@
 <%@ taglib prefix="form" uri="http://www.springframework.org/tags/form"%>
 
 <cti:standardPage module="capcontrol" page="ivvc.zoneVoltageDeltas">
-	<cti:includeCss link="/capcontrol/css/ivvc.css" />
+	<cti:includeCss link="/WebConfig/yukon/styles/da/ivvc.css" />
 
 	<script>
 		jQuery(document).ready(function() {
