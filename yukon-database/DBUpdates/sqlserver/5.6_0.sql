@@ -76,8 +76,14 @@ DROP TABLE LMThermostatSchedule;
 GO
 /* End YUK-11081 */
 
+/* Start YUK-11699 */
+UPDATE YukonGroupRole
+SET Value = '/stars/consumer/general'
+WHERE Value = '/spring/stars/consumer/general';
+/* End YUK-11699 */
+
 /**************************************************************/
 /* VERSION INFO                                               */
 /* Inserted when update script is run                         */
 /**************************************************************/
-/*INSERT INTO CTIDatabase VALUES ('5.6', '05-DEC-2012', 'Latest Update', 0, GETDATE());*/
+INSERT INTO CTIDatabase VALUES ('5.6', '05-DEC-2012', 'Latest Update', 0, GETDATE());
