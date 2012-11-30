@@ -2066,7 +2066,7 @@ BOOST_FIXTURE_TEST_SUITE(test_getOperation, getOperation_helper)
         BOOST_REQUIRE(test_dev.getOperation(EmetconProtocol::PutConfig_Options, BSt));
         BOOST_CHECK_EQUAL(BSt.IO, EmetconProtocol::IO_Function_Write);
         BOOST_CHECK_EQUAL(BSt.Function, 0x01);
-        BOOST_CHECK_EQUAL(BSt.Length,   4);
+        BOOST_CHECK_EQUAL(BSt.Length,   6);
     }
     BOOST_AUTO_TEST_CASE(test_getOperation_72)
     {
@@ -2660,7 +2660,8 @@ BOOST_AUTO_TEST_CASE(test_getValueMappingForRead_IO_Function_Read_2Dwords)
     const vector<vector<tuple<unsigned, unsigned, int>>> expected = list_of<vector<tuple<unsigned, unsigned, int>>>
         //  function read 0
         (empty)
-        .repeat(150-1, empty)
+        (tuple_list_of(5,2,127))
+        .repeat(150-2, empty)
         //  function read 150
         (empty)
         (empty)
@@ -2730,7 +2731,8 @@ BOOST_AUTO_TEST_CASE(test_getValueMappingForRead_IO_Function_Read_3Dwords)
     const vector<vector<tuple<unsigned, unsigned, int>>> expected = list_of<vector<tuple<unsigned, unsigned, int>>>
         //  function read 0
         (empty)
-        .repeat(150-1, empty)
+        (tuple_list_of(5,2,127))
+        .repeat(150-2, empty)
         //  function read 150
         (empty)
         (empty)
