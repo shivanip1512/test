@@ -61,7 +61,7 @@
                         <c:choose>
                             <c:when test="${empty eventLogTypeBackingBean or 
                                      empty eventLogTypeBackingBean.eventLogType}">
-                                <span class="subtleGray" style="font-style:italic;"><i:inline key=".noEventLogTypeSelected" /></span>
+                                <span class="subtle" style="font-style:italic;"><i:inline key=".noEventLogTypeSelected" /></span>
                             </c:when>
                             <c:otherwise>
                                 <spring:escapeBody htmlEscape="true">${eventLogTypeBackingBean.eventLogType}</spring:escapeBody>

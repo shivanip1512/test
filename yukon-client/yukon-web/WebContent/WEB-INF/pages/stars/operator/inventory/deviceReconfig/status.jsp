@@ -51,7 +51,7 @@
             <tags:nameValueContainer2>
                 
                 <tags:nameValue2 nameKey=".successCount">
-                    <cti:dataUpdaterValue type="DEVICE_RECONFIG" identifier="${task.inventoryConfigTaskId}/SUCCESS_COUNT" styleClass="successMessage normalBoldLabel"/>
+                    <cti:dataUpdaterValue type="DEVICE_RECONFIG" identifier="${task.inventoryConfigTaskId}/SUCCESS_COUNT" styleClass="successMessage fwb"/>
                 </tags:nameValue2>
                 
             </tags:nameValueContainer2>
@@ -67,7 +67,7 @@
             <tags:nameValueContainer2>
                 
                 <tags:nameValue2 nameKey=".failedCount">
-                    <cti:dataUpdaterValue type="DEVICE_RECONFIG" identifier="${task.inventoryConfigTaskId}/FAILED_COUNT" styleClass="errorMessage normalBoldLabel"/>
+                    <cti:dataUpdaterValue type="DEVICE_RECONFIG" identifier="${task.inventoryConfigTaskId}/FAILED_COUNT" styleClass="errorMessage fwb"/>
                 </tags:nameValue2>
                 
             </tags:nameValueContainer2>

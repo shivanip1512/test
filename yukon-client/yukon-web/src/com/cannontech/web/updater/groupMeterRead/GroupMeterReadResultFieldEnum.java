@@ -74,7 +74,7 @@ public enum GroupMeterReadResultFieldEnum {
         	
         	String className = "";
         	if (groupMeterReadResult.isExceptionOccured()) {
-        		className = "errorRed";
+        		className = "error";
         	} else {
         		className = "";
         	}

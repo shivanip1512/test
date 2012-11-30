@@ -92,7 +92,7 @@
 		<c:forEach var="jobWrapper" items="${filterResult.resultList}">
 	    	<c:set var="trClass" value=""/>
 			<c:if test="${jobWrapper.job.disabled}">
-				<c:set var="trClass" value="subtleGray"/>
+				<c:set var="trClass" value="subtle"/>
 			</c:if>
 			<tr id="tr_${jobWrapper.job.id}" class="<tags:alternateRow odd="" even="altRow"/> ${trClass}"
                 title="Job ID: ${jobWrapper.job.id}">
@@ -166,7 +166,7 @@
 		
 		<c:if test="${fn:length(filterResult.resultList) == 0}">
 			<tr>
-				<td class="noResults subtleGray" colspan="7">
+				<td class="noResults subtle" colspan="7">
 					<c:choose>
 						<c:when test="${canManage}">
                             <i:inline key=".noJobs.createAccess"/>

@@ -72,7 +72,7 @@
     
     <c:when test="${fn:length(groupedExtendedReviewPoints) == 0}">
     	<table class="resultsTable">
-    	<tr><td style="text-align:center;font-style:italic;" class="subtleGray">
+    	<tr><td style="text-align:center;font-style:italic;" class="subtle">
 			<br>
 			<b>No More Points to Review<b>
 			<br><br>

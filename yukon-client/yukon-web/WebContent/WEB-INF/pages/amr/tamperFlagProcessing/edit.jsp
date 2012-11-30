@@ -30,7 +30,7 @@
 	</script>
 
 		<c:if test="${not empty editError}">
-	    	<div class="errorRed">${editError}</div>
+	    	<div class="error">${editError}</div>
 	    </c:if>
     
     	<%-- MISC FORMS --%>

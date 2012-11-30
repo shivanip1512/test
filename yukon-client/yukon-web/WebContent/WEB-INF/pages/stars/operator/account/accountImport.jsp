@@ -12,7 +12,7 @@
     <cti:msg var="instructionsText" key="yukon.web.modules.operator.accountImport.instructionsText" />
     
     <tags:boxContainer2 nameKey="fileUploadContainer">
-        <cti:dataGrid cols="2" rowStyle="vertical-align:top;" cellStyle="padding-right:20px;width:50%;">
+        <cti:dataGrid cols="2" tableClasses="twoColumnLayout">
     
             <cti:dataGridCell>
     
@@ -21,7 +21,7 @@
                     <%-- note --%>
                     <table>
                         <tr valign="top">
-                            <td class="smallBoldLabel"><i:inline key=".noteLabel"/></td>
+                            <td class="fwb"><i:inline key=".noteLabel"/></td>
                             <td style="font-size:11px;"><i:inline key=".noteText"/></td>
                         </tr>
                     </table>
@@ -34,12 +34,9 @@
                         <tags:inputNameValue nameKey=".email" path="email" size="35"/>
                     </tags:nameValueContainer2>
                     
-                    <br>
-
-                    <cti:button nameKey="prescan" type="submit" styleClass="f_blocker"/>
-
-                    <br><br>
-                    
+                    <div class="actionArea box stacked">
+                        <div class="fl"><cti:button nameKey="prescan" type="submit" styleClass="f_blocker"/></div>
+                    </div>
                 </form:form>
                 
             </cti:dataGridCell>
@@ -48,9 +45,9 @@
                 
                 <%-- instructions --%>
                 <table>
-                    <tr valign="top">
-                        <td class="smallBoldLabel"><i:inline key=".instructionsLabel"/></td>
-                        <td style="font-size:11px;">${instructionsText}</td>
+                    <tr>
+                        <td class="fwb"><i:inline key=".instructionsLabel"/></td>
+                        <td>${instructionsText}</td>
                     </tr>
                 </table>
                 
@@ -66,135 +63,100 @@
             
             <cti:dataGridCell>
             
-                <table class="miniResultsTable bulkImport" style="font-size:11px;width:100%;">
-                    
-                    <tr>
-                        <td colspan="2" style="background-color:#CDCDCD;">
-                        
-                            <table class="noStyle">
-                                <tr valign="top">
-                                    <td rowspan="2"><img src="${importImg}"></td>
-                                    <td><div class="normalBoldLabel"><i:inline key=".importAccountTableHeader"/></div></td>
-                                </tr>
-                                <tr>
-                                    <td><i:inline key=".importAccountTableDescription"/></td>
-                                </tr>
-                            </table>
-                        
-                        </td>
-                    </tr>
-            
-                    <tr valign="bottom">
-                        <th style="width:150px;" align="left"><i:inline key=".accountColumnHeader"/></th>
-                        <th><i:inline key=".accountColumnDescription"/></th>
-                    </tr>
-                    
-                    <c:forEach var="field" items="${accountFields}">
-                    
-                        <tr valign="top">
-                        
-                            <td class="smallBoldLabel">${field.name} <sup>${field.legendKey}</sup></td>
-                            
-                            <td>
-                                <i:inline key=".accountField.description.${field}"/>
-                            </td>
-                            
+                <div class="box" style="background-color:#CDCDCD;padding:10px;">
+                    <div class="fl"><img src="${importImg}"></div>
+                    <div class="fl" style="margin-left:20px;">
+                        <h2><i:inline key=".importAccountTableHeader"/></h2>
+                        <span class="detail"><i:inline key=".importAccountTableDescription"/></span>
+                    </div>
+                </div>
+                <table class="resultsTable bulkImport">
+                    <thead>
+                        <tr>
+                            <th><i:inline key=".accountColumnHeader"/></th>
+                            <th><i:inline key=".accountColumnDescription"/></th>
                         </tr>
-                    
-                    </c:forEach>
-                    
-                    <tr>
-                        <td colspan="2" style="background-color:#CDCDCD;">
-                            <table>
-                                <tr>
-                                    <td><i:inline key=".accountFieldLegend.a.label"/></td>
-                                    <td><i:inline key=".accountFieldLegend.a.text"/></td>
-                                </tr>
-                                <tr>
-                                    <td><i:inline key=".accountFieldLegend.b.label"/></td>
-                                    <td><i:inline key=".accountFieldLegend.b.text"/></td>
-                                </tr>
-                                <tr>
-                                    <td><i:inline key=".accountFieldLegend.c.label"/></td>
-                                    <td><i:inline key=".accountFieldLegend.c.text"/></td>
-                                </tr>
-                            </table>
-                        </td>
-                    </tr>
-                    
+                    </thead>
+                    <tfoot></tfoot>
+                    <tbody>
+                        <c:forEach var="field" items="${accountFields}">
+                            <tr valign="top">
+                                <td class="fwb">${field.name} <sup>${field.legendKey}</sup></td>
+                                <td><i:inline key=".accountField.description.${field}"/></td>
+                            </tr>
+                        </c:forEach>
+                    </tbody>
                 </table>
+                <div class="box detail" style="background-color:#CDCDCD;padding:10px;">
+                    <table>
+                        <tr>
+                            <td><i:inline key=".accountFieldLegend.a.label"/></td>
+                            <td><i:inline key=".accountFieldLegend.a.text"/></td>
+                        </tr>
+                        <tr>
+                            <td><i:inline key=".accountFieldLegend.b.label"/></td>
+                            <td><i:inline key=".accountFieldLegend.b.text"/></td>
+                        </tr>
+                        <tr>
+                            <td><i:inline key=".accountFieldLegend.c.label"/></td>
+                            <td><i:inline key=".accountFieldLegend.c.text"/></td>
+                        </tr>
+                    </table>
+                </div>
                 
             </cti:dataGridCell>
             
             <cti:dataGridCell>
-                
-                <table class="miniResultsTable bulkImport" style="font-size:11px;width:100%;">
                     
-                    <tr>
-                        <td colspan="2" style="background-color:#CDCDCD;">
-                        
-                            <table class="noStyle">
-                                <tr valign="top">
-                                    <td rowspan="2"><img src="${importImg}"></td>
-                                    <td><div class="normalBoldLabel"><i:inline key=".importHardwareTableHeader"/></div></td>
-                                </tr>
-                                <tr>
-                                    <td><i:inline key=".importHardwareTableDescription"/></td>
-                                </tr>
-                            </table>
-                        
-                        </td>
-                    </tr>
-            
-                    <tr valign="bottom">
-                        <th style="width:150px;" align="left"><i:inline key=".hardwareColumnHeader"/></th>
-                        <th><i:inline key=".hardwareColumnDescription"/></th>
-                    </tr>
-                    
-                    <c:forEach var="field" items="${hardwareFields}">
-                    
-                        <tr valign="top">
-                        
-                            <td class="smallBoldLabel">${field.name} <sup>${field.legendKey}</sup></td>
-                            
-                            <td>
-                                <i:inline key=".hardwareField.description.${field}"/>
-                            </td>
-                            
+                <div class="box" style="background-color:#CDCDCD;padding:10px;">
+                    <div class="fl"><img src="${importImg}"></div>
+                    <div class="fl" style="margin-left:20px;">
+                        <h2><i:inline key=".importHardwareTableHeader"/></h2>
+                        <span class="detail"><i:inline key=".importHardwareTableDescription"/></span>
+                    </div>
+                </div>
+                <table class="resultsTable bulkImport">
+                    <thead>
+                        <tr>
+                            <th><i:inline key=".hardwareColumnHeader"/></th>
+                            <th><i:inline key=".hardwareColumnDescription"/></th>
                         </tr>
-                    
+                    </thead>
+                    <tfoot></tfoot>
+                    <tbody>
+                    <c:forEach var="field" items="${hardwareFields}">
+                        <tr>
+                            <td class="fwb">${field.name} <sup>${field.legendKey}</sup></td>
+                            <td><i:inline key=".hardwareField.description.${field}"/></td>
+                        </tr>
                     </c:forEach>
-                    
-                    <tr>
-                        <td colspan="2" style="background-color:#CDCDCD;">
-                            <table>
-                                <tr>
-                                    <td><i:inline key=".hardwareFieldLegend.a.label"/></td>
-                                    <td><i:inline key=".hardwareFieldLegend.a.text"/></td>
-                                </tr>
-                                <tr>
-                                    <td><i:inline key=".hardwareFieldLegend.b.label"/></td>
-                                    <td><i:inline key=".hardwareFieldLegend.b.text"/></td>
-                                </tr>
-                                <tr>
-                                    <td><i:inline key=".hardwareFieldLegend.c.label"/></td>
-                                    <td><i:inline key=".hardwareFieldLegend.c.text"/></td>
-                                </tr>
-                                <tr>
-                                    <td><i:inline key=".hardwareFieldLegend.d.label"/></td>
-                                    <td><i:inline key=".hardwareFieldLegend.d.text"/></td>
-                                </tr>
-                                <tr>
-                                    <td><i:inline key=".hardwareFieldLegend.e.label"/></td>
-                                    <td><i:inline key=".hardwareFieldLegend.e.text"/></td>
-                                </tr>
-                            </table>
-                        </td>
-                    </tr>
-                    
+                    </tbody>
                 </table>
+                <div class="box detail" style="background-color:#CDCDCD;padding:10px;">
+                    <table>
+                        <tr>
+                            <td><i:inline key=".hardwareFieldLegend.a.label"/></td>
+                            <td><i:inline key=".hardwareFieldLegend.a.text"/></td>
+                        </tr>
+                        <tr>
+                            <td><i:inline key=".hardwareFieldLegend.b.label"/></td>
+                            <td><i:inline key=".hardwareFieldLegend.b.text"/></td>
+                        </tr>
+                        <tr>
+                            <td><i:inline key=".hardwareFieldLegend.c.label"/></td>
+                            <td><i:inline key=".hardwareFieldLegend.c.text"/></td>
+                        </tr>
+                        <tr>
+                            <td><i:inline key=".hardwareFieldLegend.d.label"/></td>
+                            <td><i:inline key=".hardwareFieldLegend.d.text"/></td>
+                        </tr>
+                        <tr>
+                            <td><i:inline key=".hardwareFieldLegend.e.label"/></td>
+                            <td><i:inline key=".hardwareFieldLegend.e.text"/></td>
+                        </tr>
+                    </table>
+                </div>
             </cti:dataGridCell>
-            
         </cti:dataGrid>
     
     </tags:boxContainer2>

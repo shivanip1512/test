@@ -85,69 +85,61 @@
 
 </script>
 
-<table class="miniResultsTable">
+<table class="resultsTable">
 
     <%--  HEADERS --%>
-    <tr style="text-align:center; white-space:nowrap;">
-        <th>Days Before Peak</th>
-        <th>Peak Day</th>
-        <th>Days After Peak</th>
-        <th>Email</th>
-        <th>Collect</th>
-    </tr>
-    
-    <%--  ADJUST +/- OFF PEAK DATE --%>
-    <tr>
-        <td style="text-align:center;">
-            <select id="${id}_beforeDays">
-                <option value="0" selected>0</option>
-                <option value="1">1</option>
-                <option value="2">2</option>
-                <option value="3">3</option>
-                <option value="all">All</option>
-            </select>
-        </td>
-        <td style="text-align:center;">
+    <thead>
+        <tr style="text-align:center; white-space:nowrap;">
+            <th>Days Before Peak</th>
+            <th>Peak Day</th>
+            <th>Days After Peak</th>
+            <th>Email</th>
+            <th>Collect</th>
+        </tr>
+    </thead>
+    <tfoot></tfoot>
+    <tbody>
+        
+        <%--  ADJUST +/- OFF PEAK DATE --%>
+        <tr>
+            <td style="text-align:center;">
+                <select id="${id}_beforeDays">
+                    <option value="0" selected>0</option>
+                    <option value="1">1</option>
+                    <option value="2">2</option>
+                    <option value="3">3</option>
+                    <option value="all">All</option>
+                </select>
+            </td>
+            <td style="text-align:center;">
+                
+                <select id="${id}_selectedPeakDate" onchange="changePeak();">
+                    <c:if test="${!preResult.noData && preResult.deviceError == ''}">
+                        <option value="${preResult.peakValue}" selected>${preResult.peakValue}</option>
+                    </c:if>
+                    <c:if test="${!postResult.noData && postResult.deviceError == ''}">
+                        <option value="${postResult.peakValue}">${postResult.peakValue}</option>
+                    </c:if>
+                </select>
+                            
+            </td>
+            <td style="text-align:center;">
+                <select id="${id}_afterDays">
+                    <c:forEach var="d" items="${preAvailableDaysAfterPeak}">
+                        <option value="${d}" <c:if test="${d == '0'}">selected</c:if>>${d}</option>
+                    </c:forEach>
+                </select>
+            </td>
             
-            <select id="${id}_selectedPeakDate" onchange="changePeak();">
-                <c:if test="${!preResult.noData && preResult.deviceError == ''}">
-                    <option value="${preResult.peakValue}" selected>${preResult.peakValue}</option>
-                </c:if>
-                <c:if test="${!postResult.noData && postResult.deviceError == ''}">
-                    <option value="${postResult.peakValue}">${postResult.peakValue}</option>
-                </c:if>
-            </select>
-                        
-        </td>
-        <td style="text-align:center;">
-            <select id="${id}_afterDays">
-                <c:forEach var="d" items="${preAvailableDaysAfterPeak}">
-                    <option value="${d}" <c:if test="${d == '0'}">selected</c:if>>${d}</option>
-                </c:forEach>
-            </select>
-        </td>
-        
-        <td>
-            <input id="${id}_email" value="${pageScope.email}" type="text" size="20">
-        </td>
-        
-        <td>
-            <input type="button" id="${id}_startButton" value="Start" onclick="peakDayProfile_start('${id}', '${profileRequestOrigin}');">
-        </td>
-        
-    </tr>
-    
-   
+            <td>
+                <input id="${id}_email" value="${pageScope.email}" type="text" size="20">
+            </td>
+            
+            <td>
+                <input type="button" id="${id}_startButton" value="Start" onclick="peakDayProfile_start('${id}', '${profileRequestOrigin}');">
+            </td>
+            
+        </tr>
+    </tbody>
     
 </table>
-   
-
-
-
-
-
-
-
-
-
-

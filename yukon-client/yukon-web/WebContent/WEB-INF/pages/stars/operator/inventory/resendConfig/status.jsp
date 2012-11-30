@@ -58,7 +58,7 @@ function taskFinished() {
                             <cti:param name="taskId" value="${task.taskId}"/>
                             <cti:param name="type" value="SUCCESS"/>
                         </cti:url>
-                        <cti:dataUpdaterValue type="INVENTORY_TASK" identifier="${task.taskId}/SUCCESS_COUNT" styleClass="successMessage normalBoldLabel"/>
+                        <cti:dataUpdaterValue type="INVENTORY_TASK" identifier="${task.taskId}/SUCCESS_COUNT" styleClass="successMessage fwb"/>
                         <cti:classUpdater type="INVENTORY_TASK" identifier="${task.taskId}/NEW_OPERATION_FOR_SUCCESS">
                             <ul class="resultList">
                                 <li>
@@ -73,7 +73,7 @@ function taskFinished() {
                             <cti:param name="taskId" value="${task.taskId}"/>
                             <cti:param name="type" value="UNSUPPORTED"/>
                         </cti:url>
-                        <cti:dataUpdaterValue type="INVENTORY_TASK" identifier="${task.taskId}/UNSUPPORTED_COUNT" styleClass="warningMessage normalBoldLabel"/>
+                        <cti:dataUpdaterValue type="INVENTORY_TASK" identifier="${task.taskId}/UNSUPPORTED_COUNT" styleClass="warningMessage fwb"/>
                         <cti:classUpdater type="INVENTORY_TASK" identifier="${task.taskId}/NEW_OPERATION_FOR_UNSUPPORTED">
                             <ul class="resultList">
                                 <li>
@@ -88,7 +88,7 @@ function taskFinished() {
                             <cti:param name="taskId" value="${task.taskId}"/>
                             <cti:param name="type" value="FAILED"/>
                         </cti:url>
-                        <cti:dataUpdaterValue type="INVENTORY_TASK" identifier="${task.taskId}/FAILED_COUNT" styleClass="errorMessage normalBoldLabel"/>
+                        <cti:dataUpdaterValue type="INVENTORY_TASK" identifier="${task.taskId}/FAILED_COUNT" styleClass="errorMessage fwb"/>
                         
                         <cti:classUpdater type="INVENTORY_TASK" identifier="${task.taskId}/NEW_OPERATION_FOR_FAILED">
                             <ul class="resultList">

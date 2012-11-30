@@ -41,15 +41,15 @@
             
             <table cellspacing="8" border="0">
                 <tr valign="top">
-                    <td class="normalBoldLabel">${rows}</td>
+                    <td class="fwb">${rows}</td>
                     <td>${parsedResult.bulkFileInfo.dataCount}</td>
                 </tr>
                 <tr valign="top">
-                    <td class="normalBoldLabel">${identifierColumn}</td>
+                    <td class="fwb">${identifierColumn}</td>
                     <td>${parsedResult.identifierBulkFieldColumnHeader}</td>
                 </tr>
                 <tr valign="top">
-                    <td class="normalBoldLabel">${fieldsToUpdate}</td>
+                    <td class="fwb">${fieldsToUpdate}</td>
                     <td>
                         <c:forEach var="bulkField" items="${parsedResult.updateBulkFieldColumnHeaders}">
                             ${bulkField}<br>

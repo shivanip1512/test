@@ -30,7 +30,7 @@
 	</c:when>
 	
 	<c:otherwise>
-		<div class="errorRed">selectedDevicesPopupTag requires use of either deviceCollection or groupName parameter</div>
+		<div class="error">selectedDevicesPopupTag requires use of either deviceCollection or groupName parameter</div>
 	</c:otherwise>
 
 </c:choose>

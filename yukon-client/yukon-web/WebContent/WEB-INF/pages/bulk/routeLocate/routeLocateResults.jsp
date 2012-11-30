@@ -122,7 +122,7 @@
         
         <%-- SUCCESS --%>
         <br>
-        <div class="normalBoldLabel"><cti:msg key="yukon.web.modules.amr.routeLocateResults.successLabel" />: <span class="okGreen"><cti:dataUpdaterValue type="ROUTELOCATE" identifier="${resultId}/LOCATED_COUNT"/></span></div>
+        <div class="fwb"><cti:msg key="yukon.web.modules.amr.routeLocateResults.successLabel" />: <span class="success"><cti:dataUpdaterValue type="ROUTELOCATE" identifier="${resultId}/LOCATED_COUNT"/></span></div>
         
         <div id="successActionsDiv" style="padding:10px;display:none;">
         
@@ -137,10 +137,10 @@
         
         <%-- FAILURE --%>
         <br>
-        <div class="normalBoldLabel"><cti:msg key="yukon.web.modules.amr.routeLocateResults.failureLabel" />: <span class="errorRed"><cti:dataUpdaterValue type="ROUTELOCATE" identifier="${resultId}/NOT_FOUND_COUNT"/></span></div>
+        <div class="fwb"><cti:msg key="yukon.web.modules.amr.routeLocateResults.failureLabel" />: <span class="error"><cti:dataUpdaterValue type="ROUTELOCATE" identifier="${resultId}/NOT_FOUND_COUNT"/></span></div>
         <div id="commandsCanceledDiv" style="display:none;">
             <br>
-            <span class="errorRed"><cti:msg key="yukon.web.modules.amr.routeLocateResults.commandsCanceled" /></span>
+            <span class="error"><cti:msg key="yukon.web.modules.amr.routeLocateResults.commandsCanceled" /></span>
         </div>
         <div id="errorActionsDiv" style="padding:10px;display:none;">
         

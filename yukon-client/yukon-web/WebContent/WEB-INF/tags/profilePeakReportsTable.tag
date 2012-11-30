@@ -16,21 +16,17 @@
             <td>
                 <div style="font-size:11px;font-weight:bold;padding-top:10px;padding-bottom:5px;">${title}</div>
                 
-                <table class="miniResultsTable" width="100%">
-                    <tr>
-                        <th>
-                            Period
-                        </th>
-                        <th>
-                            Avg Daily / <br /> Total Usage
-                        </th>
-                        <th>
-                            Peak ${preResult.peakType.displayName}
-                        </th>
-                        <th>
-                            Peak Day Total Usage
-                        </th>
-                    </tr>
+                <table class="resultsTable">
+                        <thead>
+                            <tr>
+                                <th>Period</th>
+                                <th>Avg Daily / <br /> Total Usage</th>
+                                <th>Peak ${preResult.peakType.displayName}</th>
+                                <th>Peak Day Total Usage</th>
+                            </tr>
+                        </thead>
+                        <tfoot></tfoot>
+                    <tbody>
                         <c:if test="${! empty preResult}">
                             <c:choose>
                                 <c:when test="${!preResult.noData && preResult.deviceError == ''}">
@@ -100,6 +96,7 @@
                                 </c:otherwise>
                             </c:choose>
                         </c:if>
+                    </tbody>
                 </table>
             </td>
         </tr>

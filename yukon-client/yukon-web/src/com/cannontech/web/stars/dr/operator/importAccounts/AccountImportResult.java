@@ -390,9 +390,9 @@ public class AccountImportResult implements Completable {
         String status = "";
         if(complete) {
             if(canceled || hasErrors()) {
-                return "errorRed";
+                return "error";
             } else {
-                return "okGreen";
+                return "success";
             }
         }
         

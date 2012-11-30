@@ -58,7 +58,7 @@ public enum AdaProfileReadTypeEnum {
         public Object getValue(ArchiveAnalysisProfileReadResult adaProfileReadResult) {
             String className = "";
             if(adaProfileReadResult.isErrorOccurred()) {
-                className = "errorRed";
+                className = "error";
             }
             return className;
         }

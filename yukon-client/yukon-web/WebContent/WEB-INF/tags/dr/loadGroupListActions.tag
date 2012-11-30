@@ -14,7 +14,7 @@
             <span title="${loadGroupUnknown}">
                 <cti:logo key="yukon.web.modules.dr.loadGroupDetail.actions.sendShedIcon.disabled"/>
             </span>
-            <span class="subtleGray" title="${loadGroupUnknown}">
+            <span class="subtle" title="${loadGroupUnknown}">
                 <cti:logo key="yukon.web.modules.dr.loadGroupDetail.actions.sendRestoreIcon.disabled"/>
             </span>
         </tags:dynamicChooseOption>
@@ -40,7 +40,7 @@
             <span title="${loadGroupDisabled}">
                 <cti:logo key="yukon.web.modules.dr.loadGroupDetail.actions.sendShedIcon.disabled"/>
             </span>
-            <span class="subtleGray" title="${loadGroupDisabled}">
+            <span class="subtle" title="${loadGroupDisabled}">
                 <cti:logo key="yukon.web.modules.dr.loadGroupDetail.actions.sendRestoreIcon.disabled"/>
             </span>
         </tags:dynamicChooseOption>
@@ -48,10 +48,10 @@
 </cti:checkPaoAuthorization>
 <cti:checkPaoAuthorization permission="CONTROL_COMMAND" pao="${pao}" invert="true">
     <cti:msg var="noLoadGroupControl" key="yukon.web.modules.dr.loadGroupDetail.noControl"/>
-    <span class="subtleGray" title="${noLoadGroupControl}">
+    <span class="subtle" title="${noLoadGroupControl}">
         <cti:logo key="yukon.web.modules.dr.loadGroupDetail.actions.sendShedIcon.disabled"/>
     </span>
-    <span class="subtleGray" title="${noLoadGroupControl}">
+    <span class="subtle" title="${noLoadGroupControl}">
         <cti:logo key="yukon.web.modules.dr.loadGroupDetail.actions.sendRestoreIcon.disabled"/>
     </span>
 </cti:checkPaoAuthorization>

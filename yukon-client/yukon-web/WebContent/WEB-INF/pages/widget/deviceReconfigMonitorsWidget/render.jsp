@@ -16,46 +16,48 @@
 
     <c:otherwise>
         <table class="compactResultsTable">
-    
-            <tr>
-                <th><i:inline key=".taskName"/></th>
-                <th><i:inline key=".status"/></th>
-                <th nowrap="nowrap"><i:inline key=".deviceCount"/></th>
-                <th class="removeColumn"><i:inline key=".remove"/></th>
-            </tr>
-        
-            <c:forEach var="task" items="${tasks}">
-                
-                <cti:url value="/stars/operator/inventory/deviceReconfig/status" var="statusUrl">
-                    <cti:param name="taskId" value="${task.inventoryConfigTaskId}"/>
-                </cti:url>
-                
+            <thead>
                 <tr>
-                    
-                    <td>
-                        <a href="${statusUrl}" title="<spring:escapeBody htmlEscape="true">${task.taskName}</spring:escapeBody>">
-                            <spring:escapeBody htmlEscape="true">${task.displayName}</spring:escapeBody>
-                        </a>
-                    </td>
-                    
-                    <td nowrap="nowrap">
-                        <cti:classUpdater type="DEVICE_RECONFIG" identifier="${task.inventoryConfigTaskId}/STATUS_CLASS">
-                            <cti:dataUpdaterValue type="DEVICE_RECONFIG" identifier="${task.inventoryConfigTaskId}/STATUS_TEXT" styleClass="statusPart"/>
-                            <cti:dataUpdaterValue type="DEVICE_RECONFIG" identifier="${task.inventoryConfigTaskId}/PROGRESS"/>
-                        </cti:classUpdater>
-                    </td>
-                    
-                    <td>${task.numberOfItems}</td>
-                    
-                    <td class="removeColumn">
-                        <tags:widgetActionRefreshImage method="delete" taskId="${task.inventoryConfigTaskId}"
-                                                       nameKey="delete" arguments="${task.taskName}" showConfirm="true"/>
-                    </td>
-                    
+                    <th><i:inline key=".taskName"/></th>
+                    <th><i:inline key=".status"/></th>
+                    <th nowrap="nowrap"><i:inline key=".deviceCount"/></th>
+                    <th class="removeColumn"><i:inline key=".remove"/></th>
                 </tr>
-            
-            </c:forEach>
-        
+            </thead>
+            <tfoot></tfoot>
+            <tbody>
+                <c:forEach var="task" items="${tasks}">
+                    
+                    <cti:url value="/stars/operator/inventory/deviceReconfig/status" var="statusUrl">
+                        <cti:param name="taskId" value="${task.inventoryConfigTaskId}"/>
+                    </cti:url>
+                    
+                    <tr>
+                        
+                        <td>
+                            <a href="${statusUrl}" title="<spring:escapeBody htmlEscape="true">${task.taskName}</spring:escapeBody>">
+                                <spring:escapeBody htmlEscape="true">${task.displayName}</spring:escapeBody>
+                            </a>
+                        </td>
+                        
+                        <td nowrap="nowrap">
+                            <cti:classUpdater type="DEVICE_RECONFIG" identifier="${task.inventoryConfigTaskId}/STATUS_CLASS">
+                                <cti:dataUpdaterValue type="DEVICE_RECONFIG" identifier="${task.inventoryConfigTaskId}/STATUS_TEXT" styleClass="statusPart"/>
+                                <cti:dataUpdaterValue type="DEVICE_RECONFIG" identifier="${task.inventoryConfigTaskId}/PROGRESS"/>
+                            </cti:classUpdater>
+                        </td>
+                        
+                        <td>${task.numberOfItems}</td>
+                        
+                        <td class="removeColumn">
+                            <tags:widgetActionRefreshImage method="delete" taskId="${task.inventoryConfigTaskId}"
+                                                           nameKey="delete" arguments="${task.taskName}" showConfirm="true"/>
+                        </td>
+                        
+                    </tr>
+                
+                </c:forEach>
+            </tbody>
         </table>
     </c:otherwise>
 </c:choose>

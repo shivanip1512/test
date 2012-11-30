@@ -34,9 +34,9 @@
         </div>
         
         <%-- SUCCESS --%>
-        <div class="normalBoldLabel">
+        <div class="fwb">
             <i:inline key="yukon.web.modules.amr.analysis.readResults.successLabel" />
-            <span class="okGreen">
+            <span class="success">
                 <cti:dataUpdaterValue type="ARCHIVE_DATA_ANALYSIS_LP_READ" identifier="${resultId}/SUCCESS_COUNT"/>
             </span>
         </div>
@@ -48,9 +48,9 @@
         </div>
         
         <%-- FAILURE --%>
-        <div class="normalBoldLabel">
+        <div class="fwb">
             <i:inline key="yukon.web.modules.amr.analysis.readResults.failureLabel" />
-            <span class="errorRed">
+            <span class="error">
                 <cti:dataUpdaterValue type="ARCHIVE_DATA_ANALYSIS_LP_READ" identifier="${resultId}/FAILED_COUNT"/>
             </span>
         </div>

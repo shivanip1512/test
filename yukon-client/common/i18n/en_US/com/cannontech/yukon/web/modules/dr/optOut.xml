@@ -36,7 +36,7 @@
     <entry key="yukon.web.modules.dr.optOutAdmin.cancelOptOuts.note.label">Note:</entry>
     <entry key="yukon.web.modules.dr.optOutAdmin.cancelOptOuts.note.text">All program Opt Outs will be canceled unless a specific program is selected.</entry>
     <entry key="yukon.web.modules.dr.optOutAdmin.cancelOptOuts.cancelAllOptOutsButton.label">Reactivate Opted Out Devices</entry>
-    <entry key="yukon.web.modules.dr.optOutAdmin.cancelOptOuts.cancelOptOutsWarning"><![CDATA[<span class="errorRed">WARNING:</span> This action will broadcast commands to devices in the field.]]></entry>
+    <entry key="yukon.web.modules.dr.optOutAdmin.cancelOptOuts.cancelOptOutsWarning"><![CDATA[<span class="error">WARNING:</span> This action will broadcast commands to devices in the field.]]></entry>
     <entry key="yukon.web.modules.dr.optOutAdmin.cancelOptOuts.byProgramName.instruction.label">Optional:</entry>
     <entry key="yukon.web.modules.dr.optOutAdmin.cancelOptOuts.byProgramName.instruction.text">Only Cancel Opt Outs For A Single Program</entry>
 

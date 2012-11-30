@@ -95,7 +95,7 @@
 						</a>
 					</c:when>
 					<c:otherwise>
-						<span class="errorRed"><i:inline key=".groupDoesNotExist"/></span>
+						<span class="error"><i:inline key=".groupDoesNotExist"/></span>
 					</c:otherwise>
 				</c:choose>
 			</tags:nameValue>

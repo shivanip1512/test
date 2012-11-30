@@ -31,7 +31,7 @@
         <c:set var="monitorName" value="${monitor.name}"/>
         <c:set var="tdClass" value=""/>
         <c:if test="${monitor.evaluatorStatus == 'DISABLED'}">
-            <c:set var="tdClass" value="subtleGray"/>
+            <c:set var="tdClass" value="subtle"/>
         </c:if>
         <cti:url var="viewValidationMonitorEditorUrl" value="/common/vee/monitor/edit">
             <cti:param name="validationMonitorId" value="${monitorId}"/>

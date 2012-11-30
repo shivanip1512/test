@@ -10,7 +10,7 @@
     <input id="deleteStrategyId" type="hidden" name="strategyId"> 
 </form>
 
-    <div id="deletionResult" class="padded normalBoldLabel"></div>
+    <div id="deletionResult" class="padded fwb"></div>
     
     <tags:pagedBox2 nameKey="strategyContainer" 
             searchResult="${searchResult}"

@@ -299,7 +299,7 @@
     			<c:forEach var="event" items="${filterResult.resultList}">
     		    	<c:set var="trClass" value=""/>
     				<c:if test="${event.meter.disabled}">
-    					<c:set var="trClass" value="subtleGray"/>
+    					<c:set var="trClass" value="subtle"/>
     				</c:if>
     				<tr class="<tags:alternateRow odd="" even="altRow"/> ${trClass}">
     					<td>
@@ -320,7 +320,7 @@
                 
     			<c:if test="${fn:length(filterResult.resultList) == 0}">
     				<tr>
-    					<td class="noResults subtleGray" colspan="6">
+    					<td class="noResults subtle" colspan="6">
     						<i:inline key=".noEvents"/>
     					</td>
     				</tr>

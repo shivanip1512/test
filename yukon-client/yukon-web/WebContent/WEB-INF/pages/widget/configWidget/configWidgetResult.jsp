@@ -10,10 +10,10 @@
             <ct:nameValue2 nameKey=".verifyResult">
                 <c:choose>
                     <c:when test="${verifyResult.synced}">
-                        <span style="font-weight:bold;color:#006633;"><i:inline key=".inSync"/></span>
+                        <span class="fwb success"><i:inline key=".inSync"/></span>
                     </c:when>
                     <c:otherwise>
-                        <span style="font-weight:bold;color:#AA0033;"><c:out value="${verifyResult.discrepancies}"/></span>
+                        <span class="fwb error"><c:out value="${verifyResult.discrepancies}"/></span>
                     </c:otherwise>
                 </c:choose>
             </ct:nameValue2>

@@ -191,41 +191,45 @@
 <cti:msg key="yukon.dr.operator.optout.optOutHistory"/>
 <c:choose>
     <c:when test="${fn:length(previousOptOutList) > 0}">
-        <table id="deviceTable" class="miniResultsTable">
-            <tr class="<ct:alternateRow odd="" even="altRow"/>">
-                <th><cti:msg key="yukon.dr.operator.optout.device"/></th>
-                <th><cti:msg key="yukon.dr.operator.optout.program"/></th>
-                <th><cti:msg key="yukon.dr.operator.optout.dateScheduled"/></th>
-                <th><cti:msg key="yukon.dr.operator.optout.dateActive"/></th>
-                <th><cti:msg key="yukon.dr.operator.optout.durationHeader"/></th>
-            </tr>
-            
-            <c:forEach var="optOut" items="${previousOptOutList}">
-                <tr class="<ct:alternateRow odd="" even="altRow"/>">
-                    <td><spring:escapeBody htmlEscape="true">${optOut.inventory.displayName}</spring:escapeBody></td>
-                    <td>
-                        <c:forEach var="program" items="${optOut.programList}">
-                            <spring:escapeBody htmlEscape="true">${program.programName}</spring:escapeBody> 
-                        </c:forEach>
-                    </td>
-                    <td>
-                       <cti:formatDate value="${optOut.scheduledDate}" type="DATEHM"/>
-                    </td>
-                    <td>
-                       <cti:formatDate value="${optOut.startDate}" type="DATEHM"/>
-                    </td>
-                    <td>
-                        <c:choose>
-                            <c:when test="${optOut.state == 'SCHEDULE_CANCELED'}">
-                                <cti:msg key="yukon.dr.operator.optout.canceled"/>
-                            </c:when>
-                            <c:otherwise>
-                                <cti:formatTimePeriod startDate="${optOut.startDate}" endDate="${optOut.stopDate}" type="DH"/>
-                            </c:otherwise>
-                        </c:choose>
-                    </td>
+        <table id="deviceTable" class="resultsTable">
+            <thead>
+                <tr>
+                    <th><cti:msg key="yukon.dr.operator.optout.device"/></th>
+                    <th><cti:msg key="yukon.dr.operator.optout.program"/></th>
+                    <th><cti:msg key="yukon.dr.operator.optout.dateScheduled"/></th>
+                    <th><cti:msg key="yukon.dr.operator.optout.dateActive"/></th>
+                    <th><cti:msg key="yukon.dr.operator.optout.durationHeader"/></th>
                 </tr>
-            </c:forEach>
+            </thead>
+            <tfoot></tfoot>
+            <tbody>
+                <c:forEach var="optOut" items="${previousOptOutList}">
+                    <tr class="<ct:alternateRow odd="" even="altRow"/>">
+                        <td><spring:escapeBody htmlEscape="true">${optOut.inventory.displayName}</spring:escapeBody></td>
+                        <td>
+                            <c:forEach var="program" items="${optOut.programList}">
+                                <spring:escapeBody htmlEscape="true">${program.programName}</spring:escapeBody> 
+                            </c:forEach>
+                        </td>
+                        <td>
+                           <cti:formatDate value="${optOut.scheduledDate}" type="DATEHM"/>
+                        </td>
+                        <td>
+                           <cti:formatDate value="${optOut.startDate}" type="DATEHM"/>
+                        </td>
+                        <td>
+                            <c:choose>
+                                <c:when test="${optOut.state == 'SCHEDULE_CANCELED'}">
+                                    <cti:msg key="yukon.dr.operator.optout.canceled"/>
+                                </c:when>
+                                <c:otherwise>
+                                    <cti:formatTimePeriod startDate="${optOut.startDate}" endDate="${optOut.stopDate}" type="DH"/>
+                                </c:otherwise>
+                            </c:choose>
+                        </td>
+                    </tr>
+                </c:forEach>
+            </tbody>
         </table>
         <input type="button" name="viewAll" value="<cti:msg key="yukon.dr.operator.optout.viewAll" />" onClick="location='OptOutHistory.jsp'" class="formSubmit">
         <br><br>

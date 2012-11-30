@@ -102,7 +102,7 @@ function taskFinished() {
                                 </c:if>
                             </tags:nameValue2>
                             <tags:nameValue2 nameKey=".successful">
-                                <cti:dataUpdaterValue type="INVENTORY_TASK" identifier="${task.taskId}/SUCCESS_COUNT" styleClass="successMessage normalBoldLabel"/>
+                                <cti:dataUpdaterValue type="INVENTORY_TASK" identifier="${task.taskId}/SUCCESS_COUNT" styleClass="successMessage fwb"/>
                                 <cti:classUpdater type="INVENTORY_TASK" identifier="${task.taskId}/NEW_OPERATION_FOR_SUCCESS">
                                     <ul class="resultList">
                                         <li>
@@ -113,7 +113,7 @@ function taskFinished() {
                             </tags:nameValue2>
                             
                             <tags:nameValue2 nameKey=".failed">
-                                <cti:dataUpdaterValue type="INVENTORY_TASK" identifier="${task.taskId}/FAILED_COUNT" styleClass="errorMessage normalBoldLabel"/>
+                                <cti:dataUpdaterValue type="INVENTORY_TASK" identifier="${task.taskId}/FAILED_COUNT" styleClass="errorMessage fwb"/>
                                 
                                 <cti:classUpdater type="INVENTORY_TASK" identifier="${task.taskId}/NEW_OPERATION_FOR_FAILED">
                                     <ul class="resultList">

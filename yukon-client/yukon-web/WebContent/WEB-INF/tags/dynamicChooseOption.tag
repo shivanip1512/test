@@ -7,7 +7,7 @@
         <span id="${dynamicChooseId}${optionId}"><jsp:doBody/></span>
     </c:when>
     <c:otherwise>
-        <div class="errorRed" style="font-weight: bold">
+        <div class="error" style="font-weight: bold">
             ERROR: The &lt;dynamicChooseOption&gt; tag must be enclosed in a &lt;dynamicChoose&gt; tag
         </div>
     </c:otherwise>

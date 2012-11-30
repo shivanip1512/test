@@ -62,10 +62,10 @@ YEvent.observeSelectorClick('#confirmCancel', function(event) {
         
         <c:if test="${fn:length(workOrders) <= 0}">
             <cti:displayForPageEditModes modes="VIEW">
-                <tr><td colspan="7" class="noCalls subtleGray"><i:inline key=".noWorkOrders"/></td></tr>
+                <tr><td colspan="7" class="noCalls subtle"><i:inline key=".noWorkOrders"/></td></tr>
             </cti:displayForPageEditModes>
             <cti:displayForPageEditModes modes="EDIT,CREATE">
-                <tr><td colspan="8" class="noCalls subtleGray"><i:inline key=".noWorkOrders"/></td></tr>
+                <tr><td colspan="8" class="noCalls subtle"><i:inline key=".noWorkOrders"/></td></tr>
             </cti:displayForPageEditModes>
         </c:if>
 

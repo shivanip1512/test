@@ -137,7 +137,7 @@
 			     	<tags:nameValue name="${maskExistingPointsFalseOptionText}">${maskExistingPointsFalseOptionTooltip}<br><br></tags:nameValue>
 			     	<tags:nameValue name="${maskExistingPointsTrueOptionText}">${maskExistingPointsTrueOptionTooltip}</tags:nameValue>
 			     </tags:nameValueContainer><br>
-			     <div class="errorRed">${maskExistingPointsOptionDescription}</div>
+			     <div class="error">${maskExistingPointsOptionDescription}</div>
 			</tags:simplePopup>
             
             <%-- SHARED POINTS --%>

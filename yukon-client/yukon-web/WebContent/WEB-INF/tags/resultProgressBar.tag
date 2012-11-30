@@ -14,7 +14,7 @@
 <cti:includeScript link="/JavaScript/bulkDataUpdaterCallbacks.js"/>
 <cti:uniqueIdentifier var="pDescId" prefix="pgd_"/>
 
-<span class="normalBoldLabel"><cti:msg key="${progressLabelTextKey}" />: </span>
+<span class="fwb"><cti:msg key="${progressLabelTextKey}" />: </span>
 
 <c:choose>
 	<c:when test="${not empty pageScope.statusClassKey}">

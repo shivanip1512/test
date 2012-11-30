@@ -36,7 +36,7 @@
 
 		<c:set var="tdClass" value=""/>
 		<c:if test="${monitor.evaluatorStatus == 'DISABLED'}">
-			<c:set var="tdClass" value="subtleGray"/>
+			<c:set var="tdClass" value="subtle"/>
 		</c:if>
 		
 		<tr>

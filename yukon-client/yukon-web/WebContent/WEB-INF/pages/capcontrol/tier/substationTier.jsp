@@ -63,7 +63,7 @@
     				    <a href="${feederLink}" id="anc_${substationId}">
                             <spring:escapeBody>${subStation.ccName}</spring:escapeBody>
                         </a>
-    				    <span class="errorRed textFieldLabel">
+    				    <span class="error textFieldLabel">
                             <cti:capControlValue paoId="${substationId}" type="SUBSTATION" format="SA_ENABLED_MSG" />
                         </span>
     				</td>

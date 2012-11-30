@@ -17,7 +17,7 @@
         <form id="startform" method="post" action="${submitUrl}/action">
         <tags:abstractContainer type="box" title="Schedule Name:  ${schedule.scheduleName}" >
         	<c:if test="${errorMsg != null}">
-            	<div class="errorRed">${errorMsg}</div>
+            	<div class="error">${errorMsg}</div>
             </c:if>
             <h4>Start</h4>
             <table> 

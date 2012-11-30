@@ -10,7 +10,7 @@
             <i:inline key=".deviceStatusHistory.none"/>
         </c:when>
         <c:otherwise>
-            <div class="hardwarePageContainer">
+            <div class="scrollingContainer_small">
                 <table class="compactResultsTable">
                     <thead>
                         <tr>
@@ -19,6 +19,7 @@
                             <th class="wsnw"><i:inline key=".deviceStatusHistory.timeOfEvent"/></th>
                         </tr>
                     </thead>
+                    <tfoot></tfoot>
                     <tbody>
                         <c:forEach var="event" items="${deviceStatusHistory}">
                             <tr class="<tags:alternateRow odd="" even="altRow"/>">
@@ -42,15 +43,9 @@
             <i:inline key=".hardwareHistory.none"/>
         </c:when>
         <c:otherwise>
-            <div class="hardwarePageContainer">
-                <tags:alternateRowReset/>
+            <div class="scrollingContainer_small">
                 <table class="compactResultsTable">
-                    <thead>
-                        <tr>
-                            <th class="wsnw"><i:inline key=".hardwareHistory.date"/></th>
-                            <th class="wsnw"><i:inline key=".hardwareHistory.action"/></th>
-                        </tr>
-                    </thead>
+                    <thead></thead>
                     <tfoot></tfoot>
                     <tbody>
                     <c:forEach var="event" items="${hardwareHistory}">

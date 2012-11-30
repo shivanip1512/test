@@ -29,7 +29,7 @@
 			<c:set var="show" value="${mspSubstation.show}"/>
 			<c:set var="trClass" value=""/>
 			<c:if test="${!show}">
-				<c:set var="trClass" value="class='subtleGray'"/>
+				<c:set var="trClass" value="class='subtle'"/>
 			</c:if>
 		
 			<tr ${trClass}>

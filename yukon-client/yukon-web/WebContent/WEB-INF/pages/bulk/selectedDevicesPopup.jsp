@@ -4,7 +4,7 @@
 <%@ taglib prefix="fn" uri="http://java.sun.com/jsp/jstl/functions" %>
 
 <c:if test="${not empty resultsLimitedTo}">
-    <div class="errorRed" style="width:95%;text-align:right;">
+    <div class="error" style="width:95%;text-align:right;">
         <cti:msg key="yukon.common.device.bulk.selectedDevicesResultsLimited" arguments="${resultsLimitedTo}" />
     </div>
     <br>

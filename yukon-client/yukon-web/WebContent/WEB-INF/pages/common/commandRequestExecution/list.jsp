@@ -74,7 +74,7 @@
         <form name="filterForm" id="filterForm" action="/common/commandRequestExecutionResults/list" method="get">
         
             <c:if test="${not empty error}">
-                <div class="errorRed">${error}</div><br>
+                <div class="error">${error}</div><br>
             </c:if>
             
             <input type="hidden" name="commandRequestExecutionId" value="${commandRequestExecutionId}">
@@ -143,7 +143,7 @@
                 <c:set var="colCount" value="8"/>
             </c:if>
             <tr>
-                <td colspan="${colCount}" style="text-align:center;" class="subtleGray">${noExecutionsText}</td>
+                <td colspan="${colCount}" style="text-align:center;" class="subtle">${noExecutionsText}</td>
             </tr>
         </c:if>
     
@@ -166,10 +166,10 @@
                 <td style="white-space:nowrap;">
                     <c:choose>
                         <c:when test="${creWrapper.cre.commandRequestExecutionStatus == 'FAILED'}">
-                            <c:set var="statusSpanClass" value="errorRed"/>
+                            <c:set var="statusSpanClass" value="error"/>
                         </c:when>
                         <c:when test="${creWrapper.cre.commandRequestExecutionStatus == 'IN_PROGRESS'}">
-                            <c:set var="statusSpanClass" value="okGreen"/>
+                            <c:set var="statusSpanClass" value="success"/>
                         </c:when>
                         <c:otherwise>
                             <c:set var="statusSpanClass" value=""/>

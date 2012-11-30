@@ -25,8 +25,8 @@
         <tags:nameValue2 nameKey=".manufacturer">${rfnMeter.meterIdentifier.sensorManufacturer}</tags:nameValue2>
     </c:if>
 	<tags:nameValue2 nameKey=".status">
-	<c:if test='${meter.disabled}'><span style="font-weight:bold;color:#CC0000;"><i:inline key=".disabled"/></span></c:if>
-    <c:if test='${!meter.disabled}'><span style="font-weight:bold;color:#006633;"><i:inline key=".enabled"/></span></c:if>
+	<c:if test='${meter.disabled}'><span class="fwb error"><i:inline key=".disabled"/></span></c:if>
+    <c:if test='${!meter.disabled}'><span class="fwb success"><i:inline key=".enabled"/></span></c:if>
     </tags:nameValue2>
 </tags:nameValueContainer2>
 

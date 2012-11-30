@@ -18,7 +18,7 @@
         <cti:url value="/stars/operator/inventory/create" var="action"/>
     </cti:displayForPageEditModes>
     
-    <cti:dataGrid cols="2" tableClasses="twoColumnLayout hardwareTable">
+    <cti:dataGrid cols="2" tableClasses="twoColumnLayout">
     
         <%-- LEFT SIDE COLUMN --%>
         <%-- COMMON HARDWARE INFO --%>

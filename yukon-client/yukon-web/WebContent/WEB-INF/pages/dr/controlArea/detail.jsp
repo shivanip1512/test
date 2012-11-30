@@ -746,27 +746,27 @@
                         <%-- Actions are disabled if the user does not have CONTROL_COMMAND for LM objects --%>
 
                         <cti:msg var="noAssignedPrograms" key="yukon.web.modules.dr.controlAreaDetail.noControl"/>
-                        <div class="subtleGray" title="${noAssignedPrograms}">
+                        <div class="subtle" title="${noAssignedPrograms}">
                             <cti:logo key="yukon.web.modules.dr.controlAreaDetail.actions.startIcon.disabled"/>
                             <cti:msg key="yukon.web.modules.dr.controlAreaDetail.actions.start"/>
                         </div>
-                        <div class="subtleGray" title="${noAssignedPrograms}">
+                        <div class="subtle" title="${noAssignedPrograms}">
                             <cti:logo key="yukon.web.modules.dr.controlAreaDetail.actions.stopIcon.disabled"/>
                             <cti:msg key="yukon.web.modules.dr.controlAreaDetail.actions.stop"/>
                         </div>
-                        <div class="subtleGray" title="${noAssignedPrograms}">
+                        <div class="subtle" title="${noAssignedPrograms}">
                             <cti:logo key="yukon.web.modules.dr.controlAreaDetail.actions.triggersChangeIcon.disabled"/>
                             <cti:msg key="yukon.web.modules.dr.controlAreaDetail.actions.triggersChange"/>
                         </div>
-                        <div class="subtleGray" title="${noAssignedPrograms}">
+                        <div class="subtle" title="${noAssignedPrograms}">
                             <cti:logo key="yukon.web.modules.dr.controlAreaDetail.actions.dailyTimeChangeIcon.disabled"/>
                             <cti:msg key="yukon.web.modules.dr.controlAreaDetail.actions.dailyTimeChange"/>
                         </div>
-                        <div class="subtleGray" title="${noAssignedPrograms}">
+                        <div class="subtle" title="${noAssignedPrograms}">
                             <cti:logo key="yukon.web.modules.dr.controlAreaDetail.actions.disableIcon.disabled"/>
                             <cti:msg key="yukon.web.modules.dr.controlAreaDetail.actions.disable"/>
                         </div>
-                        <div class="subtleGray" title="${noAssignedPrograms}">
+                        <div class="subtle" title="${noAssignedPrograms}">
                             <cti:logo key="yukon.web.modules.dr.controlAreaDetail.actions.resetPeakIcon.disabled"/>
                             <cti:msg key="yukon.web.modules.dr.controlAreaDetail.actions.resetPeak"/>
                         </div>

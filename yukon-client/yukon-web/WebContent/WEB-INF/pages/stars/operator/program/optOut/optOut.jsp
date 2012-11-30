@@ -84,68 +84,71 @@
         <input type="submit" value="<cti:msg2 key=".optOut"/>" class="formSubmit">
     </form:form>
 </tags:boxContainer2>
-<br><br>
 
 <!-- Current Opt Outs -->
 <tags:boxContainer2 nameKey="currentOptOuts">
 <c:choose>
     <c:when test="${fn:length(currentOptOutList) > 0}">
         <table id="deviceTable" class="compactResultsTable rowHighlighting">
-            <tr class="<tags:alternateRow odd="" even="altRow"/>">
-                <th><i:inline key=".device"/></th>
-                <th><i:inline key=".program"/></th>
-                <th><i:inline key=".status"/></th>
-                <th><i:inline key=".dateActive"/></th>
-                <th class="nonwrapping"><i:inline key=".actions"/></th>
-            </tr>
-            
-            <c:forEach var="optOut" items="${currentOptOutList}">
-                <tr class="<tags:alternateRow odd="altRow" even=""/>">
-                    <td valign="top">
-                        <spring:escapeBody htmlEscape="true">${optOut.inventory.displayName}</spring:escapeBody>
-                    </td>
-                    <td valign="top">
-                        <c:forEach var="program" items="${optOut.programList}" varStatus="status">
-                            <c:if test="${status.count != 1}"><br></c:if>
-                            <spring:escapeBody htmlEscape="true">${program.programName}</spring:escapeBody>
-                        </c:forEach>
-                    </td>
-                    <td valign="top" 
-                        <c:choose>
-                    	    <c:when test="${optOut.state eq 'START_OPT_OUT_SENT'}">class="okGreen"</c:when>
-                    	    <c:when test="${optOut.state eq 'CANCEL_SENT'}">class="subtleGray"</c:when>
-                    	    <c:otherwise>class=""</c:otherwise>
-                        </c:choose>
-                    >
-                        <cti:msg key="${optOut.state.formatKey}"/>
-                    </td>
-                    <td valign="top" class="nonwrapping">
-                        <cti:formatDate value="${optOut.startDate}" type="DATEHM"/>
-                    </td>
-                    <td valign="top">
-                        <cti:img nameKey="cancelOptOut" id="cancel${optOut.inventory.inventoryId}" styleClass="hoverableImage pointer"/>
-                        <form action="/stars/operator/program/optOut/cancelOptOut" class="di">
-                            <input type="hidden" name="accountId" value="${accountId}"/>
-                            <input type="hidden" name="eventId" value="${optOut.eventId}"/>
-                            <tags:confirmDialog on="#cancel${optOut.inventory.inventoryId}" nameKey=".confirmCancelOptOut" argument="${optOut.inventory.displayName}"/>
-                        </form>
-                        
-                        <c:choose>
-                            <c:when test="${optOut.state == 'START_OPT_OUT_SENT'}">
-                                <cti:img nameKey="resendOptOut" id="resend${optOut.inventory.inventoryId}" styleClass="hoverableImage pointer"/>
-                                <form action="/stars/operator/program/optOut/resend" class="di">
-                                    <input type="hidden" name="accountId" value="${accountId}"/>
-                                    <input type="hidden" name="inventoryId" value="${optOut.inventory.inventoryId}"/>
-                                    <tags:confirmDialog on="#resend${optOut.inventory.inventoryId}" nameKey=".confirmResendOptOut" argument="${optOut.inventory.displayName}"/>
-                                </form>
-                            </c:when>
-                            <c:otherwise>
-                                <cti:img nameKey="resendOptOutDisabled"/>
-                            </c:otherwise>
-                        </c:choose>
-                    </td>
+            <thead>
+                <tr>
+                    <th><i:inline key=".device"/></th>
+                    <th><i:inline key=".program"/></th>
+                    <th><i:inline key=".status"/></th>
+                    <th><i:inline key=".dateActive"/></th>
+                    <th class="nonwrapping"><i:inline key=".actions"/></th>
                 </tr>
-            </c:forEach>
+            </thead>
+            <tfoot></tfoot>
+            <tbody>
+                <c:forEach var="optOut" items="${currentOptOutList}">
+                    <tr>
+                        <td valign="top">
+                            <spring:escapeBody htmlEscape="true">${optOut.inventory.displayName}</spring:escapeBody>
+                        </td>
+                        <td valign="top">
+                            <c:forEach var="program" items="${optOut.programList}" varStatus="status">
+                                <c:if test="${status.count != 1}"><br></c:if>
+                                <spring:escapeBody htmlEscape="true">${program.programName}</spring:escapeBody>
+                            </c:forEach>
+                        </td>
+                        <td valign="top" 
+                            <c:choose>
+                        	    <c:when test="${optOut.state eq 'START_OPT_OUT_SENT'}">class="success"</c:when>
+                        	    <c:when test="${optOut.state eq 'CANCEL_SENT'}">class="subtle"</c:when>
+                        	    <c:otherwise>class=""</c:otherwise>
+                            </c:choose>
+                        >
+                            <cti:msg key="${optOut.state.formatKey}"/>
+                        </td>
+                        <td valign="top" class="nonwrapping">
+                            <cti:formatDate value="${optOut.startDate}" type="DATEHM"/>
+                        </td>
+                        <td valign="top">
+                            <cti:img nameKey="cancelOptOut" id="cancel${optOut.inventory.inventoryId}" styleClass="hoverableImage pointer"/>
+                            <form action="/stars/operator/program/optOut/cancelOptOut" class="di">
+                                <input type="hidden" name="accountId" value="${accountId}"/>
+                                <input type="hidden" name="eventId" value="${optOut.eventId}"/>
+                                <tags:confirmDialog on="#cancel${optOut.inventory.inventoryId}" nameKey=".confirmCancelOptOut" argument="${optOut.inventory.displayName}"/>
+                            </form>
+                            
+                            <c:choose>
+                                <c:when test="${optOut.state == 'START_OPT_OUT_SENT'}">
+                                    <cti:img nameKey="resendOptOut" id="resend${optOut.inventory.inventoryId}" styleClass="hoverableImage pointer"/>
+                                    <form action="/stars/operator/program/optOut/resend" class="di">
+                                        <input type="hidden" name="accountId" value="${accountId}"/>
+                                        <input type="hidden" name="inventoryId" value="${optOut.inventory.inventoryId}"/>
+                                        <tags:confirmDialog on="#resend${optOut.inventory.inventoryId}" nameKey=".confirmResendOptOut" argument="${optOut.inventory.displayName}"/>
+                                    </form>
+                                </c:when>
+                                <c:otherwise>
+                                    <cti:img nameKey="resendOptOutDisabled"/>
+                                </c:otherwise>
+                            </c:choose>
+                        </td>
+                    </tr>
+                </c:forEach>
+            </tbody>
         </table>
     </c:when>
     <c:otherwise>
@@ -153,80 +156,82 @@
     </c:otherwise>
 </c:choose>
 </tags:boxContainer2>
-<br><br>
 
 <!-- Opt Out Limits -->
-<tags:alternateRowReset/>
 <tags:boxContainer2 nameKey="optOutLimits">
 <c:choose>
     <c:when test="${fn:length(displayableInventories) > 0}">
         <table id="deviceTable" class="compactResultsTable rowHighlighting">
-            <tr class="<tags:alternateRow odd="" even="altRow"/>">
-                <th><i:inline key=".device"/></th>
-                <th><i:inline key=".used"/></th>
-                <th><i:inline key=".remaining"/></th>
-                <c:if test="${!noOptOutLimits}">
-                    <th><i:inline key=".actions"/>
-                        <a href="javascript:void(0);" onclick="$('${uniqueId}').toggle();">
-                            <cti:img nameKey="help" styleClass="hoverableImage"/>
-                        </a>
-                    </th>
-                </c:if>
-            </tr>
-            
-            <c:forEach var="inventory" items="${displayableInventories}">
-                <tr class="<tags:alternateRow odd="altRow" even=""/>">
-                    <td><spring:escapeBody htmlEscape="true">${inventory.displayName}</spring:escapeBody></td>
-                    <td>${optOutCounts[inventory.inventoryId].usedOptOuts}</td>
-                    <td>
-                        <c:choose>
-                            <c:when test="${noOptOutLimits}">
-                                <i:inline key=".unlimitedRemaining"/>
-                            </c:when>
-                            <c:otherwise>
-                                ${optOutCounts[inventory.inventoryId].remainingOptOuts}
-                            </c:otherwise>
-                        </c:choose>
-                    </td>
-                    <td>
-                        <c:if test="${!noOptOutLimits}">
-                            <cti:img nameKey="allowOne" id="allowOne${inventory.inventoryId}" styleClass="hoverableImage pointer"/>
-                            <form action="/stars/operator/program/optOut/allowAnother" class="di">
-                                <input type="hidden" name="accountId" value="${accountId}"/>
-                                <input type="hidden" name="inventoryId" value="${inventory.inventoryId}"/>
-                                <tags:confirmDialog on="#allowOne${inventory.inventoryId}" nameKey=".confirmAllowOne" argument="${inventory.displayName}"/>
-                            </form>
-
-                            <c:if test="${optOutCounts[inventory.inventoryId].remainingOptOuts > 0}">
-                                <cti:img nameKey="decrementAllowance" id="decrementAllowance${inventory.inventoryId}" styleClass="hoverableImage pointer"/>
-                                <form action="/stars/operator/program/optOut/decrementAllowances" class="di">
+            <thead>
+                <tr>
+                    <th><i:inline key=".device"/></th>
+                    <th><i:inline key=".used"/></th>
+                    <th><i:inline key=".remaining"/></th>
+                    <c:if test="${!noOptOutLimits}">
+                        <th><i:inline key=".actions"/>
+                            <a href="javascript:void(0);" onclick="$('${uniqueId}').toggle();">
+                                <cti:img nameKey="help" styleClass="hoverableImage"/>
+                            </a>
+                        </th>
+                    </c:if>
+                </tr>
+            </thead>
+            <tfoot></tfoot>
+            <tbody>
+                <c:forEach var="inventory" items="${displayableInventories}">
+                    <tr>
+                        <td><spring:escapeBody htmlEscape="true">${inventory.displayName}</spring:escapeBody></td>
+                        <td>${optOutCounts[inventory.inventoryId].usedOptOuts}</td>
+                        <td>
+                            <c:choose>
+                                <c:when test="${noOptOutLimits}">
+                                    <i:inline key=".unlimitedRemaining"/>
+                                </c:when>
+                                <c:otherwise>
+                                    ${optOutCounts[inventory.inventoryId].remainingOptOuts}
+                                </c:otherwise>
+                            </c:choose>
+                        </td>
+                        <td>
+                            <c:if test="${!noOptOutLimits}">
+                                <cti:img nameKey="allowOne" id="allowOne${inventory.inventoryId}" styleClass="hoverableImage pointer"/>
+                                <form action="/stars/operator/program/optOut/allowAnother" class="di">
                                     <input type="hidden" name="accountId" value="${accountId}"/>
                                     <input type="hidden" name="inventoryId" value="${inventory.inventoryId}"/>
-                                    <tags:confirmDialog on="#decrementAllowance${inventory.inventoryId}" nameKey=".confirmDecrementAllowance" argument="${inventory.displayName}"/>
+                                    <tags:confirmDialog on="#allowOne${inventory.inventoryId}" nameKey=".confirmAllowOne" argument="${inventory.displayName}"/>
                                 </form>
-                            </c:if>
-                            <c:if test="${optOutCounts[inventory.inventoryId].remainingOptOuts <= 0}">
-                                <cti:img nameKey="decrementAllowanceDisabled"/>
-                            </c:if>
-
-                            <c:choose>
-        	                    <c:when test="${optOutLimit <= optOutCounts[inventory.inventoryId].remainingOptOuts}">
-                                    <cti:img nameKey="resetToLimitDisabled"/>
-        	                    </c:when>
-        	                    <c:otherwise>
-                                    <cti:img nameKey="resetToLimit" id="resetToLimit${inventory.inventoryId}" styleClass="hoverableImage pointer"/>
-                                    <form action="/stars/operator/program/optOut/resetToLimit" class="di">
+    
+                                <c:if test="${optOutCounts[inventory.inventoryId].remainingOptOuts > 0}">
+                                    <cti:img nameKey="decrementAllowance" id="decrementAllowance${inventory.inventoryId}" styleClass="hoverableImage pointer"/>
+                                    <form action="/stars/operator/program/optOut/decrementAllowances" class="di">
                                         <input type="hidden" name="accountId" value="${accountId}"/>
                                         <input type="hidden" name="inventoryId" value="${inventory.inventoryId}"/>
-                                        <tags:confirmDialog on="#resetToLimit${inventory.inventoryId}" nameKey=".confirmResetToLimit" argument="${inventory.displayName}"/>
+                                        <tags:confirmDialog on="#decrementAllowance${inventory.inventoryId}" nameKey=".confirmDecrementAllowance" argument="${inventory.displayName}"/>
                                     </form>
-          	                   </c:otherwise>
-        	                </c:choose>
-                                             
-                        </c:if>
-                    </td>
-                </tr>
-            </c:forEach>
+                                </c:if>
+                                <c:if test="${optOutCounts[inventory.inventoryId].remainingOptOuts <= 0}">
+                                    <cti:img nameKey="decrementAllowanceDisabled"/>
+                                </c:if>
+    
+                                <c:choose>
+            	                    <c:when test="${optOutLimit <= optOutCounts[inventory.inventoryId].remainingOptOuts}">
+                                        <cti:img nameKey="resetToLimitDisabled"/>
+            	                    </c:when>
+            	                    <c:otherwise>
+                                        <cti:img nameKey="resetToLimit" id="resetToLimit${inventory.inventoryId}" styleClass="hoverableImage pointer"/>
+                                        <form action="/stars/operator/program/optOut/resetToLimit" class="di">
+                                            <input type="hidden" name="accountId" value="${accountId}"/>
+                                            <input type="hidden" name="inventoryId" value="${inventory.inventoryId}"/>
+                                            <tags:confirmDialog on="#resetToLimit${inventory.inventoryId}" nameKey=".confirmResetToLimit" argument="${inventory.displayName}"/>
+                                        </form>
+              	                   </c:otherwise>
+            	                </c:choose>
+                                                 
+                            </c:if>
+                        </td>
+                    </tr>
+                </c:forEach>
+            </tbody>
         </table>
     </c:when>
     <c:otherwise>
@@ -234,10 +239,8 @@
     </c:otherwise>
 </c:choose>
 </tags:boxContainer2>
-<br><br>
 
 <!-- Opt Out History -->
-<tags:alternateRowReset/>
 <tags:boxContainer2 nameKey="optOutHistory">
 	<dr:optOutHistory previousOptOutList="${previousOptOutList}" />
 

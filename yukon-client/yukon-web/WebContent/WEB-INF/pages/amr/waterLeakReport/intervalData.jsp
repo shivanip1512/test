@@ -67,7 +67,7 @@
 			<c:forEach var="row" items="${filterResult.resultList}">
 				<c:set var="disabledClass" value="" />
 				<c:if test="${row.meter.disabled}">
-					<c:set var="disabledClass" value="subtleGray" />
+					<c:set var="disabledClass" value="subtle" />
 				</c:if>
 				<c:set var="leakRowClass" value="" />
 				<c:if test="${row.pointValueHolder.value == row.leakRate}">
@@ -88,7 +88,7 @@
 
 			<c:if test="${fn:length(filterResult.resultList) == 0}">
 				<tr>
-					<td class="noResults subtleGray" colspan="3"><i:inline key=".noUsage" /></td>
+					<td class="noResults subtle" colspan="3"><i:inline key=".noUsage" /></td>
 				</tr>
 			</c:if>
 		</table>

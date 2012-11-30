@@ -14,7 +14,7 @@
 <div id="${styleId}" class="${styleClass}">
     <c:set var="requiredColumns" value="${format.requiredColumns}"/>
     <c:if test="${not empty requiredColumns}">
-        <table class="miniResultsTable" style="font-size:11px;">
+        <table class="resultsTable" style="font-size:11px;">
             <tr>
                 <th colspan="3" style="font-weight:bold;">
                     <i:inline key="yukon.web.import.display.requiredColumnsName"/>
@@ -52,7 +52,7 @@
     
     <c:set var="optionalColumns" value="${format.optionalColumns}"/>
     <c:if test="${not empty optionalColumns}">
-        <table class="miniResultsTable" style="font-size:11px;">
+        <table class="resultsTable" style="font-size:11px;">
             <tr>
                 <th colspan="3" style="font-weight:bold;">
                     <i:inline key="yukon.web.import.display.optionalColumnsName" />
@@ -90,7 +90,7 @@
     
     <c:set var="groupedColumnsMap" value="${format.groupedColumnsAsMap}"/>
     <c:if test="${not empty groupedColumnsMap}">
-        <table class="miniResultsTable" style="font-size:11px;">
+        <table class="resultsTable" style="font-size:11px;">
             <tr>
                 <th colspan="3" style="font-weight:bold;">
                     <i:inline key="yukon.web.import.display.groupedColumnsName" />
@@ -133,7 +133,7 @@
     
     <c:set var="valueDepColumns" value="${format.valueDependentColumnsAsMap}"/>
     <c:if test="${not empty valueDepColumns}">
-        <table class="miniResultsTable" style="font-size:11px;">
+        <table class="resultsTable" style="font-size:11px;">
             <tr>
                 <th colspan="5" style="font-weight:bold;">
                     <i:inline key="yukon.web.import.display.valueDependentColumnsName" />

@@ -50,7 +50,7 @@
 		</tr>
 	</c:when>
 	<c:otherwise>
-		<div class="errorRed" style="font-weight: bold">
+		<div class="error" style="font-weight: bold">
 			ERROR: The &lt;nameValue&gt; tag must be enclosed in a &lt;nameValueContainer&gt; tag
 		</div>
 	</c:otherwise>

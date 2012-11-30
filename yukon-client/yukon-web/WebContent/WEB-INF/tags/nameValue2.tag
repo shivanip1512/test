@@ -50,6 +50,6 @@
 		</tr>
 	</c:when>
 	<c:otherwise>
-		<div class="errorRed">ERROR: The &lt;nameValue2&gt; tag must be enclosed in a &lt;nameValueContainer2&gt; tag</div>
+		<div class="error">ERROR: The &lt;nameValue2&gt; tag must be enclosed in a &lt;nameValueContainer2&gt; tag</div>
 	</c:otherwise>
 </c:choose>

@@ -48,7 +48,7 @@
             
             <%-- NOTE --%>
             <tr>
-                <td valign="top" class="smallBoldLabel errorRed">
+                <td valign="top" class="smallBoldLabel error">
                     <cti:msg key="yukon.common.device.bulk.massDeleteConfirm.noteLabel"/>
                 </td>
                 <td style="font-size:11px;">

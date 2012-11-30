@@ -123,48 +123,52 @@
 			<c:if test="${fn:length(readResults) > 0}">
 			
 				<br><br>
-				<div class="normalBoldLabel"><i:inline key=".recentReadLogsResults"/></div>
+				<div class="fwb"><i:inline key=".recentReadLogsResults"/></div>
 				<br>
 				
-				<table class="miniResultsTable">
-					<tr>
-						<th><i:inline key=".recentReadLogsResults.dateTime"/></th>
-						<th><i:inline key=".recentReadLogsResults.successCount"/></th>
-						<th><i:inline key=".recentReadLogsResults.failureCount"/></th>
-						<th><i:inline key=".recentReadLogsResults.unsupportedCount"/></th>
-						<th><i:inline key=".recentReadLogsResults.detail"/></th>
-						<th><i:inline key=".recentReadLogsResults.status"/></th>
-					</tr>
-					
-					<c:forEach var="result" items="${readResults}">
-						<tr>
-						
-							<td>
-								<cti:formatDate type="BOTH" value="${result.startTime}"/>
-							</td>
-							<td>
-								<cti:dataUpdaterValue type="GROUP_METER_READ" identifier="${result.key}/SUCCESS_COUNT"/>
-							</td>
-							<td>
-								<cti:dataUpdaterValue type="GROUP_METER_READ" identifier="${result.key}/FAILURE_COUNT"/>
-							</td>
-							<td>
-								<cti:dataUpdaterValue type="GROUP_METER_READ" identifier="${result.key}/UNSUPPORTED_COUNT"/>
-							</td>
-							<td>
-								<cti:url var="readLogsDetailUrl" value="/group/groupMeterRead/resultDetail">
-									<cti:param name="resultKey" value="${result.key}"/>
-								</cti:url>
-								<a href="${readLogsDetailUrl}"><i:inline key=".recentReadLogsResults.viewDetailLink"/></a>
-							</td>
-							<td>
-								<cti:classUpdater type="GROUP_METER_READ" identifier="${result.key}/STATUS_CLASS">
-		                        	<cti:dataUpdaterValue type="GROUP_METER_READ" identifier="${result.key}/STATUS_TEXT"/>
-		                        </cti:classUpdater>
-							</td>
-						
-						</tr>
-					</c:forEach>
+				<table class="resultsTable">
+                    <thead>
+    					<tr>
+    						<th><i:inline key=".recentReadLogsResults.dateTime"/></th>
+    						<th><i:inline key=".recentReadLogsResults.successCount"/></th>
+    						<th><i:inline key=".recentReadLogsResults.failureCount"/></th>
+    						<th><i:inline key=".recentReadLogsResults.unsupportedCount"/></th>
+    						<th><i:inline key=".recentReadLogsResults.detail"/></th>
+    						<th><i:inline key=".recentReadLogsResults.status"/></th>
+    					</tr>
+                    </thead>
+					<tfoot></tfoot>
+                    <tbody>
+    					<c:forEach var="result" items="${readResults}">
+    						<tr>
+    						
+    							<td>
+    								<cti:formatDate type="BOTH" value="${result.startTime}"/>
+    							</td>
+    							<td>
+    								<cti:dataUpdaterValue type="GROUP_METER_READ" identifier="${result.key}/SUCCESS_COUNT"/>
+    							</td>
+    							<td>
+    								<cti:dataUpdaterValue type="GROUP_METER_READ" identifier="${result.key}/FAILURE_COUNT"/>
+    							</td>
+    							<td>
+    								<cti:dataUpdaterValue type="GROUP_METER_READ" identifier="${result.key}/UNSUPPORTED_COUNT"/>
+    							</td>
+    							<td>
+    								<cti:url var="readLogsDetailUrl" value="/group/groupMeterRead/resultDetail">
+    									<cti:param name="resultKey" value="${result.key}"/>
+    								</cti:url>
+    								<a href="${readLogsDetailUrl}"><i:inline key=".recentReadLogsResults.viewDetailLink"/></a>
+    							</td>
+    							<td>
+    								<cti:classUpdater type="GROUP_METER_READ" identifier="${result.key}/STATUS_CLASS">
+    		                        	<cti:dataUpdaterValue type="GROUP_METER_READ" identifier="${result.key}/STATUS_TEXT"/>
+    		                        </cti:classUpdater>
+    							</td>
+    						
+    						</tr>
+    					</c:forEach>
+                    </tbody>
 				</table>
 			</c:if>
 		</form>

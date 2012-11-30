@@ -14,15 +14,15 @@
 <cti:checkPaoAuthorization permission="CONTROL_COMMAND" pao="${pao}">
     <tags:dynamicChoose updaterString="DR_PROGRAM/${paoId}/SHOW_ACTION" suffix="${paoId}">
         <tags:dynamicChooseOption optionId="unknown">
-            <span class="subtleGray" title="${programUnknown}">
+            <span class="subtle" title="${programUnknown}">
                 <cti:logo key="yukon.web.modules.dr.programDetail.actions.startIcon.disabled"/>
             </span>
-            <span class="subtleGray" title="${programUnknown}">
+            <span class="subtle" title="${programUnknown}">
                 <cti:logo key="yukon.web.modules.dr.programDetail.actions.stopIcon.disabled"/>
             </span>
         </tags:dynamicChooseOption>
         <tags:dynamicChooseOption optionId="runningEnabled">
-            <span class="subtleGray" title="${alreadyRunning}">
+            <span class="subtle" title="${alreadyRunning}">
                 <cti:logo key="yukon.web.modules.dr.programDetail.actions.startIcon.disabled"/>
             </span>
             <cti:url var="stopProgramUrl" value="/dr/program/stop/details">
@@ -58,7 +58,7 @@
             </span>
         </tags:dynamicChooseOption>
         <tags:dynamicChooseOption optionId="runningDisabled">
-            <span class="subtleGray" title="${alreadyRunning}">
+            <span class="subtle" title="${alreadyRunning}">
                 <cti:logo key="yukon.web.modules.dr.programDetail.actions.startIcon.disabled"/>
             </span>
             <cti:url var="stopProgramUrl" value="/dr/program/stop/details">
@@ -97,10 +97,10 @@
 </cti:checkPaoAuthorization>                    
 <cti:checkPaoAuthorization permission="CONTROL_COMMAND" pao="${pao}" invert="true">
     <cti:msg var="noProgramControl" key="yukon.web.modules.dr.programDetail.noControl"/>
-    <span class="subtleGray" title="${noProgramControl}">
+    <span class="subtle" title="${noProgramControl}">
         <cti:logo key="yukon.web.modules.dr.programDetail.actions.startIcon.disabled"/>
     </span>
-    <span class="subtleGray" title="${noProgramControl}">
+    <span class="subtle" title="${noProgramControl}">
         <cti:logo key="yukon.web.modules.dr.programDetail.actions.stopIcon.disabled"/>
     </span>
 </cti:checkPaoAuthorization>

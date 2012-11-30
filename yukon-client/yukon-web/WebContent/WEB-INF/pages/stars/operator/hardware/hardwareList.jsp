@@ -380,13 +380,13 @@
                 <i:inline key=".switches.none"/>
             </c:when>
             <c:otherwise>
-                <table class="compactResultsTable hardwareListTable">
+                <table class="compactResultsTable aligned_4_actions">
                     <thead>
                         <tr>
-                            <th class="name"><i:inline key=".serialNumber"/></th>
-                            <th class="type"><i:inline key=".displayType.SWITCH"/></th>
-                            <th class="label"><i:inline key=".label"/></th>
-                            <th class="actions"><i:inline key=".actions"/></th>
+                            <th class="first"><i:inline key=".serialNumber"/></th>
+                            <th class="middle"><i:inline key=".displayType.SWITCH"/></th>
+                            <th class="middle"><i:inline key=".label"/></th>
+                            <th class="last"><i:inline key=".actions"/></th>
                         </tr>
                     </thead>
                     <tfoot></tfoot>
@@ -466,13 +466,13 @@
             </c:when>
             <c:otherwise>
                 <tags:alternateRowReset/>
-                <table class="compactResultsTable hardwareListTable">
+                <table class="compactResultsTable aligned_4_actions">
                     <thead>
                         <tr>
-                            <th class="name"><i:inline key=".serialNumber"/></th>
-                            <th class="type"><i:inline key=".displayType.THERMOSTAT"/></th>
-                            <th class="label"><i:inline key=".label"/></th>
-                            <th class="actions"><i:inline key=".actions"/></th>
+                            <th class="first"><i:inline key=".serialNumber"/></th>
+                            <th class="middle"><i:inline key=".displayType.THERMOSTAT"/></th>
+                            <th class="middle"><i:inline key=".label"/></th>
+                            <th class="last"><i:inline key=".actions"/></th>
                         </tr>
                     </thead>
                     <tfoot></tfoot>
@@ -573,10 +573,10 @@
             </c:when>
             <c:otherwise>
                 <tags:alternateRowReset/>
-                <table class="compactResultsTable hardwareListTable">
+                <table class="compactResultsTable aligned_4_actions">
                     <thead>
                         <tr>
-                            <th class="name">
+                            <th class="first">
                                 <c:choose>
                                     <c:when test="${starsMeters}">
                                         <i:inline key=".meters.meterNumber"/>
@@ -587,11 +587,11 @@
                                 </c:choose>
                             </th>
                             <c:if test="${not starsMeters}">
-                                <th class="type"><i:inline key=".displayType.METER"/></th>
+                                <th class="middle"><i:inline key=".displayType.METER"/></th>
                             </c:if>
-                            <th class="label"><i:inline key=".label"/></th>
+                            <th class="middle"><i:inline key=".label"/></th>
                             <c:if test="${not starsMeters}">
-                                <th class="actions"><i:inline key=".actions"/></th>
+                                <th class="last"><i:inline key=".actions"/></th>
                             </c:if>
                         </tr>
                     </thead>
@@ -694,13 +694,13 @@
             </c:when>
             <c:otherwise>
                 <tags:alternateRowReset/>
-                <table class="compactResultsTable hardwareListTable">
+                <table class="compactResultsTable aligned_4_actions">
                     <thead>
                         <tr>
-                            <th class="name"><i:inline key=".displayName"/></th>
-                            <th class="type"><i:inline key=".displayType.GATEWAY"/></th>
-                            <th class="label"><i:inline key=".gateways.commStatus"/></th>
-                            <th class="actions"><i:inline key=".actions"/></th>
+                            <th class="first"><i:inline key=".displayName"/></th>
+                            <th class="middle"><i:inline key=".displayType.GATEWAY"/></th>
+                            <th class="middle"><i:inline key=".gateways.commStatus"/></th>
+                            <th class="last"><i:inline key=".actions"/></th>
                         </tr>
                     </thead>
                     <tfoot></tfoot>

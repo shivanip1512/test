@@ -137,7 +137,7 @@ jQuery(function() { updateServiceCompanyInfo();});
                 	<dt:date path="fieldRemoveDate" />
                 </tags:nameValue2>
                 
-                <tags:textareaNameValue nameKey=".deviceNotes" path="deviceNotes" rows="4" cols="35" rowClass="notesRow"/>
+                <tags:textareaNameValue nameKey=".deviceNotes" path="deviceNotes" rows="4" cols="35" rowClass="wall_of_text"/>
                 
                 <c:if test="${showGateway}">
                     
@@ -225,7 +225,7 @@ jQuery(function() { updateServiceCompanyInfo();});
                 </cti:displayForPageEditModes>
                  
                  <c:if test="${showInstallNotes}">
-                    <tags:textareaNameValue nameKey=".installNotes" path="installNotes" rows="4" cols="35"  rowClass="notesRow"/>
+                    <tags:textareaNameValue nameKey=".installNotes" path="installNotes" rows="4" cols="35"  rowClass="wall_of_text"/>
                  </c:if>
                 
             </tags:nameValueContainer2>

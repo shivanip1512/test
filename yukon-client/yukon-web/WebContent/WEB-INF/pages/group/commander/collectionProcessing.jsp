@@ -21,7 +21,7 @@
   
 	<%-- ERROR MSG --%>
     <c:if test="${not empty param.errorMsg}">
-    	<div class="errorRed">${param.errorMsg}</div>
+    	<div class="error">${param.errorMsg}</div>
     	<c:set var="errorMsg" value="" scope="request"/>
     	<br>
     </c:if>

@@ -7,11 +7,11 @@ jQuery('table#jobsTable button.toggleEnabled').live('click', function(event) {
         data: {'jobId': jobId},
         success: function(data) {
             if (data.jobEnabled === false) {
-                jQuery(toggleButton).closest('tr').addClass('subtleGray');
+                jQuery(toggleButton).closest('tr').addClass('subtle');
                 jQuery('#disableSpan_' + jobId).hide();
                 jQuery('#enableSpan_' + jobId).show();
             } else {
-                jQuery(toggleButton).closest('tr').removeClass('subtleGray');
+                jQuery(toggleButton).closest('tr').removeClass('subtle');
                 jQuery('#disableSpan_' + jobId).show();
                 jQuery('#enableSpan_' + jobId).hide();
             }
@@ -23,17 +23,17 @@ function setTrClassByJobState(jobId) {
     //assumes data is of type Hash
     return function(data) {
         var jobRow = '#tr_' + jobId;
-        jQuery(jobRow).removeClass('okGreen subtleGray');
+        jQuery(jobRow).removeClass('success subtle');
         var state = data.get('state');
         if (state == 'DISABLED') {
-            jQuery(jobRow).addClass('subtleGray');
+            jQuery(jobRow).addClass('subtle');
             jQuery('#disableSpan_' + jobId).hide();
             jQuery('#enableSpan_' + jobId).show();
             
             jQuery('#jobRunningSpan_' + jobId).hide();
             jQuery('#jobNotRunningSpan_' + jobId).show();
         } else if (state == 'RUNNING') {
-            jQuery(jobRow).addClass('okGreen');
+            jQuery(jobRow).addClass('success');
             jQuery('#disableSpan_' + jobId).hide();
             jQuery('#enableSpan_' + jobId).hide();
             

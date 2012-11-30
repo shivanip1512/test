@@ -77,11 +77,11 @@
     </script>
 
     <c:if test="${not empty editError}">
-        <div class="errorRed">${editError}</div>
+        <div class="error">${editError}</div>
     </c:if>
     
     <c:if test="${saveOk}">
-        <div class="normalBoldLabel">${saveOkText}</div>
+        <div class="fwb">${saveOkText}</div>
     </c:if>
     
     <%-- MISC FORMS --%>

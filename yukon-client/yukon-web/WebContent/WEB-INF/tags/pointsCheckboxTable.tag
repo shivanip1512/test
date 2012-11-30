@@ -13,7 +13,7 @@
 	
         <cti:dataGridCell>
 			<c:set var="disabled" value="${pointTemplateMask.masked ? 'disabled' : ''}"/>
-			<c:set var="className" value="${pointTemplateMask.masked ? 'subtleGray' : ''}"/>
+			<c:set var="className" value="${pointTemplateMask.masked ? 'subtle' : ''}"/>
 		
 			<label>
 				<input type="checkbox" ${disabled} name="PT:${deviceType}:${pointTemplateMask.pointTemplate.pointIdentifier.type}:${pointTemplateMask.pointTemplate.pointIdentifier.offset}">

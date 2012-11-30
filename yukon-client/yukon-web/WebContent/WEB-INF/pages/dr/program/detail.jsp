@@ -324,19 +324,19 @@
                         <%-- Actions are disabled if the user does not have CONTROL_COMMAND for LM objects --%>
                     
                         <cti:msg var="noProgramControl" key="yukon.web.modules.dr.programDetail.noControl"/>
-                        <div class="subtleGray" title="${noProgramControl}">
+                        <div class="subtle" title="${noProgramControl}">
                             <cti:logo key="yukon.web.modules.dr.programDetail.actions.startIcon.disabled"/>
                             <cti:msg key="yukon.web.modules.dr.programDetail.actions.start"/>
                         </div>
-                        <div class="subtleGray" title="${noProgramControl}">
+                        <div class="subtle" title="${noProgramControl}">
                             <cti:logo key="yukon.web.modules.dr.programDetail.actions.stopIcon.disabled"/>
                             <cti:msg key="yukon.web.modules.dr.programDetail.actions.stop"/>
                         </div>
-                        <div class="subtleGray" title="${noProgramControl}">
+                        <div class="subtle" title="${noProgramControl}">
                             <cti:logo key="yukon.web.modules.dr.programDetail.actions.changeGearsIcon.disabled"/>
                             <cti:msg key="yukon.web.modules.dr.programDetail.actions.changeGears"/>
                         </div>
-                        <div class="subtleGray" title="${noProgramControl}">
+                        <div class="subtle" title="${noProgramControl}">
                             <cti:logo key="yukon.web.modules.dr.programDetail.actions.disableIcon.disabled"/>
                             <cti:msg key="yukon.web.modules.dr.programDetail.actions.disable"/>
                         </div>

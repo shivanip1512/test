@@ -48,7 +48,7 @@
 					</tags:simplePopup>
 					
 						<%-- file select --%>
-			            <div class="normalBoldLabel" style="display:inline;">Update File:</div>
+			            <div class="fwb" style="display:inline;">Update File:</div>
 			            <input type="file" name="dataFile" size="30px">
 			            <tags:slowInput myFormId="uploadForm" label="Process" labelBusy="Processing" />
 					
@@ -57,7 +57,7 @@
 					<br>
 					<c:choose>
 						<c:when test="${not empty error}">
-							<div class="errorRed">${error}</div>
+							<div class="error">${error}</div>
 						</c:when>
 						<c:when test="${success}">
 							Successfully updated ${deviceCount} meter's device groups.
@@ -69,7 +69,7 @@
 				<%-- INSTRUCTIONS --%>
                 <td>
                 
-                    <div class="normalBoldLabel">Instructions:</div>
+                    <div class="fwb">Instructions:</div>
                     <ul style="font-size:11px;">
                         <li>Files must contain a header row with valid column identifiers as listed in the table below.</li><br>
 						<li>The first column is always the Identifier Column.<br>It will be used to determine which device is to be updated.</li><br>
@@ -84,7 +84,7 @@
                     
                     <%-- sample files --%>
                     <div class="small">
-                        <div class="normalBoldLabel" style="display:inline;"><cti:msg key="yukon.common.device.bulk.importUpload.sampleFilesLabel"/>:</div>
+                        <div class="fwb" style="display:inline;"><cti:msg key="yukon.common.device.bulk.importUpload.sampleFilesLabel"/>:</div>
                         <a href="<cti:url value="/WebConfig/custom/sample_bulk_files/Sample_DeviceGroup_Update_File1.csv"/>">File 1</a>, 
                         <a href="<cti:url value="/WebConfig/custom/sample_bulk_files/Sample_DeviceGroup_Update_File2.csv"/>">File 2</a>, 
                         <a href="<cti:url value="/WebConfig/custom/sample_bulk_files/Sample_DeviceGroup_Update_File3.csv"/>">File 3</a>
@@ -99,58 +99,62 @@
                 
                 	<cti:url var="check" value="/WebConfig/yukon/Icons/check.gif"/>
                 	
-                	<table class="miniResultsTable">
-                		<tr >
-                			<th style="width:20%;">Column Header</th>
-                			<th>Description</th>
-                			<th>Identifier</th>
-                		</tr>
-                		
-                		<tr>
-                			<td class="normalBoldLabel">ADDRESS</td>
-                			<td>
-                				Address of the device.
-                			</td>
-                			<td style="text-align:center;"><img src="${check}"></td>
-                		</tr>
-                		<tr>
-                			<td class="normalBoldLabel">METER_NUMBER</td>
-                			<td>
-                				Meter number of the device.
-                			</td>
-                			<td style="text-align:center;"><img src="${check}"></td>
-                		</tr>
-                		<tr>
-                			<td class="normalBoldLabel">NAME</td>
-                			<td>
-                				Name of the device.
-                			</td>
-                			<td style="text-align:center;"><img src="${check}"></td>
-                		</tr>
-                		<tr>
-                			<td class="normalBoldLabel">DEVICE_ID</td>
-                			<td>
-                				Device ID of the device.
-                			</td>
-                			<td style="text-align:center;"><img src="${check}"></td>
-                		</tr>
-                		
-                		<tr>
-                			<td class="normalBoldLabel">DEVICE_GROUP_PREFIX</td>
-                			<td>The full path of the group to be prefixed to the group name value in each row.<br><br>
-                				Example: If the header is <b>DEVICE_GROUP_PREFIX:prefix=/Meters/Collection</b>, and the value in the row is <b>A</b>, then the device will be added to <b>/Meters/Collection/A</b>.<br><br>
-                				In addition, the device will be removed from all other groups under <b>/Meters/Collection<b>.<br><br>
-                			</td>
-                			<td></td>
-                		</tr>
-                		
-                		<tr>
-                			<td class="normalBoldLabel">DEVICE_GROUP_SET</td>
-                			<td>The full path of a group to either add or remove the device from.<br><br>
-                				Example: If the header is <b>DEVICE_GROUP_SET:group=/Meters/Extra</b>, and the value in the row is <b>true</b>, then the device will be added to the group. If the value is <b>false</b>, it will be removed from the group.<br><br>
-                			</td>
-                			<td></td>
-                		</tr>
+                	<table class="resultsTable">
+                        <thead>
+                    		<tr>
+                    			<th style="width:20%;">Column Header</th>
+                    			<th>Description</th>
+                    			<th>Identifier</th>
+                    		</tr>
+                		</thead>
+                        <tfoot></tfoot>
+                        <tbody>
+                    		<tr>
+                    			<td class="fwb">ADDRESS</td>
+                    			<td>
+                    				Address of the device.
+                    			</td>
+                    			<td style="text-align:center;"><img src="${check}"></td>
+                    		</tr>
+                    		<tr>
+                    			<td class="fwb">METER_NUMBER</td>
+                    			<td>
+                    				Meter number of the device.
+                    			</td>
+                    			<td style="text-align:center;"><img src="${check}"></td>
+                    		</tr>
+                    		<tr>
+                    			<td class="fwb">NAME</td>
+                    			<td>
+                    				Name of the device.
+                    			</td>
+                    			<td style="text-align:center;"><img src="${check}"></td>
+                    		</tr>
+                    		<tr>
+                    			<td class="fwb">DEVICE_ID</td>
+                    			<td>
+                    				Device ID of the device.
+                    			</td>
+                    			<td style="text-align:center;"><img src="${check}"></td>
+                    		</tr>
+                    		
+                    		<tr>
+                    			<td class="fwb">DEVICE_GROUP_PREFIX</td>
+                    			<td>The full path of the group to be prefixed to the group name value in each row.<br><br>
+                    				Example: If the header is <b>DEVICE_GROUP_PREFIX:prefix=/Meters/Collection</b>, and the value in the row is <b>A</b>, then the device will be added to <b>/Meters/Collection/A</b>.<br><br>
+                    				In addition, the device will be removed from all other groups under <b>/Meters/Collection<b>.<br><br>
+                    			</td>
+                    			<td></td>
+                    		</tr>
+                    		
+                    		<tr>
+                    			<td class="fwb">DEVICE_GROUP_SET</td>
+                    			<td>The full path of a group to either add or remove the device from.<br><br>
+                    				Example: If the header is <b>DEVICE_GROUP_SET:group=/Meters/Extra</b>, and the value in the row is <b>true</b>, then the device will be added to the group. If the value is <b>false</b>, it will be removed from the group.<br><br>
+                    			</td>
+                    			<td></td>
+                    		</tr>
+                        </tbody>
                 	</table>
                 	
                 </td>

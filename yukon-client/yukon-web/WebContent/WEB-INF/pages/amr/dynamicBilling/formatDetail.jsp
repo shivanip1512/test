@@ -62,7 +62,7 @@ BILLING_ERRORS = {
     <br>
     
     <div align="center">
-        <div id="errorMsg" style="color:#CC0000;">&nbsp;</div>
+        <div id="errorMsg" class="error">&nbsp;</div>
     </div>
 
     <form id="begin" name="begin" action="" method="post" autocomplete="off">
@@ -72,7 +72,7 @@ BILLING_ERRORS = {
         <ct:sectionContainer title="${formatSetup}" id="dbgFormatSetup">
             <ct:nameValueContainer2>
                 <ct:nameValue2 nameKey=".nameOfFormat" >
-                    <input type="text" onkeyup="updateFormatName()" name="formatName" style="width:300px" id="formatName" value="<c:out value="${format.name}"/>" ><span style="color:#CC0000;">*</span>
+                    <input type="text" onkeyup="updateFormatName()" name="formatName" style="width:300px" id="formatName" value="<c:out value="${format.name}"/>" ><span class="error">*</span>
                 </ct:nameValue2>
                 <ct:nameValue2 nameKey=".delimiter">
                     <select  name="delimiterChoice" id="delimiterChoice" onchange="updateDelimiter();">
@@ -116,7 +116,7 @@ BILLING_ERRORS = {
                     <table width="335" border="0" cellpadding="0" cellspacing="0">
                         <tr>
                             <td colspan="2">
-                                <h4 style="display: inline;"><cti:msg2 key=".selectedFields"/></h4><span style="color:#CC0000;">*</span>
+                                <h4 style="display: inline;"><cti:msg2 key=".selectedFields"/></h4><span class="error">*</span>
                             </td>
                         </tr>
                         <tr>

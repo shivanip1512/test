@@ -86,15 +86,15 @@
                                 <%-- Actions are disabled when Load Management doesn't know about the Load group --%>
 
                                 <cti:msg var="loadGroupUnknown" key="yukon.web.modules.dr.loadGroupDetail.unknown"/>
-                                <div class="subtleGray" title="${loadGroupUnknown}">
+                                <div class="subtle" title="${loadGroupUnknown}">
                                     <cti:logo key="yukon.web.modules.dr.loadGroupDetail.actions.sendShedIcon.disabled"/>
                                     <cti:msg key="yukon.web.modules.dr.loadGroupDetail.actions.sendShed"/>
                                 </div>
-                                <div class="subtleGray" title="${loadGroupUnknown}">
+                                <div class="subtle" title="${loadGroupUnknown}">
                                     <cti:logo key="yukon.web.modules.dr.loadGroupDetail.actions.sendRestoreIcon.disabled"/>
                                     <cti:msg key="yukon.web.modules.dr.loadGroupDetail.actions.sendRestore"/>
                                 </div>
-                                <div class="subtleGray" title="${loadGroupUnknown}">
+                                <div class="subtle" title="${loadGroupUnknown}">
                                     <cti:logo key="yukon.web.modules.dr.loadGroupDetail.actions.disableIcon.disabled"/>
                                     <cti:msg key="yukon.web.modules.dr.loadGroupDetail.actions.disable"/>
                                 </div>
@@ -156,15 +156,15 @@
                         <%-- Actions are disabled if the user does not have CONTROL_COMMAND for LM objects --%>
 
                         <cti:msg var="noLoadGroupControl" key="yukon.web.modules.dr.loadGroupDetail.noControl"/>
-                        <div class="subtleGray" title="${noLoadGroupControl}">
+                        <div class="subtle" title="${noLoadGroupControl}">
                             <cti:logo key="yukon.web.modules.dr.loadGroupDetail.actions.sendShedIcon.disabled"/>
                             <cti:msg key="yukon.web.modules.dr.loadGroupDetail.actions.sendShed"/>
                         </div>
-                        <div class="subtleGray" title="${noLoadGroupControl}">
+                        <div class="subtle" title="${noLoadGroupControl}">
                             <cti:logo key="yukon.web.modules.dr.loadGroupDetail.actions.sendRestoreIcon.disabled"/>
                             <cti:msg key="yukon.web.modules.dr.loadGroupDetail.actions.sendRestore"/>
                         </div>
-                        <div class="subtleGray" title="${noLoadGroupControl}">
+                        <div class="subtle" title="${noLoadGroupControl}">
                             <cti:logo key="yukon.web.modules.dr.loadGroupDetail.actions.disableIcon.disabled"/>
                             <cti:msg key="yukon.web.modules.dr.loadGroupDetail.actions.disable"/>
                         </div>

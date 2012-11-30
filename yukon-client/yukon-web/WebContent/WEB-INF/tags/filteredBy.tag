@@ -38,6 +38,6 @@ jQuery(function() {
 		</a>
 	</c:when>
     <c:otherwise>
-        <div class="errorRed">ERROR: The &lt;filteredBy&gt; tag must be enclosed in a &lt;filteredByContainer&gt; tag</div>
+        <div class="error">ERROR: The &lt;filteredBy&gt; tag must be enclosed in a &lt;filteredByContainer&gt; tag</div>
     </c:otherwise>
 </c:choose>

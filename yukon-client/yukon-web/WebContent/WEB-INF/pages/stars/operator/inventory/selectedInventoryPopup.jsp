@@ -4,7 +4,7 @@
 <%@ taglib prefix="spring" uri="http://www.springframework.org/tags"%>
 
 <c:if test="${not empty resultsLimitedTo}">
-    <div class="errorRed" style="width:95%;text-align:right;">
+    <div class="error" style="width:95%;text-align:right;">
         <cti:msg key="yukon.common.collection.inventory.selectedInventoryPopup.selectedDevicesResultsLimited" arguments="${resultsLimitedTo}" />
     </div>
     <br>

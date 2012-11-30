@@ -32,105 +32,110 @@
 	
 	<%-- WRITE SELECT --%>
 	<tags:sectionContainer title="Filters">
-	<table class="miniResultsTable" style="width:75%">
-		<tr>
-			<th>Device Type</th>
-			<th>Display Group</th>
-			<th>Change Group</th>
-			<th>Attribute</th>
-			<th>Tag</th>
-		</tr>
-		<tr>
-			<%-- device type select --%>
-			<td>
-				<select onchange="doDefinitionFilter(this, 'deviceType');">
-					<option value="" >All Definitions</option>
-					<c:forEach var="group" items="${allDeviceTypes}" >
-						<optgroup label="${group.key}">
-							<c:forEach var="definition" items="${group.value}">
-								<c:choose>
-									<c:when test="${deviceTypeParam == definition.type}">
-										<option value="${definition.type}" selected>${definition.displayName}</option>
-									</c:when>
-									<c:otherwise>
-										<option value="${definition.type}">${definition.displayName}</option>
-									</c:otherwise>
-								</c:choose>
-								
-							</c:forEach>
-						</optgroup>
-					</c:forEach>
-				</select>
-			</td>
-			
-			<%-- display group select --%>
-			<td>
-				<select onchange="doDefinitionFilter(this, 'displayGroup');">
-					<option value="" >Any Display Group</option>
-					<c:forEach var="group" items="${allDisplayGroups}" >
-						<c:choose>
-							<c:when test="${displayGroupParam == group}">
-								<option value="${group}" selected>${group}</option>
-							</c:when>
-							<c:otherwise>
-								<option value="${group}">${group}</option>
-							</c:otherwise>
-						</c:choose>
-					</c:forEach>
-				</select>
-			</td>
-			
-			<%-- change group select --%>
-			<td>
-				<select onchange="doDefinitionFilter(this, 'changeGroup');">
-					<option value="" >Any Change Group</option>
-					<c:forEach var="changeGroup" items="${allChangeGroups}" >
-						<c:choose>
-							<c:when test="${changeGroupParam == changeGroup}">
-								<option value="${changeGroup}" selected>${changeGroup}</option>
-							</c:when>
-							<c:otherwise>
-								<option value="${changeGroup}">${changeGroup}</option>
-							</c:otherwise>
-						</c:choose>
-					</c:forEach>
-				</select>
-			</td>
-			
-			<%-- attribute select --%>
-			<td>
-				<select onchange="doDefinitionFilter(this, 'attribute');">
-					<option value="" >Any Attribute</option>
-					<c:forEach var="attribute" items="${allAttributes}" >
-						<c:choose>
-							<c:when test="${attributeParam == attribute.key}">
-								<option value="${attribute.key}" selected><cti:msg2 key="${attribute}"/></option>
-							</c:when>
-							<c:otherwise>
-								<option value="${attribute.key}"><cti:msg2 key="${attribute}"/></option>
-							</c:otherwise>
-						</c:choose>
-					</c:forEach>
-				</select>
-			</td>
-			
-			<%-- tag select --%>
-			<td>
-				<select onchange="doDefinitionFilter(this, 'tag');">
-					<option value="" >Any Tag</option>
-					<c:forEach var="tag" items="${allTags}" >
-						<c:choose>
-							<c:when test="${tagParam == tag.name}">
-								<option value="${tag.name}" selected>${tag.description}</option>
-							</c:when>
-							<c:otherwise>
-								<option value="${tag.name}">${tag.description}</option>
-							</c:otherwise>
-						</c:choose>
-					</c:forEach>
-				</select>
-			</td>
-		</tr>
+	<table class="resultsTable" style="width:75%">
+        <thead>
+    		<tr>
+    			<th>Device Type</th>
+    			<th>Display Group</th>
+    			<th>Change Group</th>
+    			<th>Attribute</th>
+    			<th>Tag</th>
+    		</tr>
+        </thead>
+        <tfoot></tfoot>
+        <tbody>
+    		<tr>
+    			<%-- device type select --%>
+    			<td>
+    				<select onchange="doDefinitionFilter(this, 'deviceType');">
+    					<option value="" >All Definitions</option>
+    					<c:forEach var="group" items="${allDeviceTypes}" >
+    						<optgroup label="${group.key}">
+    							<c:forEach var="definition" items="${group.value}">
+    								<c:choose>
+    									<c:when test="${deviceTypeParam == definition.type}">
+    										<option value="${definition.type}" selected>${definition.displayName}</option>
+    									</c:when>
+    									<c:otherwise>
+    										<option value="${definition.type}">${definition.displayName}</option>
+    									</c:otherwise>
+    								</c:choose>
+    								
+    							</c:forEach>
+    						</optgroup>
+    					</c:forEach>
+    				</select>
+    			</td>
+    			
+    			<%-- display group select --%>
+    			<td>
+    				<select onchange="doDefinitionFilter(this, 'displayGroup');">
+    					<option value="" >Any Display Group</option>
+    					<c:forEach var="group" items="${allDisplayGroups}" >
+    						<c:choose>
+    							<c:when test="${displayGroupParam == group}">
+    								<option value="${group}" selected>${group}</option>
+    							</c:when>
+    							<c:otherwise>
+    								<option value="${group}">${group}</option>
+    							</c:otherwise>
+    						</c:choose>
+    					</c:forEach>
+    				</select>
+    			</td>
+    			
+    			<%-- change group select --%>
+    			<td>
+    				<select onchange="doDefinitionFilter(this, 'changeGroup');">
+    					<option value="" >Any Change Group</option>
+    					<c:forEach var="changeGroup" items="${allChangeGroups}" >
+    						<c:choose>
+    							<c:when test="${changeGroupParam == changeGroup}">
+    								<option value="${changeGroup}" selected>${changeGroup}</option>
+    							</c:when>
+    							<c:otherwise>
+    								<option value="${changeGroup}">${changeGroup}</option>
+    							</c:otherwise>
+    						</c:choose>
+    					</c:forEach>
+    				</select>
+    			</td>
+    			
+    			<%-- attribute select --%>
+    			<td>
+    				<select onchange="doDefinitionFilter(this, 'attribute');">
+    					<option value="" >Any Attribute</option>
+    					<c:forEach var="attribute" items="${allAttributes}" >
+    						<c:choose>
+    							<c:when test="${attributeParam == attribute.key}">
+    								<option value="${attribute.key}" selected><cti:msg2 key="${attribute}"/></option>
+    							</c:when>
+    							<c:otherwise>
+    								<option value="${attribute.key}"><cti:msg2 key="${attribute}"/></option>
+    							</c:otherwise>
+    						</c:choose>
+    					</c:forEach>
+    				</select>
+    			</td>
+    			
+    			<%-- tag select --%>
+    			<td>
+    				<select onchange="doDefinitionFilter(this, 'tag');">
+    					<option value="" >Any Tag</option>
+    					<c:forEach var="tag" items="${allTags}" >
+    						<c:choose>
+    							<c:when test="${tagParam == tag.name}">
+    								<option value="${tag.name}" selected>${tag.description}</option>
+    							</c:when>
+    							<c:otherwise>
+    								<option value="${tag.name}">${tag.description}</option>
+    							</c:otherwise>
+    						</c:choose>
+    					</c:forEach>
+    				</select>
+    			</td>
+    		</tr>
+        </tbody>
 	</table>
 	</tags:sectionContainer>
 	<br>
@@ -169,34 +174,39 @@
 					<%-- POINTS --%>
 					<c:if test="${fn:length(deviceInfo.points) > 0}">
 						<br>
-						<table class="miniResultsTable" style="width:900px">
-							<tr>
-								<th>#</th>
-								<th>Points</th>
-								<th>Type</th>
-								<th>Init</th>
-								<th>Offset</th>
-								<th>Multiplier</th>
-								<th>UofM</th>
-								<th>State Group</th>
-							</tr>
-							<c:forEach var="point" items="${deviceInfo.points}" varStatus="status">
-								<tr class="<tags:alternateRow odd="" even="altRow"/>">
-									<td>${status.index +1}</td>
-									<td>${point.pointTemplate.name}</td>
-									<td><cti:msg key="${point.pointType}"/></td>
-									<td>
-										<c:choose>
-											<c:when test="${point.init}">Init</c:when>
-											<c:otherwise></c:otherwise>
-										</c:choose>
-									</td>
-									<td>${point.pointTemplate.pointIdentifier.offset}</td>
-									<td>${point.pointTemplate.multiplier}</td>
-									<td>${point.uomString}</td>
-									<td>${point.stateGroup}</td>
-								</tr>
-							</c:forEach>
+						<table class="resultsTable" style="width:900px">
+                            <thead>
+    							<tr>
+    								<th>#</th>
+    								<th>Points</th>
+    								<th>Type</th>
+    								<th>Init</th>
+    								<th>Offset</th>
+    								<th>Multiplier</th>
+    								<th>UofM</th>
+    								<th>State Group</th>
+    							</tr>
+                            </thead>
+                            <tfoot></tfoot>
+                            <tbody>
+    							<c:forEach var="point" items="${deviceInfo.points}" varStatus="status">
+    								<tr class="<tags:alternateRow odd="" even="altRow"/>">
+    									<td>${status.index +1}</td>
+    									<td>${point.pointTemplate.name}</td>
+    									<td><cti:msg key="${point.pointType}"/></td>
+    									<td>
+    										<c:choose>
+    											<c:when test="${point.init}">Init</c:when>
+    											<c:otherwise></c:otherwise>
+    										</c:choose>
+    									</td>
+    									<td>${point.pointTemplate.pointIdentifier.offset}</td>
+    									<td>${point.pointTemplate.multiplier}</td>
+    									<td>${point.uomString}</td>
+    									<td>${point.stateGroup}</td>
+    								</tr>
+    							</c:forEach>
+                            </tbody>
 						</table>
 					</c:if>
 					
@@ -204,81 +214,96 @@
 					<%-- ATTRIBUTES --%>
 					<c:if test="${fn:length(deviceInfo.attributes) > 0}">
 						<br>
-						<table class="miniResultsTable" style="width:900px">
-							<tr>
-                                <th>#</th>
-								<th>Attributes</th>
-								<th>Lookup</th>
-								<th>Lookup Attributes</th>
-							</tr>
-							<c:forEach var="attribute" items="${deviceInfo.attributes}" varStatus="status">
-								<tr class="<tags:alternateRow odd="" even="altRow"/>">
-                                    <td>${status.index +1}</td>
-									<td><cti:msg2 key="${attribute.attribute.attribute}"/></td>
-									<td>basicLookup</td>
-									<td>Point = ${attribute.pointTemplateWrapper.pointTemplate.name}</td>
-								</tr>
-							</c:forEach>
+						<table class="resultsTable" style="width:900px">
+                            <thead>
+    							<tr>
+                                    <th>#</th>
+    								<th>Attributes</th>
+    								<th>Lookup</th>
+    								<th>Lookup Attributes</th>
+    							</tr>
+                            </thead>
+                            <tfoot></tfoot>
+                            <tbody>
+    							<c:forEach var="attribute" items="${deviceInfo.attributes}" varStatus="status">
+    								<tr class="<tags:alternateRow odd="" even="altRow"/>">
+                                        <td>${status.index +1}</td>
+    									<td><cti:msg2 key="${attribute.attribute.attribute}"/></td>
+    									<td>basicLookup</td>
+    									<td>Point = ${attribute.pointTemplateWrapper.pointTemplate.name}</td>
+    								</tr>
+    							</c:forEach>
+                            </tbody>
 						</table>
 					</c:if>
 					
 					<%-- COMMANDS --%>
 					<c:if test="${fn:length(deviceInfo.commands) > 0}">
 						<br>
-						<table class="miniResultsTable" style="width:900px">
-							<tr>
-                                <th>#</th>
-								<th>Commands</th>
-								<th>Command Strings</th>
-								<th>Point Names</th>
-							</tr>
-							<c:forEach var="command" items="${deviceInfo.commands}" varStatus="status">
-								<tr class="<tags:alternateRow odd="" even="altRow"/>">
-									<td valign="top">${status.index +1}</td>
-									<td valign="top">${command.commandDefinition.name}</td>
-									<td valign="top">
-										<ul>
-											<c:forEach var="cmd" items="${command.commandDefinition.commandStringList}">
-												<li>${cmd}</li>
-											</c:forEach>
-										</ul>
-									</td>
-									<td valign="top">
-										<ul>
-											<c:forEach var="point" items="${command.pointNames}">
-												<li>${point}</li>
-											</c:forEach>
-										</ul>
-									</td>
-								</tr>
-							</c:forEach>
+						<table class="resultsTable" style="width:900px">
+                            <thead>
+    							<tr>
+                                    <th>#</th>
+    								<th>Commands</th>
+    								<th>Command Strings</th>
+    								<th>Point Names</th>
+    							</tr>
+                            </thead>
+                            <tfoot></tfoot>
+                            <tbody>
+    							<c:forEach var="command" items="${deviceInfo.commands}" varStatus="status">
+    								<tr class="<tags:alternateRow odd="" even="altRow"/>">
+    									<td valign="top">${status.index +1}</td>
+    									<td valign="top">${command.commandDefinition.name}</td>
+    									<td valign="top">
+    										<ul>
+    											<c:forEach var="cmd" items="${command.commandDefinition.commandStringList}">
+    												<li>${cmd}</li>
+    											</c:forEach>
+    										</ul>
+    									</td>
+    									<td valign="top">
+    										<ul>
+    											<c:forEach var="point" items="${command.pointNames}">
+    												<li>${point}</li>
+    											</c:forEach>
+    										</ul>
+    									</td>
+    								</tr>
+    							</c:forEach>
+                            </tbody>
 						</table>
 					</c:if>
 					
 					<%-- TAGS --%>
 					<c:if test="${fn:length(deviceInfo.tagDefinitions) > 0}">
 						<br>
-						<table class="miniResultsTable" style="width:900px">
-							<tr>
-								<th>#</th>
-								<th>Tags</th>
-                                <th>Value Support</th>
-                                <th>Values</th>
-							</tr>
-							<c:forEach var="tagDefinition" items="${deviceInfo.tagDefinitions}" varStatus="status">
-								<tr class="<tags:alternateRow odd="" even="altRow"/>">
-									<td>${status.index +1}</td>
-									<td>${tagDefinition.tag.description}</td>
-                                    <c:if test="${tagDefinition.tag.tagHasValue}">
-                                    	<td>Yes</td>
-                                    	<td>${tagDefinition.value}</td>
-                                    </c:if>
-                                    <c:if test="${not tagDefinition.tag.tagHasValue}">
-                                   		<td>No</td>
-                                        <td></td>
-                                    </c:if>
-								</tr>
-							</c:forEach>
+						<table class="resultsTable" style="width:900px">
+                            <thead>
+    							<tr>
+    								<th>#</th>
+    								<th>Tags</th>
+                                    <th>Value Support</th>
+                                    <th>Values</th>
+    							</tr>
+                            </thead>
+                            <tfoot></tfoot>
+                            <tbody>
+    							<c:forEach var="tagDefinition" items="${deviceInfo.tagDefinitions}" varStatus="status">
+    								<tr class="<tags:alternateRow odd="" even="altRow"/>">
+    									<td>${status.index +1}</td>
+    									<td>${tagDefinition.tag.description}</td>
+                                        <c:if test="${tagDefinition.tag.tagHasValue}">
+                                        	<td>Yes</td>
+                                        	<td>${tagDefinition.value}</td>
+                                        </c:if>
+                                        <c:if test="${not tagDefinition.tag.tagHasValue}">
+                                       		<td>No</td>
+                                            <td></td>
+                                        </c:if>
+    								</tr>
+    							</c:forEach>
+                            </tbody>
 						</table>
 					</c:if>
 					

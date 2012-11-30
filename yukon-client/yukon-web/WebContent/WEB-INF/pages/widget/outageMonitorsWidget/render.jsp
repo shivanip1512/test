@@ -10,7 +10,7 @@
 
 <%-- ERROR --%>
 <c:if test="${not empty outageMonitorsWidgetError}">
-  	<div class="errorRed"><i:inline key="${outageMonitorsWidgetError}"/></div>
+  	<div class="error"><i:inline key="${outageMonitorsWidgetError}"/></div>
 </c:if>
 		
 <%-- TABLE --%>
@@ -32,7 +32,7 @@
 
 		<c:set var="tdClass" value=""/>
 		<c:if test="${monitor.evaluatorStatus == 'DISABLED'}">
-			<c:set var="tdClass" value="subtleGray"/>
+			<c:set var="tdClass" value="subtle"/>
 		</c:if>
 		<tr>
 			<cti:url var="viewOutageProcessingUrl" value="/amr/outageProcessing/process/process">

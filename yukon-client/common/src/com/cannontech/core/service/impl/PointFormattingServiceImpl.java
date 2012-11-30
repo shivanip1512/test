@@ -115,14 +115,14 @@ public class PointFormattingServiceImpl implements PointFormattingService {
 	                    stateColor = Colors.getColor(liteState.getFgColor());
 	                
 	                    /* Use custom colors for red and green.
-	                     * Should be the same as the errorRed and okGreen styles in YukonGeneralStyles.css 
+	                     * Should be the same as the error and success styles in yukon.css 
 	                     * YUK-9652 will solve this problem, at which point this can be reverted. */
 	                    if (stateColor == Color.green) {
-	                        stateColor = new Color(0,102, 51); //#006633
+	                        stateColor = new Color(0,153, 51); //#009933
 	                    } else if (stateColor == Color.red) {
-	                        stateColor = new Color(204, 0, 0); //#CC0000
+	                        stateColor = new Color(209, 72, 54); //#D14836
 	                    } else if (stateColor == Color.orange) {
-	                        stateColor = new Color(255, 153, 25); //#FF9919
+	                        stateColor = new Color(255, 153, 0); //#FF9900
 	                    }
 	                }
                 }

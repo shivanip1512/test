@@ -53,7 +53,7 @@
 	    </c:if>
 	    
 	    <c:if test="${saveOk}">
-	    	<div class="normalBoldLabel"><i:inline key=".saveOk"/></div>
+	    	<div class="fwb"><i:inline key=".saveOk"/></div>
 	    </c:if>
     
     	<%-- MISC FORMS --%>

@@ -59,7 +59,7 @@
                         <%-- file errors --%>
                         <c:if test="${not empty fileErrorKeysList}">
                             <c:forEach var="fileErrorKey" items="${fileErrorKeysList}">
-                                <div style="color:#CC0000;">
+                                <div class="error">
                                     <cti:msg key="${fileErrorKey}"/>
                                 </div>
                             </c:forEach>
@@ -69,7 +69,7 @@
                         <%-- header errors --%>
                         <c:if test="${not empty headersErrorResolverList}">
                             <c:forEach var="headersErrorResolver" items="${headersErrorResolverList}">
-                                <div style="color:#CC0000;">
+                                <div class="error">
                                     <cti:msg key="${headersErrorResolver}"/>
                                 </div>
                             </c:forEach>
@@ -77,7 +77,7 @@
                         </c:if>
                             
                          <%-- file select --%>
-                        <div class="normalBoldLabel" style="display:inline;">Update File:</div>
+                        <div class="fwb" style="display:inline;">Update File:</div>
                         <input type="file" name="dataFile" size="30px">
                         <tags:slowInput myFormId="uploadForm" label="Load" labelBusy="Load" />
                     
@@ -93,7 +93,7 @@
                     <cti:url var="check" value="/WebConfig/yukon/Icons/check.gif"/>
                     
                     <%-- header --%>
-                    <div class="normalBoldLabel">Instructions:</div>
+                    <div class="fwb">Instructions:</div>
                     
                     <%-- instructions --%>
                     <ul style="font-size:11px;">
@@ -102,7 +102,7 @@
                     
                     <%-- sample files --%>
                     <div class="small">
-                        <div class="normalBoldLabel" style="display:inline;"><cti:msg key="yukon.common.device.bulk.updateUpload.sampleFilesLabel"/>:</div>
+                        <div class="fwb" style="display:inline;"><cti:msg key="yukon.common.device.bulk.updateUpload.sampleFilesLabel"/>:</div>
                         <a href="<cti:url value="/WebConfig/custom/sample_bulk_files/Sample_Bulk_Update_File1.csv"/>">File 1</a>, 
                         <a href="<cti:url value="/WebConfig/custom/sample_bulk_files/Sample_Bulk_Update_File2.csv"/>">File 2</a>, 
                         <a href="<cti:url value="/WebConfig/custom/sample_bulk_files/Sample_Bulk_Update_File3.csv"/>">File 3</a>, 
@@ -111,7 +111,7 @@
                     <br>
                     
                     <%-- field descriptions --%>
-                    <table class="miniResultsTable" style="font-size:11px;">
+                    <table class="resultsTable detail">
                     
                         <tr>
                             <th><cti:msg key="yukon.common.device.bulk.columnHeader.tableHeader.update.columnHeader"/></th>

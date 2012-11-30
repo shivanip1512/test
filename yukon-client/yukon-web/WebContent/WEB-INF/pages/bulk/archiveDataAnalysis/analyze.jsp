@@ -61,17 +61,17 @@
         </div>
 
         <%-- SUCCESS --%>
-        <div class="normalBoldLabel bottomPadded">
+        <div class="fwb bottomPadded">
             <i:inline key="yukon.web.modules.amr.analysis.progress.successLabel" />
-            <span class="okGreen">
+            <span class="success">
                 <cti:dataUpdaterValue type="BACKGROUNDPROCESS" identifier="${resultsId}/SUCCESS_COUNT"/>
             </span>
         </div>
 
         <%-- FAIL --%>
-        <div class="normalBoldLabel bottomPadded">
+        <div class="fwb bottomPadded">
             <i:inline key="yukon.web.modules.amr.analysis.progress.failLabel" />
-            <span class="errorRed">
+            <span class="error">
                 <cti:dataUpdaterValue type="BACKGROUNDPROCESS" identifier="${resultsId}/PROCESSING_EXCEPTION_COUNT"/>
             </span>
         </div>

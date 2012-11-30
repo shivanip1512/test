@@ -117,14 +117,14 @@ div.resultBar > div {
 
 .eventStatusCleared,
 .eventStatusGood {
-    color:#006633;
+    color:#093;
 }
 .eventStatusQuestionable {
 	color:#FF9900;
 }
 .eventStatusActive,
 .eventStatusBad {
-    color:#CC0000;
+    color:#D14836;
 }
 
 #eventsFilterForm table.twoColumnLayout {
@@ -213,4 +213,11 @@ form#intervalDataForm {
 
 div.attributeSetupContainer {
     min-width: 500px;
+}
+.stateBox {
+    width: 6px;
+    height: 8px;
+    border: 1px solid #888;
+    display: inline-block !important;
+    margin: 4px 5px 0 0;
 }

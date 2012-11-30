@@ -2,6 +2,6 @@
 
 <%@ attribute name="newRouteName" required="true" type="java.lang.String"%>
 
-<div class="okGreen">
+<div class="success">
     <cti:msg key="yukon.web.modules.amr.routeLocateSettings.updateInfo.newRouteName" /> ${newRouteName}
 </div>

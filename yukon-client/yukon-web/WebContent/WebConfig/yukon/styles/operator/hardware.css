@@ -1,47 +1,4 @@
-div.hardwarePageContainer {
-    max-height: 112px;
-    overflow: auto;
-    overflow-x: hidden;
-    min-width: 280px;
-    margin-bottom: 18px;
-}
-
-div.pointsList {
-    border-top: 1px solid #ccc;
-    border-bottom: 1px solid #ccc;
-}
-
-div.hardwarePageContainer td.last {
-    padding-right: 20px !important;
-}
-
-tr.notesRow td.value {
-    max-width: 300px;
-}
-
-table.hardwareTable td.first {
-    min-width: 400px;
-}
-
-table.hardwareListTable th.name,
-table.hardwareListTable th.type,
-table.hardwareListTable th.label {
-    width: 30%;
-}
-
-table.hardwareListTable th.actions {
-    width: 10%;
-}
-
-td.serviceCompanyInfo {
-    padding-top: 0px !important;
-    vertical-align: top;
-}
-
-#hardwareConfigEditDialog #editArea {
-    width: auto;
-}
-
+#hardwareConfigEditDialog #editArea {width: auto;}
 #hardwareConfigEditDialog {
     width: 500px;
 }

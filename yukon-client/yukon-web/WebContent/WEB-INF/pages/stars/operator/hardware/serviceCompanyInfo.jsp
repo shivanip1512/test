@@ -3,17 +3,17 @@
 <%@ taglib uri="http://java.sun.com/jsp/jstl/core" prefix="c" %>
 <%@ taglib uri="http://www.springframework.org/tags" prefix="spring"%>
 
-<table class="noStyle">
+<table>
     <tr>
-        <td class="serviceCompanyInfo"><spring:escapeBody htmlEscape="true">${companyName}</spring:escapeBody></td>
+        <td><spring:escapeBody htmlEscape="true">${companyName}</spring:escapeBody></td>
     </tr>
-    
-    <tr>
-        <td>    
-            <tags:address address="${address}"/>
-        </td>
-    </tr>
-    
+    <c:if test="${not empty address}">
+        <tr>
+            <td>    
+                <tags:address address="${address}"/>
+            </td>
+        </tr>
+    </c:if>
     <c:if test="${not empty mainPhoneNumber}">
         <tr>
             <td>

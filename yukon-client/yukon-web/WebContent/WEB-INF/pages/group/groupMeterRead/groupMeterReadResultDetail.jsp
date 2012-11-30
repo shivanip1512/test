@@ -119,7 +119,7 @@
         
         <%-- SUCCESS --%>
         <br>
-        <div class="normalBoldLabel">${successSectionTitle} <span class="okGreen"><cti:dataUpdaterValue type="GROUP_METER_READ" identifier="${resultKey}/SUCCESS_COUNT"/></span></div>
+        <div class="fwb">${successSectionTitle} <span class="success"><cti:dataUpdaterValue type="GROUP_METER_READ" identifier="${resultKey}/SUCCESS_COUNT"/></span></div>
         
         <div id="successActionsDiv" style="padding:10px;display:none;">
         
@@ -139,7 +139,7 @@
     
         <%-- PROCESSING EXCEPTION --%>
         <br>
-        <div class="normalBoldLabel">${failedSectionTitle} <span class="errorRed"><cti:dataUpdaterValue type="GROUP_METER_READ" identifier="${resultKey}/FAILURE_COUNT"/></span></div>
+        <div class="fwb">${failedSectionTitle} <span class="error"><cti:dataUpdaterValue type="GROUP_METER_READ" identifier="${resultKey}/FAILURE_COUNT"/></span></div>
         
         <div id="errorActionsDiv" style="padding:10px;display:none;">
         
@@ -158,7 +158,7 @@
         
         <%-- UNSUPPORTED --%>
         <br>
-        <div class="normalBoldLabel">${unsupportedSectionTitle} <span class="errorRed"><cti:dataUpdaterValue type="GROUP_METER_READ" identifier="${resultKey}/UNSUPPORTED_COUNT"/></span></div>
+        <div class="fwb">${unsupportedSectionTitle} <span class="error"><cti:dataUpdaterValue type="GROUP_METER_READ" identifier="${resultKey}/UNSUPPORTED_COUNT"/></span></div>
         
         <div id="unsupportedActionsDiv" style="padding:10px;display:none;">
         

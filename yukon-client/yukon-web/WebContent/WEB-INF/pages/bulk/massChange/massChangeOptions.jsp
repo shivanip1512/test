@@ -49,7 +49,7 @@
                                 deviceCollection="${deviceCollection}">
                                 
         <c:if test="${not empty statusMsg}">
-            <div style="font-weight:bold;color:#006633;">${statusMsg}</div>
+            <div class="fwb success">${statusMsg}</div>
             <br>
         </c:if>
         

@@ -121,7 +121,7 @@
     <br>
 
     <c:if test="${not empty param.errorMessage}">
-        <div class="errorRed">
+        <div class="error">
             ${fn:escapeXml(param.errorMessage)}
         </div>
         <br>

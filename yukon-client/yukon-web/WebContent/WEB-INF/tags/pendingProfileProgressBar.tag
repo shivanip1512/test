@@ -12,11 +12,11 @@
     </c:when>
 
     <c:when test="${percentDone >= 100.0}">
-        <div id="progressMsg_${requestId}" style='color:#006633;font-weight:bold;text-align:center;'>Completed</div>
+        <div id="progressMsg_${requestId}" class="fwb tac success">Completed</div>
     </c:when>
     
     <c:when test="${percentDone <= 0.0}">
-        <div id="progressMsg_${requestId}" style='color:#555555;font-weight:bold;text-align:center;'>Pending</div>
+        <div id="progressMsg_${requestId}" class="fwb tac">Pending</div>
     </c:when>
 
     <c:otherwise>

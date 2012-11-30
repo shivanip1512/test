@@ -7,14 +7,14 @@
 
 */
 
-body {font-family: Verdana,Arial,Helvetica,sans-serif; line-height:1.3em;font-size:14px;color:#555;}
+body {font-family: Verdana,Arial,Helvetica,sans-serif; line-height:1.35em;font-size:14px;color:#555;}
 a, .vertical_menu a:hover {text-decoration:none;}
 a:hover, a:focus {text-decoration:underline;outline:0;}
 
 /* primary color */
-a, .primary_color, .vertical_menu li.selected a, .vertical_menu a:hover, .ui-widget-content a {color:#06C;}
+a, .primary_color, .vertical_menu li.selected a, .vertical_menu a:hover, .ui-widget-content a, h3.toggle-title {color:#06C;}
 .primary_background {background-color:#06c; color:white;}
-::-moz-selection, ::selection {background-color:#06c; color:white;} /* separate rule until IE does not trash rules with pseudo selectors */
+::-moz-selection, ::selection {background-color:#06c; color:white;} /* IE 9 does not support pseudo element selectors '::<element selector name>' and will ignore the entire rule, therefore it must be separate */
 .primary_background a, .primary_background a:visited {color:white}
 
 a:visited {color: purple;}
@@ -41,8 +41,8 @@ button:disabled, input[type=submit]:disabled, input[type=button]:disabled {color
 button .hoverableImage {margin-top:-2px; top: 2px; margin-right: 5px; position:relative;}
 button.image {padding: 0; width: 16px; height: 16px;}
 
-button.danger {color:white;background:#DA4F49 linear-gradient(#EE5F5B, #BD362F); text-shadow: 0 -1px 0 rgba(0, 0, 0, 0.25); border-color:#802D2D;}
-button.danger:hover {background:#BD362F; border-color:#802D2D;box-shadow:0 0 5px red;}
+button.danger {color:white;background:#D14836 linear-gradient(#EE5F5B, #BD362F); text-shadow: 0 -1px 0 rgba(0, 0, 0, 0.25); border-color:#802D2D;}
+button.danger:hover {background:#BD362F; border-color:#802D2D;box-shadow:0 0 5px #D14836;}
 button.danger:active {background:#F55656;}
 
 button.naked, button.naked:hover {border:none; background:transparent; box-shadow:none;}
@@ -75,19 +75,58 @@ button.naked, button.naked:hover {border:none; background:transparent; box-shado
 /* Table Styles */
 table {width: auto; border-collapse:collapse;}
 table td, table th {padding:2px 5px;}
-table th {background:white;text-align:left;font-weight:bold;border-bottom:solid 1px #ccc;}
+table th {background:white; text-align:left; font-weight:bold; border-bottom:solid 1px #ccc;}
 table.naturalWidth {width: auto;}
 
 .compactResultsTable, .resultsTable, .nameValueTable {width:100%;border-collapse:collapse;}
 .compactResultsTable {font-size:0.8em;}
 .compactResultsTable tr:nth-child(even), .resultsTable tr:nth-child(even) {background-color:#f6f6f6;}
 .compactResultsTable td, .resultsTable td, .nameValueTable td {border:none;}
+.compactResultsPaging {border-top: 1px solid #ccc;}
+.compactResultsPaging .pagingArea {float: right; margin: -1px 50px 0 0; border: 1px solid #ccc; border-style: none solid solid solid; padding: 5px 10px;background-color: white;}
+.compactResultsPaging span {line-height: 16px;}
+.compactResultsPaging .pageNumText {margin: 0 10px;}
 .nameValueTable .name {font-size: .9em;}
 .nameValueTable .value {color: #333;}
-/* END Table Styles */
+
 .rowHighlighting tr:hover, .highlighted {background-color:#FFF465 !important;}
+.aligned_4_actions .first, .aligned_4_actions .middle {width: 30%;}
+.aligned_4_actions .last {width: 10%;}
+
+/* END Table Styles */
+
+/*Default Progress Bar classes - start */
+div.progressBar .box {margin-right: 5px;}
+div.progressBarBorder {height: 12px;width: 102px;border: 1px solid black;background-color: #ECECEC;}
+div.progressBarInnerSuccess,div.progressBarInnerFailure {position: absolute;}
+div.progressBarInner, div.progressBarInnerSuccess, div.progressBarInnerFailure {height: 12px;width: 0px;}
+div.progressBarInner, div.progressBarInnerSuccess {
+    background: #3A7448; /* in case the browser specific one below fails */
+    filter: progid:DXImageTransform.Microsoft.gradient(startColorstr='#529252', endColorstr='#3A7448'); /*for IE */
+    background: -webkit-gradient(linear, left top, left bottom, from(#3A7448), color-stop(0.1, #529252), color-stop(0.50, #3A7448), color-stop(0.90, #529252), to(#3A7448)); /* for webkit browsers */
+    background: -moz-linear-gradient(top, #3A7448, #3A7448 10%, #529252, #3A7448 50%, #529252 90%, #3A7448); /* for firefox 3.6+ */
+}
+div.progressBarInnerFailure {
+    background: #8C0C10; /* in case the browser specific one below fails */
+    filter: progid:DXImageTransform.Microsoft.gradient(startColorstr='#BF0F12', endColorstr='#8C0C10'); /*for IE*/
+    background: -webkit-gradient(linear, left top, left bottom, from(#8C0C10), color-stop(0.1, #BF0F12), color-stop(0.50, #8C0C10), color-stop(0.90, #BF0F12), to(#8C0C10)); /* for webkit browsers */
+    background: -moz-linear-gradient(top, #8C0C10, #8C0C10 10%, #BF0F12, #8C0C10 50%, #BF0F12 90%, #8C0C10); /* for firefox 3.6+ */
+}
+.progressBarPercentComplete, .progressBarCompletedCount {font-size: 11px;}
+/*Default Progress Bar classes - end */
+
+/* Custom Progress Bar classes - start*/
+.progressBar .scheduledRequestProgressBarBorder {width: 55px;}
+/* Custom Progress Bar classes - end*/
+
+/* LISTS */
+.buttonStack li {margin-bottom: 5px;}
+.labeledImageStack li {padding-bottom: 23px;}
 
 /* CONTAINERS */
+.toggle-title {cursor: pointer; background: white url(../Icons/icon_blockexpanded.png) no-repeat scroll 0 8px; padding-left: 14px; display: inline;}
+.collapsed .toggle-title {background: url("../Icons/icon_blockcollapsed.png") no-repeat scroll 3px 5px #FFFFFF;}
+
 .titledContainer, .pagedBox, .sectionContainer {margin-bottom: 20px;}
 .pagedBox, .sectionContainer, .boxContainer, .inlineTree, .resultsTable, .liteContainer {border:solid 1px #ccc; border-radius:3px;} /* .titledContainer, */
 .pagedBox > .title, .inlineTree > .tree_helper_controls, .resultsTable th {border-radius:3px 3px 0 0;} /* .titledContainer > .titleBar, */
@@ -139,29 +178,30 @@ table.naturalWidth {width: auto;}
 .page_help ul,.page_warning ul,.page_error ul {list-style: disc inside none;}
 .page_help {border-color: #06C; background: #EAF1FD url('/WebConfig/yukon/Icons/information.gif') 5px 4px no-repeat;}
 .page_warning {line-height: 1.3em; border-color: #FBB117; background: #FFFFDA url('/WebConfig/yukon/Icons/warning.gif') 5px 4px no-repeat;}
-.page_error {border-color: #CC0000; background: #FFDDDD url('/WebConfig/yukon/Icons/error.gif') 5px 4px no-repeat;}
+.page_error {border-color: ##D14836; background: #FFDDDD url('/WebConfig/yukon/Icons/error.gif') 5px 4px no-repeat;}
 
 /* Pipes */
 ul.pipes {overflow:hidden; display:inline-block;}
 ul.pipes li {display:inline; border-left:solid 1px #ccc; margin:0 0 0 -1px; padding:2px 5px 2px 6px;}
 
 /* Color Coding */
-.error, .errorMessage {color:red}
-.success, .successMessage {color:green}
+.error, .errorMessage {color: #D14836}
+.success, .successMessage {color: #093;}
 .info {color:blue}
-.warn, .warning {color:#FBB117}
-.disabled, .subtle, .setting .detail > span {color:#555; cursor:default;}
+.warn, .warning, .warningMessage {color:#FBB117}
+.disabled, .disabled a, .subtle, .setting .detail > span {color:#555; cursor:default;}
+.disabled a:hover {text-decoration: none;}
 
 div.message, div.userMessage {border-radius:3px; padding: 2px 30px; border-style:solid; border-width:1px; margin-bottom: 10px;}
-div.error, div.ERROR {background:pink url(../Icons/error.gif) 5px no-repeat; border-color:red;}
-div.success, div.CONFIRM {background:#C3FDB8 url("../Icons/enable.gif") 5px no-repeat; padding-left: 30px; border-color:green; color:#333;}
+div.error, div.ERROR {background:pink url(../Icons/error.gif) 5px no-repeat; border-color:#D14836;}
+div.success, div.CONFIRM {background:#C3FDB8 url("../Icons/enable.gif") 5px no-repeat; padding-left: 30px; border-color:#093; color:#333;}
 div.info {background:lightBlue url(../Icons/error.gif) 5px no-repeat; border-color:blue;}
 div.warn, div.WARNING {color:#333;background:#FFFFDA url(../Icons/warning.gif) 5px no-repeat; border-color:#FBB117;}
-input.error {background: pink;border-color:red;}
+input.error {background: pink;border-color:#D14836;}
 /* END Color Coding */
 
 /* Dialogs */
-.popUpDiv, .widgetPopup, .ui-dialog {background:white;position:absolute;box-shadow:0 10px 30px black; border:solid 1px #999; border-radius:3px; z-index: 1000; top:100px; left:200px;max-width:800px;} /* TODO: replace old popups so that size and position is not hardcoded */ 
+.popUpDiv, .widgetPopup, .ui-dialog {background:white;position:fixed;box-shadow:0 10px 30px black; border:solid 1px #999; border-radius:3px; z-index: 1000; top:100px; left:200px;max-width:800px;} /* TODO: replace old popups so that size and position is not hardcoded */ 
 .widgetPopup {padding: 10px 20px;}
 .popUpDiv .controls, .titledContainer .controls, .pagedBox .controls {float:right;cursor:pointer;}
 .popUpDiv > .titledContainer {margin-bottom: 0;}
@@ -180,8 +220,37 @@ input.error {background: pink;border-color:red;}
 .widgetColumns td.widgetColumnCell {width: 50%;}
 /* END Table Layouts */
 
+/* NORMAL LAYOUTS */
+/* column container */
+.colmask {float:left; width:100%; /* width of whole page */ overflow:hidden; /* This chops off any overhanging divs */}
+/* common column settings */
+.colright, .colmid, .colleft {float:left; width:100%; position:relative;}
+.col1, .col2, .col3 {float:left; position:relative; padding:0 0 1em 0; overflow:hidden;}
+/* 2 Column (double page) settings */
+.doublepage .colleft {right:50%; /* right column width */}
+.doublepage .col1 {
+    width:46%; /* left column content width (column width minus left and right padding) */
+    left:52%; /* right column width plus left column left padding */
+}
+.doublepage .col2 {
+    width:46%; /* right column content width (column width minus left and right padding) */
+    left:56%; /* (right column width) plus (left column left and right padding) plus (right column left padding) */
+}
+/* 2 Column (right menu) settings */
+.rightmenu .colleft {right:25%; /* right column width */}
+.rightmenu .col1 {
+    width:71%; /* left column content width (left column width minus left and right padding) */
+    left:27%; /* (right column width) plus (left column left padding) */
+}
+.rightmenu .col2 {
+    width:21%; /* right column content width (right column width minus left and right padding) */
+    left:31%; /* (right column width) plus (left column left and right padding) plus (right column left padding) */
+}
+/* END NORMAL LAYOUTS */
+
 /* scrollable divs */
-.scrollingContainer_160, .scrollingContainer_small {overflow-y:scroll; max-height:160px; border:solid 1px #ccc; border-style:solid none; margin: 10px 0 20px;}
+.scrollingContainer_160, .scrollingContainer_small {overflow: auto; overflow-x: hidden; max-height:160px;}
+.scrollingContainer_160 td.last, .scrollingContainer_small td.last {padding-right: 20px !important;} /* make sure scrollbar does not hide content */
 
 /* legacy icons */
 .graycssicon, .cssicon {border-radius:3px; cursor:pointer;}
@@ -223,6 +292,7 @@ strong, span.smallBoldLabel, .groupedList .group {font-weight: bold;}
 .full_width {width: 100%}
 .clear_both {clear:both;}
 .stacked {margin-bottom: 10px;} /*  Soley for spacing vertically stacked elements */
+.wall_of_text .value {max-width: 300px;}
 
 .setting {border-top: dotted 1px #ccc; margin-top: -1px; padding: 5px 0;}
 .setting > .fl {margin-left: 10px;}

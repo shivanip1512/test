@@ -92,7 +92,7 @@
                 <i:inline key="yukon.web.modules.amr.fdrTranslationManagement.defaultColumnsText"/><br>
                 
                 <div class="bottomPadded">
-                    <table class="miniResultsTable" style="font-size:11px;">
+                    <table class="resultsTable detail">
                         <tr>
                             <th><i:inline key="yukon.web.modules.amr.fdrTranslationManagement.defaultColumnsHeader"/></th>
                             <th><i:inline key="yukon.web.modules.amr.fdrTranslationManagement.defaultColumnsDescriptionHeader"/></th>
@@ -151,7 +151,7 @@
                     </c:forEach>
                 </select>
                 <div class="bottomPadded">
-                <table class="miniResultsTable" style="font-size:11px;">
+                <table class="resultsTable detail">
                     <c:forEach var="displayableInterface" items="${displayableInterfaces}">
                         <tr class="interface_${displayableInterface.name}" style="display: none;">
                             <th>

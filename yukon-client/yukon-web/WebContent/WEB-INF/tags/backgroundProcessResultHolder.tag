@@ -64,7 +64,7 @@
       
 <%-- SUCCESS COUNT --%>
 <br>
-<div class="normalBoldLabel"><cti:msg key="yukon.common.device.bulk.${resultsTypeMsgKey}Results.successLabel" />: <span style="color:#006633;"><cti:dataUpdaterValue type="BACKGROUNDPROCESS" identifier="${resultsId}/SUCCESS_COUNT"/></span></div>
+<div class="fwb"><cti:msg key="yukon.common.device.bulk.${resultsTypeMsgKey}Results.successLabel" />: <span class="success"><cti:dataUpdaterValue type="BACKGROUNDPROCESS" identifier="${resultsId}/SUCCESS_COUNT"/></span></div>
 
 <%-- SUCCESS DEVICE COLLECTION --%>
 <c:if test="${callbackResult.successDevicesSupported}">
@@ -93,7 +93,7 @@
 
 <%-- FAILURE COUNT --%>
 <br>
-<div class="normalBoldLabel"><cti:msg key="yukon.common.device.bulk.${resultsTypeMsgKey}Results.processingExceptionLabel" />: <span style="color:#CC0000;"><cti:dataUpdaterValue type="BACKGROUNDPROCESS" identifier="${resultsId}/PROCESSING_EXCEPTION_COUNT"/></span></div>
+<div class="fwb"><cti:msg key="yukon.common.device.bulk.${resultsTypeMsgKey}Results.processingExceptionLabel" />: <span class="error"><cti:dataUpdaterValue type="BACKGROUNDPROCESS" identifier="${resultsId}/PROCESSING_EXCEPTION_COUNT"/></span></div>
 
 <%-- FAILURE DETAILS --%>
 <div id="errorActionsDiv" style="padding:4px;display:none;">

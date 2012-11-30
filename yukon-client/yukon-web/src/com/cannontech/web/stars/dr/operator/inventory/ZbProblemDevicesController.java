@@ -65,7 +65,7 @@ public class ZbProblemDevicesController {
             String colorString;
             int fgColor = state.getFgColor();
             if (fgColor == Colors.RED_ID) {
-                colorString = "#CC0000"; //YukonGeneralStyles.css .errorMessage
+                colorString = "#D14836"; // yukon.css .error
             } else {
                 colorString = Colors.getColorString(fgColor);
             }

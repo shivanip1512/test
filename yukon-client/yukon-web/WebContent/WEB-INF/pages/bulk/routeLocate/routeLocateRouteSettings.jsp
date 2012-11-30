@@ -115,7 +115,7 @@
                 <td>${d.deviceName}</td>
                 
                 <%-- current route --%>
-                <td class="subtleGray">
+                <td class="subtle">
                     <c:choose>
                         <c:when test="${not empty d.initialRouteId}">
                             ${d.initialRouteName}
@@ -190,7 +190,7 @@
                 <td>${d.deviceName}</td>
                 
                 <%-- current route --%>
-                <td class="subtleGray">
+                <td class="subtle">
                     <c:choose>
                         <c:when test="${not empty d.initialRouteId}">
                             ${d.initialRouteName}

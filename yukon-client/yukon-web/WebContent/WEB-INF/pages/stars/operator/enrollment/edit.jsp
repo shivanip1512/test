@@ -46,7 +46,7 @@ updateOKButton = function() {
     <input type="hidden" name="assignedProgramId" value="${param.assignedProgramId}"/>
 
     <cti:checkEnergyCompanySetting value="!TRACK_HARDWARE_ADDRESSING" energyCompanyId="${energyCompanyId}" >
-        <tags:nameValueContainer2>
+        <tags:nameValueContainer2 tableClass="stacked">
             <tags:nameValue2 nameKey=".group">
                 <c:if test="${empty loadGroups}">
                     <i:inline key=".groupNotApplicable"/>
@@ -60,42 +60,46 @@ updateOKButton = function() {
         </tags:nameValueContainer2>
     </cti:checkEnergyCompanySetting>
 
-    <br>
     <tags:boxContainer2 nameKey="hardwareAssigned">
         <div class="dialogScrollArea">
         <table id="hardwareAssignedTable" class="compactResultsTable rowHighlighting">
-            <tr class="<tags:alternateRow odd="" even="altRow"/>">
-                <th></th>
-                <th class="deviceLabel"><i:inline key=".deviceLabel"/></th>
-                <th class="relay"><i:inline key=".relay"/></th>
-            </tr>
-            <c:forEach var="item" varStatus="status"
-                items="${programEnrollment.inventoryEnrollments}">
-                <c:set var="inventoryId" value="${item.inventoryId}"/>
-                <script type="text/javascript">inventoryIds.push(${item.inventoryId});</script>
-                <c:set var="displayableInventory" value="${inventoryById[inventoryId]}"/>
-                <tr class="<tags:alternateRow odd="" even="altRow"/>">
-                    <td>
-                        <form:hidden path="inventoryEnrollments[${status.index}].inventoryId"/>
-                        <form:checkbox id="enrolledCB${inventoryId}"
-                            path="inventoryEnrollments[${status.index}].enrolled"
-                            onclick="enrollmentChanged(${inventoryId});"/>
-                    </td>
-                    <td class="deviceLabel"><label for="enrolledCB${inventoryId}">
-                        <spring:escapeBody htmlEscape="true">${displayableInventory.displayName}</spring:escapeBody>
-                    </label></td>
-                    <td class="relay">
-                        <form:select id="relaySelect${inventoryId}"
-                            path="inventoryEnrollments[${status.index}].relay">
-                            <form:option value="0"><cti:msg2 key=".noRelay"/></form:option>
-                            <c:forEach var="relayNumber" begin="1"
-                                end="${displayableInventory.numRelays}">
-                                <form:option value="${relayNumber}">${relayNumber}</form:option>
-                            </c:forEach>
-                        </form:select>
-                    </td>
+            <thead>
+                <tr>
+                    <th></th>
+                    <th class="deviceLabel"><i:inline key=".deviceLabel"/></th>
+                    <th class="relay"><i:inline key=".relay"/></th>
                 </tr>
-            </c:forEach>
+            </thead>
+            <tfoot></tfoot>
+            <tbody>
+                <c:forEach var="item" varStatus="status"
+                    items="${programEnrollment.inventoryEnrollments}">
+                    <c:set var="inventoryId" value="${item.inventoryId}"/>
+                    <script type="text/javascript">inventoryIds.push(${item.inventoryId});</script>
+                    <c:set var="displayableInventory" value="${inventoryById[inventoryId]}"/>
+                    <tr class="<tags:alternateRow odd="" even="altRow"/>">
+                        <td>
+                            <form:hidden path="inventoryEnrollments[${status.index}].inventoryId"/>
+                            <form:checkbox id="enrolledCB${inventoryId}"
+                                path="inventoryEnrollments[${status.index}].enrolled"
+                                onclick="enrollmentChanged(${inventoryId});"/>
+                        </td>
+                        <td class="deviceLabel"><label for="enrolledCB${inventoryId}">
+                            <spring:escapeBody htmlEscape="true">${displayableInventory.displayName}</spring:escapeBody>
+                        </label></td>
+                        <td class="relay">
+                            <form:select id="relaySelect${inventoryId}"
+                                path="inventoryEnrollments[${status.index}].relay">
+                                <form:option value="0"><cti:msg2 key=".noRelay"/></form:option>
+                                <c:forEach var="relayNumber" begin="1"
+                                    end="${displayableInventory.numRelays}">
+                                    <form:option value="${relayNumber}">${relayNumber}</form:option>
+                                </c:forEach>
+                            </form:select>
+                        </td>
+                    </tr>
+                </c:forEach>
+            </tbody>
         </table>
         </div>
     </tags:boxContainer2>

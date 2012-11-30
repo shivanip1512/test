@@ -22,7 +22,7 @@
     <br>
     
     <%-- LAST TRANSMITTED --%>
-    <div class="normalBoldLabel">
+    <div class="fwb">
     	Last Transmitted: <span id="lastTransmitted"><cti:formatDate type="BOTH" value="${now}"/></span>
     </div>
     <br>

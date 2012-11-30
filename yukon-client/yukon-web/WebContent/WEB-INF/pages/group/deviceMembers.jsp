@@ -31,12 +31,12 @@
                 </c:if>
                 
                 <c:if test="${not empty membersErrorMessage}">
-                    <span class="errorRed">${membersErrorMessage}</span>
+                    <span class="error">${membersErrorMessage}</span>
                     <br><br>
                 </c:if>
                 
                 <c:if test="${limted}">
-                    <span class="errorRed">
+                    <span class="error">
                         <cti:msg key="yukon.web.deviceGroups.editor.membersContainer.showDevicesLimitText" 
                                  argument="${maxGetDevicesSize}"/>
                     </span>

@@ -39,7 +39,7 @@
                     ${msgStr}
                 </c:if>
                 <c:if test="${msgType == '0'}">
-                    <div style="color:#CC0000;">${msgStr}</div>
+                    <div class="error">${msgStr}</div>
                 </c:if>
             </c:if>
         
@@ -158,18 +158,20 @@
             
             <%-- FAILURES --%>
             <div id="failed_data" style="display:none;">
-                <table id="failed_table" class="miniResultsTable">
-                    <tr>
-                        <c:forEach var="colName" items="${failureColumnNames}">
-                            <th>${colName}</th>
-                        </c:forEach>
-                    </tr>
+                <table id="failed_table" class="resultsTable">
+                    <thead>
+                        <tr>
+                            <c:forEach var="colName" items="${failureColumnNames}">
+                                <th>${colName}</th>
+                            </c:forEach>
+                        </tr>
+                    </thead>
                 </table>
             </div>
             
             <%-- PENDING COMMS --%>
             <div id="pendingComm_data" style="display:none;">
-                <table id="pendingComm_table" class="miniResultsTable">
+                <table id="pendingComm_table" class="resultsTable">
                     <tr>
                         <c:forEach var="colName" items="${pendingCommsColumnNames}">
                             <th>${colName}</th>
@@ -180,7 +182,7 @@
             
             <%-- FAILURE COMMS --%>
             <div id="failedComm_data" style="display:none;">
-                <table id="failedComm_table" class="miniResultsTable">
+                <table id="failedComm_table" class="resultsTable">
                     <tr>
                         <c:forEach var="colName" items="${failureCommsColumnNames}">
                             <th>${colName}</th>

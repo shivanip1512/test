@@ -118,10 +118,10 @@
 			<tags:nameValue name="${infoStatusText}">
 				<c:choose>
 					<c:when test="${cre.commandRequestExecutionStatus == 'FAILED'}">
-						<c:set var="statusSpanClass" value="errorRed"/>
+						<c:set var="statusSpanClass" value="error"/>
 					</c:when>
 					<c:when test="${cre.commandRequestExecutionStatus == 'IN_PROGRESS'}">
-						<c:set var="statusSpanClass" value="okGreen"/>
+						<c:set var="statusSpanClass" value="success"/>
 					</c:when>
 					<c:otherwise>
 						<c:set var="statusSpanClass" value=""/>

@@ -429,7 +429,7 @@ function getEndpointCommissionConfirmationCallback(deviceId) {
                 
                 <c:if test="${showAssignedDevices}">
                     <tags:boxContainer2 nameKey="assignedDevices" id="assignedDevices" styleClass="f_block_this">
-                        <div class="hardwarePageContainer">
+                        <div class="scrollingContainer_small">
                             <c:choose>
                                 <c:when test="${not empty assignedDevices}">
                                     <table class="compactResultsTable">

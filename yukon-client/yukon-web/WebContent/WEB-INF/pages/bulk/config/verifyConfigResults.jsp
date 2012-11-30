@@ -52,13 +52,13 @@
     
     <c:choose>
         <c:when test="${not empty exceptionReason}">
-            <span class="errorRed"><b>Error Occured: ${exceptionReason}</b></span>
+            <span class="error"><b>Error Occured: ${exceptionReason}</b></span>
         </c:when>
         <c:otherwise>
-            <span class="okGreen"><b>Verify Completed Successfully</b></span>
+            <span class="success"><b>Verify Completed Successfully</b></span>
 		    <%-- SUCCESS --%>
 		    <br><br>
-		    <div class="normalBoldLabel">${successLabel} <span class="okGreen">${successCollection.deviceCount}</span></div>
+		    <div class="fwb">${successLabel} <span class="success">${successCollection.deviceCount}</span></div>
 		    <c:if test="${successCollection.deviceCount > 0}">
 		        <div id="successActionsDiv" style="padding:10px;">
 		    
@@ -73,7 +73,7 @@
 		    </c:if>
 		    
 		    <%-- FAILURE --%>
-		    <div class="normalBoldLabel">${failureLabel} <span class="errorRed">${failureCollection.deviceCount}</span></div>
+		    <div class="fwb">${failureLabel} <span class="error">${failureCollection.deviceCount}</span></div>
 		    
 		    <c:if test="${failureCollection.deviceCount > 0}">
 			    <div id="errorActionsDiv" style="padding:10px;">
@@ -88,7 +88,7 @@
 		    </c:if>
 		    
 		    <%-- UNSUPPORTED --%>
-		    <div class="normalBoldLabel">${unsupportedLabel} <span class="errorRed">${unsupportedCollection.deviceCount}</span></div>
+		    <div class="fwb">${unsupportedLabel} <span class="error">${unsupportedCollection.deviceCount}</span></div>
 		    
 		    <c:if test="${unsupportedCollection.deviceCount > 0}">
 		        <div id="errorActionsDiv" style="padding:10px;">

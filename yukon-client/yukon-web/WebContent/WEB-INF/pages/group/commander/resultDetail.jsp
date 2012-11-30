@@ -120,7 +120,7 @@
         
         <%-- SUCCESS --%>
         <br>
-        <div class="normalBoldLabel">Successfully Executed: <span class="okGreen"><cti:dataUpdaterValue type="COMMANDER" identifier="${result.key}/SUCCESS_COUNT"/></span></div>
+        <div class="fwb">Successfully Executed: <span class="success"><cti:dataUpdaterValue type="COMMANDER" identifier="${result.key}/SUCCESS_COUNT"/></span></div>
         
         <div id="successActionsDiv" style="padding:10px;display:none;">
         
@@ -141,13 +141,13 @@
     
         <%-- PROCESSING EXCEPTION --%>
         <br>
-        <div class="normalBoldLabel">Failed To Execute: <span class="errorRed"><cti:dataUpdaterValue type="COMMANDER" identifier="${result.key}/FAILURE_COUNT"/></span></div>
+        <div class="fwb">Failed To Execute: <span class="error"><cti:dataUpdaterValue type="COMMANDER" identifier="${result.key}/FAILURE_COUNT"/></span></div>
         
         <div id="errorActionsDiv" style="padding:10px;display:none;">
         
             <%-- canceled? --%>
             <div id="cmdCanceldMsg" style="display:none;">
-                <span class="errorRed">Commands were canceled.</span>
+                <span class="error">Commands were canceled.</span>
                 <br><br>
             </div>
             <cti:dataUpdaterCallback function="showCmdCanceldMsg()" initialize="true" isCanceled="COMMANDER/${result.key}/IS_CANCELED" />
@@ -168,7 +168,7 @@
         <c:if test="${result.handleUnsupported}">
 	        <%-- UNSUPPORTED --%>
 	        <br>
-	        <div class="normalBoldLabel">Not Supported: <span class="errorRed"><cti:dataUpdaterValue type="COMMANDER" identifier="${result.key}/UNSUPPORTED_COUNT"/></span></div>
+	        <div class="fwb">Not Supported: <span class="error"><cti:dataUpdaterValue type="COMMANDER" identifier="${result.key}/UNSUPPORTED_COUNT"/></span></div>
 	        
 	        <c:if test="${not empty result.unsupportedCollection.deviceList}">
 		        <div id="unsupportedActionsDiv" style="padding:10px;">

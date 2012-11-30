@@ -53,7 +53,7 @@
 	<form id="MForm" name = "MForm" action="<cti:url value="/servlet/BillingServlet" />" method="post">
 	
 			<c:if test="${BILLING_BEAN.errorMsg != null}">
-				<div style="font-weight:bold;color:#CC0000;">${BILLING_BEAN.errorMsg}</div>
+				<div class="error">${BILLING_BEAN.errorMsg}</div>
 				<br>
 			</c:if>
 	

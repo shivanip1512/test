@@ -58,7 +58,7 @@ public enum RouteLocateTypeEnum {
             
             String className = "";
             if (routeLocateResult.isCanceled()) {
-                className = "errorRed";
+                className = "error";
             } else {
                 className = "";
             }

@@ -43,7 +43,7 @@ public class MultispeakDeviceGroupSyncBackingService implements UpdateBackingSer
     	builder.put(MultispeakDeviceGroupSyncProgressStatus.RUNNING, "");
     	builder.put(MultispeakDeviceGroupSyncProgressStatus.FAILED, "errorMessage");
     	builder.put(MultispeakDeviceGroupSyncProgressStatus.CANCELED, "errorMessage");
-    	builder.put(MultispeakDeviceGroupSyncProgressStatus.FINISHED, "okGreen");
+    	builder.put(MultispeakDeviceGroupSyncProgressStatus.FINISHED, "success");
     	statusStyleClassNameMap = builder.build();
     }
     

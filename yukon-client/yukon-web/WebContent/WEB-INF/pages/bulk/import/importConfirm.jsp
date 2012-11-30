@@ -43,15 +43,15 @@
             
             <table cellspacing="8" border="0">
                 <tr valign="top">
-                    <td class="normalBoldLabel">${rows}</td>
+                    <td class="fwb">${rows}</td>
                     <td>${parsedResult.bulkFileInfo.dataCount}</td>
                 </tr>
                 <tr valign="top">
-                    <td class="normalBoldLabel">${importMethodLabel}</td>
+                    <td class="fwb">${importMethodLabel}</td>
                     <td><cti:msg key="yukon.common.device.bulk.columnHeader.tableHeader.import.method.displayName.${parsedResult.bulkImportMethod.name}"/></td>
                 </tr>
                 <tr valign="top">
-                    <td class="normalBoldLabel">${optionalFieldsLabel}</td>
+                    <td class="fwb">${optionalFieldsLabel}</td>
                     <td>
                         <c:choose>
                             <c:when test="${not empty parsedResult.updateBulkFieldColumnHeaders}">

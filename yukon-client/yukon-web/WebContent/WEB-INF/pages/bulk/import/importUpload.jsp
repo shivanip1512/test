@@ -79,7 +79,7 @@
                         <%-- file errors --%>
                         <c:if test="${not empty fileErrorKeysList}">
                             <c:forEach var="fileErrorKey" items="${fileErrorKeysList}">
-                                <div style="color:#CC0000;">
+                                <div class="error">
                                     <cti:msg key="${fileErrorKey}"/>
                                 </div>
                             </c:forEach>
@@ -89,7 +89,7 @@
                         <%-- header errors --%>
                         <c:if test="${not empty headersErrorResolverList}">
                             <c:forEach var="headersErrorResolver" items="${headersErrorResolverList}">
-                                <div style="color:#CC0000;">
+                                <div class="error">
                                     <cti:msg key="${headersErrorResolver}"/>
                                 </div>
                             </c:forEach>
@@ -97,7 +97,7 @@
                         </c:if>
                         
                         <%-- file select --%>
-                        <div class="normalBoldLabel" style="display:inline;">Import File:</div>
+                        <div class="fwb" style="display:inline;">Import File:</div>
                         <input type="file" name="dataFile" >
                         <tags:slowInput myFormId="uploadForm" label="Load" labelBusy="Load" />
                         
@@ -106,14 +106,14 @@
             
                 <%-- INSTRUCTIONS --%>
                 <td>
-                    <div class="normalBoldLabel">Instructions:</div>
+                    <div class="fwb">Instructions:</div>
                     <ul style="font-size:11px;">
                         <cti:msg key="yukon.common.device.bulk.importUpload.instructions"/>
                     </ul>
                    
                     <%-- sample files --%>
                     <div class="small">
-                        <div class="normalBoldLabel" style="display:inline;"><cti:msg key="yukon.common.device.bulk.importUpload.sampleFilesLabel"/>:</div>
+                        <div class="fwb" style="display:inline;"><cti:msg key="yukon.common.device.bulk.importUpload.sampleFilesLabel"/>:</div>
                         <a href="<cti:url value="/WebConfig/custom/sample_bulk_files/Sample_Bulk_Import_File1.csv"/>">File 1</a>, 
                         <a href="<cti:url value="/WebConfig/custom/sample_bulk_files/Sample_Bulk_Import_File2.csv"/>">File 2</a>, 
                         <a href="<cti:url value="/WebConfig/custom/sample_bulk_files/Sample_Bulk_Import_File3.csv"/>">File 3</a>, 
@@ -128,7 +128,7 @@
                     </td>
                 </tr>
                 <tr>
-                    <td><label class="normalBoldLabel"><cti:msg2 key="yukon.common.device.bulk.options.deviceTypeSelect.text" /> <select name="importTypeSelector" id="importTypeSelector">
+                    <td><label class="fwb"><cti:msg2 key="yukon.common.device.bulk.options.deviceTypeSelect.text" /> <select name="importTypeSelector" id="importTypeSelector">
                                 <c:forEach var="bulkImportType" items="${bulkImportTypes}">
                                     <option value="${bulkImportType}" <c:if test="${importTypeSelector eq bulkImportType}">selected="selected"</c:if>>
                                         <i:inline key="yukon.common.device.bulk.options.deviceTypeSelect.${bulkImportType}" />
@@ -150,16 +150,16 @@
                     <cti:url var="methodImg" value="/WebConfig/yukon/Icons/import_by_${method.name}.gif"/>
                 
                     <td class="bulkImportType_${method.type}"  style="display: none;">
-                        <table class="miniResultsTable" style="font-size:11px;">
+                        <table class="resultsTable detail">
                     
                             <tr>
                                 <td colspan="2" style="background-color:#CDCDCD;" >
                                 
-                                    <div >
+                                    <div>
                                     <table class="noStyle">
                                         <tr valign="top">
                                             <td rowspan="2"><img src="${methodImg}"></td>
-                                            <td><div class="normalBoldLabel"><cti:msg key="yukon.common.device.bulk.columnHeader.tableHeader.import.method.tableLabel.${method.name}"/></div></td>
+                                            <td><div class="fwb"><cti:msg key="yukon.common.device.bulk.columnHeader.tableHeader.import.method.tableLabel.${method.name}"/></div></td>
                                         </tr>
                                         <tr>
                                             <td><cti:msg key="yukon.common.device.bulk.columnHeader.tableHeader.import.method.tableDescription.${method.name}"/></td>

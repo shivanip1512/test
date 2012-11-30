@@ -18,7 +18,7 @@ public class StatusClassUpdaterHandler implements DeviceReconfigUpdaterHandler {
         int itemsProcessed = inventoryConfigTask.getNumberOfItemsProcessed();
         
         if(itemsProcessed == inventoryConfigTask.getNumberOfItems()) {
-            return "okGreen";
+            return "success";
         }
         
         return "";

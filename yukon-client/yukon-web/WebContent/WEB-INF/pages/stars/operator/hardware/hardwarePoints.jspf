@@ -37,8 +37,8 @@ jQuery(function() {
 <tags:boxContainer2 nameKey="hardwarePoints" styleClass="f_block_this">
     <c:forEach var="entry" items="${points}">
         <c:if test="${fn:length(entry.value) > 0}">
-            <span class="crtHeader"><i:inline key="${entry.key}" /></span>
-            <div class="hardwarePageContainer pointsList">
+            <span><i:inline key="${entry.key}" /></span>
+            <div class="scrollingContainer_small liteContainer stacked">
                 <table class="compactResultsTable">
                     <c:forEach var="point" items="${entry.value}">
                         <tr class="<tags:alternateRow odd="" even="altRow"/>">

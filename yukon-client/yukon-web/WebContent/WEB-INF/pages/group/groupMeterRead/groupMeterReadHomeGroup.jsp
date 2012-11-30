@@ -30,7 +30,7 @@
     	
     	<c:if test="${not empty errorMsg}">
     		<br>
-    		<div class="errorRed">${errorMsg}</div>
+    		<div class="error">${errorMsg}</div>
     	</c:if>
 	
     	<br>

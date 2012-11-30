@@ -61,7 +61,7 @@
                     <tags:updateableProgressBar totalCount="${task.totalItems}" countKey="INVENTORY_TASK/${task.taskId}/ITEMS_PROCESSED"/>
                 </tags:nameValue2>
                 <tags:nameValue2 nameKey=".successful">
-                    <cti:dataUpdaterValue type="INVENTORY_TASK" identifier="${task.taskId}/SUCCESS_COUNT" styleClass="successMessage normalBoldLabel"/>
+                    <cti:dataUpdaterValue type="INVENTORY_TASK" identifier="${task.taskId}/SUCCESS_COUNT" styleClass="successMessage fwb"/>
                     <cti:classUpdater type="INVENTORY_TASK" identifier="${task.taskId}/NEW_OPERATION_FOR_SUCCESS">
                         <ul class="resultList">
                             <li>
@@ -71,7 +71,7 @@
                     </cti:classUpdater>
                 </tags:nameValue2>
                 <tags:nameValue2 nameKey=".unsupported">
-                    <cti:dataUpdaterValue type="INVENTORY_TASK" identifier="${task.taskId}/UNSUPPORTED_COUNT" styleClass="warningMessage normalBoldLabel"/>
+                    <cti:dataUpdaterValue type="INVENTORY_TASK" identifier="${task.taskId}/UNSUPPORTED_COUNT" styleClass="warningMessage fwb"/>
                     <cti:classUpdater type="INVENTORY_TASK" identifier="${task.taskId}/NEW_OPERATION_FOR_UNSUPPORTED">
                         <ul class="resultList">
                             <li>

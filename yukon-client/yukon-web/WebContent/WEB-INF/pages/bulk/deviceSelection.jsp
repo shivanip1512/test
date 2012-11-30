@@ -25,7 +25,7 @@
     <br>
     
     <c:if test="${not empty errorMsg}">
-            <div class="errorRed">${errorMsg}</div>
+            <div class="error">${errorMsg}</div>
         <br>
     </c:if>
     
