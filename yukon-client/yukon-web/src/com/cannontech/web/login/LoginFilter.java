@@ -89,6 +89,7 @@ public class LoginFilter implements Filter {
                          "/servlet/SOAPClient/**",
                          "/jws/*");
     
+    @Override
     public void doFilter(ServletRequest req, ServletResponse resp, FilterChain chain) throws IOException, ServletException {
         HttpServletRequest request = (HttpServletRequest) req;
         HttpServletResponse response = (HttpServletResponse) resp;
@@ -249,11 +250,11 @@ public class LoginFilter implements Filter {
     @SuppressWarnings("unchecked")
     public void init(FilterConfig filterConfig) throws ServletException {
         context = WebApplicationContextUtils.getWebApplicationContext(filterConfig.getServletContext());
-        userContextResolver = (YukonUserContextResolver) context.getBean("userContextResolver", YukonUserContextResolver.class);
-        loginRequestHandlers = (List<LoginRequestHandler>) context.getBean("loginRequestHandlers", List.class);
-        urlAccessChecker = (UrlAccessChecker) context.getBean("urlAccessChecker", UrlAccessChecker.class);
-        rolePropertyDao = (RolePropertyDao) context.getBean("rolePropertyDao", RolePropertyDao.class);
-        loginService = (LoginService) context.getBean("loginService", LoginService.class);
+        userContextResolver = context.getBean("userContextResolver", YukonUserContextResolver.class);
+        loginRequestHandlers = context.getBean("loginRequestHandlers", List.class);
+        urlAccessChecker = context.getBean("urlAccessChecker", UrlAccessChecker.class);
+        rolePropertyDao = context.getBean("rolePropertyDao", RolePropertyDao.class);
+        loginService = context.getBean("loginService", LoginService.class);
     }
 
     @Override

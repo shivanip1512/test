@@ -1350,7 +1350,6 @@
                 
                 <!-- Deny Capacitor Control to all except CBCSettingsRole role -->
                 <value>DENY|/capcontrol/**|!CBC_SETTINGS</value>            
-                <value>DENY|/capcontrol/**|!CBC_SETTINGS</value>
                 
                 <value>DENY|/support/**|!OPERATOR_ADMINISTRATOR</value>
                 

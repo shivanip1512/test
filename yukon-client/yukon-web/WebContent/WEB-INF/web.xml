@@ -872,11 +872,6 @@
 	</servlet-mapping>
 
 	<servlet-mapping>
-		<servlet-name>editor</servlet-name>
-		<url-pattern>/editor/*</url-pattern>
-	</servlet-mapping>
-
-	<servlet-mapping>
 		<servlet-name>dynamicBilling </servlet-name>
 		<url-pattern>/dynamicBilling/* </url-pattern>
 	</servlet-mapping>

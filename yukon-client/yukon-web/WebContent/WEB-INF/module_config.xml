@@ -1464,7 +1464,7 @@
                                     <page name="userPermissions" type="DETAIL_CHILD_WITH_INFO" contributeToMenu="true">
                                     	<requireRoleProperty value="ADMIN_LM_USER_ASSIGN"/>
                                         <menu>userEditor|home</menu>
-                                        <link>/editor/user/editUser?userId=${userId}</link>
+                                        <link>/adminSetup/user/permissions?userId=${userId}</link>
                                         <labelArgument>${editingUsername}</labelArgument>
                                     </page>
                                 </pages>
@@ -1498,7 +1498,7 @@
                                     <page name="groupPermissions" type="DETAIL_CHILD_WITH_INFO" contributeToMenu="true">
                                         <requireRoleProperty value="ADMIN_LM_USER_ASSIGN"/>
                                         <menu>userEditor|home</menu>
-                                        <link>/editor/group/editGroup?userGroupId=${userGroupId}</link>
+                                        <link>/adminSetup/userGroup/permissions?userGroupId=${userGroupId}</link>
                                         <labelArgument>${userGroupName}</labelArgument>
                                     </page>
                                 </pages>

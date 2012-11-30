@@ -22,6 +22,7 @@ import com.cannontech.common.validator.YukonMessageCodeResolver;
 import com.cannontech.common.validator.YukonValidationUtils;
 import com.cannontech.core.authentication.model.AuthType;
 import com.cannontech.core.authentication.model.AuthenticationCategory;
+import com.cannontech.core.authentication.model.AuthenticationThrottleDto;
 import com.cannontech.core.authentication.model.PasswordPolicy;
 import com.cannontech.core.authentication.model.PasswordPolicyError;
 import com.cannontech.core.authentication.service.AuthenticationService;
@@ -32,6 +33,7 @@ import com.cannontech.core.dao.impl.LoginStatusEnum;
 import com.cannontech.core.roleproperties.YukonRole;
 import com.cannontech.core.roleproperties.YukonRoleCategory;
 import com.cannontech.core.roleproperties.YukonRoleProperty;
+import com.cannontech.core.roleproperties.dao.RolePropertyDao;
 import com.cannontech.core.service.YukonUserService;
 import com.cannontech.core.users.dao.UserGroupDao;
 import com.cannontech.core.users.model.LiteUserGroup;
@@ -55,6 +57,7 @@ import com.google.common.collect.Multimap;
 public class UserEditorController {
     @Autowired private AuthenticationService authenticationService;
     @Autowired private RoleDao roleDao;
+    @Autowired private RolePropertyDao rolePropertyDao;
     @Autowired private UserGroupDao userGroupDao;
     @Autowired private YukonUserDao yukonUserDao;
     @Autowired private YukonUserService yukonUserService;
@@ -83,6 +86,31 @@ public class UserEditorController {
         User user = new User(yukonUserDao.getLiteYukonUser(userId));
         setupModelMap(model, user, PageEditMode.EDIT, userContext);
         return "userGroupEditor/user.jsp";
+    }
+
+    @RequestMapping
+    public String permissions(ModelMap model, int userId, YukonUserContext userContext) {
+        rolePropertyDao.verifyProperty(YukonRoleProperty.ADMIN_LM_USER_ASSIGN, userContext.getYukonUser());
+        LiteYukonUser user = yukonUserDao.getLiteYukonUser(userId);
+
+        AuthenticationThrottleDto authThrottleDto = authenticationService.getAuthenticationThrottleData(user.getUsername());
+
+        model.addAttribute("user", user);
+        model.addAttribute("userId", user.getUserID());
+        model.addAttribute("editingUsername", user.getUsername()); // Used by layout controller.
+        model.addAttribute("authThrottleDto", authThrottleDto);
+        return "userGroupEditor/editUser.jsp";
+    }
+
+    @RequestMapping(method = RequestMethod.POST)
+    public String removeLoginWait(ModelMap model, int userId, YukonUserContext userContext) {
+        rolePropertyDao.verifyProperty(YukonRoleProperty.ADMIN_LM_USER_ASSIGN, userContext.getYukonUser());
+        LiteYukonUser user = yukonUserDao.getLiteYukonUser(userId);
+
+        authenticationService.removeAuthenticationThrottle(user.getUsername());
+
+        model.addAttribute("userId", userId);
+        return "redirect:permissions";
     }
 
     /* Unlock User */

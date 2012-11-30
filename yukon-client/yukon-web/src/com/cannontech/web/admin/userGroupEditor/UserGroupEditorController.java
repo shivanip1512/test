@@ -8,6 +8,7 @@ import java.util.List;
 import java.util.Map;
 
 import javax.naming.ConfigurationException;
+import javax.servlet.ServletException;
 import javax.servlet.http.HttpServletRequest;
 
 import org.springframework.beans.factory.annotation.Autowired;
@@ -33,6 +34,7 @@ import com.cannontech.core.dao.YukonUserDao;
 import com.cannontech.core.roleproperties.YukonRole;
 import com.cannontech.core.roleproperties.YukonRoleCategory;
 import com.cannontech.core.roleproperties.YukonRoleProperty;
+import com.cannontech.core.roleproperties.dao.RolePropertyDao;
 import com.cannontech.core.users.dao.UserGroupDao;
 import com.cannontech.core.users.model.LiteUserGroup;
 import com.cannontech.database.data.lite.LiteBase;
@@ -56,6 +58,7 @@ import com.google.common.collect.Multimap;
 public class UserGroupEditorController {
 
     @Autowired private RoleDao roleDao;
+    @Autowired private RolePropertyDao rolePropertyDao;
     @Autowired private UserGroupDao userGroupDao;
     @Autowired private YukonGroupDao yukonGroupDao;
     @Autowired private YukonUserDao yukonUserDao;
@@ -89,6 +92,17 @@ public class UserGroupEditorController {
         model.addAttribute("mode", PageEditMode.EDIT);
         model.addAttribute("userGroupName",userGroup.getUserGroup().getUserGroupName());
         return "userGroupEditor/userGroup.jsp";
+    }
+
+    @RequestMapping
+    public String permissions(ModelMap model, int userGroupId, YukonUserContext userContext) throws ServletException {
+        rolePropertyDao.verifyProperty(YukonRoleProperty.ADMIN_LM_USER_ASSIGN, userContext.getYukonUser());
+        LiteUserGroup userGroup = userGroupDao.getLiteUserGroup(userGroupId);
+
+        model.addAttribute("userGroup", userGroup);
+        model.addAttribute("userGroupId", userGroupId);
+        model.addAttribute("userGroupName", userGroup.getUserGroupName());
+        return "userGroupEditor/editGroup.jsp";
     }
 
     /* Update Group */

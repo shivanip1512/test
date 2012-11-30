@@ -16,14 +16,14 @@
 <script language="JavaScript">
 
 	function forwardToUserEdit(selectedItems) {
-		window.location = "/editor/user/editUser?userId=" +
+		window.location = "/adminSetup/user/permissions?userId=" +
 		    $('userIdSelected').value;
 		window.event.returnValue = false;
 		return true;
 	}
 
 	function forwardToGroupEdit(selectedItems) {
-		window.location = "/editor/group/editGroup?groupId=" +
+		window.location = "/adminSetup/userGroup/permissions?groupId=" +
 		    $('loginGroupIdSelected').value;
 		window.event.returnValue = false;
 		return true;
