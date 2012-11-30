@@ -43,6 +43,7 @@ public class YukonFileAppender extends AppenderSkeleton {
 
     private int maxFileOpenRetries = DatedFileAppender.MAX_FILE_OPEN_RETRIES;
     private int retryDelayInMs = DatedFileAppender.RETRY_DELAY_IN_MS;
+    private final int logRetentionDays = DatedFileAppender.LOG_RETENTION_DAYS;
     
     /**
      *  This appenders name
@@ -92,6 +93,7 @@ public class YukonFileAppender extends AppenderSkeleton {
 
         dailyRollingFileAppender.setMaxFileOpenRetries(maxFileOpenRetries);
         dailyRollingFileAppender.setRetryDelayInMillis(retryDelayInMs);
+        dailyRollingFileAppender.setLogRetentionDays(logRetentionDays);
 
         //The layout for the log file:
         Layout layout = new PatternLayout(conversionPattern);

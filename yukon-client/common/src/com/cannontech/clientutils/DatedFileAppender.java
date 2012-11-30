@@ -15,7 +15,6 @@ import org.apache.log4j.helpers.LogLog;
 import org.apache.log4j.spi.ErrorCode;
 import org.apache.log4j.spi.LoggingEvent;
 
-import com.cannontech.common.config.MasterConfigHelper;
 import com.cannontech.common.util.CtiUtilities;
 
 // Based on DatedFileAppender from http://minaret.biz/tips/datedFileAppender.html
@@ -158,6 +157,7 @@ import com.cannontech.common.util.CtiUtilities;
 public class DatedFileAppender extends FileAppender {
     public final static int MAX_FILE_OPEN_RETRIES = 5;
     public final static int RETRY_DELAY_IN_MS = 1000;
+    public final static int LOG_RETENTION_DAYS = 90;
 
     //----------------------------------------------------- class Variables
     /**
@@ -229,6 +229,8 @@ public class DatedFileAppender extends FileAppender {
      * The delay in millis between file open attempts.
      */
     private long retryDelayInMillis = RETRY_DELAY_IN_MS;
+    
+    private int logRetentionDays = LOG_RETENTION_DAYS;
     
     private class FileLogFilter implements FilenameFilter {
         @Override
@@ -341,6 +343,10 @@ public class DatedFileAppender extends FileAppender {
 		this.maxFileOpenRetries = maxFileOpenRetries;
 	}
     
+    public void setLogRetentionDays(int logRetentionDays) {
+        this.logRetentionDays = logRetentionDays;
+    }
+    
     // --------------------------------------- Public Methods
 
     /**
@@ -438,17 +444,10 @@ public class DatedFileAppender extends FileAppender {
                 }
             }
             
-            final int retentionDays = MasterConfigHelper.getConfiguration().getInteger("LOG_FILE_RETENTION", 90);
             
-            // Check to see if we need to clean up the directory.
-            File directory = new File(m_directory);
-            File[] files = directory.listFiles(new FileLogFilter());
+            // Do any necessary log cleanup in the directory.
+            cleanUpDirectory();
             
-            for (File file : files) {
-                if (filePastRetentionDate(file, retentionDays)) {
-                    file.delete();
-                }
-            }
 
             //append a header including version info at the start of the new log file
             FileWriter fwriter = null;
@@ -532,33 +531,36 @@ public class DatedFileAppender extends FileAppender {
     }
 
     /**
-     * Determines whether a log file is past the retention date or not. 
-     * This method assumes that files being checked match the regex represented by:
-     *      String regex = "^" + m_prefix + "[0-9]{8}" + m_suffix;
-     *      
-     * @param file - the file being checked for retention
-     * @return true if the file is past the user-defined retention date, false otherwise.
+     * Deletes log files that are past the retention date in the log directory.
      */
-    private boolean filePastRetentionDate(File file, final int retentionDays) {
-        String fileDateStr = file.getName().replace(m_prefix, "").replace(m_suffix, "");
-
-        if (fileDateStr.length() != 8 || retentionDays == 0) {
-            return false;
+    private void cleanUpDirectory() {
+        if (logRetentionDays == 0) {
+            // Keep files forever. No need to do cleanup.
+            return;
         }
         
-        Date fileDate;
-        try {
-            // Verify the fileDate is a valid date!
-            DateFormat formatter = new SimpleDateFormat("yyyyMMdd");
-            fileDate = formatter.parse(fileDateStr);
-        } catch (ParseException e) {
-            return false;
+        File directory = new File(m_directory);
+        File[] files = directory.listFiles(new FileLogFilter());
+        
+        for (File file : files) {
+            String fileDateStr = file.getName().replace(m_prefix, "").replace(m_suffix, "");
+            
+            Date fileDate;
+            try {
+                // Verify the fileDate is a valid date!
+                DateFormat formatter = new SimpleDateFormat("yyyyMMdd");
+                fileDate = formatter.parse(fileDateStr);
+            } catch (ParseException e) {
+                continue;
+            }
+            
+            Calendar retentionDate = Calendar.getInstance();
+            retentionDate.setTime(m_calendar.getTime());
+            retentionDate.add(Calendar.DAY_OF_YEAR, -logRetentionDays);
+            
+            if (fileDate.before(retentionDate.getTime())) {
+                file.delete();
+            }
         }
-        
-        Calendar retentionDate = Calendar.getInstance();
-        retentionDate.setTime(m_calendar.getTime());
-        retentionDate.add(Calendar.DAY_OF_YEAR, -retentionDays);
-        
-        return fileDate.before(retentionDate.getTime());
     }
 }
