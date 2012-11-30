@@ -137,15 +137,6 @@
       <sequence name="LMStatManualEvent">
         <table name="LMCustomerEventBase" identitycolumn="EventID" initsequence="true"/>
       </sequence>
-      <sequence name="LMStatSchedule">
-        <table name="LMThermostatSchedule" identitycolumn="ScheduleID" initsequence="true"/>
-      </sequence>
-      <sequence name="LMStatSeason">
-        <table name="LMThermostatSeason" identitycolumn="SeasonID" initsequence="true"/>
-      </sequence>
-      <sequence name="LMStatSeasonEntry">
-        <table name="LMThermostatSeasonEntry" identitycolumn="EntryID" initsequence="true"/>
-      </sequence>
       <sequence name="ApplianceBase">
         <table name="ApplianceBase" identitycolumn="ApplianceID" initsequence="true"/>
       </sequence>

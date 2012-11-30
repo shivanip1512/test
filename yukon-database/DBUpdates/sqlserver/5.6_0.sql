@@ -67,6 +67,15 @@ ALTER TABLE DynamicTags
 GO
 /* End YUK-11156 */
 
+/* Start YUK-11081 */
+DROP TABLE LMThermostatSeasonEntry;
+GO
+DROP TABLE LMThermostatSeason;
+GO
+DROP TABLE LMThermostatSchedule;
+GO
+/* End YUK-11081 */
+
 /**************************************************************/
 /* VERSION INFO                                               */
 /* Inserted when update script is run                         */

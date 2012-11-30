@@ -1,7 +1,7 @@
 /*==============================================================*/
 /* Database name:  YukonDatabase                                */
 /* DBMS name:      ORACLE Version 9i                            */
-/* Created on:     11/29/2012 3:37:50 PM                        */
+/* Created on:     11/30/2012 4:49:03 PM                        */
 /*==============================================================*/
 
 
@@ -5971,88 +5971,6 @@ create table LMThermostatManualEvent  (
 );
 
 /*==============================================================*/
-/* Table: LMThermostatSchedule                                  */
-/*==============================================================*/
-create table LMThermostatSchedule  (
-   ScheduleID           NUMBER                          not null,
-   ScheduleName         VARCHAR2(60)                    not null,
-   ThermostatTypeID     NUMBER                          not null,
-   AccountID            NUMBER                          not null,
-   InventoryID          NUMBER                          not null,
-   constraint PK_LMTHERMOSTATSCHEDULE primary key (ScheduleID)
-);
-
-INSERT INTO LMThermostatSchedule VALUES (-1,'(none)',0,0,0);
-
-/*==============================================================*/
-/* Index: INDX_LMThermSch_InvId                                 */
-/*==============================================================*/
-create index INDX_LMThermSch_InvId on LMThermostatSchedule (
-   InventoryID ASC
-);
-
-/*==============================================================*/
-/* Index: INDX_LMThermSch_AcctId                                */
-/*==============================================================*/
-create index INDX_LMThermSch_AcctId on LMThermostatSchedule (
-   AccountID ASC
-);
-
-/*==============================================================*/
-/* Table: LMThermostatSeason                                    */
-/*==============================================================*/
-create table LMThermostatSeason  (
-   SeasonID             NUMBER                          not null,
-   ScheduleID           NUMBER,
-   WebConfigurationID   NUMBER,
-   CoolStartDate        DATE,
-   HeatStartDate        DATE,
-   constraint PK_LMTHERMOSTATSEASON primary key (SeasonID)
-);
-
-INSERT INTO LMThermostatSeason VALUES (-1,-1,-2,'01-JUN-00','15-OCT-00');
-
-/*==============================================================*/
-/* Index: INDX_LMThermSea_SchId                                 */
-/*==============================================================*/
-create index INDX_LMThermSea_SchId on LMThermostatSeason (
-   ScheduleID ASC
-);
-
-/*==============================================================*/
-/* Table: LMThermostatSeasonEntry                               */
-/*==============================================================*/
-create table LMThermostatSeasonEntry  (
-   EntryID              NUMBER                          not null,
-   SeasonID             NUMBER                          not null,
-   TimeOfWeekID         NUMBER                          not null,
-   StartTime            NUMBER                          not null,
-   CoolTemperature      NUMBER,
-   HeatTemperature      NUMBER,
-   constraint PK_LMTHERMOSTATSEASONENTRY primary key (EntryID)
-);
-
-INSERT INTO LMThermostatSeasonEntry VALUES (-24,-1,1171,21600,72,72);
-INSERT INTO LMThermostatSeasonEntry VALUES (-23,-1,1171,30600,72,72);
-INSERT INTO LMThermostatSeasonEntry VALUES (-22,-1,1171,61200,72,72);
-INSERT INTO LMThermostatSeasonEntry VALUES (-21,-1,1171,75600,72,72);
-INSERT INTO LMThermostatSeasonEntry VALUES (-20,-1,1173,21600,72,72);
-INSERT INTO LMThermostatSeasonEntry VALUES (-19,-1,1173,30600,72,72);
-INSERT INTO LMThermostatSeasonEntry VALUES (-18,-1,1173,61200,72,72);
-INSERT INTO LMThermostatSeasonEntry VALUES (-17,-1,1173,75600,72,72);
-INSERT INTO LMThermostatSeasonEntry VALUES (-16,-1,1174,21600,72,72);
-INSERT INTO LMThermostatSeasonEntry VALUES (-15,-1,1174,30600,72,72);
-INSERT INTO LMThermostatSeasonEntry VALUES (-14,-1,1174,61200,72,72);
-INSERT INTO LMThermostatSeasonEntry VALUES (-13,-1,1174,75600,72,72);
-
-/*==============================================================*/
-/* Index: INDX_LMThermSeaEntry_SeaId                            */
-/*==============================================================*/
-create index INDX_LMThermSeaEntry_SeaId on LMThermostatSeasonEntry (
-   SeasonID ASC
-);
-
-/*==============================================================*/
 /* Table: LOGIC                                                 */
 /*==============================================================*/
 create table LOGIC  (
@@ -11465,16 +11383,6 @@ alter table LMThermostatManualEvent
 alter table LMThermostatManualEvent
    add constraint FK_LmThrS_LmCstEv foreign key (EventID)
       references LMCustomerEventBase (EventID);
-
-alter table LMThermostatSeason
-   add constraint FK_LMThermSea_LMThermSch foreign key (ScheduleID)
-      references LMThermostatSchedule (ScheduleID)
-      on delete cascade;
-
-alter table LMThermostatSeasonEntry
-   add constraint FK_LMThermSeaEntry_LMThermSea foreign key (SeasonID)
-      references LMThermostatSeason (SeasonID)
-      on delete cascade;
 
 alter table MACROROUTE
    add constraint SYS_C0013274 foreign key (ROUTEID)

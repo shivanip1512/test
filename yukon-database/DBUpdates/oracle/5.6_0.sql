@@ -54,6 +54,12 @@ ALTER TABLE DynamicTags
             ON DELETE CASCADE;
 /* End YUK-11156 */
 
+/* Start YUK-11081 */
+DROP TABLE LMThermostatSeasonEntry;
+DROP TABLE LMThermostatSeason;
+DROP TABLE LMThermostatSchedule;
+/* End YUK-11081 */
+
 /**************************************************************/
 /* VERSION INFO                                               */
 /* Inserted when update script is run                         */
