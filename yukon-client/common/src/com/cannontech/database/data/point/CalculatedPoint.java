@@ -74,9 +74,6 @@ public void delete() throws java.sql.SQLException
 	if(! baselineAssigned)
 		CalcPointBaseline.deleteCalcBaselinePoint( getPoint().getPointID(), getDbConnection() );
 	
-	//a dynamic table used by the CalcHistorical application
-	delete(DynamicCalcHistorical.TABLE_NAME, "PointID", getPoint().getPointID());
-	
 	getCalcBase().delete();	
 	super.delete();
 }

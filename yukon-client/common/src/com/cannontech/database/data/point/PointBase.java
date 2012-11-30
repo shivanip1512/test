@@ -76,13 +76,9 @@ public class PointBase extends DBPersistent implements CTIDbChange, EditorPanel 
         // ADD TABLES THAT HAVE A REFERENCE TO THE POINT TABLE AND THAT
         // NEED TO BE DELETED WHEN A POINT ROW IS DELETED (CASCADE DELETE)
         delete(FDRTranslation.TABLE_NAME, "PointID", pointID);
-        delete("DynamicPointDispatch", "PointID", pointID);
-        delete("DynamicAccumulator", "PointID", pointID);
         delete(GraphDataSeries.tableName, "PointID", pointID);
-        delete("DynamicPointAlarming", "PointID", pointID);
         delete(CalcComponent.TABLENAME, "ComponentPointID", pointID);
         delete("TagLog", "PointID", pointID);
-        delete("DynamicTags", "PointID", pointID);
         delete("Display2WayData", "PointID", pointID);
         delete("CCEventLog", "PointID", pointID);
         delete("PointUnit", "PointID", pointID);

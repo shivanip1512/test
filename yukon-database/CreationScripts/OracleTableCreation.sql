@@ -1,7 +1,7 @@
 /*==============================================================*/
 /* Database name:  YukonDatabase                                */
 /* DBMS name:      ORACLE Version 9i                            */
-/* Created on:     11/20/2012 10:19:55 AM                       */
+/* Created on:     11/29/2012 3:37:50 PM                        */
 /*==============================================================*/
 
 
@@ -10518,8 +10518,9 @@ alter table DISPLAYCOLUMNS
       references COLUMNTYPE (TYPENUM);
 
 alter table DYNAMICACCUMULATOR
-   add constraint SYS_C0015129 foreign key (POINTID)
-      references POINT (POINTID);
+   add constraint FK_DynamicAccumulator_Point foreign key (POINTID)
+      references POINT (POINTID)
+      on delete cascade;
 
 alter table DYNAMICBILLINGFIELD
    add constraint FK_DBF_REF_BFF foreign key (FormatID)
@@ -10561,8 +10562,9 @@ alter table DYNAMICDEVICESCANDATA
       on delete cascade;
 
 alter table DYNAMICPOINTDISPATCH
-   add constraint SYS_C0013331 foreign key (POINTID)
-      references POINT (POINTID);
+   add constraint FK_DynamicPointDispatch_Point foreign key (POINTID)
+      references POINT (POINTID)
+      on delete cascade;
 
 alter table DateOfHoliday
    add constraint FK_HolSchID foreign key (HolidayScheduleID)
@@ -10706,8 +10708,9 @@ alter table DynamicCCSubstationBus
       on delete cascade;
 
 alter table DynamicCalcHistorical
-   add constraint FK_DynClc_ClcB foreign key (PointID)
-      references CALCBASE (POINTID);
+   add constraint FK_DynamicCalcHist_CalcBase foreign key (PointID)
+      references CALCBASE (POINTID)
+      on delete cascade;
 
 alter table DynamicLMControlArea
    add constraint FK_LMCntlAr_DynLMCntAr foreign key (DeviceID)
@@ -10743,12 +10746,14 @@ alter table DynamicPAOStatistics
       on delete cascade;
 
 alter table DynamicPointAlarming
-   add constraint FK_DynPtAl_Pt foreign key (PointID)
-      references POINT (POINTID);
+   add constraint FK_DynamicPointAlarming_Point foreign key (PointID)
+      references POINT (POINTID)
+      on delete cascade;
 
 alter table DynamicTags
-   add constraint FK_DynTgs_Pt foreign key (PointID)
-      references POINT (POINTID);
+   add constraint FK_DynamicTags_Point foreign key (PointID)
+      references POINT (POINTID)
+      on delete cascade;
 
 alter table DynamicTags
    add constraint FK_DYNAMICT_REF_DYNTG_TAGS foreign key (TagID)

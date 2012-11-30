@@ -1,7 +1,7 @@
 /*==============================================================*/
 /* Database name:  YukonDatabase                                */
 /* DBMS name:      Microsoft SQL Server 2005                    */
-/* Created on:     11/20/2012 10:18:39 AM                       */
+/* Created on:     11/30/2012 11:23:06 AM                       */
 /*==============================================================*/
 
 /*==============================================================*/
@@ -11259,8 +11259,9 @@ alter table DISPLAYCOLUMNS
 go
 
 alter table DYNAMICACCUMULATOR
-   add constraint SYS_C0015129 foreign key (POINTID)
+   add constraint FK_DynamicAccumulator_Point foreign key (POINTID)
       references POINT (POINTID)
+         on delete cascade
 go
 
 alter table DYNAMICBILLINGFIELD
@@ -11311,8 +11312,9 @@ alter table DYNAMICDEVICESCANDATA
 go
 
 alter table DYNAMICPOINTDISPATCH
-   add constraint SYS_C0013331 foreign key (POINTID)
+   add constraint FK_DynamicPointDispatch_Point foreign key (POINTID)
       references POINT (POINTID)
+         on delete cascade
 go
 
 alter table DateOfHoliday
@@ -11490,8 +11492,9 @@ alter table DynamicCCSubstationBus
 go
 
 alter table DynamicCalcHistorical
-   add constraint FK_DynClc_ClcB foreign key (PointID)
+   add constraint FK_DynamicCalcHist_CalcBase foreign key (PointID)
       references CALCBASE (POINTID)
+         on delete cascade
 go
 
 alter table DynamicLMControlArea
@@ -11536,13 +11539,15 @@ alter table DynamicPAOStatistics
 go
 
 alter table DynamicPointAlarming
-   add constraint FK_DynPtAl_Pt foreign key (PointID)
+   add constraint FK_DynamicPointAlarming_Point foreign key (PointID)
       references POINT (POINTID)
+         on delete cascade
 go
 
 alter table DynamicTags
-   add constraint FK_DynTgs_Pt foreign key (PointID)
+   add constraint FK_DynamicTags_Point foreign key (PointID)
       references POINT (POINTID)
+         on delete cascade
 go
 
 alter table DynamicTags
