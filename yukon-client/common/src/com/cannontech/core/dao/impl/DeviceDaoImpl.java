@@ -351,11 +351,7 @@ public final class DeviceDaoImpl implements DeviceDao, InitializingBean {
         String sql = " UPDATE DeviceRoutes SET RouteID = ? WHERE DeviceID = ?";
         jdbcOps.update(sql, new Object[] {newRouteId, device.getPaoIdentifier().getPaoId()});
 
-        dbChangeManager.processDbChange(device.getPaoIdentifier().getPaoId(),
-                                        DBChangeMsg.CHANGE_PAO_DB,
-                                        PaoCategory.DEVICE.getDbString(),
-                                        device.getPaoIdentifier().getPaoType().getDbString(),
-                                        DbChangeType.UPDATE);
+        dbChangeManager.processPaoDbChange(device, DbChangeType.UPDATE);
     }
 
     @Override
@@ -364,11 +360,7 @@ public final class DeviceDaoImpl implements DeviceDao, InitializingBean {
         String sql = " UPDATE YukonPAObject SET PAOName = ? WHERE PAObjectID = ?";
         jdbcOps.update(sql, new Object[] {newName, device.getPaoIdentifier().getPaoId()});
 
-        dbChangeManager.processDbChange(device.getPaoIdentifier().getPaoId(),
-                                        DBChangeMsg.CHANGE_PAO_DB,
-                                        PaoCategory.DEVICE.getDbString(),
-                                        device.getPaoIdentifier().getPaoType().getDbString(),
-                                        DbChangeType.UPDATE);
+        dbChangeManager.processPaoDbChange(device, DbChangeType.UPDATE);
     }
 
     @Override
@@ -378,11 +370,7 @@ public final class DeviceDaoImpl implements DeviceDao, InitializingBean {
                      " SET ADDRESS = ? WHERE DeviceID = ?";
         jdbcOps.update(sql, new Object[] {newAddress, device.getPaoIdentifier().getPaoId()});
 
-        dbChangeManager.processDbChange(device.getPaoIdentifier().getPaoId(),
-                                        DBChangeMsg.CHANGE_PAO_DB,
-                                        PaoCategory.DEVICE.getDbString(),
-                                        device.getPaoIdentifier().getPaoType().getDbString(),
-                                        DbChangeType.UPDATE);
+        dbChangeManager.processPaoDbChange(device, DbChangeType.UPDATE);
     }
 
     @Override
@@ -391,11 +379,7 @@ public final class DeviceDaoImpl implements DeviceDao, InitializingBean {
         String sql = " UPDATE DEVICEMETERGROUP SET METERNUMBER = ? WHERE DeviceID = ?";
         jdbcOps.update(sql, new Object[] {newMeterNumber, device.getPaoIdentifier().getPaoId()});
 
-        dbChangeManager.processDbChange(device.getPaoIdentifier().getPaoId(),
-                                        DBChangeMsg.CHANGE_PAO_DB,
-                                        PaoCategory.DEVICE.getDbString(),
-                                        device.getPaoIdentifier().getPaoType().getDbString(),
-                                        DbChangeType.UPDATE);
+        dbChangeManager.processPaoDbChange(device, DbChangeType.UPDATE);
     }
 
     @Override
