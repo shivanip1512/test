@@ -80,12 +80,9 @@ struct test_Mct440_213xBDevice : Cti::Devices::Mct440_213xBDevice
             return point;
         }
 
-        unsigned point_count = 0;
-
-        for each( const std::pair<CtiPointType_t, PointOffsetMap> &p in points )
-        {
-            point_count += p.second.size();
-        }
+        // use a unique point id for any type
+        static unsigned point_count = 0;
+        point_count++;
 
         switch( type )
         {
@@ -121,25 +118,7 @@ struct test_Mct440_213xBDevice : Cti::Devices::Mct440_213xBDevice
             break;
         }
 
-        //printf("!!!!!new point address = 0x032%x",point.get());
-
         return point;
-    }
-
-
-    virtual void insertPointDataReport(CtiPointType_t type, int offset, CtiReturnMsg *rm, point_info pi, const string &default_pointname, const CtiTime &timestamp, double default_multiplier, int tags)
-    {
-        unsigned start_size = rm->PointData().size();
-
-        Cti::Devices::Mct440_213xBDevice::insertPointDataReport(type, offset, rm, pi, default_pointname, timestamp, default_multiplier, tags);
-
-        unsigned end_size = rm->PointData().size();
-
-        if(end_size > start_size)
-        {
-            CtiPointDataMsg *pdm = dynamic_cast<CtiPointDataMsg *>((rm->PointData())[end_size-1]);
-            pdm->setString(CtiNumStr(offset) + " " + pdm->getString()); // add point offset at the beginning of the string
-        }
     }
 
     virtual int getPhaseCount()
@@ -1426,11 +1405,9 @@ BOOST_FIXTURE_TEST_SUITE(getvalue_daily_reads, getvalueDailyReads_helper)
                     BOOST_CHECK_EQUAL( pdata->getQuality(), NormalQuality );
                     BOOST_CHECK_EQUAL( pdata->getTime().seconds(), t_exp.seconds());
 
-                    int offset = -1;
-                    std::istringstream ss(pdata->getString());
-                    ss >> offset;
+                    CtiPointSPtr point = test_dev.getDevicePointOffsetTypeEqual(20, PulseAccumulatorPointType);
 
-                    BOOST_CHECK_EQUAL(offset, 20);
+                    BOOST_CHECK_EQUAL( pdata->getId(), point->getID() );
                 }
 
                 {
@@ -1444,11 +1421,9 @@ BOOST_FIXTURE_TEST_SUITE(getvalue_daily_reads, getvalueDailyReads_helper)
                     BOOST_CHECK_EQUAL( pdata->getQuality(), NormalQuality );
                     BOOST_CHECK_EQUAL( pdata->getTime().seconds(), t_exp.seconds());
 
-                    int offset = -1;
-                    std::istringstream ss(pdata->getString());
-                    ss >> offset;
+                    CtiPointSPtr point = test_dev.getDevicePointOffsetTypeEqual(181, PulseAccumulatorPointType);
 
-                    BOOST_CHECK_EQUAL(offset, 181);
+                    BOOST_CHECK_EQUAL( pdata->getId(), point->getID() );
                 }
 
                 {
@@ -1462,11 +1437,9 @@ BOOST_FIXTURE_TEST_SUITE(getvalue_daily_reads, getvalueDailyReads_helper)
                     BOOST_CHECK_EQUAL( pdata->getQuality(), NormalQuality );
                     BOOST_CHECK_EQUAL( pdata->getTime().seconds(), t_exp.seconds());
 
-                    int offset = -1;
-                    std::istringstream ss(pdata->getString());
-                    ss >> offset;
+                    CtiPointSPtr point = test_dev.getDevicePointOffsetTypeEqual(281, PulseAccumulatorPointType);
 
-                    BOOST_CHECK_EQUAL(offset, 281);
+                    BOOST_CHECK_EQUAL( pdata->getId(), point->getID() );
                 }
 
                 {
@@ -1480,11 +1453,9 @@ BOOST_FIXTURE_TEST_SUITE(getvalue_daily_reads, getvalueDailyReads_helper)
                     BOOST_CHECK_EQUAL( pdata->getQuality(), NormalQuality );
                     BOOST_CHECK_EQUAL( pdata->getTime().seconds(), t_exp.seconds());
 
-                    int offset = -1;
-                    std::istringstream ss(pdata->getString());
-                    ss >> offset;
+                    CtiPointSPtr point = test_dev.getDevicePointOffsetTypeEqual(1, PulseAccumulatorPointType);
 
-                    BOOST_CHECK_EQUAL(offset, 1);
+                    BOOST_CHECK_EQUAL( pdata->getId(), point->getID() );
                 }
 
                 {
@@ -1498,11 +1469,9 @@ BOOST_FIXTURE_TEST_SUITE(getvalue_daily_reads, getvalueDailyReads_helper)
                     BOOST_CHECK_EQUAL( pdata->getQuality(), NormalQuality );
                     BOOST_CHECK_EQUAL( pdata->getTime().seconds(), t_exp.seconds());
 
-                    int offset = -1;
-                    std::istringstream ss(pdata->getString());
-                    ss >> offset;
+                    CtiPointSPtr point = test_dev.getDevicePointOffsetTypeEqual(2, PulseAccumulatorPointType);
 
-                    BOOST_CHECK_EQUAL(offset, 2);
+                    BOOST_CHECK_EQUAL( pdata->getId(), point->getID() );
                 }
             }
         }
