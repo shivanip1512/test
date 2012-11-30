@@ -73,9 +73,9 @@ struct test_Mct440_213xBDevice : Cti::Devices::Mct440_213xBDevice
 
     virtual CtiPointSPtr getDevicePointOffsetTypeEqual(int offset, CtiPointType_t type)
     {
-        CtiPointSPtr point = points[type][offset];
+        CtiPointSPtr &point = points[type][offset];
 
-        if( point )
+        if( point.get() )
         {
             return point;
         }
@@ -121,9 +121,26 @@ struct test_Mct440_213xBDevice : Cti::Devices::Mct440_213xBDevice
             break;
         }
 
+        //printf("!!!!!new point address = 0x032%x",point.get());
+
         return point;
     }
 
+
+    virtual void insertPointDataReport(CtiPointType_t type, int offset, CtiReturnMsg *rm, point_info pi, const string &default_pointname, const CtiTime &timestamp, double default_multiplier, int tags)
+    {
+        unsigned start_size = rm->PointData().size();
+
+        Cti::Devices::Mct440_213xBDevice::insertPointDataReport(type, offset, rm, pi, default_pointname, timestamp, default_multiplier, tags);
+
+        unsigned end_size = rm->PointData().size();
+
+        if(end_size > start_size)
+        {
+            CtiPointDataMsg *pdm = dynamic_cast<CtiPointDataMsg *>((rm->PointData())[end_size-1]);
+            pdm->setString(CtiNumStr(offset) + " " + pdm->getString()); // add point offset at the beginning of the string
+        }
+    }
 
     virtual int getPhaseCount()
     {
@@ -1408,6 +1425,12 @@ BOOST_FIXTURE_TEST_SUITE(getvalue_daily_reads, getvalueDailyReads_helper)
                     BOOST_CHECK_EQUAL( pdata->getValue(), 3);
                     BOOST_CHECK_EQUAL( pdata->getQuality(), NormalQuality );
                     BOOST_CHECK_EQUAL( pdata->getTime().seconds(), t_exp.seconds());
+
+                    int offset = -1;
+                    std::istringstream ss(pdata->getString());
+                    ss >> offset;
+
+                    BOOST_CHECK_EQUAL(offset, 20);
                 }
 
                 {
@@ -1420,6 +1443,12 @@ BOOST_FIXTURE_TEST_SUITE(getvalue_daily_reads, getvalueDailyReads_helper)
                     BOOST_CHECK_EQUAL( pdata->getValue(), 0x98967e);
                     BOOST_CHECK_EQUAL( pdata->getQuality(), NormalQuality );
                     BOOST_CHECK_EQUAL( pdata->getTime().seconds(), t_exp.seconds());
+
+                    int offset = -1;
+                    std::istringstream ss(pdata->getString());
+                    ss >> offset;
+
+                    BOOST_CHECK_EQUAL(offset, 181);
                 }
 
                 {
@@ -1432,6 +1461,12 @@ BOOST_FIXTURE_TEST_SUITE(getvalue_daily_reads, getvalueDailyReads_helper)
                     BOOST_CHECK_EQUAL( pdata->getValue(), 0x88868e);
                     BOOST_CHECK_EQUAL( pdata->getQuality(), NormalQuality );
                     BOOST_CHECK_EQUAL( pdata->getTime().seconds(), t_exp.seconds());
+
+                    int offset = -1;
+                    std::istringstream ss(pdata->getString());
+                    ss >> offset;
+
+                    BOOST_CHECK_EQUAL(offset, 281);
                 }
 
                 {
@@ -1444,6 +1479,12 @@ BOOST_FIXTURE_TEST_SUITE(getvalue_daily_reads, getvalueDailyReads_helper)
                     BOOST_CHECK_EQUAL( pdata->getValue(), 0x98967e);
                     BOOST_CHECK_EQUAL( pdata->getQuality(), NormalQuality );
                     BOOST_CHECK_EQUAL( pdata->getTime().seconds(), t_exp.seconds());
+
+                    int offset = -1;
+                    std::istringstream ss(pdata->getString());
+                    ss >> offset;
+
+                    BOOST_CHECK_EQUAL(offset, 1);
                 }
 
                 {
@@ -1456,6 +1497,12 @@ BOOST_FIXTURE_TEST_SUITE(getvalue_daily_reads, getvalueDailyReads_helper)
                     BOOST_CHECK_EQUAL( pdata->getValue(), 0x88868e);
                     BOOST_CHECK_EQUAL( pdata->getQuality(), NormalQuality );
                     BOOST_CHECK_EQUAL( pdata->getTime().seconds(), t_exp.seconds());
+
+                    int offset = -1;
+                    std::istringstream ss(pdata->getString());
+                    ss >> offset;
+
+                    BOOST_CHECK_EQUAL(offset, 2);
                 }
             }
         }
