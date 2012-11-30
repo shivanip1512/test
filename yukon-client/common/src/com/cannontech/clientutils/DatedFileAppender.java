@@ -2,7 +2,10 @@ package com.cannontech.clientutils;
 
 import java.io.File;
 import java.io.FileWriter;
+import java.io.FilenameFilter;
 import java.io.IOException;
+import java.text.DateFormat;
+import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.Calendar;
 import java.util.Date;
@@ -12,6 +15,7 @@ import org.apache.log4j.helpers.LogLog;
 import org.apache.log4j.spi.ErrorCode;
 import org.apache.log4j.spi.LoggingEvent;
 
+import com.cannontech.common.config.MasterConfigHelper;
 import com.cannontech.common.util.CtiUtilities;
 
 // Based on DatedFileAppender from http://minaret.biz/tips/datedFileAppender.html
@@ -226,6 +230,14 @@ public class DatedFileAppender extends FileAppender {
      */
     private long retryDelayInMillis = RETRY_DELAY_IN_MS;
     
+    private class FileLogFilter implements FilenameFilter {
+        @Override
+        public boolean accept(File dir, String name) {
+            String regex = "^" + m_prefix + "[0-9]{8}" + m_suffix;
+            return name.matches(regex);
+        }
+    }
+    
     // ----------------------------------------------------------- Constructors
 
     /**
@@ -335,6 +347,7 @@ public class DatedFileAppender extends FileAppender {
      * Called once all options have been set on this Appender. Calls the
      * underlying FileLogger's start() method.
      */
+    @Override
     public void activateOptions() {
         if (m_prefix == null) {
             m_prefix = "";
@@ -356,6 +369,7 @@ public class DatedFileAppender extends FileAppender {
      * Called by AppenderSkeleton.doAppend() to write a log message formatted
      * according to the layout defined for this appender.
      */
+    @Override
     public synchronized void append(LoggingEvent event) {
         File newFile = null;
         String datestamp = null;
@@ -376,7 +390,9 @@ public class DatedFileAppender extends FileAppender {
             
             m_calendar.setTimeInMillis(n); // set Calendar to current time
             
-            datestamp = datestamp(m_calendar); // convert to string "yyyy-mm-dd"
+            SimpleDateFormat sdf = new SimpleDateFormat("yyyyMMdd");
+            datestamp = sdf.format(m_calendar.getTime());
+            
             tomorrow(m_calendar); // set the Calendar to the start of tomorrow
             isMaxFileSizeReached = false; //file is always empty at beginning of 
                                           //new day, so reset to false
@@ -419,6 +435,18 @@ public class DatedFileAppender extends FileAppender {
                         errorHandler.error("setFile(" + fileName + "," + fileAppend + ") call failed.",
                                            e, ErrorCode.FILE_OPEN_FAILURE);
                     }
+                }
+            }
+            
+            final int retentionDays = MasterConfigHelper.getConfiguration().getInteger("LOG_FILE_RETENTION", 90);
+            
+            // Check to see if we need to clean up the directory.
+            File directory = new File(m_directory);
+            File[] files = directory.listFiles(new FileLogFilter());
+            
+            for (File file : files) {
+                if (filePastRetentionDate(file, retentionDays)) {
+                    file.delete();
                 }
             }
 
@@ -479,23 +507,6 @@ public class DatedFileAppender extends FileAppender {
     } // end append()
 
     /**
-     * Formats a datestamp as dd using a Calendar source object.
-     * @param calendar a Calendar containing the date to format.
-     * @return a String in the form "dd".
-     */
-    public static String datestamp(Calendar calendar) {
-        int day = calendar.get(Calendar.DAY_OF_MONTH);
-        StringBuffer sb = new StringBuffer();
-
-        if (day < 10) {
-            sb.append('0');
-        }
-
-        sb.append(Integer.toString(day));
-        return sb.toString();
-    }
-
-    /**
      * Sets a calendar to the start of tomorrow, with all time values reset to
      * zero.
      * <p>
@@ -518,5 +529,36 @@ public class DatedFileAppender extends FileAppender {
         Date currentDate = new Date();
         SimpleDateFormat formatter = new SimpleDateFormat("dd/MM/yyyy HH:mm:ss");
         startDate = formatter.format(currentDate);
+    }
+
+    /**
+     * Determines whether a log file is past the retention date or not. 
+     * This method assumes that files being checked match the regex represented by:
+     *      String regex = "^" + m_prefix + "[0-9]{8}" + m_suffix;
+     *      
+     * @param file - the file being checked for retention
+     * @return true if the file is past the user-defined retention date, false otherwise.
+     */
+    private boolean filePastRetentionDate(File file, final int retentionDays) {
+        String fileDateStr = file.getName().replace(m_prefix, "").replace(m_suffix, "");
+
+        if (fileDateStr.length() != 8 || retentionDays == 0) {
+            return false;
+        }
+        
+        Date fileDate;
+        try {
+            // Verify the fileDate is a valid date!
+            DateFormat formatter = new SimpleDateFormat("yyyyMMdd");
+            fileDate = formatter.parse(fileDateStr);
+        } catch (ParseException e) {
+            return false;
+        }
+        
+        Calendar retentionDate = Calendar.getInstance();
+        retentionDate.setTime(m_calendar.getTime());
+        retentionDate.add(Calendar.DAY_OF_YEAR, -retentionDays);
+        
+        return fileDate.before(retentionDate.getTime());
     }
 }
