@@ -9,7 +9,7 @@ ALTER TABLE CTIDatabase
 DROP COLUMN CTIEmployeeName;
 
 ALTER TABLE CTIDatabase
-ADD InstallDate DATE DEFAULT SYSDATE;
+ADD InstallDate DATE;
 /* End YUK-11288 */
 
 /* Start YUK-11156 */
@@ -58,5 +58,4 @@ ALTER TABLE DynamicTags
 /* VERSION INFO                                               */
 /* Inserted when update script is run                         */
 /**************************************************************/
-/*INSERT INTO CTIDatabase (Version, BuildDate, Notes, Build)
-VALUES ('5.6', '05-DEC-2012', 'Latest Update', 0);*/ 
+/*INSERT INTO CTIDatabase VALUES ('5.6', '05-DEC-2012', 'Latest Update', 0, SYSDATE);*/ 
