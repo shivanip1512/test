@@ -82,7 +82,7 @@ BOOST_AUTO_TEST_CASE(test_logger_check_old_file_deletion)
     l.setOutputPath("C:\\Yukon\\Server\\Log");
     l.setOutputFile("unit_test");
 
-    const std::string cutOff( "C:\\Yukon\\Server\\Log\\unit_test20121030.log" );
+    CtiDate cutOff(30, 10, 2012);   // October 30th, 2012
 
     // Prefixes and suffixes
     BOOST_CHECK_EQUAL( false, l.shouldDeleteFile( "C:\\Yukon\\Server\\Log\\saved.unit_test20121109.log", cutOff ) );
@@ -108,10 +108,10 @@ BOOST_AUTO_TEST_CASE(test_logger_check_old_file_deletion)
     BOOST_CHECK_EQUAL( false, l.shouldDeleteFile( "C:\\Yukon\\Server\\Log\\unit_test19991231.log", cutOff ) );
         // out of range -- older than 90 days from cut off date -- save
     BOOST_CHECK_EQUAL( false, l.shouldDeleteFile( "C:\\Yukon\\Server\\Log\\unit_test20360101.log",
-                                                  "C:\\Yukon\\Server\\Log\\unit_test20361231.log" ) );
+                                                  CtiDate(31, 12, 2036) ) );
         // in range -- older than 90 days from cut off date -- delete
     BOOST_CHECK_EQUAL(  true, l.shouldDeleteFile( "C:\\Yukon\\Server\\Log\\unit_test20351231.log",
-                                                  "C:\\Yukon\\Server\\Log\\unit_test20361231.log" ) );
+                                                  CtiDate(31, 12, 2036) ) );
     // Invalid dates
     BOOST_CHECK_EQUAL( false, l.shouldDeleteFile( "C:\\Yukon\\Server\\Log\\unit_test20121131.log", cutOff ) );
     BOOST_CHECK_EQUAL( false, l.shouldDeleteFile( "C:\\Yukon\\Server\\Log\\unit_test20120231.log", cutOff ) );

@@ -438,15 +438,13 @@ void CtiLogger::cleanupOldFiles()
         CtiDate cutOffDate;
         cutOffDate -= _days_to_keep;
 
-        const std::string   cutOffDateFilename = logFilename( cutOffDate );
-
         HANDLE finder_handle = FindFirstFile( file_spec.c_str(), &found_file_info );
 
         if ( finder_handle != INVALID_HANDLE_VALUE )
         {
             std::string found_filename = _path + "\\" + found_file_info.cFileName;
 
-            if ( shouldDeleteFile( found_filename, cutOffDateFilename ) )
+            if ( shouldDeleteFile( found_filename, cutOffDate ) )
             {
                 deleteOldFile( found_filename );
             }
@@ -455,7 +453,7 @@ void CtiLogger::cleanupOldFiles()
             {
                 found_filename = _path + "\\" + found_file_info.cFileName;
 
-                if ( shouldDeleteFile( found_filename, cutOffDateFilename ) )
+                if ( shouldDeleteFile( found_filename, cutOffDate ) )
                 {
                     deleteOldFile( found_filename );
                 }
@@ -476,7 +474,7 @@ void CtiLogger::deleteOldFile( const std::string &file_to_delete )
 }
 
 
-bool CtiLogger::shouldDeleteFile( const std::string &file_to_delete, const std::string &cut_off )
+bool CtiLogger::shouldDeleteFile( const std::string &file_to_delete, const CtiDate &cut_off )
 {
     std::string base_filename( _base_filename );
 
@@ -509,33 +507,13 @@ bool CtiLogger::shouldDeleteFile( const std::string &file_to_delete, const std::
     unsigned    month = date_num % 100;
     unsigned    year = date_num / 100;
 
-    try
+    CtiDate     fileDate( day, month, year );   // Any invalid params set us to Jan 01, 1970
+
+    if ( fileDate < CtiDate( 1, 1, 2000 ) || fileDate > CtiDate( 31, 12, 2035 ) )
     {
-        boost::gregorian::date  valid_date( year, month, day );
-
-        // Previous 'file_regex_spec' match ensures a date >= Jan 01, 2000.
-
-        if ( valid_date >= CtiDate::EndOfTime )  // Check if we are too far out in the future...
-        {
-            return false;
-        }
-    }
-    catch( std::out_of_range & ex )
-    {
-        // swallow the thrown exception if we try to build an invalid date (eg: Febrary 31st)
-
         return false;
     }
 
-    // Get 'cut_off' to proper format -- '\filenameYYYYMMDD.log'
-
-    CtiString   cut_off_filename( cut_off );
-    cut_off_filename.toLower();
-
-    CtiString   cutOff = cut_off_filename.match( file_regex_spec );
-
-    // Finally we can compare our dates... whew!
-
-    return output < cutOff;
+    return fileDate < cut_off;
 }
 

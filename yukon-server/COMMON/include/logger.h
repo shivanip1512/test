@@ -123,7 +123,7 @@ private:
     void deleteOldFile( const std::string &file_to_delete );
 
 protected:
-    bool shouldDeleteFile( const std::string &file_to_delete, const std::string &cut_off );
+    bool shouldDeleteFile( const std::string &file_to_delete, const CtiDate &cut_off );
 };
 
 
