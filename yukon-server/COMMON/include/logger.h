@@ -31,6 +31,7 @@
 #include "CtiPCPtrQueue.h"
 #include "utility.h"
 
+class CtiDate;
 
 class IM_EX_CTIBASE CtiLogger : public CtiThread
 {
@@ -87,15 +88,15 @@ protected:
     void run();
 
     static std::string   scrub(std::string filename);
-    static unsigned secondsUntilMidnight(const tm &tm_now);
+    static unsigned secondsUntilMidnight(const CtiTime & tm_now);
 
-    std::string logFilename(const tm &tm_now);
+    std::string logFilename(const CtiDate & date);
 
 private:
     char    _fill;
 
     std::string  _path, _base_filename, _today_filename;
-    time_t  _next_logfile_check;
+    CtiTime  _next_logfile_check;
 
     bool    _first_output;
 
@@ -119,7 +120,10 @@ private:
     bool tryOpenOutputFile(std::ofstream& stream);
 
     void cleanupOldFiles();
-    void deleteOldFile( const std::string &file_to_delete, const std::string &cut_off );
+    void deleteOldFile( const std::string &file_to_delete );
+
+protected:
+    bool shouldDeleteFile( const std::string &file_to_delete, const std::string &cut_off );
 };
 
 

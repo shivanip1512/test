@@ -1,18 +1,3 @@
-/*-----------------------------------------------------------------------------*
-*
-* File:   logger
-*
-* Date:   2/19/2001
-*
-* Author: Corey G. Plender
-*
-* PVCS KEYWORDS:
-* ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/COMMON/logger.cpp-arc  $
-* REVISION     :  $Revision: 1.23 $
-* DATE         :  $Date: 2008/10/28 19:21:39 $
-*
-* Copyright (c) 1999, 2000 Cannon Technologies Inc. All rights reserved.
-*-----------------------------------------------------------------------------*/
 #include "precompiled.h"
 
 #include "utility.h"
@@ -21,6 +6,7 @@
 #include "logger.h"
 #include "numstr.h"
 #include "ctidate.h"
+#include "ctistring.h"
 
 using namespace std;
 
@@ -36,7 +22,6 @@ CtiLogger::CtiLogger(const string& file, bool to_stdout) :
     _path("..\\log"),
     _fill(' '),
     _write_interval(5000),
-    _next_logfile_check(0),
     _days_to_keep(0)
 {
     _current_stream = new strstream;
@@ -209,21 +194,22 @@ void CtiLogger::doOutput()
         {
             bool logfile_current = true;
 
-            const time_t now = ::time(0);
+            const CtiTime   now;
 
             if( now >= _next_logfile_check )
             {
-                tm tm_now = *(CtiTime::localtime_r(&now));
-
                 //  check at midnight or after 14 hours, whichever is closer...  this accomodates
                 //    DST, since if we go ahead or behind by an hour, we'll still only check twice a day
-                _next_logfile_check = now + min(secondsUntilMidnight(tm_now), 14U * 60U * 60U);
+                _next_logfile_check = now + min(secondsUntilMidnight(now), 14U * 60U * 60U);
 
-                std::string new_log_filename = logFilename(tm_now);
+                std::string new_log_filename = logFilename( CtiDate(now) );
 
                 logfile_current = _today_filename == new_log_filename;
 
-                _today_filename = new_log_filename;
+                if ( ! logfile_current )
+                {
+                    _today_filename = new_log_filename;
+                }
             }
 
             if( !tryOpenOutputFile(outfile) )
@@ -349,37 +335,35 @@ string CtiLogger::scrub(string filename)
     return filename;
 }
 
-
-std::string CtiLogger::logFilename(const tm &tm_now)
+std::string CtiLogger::logFilename(const CtiDate & date)
 {
     ostringstream stream;
 
     stream << _path << "\\" << _base_filename;
 
     stream
-        << (1900 + tm_now.tm_year)
-        << setfill('0') << setw(2) << (1 + tm_now.tm_mon)
-        << setfill('0') << setw(2) << tm_now.tm_mday;
+        << date.year()
+        << setfill('0') << setw(2) << date.month()
+        << setfill('0') << setw(2) << date.dayOfMonth();
 
     stream << ".log";
 
     return stream.str();
+
 }
 
-
-unsigned CtiLogger::secondsUntilMidnight(const struct tm &tm_now)
+unsigned CtiLogger::secondsUntilMidnight(const CtiTime & tm_now)
 {
     unsigned seconds_until_midnight = 0;
 
-    seconds_until_midnight += 24 - tm_now.tm_hour;
+    seconds_until_midnight += 24 - tm_now.hour();
     seconds_until_midnight *= 60;
-    seconds_until_midnight -= tm_now.tm_min;
+    seconds_until_midnight -= tm_now.minute();
     seconds_until_midnight *= 60;
-    seconds_until_midnight -= tm_now.tm_sec;
+    seconds_until_midnight -= tm_now.second();
 
     return seconds_until_midnight;
 }
-
 
 bool CtiLogger::tryOpenOutputFile(ofstream& stream)
 {
@@ -454,13 +438,7 @@ void CtiLogger::cleanupOldFiles()
         CtiDate cutOffDate;
         cutOffDate -= _days_to_keep;
 
-        tm  tm_cutOff;
-
-        tm_cutOff.tm_year   = cutOffDate.year() - 1900;
-        tm_cutOff.tm_mon    = cutOffDate.month() - 1;
-        tm_cutOff.tm_mday   = cutOffDate.dayOfMonth();
-
-        const std::string   cutOffDateFilename = logFilename( tm_cutOff );
+        const std::string   cutOffDateFilename = logFilename( cutOffDate );
 
         HANDLE finder_handle = FindFirstFile( file_spec.c_str(), &found_file_info );
 
@@ -468,13 +446,19 @@ void CtiLogger::cleanupOldFiles()
         {
             std::string found_filename = _path + "\\" + found_file_info.cFileName;
 
-            deleteOldFile( found_filename, cutOffDateFilename );
+            if ( shouldDeleteFile( found_filename, cutOffDateFilename ) )
+            {
+                deleteOldFile( found_filename );
+            }
 
             while ( FindNextFile( finder_handle, &found_file_info ) ) 
             {
                 found_filename = _path + "\\" + found_file_info.cFileName;
 
-                deleteOldFile( found_filename, cutOffDateFilename );
+                if ( shouldDeleteFile( found_filename, cutOffDateFilename ) )
+                {
+                    deleteOldFile( found_filename );
+                }
             }
 
             FindClose( finder_handle );
@@ -483,15 +467,75 @@ void CtiLogger::cleanupOldFiles()
 }
 
 
-void CtiLogger::deleteOldFile( const std::string &file_to_delete, const std::string &cut_off )
+void CtiLogger::deleteOldFile( const std::string &file_to_delete )
 {
-    if ( ( file_to_delete.length() == cut_off.length() ) &&         // ignore old style '_base_filenameDD.log' files
-         ( file_to_delete < cut_off ) )                             // files in the form '_path\_base_filenameYYYYMMDD.log' sort natually by date
+    if ( DeleteFile( file_to_delete.c_str() ) )
     {
-        if ( DeleteFile( file_to_delete.c_str() ) )
+        std::cerr << "Error deleting old log file: " << file_to_delete << std::endl;
+    }
+}
+
+
+bool CtiLogger::shouldDeleteFile( const std::string &file_to_delete, const std::string &cut_off )
+{
+    std::string base_filename( _base_filename );
+
+    CtiToLower( base_filename );
+
+    const std::string   date_regex_spec = "2\\d{7}";
+    const std::string   file_regex_spec = "\\\\" + base_filename + date_regex_spec + "\\.log$";
+
+    CtiString   input( file_to_delete );
+    input.toLower();
+
+    // Check if the filename portion is in the proper format -- '\filenameYYYYMMDD.log'
+
+    CtiString   output = input.match( file_regex_spec );
+
+    if ( output.empty() )
+    {
+        return false;
+    }
+
+    // Check the date format
+    //  Previous 'file_regex_spec' match ensures a match here too.
+
+    CtiString   date = output.match( date_regex_spec );
+
+    unsigned long   date_num = std::strtoul( date.c_str(), NULL, 10 );
+
+    unsigned    day = date_num % 100;
+    date_num /= 100;
+    unsigned    month = date_num % 100;
+    unsigned    year = date_num / 100;
+
+    try
+    {
+        boost::gregorian::date  valid_date( year, month, day );
+
+        // Previous 'file_regex_spec' match ensures a date >= Jan 01, 2000.
+
+        if ( valid_date >= CtiDate::EndOfTime )  // Check if we are too far out in the future...
         {
-            std::cerr << "Error deleting old log file: " << file_to_delete << std::endl;
+            return false;
         }
     }
+    catch( std::out_of_range & ex )
+    {
+        // swallow the thrown exception if we try to build an invalid date (eg: Febrary 31st)
+
+        return false;
+    }
+
+    // Get 'cut_off' to proper format -- '\filenameYYYYMMDD.log'
+
+    CtiString   cut_off_filename( cut_off );
+    cut_off_filename.toLower();
+
+    CtiString   cutOff = cut_off_filename.match( file_regex_spec );
+
+    // Finally we can compare our dates... whew!
+
+    return output < cutOff;
 }
 
