@@ -9018,12 +9018,12 @@
             <i__deleteRule>0</i__deleteRule>
           </com.cariboulake.db.schemacompare.business.domain.db.ForeignKeyConstraint>
           <com.cariboulake.db.schemacompare.business.domain.db.ForeignKeyConstraint>
-            <i__foreignKeyName>FK_DYNCLC_CLCB</i__foreignKeyName>
+            <i__foreignKeyName>FK_DYNAMICCALCHIST_CALCBASE</i__foreignKeyName>
             <i__keySequence>1</i__keySequence>
             <i__columnName>POINTID</i__columnName>
             <i__foreignColumnName>POINTID</i__foreignColumnName>
             <i__foreignTableName>CALCBASE</i__foreignTableName>
-            <i__updateRule>1</i__updateRule>
+            <i__updateRule>0</i__updateRule>
             <i__deleteRule>0</i__deleteRule>
           </com.cariboulake.db.schemacompare.business.domain.db.ForeignKeyConstraint>
         </i__foreignKeys>
@@ -9577,12 +9577,12 @@
             <i__deleteRule>0</i__deleteRule>
           </com.cariboulake.db.schemacompare.business.domain.db.ForeignKeyConstraint>
           <com.cariboulake.db.schemacompare.business.domain.db.ForeignKeyConstraint>
-            <i__foreignKeyName>FK_DYNTGS_PT</i__foreignKeyName>
+            <i__foreignKeyName>FK_DYNAMICTAGS_POINT</i__foreignKeyName>
             <i__keySequence>1</i__keySequence>
             <i__columnName>POINTID</i__columnName>
             <i__foreignColumnName>POINTID</i__foreignColumnName>
             <i__foreignTableName>POINT</i__foreignTableName>
-            <i__updateRule>1</i__updateRule>
+            <i__updateRule>0</i__updateRule>
             <i__deleteRule>0</i__deleteRule>
           </com.cariboulake.db.schemacompare.business.domain.db.ForeignKeyConstraint>
           <com.cariboulake.db.schemacompare.business.domain.db.ForeignKeyConstraint>
@@ -9739,12 +9739,12 @@
             <i__deleteRule>0</i__deleteRule>
           </com.cariboulake.db.schemacompare.business.domain.db.ForeignKeyConstraint>
           <com.cariboulake.db.schemacompare.business.domain.db.ForeignKeyConstraint>
-            <i__foreignKeyName>SYS_C0015129</i__foreignKeyName>
+            <i__foreignKeyName>FK_DYNAMICACCUMULATOR_POINT</i__foreignKeyName>
             <i__keySequence>1</i__keySequence>
             <i__columnName>POINTID</i__columnName>
             <i__foreignColumnName>POINTID</i__foreignColumnName>
             <i__foreignTableName>POINT</i__foreignTableName>
-            <i__updateRule>1</i__updateRule>
+            <i__updateRule>0</i__updateRule>
             <i__deleteRule>0</i__deleteRule>
           </com.cariboulake.db.schemacompare.business.domain.db.ForeignKeyConstraint>
           <com.cariboulake.db.schemacompare.business.domain.db.ForeignKeyConstraint>
@@ -9766,12 +9766,12 @@
             <i__deleteRule>0</i__deleteRule>
           </com.cariboulake.db.schemacompare.business.domain.db.ForeignKeyConstraint>
           <com.cariboulake.db.schemacompare.business.domain.db.ForeignKeyConstraint>
-            <i__foreignKeyName>SYS_C0013331</i__foreignKeyName>
+            <i__foreignKeyName>FK_DYNAMICPOINTDISPATCH_POINT</i__foreignKeyName>
             <i__keySequence>1</i__keySequence>
             <i__columnName>POINTID</i__columnName>
             <i__foreignColumnName>POINTID</i__foreignColumnName>
             <i__foreignTableName>POINT</i__foreignTableName>
-            <i__updateRule>1</i__updateRule>
+            <i__updateRule>0</i__updateRule>
             <i__deleteRule>0</i__deleteRule>
           </com.cariboulake.db.schemacompare.business.domain.db.ForeignKeyConstraint>
           <com.cariboulake.db.schemacompare.business.domain.db.ForeignKeyConstraint>
@@ -9829,12 +9829,12 @@
             <i__deleteRule>0</i__deleteRule>
           </com.cariboulake.db.schemacompare.business.domain.db.ForeignKeyConstraint>
           <com.cariboulake.db.schemacompare.business.domain.db.ForeignKeyConstraint>
-            <i__foreignKeyName>FK_DYNPTAL_PT</i__foreignKeyName>
+            <i__foreignKeyName>FK_DYNAMICPOINTALARMING_POINT</i__foreignKeyName>
             <i__keySequence>1</i__keySequence>
             <i__columnName>POINTID</i__columnName>
             <i__foreignColumnName>POINTID</i__foreignColumnName>
             <i__foreignTableName>POINT</i__foreignTableName>
-            <i__updateRule>1</i__updateRule>
+            <i__updateRule>0</i__updateRule>
             <i__deleteRule>0</i__deleteRule>
           </com.cariboulake.db.schemacompare.business.domain.db.ForeignKeyConstraint>
           <com.cariboulake.db.schemacompare.business.domain.db.ForeignKeyConstraint>
