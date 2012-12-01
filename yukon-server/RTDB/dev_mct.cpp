@@ -273,89 +273,154 @@ void MctDevice::extractDynamicPaoInfo(const INMESS &InMessage)
 
 void MctDevice::decodeReadDataForKey(const CtiTableDynamicPaoInfo::PaoInfoKeys key, const unsigned char *begin, const unsigned char *end)
 {
-    //  Special processing for Key_MCT_SSpec - should probably factor this out into a "processing" function so we can manipulate other values
-    if( key == CtiTableDynamicPaoInfo::Key_MCT_SSpec && (end - begin) == 5 )
+    if( end <= begin )
     {
-        long sspec = begin[0];
-        sspec     |= begin[4] << 8;
-
-        setDynamicInfo(key, sspec);
+        CtiLockGuard<CtiLogger> doubt_guard(dout);
+        dout << CtiTime() << " **** Checkpoint - end <= begin in MctDevice::decodeReadDataForKey()"
+                             " for device  \"" << getName() << "\" (begin - end = " << static_cast<int>(begin - end) << ") **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
 
         return;
     }
-    if( key == CtiTableDynamicPaoInfo::Key_MCT_IEDLoadProfileInterval && end > begin )
-    {
-        //  Comes back as minutes, stored as seconds
-        setDynamicInfo(key, begin[0] * 60);
 
-        return;
-    }
-    if( key == CtiTableDynamicPaoInfo::Key_MCT_ScheduledFreezeDay && end > begin )
+    switch( key )
     {
-        long day = begin[0];
-
-        if( getDynamicInfo(key) != day )
+        case CtiTableDynamicPaoInfo::Key_MCT_SSpec:
         {
-            setDynamicInfo(key, day);
-            setDynamicInfo(CtiTableDynamicPaoInfo::Key_MCT_ScheduledFreezeConfigTimestamp, CtiTime::now());
-        }
-
-        return;
-    }
-    if( key == CtiTableDynamicPaoInfo::Key_MCT_LoadProfileConfig && (end - begin) == Mct470Device::ChannelCount )
-    {
-        std::string channel_info;
-
-        for( const unsigned char *itr = begin; itr < end; ++itr )
-        {
-            /*
-            Bits 0-1 - Type:    00 = Channel Not Used
-                                01 = Electronic Meter
-                                10 = 2-wire KYZ (form A)
-                                11 = 3-wire KYZ (form C)
-            Bits 2-5 - Physical Channel / Attached Meter's Channel
-            Bit 6 - Load Profile Interval #0 or #1 (0, 1)
-            */
-
-            //  type
-            channel_info += CtiNumStr(*itr & 0x03);
-
-            if( *itr & 0x03 )
+            //  Special processing for old-style 5-byte SSPEC read: Lo Rv xx xx Hi
+            if( (end - begin) == 5 )
             {
-                //  input
-                channel_info  += CtiNumStr((*itr >> 2) & 0x0f).hex();
-                //  load profile interval
-                channel_info  += (*itr & 0x40)?"1":"0";
+                long sspec = begin[0];
+                sspec     |= begin[4] << 8;
+
+                setDynamicInfo(key, sspec);
+
+                return;  //  All done with the special processing
             }
             else
             {
-                channel_info  += "00";
+                break;  //  Break out to the normal processing below
             }
         }
-
-        if( getMCTDebugLevel(DebugLevel_DynamicInfo) )
+        case CtiTableDynamicPaoInfo::Key_MCT_IEDLoadProfileInterval:
         {
-            CtiLockGuard<CtiLogger> doubt_guard(dout);
-            dout << CtiTime() << " **** Checkpoint - device \"" << getName() << "\" LP config decode - \"" << channel_info << "\" **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
+            //  Comes back as minutes, stored as seconds
+            setDynamicInfo(key, begin[0] * 60);
+
+            return;
         }
+        case CtiTableDynamicPaoInfo::Key_MCT_ScheduledFreezeDay:
+        {
+            const long day = begin[0];
 
-        setDynamicInfo(key, channel_info);
+            if( getDynamicInfo(key) != day )
+            {
+                setDynamicInfo(key, day);
+                setDynamicInfo(CtiTableDynamicPaoInfo::Key_MCT_ScheduledFreezeConfigTimestamp, CtiTime::now());
+            }
 
-        return;
+            return;
+        }
+        case CtiTableDynamicPaoInfo::Key_MCT_LoadProfileConfig:
+        {
+            if( (end - begin) != Mct470Device::ChannelCount )
+            {
+                //  default processing
+                break;
+            }
+
+            std::string channel_info;
+
+            for( const unsigned char *itr = begin; itr < end; ++itr )
+            {
+                /*
+                Bits 0-1 - Type:    00 = Channel Not Used
+                                    01 = Electronic Meter
+                                    10 = 2-wire KYZ (form A)
+                                    11 = 3-wire KYZ (form C)
+                Bits 2-5 - Physical Channel / Attached Meter's Channel
+                Bit 6 - Load Profile Interval #0 or #1 (0, 1)
+                */
+
+                //  type
+                channel_info += CtiNumStr(*itr & 0x03);
+
+                if( *itr & 0x03 )
+                {
+                    //  input
+                    channel_info  += CtiNumStr((*itr >> 2) & 0x0f).hex();
+                    //  load profile interval
+                    channel_info  += (*itr & 0x40)?"1":"0";
+                }
+                else
+                {
+                    channel_info  += "00";
+                }
+            }
+
+            if( getMCTDebugLevel(DebugLevel_DynamicInfo) )
+            {
+                CtiLockGuard<CtiLogger> doubt_guard(dout);
+                dout << CtiTime() << " **** Checkpoint - device \"" << getName() << "\" LP config decode - \"" << channel_info << "\" **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
+            }
+
+            setDynamicInfo(key, channel_info);
+
+            return;
+        }
+        case CtiTableDynamicPaoInfo::Key_MCT_LoadProfileChannelConfig1:
+        case CtiTableDynamicPaoInfo::Key_MCT_LoadProfileChannelConfig2:
+        case CtiTableDynamicPaoInfo::Key_MCT_LoadProfileChannelConfig3:
+        case CtiTableDynamicPaoInfo::Key_MCT_LoadProfileChannelConfig4:
+        {
+            string existingLoadProfileConfig;
+
+            if( getDynamicInfo(CtiTableDynamicPaoInfo::Key_MCT_LoadProfileConfig, existingLoadProfileConfig) )
+            {
+                string singleChannelLpConfig = CtiNumStr(*begin & 0x03);
+
+                if( *begin & 0x03 )
+                {
+                    //  input
+                    singleChannelLpConfig  += CtiNumStr((*begin >> 2) & 0x0f).hex();
+                    //  load profile interval
+                    singleChannelLpConfig  += (*begin & 0x40)?"1":"0";
+                }
+                else
+                {
+                    singleChannelLpConfig  += "00";
+                }
+
+                unsigned channel = 0;
+
+                switch( key )
+                {
+                   case CtiTableDynamicPaoInfo::Key_MCT_LoadProfileChannelConfig1:  channel = 1;  break;
+                   case CtiTableDynamicPaoInfo::Key_MCT_LoadProfileChannelConfig2:  channel = 2;  break;
+                   case CtiTableDynamicPaoInfo::Key_MCT_LoadProfileChannelConfig3:  channel = 3;  break;
+                   case CtiTableDynamicPaoInfo::Key_MCT_LoadProfileChannelConfig4:  channel = 4;  break;
+                }
+
+                if( existingLoadProfileConfig.size() == 12 )
+                {
+                    existingLoadProfileConfig.replace((channel - 1) * 3, 3, singleChannelLpConfig);
+                }
+
+                setDynamicInfo(CtiTableDynamicPaoInfo::Key_MCT_LoadProfileConfig, existingLoadProfileConfig);
+            }
+
+            break;  //  Store as normal as well
+        }
     }
 
-    if( begin < end )
+    unsigned long value = 0;
+
+    for( const unsigned char *itr = begin; itr < end; ++itr )
     {
-        unsigned long value = 0;
-
-        for( const unsigned char *itr = begin; itr < end; ++itr )
-        {
-            value <<= 8;
-            value |= *itr;
-        }
-
-        setDynamicInfo(key, value);
+        value <<= 8;
+        value |= *itr;
     }
+
+    setDynamicInfo(key, value);
 }
 
 

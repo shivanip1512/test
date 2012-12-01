@@ -389,6 +389,212 @@ BOOST_AUTO_TEST_CASE(test_dev_mct470_extractDynamicPaoInfo)
 }
 
 
+BOOST_AUTO_TEST_CASE(test_dev_mct470_extractDynamicPaoInfo_MCT_LoadProfileChannelConfigX)
+{
+    test_Mct470Device dev;
+
+    INMESS im;
+
+    string lpconfig;
+
+    //  Verify we start out empty
+    BOOST_CHECK_EQUAL(false, dev.hasDynamicInfo(CtiTableDynamicPaoInfo::Key_MCT_LoadProfileConfig));
+    BOOST_CHECK_EQUAL(false, dev.hasDynamicInfo(CtiTableDynamicPaoInfo::Key_MCT_LoadProfileChannelConfig1));
+    BOOST_CHECK_EQUAL(false, dev.hasDynamicInfo(CtiTableDynamicPaoInfo::Key_MCT_LoadProfileChannelConfig2));
+    BOOST_CHECK_EQUAL(false, dev.hasDynamicInfo(CtiTableDynamicPaoInfo::Key_MCT_LoadProfileChannelConfig3));
+    BOOST_CHECK_EQUAL(false, dev.hasDynamicInfo(CtiTableDynamicPaoInfo::Key_MCT_LoadProfileChannelConfig4));
+
+    //  Make sure a single channel decode doesn't populate the Key_MCT_LoadProfileConfig string
+    {
+        im.Buffer.DSt.Length = 1;
+        im.Return.ProtocolInfo.Emetcon.Function = 0x8e;
+        im.Return.ProtocolInfo.Emetcon.IO = EmetconProtocol::IO_Read;
+
+        im.Buffer.DSt.Message[ 0] = 0x77;
+
+        dev.extractDynamicPaoInfo(im);
+
+        BOOST_CHECK_EQUAL(false, dev.hasDynamicInfo(CtiTableDynamicPaoInfo::Key_MCT_LoadProfileConfig));
+        BOOST_CHECK_EQUAL(true,  dev.hasDynamicInfo(CtiTableDynamicPaoInfo::Key_MCT_LoadProfileChannelConfig1));
+        BOOST_CHECK_EQUAL(false, dev.hasDynamicInfo(CtiTableDynamicPaoInfo::Key_MCT_LoadProfileChannelConfig2));
+        BOOST_CHECK_EQUAL(false, dev.hasDynamicInfo(CtiTableDynamicPaoInfo::Key_MCT_LoadProfileChannelConfig3));
+        BOOST_CHECK_EQUAL(false, dev.hasDynamicInfo(CtiTableDynamicPaoInfo::Key_MCT_LoadProfileChannelConfig4));
+
+        BOOST_CHECK_EQUAL(dev.getDynamicInfo(CtiTableDynamicPaoInfo::Key_MCT_LoadProfileChannelConfig1), 0x77);
+    }
+
+    //  Verify a full channel config decode
+    {
+        im.Buffer.DSt.Message[ 0] = 0x03;  //  3 wire KYZ, channel 1, LP interval 1
+        im.Buffer.DSt.Message[ 1] = 0x4a;  //  2 wire KYZ, channel 3, LP interval 2
+        im.Buffer.DSt.Message[ 2] = 0x19;  //  IED, channel 7, LP interval 1
+        im.Buffer.DSt.Message[ 3] = 0x3d;  //  IED, channel 15, LP interval 1
+        im.Buffer.DSt.Message[ 4] = 0x05;  //  LP interval 1 = 5 mins
+        im.Buffer.DSt.Message[ 5] = 0x0f;  //  LP interval 2 = 15 mins
+        im.Buffer.DSt.Message[ 6] = 0x1e;  //  IED LP interval = 30 mins
+
+        im.Buffer.DSt.Length = 7;
+        im.Return.ProtocolInfo.Emetcon.Function = 0x20;
+        im.Return.ProtocolInfo.Emetcon.IO = EmetconProtocol::IO_Function_Read;
+
+        dev.extractDynamicPaoInfo(im);
+
+        dev.getDynamicInfo(CtiTableDynamicPaoInfo::Key_MCT_LoadProfileConfig, lpconfig);
+        BOOST_CHECK_EQUAL(lpconfig, "3002211601f0");
+        BOOST_CHECK_EQUAL(dev.getDynamicInfo(CtiTableDynamicPaoInfo::Key_MCT_LoadProfileChannelConfig1), 0x03);
+        BOOST_CHECK_EQUAL(dev.getDynamicInfo(CtiTableDynamicPaoInfo::Key_MCT_LoadProfileChannelConfig2), 0x4a);
+        BOOST_CHECK_EQUAL(dev.getDynamicInfo(CtiTableDynamicPaoInfo::Key_MCT_LoadProfileChannelConfig3), 0x19);
+        BOOST_CHECK_EQUAL(dev.getDynamicInfo(CtiTableDynamicPaoInfo::Key_MCT_LoadProfileChannelConfig4), 0x3d);
+    }
+
+    //  Verify a channel 1 function read
+    {
+        im.Buffer.DSt.Length = 1;
+        im.Return.ProtocolInfo.Emetcon.Function = 0x21;
+        im.Return.ProtocolInfo.Emetcon.IO = EmetconProtocol::IO_Function_Read;
+
+        im.Buffer.DSt.Message[ 0] = 0x11;
+
+        dev.extractDynamicPaoInfo(im);
+
+        dev.getDynamicInfo(CtiTableDynamicPaoInfo::Key_MCT_LoadProfileConfig, lpconfig);
+        BOOST_CHECK_EQUAL(lpconfig, "1402211601f0");
+        BOOST_CHECK_EQUAL(dev.getDynamicInfo(CtiTableDynamicPaoInfo::Key_MCT_LoadProfileChannelConfig1), 0x11);
+        BOOST_CHECK_EQUAL(dev.getDynamicInfo(CtiTableDynamicPaoInfo::Key_MCT_LoadProfileChannelConfig2), 0x4a);
+        BOOST_CHECK_EQUAL(dev.getDynamicInfo(CtiTableDynamicPaoInfo::Key_MCT_LoadProfileChannelConfig3), 0x19);
+        BOOST_CHECK_EQUAL(dev.getDynamicInfo(CtiTableDynamicPaoInfo::Key_MCT_LoadProfileChannelConfig4), 0x3d);
+    }
+
+    //  Verify a channel 1 and 2 function read
+    {
+        im.Buffer.DSt.Length = 6;
+        im.Return.ProtocolInfo.Emetcon.Function = 0x21;
+        im.Return.ProtocolInfo.Emetcon.IO = EmetconProtocol::IO_Function_Read;
+
+        im.Buffer.DSt.Message[ 0] = 0x22;
+        im.Buffer.DSt.Message[ 5] = 0x33;
+
+        dev.extractDynamicPaoInfo(im);
+
+        dev.getDynamicInfo(CtiTableDynamicPaoInfo::Key_MCT_LoadProfileConfig, lpconfig);
+        BOOST_CHECK_EQUAL(lpconfig, "2803c01601f0");
+        BOOST_CHECK_EQUAL(dev.getDynamicInfo(CtiTableDynamicPaoInfo::Key_MCT_LoadProfileChannelConfig1), 0x22);
+        BOOST_CHECK_EQUAL(dev.getDynamicInfo(CtiTableDynamicPaoInfo::Key_MCT_LoadProfileChannelConfig2), 0x33);
+        BOOST_CHECK_EQUAL(dev.getDynamicInfo(CtiTableDynamicPaoInfo::Key_MCT_LoadProfileChannelConfig3), 0x19);
+        BOOST_CHECK_EQUAL(dev.getDynamicInfo(CtiTableDynamicPaoInfo::Key_MCT_LoadProfileChannelConfig4), 0x3d);
+    }
+
+    //  Verify a channel 3 function read
+    {
+        im.Buffer.DSt.Length = 1;
+        im.Return.ProtocolInfo.Emetcon.Function = 0x22;
+        im.Return.ProtocolInfo.Emetcon.IO = EmetconProtocol::IO_Function_Read;
+
+        im.Buffer.DSt.Message[ 0] = 0x44;
+
+        dev.extractDynamicPaoInfo(im);
+
+        dev.getDynamicInfo(CtiTableDynamicPaoInfo::Key_MCT_LoadProfileConfig, lpconfig);
+        BOOST_CHECK_EQUAL(lpconfig, "2803c00001f0");
+        BOOST_CHECK_EQUAL(dev.getDynamicInfo(CtiTableDynamicPaoInfo::Key_MCT_LoadProfileChannelConfig1), 0x22);
+        BOOST_CHECK_EQUAL(dev.getDynamicInfo(CtiTableDynamicPaoInfo::Key_MCT_LoadProfileChannelConfig2), 0x33);
+        BOOST_CHECK_EQUAL(dev.getDynamicInfo(CtiTableDynamicPaoInfo::Key_MCT_LoadProfileChannelConfig3), 0x44);
+        BOOST_CHECK_EQUAL(dev.getDynamicInfo(CtiTableDynamicPaoInfo::Key_MCT_LoadProfileChannelConfig4), 0x3d);
+    }
+
+    //  Verify a channel 3 and 4 function read
+    {
+        im.Buffer.DSt.Length = 6;
+        im.Return.ProtocolInfo.Emetcon.Function = 0x22;
+        im.Return.ProtocolInfo.Emetcon.IO = EmetconProtocol::IO_Function_Read;
+
+        im.Buffer.DSt.Message[ 0] = 0x55;
+        im.Buffer.DSt.Message[ 5] = 0x66;
+
+        dev.extractDynamicPaoInfo(im);
+
+        dev.getDynamicInfo(CtiTableDynamicPaoInfo::Key_MCT_LoadProfileConfig, lpconfig);
+        BOOST_CHECK_EQUAL(lpconfig, "2803c0151291");
+        BOOST_CHECK_EQUAL(dev.getDynamicInfo(CtiTableDynamicPaoInfo::Key_MCT_LoadProfileChannelConfig1), 0x22);
+        BOOST_CHECK_EQUAL(dev.getDynamicInfo(CtiTableDynamicPaoInfo::Key_MCT_LoadProfileChannelConfig2), 0x33);
+        BOOST_CHECK_EQUAL(dev.getDynamicInfo(CtiTableDynamicPaoInfo::Key_MCT_LoadProfileChannelConfig3), 0x55);
+        BOOST_CHECK_EQUAL(dev.getDynamicInfo(CtiTableDynamicPaoInfo::Key_MCT_LoadProfileChannelConfig4), 0x66);
+    }
+
+    //  Verify a channel 1 memory read
+    {
+        im.Buffer.DSt.Length = 1;
+        im.Return.ProtocolInfo.Emetcon.Function = 0x8e;
+        im.Return.ProtocolInfo.Emetcon.IO = EmetconProtocol::IO_Read;
+
+        im.Buffer.DSt.Message[ 0] = 0x77;
+
+        dev.extractDynamicPaoInfo(im);
+
+        dev.getDynamicInfo(CtiTableDynamicPaoInfo::Key_MCT_LoadProfileConfig, lpconfig);
+        BOOST_CHECK_EQUAL(lpconfig, "3d13c0151291");
+        BOOST_CHECK_EQUAL(dev.getDynamicInfo(CtiTableDynamicPaoInfo::Key_MCT_LoadProfileChannelConfig1), 0x77);
+        BOOST_CHECK_EQUAL(dev.getDynamicInfo(CtiTableDynamicPaoInfo::Key_MCT_LoadProfileChannelConfig2), 0x33);
+        BOOST_CHECK_EQUAL(dev.getDynamicInfo(CtiTableDynamicPaoInfo::Key_MCT_LoadProfileChannelConfig3), 0x55);
+        BOOST_CHECK_EQUAL(dev.getDynamicInfo(CtiTableDynamicPaoInfo::Key_MCT_LoadProfileChannelConfig4), 0x66);
+    }
+
+    //  Verify a channel 2 memory read
+    {
+        im.Buffer.DSt.Length = 1;
+        im.Return.ProtocolInfo.Emetcon.Function = 0xa8;
+        im.Return.ProtocolInfo.Emetcon.IO = EmetconProtocol::IO_Read;
+
+        im.Buffer.DSt.Message[ 0] = 0x8f;
+
+        dev.extractDynamicPaoInfo(im);
+
+        dev.getDynamicInfo(CtiTableDynamicPaoInfo::Key_MCT_LoadProfileConfig, lpconfig);
+        BOOST_CHECK_EQUAL(lpconfig, "3d1330151291");
+        BOOST_CHECK_EQUAL(dev.getDynamicInfo(CtiTableDynamicPaoInfo::Key_MCT_LoadProfileChannelConfig1), 0x77);
+        BOOST_CHECK_EQUAL(dev.getDynamicInfo(CtiTableDynamicPaoInfo::Key_MCT_LoadProfileChannelConfig2), 0x8f);
+        BOOST_CHECK_EQUAL(dev.getDynamicInfo(CtiTableDynamicPaoInfo::Key_MCT_LoadProfileChannelConfig3), 0x55);
+        BOOST_CHECK_EQUAL(dev.getDynamicInfo(CtiTableDynamicPaoInfo::Key_MCT_LoadProfileChannelConfig4), 0x66);
+    }
+
+    //  Verify a channel 3 memory read
+    {
+        im.Buffer.DSt.Length = 1;
+        im.Return.ProtocolInfo.Emetcon.Function = 0xc2;
+        im.Return.ProtocolInfo.Emetcon.IO = EmetconProtocol::IO_Read;
+
+        im.Buffer.DSt.Message[ 0] = 0x99;
+
+        dev.extractDynamicPaoInfo(im);
+
+        dev.getDynamicInfo(CtiTableDynamicPaoInfo::Key_MCT_LoadProfileConfig, lpconfig);
+        BOOST_CHECK_EQUAL(lpconfig, "3d1330160291");
+        BOOST_CHECK_EQUAL(dev.getDynamicInfo(CtiTableDynamicPaoInfo::Key_MCT_LoadProfileChannelConfig1), 0x77);
+        BOOST_CHECK_EQUAL(dev.getDynamicInfo(CtiTableDynamicPaoInfo::Key_MCT_LoadProfileChannelConfig2), 0x8f);
+        BOOST_CHECK_EQUAL(dev.getDynamicInfo(CtiTableDynamicPaoInfo::Key_MCT_LoadProfileChannelConfig3), 0x99);
+        BOOST_CHECK_EQUAL(dev.getDynamicInfo(CtiTableDynamicPaoInfo::Key_MCT_LoadProfileChannelConfig4), 0x66);
+    }
+
+    //  Verify a channel 4 memory read
+    {
+        im.Buffer.DSt.Length = 1;
+        im.Return.ProtocolInfo.Emetcon.Function = 0xdc;
+        im.Return.ProtocolInfo.Emetcon.IO = EmetconProtocol::IO_Read;
+
+        im.Buffer.DSt.Message[ 0] = 0xaa;
+
+        dev.extractDynamicPaoInfo(im);
+
+        dev.getDynamicInfo(CtiTableDynamicPaoInfo::Key_MCT_LoadProfileConfig, lpconfig);
+        BOOST_CHECK_EQUAL(lpconfig, "3d13301602a0");
+        BOOST_CHECK_EQUAL(dev.getDynamicInfo(CtiTableDynamicPaoInfo::Key_MCT_LoadProfileChannelConfig1), 0x77);
+        BOOST_CHECK_EQUAL(dev.getDynamicInfo(CtiTableDynamicPaoInfo::Key_MCT_LoadProfileChannelConfig2), 0x8f);
+        BOOST_CHECK_EQUAL(dev.getDynamicInfo(CtiTableDynamicPaoInfo::Key_MCT_LoadProfileChannelConfig3), 0x99);
+        BOOST_CHECK_EQUAL(dev.getDynamicInfo(CtiTableDynamicPaoInfo::Key_MCT_LoadProfileChannelConfig4), 0xaa);
+    }
+}
+
+
 struct beginExecuteRequest_helper
 {
     CtiRequestMsg           request;
