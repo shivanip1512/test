@@ -12,9 +12,9 @@ a, .vertical_menu a:hover {text-decoration:none;}
 a:hover, a:focus {text-decoration:underline;outline:0;}
 
 /* primary color */
-a, .primary_color, .vertical_menu li.selected a, .vertical_menu a:hover, .ui-widget-content a, h3.toggle-title {color:#06C;}
+a, .primary_color, .vertical_menu li.selected a, .vertical_menu a:hover, .ui-widget-content a, h3.toggle-title, #subMenu a:visited {color:#06C;}
 .primary_background {background-color:#06c; color:white;}
-::-moz-selection, ::selection {background-color:#06c; color:white;} /* IE 9 does not support pseudo element selectors '::<element selector name>' and will ignore the entire rule, therefore it must be separate */
+::-moz-selection, ::selection {background-color:#06c; color:white;} /* IE 9 does not support pseudo element selector '::selection' and will ignore the entire rule, therefore it must be separate */
 .primary_background a, .primary_background a:visited {color:white}
 
 a:visited {color: #003399;}
@@ -62,7 +62,7 @@ button.naked, button.naked:hover {border:none; background:transparent; box-shado
 .StandardWithNavLayout #ContentWrapper {margin-left:139px; padding-left: 10px;border-left: solid 1px #ccc; min-height:600px; /*I guess... but specifying a height here just feels wrong*/}
 #LeftColumn {float:left; width: 140px;}
 #LeftColumn .detail {margin-bottom:10px;}
-#alertSpan a, #alertSpan a:hover, #alertSpan a:focus {color: #FF5555;}
+#alertSpan a, #alertSpan a:hover, #alertSpan a:focus {color: #FF9900;}
 
 /* vertical menus */
 .vertical_menu {background:#EEE; border:solid 1px #ccc; border-style:solid none solid solid; overflow:hidden; z-index:100;}
@@ -366,3 +366,5 @@ input.dateTimePicker {margin: 0;}
 div.toggle {padding-left: 30px;}
 div.disabled {color: #666;}
 span.info {font-size: 11px; color: #333; background: lightYellow; border: solid 1px orange; display:block; padding: 5px 10px; margin: 0 0 10px;}
+#cannonUpdaterErrorDiv {position: fixed;bottom: 0;left: 0;right: 0;background: #D14836;color: white;font-weight: bold;text-align: center;padding: 3px;}
+#cannonUpdaterErrorDiv .alert {padding-top: 64px;width: 64px;position: absolute;bottom: 0;left: 10px;}
