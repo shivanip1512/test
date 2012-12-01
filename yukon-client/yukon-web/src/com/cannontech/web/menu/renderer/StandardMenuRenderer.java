@@ -146,7 +146,7 @@ public class StandardMenuRenderer implements MenuRenderer {
             if (!first) {
                 leftDiv.addElement(SEPERATOR);
             }
-            first = false;
+            
             MenuOption option = topLevelOptionIterator.next();
             
             A link;
@@ -186,8 +186,14 @@ public class StandardMenuRenderer implements MenuRenderer {
             } else {
                 throw new CommonMenuException("Unknown MenuOption type encountered: " + option.getClass());
             }
-            link.setClass("stdhdr_menuLink" + ((isOptionSelected(option, 0))? " selected highlight":""));
-            ul.addElement(new LI(link));
+            String clazz = "stdhdr_menuLink";
+            if (isOptionSelected(option, 0)) clazz += " selected highlight";
+            if (first) clazz += " first"; //TODO add middle and last some day if needed
+            link.setClass(clazz);
+            LI li = new LI(link);
+            if (first) li.setClass("first");
+            ul.addElement(li);
+            first = false;
         }
         leftDiv.addElement(ul);
         return leftDiv;
@@ -246,8 +252,8 @@ public class StandardMenuRenderer implements MenuRenderer {
             if (!isOptionSelected(optionParent, 0)) {
                 thisMenu.setStyle("display: none;");
             }
-            Iterator<MenuOption> subLevelOptionIterator = optionParent.getMenuOptions(userContext)
-                                                                      .iterator();
+            Iterator<MenuOption> subLevelOptionIterator = optionParent.getMenuOptions(userContext).iterator();
+            boolean first = true;
             while (subLevelOptionIterator.hasNext()) {
                 MenuOption option = subLevelOptionIterator.next();
                 boolean notLast = subLevelOptionIterator.hasNext();
@@ -268,11 +274,14 @@ public class StandardMenuRenderer implements MenuRenderer {
                         link.setClass(anchorClass);
                     }
                     link.setHref(buildUrl(simpleSubOption.getUrl()));
-                    thisMenu.addElement(new LI(link));
+                    LI li = new LI(link);
+                    if (first) li.setClass("first");
+                    thisMenu.addElement(li);
                 } else {
                     // multiple menu levels aren't supported here
                     throw new CommonMenuException("StandardMenuRenderer only supports two level menus");
                 }
+                first = false;
             }
             subDiv.addElement(thisMenu);
         }

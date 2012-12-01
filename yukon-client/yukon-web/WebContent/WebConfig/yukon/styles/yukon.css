@@ -54,8 +54,9 @@ button.naked, button.naked:hover {border:none; background:transparent; box-shado
 /* Navigation Menu */
 #Header {width:100%; margin:0;padding:0;overflow:hidden;}
 #Header img {float:right;margin: 10px;}
-#topMenu, #subMenu, #bottomBar {padding: 5px 10px;}
+#topMenu, #subMenu, #bottomBar {padding: 5px 20px;}
 #topMenu a {padding:0 5px 0 6px;}
+#topMenu a.first{padding-left: 0;}
 #topMenu a:hover, #topMenu a:focus {text-decoration:none;}
 #subMenu {min-height:1.3em; background:#efefef; border-bottom:solid 1px #ccc;}
 .StandardWithNavLayout #ContentWrapper {margin-left:139px; padding-left: 10px;border-left: solid 1px #ccc; min-height:600px; /*I guess... but specifying a height here just feels wrong*/}
@@ -187,7 +188,8 @@ div.progressBarInnerFailure {
 
 /* Pipes */
 ul.pipes {overflow:hidden; display:inline-block;}
-ul.pipes li {display:inline; border-left:solid 1px #ccc; margin:0 0 0 -1px; padding:2px 5px 2px 6px;}
+ul.pipes li {display:inline; border-left:solid 1px #ccc; margin:0 0 0 -1px; padding:2px 7px 2px 5px;}
+ul.pipes li.first {padding-left:0;}
 
 /* Color Coding */
 .error, .errorMessage {color: #D14836}
