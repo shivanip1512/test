@@ -113,16 +113,23 @@ function openSimpleDialog(dialogId, innerHtmlUrl, title, parameters, skipShow, m
     	Yukon.ui.unblockPage();
     };
 
-    jQuery.ajax({
-        url: innerHtmlUrl,
-        data: parameters,
-        method: method ? method : 'post',
-        success: function(data){
-            jQuery(document.getElementById(dialogId+'_body')).html(data);
-            onComplete();
-        },
-        error: onComplete
+    new Ajax.Updater($(dialogId + '_body'), innerHtmlUrl, {
+        'evalScripts': true,
+        'method': method ? method : 'post',
+        'parameters': parameters,
+        'onComplete': onComplete
     });
+    
+//    jQuery.ajax({
+//        url: innerHtmlUrl,
+//        data: parameters,
+//        method: method ? method : 'post',
+//        success: function(data){
+//            jQuery(document.getElementById(dialogId+'_body')).html(data);
+//            onComplete();
+//        },
+//        error: onComplete
+//    });
 }
 
 /**
