@@ -129,7 +129,7 @@ gearChanged = function() {
             <th><cti:msg key="yukon.web.modules.dr.program.startMultiplePrograms.stopTime"/></th>
         </tr>
         <tr valign="top">
-            <td width="50%" class="padded">
+            <td width="50%">
                 <table>
                     <tr><td>
                         <form:checkbox path="startNow" id="startNowCheckbox" onclick="startNowChecked()"/>
@@ -137,13 +137,13 @@ gearChanged = function() {
                             <cti:msg key="yukon.web.modules.dr.program.startMultiplePrograms.startNow"/>
                         </label>
                     </td></tr>
-                    <tr><td class="padded">
+                    <tr><td>
                         <tags:dateTimeInput path="startDate" fieldValue="${backingBean.startDate}"
                             disabled="true"/>
                     </td></tr>
                 </table>
             </td>
-            <td width="50%" class="padded">
+            <td width="50%">
                 <table>
                     <tr><td>
                         <form:checkbox path="scheduleStop" id="scheduleStopCheckbox" onclick="scheduleStopChecked()"/>
@@ -151,7 +151,7 @@ gearChanged = function() {
                             <cti:msg key="yukon.web.modules.dr.program.startMultiplePrograms.scheduleStop"/>
                         </label>
                     </td></tr>
-                    <tr><td class="padded">
+                    <tr><td>
                         <tags:dateTimeInput path="stopDate" fieldValue="${backingBean.stopDate}"/>
                     </td></tr>
                 </table>

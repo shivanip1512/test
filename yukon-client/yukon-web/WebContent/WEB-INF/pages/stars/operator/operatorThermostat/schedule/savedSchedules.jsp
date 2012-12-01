@@ -83,7 +83,7 @@ jQuery(function(){
                         <jsp:include page="/WEB-INF/pages/stars/operator/operatorThermostat/selectedThermostatsFragment.jsp" />
                         <c:if test="${not empty currentSchedule}">
                         	<tags:sectionContainer2 nameKey="lastSent">
-	                            <div class="paddedContainer">
+	                            <div>
 	                                <tags:thermostatScheduleWidget schedule="${currentSchedule}"
 	                                    thermostatId="${thermostatId}"
 	                                    thermostatIds="${thermostatIds}"

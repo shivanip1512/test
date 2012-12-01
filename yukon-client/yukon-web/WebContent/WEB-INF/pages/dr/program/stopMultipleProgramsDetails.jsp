@@ -229,7 +229,7 @@ jQuery(function(){
                         <cti:msg key="yukon.web.modules.dr.program.stopMultiplePrograms.stopNow"/>
                     </label>
                 </td></tr>
-                <tr><td class="padded">
+                <tr><td>
                     <tags:dateTimeInput path="stopDate" fieldValue="${backingBean.stopDate}"
                         disabled="true"/>
                 </td></tr>

@@ -92,7 +92,7 @@ jQuery(function(){
         <div class="schedules fl">
             <c:if test="${not empty currentSchedule}">
 	            <tags:sectionContainer2 nameKey="lastSent">
-	                <div class="paddedContainer">
+	                <div>
 	                    <tags:thermostatScheduleWidget schedule="${currentSchedule}"
 	                        thermostatId="${thermostatId}"
 	                        thermostatIds="${thermostatIds}"

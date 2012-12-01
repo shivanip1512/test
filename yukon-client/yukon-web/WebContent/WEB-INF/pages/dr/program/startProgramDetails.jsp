@@ -84,7 +84,7 @@ updateSubmitButtons = function() {
             <th><cti:msg key="yukon.web.modules.dr.program.startProgram.stopTime"/></th>
         </tr>
         <tr valign="top">
-            <td width="33%" class="padded">
+            <td width="33%">
                 <table>
                     <tr><td>
                         <form:select path="gearNumber" id="gearNumber" onchange="gearChanged()">
@@ -93,7 +93,7 @@ updateSubmitButtons = function() {
                             </c:forEach>
                         </form:select>
                     </td></tr>
-                    <tr><td class="padded">
+                    <tr><td>
                         <c:set var="addAdjustmentAreaStyle" value="none"/>
                         <c:if test="${!empty gears && gears[0].targetCycle}">
                             <c:set var="addAdjustmentAreaStyle" value="block"/>
@@ -108,7 +108,7 @@ updateSubmitButtons = function() {
                     </td></tr>
                 </table>
             </td>
-            <td width="33%" class="padded">
+            <td width="33%">
                 <table>
                     <tr><td>
                         <form:checkbox path="startNow" id="startNowCheckbox" onclick="startNowChecked()"/>
@@ -116,13 +116,13 @@ updateSubmitButtons = function() {
                             <cti:msg key="yukon.web.modules.dr.program.startProgram.startNow"/>
                         </label><br>
                     </td></tr>
-                    <tr><td class="padded">
+                    <tr><td>
                         <tags:dateTimeInput path="startDate" fieldValue="${backingBean.startDate}"
                             disabled="true"/>
                     </td></tr>
                 </table>
             </td>
-            <td width="33%" class="padded">
+            <td width="33%">
                 <table>
                     <tr><td>
                         <form:checkbox path="scheduleStop" id="scheduleStopCheckbox" onclick="scheduleStopChecked()"/>
@@ -130,7 +130,7 @@ updateSubmitButtons = function() {
                             <cti:msg key="yukon.web.modules.dr.program.startProgram.scheduleStop"/>
                         </label><br>
                     </td></tr>
-                    <tr><td class="padded">
+                    <tr><td>
                         <tags:dateTimeInput path="stopDate" fieldValue="${backingBean.stopDate}"/>
                     </td></tr>
                 </table>

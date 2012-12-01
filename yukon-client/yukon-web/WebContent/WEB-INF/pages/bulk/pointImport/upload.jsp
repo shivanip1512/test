@@ -8,7 +8,7 @@
     
     <tags:boxContainer2 nameKey="mainBox">
         <div style="width: 50%; float: left;">
-            <div class="bottomPadded">
+            <div class="stacked">
             <h3><i:inline key=".importHeader"/></h3>
             <i:inline key=".importDescription"/>
             </div>
@@ -41,7 +41,7 @@
             </form>
             <br><br>
             <div id="calculationInstructions" style="display:none;">
-                <div class="bottomPadded">
+                <div class="stacked">
                     <h3><i:inline key=".calculationImportInstructionsHeader"/></h3>
                     <i:inline key=".importInstructions"/>
                 </div>
@@ -53,7 +53,7 @@
         
         
         <div style="width: 50%; float: left;">
-            <div class="bottomPadded">
+            <div class="stacked">
                 <h3><i:inline key=".importInstructionsHeader"/></h3>
                 <i:inline key=".importInstructions"/>
             </div>

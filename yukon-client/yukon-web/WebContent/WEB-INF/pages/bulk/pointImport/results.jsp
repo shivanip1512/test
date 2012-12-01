@@ -16,14 +16,14 @@
     </script>
     
     <tags:boxContainer2 nameKey="mainBox">
-        <div class="bottomPadded">
+        <div class="stacked">
             <cti:url var="folderImg" value="/WebConfig/yukon/Icons/folder_edit.gif"/>
             <img src="${folderImg}">&nbsp;<span style="color: gray">${fileName}</span><br>
             <c:if test="${ignoreInvalidColumns}">
                 <cti:msg2 key=".ignoringInvalidColumns"/>
             </c:if>
         </div>
-        <div class="bottomPadded">
+        <div class="stacked">
             <tags:resultProgressBar totalCount="${result.totalItems}"
                 countKey="POINT_IMPORT/${resultId}/COMPLETED_LINES"
                 progressLabelTextKey="yukon.web.modules.amr.pointImport.results.importProgress"

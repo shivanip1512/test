@@ -34,7 +34,7 @@
         <form:form id="analyzeIntervalDataForm" commandName="backingBean" action="/bulk/archiveDataAnalysis/home/analyze" onsubmit="prepareDateTimeFields();">
             <cti:deviceCollection deviceCollection="${deviceCollection}" />            
             
-            <div class="bottomPadded">
+            <div class="stacked">
                 <tags:nameValueContainer2>
                     <tags:nameValue2 nameKey=".startDateLabel">
                         <tags:dateTimeInput path="startDate" inline="true" fieldValue="${startDateInitialValue}"/>

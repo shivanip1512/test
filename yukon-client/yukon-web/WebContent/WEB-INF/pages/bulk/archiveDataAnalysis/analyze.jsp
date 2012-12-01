@@ -28,7 +28,7 @@
         </div>
         
         <%-- ANALYSIS PARAMETERS --%>
-        <div class="bottomPadded">
+        <div class="stacked">
             <tags:nameValueContainer2>
                 <tags:nameValue2 nameKey=".dateRange">
                     <cti:formatInterval type="DATEHM" value="${analysis.dateTimeRange}"/>
@@ -53,7 +53,7 @@
         </div>
 
         <%-- PROGRESS --%>
-        <div class="bottomPadded">
+        <div class="stacked">
             <tags:resultProgressBar totalCount="${callbackResult.totalItems}" 
                 countKey="BACKGROUNDPROCESS/${resultsId}/COMPLETED_LINES"
                 progressLabelTextKey="yukon.web.modules.amr.analysis.progress.progressLabel"
@@ -61,7 +61,7 @@
         </div>
 
         <%-- SUCCESS --%>
-        <div class="fwb bottomPadded">
+        <div class="fwb stacked">
             <i:inline key="yukon.web.modules.amr.analysis.progress.successLabel" />
             <span class="success">
                 <cti:dataUpdaterValue type="BACKGROUNDPROCESS" identifier="${resultsId}/SUCCESS_COUNT"/>
@@ -69,7 +69,7 @@
         </div>
 
         <%-- FAIL --%>
-        <div class="fwb bottomPadded">
+        <div class="fwb stacked">
             <i:inline key="yukon.web.modules.amr.analysis.progress.failLabel" />
             <span class="error">
                 <cti:dataUpdaterValue type="BACKGROUNDPROCESS" identifier="${resultsId}/PROCESSING_EXCEPTION_COUNT"/>

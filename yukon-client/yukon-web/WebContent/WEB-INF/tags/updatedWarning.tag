@@ -4,7 +4,7 @@
 
 <cti:msg2 key="yukon.web.components.updatedWarning.title" var="warningTitle"/>
 <tags:simplePopup title="${warningTitle}" id="updatedWarning">
-    <div class="bottomPadded">
+    <div class="stacked">
         <i:inline key="yukon.web.components.updatedWarning.text"/>
     </div>
     <div style="text-align:right;">

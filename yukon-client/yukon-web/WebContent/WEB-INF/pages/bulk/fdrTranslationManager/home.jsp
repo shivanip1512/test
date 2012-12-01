@@ -55,11 +55,11 @@
     <tags:boxContainer2 nameKey="mainBox">
         <div>
             <div style="width: 50%; float: left;">
-                <div class="bottomPadded">
+                <div class="stacked">
                     <h3><i:inline key="yukon.web.modules.amr.fdrTranslationManagement.addRemoveTitle"/></h3>
                     <i:inline key="yukon.web.modules.amr.fdrTranslationManagement.addRemoveText"/>
                 </div>
-                <div class="bottomPadded">
+                <div class="stacked">
                     <%-- This form submitted through ajax --%>
                     <form id="importForm" method="post" action="/bulk/fdrTranslationManager/submitImport" enctype="multipart/form-data">
                         <cti:url var="folderImg" value="/WebConfig/yukon/Icons/folder_edit.gif"/>
@@ -69,7 +69,7 @@
                         <cti:button type="submit" nameKey="importSubmitButton"/>
                     </form>
                 </div>
-                <div class="bottomPadded">
+                <div class="stacked">
                     <h3><i:inline key="yukon.web.modules.amr.fdrTranslationManagement.reportTitle"/></h3>
                     <i:inline key="yukon.web.modules.amr.fdrTranslationManagement.reportText"/>
                 </div>
@@ -85,13 +85,13 @@
                 </form>
             </div>
             <div style="width: 50%; float: left;">
-                <div class="bottomPadded">
+                <div class="stacked">
                     <h3><i:inline key="yukon.web.modules.amr.fdrTranslationManagement.importTitle"/></h3>
                     <i:inline key="yukon.web.modules.amr.fdrTranslationManagement.importText"/>
                 </div>
                 <i:inline key="yukon.web.modules.amr.fdrTranslationManagement.defaultColumnsText"/><br>
                 
-                <div class="bottomPadded">
+                <div class="stacked">
                     <table class="resultsTable detail">
                         <tr>
                             <th><i:inline key="yukon.web.modules.amr.fdrTranslationManagement.defaultColumnsHeader"/></th>
@@ -141,7 +141,7 @@
                         </c:forEach>   
                     </table>
                 </div>
-                <div class="bottomPadded">
+                <div class="stacked">
                     <i:inline key="yukon.web.modules.amr.fdrTranslationManagement.interfaceColumnsText"/>
                 </div>
                 <i:inline key="yukon.web.modules.amr.fdrTranslationManagement.interfaceColumnsLabel"/>
@@ -150,7 +150,7 @@
                         <option value="${interfaceType}"><i:inline key="${interfaceType}"/></option>
                     </c:forEach>
                 </select>
-                <div class="bottomPadded">
+                <div class="stacked">
                 <table class="resultsTable detail">
                     <c:forEach var="displayableInterface" items="${displayableInterfaces}">
                         <tr class="interface_${displayableInterface.name}" style="display: none;">

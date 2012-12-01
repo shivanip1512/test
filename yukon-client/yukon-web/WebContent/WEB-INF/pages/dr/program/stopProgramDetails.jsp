@@ -65,7 +65,7 @@ updateComponentAvailability = function() {
                             <cti:msg key="yukon.web.modules.dr.program.stopProgram.stopNow"/>
                         </label>
                     </td></tr>
-                    <tr><td class="padded">
+                    <tr><td>
                         <tags:dateTimeInput path="stopDate" fieldValue="${backingBean.stopDate}"
                             disabled="true"/>
                     </td></tr>
@@ -80,7 +80,7 @@ updateComponentAvailability = function() {
                             <cti:msg key="yukon.web.modules.dr.program.stopProgram.useStopGear"/>
                         </label>
                     </td></tr>
-                    <tr><td class="padded">
+                    <tr><td>
                         <form:select path="gearNumber" id="gearNumber" onchange="gearChanged()">
                             <c:forEach var="gear" varStatus="status" items="${gears}">
                                 <form:option value="${status.index + 1}"><spring:escapeBody htmlEscape="true">${gear.gearName}</spring:escapeBody></form:option>
