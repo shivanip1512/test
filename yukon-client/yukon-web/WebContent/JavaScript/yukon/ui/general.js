@@ -38,7 +38,7 @@ Yukon.ui = {
         // register listeners
         
         //ajaxPage
-        jQuery(document).delegate('.f_ajaxPage', 'click', function(e){
+        jQuery(document).on('click', '.f_ajaxPage', function(e){
             e.stopPropagation();
             jQuery(this.getAttribute("data-selector")).load(this.getAttribute("href"));
             return false;
@@ -48,17 +48,17 @@ Yukon.ui = {
 		jQuery.placeholder();
         
         //buttons that redirect the page on click
-        jQuery(document).delegate("button[data-href]", 'click', function(event){window.location = jQuery(this).attr("data-href");});
+        jQuery(document).on('click', 'button[data-href]', function(event){window.location = jQuery(this).attr("data-href");});
         
         // page blockers
-        jQuery(document).delegate('a.f_blocker, button.f_blocker', 'click', Yukon.ui.block);
-        jQuery(document).delegate('#modal_glass', 'resize', Yukon.ui.blockPage);
+        jQuery(document).on('click', 'a.f_blocker, button.f_blocker', Yukon.ui.block);
+        jQuery(document).on('resize', '#modal_glass', Yukon.ui.blockPage);
         
         // clear page blocker
-        jQuery(document).delegate('.f_clearBlocker', 'click', Yukon.ui.unblockPage);
+        jQuery(document).on('click', '.f_clearBlocker', Yukon.ui.unblockPage);
         
      // Disable a form element after clicked
-        jQuery(document).delegate('.f_disableAfterClick', 'click', function(){
+        jQuery(document).on('click', '.f_disableAfterClick', function(){
         	var button = jQuery(this);
             if(button.is(":input")){
                 this.disabled = true;
@@ -78,7 +78,7 @@ Yukon.ui = {
         });
         
         //prevent forms from submitting via enter key
-        jQuery(document).delegate("form.f_preventSubmitViaEnterKey", 'keydown', function(e){
+        jQuery(document).on('keydown', 'form.f_preventSubmitViaEnterKey', function(e){
         	//allow override submission elements
         	if(jQuery(e.target).hasClass("f_allowSubmitViaEnterKey")){
         		return true;
@@ -91,7 +91,7 @@ Yukon.ui = {
         // close popup on submit event
         
         // close popup on submit event
-        jQuery(document).delegate("button.f_closePopupOnSubmit", 'click', function(event){
+        jQuery(document).on('click', 'button.f_closePopupOnSubmit', function(event){
             jQuery(event).closest('.popUpDiv').hide();
         });
         

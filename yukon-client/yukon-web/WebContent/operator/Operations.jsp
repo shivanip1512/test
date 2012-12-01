@@ -39,7 +39,7 @@
 	}
 	
 	jQuery(function(){
-	    jQuery(document).delegate('.resetFieldOnChange', 'change', resetFieldOnChange);
+	    jQuery(document).on('change', '.resetFieldOnChange', resetFieldOnChange);
 	});
 
 

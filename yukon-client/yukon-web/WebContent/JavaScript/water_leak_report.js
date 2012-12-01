@@ -32,7 +32,7 @@ if(typeof(WaterLeakReport) === 'undefined'){
                 jQuery(WaterLeakReport._all_selector).bind("change", this._all_checked);
                 jQuery(WaterLeakReport._single_selector).bind("change", this._single_checked);
                 jQuery(WaterLeakReport._leak_filter_dialog).bind("keyup", this._init_filter_key_bindings);
-                jQuery(document).delegate(WaterLeakReport._leak_filter_dialog, "dialogopen", this._filter_dialog_open);
+                jQuery(document).on("dialogopen", WaterLeakReport._leak_filter_dialog, this._filter_dialog_open);
                 jQuery(document).bind("keyup", this._init_open_filter_key_binding);
                 jQuery("a.f_cis_details").bind("click", this._view_cis_details);
                 jQuery(".f_open_filter_dialog").bind("click", function(){Yukon.ui._autofocus();});

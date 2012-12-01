@@ -43,12 +43,12 @@
 	
 	<script>
 	jQuery(function(){
-		jQuery(document).delegate(".f_removeNotification", "click", function(event){
+		jQuery(document).on('click', '.f_removeNotification', function(event){
 			jQuery(this).closest(".notification").remove();
 			updateIndicies();
 		});
 		
-		jQuery(document).delegate(".f_addNotification", "click", function(event){
+		jQuery(document).on('click', '.f_addNotification', function(event){
 			jQuery("#notifications").append(jQuery("#notification_template > div").clone());
 			updateIndicies();
 		});

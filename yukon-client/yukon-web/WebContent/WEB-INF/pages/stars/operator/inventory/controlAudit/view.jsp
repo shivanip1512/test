@@ -15,7 +15,7 @@
 
 <script type="text/javascript">
 jQuery(function() {
-    jQuery(document).delegate(".f_ajaxPaging", "click", function(event) {
+    jQuery(document).on('click', '.f_ajaxPaging', function(event) {
         
         event.stopPropagation();
         

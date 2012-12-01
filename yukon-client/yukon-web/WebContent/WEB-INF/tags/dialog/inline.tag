@@ -55,7 +55,7 @@ function open_${id}() {
 }
 <c:if test="${!empty pageScope.on}">
 jQuery(document).ready(function() {
-    jQuery(document).delegate('${on}', 'click', function() {
+    jQuery(document).on('click', '${on}', function() {
         open_${id}();
     });
 });

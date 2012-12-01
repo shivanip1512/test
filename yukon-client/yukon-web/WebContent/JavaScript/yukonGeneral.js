@@ -404,7 +404,7 @@ function getHeaderJSON(xhr) {
 }
 
 jQuery(function() {
-    jQuery(document).delegate("h3.toggle-title", "click", function (event) {
+    jQuery(document).on('click', 'h3.toggle-title', function (event) {
         jQuery(event.currentTarget).closest('div.titledContainer').each(function(index, elem){
             jQuery(elem).toggleClass("collapsed");
             jQuery(elem).find('div.content').toggle();

@@ -14,7 +14,7 @@
 
     //INIT
     jQuery(function(){
-        jQuery(document).delegate(".f_thermostatSelectionChanged", 'change', thermostatSelectionChanged);
+        jQuery(document).on('change', '.f_thermostatSelectionChanged', thermostatSelectionChanged);
         thermostatSelect(jQuery("input[data-thermostat-type]:checked")[0]);
     });
     

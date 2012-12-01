@@ -19,19 +19,18 @@ package com.cannontech.web;
  */
 public enum JsLibrary {
     //if updating jquery be sure to include the noconflict call at the end of the file if prototype
-    JQUERY("/JavaScript/lib/jQuery/1.6.4/jquery.min.js"),       //http://www.jquery.com
+    JQUERY("/JavaScript/lib/jQuery/jquery-1.8.3.min.js"),       //http://www.jquery.com
     JQUERY_COLOR("/JavaScript/lib/jQuery/plugins/color/jquery.color.js"),
     JQUERY_COOKIE("/JavaScript/lib/jQuery/plugins/cookie/jquery.cookie.js"),
     JQUERY_FORM("/JavaScript/lib/jQuery/plugins/form/jquery.form.js"),  //http://jquery.malsup.com/form/
     JQUERY_GRID("/JavaScript/lib/jQuery/plugins/jqGrid/4.2.0/js/jquery.jqGrid.min.js"),         //http://www.trirand.com/jqgridwiki/doku.php?id=wiki:jqgriddocs
     JQUERY_GRID_HELPER("/JavaScript/lib/jQuery/plugins/jqGrid/jqGridHelper.js"),         //in-house
-    JQUERY_NOCONFLICT("/JavaScript/lib/jQuery/1.6.4/jquery.noconflict.min.js"), //http://api.jquery.com/jQuery.noConflict/
     JQUERY_PLACEHOLDER("/JavaScript/lib/jQuery/plugins/placeholder/jquery.placeholder.js"), // https://github.com/thehappybit/jQuery-HTML5-placeholder-plugin
     JQUERY_SCROLLTO("/JavaScript/lib/jQuery/plugins/scrollTo/jquery.scrollTo-1.4.2-min.js"),    //http://demos.flesler.com/jquery/scrollTo/
     JQUERY_STICKY_PANEL("/JavaScript/lib/jQuery/plugins/stickyPanel/jquery.stickyPanel.1.4.1.min.js"),    //http://code.google.com/p/sticky-panel/
     JQUERY_TREE("/JavaScript/lib/jQuery/plugins/dynatree/jquery.dynatree.min.js"),  //http://wwwendt.de/tech/dynatree/doc/dynatree-doc.html
     JQUERY_TREE_HELPERS("/JavaScript/lib/jQuery/plugins/dynatree/treeHelper.js"),   //in-house
-    JQUERY_UI("/JavaScript/lib/jQuery/plugins/jQueryUI/jquery-ui-1.8.16.custom.min.js"),    //http://www.jqueryui.com
+    JQUERY_UI("/JavaScript/lib/jQuery/plugins/jQueryUI/jquery-ui-1.9.2.custom.min.js"),    //http://www.jqueryui.com
     JQUERY_UI_DIALOG_HELPER("/JavaScript/lib/jQuery/plugins/jQueryUI/dialog-helper.js"), //in-house
     JQUERY_UI_CHECK_ALL("/JavaScript/lib/jQuery/plugins/checkAll/jquery.checkall.js"), //https://github.com/mjball/jQuery-CheckAll
     JQUERY_UI_ACTION_WHEN("/JavaScript/lib/jQuery/plugins/actionWhen/jquery.actionwhen.js"), //in-house

@@ -116,7 +116,7 @@
     }
     
 jQuery(function(){
-    jQuery(document).delegate("select.f_loadCommanderCommand", "change", loadCommanderCommand);
+    jQuery(document).on('change', 'select.f_loadCommanderCommand', loadCommanderCommand);
 });
 </script>
 

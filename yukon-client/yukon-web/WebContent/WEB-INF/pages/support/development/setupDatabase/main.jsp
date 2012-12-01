@@ -82,8 +82,8 @@
             
             jQuery("input#f_check_all_meters:checkbox").checkAll("input.f_check_single_meter:checkbox");
             jQuery("input#f_check_all_hardware:checkbox").checkAll("input.f_check_single_hardware:checkbox");
-            
-            jQuery("body").delegate(".f_ec_select","change",function() {
+
+            jQuery('body').on('.f_ec_select', 'change', function() {
                 if (jQuery('#createNewEnergyCompanyOpt').is(':selected')) {
                     jQuery('.newEnergyCompanyRow').show(800, function() {
                         jQuery('.newEnergyCompanyInput').focus();

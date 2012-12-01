@@ -80,7 +80,7 @@ if(typeof(Yukon.Dialog.ConfirmationManager) === 'undefined'){
                     });
                     
                     //register the event handler
-                    jQuery(document).delegate(defaults.on, defaults.eventType, this._show_window);
+                    jQuery(document).on(defaults.eventType, defaults.on, this._show_window);
                     return true;
                 }
                 return false;

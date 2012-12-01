@@ -26,7 +26,7 @@
 
 <script type="text/javascript">
 jQuery(function() {
-    jQuery(document).delegate('#rfReadNow', 'click', function(event) {
+    jQuery(document).on('click', '#rfReadNow', function(event) {
         var url = '<cti:url value="/stars/operator/hardware/${readPath}/readNow"/>';
         
         jQuery("<a class=\"fl loading labeled_icon\"/>").insertBefore(jQuery("#rfReadNow span"));

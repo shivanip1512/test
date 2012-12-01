@@ -10,10 +10,10 @@
     <cti:includeCss link="/WebConfig/yukon/styles/operator/hardware.css"/>
     
 <script type="text/javascript">
-jQuery(document).delegate('#deleteBtn', 'click', function() {
+jQuery(document).on('click', '#deleteBtn', function() {
     jQuery('#deleteHardwarePopup').show();
 });
-jQuery(document).delegate('#cancelDeleteBtn', 'click', function() {
+jQuery(document).on('click', '#cancelDeleteBtn', function() {
     jQuery('#deleteHardwarePopup').hide();
 });
 </script>

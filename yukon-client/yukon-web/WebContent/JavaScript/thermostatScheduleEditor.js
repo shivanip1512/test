@@ -23,14 +23,14 @@ Yukon.ThermostatScheduleEditor = {
         Yukon.ThermostatScheduleEditor.renderTime();
         
         //time UI
-        jQuery(document).delegate(".time input:text", "focus", this.showTimeSlider);
-        jQuery(document).delegate(".time input:text", "blur", this.blurTimeInput);
-        jQuery(document).delegate(".time input:text", "keydown", this.timeKeydown);
+        jQuery(document).on('focus', '.time input:text', this.showTimeSlider);
+        jQuery(document).on('blur', '.time input:text', this.blurTimeInput);
+        jQuery(document).on('keydown', '.time input:text', this.timeKeydown);
 
         //temperature UI
-        jQuery(document).delegate(".temp input:text", "focus", this.showTempSlider);
-        jQuery(document).delegate(".temp input:text", "blur", this.blurTempInput);
-        jQuery(document).delegate(".temp input:text", "keydown", this.tempKeydown);
+        jQuery(document).on('focus', '.temp input:text', this.showTempSlider);
+        jQuery(document).on('blur', '.temp input:text', this.blurTempInput);
+        jQuery(document).on('keydown', '.temp input:text', this.tempKeydown);
         
         TIME_SLIDER = jQuery("#timeSlider .track").slider({
         	max: 24*60,
@@ -164,7 +164,7 @@ Yukon.ThermostatScheduleEditor = {
         	jQuery("button.delete", editForm).hide();
         });
         
-        jQuery(document).delegate(".save", 'click', function(e){
+        jQuery(document).on('click', '.save', function(e){
         	var form = null;
         	if(jQuery(e.target).closest("#createSchedule")[0]){
         		var mode = jQuery("#createSchedule_body input[name=defaultScheduleMode]:checked").val();
@@ -208,7 +208,7 @@ Yukon.ThermostatScheduleEditor = {
                 jQuery(this).closest('.f_page').find('.f_next').removeAttr('disabled');
         });
         
-        jQuery(document).delegate(".create", 'click', function(e){
+        jQuery(document).on('click', '.create', function(e){
             //show type picker
             Yukon.ThermostatScheduleEditor.clearErrors(jQuery("#createSchedule_body"));
             Yukon.ui.wizard.reset(jQuery("#createSchedule_body"));
@@ -229,7 +229,7 @@ Yukon.ThermostatScheduleEditor = {
             });
         });
         
-        jQuery(document).delegate(".default", "click", function(e){
+        jQuery(document).on('click', '.default', function(e){
             //find 'recommended schedule in the create popup
             var ourForm = jQuery(this).closest(".popUpDiv").find('form');
             var mode = jQuery("input[name=thermostatScheduleMode]", ourForm).val();
@@ -239,7 +239,7 @@ Yukon.ThermostatScheduleEditor = {
             
         });
         
-        jQuery(document).delegate(".createDefault", "click", function(e){
+        jQuery(document).on('click', '.createDefault', function(e){
             //find 'recommended schedule in the create popup
             var ourForm = jQuery("#createSchedule .schedule_editor.active");
             var mode = jQuery("input[name=thermostatScheduleMode]", ourForm).val();

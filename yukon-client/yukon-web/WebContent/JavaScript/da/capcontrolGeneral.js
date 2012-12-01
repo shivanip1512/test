@@ -89,10 +89,10 @@ function showMenuPopup(params) {
     });
 }
 
-jQuery(document).delegate("div.dynamicTableWrapper .pointAddItem", "click", function(event) {
+jQuery(document).on('click', 'div.dynamicTableWrapper .pointAddItem', function(event) {
     pointPicker.show();
 });
-jQuery(document).delegate("div.dynamicTableWrapper .bankAddItem", "click", function(event) {
+jQuery(document).on('click', 'div.dynamicTableWrapper .bankAddItem', function(event) {
     bankPicker.show();
 });
 
@@ -219,7 +219,7 @@ function hideAlertMessage() {
 
 //BANK MOVE JS
 jQuery(function() {
-    jQuery(document).delegate("li.toggle", 'click', function(e) {
+    jQuery(document).on('click', 'li.toggle', function(e) {
         if (e.target == e.currentTarget) {
             var li = jQuery(this);
             var subMenu = li.find('ul:first');

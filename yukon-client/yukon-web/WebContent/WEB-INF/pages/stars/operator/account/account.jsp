@@ -65,11 +65,11 @@
         		}
     		}
     		
-    		jQuery(document).delegate("#passwordDialog", 'e_updatePassword', updatePassword);
-            jQuery(document).delegate("a.f_resetPasswordDialog", 'click', resetPasswordDialog);
-            jQuery(document).delegate(".f_prepPasswordFields", 'click', prepPasswordFields);
-            jQuery(document).delegate(".f_generatePassword", 'click', generatePassword);
-            jQuery(document).delegate(".f_deleteLogin", "click", function(){jQuery('#confirmDeleteLoginDialog').show();});
+    		jQuery(document).on('e_updatePassword', '#passwordDialog', updatePassword);
+            jQuery(document).on('click', 'a.f_resetPasswordDialog', resetPasswordDialog);
+            jQuery(document).on('click', '.f_prepPasswordFields', prepPasswordFields);
+            jQuery(document).on('click', '.f_generatePassword', generatePassword);
+            jQuery(document).on('click', '.f_deleteLogin', function(){jQuery('#confirmDeleteLoginDialog').show();});
            
     	});
 

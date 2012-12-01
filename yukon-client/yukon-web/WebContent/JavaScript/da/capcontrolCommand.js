@@ -1,4 +1,4 @@
-jQuery(document).delegate("li.menuOption.command", "click", function(event) {
+jQuery(document).on('click', 'li.menuOption.command', function(event) {
     hideMenu();
     var doCommand = true;
     var menuOption = jQuery(event.currentTarget).closest("li");
@@ -12,7 +12,7 @@ jQuery(document).delegate("li.menuOption.command", "click", function(event) {
     }
 });
 
-jQuery(document).delegate("li.menuOption.stateChange", "click", function(event) {
+jQuery(document).on('click', 'li.menuOption.stateChange', function(event) {
     hideMenu();
     doChangeState(jQuery(event.currentTarget).closest("ul").find("input[name='paoId']").val(), jQuery(event.currentTarget).val());
 });
@@ -89,7 +89,7 @@ function doChangeOpState(bankId, stateId, reason, onReasonMenu) {
 }
 
 function addCommandMenuBehavior(selector) {
-	jQuery(document).delegate(selector, "click", function (event) {
+	jQuery(document).on('click', selector, function (event) {
         getCommandMenu(jQuery(event.currentTarget).closest("a")[0].id.split('_')[1], event);
     });
 }

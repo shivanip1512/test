@@ -18,7 +18,6 @@ import com.cannontech.common.pao.attribute.model.Attribute;
 import com.cannontech.common.pao.attribute.model.BuiltInAttribute;
 import com.cannontech.common.util.Range;
 import com.cannontech.common.util.TimeUtil;
-import com.cannontech.core.dao.RawPointHistoryDao.Clusivity;
 import com.cannontech.user.YukonUserContext;
 import com.cannontech.web.util.ListBackingBean;
 import com.google.common.collect.Lists;
@@ -87,7 +86,7 @@ public class MeterEventsReportFilterBackingBean extends ListBackingBean {
     }
 
     public Range<Instant> getRange() {
-        return Clusivity.INCLUSIVE_INCLUSIVE.makeRange(fromInstant, toInstant);
+        return new Range<>(fromInstant, true, toInstant, false);
     }
 
     public Map<BuiltInAttribute, Boolean> getMeterEventTypesMap() {

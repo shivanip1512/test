@@ -31,7 +31,7 @@ function typeChanged(event) {
 }
 
 jQuery(document).ready(function() {
-    jQuery(document).delegate('select[name^=entries]', 'change', typeChanged);
+    jQuery(document).on('change', 'select[name^=entries]', typeChanged);
 });
 </script>
 

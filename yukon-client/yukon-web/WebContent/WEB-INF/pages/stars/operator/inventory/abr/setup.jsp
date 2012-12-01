@@ -10,7 +10,7 @@
 <cti:standardPage module="operator" page="abr.setup">
 
 <script type="text/javascript">
-jQuery(document).delegate('a.failedItems', 'click', function() {
+jQuery(document).on('click', 'a.failedItems', function() {
     jQuery.ajax({
         url: 'viewFailed',
         data: {"taskId": '${task.taskId}'},

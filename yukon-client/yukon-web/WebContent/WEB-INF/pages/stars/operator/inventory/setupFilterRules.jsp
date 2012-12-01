@@ -26,7 +26,7 @@
             $('removeRule').value = row;
             $('selectionForm').submit();
         }
-        jQuery(document).delegate('a.icon_datePicker', 'click', function(event) {
+        jQuery(document).on('click', 'a.icon_datePicker', function(event) {
             var inputId = jQuery(event.target).prev('input').attr('id');
             showCalendarControl(inputId, '${months}', '${days}', '${clear}', '${close}');
         });

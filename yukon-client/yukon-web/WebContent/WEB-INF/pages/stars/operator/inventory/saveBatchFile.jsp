@@ -10,7 +10,7 @@
     
     <script type="text/javascript">
         jQuery(document).ready(function() {
-        	jQuery(document).delegate('#routes input:radio', 'change', function(e){
+        	jQuery(document).on('change', '#routes input:radio', function(e){
         		var currentTarget = jQuery(this);
         		
         		currentTarget.closest('div').siblings().addClass('disabled').find('input[type!=radio], select, textarea, button').attr('disabled', 'disabled');
@@ -22,7 +22,7 @@
             if(!singleHwConfigType) {
                 jQuery('#groups').addClass('disabled').find(':input').attr('disabled', 'disabled');
             } else {
-            	jQuery(document).delegate('#groups input:radio', 'change', function(e){
+            	jQuery(document).on('change', '#groups input:radio', function(e){
                     var currentTarget = jQuery(this);
                     
                     currentTarget.closest('div').siblings().addClass('disabled').find('input[type!=radio],select,textarea,button').attr('disabled', 'disabled');

@@ -60,9 +60,9 @@ jQuery(document).ready(function() {
 
     jQuery('.moveDownBtn').click(moveQuestionFunc('down'));
     jQuery('.moveUpBtn').click(moveQuestionFunc('up'));
-    jQuery(document).delegate('.moveAnswerUp', 'click', moveAnswerUp);
-    jQuery(document).delegate('.moveAnswerDown', 'click', moveAnswerDown);
-    jQuery(document).delegate('.deleteAnswer', 'click', deleteAnswer);
+    jQuery(document).on('click', '.moveAnswerUp', moveAnswerUp);
+    jQuery(document).on('click', '.moveAnswerDown', moveAnswerDown);
+    jQuery(document).on('click', '.deleteAnswer', deleteAnswer);
 
     jQuery(document).bind('yukonDetailsUpdated', closeAjaxDialogAndRefresh);
     jQuery(document).bind('yukonQuestionSaved', closeAjaxDialogAndRefresh);

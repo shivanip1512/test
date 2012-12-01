@@ -16,7 +16,7 @@ var loadOutageTable = function() {
 }
 jQuery(document).ready(loadOutageTable());
 
-jQuery(document).delegate('#refreshLogs', 'click', loadOutageTable);
+jQuery(document).on('click', '#refreshLogs', loadOutageTable);
 </script>
 
 <tags:nameValueContainer2>

@@ -197,8 +197,8 @@
              fieldDialogDiv.dialog(dialogOpts);
         </c:if>
         renderContainer();
-        jQuery(document).delegate("#fieldDialog select", 'change', renderPopup);
-        jQuery(document).delegate("#delimiterSelect", "change", renderContainer);
+        jQuery(document).on('change', '#fieldDialog select', renderPopup);
+        jQuery(document).on('change', '#delimiterSelect', renderContainer);
         
         initialized = true;
         jQuery('#addAttributeBtn').click(function() {
@@ -300,13 +300,13 @@
         jQuery('#generateReportBtn').click(function(event) {
             submitForm(-1, 'generateReport');
         });
-        jQuery(document).delegate('#yukon_dialog_confirm', 'yukonDialogConfirmOk', function(event) {
+        jQuery(document).on('yukonDialogConfirmOk', '#yukon_dialog_confirm', function(event) {
             event.preventDefault();
             Yukon.Dialog.ConfirmationManager.cancel();
             submitForm(-1, 'deleteFormat');
         });
 
-        jQuery(document).delegate("#patternSelect", 'change', function() {
+        jQuery(document).on('change', '#patternSelect', function() {
             var value = $("#patternSelect").is("selected").text();
             alert(value);
             if (value != "Custom") {

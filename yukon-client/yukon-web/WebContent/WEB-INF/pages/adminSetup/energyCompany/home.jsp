@@ -10,7 +10,7 @@
 
 <script type="text/javascript">
 
-jQuery(document).delegate('button.loginButton','click',function() {
+jQuery(document).on('click', 'button.loginButton',function() {
 
         var parentLoginId = jQuery(this).attr('name');
         jQuery('#loginAsUserId').val(parentLoginId); 

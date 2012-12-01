@@ -16,7 +16,7 @@
 <script type="text/javascript">
 jQuery(function(){
     
-    jQuery(document).delegate('#refresh, button[name=commissionSubmit], button[name=decommissionSubmit]', 'click', function(event) {
+    jQuery(document).on('click', '#refresh, button[name=commissionSubmit], button[name=decommissionSubmit]', function(event) {
         var url = '/stars/operator/hardware/zb/';
         var button = event.currentTarget;
         if (button.id == 'refresh') {
@@ -51,7 +51,7 @@ jQuery(function(){
         });
     });
     
-    jQuery(document).delegate('button[name^=assignedDevicesCommissionSubmit_], button[name^=assignedDevicesDecommissionSubmit_]', 'click', function(event) {
+    jQuery(document).on('click', 'button[name^=assignedDevicesCommissionSubmit_], button[name^=assignedDevicesDecommissionSubmit_]', function(event) {
         var url = '/stars/operator/hardware/zb/';
         var button = event.currentTarget;
         
@@ -88,7 +88,7 @@ jQuery(function(){
     });
     
     <cti:displayForPageEditModes modes="VIEW">
-    jQuery(document).delegate('#sendTextMsg', 'click', function(event) {
+    jQuery(document).on('click', '#sendTextMsg', function(event) {
         var params = {'accountId' : ${accountId}, 
                       'inventoryId' : ${inventoryId}, 
                       'gatewayId' : ${hardware.deviceId}};
