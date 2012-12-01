@@ -102,13 +102,13 @@
             if (${submitNormal}) {
                 $('commentForm').submit();
             } else {
-                submitFormViaAjax('contentPopup', 'commentForm', null, $('contentPopup').getElementsByClassName('boxContainer_title')[0].innerHTML);
+                submitFormViaAjax('contentPopup', 'commentForm', null, $('comment_editor').innerHTML);
             }
         };
         
     </script>
     
-    <div style="max-height:400px;overflow-x:hidden;overflow-y:auto;" class="boxContainer">
+    <div id="comment_editor" class="scrollingContainer_large">
         <form id="commentForm" action="/capcontrol/comments/" method="POST">
             <input type="hidden" name="paoId" value="${paoId}">
             <input type="hidden" name="commentId" id="commentId" value="">

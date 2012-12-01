@@ -44,48 +44,45 @@ jQuery('#viewCommentsOption').click(function(event) {
 <div id="menuPopupBoxContainer">
 	<input type="hidden" id="dialogTitle" value="${paoName}">
    
-	<div class="content boxContainer_content">
-	
-	    <ul class="capcontrolMenu">
-	    
-	        <%--Commands --%>
-	        <input type="hidden" name="paoId" value="${paoId}">
-	        <input type="hidden" name="warnOnCommands" value="${warnOnCommands}">
-	        <c:forEach var="command" items="${commands}">
-	            <cti:msg2 var="commandName" key="${command}"/>
-	            <li class="menuOption command" value="${command.commandId}">
-	                <a href="javascript:void(0);">${commandName}</a>
-	                <span class="confirmMessage dn"><i:inline key="yukon.web.modules.capcontrol.command.confirm" arguments="${commandName}"/></span>
-	            </li>
-	        </c:forEach>
-	        
-	        <%--States --%>
-	        <c:forEach var="state" items="${states}">
-	            <li class="menuOption stateChange" value="${state.stateRawState}"><a href="javascript:void(0);">${state.stateText}</a></li>
-	        </c:forEach>
-	        
-	        <%--Special Links --%>
-	        <c:if test="${showResetBankOpCount}">
-	            <li class="menuOption" id="resetBankOpCountOption"><a href="javascript:void(0);"><i:inline key="${resetBankOpCount}"/></a></li>
-	        </c:if>
-	        <c:if test="${showChangeOpState}">
-	            <li class="menuOption" id="changeOpStateOption"><a href="javascript:void(0);"><i:inline key="${changeOpState}"/></a></li>
-	        </c:if>
-	        <c:if test="${showComments}">
-	            <li class="menuOption" id="viewCommentsOption">
-	                <input type="hidden" id="commentsTitle" value="<cti:msg2 key="yukon.web.modules.capcontrol.comments.title" arguments="${paoName}"/>">
-	                <a href="javascript:void(0);"><i:inline key=".viewComments"/></a>
-	            </li>
-	        </c:if>
-	        <c:if test="${showRecentCommands}">
-	            <li class="menuOption" id="recentEventsOption"><a href="javascript:void(0);"><i:inline key=".viewRecentEvents"/></a></li>
-	        </c:if>
-	        <c:if test="${showLocalControl}">
-	            <li class="menuOption" id="localControlsOption"><a href="javascript:void(0);"><i:inline key=".moreControls"/></a></li>
-	        </c:if>
-	        
-	    </ul>
-	</div>
+    <ul class="capcontrolMenu detail">
+    
+        <%--Commands --%>
+        <input type="hidden" name="paoId" value="${paoId}">
+        <input type="hidden" name="warnOnCommands" value="${warnOnCommands}">
+        <c:forEach var="command" items="${commands}">
+            <cti:msg2 var="commandName" key="${command}"/>
+            <li class="menuOption command" value="${command.commandId}">
+                <a href="javascript:void(0);">${commandName}</a>
+                <span class="confirmMessage dn"><i:inline key="yukon.web.modules.capcontrol.command.confirm" arguments="${commandName}"/></span>
+            </li>
+        </c:forEach>
+        
+        <%--States --%>
+        <c:forEach var="state" items="${states}">
+            <li class="menuOption stateChange" value="${state.stateRawState}"><a href="javascript:void(0);">${state.stateText}</a></li>
+        </c:forEach>
+        
+        <%--Special Links --%>
+        <c:if test="${showResetBankOpCount}">
+            <li class="menuOption" id="resetBankOpCountOption"><a href="javascript:void(0);"><i:inline key="${resetBankOpCount}"/></a></li>
+        </c:if>
+        <c:if test="${showChangeOpState}">
+            <li class="menuOption" id="changeOpStateOption"><a href="javascript:void(0);"><i:inline key="${changeOpState}"/></a></li>
+        </c:if>
+        <c:if test="${showComments}">
+            <li class="menuOption" id="viewCommentsOption">
+                <input type="hidden" id="commentsTitle" value="<cti:msg2 key="yukon.web.modules.capcontrol.comments.title" arguments="${paoName}"/>">
+                <a href="javascript:void(0);"><i:inline key=".viewComments"/></a>
+            </li>
+        </c:if>
+        <c:if test="${showRecentCommands}">
+            <li class="menuOption" id="recentEventsOption"><a href="javascript:void(0);"><i:inline key=".viewRecentEvents"/></a></li>
+        </c:if>
+        <c:if test="${showLocalControl}">
+            <li class="menuOption" id="localControlsOption"><a href="javascript:void(0);"><i:inline key=".moreControls"/></a></li>
+        </c:if>
+        
+    </ul>
 </div>
 
 </cti:msgScope>     

@@ -22,7 +22,7 @@
         <div>
     </c:if>
 
-    <div class="largeDialogScrollArea">
+    <div class="scrollingContainer_large">
             <table id="pointValueList" class="compactResultsTable rowHighlighting">
                 <tr>
                     <th><tags:sortLink nameKey="tableHeader.timestamp" baseUrl="${viewUrl}" fieldName="TIMESTAMP"

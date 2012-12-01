@@ -17,7 +17,7 @@ a, .primary_color, .vertical_menu li.selected a, .vertical_menu a:hover, .ui-wid
 ::-moz-selection, ::selection {background-color:#06c; color:white;} /* IE 9 does not support pseudo element selectors '::<element selector name>' and will ignore the entire rule, therefore it must be separate */
 .primary_background a, .primary_background a:visited {color:white}
 
-a:visited {color: purple;}
+a:visited {color: #003399;}
 
 /* highlight color */
 .highlight, .primary_background .highlight, #topMenu a:hover, #topMenu a:focus, #subMenu a.selected, #topMenu a.selected, .breadCrumbs a, .breadCrumbs {color: #FF9900;}
@@ -201,7 +201,7 @@ input.error {background: pink;border-color:#D14836;}
 /* END Color Coding */
 
 /* Dialogs */
-.popUpDiv, .widgetPopup, .ui-dialog {background:white;position:fixed;box-shadow:0 10px 30px black; border:solid 1px #999; border-radius:3px; z-index: 1000; top:100px; left:200px;max-width:800px;} /* TODO: replace old popups so that size and position is not hardcoded */ 
+.popUpDiv, .widgetPopup, .ui-dialog {background:white;position:fixed;box-shadow:0 10px 30px black; border:solid 1px #999; border-radius:3px; z-index: 1000;max-width:800px;} 
 .widgetPopup {padding: 10px 20px;}
 .popUpDiv .controls, .titledContainer .controls, .pagedBox .controls {float:right;cursor:pointer;}
 .popUpDiv > .titledContainer {margin-bottom: 0;}
@@ -222,10 +222,10 @@ input.error {background: pink;border-color:#D14836;}
 
 /* NORMAL LAYOUTS */
 /* column container */
-.colmask {float:left; width:100%; /* width of whole page */ overflow:hidden; /* This chops off any overhanging divs */}
+.colmask {float:left; width:100%; /* width of whole page */ /* overflow:hidden;  This chops off any overhanging divs */}
 /* common column settings */
 .colright, .colmid, .colleft {float:left; width:100%; position:relative;}
-.col1, .col2, .col3 {float:left; position:relative; padding:0 0 1em 0; overflow:hidden;}
+.col1, .col2, .col3 {float:left; position:relative; padding:0 0 1em 0; /*overflow:hidden; */}
 /* 2 Column (double page) settings */
 .doublepage .colleft {right:50%; /* right column width */}
 .doublepage .col1 {
@@ -249,6 +249,8 @@ input.error {background: pink;border-color:#D14836;}
 /* END NORMAL LAYOUTS */
 
 /* scrollable divs */
+.scrollingContainer_350, .scrollingContainer_large {overflow: auto; overflow-x: hidden; max-height:350px;}
+.scrollingContainer_350 td.last, .scrollingContainer_large td.last {padding-right: 20px !important;} /* make sure scrollbar does not hide content */
 .scrollingContainer_160, .scrollingContainer_small {overflow: auto; overflow-x: hidden; max-height:160px;}
 .scrollingContainer_160 td.last, .scrollingContainer_small td.last {padding-right: 20px !important;} /* make sure scrollbar does not hide content */
 

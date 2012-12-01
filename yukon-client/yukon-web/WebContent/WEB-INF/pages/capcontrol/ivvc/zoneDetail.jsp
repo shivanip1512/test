@@ -431,7 +431,7 @@
 				</cti:tabbedContentSelectorContent>
 				<cti:msg2 var="voltagePointsTab" key=".voltagePoints.title" />
 				<cti:tabbedContentSelectorContent selectorName="${voltagePointsTab}">
-					<div class="largeDialogScrollArea">
+					<div class="scrollingContainer_large">
 						<cti:url var="zoneVoltagePointsUrl" value="/capcontrol/ivvc/zone/voltagePoints">
 					    	<cti:param name="zoneId" value="${zoneId}"/>
 					    </cti:url>

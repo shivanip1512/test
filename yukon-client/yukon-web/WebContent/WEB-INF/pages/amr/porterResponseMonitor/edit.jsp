@@ -10,7 +10,7 @@
     <cti:url var="fullErrorCodesURL" value="/support/errorCodes/view"/>
 
     <i:simplePopup titleKey=".errorCodesPopup" id="errorCodesHelpPopup" on="#errorHelp">
-        <div class="largeDialogScrollArea">
+        <div class="scrollingContainer_large">
         <table id="errorCodes" class="resultsTable">
             <tr>
                 <th><i:inline key=".errorCodesPopup.header.code" /></th>

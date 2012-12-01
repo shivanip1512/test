@@ -18,45 +18,42 @@ jQuery("#reasonSelect").change(function(event) {
 <div id="menuPopupBoxContainer">
 	<input type="hidden" id="dialogTitle" value="${title}">
 
-	<div class="content boxContainer_content">
-
-		<div class="changeOpState">
-			<div>
-				<span><i:inline key=".opState"/></span>
-				<select id="newOpState">
-					<c:forEach items="${allowedOperationStates}" var="state">
-						<option value="${state}"
-							<c:if test="${currentState == state}">selected</c:if>>
-							<cti:msg2 key="${state}"/>
-						</option>
-					</c:forEach>
-				</select>
-			</div>
-			<div class="dialogReason">
-				<div><i:inline key=".reason"/></div>
-				<textarea id="coReason" rows="3">${reason}</textarea>
-			</div>
-			<div>
-				<select id="reasonSelect">
-					<option><cti:msg2 key=".previousComment"/></option>
-					<c:forEach var="comment" items="${comments}">
-						<c:choose>
-							<c:when test="${fn:length(comment) > maxCommentLength}">
-								<c:set var="subString" value="${fn:substring(comment, 0, (maxCommentLength - 3))}" />
-								<c:set var="formattedComment" value="${subString}..." />
-							</c:when>
-							<c:otherwise>
-								<c:set var="formattedComment" value="${comment}" />
-							</c:otherwise>
-						</c:choose>
-						<option value="${formattedComment}">${formattedComment}</option>
-					</c:forEach>
-				</select>
-			</div>
-			<div class="actionArea">
-				<cti:button nameKey="execute"
-					onclick="doChangeOpState(${bankId}, $F('newOpState'), $F('coReason'), 'true')" />
-			</div>
+	<div class="changeOpState">
+		<div>
+			<span><i:inline key=".opState"/></span>
+			<select id="newOpState">
+				<c:forEach items="${allowedOperationStates}" var="state">
+					<option value="${state}"
+						<c:if test="${currentState == state}">selected</c:if>>
+						<cti:msg2 key="${state}"/>
+					</option>
+				</c:forEach>
+			</select>
+		</div>
+		<div class="dialogReason">
+			<div><i:inline key=".reason"/></div>
+			<textarea id="coReason" rows="3">${reason}</textarea>
+		</div>
+		<div>
+			<select id="reasonSelect">
+				<option><cti:msg2 key=".previousComment"/></option>
+				<c:forEach var="comment" items="${comments}">
+					<c:choose>
+						<c:when test="${fn:length(comment) > maxCommentLength}">
+							<c:set var="subString" value="${fn:substring(comment, 0, (maxCommentLength - 3))}" />
+							<c:set var="formattedComment" value="${subString}..." />
+						</c:when>
+						<c:otherwise>
+							<c:set var="formattedComment" value="${comment}" />
+						</c:otherwise>
+					</c:choose>
+					<option value="${formattedComment}">${formattedComment}</option>
+				</c:forEach>
+			</select>
+		</div>
+		<div class="actionArea">
+			<cti:button nameKey="execute"
+				onclick="doChangeOpState(${bankId}, $F('newOpState'), $F('coReason'), 'true')" />
 		</div>
 	</div>
 </div>

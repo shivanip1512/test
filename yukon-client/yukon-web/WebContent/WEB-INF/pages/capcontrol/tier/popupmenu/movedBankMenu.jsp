@@ -17,13 +17,11 @@
 
 	<div id="menuPopupBoxContainer">
 		<input type="hidden" id="dialogTitle" value="${title}">
-		<div class="content boxContainer_content">
-			<ul class="capcontrolMenu">
-				<li class="menuOption f_blocker"
-					onclick="window.location='${assignUrl}'"><a href="javascript:void(0);">${assignLabel}</a></li>
-				<li class="menuOption f_blocker"
-					onclick="window.location='${returnUrl}'"><a href="javascript:void(0);">${returnLabel}</a></li>
-			</ul>
-		</div>
+		<ul class="capcontrolMenu detail">
+			<li class="menuOption f_blocker"
+				onclick="window.location='${assignUrl}'"><a href="javascript:void(0);">${assignLabel}</a></li>
+			<li class="menuOption f_blocker"
+				onclick="window.location='${returnUrl}'"><a href="javascript:void(0);">${returnLabel}</a></li>
+		</ul>
 	</div>
 </cti:msgScope>

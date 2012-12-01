@@ -8,15 +8,13 @@
 <cti:msgScope paths="yukon.web.modules.capcontrol.menu">
     <div id="menuPopupBoxContainer">
 		<input type="hidden" id="dialogTitle" value="${title}">        
-        <div class="content boxContainer_content">
-            <tags:nameValueContainer2>
-                <tags:nameValue2 nameKey=".resetOpCountTo">
-                    <input id="newOpCount" type="text" value="0" maxlength="4" size="4">
-                </tags:nameValue2>
-            </tags:nameValueContainer2>
-            <div class="actionArea">
-                <cti:button nameKey="reset" onclick="doResetBankOpCount(${bankId}, $F('newOpCount'))"/>
-            </div>
+        <tags:nameValueContainer2>
+            <tags:nameValue2 nameKey=".resetOpCountTo">
+                <input id="newOpCount" type="text" value="0" maxlength="4" size="4">
+            </tags:nameValue2>
+        </tags:nameValueContainer2>
+        <div class="actionArea">
+            <cti:button nameKey="reset" onclick="doResetBankOpCount(${bankId}, $F('newOpCount'))"/>
         </div>
     </div>
 </cti:msgScope>
