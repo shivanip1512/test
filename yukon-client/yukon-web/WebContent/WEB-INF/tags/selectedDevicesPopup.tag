@@ -40,7 +40,7 @@
 	<a href="javascript:void(0);" title="${warning}" class="icon magnifier f_showSelectedDevices" data-function-arguments="{'id':'${id}', 'url':'${selectedDevicesTableUrl}'}">${warning}</a>
 </div>
 <tags:simplePopup id="${id}" title="${popupTitle}">
-    <div style="height:300px;overflow:auto;">
+    <div style="max-height:300px;overflow:auto;min-width: 300px;">
     <div class="smallBoldLabel" id="${id}InnerDiv" style="text-align:left;"></div>
     </div>
 </tags:simplePopup>
