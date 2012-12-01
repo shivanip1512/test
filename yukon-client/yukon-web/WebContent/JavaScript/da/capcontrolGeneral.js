@@ -127,15 +127,15 @@ function expandRow(itemId, imgId) {
 
 function statusMsgAbove(elem, message) {
     elem.onmouseout = function (e) {nd();};
-    overlib(message, ABOVE,  WIDTH, 260, CSSCLASS, TEXTFONTCLASS, 'flyover');
+    overlib(message, ABOVE,  WIDTH, 260, CSSCLASS, TEXTFONTCLASS, 'flyover detail');
 }
 
 function showDynamicPopup(containerId, popupWidth) {
-    overlib(jQuery("#" + containerId).html(), WIDTH, popupWidth, CSSCLASS, TEXTFONTCLASS, 'flyover');
+    overlib(jQuery("#" + containerId).html(), WIDTH, popupWidth, CSSCLASS, TEXTFONTCLASS, 'flyover detail');
 }
 
 function showDynamicPopupAbove(containerId, popupWidth) {
-    overlib(jQuery("#" + containerId).html(), ABOVE, WIDTH, popupWidth, CSSCLASS, TEXTFONTCLASS, 'flyover');
+    overlib(jQuery("#" + containerId).html(), ABOVE, WIDTH, popupWidth, CSSCLASS, TEXTFONTCLASS, 'flyover detail');
 }
 
 function addLockButtonForButtonGroup (groupId, secs) {

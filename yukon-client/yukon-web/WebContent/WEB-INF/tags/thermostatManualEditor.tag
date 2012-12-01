@@ -15,41 +15,43 @@
 <%@ taglib prefix="fn" uri="http://java.sun.com/jsp/jstl/functions" %>
 <%@ taglib prefix="form" uri="http://www.springframework.org/tags/form" %>
 
-<div class="boxContainer manualThermostat box fl">
-    <div class="boxContainer_titleBar">
+<div class="titledContainer boxContainer manualThermostat box fl">
+    <div class="titleBar boxContainer_titleBar">
+        <div class="title boxContainer_title">
         <c:set var="multipleThermostatsSelected" value="${fn:length(fn:split(thermostatIds, ',')) > 1}"></c:set>
-        <c:choose>
-            <c:when test="${not multipleThermostatsSelected and canEditLabel}">
-                <form:form action="/stars/consumer/thermostat/saveLabel" commandName="thermostat" method="post">
-                    <input name="thermostatIds" type="hidden" value="${thermostatIds}" />
-                    <form:hidden path="id"/>
-
-                    <span id="editName" style="display: none;">
-                        <form:input path="deviceLabel" maxlength="60" />
-                        <cti:button nameKey="save" type="submit" styleClass="f_blocker"/>
-                        <cti:button nameKey="cancel" styleClass="cancelLabelEdit"/>
-                    </span> 
-                    <span id="thermostatName">
-                        <spring:escapeBody>${thermostat.deviceLabel}</spring:escapeBody>
-                        <a href="javascript:void(0)" class="editLabel"><i:inline key=".edit" /></a>
-                    </span>
-                </form:form>
-            </c:when>
-            <c:otherwise>
-                <span id="thermostatName">
-                    <c:choose>
-                        <c:when test="${multipleThermostatsSelected}">
-                            <i:inline key="yukon.web.modules.operator.thermostatManual.multipleLabel"/>
-                        </c:when>
-                        <c:otherwise>
+            <c:choose>
+                <c:when test="${not multipleThermostatsSelected and canEditLabel}">
+                    <form:form action="/stars/consumer/thermostat/saveLabel" commandName="thermostat" method="post">
+                        <input name="thermostatIds" type="hidden" value="${thermostatIds}" />
+                        <form:hidden path="id"/>
+    
+                        <span id="editName" style="display: none;">
+                            <form:input path="deviceLabel" maxlength="60" />
+                            <cti:button nameKey="save" type="submit" styleClass="f_blocker"/>
+                            <cti:button nameKey="cancel" styleClass="cancelLabelEdit"/>
+                        </span> 
+                        <span id="thermostatName">
                             <spring:escapeBody>${thermostat.deviceLabel}</spring:escapeBody>
-                        </c:otherwise>
-                    </c:choose>
-                </span>
-            </c:otherwise>
-        </c:choose>
+                            <a href="javascript:void(0)" class="editLabel"><i:inline key=".edit" /></a>
+                        </span>
+                    </form:form>
+                </c:when>
+                <c:otherwise>
+                    <span id="thermostatName">
+                        <c:choose>
+                            <c:when test="${multipleThermostatsSelected}">
+                                <i:inline key="yukon.web.modules.operator.thermostatManual.multipleLabel"/>
+                            </c:when>
+                            <c:otherwise>
+                                <spring:escapeBody>${thermostat.deviceLabel}</spring:escapeBody>
+                            </c:otherwise>
+                        </c:choose>
+                    </span>
+                </c:otherwise>
+            </c:choose>
+        </div>
     </div>
-    <div class="boxContainer_content">
+    <div class="content boxContainer_content">
         <div class="box clear" style="padding-bottom: .5em; font-size: .75em;">
             <cti:msg2 var="runProgramText" key="yukon.web.modules.operator.thermostatManual.runProgram" />
             <cti:msg2 var="manualSettingsText" key="yukon.web.modules.operator.thermostatManual.manualSettings" />

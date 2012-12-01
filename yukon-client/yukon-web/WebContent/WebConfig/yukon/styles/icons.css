@@ -81,7 +81,7 @@ a.icon {margin: 0 5px 0 0;}
 .icon_script:hover {background: transparent url(../Icons/script_over.gif) top left no-repeat;}
 .icon_help {background: transparent url(../Icons/help.gif) top left no-repeat;}
 .icon_help:hover {background: transparent url(../Icons/help_over.gif) top left no-repeat;}
-.item {background-image: url(../Icons/32/item.png);}
+.icon_item {background-image: url(../Icons/32/item.png);}
 
 .lightbulb {background-image: url(../Icons/32/lightbulb.png);}
 .list {background-image: url(../Icons/32/list.png);}

@@ -64,7 +64,7 @@ a.save {background: transparent url(../../Icons/accept.png) top left no-repeat;}
 a.cancel {background: transparent url(../../Icons/cancel.gif) left top no-repeat;}
 a.default {background: transparent url('http://cdn5.iconfinder.com/data/icons/fugue/bonus/icons-24/ui-color-picker-default.png') left top no-repeat;}
 .editing .editor {display: inherit;}
-.slider {position: fixed; width: 250px; height: 29px; background: white; border: solid 4px #333; box-shadow: 0 0 5px rgba(0,0,0,0.5); z-index: 200; left:-999em;   /* scriptaculous in all its wonderfulness can't handle elements being hidden on creation. */ border-radius: 8px; -moz-border-radius: 8px; -webkit-border-radius: 8px; font-size: 10px;}
+.slider {position: fixed; width: 250px; height: 29px; background: white; border: solid 4px #333; box-shadow: 0 0 5px rgba(0,0,0,0.5); z-index: 1001; left:-999em;   /* scriptaculous in all its wonderfulness can't handle elements being hidden on creation. */ border-radius: 8px; -moz-border-radius: 8px; -webkit-border-radius: 8px; font-size: 10px;}
 .slider .ui-slider-handle {height: 20px; width: 20px; background: transparent url(../../Icons/slider-handle.png) top left no-repeat; margin-top: -7px; margin-left: -10px;}
 .slider .track {width: 230px; height: 1px; border: solid 1px #666; background-color: #999; position: absolute; left: 9px; top: 19px;}
 .slider .label {margin: 0 5px;}

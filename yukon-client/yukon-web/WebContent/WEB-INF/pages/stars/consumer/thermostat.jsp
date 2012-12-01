@@ -92,7 +92,7 @@
                 <cti:url var="autoEnabledManualUrl" value="/stars/consumer/thermostat/autoEnabledView">
                     <cti:param name="thermostatIds" value="${thermostatIds}"/>
                 </cti:url>
-                <cti:button nameKey="autoEnabledManual" href="${autoEnabledManualUrl}" />
+                <cti:button nameKey="autoEnabledManual" href="${autoEnabledManualUrl}" styleClass="stacked"/>
                 <br>
             </c:if>
                                 

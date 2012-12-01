@@ -4,7 +4,7 @@
     </script>
 </c:if>
 
-<tags:boxContainer2 nameKey="feedersContainer" hideEnabled="true" showInitially="true">
+<tags:boxContainer2 nameKey="feedersContainer" hideEnabled="true" showInitially="true" styleClass="with_footer">
 
     <table id="fdrTable" class="compactResultsTable rowHighlighting">
         

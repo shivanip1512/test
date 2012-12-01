@@ -46,6 +46,7 @@ button.danger:hover {background:#BD362F; border-color:#802D2D;box-shadow:0 0 5px
 button.danger:active {background:#F55656;}
 
 button.naked, button.naked:hover {border:none; background:transparent; box-shadow:none;}
+.button_container button {margin-right: 4px;}
 
 #MainContainer {padding: 20px;}
 #Content > .centeredContainer, .dashboard {margin:0 auto; width: 960px;}
@@ -132,9 +133,9 @@ div.progressBarInnerFailure {
 .pagedBox > .title, .inlineTree > .tree_helper_controls, .resultsTable th {border-radius:3px 3px 0 0;} /* .titledContainer > .titleBar, */
 .resultsTable th {border-bottom: solid 1px #ccc;}
 .titledContainer .titleBar h3 {margin-bottom: 0;}
-.content, .titledContainer > .titleBar, .pagedBox > .title, .pagedBox > .content, .pagedBox > .footer {padding: 5px 10px; overflow:hidden;}
+.content, .titledContainer > .titleBar, .pagedBox > .title, .pagedBox > .content, .pagedBox > .footer, .boxContainerFooter {padding: 5px 10px; overflow:hidden;}
 .content, .pagedBox > .content {padding-bottom: 10px;}
-.pagedBox > .title, .pagedBox > .footer, .boxContainer_titleBar, .resultsTable th {background-color:#efefef;} /* .titledContainer > .titleBar, */
+.pagedBox > .title, .pagedBox > .footer, .boxContainer_titleBar, .resultsTable th, .boxContainerFooter {background-color:#efefef;} /* .titledContainer > .titleBar, */
 .titledContainer > .content, .pagedBox > .content, .pagedBox > .footer, .sectionContainer > .content, .sectionContainer > .footer {border-top: solid 1px #ccc;}
 .titledContainer > .titleBar, .pagedBox > .title, .pagedBox > .footer, .ui-dialog .ui-dialog-title {font-weight:bold; text-shadow:1px 1px 0 white;border-radius: 3px 3px 0 0;}
 .actionArea {text-align:right; margin-top: 20px;}
@@ -171,6 +172,10 @@ div.progressBarInnerFailure {
 .pagedBox .contextArea button.fancy:disabled,
 .pagedBox .contextArea button.fancy:disabled:hover {background: #efefef !important;color: #999 !important;border: solid 1px #ccc !important;cursor: default;}
 .pagedBox .contextArea button.fancy:focus {outline: none !important;}
+
+.boxContainer.with_footer {border-radius: 3px 3px 0 0;margin-bottom: 0;}
+.boxContainerFooter {border:1px solid #ccc;border-radius: 0 0 3px 3px;border-top: none;}
+.flyover, .tooltip {background-color: white; padding: 2px; border: 2px solid #666;box-shadow: 9px;}
 /* END CONTAINERS */
 
 /* Flash Scope */
@@ -187,22 +192,24 @@ ul.pipes li {display:inline; border-left:solid 1px #ccc; margin:0 0 0 -1px; padd
 /* Color Coding */
 .error, .errorMessage {color: #D14836}
 .success, .successMessage {color: #093;}
-.info {color:blue}
 .warn, .warning, .warningMessage {color:#FBB117}
 .disabled, .disabled a, .subtle, .setting .detail > span {color:#555; cursor:default;}
 .disabled a:hover {text-decoration: none;}
 
+/* used on consumer pages, delete during consumer overhaul */
 div.message, div.userMessage {border-radius:3px; padding: 2px 30px; border-style:solid; border-width:1px; margin-bottom: 10px;}
-div.error, div.ERROR {background:pink url(../Icons/error.gif) 5px no-repeat; border-color:#D14836;}
-div.success, div.CONFIRM {background:#C3FDB8 url("../Icons/enable.gif") 5px no-repeat; padding-left: 30px; border-color:#093; color:#333;}
-div.info {background:lightBlue url(../Icons/error.gif) 5px no-repeat; border-color:blue;}
-div.warn, div.WARNING {color:#333;background:#FFFFDA url(../Icons/warning.gif) 5px no-repeat; border-color:#FBB117;}
+.userMessage.error, .userMessage.ERROR {background:pink url(../Icons/error.gif) 5px no-repeat; border-color:#D14836;}
+.userMessage.success, .userMessage.CONFIRM {background:#C3FDB8 url("../Icons/enable.gif") 5px no-repeat; padding-left: 30px; border-color:#093; color:#333;}
+.userMessage.info {background:lightBlue url(../Icons/information.gif) 5px no-repeat; border-color:blue;}
+.userMessage.warn, .userMessage.WARNING {color:#333;background:#FFFFDA url(../Icons/warning.gif) 5px no-repeat; border-color:#FBB117;}
+
 input.error {background: pink;border-color:#D14836;}
 /* END Color Coding */
 
 /* Dialogs */
 .popUpDiv, .widgetPopup, .ui-dialog {background:white;position:fixed;box-shadow:0 10px 30px black; border:solid 1px #999; border-radius:3px; z-index: 1000;max-width:800px;} 
 .widgetPopup {padding: 10px 20px;}
+.simplePopup {left:75px;top:15%;}
 .popUpDiv .controls, .titledContainer .controls, .pagedBox .controls {float:right;cursor:pointer;}
 .popUpDiv > .titledContainer {margin-bottom: 0;}
 

@@ -696,7 +696,7 @@ public class UpdaterHelper {
             if (!CapControlUtils.signalQualityNormal(subBus, UnitOfMeasure.KVAR.getId())) {
                 return "";
             } else {
-                return "hideElement";
+                return "dn";
             }
         }
         
@@ -705,7 +705,7 @@ public class UpdaterHelper {
             if (!CapControlUtils.signalQualityNormal(subBus, UnitOfMeasure.KW.getId())) {
                 return "";
             } else {
-                return "hideElement";
+                return "dn";
             }
         }
         
@@ -714,7 +714,7 @@ public class UpdaterHelper {
             if (!CapControlUtils.signalQualityNormal(subBus, UnitOfMeasure.KVOLTS.getId())) {
                 return "";
             } else {
-                return "hideElement";
+                return "dn";
             }
         }
         
@@ -946,7 +946,7 @@ public class UpdaterHelper {
             if (!CapControlUtils.signalQualityNormal(feeder, UnitOfMeasure.KVAR.getId())) {
                 return "";
             } else {
-                return "hideElement";
+                return "dn";
             }
         }
         
@@ -955,7 +955,7 @@ public class UpdaterHelper {
             if (!CapControlUtils.signalQualityNormal(feeder, UnitOfMeasure.KW.getId())) {
                 return "";
             } else {
-                return "hideElement";
+                return "dn";
             }
         }
         
@@ -964,7 +964,7 @@ public class UpdaterHelper {
             if (!CapControlUtils.signalQualityNormal(feeder, UnitOfMeasure.KVOLTS.getId())) {
                 return "";
             } else {
-                return "hideElement";
+                return "dn";
             }
         }
         

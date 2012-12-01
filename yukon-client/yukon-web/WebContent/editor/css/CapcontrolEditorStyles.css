@@ -76,7 +76,6 @@ a.submenuLink:hover, legend, .editorHeader, .legendLikeLabel {
 .scrollSmall {
 	overflow: auto;
 	max-height: 200px;
-	height: expression(this.scrollHeight > 200 ? "200px" : "auto");  /* Hack for IE6 */
 }
 
 .widthSet,.scrollSmallWidthSet,.scrollVerySmall {
@@ -105,12 +104,10 @@ legend, .legendLikeLabel{
     margin-right: 3px;
 }
 
-/* red */
 .alert, .errorResults {
 	color: #FF0000;
 }
 
-/* green */
 .complete {
 	color: green;
 }
@@ -141,15 +138,13 @@ label {
 .dataCell {
 	border-collapse: collapse;
     vertical-align: top;
-    width: 100%; /*  For FF and IE7  */
-    width: expression(this.scrollHeight > 400 ? "94%" : "100%"); /*  For IE6  */
+    width: 100%;  For FF and IE7 
 }
 
 .scrollerDivWithBorder {
 	border: 1px solid gray;
     max-height: 400px;
     width: 60%;
-    height: expression(this.scrollHeight > 400 ? "400px" : "auto");  /* Hack for IE6 */
     overflow: auto;
 }
 

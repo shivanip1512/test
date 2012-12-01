@@ -105,7 +105,7 @@ jQuery(function(){
                 </tags:sectionContainer2>
             </c:if>
             <div class="box clear">
-                <div class="fr">
+                <div class="fr button_container">
                     <cti:button nameKey="create" styleClass="create fl"/>
                     <cti:button nameKey="help" styleClass="help fl"/>
                 </div>
