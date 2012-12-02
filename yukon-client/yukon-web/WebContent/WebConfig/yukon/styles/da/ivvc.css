@@ -1,174 +1,48 @@
-.tableCell {
-    font-size: 12px;
-}
+.errorIndicator {color: pink;}
 
-.altTableCell {
-    font-size: 12px;
-}
+.disabledRow {font-style: italic;}
 
-.errorIndicator {
-    color: pink;
-}
+.ivvcContainer {width: auto;vertical-align: top;}
 
-.disabledRow {
-    font-style: italic;
-}
+.ivvcChart {width: 100%;vertical-align: top;}
 
-.ivvcContainer {
-    width: auto;
-    vertical-align: top;
-}
+div.zoneHierarchy li {list-style-type: none;margin: 6px 0;}
 
-.ivvcChart {
-    width: 100%;
-    vertical-align: top;
-}
+table.zoneListTable th.zoneName,table.zoneListTable td.zoneName {width: 50%;}
 
-span.leftIndent {
-    margin-left: 1em;
-}
+table.zoneListTable td.zoneType {width: 95px;}
 
-div.zoneHierarchy li {
-    list-style-type: none;
-    margin: 6px 0;
-}
+table.zoneListTable .tapContainer {width: 97px;}
+table.zoneListTable .tapContainer > span {width: 33px;text-align: left;display: inline-block;}
+table.zoneListTable .tapContainer > span .lastOpLeft {width: 16px;text-align: center;display: inline-block;}
+table.zoneListTable .tapContainer .phaseLetter {font-weight: bold;}
+table.zoneListTable th.lastOperation {padding-left: 5px;}
+table th.rightActionColumn {text-align: right;padding-right: 10px;}
+table td.rightActionColumn {text-align: right;padding-right: 15px;}
 
-table.zoneListTable th.zoneName,
-table.zoneListTable td.zoneName {
-    width: 50%;
-}
-
-table.zoneListTable td.zoneType {
-    width: 95px;
-}
-
-table.zoneListTable .tapContainer {
-    width: 97px;
-}
-table.zoneListTable .tapContainer > span {
-    width: 33px;
-    text-align: left;
-    display: inline-block;
-}
-table.zoneListTable .tapContainer > span .lastOpLeft {
-    width: 16px;
-    text-align: center;
-    display: inline-block;
-}
-
-table.zoneListTable .tapContainer .phaseLetter {
-    font-weight: bold;
-}
-
-table.zoneListTable th.lastOperation {
-    padding-left: 5px;
-}
-
-table th.rightActionColumn {
-    text-align: right;
-    padding-right: 10px;
-}
-table td.rightActionColumn {
-    text-align: right;
-    padding-right: 15px;
-}
-
-.regulatorModeRemote {
-    display: none;
-}
+.regulatorModeRemote {display: none;}
 .regulatorModeLocal,
-.regulatorModeLocalWarning {
-    display: inline;
-    font-weight: bold;
-}
-.regulatorModeLocalWarning {
-    color: #EE8800;    
-}
+.regulatorModeLocalWarning {display: inline;font-weight: bold;}
+.regulatorModeLocalWarning {color: #EE8800;}
 
-.ivvcRegulatorTabs ul.f_tabs li.title {
-    font-size: 12px;
-}
+div.historyContainer {max-height: 98px;overflow: auto;overflow-x: hidden;}
 
-div.historyContainer {
-    max-height: 98px;
-    overflow: auto;
-    overflow-x: hidden;
-}
+table.ivvcGridLayout {width: 100%;}
+table.ivvcGridLayout td {white-space: nowrap;}
+table.ivvcGridLayout td.first, table.ivvcGridLayout td.middle {padding-right: 10px;}
+table.ivvcGridLayout td.first, table.ivvcGridLayout td.middle, table.ivvcGridLayout td.last {width: 50%;}
+table.ivvcGridLayout td.last {padding-left: 15px;}
+table.ivvcGridLayout tr {vertical-align: top;}
 
-table.ivvcGridLayout {
-    width: 100%;
-}
+.zoneWizardTableScrollArea {height: 97px;overflow: auto;}
 
-table.ivvcGridLayout td {
-    white-space: nowrap;
-}
+.zoneWizardVoltagePoints, .zoneWizardCapBanks {height: auto;overflow: auto;}
 
-table.ivvcGridLayout td.first,
-table.ivvcGridLayout td.middle {
-    padding-right: 10px;
-}
-table.ivvcGridLayout td.first,
-table.ivvcGridLayout td.middle,
-table.ivvcGridLayout td.last {
-    width: 50%;
-}
-table.ivvcGridLayout td.last {
-	padding-left: 15px;
-}
+.regulatorAttributeRow {height: 21px;}
 
-table.ivvcGridLayout tr {
-    vertical-align: top;
-}
+.graph_message_container {height: 10px;font-size: 10px;}
 
-#zoneWizardPopup table.nameValueTable,
-#zoneWizardPopup table.compactResultsTable {
-    font-size: 14px;
-}
+form#deltaForm tr {height: 25px;}
+form#deltaForm label.staticChangedLabel {background-color: orange;padding-top: 4px;}
 
-.zoneWizardTableScrollArea {
-    height: 97px;
-    overflow: auto;
-}
-
-.zoneWizardVoltagePoints,
-.zoneWizardCapBanks {
-    width: 400px;
-    height: auto;
-    overflow: auto;
-    padding-top: 5px;
-}
-
-.zoneWizardCapBanks {
-    padding-right: 5px;
-}
-
-.regulatorActions button.labeledImage {
-    font-size: 11px;
-}
-
-.regulatorAttributeRow {
-    height: 21px;
-}
-
-#ivvcAnalysisMsg {
-    font-size: 12px;
-}
-
-.graph_message_container {
-	height: 10px;
-	font-size: 10px;
-}
-
-form#deltaForm tr {
-	height: 25px;
-}
-form#deltaForm label.staticChangedLabel {
-	background-color: orange;
-	padding-top: 4px;
-}
-
-table.zoneVoltagePoints .gutter {
-	display: inline-block;
-	width: 60px;
-	text-align: right;
-}
+table.zoneVoltagePoints .gutter {display: inline-block;width: 60px;text-align: right;}

@@ -9,15 +9,6 @@
 	<%@include file="/capcontrol/capcontrolHeader.jspf"%>
 
 <script type="text/javascript">
-//     jQuery(document).delegate('a.area_name', 'mouseover', function(event) {
-//         showDynamicPopupAbove(jQuery(event.target).prev('.area_stats').attr('id'), 300); 
-//         return false;
-//     });
-//     jQuery(document).delegate('a.area_name', 'mouseout', function(event) {
-//         nd();
-//         return false;
-//     });
-
 jQuery(function() {
     jQuery(document).tooltip({
         items: "a.area_name",
@@ -25,7 +16,9 @@ jQuery(function() {
             var element = jQuery(this);
             var tip = element.prev('.area_stats');
             return tip.html();
-        }
+        },
+        tooltipClass: "tooltip",
+        position: { my: "left top+15", at: "left bottom", collision: "flipfit" }
     });
 });
 </script>
@@ -113,9 +106,11 @@ jQuery(function() {
                         <td>
                             <div id="allAreas${thisAreaId}" class="dn area_stats">
                                 <c:forEach var="station" items="${viewableArea.subStations}">
-                                        <div>${station.name}</div>
-                                        <div><i:inline key=".feeders" arguments="${station.feederCount}"/></div>
-                                        <div><i:inline key=".banks" arguments="${station.capBankCount}"/></div>
+                                        <div class="detail fwb">${station.name}</div>
+                                        <ul class="detail">
+                                            <li class="fl" style="margin-left:10px;"><i:inline key=".feeders" arguments="${station.feederCount}"/></li>
+                                            <li class="fl" style="margin-left:10px;"><i:inline key=".banks" arguments="${station.capBankCount}"/></li>
+                                        </ul>
                                 </c:forEach>
                             </div>
 	        				<a href="${substationUrl}" class="area_name">
