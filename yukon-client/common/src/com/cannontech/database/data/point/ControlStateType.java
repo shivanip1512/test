@@ -2,7 +2,7 @@ package com.cannontech.database.data.point;
 
 import com.cannontech.common.util.DatabaseRepresentationSource;
 
-public enum StateControlType implements DatabaseRepresentationSource {
+public enum ControlStateType implements DatabaseRepresentationSource {
     NONE("none"),
     OPEN("control open"),
     CLOSE("control close"),
@@ -12,7 +12,7 @@ public enum StateControlType implements DatabaseRepresentationSource {
     
     private final String controlCommand;
     
-    private StateControlType(String controlCommand) {
+    private ControlStateType(String controlCommand) {
         this.controlCommand = controlCommand;
     }
     

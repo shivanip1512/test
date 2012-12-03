@@ -14,7 +14,7 @@ import com.cannontech.common.point.StatusPointBuilder;
 import com.cannontech.core.dao.DBPersistentDao;
 import com.cannontech.core.dao.PaoDao;
 import com.cannontech.core.dao.PointDao;
-import com.cannontech.database.data.point.StateControlType;
+import com.cannontech.database.data.point.ControlStateType;
 import com.cannontech.database.data.point.StatusControlType;
 
 public class StatusPointImportProcessor extends PointImportProcessor {
@@ -74,10 +74,10 @@ public class StatusPointImportProcessor extends PointImportProcessor {
                 builder.setCloseTime2(Integer.valueOf(row.getValue(CLOSE_TIME_2.NAME)));
             }
             if(row.hasValue(STATE_1_COMMAND.NAME)) {
-                builder.setState1Command(StateControlType.valueOf(row.getValue(STATE_1_COMMAND.NAME)));
+                builder.setState1Command(ControlStateType.valueOf(row.getValue(STATE_1_COMMAND.NAME)));
             }
             if(row.hasValue(STATE_2_COMMAND.NAME)) {
-                builder.setState2Command(StateControlType.valueOf(row.getValue(STATE_2_COMMAND.NAME)));
+                builder.setState2Command(ControlStateType.valueOf(row.getValue(STATE_2_COMMAND.NAME)));
             }
             if(row.hasValue(COMMAND_TIMEOUT.NAME)) {
                 builder.setCommandTimeout(Integer.valueOf(row.getValue(COMMAND_TIMEOUT.NAME)));

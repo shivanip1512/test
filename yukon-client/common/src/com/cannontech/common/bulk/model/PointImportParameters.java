@@ -7,7 +7,7 @@ import com.cannontech.common.point.AccumulatorType;
 import com.cannontech.common.util.PositiveDouble;
 import com.cannontech.common.util.PositiveInteger;
 import com.cannontech.database.data.point.PointArchiveType;
-import com.cannontech.database.data.point.StateControlType;
+import com.cannontech.database.data.point.ControlStateType;
 import com.cannontech.database.data.point.StatusControlType;
 
 public enum PointImportParameters {
@@ -43,8 +43,8 @@ public enum PointImportParameters {
     CONTROL_POINT_OFFSET("CONTROL POINT OFFSET", Integer.class, "yukon.web.modules.amr.pointImport.column.controlPointOffset"),
     CLOSE_TIME_1("CLOSE TIME 1", Integer.class, "yukon.web.modules.amr.pointImport.column.closeTime1"),
     CLOSE_TIME_2("CLOSE TIME 2", Integer.class, "yukon.web.modules.amr.pointImport.column.closeTime2"),
-    STATE_1_COMMAND("STATE 1 COMMAND", StateControlType.class, "yukon.web.modules.amr.pointImport.column.state1Command"),
-    STATE_2_COMMAND("STATE 2 COMMAND", StateControlType.class, "yukon.web.modules.amr.pointImport.column.state2Command"),
+    STATE_1_COMMAND("STATE 1 COMMAND", ControlStateType.class, "yukon.web.modules.amr.pointImport.column.state1Command"),
+    STATE_2_COMMAND("STATE 2 COMMAND", ControlStateType.class, "yukon.web.modules.amr.pointImport.column.state2Command"),
     COMMAND_TIMEOUT("COMMAND TIMEOUT", PositiveInteger.class, "yukon.web.modules.amr.pointImport.column.commandTimeout"),
     ACCUMULATOR_TYPE("ACCUMULATOR TYPE", AccumulatorType.class, "yukon.web.modules.amr.pointImport.column.accumulatorType"),
     ANALOG_UPDATE_TYPE("UPDATE TYPE", AnalogPointUpdateType.class, "yukon.web.modules.amr.pointImport.column.updateType"),

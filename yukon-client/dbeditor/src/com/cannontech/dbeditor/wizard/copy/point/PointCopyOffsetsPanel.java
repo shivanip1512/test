@@ -436,17 +436,12 @@ private void initialize() {
 	} catch (java.lang.Throwable ivjExc) {
 		handleException(ivjExc);
 	}
-	// user code begin {2}
-	getControlTypeComboBox().addItem(StatusControlType.NONE.getControlName());
-	getControlTypeComboBox().addItem(StatusControlType.LATCH.getControlName());
-	getControlTypeComboBox().addItem(StatusControlType.NORMAL.getControlName());
-	getControlTypeComboBox().addItem(StatusControlType.PSEUDO.getControlName());
-	getControlTypeComboBox().addItem(StatusControlType.SBOLATCH.getControlName());
-	getControlTypeComboBox().addItem(StatusControlType.SBOPULSE.getControlName());
+	
+	for (StatusControlType statusControlType : StatusControlType.values()) {
+	    getControlTypeComboBox().addItem(statusControlType.getControlName());
+	}
 
 	getControlTypeComboBox().setSelectedItem(StatusControlType.NONE.getControlName());
-	
-	// user code end
 }
 /**
  * Method to handle events for the ItemListener interface.

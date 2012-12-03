@@ -11,6 +11,7 @@ package com.cannontech.common.pao.definition.model.jaxb;
 import java.math.BigDecimal;
 import java.util.ArrayList;
 import java.util.List;
+
 import javax.xml.bind.annotation.XmlAccessType;
 import javax.xml.bind.annotation.XmlAccessorType;
 import javax.xml.bind.annotation.XmlAttribute;
@@ -100,7 +101,7 @@ import javax.xml.bind.annotation.XmlType;
  *                         &lt;complexType>
  *                           &lt;complexContent>
  *                             &lt;restriction base="{http://www.w3.org/2001/XMLSchema}anyType">
- *                               &lt;attribute name="value" use="required" type="{}stateControlType" />
+ *                               &lt;attribute name="value" use="required" type="{}controlStateType" />
  *                             &lt;/restriction>
  *                           &lt;/complexContent>
  *                         &lt;/complexType>
@@ -109,7 +110,7 @@ import javax.xml.bind.annotation.XmlType;
  *                         &lt;complexType>
  *                           &lt;complexContent>
  *                             &lt;restriction base="{http://www.w3.org/2001/XMLSchema}anyType">
- *                               &lt;attribute name="value" use="required" type="{}stateControlType" />
+ *                               &lt;attribute name="value" use="required" type="{}controlStateType" />
  *                             &lt;/restriction>
  *                           &lt;/complexContent>
  *                         &lt;/complexType>
@@ -289,7 +290,7 @@ public class PointsType {
      *               &lt;complexType>
      *                 &lt;complexContent>
      *                   &lt;restriction base="{http://www.w3.org/2001/XMLSchema}anyType">
-     *                     &lt;attribute name="value" use="required" type="{}stateControlType" />
+     *                     &lt;attribute name="value" use="required" type="{}controlStateType" />
      *                   &lt;/restriction>
      *                 &lt;/complexContent>
      *               &lt;/complexType>
@@ -298,7 +299,7 @@ public class PointsType {
      *               &lt;complexType>
      *                 &lt;complexContent>
      *                   &lt;restriction base="{http://www.w3.org/2001/XMLSchema}anyType">
-     *                     &lt;attribute name="value" use="required" type="{}stateControlType" />
+     *                     &lt;attribute name="value" use="required" type="{}controlStateType" />
      *                   &lt;/restriction>
      *                 &lt;/complexContent>
      *               &lt;/complexType>
@@ -1421,7 +1422,7 @@ public class PointsType {
          * &lt;complexType>
          *   &lt;complexContent>
          *     &lt;restriction base="{http://www.w3.org/2001/XMLSchema}anyType">
-         *       &lt;attribute name="value" use="required" type="{}stateControlType" />
+         *       &lt;attribute name="value" use="required" type="{}controlStateType" />
          *     &lt;/restriction>
          *   &lt;/complexContent>
          * &lt;/complexType>
@@ -1434,17 +1435,17 @@ public class PointsType {
         public static class StateOneControl {
 
             @XmlAttribute(name = "value", required = true)
-            protected StateControlType value;
+            protected ControlStateType value;
 
             /**
              * Gets the value of the value property.
              * 
              * @return
              *     possible object is
-             *     {@link StateControlType }
+             *     {@link ControlStateType }
              *     
              */
-            public StateControlType getValue() {
+            public ControlStateType getValue() {
                 return value;
             }
 
@@ -1453,10 +1454,10 @@ public class PointsType {
              * 
              * @param value
              *     allowed object is
-             *     {@link StateControlType }
+             *     {@link ControlStateType }
              *     
              */
-            public void setValue(StateControlType value) {
+            public void setValue(ControlStateType value) {
                 this.value = value;
             }
 
@@ -1472,7 +1473,7 @@ public class PointsType {
          * &lt;complexType>
          *   &lt;complexContent>
          *     &lt;restriction base="{http://www.w3.org/2001/XMLSchema}anyType">
-         *       &lt;attribute name="value" use="required" type="{}stateControlType" />
+         *       &lt;attribute name="value" use="required" type="{}controlStateType" />
          *     &lt;/restriction>
          *   &lt;/complexContent>
          * &lt;/complexType>
@@ -1485,17 +1486,17 @@ public class PointsType {
         public static class StateZeroControl {
 
             @XmlAttribute(name = "value", required = true)
-            protected StateControlType value;
+            protected ControlStateType value;
 
             /**
              * Gets the value of the value property.
              * 
              * @return
              *     possible object is
-             *     {@link StateControlType }
+             *     {@link ControlStateType }
              *     
              */
-            public StateControlType getValue() {
+            public ControlStateType getValue() {
                 return value;
             }
 
@@ -1504,10 +1505,10 @@ public class PointsType {
              * 
              * @param value
              *     allowed object is
-             *     {@link StateControlType }
+             *     {@link ControlStateType }
              *     
              */
-            public void setValue(StateControlType value) {
+            public void setValue(ControlStateType value) {
                 this.value = value;
             }
 

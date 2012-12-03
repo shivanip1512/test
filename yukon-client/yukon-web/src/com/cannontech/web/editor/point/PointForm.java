@@ -235,32 +235,6 @@ public class PointForm extends DBEditorForm {
         return stateGroups;
     }
 
-
-    /*
-     * Unused. Remove?
-     * 
-    private int findEmailContact( LiteContact contact ) {
-
-        if( contact != null )
-        {
-            //find the first email address in the list ContactNotifications...then use it
-            for( int j = 0; j < contact.getLiteContactNotifications().size(); j++  )
-            {   
-                LiteContactNotification ltCntNotif = 
-                        contact.getLiteContactNotifications().get(j);
-                        
-                if( ltCntNotif.getNotificationCategoryID() == YukonListEntryTypes.YUK_ENTRY_ID_EMAIL )
-                {
-                    return ltCntNotif.getContactNotifID();
-                }
-            }
-        }
-
-        //no e-mail notif found
-        return CtiUtilities.NONE_ZERO_ID;
-    }
-    */
-
     /**
      * initializes model data. sets parent id of the point
      * @param parentId
@@ -674,7 +648,7 @@ public class PointForm extends DBEditorForm {
                 AnalogPoint analogPoint = (AnalogPoint)getPointBase();
                 analogControlEntry = new PointAnalogControlEntry(analogPoint.getPointAnalogControl());
             } else {
-                log.warn("Attempting to create a PointControl editor for a non-controllable point or for an invalid point type");
+                log.warn("Attempting to create an AnalogPointControl editor for a non-controllable point or for an invalid point type");
             }
         }
         
@@ -687,7 +661,7 @@ public class PointForm extends DBEditorForm {
                 StatusPoint statusPoint = (StatusPoint)getPointBase();
                 statusControlEntry = new PointStatusControlEntry(statusPoint.getPointStatusControl());
             } else {
-                log.warn("Attempting to create a PointControl editor for a non-controllable point or for an invalid point type");
+                log.warn("Attempting to create a StatusPointControl editor for a non-controllable point or for an invalid point type");
             }
         }
         

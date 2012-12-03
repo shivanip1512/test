@@ -10,7 +10,7 @@ import com.cannontech.common.util.CtiUtilities;
 import com.cannontech.database.data.point.PointArchiveInterval;
 import com.cannontech.database.data.point.PointArchiveType;
 import com.cannontech.database.data.point.PointFactory;
-import com.cannontech.database.data.point.StateControlType;
+import com.cannontech.database.data.point.ControlStateType;
 import com.cannontech.database.data.point.StatusControlType;
 import com.cannontech.database.data.point.StatusPoint;
 import com.cannontech.database.db.state.State;
@@ -30,8 +30,8 @@ public class StatusPointBuilder extends PointBuilder {
     private Integer closeTime2 = null;
     private Integer commandTimeout = null;
     private int controlOffset = 0;
-    private StateControlType state1Command = StateControlType.OPEN;
-    private StateControlType state2Command = StateControlType.CLOSE;
+    private ControlStateType state1Command = ControlStateType.OPEN;
+    private ControlStateType state2Command = ControlStateType.CLOSE;
     
     protected StatusPointBuilder(int paoId, int pointId, String pointName, boolean isDisabled, PointPropertyValueDao pointPropertyValueDao) {
         super(paoId, pointId, pointName, isDisabled, pointPropertyValueDao);
@@ -142,11 +142,11 @@ public class StatusPointBuilder extends PointBuilder {
         this.controlType = controlType;
     }
     
-    public void setState1Command(StateControlType state1Command) {
+    public void setState1Command(ControlStateType state1Command) {
         this.state1Command = state1Command;
     }
     
-    public void setState2Command(StateControlType state2Command) {
+    public void setState2Command(ControlStateType state2Command) {
         this.state2Command = state2Command;
     }
     

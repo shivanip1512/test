@@ -89,7 +89,7 @@ import com.cannontech.database.data.lite.LiteUnitMeasure;
 import com.cannontech.database.data.point.PointArchiveInterval;
 import com.cannontech.database.data.point.PointArchiveType;
 import com.cannontech.database.data.point.PointType;
-import com.cannontech.database.data.point.StateControlType;
+import com.cannontech.database.data.point.ControlStateType;
 import com.cannontech.database.data.point.StatusControlType;
 import com.cannontech.database.data.point.UnitOfMeasure;
 import com.cannontech.database.db.point.PointUnit;
@@ -948,11 +948,11 @@ public class PaoDefinitionDaoImpl implements PaoDefinitionDao {
                 template.setControlType(controlType);
             }
             if (point.getStateZeroControl() != null) {
-                StateControlType stateZeroControl = StateControlType.valueOf(point.getStateZeroControl().getValue().toString());
+                ControlStateType stateZeroControl = ControlStateType.valueOf(point.getStateZeroControl().getValue().toString());
                 template.setStateZeroControl(stateZeroControl);
             }
             if (point.getStateOneControl() != null) {
-                StateControlType stateOneControl = StateControlType.valueOf(point.getStateOneControl().getValue().toString());
+                ControlStateType stateOneControl = ControlStateType.valueOf(point.getStateOneControl().getValue().toString());
                 template.setStateOneControl(stateOneControl);
             }
             if (point.getStategroup() != null) {

@@ -13,12 +13,12 @@ import javax.xml.bind.annotation.XmlType;
 
 
 /**
- * <p>Java class for stateControlType.
+ * <p>Java class for controlStateType.
  * 
  * <p>The following schema fragment specifies the expected content contained within this class.
  * <p>
  * <pre>
- * &lt;simpleType name="stateControlType">
+ * &lt;simpleType name="controlStateType">
  *   &lt;restriction base="{http://www.w3.org/2001/XMLSchema}string">
  *     &lt;enumeration value="OPEN"/>
  *     &lt;enumeration value="CLOSE"/>
@@ -27,9 +27,9 @@ import javax.xml.bind.annotation.XmlType;
  * </pre>
  * 
  */
-@XmlType(name = "stateControlType")
+@XmlType(name = "controlStateType")
 @XmlEnum
-public enum StateControlType {
+public enum ControlStateType {
 
     OPEN,
     CLOSE,
@@ -40,7 +40,7 @@ public enum StateControlType {
         return name();
     }
 
-    public static StateControlType fromValue(String v) {
+    public static ControlStateType fromValue(String v) {
         return valueOf(v);
     }
 

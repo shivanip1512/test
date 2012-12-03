@@ -2,6 +2,9 @@ package com.cannontech.database.data.point;
 
 import com.cannontech.common.util.DatabaseRepresentationSource;
 
+/**
+ * This enum represents the ControlType field of the PointStatusControl table.
+ */
 public enum StatusControlType implements DatabaseRepresentationSource {
     NONE("None"),
     NORMAL("Normal"),

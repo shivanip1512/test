@@ -2,7 +2,7 @@ package com.cannontech.database.db.point;
 
 import java.util.List;
 
-import com.cannontech.database.data.point.StateControlType;
+import com.cannontech.database.data.point.ControlStateType;
 import com.cannontech.database.data.point.StatusControlType;
 import com.google.common.collect.Lists;
 
@@ -12,8 +12,8 @@ public class PointStatusControl extends PointControl {
 	private Integer pointID = null;
 	private Integer closeTime1 = 0;
 	private Integer closeTime2 = 0;
-	private String stateZeroControl = StateControlType.OPEN.getControlCommand();
-	private String stateOneControl = StateControlType.CLOSE.getControlCommand();
+	private String stateZeroControl = ControlStateType.OPEN.getControlCommand();
+	private String stateOneControl = ControlStateType.CLOSE.getControlCommand();
 	private Integer commandTimeOut = DEFAULT_CMD_TIMEOUT;
 	private String controlType = StatusControlType.NONE.getControlName();
 	

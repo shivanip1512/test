@@ -11,7 +11,7 @@ import com.cannontech.database.data.point.PointArchiveType;
 import com.cannontech.database.data.point.PointBase;
 import com.cannontech.database.data.point.PointFactory;
 import com.cannontech.database.data.point.PointTypes;
-import com.cannontech.database.data.point.StateControlType;
+import com.cannontech.database.data.point.ControlStateType;
 import com.cannontech.database.data.point.StatusControlType;
 import com.cannontech.database.incrementer.NextValueHelper;
 
@@ -41,7 +41,7 @@ public class PointCreationServiceImpl implements PointCreationService {
 	}
 
     private PointBase createPoint(int type, String name, PaoIdentifier paoIdentifier, int offset, double multiplier,
-                                  int unitOfMeasure, int stateGroupId, int initialState, int decimalPlaces, Integer controlOffset, StatusControlType controlType, StateControlType stateZeroControl, StateControlType stateOneControl, PointArchiveType pointArchiveType, PointArchiveInterval pointArchiveInterval, CalcPointInfo calcPoint) {
+                                  int unitOfMeasure, int stateGroupId, int initialState, int decimalPlaces, Integer controlOffset, StatusControlType controlType, ControlStateType stateZeroControl, ControlStateType stateOneControl, PointArchiveType pointArchiveType, PointArchiveInterval pointArchiveInterval, CalcPointInfo calcPoint) {
         PointBase point = null;
         int pointId = nextValueHelper.getNextValue("point");
         

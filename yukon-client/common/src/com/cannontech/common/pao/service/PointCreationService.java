@@ -28,25 +28,6 @@ public interface PointCreationService {
                                  double multiplier, int unitOfMeasure, int stateGroupId, int initialState, int decimalplaces, StatusControlType controlType, PointArchiveType pointArchiveType, PointArchiveInterval pointArchiveInterval);
     
     /**
-     * Method to create a point
-     * @param type - Type of point
-     * @param name - Name of point
-     * @param paoIdentifier - PaoIdentifier of parent device
-     * @param offset - Offset of point
-     * @param multiplier - Multiplier for point
-     * @param unitOfMeasure - Unit of measure for point
-     * @param stateGroupId - State group id for point
-     * @param initialState - starting state for point
-     * @param decimalPlaces - Number of decimal places
-     * @param pointArchiveType - Type of archiving
-     * @param pointArchiveInterval - Interval of archiving
-     * @param calcPointInfo - Calculated point specific object
-     * @return A new point of the given type
-     
-    public PointBase createPoint(int type, String name, PaoIdentifier paoIdentifier, int offset,
-                                 double multiplier, int unitOfMeasure, int stateGroupId, int initialState, int decimalplaces, Integer controlOffset, StatusControlType controlType, StateControlType stateZeroControl, StateControlType stateOneControl, PointArchiveType pointArchiveType, PointArchiveInterval pointArchiveInterval, CalcPointInfo calcPoint);
-    */
-    /**
      * Method to create a point based on a point template
      * @param PaoIdentifier - PaoIdentifier of the pao object to create the point for
      * @param template - Template for point to be created

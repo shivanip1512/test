@@ -527,20 +527,12 @@ private JComboBox<String> getControlTypeComboBox() {
 			ivjControlTypeComboBox.setPreferredSize(new java.awt.Dimension(85, 24));
 			ivjControlTypeComboBox.setFont(new java.awt.Font("dialog", 0, 14));
 			ivjControlTypeComboBox.setMinimumSize(new java.awt.Dimension(85, 24));
-			// user code begin {1}
 
 			//Load default possibilites into control type combo box
-			ivjControlTypeComboBox.addItem(StatusControlType.NONE.getControlName());
-			ivjControlTypeComboBox.addItem(StatusControlType.LATCH.getControlName());
-			ivjControlTypeComboBox.addItem(StatusControlType.NORMAL.getControlName());
-			ivjControlTypeComboBox.addItem(StatusControlType.PSEUDO.getControlName());
-			ivjControlTypeComboBox.addItem(StatusControlType.SBOLATCH.getControlName());
-			ivjControlTypeComboBox.addItem(StatusControlType.SBOPULSE.getControlName());
-			
-			// user code end
+			for (StatusControlType statusControlType : StatusControlType.values()) {
+			    ivjControlTypeComboBox.addItem(statusControlType.getControlName());
+			}
 		} catch (java.lang.Throwable ivjExc) {
-			// user code begin {2}
-			// user code end
 			handleException(ivjExc);
 		}
 	}

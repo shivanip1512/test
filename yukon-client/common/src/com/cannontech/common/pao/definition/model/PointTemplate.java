@@ -2,10 +2,10 @@ package com.cannontech.common.pao.definition.model;
 
 import org.springframework.core.style.ToStringCreator;
 
+import com.cannontech.database.data.point.ControlStateType;
 import com.cannontech.database.data.point.PointArchiveInterval;
 import com.cannontech.database.data.point.PointArchiveType;
 import com.cannontech.database.data.point.PointType;
-import com.cannontech.database.data.point.StateControlType;
 import com.cannontech.database.data.point.StatusControlType;
 import com.cannontech.database.data.point.UnitOfMeasure;
 import com.cannontech.database.db.point.PointUnit;
@@ -29,8 +29,8 @@ public class PointTemplate implements Comparable<PointTemplate> {
     private int initialState = StateGroupUtils.DEFAULT_STATE;
     private int controlOffset = 1;
     private StatusControlType controlType = StatusControlType.NONE;
-    private StateControlType stateZeroControl = StateControlType.OPEN;
-    private StateControlType stateOneControl = StateControlType.CLOSE;
+    private ControlStateType stateZeroControl = ControlStateType.OPEN;
+    private ControlStateType stateOneControl = ControlStateType.CLOSE;
 
     // Only valid for Calculated points
     private CalcPointInfo calcPointInfo = null;
@@ -151,19 +151,19 @@ public class PointTemplate implements Comparable<PointTemplate> {
         this.controlType = controlType;
     }
 
-    public StateControlType getStateZeroControl() {
+    public ControlStateType getStateZeroControl() {
         return stateZeroControl;
     }
 
-    public void setStateZeroControl(StateControlType stateZeroControl) {
+    public void setStateZeroControl(ControlStateType stateZeroControl) {
         this.stateZeroControl = stateZeroControl;
     }
 
-    public StateControlType getStateOneControl() {
+    public ControlStateType getStateOneControl() {
         return stateOneControl;
     }
 
-    public void setStateOneControl(StateControlType stateOneControl) {
+    public void setStateOneControl(ControlStateType stateOneControl) {
         this.stateOneControl = stateOneControl;
     }
 

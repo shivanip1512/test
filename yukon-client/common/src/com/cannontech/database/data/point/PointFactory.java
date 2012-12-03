@@ -309,8 +309,8 @@ public final class PointFactory {
                                                            int stateGroupId, int initialState,
                                                            Integer controlOffset,
                                                            StatusControlType controlType,
-                                                           StateControlType stateZeroControl,
-                                                           StateControlType stateOneControl,
+                                                           ControlStateType stateZeroControl,
+                                                           ControlStateType stateOneControl,
                                                            PointArchiveType pointArchiveType,
                                                            PointArchiveInterval pointArchiveInterval)
     {
