@@ -75,10 +75,24 @@ public interface SqlBuilder {
     
     public SqlBuilder lte(Object argument);
     
+    /**
+     * Appends the list of arguments to the current query using the IN syntax.
+     * This method shouldn't be used when it's possible that the iterable contains
+     * 1000 or more elements. Favor appending an SQL query instead when possible. 
+     * @param list
+     * @return
+     */
     public SqlBuilder in(Iterable<?> list);
     
     public SqlBuilder in(SqlFragmentSource sqlFragmentSource);
     
+    /**
+     * Appends the list of arguments to the current query using the NOT IN syntax.
+     * This method shouldn't be used when it's possible that the iterable contains
+     * 1000 or more elements. Favor appending an SQL query instead when possible. 
+     * @param list
+     * @return
+     */
     public SqlBuilder notIn(Iterable<?> list);
     
     public SqlBuilder notIn(SqlFragmentSource sqlFragmentSource);
