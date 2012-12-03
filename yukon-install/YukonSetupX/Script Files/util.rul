@@ -341,11 +341,7 @@ string sConfPath, sReturnLine, sTemp;
 number nResult, nLineNumber, i;
 begin
 	//restore Tomcat settings to registry
-	NumToStr(sTemp, nTomcatSettingsExist);//TEST
-	MessageBox("Tomcat settings exist? " + sTemp, WARNING);//TEST 
 	if(nTomcatSettingsExist) then
-		NumToStr(sTemp, nJvmOptionsSize);//TEST
-		MessageBox("Setting tomcat mx: " + sJvmMx + ", options: " + sJvmOptions + " Size: " + sTemp, WARNING);//TEST
 		RegDBSetDefaultRoot(HKEY_LOCAL_MACHINE); //set registry root
 		RegDBSetKeyValueEx(TOMCAT_REG_KEY, JVM_MX, REGDB_NUMBER, sJvmMx, -1);
 		RegDBSetKeyValueEx(TOMCAT_REG_KEY, JVM_OPTIONS, REGDB_STRING_MULTI, sJvmOptions, nJvmOptionsSize);
