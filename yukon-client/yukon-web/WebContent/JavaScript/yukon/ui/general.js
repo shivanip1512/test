@@ -16,6 +16,22 @@ if(typeof(Yukon) == 'undefined') {
     Yukon = {};
 }
 
+jQuery.fn.flashColor = function(args) {
+	return this.each(function() {
+		var _self = jQuery(this);
+		var prevColor = _self.data('previous_color') ? _self.data('previous_color') : _self.css('background-color');
+		_self.data('previous_color', prevColor);
+
+		if (typeof(args) === 'string') {
+			_self.stop(true);
+			_self.css({backgroundColor: args}).animate({backgroundColor: prevColor, duration: 1000});
+		} else if(typeof(args) === 'object' && typeof(args.color) === 'string'){
+			_self.stop(true);
+			_self.css({backgroundColor: args.color}).animate({backgroundColor: prevColor}, args);
+		}
+	});
+};
+
 Yukon.ui = {
     _initialized : false,
 

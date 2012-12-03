@@ -20,7 +20,6 @@ package com.cannontech.web;
 public enum JsLibrary {
     //if updating jquery be sure to include the noconflict call at the end of the file if prototype
     JQUERY("/JavaScript/lib/jQuery/jquery-1.8.3.min.js"),       //http://www.jquery.com
-    JQUERY_COLOR("/JavaScript/lib/jQuery/plugins/color/jquery.color.js"),
     JQUERY_COOKIE("/JavaScript/lib/jQuery/plugins/cookie/jquery.cookie.js"),
     JQUERY_FORM("/JavaScript/lib/jQuery/plugins/form/jquery.form.js"),  //http://jquery.malsup.com/form/
     JQUERY_GRID("/JavaScript/lib/jQuery/plugins/jqGrid/4.2.0/js/jquery.jqGrid.min.js"),         //http://www.trirand.com/jqgridwiki/doku.php?id=wiki:jqgriddocs
