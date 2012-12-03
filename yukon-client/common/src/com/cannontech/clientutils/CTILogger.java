@@ -1,6 +1,5 @@
 package com.cannontech.clientutils;
 
-import org.apache.commons.lang.SystemUtils;
 import org.apache.log4j.Level;
 import org.apache.log4j.Logger;
 
@@ -25,22 +24,15 @@ public class CTILogger  {
     }
     
     /**
-     * Returns the fully qualified class name for the class
-     * that called the logging method by using the current
-     * thread's getStackTrace method. The stack trace element
-     * that corresponds to the caller seems to vary depending
-     * on which JRE is running.
+     * Returns the fully qualified class name for the class that called the logging method by using the current
+     * thread's getStackTrace method.
      */
     public static String getFullyQualifiedClassName() {
         StackTraceElement[] stackElements = Thread.currentThread().getStackTrace();
-        int callingFrameIndex = 4;
-        if (SystemUtils.IS_JAVA_1_6) {
-            callingFrameIndex = 3;
-        }
-        String className = stackElements[callingFrameIndex].getClassName();
+        String className = stackElements[3].getClassName();
         return className;
     }
-    
+
     /**
      * @return the level of the logger that called this method
      */
