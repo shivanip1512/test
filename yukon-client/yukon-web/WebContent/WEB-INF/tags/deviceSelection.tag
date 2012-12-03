@@ -13,6 +13,12 @@
 <cti:msg var="noGroupSelectedAlertText" key="yukon.common.device.bulk.deviceSelection.selectDevicesByGroupTree.noGroupSelectedAlertText" />
 <c:set var="byAddrPopupId" value="byAddrPopup" />
 
+<cti:msg2 var="dataFileNoteAddress" key="yukon.common.device.bulk.deviceSelection.dataFileNote.address"/>
+<cti:msg2 var="dataFileNotePaoName" key="yukon.common.device.bulk.deviceSelection.dataFileNote.paoName"/>
+<cti:msg2 var="dataFileNoteDeviceId" key="yukon.common.device.bulk.deviceSelection.dataFileNote.deviceId"/>
+<cti:msg2 var="dataFileNoteMeterNumber" key="yukon.common.device.bulk.deviceSelection.dataFileNote.meterNumber"/>
+<cti:msg2 var="dataFileNoteBulk" key="yukon.common.device.bulk.deviceSelection.dataFileNote.bulk"/>
+
 <script>
     jQuery(document).ready(function(){
         jQuery("#addByAddressForm button").click(function(e){
@@ -79,15 +85,15 @@
             var fileNote = $(id + '_fileNote');
             
             if(selection == 'ADDRESS') {
-                fileNote.update('Note: The file must contain 1 valid Physical Address per line.');
+                fileNote.update('${dataFileNoteAddress}');
             } else if(selection == 'PAONAME') {
-                fileNote.update('Note: The file must contain 1 valid Device Name per line.');
+                fileNote.update('${dataFileNotePaoName}');
             } else if(selection == 'DEVICEID') {
-                fileNote.update('Note: The file must contain 1 valid Device ID per line.');
+                fileNote.update('${dataFileNoteDeviceId}');
             } else if(selection == 'METERNUMBER') {
-                fileNote.update('Note: The file must contain 1 valid Meter number per line.');
+                fileNote.update('${dataFileNoteMeterNumber}');
             } else if(selection == 'BULK') {
-                fileNote.update('Note: The file must be a valid Bulk Importer upload file.');
+                fileNote.update('${dataFileNoteBulk}');
             }
         }
         
@@ -269,11 +275,14 @@
                     
                     <input type="hidden" name="collectionType" value="addressRange" />
                     
+                    <cti:msg2 var="startOfRangeLabel" key="yukon.common.device.bulk.deviceSelection.startOfRangeLabel" />
+                    <cti:msg2 var="endOfRangeLabel" key="yukon.common.device.bulk.deviceSelection.endOfRangeLabel" />
+                    
                     <tags:nameValueContainer>
-                        <tags:nameValue name="Start of Range">
+                        <tags:nameValue name="${startOfRangeLabel}">
                             <input type="text" id="${byAddrPopupId}_startRange" name="addressRange.start" class="undefinedStartAddress outOfRange lessThanZero startTooHigh" />
                         </tags:nameValue>
-                        <tags:nameValue name="End of Range">
+                        <tags:nameValue name="${endOfRangeLabel}">
                             <input type="text" id="${byAddrPopupId}_endRange" name="addressRange.end" class="undefinedEndAddress outOfRange endTooHigh" />
                         </tags:nameValue>
                     </tags:nameValueContainer>
@@ -339,7 +348,7 @@
                         <tags:nameValue name="${dataFileLabel}">
                             <input type="file" id="fileUpload.dataFile" name="fileUpload.dataFile" size="40" />
                             <br>
-                            <span id="${byFileUploadId}_fileNote" style="font-size: .7em; color: blue;">Note: The file must contain 1 valid Physical Address per line.</span>
+                            <span id="${byFileUploadId}_fileNote" style="font-size: .7em; color: blue;">${dateFileNoteAddress}</span>
                         </tags:nameValue>
                         
                     </tags:nameValueContainer>

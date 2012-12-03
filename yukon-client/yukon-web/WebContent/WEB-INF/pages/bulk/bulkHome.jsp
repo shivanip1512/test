@@ -2,6 +2,7 @@
 <%@ taglib uri="http://cannontech.com/tags/cti" prefix="cti"%>
 <%@ taglib uri="http://java.sun.com/jsp/jstl/functions" prefix="fn" %>
 <%@ taglib prefix="tags" tagdir="/WEB-INF/tags" %>
+<%@ taglib prefix="i" tagdir="/WEB-INF/tags/i18n" %>
 
 <cti:msg var="pageTitle" key="yukon.common.device.bulk.bulkHome.pageTitle"/>
 
@@ -37,35 +38,35 @@
         <cti:checkRole role="operator.DeviceActionsRole.ROLEID">
             <cti:checkProperty property="operator.DeviceActionsRole.BULK_IMPORT_OPERATION">
                 <div class="marginBottomSmall">
-                    <button type="button" data-href="/spring/bulk/import/upload" class="wideButton">Bulk Import</button>
-                    Import a file to create meters.
+                    <button type="button" data-href="/spring/bulk/import/upload" class="wideButton"><i:inline key="yukon.common.device.bulk.bulkHome.bulkImportButton"/></button>
+                    <i:inline key="yukon.common.device.bulk.bulkHome.bulkImportButton.description"/>
                 </div>
             </cti:checkProperty>
             
             <cti:checkProperty property="operator.DeviceActionsRole.BULK_UPDATE_OPERATION">
                 <div class="marginBottomSmall">
-                    <button type="button" data-href="/spring/bulk/update/upload" class="wideButton">Bulk Update</button>
-                    Import a file to update existing meters.
+                    <button type="button" data-href="/spring/bulk/update/upload" class="wideButton"><i:inline key="yukon.common.device.bulk.bulkHome.bulkUpdateButton"/></button>
+                    <i:inline key="yukon.common.device.bulk.bulkHome.bulkUpdateButton.description"/>
                 </div>
             </cti:checkProperty>
             
             <cti:checkProperty property="operator.DeviceActionsRole.ADD_REMOVE_POINTS">
                 <div class="marginBottomSmall">
-                    <button type="button" data-href="/spring/bulk/pointImport/upload" class="wideButton">Bulk Point Import</button>
-                    Import a file to create points on existing devices.
+                    <button type="button" data-href="/spring/bulk/pointImport/upload" class="wideButton"><i:inline key="yukon.common.device.bulk.bulkHome.bulkPointImportButton"/></button>
+                    <i:inline key="yukon.common.device.bulk.bulkHome.bulkPointImportButton.description"/>
                 </div>
             </cti:checkProperty>
         </cti:checkRole>
             
         <div class="marginBottomSmall">
-            <button type="button" data-href="/spring/bulk/deviceSelection" class="wideButton">Create Collection</button>
-            Create a collection of devices to perform actions upon.
+            <button type="button" data-href="/spring/bulk/deviceSelection" class="wideButton"><i:inline key="yukon.common.device.bulk.bulkHome.createCollectionButton"/></button>
+            <i:inline key="yukon.common.device.bulk.bulkHome.createCollectionButton.description"/>
         </div>
 
         <cti:checkProperty property="operator.DeviceActionsRole.FDR_TRANSLATION_MANAGER">
             <div class="marginBottomSmall">
-                <button type="button" data-href="/spring/bulk/fdrTranslationManager/home" class="wideButton">Manage FDR Translations</button>
-                Import, export or delete FDR translations.
+                <button type="button" data-href="/spring/bulk/fdrTranslationManager/home" class="wideButton"><i:inline key="yukon.common.device.bulk.bulkHome.manageFDRTranslationsButton"/></button>
+                <i:inline key="yukon.common.device.bulk.bulkHome.manageFDRTranslationsButton.description"/>
             </div>
         </cti:checkProperty>   
     </tags:boxContainer>

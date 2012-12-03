@@ -7,6 +7,17 @@
     <entry key="yukon.common.device.bulk.bulkHome.pageTitle">Bulk Operations</entry>
     <entry key="yukon.common.device.bulk.bulkHome.header">Choose Type Of Bulk Operation:</entry>
 
+    <entry key="yukon.common.device.bulk.bulkHome.bulkImportButton">Bulk Import</entry>
+    <entry key="yukon.common.device.bulk.bulkHome.bulkImportButton.description">Import a file to create meters.</entry>
+    <entry key="yukon.common.device.bulk.bulkHome.bulkUpdateButton">Bulk Update</entry>
+    <entry key="yukon.common.device.bulk.bulkHome.bulkUpdateButton.description">Import a file to update existing meters.</entry>
+    <entry key="yukon.common.device.bulk.bulkHome.bulkPointImportButton">Bulk Point Import</entry>
+    <entry key="yukon.common.device.bulk.bulkHome.bulkPointImportButton.description">Import a file to create points on existing devices.</entry>
+    <entry key="yukon.common.device.bulk.bulkHome.createCollectionButton">Create Collection</entry>
+    <entry key="yukon.common.device.bulk.bulkHome.createCollectionButton.description">Create a collection of devices to perform actions upon.</entry>
+    <entry key="yukon.common.device.bulk.bulkHome.manageFDRTranslationsButton">Manage FDR Translations</entry>
+    <entry key="yukon.common.device.bulk.bulkHome.manageFDRTranslationsButton.description">Import, export or delete FDR translations.</entry>
+
     <entry key="yukon.common.device.bulk.bulkHome.recentBulkOperations.header">Recent Bulk Operations:</entry>
     <entry key="yukon.common.device.bulk.bulkHome.recentBulkOperations.operationType">Type</entry>
     <entry key="yukon.common.device.bulk.bulkHome.recentBulkOperations.updateTime">Time</entry>
@@ -65,6 +76,15 @@
     <entry key="yukon.common.device.bulk.deviceSelection.selectDataFileType">Type of data</entry>
     <entry key="yukon.common.device.bulk.deviceSelection.selectDataFile">Data file</entry>
 
+    <entry key="yukon.common.device.bulk.deviceSelection.startOfRangeLabel">Start of Range:</entry>
+    <entry key="yukon.common.device.bulk.deviceSelection.endOfRangeLabel">End of Range:</entry>
+
+    <entry key="yukon.common.device.bulk.deviceSelection.dataFileNote.address">Note: The file must contain 1 valid Physical Address per line.</entry>
+    <entry key="yukon.common.device.bulk.deviceSelection.dataFileNote.paoName">Note: The file must contain 1 valid Device Name per line.</entry>
+    <entry key="yukon.common.device.bulk.deviceSelection.dataFileNote.deviceId">Note: The file must contain 1 valid Device ID per line.</entry>
+    <entry key="yukon.common.device.bulk.deviceSelection.dataFileNote.meterNumber">Note: The file must contain 1 valid Meter number per line.</entry>
+    <entry key="yukon.common.device.bulk.deviceSelection.dataFileNote.bulk">Note: The file must be a valid Bulk Importer upload file.</entry>
+    
     <entry key="yukon.common.device.bulk.deviceSelection.dataFileAddress">Physical Address (one per line)</entry>
     <entry key="yukon.common.device.bulk.deviceSelection.dataFileName">Device Name (one per line)</entry>
     <entry key="yukon.common.device.bulk.deviceSelection.dataFileMeterNumber">Meter Number (one per line)</entry>
@@ -537,6 +557,10 @@
     <entry key="yukon.common.device.bulk.updateUpload.noteText"><![CDATA[
         Uploading a file will not immediatly make any changes.<br>You will be directed to a page with additional options and/or opportunity to confirm.
     ]]></entry>
+    <entry key="yukon.common.device.bulk.updateUpload.optionsLabel">Options:</entry>
+    <entry key="yukon.common.device.bulk.updateUpload.updateFileLabel">Update File:</entry>
+    <entry key="yukon.common.device.bulk.updateUpload.loadButton">Load</entry>
+    <entry key="yukon.common.device.bulk.updateUpload.loadButton.busy">Loading...</entry>
     <entry key="yukon.common.device.bulk.updateUpload.instructions"><![CDATA[
         <li>Files must contain a header row with valid column identifiers as listed in the table below.</li><br>
         <li>The first column is always the <i><b>Identifier Column</b></i>. <br>It will be used to determine which device is to be updated.</li><br>
@@ -635,6 +659,10 @@
     <entry key="yukon.common.device.bulk.importUpload.noteText"><![CDATA[
         Uploading a file will not immediatly create any devices.<br>You will be directed to a page with additional options and/or opportunity to confirm.
     ]]></entry>
+    <entry key="yukon.common.device.bulk.importUpload.optionsLabel">Options:</entry>
+    <entry key="yukon.common.device.bulk.importUpload.importFileLabel">Import File:</entry>
+    <entry key="yukon.common.device.bulk.importUpload.loadButton">Load</entry>
+    <entry key="yukon.common.device.bulk.importUpload.loadButton.busy">Loading...</entry>
     <entry key="yukon.common.device.bulk.importUpload.instructions"><![CDATA[
         <li>Files must contain a header row with valid columns as listed in the tables below.</li><br>
         <li>Devices may be imported using either by <i><b>Template</b></i> or by <i><b>Device Type</b></i>.<br>Each method requires that certain column values are included for each row.</li><br>
