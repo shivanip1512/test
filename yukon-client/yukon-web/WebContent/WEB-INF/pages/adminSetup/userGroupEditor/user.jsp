@@ -151,7 +151,7 @@ jQuery(function() {
                             <div class="rolesContainer">
                                 <c:forEach var="category" items="${roles}">
                                     <ul class="category">
-                                        <li><span class="categoryLabel">${category.key}</span>
+                                        <li><span class="categoryLabel"><cti:formatObject value="${category.key}"/></span>
                                             <ul class="role">
                                                 <c:forEach var="roleGroupPair" items="${category.value}">
                                                     <li>
