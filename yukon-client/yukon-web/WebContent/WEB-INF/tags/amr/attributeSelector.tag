@@ -32,7 +32,7 @@
                 <optgroup label="<cti:msg2 key="${group.key}"/>">
                     <c:forEach items="${group.value}" var="item">
                         <option value="${item.key}">
-                            <cti:formatObject value="${item.description}"/>
+                            <cti:formatObject value="${item}"/>
                         </option>
                     </c:forEach>
                 </optgroup>
