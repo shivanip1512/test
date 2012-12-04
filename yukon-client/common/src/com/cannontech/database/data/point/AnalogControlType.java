@@ -12,7 +12,7 @@ public enum AnalogControlType implements DatabaseRepresentationSource {
     NONE("None"),
     NORMAL("Normal");
     
-    String controlName;
+    private final String controlName;
     
     private AnalogControlType(String controlName) {
         this.controlName = controlName;
@@ -25,14 +25,5 @@ public enum AnalogControlType implements DatabaseRepresentationSource {
     @Override
     public Object getDatabaseRepresentation() {
         return getControlName();
-    }
-    
-    public AnalogControlType getByDisplayName(String name) {
-        for (AnalogControlType value : AnalogControlType.values()) {
-            if (value.getControlName().equalsIgnoreCase(name)) {
-                return value;
-            }
-        }
-        return NONE;
     }
 }

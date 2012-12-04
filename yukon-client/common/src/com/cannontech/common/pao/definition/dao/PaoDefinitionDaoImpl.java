@@ -944,15 +944,15 @@ public class PaoDefinitionDaoImpl implements PaoDefinitionDao {
                 template.setControlOffset(point.getControlOffset().getValue());
             }
             if (point.getControlType() != null) {
-                StatusControlType controlType = StatusControlType.valueOf(point.getControlType().getValue().toString());
+                StatusControlType controlType = StatusControlType.valueOf(point.getControlType().getValue().name());
                 template.setControlType(controlType);
             }
             if (point.getStateZeroControl() != null) {
-                ControlStateType stateZeroControl = ControlStateType.valueOf(point.getStateZeroControl().getValue().toString());
+                ControlStateType stateZeroControl = ControlStateType.valueOf(point.getStateZeroControl().getValue().name());
                 template.setStateZeroControl(stateZeroControl);
             }
             if (point.getStateOneControl() != null) {
-                ControlStateType stateOneControl = ControlStateType.valueOf(point.getStateOneControl().getValue().toString());
+                ControlStateType stateOneControl = ControlStateType.valueOf(point.getStateOneControl().getValue().name());
                 template.setStateOneControl(stateOneControl);
             }
             if (point.getStategroup() != null) {

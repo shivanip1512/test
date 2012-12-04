@@ -13,7 +13,7 @@ public enum StatusControlType implements DatabaseRepresentationSource {
     SBOLATCH("SBO Latch"),
     SBOPULSE("SBO Pulse");
     
-    String controlName;
+    private final String controlName;
     
     private StatusControlType(String controlName) {
         this.controlName = controlName;
@@ -26,14 +26,5 @@ public enum StatusControlType implements DatabaseRepresentationSource {
     @Override
     public Object getDatabaseRepresentation() {
         return getControlName();
-    }
-    
-    public StatusControlType getByDisplayName(String name) {
-        for (StatusControlType value : StatusControlType.values()) {
-            if (value.getControlName().equalsIgnoreCase(name)) {
-                return value;
-            }
-        }
-        return NONE;
     }
 }

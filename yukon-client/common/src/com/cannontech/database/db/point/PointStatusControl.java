@@ -4,7 +4,7 @@ import java.util.List;
 
 import com.cannontech.database.data.point.ControlStateType;
 import com.cannontech.database.data.point.StatusControlType;
-import com.google.common.collect.Lists;
+import com.google.common.collect.ImmutableList;
 
 public class PointStatusControl extends PointControl {
 	public static final int DEFAULT_CMD_TIMEOUT = 0;
@@ -17,12 +17,12 @@ public class PointStatusControl extends PointControl {
 	private Integer commandTimeOut = DEFAULT_CMD_TIMEOUT;
 	private String controlType = StatusControlType.NONE.getControlName();
 	
-	private final List<String> validControlTypes = 
-	        Lists.newArrayList(StatusControlType.NORMAL.getControlName(),
-	                           StatusControlType.LATCH.getControlName(),
-	                           StatusControlType.PSEUDO.getControlName(), 
-	                           StatusControlType.SBOPULSE.getControlName(),
-	                           StatusControlType.SBOLATCH.getControlName());
+	private static final List<String> validControlTypes = 
+	        ImmutableList.of(StatusControlType.NORMAL.getControlName(),
+	                         StatusControlType.LATCH.getControlName(),
+	                         StatusControlType.PSEUDO.getControlName(), 
+	                         StatusControlType.SBOPULSE.getControlName(),
+	                         StatusControlType.SBOLATCH.getControlName());
 
 	public static final String CONSTRAINT_COLUMNS[] = { "POINTID" };
 
