@@ -74,14 +74,14 @@ import com.cannontech.common.util.CtiUtilities;
  *  # Configures Log4j as the Tomcat system logger
  *  # using the custom DatedFileAppender.
  *  #
- *  
+ * 
  *  #
  *  # Configure the logger to output ERROR or INFO level messages into
  *  # a Tomcat-style rolling, dated log file (&quot;tomcat.DATE.log&quot;).
  *  #
  *  #log4j.rootLogger=ERROR, T
  *  log4j.rootLogger=INFO, T
- *  
+ * 
  *  #
  *  # Configure the appender &quot;T&quot;.
  *  #
@@ -125,7 +125,7 @@ import com.cannontech.common.util.CtiUtilities;
  *  # BufferSize: sets the size of the buffer to use if BufferedIO is true.
  *  # The default size is 8K.
  *  #log4j.appender.T.BufferSize=8192
- *  
+ * 
  *  #
  *  # Application logging options
  *  #
@@ -145,7 +145,7 @@ import com.cannontech.common.util.CtiUtilities;
  * following format: fileName_dd.log
  * 2. If the file size exceeds 1 gigabyte, logging stops for the day
  * and an error message is logged to the file
- * 3. Files from previous months are deleted when the file for the 
+ * 3. Files from previous months are deleted when the file for the
  * next month with the same name is created. Therefore, there are never
  * more than 31 files kept for a particular logger.
  * @see com.cannontech.clientutils.YukonFileAppender
@@ -169,9 +169,9 @@ public class DatedFileAppender extends FileAppender {
      * tells whether the maxFileSize has been reached
      */
     private static boolean isMaxFileSizeReached = false;
-    
+
     //----------------------------------------------------- Instance Variables
-    
+
     /**
      * The directory in which log files are created. Wihtout a leading slash,
      * this is relative to the Tomcat home directory.
@@ -203,35 +203,35 @@ public class DatedFileAppender extends FileAppender {
      * time).
      */
     private long m_tomorrow = 0L;
-    
+
     /**
      * String describing the process being logged and the current system configuration
      */
     private String systemInfoString = "";
-    
+
     /**
      * The maximum log file size.  If this is exceeded, logging will stop for the
      * rest of the day.  Default is 1G.
      */
     private long maxFileSize = 1073741824L;
-    
+
     /**
      * String representation of the date and time this log was started.
      */
     private String startDate = "";
-    
+
     /**
      * Maximum number of retries attempting to open/create a file
      */
     private int maxFileOpenRetries = MAX_FILE_OPEN_RETRIES;
-    
+
     /**
      * The delay in millis between file open attempts.
      */
     private long retryDelayInMillis = RETRY_DELAY_IN_MS;
-    
+
     private int logRetentionDays = LOG_RETENTION_DAYS;
-    
+
     private class FileLogFilter implements FilenameFilter {
         @Override
         public boolean accept(File dir, String name) {
@@ -239,7 +239,7 @@ public class DatedFileAppender extends FileAppender {
             return name.matches(regex);
         }
     }
-    
+
     // ----------------------------------------------------------- Constructors
 
     /**
@@ -324,7 +324,7 @@ public class DatedFileAppender extends FileAppender {
     public void setSystemInfoString(String systemInfoString){
         this.systemInfoString = systemInfoString;
     }
-    
+
     /**
      * Set the maximum file size.  If the log file grows beyond
      * this size, logging will cease for the remainder of the day.
@@ -334,19 +334,19 @@ public class DatedFileAppender extends FileAppender {
     public void setMaxFileSize(long maxFileSize){
         this.maxFileSize = maxFileSize;
     }
-    
+
     public void setRetryDelayInMillis(long retryDelayInMillis) {
-		this.retryDelayInMillis = retryDelayInMillis;
-	}
+        this.retryDelayInMillis = retryDelayInMillis;
+    }
 
     public void setMaxFileOpenRetries(int maxFileOpenRetries) {
-		this.maxFileOpenRetries = maxFileOpenRetries;
-	}
-    
+        this.maxFileOpenRetries = maxFileOpenRetries;
+    }
+
     public void setLogRetentionDays(int logRetentionDays) {
         this.logRetentionDays = logRetentionDays;
     }
-    
+
     // --------------------------------------- Public Methods
 
     /**
@@ -388,31 +388,31 @@ public class DatedFileAppender extends FileAppender {
             return;
         }
         long n = System.currentTimeMillis();
-        
+
         if (n >= m_tomorrow) {
             //If the current time is the next day, then create a new file for
             //tomorrow--always first deleting the file with the same name/day from last month
             //this condition is only met once per day
-            
+
             m_calendar.setTimeInMillis(n); // set Calendar to current time
-            
+
             SimpleDateFormat sdf = new SimpleDateFormat("yyyyMMdd");
             datestamp = sdf.format(m_calendar.getTime());
-            
+
             tomorrow(m_calendar); // set the Calendar to the start of tomorrow
-            isMaxFileSizeReached = false; //file is always empty at beginning of 
-                                          //new day, so reset to false
+            isMaxFileSizeReached = false; //file is always empty at beginning of
+            //new day, so reset to false
 
             //time in millis when tomorrow starts
-            m_tomorrow = m_calendar.getTimeInMillis(); 
+            m_tomorrow = m_calendar.getTimeInMillis();
             String child = m_prefix + datestamp + m_suffix;
             newFile = new File(m_path, child);
 
             // if the file has a timestamp that is earlier than the beginning of
-            // today, then it must be last months file, so delete its contents 
+            // today, then it must be last months file, so delete its contents
             //and start with an empty file
-            long today = m_calendar.getTimeInMillis() - millisecondsInADay; 
-            long lastModified = newFile.lastModified(); 
+            long today = m_calendar.getTimeInMillis() - millisecondsInADay;
+            long lastModified = newFile.lastModified();
 
             if ((lastModified < today) && lastModified != 0) {
                 //lastModified == 0 if the file doesn't exist
@@ -424,7 +424,7 @@ public class DatedFileAppender extends FileAppender {
             int numTries = 0;
             while (numTries < maxFileOpenRetries) {
                 try {
-                	numTries++;
+                    numTries++;
                     this.fileName = newFile.getAbsolutePath();
                     setFile(fileName, fileAppend, bufferedIO, bufferSize);
                     break;	//made it to here, was a success...break from while.
@@ -443,22 +443,22 @@ public class DatedFileAppender extends FileAppender {
                     }
                 }
             }
-            
+
             // Do any necessary log cleanup in the directory.
             cleanUpOldLogFiles();
-            
+
             //append a header including version info at the start of the new log file
             FileWriter fwriter = null;
             try{
                 fwriter = new FileWriter(fileName, true);
                 String header = "LOG CONTINUES (Running since " + startDate + ")\n"
-                                + systemInfoString + "\n";
+                        + systemInfoString + "\n";
                 fwriter.write(header);
                 //fwriter.close();
             } catch(IOException e){
                 errorHandler.error("Unable to write header to new log file.");
             } finally {
-                if(fwriter != null){    
+                if(fwriter != null){
                     CtiUtilities.close(fwriter);
                 }
             }
@@ -476,12 +476,12 @@ public class DatedFileAppender extends FileAppender {
             // also set isMaxSizeReached = true so no more logging occurs for the
             // day.
             isMaxFileSizeReached = true;
-            
+
             FileWriter fwriter = null;
             try {
                 fwriter = new FileWriter(tempFile, true);
-                String output = "The maximum file size of " + maxFileSize 
-                                + " bytes has been reached, logging has been turned off for today.\n";
+                String output = "The maximum file size of " + maxFileSize
+                        + " bytes has been reached, logging has been turned off for today.\n";
                 fwriter.write("\n");
                 fwriter.write(output);
                 fwriter.close();
@@ -499,7 +499,7 @@ public class DatedFileAppender extends FileAppender {
             // the event occurs here.
             // Only allow appending if the max file size has not been reached
             subAppend(event);
-        }    
+        }
 
     } // end append()
 
@@ -536,13 +536,13 @@ public class DatedFileAppender extends FileAppender {
             // Keep files forever. No need to do cleanup.
             return;
         }
-        
+
         File directory = new File(m_directory);
         File[] files = directory.listFiles(new FileLogFilter());
         
         for (File file : files) {
             String fileDateStr = file.getName().replace(m_prefix, "").replace(m_suffix, "");
-            
+
             Date fileDate;
             try {
                 // Verify the fileDate is a valid date!
