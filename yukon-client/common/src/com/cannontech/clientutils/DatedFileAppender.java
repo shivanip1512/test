@@ -444,11 +444,9 @@ public class DatedFileAppender extends FileAppender {
                 }
             }
             
-            
             // Do any necessary log cleanup in the directory.
-            cleanUpDirectory();
+            cleanUpOldLogFiles();
             
-
             //append a header including version info at the start of the new log file
             FileWriter fwriter = null;
             try{
@@ -533,7 +531,7 @@ public class DatedFileAppender extends FileAppender {
     /**
      * Deletes log files that are past the retention date in the log directory.
      */
-    private void cleanUpDirectory() {
+    private void cleanUpOldLogFiles() {
         if (logRetentionDays == 0) {
             // Keep files forever. No need to do cleanup.
             return;
