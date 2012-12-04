@@ -224,7 +224,8 @@ input.error {background: pink;border-color:#D14836;}
 
 /* Table Layouts, please kill me! */
 .twoColumnLayout {border-spacing:10px; border-collapse:table;}
-.twoColumnLayout > tbody > tr > td {padding:0 10px !important;}
+.twoColumnLayout > tbody > tr > td.first {padding:0 10px 0 0 !important;}
+.twoColumnLayout > tbody > tr > td.last {padding:0 0 0 10px !important;}
 .widgetColumns, .pickerHeader > table {width:100%;}
 .widgetColumns td.widgetColumnCell {width: 50%;}
 /* END Table Layouts */

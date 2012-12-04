@@ -37,6 +37,7 @@ a.icon {margin: 0 5px 0 0;}
 .DISABLED {background: transparent url(../Icons/disable.gif) top left no-repeat;}
 .document {background-image: url(../Icons/32/document.png);}
 
+.water_meter {background: url(../Icons/water_16.png)}
 .electric_meter {background-image:url("../Icons/electric_16.png")}
 .enable {background-image: url(../Icons/enable.gif);}
 .enable:hover {background-image: url(../Icons/enable_over.gif);}

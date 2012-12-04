@@ -31,49 +31,46 @@
     });
 </script>
 
-    <cti:dataGrid cols="2" tableClasses="twoColumnLayout">
-        <cti:dataGridCell>
-            <tags:boxContainer2 nameKey="pageName" styleClass="operatorLogins">
-                <div id="operatorLoginList" class="scroll_y">
-                    <table class="compactResultsTable rowHighlighting">
-                        <th><i:inline key=".username" /></th>
-                        <th class="removeColumn"><i:inline key=".loginEnabled" /></th>
-                        <c:forEach items="${operatorLogins}" var="login">
-                            <tr class="<tags:alternateRow odd="" even="altRow"/>">
-                                <td>
-                                    <cti:url var="operatorLoginViewUrl" value="${baseUrl}/view">
-                                        <cti:param name="ecId" value="${ecId}"/>
-                                        <cti:param name="operatorLoginId" value="${login.userID}"/>
-                                    </cti:url>
-                                    <b><a href="${operatorLoginViewUrl}"><spring:escapeBody htmlEscape="true">${login}</spring:escapeBody></a></b>
-                                </td>
-                                <td class="removeColumn">
-                                <div class="dib">
-                                    <cti:url var="operatorLoginUpdateUrl" value="${baseUrl}/toggleOperatorLoginStatus">
-                                        <cti:param name="ecId" value="${ecId}"/>
-                                        <cti:param name="operatorLoginId" value="${login.userID}"/>
-                                    </cti:url>
-                                    <c:if test="${currentUserId != login.userID}">
-                                        <a href="${operatorLoginUpdateUrl}" class="icon ${login.loginStatus} toggle_status" title="${login.loginStatus}">${login.loginStatus}</a>
-                                    </c:if>
-                                    <c:if test="${currentUserId == login.userID}">
-                                        <a class="icon enable_disabled" title="<i:inline key=".unableToDeleteCurrentUser"/>"><i:inline key=".unableToDeleteCurrentUser"/></a>
-                                    </c:if>
-                                </div>
-                                </td>
-                            </tr>
-                        </c:forEach>
-                    </table>
-                </div>
-                <cti:url var="operatorLoginCreateUrl" value="${baseUrl}/new">
-                    <cti:param name="ecId" value="${ecId}"/>
-                </cti:url>
-                <div class="actionArea">
-                    <cti:button nameKey="create" href="${operatorLoginCreateUrl}"/>
-                </div>
-            </tags:boxContainer2>
-
-        </cti:dataGridCell>
-    </cti:dataGrid>
+    <div style="min-width:400px;" class="fl">
+    <tags:boxContainer2 nameKey="pageName" styleClass="operatorLogins">
+        <div id="operatorLoginList" class="scroll_y">
+            <table class="compactResultsTable rowHighlighting">
+                <th><i:inline key=".username" /></th>
+                <th class="removeColumn"><i:inline key=".loginEnabled" /></th>
+                <c:forEach items="${operatorLogins}" var="login">
+                    <tr class="<tags:alternateRow odd="" even="altRow"/>">
+                        <td>
+                            <cti:url var="operatorLoginViewUrl" value="${baseUrl}/view">
+                                <cti:param name="ecId" value="${ecId}"/>
+                                <cti:param name="operatorLoginId" value="${login.userID}"/>
+                            </cti:url>
+                            <b><a href="${operatorLoginViewUrl}"><spring:escapeBody htmlEscape="true">${login}</spring:escapeBody></a></b>
+                        </td>
+                        <td class="removeColumn">
+                        <div class="dib">
+                            <cti:url var="operatorLoginUpdateUrl" value="${baseUrl}/toggleOperatorLoginStatus">
+                                <cti:param name="ecId" value="${ecId}"/>
+                                <cti:param name="operatorLoginId" value="${login.userID}"/>
+                            </cti:url>
+                            <c:if test="${currentUserId != login.userID}">
+                                <a href="${operatorLoginUpdateUrl}" class="icon ${login.loginStatus} toggle_status" title="${login.loginStatus}">${login.loginStatus}</a>
+                            </c:if>
+                            <c:if test="${currentUserId == login.userID}">
+                                <a class="icon enable_disabled" title="<i:inline key=".unableToDeleteCurrentUser"/>"><i:inline key=".unableToDeleteCurrentUser"/></a>
+                            </c:if>
+                        </div>
+                        </td>
+                    </tr>
+                </c:forEach>
+            </table>
+        </div>
+        <cti:url var="operatorLoginCreateUrl" value="${baseUrl}/new">
+            <cti:param name="ecId" value="${ecId}"/>
+        </cti:url>
+        <div class="actionArea">
+            <cti:button nameKey="create" href="${operatorLoginCreateUrl}"/>
+        </div>
+    </tags:boxContainer2>
+    </div>
     
 </cti:standardPage>
