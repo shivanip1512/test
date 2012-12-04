@@ -539,7 +539,11 @@ public class DatedFileAppender extends FileAppender {
 
         File directory = new File(m_directory);
         File[] files = directory.listFiles(new FileLogFilter());
-        
+
+        Calendar retentionDate = Calendar.getInstance();
+        retentionDate.setTime(m_calendar.getTime());
+        retentionDate.add(Calendar.DAY_OF_YEAR, -logRetentionDays);
+
         for (File file : files) {
             String fileDateStr = file.getName().replace(m_prefix, "").replace(m_suffix, "");
 
@@ -551,11 +555,7 @@ public class DatedFileAppender extends FileAppender {
             } catch (ParseException e) {
                 continue;
             }
-            
-            Calendar retentionDate = Calendar.getInstance();
-            retentionDate.setTime(m_calendar.getTime());
-            retentionDate.add(Calendar.DAY_OF_YEAR, -logRetentionDays);
-            
+
             if (fileDate.before(retentionDate.getTime())) {
                 file.delete();
             }
