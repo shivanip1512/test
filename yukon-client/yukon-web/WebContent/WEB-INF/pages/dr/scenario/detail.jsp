@@ -19,14 +19,14 @@
 
     <table class="widgetColumns">
         <tr>
-            <td class="widgetColumnCell" valign="top">
+            <td class="widgetColumnCell first" valign="top">
                 <div class="widgetContainer">
                 <cti:msg var="boxTitle" key="yukon.web.modules.dr.scenarioDetail.heading.info"/>
                 <tags:abstractContainer type="box" title="${boxTitle}">
                 </tags:abstractContainer>
                 </div>
             </td>
-            <td class="widgetColumnCell" valign="top">
+            <td class="widgetColumnCell last" valign="top">
                 <div class="widgetContainer">
                 <cti:msg var="boxTitle" key="yukon.web.modules.dr.scenarioDetail.heading.actions"/>
                 <tags:abstractContainer type="box" title="${boxTitle}">

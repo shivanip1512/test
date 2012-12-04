@@ -252,7 +252,7 @@ function makeFirstSelectedFilterValueVisible() {
 	  <input type="hidden" name="ACTION" value="DownloadReport">
 	  <cti:msg key="yukon.web.reportSelection" var="reportSelectionTitle"/>
       <cti:titledContainer title="${reportSelectionTitle}">
-            <table width="100%" border="0" cellspacing="2" cellpadding="0" bordercolor="#FFFFFF" align="center">
+            <table style="width:100%;">
               <tr>
 				<td class="columnHeader"><cti:msg key="yukon.web.reports"/></td>
                 <td class="columnHeader">&nbsp;</td>

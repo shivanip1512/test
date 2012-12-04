@@ -14,7 +14,7 @@
 
 		<table class="widgetColumns">
 			<tr>
-				<td class="widgetColumnCell" valign="top">
+				<td class="widgetColumnCell first" valign="top">
 				    <ct:widget bean="meterInformationWidget" />
 
                     <c:choose>
@@ -116,7 +116,7 @@
 					</ct:boxContainer2>
 	
 				</td>
-				<td class="widgetColumnCell" valign="top">
+				<td class="widgetColumnCell last" valign="top">
 	
 					<ct:widget bean="csrTrendWidget" tabularDataViewer="archivedDataReport" />
 					

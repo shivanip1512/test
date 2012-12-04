@@ -1055,8 +1055,6 @@
       </options>
     </menu>
     <skin name="STANDARD" />
-    <css file="/WebConfig/yukon/Base.css" />
-    <css file="/WebConfig/yukon/styles/reportinglogos.css" />
     <script file="/JavaScript/change_monitor.js" />
   </module>
 

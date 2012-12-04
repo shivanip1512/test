@@ -19,7 +19,7 @@
 
     <table class="widgetColumns">
         <tr>
-            <td class="widgetColumnCell" valign="top">
+            <td class="widgetColumnCel first" valign="top">
 
                 <%-- Control Area Info section --%>
 
@@ -92,7 +92,7 @@
                 </tags:abstractContainer>
                 </div>
             </td>
-            <td class="widgetColumnCell" valign="top">
+            <td class="widgetColumnCell last" valign="top">
 
                 <%--
                     Control Area Actions section each action has a simpleDialogLink that

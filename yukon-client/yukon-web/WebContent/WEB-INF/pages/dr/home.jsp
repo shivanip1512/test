@@ -15,7 +15,7 @@
 
 <table class="widgetColumns">
     <tr>
-        <td class="widgetColumnCell" valign="top">
+        <td class="widgetColumnCell first" valign="top">
             <div class="widgetContainer">
             <c:if test="${empty favorites}">
                 <cti:msg key="yukon.web.modules.dr.home.noFavorites"/>
@@ -66,7 +66,7 @@
             </c:if>
             </div>
         </td>
-        <td class="widgetColumnCell" valign="top">
+        <td class="widgetColumnCell last" valign="top">
             <div class="widgetContainer">
                 <cti:msg var="boxTitle" key="yukon.web.modules.dr.home.quickSearches"/>
                 <tags:abstractContainer type="box" title="${boxTitle}">

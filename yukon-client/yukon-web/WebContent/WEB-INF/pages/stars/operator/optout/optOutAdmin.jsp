@@ -23,7 +23,7 @@
 
 	<table class="widgetColumns">
 		<tr>
-			<td class="widgetColumnCell" valign="top" style="padding: 9px 0px 0px 0px">    
+			<td class="widgetColumnCell first" valign="top">    
 			    <!-- System Information -->
 			    <cti:checkProperty property="ConsumerInfoRole.OPT_OUT_ADMIN_STATUS">
 				    <tags:boxContainer2 nameKey="systemInfo" hideEnabled="false">
@@ -234,7 +234,7 @@
 		        </cti:checkProperty>
 			</td>
 			
-			<td class="widgetColumnCell" valign="top">
+			<td class="widgetColumnCell last" valign="top">
 				<tags:widget bean="operatorAccountSearchWidget"/>
 			</td>
 		</tr>

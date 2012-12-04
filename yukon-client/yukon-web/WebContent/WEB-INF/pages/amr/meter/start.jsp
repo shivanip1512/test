@@ -11,7 +11,7 @@
 		
 			<tr>
 		
-				<td class="widgetColumnCell">
+				<td class="widgetColumnCell first">
 				
 					<%-- OUTAGE MONITORS WIDGET --%>
 					<ct:widget bean="outageMonitorsWidget"/>
@@ -35,7 +35,7 @@
 					
 				</td>
 				
-				<td class="widgetColumnCell">
+				<td class="widgetColumnCell last">
                     <cti:msg2 key="yukon.web.widgets.meterSearchWidget.helpText" var="helpText"/>
 					<ct:widget bean="meterSearchWidget" helpText="${helpText}" />
 					<cti:checkRole role="DeviceActionsRole.ROLEID">

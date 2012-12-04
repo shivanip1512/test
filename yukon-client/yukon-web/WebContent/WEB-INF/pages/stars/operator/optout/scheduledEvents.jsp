@@ -10,7 +10,7 @@
     
     <table class="widgetColumns">
 		<tr>
-			<td class="widgetColumnCell" valign="top" style="padding: 9px 0px 0px 0px">
+			<td class="widgetColumnCell first" valign="top">
 			    <c:choose>
 			        <c:when test="${fn:length(scheduledEvents) > 0}">
 					    <table class="resultsTable">
@@ -35,7 +35,7 @@
 				    </c:otherwise>
 			    </c:choose>
 			</td>
-    		<td class="widgetColumnCell" valign="top">
+    		<td class="widgetColumnCell last" valign="top">
 			    <ct:widget bean="operatorAccountSearchWidget"/>
     		</td>
     	</tr>

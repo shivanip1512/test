@@ -21,7 +21,7 @@
     <table class="widgetColumns">
         <c:if test="${loadGroup.paoIdentifier.paoType != 'MACRO_GROUP'}">
         <tr>
-            <td class="widgetColumnCell" valign="top">
+            <td class="widgetColumnCell first" valign="top">
 
                 <%-- Load Group Info section --%>
 
@@ -65,7 +65,7 @@
                 </tags:abstractContainer>
                 </div>
             </td>
-            <td class="widgetColumnCell" valign="top">
+            <td class="widgetColumnCell last" valign="top">
                 <cti:msg var="boxTitle" key="yukon.web.modules.dr.loadGroupDetail.heading.actions"/>
 
                 <%--
@@ -192,7 +192,7 @@
 
         <%-- Parent Programs and macro load groups --%>
         <tr>
-            <td class="widgetColumnCell" valign="top">
+            <td class="widgetColumnCell first" valign="top">
                 <div class="widgetContainer">
                     <cti:msg var="boxTitle" key="yukon.web.modules.dr.loadGroupDetail.parents.programs"/>
                     <tags:abstractContainer title="${boxTitle}" type="box">
@@ -218,7 +218,7 @@
                     </tags:abstractContainer>
                 </div>
             </td>
-            <td class="widgetColumnCell" valign="top">
+            <td class="widgetColumnCell last" valign="top">
                 <div class="widgetContainer">
                     <cti:msg var="boxTitle" key="yukon.web.modules.dr.loadGroupDetail.parents.macroLoadGroups"/>
                     <tags:abstractContainer title="${boxTitle}" type="box">

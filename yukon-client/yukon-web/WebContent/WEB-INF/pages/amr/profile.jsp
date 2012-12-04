@@ -8,7 +8,7 @@
     <table class="widgetColumns">
         
         <tr>
-            <td class="widgetColumnCell" valign="top">
+            <td class="widgetColumnCell first" valign="top">
                 <c:if test="${lpSupported}">
                     <tags:widget bean="profileWidget" />
                 </c:if>
@@ -19,7 +19,7 @@
                 
             </td>
             
-            <td class="widgetColumnCell" valign="top">
+            <td class="widgetColumnCell last" valign="top">
             
                 <tags:widget bean="meterInformationWidget" />
                 

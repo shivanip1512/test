@@ -20,7 +20,7 @@
 	
     <table class="widgetColumns">
         <tr>
-            <td class="widgetColumnCell" valign="top">
+            <td class="widgetColumnCell first" valign="top">
 
                 <%-- Program Info section --%>
 
@@ -76,7 +76,7 @@
                 </tags:abstractContainer>
                 </div>
             </td>
-            <td class="widgetColumnCell" valign="top">
+            <td class="widgetColumnCell last" valign="top">
 
                 <%-- 
                     Program Actions section each action has a simpleDialogLink that
@@ -369,7 +369,7 @@
         <c:if test="${showControlAreas || showScenarios}">
         <tr>
             <c:if test="${showControlAreas}">
-            <td class="widgetColumnCell" valign="top">
+            <td class="widgetColumnCell first" valign="top">
                 <div class="widgetContainer">
                     <%-- 
                         Parent Control Area for the Program - has a link to Control Area detail if
@@ -399,7 +399,7 @@
             </td>
             </c:if>
             <c:if test="${showScenarios}">
-            <td class="widgetColumnCell" valign="top">
+            <td class="widgetColumnCell last" valign="top">
                 <div class="widgetContainer">
                     <cti:msg var="boxTitle" key="yukon.web.modules.dr.programDetail.parents.scenarios"/>
                     <tags:abstractContainer title="${boxTitle}" type="box">

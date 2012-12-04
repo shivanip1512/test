@@ -77,7 +77,7 @@ button.naked, button.naked:hover {border:none; background:transparent; box-shado
 /* Table Styles */
 table {width: auto; border-collapse:collapse;}
 table td, table th {padding:2px 5px;}
-table th {background:white; text-align:left; font-weight:bold; border-bottom:solid 1px #ccc;}
+table th, .TitleHeader, .columnHeader {background:white; text-align:left; font-weight:bold; border-bottom:solid 1px #ccc;}
 table.naturalWidth {width: auto;}
 
 .compactResultsTable, .resultsTable, .nameValueTable {width:100%;border-collapse:collapse;}
@@ -223,11 +223,11 @@ input.error {background: pink;border-color:#D14836;}
 /* END Dialogs */
 
 /* Table Layouts, please kill me! */
-.twoColumnLayout {border-spacing:10px; border-collapse:table;}
-.twoColumnLayout > tbody > tr > td.first {padding:0 10px 0 0 !important;}
-.twoColumnLayout > tbody > tr > td.last {padding:0 0 0 10px !important;}
+.twoColumnLayout, .widgetColumns {border-spacing:10px; border-collapse:table;}
+.widgetColumns .widgetColumnCell {width: 50%; padding:0;}
+.twoColumnLayout > tbody > tr > td.first, .widgetColumns > tbody > tr > td.first {padding:0 10px 0 0 !important;}
+.twoColumnLayout > tbody > tr > td.last, .widgetColumns > tbody > tr > td.last {padding:0 0 0 10px !important;}
 .widgetColumns, .pickerHeader > table {width:100%;}
-.widgetColumns td.widgetColumnCell {width: 50%;}
 /* END Table Layouts */
 
 /* NORMAL LAYOUTS */

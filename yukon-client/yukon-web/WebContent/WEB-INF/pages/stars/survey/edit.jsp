@@ -80,7 +80,7 @@ moveDownDisabledIcon = templateIcons[4];
 
 <table class="widgetColumns">
     <tr>
-        <td class="widgetColumnCell" valign="top">
+        <td class="widgetColumnCell first" valign="top">
             <div class="widgetContainer">
                 <tags:boxContainer2 nameKey="info">
                     <tags:nameValueContainer2>
@@ -97,7 +97,7 @@ moveDownDisabledIcon = templateIcons[4];
                 </tags:boxContainer2>
             </div>
         </td>
-        <td class="widgetColumnCell" valign="top">
+        <td class="widgetColumnCell last" valign="top">
             <div class="widgetContainer">
                 <tags:boxContainer2 nameKey="actions">
                     <ul>

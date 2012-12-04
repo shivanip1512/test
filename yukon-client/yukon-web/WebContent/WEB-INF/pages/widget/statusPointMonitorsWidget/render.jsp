@@ -17,13 +17,16 @@
 <c:choose>
     <c:when test="${fn:length(monitors) > 0}">
         <table class="compactResultsTable">
-        	<tr>
-        		<th style="width:20px;">&nbsp;</th>
-        		<th><i:inline key=".tableHeader.name"/></th>
-        		<th style="text-align:right;"><i:inline key=".tableHeader.monitoring"/></th>
-        		<th style="text-align:right;width:80px;"><i:inline key=".tableHeader.enabled"/></th>
-        	</tr>
-        
+            <thead>
+            	<tr>
+            		<th style="width:20px;">&nbsp;</th>
+            		<th><i:inline key=".tableHeader.name"/></th>
+            		<th style="text-align:right;"><i:inline key=".tableHeader.monitoring"/></th>
+            		<th style="text-align:right;width:80px;"><i:inline key=".tableHeader.enabled"/></th>
+            	</tr>
+            </thead>
+            <tfoot></tfoot>
+            <tbody>
         	<c:forEach var="monitor" items="${monitors}">
         		<c:set var="monitorId" value="${monitor.statusPointMonitorId}"/>
         		<c:set var="monitorName" value="${monitor.statusPointMonitorName}"/>
@@ -67,6 +70,7 @@
         			</td>
         		</tr>
         	</c:forEach>
+            </tbody>
         
         </table>
     </c:when>
