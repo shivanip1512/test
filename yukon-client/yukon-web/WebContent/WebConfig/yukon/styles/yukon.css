@@ -12,7 +12,7 @@ a, .vertical_menu a:hover {text-decoration:none;}
 a:hover, a:focus {text-decoration:underline;outline:0;}
 
 /* primary color */
-a, .primary_color, .vertical_menu li.selected a, .vertical_menu a:hover, .ui-widget-content a, h3.toggle-title, #subMenu a:visited {color:#06C;}
+a, .primary_color, .vertical_menu li.selected a, .vertical_menu a:hover, .ui-widget-content a, h3.toggle-title, #subMenu a:visited, .perPageArea a:visited {color:#06C;}
 .primary_background {background-color:#06c; color:white;}
 ::-moz-selection, ::selection {background-color:#06c; color:white;} /* IE 9 does not support pseudo element selector '::selection' and will ignore the entire rule, therefore it must be separate */
 .primary_background a, .primary_background a:visited {color:white}
