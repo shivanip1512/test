@@ -8,7 +8,7 @@
 
 <cti:includeScript link="/JavaScript/dropdown_actions.js"/>
 
-<div class="dropdown-container box">
+<div class="dropdown-container dib">
     <a class="icon icon_with_chevron cog">
 		<span class="arrow-down actions_link"></span>
     </a>

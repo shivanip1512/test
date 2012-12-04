@@ -167,12 +167,12 @@
             </li>
         </tags:dropdownActions>
         
-        <c:if test="${collectionFromReportResults != null && filterResult.hitCount > 0}">
-            <form:form id="intervalDataForm" action="intervalData" method="get" commandName="backingBean" cssClass="">
+<%--         <c:if test="${collectionFromReportResults != null && filterResult.hitCount > 0}"> --%>
+            <form:form id="intervalDataForm" action="intervalData" method="get" commandName="backingBean" cssClass="dib">
                 <%@ include file="reportFilterFormValues.jspf"%>
                 <button class="fancy" type="submit" title="<cti:msg2 key=".viewIntervalDataTitle"/>"><cti:msg2 key=".viewIntervalData"/></button>
             </form:form>
-        </c:if>
+<%--         </c:if> --%>
     </c:set>
 
 	<tags:pagedBox2 nameKey="tableTitle" searchResult="${filterResult}" baseUrl="report" titleLinkHtml="${actionsMenu}" styleClass="waterLeakReport">
