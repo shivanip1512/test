@@ -33,6 +33,19 @@ class IM_EX_DEVDB Mct440_213xBDevice : public Mct420Device
 
 protected:
 
+    struct MctConfigInfo_t
+    {
+        int eventMask, meterAlarmMask, configuration;
+        MctConfigInfo_t()
+        {
+            eventMask                           = 0x0; // set default values
+            meterAlarmMask                      = 0x0;
+            configuration                       = 0x0;
+        }
+    };
+
+    MctConfigInfo_t MctConfigInfo;
+
     enum PointOffsets
     {
         PointOffset_Analog_LineVoltagePhaseA    = 801,

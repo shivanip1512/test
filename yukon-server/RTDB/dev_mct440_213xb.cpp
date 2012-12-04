@@ -2496,47 +2496,38 @@ int Mct440_213xBDevice::executePutConfigAlarmMask(CtiRequestMsg     *pReq,
     }
 
                                                                 /* ----------------- EVENT FLAGS MASK ----------------- */
-    const int alarmMask  = parse.getiValue("alarm_mask", 0);
+    MctConfigInfo.eventMask  = parse.getiValue("alarm_mask", 0);
 
-    OutMessage->Buffer.BSt.Message[0] = ((alarmMask >> 8) & 0xFF);
-    OutMessage->Buffer.BSt.Message[1] = (alarmMask & 0xFF);
-
-    // No putconfig install configuration exist for the masks, so to avoid erasing the masks later on, we set it here
-    CtiDeviceBase::setDynamicInfo(CtiTableDynamicPaoInfo::Key_MCT_EventFlagsMask1, OutMessage->Buffer.BSt.Message[0]);
-    CtiDeviceBase::setDynamicInfo(CtiTableDynamicPaoInfo::Key_MCT_EventFlagsMask2, OutMessage->Buffer.BSt.Message[1]);
+    OutMessage->Buffer.BSt.Message[0] = ((MctConfigInfo.eventMask >> 8) & 0xFF);
+    OutMessage->Buffer.BSt.Message[1] = (MctConfigInfo.eventMask & 0xFF);
 
                                                                 /* ----------- METER ALARM MASK (OPTIONAL) ------------ */
-    int meterAlarmMask = 0;
     if( parse.isKeyValid("alarm_mask_meter") )
     {
-        meterAlarmMask = parse.getiValue("alarm_mask_meter", 0);
+        MctConfigInfo.meterAlarmMask = parse.getiValue("alarm_mask_meter", 0);
     }
-    else if( hasDynamicInfo(CtiTableDynamicPaoInfo::Key_MCT_MeterAlarmMask) )
+    else
     {
-        meterAlarmMask = (int)getDynamicInfo(CtiTableDynamicPaoInfo::Key_MCT_MeterAlarmMask);
+        CtiLockGuard<CtiLogger> doubt_guard(dout);
+        dout << CtiTime() << " **** Checkpoint - parameter alarm_mask_meter is not specified for device \"" << getName() << "\", using default or previous value " << (CtiNumStr(MctConfigInfo.meterAlarmMask).hex().zpad(4)).toString() << "**** " << __FILE__ << " (" << __LINE__ << ")" << endl;
     }
 
-    OutMessage->Buffer.BSt.Message[2] = ((meterAlarmMask >> 8) & 0xFF);
-    OutMessage->Buffer.BSt.Message[3] = (meterAlarmMask & 0xFF);
-
-    // No putconfig install configuration exist for the masks, so to avoid erasing the masks later on, we set it here
-    CtiDeviceBase::setDynamicInfo(CtiTableDynamicPaoInfo::Key_MCT_MeterAlarmMask, meterAlarmMask);
+    OutMessage->Buffer.BSt.Message[2] = ((MctConfigInfo.meterAlarmMask >> 8) & 0xFF);
+    OutMessage->Buffer.BSt.Message[3] = (MctConfigInfo.meterAlarmMask & 0xFF);
 
                                                                 /* ----------- MCT CONFIGURATION (OPTIONAL) ----------- */
-    int config_byte = 0;
     if( parse.isKeyValid("config_byte") )
     {
-        config_byte = parse.getiValue("config_byte", 0);
+        MctConfigInfo.configuration = parse.getiValue("config_byte", 0);
     }
-    else if( hasDynamicInfo(CtiTableDynamicPaoInfo::Key_MCT_Configuration) )
+    else
     {
-        config_byte = (int)getDynamicInfo(CtiTableDynamicPaoInfo::Key_MCT_Configuration);
+        CtiLockGuard<CtiLogger> doubt_guard(dout);
+        dout << CtiTime() << " **** Checkpoint - parameter config_byte is not specified set for device \"" << getName() << "\", using default or previous value " << (CtiNumStr(MctConfigInfo.configuration).hex().zpad(4)).toString() << "**** " << __FILE__ << " (" << __LINE__ << ")" << endl;
     }
 
-    OutMessage->Buffer.BSt.Message[5] = ((config_byte >> 8) & 0xFF);
-    OutMessage->Buffer.BSt.Message[6] = (config_byte & 0xFF);
-
-    CtiDeviceBase::setDynamicInfo(CtiTableDynamicPaoInfo::Key_MCT_Configuration, config_byte );
+    OutMessage->Buffer.BSt.Message[5] = ((MctConfigInfo.configuration>> 8) & 0xFF);
+    OutMessage->Buffer.BSt.Message[6] = (MctConfigInfo.configuration & 0xFF);
 
     return NoError;
 }
@@ -3732,9 +3723,9 @@ int Mct440_213xBDevice::decodeGetConfigOptions(INMESS         *InMessage,
 
     string resultStr = getName() + " / MCT Configuration:\n";
 
-    resultStr += (DSt->Message[5] & 0x20) ? "Role enabled" : "Role disabled";
-    resultStr += (DSt->Message[5] & 0x02) ? "LED test enabled" : "LED test disabled";
-    resultStr += (DSt->Message[5] & 0x01) ? "DST enabled" : "DST disabled";
+    resultStr += (DSt->Message[5] & 0x20) ? "Role enabled\n" : "Role disabled\n";
+    resultStr += (DSt->Message[5] & 0x02) ? "LED test enabled\n" : "LED test disabled\n";
+    resultStr += (DSt->Message[5] & 0x01) ? "DST enabled\n" : "DST disabled\n";
 
     ReturnMsg->setUserMessageId(InMessage->Return.UserID);
     ReturnMsg->setResultString(resultStr);
@@ -3985,24 +3976,12 @@ int Mct440_213xBDevice::executePutConfigInstallDST(CtiRequestMsg     *pReq,
 
         const bool enable_dst = (enable_dst_str.compare("true") == 0);
 
-        long event_mask1      = CtiDeviceBase::getDynamicInfo(CtiTableDynamicPaoInfo::Key_MCT_EventFlagsMask1),
-             event_mask2      = CtiDeviceBase::getDynamicInfo(CtiTableDynamicPaoInfo::Key_MCT_EventFlagsMask2),
-             meter_alarm_mask = CtiDeviceBase::getDynamicInfo(CtiTableDynamicPaoInfo::Key_MCT_MeterAlarmMask ),
-             config_byte      = CtiDeviceBase::getDynamicInfo(CtiTableDynamicPaoInfo::Key_MCT_Configuration  );
-
-        if( event_mask1      == std::numeric_limits<long>::min() ) event_mask1      = 0x0;
-        if( event_mask2      == std::numeric_limits<long>::min() ) event_mask2      = 0x0;
-        if( meter_alarm_mask == std::numeric_limits<long>::min() ) meter_alarm_mask = 0x0;
-        if( config_byte      == std::numeric_limits<long>::min() ) config_byte      = 0x0;
-
-        const bool dyn_enable_dst = ((config_byte & 0x1) != 0x0);
+        const long dyn_configuration = CtiDeviceBase::getDynamicInfo(CtiTableDynamicPaoInfo::Key_MCT_Configuration);
+        const bool dyn_enable_dst    = ((dyn_configuration & 0x1) != 0x0);
 
         if( parse.isKeyValid("force")
             || enable_dst != dyn_enable_dst
-            || !CtiDeviceBase::hasDynamicInfo(CtiTableDynamicPaoInfo::Key_MCT_EventFlagsMask1)
-            || !CtiDeviceBase::hasDynamicInfo(CtiTableDynamicPaoInfo::Key_MCT_EventFlagsMask2)
-            || !CtiDeviceBase::hasDynamicInfo(CtiTableDynamicPaoInfo::Key_MCT_MeterAlarmMask )
-            || !CtiDeviceBase::hasDynamicInfo(CtiTableDynamicPaoInfo::Key_MCT_Configuration  ) )
+            || !CtiDeviceBase::hasDynamicInfo(CtiTableDynamicPaoInfo::Key_MCT_Configuration) )
         {
             if( !parse.isKeyValid("verify") )
             {
@@ -4013,16 +3992,20 @@ int Mct440_213xBDevice::executePutConfigInstallDST(CtiRequestMsg     *pReq,
                     return NoConfigData;
                 }
 
-                if( enable_dst != dyn_enable_dst ) config_byte ^= 0x1;
+                const bool config_enable_dst = ((MctConfigInfo.configuration & 0x1) != 0x0);
+                if( enable_dst != config_enable_dst )
+                {
+                    MctConfigInfo.configuration ^= 0x1; // flip the bit
+                }
 
-                OutMessage->Buffer.BSt.Message[0] = (event_mask1 & 0xFF);
-                OutMessage->Buffer.BSt.Message[1] = (event_mask2 & 0xFF);
+                OutMessage->Buffer.BSt.Message[0] = ((MctConfigInfo.eventMask >> 8) & 0xFF);
+                OutMessage->Buffer.BSt.Message[1] = (MctConfigInfo.eventMask & 0xFF);
 
-                OutMessage->Buffer.BSt.Message[2] = ((meter_alarm_mask >> 8) & 0xFF);
-                OutMessage->Buffer.BSt.Message[3] = (meter_alarm_mask & 0xFF);
+                OutMessage->Buffer.BSt.Message[2] = ((MctConfigInfo.meterAlarmMask >> 8) & 0xFF);
+                OutMessage->Buffer.BSt.Message[3] = (MctConfigInfo.meterAlarmMask & 0xFF);
 
-                OutMessage->Buffer.BSt.Message[4] = ((config_byte >> 8) & 0xFF);
-                OutMessage->Buffer.BSt.Message[5] = (config_byte & 0xFF);
+                OutMessage->Buffer.BSt.Message[4] = ((MctConfigInfo.configuration >> 8) & 0xFF);
+                OutMessage->Buffer.BSt.Message[5] = (MctConfigInfo.configuration & 0xFF);
 
                 outList.push_back( CTIDBG_new OUTMESS(*OutMessage) );
             }
@@ -4307,7 +4290,7 @@ INT Mct440_213xBDevice::decodePutConfig(INMESS         *InMessage,
 
         if( do_readback )
         {
-            resultString = getName() + " / Config \"" + config_part + "\" date sent\n";
+            resultString = getName() + " / Config \"" + config_part + "\" sent\n";
 
             string getconfig_cmd = string("getconfig install ") + config_part;
 
