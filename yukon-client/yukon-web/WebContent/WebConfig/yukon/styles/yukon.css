@@ -143,7 +143,8 @@ div.progressBarInnerFailure {
 .pageActionArea {margin: 20px 0;}
 .pagingArea, .perPageArea {font-weight: normal;} /* TODO: change title span to h3 to avoid this 'undo' css rule, move bottom-margin on h's to new rule .page-title */
 
-.titledContainer .filter_container, .pagedBox .filter_container, .sectionContainer .filter_container {border-bottom: 1px dashed #ccc; margin: 0 0 6px; padding: 0 0 6px;} 
+.titledContainer .filter_container, .pagedBox .filter_container, .sectionContainer .filter_container {border-bottom: 1px dashed #ccc; margin: 0 0 6px; padding: 0 0 6px;}
+.titledContainer .filter_container a:hover, .titledContainer .filter_container a:focus, .pagedBox .filter_container a:hover, .pagedBox .filter_container a:focus {background: #ddd}
 .titledContainer .filter_container a , .pagedBox .filter_container a , .sectionContainer .filter_container a {border: solid 1px #ccc; background: #EEEEEE; border-radius: 3px; color: #555; font-size: 10px; padding:2px; margin: 0 5px 5px;} 
 .titledContainer .filter_container .value , .pagedBox .filter_container .value , .sectionContainer .filter_container .value {color: #444; font-weight: bold;}
 
