@@ -216,6 +216,22 @@ button.ui-button::-moz-focus-inner { border: 0; padding: 0; } /* reset extra pad
     width: 200px; /*must have*/
     height: 200px; /*must have*/
 }
+
+/* Component containers
+----------------------------------*/
+.ui-widget {}
+.ui-widget[disabled] { color: #dddddd !important; };
+.ui-widget .ui-widget {}
+.ui-widget input, .ui-widget select, .ui-widget textarea, .ui-widget button {}
+.ui-widget-content { border: 1px solid #ddd; background: white; color:#555;}
+.ui-widget-header, .ui-jqgrid-pager { 
+    border: none;
+    background: #EFEFEF;
+    color: #555;
+    font-weight: normal;
+}
+.ui-widget-header a, .ui-widget-header a:visited { color: #555 !important;}
+
 .ui-dialog {
     position: absolute;
     padding: 0;
@@ -360,21 +376,6 @@ button.ui-button::-moz-focus-inner { border: 0; padding: 0; } /* reset extra pad
     background-image: none;
 }
 body .ui-tooltip { border-width: 2px; }
-
-/* Component containers
-----------------------------------*/
-.ui-widget {}
-.ui-widget[disabled] { color: #dddddd !important; };
-.ui-widget .ui-widget {}
-.ui-widget input, .ui-widget select, .ui-widget textarea, .ui-widget button {}
-.ui-widget-content { border: none; background: white; color:#555;}
-.ui-widget-header, .ui-jqgrid-pager { 
-    border: none;
-    background: #EFEFEF;
-    color: #555;
-    font-weight: normal;
-}
-.ui-widget-header a, .ui-widget-header a:visited { color: #555 !important;}
 
 /* Interaction states
 ----------------------------------*/
