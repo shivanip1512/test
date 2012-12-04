@@ -40,10 +40,11 @@ public class YukonFileAppender extends AppenderSkeleton {
      * Accepts forms: "1G" or "1g", ".5M", etc.
      */
     private String maxFileSizeString;
+    private String logRetentionDaysString;
 
     private int maxFileOpenRetries = DatedFileAppender.MAX_FILE_OPEN_RETRIES;
     private int retryDelayInMs = DatedFileAppender.RETRY_DELAY_IN_MS;
-    private final int logRetentionDays = DatedFileAppender.LOG_RETENTION_DAYS;
+    private int logRetentionDays = DatedFileAppender.LOG_RETENTION_DAYS;
 
     /**
      *  This appenders name
@@ -157,6 +158,15 @@ public class YukonFileAppender extends AppenderSkeleton {
 
     public void setRetryDelayInMs(int retryDelayInMs) {
         this.retryDelayInMs = retryDelayInMs;
+    }
+
+    public void setLogRetentionDaysString(String logRetentionDaysString) {
+        this.logRetentionDaysString = logRetentionDaysString;
+        logRetentionDays = Integer.parseInt(logRetentionDaysString);
+    }
+
+    public String getLogRetentionDaysString() {
+        return logRetentionDaysString;
     }
 
     /**
