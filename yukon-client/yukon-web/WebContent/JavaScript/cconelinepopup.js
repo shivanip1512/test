@@ -215,7 +215,7 @@ function openPopupWin(elem, compositeIdType) {
         return;
     } else if (type == ALL_POPUP_TYPES.legend) {
         jQuery.ajax({
-            url: '/capcontrol/oneline/legend/view',
+            url: '/oneline/legend/view',
             method: 'get',
             success: function(data) {
                 currentPopup.offsetX = window.innerWidth/2;

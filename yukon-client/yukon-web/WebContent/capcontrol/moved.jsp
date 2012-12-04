@@ -40,7 +40,7 @@
 	
 	<div style="text-align: center;font-weight: bold;">CapBank moved to <%= feederName %> on <%= subName %>. </div>
 	<% if( subbusID != null ) {%>
-		<div style="text-align: center;"><a href="/capcontrol/oneline/OnelineCBCServlet?id=<%=subbusID %>&redirectURL=/capcontrol/tier/feeders?isSpecialArea=false&amp;substationId=<%=substationID %>&amp;areaId=<%=areaID %>">Return to OneLine</a></div>
+		<div style="text-align: center;"><a href="/oneline/OnelineCBCServlet?id=<%=subbusID %>&redirectURL=/capcontrol/tier/feeders?isSpecialArea=false&amp;substationId=<%=substationID %>&amp;areaId=<%=areaID %>">Return to OneLine</a></div>
 	<%} %>
 </form>
 </div>

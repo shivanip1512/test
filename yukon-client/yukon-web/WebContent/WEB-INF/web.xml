@@ -215,17 +215,17 @@
 
 	<filter-mapping>
 		<filter-name>jsFilter</filter-name>
-		<url-pattern>/capcontrol/oneline/*</url-pattern>
+		<url-pattern>/oneline/*</url-pattern>
 	</filter-mapping>
 
 	<filter-mapping>
 		<filter-name>cssFilter</filter-name>
-		<url-pattern>/capcontrol/oneline/*</url-pattern>
+		<url-pattern>/oneline/*</url-pattern>
 	</filter-mapping>
 
 	<filter-mapping>
 		<filter-name>svgFilter</filter-name>
-		<url-pattern>/capcontrol/oneline/*</url-pattern>
+		<url-pattern>/oneline/*</url-pattern>
 	</filter-mapping>
 
 	<filter-mapping>
@@ -1045,7 +1045,7 @@
 
 	<servlet-mapping>
 		<servlet-name>OnelineCBCServlet</servlet-name>
-		<url-pattern>/capcontrol/oneline/OnelineCBCServlet</url-pattern>
+		<url-pattern>/oneline/OnelineCBCServlet</url-pattern>
 	</servlet-mapping>
 	<servlet-mapping>
 		<servlet-name>DynamicTextServlet</servlet-name>

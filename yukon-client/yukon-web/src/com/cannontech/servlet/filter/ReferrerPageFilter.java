@@ -36,10 +36,12 @@ public class ReferrerPageFilter implements Filter {
                          "/capcontrol/capAddInfo",
                          "/capcontrol/oneline/popupmenu/*");
     
+    @Override
     public void init(FilterConfig fc) throws ServletException {
         config = fc;
     }
 
+    @Override
     public void doFilter(ServletRequest req, ServletResponse resp, FilterChain chain) throws IOException, ServletException {
 
         HttpServletRequest request = (HttpServletRequest) req;
@@ -69,6 +71,7 @@ public class ReferrerPageFilter implements Filter {
         chain.doFilter(req, resp);
     }
 
+    @Override
     public void destroy() {
         config = null;
     }

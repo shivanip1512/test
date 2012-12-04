@@ -25,14 +25,16 @@ public class JSFilter implements Filter {
 	/**
 	 * @see javax.servlet.Filter#init(FilterConfig)
 	 */
-	public void init(FilterConfig fc) throws ServletException { 
+	@Override
+    public void init(FilterConfig fc) throws ServletException { 
         config = fc;   
     }
 
 	/**
 	 * @see javax.servlet.Filter#doFilter(ServletRequest, ServletResponse, FilterChain)
 	 */
-	public void doFilter(
+	@Override
+    public void doFilter(
 		ServletRequest req,
 		ServletResponse resp,
 		FilterChain chain)
@@ -53,10 +55,10 @@ public class JSFilter implements Filter {
 			chain.doFilter(req,resp);		
 		}
         else
-		if (jsPath.startsWith("/capcontrol/oneline/"))
+		if (jsPath.startsWith("/oneline/"))
         {
               
-            jsPath = StringUtils.replace(jsPath, "/capcontrol/oneline/", "/JavaScript/");  
+            jsPath = StringUtils.replace(jsPath, "/oneline/", "/JavaScript/");  
             config.getServletContext().getRequestDispatcher(jsPath).forward(req, resp);
             
         }      
@@ -73,7 +75,8 @@ public class JSFilter implements Filter {
 	/**
 	 * @see javax.servlet.Filter#destroy()
 	 */
-	public void destroy() {
+	@Override
+    public void destroy() {
 		config = null;
 	}
 

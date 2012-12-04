@@ -152,7 +152,7 @@
                                 <tr>
                                     <td>
                                         <img
-                                            src="<cti:url value='/capcontrol/oneline/X.gif'/>" />
+                                            src="<cti:url value='/oneline/X.gif'/>" />
                                     </td>
                                     <td
                                         style="color: rgb(192, 192, 192); font-size: 12;">
@@ -162,7 +162,7 @@
                                 <tr>
                                     <td>
                                         <img
-                                            src="<cti:url value='/capcontrol/oneline/regenerate.gif'/>" />
+                                            src="<cti:url value='/oneline/regenerate.gif'/>" />
                                     </td>
                                     <td
                                         style="color: rgb(192, 192, 192); font-size: 12;">
@@ -172,7 +172,7 @@
                                 <tr>
                                     <td>
                                         <img
-                                            src="<cti:url value='/capcontrol/oneline/magnifier.gif'/>" />
+                                            src="<cti:url value='/oneline/magnifier.gif'/>" />
                                     </td>
                                     <td
                                         style="color: rgb(192, 192, 192); font-size: 12;">
@@ -183,7 +183,7 @@
                                 <tr>
                                     <td>
                                         <img
-                                            src="<cti:url value='/capcontrol/oneline/question.GIF'/>" />
+                                            src="<cti:url value='/oneline/question.GIF'/>" />
                                     </td>
                                     <td
                                         style="color: rgb(192, 192, 192); font-size: 12;">
@@ -193,7 +193,7 @@
                                 <tr>
                                     <td>
                                         <img
-                                            src="<cti:url value='/capcontrol/oneline/edit.gif'/>" />
+                                            src="<cti:url value='/oneline/edit.gif'/>" />
                                     </td>
                                     <td
                                         style="color: rgb(192, 192, 192); font-size: 12;">
@@ -203,7 +203,7 @@
                                 <tr>
                                     <td>
                                         <img
-                                            src="<cti:url value='/capcontrol/oneline/arrow.gif'/>" />
+                                            src="<cti:url value='/oneline/arrow.gif'/>" />
                                     </td>
                                     <td
                                         style="color: rgb(192, 192, 192); font-size: 12;">
@@ -234,7 +234,7 @@
                                     <tr>
                                         <td>
                                             <img
-                                                src="<cti:url value='/capcontrol/oneline/${imageNameMap[state.imageID]}'/>" />
+                                                src="<cti:url value='/oneline/${imageNameMap[state.imageID]}'/>" />
                                         </td>
                                         <td
                                             style="color: rgb(192, 192, 192); font-size: 12;">
@@ -274,7 +274,7 @@
                                     <tr>
                                         <td>
                                             <img
-                                                src="<cti:url value='/capcontrol/oneline/${imageNameMap[state.imageID]}'/>" />
+                                                src="<cti:url value='/oneline/${imageNameMap[state.imageID]}'/>" />
                                         </td>
                                         <td
                                             style="color: rgb(192, 192, 192); font-size: 12;">

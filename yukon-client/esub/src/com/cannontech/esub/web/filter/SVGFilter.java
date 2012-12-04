@@ -19,6 +19,7 @@ public class SVGFilter implements Filter {
     /**
      * @see javax.servlet.Filter#init(FilterConfig)
      */
+    @Override
     public void init(FilterConfig fc) throws ServletException {
         config = fc;
     }
@@ -27,6 +28,7 @@ public class SVGFilter implements Filter {
      * @see javax.servlet.Filter#doFilter(ServletRequest, ServletResponse,
      *      FilterChain)
      */
+    @Override
     public void doFilter(ServletRequest req, ServletResponse resp,
             FilterChain chain) throws IOException, ServletException {
 
@@ -40,7 +42,7 @@ public class SVGFilter implements Filter {
             return;
         }
         String jsPath = uri.replaceFirst(conPath, "");
-        if (jsPath.startsWith("/capcontrol/oneline/")) {
+        if (jsPath.startsWith("/oneline/")) {
 
             chain.doFilter(req, resp);
             return;
@@ -59,6 +61,7 @@ public class SVGFilter implements Filter {
     /**
      * @see javax.servlet.Filter#destroy()
      */
+    @Override
     public void destroy() {
         config = null;
     }

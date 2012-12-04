@@ -80,7 +80,7 @@ public class OnelineControlPanel {
         regenerateDraw.setX(getBackButton().getX());
         regenerateDraw.setY(getBackButton().getY() + 50);
         Integer id = drawing.getSub().getSubBus().getCcId();
-        String regenerateLink = "/capcontrol/oneline/OnelineCBCServlet?id=" + id + "&redirectURL=" + layoutParams.getRedirectURL();
+        String regenerateLink = "/oneline/OnelineCBCServlet?id=" + id + "&redirectURL=" + layoutParams.getRedirectURL();
         regenerateDraw.setLinkTo(regenerateLink);
         LxGraph graph = drawing.getDrawing().getLxGraph();
         graph.add(regenerateDraw);

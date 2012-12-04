@@ -17,7 +17,7 @@
 
 <jsp:setProperty name="CtiNavObject" property="moduleExitPage" value=""/>
 
-<cti:url var="onelineCBCServlet" value="/capcontrol/oneline/OnelineCBCServlet"/>
+<cti:url var="onelineCBCServlet" value="/oneline/OnelineCBCServlet"/>
 <cti:url var="stateMenuUrl" value="/capcontrol/menu/capBankState"/>
 
 <cti:msg2 var="moveBank" key="yukon.web.modules.capcontrol.substation.moveBank"/>

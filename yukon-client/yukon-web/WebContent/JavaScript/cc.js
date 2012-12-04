@@ -30,7 +30,7 @@ function chop(string) {
 function updateDrawing() {
     var id = getSubId();
     var redirectURL = getRedirectURL();
-    var url = '/capcontrol/oneline/OnelineCBCServlet';
+    var url = '/oneline/OnelineCBCServlet';
     
 	new Ajax.Request(url, { method:'POST', parameters: {'id': id, 'redirectURL': redirectURL},
         onSuccess:function (t) {

@@ -23,7 +23,7 @@ public class CBCWebUtils
 
     private static final String GRAPH_30_DAY_URL = "/servlet/GraphGenerator?action=EncodeGraph";
 
-    public static final String ONE_LINE_DIR = "/capcontrol/oneline";
+    public static final String ONE_LINE_DIR = "/oneline";
 
     /**
      * Creates a URL that will generate a graph for the give FEEDER
