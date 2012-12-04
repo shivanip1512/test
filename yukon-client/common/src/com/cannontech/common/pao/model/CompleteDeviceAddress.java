@@ -2,6 +2,7 @@ package com.cannontech.common.pao.model;
 
 import com.cannontech.common.pao.annotation.YukonPaoField;
 import com.cannontech.common.pao.annotation.YukonPaoPart;
+import com.google.common.base.Objects;
 
 @YukonPaoPart(idColumnName = "deviceId")
 public class CompleteDeviceAddress {
@@ -37,31 +38,19 @@ public class CompleteDeviceAddress {
     }
 
     @Override
-    public int hashCode() {
-        final int prime = 31;
-        int result = 1;
-        result = prime * result + masterAddress;
-        result = prime * result + postCommWait;
-        result = prime * result + slaveAddress;
-        return result;
+    public int hashCode(){
+        return Objects.hashCode(masterAddress, slaveAddress, postCommWait);
     }
-
+    
     @Override
-    public boolean equals(Object obj) {
-        if (this == obj)
-            return true;
-        if (obj == null)
-            return false;
-        if (getClass() != obj.getClass())
-            return false;
-        CompleteDeviceAddress other = (CompleteDeviceAddress) obj;
-        if (masterAddress != other.masterAddress)
-            return false;
-        if (postCommWait != other.postCommWait)
-            return false;
-        if (slaveAddress != other.slaveAddress)
-            return false;
-        return true;
+    public boolean equals(Object object){
+        if (object instanceof CompleteDeviceAddress) {
+            CompleteDeviceAddress that = (CompleteDeviceAddress) object;
+            return Objects.equal(this.masterAddress, that.masterAddress)
+                && Objects.equal(this.slaveAddress, that.slaveAddress)
+                && Objects.equal(this.postCommWait, that.postCommWait);
+        }
+        return false;
     }
 
     @Override
@@ -69,5 +58,4 @@ public class CompleteDeviceAddress {
         return "CompleteDeviceAddress [masterAddress=" + masterAddress + ", slaveAddress="
                + slaveAddress + ", postCommWait=" + postCommWait + "]";
     }
-
 }

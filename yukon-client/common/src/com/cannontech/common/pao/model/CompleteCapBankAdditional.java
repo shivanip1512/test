@@ -6,6 +6,7 @@ import com.cannontech.common.pao.annotation.YukonPaoField;
 import com.cannontech.common.pao.annotation.YukonPaoPart;
 import com.cannontech.common.util.CtiUtilities;
 import com.cannontech.database.db.capcontrol.CapBankAdditional;
+import com.google.common.base.Objects;
 
 @YukonPaoPart(idColumnName = "deviceId")
 public class CompleteCapBankAdditional {
@@ -191,127 +192,51 @@ public class CompleteCapBankAdditional {
     }
 
     @Override
-    public int hashCode() {
-        final int prime = 31;
-        int result = 1;
-        result = prime * result + ((antennaType == null) ? 0 : antennaType.hashCode());
-        result = prime * result + ((capbankConfig == null) ? 0 : capbankConfig.hashCode());
-        result = prime * result + ((cbcInstallDate == null) ? 0 : cbcInstallDate.hashCode());
-        result = prime * result + ((commMedium == null) ? 0 : commMedium.hashCode());
-        result = prime * result + commStrength;
-        result = prime * result + ((driveDirections == null) ? 0 : driveDirections.hashCode());
-        result = prime * result + (extAntenna ? 1231 : 1237);
-        result = prime * result + ((lastInspection == null) ? 0 : lastInspection.hashCode());
-        result =
-            prime * result + ((lastMaintenanceVisit == null) ? 0 : lastMaintenanceVisit.hashCode());
-        long temp;
-        temp = Double.doubleToLongBits(latitude);
-        result = prime * result + (int) (temp ^ (temp >>> 32));
-        temp = Double.doubleToLongBits(longitude);
-        result = prime * result + (int) (temp ^ (temp >>> 32));
-        result = prime * result + maintenanceAreaId;
-        result = prime * result + (maintenanceRequired ? 1231 : 1237);
-        result = prime * result + ((opCountResetDate == null) ? 0 : opCountResetDate.hashCode());
-        result = prime * result + ((opTeamComments == null) ? 0 : opTeamComments.hashCode());
-        result = prime * result + ((otherComments == null) ? 0 : otherComments.hashCode());
-        result = prime * result + poleNumber;
-        result =
-            prime * result + ((potentialTransformer == null) ? 0 : potentialTransformer.hashCode());
-        return result;
+    public int hashCode(){
+        return Objects.hashCode(maintenanceAreaId, poleNumber, commStrength, latitude, longitude, 
+                                lastMaintenanceVisit, lastInspection, opCountResetDate, 
+                                cbcInstallDate, capbankConfig, commMedium, driveDirections, 
+                                potentialTransformer, opTeamComments, antennaType, otherComments, 
+                                extAntenna, maintenanceRequired);
     }
-
+    
     @Override
-    public boolean equals(Object obj) {
-        if (this == obj)
-            return true;
-        if (obj == null)
-            return false;
-        if (getClass() != obj.getClass())
-            return false;
-        CompleteCapBankAdditional other = (CompleteCapBankAdditional) obj;
-        if (antennaType == null) {
-            if (other.antennaType != null)
-                return false;
-        } else if (!antennaType.equals(other.antennaType))
-            return false;
-        if (capbankConfig == null) {
-            if (other.capbankConfig != null)
-                return false;
-        } else if (!capbankConfig.equals(other.capbankConfig))
-            return false;
-        if (cbcInstallDate == null) {
-            if (other.cbcInstallDate != null)
-                return false;
-        } else if (!cbcInstallDate.equals(other.cbcInstallDate))
-            return false;
-        if (commMedium == null) {
-            if (other.commMedium != null)
-                return false;
-        } else if (!commMedium.equals(other.commMedium))
-            return false;
-        if (commStrength != other.commStrength)
-            return false;
-        if (driveDirections == null) {
-            if (other.driveDirections != null)
-                return false;
-        } else if (!driveDirections.equals(other.driveDirections))
-            return false;
-        if (extAntenna != other.extAntenna)
-            return false;
-        if (lastInspection == null) {
-            if (other.lastInspection != null)
-                return false;
-        } else if (!lastInspection.equals(other.lastInspection))
-            return false;
-        if (lastMaintenanceVisit == null) {
-            if (other.lastMaintenanceVisit != null)
-                return false;
-        } else if (!lastMaintenanceVisit.equals(other.lastMaintenanceVisit))
-            return false;
-        if (Double.doubleToLongBits(latitude) != Double.doubleToLongBits(other.latitude))
-            return false;
-        if (Double.doubleToLongBits(longitude) != Double.doubleToLongBits(other.longitude))
-            return false;
-        if (maintenanceAreaId != other.maintenanceAreaId)
-            return false;
-        if (maintenanceRequired != other.maintenanceRequired)
-            return false;
-        if (opCountResetDate == null) {
-            if (other.opCountResetDate != null)
-                return false;
-        } else if (!opCountResetDate.equals(other.opCountResetDate))
-            return false;
-        if (opTeamComments == null) {
-            if (other.opTeamComments != null)
-                return false;
-        } else if (!opTeamComments.equals(other.opTeamComments))
-            return false;
-        if (otherComments == null) {
-            if (other.otherComments != null)
-                return false;
-        } else if (!otherComments.equals(other.otherComments))
-            return false;
-        if (poleNumber != other.poleNumber)
-            return false;
-        if (potentialTransformer == null) {
-            if (other.potentialTransformer != null)
-                return false;
-        } else if (!potentialTransformer.equals(other.potentialTransformer))
-            return false;
-        return true;
+    public boolean equals(Object object){
+        if (object instanceof CompleteCapBankAdditional) {
+            CompleteCapBankAdditional that = (CompleteCapBankAdditional) object;
+            return Objects.equal(this.maintenanceAreaId, that.maintenanceAreaId)
+                && Objects.equal(this.poleNumber, that.poleNumber)
+                && Objects.equal(this.commStrength, that.commStrength)
+                && Objects.equal(this.latitude, that.latitude)
+                && Objects.equal(this.longitude, that.longitude)
+                && Objects.equal(this.lastMaintenanceVisit, that.lastMaintenanceVisit)
+                && Objects.equal(this.lastInspection, that.lastInspection)
+                && Objects.equal(this.opCountResetDate, that.opCountResetDate)
+                && Objects.equal(this.cbcInstallDate, that.cbcInstallDate)
+                && Objects.equal(this.capbankConfig, that.capbankConfig)
+                && Objects.equal(this.commMedium, that.commMedium)
+                && Objects.equal(this.driveDirections, that.driveDirections)
+                && Objects.equal(this.potentialTransformer, that.potentialTransformer)
+                && Objects.equal(this.opTeamComments, that.opTeamComments)
+                && Objects.equal(this.antennaType, that.antennaType)
+                && Objects.equal(this.otherComments, that.otherComments)
+                && Objects.equal(this.extAntenna, that.extAntenna)
+                && Objects.equal(this.maintenanceRequired, that.maintenanceRequired);
+        }
+        return false;
     }
 
     @Override
     public String toString() {
-        return "CompleteCapBank [maintenanceAreaId=" + maintenanceAreaId + ", poleNumber="
-               + poleNumber + ", commStrength=" + commStrength + ", latitude=" + latitude
-               + ", longitude=" + longitude + ", lastMaintenanceVisit=" + lastMaintenanceVisit
-               + ", lastInspection=" + lastInspection + ", opCountResetDate=" + opCountResetDate
-               + ", cbcInstallDate=" + cbcInstallDate + ", capbankConfig=" + capbankConfig
-               + ", commMedium=" + commMedium + ", driveDirections=" + driveDirections
-               + ", potentialTransformer=" + potentialTransformer + ", opTeamComments="
-               + opTeamComments + ", antennaType=" + antennaType + ", otherComments="
-               + otherComments + ", extAntenna=" + extAntenna + ", maintenanceRequired="
-               + maintenanceRequired + "]";
+        return "CompleteCapBankAdditional [maintenanceAreaId=" + maintenanceAreaId
+               + ", poleNumber=" + poleNumber + ", commStrength=" + commStrength + ", latitude="
+               + latitude + ", longitude=" + longitude + ", lastMaintenanceVisit="
+               + lastMaintenanceVisit + ", lastInspection=" + lastInspection
+               + ", opCountResetDate=" + opCountResetDate + ", cbcInstallDate=" + cbcInstallDate
+               + ", capbankConfig=" + capbankConfig + ", commMedium=" + commMedium
+               + ", driveDirections=" + driveDirections + ", potentialTransformer="
+               + potentialTransformer + ", opTeamComments=" + opTeamComments + ", antennaType="
+               + antennaType + ", otherComments=" + otherComments + ", extAntenna=" + extAntenna
+               + ", maintenanceRequired=" + maintenanceRequired + "]";
     }
 }

@@ -2,6 +2,7 @@ package com.cannontech.common.pao.model;
 
 import com.cannontech.common.pao.annotation.YukonPao;
 import com.cannontech.common.pao.annotation.YukonPaoField;
+import com.google.common.base.Objects;
 
 @YukonPao(idColumnName="DeviceId")
 public class CompleteDevice extends CompleteYukonPao {
@@ -27,8 +28,25 @@ public class CompleteDevice extends CompleteYukonPao {
     }
 
     @Override
+    public int hashCode(){
+        return Objects.hashCode(super.hashCode(), alarmInhibit, controlInhibit);
+    }
+    
+    @Override
+    public boolean equals(Object object){
+        if (object instanceof CompleteDevice) {
+            if (!super.equals(object)) 
+                return false;
+            CompleteDevice that = (CompleteDevice) object;
+            return Objects.equal(this.alarmInhibit, that.alarmInhibit)
+                && Objects.equal(this.controlInhibit, that.controlInhibit);
+        }
+        return false;
+    }
+
+    @Override
     public String toString() {
-        return "CompleteDevice [alarmInhibit=" + alarmInhibit + ", controlInhibit="
+        return super.toString() + " CompleteDevice [alarmInhibit=" + alarmInhibit + ", controlInhibit="
                + controlInhibit + "]";
     }
 }

@@ -6,8 +6,8 @@ import com.cannontech.common.pao.annotation.YukonPaoField;
 
 @YukonPao(paoTypes = PaoType.CCU721, tableBacked=false)
 public final class Ccu721 extends CompleteDevice {
-    private CompleteDeviceAddress completeDeviceAddress = new CompleteDeviceAddress();
-    private CompleteDeviceDirectCommSettings completeDeviceDirectCommSettings = new CompleteDeviceDirectCommSettings();
+    private final CompleteDeviceAddress completeDeviceAddress = new CompleteDeviceAddress();
+    private final CompleteDeviceDirectCommSettings completeDeviceDirectCommSettings = new CompleteDeviceDirectCommSettings();
 
     @YukonPaoField
     public CompleteDeviceAddress getCompleteDeviceAddress() {
@@ -48,12 +48,15 @@ public final class Ccu721 extends CompleteDevice {
     }
 
     public void setPortId(int portId) {
+
         completeDeviceDirectCommSettings.setPortId(portId);
     }
 
+
+
     @Override
     public String toString() {
-        return "Ccu721 [completeDeviceAddress=" + completeDeviceAddress
-               + ", completeDeviceDirectCommSettings=" + completeDeviceDirectCommSettings + "]";
+        return super.toString() + " Ccu721 [completeDeviceAddress=" + completeDeviceAddress
+                + ", completeDeviceDirectCommSettings=" + completeDeviceDirectCommSettings + "]";
     }
 }

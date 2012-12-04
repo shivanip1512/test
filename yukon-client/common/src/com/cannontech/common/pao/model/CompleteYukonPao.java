@@ -7,6 +7,7 @@ import com.cannontech.common.pao.PaoType;
 import com.cannontech.common.pao.annotation.YukonPao;
 import com.cannontech.common.pao.annotation.YukonPaoField;
 import com.cannontech.common.util.CtiUtilities;
+import com.google.common.base.Objects;
 
 @YukonPao(tableName="YukonPaObject", idColumnName="PaObjectId")
 public class CompleteYukonPao implements com.cannontech.common.pao.YukonPao {
@@ -17,6 +18,7 @@ public class CompleteYukonPao implements com.cannontech.common.pao.YukonPao {
     private String statistics = CtiUtilities.STRING_DASH_LINE;
     private boolean disabled = false;
 
+    @Override
     public PaoIdentifier getPaoIdentifier() {
         return paoIdentifier;
     }
@@ -28,17 +30,17 @@ public class CompleteYukonPao implements com.cannontech.common.pao.YukonPao {
     public int getPaObjectId() {
         return paoIdentifier.getPaoId();
     }
-    
+
     @YukonPaoField(columnName="Category")
     public PaoCategory getPaoCategory() {
         return paoIdentifier.getPaoType().getPaoCategory();
     }
-    
+
     @YukonPaoField(columnName="PaoClass")
     public PaoClass getPaoClass() {
         return paoIdentifier.getPaoType().getPaoClass();
     }
-    
+
     @YukonPaoField(columnName="Type")
     public PaoType getPaoType() {
         return paoIdentifier.getPaoType();
@@ -82,54 +84,29 @@ public class CompleteYukonPao implements com.cannontech.common.pao.YukonPao {
 
     @Override
     public String toString() {
-        return "CompleteYukonPao [paoIdentifier=" + paoIdentifier + ", paoName=" + paoName
-               + ", description=" + description + ", statistics=" + statistics + ", disabled="
-               + disabled + "]";
+        return this.getClass().getSimpleName() + " [ CompleteYukonPao [paoIdentifier="
+                + paoIdentifier + ", paoName=" + paoName + ", description=" + description
+                + ", statistics=" + statistics + ", disabled=" + disabled + "]";
     }
 
     @Override
     public int hashCode() {
-        final int prime = 31;
-        int result = 1;
-        result = prime * result + ((description == null) ? 0 : description.hashCode());
-        result = prime * result + (disabled ? 1231 : 1237);
-        result = prime * result + ((paoIdentifier == null) ? 0 : paoIdentifier.hashCode());
-        result = prime * result + ((paoName == null) ? 0 : paoName.hashCode());
-        result = prime * result + ((statistics == null) ? 0 : statistics.hashCode());
-        return result;
+        return Objects.hashCode(super.hashCode(), paoIdentifier, paoName, description, statistics, disabled);
     }
 
     @Override
-    public boolean equals(Object obj) {
-        if (this == obj)
-            return true;
-        if (obj == null)
-            return false;
-        if (getClass() != obj.getClass())
-            return false;
-        CompleteYukonPao other = (CompleteYukonPao) obj;
-        if (description == null) {
-            if (other.description != null)
+    public boolean equals(Object object) {
+        if (object instanceof CompleteYukonPao) {
+            if (!super.equals(object)) {
                 return false;
-        } else if (!description.equals(other.description))
-            return false;
-        if (disabled != other.disabled)
-            return false;
-        if (paoIdentifier == null) {
-            if (other.paoIdentifier != null)
-                return false;
-        } else if (!paoIdentifier.equals(other.paoIdentifier))
-            return false;
-        if (paoName == null) {
-            if (other.paoName != null)
-                return false;
-        } else if (!paoName.equals(other.paoName))
-            return false;
-        if (statistics == null) {
-            if (other.statistics != null)
-                return false;
-        } else if (!statistics.equals(other.statistics))
-            return false;
-        return true;
+            }
+            CompleteYukonPao that = (CompleteYukonPao) object;
+            return Objects.equal(this.paoIdentifier, that.paoIdentifier)
+                    && Objects.equal(this.paoName, that.paoName)
+                    && Objects.equal(this.description, that.description)
+                    && Objects.equal(this.statistics, that.statistics)
+                    && Objects.equal(this.disabled, that.disabled);
+        }
+        return false;
     }
 }

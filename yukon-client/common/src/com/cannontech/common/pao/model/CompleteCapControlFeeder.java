@@ -3,6 +3,7 @@ package com.cannontech.common.pao.model;
 import com.cannontech.common.pao.PaoType;
 import com.cannontech.common.pao.annotation.YukonPao;
 import com.cannontech.common.pao.annotation.YukonPaoField;
+import com.google.common.base.Objects;
 
 @YukonPao(idColumnName="FeederId", paoTypes=PaoType.CAP_CONTROL_FEEDER)
 public class CompleteCapControlFeeder extends CompleteYukonPao {
@@ -98,61 +99,38 @@ public class CompleteCapControlFeeder extends CompleteYukonPao {
     }
 
     @Override
+    public int hashCode(){
+        return Objects.hashCode(super.hashCode(), currentVarLoadPointId, currentWattLoadPointId, 
+                                currentVoltLoadPointId, phaseB, phaseC, mapLocationId, 
+                                multiMonitorControl, usePhaseData, controlFlag);
+    }
+    
+    @Override
+    public boolean equals(Object object){
+        if (object instanceof CompleteCapControlFeeder) {
+            if (!super.equals(object)) 
+                return false;
+            CompleteCapControlFeeder that = (CompleteCapControlFeeder) object;
+            return Objects.equal(this.currentVarLoadPointId, that.currentVarLoadPointId)
+                && Objects.equal(this.currentWattLoadPointId, that.currentWattLoadPointId)
+                && Objects.equal(this.currentVoltLoadPointId, that.currentVoltLoadPointId)
+                && Objects.equal(this.phaseB, that.phaseB)
+                && Objects.equal(this.phaseC, that.phaseC)
+                && Objects.equal(this.mapLocationId, that.mapLocationId)
+                && Objects.equal(this.multiMonitorControl, that.multiMonitorControl)
+                && Objects.equal(this.usePhaseData, that.usePhaseData)
+                && Objects.equal(this.controlFlag, that.controlFlag);
+        }
+        return false;
+    }
+
+    @Override
     public String toString() {
-        return "CompleteCapControlFeeder [currentVarLoadPointId=" + currentVarLoadPointId
+        return super.toString() + " CompleteCapControlFeeder [currentVarLoadPointId=" + currentVarLoadPointId
                + ", currentWattLoadPointId=" + currentWattLoadPointId + ", currentVoltLoadPointId="
                + currentVoltLoadPointId + ", phaseB=" + phaseB + ", phaseC=" + phaseC
                + ", mapLocationId=" + mapLocationId + ", multiMonitorControl="
                + multiMonitorControl + ", usePhaseData=" + usePhaseData + ", controlFlag="
                + controlFlag + "]";
-    }
-
-    @Override
-    public int hashCode() {
-        final int prime = 31;
-        int result = super.hashCode();
-        result = prime * result + (controlFlag ? 1231 : 1237);
-        result = prime * result + currentVarLoadPointId;
-        result = prime * result + currentVoltLoadPointId;
-        result = prime * result + currentWattLoadPointId;
-        result = prime * result + ((mapLocationId == null) ? 0 : mapLocationId.hashCode());
-        result = prime * result + (multiMonitorControl ? 1231 : 1237);
-        result = prime * result + phaseB;
-        result = prime * result + phaseC;
-        result = prime * result + (usePhaseData ? 1231 : 1237);
-        return result;
-    }
-
-    @Override
-    public boolean equals(Object obj) {
-        if (this == obj)
-            return true;
-        if (!super.equals(obj))
-            return false;
-        if (getClass() != obj.getClass())
-            return false;
-        CompleteCapControlFeeder other = (CompleteCapControlFeeder) obj;
-        if (controlFlag != other.controlFlag)
-            return false;
-        if (currentVarLoadPointId != other.currentVarLoadPointId)
-            return false;
-        if (currentVoltLoadPointId != other.currentVoltLoadPointId)
-            return false;
-        if (currentWattLoadPointId != other.currentWattLoadPointId)
-            return false;
-        if (mapLocationId == null) {
-            if (other.mapLocationId != null)
-                return false;
-        } else if (!mapLocationId.equals(other.mapLocationId))
-            return false;
-        if (multiMonitorControl != other.multiMonitorControl)
-            return false;
-        if (phaseB != other.phaseB)
-            return false;
-        if (phaseC != other.phaseC)
-            return false;
-        if (usePhaseData != other.usePhaseData)
-            return false;
-        return true;
     }
 }

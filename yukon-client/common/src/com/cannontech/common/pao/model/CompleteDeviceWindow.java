@@ -3,6 +3,7 @@ package com.cannontech.common.pao.model;
 import com.cannontech.common.device.DeviceWindowType;
 import com.cannontech.common.pao.annotation.YukonPaoField;
 import com.cannontech.common.pao.annotation.YukonPaoPart;
+import com.google.common.base.Objects;
 
 @YukonPaoPart(idColumnName="deviceId")
 public class CompleteDeviceWindow {
@@ -58,37 +59,21 @@ public class CompleteDeviceWindow {
     }
 
     @Override
-    public int hashCode() {
-        final int prime = 31;
-        int result = 1;
-        result = prime * result + alternateClose;
-        result = prime * result + alternateOpen;
-        result = prime * result + ((type == null) ? 0 : type.hashCode());
-        result = prime * result + windowClose;
-        result = prime * result + windowOpen;
-        return result;
+    public int hashCode(){
+        return Objects.hashCode(type, windowOpen, windowClose, alternateOpen, alternateClose);
     }
-
+    
     @Override
-    public boolean equals(Object obj) {
-        if (this == obj)
-            return true;
-        if (obj == null)
-            return false;
-        if (getClass() != obj.getClass())
-            return false;
-        CompleteDeviceWindow other = (CompleteDeviceWindow) obj;
-        if (alternateClose != other.alternateClose)
-            return false;
-        if (alternateOpen != other.alternateOpen)
-            return false;
-        if (type != other.type)
-            return false;
-        if (windowClose != other.windowClose)
-            return false;
-        if (windowOpen != other.windowOpen)
-            return false;
-        return true;
+    public boolean equals(Object object){
+        if (object instanceof CompleteDeviceWindow) {
+            CompleteDeviceWindow that = (CompleteDeviceWindow) object;
+            return Objects.equal(this.type, that.type)
+                && Objects.equal(this.windowOpen, that.windowOpen)
+                && Objects.equal(this.windowClose, that.windowClose)
+                && Objects.equal(this.alternateOpen, that.alternateOpen)
+                && Objects.equal(this.alternateClose, that.alternateClose);
+        }
+        return false;
     }
 
     @Override

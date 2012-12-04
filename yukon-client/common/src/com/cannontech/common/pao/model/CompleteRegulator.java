@@ -3,6 +3,7 @@ package com.cannontech.common.pao.model;
 import com.cannontech.common.pao.PaoType;
 import com.cannontech.common.pao.annotation.YukonPao;
 import com.cannontech.common.pao.annotation.YukonPaoField;
+import com.google.common.base.Objects;
 
 @YukonPao(idColumnName="RegulatorId", 
           paoTypes={PaoType.LOAD_TAP_CHANGER, PaoType.GANG_OPERATED, PaoType.PHASE_OPERATED})
@@ -39,39 +40,27 @@ public class CompleteRegulator extends CompleteYukonPao {
     }
 
     @Override
+    public int hashCode(){
+        return Objects.hashCode(super.hashCode(), keepAliveTimer, keepAliveConfig, voltChangePerTap);
+    }
+    
+    @Override
+    public boolean equals(Object object){
+        if (object instanceof CompleteRegulator) {
+            if (!super.equals(object)) 
+                return false;
+            CompleteRegulator that = (CompleteRegulator) object;
+            return Objects.equal(this.keepAliveTimer, that.keepAliveTimer)
+                && Objects.equal(this.keepAliveConfig, that.keepAliveConfig)
+                && Objects.equal(this.voltChangePerTap, that.voltChangePerTap);
+        }
+        return false;
+    }
+
+    @Override
     public String toString() {
-        return "CompleteRegulator [keepAliveTimer=" + keepAliveTimer + ", keepAliveConfig="
+        return super.toString() + " CompleteRegulator [keepAliveTimer=" + keepAliveTimer + ", keepAliveConfig="
                + keepAliveConfig + ", voltChangePerTap=" + voltChangePerTap + "]";
     }
 
-    @Override
-    public int hashCode() {
-        final int prime = 31;
-        int result = super.hashCode();
-        result = prime * result + keepAliveConfig;
-        result = prime * result + keepAliveTimer;
-        long temp;
-        temp = Double.doubleToLongBits(voltChangePerTap);
-        result = prime * result + (int) (temp ^ (temp >>> 32));
-        return result;
-    }
-
-    @Override
-    public boolean equals(Object obj) {
-        if (this == obj)
-            return true;
-        if (!super.equals(obj))
-            return false;
-        if (getClass() != obj.getClass())
-            return false;
-        CompleteRegulator other = (CompleteRegulator) obj;
-        if (keepAliveConfig != other.keepAliveConfig)
-            return false;
-        if (keepAliveTimer != other.keepAliveTimer)
-            return false;
-        if (Double.doubleToLongBits(voltChangePerTap) != Double
-            .doubleToLongBits(other.voltChangePerTap))
-            return false;
-        return true;
-    }
 }

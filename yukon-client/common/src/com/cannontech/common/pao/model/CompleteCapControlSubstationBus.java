@@ -3,6 +3,7 @@ package com.cannontech.common.pao.model;
 import com.cannontech.common.pao.PaoType;
 import com.cannontech.common.pao.annotation.YukonPao;
 import com.cannontech.common.pao.annotation.YukonPaoField;
+import com.google.common.base.Objects;
 
 @YukonPao(idColumnName="SubstationBusId", paoTypes=PaoType.CAP_CONTROL_SUBBUS)
 public class CompleteCapControlSubstationBus extends CompleteYukonPao {
@@ -148,8 +149,40 @@ public class CompleteCapControlSubstationBus extends CompleteYukonPao {
     }
 
     @Override
+    public int hashCode(){
+        return Objects.hashCode(super.hashCode(), currentVarLoadPointId, currentWattLoadPointId, 
+                                mapLocationId, currentVoltLoadPointId, altSubId, switchPointId, 
+                                phaseB, phaseC, voltReductionPointId, controlFlag, dualBusEnabled, 
+                                multiMonitorControl, usePhaseData, disableBusPointId);
+    }
+    
+    @Override
+    public boolean equals(Object object){
+        if (object instanceof CompleteCapControlSubstationBus) {
+            if (!super.equals(object)) 
+                return false;
+            CompleteCapControlSubstationBus that = (CompleteCapControlSubstationBus) object;
+            return Objects.equal(this.currentVarLoadPointId, that.currentVarLoadPointId)
+                && Objects.equal(this.currentWattLoadPointId, that.currentWattLoadPointId)
+                && Objects.equal(this.mapLocationId, that.mapLocationId)
+                && Objects.equal(this.currentVoltLoadPointId, that.currentVoltLoadPointId)
+                && Objects.equal(this.altSubId, that.altSubId)
+                && Objects.equal(this.switchPointId, that.switchPointId)
+                && Objects.equal(this.phaseB, that.phaseB)
+                && Objects.equal(this.phaseC, that.phaseC)
+                && Objects.equal(this.voltReductionPointId, that.voltReductionPointId)
+                && Objects.equal(this.controlFlag, that.controlFlag)
+                && Objects.equal(this.dualBusEnabled, that.dualBusEnabled)
+                && Objects.equal(this.multiMonitorControl, that.multiMonitorControl)
+                && Objects.equal(this.usePhaseData, that.usePhaseData)
+                && Objects.equal(this.disableBusPointId, that.disableBusPointId);
+        }
+        return false;
+    }
+
+    @Override
     public String toString() {
-        return "CompleteCapControlSubstationBus [currentVarLoadPointId=" + currentVarLoadPointId
+        return super.toString() + " CompleteCapControlSubstationBus [currentVarLoadPointId=" + currentVarLoadPointId
                + ", currentWattLoadPointId=" + currentWattLoadPointId + ", mapLocationId="
                + mapLocationId + ", currentVoltLoadPointId=" + currentVoltLoadPointId
                + ", altSubId=" + altSubId + ", switchPointId=" + switchPointId + ", phaseB="
@@ -157,69 +190,5 @@ public class CompleteCapControlSubstationBus extends CompleteYukonPao {
                + ", controlFlag=" + controlFlag + ", dualBusEnabled=" + dualBusEnabled
                + ", multiMonitorControl=" + multiMonitorControl + ", usePhaseData=" + usePhaseData
                + ", disableBusPointId=" + disableBusPointId + "]";
-    }
-
-    @Override
-    public int hashCode() {
-        final int prime = 31;
-        int result = super.hashCode();
-        result = prime * result + altSubId;
-        result = prime * result + (controlFlag ? 1231 : 1237);
-        result = prime * result + currentVarLoadPointId;
-        result = prime * result + currentVoltLoadPointId;
-        result = prime * result + currentWattLoadPointId;
-        result = prime * result + disableBusPointId;
-        result = prime * result + (dualBusEnabled ? 1231 : 1237);
-        result = prime * result + ((mapLocationId == null) ? 0 : mapLocationId.hashCode());
-        result = prime * result + (multiMonitorControl ? 1231 : 1237);
-        result = prime * result + phaseB;
-        result = prime * result + phaseC;
-        result = prime * result + switchPointId;
-        result = prime * result + (usePhaseData ? 1231 : 1237);
-        result = prime * result + voltReductionPointId;
-        return result;
-    }
-
-    @Override
-    public boolean equals(Object obj) {
-        if (this == obj)
-            return true;
-        if (!super.equals(obj))
-            return false;
-        if (getClass() != obj.getClass())
-            return false;
-        CompleteCapControlSubstationBus other = (CompleteCapControlSubstationBus) obj;
-        if (altSubId != other.altSubId)
-            return false;
-        if (controlFlag != other.controlFlag)
-            return false;
-        if (currentVarLoadPointId != other.currentVarLoadPointId)
-            return false;
-        if (currentVoltLoadPointId != other.currentVoltLoadPointId)
-            return false;
-        if (currentWattLoadPointId != other.currentWattLoadPointId)
-            return false;
-        if (disableBusPointId != other.disableBusPointId)
-            return false;
-        if (dualBusEnabled != other.dualBusEnabled)
-            return false;
-        if (mapLocationId == null) {
-            if (other.mapLocationId != null)
-                return false;
-        } else if (!mapLocationId.equals(other.mapLocationId))
-            return false;
-        if (multiMonitorControl != other.multiMonitorControl)
-            return false;
-        if (phaseB != other.phaseB)
-            return false;
-        if (phaseC != other.phaseC)
-            return false;
-        if (switchPointId != other.switchPointId)
-            return false;
-        if (usePhaseData != other.usePhaseData)
-            return false;
-        if (voltReductionPointId != other.voltReductionPointId)
-            return false;
-        return true;
     }
 }

@@ -413,6 +413,11 @@ public class PaoPersistenceDaoImpl implements PaoPersistenceDao {
         PaoIdentifier paoIdentifier = new PaoIdentifier(paoId, paoType);
         pao.setPaoIdentifier(paoIdentifier);
         
+        // Debug log is more useful if we have our PaoIdentifier non-null.
+        if (log.isDebugEnabled()) {
+            log.debug("Creating " + pao);
+        }
+
         try {
             insertOrUpdatePao(pao, false);
         } catch (Exception e) {
@@ -424,12 +429,20 @@ public class PaoPersistenceDaoImpl implements PaoPersistenceDao {
     @Override
     @Transactional
     public void updatePao(CompleteYukonPao pao) {
+        if (log.isDebugEnabled()) {
+            log.debug("Updating " + pao);
+        }
+        
         insertOrUpdatePao(pao, true);
     }
     
     @Override
     @Transactional
     public void deletePao(PaoIdentifier paoIdentifier) {
+        if (log.isDebugEnabled()) {
+            log.debug("Deleting " + paoIdentifier);
+        }
+        
         List<CompletePaoMetaData> mappings = paoTypeToTableMapping.get(paoIdentifier.getPaoType());
         // The list we get from the map is in insertion order, we need to reverse it for deletion.
         List<CompletePaoMetaData> dbTableMappings = Lists.reverse(mappings);

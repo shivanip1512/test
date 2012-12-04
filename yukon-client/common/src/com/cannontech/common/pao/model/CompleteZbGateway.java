@@ -2,6 +2,7 @@ package com.cannontech.common.pao.model;
 
 import com.cannontech.common.pao.annotation.YukonPao;
 import com.cannontech.common.pao.annotation.YukonPaoField;
+import com.google.common.base.Objects;
 
 @YukonPao(idColumnName="DeviceId")
 public class CompleteZbGateway extends CompleteDevice {
@@ -27,39 +28,25 @@ public class CompleteZbGateway extends CompleteDevice {
     }
 
     @Override
+    public int hashCode(){
+        return Objects.hashCode(super.hashCode(), firmwareVersion, macAddress);
+    }
+    
+    @Override
+    public boolean equals(Object object){
+        if (object instanceof CompleteZbGateway) {
+            if (!super.equals(object)) 
+                return false;
+            CompleteZbGateway that = (CompleteZbGateway) object;
+            return Objects.equal(this.firmwareVersion, that.firmwareVersion)
+                && Objects.equal(this.macAddress, that.macAddress);
+        }
+        return false;
+    }
+
+    @Override
     public String toString() {
-        return "CompleteZbGateway [firmwareVersion=" + firmwareVersion + ", macAddress="
+        return super.toString() + " CompleteZbGateway [firmwareVersion=" + firmwareVersion + ", macAddress="
                + macAddress + "]";
-    }
-
-    @Override
-    public int hashCode() {
-        final int prime = 31;
-        int result = super.hashCode();
-        result = prime * result + ((firmwareVersion == null) ? 0 : firmwareVersion.hashCode());
-        result = prime * result + ((macAddress == null) ? 0 : macAddress.hashCode());
-        return result;
-    }
-
-    @Override
-    public boolean equals(Object obj) {
-        if (this == obj)
-            return true;
-        if (!super.equals(obj))
-            return false;
-        if (getClass() != obj.getClass())
-            return false;
-        CompleteZbGateway other = (CompleteZbGateway) obj;
-        if (firmwareVersion == null) {
-            if (other.firmwareVersion != null)
-                return false;
-        } else if (!firmwareVersion.equals(other.firmwareVersion))
-            return false;
-        if (macAddress == null) {
-            if (other.macAddress != null)
-                return false;
-        } else if (!macAddress.equals(other.macAddress))
-            return false;
-        return true;
     }
 }

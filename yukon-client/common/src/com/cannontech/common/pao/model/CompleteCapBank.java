@@ -5,6 +5,7 @@ import com.cannontech.common.pao.PaoType;
 import com.cannontech.common.pao.annotation.YukonPao;
 import com.cannontech.common.pao.annotation.YukonPaoField;
 import com.cannontech.common.util.CtiUtilities;
+import com.google.common.base.Objects;
 
 @YukonPao(idColumnName = "deviceId", paoTypes=PaoType.CAPBANK)
 public class CompleteCapBank extends CompleteDevice {
@@ -130,77 +131,42 @@ public class CompleteCapBank extends CompleteDevice {
     }
 
     @Override
+    public int hashCode(){
+        return Objects.hashCode(super.hashCode(), operationalState, controlDeviceId, controlPointId, 
+                                bankSize, recloseDelay, maxDailyOps, typeOfSwitch, controllerType, 
+                                switchManufacturer, mapLocationId, maxOpDisable, capBankAdditional);
+    }
+    
+    @Override
+    public boolean equals(Object object){
+        if (object instanceof CompleteCapBank) {
+            if (!super.equals(object)) 
+                return false;
+            CompleteCapBank that = (CompleteCapBank) object;
+            return Objects.equal(this.operationalState, that.operationalState)
+                && Objects.equal(this.controlDeviceId, that.controlDeviceId)
+                && Objects.equal(this.controlPointId, that.controlPointId)
+                && Objects.equal(this.bankSize, that.bankSize)
+                && Objects.equal(this.recloseDelay, that.recloseDelay)
+                && Objects.equal(this.maxDailyOps, that.maxDailyOps)
+                && Objects.equal(this.typeOfSwitch, that.typeOfSwitch)
+                && Objects.equal(this.controllerType, that.controllerType)
+                && Objects.equal(this.switchManufacturer, that.switchManufacturer)
+                && Objects.equal(this.mapLocationId, that.mapLocationId)
+                && Objects.equal(this.maxOpDisable, that.maxOpDisable)
+                && Objects.equal(this.capBankAdditional, that.capBankAdditional);
+        }
+        return false;
+    }
+
+    @Override
     public String toString() {
-        return "CompleteCapBank [operationalState=" + operationalState + ", controlDeviceId="
+        return super.toString() + " CompleteCapBank [operationalState=" + operationalState + ", controlDeviceId="
                + controlDeviceId + ", controlPointId=" + controlPointId + ", bankSize=" + bankSize
                + ", recloseDelay=" + recloseDelay + ", maxDailyOps=" + maxDailyOps
                + ", typeOfSwitch=" + typeOfSwitch + ", controllerType=" + controllerType
                + ", switchManufacturer=" + switchManufacturer + ", mapLocationId=" + mapLocationId
-               + ", maxOpDisable=" + maxOpDisable + "]";
-    }
-
-    @Override
-    public int hashCode() {
-        final int prime = 31;
-        int result = super.hashCode();
-        result = prime * result + bankSize;
-        result = prime * result + controlDeviceId;
-        result = prime * result + controlPointId;
-        result = prime * result + ((controllerType == null) ? 0 : controllerType.hashCode());
-        result = prime * result + ((mapLocationId == null) ? 0 : mapLocationId.hashCode());
-        result = prime * result + maxDailyOps;
-        result = prime * result + (maxOpDisable ? 1231 : 1237);
-        result = prime * result + ((operationalState == null) ? 0 : operationalState.hashCode());
-        result = prime * result + recloseDelay;
-        result =
-            prime * result + ((switchManufacturer == null) ? 0 : switchManufacturer.hashCode());
-        result = prime * result + ((typeOfSwitch == null) ? 0 : typeOfSwitch.hashCode());
-        return result;
-    }
-
-    @Override
-    public boolean equals(Object obj) {
-        if (this == obj)
-            return true;
-        if (!super.equals(obj))
-            return false;
-        if (getClass() != obj.getClass())
-            return false;
-        CompleteCapBank other = (CompleteCapBank) obj;
-        if (bankSize != other.bankSize)
-            return false;
-        if (controlDeviceId != other.controlDeviceId)
-            return false;
-        if (controlPointId != other.controlPointId)
-            return false;
-        if (controllerType == null) {
-            if (other.controllerType != null)
-                return false;
-        } else if (!controllerType.equals(other.controllerType))
-            return false;
-        if (mapLocationId == null) {
-            if (other.mapLocationId != null)
-                return false;
-        } else if (!mapLocationId.equals(other.mapLocationId))
-            return false;
-        if (maxDailyOps != other.maxDailyOps)
-            return false;
-        if (maxOpDisable != other.maxOpDisable)
-            return false;
-        if (operationalState != other.operationalState)
-            return false;
-        if (recloseDelay != other.recloseDelay)
-            return false;
-        if (switchManufacturer == null) {
-            if (other.switchManufacturer != null)
-                return false;
-        } else if (!switchManufacturer.equals(other.switchManufacturer))
-            return false;
-        if (typeOfSwitch == null) {
-            if (other.typeOfSwitch != null)
-                return false;
-        } else if (!typeOfSwitch.equals(other.typeOfSwitch))
-            return false;
-        return true;
+               + ", maxOpDisable=" + maxOpDisable + ", capBankAdditional=" + capBankAdditional
+               + "]";
     }
 }

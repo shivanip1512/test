@@ -2,6 +2,7 @@ package com.cannontech.common.pao.model;
 
 import com.cannontech.common.pao.annotation.YukonPao;
 import com.cannontech.common.pao.annotation.YukonPaoField;
+import com.google.common.base.Objects;
 
 @YukonPao(tableName="DeviceCbc", idColumnName="deviceId")
 public class CompleteCbcBase extends CompleteDevice {
@@ -27,33 +28,24 @@ public class CompleteCbcBase extends CompleteDevice {
     }
 
     @Override
-    public int hashCode() {
-        final int prime = 31;
-        int result = super.hashCode();
-        result = prime * result + routeId;
-        result = prime * result + serialNumber;
-        return result;
+    public int hashCode(){
+        return Objects.hashCode(super.hashCode(), serialNumber, routeId);
     }
-
+    
     @Override
-    public boolean equals(Object obj) {
-        if (this == obj)
-            return true;
-        if (!super.equals(obj))
-            return false;
-        if (getClass() != obj.getClass())
-            return false;
-        CompleteCbcBase other = (CompleteCbcBase) obj;
-        if (routeId != other.routeId)
-            return false;
-        if (serialNumber != other.serialNumber)
-            return false;
-        return true;
+    public boolean equals(Object object){
+        if (object instanceof CompleteCbcBase) {
+            if (!super.equals(object)) 
+                return false;
+            CompleteCbcBase that = (CompleteCbcBase) object;
+            return Objects.equal(this.serialNumber, that.serialNumber)
+                && Objects.equal(this.routeId, that.routeId);
+        }
+        return false;
     }
 
     @Override
     public String toString() {
-        return "CompleteDeviceCbc [serialNumber=" + serialNumber + ", routeId=" + routeId + "]";
+        return super.toString() + "CompleteCbcBase [serialNumber=" + serialNumber + ", routeId=" + routeId + "]";
     }
-    
 }

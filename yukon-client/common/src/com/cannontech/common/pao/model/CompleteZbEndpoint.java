@@ -3,6 +3,7 @@ package com.cannontech.common.pao.model;
 import com.cannontech.common.pao.PaoType;
 import com.cannontech.common.pao.annotation.YukonPao;
 import com.cannontech.common.pao.annotation.YukonPaoField;
+import com.google.common.base.Objects;
 
 @YukonPao(idColumnName="DeviceId", paoTypes=PaoType.ZIGBEE_ENDPOINT)
 public class CompleteZbEndpoint extends CompleteDevice {
@@ -48,45 +49,27 @@ public class CompleteZbEndpoint extends CompleteDevice {
     }
 
     @Override
+    public int hashCode(){
+        return Objects.hashCode(super.hashCode(), installCode, macAddress, endPointId, nodeId);
+    }
+    
+    @Override
+    public boolean equals(Object object){
+        if (object instanceof CompleteZbEndpoint) {
+            if (!super.equals(object)) 
+                return false;
+            CompleteZbEndpoint that = (CompleteZbEndpoint) object;
+            return Objects.equal(this.installCode, that.installCode)
+                && Objects.equal(this.macAddress, that.macAddress)
+                && Objects.equal(this.endPointId, that.endPointId)
+                && Objects.equal(this.nodeId, that.nodeId);
+        }
+        return false;
+    }
+
+    @Override
     public String toString() {
-        return "CompleteZbEndpoint [installCode=" + installCode + ", macAddress=" + macAddress
+        return super.toString() + " CompleteZbEndpoint [installCode=" + installCode + ", macAddress=" + macAddress
                + ", endPointId=" + endPointId + ", nodeId=" + nodeId + "]";
-    }
-
-    @Override
-    public int hashCode() {
-        final int prime = 31;
-        int result = super.hashCode();
-        result = prime * result + endPointId;
-        result = prime * result + ((installCode == null) ? 0 : installCode.hashCode());
-        result = prime * result + ((macAddress == null) ? 0 : macAddress.hashCode());
-        result = prime * result + nodeId;
-        return result;
-    }
-
-    @Override
-    public boolean equals(Object obj) {
-        if (this == obj)
-            return true;
-        if (!super.equals(obj))
-            return false;
-        if (getClass() != obj.getClass())
-            return false;
-        CompleteZbEndpoint other = (CompleteZbEndpoint) obj;
-        if (endPointId != other.endPointId)
-            return false;
-        if (installCode == null) {
-            if (other.installCode != null)
-                return false;
-        } else if (!installCode.equals(other.installCode))
-            return false;
-        if (macAddress == null) {
-            if (other.macAddress != null)
-                return false;
-        } else if (!macAddress.equals(other.macAddress))
-            return false;
-        if (nodeId != other.nodeId)
-            return false;
-        return true;
     }
 }

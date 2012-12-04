@@ -3,6 +3,7 @@ package com.cannontech.common.pao.model;
 import com.cannontech.common.pao.PaoType;
 import com.cannontech.common.pao.annotation.YukonPao;
 import com.cannontech.common.pao.annotation.YukonPaoField;
+import com.google.common.base.Objects;
 
 @YukonPao(idColumnName="SubstationId", paoTypes=PaoType.CAP_CONTROL_SUBSTATION)
 public class CompleteCapControlSubstation extends CompleteYukonPao {
@@ -28,36 +29,25 @@ public class CompleteCapControlSubstation extends CompleteYukonPao {
     }
 
     @Override
-    public int hashCode() {
-        final int prime = 31;
-        int result = super.hashCode();
-        result = prime * result + ((mapLocationId == null) ? 0 : mapLocationId.hashCode());
-        result = prime * result + voltReductionPointId;
-        return result;
+    public int hashCode(){
+        return Objects.hashCode(super.hashCode(), voltReductionPointId, mapLocationId);
     }
-
+    
     @Override
-    public boolean equals(Object obj) {
-        if (this == obj)
-            return true;
-        if (!super.equals(obj))
-            return false;
-        if (getClass() != obj.getClass())
-            return false;
-        CompleteCapControlSubstation other = (CompleteCapControlSubstation) obj;
-        if (mapLocationId == null) {
-            if (other.mapLocationId != null)
+    public boolean equals(Object object){
+        if (object instanceof CompleteCapControlSubstation) {
+            if (!super.equals(object)) 
                 return false;
-        } else if (!mapLocationId.equals(other.mapLocationId))
-            return false;
-        if (voltReductionPointId != other.voltReductionPointId)
-            return false;
-        return true;
+            CompleteCapControlSubstation that = (CompleteCapControlSubstation) object;
+            return Objects.equal(this.voltReductionPointId, that.voltReductionPointId)
+                && Objects.equal(this.mapLocationId, that.mapLocationId);
+        }
+        return false;
     }
 
     @Override
     public String toString() {
-        return "CompleteCapControlSubstation [voltReductionPointId=" + voltReductionPointId
+        return super.toString() + " CompleteCapControlSubstation [voltReductionPointId=" + voltReductionPointId
                + ", mapLocationId=" + mapLocationId + "]";
     }
 }

@@ -2,6 +2,7 @@ package com.cannontech.common.pao.model;
 
 import com.cannontech.common.pao.annotation.YukonPaoField;
 import com.cannontech.common.pao.annotation.YukonPaoPart;
+import com.google.common.base.Objects;
 
 @YukonPaoPart(idColumnName="deviceId")
 public class CompleteDeviceDirectCommSettings {
@@ -17,25 +18,17 @@ public class CompleteDeviceDirectCommSettings {
     }
 
     @Override
-    public int hashCode() {
-        final int prime = 31;
-        int result = 1;
-        result = prime * result + portId;
-        return result;
+    public int hashCode(){
+        return Objects.hashCode(portId);
     }
-
+    
     @Override
-    public boolean equals(Object obj) {
-        if (this == obj)
-            return true;
-        if (obj == null)
-            return false;
-        if (getClass() != obj.getClass())
-            return false;
-        CompleteDeviceDirectCommSettings other = (CompleteDeviceDirectCommSettings) obj;
-        if (portId != other.portId)
-            return false;
-        return true;
+    public boolean equals(Object object){
+        if (object instanceof CompleteDeviceDirectCommSettings) {
+            CompleteDeviceDirectCommSettings that = (CompleteDeviceDirectCommSettings) object;
+            return Objects.equal(this.portId, that.portId);
+        }
+        return false;
     }
 
     @Override

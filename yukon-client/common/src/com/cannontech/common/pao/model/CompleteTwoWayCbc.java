@@ -5,15 +5,16 @@ import com.cannontech.common.device.DeviceWindowType;
 import com.cannontech.common.pao.PaoType;
 import com.cannontech.common.pao.annotation.YukonPao;
 import com.cannontech.common.pao.annotation.YukonPaoField;
+import com.google.common.base.Objects;
 
 @YukonPao(tableBacked=false,
           paoTypes={PaoType.CBC_7020, PaoType.CBC_7022, PaoType.CBC_7023, PaoType.CBC_7024, 
                     PaoType.CBC_8020, PaoType.CBC_8024, PaoType.CBC_DNP})
 public class CompleteTwoWayCbc extends CompleteCbcBase {
     private CompleteDeviceScanRate completeDeviceScanRate = null;
-    private CompleteDeviceWindow completeDeviceWindow = new CompleteDeviceWindow();
-    private CompleteDeviceDirectCommSettings completeDeviceDirectCommSettings = new CompleteDeviceDirectCommSettings();
-    private CompleteDeviceAddress completeDeviceAddress = new CompleteDeviceAddress();
+    private final CompleteDeviceWindow completeDeviceWindow = new CompleteDeviceWindow();
+    private final CompleteDeviceDirectCommSettings completeDeviceDirectCommSettings = new CompleteDeviceDirectCommSettings();
+    private final CompleteDeviceAddress completeDeviceAddress = new CompleteDeviceAddress();
 
     public boolean isScanEnabled() {
         return completeDeviceScanRate != null;
@@ -157,4 +158,33 @@ public class CompleteTwoWayCbc extends CompleteCbcBase {
     public void setPostCommWait(int postCommWait) {
         completeDeviceAddress.setPostCommWait(postCommWait);
     }
+
+    @Override
+    public int hashCode(){
+    	return Objects.hashCode(super.hashCode(), completeDeviceScanRate, completeDeviceWindow, 
+    	                        completeDeviceDirectCommSettings, completeDeviceAddress);
+    }
+    
+    @Override
+    public boolean equals(Object object){
+    	if (object instanceof CompleteTwoWayCbc) {
+    		if (!super.equals(object)) 
+    			return false;
+    		CompleteTwoWayCbc that = (CompleteTwoWayCbc) object;
+    		return Objects.equal(this.completeDeviceScanRate, that.completeDeviceScanRate)
+    			&& Objects.equal(this.completeDeviceWindow, that.completeDeviceWindow)
+    			&& Objects.equal(this.completeDeviceDirectCommSettings, that.completeDeviceDirectCommSettings)
+    			&& Objects.equal(this.completeDeviceAddress, that.completeDeviceAddress);
+    	}
+    	return false;
+    }
+
+    @Override
+    public String toString() {
+        return super.toString() + " CompleteTwoWayCbc [completeDeviceScanRate=" + completeDeviceScanRate
+               + ", completeDeviceWindow=" + completeDeviceWindow
+               + ", completeDeviceDirectCommSettings=" + completeDeviceDirectCommSettings
+               + ", completeDeviceAddress=" + completeDeviceAddress + "]";
+    }
+    
 }

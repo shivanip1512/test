@@ -3,6 +3,7 @@ package com.cannontech.common.pao.model;
 import com.cannontech.common.device.DeviceScanType;
 import com.cannontech.common.pao.annotation.YukonPaoField;
 import com.cannontech.common.pao.annotation.YukonPaoPart;
+import com.google.common.base.Objects;
 
 @YukonPaoPart(idColumnName = "deviceId")
 public class CompleteDeviceScanRate {
@@ -48,34 +49,20 @@ public class CompleteDeviceScanRate {
     }
 
     @Override
-    public int hashCode() {
-        final int prime = 31;
-        int result = 1;
-        result = prime * result + alternateRate;
-        result = prime * result + intervalRate;
-        result = prime * result + scanGroup;
-        result = prime * result + ((scanType == null) ? 0 : scanType.hashCode());
-        return result;
+    public int hashCode(){
+        return Objects.hashCode(intervalRate, scanGroup, alternateRate, scanType);
     }
-
+    
     @Override
-    public boolean equals(Object obj) {
-        if (this == obj)
-            return true;
-        if (obj == null)
-            return false;
-        if (getClass() != obj.getClass())
-            return false;
-        CompleteDeviceScanRate other = (CompleteDeviceScanRate) obj;
-        if (alternateRate != other.alternateRate)
-            return false;
-        if (intervalRate != other.intervalRate)
-            return false;
-        if (scanGroup != other.scanGroup)
-            return false;
-        if (scanType != other.scanType)
-            return false;
-        return true;
+    public boolean equals(Object object){
+        if (object instanceof CompleteDeviceScanRate) {
+            CompleteDeviceScanRate that = (CompleteDeviceScanRate) object;
+            return Objects.equal(this.intervalRate, that.intervalRate)
+                && Objects.equal(this.scanGroup, that.scanGroup)
+                && Objects.equal(this.alternateRate, that.alternateRate)
+                && Objects.equal(this.scanType, that.scanType);
+        }
+        return false;
     }
 
     @Override

@@ -3,6 +3,7 @@ package com.cannontech.common.pao.model;
 import com.cannontech.common.pao.PaoType;
 import com.cannontech.common.pao.annotation.YukonPao;
 import com.cannontech.common.pao.annotation.YukonPaoField;
+import com.google.common.base.Objects;
 
 @YukonPao(idColumnName="DeviceId", paoTypes=PaoType.DIGIGATEWAY)
 public class CompleteDigiGateway extends CompleteZbGateway {
@@ -18,29 +19,23 @@ public class CompleteDigiGateway extends CompleteZbGateway {
     }
 
     @Override
+    public int hashCode(){
+        return Objects.hashCode(super.hashCode(), digiId);
+    }
+    
+    @Override
+    public boolean equals(Object object){
+        if (object instanceof CompleteDigiGateway) {
+            if (!super.equals(object)) 
+                return false;
+            CompleteDigiGateway that = (CompleteDigiGateway) object;
+            return Objects.equal(this.digiId, that.digiId);
+        }
+        return false;
+    }
+
+    @Override
     public String toString() {
-        return "CompleteDigiGateway [digiId=" + digiId + "]";
-    }
-
-    @Override
-    public int hashCode() {
-        final int prime = 31;
-        int result = super.hashCode();
-        result = prime * result + digiId;
-        return result;
-    }
-
-    @Override
-    public boolean equals(Object obj) {
-        if (this == obj)
-            return true;
-        if (!super.equals(obj))
-            return false;
-        if (getClass() != obj.getClass())
-            return false;
-        CompleteDigiGateway other = (CompleteDigiGateway) obj;
-        if (digiId != other.digiId)
-            return false;
-        return true;
+        return super.toString() + " CompleteDigiGateway [digiId=" + digiId + "]";
     }
 }
