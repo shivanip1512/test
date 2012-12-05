@@ -57,19 +57,7 @@ submitForm = function() {
         $('shortNameInput').enable();
     </c:if>
     return submitFormViaAjax('acDialog', 'inputForm')
-};
-
-jQuery(function(){
-    jQuery("#picker_assignedProgramPicker_label a").click(function(e) {
-        jQuery("#acDialog").hide();
-        e.stopPropagation();
-        return true;
-    });
-});
-
-var showProgramEditor = function() {
-    jQuery("#acDialog").show();
-};
+}
 
 YEvent.observeSelectorClick('#sameAsProgramName', sameAsProgramNameClicked);
 YEvent.observeSelectorClick('#sameAsDisplayName', sameAsDisplayNameClicked);
@@ -79,27 +67,24 @@ YEvent.observeSelectorClick('#sameAsDisplayName', sameAsDisplayNameClicked);
 <cti:flashScopeMessages/>
 
 <c:if test="${backingBean.multiple}">
-    <i:inline key=".editingMultiple"/>
+<i:inline key=".editingMultiple"/>
 </c:if>
 
-<form:form id="inputForm" commandName="backingBean" action="saveAssignedProgram" onsubmit="return submitForm()">
-
+<cti:url var="submitUrl" value="saveAssignedProgram"/>
+<form:form id="inputForm" commandName="backingBean" action="${submitUrl}" onsubmit="return submitForm()">
     <input type="hidden" name="ecId" value="${param.ecId}"/>
     <form:hidden path="virtual"/>
     <form:hidden path="multiple"/>
-    
     <c:if test="${backingBean.multiple}">
         <c:forEach var="programId" items="${backingBean.programIds}">
             <input type="hidden" name="programIds" value="${programId}">
         </c:forEach>
     </c:if>
-    
     <form:hidden path="assignedProgram.applianceCategoryId"/>
     <form:hidden path="assignedProgram.assignedProgramId"/>
     <form:hidden path="assignedProgram.programId"/>
     <form:hidden id="programNameInput" path="assignedProgram.programName"/>
     <form:hidden path="assignedProgram.programOrder"/>
-    
     <tags:nameValueContainer>
         <cti:msg2 var="fieldName" key=".applianceCategory"/>
         <tags:nameValue name="${fieldName}" nameColumnWidth="170px">
@@ -190,21 +175,6 @@ YEvent.observeSelectorClick('#sameAsDisplayName', sameAsDisplayNameClicked);
                     icons="${environmentIcons}" value="${backingBean.assignedProgram.environmentIcon}"
                     selectedIcon="${backingBean.assignedProgram.environmentIconEnum}"/>
             </tags:nameValue>
-        </tags:nameValue>
-        <cti:msg2 var="fieldName" key=".seasonalOverride"/>
-        <tags:nameValue name="${fieldName}">
-            <form:hidden path="assignedProgram.seasonalOverrideProgramId" id="seasonalOverrideProgramId"/>
-            <tags:pickerDialog type="assignedProgramPicker" 
-                id="assignedProgramPicker"
-                linkType="selection"
-                selectionProperty="displayName" 
-                multiSelectMode="false" 
-                memoryGroup="programPicker"
-                destinationFieldId="seasonalOverrideProgramId"
-                allowEmptySelection="true"
-                endAction="showProgramEditor"
-                cancelAction="showProgramEditor">
-            </tags:pickerDialog>
         </tags:nameValue>
     </tags:nameValueContainer>
     <cti:displayForPageEditModes modes="EDIT,CREATE">
