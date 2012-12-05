@@ -196,8 +196,9 @@ ul.pipes li.first {padding-left:0;}
 .error, .errorMessage {color: #D14836}
 .success, .successMessage {color: #093;}
 .warn, .warning, .warningMessage {color:#FBB117}
-.disabled, .disabled a, .subtle, .setting .detail > span {color:#555; cursor:default;}
+.disabled, .disabled a {color:#555; cursor:default;}
 .disabled a:hover {text-decoration: none;}
+.subtle, .setting .detail > span {color:#555;}
 
 /* used on consumer pages, delete during consumer overhaul */
 div.message, div.userMessage {border-radius:3px; padding: 2px 30px; border-style:solid; border-width:1px; margin-bottom: 10px;}

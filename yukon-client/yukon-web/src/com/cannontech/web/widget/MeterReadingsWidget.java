@@ -24,7 +24,6 @@ import com.cannontech.common.pao.service.PointService;
 import com.cannontech.core.dao.PointDao;
 import com.cannontech.database.data.lite.LitePoint;
 import com.cannontech.database.data.lite.LiteYukonUser;
-import com.cannontech.database.data.point.PointBase;
 import com.cannontech.util.ServletUtil;
 import com.cannontech.web.widget.support.WidgetControllerBase;
 

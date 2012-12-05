@@ -114,34 +114,5 @@ function ${widgetParameters.widgetId}_updateDifference() {
 
 <div id="${widgetParameters.widgetId}_results"></div>
 <div class="actionArea">
-    <a id="readings_showAll" class="showAll fl">Show All</a>
 	<tags:widgetActionUpdate hide="${!readable}" method="read" nameKey="readNow" container="${widgetParameters.widgetId}_results"/>
 </div>
-
-<dialog:inline id="readings_showAll_popup" nameKey="points" okEvent="none" on="#readings_showAll" options="{'modal' : false, 'width' : 800, 'height' : 500}">
-    <table class="compactResultsTable rowHighlighting" style="width:100%;">
-        <tr>
-            <th>Name</th>
-            <th>Value/State</th>
-            <th>Qaulity</th>
-            <th>Timestamp</th>
-        </tr>
-        <c:forEach var="point" items="${points}">
-            <tr class="<tags:alternateRow odd="" even="altRow"/>">
-                <td>${fn:escapeXml(point.pointName)}</td>
-                <c:if test="${point.pointTypeEnum.status}">
-                    <td>
-                        <cti:pointStatusColor var="stateColor" pointId="${point.liteID}"/>
-                        <div class="box stateBox" style="background-color: ${stateColor};"></div>
-                        <cti:pointValue pointId="${point.liteID}" format="{state}"/>
-                    </td>
-                </c:if>
-                <c:if test="${!point.pointTypeEnum.status}">
-                    <td><cti:pointValue pointId="${point.liteID}" format="VALUE_UNIT"/></td>
-                </c:if>
-                <td><cti:pointValue pointId="${point.liteID}" format="{quality}"/></td>
-                <td><cti:pointValue pointId="${point.liteID}" format="DATE"/></td>
-            </tr>
-        </c:forEach>
-    </table>
-</dialog:inline>
