@@ -2305,7 +2305,7 @@ BOOST_AUTO_TEST_CASE(test_getValueMappingForRead_IO_Read_2Dwords)
         (empty)
         (empty)
         (empty)
-        (tuple_list_of(5,1,128)(6,1,129)(7,2,130))
+        (empty)
         (empty)
         (empty)
         (empty)
@@ -2453,7 +2453,7 @@ BOOST_AUTO_TEST_CASE(test_getValueMappingForRead_IO_Read_3Dwords)
         (empty)
         (empty)
         (empty)
-        (tuple_list_of(5,1,128)(6,1,129)(7,2,130))
+        (empty)
         (empty)
         (empty)
         (empty)
@@ -2608,7 +2608,8 @@ BOOST_AUTO_TEST_CASE(test_getValueMappingForRead_IO_Function_Read_1Dword)
     const vector<vector<tuple<unsigned, unsigned, int>>> expected = list_of<vector<tuple<unsigned, unsigned, int>>>
         //  function read 0
         (empty)
-        .repeat(170-1, empty)
+        (tuple_list_of(1,1,128)(2,1,129))
+        .repeat(170-2, empty)
         //  function read 170
         (empty)
         (empty)
@@ -2660,7 +2661,7 @@ BOOST_AUTO_TEST_CASE(test_getValueMappingForRead_IO_Function_Read_2Dwords)
     const vector<vector<tuple<unsigned, unsigned, int>>> expected = list_of<vector<tuple<unsigned, unsigned, int>>>
         //  function read 0
         (empty)
-        (tuple_list_of(5,2,127))
+        (tuple_list_of(1,1,128)(2,1,129)(3,2,130)(5,2,127))
         .repeat(150-2, empty)
         //  function read 150
         (empty)
@@ -2731,7 +2732,7 @@ BOOST_AUTO_TEST_CASE(test_getValueMappingForRead_IO_Function_Read_3Dwords)
     const vector<vector<tuple<unsigned, unsigned, int>>> expected = list_of<vector<tuple<unsigned, unsigned, int>>>
         //  function read 0
         (empty)
-        (tuple_list_of(5,2,127))
+        (tuple_list_of(1,1,128)(2,1,129)(3,2,130)(5,2,127))
         .repeat(150-2, empty)
         //  function read 150
         (empty)

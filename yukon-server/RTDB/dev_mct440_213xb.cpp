@@ -95,9 +95,7 @@ Mct440_213xBDevice::FunctionReadValueMappings Mct440_213xBDevice::initReadValueM
         { 0x000,  1, { 2, CtiTableDynamicPaoInfo::Key_MCT_SSpec                     } },
 
         // 0x005 – Status and Event Flags and Masks
-        { 0x005,  5, { 1, CtiTableDynamicPaoInfo::Key_MCT_EventFlagsMask1           } },
-        { 0x005,  6, { 1, CtiTableDynamicPaoInfo::Key_MCT_EventFlagsMask2           } },
-        { 0x005,  7, { 2, CtiTableDynamicPaoInfo::Key_MCT_MeterAlarmMask            } },
+        // (mask are check in function 0x101)
 
         // 0x00F – Display Parameters
         { 0x00f,  0, { 1, CtiTableDynamicPaoInfo::Key_MCT_DisplayParameters         } },
@@ -174,7 +172,10 @@ Mct440_213xBDevice::FunctionReadValueMappings Mct440_213xBDevice::initReadValueM
         { 0x0d4,  6, { 2, CtiTableDynamicPaoInfo::Key_MCT_Holiday28                 } },
 
         // 0x101 - Config byte
-        { 0x101,  5, { 2, CtiTableDynamicPaoInfo::Key_MCT_Configuration             } }, //FIXME is this 2-byte?
+        { 0x101,  1, { 1, CtiTableDynamicPaoInfo::Key_MCT_EventFlagsMask1           } },
+        { 0x101,  2, { 1, CtiTableDynamicPaoInfo::Key_MCT_EventFlagsMask2           } },
+        { 0x101,  3, { 2, CtiTableDynamicPaoInfo::Key_MCT_MeterAlarmMask            } },
+        { 0x101,  5, { 2, CtiTableDynamicPaoInfo::Key_MCT_Configuration             } },
 
         // 0x19D – Long Load Profile Status
         { 0x19d,  4, { 1, CtiTableDynamicPaoInfo::Key_MCT_LLPChannel1Len            } },
@@ -2496,7 +2497,7 @@ int Mct440_213xBDevice::executePutConfigAlarmMask(CtiRequestMsg     *pReq,
     }
 
                                                                 /* ----------------- EVENT FLAGS MASK ----------------- */
-    MctConfigInfo.eventMask  = parse.getiValue("alarm_mask", 0);
+    MctConfigInfo.eventMask = parse.getiValue("alarm_mask", 0);
 
     OutMessage->Buffer.BSt.Message[0] = ((MctConfigInfo.eventMask >> 8) & 0xFF);
     OutMessage->Buffer.BSt.Message[1] = (MctConfigInfo.eventMask & 0xFF);
@@ -3105,6 +3106,9 @@ int Mct440_213xBDevice::decodeGetConfigAlarmMask(INMESS          *InMessage,
     INT status    = NORMAL;
     INT ErrReturn = InMessage->EventCode & 0x3fff;
     DSTRUCT *DSt  = &InMessage->Buffer.DSt;
+
+    MctConfigInfo.eventMask      = ((DSt->Message[1] & 0xFF) << 8) | (DSt->Message[2] & 0xFF); // update the event mask info
+    MctConfigInfo.meterAlarmMask = ((DSt->Message[3] & 0xFF) << 8) | (DSt->Message[4] & 0xFF); // update the meter alarm mask info
 
     std::auto_ptr<CtiReturnMsg> ReturnMsg(CTIDBG_new CtiReturnMsg(getID(), InMessage->Return.CommandStr));
 
@@ -3718,6 +3722,10 @@ int Mct440_213xBDevice::decodeGetConfigOptions(INMESS         *InMessage,
 {
     INT status   = NORMAL;
     DSTRUCT *DSt = &InMessage->Buffer.DSt;
+
+    MctConfigInfo.eventMask      = ((DSt->Message[1] & 0xFF) << 8) | (DSt->Message[2] & 0xFF); // update the event mask info
+    MctConfigInfo.meterAlarmMask = ((DSt->Message[3] & 0xFF) << 8) | (DSt->Message[4] & 0xFF); // update the meter alarm mask info
+    MctConfigInfo.configuration  = ((DSt->Message[5] & 0xFF) << 8) | (DSt->Message[6] & 0xFF); // update the configuration info
 
     std::auto_ptr<CtiReturnMsg> ReturnMsg(CTIDBG_new CtiReturnMsg(getID(), InMessage->Return.CommandStr));
 
