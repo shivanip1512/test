@@ -169,7 +169,7 @@ public class LMControlSummaryModel extends BareDatedReportModelBase<LMControlSum
                         int enrolledParticipants = 0;
                         boolean accountEnrollmentCounted = false;
                         double totalControlHours = 0.0;
-                        double totalOptOutHours = 0.0;
+                        double totalControlDuringOptOut = 0.0;
                         int optOutEvents = 0;
                        
 
@@ -215,7 +215,7 @@ public class LMControlSummaryModel extends BareDatedReportModelBase<LMControlSum
                                     }
 
                                     totalControlHours += controlTotals.getTotalControlTime().getMillis();
-                                    totalOptOutHours += controlTotals.getTotalOptOutTime().getMillis();
+                                    totalControlDuringOptOut += controlTotals.getTotalControlDuringOptOutTime().getMillis();
                                     optOutEvents += controlTotals.getTotalOptOutEvents();
                                     inventory++;
                                 }
@@ -233,7 +233,7 @@ public class LMControlSummaryModel extends BareDatedReportModelBase<LMControlSum
                                 programTotals.put(currentGroupProgram.getPaobjectId(), totals);
                             }
                             totals[TOTAL_CONTROL_HOURS] += totalControlHours;
-                            totals[TOTAL_OPT_OUT_HOURS_DURING_CONTROL] += totalOptOutHours;
+                            totals[TOTAL_OPT_OUT_HOURS_DURING_CONTROL] += totalControlDuringOptOut;
                             totals[TOTAL_OPT_OUT_EVENTS] += optOutEvents;
                             totals[ENROLLED_INVENTORY] += inventory;
                             totals[ENROLLED_CUSTOMERS] += enrolledParticipants;
