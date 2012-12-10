@@ -102,7 +102,14 @@
             if (${submitNormal}) {
                 $('commentForm').submit();
             } else {
-                submitFormViaAjax('contentPopup', 'commentForm', null, $('comment_editor').innerHTML);
+                jQuery.ajax({
+                    url: jQuery("#commentForm").attr("action"),
+                    data: jQuery("#commentForm").serialize(),
+                    type: "POST",
+                    success: function(data) {
+                        jQuery("#contentPopup").html(data);
+                    }
+                });
             }
         };
         

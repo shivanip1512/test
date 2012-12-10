@@ -79,7 +79,7 @@ public class CapControlCommentController {
     
     @RequestMapping
     public String paoComments(HttpServletRequest request, HttpServletResponse response, int paoId, LiteYukonUser user, ModelMap model){
-        setupPaoComments(request, paoId, user, model);
+        setupPaoComments(paoId, user, model);
         model.addAttribute("submitNormal", false);
         model.addAttribute("redirectToOneline", false);
         return "comments/commentsPage.jsp";
@@ -87,13 +87,13 @@ public class CapControlCommentController {
     
     @RequestMapping
     public String paoCommentsForOneline(HttpServletRequest request, HttpServletResponse response, int paoId, LiteYukonUser user, ModelMap model){
-        setupPaoComments(request, paoId, user, model);
+        setupPaoComments(paoId, user, model);
         model.addAttribute("submitNormal", true);
         model.addAttribute("redirectToOneline", true);
         return "comments/commentsPageOneline.jsp";
     }
     
-    private void setupPaoComments(HttpServletRequest request, int paoId, LiteYukonUser user, ModelMap model) {
+    private void setupPaoComments(int paoId, LiteYukonUser user, ModelMap model) {
         CapControlCache filterCapControlCache = filterCacheFactory.createUserAccessFilteredCache(user);
 
         StreamableCapObject capObject = filterCapControlCache.getCapControlPAO(paoId);

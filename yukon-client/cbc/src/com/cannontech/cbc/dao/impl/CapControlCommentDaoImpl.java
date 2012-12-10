@@ -214,7 +214,7 @@ public class CapControlCommentDaoImpl implements CapControlCommentDao {
     
     @Transactional(readOnly = true, propagation = Propagation.SUPPORTS)
     public List<CapControlComment> getAllCommentsByPao( int paoId ) { 
-        String sql = selectAllSql + " WHERE paoId = ? ORDER BY commentTime desc";
+        String sql = selectAllSql + " WHERE paoId = ? ORDER BY commentTime asc";
         List<CapControlComment> list = yukonJdbcTemplate.query(new SqlFragment(sql, paoId), rowMapper);
         return list;
     }
