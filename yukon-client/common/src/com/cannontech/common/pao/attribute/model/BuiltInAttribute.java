@@ -608,9 +608,9 @@ public enum BuiltInAttribute implements Attribute {
         Collections.sort(attributes, comparator);
     }
 
-    @Deprecated
     /**
-     * Deprecated in favor of i18n of attribute names. No new references of this method should be used.
+     * This method should not be used to display the name. Use getMessage() for i18n. This method
+     * is used internally for logic that relies on these values remaining the same.
      */
     public String getDescription() {
         return defaultDescription;

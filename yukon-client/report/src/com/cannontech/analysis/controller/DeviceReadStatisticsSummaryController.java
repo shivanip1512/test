@@ -18,7 +18,6 @@ import com.cannontech.analysis.tablemodel.ReportModelBase;
 import com.cannontech.common.pao.attribute.model.Attribute;
 import com.cannontech.common.pao.attribute.model.BuiltInAttribute;
 import com.cannontech.common.pao.attribute.service.AttributeService;
-import com.cannontech.i18n.YukonUserContextMessageSourceResolver;
 import com.cannontech.spring.YukonSpringHook;
 import com.cannontech.util.ServletUtil;
 import com.cannontech.web.util.ServletRequestEnumUtils;
@@ -28,7 +27,6 @@ public class DeviceReadStatisticsSummaryController extends ReportControllerBase{
 
     private ReportFilter[] filterModelTypes = new ReportFilter[] {ReportFilter.GROUPS};
     private static final String LINE_SEPARATOR = System.getProperty("line.separator");
-    private YukonUserContextMessageSourceResolver resolver;
     private AttributeService attributeService = YukonSpringHook.getBean(AttributeService.class);
 
     public DeviceReadStatisticsSummaryController() {
@@ -36,7 +34,6 @@ public class DeviceReadStatisticsSummaryController extends ReportControllerBase{
         model = YukonSpringHook.getBean("deviceReadStatisticsSummaryModel", DeviceReadStatisticsSummaryModel.class);
         attributeService = YukonSpringHook.getBean(AttributeService.class);
         report = new DeviceReadStatisticsSummaryReport(model);
-        resolver = YukonSpringHook.getBean("yukonUserContextMessageSourceResolver", YukonUserContextMessageSourceResolver.class);
     }
 
     @Override
@@ -77,7 +74,6 @@ public class DeviceReadStatisticsSummaryController extends ReportControllerBase{
     
     @Override
     public String getHTMLOptionsTable() {
-        DeviceReadStatisticsSummaryModel contextModel = (DeviceReadStatisticsSummaryModel) model;
 
         Set<BuiltInAttribute> measuredAttributeSet= Sets.difference(Sets.newHashSet(BuiltInAttribute.values()), BuiltInAttribute.getRfnEventTypes());
         
