@@ -93,7 +93,6 @@
     <!-- capBankAddInfoPopup.jsp -->
     <entry key="yukon.web.modules.capcontrol.cbAddInfo.setting">Setting</entry>
     <entry key="yukon.web.modules.capcontrol.cbAddInfo.value">Value</entry>
-    <entry key="yukon.web.modules.capcontrol.cbAddInfo.address">Address</entry>
     <entry key="yukon.web.modules.capcontrol.cbAddInfo.maintAreaId">Maintenance Area Id</entry>
     <entry key="yukon.web.modules.capcontrol.cbAddInfo.poleNumber">Pole Number</entry>
     <entry key="yukon.web.modules.capcontrol.cbAddInfo.latitude">Latitude</entry>

@@ -15,10 +15,6 @@
                     <th><i:inline key=".value"/></th>
                 </tr>
 				<tr class="<tags:alternateRow odd="" even="altRow"/>">
-					<td><i:inline key=".address"/></td>
-					<td><spring:escapeBody htmlEscape="true">${capBankAdd.address}</spring:escapeBody></td>
-				</tr>
-				<tr class="<tags:alternateRow odd="" even="altRow"/>">
 					<td><i:inline key=".maintAreaId"/></td>
 					<td><spring:escapeBody htmlEscape="true">${capBankAdd.maintenanceAreaId}</spring:escapeBody></td>
 				</tr>
@@ -84,7 +80,7 @@
 				</tr>
 				<tr class="<tags:alternateRow odd="" even="altRow"/>">
 					<td><i:inline key=".cbMapAddress"/></td>
-					<td><spring:escapeBody htmlEscape="true">${lite.paoDescription}</spring:escapeBody></td>
+					<td><spring:escapeBody htmlEscape="true">${capBankAdd.address}</spring:escapeBody></td>
 				</tr>
 				<tr class="<tags:alternateRow odd="" even="altRow"/>">
 					<td><i:inline key=".drivingDirections"/></td>
