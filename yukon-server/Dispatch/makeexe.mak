@@ -83,49 +83,53 @@ $(COMPILEBASE)\lib\ctisvr.lib \
 $(COMPILEBASE)\lib\ctipntdb.lib \
 
 
+PROGS_VERSION=\
+$(CTIPROGS)
+
+
 ALL:            $(CTIPROGS)
 
-dispatch.exe:   $(VGOBJS) makeexe.mak
+dispatch.exe:   $(VGOBJS) makeexe.mak $(OBJ)\dispatch.res
                 @echo:
                 @echo Compiling ..\$@
                 @%cd $(OBJ)
                 $(RWCPPINVOKE) $(CFLAGS) $(INCLPATHS) $(RWLINKFLAGS) /Fe..\$@ \
-$(VGOBJS) id_vg.obj -link $(RWLIBS) $(BOOST_LIBS) $(VGLIBS)
+$(VGOBJS) id_vg.obj -link $(RWLIBS) $(BOOST_LIBS) $(VGLIBS) dispatch.res
                -@if not exist $(YUKONOUTPUT) md $(YUKONOUTPUT)
                 mt.exe -manifest ..\$@.manifest -outputresource:..\$@;1
                -copy ..\$@ $(YUKONOUTPUT)
                 @%cd $(CWD)
 
 
-sigsinktest.exe: $(SIGTESTOBJS) makeexe.mak
+sigsinktest.exe: $(SIGTESTOBJS) makeexe.mak $(OBJ)\sigsinktest.res
                 @echo:
                 @echo Compiling ..\$@
                 @%cd $(OBJ)
                 $(RWCPPINVOKE) $(CFLAGS) $(INCLPATHS) $(RWLINKFLAGS) /Fe..\$@ \
-$(SIGTESTOBJS) -link $(RWLIBS) $(BOOST_LIBS) $(TESTLIBS)
+$(SIGTESTOBJS) -link $(RWLIBS) $(BOOST_LIBS) $(TESTLIBS) sigsinktest.res
                -@if not exist $(YUKONOUTPUT) md $(YUKONOUTPUT)
                mt.exe -manifest ..\$@.manifest -outputresource:..\$@;1
                -copy ..\$@ $(YUKONOUTPUT)
                 @%cd $(CWD)
 
-poker.exe: $(PORTERPOKE) makeexe.mak
+poker.exe: $(PORTERPOKE) makeexe.mak $(OBJ)\poker.res
                 @echo:
                 @echo Compiling ..\$@
                 @%cd $(OBJ)
                 $(RWCPPINVOKE) $(CFLAGS) $(INCLPATHS) $(RWLINKFLAGS) /Fe..\$@ \
-$(PORTERPOKE) -link $(RWLIBS) $(BOOST_LIBS) $(TESTLIBS)
+$(PORTERPOKE) -link $(RWLIBS) $(BOOST_LIBS) $(TESTLIBS) poker.res
                -@if not exist $(YUKONOUTPUT) md $(YUKONOUTPUT)
                mt.exe -manifest ..\$@.manifest -outputresource:..\$@;1
                -copy ..\$@ $(YUKONOUTPUT)
                 @%cd $(CWD)
 
 
-sigsrctest.exe: $(SIGSRCTESTOBJS) makeexe.mak
+sigsrctest.exe: $(SIGSRCTESTOBJS) makeexe.mak $(OBJ)\sigsrctest.res
                 @echo:
                 @echo Compiling ..\$@
                 @%cd $(OBJ)
                 $(RWCPPINVOKE) $(CFLAGS) $(INCLPATHS) $(RWLINKFLAGS) /Fe..\$@ \
-$(SIGSRCTESTOBJS) -link $(RWLIBS) $(BOOST_LIBS) $(TESTLIBS)
+$(SIGSRCTESTOBJS) -link $(RWLIBS) $(BOOST_LIBS) $(TESTLIBS) sigsrctest.res
                -@if not exist $(YUKONOUTPUT) md $(YUKONOUTPUT)
                mt.exe -manifest ..\$@.manifest -outputresource:..\$@;1
                -copy ..\$@ $(YUKONOUTPUT)
@@ -513,3 +517,5 @@ vgexe_factory.obj:	precompiled.h executorfactory.h collectable.h \
 		executor.h exe_cmd.h exe_reg.h vgexe_factory.h exe_ptchg.h \
 		ctibase.h ctinexus.h
 #ENDUPDATE#
+
+include $(COMPILEBASE)\versioninfo.inc

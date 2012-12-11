@@ -75,6 +75,10 @@ CTIPROGS=\
 ctimsg.dll
 
 
+PROGS_VERSION=\
+$(CTIPROGS)
+
+
 ALL:           $(CTIPROGS)
 
 
@@ -85,12 +89,12 @@ $(MESSAGE_FULLBUILD) :
         $(RWCPPINVOKE) $(RWCPPFLAGS) $(DLLFLAGS) $(PCHFLAGS) $(PARALLEL) $(INCLPATHS) /D_DLL_MESSAGE -Fo$(OBJ)\ -c $[StrReplace,.obj,.cpp,$(OBJS)]
 
 
-ctimsg.dll:    $(MESSAGE_FULLBUILD) $(OBJS) Makefile
+ctimsg.dll:    $(MESSAGE_FULLBUILD) $(OBJS) Makefile $(OBJ)\ctimsg.res
                 @build -nologo -f $(_InputFile) id
                 @echo:
                 @echo Compiling $@
                 @%cd $(OBJ)
-                $(RWCPPINVOKE) $(INCLPATHS) $(RWLINKFLAGS) $(DLLFLAGS) -Fe..\$@ $(OBJS) id_ctimsg.obj -link $(RWLIBS) $(BOOST_LIBS) $(ACTIVEMQLIB) $(COMPILEBASE)\lib\ctibase.lib $(LINKFLAGS)
+                $(RWCPPINVOKE) $(INCLPATHS) $(RWLINKFLAGS) $(DLLFLAGS) -Fe..\$@ $(OBJS) id_ctimsg.obj -link $(RWLIBS) $(BOOST_LIBS) $(ACTIVEMQLIB) $(COMPILEBASE)\lib\ctibase.lib $(LINKFLAGS) ctimsg.res
                -@if not exist $(YUKONOUTPUT) md $(YUKONOUTPUT)
                -if exist ..\$@ copy ..\$@ $(YUKONOUTPUT)
                -@if not exist $(COMPILEBASE)\lib md $(COMPILEBASE)\lib
@@ -443,3 +447,5 @@ test_pointdatarequest.obj:	PointDataRequestFactory.h \
 		cparms.h configkey.h configval.h MessageListener.h \
 		DispatchPointdataRequest.h
 #ENDUPDATE#
+
+include $(COMPILEBASE)\versioninfo.inc

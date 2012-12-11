@@ -41,15 +41,17 @@ $(COMPILEBASE)\lib\ctidbres.lib
 EXECS=\
 sigsend.exe
 
+PROGS_VERSION=\
+$(EXECS)
 
 ALL:            $(EXECS)
 
-sigsend.exe:    $(BASEOBJS)
+sigsend.exe:    $(BASEOBJS) $(OBJ)\sigsend.res
                 @echo:
                 @echo Compiling $@
                 @%cd $(OBJ)
                 $(RWCPPINVOKE) $(CFLAGS) $(INCLPATHS) $(RWLINKFLAGS) /Fe..\$@ \
-$(BASEOBJS) -link $(LIBS) $(RWLIBS) $(BOOST_LIBS) $(TABLETESTLIBS)
+$(BASEOBJS) -link $(LIBS) $(RWLIBS) $(BOOST_LIBS) $(TABLETESTLIBS) sigsend.res
                 @echo:
                -@if not exist $(YUKONOUTPUT) md $(YUKONOUTPUT)
                mt.exe -manifest ..\$@.manifest -outputresource:..\$@;1
@@ -81,4 +83,4 @@ clean:
 deps:
                 scandeps -Output makeexe.mak *.cpp
 
-
+include $(COMPILEBASE)\versioninfo.inc

@@ -159,6 +159,10 @@ ctiprot.dll
 PROTOCOL_FULLBUILD = $[Filename,$(OBJ),ProtocolFullBuild,target]
 
 
+PROGS_VERSION=\
+ctiprot.dll
+
+
 ALL:           $(CTIPROGS)
 
 
@@ -170,12 +174,12 @@ $(PROTOCOL_FULLBUILD) :
 
 
 
-ctiprot.dll:   $(PROTOCOL_FULLBUILD) $(OBJS) Makefile
+ctiprot.dll:   $(PROTOCOL_FULLBUILD) $(OBJS) Makefile $(OBJ)\ctiprot.res
                 @build -nologo -f $(_InputFile) id
                 @echo:
                 @echo Compiling $@
                 @%cd $(OBJ)
-                $(RWCPPINVOKE) $(INCLPATHS) $(RWLINKFLAGS) $(DLLFLAGS) -Fe..\$@ $(OBJS) id_ctiprot.obj -link $(RWLIBS) $(PROTLIBS) $(BOOST_LIBS) $(LINKFLAGS)
+                $(RWCPPINVOKE) $(INCLPATHS) $(RWLINKFLAGS) $(DLLFLAGS) -Fe..\$@ $(OBJS) id_ctiprot.obj -link $(RWLIBS) $(PROTLIBS) $(BOOST_LIBS) $(LINKFLAGS) ctiprot.res
                -@if not exist $(YUKONOUTPUT) md $(YUKONOUTPUT)
                -if exist ..\$@ copy ..\$@ $(YUKONOUTPUT)
                -@if not exist $(COMPILEBASE)\lib md $(COMPILEBASE)\lib
@@ -987,3 +991,6 @@ transdata_tracker.obj:	precompiled.h transdata_tracker.h xfer.h dsm2.h \
 		transdata_datalink.h prot_ymodem.h dllbase.h ctidate.h \
 		logger.h thread.h CtiPCPtrQueue.h
 #ENDUPDATE#
+
+include $(COMPILEBASE)\versioninfo.inc
+

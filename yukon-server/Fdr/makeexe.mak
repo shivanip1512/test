@@ -54,14 +54,18 @@ $(COMPILEBASE)\lib\service.lib \
 $(COMPILEBASE)\lib\ctidbsrc.lib
 
 
+PROGS_VERSION=\
+$(CTIPROGS)
+
+
 ALL:            $(CTIPROGS)
 
-fdr.exe:    $(FDROBJS) makeexe.mak
+fdr.exe:    $(FDROBJS) makeexe.mak $(OBJ)\fdr.res
         @echo:
         @echo Compiling ..\$@
         @%cd $(OBJ)
         $(RWCPPINVOKE) /Fm $(CFLAGS) $(INCLPATHS) $(RWLINKFLAGS) /Fe..\$@ \
-        $(FDROBJS) -link $(RWLIBS) $(BOOST_LIBS) $(FDRLIBS)
+        $(FDROBJS) -link $(RWLIBS) $(BOOST_LIBS) $(FDRLIBS) fdr.res
            -@if not exist $(YUKONOUTPUT) md $(YUKONOUTPUT)
            mt.exe -manifest ..\$@.manifest -outputresource:..\$@;1
            -copy ..\$@ $(YUKONOUTPUT)
@@ -915,3 +919,5 @@ textfileinterfaceparts.obj:	precompiled.h cparms.h dlldefs.h rwutil.h \
 		collectable.h msg_pdata.h pointdefs.h pointtypes.h message.h \
 		logger.h thread.h CtiPCPtrQueue.h TextFileInterfaceParts.h
 #ENDUPDATE#
+
+include $(COMPILEBASE)\versioninfo.inc

@@ -63,6 +63,10 @@ ctiprtdb.dll
 RTDB_PRT_FULLBUILD = $[Filename,$(OBJ),RtdbPrtFullBuild,target]
 
 
+PROGS_VERSION=\
+$(CTIPROGS)
+
+
 ALL:            $(CTIPROGS)
 
 
@@ -73,12 +77,12 @@ $(RTDB_PRT_FULLBUILD) :
 	$(RWCPPINVOKE) $(RWCPPFLAGS) $(DLLFLAGS) $(PARALLEL) $(INCLPATHS) /D_DLL_PRTDB -Fdctiprt.pdb -Fo$(OBJ)\ -c $[StrReplace,.obj,.cpp,$(YUKONPORTDLLOBJS)]
 
 
-ctiprtdb.dll:   $(RTDB_PRT_FULLBUILD) $(YUKONPORTDLLOBJS) Makefile
+ctiprtdb.dll:   $(RTDB_PRT_FULLBUILD) $(YUKONPORTDLLOBJS) Makefile $(OBJ)\ctiprtdb.res
                 @build -nologo -f $(_InputFile) id
                 @echo:
                 @echo Compiling $@
                 @%cd $(OBJ)
-                $(RWCPPINVOKE) $(INCLPATHS) $(RWLINKFLAGS) $(DLLFLAGS) -Fe..\$@ $(YUKONPORTDLLOBJS) id_prtdll.obj -link $(RWLIBS) $(BOOST_LIBS) $(PRTDBLIBS) $(LINKFLAGS)
+                $(RWCPPINVOKE) $(INCLPATHS) $(RWLINKFLAGS) $(DLLFLAGS) -Fe..\$@ $(YUKONPORTDLLOBJS) id_prtdll.obj -link $(RWLIBS) $(BOOST_LIBS) $(PRTDBLIBS) $(LINKFLAGS) ctiprtdb.res
                -@if not exist $(YUKONOUTPUT) md $(YUKONOUTPUT)
                -if exist ..\$@ copy ..\$@ $(YUKONOUTPUT)
                -@if not exist $(COMPILEBASE)\lib md $(COMPILEBASE)\lib
@@ -103,6 +107,7 @@ clean:
         -del \
 *.pdb \
 $(OBJ)\*.obj \
+$(OBJ)\*.res \
 $(BIN)\*.pdb \
 $(BIN)\*.pch \
 $(BIN)\*.ilk \
@@ -3688,3 +3693,5 @@ test_slctdev.obj:	slctdev.h dev_base.h dsm2.h cticonnect.h yukon.h \
 		encryption.h tbl_base.h tbl_scanrate.h tbl_dyn_paoinfo.h \
 		pt_base.h tbl_pt_base.h devicetypes.h
 #ENDUPDATE#
+
+include $(COMPILEBASE)\versioninfo.inc

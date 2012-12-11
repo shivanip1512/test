@@ -55,7 +55,8 @@ $(COMPILEBASE)\lib\ctidbsrc.lib \
 
 MCCMD_FULLBUILD = $[Filename,$(OBJ),MccmdFullBuild,target]
 
-
+PROGS_VERSION=\
+mccmd.dll
 
 ALL:            mccmd.dll
 
@@ -67,10 +68,10 @@ $(MCCMD_FULLBUILD) :
 	$(RWCPPINVOKE) $(RWCPPFLAGS) $(DLLFLAGS) $(PARALLEL) $(PCHFLAGS) $(INCLPATHS) -Fo$(OBJ)\ -DWINDOWS -c $[StrReplace,.obj,.cpp,$(DLLOBJS)]
 
 
-mccmd.dll:  $(MCCMD_FULLBUILD) $(DLLOBJS) Makedll.mak
+mccmd.dll:  $(MCCMD_FULLBUILD) $(DLLOBJS) Makedll.mak $(OBJ)\mccmd.res
             @echo Building  $@
             @%cd $(OBJ)
-            $(CC) $(DLLFLAGS) $(DLLOBJS) $(INCLPATHS) $(LIBS) $(RWLIBS) $(BOOST_LIBS) /Fe..\$@ -link /def:$(DLLDEF) $(LINKFLAGS)
+            $(CC) $(DLLFLAGS) $(DLLOBJS) $(INCLPATHS) $(LIBS) $(RWLIBS) $(BOOST_LIBS) /Fe..\$@ -link /def:$(DLLDEF) $(LINKFLAGS) mccmd.res
             -@if not exist $(YUKONOUTPUT) md $(YUKONOUTPUT)
             -if exist ..\$@ copy ..\$@ $(YUKONOUTPUT)
             -@if not exist $(COMPILEBASE)\lib md $(COMPILEBASE)\lib
@@ -142,3 +143,5 @@ xcel.obj:	precompiled.h xcel.h logger.h dlldefs.h thread.h mutex.h \
 		guard.h utility.h ctitime.h queues.h cticalls.h os2_2w32.h \
 		types.h numstr.h CtiPCPtrQueue.h
 #ENDUPDATE#
+
+include $(COMPILEBASE)\versioninfo.inc

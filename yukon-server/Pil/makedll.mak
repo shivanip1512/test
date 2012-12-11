@@ -56,6 +56,10 @@ pilserver.obj
 PIL_FULLBUILD = $[Filename,$(OBJ),PilFullBuild,target]
 
 
+PROGS_VERSION=\
+ctipil.dll
+
+
 ALL:            ctipil.dll
 
 
@@ -66,10 +70,10 @@ $(PIL_FULLBUILD) :
 	$(RWCPPINVOKE) $(RWCPPFLAGS) $(DLLFLAGS) $(PARALLEL) $(PCHFLAGS) /D_DLL_CTIPIL $(INCLPATHS) -DWINDOWS -Fo$(OBJ)\ -c $[StrReplace,.obj,.cpp,$(DLLOBJS)]
 
 
-ctipil.dll:     $(PIL_FULLBUILD) $(DLLOBJS) makedll.mak
+ctipil.dll:     $(PIL_FULLBUILD) $(DLLOBJS) makedll.mak $(OBJ)\ctipil.res
                 @echo Building  $@
                 @%cd $(OBJ)
-                $(CC) $(DLLFLAGS) $(DLLOBJS) $(INCLPATHS) $(RWLIBS) $(BOOST_LIBS) $(DLLLIBS) -Fe..\$@ $(LINKFLAGS)
+                $(CC) $(DLLFLAGS) $(DLLOBJS) $(INCLPATHS) $(RWLIBS) $(BOOST_LIBS) $(DLLLIBS) -Fe..\$@ $(LINKFLAGS) ctipil.res
                 -@if not exist $(YUKONOUTPUT) md $(YUKONOUTPUT)
                 -if exist ..\$@ copy ..\$@ $(YUKONOUTPUT)
                 -@if not exist $(COMPILEBASE)\lib md $(COMPILEBASE)\lib
@@ -182,3 +186,5 @@ pil_exefct.obj:	precompiled.h executorfactory.h collectable.h \
 		database_reader.h row_reader.h boost_time.h boostutil.h \
 		executor.h exe_cmd.h exe_reg.h pil_exefct.h exe_pcreq.h
 #ENDUPDATE#
+
+include $(COMPILEBASE)\versioninfo.inc

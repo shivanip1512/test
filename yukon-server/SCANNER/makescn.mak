@@ -13,14 +13,17 @@ SCNLIBS=\
 $(COMPILEBASE)\lib\ctibase.lib\
 $(COMPILEBASE)\lib\ctidbsrc.lib
 
+PROGS_VERSION=\
+$(CTIPROGS)
+
 
 ALL:            $(CTIPROGS)
 
-ctiscn.dll:     $(SCNDLLOBJS) Makefile
+ctiscn.dll:     $(SCNDLLOBJS) Makefile $(OBJ)\ctiscn.res
                 @echo:
                 @echo Compiling $@
                 $(RWCPPINVOKE) $(INCLPATHS) $(RWLINKFLAGS) $(DLLFLAGS) -Fe$@ \
-                $(SCNDLLOBJS) -link $(RWLIBS) $(SCNLIBS)
+                $(SCNDLLOBJS) -link $(RWLIBS) $(SCNLIBS) $(OBJ)\ctiscn.res
                -@if not exist $(YUKONOUTPUT) md $(YUKONOUTPUT)
                -if exist $@ copy $@ $(YUKONOUTPUT)
                -@if not exist $(COMPILEBASE)\lib md $(COMPILEBASE)\lib

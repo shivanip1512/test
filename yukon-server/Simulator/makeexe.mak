@@ -81,6 +81,10 @@ ccu_simulator.exe
 SIMULATOR_FULLBUILD = $[Filename,$(OBJ),SimulatorFullBuild,target]
 
 
+PROGS_VERSION=\
+$(CTIPROGS)
+
+
 ALL:            $(CTIPROGS)
 
 
@@ -91,11 +95,11 @@ $(SIMULATOR_FULLBUILD) :
         $(RWCPPINVOKE) $(RWCPPFLAGS) $(CFLAGS) $(PARALLEL) $(PCHFLAGS) $(INCLPATHS) -Fo$(OBJ)\ -c $[StrReplace,.obj,.cpp,$(CCU_SIMULATOR_OBJS)]
 
 
-ccu_simulator.exe:      $(SIMULATOR_FULLBUILD) $(CCU_SIMULATOR_OBJS) makeexe.mak
+ccu_simulator.exe:      $(SIMULATOR_FULLBUILD) $(CCU_SIMULATOR_OBJS) makeexe.mak $(OBJ)\ccu_simulator.res
                 @echo:
                 @echo Compiling $@
                 @%cd $(OBJ)
-                $(RWCPPINVOKE) $(CFLAGS) $(RWLINKFLAGS) $(INCLPATHS) /Fe..\$@ $(CCU_SIMULATOR_OBJS) -link $(CCU_SIMULATOR_LIBS) $(RWLIBS) $(BOOST_LIBS)
+                $(RWCPPINVOKE) $(CFLAGS) $(RWLINKFLAGS) $(INCLPATHS) /Fe..\$@ $(CCU_SIMULATOR_OBJS) -link $(CCU_SIMULATOR_LIBS) $(RWLIBS) $(BOOST_LIBS) ccu_simulator.res
                 -@if not exist $(YUKONOUTPUT) md $(YUKONOUTPUT)
                 mt.exe -manifest ..\$@.manifest -outputresource:..\$@;1
                 -@copy ..\$@ $(YUKONOUTPUT)
@@ -330,3 +334,4 @@ test_random_consumption_behavior.obj:	RandomConsumptionBehavior.h \
 		BehaviorCollection.h
 #ENDUPDATE#
 
+include $(COMPILEBASE)\versioninfo.inc

@@ -49,6 +49,9 @@ cticonfig.dll
 DEVCONF_FULLBUILD = $[Filename,$(OBJ),DevConfFullBuild,target]
 
 
+PROGS_VERSION=\
+$(CTIPROGS)
+
 
 ALL:            $(CTIPROGS)
 
@@ -60,12 +63,12 @@ $(DEVCONF_FULLBUILD) :
         $(RWCPPINVOKE) $(RWCPPFLAGS) $(DLLFLAGS) $(PARALLEL) $(PCHFLAGS) $(INCLPATHS) /D_DLL_CONFIG -Fo$(OBJ)\ -c $[StrReplace,.obj,.cpp,$(DLLOBJS)]
 
 
-cticonfig.dll:  $(DEVCONF_FULLBUILD) $(DLLOBJS) Makedll.mak
+cticonfig.dll:  $(DEVCONF_FULLBUILD) $(DLLOBJS) Makedll.mak $(OBJ)\cticonfig.res
                 @build -nologo -f $(_InputFile) id
                 @echo:
                 @echo Compiling $@
                 @%cd $(OBJ)
-                $(CC) $(RWCPPFLAGS) $(DLLFLAGS) $(DLLOBJS) id_dcdll.obj $(INCLPATHS) /Fe..\$@ -link $(LIBS) $(RWLIBS) $(BOOST_LIBS) $(LINKFLAGS)
+                $(CC) $(RWCPPFLAGS) $(DLLFLAGS) $(DLLOBJS) id_dcdll.obj $(INCLPATHS) /Fe..\$@ -link $(LIBS) $(RWLIBS) $(BOOST_LIBS) $(LINKFLAGS) cticonfig.res
                -@if not exist $(YUKONOUTPUT) md $(YUKONOUTPUT)
                -if exist ..\$@ copy ..\$@ $(YUKONOUTPUT)
                -@if not exist $(COMPILEBASE)\lib md $(COMPILEBASE)\lib
@@ -130,3 +133,6 @@ da_lp_deviceconfig.obj:	precompiled.h da_lp_deviceconfig.h yukon.h \
 id_dcdll.obj:	precompiled.h id_dcdll.h utility.h ctitime.h dlldefs.h \
 		queues.h cticalls.h os2_2w32.h types.h numstr.h
 #ENDUPDATE#
+
+include $(COMPILEBASE)\versioninfo.inc
+

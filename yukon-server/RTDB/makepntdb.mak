@@ -55,6 +55,10 @@ CTIPROGS=\
 ctipntdb.dll
 
 
+PROGS_VERSION=\
+$(CTIPROGS)
+
+
 RTDB_PNT_FULLBUILD = $[Filename,$(OBJ),RtdbPntFullBuild,target]
 
 
@@ -69,12 +73,12 @@ $(RTDB_PNT_FULLBUILD) :
 
 
 
-ctipntdb.dll:   $(RTDB_PNT_FULLBUILD) $(YUKONPNTDLLOBJS) Makefile
+ctipntdb.dll:   $(RTDB_PNT_FULLBUILD) $(YUKONPNTDLLOBJS) Makefile $(OBJ)\ctipntdb.res
                 @build -nologo -f $(_InputFile) id
                 @echo:
                 @echo Compiling $@
                 @%cd $(OBJ)
-                $(RWCPPINVOKE) $(INCLPATHS) $(RWLINKFLAGS) $(DLLFLAGS) -Fe..\$@ $(YUKONPNTDLLOBJS) id_pntdll.obj -link $(RWLIBS) $(BOOST_LIBS) $(PNTDBLIBS) $(LINKFLAGS)
+                $(RWCPPINVOKE) $(INCLPATHS) $(RWLINKFLAGS) $(DLLFLAGS) -Fe..\$@ $(YUKONPNTDLLOBJS) id_pntdll.obj -link $(RWLIBS) $(BOOST_LIBS) $(PNTDBLIBS) $(LINKFLAGS) ctipntdb.res
                -@if not exist $(YUKONOUTPUT) md $(YUKONOUTPUT)
                -if exist ..\$@ copy ..\$@ $(YUKONOUTPUT)
                -@if not exist $(COMPILEBASE)\lib md $(COMPILEBASE)\lib
@@ -99,6 +103,7 @@ clean:
         -del \
 *.pdb \
 $(OBJ)\*.obj \
+$(OBJ)\*.res \
 $(BIN)\*.pdb \
 $(BIN)\*.pch \
 $(BIN)\*.ilk \
@@ -3584,3 +3589,6 @@ test_slctdev.obj:	slctdev.h dev_base.h dsm2.h cticonnect.h yukon.h \
 		tbl_scanrate.h tbl_dyn_paoinfo.h pt_base.h tbl_pt_base.h \
 		devicetypes.h
 #ENDUPDATE#
+
+include $(COMPILEBASE)\versioninfo.inc
+

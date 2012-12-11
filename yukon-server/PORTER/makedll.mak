@@ -49,6 +49,9 @@ dllmain.obj
 PORTER_DLL_FULLBUILD = $[Filename,$(OBJ),PorterDllFullBuild,target]
 
 
+PROGS_VERSION=\
+portglob.dll
+
 
 ALL:            portglob.dll
 
@@ -61,11 +64,11 @@ $(PORTER_DLL_FULLBUILD) :
 
 
 
-portglob.dll:  $(PORTER_DLL_FULLBUILD) $(DLLOBJS) Makedll.mak
+portglob.dll:  $(PORTER_DLL_FULLBUILD) $(DLLOBJS) Makedll.mak $(OBJ)\portglob.res
                @build -nologo -f $(_InputFile) id
                @echo Building  ..\$@
                @%cd $(OBJ)
-               $(CC) $(RWCPPFLAGS) $(DLLFLAGS) $(DLLOBJS) id_pgdll.obj $(INCLPATHS) /Fe..\$@ -link $(LIBS) $(COMPILEBASE)\lib\ctibase.lib $(COMPILEBASE)\lib\ctiprtdb.lib $(COMPILEBASE)\lib\ctidbsrc.lib $(RWLIBS) $(BOOST_LIBS)
+               $(CC) $(RWCPPFLAGS) $(DLLFLAGS) $(DLLOBJS) id_pgdll.obj $(INCLPATHS) /Fe..\$@ -link $(LIBS) $(COMPILEBASE)\lib\ctibase.lib $(COMPILEBASE)\lib\ctiprtdb.lib $(COMPILEBASE)\lib\ctidbsrc.lib $(RWLIBS) $(BOOST_LIBS) portglob.res
                -@if not exist $(YUKONOUTPUT) md $(YUKONOUTPUT)
                -if exist ..\$@ copy ..\$@ $(YUKONOUTPUT)
                -@if not exist $(COMPILEBASE)\lib md $(COMPILEBASE)\lib
@@ -822,3 +825,5 @@ unsolicited_handler.obj:	precompiled.h boostutil.h utility.h ctitime.h \
 		StatisticsManager.h PaoStatistics.h PaoStatisticsRecord.h \
 		ThreadStatusKeeper.h thread_register_data.h thread_monitor.h
 #ENDUPDATE#
+
+include $(COMPILEBASE)\versioninfo.inc

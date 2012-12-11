@@ -74,6 +74,10 @@ TARGS = macs.exe
 MACS_EXE_FULLBUILD = $[Filename,$(OBJ),MacsExeFullBuild,target]
 
 
+PROGS_VERSION=\
+$(TARGS)
+
+
 ALL:          $(TARGS)
 
 
@@ -84,12 +88,12 @@ $(MACS_EXE_FULLBUILD) :
 	$(RWCPPINVOKE) $(CFLAGS) $(RWCPPFLAGS) $(PARALLEL) $(PCHFLAGS) $(INCLPATHS) -DWINDOWS -Fo$(OBJ)\ -c $[StrReplace,.obj,.cpp,$(BASEOBJS)]
 
 
-macs.exe:     $(MACS_EXE_FULLBUILD) $(BASEOBJS) Makefile
+macs.exe:     $(MACS_EXE_FULLBUILD) $(BASEOBJS) Makefile $(OBJ)\macs.res
               @echo:
               @echo Compiling $@
               @%cd $(OBJ)
               $(RWCPPINVOKE) $(CFLAGS) $(INCLPATHS) $(RWLINKFLAGS) /Fe..\$@ \
-$(BASEOBJS) -link $(LIBS) $(RWLIBS) $(BOOST_LIBS) $(LINKFLAGS)
+$(BASEOBJS) -link $(LIBS) $(RWLIBS) $(BOOST_LIBS) $(LINKFLAGS) macs.res
               @echo:
               -@if not exist $(YUKONOUTPUT) md $(YUKONOUTPUT)
               mt.exe -manifest ..\$@.manifest -outputresource:..\$@;1
@@ -286,3 +290,5 @@ test_scheduletime.obj:	ctitime.h dlldefs.h mc_scheduler.h mc.h \
 		rtdb.h hashkey.h hash_functions.h string_utility.h \
 		mgr_holiday.h ctidate.h
 #ENDUPDATE#
+
+include $(COMPILEBASE)\versioninfo.inc

@@ -42,14 +42,18 @@ CTIPROGS=\
 ctiseasondb.dll
 
 
+PROGS_VERSION=\
+$(CTIPROGS)
+
+
 ALL:            $(CTIPROGS)
 
 
-ctiseasondb.dll:   $(YUKONSEASONDLLOBJS) Makefile
+ctiseasondb.dll:   $(YUKONSEASONDLLOBJS) Makefile $(OBJ)\ctiseasondb.res
                 @echo:
                 @echo Compiling $@
                 @%cd $(OBJ)
-                $(RWCPPINVOKE) $(INCLPATHS) $(RWLINKFLAGS) $(DLLFLAGS) -Fe..\$@ $(YUKONSEASONDLLOBJS) id_devdll.obj -link $(RWLIBS) $(BOOST_LIBS) $(SEASONDBLIBS) $(LINKFLAGS)
+                $(RWCPPINVOKE) $(INCLPATHS) $(RWLINKFLAGS) $(DLLFLAGS) -Fe..\$@ $(YUKONSEASONDLLOBJS) id_devdll.obj -link $(RWLIBS) $(BOOST_LIBS) $(SEASONDBLIBS) $(LINKFLAGS) ctiseasondb.res
                -@if not exist $(YUKONOUTPUT) md $(YUKONOUTPUT)
                -if exist ..\$@ copy ..\$@ $(YUKONOUTPUT)
                -@if not exist $(COMPILEBASE)\lib md $(COMPILEBASE)\lib
@@ -74,6 +78,7 @@ clean:
         -del \
 *.pdb \
 $(OBJ)\*.obj \
+$(OBJ)\*.res \
 $(BIN)\*.pdb \
 $(BIN)\*.pch \
 $(BIN)\*.ilk \
@@ -3551,3 +3556,6 @@ test_slctdev.obj:	slctdev.h dev_base.h dsm2.h cticonnect.h yukon.h \
 		tbl_scanrate.h tbl_dyn_paoinfo.h pt_base.h tbl_pt_base.h \
 		devicetypes.h
 #ENDUPDATE#
+
+include $(COMPILEBASE)\versioninfo.inc
+

@@ -101,6 +101,8 @@ SQLAPILIB=$(SQLAPI)\lib\$(SQLAPI_LIB).lib
 
 COMMON_FULLBUILD = $[Filename,$(OBJ),CommonFullBuild,target]
 
+PROGS_VERSION=\
+$(CTIPROGS)
 
 ALL:            $(CTIPROGS)
 
@@ -112,10 +114,10 @@ $(COMMON_FULLBUILD):
         $(RWCPPINVOKE) $(RWCPPFLAGS) $(DLLFLAGS) $(PCHFLAGS) $(PARALLEL) $(DLLBUILDNAME) $(INCLPATHS) -Fo$(OBJ)\ -c $[StrReplace,.obj,.cpp,$(BASEOBJS)]
 
 
-ctibase.dll:    $(COMMON_FULLBUILD) $(BASEOBJS) Makefile
+ctibase.dll:    $(COMMON_FULLBUILD) $(BASEOBJS) Makefile $(OBJ)\ctibase.res
                 @build -nologo -f $(_InputFile) id
                 @%cd $(OBJ)
-                $(CC) $(BASEOBJS) id_ctibase.obj $(WINLIBS) $(SQLAPILIB) $(OPENSSL_LIBS) $(DLLFLAGS) $(RWLIBS) $(BOOST_LIBS) $(DBGHELP_LIBS) shlwapi.lib /Fe..\$@ $(LINKFLAGS)
+                $(CC) $(BASEOBJS) id_ctibase.obj $(WINLIBS) $(SQLAPILIB) $(OPENSSL_LIBS) $(DLLFLAGS) $(RWLIBS) $(BOOST_LIBS) $(DBGHELP_LIBS) shlwapi.lib /Fe..\$@ $(LINKFLAGS) ctibase.res
                 -@if not exist $(YUKONOUTPUT) md $(YUKONOUTPUT)
                 -copy ..\$@ $(YUKONOUTPUT)
                 -@if not exist $(COMPILEBASE)\lib md $(COMPILEBASE)\lib
@@ -139,6 +141,7 @@ clean:
 *.obj \
 $(OBJ)\*.obj \
 $(OBJ)\*.target \
+$(OBJ)\*.res \
 $(BIN)\*.pdb \
 $(BIN)\*.pch \
 $(BIN)\*.ilk \
@@ -514,3 +517,6 @@ xfer.obj:	precompiled.h xfer.h dsm2.h cticonnect.h yukon.h types.h \
 		ctitime.h queues.h cticalls.h os2_2w32.h numstr.h dsm2err.h \
 		words.h optional.h
 #ENDUPDATE#
+
+include $(COMPILEBASE)\versioninfo.inc
+

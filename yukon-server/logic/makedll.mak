@@ -23,14 +23,17 @@ $(COMPILEBASE)\lib\ctimsg.lib \
 CTIPROGS=\
 logic.dll
 
+PROGS_VERSION=\
+$(CTIPROGS)
+
 
 ALL:            $(CTIPROGS)
 
-logic.dll:  $(INTERPOBJS) Makefile
+logic.dll:  $(INTERPOBJS) Makefile $(OBJ)\logic.res
                 @echo:
                 @echo Compiling $@
                 @%cd $(OBJ)
-                $(RWCPPINVOKE) $(INCLPATHS) $(RWLINKFLAGS) $(DLLFLAGS) -Fe..\$@ $(INTERPOBJS) -link $(RWLIBS) $(BOOST_LIBS) $(CTILIBS) $(TCL_LIBS) advapi32.lib -link /def:$(DLLDEF)
+                $(RWCPPINVOKE) $(INCLPATHS) $(RWLINKFLAGS) $(DLLFLAGS) -Fe..\$@ $(INTERPOBJS) -link $(RWLIBS) $(BOOST_LIBS) $(CTILIBS) $(TCL_LIBS) advapi32.lib -link /def:$(DLLDEF) logic.res
                 -@if not exist $(YUKONOUTPUT) md $(YUKONOUTPUT)
                 -@if exist ..\$@ copy ..\$@ $(YUKONOUTPUT)
                 -@if not exist $(COMPILEBASE)\lib md $(COMPILEBASE)\lib
@@ -71,3 +74,4 @@ clean:
 
 ######################################################################################
 
+include $(COMPILEBASE)\versioninfo.inc

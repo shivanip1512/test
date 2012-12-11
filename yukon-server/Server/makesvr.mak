@@ -50,10 +50,18 @@ executorfactory.obj \
 server_b.obj
 
 
+CTIPROGS=\
+ctisvr.dll
+
+
 SERVER_FULLBUILD = $[Filename,$(OBJ),ServerFullBuild,target]
 
 
-ALL:            ctisvr.dll
+PROGS_VERSION=\
+$(CTIPROGS)
+
+
+ALL:            $(CTIPROGS)
 
 
 $(SERVER_FULLBUILD) :
@@ -64,11 +72,11 @@ $(SERVER_FULLBUILD) :
 	$(RWCPPINVOKE) $(RWCPPFLAGS) $(DLLFLAGS) $(PARALLEL) $(PCHFLAGS) /DCTISVR $(INCLPATHS) -DWINDOWS -Fo$(OBJ)\ -c $[StrReplace,.obj,.cpp,$(SERVEROBJS)]
 
 
-ctisvr.dll:     $(SERVER_FULLBUILD) $(SERVEROBJS) makesvr.mak
+ctisvr.dll:     $(SERVER_FULLBUILD) $(SERVEROBJS) makesvr.mak $(OBJ)\ctisvr.res
                 @build -nologo -f $(_InputFile) id
                 @echo Building  $@
                 @%cd $(OBJ)
-                $(CC) $(DLLFLAGS) $(SERVEROBJS) $(INCLPATHS) $(RWLIBS) $(BOOST_LIBS) $(SVRLIBS) /Fe..\$@
+                $(CC) $(DLLFLAGS) $(SERVEROBJS) $(INCLPATHS) $(RWLIBS) $(BOOST_LIBS) $(SVRLIBS) /Fe..\$@ ctisvr.res
                 -@if not exist $(YUKONOUTPUT) md $(YUKONOUTPUT)
                 -if exist ..\$@ copy ..\$@ $(YUKONOUTPUT)
                 -@if not exist $(COMPILEBASE)\lib md $(COMPILEBASE)\lib
@@ -174,3 +182,5 @@ server_b.obj:	precompiled.h server_b.h con_mgr.h connection.h \
 		critical_Section.h smartmap.h readers_writer_lock.h \
 		executor.h msg_cmd.h id_svr.h
 #ENDUPDATE#
+
+include $(COMPILEBASE)\versioninfo.inc

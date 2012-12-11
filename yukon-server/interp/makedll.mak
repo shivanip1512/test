@@ -16,19 +16,21 @@ CTILIBS=\
 $(COMPILEBASE)\lib\ctibase.lib \
 $(TCL_LIBS)
 
-
-
 CTIPROGS=\
 interp.dll
 
 
+PROGS_VERSION=\
+$(CTIPROGS)
+
+
 ALL:            $(CTIPROGS)
 
-interp.dll:  $(INTERPOBJS) Makefile
+interp.dll:  $(INTERPOBJS) Makefile $(OBJ)\interp.res
                 @echo:
                 @echo Compiling $@
                 @%cd $(OBJ)
-                $(RWCPPINVOKE) $(INCLPATHS) $(RWLINKFLAGS) $(DLLFLAGS) -Fe..\$@ $(INTERPOBJS) -link $(RWLIBS) $(BOOST_LIBS) $(CTILIBS) advapi32.lib
+                $(RWCPPINVOKE) $(INCLPATHS) $(RWLINKFLAGS) $(DLLFLAGS) -Fe..\$@ $(INTERPOBJS) -link $(RWLIBS) $(BOOST_LIBS) $(CTILIBS) advapi32.lib interp.res
                 -@if not exist $(YUKONOUTPUT) md $(YUKONOUTPUT)
                 -@if exist ..\$@ copy ..\$@ $(YUKONOUTPUT)
                 -@if not exist $(COMPILEBASE)\lib md $(COMPILEBASE)\lib
@@ -69,3 +71,4 @@ clean:
 
 ######################################################################################
 
+include $(COMPILEBASE)\versioninfo.inc

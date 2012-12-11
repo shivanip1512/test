@@ -131,6 +131,8 @@ TARGS = capcontrol.exe
 
 CAPCONTROL_FULLBUILD = $[Filename,$(OBJ),CapControlFullBuild,target]
 
+PROGS_VERSION=\
+$(TARGS)
 
 ALL:          $(TARGS)
 
@@ -143,12 +145,12 @@ $(CAPCONTROL_FULLBUILD) :
 
 
 
-capcontrol.exe: $(CAPCONTROL_FULLBUILD) $(BASEOBJS) Makefile
+capcontrol.exe: $(CAPCONTROL_FULLBUILD) $(BASEOBJS) Makefile $(OBJ)\capcontrol.res
               @echo:
               @echo Compiling $@
               @%cd $(OBJ)
               $(RWCPPINVOKE) $(CFLAGS) $(INCLPATHS) $(RWLINKFLAGS) /Fe..\$@ \
-$(BASEOBJS) -link $(LIBS) $(RWLIBS) $(BOOST_LIBS) $(LINKFLAGS)
+$(BASEOBJS) -link $(LIBS) $(RWLIBS) $(BOOST_LIBS) $(LINKFLAGS) capcontrol.res
               @echo:
 	      mt.exe -manifest ..\$@.manifest -outputresource:..\$@;1
               -@if not exist $(YUKONOUTPUT) md $(YUKONOUTPUT)
@@ -169,6 +171,7 @@ clean:
         -del \
 *.pdb \
 $(OBJ)\*.obj \
+$(OBJ)\*.res \
 $(BIN)\*.pdb \
 $(BIN)\*.pch \
 $(BIN)\*.ilk \
@@ -2260,3 +2263,4 @@ zonemanager.obj:	precompiled.h ZoneManager.h Zone.h ccutil.h \
 		readers_writer_lock.h ZoneLoader.h
 #ENDUPDATE#
 
+include $(COMPILEBASE)\versioninfo.inc

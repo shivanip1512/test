@@ -67,6 +67,10 @@ control_history_association.obj \
 DISPATCH_VG_FULLBUILD = $[Filename,$(OBJ),DispatchVGFullBuild,target]
 
 
+PROGS_VERSION=\
+ctivg.dll
+
+
 ALL:            ctivg.dll
 
 
@@ -78,11 +82,11 @@ $(DISPATCH_VG_FULLBUILD) :
 
 
 
-ctivg.dll:      $(DISPATCH_VG_FULLBUILD) $(DLLOBJS) Makedll.mak
+ctivg.dll:      $(DISPATCH_VG_FULLBUILD) $(DLLOBJS) Makedll.mak $(OBJ)\ctivg.res
                 @build -nologo -f $(_InputFile) id
                 @echo Building  ..\$@
                 @%cd $(OBJ)
-                $(CC) $(DLLFLAGS) $(DLLOBJS) id_vgdll.obj $(INCLPATHS) $(RWLIBS) $(BOOST_LIBS) $(CTIVGLIBS) /Fe..\$@
+                $(CC) $(DLLFLAGS) $(DLLOBJS) id_vgdll.obj $(INCLPATHS) $(RWLIBS) $(BOOST_LIBS) $(CTIVGLIBS) /Fe..\$@ ctivg.res
                 -@if not exist $(YUKONOUTPUT) md $(YUKONOUTPUT)
                 -if exist ..\$@ copy ..\$@ $(YUKONOUTPUT)
                 -@if not exist $(COMPILEBASE)\lib md $(COMPILEBASE)\lib
@@ -468,3 +472,5 @@ vgexe_factory.obj:	precompiled.h executorfactory.h collectable.h \
 		executor.h exe_cmd.h exe_reg.h vgexe_factory.h exe_ptchg.h \
 		ctibase.h ctinexus.h
 #ENDUPDATE#
+
+include $(COMPILEBASE)\versioninfo.inc

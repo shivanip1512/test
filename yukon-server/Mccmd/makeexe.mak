@@ -54,16 +54,19 @@ $(COMPILEBASE)\lib\ctimsg.lib \
 EXECS=\
 mcsh.exe
 
+PROGS_VERSION=\
+$(EXECS)
+
 ALL:            $(EXECS)
 
 regx.exe:	regx.obj -link $(LIBS)
 
-mcsh.exe:     $(BASEOBJS) Makefile
+mcsh.exe:     $(BASEOBJS) Makefile $(OBJ)\mcsh.res
                 @echo:
                 @echo Compiling $@
                 @%cd $(OBJ)
                 $(RWCPPINVOKE) $(CFLAGS) $(INCLPATHS) $(RWLINKFLAGS) /Fe..\$@ \
-$(BASEOBJS) -link $(LIBS) $(RWLIBS) $(PORTERLIBS)
+$(BASEOBJS) -link $(LIBS) $(RWLIBS) $(PORTERLIBS) mcsh.res
                 @echo:
                -@if not exist $(YUKONOUTPUT) md $(YUKONOUTPUT)
                -@copy ..\$@ $(YUKONOUTPUT)
@@ -116,3 +119,6 @@ wpsc.obj:	wpsc.h logger.h thread.h mutex.h dlldefs.h guard.h types.h \
 		numstr.h
 xcel.obj:	xcel.h logger.h thread.h mutex.h dlldefs.h guard.h types.h
 #ENDUPDATE#
+
+include $(COMPILEBASE)\versioninfo.inc
+

@@ -127,6 +127,8 @@ ctidbsrc.dll \
 
 DATABASE_FULLBUILD = $[Filename,$(OBJ),DatabaseFullBuild,target]
 
+PROGS_VERSION=\
+$(CTIPROGS)
 
 ALL:            $(CTIPROGS)
 
@@ -139,13 +141,13 @@ $(DATABASE_FULLBUILD) :
 
 
 
-ctidbsrc.dll:   $(DATABASE_FULLBUILD) $(YUKONDLLOBJS) Makefile
+ctidbsrc.dll:   $(DATABASE_FULLBUILD) $(YUKONDLLOBJS) Makefile $(OBJ)\ctidbsrc.res
                 @echo:
                 @echo Compiling $@
                 @%cd $(OBJ)
                 $(RWCPPINVOKE) $(INCLPATHS) $(RWLINKFLAGS) $(DLLFLAGS) -Fe..\$@ \
-$(YUKONDLLOBJS) -link $(RWLIBS) $(BOOST_LIBS) $(DBLIBS) $(LINKFLAGS)
-               -@if not exist $(YUKONOUTPUT) md $(YUKONOUTPUT)
+$(YUKONDLLOBJS) -link $(RWLIBS) $(BOOST_LIBS) $(DBLIBS) $(LINKFLAGS) ctidbsrc.res
+               -@if not exist $(YUKONOUTPUT) md $(YUKONOUTPUT) 
                -if exist ..\$@ copy ..\$@ $(YUKONOUTPUT)
                -@if not exist $(COMPILEBASE)\lib md $(COMPILEBASE)\lib
                -if exist ..\bin\$(@B).lib copy ..\bin\$(@B).lib $(COMPILEBASE)\lib
@@ -169,6 +171,7 @@ clean:
         -del \
 *.pdb \
 $(OBJ)\*.obj \
+$(OBJ)\*.res \
 $(BIN)\*.pdb \
 $(BIN)\*.pch \
 $(BIN)\*.ilk \
@@ -757,3 +760,5 @@ test_tbl_dyn_paoinfo.obj:	tbl_dyn_paoinfo.h dlldefs.h dbmemobject.h \
 		numstr.h dsm2err.h words.h optional.h row_reader.h \
 		boostutil.h
 #ENDUPDATE#
+
+include $(COMPILEBASE)\versioninfo.inc

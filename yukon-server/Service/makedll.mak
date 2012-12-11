@@ -25,13 +25,21 @@ CPPFLAGS=\
 LIBS=\
 advapi32.lib
 
-ALL:        service.dll
+CTIPROGS=\
+service.dll
 
 
-service.dll:  $(DLLOBJS) Makedll.mak
+PROGS_VERSION=\
+$(CTIPROGS)
+
+
+ALL:        $(CTIPROGS)
+
+
+service.dll:  $(DLLOBJS) Makedll.mak $(OBJ)\service.res
               @echo Building  $@
               @%cd $(OBJ)
-              $(CC) /Gd $(DLLFLAGS) $(DLLOBJS) $(INCLPATHS) $(LIBS) $(RWLIBS) /Fe..\$@
+              $(CC) /Gd $(DLLFLAGS) $(DLLOBJS) $(INCLPATHS) $(LIBS) $(RWLIBS) /Fe..\$@ service.res
               -@if not exist $(YUKONOUTPUT) md $(YUKONOUTPUT)
               -@if exist ..\$@ copy ..\$@ $(YUKONOUTPUT)
               -@if not exist $(COMPILEBASE)\lib md $(COMPILEBASE)\lib
@@ -59,3 +67,5 @@ deps:
 
 #UPDATE#
 #ENDUPDATE#
+
+include $(COMPILEBASE)\versioninfo.inc

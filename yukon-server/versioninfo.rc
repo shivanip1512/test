@@ -1,0 +1,42 @@
+#ifndef WIN32_LEAN_AND_MEAN
+#define WIN32_LEAN_AND_MEAN
+#endif /* Prevents winsock.h from being included in windows.h */
+#include <windows.h> /* Needed for a few definitions, can be excluded if you use values instead. */
+
+#define STR_EXPAND(x) #x
+#define STR(x) STR_EXPAND(x)
+
+
+VS_VERSION_INFO VERSIONINFO
+FILEVERSION    	D_FILE_VERSION
+PRODUCTVERSION 	D_PRODUCT_VERSION
+
+FILEOS         	VOS__WINDOWS32
+FILETYPE       	VFT_APP
+BEGIN
+    BLOCK "StringFileInfo"
+    BEGIN
+        BLOCK "040904E4"
+        BEGIN
+			/* VALUE "CompanyName",      "My Company.\0" */
+            VALUE "FileDescription",  STR(D_FILE_NAME)
+            VALUE "FileVersion",      STR(D_FILE_VERSION_STR)
+            VALUE "ProductName",      "Yukon\0"
+			VALUE "ProductVersion",   STR(D_PRODUCT_VERSION_STR)
+            VALUE "LegalCopyright",   "© 2002-2012 Cooper Industries plc. All rights reserved.\0"
+        END
+    END
+
+    BLOCK "VarFileInfo"
+    BEGIN
+        /* The following line should only be modified for localized versions.     */
+        /* It consists of any number of WORD,WORD pairs, with each pair           */
+        /* describing a language,codepage combination supported by the file.      */
+        /*                                                                        */
+        /* For example, a file might have values "0x409,1252" indicating that it  */
+        /* supports English language (0x409) in the Windows ANSI codepage (1252). */
+
+        VALUE "Translation", 0x409, 1252
+
+    END
+END

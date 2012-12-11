@@ -41,15 +41,23 @@ scanglob.obj \
 
 #scan_dlc.obj
 
+CTIPROGS=\
+scansup.dll
 
-ALL:            scansup.dll
+
+PROGS_VERSION=\
+$(CTIPROGS)
 
 
-scansup.dll:   $(DLLOBJS) Makedll.mak
+ALL:            $(CTIPROGS)
+
+
+
+scansup.dll:   $(DLLOBJS) Makedll.mak $(OBJ)\scansup.res
                @build -nologo -f $(_InputFile) id
                @echo Building  ..\$@
                @%cd $(OBJ)
-               $(CC) $(DLLFLAGS) $(DLLOBJS) id_sgdll.obj $(INCLPATHS) $(RWLIBS) $(BOOST_LIBS) $(COMPILEBASE)\lib\ctibase.lib /Fe..\$@
+               $(CC) $(DLLFLAGS) $(DLLOBJS) id_sgdll.obj $(INCLPATHS) $(RWLIBS) $(BOOST_LIBS) $(COMPILEBASE)\lib\ctibase.lib /Fe..\$@ scansup.res
                -@if not exist $(YUKONOUTPUT) md $(YUKONOUTPUT)
                -if exist ..\$@ copy ..\$@ $(YUKONOUTPUT)
                -@if not exist $(COMPILEBASE)\lib md $(COMPILEBASE)\lib
@@ -157,3 +165,5 @@ scanner.obj:	precompiled.h dbaccess.h dllbase.h dsm2.h cticonnect.h \
 		database_transaction.h millisecond_timer.h
 scansvc.obj:	precompiled.h scanglob.h dlldefs.h scansvc.h cservice.h
 #ENDUPDATE#
+
+include $(COMPILEBASE)\versioninfo.inc

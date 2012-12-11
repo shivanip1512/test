@@ -40,14 +40,18 @@ CTIPROGS=\
 ctidbres.dll
 
 
+PROGS_VERSION=\
+$(CTIPROGS)
+
+
 ALL:           $(CTIPROGS)
 
-ctidbres.dll:  $(DLLOBJS) Makefile
+ctidbres.dll:  $(DLLOBJS) Makefile $(OBJ)\ctidbres.res
                 @echo:
                 @echo Compiling $@
                 @%cd $(OBJ)
                 $(RWCPPINVOKE) $(INCLPATHS) $(RWLINKFLAGS) $(DLLFLAGS) -Fe..\$@ $(DLLOBJS) -link $(RWLIBS) $(BOOST_LIBS) \
-$(DBLIBS)
+$(DBLIBS) ctidbres.res
                -@if not exist $(YUKONOUTPUT) md $(YUKONOUTPUT)
                -if exist ..\$@ copy ..\$@ $(YUKONOUTPUT)
                -@if not exist $(COMPILEBASE)\lib md $(COMPILEBASE)\lib
@@ -72,6 +76,7 @@ clean:
         -del \
 *.pdb \
 $(OBJ)\*.obj \
+$(OBJ)\*.res \
 $(BIN)\*.pdb \
 $(BIN)\*.pch \
 $(BIN)\*.ilk \
@@ -115,3 +120,5 @@ tbl_signal.obj:	precompiled.h tbl_signal.h ctitime.h dlldefs.h \
 		thread.h CtiPCPtrQueue.h database_writer.h row_writer.h \
 		database_reader.h
 #ENDUPDATE#
+
+include $(COMPILEBASE)\versioninfo.inc

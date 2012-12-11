@@ -92,6 +92,10 @@ TARGS = loadmanagement.exe
 LOADMANAGEMENT_FULLBUILD = $[Filename,$(OBJ),LoadManagementFullBuild,target]
 
 
+PROGS_VERSION=\
+$(TARGS)
+
+
 ALL:          $(TARGS)
 
 
@@ -103,12 +107,12 @@ $(LOADMANAGEMENT_FULLBUILD) :
 	$(RWCPPINVOKE) $(CFLAGS) $(RWCPPFLAGS) $(PARALLEL) $(PCHFLAGS) $(INCLPATHS) -DWINDOWS -Fo$(OBJ)\ -c $[StrReplace,.obj,.cpp,$(BASEOBJS)]
 
 
-loadmanagement.exe: $(LOADMANAGEMENT_FULLBUILD) $(BASEOBJS) Makefile
+loadmanagement.exe: $(LOADMANAGEMENT_FULLBUILD) $(BASEOBJS) Makefile $(OBJ)\loadmanagement.res
               @echo:
               @echo Compiling $@
               @%cd $(OBJ)
               $(RWCPPINVOKE) $(CFLAGS) -D_DEBUG_MEMORY $(INCLPATHS) $(RWLINKFLAGS) /Fe..\$@ \
-$(BASEOBJS) -link $(LIBS) $(RWLIBS) $(BOOST_LIBS) $(LINKFLAGS)
+$(BASEOBJS) -link $(LIBS) $(RWLIBS) $(BOOST_LIBS) $(LINKFLAGS) loadmanagement.res
               @echo:
               -@if not exist $(YUKONOUTPUT) md $(YUKONOUTPUT)
               mt.exe -manifest ..\$@.manifest -outputresource:..\$@;1
@@ -129,6 +133,7 @@ clean:
         -del \
 *.pdb \
 $(OBJ)\*.obj \
+$(OBJ)\*.res \
 $(BIN)\*.pdb \
 $(BIN)\*.pch \
 $(BIN)\*.ilk \
@@ -944,3 +949,5 @@ test_lm_constraintviolations.obj:	ConstraintViolation.h ctitime.h \
 		utility.h queues.h cticalls.h os2_2w32.h types.h numstr.h \
 		CtiPCPtrQueue.h
 #ENDUPDATE#
+
+include $(COMPILEBASE)\versioninfo.inc

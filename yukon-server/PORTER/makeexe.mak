@@ -105,6 +105,9 @@ traceset.exe
 PORTER_EXE_FULLBUILD = $[Filename,$(OBJ),PorterExeFullBuild,target]
 
 
+PROGS_VERSION=\
+$(EXECS)
+
 
 ALL:            $(EXECS)
                 -@if exist $(COMPILEBASE)\porter\lib\libeay32.dll copy $(COMPILEBASE)\porter\lib\libeay32.dll $(YUKONOUTPUT)
@@ -118,12 +121,12 @@ $(PORTER_EXE_FULLBUILD) :
 	$(RWCPPINVOKE) $(CFLAGS) $(RWCPPFLAGS) $(PARALLEL) $(PCHFLAGS) $(INCLPATHS) -DWINDOWS -Fo$(OBJ)\ -c $[StrReplace,.obj,.cpp,$(BASEOBJS)]
 
 
-porter.exe:     $(PORTER_EXE_FULLBUILD) $(BASEOBJS) Makefile
+porter.exe:     $(PORTER_EXE_FULLBUILD) $(BASEOBJS) Makefile $(OBJ)\porter.res
                 @build -nologo -f $(_InputFile) id
                 @echo:
                 @echo Compiling ..\$@
                 @%cd $(OBJ)
-                $(RWCPPINVOKE) $(CFLAGS) $(BASEOBJS) id_porter.obj $(INCLPATHS) $(RWLINKFLAGS) /Fe..\$@ -link $(LIBS) $(RWLIBS) $(PORTERLIBS) $(BOOST_LIBS) $(LINKFLAGS)
+                $(RWCPPINVOKE) $(CFLAGS) $(BASEOBJS) id_porter.obj $(INCLPATHS) $(RWLINKFLAGS) /Fe..\$@ -link $(LIBS) $(RWLIBS) $(PORTERLIBS) $(BOOST_LIBS) $(LINKFLAGS) porter.res
                 @echo:
                -@if not exist $(YUKONOUTPUT) md $(YUKONOUTPUT)
                mt.exe -manifest ..\$@.manifest -outputresource:..\$@;1
@@ -898,3 +901,5 @@ unsolicited_handler.obj:	precompiled.h boostutil.h utility.h ctitime.h \
 		StatisticsManager.h PaoStatistics.h PaoStatisticsRecord.h \
 		ThreadStatusKeeper.h thread_register_data.h thread_monitor.h
 #ENDUPDATE#
+
+include $(COMPILEBASE)\versioninfo.inc

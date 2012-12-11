@@ -60,9 +60,15 @@ $(COMPILEBASE)\lib\ctidbsrc.lib
 
 SCANNER_EXE_FULLBUILD = $[Filename,$(OBJ),ScannerExeFullBuild,target]
 
+CTIPROGS=\
+scanner.exe
 
 
-ALL:            scanner.exe
+PROGS_VERSION=\
+$(CTIPROGS)
+
+
+ALL:            $(CTIPROGS)
 
 
 $(SCANNER_EXE_FULLBUILD) :
@@ -73,12 +79,12 @@ $(SCANNER_EXE_FULLBUILD) :
 
 
 
-scanner.exe:    $(SCANNER_EXE_FULLBUILD) $(BASEOBJS) makeexe.mak
+scanner.exe:    $(SCANNER_EXE_FULLBUILD) $(BASEOBJS) makeexe.mak $(OBJ)\scanner.res
                 @build -nologo -f $(_InputFile) id
                 @echo:
                 @echo Compiling $@
                 @%cd $(OBJ)
-                $(RWCPPINVOKE) $(CFLAGS) $(BASEOBJS) id_scanner.obj $(INCLPATHS) $(RWLINKFLAGS) /Fe..\$@ -link $(LIBS) $(RWLIBS) $(SCANNERLIBS) $(BOOST_LIBS)
+                $(RWCPPINVOKE) $(CFLAGS) $(BASEOBJS) id_scanner.obj $(INCLPATHS) $(RWLINKFLAGS) /Fe..\$@ -link $(LIBS) $(RWLIBS) $(SCANNERLIBS) $(BOOST_LIBS) scanner.res
                 @echo:
                -@if not exist $(YUKONOUTPUT) md $(YUKONOUTPUT)
                mt.exe -manifest ..\$@.manifest -outputresource:..\$@;1
@@ -87,11 +93,11 @@ scanner.exe:    $(SCANNER_EXE_FULLBUILD) $(BASEOBJS) makeexe.mak
                 @echo:
                 @%cd $(CWD)
 
-killscan.exe:   poker.obj makeexe.mak
+killscan.exe:   poker.obj makeexe.mak $(OBJ)\killscan.res
                 @echo:
                 @echo Compiling $@
                 @%cd $(OBJ)
-                $(RWCPPINVOKE) $(CFLAGS) poker.obj $(INCLPATHS) $(RWLINKFLAGS) /Fe..\$@ -link $(LIBS) $(RWLIBS) $(SCANNERLIBS)
+                $(RWCPPINVOKE) $(CFLAGS) poker.obj $(INCLPATHS) $(RWLINKFLAGS) /Fe..\$@ -link $(LIBS) $(RWLIBS) $(SCANNERLIBS) killscan.res
                 @echo:
                -@if not exist $(YUKONOUTPUT) md $(YUKONOUTPUT)
                mt.exe -manifest ..\$@.manifest -outputresource:..\$@;1
@@ -202,3 +208,5 @@ scanner.obj:	precompiled.h dbaccess.h dllbase.h dsm2.h cticonnect.h \
 		database_transaction.h millisecond_timer.h
 scansvc.obj:	precompiled.h scanglob.h dlldefs.h scansvc.h cservice.h
 #ENDUPDATE#
+
+include $(COMPILEBASE)\versioninfo.inc

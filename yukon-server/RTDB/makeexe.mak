@@ -56,16 +56,19 @@ conntest.exe
 # key_password_encryptor.exe
 
 
+PROGS_VERSION=\
+$(CTIPROGS)
+
 
 ALL:            $(CTIPROGS)
 
-rtpttest.exe:  $(RTPTTESTOBJS) makeexe.mak
+rtpttest.exe:  $(RTPTTESTOBJS) makeexe.mak $(OBJ)\rtpttest.res
                 @echo:
                 @echo Compiling ..\$@
                 @%cd $(OBJ)
                 $(RWCPPINVOKE) $(CFLAGS) $(RWLINKFLAGS) $(INCLPATHS) /Fe..\$@ \
 $(RTPTTESTOBJS) \
--link $(COMPILEBASE)\lib\ctisvr.lib $(RWLIBS)
+-link $(COMPILEBASE)\lib\ctisvr.lib $(RWLIBS) rtpttest.res
                -@if not exist $(YUKONOUTPUT) md $(YUKONOUTPUT)
                mt.exe -manifest ..\$@.manifest -outputresource:..\$@;1
                -@copy ..\$@ $(YUKONOUTPUT)
@@ -74,12 +77,12 @@ $(RTPTTESTOBJS) \
                 @echo:
                 @%cd $(CWD)
 
-memtest.exe:    memtest.obj makeexe.mak
+memtest.exe:    memtest.obj makeexe.mak $(OBJ)\memtest.res
                 @echo:
                 @echo Compiling ..\$@
                 @%cd $(OBJ)
                 $(RWCPPINVOKE) $(CFLAGS) $(INCLPATHS) $(RWLINKFLAGS) /Fe..\$@ memtest.obj \
--link $(COMPILEBASE)\lib\ctibase.lib $(RWLIBS) $(BOOST_LIBS)
+-link $(COMPILEBASE)\lib\ctibase.lib $(RWLIBS) $(BOOST_LIBS) memtest.res
                -@if not exist $(YUKONOUTPUT) md $(YUKONOUTPUT)
                mt.exe -manifest ..\$@.manifest -outputresource:..\$@;1
                -@copy ..\$@ $(YUKONOUTPUT)
@@ -88,12 +91,12 @@ memtest.exe:    memtest.obj makeexe.mak
                 @echo:
                 @%cd $(CWD)
 
-routetest.exe:   $(RTESTOBJS) makeexe.mak
+routetest.exe:   $(RTESTOBJS) makeexe.mak $(OBJ)\routetest.res
                 @echo:
                 @echo Compiling ..\$@
                 @%cd $(OBJ)
                 $(RWCPPINVOKE) $(CFLAGS) $(INCLPATHS) $(RWLINKFLAGS) /Fe..\$@ $(RTESTOBJS) \
--link $(COMPILEBASE)\lib\ctibase.lib $(COMPILEBASE)\lib\ctisvr.lib $(COMPILEBASE)\lib\ctidbsrc.lib $(COMPILEBASE)\lib\ctidevdb.lib  $(RWLIBS) $(BOOST_LIBS)
+-link $(COMPILEBASE)\lib\ctibase.lib $(COMPILEBASE)\lib\ctisvr.lib $(COMPILEBASE)\lib\ctidbsrc.lib $(COMPILEBASE)\lib\ctidevdb.lib  $(RWLIBS) $(BOOST_LIBS) routetest.res
                -@if not exist $(YUKONOUTPUT) md $(YUKONOUTPUT)
                mt.exe -manifest ..\$@.manifest -outputresource:..\$@;1
                -@copy ..\$@ $(YUKONOUTPUT)
@@ -102,12 +105,12 @@ routetest.exe:   $(RTESTOBJS) makeexe.mak
                 @echo:
                 @%cd $(CWD)
 
-conntest.exe:   $(CONNTESTOBJS) makeexe.mak
+conntest.exe:   $(CONNTESTOBJS) makeexe.mak $(OBJ)\conntest.res
                 @echo:
                 @echo Compiling ..\$@
                 @%cd $(OBJ)
                 $(RWCPPINVOKE) $(CFLAGS) $(INCLPATHS) $(RWLINKFLAGS) /Fe..\$@ $(CONNTESTOBJS) \
--link $(COMPILEBASE)\lib\ctibase.lib $(COMPILEBASE)\lib\ctimsg.lib $(COMPILEBASE)\lib\ctisvr.lib $(COMPILEBASE)\lib\ctidbsrc.lib $(COMPILEBASE)\lib\ctidevdb.lib  $(RWLIBS) $(BOOST_LIBS)
+-link $(COMPILEBASE)\lib\ctibase.lib $(COMPILEBASE)\lib\ctimsg.lib $(COMPILEBASE)\lib\ctisvr.lib $(COMPILEBASE)\lib\ctidbsrc.lib $(COMPILEBASE)\lib\ctidevdb.lib  $(RWLIBS) $(BOOST_LIBS) conntest.res
                -@if not exist $(YUKONOUTPUT) md $(YUKONOUTPUT)
                mt.exe -manifest ..\$@.manifest -outputresource:..\$@;1
                -@copy ..\$@ $(YUKONOUTPUT)
@@ -116,14 +119,14 @@ conntest.exe:   $(CONNTESTOBJS) makeexe.mak
                 @echo:
                 @%cd $(CWD)
 
-key_password_encryptor.exe:   $(KEYPSWDENCRYPTOROBJS) makeexe.mak
+key_password_encryptor.exe:   $(KEYPSWDENCRYPTOROBJS) makeexe.mak $(OBJ)\key_password_encryptor.res
                 @echo:
                 @echo Compiling ..\$@
                 @%cd $(OBJ)
                 $(RWCPPINVOKE) $(CFLAGS) $(INCLPATHS) $(RWLINKFLAGS) /Fe..\$@ $(KEYPSWDENCRYPTOROBJS) \
 			-link $(COMPILEBASE)\lib\ctibase.lib \
 			$(COMPILEBASE)\lib\ctimsg.lib $(COMPILEBASE)\lib\ctisvr.lib \
-			$(COMPILEBASE)\lib\ctidbsrc.lib $(COMPILEBASE)\lib\ctidevdb.lib  $(RWLIBS) $(BOOST_LIBS) $(OPENSSL_LIBS)
+			$(COMPILEBASE)\lib\ctidbsrc.lib $(COMPILEBASE)\lib\ctidevdb.lib  $(RWLIBS) $(BOOST_LIBS) $(OPENSSL_LIBS) key_password_encryptor.res
                -@if not exist $(YUKONOUTPUT) md $(YUKONOUTPUT)
                mt.exe -manifest ..\$@.manifest -outputresource:..\$@;1
                -@copy ..\$@ $(YUKONOUTPUT)
@@ -3711,3 +3714,6 @@ test_slctdev.obj:	slctdev.h dev_base.h dsm2.h cticonnect.h yukon.h \
 		encryption.h tbl_base.h tbl_scanrate.h tbl_dyn_paoinfo.h \
 		pt_base.h tbl_pt_base.h devicetypes.h
 #ENDUPDATE#
+
+include $(COMPILEBASE)\versioninfo.inc
+

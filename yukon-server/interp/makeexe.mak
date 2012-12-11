@@ -22,14 +22,18 @@ $(COMPILEBASE)\lib\ctimsg.lib \
 EXECS=\
 ctish.exe
 
+PROGS_VERSION=\
+$(EXECS)
+
+
 ALL:            $(EXECS)
 
-ctish.exe:     $(OBJS) Makefile
+ctish.exe:     $(OBJS) Makefile $(OBJ)\ctish.res
                 @echo:
                 @echo Compiling $@
                 @%cd $(OBJ)
                 $(RWCPPINVOKE) $(CFLAGS) $(INCLPATHS) $(RWLINKFLAGS) /Fe..\$@ \
-$(OBJS) -link $(LIBS) $(RWLIBS) $(BOOST_LIBS)
+$(OBJS) -link $(LIBS) $(RWLIBS) $(BOOST_LIBS) ctish.res
                 @echo:
                -@if not exist $(YUKONOUTPUT) md $(YUKONOUTPUT)
                mt.exe -manifest ..\$@.manifest -outputresource:..\$@;1
@@ -82,3 +86,5 @@ wpsc.obj:	wpsc.h logger.h thread.h mutex.h dlldefs.h guard.h types.h \
 		numstr.h
 xcel.obj:	xcel.h logger.h thread.h mutex.h dlldefs.h guard.h types.h
 #ENDUPDATE#
+
+include $(COMPILEBASE)\versioninfo.inc
