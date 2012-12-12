@@ -14,6 +14,7 @@
 #include "ThreadStatusKeeper.h"
 #include "ExecutorFactory.h"
 #include "MsgVerifyBanks.h" 
+#include "MsgVerifyInactiveBanks.h" 
 
 #include <stdlib.h>
 
@@ -401,7 +402,16 @@ void CtiPAOScheduleManager::runScheduledEvent(CtiPAOEvent *paoEvent)
     {
         case CapControlVerification:
         {
-            CtiCCExecutorFactory::createExecutor(new VerifyBanks(paoEvent->getPAOId(),paoEvent->getDisableOvUvFlag(), strategy))->execute();
+            //What type of Verification?
+            if (strategy == BanksInactiveForXTime)
+            {
+               CtiCCExecutorFactory::createExecutor(new VerifyInactiveBanks(paoEvent->getPAOId(),secsSinceLastOp,paoEvent->getDisableOvUvFlag()))->execute();
+            }
+            else //The rest
+            {
+               CtiCCExecutorFactory::createExecutor(new VerifyBanks(paoEvent->getPAOId(),paoEvent->getDisableOvUvFlag(), strategy))->execute();
+            }
+            // Verify Selected Banks cannot be scheduled. It is executed from the Web only.
             break;
         }
         case ConfirmSubstationBus:
