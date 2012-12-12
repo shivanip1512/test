@@ -31,16 +31,16 @@
 
 <ct:simpleDialog id="disconnectInfo"/>
 
-<ct:nameValueContainer altRowOn="true">
-  <ct:nameValue2 label="${attribute}">
-  <c:if test="${isConfigured}">
-    <ct:attributeValue device="${device}" attribute="${attribute}" />
-  </c:if>
-  <c:if test="${not isConfigured}">
-    <cti:msg2 key=".notConfigured" />
-  </c:if>
-  </ct:nameValue2>
-</ct:nameValueContainer>
+<ct:nameValueContainer2>
+    <ct:nameValue2 label="${attribute}">
+        <c:if test="${isConfigured}">
+            <ct:attributeValue device="${device}" attribute="${attribute}" />
+        </c:if>
+        <c:if test="${not isConfigured}">
+            <cti:msg2 key=".notConfigured" />
+        </c:if>
+    </ct:nameValue2>
+</ct:nameValueContainer2>
 <br>
 <div style="text-align: right">
 	<ct:widgetActionRefresh hide="${!readable}" method="read" nameKey="read"/>

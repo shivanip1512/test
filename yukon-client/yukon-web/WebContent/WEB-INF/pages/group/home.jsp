@@ -514,7 +514,7 @@
                                             </cti:url>
                                         
                                             <span title="${fn:escapeXml(subGroup.value)}">
-                                                <a href="${homeUrl}"><c:out value="${subGroup.value}"/></a>
+                                                <a href="${homeUrl}"><c:out value="${subGroup.key.name}"/></a>
                                             </span>
                                         </td>
                                         

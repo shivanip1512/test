@@ -2,9 +2,9 @@ package com.cannontech.web.group;
 
 import java.util.ArrayList;
 import java.util.Collections;
-import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.TreeMap;
 
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServletRequest;
@@ -102,10 +102,10 @@ public class GroupEditorController extends MultiActionController {
         // sub groups (child groups)
         List<DeviceGroup> childGroups = deviceGroupDao.getChildGroups(group);
 
-        Map<DeviceGroup,String> subGroupMap = new HashMap<>();
+        Map<DeviceGroup,String> subGroupMap = new TreeMap<>();
         
         for (DeviceGroup childGroup : childGroups) {
-            subGroupMap.put(childGroup, childGroup.getName(userContext, childGroup.getName()));
+            subGroupMap.put(childGroup, childGroup.getFullName(userContext));
         }
         
         mav.addObject("subGroupMap",subGroupMap);
