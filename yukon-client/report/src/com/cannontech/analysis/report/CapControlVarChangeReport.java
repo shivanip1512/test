@@ -11,6 +11,7 @@ public class CapControlVarChangeReport extends SimpleYukonReportBase {
     private static final ColumnLayoutData bodyColumns[] = new ColumnLayoutData[] {
         new ColumnLayoutData("Cap Bank", "capBankName", 80),
         new ColumnLayoutData("CBC", "cbcName", 80),
+        new ColumnLayoutData("Bank Size", "bankSize", 80),
         new ColumnLayoutData("kVAR Change", "kvarChange", 70),
         new ColumnLayoutData("Percent Change", "percentChange", 80),
         new ColumnLayoutData("Date/Time", "dateTime", 110, columnDateFormat),
