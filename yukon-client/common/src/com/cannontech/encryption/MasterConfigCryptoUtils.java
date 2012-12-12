@@ -26,15 +26,7 @@ public class MasterConfigCryptoUtils {
     static {
         try {
             encrypter = new AESPasswordBasedCrypto(getMasterCfgPasskey());
-        } catch (CryptoException e) {
-            // Logging probably hasn't been set up...log to standard error.
-            System.err.println("error creating encryptor");
-            e.printStackTrace(System.err);
-        } catch (IOException e) {
-            // Logging probably hasn't been set up...log to standard error.
-            System.err.println("error creating encryptor");
-            e.printStackTrace(System.err);
-        } catch (JDOMException e) {
+        } catch (CryptoException | IOException | JDOMException e) {
             // Logging probably hasn't been set up...log to standard error.
             System.err.println("error creating encryptor");
             e.printStackTrace(System.err);
