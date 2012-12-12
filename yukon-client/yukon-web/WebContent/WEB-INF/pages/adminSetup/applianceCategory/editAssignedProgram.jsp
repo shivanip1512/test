@@ -57,7 +57,19 @@ submitForm = function() {
         $('shortNameInput').enable();
     </c:if>
     return submitFormViaAjax('acDialog', 'inputForm')
-}
+};
+
+jQuery(function(){
+    jQuery("#picker_assignedProgramPicker_label a").click(function(e) {
+        jQuery("#acDialog").hide();
+        e.stopPropagation();
+        return true;
+    });
+});
+
+var showProgramEditor = function() {
+    jQuery("#acDialog").show();
+};
 
 YEvent.observeSelectorClick('#sameAsProgramName', sameAsProgramNameClicked);
 YEvent.observeSelectorClick('#sameAsDisplayName', sameAsDisplayNameClicked);
@@ -70,21 +82,23 @@ YEvent.observeSelectorClick('#sameAsDisplayName', sameAsDisplayNameClicked);
 <i:inline key=".editingMultiple"/>
 </c:if>
 
-<cti:url var="submitUrl" value="saveAssignedProgram"/>
-<form:form id="inputForm" commandName="backingBean" action="${submitUrl}" onsubmit="return submitForm()">
+<form:form id="inputForm" commandName="backingBean" action="saveAssignedProgram" onsubmit="return submitForm()">
     <input type="hidden" name="ecId" value="${param.ecId}"/>
     <form:hidden path="virtual"/>
     <form:hidden path="multiple"/>
+    
     <c:if test="${backingBean.multiple}">
         <c:forEach var="programId" items="${backingBean.programIds}">
             <input type="hidden" name="programIds" value="${programId}">
         </c:forEach>
     </c:if>
+    
     <form:hidden path="assignedProgram.applianceCategoryId"/>
     <form:hidden path="assignedProgram.assignedProgramId"/>
     <form:hidden path="assignedProgram.programId"/>
     <form:hidden id="programNameInput" path="assignedProgram.programName"/>
     <form:hidden path="assignedProgram.programOrder"/>
+    
     <tags:nameValueContainer>
         <cti:msg2 var="fieldName" key=".applianceCategory"/>
         <tags:nameValue name="${fieldName}" nameColumnWidth="170px">
@@ -176,6 +190,21 @@ YEvent.observeSelectorClick('#sameAsDisplayName', sameAsDisplayNameClicked);
                     selectedIcon="${backingBean.assignedProgram.environmentIconEnum}"/>
             </tags:nameValue>
         </tags:nameValue>
+        <cti:msg2 var="fieldName" key=".alternateEnrollment"/>
+ 	 	<tags:nameValue name="${fieldName}">
+ 	 	    <form:hidden path="assignedProgram.alternateProgramId" id="alternateProgramId"/>
+ 	 	    <tags:pickerDialog type="assignedProgramPicker" 
+ 	 	        id="assignedProgramPicker"
+ 	 	        linkType="selection"
+ 	 	        selectionProperty="displayName" 
+ 	 	        multiSelectMode="false" 
+ 	 	        memoryGroup="programPicker"
+ 	 	        destinationFieldId="alternateProgramId"
+ 	 	        allowEmptySelection="true"
+ 	 	        endAction="showProgramEditor"
+ 	 	        cancelAction="showProgramEditor" initialId="${backingBean.assignedProgram.alternateProgramId}">
+ 	 	    </tags:pickerDialog>
+ 	 	</tags:nameValue>
     </tags:nameValueContainer>
     <cti:displayForPageEditModes modes="EDIT,CREATE">
     <c:if test="${!backingBean.multiple}">

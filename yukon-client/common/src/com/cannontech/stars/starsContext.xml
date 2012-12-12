@@ -110,6 +110,7 @@
     </bean>
 
     <bean id="enrollmentService" class="com.cannontech.stars.dr.enrollment.service.impl.EnrollmentHelperServiceImpl"/>
+    <bean class="com.cannontech.stars.dr.enrollment.service.impl.AlternateEnrollmentServiceImpl"/>
     <bean class="com.cannontech.stars.dr.hardwareConfig.HardwareConfigServiceImpl"/>
 
 	<bean id="lmHardwareControlInformationService" class="com.cannontech.stars.dr.hardware.service.impl.LMHardwareControlInformationServiceImpl">
@@ -142,6 +143,8 @@
     <bean id="starsInventoryBaseService" class="com.cannontech.stars.core.service.impl.StarsInventoryBaseServiceImpl"/>
     
     <bean id="starsTwoWayLcrYukonDeviceAssignmentService" class="com.cannontech.stars.core.service.impl.StarsTwoWayLcrYukonDeviceAssignmentServiceImpl"/>
+    
+    <bean class="com.cannontech.stars.dr.hardware.dao.impl.ProgramToAlternateProgramDaoImpl" />
 
     <bean id="staticLoadGroupMappingDao" class="com.cannontech.stars.dr.hardware.dao.impl.StaticLoadGroupMappingDaoImpl"/>
 

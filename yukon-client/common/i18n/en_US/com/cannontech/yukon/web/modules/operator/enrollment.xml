@@ -98,5 +98,30 @@
     <entry key="yukon.web.modules.operator.enrollmentHistory.relay">Relay</entry>
     <entry key="yukon.web.modules.operator.enrollmentHistory.noRelay">None</entry>
     <entry key="yukon.web.modules.operator.enrollmentHistory.showCompleteHistory">View Complete History</entry>
+    
+    <!-- Alternate Enrollment -->
+	<entry key="yukon.web.modules.operator.alternateEnrollment.pageName">Alternate Enrollment</entry>
+	<entry key="yukon.web.modules.operator.alternateEnrollment.confirmAlternate.title">Confirm Alternate Enrollment</entry>
+	<entry key="yukon.web.modules.operator.alternateEnrollment.confirmAlternate.message"><![CDATA[
+	    Are you sure you would like to switch to the selected device(s) to their alternate programs?
+	]]></entry>
+	<entry key="yukon.web.modules.operator.alternateEnrollment.confirmNormal.title">Confirm Revert Alternate Enrollment</entry>
+	<entry key="yukon.web.modules.operator.alternateEnrollment.confirmNormal.message"><![CDATA[
+	    Are you sure you would like to switch to the selected device(s) back to their normal programs?
+	]]></entry>
+	<entry key="yukon.web.modules.operator.alternateEnrollment.alternate.success">Alternate program enrollment update was successful.</entry>
+ 	<entry key="yukon.web.modules.operator.alternateEnrollment.alternate.failed"><![CDATA[Alternate program enrollment update failed.<br><ul><li>{0}</li></ul>]]></entry>
+	<entry key="yukon.web.modules.operator.alternateEnrollment.available.title">Available</entry>
+	<entry key="yukon.web.modules.operator.alternateEnrollment.active.title">Active</entry>
+	<entry key="yukon.web.modules.operator.alternateEnrollment.device">Device</entry>
+	<entry key="yukon.web.modules.operator.alternateEnrollment.enrolled">Enrolled Program(s)</entry>
+	<entry key="yukon.web.modules.operator.alternateEnrollment.alternate">Alternate Program(s)</entry>
+	<entry key="yukon.web.modules.operator.alternateEnrollment.original">Original Program(s)</entry>
+	<entry key="yukon.web.modules.operator.alternateEnrollment.available.none">No available alternate enrollments</entry>
+	<entry key="yukon.web.modules.operator.alternateEnrollment.active.none">No active alternate enrollments</entry>
+	<entry key="yukon.web.modules.operator.alternateEnrollment.switch.label">Switch</entry>
+	<entry key="yukon.web.modules.operator.alternateEnrollment.switch.imageUrl">/WebConfig/yukon/Icons/changeout.gif</entry>
+	<entry key="yukon.web.modules.operator.alternateEnrollment.revert.label">Revert</entry>
+	<entry key="yukon.web.modules.operator.alternateEnrollment.revert.imageUrl">/WebConfig/yukon/Icons/changeout.gif</entry>
 
 </properties>

@@ -288,5 +288,8 @@
       <sequence name="GlobalSetting">
         <table name="GlobalSetting" identitycolumn="GlobalSettingId" initsequence="true" />
       </sequence>
+      <sequence name="ProgramToSeasonalProgram">
+ 	    <table name="ProgramToSeasonalProgram" identitycolumn="AssignedProgramId" initsequence="true" />
+      </sequence>
   </sequencetable>
 </sequencetables>

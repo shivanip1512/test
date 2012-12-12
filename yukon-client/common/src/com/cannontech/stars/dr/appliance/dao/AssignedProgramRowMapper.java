@@ -60,11 +60,13 @@ public class AssignedProgramRowMapper extends
         retVal.append("SELECT p.applianceCategoryId,");
         retVal.append(    "p.deviceId, p.webSettingsId,");
         retVal.append(    "p.chanceOfControlId, p.programOrder,");
-        retVal.append(    "p.programId, pao.paoName");
+        retVal.append(    "p.programId, pao.paoName,");
+        retVal.append(    "ptsp.seasonalProgramId");
         retVal.append("FROM lmProgramWebPublishing p");
         retVal.append(    "JOIN yukonWebConfiguration wc ON p.webSettingsId = wc.configurationId");
         retVal.append(    "JOIN yukonPaobject pao ON pao.paobjectId = p.deviceId");
         retVal.append(    "JOIN applianceCategory ac ON ac.applianceCategoryId = p.applianceCategoryId");
+        retVal.append(    "LEFT JOIN ProgramToSeasonalProgram ptsp ON ptsp.assignedProgramId = p.programId");
         // there is a "blank" row in lmProgramWebPublishing (all zeros) we have to ignore
         retVal.append("WHERE p.applianceCategoryId").neq(0);
         return retVal;
@@ -94,11 +96,13 @@ public class AssignedProgramRowMapper extends
         }
         // isLast and highestProgramOrder only make sense when looking at a full appliance category.
         boolean isLast = highestProgramOrder != null && programOrder == highestProgramOrder;
+        
+        Integer alternateProgramId = rs.getInt("seasonalProgramId");
 
         AssignedProgram assignedProgram = new AssignedProgram(applianceCategoryId, 
                                                               assignedProgramId, 
                                                               programId, 
-                                                              null, //TODO set actual seasonal override program id
+                                                              alternateProgramId,
                                                               programName,
                                                               chanceOfControlId, 
                                                               programOrder, 

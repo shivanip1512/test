@@ -7,7 +7,7 @@
 
 */
 
-body {font-family: Verdana,Arial,Helvetica,sans-serif; line-height:1.35em;font-size:14px;color:#555;}
+body {font-family: Arial,Helvetica,sans-serif; line-height:1.35em;font-size:14px;color:#555;}
 a, .vertical_menu a:hover {text-decoration:none;}
 a:hover, a:focus {text-decoration:underline;outline:0;}
 
@@ -178,6 +178,7 @@ div.progressBarInnerFailure {
 .boxContainer.with_footer {border-radius: 3px 3px 0 0;margin-bottom: 0;}
 .boxContainerFooter {border:1px solid #ccc;border-radius: 0 0 3px 3px;border-top: none;}
 .flyover, .tooltip {background-color: white; padding: 2px; border: 2px solid #666;box-shadow: 9px;}
+.list-none {font-style: italic;}
 /* END CONTAINERS */
 
 /* Flash Scope */
@@ -371,3 +372,13 @@ div.disabled {color: #666;}
 span.info {font-size: 11px; color: #333; background: lightYellow; border: solid 1px orange; display:block; padding: 5px 10px; margin: 0 0 10px;}
 #cannonUpdaterErrorDiv {position: fixed;bottom: 0;left: 0;right: 0;background: #D14836;color: white;font-weight: bold;text-align: center;padding: 3px;}
 #cannonUpdaterErrorDiv .alert {padding-top: 64px;width: 64px;position: absolute;bottom: 0;left: 10px;}
+
+input:not([type="submit"]):not([type="radio"]):not([type="checkbox"]) {
+    -webkit-background-clip: padding-box;
+    background-clip: padding-box;
+    -webkit-transition: border .2s ease-in-out,background-color .2s ease-in-out;
+    -moz-transition: border .2s ease-in-out,background-color .2s ease-in-out;
+    -ms-transition: border .2s ease-in-out,background-color .2s ease-in-out;
+    -o-transition: border .2s ease-in-out,background-color .2s ease-in-out;
+    transition: border .2s ease-in-out,background-color .2s ease-in-out;
+}

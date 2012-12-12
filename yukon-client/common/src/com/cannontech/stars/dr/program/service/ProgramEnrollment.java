@@ -208,4 +208,16 @@ public class ProgramEnrollment {
         this.relay = programEnrollment.relay;
     }
     
+    public ProgramEnrollment copyOf() {
+	 	ProgramEnrollment copy = new ProgramEnrollment();
+	 	copy.setApplianceCategoryId(this.getApplianceCategoryId());
+	 	copy.setApplianceKW(this.getApplianceKW());
+	 	copy.setAssignedProgramId(this.getAssignedProgramId());
+	 	copy.setEnroll(this.isEnroll());
+	 	copy.setInventoryId(this.getInventoryId());
+	 	copy.setLmGroupId(this.getLmGroupId());
+	 	copy.setRelay(this.getRelay());
+	 	return copy;
+    }
+    
 }

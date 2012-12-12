@@ -366,6 +366,31 @@
     <entry key="yukon.web.modules.consumer.enrollmentDisabled.header">Enrollment Disabled</entry>
     <entry key="yukon.web.modules.consumer.enrollmentDisabled.rightColumnLogo">/WebConfig/yukon/Family.jpg</entry>
     <entry key="yukon.web.modules.consumer.enrollmentDisabled.msg">Enrollment is currently disabled.</entry>
+    
+    <!-- Alternate Enrollment -->
+ 	<entry key="yukon.web.modules.consumer.alternateEnrollment.header">Programs - Alternate Enrollment</entry>
+ 	<entry key="yukon.web.modules.consumer.alternateEnrollment.confirmAlternate.title">Confirm Alternate Enrollment</entry>
+ 	<entry key="yukon.web.modules.consumer.alternateEnrollment.confirmAlternate.message"><![CDATA[
+ 	    Are you sure you would like to switch to the selected device(s) to their alternate programs?
+ 	]]></entry>
+ 	<entry key="yukon.web.modules.consumer.alternateEnrollment.confirmNormal.title">Confirm Revert Alternate Enrollment</entry>
+ 	<entry key="yukon.web.modules.consumer.alternateEnrollment.confirmNormal.message"><![CDATA[
+ 	    Are you sure you would like to switch to the selected device(s) back to their normal programs?
+ 	]]></entry>
+ 	<entry key="yukon.web.modules.consumer.alternateEnrollment.alternate.success">Alternate program enrollment update was successful.</entry>
+ 	<entry key="yukon.web.modules.consumer.alternateEnrollment.alternate.failed"><![CDATA[Alternate program enrollment update failed.<br><ul><li>{0}</li></ul>]]></entry>
+ 	<entry key="yukon.web.modules.consumer.alternateEnrollment.available.title">Available</entry>
+ 	<entry key="yukon.web.modules.consumer.alternateEnrollment.active.title">Active</entry>
+ 	<entry key="yukon.web.modules.consumer.alternateEnrollment.device">Device</entry>
+ 	<entry key="yukon.web.modules.consumer.alternateEnrollment.enrolled">Enrolled Program(s)</entry>
+ 	<entry key="yukon.web.modules.consumer.alternateEnrollment.alternate">Alternate Program(s)</entry>
+ 	<entry key="yukon.web.modules.consumer.alternateEnrollment.original">Original Program(s)</entry>
+ 	<entry key="yukon.web.modules.consumer.alternateEnrollment.available.none">No available alternate enrollments</entry>
+ 	<entry key="yukon.web.modules.consumer.alternateEnrollment.active.none">No active alternate enrollments</entry>
+ 	<entry key="yukon.web.modules.consumer.alternateEnrollment.switch.label">Switch</entry>
+ 	<entry key="yukon.web.modules.consumer.alternateEnrollment.switch.imageUrl">/WebConfig/yukon/Icons/changeout.gif</entry>
+ 	<entry key="yukon.web.modules.consumer.alternateEnrollment.revert.label">Revert</entry>
+ 	<entry key="yukon.web.modules.consumer.alternateEnrollment.revert.imageUrl">/WebConfig/yukon/Icons/changeout.gif</entry>
 
     <!-- enrollment.jsp -->
     <entry key="yukon.dr.consumer.enrollment.header">Programs - Enrollment</entry>

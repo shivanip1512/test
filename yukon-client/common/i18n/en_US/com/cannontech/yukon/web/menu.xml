@@ -250,6 +250,7 @@
 <entry key="yukon.web.menu.config.consumer.programs">Programs</entry>
 <entry key="yukon.web.menu.config.consumer.programs.controlHistory">Control History</entry>
 <entry key="yukon.web.menu.config.consumer.programs.enrollment">Enrollment</entry>
+<entry key="yukon.web.menu.config.consumer.programs.alternateEnrollment">Alternate Enrollment</entry>
 <entry key="yukon.web.menu.config.consumer.programs.optOut">Opt Out</entry>
 <entry key="yukon.web.menu.config.consumer.programs.seasonalOverride">Seasonal Override</entry>
 <entry key="yukon.web.menu.config.consumer.trending">Trending</entry>

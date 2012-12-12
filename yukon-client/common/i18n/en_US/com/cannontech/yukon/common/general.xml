@@ -63,6 +63,7 @@
 
 <entry key="yukon.common.decimalSeparator">.</entry>
 <entry key="yukon.common.thousandSeparator">,</entry>
+<entry key="yukon.common.comma">,</entry>
 
 <entry key="yukon.common.attributes.pointNotFound">Point not configured.</entry>
 

@@ -1427,6 +1427,8 @@
         <property name="optOutStatusService" ref="optOutStatusService" />
     </bean>
     
+    <bean id="alternateEnrollmentMenuOption" class="com.cannontech.web.menu.option.producer.AlternateEnrollmentMenuOptionProducer"/>
+    
     <bean id="faqMenuOption" class="com.cannontech.web.menu.option.producer.FaqMenuOptionProducer"/>
     
     <bean id="trendingMenuOption" class="com.cannontech.web.menu.option.producer.TrendingMenuOptionProducer">

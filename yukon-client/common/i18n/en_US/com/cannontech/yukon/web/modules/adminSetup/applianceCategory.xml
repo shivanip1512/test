@@ -123,7 +123,7 @@
 <entry key="yukon.web.modules.adminSetup.applianceCategory.editAssignedProgram.controlPercent">Control %</entry>
 <entry key="yukon.web.modules.adminSetup.applianceCategory.editAssignedProgram.environment">Environment</entry>
 <entry key="yukon.web.modules.adminSetup.applianceCategory.editAssignedProgram.noIcon">No Icon</entry>
-<entry key="yukon.web.modules.adminSetup.applianceCategory.editAssignedProgram.seasonalOverride">Seasonal Override</entry>
+<entry key="yukon.web.modules.adminSetup.applianceCategory.editAssignedProgram.alternateEnrollment">Alternate Enrollment</entry>
 
 <entry key="yukon.web.modules.adminSetup.applianceCategory.editAssignedProgram.empty">Required field.</entry>
 <entry key="yukon.web.modules.adminSetup.applianceCategory.editAssignedProgram.empty.assignedProgram.displayName">Display name cannot be empty.</entry>

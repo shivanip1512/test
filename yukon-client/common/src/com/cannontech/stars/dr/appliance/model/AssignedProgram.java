@@ -9,7 +9,7 @@ public class AssignedProgram {
     private int applianceCategoryId;
     private int assignedProgramId;
     private int programId;
-    private Integer seasonalOverrideProgramId;
+    private Integer alternateProgramId;
     private int chanceOfControlId;
     private int programOrder;
     private boolean isLast;
@@ -28,14 +28,14 @@ public class AssignedProgram {
         name = new AssignedProgramName();
     }
 
-    public AssignedProgram(int applianceCategoryId, int assignedProgramId, int programId, Integer seasonalOverrideProgramId,
+    public AssignedProgram(int applianceCategoryId, int assignedProgramId, int programId, Integer alternateProgramId,
                            String programName, int chanceOfControlId, int programOrder, 
                            boolean isLast, int webConfigurationId, WebConfiguration webConfiguration) {
         
         this.applianceCategoryId = applianceCategoryId;
         this.assignedProgramId = assignedProgramId;
         this.programId = programId;
-        this.seasonalOverrideProgramId = seasonalOverrideProgramId;
+        this.alternateProgramId = alternateProgramId;
         this.name = new AssignedProgramName(programName); 
         this.chanceOfControlId = chanceOfControlId;
         this.programOrder = programOrder;
@@ -76,14 +76,14 @@ public class AssignedProgram {
         this.programId = programId;
     }
     
-    public Integer getSeasonalOverrideProgramId() {
-        return seasonalOverrideProgramId;
-    }
+    public Integer getAlternateProgramId() {
+		return alternateProgramId;
+	}
     
-    public void setSeasonalOverrideProgramId(Integer seasonalOverrideProgramId) {
-        this.seasonalOverrideProgramId = seasonalOverrideProgramId;
-    }
-
+    public void setAlternateProgramId(Integer alternateProgramId) {
+		this.alternateProgramId = alternateProgramId;
+	}
+    
     /**
      * Get the PAO program name for an assigned program.  This method is not valid for virtual
      * programs.  For virtual programs, this method will return the display name but as a rule,

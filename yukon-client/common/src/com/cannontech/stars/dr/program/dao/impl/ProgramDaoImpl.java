@@ -149,7 +149,7 @@ public class ProgramDaoImpl implements ProgramDao {
     
     @Override
     @Transactional(readOnly = true, propagation = Propagation.SUPPORTS)
-    public List<Program> getByAssignedProgramIds(final List<Integer> assignedProgramIdList) {
+    public List<Program> getByAssignedProgramIds(final Iterable<Integer> assignedProgramIdList) {
         final SqlStatementBuilder sql = new SqlStatementBuilder();
         sql.append(selectSql);
         sql.append(" AND pwp.ProgramID IN (");

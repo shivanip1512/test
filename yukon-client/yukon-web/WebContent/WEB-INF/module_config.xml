@@ -723,9 +723,7 @@
               <requireRoleProperty
                 value="RESIDENTIAL_CONSUMER_INFO_PROGRAMS_ENROLLMENT" />
             </dynamicOptions>
-            <option name="seasonalOverride">
-                <link>/spring/stars/consumer/so</link>
-            </option>
+            <dynamicOptions bean="alternateEnrollmentMenuOption"/>
             <dynamicOptions bean="optOutMenuOption">
               <requireRoleProperty
                 value="RESIDENTIAL_CONSUMER_INFO_PROGRAMS_OPT_OUT" />
@@ -1851,6 +1849,12 @@
                                     </page>
                                 </pages>
                             </page>
+                            <page name="alternateEnrollment" type="DETAIL_CHILD_WITH_INFO" contributeToMenu="true">
+				 	 	 	    <requireRoleProperty value="ALTERNATE_PROGRAM_ENROLLMENT"/>
+				 	 	 	    <menu>account|accounts</menu>
+				 	 	 	    <link>/stars/operator/ae/view?accountId=${accountId}</link>
+				 	 	 	    <labelArgument>${accountNumber}</labelArgument>
+				 	 	 	</page>
                             <page name="optOut.main" type="DETAIL_CHILD_WITH_INFO" contributeToMenu="true">
                                 <menu>account|accounts</menu>
                                 <link>/stars/operator/program/optOut/view?accountId=${accountId}</link>

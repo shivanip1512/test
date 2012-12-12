@@ -13,6 +13,7 @@ import com.cannontech.database.TransactionException;
 import com.cannontech.database.TransactionType;
 import com.cannontech.database.db.web.YukonWebConfiguration;
 import com.cannontech.stars.database.cache.StarsDatabaseCache;
+import com.cannontech.stars.database.data.LMProgramWebPublishing;
 import com.cannontech.stars.database.data.lite.LiteApplianceCategory;
 import com.cannontech.stars.database.data.lite.LiteLMProgramWebPublishing;
 import com.cannontech.stars.database.data.lite.LiteStarsEnergyCompany;
@@ -23,19 +24,22 @@ import com.cannontech.stars.dr.appliance.dao.AssignedProgramDao;
 import com.cannontech.stars.dr.appliance.model.ApplianceCategory;
 import com.cannontech.stars.dr.appliance.model.AssignedProgram;
 import com.cannontech.stars.dr.appliance.service.ApplianceCategoryService;
+import com.cannontech.stars.dr.hardware.dao.ProgramToAlternateProgramDao;
+import com.cannontech.stars.dr.hardware.model.ProgramToAlternateProgram;
 import com.cannontech.stars.dr.util.YukonListEntryHelper;
 import com.cannontech.stars.web.util.StarsAdminUtil;
 import com.cannontech.user.YukonUserContext;
 import com.google.common.collect.Lists;
 
 public class ApplianceCategoryServiceImpl implements ApplianceCategoryService {
-    private StarsDatabaseCache starsDatabaseCache;
-    private AssignedProgramDao assignedProgramDao;
-    private ApplianceCategoryDao applianceCategoryDao;
-    private DBPersistentDao dbPersistentDao;
+    
+	@Autowired private StarsDatabaseCache starsDatabaseCache;
+    @Autowired private AssignedProgramDao assignedProgramDao;
+    @Autowired private ApplianceCategoryDao applianceCategoryDao;
+    @Autowired private DBPersistentDao dbPersistentDao;
+    @Autowired private ProgramToAlternateProgramDao programToSeasonalProgramDao;
 
-    private static final String LINE_SEPARATOR =
-        System.getProperty("line.separator");
+    private static final String LINE_SEPARATOR = System.getProperty("line.separator");
 
     @Override
     @Transactional
@@ -248,66 +252,55 @@ public class ApplianceCategoryServiceImpl implements ApplianceCategoryService {
                               assignedProgram, liteProgramToSwapWith);
     }
 
-    private void updateAssignedProgram(LiteStarsEnergyCompany energyCompany,
-            LiteApplianceCategory liteApplianceCategory,
-            AssignedProgram assignedProgram,
-            LiteLMProgramWebPublishing liteProgram) {
-        int programPaoId = assignedProgram.getProgramId();
+    private void updateAssignedProgram(LiteStarsEnergyCompany lec,
+            LiteApplianceCategory lac,
+            AssignedProgram ap,
+            LiteLMProgramWebPublishing liteLmPWP) {
+    	
+        int programPaoId = ap.getProgramId();
 
-        com.cannontech.stars.database.data.LMProgramWebPublishing pubProg =
-            new com.cannontech.stars.database.data.LMProgramWebPublishing();
+        LMProgramWebPublishing pubProg = new LMProgramWebPublishing();
         com.cannontech.stars.database.db.LMProgramWebPublishing pubProgDB =
             pubProg.getLMProgramWebPublishing();
-        pubProgDB.setApplianceCategoryID(liteApplianceCategory.getApplianceCategoryID());
+        pubProgDB.setApplianceCategoryID(lac.getApplianceCategoryID());
         pubProgDB.setDeviceID(programPaoId);
-        pubProgDB.setChanceOfControlID(assignedProgram.getChanceOfControlId());
+        pubProgDB.setChanceOfControlID(ap.getChanceOfControlId());
 
         YukonWebConfiguration cfg = new YukonWebConfiguration();
-        cfg.setLogoLocation(assignedProgram.getWebConfiguration().getLogoLocation());
-        cfg.setAlternateDisplayName(assignedProgram.getWebConfiguration().getAlternateDisplayName());
-        cfg.setDescription(assignedProgram.getDescription().replaceAll(LINE_SEPARATOR, "<br>"));
+        cfg.setLogoLocation(ap.getWebConfiguration().getLogoLocation());
+        cfg.setAlternateDisplayName(ap.getWebConfiguration().getAlternateDisplayName());
+        cfg.setDescription(ap.getDescription().replaceAll(LINE_SEPARATOR, "<br>"));
         cfg.setURL("");
         pubProg.setWebConfiguration(cfg);
-        pubProgDB.setProgramOrder(assignedProgram.getProgramOrder());
+        pubProgDB.setProgramOrder(ap.getProgramOrder());
 
-        if (liteProgram != null) {
-            pubProg.setProgramID(liteProgram.getProgramID());
-            pubProg.getLMProgramWebPublishing().setWebSettingsID(liteProgram.getWebSettingsID());
+        if (liteLmPWP != null) {
+            pubProg.setProgramID(liteLmPWP.getProgramID());
+            pubProg.getLMProgramWebPublishing().setWebSettingsID(liteLmPWP.getWebSettingsID());
             dbPersistentDao.performDBChange(pubProg, TransactionType.UPDATE);
 
-            liteProgram.setChanceOfControlID(pubProg.getLMProgramWebPublishing().getChanceOfControlID().intValue());
-            liteProgram.setProgramOrder(pubProg.getLMProgramWebPublishing().getProgramOrder().intValue());
+            liteLmPWP.setChanceOfControlID(pubProg.getLMProgramWebPublishing().getChanceOfControlID().intValue());
+            liteLmPWP.setProgramOrder(pubProg.getLMProgramWebPublishing().getProgramOrder().intValue());
 
-            LiteWebConfiguration liteCfg = starsDatabaseCache.getWebConfiguration(liteProgram.getWebSettingsID());
+            LiteWebConfiguration liteCfg = starsDatabaseCache.getWebConfiguration(liteLmPWP.getWebSettingsID());
             StarsLiteFactory.setLiteWebConfiguration(liteCfg,
                                                      pubProg.getWebConfiguration());
         } else {
             dbPersistentDao.performDBChange(pubProg, TransactionType.INSERT);
-            liteProgram = (LiteLMProgramWebPublishing) StarsLiteFactory.createLite(pubProg.getLMProgramWebPublishing());
-            energyCompany.addProgram(liteProgram, liteApplianceCategory);
+            liteLmPWP = (LiteLMProgramWebPublishing) StarsLiteFactory.createLite(pubProg.getLMProgramWebPublishing());
+            lec.addProgram(liteLmPWP, lac);
 
             LiteWebConfiguration liteCfg = (LiteWebConfiguration) StarsLiteFactory.createLite(pubProg.getWebConfiguration());
             starsDatabaseCache.addWebConfiguration(liteCfg);
         }
+        
+        Integer altProgramId = ap.getAlternateProgramId();
+	 	if (altProgramId != null) {
+	 	    ProgramToAlternateProgram mapping = ProgramToAlternateProgram.of(liteLmPWP.getProgramID(), altProgramId);
+	 	    programToSeasonalProgramDao.save(mapping);
+	 	} else {
+	 		programToSeasonalProgramDao.delete(liteLmPWP.getProgramID());
+	 	}
     }
 
-    @Autowired
-    public void setStarsDatabaseCache(StarsDatabaseCache starsDatabaseCache) {
-        this.starsDatabaseCache = starsDatabaseCache;
-    }
-
-    @Autowired
-    public void setAssignedProgramDao(AssignedProgramDao assignedProgramDao) {
-        this.assignedProgramDao = assignedProgramDao;
-    }
-
-    @Autowired
-    public void setApplianceCategoryDao(ApplianceCategoryDao applianceCategoryDao) {
-        this.applianceCategoryDao = applianceCategoryDao;
-    }
-
-    @Autowired
-    public void setDbPersistentDao(DBPersistentDao dbPersistentDao) {
-        this.dbPersistentDao = dbPersistentDao;
-    }
 }

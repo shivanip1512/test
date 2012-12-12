@@ -12,6 +12,7 @@ import com.cannontech.stars.dr.appliance.model.ApplianceTypeEnum;
 import com.cannontech.stars.dr.program.model.Program;
 
 public final class DisplayableEnrollment {
+	
     public static final Comparator<DisplayableEnrollmentProgram> enrollmentProgramComparator;
     public static final Comparator<DisplayableEnrollment> byApplianceCategoryNameComparator;
     private ApplianceCategory applianceCategory;
@@ -39,9 +40,6 @@ public final class DisplayableEnrollment {
         };
     }
     
-    public DisplayableEnrollment() {
-    }
-    
     public ApplianceCategory getApplianceCategory() {
         return this.applianceCategory;
     }
@@ -49,8 +47,6 @@ public final class DisplayableEnrollment {
     public void setApplianceCategory(ApplianceCategory applianceCategory) {
         this.applianceCategory = applianceCategory;
     }
-
-
 
     public ApplianceTypeEnum getApplianceTypeEnum() {
         return applianceCategory.getApplianceType();
@@ -64,8 +60,7 @@ public final class DisplayableEnrollment {
         return enrollmentPrograms;
     }
 
-    public void setEnrollmentPrograms(
-            Set<DisplayableEnrollmentProgram> enrollmentPrograms) {
+    public void setEnrollmentPrograms(Set<DisplayableEnrollmentProgram> enrollmentPrograms) {
         this.enrollmentPrograms = enrollmentPrograms;
     }
 
