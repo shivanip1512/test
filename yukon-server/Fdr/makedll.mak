@@ -214,6 +214,22 @@ fdrcygnet.dll: fdrcygnet.obj Makefile $(OBJ)\fdrcygnet.res
                 @if exist ..\bin\$(@B).lib copy ..\bin\$(@B).lib $(COMPILEBASE)\lib
                 @%cd $(CWD)
 
+fdracs.dll:     fdracs.obj Makefile $(OBJ)\fdracs.res
+                @%cd $(OBJ)
+                @echo Building  ..\$@
+                $(CC) $(DLLFLAGS) $(<F) $(INCLPATHS) $(RWLIBS) $(BOOST_LIBS) $(CTIFDRLIBS) $(COMPILEBASE)\lib\cti_fdr.lib /Fe..\$@ $(LINKFLAGS) fdracs.res
+                @if exist ..\$@ copy ..\$@ $(YUKONOUTPUT)
+                @if exist ..\bin\$(@B).lib copy ..\bin\$(@B).lib $(COMPILEBASE)\lib
+                @%cd $(CWD)
+
+fdracsmulti.dll: fdracsmulti.obj Makefile $(OBJ)\fdracsmulti.res
+                @%cd $(OBJ)
+                @echo Building  ..\$@
+                $(CC) $(DLLFLAGS) $(<F) $(INCLPATHS) $(RWLIBS) $(BOOST_LIBS) $(CTIFDRLIBS) $(COMPILEBASE)\lib\cti_fdr.lib /Fe..\$@ $(LINKFLAGS) fdracsmulti.res
+                @if exist ..\$@ copy ..\$@ $(YUKONOUTPUT)
+                @if exist ..\bin\$(@B).lib copy ..\bin\$(@B).lib $(COMPILEBASE)\lib
+                @%cd $(CWD)
+
 .obj.dll :
                 @%cd $(OBJ)
                 @echo Building  ..\$@
