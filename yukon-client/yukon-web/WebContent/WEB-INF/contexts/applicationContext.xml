@@ -1009,11 +1009,19 @@
     <bean id="capControlValueTagPrototype" class="com.cannontech.web.updater.capcontrol.CapControlValueTag">
         <property name="updaterService" ref="dataUpdaterService" />
     </bean>
-    
+
+    <bean id="meterNumberTagPrototype" class="com.cannontech.web.taglib.MeterNumberTag">
+        <property name="deviceDao" ref="deviceDao"/>
+    </bean>
+
     <bean id="navigableHierarchyTagPrototype" class="com.cannontech.web.capcontrol.NavigableHierarchyTag"/>
     
     <bean id="paoDetailUrlTagPrototype" class="com.cannontech.web.taglib.PaoDetailUrlTag">
         <property name="paoDetailUrlHelper" ref="paoDetailUrlHelper"/>
+    </bean>
+
+    <bean id="paoNameTagPrototype" class="com.cannontech.web.taglib.PaoNameTag">
+        <property name="paoDao" ref="paoDao"/>
     </bean>
 
     <bean id="paoTypeIconTagPrototype" class="com.cannontech.web.taglib.PaoTypeIconTag">

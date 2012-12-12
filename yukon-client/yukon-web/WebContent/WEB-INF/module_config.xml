@@ -151,7 +151,7 @@
           </option>
 
           <option name="commander">
-            <link>/apps/SelectDevice.jsp</link>
+            <link>/commander/select</link>
             <requireRoleProperty value="ENABLE_WEB_COMMANDER" />
           </option>
           <option name="archivedDateExport">
@@ -2069,7 +2069,7 @@
     <menu>
       <options>
         <option name="deviceselection">
-          <link>/apps/SelectDevice.jsp</link>
+          <link>/commander/select</link>
         </option>
       </options>
     </menu>
@@ -2087,16 +2087,16 @@
         <option name="devices">
           <options>
             <option name="mct">
-              <link>SelectDevice.jsp?SortBy=1004</link>
+              <link>/commander/select?category=MCT</link>
             </option>
             <option name="ied">
-              <link>SelectDevice.jsp?SortBy=1002</link>
+              <link>/commander/select?category=IED</link>
             </option>
             <option name="rtu">
-              <link>SelectDevice.jsp?SortBy=1001</link>
+              <link>/commander/select?category=RTU</link>
             </option>
             <option name="transmitter">
-              <link>SelectDevice.jsp?SortBy=1000</link>
+              <link>/commander/select?category=TRANSMITTER</link>
             </option>
             <option name="group">
               <link>/spring/group/commander/groupProcessing</link>
@@ -2107,22 +2107,22 @@
         <option name="lm">
           <options>
             <option name="group">
-              <link>SelectDevice.jsp?SortBy=1005</link>
+              <link>/commander/select?category=LMGROUP</link>
             </option>
             <option name="xcom">
-              <link>CommandDevice.jsp?deviceID=-1&amp;manual&amp;xcom</link>
+              <link>/commander/command/xcom?manual</link>
               <requireRoleProperty value="EXPRESSCOM_SERIAL_MODEL" />
             </option>
             <option name="vcom">
-              <link>CommandDevice.jsp?deviceID=-1&amp;manual&amp;vcom</link>
+              <link>/commander/command/vcom?manual</link>
               <requireRoleProperty value="VERSACOM_SERIAL_MODEL" />
             </option>
             <option name="205serial">
-              <link>CommandDevice.jsp?deviceID=-1&amp;manual&amp;sa205</link>
+              <link>/commander/command/sa205?manual</link>
               <requireRoleProperty value="DCU_SA205_SERIAL_MODEL" />
             </option>
             <option name="305serial">
-              <link>CommandDevice.jsp?deviceID=-1&amp;manual&amp;sa305</link>
+              <link>/commander/command/sa305?manual</link>
               <requireRoleProperty value="DCU_SA305_SERIAL_MODEL" />
             </option>
           </options>
@@ -2130,7 +2130,7 @@
         <option name="capcontrol">
           <options>
             <option name="capcontrolsub">
-              <link>SelectDevice.jsp?SortBy=4</link>
+              <link>/commander/select?category=CAP</link>
             </option>
           </options>
         </option>

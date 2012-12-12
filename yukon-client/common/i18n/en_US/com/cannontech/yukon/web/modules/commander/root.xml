@@ -1,0 +1,55 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE properties SYSTEM "http://java.sun.com/dtd/properties.dtd">
+<properties>
+    <!-- select.jsp -->
+    <entry key="yukon.web.modules.commanderSelect.pageTitle">Commander</entry>
+    <entry key="yukon.web.modules.commanderSelect.deviceSearch.title">Device Search</entry>
+    <entry key="yukon.web.modules.commanderSelect.deviceSearch.helpText">Returns devices that match the combination of all values provided.</entry> 
+    <entry key="yukon.web.modules.commanderSelect.deviceSearch.search">Search</entry>
+    <entry key="yukon.web.modules.commanderSelect.deviceSearch.search.label">Search</entry>
+    <entry key="yukon.web.modules.commanderSelect.showAll">Show All</entry>
+    <entry key="yukon.web.modules.commanderSelect.showAll.label">Show All</entry>
+    <entry key="yukon.web.modules.commanderSelect.deviceSearchResults.title">Device Search Results</entry>
+    <entry key="yukon.web.modules.commanderSelect.deviceSearchField.NAME">Device Name</entry>
+    <entry key="yukon.web.modules.commanderSelect.deviceSearchField.NAME.linkText">Device Name</entry>
+    <entry key="yukon.web.modules.commanderSelect.deviceSearchField.TYPE">Device Type</entry>
+    <entry key="yukon.web.modules.commanderSelect.deviceSearchField.TYPE.linkText">Device Type</entry>
+    <entry key="yukon.web.modules.commanderSelect.deviceSearchField.ADDRESS">Address</entry>
+    <entry key="yukon.web.modules.commanderSelect.deviceSearchField.ADDRESS.linkText">Address</entry>
+    <entry key="yukon.web.modules.commanderSelect.deviceSearchField.METERNUMBER">Meter Number</entry>
+    <entry key="yukon.web.modules.commanderSelect.deviceSearchField.METERNUMBER.linkText">Meter Number</entry>
+    <entry key="yukon.web.modules.commanderSelect.deviceSearchField.ROUTE">Route</entry>
+    <entry key="yukon.web.modules.commanderSelect.deviceSearchField.ROUTE.linkText">Route</entry>
+    <entry key="yukon.web.modules.commanderSelect.deviceSearchField.COMM_CHANNEL">Comm Channel</entry>
+    <entry key="yukon.web.modules.commanderSelect.deviceSearchField.COMM_CHANNEL.linkText">Comm Channel</entry>
+    <entry key="yukon.web.modules.commanderSelect.deviceSearchField.LOAD_GROUP">Load Group</entry>
+    <entry key="yukon.web.modules.commanderSelect.deviceSearchField.LOAD_GROUP.linkText">Load Group</entry>
+    <entry key="yukon.web.modules.commanderSelect.deviceSearchField.LMGROUP_SERIAL">Group Serial Number</entry>
+    <entry key="yukon.web.modules.commanderSelect.deviceSearchField.LMGROUP_SERIAL.linkText">Group Serial Number</entry>
+    <entry key="yukon.web.modules.commanderSelect.deviceSearchField.LMGROUP_CAPACITY">kW Capactiy</entry>
+    <entry key="yukon.web.modules.commanderSelect.deviceSearchField.LMGROUP_CAPACITY.linkText">kW Capactiy</entry>
+    <entry key="yukon.web.modules.commanderSelect.deviceSearchField.LMGROUP_ROUTE">Group Route</entry>
+    <entry key="yukon.web.modules.commanderSelect.deviceSearchField.LMGROUP_ROUTE.linkText">Group Route</entry>
+    <entry key="yukon.web.modules.commanderSelect.deviceSearchField.LMGROUP_TYPE">Group Type</entry>
+    <entry key="yukon.web.modules.commanderSelect.deviceSearchField.LMGROUP_TYPE.linkText">Group Type</entry>
+    <entry key="yukon.web.modules.commanderSelect.deviceSearchField.CBC_SERIAL">Serial Number</entry>
+    <entry key="yukon.web.modules.commanderSelect.deviceSearchField.CBC_SERIAL.linkText">Serial Number</entry>
+    
+    <!-- command.jsp -->
+    <entry key="yukon.web.modules.commanderSelect.commander.title">Commander</entry>
+    <entry key="yukon.web.modules.commanderSelect.command.deviceName">Device</entry>
+    <entry key="yukon.web.modules.commanderSelect.command.deviceType">Type</entry>
+    <entry key="yukon.web.modules.commanderSelect.command.serialNumber">Serial Number</entry>
+    <entry key="yukon.web.modules.commanderSelect.command.route">Route</entry>
+    <entry key="yukon.web.modules.commanderSelect.command.route.select">Select a Route</entry>
+    <entry key="yukon.web.modules.commanderSelect.command.availableCommands">Common Commands</entry>
+    <entry key="yukon.web.modules.commanderSelect.command.availableCommands.select">Select a Command</entry>
+    <entry key="yukon.web.modules.commanderSelect.command.executeCommand">Execute Command:</entry>
+    <entry key="yukon.web.modules.commanderSelect.command.executeButton">Execute</entry>
+    <entry key="yukon.web.modules.commanderSelect.command.clearResultsButton">Clear Results</entry>
+    <entry key="yukon.web.modules.commanderSelect.command.refreshButton">Refresh</entry>
+    <entry key="yukon.web.modules.commanderSelect.sideMenu.title">History</entry>
+    <entry key="yukon.web.modules.commanderSelect.sideMenu.devices">Devices</entry>
+    <entry key="yukon.web.modules.commanderSelect.sideMenu.loadManagement">Load Management</entry>
+    <entry key="yukon.web.modules.commanderSelect.sideMenu.capControl">Cap Control</entry>
+</properties>
