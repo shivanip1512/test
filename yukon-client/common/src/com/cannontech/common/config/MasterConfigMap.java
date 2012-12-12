@@ -24,7 +24,6 @@ import com.cannontech.clientutils.YukonLogManager;
 import com.cannontech.common.util.SimplePeriodFormat;
 import com.cannontech.encryption.CryptoException;
 import com.cannontech.encryption.MasterConfigCryptoUtils;
-import com.google.common.base.Charsets;
 
 public class MasterConfigMap implements ConfigurationSource {
     private Map<String, String> configMap = new HashMap<String, String>();
@@ -46,7 +45,7 @@ public class MasterConfigMap implements ConfigurationSource {
         this.masterCfgFile = file;
     }
 
-    public void initialize() throws IOException, CryptoException {
+    public void initialize() throws IOException {
         configMap.clear();
         boolean updateFile = false;
         String endl = System.getProperty("line.separator");
@@ -72,35 +71,31 @@ public class MasterConfigMap implements ConfigurationSource {
             Matcher extCharMatcher = extCharPattern.matcher(line);
 
             if (extCharMatcher.find()) {
-                LogHelper.warn(log, " Line %d: Extended characters found: %s", lineNum, line);
+                LogHelper.warn(log, "Line %d: Extended characters found: %s", lineNum, extCharMatcher.group());
             }
             line = spacePattern.matcher(line).replaceAll(" ");
             Matcher keyMatcher = keyCharPattern.matcher(line);
             if (keyMatcher.find()) {
-                LogHelper.debug(log, "Found line match: %s", line);
                 String key = keyMatcher.group(1);
                 String value = keyMatcher.group(2).trim();
                 String comment = (keyMatcher.group(3) != null) ? keyMatcher.group(3) : ""; // avoid null
                 if (configMap.containsKey(key)) {
                     LogHelper.warn(log, "Line %d: Duplicate key found while reading Master Config file: %s", lineNum, key);
                 }
-                if (MasterConfigCryptoUtils.isSensitiveData(key)) {
-                    if (MasterConfigCryptoUtils.isEncrypted(value)) {
-                        // Found a value already encrypted
-                        String valueDecrypted = MasterConfigCryptoUtils.decryptValue(value);
-                        tempWriter.append(line);
-                        configMap.put(key, valueDecrypted);
-                    } else {
-                        updateFile = true;
-                        // Found a value that needs to be encrypted
-                        String valueEncrypted = MasterConfigCryptoUtils.encryptValue(value);
-                        tempWriter.append(key).append(" : ").append(valueEncrypted).append(" ").append(comment);
-                        configMap.put(key, value);
-                    }
+                if (MasterConfigCryptoUtils.isSensitiveData(key) 
+                        && !MasterConfigCryptoUtils.isEncrypted(value)) {
+                    // Found a value that needs to be encrypted
+                    updateFile = true;
+                    String valueEncrypted = MasterConfigCryptoUtils.encryptValue(value);
+                    tempWriter.append(key).append(" : ").append(valueEncrypted).append(" ").append(comment);
+                    configMap.put(key, valueEncrypted);
+                    log.info("Line " + lineNum + ": Value for " + key + " encrypted and rewritten in Master Config file."); // Do not log value here for security
+                    LogHelper.debug(log, "Found line match for key: %s containing an encrypted value.", key); // Do no log entire line here because it contains sensitive data
                 } else {
-                    // Non-sensitive data.
+                    // Either plain-text data, or data already encrypted and safe to place into memory
                     configMap.put(key, value);
                     tempWriter.append(line);
+                    LogHelper.debug(log, "Found line match: %s", line);
                 }
             } else {
                 // Line with no "key : value" pair
@@ -126,7 +121,15 @@ public class MasterConfigMap implements ConfigurationSource {
             throw new UnknownKeyException(key);
         }
         String string = configMap.get(key);
-        LogHelper.debug(log, "Returning '%s' for '%s'", string, key);
+        if (MasterConfigCryptoUtils.isSensitiveData(key) && 
+                MasterConfigCryptoUtils.isEncrypted(string)) {
+            // Found an encrypted value
+            string = MasterConfigCryptoUtils.decryptValue(string);
+            LogHelper.debug(log, "Returning [encrypted value] for '%s'", key); // Do not log string here for security
+        } else {
+            LogHelper.debug(log, "Returning '%s' for '%s'", string, key);
+        }
+
         return string;
     }
 
@@ -141,7 +144,15 @@ public class MasterConfigMap implements ConfigurationSource {
             return defaultValue;
         }
         String string = configMap.get(key);
-        LogHelper.debug(log, "Returning '%s' for '%s'", string, key);
+        if (MasterConfigCryptoUtils.isSensitiveData(key) && 
+                MasterConfigCryptoUtils.isEncrypted(string)) {
+            // Found an encrypted value
+            string = MasterConfigCryptoUtils.decryptValue(string);
+            LogHelper.debug(log, "Returning [encrypted value] for '%s'", key); // Do not log string here for security
+        } else {
+            LogHelper.debug(log, "Returning '%s' for '%s'", string, key);
+        }
+        
         return string;
     }
 
@@ -151,7 +162,7 @@ public class MasterConfigMap implements ConfigurationSource {
     }
 
     @Override
-    public int getRequiredInteger(String key) throws UnknownKeyException {
+    public int getRequiredInteger(String key) throws UnknownKeyException, CryptoException {
         String string = getRequiredString(key);
         return Integer.parseInt(string);
     }

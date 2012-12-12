@@ -67,7 +67,7 @@ public class MasterConfigHelper {
             try {
                 localConfig = new MasterConfigMap(masterCfg);
             } catch (CryptoException cae) {
-                log.error("Severe Error while initializing configuration. The MasterConfigPasskey.dat file might be invalid. May need to reset encrypted values in master.cfg to plaintext",cae);
+                log.error("Severe Error while initializing configuration. The MasterConfigPasskey.dat file might be invalid or you may need to reset encrypted values in master.cfg to plaintext",cae);
             } catch (IOException e) {
                 log.error("Severe Error while initializing configuration.",e);
             }
