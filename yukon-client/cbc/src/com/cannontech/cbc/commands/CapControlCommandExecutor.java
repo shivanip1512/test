@@ -12,6 +12,7 @@ import com.cannontech.common.util.CommandExecutionException;
 import com.cannontech.message.capcontrol.model.CapControlResponseType;
 import com.cannontech.message.capcontrol.model.CapControlServerResponse;
 import com.cannontech.message.capcontrol.model.CommandResultParticipant;
+import com.cannontech.message.util.ConnectionException;
 import com.cannontech.message.util.Message;
 import com.cannontech.message.util.MessageEvent;
 import com.cannontech.message.util.MessageListener;
@@ -24,7 +25,7 @@ public class CapControlCommandExecutor {
     public void execute(final Message message) throws CommandExecutionException {
         try {
             cache.getConnection().write(message);
-        } catch (Exception e) {
+        } catch (ConnectionException e) {
             throw new CommandExecutionException("Unable to send command", e); 
         }
     }
@@ -37,7 +38,7 @@ public class CapControlCommandExecutor {
                 cache.getConnection().addMessageListener(messageListener);
                 try {
                     cache.getConnection().write(message);
-                } catch (Exception e) {
+                } catch (ConnectionException e) {
                     callback.processingExceptionOccured(e.getMessage());
                     messageListener.removeListener();
                 }

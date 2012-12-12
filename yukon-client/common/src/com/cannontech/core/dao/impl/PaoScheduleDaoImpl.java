@@ -1,74 +1,37 @@
 package com.cannontech.core.dao.impl;
 
-import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.Date;
 import java.util.List;
 
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.jdbc.core.simple.ParameterizedRowMapper;
-import org.springframework.jdbc.core.simple.SimpleJdbcTemplate;
+import org.springframework.dao.IncorrectResultSizeDataAccessException;
 import org.springframework.transaction.annotation.Transactional;
 
 import com.cannontech.common.util.CtiUtilities;
+import com.cannontech.common.util.SqlStatementBuilder;
+import com.cannontech.core.dao.NotFoundException;
 import com.cannontech.core.dao.PaoScheduleDao;
+import com.cannontech.database.SqlParameterSink;
+import com.cannontech.database.YukonJdbcTemplate;
+import com.cannontech.database.YukonResultSet;
+import com.cannontech.database.YukonRowMapper;
 import com.cannontech.database.db.pao.PAOSchedule;
 import com.cannontech.database.db.pao.PaoScheduleAssignment;
 import com.cannontech.database.incrementer.NextValueHelper;
 
 public class PaoScheduleDaoImpl implements PaoScheduleDao {
 
-    private static final String assignCommandToSchedule;
-    private static final String updateAssignment;
-    private static final String removeCommandFromScheduleByEventId;
-    private static final String selectAllAssignments;
-    private static final String selectAllPaoSchedule;
-    private static final String selectAssignmentByEventId;
-    private static final String deletePaoSchedule;
-    private static final String deletePaoScheduleAssignmentByScheduleId;
-    private static final String insertSql;
+    private static final YukonRowMapper<PaoScheduleAssignment> assignmentRowMapper;
+    private static final YukonRowMapper<PAOSchedule> paoScheduleRowMapper;
 
-    private static final ParameterizedRowMapper<PaoScheduleAssignment> assignmentRowMapper;
-    private static final ParameterizedRowMapper<PAOSchedule> paoScheduleRowMapper;
-    private SimpleJdbcTemplate simpleJdbcTemplate;
-
-    private NextValueHelper nextValueHelper = null;
+    @Autowired private YukonJdbcTemplate yukonJdbcTemplate;
+    @Autowired private NextValueHelper nextValueHelper = null;
 
     static {
-
-        insertSql = "INSERT INTO PAOSchedule values(?, ?, ?, ?, ?, ?)";
-
-        updateAssignment =
-            "UPDATE PAOScheduleAssignment SET ScheduleId = ?, PaoId = ?, Command = ?, disableOvUv = ? where EventId = ?";
-
-        selectAllPaoSchedule =
-            "SELECT ScheduleID, NextRunTime, LastRunTime, IntervalRate, ScheduleName, Disabled From PaoSchedule";
-
-        selectAllAssignments =
-            "SELECT sa.EventID, sa.ScheduleID, s.ScheduleName, s.NextRunTime, s.LastRunTime, sa.PaoID, po.PAOName, sa.Command, sa.disableOvUv "
-                    +
-                    "FROM PAOScheduleAssignment sa, PAOSchedule s, YukonPAObject po " +
-                    "WHERE s.ScheduleID = sa.ScheduleID AND sa.PaoID = po.PAObjectID ";
-
-        selectAssignmentByEventId =
-            "SELECT sa.EventID, sa.ScheduleID, s.ScheduleName, s.NextRunTime, s.LastRunTime, sa.PaoID, po.PAOName, sa.Command, sa.disableOvUv "
-                    +
-                    "FROM PAOScheduleAssignment sa, PAOSchedule s, YukonPAObject po "
-                    +
-                    "WHERE s.ScheduleID = sa.ScheduleID AND sa.PaoID = po.PAObjectID AND sa.EventID = ?";
-
-        assignCommandToSchedule =
-            "INSERT INTO PAOScheduleAssignment (EventID, ScheduleID, PaoID, Command, disableOvUv) VALUES (?,?,?,?,?)";
-
-        removeCommandFromScheduleByEventId = "DELETE FROM PAOScheduleAssignment WHERE EventID = ?";
-
-        deletePaoSchedule = "DELETE FROM PAOSchedule WHERE ScheduleId = ?";
-
-        deletePaoScheduleAssignmentByScheduleId =
-            "DELETE FROM PAOScheduleAssignment WHERE ScheduleId = ?";
-
-        assignmentRowMapper = new ParameterizedRowMapper<PaoScheduleAssignment>() {
-            public PaoScheduleAssignment mapRow(ResultSet rs, int rowNum) throws SQLException {
+        assignmentRowMapper = new YukonRowMapper<PaoScheduleAssignment>() {
+            @Override
+            public PaoScheduleAssignment mapRow(YukonResultSet rs) throws SQLException {
 
                 PaoScheduleAssignment assignment = new PaoScheduleAssignment();
 
@@ -78,21 +41,22 @@ public class PaoScheduleDaoImpl implements PaoScheduleDao {
                 assignment.setCommandName(rs.getString("Command"));
                 assignment.setScheduleName(rs.getString("ScheduleName"));
                 assignment.setDeviceName(rs.getString("PaoName"));
-                assignment.setLastRunTime(rs.getTimestamp("LastRunTime"));
-                assignment.setNextRunTime(rs.getTimestamp("NextRunTime"));
+                assignment.setLastRunTime(rs.getInstant("LastRunTime"));
+                assignment.setNextRunTime(rs.getInstant("NextRunTime"));
                 assignment.setDisableOvUv(rs.getString("disableOvUv"));
 
                 return assignment;
             }
         };
 
-        paoScheduleRowMapper = new ParameterizedRowMapper<PAOSchedule>() {
-            public PAOSchedule mapRow(ResultSet rs, int rowNum) throws SQLException
+        paoScheduleRowMapper = new YukonRowMapper<PAOSchedule>() {
+            @Override
+            public PAOSchedule mapRow(YukonResultSet rs) throws SQLException
             {
                 PAOSchedule sched = new PAOSchedule();
                 sched.setScheduleID(rs.getInt("ScheduleID"));
-                sched.setNextRunTime(rs.getTimestamp("NextRunTime"));
-                sched.setLastRunTime(rs.getTimestamp("LastRunTime"));
+                sched.setNextRunTime(rs.getInstant("NextRunTime").toDate());
+                sched.setLastRunTime(rs.getInstant("LastRunTime").toDate());
                 sched.setIntervalRate(rs.getInt("IntervalRate"));
                 sched.setScheduleName(rs.getString("ScheduleName"));
                 sched.setDisabled(rs.getString("Disabled").equalsIgnoreCase("Y") ? true : false);
@@ -103,57 +67,92 @@ public class PaoScheduleDaoImpl implements PaoScheduleDao {
 
     @Override
     public int add(String name, boolean disabled) {
+
         int scheduleId = nextValueHelper.getNextValue("PAOSchedule");
         Date nextRunTime = new Date(System.currentTimeMillis() - 14400000);
         Date lastRunTime = CtiUtilities.get1990GregCalendar().getTime();
         Integer intervalRate = new Integer(CtiUtilities.NONE_ZERO_ID);
-        simpleJdbcTemplate.update(insertSql,
-                                  scheduleId,
-                                  nextRunTime,
-                                  lastRunTime,
-                                  intervalRate,
-                                  name,
-                                  disabled ? "Y" : "N");
+
+        SqlStatementBuilder sql = new SqlStatementBuilder();
+
+        SqlParameterSink sink = sql.insertInto("PaoSchedule");
+        sink.addValue("ScheduleId", scheduleId);
+        sink.addValue("NextRunTime", nextRunTime);
+        sink.addValue("LastRunTime", lastRunTime);
+        sink.addValue("IntervalRate", intervalRate);
+        sink.addValue("ScheduleName", name);
+        sink.addValue("Disabled", disabled ? "Y" : "N");
+
+        yukonJdbcTemplate.update(sql);
+
         return scheduleId;
     }
 
     @Override
     @Transactional(readOnly = true)
     public List<PaoScheduleAssignment> getAllScheduleAssignments() {
-        List<PaoScheduleAssignment> assignmentList =
-            simpleJdbcTemplate.query(selectAllAssignments, assignmentRowMapper);
 
+        final String selectAllAssignments =
+            "SELECT sa.EventID, sa.ScheduleID, s.ScheduleName, s.NextRunTime, s.LastRunTime, " +
+                    "sa.PaoID, po.PAOName, sa.Command, sa.disableOvUv " +
+                    "FROM PAOScheduleAssignment sa, PAOSchedule s, YukonPAObject po " +
+                    "WHERE s.ScheduleID = sa.ScheduleID AND sa.PaoID = po.PAObjectID ";
+
+        SqlStatementBuilder sql = new SqlStatementBuilder();
+        sql.append(selectAllAssignments);
+
+        List<PaoScheduleAssignment> assignmentList = yukonJdbcTemplate.query(sql, assignmentRowMapper);
         return assignmentList;
     }
 
     @Override
     @Transactional(readOnly = true)
     public PaoScheduleAssignment getScheduleAssignmentByEventId(Integer eventId) {
-        PaoScheduleAssignment assignment =
-            simpleJdbcTemplate.queryForObject(selectAssignmentByEventId,
-                                              assignmentRowMapper,
-                                              eventId);
-        return assignment;
+        final String selectAssignmentByEventId =
+            "SELECT sa.EventID, sa.ScheduleID, s.ScheduleName, s.NextRunTime, " +
+                    "s.LastRunTime, sa.PaoID, po.PAOName, sa.Command, sa.disableOvUv " +
+                    "FROM PAOScheduleAssignment sa, PAOSchedule s, YukonPAObject po " +
+                    "WHERE s.ScheduleID = sa.ScheduleID AND sa.PaoID = po.PAObjectID ";
+        SqlStatementBuilder sql = new SqlStatementBuilder();
+        sql.append(selectAssignmentByEventId);
+        sql.append("AND sa.EventID").eq(eventId);
+
+        try {
+            PaoScheduleAssignment assignment = yukonJdbcTemplate.queryForObject(sql, assignmentRowMapper);
+            return assignment;
+        } catch (IncorrectResultSizeDataAccessException e) {
+            throw new NotFoundException("PaoSchedule with id of " + eventId + " was not found.");
+        }
+
     }
 
     @Override
     @Transactional(readOnly = true)
     public boolean updateAssignment(PaoScheduleAssignment assignment) {
-        int rowsAffected =
-            simpleJdbcTemplate.update(updateAssignment,
-                                      assignment.getScheduleId(),
-                                      assignment.getPaoId(),
-                                      assignment.getCommandName(),
-                                      assignment.getDisableOvUv(),
-                                      assignment.getEventId());
+        SqlStatementBuilder sql = new SqlStatementBuilder();
+        
+        SqlParameterSink sink = sql.update("PAOScheduleAssignment");
+        sink.addValue("ScheduleId", assignment.getScheduleId());
+        sink.addValue("PaoId", assignment.getPaoId());
+        sink.addValue("Command", assignment.getCommandName());
+        sink.addValue("DisableOVUV", assignment.getDisableOvUv());
+        
+        sql.append("WHERE EventId").eq(assignment.getEventId());
+        
+        int rowsAffected = yukonJdbcTemplate.update(sql);
+        
         return rowsAffected == 1;
     }
 
     @Override
     @Transactional(readOnly = true)
     public List<PAOSchedule> getAllPaoScheduleNames() {
-        List<PAOSchedule> scheduleNames =
-            simpleJdbcTemplate.query(selectAllPaoSchedule, paoScheduleRowMapper);
+        SqlStatementBuilder sql = new SqlStatementBuilder();
+        sql.append("SELECT ScheduleId, NextRunTime, LastRunTime,");
+        sql.append(       "IntervalRate, ScheduleName, Disabled");
+        sql.append("FROM PaoSchedule");
+        
+        List<PAOSchedule> scheduleNames = yukonJdbcTemplate.query(sql, paoScheduleRowMapper);
         return scheduleNames;
     }
 
@@ -161,13 +160,16 @@ public class PaoScheduleDaoImpl implements PaoScheduleDao {
     @Transactional(readOnly = false)
     public boolean assignCommand(PaoScheduleAssignment pao) {
         int nextId = nextValueHelper.getNextValue("PAOScheduleAssignment");
-        int rowsAffected = simpleJdbcTemplate.update(assignCommandToSchedule,
-                                                     nextId,
-                                                     pao.getScheduleId(),
-                                                     pao.getPaoId(),
-                                                     pao.getCommandName(),
-                                                     pao.getDisableOvUv()
-            );
+        
+        SqlStatementBuilder sql = new SqlStatementBuilder();
+        SqlParameterSink sink = sql.insertInto("PaoScheduleAssignment");
+        sink.addValue("EventId", nextId);
+        sink.addValue("ScheduleId", pao.getScheduleId());
+        sink.addValue("PaoId", pao.getPaoId());
+        sink.addValue("Command", pao.getCommandName());
+        sink.addValue("DisableOVUV", pao.getDisableOvUv());
+        
+        int rowsAffected = yukonJdbcTemplate.update(sql);
         return rowsAffected == 1;
     }
 
@@ -187,17 +189,22 @@ public class PaoScheduleDaoImpl implements PaoScheduleDao {
     @Override
     @Transactional(readOnly = false)
     public boolean unassignCommandByEventId(int eventId) {
-        int rowsAffected = simpleJdbcTemplate.update(removeCommandFromScheduleByEventId, eventId);
-
+        SqlStatementBuilder sql = new SqlStatementBuilder();
+        sql.append("DELETE FROM PAOScheduleAssignment");
+        sql.append("WHERE EventID").eq(eventId);
+        
+        int rowsAffected = yukonJdbcTemplate.update(sql);
         return rowsAffected == 1;
     }
 
     @Override
     @Transactional(readOnly = false)
     public boolean deletePaoScheduleAssignmentsByScheduleId(int scheduleId) {
-        int rowsAffected =
-            simpleJdbcTemplate.update(deletePaoScheduleAssignmentByScheduleId, scheduleId);
-
+        SqlStatementBuilder sql = new SqlStatementBuilder();
+        sql.append("DELETE FROM PAOScheduleAssignment");
+        sql.append("WHERE ScheduleId").eq(scheduleId);
+        
+        int rowsAffected = yukonJdbcTemplate.update(sql);
         return rowsAffected == 1;
     }
 
@@ -205,18 +212,12 @@ public class PaoScheduleDaoImpl implements PaoScheduleDao {
     @Transactional(readOnly = false)
     public boolean delete(int scheduleId) {
         deletePaoScheduleAssignmentsByScheduleId(scheduleId);
-        int rowsAffected = simpleJdbcTemplate.update(deletePaoSchedule, scheduleId);
-
+        
+        SqlStatementBuilder sql = new SqlStatementBuilder();
+        sql.append("DELETE FROM PAOSchedule");
+        sql.append("WHERE ScheduleId").eq(scheduleId);
+        
+        int rowsAffected = yukonJdbcTemplate.update(sql);
         return rowsAffected == 1;
-    }
-
-    @Autowired
-    public void setSimpleJdbcTemplate(SimpleJdbcTemplate simpleJdbcTemplate) {
-        this.simpleJdbcTemplate = simpleJdbcTemplate;
-    }
-
-    @Autowired
-    public void setNextValueHelper(NextValueHelper nextValueHelper) {
-        this.nextValueHelper = nextValueHelper;
     }
 }

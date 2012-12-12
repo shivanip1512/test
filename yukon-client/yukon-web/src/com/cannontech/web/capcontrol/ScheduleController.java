@@ -44,7 +44,7 @@ import com.cannontech.i18n.YukonMessageSourceResolvable;
 import com.cannontech.i18n.YukonUserContextMessageSourceResolver;
 import com.cannontech.message.capcontrol.model.CapControlCommand;
 import com.cannontech.message.capcontrol.model.CommandType;
-import com.cannontech.message.capcontrol.model.ItemCommand;
+import com.cannontech.message.capcontrol.model.VerifyBanks;
 import com.cannontech.servlet.nav.CBCNavigationUtil;
 import com.cannontech.user.YukonUserContext;
 import com.cannontech.util.ServletUtil;
@@ -61,13 +61,15 @@ import com.cannontech.web.util.JsonView;
 @CheckRoleProperty(YukonRoleProperty.CAP_CONTROL_ACCESS)
 public class ScheduleController {
     
-    private Logger log = YukonLogManager.getLogger(ScheduleController.class);
-	private PaoScheduleDao paoScheduleDao;
-	private RolePropertyDao rolePropertyDao;
-	private FilterService filterService;
-	private PeriodFormatter periodFormatter;
-	private CapControlCommandExecutor executor;
-	private YukonUserContextMessageSourceResolver messageSourceResolver;
+    private static final Logger log = YukonLogManager.getLogger(ScheduleController.class);
+    
+    private PeriodFormatter periodFormatter;
+
+    @Autowired private PaoScheduleDao paoScheduleDao;
+    @Autowired private RolePropertyDao rolePropertyDao;
+    @Autowired private FilterService filterService;
+    @Autowired private CapControlCommandExecutor executor;
+    @Autowired private YukonUserContextMessageSourceResolver messageSourceResolver;
 	
 	private final String NO_FILTER = "All";
 	
@@ -271,7 +273,7 @@ public class ScheduleController {
             
             //send stop command
             if (stopApplicable) {
-                ItemCommand command = CommandHelper.buildItemCommand(CommandType.STOP_VERIFICATION.getCommandId(), deviceId, context.getYukonUser());
+                VerifyBanks command = CommandHelper.buildStopVerifyBanks(context.getYukonUser(), CommandType.STOP_VERIFICATION, deviceId);
                 try {
                     executor.execute(command);
                     commandsSentCount++;
@@ -322,7 +324,11 @@ public class ScheduleController {
     public View stopSchedule(Integer deviceId, String deviceName, YukonUserContext context, ModelMap map) throws ServletException {
 	    MessageSourceAccessor accessor = messageSourceResolver.getMessageSourceAccessor(context);
 	    
-//	    executor.execute(CommandHelper.buildItemCommand(CommandType.STOP_VERIFICATION.getCommandId(), deviceId, context.getYukonUser()));
+	    try {
+            executor.execute(CommandHelper.buildStopVerifyBanks(context.getYukonUser(), CommandType.STOP_VERIFICATION, deviceId));
+        } catch (CommandExecutionException e) {
+            log.warn("caught exception in stopSchedule", e);
+        }
 	    String result = accessor.getMessage("yukon.web.modules.capcontrol.scheduleAssignments.stopVerify", deviceName);
 	    
 	    map.addAttribute("success", true);
@@ -334,10 +340,13 @@ public class ScheduleController {
 	@RequestMapping(method=RequestMethod.POST)
     public String removePao(Integer eventId, ModelMap map, FlashScope flash) {
         boolean success = paoScheduleDao.unassignCommandByEventId(eventId);
+        
         if (success) {
+            //Send DB Change YUK-11757
             flash.setConfirm(new YukonMessageSourceResolvable("yukon.web.modules.capcontrol.scheduleAssignments.deleteSuccess"));
         } else {
-            flash.setError(new YukonMessageSourceResolvable("yukon.web.modules.capcontrol.scheduleAssignments.deleteFailed"));
+            //Warn the user, the only way this happens is if we attempted to delete something that didn't exist.
+            flash.setWarning(new YukonMessageSourceResolvable("yukon.web.modules.capcontrol.scheduleAssignments.deleteFailed"));
         }
         
         return "redirect:scheduleAssignments";
@@ -348,6 +357,7 @@ public class ScheduleController {
 	    boolean success = paoScheduleDao.delete(scheduleId); 
 	    
         if (success) {
+            //Send DB Change YUK-11757
             flash.setConfirm(new YukonMessageSourceResolvable("yukon.web.modules.capcontrol.schedules.deleteSuccess"));
         } else {
             flash.setError(new YukonMessageSourceResolvable("yukon.web.modules.capcontrol.schedules.deleteFailed"));
@@ -401,6 +411,7 @@ public class ScheduleController {
     			try {
     				paoScheduleDao.assignCommand(assignments);
     				message = new YukonMessageSourceResolvable("yukon.web.modules.capcontrol.scheduleAssignments.addSuccessful", assignments.size());
+    				//Send DB Change YUK-11757
     			} catch (DataIntegrityViolationException e) {
     				success = false;
     				message = new YukonMessageSourceResolvable("yukon.web.modules.capcontrol.scheduleAssignments.duplicate");
@@ -519,30 +530,4 @@ public class ScheduleController {
         
         return searchResult;
     }
-    
-	@Autowired
-	public void setPaoScheduleDao(PaoScheduleDao paoScheduleDao) {
-		this.paoScheduleDao = paoScheduleDao;
-	}
-	
-	@Autowired
-    public void setRolePropertyDao(RolePropertyDao rolePropertyDao) {
-        this.rolePropertyDao = rolePropertyDao;
-    }
-	
-	@Autowired
-	public void setFilterService(FilterService filterService) {
-	    this.filterService = filterService;
-	}
-	
-	@Autowired
-	public void setExecutor(CapControlCommandExecutor executor) {
-        this.executor = executor;
-    }
-	
-	@Autowired
-	public void setMessageSourceResolver(YukonUserContextMessageSourceResolver messageSourceResolver) {
-        this.messageSourceResolver = messageSourceResolver;
-    }
-	
 }

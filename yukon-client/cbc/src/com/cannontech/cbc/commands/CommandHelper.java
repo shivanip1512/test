@@ -73,6 +73,16 @@ public class CommandHelper {
         return command;
     }
     
+    public static VerifyBanks buildStopVerifyBanks(LiteYukonUser user, CommandType type, int itemId) { 
+        VerifyBanks command = new VerifyBanks();
+        command.setUserName(user.getUsername());
+        command.setCommandId(type.getCommandId());
+        command.setItemId(itemId);
+        command.setDisableOvUv(false);
+        
+        return command;
+    }
+    
     public static VerifyInactiveBanks buildVerifyInactiveBanks(LiteYukonUser user, 
                                                                CommandType type, 
                                                                int itemId, 
@@ -80,6 +90,7 @@ public class CommandHelper {
                                                                long inactiveTime) {
         
         VerifyInactiveBanks command = new VerifyInactiveBanks();
+        command.setItemId(itemId);
         command.setUserName(user.getUsername());
         command.setCommandId(type.getCommandId());
         command.setDisableOvUv(disableOvUv);

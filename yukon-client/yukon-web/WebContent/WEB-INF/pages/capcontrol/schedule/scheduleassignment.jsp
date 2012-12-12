@@ -28,48 +28,59 @@
 </form> 
     
 <script type="text/javascript">
-YEvent.observeSelectorClick('button.deleteAssignment', function(event) {
-    var row = event.findElement('tr');
-    var eventId = row.id.split('_')[1];
-    var confirmMsg = event.findElement().next('span.dn').innerHTML;
-    if (confirm(confirmMsg)) {
-        var url = "/capcontrol/schedule/removePao?eventId=" + eventId;
-        var removeForm = $('removeAssignmentForm');
-        removeForm.down('input').value = eventId;
-        removeForm.submit();
-    }
+jQuery(function() {
+    jQuery(document).on('click', 'button.deleteAssignment', function(event){
+        var row = jQuery(event.currentTarget).closest('tr');
+        var target = event.currentTarget;
+        var rowid = row[0].id;
+        var eventId = rowid.split('_')[1];
+        var confirmMsg = jQuery(event.currentTarget).siblings('span.dn').html();
+        if (confirm(confirmMsg)) {
+            var removeForm = jQuery('#removeAssignmentForm');
+            var input = removeForm.children('input[name=eventId]');
+            input.val(eventId);
+            removeForm.submit();
+        }
+    });
 });
 
-YEvent.observeSelectorClick('button.runSchedule', function(event) {
-    var row = event.findElement('tr');
-    var scheduleNameCell = row.down('td');
-    var scheduleName = scheduleNameCell.innerHTML;
-    var deviceName = scheduleNameCell.next().innerHTML;
-    var eventId = row.id.split('_')[1];
-    var url = "/capcontrol/schedule/startSchedule";
-    new Ajax.Request(url, {'parameters': {'eventId': eventId, 'deviceName': deviceName},
-        onComplete: function(transport, json) {
-            if (!json.success) {
-                showAlertMessageForAction(scheduleName, '', json.resultText, 'red');
-            } else {
-                showAlertMessageForAction(scheduleName, '', json.resultText, 'green');
+jQuery(function() {
+    jQuery(document).on('click', 'button.runSchedule', function(event){
+        var row = jQuery(event.currentTarget).closest('tr');
+        var scheduleName = row.children('td[name=schedName]').html();
+        var deviceName = row.children('td[name=deviceName]').html();
+        var eventId = row[0].id.split('_')[1];
+        
+        var url = "/capcontrol/schedule/startSchedule";
+        new Ajax.Request(url, {'parameters': {'eventId': eventId, 'deviceName': deviceName},
+            onComplete: function(transport, json) {
+                if (!json.success) {
+                    showAlertMessageForAction(scheduleName, '', json.resultText, 'red');
+                } else {
+                    showAlertMessageForAction(scheduleName, '', json.resultText, 'green');
+                }
             }
+        });
+    });
+});
+
+jQuery(function() {
+    jQuery(document).on('click', 'button.stopSchedule', function(event){
+        var row = jQuery(event.currentTarget).closest('tr');
+        
+        var deviceName = row.children('td[name=deviceName]').html();
+        var deviceId = jQuery(event.currentTarget).attr('name');
+        
+        var url = "/capcontrol/schedule/stopSchedule";
+        new Ajax.Request(url, {'parameters': {'deviceId': deviceId, 'deviceName': deviceName},
+            onComplete: function(transport, json) {
+                if(!json.success) {
+                    showAlertMessageForAction('<cti:msg2 key=".stopSchedule" javaScriptEscape="true"/>', '', json.resultText, 'red');
+                } else {
+                    showAlertMessageForAction('<cti:msg2 key=".stopSchedule" javaScriptEscape="true"/>', '', json.resultText, 'green');
+                }
         } });
-});
-
-YEvent.observeSelectorClick('button.stopSchedule', function(event) {
-    var row = event.findElement('tr');
-    var deviceName = row.down('td', 1).innerHTML;
-    var deviceId = event.findElement().name;
-    var url = "/capcontrol/schedule/stopSchedule";
-    new Ajax.Request(url, {'parameters': {'deviceId': deviceId, 'deviceName': deviceName},
-        onComplete: function(transport, json) {
-            if(!json.success) {
-                showAlertMessageForAction('<cti:msg2 key=".stopSchedule" javaScriptEscape="true"/>', '', json.resultText, 'red');
-            } else {
-                showAlertMessageForAction('<cti:msg2 key=".stopSchedule" javaScriptEscape="true"/>', '', json.resultText, 'green');
-            }
-    } });
+    });
 });
 
 function setOvUv(eventId, ovuv) {
@@ -194,10 +205,10 @@ function newScheduleAssignmentPopup(schedule, command) {
                         <c:forEach var="item" items="${itemList}">
                         
                             <tr class="<tags:alternateRow odd="" even="altRow"/>" id="s_${item.eventId}">
-                                <td><spring:escapeBody htmlEscape="true">${item.scheduleName}</spring:escapeBody></td>
+                                <td name="schedName"><spring:escapeBody htmlEscape="true">${item.scheduleName}</spring:escapeBody></td>
                                 
                                 <!-- Device -->
-                                <td><spring:escapeBody htmlEscape="true">${item.deviceName}</spring:escapeBody></td>
+                                <td name="deviceName"><spring:escapeBody htmlEscape="true">${item.deviceName}</spring:escapeBody></td>
                                 
                                 <td>
                                     <!-- Actions -->

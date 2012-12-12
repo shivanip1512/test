@@ -34,8 +34,8 @@ public class ScheduleAssignmentRowMapper extends
         assignment.setDisableOvUv(disableOvUv);
         int eventId = rs.getInt("EventID");
         assignment.setEventId(eventId);
-        assignment.setLastRunTime(rs.getDate("LastRunTime"));
-        assignment.setNextRunTime(rs.getDate("NextRunTime"));
+        assignment.setLastRunTime(rs.getInstant("LastRunTime"));
+        assignment.setNextRunTime(rs.getInstant("NextRunTime"));
         int paoId = rs.getInt("PaoID");
         assignment.setPaoId(paoId);
         int scheduleId = rs.getInt("ScheduleID");
