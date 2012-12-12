@@ -9,10 +9,13 @@
        http://www.springframework.org/schema/tx http://www.springframework.org/schema/tx/spring-tx-3.0.xsd
        http://www.springframework.org/schema/aop http://www.springframework.org/schema/aop/spring-aop-3.0.xsd">
 
+    <import resource="mct440ConfigurationContext.xml"/>
+
 	<bean id="deviceConfigurationDao" class="com.cannontech.common.device.config.dao.DeviceConfigurationDaoImpl">
 		<property name="configurationTemplateList">
 			<list>
 				<ref bean="mct470Config"/>
+                <ref bean="mct440Config"/>
 				<ref bean="mct430Config"/>
 				<ref bean="mct420Config" />
                 <ref bean="dnpConfig"/>
@@ -1588,7 +1591,7 @@
 			</list>
 		</property>
 	</bean>
-					
+
 	<bean id="mct470CofigurationByte" class="com.cannontech.common.device.config.model.CategoryTemplate">
 		<property name="name" value="MCT Configuration" />
 		<property name="inputList">

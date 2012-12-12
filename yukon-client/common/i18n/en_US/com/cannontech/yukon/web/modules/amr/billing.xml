@@ -5,6 +5,8 @@
 <!-- overview.jsp (dynamicBilling) -->
     <entry key="yukon.web.modules.amr.billing.DETAIL.title">Field Setup</entry>
     <entry key="yukon.web.modules.amr.billing.DETAIL.pageName">Billing Format Editor</entry>
+    <entry key="yukon.web.modules.amr.billing.DETAIL.pageName.create">Create New Format</entry>
+    <entry key="yukon.web.modules.amr.billing.DETAIL.pageName.edit">Edit Format</entry>
     <entry key="yukon.web.modules.amr.billing.DETAIL.contextualPageName">Billing Setup</entry>
     <entry key="yukon.web.modules.amr.billing.DETAIL.formatSetup.title">Format Setup</entry>
     <entry key="yukon.web.modules.amr.billing.DETAIL.nameOfFormat">Name of Format</entry>

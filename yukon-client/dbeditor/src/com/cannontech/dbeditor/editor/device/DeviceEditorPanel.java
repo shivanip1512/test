@@ -42,6 +42,7 @@ public class DeviceEditorPanel extends com.cannontech.common.editor.PropertyPane
             PAOGroups.RFN420CL, PAOGroups.RFN420CD,
             PAOGroups.RFN430KV, PAOGroups.RFN430A3, PAOGroups.RDS_TERMINAL, 
             PAOGroups.MCT420FL, PAOGroups.MCT420FD, PAOGroups.MCT420CL, PAOGroups.MCT420CD,
+            PAOGroups.MCT440_2131B, PAOGroups.MCT440_2133B,  
             PAOGroups.RFWMETER,
             PAOGroups.IPC410FL, PAOGroups.IPC420FD, PAOGroups.IPC430S4E, PAOGroups.IPC430SL,
             PAOGroups.RFN420ELO, PAOGroups.RFN430ELO
@@ -60,6 +61,7 @@ public class DeviceEditorPanel extends com.cannontech.common.editor.PropertyPane
             PAOGroups.RFN420CL, PAOGroups.RFN420CD,
             PAOGroups.RFN430KV, PAOGroups.RFN430A3, 
             PAOGroups.MCT420FL, PAOGroups.MCT420FD, PAOGroups.MCT420CL, PAOGroups.MCT420CD,
+            PAOGroups.MCT440_2131B, PAOGroups.MCT440_2133B,
             PAOGroups.RFWMETER,
             PAOGroups.IPC410FL, PAOGroups.IPC420FD, PAOGroups.IPC430S4E, PAOGroups.IPC430SL,
             PAOGroups.RFN420ELO, PAOGroups.RFN430ELO
@@ -88,6 +90,7 @@ public class DeviceEditorPanel extends com.cannontech.common.editor.PropertyPane
             PAOGroups.MCT410FL, PAOGroups.MCT410GL, PAOGroups.MCT470, PAOGroups.MCT430A, PAOGroups.MCT430S4, PAOGroups.MCT430SL, PAOGroups.MCT430A3,
             PAOGroups.SENTINEL, PAOGroups.FOCUS, PAOGroups.ALPHA_A3, PAOGroups.LCR3102,
             PAOGroups.MCT420FL, PAOGroups.MCT420FD, PAOGroups.MCT420CL, PAOGroups.MCT420CD,
+            PAOGroups.MCT440_2131B, PAOGroups.MCT440_2133B,
             PAOGroups.IPC410FL, PAOGroups.IPC420FD, PAOGroups.IPC430S4E, PAOGroups.IPC430SL,
 		},
 

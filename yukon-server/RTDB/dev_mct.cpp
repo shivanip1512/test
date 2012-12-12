@@ -861,7 +861,6 @@ INT MctDevice::ModelDecode(INMESS *InMessage, CtiTime &TimeNow, CtiMessageList &
             break;
         }
 
-
         case EmetconProtocol::GetConfig_Time:
         case EmetconProtocol::GetConfig_TSync:
         case EmetconProtocol::GetConfig_Holiday:
@@ -935,6 +934,7 @@ INT MctDevice::ModelDecode(INMESS *InMessage, CtiTime &TimeNow, CtiMessageList &
         case EmetconProtocol::PutConfig_PhaseDetect:
         case EmetconProtocol::PutConfig_AlarmMask:
         case EmetconProtocol::PutConfig_AutoReconnect:
+        case EmetconProtocol::PutConfig_PhaseLossThreshold:
         {
             status = decodePutConfig(InMessage, TimeNow, vgList, retList, outList);
             break;
@@ -960,6 +960,8 @@ INT MctDevice::ModelDecode(INMESS *InMessage, CtiTime &TimeNow, CtiMessageList &
         case EmetconProtocol::PutStatus_FreezeTwo:
         case EmetconProtocol::PutStatus_FreezeVoltageOne:
         case EmetconProtocol::PutStatus_FreezeVoltageTwo:
+        case EmetconProtocol::PutStatus_SetTOUHolidayRate:
+        case EmetconProtocol::PutStatus_ClearTOUHolidayRate:
         {
             status = decodePutStatus(InMessage, TimeNow, vgList, retList, outList);
             break;
@@ -1086,7 +1088,7 @@ INT MctDevice::ErrorDecode(const INMESS &InMessage, const CtiTime TimeNow, CtiMe
 
                 case ScanRateLoadProfile:
                 {
-                    if( isMct410(getType()) || isMct420(getType()) )
+                    if( isMct410(getType()) || isMct420(getType()) || isMct440(getType()) )
                     {
                         int channel = parse.getiValue("loadprofile_channel", 0);
 
@@ -1384,7 +1386,8 @@ INT MctDevice::executeGetValue(CtiRequestMsg *pReq,
         if( getType() == TYPEMCT318 || getType() == TYPEMCT318L ||
             getType() == TYPEMCT360 || getType() == TYPEMCT370 ||
             isMct410(getType()) ||
-            isMct420(getType()) )
+            isMct420(getType()) ||
+            isMct440(getType()) )
         {
             //  if pulse input 3 isn't defined
             if( !getDevicePointOffsetTypeEqual(3, DemandAccumulatorPointType ) )
@@ -1449,7 +1452,7 @@ INT MctDevice::executeGetValue(CtiRequestMsg *pReq,
         {
             channels = Mct31xDevice::ChannelCount;
         }
-        else if( isMct410(getType()) || isMct420(getType()) )
+        else if( isMct410(getType()) || isMct420(getType()) || isMct440(getType()) )
         {
             channels = Mct410Device::ChannelCount;
         }
@@ -1460,7 +1463,7 @@ INT MctDevice::executeGetValue(CtiRequestMsg *pReq,
 
         //  "getvalue kwh" is the short-form request for the MCT-410;  "getvalue usage" is the long form.
         //    I don't like this type-specific code in the base class...  but I also don't want to add a virtual function for just this.
-        if( (isMct410(getType()) || isMct420(getType())) && parse.getFlags() & CMD_FLAG_GV_KWH )
+        if( (isMct410(getType()) || isMct420(getType()) || isMct440(getType())) && parse.getFlags() & CMD_FLAG_GV_KWH )
         {
             OutMessage->Buffer.BSt.Length -= 6;
         }
@@ -2314,7 +2317,7 @@ INT MctDevice::executePutConfig(CtiRequestMsg *pReq,
             function = EmetconProtocol::PutConfig_Intervals;
             found = getOperation(function, OutMessage->Buffer.BSt);
 
-            if( isMct410(getType()) || isMct420(getType()) )
+            if( isMct410(getType()) || isMct420(getType()) || isMct440(getType()) )
             {
                 OutMessage->Buffer.BSt.Message[0] = getLoadProfile()->getLastIntervalDemandRate() / 60;
                 OutMessage->Buffer.BSt.Message[1] = getLoadProfile()->getLoadProfileDemandRate()  / 60;
@@ -2400,7 +2403,7 @@ INT MctDevice::executePutConfig(CtiRequestMsg *pReq,
                     }
                 }
                 else*/
-                if( !isMct410(getType()) && !isMct420(getType()) )
+                if( !isMct410(getType()) && !isMct420(getType()) && !isMct440(getType()) )
                 {
                     intervallength *= 4;  //  all else are in multiples of 15 seconds
                 }
@@ -3333,6 +3336,8 @@ INT MctDevice::decodePutConfig(INMESS *InMessage, CtiTime &TimeNow, CtiMessageLi
         case EmetconProtocol::PutConfig_PhaseDetect:                resultString = getName() + " / Phase Detect test settings sent";    break;
         case EmetconProtocol::PutConfig_AutoReconnect:              resultString = getName() + " / Autoreconnect settings sent";    break;
 
+        case EmetconProtocol::PutConfig_PhaseLossThreshold:         resultString = getName() + " / Phase loss settings sent";       break;
+
         case EmetconProtocol::PutConfig_Install:
         {
             int sspec;
@@ -3642,6 +3647,20 @@ bool MctDevice::isMct430(int type)
         case TYPEMCT430A3:
         case TYPEMCT430S4:
         case TYPEMCT430SL:
+        {
+            return true;
+        }
+    }
+
+    return false;
+}
+
+bool MctDevice::isMct440(int type)
+{
+    switch(type)
+    {
+        case TYPEMCT440_2131B:
+        case TYPEMCT440_2133B:
         {
             return true;
         }

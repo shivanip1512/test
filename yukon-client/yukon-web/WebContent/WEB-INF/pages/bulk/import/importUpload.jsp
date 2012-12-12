@@ -67,7 +67,7 @@
                             
                             <%-- options --%>
                             <tr>
-                                <td valign="top" class="smallBoldLabel">Options:</td>
+                                <td valign="top" class="smallBoldLabel"><i:inline key="yukon.common.device.bulk.importUpload.optionsLabel"/></td>
                                 <td style="font-size:11px;">
                                     <label><input type="checkbox" name="ignoreInvalidCols" <c:if test="${ignoreInvalidCols}">checked</c:if>><cti:msg key="yukon.common.device.bulk.options.import.ignoreInvalidHeaders"/></label><br>
                                 </td>
@@ -97,9 +97,11 @@
                         </c:if>
                         
                         <%-- file select --%>
-                        <div class="normalBoldLabel" style="display:inline;">Import File:</div>
+                        <div class="normalBoldLabel" style="display:inline;"><i:inline key="yukon.common.device.bulk.importUpload.importFileLabel"/></div>
                         <input type="file" name="dataFile" >
-                        <tags:slowInput myFormId="uploadForm" label="Load" labelBusy="Load" />
+                        <cti:msg2 var="loadButtonLabel" key="yukon.common.device.bulk.importUpload.loadButton"/>
+                        <cti:msg2 var="loadButtonBusyLabel" key="yukon.common.device.bulk.importUpload.loadButton.busy"/> 
+                        <tags:slowInput myFormId="uploadForm" label="${loadButtonLabel}" labelBusy="${loadButtonBusyLabel}" />
                         
                    
                 </td>

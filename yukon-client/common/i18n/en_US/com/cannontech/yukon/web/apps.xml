@@ -1,0 +1,41 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE properties SYSTEM "http://java.sun.com/dtd/properties.dtd">
+<properties>
+    <!-- SelectDevice.jsp -->
+    <entry key="yukon.web.apps.selectDevice.title">Device Selection</entry>
+    <entry key="yukon.web.apps.selectDevice.orderBy">Order by:</entry>
+    <entry key="yukon.web.apps.selectDevice.orderBy.ascending">Ascending</entry>
+    <entry key="yukon.web.apps.selectDevice.orderBy.descending">Descending</entry>
+    <entry key="yukon.web.apps.selectDevice.filterBy">Filter by:</entry>
+    <entry key="yukon.web.apps.selectDevice.filterBy.none">(none)</entry>
+    <entry key="yukon.web.apps.selectDevice.filterBy.route">Route</entry>
+    <entry key="yukon.web.apps.selectDevice.filterBy.commChannel">Comm Channel</entry>
+    <entry key="yukon.web.apps.selectDevice.filterBy.cbcType">CBC Type</entry>
+    <entry key="yukon.web.apps.selectDevice.specificDevice">Find specific device:</entry>
+    <entry key="yukon.web.apps.selectDevice.showButton">Show</entry>
+    <entry key="yukon.web.apps.selectDevice.showAllButton">Show All</entry>
+    <entry key="yukon.web.apps.selectDevice.searchButton">Search</entry>
+    <entry key="yukon.web.apps.selectDevice.cancelButton">Cancel</entry>
+
+    <!-- CommandDevice.jsp -->
+    <entry key="yukon.web.apps.commandDevice.navigation">Navigation</entry>
+    <entry key="yukon.web.apps.commandDevice.goTo">Go To...</entry>
+    <entry key="yukon.web.apps.commandDevice.goTo.manual">Manual</entry>
+    <entry key="yukon.web.apps.commandDevice.goTo.meterDetails">Meter Details</entry>
+    <entry key="yukon.web.apps.commandDevice.devices">Devices</entry>
+    <entry key="yukon.web.apps.commandDevice.loadManagement">Load Management</entry>
+    <entry key="yukon.web.apps.commandDevice.capControl">Cap Control</entry>
+
+    <!-- Commander.jsp -->
+    <entry key="yukon.web.apps.commander.title">Control Commands:</entry>
+    <entry key="yukon.web.apps.commander.type">Type:</entry>
+    <entry key="yukon.web.apps.commander.serialNumber">Serial Number:</entry>
+    <entry key="yukon.web.apps.commander.route">Route:</entry>
+    <entry key="yukon.web.apps.commander.route.select">Select a Route</entry>
+    <entry key="yukon.web.apps.commander.commonCommands">Common Commands:</entry>
+    <entry key="yukon.web.apps.commander.commonCommands.select">Select a Command</entry>
+    <entry key="yukon.web.apps.commander.executeCommand">Execute Command:</entry>
+    <entry key="yukon.web.apps.commander.executeButton">Execute</entry>
+    <entry key="yukon.web.apps.commander.clearResultsButton">Clear Results</entry>
+    <entry key="yukon.web.apps.commander.refreshButton">Refresh</entry>
+</properties>

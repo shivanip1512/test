@@ -1,6 +1,7 @@
 <%@ taglib uri="http://java.sun.com/jsp/jstl/core" prefix="c" %>
 <%@ taglib uri="http://cannontech.com/tags/cti" prefix="cti"%>
 <%@ taglib prefix="tags" tagdir="/WEB-INF/tags" %>
+<%@ taglib prefix="i" tagdir="/WEB-INF/tags/i18n" %>
 
 <cti:msg var="pageTitle" key="yukon.common.device.bulk.updateUpload.pageTitle"/>
 <cti:url var="check" value="/WebConfig/yukon/Icons/check.gif"/>
@@ -47,7 +48,7 @@
                             
                             <%-- options --%>
                             <tr>
-                                <td valign="top" class="smallBoldLabel">Options:</td>
+                                <td valign="top" class="smallBoldLabel"><i:inline key="yukon.common.device.bulk.updateUpload.optionsLabel"/></td>
                                 <td style="font-size:11px;">
                                     <label><input type="checkbox" name="ignoreInvalidCols" <c:if test="${ignoreInvalidCols}">checked</c:if>><cti:msg key="yukon.common.device.bulk.options.update.ignoreInvalidHeaders"/></label><br>
                                     <label><input type="checkbox" name="ignoreInvalidIdentifiers" <c:if test="${ignoreInvalidIdentifiers}">checked</c:if>><cti:msg key="yukon.common.device.bulk.options.update.ignoreInvalidIdentifiers"/></label>
@@ -77,9 +78,11 @@
                         </c:if>
                             
                          <%-- file select --%>
-                        <div class="normalBoldLabel" style="display:inline;">Update File:</div>
+                        <div class="normalBoldLabel" style="display:inline;"><i:inline key="yukon.common.device.bulk.updateUpload.updateFileLabel"/></div>
                         <input type="file" name="dataFile" size="30px">
-                        <tags:slowInput myFormId="uploadForm" label="Load" labelBusy="Load" />
+                        <cti:msg2 var="loadButtonLabel" key="yukon.common.device.bulk.updateUpload.loadButton"/>
+                        <cti:msg2 var="loadButtonBusyLabel" key="yukon.common.device.bulk.updateUpload.loadButton.busy"/> 
+                        <tags:slowInput myFormId="uploadForm" label="${loadButtonLabel}" labelBusy="${loadButtonBusyLabel}" />
                     
                     </form>
                 </td>

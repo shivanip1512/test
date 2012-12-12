@@ -862,6 +862,10 @@ void  CtiCommandParser::doParseGetValue(const string &_CmdStr)
         {
             _cmd["phasecurrentread"] = CtiParseValue(TRUE);
         }
+        else if(CmdStr.contains(" instant line data"))
+        {
+            _cmd["instantlinedata"] = CtiParseValue(TRUE);
+        }
         else
         {
             // Default Get Value request has been specified....
@@ -927,6 +931,10 @@ void  CtiCommandParser::doParseGetValue(const string &_CmdStr)
         if(CmdStr.contains(" update"))      // Sourcing from CmdStr, which is the entire command string.
         {
             flag |= CMD_FLAG_UPDATE;
+        }
+        if(CmdStr.contains(" reverse"))
+        {
+            flag |= CMD_FLAG_GV_REVERSE;
         }
     }
     else
@@ -1341,8 +1349,8 @@ void  CtiCommandParser::doParseControl(const string &_CmdStr)
                 _cmd["silver"] = CtiParseValue(atoi(addr_tok().c_str()));
             }
         }
-
     }
+
     else
     {
         // Something went WAY wrong....
@@ -1859,6 +1867,14 @@ void  CtiCommandParser::doParseGetConfig(const string &_CmdStr)
         {
             flag |= CMD_FLAG_UPDATE;
         }
+        if(!CmdStr.match(" phaseloss threshold").empty())
+        {
+            _cmd["phaseloss_threshold"] = CtiParseValue("TRUE");
+        }
+        if(!CmdStr.match(" alarm_mask").empty())
+        {
+            _cmd["alarm_mask"] = CtiParseValue("TRUE");
+        }
         setFlags(flag);
     }
     else
@@ -1873,7 +1889,7 @@ void  CtiCommandParser::doParseGetConfig(const string &_CmdStr)
 
 void  CtiCommandParser::doParsePutConfig(const string &_CmdStr)
 {
-    static const boost::regex re_tou("tou [0-9]+( schedule [0-9]+( [a-z]/[0-9]+:[0-9]+)*)* default [a-z]");
+    static const boost::regex re_tou("tou [0-9]+( schedule [0-9]+( [a-z]/[0-9]+:[0-9]+)*)*( default [a-z])?");
 
     CtiString CmdStr(_CmdStr);
     CtiString   temp2;
@@ -2267,6 +2283,7 @@ void  CtiCommandParser::doParsePutConfigEmetcon(const string &_CmdStr)
                              " [0-9]+");
     static const boost::regex  re_interval("interval(s| lp| li)");  //  match "intervals", "interval lp" and "interval li"
     static const boost::regex  re_thresholds(CtiString("(outage|voltage) threshold ") + str_num);
+    static const boost::regex  re_thresholds_phaseloss("phaseloss threshold [0-9]+ duration [0-9]+:[0-9]+:[0-9]+");
     static const boost::regex  re_multiplier("mult(iplier)? kyz *[0-9]+ [0-9]+(\\.[0-9]+)?");  //  match "mult kyz # #(.###)
     static const boost::regex  re_ied_class("ied class [0-9]+ [0-9]+");
     static const boost::regex  re_ied_scan ("ied scan [0-9]+ [0-9]+");
@@ -2512,10 +2529,23 @@ void  CtiCommandParser::doParsePutConfigEmetcon(const string &_CmdStr)
 
                 if( temp.contains("outage") )
                 {
-                    cmdtok();
+                    cmdtok(); // go past "threshold"
 
                     _cmd["outage_threshold"] = CtiParseValue( atoi( cmdtok().c_str() ) );
                 }
+            }
+            else if(!(token = CmdStr.match(re_thresholds_phaseloss)).empty())
+            {
+                CtiTokenizer cmdtok(token);
+
+                cmdtok(); // go past "phaseloss"
+                cmdtok(); // go past "threshold"
+
+                _cmd["phaseloss_percent_threshold"]  = CtiParseValue( atoi( cmdtok().c_str() ) );
+
+                cmdtok(); // go past "duration"
+
+                _cmd["phaseloss_duration_threshold"] = CtiParseValue( cmdtok() );
             }
         }
         if(CmdStr.contains(" centron") ||
@@ -3914,6 +3944,18 @@ void  CtiCommandParser::doParsePutStatusEmetcon(const string &_CmdStr)
             if(CmdStr.contains(" voltage"))
             {
                 _cmd["voltage"] = CtiParseValue(TRUE);
+            }
+        }
+        if(CmdStr.contains(" tou holiday rate"))
+        {
+            if(CmdStr.contains("set tou holiday rate"))
+            {
+                _cmd["set_tou_holiday_rate"] = CtiParseValue( TRUE );
+            }
+
+            if(CmdStr.contains("clear tou holiday rate"))
+            {
+                _cmd["clear_tou_holiday_rate"] = CtiParseValue( TRUE );
             }
         }
     }

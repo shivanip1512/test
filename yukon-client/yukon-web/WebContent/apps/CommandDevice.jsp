@@ -111,22 +111,22 @@
             <div class="titledContainer boxContainer">
             <div class="titleBar boxContainer_titleBar">
                 <div class="title boxContainer_title">
-                    Navigation
+                    <cti:msg key="yukon.web.apps.commandDevice.navigation"/>
                 </div>
             </div>
             
 			<div id="commandDevice_content" class="content boxContainer_content">
 
-			<div class="header">Go To...</div>
+			<div class="header"><cti:msg key="yukon.web.apps.commandDevice.goTo"/></div>
 			
 			<!-- Manual side menu section -->
-			<div class="sideMenuLink selected">Manual</div>
+			<div class="sideMenuLink selected"><cti:msg key="yukon.web.apps.commandDevice.goTo.manual"/></div>
 			<c:set var="link" scope="page" value="${pageContext.request.contextPath}/apps/CommandDevice.jsp?deviceID=${deviceId}&command=null"/> 
 
             <cti:checkRolesAndProperties value="METERING">
 			<c:if test="${meterDetailDisplayable}">
 			<div class="sideMenuLink">
-                <cti:paoDetailUrl yukonPao="${liteYukonPao}">Meter Details</cti:paoDetailUrl>
+                <cti:paoDetailUrl yukonPao="${liteYukonPao}"><cti:msg key="yukon.web.apps.commandDevice.goTo.meterDetails"/></cti:paoDetailUrl>
 			</div>
 			</c:if>
             </cti:checkRolesAndProperties>
@@ -134,7 +134,7 @@
 			<div class="horizontalRule" ></div>
 		
 			<!-- Devices side menu section -->
-			<div class="header">Devices</div>
+			<div class="header"><cti:msg key="yukon.web.apps.commandDevice.devices"/></div>
 			
 			<c:forEach items="${YC_BEAN.deviceHistory}" var="device">
 				<c:if test="${cti:isDeviceSortByGroup(device)}">
@@ -156,7 +156,7 @@
 			<div class="horizontalRule" ></div>
 		
 			<!-- Load Management menu section -->
-			<div class="header">Load Management</div>
+			<div class="header"><cti:msg key="yukon.web.apps.commandDevice.loadManagement"/></div>
 			
 			<c:forEach items="${YC_BEAN.deviceHistory}" var="device">
 				<c:if test="${cti:isLoadManagementSortByGroup(device)}">
@@ -330,7 +330,7 @@
 			<div class="horizontalRule" ></div>
 		
 			<!-- Cap Control menu section -->
-			<div class="header">Cap Control</div>
+			<div class="header"><cti:msg key="yukon.web.apps.commandDevice.capControl"/></div>
 			
 			<c:forEach items="${YC_BEAN.deviceHistory}" var="device">
 				<c:if test="${cti:isCapControlSortByGroup(device)}">

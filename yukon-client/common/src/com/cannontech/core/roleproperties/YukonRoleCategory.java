@@ -1,10 +1,11 @@
 package com.cannontech.core.roleproperties;
 
+import com.cannontech.common.i18n.DisplayableEnum;
 import com.google.common.base.Function;
 import com.google.common.collect.Ordering;
 
 
-public enum YukonRoleCategory {
+public enum YukonRoleCategory implements DisplayableEnum {
     Application, CapControl, CiCustomer, Consumer, LoadControl, Notifications, Operator, System;
 
     public boolean isSystem() {
@@ -19,4 +20,8 @@ public enum YukonRoleCategory {
                 return input.name();
             }
         });
+
+    @Override
+    public String getFormatKey() {
+        return "yukon.common.role.category." + name();    }
 }

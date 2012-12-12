@@ -66,7 +66,7 @@
                             <div class="rolesContainer">
                                 <c:forEach var="category" items="${categoryRoleMap}">
                                     <ul class="category">
-                                        <li><span class="categoryLabel">${category.key}</span>
+                                        <li><span class="categoryLabel"><cti:formatObject value="${category.key}"/></span>
                                             <ul class="role">
                                                 <c:forEach var="role" items="${category.value}">
                                                     <li>

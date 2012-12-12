@@ -72,6 +72,9 @@ public:
         GetValue_Temperature,
         GetValue_XfmrHistoricalCT,
         GetValue_DutyCycle,
+        GetValue_InstantLineData,
+        GetValue_TOUkWhReverse,
+        GetValue_FrozenTOUkWhReverse,
 
         // PutValue Commands
         PutValue_IEDReset,
@@ -103,6 +106,8 @@ public:
         PutStatus_ResetOverride,
         PutStatus_PeakOn,
         PutStatus_PeakOff,
+        PutStatus_SetTOUHolidayRate,                            /* Set TOU Holiday Rate Active                          */
+        PutStatus_ClearTOUHolidayRate,                          /* Clear TOU Holiday Rate and Resort to Normal Rate     */
 
         // GetConfig commands
         GetConfig_Default,
@@ -140,6 +145,9 @@ public:
         GetConfig_Addressing,
         GetConfig_DailyReadInterest,
         GetConfig_WaterMeterReadInterval,
+        GetConfig_PhaseLossThreshold,
+        GetConfig_AlarmMask,
+        GetConfig_TimeAdjustTolerance,
 
         // PutConfig commands
         PutConfig_Install,
@@ -192,6 +200,7 @@ public:
         PutConfig_IEDDNPAddress,
         PutConfig_WaterMeterReadInterval,
         PutConfig_Channel2NetMetering,      // GetConfig_Options was hijacked for the config byte/alarm mask in the 410....
+        PutConfig_PhaseLossThreshold,
 
         PutConfig_ARMC,
         PutConfig_ARML,

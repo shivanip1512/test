@@ -325,6 +325,62 @@ const CtiTableDynamicPaoInfo::key_map_t   CtiTableDynamicPaoInfo::_key_map =
             "rpt sspec")
         (Key_RPT_SSpecRevision,
             "rpt sspec revision")
+
+        (Key_MCT_Holiday4,
+            "mct holiday 4")
+        (Key_MCT_Holiday5,
+            "mct holiday 5")
+        (Key_MCT_Holiday6,
+            "mct holiday 6")
+        (Key_MCT_Holiday7,
+            "mct holiday 7")
+        (Key_MCT_Holiday8,
+            "mct holiday 8")
+        (Key_MCT_Holiday9,
+            "mct holiday 9")
+        (Key_MCT_Holiday10,
+            "mct holiday 10")
+        (Key_MCT_Holiday11,
+            "mct holiday 11")
+        (Key_MCT_Holiday12,
+            "mct holiday 12")
+        (Key_MCT_Holiday13,
+            "mct holiday 13")
+        (Key_MCT_Holiday14,
+            "mct holiday 14")
+        (Key_MCT_Holiday15,
+            "mct holiday 15")
+        (Key_MCT_Holiday16,
+            "mct holiday 16")
+        (Key_MCT_Holiday17,
+            "mct holiday 17")
+        (Key_MCT_Holiday18,
+            "mct holiday 18")
+        (Key_MCT_Holiday19,
+            "mct holiday 19")
+        (Key_MCT_Holiday20,
+            "mct holiday 20")
+        (Key_MCT_Holiday21,
+            "mct holiday 21")
+        (Key_MCT_Holiday22,
+            "mct holiday 22")
+        (Key_MCT_Holiday23,
+            "mct holiday 23")
+        (Key_MCT_Holiday24,
+            "mct holiday 24")
+        (Key_MCT_Holiday25,
+            "mct holiday 25")
+        (Key_MCT_Holiday26,
+            "mct holiday 26")
+        (Key_MCT_Holiday27,
+            "mct holiday 27")
+        (Key_MCT_Holiday28,
+            "mct holiday 28")
+
+        (Key_MCT_PhaseLossPercent,
+            "mct phase loss percent")
+        (Key_MCT_PhaseLossSeconds,
+            "mct phase loss seconds")
         ;
 
 CtiTableDynamicPaoInfo::CtiTableDynamicPaoInfo() :

@@ -36,7 +36,7 @@
                             <c:set var="selected" value="selected"/>
                         </c:if>
                         <option value="${item.key}" ${selected}>
-                            <cti:formatObject value="${item.description}"/>
+                            <cti:formatObject value="${item}"/>
                         </option>
                     </c:forEach>
                 </optgroup>

@@ -169,6 +169,35 @@ public:
         Key_RPT_SSpec,
         Key_RPT_SSpecRevision,
         //  make sure to add any new enum values to the string map
+
+        Key_MCT_Holiday4,
+        Key_MCT_Holiday5,
+        Key_MCT_Holiday6,
+        Key_MCT_Holiday7,
+        Key_MCT_Holiday8,
+        Key_MCT_Holiday9,
+        Key_MCT_Holiday10,
+        Key_MCT_Holiday11,
+        Key_MCT_Holiday12,
+        Key_MCT_Holiday13,
+        Key_MCT_Holiday14,
+        Key_MCT_Holiday15,
+        Key_MCT_Holiday16,
+        Key_MCT_Holiday17,
+        Key_MCT_Holiday18,
+        Key_MCT_Holiday19,
+        Key_MCT_Holiday20,
+        Key_MCT_Holiday21,
+        Key_MCT_Holiday22,
+        Key_MCT_Holiday23,
+        Key_MCT_Holiday24,
+        Key_MCT_Holiday25,
+        Key_MCT_Holiday26,
+        Key_MCT_Holiday27,
+        Key_MCT_Holiday28,
+
+        Key_MCT_PhaseLossPercent,
+        Key_MCT_PhaseLossSeconds,
     };
 
 protected:

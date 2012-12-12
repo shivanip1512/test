@@ -5,15 +5,19 @@
 <%@ taglib prefix="amr" tagdir="/WEB-INF/tags/amr" %>
 <%@ taglib prefix="jsTree" tagdir="/WEB-INF/tags/jsTree" %>
 <%@ taglib uri="http://www.springframework.org/tags" prefix="spring" %>
+<%@ taglib prefix="i" tagdir="/WEB-INF/tags/i18n" %>
 
 <cti:standardPage title="Group Processing" module="amr">
 
     <cti:standardMenu menuSelection="devicegroups|commander"/>
 
        	<cti:breadCrumbs>
-    	    <cti:crumbLink url="/operator/Operations.jsp" title="Operations Home" />
-    	    <cti:crumbLink url="/spring/group/editor/home" title="Device Groups" />
-    	    <cti:crumbLink title="Group Command Processing"/>
+            <cti:msg key="yukon.web.components.button.home.label" var="homeLabel"/>
+            <cti:crumbLink url="/operator/Operations.jsp" title="${homeLabel}" />
+            <cti:msg key="yukon.web.deviceGroups.editor.title" var="deviceGroupsLabel"/>
+    	    <cti:crumbLink url="/spring/group/editor/home" title="${deviceGroupsLabel}" />
+            <cti:msg key="yukon.web.deviceGroups.commander.title" var="groupCommandProcessingLabel"/>
+    	    <cti:crumbLink title="${groupCommandProcessingLabel}"/>
     	</cti:breadCrumbs>
         
         <script type="text/javascript">
@@ -32,7 +36,7 @@
         
         </script>
 		
-		<h2>Group Command Processing</h2>
+		<h2><i:inline key="yukon.web.deviceGroups.commander.title"/></h2>
 		<br>
 		
     	<%-- ERROR MSG --%>
@@ -53,7 +57,7 @@
             
             <%-- SELECT DEVICE GROUP TREE INPUT --%>
             <br><br>
-            <div class="largeBoldLabel">Group:</div>
+            <div class="largeBoldLabel"><i:inline key="yukon.web.deviceGroups.commander.groupSelectionLabel"/></div>
             
             <cti:deviceGroupHierarchyJson predicates="NON_HIDDEN" var="dataJson" selectGroupName="${param.groupName}" selectedNodePathVar="selectedNodePath"/>
             <jsTree:nodeValueSelectingInlineTree   fieldId="groupName" 
@@ -68,7 +72,7 @@
                                                 includeControlBar="true"/>
                                                 
             <%-- EMAIL --%>
-            <div class="largeBoldLabel">Email Address (optional):</div>
+            <div class="largeBoldLabel"><i:inline key="yukon.web.deviceGroups.commander.emailLabel"/></div>
             <input type="text" name="emailAddress" value="" size="40">
             <br><br>
                                                 
@@ -77,12 +81,13 @@
             <cti:msg var="noGroupSelectedAlertText" key="yukon.common.device.bulk.deviceSelection.selectDevicesByGroupTree.noGroupSelectedAlertText" />
             <cti:url var="waitImgUrl" value="/WebConfig/yukon/Icons/indicator_arrows.gif" />
             
-            <input type="button" id="submitGroupCommanderButton" value="Execute" onclick="return validateGroupIsSelected(this, '${cti:escapeJavaScript(noGroupSelectedAlertText)}');">
+            <cti:msg2 var="executeButtonLabel" key="yukon.web.deviceGroups.commander.executeButton"/>
+            <input type="button" id="submitGroupCommanderButton" value="${executeButtonLabel}" onclick="return validateGroupIsSelected(this, '${cti:escapeJavaScript(noGroupSelectedAlertText)}');">
             <img id="waitImg" src="${waitImgUrl}" style="display:none;">
             
             <br><br>
-            <span class="largeBoldLabel">Recent Results: </span> 
-            <a href="/spring/group/commander/resultList">View</a>
+            <span class="largeBoldLabel"><i:inline key="yukon.web.deviceGroups.commander.recentResultsLabel"/></span> 
+            <a href="/spring/group/commander/resultList"><i:inline key="yukon.web.deviceGroups.commander.recentResultsLink"/></a>
     			 
     		</form>
     	</div>

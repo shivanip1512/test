@@ -339,7 +339,11 @@ BOOST_AUTO_TEST_CASE(test_isProfileTablePointerCurrent)
     test_Mct420CL dev;
 
     {
-        const CtiTime t(CtiDate(1, 1, 2011), 19, 16, 0);  //  1293930960 seconds (0x4D1FD1D0)
+        CtiTime t(CtiDate(1, 1, 2011), 19, 16, 0);  //  1293930960 seconds (0x4D1FD1D0)
+
+        long tz;
+        _get_timezone(&tz);
+        t.addSeconds(21600 - tz);
 
         BOOST_CHECK_EQUAL(false, dev.isProfileTablePointerCurrent(254, t, 3600));
         BOOST_CHECK_EQUAL(true,  dev.isProfileTablePointerCurrent(255, t, 3600));
@@ -363,7 +367,11 @@ BOOST_AUTO_TEST_CASE(test_isProfileTablePointerCurrent)
     }
 
     {
-        const CtiTime t(CtiDate(1, 1, 2011), 1, 16, 0);  //  1293866160 seconds (0x4D1ED4B0)
+        CtiTime t(CtiDate(1, 1, 2011), 1, 16, 0);  //  1293866160 seconds (0x4D1ED4B0)
+
+        long tz;
+        _get_timezone(&tz);
+        t.addSeconds(21600 - tz);
 
         BOOST_CHECK_EQUAL(false, dev.isProfileTablePointerCurrent(251, t, 3600));
         BOOST_CHECK_EQUAL(true,  dev.isProfileTablePointerCurrent(252, t, 3600));
@@ -387,7 +395,11 @@ BOOST_AUTO_TEST_CASE(test_isProfileTablePointerCurrent)
     }
 
     {
-        const CtiTime t(CtiDate(1, 1, 2011), 9, 16, 0);  //  1293894960 seconds (0x4D1F4530)
+        CtiTime t(CtiDate(1, 1, 2011), 9, 16, 0);  //  1293894960 seconds (0x4D1F4530)
+
+        long tz;
+        _get_timezone(&tz);
+        t.addSeconds(21600 - tz);
 
         BOOST_CHECK_EQUAL(false, dev.isProfileTablePointerCurrent(252, t, 3600));
         BOOST_CHECK_EQUAL(true,  dev.isProfileTablePointerCurrent(253, t, 3600));
@@ -411,7 +423,11 @@ BOOST_AUTO_TEST_CASE(test_isProfileTablePointerCurrent)
     }
 
     {
-        const CtiTime t(CtiDate(1, 1, 2011), 12, 26, 0);  //  1293906360 seconds (0x4D1F71B8)
+        CtiTime t(CtiDate(1, 1, 2011), 12, 26, 0);  //  1293906360 seconds (0x4D1F71B8)
+
+        long tz;
+        _get_timezone(&tz);
+        t.addSeconds(21600 - tz);
 
         BOOST_CHECK_EQUAL(false, dev.isProfileTablePointerCurrent(253, t, 3600));
         BOOST_CHECK_EQUAL(true,  dev.isProfileTablePointerCurrent(254, t, 3600));

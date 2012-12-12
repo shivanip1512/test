@@ -23,6 +23,30 @@ private:
 
     static std::string describeStatusAndEvents(unsigned char *buf);
 
+    enum SspecInformation
+    {
+        Sspec = 1029,
+
+        SspecRev_NextGen = 40,
+
+        SspecRev_NewLLP_Min         =    9,  //  rev  0.9
+        SspecRev_TOUPeak_Min        =   13,  //  rev  1.3
+        SspecRev_NewOutage_Min      =    8,  //  rev  0.8
+        SspecRev_Disconnect_Cycle   =   12,  //  rev  1.2
+        SspecRev_Disconnect_ConfigReadEnhanced = 20,  //  rev 2.0
+        SspecRev_DailyRead          =   21,  //  rev  2.1
+        SspecRev_HourlyKwh          =   33,
+
+        SspecRev_BetaLo =    9,  //  rev  0.9
+        SspecRev_BetaHi =  200,  //  rev 20.0
+    };
+
+    void readSspec(const OUTMESS &OutMessage, std::list<OUTMESS *> &outList) const;
+
+    virtual unsigned getUsageReportDelay(const unsigned interval_length, const unsigned days) const;
+
+protected:
+
     struct daily_read_info_t
     {
         enum RequestType
@@ -58,31 +82,7 @@ private:
 
     } _daily_read_info;
 
-    enum SspecInformation
-    {
-        Sspec = 1029,
-
-        SspecRev_NextGen = 40,
-
-        SspecRev_NewLLP_Min         =    9,  //  rev  0.9
-        SspecRev_TOUPeak_Min        =   13,  //  rev  1.3
-        SspecRev_NewOutage_Min      =    8,  //  rev  0.8
-        SspecRev_Disconnect_Cycle   =   12,  //  rev  1.2
-        SspecRev_Disconnect_ConfigReadEnhanced = 20,  //  rev 2.0
-        SspecRev_DailyRead          =   21,  //  rev  2.1
-        SspecRev_HourlyKwh          =   33,
-
-        SspecRev_BetaLo =    9,  //  rev  0.9
-        SspecRev_BetaHi =  200,  //  rev 20.0
-    };
-
     virtual bool sspecValid(const unsigned sspec, const unsigned rev) const;
-
-    void readSspec(const OUTMESS &OutMessage, std::list<OUTMESS *> &outList) const;
-
-    virtual unsigned getUsageReportDelay(const unsigned interval_length, const unsigned days) const;
-
-protected:
 
     //  protected so the MCT-420 can access them
     static ValueMapping initMemoryMap();
@@ -390,15 +390,15 @@ protected:
     INT decodeGetValueFreezeCounter( INMESS *InMessage, CtiTime &TimeNow, CtiMessageList &vgList, CtiMessageList &retList, OutMessageList &outList );
     INT decodeGetValueLoadProfilePeakReport( INMESS *InMessage, CtiTime &TimeNow, CtiMessageList &vgList, CtiMessageList &retList, OutMessageList &outList );
     INT decodeGetValueDailyRead    ( INMESS *InMessage, CtiTime &TimeNow, CtiMessageList &vgList, CtiMessageList &retList, OutMessageList &outList );
-    INT decodeGetStatusInternal    ( INMESS *InMessage, CtiTime &TimeNow, CtiMessageList &vgList, CtiMessageList &retList, OutMessageList &outList );
+    virtual INT decodeGetStatusInternal    ( INMESS *InMessage, CtiTime &TimeNow, CtiMessageList &vgList, CtiMessageList &retList, OutMessageList &outList );
     INT decodeGetStatusLoadProfile ( INMESS *InMessage, CtiTime &TimeNow, CtiMessageList &vgList, CtiMessageList &retList, OutMessageList &outList );
-    INT decodeGetStatusFreeze      ( INMESS *InMessage, CtiTime &TimeNow, CtiMessageList &vgList, CtiMessageList &retList, OutMessageList &outList );
+    virtual INT decodeGetStatusFreeze      ( INMESS *InMessage, CtiTime &TimeNow, CtiMessageList &vgList, CtiMessageList &retList, OutMessageList &outList );
     virtual int decodeGetConfigMeterParameters( INMESS *InMessage, CtiTime &TimeNow, CtiMessageList &vgList, CtiMessageList &retList, OutMessageList &outList );
-    INT decodeGetConfigIntervals   ( INMESS *InMessage, CtiTime &TimeNow, CtiMessageList &vgList, CtiMessageList &retList, OutMessageList &outList );
+    virtual INT decodeGetConfigIntervals   ( INMESS *InMessage, CtiTime &TimeNow, CtiMessageList &vgList, CtiMessageList &retList, OutMessageList &outList );
     INT decodeGetConfigThresholds  ( INMESS *InMessage, CtiTime &TimeNow, CtiMessageList &vgList, CtiMessageList &retList, OutMessageList &outList );
     virtual INT decodeGetConfigModel       ( INMESS *InMessage, CtiTime &TimeNow, CtiMessageList &vgList, CtiMessageList &retList, OutMessageList &outList );
     INT decodeGetConfigFreeze      ( INMESS *InMessage, CtiTime &TimeNow, CtiMessageList &vgList, CtiMessageList &retList, OutMessageList &outList );
-    INT decodeGetConfigDisconnect  ( INMESS *InMessage, CtiTime &TimeNow, CtiMessageList &vgList, CtiMessageList &retList, OutMessageList &outList );
+    virtual INT decodeGetConfigDisconnect  ( INMESS *InMessage, CtiTime &TimeNow, CtiMessageList &vgList, CtiMessageList &retList, OutMessageList &outList );
     INT decodeGetConfigAddress     ( INMESS *InMessage, CtiTime &TimeNow, CtiMessageList &vgList, CtiMessageList &retList, OutMessageList &outList );
     INT decodeGetConfigPhaseDetect ( INMESS *InMessage, CtiTime &TimeNow, CtiMessageList &vgList, CtiMessageList &retList, OutMessageList &outList);
     INT decodeGetConfigDailyReadInterest( INMESS *InMessage, CtiTime &TimeNow, CtiMessageList &vgList, CtiMessageList &retList, OutMessageList &outList);
