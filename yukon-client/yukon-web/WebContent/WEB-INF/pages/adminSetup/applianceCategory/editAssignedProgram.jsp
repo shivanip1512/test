@@ -67,7 +67,7 @@ jQuery(function(){
     });
 });
 
-var showProgramEditor = function() {
+showProgramEditor = function() {
     jQuery("#acDialog").show();
 };
 
