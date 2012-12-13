@@ -915,7 +915,7 @@ INT CtiProtocolExpresscom::temporaryService(USHORT hoursout, bool cancel, bool d
     _message.push_back( mtTemporaryService );
     _message.push_back( flags );
 
-    if(flags & 0x80)    // This is an OOS.  include the time fields
+    if(cancel)    // This is an OOS.  include the time fields
     {
         _message.push_back( HIBYTE(hoursout) );
         _message.push_back( LOBYTE(hoursout) );
@@ -1397,13 +1397,27 @@ INT CtiProtocolExpresscom::assemblePutConfig(CtiCommandParser &parse)
         {
             status = service((BYTE)parse.getiValue("xcpservice"));
         }
-        else if(parse.isKeyValid("xctservicecancel"))
+    }
+
+    if(parse.isKeyValid("xctservicecancel"))
+    {
+        bool isOutOfServiceRequest = (bool)parse.getiValue("xctservicecancel");
+
+        // Only allow serial and allow SPID for temp service in only!
+        if(!_addressLevel || (_addressLevel & ~atSpid) || ((_addressLevel == atSpid) && !isOutOfServiceRequest))
         {
             // This is special syntax to cause any controlled load to restore before going o.o.s.
             priority(0);                    // Need to make certain the restore is high priority.
-            restoreLoadControl(0, 2, 0);    // 0,2,0 == all relays, 0-2 minutes randomization, 0 delay minutes.
+
+            
+            if(isOutOfServiceRequest)
+            {
+                // Restore only happens on service out, not on service in.
+                restoreLoadControl(0, 2, 0);    // 0,2,0 == all relays, 0-2 minutes randomization, 0 delay minutes.
+            }
+
             status = temporaryService( (USHORT)parse.getiValue("xctservicetime"),
-                                       (bool)parse.getiValue("xctservicecancel"),
+                                       isOutOfServiceRequest,
                                        (bool)parse.getiValue("xctservicebitp"),
                                        (bool)parse.getiValue("xctservicebitl") );
         }

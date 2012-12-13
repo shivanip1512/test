@@ -175,19 +175,21 @@ INT CtiDeviceSystem::ExecuteRequest(CtiRequestMsg *pReq, CtiCommandParser &parse
                 case ProtocolExpresscomType:
                     {
                         int xcserial = parse.getiValue("serial");
+                        int xcspid   = parse.getiValue("xc_spid");
                         bool isGenericAddressing = parse.isKeyValid("xcgenericaddress");
 
-                        parse.setValue("xc_serial", xcserial);
+                        if(xcspid == INT_MIN)
+                        {
+                            // This seems wrong for the genericaddressing case but this is how it worked before so I am keeping this behavior.
+                            parse.setValue("xc_serial", xcserial);
+                        }
 
 
-                        if( INT_MIN == xcserial && !isGenericAddressing)
+                        if( xcserial == INT_MIN && !isGenericAddressing && xcspid == INT_MIN)
                         {
                             string   problem;
 
-                            if( INT_MIN == xcserial )
-                            {
-                                problem = string("Invalid Request: Serial number not specified");
-                            }
+                            problem = string("Invalid Request: Serial number or SPID not specified");
 
                             status = ErrorInvalidRequest;
 
