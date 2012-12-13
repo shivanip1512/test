@@ -5,6 +5,10 @@ import java.sql.SQLException;
 
 import org.springframework.jdbc.core.simple.ParameterizedRowMapper;
 
+/**
+ * @deprecated Use {@link RowMapper#INTEGER} or {@link RowMapper#INTEGER_NULLABLE}
+ */
+@Deprecated
 public final class IntegerRowMapper implements ParameterizedRowMapper<Integer> {
 
     private final boolean nullable;

@@ -5,6 +5,10 @@ import java.sql.SQLException;
 
 import org.springframework.jdbc.core.simple.ParameterizedRowMapper;
 
+/**
+ * @deprecated Use {@link RowMapper#STRING}
+ */
+@Deprecated
 public class StringRowMapper implements ParameterizedRowMapper<String> {
 
     @Override

@@ -5,6 +5,10 @@ import java.sql.SQLException;
 
 import org.springframework.jdbc.core.simple.ParameterizedRowMapper;
 
+/**
+ * @deprecated Use {@link RowMapper#LONG} or {@link RowMapper#LONG_NULLABLE}
+ */
+@Deprecated
 public final class LongRowMapper implements ParameterizedRowMapper<Long> {
 
     private final boolean nullable;

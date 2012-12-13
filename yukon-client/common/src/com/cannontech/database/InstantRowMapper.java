@@ -5,6 +5,10 @@ import java.sql.Timestamp;
 
 import org.joda.time.Instant;
 
+/**
+ * @deprecated Use {@link RowMapper#INSTANT}
+ */
+@Deprecated
 public final class InstantRowMapper implements YukonRowMapper<Instant> {
 
     @Override
