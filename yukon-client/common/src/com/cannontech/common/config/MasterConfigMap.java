@@ -120,17 +120,7 @@ public class MasterConfigMap implements ConfigurationSource {
         if (!configMap.containsKey(key)) {
             throw new UnknownKeyException(key);
         }
-        String string = configMap.get(key);
-        if (MasterConfigCryptoUtils.isSensitiveData(key) && 
-                MasterConfigCryptoUtils.isEncrypted(string)) {
-            // Found an encrypted value
-            string = MasterConfigCryptoUtils.decryptValue(string);
-            LogHelper.debug(log, "Returning [encrypted value] for '%s'", key); // Do not log string here for security
-        } else {
-            LogHelper.debug(log, "Returning '%s' for '%s'", string, key);
-        }
-
-        return string;
+        return getValueFromMap(key);
     }
 
     @Override
@@ -143,17 +133,7 @@ public class MasterConfigMap implements ConfigurationSource {
         if (!configMap.containsKey(key)) {
             return defaultValue;
         }
-        String string = configMap.get(key);
-        if (MasterConfigCryptoUtils.isSensitiveData(key) && 
-                MasterConfigCryptoUtils.isEncrypted(string)) {
-            // Found an encrypted value
-            string = MasterConfigCryptoUtils.decryptValue(string);
-            LogHelper.debug(log, "Returning [encrypted value] for '%s'", key); // Do not log string here for security
-        } else {
-            LogHelper.debug(log, "Returning '%s' for '%s'", string, key);
-        }
-        
-        return string;
+        return getValueFromMap(key);
     }
 
     @Override
@@ -248,4 +228,26 @@ public class MasterConfigMap implements ConfigurationSource {
         return getPeriod(key, defaultValue.toPeriod(), duationFieldType).toStandardDuration();
     }
 
+    /**
+     * Returns the value from the configuration map.
+     * 
+     * If the value isn't found will return null. If the value is encrypted will attempt to 
+     * decrypt it and return the plaintext value.
+     * 
+     * @param key
+     * @return value if found. Null if not found
+     */
+    private String getValueFromMap(String key) {
+        String value = configMap.get(key);
+        if (MasterConfigCryptoUtils.isSensitiveData(key) && 
+                MasterConfigCryptoUtils.isEncrypted(value)) {
+            // Found an encrypted value
+            value = MasterConfigCryptoUtils.decryptValue(value);
+            LogHelper.debug(log, "Returning [encrypted value] for '%s'", key); // Do not log string here for security
+        } else {
+            LogHelper.debug(log, "Returning '%s' for '%s'", value, key);
+        }
+
+        return value;
+    }
 }

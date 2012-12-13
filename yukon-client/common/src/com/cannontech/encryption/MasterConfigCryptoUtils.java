@@ -128,15 +128,19 @@ public class MasterConfigCryptoUtils {
      *  Checks a value to determine if it is encrypted
      *  
      *  Checks for "(AUTO_ENCRYPTED)" to be the start of the value
-     *  and returns true if this is found
+     *  and returns true if this is found. This method is null safe and will
+     *  return false if value is null
+     *  
+     *  @return true if value is encrypted, false if not encrypted or null
      */
     public static boolean isEncrypted(String value) {
-        value = StringUtils.deleteWhitespace(value);
-        if (value.length() > encryptionIndicator.length() 
-                && value.substring(0, encryptionIndicator.length()).equals(encryptionIndicator)) {
-            return true;
-        } else {
+        value = StringUtils.deleteWhitespace(value); // null safe
+        if (StringUtils.isEmpty(value) // check for "" or Null
+                || value.length() <= encryptionIndicator.length() // Ensure the next line doesn't throw indexOutOfBounds
+                || !value.substring(0, encryptionIndicator.length()).equals(encryptionIndicator)) {
             return false;
+        } else {
+            return true;
         }
     }
 }
