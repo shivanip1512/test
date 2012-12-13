@@ -12,6 +12,8 @@ import com.cannontech.database.data.lite.LiteYukonUser;
 import com.cannontech.stars.core.service.AccountCheckerService;
 import com.cannontech.stars.dr.controlHistory.model.ControlPeriod;
 import com.cannontech.stars.dr.displayable.dao.DisplayableProgramDao;
+import com.cannontech.stars.dr.displayable.model.DisplayableControlHistory;
+import com.cannontech.stars.dr.displayable.model.DisplayableGroupedControlHistory;
 import com.cannontech.stars.dr.displayable.model.DisplayableProgram;
 import com.cannontech.stars.dr.enrollment.dao.EnrollmentDao;
 import com.cannontech.stars.dr.program.dao.ProgramDao;
@@ -26,10 +28,10 @@ import com.cannontech.web.stars.dr.operator.service.AccountInfoFragmentHelper;
 public class OperatorProgramControlHistoryController {
 	
     private static final String viewName = "operator/program/controlHistory/controlHistory.jsp";
-    private AccountCheckerService accountCheckerService;
-    private DisplayableProgramDao displayableProgramDao;
-    private ProgramDao programDao;
-    private EnrollmentDao enrollmentDao;
+    @Autowired private AccountCheckerService accountCheckerService;
+    @Autowired private DisplayableProgramDao displayableProgramDao;
+    @Autowired private ProgramDao programDao;
+    @Autowired private EnrollmentDao enrollmentDao;
     
     @RequestMapping(value = "/operator/program/controlHistory")
     public String controlHistory(ModelMap modelMap, YukonUserContext userContext, AccountInfoFragment accountInfoFragment) {
@@ -92,30 +94,13 @@ public class OperatorProgramControlHistoryController {
         ControlPeriod controlPeriodEnum = ControlPeriod.valueOf(controlPeriod);
         
         DisplayableProgram displayableProgram = displayableProgramDao.getDisplayableProgram(accountInfoFragment.getAccountId(), yukonUserContext, program, controlPeriodEnum, past);
-        modelMap.addAttribute("displayableControlHistoryMap", displayableProgram.getDisplayableControlHistoryList());
+        
+        List<DisplayableControlHistory> controlHistoryList = displayableProgram.getDisplayableControlHistoryList();
+        List<DisplayableGroupedControlHistory> displayableGroupedControlHistory = displayableProgramDao.getDisplayableGroupedControlHistory(controlHistoryList);
+        
+        modelMap.addAttribute("groupedControlHistory", displayableGroupedControlHistory);
         
         AccountInfoFragmentHelper.setupModelMapBasics(accountInfoFragment, modelMap);
         return "operator/program/controlHistory/innerCompleteControlHistory.jsp";
     }
-    
-    @Autowired
-    public void setAccountCheckerService(AccountCheckerService accountCheckerService) {
-        this.accountCheckerService = accountCheckerService;
-    }
-
-    @Autowired
-    public void setDisplayableProgramDao(DisplayableProgramDao displayableProgramDao) {
-        this.displayableProgramDao = displayableProgramDao;
-    }
-
-    @Autowired
-    public void setProgramDao(ProgramDao programDao) {
-        this.programDao = programDao;
-    }
-    
-    @Autowired
-    public void setEnrollmentDao(EnrollmentDao enrollmentDao) {
-        this.enrollmentDao = enrollmentDao;
-    }
-
 }

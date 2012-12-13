@@ -18,8 +18,9 @@ import com.cannontech.stars.dr.appliance.model.Appliance;
 import com.cannontech.stars.dr.controlHistory.model.ControlHistory;
 import com.cannontech.stars.dr.controlHistory.model.ControlPeriod;
 import com.cannontech.stars.dr.controlHistory.service.ControlHistoryService;
+import com.cannontech.stars.dr.displayable.model.DisplayableControlHistory;
+import com.cannontech.stars.dr.displayable.model.DisplayableGroupedControlHistory;
 import com.cannontech.stars.dr.displayable.model.DisplayableProgram;
-import com.cannontech.stars.dr.optout.service.OptOutStatusService;
 import com.cannontech.stars.dr.program.model.Program;
 import com.cannontech.user.YukonUserContext;
 import com.cannontech.web.security.annotation.CheckRoleProperty;
@@ -92,6 +93,9 @@ public class ControlHistoryController extends AbstractConsumerController {
             ModelMap map) {
         
         LiteYukonUser user = yukonUserContext.getYukonUser();
+        boolean showGroupedHistory = 
+                rolePropertyDao.getPropertyBooleanValue(YukonRoleProperty.RESIDENTIAL_CONSUMER_INFO_GROUPED_CONTROL_HISTORY_DISPLAY,
+                                                        yukonUserContext.getYukonUser());
         accountCheckerService.checkProgram(user, programId);
         Program program = programDao.getByProgramId(programId);
         
@@ -99,9 +103,11 @@ public class ControlHistoryController extends AbstractConsumerController {
         
         DisplayableProgram displayableProgram = 
             displayableProgramDao.getDisplayableProgram(customerAccount.getAccountId(), yukonUserContext, program, controlPeriodEnum, false);
-        map.addAttribute("displayableControlHistoryMap", displayableProgram.getDisplayableControlHistoryList());
+        List<DisplayableControlHistory> controlHistoryList = displayableProgram.getDisplayableControlHistoryList();
+        List<DisplayableGroupedControlHistory> displayableGroupedControlHistory = displayableProgramDao.getDisplayableGroupedControlHistory(controlHistoryList);
         
-        map.addAttribute("consumer", true);
+        map.addAttribute("groupedControlHistory", displayableGroupedControlHistory);
+        map.addAttribute("showGroupedHistory", showGroupedHistory);
         
         return viewNamePrefix + "innerCompleteControlHistory.jsp";
     }

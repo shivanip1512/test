@@ -37,15 +37,22 @@ jQuery(function() {
 });
 
 function updateControlEvents(controlPeriod) {
-    new Ajax.Updater('controlEventsDiv', '${innerViewUrl}', {
-        'method': 'POST', //IE caches GET requests
-        'parameters': { 
+    jQuery.ajax({
+        url: '${innerViewUrl}',
+        method: 'POST',
+        data: { 
             'programId': '${program.programId}',
             'past': '${past}',
             'accountId': '${accountId}',
             'controlPeriod': controlPeriod
+        },
+        success: function(data){
+            jQuery('#controlEventsDiv').html(data);
+        },
+        error: function(){
+            //do nothing, log maybe?
         }
-    });    
+    });
 }
 </script>  
         

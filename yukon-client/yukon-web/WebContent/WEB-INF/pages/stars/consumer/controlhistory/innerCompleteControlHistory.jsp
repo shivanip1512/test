@@ -2,5 +2,5 @@
 <%@ taglib tagdir="/WEB-INF/tags/dr" prefix="dr"%>
 
 <cti:msgScope paths="yukon.dr.consumer.innercompletecontrolhistory">
-	<dr:controlHistory displayableControlHistoryMap="${displayableControlHistoryMap}" consumer="${consumer}"/>
+	<dr:controlHistory groupedControlHistory="${groupedControlHistory}" consumer="true" showGroupedHistory="${showGroupedHistory}"/>
 </cti:msgScope>

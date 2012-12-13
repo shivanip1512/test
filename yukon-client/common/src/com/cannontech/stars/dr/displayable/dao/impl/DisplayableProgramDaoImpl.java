@@ -3,17 +3,22 @@ package com.cannontech.stars.dr.displayable.dao.impl;
 import java.util.Collections;
 import java.util.Comparator;
 import java.util.List;
+import java.util.SortedSet;
 
 import org.joda.time.Duration;
 
+import com.cannontech.common.util.MutableDuration;
 import com.cannontech.stars.dr.appliance.model.Appliance;
 import com.cannontech.stars.dr.controlHistory.model.ControlHistory;
+import com.cannontech.stars.dr.controlHistory.model.ControlHistoryEvent;
 import com.cannontech.stars.dr.controlHistory.model.ControlHistoryStatus;
 import com.cannontech.stars.dr.controlHistory.model.ControlPeriod;
 import com.cannontech.stars.dr.displayable.dao.AbstractDisplayableDao;
 import com.cannontech.stars.dr.displayable.dao.DisplayableProgramDao;
 import com.cannontech.stars.dr.displayable.model.DisplayableControlHistory;
 import com.cannontech.stars.dr.displayable.model.DisplayableControlHistory.DisplayableControlHistoryType;
+import com.cannontech.stars.dr.displayable.model.DisplayableGroupedControlHistory;
+import com.cannontech.stars.dr.displayable.model.DisplayableGroupedControlHistoryEvent;
 import com.cannontech.stars.dr.displayable.model.DisplayableProgram;
 import com.cannontech.stars.dr.program.model.Program;
 import com.cannontech.user.YukonUserContext;
@@ -21,6 +26,7 @@ import com.google.common.base.Function;
 import com.google.common.collect.ListMultimap;
 import com.google.common.collect.Lists;
 import com.google.common.collect.Ordering;
+import com.google.common.collect.Sets;
 
 public class DisplayableProgramDaoImpl extends AbstractDisplayableDao implements DisplayableProgramDao {
     
@@ -75,8 +81,8 @@ public class DisplayableProgramDaoImpl extends AbstractDisplayableDao implements
             }
             
             DisplayableControlHistory displayableControlHistory = 
-                new DisplayableControlHistory(displayableType, controlHistory);
-            displayableControlHistoryList.add(displayableControlHistory);
+                    new DisplayableControlHistory(displayableType, controlHistory);
+                displayableControlHistoryList.add(displayableControlHistory);
         }
         
         Collections.sort(displayableControlHistoryList, DEVICE_LABEL_COMPARATOR);
@@ -180,5 +186,73 @@ public class DisplayableProgramDaoImpl extends AbstractDisplayableDao implements
         
         return results;
     }
+    
+    @Override
+    public List<DisplayableGroupedControlHistory> getDisplayableGroupedControlHistory(List<DisplayableControlHistory> displayableControlHistories) {
+        List<DisplayableGroupedControlHistory> groupedHistory = Lists.newArrayList();
+        for (DisplayableControlHistory displayableControlHistory : displayableControlHistories) {
+            groupedHistory.add(getDisplayableGroupedControlHistory(displayableControlHistory.getControlHistory()));
+        }
+        return groupedHistory;
+    }
 
+    /**
+     * This method goes through the list of control history events and groups the contiguous events. From each contiguous event 
+     * group the DisplayableGroupedControlHistoryEvent is created.
+     */
+    
+    private DisplayableGroupedControlHistory getDisplayableGroupedControlHistory(ControlHistory controlHistory) {
+        DisplayableGroupedControlHistory history = new DisplayableGroupedControlHistory();
+        history.setDisplayName(controlHistory.getDisplayName());
+        SortedSet<DisplayableGroupedControlHistoryEvent> groupedHistory =
+            Sets.newTreeSet(DisplayableGroupedControlHistoryEvent.getStartDateComparator());
+        List<SortedSet<ControlHistoryEvent>> contiguousEvents = Lists.newArrayList();
+        SortedSet<ControlHistoryEvent> contiguousEvent =
+            Sets.newTreeSet(ControlHistoryEvent.getStartDateComparator());
+
+        // group all contiguousEvent events
+        for (ControlHistoryEvent event : controlHistory.getCurrentHistory()) {
+            // Contiguous Event is when an end date of the last event equals a start date of the
+            // next event
+            if (contiguousEvent.isEmpty()
+                || contiguousEvent.last().getEndDate().equals(event.getStartDate())) {
+                contiguousEvent.add(event);
+            } else {
+                contiguousEvents.add(contiguousEvent);
+                contiguousEvent = Sets.newTreeSet(ControlHistoryEvent.getStartDateComparator());
+                contiguousEvent.add(event);
+            }
+            if (controlHistory.getCurrentHistory().last().equals(event)) {
+                contiguousEvents.add(contiguousEvent);
+            }
+        }
+        //create DisplayableGroupedControlHistoryEvent from each contiguous event group
+        for (SortedSet<ControlHistoryEvent> event : contiguousEvents) {
+            DisplayableGroupedControlHistoryEvent displayableEvent =
+                getDisplayableGroupedControlHistoryEvent(event);
+            groupedHistory.add(displayableEvent);
+        }
+
+        history.setGroupedHistory(groupedHistory);
+        return history;
+    }
+
+    /**
+     * This method creates DisplayableGroupedControlHistoryEvent from the list of contiguous control history events
+     */
+    private DisplayableGroupedControlHistoryEvent getDisplayableGroupedControlHistoryEvent(SortedSet<ControlHistoryEvent> contiguousEvent) {
+        DisplayableGroupedControlHistoryEvent groupedEvent =
+            new DisplayableGroupedControlHistoryEvent();
+        MutableDuration duration = new MutableDuration(0);
+        //add duration for contiguous events
+        for (ControlHistoryEvent event : contiguousEvent) {
+            duration.plus(event.getDuration()); 
+        }
+        groupedEvent.setControlHistory(contiguousEvent);
+        groupedEvent.setStartDate(contiguousEvent.first().getStartDate());
+        groupedEvent.setEndDate(contiguousEvent.last().getEndDate());
+        groupedEvent.setControlling(contiguousEvent.last().isControlling());
+        groupedEvent.setDuration(duration.toDuration());
+        return groupedEvent;
+    }
 }
