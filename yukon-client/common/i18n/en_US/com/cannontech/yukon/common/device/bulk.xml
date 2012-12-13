@@ -115,6 +115,8 @@
     <entry key="yukon.common.device.bulk.collectionActions.dataAnalysisDiscription">View a report detailing archived reads.</entry>
     <entry key="yukon.common.device.bulk.collectionActions.assignConfigLabel">Assign Config</entry>
     <entry key="yukon.common.device.bulk.collectionActions.assignConfigDescription">Assign a config to a collection of devices.</entry>
+    <entry key="yukon.common.device.bulk.collectionActions.unassignConfigLabel">Unassign Config</entry>
+    <entry key="yukon.common.device.bulk.collectionActions.unassignConfigDescription">Unassign a config from a collection of devices.</entry>
     <entry key="yukon.common.device.bulk.collectionActions.sendConfigLabel">Send Config</entry>
     <entry key="yukon.common.device.bulk.collectionActions.sendConfigDescription">Send device configurations to a collection of devices.</entry>
     <entry key="yukon.common.device.bulk.collectionActions.readConfigLabel">Read Config</entry>
@@ -254,6 +256,37 @@
     <entry key="yukon.common.device.bulk.assignConfigResults.processingExceptionErrorListLabel">View Failure Reasons</entry>
     
     <entry key="yukon.common.device.bulk.assignConfigResults.noProcessingExceptionErrorListLabel">No processing errors.</entry>
+    
+    <!-- UNASSIGN CONFIG -->
+    <!-- ******************************************************************************************************************** -->
+    <!-- ******************************************************************************************************************** -->
+    
+    <!-- unassignConfig.jsp -->
+    <entry key="yukon.common.device.bulk.unassignConfig.pageTitle">Unassign Configuration</entry>
+    <entry key="yukon.common.device.bulk.unassignConfig.header">Unassign Configuration:</entry>
+    <entry key="yukon.common.device.bulk.unassignConfig.noteLabel">Note:</entry>
+    <entry key="yukon.common.device.bulk.unassignConfig.noteText">The devices in the selected device group will have their device configurations unassigned.</entry>
+    <entry key="yukon.common.device.bulk.unassignConfig.unassign">Unassign</entry>
+    
+    <!-- unassignConfigResults.jsp -->
+    <entry key="yukon.common.device.bulk.unassignConfigResults.pageTitle">Unassign Config Results</entry>
+    <entry key="yukon.common.device.bulk.unassignConfigResults.header">Results of Unassign Config Operation</entry>
+    
+    <entry key="yukon.common.device.bulk.unassignConfigResults.noteLabel">Note: </entry>
+    <entry key="yukon.common.device.bulk.unassignConfigResults.noteText"><![CDATA[
+        Progress is updated periodically. Processing will continue if you wish to navigate away from this page at any time.<br>You can return to this results page by following a link within the "Recent Bulk Operations" section of the main Bulk Operations page.
+    ]]></entry>
+    <entry key="yukon.common.device.bulk.unassignConfigResults.progressLabel">Progress</entry>
+    <entry key="yukon.common.device.bulk.unassignConfigResults.inProgress">In Progress...</entry>
+    <entry key="yukon.common.device.bulk.unassignConfigResults.complete">Complete.</entry>
+    
+    <entry key="yukon.common.device.bulk.unassignConfigResults.successLabel">Successfully Unassigned Config from Devices</entry>
+    <entry key="yukon.common.device.bulk.unassignConfigResults.processingExceptionLabel">Failed To Unassign Config</entry>
+    
+    <entry key="yukon.common.device.bulk.unassignConfigResults.collectionActionOnDevicesLabel">Choose New Operation For These Devices</entry>
+    <entry key="yukon.common.device.bulk.unassignConfigResults.processingExceptionErrorListLabel">View Failure Reasons</entry>
+    
+    <entry key="yukon.common.device.bulk.unassignConfigResults.noProcessingExceptionErrorListLabel">No processing errors.</entry>
     
     <!-- SEND CONFIG -->
     <!-- ******************************************************************************************************************** -->

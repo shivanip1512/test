@@ -169,8 +169,6 @@
         <property name="deviceCollectionFactory" ref="deviceCollectionFactory" />
         <property name="bulkProcessor" ref="oneAtATimeProcessor" />
         <property name="recentResultsCache" ref="recentResultsCache" />
-        <property name="deviceConfigService" ref="deviceConfigService" />
-        <property name="alertService" ref="alertService"/>
     </bean>
     
 </beans>

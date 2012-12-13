@@ -59,6 +59,8 @@
         <cti:msg var="deviceCollectionReportDescription" key="yukon.common.device.bulk.collectionActions.deviceCollectionReportDescription"/>
         <cti:msg var="assignConfigLabel" key="yukon.common.device.bulk.collectionActions.assignConfigLabel"/>
         <cti:msg var="assignConfigDescription" key="yukon.common.device.bulk.collectionActions.assignConfigDescription"/>
+        <cti:msg var="unassignConfigLabel" key="yukon.common.device.bulk.collectionActions.unassignConfigLabel"/>
+        <cti:msg var="unassignConfigDescription" key="yukon.common.device.bulk.collectionActions.unassignConfigDescription"/>
         <cti:msg var="sendConfigLabel" key="yukon.common.device.bulk.collectionActions.sendConfigLabel"/>
         <cti:msg var="sendConfigDescription" key="yukon.common.device.bulk.collectionActions.sendConfigDescription"/>
         <cti:msg var="readConfigLabel" key="yukon.common.device.bulk.collectionActions.readConfigLabel"/>
@@ -146,6 +148,12 @@
                             <cti:checkRolesAndProperties value="ASSIGN_CONFIG">
                                 <tags:collectionActionTr buttonValue="${assignConfigLabel}" description="${assignConfigDescription}"
                                     action="/bulk/config/assignConfig" deviceCollection="${deviceCollection}"/>
+                            </cti:checkRolesAndProperties>
+                            
+                            <%-- UNASSIGN CONFIG --%>
+                            <cti:checkRolesAndProperties value="ASSIGN_CONFIG">
+                                <tags:collectionActionTr buttonValue="${unassignConfigLabel}" description="${unassignConfigDescription}"
+                                    action="/bulk/config/unassignConfig" deviceCollection="${deviceCollection}" />
                             </cti:checkRolesAndProperties>
                             
                             <%-- SEND CONFIG --%>

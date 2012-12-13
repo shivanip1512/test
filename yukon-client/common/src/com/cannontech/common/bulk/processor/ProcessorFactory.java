@@ -16,7 +16,10 @@ public interface ProcessorFactory {
      */
     public Processor<SimpleDevice> createAssignConfigurationToYukonDeviceProcessor(
             final ConfigurationBase configuration);
-
-
-
+    
+    /**
+     * Method to get a processor that will unassign a configuration from a device
+     * @return The processor
+     */
+    public Processor<SimpleDevice> createUnassignConfigurationToYukonDeviceProcessor();
 }

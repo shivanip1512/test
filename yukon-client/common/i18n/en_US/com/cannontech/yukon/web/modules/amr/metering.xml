@@ -102,6 +102,8 @@
     <!-- configWidget/render.jsp -->
     <entry key="yukon.web.widgets.configWidget.currentConfigurations">Current Configuration</entry>
     <entry key="yukon.web.widgets.configWidget.deviceConfigurations">Device Configurations</entry>
+    <entry key="yukon.web.widgets.configWidget.unassign.label">Unassign</entry>
+    <entry key="yukon.web.widgets.configWidget.unassign.labelBusy">Unassigning</entry>
     <entry key="yukon.web.widgets.configWidget.assign.label">Assign</entry>
     <entry key="yukon.web.widgets.configWidget.assign.labelBusy">Assigning</entry>
     <entry key="yukon.web.widgets.configWidget.send.label">Send</entry>

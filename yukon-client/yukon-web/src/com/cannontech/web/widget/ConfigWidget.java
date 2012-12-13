@@ -68,7 +68,7 @@ public class ConfigWidget extends WidgetControllerBase {
         mav.addObject("existingConfigs", existingConfigs);
         
         ConfigurationBase config = deviceConfigurationDao.findConfigurationForDevice(meter);
-        mav.addObject("currentConfigId", config != null ? config.getId() : -1);
+        mav.addObject("currentConfigId", config != null ? config.getId() : -1000);
         mav.addObject("currentConfigName", config != null ? config.getName() : CtiUtilities.STRING_NONE);
         return mav;
     }
@@ -95,6 +95,16 @@ public class ConfigWidget extends WidgetControllerBase {
         } else {
             deviceConfigurationDao.unassignConfig(meter);
         }
+        
+        ModelAndView mav = getConfigModelAndView(request);
+        return mav;
+    }
+    
+    @RequestMapping
+    public ModelAndView unassignConfig(HttpServletRequest request, HttpServletResponse response) throws Exception {
+        Meter meter = getMeter(request);
+        
+        deviceConfigurationDao.unassignConfig(meter);
         
         ModelAndView mav = getConfigModelAndView(request);
         return mav;

@@ -12,27 +12,33 @@ public class ProcessorFactoryImpl implements ProcessorFactory {
 
     private DeviceConfigurationDao deviceConfigurationDao = null;
 
-    public void setDeviceConfigurationDao(
-            DeviceConfigurationDao deviceConfigurationDao) {
+    public void setDeviceConfigurationDao(DeviceConfigurationDao deviceConfigurationDao) {
         this.deviceConfigurationDao = deviceConfigurationDao;
     }
 
+    @Override
     public Processor<SimpleDevice> createAssignConfigurationToYukonDeviceProcessor(final ConfigurationBase configuration) {
-
         return new SingleProcessor<SimpleDevice>() {
-
             public void process(SimpleDevice device) throws ProcessingException {
                 try {
-                    if(configuration == null) {
-                        deviceConfigurationDao.unassignConfig(device);
-                    } else {
-                        deviceConfigurationDao.assignConfigToDevice(configuration, device);
-                    }
+                    deviceConfigurationDao.assignConfigToDevice(configuration, device);
                 } catch (InvalidDeviceTypeException e) {
                     throw new ProcessingException(e.getMessage());
                 }
             }
-
+        };
+    }
+    
+    @Override
+    public Processor<SimpleDevice> createUnassignConfigurationToYukonDeviceProcessor() {
+        return new SingleProcessor<SimpleDevice>() {
+            public void process(SimpleDevice device) throws ProcessingException {
+                try {
+                    deviceConfigurationDao.unassignConfig(device);
+                } catch (InvalidDeviceTypeException e) {
+                    throw new ProcessingException(e.getMessage());
+                }
+            }
         };
     }
 }

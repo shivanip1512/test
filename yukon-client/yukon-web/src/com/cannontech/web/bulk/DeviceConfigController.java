@@ -22,8 +22,8 @@ import org.springframework.web.servlet.ModelAndView;
 
 import com.cannontech.common.alert.service.AlertService;
 import com.cannontech.common.bulk.BulkProcessor;
-import com.cannontech.common.bulk.callbackResult.AssignConfigCallbackResult;
 import com.cannontech.common.bulk.callbackResult.BackgroundProcessResultHolder;
+import com.cannontech.common.bulk.callbackResult.ConfigurationCallbackResult;
 import com.cannontech.common.bulk.collection.device.DeviceCollection;
 import com.cannontech.common.bulk.collection.device.DeviceGroupCollectionHelper;
 import com.cannontech.common.bulk.mapper.PassThroughMapper;
@@ -54,23 +54,17 @@ import com.cannontech.web.security.annotation.CheckRoleProperty;
 public class DeviceConfigController extends BulkControllerBase {
 
     private BulkProcessor bulkProcessor;
-    private ProcessorFactory processorFactory;
-    private DeviceConfigurationDao deviceConfigurationDao;
-    private TemporaryDeviceGroupService temporaryDeviceGroupService;
-    private DeviceGroupMemberEditorDao deviceGroupMemberEditorDao;
-    private DeviceGroupCollectionHelper deviceGroupCollectionHelper;
     private RecentResultsCache<BackgroundProcessResultHolder> recentResultsCache;
-    private DeviceConfigService deviceConfigService;
-    private AlertService alertService;
-    private RolePropertyDao rolePropertyDao;
+
+    @Autowired private ProcessorFactory processorFactory;
+    @Autowired private DeviceConfigurationDao deviceConfigurationDao;
+    @Autowired private TemporaryDeviceGroupService temporaryDeviceGroupService;
+    @Autowired private DeviceGroupMemberEditorDao deviceGroupMemberEditorDao;
+    @Autowired private DeviceGroupCollectionHelper deviceGroupCollectionHelper;
+    @Autowired private DeviceConfigService deviceConfigService;
+    @Autowired private AlertService alertService;
+    @Autowired private RolePropertyDao rolePropertyDao;
     
-    /**
-     * CONFIRM CONFIG ASSIGN
-     * @param deviceCollection
-     * @param model
-     * @return
-     * @throws ServletException
-     */
     @RequestMapping
     public String assignConfig(DeviceCollection deviceCollection, ModelMap model, YukonUserContext userContext) throws ServletException {
         rolePropertyDao.verifyProperty(YukonRoleProperty.ASSIGN_CONFIG, userContext.getYukonUser());
@@ -86,30 +80,23 @@ public class DeviceConfigController extends BulkControllerBase {
         return "config/assignConfig.jsp";
     }
     
-    
-    /**
-     * DO ASSIGN CONFIG
-     * @param request
-     * @param response
-     * @return
-     * @throws ServletException
-     */
     @RequestMapping(method=RequestMethod.POST)
     public ModelAndView doAssignConfig(HttpServletRequest request, HttpServletResponse response, YukonUserContext userContext) throws ServletException {
         rolePropertyDao.verifyProperty(YukonRoleProperty.ASSIGN_CONFIG, userContext.getYukonUser());
         ModelAndView mav = null;
-        DeviceCollection deviceCollection = this.deviceCollectionFactory.createDeviceCollection(request);
+        DeviceCollection deviceCollection = deviceCollectionFactory.createDeviceCollection(request);
         // CALLBACK
         String resultsId = StringUtils.replace(UUID.randomUUID().toString(), "-", "");
         StoredDeviceGroup successGroup = temporaryDeviceGroupService.createTempGroup(null);
         StoredDeviceGroup processingExceptionGroup = temporaryDeviceGroupService.createTempGroup(null);
         
-        AssignConfigCallbackResult callbackResult = new AssignConfigCallbackResult(resultsId,
-                                                                                    deviceCollection, 
-                                                                                    successGroup, 
-                                                                                    processingExceptionGroup, 
-                                                                                    deviceGroupMemberEditorDao,
-                                                                                    deviceGroupCollectionHelper);
+        ConfigurationCallbackResult callbackResult = 
+                new ConfigurationCallbackResult(resultsId,
+                                                deviceCollection, 
+                                                successGroup, 
+                                                processingExceptionGroup, 
+                                                deviceGroupMemberEditorDao,
+                                                deviceGroupCollectionHelper);
         
         // CACHE
         recentResultsCache.addResult(resultsId, callbackResult);
@@ -129,22 +116,77 @@ public class DeviceConfigController extends BulkControllerBase {
         return mav;
     }
     
-    /**
-     * ASSIGN CONFIG RESULTS
-     * @param request
-     * @param model
-     * @return
-     * @throws ServletException
-     */
     @RequestMapping
     public String assignConfigResults(HttpServletRequest request, ModelMap model, YukonUserContext userContext) throws ServletException {
+        doConfigResultsCore(request, model, userContext);
+        return "config/assignConfigResults.jsp";
+    }
+    
+    @RequestMapping
+    public String unassignConfig(DeviceCollection deviceCollection, ModelMap model, YukonUserContext userContext) throws ServletException {
+        rolePropertyDao.verifyProperty(YukonRoleProperty.ASSIGN_CONFIG, userContext.getYukonUser());
+        
+        // pass along deviceCollection
+        model.addAttribute("deviceCollection", deviceCollection);
+        
+        long deviceCount = deviceCollection.getDeviceCount();
+        model.addAttribute("deviceCount", deviceCount);
+        
+        return "config/unassignConfig.jsp";
+    }
+    
+    @RequestMapping(method=RequestMethod.POST)
+    public ModelAndView doUnassignConfig(HttpServletRequest request, HttpServletResponse response, YukonUserContext userContext) throws ServletException {
+        rolePropertyDao.verifyProperty(YukonRoleProperty.ASSIGN_CONFIG, userContext.getYukonUser());
+        
+        ModelAndView mav = null;
+        
+        DeviceCollection deviceCollection = deviceCollectionFactory.createDeviceCollection(request);
+        
+        // CALLBACK
+        String resultsId = StringUtils.replace(UUID.randomUUID().toString(), "-", "");
+        StoredDeviceGroup successGroup = temporaryDeviceGroupService.createTempGroup(null);
+        StoredDeviceGroup processingExceptionGroup = temporaryDeviceGroupService.createTempGroup(null);
+        
+        ConfigurationCallbackResult callbackResult = 
+                new ConfigurationCallbackResult(resultsId,
+                                                deviceCollection, 
+                                                successGroup, 
+                                                processingExceptionGroup, 
+                                                deviceGroupMemberEditorDao,
+                                                deviceGroupCollectionHelper);
+        
+        // CACHE
+        recentResultsCache.addResult(resultsId, callbackResult);
+        
+        // PROCESS
+        Processor<SimpleDevice> processor = processorFactory.createUnassignConfigurationToYukonDeviceProcessor();
+        
+        ObjectMapper<SimpleDevice, SimpleDevice> mapper = new PassThroughMapper<SimpleDevice>();
+        bulkProcessor.backgroundBulkProcess(deviceCollection.iterator(), mapper, processor, callbackResult);
+        
+        mav = new ModelAndView("redirect:unassignConfigResults");
+        mav.addObject("resultsId", resultsId);
+        
+        return mav;
+    }
+    
+    @RequestMapping
+    public String unassignConfigResults(HttpServletRequest request, ModelMap model, YukonUserContext userContext) throws ServletException {
+        doConfigResultsCore(request, model, userContext);
+        return "config/unassignConfigResults.jsp";
+    }
+    
+    /**
+     * Helper method for the assignConfigResults and unassignConfigResults methods that 
+     * handles common statements.
+     */
+    private void doConfigResultsCore(HttpServletRequest request, ModelMap model, YukonUserContext userContext) throws ServletException {
         rolePropertyDao.verifyProperty(YukonRoleProperty.ASSIGN_CONFIG, userContext.getYukonUser());
         String resultsId = ServletRequestUtils.getRequiredStringParameter(request, "resultsId");
-        AssignConfigCallbackResult callbackResult = (AssignConfigCallbackResult)recentResultsCache.getResult(resultsId);
+        ConfigurationCallbackResult callbackResult = (ConfigurationCallbackResult)recentResultsCache.getResult(resultsId);
         model.addAttribute("deviceCollection", callbackResult.getDeviceCollection());
         model.addAttribute("callbackResult", callbackResult);
-
-        return "config/assignConfigResults.jsp";
     }
 
     /**
@@ -289,46 +331,6 @@ public class DeviceConfigController extends BulkControllerBase {
     @Required
     public void setBulkProcessor(BulkProcessor bulkProcessor) {
         this.bulkProcessor = bulkProcessor;
-    }
-    
-    @Autowired
-    public void setDeviceConfigurationDao(DeviceConfigurationDao deviceConfigurationDao) {
-        this.deviceConfigurationDao = deviceConfigurationDao;
-    }
-    
-    @Autowired
-    public void setProcessorFactory(ProcessorFactory processorFactory) {
-        this.processorFactory = processorFactory;
-    }
-    
-    @Autowired
-    public void setTemporaryDeviceGroupService(TemporaryDeviceGroupService temporaryDeviceGroupService) {
-        this.temporaryDeviceGroupService = temporaryDeviceGroupService;
-    }
-    
-    @Autowired
-    public void setDeviceGroupMemberEditorDao(DeviceGroupMemberEditorDao deviceGroupMemberEditorDao) {
-        this.deviceGroupMemberEditorDao = deviceGroupMemberEditorDao;
-    }
-    
-    @Autowired
-    public void setDeviceGroupCollectionHelper(DeviceGroupCollectionHelper deviceGroupCollectionHelper) {
-        this.deviceGroupCollectionHelper = deviceGroupCollectionHelper;
-    }
-    
-    @Autowired
-    public void setDeviceConfigService(DeviceConfigService deviceConfigService) {
-        this.deviceConfigService = deviceConfigService;
-    }
-    
-    @Autowired
-    public void setAlertService(AlertService alertService) {
-        this.alertService = alertService;
-    }
-    
-    @Autowired
-    public void setRolePropertyDao(RolePropertyDao rolePropertyDao) {
-        this.rolePropertyDao = rolePropertyDao;
     }
     
     @Resource(name="recentResultsCache")

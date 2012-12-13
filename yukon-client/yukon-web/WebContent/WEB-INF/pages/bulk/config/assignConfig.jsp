@@ -49,29 +49,26 @@
 	                </td>
 	                <td>
 	                    <select id="configuration" name="configuration">
-                            <!-- -1000 is used here to match the server code as a result of YUK-10944 -->
-                            <!-- -1 was used previously but had to be changed since the Default DNP   -->
-                            <!-- configuration has a configurationId of -1, which caused problems.    -->
-                            <option value="-1000">(none)</option>
 	                        <c:forEach var="config" items="${existingConfigs}">
 	                            <option value="${config.id}">${config.name}</option>
 	                        </c:forEach>
 	                    </select>
 	                </td>
+                    <td>
+                        <%-- ASSIGN BUTTON --%>
+                        <c:choose>
+                            <c:when test="${fn:length(existingConfigs) > 0}">
+                                <cti:msg var="assign" key="yukon.common.device.bulk.assignConfig.assign" />
+                                <input type="submit" name="assignButton" value="${assign}">
+                            </c:when>
+                            <c:otherwise>
+                                There are no existing configurations.<br><br>
+                                <a href="/bulk/bulkHome">Bulk Operations Home</a>
+                            </c:otherwise>
+                        </c:choose>
+                    </td>
 	            </tr>
             </table>
-            <%-- ASSIGN BUTTON --%>
-            <c:choose>
-                <c:when test="${fn:length(existingConfigs) > 0}">
-		            <cti:msg var="assign" key="yukon.common.device.bulk.assignConfig.assign" />
-		            <input type="submit" name="assignButton" value="${assign}">
-                </c:when>
-                <c:otherwise>
-                    There are no existing configurations.<br><br>
-                    <a href="/bulk/bulkHome">Bulk Operations Home</a>
-                </c:otherwise>
-            </c:choose>
-            
         </form>
             
     </tags:bulkActionContainer>

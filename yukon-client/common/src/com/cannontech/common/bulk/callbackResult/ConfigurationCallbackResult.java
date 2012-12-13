@@ -7,7 +7,10 @@ import com.cannontech.common.device.groups.editor.dao.DeviceGroupMemberEditorDao
 import com.cannontech.common.device.groups.editor.model.StoredDeviceGroup;
 import com.cannontech.common.device.model.SimpleDevice;
 
-public class AssignConfigCallbackResult extends BackgroundProcessBulkProcessorCallback<SimpleDevice> implements BackgroundProcessResultHolder {
+/**
+ * A callback result class used for both configuration assignments and configuration unassignments.
+ */
+public class ConfigurationCallbackResult extends BackgroundProcessBulkProcessorCallback<SimpleDevice> implements BackgroundProcessResultHolder {
 
     private DeviceCollection deviceCollection;
     private StoredDeviceGroup successGroup;
@@ -15,7 +18,7 @@ public class AssignConfigCallbackResult extends BackgroundProcessBulkProcessorCa
     private DeviceGroupMemberEditorDao deviceGroupMemberEditorDao;
     private DeviceGroupCollectionHelper deviceGroupCollectionHelper;
     
-    public AssignConfigCallbackResult(String resultsId, 
+    public ConfigurationCallbackResult(String resultsId, 
                                     DeviceCollection deviceCollection, 
                                     StoredDeviceGroup successGroup, 
                                     StoredDeviceGroup processingExceptionGroup, 
@@ -53,6 +56,7 @@ public class AssignConfigCallbackResult extends BackgroundProcessBulkProcessorCa
     public boolean isSuccessDevicesSupported() {
         return true;
     }
+    
     @Override
     public DeviceCollection getSuccessDeviceCollection() {
         return deviceGroupCollectionHelper.buildDeviceCollection(successGroup);
@@ -62,6 +66,7 @@ public class AssignConfigCallbackResult extends BackgroundProcessBulkProcessorCa
     public boolean isFailureDevicesSupported() {
         return true;
     }
+    
     @Override
     public DeviceCollection getFailureDeviceCollection() {
         return deviceGroupCollectionHelper.buildDeviceCollection(processingExceptionGroup);
