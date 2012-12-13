@@ -8,6 +8,7 @@ import org.springframework.ws.server.endpoint.annotation.Endpoint;
 import org.springframework.ws.server.endpoint.annotation.PayloadRoot;
 
 import com.cannontech.common.events.loggers.StarsEventLogService;
+import com.cannontech.common.events.model.EventSource;
 import com.cannontech.common.exception.NotAuthorizedException;
 import com.cannontech.common.util.xml.SimpleXPathTemplate;
 import com.cannontech.common.util.xml.XmlUtils;
@@ -23,10 +24,10 @@ import com.cannontech.yukon.api.util.XmlVersionUtils;
 @Endpoint
 public class CountOverridesTowardsLimitRequestEndpoint {
 
-	private OptOutService optOutService;
-	private StarsEventLogService starsEventLogService;
+    private OptOutService optOutService;
+    private StarsEventLogService starsEventLogService;
     private Namespace ns = YukonXml.getYukonNamespace();
-	private RolePropertyDao rolePropertyDao;
+    private RolePropertyDao rolePropertyDao;
 
     @PayloadRoot(namespace="http://yukon.cannontech.com/api", localPart="countOverridesTowardsLimitRequest")
     public Element invoke(Element countOverridesTowardsLimitRequest, LiteYukonUser user) throws Exception {
@@ -50,10 +51,10 @@ public class CountOverridesTowardsLimitRequestEndpoint {
         	rolePropertyDao.verifyProperty(YukonRoleProperty.OPERATOR_CONSUMER_INFO_WS_LM_DATA_ACCESS, user);
         	
         	if (StringUtils.isBlank(programName)) {
-        	    starsEventLogService.countTowardOptOutLimitTodayAttemptedByApi(user);
+        	    starsEventLogService.countTowardOptOutLimitTodayAttempted(user, EventSource.API);
         		optOutService.changeOptOutCountStateForToday(user, true);
         	} else {
-        	    starsEventLogService.countTowardOptOutLimitTodayByProgramAttemptedByApi(user, programName);
+        	    starsEventLogService.countTowardOptOutLimitTodayByProgramAttempted(user, programName, EventSource.API);
         		optOutService.changeOptOutCountStateForTodayByProgramName(user, true, programName);
         	}
             
@@ -72,8 +73,8 @@ public class CountOverridesTowardsLimitRequestEndpoint {
     
     @Autowired
     public void setOptOutService(OptOutService optOutService) {
-		this.optOutService = optOutService;
-	}
+        this.optOutService = optOutService;
+    }
     
     @Autowired
     public void setStarsEventLogService(StarsEventLogService starsEventLogService) {
@@ -82,7 +83,7 @@ public class CountOverridesTowardsLimitRequestEndpoint {
     
     @Autowired
     public void setRolePropertyDao(RolePropertyDao rolePropertyDao) {
-		this.rolePropertyDao = rolePropertyDao;
-	}
+        this.rolePropertyDao = rolePropertyDao;
+    }
     
 }

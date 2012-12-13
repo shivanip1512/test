@@ -33,6 +33,7 @@ import com.cannontech.common.events.model.ArgumentColumn;
 import com.cannontech.common.events.model.EventCategory;
 import com.cannontech.common.events.model.EventLog;
 import com.cannontech.common.events.model.EventParameter;
+import com.cannontech.common.events.model.EventSource;
 import com.cannontech.common.events.model.MappedEventLog;
 import com.cannontech.common.events.service.EventLogService;
 import com.cannontech.common.events.service.mappers.LiteYukonUserToNameMapper;
@@ -128,6 +129,7 @@ public class EventLogServiceImpl implements EventLogService {
         builder.add(ArgumentMapper.createForEnum(PointType.class));
         builder.add(ArgumentMapper.createForEnum(DeviceRequestType.class));
         builder.add(ArgumentMapper.createForEnum(GlobalSettingType.class));
+        builder.add(ArgumentMapper.createForEnum(EventSource.class));
         builder.add(ArgumentMapper.create(ReadableInstant.class, Types.TIMESTAMP, new ObjectMapper<ReadableInstant, Date>() {
             public Date map(ReadableInstant from) throws ObjectMappingException {
                 return new Instant(from).toDate();

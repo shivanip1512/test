@@ -12,6 +12,7 @@ import com.cannontech.clientutils.ActivityLogger;
 import com.cannontech.clientutils.YukonLogManager;
 import com.cannontech.common.device.commands.exception.CommandCompletionException;
 import com.cannontech.common.events.loggers.AccountEventLogService;
+import com.cannontech.common.events.model.EventSource;
 import com.cannontech.common.inventory.HardwareType;
 import com.cannontech.common.temperature.Temperature;
 import com.cannontech.common.temperature.TemperatureUnit;
@@ -498,27 +499,25 @@ public class ThermostatServiceImpl implements ThermostatService {
     }
     
     @Override
-    public void logConsumerThermostatManualSaveAttempt(List<Integer> thermostatIds, YukonUserContext context, CustomerAccount account) {
+    public void logThermostatManualSaveAttempt(List<Integer> thermostatIds,
+                                                   YukonUserContext context,
+                                                   CustomerAccount account,
+                                                   Double heatTemperature,
+                                                   Double coldTemperature,
+                                                   String mode,
+                                                   boolean holdTemperature,
+                                                   EventSource source) {
         for (int thermostatId : thermostatIds) {
             Thermostat thermostat = inventoryDao.getThermostatById(thermostatId);
             
-            accountEventLogService.thermostatManualSetAttemptedByConsumer(context.getYukonUser(),
-                                                                          account.getAccountNumber(),
-                                                                          thermostat.getSerialNumber());
+            accountEventLogService.thermostatManualSetAttempted(context.getYukonUser(),
+                                                                  account.getAccountNumber(),
+                                                                  thermostat.getSerialNumber(),
+                                                                  heatTemperature, coldTemperature,
+                                                                  mode, holdTemperature, source);
         }
     }
-    
-    @Override
-    public void logOperatorThermostatManualSaveAttempt(List<Integer> thermostatIds, YukonUserContext context, CustomerAccount account) {
-        for (int thermostatId : thermostatIds) {
-            Thermostat thermostat = inventoryDao.getThermostatById(thermostatId);
-            
-            accountEventLogService.thermostatManualSetAttemptedByOperator(context.getYukonUser(),
-                                                                          account.getAccountNumber(),
-                                                                          thermostat.getSerialNumber());
-        }
-    }
-    
+      
     /**
      * Helper method to log the manual event to the activity log
      * @param thermostat - Thermostat for manual event

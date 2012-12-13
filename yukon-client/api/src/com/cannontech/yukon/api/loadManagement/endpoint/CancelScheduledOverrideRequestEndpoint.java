@@ -9,6 +9,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.ws.server.endpoint.annotation.Endpoint;
 import org.springframework.ws.server.endpoint.annotation.PayloadRoot;
 
+import com.cannontech.common.events.model.EventSource;
 import com.cannontech.common.exception.NotAuthorizedException;
 import com.cannontech.common.util.xml.SimpleXPathTemplate;
 import com.cannontech.common.util.xml.XmlUtils;
@@ -56,8 +57,10 @@ public class CancelScheduledOverrideRequestEndpoint extends OverrideRequestEndpo
         LMHardwareBase lmHardwareBase = null;
         
         try {
-            accountEventLogService.scheduledOptOutCancelAttemptedThroughApi(user, cancelOptOutHelper.getAccountNumber(), 
-                                                                            cancelOptOutHelper.getSerialNumber());
+            accountEventLogService.scheduledOptOutCancelAttempted(user,
+                                                                  cancelOptOutHelper.getAccountNumber(), 
+                                                                  cancelOptOutHelper.getSerialNumber(),
+                                                                  EventSource.API);
             rolePropertyDao.verifyProperty(YukonRoleProperty.OPERATOR_CONSUMER_INFO_PROGRAMS_OPT_OUT, user);
            
             customerAccount = getCustomerAccount(cancelOptOutHelper.getAccountNumber(), user);

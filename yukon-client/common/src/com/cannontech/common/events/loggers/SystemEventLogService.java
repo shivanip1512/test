@@ -4,6 +4,7 @@ import org.joda.time.Instant;
 
 import com.cannontech.common.events.Arg;
 import com.cannontech.common.events.YukonEventLog;
+import com.cannontech.common.events.model.EventSource;
 import com.cannontech.common.util.TransactionExecutor.ExecutorTransactionality;
 import com.cannontech.database.data.lite.LiteYukonUser;
 import com.cannontech.system.GlobalSettingType;
@@ -14,15 +15,18 @@ public interface SystemEventLogService {
     // Username
     
     @YukonEventLog(transactionality=ExecutorTransactionality.FORCED, category="system.login")
-    public void loginPasswordChangeAttemptedByConsumer(@Arg(ArgEnum.username) LiteYukonUser user);
+    public void loginPasswordChangeAttempted(@Arg(ArgEnum.username) LiteYukonUser user, 
+                                                       @Arg(ArgEnum.eventSource) EventSource eventSource);
     
     @YukonEventLog(transactionality=ExecutorTransactionality.FORCED, category="system.login")
-    public void loginUsernameChangeAttemptedByConsumer(@Arg(ArgEnum.username) LiteYukonUser user, 
-                                                       @Arg(ArgEnum.username) String newUsername);
+    public void loginUsernameChangeAttempted(@Arg(ArgEnum.username) LiteYukonUser user, 
+                                                       @Arg(ArgEnum.username) String newUsername, 
+                                                       @Arg(ArgEnum.eventSource) EventSource eventSource);
     
     @YukonEventLog(transactionality=ExecutorTransactionality.FORCED, category="system.login")
-    public void loginChangeAttemptedByOperator(@Arg(ArgEnum.username) LiteYukonUser user, 
-                                               @Arg(ArgEnum.username) String username);
+    public void loginChangeAttempted(@Arg(ArgEnum.username) LiteYukonUser user, 
+                                       @Arg(ArgEnum.username) String username, 
+                                       @Arg(ArgEnum.eventSource) EventSource eventSource);
     
     
     // Username service level

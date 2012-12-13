@@ -37,9 +37,9 @@ import com.google.common.collect.Sets;
 
 public class EventLogDaoImpl implements EventLogDao {
     
-    private JdbcTemplate jdbcTemplate;
-    private YukonJdbcTemplate yukonJdbcTemplate;
-    private NextValueHelper nextValueHelper;
+    @Autowired private JdbcTemplate jdbcTemplate;
+    @Autowired private YukonJdbcTemplate yukonJdbcTemplate;
+    @Autowired private NextValueHelper nextValueHelper;
 
     private final int countOfTotalArguments;
     private List<ArgumentColumn> argumentColumns;
@@ -410,7 +410,6 @@ public class EventLogDaoImpl implements EventLogDao {
                 if (varCharValue != null) {
                     sql.append("UPPER("+argumentColumn.getColumnName()+")").eq(String.valueOf(varCharValue).toUpperCase());
                     sqlFragmentCollection.add(sql);
-                    //                sqlFragmentCollection.add(sql);
                 }
                 break;
             case Types.NUMERIC:
@@ -475,20 +474,5 @@ public class EventLogDaoImpl implements EventLogDao {
     @Override
     public List<com.cannontech.common.events.model.ArgumentColumn> getArgumentColumns() {
         return argumentColumns;
-    }
-    
-    @Autowired
-    public void setJdbcTemplate(JdbcTemplate jdbcTemplate) {
-        this.jdbcTemplate = jdbcTemplate;
-    }
-    
-    @Autowired
-    public void setYukonJdbcTemplate(YukonJdbcTemplate yukonJdbcTemplate) {
-        this.yukonJdbcTemplate = yukonJdbcTemplate;
-    }
-    
-    @Autowired
-    public void setNextValueHelper(NextValueHelper nextValueHelper) {
-        this.nextValueHelper = nextValueHelper;
     }
 }

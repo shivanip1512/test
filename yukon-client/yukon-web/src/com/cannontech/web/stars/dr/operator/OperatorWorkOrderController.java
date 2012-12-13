@@ -25,6 +25,7 @@ import com.cannontech.analysis.report.WorkOrder;
 import com.cannontech.analysis.tablemodel.WorkOrderModel;
 import com.cannontech.common.constants.YukonListEntry;
 import com.cannontech.common.events.loggers.AccountEventLogService;
+import com.cannontech.common.events.model.EventSource;
 import com.cannontech.common.model.ServiceCompanyDto;
 import com.cannontech.common.validator.YukonValidationUtils;
 import com.cannontech.core.dao.ServiceCompanyDao;
@@ -54,12 +55,12 @@ import com.cannontech.web.stars.dr.operator.validator.WorkOrderValidator;
 @CheckRoleProperty(YukonRoleProperty.OPERATOR_CONSUMER_INFO_WORK_ORDERS)
 public class OperatorWorkOrderController {
 
-    private AccountEventLogService accountEventLogService;
-    private DatePropertyEditorFactory datePropertyEditorFactory;
-    private RolePropertyDao rolePropertyDao;
-    private ServiceCompanyDao serviceCompanyDao;
-    private StarsDatabaseCache starsDatabaseCache;
-    private WorkOrderService workOrderService;
+    @Autowired private AccountEventLogService accountEventLogService;
+    @Autowired private DatePropertyEditorFactory datePropertyEditorFactory;
+    @Autowired private RolePropertyDao rolePropertyDao;
+    @Autowired private ServiceCompanyDao serviceCompanyDao;
+    @Autowired private StarsDatabaseCache starsDatabaseCache;
+    @Autowired private WorkOrderService workOrderService;
     
     // CALL LIST
     @RequestMapping
@@ -152,9 +153,10 @@ public class OperatorWorkOrderController {
 
         // Create a work order
         if (workOrderDto.getWorkOrderBase().getOrderId() == 0) {
-            accountEventLogService.workOrderCreationAttemptedByOperator(userContext.getYukonUser(),
-                                                                        accountInfoFragment.getAccountNumber(),
-                                                                        workOrderDto.getWorkOrderBase().getOrderNumber());
+            accountEventLogService.workOrderCreationAttempted(userContext.getYukonUser(),
+                                                              accountInfoFragment.getAccountNumber(),
+                                                              workOrderDto.getWorkOrderBase().getOrderNumber(),
+                                                              EventSource.OPERATOR);
 
             workOrderService.createWorkOrder(workOrderDto, accountInfoFragment.getEnergyCompanyId(),
                                              accountInfoFragment.getAccountNumber(), userContext);
@@ -162,9 +164,10 @@ public class OperatorWorkOrderController {
         
         // Update a work order
         } else {
-            accountEventLogService.workOrderUpdateAttemptedByOperator(userContext.getYukonUser(),
-                                                                      accountInfoFragment.getAccountNumber(),
-                                                                      workOrderDto.getWorkOrderBase().getOrderNumber());
+            accountEventLogService.workOrderUpdateAttempted(userContext.getYukonUser(),
+                                                            accountInfoFragment.getAccountNumber(),
+                                                            workOrderDto.getWorkOrderBase().getOrderNumber(),
+                                                            EventSource.OPERATOR);
 
             workOrderService.updateWorkOrder(workOrderDto, accountInfoFragment.getAccountNumber(), userContext);
             flashScope.setConfirm(new YukonMessageSourceResolvable("yukon.web.modules.operator.workOrder.workOrderUpdated"));
@@ -184,9 +187,10 @@ public class OperatorWorkOrderController {
         rolePropertyDao.verifyProperty(YukonRoleProperty.OPERATOR_ALLOW_ACCOUNT_EDITING, userContext.getYukonUser());
 
         WorkOrderDto workOrderDto = workOrderService.getWorkOrder(deleteWorkOrderId);
-        accountEventLogService.workOrderDeletionAttemptedByOperator(userContext.getYukonUser(),
-                                                                  accountInfoFragment.getAccountNumber(),
-                                                                  workOrderDto.getWorkOrderBase().getOrderNumber());
+        accountEventLogService.workOrderDeletionAttempted(userContext.getYukonUser(),
+                                                          accountInfoFragment.getAccountNumber(),
+                                                          workOrderDto.getWorkOrderBase().getOrderNumber(),
+                                                          EventSource.OPERATOR);
 
         
         workOrderService.deleteWorkOrder(deleteWorkOrderId, accountInfoFragment.getAccountNumber(), userContext);
@@ -263,35 +267,5 @@ public class OperatorWorkOrderController {
         }
         
         datePropertyEditorFactory.setupInstantPropertyEditor(binder, userContext, BlankMode.CURRENT);
-    }
-    
-    @Autowired
-    public void setAccountEventLogService(AccountEventLogService accountEventLogService) {
-        this.accountEventLogService = accountEventLogService;
-    }
-    
-    @Autowired
-    public void setDatePropertyEditorFactory(DatePropertyEditorFactory datePropertyEditorFactory) {
-        this.datePropertyEditorFactory = datePropertyEditorFactory;
-    }
-    
-    @Autowired
-    public void setRolePropertyDao(RolePropertyDao rolePropertyDao) {
-        this.rolePropertyDao = rolePropertyDao;
-    }
-    
-    @Autowired
-    public void setServiceCompanyDao(ServiceCompanyDao serviceCompanyDao) {
-        this.serviceCompanyDao = serviceCompanyDao;
-    }
-
-    @Autowired
-    public void setStarsDatabaseCache(StarsDatabaseCache starsDatabaseCache) {
-        this.starsDatabaseCache = starsDatabaseCache;
-    }
-    
-    @Autowired
-    public void setWorkOrderService(WorkOrderService workOrderService) {
-        this.workOrderService = workOrderService;
     }
 }

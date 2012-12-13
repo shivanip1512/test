@@ -16,6 +16,7 @@ import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.RequestMapping;
 
 import com.cannontech.common.events.loggers.AccountEventLogService;
+import com.cannontech.common.events.model.EventSource;
 import com.cannontech.common.i18n.MessageSourceAccessor;
 import com.cannontech.common.version.VersionTools;
 import com.cannontech.core.dao.PaoDao;
@@ -232,8 +233,9 @@ public class OperatorEnrollmentController {
             FlashScope flashScope) throws IOException {
         
         // Log enrollment/unenrollment attempts
-        accountEventLogService.enrollmentModificationAttemptedByOperator(userContext.getYukonUser(), 
-                                                                         accountInfoFragment.getAccountNumber());
+        accountEventLogService.enrollmentModificationAttempted(userContext.getYukonUser(), 
+                                                               accountInfoFragment.getAccountNumber(),
+                                                               EventSource.OPERATOR);
         
         validateAccountEditing(userContext);
         AssignedProgram assignedProgram = assignedProgramDao.getById(assignedProgramId);

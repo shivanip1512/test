@@ -8,6 +8,7 @@ import org.jdom.Namespace;
 import org.springframework.ws.server.endpoint.annotation.Endpoint;
 import org.springframework.ws.server.endpoint.annotation.PayloadRoot;
 
+import com.cannontech.common.events.model.EventSource;
 import com.cannontech.common.exception.NotAuthorizedException;
 import com.cannontech.common.util.xml.SimpleXPathTemplate;
 import com.cannontech.common.util.xml.XmlUtils;
@@ -50,9 +51,11 @@ public class OverrideRequestEndpoint extends OverrideRequestEndpointBase{
             CustomerAccount customerAccount = getCustomerAccount(optOutHelper.getAccountNumber(), user);
             LMHardwareBase lmHardwareBase = getLMHardwareBase(optOutHelper.getSerialNumber());
             
-            accountEventLogService.optOutAttemptedThroughApi(user, customerAccount.getAccountNumber(),
-                                                             lmHardwareBase.getManufacturerSerialNumber(),
-                                                             optOutHelper.getStartDate());
+            accountEventLogService.optOutAttempted(user, 
+                                                   customerAccount.getAccountNumber(),
+                                                   lmHardwareBase.getManufacturerSerialNumber(),
+                                                   optOutHelper.getStartDate(),
+                                                   EventSource.API);
             
             OptOutRequest request = new OptOutRequest();
             List<Integer>inventoryIds = Collections.singletonList(lmHardwareBase.getInventoryId());

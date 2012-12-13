@@ -27,6 +27,7 @@ import com.cannontech.common.constants.YukonListEntry;
 import com.cannontech.common.constants.YukonSelectionListDefs;
 import com.cannontech.common.device.commands.exception.CommandCompletionException;
 import com.cannontech.common.events.loggers.HardwareEventLogService;
+import com.cannontech.common.events.model.EventSource;
 import com.cannontech.common.exception.NotAuthorizedException;
 import com.cannontech.common.i18n.MessageSourceAccessor;
 import com.cannontech.common.inventory.Hardware;
@@ -527,7 +528,7 @@ public class OperatorHardwareController {
         
         Hardware hardwareToDelete = hardwareUiService.getHardware(inventoryId);
         LiteYukonUser user = context.getYukonUser();
-        hardwareEventLogService.hardwareDeletionAttemptedByOperator(user, hardwareToDelete.getDisplayName());
+        hardwareEventLogService.hardwareDeletionAttempted(user, hardwareToDelete.getDisplayName(), EventSource.OPERATOR);
         
         hardwareUiService.validateInventoryAgainstAccount(Collections.singletonList(inventoryId), fragment.getAccountId());
         rolePropertyDao.verifyProperty(YukonRoleProperty.OPERATOR_ALLOW_ACCOUNT_EDITING, user);
@@ -571,9 +572,10 @@ public class OperatorHardwareController {
                                      int inventoryId) {
         
         LMHardwareBase lmHardwareBase = lmHardwareBaseDao.getById(inventoryId);
-        hardwareEventLogService.assigningHardwareAttemptedByOperator(context.getYukonUser(),
-                                                                     fragment.getAccountNumber(),
-                                                                     lmHardwareBase.getManufacturerSerialNumber());
+        hardwareEventLogService.assigningHardwareAttempted(context.getYukonUser(),
+                                                           fragment.getAccountNumber(),
+                                                           lmHardwareBase.getManufacturerSerialNumber(),
+                                                           EventSource.OPERATOR);
         
         rolePropertyDao.verifyProperty(YukonRoleProperty.OPERATOR_ALLOW_ACCOUNT_EDITING, context.getYukonUser());
         
@@ -598,7 +600,7 @@ public class OperatorHardwareController {
         
         LiteYukonPAObject liteYukonPAO = paoDao.getLiteYukonPAO(meterId);
         LiteYukonUser user = context.getYukonUser();
-        hardwareEventLogService.hardwareMeterCreationAttemptedByOperator(user, liteYukonPAO.getPaoName());
+        hardwareEventLogService.hardwareMeterCreationAttempted(user, liteYukonPAO.getPaoName(), EventSource.OPERATOR);
         
         rolePropertyDao.verifyProperty(YukonRoleProperty.OPERATOR_ALLOW_ACCOUNT_EDITING, user);
         try {
@@ -631,13 +633,14 @@ public class OperatorHardwareController {
         if (isMeter) {
             LiteYukonPAObject oldLiteYukonPAO = paoDao.getLiteYukonPAO(oldInventory.getDeviceId());
             LiteYukonPAObject newLiteYukonPAO = paoDao.getLiteYukonPAO(newInventoryId);
-            hardwareEventLogService.hardwareChangeOutForMeterAttemptedByOperator(user,
-                                                                                 oldLiteYukonPAO.getPaoName(),
-                                                                                 newLiteYukonPAO.getPaoName());
+            hardwareEventLogService.hardwareChangeOutForMeterAttempted(user,
+                                                                       oldLiteYukonPAO.getPaoName(),
+                                                                       newLiteYukonPAO.getPaoName(),
+                                                                       EventSource.OPERATOR);
         } else {
             String newInventorySN = lmHardwareBaseDao.getSerialNumberForInventoryId(newInventoryId);
             String oldInventorySN = oldInventory.getSerialNumber();
-            hardwareEventLogService.hardwareChangeOutAttemptedByOperator(user, oldInventorySN, newInventorySN);
+            hardwareEventLogService.hardwareChangeOutAttempted(user, oldInventorySN, newInventorySN, EventSource.OPERATOR);
         }
 
         rolePropertyDao.verifyProperty(YukonRoleProperty.OPERATOR_ALLOW_ACCOUNT_EDITING, user);

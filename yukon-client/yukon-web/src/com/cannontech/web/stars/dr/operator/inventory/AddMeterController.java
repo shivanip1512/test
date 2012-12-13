@@ -6,6 +6,7 @@ import org.springframework.ui.ModelMap;
 import org.springframework.web.bind.annotation.RequestMapping;
 
 import com.cannontech.common.events.loggers.HardwareEventLogService;
+import com.cannontech.common.events.model.EventSource;
 import com.cannontech.core.dao.PaoDao;
 import com.cannontech.core.roleproperties.YukonRoleProperty;
 import com.cannontech.core.roleproperties.dao.EnergyCompanyRolePropertyDao;
@@ -17,7 +18,6 @@ import com.cannontech.roles.yukon.EnergyCompanyRole.MeteringType;
 import com.cannontech.stars.core.service.YukonEnergyCompanyService;
 import com.cannontech.stars.dr.hardware.service.HardwareUiService;
 import com.cannontech.stars.energyCompany.model.YukonEnergyCompany;
-import com.cannontech.stars.util.ObjectInOtherEnergyCompanyException;
 import com.cannontech.web.common.flashScope.FlashScope;
 import com.cannontech.web.security.annotation.CheckRoleProperty;
 
@@ -41,7 +41,7 @@ public class AddMeterController {
         if (value == MeteringType.yukon) {
             LiteYukonPAObject liteYukonPAO = paoDao.getLiteYukonPAO(mctId);
             String meterName = liteYukonPAO.getPaoName();
-            hardwareEventLogService.hardwareMeterCreationAttemptedByOperator(user, meterName);
+            hardwareEventLogService.hardwareMeterCreationAttempted(user, meterName, EventSource.OPERATOR);
             
             /* Tracking meters as MCTs */
             int inventoryId = hardwareUiService.addYukonMeter(mctId, null, user);

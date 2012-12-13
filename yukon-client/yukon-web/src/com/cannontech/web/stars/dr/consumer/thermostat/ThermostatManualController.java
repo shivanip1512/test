@@ -16,6 +16,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 
 import com.cannontech.common.events.loggers.AccountEventLogService;
+import com.cannontech.common.events.model.EventSource;
 import com.cannontech.common.temperature.Temperature;
 import com.cannontech.common.validator.YukonValidationUtils;
 import com.cannontech.core.dao.CustomerDao;
@@ -145,9 +146,11 @@ public class ThermostatManualController extends AbstractThermostatController {
         thermostat = inventoryDao.getThermostatById(inventoryId);
         String oldLabel = thermostat.getDeviceLabel();
         thermostat.setDeviceLabel(newLabel);
-        accountEventLogService.thermostatLabelChangeAttemptedByConsumer(user,
-                                                                        thermostat.getSerialNumber(),
-                                                                        oldLabel, newLabel);
+        accountEventLogService.thermostatLabelChangeAttempted(user,
+                                                              thermostat.getSerialNumber(),
+                                                              oldLabel,
+                                                              newLabel,
+                                                              EventSource.CONSUMER);
 
         accountCheckerService.checkInventory(user, inventoryId);
 
@@ -205,7 +208,7 @@ public class ThermostatManualController extends AbstractThermostatController {
         CustomerAccount account = getCustomerAccount(request);
         List<String> serialNumbers =  lmHardwareBaseDao.getSerialNumberForInventoryIds(thermostatIds);
         for (String serialNumber : serialNumbers) {
-            accountEventLogService.thermostatRunProgramAttemptedByConsumer(userContext.getYukonUser(), account.getAccountNumber(), serialNumber);
+            accountEventLogService.thermostatRunProgramAttempted(userContext.getYukonUser(), account.getAccountNumber(), serialNumber, EventSource.CONSUMER);
         }
 
         // Send out run program commands
@@ -231,8 +234,12 @@ public class ThermostatManualController extends AbstractThermostatController {
 		
 	    CustomerAccount account = getCustomerAccount(request);
 		
-        thermostatService.logConsumerThermostatManualSaveAttempt(thermostatIds, userContext, account);
-        
+        thermostatService.logThermostatManualSaveAttempt(thermostatIds, userContext, account,
+                                                        (heatTemperature != null) ? heatTemperature.toFahrenheit().getValue() : null,
+                                                        (coolTemperature != null) ? coolTemperature.toFahrenheit().getValue() : null,
+                                                        mode, autoModeEnabledCommand, 
+                                                        EventSource.CONSUMER);
+
         accountCheckerService.checkInventory(userContext.getYukonUser(), thermostatIds.toArray(new Integer[thermostatIds.size()]));
         thermostatService.updateTempUnitForCustomer(temperatureUnit, account.getCustomerId());
         ThermostatMode thermostatMode = thermostatService.getThermostatModeFromString(mode);

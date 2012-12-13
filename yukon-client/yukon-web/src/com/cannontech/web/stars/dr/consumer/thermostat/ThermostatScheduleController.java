@@ -26,10 +26,11 @@ import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RequestParam;
 
 import com.cannontech.common.events.loggers.AccountEventLogService;
-import com.cannontech.common.search.SearchResult;
-import com.cannontech.common.util.CtiUtilities;
+import com.cannontech.common.events.model.EventSource;
 import com.cannontech.common.exception.NotAuthorizedException;
 import com.cannontech.common.i18n.MessageSourceAccessor;
+import com.cannontech.common.search.SearchResult;
+import com.cannontech.common.util.CtiUtilities;
 import com.cannontech.core.dao.CustomerDao;
 import com.cannontech.core.roleproperties.YukonRoleProperty;
 import com.cannontech.database.TransactionException;
@@ -62,6 +63,7 @@ import com.cannontech.web.stars.dr.operator.validator.AccountThermostatScheduleV
 @CheckRoleProperty(YukonRoleProperty.RESIDENTIAL_CONSUMER_INFO_HARDWARES_THERMOSTAT)
 @Controller
 public class ThermostatScheduleController extends AbstractThermostatController {
+    
     @Autowired private AccountEventLogService accountEventLogService;
     @Autowired private AccountThermostatScheduleDao accountThermostatScheduleDao;
     @Autowired private CustomerDao customerDao;
@@ -206,8 +208,10 @@ public class ThermostatScheduleController extends AbstractThermostatController {
     	AccountThermostatSchedule oldAts = accountThermostatScheduleDao.getById(scheduleId);
         String oldScheduleName = oldAts.getScheduleName();
 
-        accountEventLogService.thermostatScheduleDeleteAttemptedByConsumer(user,
-            account.getAccountNumber(), oldAts.getScheduleName());
+        accountEventLogService.thermostatScheduleDeleteAttempted(user,
+                                                                 account.getAccountNumber(),
+                                                                 oldAts.getScheduleName(),
+                                                                 EventSource.CONSUMER);
 
         accountCheckerService.checkInventory(user, thermostatIdsList);
     	accountThermostatScheduleDao.deleteById(scheduleId);
@@ -348,7 +352,7 @@ public class ThermostatScheduleController extends AbstractThermostatController {
             // Log thermostat schedule save attempt
             for (int thermostatId : thermostatIds) {
                 Thermostat thermostat = inventoryDao.getThermostatById(thermostatId);
-                accountEventLogService.thermostatScheduleSavingAttemptedByConsumer(user, account.getAccountNumber(), thermostat.getSerialNumber(), ats.getScheduleName());
+                accountEventLogService.thermostatScheduleSavingAttempted(user, account.getAccountNumber(), thermostat.getSerialNumber(), ats.getScheduleName(), EventSource.CONSUMER);
             }
         
             // Save the Schedule

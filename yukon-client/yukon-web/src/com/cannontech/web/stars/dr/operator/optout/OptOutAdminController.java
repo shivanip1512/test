@@ -18,6 +18,7 @@ import com.cannontech.common.constants.YukonListEntryTypes;
 import com.cannontech.common.constants.YukonSelectionList;
 import com.cannontech.common.constants.YukonSelectionListDefs;
 import com.cannontech.common.events.loggers.StarsEventLogService;
+import com.cannontech.common.events.model.EventSource;
 import com.cannontech.core.dao.ProgramNotFoundException;
 import com.cannontech.core.roleproperties.YukonRole;
 import com.cannontech.core.roleproperties.YukonRoleProperty;
@@ -51,15 +52,15 @@ import com.google.common.collect.Maps;
 @Controller
 public class OptOutAdminController {
 
-	private OptOutEventDao optOutEventDao;
-	private CustomerAccountDao customerAccountDao;
-	private OptOutStatusService optOutStatusService;
-	private StarsDatabaseCache starsDatabaseCache;
-	private OptOutService optOutService;
-	private StarsEventLogService starsEventLogService;
-	private InventoryBaseDao inventoryBaseDao;
-	private ProgramDao programDao;
-	private RolePropertyDao rolePropertyDao;
+	@Autowired private OptOutEventDao optOutEventDao;
+	@Autowired private CustomerAccountDao customerAccountDao;
+	@Autowired private OptOutStatusService optOutStatusService;
+	@Autowired private StarsDatabaseCache starsDatabaseCache;
+	@Autowired private OptOutService optOutService;
+	@Autowired private StarsEventLogService starsEventLogService;
+	@Autowired private InventoryBaseDao inventoryBaseDao;
+	@Autowired private ProgramDao programDao;
+	@Autowired private RolePropertyDao rolePropertyDao;
 	
     @RequestMapping(value = "/operator/optOut/admin", method = RequestMethod.GET)
     public String view(YukonUserContext userContext, ModelMap map, Boolean emptyProgramName, Boolean programNotFound) throws Exception {
@@ -146,9 +147,9 @@ public class OptOutAdminController {
     private String toggleOptOutsToday(LiteYukonUser user, ModelMap map, String programName, OptOutEnabled optOutEnabled, FlashScope flashScope) throws Exception {
         // Log disable opt outs for today attempt
         if (StringUtils.isNotBlank(programName)) {
-            starsEventLogService.disablingOptOutUsageForTodayByProgramAttemptedByOperator(user, programName);
+            starsEventLogService.disablingOptOutUsageForTodayByProgramAttempted(user, programName, EventSource.OPERATOR);
         } else {
-            starsEventLogService.disablingOptOutUsageForTodayAttemptedByOperator(user);
+            starsEventLogService.disablingOptOutUsageForTodayAttempted(user, EventSource.OPERATOR);
         }
         
         rolePropertyDao.verifyProperty(YukonRoleProperty.OPERATOR_OPT_OUT_ADMIN_CHANGE_ENABLE, user);
@@ -176,9 +177,9 @@ public class OptOutAdminController {
     public String cancelActiveOptOuts(LiteYukonUser user, ModelMap map, String programName, FlashScope flashScope) throws Exception {
     	
         if (StringUtils.isNotBlank(programName)) {
-            starsEventLogService.cancelCurrentOptOutsByProgramAttemptedByOperator(user, programName);
+            starsEventLogService.cancelCurrentOptOutsByProgramAttempted(user, programName, EventSource.OPERATOR);
         } else {
-            starsEventLogService.cancelCurrentOptOutsAttemptedByOperator(user);
+            starsEventLogService.cancelCurrentOptOutsAttempted(user, EventSource.OPERATOR);
         }
         
         rolePropertyDao.verifyProperty(YukonRoleProperty.OPERATOR_OPT_OUT_ADMIN_CANCEL_CURRENT, user);
@@ -211,15 +212,15 @@ public class OptOutAdminController {
 
         if (StringUtils.isNotBlank(programName)) {
             if (countBool) {
-                starsEventLogService.countTowardOptOutLimitTodayByProgramAttemptedByOperator(user, programName);
+                starsEventLogService.countTowardOptOutLimitTodayByProgramAttempted(user, programName, EventSource.OPERATOR);
             } else {
-                starsEventLogService.doNotCountTowardOptOutLimitTodayByProgramAttemptedByOperator(user, programName);
+                starsEventLogService.doNotCountTowardOptOutLimitTodayByProgramAttempted(user, programName, EventSource.OPERATOR);
             }
         } else {
             if (countBool) {
-                starsEventLogService.countTowardOptOutLimitTodayAttemptedByOperator(user);
+                starsEventLogService.countTowardOptOutLimitTodayAttempted(user, EventSource.OPERATOR);
             } else {
-                starsEventLogService.doNotCountTowardOptOutLimitTodayAttemptedByOperator(user);
+                starsEventLogService.doNotCountTowardOptOutLimitTodayAttempted(user, EventSource.OPERATOR);
             }
         }
     	
@@ -329,49 +330,4 @@ public class OptOutAdminController {
 			this.serialNumber = serialNumber;
 		}
     }
-    
-    @Autowired
-    public void setOptOutEventDao(OptOutEventDao optOutEventDao) {
-		this.optOutEventDao = optOutEventDao;
-	}
-    
-    @Autowired
-    public void setCustomerAccountDao(CustomerAccountDao customerAccountDao) {
-		this.customerAccountDao = customerAccountDao;
-	}
-    
-    @Autowired
-    public void setOptOutStatusService(OptOutStatusService optOutStatusService) {
-		this.optOutStatusService = optOutStatusService;
-	}
-    
-    @Autowired
-    public void setStarsDatabaseCache(StarsDatabaseCache starsDatabaseCache) {
-		this.starsDatabaseCache = starsDatabaseCache;
-	}
-    
-    @Autowired
-    public void setOptOutServiceHelper(OptOutService optOutServiceHelper) {
-		this.optOutService = optOutServiceHelper;
-	}
-    
-    @Autowired
-    public void setStarsEventLogService(StarsEventLogService starsEventLogService) {
-        this.starsEventLogService = starsEventLogService;
-    }
-    
-    @Autowired
-    public void setInventoryBaseDao(InventoryBaseDao inventoryBaseDao) {
-		this.inventoryBaseDao = inventoryBaseDao;
-	}
-
-    @Autowired
-    public void setRolePropertyDao(RolePropertyDao rolePropertyDao) {
-    	this.rolePropertyDao = rolePropertyDao;
-    }
-    
-    @Autowired
-    public void setProgramDao(ProgramDao programDao) {
-		this.programDao = programDao;
-	}
 }

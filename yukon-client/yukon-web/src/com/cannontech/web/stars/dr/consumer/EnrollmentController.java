@@ -15,6 +15,7 @@ import org.springframework.web.bind.annotation.RequestMethod;
 
 import com.cannontech.common.constants.YukonListEntryTypes;
 import com.cannontech.common.events.loggers.AccountEventLogService;
+import com.cannontech.common.events.model.EventSource;
 import com.cannontech.core.roleproperties.YukonRoleProperty;
 import com.cannontech.i18n.YukonMessageSourceResolvable;
 import com.cannontech.stars.dr.account.model.CustomerAccount;
@@ -39,6 +40,7 @@ import com.google.common.collect.Sets;
 @CheckRoleProperty(YukonRoleProperty.RESIDENTIAL_CONSUMER_INFO_PROGRAMS_ENROLLMENT)
 @Controller
 public class EnrollmentController extends AbstractConsumerController {
+    
     @Autowired private AccountEventLogService accountEventLogService;
     @Autowired private DisplayableEnrollmentDao displayableEnrollmentDao;
     @Autowired private EnrollmentDao enrollmentDao;
@@ -90,11 +92,12 @@ public class EnrollmentController extends AbstractConsumerController {
             // Log Attempt
             EnrollmentEventLoggingData eventLoggingData = enrollmentHelperService.getEventLoggingData(programEnrollment);
             
-            accountEventLogService.enrollmentAttemptedByConsumer(yukonUserContext.getYukonUser(), 
+            accountEventLogService.enrollmentAttempted(yukonUserContext.getYukonUser(), 
                                                                  customerAccount.getAccountNumber(), 
                                                                  eventLoggingData.getManufacturerSerialNumber(), 
                                                                  eventLoggingData.getProgramName(), 
-                                                                 eventLoggingData.getLoadGroupName());
+                                                                 eventLoggingData.getLoadGroupName(),
+                                                                 EventSource.CONSUMER);
 
         }
 
@@ -168,11 +171,12 @@ public class EnrollmentController extends AbstractConsumerController {
             // Log Attempt
             EnrollmentEventLoggingData eventLoggingData = enrollmentHelperService.getEventLoggingData(programEnrollment);
             
-            accountEventLogService.unenrollmentAttemptedByConsumer(yukonUserContext.getYukonUser(), 
+            accountEventLogService.unenrollmentAttempted(yukonUserContext.getYukonUser(), 
                                                                    customerAccount.getAccountNumber(),
                                                                    eventLoggingData.getManufacturerSerialNumber(), 
                                                                    eventLoggingData.getProgramName(), 
-                                                                   eventLoggingData.getLoadGroupName());
+                                                                   eventLoggingData.getLoadGroupName(),
+                                                                   EventSource.CONSUMER);
         }
 
         

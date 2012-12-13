@@ -28,6 +28,7 @@ import com.cannontech.common.constants.YukonSelectionList;
 import com.cannontech.common.constants.YukonSelectionListDefs;
 import com.cannontech.common.events.loggers.AccountEventLogService;
 import com.cannontech.common.events.loggers.HardwareEventLogService;
+import com.cannontech.common.events.model.EventSource;
 import com.cannontech.common.exception.DuplicateEnrollmentException;
 import com.cannontech.core.dao.ContactDao;
 import com.cannontech.core.dao.NotFoundException;
@@ -990,7 +991,7 @@ public class AccountImportService {
             String accountNumber = liteAcctInfo.getCustomerAccount().getAccountNumber();
             
             if (hwFields[ImportFields.IDX_HARDWARE_ACTION].equalsIgnoreCase("REMOVE")) {
-                hardwareLog.hardwareRemovalAttemptedThroughAccountImporter(user, hwFields[ImportFields.IDX_SERIAL_NO]);
+                hardwareLog.hardwareRemovalAttempted(user, accountNumber, hwFields[ImportFields.IDX_SERIAL_NO], EventSource.ACCOUNT_IMPORTER);
                 
                 if (liteInv == null) {
                     throw new Exception("Cannot remove hardware, serial #" + hwFields[ImportFields.IDX_SERIAL_NO] + " not found in the customer account");
@@ -1011,7 +1012,7 @@ public class AccountImportService {
                 
                 result.getHardwareRemoved().add(hwFields[ImportFields.IDX_SERIAL_NO]);
             } else if (liteInv == null) {
-                hardwareLog.hardwareCreationAttemptedThroughAccountImporter(user, hwFields[ImportFields.IDX_SERIAL_NO]);
+                hardwareLog.hardwareCreationAttempted(user, accountNumber, hwFields[ImportFields.IDX_SERIAL_NO], EventSource.ACCOUNT_IMPORTER);
                 
                 // ADD HARDWARE
                 LmDeviceDto dto = dtoConverter.createNewDto(accountNumber, hwFields, lsec);
@@ -1019,7 +1020,7 @@ public class AccountImportService {
                 
                 result.getHardwareAdded().add(hwFields[ImportFields.IDX_SERIAL_NO]);
             } else if (!result.isInsertSpecified()) {
-                hardwareLog.hardwareUpdateAttemptedThroughAccountImporter(user, hwFields[ImportFields.IDX_SERIAL_NO]);
+                hardwareLog.hardwareUpdateAttempted(user, accountNumber, hwFields[ImportFields.IDX_SERIAL_NO], EventSource.ACCOUNT_IMPORTER);
                 
                 // UPDATE HARDWARE
                 LmDeviceDto dto = dtoConverter.getDtoForHardware(accountNumber, liteInv, lsec);
@@ -1046,7 +1047,7 @@ public class AccountImportService {
         try {
             
             if (custFields[ImportFields.IDX_ACCOUNT_ACTION].equalsIgnoreCase("REMOVE")) {
-                accountLog.accountDeletionAttemptedThroughAccountImporter(user, custFields[ImportFields.IDX_ACCOUNT_NO]);
+                accountLog.accountDeletionAttempted(user, custFields[ImportFields.IDX_ACCOUNT_NO], EventSource.ACCOUNT_IMPORTER);
                 // deletion 
                 if (liteAcctInfo == null) {
                     String errorStr = "Cannot delete customer account: account #" + custFields[ImportFields.IDX_ACCOUNT_NO] + " doesn't exist";
@@ -1064,7 +1065,7 @@ public class AccountImportService {
             }
             
             if (liteAcctInfo == null) {
-                accountLog.accountCreationAttemptedThroughAccountImporter(user, custFields[ImportFields.IDX_ACCOUNT_NO]);
+                accountLog.accountCreationAttempted(user, custFields[ImportFields.IDX_ACCOUNT_NO], EventSource.ACCOUNT_IMPORTER);
                 
                 // Validates the IVR fields and throws a web client exception if they don't
                 ServletUtils.formatPin(custFields[ImportFields.IDX_IVR_USERNAME]);
@@ -1077,7 +1078,7 @@ public class AccountImportService {
                 
                 result.getAccountsAdded().add(custFields[ImportFields.IDX_ACCOUNT_NO]);
             } else if (!result.isInsertSpecified()) {
-                accountLog.accountUpdateAttemptedThroughAccountImporter(user, custFields[ImportFields.IDX_ACCOUNT_NO]);
+                accountLog.accountUpdateAttempted(user, custFields[ImportFields.IDX_ACCOUNT_NO], EventSource.ACCOUNT_IMPORTER);
     
                 // Validates the IVR fields and throws a web client exception if they don't
                 ServletUtils.formatPin(custFields[ImportFields.IDX_IVR_USERNAME]);

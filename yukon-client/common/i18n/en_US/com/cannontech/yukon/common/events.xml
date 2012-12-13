@@ -14,6 +14,7 @@
     <entry key="yukon.common.events.deviceLabel">Device Label</entry>
     <entry key="yukon.common.events.deviceName">Device Name</entry>
     <entry key="yukon.common.events.energyCompanyName">Energy Company Name</entry>
+    <entry key="yukon.common.events.eventSource">Event Source</entry>    
     <entry key="yukon.common.events.fileName">File Name</entry>
     <entry key="yukon.common.events.gatewayName">Gateway Name</entry>
     <entry key="yukon.common.events.gearName">Gear Name</entry>
@@ -44,15 +45,10 @@
 <!-- Event log message text and column names -->
 <!-- Account -->
     <!-- Account -->
-    <entry key="yukon.common.events.stars.account.accountCreationAttemptedThroughAccountImporter"> The user {1} is attempting to created a new account {2}.  They are attempting this through the account importer.</entry>
-    <entry key="yukon.common.events.stars.account.accountCreationAttemptedThroughApi"> The user {1} is attempting to created a new account {2}.  They are attempting this through the API.</entry>
-    <entry key="yukon.common.events.stars.account.accountUpdateCreationAttemptedThroughApi"> The user {1} is attempting to create a new account {2}.  They are attempting this through the API.</entry>
-    <entry key="yukon.common.events.stars.account.accountDeletionAttemptedThroughAccountImporter"> The user {1} is attempting to delete the account {2}.  They are attempting this through the account importer.</entry>
-    <entry key="yukon.common.events.stars.account.accountDeletionAttemptedThroughApi"> The user {1} is attempting to delete the account {2}.  They are attempting this through the API.</entry>
-    <entry key="yukon.common.events.stars.account.accountDeletionAttemptedByOperator"> The user {1} is attempting to delete the account {2}.  They are attempting this through the operator pages.</entry>
-    <entry key="yukon.common.events.stars.account.accountUpdateAttemptedThroughAccountImporter"> The user {1} is attempting to update the account {2}.  They are attempting this through the account importer.</entry>
-    <entry key="yukon.common.events.stars.account.accountUpdateAttemptedThroughApi"> The user {1} is attempting to update the account {2}.  They are attempting this through the API.</entry>
-    <entry key="yukon.common.events.stars.account.accountUpdateAttemptedByOperator"> The user {1} is attempting to update the account {2}.  They are attempting this through the operator pages.</entry>
+    <entry key="yukon.common.events.stars.account.accountCreationAttempted"> The user {1} is attempting to created a new account {2}.  They are attempting this through source: {3}.</entry>
+    <entry key="yukon.common.events.stars.account.accountUpdateCreationAttempted"> The user {1} is attempting to create a new account {2}.  They are attempting this through source: {3}.</entry>
+    <entry key="yukon.common.events.stars.account.accountDeletionAttempted"> The user {1} is attempting to delete the account {2}.  They are attempting this through the source: {3}.</entry>
+    <entry key="yukon.common.events.stars.account.accountUpdateAttempted"> The user {1} is attempting to update the account {2}.  They are attempting this through source: {3}.</entry>
 
     <!-- Account Service Level -->
     <entry key="yukon.common.events.stars.account.accountAdded">The account {2} was added by {1}</entry>
@@ -81,35 +77,24 @@
     <entry key="yukon.common.events.stars.account.contactInfo.contactRemoved">The user {1} removed the contact {3} on the account {2}.</entry>
 
     <!-- Account Enrollment -->
-    <entry key="yukon.common.events.stars.account.enrollment.enrollmentModificationAttemptedByOperator">The user {1} is attempting to modify enrollments for the account {2}.  They are attempting this through the operator pages.</entry>
-    <entry key="yukon.common.events.stars.account.enrollment.enrollmentAttemptedByOperator">The user {1} is attempting to enroll the device {3} into {4} [{5}] for the account {2}.  They are attempting this through the operator pages.</entry>
-    <entry key="yukon.common.events.stars.account.enrollment.enrollmentAttemptedByConsumer">The user {1} is attempting to enroll the device {3} into {4} [{5}] for the account {2}.  They are attempting this through the consumer pages.</entry>
-    <entry key="yukon.common.events.stars.account.enrollment.enrollmentAttemptedThroughApi">The user {1} is attempting to enroll the device {3} into {4} [{5}] for the account {2}.  They are attempting this through the API.</entry>
-    <entry key="yukon.common.events.stars.account.enrollment.unenrollmentAttemptedByOperator">The user {1} is attempting to unenroll the device {3} from {4} [{5}] for the account {2}.  They are attempting this through the operator pages.</entry>
-    <entry key="yukon.common.events.stars.account.enrollment.unenrollmentAttemptedByConsumer">The user {1} is attempting to unenroll the device {3} from {4} [{5}] for the account {2}.  They are attempting this through the consumer pages.</entry>
-    <entry key="yukon.common.events.stars.account.enrollment.unenrollmentAttemptedThroughApi">The user {1} is attempting to unenroll the device {3} from {4} [{5}] for the account {2}.  They are attempting this through the API.</entry>
+    <entry key="yukon.common.events.stars.account.enrollment.enrollmentModificationAttempted">The user {1} is attempting to modify enrollments for the account {2}.  They are attempting this through source: {3}.</entry>
+    <entry key="yukon.common.events.stars.account.enrollment.enrollmentAttempted">The user {1} is attempting to enroll the device {3} into {4} [{5}] for the account {2}.  They are attempting this through source: {6}.</entry>
+    <entry key="yukon.common.events.stars.account.enrollment.unenrollmentAttempted">The user {1} is attempting to unenroll the device {3} from {4} [{5}] for the account {2}.  They are attempting this through source: {6}.</entry>
 
     <!-- Account Enrollment Service Level -->
     <entry key="yukon.common.events.stars.account.enrollment.deviceEnrolled">The device {3} was enrolled in the program {4} and the load group {5} for the account {2} by {1}</entry>
     <entry key="yukon.common.events.stars.account.enrollment.deviceUnenrolled">The device {3} was unenrolled from the program {4} and the load group {5} for the account {2} by {1}</entry>
 
     <!-- Opt Outs -->
-    <entry key="yukon.common.events.stars.account.optOut.optOutLimitReductionAttemptedThroughApi">The user {1} is attempting to reduce the opt out limit for the device {3} on the account {2}.  They are attempting this through the API.</entry>
-    <entry key="yukon.common.events.stars.account.optOut.optOutLimitIncreaseAttemptedByOperator">The user {1} is attempting to increase the opt out limit for the device {3} on the account {2}.  They are attempting this through the operator pages.</entry>
-    <entry key="yukon.common.events.stars.account.optOut.optOutLimitReductionAttemptedByOperator">The user {1} is attempting to increase the opt out limit for the device {3} on the account {2}.  They are attempting this through the operator pages.</entry>
-    <entry key="yukon.common.events.stars.account.optOut.optOutLimitResetAttemptedByOperator">The user {1} is attempting to reset the opt out limit for the device {3} on the account {2}.  They are attempting this through the operator pages.</entry>
-    <entry key="yukon.common.events.stars.account.optOut.optOutLimitResetAttemptedThroughApi">The user {1} is attempting to reset the opt out limit for the device {3} on the account {2}.  They are attempting this through the API.</entry>
-    <entry key="yukon.common.events.stars.account.optOut.optOutResendAttemptedByOperator">The user {1} is attempting to resend an opt out command for the device {3} on the account {2}.  They are attempting this through the operator pages.</entry>
-    <entry key="yukon.common.events.stars.account.optOut.optOutAttemptedByOperator">The user {1} is attempting to opt out the device {3} on the account {2} for the {11}.  They are attempting this through the operator pages.</entry>
-    <entry key="yukon.common.events.stars.account.optOut.optOutAttemptedByOperator.11">Opt Out Start Date</entry>
-    <entry key="yukon.common.events.stars.account.optOut.optOutAttemptedByConsumer">The user {1} is attempting to opt out the device {3} on account {2} for the {11}.  They are attempting this through the consumer pages.</entry>
-    <entry key="yukon.common.events.stars.account.optOut.optOutAttemptedByConsumer.11">Opt Out Start Date</entry>
-    <entry key="yukon.common.events.stars.account.optOut.optOutCancelAttemptedByConsumer">The user {1} is attempting to cancel an opt out for the device {3} on the account {2} for the {11} through the {12}.  They are attempting this through the consumer pages.</entry>
-    <entry key="yukon.common.events.stars.account.optOut.optOutCancelAttemptedByConsumer.11">Opt Out Start Date</entry>
-    <entry key="yukon.common.events.stars.account.optOut.optOutCancelAttemptedByConsumer.12">Opt Out Stop Date</entry>
-    <entry key="yukon.common.events.stars.account.optOut.optOutCancelAttemptedByOperator">The user {1} is attempting to cancel an opt out for the device {3} on the account {2} for the {11} through the {12}.  They are attempting this through the consumer pages.</entry>
-    <entry key="yukon.common.events.stars.account.optOut.optOutCancelAttemptedByOperator.11">Opt Out Start Date</entry>
-    <entry key="yukon.common.events.stars.account.optOut.optOutCancelAttemptedByOperator.12">Opt Out Stop Date</entry>
+    <entry key="yukon.common.events.stars.account.optOut.optOutLimitReductionAttempted">The user {1} is attempting to reduce the opt out limit for the device {3} on the account {2}.  They are attempting this through source: {4}.</entry>
+    <entry key="yukon.common.events.stars.account.optOut.optOutLimitIncreaseAttempted">The user {1} is attempting to increase the opt out limit for the device {3} on the account {2}.  They are attempting this through source: {4}.</entry>
+    <entry key="yukon.common.events.stars.account.optOut.optOutLimitResetAttempted">The user {1} is attempting to reset the opt out limit for the device {3} on the account {2}.  They are attempting this through source: {4}.</entry>
+    <entry key="yukon.common.events.stars.account.optOut.optOutResendAttempted">The user {1} is attempting to resend an opt out command for the device {3} on the account {2}.  They are attempting this through source: {4}.</entry>
+    <entry key="yukon.common.events.stars.account.optOut.optOutAttempted">The user {1} is attempting to opt out the device {3} on the account {2} for the {11}.  They are attempting this through source: {4}.</entry>
+    <entry key="yukon.common.events.stars.account.optOut.optOutAttempted.11">Opt Out Start Date</entry>
+    <entry key="yukon.common.events.stars.account.optOut.optOutCancelAttempted">The user {1} is attempting to cancel an opt out for the device {3} on the account {2} for the {11} through the {12}.  They are attempting this through source: {4}.</entry>
+    <entry key="yukon.common.events.stars.account.optOut.optOutCancelAttempted.11">Opt Out Start Date</entry>
+    <entry key="yukon.common.events.stars.account.optOut.optOutCancelAttempted.12">Opt Out Stop Date</entry>
 
     <entry key="yukon.common.events.stars.account.optOut.optOutLimitIncreased">{7} opt outs were added to the {2} account for the device {3} by {1}</entry>
     <entry key="yukon.common.events.stars.account.optOut.optOutLimitIncreased.7">Number of Added Opt Outs</entry>
@@ -121,38 +106,32 @@
     <entry key="yukon.common.events.stars.account.optOut.optOutCanceled">An opt out was canceled for the device {3} on the account {2} by {1}</entry>
     
     <!-- Account Appliances -->
-    <entry key="yukon.common.events.stars.account.appliance.applianceAdditionAttemptedByOperator">The user {1} is attempting to add the appliance {3} [{5}] to the device {4} on the account {2}.</entry>
-    <entry key="yukon.common.events.stars.account.appliance.applianceUpdateAttemptedByOperator">The user {1} is attempting to update the appliance {3} [{5}] on the device {4} for the account {2}.</entry>
-    <entry key="yukon.common.events.stars.account.appliance.applianceDeletionAttemptedByOperator">The user {1} is attempting to delete the appliance {3} [{5}] on the device {4} for the account {2}.</entry>
+    <entry key="yukon.common.events.stars.account.appliance.applianceAdditionAttempted">The user {1} is attempting to add the appliance {3} [{5}] to the device {4} on the account {2}.</entry>
+    <entry key="yukon.common.events.stars.account.appliance.applianceUpdateAttempted">The user {1} is attempting to update the appliance {3} [{5}] on the device {4} for the account {2}.</entry>
+    <entry key="yukon.common.events.stars.account.appliance.applianceDeletionAttempted">The user {1} is attempting to delete the appliance {3} [{5}] on the device {4} for the account {2}.</entry>
     
     <entry key="yukon.common.events.stars.account.appliance.applianceAdded">The appliance {3} with the program {5} was added to the account {2} on device {4} by {1}</entry>
     <entry key="yukon.common.events.stars.account.appliance.applianceUpdated">The appliance {3} with the program {5} for device {4} and account {2} was updated by {1}</entry>
     <entry key="yukon.common.events.stars.account.appliance.applianceDeleted">The appliance {3} with the program {5} for device {4} and account {2} was removed by {1}</entry>
 
     <!-- Work Order -->
-    <entry key="yukon.common.events.stars.account.workOrder.workOrderCreationAttemptedByOperator">The operator {1} is attempting to create the work order {3} which will be on the account {2}.</entry>
-    <entry key="yukon.common.events.stars.account.workOrder.workOrderUpdateAttemptedByOperator">The operator {1} is attempting to update the work order {3} which is currently on the account {2}.</entry>
-    <entry key="yukon.common.events.stars.account.workOrder.workOrderDeletionAttemptedByOperator">The operator {1} is attempting to delete the work order {3} which is currently on the account {2}.</entry>
+    <entry key="yukon.common.events.stars.account.workOrder.workOrderCreationAttempted">The user {1} is attempting to create the work order {3} which will be on the account {2}.</entry>
+    <entry key="yukon.common.events.stars.account.workOrder.workOrderUpdateAttempted">The user {1} is attempting to update the work order {3} which is currently on the account {2}.</entry>
+    <entry key="yukon.common.events.stars.account.workOrder.workOrderDeletionAttempted">The user {1} is attempting to delete the work order {3} which is currently on the account {2}.</entry>
 
     <entry key="yukon.common.events.stars.account.workOrder.workOrderCreated">The work order {3} was created on the the account {2} by {1}</entry>
     <entry key="yukon.common.events.stars.account.workOrder.workOrderUpdated">The work order {3}, which is on the account {2}, was updated by {1}</entry>
     <entry key="yukon.common.events.stars.account.workOrder.workOrderDeleted">The work order {3} was deleted from the account {2} by {1}</entry>
 
     <!-- Thermostat Schedule -->
-    <entry key="yukon.common.events.stars.account.thermostat.thermostatScheduleSavingAttemptedByOperator">The user {1} is attempting to save the schedule {4} to the device {3} for the account {2}.  They are attempting this through the operator pages.</entry>
-    <entry key="yukon.common.events.stars.account.thermostat.thermostatScheduleSavingAttemptedByConsumer">The user {1} is attempting to save the schedule {4} to the device {3} for the account {2}.  They are attempting this through the consumer pages.</entry>
-    <entry key="yukon.common.events.stars.account.thermostat.thermostatScheduleDeleteAttemptedByOperator">The user {1} is attempting to delete the schedule {3} for the account {2}.  They are attempting this through the operator pages.</entry>
-    <entry key="yukon.common.events.stars.account.thermostat.thermostatScheduleDeleteAttemptedByConsumer">The user {1} is attempting to delete the schedule {3} for the account {2}.  They are attempting this through the consumer pages.</entry>
+    <entry key="yukon.common.events.stars.account.thermostat.thermostatScheduleSavingAttempted">The user {1} is attempting to save the schedule {4} to the device {3} for the account {2}.  They are attempting this through source: {5}.</entry>
+    <entry key="yukon.common.events.stars.account.thermostat.thermostatScheduleDeleteAttempted">The user {1} is attempting to delete the schedule {3} for the account {2}.  They are attempting this through source: {4}.</entry>
 
-    <entry key="yukon.common.events.stars.account.thermostat.thermostatRunProgramAttemptedByApi">The user {1} is attempting to revert the thermostat {2}.  They are attempting this through the API.</entry>
-    <entry key="yukon.common.events.stars.account.thermostat.thermostatRunProgramAttemptedByOperator">The user {1} is attempting to revert the thermostat {3} for the account {2}.  They are attempting this through the operator pages.</entry>
-    <entry key="yukon.common.events.stars.account.thermostat.thermostatRunProgramAttemptedByConsumer">The user {1} is attempting to revert the thermostat {3} for the account {2}.  They are attempting this through the consumer pages.</entry>
-    <entry key="yukon.common.events.stars.account.thermostat.thermostatManualSetAttemptedByApi">The user {1} is attempting to manual set the thermostat of the device {3} for the account {2}.  They are attempting this through the API.</entry>
-    <entry key="yukon.common.events.stars.account.thermostat.thermostatManualSetAttemptedByOperator">The user {1} is attempting to manual set the thermostat of the device {3} for the account {2}.  They are attempting this through the operator pages.</entry>
-    <entry key="yukon.common.events.stars.account.thermostat.thermostatManualSetAttemptedByConsumer">The user {1} is attempting to manual set the thermostat of the device {3} for the account {2}.  They are attempting this through the consumer pages.</entry>
-    <entry key="yukon.common.events.stars.account.thermostat.thermostatLabelChangeAttemptedByConsumer">The user {1} is attempting to change the thermostat label from {3} to {4} through the consumer pages for the device {2}.</entry>
-    <entry key="yukon.common.events.stars.account.thermostat.thermostatLabelChangeAttemptedByConsumer.3">Old Thermostat Label</entry>
-    <entry key="yukon.common.events.stars.account.thermostat.thermostatLabelChangeAttemptedByConsumer.4">New Thermostat Label</entry>
+    <entry key="yukon.common.events.stars.account.thermostat.thermostatRunProgramAttempted">The user {1} is attempting to revert the thermostat {2}.  They are attempting this through source: {3}.</entry>
+    <entry key="yukon.common.events.stars.account.thermostat.thermostatManualSetAttempted">The user {1} is attempting to manual set the thermostat of the device {3} for the account {2}.  They are attempting this through source: {6}.</entry>
+    <entry key="yukon.common.events.stars.account.thermostat.thermostatLabelChangeAttempted">The user {1} is attempting to change the thermostat label from {3} to {4} through the for the device {2}. Source: {5}.</entry>
+    <entry key="yukon.common.events.stars.account.thermostat.thermostatLabelChangeAttempted.3">Old Thermostat Label</entry>
+    <entry key="yukon.common.events.stars.account.thermostat.thermostatLabelChangeAttempted.4">New Thermostat Label</entry>
     
     <!-- Thermostat Schedule Service Level -->
     <entry key="yukon.common.events.stars.account.thermostat.thermostatScheduleSaved">The schedule {2} has been saved on the account {1}.</entry>
@@ -189,19 +168,16 @@
 
 <!-- Hardware -->
     <!-- Hardware -->
-    <entry key="yukon.common.events.hardware.hardwareMeterCreationAttemptedByOperator">The user {1} is attempting to create the meter (2)</entry>
-    <entry key="yukon.common.events.hardware.hardwareChangeOutForMeterAttemptedByOperator">The user {1} is attempting to change out {2} for the meter {3}.</entry>
-    <entry key="yukon.common.events.hardware.hardwareChangeOutAttemptedByOperator">The user {1} is attempting to change out {2} for {3}.</entry>
-    <entry key="yukon.common.events.hardware.hardwareCreationAttemptedByOperator">The user {1} is attempting to create the device {3} for the account {2}.  They are attempting this through the operator pages.</entry>
-    <entry key="yukon.common.events.hardware.hardwareCreationAttemptedThroughAccountImporter">The user {1} is attempting to create the device {2}.  They are attempting this through the account importer.</entry>
-    <entry key="yukon.common.events.hardware.twoWayHardwareCreationAttemptedByOperator">The user {1} is attempting to create the two way device {2}.  They are attempting this through the operator pages.</entry>
-    <entry key="yukon.common.events.hardware.assigningHardwareAttemptedByOperator">The user {1} is attempting to assign the hardware {3} to the account {2}.</entry>
-    <entry key="yukon.common.events.hardware.hardwareAdditionAttemptedThroughApi">The user {1} is attempting to add the device {3} to the account {2}.</entry>
-    <entry key="yukon.common.events.hardware.hardwareUpdateAttemptedByOperator">The user {1} is attempting to update the device {2}.  They are attempting this through the operator pages.</entry>
-    <entry key="yukon.common.events.hardware.hardwareUpdateAttemptedThroughAccountImporter">The user {1} is attempting to update the device {2} on the account {3}.  They are attempting this through the API.</entry>
-    <entry key="yukon.common.events.hardware.hardwareDeletionAttemptedByOperator">The user {1} is attempting to delete the device {2}.  They are attempting this through the operator pages.</entry>
-    <entry key="yukon.common.events.hardware.hardwareRemovalAttemptedThroughAccountImporter">The user {1} is attempting to delete the device {2}.  They are attempting this through the account importer.</entry>
-    <entry key="yukon.common.events.hardware.hardwareUpdateAttemptedThroughApi">The user {1} is attempting to delete the device {3} from the account {2}.  They are attempting this through the API.</entry>
+    <entry key="yukon.common.events.hardware.hardwareMeterCreationAttempted">The user {1} is attempting to create the meter {2}</entry>
+    <entry key="yukon.common.events.hardware.hardwareChangeOutForMeterAttempted">The user {1} is attempting to change out {2} for the meter {3}.</entry>
+    <entry key="yukon.common.events.hardware.hardwareChangeOutAttempted">The user {1} is attempting to change out {2} for {3}.</entry>
+    <entry key="yukon.common.events.hardware.hardwareCreationAttempted">The user {1} is attempting to create the device {3} for the account {2}.  They are attempting this through source: {4}.</entry>
+    <entry key="yukon.common.events.hardware.twoWayHardwareCreationAttempted">The user {1} is attempting to create the two way device {2}.  They are attempting this through source: {3}.</entry>
+    <entry key="yukon.common.events.hardware.assigningHardwareAttempted">The user {1} is attempting to assign the hardware {3} to the account {2}.</entry>
+    <entry key="yukon.common.events.hardware.hardwareAdditionAttempted">The user {1} is attempting to add the device {3} to the account {2}.</entry>
+    <entry key="yukon.common.events.hardware.hardwareDeletionAttempte">The user {1} is attempting to delete the device {2}.  They are attempting this through source: {3}.</entry>
+    <entry key="yukon.common.events.hardware.hardwareRemovalAttempted">The user {1} is attempting to delete the device {2} from account number {3}.  They are attempting this through source: {4}.</entry>
+    <entry key="yukon.common.events.hardware.hardwareUpdateAttempted">The user {1} is attempting to delete the device {3} from the account {2}.  They are attempting this through source: {4}.</entry>
     
     <!-- Hardware Service Level -->
     <entry key="yukon.common.events.hardware.hardwareCreated">The user {1} has created the device {2}.</entry>
@@ -214,9 +190,9 @@
     <entry key="yukon.common.events.hardware.serialNumberChanged.3">New Serial Number</entry>
 
     <!-- Hardware Configuration -->
-    <entry key="yukon.common.events.hardware.config.hardwareConfigAttemptedByOperator">The user {1} is attempting to configure the device {2} on the account {3}.</entry>
-    <entry key="yukon.common.events.hardware.config.hardwareDisableAttemptedByOperator">The user {1} is attempting to disable the device {2} on the account {3}.</entry>
-    <entry key="yukon.common.events.hardware.config.hardwareEnableAttemptedByOperator">The user {1} is attempting to enable the device {2} on the account {3}.</entry>
+    <entry key="yukon.common.events.hardware.config.hardwareConfigAttempted">The user {1} is attempting to configure the device {2} on the account {3}.</entry>
+    <entry key="yukon.common.events.hardware.config.hardwareDisableAttempted">The user {1} is attempting to disable the device {2} on the account {3}.</entry>
+    <entry key="yukon.common.events.hardware.config.hardwareEnableAttempted">The user {1} is attempting to enable the device {2} on the account {3}.</entry>
     
     <!-- Hardware Configuration Service Level -->
     <entry key="yukon.common.events.hardware.config.hardwareConfigUpdated">The user {1} has updated the configuration for the device {2} on the account {3}.</entry>
@@ -331,34 +307,23 @@
     <entry key="yukon.common.events.stars.energyCompany.deleteEnergyCompanyAttemptedByOperator">The user {1} is attempting to delete the energy company {2}.</entry>
     <entry key="yukon.common.events.stars.energyCompany.deleteEnergyCompany">The user {1} deleted the energy company {2}.</entry>
     
-    <entry key="yukon.common.events.stars.warehouse.addWarehouseAttemptedByOperator">The user {1} is attempting to add the warehouse {2}.</entry>
-    <entry key="yukon.common.events.stars.warehouse.updateWarehouseAttemptedByOperator">The user {1} is attempting to update the warehouse {2}.</entry>
-    <entry key="yukon.common.events.stars.warehouse.deleteWarehouseAttemptedByOperator">The user {1} is attempting to delete the warehouse {2}.</entry>
+    <entry key="yukon.common.events.stars.warehouse.addWarehouseAttempted">The user {1} is attempting to add the warehouse {2}.</entry>
+    <entry key="yukon.common.events.stars.warehouse.deleteWarehouseAttempted">The user {1} is attempting to delete the warehouse {2}.</entry>
 
     <entry key="yukon.common.events.stars.warehouse.addWarehouse">The warehouse {1} has been added.</entry>
     <entry key="yukon.common.events.stars.warehouse.updateWarehouse">The warehouse {1} has been updated.</entry>
     <entry key="yukon.common.events.stars.warehouse.deleteWarehouse">The warehouse {1} has been deleted.</entry>
 
-    <entry key="yukon.common.events.stars.optOutAdmin.cancelCurrentOptOutsAttemptedByOperator">The user {1} is attempting to cancel all the opt outs in the system.  They are attempting this through the operator pages.</entry>
-    <entry key="yukon.common.events.stars.optOutAdmin.cancelCurrentOptOutsAttemptedByApi">The user {1} is attempting to cancel all the opt outs in the system.  They are attempting this through the API.</entry>
-    <entry key="yukon.common.events.stars.optOutAdmin.cancelCurrentOptOutsByProgramAttemptedByOperator">The user {1} is attempting to cancel all the opt outs in the system for the program {2}.  They are attempting this through the operator pages.</entry>
-    <entry key="yukon.common.events.stars.optOutAdmin.cancelCurrentOptOutsByProgramAttemptedByApi">The user {1} is attempting to cancel all the opt outs in the system for the program {2}.  They are attempting this through the API.</entry>
-    <entry key="yukon.common.events.stars.optOutAdmin.enablingOptOutUsageForTodayAttemptedByOperator">The user {1} is attempting to enable the ability for customers to opt out.  They are attempting this through the operator pages.</entry>
-    <entry key="yukon.common.events.stars.optOutAdmin.enablingOptOutUsageForTodayAttemptedByApi">The user {1} is attempting to enable the ability for customers to opt out.  They are attempting this through the API.</entry>
-    <entry key="yukon.common.events.stars.optOutAdmin.enablingOptOutUsageForTodayByProgramAttemptedByOperator">The user {1} is attempting to enable the ability for customers to opt out of the program {2}.  They are attempting this through the operator pages.</entry>
-    <entry key="yukon.common.events.stars.optOutAdmin.enablingOptOutUsageForTodayByProgramAttemptedByApi">The user {1} is attempting to enable the ability for customers to opt out of the program {2}.  They are attempting this through the API.</entry>
-    <entry key="yukon.common.events.stars.optOutAdmin.disablingOptOutUsageForTodayAttemptedByOperator">The user {1} is attempting to disable the ability for customers to opt out.  They are attempting this through the operator pages.</entry>
-    <entry key="yukon.common.events.stars.optOutAdmin.disablingOptOutUsageForTodayAttemptedByApi">The user {1} is attempting to disable the ability for customers to opt out.  They are attempting this through the API.</entry>
-    <entry key="yukon.common.events.stars.optOutAdmin.disablingOptOutUsageForTodayByProgramAttemptedByOperator">The user {1} is attempting to disable the ability for customers to opt out of the program {2}.  They are attempting this through the operator pages.</entry>
-    <entry key="yukon.common.events.stars.optOutAdmin.disablingOptOutUsageForTodayByProgramAttemptedByApi">The user {1} is attempting to disable the ability for customers to opt out of the program {2}.  They are attempting this through the API.</entry>
-    <entry key="yukon.common.events.stars.optOutAdmin.countTowardOptOutLimitTodayAttemptedByOperator">The user {1} is attempting to change the system to count opt outs for today.  They are attempting this through the operator pages.</entry>
-    <entry key="yukon.common.events.stars.optOutAdmin.countTowardOptOutLimitTodayAttemptedByApi">The user {1} is attempting to change the system to count opt outs for today.  They are attempting this through the API.</entry>
-    <entry key="yukon.common.events.stars.optOutAdmin.countTowardOptOutLimitTodayByProgramAttemptedByOperator">The user {1} is attempting to change the system to count opt outs for the program {2} today.  They are attempting this through the operator pages.</entry>
-    <entry key="yukon.common.events.stars.optOutAdmin.countTowardOptOutLimitTodayByProgramAttemptedByApi">The user {1} is attempting to change the system to count opt outs for the program {2} today.  They are attempting this through the API.</entry>
-    <entry key="yukon.common.events.stars.optOutAdmin.doNotCountTowardOptOutLimitTodayAttemptedByOperator">The user {1} is attempting to change the system to not count opt outs for today.  They are attempting this through the operator pages.</entry>
-    <entry key="yukon.common.events.stars.optOutAdmin.doNotCountTowardOptOutLimitTodayAttemptedByApi">The user {1} is attempting to change the system to not count opt outs for today.  They are attempting this through the API.</entry>
-    <entry key="yukon.common.events.stars.optOutAdmin.doNotCountTowardOptOutLimitTodayByProgramAttemptedByOperator">The user {1} is attempting to change the system to not count opt outs for the program {2} today.  They are attempting this through the operator pages.</entry>
-    <entry key="yukon.common.events.stars.optOutAdmin.doNotCountTowardOptOutLimitTodayByProgramAttemptedByApi">The user {1} is attempting to change the system to not count opt outs for the program {2} today.  They are attempting this through the API.</entry>
+    <entry key="yukon.common.events.stars.optOutAdmin.cancelCurrentOptOutsAttempted">The user {1} is attempting to cancel all the opt outs in the system.  They are attempting this through source: {2}.</entry>
+    <entry key="yukon.common.events.stars.optOutAdmin.cancelCurrentOptOutsByProgramAttempted">The user {1} is attempting to cancel all the opt outs in the system for the program {2}.  They are attempting this through source: {3}.</entry>
+    <entry key="yukon.common.events.stars.optOutAdmin.enablingOptOutUsageForTodayAttempted">The user {1} is attempting to enable the ability for customers to opt out.  They are attempting this through source: {2}.</entry>
+    <entry key="yukon.common.events.stars.optOutAdmin.enablingOptOutUsageForTodayByProgramAttempted">The user {1} is attempting to enable the ability for customers to opt out of the program {2}.  They are attempting this through source: {3}.</entry>
+    <entry key="yukon.common.events.stars.optOutAdmin.disablingOptOutUsageForTodayAttempted">The user {1} is attempting to disable the ability for customers to opt out.  They are attempting this through source: {2}.</entry>
+    <entry key="yukon.common.events.stars.optOutAdmin.disablingOptOutUsageForTodayByProgramAttempted">The user {1} is attempting to disable the ability for customers to opt out of the program {2}.  They are attempting this through source: {3}.</entry>
+    <entry key="yukon.common.events.stars.optOutAdmin.countTowardOptOutLimitTodayAttempted">The user {1} is attempting to change the system to count opt outs for today.  They are attempting this through source: {2}.</entry>
+    <entry key="yukon.common.events.stars.optOutAdmin.countTowardOptOutLimitTodayByProgramAttempted">The user {1} is attempting to change the system to count opt outs for the program {2} today.  They are attempting this through source: {3}..</entry>
+    <entry key="yukon.common.events.stars.optOutAdmin.doNotCountTowardOptOutLimitTodayAttempted">The user {1} is attempting to change the system to not count opt outs for today.  They are attempting this through source: {2}..</entry>
+    <entry key="yukon.common.events.stars.optOutAdmin.doNotCountTowardOptOutLimitTodayByProgramAttempted">The user {1} is attempting to change the system to not count opt outs for the program {2} today.  They are attempting this through source: {3}.</entry>
 
     <entry key="yukon.common.events.stars.optOutAdmin.cancelCurrentOptOuts">The user {1} canceled all the opt outs in the system.</entry>
     <entry key="yukon.common.events.stars.optOutAdmin.cancelCurrentOptOutsByProgram">The user {1} canceled all the opt outs for the program {2}.</entry>
@@ -404,13 +369,13 @@
     
     
 <!-- ZigBee Webservices -->
-    <entry key="yukon.common.events.hardware.commands.config.zigbeeDeviceCommissionByOperator">The user {1} has pressed the commission button for ZigBee device {2}.</entry>
-    <entry key="yukon.common.events.hardware.commands.config.zigbeeDeviceDecommissionByOperator">The user {1} has pressed the decommission button for ZigBee device {2}.</entry>
-    <entry key="yukon.common.events.hardware.commands.status.zigbeeDeviceRefreshByOperator">The user {1} has pressed the refresh button for the ZigBee device {2}.</entry>
-    <entry key="yukon.common.events.hardware.commands.actions.zigbeeSendTextByOperator">The user {1} has entered a text message to send to the ZigBee device {2}: "{3}"</entry>
-    <entry key="yukon.common.events.hardware.commands.actions.zigbeeSendTextByOperator.2">Device Name</entry>
-    <entry key="yukon.common.events.hardware.config.zigbeeDeviceAssignByOperator">The user {1} pressed the assign button to link ZigBee device {2} to the ZigBee gateway {3}.</entry>
-    <entry key="yukon.common.events.hardware.config.zigbeeDeviceUnassignByOperator">The user {1} pressed the unassign button to remove the link between ZigBee device {2} and ZigBee gateway {3}.</entry>
+    <entry key="yukon.common.events.hardware.commands.config.zigbeeDeviceCommission">The user {1} has pressed the commission button for ZigBee device {2}.</entry>
+    <entry key="yukon.common.events.hardware.commands.config.zigbeeDeviceDecommission">The user {1} has pressed the decommission button for ZigBee device {2}.</entry>
+    <entry key="yukon.common.events.hardware.commands.status.zigbeeDeviceRefresh">The user {1} has pressed the refresh button for the ZigBee device {2}. Source: {3}</entry>
+    <entry key="yukon.common.events.hardware.commands.actions.zigbeeSendText">The user {1} has entered a text message to send to the ZigBee device {2}: "{3}"</entry>
+    <entry key="yukon.common.events.hardware.commands.actions.zigbeeSendText.2">Device Name</entry>
+    <entry key="yukon.common.events.hardware.config.zigbeeDeviceAssign">The user {1} pressed the assign button to link ZigBee device {2} to the ZigBee gateway {3}.</entry>
+    <entry key="yukon.common.events.hardware.config.zigbeeDeviceUnassign">The user {1} pressed the unassign button to remove the link between ZigBee device {2} and ZigBee gateway {3}.</entry>
 
     <entry key="yukon.common.events.hardware.commands.config.zigbeeDeviceCommissioned">Commission command has been sent for ZigBee device {1}.</entry>
     <entry key="yukon.common.events.hardware.commands.config.zigbeeDeviceDecommissioned">Decommission command has been sent for ZigBee device {1}.</entry>

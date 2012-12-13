@@ -261,4 +261,9 @@
     <entry key="yukon.common.setting.DATABASE_MIGRATION_FILE_LOCATION">Database Migration File Location</entry>
     <entry key="yukon.common.setting.DATABASE_MIGRATION_FILE_LOCATION.description">File location of the database migration export process.</entry>
 
+    <entry key="yukon.common.eventSource.API">API</entry>
+    <entry key="yukon.common.eventSource.CONSUMER">Consumer</entry>
+    <entry key="yukon.common.eventSource.ACCOUNT_IMPORTER">Account Importer</entry>
+    <entry key="yukon.common.eventSource.OPERATOR">Operator</entry>
+
 </properties>

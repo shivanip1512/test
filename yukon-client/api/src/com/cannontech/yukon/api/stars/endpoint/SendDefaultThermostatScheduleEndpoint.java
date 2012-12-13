@@ -13,6 +13,7 @@ import org.springframework.ws.server.endpoint.annotation.PayloadRoot;
 
 import com.cannontech.clientutils.YukonLogManager;
 import com.cannontech.common.events.loggers.AccountEventLogService;
+import com.cannontech.common.events.model.EventSource;
 import com.cannontech.common.exception.NotAuthorizedException;
 import com.cannontech.common.util.xml.SimpleXPathTemplate;
 import com.cannontech.common.util.xml.XmlUtils;
@@ -56,7 +57,7 @@ public class SendDefaultThermostatScheduleEndpoint {
 
         // Log run program attempt
         for (String serialNumber : serialNumbers) {
-            accountEventLogService.thermostatScheduleSendDefaultAttemptedByApi(user, serialNumber);
+            accountEventLogService.thermostatScheduleSendDefaultAttempted(user, serialNumber, EventSource.API);
         }
         
         // init response

@@ -7,6 +7,7 @@ import org.springframework.ws.server.endpoint.annotation.Endpoint;
 import org.springframework.ws.server.endpoint.annotation.PayloadRoot;
 
 import com.cannontech.common.events.loggers.AccountEventLogService;
+import com.cannontech.common.events.model.EventSource;
 import com.cannontech.common.exception.NotAuthorizedException;
 import com.cannontech.common.util.xml.SimpleXPathTemplate;
 import com.cannontech.common.util.xml.XmlUtils;
@@ -24,10 +25,10 @@ import com.cannontech.yukon.api.util.XmlVersionUtils;
 public class ResetOverrideCountBySerialNumberRequestEndpoint {
 
     private AccountEventLogService accountEventLogService;
-	private OptOutService optOutService;
+    private OptOutService optOutService;
     private Namespace ns = YukonXml.getYukonNamespace();
-	private RolePropertyDao rolePropertyDao;
-	
+    private RolePropertyDao rolePropertyDao;
+    
 	private String accountNumberExpressionStr = "/y:resetOverrideCountBySerialNumberRequest/y:accountNumber";
 	private String serialNumberExpressionStr = "/y:resetOverrideCountBySerialNumberRequest/y:serialNumber";
     
@@ -49,9 +50,10 @@ public class ResetOverrideCountBySerialNumberRequestEndpoint {
         try {
             
             // Log opt out limit reset attempt
-            accountEventLogService.optOutLimitResetAttemptedThroughApi(user, 
-                                                                       accountNumber, 
-                                                                       serialNumber);
+            accountEventLogService.optOutLimitResetAttempted(user,
+                                                             accountNumber,
+                                                             serialNumber,
+                                                             EventSource.API);
             
             // Check authorization
             rolePropertyDao.verifyProperty(YukonRoleProperty.OPERATOR_CONSUMER_INFO_WS_LM_DATA_ACCESS, user);
@@ -85,12 +87,12 @@ public class ResetOverrideCountBySerialNumberRequestEndpoint {
     
     @Autowired
     public void setOptOutService(OptOutService optOutService) {
-		this.optOutService = optOutService;
-	}
+        this.optOutService = optOutService;
+    }
     
     @Autowired
     public void setRolePropertyDao(RolePropertyDao rolePropertyDao) {
-		this.rolePropertyDao = rolePropertyDao;
-	}
+        this.rolePropertyDao = rolePropertyDao;
+    }
     
 }

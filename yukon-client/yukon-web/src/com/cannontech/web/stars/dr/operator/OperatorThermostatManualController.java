@@ -13,6 +13,7 @@ import org.springframework.web.bind.ServletRequestUtils;
 import org.springframework.web.bind.annotation.RequestMapping;
 
 import com.cannontech.common.events.loggers.AccountEventLogService;
+import com.cannontech.common.events.model.EventSource;
 import com.cannontech.common.search.SearchResult;
 import com.cannontech.common.temperature.Temperature;
 import com.cannontech.core.dao.CustomerDao;
@@ -169,7 +170,7 @@ public class OperatorThermostatManualController {
 	    CustomerAccount customerAccount = customerAccountDao.getById(accountInfoFragment.getAccountId());
         List<String> serialNumbers =  lmHardwareBaseDao.getSerialNumberForInventoryIds(thermostatIdsList);
         for (String serialNumber : serialNumbers) {
-            accountEventLogService.thermostatRunProgramAttemptedByOperator(userContext.getYukonUser(), customerAccount.getAccountNumber(), serialNumber);
+            accountEventLogService.thermostatRunProgramAttempted(userContext.getYukonUser(), customerAccount.getAccountNumber(), serialNumber, EventSource.OPERATOR);
         }
 	    
         // Send out run program commands
@@ -191,10 +192,15 @@ public class OperatorThermostatManualController {
                                     Temperature coolTemp, boolean autoModeEnabledCommand, YukonUserContext userContext, 
                                     HttpServletRequest request, ModelMap modelMap, FlashScope flashScope, AccountInfoFragment accountInfoFragment) {
 
-		List<Integer> thermostatIdsList = operatorThermostatHelper.setupModelMapForThermostats(thermostatIds, accountInfoFragment, modelMap);
+        List<Integer> thermostatIdsList = operatorThermostatHelper.setupModelMapForThermostats(thermostatIds, accountInfoFragment, modelMap);
 		CustomerAccount customerAccount = customerAccountDao.getById(accountInfoFragment.getAccountId());
-        
-		thermostatService.logOperatorThermostatManualSaveAttempt(thermostatIdsList, userContext, customerAccount);
+
+        thermostatService.logThermostatManualSaveAttempt(thermostatIdsList, userContext, customerAccount,
+                                                         (heatTemp != null) ? heatTemp.toFahrenheit().getValue() : null,
+                                                         (coolTemp != null) ? coolTemp.toFahrenheit().getValue() : null,
+                                                         mode, autoModeEnabledCommand, 
+                                                         EventSource.OPERATOR);
+
         ThermostatMode thermostatMode = thermostatService.getThermostatModeFromString(mode);
         ThermostatFanState fanState = ThermostatFanState.valueOf(fan);
         thermostatService.updateTempUnitForCustomer(temperatureUnit, customerAccount.getCustomerId());

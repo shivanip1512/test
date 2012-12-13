@@ -2,7 +2,6 @@ package com.cannontech.yukon.api.account.endpoint;
 
 import java.util.List;
 
-import org.jdom.Attribute;
 import org.jdom.Element;
 import org.jdom.Namespace;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -11,6 +10,7 @@ import org.springframework.ws.server.endpoint.annotation.PayloadRoot;
 
 import com.cannontech.common.bulk.mapper.ObjectMappingException;
 import com.cannontech.common.events.loggers.AccountEventLogService;
+import com.cannontech.common.events.model.EventSource;
 import com.cannontech.common.util.ObjectMapper;
 import com.cannontech.common.util.xml.SimpleXPathTemplate;
 import com.cannontech.common.util.xml.XmlUtils;
@@ -44,7 +44,7 @@ public class RemoveAccountsRequestEndpoint {
         removeAccountsResponse.addContent(removeAccountsResultList);
         
         for (String accountNumber : accountNumbers) {
-            accountEventLogService.accountDeletionAttemptedThroughApi(user, accountNumber);
+            accountEventLogService.accountDeletionAttempted(user, accountNumber, EventSource.API);
             
             Element removeAccountResult = addAccountResponse(ns, removeAccountsResultList, accountNumber);
             try {
@@ -80,13 +80,13 @@ public class RemoveAccountsRequestEndpoint {
 	    }
 	}
 
-	@Autowired
-	public void setAccountEventLogService(AccountEventLogService accountEventLogService) {
+    @Autowired
+    public void setAccountEventLogService(AccountEventLogService accountEventLogService) {
         this.accountEventLogService = accountEventLogService;
     }
-	
-	@Autowired
-	public void setAccountService(AccountService accountService) {
-		this.accountService = accountService;
-	}
+
+    @Autowired
+    public void setAccountService(AccountService accountService) {
+        this.accountService = accountService;
+    }
 }

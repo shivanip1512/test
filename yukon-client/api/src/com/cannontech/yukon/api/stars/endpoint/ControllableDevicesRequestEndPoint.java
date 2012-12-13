@@ -2,7 +2,6 @@ package com.cannontech.yukon.api.stars.endpoint;
 
 import java.util.List;
 
-import org.apache.log4j.Logger;
 import org.jdom.Element;
 import org.jdom.Namespace;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -10,9 +9,9 @@ import org.springframework.ws.server.endpoint.annotation.Endpoint;
 import org.springframework.ws.server.endpoint.annotation.PayloadRoot;
 import org.w3c.dom.Node;
 
-import com.cannontech.clientutils.YukonLogManager;
 import com.cannontech.common.bulk.mapper.ObjectMappingException;
 import com.cannontech.common.events.loggers.HardwareEventLogService;
+import com.cannontech.common.events.model.EventSource;
 import com.cannontech.common.util.ObjectMapper;
 import com.cannontech.common.util.xml.SimpleXPathTemplate;
 import com.cannontech.common.util.xml.XmlUtils;
@@ -35,7 +34,6 @@ import com.cannontech.yukon.api.util.XmlVersionUtils;
 
 @Endpoint
 public class ControllableDevicesRequestEndPoint {
-    private static Logger log = YukonLogManager.getLogger(ControllableDevicesRequestEndPoint.class);
 
     private HardwareEventLogService hardwareEventLogService;
     private StarsControllableDeviceHelper starsControllableDeviceHelper;
@@ -90,14 +88,14 @@ public class ControllableDevicesRequestEndPoint {
 
         // Log hardware addition attempts
         for (LmDeviceDto device : devices) {
-            hardwareEventLogService.hardwareAdditionAttemptedThroughApi(user,
-                                                                        device.getAccountNumber(),
-                                                                        device.getSerialNumber());
+            hardwareEventLogService.hardwareAdditionAttempted(user,
+                                                              device.getAccountNumber(),
+                                                              device.getSerialNumber(),
+                                                              EventSource.API);
         }
         
         // check authorization
-        authDao.verifyTrueProperty(user,
-                                   ConsumerInfoRole.CONSUMER_INFO_HARDWARES_CREATE);
+        authDao.verifyTrueProperty(user, ConsumerInfoRole.CONSUMER_INFO_HARDWARES_CREATE);
         
         // run service
         for (LmDeviceDto device : devices) {
@@ -133,9 +131,10 @@ public class ControllableDevicesRequestEndPoint {
         // run service
         for (LmDeviceDto device : devices) {
             try {
-                hardwareEventLogService.hardwareUpdateAttemptedThroughApi(user,
-                                                                          device.getAccountNumber(),
-                                                                          device.getSerialNumber());
+                hardwareEventLogService.hardwareUpdateAttempted(user,
+                                                                device.getAccountNumber(),
+                                                                device.getSerialNumber(),
+                                                                EventSource.API);
 
                 
                 starsControllableDeviceHelper.updateDeviceOnAccount(device, user);
@@ -169,9 +168,10 @@ public class ControllableDevicesRequestEndPoint {
         // run service
         for (LmDeviceDto device : devices) {
             try {
-                hardwareEventLogService.hardwareRemovalAttemptedThroughApi(user,
-                                                                           device.getAccountNumber(),
-                                                                           device.getSerialNumber());
+                hardwareEventLogService.hardwareRemovalAttempted(user,
+                                                                 device.getAccountNumber(),
+                                                                 device.getSerialNumber(),
+                                                                 EventSource.API);
 
                 
                 starsControllableDeviceHelper.removeDeviceFromAccount(device, user);

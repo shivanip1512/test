@@ -10,6 +10,7 @@ import org.springframework.validation.BindingResult;
 import com.cannontech.common.device.creation.BadTemplateDeviceCreationException;
 import com.cannontech.common.device.creation.DeviceCreationException;
 import com.cannontech.common.events.loggers.HardwareEventLogService;
+import com.cannontech.common.events.model.EventSource;
 import com.cannontech.common.inventory.Hardware;
 import com.cannontech.common.inventory.HardwareType;
 import com.cannontech.common.pao.PaoType;
@@ -42,9 +43,9 @@ public class HardwareModelHelper {
                                   Set<YukonRoleProperty> verifyProperties, 
                                   BindingResult result) {
         
-        hardwareEventLogService.hardwareCreationAttemptedByOperator(user, accountNo, hardware.getSerialNumber());
+        hardwareEventLogService.hardwareCreationAttempted(user, accountNo, hardware.getSerialNumber(), EventSource.OPERATOR);
         if (hardware.isCreatingNewTwoWayDevice()) {
-            hardwareEventLogService.twoWayHardwareCreationAttemptedByOperator(user, hardware.getTwoWayDeviceName());
+            hardwareEventLogService.twoWayHardwareCreationAttempted(user, hardware.getTwoWayDeviceName(), EventSource.OPERATOR);
         }
 
         for (YukonRoleProperty property : verifyProperties) {
@@ -107,7 +108,7 @@ public class HardwareModelHelper {
     }
     
     public void updateAttempted(Hardware hardware, LiteYukonUser user, YukonRoleProperty editingRp, BindingResult result) {
-        hardwareEventLogService.hardwareUpdateAttemptedByOperator(user, hardware.getSerialNumber());
+        hardwareEventLogService.hardwareUpdateAttempted(user, Integer.toString(hardware.getAccountId()), hardware.getSerialNumber(), EventSource.OPERATOR);
         rolePropertyDao.verifyProperty(editingRp, user);
         hardwareValidator.validate(hardware, result);
     }

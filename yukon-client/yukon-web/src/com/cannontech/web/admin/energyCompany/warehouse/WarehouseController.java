@@ -13,6 +13,7 @@ import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.RequestMapping;
 
 import com.cannontech.common.events.loggers.StarsEventLogService;
+import com.cannontech.common.events.model.EventSource;
 import com.cannontech.common.model.Address;
 import com.cannontech.common.validator.AddressValidator;
 import com.cannontech.common.validator.SimpleValidator;
@@ -101,8 +102,9 @@ public class WarehouseController {
                                   FlashScope flashScope,
                                   EnergyCompanyInfoFragment energyCompanyInfoFragment) {
         
-        starsEventLogService.addWarehouseAttemptedByOperator(userContext.getYukonUser(), 
-                                                             warehouseDto.getWarehouse().getWarehouseName());
+        starsEventLogService.addWarehouseAttempted(userContext.getYukonUser(),
+                                                   warehouseDto.getWarehouse().getWarehouseName(),
+                                                   EventSource.OPERATOR);
         
         modelMap.addAttribute("ecId", ecId);
         WarehouseDtoValidator validator = new WarehouseDtoValidator();
@@ -146,8 +148,9 @@ public class WarehouseController {
                                  EnergyCompanyInfoFragment energyCompanyInfoFragment) {
         
 
-        starsEventLogService.updateWarehouseAttemptedByOperator(userContext.getYukonUser(), 
-                                                                warehouseDto.getWarehouse().getWarehouseName());
+        starsEventLogService.updateWarehouseAttempted(userContext.getYukonUser(), 
+                                                      warehouseDto.getWarehouse().getWarehouseName(),
+                                                      EventSource.OPERATOR);
         
         WarehouseDtoValidator validator = new WarehouseDtoValidator();
         validator.validate(warehouseDto, bindingResult);
@@ -173,8 +176,8 @@ public class WarehouseController {
                                   FlashScope flashScope,
                                   EnergyCompanyInfoFragment energyCompanyInfoFragment) {
         
-        starsEventLogService.deleteWarehouseAttemptedByOperator(userContext.getYukonUser(),
-                                                                warehouseDto.getWarehouse().getWarehouseName());
+        starsEventLogService.deleteWarehouseAttempted(userContext.getYukonUser(),
+                                                                warehouseDto.getWarehouse().getWarehouseName(), EventSource.OPERATOR);
         modelMap.addAttribute("ecId", ecId);
         List<Integer> inventory = Warehouse.getAllInventoryInAWarehouse(warehouseDto.getWarehouse().getWarehouseID());
         //Only warehouse that contains no inventory may be deleted.

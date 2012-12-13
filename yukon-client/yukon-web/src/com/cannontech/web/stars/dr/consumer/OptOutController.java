@@ -25,6 +25,7 @@ import org.springframework.web.bind.annotation.RequestMethod;
 
 import com.cannontech.common.device.commands.exception.CommandCompletionException;
 import com.cannontech.common.events.loggers.AccountEventLogService;
+import com.cannontech.common.events.model.EventSource;
 import com.cannontech.common.survey.dao.SurveyDao;
 import com.cannontech.common.survey.model.Question;
 import com.cannontech.common.survey.model.Survey;
@@ -354,10 +355,11 @@ public class OptOutController extends AbstractConsumerController {
             LMHardwareBase lmHardwareBase = lmHardwareBaseDao.getById(inventoryId);
             DateTime startDate =
                 optOutBackingBean.getStartDate().toDateTimeAtStartOfDay(userContext.getJodaTimeZone());
-            accountEventLogService.optOutAttemptedByConsumer(userContext.getYukonUser(), 
+            accountEventLogService.optOutAttempted(userContext.getYukonUser(), 
                                                              customerAccount.getAccountNumber(), 
                                                              lmHardwareBase.getManufacturerSerialNumber(),
-                                                             startDate);
+                                                             startDate,
+                                                             EventSource.CONSUMER);
         }
 
         helper.processOptOut(optOutBackingBean, userContext,
@@ -401,11 +403,12 @@ public class OptOutController extends AbstractConsumerController {
         // Log consumer opt out cancel attempt
         OptOutEvent optOutEvent = optOutEventDao.getOptOutEventById(eventId);
         LMHardwareBase lmHardwareBase = lmHardwareBaseDao.getById(optOutEvent.getInventoryId());
-        accountEventLogService.optOutCancelAttemptedByConsumer(userContext.getYukonUser(), 
+        accountEventLogService.optOutCancelAttempted(userContext.getYukonUser(), 
                                                               customerAccount.getAccountNumber(),
                                                               lmHardwareBase.getManufacturerSerialNumber(),
                                                               optOutEvent.getStartDate(),
-                                                              optOutEvent.getStopDate());
+                                                              optOutEvent.getStopDate(),
+                                                              EventSource.CONSUMER);
         
     	// Make sure opt outs are enabled for the user
     	LiteYukonUser user = userContext.getYukonUser();

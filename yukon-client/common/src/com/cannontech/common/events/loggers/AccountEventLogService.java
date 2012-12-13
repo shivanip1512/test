@@ -5,6 +5,7 @@ import org.joda.time.ReadableInstant;
 
 import com.cannontech.common.events.Arg;
 import com.cannontech.common.events.YukonEventLog;
+import com.cannontech.common.events.model.EventSource;
 import com.cannontech.common.util.TransactionExecutor.ExecutorTransactionality;
 import com.cannontech.database.data.lite.LiteYukonUser;
 
@@ -13,41 +14,25 @@ public interface AccountEventLogService {
 /* ACCOUNTS */
     // Account
     @YukonEventLog(transactionality=ExecutorTransactionality.FORCED, category="stars.account")
-    public void accountCreationAttemptedThroughAccountImporter(@Arg(ArgEnum.username) LiteYukonUser yukonUser,
-                                                               @Arg(ArgEnum.accountNumber) String accountNumber);
+    public void accountCreationAttempted(@Arg(ArgEnum.username) LiteYukonUser yukonUser,
+                                       @Arg(ArgEnum.accountNumber) String accountNumber,
+                                       @Arg(ArgEnum.eventSource) EventSource source);
 
     @YukonEventLog(transactionality=ExecutorTransactionality.FORCED, category="stars.account")
-    public void accountCreationAttemptedThroughApi(@Arg(ArgEnum.username) LiteYukonUser yukonUser,
-                                                   @Arg(ArgEnum.accountNumber) String accountNumber);
+    public void accountUpdateCreationAttempted(@Arg(ArgEnum.username) LiteYukonUser yukonUser,
+                                                         @Arg(ArgEnum.accountNumber) String accountNumber,
+                                                         @Arg(ArgEnum.eventSource) EventSource source);
 
     @YukonEventLog(transactionality=ExecutorTransactionality.FORCED, category="stars.account")
-    public void accountUpdateCreationAttemptedThroughApi(@Arg(ArgEnum.username) LiteYukonUser yukonUser,
-                                                         @Arg(ArgEnum.accountNumber) String accountNumber);
-
-    @YukonEventLog(transactionality=ExecutorTransactionality.FORCED, category="stars.account")
-    public void accountDeletionAttemptedThroughAccountImporter(@Arg(ArgEnum.username) LiteYukonUser yukonUser,
-                                                               @Arg(ArgEnum.accountNumber) String accountNumber);
+    public void accountDeletionAttempted(@Arg(ArgEnum.username) LiteYukonUser yukonUser,
+                                           @Arg(ArgEnum.accountNumber) String accountNumber,
+                                           @Arg(ArgEnum.eventSource) EventSource source);
     
     @YukonEventLog(transactionality=ExecutorTransactionality.FORCED, category="stars.account")
-    public void accountDeletionAttemptedThroughApi(@Arg(ArgEnum.username) LiteYukonUser yukonUser,
-                                                   @Arg(ArgEnum.accountNumber) String accountNumber);
-    
-    @YukonEventLog(transactionality=ExecutorTransactionality.FORCED, category="stars.account")
-    public void accountDeletionAttemptedByOperator(@Arg(ArgEnum.username) LiteYukonUser yukonUser,
-                                                   @Arg(ArgEnum.accountNumber) String accountNumber);
-    
-    @YukonEventLog(transactionality=ExecutorTransactionality.FORCED, category="stars.account")
-    public void accountUpdateAttemptedThroughAccountImporter(@Arg(ArgEnum.username) LiteYukonUser yukonUser,
-                                                             @Arg(ArgEnum.accountNumber) String accountNumber);
+    public void accountUpdateAttempted(@Arg(ArgEnum.username) LiteYukonUser yukonUser,
+                                         @Arg(ArgEnum.accountNumber) String accountNumber,
+                                         @Arg(ArgEnum.eventSource) EventSource source);
 
-    @YukonEventLog(transactionality=ExecutorTransactionality.FORCED, category="stars.account")
-    public void accountUpdateAttemptedThroughApi(@Arg(ArgEnum.username) LiteYukonUser yukonUser,
-                                                 @Arg(ArgEnum.accountNumber) String accountNumber);
-
-    @YukonEventLog(transactionality=ExecutorTransactionality.FORCED, category="stars.account")
-    public void accountUpdateAttemptedByOperator(@Arg(ArgEnum.username) LiteYukonUser yukonUser,
-                                                 @Arg(ArgEnum.accountNumber) String accountNumber);
-    
     // Account Service Level
     @YukonEventLog(transactionality=ExecutorTransactionality.TRANSACTIONAL, category="stars.account")
     public void accountAdded(@Arg(ArgEnum.username) LiteYukonUser yukonUser,
@@ -101,39 +86,28 @@ public interface AccountEventLogService {
                                    String newCompanyName);
 
     
-/* ENROLLMENTS */
+    /* ENROLLMENTS */
     // Enrollment
     @YukonEventLog(transactionality=ExecutorTransactionality.FORCED, category="stars.account.enrollment")
-    public void enrollmentAttemptedByConsumer(@Arg(ArgEnum.username) LiteYukonUser yukonUser,
+    public void enrollmentAttempted(@Arg(ArgEnum.username) LiteYukonUser yukonUser,
                                               @Arg(ArgEnum.accountNumber) String accountNumber, 
                                               @Arg(ArgEnum.deviceName) String deviceName, 
                                               @Arg(ArgEnum.programName) String programName,
-                                              @Arg(ArgEnum.loadGroupName) String loadGroupName);
+                                              @Arg(ArgEnum.loadGroupName) String loadGroupName,
+                                              @Arg(ArgEnum.eventSource) EventSource source);
     
     @YukonEventLog(transactionality=ExecutorTransactionality.FORCED, category="stars.account.enrollment")
-    public void enrollmentAttemptedThroughApi(@Arg(ArgEnum.username) LiteYukonUser yukonUser,
-                                              @Arg(ArgEnum.accountNumber) String accountNumber,
-                                              @Arg(ArgEnum.deviceName) String deviceName,
-                                              @Arg(ArgEnum.programName) String programName,
-                                              @Arg(ArgEnum.loadGroupName) String loadGroupName);
+    public void enrollmentModificationAttempted(@Arg(ArgEnum.username) LiteYukonUser yukonUser,
+                                                  @Arg(ArgEnum.accountNumber) String accountNumber,
+                                                  @Arg(ArgEnum.eventSource) EventSource source);
 
     @YukonEventLog(transactionality=ExecutorTransactionality.FORCED, category="stars.account.enrollment")
-    public void enrollmentModificationAttemptedByOperator(@Arg(ArgEnum.username) LiteYukonUser yukonUser,
-                                                          @Arg(ArgEnum.accountNumber) String accountNumber);
-
-    @YukonEventLog(transactionality=ExecutorTransactionality.FORCED, category="stars.account.enrollment")
-    public void unenrollmentAttemptedByConsumer(@Arg(ArgEnum.username) LiteYukonUser yukonUser,
-                                                @Arg(ArgEnum.accountNumber) String accountNumber,
-                                                @Arg(ArgEnum.deviceName) String deviceName,
-                                                @Arg(ArgEnum.programName) String programName,
-                                                @Arg(ArgEnum.loadGroupName) String loadGroupName);
-    
-    @YukonEventLog(transactionality=ExecutorTransactionality.FORCED, category="stars.account.enrollment")
-    public void unenrollmentAttemptedThroughApi(@Arg(ArgEnum.username) LiteYukonUser yukonUser,
-                                                @Arg(ArgEnum.accountNumber) String accountNumber,
-                                                @Arg(ArgEnum.deviceName) String deviceName,
-                                                @Arg(ArgEnum.programName) String programName,
-                                                @Arg(ArgEnum.loadGroupName) String loadGroupName);
+    public void unenrollmentAttempted(@Arg(ArgEnum.username) LiteYukonUser yukonUser,
+                                        @Arg(ArgEnum.accountNumber) String accountNumber,
+                                        @Arg(ArgEnum.deviceName) String deviceName,
+                                        @Arg(ArgEnum.programName) String programName,
+                                        @Arg(ArgEnum.loadGroupName) String loadGroupName,
+                                        @Arg(ArgEnum.eventSource) EventSource source);
     
     // Enrollment Service Level
     @YukonEventLog(transactionality=ExecutorTransactionality.TRANSACTIONAL, category="stars.account.enrollment")
@@ -153,80 +127,55 @@ public interface AccountEventLogService {
 /* Opt Outs */
     // Opt Outs
     @YukonEventLog(transactionality=ExecutorTransactionality.FORCED, category="stars.account.optOut")
-    public void optOutLimitReductionAttemptedThroughApi(@Arg(ArgEnum.username) LiteYukonUser user,
+    public void optOutLimitReductionAttempted(@Arg(ArgEnum.username) LiteYukonUser user,
                                                         @Arg(ArgEnum.accountNumber) String accountNumber,
-                                                        @Arg(ArgEnum.deviceName) String serialNumber);
+                                                        @Arg(ArgEnum.deviceName) String serialNumber,
+                                                        @Arg(ArgEnum.eventSource) EventSource source);
 
     @YukonEventLog(transactionality=ExecutorTransactionality.FORCED, category="stars.account.optOut")
-    public void optOutLimitIncreaseAttemptedByOperator(@Arg(ArgEnum.username) LiteYukonUser user,
+    public void optOutLimitIncreaseAttempted(@Arg(ArgEnum.username) LiteYukonUser user,
                                                        @Arg(ArgEnum.accountNumber) String accountNumber,
-                                                       @Arg(ArgEnum.deviceName) String serialNumber);
+                                                       @Arg(ArgEnum.deviceName) String serialNumber,
+                                                       @Arg(ArgEnum.eventSource) EventSource source);
 
     @YukonEventLog(transactionality=ExecutorTransactionality.FORCED, category="stars.account.optOut")
-    public void optOutLimitReductionAttemptedByOperator(@Arg(ArgEnum.username) LiteYukonUser user,
-                                                        @Arg(ArgEnum.accountNumber) String accountNumber,
-                                                        @Arg(ArgEnum.deviceName) String serialNumber);
-
-    
-    @YukonEventLog(transactionality=ExecutorTransactionality.FORCED, category="stars.account.optOut")
-    public void optOutLimitResetAttemptedByOperator(@Arg(ArgEnum.username) LiteYukonUser user,
+    public void optOutLimitResetAttempted(@Arg(ArgEnum.username) LiteYukonUser user,
                                                     @Arg(ArgEnum.accountNumber) String accountNumber,
-                                                    @Arg(ArgEnum.deviceName) String serialNumber);
+                                                    @Arg(ArgEnum.deviceName) String serialNumber,
+                                                    @Arg(ArgEnum.eventSource) EventSource source);
 
     @YukonEventLog(transactionality=ExecutorTransactionality.FORCED, category="stars.account.optOut")
-    public void optOutLimitResetAttemptedThroughApi(@Arg(ArgEnum.username) LiteYukonUser user,
-                                                    @Arg(ArgEnum.accountNumber) String accountNumber,
-                                                    @Arg(ArgEnum.deviceName) String serialNumber);
-
-    
-    @YukonEventLog(transactionality=ExecutorTransactionality.FORCED, category="stars.account.optOut")
-    public void optOutResendAttemptedByOperator(@Arg(ArgEnum.username) LiteYukonUser user,
+    public void optOutResendAttempted(@Arg(ArgEnum.username) LiteYukonUser user,
                                                 @Arg(ArgEnum.accountNumber) String accountNumber,
-                                                @Arg(ArgEnum.deviceName) String serialNumber);
+                                                @Arg(ArgEnum.deviceName) String serialNumber,
+                                                @Arg(ArgEnum.eventSource) EventSource source);
     
     @YukonEventLog(transactionality=ExecutorTransactionality.FORCED, category="stars.account.optOut")
-    public void optOutAttemptedByOperator(@Arg(ArgEnum.username) LiteYukonUser user,
+    public void optOutAttempted(@Arg(ArgEnum.username) LiteYukonUser user,
                                           @Arg(ArgEnum.accountNumber) String accountNumber,
                                           @Arg(ArgEnum.deviceName) String serialNumber,
-                                          ReadableInstant startDate);
+                                          ReadableInstant startDate,
+                                          @Arg(ArgEnum.eventSource) EventSource source);
     
     @YukonEventLog(transactionality=ExecutorTransactionality.FORCED, category="stars.account.optOut")
-    public void optOutAttemptedByConsumer(@Arg(ArgEnum.username) LiteYukonUser user,
-                                          @Arg(ArgEnum.accountNumber) String accountNumber,
-                                          @Arg(ArgEnum.deviceName) String serialNumber,
-                                          ReadableInstant startDate);
-    
-    @YukonEventLog(transactionality=ExecutorTransactionality.FORCED, category="stars.account.optOut")
-    public void optOutAttemptedThroughApi(@Arg(ArgEnum.username) LiteYukonUser user,
-                                          @Arg(ArgEnum.accountNumber) String accountNumber,
-                                          @Arg(ArgEnum.deviceName) String serialNumber,
-                                          ReadableInstant startDate);
-    
-    
-    
-    @YukonEventLog(transactionality=ExecutorTransactionality.FORCED, category="stars.account.optOut")
-    public void optOutCancelAttemptedByConsumer(@Arg(ArgEnum.username) LiteYukonUser user,
+    public void optOutCancelAttempted(@Arg(ArgEnum.username) LiteYukonUser user,
                                                @Arg(ArgEnum.accountNumber) String accountNumber,
                                                @Arg(ArgEnum.deviceName) String serialNumber,
                                                ReadableInstant optOutStartDate,
-                                               ReadableInstant optOutStopDate);
+                                               ReadableInstant optOutStopDate,
+                                               @Arg(ArgEnum.eventSource) EventSource source);
     
     @YukonEventLog(transactionality=ExecutorTransactionality.FORCED, category="stars.account.optOut")
-    public void optOutCancelAttemptedByOperator(@Arg(ArgEnum.username) LiteYukonUser user,
-                                               @Arg(ArgEnum.accountNumber) String accountNumber,
-                                               @Arg(ArgEnum.deviceName) String serialNumber,
-                                               ReadableInstant optOutStartDate,
-                                               ReadableInstant optOutStopDate);
+    public void scheduledOptOutCancelAttempted(@Arg(ArgEnum.username) LiteYukonUser user,
+                                                 @Arg(ArgEnum.accountNumber) String accountNumber,
+                                                 @Arg(ArgEnum.deviceName) String serialNumber,
+                                                 @Arg(ArgEnum.eventSource) EventSource source);
     
     @YukonEventLog(transactionality=ExecutorTransactionality.FORCED, category="stars.account.optOut")
-    public void scheduledOptOutCancelAttemptedThroughApi(@Arg(ArgEnum.username) LiteYukonUser user,
-                                                         @Arg(ArgEnum.accountNumber) String accountNumber,
-                                                         @Arg(ArgEnum.deviceName) String serialNumber);
-    
-    @YukonEventLog(transactionality=ExecutorTransactionality.FORCED, category="stars.account.optOut")
-    public void activeOptOutCancelAttemptedThroughApi(@Arg(ArgEnum.username) LiteYukonUser user,
-                                                      @Arg(ArgEnum.accountNumber) String accountNumber,
-                                                      @Arg(ArgEnum.deviceName) String serialNumber);
+    public void activeOptOutCancelAttempted(@Arg(ArgEnum.username) LiteYukonUser user,
+                                              @Arg(ArgEnum.accountNumber) String accountNumber,
+                                              @Arg(ArgEnum.deviceName) String serialNumber,
+                                              @Arg(ArgEnum.eventSource) EventSource source);
     
     // Opt Out Service Level
     @YukonEventLog(transactionality=ExecutorTransactionality.TRANSACTIONAL, category="stars.account.optOut")
@@ -262,25 +211,28 @@ public interface AccountEventLogService {
 /* Appliances */
     // Appliance
     @YukonEventLog(transactionality=ExecutorTransactionality.TRANSACTIONAL, category="stars.account.appliance")
-    public void applianceAdditionAttemptedByOperator(@Arg(ArgEnum.username) LiteYukonUser yukonUser, 
+    public void applianceAdditionAttempted(@Arg(ArgEnum.username) LiteYukonUser yukonUser, 
                                                      @Arg(ArgEnum.accountNumber) String accountNumber, 
                                                      @Arg(ArgEnum.applianceType) String applianceType,
                                                      @Arg(ArgEnum.deviceName) String deviceName,
-                                                     @Arg(ArgEnum.programName) String programName);
+                                                     @Arg(ArgEnum.programName) String programName,
+                                                     @Arg(ArgEnum.eventSource) EventSource source);
 
     @YukonEventLog(transactionality=ExecutorTransactionality.TRANSACTIONAL, category="stars.account.appliance")
-    public void applianceUpdateAttemptedByOperator(@Arg(ArgEnum.username) LiteYukonUser yukonUser, 
+    public void applianceUpdateAttempted(@Arg(ArgEnum.username) LiteYukonUser yukonUser, 
                                                    @Arg(ArgEnum.accountNumber) String accountNumber, 
                                                    @Arg(ArgEnum.applianceType) String applianceType,
                                                    @Arg(ArgEnum.deviceName) String deviceName,
-                                                   @Arg(ArgEnum.programName) String programName);
+                                                   @Arg(ArgEnum.programName) String programName,
+                                                   @Arg(ArgEnum.eventSource) EventSource source);
 
     @YukonEventLog(transactionality=ExecutorTransactionality.TRANSACTIONAL, category="stars.account.appliance")
-    public void applianceDeletionAttemptedByOperator(@Arg(ArgEnum.username) LiteYukonUser yukonUser, 
+    public void applianceDeletionAttempted(@Arg(ArgEnum.username) LiteYukonUser yukonUser, 
                                                       @Arg(ArgEnum.accountNumber) String accountNumber, 
                                                       @Arg(ArgEnum.applianceType) String applianceType,
                                                       @Arg(ArgEnum.deviceName) String deviceName,
-                                                      @Arg(ArgEnum.programName) String programName);
+                                                      @Arg(ArgEnum.programName) String programName,
+                                                      @Arg(ArgEnum.eventSource) EventSource source);
 
     
     // Appliance Service Level
@@ -308,19 +260,22 @@ public interface AccountEventLogService {
 /* Work Orders */
     // Work Order
     @YukonEventLog(transactionality=ExecutorTransactionality.TRANSACTIONAL, category="stars.account.workOrder")
-    public void workOrderCreationAttemptedByOperator(@Arg(ArgEnum.username) LiteYukonUser yukonUser, 
+    public void workOrderCreationAttempted(@Arg(ArgEnum.username) LiteYukonUser yukonUser, 
                                                      @Arg(ArgEnum.accountNumber) String accountNumber, 
-                                                     @Arg(ArgEnum.workOrderNumber) String workOrderNumber);
+                                                     @Arg(ArgEnum.workOrderNumber) String workOrderNumber,
+                                                     @Arg(ArgEnum.eventSource) EventSource source);
     
     @YukonEventLog(transactionality=ExecutorTransactionality.TRANSACTIONAL, category="stars.account.workOrder")
-    public void workOrderUpdateAttemptedByOperator(@Arg(ArgEnum.username) LiteYukonUser yukonUser, 
+    public void workOrderUpdateAttempted(@Arg(ArgEnum.username) LiteYukonUser yukonUser, 
                                                    @Arg(ArgEnum.accountNumber) String accountNumber, 
-                                                   @Arg(ArgEnum.workOrderNumber) String workOrderNumber);
+                                                   @Arg(ArgEnum.workOrderNumber) String workOrderNumber,
+                                                   @Arg(ArgEnum.eventSource) EventSource source);
     
     @YukonEventLog(transactionality=ExecutorTransactionality.TRANSACTIONAL, category="stars.account.workOrder")
-    public void workOrderDeletionAttemptedByOperator(@Arg(ArgEnum.username) LiteYukonUser yukonUser, 
+    public void workOrderDeletionAttempted(@Arg(ArgEnum.username) LiteYukonUser yukonUser, 
                                                      @Arg(ArgEnum.accountNumber) String accountNumber, 
-                                                     @Arg(ArgEnum.workOrderNumber) String workOrderNumber);
+                                                     @Arg(ArgEnum.workOrderNumber) String workOrderNumber,
+                                                     @Arg(ArgEnum.eventSource) EventSource source);
     
     // Work Order Service Level
     @YukonEventLog(transactionality=ExecutorTransactionality.TRANSACTIONAL, category="stars.account.workOrder")
@@ -341,76 +296,57 @@ public interface AccountEventLogService {
 /* THERMOSTAT SCHEDULES */
     // Thermostat Schedule
     @YukonEventLog(transactionality=ExecutorTransactionality.FORCED, category="stars.account.thermostat")
-    public void thermostatScheduleSavingAttemptedByOperator(@Arg(ArgEnum.username) LiteYukonUser yukonUser,
+    public void thermostatScheduleSavingAttempted(@Arg(ArgEnum.username) LiteYukonUser yukonUser,
                                                             @Arg(ArgEnum.accountNumber) String accountNumber, 
                                                             @Arg(ArgEnum.serialNumber) String serialNumber,
-                                                            @Arg(ArgEnum.scheduleName) String scheduleName);
+                                                            @Arg(ArgEnum.scheduleName) String scheduleName,
+                                                            @Arg(ArgEnum.eventSource) EventSource source);
 
     @YukonEventLog(transactionality=ExecutorTransactionality.FORCED, category="stars.account.thermostat")
-    public void thermostatScheduleSavingAttemptedByConsumer(@Arg(ArgEnum.username) LiteYukonUser yukonUser,
-                                                            @Arg(ArgEnum.accountNumber) String accountNumber, 
+    public void thermostatScheduleSendDefaultAttempted(@Arg(ArgEnum.username) LiteYukonUser yukonUser,
                                                             @Arg(ArgEnum.serialNumber) String serialNumber,
-                                                            @Arg(ArgEnum.scheduleName) String scheduleName);
+                                                            @Arg(ArgEnum.eventSource) EventSource source);
 
     @YukonEventLog(transactionality=ExecutorTransactionality.FORCED, category="stars.account.thermostat")
-    public void thermostatScheduleDeleteAttemptedByOperator(@Arg(ArgEnum.username) LiteYukonUser yukonUser,
-                                                            @Arg(ArgEnum.accountNumber) String accountNumber, 
-                                                            @Arg(ArgEnum.scheduleName) String scheduleName);
-
-    @YukonEventLog(transactionality=ExecutorTransactionality.FORCED, category="stars.account.thermostat")
-    public void thermostatScheduleSendDefaultAttemptedByApi(@Arg(ArgEnum.username) LiteYukonUser yukonUser,
-                                                            @Arg(ArgEnum.serialNumber) String serialNumber);
-
-    @YukonEventLog(transactionality=ExecutorTransactionality.FORCED, category="stars.account.thermostat")
-    public void thermostatScheduleSendAttemptedByApi(@Arg(ArgEnum.username) LiteYukonUser yukonUser,
+    public void thermostatScheduleSendAttempted(@Arg(ArgEnum.username) LiteYukonUser yukonUser,
                                                             @Arg(ArgEnum.serialNumber) String serialNumber,
-                                                            @Arg(ArgEnum.scheduleName) String scheduleName);
+                                                            @Arg(ArgEnum.scheduleName) String scheduleName,
+                                                            @Arg(ArgEnum.eventSource) EventSource source);
 
     @YukonEventLog(transactionality=ExecutorTransactionality.FORCED, category="stars.account.thermostat")
-    public void thermostatScheduleDeleteAttemptedByConsumer(@Arg(ArgEnum.username) LiteYukonUser yukonUser,
+    public void thermostatScheduleDeleteAttempted(@Arg(ArgEnum.username) LiteYukonUser yukonUser,
                                                             @Arg(ArgEnum.accountNumber) String accountNumber, 
-                                                            @Arg(ArgEnum.scheduleName) String scheduleName);
+                                                            @Arg(ArgEnum.scheduleName) String scheduleName,
+                                                            @Arg(ArgEnum.eventSource) EventSource source);
 
 
     @YukonEventLog(transactionality=ExecutorTransactionality.FORCED, category="stars.account.thermostat")
-    public void thermostatRunProgramAttemptedByApi(@Arg(ArgEnum.username) LiteYukonUser yukonUser,
-                                                       @Arg(ArgEnum.serialNumber) String serialNumber);
+    public void thermostatRunProgramAttempted(@Arg(ArgEnum.username) LiteYukonUser yukonUser,
+                                                       @Arg(ArgEnum.serialNumber) String serialNumber,
+                                                       @Arg(ArgEnum.eventSource) EventSource source);
     
     @YukonEventLog(transactionality=ExecutorTransactionality.FORCED, category="stars.account.thermostat")
-    public void thermostatRunProgramAttemptedByOperator(@Arg(ArgEnum.username) LiteYukonUser yukonUser,
+    public void thermostatRunProgramAttempted(@Arg(ArgEnum.username) LiteYukonUser yukonUser,
                                                        @Arg(ArgEnum.accountNumber) String accountNumber, 
-                                                       @Arg(ArgEnum.serialNumber) String serialNumber);
-
-    @YukonEventLog(transactionality=ExecutorTransactionality.FORCED, category="stars.account.thermostat")
-    public void thermostatRunProgramAttemptedByConsumer(@Arg(ArgEnum.username) LiteYukonUser yukonUser,
-                                                       @Arg(ArgEnum.accountNumber) String accountNumber, 
-                                                       @Arg(ArgEnum.serialNumber) String serialNumber);
-
-    @YukonEventLog(transactionality=ExecutorTransactionality.FORCED, category="stars.account.thermostat")
-    public void thermostatManualSetAttemptedByApi(@Arg(ArgEnum.username) LiteYukonUser yukonUser,
                                                        @Arg(ArgEnum.serialNumber) String serialNumber,
-                                                       Double heatTemperature,
-                                                       Double coolTemperature,
-                                                       String mode,
-                                                       String fanSetting,
-                                                       boolean holdTemperature);
+                                                       @Arg(ArgEnum.eventSource) EventSource source);
 
     @YukonEventLog(transactionality=ExecutorTransactionality.FORCED, category="stars.account.thermostat")
-    public void thermostatManualSetAttemptedByOperator(@Arg(ArgEnum.username) LiteYukonUser yukonUser,
-                                                       @Arg(ArgEnum.accountNumber) String accountNumber, 
-                                                       @Arg(ArgEnum.serialNumber) String serialNumber);
+    public void thermostatManualSetAttempted(@Arg(ArgEnum.username) LiteYukonUser yukonUser,
+                                              @Arg(ArgEnum.accountNumber) String accountNumber,
+                                               @Arg(ArgEnum.serialNumber) String serialNumber,
+                                               Double heatTemperature,
+                                               Double coolTemperature,
+                                               String mode,
+                                               boolean holdTemperature,
+                                               @Arg(ArgEnum.eventSource) EventSource source);
 
     @YukonEventLog(transactionality=ExecutorTransactionality.FORCED, category="stars.account.thermostat")
-    public void thermostatManualSetAttemptedByConsumer(@Arg(ArgEnum.username) LiteYukonUser yukonUser,
-                                                       @Arg(ArgEnum.accountNumber) String accountNumber, 
-                                                       @Arg(ArgEnum.serialNumber) String serialNumber);
-
-    @YukonEventLog(transactionality=ExecutorTransactionality.FORCED, category="stars.account.thermostat")
-    public void thermostatLabelChangeAttemptedByConsumer(@Arg(ArgEnum.username) LiteYukonUser yukonUser,
+    public void thermostatLabelChangeAttempted(@Arg(ArgEnum.username) LiteYukonUser yukonUser,
                                                          @Arg(ArgEnum.serialNumber) String serialNumber,
                                                          @Arg(ArgEnum.thermostatLabel) String oldThermostatLabel,
-                                                         @Arg(ArgEnum.thermostatLabel) String newThermostatLabel);
-
+                                                         @Arg(ArgEnum.thermostatLabel) String newThermostatLabel,
+                                                         @Arg(ArgEnum.eventSource) EventSource source);
     
     // Thermostat Schedule Service Level
     @YukonEventLog(transactionality=ExecutorTransactionality.TRANSACTIONAL, category="stars.account.thermostat")

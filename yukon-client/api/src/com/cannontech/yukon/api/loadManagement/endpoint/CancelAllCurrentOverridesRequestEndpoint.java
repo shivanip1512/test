@@ -8,6 +8,7 @@ import org.springframework.ws.server.endpoint.annotation.Endpoint;
 import org.springframework.ws.server.endpoint.annotation.PayloadRoot;
 
 import com.cannontech.common.events.loggers.StarsEventLogService;
+import com.cannontech.common.events.model.EventSource;
 import com.cannontech.common.exception.NotAuthorizedException;
 import com.cannontech.common.util.xml.SimpleXPathTemplate;
 import com.cannontech.common.util.xml.XmlUtils;
@@ -23,11 +24,11 @@ import com.cannontech.yukon.api.util.XmlVersionUtils;
 @Endpoint
 public class CancelAllCurrentOverridesRequestEndpoint {
 
-	private OptOutService optOutService;
-	private StarsEventLogService starsEventLogService;
+    private OptOutService optOutService;
+    private StarsEventLogService starsEventLogService;
     private Namespace ns = YukonXml.getYukonNamespace();
-	private RolePropertyDao rolePropertyDao;
-	
+    private RolePropertyDao rolePropertyDao;
+    
 	private String programNameExpressionStr = "/y:cancelAllCurrentOverridesRequest/y:programName";
     
     @PayloadRoot(namespace="http://yukon.cannontech.com/api", localPart="cancelAllCurrentOverridesRequest")
@@ -52,10 +53,10 @@ public class CancelAllCurrentOverridesRequestEndpoint {
             rolePropertyDao.verifyProperty(YukonRoleProperty.OPERATOR_CONSUMER_INFO_WS_LM_CONTROL_ACCESS, user);
             
             if (StringUtils.isBlank(programName)) {
-                starsEventLogService.cancelCurrentOptOutsAttemptedByApi(user);
+                starsEventLogService.cancelCurrentOptOutsAttempted(user, EventSource.API);
             	optOutService.cancelAllOptOuts(user);
             } else {
-                starsEventLogService.cancelCurrentOptOutsByProgramAttemptedByApi(user, programName);
+                starsEventLogService.cancelCurrentOptOutsByProgramAttempted(user, programName, EventSource.API);
             	optOutService.cancelAllOptOutsByProgramName(programName, user);
             }
             
@@ -80,8 +81,8 @@ public class CancelAllCurrentOverridesRequestEndpoint {
     
     @Autowired
     public void setOptOutService(OptOutService optOutService) {
-		this.optOutService = optOutService;
-	}
+        this.optOutService = optOutService;
+    }
     
     @Autowired
     public void setStarsEventLogService(StarsEventLogService starsEventLogService) {
@@ -90,7 +91,7 @@ public class CancelAllCurrentOverridesRequestEndpoint {
     
     @Autowired
     public void setRolePropertyDao(RolePropertyDao rolePropertyDao) {
-		this.rolePropertyDao = rolePropertyDao;
-	}
+        this.rolePropertyDao = rolePropertyDao;
+    }
     
 }

@@ -19,6 +19,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 
 import com.cannontech.common.constants.YukonListEntryTypes;
 import com.cannontech.common.events.loggers.AccountEventLogService;
+import com.cannontech.common.events.model.EventSource;
 import com.cannontech.common.inventory.Hardware;
 import com.cannontech.common.validator.YukonValidationUtils;
 import com.cannontech.core.roleproperties.YukonRoleProperty;
@@ -58,18 +59,18 @@ import com.cannontech.web.util.SessionUtil;
 @RequestMapping(value = "/operator/appliances/*")
 public class OperatorApplianceController {
 
-    private AccountEventLogService accountEventLogService;
-    private ApplianceValidator applianceValidator;
-    private ApplianceCategoryDao applianceCategoryDao;
-    private DisplayableApplianceService displayableApplianceService;
-    private DisplayableInventoryEnrollmentDao displayableInventoryEnrollmentDao;
-    private HardwareUiService hardwareUiService;
-    private LmHardwareBaseDao lmHardwareBaseDao;
-    private ProgramDao programDao;
-    private RolePropertyDao rolePropertyDao;
-    private StarsApplianceDao starsApplianceDao;
-    private StarsApplianceService starsApplianceService;
-    private StarsDatabaseCache starsDatabaseCache;
+    @Autowired private AccountEventLogService accountEventLogService;
+    @Autowired private ApplianceValidator applianceValidator;
+    @Autowired private ApplianceCategoryDao applianceCategoryDao;
+    @Autowired private DisplayableApplianceService displayableApplianceService;
+    @Autowired private DisplayableInventoryEnrollmentDao displayableInventoryEnrollmentDao;
+    @Autowired private HardwareUiService hardwareUiService;
+    @Autowired private LmHardwareBaseDao lmHardwareBaseDao;
+    @Autowired private ProgramDao programDao;
+    @Autowired private RolePropertyDao rolePropertyDao;
+    @Autowired private StarsApplianceDao starsApplianceDao;
+    @Autowired private StarsApplianceService starsApplianceService;
+    @Autowired private StarsDatabaseCache starsDatabaseCache;
 
     // APPLIANCE LIST
     @RequestMapping
@@ -144,11 +145,12 @@ public class OperatorApplianceController {
             programName = program != null ? program.getProgramName() : "";
         }
 
-        accountEventLogService.applianceAdditionAttemptedByOperator(userContext.getYukonUser(), 
-                                                                    accountInfoFragment.getAccountNumber(), 
-                                                                    starsAppliance.getApplianceCategory().getName(), 
-                                                                    serialNumber, 
-                                                                    programName);
+        accountEventLogService.applianceAdditionAttempted(userContext.getYukonUser(),
+                                                          accountInfoFragment.getAccountNumber(),
+                                                          starsAppliance.getApplianceCategory().getName(),
+                                                          serialNumber,
+                                                          programName,
+                                                          EventSource.OPERATOR);
         
         // Check permissions
         rolePropertyDao.verifyProperty(YukonRoleProperty.OPERATOR_ALLOW_ACCOUNT_EDITING, 
@@ -268,11 +270,11 @@ public class OperatorApplianceController {
             programName = program != null ? program.getProgramName() : "";
         }
 
-        accountEventLogService.applianceUpdateAttemptedByOperator(userContext.getYukonUser(), 
+        accountEventLogService.applianceUpdateAttempted(userContext.getYukonUser(), 
                                                                   accountInfoFragment.getAccountNumber(), 
                                                                   starsAppliance.getApplianceCategory().getName(), 
                                                                   serialNumber, 
-                                                                  programName);
+                                                                  programName, EventSource.OPERATOR);
         
         // Check permissions
         rolePropertyDao.verifyProperty(YukonRoleProperty.OPERATOR_ALLOW_ACCOUNT_EDITING, 
@@ -347,11 +349,11 @@ public class OperatorApplianceController {
             programName = program != null ? program.getProgramName() : "";
         }
 
-        accountEventLogService.applianceDeletionAttemptedByOperator(userContext.getYukonUser(), 
+        accountEventLogService.applianceDeletionAttempted(userContext.getYukonUser(), 
                                                                     accountInfoFragment.getAccountNumber(), 
                                                                     liteStarsAppliance.getApplianceCategory().getName(), 
                                                                     serialNumber, 
-                                                                    programName);
+                                                                    programName, EventSource.OPERATOR);
         
         // Check permissions
         rolePropertyDao.verifyProperty(YukonRoleProperty.OPERATOR_ALLOW_ACCOUNT_EDITING, 
@@ -394,66 +396,5 @@ public class OperatorApplianceController {
         modelMap.addAttribute("applianceId", applianceId);
         modelMap.addAttribute("energyCompanyId", accountInfoFragment.getEnergyCompanyId());
         AccountInfoFragmentHelper.setupModelMapBasics(accountInfoFragment, modelMap);
-    }
-
-    @Autowired
-    public void setAccountEventLogService(AccountEventLogService accountEventLogService) {
-        this.accountEventLogService = accountEventLogService;
-    }
-    
-    @Autowired
-    public void setApplianceValidator(ApplianceValidator applianceValidator) {
-        this.applianceValidator = applianceValidator;
-    }
-
-    @Autowired
-    public void setApplianceCategoryDao(ApplianceCategoryDao applianceCategoryDao) {
-        this.applianceCategoryDao = applianceCategoryDao;
-    }
-
-    @Autowired
-    public void setStarsDatabaseCache(StarsDatabaseCache starsDatabaseCache) {
-        this.starsDatabaseCache = starsDatabaseCache;
-    }
-
-    @Autowired
-    public void setDisplayableApplianceService(DisplayableApplianceService displayableApplianceService) {
-        this.displayableApplianceService = displayableApplianceService;
-    }
-
-    @Autowired
-    public void setDisplayableInventoryEnrollmentDao(
-                      DisplayableInventoryEnrollmentDao displayableInventoryEnrollmentDao) {
-        this.displayableInventoryEnrollmentDao = displayableInventoryEnrollmentDao;
-    }
-
-    @Autowired
-    public void setLmHardwareBaseDao(LmHardwareBaseDao lmHardwareBaseDao) {
-        this.lmHardwareBaseDao = lmHardwareBaseDao;
-    }
-    
-    @Autowired
-    public void setRolePropertyDao(RolePropertyDao rolePropertyDao) {
-        this.rolePropertyDao = rolePropertyDao;
-    }
-    
-    @Autowired
-    public void setHardwareUiService(HardwareUiService hardwareUiService) {
-        this.hardwareUiService = hardwareUiService;
-    }
-
-    @Autowired
-    public void setProgramDao(ProgramDao programDao) {
-        this.programDao = programDao;
-    }
-    
-    @Autowired
-    public void setStarsApplianceDao(StarsApplianceDao starsApplianceDao) {
-        this.starsApplianceDao = starsApplianceDao;
-    }
-
-    @Autowired
-    public void setStarsApplianceService(StarsApplianceService starsApplianceService) {
-        this.starsApplianceService = starsApplianceService;
     }
 }

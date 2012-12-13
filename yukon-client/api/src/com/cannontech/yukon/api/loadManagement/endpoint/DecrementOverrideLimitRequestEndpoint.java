@@ -7,6 +7,7 @@ import org.springframework.ws.server.endpoint.annotation.Endpoint;
 import org.springframework.ws.server.endpoint.annotation.PayloadRoot;
 
 import com.cannontech.common.events.loggers.AccountEventLogService;
+import com.cannontech.common.events.model.EventSource;
 import com.cannontech.common.exception.NotAuthorizedException;
 import com.cannontech.common.util.xml.SimpleXPathTemplate;
 import com.cannontech.common.util.xml.XmlUtils;
@@ -49,7 +50,7 @@ public class DecrementOverrideLimitRequestEndpoint {
         // run service
         Element resultElement;
         try {
-            accountEventLogService.optOutLimitReductionAttemptedThroughApi(user, accountNumber, serialNumber);
+            accountEventLogService.optOutLimitReductionAttempted(user, accountNumber, serialNumber, EventSource.API);
             
             // Check authorization
         	rolePropertyDao.verifyProperty(YukonRoleProperty.OPERATOR_CONSUMER_INFO_PROGRAMS_OPT_OUT, user);
@@ -94,12 +95,12 @@ public class DecrementOverrideLimitRequestEndpoint {
     
     @Autowired
     public void setOptOutService(OptOutService optOutService) {
-		this.optOutService = optOutService;
-	}
+        this.optOutService = optOutService;
+    }
     
     @Autowired
     public void setRolePropertyDao(RolePropertyDao rolePropertyDao) {
-		this.rolePropertyDao = rolePropertyDao;
-	}
+        this.rolePropertyDao = rolePropertyDao;
+    }
     
 }

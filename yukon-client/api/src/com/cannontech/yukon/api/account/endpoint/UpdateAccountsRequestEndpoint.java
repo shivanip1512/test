@@ -2,7 +2,6 @@ package com.cannontech.yukon.api.account.endpoint;
 
 import java.util.List;
 
-import org.jdom.Attribute;
 import org.jdom.Element;
 import org.jdom.Namespace;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -10,6 +9,7 @@ import org.springframework.ws.server.endpoint.annotation.Endpoint;
 import org.springframework.ws.server.endpoint.annotation.PayloadRoot;
 
 import com.cannontech.common.events.loggers.AccountEventLogService;
+import com.cannontech.common.events.model.EventSource;
 import com.cannontech.common.util.xml.SimpleXPathTemplate;
 import com.cannontech.common.util.xml.XmlUtils;
 import com.cannontech.common.util.xml.YukonXml;
@@ -51,7 +51,7 @@ public class UpdateAccountsRequestEndpoint {
         updateAccountsResponse.addContent(updateAccountsResultList);
         
         for (UpdatableAccount account : customerAccounts) {
-            accountEventLogService.accountUpdateAttemptedThroughApi(user,account.getAccountNumber());
+            accountEventLogService.accountUpdateAttempted(user,account.getAccountNumber(), EventSource.API);
             
             Element updateAccountResult = addAccountResponse(ns, updateAccountsResultList, account);
             try {
@@ -60,7 +60,7 @@ public class UpdateAccountsRequestEndpoint {
                 updateAccountResult.addContent(new Element("success", ns));
             } catch(InvalidAccountNumberException e) {
                 if(add) {
-                    accountEventLogService.accountUpdateCreationAttemptedThroughApi(user,account.getAccountNumber());
+                    accountEventLogService.accountUpdateCreationAttempted(user,account.getAccountNumber(), EventSource.API);
                     
                     // Update didn't work, try to add it.
                     try {

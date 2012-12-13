@@ -15,6 +15,7 @@ import org.springframework.web.servlet.ModelAndView;
 import com.cannontech.clientutils.CTILogger;
 import com.cannontech.common.constants.LoginController;
 import com.cannontech.common.events.loggers.SystemEventLogService;
+import com.cannontech.common.events.model.EventSource;
 import com.cannontech.common.exception.AuthenticationThrottleException;
 import com.cannontech.common.exception.BadAuthenticationException;
 import com.cannontech.common.exception.NotAuthorizedException;
@@ -65,7 +66,7 @@ public class ChangeLoginController {
         final YukonUserContext yukonUserContext = YukonUserContextUtils.getYukonUserContext(request);
         final LiteYukonUser user = yukonUserContext.getYukonUser();
         
-        systemEventLogService.loginPasswordChangeAttemptedByConsumer(user);
+        systemEventLogService.loginPasswordChangeAttempted(user, EventSource.CONSUMER);
         
         final AuthType type = user.getAuthType();
         rolePropertyDao.verifyProperty(YukonRoleProperty.RESIDENTIAL_CONSUMER_INFO_CHANGE_LOGIN_PASSWORD, user);
@@ -124,7 +125,7 @@ public class ChangeLoginController {
         final YukonUserContext yukonUserContext = YukonUserContextUtils.getYukonUserContext(request);
         final LiteYukonUser user = yukonUserContext.getYukonUser();
 
-        systemEventLogService.loginUsernameChangeAttemptedByConsumer(user, username);
+        systemEventLogService.loginUsernameChangeAttempted(user, username, EventSource.CONSUMER);
         
         rolePropertyDao.verifyProperty(YukonRoleProperty.RESIDENTIAL_CONSUMER_INFO_CHANGE_LOGIN_USERNAME, user);
         boolean isValidPassword = false;

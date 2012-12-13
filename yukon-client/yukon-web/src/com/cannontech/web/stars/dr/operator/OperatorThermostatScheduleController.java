@@ -24,6 +24,7 @@ import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RequestParam;
 
 import com.cannontech.common.events.loggers.AccountEventLogService;
+import com.cannontech.common.events.model.EventSource;
 import com.cannontech.common.exception.NotAuthorizedException;
 import com.cannontech.common.i18n.MessageSourceAccessor;
 import com.cannontech.core.dao.CustomerDao;
@@ -119,7 +120,7 @@ public class OperatorThermostatScheduleController {
             // Log thermostat schedule save attempt
             for (int thermostatId : thermostatIdList) {
                 Thermostat thermostat = inventoryDao.getThermostatById(thermostatId);
-                accountEventLogService.thermostatScheduleSavingAttemptedByOperator(user, fragment.getAccountNumber(), thermostat.getSerialNumber(), oldScheduleName);
+                accountEventLogService.thermostatScheduleSavingAttempted(user, fragment.getAccountNumber(), thermostat.getSerialNumber(), oldScheduleName, EventSource.OPERATOR);
             }
             
             //ensure this user can work with this schedule and thermostat
@@ -299,8 +300,10 @@ public class OperatorThermostatScheduleController {
 		AccountInfoFragmentHelper.setupModelMapBasics(fragment, model);
 
 		AccountThermostatSchedule schedule = accountThermostatScheduleDao.getById(scheduleId);
-        accountEventLogService.thermostatScheduleDeleteAttemptedByOperator(user,
-            fragment.getAccountNumber(), schedule.getScheduleName());
+		accountEventLogService.thermostatScheduleDeleteAttempted(user,
+		                                                         fragment.getAccountNumber(),
+		                                                         schedule.getScheduleName(),
+		                                                         EventSource.OPERATOR);
 		accountThermostatScheduleDao.deleteById(scheduleId);
 		
 		MessageSourceResolvable message = new YukonMessageSourceResolvable("yukon.web.modules.operator.thermostat.schedules.scheduleDeleted", schedule.getScheduleName());

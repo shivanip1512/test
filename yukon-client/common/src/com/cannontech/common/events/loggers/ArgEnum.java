@@ -12,6 +12,7 @@ public enum ArgEnum {
     deviceLabel, 
     deviceName, 
     energyCompanyName,
+    eventSource,
     fileName, 
     gatewayName,
     gearName, 

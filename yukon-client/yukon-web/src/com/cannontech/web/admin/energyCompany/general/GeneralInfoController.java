@@ -14,6 +14,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 
 import com.cannontech.common.events.loggers.StarsEventLogService;
+import com.cannontech.common.events.model.EventSource;
 import com.cannontech.common.exception.NotAuthorizedException;
 import com.cannontech.common.i18n.MessageSourceAccessor;
 import com.cannontech.common.util.CommandExecutionException;
@@ -122,7 +123,7 @@ public class GeneralInfoController {
             throw new NotAuthorizedException("User " + user.getUsername() + " is not authorized to delete energy company with id:" + ecId);
         }
         
-        starsEventLogService.deleteEnergyCompanyAttemptedByOperator(user, fragment.getCompanyName());
+        starsEventLogService.deleteEnergyCompanyAttempted(user, fragment.getCompanyName(), EventSource.OPERATOR);
 
         energyCompanyService.deleteEnergyCompany(user, ecId);
 

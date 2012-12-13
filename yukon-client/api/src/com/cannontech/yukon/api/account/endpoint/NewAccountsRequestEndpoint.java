@@ -9,6 +9,7 @@ import org.springframework.ws.server.endpoint.annotation.Endpoint;
 import org.springframework.ws.server.endpoint.annotation.PayloadRoot;
 
 import com.cannontech.common.events.loggers.AccountEventLogService;
+import com.cannontech.common.events.model.EventSource;
 import com.cannontech.common.util.xml.SimpleXPathTemplate;
 import com.cannontech.common.util.xml.XmlUtils;
 import com.cannontech.common.util.xml.YukonXml;
@@ -29,6 +30,7 @@ public class NewAccountsRequestEndpoint {
 
     private AccountEventLogService accountEventLogService;
     private AccountService accountService;
+
     private Namespace ns = YukonXml.getYukonNamespace();
     
     @PayloadRoot(namespace="http://yukon.cannontech.com/api", localPart="newAccountsRequest")
@@ -46,7 +48,7 @@ public class NewAccountsRequestEndpoint {
         newAccountsResponse.addContent(newAccountsResultList);
         
         for (UpdatableAccount account : customerAccounts) {
-            accountEventLogService.accountCreationAttemptedThroughApi(user,account.getAccountNumber());
+            accountEventLogService.accountCreationAttempted(user,account.getAccountNumber(), EventSource.API);
             
             Element newAccountResult = addAccountResponse(ns, newAccountsResultList, account);
             try {

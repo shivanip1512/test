@@ -3,6 +3,7 @@ package com.cannontech.stars.dr.thermostat.service;
 import java.util.List;
 import java.util.Set;
 
+import com.cannontech.common.events.model.EventSource;
 import com.cannontech.common.temperature.Temperature;
 import com.cannontech.database.data.lite.LiteYukonUser;
 import com.cannontech.stars.dr.account.model.CustomerAccount;
@@ -71,15 +72,11 @@ public interface ThermostatService {
     /**
      * Log a consumer's attempt to send manual thermostat settings.
      */
-    public void logConsumerThermostatManualSaveAttempt(List<Integer> thermostatIds, 
-                                                       YukonUserContext userContext, 
-                                                       CustomerAccount account);
-    /**
-     * Log an operator's attempt to send manual thermostat settings.
-     */
-    public void logOperatorThermostatManualSaveAttempt(List<Integer> thermostatIds, 
-                                                       YukonUserContext userContext, 
-                                                       CustomerAccount account);
+    public void logThermostatManualSaveAttempt( List<Integer> thermostatIds,
+                                                YukonUserContext context, CustomerAccount account,
+                                                Double heatTemperature, Double coldTemperature,
+                                                String mode, boolean holdTemperature,
+                                                EventSource source);
     
     /**
      * Stores the temperature unit that the customer last used, so next time we can display temps

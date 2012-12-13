@@ -26,6 +26,7 @@ import com.cannontech.common.constants.YukonListEntry;
 import com.cannontech.common.constants.YukonSelectionListEnum;
 import com.cannontech.common.device.commands.exception.CommandCompletionException;
 import com.cannontech.common.events.loggers.HardwareEventLogService;
+import com.cannontech.common.events.model.EventSource;
 import com.cannontech.common.i18n.MessageSourceAccessor;
 import com.cannontech.common.inventory.Hardware;
 import com.cannontech.common.inventory.HardwareClass;
@@ -424,7 +425,7 @@ public class InventoryController {
         }
         
         LiteYukonUser user = context.getYukonUser();
-        hardwareEventLogService.hardwareUpdateAttemptedByOperator(user, hardware.getSerialNumber());
+        hardwareEventLogService.hardwareUpdateAttempted(user, Integer.toString(hardware.getAccountId()), hardware.getSerialNumber(), EventSource.OPERATOR);
         
         rolePropertyDao.verifyProperty(YukonRoleProperty.OPERATOR_CONSUMER_INFO_HARDWARES, user);
         
@@ -500,7 +501,7 @@ public class InventoryController {
         
         Hardware hardwareToDelete = hardwareUiService.getHardware(inventoryId);
         LiteYukonUser user = context.getYukonUser();
-        hardwareEventLogService.hardwareDeletionAttemptedByOperator(user, hardwareToDelete.getDisplayName());
+        hardwareEventLogService.hardwareDeletionAttempted(user, hardwareToDelete.getDisplayName(), EventSource.OPERATOR);
         rolePropertyDao.verifyProperty(YukonRoleProperty.OPERATOR_ALLOW_ACCOUNT_EDITING, user);
         
         hardwareService.deleteHardware(user, true, inventoryId);

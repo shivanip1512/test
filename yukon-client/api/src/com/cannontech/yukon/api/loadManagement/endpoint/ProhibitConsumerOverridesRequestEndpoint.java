@@ -8,6 +8,7 @@ import org.springframework.ws.server.endpoint.annotation.Endpoint;
 import org.springframework.ws.server.endpoint.annotation.PayloadRoot;
 
 import com.cannontech.common.events.loggers.StarsEventLogService;
+import com.cannontech.common.events.model.EventSource;
 import com.cannontech.common.exception.NotAuthorizedException;
 import com.cannontech.common.util.xml.SimpleXPathTemplate;
 import com.cannontech.common.util.xml.XmlUtils;
@@ -27,7 +28,7 @@ public class ProhibitConsumerOverridesRequestEndpoint {
     private OptOutService optOutService;
     private StarsEventLogService starsEventLogService;
     private Namespace ns = YukonXml.getYukonNamespace();
-	private RolePropertyDao rolePropertyDao;
+    private RolePropertyDao rolePropertyDao;
     
 	private String programNameExpressionStr = "/y:prohibitConsumerOverridesRequest/y:programName";
 	private String actionExpressionStr = "/y:prohibitConsumerOverridesRequest/y:action";
@@ -60,11 +61,11 @@ public class ProhibitConsumerOverridesRequestEndpoint {
             }
             
             if (StringUtils.isBlank(programName)) {
-                starsEventLogService.disablingOptOutUsageForTodayAttemptedByApi(user);
+                starsEventLogService.disablingOptOutUsageForTodayAttempted(user, EventSource.API);
                 optOutService.changeOptOutEnabledStateForToday(user, optOutAction);
 
             } else {
-                starsEventLogService.disablingOptOutUsageForTodayByProgramAttemptedByApi(user, programName);
+                starsEventLogService.disablingOptOutUsageForTodayByProgramAttempted(user, programName, EventSource.API);
                 optOutService.changeOptOutEnabledStateForTodayByProgramName(user, optOutAction, programName);
             }
             
@@ -89,8 +90,8 @@ public class ProhibitConsumerOverridesRequestEndpoint {
     
     @Autowired
     public void setOptOutService(OptOutService optOutService) {
-		this.optOutService = optOutService;
-	}
+        this.optOutService = optOutService;
+    }
     
     @Autowired
     public void setStarsEventLogService(StarsEventLogService starsEventLogService) {

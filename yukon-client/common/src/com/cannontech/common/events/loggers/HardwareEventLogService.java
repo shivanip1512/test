@@ -2,6 +2,7 @@ package com.cannontech.common.events.loggers;
 
 import com.cannontech.common.events.Arg;
 import com.cannontech.common.events.YukonEventLog;
+import com.cannontech.common.events.model.EventSource;
 import com.cannontech.common.util.TransactionExecutor.ExecutorTransactionality;
 import com.cannontech.database.data.lite.LiteYukonUser;
 
@@ -10,72 +11,65 @@ public interface HardwareEventLogService {
 /* HARDWARE */    
     // Hardware
     @YukonEventLog(transactionality=ExecutorTransactionality.FORCED, category="hardware")
-    public void hardwareMeterCreationAttemptedByOperator(@Arg(ArgEnum.username) LiteYukonUser yukonUser, 
-                                                         @Arg(ArgEnum.meterName) String meterName);
+    public void hardwareMeterCreationAttempted(@Arg(ArgEnum.username) LiteYukonUser yukonUser, 
+                                                         @Arg(ArgEnum.meterName) String meterName,
+                                                         @Arg(ArgEnum.eventSource) EventSource source);
 
     
     @YukonEventLog(transactionality=ExecutorTransactionality.FORCED, category="hardware")
-    public void hardwareChangeOutForMeterAttemptedByOperator(@Arg(ArgEnum.username) LiteYukonUser yukonUser,
+    public void hardwareChangeOutForMeterAttempted(@Arg(ArgEnum.username) LiteYukonUser yukonUser,
                                                              @Arg(ArgEnum.meterName) String oldMeterName,
-                                                             @Arg(ArgEnum.meterName) String newMeterName);
+                                                             @Arg(ArgEnum.meterName) String newMeterName,
+                                                             @Arg(ArgEnum.eventSource) EventSource source);
     
     @YukonEventLog(transactionality=ExecutorTransactionality.FORCED, category="hardware")
-    public void hardwareChangeOutAttemptedByOperator(@Arg(ArgEnum.username) LiteYukonUser yukonUser,
+    public void hardwareChangeOutAttempted(@Arg(ArgEnum.username) LiteYukonUser yukonUser,
                                                      @Arg(ArgEnum.serialNumber) String oldSerialNumber,
-                                                     @Arg(ArgEnum.serialNumber) String newSerialNumber);
+                                                     @Arg(ArgEnum.serialNumber) String newSerialNumber,
+                                                     @Arg(ArgEnum.eventSource) EventSource source);
     
     @YukonEventLog(transactionality=ExecutorTransactionality.FORCED, category="hardware")
-    public void hardwareCreationAttemptedByOperator(@Arg(ArgEnum.username) LiteYukonUser yukonUser,
+    public void hardwareCreationAttempted(@Arg(ArgEnum.username) LiteYukonUser yukonUser,
                                                     @Arg(ArgEnum.accountNumber) String accountNumber,
-                                                     @Arg(ArgEnum.serialNumber) String serialNumber);
-
-    @YukonEventLog(transactionality=ExecutorTransactionality.FORCED, category="hardware")
-    public void hardwareCreationAttemptedThroughAccountImporter(@Arg(ArgEnum.username) LiteYukonUser yukonUser,
-                                                                @Arg(ArgEnum.serialNumber) String serialNumber);
+                                                     @Arg(ArgEnum.serialNumber) String serialNumber,
+                                                     @Arg(ArgEnum.eventSource) EventSource source);
     
     @YukonEventLog(transactionality=ExecutorTransactionality.FORCED, category="hardware")
-    public void twoWayHardwareCreationAttemptedByOperator(@Arg(ArgEnum.username) LiteYukonUser yukonUser,
-                                                          @Arg(ArgEnum.deviceName) String deviceName);
+    public void twoWayHardwareCreationAttempted(@Arg(ArgEnum.username) LiteYukonUser yukonUser,
+                                                          @Arg(ArgEnum.deviceName) String deviceName,
+                                                          @Arg(ArgEnum.eventSource) EventSource source);
     
 
     @YukonEventLog(transactionality=ExecutorTransactionality.FORCED, category="hardware")
-    public void assigningHardwareAttemptedByOperator(@Arg(ArgEnum.username) LiteYukonUser yukonUser,
+    public void assigningHardwareAttempted(@Arg(ArgEnum.username) LiteYukonUser yukonUser,
                                                      @Arg(ArgEnum.accountNumber) String accountNumber,
-                                                     @Arg(ArgEnum.serialNumber) String serialNumber);
+                                                     @Arg(ArgEnum.serialNumber) String serialNumber,
+                                                     @Arg(ArgEnum.eventSource) EventSource source);
 
     @YukonEventLog(transactionality=ExecutorTransactionality.FORCED, category="hardware")
-    public void hardwareAdditionAttemptedThroughApi(@Arg(ArgEnum.username) LiteYukonUser yukonUser,
+    public void hardwareAdditionAttempted(@Arg(ArgEnum.username) LiteYukonUser yukonUser,
                                                     @Arg(ArgEnum.accountNumber) String accountNumber,
-                                                    @Arg(ArgEnum.serialNumber) String serialNumber);
-    
-    
-    @YukonEventLog(transactionality=ExecutorTransactionality.FORCED, category="hardware")
-    public void hardwareUpdateAttemptedByOperator(@Arg(ArgEnum.username) LiteYukonUser yukonUser,
-                                                  @Arg(ArgEnum.serialNumber) String serialNumber);
-    
-    @YukonEventLog(transactionality=ExecutorTransactionality.FORCED, category="hardware")
-    public void hardwareUpdateAttemptedThroughAccountImporter(@Arg(ArgEnum.username) LiteYukonUser yukonUser,
-                                                              @Arg(ArgEnum.serialNumber) String serialNumber);
+                                                    @Arg(ArgEnum.serialNumber) String serialNumber,
+                                                    @Arg(ArgEnum.eventSource) EventSource source);
 
+    
     @YukonEventLog(transactionality=ExecutorTransactionality.FORCED, category="hardware")
-    public void hardwareUpdateAttemptedThroughApi(@Arg(ArgEnum.username) LiteYukonUser yukonUser,
+    public void hardwareUpdateAttempted(@Arg(ArgEnum.username) LiteYukonUser yukonUser,
                                                   @Arg(ArgEnum.accountNumber) String accountNumber,
-                                                  @Arg(ArgEnum.serialNumber) String serialNumber);
+                                                  @Arg(ArgEnum.serialNumber) String serialNumber,
+                                                  @Arg(ArgEnum.eventSource) EventSource source);
 
     
     @YukonEventLog(transactionality=ExecutorTransactionality.FORCED, category="hardware")
-    public void hardwareDeletionAttemptedByOperator(@Arg(ArgEnum.username) LiteYukonUser yukonUser,
-                                                    @Arg(ArgEnum.deviceLabel) String deviceLabel);
-
+    public void hardwareDeletionAttempted(@Arg(ArgEnum.username) LiteYukonUser yukonUser,
+                                                    @Arg(ArgEnum.deviceLabel) String deviceLabel,
+                                                    @Arg(ArgEnum.eventSource) EventSource source);
     
     @YukonEventLog(transactionality=ExecutorTransactionality.FORCED, category="hardware")
-    public void hardwareRemovalAttemptedThroughAccountImporter(@Arg(ArgEnum.username) LiteYukonUser yukonUser,
-                                                               @Arg(ArgEnum.serialNumber) String serialNumber);
-    
-    @YukonEventLog(transactionality=ExecutorTransactionality.FORCED, category="hardware")
-    public void hardwareRemovalAttemptedThroughApi(@Arg(ArgEnum.username) LiteYukonUser yukonUser,
+    public void hardwareRemovalAttempted(@Arg(ArgEnum.username) LiteYukonUser yukonUser,
                                                    @Arg(ArgEnum.accountNumber) String accountNumber,
-                                                   @Arg(ArgEnum.serialNumber) String serialNumber);
+                                                   @Arg(ArgEnum.serialNumber) String serialNumber,
+                                                   @Arg(ArgEnum.eventSource) EventSource source);
 
     // Hardware Service Level
     @YukonEventLog(transactionality=ExecutorTransactionality.TRANSACTIONAL, category="hardware")
@@ -109,19 +103,22 @@ public interface HardwareEventLogService {
 /* HARDWARE CONFIGURATION */
     // hardware configuration
     @YukonEventLog(transactionality=ExecutorTransactionality.FORCED, category="hardware.config")
-    public void hardwareConfigAttemptedByOperator(@Arg(ArgEnum.username) LiteYukonUser yukonUser, 
+    public void hardwareConfigAttempted(@Arg(ArgEnum.username) LiteYukonUser yukonUser, 
                                                      @Arg(ArgEnum.serialNumber) String serialNumber, 
-                                                     @Arg(ArgEnum.accountNumber) String accountNumber);
+                                                     @Arg(ArgEnum.accountNumber) String accountNumber,
+                                                     @Arg(ArgEnum.eventSource) EventSource source);
 
     @YukonEventLog(transactionality=ExecutorTransactionality.FORCED, category="hardware.config")
-    public void hardwareDisableAttemptedByOperator(@Arg(ArgEnum.username) LiteYukonUser yukonUser, 
+    public void hardwareDisableAttempted(@Arg(ArgEnum.username) LiteYukonUser yukonUser, 
                                                      @Arg(ArgEnum.serialNumber) String serialNumber, 
-                                                     @Arg(ArgEnum.accountNumber) String accountNumber);
+                                                     @Arg(ArgEnum.accountNumber) String accountNumber,
+                                                     @Arg(ArgEnum.eventSource) EventSource source);
 
     @YukonEventLog(transactionality=ExecutorTransactionality.FORCED, category="hardware.config")
-    public void hardwareEnableAttemptedByOperator(@Arg(ArgEnum.username) LiteYukonUser yukonUser, 
+    public void hardwareEnableAttempted(@Arg(ArgEnum.username) LiteYukonUser yukonUser, 
                                                   @Arg(ArgEnum.serialNumber) String serialNumber, 
-                                                  @Arg(ArgEnum.accountNumber) String accountNumber);
+                                                  @Arg(ArgEnum.accountNumber) String accountNumber,
+                                                  @Arg(ArgEnum.eventSource) EventSource source);
 
     
     // hardware configuration Service Level

@@ -23,6 +23,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 
 import com.cannontech.common.device.commands.exception.CommandCompletionException;
 import com.cannontech.common.events.loggers.AccountEventLogService;
+import com.cannontech.common.events.model.EventSource;
 import com.cannontech.common.i18n.MessageSourceAccessor;
 import com.cannontech.common.survey.dao.SurveyDao;
 import com.cannontech.common.survey.model.Question;
@@ -74,21 +75,22 @@ import com.google.common.collect.Sets;
 @CheckRoleProperty(YukonRoleProperty.OPERATOR_CONSUMER_INFO_PROGRAMS_OPT_OUT)
 @RequestMapping(value = "/operator/program/optOut/*")
 public class OperatorOptOutController {
-    private AccountEventLogService accountEventLogService;
-    private CustomerAccountDao customerAccountDao;
-    private DatePropertyEditorFactory datePropertyEditorFactory;
-    private DisplayableInventoryDao displayableInventoryDao;
-    private OptOutEventDao optOutEventDao;
-    private OptOutService optOutService;
-    private OptOutValidatorFactory optOutValidatorFactory;
-    private LmHardwareBaseDao lmHardwareBaseDao;
-    private RolePropertyDao rolePropertyDao;
-    private YukonUserContextMessageSourceResolver messageSourceResolver;
-    private DateFormattingService dateFormattingService;
-    private OptOutSurveyService optOutSurveyService;
-    private SurveyService surveyService;
-    private SurveyDao surveyDao;
-    private OptOutControllerHelper helper;
+    
+    @Autowired private AccountEventLogService accountEventLogService;
+    @Autowired private CustomerAccountDao customerAccountDao;
+    @Autowired private DatePropertyEditorFactory datePropertyEditorFactory;
+    @Autowired private DisplayableInventoryDao displayableInventoryDao;
+    @Autowired private OptOutEventDao optOutEventDao;
+    @Autowired private OptOutService optOutService;
+    @Autowired private OptOutValidatorFactory optOutValidatorFactory;
+    @Autowired private LmHardwareBaseDao lmHardwareBaseDao;
+    @Autowired private RolePropertyDao rolePropertyDao;
+    @Autowired private YukonUserContextMessageSourceResolver messageSourceResolver;
+    @Autowired private DateFormattingService dateFormattingService;
+    @Autowired private OptOutSurveyService optOutSurveyService;
+    @Autowired private SurveyService surveyService;
+    @Autowired private SurveyDao surveyDao;
+    @Autowired private OptOutControllerHelper helper;
 
     @RequestMapping
     public String view(YukonUserContext userContext, ModelMap model,
@@ -340,10 +342,11 @@ public class OperatorOptOutController {
             LMHardwareBase lmHardwareBase = lmHardwareBaseDao.getById(inventoryId);
             DateTime startDate =
                 optOutBackingBean.getStartDate().toDateTimeAtStartOfDay(userContext.getJodaTimeZone());
-            accountEventLogService.optOutAttemptedByOperator(userContext.getYukonUser(),
-                                                             accountInfoFragment.getAccountNumber(),
-                                                             lmHardwareBase.getManufacturerSerialNumber(),
-                                                             startDate);
+            accountEventLogService.optOutAttempted(userContext.getYukonUser(),
+                                                   accountInfoFragment.getAccountNumber(),
+                                                   lmHardwareBase.getManufacturerSerialNumber(),
+                                                   startDate,
+                                                   EventSource.OPERATOR);
         }
 
         helper.processOptOut(optOutBackingBean, userContext,
@@ -404,11 +407,12 @@ public class OperatorOptOutController {
         // Log consumer opt out cancel attempt
         OptOutEvent optOutEvent = optOutEventDao.getOptOutEventById(eventId);
         LMHardwareBase lmHardwareBase = lmHardwareBaseDao.getById(optOutEvent.getInventoryId());
-        accountEventLogService.optOutCancelAttemptedByOperator(userContext.getYukonUser(),
-                                                              accountInfoFragment.getAccountNumber(),
-                                                              lmHardwareBase.getManufacturerSerialNumber(),
-                                                              optOutEvent.getStartDate(),
-                                                              optOutEvent.getStopDate());
+        accountEventLogService.optOutCancelAttempted(userContext.getYukonUser(),
+                                                     accountInfoFragment.getAccountNumber(),
+                                                     lmHardwareBase.getManufacturerSerialNumber(),
+                                                     optOutEvent.getStartDate(),
+                                                     optOutEvent.getStopDate(),
+                                                     EventSource.OPERATOR);
 
         // Check that the inventory we're working with belongs to the current account
         helper.checkEventAgainstAccount(eventId, accountInfoFragment.getAccountId());
@@ -451,9 +455,9 @@ public class OperatorOptOutController {
 
         // Log opt out addition attempt
         LMHardwareBase lmHardwareBase = lmHardwareBaseDao.getById(inventoryId);
-        accountEventLogService.optOutLimitIncreaseAttemptedByOperator(userContext.getYukonUser(),
+        accountEventLogService.optOutLimitIncreaseAttempted(userContext.getYukonUser(),
                                                                       accountInfoFragment.getAccountNumber(),
-                                                                      lmHardwareBase.getManufacturerSerialNumber());
+                                                                      lmHardwareBase.getManufacturerSerialNumber(), EventSource.OPERATOR);
 
         // Check that the inventory we're working with belongs to the current account
         CustomerAccount customerAccount = customerAccountDao.getById(accountInfoFragment.getAccountId());
@@ -476,9 +480,9 @@ public class OperatorOptOutController {
 
         // Log command resend attempt
         LMHardwareBase lmHardwareBase = lmHardwareBaseDao.getById(inventoryId);
-        accountEventLogService.optOutResendAttemptedByOperator(userContext.getYukonUser(),
+        accountEventLogService.optOutResendAttempted(userContext.getYukonUser(),
                                                                accountInfoFragment.getAccountNumber(),
-                                                               lmHardwareBase.getManufacturerSerialNumber());
+                                                               lmHardwareBase.getManufacturerSerialNumber(), EventSource.OPERATOR);
 
         // Check that the inventory we're working with belongs to the current account
         CustomerAccount customerAccount = customerAccountDao.getById(accountInfoFragment.getAccountId());
@@ -505,9 +509,9 @@ public class OperatorOptOutController {
 
         // Log opt out reset attempt
         LMHardwareBase lmHardwareBase = lmHardwareBaseDao.getById(inventoryId);
-        accountEventLogService.optOutLimitResetAttemptedByOperator(userContext.getYukonUser(),
+        accountEventLogService.optOutLimitResetAttempted(userContext.getYukonUser(),
                                                                    accountInfoFragment.getAccountNumber(),
-                                                                   lmHardwareBase.getManufacturerSerialNumber());
+                                                                   lmHardwareBase.getManufacturerSerialNumber(), EventSource.OPERATOR);
 
         // Check that the inventory we're working with belongs to the current account
         helper.checkInventoryAgainstAccount(inventoryId, accountInfoFragment.getAccountId());
@@ -565,81 +569,4 @@ public class OperatorOptOutController {
                                     "startDate",
                                     datePropertyEditorFactory.getLocalDatePropertyEditor(DateFormatEnum.DATE, userContext));
     }
-
-    @Autowired
-    public void setAccountEventLogService(AccountEventLogService accountEventLogService) {
-        this.accountEventLogService = accountEventLogService;
-    }
-
-    @Autowired
-    public void setOptOutService(OptOutService optOutService) {
-        this.optOutService = optOutService;
-    }
-
-    @Autowired
-    public void setOptOutEventDao(OptOutEventDao optOutEventDao) {
-        this.optOutEventDao = optOutEventDao;
-    }
-
-    @Autowired
-    public void setCustomerAccountDao(CustomerAccountDao customerAccountDao) {
-        this.customerAccountDao = customerAccountDao;
-    }
-
-    @Autowired
-    public void setRolePropertyDao(RolePropertyDao rolePropertyDao) {
-        this.rolePropertyDao = rolePropertyDao;
-    }
-
-    @Autowired
-    public void setDatePropertyEditorFactory(DatePropertyEditorFactory datePropertyEditorFactory) {
-        this.datePropertyEditorFactory = datePropertyEditorFactory;
-    }
-
-    @Autowired
-    public void setDisplayableInventoryDao(
-            DisplayableInventoryDao displayableInventoryDao) {
-        this.displayableInventoryDao = displayableInventoryDao;
-    }
-
-    @Autowired
-    public void setMessageSourceResolver(YukonUserContextMessageSourceResolver messageSourceResolver) {
-        this.messageSourceResolver = messageSourceResolver;
-    }
-
-    @Autowired
-    public void setLmHardwareBaseDao(LmHardwareBaseDao lmHardwareBaseDao) {
-        this.lmHardwareBaseDao = lmHardwareBaseDao;
-    }
-
-    @Autowired
-    public void setOptOutValidatorFactory(OptOutValidatorFactory optOutValidatorFactory) {
-        this.optOutValidatorFactory = optOutValidatorFactory;
-    }
-
-    @Autowired
-    public void setDateFormattingService(DateFormattingService dateFormattingService) {
-        this.dateFormattingService = dateFormattingService;
-    }
-
-    @Autowired
-    public void setOptOutSurveyService(OptOutSurveyService optOutSurveyService) {
-        this.optOutSurveyService = optOutSurveyService;
-    }
-
-    @Autowired
-    public void setSurveyDao(SurveyDao surveyDao) {
-        this.surveyDao = surveyDao;
-    }
-
-    @Autowired
-    public void setHelper(OptOutControllerHelper helper) {
-        this.helper = helper;
-    }
-    
-    @Autowired
-    public void setSurveyService(SurveyService surveyService) {
-        this.surveyService = surveyService;
-    }
-    
 }

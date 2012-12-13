@@ -27,6 +27,7 @@ import com.cannontech.amr.meter.dao.MeterDao;
 import com.cannontech.amr.meter.model.Meter;
 import com.cannontech.common.device.commands.exception.CommandCompletionException;
 import com.cannontech.common.events.loggers.HardwareEventLogService;
+import com.cannontech.common.events.model.EventSource;
 import com.cannontech.common.exception.NotAuthorizedException;
 import com.cannontech.common.inventory.HardwareConfigType;
 import com.cannontech.common.inventory.HardwareType;
@@ -46,7 +47,6 @@ import com.cannontech.database.data.lite.LitePoint;
 import com.cannontech.database.data.lite.LiteYukonPAObject;
 import com.cannontech.database.data.pao.RouteTypes;
 import com.cannontech.dr.dao.ExpressComReportedAddressDao;
-import com.cannontech.dr.dao.ExpressComReportedAddress;
 import com.cannontech.dr.dao.LmReportedAddress;
 import com.cannontech.dr.dao.SepReportedAddressDao;
 import com.cannontech.i18n.YukonMessageSourceResolvable;
@@ -286,9 +286,10 @@ public class OperatorHardwareConfigController {
 
         // Log hardware configuration attempt
         LMHardwareBase lmHardwareBase = lmHardwareBaseDao.getById(inventoryId);
-        hardwareEventLogService.hardwareConfigAttemptedByOperator(userContext.getYukonUser(),
-                                                                  lmHardwareBase.getManufacturerSerialNumber(),
-                                                                  accountInfo.getAccountNumber());
+        hardwareEventLogService.hardwareConfigAttempted(userContext.getYukonUser(),
+                                                        lmHardwareBase.getManufacturerSerialNumber(),
+                                                        accountInfo.getAccountNumber(),
+                                                        EventSource.OPERATOR);
         
         rolePropertyDao.verifyProperty(YukonRoleProperty.OPERATOR_ALLOW_ACCOUNT_EDITING,
                                        userContext.getYukonUser());
@@ -365,9 +366,10 @@ public class OperatorHardwareConfigController {
         
         // Log hardware disable attempt
         LMHardwareBase lmHardwareBase = lmHardwareBaseDao.getById(inventoryId);
-        hardwareEventLogService.hardwareDisableAttemptedByOperator(userContext.getYukonUser(),
-                                                                   lmHardwareBase.getManufacturerSerialNumber(),
-                                                                   accountInfo.getAccountNumber());
+        hardwareEventLogService.hardwareDisableAttempted(userContext.getYukonUser(),
+                                                         lmHardwareBase.getManufacturerSerialNumber(),
+                                                         accountInfo.getAccountNumber(),
+                                                         EventSource.OPERATOR);
         
         // Validate request
         verifyHardwareIsForAccount(inventoryId, accountInfo);
@@ -399,9 +401,10 @@ public class OperatorHardwareConfigController {
 
         // Log hardware disable attempt
         LMHardwareBase lmHardwareBase = lmHardwareBaseDao.getById(inventoryId);
-        hardwareEventLogService.hardwareEnableAttemptedByOperator(userContext.getYukonUser(),
-                                                                  lmHardwareBase.getManufacturerSerialNumber(),
-                                                                  accountInfo.getAccountNumber());
+        hardwareEventLogService.hardwareEnableAttempted(userContext.getYukonUser(),
+                                                        lmHardwareBase.getManufacturerSerialNumber(),
+                                                        accountInfo.getAccountNumber(),
+                                                        EventSource.OPERATOR);
         
         // Validate request
         verifyHardwareIsForAccount(inventoryId, accountInfo);

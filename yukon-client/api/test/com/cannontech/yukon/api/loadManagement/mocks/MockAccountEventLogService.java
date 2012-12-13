@@ -4,48 +4,29 @@ import org.joda.time.Instant;
 import org.joda.time.ReadableInstant;
 
 import com.cannontech.common.events.loggers.AccountEventLogService;
+import com.cannontech.common.events.model.EventSource;
 import com.cannontech.database.data.lite.LiteYukonUser;
 
-public class MockAccountEventLogService implements AccountEventLogService{
+public class MockAccountEventLogService implements AccountEventLogService {
 
     @Override
-    public void accountCreationAttemptedThroughAccountImporter(LiteYukonUser yukonUser,
-                                                               String accountNumber) {
+    public void accountCreationAttempted(LiteYukonUser yukonUser,
+                                           String accountNumber,
+                                           EventSource source) {
     }
 
     @Override
-    public void accountCreationAttemptedThroughApi(LiteYukonUser yukonUser, String accountNumber) {
+    public void accountUpdateCreationAttempted(LiteYukonUser yukonUser,
+                                               String accountNumber,
+                                               EventSource source) {
     }
 
     @Override
-    public void accountUpdateCreationAttemptedThroughApi(LiteYukonUser yukonUser,
-                                                         String accountNumber) {
+    public void accountDeletionAttempted(LiteYukonUser yukonUser, String accountNumber, EventSource source) {
     }
 
     @Override
-    public void accountDeletionAttemptedThroughAccountImporter(LiteYukonUser yukonUser,
-                                                               String accountNumber) {
-    }
-
-    @Override
-    public void accountDeletionAttemptedThroughApi(LiteYukonUser yukonUser, String accountNumber) {
-    }
-
-    @Override
-    public void accountDeletionAttemptedByOperator(LiteYukonUser yukonUser, String accountNumber) {
-    }
-
-    @Override
-    public void accountUpdateAttemptedThroughAccountImporter(LiteYukonUser yukonUser,
-                                                             String accountNumber) {
-    }
-
-    @Override
-    public void accountUpdateAttemptedThroughApi(LiteYukonUser yukonUser, String accountNumber) {
-    }
-
-    @Override
-    public void accountUpdateAttemptedByOperator(LiteYukonUser yukonUser, String accountNumber) {
+    public void accountUpdateAttempted(LiteYukonUser yukonUser, String accountNumber, EventSource source) {
     }
 
     @Override
@@ -93,32 +74,21 @@ public class MockAccountEventLogService implements AccountEventLogService{
     }
 
     @Override
-    public void enrollmentAttemptedByConsumer(LiteYukonUser yukonUser, String accountNumber,
+    public void enrollmentAttempted(LiteYukonUser yukonUser, String accountNumber,
                                               String deviceName, String programName,
-                                              String loadGroupName) {
+                                              String loadGroupName, EventSource source) {
     }
 
     @Override
-    public void enrollmentAttemptedThroughApi(LiteYukonUser yukonUser, String accountNumber,
-                                              String deviceName, String programName,
-                                              String loadGroupName) {
+    public void enrollmentModificationAttempted(LiteYukonUser yukonUser,
+                                                String accountNumber,
+                                                EventSource source) {
     }
 
     @Override
-    public void enrollmentModificationAttemptedByOperator(LiteYukonUser yukonUser,
-                                                          String accountNumber) {
-    }
-
-    @Override
-    public void unenrollmentAttemptedByConsumer(LiteYukonUser yukonUser, String accountNumber,
+    public void unenrollmentAttempted(LiteYukonUser yukonUser, String accountNumber,
                                                 String deviceName, String programName,
-                                                String loadGroupName) {
-    }
-
-    @Override
-    public void unenrollmentAttemptedThroughApi(LiteYukonUser yukonUser, String accountNumber,
-                                                String deviceName, String programName,
-                                                String loadGroupName) {
+                                                String loadGroupName, EventSource source) {
     }
 
     @Override
@@ -132,72 +102,40 @@ public class MockAccountEventLogService implements AccountEventLogService{
     }
 
     @Override
-    public void optOutLimitReductionAttemptedThroughApi(LiteYukonUser user, String accountNumber,
-                                                        String serialNumber) {
+    public void optOutLimitReductionAttempted(LiteYukonUser user, String accountNumber,
+                                              String serialNumber, EventSource source) {
     }
 
     @Override
-    public void optOutLimitIncreaseAttemptedByOperator(LiteYukonUser user, String accountNumber,
-                                                       String serialNumber) {
+    public void optOutLimitResetAttempted(LiteYukonUser user, String accountNumber,
+                                          String serialNumber, EventSource source) {
     }
 
     @Override
-    public void optOutLimitReductionAttemptedByOperator(LiteYukonUser user, String accountNumber,
-                                                        String serialNumber) {
+    public void optOutResendAttempted(LiteYukonUser user, String accountNumber,
+                                                String serialNumber, EventSource source) {
     }
 
     @Override
-    public void optOutLimitResetAttemptedByOperator(LiteYukonUser user, String accountNumber,
-                                                    String serialNumber) {
+    public void optOutAttempted(LiteYukonUser user, String accountNumber,
+                                          String serialNumber, ReadableInstant startDate, EventSource source) {
     }
 
     @Override
-    public void optOutLimitResetAttemptedThroughApi(LiteYukonUser user, String accountNumber,
-                                                    String serialNumber) {
-    }
-
-    @Override
-    public void optOutResendAttemptedByOperator(LiteYukonUser user, String accountNumber,
-                                                String serialNumber) {
-    }
-
-    @Override
-    public void optOutAttemptedByOperator(LiteYukonUser user, String accountNumber,
-                                          String serialNumber, ReadableInstant startDate) {
-    }
-
-    @Override
-    public void optOutAttemptedByConsumer(LiteYukonUser user, String accountNumber,
-                                          String serialNumber, ReadableInstant startDate) {
-    }
-
-    @Override
-    public void optOutAttemptedThroughApi(LiteYukonUser user, String accountNumber,
-                                          String serialNumber, ReadableInstant startDate) {
-    }
-
-    @Override
-    public void optOutCancelAttemptedByConsumer(LiteYukonUser user, String accountNumber,
+    public void optOutCancelAttempted(LiteYukonUser user, String accountNumber,
                                                 String serialNumber,
                                                 ReadableInstant optOutStartDate,
-                                                ReadableInstant optOutStopDate) {
+                                                ReadableInstant optOutStopDate, EventSource source) {
     }
 
     @Override
-    public void optOutCancelAttemptedByOperator(LiteYukonUser user, String accountNumber,
-                                                String serialNumber,
-                                                ReadableInstant optOutStartDate,
-                                                ReadableInstant optOutStopDate) {
+    public void scheduledOptOutCancelAttempted(LiteYukonUser user, String accountNumber,
+                                                         String serialNumber, EventSource source) {
     }
 
     @Override
-    public void scheduledOptOutCancelAttemptedThroughApi(LiteYukonUser user, String accountNumber,
-                                                         String serialNumber) {
-    }
-
-    @Override
-    public void activeOptOutCancelAttemptedThroughApi(LiteYukonUser user, String accountNumber,
-                                                      String serialNumber) {
+    public void activeOptOutCancelAttempted(LiteYukonUser user, String accountNumber,
+                                                      String serialNumber, EventSource source) {
     }
 
     @Override
@@ -223,21 +161,21 @@ public class MockAccountEventLogService implements AccountEventLogService{
     }
 
     @Override
-    public void applianceAdditionAttemptedByOperator(LiteYukonUser yukonUser, String accountNumber,
+    public void applianceAdditionAttempted(LiteYukonUser yukonUser, String accountNumber,
                                                      String applianceType, String deviceName,
-                                                     String programName) {
+                                                     String programName, EventSource source) {
     }
 
     @Override
-    public void applianceUpdateAttemptedByOperator(LiteYukonUser yukonUser, String accountNumber,
+    public void applianceUpdateAttempted(LiteYukonUser yukonUser, String accountNumber,
                                                    String applianceType, String deviceName,
-                                                   String programName) {
+                                                   String programName, EventSource source) {
     }
 
     @Override
-    public void applianceDeletionAttemptedByOperator(LiteYukonUser yukonUser, String accountNumber,
+    public void applianceDeletionAttempted(LiteYukonUser yukonUser, String accountNumber,
                                                      String applianceType, String deviceName,
-                                                     String programName) {
+                                                     String programName, EventSource source) {
     }
 
     @Override
@@ -256,18 +194,18 @@ public class MockAccountEventLogService implements AccountEventLogService{
     }
 
     @Override
-    public void workOrderCreationAttemptedByOperator(LiteYukonUser yukonUser, String accountNumber,
-                                                     String workOrderNumber) {
+    public void workOrderCreationAttempted(LiteYukonUser yukonUser, String accountNumber,
+                                                     String workOrderNumber, EventSource source) {
     }
 
     @Override
-    public void workOrderUpdateAttemptedByOperator(LiteYukonUser yukonUser, String accountNumber,
-                                                   String workOrderNumber) {
+    public void workOrderUpdateAttempted(LiteYukonUser yukonUser, String accountNumber,
+                                                   String workOrderNumber, EventSource source) {
     }
 
     @Override
-    public void workOrderDeletionAttemptedByOperator(LiteYukonUser yukonUser, String accountNumber,
-                                                     String workOrderNumber) {
+    public void workOrderDeletionAttempted(LiteYukonUser yukonUser, String accountNumber,
+                                                     String workOrderNumber, EventSource source) {
     }
 
     @Override
@@ -286,51 +224,30 @@ public class MockAccountEventLogService implements AccountEventLogService{
     }
 
     @Override
-    public void thermostatScheduleSavingAttemptedByOperator(LiteYukonUser yukonUser,
+    public void thermostatScheduleSavingAttempted(LiteYukonUser yukonUser,
                                                             String accountNumber,
-                                                            String serialNumber, String scheduleName) {
+                                                            String serialNumber, String scheduleName, EventSource source) {
     }
 
     @Override
-    public void thermostatScheduleSavingAttemptedByConsumer(LiteYukonUser yukonUser,
+    public void thermostatScheduleDeleteAttempted(LiteYukonUser yukonUser,
                                                             String accountNumber,
-                                                            String serialNumber, String scheduleName) {
+                                                            String scheduleName, EventSource source) {
     }
 
     @Override
-    public void thermostatScheduleDeleteAttemptedByOperator(LiteYukonUser yukonUser,
-                                                            String accountNumber,
-                                                            String scheduleName) {
-    }
-
-    @Override
-    public void thermostatScheduleDeleteAttemptedByConsumer(LiteYukonUser yukonUser,
-                                                            String accountNumber,
-                                                            String scheduleName) {
-    }
-
-    @Override
-    public void thermostatManualSetAttemptedByApi(LiteYukonUser yukonUser, String serialNumber,
+    public void thermostatManualSetAttempted(LiteYukonUser yukonUser, String accountNumber, String serialNumber,
                                                   Double heatTemperature, Double coolTemperature,
-                                                  String mode, String fanSetting,
-                                                  boolean holdTemperature) {
+                                                  String mode,
+                                                  boolean holdTemperature, EventSource source) {
     }
 
     @Override
-    public void thermostatManualSetAttemptedByOperator(LiteYukonUser yukonUser,
-                                                       String accountNumber, String serialNumber) {
-    }
-
-    @Override
-    public void thermostatManualSetAttemptedByConsumer(LiteYukonUser yukonUser,
-                                                       String accountNumber, String serialNumber) {
-    }
-
-    @Override
-    public void thermostatLabelChangeAttemptedByConsumer(LiteYukonUser yukonUser,
+    public void thermostatLabelChangeAttempted(LiteYukonUser yukonUser,
                                                          String serialNumber,
                                                          String oldThermostatLabel,
-                                                         String newThermostatLabel) {
+                                                         String newThermostatLabel,
+                                                         EventSource source) {
     }
 
     @Override
@@ -357,22 +274,23 @@ public class MockAccountEventLogService implements AccountEventLogService{
     }
 
     @Override
-    public void thermostatRunProgramAttemptedByApi(LiteYukonUser yukonUser, String serialNumber) {
+    public void thermostatRunProgramAttempted(LiteYukonUser yukonUser, String serialNumber, EventSource source) {
     }
 
     @Override
-    public void thermostatRunProgramAttemptedByOperator(LiteYukonUser yukonUser, String accountNumber, String serialNumber) {
+    public void thermostatRunProgramAttempted(LiteYukonUser yukonUser, String accountNumber, String serialNumber, EventSource source) {
     }
 
     @Override
-    public void thermostatRunProgramAttemptedByConsumer(LiteYukonUser yukonUser, String accountNumber, String serialNumber) {
+    public void thermostatScheduleSendDefaultAttempted(LiteYukonUser yukonUser, String serialNumber, EventSource source) {
     }
 
     @Override
-    public void thermostatScheduleSendDefaultAttemptedByApi(LiteYukonUser yukonUser, String serialNumber) {
+    public void thermostatScheduleSendAttempted(LiteYukonUser yukonUser, String serialNumber, String scheduleName, EventSource source) {
     }
 
     @Override
-    public void thermostatScheduleSendAttemptedByApi(LiteYukonUser yukonUser, String serialNumber, String scheduleName) {
+    public void optOutLimitIncreaseAttempted(LiteYukonUser yukonUser, String accountNumber, String serialNumber,  EventSource source) {
     }
+
 }

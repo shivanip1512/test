@@ -12,6 +12,7 @@ import org.springframework.ws.server.endpoint.annotation.PayloadRoot;
 
 import com.cannontech.clientutils.YukonLogManager;
 import com.cannontech.common.events.loggers.AccountEventLogService;
+import com.cannontech.common.events.model.EventSource;
 import com.cannontech.common.exception.NotAuthorizedException;
 import com.cannontech.common.temperature.Temperature;
 import com.cannontech.common.util.xml.SimpleXPathTemplate;
@@ -61,12 +62,17 @@ public class SendManualThermostatSettingEndpoint {
         for (String serialNumber : manualThermostatSetting.getSerialNumbers()) {
             Temperature heatTemperature = manualThermostatSetting.getHeatTemperature() ;
             Temperature coolTemperature = manualThermostatSetting.getCoolTemperature(); 
-
-            accountEventLogService.thermostatManualSetAttemptedByApi(user, serialNumber, 
-                                                                     (heatTemperature != null) ? heatTemperature.toFahrenheit().getValue() : null, 
-                                                                     (coolTemperature != null) ? coolTemperature.toFahrenheit().getValue() : null, 
-                                                                     manualThermostatSetting.getThermostatMode().name(), 
-                                                                     manualThermostatSetting.getFanState().name(), manualThermostatSetting.isHoldTemperature());
+            
+            int thermostatId = serialNumberToInventoryIdMap.get(serialNumber);
+            String accountNumber =  Integer.toString(customerAccountDao.getAccountByInventoryId(thermostatId).getAccountId());
+            accountEventLogService.thermostatManualSetAttempted(user,
+                                                                accountNumber,
+                                                                serialNumber,
+                                                                (heatTemperature != null) ? heatTemperature.toFahrenheit().getValue() : null,
+                                                                (coolTemperature != null) ? coolTemperature.toFahrenheit().getValue() : null,
+                                                                manualThermostatSetting.getThermostatMode().name(),
+                                                                manualThermostatSetting.isHoldTemperature(),
+                                                                EventSource.API);
         }
         
         // init response

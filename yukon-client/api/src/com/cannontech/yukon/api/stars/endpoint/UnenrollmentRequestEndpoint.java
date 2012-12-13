@@ -2,7 +2,6 @@ package com.cannontech.yukon.api.stars.endpoint;
 
 import java.util.List;
 
-import org.jdom.Attribute;
 import org.jdom.Element;
 import org.jdom.Namespace;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -10,6 +9,7 @@ import org.springframework.ws.server.endpoint.annotation.Endpoint;
 import org.springframework.ws.server.endpoint.annotation.PayloadRoot;
 
 import com.cannontech.common.events.loggers.AccountEventLogService;
+import com.cannontech.common.events.model.EventSource;
 import com.cannontech.common.exception.DuplicateEnrollmentException;
 import com.cannontech.common.util.xml.SimpleXPathTemplate;
 import com.cannontech.common.util.xml.YukonXml;
@@ -50,11 +50,12 @@ public class UnenrollmentRequestEndpoint {
                                                                                              enrollmentResultList, 
                                                                                              enrollmentHelper);
             
-            accountEventLogService.unenrollmentAttemptedThroughApi(user, 
-                                                                           enrollmentHelper.getAccountNumber(), 
-                                                                           enrollmentHelper.getSerialNumber(), 
-                                                                           enrollmentHelper.getProgramName(), 
-                                                                           enrollmentHelper.getLoadGroupName());
+            accountEventLogService.unenrollmentAttempted(user,
+                                                         enrollmentHelper.getAccountNumber(),
+                                                         enrollmentHelper.getSerialNumber(),
+                                                         enrollmentHelper.getProgramName(),
+                                                         enrollmentHelper.getLoadGroupName(),
+                                                         EventSource.API);
 
             Element resultElement;
             try {

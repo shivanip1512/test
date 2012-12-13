@@ -38,6 +38,7 @@ import org.springframework.web.servlet.ModelAndView;
 import com.cannontech.common.constants.YukonListEntryTypes;
 import com.cannontech.common.events.loggers.AccountEventLogService;
 import com.cannontech.common.events.loggers.SystemEventLogService;
+import com.cannontech.common.events.model.EventSource;
 import com.cannontech.common.i18n.MessageSourceAccessor;
 import com.cannontech.common.model.Substation;
 import com.cannontech.common.util.RecentResultsCache;
@@ -584,7 +585,7 @@ public class OperatorAccountController {
         if(residentialUser.getUserID() != UserUtils.USER_DEFAULT_ID 
             && LoginModeEnum.EDIT.equals(LoginModeEnum.valueOf(loginMode))
             && !bindingResult.hasErrors()) {
-            systemEventLogService.loginChangeAttemptedByOperator(userContext.getYukonUser(), residentialUser.getUsername());
+            systemEventLogService.loginChangeAttempted(userContext.getYukonUser(), residentialUser.getUsername(), EventSource.OPERATOR);
             
             /* ensure that we are only updating passwords on existing accounts */
             residentialLoginService.updateResidentialPassword(loginBackingBean, userContext, residentialUser);
@@ -653,10 +654,10 @@ public class OperatorAccountController {
 		updatableAccount.setAccountNumber(currentAccountNumber);
 		updatableAccount.setAccountDto(accountGeneral.getAccountDto());
 		
-		accountEventLogService.accountUpdateAttemptedByOperator(userContext.getYukonUser(), updatableAccount.getAccountNumber());
+		accountEventLogService.accountUpdateAttempted(userContext.getYukonUser(), updatableAccount.getAccountNumber(), EventSource.OPERATOR);
 		
 		if(!ignoreLogin) {
-		    systemEventLogService.loginChangeAttemptedByOperator(userContext.getYukonUser(), residentialUser.getUsername());
+		    systemEventLogService.loginChangeAttempted(userContext.getYukonUser(), residentialUser.getUsername(), EventSource.OPERATOR);
 		}
         LoginPasswordValidator passwordValidator = loginValidatorFactory.getPasswordValidator(residentialUser);
         LoginUsernameValidator usernameValidator = loginValidatorFactory.getUsernameValidator(residentialUser);
@@ -765,7 +766,7 @@ public class OperatorAccountController {
     							YukonUserContext userContext,
     							FlashScope flashScope) throws ServletRequestBindingException {
 	    CustomerAccount customerAccount = customerAccountDao.getById(accountId);
-	    accountEventLogService.accountDeletionAttemptedByOperator(userContext.getYukonUser(), customerAccount.getAccountNumber());
+	    accountEventLogService.accountDeletionAttempted(userContext.getYukonUser(), customerAccount.getAccountNumber(), EventSource.OPERATOR);
 		accountService.deleteAccount(accountId, userContext.getYukonUser());
 		
 		flashScope.setConfirm(new YukonMessageSourceResolvable("yukon.web.modules.operator.account.accountDeleted"));
