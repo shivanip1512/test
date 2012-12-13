@@ -86,6 +86,9 @@
                             <c:when test="${field eq 'METERNUMBER'}"><td><cti:meterNumber yukonPao="${searchResultRow}"/></td></c:when>
                             <c:when test="${field eq 'ROUTE'}"><td><cti:paoName paoId="${searchResultRow.routeID}"/></td></c:when>
                             <c:when test="${field eq 'COMM_CHANNEL'}"><td><cti:paoName paoId="${searchResultRow.portID}"/></td></c:when>
+                            <c:when test="${field eq 'LMGROUP_ROUTE'}"><td><cti:lmGroupRoute paoId="${searchResultRow.paoIdentifier.paoId}"/></td></c:when>
+                            <c:when test="${field eq 'LMGROUP_SERIAL'}"><td><cti:lmGroupSerialNumber paoId="${searchResultRow.paoIdentifier.paoId}"/></td></c:when>
+                            <c:when test="${field eq 'LMGROUP_CAPACITY'}"><td><cti:lmGroupCapacity paoId="${searchResultRow.paoIdentifier.paoId}"/></td></c:when>
                         </c:choose>
                     </c:forEach>
                 </tr>

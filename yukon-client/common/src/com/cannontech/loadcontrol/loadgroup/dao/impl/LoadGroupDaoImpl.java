@@ -8,6 +8,7 @@ import java.util.Map;
 import java.util.Map.Entry;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.dao.DataAccessException;
 import org.springframework.dao.EmptyResultDataAccessException;
 import org.springframework.dao.IncorrectResultSizeDataAccessException;
 import org.springframework.jdbc.core.simple.ParameterizedRowMapper;
@@ -230,7 +231,61 @@ public class LoadGroupDaoImpl implements LoadGroupDao {
 
         return yukonJdbcTemplate.query(sql, loadGroupRowMapper);
     }
-    
+
+    @Override
+    public Integer getRouteId(int loadGroupId) {
+        SqlStatementBuilder sql = new SqlStatementBuilder();
+        sql.append("SELECT RouteId FROM (SELECT DeviceId, RouteId FROM LMGroupVersacom");
+        sql.append("UNION SELECT LMGroupId as DeviceId, RouteId FROM LMGroupExpressCom");
+        sql.append("UNION SELECT DeviceId, RouteId FROM LMGroupEmetcon");
+        sql.append("UNION SELECT DeviceId, RouteId FROM LMGroupMCT) LMGroups");
+        sql.append("WHERE DeviceId").eq(loadGroupId);
+        
+        try {
+            return yukonJdbcTemplate.queryForInt(sql);
+        } catch(DataAccessException e) {
+            return null;
+        }
+    }
+
+    @Override
+    public Integer getSerialNumber(int loadGroupId) {
+        SqlStatementBuilder sql = new SqlStatementBuilder();
+        sql.append("SELECT SerialNumber FROM (SELECT DeviceId, SerialAddress AS SerialNumber FROM LMGroupVersacom");
+        sql.append("UNION SELECT LMGroupId as DeviceId, SerialNumber FROM LMGroupExpressCom) LMGroups");
+        sql.append("WHERE DeviceId").eq(loadGroupId);
+        
+        try {
+            return yukonJdbcTemplate.queryForInt(sql);
+        } catch(DataAccessException e) {
+            return null;
+        }
+    }
+
+    @Override
+    public Double getCapacity(int loadGroupId) {
+        SqlStatementBuilder sql = new SqlStatementBuilder();
+        sql.append("SELECT kWCapacity FROM LMGroup");
+        sql.append("WHERE deviceID").eq(loadGroupId);
+        
+        List<Double> capacity = yukonJdbcTemplate.query(sql, new ParameterizedRowMapper<Double>() {
+            @Override
+            public Double mapRow(ResultSet rs, int rowNum) throws SQLException {
+                double result = rs.getDouble(1);
+                if(rs.wasNull()) {
+                    return null;
+                }
+                return Double.valueOf(result);
+            }
+        });
+        
+        if(capacity != null && !capacity.isEmpty()) {
+            return capacity.get(0);
+        }
+        
+        return null;
+    }
+
     // rowMappers
     private final YukonRowMapper<LoadGroup> loadGroupRowMapper =
         new YukonRowMapper<LoadGroup>() {

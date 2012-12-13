@@ -19,6 +19,7 @@ import com.cannontech.common.search.SearchResult;
 import com.cannontech.core.dao.DeviceDao;
 import com.cannontech.core.dao.PaoDao;
 import com.cannontech.database.data.lite.LiteYukonPAObject;
+import com.cannontech.loadcontrol.loadgroup.dao.LoadGroupDao;
 
 @Service
 public class DeviceSearchServiceImpl implements DeviceSearchService {
@@ -26,6 +27,7 @@ public class DeviceSearchServiceImpl implements DeviceSearchService {
     @Autowired private PaoDao paoDao;
     @Autowired private DeviceDao deviceDao;
     @Autowired private PaoDefinitionDao paoDefinitionDao;
+    @Autowired private LoadGroupDao loadGroupDao;
     
     @Override
     public SearchResult<LiteYukonPAObject> search(DeviceSearchCategory category, List<DeviceSearchFilterBy> filterBy, DeviceSearchOrderBy orderBy, Boolean orderByDescending, int start, int count) {
@@ -59,9 +61,9 @@ public class DeviceSearchServiceImpl implements DeviceSearchService {
             case LMGROUP:
                 fields.add(DeviceSearchField.LOAD_GROUP);
                 fields.add(DeviceSearchField.LMGROUP_TYPE);
-                //fields.add(DeviceSearchField.LMGROUP_ROUTE);
-                //fields.add(DeviceSearchField.LMGROUP_SERIAL);
-                //fields.add(DeviceSearchField.LMGROUP_CAPACITY);
+                fields.add(DeviceSearchField.LMGROUP_ROUTE);
+                fields.add(DeviceSearchField.LMGROUP_SERIAL);
+                fields.add(DeviceSearchField.LMGROUP_CAPACITY);
                 break;
             case CAP:
                 fields.add(DeviceSearchField.NAME);
@@ -75,7 +77,7 @@ public class DeviceSearchServiceImpl implements DeviceSearchService {
 
     @Override
     public List<DeviceSearchFilterBy> getFiltersForFields(List<DeviceSearchField> fields) {
-        return DeviceSearchFilterByGenerator.getFilterForFields(fields, paoDao, deviceDao);
+        return DeviceSearchFilterByGenerator.getFilterForFields(fields, paoDao, deviceDao, loadGroupDao);
     }
 
     @Override

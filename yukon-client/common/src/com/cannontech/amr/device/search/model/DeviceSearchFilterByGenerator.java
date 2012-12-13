@@ -9,11 +9,12 @@ import com.cannontech.core.dao.DeviceDao;
 import com.cannontech.core.dao.PaoDao;
 import com.cannontech.database.data.lite.LiteDeviceMeterNumber;
 import com.cannontech.database.data.lite.LiteYukonPAObject;
+import com.cannontech.loadcontrol.loadgroup.dao.LoadGroupDao;
 
 @Component
 public class DeviceSearchFilterByGenerator {
     
-    public static List<DeviceSearchFilterBy> getFilterForFields(final List<DeviceSearchField> fields, final PaoDao paoDao, final DeviceDao deviceDao) {
+    public static List<DeviceSearchFilterBy> getFilterForFields(final List<DeviceSearchField> fields, final PaoDao paoDao, final DeviceDao deviceDao, final LoadGroupDao loadGroupDao) {
         List<DeviceSearchFilterBy> filterByList = new ArrayList<DeviceSearchFilterBy>();
         
         for(DeviceSearchField field : fields) {
@@ -93,10 +94,38 @@ public class DeviceSearchFilterByGenerator {
                     }));
                     break;
                 case LMGROUP_TYPE:
-                    filterByList.add(new DeviceSearchFilterBy(field, "loadGroup", new DeviceSearchFilterBy.Validator() {
+                    filterByList.add(new DeviceSearchFilterBy(field, "loadGroupType", new DeviceSearchFilterBy.Validator() {
                         @Override
                         public boolean isValid(LiteYukonPAObject lPao, String value) {
                             return lPao.getPaoType().getDbString().startsWith(value);
+                        }
+                    }));
+                    break;
+                case LMGROUP_CAPACITY:
+                    filterByList.add(new DeviceSearchFilterBy(field, "loadGroupCapacity", new DeviceSearchFilterBy.Validator() {
+                        @Override
+                        public boolean isValid(LiteYukonPAObject lPao, String value) {
+                            Double capacity = loadGroupDao.getCapacity(lPao.getPaoIdentifier().getPaoId());
+                            return Double.toString(capacity).startsWith(value);
+                        }
+                    }));
+                    break;
+                case LMGROUP_ROUTE:
+                    filterByList.add(new DeviceSearchFilterBy(field, "loadGroupRoute", new DeviceSearchFilterBy.Validator() {
+                        @Override
+                        public boolean isValid(LiteYukonPAObject lPao, String value) {
+                            Integer routeId = loadGroupDao.getRouteId(lPao.getPaoIdentifier().getPaoId());
+                            LiteYukonPAObject route = paoDao.getLiteYukonPAO(routeId);
+                            return route.getPaoName().startsWith(value);
+                        }
+                    }));
+                    break;
+                case LMGROUP_SERIAL:
+                    filterByList.add(new DeviceSearchFilterBy(field, "loadGroupSerial", new DeviceSearchFilterBy.Validator() {
+                        @Override
+                        public boolean isValid(LiteYukonPAObject lPao, String value) {
+                            Integer serialNumber = loadGroupDao.getSerialNumber(lPao.getPaoIdentifier().getPaoId());
+                            return String.valueOf(serialNumber).startsWith(value);
                         }
                     }));
                     break;
