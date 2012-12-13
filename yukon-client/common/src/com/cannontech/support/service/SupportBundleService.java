@@ -1,7 +1,6 @@
 package com.cannontech.support.service;
 
 import java.io.File;
-import java.io.IOException;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
@@ -12,7 +11,7 @@ import com.cannontech.tools.sftp.SftpWriter.Status;
 
 public interface SupportBundleService {
     public void bundle(ReadableInstant start, ReadableInstant end, String custName,
-                       String comments, Set<String> optionalWritersToInclude) throws IOException;
+                       String comments, Set<String> optionalWritersToInclude);
 
     public List<File> getBundles();
 

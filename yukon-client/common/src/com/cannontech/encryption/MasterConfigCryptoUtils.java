@@ -4,8 +4,6 @@ import java.io.File;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.nio.channels.FileLock;
-import java.util.HashSet;
-import java.util.Set;
 
 import org.apache.commons.codec.DecoderException;
 import org.apache.commons.codec.binary.Hex;
@@ -20,7 +18,6 @@ public class MasterConfigCryptoUtils {
     private static final File masterCfgCryptoFile = new File(keysFolder, "masterConfigKeyfile.dat");
     private static final File masterCfgCryptoLockFile = new File(keysFolder, "masterConfigKeyfile.lck");
     private static final String encryptionIndicator = "(AUTO_ENCRYPTED)";
-    private static final Set<String> sensitiveData;
     private static AESPasswordBasedCrypto encrypter;
     
     static {
@@ -33,25 +30,8 @@ public class MasterConfigCryptoUtils {
         }
     }
     
-    static {
-        sensitiveData = new HashSet<String>();
-        sensitiveData.add("DB_USERNAME");
-        sensitiveData.add("DB_PASSWORD");
-        sensitiveData.add("DB_SQLSERVER");
-        sensitiveData.add("DB_SQLSERVER_HOST");
-        sensitiveData.add("DB_JAVA_URL");
-    }
-
     private MasterConfigCryptoUtils() {/*Not instantiable. Utility class only */ }
     
-    /**
-     * Checks the sensitiveData set for this key
-     * Returns true if its found
-     */
-    public static boolean isSensitiveData(String key) {
-        return sensitiveData.contains(key);
-    }
-
     /**
      * Returns the results of CryptoUtils.getPassKeyFromFile(masterCfgCryptoFile : File);
      * 

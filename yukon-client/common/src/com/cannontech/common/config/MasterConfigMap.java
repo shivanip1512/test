@@ -82,7 +82,7 @@ public class MasterConfigMap implements ConfigurationSource {
                 if (configMap.containsKey(key)) {
                     LogHelper.warn(log, "Line %d: Duplicate key found while reading Master Config file: %s", lineNum, key);
                 }
-                if (MasterConfigCryptoUtils.isSensitiveData(key) 
+                if (MasterConfigStringKeysEnum.isEncryptedKey(key) 
                         && !MasterConfigCryptoUtils.isEncrypted(value)) {
                     // Found a value that needs to be encrypted
                     updateFile = true;
@@ -239,7 +239,7 @@ public class MasterConfigMap implements ConfigurationSource {
      */
     private String getValueFromMap(String key) {
         String value = configMap.get(key);
-        if (MasterConfigCryptoUtils.isSensitiveData(key) && 
+        if (MasterConfigStringKeysEnum.isEncryptedKey(key) && 
                 MasterConfigCryptoUtils.isEncrypted(value)) {
             // Found an encrypted value
             value = MasterConfigCryptoUtils.decryptValue(value);

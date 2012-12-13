@@ -5,7 +5,6 @@ import java.io.File;
 import java.io.FilenameFilter;
 import java.io.IOException;
 import java.io.InputStream;
-import java.io.UnsupportedEncodingException;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.Comparator;
@@ -27,6 +26,7 @@ import org.springframework.beans.factory.annotation.Qualifier;
 
 import com.cannontech.clientutils.YukonLogManager;
 import com.cannontech.common.config.ConfigurationSource;
+import com.cannontech.common.config.MasterConfigStringKeysEnum;
 import com.cannontech.common.util.CtiUtilities;
 import com.cannontech.support.service.SupportBundleService;
 import com.cannontech.support.service.SupportBundleWriter;
@@ -57,10 +57,11 @@ public class SupportBundleServiceImpl implements SupportBundleService {
     @Override
     public void bundle(final ReadableInstant start, final ReadableInstant stop,
                        final String custName, final String comments,
-                       final Set<String> optionalWritersToInclude) throws IOException {
+                       final Set<String> optionalWritersToInclude) {
         boolean ready = inProgress.compareAndSet(false, true);
         if (!ready) {
             log.warn("Cannot create bundle until previous bundle has completed");
+            return;
         }
 
         removeOldFiles();
@@ -105,10 +106,8 @@ public class SupportBundleServiceImpl implements SupportBundleService {
 
                     String zipFilename = custName + "-" + now.toString("yyyy-MM-dd-HHmmss") + ".zip";
                     tempFile.renameTo(new File(getBundleDir(), zipFilename));
-                } catch (UnsupportedEncodingException uee) {
-                    throw new RuntimeException(uee);
-                } catch (IOException ioe) {
-                    throw new RuntimeException(ioe);
+                } catch (IOException e) {
+                    throw new RuntimeException(e);
                 } finally {
                     inProgress.set(false);
                 }
@@ -209,11 +208,11 @@ public class SupportBundleServiceImpl implements SupportBundleService {
 
     @Override
     public Status uploadViaSftp(File file) {
-        String ftpUser = configurationSource.getString("SUPPORT_BUNDLE_FTP_UPLOAD_USER",
+        String ftpUser = configurationSource.getString(MasterConfigStringKeysEnum.SUPPORT_BUNDLE_FTP_UPLOAD_USER,
                                                        DEFAULT_FTP_USER);
-        String ftpPassword = configurationSource.getString("SUPPORT_BUNDLE_FTP_UPLOAD_PASSWORD",
+        String ftpPassword = configurationSource.getString(MasterConfigStringKeysEnum.SUPPORT_BUNDLE_FTP_UPLOAD_PASSWORD,
                                                            DEFAULT_FTP_PASSWORD);
-        String ftpHost = configurationSource.getString("SUPPORT_BUNDLE_FTP_UPLOAD_HOST",
+        String ftpHost = configurationSource.getString(MasterConfigStringKeysEnum.SUPPORT_BUNDLE_FTP_UPLOAD_HOST,
                                                        DEFAULT_FTP_HOST);
         SftpWriter ftp = new SftpWriter(ftpUser, ftpPassword, ftpHost);
         Status ftpStatus = ftp.sendFile(file);
