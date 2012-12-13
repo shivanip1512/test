@@ -6,8 +6,11 @@ import org.springframework.beans.factory.annotation.Autowired;
 import com.cannontech.core.roleproperties.YukonRole;
 import com.cannontech.core.roleproperties.YukonRoleCategory;
 import com.cannontech.core.roleproperties.YukonRoleProperty;
+import com.cannontech.core.roleproperties.dao.EnergyCompanyRolePropertyDao;
 import com.cannontech.core.roleproperties.dao.RolePropertyDao;
 import com.cannontech.database.data.lite.LiteYukonUser;
+import com.cannontech.stars.core.service.YukonEnergyCompanyService;
+import com.cannontech.stars.energyCompany.model.YukonEnergyCompany;
 
 /**
  * This is both a base class and a factory for OptionPropertyCheckers.
@@ -17,7 +20,9 @@ import com.cannontech.database.data.lite.LiteYukonUser;
  * and to check the value of a boolean role property).
  */
 public class RolePropertyUserCheckerFactory {
-    private RolePropertyDao rolePropertyDao;
+    @Autowired private RolePropertyDao rolePropertyDao;
+    @Autowired private EnergyCompanyRolePropertyDao ecRolePropertyDao;
+    @Autowired private YukonEnergyCompanyService yecService;
     
     public UserChecker createPropertyChecker(final YukonRoleProperty property) {
         Validate.isTrue(rolePropertyDao.isCheckPropertyCompatible(property), "Property must return a Boolean: " + property);
@@ -36,6 +41,24 @@ public class RolePropertyUserCheckerFactory {
         return checker;
     }
     
+    public UserChecker createECPropertyChecker(final YukonRoleProperty property) {
+        Validate.isTrue(ecRolePropertyDao.isCheckPropertyCompatible(property), "Property must return a Boolean: " + property);
+
+        UserCheckerBase checker = new UserCheckerBase() {
+            @Override
+            public boolean check(LiteYukonUser user) {
+                
+                return ecRolePropertyDao.checkProperty(property, yecService.getEnergyCompanyByOperator(user));
+            };
+            
+            @Override
+            public String toString() {
+                return property + " EC checker";
+            }
+        };
+        return checker;
+    }
+    
     public UserChecker createFalsePropertyChecker(final YukonRoleProperty property) {
         Validate.isTrue(rolePropertyDao.isCheckPropertyCompatible(property), "Property must return a Boolean: " + property);
         
@@ -48,6 +71,23 @@ public class RolePropertyUserCheckerFactory {
             @Override
             public String toString() {
                 return property + " false checker";
+            }
+        };
+        return checker;
+    }
+    
+    public UserChecker createECFalsePropertyChecker(final YukonRoleProperty property) {
+        Validate.isTrue(rolePropertyDao.isCheckPropertyCompatible(property), "Property must return a Boolean: " + property);
+        
+        UserCheckerBase checker = new UserCheckerBase() {
+            @Override
+            public boolean check(LiteYukonUser user) {
+                return ecRolePropertyDao.checkFalseProperty(property, yecService.getEnergyCompanyByOperator(user));
+            };
+            
+            @Override
+            public String toString() {
+                return property + " false EC checker";
             }
         };
         return checker;
@@ -100,10 +140,4 @@ public class RolePropertyUserCheckerFactory {
         };
         return checker;
     }
-    
-    @Autowired
-    public void setRolePropertyDao(RolePropertyDao rolePropertyDao) {
-        this.rolePropertyDao = rolePropertyDao;
-    }
-
 }

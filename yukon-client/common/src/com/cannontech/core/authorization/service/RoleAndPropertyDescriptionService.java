@@ -1,5 +1,7 @@
 package com.cannontech.core.authorization.service;
 
+import static com.cannontech.core.roleproperties.YukonRole.ENERGY_COMPANY;
+
 import java.util.List;
 
 import org.springframework.beans.factory.annotation.Autowired;
@@ -90,12 +92,21 @@ public class RoleAndPropertyDescriptionService {
             try {
                 YukonRoleProperty property = YukonRoleProperty.valueOf(someEnumName);
                 UserChecker propertyChecker;
-                if (inverted) {
-                    propertyChecker = userCheckerFactory.createFalsePropertyChecker(property);
+                if (property.getRole() == ENERGY_COMPANY) {
+                    if (inverted) {
+                        propertyChecker = userCheckerFactory.createECFalsePropertyChecker(property);
+                    } else {
+                        propertyChecker = userCheckerFactory.createECPropertyChecker(property);
+                    }
+                    checkers.add(propertyChecker);
                 } else {
-                    propertyChecker = userCheckerFactory.createPropertyChecker(property);
+                    if (inverted) {
+                        propertyChecker = userCheckerFactory.createFalsePropertyChecker(property);
+                    } else {
+                        propertyChecker = userCheckerFactory.createPropertyChecker(property);
+                    }
+                    checkers.add(propertyChecker);
                 }
-                checkers.add(propertyChecker);
                 continue;
 
             } catch (IllegalArgumentException ignore) { }

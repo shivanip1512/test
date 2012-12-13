@@ -10,21 +10,18 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 
 import com.cannontech.common.util.Pair;
-import com.cannontech.core.roleproperties.YukonRoleProperty;
 import com.cannontech.i18n.YukonMessageSourceResolvable;
 import com.cannontech.stars.dr.enrollment.service.AlternateEnrollmentService;
 import com.cannontech.stars.dr.hardware.model.HardwareSummary;
 import com.cannontech.stars.dr.program.model.Program;
 import com.cannontech.user.YukonUserContext;
 import com.cannontech.web.common.flashScope.FlashScope;
-import com.cannontech.web.security.annotation.CheckRoleProperty;
 import com.cannontech.web.stars.dr.operator.general.AccountInfoFragment;
 import com.cannontech.web.stars.dr.operator.service.AccountInfoFragmentHelper;
 import com.google.common.collect.Maps;
 
 @Controller
 @RequestMapping("/operator/ae/*")
-@CheckRoleProperty(YukonRoleProperty.ALTERNATE_PROGRAM_ENROLLMENT)
 public class OperatorAlternateEnrollmentController {
     
     @Autowired private AlternateEnrollmentService aeService;
