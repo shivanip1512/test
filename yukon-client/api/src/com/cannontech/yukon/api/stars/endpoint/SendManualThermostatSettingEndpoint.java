@@ -60,17 +60,23 @@ public class SendManualThermostatSettingEndpoint {
          
         // Log run program attempt
         for (String serialNumber : manualThermostatSetting.getSerialNumbers()) {
+
+            Integer thermostatId = serialNumberToInventoryIdMap.get(serialNumber);
+            CustomerAccount account = (thermostatId != null) ? customerAccountDao.getAccountByInventoryId(thermostatId) : null;
+
             Temperature heatTemperature = manualThermostatSetting.getHeatTemperature() ;
             Temperature coolTemperature = manualThermostatSetting.getCoolTemperature(); 
-            
-            accountEventLogService.thermostatManualSetAttempted(user, "", serialNumber,
+
+            accountEventLogService.thermostatManualSetAttempted(user,
+                                                                (account != null) ? account.getAccountNumber() : null,
+                                                                serialNumber,
                                                                 (heatTemperature != null) ? heatTemperature.toFahrenheit().getValue() : null,
                                                                 (coolTemperature != null) ? coolTemperature.toFahrenheit().getValue() : null,
                                                                 manualThermostatSetting.getThermostatMode().name(),
                                                                 manualThermostatSetting.isHoldTemperature(),
                                                                 EventSource.API);
         }
-        
+
         // init response
         Element resp = new Element("sendManualThermostatSettingResponse", ns);
         XmlVersionUtils.addVersionAttribute(resp, XmlVersionUtils.YUKON_MSG_VERSION_1_0);
@@ -88,7 +94,7 @@ public class SendManualThermostatSettingEndpoint {
              */
             for (String serialNumber : manualThermostatSetting.getSerialNumbers()) {
                 int thermostatId = serialNumberToInventoryIdMap.get(serialNumber);
-                CustomerAccount account = customerAccountDao.getAccountByInventoryId( thermostatId);
+                CustomerAccount account = customerAccountDao.getAccountByInventoryId(thermostatId);
 
                 // Send out manual thermostat commands
                 result = thermostatService.executeManualEvent(thermostatId, manualThermostatSetting.getHeatTemperature(), manualThermostatSetting.getCoolTemperature(),
