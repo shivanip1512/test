@@ -19,7 +19,7 @@ public class LmGroupSerialNumberTag extends YukonTagSupport {
     public void doTag() throws JspException, IOException {
         JspWriter out = getJspContext().getOut();
         
-        Integer serialNumber = loadGroupDao.getSerialNumber(paoId);
+        Integer serialNumber = loadGroupDao.findSerialNumber(paoId);
         if(serialNumber != null) {
             out.print(String.format("%d", serialNumber));
         } else {

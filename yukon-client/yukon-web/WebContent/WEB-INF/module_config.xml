@@ -2110,19 +2110,19 @@
               <link>/commander/select?category=LMGROUP</link>
             </option>
             <option name="xcom">
-              <link>/commander/command/xcom?manual</link>
+              <link>/commander/command/xcom</link>
               <requireRoleProperty value="EXPRESSCOM_SERIAL_MODEL" />
             </option>
             <option name="vcom">
-              <link>/commander/command/vcom?manual</link>
+              <link>/commander/command/vcom</link>
               <requireRoleProperty value="VERSACOM_SERIAL_MODEL" />
             </option>
             <option name="205serial">
-              <link>/commander/command/sa205?manual</link>
+              <link>/commander/command/sa205</link>
               <requireRoleProperty value="DCU_SA205_SERIAL_MODEL" />
             </option>
             <option name="305serial">
-              <link>/commander/command/sa305?manual</link>
+              <link>/commander/command/sa305</link>
               <requireRoleProperty value="DCU_SA305_SERIAL_MODEL" />
             </option>
           </options>

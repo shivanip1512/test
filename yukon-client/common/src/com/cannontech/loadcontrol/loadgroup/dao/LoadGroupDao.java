@@ -60,19 +60,19 @@ public interface LoadGroupDao {
      * @param loadGroupId the load group ID
      * @return the route ID or null if not supported
      */
-    public Integer getRouteId(int loadGroupId);
+    public Integer findRouteId(int loadGroupId);
     
     /**
      * This method will return the serial number of the specified load group if supported
      * @param loadGroupId the load group ID
      * @return the serial number or null if not supported
      */
-    public Integer getSerialNumber(int loadGroupId);
+    public Integer findSerialNumber(int loadGroupId);
     
     /**
      * This method will return the kW capacity of the specified load group
      * @param loadGroupId the load group ID
      * @return the kW capacity
      */
-    public Double getCapacity(int loadGroupId);
+    public Double findCapacity(int loadGroupId);
 }

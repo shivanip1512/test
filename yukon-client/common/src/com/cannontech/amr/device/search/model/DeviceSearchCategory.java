@@ -12,44 +12,41 @@ public enum DeviceSearchCategory {
     MCT(new CategoryContentChecker() {
         @Override
         public boolean contains(LiteYukonPAObject lPao) {
-            if(DeviceTypesFuncs.isMCT(lPao.getPaoType().getDeviceTypeId()) && lPao.getPaoType().getPaoCategory() == PaoCategory.DEVICE) {
-                return true;
-            }
-            return false;
+            return (DeviceTypesFuncs.isMCT(lPao.getPaoType().getDeviceTypeId())
+                    && lPao.getPaoType().getPaoCategory() == PaoCategory.DEVICE);
         }
     }),
     IED(new CategoryContentChecker() {
         @Override
         public boolean contains(LiteYukonPAObject lPao) {
-            if(DeviceTypesFuncs.isMeter(lPao.getPaoType().getDeviceTypeId()) || lPao.getPaoType() == PaoType.DAVISWEATHER && lPao.getPaoType().getPaoCategory() == PaoCategory.DEVICE) {
-                return true;
-            }
-            return false;
+            return (DeviceTypesFuncs.isMeter(lPao.getPaoType().getDeviceTypeId())
+                    || lPao.getPaoType() == PaoType.DAVISWEATHER
+                    && lPao.getPaoType().getPaoCategory() == PaoCategory.DEVICE);
         }
     }),
     RTU(new CategoryContentChecker() {
         @Override
         public boolean contains(LiteYukonPAObject lPao) {
-            if ((DeviceTypesFuncs.isRTU(lPao.getPaoType().getDeviceTypeId()) || lPao.getPaoType() == PaoType.DAVISWEATHER) && lPao.getPaoType().getPaoCategory() == PaoCategory.DEVICE && !DeviceTypesFuncs.isIon(lPao.getPaoType().getDeviceTypeId())) {
-                return true;
-            }
-            return false;
+            return ((DeviceTypesFuncs.isRTU(lPao.getPaoType().getDeviceTypeId())
+                        || lPao.getPaoType() == PaoType.DAVISWEATHER)
+                    && lPao.getPaoType().getPaoCategory() == PaoCategory.DEVICE
+                    && !DeviceTypesFuncs.isIon(lPao.getPaoType().getDeviceTypeId()));
         }
     }),
     TRANSMITTER(new CategoryContentChecker() {
         @Override
         public boolean contains(LiteYukonPAObject lPao) {
-            if(DeviceTypesFuncs.isTransmitter(lPao.getPaoType().getDeviceTypeId()) && DeviceClasses.isMeterClass(lPao.getPaoType().getPaoClass().getPaoClassId()) && lPao.getPaoType().getPaoCategory() == PaoCategory.DEVICE) {
-                return true;
-            }
-            return false;
+            return (DeviceTypesFuncs.isTransmitter(lPao.getPaoType().getDeviceTypeId())
+                    && DeviceClasses.isMeterClass(lPao.getPaoType().getPaoClass().getPaoClassId())
+                    && lPao.getPaoType().getPaoCategory() == PaoCategory.DEVICE);
         }
     }),
     LMGROUP(new CategoryContentChecker() {
         @Override
         public boolean contains(LiteYukonPAObject lPao) {
             // TODO Auto-generated method stub
-            return (PaoClass.LOADMANAGEMENT == lPao.getPaoType().getPaoClass() || PaoClass.GROUP == lPao.getPaoType().getPaoClass());
+            return (PaoClass.LOADMANAGEMENT == lPao.getPaoType().getPaoClass()
+                    || PaoClass.GROUP == lPao.getPaoType().getPaoClass());
         }
     }),
     CAP(new CategoryContentChecker() {

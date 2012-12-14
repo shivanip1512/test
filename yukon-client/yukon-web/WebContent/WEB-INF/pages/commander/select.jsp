@@ -19,17 +19,19 @@
     <h2><i:inline key=".pageTitle"/></h2>
     <br>
     
-    <script type="text/javascript">
-        function clearFilter() {
-          <c:forEach var="filter" items="${filterByList}">
-            jQuery('#${filter.name}').val('');
-          </c:forEach>
-          
-          jQuery('#filterForm')[0].submit();
-        }
+    <script>
+        jQuery(function() {
+            jQuery('.f_show_all').click(function () {
+                <c:forEach var="filter" items="${filterByList}">
+                  jQuery('#${filter.name}').val('');
+                </c:forEach>
+                
+                jQuery('#filterForm')[0].submit();
+            });
+        });
     </script>
     
-    <c:set var="baseUrl" value="/commander/select"/>
+    <cti:url var="baseUrl" value="/commander/select"/>
     
     <form id="filterForm" action="${baseUrl}">
         <tags:boxContainer2 nameKey="deviceSearch">
@@ -40,9 +42,9 @@
             
             <div class="filters">
                 <c:forEach var="filter" items="${filterByList}">
-                    <div style="width: 21em; text-align: right; float: left; margin-bottom: 5px; margin-right: 5px;">
+                    <div class="searchFilterContainer">
                         <label for="${filter.name}"><i:inline key="${filter.field}" /> </label><input
-                            style="width: 10em" type="text" id="${filter.name}" name="${filter.name}"
+                            type="text" id="${filter.name}" name="${filter.name}"
                             value="${filter.value}"
                         />
                     </div>
@@ -51,7 +53,7 @@
             
             <div class="actionArea clear">
                 <cti:button nameKey="search" type="submit" />
-                <cti:button nameKey="showAll" onclick="javascript:clearFilter()" />
+                <cti:button nameKey="showAll" styleClass="f_show_all"/>
             </div>
         </tags:boxContainer2>
     </form>
@@ -72,16 +74,21 @@
                 <tr class="<tags:alternateRow odd="" even="altRow"/>">
                     <c:forEach var="field" items="${fields}">
                         <c:choose>
-                            <c:when test="${field eq 'NAME' || field eq 'LOAD_GROUP'}"><td><a title="${searchResultRow.paoIdentifier}" href="/commander/command?deviceId=${searchResultRow.paoIdentifier.paoId}">
+                            <c:when test="${field eq 'NAME' || field eq 'LOAD_GROUP'}">
+                            <cti:url var="commandUrl" value="/commander/command">
+                                <cti:param name="deviceId" value="${searchResultRow.paoIdentifier.paoId}"/>
+                            </cti:url>
+                            <td><a title="${searchResultRow.paoIdentifier}" href="${commandUrl}">
                                 <c:choose>
                                     <c:when test="${empty searchResultRow.paoName}"></c:when>
-                                    <c:otherwise>${searchResultRow.paoName}</c:otherwise>
+                                    <c:otherwise>${fn:escapeXml(searchResultRow.paoName)}</c:otherwise>
                                 </c:choose>
-                            </a></td></c:when>
+                            </a></td>
+                            </c:when>
                             <c:when test="${field eq 'TYPE' || field eq 'LMGROUP_TYPE'}"><td><span><cti:paoTypeIcon yukonPao="${searchResultRow}"/>&nbsp;${searchResultRow.paoType.dbString}</span></td></c:when>
                             <c:when test="${field eq 'ADDRESS'}"><td><c:choose>
                                 <c:when test="${empty searchResultRow.address}">-</c:when>
-                                <c:otherwise>${searchResultRow.address}</c:otherwise>
+                                <c:otherwise>${fn:escapeXml(searchResultRow.address)}</c:otherwise>
                             </c:choose></td></c:when>
                             <c:when test="${field eq 'METERNUMBER'}"><td><cti:meterNumber yukonPao="${searchResultRow}"/></td></c:when>
                             <c:when test="${field eq 'ROUTE'}"><td><cti:paoName paoId="${searchResultRow.routeID}"/></td></c:when>

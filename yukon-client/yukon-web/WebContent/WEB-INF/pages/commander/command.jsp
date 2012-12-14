@@ -20,10 +20,16 @@
     <br>
     
     <script language="JavaScript">
-    function disableButton(x) {
-        x.disabled = true;
-        document.commandForm.submit();
-    }
+        jQuery(function() {
+            jQuery('.f_execute').click(function() {
+                x.disabled = true;
+                document.commandForm.submit();
+            });
+            
+            jQuery('.f_refresh').click(function() {
+                window.location.reload();
+            });
+        });
     </script>
     
     <table class="compactResultsTable">
@@ -41,8 +47,8 @@
                                     <td class="name"><i:inline key=".deviceName"/></td>
                                     <td class="value">
                                         <c:choose>
-                                            <c:when test="${meterDetailDisplayable}"><cti:paoDetailUrl yukonPao="${lPao}">${deviceName}</cti:paoDetailUrl></c:when>
-                                            <c:otherwise>${deviceName}</c:otherwise>
+                                            <c:when test="${meterDetailDisplayable}"><cti:paoDetailUrl yukonPao="${lPao}">${fn:escapeXml(deviceName)}</cti:paoDetailUrl></c:when>
+                                            <c:otherwise>${fn:escapeXml(deviceName)}</c:otherwise>
                                         </c:choose>
                                     </td>
                                 </tr>
@@ -54,7 +60,7 @@
                                 <tr> 
                                     <td class="name"><i:inline key=".serialNumber"/></td>
                                     <td class="value">
-                                        <input type="text" name="serialNumber" size="20" value="${serialNumber}">
+                                        <input type="text" name="serialNumber" size="20" value="${fn:escapeXml(serialNumber)}">
                                     </td>
                                 </tr>
                             <c:if test="${not empty availableRoutes}">
@@ -64,7 +70,7 @@
                                         <select id="routeID" name="routeID">
                                             <option VALUE="-1"><cti:msg2 key=".route.select"/>
                                         <c:forEach var="route" items="${availableRoutes}">
-                                            <option value="${route.yukonID}">${route.paoName}</option>
+                                            <option value="${route.yukonID}">${fn:escapeXml(route.paoName)}</option>
                                         </c:forEach>
                                         </select>
                                     </td>
@@ -92,7 +98,7 @@
                                     <td class="value">
                                         <input type="text" id="command" name="command" size="40" <cti:isPropertyFalse property="CommanderRole.EXECUTE_MANUAL_COMMAND">readonly</cti:isPropertyFalse> value="${currentCommand}">
                                         <cti:msg2 var="executeButtonLabel" key=".executeButton"/>
-                                        <input type="submit" name="execute" value="${executeButtonLabel}" onClick="disableButton(this)">
+                                        <input type="submit" name="execute" value="${executeButtonLabel}" class="f_execute">
                                     </td>
                                 </tr>
                                 <tr>
@@ -104,7 +110,7 @@
                                     <cti:msg2 var="clearResultsButtonLabel" key=".clearResultsButton"/>
                                     <cti:msg2 var="refreshButtonLabel" key=".refreshButton"/>
                                     <input type="submit" name="clearText" value="${clearResultsButtonLabel}">
-                                    <input type="reset" name="refresh" value="${refreshButtonLabel}" onClick="window.location.reload()">
+                                    <input type="reset" name="refresh" value="${refreshButtonLabel}" class="f_refresh">
                                     </td>
                                 </tr>
                             </table>
@@ -125,7 +131,10 @@
                             <cti:paoName paoId="${device.yukonID}"/>
                         </c:when>
                         <c:otherwise>
-                            <a title="${device.paoIdentifier}" href="/commander/command?deviceId=${device.yukonID}"><cti:paoName paoId="${device.yukonID}"/></a>
+                            <cti:url var="commandUrl" value="/commander/command">
+                                <cti:param name="deviceId" value="${device.yukonID}"/>
+                            </cti:url>
+                            <a title="${device.paoIdentifier}" href="${commandUrl}"><cti:paoName paoId="${device.yukonID}"/></a>
                         </c:otherwise>
                     </c:choose>
                         </li>
@@ -147,7 +156,10 @@
                             <li><cti:paoName paoId="${device.yukonID}"/></li>
                         </c:when>
                         <c:otherwise>
-                            <li><a href="/commander/command?deviceId=${device.yukonID}" class="Link1"><cti:paoName paoId="${device.yukonID}"/></a></li>
+                            <cti:url var="commandUrl" value="/commander/command">
+                                <cti:param name="deviceId" value="${device.yukonID}"/>
+                            </cti:url>
+                            <li><a href="${commandUrl}" class="Link1"><cti:paoName paoId="${device.yukonID}"/></a></li>
                         </c:otherwise>
                     </c:choose>
                         </ul>
@@ -158,11 +170,11 @@
             <cti:checkProperty property="CommanderRole.DCU_SA205_SERIAL_MODEL">
                 <c:choose>
                     <c:when test="${serialType == 'sa205' && empty serialNumber}">
-                        <div class="sideMenuLink selected">DCU-205 Serial</div>
+                        <div class="sideMenuLink selected"><i:inline key="yukon.web.modules.commanderSelect.sideMenu.sa205"/></div>
                     </c:when>
                     <c:otherwise>
                         <div class="sideMenuLink">
-                            <a href="/commander/command/sa205" class="Link1">DCU-205 Serial</a>
+                            <a href="<cti:url value="/commander/command/sa205"/>" class="Link1"><i:inline key="yukon.web.modules.commanderSelect.sideMenu.sa205"/></a>
                         </div>
                     </c:otherwise>
                 </c:choose>
@@ -173,7 +185,10 @@
                             <li>${serial}</li>
                         </c:when>
                         <c:otherwise>
-                            <li><a href="/commander/command/sa205?serialNumber=${serial}">${serial}</a></li>
+                            <cti:url var="commandUrl" value="/commander/command/sa205">
+                                <cti:param name="serialNumber" value="${serial}"/>
+                            </cti:url>
+                            <li><a href="${commandUrl}">${serial}</a></li>
                         </c:otherwise>
                     </c:choose>
                 </c:forEach>
@@ -185,11 +200,11 @@
             <cti:checkProperty property="CommanderRole.DCU_SA305_SERIAL_MODEL">
                 <c:choose>
                     <c:when test="${serialType == 'sa305' && empty serialNumber}">
-                        <div class="sideMenuLink selected">DCU-305 Serial</div>
+                        <div class="sideMenuLink selected"><i:inline key="yukon.web.modules.commanderSelect.sideMenu.sa305"/></div>
                     </c:when>
                     <c:otherwise>
                         <div class="sideMenuLink">
-                            <a href="/commander/command/sa305" class="Link1">DCU-305 Serial</a>
+                            <a href="<cti:url value="/commander/command/sa305"/>" class="Link1"><i:inline key="yukon.web.modules.commanderSelect.sideMenu.sa305"/></a>
                         </div>
                     </c:otherwise>
                 </c:choose>
@@ -200,7 +215,10 @@
                             <li>${serial}</li>
                         </c:when>
                         <c:otherwise>
-                            <li><a href="/commander/command/sa305?serialNumber=${serial}">${serial}</a></li>
+                            <cti:url var="commandUrl" value="/commander/command/sa305">
+                                <cti:param name="serialNumber" value="${serial}"/>
+                            </cti:url>
+                            <li><a href="${commandUrl}">${serial}</a></li>
                         </c:otherwise>
                     </c:choose>
                 </c:forEach>
@@ -212,11 +230,11 @@
             <cti:checkProperty property="CommanderRole.EXPRESSCOM_SERIAL_MODEL">
                 <c:choose>
                     <c:when test="${serialType == 'xcom' && empty serialNumber}">
-                        <div class="sideMenuLink selected">Expresscom Serial</div>
+                        <div class="sideMenuLink selected"><i:inline key="yukon.web.modules.commanderSelect.sideMenu.xcom"/></div>
                     </c:when>
                     <c:otherwise>
                         <div class="sideMenuLink">
-                            <a href="/commander/command/xcom" class="Link1">Expresscom Serial</a>
+                            <a href="<cti:url value="/commander/command/xcom"/>" class="Link1"><i:inline key="yukon.web.modules.commanderSelect.sideMenu.xcom"/></a>
                         </div>
                     </c:otherwise>
                 </c:choose>
@@ -227,7 +245,10 @@
                             <li>${serial}</li>
                         </c:when>
                         <c:otherwise>
-                            <li><a href="/commander/command/xcom?serialNumber=${serial}">${serial}</a></li>
+                            <cti:url var="commandUrl" value="/commander/command/xcom">
+                                <cti:param name="serialNumber" value="${serial}"/>
+                            </cti:url>
+                            <li><a href="${commandUrl}">${serial}</a></li>
                         </c:otherwise>
                     </c:choose>
                 </c:forEach>
@@ -239,11 +260,11 @@
             <cti:checkProperty property="CommanderRole.VERSACOM_SERIAL_MODEL">
                 <c:choose>
                     <c:when test="${serialType == 'vcom' && empty serialNumber}">
-                        <div class="sideMenuLink selected">Versacom Serial</div>
+                        <div class="sideMenuLink selected"><i:inline key="yukon.web.modules.commanderSelect.sideMenu.vcom"/></div>
                     </c:when>
                     <c:otherwise>
                         <div class="sideMenuLink">
-                            <a href="/commander/command/vcom" class="Link1">Versacom Serial</a>
+                            <a href="<cti:url value="/commander/command/vcom"/>" class="Link1"><i:inline key="yukon.web.modules.commanderSelect.sideMenu.vcom"/></a>
                         </div>
                     </c:otherwise>
                 </c:choose>
@@ -254,7 +275,10 @@
                             <li>${serial}</li>
                         </c:when>
                         <c:otherwise>
-                            <li><a href="/commander/command/vcom?serialNumber=${serial}">${serial}</a></li>
+                            <cti:url var="commandUrl" value="/commander/command/vcom">
+                                <cti:param name="serialNumber" value="${serial}"/>
+                            </cti:url>
+                            <li><a href="${commandUrl}">${serial}</a></li>
                         </c:otherwise>
                     </c:choose>
                 </c:forEach>
@@ -276,7 +300,10 @@
                             <cti:paoName paoId="${device.yukonID}"/>
                         </c:when>
                         <c:otherwise>
-                            <a title="${device.paoIdentifier}" href="/commander/command?deviceId=${device.yukonID}"><cti:paoName paoId="${device.yukonID}"/></a>
+                            <cti:url var="commandUrl" value="/commander/command">
+                                <cti:param name="deviceId" value="${device.yukonID}"/>
+                            </cti:url>
+                            <a title="${device.paoIdentifier}" href="${commandUrl}"><cti:paoName paoId="${device.yukonID}"/></a>
                         </c:otherwise>
                     </c:choose>
                         </li>

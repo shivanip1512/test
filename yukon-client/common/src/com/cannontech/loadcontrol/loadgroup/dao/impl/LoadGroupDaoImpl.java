@@ -233,7 +233,7 @@ public class LoadGroupDaoImpl implements LoadGroupDao {
     }
 
     @Override
-    public Integer getRouteId(int loadGroupId) {
+    public Integer findRouteId(int loadGroupId) {
         SqlStatementBuilder sql = new SqlStatementBuilder();
         sql.append("SELECT RouteId FROM (SELECT DeviceId, RouteId FROM LMGroupVersacom");
         sql.append("UNION SELECT LMGroupId as DeviceId, RouteId FROM LMGroupExpressCom");
@@ -249,7 +249,7 @@ public class LoadGroupDaoImpl implements LoadGroupDao {
     }
 
     @Override
-    public Integer getSerialNumber(int loadGroupId) {
+    public Integer findSerialNumber(int loadGroupId) {
         SqlStatementBuilder sql = new SqlStatementBuilder();
         sql.append("SELECT SerialNumber FROM (SELECT DeviceId, SerialAddress AS SerialNumber FROM LMGroupVersacom");
         sql.append("UNION SELECT LMGroupId as DeviceId, SerialNumber FROM LMGroupExpressCom) LMGroups");
@@ -263,7 +263,7 @@ public class LoadGroupDaoImpl implements LoadGroupDao {
     }
 
     @Override
-    public Double getCapacity(int loadGroupId) {
+    public Double findCapacity(int loadGroupId) {
         SqlStatementBuilder sql = new SqlStatementBuilder();
         sql.append("SELECT kWCapacity FROM LMGroup");
         sql.append("WHERE deviceID").eq(loadGroupId);

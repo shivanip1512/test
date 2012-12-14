@@ -22,7 +22,7 @@ public class LmGroupRouteTag extends YukonTagSupport {
     public void doTag() throws JspException, IOException {
         JspWriter out = getJspContext().getOut();
         
-        Integer routeId = loadGroupDao.getRouteId(paoId);
+        Integer routeId = loadGroupDao.findRouteId(paoId);
         if(routeId != null) {
             String paoName;
             try {

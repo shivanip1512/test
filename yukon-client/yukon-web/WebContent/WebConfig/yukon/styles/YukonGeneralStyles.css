@@ -2431,3 +2431,15 @@ a.pv_history:hover {
     color: #06c;
     cursor: pointer;
 }
+
+div.searchFilterContainer {
+	width: 21em;
+	text-align: right;
+	float: left;
+	margin-bottom: 5px;
+	margin-right: 5px;
+}
+
+div.searchFilterContainer input {
+	width: 10em;
+}

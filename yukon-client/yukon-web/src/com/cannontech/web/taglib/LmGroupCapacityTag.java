@@ -21,7 +21,7 @@ public class LmGroupCapacityTag extends YukonTagSupport {
     public void doTag() throws JspException, IOException {
         JspWriter out = getJspContext().getOut();
         
-        Double capacity = loadGroupDao.getCapacity(paoId);
+        Double capacity = loadGroupDao.findCapacity(paoId);
         
         if(capacity != null) {
             out.print(objectFormattingService.formatObjectAsString(capacity, getUserContext()));

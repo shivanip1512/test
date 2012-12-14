@@ -52,4 +52,8 @@
     <entry key="yukon.web.modules.commanderSelect.sideMenu.devices">Devices</entry>
     <entry key="yukon.web.modules.commanderSelect.sideMenu.loadManagement">Load Management</entry>
     <entry key="yukon.web.modules.commanderSelect.sideMenu.capControl">Cap Control</entry>
+    <entry key="yukon.web.modules.commanderSelect.sideMenu.sa205">DCU-205 Serial</entry>
+    <entry key="yukon.web.modules.commanderSelect.sideMenu.sa305">DCU-305 Serial</entry>
+    <entry key="yukon.web.modules.commanderSelect.sideMenu.xcom">Expresscom Serial</entry>
+    <entry key="yukon.web.modules.commanderSelect.sideMenu.vcom">Versacom Serial</entry>
 </properties>

@@ -105,7 +105,7 @@ public class DeviceSearchFilterByGenerator {
                     filterByList.add(new DeviceSearchFilterBy(field, "loadGroupCapacity", new DeviceSearchFilterBy.Validator() {
                         @Override
                         public boolean isValid(LiteYukonPAObject lPao, String value) {
-                            Double capacity = loadGroupDao.getCapacity(lPao.getPaoIdentifier().getPaoId());
+                            Double capacity = loadGroupDao.findCapacity(lPao.getPaoIdentifier().getPaoId());
                             return Double.toString(capacity).startsWith(value);
                         }
                     }));
@@ -114,7 +114,7 @@ public class DeviceSearchFilterByGenerator {
                     filterByList.add(new DeviceSearchFilterBy(field, "loadGroupRoute", new DeviceSearchFilterBy.Validator() {
                         @Override
                         public boolean isValid(LiteYukonPAObject lPao, String value) {
-                            Integer routeId = loadGroupDao.getRouteId(lPao.getPaoIdentifier().getPaoId());
+                            Integer routeId = loadGroupDao.findRouteId(lPao.getPaoIdentifier().getPaoId());
                             LiteYukonPAObject route = paoDao.getLiteYukonPAO(routeId);
                             return route.getPaoName().startsWith(value);
                         }
@@ -124,7 +124,7 @@ public class DeviceSearchFilterByGenerator {
                     filterByList.add(new DeviceSearchFilterBy(field, "loadGroupSerial", new DeviceSearchFilterBy.Validator() {
                         @Override
                         public boolean isValid(LiteYukonPAObject lPao, String value) {
-                            Integer serialNumber = loadGroupDao.getSerialNumber(lPao.getPaoIdentifier().getPaoId());
+                            Integer serialNumber = loadGroupDao.findSerialNumber(lPao.getPaoIdentifier().getPaoId());
                             return String.valueOf(serialNumber).startsWith(value);
                         }
                     }));

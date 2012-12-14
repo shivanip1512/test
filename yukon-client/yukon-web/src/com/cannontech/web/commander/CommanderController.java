@@ -154,7 +154,7 @@ public class CommanderController {
         
         String redirectURI;
         if(serialNumber != null && !serialNumber.isEmpty()) {
-            redirectURI = String.format("%s?serialNumber=%s", request.getRequestURI(), serialNumber);
+            redirectURI = ServletUtil.addParameters(request.getRequestURI(), "serialNumber", serialNumber);
         } else {
             redirectURI = request.getRequestURI();
         }
@@ -249,7 +249,7 @@ public class CommanderController {
                     return "devices|mct";
             }
         }
-        return "";
+        return StringUtils.EMPTY;
     }
 
     private String getMenuSelection(String serialType) {
@@ -263,7 +263,7 @@ public class CommanderController {
             return "lm|305serial";
         }
         
-        return "";
+        return StringUtils.EMPTY;
     }
 
     private List<DeviceSearchFilterBy> getQueryFilter(HttpServletRequest request, List<DeviceSearchFilterBy> filterByList) {

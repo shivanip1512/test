@@ -34,8 +34,8 @@ public enum DeviceSearchOrderBy {
         public int compare(LiteYukonPAObject o1, LiteYukonPAObject o2) {
             String thisVal = null, anotherVal = null;
             
-            thisVal = String.valueOf(((LiteYukonPAObject) o1).getAddress());
-            anotherVal = String.valueOf(((LiteYukonPAObject) o2).getAddress());
+            thisVal = String.valueOf(o1.getAddress());
+            anotherVal = String.valueOf(o2.getAddress());
             
             if (thisVal.equalsIgnoreCase(anotherVal)) {
                 //if the types are equal, we need to sort by deviceName
@@ -90,8 +90,8 @@ public enum DeviceSearchOrderBy {
             
             if (thisVal.equalsIgnoreCase(anotherVal)) {
                 //if the types are equal, we need to sort by deviceName
-                thisVal = ((LiteYukonPAObject) o1).getPaoName();
-                anotherVal = ((LiteYukonPAObject) o2).getPaoName();
+                thisVal = o1.getPaoName();
+                anotherVal = o2.getPaoName();
             }
             
             return (thisVal.compareToIgnoreCase(anotherVal));
