@@ -12,20 +12,9 @@
             <div class="widgetContent">
                 <h4>Select which Event Log Service(s) to use</h4>
                 <ul>
-                    <li> <label> <tags:checkbox path="accountEventLog"/> AccountEventLogService </label></li>
-                    <li> <label> <tags:checkbox path="commandRequestExecutorEventLog"/> CommandRequestExecutorEventLogService </label></li>
-                    <li> <label> <tags:checkbox path="commandScheduleEventLog"/> CommandScheduleEventLogService </label></li>
-                    <li> <label> <tags:checkbox path="databaseMigrationEventLog"/> DatabaseMigrationEventLogService </label></li>
-                    <li> <label> <tags:checkbox path="demandResponseEventLog"/> DemandResponseEventLogService </label></li>
-                    <li> <label> <tags:checkbox path="hardwareEventLog"/> HardwareEventLogService </label></li>
-                    <li> <label> <tags:checkbox path="inventoryConfigEventLog"/> InventoryConfigEventLogService </label></li>
-                    <li> <label> <tags:checkbox path="meteringEventLog"/> MeteringEventLogService </label></li>
-                    <li> <label> <tags:checkbox path="outageEventLog"/> OutageEventLogService </label></li>
-                    <li> <label> <tags:checkbox path="rfnDeviceEventLog"/> RfnDeviceEventLogService </label></li>
-                    <li> <label> <tags:checkbox path="starsEventLog"/> StarsEventLogService </label></li>
-                    <li> <label> <tags:checkbox path="systemEventLog"/> SystemEventLogService </label></li>
-                    <li> <label> <tags:checkbox path="validationEventLog"/> ValidationEventLogService </label></li>
-                    <li> <label> <tags:checkbox path="veeReviewEventLog"/> VeeReviewEventLogService </label></li>
+                <c:forEach items="${devEventLog.eventLogTypes}" var="eventType">
+                    <li><label><tags:checkbox path="eventLogTypes[${eventType.key}]"/><i:inline key="${eventType.key}"/></label></li>
+                </c:forEach>
                 </ul>
                 <br>
                 <h4>Common parameters</h4>
