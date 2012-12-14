@@ -50,6 +50,7 @@ import com.cannontech.stars.dr.appliance.model.EnvironmentIcon;
 import com.cannontech.stars.dr.appliance.model.SavingsIcon;
 import com.cannontech.stars.dr.appliance.service.ApplianceCategoryService;
 import com.cannontech.stars.dr.appliance.service.AssignedProgramService;
+import com.cannontech.stars.dr.hardware.dao.ProgramToAlternateProgramDao;
 import com.cannontech.stars.energyCompany.model.YukonEnergyCompany;
 import com.cannontech.stars.service.EnergyCompanyService;
 import com.cannontech.stars.util.ServletUtils;
@@ -81,6 +82,7 @@ public class ApplianceCategoryController {
     @Autowired private YukonEnergyCompanyService yecService;
     @Autowired private EnergyCompanyService energyCompanyService;
     @Autowired private ConfigurationSource configurationSource;
+    @Autowired private ProgramToAlternateProgramDao ptapDao;
 
     private Validator detailsValidator = new SimpleValidator<ApplianceCategory>(ApplianceCategory.class) {
         @Override
@@ -415,6 +417,11 @@ public class ApplianceCategoryController {
         }
         model.addAttribute("mode", mode);
         model.addAttribute("isEditable", isEditable);
+        
+        // Programs that are already an alternate on another program and this program should be excluded from the Alternate Enrollment picker
+        List<Integer> excludedProgramIds = ptapDao.getAllAlternateProgramIds();
+        excludedProgramIds.add(bean.getAssignedProgram().getAssignedProgramId());
+        model.addAttribute("excludedProgramIds", excludedProgramIds);
         
         return "applianceCategory/editAssignedProgram.jsp";
     }

@@ -191,7 +191,7 @@ YEvent.observeSelectorClick('#sameAsDisplayName', sameAsDisplayNameClicked);
             </tags:nameValue>
         </tags:nameValue>
         <cti:msg2 var="fieldName" key=".alternateEnrollment"/>
- 	 	<tags:nameValue name="${fieldName}">
+	 	<tags:nameValue name="${fieldName}">
  	 	    <form:hidden path="assignedProgram.alternateProgramId" id="alternateProgramId"/>
  	 	    <tags:pickerDialog type="assignedProgramPicker" 
  	 	        id="assignedProgramPicker"
@@ -200,6 +200,7 @@ YEvent.observeSelectorClick('#sameAsDisplayName', sameAsDisplayNameClicked);
  	 	        multiSelectMode="false" 
  	 	        memoryGroup="programPicker"
  	 	        destinationFieldId="alternateProgramId"
+ 	 	        excludeIds = "${excludedProgramIds}"
  	 	        allowEmptySelection="true"
  	 	        endAction="showProgramEditor"
  	 	        cancelAction="showProgramEditor" initialId="${backingBean.assignedProgram.alternateProgramId}">
