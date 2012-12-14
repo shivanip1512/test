@@ -63,11 +63,7 @@ public class SendManualThermostatSettingEndpoint {
             Temperature heatTemperature = manualThermostatSetting.getHeatTemperature() ;
             Temperature coolTemperature = manualThermostatSetting.getCoolTemperature(); 
             
-            int thermostatId = serialNumberToInventoryIdMap.get(serialNumber);
-            String accountNumber =  Integer.toString(customerAccountDao.getAccountByInventoryId(thermostatId).getAccountId());
-            accountEventLogService.thermostatManualSetAttempted(user,
-                                                                accountNumber,
-                                                                serialNumber,
+            accountEventLogService.thermostatManualSetAttempted(user, "", serialNumber,
                                                                 (heatTemperature != null) ? heatTemperature.toFahrenheit().getValue() : null,
                                                                 (coolTemperature != null) ? coolTemperature.toFahrenheit().getValue() : null,
                                                                 manualThermostatSetting.getThermostatMode().name(),
