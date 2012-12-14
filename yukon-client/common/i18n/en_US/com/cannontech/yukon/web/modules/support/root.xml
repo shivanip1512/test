@@ -177,6 +177,7 @@
  
     <entry key="yukon.web.modules.support.setupDatabase.setupDevDatabase.option.roleProperties.title">Role Properties</entry>
     <entry key="yukon.web.modules.support.setupDatabase.setupDevDatabase.option.roleProperties">Role Properties</entry>
+    <entry key="yukon.web.modules.support.setupDatabase.setupDevDatabase.option.roleProperties.roleGroup">Role Group to update</entry>
     
     <entry key="yukon.web.modules.support.setupDatabase.setupDevDatabase.option.amr.createCartObjects">Create Cart Objects</entry>
     <entry key="yukon.web.modules.support.setupDatabase.setupDevDatabase.option.amr.createRfnTemplateMeters">Create Rfn Template Meters</entry>
@@ -199,6 +200,12 @@
     <entry key="yukon.web.modules.support.setupDatabase.setupDevDatabase.option.capcontrol.object.regulators"># of Regulators (per type)</entry>
     <entry key="yukon.web.modules.support.setupDatabase.setupDevDatabase.option.capcontrol.object.offset">Offset # (for names)</entry>
     
+    <entry key="yukon.web.modules.support.setupDatabase.setupDevDatabase.option.eventLog">Event Log</entry>
+    <entry key="yukon.web.modules.support.setupDatabase.setupDevDatabase.option.eventLog.username">Username</entry>
+    <entry key="yukon.web.modules.support.setupDatabase.setupDevDatabase.option.eventLog.indicatorString">Indicator Prefix prepended to all string arguments</entry>
+    <entry key="yukon.web.modules.support.setupDatabase.setupDevDatabase.option.eventLog.eventSource">Event Source</entry>
+    <entry key="yukon.web.modules.support.setupDatabase.setupDevDatabase.option.eventLog.iterations"># of inserts per type</entry>
+
     <entry key="yukon.web.modules.support.setupDatabase.setupDevDatabase.option.stars.title">Stars</entry>
     <entry key="yukon.web.modules.support.setupDatabase.setupDevDatabase.option.stars">Stars</entry>
     <entry key="yukon.web.modules.support.setupDatabase.setupDevDatabase.option.stars.hardwareTypes">Hardware Types</entry>

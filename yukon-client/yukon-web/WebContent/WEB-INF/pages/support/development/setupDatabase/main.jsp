@@ -10,18 +10,10 @@
 <cti:includeScript link="JQUERY_GRID"/>
     
 <style>
-.devWidget {
-    margin: 15px;
-    -moz-box-shadow: -2px -2px 10px rgba(0,0,0,0.2);
-    -webkit-box-shadow: -2px -2px 10px rgba(0,0,0,0.2);
-    box-shadow: -2px -2px 10px rgba(0,0,0,0.2);
-}
 
 .widgetContent {
     padding:5px;
     margin:5px;
-    border-top:1px solid #CCC;
-    border-bottom:1px solid #CCC;
 }
 
 .subItemCheckbox {
@@ -62,55 +54,46 @@
 
 </style>
 
-<cti:dataGrid cols="2" tableClasses="twoColumnLayout split" cellStyle="padding-right:0px;">
-
-    <cti:dataGridCell>
-        <%@include file="devRoleProperty.jspf"%>
-        <%@include file="devStars.jspf"%>
-    </cti:dataGridCell>
-    
-    <cti:dataGridCell>
-        <%@include file="devAmr.jspf"%>
-        <%@include file="devCapControl.jspf"%>
-    </cti:dataGridCell>
-    
-</cti:dataGrid>
+<cti:tabbedContentSelector>
+        <cti:tabbedContentSelectorContent tabId="rolePropertiesTab" selectorName="Role Properties">
+            <%@include file="devRoleProperty.jspf"%>
+        </cti:tabbedContentSelectorContent>
+        <cti:tabbedContentSelectorContent tabId="starsTab" selectorName="Stars Accounts">
+            <%@include file="devStars.jspf"%>
+        </cti:tabbedContentSelectorContent>
+        <cti:tabbedContentSelectorContent tabId="amrTab" selectorName="AMR">
+            <%@include file="devAmr.jspf"%>
+        </cti:tabbedContentSelectorContent>
+        <cti:tabbedContentSelectorContent tabId="capControlTab" selectorName="Cap Control">
+            <%@include file="devCapControl.jspf"%>
+        </cti:tabbedContentSelectorContent>
+        <cti:tabbedContentSelectorContent tabId="eventLogTab" selectorName="Event Log">
+            <%@include file="devEventLog.jspf"%>
+        </cti:tabbedContentSelectorContent>
+</cti:tabbedContentSelector>
 
 
     <script type="text/javascript">
-    	jQuery(function() {
-            
-            jQuery("input#f_check_all_meters:checkbox").checkAll("input.f_check_single_meter:checkbox");
-            jQuery("input#f_check_all_hardware:checkbox").checkAll("input.f_check_single_hardware:checkbox");
-
-            jQuery('body').on('.f_ec_select', 'change', function() {
-                if (jQuery('#createNewEnergyCompanyOpt').is(':selected')) {
-                    jQuery('.newEnergyCompanyRow').show(800, function() {
-                        jQuery('.newEnergyCompanyInput').focus();
-                    });
-                } else {
-                    jQuery('.newEnergyCompanyRow').hide(500);
-                }
-            });
-            
+    jQuery(function() {
             var ajaxSubmitOptions = {
                 beforeSubmit:  beforeSubmit,        // pre-submit callback 
                 success:       ajaxResponse,        // post-submit callback 
                 error:         ajaxError,
                 type:          'POST'
             }; 
-         
-            // bind form using 'ajaxForm' 
+
+            // bind form using 'ajaxForm'
             jQuery('#setupRolePropertiesForm').ajaxForm(ajaxSubmitOptions); 
             jQuery('#setupAMRForm').ajaxForm(ajaxSubmitOptions); 
             jQuery('#setupCapControlForm').ajaxForm(ajaxSubmitOptions); 
-            jQuery('#setupStarsForm').ajaxForm(ajaxSubmitOptions); 
+            jQuery('#setupStarsForm').ajaxForm(ajaxSubmitOptions);
+            jQuery('#setupEventLogForm').ajaxForm(ajaxSubmitOptions); 
              
             function beforeSubmit(formData, jqForm, options) {
                 setWidgetAvailability(jqForm.closest(".devWidget"), false);
                 return true;
             } 
-             
+
             function ajaxResponse(responseText, statusText, xhr, jqForm)  { 
                 // The entire devWidget box will get replaced so this probably
                 // isn't neccesary to call
@@ -118,17 +101,18 @@
                 jqForm.closest(".devWidget").replaceWith(responseText);
                 var formId = jqForm.attr("id");
                 jQuery("#"+formId).ajaxForm(ajaxSubmitOptions);
-            } 
+            }
 
             function ajaxError(response, status, error) {
                 // need to attatch this to only the box which it relates to.
                 //jQuery(".widgetMessage").html("Error: Setup did not finish " + response.responseText);
             }
             
-            function setWidgetAvailability(widget,isAvailable, progress) {
+            function setWidgetAvailability(widget, isAvailable, progress) {
                 if (isAvailable) {
                     widget.find(":input").not(".f_disabled").removeAttr("disabled");
                     widget.find(".widgetMessage").html("").removeClass("resultMessage");
+                    jQuery('a[href$="#'+widget.attr("id")+'Tab"]').removeAttr("style");
                 } else {
                     widget.find(".userMessage").remove();
                     widget.find(":input").attr("disabled","disabled");
@@ -139,9 +123,18 @@
                     } else {
                         widget.find(".widgetMessage").html("Setup is currently running...").addClass("resultMessage");
                     }
+                    slowFlash(jQuery('a[href$="#'+widget.attr("id")+'Tab"]'));
+                    //jQuery('a[href$="#'+widget.attr("id")+'Tab"]').css("background-color","#FFCCCC");
                 }
             }
             
+            function slowFlash(selector){
+                jQuery(selector).animate({"background-color":"#FFCCCC"}, 1000, function(){
+                    jQuery(selector).animate({"background-color":"#FFFFFF"}, 1000);
+                });
+            }
+            
+            // Main UI Loop
             function checkAvailability() {
                 jQuery.ajax({
                   url: "checkAvailability",
@@ -152,6 +145,7 @@
                     setWidgetAvailability(jQuery("#capControl"),data.capControl, data.capControlProgress);
                     setWidgetAvailability(jQuery("#amr"),data.amr);
                     setWidgetAvailability(jQuery("#stars"),data.stars,data.starsProgress);
+                    setWidgetAvailability(jQuery("#eventLog"),data.eventLog, data.eventLogProgress);
                   }
                 });
               }

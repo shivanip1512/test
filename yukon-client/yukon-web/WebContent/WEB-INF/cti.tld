@@ -2122,6 +2122,12 @@
         <rtexprvalue>true</rtexprvalue>
         <description>Tab selected</description>
     </attribute>
+    <attribute>
+        <name>tabId</name>
+        <required>false</required>
+        <rtexprvalue>true</rtexprvalue>
+        <description>Tab li element id. If not specified a unique value will be used.</description>
+    </attribute>
     <description>
         Tab content
     </description>

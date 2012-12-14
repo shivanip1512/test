@@ -1,0 +1,47 @@
+<%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core"%>
+<%@ taglib prefix="cti" uri="http://cannontech.com/tags/cti"%>
+<%@ taglib prefix="fn" uri="http://java.sun.com/jsp/jstl/functions"%>
+<%@ taglib prefix="spring" uri="http://www.springframework.org/tags"%>
+<%@ taglib prefix="tags" tagdir="/WEB-INF/tags"%>
+<%@ taglib prefix="i" tagdir="/WEB-INF/tags/i18n"%>
+
+<div id="eventLog" class="devWidget">
+        <cti:flashScopeMessages />
+        <div class="widgetMessage"></div>
+        <form:form commandName="devEventLog" action="setupEventLog" method="post" id="setupEventLogForm">
+            <div class="widgetContent">
+                <h4>Select which Event Log Service(s) to use</h4>
+                <ul>
+                    <li> <label> <tags:checkbox path="accountEventLog"/> AccountEventLogService </label></li>
+                    <li> <label> <tags:checkbox path="commandRequestExecutorEventLog"/> CommandRequestExecutorEventLogService </label></li>
+                    <li> <label> <tags:checkbox path="commandScheduleEventLog"/> CommandScheduleEventLogService </label></li>
+                    <li> <label> <tags:checkbox path="databaseMigrationEventLog"/> DatabaseMigrationEventLogService </label></li>
+                    <li> <label> <tags:checkbox path="demandResponseEventLog"/> DemandResponseEventLogService </label></li>
+                    <li> <label> <tags:checkbox path="hardwareEventLog"/> HardwareEventLogService </label></li>
+                    <li> <label> <tags:checkbox path="inventoryConfigEventLog"/> InventoryConfigEventLogService </label></li>
+                    <li> <label> <tags:checkbox path="meteringEventLog"/> MeteringEventLogService </label></li>
+                    <li> <label> <tags:checkbox path="outageEventLog"/> OutageEventLogService </label></li>
+                    <li> <label> <tags:checkbox path="rfnDeviceEventLog"/> RfnDeviceEventLogService </label></li>
+                    <li> <label> <tags:checkbox path="starsEventLog"/> StarsEventLogService </label></li>
+                    <li> <label> <tags:checkbox path="systemEventLog"/> SystemEventLogService </label></li>
+                    <li> <label> <tags:checkbox path="validationEventLog"/> ValidationEventLogService </label></li>
+                    <li> <label> <tags:checkbox path="veeReviewEventLog"/> VeeReviewEventLogService </label></li>
+                </ul>
+                <br>
+                <h4>Common parameters</h4>
+                <tags:nameValueContainer2>
+                    <tags:inputNameValue nameKey=".setupDevDatabase.option.eventLog.username" path="username"/>
+                </tags:nameValueContainer2>
+                <tags:nameValueContainer2>
+                    <tags:inputNameValue nameKey=".setupDevDatabase.option.eventLog.indicatorString" path="indicatorString"/>
+                </tags:nameValueContainer2>
+                <tags:nameValueContainer2>
+                    <tags:selectNameValue items="${eventSourceList}" nameKey=".setupDevDatabase.option.eventLog.eventSource" path="eventSource"/>
+                </tags:nameValueContainer2>
+                <tags:nameValueContainer2>
+                    <tags:inputNameValue nameKey=".setupDevDatabase.option.eventLog.iterations" path="iterations"/>
+                </tags:nameValueContainer2>
+            </div>
+            <input type="submit" value="Run Setup"/>
+        </form:form>
+</div>

@@ -5,7 +5,7 @@
 <%@ taglib prefix="tags" tagdir="/WEB-INF/tags"%>
 <%@ taglib prefix="i" tagdir="/WEB-INF/tags/i18n"%>
 
-<tags:boxContainer2 id="capControl" nameKey="setupDevDatabase.option.capcontrol" styleClass="devWidget">
+<div id="capControl" class="devWidget">
                 <cti:flashScopeMessages />
                 <div class="widgetMessage"></div>
                 <form:form commandName="devCapControl" action="setupCapControl" method="post" id="setupCapControlForm">
@@ -52,6 +52,7 @@
                                 </ul>
                             </li>
                         <li>
+                        <br>
                         <h4><i:inline key=".setupDevDatabase.option.capcontrol.regulatorTypes"/></h4>
                             <tags:nameValueContainer2>
                                 <tags:inputNameValue path="numRegulators"
@@ -62,8 +63,7 @@
                                     <c:forEach
                                         items="${devCapControl.regulatorTypes}"
                                         var="cbcType" varStatus="status">
-                                        <li><label> <tags:checkbox
-                                                    path="regulatorTypes[${status.index}].create" />
+                                        <li><label> <tags:checkbox path="regulatorTypes[${status.index}].create" />
                                                 <span>${devCapControl.regulatorTypes[status.index].paoType}</span>
                                         </label></li>
                                     </c:forEach>
@@ -73,4 +73,4 @@
                     </div>
                 <input type="submit" value="Run Setup"/>
             </form:form>
-        </tags:boxContainer2>
+        </div>

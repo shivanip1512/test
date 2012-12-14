@@ -8,11 +8,12 @@ public class TabbedContentSelectorContentTag extends YukonTagSupport {
     
 	private String selectorName = "";
 	private String cssClass;
+	private String tabId;
 	private boolean initiallySelected = false;
 	
 	@Override
     public void doTag() throws JspException, IOException {
-		String id = UniqueIdentifierTag.generateIdentifier(getJspContext(), "tabbedContentSelectorContent_");
+		String id = tabId != null ? tabId : UniqueIdentifierTag.generateIdentifier(getJspContext(), "tabbedContentSelectorContent_");
 		
 		// tell container tag about ourself
         TabbedContentSelectorTag parent = getParent(TabbedContentSelectorTag.class);
@@ -33,7 +34,12 @@ public class TabbedContentSelectorContentTag extends YukonTagSupport {
         this.cssClass = cssClass;
     }
  
+    public void setTabId(String tabId) {
+        this.tabId = tabId;
+    }
+    
 	public void setInitiallySelected(boolean initiallySelected) {
 		this.initiallySelected = initiallySelected;
 	}
+	
 }

@@ -21,6 +21,7 @@ import org.springframework.web.bind.annotation.ResponseBody;
 
 import com.cannontech.clientutils.YukonLogManager;
 import com.cannontech.common.config.MasterConfigBooleanKeysEnum;
+import com.cannontech.common.events.model.EventSource;
 import com.cannontech.common.pao.PaoType;
 import com.cannontech.common.validator.SimpleValidator;
 import com.cannontech.core.dao.PaoDao;
@@ -40,11 +41,13 @@ import com.cannontech.web.support.development.database.objects.DevAMR;
 import com.cannontech.web.support.development.database.objects.DevCCU;
 import com.cannontech.web.support.development.database.objects.DevCapControl;
 import com.cannontech.web.support.development.database.objects.DevCommChannel;
+import com.cannontech.web.support.development.database.objects.DevEventLog;
 import com.cannontech.web.support.development.database.objects.DevPaoType;
 import com.cannontech.web.support.development.database.objects.DevRoleProperties;
 import com.cannontech.web.support.development.database.objects.DevStars;
 import com.cannontech.web.support.development.database.service.impl.DevAMRCreationService;
 import com.cannontech.web.support.development.database.service.impl.DevCapControlCreationService;
+import com.cannontech.web.support.development.database.service.impl.DevEventLogCreationService;
 import com.cannontech.web.support.development.database.service.impl.DevRolePropUpdaterService;
 import com.cannontech.web.support.development.database.service.impl.DevStarsCreationService;
 import com.google.common.collect.Lists;
@@ -61,20 +64,18 @@ public class SetupDevDbMethodController {
     @Autowired private DevAMRCreationService devAMRCreationService;
     @Autowired private DevCapControlCreationService devCapControlCreationService;
     @Autowired private DevStarsCreationService devStarsCreationService;
+    @Autowired private DevEventLogCreationService devEventLogCreationService;
     @Autowired private RoleDao roleDao;
     @Autowired private EnergyCompanyDao ecDao;
 
     @RequestMapping
     public void main(ModelMap model) {
-        DevAMR devAMR = new DevAMR();
-        DevCapControl devCapControl = new DevCapControl();
-        DevStars devStars = new DevStars();
-        DevRoleProperties devRoleProperties = new DevRoleProperties();
 
-        model.addAttribute("devRoleProperties",devRoleProperties);
-        model.addAttribute("devAMR", devAMR);
-        model.addAttribute("devCapControl", devCapControl);
-        model.addAttribute("devStars", devStars);
+        model.addAttribute("devRoleProperties",new DevRoleProperties());
+        model.addAttribute("devAMR",  new DevAMR());
+        model.addAttribute("devCapControl", new DevCapControl());
+        model.addAttribute("devStars", new DevStars());
+        model.addAttribute("devEventLog",new DevEventLog());
 
         List<LiteYukonGroup> allGroups = yukonGroupDao.getAllGroups();
         List<LiteYukonGroup> resGroups = Lists.newArrayList();
@@ -92,6 +93,8 @@ public class SetupDevDbMethodController {
 
         List<LiteStarsEnergyCompany> allEnergyCompanies = starsDatabaseCache.getAllEnergyCompanies();
         model.addAttribute("allEnergyCompanies", allEnergyCompanies);
+        
+        model.addAttribute("eventSourceList", Lists.newArrayList(EventSource.values()));
     }
 
     @RequestMapping
@@ -105,13 +108,14 @@ public class SetupDevDbMethodController {
         json.put("capControlProgress", devCapControlCreationService.getPercentComplete());
         json.put("stars", !devStarsCreationService.isRunning());
         json.put("starsProgress", devStarsCreationService.getPercentComplete());
+        json.put("eventLog", !devEventLogCreationService.isRunning());
+        json.put("eventLogProgress", devEventLogCreationService.getPercentComplete());
         
         return json.toString();
     }
     
     @RequestMapping
     public String setupRoleProperties(DevRoleProperties devRoleProperties, LiteYukonUser user, FlashScope flashScope, ModelMap model) {
-        
         if (!devRolePropUpdaterService.isRunning()) {
             try {
                 Map<YukonRole,Boolean> results = devRolePropUpdaterService.executeSetup(devRoleProperties);
@@ -141,7 +145,6 @@ public class SetupDevDbMethodController {
 
     @RequestMapping 
     public String setupAMR(DevAMR devAMR, BindingResult bindingResult, LiteYukonUser user, FlashScope flashScope, ModelMap model) {
-
         amrValidator.validate(devAMR, bindingResult);
 
         if (bindingResult.hasErrors()) {
@@ -165,7 +168,6 @@ public class SetupDevDbMethodController {
 
     @RequestMapping
     public String setupCapControl(DevCapControl devCapControl, BindingResult bindingResult, LiteYukonUser user, FlashScope flashScope, ModelMap model) {
-
         capControlValidator.validate(devCapControl, bindingResult);
         
         boolean simComFound = paoDao.getLiteYukonPaoByName(DevCommChannel.SIM.getName(), false).size() == 1;
@@ -189,8 +191,24 @@ public class SetupDevDbMethodController {
     }
 
     @RequestMapping
+    public String setupEventLog(DevEventLog devEventLog, BindingResult bindingResult, FlashScope flashScope, ModelMap model) {
+        
+        try {
+            devEventLogCreationService.execute(devEventLog);
+            flashScope.setConfirm(YukonMessageSourceResolvable .createDefaultWithoutCode("Successfully setup Event Log"));
+        } catch (Exception e) {
+            log.warn("caught exception in Setup Event Log", e);
+            flashScope.setError(YukonMessageSourceResolvable
+                                .createDefaultWithoutCode("Unable to setup Event Log: " + e.getMessage()));
+        }
+        
+        model.addAttribute("eventSourceList", Lists.newArrayList(EventSource.values()));
+        
+        return "development/setupDatabase/eventLogWidget.jsp";
+    }
+    
+    @RequestMapping
     public String setupStars(DevStars devStars, BindingResult bindingResult, LiteYukonUser user, FlashScope flashScope, ModelMap model) {
-
         starsValidator.validate(devStars, bindingResult);
 
         String ccuName = DevCCU.SIM_711.getName();
@@ -201,6 +219,7 @@ public class SetupDevDbMethodController {
         } else if (routeId == null) {
             flashScope.setError(YukonMessageSourceResolvable.createDefaultWithoutCode("Couldn't find route with name " + ccuName + ". Run AMR setup with Create Cart Objects to create this route."));
         } else if (!devStarsCreationService.isRunning()) {
+            
             try {
                 devStarsCreationService.executeSetup(devStars);
                 flashScope.setConfirm(YukonMessageSourceResolvable .createDefaultWithoutCode("Successfully setup stars"));
@@ -213,7 +232,7 @@ public class SetupDevDbMethodController {
 
         List<LiteStarsEnergyCompany> allEnergyCompanies = starsDatabaseCache.getAllEnergyCompanies();
         model.addAttribute("allEnergyCompanies", allEnergyCompanies);
-
+      
         return "development/setupDatabase/starsWidget.jsp";
     }
 

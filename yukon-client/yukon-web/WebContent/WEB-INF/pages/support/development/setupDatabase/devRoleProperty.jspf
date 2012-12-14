@@ -5,8 +5,7 @@
 <%@ taglib prefix="tags" tagdir="/WEB-INF/tags"%>
 <%@ taglib prefix="i" tagdir="/WEB-INF/tags/i18n"%>
 
-<tags:boxContainer2 id="roleProperties" nameKey="setupDevDatabase.option.roleProperties" styleClass="devWidget">
-
+<div id="roleProperties" class="devWidget">
     <c:if test="${fn:length(results) > 0}">
         <div class="results">
             <div class="resultMessage">
@@ -27,21 +26,15 @@
         <div class="widgetMessage"></div>
         <div class="widgetContent">
             <tags:nameValueContainer2>
-                <c:forEach items="${allGroups}" var="group">
-                    <label>
-                        <c:if test="${resGroups.contains(group)}">
-                            <input type="radio" value="${group.groupName}" class="f_disabled" disabled="disabled"/>
-                            ${fn:escapeXml(group.groupName)} (Cannot run with Residential Group)
-                        </c:if>
-                        <c:if test="${!resGroups.contains(group)}">
-                            <form:radiobutton path="groupName" value="${group.groupName}"/>
-                            ${fn:escapeXml(group.groupName)}
-                        </c:if>
-                    </label>
-                    <br/>
-                </c:forEach>
+            <tags:nameValue2 nameKey=".setupDevDatabase.option.roleProperties.roleGroup">
+                <form:select path="groupName">
+                    <c:forEach items="${allGroups}" var="group">
+                        <form:option path="groupName" value="${group.groupName}">${fn:escapeXml(group.groupName)}</form:option>
+                    </c:forEach>
+                </form:select>
+            </tags:nameValue2>
             </tags:nameValueContainer2>
         </div>
         <input type="submit" value="Run Setup"/>
     </form:form>
-</tags:boxContainer2>
+</div>

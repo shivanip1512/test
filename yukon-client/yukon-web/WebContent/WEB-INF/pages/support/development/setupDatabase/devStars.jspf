@@ -5,7 +5,7 @@
 <%@ taglib prefix="tags" tagdir="/WEB-INF/tags"%>
 <%@ taglib prefix="i" tagdir="/WEB-INF/tags/i18n"%>
 
-<tags:boxContainer2 id="stars" nameKey="setupDevDatabase.option.stars" styleClass="devWidget">
+<div id="stars" class="devWidget">
         <cti:flashScopeMessages />
         <div class="widgetMessage"></div>
         <form:form commandName="devStars" action="setupStars" method="post" id="setupStarsForm">
@@ -14,15 +14,11 @@
                     <li>
                         <tags:nameValueContainer2>
                             <tags:nameValue2 nameKey=".setupDevDatabase.option.stars.parentEnergyCompany">
-                                <form:select path="energyCompany"
-                                    cssClass="f_ec_select">
-                                    <c:forEach items="${allEnergyCompanies}"
-                                        var="energyCompany">
-                                        <form:option
-                                            value="${energyCompany.energyCompanyId}">${energyCompany.name}</form:option>
+                                <form:select path="energyCompany" cssClass="f_ec_select">
+                                    <c:forEach items="${allEnergyCompanies}" var="energyCompany">
+                                        <form:option value="${energyCompany.energyCompanyId}">${energyCompany.name}</form:option>
                                     </c:forEach>
-                                    <option value="0" id="createNewEnergyCompanyOpt">*Create
-                                        New Energy Company</option>
+                                    <option value="0" id="createNewEnergyCompanyOpt">*Create New Energy Company </option>
                                 </form:select>
                             </tags:nameValue2>
                             <tags:inputNameValue path="newEnergyCompanyName"
@@ -90,4 +86,19 @@
                 </div>
                 <input type="submit" value="Run Setup"/>
             </form:form>
-        </tags:boxContainer2>
+            <script type="text/javascript">
+            jQuery(function() {
+                jQuery("input#f_check_all_hardware:checkbox").checkAll("input.f_check_single_hardware:checkbox");
+                jQuery('.f_ec_select').on('change', function() {
+                    if (jQuery('#createNewEnergyCompanyOpt').is(':selected')) {
+                        jQuery('.newEnergyCompanyRow').show(800, function() {
+                            jQuery('.newEnergyCompanyInput').focus();
+                        });
+                    } else {
+                        jQuery('.newEnergyCompanyRow').hide(500);
+                    }
+                });
+            });
+            </script>
+ 
+</div>

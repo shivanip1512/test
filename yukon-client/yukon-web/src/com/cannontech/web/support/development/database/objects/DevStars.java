@@ -47,7 +47,6 @@ public class DevStars extends DevObject {
         int accountHardware = hardwareTypes * accounts * devStarsHardware.getNumHardwarePerAccount();
         int total = accounts + accountHardware + extraHardware;
         
-//        int total = accounts + extraHardware;
         return total;
     }
 

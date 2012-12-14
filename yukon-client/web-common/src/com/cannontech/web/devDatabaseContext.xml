@@ -19,5 +19,6 @@
     <bean id="devAMRCreationService" class="com.cannontech.web.support.development.database.service.impl.DevAMRCreationService"/>
     <bean id="devCapControlCreationService" class="com.cannontech.web.support.development.database.service.impl.DevCapControlCreationService"/>
     <bean id="devStarsCreationService" class="com.cannontech.web.support.development.database.service.impl.DevStarsCreationService"/>
+    <bean id="devEventLogCreationService" class="com.cannontech.web.support.development.database.service.impl.DevEventLogCreationService"/>
 
 </beans>
