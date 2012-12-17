@@ -107,7 +107,7 @@ public class DeviceConfigController extends BulkControllerBase {
 
         Processor<SimpleDevice> processor = processorFactory.createAssignConfigurationToYukonDeviceProcessor(configuration);
         
-        ObjectMapper<SimpleDevice, SimpleDevice> mapper = new PassThroughMapper<SimpleDevice>();
+        ObjectMapper<SimpleDevice, SimpleDevice> mapper = new PassThroughMapper<>();
         bulkProcessor.backgroundBulkProcess(deviceCollection.iterator(), mapper, processor, callbackResult);
         
         mav = new ModelAndView("redirect:assignConfigResults");
@@ -139,12 +139,16 @@ public class DeviceConfigController extends BulkControllerBase {
     public ModelAndView doUnassignConfig(HttpServletRequest request, HttpServletResponse response, YukonUserContext userContext) throws ServletException {
         rolePropertyDao.verifyProperty(YukonRoleProperty.ASSIGN_CONFIG, userContext.getYukonUser());
         
-        ModelAndView mav = null;
-        
         DeviceCollection deviceCollection = deviceCollectionFactory.createDeviceCollection(request);
         
-        // CALLBACK
+        /*
+         * Generate a unique ID string for the results of this operation. Strip the dashes of a 
+         * random UUID and use it.
+         *  i.e. bee09385-2da2-4622-863c-1e30023d9738 becomes bee093852da24622863c1e30023d9738
+         */
         String resultsId = StringUtils.replace(UUID.randomUUID().toString(), "-", "");
+        
+        // CALLBACK
         StoredDeviceGroup successGroup = temporaryDeviceGroupService.createTempGroup(null);
         StoredDeviceGroup processingExceptionGroup = temporaryDeviceGroupService.createTempGroup(null);
         
@@ -162,10 +166,10 @@ public class DeviceConfigController extends BulkControllerBase {
         // PROCESS
         Processor<SimpleDevice> processor = processorFactory.createUnassignConfigurationToYukonDeviceProcessor();
         
-        ObjectMapper<SimpleDevice, SimpleDevice> mapper = new PassThroughMapper<SimpleDevice>();
+        ObjectMapper<SimpleDevice, SimpleDevice> mapper = new PassThroughMapper<>();
         bulkProcessor.backgroundBulkProcess(deviceCollection.iterator(), mapper, processor, callbackResult);
         
-        mav = new ModelAndView("redirect:unassignConfigResults");
+        ModelAndView mav = new ModelAndView("redirect:unassignConfigResults");
         mav.addObject("resultsId", resultsId);
         
         return mav;

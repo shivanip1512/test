@@ -38,7 +38,7 @@
     <cti:msg var="headerTitle" key="yukon.common.device.bulk.unassignConfig.header"/>
     <tags:bulkActionContainer  key="yukon.common.device.bulk.unassignConfig" deviceCollection="${deviceCollection}">
     
-        <form id="unassignConfigForm" method="post" action="/bulk/config/doUnassignConfig">
+        <form id="unassignConfigForm" method="post" action="<cti:url value="/bulk/config/doUnassignConfig" />">
             <%-- DEVICE COLLECTION --%>
             <cti:deviceCollection deviceCollection="${deviceCollection}" />
             

@@ -68,7 +68,7 @@ public class ConfigWidget extends WidgetControllerBase {
         mav.addObject("existingConfigs", existingConfigs);
         
         ConfigurationBase config = deviceConfigurationDao.findConfigurationForDevice(meter);
-        mav.addObject("currentConfigId", config != null ? config.getId() : -1000);
+        mav.addObject("currentConfigId", config != null ? config.getId() : null);
         mav.addObject("currentConfigName", config != null ? config.getName() : CtiUtilities.STRING_NONE);
         return mav;
     }

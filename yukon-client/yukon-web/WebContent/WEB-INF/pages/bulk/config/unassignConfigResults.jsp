@@ -25,9 +25,7 @@
         <tags:collectionActionsCrumbLink deviceCollection="${deviceCollection}" />
         
         <cti:url var="unassignConfigUrl" value="/bulk/config/unassignConfig">
-            <c:forEach var="deviceCollectionParam" items="${deviceCollection.collectionParameters}">
-                <cti:param name="${deviceCollectionParam.key}" value="${deviceCollectionParam.value}"/>
-            </c:forEach>
+            <cti:mapParam value="${deviceCollection.collectionParameters}"/>
         </cti:url>
         <cti:msg var="unassignConfigPageTitle" key="yukon.common.device.bulk.unassignConfig.pageTitle"/>
         <cti:crumbLink url="${unassignConfigUrl}" title="${unassignConfigPageTitle}" />

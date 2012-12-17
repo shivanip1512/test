@@ -16,7 +16,7 @@
                     </ct:nameValueContainer2>
                 </td>
                 <td>
-                    <c:if test="${currentConfigId >= 0}">
+                    <c:if test="${not empty currentConfigId}">
                         <cti:checkRolesAndProperties value="ASSIGN_CONFIG">
                             <ct:widgetActionRefresh method="unassignConfig" nameKey="unassign"/>
                         </cti:checkRolesAndProperties>
