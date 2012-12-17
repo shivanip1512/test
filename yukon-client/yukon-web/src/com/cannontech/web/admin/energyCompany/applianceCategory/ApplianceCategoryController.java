@@ -1,6 +1,7 @@
 package com.cannontech.web.admin.energyCompany.applianceCategory;
 
 import java.io.IOException;
+import java.util.Collections;
 import java.util.List;
 import java.util.Map;
 
@@ -420,6 +421,7 @@ public class ApplianceCategoryController {
         
         // Programs that are already an alternate on another program and this program should be excluded from the Alternate Enrollment picker
         List<Integer> excludedProgramIds = ptapDao.getAllAlternateProgramIds();
+        excludedProgramIds.removeAll(Collections.singleton(bean.getAssignedProgram().getAlternateProgramId()));
         excludedProgramIds.add(bean.getAssignedProgram().getAssignedProgramId());
         model.addAttribute("excludedProgramIds", excludedProgramIds);
         
