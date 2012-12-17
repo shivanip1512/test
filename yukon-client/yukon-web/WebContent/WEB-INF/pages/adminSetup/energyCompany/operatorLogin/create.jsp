@@ -50,7 +50,7 @@
         <tags:nameValueContainer2>
             <tags:hidden path="userId"/>
             <c:choose>
-                <c:when test="${isOperatorInOperatorUserGroup}">
+                <c:when test="${showOperatorGroupSelect}">
                     <tags:selectNameValue nameKey=".operatorGroup" items="${assignableGroups}" path="userGroupName"/>
                 </c:when>
                 <c:otherwise>

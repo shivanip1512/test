@@ -140,6 +140,7 @@ public class OperatorLoginController {
         //determine if we can set a password
         AuthType defaultAuthType = authenticationService.getDefaultAuthType();
         modelMap.addAttribute("supportsPasswordSet", authenticationService.supportsPasswordSet(defaultAuthType));
+        modelMap.addAttribute("showOperatorGroupSelect", true);
         
         return "energyCompany/operatorLogin/create.jsp"; 
     }
@@ -166,6 +167,7 @@ public class OperatorLoginController {
             flashScope.setMessage(messages, FlashScopeMessageType.ERROR);
             modelMap.addAttribute("mode", PageEditMode.CREATE);
             modelMap.addAttribute("supportsPasswordSet", authenticationService.supportsPasswordSet(defaultAuthType));
+            modelMap.addAttribute("showOperatorGroupSelect", true);
             return "energyCompany/operatorLogin/create.jsp";
         }
         
@@ -195,8 +197,8 @@ public class OperatorLoginController {
         modelMap.addAttribute("mode", PageEditMode.EDIT);
         modelMap.addAttribute("supportsPasswordSet", authenticationService.supportsPasswordSet(yukonUserDao.getLiteYukonUser(login.getUserId()).getAuthType()));
         modelMap.addAttribute("isPrimaryOperator", yukonEnergyCompanyService.isPrimaryOperator(operatorLoginId));
-        modelMap.addAttribute("isOperatorInOperatorUserGroup", ecMappingDao.isOperatorInOperatorUserGroup(operatorLoginId));
-        
+        modelMap.addAttribute("showOperatorGroupSelect", ecMappingDao.isOperatorInOperatorUserGroup(operatorLoginId));
+
         return "energyCompany/operatorLogin/create.jsp"; 
     }
     
@@ -227,7 +229,8 @@ public class OperatorLoginController {
             modelMap.addAttribute("mode", PageEditMode.EDIT);
             modelMap.addAttribute("supportsPasswordSet", authenticationService.supportsPasswordSet(user.getAuthType()));
             modelMap.addAttribute("isPrimaryOperator", yukonEnergyCompanyService.isPrimaryOperator(operatorLogin.getUserId()));
-            modelMap.addAttribute("isOperatorInOperatorUserGroup", ecMappingDao.isOperatorInOperatorUserGroup(operatorLogin.getUserId()));
+            modelMap.addAttribute("showOperatorGroupSelect", ecMappingDao.isOperatorInOperatorUserGroup(operatorLogin.getUserId()));
+
             return "energyCompany/operatorLogin/create.jsp";
         }
         
