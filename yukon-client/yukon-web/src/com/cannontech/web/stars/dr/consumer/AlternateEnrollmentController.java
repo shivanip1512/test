@@ -65,12 +65,14 @@ public class AlternateEnrollmentController extends AbstractConsumerController {
     		final FlashScope flash, 
     		final YukonUserContext context) {
     	
-    	YukonEnergyCompany yec = yecService.getEnergyCompanyByAccountId(customerAccount.getAccountId());
-        ecRolePropertyDao.verifyProperty(YukonRoleProperty.ALTERNATE_PROGRAM_ENROLLMENT, yec);
+        if(alternate != null || normal != null){
+            YukonEnergyCompany yec = yecService.getEnergyCompanyByAccountId(customerAccount.getAccountId());
+            ecRolePropertyDao.verifyProperty(YukonRoleProperty.ALTERNATE_PROGRAM_ENROLLMENT, yec);
     	
-    	aeService.doEnrollment(alternate, normal, customerAccount.getAccountId(), context);
+            aeService.doEnrollment(alternate, normal, customerAccount.getAccountId(), context);
         
-        flash.setConfirm(new YukonMessageSourceResolvable("yukon.web.modules.consumer.alternateEnrollment.alternate.success"));
+            flash.setConfirm(new YukonMessageSourceResolvable("yukon.web.modules.consumer.alternateEnrollment.alternate.success"));
+        }
     	return "redirect:view";
     }
         

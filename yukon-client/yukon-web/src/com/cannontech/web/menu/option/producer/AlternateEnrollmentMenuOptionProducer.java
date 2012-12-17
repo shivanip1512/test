@@ -2,20 +2,27 @@ package com.cannontech.web.menu.option.producer;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
+import java.util.Set;
 
 import org.springframework.beans.factory.annotation.Autowired;
 
+import com.cannontech.common.util.Pair;
 import com.cannontech.core.roleproperties.YukonRoleProperty;
 import com.cannontech.core.roleproperties.dao.EnergyCompanyRolePropertyDao;
 import com.cannontech.i18n.YukonMessageSourceResolvable;
 import com.cannontech.stars.core.service.YukonEnergyCompanyService;
 import com.cannontech.stars.dr.account.dao.CustomerAccountDao;
 import com.cannontech.stars.dr.account.model.CustomerAccount;
+import com.cannontech.stars.dr.enrollment.service.AlternateEnrollmentService;
+import com.cannontech.stars.dr.hardware.model.HardwareSummary;
 import com.cannontech.stars.dr.optout.service.OptOutStatusService;
+import com.cannontech.stars.dr.program.model.Program;
 import com.cannontech.stars.energyCompany.model.YukonEnergyCompany;
 import com.cannontech.user.YukonUserContext;
 import com.cannontech.web.menu.option.MenuOption;
 import com.cannontech.web.menu.option.SimpleMenuOptionLink;
+import com.google.common.collect.Maps;
 
 public class AlternateEnrollmentMenuOptionProducer extends DynamicMenuOptionProducer {
 
@@ -23,28 +30,36 @@ public class AlternateEnrollmentMenuOptionProducer extends DynamicMenuOptionProd
     @Autowired private CustomerAccountDao customerAccountDao;
     @Autowired private YukonEnergyCompanyService yecService;
     @Autowired private EnergyCompanyRolePropertyDao ecRolePropertyDao;
+    @Autowired private AlternateEnrollmentService aeService;
 
     @Override
     public List<MenuOption> doGetMenuOptions(YukonUserContext userContext) {
 
         List<MenuOption> menuOptions = new ArrayList<MenuOption>();
         
-        List<CustomerAccount> customers = customerAccountDao.getByUser(userContext.getYukonUser());
-        YukonEnergyCompany yec = yecService.getEnergyCompanyByAccountId(customers.get(0).getAccountId());
+        CustomerAccount customer = customerAccountDao.getByUser(userContext.getYukonUser()).get(0);
+        YukonEnergyCompany yec = yecService.getEnergyCompanyByAccountId(customer.getAccountId());
         boolean altProgramEnrollment = ecRolePropertyDao.checkProperty(YukonRoleProperty.ALTERNATE_PROGRAM_ENROLLMENT, yec);
         
-        // Generate a menu option if opt out is enabled
+        // Generate a menu option if opt out is enabled and actual enrollment exists 
         if (altProgramEnrollment && optOutStatusService.getOptOutEnabled(userContext.getYukonUser()).isCommunicationEnabled()) {
-            YukonMessageSourceResolvable resolvable = 
-                new YukonMessageSourceResolvable("yukon.web.menu.config.consumer.programs.alternateEnrollment");
-            
-            SimpleMenuOptionLink optionLink = new SimpleMenuOptionLink("alternateEnrollment", resolvable);
-            optionLink.setLinkUrl("/stars/consumer/ae/view");
-            
-            menuOptions.add(optionLink);
+            /* inventory to: set of normal programs, set of alternate programs */
+            Map<HardwareSummary, Pair<Set<Program>, Set<Program>>> available = Maps.newHashMap();
+            /* inventory to: set of alternate programs, set of normal programs */
+            Map<HardwareSummary, Pair<Set<Program>, Set<Program>>> active = Maps.newHashMap();
+            aeService.buildEnrollmentMaps(customer.getAccountId(), available, active);
+            if (!available.isEmpty() || !active.isEmpty()){
+                YukonMessageSourceResolvable resolvable = 
+                        new YukonMessageSourceResolvable("yukon.web.menu.config.consumer.programs.alternateEnrollment");
+                
+                SimpleMenuOptionLink optionLink = new SimpleMenuOptionLink("alternateEnrollment", resolvable);
+                optionLink.setLinkUrl("/stars/consumer/ae/view");
+                
+                menuOptions.add(optionLink);
+            }
         }
         
         return menuOptions;
     }
-
+    
 }
