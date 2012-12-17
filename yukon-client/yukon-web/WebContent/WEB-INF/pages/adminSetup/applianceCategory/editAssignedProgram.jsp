@@ -200,7 +200,7 @@ YEvent.observeSelectorClick('#sameAsDisplayName', sameAsDisplayNameClicked);
  	 	        multiSelectMode="false" 
  	 	        memoryGroup="programPicker"
  	 	        destinationFieldId="alternateProgramId"
- 	 	        excludeIds = "${excludedProgramIds}"
+ 	 	        excludeIds="${excludedProgramIds}"
  	 	        allowEmptySelection="true"
  	 	        endAction="showProgramEditor"
  	 	        cancelAction="showProgramEditor" initialId="${backingBean.assignedProgram.alternateProgramId}">
