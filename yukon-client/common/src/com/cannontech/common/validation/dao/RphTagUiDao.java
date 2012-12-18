@@ -19,5 +19,5 @@ public interface RphTagUiDao {
      * @param rphTags
      * @return
      */
-    public List<Integer> findMatchingChangeIds(Set<RphTag> set, Set<RphTag> mask);
+    public List<Long> findMatchingChangeIds(Set<RphTag> set, Set<RphTag> mask);
 }

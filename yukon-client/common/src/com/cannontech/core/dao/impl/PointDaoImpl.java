@@ -820,7 +820,7 @@ public final class PointDaoImpl implements PointDao {
     }
 
     private static LiteRawPointHistory createLitePointHistory(ResultSet rset) throws SQLException {
-        int changeID = rset.getInt(1);
+        long changeID = rset.getLong(1);
         int pointID = rset.getInt(2);
         Timestamp ts = rset.getTimestamp(3);
         int quality = rset.getInt(4);

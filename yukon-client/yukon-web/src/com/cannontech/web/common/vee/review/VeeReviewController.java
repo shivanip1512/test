@@ -29,6 +29,7 @@ import com.cannontech.web.security.annotation.CheckRoleProperty;
 import com.google.common.base.Function;
 import com.google.common.collect.LinkedListMultimap;
 import com.google.common.collect.ListMultimap;
+import com.google.common.collect.Lists;
 import com.google.common.collect.Ordering;
 
 @Controller
@@ -73,7 +74,7 @@ public class VeeReviewController {
         
         // narrow - group by changeId
         // loop over rpsByName by key to keep order intact
-        ListMultimap<Integer, ReviewPoint> commonChangeIdReviewPoints = LinkedListMultimap.create();
+        ListMultimap<Long, ReviewPoint> commonChangeIdReviewPoints = LinkedListMultimap.create();
         for (String nameKey : rpsByName.keySet()) {
         	List<ReviewPoint> rpsForName = rpsByName.get(nameKey);
 	        for (ReviewPoint rp : rpsForName) {
@@ -85,7 +86,7 @@ public class VeeReviewController {
         // add keepers until the next distinct device and count >= IDEAL_PAGE_COUNT
         int lastPaoId = 0;
         List<ReviewPoint> keepReviewPoints = new ArrayList<ReviewPoint>();
-        for (int changeId : commonChangeIdReviewPoints.keySet()) {
+        for (long changeId : commonChangeIdReviewPoints.keySet()) {
         	
         	List<ReviewPoint> rpList = commonChangeIdReviewPoints.get(changeId);
         	ReviewPoint keeper = reviewPointingOrdering.min(rpList);
@@ -103,7 +104,7 @@ public class VeeReviewController {
         List<ExtendedReviewPoint> extendedReviewPoints = new ArrayList<ExtendedReviewPoint>();
         for (ReviewPoint rp : keepReviewPoints) {
         	
-        	List<RphTag> otherTags = new ArrayList<RphTag>();
+        	List<RphTag> otherTags = Lists.newArrayList();
         	List<ReviewPoint> rpsWithCommonChangeId = commonChangeIdReviewPoints.get(rp.getChangeId());
         	for (ReviewPoint rpCommon : rpsWithCommonChangeId) {
         		if (!rpCommon.equals(rp)) {
@@ -151,8 +152,8 @@ public class VeeReviewController {
         int afterPaoId = ServletRequestUtils.getIntParameter(request, "afterPaoId", 0);
         
         // gather changeIds
-        List<Integer> deleteChangeIds = new ArrayList<Integer>();
-        List<Integer> acceptChangeIds = new ArrayList<Integer>();
+        List<Long> deleteChangeIds = Lists.newArrayList();
+        List<Long> acceptChangeIds = Lists.newArrayList();
         
         Map<String, String> actionParameters = ServletUtil.getStringParameters(request, "ACTION_");
         for (String changeIdStr : actionParameters.keySet()) {
@@ -161,20 +162,20 @@ public class VeeReviewController {
         	if (!StringUtils.isBlank(actionTypeStr)) {
 	        	ActionType actionType = ActionType.valueOf(actionTypeStr);
 	        	if (ActionType.DELETE.equals(actionType)) {
-	        		deleteChangeIds.add(Integer.valueOf(changeIdStr));
+	        		deleteChangeIds.add(Long.valueOf(changeIdStr));
 	        	} else if (ActionType.ACCEPT.equals(actionType)) {
-	        		acceptChangeIds.add(Integer.valueOf(changeIdStr));
+	        		acceptChangeIds.add(Long.valueOf(changeIdStr));
 	        	}
         	}
         }
         
         // delete
-        for (int deleteChangeId : deleteChangeIds) {
+        for (long deleteChangeId : deleteChangeIds) {
         	validationHelperService.deleteRawPointHistoryRow(deleteChangeId, user);
         }
         
         // accept
-        for (int acceptChangeId : acceptChangeIds) {
+        for (long acceptChangeId : acceptChangeIds) {
         	validationHelperService.acceptRawPointHistoryRow(acceptChangeId, user);
         }
         

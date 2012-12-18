@@ -309,14 +309,14 @@ public interface RawPointHistoryDao {
      * @param changeId any valid change id
      * @param questionable any valid quality
      */
-    public void changeQuality(int changeId, PointQuality questionable);
+    public void changeQuality(long changeId, PointQuality questionable);
     
     /**
      * Get a PointValueQualityHolder for a particular changeId.
      * @param changeId
      * @return
      */
-    public PointValueQualityHolder getPointValueQualityForChangeId(int changeId);
+    public PointValueQualityHolder getPointValueQualityForChangeId(long changeId);
     
    /**
     * Gets values immediately before and after (with respect to timestamp) of a given point value.
@@ -329,7 +329,7 @@ public interface RawPointHistoryDao {
     * Delete a row of RawPointHistory by ChangeId.
     * @param changeId
     */
-   public void deleteValue(int changeId);
+   public void deleteValue(long changeId);
    
    /**
     * Get the largest changeId currently in RawPointHistory

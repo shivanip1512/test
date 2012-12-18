@@ -174,7 +174,7 @@ public final HashMap getDeviceNameToRPHMap() throws java.sql.SQLException
 				
 				while (rset.next())
 				{
-				    int changeID = rset.getInt(1);
+				    long changeID = rset.getLong(1);
 				    int pointID = rset.getInt(2);
 					java.sql.Timestamp ts = rset.getTimestamp(3);
 					GregorianCalendar tsCal = new GregorianCalendar();
@@ -182,7 +182,7 @@ public final HashMap getDeviceNameToRPHMap() throws java.sql.SQLException
 					int quality = rset.getInt(4);
 					double value = rset.getDouble(5);
 					short millis = rset.getShort(6);
-					RawPointHistory dummyRPH = new RawPointHistory(new Integer(changeID), new Integer(pointID), tsCal, new Integer(quality), new Double(value));
+					RawPointHistory dummyRPH = new RawPointHistory(new Long(changeID), new Integer(pointID), tsCal, new Integer(quality), new Double(value));
 					
 //					String address = rset.getString(7);	//key value
 					String ptOffset = String.valueOf(rset.getInt(8));	//additional info for key value

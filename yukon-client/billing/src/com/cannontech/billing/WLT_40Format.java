@@ -303,7 +303,7 @@ public boolean retrieveBillingData(java.util.Vector collectionGroups)
 
 							while (rset.next())
 							{
-								Integer changeID = new Integer(0);
+								Long changeID = new Long(0);
 								Integer pointID = new Integer(rset.getInt(1));
 								java.util.GregorianCalendar timestamp = new java.util.GregorianCalendar();
 								timestamp.setTime(rset.getTimestamp(2));

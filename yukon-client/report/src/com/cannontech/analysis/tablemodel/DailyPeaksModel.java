@@ -237,7 +237,7 @@ public class DailyPeaksModel extends ReportModelBase
 
 					while( rset.next() && ( controlTimePeakVector.size() < MAX_NUMBER_OF_PEAK_VALUES || nonControlTimePeakVector.size() < MAX_NUMBER_OF_PEAK_VALUES) )
 					{
-						Integer changeId = new Integer(rset.getInt(1));
+						Long changeId = new Long(rset.getLong(1));
 						Integer pointId = new Integer(rset.getInt(2));
 						Double value = new Double(rset.getDouble(3));
 						Integer quality = new Integer(rset.getInt(4));

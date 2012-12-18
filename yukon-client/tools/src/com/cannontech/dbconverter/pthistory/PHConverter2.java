@@ -22,7 +22,7 @@ class PHConverter2 {
 		"PHConverter srcdir [ FORCE (insert timestamps ignoring RPH maxTimestamp) ]\r\nsrcdir=<DSM2 root> FORCE";
 
 	private long lastTimestamp = 0;
-	private int changeID = 0;
+	private long changeID = 0;
 	private boolean forceInsert = false;
 	
 	private java.util.Vector pointVector = null;
@@ -362,7 +362,7 @@ private void writePointData(int id, float multiplier, DSM2PointData[] data)
 			else if(timestamp.getTime() <= lastTimestamp)
 				continue;
 
-			pstmt.setInt(1, changeID++);
+			pstmt.setLong(1, changeID++);
 			pstmt.setInt(2, id);			
 			pstmt.setTimestamp(3, timestamp);
 			pstmt.setInt(4, quality);
@@ -405,7 +405,7 @@ private boolean initYukonStuff() {
 		rset = stmt.executeQuery("select max(changeid),max(timestamp) from rawpointhistory");
 	
 		if(rset.next()) {
-			changeID = rset.getInt(1) + 1;
+			changeID = rset.getLong(1) + 1;
 			if( rset.getTimestamp(2) != null)
 			    lastTimestamp = rset.getTimestamp(2).getTime();	
 		}	

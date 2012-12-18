@@ -14,7 +14,7 @@ public class Analysis {
     private int analysisId;
     private Interval dateTimeRange;
     private Period intervalPeriod;
-    private int lastChangeId;
+    private long lastChangeId;
     private Instant runDate;
     private boolean excludeBadPointQualities;
     private AdaStatus status;
@@ -52,11 +52,11 @@ public class Analysis {
         return intervalPeriod;
     }
     
-    public void setLastChangeId(int lastChangeId) {
+    public void setLastChangeId(long lastChangeId) {
         this.lastChangeId = lastChangeId;
     }
     
-    public int getLastChangeId() {
+    public long getLastChangeId() {
         return lastChangeId;
     }
     

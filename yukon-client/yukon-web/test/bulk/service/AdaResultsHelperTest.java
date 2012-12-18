@@ -38,10 +38,10 @@ public class AdaResultsHelperTest {
         
         // archive data: M,M,M,M
         List<ArchiveData> archiveData = Lists.newArrayList();
-        archiveData.add(new ArchiveData(new Interval(analysisStart, analysisStart.plus(Duration.standardMinutes(15))), ReadType.DATA_MISSING, 0));
-        archiveData.add(new ArchiveData(new Interval(analysisStart.plus(Duration.standardMinutes(15)), analysisStart.plus(Duration.standardMinutes(30))), ReadType.DATA_MISSING, 1));
-        archiveData.add(new ArchiveData(new Interval(analysisStart.plus(Duration.standardMinutes(30)), analysisStart.plus(Duration.standardMinutes(45))), ReadType.DATA_MISSING, 2));
-        archiveData.add(new ArchiveData(new Interval(analysisStart.plus(Duration.standardMinutes(45)), analysisStart.plus(Duration.standardMinutes(60))), ReadType.DATA_MISSING, 3));
+        archiveData.add(new ArchiveData(new Interval(analysisStart, analysisStart.plus(Duration.standardMinutes(15))), ReadType.DATA_MISSING, 0L));
+        archiveData.add(new ArchiveData(new Interval(analysisStart.plus(Duration.standardMinutes(15)), analysisStart.plus(Duration.standardMinutes(30))), ReadType.DATA_MISSING, 1L));
+        archiveData.add(new ArchiveData(new Interval(analysisStart.plus(Duration.standardMinutes(30)), analysisStart.plus(Duration.standardMinutes(45))), ReadType.DATA_MISSING, 2L));
+        archiveData.add(new ArchiveData(new Interval(analysisStart.plus(Duration.standardMinutes(45)), analysisStart.plus(Duration.standardMinutes(60))), ReadType.DATA_MISSING, 3L));
         
         // device archive data
         List<DeviceArchiveData> data = Lists.newArrayList();
@@ -56,10 +56,10 @@ public class AdaResultsHelperTest {
         
         // archive data: P,M,M,M
         archiveData = Lists.newArrayList();
-        archiveData.add(new ArchiveData(new Interval(analysisStart, analysisStart.plus(Duration.standardMinutes(15))), ReadType.DATA_PRESENT, 0));
-        archiveData.add(new ArchiveData(new Interval(analysisStart.plus(Duration.standardMinutes(15)), analysisStart.plus(Duration.standardMinutes(30))), ReadType.DATA_MISSING, 1));
-        archiveData.add(new ArchiveData(new Interval(analysisStart.plus(Duration.standardMinutes(30)), analysisStart.plus(Duration.standardMinutes(45))), ReadType.DATA_MISSING, 2));
-        archiveData.add(new ArchiveData(new Interval(analysisStart.plus(Duration.standardMinutes(45)), analysisStart.plus(Duration.standardMinutes(60))), ReadType.DATA_MISSING, 3));
+        archiveData.add(new ArchiveData(new Interval(analysisStart, analysisStart.plus(Duration.standardMinutes(15))), ReadType.DATA_PRESENT, 0L));
+        archiveData.add(new ArchiveData(new Interval(analysisStart.plus(Duration.standardMinutes(15)), analysisStart.plus(Duration.standardMinutes(30))), ReadType.DATA_MISSING, 1L));
+        archiveData.add(new ArchiveData(new Interval(analysisStart.plus(Duration.standardMinutes(30)), analysisStart.plus(Duration.standardMinutes(45))), ReadType.DATA_MISSING, 2L));
+        archiveData.add(new ArchiveData(new Interval(analysisStart.plus(Duration.standardMinutes(45)), analysisStart.plus(Duration.standardMinutes(60))), ReadType.DATA_MISSING, 3L));
         data = Lists.newArrayList();
         data.add(new DeviceArchiveData(paoIdentifier, BuiltInAttribute.LOAD_PROFILE, archiveData, analysis.getDateTimeRange()));
         
@@ -74,10 +74,10 @@ public class AdaResultsHelperTest {
         
         // archive data: M,P,M,M
         archiveData = Lists.newArrayList();
-        archiveData.add(new ArchiveData(new Interval(analysisStart, analysisStart.plus(Duration.standardMinutes(15))), ReadType.DATA_MISSING, 0));
-        archiveData.add(new ArchiveData(new Interval(analysisStart.plus(Duration.standardMinutes(15)), analysisStart.plus(Duration.standardMinutes(30))), ReadType.DATA_PRESENT, 1));
-        archiveData.add(new ArchiveData(new Interval(analysisStart.plus(Duration.standardMinutes(30)), analysisStart.plus(Duration.standardMinutes(45))), ReadType.DATA_MISSING, 2));
-        archiveData.add(new ArchiveData(new Interval(analysisStart.plus(Duration.standardMinutes(45)), analysisStart.plus(Duration.standardMinutes(60))), ReadType.DATA_MISSING, 3));
+        archiveData.add(new ArchiveData(new Interval(analysisStart, analysisStart.plus(Duration.standardMinutes(15))), ReadType.DATA_MISSING, 0L));
+        archiveData.add(new ArchiveData(new Interval(analysisStart.plus(Duration.standardMinutes(15)), analysisStart.plus(Duration.standardMinutes(30))), ReadType.DATA_PRESENT, 1L));
+        archiveData.add(new ArchiveData(new Interval(analysisStart.plus(Duration.standardMinutes(30)), analysisStart.plus(Duration.standardMinutes(45))), ReadType.DATA_MISSING, 2L));
+        archiveData.add(new ArchiveData(new Interval(analysisStart.plus(Duration.standardMinutes(45)), analysisStart.plus(Duration.standardMinutes(60))), ReadType.DATA_MISSING, 3L));
         data = Lists.newArrayList();
         data.add(new DeviceArchiveData(paoIdentifier, BuiltInAttribute.LOAD_PROFILE, archiveData, analysis.getDateTimeRange()));
         
@@ -94,10 +94,10 @@ public class AdaResultsHelperTest {
         
         // archive data: M,M,P,M
         archiveData = Lists.newArrayList();
-        archiveData.add(new ArchiveData(new Interval(analysisStart, analysisStart.plus(Duration.standardMinutes(15))), ReadType.DATA_MISSING, 0));
-        archiveData.add(new ArchiveData(new Interval(analysisStart.plus(Duration.standardMinutes(15)), analysisStart.plus(Duration.standardMinutes(30))), ReadType.DATA_MISSING, 1));
-        archiveData.add(new ArchiveData(new Interval(analysisStart.plus(Duration.standardMinutes(30)), analysisStart.plus(Duration.standardMinutes(45))), ReadType.DATA_PRESENT, 2));
-        archiveData.add(new ArchiveData(new Interval(analysisStart.plus(Duration.standardMinutes(45)), analysisStart.plus(Duration.standardMinutes(60))), ReadType.DATA_MISSING, 3));
+        archiveData.add(new ArchiveData(new Interval(analysisStart, analysisStart.plus(Duration.standardMinutes(15))), ReadType.DATA_MISSING, 0L));
+        archiveData.add(new ArchiveData(new Interval(analysisStart.plus(Duration.standardMinutes(15)), analysisStart.plus(Duration.standardMinutes(30))), ReadType.DATA_MISSING, 1L));
+        archiveData.add(new ArchiveData(new Interval(analysisStart.plus(Duration.standardMinutes(30)), analysisStart.plus(Duration.standardMinutes(45))), ReadType.DATA_PRESENT, 2L));
+        archiveData.add(new ArchiveData(new Interval(analysisStart.plus(Duration.standardMinutes(45)), analysisStart.plus(Duration.standardMinutes(60))), ReadType.DATA_MISSING, 3L));
         data = Lists.newArrayList();
         data.add(new DeviceArchiveData(paoIdentifier, BuiltInAttribute.LOAD_PROFILE, archiveData, analysis.getDateTimeRange()));
         
@@ -114,10 +114,10 @@ public class AdaResultsHelperTest {
         
         // archive data: M,M,M,P
         archiveData = Lists.newArrayList();
-        archiveData.add(new ArchiveData(new Interval(analysisStart, analysisStart.plus(Duration.standardMinutes(15))), ReadType.DATA_MISSING, 0));
-        archiveData.add(new ArchiveData(new Interval(analysisStart.plus(Duration.standardMinutes(15)), analysisStart.plus(Duration.standardMinutes(30))), ReadType.DATA_MISSING, 1));
-        archiveData.add(new ArchiveData(new Interval(analysisStart.plus(Duration.standardMinutes(30)), analysisStart.plus(Duration.standardMinutes(45))), ReadType.DATA_MISSING, 2));
-        archiveData.add(new ArchiveData(new Interval(analysisStart.plus(Duration.standardMinutes(45)), analysisStart.plus(Duration.standardMinutes(60))), ReadType.DATA_PRESENT, 3));
+        archiveData.add(new ArchiveData(new Interval(analysisStart, analysisStart.plus(Duration.standardMinutes(15))), ReadType.DATA_MISSING, 0L));
+        archiveData.add(new ArchiveData(new Interval(analysisStart.plus(Duration.standardMinutes(15)), analysisStart.plus(Duration.standardMinutes(30))), ReadType.DATA_MISSING, 1L));
+        archiveData.add(new ArchiveData(new Interval(analysisStart.plus(Duration.standardMinutes(30)), analysisStart.plus(Duration.standardMinutes(45))), ReadType.DATA_MISSING, 2L));
+        archiveData.add(new ArchiveData(new Interval(analysisStart.plus(Duration.standardMinutes(45)), analysisStart.plus(Duration.standardMinutes(60))), ReadType.DATA_PRESENT, 3L));
         data = Lists.newArrayList();
         data.add(new DeviceArchiveData(paoIdentifier, BuiltInAttribute.LOAD_PROFILE, archiveData, analysis.getDateTimeRange()));
         
@@ -132,10 +132,10 @@ public class AdaResultsHelperTest {
         
         // archive data: P,P,M,M
         archiveData = Lists.newArrayList();
-        archiveData.add(new ArchiveData(new Interval(analysisStart, analysisStart.plus(Duration.standardMinutes(15))), ReadType.DATA_PRESENT, 0));
-        archiveData.add(new ArchiveData(new Interval(analysisStart.plus(Duration.standardMinutes(15)), analysisStart.plus(Duration.standardMinutes(30))), ReadType.DATA_PRESENT, 1));
-        archiveData.add(new ArchiveData(new Interval(analysisStart.plus(Duration.standardMinutes(30)), analysisStart.plus(Duration.standardMinutes(45))), ReadType.DATA_MISSING, 2));
-        archiveData.add(new ArchiveData(new Interval(analysisStart.plus(Duration.standardMinutes(45)), analysisStart.plus(Duration.standardMinutes(60))), ReadType.DATA_MISSING, 3));
+        archiveData.add(new ArchiveData(new Interval(analysisStart, analysisStart.plus(Duration.standardMinutes(15))), ReadType.DATA_PRESENT, 0L));
+        archiveData.add(new ArchiveData(new Interval(analysisStart.plus(Duration.standardMinutes(15)), analysisStart.plus(Duration.standardMinutes(30))), ReadType.DATA_PRESENT, 1L));
+        archiveData.add(new ArchiveData(new Interval(analysisStart.plus(Duration.standardMinutes(30)), analysisStart.plus(Duration.standardMinutes(45))), ReadType.DATA_MISSING, 2L));
+        archiveData.add(new ArchiveData(new Interval(analysisStart.plus(Duration.standardMinutes(45)), analysisStart.plus(Duration.standardMinutes(60))), ReadType.DATA_MISSING, 3L));
         data = Lists.newArrayList();
         data.add(new DeviceArchiveData(paoIdentifier, BuiltInAttribute.LOAD_PROFILE, archiveData, analysis.getDateTimeRange()));
         
@@ -150,10 +150,10 @@ public class AdaResultsHelperTest {
 
         // archive data: M,P,P,M
         archiveData = Lists.newArrayList();
-        archiveData.add(new ArchiveData(new Interval(analysisStart, analysisStart.plus(Duration.standardMinutes(15))), ReadType.DATA_MISSING, 0));
-        archiveData.add(new ArchiveData(new Interval(analysisStart.plus(Duration.standardMinutes(15)), analysisStart.plus(Duration.standardMinutes(30))), ReadType.DATA_PRESENT, 1));
-        archiveData.add(new ArchiveData(new Interval(analysisStart.plus(Duration.standardMinutes(30)), analysisStart.plus(Duration.standardMinutes(45))), ReadType.DATA_PRESENT, 2));
-        archiveData.add(new ArchiveData(new Interval(analysisStart.plus(Duration.standardMinutes(45)), analysisStart.plus(Duration.standardMinutes(60))), ReadType.DATA_MISSING, 3));
+        archiveData.add(new ArchiveData(new Interval(analysisStart, analysisStart.plus(Duration.standardMinutes(15))), ReadType.DATA_MISSING, 0L));
+        archiveData.add(new ArchiveData(new Interval(analysisStart.plus(Duration.standardMinutes(15)), analysisStart.plus(Duration.standardMinutes(30))), ReadType.DATA_PRESENT, 1L));
+        archiveData.add(new ArchiveData(new Interval(analysisStart.plus(Duration.standardMinutes(30)), analysisStart.plus(Duration.standardMinutes(45))), ReadType.DATA_PRESENT, 2L));
+        archiveData.add(new ArchiveData(new Interval(analysisStart.plus(Duration.standardMinutes(45)), analysisStart.plus(Duration.standardMinutes(60))), ReadType.DATA_MISSING, 3L));
         data = Lists.newArrayList();
         data.add(new DeviceArchiveData(paoIdentifier, BuiltInAttribute.LOAD_PROFILE, archiveData, analysis.getDateTimeRange()));
         

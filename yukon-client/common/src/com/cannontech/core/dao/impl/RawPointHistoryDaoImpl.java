@@ -876,7 +876,7 @@ public class RawPointHistoryDaoImpl implements RawPointHistoryDao {
     }
     
     @Override
-    public void changeQuality(int changeId, PointQuality questionable) {
+    public void changeQuality(long changeId, PointQuality questionable) {
         SqlStatementBuilder sql = new SqlStatementBuilder();
         sql.append("update RawPointHistory");
         sql.append("set Quality").eq(questionable);
@@ -887,7 +887,7 @@ public class RawPointHistoryDaoImpl implements RawPointHistoryDao {
     }
     
     @Override
-    public PointValueQualityHolder getPointValueQualityForChangeId(int changeId) {
+    public PointValueQualityHolder getPointValueQualityForChangeId(long changeId) {
     
     	SqlStatementBuilder sql = new SqlStatementBuilder();
     	sql.append("SELECT");
@@ -924,7 +924,7 @@ public class RawPointHistoryDaoImpl implements RawPointHistoryDao {
     }
     
     @Override
-    public void deleteValue(int changeId) {
+    public void deleteValue(long changeId) {
     	
     	SqlStatementBuilder sql = new SqlStatementBuilder();
     	sql.append("DELETE");

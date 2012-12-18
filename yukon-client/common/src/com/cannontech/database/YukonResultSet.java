@@ -92,6 +92,11 @@ public class YukonResultSet {
     public long getLong(String columnLabel) throws SQLException {
         return rs.getLong(columnLabel);
     }
+    
+    public Long getNullableLong(String columnLabel) throws SQLException {
+        long retVal = rs.getLong(columnLabel);
+        return rs.wasNull() ? null : retVal;
+    }
 
     public short getShort(String columnLabel) throws SQLException {
         return rs.getShort(columnLabel);

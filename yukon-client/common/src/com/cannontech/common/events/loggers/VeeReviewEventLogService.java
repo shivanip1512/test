@@ -12,7 +12,7 @@ import com.cannontech.database.data.point.PointType;
 public interface VeeReviewEventLogService {
 
 	@YukonEventLog(transactionality=ExecutorTransactionality.TRANSACTIONAL, category="system.rphValidation.helper")
-    public void deletePointValue(int changeId, 
+    public void deletePointValue(long changeId, 
                                  @Arg(ArgEnum.pointValue) double value,
                                  @Arg(ArgEnum.pointDate) Date timestamp,
                                  @Arg(ArgEnum.paoName) String paoName,
@@ -23,7 +23,7 @@ public interface VeeReviewEventLogService {
                                  @Arg(ArgEnum.username) LiteYukonUser user);
 	
 	@YukonEventLog(transactionality=ExecutorTransactionality.TRANSACTIONAL, category="system.rphValidation.helper")
-    public void acceptPointValue(int changeId,
+    public void acceptPointValue(long changeId,
                                  @Arg(ArgEnum.pointValue) double value,
                                  @Arg(ArgEnum.pointDate) Date timestamp,
                                  @Arg(ArgEnum.paoName) String paoName,
@@ -34,7 +34,7 @@ public interface VeeReviewEventLogService {
                                  @Arg(ArgEnum.username) LiteYukonUser user);
 	
 	@YukonEventLog(transactionality=ExecutorTransactionality.TRANSACTIONAL, category="system.rphValidation.helper")
-    public void updateQuestionableQuality(int changeId,
+    public void updateQuestionableQuality(long changeId,
                                           @Arg(ArgEnum.pointValue) double value,
                                           @Arg(ArgEnum.pointDate) Date timestamp,
                                           @Arg(ArgEnum.paoName) String paoName,

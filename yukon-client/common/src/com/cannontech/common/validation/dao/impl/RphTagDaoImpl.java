@@ -14,7 +14,7 @@ public class RphTagDaoImpl implements RphTagDao {
     private YukonJdbcTemplate yukonJdbcTemplate;
 
     @Override
-    public boolean insertTag(int changeId, RphTag value) {
+    public boolean insertTag(long changeId, RphTag value) {
         try {
             SqlStatementBuilder sql =  new SqlStatementBuilder();
             sql.append("insert into RphTag values (");

@@ -24,7 +24,7 @@ public interface ValidationEventLogService {
                                         int tagsCleared);
 
     @YukonEventLog(transactionality=ExecutorTransactionality.TRANSACTIONAL, category="system.rphValidation.validator")
-    public void changedQualityOnPeakedValue(int changeId, 
+    public void changedQualityOnPeakedValue(long changeId, 
                                             @Arg(ArgEnum.paoId) int paoId, 
                                             @Arg(ArgEnum.paoName) String paoName, 
                                             @Arg(ArgEnum.paoType) PaoType paoType, 

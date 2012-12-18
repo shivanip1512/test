@@ -43,7 +43,6 @@ public final class LiteTypes
 	public final static int COMMAND 	= 33;
 	public final static int TOU_SCHEDULE	= 34;
 	public final static int TOU_DAY			= 35;	
-	public final static int RAWPOINTHISTORY = 36;
 	public final static int SETTLEMENT = 37;
 	public final static int DEVICE_CONFIGURATION    = 38;
 	public final static int DEVICE_CONFIGURATION_CATEGORY    = 39;

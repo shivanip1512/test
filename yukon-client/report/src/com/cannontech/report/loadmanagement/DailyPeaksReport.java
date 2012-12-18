@@ -213,7 +213,7 @@ public boolean retrieveReportData(String dbAlias)
 
 					while( rset2.next() && (controlTimePeakVector.size() < MAX_NUMBER_OF_PEAK_VALUES || nonControlTimePeakVector.size() < MAX_NUMBER_OF_PEAK_VALUES) )
 					{
-						Integer changeId = new Integer(rset2.getInt(1));
+						Long changeId = new Long(rset2.getLong(1));
 						Integer pointId = new Integer(rset2.getInt(2));
 						Double value = new Double(rset2.getDouble(3));
 						Integer quality = new Integer(rset2.getInt(4));

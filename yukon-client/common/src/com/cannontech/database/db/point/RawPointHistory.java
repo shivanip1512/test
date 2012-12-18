@@ -5,7 +5,7 @@ package com.cannontech.database.db.point;
  */
 public class RawPointHistory extends com.cannontech.database.db.DBPersistent {
 	
-	private Integer changeID = null;
+	private Long changeID = null;
 	private Integer pointID = null;
 	private java.util.GregorianCalendar timeStamp = null;
 	private Integer quality = null;
@@ -23,14 +23,14 @@ public RawPointHistory() {
 /**
  * PointDispatch constructor comment.
  */
-public RawPointHistory(Integer pointID) {
+public RawPointHistory(Long pointID) {
 	super();
 	initialize( pointID, null ,null, null, null );
 }
 /**
  * PointDispatch constructor comment.
  */
-public RawPointHistory( Integer changeID, Integer pointID,
+public RawPointHistory( Long changeID, Integer pointID,
 												java.util.GregorianCalendar timeStamp, Integer quality,
 												Double value ) 
 {
@@ -59,7 +59,7 @@ public void delete() throws java.sql.SQLException
  * This method was created in VisualAge.
  * @return java.lang.Integer
  */
-public Integer getChangeID() {
+public Long getChangeID() {
 	return changeID;
 }
 /**
@@ -93,7 +93,7 @@ public Double getValue() {
 /**
  * This method was created in VisualAge.
  */
-public void initialize( Integer changeID, Integer pointID,
+public void initialize( Long changeID, Integer pointID,
 												java.util.GregorianCalendar timeStamp, Integer quality,
 												Double value ) 
 {
@@ -134,7 +134,7 @@ public void retrieve() throws java.sql.SQLException {
  * This method was created in VisualAge.
  * @param newValue java.lang.Integer
  */
-public void setChangeID(Integer newValue) {
+public void setChangeID(Long newValue) {
 	this.changeID = newValue;
 }
 /**

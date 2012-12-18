@@ -1,7 +1,5 @@
 package com.cannontech.database.data.lite;
 
-import java.util.GregorianCalendar;
-
 import org.joda.time.Instant;
 
 import com.cannontech.common.pao.PaoType;
@@ -26,7 +24,6 @@ import com.cannontech.database.db.command.Command;
 import com.cannontech.database.db.company.SettlementConfig;
 import com.cannontech.database.db.device.lm.GearControlMethod;
 import com.cannontech.database.db.device.lm.LMProgramDirectGear;
-import com.cannontech.database.db.point.RawPointHistory;
 import com.cannontech.database.db.user.YukonGroup;
 
 /**
@@ -238,16 +235,6 @@ public final static com.cannontech.database.db.DBPersistent createDBPersistent(L
 	 		((com.cannontech.database.data.company.EnergyCompanyBase)returnObject).setName( ((LiteEnergyCompany)liteObject).getName());
 	 		break;
 /* TODO: add LiteTypes.TAG? */
-		case LiteTypes.RAWPOINTHISTORY:
-			returnObject = new RawPointHistory();
-			((RawPointHistory)returnObject).setChangeID(new Integer(((LiteRawPointHistory)liteObject).getLiteID()));
-			((RawPointHistory)returnObject).setPointID(new Integer(((LiteRawPointHistory)liteObject).getPointID()));
-			GregorianCalendar cal = new GregorianCalendar();
-			cal.setTimeInMillis( ((LiteRawPointHistory)liteObject).getTimeStamp());
-			((RawPointHistory)returnObject).setTimeStamp(cal);
-			((RawPointHistory)returnObject).setValue(new Double(((LiteRawPointHistory)liteObject).getValue()));
-			((RawPointHistory)returnObject).setQuality(new Integer(((LiteRawPointHistory)liteObject).getQuality()));					 		
-			break;
 		case LiteTypes.SETTLEMENT:
 			returnObject = new SettlementConfig();
 			((SettlementConfig)returnObject).setConfigID(new Integer(((LiteSettlementConfig)liteObject).getConfigID()));				
@@ -482,15 +469,6 @@ public final static LiteBase createLite(com.cannontech.database.db.DBPersistent 
 			((Command)val).getCommand(),
 			((Command)val).getCategory());
    }
-	else if ( val instanceof RawPointHistory)
-	{
-		returnLite = new LiteRawPointHistory(
-			((RawPointHistory)val).getChangeID().intValue(),
-			((RawPointHistory)val).getPointID().intValue(),
-			((RawPointHistory)val).getTimeStamp().getTimeInMillis(),
-			((RawPointHistory)val).getQuality().intValue(),
-			((RawPointHistory)val).getValue().doubleValue());	
-   	}
 	else if( val instanceof SettlementConfig)
 	{
 	   returnLite = new LiteSettlementConfig(

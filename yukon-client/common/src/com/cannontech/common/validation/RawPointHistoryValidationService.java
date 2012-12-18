@@ -96,7 +96,7 @@ public class RawPointHistoryValidationService {
             RawPointHistoryWrapper wrapper = new RawPointHistoryWrapper();
             wrapper.timestamp = new DateTime(rs.getTimestamp("TimeStamp"));
             wrapper.value = rs.getDouble("value");
-            wrapper.changeId = rs.getInt("ChangeId");
+            wrapper.changeId = rs.getLong("ChangeId");
 
             return wrapper;
         }
@@ -175,7 +175,7 @@ public class RawPointHistoryValidationService {
     public static class RawPointHistoryWrapper {
         public DateTime timestamp;
         public double value;
-        public int changeId;
+        public long changeId;
 
         public double getValue() {
             return value;
@@ -530,7 +530,7 @@ public class RawPointHistoryValidationService {
         }
         
         if (validationMonitor.isSetQuestionableOnPeak() && analysisResult.peakInTheMiddle) {
-            int changeId = values.get(1).changeId; // peak in the "middle" means the 1 value
+            long changeId = values.get(1).changeId; // peak in the "middle" means the 1 value
             rawPointHistoryDao.changeQuality(changeId, PointQuality.Questionable);
             
             PaoIdentifier paoIdentifier = workUnit.paoPointIdentifier.getPaoIdentifier();

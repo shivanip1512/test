@@ -51,36 +51,36 @@ public class ValidationHelperServiceImpl implements ValidationHelperService {
 
     @Override
     public void acceptAllMatchingRows(Set<RphTag> tags, LiteYukonUser liteYukonUser) {
-        List<Integer> changeIds = rphTagUiDao.findMatchingChangeIds(tags, validationPlusOkTags);
-        for (int changeId : changeIds) {
+        List<Long> changeIds = rphTagUiDao.findMatchingChangeIds(tags, validationPlusOkTags);
+        for (long changeId : changeIds) {
             acceptRawPointHistoryRow(changeId, liteYukonUser);
         }
     }
 
     @Override
     public void deleteAllMatchingRows(Set<RphTag> tags, LiteYukonUser liteYukonUser) {
-        List<Integer> changeIds = rphTagUiDao.findMatchingChangeIds(tags, validationPlusOkTags);
-        for (int changeId : changeIds) {
+        List<Long> changeIds = rphTagUiDao.findMatchingChangeIds(tags, validationPlusOkTags);
+        for (long changeId : changeIds) {
             deleteRawPointHistoryRow(changeId, liteYukonUser);
         }
     }
 
     @Override
     public void resetValidationEngine(Date since) {
-        int changeIdToResetTo = 0;
+        long changeIdToResetTo = 0;
         if (since != null) {
             SqlStatementBuilder sql = new SqlStatementBuilder();
             sql.append("select min(changeId)");
             sql.append("from RawPointHistory");
             sql.append("where TimeStamp").gte(since);
             
-            changeIdToResetTo = yukonJdbcOperations.queryForInt(sql) - 1; // one less because we start after
+            changeIdToResetTo = yukonJdbcOperations.queryForLong(sql) - 1; // one less because we start after
         }
         persistedSystemValueDao.setValue(PersistedSystemValueKey.VALIDATION_ENGINE_LAST_CHANGE_ID, changeIdToResetTo);
     }
     
     @Override
-    public void deleteRawPointHistoryRow(int changeId, LiteYukonUser user) {
+    public void deleteRawPointHistoryRow(long changeId, LiteYukonUser user) {
         
     	PointValueQualityHolder pointValueQualityHolder = rawPointHistoryDao.getPointValueQualityForChangeId(changeId);
 		int pointId = pointValueQualityHolder.getId();
@@ -101,7 +101,7 @@ public class ValidationHelperServiceImpl implements ValidationHelperService {
     }
     
     @Override
-    public void acceptRawPointHistoryRow(int changeId, LiteYukonUser user) {
+    public void acceptRawPointHistoryRow(long changeId, LiteYukonUser user) {
         
         // because the RawPointHistory table and the Point table can become unattached,
         // we must be careful that this changeId is for a point/pao that still exists

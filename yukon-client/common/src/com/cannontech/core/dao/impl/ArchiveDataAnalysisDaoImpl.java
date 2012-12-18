@@ -62,7 +62,7 @@ public class ArchiveDataAnalysisDaoImpl implements ArchiveDataAnalysisDao {
         @Override
         public ArchiveData mapRow(YukonResultSet rs) throws SQLException {
             Instant startTime = rs.getInstant("startTime");
-            Integer changeId = rs.getNullableInt("changeId");
+            Long changeId = rs.getNullableLong("changeId");
             
             ReadType readType;
             if(changeId==null) {
@@ -88,7 +88,7 @@ public class ArchiveDataAnalysisDaoImpl implements ArchiveDataAnalysisDao {
             Interval dateTimeRange = new Interval(startDate, stopDate);
             PeriodFormatter periodFormatter = ISOPeriodFormat.standard();
             Period intervalPeriod = periodFormatter.parsePeriod(rs.getString("intervalPeriod"));
-            Integer lastChangeId = rs.getInt("lastChangeId");
+            Long lastChangeId = rs.getLong("lastChangeId");
             Instant runDate = rs.getInstant("runDate");
             boolean excludeBadPointQualities = rs.getEnum("excludeBadPointQualities", YNBoolean.class).getBoolean();
             AdaStatus status = rs.getEnum("AnalysisStatus", AdaStatus.class);

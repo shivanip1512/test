@@ -5,9 +5,9 @@ import org.joda.time.Interval;
 public class ArchiveData {
     private Interval archiveRange;
     private ReadType readType;
-    private Integer changeId;
+    private Long changeId;
     
-    public ArchiveData(Interval archiveRange, ReadType readType, Integer changeId){
+    public ArchiveData(Interval archiveRange, ReadType readType, Long changeId){
         this.archiveRange = archiveRange;
         this.readType = readType;
         this.changeId = changeId;
@@ -33,7 +33,7 @@ public class ArchiveData {
         this.readType = readType;
     }
     
-    public Integer getChangeId() {
+    public Long getChangeId() {
         return changeId;
     }
 }

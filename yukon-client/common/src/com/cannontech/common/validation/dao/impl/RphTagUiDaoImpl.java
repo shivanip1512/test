@@ -21,7 +21,7 @@ import com.cannontech.core.dao.impl.YukonPaoRowMapper;
 import com.cannontech.core.dynamic.PointValueBuilder;
 import com.cannontech.core.dynamic.PointValueQualityHolder;
 import com.cannontech.core.service.PaoLoadingService;
-import com.cannontech.database.IntegerRowMapper;
+import com.cannontech.database.LongRowMapper;
 import com.cannontech.database.YukonJdbcTemplate;
 import com.google.common.collect.Maps;
 import com.google.common.collect.Sets;
@@ -111,7 +111,7 @@ public class RphTagUiDaoImpl implements RphTagUiDao {
 				paos.add(paoIdentifier);
 				
 				ReviewPoint rp = new ReviewPoint();
-				rp.setChangeId(rs.getInt("ChangeId"));
+				rp.setChangeId(rs.getLong("ChangeId"));
 				rp.setRphTag(RphTag.valueOf(rs.getString("TagName")));
 				
 				PointValueBuilder builder = PointValueBuilder.create();
@@ -159,7 +159,7 @@ public class RphTagUiDaoImpl implements RphTagUiDao {
     }
     
     @Override
-    public List<Integer> findMatchingChangeIds(Set<RphTag> set, Set<RphTag> mask) {
+    public List<Long> findMatchingChangeIds(Set<RphTag> set, Set<RphTag> mask) {
         Set<RphTag> mustNotHave = Sets.difference(mask, set);
         SqlStatementBuilder sql = new SqlStatementBuilder();
         sql.append("select distinct ChangeId");
@@ -173,7 +173,7 @@ public class RphTagUiDaoImpl implements RphTagUiDao {
         sql.append("group by ChangeId");
         sql.append("having count(*)").eq(set.size());
         
-        List<Integer> result = yukonJdbcTemplate.query(sql, new IntegerRowMapper());
+        List<Long> result = yukonJdbcTemplate.query(sql, new LongRowMapper());
         return result;
     }
     

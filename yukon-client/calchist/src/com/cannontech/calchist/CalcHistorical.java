@@ -443,8 +443,8 @@ public Vector getRawPointHistoryVectorOfVectors(Vector calcComponentVector, Greg
 				CTILogger.debug(" ** RSET RETRIEVED * getCalcHistoricalPointDataMsgVector");
 				while (rset.next())
 				{
-//					int changeID = rset.getInt(1);
-				    int changeID = -1;	//HACK, we just need some value here, and we wanted to do distinct in the query.
+//					long changeID = rset.getLong(1);
+				    long changeID = -1;	//HACK, we just need some value here, and we wanted to do distinct in the query.
 					int pointID = rset.getInt(1);
 					long time = rset.getTimestamp(2).getTime(); 
 					int quality = rset.getInt(3);

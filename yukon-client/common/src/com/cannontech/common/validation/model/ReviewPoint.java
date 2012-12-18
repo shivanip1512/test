@@ -7,15 +7,15 @@ import com.cannontech.core.dynamic.PointValueHolder;
 
 public class ReviewPoint implements PointValueHolder {
 
-	private int changeId;
+	private long changeId;
 	private RphTag rphTag;
 	private DisplayablePao displayablePao;
 	private PointValueHolder pointValue;
 	
-	public int getChangeId() {
+	public long getChangeId() {
 		return changeId;
 	}
-	public void setChangeId(int changeId) {
+	public void setChangeId(long changeId) {
 		this.changeId = changeId;
 	}
 	public RphTag getRphTag() {

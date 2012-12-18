@@ -390,7 +390,7 @@ public class RawPointHistoryValidationServiceTest {
         return workUnit;
     }
     
-    private RawPointHistoryWrapper createPoint(int changeId, String dateTimeStr, double value) {
+    private RawPointHistoryWrapper createPoint(long changeId, String dateTimeStr, double value) {
         RawPointHistoryWrapper wrapper = new RawPointHistoryWrapper();
         wrapper.changeId = changeId;
         wrapper.timestamp = new DateTime(dateTimeStr);
