@@ -51,9 +51,12 @@ public class OperatorAlternateEnrollmentController {
     		final FlashScope flash, 
     		final YukonUserContext context) {
     	
-    	aeService.doEnrollment(alternate, normal, fragment.getAccountId(), context);
+        if(alternate != null || normal != null){
+            aeService.doEnrollment(alternate, normal, fragment.getAccountId(), context);
         
-        flash.setConfirm(new YukonMessageSourceResolvable("yukon.web.modules.operator.alternateEnrollment.alternate.success"));
+            flash.setConfirm(new YukonMessageSourceResolvable("yukon.web.modules.operator.alternateEnrollment.alternate.success"));
+        }
+        
     	AccountInfoFragmentHelper.setupModelMapBasics(fragment, model);
     	return "redirect:view";
     }
