@@ -18,69 +18,47 @@ import com.cannontech.user.SystemUserContext;
 
 public class FormattingTemplateProcessorTest {
     private static final SystemUserContext userContext = new SystemUserContext();
-  //Using this DateFormat so that the date and time are being parsed the same regardless of locale
+    //Using this DateFormat so that the date and time are being parsed the same regardless of locale
     DateFormat dateTimeInstance = new SimpleDateFormat("MM/dd/yyyy");
     DateFormattingServiceImpl dateFormattingService = new DateFormattingServiceImpl();
     
+   
+    //Tests that a number string is formatted correctly for a given locale
+    private void testNumberFormat(Locale locale, String expectedResult){
+       Locale.setDefault(locale);
+       
+       FormattingTemplateProcessor tp = new FormattingTemplateProcessor(dateFormattingService, userContext);
+       String template = "{name} is {age|####.000#}";
+       
+       Map<String, Object> data = new HashMap<String, Object>();
+       
+       data.put("name", "Tom Mack");
+       data.put("age", 29.11223234234234234f);
+       
+       String result = tp.process(template, data);
+       
+       Assert.assertEquals(expectedResult, result);
+   }
+   
     //Same test performed in multiple locales to ensure correct functionality
     @Test
-    public void testNumberFormat_US() {
-        Locale.setDefault(Locale.US);
-        
-        FormattingTemplateProcessor tp = new FormattingTemplateProcessor(dateFormattingService, userContext);
-        String template = "{name} is {age|####.000#}";
-        
-        Map<String, Object> data = new HashMap<String, Object>();
-        
-        data.put("name", "Tom Mack");
-        data.put("age", 29.11223234234234234f);
-        
-        String result = tp.process(template, data);
-        
-        Assert.assertEquals("Tom Mack is 29.1122", result);
+    public void testNumberFormat_en_US() {
+        testNumberFormat(Locale.US, "Tom Mack is 29.1122");
     }
     
     @Test
     public void testNumberFormat_fr_CA() {
-        Locale.setDefault(Locale.CANADA_FRENCH);
-        
-        FormattingTemplateProcessor tp = new FormattingTemplateProcessor(dateFormattingService, userContext);
-        String template = "{name} is {age|####.000#}";
-        
-        Map<String, Object> data = new HashMap<String, Object>();
-        
-        data.put("name", "Tom Mack");
-        data.put("age", 29.11223234234234234f);
-        
-        String result = tp.process(template, data);
-        
-        Assert.assertEquals("Tom Mack is 29,1122", result);
+        testNumberFormat(Locale.CANADA_FRENCH, "Tom Mack is 29,1122");
     }
     
     @Test
     public void testNumberFormat_pt_BR() {
-        Locale.setDefault(new Locale("pt","BR"));
-        System.out.println(Locale.getDefault().toString());
-        
-        FormattingTemplateProcessor tp = new FormattingTemplateProcessor(dateFormattingService, userContext);
-        String template = "{name} is {age|####.000#}";
-        
-        Map<String, Object> data = new HashMap<String, Object>();
-        
-        data.put("name", "Tom Mack");
-        data.put("age", 29.11223234234234234f);
-        
-        String result = tp.process(template, data);
-        
-        Assert.assertEquals("Tom Mack is 29,1122", result);
+        testNumberFormat(new Locale("pt","BR"), "Tom Mack is 29,1122");
     }
     
-    
-    
-    
-    @Test
-    public void testNumberFormat2_US() {
-        Locale.setDefault(Locale.US);
+    //Tests that a number string is formatted correctly for a given locale
+    private void testNumberFormat2(Locale locale, String expectedResult) {
+        Locale.setDefault(locale);
        
         FormattingTemplateProcessor tp = new FormattingTemplateProcessor(dateFormattingService, userContext);
         String template = "{age1|2} {age2|3} {age3|4}";
@@ -93,43 +71,22 @@ public class FormattingTemplateProcessorTest {
         
         String result = tp.process(template, data);
         
-        Assert.assertEquals("29.11 800.896 -45.2324", result);
+        Assert.assertEquals(expectedResult, result);
+    }
+    
+    @Test
+    public void testNumberFormat2_US() {
+        testNumberFormat2(Locale.US, "29.11 800.896 -45.2324");
     }
     
     @Test
     public void testNumberFormat2_fr_CA() {
-        Locale.setDefault(Locale.CANADA_FRENCH);
-       
-        FormattingTemplateProcessor tp = new FormattingTemplateProcessor(dateFormattingService, userContext);
-        String template = "{age1|2} {age2|3} {age3|4}";
-        
-        Map<String, Object> data = new HashMap<String, Object>();
-        
-        data.put("age1", 29.11223234234234234f);
-        data.put("age2", 800.89623234234234234f);
-        data.put("age3", -45.23237234234234f);
-        
-        String result = tp.process(template, data);
-        
-        Assert.assertEquals("29,11 800,896 -45,2324", result);
+        testNumberFormat2(Locale.CANADA_FRENCH, "29,11 800,896 -45,2324");
     }
     
     @Test
     public void testNumberFormat2_pt_BR() {
-        Locale.setDefault(new Locale("pt", "BR"));
-       
-        FormattingTemplateProcessor tp = new FormattingTemplateProcessor(dateFormattingService, userContext);
-        String template = "{age1|2} {age2|3} {age3|4}";
-        
-        Map<String, Object> data = new HashMap<String, Object>();
-        
-        data.put("age1", 29.11223234234234234f);
-        data.put("age2", 800.89623234234234234f);
-        data.put("age3", -45.23237234234234f);
-        
-        String result = tp.process(template, data);
-        
-        Assert.assertEquals("29,11 800,896 -45,2324", result);
+        testNumberFormat2(new Locale("pt", "BR"), "29,11 800,896 -45,2324");
     }
     
     @Test
