@@ -9,16 +9,16 @@ import com.cannontech.analysis.tablemodel.CapControlVarChangeModel;
 public class CapControlVarChangeReport extends SimpleYukonReportBase {
     
     private static final ColumnLayoutData bodyColumns[] = new ColumnLayoutData[] {
-        new ColumnLayoutData("Cap Bank", "capBankName", 80),
-        new ColumnLayoutData("CBC", "cbcName", 80),
-        new ColumnLayoutData("Bank Size", "bankSize", 80),
+        new ColumnLayoutData("Cap Bank", "capBankName", 70),
+        new ColumnLayoutData("CBC", "cbcName", 70),
+        new ColumnLayoutData("Bank Size", "bankSize", 70),
         new ColumnLayoutData("kVAR Change", "kvarChange", 70),
-        new ColumnLayoutData("Percent Change", "percentChange", 80),
+        new ColumnLayoutData("Percent Change", "percentChange", 70),
         new ColumnLayoutData("Date/Time", "dateTime", 110, columnDateFormat),
-        new ColumnLayoutData("Area", "area", 80),
-        new ColumnLayoutData("Substation", "substation", 80),
-        new ColumnLayoutData("Substation Bus", "subbus", 80),
-        new ColumnLayoutData("Feeder", "feeder", 80) 
+        new ColumnLayoutData("Area", "area", 70),
+        new ColumnLayoutData("Substation", "substation", 70),
+        new ColumnLayoutData("Substation Bus", "subbus", 70),
+        new ColumnLayoutData("Feeder", "feeder", 70) 
     };
 
     public CapControlVarChangeReport(BareReportModel bareModel) {
