@@ -33,6 +33,7 @@ public:
     virtual RowWriter &operator<<(const INT operand) = 0;
     virtual RowWriter &operator<<(const UINT operand) = 0;
     virtual RowWriter &operator<<(const unsigned long operand) = 0;
+    virtual RowWriter &operator<<(const __int64 operand) = 0;
     virtual RowWriter &operator<<(const double operand) = 0;
     virtual RowWriter &operator<<(const float operand) = 0;
     virtual RowWriter &operator<<(const CtiTime &operand) = 0;

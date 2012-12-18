@@ -25,7 +25,7 @@ IM_EX_CTIBASE LONG LMControlHistoryIdGen(bool force = false);
 IM_EX_CTIBASE LONG CommErrorHistoryIdGen(bool force = false);
 IM_EX_CTIBASE LONG VerificationSequenceGen(bool force = false, int force_value = 0);
 IM_EX_CTIBASE int  DynamicPaoStatisticsIdGen();
-IM_EX_CTIBASE INT  ChangeIdGen(bool force = false);
+IM_EX_CTIBASE __int64 ChangeIdGen(bool force = false);
 IM_EX_CTIBASE INT  SystemLogIdGen();
 IM_EX_CTIBASE INT  CCEventActionIdGen(LONG capBankPointId);
 IM_EX_CTIBASE INT  CCEventLogIdGen();

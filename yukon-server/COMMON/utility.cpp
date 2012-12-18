@@ -297,14 +297,14 @@ int DynamicPaoStatisticsIdGen()
     return ++(*id);
 }
 
-INT ChangeIdGen(bool force)
+__int64 ChangeIdGen(bool force)
 {
     static RWMutexLock   mux;
     RWMutexLock::LockGuard guard(mux);
 
-    INT tempid = 0;
+    __int64 tempid = 0;
     static BOOL init_id = FALSE;
-    volatile static INT id = 0;
+    volatile static __int64 id = 0;
     static const CHAR sql[] = "SELECT MAX(CHANGEID) FROM RAWPOINTHISTORY";
 
     if(!init_id || force)

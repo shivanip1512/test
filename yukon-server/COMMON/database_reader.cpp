@@ -180,6 +180,12 @@ RowReader &DatabaseReader::operator>>(unsigned long &operand)
     return *this;
 }
 
+RowReader &DatabaseReader::operator>>(__int64 &operand)
+{
+    operand = _command[_currentIndex++].asNumeric();
+    return *this;
+}
+
 RowReader &DatabaseReader::operator>>(double &operand)
 {
     operand = _command[_currentIndex++];
@@ -270,6 +276,12 @@ RowReader &DatabaseReader::operator<<(const UINT operand)
 RowReader &DatabaseReader::operator<<(const unsigned long operand)
 {
     _command << operand;
+    return *this;
+}
+
+RowReader &DatabaseReader::operator<<(const __int64 operand)
+{
+    _command << SANumeric(operand);
     return *this;
 }
 

@@ -933,17 +933,17 @@ void CtiFDRInterface::threadFunctionReceiveFromDispatch( void )
             {
                 case MSG_DBCHANGE:
                     {
-                        // db change message reload if type if point
-                        int changeId = ((CtiDBChangeMsg*)incomingMsg)->getId();
+                        // db change message reload if type is point
+                        int pidChanged = ((CtiDBChangeMsg*)incomingMsg)->getId();
                         int changeType = ((CtiDBChangeMsg*)incomingMsg)->getTypeOfChange();
 
                         if ( ((CtiDBChangeMsg*)incomingMsg)->getDatabase() == ChangePointDb)
                         {
                             if (changeType == ChangeTypeDelete)
-                                processFDRPointChange(changeId, true);
+                                processFDRPointChange(pidChanged, true);
                             else
                             {
-                                processFDRPointChange(changeId, false);
+                                processFDRPointChange(pidChanged, false);
                                 reRegisterWithDispatch();
                             }
 
@@ -954,17 +954,11 @@ void CtiFDRInterface::threadFunctionReceiveFromDispatch( void )
                             // Updates get sent on point level. We only have to deal with change type add for pao's
                             if (changeType == ChangeTypeAdd)
                             {
-                                // get all points on device and make a message for each
-                                std::vector<int> ids = getPointIdsOnPao(changeId);
-
-                                for (std::vector<int>::iterator itr = ids.begin(); itr != ids.end(); itr++)
+                                // get all points on device and process point change for each
+                                std::vector<int> pointIds = getPointIdsOnPao(pidChanged);
+                                for each(int pointId in pointIds)
                                 {
-                                    // Only have to setId to id in list and setTypeOfChange to match original message.
-                                    int pid = *itr;
-                                    CtiDBChangeMsg* ptr = new CtiDBChangeMsg(pid, 0, "", "", changeType);
-                                    processFDRPointChange(pid,false);//always false.  Tested up top.
-                                    reRegisterWithDispatch();
-                                    delete ptr;
+                                    processFDRPointChange(pointId,false);//changeType tested to be true, so its not a delete
                                 }
                             }
                         }

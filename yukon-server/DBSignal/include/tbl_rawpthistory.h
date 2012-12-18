@@ -18,7 +18,7 @@ class IM_EX_SIGNAL CtiTableRawPointHistory
 {
 protected:
 
-   LONG        _changeID;
+   __int64     _changeID;
    LONG        _pointID;
    CtiTime      _time;
    INT         _millis;
@@ -34,7 +34,7 @@ public:
                            DOUBLE   val            = 0.0,
                            const CtiTime    &tme    = CtiTime(),
                            INT      millis         = 0,
-                           LONG     cid            = ChangeIdGen()) :
+                           __int64  cid            = ChangeIdGen()) :
       _changeID(cid),
       _pointID(pid),
       _quality(qual),
@@ -63,14 +63,14 @@ public:
    virtual void DecodeDatabaseReader( Cti::RowReader& rdr );
 
 
-   LONG                       getChangeID() const;
+   __int64                    getChangeID() const;
    LONG                       getPointID() const;
    CtiTime                     getTime() const;
    INT                        getMillis() const;
    INT                        getQuality() const;
    DOUBLE                     getValue() const;
 
-   CtiTableRawPointHistory&   setChangeID(LONG id);
+   CtiTableRawPointHistory&   setChangeID(__int64 id);
    CtiTableRawPointHistory&   setPointID(LONG id);
    CtiTableRawPointHistory&   setTime(const CtiTime &rwt);
    CtiTableRawPointHistory&   setMillis(INT millis);

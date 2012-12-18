@@ -34,7 +34,7 @@ void CtiTableRawPointHistory::Insert(Cti::Database::DatabaseConnection &conn)
 
     if( ! inserter.execute() )
     {
-        LONG newcid = ChangeIdGen(true);
+        __int64 newcid = ChangeIdGen(true);
 
         if(newcid != getChangeID())
         {
@@ -106,7 +106,7 @@ string CtiTableRawPointHistory::getTableName() const
     return string("rawpointhistory");
 }
 
-LONG CtiTableRawPointHistory::getChangeID() const
+__int64 CtiTableRawPointHistory::getChangeID() const
 {
     return _changeID;
 }
@@ -126,7 +126,7 @@ INT CtiTableRawPointHistory::getMillis() const
     return _millis;
 }
 
-CtiTableRawPointHistory& CtiTableRawPointHistory::setChangeID(LONG id)
+CtiTableRawPointHistory& CtiTableRawPointHistory::setChangeID(__int64 id)
 {
     _changeID = id;
     return *this;

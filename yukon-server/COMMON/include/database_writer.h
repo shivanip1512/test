@@ -31,6 +31,7 @@ public:
     RowWriter &operator<<(const INT operand);
     RowWriter &operator<<(const UINT operand);
     RowWriter &operator<<(const unsigned long operand);
+    RowWriter &operator<<(const __int64 operand);
     RowWriter &operator<<(const double operand);
     RowWriter &operator<<(const float operand);
     RowWriter &operator<<(const CtiTime &operand);

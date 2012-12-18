@@ -98,6 +98,12 @@ RowWriter &DatabaseWriter::operator<<(const unsigned long operand)
     return *this;
 }
 
+RowWriter &DatabaseWriter::operator<<(const __int64 operand)
+{
+    _command << SANumeric(operand);
+    return *this;
+}
+
 RowWriter &DatabaseWriter::operator<<(const double operand)
 {
     _command << operand;

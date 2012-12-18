@@ -45,6 +45,7 @@ public:
     RowReader &operator>>(UINT &operand);
     RowReader &operator>>(UCHAR &operand);
     RowReader &operator>>(unsigned long &operand);
+    RowReader &operator>>(__int64 &operand);
     RowReader &operator>>(double &operand);
     RowReader &operator>>(float &operand);
     RowReader &operator>>(CtiTime &operand);
@@ -60,6 +61,7 @@ public:
     RowReader &operator<<(const INT operand);
     RowReader &operator<<(const UINT operand);
     RowReader &operator<<(const unsigned long operand);
+    RowReader &operator<<(const __int64 operand);
     RowReader &operator<<(const double operand);
     RowReader &operator<<(const float operand);
     RowReader &operator<<(const CtiTime &operand);
