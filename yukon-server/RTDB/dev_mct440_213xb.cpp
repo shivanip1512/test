@@ -95,7 +95,9 @@ Mct440_213xBDevice::FunctionReadValueMappings Mct440_213xBDevice::initReadValueM
         { 0x000,  1, { 2, CtiTableDynamicPaoInfo::Key_MCT_SSpec                     } },
 
         // 0x005 – Status and Event Flags and Masks
-        // (mask are check in function 0x101)
+        { 0x005,  5, { 1, CtiTableDynamicPaoInfo::Key_MCT_EventFlagsMask1           } },
+        { 0x005,  6, { 1, CtiTableDynamicPaoInfo::Key_MCT_EventFlagsMask2           } },
+        { 0x005,  7, { 2, CtiTableDynamicPaoInfo::Key_MCT_MeterAlarmMask            } },
 
         // 0x00F – Display Parameters
         { 0x00f,  0, { 1, CtiTableDynamicPaoInfo::Key_MCT_DisplayParameters         } },
@@ -2507,10 +2509,16 @@ int Mct440_213xBDevice::executePutConfigAlarmMask(CtiRequestMsg     *pReq,
     {
         MctConfigInfo.meterAlarmMask = parse.getiValue("alarm_mask_meter", 0);
     }
+    else if( CtiDeviceBase::hasDynamicInfo(CtiTableDynamicPaoInfo::Key_MCT_MeterAlarmMask) )
+    {
+        MctConfigInfo.meterAlarmMask = (int)CtiDeviceBase::getDynamicInfo(CtiTableDynamicPaoInfo::Key_MCT_MeterAlarmMask);
+    }
     else
     {
-        CtiLockGuard<CtiLogger> doubt_guard(dout);
-        dout << CtiTime() << " **** Checkpoint - parameter alarm_mask_meter is not specified for device \"" << getName() << "\", using default or previous value " << (CtiNumStr(MctConfigInfo.meterAlarmMask).hex().zpad(4)).toString() << "**** " << __FILE__ << " (" << __LINE__ << ")" << endl;
+        returnErrorMessage(MISPARAM, OutMessage, retList,
+                           "parameter \"alarm_mask_meter\" is not specified for device \"" + getName() + "\"");
+
+        return ExecutionComplete;
     }
 
     OutMessage->Buffer.BSt.Message[2] = ((MctConfigInfo.meterAlarmMask >> 8) & 0xFF);
@@ -2521,10 +2529,16 @@ int Mct440_213xBDevice::executePutConfigAlarmMask(CtiRequestMsg     *pReq,
     {
         MctConfigInfo.configuration = parse.getiValue("config_byte", 0);
     }
+    else if( CtiDeviceBase::hasDynamicInfo(CtiTableDynamicPaoInfo::Key_MCT_Configuration) )
+    {
+        MctConfigInfo.configuration = (int)CtiDeviceBase::getDynamicInfo(CtiTableDynamicPaoInfo::Key_MCT_Configuration);
+    }
     else
     {
-        CtiLockGuard<CtiLogger> doubt_guard(dout);
-        dout << CtiTime() << " **** Checkpoint - parameter config_byte is not specified set for device \"" << getName() << "\", using default or previous value " << (CtiNumStr(MctConfigInfo.configuration).hex().zpad(4)).toString() << "**** " << __FILE__ << " (" << __LINE__ << ")" << endl;
+        returnErrorMessage(MISPARAM, OutMessage, retList,
+                           "parameter \"config_byte\" is not specified for device \"" + getName() + "\"");
+
+        return ExecutionComplete;
     }
 
     OutMessage->Buffer.BSt.Message[5] = ((MctConfigInfo.configuration>> 8) & 0xFF);
