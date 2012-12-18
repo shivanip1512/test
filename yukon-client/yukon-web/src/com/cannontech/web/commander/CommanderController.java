@@ -22,8 +22,12 @@ import org.springframework.web.bind.annotation.RequestParam;
 
 import com.cannontech.amr.device.search.model.DeviceSearchCategory;
 import com.cannontech.amr.device.search.model.DeviceSearchField;
-import com.cannontech.amr.device.search.model.DeviceSearchFilterBy;
-import com.cannontech.amr.device.search.model.DeviceSearchOrderBy;
+import com.cannontech.amr.device.search.model.DeviceSearchResultEntry;
+import com.cannontech.amr.device.search.model.FilterBy;
+import com.cannontech.amr.device.search.model.FilterByField;
+import com.cannontech.amr.device.search.model.FilterByField.Comparator;
+import com.cannontech.amr.device.search.model.OrderByField;
+import com.cannontech.amr.device.search.model.SearchField;
 import com.cannontech.amr.device.search.service.DeviceSearchService;
 import com.cannontech.common.search.SearchResult;
 import com.cannontech.core.dao.CommandDao;
@@ -47,7 +51,7 @@ public class CommanderController {
     @RequestMapping
     public String select(
             @RequestParam(value = "category", defaultValue = "MCT") DeviceSearchCategory category,
-            @RequestParam(value = "orderBy", defaultValue = "NAME") DeviceSearchOrderBy orderBy,
+            @RequestParam(value = "orderBy", defaultValue = "NAME") DeviceSearchField orderByField,
             @RequestParam(value = "descending", defaultValue = "false") Boolean orderByDescending,
             @RequestParam(required = false) Integer page,
             @RequestParam(required = false) Integer itemsPerPage,
@@ -55,23 +59,25 @@ public class CommanderController {
             YukonUserContext userContext,
             HttpServletRequest request) {
         
-        YCBean ycBean = setupYCBean(request.getSession(), userContext);
-        
         int pageComputed = (page == null) ? 1 : page;
         int itemsPerPageComputed = (itemsPerPage == null) ? 25 : itemsPerPage;
         
-        List<DeviceSearchField> fields = deviceSearchService.getFieldsForCategory(category);
+        List<SearchField> fields = deviceSearchService.getFieldsForCategory(category);
         
-        List<DeviceSearchFilterBy> filterByList = deviceSearchService.getFiltersForFields(fields);
-        modelMap.addAttribute("filterByList", filterByList);
+        OrderByField orderBy = new OrderByField(orderByField, orderByDescending);
         
-        List<DeviceSearchFilterBy> queryFilters = getQueryFilter(request, filterByList);
-        SearchResult<LiteYukonPAObject> deviceSearchResults = deviceSearchService.search(category, queryFilters, orderBy, orderByDescending, pageComputed, itemsPerPageComputed);
+        FilterBy categoryfilter = deviceSearchService.getFiltersForCategory(category);
+        List<FilterBy> editableFilters = getQueryFilters(request, fields);
         
+        List<FilterBy> searchFilters = new ArrayList<FilterBy>();
+        searchFilters.add(categoryfilter);
+        searchFilters.addAll(editableFilters);
+        SearchResult<DeviceSearchResultEntry> deviceSearchResults = deviceSearchService.search(fields, searchFilters, orderBy, ((pageComputed - 1) * itemsPerPageComputed), itemsPerPageComputed);
+        
+        modelMap.addAttribute("filters", editableFilters);
         modelMap.addAttribute("fields", fields);
         modelMap.addAttribute("category", category);
-        modelMap.addAttribute("availableRoutes", ycBean.getValidRoutes());
-        modelMap.addAttribute("orderBy", orderBy);
+        modelMap.addAttribute("orderBy", orderByField);
         modelMap.addAttribute("deviceSearchResults", deviceSearchResults);
         modelMap.addAttribute("menuSelection", getMenuSelection(category));
         
@@ -266,13 +272,16 @@ public class CommanderController {
         return StringUtils.EMPTY;
     }
 
-    private List<DeviceSearchFilterBy> getQueryFilter(HttpServletRequest request, List<DeviceSearchFilterBy> filterByList) {
-        List<DeviceSearchFilterBy> queryFilter = new ArrayList<DeviceSearchFilterBy>();
-        for (DeviceSearchFilterBy filterBy : filterByList) {
-            String filterValue = ServletRequestUtils.getStringParameter(request, filterBy.getName(), "").trim();
-            if (!StringUtils.isBlank(filterValue)) {
-                filterBy.setValue(filterValue);
-                queryFilter.add(filterBy);
+    private List<FilterBy> getQueryFilters(HttpServletRequest request, List<SearchField> fields) {
+        List<FilterBy> queryFilter = new ArrayList<FilterBy>();
+        for (SearchField field : fields) {
+            if(field.isVisible()) {
+                FilterByField filter = new FilterByField(field, Comparator.STARTS_WITH_IGNORE_CASE);
+                String filterValue = ServletRequestUtils.getStringParameter(request, field.getFieldName(), "").trim();
+                if (!StringUtils.isBlank(filterValue)) {
+                    filter.setFilterValue(filterValue);
+                }
+                queryFilter.add(filter);
             }
         }
         

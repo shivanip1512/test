@@ -2114,50 +2114,6 @@
   </tag>
   
   <tag>
-    <name>meterNumber</name>
-    <tag-class>com.cannontech.web.taglib.MeterNumberTag</tag-class>
-    <body-content>scriptless</body-content>
-    <attribute>
-        <name>yukonPao</name>
-        <required>true</required>
-        <rtexprvalue>true</rtexprvalue>
-    </attribute>
-  </tag>
-  
-  <tag>
-    <name>lmGroupCapacity</name>
-    <tag-class>com.cannontech.web.taglib.LmGroupCapacityTag</tag-class>
-    <body-content>scriptless</body-content>
-    <attribute>
-        <name>paoId</name>
-        <required>true</required>
-        <rtexprvalue>true</rtexprvalue>
-    </attribute>
-  </tag>
-  
-  <tag>
-    <name>lmGroupRoute</name>
-    <tag-class>com.cannontech.web.taglib.LmGroupRouteTag</tag-class>
-    <body-content>scriptless</body-content>
-    <attribute>
-        <name>paoId</name>
-        <required>true</required>
-        <rtexprvalue>true</rtexprvalue>
-    </attribute>
-  </tag>
-  
-  <tag>
-    <name>lmGroupSerialNumber</name>
-    <tag-class>com.cannontech.web.taglib.LmGroupSerialNumberTag</tag-class>
-    <body-content>scriptless</body-content>
-    <attribute>
-        <name>paoId</name>
-        <required>true</required>
-        <rtexprvalue>true</rtexprvalue>
-    </attribute>
-  </tag>
-  
-  <tag>
     <name>paoTypeIcon</name>
     <tag-class>com.cannontech.web.taglib.PaoTypeIconTag</tag-class>
     <body-content>scriptless</body-content>

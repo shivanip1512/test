@@ -1,44 +1,32 @@
 package com.cannontech.amr.device.search.model;
 
-import com.cannontech.common.pao.PaoCategory;
 import com.cannontech.common.pao.PaoClass;
 import com.cannontech.common.pao.PaoType;
-import com.cannontech.database.data.device.DeviceTypesFuncs;
 import com.cannontech.database.data.lite.LiteYukonPAObject;
-import com.cannontech.database.data.pao.DeviceClasses;
-
 
 public enum DeviceSearchCategory {
     MCT(new CategoryContentChecker() {
         @Override
         public boolean contains(LiteYukonPAObject lPao) {
-            return (DeviceTypesFuncs.isMCT(lPao.getPaoType().getDeviceTypeId())
-                    && lPao.getPaoType().getPaoCategory() == PaoCategory.DEVICE);
+            return PaoType.getMctTypes().contains(lPao.getPaoType());
         }
     }),
     IED(new CategoryContentChecker() {
         @Override
         public boolean contains(LiteYukonPAObject lPao) {
-            return (DeviceTypesFuncs.isMeter(lPao.getPaoType().getDeviceTypeId())
-                    || lPao.getPaoType() == PaoType.DAVISWEATHER
-                    && lPao.getPaoType().getPaoCategory() == PaoCategory.DEVICE);
+            return PaoType.getIedTypes().contains(lPao.getPaoType());
         }
     }),
     RTU(new CategoryContentChecker() {
         @Override
         public boolean contains(LiteYukonPAObject lPao) {
-            return ((DeviceTypesFuncs.isRTU(lPao.getPaoType().getDeviceTypeId())
-                        || lPao.getPaoType() == PaoType.DAVISWEATHER)
-                    && lPao.getPaoType().getPaoCategory() == PaoCategory.DEVICE
-                    && !DeviceTypesFuncs.isIon(lPao.getPaoType().getDeviceTypeId()));
+            return PaoType.getRtuTypes().contains(lPao.getPaoType());
         }
     }),
     TRANSMITTER(new CategoryContentChecker() {
         @Override
         public boolean contains(LiteYukonPAObject lPao) {
-            return (DeviceTypesFuncs.isTransmitter(lPao.getPaoType().getDeviceTypeId())
-                    && DeviceClasses.isMeterClass(lPao.getPaoType().getPaoClass().getPaoClassId())
-                    && lPao.getPaoType().getPaoCategory() == PaoCategory.DEVICE);
+            return PaoClass.TRANSMITTER == lPao.getPaoType().getPaoClass();
         }
     }),
     LMGROUP(new CategoryContentChecker() {

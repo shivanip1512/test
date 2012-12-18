@@ -1,6 +1,8 @@
 package com.cannontech.common.pao;
 
 
+import java.util.Set;
+
 import org.apache.commons.lang.Validate;
 import org.apache.log4j.Logger;
 
@@ -218,6 +220,10 @@ public enum PaoType implements DatabaseRepresentationSource {
     private final static ImmutableSet<PaoType> meterTypes;
     private final static ImmutableSet<PaoType> cbcTypes;
     
+    private final static ImmutableSet<PaoType> mctTypes;
+    private final static ImmutableSet<PaoType> iedTypes;
+    private final static ImmutableSet<PaoType> rtuTypes;
+    
     static {
         try {
             ImmutableMap.Builder<Integer, PaoType> idBuilder = ImmutableMap.builder();
@@ -316,6 +322,72 @@ public enum PaoType implements DatabaseRepresentationSource {
         meterTypesBuilder.add(RFWMETER);
         
         meterTypes = meterTypesBuilder.build();
+        
+        mctTypes = ImmutableSet.of(
+            MCT213,
+            MCT310,
+            MCT318,
+            MCT360,
+            MCT370,
+            MCT240,
+            MCT248,
+            MCT250,
+            MCT210,
+            LMT_2,
+            DCT_501,
+            MCT310ID,
+            MCT310IDL,
+            MCT310IL,
+            MCT410IL,
+            MCT410CL,
+            MCT410FL,
+            MCT410GL,
+            MCT420FL,
+            MCT420FD,
+            MCT420CL,
+            MCT420CD,
+            MCT430A,
+            MCT430S4,
+            MCT430SL,
+            MCT430A3,
+            MCT440_2131B,
+            MCT440_2133B,
+            MCT470,
+            MCT310CT,
+            MCT310IM,
+            MCT318L);
+        
+        iedTypes = ImmutableSet.of(
+            ALPHA_PPLUS,
+            ALPHA_A1,
+            FULCRUM,
+            VECTRON,
+            LANDISGYRS4,
+            DR_87,
+            QUANTUM,
+            SIXNET,
+            ION_7700,
+            ION_7330,
+            ION_8300,
+            TRANSDATA_MARKV,
+            KV,
+            KVII,
+            SENTINEL,
+            FOCUS,
+            ALPHA_A3,
+            DAVISWEATHER,
+            IPC430SL,
+            IPC430S4E,
+            IPC420FD,
+            IPC410FL);
+        
+        rtuTypes = ImmutableSet.of(
+            RTU_DNP,
+            RTU_MODBUS,
+            RTU_DART,
+            RTUILEX,
+            RTUWELCO,
+            RTM);
     }
 
     /**
@@ -393,4 +465,19 @@ public enum PaoType implements DatabaseRepresentationSource {
     	return getDbString();
     }
 
+    public Set<PaoType> getMeterTypes() {
+        return meterTypes;
+    }
+    
+    public static Set<PaoType> getMctTypes() {
+        return mctTypes;
+    }
+    
+    public static Set<PaoType> getIedTypes() {
+        return iedTypes;
+    }
+    
+    public static Set<PaoType> getRtuTypes() {
+        return rtuTypes;
+    }
 }

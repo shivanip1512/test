@@ -22,7 +22,7 @@
     <script>
         jQuery(function() {
             jQuery('.f_show_all').click(function () {
-                <c:forEach var="filter" items="${filterByList}">
+                <c:forEach var="filter" items="${filters}">
                   jQuery('#${filter.name}').val('');
                 </c:forEach>
                 
@@ -41,13 +41,15 @@
             <input type="hidden" name="category" value="${category}" />
             
             <div class="filters">
-                <c:forEach var="filter" items="${filterByList}">
+                <c:forEach var="filter" items="${filters}">
+                    <c:if test="${filter.searchField.visible}">
                     <div class="searchFilterContainer">
-                        <label for="${filter.name}"><i:inline key="${filter.field}" /> </label><input
+                        <label for="${filter.name}"><i:inline key="${filter}" /> </label><input
                             type="text" id="${filter.name}" name="${filter.name}"
-                            value="${filter.value}"
+                            value="${filter.filterValue}"
                         />
                     </div>
+                    </c:if>
                 </c:forEach>
             </div>
             
@@ -66,37 +68,36 @@
             <c:if test="${deviceSearchResults.hitCount > 0}">
                 <tr>
                 <c:forEach var="field" items="${fields}">
+                    <c:if test="${field.visible}">
                     <th><tags:sortLink nameKey="deviceSearchField.${field}" baseUrl="${baseUrl}" fieldName="${field}" sortParam="orderBy"/></th>
+                    </c:if>
                 </c:forEach>
                 </tr>
             </c:if>
             <c:forEach var="searchResultRow" items="${deviceSearchResults.resultList}">
                 <tr class="<tags:alternateRow odd="" even="altRow"/>">
                     <c:forEach var="field" items="${fields}">
+                        <c:if test="${field.visible}">
+                        <c:set var="value" value="${fn:escapeXml(searchResultRow.map[field.fieldName])}"/>
                         <c:choose>
-                            <c:when test="${field eq 'NAME' || field eq 'LOAD_GROUP'}">
+                            <c:when test="${field eq 'NAME'}">
                             <cti:url var="commandUrl" value="/commander/command">
-                                <cti:param name="deviceId" value="${searchResultRow.paoIdentifier.paoId}"/>
+                                <cti:param name="deviceId" value="${searchResultRow.map['id']}"/>
                             </cti:url>
-                            <td><a title="${searchResultRow.paoIdentifier}" href="${commandUrl}">
+                            <td><a href="${commandUrl}">
                                 <c:choose>
-                                    <c:when test="${empty searchResultRow.paoName}"></c:when>
-                                    <c:otherwise>${fn:escapeXml(searchResultRow.paoName)}</c:otherwise>
+                                    <c:when test="${empty value}"></c:when>
+                                    <c:otherwise>${value}</c:otherwise>
                                 </c:choose>
                             </a></td>
                             </c:when>
-                            <c:when test="${field eq 'TYPE' || field eq 'LMGROUP_TYPE'}"><td><span><cti:paoTypeIcon yukonPao="${searchResultRow}"/>&nbsp;${searchResultRow.paoType.dbString}</span></td></c:when>
-                            <c:when test="${field eq 'ADDRESS'}"><td><c:choose>
-                                <c:when test="${empty searchResultRow.address}">-</c:when>
-                                <c:otherwise>${fn:escapeXml(searchResultRow.address)}</c:otherwise>
-                            </c:choose></td></c:when>
-                            <c:when test="${field eq 'METERNUMBER'}"><td><cti:meterNumber yukonPao="${searchResultRow}"/></td></c:when>
-                            <c:when test="${field eq 'ROUTE'}"><td><cti:paoName paoId="${searchResultRow.routeID}"/></td></c:when>
-                            <c:when test="${field eq 'COMM_CHANNEL'}"><td><cti:paoName paoId="${searchResultRow.portID}"/></td></c:when>
-                            <c:when test="${field eq 'LMGROUP_ROUTE'}"><td><cti:lmGroupRoute paoId="${searchResultRow.paoIdentifier.paoId}"/></td></c:when>
-                            <c:when test="${field eq 'LMGROUP_SERIAL'}"><td><cti:lmGroupSerialNumber paoId="${searchResultRow.paoIdentifier.paoId}"/></td></c:when>
-                            <c:when test="${field eq 'LMGROUP_CAPACITY'}"><td><cti:lmGroupCapacity paoId="${searchResultRow.paoIdentifier.paoId}"/></td></c:when>
+                            <c:when test="${field eq 'TYPE'}"><td>${value}</td></c:when>
+                            <c:otherwise><td><c:choose>
+                                <c:when test="${empty value}">-</c:when>
+                                <c:otherwise>${value}</c:otherwise>
+                            </c:choose></td></c:otherwise>
                         </c:choose>
+                        </c:if>
                     </c:forEach>
                 </tr>
             </c:forEach>

@@ -1010,24 +1010,6 @@
         <property name="updaterService" ref="dataUpdaterService" />
     </bean>
 
-    <bean id="meterNumberTagPrototype" class="com.cannontech.web.taglib.MeterNumberTag">
-        <property name="deviceDao" ref="deviceDao"/>
-    </bean>
-
-    <bean id="lmGroupCapacityTagPrototype" class="com.cannontech.web.taglib.LmGroupCapacityTag">
-        <property name="loadGroupDao" ref="loadGroupDao"/>
-        <property name="objectFormattingService" ref="objectFormattingService"/>
-    </bean>
-
-    <bean id="lmGroupRouteTagPrototype" class="com.cannontech.web.taglib.LmGroupRouteTag">
-        <property name="loadGroupDao" ref="loadGroupDao"/>
-        <property name="paoDao" ref="paoDao"/>
-    </bean>
-
-    <bean id="lmGroupSerialNumberTagPrototype" class="com.cannontech.web.taglib.LmGroupSerialNumberTag">
-        <property name="loadGroupDao" ref="loadGroupDao"/>
-    </bean>
-
     <bean id="navigableHierarchyTagPrototype" class="com.cannontech.web.capcontrol.NavigableHierarchyTag"/>
     
     <bean id="paoDetailUrlTagPrototype" class="com.cannontech.web.taglib.PaoDetailUrlTag">
