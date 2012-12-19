@@ -2,15 +2,9 @@
 <%@ taglib uri="http://cannontech.com/tags/cti" prefix="cti"%>
 <%@ taglib uri="http://java.sun.com/jsp/jstl/functions" prefix="fn" %>
 <%@ taglib prefix="tags" tagdir="/WEB-INF/tags"%>
+<%@ taglib prefix="i" tagdir="/WEB-INF/tags/i18n" %>
 
-<cti:standardPage title="Device Definitions" module="support">
-<cti:standardMenu menuSelection="information|deviceDef"/>
-<cti:breadCrumbs>
-    <cti:crumbLink url="/operator/Operations.jsp" title="Operations Home"  />
-    <cti:crumbLink url="/spring/support/" title="Support" />
-    <cti:crumbLink>Device Definitions</cti:crumbLink>
-</cti:breadCrumbs>
-
+<cti:standardPage module="support" page="deviceDef">
 	<c:url var="url" value="/spring/common/deviceDefinition.xml"/>
 	
 	<style type="text/css">
@@ -31,20 +25,24 @@
 
 	
 	<%-- WRITE SELECT --%>
-	<tags:sectionContainer title="Filters">
+    <cti:msgScope paths=".filters">
+    <cti:msg2 var="filtersTitle" key=".title"/>
+	<tags:sectionContainer title="${filtersTitle}">
 	<table class="miniResultsTable" style="width:75%">
 		<tr>
-			<th>Device Type</th>
-			<th>Display Group</th>
-			<th>Change Group</th>
-			<th>Attribute</th>
-			<th>Tag</th>
+            <cti:msgScope paths=".column">
+			<th><i:inline key=".deviceType"/></th>
+			<th><i:inline key=".displayGroup"/></th>
+			<th><i:inline key=".changeGroup"/></th>
+			<th><i:inline key=".attribute"/></th>
+			<th><i:inline key=".tag"/></th>
+            </cti:msgScope>
 		</tr>
 		<tr>
 			<%-- device type select --%>
 			<td>
 				<select onchange="doDefinitionFilter(this, 'deviceType');">
-					<option value="" >All Definitions</option>
+					<option value="" ><cti:msg2 key=".allDefinitions"/></option>
 					<c:forEach var="group" items="${allDeviceTypes}" >
 						<optgroup label="${group.key}">
 							<c:forEach var="definition" items="${group.value}">
@@ -66,7 +64,7 @@
 			<%-- display group select --%>
 			<td>
 				<select onchange="doDefinitionFilter(this, 'displayGroup');">
-					<option value="" >Any Display Group</option>
+					<option value="" ><cti:msg2 key=".anyDisplayGroup"/></option>
 					<c:forEach var="group" items="${allDisplayGroups}" >
 						<c:choose>
 							<c:when test="${displayGroupParam == group}">
@@ -83,7 +81,7 @@
 			<%-- change group select --%>
 			<td>
 				<select onchange="doDefinitionFilter(this, 'changeGroup');">
-					<option value="" >Any Change Group</option>
+					<option value="" ><cti:msg2 key=".anyChangeGroup"/></option>
 					<c:forEach var="changeGroup" items="${allChangeGroups}" >
 						<c:choose>
 							<c:when test="${changeGroupParam == changeGroup}">
@@ -100,7 +98,7 @@
 			<%-- attribute select --%>
 			<td>
 				<select onchange="doDefinitionFilter(this, 'attribute');">
-					<option value="" >Any Attribute</option>
+					<option value="" ><cti:msg2 key=".anyAttribute"/></option>
 					<c:forEach var="attribute" items="${allAttributes}" >
 						<c:choose>
 							<c:when test="${attributeParam == attribute.key}">
@@ -117,7 +115,7 @@
 			<%-- tag select --%>
 			<td>
 				<select onchange="doDefinitionFilter(this, 'tag');">
-					<option value="" >Any Tag</option>
+					<option value="" ><cti:msg2 key=".anyTag"/></option>
 					<c:forEach var="tag" items="${allTags}" >
 						<c:choose>
 							<c:when test="${tagParam == tag.name}">
@@ -133,11 +131,13 @@
 		</tr>
 	</table>
 	</tags:sectionContainer>
+    </cti:msgScope>
 	<br>
 	
 	
 	
 	<%-- WRITE DEFINITIONS --%>
+    <cti:msgScope paths=".info">
 	<c:forEach var="info" items="${displayDefinitionsMap}">
 	
 		<c:set var="sectionName" value="${info.key}"/>
@@ -151,15 +151,15 @@
 					<%-- BASICS --%>
 					<table class="compactResultsTable">
 					    <tr>
-					        <td width="15%" class="label">Type:</td>
+					        <td width="15%" class="label"><i:inline key=".type"/></td>
 					        <td>${deviceInfo.definition.type}</td>
 					    </tr>
 					    <tr>
-					        <td class="label">Java Constant</td>
+					        <td class="label"><i:inline key=".javaConstant"/></td>
 					        <td>${deviceInfo.definition.javaConstant}</td>
 					    </tr>
 					    <tr>
-					        <td class="label">Change Group:</td>
+					        <td class="label"><i:inline key=".changeGroup"/></td>
 					        <td>${deviceInfo.definition.changeGroup}</td>
 					    </tr>
 					</table>
@@ -168,16 +168,17 @@
 					
 					<%-- POINTS --%>
 					<c:if test="${fn:length(deviceInfo.points) > 0}">
+                    <cti:msgScope paths=".points">
 						<br>
 						<table class="miniResultsTable" style="width:900px">
 							<tr>
-								<th>Points</th>
-								<th>Type</th>
-								<th>Init</th>
-								<th>Offset</th>
-								<th>Multiplier</th>
-								<th>UofM</th>
-								<th>State Group</th>
+								<th><i:inline key=".name"/></th>
+								<th><i:inline key=".type"/></th>
+								<th><i:inline key=".init"/></th>
+								<th><i:inline key=".offset"/></th>
+								<th><i:inline key=".multiplier"/></th>
+								<th><i:inline key=".uofm"/></th>
+								<th><i:inline key=".stateGroup"/></th>
 							</tr>
 							<c:forEach var="point" items="${deviceInfo.points}">
 								<tr class="<tags:alternateRow odd="" even="altRow"/>">
@@ -185,7 +186,7 @@
 									<td><cti:msg key="${point.pointType}"/></td>
 									<td>
 										<c:choose>
-											<c:when test="${point.init}">Init</c:when>
+											<c:when test="${point.init}"><i:inline key=".init.value"/></c:when>
 											<c:otherwise></c:otherwise>
 										</c:choose>
 									</td>
@@ -196,36 +197,39 @@
 								</tr>
 							</c:forEach>
 						</table>
+                    </cti:msgScope>
 					</c:if>
-					
 					
 					<%-- ATTRIBUTES --%>
 					<c:if test="${fn:length(deviceInfo.attributes) > 0}">
+                    <cti:msgScope paths=".attributes">
 						<br>
 						<table class="miniResultsTable" style="width:900px">
 							<tr>
-								<th>Attributes</th>
-								<th>Lookup</th>
-								<th>Lookup Attributes</th>
+								<th><i:inline key=".name"/></th>
+								<th><i:inline key=".lookup"/></th>
+								<th><i:inline key=".lookupAttributes"/></th>
 							</tr>
 							<c:forEach var="attribute" items="${deviceInfo.attributes}">
 								<tr class="<tags:alternateRow odd="" even="altRow"/>">
 									<td>${attribute.attribute.attribute.description}</td>
-									<td>basicLookup</td>
-									<td>Point = ${attribute.pointTemplateWrapper.pointTemplate.name}</td>
+									<td><i:inline key=".lookup.default"/></td>
+									<td><i:inline key=".lookupAttributes.point"/> = ${attribute.pointTemplateWrapper.pointTemplate.name}</td>
 								</tr>
 							</c:forEach>
 						</table>
+                    </cti:msgScope>
 					</c:if>
 					
 					<%-- COMMANDS --%>
 					<c:if test="${fn:length(deviceInfo.commands) > 0}">
+                    <cti:msgScope paths=".commands">
 						<br>
 						<table class="miniResultsTable" style="width:900px">
 							<tr>
-								<th>Commands</th>
-								<th>Command Strings</th>
-								<th>Point Names</th>
+								<th><i:inline key=".name"/></th>
+								<th><i:inline key=".commandStrings"/></th>
+								<th><i:inline key=".pointNames"/></th>
 							</tr>
 							<c:forEach var="command" items="${deviceInfo.commands}">
 								<tr class="<tags:alternateRow odd="" even="altRow"/>">
@@ -247,31 +251,34 @@
 								</tr>
 							</c:forEach>
 						</table>
+                    </cti:msgScope>
 					</c:if>
 					
 					<%-- TAGS --%>
 					<c:if test="${fn:length(deviceInfo.tagDefinitions) > 0}">
+                    <cti:msgScope paths=".tags">
 						<br>
 						<table class="miniResultsTable" style="width:900px">
 							<tr>
-								<th>Tags</th>
-                                <th>Value Support</th>
-                                <th>Values</th>
+								<th><i:inline key=".name"/></th>
+                                <th><i:inline key=".valueSupport"/></th>
+                                <th><i:inline key=".values"/></th>
 							</tr>
 							<c:forEach var="tagDefinition" items="${deviceInfo.tagDefinitions}">
 								<tr class="<tags:alternateRow odd="" even="altRow"/>">
 									<td>${tagDefinition.tag.description}</td>
                                     <c:if test="${tagDefinition.tag.tagHasValue}">
-                                    	<td>Yes</td>
+                                    	<td><i:inline key=".valueSupport.yes"/></td>
                                     	<td>${tagDefinition.value}</td>
                                     </c:if>
                                     <c:if test="${not tagDefinition.tag.tagHasValue}">
-                                   		<td>No</td>
+                                   		<td><i:inline key=".valueSupport.no"/></td>
                                         <td></td>
                                     </c:if>
 								</tr>
 							</c:forEach>
 						</table>
+                    </cti:msgScope>
 					</c:if>
 					
 					</div>
@@ -287,6 +294,6 @@
 		
 
 	</c:forEach>
-	
+	</cti:msgScope>
 
 </cti:standardPage>

@@ -1,14 +1,9 @@
 <%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core"%>
 <%@ taglib prefix="cti" uri="http://cannontech.com/tags/cti"%>
 <%@ taglib prefix="tags" tagdir="/WEB-INF/tags"%>
+<%@ taglib prefix="i" tagdir="/WEB-INF/tags/i18n" %>
 
-<cti:standardPage module="support">
-    <cti:standardMenu menuSelection="other|routeUsage"/>
-    <cti:breadCrumbs>
-        <cti:crumbLink url="/operator/Operations.jsp" title="Operations Home"  />
-        <cti:crumbLink url="/spring/support/" title="Support" />
-        <cti:crumbLink>Route Usage</cti:crumbLink>
-    </cti:breadCrumbs>
+<cti:standardPage module="support" page="routeUsage">
 
 <script type="text/javascript">
 
@@ -85,18 +80,19 @@ th.variableColumn {
 </style>
     
     <c:forEach var="level" items="${routeTables}" varStatus="levelStatus">
-        <tags:hideReveal title="Level ${levelStatus.index + 1}" showInitially="true">
+        <cti:msg2 var="levelLabel" key=".level" argument="${levelStatus.index + 1}"/>
+        <tags:hideReveal title="${levelLabel}" showInitially="true">
             <table id="level${levelStatus.index + 1}" class="resultsTable routeTable">
                 <thead>
                     <tr>
-                        <th class="fixedColumn">Fixed Bit</th>
-                        <th class="variableColumn">Variable Bit: <span class="variableBit">0</span></th>
-                        <th class="variableColumn">Variable Bit: <span class="variableBit">1</span></th>
-                        <th class="variableColumn">Variable Bit: <span class="variableBit">2</span></th>
-                        <th class="variableColumn">Variable Bit: <span class="variableBit">3</span></th>
-                        <th class="variableColumn">Variable Bit: <span class="variableBit">4</span></th>
-                        <th class="variableColumn">Variable Bit: <span class="variableBit">5</span></th>
-                        <th class="variableColumn">Variable Bit: <span class="variableBit">6</span></th>
+                        <th class="fixedColumn"><i:inline key=".fixedBit"/></th>
+                        <th class="variableColumn"><i:inline key=".variableBit"/> <span class="variableBit">0</span></th>
+                        <th class="variableColumn"><i:inline key=".variableBit"/> <span class="variableBit">1</span></th>
+                        <th class="variableColumn"><i:inline key=".variableBit"/> <span class="variableBit">2</span></th>
+                        <th class="variableColumn"><i:inline key=".variableBit"/> <span class="variableBit">3</span></th>
+                        <th class="variableColumn"><i:inline key=".variableBit"/> <span class="variableBit">4</span></th>
+                        <th class="variableColumn"><i:inline key=".variableBit"/> <span class="variableBit">5</span></th>
+                        <th class="variableColumn"><i:inline key=".variableBit"/> <span class="variableBit">6</span></th>
                     </tr>
                 </thead>
                 
@@ -162,14 +158,14 @@ th.variableColumn {
                 
                 <tfoot>
                     <tr>
-                        <th>Fixed Bit</th>
-                        <th>Variable Bit: <span class="variableBit">0</span></th>
-                        <th>Variable Bit: <span class="variableBit">1</span></th>
-                        <th>Variable Bit: <span class="variableBit">2</span></th>
-                        <th>Variable Bit: <span class="variableBit">3</span></th>
-                        <th>Variable Bit: <span class="variableBit">4</span></th>
-                        <th>Variable Bit: <span class="variableBit">5</span></th>
-                        <th>Variable Bit: <span class="variableBit">6</span></th>
+                        <th><i:inline key=".fixedBit"/></th>
+                        <th><i:inline key=".variableBit"/> <span class="variableBit">0</span></th>
+                        <th><i:inline key=".variableBit"/> <span class="variableBit">1</span></th>
+                        <th><i:inline key=".variableBit"/> <span class="variableBit">2</span></th>
+                        <th><i:inline key=".variableBit"/> <span class="variableBit">3</span></th>
+                        <th><i:inline key=".variableBit"/> <span class="variableBit">4</span></th>
+                        <th><i:inline key=".variableBit"/> <span class="variableBit">5</span></th>
+                        <th><i:inline key=".variableBit"/> <span class="variableBit">6</span></th>
                     </tr>
                 </tfoot>
                 

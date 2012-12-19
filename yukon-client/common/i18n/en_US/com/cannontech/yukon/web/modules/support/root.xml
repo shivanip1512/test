@@ -5,16 +5,75 @@
     <entry key="yukon.web.modules.support.pageTitle">Yukon Support Information</entry>
     <entry key="yukon.web.modules.support.moduleName">Support</entry>
 
+    <!-- info.jsp -->
+    <entry key="yukon.web.modules.support.system.pageName">System</entry>
+    <entry key="yukon.web.modules.support.system.versionDetails">Version Details</entry>
+    <entry key="yukon.web.modules.support.system.buildInformation">Build Information</entry>
+    <entry key="yukon.web.modules.support.system.systemInformation">System Information</entry>
+
     <entry key="yukon.web.modules.support.logLanding.pageName">Logs</entry>
+
+    <!-- logging/menu.jsp -->
     <entry key="yukon.web.modules.support.logMenu.pageName">Log Explorer</entry>
     <entry key="yukon.web.modules.support.logMenu.pageDescription">{0}</entry>
+    <entry key="yukon.web.modules.support.logMenu.sortBy">Sort By:</entry>
+    <entry key="yukon.web.modules.support.logMenu.sortBy.alphabetic">Alphabetic</entry>
+    <entry key="yukon.web.modules.support.logMenu.sortBy.or">or</entry>
+    <entry key="yukon.web.modules.support.logMenu.sortBy.date">Date</entry>
+    <entry key="yukon.web.modules.support.logMenu.directories">Directories</entry>
 
+    <!-- logging/logTail.jsp -->
     <entry key="yukon.web.modules.support.logTail.pageName">Log Tail</entry>
     <entry key="yukon.web.modules.support.logTail.pageDescription">{0}</entry>
 
     <entry key="yukon.web.modules.support.logView.pageName">Log View</entry>
     <entry key="yukon.web.modules.support.logView.contextualPageName">View</entry>
     <entry key="yukon.web.modules.support.logView.pageDescription">{0}</entry>
+
+    <!-- database/info.jsp -->
+    <entry key="yukon.web.modules.support.databaseInfo.pageName">Database Information</entry>
+    <entry key="yukon.web.modules.support.databaseInfo.dbConnection">DB Connection</entry>
+    <entry key="yukon.web.modules.support.databaseInfo.dbConnection.jdbcUrl">JDBC URL:</entry>
+    <entry key="yukon.web.modules.support.databaseInfo.dbConnection.jdbcUser">JDBC User:</entry>
+
+    <!-- database/validate.jsp -->
+    <entry key="yukon.web.modules.support.databaseValidate.pageName">Database Validate</entry>
+    <entry key="yukon.web.modules.support.databaseValidate.oracleWarning">Validation of your database schema is in progress (this process may take several minutes).</entry>
+    <entry key="yukon.web.modules.support.databaseValidate.loading">loading...</entry>
+    <entry key="yukon.web.modules.support.databaseValidate.msgError.alreadyRunning">Database validation process is already running.  Please try again later.</entry>
+    <entry key="yukon.web.modules.support.databaseValidate.msgError.noAccessToMetadata">System does not have access to database metadata.  Database validation cannot be completed.</entry>
+    <entry key="yukon.web.modules.support.databaseValidate.msgError.valitationNotSupported">Your current database configuration is not currently supported by our validation system.</entry>
+
+    <entry key="yukon.web.modules.support.scheduler.pageName">Jobs</entry>
+
+    <!-- scheduler/active.jsp -->
+    <entry key="yukon.web.modules.support.scheduler.active.pageName">Active</entry>
+    <entry key="yukon.web.modules.support.scheduler.active.column.jobName">Job Name</entry>
+    <entry key="yukon.web.modules.support.scheduler.active.column.startTime">Start Time</entry>
+    <entry key="yukon.web.modules.support.scheduler.active.column.running">Running</entry>
+    <entry key="yukon.web.modules.support.scheduler.active.abortButton">Abort</entry>
+
+    <!-- scheduler/status.jsp -->
+    <entry key="yukon.web.modules.support.scheduler.status.pageName">Status</entry>
+    <entry key="yukon.web.modules.support.scheduler.status.column.jobName">Job Name</entry>
+    <entry key="yukon.web.modules.support.scheduler.status.column.start">Start</entry>
+    <entry key="yukon.web.modules.support.scheduler.status.column.stop">Stop</entry>
+    <entry key="yukon.web.modules.support.scheduler.status.column.state">State</entry>
+    <entry key="yukon.web.modules.support.scheduler.status.column.disabled">Disabled</entry>
+    <entry key="yukon.web.modules.support.scheduler.status.column.errorMessage">Error Message</entry>
+
+    <!-- scheduler/jobs.jsp -->
+    <entry key="yukon.web.modules.support.scheduler.jobs.pageName">All</entry>
+    <entry key="yukon.web.modules.support.scheduler.jobs.enabled">Enabled</entry>
+    <entry key="yukon.web.modules.support.scheduler.jobs.disabled">Disabled</entry>
+    <entry key="yukon.web.modules.support.scheduler.jobs.repeatingJobs">Repeating Jobs</entry>
+    <entry key="yukon.web.modules.support.scheduler.jobs.oneTimeJobs">One Time Jobs</entry>
+    <entry key="yukon.web.modules.support.scheduler.jobs.column.jobName">Job Name</entry>
+    <entry key="yukon.web.modules.support.scheduler.jobs.column.beanName">Bean Name</entry>
+    <entry key="yukon.web.modules.support.scheduler.jobs.column.username">Username</entry>
+    <entry key="yukon.web.modules.support.scheduler.jobs.column.cronString">Cron String</entry>
+    <entry key="yukon.web.modules.support.scheduler.jobs.column.scheduledStart">Scheduled Start</entry>
+    <entry key="yukon.web.modules.support.scheduler.jobs.column.enabled">Enable/Disable</entry>
 
     <entry key="yukon.web.modules.support.pointInjection.pageName">Point Injection</entry>
 
@@ -364,4 +423,48 @@
     <entry key="yukon.web.modules.support.webServices.eimTest.formatResponse">Format Response</entry>
     <entry key="yukon.web.modules.support.webServices.eimTest.submitRequest">Submit Request</entry>
     <entry key="yukon.web.modules.support.webServices.eimTest.noRequestMade">No request has been made yet.</entry>
+    
+    <!-- routeUsage.jsp -->
+    <entry key="yukon.web.modules.support.routeUsage.pageName">Route Usage</entry>
+    <entry key="yukon.web.modules.support.routeUsage.fixedBit">Fixed Bit</entry>
+    <entry key="yukon.web.modules.support.routeUsage.variableBit">Variable Bit:</entry>
+    <entry key="yukon.web.modules.support.routeUsage.level">Level {0}</entry>
+    
+    <!-- deviceDefinition/deviceDefinitionViewer.jsp -->
+    <entry key="yukon.web.modules.support.deviceDef.pageName">Device Definitions</entry>
+    <entry key="yukon.web.modules.support.deviceDef.filters.title">Filters</entry>
+    <entry key="yukon.web.modules.support.deviceDef.filters.column.deviceType">Device Type</entry>
+    <entry key="yukon.web.modules.support.deviceDef.filters.column.displayGroup">Display Group</entry>
+    <entry key="yukon.web.modules.support.deviceDef.filters.column.changeGroup">Change Group</entry>
+    <entry key="yukon.web.modules.support.deviceDef.filters.column.attribute">Attribute</entry>
+    <entry key="yukon.web.modules.support.deviceDef.filters.column.tag">Tag</entry>
+    <entry key="yukon.web.modules.support.deviceDef.filters.allDefinitions">All Definitions</entry>
+    <entry key="yukon.web.modules.support.deviceDef.filters.anyDisplayGroup">Any Display Group</entry>
+    <entry key="yukon.web.modules.support.deviceDef.filters.anyChangeGroup">Any Change Group</entry>
+    <entry key="yukon.web.modules.support.deviceDef.filters.anyAttribute">Any Attribute</entry>
+    <entry key="yukon.web.modules.support.deviceDef.filters.anyTag">Any Tag</entry>
+    <entry key="yukon.web.modules.support.deviceDef.info.type">Type:</entry>
+    <entry key="yukon.web.modules.support.deviceDef.info.javaConstant">Java Constant:</entry>
+    <entry key="yukon.web.modules.support.deviceDef.info.changeGroup">Change Group:</entry>
+    <entry key="yukon.web.modules.support.deviceDef.info.points.name">Points</entry>
+    <entry key="yukon.web.modules.support.deviceDef.info.points.type">Type</entry>
+    <entry key="yukon.web.modules.support.deviceDef.info.points.init">Init</entry>
+    <entry key="yukon.web.modules.support.deviceDef.info.points.init.value">Init</entry>
+    <entry key="yukon.web.modules.support.deviceDef.info.points.offset">Offset</entry>
+    <entry key="yukon.web.modules.support.deviceDef.info.points.multiplier">Multiplier</entry>
+    <entry key="yukon.web.modules.support.deviceDef.info.points.uofm">UofM</entry>
+    <entry key="yukon.web.modules.support.deviceDef.info.points.stateGroup">State Group</entry>
+    <entry key="yukon.web.modules.support.deviceDef.info.attributes.name">Attributes</entry>
+    <entry key="yukon.web.modules.support.deviceDef.info.attributes.lookup">Lookup</entry>
+    <entry key="yukon.web.modules.support.deviceDef.info.attributes.lookup.default">basicLookup</entry>
+    <entry key="yukon.web.modules.support.deviceDef.info.attributes.lookupAttributes">Lookup Attributes</entry>
+    <entry key="yukon.web.modules.support.deviceDef.info.attributes.lookupAttributes.point">Point</entry>
+    <entry key="yukon.web.modules.support.deviceDef.info.commands.name">Commands</entry>
+    <entry key="yukon.web.modules.support.deviceDef.info.commands.commandStrings">Command Strings</entry>
+    <entry key="yukon.web.modules.support.deviceDef.info.commands.pointNames">Point Names</entry>
+    <entry key="yukon.web.modules.support.deviceDef.info.tags.name">Tags</entry>
+    <entry key="yukon.web.modules.support.deviceDef.info.tags.valueSupport">Value Support</entry>
+    <entry key="yukon.web.modules.support.deviceDef.info.tags.valueSupport.yes">Yes</entry>
+    <entry key="yukon.web.modules.support.deviceDef.info.tags.valueSupport.no">No</entry>
+    <entry key="yukon.web.modules.support.deviceDef.info.tags.values">Values</entry>
 </properties>

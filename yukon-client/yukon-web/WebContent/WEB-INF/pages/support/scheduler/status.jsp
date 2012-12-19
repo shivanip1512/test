@@ -1,25 +1,17 @@
 <%@ taglib uri="http://java.sun.com/jsp/jstl/core" prefix="c"%>
 <%@ taglib uri="http://cannontech.com/tags/cti" prefix="cti"%>
 <%@ taglib prefix="ct" tagdir="/WEB-INF/tags"%>
+<%@ taglib prefix="i" tagdir="/WEB-INF/tags/i18n" %>
 
-<cti:standardPage module="support">
-<cti:standardMenu menuSelection="scheduler|status" />
-<cti:breadCrumbs>
-    <cti:crumbLink url="/operator/Operations.jsp" title="Operations Home"  />
-	<cti:crumbLink url="/spring/support/" title="Support" />
-	<cti:crumbLink url="/spring/support/scheduler/active" title="Jobs"/>
-    <cti:crumbLink>Status</cti:crumbLink>
-</cti:breadCrumbs>
-
-
+<cti:standardPage module="support" page="scheduler.status">
   <table class="resultsTable">
     <tr>
-      <th width="15%">Job Name</th>
-      <th width="10%">Start</th>
-      <th width="10%">Stop</th>
-      <th>State</th>
-      <th>Disabled</th>
-      <th>Error Message</th>
+      <th width="15%"><i:inline key=".column.jobName"/></th>
+      <th width="10%"><i:inline key=".column.start"/></th>
+      <th width="10%"><i:inline key=".column.stop"/></th>
+      <th><i:inline key=".column.state"/></th>
+      <th><i:inline key=".column.disabled"/></th>
+      <th><i:inline key=".column.errorMessage"/></th>
     </tr>
     <c:forEach items="${jobStatusList}" var="jobStatus">
       <tr>

@@ -1218,6 +1218,12 @@
                         </page>
                     </pages>
                 </page>
+                <page name="databaseInfo" type="BASIC">
+                    <menu>database|info</menu>
+                </page>
+                <page name="databaseValidate" type="BASIC">
+                    <menu>database|compare</menu>
+                </page>
                 <page name="databaseMigration" type="BASIC">
                     <requireRoleProperty value="ADMIN_DATABASE_MIGRATION"/>
                     <menu>database|migration</menu>
@@ -1246,6 +1252,12 @@
                 <page name="setup" type="BASIC">
                     <requireRoleProperty value="OPERATOR_ADMINISTRATOR" />
                     <menu>other|setup</menu>
+                </page>
+                <page name="system" type="BASIC">
+                    <menu>information|system</menu>
+                </page>
+                <page name="deviceDef" type="BASIC">
+                    <menu>information|deviceDef</menu>
                 </page>
                 <page name="errorCodes" type="BASIC">
                     <menu>information|errorCodes</menu>
@@ -1279,6 +1291,26 @@
                             <menu>development|rfn</menu>
                         </page>
                     </pages>
+                </page>
+                <page name="scheduler" type="BASIC">
+                    <menu>scheduler|active</menu>
+                    <pages>
+                        <page name="scheduler.active" type="BASIC">
+                            <menu>scheduler|active</menu>
+                        </page>
+                        <page name="scheduler.status" type="BASIC">
+                            <menu>scheduler|status</menu>
+                        </page>
+                        <page name="scheduler.jobs" type="BASIC">
+                            <menu>scheduler|jobs</menu>
+                        </page>
+                    </pages>
+                </page>
+                <page name="threadDump" type="BASIC">
+                    <menu>other|threadDump</menu>
+                </page>
+                <page name="routeUsage" type="BASIC">
+                    <menu>other|routeUsage</menu>
                 </page>
             </pages>
             <link>/spring/support/</link>
