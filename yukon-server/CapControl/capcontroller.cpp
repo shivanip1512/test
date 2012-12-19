@@ -2704,15 +2704,14 @@ void CtiCapController::pointDataMsg (CtiPointDataMsg* message)
         CapControlPointDataHandler pointHandler = store->getPointDataHandler();
         pointHandler.processIncomingPointData(message);
 
-        if (!Cti::CapControl::isQualityOk(quality))
-        {
-            return;
-        }
         pointDataMsgBySubBus(pointID, value, quality, timestamp);
 
         pointDataMsgByFeeder(pointID, value, quality, timestamp);
 
-        pointDataMsgByCapBank(pointID, value, quality, tags, timestamp);
+        if (Cti::CapControl::isQualityOk(quality))
+        {
+            pointDataMsgByCapBank(pointID, value, quality, tags, timestamp);
+        }
 
         pointDataMsgBySubstation(pointID, value, quality, timestamp);
 
