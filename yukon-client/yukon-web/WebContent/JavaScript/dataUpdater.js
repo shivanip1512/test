@@ -40,7 +40,7 @@ function initiateCannonDataUpdate(url, delayMs) {
             var id = it.readAttribute('cannonClassUpdater');
             // use the cannonUpdater "id" to look up value in response
             var newData = responseStruc.data[id];
-            if (newData && it.className != newData) {
+            if (typeof newData !== 'undefined' && it.className != newData) {
                 // data was sent and is different than current
             	it.className = newData;
             }
