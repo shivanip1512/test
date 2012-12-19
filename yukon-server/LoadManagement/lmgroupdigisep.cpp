@@ -239,7 +239,7 @@ bool LMGroupDigiSEP::sendShedControl(long controlMinutes)
 */
 bool LMGroupDigiSEP::doesStopRequireCommandAt(const CtiTime &currentTime) const
 {
-    return getLastStopTimeSent() > currentTime || getLastStopTimeSent() == gInvalidCtiTime;
+    return getLastStopTimeSent() > currentTime + 30 || getLastStopTimeSent() == gInvalidCtiTime;
 }
 
 CtiRequestMsg* LMGroupDigiSEP::createTimeRefreshRequestMsg(LONG refreshRate, LONG shedTime, int priority) const
