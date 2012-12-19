@@ -30,11 +30,11 @@
 <script type="text/javascript">
 jQuery(function() {
     jQuery(document).on('click', 'button.deleteAssignment', function(event){
-        var row = jQuery(event.currentTarget).closest('tr');
-        var target = event.currentTarget;
+        var jEvent = jQuery(event.currentTarget);
+        var row = jEvent.closest('tr');
         var rowid = row[0].id;
         var eventId = rowid.split('_')[1];
-        var confirmMsg = jQuery(event.currentTarget).siblings('span.dn').html();
+        var confirmMsg = jEvent.siblings('span.dn').html();
         if (confirm(confirmMsg)) {
             var removeForm = jQuery('#removeAssignmentForm');
             var input = removeForm.children('input[name=eventId]');

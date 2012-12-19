@@ -324,15 +324,18 @@ public class ScheduleController {
     public View stopSchedule(Integer deviceId, String deviceName, YukonUserContext context, ModelMap map) throws ServletException {
 	    MessageSourceAccessor accessor = messageSourceResolver.getMessageSourceAccessor(context);
 	    
+	    String result = accessor.getMessage("yukon.web.modules.capcontrol.scheduleAssignments.stopVerify", deviceName);
 	    try {
             executor.execute(CommandHelper.buildStopVerifyBanks(context.getYukonUser(), CommandType.STOP_VERIFICATION, deviceId));
+            
+            map.addAttribute("success", true);
+            map.addAttribute("resultText" , result);
         } catch (CommandExecutionException e) {
             log.warn("caught exception in stopSchedule", e);
+            
+            map.addAttribute("success", false);
+            map.addAttribute("resultText" , result);
         }
-	    String result = accessor.getMessage("yukon.web.modules.capcontrol.scheduleAssignments.stopVerify", deviceName);
-	    
-	    map.addAttribute("success", true);
-        map.addAttribute("resultText" , result);
 	    
 	    return new JsonView();
 	}
