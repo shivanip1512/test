@@ -13,6 +13,7 @@ import com.cannontech.common.util.SqlStatementBuilder;
 import com.cannontech.core.dao.NotFoundException;
 import com.cannontech.core.dao.PaoScheduleDao;
 import com.cannontech.database.SqlParameterSink;
+import com.cannontech.database.YNBoolean;
 import com.cannontech.database.YukonJdbcTemplate;
 import com.cannontech.database.YukonResultSet;
 import com.cannontech.database.YukonRowMapper;
@@ -81,7 +82,7 @@ public class PaoScheduleDaoImpl implements PaoScheduleDao {
         sink.addValue("LastRunTime", lastRunTime);
         sink.addValue("IntervalRate", intervalRate);
         sink.addValue("ScheduleName", name);
-        sink.addValue("Disabled", disabled ? "Y" : "N");
+        sink.addValue("Disabled", disabled ? YNBoolean.YES : YNBoolean.NO);
 
         yukonJdbcTemplate.update(sql);
 
