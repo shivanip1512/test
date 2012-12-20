@@ -933,6 +933,8 @@ INT Mct410Device::ModelDecode(INMESS *InMessage, CtiTime &TimeNow, CtiMessageLis
 
         case EmetconProtocol::GetConfig_LongLoadProfile: status = decodeGetConfigLongLoadProfileStorageDays(InMessage, TimeNow, vgList, retList, outList);      break;
 
+        case EmetconProtocol::GetConfig_Configuration:      status = decodeGetConfigConfiguration(InMessage, TimeNow, vgList, retList, outList);    break;
+
         default:
         {
             status = Inherited::ModelDecode(InMessage, TimeNow, vgList, retList, outList);
@@ -4345,6 +4347,10 @@ INT Mct410Device::decodeGetConfigDisconnect(INMESS *InMessage, CtiTime &TimeNow,
     return status;
 }
 
+int Mct410Device::decodeGetConfigConfiguration( INMESS *InMessage, CtiTime &TimeNow, CtiMessageList &vgList, CtiMessageList &retList, OutMessageList &outList )
+{
+    return NoMethod;
+}
 
 string Mct410Device::decodeDisconnectStatus(const DSTRUCT &DSt)
 {

@@ -2192,6 +2192,34 @@ INT Mct4xxDevice::decodePutConfig(INMESS *InMessage, CtiTime &TimeNow, CtiMessag
             break;
         }
 
+        case EmetconProtocol::PutConfig_Channel2NetMetering:
+        {
+            if( isMct420(getType()) )
+            {
+                // Execute a read to get back the configuration data to be stored in dynamic pao info.
+                CtiRequestMsg *pReq pReq = 
+                    CTIDBG_new CtiRequestMsg(
+                        InMessage->TargetID, 
+                        "getconfig configuration", 
+                        InMessage->Return.UserID, 
+                        InMessage->Return.GrpMsgID, 
+                        InMessage->Return.RouteID, 
+                        selectInitialMacroRouteOffset(InMessage->Return.RouteID), 
+                        InMessage->Return.Attempt);
+
+                if( strstr(InMessage->Return.CommandStr, "noqueue") )
+                {
+                    pReq->setCommandString(pReq->CommandString() + " noqueue");
+                }
+
+                CtiCommandParser parse(pReq->CommandString());
+
+                beginExecuteRequest(pReq, parse, vgList, retList, outList);
+            }
+
+            break;
+        }
+
         default:
         {
             status = Inherited::decodePutConfig(InMessage,TimeNow,vgList,retList,outList);

@@ -20,8 +20,10 @@ namespace Devices {
 
 
 const Mct420Device::CommandSet       Mct420Device::_commandStore = boost::assign::list_of
-    (CommandStore(EmetconProtocol::GetConfig_Multiplier,       EmetconProtocol::IO_Function_Read, 0xf3, 2))
-    (CommandStore(EmetconProtocol::GetConfig_MeterParameters,  EmetconProtocol::IO_Function_Read, 0xf3, 2));
+    (CommandStore(EmetconProtocol::GetConfig_Multiplier,          EmetconProtocol::IO_Function_Read, 0xf3, 2))
+    (CommandStore(EmetconProtocol::GetConfig_MeterParameters,     EmetconProtocol::IO_Function_Read, 0xf3, 2))
+    (CommandStore(EmetconProtocol::GetConfig_Configuration,       EmetconProtocol::IO_Function_Read, 0x01, 6))
+    (CommandStore(EmetconProtocol::PutConfig_Channel2NetMetering, EmetconProtocol::IO_Write,         0x85, 0));
 
 
 const Mct420Device::ConfigPartsList  Mct420Device::_config_parts = boost::assign::list_of
@@ -71,6 +73,12 @@ const Mct420Device::FunctionReadValueMappings Mct420Device::_readValueMaps = boo
         ( 4, make_value_descriptor(4, CtiTableDynamicPaoInfo::Key_MCT_Holiday3)))
     (0x0d8, boost::assign::map_list_of
         ( 0, make_value_descriptor(4, CtiTableDynamicPaoInfo::Key_MCT_Holiday3)))
+    (0x101, boost::assign::map_list_of
+        ( 0, make_value_descriptor(1, CtiTableDynamicPaoInfo::Key_MCT_Configuration))
+        ( 1, make_value_descriptor(1, CtiTableDynamicPaoInfo::Key_MCT_EventFlagsMask1))
+        ( 2, make_value_descriptor(1, CtiTableDynamicPaoInfo::Key_MCT_EventFlagsMask2))
+        ( 3, make_value_descriptor(2, CtiTableDynamicPaoInfo::Key_MCT_MeterAlarmMask))
+        ( 5, make_value_descriptor(1, CtiTableDynamicPaoInfo::Key_MCT_Options)))
     (0x19d, boost::assign::map_list_of
         ( 4, make_value_descriptor(1, CtiTableDynamicPaoInfo::Key_MCT_LLPChannel1Len))
         ( 5, make_value_descriptor(1, CtiTableDynamicPaoInfo::Key_MCT_LLPChannel2Len))
@@ -114,6 +122,35 @@ const Mct420Device::FunctionReadValueMappings Mct420Device::_readValueMaps = boo
         ( 9, make_value_descriptor(1, CtiTableDynamicPaoInfo::Key_MCT_DisconnectMinutes))
         (10, make_value_descriptor(1, CtiTableDynamicPaoInfo::Key_MCT_ConnectMinutes   ))
         (11, make_value_descriptor(1, CtiTableDynamicPaoInfo::Key_MCT_Configuration    )));
+
+
+const Mct420Device::FlagSet Mct420Device::_eventFlags = boost::assign::list_of
+    (make_pair(0x0001, "Zero usage"))
+    (make_pair(0x0002, "Disconnect error"))
+    (make_pair(0x0004, "Meter reading corrupted"))
+    (make_pair(0x0008, "Reverse power"))
+    // 0x0010-0x0080 unused
+    (make_pair(0x0100, "Power fail event"))
+    (make_pair(0x0200, "Under voltage event"))
+    (make_pair(0x0400, "Over voltage event"))
+    (make_pair(0x0800, "RTC lost"))
+    (make_pair(0x1000, "RTC adjusted"))
+    (make_pair(0x2000, "Holiday flag"))
+    (make_pair(0x4000, "DST change"))
+    (make_pair(0x8000, "Tamper flag"));
+
+
+const Mct420Device::FlagSet Mct420Device::_meterAlarmFlags = boost::assign::list_of
+    (make_pair(0x0001, "Unprogrammed"))
+    (make_pair(0x0002, "Configuration error"))
+    (make_pair(0x0004, "Self check error"))
+    (make_pair(0x0008, "RAM failure"))
+    // 0x0010 unsupported
+    (make_pair(0x0020, "Non-volatile memory failure"))
+    // 0x0040 unsupported
+    (make_pair(0x0080, "Measurement error"))
+    // 0x0100-0x0400 and 0x100-0x800 unsupported
+    (make_pair(0x0800, "Power failure"));
 
 
 const Mct420Device::ReadDescriptor Mct420Device::getDescriptorForRead(const unsigned char io, const unsigned function, const unsigned readLength) const
@@ -250,6 +287,26 @@ int Mct420Device::executePutConfig( CtiRequestMsg        *pReq,
 
         return ExecutionComplete;
     }
+    else if( parse.isKeyValid("channel_2_configuration") )
+    {
+        OutMessage->Sequence = EmetconProtocol::PutConfig_Channel2NetMetering;
+        bool found = getOperation(OutMessage->Sequence, OutMessage->Buffer.BSt);
+
+        string optionsString = parse.getsValue("channel_2_configuration_setting");
+
+        if( optionsString == "none" )
+        {
+            // We need to increment the function to disable net metering.
+            OutMessage->Buffer.BSt.Function += 1;
+        }
+
+        if( !found )
+        {
+            return NoMethod;
+        }
+
+        return NoError;
+    }
     else
     {
         return Inherited::executePutConfig(pReq, parse, OutMessage, vgList, retList, outList);
@@ -369,13 +426,42 @@ int Mct420Device::executeGetConfig( CtiRequestMsg        *pReq,
                                     list< CtiMessage* >  &retList,
                                     list< OUTMESS* >     &outList )
 {
+    INT nRet = NoMethod;
+    bool found = false;
+
     //  Explicitly disallow this command for the MCT-420
     if( parse.isKeyValid("centron_parameters") )
     {
         return NoMethod;
     }
+    else if( parse.isKeyValid("configuration") )
+    {
+        OutMessage->Sequence = EmetconProtocol::GetConfig_Configuration;
+        found = getOperation(OutMessage->Sequence, OutMessage->Buffer.BSt);
+    }
+    else
+    {
+        return Inherited::executeGetConfig(pReq, parse, OutMessage, vgList, retList, outList);
+    }
 
-    return Inherited::executeGetConfig(pReq, parse, OutMessage, vgList, retList, outList);
+    if( found )
+    {
+        // Load all the other stuff that is needed
+        //  FIXME:  most of this is taken care of in propagateRequest - we could probably trim a lot of this out
+        OutMessage->DeviceID  = getID();
+        OutMessage->TargetID  = getID();
+        OutMessage->Port      = getPortID();
+        OutMessage->Remote    = getAddress();
+        OutMessage->TimeOut   = 2;
+        OutMessage->Retry     = 2;
+
+        OutMessage->Request.RouteID   = getRouteID();
+        strncpy(OutMessage->Request.CommandStr, pReq->CommandString().c_str(), COMMAND_STR_SIZE);
+
+        nRet = NoError;
+    }
+
+    return nRet;
 }
 
 
@@ -474,6 +560,68 @@ int Mct420Device::decodeGetConfigModel(INMESS *InMessage, CtiTime &TimeNow, list
     return NoError;
 }
 
+int Mct420Device::decodeGetConfigConfiguration( INMESS *InMessage, CtiTime &TimeNow, std::list< CtiMessage* > &vgList, std::list< CtiMessage* > &retList, std::list< OUTMESS* > &outList )
+{
+    DSTRUCT &DSt = InMessage->Buffer.DSt;
+
+    const unsigned configuration  = DSt.Message[0];
+    const unsigned eventMask      = DSt.Message[1] << 8 | DSt.Message[2];
+    const unsigned meterAlarmMask = DSt.Message[3] << 8 | DSt.Message[4];
+    const unsigned options        = DSt.Message[5];
+
+    string descriptor;
+
+    descriptor += getName() + " / Configuration information:\n";
+
+    // Configuration description
+    descriptor += "DST " + string(configuration & 0x01 ? "en" : "dis") + "abled\n";
+    descriptor += "LED Test " + string(configuration & 0x02 ? "en" : "dis") + "abled\n";
+    descriptor += "Reconnect button " + string(configuration & 0x04 ? "" : "not ") + "required\n";
+    descriptor += "Demand limit mode " + string(configuration & 0x08 ? "en" : "dis") + "abled\n";
+    descriptor += "Disconnect cycling mode " + string(configuration & 0x10 ? "en" : "dis") += "abled\n";
+    descriptor += "Repeater role " + string(configuration & 0x20 ? "en" : "dis") + "abled\n";
+    descriptor += "Disconnect collar is " + string(configuration & 0x40 ? "" : "not ") + "an MCT-410d Rev E (or later)\n";
+    descriptor += "Daily reporting " + string(configuration & 0x80 ? "en" : "dis") + "abled\n";
+
+    // Event mask descriptions
+    descriptor += getName() + " / Event mask information:\n";
+
+    for each (const Mct420Device::FlagMask &flag in _eventFlags)
+    {
+        descriptor += flag.second + " event mask " + string(eventMask & flag.first ? "en" : "dis") + "abled\n";
+    }
+
+    // Meter alarm mask descriptions
+    descriptor += getName() + " / Meter alarm mask information:\n";
+
+    for each (const Mct420Device::FlagMask &flag in _meterAlarmFlags)
+    {
+        descriptor += flag.second + " meter alarm mask " + string(eventMask & flag.first ? "en" : "dis") + "abled\n";
+    }
+
+    // Options description
+    descriptor += getName() + " / Channel configuration:\n";
+
+    if( (options & 0x1c) == 0x1c ) 
+    {
+        descriptor += "Channel 2: Net metering mode enabled\n";
+    }
+    else
+    {
+        descriptor += "Channel 2: No meter attached\n";
+    }
+
+    if( !(options & 0x60) ) descriptor += "Channel 3: No meter attached\n";
+
+    CtiReturnMsg *ReturnMsg = new CtiReturnMsg(getID(), InMessage->Return.CommandStr);
+
+    ReturnMsg->setUserMessageId(InMessage->Return.UserID);
+    ReturnMsg->setResultString(descriptor);
+
+    retMsgHandler( InMessage->Return.CommandStr, NoError, ReturnMsg, vgList, retList, InMessage->MessageFlags & MessageFlag_ExpectMore );
+
+    return NoError;
+}
 
 Mct420Device::point_info Mct420Device::decodePulseAccumulator(const unsigned char *buf, const unsigned len, const unsigned char *freeze_counter)
 {

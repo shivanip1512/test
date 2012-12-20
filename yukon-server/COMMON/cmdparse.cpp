@@ -1859,6 +1859,10 @@ void  CtiCommandParser::doParseGetConfig(const string &_CmdStr)
         {
             flag |= CMD_FLAG_UPDATE;
         }
+        if( CmdStr.contains(" configuration") )
+        {
+            _cmd["configuration"] = true;
+        }
         setFlags(flag);
     }
     else

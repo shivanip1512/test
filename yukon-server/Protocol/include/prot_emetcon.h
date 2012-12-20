@@ -140,6 +140,7 @@ public:
         GetConfig_Addressing,
         GetConfig_DailyReadInterest,
         GetConfig_WaterMeterReadInterval,
+        GetConfig_Configuration,
 
         // PutConfig commands
         PutConfig_Install,

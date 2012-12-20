@@ -12,6 +12,12 @@ class IM_EX_DEVDB Mct420Device : public Mct410Device
 
     static const FunctionReadValueMappings _readValueMaps;
 
+    typedef std::pair<unsigned, std::string> FlagMask;
+    typedef std::set<FlagMask> FlagSet;
+
+    static const FlagSet _eventFlags;
+    static const FlagSet _meterAlarmFlags;
+
     virtual bool getOperation( const UINT &cmd, BSTRUCT &bst ) const;
 
     typedef Mct410Device Inherited;
@@ -37,6 +43,7 @@ protected:
 
     virtual int decodeGetConfigMeterParameters( INMESS *InMessage, CtiTime &TimeNow, std::list< CtiMessage* > &vgList, std::list< CtiMessage* > &retList, std::list< OUTMESS* > &outList );
     virtual int decodeGetConfigModel          ( INMESS *InMessage, CtiTime &TimeNow, std::list< CtiMessage* > &vgList, std::list< CtiMessage* > &retList, std::list< OUTMESS* > &outList );
+    virtual int decodeGetConfigConfiguration  ( INMESS *InMessage, CtiTime &TimeNow, std::list< CtiMessage* > &vgList, std::list< CtiMessage* > &retList, std::list< OUTMESS* > &outList );
 
     //  overriding the MCT-410's definitions
     virtual bool isSupported(const Mct410Device::Features feature) const;

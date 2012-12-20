@@ -1000,6 +1000,7 @@ INT MctDevice::ModelDecode(INMESS *InMessage, CtiTime &TimeNow, CtiMessageList &
         case EmetconProtocol::PutConfig_PhaseDetect:
         case EmetconProtocol::PutConfig_AlarmMask:
         case EmetconProtocol::PutConfig_AutoReconnect:
+        case EmetconProtocol::PutConfig_Channel2NetMetering:
         {
             status = decodePutConfig(InMessage, TimeNow, vgList, retList, outList);
             break;

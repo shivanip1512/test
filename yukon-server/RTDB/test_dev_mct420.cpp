@@ -1970,6 +1970,20 @@ BOOST_FIXTURE_TEST_SUITE(test_getOperation, getOperation_helper)
         BOOST_CHECK_EQUAL(BSt.Function, 0xf3);
         BOOST_CHECK_EQUAL(BSt.Length,   2);
     }
+    BOOST_AUTO_TEST_CASE(test_getOperation_80)
+    {
+        BOOST_REQUIRE(mct.getOperation(Cti::Protocols::EmetconProtocol::GetConfig_Configuration, BSt));
+        BOOST_CHECK_EQUAL(BSt.IO, EmetconProtocol::IO_Function_Read);
+        BOOST_CHECK_EQUAL(BSt.Function, 0x01);
+        BOOST_CHECK_EQUAL(BSt.Length,   6);
+    }
+    BOOST_AUTO_TEST_CASE(test_getOperation_81)
+    {
+        BOOST_REQUIRE(mct.getOperation(Cti::Protocols::EmetconProtocol::PutConfig_Channel2NetMetering, BSt));
+        BOOST_CHECK_EQUAL(BSt.IO, EmetconProtocol::IO_Write);
+        BOOST_CHECK_EQUAL(BSt.Function, 0x85);
+        BOOST_CHECK_EQUAL(BSt.Length,   0);
+    }
 //}  Brace matching for BOOST_FIXTURE_TEST_SUITE
 BOOST_AUTO_TEST_SUITE_END()
 
@@ -2431,7 +2445,17 @@ BOOST_AUTO_TEST_CASE(test_getValueMappingForRead_IO_Function_Read_1Dword)
     const vector<vector<tuple<unsigned, unsigned, int>>> expected = list_of<vector<tuple<unsigned, unsigned, int>>>
         //  function read 0
         (empty)
-        .repeat(170-1, empty)
+        (tuple_list_of(0,1,127)(1,1,128)(2,1,129))
+        (empty)
+        (empty)
+        (empty)
+        (empty)
+        (empty)
+        (empty)
+        (empty)
+        (empty)
+        //  function read 10
+        .repeat(160, empty)
         //  function read 170
         (empty)
         (empty)
@@ -2456,7 +2480,7 @@ BOOST_AUTO_TEST_CASE(test_getValueMappingForRead_IO_Function_Read_1Dword)
         (tuple_list_of(0,1,189)(1,1,190)(2,1,191))
         (empty)
         (empty)
-        //  function read 240
+        //  function read 250
         .repeat(6, empty);
 
     const test_Mct420CL dev;
@@ -2483,7 +2507,17 @@ BOOST_AUTO_TEST_CASE(test_getValueMappingForRead_IO_Function_Read_2Dwords)
     const vector<vector<tuple<unsigned, unsigned, int>>> expected = list_of<vector<tuple<unsigned, unsigned, int>>>
         //  function read 0
         (empty)
-        .repeat(150-1, empty)
+        (tuple_list_of(0,1,127)(1,1,128)(2,1,129)(3,2,130)(5,1,131))
+        (empty)
+        (empty)
+        (empty)
+        (empty)
+        (empty)
+        (empty)
+        (empty)
+        (empty)
+        //  function read 10
+        .repeat(140, empty)
         //  function read 150
         (empty)
         (empty)
@@ -2553,7 +2587,17 @@ BOOST_AUTO_TEST_CASE(test_getValueMappingForRead_IO_Function_Read_3Dwords)
     const vector<vector<tuple<unsigned, unsigned, int>>> expected = list_of<vector<tuple<unsigned, unsigned, int>>>
         //  function read 0
         (empty)
-        .repeat(150-1, empty)
+        (tuple_list_of(0,1,127)(1,1,128)(2,1,129)(3,2,130)(5,1,131))
+        (empty)
+        (empty)
+        (empty)
+        (empty)
+        (empty)
+        (empty)
+        (empty)
+        (empty)
+        //  function read 10
+        .repeat(140, empty)
         //  function read 150
         (empty)
         (empty)
