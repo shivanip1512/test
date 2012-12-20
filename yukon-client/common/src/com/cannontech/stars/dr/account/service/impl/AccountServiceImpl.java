@@ -385,6 +385,7 @@ public class AccountServiceImpl implements AccountService {
     @Transactional
     public void deleteAccount(int accountId, LiteYukonUser user) {
         CustomerAccount account = customerAccountDao.getById(accountId);
+        log.info("Deleting account id# " + accountId);
         deleteAccount(account, user);
     }
     
@@ -394,8 +395,8 @@ public class AccountServiceImpl implements AccountService {
     	YukonEnergyCompany yukonEnergyCompany = yukonEnergyCompanyService.getEnergyCompanyByOperator(user);
     	try {
     	    CustomerAccount account = customerAccountDao.getByAccountNumber(accountNumber, yukonEnergyCompany.getEnergyCompanyId());
+    	    log.info("Deleting account id# " + account.getAccountId());
             deleteAccount(account, user);
-
     	} catch (NotFoundException e ) {
             log.error("Account " + accountNumber + " could not be deleted: Unable to find account for account#: " + accountNumber);
             throw new InvalidAccountNumberException("Unable to find account for account#: " + accountNumber, e);
@@ -421,6 +422,7 @@ public class AccountServiceImpl implements AccountService {
          */
         List<Integer> inventoryIds = inventoryDao.getInventoryIdsByAccount(account.getAccountId());
         for(Integer inventoryId : inventoryIds) {
+            log.info("Clearing LMHardwareInfo and unenrolling hardware for inventory id# " + inventoryId);
             hardwareBaseDao.clearLMHardwareInfo(inventoryId);
             lmHardwareControlGroupDao.unenrollHardware(inventoryId);
         }
@@ -428,57 +430,68 @@ public class AccountServiceImpl implements AccountService {
         /*
          * Delete Program info
          */
+        log.info("Deleting Program info for account id# " + account.getAccountId());
         lmProgramEventDao.deleteProgramEventsForAccount(account.getAccountId());
         
         /*
          * Delete Appliance info
          */
+        log.info("Deleting Appliances for account id# " + account.getAccountId());
         applianceDao.deleteAppliancesByAccountId(account.getAccountId());
         
         /*
          * Delete WorkOrders
          */
+        log.info("Deleting Work Orders for account id# " + account.getAccountId());
         workOrderDao.deleteByAccount(account.getAccountId());
         
         /*
          * Delete CallReports 
          */
+        log.info("Deleting call reports for account id# " + account.getAccountId());
         callReportDao.deleteAllCallsByAccount(account.getAccountId());
         
         /*
          * Delete thermostat schedules for account
          */
+        log.info("Deleting thermostat schedules for account id# " + account.getAccountId());
         accountThermostatScheduleDao.deleteAllByAccountId(account.getAccountId());
         
         /*
          * Delete account mappings
          */
+        log.info("Deleting EC to account mappings for account id# " + account.getAccountId());
         ecMappingDao.deleteECToAccountMapping(account.getAccountId());
         
         /*
          * Delete account events
          */
+        log.info("Deleting events for account id# " + account.getAccountId());
         eventAccountDao.deleteAllEventsForAccount(account.getAccountId());
         
         /*
          * Delete customer account
          */
+        log.info("Deleting customer account " + account.getAccountId());
         customerAccountDao.remove(account);
         
         /*
          * Delete account site
          */
+        log.info("Deleting account site id# " + accountSite.getAccountSiteId());
         accountSiteDao.remove(accountSite);
         
         /*
          * Delete site information
          */
+        log.info("Deleting site info id# " + siteInfo.getSiteID());
         siteInformationDao.delete(siteInfo);
         
         /*
          * Delete billing address
          */
         if(billingAddress.getAddressID() != CtiUtilities.NONE_ZERO_ID) {
+            log.info("Deleting billing address id# " + billingAddress.getAddressID());
             addressDao.remove(billingAddress);
         }
         
@@ -499,8 +512,9 @@ public class AccountServiceImpl implements AccountService {
         if (userId != UserUtils.USER_DEFAULT_ID &&
                 userId != UserUtils.USER_ADMIN_ID &&
                 userId != UserUtils.USER_YUKON_ID) {
+            log.info("Deleting login and removing from starsDatabaseCache id# " + userId);
             yukonUserDao.deleteUser(userId);
-            starsDatabaseCache.deleteStarsYukonUser( userId );
+            starsDatabaseCache.deleteStarsYukonUser(userId);
         }
         
         /*

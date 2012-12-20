@@ -8,10 +8,12 @@ import java.util.Set;
 import javax.naming.ConfigurationException;
 
 import org.apache.commons.lang.StringUtils;
+import org.apache.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.dao.EmptyResultDataAccessException;
 import org.springframework.transaction.annotation.Transactional;
 
+import com.cannontech.clientutils.YukonLogManager;
 import com.cannontech.common.config.ConfigurationSource;
 import com.cannontech.common.config.MasterConfigBooleanKeysEnum;
 import com.cannontech.common.constants.YukonSelectionList;
@@ -81,6 +83,8 @@ import com.google.common.collect.Iterables;
 import com.google.common.collect.Sets;
 
 public class EnergyCompanyServiceImpl implements EnergyCompanyService {
+    private Logger log = YukonLogManager.getLogger(EnergyCompanyServiceImpl.class);
+
     @Autowired private AccountThermostatScheduleDao accountThermostatScheduleDao;
     @Autowired private ContactDao contactDao;
     @Autowired private ContactNotificationDao contactNotificationDao;
@@ -334,19 +338,19 @@ public class EnergyCompanyServiceImpl implements EnergyCompanyService {
         deleteAllCustomerAccounts(energyCompany, user);
         
         deleteAllInventory(energyCompanyId, dbAlias);
-        
+
         deleteAllWorkOrders(energyCompanyId, dbAlias);
-        
+
         deleteAllDefaultThermostatSchedules(energyCompany);
-        
+
         deleteAllSubstations(energyCompany);
-        
+
         deleteAllWarehouses(energyCompany);
-        
+
         deleteAllServiceCompanies(energyCompany);
-        
+
         deleteAllApplianceCategories(energyCompany);
-        
+
         deleteAllCustomerSelectionLists(energyCompany);
         
         LiteYukonGroup liteGroup = deleteEnergyCompanyBase(energyCompany, dbAlias);
@@ -354,12 +358,14 @@ public class EnergyCompanyServiceImpl implements EnergyCompanyService {
         deletePrivilegeGroupsAndDefaultOperatorLogin(energyCompany, liteGroup);
         
         starsEventLogService.deleteEnergyCompany(user, energyCompanyName);
+        log.info("Deleting energy company " + energyCompany.getName() + " id# " + energyCompanyId + " completed.");
     }
 
     private void deleteAllWarehouses(LiteStarsEnergyCompany energyCompany) {
         List<Warehouse> warehouses = warehouseDao.getAllWarehousesForEnergyCompanyId(energyCompany.getEnergyCompanyId());
         
         for (Warehouse warehouse : warehouses) {
+            log.info("Deleting warehouse " + warehouse.getWarehouseName() + " id# " + warehouse.getWarehouseID() + " for energy company : " + energyCompany.getName());
             warehouseDao.delete(warehouse);
         }
     }
@@ -387,6 +393,7 @@ public class EnergyCompanyServiceImpl implements EnergyCompanyService {
             YukonGroup dftGroup = new YukonGroup();
             dftGroup.setGroupID(new Integer(liteGroup.getGroupID()));
 
+            log.info("Deleting role group id# " + dftGroup.getGroupID());
             dbPersistentDao.performDBChange(dftGroup, TransactionType.DELETE);
         }
         //Find and delete a privilege user group
@@ -395,6 +402,7 @@ public class EnergyCompanyServiceImpl implements EnergyCompanyService {
             UserGroup userGroup = new UserGroup();
             userGroup.setUserGroupId(liteUserGroup.getUserGroupId());
             
+            log.info("Deleting user group id# " + liteUserGroup.getUserGroupId());
             dbPersistentDao.performDBChange(userGroup, TransactionType.DELETE);
         }
     }
@@ -408,6 +416,7 @@ public class EnergyCompanyServiceImpl implements EnergyCompanyService {
      * @throws TransactionException
      */
     private LiteYukonGroup deleteEnergyCompanyBase(LiteStarsEnergyCompany energyCompany, String dbAlias) {
+        log.info("Deleting energy company base id# " + energyCompany.getEnergyCompanyId());
         String sql;
         // Delete all other generic mappings
         sql = "DELETE FROM ECToGenericMapping WHERE EnergyCompanyID = " + energyCompany.getEnergyCompanyId();
@@ -440,6 +449,7 @@ public class EnergyCompanyServiceImpl implements EnergyCompanyService {
         ec.setEnergyCompanyID( energyCompany.getEnergyCompanyId() );
         ec.getEnergyCompany().setPrimaryContactId(energyCompany.getPrimaryContactID());
         
+        log.info("Deleting energy company id# " + energyCompany.getEnergyCompanyId());
         dbPersistentDao.performDBChange(ec, TransactionType.DELETE);
         
         StarsDatabaseCache.getInstance().deleteEnergyCompany( energyCompany.getLiteID() );
@@ -459,19 +469,18 @@ public class EnergyCompanyServiceImpl implements EnergyCompanyService {
     /**
      * @param energyCompany
      */
-    private void deleteAllCustomerSelectionLists(
-                                                 LiteStarsEnergyCompany energyCompany) {
+    private void deleteAllCustomerSelectionLists(LiteStarsEnergyCompany energyCompany) {
         // Delete customer selection lists
         List<YukonSelectionList> energyCompanySelectionLists = 
-            yukonListDao.getSelectionListsByEnergyCompanyId(energyCompany.getEnergyCompanyId());
+                yukonListDao.getSelectionListsByEnergyCompanyId(energyCompany.getEnergyCompanyId());
         for (YukonSelectionList cList : energyCompanySelectionLists) {
             if (cList.getListId() == LiteStarsEnergyCompany.FAKE_LIST_ID) continue;
-            
-            Integer listID = new Integer( cList.getListId() );
+
             com.cannontech.database.data.constants.YukonSelectionList list =
                     new com.cannontech.database.data.constants.YukonSelectionList();
-            list.setListID( listID );
-            
+            list.setListID(cList.getListId());
+            log.info("Deleting customer selection list id# " + cList.getListId());
+
             dbPersistentDao.performDBChange(list, TransactionType.DELETE);
         }
     }
@@ -496,6 +505,7 @@ public class EnergyCompanyServiceImpl implements EnergyCompanyService {
             com.cannontech.stars.database.data.appliance.ApplianceCategory appCat =
                     new com.cannontech.stars.database.data.appliance.ApplianceCategory();
             StarsLiteFactory.setApplianceCategory( appCat.getApplianceCategory(), liteAppCat );
+            log.info("Deleting appliance category id# " + appCat.getApplianceCategory().getApplianceCategoryID());
             dbPersistentDao.performDBChange(appCat, TransactionType.DELETE);
             
             energyCompany.deleteApplianceCategory( liteAppCat.getApplianceCategoryID() );
@@ -513,7 +523,7 @@ public class EnergyCompanyServiceImpl implements EnergyCompanyService {
             com.cannontech.stars.database.data.report.ServiceCompany company =
                     new com.cannontech.stars.database.data.report.ServiceCompany();
             StarsLiteFactory.setServiceCompany( company, liteCompany );
-            
+            log.info("Deleting service company id# " + liteCompany.getCompanyID());
             dbPersistentDao.performDBChange(company, TransactionType.DELETE);
 
         }
@@ -530,8 +540,8 @@ public class EnergyCompanyServiceImpl implements EnergyCompanyService {
             for (int i = 0; i < substations.length; i++) {
                 com.cannontech.stars.database.data.Substation substation =
                         new com.cannontech.stars.database.data.Substation();
-                substation.setSubstationID( substations[i].getItemID() );
-                
+                substation.setSubstationID(substations[i].getItemID());
+                log.info("Deleting Substation id# " + substations[i].getItemID());
                 dbPersistentDao.performDBChange(substation, TransactionType.DELETE);
                 
             }
@@ -546,6 +556,7 @@ public class EnergyCompanyServiceImpl implements EnergyCompanyService {
         List<AccountThermostatSchedule> schedules = accountThermostatScheduleDao.getAllThermostatSchedulesForEC(energyCompany.getEnergyCompanyId());
 
         for(AccountThermostatSchedule schedule : schedules){
+            log.info("Deleting Thermostat Schedule " + schedule.getScheduleName() + " id# " + schedule.getAccountThermostatScheduleId());
             accountThermostatScheduleDao.deleteById(schedule.getAccountThermostatScheduleId());
         }
     }
@@ -572,8 +583,8 @@ public class EnergyCompanyServiceImpl implements EnergyCompanyService {
                 
                 com.cannontech.stars.database.data.report.WorkOrderBase order =
                         new com.cannontech.stars.database.data.report.WorkOrderBase();
-                order.setOrderID( new Integer(orderIDs[i]) );
-                
+                order.setOrderID(orderIDs[i]);
+                log.info("Deleting Work Order id# " + orderIDs[i]);
                 dbPersistentDao.performDBChange(order, TransactionType.DELETE);
                 
             }
@@ -603,8 +614,8 @@ public class EnergyCompanyServiceImpl implements EnergyCompanyService {
                 
                 com.cannontech.stars.database.data.hardware.InventoryBase inventory =
                         new com.cannontech.stars.database.data.hardware.InventoryBase();
-                inventory.setInventoryID( new Integer(invIDs[i]) );
-                
+                inventory.setInventoryID(invIDs[i]);
+                log.info("Deleting inventory id# " + invIDs[i]);
                 dbPersistentDao.performDBChange(inventory, TransactionType.DELETE);
                 
             }
@@ -630,13 +641,13 @@ public class EnergyCompanyServiceImpl implements EnergyCompanyService {
      * @return
      */
     private void deleteOperatorLoginList(LiteStarsEnergyCompany energyCompany) {
-
         // Delete entries in EnergyCompanyOperatorLoginList for EnergyCompanyId exclude the default operator login
         SqlStatementBuilder sql = new SqlStatementBuilder();
         sql.append("DELETE FROM EnergyCompanyOperatorLoginList");
         sql.append("WHERE EnergyCompanyId").eq(energyCompany.getEnergyCompanyId());
         sql.append("AND OperatorLoginID").neq(energyCompany.getUser().getUserID());
         yukonJdbcTemplate.update(sql); 
+        log.info("Deleting Operator Login list for energy company " + energyCompany.getName() + " id# " + energyCompany.getEnergyCompanyId());
     }
 
     @Override
