@@ -31,6 +31,18 @@ class IM_EX_DEVDB Mct440_213xBDevice : public Mct420Device
         Sspec                                   = 1030,
     };
 
+    struct PutConfigPending_t
+    {
+        bool is_pending, force;
+        PutConfigPending_t()
+        {
+            is_pending = false;
+            force      = false;
+        }
+    };
+
+    PutConfigPending_t InstallDstPending;
+
 protected:
 
     enum PointOffsets

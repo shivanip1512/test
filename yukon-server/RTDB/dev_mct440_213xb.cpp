@@ -3751,6 +3751,33 @@ int Mct440_213xBDevice::decodeGetConfigOptions(INMESS         *InMessage,
 
     retMsgHandler( InMessage->Return.CommandStr, status, ReturnMsg.release(), vgList, retList );
 
+    if( InstallDstPending.is_pending )
+    {
+        InstallDstPending.is_pending = false;
+
+        string putconfig_cmd = string("putconfig install ") + Mct4xxDevice::PutConfigPart_dst;
+
+        if(InstallDstPending.force)
+        {
+             putconfig_cmd += " force"; // add force parameter
+        }
+
+        // create putconfig install request
+        std::auto_ptr<CtiRequestMsg> newReq(CTIDBG_new CtiRequestMsg(getID(),
+                                                                     putconfig_cmd,
+                                                                     InMessage->Return.UserID,
+                                                                     InMessage->Return.GrpMsgID,
+                                                                     InMessage->Return.RouteID,
+                                                                     0,  //  PIL will recalculate this;  if we include it, we will potentially be bypassing the initial macro routes
+                                                                     0,
+                                                                     InMessage->Return.OptionsField,
+                                                                     InMessage->Priority));
+
+        newReq->setConnectionHandle((void *)InMessage->Return.Connection);
+
+        retList.push_back(newReq.release()); // re-add request to do a putconfig
+    }
+
     return status;
 }
 
@@ -4039,46 +4066,22 @@ int Mct440_213xBDevice::executePutConfigInstallDST(CtiRequestMsg     *pReq,
 
                     outList.push_back( CTIDBG_new OUTMESS(*OutMessage) );
                 }
-                else // if dynamic data is not available, sent a getconfig install command, followed by a copy of the current putconfig install command
+                else // if dynamic data is not available
                 {
-                    // create getconfig install request
-                    string getconfig_cmd = string("getconfig install ") + Mct4xxDevice::PutConfigPart_dst;
-
-                    std::auto_ptr<CtiRequestMsg> getConfigReq(CTIDBG_new CtiRequestMsg(getID(),
-                                                                                       getconfig_cmd,
-                                                                                       OutMessage->Request.UserID,
-                                                                                       OutMessage->Request.GrpMsgID,
-                                                                                       OutMessage->Request.RouteID,
-                                                                                       0,  //  PIL will recalculate this;  if we include it, we will potentially be bypassing the initial macro routes
-                                                                                       0,
-                                                                                       OutMessage->Request.OptionsField,
-                                                                                       OutMessage->Priority));
-
-                    getConfigReq->setConnectionHandle((void *)OutMessage->Request.Connection);
-
-                    retList.push_back(getConfigReq.release()); // add request to getconfig install dst
-
-                    string putconfig_cmd = string("putconfig install ") + Mct4xxDevice::PutConfigPart_dst;
-
-                    if(parse.isKeyValid("force"))
+                    if( !getOperation(EmetconProtocol::GetConfig_Options, OutMessage->Buffer.BSt) )
                     {
-                        putconfig_cmd += " force"; // add force parameter
+                        CtiLockGuard<CtiLogger> doubt_guard(dout);
+                        dout << CtiTime() << " **** Checkpoint - Operation GetStatus_Internal not found **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
+                        return NoConfigData;
                     }
 
-                    // create putconfig install request
-                    std::auto_ptr<CtiRequestMsg> putConfigReq(CTIDBG_new CtiRequestMsg(getID(),
-                                                                                       putconfig_cmd,
-                                                                                       OutMessage->Request.UserID,
-                                                                                       OutMessage->Request.GrpMsgID,
-                                                                                       OutMessage->Request.RouteID,
-                                                                                       0,  //  PIL will recalculate this;  if we include it, we will potentially be bypassing the initial macro routes
-                                                                                       0,
-                                                                                       OutMessage->Request.OptionsField,
-                                                                                       OutMessage->Priority - 1)); // decrement priority
+                    OutMessage->Sequence = EmetconProtocol::GetConfig_Options;
 
-                    putConfigReq->setConnectionHandle((void *)OutMessage->Request.Connection);
+                    outList.push_back( CTIDBG_new OUTMESS(*OutMessage) );
 
-                    retList.push_back(putConfigReq.release()); // re-add request to do a putconfig
+                    // set put config install dst pending (will be done once GetConfig_Options)
+                    InstallDstPending.is_pending = true;
+                    InstallDstPending.force      = parse.isKeyValid("force");
                 }
             }
             else
