@@ -1,46 +1,42 @@
 package com.cannontech.amr.device.search.model;
 
-import com.cannontech.common.pao.PaoClass;
-import com.cannontech.common.pao.PaoType;
 import com.cannontech.database.data.lite.LiteYukonPAObject;
 
 public enum DeviceSearchCategory {
     MCT(new CategoryContentChecker() {
         @Override
         public boolean contains(LiteYukonPAObject lPao) {
-            return PaoType.getMctTypes().contains(lPao.getPaoType());
+            return lPao.getPaoType().isMct();
         }
     }),
     IED(new CategoryContentChecker() {
         @Override
         public boolean contains(LiteYukonPAObject lPao) {
-            return PaoType.getIedTypes().contains(lPao.getPaoType());
+            return lPao.getPaoType().isIed();
         }
     }),
     RTU(new CategoryContentChecker() {
         @Override
         public boolean contains(LiteYukonPAObject lPao) {
-            return PaoType.getRtuTypes().contains(lPao.getPaoType());
+            return lPao.getPaoType().isRtu();
         }
     }),
     TRANSMITTER(new CategoryContentChecker() {
         @Override
         public boolean contains(LiteYukonPAObject lPao) {
-            return PaoClass.TRANSMITTER == lPao.getPaoType().getPaoClass();
+            return lPao.getPaoType().isTransmitter();
         }
     }),
     LMGROUP(new CategoryContentChecker() {
         @Override
         public boolean contains(LiteYukonPAObject lPao) {
-            // TODO Auto-generated method stub
-            return (PaoClass.LOADMANAGEMENT == lPao.getPaoType().getPaoClass()
-                    || PaoClass.GROUP == lPao.getPaoType().getPaoClass());
+            return lPao.getPaoType().isLmGroup();
         }
     }),
     CAP(new CategoryContentChecker() {
         @Override
         public boolean contains(LiteYukonPAObject lPao) {
-            return (PaoClass.CAPCONTROL == lPao.getPaoType().getPaoClass());
+            return lPao.getPaoType().isCapControl();
         }
     });
     

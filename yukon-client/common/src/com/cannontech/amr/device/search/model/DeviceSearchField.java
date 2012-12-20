@@ -1,5 +1,12 @@
 package com.cannontech.amr.device.search.model;
 
+/**
+ * For usage of the queryField values,
+ * @see com.cannontech.amr.device.search.dao.impl.DeviceSearchRowMapper
+ * 
+ * @author macourtois
+ *
+ */
 public enum DeviceSearchField implements SearchField {
     ID("id", "ypo.paObjectId", false),
     NAME("name", "ypo.paoname", true),

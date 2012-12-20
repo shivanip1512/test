@@ -1,7 +1,6 @@
 package com.cannontech.amr.device.search.service.impl;
 
 import java.util.ArrayList;
-import java.util.Iterator;
 import java.util.List;
 
 import org.springframework.beans.factory.annotation.Autowired;
@@ -12,9 +11,9 @@ import com.cannontech.amr.device.search.model.CompositeFilterBy;
 import com.cannontech.amr.device.search.model.DeviceSearchCategory;
 import com.cannontech.amr.device.search.model.DeviceSearchField;
 import com.cannontech.amr.device.search.model.DeviceSearchResultEntry;
+import com.cannontech.amr.device.search.model.FieldValueIn;
+import com.cannontech.amr.device.search.model.FieldValueStartsWith;
 import com.cannontech.amr.device.search.model.FilterBy;
-import com.cannontech.amr.device.search.model.FilterByField;
-import com.cannontech.amr.device.search.model.FilterByField.Comparator;
 import com.cannontech.amr.device.search.model.OrderByField;
 import com.cannontech.amr.device.search.model.SearchField;
 import com.cannontech.amr.device.search.service.DeviceSearchService;
@@ -80,20 +79,20 @@ public class DeviceSearchServiceImpl implements DeviceSearchService {
     public FilterBy getFiltersForCategory(DeviceSearchCategory category) {
         switch(category) {
             case CAP:
-                return new FilterByField(DeviceSearchField.CLASS, PaoClass.CAPCONTROL.getDbString(), Comparator.STARTS_WITH_IGNORE_CASE);
+                return new FieldValueStartsWith(DeviceSearchField.CLASS, PaoClass.CAPCONTROL.getDbString());
             case IED:
-                return new FilterByField(DeviceSearchField.TYPE, createStringList(PaoType.getIedTypes().iterator()), Comparator.IN);
+                return new FieldValueIn(DeviceSearchField.TYPE, PaoType.getIedTypes());
             case LMGROUP:
                 return CompositeFilterBy.or(
-                        new FilterByField(DeviceSearchField.CLASS, PaoClass.GROUP.getDbString(), Comparator.STARTS_WITH_IGNORE_CASE),
-                        new FilterByField(DeviceSearchField.CLASS, PaoClass.LOADMANAGEMENT.getDbString(), Comparator.STARTS_WITH_IGNORE_CASE)
+                        new FieldValueStartsWith(DeviceSearchField.CLASS, PaoClass.GROUP.getDbString()),
+                        new FieldValueStartsWith(DeviceSearchField.CLASS, PaoClass.LOADMANAGEMENT.getDbString())
                 );
             case MCT:
-                return new FilterByField(DeviceSearchField.TYPE, createStringList(PaoType.getMctTypes().iterator()), Comparator.IN);
+                return new FieldValueIn(DeviceSearchField.TYPE, PaoType.getMctTypes());
             case RTU:
-                return new FilterByField(DeviceSearchField.TYPE, createStringList(PaoType.getRtuTypes().iterator()), Comparator.IN);
+                return new FieldValueIn(DeviceSearchField.TYPE, PaoType.getRtuTypes());
             case TRANSMITTER:
-                return new FilterByField(DeviceSearchField.CLASS, PaoClass.TRANSMITTER.getDbString(), Comparator.STARTS_WITH_IGNORE_CASE);
+                return new FieldValueStartsWith(DeviceSearchField.CLASS, PaoClass.TRANSMITTER.getDbString());
         }
         
         return null;
@@ -113,18 +112,5 @@ public class DeviceSearchServiceImpl implements DeviceSearchService {
     @Override
     public boolean isMeterDetailsSupported(LiteYukonPAObject lPao) {
         return paoDefinitionDao.isTagSupported(lPao.getPaoType(), PaoTag.METER_DETAIL_DISPLAYABLE);
-    }
-
-    private String createStringList(Iterator<PaoType> iterator) {
-        StringBuilder stringList = new StringBuilder();
-        while(iterator.hasNext()) {
-            PaoType type = iterator.next();
-            stringList.append("'").append(type.getDbString()).append("'");
-            if(iterator.hasNext()) {
-                stringList.append(',');
-            }
-        }
-        
-        return stringList.toString();
     }
 }

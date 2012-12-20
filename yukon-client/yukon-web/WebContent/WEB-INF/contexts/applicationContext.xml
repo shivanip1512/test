@@ -1016,10 +1016,6 @@
         <property name="paoDetailUrlHelper" ref="paoDetailUrlHelper"/>
     </bean>
 
-    <bean id="paoNameTagPrototype" class="com.cannontech.web.taglib.PaoNameTag">
-        <property name="paoDao" ref="paoDao"/>
-    </bean>
-
     <bean id="paoTypeIconTagPrototype" class="com.cannontech.web.taglib.PaoTypeIconTag">
         <property name="paoDefinitionDao" ref="paoDefinitionDao"/>
     </bean>

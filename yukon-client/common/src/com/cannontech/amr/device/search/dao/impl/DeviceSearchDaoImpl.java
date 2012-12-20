@@ -19,6 +19,7 @@ import com.cannontech.amr.device.search.model.SearchField;
 import com.cannontech.common.search.SearchResult;
 import com.cannontech.common.util.SqlFragmentCollection;
 import com.cannontech.common.util.SqlStatementBuilder;
+import com.cannontech.database.YukonResultSet;
 
 @Repository
 public class DeviceSearchDaoImpl implements DeviceSearchDao {
@@ -85,7 +86,7 @@ public class DeviceSearchDaoImpl implements DeviceSearchDao {
             
             while(rs.next() && pageCount-- > 0){
                 
-                DeviceSearchResultEntry entry = deviceSearchRowMapper.mapRow(rs, rs.getRow());
+                DeviceSearchResultEntry entry = deviceSearchRowMapper.mapRow(new YukonResultSet(rs));
                 entryList.add(entry);
             }
             

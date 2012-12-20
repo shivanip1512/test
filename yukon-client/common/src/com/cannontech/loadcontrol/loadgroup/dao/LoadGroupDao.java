@@ -54,25 +54,4 @@ public interface LoadGroupDao {
      * @return
      */
     public List<LoadGroup> getByProgramId(int programId);
-    
-    /**
-     * This method will return the route ID of the specified load group if supported
-     * @param loadGroupId the load group ID
-     * @return the route ID or null if not supported
-     */
-    public Integer findRouteId(int loadGroupId);
-    
-    /**
-     * This method will return the serial number of the specified load group if supported
-     * @param loadGroupId the load group ID
-     * @return the serial number or null if not supported
-     */
-    public Integer findSerialNumber(int loadGroupId);
-    
-    /**
-     * This method will return the kW capacity of the specified load group
-     * @param loadGroupId the load group ID
-     * @return the kW capacity
-     */
-    public Double findCapacity(int loadGroupId);
 }

@@ -84,12 +84,7 @@
                             <cti:url var="commandUrl" value="/commander/command">
                                 <cti:param name="deviceId" value="${searchResultRow.map['id']}"/>
                             </cti:url>
-                            <td><a href="${commandUrl}">
-                                <c:choose>
-                                    <c:when test="${empty value}"></c:when>
-                                    <c:otherwise>${value}</c:otherwise>
-                                </c:choose>
-                            </a></td>
+                            <td><a href="${commandUrl}">${value}</a></td>
                             </c:when>
                             <c:when test="${field eq 'TYPE'}"><td>${value}</td></c:when>
                             <c:otherwise><td><c:choose>

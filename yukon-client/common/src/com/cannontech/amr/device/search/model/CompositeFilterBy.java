@@ -4,6 +4,25 @@ import com.cannontech.common.util.SqlFragmentCollection;
 import com.cannontech.common.util.SqlFragmentSource;
 import com.cannontech.common.util.SqlStatementBuilder;
 
+/**
+ * This class should be used to make groups of filters.
+ * 
+ * For example, if you want something like:
+ * 
+ * WHERE (itemA AND (ItemB OR itemC))
+ * 
+ * you could use:
+ * 
+ * CompositeFilterBy.and(
+ *      FilterBy(something for itemA),
+ *      CompositeFilterBy.or(
+ *          FilterBy(something for itemB),
+ *          FilterBy(something for itemC)
+ * );
+ * 
+ * @author macourtois
+ *
+ */
 public class CompositeFilterBy implements FilterBy {
     public enum Joiner {
         AND {
@@ -25,6 +44,12 @@ public class CompositeFilterBy implements FilterBy {
     private FilterBy [] filters;
     private Joiner joiner;
 
+    /**
+     * Create a composite of filters
+     * 
+     * @param joiner OR or AND joiner for the filters
+     * @param filters list of filters to join
+     */
     public CompositeFilterBy(Joiner joiner, FilterBy... filters) {
         this.joiner = joiner;
         this.filters = filters;
@@ -71,10 +96,22 @@ public class CompositeFilterBy implements FilterBy {
         return stringBuilder.toString();
     }
 
+    /**
+     * Utility method to create an AND composite filter
+     * 
+     * @param filters the list of filters to join
+     * @return the composite filter
+     */
     public static FilterBy and(FilterBy... filters) {
         return new CompositeFilterBy(Joiner.AND, filters);
     }
 
+    /**
+     * Utility method to create an OR composite filter
+     * 
+     * @param filters the list of filters to join
+     * @return the composite filter
+     */
     public static FilterBy or(FilterBy... filters) {
         return new CompositeFilterBy(Joiner.OR, filters);
     }

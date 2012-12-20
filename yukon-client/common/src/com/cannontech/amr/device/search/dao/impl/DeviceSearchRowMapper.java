@@ -5,14 +5,14 @@ import java.sql.ResultSetMetaData;
 import java.sql.SQLException;
 import java.util.List;
 
-import org.springframework.jdbc.core.simple.ParameterizedRowMapper;
-
 import com.cannontech.amr.device.search.model.DeviceSearchResultEntry;
 import com.cannontech.amr.device.search.model.SearchField;
 import com.cannontech.common.util.SqlFragmentSource;
 import com.cannontech.common.util.SqlStatementBuilder;
+import com.cannontech.database.YukonResultSet;
+import com.cannontech.database.YukonRowMapper;
 
-public class DeviceSearchRowMapper implements ParameterizedRowMapper<DeviceSearchResultEntry> {
+public class DeviceSearchRowMapper implements YukonRowMapper<DeviceSearchResultEntry> {
 
     public SqlFragmentSource getSelectFragment(List<SearchField> fields) {
         SqlStatementBuilder sql = new SqlStatementBuilder();
@@ -59,13 +59,16 @@ public class DeviceSearchRowMapper implements ParameterizedRowMapper<DeviceSearc
     }
 
     @Override
-    public DeviceSearchResultEntry mapRow(ResultSet rs, int rowNum) throws SQLException {
+    public DeviceSearchResultEntry mapRow(YukonResultSet rs) throws SQLException {
         DeviceSearchResultEntry entry = new DeviceSearchResultEntry();
         
-        ResultSetMetaData metaData = rs.getMetaData();
+        // Getting the base result set so we have access to metadata and columnIndex functions
+        ResultSet wrappedResultSet = rs.getResultSet();
         
+        // We don't know what we fetched here, so we loop through all the columns and get the values as string if they're not null
+        ResultSetMetaData metaData = wrappedResultSet.getMetaData();
         for(int columnIndex = 1; columnIndex <= metaData.getColumnCount(); columnIndex++) {
-            Object value = rs.getObject(columnIndex);
+            Object value = wrappedResultSet.getObject(columnIndex);
             if(value != null) {
                 entry.putField(metaData.getColumnLabel(columnIndex), value.toString());
             }

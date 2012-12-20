@@ -27,9 +27,9 @@
         <property name="template" ref="simpleJdbcTemplate" />
     </bean>
 
-    <bean id="deviceSearchService" class="com.cannontech.amr.device.search.service.impl.DeviceSearchServiceImpl" />
-    <bean id="deviceSearchDao" class="com.cannontech.amr.device.search.dao.impl.DeviceSearchDaoImpl"/>
-    <bean id="deviceSearchRowMapper" class="com.cannontech.amr.device.search.dao.impl.DeviceSearchRowMapper"/>
+    <bean class="com.cannontech.amr.device.search.service.impl.DeviceSearchServiceImpl" />
+    <bean class="com.cannontech.amr.device.search.dao.impl.DeviceSearchDaoImpl"/>
+    <bean class="com.cannontech.amr.device.search.dao.impl.DeviceSearchRowMapper"/>
 
     <bean id="meterSearchService"
         class="com.cannontech.amr.meter.search.service.impl.MeterSearchServiceImpl">

@@ -1,10 +1,10 @@
 package com.cannontech.web.commander;
 
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.Vector;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpSession;
@@ -23,9 +23,8 @@ import org.springframework.web.bind.annotation.RequestParam;
 import com.cannontech.amr.device.search.model.DeviceSearchCategory;
 import com.cannontech.amr.device.search.model.DeviceSearchField;
 import com.cannontech.amr.device.search.model.DeviceSearchResultEntry;
+import com.cannontech.amr.device.search.model.FieldValueStartsWith;
 import com.cannontech.amr.device.search.model.FilterBy;
-import com.cannontech.amr.device.search.model.FilterByField;
-import com.cannontech.amr.device.search.model.FilterByField.Comparator;
 import com.cannontech.amr.device.search.model.OrderByField;
 import com.cannontech.amr.device.search.model.SearchField;
 import com.cannontech.amr.device.search.service.DeviceSearchService;
@@ -53,14 +52,11 @@ public class CommanderController {
             @RequestParam(value = "category", defaultValue = "MCT") DeviceSearchCategory category,
             @RequestParam(value = "orderBy", defaultValue = "NAME") DeviceSearchField orderByField,
             @RequestParam(value = "descending", defaultValue = "false") Boolean orderByDescending,
-            @RequestParam(required = false) Integer page,
-            @RequestParam(required = false) Integer itemsPerPage,
+            @RequestParam(defaultValue = "1") Integer page,
+            @RequestParam(defaultValue = "25") Integer itemsPerPage,
             ModelMap modelMap,
             YukonUserContext userContext,
             HttpServletRequest request) {
-        
-        int pageComputed = (page == null) ? 1 : page;
-        int itemsPerPageComputed = (itemsPerPage == null) ? 25 : itemsPerPage;
         
         List<SearchField> fields = deviceSearchService.getFieldsForCategory(category);
         
@@ -72,7 +68,7 @@ public class CommanderController {
         List<FilterBy> searchFilters = new ArrayList<FilterBy>();
         searchFilters.add(categoryfilter);
         searchFilters.addAll(editableFilters);
-        SearchResult<DeviceSearchResultEntry> deviceSearchResults = deviceSearchService.search(fields, searchFilters, orderBy, ((pageComputed - 1) * itemsPerPageComputed), itemsPerPageComputed);
+        SearchResult<DeviceSearchResultEntry> deviceSearchResults = deviceSearchService.search(fields, searchFilters, orderBy, ((page - 1) * itemsPerPage), itemsPerPage);
         
         modelMap.addAttribute("filters", editableFilters);
         modelMap.addAttribute("fields", fields);
@@ -227,11 +223,11 @@ public class CommanderController {
         return commands;
     }
 
-    private Vector<String> getSerialNumberHistory(YCBean ycBean, String serialType) {
-        Vector<String> serialNumbers = ycBean.getSerialNumbers(serialType);
+    private List<String> getSerialNumberHistory(YCBean ycBean, String serialType) {
+        List<String> serialNumbers = ycBean.getSerialNumbers(serialType);
         
         if(serialNumbers == null) {
-            serialNumbers = new Vector<String>();
+            serialNumbers = Collections.emptyList();
         }
         
         return serialNumbers;
@@ -276,7 +272,7 @@ public class CommanderController {
         List<FilterBy> queryFilter = new ArrayList<FilterBy>();
         for (SearchField field : fields) {
             if(field.isVisible()) {
-                FilterByField filter = new FilterByField(field, Comparator.STARTS_WITH_IGNORE_CASE);
+                FieldValueStartsWith filter = new FieldValueStartsWith(field);
                 String filterValue = ServletRequestUtils.getStringParameter(request, field.getFieldName(), "").trim();
                 if (!StringUtils.isBlank(filterValue)) {
                     filter.setFilterValue(filterValue);

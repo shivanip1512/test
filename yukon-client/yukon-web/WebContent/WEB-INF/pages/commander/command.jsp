@@ -128,13 +128,13 @@
                         <li>
                     <c:choose>
                         <c:when test="${device.yukonID == deviceId}">
-                            <cti:paoName paoId="${device.yukonID}"/>
+                            ${fn:escapeXml(device.paoName)}
                         </c:when>
                         <c:otherwise>
                             <cti:url var="commandUrl" value="/commander/command">
                                 <cti:param name="deviceId" value="${device.yukonID}"/>
                             </cti:url>
-                            <a title="${device.paoIdentifier}" href="${commandUrl}"><cti:paoName paoId="${device.yukonID}"/></a>
+                            <a title="${device.paoIdentifier}" href="${commandUrl}">${fn:escapeXml(device.paoName)}</a>
                         </c:otherwise>
                     </c:choose>
                         </li>
@@ -153,13 +153,13 @@
                         <ul>
                     <c:choose>
                         <c:when test="${device.yukonID == deviceId}">
-                            <li><cti:paoName paoId="${device.yukonID}"/></li>
+                            <li>${fn:escapeXml(device.paoName)}</li>
                         </c:when>
                         <c:otherwise>
                             <cti:url var="commandUrl" value="/commander/command">
                                 <cti:param name="deviceId" value="${device.yukonID}"/>
                             </cti:url>
-                            <li><a href="${commandUrl}" class="Link1"><cti:paoName paoId="${device.yukonID}"/></a></li>
+                            <li><a href="${commandUrl}" class="Link1">${fn:escapeXml(device.paoName)}</a></li>
                         </c:otherwise>
                     </c:choose>
                         </ul>
@@ -297,13 +297,13 @@
                         <li>
                     <c:choose>
                         <c:when test="${device.yukonID == deviceId}">
-                            <cti:paoName paoId="${device.yukonID}"/>
+                            ${fn:escapeXml(device.paoName)}
                         </c:when>
                         <c:otherwise>
                             <cti:url var="commandUrl" value="/commander/command">
                                 <cti:param name="deviceId" value="${device.yukonID}"/>
                             </cti:url>
-                            <a title="${device.paoIdentifier}" href="${commandUrl}"><cti:paoName paoId="${device.yukonID}"/></a>
+                            <a title="${device.paoIdentifier}" href="${commandUrl}">${fn:escapeXml(device.paoName)}</a>
                         </c:otherwise>
                     </c:choose>
                         </li>

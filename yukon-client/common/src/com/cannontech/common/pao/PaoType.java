@@ -424,8 +424,32 @@ public enum PaoType implements DatabaseRepresentationSource {
         return meterTypes.contains(this);
     }
     
+    public boolean isIed() {
+        return iedTypes.contains(this);
+    }
+    
+    public boolean isMct() {
+        return mctTypes.contains(this);
+    }
+    
+    public boolean isRtu() {
+        return rtuTypes.contains(this);
+    }
+    
     public boolean isRfn() {
         return this.paoClass == PaoClass.RFMESH;
+    }
+    
+    public boolean isTransmitter() {
+        return PaoClass.TRANSMITTER == paoClass;
+    }
+    
+    public boolean isCapControl() {
+        return PaoClass.CAPCONTROL == paoClass;
+    }
+    
+    public boolean isLmGroup() {
+        return (PaoClass.LOADMANAGEMENT == paoClass || PaoClass.GROUP == paoClass);
     }
 
     public boolean isWaterMeter() {
@@ -465,7 +489,7 @@ public enum PaoType implements DatabaseRepresentationSource {
     	return getDbString();
     }
 
-    public Set<PaoType> getMeterTypes() {
+    public static Set<PaoType> getMeterTypes() {
         return meterTypes;
     }
     
