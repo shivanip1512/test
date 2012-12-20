@@ -2197,7 +2197,7 @@ INT Mct4xxDevice::decodePutConfig(INMESS *InMessage, CtiTime &TimeNow, CtiMessag
             if( isMct420(getType()) )
             {
                 // Execute a read to get back the configuration data to be stored in dynamic pao info.
-                CtiRequestMsg *pReq pReq = 
+                CtiRequestMsg *pReq = 
                     CTIDBG_new CtiRequestMsg(
                         InMessage->TargetID, 
                         "getconfig configuration", 
