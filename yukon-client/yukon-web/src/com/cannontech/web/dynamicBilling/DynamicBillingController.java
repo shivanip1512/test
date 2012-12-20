@@ -231,14 +231,16 @@ public class DynamicBillingController {
     }
 
     @RequestMapping
-    public @ResponseBody String updateFormatName(int formatId, String formatName, ModelMap model) throws ServletException {
+    public @ResponseBody String updateFormatName(int formatId, String formatName, ModelMap model, final YukonUserContext context) throws ServletException {
 
         DynamicFormat format = new DynamicFormat();
         format.setFormatId(formatId);
         format.setName(formatName);
             
         if (!dynamicBillingFileDao.isFormatNameUnique(format)){
-            return "The format name is not unique.  Please supply a unique format name";
+            
+            MessageSourceAccessor messageSourceAccessor = messageSourceResolver.getMessageSourceAccessor(context);
+            return messageSourceAccessor.getMessage("yukon.web.billing.nonUniqueFormatName");
         }
 
         // returns a blank text view since to error occured.   

@@ -197,6 +197,8 @@ greater than one.
     
     <entry key="yukon.web.billing.mustSelectGroup">Billing group must be selected.</entry>
 
+    <entry key="yukon.web.billing.nonUniqueFormatName">The format name is not unique.  Please supply a unique format name</entry>
+
 	<!-- Billing.jsp -->
 	<entry key="yukon.web.billing.fileFormat">File Format</entry>
 	<entry key="yukon.web.billing.billingEndDate">Billing End Date</entry>
