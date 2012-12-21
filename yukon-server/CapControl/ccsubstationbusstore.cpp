@@ -50,6 +50,7 @@ extern string _MAXOPS_ALARM_CAT;
 extern long _MAXOPS_ALARM_CATID;
 extern bool _OP_STATS_DYNAMIC_UPDATE;
 extern double _IVVC_DEFAULT_DELTA;
+extern unsigned long _SQL_RETRY_COUNT;
 
 using namespace std;
 using namespace Cti::CapControl;
@@ -2338,7 +2339,7 @@ void CtiCCSubstationBusStore::doOpStatsThr()
         CtiLockGuard<CtiLogger> logger_guard(dout);
         dout << CtiTime() << " - Unable to obtain '" << var << "' value from cparms." << endl;
     }
-
+    ThreadStatusKeeper threadStatus("CapControl doOpsThr");
     bool startUpSendStats = true;
     long lastOpStatsThreadPulse = 0;
     CtiTime rwnow;
@@ -2423,6 +2424,7 @@ void CtiCCSubstationBusStore::doOpStatsThr()
             startUpSendStats = false;
         }
 
+        threadStatus.monitorCheck();
         {
             rwRunnable().sleep(500);
             rwRunnable().serviceCancellation();
@@ -10084,7 +10086,7 @@ void CtiCCSubstationBusStore::reCalculateConfirmationStatsFromDatabase( )
 
             rdr << oneMonthAgo;
 
-            rdr.execute();
+            rdr.executeWithRetries(_SQL_RETRY_COUNT);
 
             if ( _CC_DEBUG & CC_DEBUG_DATABASE )
             {

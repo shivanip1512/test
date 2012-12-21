@@ -1,6 +1,7 @@
 #include "precompiled.h"
 #include "database_reader.h"
 #include "logger.h"
+#include "CParms.h"
 
 using namespace Cti::Database;
 using Cti::RowReader;
@@ -52,6 +53,38 @@ bool DatabaseReader::isValid()
         CtiLockGuard<CtiLogger> doubt_guard(dout);
         dout << CtiTime() << " **** ERROR **** EXECUTE NOT CALLED BEFORE CHECKING VALIDITY!!!! " << endl;
     }
+    return _isValid;
+}
+
+
+bool DatabaseReader::executeWithRetries(int retries)
+{
+    unsigned long waitTimer = gConfigParms.getValueAsULong("YUKON_RETRY_SQL_WAIT_MS", 500);
+    _executeCalled = true;
+    while( retries > 0)
+    {
+        try
+        {
+            _command.Execute();
+            _isValid = true;
+            return _isValid;
+
+        }
+        catch(SAException &x)
+        {
+            _isValid = false;
+            retries--;
+            {
+                CtiLockGuard<CtiLogger> doubt_guard(dout);
+                dout << CtiTime() << " ** Attempt failed for SQL query, due to native code Error: " << x.ErrNativeCode() <<". Retrying." << endl;
+
+            }
+            Sleep(waitTimer);
+        }
+    };
+    execute();
+    
+
     return _isValid;
 }
 
