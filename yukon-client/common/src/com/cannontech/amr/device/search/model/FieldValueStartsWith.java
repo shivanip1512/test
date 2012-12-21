@@ -17,10 +17,8 @@ public class FieldValueStartsWith extends FilterByField<String> {
     public SqlFragmentSource getWhereClauseFragment() {
         SqlStatementBuilder sql = new SqlStatementBuilder();
         
-        sql.append("UPPER(" + getSearchField().getQueryField() + ")");
-        sql.append("LIKE UPPER(");
-        sql.appendArgument(getFilterValue());
-        sql.append(")");
+        sql.upperAppend(getSearchField().getQueryField());
+        sql.startsWithUppercase(getFilterValue());
         
         return sql;
     }
