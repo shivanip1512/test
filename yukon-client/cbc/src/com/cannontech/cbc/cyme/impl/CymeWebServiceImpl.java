@@ -67,8 +67,10 @@ public class CymeWebServiceImpl implements CymeWebService {
 
     @Override
     public CymeSimulationStatus getSimulationReportStatus(String simulationId) {
+        log.info("Checking Simulation Status with CYME"); 
+
         String response = cymeRestTemplate.getForObject(BASE_CYME_URL + SIMULATION_URL_PART + "/" + simulationId + CHECK_REPORT_STATUS_URL_END, String.class);
-        log.info("Checked Simulation Status with CYME"); 
+        
         log.debug(response);
         
         SimpleXPathTemplate template = new SimpleXPathTemplate();
@@ -77,7 +79,8 @@ public class CymeWebServiceImpl implements CymeWebService {
 
         String statusStr = template.evaluateAsString("/ns1:GetSimulationStatusResponse/ns1:Status");   
         CymeSimulationStatus status = CymeSimulationStatus.getFromCymeValue(statusStr);
-
+        log.info("Simulation Status is " + status.getCymeValue());
+        
         return status;
     }
 

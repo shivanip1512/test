@@ -2,6 +2,7 @@ package com.cannontech.cbc.cyme.profile;
 
 import java.util.List;
 
+import com.cannontech.cbc.cyme.model.SimulationLoadFactor;
 import com.cannontech.cbc.cyme.profile.CymeType.GlobalUnit;
 import com.cannontech.cbc.cyme.profile.CymeType.IntervalFormat;
 import com.cannontech.cbc.cyme.profile.CymeType.ProfileType;
@@ -22,7 +23,7 @@ public class CymeLoadProfile {
     private String dayType;
     private Unit unit;
     private String phase;
-    private List<Integer> values;
+    private List<SimulationLoadFactor> values;
     
     public CymeLoadProfile() {
         
@@ -116,11 +117,11 @@ public class CymeLoadProfile {
         this.phase = phase;
     }
 
-    public List<Integer> getValues() {
+    public List<SimulationLoadFactor> getValues() {
         return values;
     }
 
-    public void setValues(List<Integer> values) {
+    public void setValues(List<SimulationLoadFactor> values) {
         this.values = values;
     }
 }

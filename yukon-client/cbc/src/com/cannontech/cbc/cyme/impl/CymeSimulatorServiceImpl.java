@@ -20,12 +20,14 @@ import com.cannontech.capcontrol.model.BankState;
 import com.cannontech.capcontrol.model.PointPaoIdentifier;
 import com.cannontech.capcontrol.model.RegulatorToZoneMapping;
 import com.cannontech.capcontrol.model.Zone;
-import com.cannontech.cbc.cyme.CymeConfigurationException;
 import com.cannontech.cbc.cyme.CymeLoadProfileReader;
 import com.cannontech.cbc.cyme.CymePointDataCache;
 import com.cannontech.cbc.cyme.CymeSimulationListener;
 import com.cannontech.cbc.cyme.CymeSimulatorService;
 import com.cannontech.cbc.cyme.CymeWebService;
+import com.cannontech.cbc.cyme.exception.CymeConfigurationException;
+import com.cannontech.cbc.cyme.exception.CymeSimulationStopException;
+import com.cannontech.cbc.cyme.model.SimulationLoadFactor;
 import com.cannontech.cbc.cyme.profile.CymeLoadProfile;
 import com.cannontech.clientutils.YukonLogManager;
 import com.cannontech.common.config.ConfigurationSource;
@@ -117,75 +119,100 @@ public class CymeSimulatorServiceImpl implements CymeSimulatorService, CymeSimul
             return;
         }
         
-        // We didnt return out where we expected, something is wrong
+        // We didn't return out where we expected, something is wrong
         logger.info("CYME IVVC Simulator is disabled and will not run.");
     }
     
-    // Main Loop
     // Task in a scheduled executor.
     public void simulationKickoff() {
         
         if (cymePointDataCache.isCymeEnabled(substationBusPao.getPaoIdentifier().getPaoId())) {
-            if( ! simulationRunning) {   
-                logger.debug("Starting Simulation.");
-                simulationRunning = true;
-                
-                //Grab simulation Data. From File for now
-                String path = configurationSource.getString(MasterConfigStringKeysEnum.CYME_SIM_FILE, null );
-                if (path == null) {
-                    throw new UnknownKeyException("Missing File path Cparm  CYME_SIM_FILE. Could not continue simulation.");
-                }
-
-                final CymeLoadProfile loadProfile = cymeLoadProfileReader.readFromFile(path);
-    
-                //Prime the System data.
-                simulationKickoff();
-                
-                Runnable simulation = new Runnable() {
-                    private int stepNumber = 1;//Start at 1. The 0th was sent out upon simulation start
-                    private boolean complete = false;
+            if( ! simulationRunning) {
+                try {
+                    logger.info("Starting Simulation.");
+                    simulationRunning = true;
                     
-                    @Override
-                    public void run() {
-                        if (! runSimulation) {
-                            logger.debug("Simulation disabled, halting.");
-                            simulationRunning = false;
-                            throw new RuntimeException();//this ends future tasks
-                        }
-
-                        if (complete) {
-                            logger.debug("Simulation Complete, halting.");
-                            //Toggle the start simulation point to false,
-
-                            PointIdentifier startSimulation = new PointIdentifier(PointType.Status, 351);
-                            LitePoint simulationPoint = pointDao.getLitePoint(new PaoPointIdentifier(substationBusPao.getPaoIdentifier(), startSimulation));
-                            
-                            simplePointAccessDao.setPointValue(simulationPoint.getLiteID(), TrueFalse.FALSE);
-                            throw new RuntimeException();//this ends future tasks
-                        }
-                        
-                        int value = loadProfile.getValues().get(stepNumber++);
-                        logger.debug("Running next simulation step with Profile Percent:" + value);
-    
-                        //Send the New Load Value to the system.
-                        PointIdentifier loadFactor = new PointIdentifier(PointType.Analog, 352);
-                        LitePoint loadPoint = pointDao.getLitePoint(new PaoPointIdentifier(substationBusPao.getPaoIdentifier(), loadFactor));
-                        simplePointAccessDao.setPointValue(loadPoint.getLiteID(), value);
-                        scheduleCymeStudy();
-                        
-                        //Are we done? Change the status point
-                        if (stepNumber+1 >= 1440/loadProfile.getTimeInterval().getMinutes()) {
-                            complete = true;
-                            simulationRunning = false;
-                        }
+                    //Grab simulation Data. From File for now
+                    String path = configurationSource.getString(MasterConfigStringKeysEnum.CYME_SIM_FILE, null );
+                    if (path == null) {
+                        throw new UnknownKeyException("Missing File path Cparm  CYME_SIM_FILE. Could not continue simulation.");
                     }
-                };
-    
-                //Schedule at rate based on loadProfile data
-                int minutes = loadProfile.getTimeInterval().getMinutes();
-                scheduledExecutor.scheduleAtFixedRate(simulation, 0, minutes, TimeUnit.MINUTES);//TODO fix this to minutes
+
+                    final CymeLoadProfile loadProfile = cymeLoadProfileReader.readFromFile(path);
+                    
+                    Runnable simulation = new Runnable() {
+                        private int stepNumber = 1;//Start at 1. The 0th was sent out upon simulation start
+                        private boolean complete = false;
+                        private SimulationLoadFactor nextLoadFactor = loadProfile.getValues().get(0);
+                        
+                        @Override
+                        public void run() {
+                            try{
+                                //Check if we should continue to run.
+                                if (! runSimulation) {
+                                    //This was true to get this Runnable to execute, it must have changed since runtime 
+                                    logger.debug("Simulation disabled, halting.");
+                                    throw new CymeSimulationStopException("Simulation was halted before completing.");
+                                }
+        
+                                if (complete) {
+                                    logger.debug("Simulation Complete, halting.");
+                                    throw new CymeSimulationStopException("Simulation completing normally.");
+                                }
+                                
+                                //Check if its time to execute a new Load Factor
+                                if (nextLoadFactor.getTime().isBeforeNow()) {
+                                    logger.debug("Running next simulation step with Profile Percent:" + nextLoadFactor.getLoad());
+                                    
+                                    //Send the New Load Value to the system. The point change will cause a new study to run
+                                    PointIdentifier loadFactor = new PointIdentifier(PointType.Analog, 352);
+                                    LitePoint loadPoint = pointDao.getLitePoint(new PaoPointIdentifier(substationBusPao.getPaoIdentifier(), loadFactor));
+                                    simplePointAccessDao.setPointValue(loadPoint.getLiteID(), nextLoadFactor.getLoad());
+
+                                    //Are we done? Change the status point
+                                    //TODO Future: This will also need to pay attention to the time.
+                                    if (stepNumber+1 >= 1440/loadProfile.getTimeInterval().getMinutes()) {
+                                        complete = true;
+                                        simulationRunning = false;
+                                    } else {
+                                        //Setup the next Load Factor
+                                        nextLoadFactor = loadProfile.getValues().get(stepNumber++);
+                                    }
+                                }
+                                
+                            } catch (CymeSimulationStopException e) {
+                                simulationRunning = false;
+                                //Toggle the start simulation point to false,
+                                PointIdentifier startSimulation = new PointIdentifier(PointType.Status, 351);
+                                LitePoint simulationPoint = pointDao.getLitePoint(new PaoPointIdentifier(substationBusPao.getPaoIdentifier(), startSimulation));
+                                simplePointAccessDao.setPointValue(simulationPoint.getLiteID(), TrueFalse.FALSE);
+                                
+                                throw new RuntimeException();//Stops future scheduled executions
+                            } catch (Exception e) {
+                                logger.error("Uncaught Exception during 24 simulation. Shutting down the simulation.",e);
+                                
+                                simulationRunning = false;
+                                
+                                //Toggle the start simulation point to false,
+                                PointIdentifier startSimulation = new PointIdentifier(PointType.Status, 351);
+                                LitePoint simulationPoint = pointDao.getLitePoint(new PaoPointIdentifier(substationBusPao.getPaoIdentifier(), startSimulation));
+                                simplePointAccessDao.setPointValue(simulationPoint.getLiteID(), TrueFalse.FALSE);
+
+                                throw e;//Stops future scheduled executions
+                            }
+                        }
+                    };
+        
+                    //Run this every 5 seconds.
+                    scheduledExecutor.scheduleAtFixedRate(simulation, 0, 5, TimeUnit.SECONDS);
+                } catch (Exception e) {
+                    //intercepting all exception while setting up the simulation in order to make sure we reset flags.
+                    logger.error("There was an exeption while starting up the 24 hour load simulation.", e);
+                    simulationRunning = false;
+                    throw e;
+                }
             } else {
-                logger.debug("Simulation is in progress. Cannot start new one.");
+                logger.info("Simulation is in progress. Cannot start new one.");
             }
         } 
     }
@@ -325,7 +352,7 @@ public class CymeSimulatorServiceImpl implements CymeSimulatorService, CymeSimul
         if (!isCymeCparmEnabled()) {
             return;
         }
-        
+        logger.debug("New Load Factor received: " + pointData.getValue());
         scheduleCymeStudy();
     }
     

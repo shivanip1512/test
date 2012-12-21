@@ -35,6 +35,7 @@ public class CymeTaskExecutor {
                     
                     for (int i = 0; i < 15; i++) {
                         CymeSimulationStatus simStatus = cymeWebService.getSimulationReportStatus(simulationId);
+
                         if (simStatus == CymeSimulationStatus.QUEUED || simStatus == CymeSimulationStatus.ACTIVE) {
                             try {
                                 Thread.sleep(3000);

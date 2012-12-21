@@ -17,7 +17,6 @@ public enum TimeInterval implements CymeRepresentation{
         this.minutes = minutes;
     }
     
-    
     static public TimeInterval getFromCymeValue(String cymeValue) {
         
         for (TimeInterval i : values()) {

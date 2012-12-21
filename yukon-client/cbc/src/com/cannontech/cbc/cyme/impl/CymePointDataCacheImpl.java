@@ -19,9 +19,9 @@ import com.cannontech.capcontrol.dao.SubstationBusDao;
 import com.cannontech.capcontrol.dao.ZoneDao;
 import com.cannontech.capcontrol.model.PointPaoIdentifier;
 import com.cannontech.capcontrol.model.Zone;
-import com.cannontech.cbc.cyme.CymeConfigurationException;
 import com.cannontech.cbc.cyme.CymePointDataCache;
 import com.cannontech.cbc.cyme.CymeSimulationListener;
+import com.cannontech.cbc.cyme.exception.CymeConfigurationException;
 import com.cannontech.clientutils.YukonLogManager;
 import com.cannontech.common.config.ConfigurationSource;
 import com.cannontech.common.config.MasterConfigBooleanKeysEnum;
@@ -155,6 +155,11 @@ public class CymePointDataCacheImpl implements CymePointDataCache, PointDataList
         log.debug("Done Registering for bus with paoId:" + subbus.getPaoId());
     }
 
+    /**
+     * Attempts to register for the point updates for all points in the cache.
+     * If dispatch connection is not valid, it will return false, otherwise true if successful.
+     * @return
+     */
     private boolean registerPoints() {
         if (dispatchConnection.isValid()) {
             //Register Bank Statuses
@@ -237,7 +242,7 @@ public class CymePointDataCacheImpl implements CymePointDataCache, PointDataList
                 return pointIdToValue.get(entry.getKey());
             }
         }
-        throw new NotFoundException("Simulation Listener it no registered to the cache.");
+        throw new NotFoundException("No point found for Load Factor on Subbus with id: " + subbusId);
     }
     
     @Override

@@ -11,7 +11,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import com.cannontech.capcontrol.dao.CcMonitorBankListDao;
 import com.cannontech.capcontrol.model.BankState;
 import com.cannontech.capcontrol.model.PointPaoIdentifier;
-import com.cannontech.cbc.cyme.CymeConfigurationException;
+import com.cannontech.cbc.cyme.exception.CymeConfigurationException;
 import com.cannontech.clientutils.YukonLogManager;
 import com.cannontech.common.config.ConfigurationSource;
 import com.cannontech.common.config.MasterConfigStringKeysEnum;
