@@ -22,7 +22,7 @@ namespace Devices {
 const Mct420Device::CommandSet       Mct420Device::_commandStore = boost::assign::list_of
     (CommandStore(EmetconProtocol::GetConfig_Multiplier,          EmetconProtocol::IO_Function_Read, 0xf3, 2))
     (CommandStore(EmetconProtocol::GetConfig_MeterParameters,     EmetconProtocol::IO_Function_Read, 0xf3, 2))
-    (CommandStore(EmetconProtocol::GetConfig_Configuration,       EmetconProtocol::IO_Function_Read, 0x01, 6))
+    (CommandStore(EmetconProtocol::GetConfig_Options,             EmetconProtocol::IO_Function_Read, 0x01, 6))
     (CommandStore(EmetconProtocol::PutConfig_Channel2NetMetering, EmetconProtocol::IO_Write,         0x85, 0));
 
 
@@ -436,7 +436,7 @@ int Mct420Device::executeGetConfig( CtiRequestMsg        *pReq,
     }
     else if( parse.isKeyValid("configuration") )
     {
-        OutMessage->Sequence = EmetconProtocol::GetConfig_Configuration;
+        OutMessage->Sequence = EmetconProtocol::GetConfig_Options;
         found = getOperation(OutMessage->Sequence, OutMessage->Buffer.BSt);
     }
     else
@@ -468,6 +468,134 @@ int Mct420Device::executeGetConfig( CtiRequestMsg        *pReq,
 DlcBaseDevice::DlcCommandSPtr Mct420Device::makeHourlyReadCommand(const CtiDate date_begin, const CtiDate date_end, const unsigned channel) const
 {
     return DlcCommandSPtr(new Mct420HourlyReadCommand(date_begin, date_end, channel));
+}
+
+
+/**
+ * Calls the corresponding decode method for the function stored
+ * in InMessage->Sequence. All EmetconProtocol commands 
+ * supported by the MCT-420 that aren't supported by a parent of
+ * the MCT-420 must be represented in this function. Virtual 
+ * decode calls will be made from the parent ModelDecode calls, 
+ * so any decode that is supported by a parent class should be 
+ * omitted from this function. 
+ */
+INT Mct420Device::ModelDecode( INMESS *InMessage, CtiTime &TimeNow, CtiMessageList &vgList, CtiMessageList &retList, OutMessageList &outList )
+{
+    if( !InMessage )
+    {
+        return MEMORY;
+    }
+
+    INT status = NORMAL;
+
+    switch(InMessage->Sequence)
+    {
+        case EmetconProtocol::GetConfig_Options:
+        {
+            status = decodeGetConfigOptions(InMessage, TimeNow, vgList, retList, outList);
+            break;
+        }
+
+        // PutConfig commands
+        case EmetconProtocol::PutConfig_Channel2NetMetering:  
+        {
+            status = decodePutConfig(InMessage, TimeNow, vgList, retList, outList);  
+            break;
+        }
+
+        default:
+        {
+            status = Inherited::ModelDecode(InMessage, TimeNow, vgList, retList, outList);
+
+            if(status != NORMAL)
+            {
+                CtiLockGuard<CtiLogger> doubt_guard(dout);
+                dout << CtiTime() << " **** Checkpoint **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
+                dout << " IM->Sequence = " << InMessage->Sequence << " " << getName() << endl;
+            }
+
+            break;
+        }
+    }
+
+    return status;
+}
+
+/**
+ * This method is not virtual, and is only called by the 
+ * ModelDecode function of the MCT-420 for putConfig commands 
+ * specific to the MCT-420. If the command isn't specific to the 
+ * MCT-420, the decode will be processed by the parent class 
+ * ModelDecode function, and it does not need to be accounted 
+ * for in this function. 
+ */
+int Mct420Device::decodePutConfig( INMESS *InMessage, CtiTime &TimeNow, CtiMessageList &vgList, CtiMessageList &retList, OutMessageList &outList )
+{
+    int status = NoError;
+    string resultString;
+
+    switch ( InMessage->Sequence )
+    {
+        case EmetconProtocol::PutConfig_Channel2NetMetering: 
+        {
+            status = decodePutConfigChannel2NetMetering(InMessage, TimeNow, vgList, retList, outList); 
+            resultString = getName( ) + " / channel 2 configuration sent";
+            break;
+        }
+
+        default:    
+        {
+            resultString = getName( ) + " / command complete";  
+            break;    
+        }
+    }
+
+    // Handle the return message. 
+    {
+        CtiReturnMsg *ReturnMsg = new CtiReturnMsg(getID(), InMessage->Return.CommandStr);
+        ReturnMsg->setUserMessageId( InMessage->Return.UserID );
+        ReturnMsg->setResultString ( resultString );
+
+        decrementGroupMessageCount(InMessage->Return.UserID, (long)InMessage->Return.Connection);
+
+        if( InMessage->MessageFlags & MessageFlag_ExpectMore || getGroupMessageCount(InMessage->Return.UserID, (long)InMessage->Return.Connection)!=0 )
+        {
+            ReturnMsg->setExpectMore(true);
+        }
+
+        retMsgHandler( InMessage->Return.CommandStr, status, ReturnMsg, vgList, retList );
+    }
+
+    return status;
+}
+
+
+int Mct420Device::decodePutConfigChannel2NetMetering( INMESS *InMessage, CtiTime &TimeNow, CtiMessageList &vgList, CtiMessageList &retList, OutMessageList &outList )
+{
+    // Execute a read to get the configuration data to be stored in dynamic pao info.
+    {
+        CtiRequestMsg *pReq = 
+            CTIDBG_new CtiRequestMsg(
+                InMessage->TargetID, 
+                "getconfig configuration", 
+                InMessage->Return.UserID, 
+                InMessage->Return.GrpMsgID, 
+                InMessage->Return.RouteID, 
+                selectInitialMacroRouteOffset(InMessage->Return.RouteID), 
+                InMessage->Return.Attempt);
+
+        if( strstr(InMessage->Return.CommandStr, "noqueue") )
+        {
+            pReq->setCommandString(pReq->CommandString() + " noqueue");
+        }
+
+        CtiCommandParser parse(pReq->CommandString());
+
+        beginExecuteRequest(pReq, parse, vgList, retList, outList);
+    }
+
+    return NoError;
 }
 
 
@@ -560,7 +688,7 @@ int Mct420Device::decodeGetConfigModel(INMESS *InMessage, CtiTime &TimeNow, list
     return NoError;
 }
 
-int Mct420Device::decodeGetConfigConfiguration( INMESS *InMessage, CtiTime &TimeNow, std::list< CtiMessage* > &vgList, std::list< CtiMessage* > &retList, std::list< OUTMESS* > &outList )
+int Mct420Device::decodeGetConfigOptions( INMESS *InMessage, CtiTime &TimeNow, CtiMessageList &vgList, CtiMessageList &retList, OutMessageList &outList )
 {
     DSTRUCT &DSt = InMessage->Buffer.DSt;
 
@@ -574,14 +702,14 @@ int Mct420Device::decodeGetConfigConfiguration( INMESS *InMessage, CtiTime &Time
     descriptor += getName() + " / Configuration information:\n";
 
     // Configuration description
-    descriptor += "DST " + string(configuration & 0x01 ? "en" : "dis") + "abled\n";
-    descriptor += "LED Test " + string(configuration & 0x02 ? "en" : "dis") + "abled\n";
-    descriptor += "Reconnect button " + string(configuration & 0x04 ? "" : "not ") + "required\n";
-    descriptor += "Demand limit mode " + string(configuration & 0x08 ? "en" : "dis") + "abled\n";
-    descriptor += "Disconnect cycling mode " + string(configuration & 0x10 ? "en" : "dis") += "abled\n";
-    descriptor += "Repeater role " + string(configuration & 0x20 ? "en" : "dis") + "abled\n";
-    descriptor += "Disconnect collar is " + string(configuration & 0x40 ? "" : "not ") + "an MCT-410d Rev E (or later)\n";
-    descriptor += "Daily reporting " + string(configuration & 0x80 ? "en" : "dis") + "abled\n";
+    descriptor += configuration & 0x01 ? "DST enabled\n" : "DST disabled\n";
+    descriptor += configuration & 0x02 ? "LED test enabled\n" : "LED test disabled\n";
+    descriptor += configuration & 0x04 ? "Reconnect button required\n" : "Reconnect button not required\n";
+    descriptor += configuration & 0x08 ? "Demand limit mode enabled\n" : "Demand limit mode disabled\n";
+    descriptor += configuration & 0x10 ? "Disconnect cycling mode enabled\n" : "Disconnect cycling mode disabled\n";
+    descriptor += configuration & 0x20 ? "Repeater role enabled\n" : "Repeater role disabled\n";
+    descriptor += configuration & 0x40 ? "Disconnect collar is MCT-410d Rev E (or later)\n" : "Disconnect collar is not MCT-410d Rev E (or later)\n";
+    descriptor += configuration & 0x80 ? "Daily reporting enabled\n" : "Daily reporting disabled\n";
 
     // Event mask descriptions
     descriptor += getName() + " / Event mask information:\n";
@@ -611,7 +739,10 @@ int Mct420Device::decodeGetConfigConfiguration( INMESS *InMessage, CtiTime &Time
         descriptor += "Channel 2: No meter attached\n";
     }
 
-    if( !(options & 0x60) ) descriptor += "Channel 3: No meter attached\n";
+    if( !(options & 0x60) ) 
+    {
+        descriptor += "Channel 3: No meter attached\n";
+    }
 
     CtiReturnMsg *ReturnMsg = new CtiReturnMsg(getID(), InMessage->Return.CommandStr);
 

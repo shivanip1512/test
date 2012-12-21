@@ -1972,7 +1972,7 @@ BOOST_FIXTURE_TEST_SUITE(test_getOperation, getOperation_helper)
     }
     BOOST_AUTO_TEST_CASE(test_getOperation_80)
     {
-        BOOST_REQUIRE(mct.getOperation(Cti::Protocols::EmetconProtocol::GetConfig_Configuration, BSt));
+        BOOST_REQUIRE(mct.getOperation(Cti::Protocols::EmetconProtocol::GetConfig_Options, BSt));
         BOOST_CHECK_EQUAL(BSt.IO, EmetconProtocol::IO_Function_Read);
         BOOST_CHECK_EQUAL(BSt.Function, 0x01);
         BOOST_CHECK_EQUAL(BSt.Length,   6);
