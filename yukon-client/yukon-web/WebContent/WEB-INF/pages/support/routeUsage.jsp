@@ -86,13 +86,13 @@ th.variableColumn {
                 <thead>
                     <tr>
                         <th class="fixedColumn"><i:inline key=".fixedBit"/></th>
-                        <th class="variableColumn"><i:inline key=".variableBit"/> <span class="variableBit">0</span></th>
-                        <th class="variableColumn"><i:inline key=".variableBit"/> <span class="variableBit">1</span></th>
-                        <th class="variableColumn"><i:inline key=".variableBit"/> <span class="variableBit">2</span></th>
-                        <th class="variableColumn"><i:inline key=".variableBit"/> <span class="variableBit">3</span></th>
-                        <th class="variableColumn"><i:inline key=".variableBit"/> <span class="variableBit">4</span></th>
-                        <th class="variableColumn"><i:inline key=".variableBit"/> <span class="variableBit">5</span></th>
-                        <th class="variableColumn"><i:inline key=".variableBit"/> <span class="variableBit">6</span></th>
+                        <th class="variableColumn"><i:inline key=".variableBit" arguments="0"/></th>
+                        <th class="variableColumn"><i:inline key=".variableBit" arguments="1"/></th>
+                        <th class="variableColumn"><i:inline key=".variableBit" arguments="2"/></th>
+                        <th class="variableColumn"><i:inline key=".variableBit" arguments="3"/></th>
+                        <th class="variableColumn"><i:inline key=".variableBit" arguments="4"/></th>
+                        <th class="variableColumn"><i:inline key=".variableBit" arguments="5"/></th>
+                        <th class="variableColumn"><i:inline key=".variableBit" arguments="6"/></th>
                     </tr>
                 </thead>
                 
@@ -159,13 +159,13 @@ th.variableColumn {
                 <tfoot>
                     <tr>
                         <th><i:inline key=".fixedBit"/></th>
-                        <th><i:inline key=".variableBit"/> <span class="variableBit">0</span></th>
-                        <th><i:inline key=".variableBit"/> <span class="variableBit">1</span></th>
-                        <th><i:inline key=".variableBit"/> <span class="variableBit">2</span></th>
-                        <th><i:inline key=".variableBit"/> <span class="variableBit">3</span></th>
-                        <th><i:inline key=".variableBit"/> <span class="variableBit">4</span></th>
-                        <th><i:inline key=".variableBit"/> <span class="variableBit">5</span></th>
-                        <th><i:inline key=".variableBit"/> <span class="variableBit">6</span></th>
+                        <th><i:inline key=".variableBit" arguments="0"/></th>
+                        <th><i:inline key=".variableBit" arguments="1"/></th>
+                        <th><i:inline key=".variableBit" arguments="2"/></th>
+                        <th><i:inline key=".variableBit" arguments="3"/></th>
+                        <th><i:inline key=".variableBit" arguments="4"/></th>
+                        <th><i:inline key=".variableBit" arguments="5"/></th>
+                        <th><i:inline key=".variableBit" arguments="6"/></th>
                     </tr>
                 </tfoot>
                 

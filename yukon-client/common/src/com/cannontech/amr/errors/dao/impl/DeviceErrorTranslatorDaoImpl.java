@@ -9,7 +9,6 @@ import java.util.Locale;
 import java.util.Map;
 import java.util.TimeZone;
 
-import org.apache.commons.lang.StringUtils;
 import org.apache.commons.lang.Validate;
 import org.apache.log4j.Logger;
 import org.jdom.Document;
@@ -41,6 +40,7 @@ public class DeviceErrorTranslatorDaoImpl implements DeviceErrorTranslatorDao {
     private Map<String, Map<Integer, DeviceErrorDescription>> store = new HashMap<String, Map<Integer, DeviceErrorDescription>>();
     private DeviceErrorDescription defaultTranslation;
     private String baseKey = "yukon.web.errorCodes_";
+    private String defaultThemeKey = getThemeKey(Locale.US, ThemeUtils.getDefaultThemeName());
 
     /**
      * Returns the US translation for the error code.
@@ -54,9 +54,8 @@ public class DeviceErrorTranslatorDaoImpl implements DeviceErrorTranslatorDao {
         }
 
         // Clone the defaultTranslation and set the error code
-        DeviceErrorDescription ded = defaultTranslation;
-        return new DeviceErrorDescription(error, ded.getCategory(), ded.getPorter(), 
-                                          ded.getDescription(), ded.getTroubleshooting());
+        return new DeviceErrorDescription(error, defaultTranslation.getCategory(), defaultTranslation.getPorter(), 
+                defaultTranslation.getDescription(), defaultTranslation.getTroubleshooting());
     }
 
     @Override
@@ -73,7 +72,7 @@ public class DeviceErrorTranslatorDaoImpl implements DeviceErrorTranslatorDao {
 	    	try{
 	    		//the first time we encounter a new Locale, try to cache the errors
 	    		cacheErrorsForLocale(userContext);
-	    		localeStore = store.get(userContext.getLocale());
+	    		localeStore = store.get(getThemeKey(userContext.getLocale(), userContext.getThemeName()));
 	    		return localeStore.get(error);
 	    	}catch(Exception exception){
 	    		log.info("Unable to load errors for ("+ userContext.getLocale().getDisplayCountry() +"): " + error);
@@ -81,7 +80,8 @@ public class DeviceErrorTranslatorDaoImpl implements DeviceErrorTranslatorDao {
     	}
 
     	// Clone the defaultTranslation and set the error code
-    	return defaultTranslation;
+        return new DeviceErrorDescription(error, defaultTranslation.getCategory(), defaultTranslation.getPorter(), 
+                defaultTranslation.getDescription(), defaultTranslation.getTroubleshooting());
     }
 
     /**
@@ -128,7 +128,7 @@ public class DeviceErrorTranslatorDaoImpl implements DeviceErrorTranslatorDao {
             }
         }
         Validate.notNull(defaultTranslation, "No default translation found");
-        store.put(getThemeKey(Locale.US, StringUtils.EMPTY), mapBuilder.build());
+        store.put(defaultThemeKey, mapBuilder.build());
         log.info("Device error code descriptions loaded: " + store.size());
     }
 
@@ -138,7 +138,7 @@ public class DeviceErrorTranslatorDaoImpl implements DeviceErrorTranslatorDao {
 
     @Override
     public Iterable<DeviceErrorDescription> getAllErrors() {
-        return getAllErrors(new SimpleYukonUserContext(null, Locale.US, TimeZone.getDefault(), StringUtils.EMPTY));
+        return getAllErrors(new SimpleYukonUserContext(null, Locale.US, TimeZone.getDefault(), ThemeUtils.getDefaultThemeName()));
     }
 
     @Override
@@ -156,7 +156,7 @@ public class DeviceErrorTranslatorDaoImpl implements DeviceErrorTranslatorDao {
         
     	//loop over us entries
     	Builder<Integer, DeviceErrorDescription> mapBuilder = ImmutableMap.builder();
-    	for(Integer errorCode : store.get(StringUtils.EMPTY).keySet()){
+    	for(Integer errorCode : store.get(defaultThemeKey).keySet()){
 
     		try{
 	    		//resolve each message
@@ -179,7 +179,7 @@ public class DeviceErrorTranslatorDaoImpl implements DeviceErrorTranslatorDao {
 	    			+ errorCode + " and Locale: " 
 	    			+ userContext.getLocale().getDisplayCountry());
     			
-    			DeviceErrorDescription fallback = store.get(StringUtils.EMPTY).get(errorCode);
+    			DeviceErrorDescription fallback = store.get(defaultThemeKey).get(errorCode);
     			DeviceErrorDescription dded = new DeviceErrorDescription(errorCode, 
     					fallback.getCategory(), 
     					fallback.getPorter(), 
