@@ -57,12 +57,9 @@
       </property>
     </bean>
      
-     <bean id="radiusLoginProviderTarget" class="com.cannontech.common.login.radius.RadiusLogin" lazy-init="true">
-      <property name="roleDao" ref="roleDao"/>
-    </bean>
+    <bean id="radiusLoginProviderTarget" class="com.cannontech.common.login.radius.RadiusLogin" lazy-init="true"/>
     
-    <bean id="nullAuthentication" class="com.cannontech.core.authentication.service.impl.NullAuthenticationService">
-    </bean>
+    <bean id="nullAuthentication" class="com.cannontech.core.authentication.service.impl.NullAuthenticationService"/>
     
     <bean id="ldapService" class="com.cannontech.common.login.ldap.LDAPService"/>
     
