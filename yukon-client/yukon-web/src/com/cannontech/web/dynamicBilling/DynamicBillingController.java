@@ -146,11 +146,13 @@ public class DynamicBillingController {
      * 
      */
     @RequestMapping
-    public String copy(int availableFormat, ModelMap model) {
+    public String copy(int availableFormat, ModelMap model, final YukonUserContext context) {
         // retrieve the format information, 
         // assert that this is a copy into the name
         DynamicFormat formatSelected = dynamicBillingFileDao.retrieve(availableFormat);
-        formatSelected.setName(formatSelected.getName() + " (copy)");
+
+        MessageSourceAccessor messageSourceAccessor = messageSourceResolver.getMessageSourceAccessor(context);
+        formatSelected.setName(messageSourceAccessor.getMessage("yukon.web.billing.formatNameCopy", formatSelected.getName()));
 
         // to give it new format id, give it -1
         model.addAttribute("initiallySelected", -1);
