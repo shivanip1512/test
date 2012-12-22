@@ -6,9 +6,8 @@ import java.util.concurrent.TimeUnit;
 
 import org.apache.commons.lang.StringUtils;
 import org.apache.log4j.Logger;
-import org.springframework.beans.factory.InitializingBean;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Required;
-import org.springframework.transaction.annotation.Transactional;
 
 import com.cannontech.clientutils.YukonLogManager;
 import com.cannontech.common.device.groups.editor.dao.DeviceGroupEditorDao;
@@ -16,14 +15,18 @@ import com.cannontech.common.device.groups.editor.dao.SystemGroupEnum;
 import com.cannontech.common.device.groups.editor.model.StoredDeviceGroup;
 import com.cannontech.common.device.groups.service.TemporaryDeviceGroupService;
 import com.cannontech.common.util.ScheduledExecutor;
+import com.cannontech.system.GlobalSettingType;
+import com.cannontech.system.dao.GlobalSettingDao;
 
-public class TemporaryDeviceGroupServiceImpl implements TemporaryDeviceGroupService, InitializingBean {
+public class TemporaryDeviceGroupServiceImpl implements TemporaryDeviceGroupService {
 
+    @Autowired private GlobalSettingDao globalSettingDao = null;
     private DeviceGroupEditorDao deviceGroupEditorDao = null;
     private ScheduledExecutor scheduledExecutor = null;
     
     private Logger log = YukonLogManager.getLogger(TemporaryDeviceGroupServiceImpl.class);
     
+    @Override
     public StoredDeviceGroup createTempGroup(String groupName, int deleteDelay, TimeUnit deleteDelayUnit) {
         
         StoredDeviceGroup group = doCreateTempGroup(groupName);
@@ -32,6 +35,7 @@ public class TemporaryDeviceGroupServiceImpl implements TemporaryDeviceGroupServ
         return group;
     }
     
+    @Override
     public StoredDeviceGroup createTempGroup(String groupName) {
         
         StoredDeviceGroup group = doCreateTempGroup(groupName);
@@ -58,8 +62,8 @@ public class TemporaryDeviceGroupServiceImpl implements TemporaryDeviceGroupServ
     }
     
     private void scheduleTempGroupDeletion(final StoredDeviceGroup group) {
-    
-        scheduleTempGroupDeletion(group, 1, TimeUnit.DAYS);
+        int days = globalSettingDao.getInteger(GlobalSettingType.TEMPORARY_DEVICE_GROUP_DELETION_PERIOD);
+        scheduleTempGroupDeletion(group, days, TimeUnit.DAYS);
     }    
     
     private void scheduleTempGroupDeletion(final StoredDeviceGroup group, int delay, TimeUnit unit) {
@@ -73,30 +77,24 @@ public class TemporaryDeviceGroupServiceImpl implements TemporaryDeviceGroupServ
         }, delay, unit);
     }
     
-    private void clearTemporaryGroups() {
+    @Override
+    public void deleteTemporaryGroups() {
         
         StoredDeviceGroup parentGroup = deviceGroupEditorDao.getSystemGroup(SystemGroupEnum.TEMPORARYGROUPS);
         List<StoredDeviceGroup> childGroups = deviceGroupEditorDao.getChildGroups(parentGroup);
         for (StoredDeviceGroup childGroup : childGroups) {
-            log.info("deleting temporary group on startup: " + childGroup);
             deviceGroupEditorDao.removeGroup(childGroup);
         }
-    }
-    
-    @Transactional
-    public void afterPropertiesSet() throws Exception {
-        // commenting out for now, we can readdress this post 4.1 (see YUK-6249 and YUK-6250)
-        //clearTemporaryGroups();
+        log.info(childGroups.size()+" temporary device groups deleted.");
     }
     
     @Required
     public void setDeviceGroupEditorDao(DeviceGroupEditorDao deviceGroupEditorDao) {
         this.deviceGroupEditorDao = deviceGroupEditorDao;
     }
-
+    
     @Required
     public void setScheduledExecutor(ScheduledExecutor scheduledExecutor) {
         this.scheduledExecutor = scheduledExecutor;
     }
-    
 }

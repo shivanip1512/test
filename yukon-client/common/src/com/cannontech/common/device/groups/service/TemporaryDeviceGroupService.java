@@ -30,4 +30,9 @@ public interface TemporaryDeviceGroupService {
      */
     public StoredDeviceGroup createTempGroup(String groupName, int deleteDelay, TimeUnit deleteDelayUnit);
     
+    /**
+     * This method deletes all temporary device groups.
+     */
+    public void deleteTemporaryGroups();
+    
 }
