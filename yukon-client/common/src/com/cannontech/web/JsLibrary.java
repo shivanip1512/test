@@ -33,6 +33,7 @@ public enum JsLibrary {
     JQUERY_UI_DIALOG_HELPER("/JavaScript/lib/jQuery/plugins/jQueryUI/dialog-helper.js"), //in-house
     JQUERY_UI_CHECK_ALL("/JavaScript/lib/jQuery/plugins/checkAll/jquery.checkall.js"), //https://github.com/mjball/jQuery-CheckAll
     JQUERY_UI_ACTION_WHEN("/JavaScript/lib/jQuery/plugins/actionWhen/jquery.actionwhen.js"), //in-house
+    JQUERY_TRAVERSABLE("/JavaScript/lib/jQuery/plugins/traversable/jquery.traversable.js"), //https://github.com/adelegard/jquery-traverse
 
     JSON("/JavaScript/lib/JSON/2.0/json2.js"),
     OVERLIB("/JavaScript/ol/overlib_mini.js"),

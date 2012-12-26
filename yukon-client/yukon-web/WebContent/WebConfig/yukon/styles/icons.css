@@ -68,9 +68,13 @@ a.icon {margin: 0 5px 0 0;}
 .icon_small_clear {position: relative; top: 2px; right: 1px; height: 11px; margin-left: 5px; padding: 0 0 0 11px; background: transparent url(../Icons/circle_clear_small.png) top left no-repeat; background-position: 0 -11px;}
 .icon_small_clear:hover {background-position: 0 0px;}
 .icon_with_chevron {width: 30px; /*this style has a down chevron with it*/}
-.arrow-up {width: 0; height: 0; border-left: 5px solid transparent; border-right: 5px solid transparent; border-bottom: 5px solid black;}
-.arrow-down {width: 0; height: 0; border-left: 5px solid transparent; border-right: 5px solid transparent; border-top: 5px solid #999;}
-.icon_with_chevron:hover .arrow-down {border-top: 5px solid #444;}
+.arrow-up, .arrow-down {width: 0; height: 0; border-left: 5px solid transparent; border-right: 5px solid transparent;}
+.arrow-up {border-bottom: 5px solid #999;}
+.arrow-down {border-top: 5px solid #999;}
+a:hover .arrow-down {border-top: 5px solid #444;}
+a:hover .arrow-up {border-bottom: 5px solid #444;}
+a .arrow-down, a .arrow-up {left: 3px;}
+.text_with_chevron .arrow-down {position: relative; top: 10px;}
 .icon_with_chevron .arrow-down {position: relative; top: -6px; left: 18px; /* icon width + 3px space*/}
 .inputWithIcon {margin-right: 5px;}
 .icon_pencil {background: transparent url(../Icons/pencil.png) top left no-repeat;}

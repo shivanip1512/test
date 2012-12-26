@@ -2,7 +2,9 @@
 <%@ taglib prefix="cti" uri="http://cannontech.com/tags/cti"%>
 <%@ taglib prefix="amr" tagdir="/WEB-INF/tags/amr" %>
 <%@ taglib prefix="tags" tagdir="/WEB-INF/tags" %>
+<%@ taglib prefix="cm" tagdir="/WEB-INF/tags/contextualMenu" %>
 <%@ taglib prefix="i" tagdir="/WEB-INF/tags/i18n"%>
+<%@ taglib prefix="fn" uri="http://java.sun.com/jsp/jstl/functions"%>
 
 <cti:standardPage module="amr" page="meterSearchResults">
 
@@ -41,7 +43,7 @@
                     <div style="width: 21em; text-align: right; float: left; margin-bottom: 5px; margin-right: 5px;">
                         <label for="${filter.name}"><i:inline key="${filter.formatKey}" /> </label><input
                             style="width: 10em" type="text" id="${filter.name}" name="${filter.name}"
-                            value="${filter.filterValue}"
+                            value="${fn:escapeXml(filter.filterValue)}"
                         />
                     </div>
                 </c:forEach>
@@ -59,17 +61,16 @@
         <%-- DATA ROWS --%>
     <c:if test="${meterSearchResults.hitCount > 0}">
         <c:set var="linkHeaderHtml">
-            <span class="navLink fr"> 
-                <cti:link href="/bulk/collectionActions" key="yukon.web.modules.amr.deviceSelection.performCollectionAction">
-                    <cti:mapParam value="${deviceGroupCollection.collectionParameters}" />
-                </cti:link> 
-            </span>
+            <span class="navLink fr">
+                <cm:deviceCollectionMenu deviceCollection="${deviceGroupCollection}"
+					key="yukon.web.modules.common.contextualMenu.actions"/>
+			</span>
         </c:set>
     </c:if>
     <cti:msg2 var="meterSearchTitle" key=".meterSearchResultsTitle" />
     <tags:pagedBox title="${meterSearchTitle}" searchResult="${meterSearchResults}" baseUrl="${baseUrl}"
         pageByHundereds="true" titleLinkHtml="${linkHeaderHtml}">
-        <table class="compactResultsTable rowHighlighting">
+        <table class="compactResultsTable traversable rowHighlighting contextual-menu-list">
             <c:if test="${meterSearchResults.hitCount > 0}">
                 <thead>
                     <tr>
@@ -89,6 +90,7 @@
                         <th><tags:sortLink nameKey="columnHeader.route" baseUrl="${baseUrl}" fieldName="ROUTE"
                                 sortParam="orderBy" />
                        </th>
+                       <th></th>
                     </tr>
                 </thead>
                 <tfoot></tfoot>
@@ -117,6 +119,9 @@
                             <c:when test="${empty searchResultRow.route}"></c:when>
                             <c:otherwise>${searchResultRow.route}</c:otherwise>
                         </c:choose>
+                    </td>
+                    <td class="contextual-menu">
+                        <cm:singleDeviceMenu deviceId="${searchResultRow.paoIdentifier.paoId}"/>
                     </td>
                 </tr>
             </c:forEach>

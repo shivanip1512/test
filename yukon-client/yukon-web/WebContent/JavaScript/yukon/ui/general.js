@@ -53,6 +53,10 @@ Yukon.ui = {
     autoWire: function() {
         // register listeners
         
+        jQuery(".compactResultsTable.traversable").traverse('tr', {
+            table_row_helper: true
+        });
+        
         //ajaxPage
         jQuery(document).on('click', '.f_ajaxPage', function(e){
             e.stopPropagation();
@@ -103,8 +107,6 @@ Yukon.ui = {
         		return false;
         	}
         });
-        
-        // close popup on submit event
         
         // close popup on submit event
         jQuery(document).on('click', 'button.f_closePopupOnSubmit', function(event){

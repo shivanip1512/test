@@ -2,6 +2,7 @@
 <%@ taglib prefix="cti" uri="http://cannontech.com/tags/cti"%>
 <%@ taglib prefix="fn" uri="http://java.sun.com/jsp/jstl/functions"%>
 <%@ taglib prefix="tags" tagdir="/WEB-INF/tags"%>
+<%@ taglib prefix="cm" tagdir="/WEB-INF/tags/contextualMenu"%>
 <%@ taglib prefix="dt" tagdir="/WEB-INF/tags/dateTime"%>
 <%@ taglib prefix="form" uri="http://www.springframework.org/tags/form"%>
 <%@ taglib prefix="i" tagdir="/WEB-INF/tags/i18n"%>
@@ -145,7 +146,7 @@
 	</c:choose>
 
     <c:set var="actionsMenu">
-        <tags:dropdownActions>
+        <cm:dropdownActions>
             <c:if test="${collectionFromReportResults != null && filterResult.hitCount > 0}">
                 <li>
                     <cti:link href="/bulk/collectionActions"
@@ -165,7 +166,7 @@
                     <i:inline key=".filter"/>
                 </a>
             </li>
-        </tags:dropdownActions>
+        </cm:dropdownActions>
         
         <c:if test="${collectionFromReportResults != null && filterResult.hitCount > 0}">
             <form:form id="intervalDataForm" action="intervalData" method="get" commandName="backingBean" cssClass="dib">
@@ -213,7 +214,7 @@
                 <tags:filteredBy labelKey="yukon.common.filteredBy.reset.label" value="${reset_value}" isClearable="false" isReset="true" cssClass="f_reset_filter_submit"/>
 			</c:if>
         </tags:filteredByContainer>
-		<table id="leaksTable" class="compactResultsTable">
+		<table id="leaksTable" class="compactResultsTable traversable contextual-menu-list">
             <c:choose>
                 <c:when test="${fn:length(filterResult.resultList) > 0}">
 					<thead>
@@ -226,6 +227,7 @@
 							<th><tags:sortLink nameKey="tableHeader.deviceType" baseUrl="report" fieldName="PAO_TYPE"/></th>
 							<th><tags:sortLink nameKey="tableHeader.leakRate" baseUrl="report" fieldName="LEAK_RATE"/></th>
 		                    <c:if test="${hasVendorId}"><th><i:inline key=".tableHeader.cisDetails"/></th></c:if>
+		                    <th></th>
 						</tr>
 					</thead>
 					<tfoot></tfoot>
@@ -253,13 +255,16 @@
 										</a>
 			                        </td>
 		                        </c:if>
+			                    <td class="contextual-menu">
+			                        <cm:singleDeviceMenu deviceId="${row.meter.paoIdentifier.paoId}"/>
+			                    </td>
 							</tr>
 						</c:forEach>
 					</tbody>
                 </c:when>
                 <c:otherwise>
 					<tr>
-						<td class="noResults" colspan="3">
+						<td class="noResults" colspan="6">
 	                        <i:inline key=".noLeaks"/>
 	                    </td>
 					</tr>

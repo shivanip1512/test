@@ -348,6 +348,10 @@ public enum PaoType implements DatabaseRepresentationSource {
         return meterTypes.contains(this);
     }
     
+    public static ImmutableSet<PaoType> getMeterTypes() {
+        return meterTypes;
+    }
+
     public boolean isRfn() {
         return this.paoClass == PaoClass.RFMESH;
     }

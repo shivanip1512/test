@@ -49,7 +49,7 @@ public class AddPointsController extends AddRemovePointsControllerBase {
         // options
         boolean sharedPoints = ServletRequestUtils.getBooleanParameter(request, "sharedPoints", true);
         boolean updatePoints = ServletRequestUtils.getBooleanParameter(request, "updatePoints", false);
-        boolean maskExistingPoints = ServletRequestUtils.getBooleanParameter(request, "maskExistingPoints", false);
+        boolean maskExistingPoints = ServletRequestUtils.getBooleanParameter(request, "maskExistingPoints", true);
         mav.addObject("sharedPoints", sharedPoints);
         mav.addObject("updatePoints", updatePoints);
         mav.addObject("maskExistingPoints", maskExistingPoints);

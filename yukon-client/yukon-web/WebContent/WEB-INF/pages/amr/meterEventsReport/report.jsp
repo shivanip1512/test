@@ -2,6 +2,7 @@
 <%@ taglib prefix="cti" uri="http://cannontech.com/tags/cti" %>
 <%@ taglib prefix="fn" uri="http://java.sun.com/jsp/jstl/functions" %>
 <%@ taglib prefix="tags" tagdir="/WEB-INF/tags" %>
+<%@ taglib prefix="cm" tagdir="/WEB-INF/tags/contextualMenu" %>
 <%@ taglib prefix="form" uri="http://www.springframework.org/tags/form" %>
 <%@ taglib prefix="i" tagdir="/WEB-INF/tags/i18n"%>
 <%@ taglib prefix="spring" uri="http://www.springframework.org/tags"%>
@@ -273,17 +274,16 @@
 	</c:if>
 
     <c:if test="${collectionFromReportResults != null && filterResult.hitCount > 0}">
-		<c:set var="linkHeaderHtml">
-			<span class="navLink"> <cti:link
-					href="/bulk/collectionActions"
-					key="yukon.web.modules.amr.deviceSelection.performCollectionAction">
-					<cti:mapParam value="${collectionFromReportResults.collectionParameters}" />
-				</cti:link> </span>
-		</c:set>
+        <c:set var="linkHeaderHtml">
+            <span class="navLink fr">
+                <cm:deviceCollectionMenu deviceCollection="${collectionFromReportResults}"
+					key="yukon.web.modules.common.contextualMenu.actions"/>
+			</span>
+        </c:set>
 	</c:if>
 
 	<tags:pagedBox2 nameKey="tableTitle" searchResult="${filterResult}" baseUrl="report" titleLinkHtml="${linkHeaderHtml}">
-		<table id="eventsTable" class="compactResultsTable">
+		<table id="eventsTable" class="compactResultsTable traversable contextual-menu-list">
             <thead>
     			<tr>
     				<th><tags:sortLink nameKey="tableHeader.deviceName" baseUrl="report" fieldName="NAME" isDefault="false" /></th>
@@ -292,6 +292,7 @@
     				<th><tags:sortLink nameKey="tableHeader.date" baseUrl="report" fieldName="DATE" isDefault="true" /></th>
     				<th><tags:sortLink nameKey="tableHeader.event" baseUrl="report" fieldName="EVENT" /></th>
     				<th><tags:sortLink nameKey="tableHeader.value" baseUrl="report" fieldName="VALUE" /></th>
+    				<th></th>
     			</tr>
             </thead>
             <tfoot></tfoot>
@@ -315,12 +316,15 @@
     					<td><cti:formatDate type="BOTH" value="${event.pointValueHolder.pointDataTimeStamp}"/></td>
     	                <td><spring:escapeBody>${event.pointName}</spring:escapeBody></td>
     					<td class="eventStatus${event.formattedValue}">${event.formattedValue}</td>
+                        <td class="contextual-menu">
+                            <cm:singleDeviceMenu deviceId="${event.meter.paoIdentifier.paoId}"/>
+                        </td>
     				</tr>
     			</c:forEach>
                 
     			<c:if test="${fn:length(filterResult.resultList) == 0}">
     				<tr>
-    					<td class="noResults subtle" colspan="6">
+    					<td class="noResults subtle" colspan="7">
     						<i:inline key=".noEvents"/>
     					</td>
     				</tr>

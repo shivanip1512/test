@@ -81,6 +81,7 @@ table th, .TitleHeader, .columnHeader {background:white; text-align:left; font-w
 table.naturalWidth {width: auto;}
 
 .compactResultsTable, .resultsTable, .nameValueTable {width:100%;border-collapse:collapse;}
+.compactResultsTable tr.focused, .compactResultsTable tr.focused:nth-child(2n) { background-color: #DAE2FF;}
 .compactResultsTable {font-size:0.8em;}
 .compactResultsTable tr:nth-child(even), .resultsTable tr:nth-child(even) {background-color:#f6f6f6;}
 .compactResultsTable td, .resultsTable td, .nameValueTable td {border:none;}
@@ -91,7 +92,7 @@ table.naturalWidth {width: auto;}
 .nameValueTable .name {font-size: .9em;}
 .nameValueTable .value {color: #333;}
 
-.rowHighlighting tr:hover, .highlighted {background-color:#FFF465 !important;}
+.rowHighlighting tr:hover, .highlighted {background-color:#dedede !important;}
 .aligned_4_actions .first, .aligned_4_actions .middle {width: 30%;}
 .aligned_4_actions .last {width: 10%;}
 
@@ -338,9 +339,15 @@ input.dateTimePicker {margin: 0;}
 .icon_datePicker_disabled {width: 20px; background: transparent url(../Icons/StartCalendar_disabled_gray.png) top left no-repeat; cursor: not-allowed;}
 
 /* dropdown cog menu start */
-.dropdown-container {margin: 2px 0 0 0;}
+.dropdown-container {display: inline-block; margin: 2px 0 0 0; float: right; width: 30px; }
+.dropdown-container.with-text {margin: 0; width: inherit; }
+.contextual-menu-list .dropdown-container {visibility: hidden; margin-top: 0px;}
+.contextual-menu-list tr.focused .dropdown-container {visibility: visible;}
+.contextual-menu-list tr:hover td.contextual-menu .dropdown-container {visibility: visible;}
+.dropdown-container.menu-open {display: block; visibility: visible;}
 .ui-datepicker::before,
 .dropdown-menu::before {right: 14px; left: auto; position: absolute; top: -7px; display: inline-block; border-right: 7px solid transparent; border-bottom: 7px solid #ccc; border-left: 7px solid transparent; border-bottom-color: rgba(0, 0, 0, 0.2); content: '';}
+.dropdown-menu.long-menu-list {font-size: 11px;}
 .ui-datepicker::after, .dropdown-menu::after {position: absolute; top: -6px; right: 15px; left: auto; display: inline-block; border-right: 6px solid transparent; border-bottom: 6px solid #ffffff; border-left: 6px solid transparent; content: '';}
 .ui-datepicker::before {left:3.5em;right:auto;border-bottom-color: #999;}
 .dropdown-menu {display: none; position: absolute; right: 0; left: auto; top: 100%; text-align: left; z-index: 1000; float: left; min-width: 160px; padding: 4px 0; margin: 1px 0 0; color: #999; list-style: none; background-color: #ffffff; border: 1px solid #ccc; border: 1px solid rgba(0, 0, 0, 0.2); *border-right-width: 2px; *border-bottom-width: 2px; -webkit-border-radius: 5px; -moz-border-radius: 5px; border-radius: 5px; -webkit-box-shadow: 0 5px 10px rgba(0, 0, 0, 0.2); -moz-box-shadow: 0 5px 10px rgba(0, 0, 0, 0.2); box-shadow: 0 5px 10px rgba(0, 0, 0, 0.2); -webkit-background-clip: padding-box; -moz-background-clip: padding; background-clip: padding-box; font-size: 13px;}

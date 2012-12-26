@@ -28,6 +28,8 @@
 <cti:msg2 var="cancelText" key="${cancelButton}" javaScriptEscape="true"/>
 <cti:msg2 var="noSelectionAlertMessage" key="${noSelectionAlert}" javaScriptEscape="true"/> 
 
+<cti:includeScript link="JQUERY_TREE" />
+
 <%-- SELECTION HANDLER CODE --%>
 <script type="text/javascript">
 
