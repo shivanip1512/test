@@ -2,6 +2,7 @@
 <%@ taglib prefix="cti" uri="http://cannontech.com/tags/cti"%>
 <%@ taglib prefix="fn" uri="http://java.sun.com/jsp/jstl/functions"%>
 <%@ taglib prefix="tags" tagdir="/WEB-INF/tags"%>
+<%@ taglib prefix="cm" tagdir="/WEB-INF/tags/contextualMenu"%>
 <%@ taglib prefix="form" uri="http://www.springframework.org/tags/form"%>
 <%@ taglib prefix="i" tagdir="/WEB-INF/tags/i18n"%>
 <%@ taglib prefix="spring" uri="http://www.springframework.org/tags"%>
@@ -21,7 +22,7 @@
 
 	<c:if test="${collectionFromReportResults != null && filterResult.hitCount > 0}">
 		<c:set var="actionsMenu">
-			<tags:dropdownActions>
+			<cm:dropdownActions>
 				<li>
                     <cti:link href="/bulk/collectionActions"
                         key="yukon.web.modules.amr.waterLeakReport.report.performCollectionAction">
@@ -33,7 +34,7 @@
                         <i:inline key=".exportCSV" />
                     </a>
                 </li>
-			</tags:dropdownActions>
+			</cm:dropdownActions>
 		</c:set>
 	</c:if>
 
@@ -63,6 +64,7 @@
 				<th>
                     <tags:sortLink nameKey="tableHeader.date" baseUrl="intervalData" fieldName="DATE" isDefault="true" />
                 </th>
+                <th></th>
 			</tr>
 			<c:forEach var="row" items="${filterResult.resultList}">
 				<c:set var="disabledClass" value="" />
@@ -83,12 +85,15 @@
 					<td><tags:paoType yukonPao="${row.meter}" /></td>
 					<td><cti:pointValueFormatter value="${row.pointValueHolder}" format="VALUE" /></td>
 					<td><cti:formatDate type="BOTH" value="${row.pointValueHolder.pointDataTimeStamp}" /></td>
+					<td class="contextual-menu">
+                        <cm:singleDeviceMenu deviceId="${row.meter.paoIdentifier.paoId}"/>
+					</td>
 				</tr>
 			</c:forEach>
 
 			<c:if test="${fn:length(filterResult.resultList) == 0}">
 				<tr>
-					<td class="noResults subtle" colspan="3"><i:inline key=".noUsage" /></td>
+					<td class="noResults subtle" colspan="6"><i:inline key=".noUsage" /></td>
 				</tr>
 			</c:if>
 		</table>
