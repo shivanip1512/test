@@ -176,6 +176,7 @@
 <entry key="yukon.web.menu.config.support.information.deviceDef">Device Definitions</entry>
 <entry key="yukon.web.menu.config.support.information.errorCodes">Error Codes</entry>
 <entry key="yukon.web.menu.config.support.information.supportBundle">Support Bundle</entry>
+<entry key="yukon.web.menu.config.support.information.localization">Localization</entry>
 
 <entry key="yukon.web.menu.config.support.logs">Logs</entry>
 

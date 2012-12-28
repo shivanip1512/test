@@ -1086,6 +1086,9 @@
             <option name="supportBundle">
               <link>/support/supportBundle/view</link>
             </option>
+            <option name="localization">
+              <link>/support/localization/view</link>
+            </option>
           </options>
         </option>
         <option name="logs">
@@ -1251,6 +1254,9 @@
                 </page>
                 <page name="supportBundle" type = "BASIC">
                     <menu>information|supportBundle</menu>
+                </page>
+                <page name="localization" type = "BASIC">
+                    <menu>information|localization</menu>
                 </page>
                 <page name="uiDemos" type="BASIC">
                      <requireRoleProperty value="DEVELOPMENT_MODE" />

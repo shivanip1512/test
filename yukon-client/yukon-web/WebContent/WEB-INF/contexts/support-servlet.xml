@@ -13,6 +13,8 @@
 	<!-- Loads all @Controllers from the specified packages. -->
     <context:component-scan base-package="com.cannontech.web.support" />
 
+    <bean class="com.cannontech.web.support.LocalizationService"/>
+
 	<bean id="annotationMapping" class="org.springframework.web.servlet.mvc.annotation.DefaultAnnotationHandlerMapping">
         <property name="order" value="1"/>
     </bean>
