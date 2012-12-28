@@ -99,15 +99,15 @@
                         </tr>
                         <tr>
                             <td class="smallBoldLabel">
-                                <i:inline key="yukon.web.modules.amr.fdrTranslationManagement.defaultColumns.action"/>
+                                ACTION
                             </td>
                             <td>
-                                <i:inline key="yukon.web.modules.amr.fdrTranslationManagement.defaultColumns.actionDescription"/>
+                                ADD or REMOVE
                             </td>
                         </tr>
                         <tr>
                             <td class="smallBoldLabel">
-                                <i:inline key="yukon.web.modules.amr.fdrTranslationManagement.defaultColumns.deviceName"/>
+                                DEVICE_NAME
                             </td>
                             <td>
                                 <i:inline key="yukon.web.modules.amr.fdrTranslationManagement.defaultColumns.deviceNameDescription"/>
@@ -115,7 +115,7 @@
                         </tr>
                         <tr>
                             <td class="smallBoldLabel">
-                                <i:inline key="yukon.web.modules.amr.fdrTranslationManagement.defaultColumns.deviceType"/>
+                                DEVICE_TYPE
                             </td>
                             <td>
                                 <i:inline key="yukon.web.modules.amr.fdrTranslationManagement.defaultColumns.deviceTypeDescription"/>
@@ -123,7 +123,7 @@
                         </tr>
                         <tr>
                             <td class="smallBoldLabel">
-                                <i:inline key="yukon.web.modules.amr.fdrTranslationManagement.defaultColumns.pointName"/>
+                                POINT_NAME
                             </td>
                             <td>
                                 <i:inline key="yukon.web.modules.amr.fdrTranslationManagement.defaultColumns.pointNameDescription"/>
@@ -132,7 +132,7 @@
                         <c:forEach var="interfaceType" items="${interfaceTypes}">
                             <tr class="interface_${interfaceType}" style="display:none;">
                                 <td class="smallBoldLabel">
-                                    <i:inline key="yukon.web.modules.amr.fdrTranslationManagement.defaultColumns.direction"/>
+                                    DIRECTION
                                 </td>
                                 <td>
                                     <c:forEach var="direction" varStatus="status" items="${interfaceType.supportedDirections}">"${direction.value}"<c:if test="${!status.last}">,&nbsp;</c:if></c:forEach>
