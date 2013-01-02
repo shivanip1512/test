@@ -57,6 +57,7 @@ public class OperatorAlternateEnrollmentController {
             flash.setConfirm(new YukonMessageSourceResolvable("yukon.web.modules.operator.alternateEnrollment.alternate.success"));
         }
         
+        model.clear();
     	AccountInfoFragmentHelper.setupModelMapBasics(fragment, model);
     	return "redirect:view";
     }

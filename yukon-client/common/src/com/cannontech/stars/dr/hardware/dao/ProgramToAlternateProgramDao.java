@@ -10,15 +10,15 @@ public interface ProgramToAlternateProgramDao {
 
 	/**
 	 * Will attempt to insert the mapping, if that fails will attempt to update it.
-	 * @param programToSeasonalProgram
+	 * @param programToAlternateProgram
 	 */
-    public void save(ProgramToAlternateProgram programToSeasonalProgram);
+    public void save(ProgramToAlternateProgram programToAlternateProgram);
     
     /**
      * Deletes a program to seasonal program mapping
-     * @param programToSeasonalProgram
+     * @param programToAlternateProgram
      */
-    public void delete(ProgramToAlternateProgram programToSeasonalProgram);
+    public void delete(ProgramToAlternateProgram programToAlternateProgram);
     
     /**
      * Deletes a program to seasonal program mapping

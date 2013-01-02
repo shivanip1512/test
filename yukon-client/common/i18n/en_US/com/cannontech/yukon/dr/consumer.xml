@@ -371,11 +371,11 @@
  	<entry key="yukon.web.modules.consumer.alternateEnrollment.header">Programs - Alternate Enrollment</entry>
  	<entry key="yukon.web.modules.consumer.alternateEnrollment.confirmAlternate.title">Confirm Alternate Enrollment</entry>
  	<entry key="yukon.web.modules.consumer.alternateEnrollment.confirmAlternate.message"><![CDATA[
- 	    Are you sure you would like to switch to the selected device(s) to their alternate programs?
+ 	    Are you sure you would like to switch the selected device(s) to their alternate programs?
  	]]></entry>
  	<entry key="yukon.web.modules.consumer.alternateEnrollment.confirmNormal.title">Confirm Revert Alternate Enrollment</entry>
  	<entry key="yukon.web.modules.consumer.alternateEnrollment.confirmNormal.message"><![CDATA[
- 	    Are you sure you would like to switch to the selected device(s) back to their normal programs?
+ 	    Are you sure you would like to switch the selected device(s) back to their normal programs?
  	]]></entry>
  	<entry key="yukon.web.modules.consumer.alternateEnrollment.alternate.success">Alternate program enrollment update was successful.</entry>
  	<entry key="yukon.web.modules.consumer.alternateEnrollment.alternate.failed"><![CDATA[Alternate program enrollment update failed.<br><ul><li>{0}</li></ul>]]></entry>

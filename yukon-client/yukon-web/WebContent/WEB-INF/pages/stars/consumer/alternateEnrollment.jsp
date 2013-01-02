@@ -16,7 +16,7 @@
 
 <cti:flashScopeMessages/>
 
-<h3><cti:msg key="yukon.web.modules.consumer.alternateEnrollment.header" /></h3><br>
+<h3><i:inline key=".header"/></h3><br>
 
 <tags:boxContainer2 nameKey="available">
     <c:choose>
