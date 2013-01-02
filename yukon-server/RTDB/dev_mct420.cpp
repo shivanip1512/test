@@ -522,14 +522,6 @@ INT Mct420Device::ModelDecode( INMESS *InMessage, CtiTime &TimeNow, CtiMessageLi
     return status;
 }
 
-/**
- * This method is not virtual, and is only called by the 
- * ModelDecode function of the MCT-420 for putConfig commands 
- * specific to the MCT-420. If the command isn't specific to the 
- * MCT-420, the decode will be processed by the parent class 
- * ModelDecode function, and it does not need to be accounted 
- * for in this function. 
- */
 int Mct420Device::decodePutConfig( INMESS *InMessage, CtiTime &TimeNow, CtiMessageList &vgList, CtiMessageList &retList, OutMessageList &outList )
 {
     int status = NoError;
@@ -546,14 +538,14 @@ int Mct420Device::decodePutConfig( INMESS *InMessage, CtiTime &TimeNow, CtiMessa
 
         default:    
         {
-            resultString = getName( ) + " / command complete";  
-            break;    
+            return Inherited::decodePutConfig(InMessage, TimeNow, vgList, retList, outList); 
         }
     }
 
     // Handle the return message. 
     {
-        CtiReturnMsg *ReturnMsg = new CtiReturnMsg(getID(), InMessage->Return.CommandStr);
+        std::auto_ptr<CtiReturnMsg> ReturnMsg(new CtiReturnMsg(getID(), InMessage->Return.CommandStr));
+
         ReturnMsg->setUserMessageId( InMessage->Return.UserID );
         ReturnMsg->setResultString ( resultString );
 
@@ -564,7 +556,7 @@ int Mct420Device::decodePutConfig( INMESS *InMessage, CtiTime &TimeNow, CtiMessa
             ReturnMsg->setExpectMore(true);
         }
 
-        retMsgHandler( InMessage->Return.CommandStr, status, ReturnMsg, vgList, retList );
+        retMsgHandler( InMessage->Return.CommandStr, status, ReturnMsg.release(), vgList, retList );
     }
 
     return status;
@@ -575,15 +567,15 @@ int Mct420Device::decodePutConfigChannel2NetMetering( INMESS *InMessage, CtiTime
 {
     // Execute a read to get the configuration data to be stored in dynamic pao info.
     {
-        CtiRequestMsg *pReq = 
-            CTIDBG_new CtiRequestMsg(
+        std::auto_ptr<CtiRequestMsg> pReq(
+            new CtiRequestMsg(
                 InMessage->TargetID, 
                 "getconfig configuration", 
                 InMessage->Return.UserID, 
                 InMessage->Return.GrpMsgID, 
                 InMessage->Return.RouteID, 
                 selectInitialMacroRouteOffset(InMessage->Return.RouteID), 
-                InMessage->Return.Attempt);
+                InMessage->Return.Attempt));
 
         if( strstr(InMessage->Return.CommandStr, "noqueue") )
         {
@@ -592,7 +584,7 @@ int Mct420Device::decodePutConfigChannel2NetMetering( INMESS *InMessage, CtiTime
 
         CtiCommandParser parse(pReq->CommandString());
 
-        beginExecuteRequest(pReq, parse, vgList, retList, outList);
+        beginExecuteRequest(pReq.release(), parse, vgList, retList, outList);
     }
 
     return NoError;
@@ -702,14 +694,22 @@ int Mct420Device::decodeGetConfigOptions( INMESS *InMessage, CtiTime &TimeNow, C
     descriptor += getName() + " / Configuration information:\n";
 
     // Configuration description
-    descriptor += configuration & 0x01 ? "DST enabled\n" : "DST disabled\n";
-    descriptor += configuration & 0x02 ? "LED test enabled\n" : "LED test disabled\n";
-    descriptor += configuration & 0x04 ? "Reconnect button required\n" : "Reconnect button not required\n";
-    descriptor += configuration & 0x08 ? "Demand limit mode enabled\n" : "Demand limit mode disabled\n";
-    descriptor += configuration & 0x10 ? "Disconnect cycling mode enabled\n" : "Disconnect cycling mode disabled\n";
-    descriptor += configuration & 0x20 ? "Repeater role enabled\n" : "Repeater role disabled\n";
-    descriptor += configuration & 0x40 ? "Disconnect collar is MCT-410d Rev E (or later)\n" : "Disconnect collar is not MCT-410d Rev E (or later)\n";
-    descriptor += configuration & 0x80 ? "Daily reporting enabled\n" : "Daily reporting disabled\n";
+    descriptor += configuration & 0x01 ? "DST enabled\n" 
+                                       : "DST disabled\n";
+    descriptor += configuration & 0x02 ? "LED test enabled\n" 
+                                       : "LED test disabled\n";
+    descriptor += configuration & 0x04 ? "Reconnect button required\n" 
+                                       : "Reconnect button not required\n";
+    descriptor += configuration & 0x08 ? "Demand limit mode enabled\n" 
+                                       : "Demand limit mode disabled\n";
+    descriptor += configuration & 0x10 ? "Disconnect cycling mode enabled\n" 
+                                       : "Disconnect cycling mode disabled\n";
+    descriptor += configuration & 0x20 ? "Repeater role enabled\n" 
+                                       : "Repeater role disabled\n";
+    descriptor += configuration & 0x40 ? "Disconnect collar is MCT-410d Rev E (or later)\n" 
+                                       : "Disconnect collar is not MCT-410d Rev E (or later)\n";
+    descriptor += configuration & 0x80 ? "Daily reporting enabled\n" 
+                                       : "Daily reporting disabled\n";
 
     // Event mask descriptions
     descriptor += getName() + " / Event mask information:\n";
