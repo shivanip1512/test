@@ -292,8 +292,22 @@ DLLEXPORT void InitYukonBaseGlobals(void)
         if(DebugLevel & 0x0001) cout << "Modem Connection Timeout is set to 60 seconds" << endl;
     }
 
-    gLogDirectory = gConfigParms.getValueAsPath("LOG_DIRECTORY", "server\\log");
-    if(DebugLevel & 0x0001) cout << "Yukon Log Directory " << gLogDirectory << endl;
+    {
+        // Set Logging directory based on the existence of the following (in decreasing priority)
+        //          LOG_DIRECTORY CParm
+        //  -or-    YUKON_BASE environment variable ( + "\Server\Log" )
+        //  -or-    default: "C:\Yukon\Server\Log"
+        //              -- if getYukonBase() errors it returns "C:\Yukon" )
+
+        gLogDirectory = gConfigParms.isOpt("LOG_DIRECTORY")
+                            ? gConfigParms.getValueAsPath("LOG_DIRECTORY")
+                            : getYukonBase() + "\\Server\\Log";
+
+        if (DebugLevel & 0x0001)
+        {
+            cout << "Yukon Log Directory: " << gLogDirectory << endl;
+        }
+    }
 
     gLogRetention = gConfigParms.getValueAsULong("LOG_FILE_RETENTION", 90ul);   // 90 day default
     if(DebugLevel & 0x0001)
