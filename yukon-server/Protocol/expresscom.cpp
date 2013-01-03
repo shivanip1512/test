@@ -1388,12 +1388,16 @@ INT CtiProtocolExpresscom::assemblePutConfig(CtiCommandParser &parse)
     int serial = parse.getiValue("xc_serial", 0);
     int relaymask  = parse.getiValue("relaymask", 0);
 
+    const bool isAddressSerial = !_addressLevel;
+    const bool isAddressBeyondSpid = _addressLevel & ~atSpid;
+    const bool isAddressExactlySpid = _addressLevel == atSpid;
+
 
     // Service should be first parse to ensure a device which is awake and listening to us if so directed.
 
-    if(!_addressLevel || (_addressLevel & ~atSpid))  // Allow only serial, or levels BEYOND SPID only.
+    if(parse.isKeyValid("xcpservice"))
     {
-        if(parse.isKeyValid("xcpservice"))
+        if(isAddressSerial || isAddressBeyondSpid)  // Allow only serial, or levels BEYOND SPID only.
         {
             status = service((BYTE)parse.getiValue("xcpservice"));
         }
@@ -1402,17 +1406,15 @@ INT CtiProtocolExpresscom::assemblePutConfig(CtiCommandParser &parse)
     if(parse.isKeyValid("xctservicecancel"))
     {
         bool isOutOfServiceRequest = (bool)parse.getiValue("xctservicecancel");
-
-        // Only allow serial and allow SPID for temp service in only!
-        if(!_addressLevel || (_addressLevel & ~atSpid) || ((_addressLevel == atSpid) && !isOutOfServiceRequest))
+        
+        // Allow Serial or anything beyond SPID for in/out. Allow SPID alone for in service message but not out of service.
+        if(isAddressSerial || isAddressBeyondSpid || (isAddressExactlySpid && !isOutOfServiceRequest))
         {
-            // This is special syntax to cause any controlled load to restore before going o.o.s.
             priority(0);                    // Need to make certain the restore is high priority.
-
             
+            // Restore only happens on service out, not on service in.
             if(isOutOfServiceRequest)
             {
-                // Restore only happens on service out, not on service in.
                 restoreLoadControl(0, 2, 0);    // 0,2,0 == all relays, 0-2 minutes randomization, 0 delay minutes.
             }
 
