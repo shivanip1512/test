@@ -19,6 +19,10 @@ ALTER TABLE ProgramToSeasonalProgram
         REFERENCES LMProgramWebPublishing (ProgramId);
 /* End YUK-11672 */
 
+/* Start YUK-11744 */
+INSERT INTO YukonRoleProperty VALUES(-1126, -2, 'Alternate Program Enrollment', 'false', 'Enables the use of alternate program enrollments.');
+/* End YUK-11744 */
+
 /**************************************************************/
 /* VERSION INFO                                               */
 /* Inserted when update script is run                         */
