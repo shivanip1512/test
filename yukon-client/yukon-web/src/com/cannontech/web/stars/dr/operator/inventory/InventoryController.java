@@ -54,6 +54,8 @@ import com.cannontech.stars.core.service.YukonEnergyCompanyService;
 import com.cannontech.stars.database.cache.StarsDatabaseCache;
 import com.cannontech.stars.database.data.lite.LiteStarsEnergyCompany;
 import com.cannontech.stars.database.db.hardware.Warehouse;
+import com.cannontech.stars.dr.account.dao.CustomerAccountDao;
+import com.cannontech.stars.dr.account.model.CustomerAccount;
 import com.cannontech.stars.dr.general.model.OperatorInventorySearchBy;
 import com.cannontech.stars.dr.hardware.dao.InventoryDao;
 import com.cannontech.stars.dr.hardware.exception.Lcr3102YukonDeviceCreationException;
@@ -97,6 +99,7 @@ public class InventoryController {
     @Autowired private YukonListDao yukonListDao;
     @Autowired private HardwareModelHelper helper;
     @Autowired private PhoneNumberFormattingService phoneNumberFormattingService;
+    @Autowired private CustomerAccountDao customerAccountDao;
     
     /* Home - Landing Page */
     @RequestMapping
@@ -425,8 +428,9 @@ public class InventoryController {
         }
         
         LiteYukonUser user = context.getYukonUser();
-        hardwareEventLogService.hardwareUpdateAttempted(user, Integer.toString(hardware.getAccountId()), hardware.getSerialNumber(), EventSource.OPERATOR);
-        
+        CustomerAccount custAccount = customerAccountDao.getById(hardware.getAccountId());
+        hardwareEventLogService.hardwareUpdateAttempted(user, custAccount.getAccountNumber(), hardware.getSerialNumber(), EventSource.OPERATOR);
+
         rolePropertyDao.verifyProperty(YukonRoleProperty.OPERATOR_CONSUMER_INFO_HARDWARES, user);
         
         /* Validate and Update*/

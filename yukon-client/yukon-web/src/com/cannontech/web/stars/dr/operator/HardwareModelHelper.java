@@ -21,6 +21,8 @@ import com.cannontech.common.rfn.service.RfnDeviceCreationService;
 import com.cannontech.core.roleproperties.YukonRoleProperty;
 import com.cannontech.core.roleproperties.dao.RolePropertyDao;
 import com.cannontech.database.data.lite.LiteYukonUser;
+import com.cannontech.stars.dr.account.dao.CustomerAccountDao;
+import com.cannontech.stars.dr.account.model.CustomerAccount;
 import com.cannontech.stars.dr.hardware.exception.Lcr3102YukonDeviceCreationException;
 import com.cannontech.stars.dr.hardware.exception.StarsDeviceSerialNumberAlreadyExistsException;
 import com.cannontech.stars.dr.hardware.service.HardwareUiService;
@@ -36,7 +38,8 @@ public class HardwareModelHelper {
     @Autowired private RolePropertyDao rolePropertyDao;
     @Autowired private HardwareValidator hardwareValidator;
     @Autowired private RfnDeviceCreationService rfnDeviceCreationService;
-    
+    @Autowired private CustomerAccountDao customerAccountDao;
+
     public void creationAttempted(LiteYukonUser user, 
                                   String accountNo, 
                                   Hardware hardware, 
@@ -108,7 +111,8 @@ public class HardwareModelHelper {
     }
     
     public void updateAttempted(Hardware hardware, LiteYukonUser user, YukonRoleProperty editingRp, BindingResult result) {
-        hardwareEventLogService.hardwareUpdateAttempted(user, Integer.toString(hardware.getAccountId()), hardware.getSerialNumber(), EventSource.OPERATOR);
+        CustomerAccount custAccount = customerAccountDao.getById(hardware.getAccountId());
+        hardwareEventLogService.hardwareUpdateAttempted(user, custAccount.getAccountNumber(), hardware.getSerialNumber(), EventSource.OPERATOR);
         rolePropertyDao.verifyProperty(editingRp, user);
         hardwareValidator.validate(hardware, result);
     }
