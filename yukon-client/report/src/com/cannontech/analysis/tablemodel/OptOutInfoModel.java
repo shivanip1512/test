@@ -1,6 +1,5 @@
 package com.cannontech.analysis.tablemodel;
 
-import java.util.ArrayList;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
@@ -35,17 +34,13 @@ public class OptOutInfoModel extends BareDatedReportModelBase<OptOutInfoModel.Mo
 
     private double oneHour = Duration.standardHours(1).getMillis();
     
-    private CustomerAccountDao customerAccountDao = 
-        (CustomerAccountDao) YukonSpringHook.getBean("customerAccountDao", CustomerAccountDao.class);
-    private LmControlHistoryUtilService lmControlHistoryUtilService =
-        (LmControlHistoryUtilService) YukonSpringHook.getBean("lmControlHistoryUtilService", LmControlHistoryUtilService.class);
-    private ProgramDao programDao = 
-        (ProgramDao) YukonSpringHook.getBean("starsProgramDao", ProgramDao.class);
-    private OptOutEventDao optOutEventDao =
-        (OptOutEventDao) YukonSpringHook.getBean("optOutEventDao", OptOutEventDao.class);
+    private CustomerAccountDao customerAccountDao = YukonSpringHook.getBean("customerAccountDao", CustomerAccountDao.class);
+    private LmControlHistoryUtilService lmControlHistoryUtilService = YukonSpringHook.getBean("lmControlHistoryUtilService", LmControlHistoryUtilService.class);
+    private ProgramDao programDao = YukonSpringHook.getBean("starsProgramDao", ProgramDao.class);
+    private OptOutEventDao optOutEventDao = YukonSpringHook.getBean("optOutEventDao", OptOutEventDao.class);
     
     // member variables
-    private List<ModelRow> data = new ArrayList<ModelRow>();
+    private List<ModelRow> data = Lists.newArrayList();
     private int energyCompanyId;
     private Set<Integer> accountIds;
     private Set<Integer> programIds;
