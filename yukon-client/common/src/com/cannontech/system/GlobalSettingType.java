@@ -111,7 +111,7 @@ public enum GlobalSettingType implements DisplayableEnum {
     SYSTEM_TIMEZONE(GlobalSettingSubCategory.MISC, stringType(), null),
     ALERT_TIMEOUT_HOURS(GlobalSettingSubCategory.MISC, integerType(), 168),
     DATABASE_MIGRATION_FILE_LOCATION(GlobalSettingSubCategory.MISC, stringType(), "/Server/Export/"),
-    TEMPORARY_DEVICE_GROUP_DELETION_PERIOD(GlobalSettingSubCategory.MISC, integerType(), 7),
+    TEMP_DEVICE_GROUP_DELETION_IN_DAYS(GlobalSettingSubCategory.MISC, integerType(), 7),
     
     // Voice Server
     CALL_RESPONSE_TIMEOUT(GlobalSettingSubCategory.VOICE, integerType(), 240),
