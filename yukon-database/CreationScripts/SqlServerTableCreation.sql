@@ -1,7 +1,7 @@
 /*==============================================================*/
 /* Database name:  YukonDatabase                                */
 /* DBMS name:      Microsoft SQL Server 2005                    */
-/* Created on:     11/30/2012 4:45:16 PM                        */
+/* Created on:     1/7/2013 3:18:55 PM                          */
 /*==============================================================*/
 
 /*==============================================================*/
@@ -7248,6 +7248,16 @@ MonitorId ASC
 go
 
 /*==============================================================*/
+/* Table: ProgramToSeasonalProgram                              */
+/*==============================================================*/
+create table ProgramToSeasonalProgram (
+   AssignedProgramId    numeric              not null,
+   SeasonalProgramId    numeric              not null,
+   constraint PK_ProgramToSeasonalProgram primary key (AssignedProgramId)
+)
+go
+
+/*==============================================================*/
 /* Table: PurchasePlan                                          */
 /*==============================================================*/
 create table PurchasePlan (
@@ -12689,6 +12699,17 @@ alter table PorterResponseMonitorRule
    add constraint FK_PortRespMonRule_PortRespMon foreign key (MonitorId)
       references PorterResponseMonitor (MonitorId)
          on delete cascade
+go
+
+alter table ProgramToSeasonalProgram
+   add constraint FK_ProgSeaProg_LMProgWebPub_AP foreign key (AssignedProgramId)
+      references LMProgramWebPublishing (ProgramID)
+         on delete cascade
+go
+
+alter table ProgramToSeasonalProgram
+   add constraint FK_ProgSeaProg_LMProgWebPub_SP foreign key (SeasonalProgramId)
+      references LMProgramWebPublishing (ProgramID)
 go
 
 alter table PurchasePlan

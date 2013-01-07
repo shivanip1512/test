@@ -1,7 +1,7 @@
 /*==============================================================*/
 /* Database name:  YukonDatabase                                */
 /* DBMS name:      ORACLE Version 9i                            */
-/* Created on:     11/30/2012 4:49:03 PM                        */
+/* Created on:     1/7/2013 3:23:53 PM                          */
 /*==============================================================*/
 
 
@@ -6829,6 +6829,15 @@ create unique index Indx_PortRespMonRule_RO_MI_UNQ on PorterResponseMonitorRule 
 );
 
 /*==============================================================*/
+/* Table: ProgramToSeasonalProgram                              */
+/*==============================================================*/
+create table ProgramToSeasonalProgram  (
+   AssignedProgramId    NUMBER                          not null,
+   SeasonalProgramId    NUMBER                          not null,
+   constraint PK_ProgramToSeasonalProgram primary key (AssignedProgramId)
+);
+
+/*==============================================================*/
 /* Table: PurchasePlan                                          */
 /*==============================================================*/
 create table PurchasePlan  (
@@ -11666,6 +11675,15 @@ alter table PorterResponseMonitorRule
    add constraint FK_PortRespMonRule_PortRespMon foreign key (MonitorId)
       references PorterResponseMonitor (MonitorId)
       on delete cascade;
+
+alter table ProgramToSeasonalProgram
+   add constraint FK_ProgSeaProg_LMProgWebPub_AP foreign key (AssignedProgramId)
+      references LMProgramWebPublishing (ProgramID)
+      on delete cascade;
+
+alter table ProgramToSeasonalProgram
+   add constraint FK_ProgSeaProg_LMProgWebPub_SP foreign key (SeasonalProgramId)
+      references LMProgramWebPublishing (ProgramID);
 
 alter table PurchasePlan
    add constraint FK_PRCHSPL_REF_EC foreign key (EnergyCompanyID)
