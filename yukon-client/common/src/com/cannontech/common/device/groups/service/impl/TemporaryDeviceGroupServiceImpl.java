@@ -62,7 +62,7 @@ public class TemporaryDeviceGroupServiceImpl implements TemporaryDeviceGroupServ
     }
     
     private void scheduleTempGroupDeletion(final StoredDeviceGroup group) {
-        int days = globalSettingDao.getInteger(GlobalSettingType.TEMPORARY_DEVICE_GROUP_DELETION_PERIOD);
+        int days = globalSettingDao.getInteger(GlobalSettingType.TEMP_DEVICE_GROUP_DELETION_IN_DAYS);
         scheduleTempGroupDeletion(group, days, TimeUnit.DAYS);
     }    
     
