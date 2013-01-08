@@ -1,7 +1,7 @@
 /*==============================================================*/
 /* Database name:  YukonDatabase                                */
 /* DBMS name:      ORACLE Version 9i                            */
-/* Created on:     1/7/2013 3:23:53 PM                          */
+/* Created on:     1/7/2013 3:35:38 PM                          */
 /*==============================================================*/
 
 
@@ -8632,6 +8632,7 @@ INSERT INTO YukonRoleProperty VALUES(-1121, -2, 'Allow Single Day Thermostat Sch
 INSERT INTO YukonRoleProperty VALUES(-1122, -2, 'Allow 5/2 Thermostat Schedules', 'false', 'Allow the use of 5/2 day schedules for compatible thermostats. Weekday/Weekend.'); 
 INSERT INTO YukonRoleProperty VALUES(-1123, -2, 'Allow 5/1/1 Thermostat Schedules', 'true', 'Allow the use of 5/1/1 schedules for compatible thermostats. Weekday/Saturday/Sunday.'); 
 INSERT INTO YukonRoleProperty VALUES(-1124, -2, 'Allow 7 Day Thermostat Schedules', 'false', 'Allow the use of 7 day schedules (different schedule each day of the week) for compatible thermostats.'); 
+INSERT INTO YukonRoleProperty VALUES(-1126, -2, 'Alternate Program Enrollment', 'false', 'Enables the use of alternate program enrollments.');
 
 /* Database Editor Role */
 INSERT INTO YukonRoleProperty VALUES(-10000,-100,'point_id_edit','false','Controls whether point ids can be edited');
