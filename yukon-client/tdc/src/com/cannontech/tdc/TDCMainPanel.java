@@ -48,6 +48,7 @@ import com.cannontech.common.gui.util.Colors;
 import com.cannontech.common.gui.util.SortTableModelWrapper;
 import com.cannontech.common.point.PointQuality;
 import com.cannontech.common.util.CtiUtilities;
+import com.cannontech.common.util.SwingUtil;
 import com.cannontech.core.dao.DaoFactory;
 import com.cannontech.database.data.device.DeviceTypesFuncs;
 import com.cannontech.database.data.lite.LiteAlarmCategory;
@@ -55,6 +56,7 @@ import com.cannontech.database.data.lite.LitePoint;
 import com.cannontech.database.data.lite.LiteTag;
 import com.cannontech.database.data.pao.PAOGroups;
 import com.cannontech.database.data.point.PointTypes;
+import com.cannontech.debug.gui.ObjectInfoDialog;
 import com.cannontech.graph.model.TrendModel;
 import com.cannontech.message.dispatch.message.DBChangeMsg;
 import com.cannontech.message.dispatch.message.Signal;
@@ -204,8 +206,7 @@ public void actionPerformed(java.awt.event.ActionEvent e) {
  */
 private void addClientRadioButtons(Object value, int index, boolean enabled ) 
 {	
-	TDCMainFrame parentFrame = 
-			((TDCMainFrame)CtiUtilities.getParentFrame( this ));
+    TDCMainFrame parentFrame = ((TDCMainFrame) SwingUtil.getParentFrame(this));
 
 	parentFrame.addClientRadioButtons( value, index, enabled );
 }
@@ -225,7 +226,7 @@ public void checkForMissingPoints()
 {
 	if( getTableDataModel().getPointsInLimbo() != null )
 	{
-		java.awt.Frame owner = CtiUtilities.getParentFrame( this );
+		Frame owner = SwingUtil.getParentFrame( this );
 		
 		MissingPointsDialog missing = new MissingPointsDialog( owner, getTableDataModel().getPointsInLimbo() );
 		missing.setLocationRelativeTo( owner );
@@ -557,7 +558,7 @@ public void displayTable_MousePressed(java.awt.event.MouseEvent mouseEvent)
 public void executeDateChange( Date newDate ) 
 {
 	getTableDataModel().setCurrentDate( newDate );
-	java.awt.Frame owner = CtiUtilities.getParentFrame(this);
+	Frame owner = SwingUtil.getParentFrame(this);
 	Cursor original = owner.getCursor();
 	owner.setCursor(new java.awt.Cursor(java.awt.Cursor.WAIT_CURSOR));
 
@@ -729,8 +730,7 @@ public void fireBookMarkSelected( Object source )
 			final String bookMark = tokenizer.nextToken();
 
 			// we must have the View Type clicked on here
-			TDCMainFrame parentFrame = 
-					((TDCMainFrame)CtiUtilities.getParentFrame( this ));
+			TDCMainFrame parentFrame = ((TDCMainFrame) SwingUtil.getParentFrame(this));
 
 			parentFrame.setSelectedViewType( bookMarkType );
 
@@ -766,7 +766,7 @@ public void fireBookMarkSelected( Object source )
 	}
 	finally
 	{
-		CtiUtilities.getParentFrame(this).setCursor( original );
+	    SwingUtil.getParentFrame(this).setCursor(original);
 		needColDataUpdate = true;
 	}
 	
@@ -838,7 +838,7 @@ private void fireJComboCurrentDisplayAction_actionPerformed(java.util.EventObjec
 		}
 		finally
 		{
-            Frame owner = CtiUtilities.getParentFrame(this);
+            Frame owner = SwingUtil.getParentFrame(this);
             
             owner.setCursor( original );
 			
@@ -1632,7 +1632,7 @@ private Display[] getLastDisplays() {
  */
 public void getHistoryDisplayData( Date date ) 
 {
-	java.awt.Frame owner = CtiUtilities.getParentFrame(this);
+	Frame owner = SwingUtil.getParentFrame(this);
 	java.awt.Cursor original = owner.getCursor();	
 	owner.setCursor( new java.awt.Cursor( java.awt.Cursor.WAIT_CURSOR ) );
 
@@ -2127,9 +2127,8 @@ private void initialize() {
  */
 private void initializeParameters()
 {
-	TDCMainFrame parentFrame = 
-			((TDCMainFrame)CtiUtilities.getParentFrame( this ));
-			
+	TDCMainFrame parentFrame = ((TDCMainFrame) SwingUtil.getParentFrame(this));
+
 	java.awt.Font newFont = null;
 	ParametersFile pf = new ParametersFile( CtiUtilities.OUTPUT_FILE_NAME );
 
@@ -2435,7 +2434,7 @@ public void jMenuItemGraph_ActionPerformed(java.awt.event.ActionEvent actionEven
 	JFrame jd = new JFrame(
 		pv.getPointName() + " - 30 Day Trend Snapshot");
 	
-	jd.setIconImage( CtiUtilities.getParentFrame(this).getIconImage() );
+	jd.setIconImage(SwingUtil.getParentFrame(this).getIconImage());
 	jd.setResizable( true );
 	jd.setSize( 600, 430 );
 	jd.setLocation( this.getLocationOnScreen() );
@@ -2447,8 +2446,7 @@ public void jMenuItemGraph_ActionPerformed(java.awt.event.ActionEvent actionEven
 
 public void jMenuItemAltScanRate_ActionPerformed(java.awt.event.ActionEvent actionEvent)
 {
-	RowEditorDialog d = new RowEditorDialog( 
-		CtiUtilities.getParentFrame(this) ); 
+	RowEditorDialog d = new RowEditorDialog(SwingUtil.getParentFrame(this)); 
 
 	int selectedRow = getDisplayTable().getSelectedRow();
 	PointValues pt = getTableDataModel().getPointValue( selectedRow );
@@ -2760,8 +2758,7 @@ public void jPopupMenu_PopupMenuWillBecomeVisible(javax.swing.event.PopupMenuEve
 
 private void jMenutItemTag_Modify( ActionEvent e )
 {
-	RowEditorDialog d = new RowEditorDialog( 
-		CtiUtilities.getParentFrame(this) ); 
+	RowEditorDialog d = new RowEditorDialog(SwingUtil.getParentFrame(this)); 
 
 	int selectedRow = getDisplayTable().getSelectedRow();
 	PointValues pt = getTableDataModel().getPointValue( selectedRow );
@@ -3056,8 +3053,7 @@ public void jMenuItemInhibitDev_ActionPerformed(java.awt.event.ActionEvent actio
  */
 public void jMenuItemCreateTag_ActionPerformed(java.awt.event.ActionEvent source) 
 {
-	RowEditorDialog d = new RowEditorDialog( 
-		CtiUtilities.getParentFrame(this) ); 
+	RowEditorDialog d = new RowEditorDialog(SwingUtil.getParentFrame(this)); 
 
 	int selectedRow = getDisplayTable().getSelectedRow();
 	PointValues pt = getTableDataModel().getPointValue( selectedRow );
@@ -3125,7 +3121,7 @@ public void jRadioButtonMenuItemInhibitPt_ActionPerformed(java.awt.event.ActionE
  **/
 public void jComboPopupPage_ActionPerformed()
 {
-    java.awt.Frame owner = CtiUtilities.getParentFrame(this);       
+    Frame owner = SwingUtil.getParentFrame(this);       
     Cursor savedCursor = owner.getCursor();
 
 	try
@@ -3611,7 +3607,7 @@ protected void setCurrentSpecialChild(SpecialTDCChild newCurrentSpecialChild) {
  */
 public Cursor setCursorToWait() 
 {
-	java.awt.Frame owner = CtiUtilities.getParentFrame(this);
+	Frame owner = SwingUtil.getParentFrame(this);
 	Cursor original = owner.getCursor();	
 	owner.setCursor( new java.awt.Cursor( java.awt.Cursor.WAIT_CURSOR ) );
 
@@ -3768,7 +3764,7 @@ private void setTableHeaderListener()
 				int vc = getDisplayTable().getColumnModel().getColumnIndexAtX( e.getX() );
 				int mc = getDisplayTable().convertColumnIndexToModel( vc );
 
-				java.awt.Frame owner = CtiUtilities.getParentFrame( TDCMainPanel.this );
+				Frame owner = SwingUtil.getParentFrame(TDCMainPanel.this);
 				
 				Cursor original = owner.getCursor();	
 				owner.setCursor( new java.awt.Cursor( java.awt.Cursor.WAIT_CURSOR ) );
@@ -3816,7 +3812,7 @@ public void setUpTable()
 {
 	if (getJComboCurrentDisplay().getSelectedItem() != null)
 	{
-		java.awt.Frame owner = CtiUtilities.getParentFrame(this);
+		Frame owner = SwingUtil.getParentFrame(this);
 		Cursor original = owner.getCursor();
 		owner.setCursor(new java.awt.Cursor(java.awt.Cursor.WAIT_CURSOR));
 		
@@ -3869,8 +3865,7 @@ public void setUpTable()
  */
 private void showDebugInfo( ) 
 {
-	com.cannontech.debug.gui.ObjectInfoDialog d = new com.cannontech.debug.gui.ObjectInfoDialog(
-		CtiUtilities.getParentFrame(this) ); 
+	ObjectInfoDialog d = new ObjectInfoDialog(SwingUtil.getParentFrame(this)); 
 
 	d.setLocation( this.getLocationOnScreen() );
 	d.showDialog( 
@@ -3886,8 +3881,7 @@ private void showDebugInfo( )
  */
 private void showRowEditor( Object source ) 
 {	
-	RowEditorDialog d = new RowEditorDialog( 
-		CtiUtilities.getParentFrame(this) ); 
+	RowEditorDialog d = new RowEditorDialog(SwingUtil.getParentFrame(this)); 
 
 	ManualEntryJPanel panel = null;	
 	int selectedRow = getDisplayTable().getSelectedRow();

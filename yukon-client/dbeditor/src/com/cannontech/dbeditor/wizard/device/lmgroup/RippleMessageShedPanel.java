@@ -1,6 +1,9 @@
 package com.cannontech.dbeditor.wizard.device.lmgroup;
 
+import javax.swing.JComboBox;
+
 import com.cannontech.common.util.CtiUtilities;
+import com.cannontech.common.util.SwingUtil;
 
 /**
  * Insert the type's description here.
@@ -18,13 +21,9 @@ public class RippleMessageShedPanel extends com.cannontech.common.gui.util.DataI
 	private javax.swing.JPanel ivjControlPanel = null;
 	private javax.swing.JPanel ivjRestorePanel = null;
 	private javax.swing.JLabel ivjShedTimeLabel = null;
-	private javax.swing.JComboBox ivjShedTimeComboBox = null;
+	private JComboBox<String> ivjShedTimeComboBox = null;
 	private javax.swing.JPanel ivjShedTimePanel = null;
-	private java.awt.GridLayout ivjControlBitToggleGridLayout = null;
-	private java.awt.GridLayout ivjControlBitToggle1GridLayout = null;
-/**
- * RippleAddressPanel constructor comment.
- */
+
 public RippleMessageShedPanel() {
 	super();
 	initialize();
@@ -376,8 +375,7 @@ private javax.swing.JPanel getRestorePanel() {
  * Return the ScanRateComboBox property value.
  * @return javax.swing.JComboBox
  */
-/* WARNING: THIS METHOD WILL BE REGENERATED. */
-private javax.swing.JComboBox getShedTimeComboBox() {
+private JComboBox<String> getShedTimeComboBox() {
 	if (ivjShedTimeComboBox == null) {
 		try {
 			javax.swing.plaf.metal.MetalComboBoxEditor.UIResource ivjLocalEditor;
@@ -390,7 +388,7 @@ private javax.swing.JComboBox getShedTimeComboBox() {
 			ivjLocalRenderer.setMaximumSize(new java.awt.Dimension(35, 16));
 			ivjLocalRenderer.setMinimumSize(new java.awt.Dimension(35, 16));
 			ivjLocalRenderer.setForeground(new java.awt.Color(0, 0, 0));
-			ivjShedTimeComboBox = new javax.swing.JComboBox();
+			ivjShedTimeComboBox = new JComboBox<>();
 			ivjShedTimeComboBox.setName("ShedTimeComboBox");
 			ivjShedTimeComboBox.setEditor(ivjLocalEditor);
 			ivjShedTimeComboBox.setRenderer(ivjLocalRenderer);
@@ -666,10 +664,8 @@ public void setValue(Object val)
 
 		if(shedTimeSec.intValue() == 0)
 			getShedTimeComboBox().setSelectedItem(CONT_LATCH);
-	  	
 		else
-			CtiUtilities.setIntervalComboBoxSelectedItem(
-				getShedTimeComboBox(), shedTimeSec.intValue() );
+            SwingUtil.setIntervalComboBoxSelectedItem(getShedTimeComboBox(), shedTimeSec.intValue());
 
 		//set the Control Bits
 		javax.swing.JToggleButton controlToggleButtons[]= getControlBitToggle().getToggleButtons();

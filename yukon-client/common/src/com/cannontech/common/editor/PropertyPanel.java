@@ -4,12 +4,13 @@ package com.cannontech.common.editor;
  * This type was created in VisualAge.
  */
 
-import java.awt.Component;
+import java.awt.Frame;
 import java.util.Vector;
 
 import javax.swing.JTabbedPane;
 
 import com.cannontech.common.gui.util.DataInputPanel;
+import com.cannontech.common.util.SwingUtil;
 import com.cannontech.database.db.DBPersistent;
 
 public abstract class PropertyPanel extends com.cannontech.common.gui.util.DataInputPanel implements com.cannontech.common.gui.util.DataInputPanelListener, java.awt.event.ActionListener 
@@ -40,7 +41,7 @@ public abstract class PropertyPanel extends com.cannontech.common.gui.util.DataI
 	public void actionPerformed(java.awt.event.ActionEvent newEvent) {
 	
 		//Change the cursor in case this takes a while
-		java.awt.Frame owner = com.cannontech.common.util.CtiUtilities.getParentFrame(this);
+		Frame owner = SwingUtil.getParentFrame(this);
 		java.awt.Cursor savedCursor = null;
 		if( owner != null )
 			savedCursor = owner.getCursor();
@@ -289,7 +290,7 @@ public abstract class PropertyPanel extends com.cannontech.common.gui.util.DataI
 		else
 		{
 			//just forward the event on as is
-			java.awt.Frame owner = com.cannontech.common.util.CtiUtilities.getParentFrame(this);
+			Frame owner = SwingUtil.getParentFrame(this);
 			java.awt.Cursor savedCursor = null;
 			if( owner != null )
 				savedCursor = owner.getCursor();

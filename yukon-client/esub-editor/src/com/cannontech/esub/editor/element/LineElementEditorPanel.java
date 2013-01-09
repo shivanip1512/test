@@ -20,7 +20,7 @@ import javax.swing.event.ChangeListener;
 import com.cannontech.clientutils.CTILogger;
 import com.cannontech.common.editor.PropertyPanel;
 import com.cannontech.common.gui.util.SimpleLabel;
-import com.cannontech.common.util.CtiUtilities;
+import com.cannontech.common.util.SwingUtil;
 import com.cannontech.core.dao.DaoFactory;
 import com.cannontech.core.dao.NotFoundException;
 import com.cannontech.database.data.lite.LitePoint;
@@ -208,7 +208,7 @@ public class LineElementEditorPanel extends com.cannontech.common.gui.util.DataI
             add(getBlinkPointButton(), blinkButtonConstraint);
             
             initConnections();
-            JFrame parent = (JFrame) CtiUtilities.getParentFrame(this);
+            JFrame parent = (JFrame) SwingUtil.getParentFrame(this);
             if(parent != null) {
                 parent.setTitle("Line Element Editor");
             }
@@ -800,35 +800,35 @@ public class LineElementEditorPanel extends com.cannontech.common.gui.util.DataI
                 getBlinkCheckBox().setEnabled(true);
             }
         }else if( source == getColorPointButton()) {
-            pointPanelDialog = new JDialog(CtiUtilities.getParentFrame(this), true);
+            pointPanelDialog = new JDialog(SwingUtil.getParentFrame(this), true);
             pointPanelDialog.setContentPane(getColorPointPanel());
             pointPanelDialog.setSize(new java.awt.Dimension(540, 630));
             getColorPointPanel().setValue(lineElement);
             pointPanelDialog.setVisible(true);
         }
         else if( source == getThicknessPointButton()) {
-            pointPanelDialog = new JDialog(CtiUtilities.getParentFrame(this), true);
+            pointPanelDialog = new JDialog(SwingUtil.getParentFrame(this), true);
             pointPanelDialog.setContentPane(getThicknessPointPanel());
             pointPanelDialog.setSize(new java.awt.Dimension(540, 650));
             getThicknessPointPanel().setValue(lineElement);
             pointPanelDialog.setVisible(true);
         }
         else if( source == getArrowPointButton()) {
-            pointPanelDialog = new JDialog(CtiUtilities.getParentFrame(this), true);
+            pointPanelDialog = new JDialog(SwingUtil.getParentFrame(this), true);
             pointPanelDialog.setContentPane(getArrowPointPanel());
             pointPanelDialog.setSize(new java.awt.Dimension(540, 630));
             getArrowPointPanel().setValue(lineElement);
             pointPanelDialog.setVisible(true);
         }
         else if( source == getOpacityPointButton()) {
-            pointPanelDialog = new JDialog(CtiUtilities.getParentFrame(this), true);
+            pointPanelDialog = new JDialog(SwingUtil.getParentFrame(this), true);
             pointPanelDialog.setContentPane(getOpacityPointPanel());
             pointPanelDialog.setSize(new java.awt.Dimension(540, 650));
             getOpacityPointPanel().setValue(lineElement);
             pointPanelDialog.setVisible(true);
         }
         else if( source == getBlinkPointButton()) {
-            pointPanelDialog = new JDialog(CtiUtilities.getParentFrame(this), true);
+            pointPanelDialog = new JDialog(SwingUtil.getParentFrame(this), true);
             pointPanelDialog.setContentPane(getBlinkPointPanel());
             pointPanelDialog.setSize(new java.awt.Dimension(540, 500));
             getBlinkPointPanel().setValue(lineElement);

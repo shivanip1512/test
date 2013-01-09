@@ -3,6 +3,7 @@ package com.cannontech.macs.gui;
 /**
  * This type was created in VisualAge.
  */
+import java.awt.Frame;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.MouseEvent;
@@ -32,6 +33,7 @@ import com.cannontech.common.gui.panel.ManualChangeJPanel;
 import com.cannontech.common.gui.util.MessagePanel;
 import com.cannontech.common.gui.util.SortTableModelWrapper;
 import com.cannontech.common.util.CtiUtilities;
+import com.cannontech.common.util.SwingUtil;
 import com.cannontech.common.wizard.WizardPanel;
 import com.cannontech.common.wizard.WizardPanelEvent;
 import com.cannontech.common.wizard.WizardPanelListener;
@@ -99,7 +101,7 @@ public void actionPerformed(ActionEvent event)
 	
 	try
 	{	
-		parent = CtiUtilities.getParentFrame(this);
+		parent = SwingUtil.getParentFrame(this);
 		savedCursor = parent.getCursor();
 		parent.setCursor( new java.awt.Cursor(java.awt.Cursor.WAIT_CURSOR) );
 			
@@ -210,8 +212,9 @@ private void executeDeleteButton_ActionPerformed( ActionEvent event )
 	if( selected == null || selected.getCurrentState().equals(Schedule.STATE_PENDING) )
 		return;
 
-	if( javax.swing.JOptionPane.showConfirmDialog( CtiUtilities.getParentFrame(this), "Do you really want to delete '" + selected.getScheduleName() + "'?", "Schedule Deletion", JOptionPane.YES_NO_OPTION ) == JOptionPane.NO_OPTION )
+	if (JOptionPane.showConfirmDialog(SwingUtil.getParentFrame(this), "Do you really want to delete '" + selected.getScheduleName() + "'?", "Schedule Deletion", JOptionPane.YES_NO_OPTION ) == JOptionPane.NO_OPTION) {
 		return;
+	}
 
 	try
 	{
@@ -287,7 +290,7 @@ private void executeStartStopButton_ActionPerformed( ActionEvent event )
 		if( selected == null || selected.getCurrentState().equalsIgnoreCase(Schedule.STATE_DISABLED) )
 			return;
 
-		final JDialog d = new JDialog( CtiUtilities.getParentFrame(this) );
+		final JDialog d = new JDialog(SwingUtil.getParentFrame(this));
 		ManualChangeJPanel panel = null;
 		
 		if( selected.getCurrentState().equalsIgnoreCase(Schedule.STATE_WAITING) )
@@ -583,7 +586,7 @@ public javax.swing.JTable getScheduleTable()
 					int vc = getScheduleTable().getColumnModel().getColumnIndexAtX( e.getX() );
 					int mc = getScheduleTable().convertColumnIndexToModel( vc );
 
-					java.awt.Frame owner = CtiUtilities.getParentFrame( getScheduleTable() );
+					Frame owner = SwingUtil.getParentFrame(getScheduleTable());
 					java.awt.Cursor original = null;
 
 					if( owner != null )
@@ -1014,7 +1017,7 @@ public void selectionPerformed(WizardPanelEvent event)
  */
 private void showDebugInfo( ) 
 {
-	ScheduleDebugViewer d = new ScheduleDebugViewer(CtiUtilities.getParentFrame(this) ); 
+	ScheduleDebugViewer d = new ScheduleDebugViewer(SwingUtil.getParentFrame(this)); 
 	
 	d.setValue( getSelectedSchedule() );
 		
@@ -1031,7 +1034,7 @@ public void showEditViewPanel( final Schedule selectedSchedule, PropertyPanel ed
 	if( selectedSchedule == null )
 		return;
 	
-	java.awt.Frame owner = CtiUtilities.getParentFrame(this);
+	Frame owner = SwingUtil.getParentFrame(this);
 	java.awt.Cursor savedCursor = owner.getCursor();
 	
 	try
@@ -1078,7 +1081,7 @@ public void showEditViewPanel( final Schedule selectedSchedule, PropertyPanel ed
 private void showWizardPanel(WizardPanel wizard) 
 {
 	//Set the cursor to wait
-	java.awt.Frame owner = CtiUtilities.getParentFrame( this );
+	Frame owner = SwingUtil.getParentFrame(this);
 	owner.setCursor( new java.awt.Cursor( java.awt.Cursor.WAIT_CURSOR ) );
 
 	wizard.addWizardPanelListener(this);	
@@ -1201,7 +1204,7 @@ public void messageReceived( MessageEvent e )
 	        final String connectedString = getConnectionState();
 	        javax.swing.SwingUtilities.invokeLater( new Runnable() {
 	            public void run() {
-	                java.awt.Frame f = CtiUtilities.getParentFrame(SchedulerMainPanel.this);
+	                Frame f = SwingUtil.getParentFrame(SchedulerMainPanel.this);
 	                if( f != null ) {
 	                    f.setTitle(connectedString);
 	                }

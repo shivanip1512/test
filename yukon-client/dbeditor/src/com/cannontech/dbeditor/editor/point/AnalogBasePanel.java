@@ -6,7 +6,7 @@ import javax.swing.JComboBox;
 import javax.swing.JLabel;
 import javax.swing.JPanel;
 
-import com.cannontech.common.util.CtiUtilities;
+import com.cannontech.common.util.SwingUtil;
 import com.cannontech.core.dao.DaoFactory;
 import com.cannontech.database.cache.DefaultDatabaseCache;
 import com.cannontech.database.data.lite.LiteStateGroup;
@@ -445,7 +445,7 @@ public Object getValue(Object val) {
         point.getPoint().setArchiveType(PointArchiveType.ON_TIMER_OR_UPDATE.getPointArchiveTypeName());
     else
         point.getPoint().setArchiveType((String)getArchiveTypeComboBox().getSelectedItem());
-    point.getPoint().setArchiveInterval(CtiUtilities.getIntervalComboBoxSecondsValue(getArchiveIntervalComboBox()));
+    point.getPoint().setArchiveInterval(SwingUtil.getIntervalComboBoxSecondsValue(getArchiveIntervalComboBox()));
     
     point.getPointUnit().setDecimalPlaces( new Integer(((Number)getDecimalPlacesSpinner().getValue()).intValue() ) );
     point.getPointUnit().setMeterDials( new Integer(((Number)getMeterDialsSpinner().getValue()).intValue() ) );
@@ -617,7 +617,7 @@ public void setValue(Object val) {
         {
             getArchiveTypeComboBox().setSelectedIndex(i);
             if( getArchiveIntervalComboBox().isEnabled() )
-                CtiUtilities.setIntervalComboBoxSelectedItem(getArchiveIntervalComboBox(),archiveInteger.intValue());
+                SwingUtil.setIntervalComboBoxSelectedItem(getArchiveIntervalComboBox(),archiveInteger.intValue());
             break;
         }
     }

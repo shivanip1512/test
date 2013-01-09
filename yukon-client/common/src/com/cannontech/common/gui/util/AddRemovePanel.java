@@ -16,7 +16,7 @@ import javax.swing.KeyStroke;
 import javax.swing.event.ListSelectionListener;
 
 import com.cannontech.common.gui.dnd.DragAndDropListener;
-import com.cannontech.common.util.CtiUtilities;
+import com.cannontech.common.util.SwingUtil;
 
 public class AddRemovePanel extends JPanel implements DragAndDropListener, MouseListener, MouseMotionListener, ListSelectionListener {
 	private javax.swing.JButton ivjAddButton = null;
@@ -630,11 +630,8 @@ private void handleException(Throwable exception) {
  * Initializes connections
  */
 private void initConnections() throws java.lang.Exception {
-	dialog = new OkCancelDialog(
-		CtiUtilities.getParentFrame(this),
-		"Search",
-		true, FND_PANEL );
-	
+	dialog = new OkCancelDialog(SwingUtil.getParentFrame(this), "Search", true, FND_PANEL);
+
 	final AbstractAction searchActionLeftList = new AbstractAction()
 	{
 		public void actionPerformed(java.awt.event.ActionEvent e)

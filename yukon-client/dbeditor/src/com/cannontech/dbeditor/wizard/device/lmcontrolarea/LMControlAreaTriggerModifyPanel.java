@@ -12,7 +12,7 @@ import javax.swing.event.CaretListener;
 import com.cannontech.common.gui.unchanging.LongRangeDocument;
 import com.cannontech.common.gui.util.DataInputPanel;
 import com.cannontech.common.gui.util.OkCancelDialog;
-import com.cannontech.common.util.CtiUtilities;
+import com.cannontech.common.util.SwingUtil;
 import com.cannontech.core.dao.DaoFactory;
 import com.cannontech.database.data.lite.LitePoint;
 import com.cannontech.database.data.lite.LiteStateGroup;
@@ -1056,11 +1056,8 @@ private javax.swing.JTextField getJTextFieldATKU() {
 	 */
 	public void jButtonProjection_ActionPerformed(java.awt.event.ActionEvent actionEvent) 
 	{
-		OkCancelDialog d = new OkCancelDialog( 
-				CtiUtilities.getParentFrame(this),
-				"Projection Properties",
-				true,
-				getJPanelTriggerProjPanel() );
+		OkCancelDialog d = new OkCancelDialog(SwingUtil.getParentFrame(this), "Projection Properties", true,
+				getJPanelTriggerProjPanel());
 		
 		d.setLocationRelativeTo( this );
 		d.setCancelButtonVisible( false );

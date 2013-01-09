@@ -24,6 +24,7 @@ import com.cannontech.common.gui.table.MultiJComboCellRenderer;
 import com.cannontech.common.gui.util.ComboBoxTableRenderer;
 import com.cannontech.common.login.ClientSession;
 import com.cannontech.common.util.CtiUtilities;
+import com.cannontech.common.util.SwingUtil;
 import com.cannontech.core.dao.DaoFactory;
 import com.cannontech.database.data.lite.LiteLMProgScenario;
 import com.cannontech.database.data.lite.LiteYukonPAObject;
@@ -202,7 +203,7 @@ public class DirectControlJPanel extends javax.swing.JPanel implements java.awt.
  *
  */
     private void launchTargetAdjConfig() {
-        final JDialog d = new javax.swing.JDialog( CtiUtilities.getParentFrame(this) );
+        final JDialog d = new JDialog(SwingUtil.getParentFrame(this));
         Date start  = getStartTime();
         Date stop = getStopTime();
 

@@ -6,6 +6,7 @@ package com.cannontech.tdc;
  */
 import java.awt.Component;
 import java.awt.Cursor;
+import java.awt.Frame;
 import java.awt.Image;
 import java.awt.KeyboardFocusManager;
 import java.awt.Toolkit;
@@ -32,6 +33,7 @@ import com.cannontech.common.gui.util.CTIKeyEventDispatcher;
 import com.cannontech.common.login.ClientSession;
 import com.cannontech.common.login.ClientStartupHelper;
 import com.cannontech.common.util.CtiUtilities;
+import com.cannontech.common.util.SwingUtil;
 import com.cannontech.debug.gui.AboutDialog;
 import com.cannontech.message.dispatch.message.DBChangeMsg;
 import com.cannontech.message.dispatch.message.DbChangeType;
@@ -3300,9 +3302,8 @@ public void jMenuItemEditTemplate_ActionPerformed(java.awt.event.ActionEvent act
 	if ( !checkDataBaseConnection() )
 		return;
 
-	java.awt.Frame owner = com.cannontech.common.util.CtiUtilities.getParentFrame( this );
-	
-    
+    Frame owner = SwingUtil.getParentFrame(this);
+
     ColumnEditorDialog editor = 
         new ColumnEditorDialog(owner, "Edit Template", ColumnEditorDialog.DISPLAY_COMBO_ONLY, getCurrentDisplayNumber() );
     editor.setModal( true );
@@ -3893,7 +3894,7 @@ public void jMenuItemRemoveTemplate_ActionPerformed(java.awt.event.ActionEvent a
 		setCursor( original );
 		display.setModal(true);
 		display.setLocationRelativeTo( this );	
-        EditTemplateWarningDialog warning = new EditTemplateWarningDialog (CtiUtilities.getParentFrame(this), display);
+        EditTemplateWarningDialog warning = new EditTemplateWarningDialog(SwingUtil.getParentFrame(this), display);
         warning.setModal(true);
         warning.setLocationRelativeTo(this);
         warning.setVisible(true);

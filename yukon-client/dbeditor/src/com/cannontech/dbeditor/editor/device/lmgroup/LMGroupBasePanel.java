@@ -12,11 +12,11 @@ import javax.swing.JLabel;
 import javax.swing.JPanel;
 
 import com.cannontech.common.gui.util.TextFieldDocument;
+import com.cannontech.common.pao.PaoUtils;
 import com.cannontech.common.util.CtiUtilities;
 import com.cannontech.database.data.device.lm.IGroupRoute;
 import com.cannontech.database.data.device.lm.LMGroup;
 import com.cannontech.database.data.device.lm.LMGroupExpressCom;
-import com.cannontech.database.data.device.lm.LMGroupRfnExpressCom;
 import com.cannontech.database.data.lite.LiteYukonPAObject;
 import com.cannontech.database.data.pao.PAOGroups;
 import com.cannontech.yukon.IDatabaseCache;
@@ -844,7 +844,7 @@ private javax.swing.JTextField getJTextFieldName() {
 			ivjJTextFieldName.setDocument(
 					new TextFieldDocument(
 						TextFieldDocument.MAX_DEVICE_NAME_LENGTH,
-						TextFieldDocument.INVALID_CHARS_PAO) );
+						PaoUtils.ILLEGAL_NAME_CHARS) );
 
 			// user code end
 		} catch (java.lang.Throwable ivjExc) {

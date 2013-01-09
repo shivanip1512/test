@@ -6,18 +6,16 @@ package com.cannontech.dbeditor.wizard.copy.lm;
 
 import java.util.Collections;
 import java.util.List;
-import java.util.Vector;
 
 import com.cannontech.common.gui.util.TextFieldDocument;
+import com.cannontech.common.pao.PaoUtils;
 import com.cannontech.core.dao.DaoFactory;
-import com.cannontech.core.dao.PaoDao;
 import com.cannontech.database.Transaction;
 import com.cannontech.database.data.device.lm.LMProgramBase;
 import com.cannontech.database.data.device.lm.LMProgramDirect;
 import com.cannontech.database.data.lite.LiteComparators;
 import com.cannontech.database.data.lite.LiteFactory;
 import com.cannontech.database.data.lite.LitePoint;
-import com.cannontech.database.data.multi.MultiDBPersistent;
 import com.cannontech.database.data.multi.SmartMultiDBPersistent;
 import com.cannontech.database.data.point.PointBase;
 import com.cannontech.database.db.device.lm.LMProgramDirectGear;
@@ -425,7 +423,7 @@ private javax.swing.JTextField getJTextFieldName() {
 			ivjJTextFieldName.setDocument(
 					new TextFieldDocument(
 						TextFieldDocument.MAX_DEVICE_NAME_LENGTH,
-						TextFieldDocument.INVALID_CHARS_PAO) );
+						PaoUtils.ILLEGAL_NAME_CHARS) );
 			
 			// user code end
 		} catch (java.lang.Throwable ivjExc) {

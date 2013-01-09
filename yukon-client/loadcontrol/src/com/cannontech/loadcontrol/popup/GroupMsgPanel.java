@@ -3,7 +3,7 @@ import java.util.Collections;
 import java.util.List;
 
 import com.cannontech.common.gui.unchanging.LongRangeDocument;
-import com.cannontech.common.util.CtiUtilities;
+import com.cannontech.common.util.SwingUtil;
 import com.cannontech.database.cache.DefaultDatabaseCache;
 import com.cannontech.database.data.lite.LiteComparators;
 import com.cannontech.database.data.lite.LiteYukonPAObject;
@@ -347,7 +347,7 @@ public Object getValue(Object val)
 	
 
 	Integer cnt = (Integer)getJComboBoxPeriodCnt().getSelectedItem();
-	Integer length = CtiUtilities.getIntervalComboBoxSecondsValue( getJComboBoxPeriodLength() );	
+	Integer length = SwingUtil.getIntervalComboBoxSecondsValue( getJComboBoxPeriodLength() );	
 	Integer percent = Integer.valueOf( getJTextFieldCyclePercent().getText() );
 	
 	//the alt route may or may not be available

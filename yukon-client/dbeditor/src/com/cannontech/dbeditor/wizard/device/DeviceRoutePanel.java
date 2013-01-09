@@ -4,7 +4,6 @@ package com.cannontech.dbeditor.wizard.device;
  * This type was created in VisualAge.
  */
 import java.awt.Dimension;
-import java.util.ArrayList;
 import java.util.List;
 import java.util.Vector;
 
@@ -18,6 +17,7 @@ import com.cannontech.common.pao.PaoIdentifier;
 import com.cannontech.common.pao.PaoType;
 import com.cannontech.common.pao.definition.service.PaoDefinitionService;
 import com.cannontech.common.util.CtiUtilities;
+import com.cannontech.common.util.SwingUtil;
 import com.cannontech.core.dao.DaoFactory;
 import com.cannontech.core.dao.DeviceDao;
 import com.cannontech.core.dao.PaoDao;
@@ -27,7 +27,6 @@ import com.cannontech.database.cache.DefaultDatabaseCache;
 import com.cannontech.database.data.device.CarrierBase;
 import com.cannontech.database.data.device.DeviceBase;
 import com.cannontech.database.data.device.DeviceTypesFuncs;
-import com.cannontech.database.data.device.MCT400SeriesBase;
 import com.cannontech.database.data.device.MCTBase;
 import com.cannontech.database.data.device.Repeater850;
 import com.cannontech.database.data.device.RepeaterBase;
@@ -42,9 +41,9 @@ import com.cannontech.database.data.point.PointBase;
 import com.cannontech.database.data.route.CCURoute;
 import com.cannontech.database.data.route.MacroRoute;
 import com.cannontech.database.data.route.RouteBase;
-import com.cannontech.database.data.route.RouteUsageHelper;
 import com.cannontech.database.data.route.RouteFactory;
 import com.cannontech.database.data.route.RouteRole;
+import com.cannontech.database.data.route.RouteUsageHelper;
 import com.cannontech.database.db.DBPersistent;
 import com.cannontech.database.db.route.RepeaterRoute;
 import com.cannontech.dbeditor.editor.regenerate.RoleConflictDialog;
@@ -56,7 +55,7 @@ public class DeviceRoutePanel
 	extends com.cannontech.common.gui.util.DataInputPanel {
 	private javax.swing.JLabel ivjRouteLabel = null;
 	private javax.swing.JComboBox ivjRouteComboBox = null;
-    private java.awt.Frame owner = com.cannontech.common.util.CtiUtilities.getParentFrame(this);
+    private java.awt.Frame owner = SwingUtil.getParentFrame(this);
 	
     public DeviceRoutePanel() {
 		super();

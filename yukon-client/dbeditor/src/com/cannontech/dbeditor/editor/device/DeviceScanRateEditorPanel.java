@@ -11,6 +11,7 @@ import javax.swing.JPanel;
 
 import com.cannontech.common.pao.PaoType;
 import com.cannontech.common.util.CtiUtilities;
+import com.cannontech.common.util.SwingUtil;
 import com.cannontech.database.data.capcontrol.CapBankController6510;
 import com.cannontech.database.data.capcontrol.CapBankController702x;
 import com.cannontech.database.data.capcontrol.CapBankControllerDNP;
@@ -1558,8 +1559,8 @@ public Object getValue(Object device)
 	{
 		if (getPeriodicHealthCheckBox().isSelected() && getPeriodicHealthCheckBox().isVisible() )
 		{
-			Integer generalRate = CtiUtilities.getIntervalComboBoxSecondsValue(getPeriodicHealthIntervalComboBox());
-			Integer altRate = CtiUtilities.getIntervalComboBoxSecondsValue( 
+			Integer generalRate = SwingUtil.getIntervalComboBoxSecondsValue(getPeriodicHealthIntervalComboBox());
+			Integer altRate = SwingUtil.getIntervalComboBoxSecondsValue( 
 					getJComboBoxAltHealthChk().getSelectedItem().equals(CtiUtilities.STRING_NONE)
 					? getPeriodicHealthIntervalComboBox() 
 					: getJComboBoxAltHealthChk() );
@@ -1574,8 +1575,8 @@ public Object getValue(Object device)
 	{
 		if (getPeriodicHealthCheckBox().isSelected() && getPeriodicHealthCheckBox().isVisible())
 		{
-			Integer generalRate = CtiUtilities.getIntervalComboBoxSecondsValue(getPeriodicHealthIntervalComboBox());
-			Integer altRate = CtiUtilities.getIntervalComboBoxSecondsValue(
+			Integer generalRate = SwingUtil.getIntervalComboBoxSecondsValue(getPeriodicHealthIntervalComboBox());
+			Integer altRate = SwingUtil.getIntervalComboBoxSecondsValue(
 					getJComboBoxAltHealthChk().getSelectedItem().equals(CtiUtilities.STRING_NONE)
 					? getPeriodicHealthIntervalComboBox()
 					: getJComboBoxAltHealthChk() );
@@ -1600,8 +1601,8 @@ public Object getValue(Object device)
 		{
 			if( val instanceof MCTBase )
 			{
-				Integer generalRate = CtiUtilities.getIntervalComboBoxSecondsValue(getPeriodicHealthIntervalComboBox());
-				Integer altRate = CtiUtilities.getIntervalComboBoxSecondsValue(
+				Integer generalRate = SwingUtil.getIntervalComboBoxSecondsValue(getPeriodicHealthIntervalComboBox());
+				Integer altRate = SwingUtil.getIntervalComboBoxSecondsValue(
 					getJComboBoxAltHealthChk().getSelectedItem().equals(CtiUtilities.STRING_NONE)
 					? getPeriodicHealthIntervalComboBox()
 					: getJComboBoxAltHealthChk() );
@@ -1613,8 +1614,8 @@ public Object getValue(Object device)
 			}
 			else
 			{
-				Integer generalRate = CtiUtilities.getIntervalComboBoxSecondsValue(getPeriodicHealthIntervalComboBox());
-				Integer altRate = CtiUtilities.getIntervalComboBoxSecondsValue(
+				Integer generalRate = SwingUtil.getIntervalComboBoxSecondsValue(getPeriodicHealthIntervalComboBox());
+				Integer altRate = SwingUtil.getIntervalComboBoxSecondsValue(
 					getJComboBoxAltHealthChk().getSelectedItem().equals(CtiUtilities.STRING_NONE)
 					? getPeriodicHealthIntervalComboBox()
 					: getJComboBoxAltHealthChk() );
@@ -1628,8 +1629,8 @@ public Object getValue(Object device)
 
 		if( getAccumulatorRateCheckBox().isSelected() && getAccumulatorRateCheckBox().isVisible() )
 		{
-			Integer accumulatorRate = CtiUtilities.getIntervalComboBoxSecondsValue(getAccumulatorRateComboBox());
-			Integer altRate = CtiUtilities.getIntervalComboBoxSecondsValue(
+			Integer accumulatorRate = SwingUtil.getIntervalComboBoxSecondsValue(getAccumulatorRateComboBox());
+			Integer altRate = SwingUtil.getIntervalComboBoxSecondsValue(
 					getJComboBoxAltAccRate().getSelectedItem().equals(CtiUtilities.STRING_NONE)
 					? getAccumulatorRateComboBox()
 					: getJComboBoxAltAccRate() );
@@ -1642,8 +1643,8 @@ public Object getValue(Object device)
 		
 		if( getIntegrityRateCheckBox().isSelected() &&  getIntegrityRateCheckBox().isVisible() )
 		{
-			Integer integrityRate = CtiUtilities.getIntervalComboBoxSecondsValue(getIntegrityRateComboBox());
-			Integer altRate = CtiUtilities.getIntervalComboBoxSecondsValue(
+			Integer integrityRate = SwingUtil.getIntervalComboBoxSecondsValue(getIntegrityRateComboBox());
+			Integer altRate = SwingUtil.getIntervalComboBoxSecondsValue(
 					getJComboBoxAltIntegrityRate().getSelectedItem().equals(CtiUtilities.STRING_NONE)
 					? getIntegrityRateComboBox()
 					: getJComboBoxAltIntegrityRate() );
@@ -2134,15 +2135,13 @@ public void setValue(Object val)
 			getPeriodicHealthGroupComboBox().setSelectedIndex(
 				scanRate.getScanGroup().intValue());
 			
-			CtiUtilities.setIntervalComboBoxSelectedItem(
-				getPeriodicHealthIntervalComboBox(),
+			SwingUtil.setIntervalComboBoxSelectedItem(getPeriodicHealthIntervalComboBox(),
 				scanRate.getIntervalRate().intValue());
 
 			if( scanRate.getIntervalRate().intValue() == scanRate.getAlternateRate().intValue() )
 				getJComboBoxAltHealthChk().setSelectedItem( CtiUtilities.STRING_NONE );
 			else
-				CtiUtilities.setIntervalComboBoxSelectedItem(
-					getJComboBoxAltHealthChk(),
+			    SwingUtil.setIntervalComboBoxSelectedItem(getJComboBoxAltHealthChk(),
 					scanRate.getAlternateRate().intValue());
 		}
 	}
@@ -2168,15 +2167,14 @@ public void setValue(Object val)
 			getJComboBoxAltHealthChk().setEnabled(true);
 			
 			getPeriodicHealthGroupComboBox().setSelectedIndex(statusRate.getScanGroup().intValue());
-			CtiUtilities.setIntervalComboBoxSelectedItem(
-				getPeriodicHealthIntervalComboBox(),
+			SwingUtil.setIntervalComboBoxSelectedItem(getPeriodicHealthIntervalComboBox(),
 				statusRate.getIntervalRate().intValue());
 			
 			if( statusRate.getIntervalRate().intValue() == statusRate.getAlternateRate().intValue() )
 				getJComboBoxAltHealthChk().setSelectedItem( CtiUtilities.STRING_NONE );
 			else
-				CtiUtilities.setIntervalComboBoxSelectedItem(
-					getJComboBoxAltHealthChk(), statusRate.getAlternateRate().intValue());
+			    SwingUtil.setIntervalComboBoxSelectedItem(getJComboBoxAltHealthChk(),
+			        statusRate.getAlternateRate().intValue());
 		}
 		
 
@@ -2188,14 +2186,14 @@ public void setValue(Object val)
 			getJComboBoxAltAccRate().setEnabled(true);
 			
 			getAccumulatorGroupComboBox().setSelectedIndex(accumRate.getScanGroup().intValue());
-			CtiUtilities.setIntervalComboBoxSelectedItem(
-				getAccumulatorRateComboBox(), accumRate.getIntervalRate().intValue());
+			SwingUtil.setIntervalComboBoxSelectedItem(getAccumulatorRateComboBox(),
+			    accumRate.getIntervalRate().intValue());
 			
 			if( accumRate.getIntervalRate().intValue() == accumRate.getAlternateRate().intValue() )
 				getJComboBoxAltAccRate().setSelectedItem( CtiUtilities.STRING_NONE );
 			else
-				CtiUtilities.setIntervalComboBoxSelectedItem(
-					getJComboBoxAltAccRate(), accumRate.getAlternateRate().intValue());				
+			    SwingUtil.setIntervalComboBoxSelectedItem(getJComboBoxAltAccRate(),
+			        accumRate.getAlternateRate().intValue());				
 		}
 		
 
@@ -2208,13 +2206,13 @@ public void setValue(Object val)
 			
 			getIntegrityGroupComboBox().setSelectedIndex(integrityRate.getScanGroup().intValue());
 			
-			CtiUtilities.setIntervalComboBoxSelectedItem(
+			SwingUtil.setIntervalComboBoxSelectedItem(
 				getIntegrityRateComboBox(), integrityRate.getIntervalRate().intValue());
 
 			if( integrityRate.getIntervalRate().intValue() == integrityRate.getAlternateRate().intValue() )
 				getJComboBoxAltIntegrityRate().setSelectedItem( CtiUtilities.STRING_NONE );
 			else
-				CtiUtilities.setIntervalComboBoxSelectedItem(
+			    SwingUtil.setIntervalComboBoxSelectedItem(
 					getJComboBoxAltIntegrityRate(), integrityRate.getAlternateRate().intValue());
 		}
 			

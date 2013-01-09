@@ -7,13 +7,14 @@ package com.cannontech.dbeditor.wizard.device.lmprogram;
  */
 import java.awt.Dimension;
 
+import javax.swing.JComboBox;
 import javax.swing.JLabel;
 import javax.swing.JTextField;
 import javax.swing.border.EtchedBorder;
 
-import com.cannontech.common.gui.util.TextFieldDocument;
 import com.cannontech.common.util.CtiUtilities;
 import com.cannontech.common.util.StringUtils;
+import com.cannontech.common.util.SwingUtil;
 import com.cannontech.database.data.device.lm.TargetCycleGear;
 import com.cannontech.database.db.device.lm.LMProgramDirectGear;
  
@@ -46,8 +47,8 @@ public class SmartCycleGearPanel extends GenericGearPanel {
 	private javax.swing.JLabel ivjJLabelWhenChange = null;
 	private javax.swing.JPanel ivjJPanelChangeMethod = null;
 	private javax.swing.JTextField ivjJTextFieldChangeTriggerOffset = null;
-	private javax.swing.JComboBox ivjJComboBoxSendRateDigits = null;
-	private javax.swing.JComboBox ivjJComboBoxSendRateUnits = null;
+	private JComboBox<String> ivjJComboBoxSendRateDigits = null;
+	private JComboBox<String> ivjJComboBoxSendRateUnits = null;
 	private javax.swing.JCheckBox jCheckBoxNoRamp = null;
     private JLabel jLabelKWReduction = null;
     private JTextField jTextFieldKWReduction = null;
@@ -346,11 +347,10 @@ private javax.swing.JComboBox getJComboBoxPeriodCount() {
  * Return the JComboBoxSendRateDigits property value.
  * @return javax.swing.JComboBox
  */
-/* WARNING: THIS METHOD WILL BE REGENERATED. */
-private javax.swing.JComboBox getJComboBoxSendRateDigits() {
+private JComboBox<String> getJComboBoxSendRateDigits() {
 	if (ivjJComboBoxSendRateDigits == null) {
 		try {
-			ivjJComboBoxSendRateDigits = new javax.swing.JComboBox();
+			ivjJComboBoxSendRateDigits = new JComboBox<>();
 			ivjJComboBoxSendRateDigits.setName("JComboBoxSendRateDigits");
 			ivjJComboBoxSendRateDigits.setAlignmentY(java.awt.Component.TOP_ALIGNMENT);
 			ivjJComboBoxSendRateDigits.setComponentOrientation(java.awt.ComponentOrientation.LEFT_TO_RIGHT);
@@ -1196,8 +1196,7 @@ public Object getValue(Object o)
 	s.setStartingPeriodCnt( (Integer)getJComboBoxPeriodCount().getSelectedItem() );
 
 	String sendRateString = (String)(getJComboBoxSendRateDigits().getSelectedItem()) + " " + (String)(getJComboBoxSendRateUnits().getSelectedItem());	
-	s.setResendRate( com.cannontech.common.util.CtiUtilities.getIntervalSecondsValue( sendRateString ) );
-	
+    s.setResendRate(SwingUtil.getIntervalSecondsValue(sendRateString));
 
 	if( getJComboBoxMaxCycleCount().getSelectedItem() == null
 			|| getJComboBoxMaxCycleCount().getSelectedItem() instanceof String )
@@ -1598,8 +1597,8 @@ public void setValue(Object o)
 	getJCSpinFieldCyclePeriod().setValue( new Integer( s.getCyclePeriodLength().intValue() / 60 ) );
 
 	getJComboBoxPeriodCount().setSelectedItem( s.getStartingPeriodCnt() );
-			
-	com.cannontech.common.util.CtiUtilities.setIntervalComboBoxSelectedItem( getJComboBoxSendRateDigits(), getJComboBoxSendRateUnits(), s.getResendRate().intValue() );
+
+	SwingUtil.setIntervalComboBoxSelectedItem(getJComboBoxSendRateDigits(), getJComboBoxSendRateUnits(), s.getResendRate().intValue());
 
 	if( s.getMethodOptionMax().intValue() > 0 )
 		getJComboBoxMaxCycleCount().setSelectedItem( s.getMethodOptionMax() );

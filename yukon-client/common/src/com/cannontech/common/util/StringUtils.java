@@ -4,8 +4,6 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.StringTokenizer;
 
-import com.cannontech.common.gui.util.TextFieldDocument;
-
 public final class StringUtils {
     /**
      * StringUtils constructor comment.
@@ -226,22 +224,5 @@ public final class StringUtils {
     
     public static String stripNone (String value) {
         return CtiUtilities.STRING_NONE.equals(value) ? "" : value;
-    }
-    
-    /**
-     * Returns a string that has invalid DeviceGroup name characters removed and 
-     * replaced with underscores.
-     * @param string
-     * @return
-     */
-    public static String removeInvalidDeviceGroupNameCharacters(String string) {
-        String result = string;
-        // what follows is not a perfect solution, it could produce duplicates
-        // but this is unlikely in practice and a better solution would probably
-        // involve generating really ugly group names (8.3 window's file names???)
-        for (char badCharacter : TextFieldDocument.INVALID_CHARS_DEVICEGROUPNAME) {
-            result = result.replace(badCharacter, '_');
-        }
-        return result;
     }
 }

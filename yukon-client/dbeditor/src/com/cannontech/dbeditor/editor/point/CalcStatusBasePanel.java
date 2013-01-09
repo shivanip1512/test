@@ -1,6 +1,6 @@
 package com.cannontech.dbeditor.editor.point;
 
-import com.cannontech.common.util.CtiUtilities;
+import com.cannontech.common.util.SwingUtil;
 import com.cannontech.core.dao.DaoFactory;
 import com.cannontech.database.cache.DefaultDatabaseCache;
 import com.cannontech.database.data.lite.LiteStateGroup;
@@ -441,7 +441,7 @@ public Object getValue(Object val) {
 		point.getPoint().setArchiveType("None");
 		
 	point.getCalcBase().setUpdateType((String) getUpdateTypeComboBox().getSelectedItem());
-	point.getCalcBase().setPeriodicRate(CtiUtilities.getIntervalComboBoxSecondsValue(getPeriodicRateComboBox()));
+	point.getCalcBase().setPeriodicRate(SwingUtil.getIntervalComboBoxSecondsValue(getPeriodicRateComboBox()));
 
 
 	return point;
@@ -714,7 +714,7 @@ public void setValue(Object val)
 			{
 				getUpdateTypeComboBox().setSelectedIndex(i);
 				if( getPeriodicRateComboBox().isEnabled() )
-					CtiUtilities.setIntervalComboBoxSelectedItem(getPeriodicRateComboBox(),periodicRate.intValue());
+				    SwingUtil.setIntervalComboBoxSelectedItem(getPeriodicRateComboBox(),periodicRate.intValue());
 				break;
 			}
 		}	

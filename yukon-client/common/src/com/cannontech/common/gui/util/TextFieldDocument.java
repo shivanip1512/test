@@ -65,20 +65,6 @@ public class TextFieldDocument extends javax.swing.text.PlainDocument
         '?'
     };
 
-	public static final char[] INVALID_CHARS_PAO =
-	{
-		'\'',
-		',',
-		'|',
-		'"'	
-	};
-	
-	public static final char[] INVALID_CHARS_DEVICEGROUPNAME =
-    {
-	    '\\',
-	    '/'
-    };
-	
 	public static final char[] INVALID_CHARS_LMCONSTRAINTS =
 	{
 		'\'',

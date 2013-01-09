@@ -17,7 +17,7 @@ import javax.swing.event.ChangeListener;
 import com.cannontech.clientutils.CTILogger;
 import com.cannontech.common.editor.PropertyPanel;
 import com.cannontech.common.gui.util.ColorLabel;
-import com.cannontech.common.util.CtiUtilities;
+import com.cannontech.common.util.SwingUtil;
 import com.cannontech.esub.element.RectangleElement;
 
 public class RectangleElementEditorPanel extends com.cannontech.common.gui.util.DataInputPanel implements ActionListener, ChangeListener {
@@ -113,7 +113,7 @@ public class RectangleElementEditorPanel extends com.cannontech.common.gui.util.
             add(getOpacitySlider(), opacitySliderConstraint);
             
             initConnections();
-            JFrame parent = (JFrame) CtiUtilities.getParentFrame(this);
+            JFrame parent = (JFrame) SwingUtil.getParentFrame(this);
             if(parent != null) {
                 parent.setTitle("Rectangle Element Editor");
             }

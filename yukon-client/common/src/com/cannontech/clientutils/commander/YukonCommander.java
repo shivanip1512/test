@@ -4,6 +4,7 @@ package com.cannontech.clientutils.commander;
  * This type was created in VisualAge.
  */
 import java.awt.Cursor;
+import java.awt.Frame;
 import java.awt.Image;
 import java.awt.Toolkit;
 import java.awt.event.ActionEvent;
@@ -53,6 +54,7 @@ import com.cannontech.common.pao.definition.dao.PaoDefinitionDao;
 import com.cannontech.common.pao.definition.model.PaoTag;
 import com.cannontech.common.util.CtiUtilities;
 import com.cannontech.common.util.FileFilter;
+import com.cannontech.common.util.SwingUtil;
 import com.cannontech.core.authorization.exception.PaoAuthorizationException;
 import com.cannontech.core.dao.DaoFactory;
 import com.cannontech.core.dynamic.AsyncDynamicDataSource;
@@ -196,12 +198,12 @@ public class YukonCommander extends JFrame implements DBChangeLiteListener, Acti
 	 */
 	private void about()
 	{
-	    java.awt.Frame f = (JFrame)CtiUtilities.getParentFrame(YukonCommander.this.getContentPane() );
+	    Frame f = (Frame) SwingUtil.getParentFrame(YukonCommander.this.getContentPane());
 	    AboutDialog aboutDialog = new AboutDialog( f, "About Commander", true );
 
 	    aboutDialog.setLocationRelativeTo( f );
 	    aboutDialog.setValue(null);
-	    aboutDialog.show();
+	    aboutDialog.setVisible(true);
 	}
 	
 	/**
@@ -1582,7 +1584,7 @@ public class YukonCommander extends JFrame implements DBChangeLiteListener, Acti
 		}
 		// FIX to keep the YC frame on top after calling the printDialog.
 		// JDK1.4 should have fixed the issue but I(SN) have still seen inconsistencies with focus.
-		CtiUtilities.getParentFrame(this).toFront();//keeps the main frame in front focus
+		SwingUtil.getParentFrame(this).toFront();//keeps the main frame in front focus
 	}
 	/**
 	 * Print the graphics from printTextPane.
@@ -1621,7 +1623,7 @@ public class YukonCommander extends JFrame implements DBChangeLiteListener, Acti
 		
 		try
 		{
-			frame = com.cannontech.common.util.CtiUtilities.getParentFrame(getRootPane());
+			frame = SwingUtil.getParentFrame(getRootPane());
 			savedCursor = frame.getCursor();
 			frame.setCursor( new java.awt.Cursor( java.awt.Cursor.WAIT_CURSOR ) );
 			
@@ -1673,7 +1675,7 @@ public class YukonCommander extends JFrame implements DBChangeLiteListener, Acti
 	private void save(javax.swing.JTextPane textPane)
 	{
 		//This will need to be updated someday for a new version of swing
-		java.awt.Frame parent = com.cannontech.common.util.CtiUtilities.getParentFrame(this);
+		Frame parent = SwingUtil.getParentFrame(this);
 		javax.swing.JFileChooser  fileChooser = new javax.swing.JFileChooser();
 
 		FileFilter filter = new FileFilter("rtf", "Rich Text Format");
@@ -1882,7 +1884,7 @@ public class YukonCommander extends JFrame implements DBChangeLiteListener, Acti
 	private void updateTreePathSelection(Object currentSelection)
 	{
 		TreeViewPanel t =  getTreeViewPanel();
-		TreePath selectedPath = CtiUtilities.getTreePath( t.getTree(), currentSelection);
+		TreePath selectedPath = SwingUtil.getTreePath(t.getTree(), currentSelection);
 		t.getTree().getSelectionModel().setSelectionPath( selectedPath );
 	}
 	

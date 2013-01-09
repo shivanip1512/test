@@ -13,6 +13,7 @@ import javax.swing.border.BevelBorder;
 
 import com.cannontech.common.gui.util.TextFieldDocument;
 import com.cannontech.common.gui.util.TitleBorder;
+import com.cannontech.common.pao.PaoUtils;
 import com.cannontech.common.util.SimpleCallback;
 import com.cannontech.core.dao.DaoFactory;
 import com.cannontech.core.dao.YukonUserDao;
@@ -401,7 +402,7 @@ private javax.swing.JTextField getJTextFieldGroupName() {
 			ivjJTextFieldGroupName.setPreferredSize(new java.awt.Dimension(216, 20));
 			ivjJTextFieldGroupName.setEnabled(true);
 			ivjJTextFieldGroupName.setMinimumSize(new java.awt.Dimension(216, 20));
-			ivjJTextFieldGroupName.setDocument(new TextFieldDocument(120, TextFieldDocument.INVALID_CHARS_PAO) );
+			ivjJTextFieldGroupName.setDocument(new TextFieldDocument(120, PaoUtils.ILLEGAL_NAME_CHARS) );
 		} catch (java.lang.Throwable ivjExc) {
 			handleException(ivjExc);
 		}

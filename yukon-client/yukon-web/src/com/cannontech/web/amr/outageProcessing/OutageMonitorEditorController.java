@@ -24,9 +24,9 @@ import com.cannontech.common.device.commands.RetryStrategy;
 import com.cannontech.common.device.groups.editor.dao.DeviceGroupEditorDao;
 import com.cannontech.common.device.groups.editor.dao.SystemGroupEnum;
 import com.cannontech.common.device.groups.editor.model.StoredDeviceGroup;
+import com.cannontech.common.device.groups.util.DeviceGroupUtil;
 import com.cannontech.common.pao.attribute.model.Attribute;
 import com.cannontech.common.pao.attribute.model.BuiltInAttribute;
-import com.cannontech.common.util.CtiUtilities;
 import com.cannontech.core.dao.NotFoundException;
 import com.cannontech.core.dao.OutageMonitorNotFoundException;
 import com.cannontech.core.roleproperties.YukonRoleProperty;
@@ -167,7 +167,7 @@ public class OutageMonitorEditorController extends MultiActionController {
         // monitor errors
         if (StringUtils.isBlank(name)) {
         	editError = "Name required.";
-        } else if (CtiUtilities.isContainsInvalidDeviceGroupNameCharacters(name)) {
+        } else if (!DeviceGroupUtil.isValidName(name)) {
         	editError = "Name may not contain slashes.";
         } else if (isNewMonitor && outageMonitorDao.processorExistsWithName(name)) { // new monitor, check name
         	editError = "Outage Monitor with name \"" + name + "\" already exists.";

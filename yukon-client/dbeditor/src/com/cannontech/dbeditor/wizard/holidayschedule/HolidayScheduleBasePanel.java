@@ -1,5 +1,7 @@
 package com.cannontech.dbeditor.wizard.holidayschedule;
 
+import com.cannontech.common.util.SwingUtil;
+
 /**
  * This type was created in VisualAge.
  */
@@ -151,9 +153,7 @@ private javax.swing.JDialog getHolidayCreationDialog()
 {
 	if( holidayCreationDialog == null )
 	{
-		holidayCreationDialog = new javax.swing.JDialog( 
-			com.cannontech.common.util.CtiUtilities.getParentFrame(this),
-			true );
+		holidayCreationDialog = new javax.swing.JDialog(SwingUtil.getParentFrame(this), true);
 
 		HolidayDateCreationPanel panel = new HolidayDateCreationPanel()
 		{

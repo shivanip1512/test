@@ -38,7 +38,7 @@ import javax.swing.filechooser.FileFilter;
 import com.cannontech.clientutils.CTILogger;
 import com.cannontech.clientutils.popup.PopUpMenuShower;
 import com.cannontech.common.gui.util.TitleBorder;
-import com.cannontech.common.util.CtiUtilities;
+import com.cannontech.common.util.SwingUtil;
 import com.cannontech.dbconverter.converter.DBConverter;
 import com.cannontech.dbtools.DBCompare.DBCompare;
 import com.cannontech.dbtools.image.ImageInserter;
@@ -325,7 +325,7 @@ class DBToolsFrame extends JFrame implements IMessageFrame, ActionListener, Popu
 
     public void getChooser() {
         // This will need to be updated someday for a new version of swing
-        Frame parent = CtiUtilities.getParentFrame(this);
+        Frame parent = SwingUtil.getParentFrame(this);
         JFileChooser fileChooser = new JFileChooser();
 
         // we set the chooser so it will only look for dirs
@@ -366,7 +366,7 @@ class DBToolsFrame extends JFrame implements IMessageFrame, ActionListener, Popu
 
     public void getBrowseXMLChooser()
     {
-        Frame parent = CtiUtilities.getParentFrame(this);
+        Frame parent = SwingUtil.getParentFrame(this);
         JFileChooser fileChooser = new JFileChooser();
 
         // We set the chooser so it will only look for dirs
@@ -405,7 +405,7 @@ class DBToolsFrame extends JFrame implements IMessageFrame, ActionListener, Popu
 
     public void getXMLFileChooser() {
         // This will need to be updated someday for a new version of swing
-        Frame parent = CtiUtilities.getParentFrame(this);
+        Frame parent = SwingUtil.getParentFrame(this);
         JFileChooser fileChooser = new JFileChooser();
 
         // we set the chooser so it will only look for dirs
@@ -448,7 +448,7 @@ class DBToolsFrame extends JFrame implements IMessageFrame, ActionListener, Popu
         // File temp = new File(shorterPath);
 
         // This will need to be updated someday for a new version of swing
-        Frame parent = CtiUtilities.getParentFrame(this);
+        Frame parent = SwingUtil.getParentFrame(this);
         JFileChooser fileChooser = new JFileChooser();
 
         // we set the chooser so it will only look for dirs

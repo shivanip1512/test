@@ -36,9 +36,9 @@ import com.cannontech.common.device.groups.service.CopyDeviceGroupService;
 import com.cannontech.common.device.groups.service.DeviceGroupService;
 import com.cannontech.common.device.groups.service.DeviceGroupUiService;
 import com.cannontech.common.device.groups.service.NonHiddenDeviceGroupPredicate;
+import com.cannontech.common.device.groups.util.DeviceGroupUtil;
 import com.cannontech.common.exception.NotAuthorizedException;
 import com.cannontech.common.pao.DisplayablePao;
-import com.cannontech.common.util.CtiUtilities;
 import com.cannontech.common.util.predicate.NullPredicate;
 import com.cannontech.common.util.predicate.Predicate;
 import com.cannontech.core.dao.DuplicateException;
@@ -225,7 +225,7 @@ public class GroupEditorController extends MultiActionController {
 
         // Make sure a new name was entered and doesn't contain slashes
         newGroupName = newGroupName.trim();
-        if (StringUtils.isEmpty(newGroupName) || CtiUtilities.isContainsInvalidDeviceGroupNameCharacters(newGroupName)) {
+        if (StringUtils.isEmpty(newGroupName) || !DeviceGroupUtil.isValidName(newGroupName)) {
             mav.addObject("errorMessage",
                           "You must enter a New Group Name.  Group names may not contain slashes.");
             return mav;
@@ -270,7 +270,7 @@ public class GroupEditorController extends MultiActionController {
 
             // Make sure a new name was entered and doesn't contain slashes
             childGroupName = childGroupName.trim();
-            if (StringUtils.isEmpty(childGroupName) || CtiUtilities.isContainsInvalidDeviceGroupNameCharacters(childGroupName)) {
+            if (StringUtils.isEmpty(childGroupName) || !DeviceGroupUtil.isValidName(childGroupName)) {
                 
                 deviceGroupMav.addObject("groupName", groupName);
                 deviceGroupMav.addObject("errorMessage", "You must enter a Sub Group Name.  Group names may not contain slashes.");

@@ -26,6 +26,7 @@ import com.cannontech.clientutils.YukonLogManager;
 import com.cannontech.common.gui.table.CheckBoxColorRenderer;
 import com.cannontech.common.gui.util.OkCancelDialog;
 import com.cannontech.common.util.CtiUtilities;
+import com.cannontech.common.util.SwingUtil;
 import com.cannontech.common.util.UniqueSet;
 import com.cannontech.database.Transaction;
 import com.cannontech.database.TransactionException;
@@ -384,14 +385,13 @@ public class UserGroupRoleEditorPanel extends com.cannontech.common.gui.util.Dat
 			rolePanel.setValue( dbObj );
 			rolePanel.setRoleTabledEnabled( false );
 						
-			OkCancelDialog diag = new OkCancelDialog(
-					CtiUtilities.getParentFrame(UserGroupRoleEditorPanel.this), 
+			OkCancelDialog diag = new OkCancelDialog(SwingUtil.getParentFrame(UserGroupRoleEditorPanel.this), 
 					"Group Roles : " + getTableModel().getRowAt(row).getLiteYukonGroup().getGroupName() + "  (Read-only)", 
-					true, rolePanel );
+					true, rolePanel);
 	
 			diag.setCancelButtonVisible( false );
 			diag.setSize( 520, 610 );
-			diag.setLocationRelativeTo( CtiUtilities.getParentFrame(UserGroupRoleEditorPanel.this) );
+			diag.setLocationRelativeTo(SwingUtil.getParentFrame(UserGroupRoleEditorPanel.this));
 						
 			diag.show();
 		}

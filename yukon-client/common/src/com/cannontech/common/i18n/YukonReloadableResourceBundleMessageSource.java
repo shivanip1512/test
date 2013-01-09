@@ -21,7 +21,7 @@ public class YukonReloadableResourceBundleMessageSource extends ReloadableResour
     }
 
     @Override
-    public void setBasenames(String[] basenames) {
+    public void setBasenames(String... basenames) {
         String wsDir = System.getProperty("com.cooperindustries.dev.wsdir");
         if (wsDir != null) {
             for (int index = 0; index < basenames.length; index++) {

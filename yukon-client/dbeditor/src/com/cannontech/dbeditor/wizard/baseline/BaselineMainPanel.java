@@ -6,6 +6,7 @@ package com.cannontech.dbeditor.wizard.baseline;
 import java.util.List;
 
 import com.cannontech.common.gui.util.TextFieldDocument;
+import com.cannontech.common.pao.PaoUtils;
 import com.cannontech.database.data.baseline.Baseline;
 import com.cannontech.database.data.holiday.HolidaySchedule;
 import com.cannontech.database.data.lite.LiteHolidaySchedule;
@@ -594,7 +595,7 @@ private javax.swing.JTextField getJTextFieldName() {
 			ivjJTextFieldName.setDocument(
 					new TextFieldDocument(
 						TextFieldDocument.MAX_BASELINE_NAME_LENGTH,
-						TextFieldDocument.INVALID_CHARS_PAO) );
+						PaoUtils.ILLEGAL_NAME_CHARS) );
 			// user code end
 		} catch (java.lang.Throwable ivjExc) {
 			// user code begin {2}

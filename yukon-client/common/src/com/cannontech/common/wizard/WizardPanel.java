@@ -1,10 +1,12 @@
 package com.cannontech.common.wizard;
 
+import java.awt.Frame;
 import java.util.Vector;
 
 import com.cannontech.common.editor.EditorInputValidationException;
 import com.cannontech.common.editor.PropertyPanelEvent;
 import com.cannontech.common.gui.util.DataInputPanel;
+import com.cannontech.common.util.SwingUtil;
 import com.cannontech.database.DatabaseTypes;
 import com.cannontech.database.db.DBPersistent;
 
@@ -36,7 +38,7 @@ public abstract class WizardPanel extends com.cannontech.common.gui.util.DataInp
     public void actionPerformed(java.awt.event.ActionEvent newEvent) {
     
     	//Change the cursor in case this takes a while
-    	java.awt.Frame owner = com.cannontech.common.util.CtiUtilities.getParentFrame(this);
+    	Frame owner = SwingUtil.getParentFrame(this);
     	java.awt.Cursor savedCursor = owner.getCursor();
     	try
     	{

@@ -13,6 +13,7 @@ import javax.swing.SwingUtilities;
 import com.cannontech.common.gui.util.TextFieldDocument;
 import com.cannontech.common.pao.PaoCategory;
 import com.cannontech.common.pao.PaoClass;
+import com.cannontech.common.pao.PaoUtils;
 import com.cannontech.common.util.CtiUtilities;
 import com.cannontech.core.dao.DaoFactory;
 import com.cannontech.database.data.device.lm.IGroupRoute;
@@ -949,7 +950,7 @@ private javax.swing.JTextField getJTextFieldName() {
 			ivjJTextFieldName.setDocument(
 					new TextFieldDocument(
 						TextFieldDocument.MAX_DEVICE_NAME_LENGTH,
-						TextFieldDocument.INVALID_CHARS_PAO) );
+						PaoUtils.ILLEGAL_NAME_CHARS) );
 
 			// user code end
 		} catch (java.lang.Throwable ivjExc) {

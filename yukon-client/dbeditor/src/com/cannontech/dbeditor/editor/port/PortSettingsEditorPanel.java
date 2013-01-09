@@ -4,7 +4,7 @@ package com.cannontech.dbeditor.editor.port;
  * This type was created in VisualAge.
  */
 
- import com.cannontech.common.util.CtiUtilities;
+ import com.cannontech.common.util.SwingUtil;
 import com.cannontech.database.data.port.DirectPort;
 import com.cannontech.database.data.port.LocalDirectPort;
 import com.cannontech.database.data.port.PooledPort;
@@ -1121,10 +1121,9 @@ public void setValue(Object val)
 		getPhysicalPortComboBox().setVisible(true);
 		getCommonProtocolLabel().setVisible(true);
 		getCommonProtocolComboBox().setVisible(true);
-		CtiUtilities.setSelectedInComboBox(
-			getPhysicalPortComboBox(),
+		SwingUtil.setSelectedInComboBox(getPhysicalPortComboBox(),
 			((LocalDirectPort) dp).getPortLocalSerial().getPhysicalPort());
-		CtiUtilities.setSelectedInComboBox(getCommonProtocolComboBox(), cp.getCommonProtocol());
+		SwingUtil.setSelectedInComboBox(getCommonProtocolComboBox(), cp.getCommonProtocol());
 	}
 	else if (val instanceof TerminalServerDirectPort)
 	{
@@ -1142,7 +1141,7 @@ public void setValue(Object val)
 
 		getCommonProtocolLabel().setVisible(true);
 		getCommonProtocolComboBox().setVisible(true);
-		CtiUtilities.setSelectedInComboBox(getCommonProtocolComboBox(), cp.getCommonProtocol());
+		SwingUtil.setSelectedInComboBox(getCommonProtocolComboBox(), cp.getCommonProtocol());
 
 		getIPAddressTextField().setText(pts.getIpAddress());
 		getPortNumberTextField().setText(pts.getSocketPortNumber().toString());
@@ -1185,8 +1184,8 @@ public void setValue(Object val)
 
 	getTypeLabelField().setText(portType);
 	getPortDescriptionTextField().setText( name );
-	CtiUtilities.setCheckBoxState(getDisableCheckBox(), disableFlag);
-	CtiUtilities.setSelectedInComboBox(getBaudRateComboBox(), baudRate.toString());
+	SwingUtil.setCheckBoxState(getDisableCheckBox(), disableFlag);
+	SwingUtil.setSelectedInComboBox(getBaudRateComboBox(), baudRate.toString());
 
 	if (cdWait.intValue() > 0)
 	{

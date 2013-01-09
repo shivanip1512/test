@@ -1,7 +1,8 @@
 package com.cannontech.dbeditor.editor.route;
 
-import static javax.swing.JOptionPane.showMessageDialog;
+import static javax.swing.JOptionPane.*;
 
+import java.awt.Frame;
 import java.util.List;
 import java.util.Vector;
 
@@ -9,11 +10,12 @@ import javax.swing.JLabel;
 
 import com.cannontech.common.editor.PropertyPanelEvent;
 import com.cannontech.common.pao.PaoType;
+import com.cannontech.common.util.SwingUtil;
 import com.cannontech.database.data.device.DeviceTypesFuncs;
 import com.cannontech.database.data.lite.LiteYukonPAObject;
 import com.cannontech.database.data.route.CCURoute;
-import com.cannontech.database.data.route.RouteUsageHelper;
 import com.cannontech.database.data.route.RouteRole;
+import com.cannontech.database.data.route.RouteUsageHelper;
 import com.cannontech.database.db.route.RepeaterRoute;
 import com.cannontech.dbeditor.editor.regenerate.RoleConflictDialog;
 import com.cannontech.yukon.IDatabaseCache;
@@ -28,7 +30,7 @@ public class RepeaterSetupEditorPanel extends com.cannontech.common.gui.util.Dat
    private AdvancedRepeaterSetupEditorPanel advancedRepeaterSetupEditorPanel = null;
    private Object objectToEdit = null;
    private int rightListItemIndex = getRepeatersAddRemovePanel().rightListGetSelectedIndex();
-   private java.awt.Frame owner = com.cannontech.common.util.CtiUtilities.getParentFrame(this);
+   private Frame owner = SwingUtil.getParentFrame(this);
    private boolean rightListDragging = false;
    private com.cannontech.common.gui.util.RepeaterAddRemovePanel ivjRepeatersAddRemovePanel = null;
    private boolean addOrRemoveHasBeenDone = false;
@@ -67,7 +69,7 @@ public void addButtonAction_actionPerformed(java.util.EventObject newEvent) {
  */
 public void advancedSetupButton_ActionPerformed(java.awt.event.ActionEvent actionEvent) {
 
-    java.awt.Frame owner = com.cannontech.common.util.CtiUtilities.getParentFrame(this);
+    Frame owner = SwingUtil.getParentFrame(this);
    
     frame = new AdvancedRouteSetupDialog(owner,(CCURoute)this.objectToEdit);
     frame.setLocationRelativeTo(this);

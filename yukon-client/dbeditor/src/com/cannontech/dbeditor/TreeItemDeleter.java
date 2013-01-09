@@ -5,6 +5,7 @@ import javax.swing.JOptionPane;
 import javax.swing.tree.DefaultMutableTreeNode;
 
 import com.cannontech.common.gui.util.TreeViewPanel;
+import com.cannontech.common.util.SwingUtil;
 import com.cannontech.core.dao.DBDeleteResult;
 import com.cannontech.core.dao.DBDeletionDao;
 import com.cannontech.core.dao.DaoFactory;
@@ -186,7 +187,7 @@ public class TreeItemDeleter
 
 	private JFrame getParentFrame()
 	{
-		return (JFrame)com.cannontech.common.util.CtiUtilities.getParentFrame(treeViewPanel );		
+		return (JFrame) SwingUtil.getParentFrame(treeViewPanel );		
 	}
 
 }

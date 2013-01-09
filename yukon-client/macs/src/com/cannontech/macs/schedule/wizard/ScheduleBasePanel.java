@@ -6,7 +6,7 @@ package com.cannontech.macs.schedule.wizard;
 import java.util.Calendar;
 import java.util.List;
 
-import com.cannontech.common.gui.util.TextFieldDocument;
+import com.cannontech.common.pao.PaoUtils;
 import com.cannontech.common.util.StringUtils;
 import com.cannontech.database.data.schedule.script.ScriptTemplateTypes;
 import com.cannontech.message.macs.message.Schedule;
@@ -1697,7 +1697,7 @@ public boolean isInputValid()
 	{
 		setErrorString("The Schedule Name text field must be filled in");
 		return false;
-	}else if(!isValidPaoName(scheduleName)) {
+    } else if (!PaoUtils.isValidPaoName(scheduleName)) {
 	    setErrorString("The Schedule Name cannot contain invalid schedule name charaters.");
         return false;
 	}
@@ -1767,10 +1767,6 @@ public boolean isInputValid()
 */
 
 	return true;
-}
-
-private boolean isValidPaoName(String paoName) {
-    return org.apache.commons.lang.StringUtils.containsNone(paoName, TextFieldDocument.INVALID_CHARS_PAO);
 }
 
 /**

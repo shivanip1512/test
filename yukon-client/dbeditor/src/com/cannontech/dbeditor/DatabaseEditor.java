@@ -72,6 +72,7 @@ import com.cannontech.common.util.CtiUtilities;
 import com.cannontech.common.util.LoggerEventListener;
 import com.cannontech.common.util.MessageEvent;
 import com.cannontech.common.util.MessageEventListener;
+import com.cannontech.common.util.SwingUtil;
 import com.cannontech.common.wizard.CancelInsertException;
 import com.cannontech.common.wizard.WizardPanel;
 import com.cannontech.common.wizard.WizardPanelEvent;
@@ -353,7 +354,7 @@ public void actionPerformed(ActionEvent event)
 
 	if( item == viewMenu.coreRadioButtonMenuItem &&
 		currentDatabase != DatabaseTypes.CORE_DB ) {
-		Frame f = CtiUtilities.getParentFrame(getContentPane());
+		Frame f = SwingUtil.getParentFrame(getContentPane());
 		Cursor savedCursor = f.getCursor();
 		try {
 			f.setCursor(new Cursor(Cursor.WAIT_CURSOR ) );		
@@ -369,7 +370,7 @@ public void actionPerformed(ActionEvent event)
 		f.repaint();
 	} else if( item == viewMenu.lmRadioButtonMenuItem &&
 		currentDatabase != DatabaseTypes.LM_DB ) {
-		Frame f = CtiUtilities.getParentFrame(getContentPane());
+		Frame f = SwingUtil.getParentFrame(getContentPane());
 		Cursor savedCursor = f.getCursor();
 		try {
 			f.setCursor( new Cursor( Cursor.WAIT_CURSOR ) );
@@ -385,7 +386,7 @@ public void actionPerformed(ActionEvent event)
 		f.repaint();
 	} else if( item == viewMenu.systemRadioButtonMenuItem &&
 		currentDatabase != DatabaseTypes.SYSTEM_DB ) {
-		Frame f = CtiUtilities.getParentFrame(getContentPane());
+		Frame f = SwingUtil.getParentFrame(getContentPane());
 		Cursor savedCursor = f.getCursor();
 		try {
 			f.setCursor( new Cursor( Cursor.WAIT_CURSOR ) );
@@ -428,7 +429,7 @@ public void actionPerformed(ActionEvent event)
 	
 }
 public void viewMenuRefreshAction() {
-    Frame f = CtiUtilities.getParentFrame(getContentPane());
+    Frame f = SwingUtil.getParentFrame(getContentPane());
     Cursor savedCursor = f.getCursor();
     
     try
@@ -1113,9 +1114,8 @@ private void executeDeleteButton_ActionPerformed(ActionEvent event)
  */
 private void executeEditButton_ActionPerformed(ActionEvent event)
 {
-   Frame owner = CtiUtilities.getParentFrame(getTree());   
+   Frame owner = SwingUtil.getParentFrame(getTree());   
    Cursor savedCursor = owner.getCursor();
-
 
    try
    {
@@ -1202,7 +1202,7 @@ private void executeEditButton_ActionPerformed(ActionEvent event)
 }
 
 private void showEditor(DBPersistent userObject) {
-    Frame owner = CtiUtilities.getParentFrame(getTree());
+    Frame owner = SwingUtil.getParentFrame(getTree());
     Cursor savedCursor = owner.getCursor();
     LiteBase liteBase = LiteFactory.createLite(userObject);
     DefaultMutableTreeNode node = new DefaultMutableTreeNode();
@@ -1737,8 +1737,7 @@ private MessagePanel getMessagePanel() {
  */
 private JFrame getParentFrame() 
 {
-	return (JFrame)CtiUtilities.getParentFrame(
-				DatabaseEditor.this.getContentPane() );
+	return (JFrame) SwingUtil.getParentFrame(DatabaseEditor.this.getContentPane());
 }
 /**
  * This method was created in VisualAge.
@@ -1988,7 +1987,7 @@ private void initialize(JRootPane rootPane)
     
     //add a loggerEventListern for logging database editor events
     addMessageListener(getLoggerEventListener());
-	owner = CtiUtilities.getParentFrame(rootPane);
+	owner = SwingUtil.getParentFrame(rootPane);
 
 	//get all the config values read in
 	readConfigParameters();
@@ -2631,7 +2630,7 @@ public void setDatabase(DatabaseTypes whichDatabase)
 	TreeModelEnum[] models = null;
 
 	//Get a ref to the rootpane
-	JFrame frame = (JFrame) CtiUtilities.getParentFrame( getContentPane() );
+	JFrame frame = (JFrame) SwingUtil.getParentFrame( getContentPane() );
     JRootPane rPane = frame.getRootPane();
 	
 	switch( whichDatabase )
@@ -2706,7 +2705,7 @@ public void setDatabase(DatabaseTypes whichDatabase)
 private void showChangeTypeWizardPanel(WizardPanel wizard) {
 
 	//Set the cursor to wait
-	Frame owner = CtiUtilities.getParentFrame(this.desktopPane);
+	Frame owner = SwingUtil.getParentFrame(this.desktopPane);
 	Cursor savedCursor = owner.getCursor();
 	owner.setCursor( new Cursor( Cursor.WAIT_CURSOR ) );
 
@@ -2747,7 +2746,7 @@ private void showChangeTypeWizardPanel(WizardPanel wizard) {
 private void showCopyWizardPanel(WizardPanel wizard, DBPersistent toCopy) {
 
 	//Set the cursor to wait
-	Frame owner = CtiUtilities.getParentFrame(this.desktopPane);
+	Frame owner = SwingUtil.getParentFrame(this.desktopPane);
 	Cursor savedCursor = owner.getCursor();
 	owner.setCursor( new Cursor( Cursor.WAIT_CURSOR ) );
 
@@ -2785,7 +2784,7 @@ private void showCopyWizardPanel(WizardPanel wizard, DBPersistent toCopy) {
  */
 public void showEditorSelectedObject()
 {
-	Frame f = CtiUtilities.getParentFrame(this.desktopPane);
+	Frame f = SwingUtil.getParentFrame(this.desktopPane);
 	f.validate();
 
 	try
@@ -2810,7 +2809,7 @@ public void showEditorSelectedObject()
 private void showWizardPanel(WizardPanel wizard) {
 
 	//Set the cursor to wait
-	Frame owner = CtiUtilities.getParentFrame(this.desktopPane);
+	Frame owner = SwingUtil.getParentFrame(this.desktopPane);
 	Cursor savedCursor = owner.getCursor();
 	owner.setCursor( new Cursor( Cursor.WAIT_CURSOR ) );
 

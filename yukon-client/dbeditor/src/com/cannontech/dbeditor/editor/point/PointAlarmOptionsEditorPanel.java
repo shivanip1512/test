@@ -4,20 +4,13 @@ package com.cannontech.dbeditor.editor.point;
  * This type was created in VisualAge.
  */
 
-import java.util.List;
-
 import com.cannontech.clientutils.tags.IAlarmDefs;
-import com.cannontech.common.constants.YukonListEntryTypes;
-import com.cannontech.common.editor.PropertyPanelEvent;
 import com.cannontech.common.util.CtiUtilities;
-import com.cannontech.database.cache.DefaultDatabaseCache;
-import com.cannontech.database.data.customer.Contact;
+import com.cannontech.common.util.SwingUtil;
 import com.cannontech.database.data.lite.LiteContact;
-import com.cannontech.database.data.lite.LiteContactNotification;
 import com.cannontech.database.data.lite.LiteNotificationGroup;
 import com.cannontech.database.data.lite.LiteStateGroup;
 import com.cannontech.database.db.point.PointAlarming;
-import com.cannontech.dbeditor.wizard.contact.QuickContactPanel;
 import com.cannontech.yukon.IDatabaseCache;
 
 public class PointAlarmOptionsEditorPanel extends com.cannontech.common.gui.util.DataInputPanel implements java.awt.event.ActionListener {
@@ -634,7 +627,7 @@ public void setValue(Object val)
 	Character alarmInhibit = point.getPoint().getAlarmInhibit();
 
 	if( alarmInhibit != null )
-		CtiUtilities.setCheckBoxState( getJCheckBoxDisableAllAlarms(), alarmInhibit );
+		SwingUtil.setCheckBoxState( getJCheckBoxDisableAllAlarms(), alarmInhibit );
 		
    //be sure we have a 32 character string
 	String alarmStates =

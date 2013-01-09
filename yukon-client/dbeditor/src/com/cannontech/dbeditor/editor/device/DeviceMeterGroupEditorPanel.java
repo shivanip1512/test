@@ -16,10 +16,11 @@ import com.cannontech.common.device.config.dao.DeviceConfigurationDao;
 import com.cannontech.common.device.config.model.ConfigurationBase;
 import com.cannontech.common.device.groups.service.FixedDeviceGroupingHack;
 import com.cannontech.common.device.groups.service.FixedDeviceGroups;
+import com.cannontech.common.device.groups.util.DeviceGroupUtil;
 import com.cannontech.common.device.model.SimpleDevice;
 import com.cannontech.common.gui.util.DataInputPanel;
 import com.cannontech.common.gui.util.TextFieldDocument;
-import com.cannontech.common.util.CtiUtilities;
+import com.cannontech.common.util.SwingUtil;
 import com.cannontech.core.dao.DaoFactory;
 import com.cannontech.database.data.device.DeviceBase;
 import com.cannontech.database.data.device.DeviceTypesFuncs;
@@ -177,7 +178,7 @@ private javax.swing.JComboBox getAlternateGroupComboBox() {
 			alternateGroupComboBox.setMinimumSize(new java.awt.Dimension(200, 25));
 			
 			JTextComponent tc = (JTextComponent)alternateGroupComboBox.getEditor().getEditorComponent();
-            tc.setDocument(new TextFieldDocument(-1, TextFieldDocument.INVALID_CHARS_DEVICEGROUPNAME));
+            tc.setDocument(new TextFieldDocument(-1, DeviceGroupUtil.ILLEGAL_NAME_CHARS));
 			
             List<String> availableAlternateGroups = hacker.getGroups(FixedDeviceGroups.TESTCOLLECTIONGROUP);
             Iterator<String> iter = availableAlternateGroups.iterator();
@@ -325,7 +326,7 @@ private javax.swing.JComboBox getCycleGroupComboBox() {
 			ivjCycleGroupComboBox.setMinimumSize(new java.awt.Dimension(200, 25));
 			
 			JTextComponent tc = (JTextComponent)ivjCycleGroupComboBox.getEditor().getEditorComponent();
-            tc.setDocument(new TextFieldDocument(-1, TextFieldDocument.INVALID_CHARS_DEVICEGROUPNAME));
+            tc.setDocument(new TextFieldDocument(-1, DeviceGroupUtil.ILLEGAL_NAME_CHARS));
 			
             List<String> availableCollectionGroups = hacker.getGroups(FixedDeviceGroups.COLLECTIONGROUP);
             Iterator<String> iter = availableCollectionGroups.iterator();
@@ -472,7 +473,7 @@ private javax.swing.JComboBox getJComboBoxBillingGroup() {
 			ivjJComboBoxBillingGroup.setMinimumSize(new java.awt.Dimension(200, 25));
 			
 			JTextComponent tc = (JTextComponent)ivjJComboBoxBillingGroup.getEditor().getEditorComponent();
-			tc.setDocument(new TextFieldDocument(-1, TextFieldDocument.INVALID_CHARS_DEVICEGROUPNAME));
+			tc.setDocument(new TextFieldDocument(-1, DeviceGroupUtil.ILLEGAL_NAME_CHARS));
 			
             List<String> availableBillingsGroups = hacker.getGroups(FixedDeviceGroups.BILLINGGROUP);
             Iterator<String> iter = availableBillingsGroups.iterator();
@@ -840,13 +841,11 @@ public Object getValue(Object val)
 			dlp = ((TwoWayLCR) val).getDeviceLoadProfile();
 		}
 		
-		dlp.setLastIntervalDemandRate(
-		 CtiUtilities.getIntervalComboBoxSecondsValue(getLastIntervalDemandRateComboBox()) );
+		dlp.setLastIntervalDemandRate(SwingUtil.getIntervalComboBoxSecondsValue(getLastIntervalDemandRateComboBox()));
 
 		if( getLoadProfileCollectionPanel().isVisible() )
 		{
-		 dlp.setLoadProfileDemandRate(
-			CtiUtilities.getIntervalComboBoxSecondsValue(getLoadProfileDemandRateComboBox()) );
+		 dlp.setLoadProfileDemandRate(SwingUtil.getIntervalComboBoxSecondsValue(getLoadProfileDemandRateComboBox()));
 
 			StringBuffer loadProfileCollection = new StringBuffer();
 			if( getChannel1CheckBox().isSelected() )
@@ -872,11 +871,9 @@ public Object getValue(Object val)
 
 			dlp.setLoadProfileCollection(loadProfileCollection.toString());
 
-			dlp.setVoltageDmdInterval(
-				CtiUtilities.getIntervalComboBoxSecondsValue(getJComboBoxlVoltInterval()) );
+			dlp.setVoltageDmdInterval(SwingUtil.getIntervalComboBoxSecondsValue(getJComboBoxlVoltInterval()) );
 
-			dlp.setVoltageDmdRate(
-				CtiUtilities.getIntervalComboBoxSecondsValue(getJComboBoxlVoltRate()) );
+			dlp.setVoltageDmdRate(SwingUtil.getIntervalComboBoxSecondsValue(getJComboBoxlVoltRate()) );
 		}
 	}
 
@@ -1046,10 +1043,10 @@ public void setValue(Object val)
 
 		String loadProfileCollection = dlp.getLoadProfileCollection();
 
-		CtiUtilities.setIntervalComboBoxSelectedItem(
+		SwingUtil.setIntervalComboBoxSelectedItem(
 			getLastIntervalDemandRateComboBox(), dlp.getLastIntervalDemandRate().intValue() );
 
-		CtiUtilities.setIntervalComboBoxSelectedItem(
+		SwingUtil.setIntervalComboBoxSelectedItem(
 			getJComboBoxlVoltInterval(), dlp.getVoltageDmdInterval().intValue() );
 
 		if( deviceType == PAOGroups.DCT_501 
@@ -1103,36 +1100,34 @@ public void setValue(Object val)
 			getJComboBoxlVoltRate().addItem("30 minute");
 			getJComboBoxlVoltRate().addItem("1 hour");
 			
-			CtiUtilities.setCheckBoxState(getChannel1CheckBox(),new Character(loadProfileCollection.charAt(0)));
+			SwingUtil.setCheckBoxState(getChannel1CheckBox(),new Character(loadProfileCollection.charAt(0)));
 		}
 		
-		CtiUtilities.setIntervalComboBoxSelectedItem(
-			getJComboBoxlVoltRate(), dlp.getVoltageDmdRate().intValue() );
-      	
-		CtiUtilities.setIntervalComboBoxSelectedItem(
-			getLoadProfileDemandRateComboBox(), dlp.getLoadProfileDemandRate().intValue() );
+        SwingUtil.setIntervalComboBoxSelectedItem(getJComboBoxlVoltRate(), dlp.getVoltageDmdRate().intValue());
 
+        SwingUtil.setIntervalComboBoxSelectedItem(getLoadProfileDemandRateComboBox(), dlp
+            .getLoadProfileDemandRate().intValue());
 
 		if( DeviceTypesFuncs.isLoadProfile1Channel(deviceType) )
 		{
-			CtiUtilities.setCheckBoxState(getChannel1CheckBox(),new Character(loadProfileCollection.charAt(0)));
+			SwingUtil.setCheckBoxState(getChannel1CheckBox(),new Character(loadProfileCollection.charAt(0)));
 			getChannel2CheckBox().setVisible(false);
 			getChannel3CheckBox().setVisible(false);
 			getChannel4CheckBox().setVisible(false);
 		}
 	  else if( DeviceTypesFuncs.isLoadProfile3Channel(deviceType) )
 	  {
-		 CtiUtilities.setCheckBoxState(getChannel1CheckBox(), new Character(loadProfileCollection.charAt(0)));
-		 CtiUtilities.setCheckBoxState(getChannel2CheckBox(), new Character(loadProfileCollection.charAt(1)));
-		 CtiUtilities.setCheckBoxState(getChannel3CheckBox(), new Character(loadProfileCollection.charAt(2)));
+		 SwingUtil.setCheckBoxState(getChannel1CheckBox(), new Character(loadProfileCollection.charAt(0)));
+		 SwingUtil.setCheckBoxState(getChannel2CheckBox(), new Character(loadProfileCollection.charAt(1)));
+		 SwingUtil.setCheckBoxState(getChannel3CheckBox(), new Character(loadProfileCollection.charAt(2)));
 		 getChannel4CheckBox().setVisible(false);
 	  } else if( deviceType == PAOGroups.MCT470 || DeviceTypesFuncs.isMCT430(deviceType) ) {
 	      SimpleDevice device = new SimpleDevice(mctBase.getPAObjectID(), deviceType);
           ConfigurationBase config = deviceConfigDao.findConfigurationForDevice(device);
-          CtiUtilities.setCheckBoxState(getChannel1CheckBox(), new Character(loadProfileCollection.charAt(0)));
-          CtiUtilities.setCheckBoxState(getChannel2CheckBox(), new Character(loadProfileCollection.charAt(1)));
-          CtiUtilities.setCheckBoxState(getChannel3CheckBox(), new Character(loadProfileCollection.charAt(2)));
-          CtiUtilities.setCheckBoxState(getChannel4CheckBox(), new Character(loadProfileCollection.charAt(3)));
+          SwingUtil.setCheckBoxState(getChannel1CheckBox(), new Character(loadProfileCollection.charAt(0)));
+          SwingUtil.setCheckBoxState(getChannel2CheckBox(), new Character(loadProfileCollection.charAt(1)));
+          SwingUtil.setCheckBoxState(getChannel3CheckBox(), new Character(loadProfileCollection.charAt(2)));
+          SwingUtil.setCheckBoxState(getChannel4CheckBox(), new Character(loadProfileCollection.charAt(3)));
 		
           if(config != null) {
               String demandInterval = deviceConfigDao.getValueForFieldName(config.getId(), "Demand Interval");
@@ -1146,10 +1141,10 @@ public void setValue(Object val)
               
           }
 	  } else if( DeviceTypesFuncs.isLoadProfile4Channel(deviceType) ) {
-			CtiUtilities.setCheckBoxState(getChannel1CheckBox(), new Character(loadProfileCollection.charAt(0)));
-			CtiUtilities.setCheckBoxState(getChannel2CheckBox(), new Character(loadProfileCollection.charAt(1)));
-			CtiUtilities.setCheckBoxState(getChannel3CheckBox(), new Character(loadProfileCollection.charAt(2)));
-			CtiUtilities.setCheckBoxState(getChannel4CheckBox(), new Character(loadProfileCollection.charAt(3)));
+			SwingUtil.setCheckBoxState(getChannel1CheckBox(), new Character(loadProfileCollection.charAt(0)));
+			SwingUtil.setCheckBoxState(getChannel2CheckBox(), new Character(loadProfileCollection.charAt(1)));
+			SwingUtil.setCheckBoxState(getChannel3CheckBox(), new Character(loadProfileCollection.charAt(2)));
+			SwingUtil.setCheckBoxState(getChannel4CheckBox(), new Character(loadProfileCollection.charAt(3)));
 			
 			if( DeviceTypesFuncs.isLoadProfileVoltage(deviceType) )
 			{
@@ -1168,9 +1163,9 @@ public void setValue(Object val)
 		getLastIntervalDemandRateComboBox().setVisible(true);
 		
 		DeviceLoadProfile dlp = ((TwoWayLCR)val).getDeviceLoadProfile();
-		
-		CtiUtilities.setIntervalComboBoxSelectedItem(
-				getLastIntervalDemandRateComboBox(), dlp.getLastIntervalDemandRate().intValue() );
+
+        SwingUtil.setIntervalComboBoxSelectedItem(getLastIntervalDemandRateComboBox(),
+            dlp.getLastIntervalDemandRate().intValue());
 	}
 
 	//handle the DeviceMeterGroup data below

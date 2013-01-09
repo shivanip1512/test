@@ -3,8 +3,10 @@ package com.cannontech.common.gui.util;
 import java.util.List;
 import java.util.Vector;
 
+import javax.swing.JComboBox;
 import javax.swing.JPanel;
 
+import com.cannontech.clientutils.CTILogger;
 import com.cannontech.common.editor.EditorInputValidationException;
 import com.cannontech.common.editor.PropertyPanelEvent;
 import com.cannontech.core.dao.DaoFactory;
@@ -103,5 +105,50 @@ public abstract class DataInputPanel extends JPanel {
 
     protected boolean isUniquePao(String paoName, String category, String paoClass) {
         return isUniquePao(paoName, category, paoClass, -1);
+    }
+
+    public final static Integer getIntervalComboBoxSecondsValue(JComboBox comboBox) {
+        return getIntervalSecondsValue((String) comboBox.getSelectedItem());
+    }
+
+    public final static Integer getIntervalSecondsValue(String selectedString) {
+        Integer generic = null;
+        Integer retVal = null;
+        int multiplier = 1;
+
+        if (selectedString == null) {
+            retVal = new Integer(0); // we have no idea, just use zero
+        } else if (selectedString.toLowerCase().compareTo("daily") == 0) {
+            generic = new Integer(86400);
+            return generic;
+        } else if (selectedString.toLowerCase().compareTo("weekly") == 0) {
+            generic = new Integer(604800);
+            return generic;
+        } else if (selectedString.toLowerCase().compareTo("monthly") == 0) {
+            generic = new Integer(2592000);
+            return generic;
+        } else if (selectedString.toLowerCase().indexOf("second") != -1) {
+            multiplier = 1;
+        } else if (selectedString.toLowerCase().indexOf("minute") != -1) {
+            multiplier = 60;
+        } else if (selectedString.toLowerCase().indexOf("hour") != -1) {
+            multiplier = 3600;
+        } else if (selectedString.toLowerCase().indexOf("day") != -1) {
+            multiplier = 86400;
+        } else
+            multiplier = 0; // we have no idea, just use zero
+
+        try {
+            int loc = selectedString.toLowerCase().indexOf(" ");
+
+            retVal = new Integer(
+                                 multiplier * Integer.parseInt(
+                                     selectedString.toLowerCase().substring(0, loc)));
+        } catch (Exception e) {
+            CTILogger.error("Unable to parse combo box text string into seconds, using ZERO", e);
+            retVal = new Integer(0);
+        }
+
+        return retVal;
     }
 }

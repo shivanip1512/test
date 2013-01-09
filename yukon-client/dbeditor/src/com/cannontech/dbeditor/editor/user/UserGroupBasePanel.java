@@ -26,6 +26,7 @@ import org.apache.commons.lang.StringUtils;
 import com.cannontech.common.gui.util.DataInputPanel;
 import com.cannontech.common.gui.util.TextFieldDocument;
 import com.cannontech.common.gui.util.TitleBorder;
+import com.cannontech.common.pao.PaoUtils;
 import com.cannontech.common.util.SimpleCallback;
 import com.cannontech.core.dao.YukonUserDao;
 import com.cannontech.core.users.dao.UserGroupDao;
@@ -328,7 +329,7 @@ public class UserGroupBasePanel extends DataInputPanel implements CaretListener 
 			ivjJTextFieldUserGroupName.setPreferredSize(new java.awt.Dimension(216, 20));
 			ivjJTextFieldUserGroupName.setEnabled(true);
 			ivjJTextFieldUserGroupName.setMinimumSize(new java.awt.Dimension(216, 20));
-			ivjJTextFieldUserGroupName.setDocument(new TextFieldDocument(120, TextFieldDocument.INVALID_CHARS_PAO));
+			ivjJTextFieldUserGroupName.setDocument(new TextFieldDocument(120, PaoUtils.ILLEGAL_NAME_CHARS));
     	}
     	return ivjJTextFieldUserGroupName;
     }

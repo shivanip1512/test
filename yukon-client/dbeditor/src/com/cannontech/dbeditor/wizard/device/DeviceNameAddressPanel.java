@@ -12,8 +12,8 @@ import org.apache.commons.lang.StringUtils;
 
 import com.cannontech.common.device.model.SimpleDevice;
 import com.cannontech.common.gui.unchanging.LongRangeDocument;
-import com.cannontech.common.gui.util.TextFieldDocument;
 import com.cannontech.common.pao.PaoType;
+import com.cannontech.common.pao.PaoUtils;
 import com.cannontech.common.pao.definition.service.PaoDefinitionService;
 import com.cannontech.common.util.CtiUtilities;
 import com.cannontech.common.wizard.CancelInsertException;
@@ -364,7 +364,7 @@ private javax.swing.JTextField getNameTextField() {
 			ivjNameTextField.setFont(new java.awt.Font("sansserif", 0, 14));
 			ivjNameTextField.setColumns(12);
 			// user code begin {1}
-			ivjNameTextField.setDocument(new com.cannontech.common.gui.util.TextFieldDocument(com.cannontech.common.gui.util.TextFieldDocument.MAX_DEVICE_NAME_LENGTH, TextFieldDocument.INVALID_CHARS_PAO));
+			ivjNameTextField.setDocument(new com.cannontech.common.gui.util.TextFieldDocument(com.cannontech.common.gui.util.TextFieldDocument.MAX_DEVICE_NAME_LENGTH, PaoUtils.ILLEGAL_NAME_CHARS));
 			// user code end
 		} catch (java.lang.Throwable ivjExc) {
 			// user code begin {2}

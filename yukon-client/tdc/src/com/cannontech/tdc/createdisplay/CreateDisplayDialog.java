@@ -8,10 +8,8 @@ package com.cannontech.tdc.createdisplay;
 import java.awt.Cursor;
 import java.awt.Frame;
 import java.math.BigDecimal;
-import java.util.ArrayList;
-import java.util.List;
 
-import com.cannontech.common.util.CtiUtilities;
+import com.cannontech.common.util.SwingUtil;
 import com.cannontech.tdc.TDCMainFrame;
 import com.cannontech.tdc.logbox.MessageBoxFrame;
 import com.cannontech.tdc.template.TemplateDisplayModel;
@@ -274,7 +272,7 @@ private com.cannontech.common.gui.util.OkCancelPanel getOkCancelPanel() {
 public TemplatePanel getTemplatePanel() {
 	if (ivjTemplatePanel == null) {
 		try {
-			Frame parentFrame = CtiUtilities.getParentFrame(this);
+			Frame parentFrame = SwingUtil.getParentFrame(this);
             ivjTemplatePanel = new com.cannontech.tdc.createdisplay.TemplatePanel(parentFrame);
 			ivjTemplatePanel.resetTemplateTable();
             ivjTemplatePanel.setName("TemplatePanel");

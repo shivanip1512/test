@@ -2,6 +2,8 @@ package com.cannontech.dbeditor.wizard.state;
 
 import javax.swing.JPopupMenu;
 
+import com.cannontech.common.gui.util.OkCancelDialog;
+import com.cannontech.common.util.SwingUtil;
 import com.cannontech.core.dao.DaoFactory;
 import com.cannontech.database.data.lite.LiteYukonImage;
 /**
@@ -88,15 +90,9 @@ class ImagePopup extends JPopupMenu implements java.awt.event.ActionListener
       YukonImagePropertyPanel panel = new YukonImagePropertyPanel();
       panel.setSelectedName( getSelectedLiteImage().getImageName() );
       panel.setSelectedCategory( getSelectedLiteImage().getImageCategory() );
-      
-      com.cannontech.common.gui.util.OkCancelDialog d = 
-            new com.cannontech.common.gui.util.OkCancelDialog(
-               com.cannontech.common.util.CtiUtilities.getParentFrame(this),
-                "Image Properties",
-                 true,
-                 panel );
-                 
-                 
+
+      OkCancelDialog d = new OkCancelDialog(SwingUtil.getParentFrame(this), "Image Properties", true, panel);
+
       d.setSize(350, 200);
       d.setLocationRelativeTo( this );
       d.show();

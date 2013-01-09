@@ -8,7 +8,9 @@ import java.util.Hashtable;
 import java.util.Map;
 
 import com.cannontech.common.gui.util.TextFieldDocument;
+import com.cannontech.common.pao.PaoUtils;
 import com.cannontech.common.util.CtiUtilities;
+import com.cannontech.common.util.SwingUtil;
 import com.cannontech.database.data.device.lm.LMControlArea;
 
 public class LMControlAreaBasePanel extends com.cannontech.common.gui.util.DataInputPanel implements java.awt.event.ActionListener, javax.swing.event.CaretListener 
@@ -595,7 +597,7 @@ private javax.swing.JTextField getJTextFieldName() {
 			ivjJTextFieldName.setDocument(
 					new TextFieldDocument(
 						TextFieldDocument.MAX_DEVICE_NAME_LENGTH,
-						TextFieldDocument.INVALID_CHARS_PAO) );
+						PaoUtils.ILLEGAL_NAME_CHARS) );
 			
 			// user code end
 		} catch (java.lang.Throwable ivjExc) {
@@ -668,13 +670,13 @@ public Object getValue(Object o)
 		controlArea.getControlArea().setControlInterval(new Integer(0)); 
 	else
 		controlArea.getControlArea().setControlInterval( 
-			com.cannontech.common.util.CtiUtilities.getIntervalComboBoxSecondsValue(getJComboBoxControlInterval()) );
+			SwingUtil.getIntervalComboBoxSecondsValue(getJComboBoxControlInterval()) );
 
 	if(((String)getJComboBoxMinRespTime().getSelectedItem()).compareTo(CtiUtilities.STRING_NONE) == 0)
 		controlArea.getControlArea().setMinResponseTime(new Integer(0));
 	else
 		controlArea.getControlArea().setMinResponseTime( 
-			com.cannontech.common.util.CtiUtilities.getIntervalComboBoxSecondsValue(getJComboBoxMinRespTime()) );
+		    SwingUtil.getIntervalComboBoxSecondsValue(getJComboBoxMinRespTime()) );
 
 	controlArea.getControlArea().setDefOperationalState(
 			STRING_MAP.get(getJComboBoxOperationalState().getSelectedItem().toString()).toString() );
@@ -903,13 +905,13 @@ public void setValue(Object o)
 		if( controlArea.getControlArea().getControlInterval().intValue() == 0 )
 			getJComboBoxControlInterval().setSelectedIndex(0);
 		else
-			com.cannontech.common.util.CtiUtilities.setIntervalComboBoxSelectedItem( 
+		    SwingUtil.setIntervalComboBoxSelectedItem( 
 					getJComboBoxControlInterval(), controlArea.getControlArea().getControlInterval().intValue() );
 
 		if( controlArea.getControlArea().getMinResponseTime().intValue() == 0 )
 			getJComboBoxMinRespTime().setSelectedIndex(0);
 		else
-			com.cannontech.common.util.CtiUtilities.setIntervalComboBoxSelectedItem( 
+		    SwingUtil.setIntervalComboBoxSelectedItem( 
 					getJComboBoxMinRespTime(), controlArea.getControlArea().getMinResponseTime().intValue() );
 		
 		getJComboBoxOperationalState().setSelectedItem( 

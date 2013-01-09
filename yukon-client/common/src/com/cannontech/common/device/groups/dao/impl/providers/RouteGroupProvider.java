@@ -7,10 +7,10 @@ import java.util.Set;
 
 import org.springframework.beans.factory.annotation.Autowired;
 
+import com.cannontech.common.device.groups.util.DeviceGroupUtil;
 import com.cannontech.common.pao.YukonDevice;
 import com.cannontech.common.util.SqlFragmentSource;
 import com.cannontech.common.util.SqlStatementBuilder;
-import com.cannontech.common.util.StringUtils;
 import com.cannontech.core.dao.PaoDao;
 import com.cannontech.database.data.lite.LiteYukonPAObject;
 
@@ -61,7 +61,7 @@ public class RouteGroupProvider extends BinningDeviceGroupProviderBase<LiteYukon
     
     @Override
     protected String getGroupName(LiteYukonPAObject bin) {
-        String groupName = StringUtils.removeInvalidDeviceGroupNameCharacters(bin.getPaoName());
+        String groupName = DeviceGroupUtil.removeInvalidDeviceGroupNameCharacters(bin.getPaoName());
         return groupName;
     }
 

@@ -41,7 +41,7 @@ import com.cannontech.common.editor.PropertyPanelEvent;
 import com.cannontech.common.editor.PropertyPanelListener;
 import com.cannontech.common.gui.image.ImageChooser;
 import com.cannontech.common.login.ClientStartupHelper;
-import com.cannontech.common.util.CtiUtilities;
+import com.cannontech.common.util.SwingUtil;
 import com.cannontech.database.cache.DefaultDatabaseCache;
 import com.cannontech.debug.gui.AboutDialog;
 import com.cannontech.esub.Drawing;
@@ -312,7 +312,7 @@ public class Editor extends JPanel {
 		stopUpdating();
 		
         if (propertyDialog == null){
-			propertyDialog = new JDialog(CtiUtilities.getParentFrame(getDrawing().getLxView()), true);
+			propertyDialog = new JDialog(SwingUtil.getParentFrame(getDrawing().getLxView()), true);
         }
         final PropertyPanel editor = ElementEditorFactory.getInstance().createEditorPanel(elem.getClass());
         
@@ -334,7 +334,7 @@ public class Editor extends JPanel {
 			propertyDialog.setTitle("Edit Element Settings");
             propertyDialog.setContentPane(editor);		
 			propertyDialog.pack();
-			propertyDialog.setLocationRelativeTo(CtiUtilities.getParentFrame(getDrawing().getLxView()));
+			propertyDialog.setLocationRelativeTo(SwingUtil.getParentFrame(getDrawing().getLxView()));
 			propertyDialog.setVisible(true);
 			getDrawing().getLxGraph().cancelUndoEdit();
 			startUpdating();
@@ -607,8 +607,8 @@ public class Editor extends JPanel {
 		}
 		catch(Exception e) {
 			CTILogger.error("Error saving drawing", e);
-			JOptionPane.showMessageDialog(com.cannontech.common.util.CtiUtilities.getParentFrame(
-			getDrawing().getLxView()), "An error occurred saving the drawing", "Saving Error", JOptionPane.ERROR_MESSAGE);
+			JOptionPane.showMessageDialog(SwingUtil.getParentFrame(getDrawing().getLxView()),
+			    "An error occurred saving the drawing", "Saving Error", JOptionPane.ERROR_MESSAGE);
 		}
 	}
 	
@@ -676,13 +676,13 @@ public class Editor extends JPanel {
 	 * @param title
 	 */
 	public void setFrameTitle(String title) {
-		Frame pFrame = CtiUtilities.getParentFrame(this);
+		Frame pFrame = SwingUtil.getParentFrame(this);
 		if (pFrame != null) {
 			pFrame.setTitle(title + " - eSubstation Editor");
 			return;
 		}
 
-		JInternalFrame piFrame = CtiUtilities.getParentInternalFrame(this);
+		JInternalFrame piFrame = SwingUtil.getParentInternalFrame(this);
 		if (piFrame != null) {
 			piFrame.setTitle(title + " - eSubstation Editor");
 			return;
@@ -693,7 +693,7 @@ public class Editor extends JPanel {
 	 * Displays the about dialog
 	 */
 	public void showAboutDialog() {
-		AboutDialog aboutDialog = new AboutDialog(CtiUtilities.getParentFrame(getDrawing().getLxView()), "About eSubstation Editor", true);		
+		AboutDialog aboutDialog = new AboutDialog(SwingUtil.getParentFrame(getDrawing().getLxView()), "About eSubstation Editor", true);		
 		aboutDialog.setLocationRelativeTo(getDrawing().getLxView());
 		aboutDialog.setVisible(true);
 		aboutDialog.dispose();

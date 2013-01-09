@@ -27,6 +27,7 @@ import com.cannontech.common.pao.definition.dao.PaoDefinitionDao;
 import com.cannontech.common.pao.definition.model.PaoTag;
 import com.cannontech.common.util.CtiUtilities;
 import com.cannontech.common.util.MessageEvent;
+import com.cannontech.common.util.SwingUtil;
 import com.cannontech.core.dao.DBPersistentDao;
 import com.cannontech.core.dao.DeviceDao;
 import com.cannontech.core.dao.NotFoundException;
@@ -197,8 +198,7 @@ public final class DatabaseEditorUtil {
                     SwingUtilities.invokeLater(new Runnable() {
                         @Override
                         public void run() {
-                            int result = JOptionPane.showConfirmDialog(
-                                                                       CtiUtilities.getParentFrame(c), 
+                            int result = JOptionPane.showConfirmDialog(SwingUtil.getParentFrame(c), 
                                                                        message,
                                                                        title,
                                                                        JOptionPane.YES_NO_OPTION,
@@ -224,12 +224,11 @@ public final class DatabaseEditorUtil {
                     });
                     
                 } catch (NotFoundException ignore) {
-                    javax.swing.JOptionPane.showConfirmDialog(
-                                                              CtiUtilities.getParentFrame(c),
-                                                              "No identical route names were found for " + oldName + ".  No Route Names were updated.",
-                                                              "Information",
-                                                              JOptionPane.DEFAULT_OPTION,
-                                                              JOptionPane.INFORMATION_MESSAGE);
+                    JOptionPane.showConfirmDialog(SwingUtil.getParentFrame(c),
+                                                  "No identical route names were found for " + oldName + ".  No Route Names were updated.",
+                                                  "Information",
+                                                  JOptionPane.DEFAULT_OPTION,
+                                                  JOptionPane.INFORMATION_MESSAGE);
                 }
             }
         });

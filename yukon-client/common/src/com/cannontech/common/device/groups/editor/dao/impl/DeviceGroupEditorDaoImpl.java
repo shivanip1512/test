@@ -27,10 +27,10 @@ import com.cannontech.common.device.groups.editor.dao.DeviceGroupMemberEditorDao
 import com.cannontech.common.device.groups.editor.dao.SystemGroupEnum;
 import com.cannontech.common.device.groups.editor.model.StoredDeviceGroup;
 import com.cannontech.common.device.groups.model.DeviceGroup;
+import com.cannontech.common.device.groups.util.DeviceGroupUtil;
 import com.cannontech.common.device.groups.util.YukonDeviceToIdMapper;
 import com.cannontech.common.device.model.SimpleDevice;
 import com.cannontech.common.pao.YukonDevice;
-import com.cannontech.common.util.CtiUtilities;
 import com.cannontech.common.util.MappingCollection;
 import com.cannontech.common.util.ReverseList;
 import com.cannontech.common.util.SqlBuilder;
@@ -266,7 +266,7 @@ public class DeviceGroupEditorDaoImpl implements DeviceGroupEditorDao, DeviceGro
     public StoredDeviceGroup getGroupByName(StoredDeviceGroup parent, 
             String groupName) throws NotFoundException, IllegalGroupNameException {
         
-        CtiUtilities.validateGroupName(groupName);
+        DeviceGroupUtil.validateName(groupName);
         
         return getGroupByName(parent, groupName, false);
     }
@@ -275,7 +275,7 @@ public class DeviceGroupEditorDaoImpl implements DeviceGroupEditorDao, DeviceGro
     public StoredDeviceGroup getGroupByName(StoredDeviceGroup parent, 
             String groupName, boolean addGroup) throws NotFoundException, IllegalGroupNameException {
         
-        CtiUtilities.validateGroupName(groupName);
+        DeviceGroupUtil.validateName(groupName);
         
         String rawName = SqlUtils.convertStringToDbValue(groupName);
 
@@ -317,7 +317,7 @@ public class DeviceGroupEditorDaoImpl implements DeviceGroupEditorDao, DeviceGro
     
     @Transactional(propagation=Propagation.REQUIRED, noRollbackFor={DuplicateException.class})
     public StoredDeviceGroup addGroup(StoredDeviceGroup parentGroup, DeviceGroupType type, String groupName, DeviceGroupPermission permission) throws IllegalGroupNameException {
-        CtiUtilities.validateGroupName(groupName);
+        DeviceGroupUtil.validateName(groupName);
         
         int nextValue = nextValueHelper.getNextValue("DeviceGroup");
         SqlStatementBuilder sql = new SqlStatementBuilder();
@@ -347,7 +347,7 @@ public class DeviceGroupEditorDaoImpl implements DeviceGroupEditorDao, DeviceGro
     public void updateGroup(StoredDeviceGroup group) throws IllegalGroupNameException {
         Validate.isTrue(group.getParent() != null, "The root group cannot be updated.");
         
-        CtiUtilities.validateGroupName(group.getName());
+        DeviceGroupUtil.validateName(group.getName());
         
         StoredDeviceGroup parentGroup = getStoredGroup(group.getParent());
 

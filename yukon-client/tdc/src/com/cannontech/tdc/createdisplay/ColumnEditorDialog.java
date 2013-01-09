@@ -8,11 +8,10 @@ package com.cannontech.tdc.createdisplay;
  */
 import java.awt.Frame;
 import java.math.BigDecimal;
-import java.util.ArrayList;
 import java.util.List;
 import java.util.Vector;
 
-import com.cannontech.common.util.CtiUtilities;
+import com.cannontech.common.util.SwingUtil;
 import com.cannontech.tdc.TDCMainFrame;
 import com.cannontech.tdc.editdisplay.EditDisplayDialog;
 import com.cannontech.tdc.logbox.MessageBoxFrame;
@@ -432,7 +431,7 @@ private void initComboTemplate()
 	if( getJComboBoxTemplate().getItemCount() > 0 )
 	{
         Integer templateNum = new Integer (1);
-        Frame parentFrame = CtiUtilities.getParentFrame(this);
+        Frame parentFrame = SwingUtil.getParentFrame(this);
         if (parentFrame instanceof TDCMainFrame)
         {
             Integer dispNum = new Integer (((TDCMainFrame)parentFrame).getMainPanel().getCurrentDisplay().getDisplayNumber());
@@ -502,7 +501,7 @@ private void initialize() {
  */
 public void jComboBoxTemplate_ActionPerformed(java.awt.event.ActionEvent actionEvent) 
 {
-	java.awt.Frame owner = com.cannontech.common.util.CtiUtilities.getParentFrame(this);
+	Frame owner = SwingUtil.getParentFrame(this);
 	java.awt.Cursor original = owner.getCursor();
 	owner.setCursor( new java.awt.Cursor( java.awt.Cursor.WAIT_CURSOR ) );	
 	try
@@ -607,7 +606,7 @@ private void updateDisplaysAssociated(Integer templateNum)
 }
 private void updateTemplateDisplayModel(Integer templateNum) {
   
-    Frame parentFrame = CtiUtilities.getParentFrame(this);
+    Frame parentFrame = SwingUtil.getParentFrame(this);
     Integer displayNum = new Integer ((int)((TDCMainFrame)parentFrame).getCurrentDisplayNumber());
     getTempDispModel().saveModel(displayNum, templateNum);
 }

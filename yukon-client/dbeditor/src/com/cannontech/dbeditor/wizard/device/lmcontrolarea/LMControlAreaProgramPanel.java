@@ -18,7 +18,7 @@ import com.cannontech.common.gui.util.TreeFindPanel;
 import com.cannontech.common.pao.PaoIdentifier;
 import com.cannontech.common.pao.PaoType;
 import com.cannontech.common.pao.service.PointCreationService;
-import com.cannontech.common.util.CtiUtilities;
+import com.cannontech.common.util.SwingUtil;
 import com.cannontech.core.dao.DaoFactory;
 import com.cannontech.core.dao.PaoDao;
 import com.cannontech.database.data.lite.LiteBase;
@@ -720,10 +720,7 @@ private void handleException(Throwable exception) {
 private void initConnections() throws java.lang.Exception {
 	// user code begin {1}
 	
-	dialog = new OkCancelDialog(
-		CtiUtilities.getParentFrame(this),
-		"Search",
-		true, FND_PANEL );
+	dialog = new OkCancelDialog(SwingUtil.getParentFrame(this), "Search", true, FND_PANEL);
 	
 	final AbstractAction searchAction = new AbstractAction()
 	{

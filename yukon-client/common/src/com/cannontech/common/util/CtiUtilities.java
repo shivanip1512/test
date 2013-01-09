@@ -1,9 +1,5 @@
 package com.cannontech.common.util;
 
-import java.awt.AWTEvent;
-import java.awt.Component;
-import java.awt.EventQueue;
-import java.awt.MenuComponent;
 import java.io.Closeable;
 import java.io.File;
 import java.io.FileOutputStream;
@@ -17,14 +13,13 @@ import java.net.InetAddress;
 import java.net.NetworkInterface;
 import java.net.SocketException;
 import java.net.URL;
-import java.text.DecimalFormat;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Calendar;
 import java.util.Collection;
 import java.util.Collections;
-import java.util.Comparator;
 import java.util.Date;
 import java.util.Enumeration;
 import java.util.GregorianCalendar;
@@ -33,15 +28,12 @@ import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
-import java.util.Stack;
 import java.util.StringTokenizer;
 import java.util.TimeZone;
-import java.util.Vector;
 import java.util.jar.Attributes;
 import java.util.jar.JarFile;
 import java.util.jar.Manifest;
 
-import javax.swing.JComboBox;
 import javax.swing.JEditorPane;
 import javax.swing.text.BadLocationException;
 
@@ -53,13 +45,12 @@ import org.joda.time.Instant;
 import org.springframework.util.FileCopyUtils;
 
 import com.cannontech.clientutils.CTILogger;
-import com.cannontech.common.device.groups.IllegalGroupNameException;
 import com.cannontech.common.exception.BadConfigurationException;
-import com.cannontech.common.gui.util.TextFieldDocument;
 import com.cannontech.common.login.ClientSession;
 import com.cannontech.common.version.VersionTools;
 import com.cannontech.database.data.lite.LiteComparators;
 import com.google.common.base.Function;
+import com.google.common.collect.ImmutableSet;
 
 public final class CtiUtilities {
     private static final String YUKON_HELP_PREFIX = "com/cannontech/help/";
@@ -101,9 +92,6 @@ public final class CtiUtilities {
 
     private static GregorianCalendar gc1990 = null;
     private static GregorianCalendar gc2035 = null;
-
-    // a universal formatter for numbers
-    private static DecimalFormat numberFormatter = null;
 
     // image names
     public static final URL GENERIC_APPLICATION_SPLASH = CtiUtilities.class
@@ -168,52 +156,6 @@ public final class CtiUtilities {
     }
 
     /**
-     * This method first sorts list of objects using the passed in comparator.
-     * Then, it uses a binary search to find the first instance of the key.
-     * If there is more elements that equal key, then the algorithm walks
-     * backwards through the sorted list until it reaches the beginning of
-     * occurrences of key. Then each occurrence of key is returned
-     * in a List.
-     */
-    public static final List binarySearchRepetition(List listToBeSorted, Object key,
-                                                    Comparator comp, List destList) {
-        destList.clear();
-
-        // do the sort and search here
-        Collections.sort(listToBeSorted, comp);
-        int loc = Collections.binarySearch(listToBeSorted,
-                                           key, // must have the needed ID set in this key that comp uses!!
-                                           comp);
-
-        int listSize = listToBeSorted.size();
-
-        if (loc >= 0) // only loop if there is a found item
-        {
-            // walk back thru the list and make sure we
-            // have the first occurrence of the ID
-            for (int j = (loc - 1); j >= 0; j--) {
-                if (comp.compare(listToBeSorted.get(j), key) == 0) { // is equal
-                    loc--;
-                } else {
-                    break;
-                }
-            }
-
-            // the element in the location loc SHOULD/MUST be an instance of
-            // what we are looking for!
-            for (; loc < listSize; loc++) {
-                if (comp.compare(listToBeSorted.get(loc), key) == 0) { // is equal
-                    destList.add(listToBeSorted.get(loc));
-                } else {
-                    break; // we've gone past all elements since they are sorted, get out of the loop
-                }
-            }
-        }
-
-        return destList;
-    }
-
-    /**
      * This method does a deep copy on any Serializable object.
      * If the object has references to other objects, thos referenced objects
      * must be serializable also!!
@@ -256,47 +198,19 @@ public final class CtiUtilities {
         return outInteger;
     }
 
-    public final static void setJComboBoxSelection(JComboBox box, Object value) {
-        if (box == null || value == null)
-            return; // blah, fool!
-
-        // look for the value, if not found add it and set it selected
-        boolean found = false;
-        for (int i = 0; i < box.getItemCount(); i++) {
-            if (box.getItemAt(i).equals(value)) {
-                found = true;
-                box.setSelectedItem(value);
-                break;
-            }
-        }
-
-        if (!found) {
-            box.addItem(value);
-            box.setSelectedItem(value);
-        }
-    }
-
-    public static DecimalFormat getDecimalFormatter() {
-        if (numberFormatter == null)
-            numberFormatter = new DecimalFormat();
-
-        return numberFormatter;
-    }
-
     /**
      * Takes a string in the format of:
      * X-X,x,x,x,
      * where - represents and inclusive set of numbers
      */
     public static int[] decodeRangeIDString(String string, final int maxID) {
-
         if (string != null) {
             try {
                 StringTokenizer tokenizer = new StringTokenizer(string, ",");
                 NativeIntVector utilIds = new NativeIntVector(tokenizer.countTokens());
                 // ArrayList utilIds = new ArrayList(tokenizer.countTokens());
 
-                for (int i = 0; tokenizer.hasMoreElements(); i++) {
+                for (; tokenizer.hasMoreElements();) {
                     String val = tokenizer.nextToken().trim();
 
                     if (val.indexOf("-") != -1) // we have a range of ints
@@ -310,25 +224,23 @@ public final class CtiUtilities {
                                 utilIds.add(j);
                         }
 
-                    } else // we only have one int alone
-                    {
+                    } else {
+                        // we only have one int alone
                         int tmp = Integer.parseInt(val);
                         if (!utilIds.contains(tmp) && tmp > 0 && tmp <= maxID)
                             utilIds.add(tmp);
                     }
-
                 }
 
                 int[] ids = utilIds.toArray();
                 Arrays.sort(ids);
 
                 return ids;
-            } catch (Exception e) // catch all!
-            {
+            } catch (Exception e) {
+                // catch all!
                 com.cannontech.clientutils.CTILogger
                     .info("*** Unable to parse UtilityID range string : " + string);
             }
-
         }
 
         return new int[0];
@@ -413,26 +325,6 @@ public final class CtiUtilities {
         return returnCalendar.getTime();
     }
 
-    private static boolean findPath(Stack s, Object o) {
-
-        javax.swing.tree.DefaultMutableTreeNode node =
-            (javax.swing.tree.DefaultMutableTreeNode) s.peek();
-
-        if (node.getUserObject().equals(o))
-            return true;
-        else {
-            for (int i = 0; i < node.getChildCount(); i++) {
-                s.push(node.getChildAt(i));
-
-                if (findPath(s, o))
-                    return true;
-
-                s.pop();
-            }
-        }
-        return false;
-    }
-
     public static GregorianCalendar get1990GregCalendar() {
         return gc1990;
     }
@@ -474,65 +366,12 @@ public final class CtiUtilities {
                getUserName() + ")";
     }
 
-    public static final javax.swing.JDesktopPane getDesktopPane(java.awt.Component comp) {
-        while (comp != null && !(comp instanceof javax.swing.JDesktopPane)) {
-            comp = comp.getParent();
-        }
-
-        return (javax.swing.JDesktopPane) comp;
-    }
-
     public final static String getExportDirPath() {
         return getYukonBase() + "/Client/export/";
     }
 
     public final static Character getFalseCharacter() {
         return falseChar;
-    }
-
-    public final static Integer getIntervalComboBoxSecondsValue(JComboBox comboBox) {
-        return getIntervalSecondsValue((String) comboBox.getSelectedItem());
-    }
-
-    public final static Integer getIntervalSecondsValue(String selectedString) {
-        Integer generic = null;
-        Integer retVal = null;
-        int multiplier = 1;
-
-        if (selectedString == null) {
-            retVal = new Integer(0); // we have no idea, just use zero
-        } else if (selectedString.toLowerCase().compareTo("daily") == 0) {
-            generic = new Integer(86400);
-            return generic;
-        } else if (selectedString.toLowerCase().compareTo("weekly") == 0) {
-            generic = new Integer(604800);
-            return generic;
-        } else if (selectedString.toLowerCase().compareTo("monthly") == 0) {
-            generic = new Integer(2592000);
-            return generic;
-        } else if (selectedString.toLowerCase().indexOf("second") != -1) {
-            multiplier = 1;
-        } else if (selectedString.toLowerCase().indexOf("minute") != -1) {
-            multiplier = 60;
-        } else if (selectedString.toLowerCase().indexOf("hour") != -1) {
-            multiplier = 3600;
-        } else if (selectedString.toLowerCase().indexOf("day") != -1) {
-            multiplier = 86400;
-        } else
-            multiplier = 0; // we have no idea, just use zero
-
-        try {
-            int loc = selectedString.toLowerCase().indexOf(" ");
-
-            retVal = new Integer(
-                                 multiplier * Integer.parseInt(
-                                     selectedString.toLowerCase().substring(0, loc)));
-        } catch (Exception e) {
-            CTILogger.error("Unable to parse combo box text string into seconds, using ZERO", e);
-            retVal = new Integer(0);
-        }
-
-        return retVal;
     }
 
     public final static Integer getIntervalSecondsValueFromDecimal(String selectedString) {
@@ -623,83 +462,6 @@ public final class CtiUtilities {
     }
 
     /**
-     * This method will return the java.awt.Dialog associated with a component
-     * If no parent dialog is found null will be returned
-     * @return java.awt.Dialog
-     * @param comp java.awt.Component
-     */
-    public final static java.awt.Dialog getParentDialog(java.awt.Component comp) {
-
-        while (comp != null && !(comp instanceof java.awt.Dialog)) {
-            comp = comp.getParent();
-        }
-
-        return (java.awt.Dialog) comp;
-    }
-
-    /**
-     * This method will return the java.awt.Frame associated with a component
-     * If no parent frame is found null will be returned
-     * @return java.awt.Frame
-     * @param comp java.awt.Component
-     */
-    public final static java.awt.Frame getParentFrame(java.awt.Component comp) {
-
-        while (comp != null && !(comp instanceof java.awt.Frame)) {
-            comp = comp.getParent();
-        }
-
-        return (java.awt.Frame) comp;
-    }
-
-    public final static javax.swing.JInternalFrame getParentInternalFrame(Component comp) {
-
-        while (comp != null && !(comp instanceof javax.swing.JInternalFrame)) {
-            comp = comp.getParent();
-        }
-
-        return (javax.swing.JInternalFrame) comp;
-    }
-
-    /**
-     * This method will return the java.awt.Window associated with a component
-     * If no parent window is found null will be returned.
-     * @return java.awt.Window
-     * @param comp java.awt.Component
-     */
-    public final static java.awt.Window getParentWindow(java.awt.Component comp) {
-
-        while (comp != null && !(comp instanceof java.awt.Window)) {
-            comp = comp.getParent();
-        }
-
-        return (java.awt.Window) comp;
-    }
-
-    /**
-     * This method will return the javax.swing.JRootPane associated with a components parent
-     * If no parent is found with a root panethen null will be returned
-     * @return java.awt.Frame
-     * @param comp java.awt.Component
-     */
-    public final static javax.swing.JRootPane getParentRootPane(java.awt.Component comp) {
-
-        while (comp != null) {
-            if (comp instanceof javax.swing.JFrame) {
-                return ((javax.swing.JFrame) comp).getRootPane();
-            } else if (comp instanceof javax.swing.JApplet) {
-                return ((javax.swing.JApplet) comp).getRootPane();
-            } else if (comp instanceof javax.swing.JDialog) {
-                return ((javax.swing.JDialog) comp).getRootPane();
-            }
-
-            comp = comp.getParent();
-        }
-
-        return null;
-    }
-
-    /**
      * This method creates a new CTIPrintStackTaceExc() instance and
      * returns the current stack trace
      */
@@ -728,36 +490,13 @@ public final class CtiUtilities {
         return s;
     }
 
-    public final static javax.swing.tree.TreePath getTreePath(javax.swing.JTree tree, Object o) {
-
-        javax.swing.tree.DefaultMutableTreeNode rootNode =
-            (javax.swing.tree.DefaultMutableTreeNode) tree.getModel().getRoot();
-
-        Stack s = new Stack();
-        s.push(rootNode);
-
-        if (findPath(s, o)) {
-            Vector v = new Vector();
-
-            while (!s.isEmpty())
-                v.insertElementAt(s.pop(), 0);
-
-            Object[] path = new Object[v.size()];
-
-            v.copyInto(path);
-
-            return new javax.swing.tree.TreePath(path);
-        } else
-            return null;
-    }
-
     /**
      * Returns valid US timezone strings.
      */
     public static final String[] getTimeZones() {
         if (timeZones == null) {
             String[] availableIDs = TimeZone.getAvailableIDs();
-            Vector retVals = new Vector(16);
+            List<String> retVals = new ArrayList<>(16);
 
             for (int i = 0; i < availableIDs.length; i++) {
                 String zone = availableIDs[i];
@@ -863,112 +602,6 @@ public final class CtiUtilities {
 
         return false;
     }
-
-    public static void setCheckBoxState(javax.swing.JCheckBox cBox, Character state) {
-
-        char c = Character.toLowerCase(state.charValue());
-
-        if (c == 'y')
-            cBox.setSelected(true);
-        else if (c == 'n')
-            cBox.setSelected(false);
-    }
-
-    public static void setCheckBoxState(javax.swing.JCheckBox cBox, Integer state) {
-
-        if (state.intValue() == 0)
-            cBox.setSelected(false);
-        else
-            cBox.setSelected(true);
-    }
-
-    public static final void setIntervalComboBoxSelectedItem(JComboBox comboBox, double scanRateSecs) {
-        String scanRateString = null;
-        boolean found = false;
-
-        // when we divide the scanRateSecs value, we must use a double formatted number
-        // so we are returned a double value (Ex: getDecimalFormatter().format(scanRateSecs/60.0)
-
-        if (scanRateSecs < 60) {
-            scanRateString = getDecimalFormatter().format(scanRateSecs) + " second";
-        } else if (scanRateSecs < 3600) {
-            scanRateString = getDecimalFormatter().format(scanRateSecs / 60.0) + " minute";
-        } else if (scanRateSecs < 86400) {
-            scanRateString = getDecimalFormatter().format(scanRateSecs / 3600.0) + " hour";
-        } else {
-            if (scanRateSecs == 86400)
-                scanRateString = "Daily";
-            else if (scanRateSecs == 604800)
-                scanRateString = "Weekly";
-            else if (scanRateSecs == 2592000)
-                scanRateString = "Monthly";
-            else
-                scanRateString = getDecimalFormatter().format(scanRateSecs / 86400.0) + " day";
-        }
-
-        for (int i = 0; i < comboBox.getModel().getSize(); i++) {
-            if (((String) comboBox.getItemAt(i)).indexOf(scanRateString) != -1) {
-                comboBox.setSelectedIndex(i);
-                found = true;
-                break;
-            }
-        }
-
-        if (!found) {
-            comboBox.addItem(scanRateString);
-            comboBox.setSelectedItem(scanRateString);
-        }
-    }
-
-    // this is mainly for gear refresh rates
-    public static final void setIntervalComboBoxSelectedItem(JComboBox comboBox,
-                                                             JComboBox comboBox2,
-                                                             double scanRateSecs) {
-        String scanRateString = null;
-        String scanRateUnitString = null;
-
-        // when we divide the scanRateSecs value, we must use a double formatted number
-        // so we are returned a double value (Ex: getDecimalFormatter().format(scanRateSecs/60.0)
-
-        if (scanRateSecs < 3600) {
-            scanRateString = getDecimalFormatter().format(scanRateSecs / 60.0);
-            scanRateUnitString = "minutes";
-        } else {
-            scanRateString = getDecimalFormatter().format(scanRateSecs / 3600.0);
-            if (scanRateString.indexOf(".") != -1) {
-                scanRateString = getDecimalFormatter().format(scanRateSecs / 60.0);
-                scanRateUnitString = "minutes";
-            } else
-                scanRateUnitString = "hours";
-        }
-
-        comboBox.setSelectedItem(scanRateString);
-        comboBox2.setSelectedItem(scanRateUnitString);
-
-    }
-
-    public final static void setSelectedInComboBox(javax.swing.JComboBox comboBox, Object val) {
-
-        int items = comboBox.getItemCount();
-        boolean foundIt = false;
-
-        for (int i = 0; i < items; i++) {
-            Object item = comboBox.getItemAt(i);
-
-            if (item.equals(val)) {
-                comboBox.setSelectedIndex(i);
-                foundIt = true;
-                break;
-            }
-        }
-
-        // Add it if we didn't find it
-        if (foundIt == false) {
-            comboBox.addItem(val);
-            comboBox.setSelectedItem(val);
-        }
-    }
-
     public static final void showHelp(String helpFileName) {
         try {
             // prepend classpath prefix to helpFile
@@ -997,39 +630,6 @@ public final class CtiUtilities {
         } catch (IOException e) {
             CTILogger.info("Unable to display help for: " + helpFileName, e);
         }
-    }
-
-    public final static void startModal(javax.swing.JInternalFrame frame) {
-        try {
-            // can't use instanceof EventDispatchThread because the class isn't public
-            if (Thread.currentThread().getClass().getName().endsWith("EventDispatchThread")) {
-                EventQueue theQueue = java.awt.Toolkit.getDefaultToolkit().getSystemEventQueue();
-                while (frame.isVisible()) {
-                    // This is essentially the body of EventDispatchThread
-                    AWTEvent event = theQueue.getNextEvent();
-                    Object src = event.getSource();
-                    // can't call theQueue.dispatchEvent, so I pasted it's body here
-                    /*
-                     * if (event instanceof ActiveEvent) {
-                     * ((ActiveEvent) event).dispatch();
-                     * } else
-                     */if (src instanceof Component) {
-                        ((Component) src).dispatchEvent(event);
-                    } else if (src instanceof MenuComponent) {
-                        ((MenuComponent) src).dispatchEvent(event);
-                    } else {
-                        System.err.println("unable to dispatch event: " + event);
-                    }
-                }
-                com.cannontech.clientutils.CTILogger.info("here");
-            } else
-                while (frame.isVisible())
-                    frame.wait();
-        } catch (InterruptedException e) {}
-    }
-
-    public final static void stopModal(javax.swing.JInternalFrame frame) {
-        frame.notifyAll();
     }
 
     /**
@@ -1072,15 +672,6 @@ public final class CtiUtilities {
             ext = s.substring(i + 1).toLowerCase();
         }
         return ext;
-    }
-
-    public static void setLaF() {
-        try {
-            javax.swing.UIManager.setLookAndFeel(
-                javax.swing.UIManager.getSystemLookAndFeelClassName());
-        } catch (Exception e) {
-            e.printStackTrace(); /* Not much to do about */
-        }
     }
 
     /**
@@ -1199,6 +790,10 @@ public final class CtiUtilities {
         return (arr == null ? new Integer[0] : arr);
     }
 
+    /**
+     * @deprecated Use Guava's {@link ImmutableSet#of}
+     */
+    @Deprecated
     public static <T> Set<T> asSet(T... a) {
         Set<T> s = new HashSet<T>((int) (a.length / 0.75f + 1), 0.75f);
         for (T t : a) {
@@ -1357,35 +952,6 @@ public final class CtiUtilities {
             if (otherMap.containsKey(defaultsKey)) {
                 defaultsMap.put(defaultsKey, otherMap.get(defaultsKey).toString());
             }
-        }
-    }
-
-    public static boolean isContainsInvalidPaoNameCharacters(String name) {
-
-        return !StringUtils.containsNone(name, TextFieldDocument.INVALID_CHARS_PAO);
-    }
-
-    public static boolean isContainsInvalidDeviceGroupNameCharacters(String name) {
-
-        return !StringUtils.containsNone(name, TextFieldDocument.INVALID_CHARS_DEVICEGROUPNAME);
-    }
-
-    /**
-     * See /yukon-web/WebContent/WEB-INF/pages/group/home.jsp JavaScript function
-     * "isValidGroupName()" for client side implementation.
-     * @param groupName
-     * @return
-     */
-    public static boolean isValidGroupName(String groupName) {
-
-        return !StringUtils.isBlank(groupName)
-               && !isContainsInvalidDeviceGroupNameCharacters(groupName);
-    }
-
-    public static void validateGroupName(String groupName) throws IllegalGroupNameException {
-
-        if (!isValidGroupName(groupName)) {
-            throw new IllegalGroupNameException(groupName);
         }
     }
 

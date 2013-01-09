@@ -8,7 +8,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 import com.cannontech.clientutils.CTILogger;
-import com.cannontech.common.util.CtiUtilities;
+import com.cannontech.common.util.SwingUtil;
 import com.cannontech.core.dao.DaoFactory;
 import com.cannontech.database.data.device.DeviceTypesFuncs;
 import com.cannontech.database.data.lite.LiteYukonPAObject;
@@ -313,12 +313,10 @@ public void JButtonSendAction_actionPerformed(java.util.EventObject newEvent)
 		 && DeviceTypesFuncs.hasDeviceScanRate(paobject.getPaoType().getDeviceTypeId()) )
 	{
 		long duration = 0;
-		
-		if( getJComboBoxTime().getSelectedIndex() > 0 )
-			duration = CtiUtilities.getIntervalComboBoxSecondsValue(
-								getJComboBoxTime() ).longValue();
-		
-		
+
+        if (getJComboBoxTime().getSelectedIndex() > 0)
+            duration = SwingUtil.getIntervalComboBoxSecondsValue(getJComboBoxTime()).longValue();
+
 		Command cmdMsg = new Command();
 		cmdMsg.setOperation( Command.ALTERNATE_SCAN_RATE );
 		cmdMsg.setPriority(14);

@@ -5,7 +5,9 @@ package com.cannontech.dbeditor.wizard.device.lmprogram;
  */
 
 import com.cannontech.common.editor.PropertyPanelEvent;
+import com.cannontech.common.gui.util.OkCancelDialog;
 import com.cannontech.common.pao.PaoType;
+import com.cannontech.common.util.SwingUtil;
 import com.cannontech.database.data.device.lm.LMProgramDirect;
 import com.cannontech.database.db.device.lm.GearControlMethod;
 import com.cannontech.database.db.device.lm.IlmDefines;
@@ -492,10 +494,9 @@ public void jButtonCreate_ActionPerformed(java.awt.event.ActionEvent actionEvent
 
 
 	DirectModifyGearPanel p = new DirectModifyGearPanel(programType);
-	
-	com.cannontech.common.gui.util.OkCancelDialog d = new com.cannontech.common.gui.util.OkCancelDialog(
-		com.cannontech.common.util.CtiUtilities.getParentFrame(this), "Gear Creation", true, p );
-	
+
+	OkCancelDialog d = new OkCancelDialog(SwingUtil.getParentFrame(this), "Gear Creation", true, p);
+
 	d.setSize(500, 500);
 	d.setLocationRelativeTo( this );
 	d.setVisible(true);

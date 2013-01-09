@@ -7,6 +7,7 @@ import javax.swing.JPopupMenu;
 import com.cannontech.common.gui.panel.ManualChangeJPanel;
 import com.cannontech.common.gui.util.OkCancelDialog;
 import com.cannontech.common.util.CtiUtilities;
+import com.cannontech.common.util.SwingUtil;
 import com.cannontech.loadcontrol.LCUtils;
 import com.cannontech.loadcontrol.data.IGearProgram;
 import com.cannontech.loadcontrol.data.LMProgramBase;
@@ -46,8 +47,7 @@ public class PopUpPanel {
 	public void showDirectManualEntry( final int panelMode,
 			LMProgramBase[] prgArray ) 
 	{
-		final javax.swing.JDialog d = new javax.swing.JDialog(
-				CtiUtilities.getParentFrame(thisPopup.getInvoker()) );
+		final JDialog d = new JDialog(SwingUtil.getParentFrame(thisPopup.getInvoker()));
 
 		DirectControlJPanel panel = new DirectControlJPanel()
 		{
@@ -117,11 +117,8 @@ public class PopUpPanel {
 					if( !success || isCheckConstraints )
 					{
 						final ConstraintResponsePanel constrPanel = new ConstraintResponsePanel();
-						OkCancelDialog diag = new OkCancelDialog(
-							CtiUtilities.getParentFrame(thisPopup.getInvoker()),
-							"Results of Constraint Check",
-							true,
-							constrPanel );
+						OkCancelDialog diag = new OkCancelDialog(SwingUtil.getParentFrame(thisPopup.getInvoker()),
+							"Results of Constraint Check", true, constrPanel);
 
 						//add a "Successful check" output if there are not
 						// any constraints violated
@@ -178,7 +175,7 @@ public class PopUpPanel {
 	}
 
     public void showChangeGearOptions( LMProgramDirect currentProgram ) {
-        final JDialog d = new JDialog(CtiUtilities.getParentFrame(thisPopup.getInvoker()) );
+        final JDialog d = new JDialog(SwingUtil.getParentFrame(thisPopup.getInvoker()));
 
         DirectChangeGearJPanel panel = new DirectChangeGearJPanel() {
             public void exit() {
@@ -213,11 +210,8 @@ public class PopUpPanel {
                 if( !success )
                 {
                     final ConstraintResponsePanel constrPanel = new ConstraintResponsePanel();
-                    OkCancelDialog diag = new OkCancelDialog(
-                        CtiUtilities.getParentFrame(thisPopup.getInvoker()),
-                        "Results of Constraint Check",
-                        true,
-                        constrPanel );
+                    OkCancelDialog diag = new OkCancelDialog(SwingUtil.getParentFrame(thisPopup.getInvoker()),
+                        "Results of Constraint Check", true, constrPanel);
 
                     //add a "Successful check" output if there are not
                     // any constraints violated

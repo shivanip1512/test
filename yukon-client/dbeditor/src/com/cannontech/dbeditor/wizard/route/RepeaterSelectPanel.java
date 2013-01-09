@@ -2,6 +2,7 @@ package com.cannontech.dbeditor.wizard.route;
 
 import java.awt.Dimension;
 import java.awt.Font;
+import java.awt.Frame;
 import java.awt.GridBagConstraints;
 import java.util.List;
 
@@ -10,11 +11,12 @@ import javax.swing.ListModel;
 import javax.swing.SwingConstants;
 
 import com.cannontech.common.pao.PaoType;
+import com.cannontech.common.util.SwingUtil;
 import com.cannontech.database.data.device.DeviceTypesFuncs;
 import com.cannontech.database.data.lite.LiteYukonPAObject;
 import com.cannontech.database.data.route.CCURoute;
-import com.cannontech.database.data.route.RouteUsageHelper;
 import com.cannontech.database.data.route.RouteRole;
+import com.cannontech.database.data.route.RouteUsageHelper;
 import com.cannontech.database.db.route.RepeaterRoute;
 import com.cannontech.dbeditor.editor.regenerate.RoleConflictDialog;
 import com.cannontech.yukon.IDatabaseCache;
@@ -24,7 +26,7 @@ import com.cannontech.yukon.IDatabaseCache;
  */
 public class RepeaterSelectPanel extends com.cannontech.common.gui.util.DataInputPanel implements com.cannontech.common.gui.util.AddRemovePanelListener {
    private javax.swing.JLabel ivjRepeaterLabel = null;
-   private java.awt.Frame owner = com.cannontech.common.util.CtiUtilities.getParentFrame(this);
+   private Frame owner = SwingUtil.getParentFrame(this);
    private com.cannontech.common.gui.util.AddRemovePanel ivjRepeatersAddRemovePanel = null;
    private int rightListItemIndex = getRepeatersAddRemovePanel().rightListGetSelectedIndex();
    private boolean rightListDragging = false;

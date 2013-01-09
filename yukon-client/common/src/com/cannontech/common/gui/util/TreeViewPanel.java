@@ -31,6 +31,7 @@ import com.cannontech.clientutils.CTILogger;
 import com.cannontech.common.device.groups.service.DeviceGroupRenderer;
 import com.cannontech.common.gui.tree.CustomRenderJTree;
 import com.cannontech.common.util.CtiUtilities;
+import com.cannontech.common.util.SwingUtil;
 import com.cannontech.database.data.lite.LiteBase;
 import com.cannontech.database.data.lite.LiteFactory;
 import com.cannontech.database.data.lite.LitePoint;
@@ -218,12 +219,9 @@ private void initConnections()
 	getSortByComboBox().addItemListener(this);
 
 	getTree().addTreeWillExpandListener(this);
-	
-	dialog = new OkCancelDialog(
-		CtiUtilities.getParentFrame(TreeViewPanel.this),
-		"Search",
-		true, FND_PANEL );
-	
+
+	dialog = new OkCancelDialog(SwingUtil.getParentFrame(TreeViewPanel.this), "Search", true, FND_PANEL);
+
 	final AbstractAction searchAction = new AbstractAction()
 	{
 		public void actionPerformed(java.awt.event.ActionEvent e)
@@ -389,7 +387,7 @@ public void itemStateChanged(ItemEvent event) {
 
 			        if( itemToRestore != null )
 			        {
-			            TreePath selectPath = CtiUtilities.getTreePath( getTree(), itemToRestore );
+			            TreePath selectPath = SwingUtil.getTreePath(getTree(), itemToRestore);
 			            selectPath(model, selectPath);
 			        }
 			    }

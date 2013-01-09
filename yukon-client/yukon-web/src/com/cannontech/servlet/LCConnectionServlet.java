@@ -23,6 +23,7 @@ import javax.servlet.http.HttpSession;
 
 import com.cannontech.clientutils.CTILogger;
 import com.cannontech.common.util.CtiUtilities;
+import com.cannontech.common.util.SwingUtil;
 import com.cannontech.core.dao.AuthDao;
 import com.cannontech.core.service.DateFormattingService;
 import com.cannontech.core.service.DateFormattingService.DateFormatEnum;
@@ -381,8 +382,7 @@ private Map<String, Object> getOptionalParams( HttpServletRequest req )
 	Map<String, Object> optionalProps = new Hashtable<String, Object>(10);
 	
 	if( req.getParameter("duration") != null )
-		optionalProps.put( "duration",
-			CtiUtilities.getIntervalSecondsValue(req.getParameter("duration")) );
+		optionalProps.put( "duration", SwingUtil.getIntervalSecondsValue(req.getParameter("duration")) );
 
 	if( req.getParameter("constraint") != null )
 		optionalProps.put( "constraint", req.getParameter("constraint") );

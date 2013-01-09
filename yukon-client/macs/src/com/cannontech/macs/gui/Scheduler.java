@@ -4,12 +4,14 @@ package com.cannontech.macs.gui;
  * This type was created in VisualAge.
  */
 
+import java.awt.Frame;
 import java.awt.event.ActionEvent;
 
 import javax.swing.JRootPane;
 
 import com.cannontech.common.login.ClientSession;
 import com.cannontech.common.util.ClientRights;
+import com.cannontech.common.util.SwingUtil;
 import com.cannontech.message.macs.message.MACSCategoryChange;
 import com.cannontech.message.util.ConnStateChange;
 import com.cannontech.message.util.MessageEvent;
@@ -98,7 +100,7 @@ public static void displayScheduler( Scheduler scheduler, final JRootPane owner)
 	{
 		public void run()
 		{
-			java.awt.Frame f = com.cannontech.common.util.CtiUtilities.getParentFrame(mainPanel);
+			Frame f = SwingUtil.getParentFrame(mainPanel);
 	
 			if( f != null )
 				f.setTitle( mainPanel.getConnectionState() );
@@ -129,7 +131,7 @@ public void executeRefreshButton()
  */
 public void exportDataSet() 
 {
-	java.awt.Frame f = com.cannontech.common.util.CtiUtilities.getParentFrame( mainPanel );
+	Frame f = SwingUtil.getParentFrame(mainPanel);
 
 	com.cannontech.clientutils.commonutils.ModifiedDate date = new com.cannontech.clientutils.commonutils.ModifiedDate();
 	
@@ -254,7 +256,7 @@ public javax.swing.JPanel getMainJPanel()
 		{
 			public void run()
 			{
-				java.awt.Frame f = com.cannontech.common.util.CtiUtilities.getParentFrame(mainPanel);
+				Frame f = SwingUtil.getParentFrame(mainPanel);
 				
 				if( f != null )
 					f.setTitle( mainPanel.getConnectionState() );

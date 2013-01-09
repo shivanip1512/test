@@ -27,7 +27,7 @@ import com.cannontech.common.editor.PropertyPanelEvent;
 import com.cannontech.common.gui.util.DataInputPanel;
 import com.cannontech.common.gui.util.DataInputPanelListener;
 import com.cannontech.common.gui.util.TitleBorder;
-import com.cannontech.common.util.CtiUtilities;
+import com.cannontech.common.util.SwingUtil;
 import com.cannontech.core.dao.DaoFactory;
 import com.cannontech.database.Transaction;
 import com.cannontech.database.cache.DefaultDatabaseCache;
@@ -36,7 +36,6 @@ import com.cannontech.database.data.lite.LitePoint;
 import com.cannontech.database.data.lite.LiteState;
 import com.cannontech.database.data.lite.LiteStateGroup;
 import com.cannontech.database.data.lite.LiteYukonImage;
-import com.cannontech.database.data.point.PointTypes;
 import com.cannontech.database.db.CTIDbChange;
 import com.cannontech.database.db.DBPersistent;
 import com.cannontech.dbeditor.wizard.state.YukonImagePanel;
@@ -1252,7 +1251,7 @@ public void actionPerformed(ActionEvent e)
     {
     JButton button = (JButton)e.getSource();
     
-    Frame parent = CtiUtilities.getParentFrame(StateImageEditorPanel.this);
+    Frame parent = SwingUtil.getParentFrame(StateImageEditorPanel.this);
     final javax.swing.JDialog d = new javax.swing.JDialog(parent);
 
     YukonImagePanel yPanel = new YukonImagePanel(null)

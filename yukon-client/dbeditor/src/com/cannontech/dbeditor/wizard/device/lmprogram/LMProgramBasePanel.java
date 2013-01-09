@@ -9,11 +9,11 @@ import java.util.Collections;
 import com.cannontech.common.gui.unchanging.DoubleRangeDocument;
 import com.cannontech.common.gui.util.TextFieldDocument;
 import com.cannontech.common.pao.PaoType;
+import com.cannontech.common.pao.PaoUtils;
 import com.cannontech.database.data.device.lm.LMFactory;
 import com.cannontech.database.data.device.lm.LMProgramBase;
 import com.cannontech.database.data.device.lm.LMProgramDirect;
 import com.cannontech.database.data.lite.LiteComparators;
-import com.cannontech.database.data.pao.PAOGroups;
 import com.cannontech.yukon.IDatabaseCache;
 
 public class LMProgramBasePanel extends com.cannontech.common.gui.util.DataInputPanel implements java.awt.event.ActionListener, javax.swing.event.CaretListener {
@@ -501,7 +501,7 @@ private javax.swing.JTextField getJTextFieldName() {
 			ivjJTextFieldName.setDocument(
 					new TextFieldDocument(
 						TextFieldDocument.MAX_DEVICE_NAME_LENGTH,
-						TextFieldDocument.INVALID_CHARS_PAO) );
+						PaoUtils.ILLEGAL_NAME_CHARS) );
 			
 			// user code end
 		} catch (java.lang.Throwable ivjExc) {

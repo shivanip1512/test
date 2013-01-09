@@ -1,6 +1,7 @@
 package com.cannontech.palm.client;
 
 import java.awt.Color;
+import java.awt.Frame;
 import java.awt.event.ActionListener;
 import java.awt.event.MouseListener;
 import java.io.File;
@@ -9,6 +10,8 @@ import java.io.FileOutputStream;
 import java.io.IOException;
 import java.util.Properties;
 import java.util.Vector;
+
+import com.cannontech.common.util.SwingUtil;
 //==============================================================================================
 //Second attempt at an app that builds the files the conduit looks for to config the Palm-RSU
 //Creation date: (6/14/2001 10:18:16 AM)
@@ -3432,7 +3435,7 @@ public void menu_Load_ActionPerformed(java.awt.event.ActionEvent actionEvent)
 	if( actionEvent.getSource() == getMenu_Load() )
 	{
 		//This will need to be updated someday for a new version of swing
-		java.awt.Frame parent = com.cannontech.common.util.CtiUtilities.getParentFrame(this);
+		Frame parent = SwingUtil.getParentFrame(this);
 		javax.swing.JFileChooser fileChooser = new javax.swing.JFileChooser();
 
 //		fileChooser.setSelectedFile( new java.io.File(CONFIG_FILENAME) );
@@ -3468,7 +3471,7 @@ public void menu_Save_ActionPerformed(java.awt.event.ActionEvent actionEvent)
 	if( actionEvent.getSource() == getMenu_Save() )
 	{
 		//This will need to be updated someday for a new version of swing
-		java.awt.Frame parent = com.cannontech.common.util.CtiUtilities.getParentFrame(this);
+		Frame parent = SwingUtil.getParentFrame(this);
 		javax.swing.JFileChooser fileChooser = new javax.swing.JFileChooser();
 
 		fileChooser.setSelectedFile( new java.io.File(CONFIG_FILENAME) );

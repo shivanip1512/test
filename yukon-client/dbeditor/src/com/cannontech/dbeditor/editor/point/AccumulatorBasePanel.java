@@ -6,7 +6,7 @@ import javax.swing.JComboBox;
 import javax.swing.JLabel;
 import javax.swing.JPanel;
 
-import com.cannontech.common.util.CtiUtilities;
+import com.cannontech.common.util.SwingUtil;
 import com.cannontech.core.dao.DaoFactory;
 import com.cannontech.database.cache.DefaultDatabaseCache;
 import com.cannontech.database.data.lite.LiteStateGroup;
@@ -356,7 +356,7 @@ public Object getValue(Object val)
     }else {
 		point.getPoint().setArchiveType((String) getArchiveTypeComboBox().getSelectedItem());
     }
-	point.getPoint().setArchiveInterval(CtiUtilities.getIntervalComboBoxSecondsValue(getArchiveIntervalComboBox()));
+	point.getPoint().setArchiveInterval(getIntervalComboBoxSecondsValue(getArchiveIntervalComboBox()));
     LiteStateGroup stateGroup = (LiteStateGroup) getStateGroupComboBox().getSelectedItem();
     point.getPoint().setStateGroupID( new Integer(stateGroup.getStateGroupID()) );
 
@@ -572,7 +572,7 @@ public void setValue(Object val)
 		if (((String) getArchiveTypeComboBox().getItemAt(i)).equalsIgnoreCase(archiveType)) {
 			getArchiveTypeComboBox().setSelectedIndex(i);
 			if (getArchiveIntervalComboBox().isEnabled()) {
-				CtiUtilities.setIntervalComboBoxSelectedItem(getArchiveIntervalComboBox(), archiveInteger.intValue());
+			    SwingUtil.setIntervalComboBoxSelectedItem(getArchiveIntervalComboBox(), archiveInteger.intValue());
             }
 			break;
 		}

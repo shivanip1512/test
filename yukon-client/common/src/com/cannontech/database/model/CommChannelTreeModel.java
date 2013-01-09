@@ -1,6 +1,7 @@
 package com.cannontech.database.model;
 
 import java.util.Collections;
+import java.util.Comparator;
 import java.util.List;
 import java.util.Vector;
 
@@ -153,10 +154,56 @@ public class CommChannelTreeModel extends DBTreeModel {
             || deviceClass == DeviceClasses.GRID || deviceClass == DeviceClasses.SYSTEM);
     }
 
+    /**
+     * This method first sorts list of objects using the passed in comparator.
+     * Then, it uses a binary search to find the first instance of the key.
+     * If there is more elements that equal key, then the algorithm walks
+     * backwards through the sorted list until it reaches the beginning of
+     * occurrences of key. Then each occurrence of key is returned
+     * in a List.
+     */
+    private final static <T> List<T> binarySearchRepetition(List<T> listToBeSorted, T key, Comparator<T> comp,
+            List<T> destList) {
+        destList.clear();
+
+        // do the sort and search here
+        Collections.sort(listToBeSorted, comp);
+        int loc = Collections.binarySearch(listToBeSorted, key, // must have the needed ID set in
+                                                                // this key that comp uses!!
+            comp);
+
+        int listSize = listToBeSorted.size();
+
+        // only loop if there is a found item
+        if (loc >= 0) {
+            // walk back thru the list and make sure we
+            // have the first occurrence of the ID
+            for (int j = (loc - 1); j >= 0; j--) {
+                if (comp.compare(listToBeSorted.get(j), key) == 0) { // is equal
+                    loc--;
+                } else {
+                    break;
+                }
+            }
+
+            // the element in the location loc SHOULD/MUST be an instance of
+            // what we are looking for!
+            for (; loc < listSize; loc++) {
+                if (comp.compare(listToBeSorted.get(loc), key) == 0) { // is equal
+                    destList.add(listToBeSorted.get(loc));
+                } else {
+                    break; // we've gone past all elements since they are sorted, get out of the loop
+                }
+            }
+        }
+
+        return destList;
+    }
+
     private boolean createPaoChildList(List<LiteYukonPAObject> paos, List<LiteYukonPAObject> destList) {
         // searches and sorts the list!
-        CtiUtilities.binarySearchRepetition(paos, DUMMY_LITE_PAO, // must have the needed PortID set!!
-        LiteComparators.litePaoPortIDComparator, destList);
+        // must have the needed PortID set!!
+        binarySearchRepetition(paos, DUMMY_LITE_PAO, LiteComparators.litePaoPortIDComparator, destList);
 
         return destList.size() > 0;
     }

@@ -5,6 +5,8 @@ package com.cannontech.dbeditor.wizard.device.lmcontrolarea;
  */
 
 import com.cannontech.common.editor.PropertyPanelEvent;
+import com.cannontech.common.gui.util.OkCancelDialog;
+import com.cannontech.common.util.SwingUtil;
 import com.cannontech.database.db.device.lm.LMControlAreaTrigger;
 
 public class LMControlAreaTriggerPanel extends com.cannontech.common.gui.util.DataInputPanel implements com.cannontech.common.gui.util.DataInputPanelListener, java.awt.event.ActionListener, java.awt.event.ItemListener 
@@ -491,8 +493,7 @@ public void jButtonNewTrigger_ActionPerformed(java.awt.event.ActionEvent actionE
 
 
 	LMControlAreaTriggerModifyPanel p = new LMControlAreaTriggerModifyPanel();
-	com.cannontech.common.gui.util.OkCancelDialog d = new com.cannontech.common.gui.util.OkCancelDialog(
-		com.cannontech.common.util.CtiUtilities.getParentFrame(this), "Trigger Creation", true, p );
+	OkCancelDialog d = new OkCancelDialog(SwingUtil.getParentFrame(this), "Trigger Creation", true, p);
 
 	
 	d.setSize( (int)p.getSize().getWidth(), (int) p.getSize().getHeight() );	

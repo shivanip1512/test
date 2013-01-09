@@ -1,5 +1,6 @@
 package com.cannontech.dbeditor.editor.device;
 
+import com.cannontech.common.util.SwingUtil;
 import com.cannontech.database.data.device.MCTIEDBase;
 
 /**
@@ -491,7 +492,7 @@ public Object getValue(Object val) {
 	MCTIEDBase mctIED = (MCTIEDBase)val;
 
 	mctIED.getDeviceMCTIEDPort().setConnectedIED((String)getConnectedIEDComboBox().getSelectedItem());
-	mctIED.getDeviceMCTIEDPort().setIEDScanRate(com.cannontech.common.util.CtiUtilities.getIntervalComboBoxSecondsValue(getIEDScanRateComboBox()));
+	mctIED.getDeviceMCTIEDPort().setIEDScanRate(SwingUtil.getIntervalComboBoxSecondsValue(getIEDScanRateComboBox()));
 
 	Object defaultDataClassSpinVal = getDefaultDataClassSpinner().getValue();
 	Integer defaultDataClass = null;
@@ -680,7 +681,7 @@ public void setValue(Object val) {
 		getPasswordTextField().setText(mctIED.getDeviceMCTIEDPort().getPassword());
 	
 	getConnectedIEDComboBox().setSelectedItem(mctIED.getDeviceMCTIEDPort().getConnectedIED());
-	com.cannontech.common.util.CtiUtilities.setIntervalComboBoxSelectedItem( getIEDScanRateComboBox(), mctIED.getDeviceMCTIEDPort().getIEDScanRate().intValue() );
+	SwingUtil.setIntervalComboBoxSelectedItem( getIEDScanRateComboBox(), mctIED.getDeviceMCTIEDPort().getIEDScanRate().intValue() );
 	getDefaultDataClassSpinner().setValue(mctIED.getDeviceMCTIEDPort().getDefaultDataClass());
 	getDefaultDataOffsetSpinner().setValue(mctIED.getDeviceMCTIEDPort().getDefaultDataOffset());
 	getRealTimeScanCheckBox().setSelected(mctIED.getDeviceMCTIEDPort().getRealTimeScan().charValue() == 'Y');

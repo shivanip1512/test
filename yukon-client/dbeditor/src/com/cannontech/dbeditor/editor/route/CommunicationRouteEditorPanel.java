@@ -8,6 +8,7 @@ import java.awt.GridBagConstraints;
 import java.util.List;
 
 import com.cannontech.common.pao.PaoType;
+import com.cannontech.common.util.SwingUtil;
 import com.cannontech.database.data.device.DeviceTypesFuncs;
 import com.cannontech.database.data.lite.LiteYukonPAObject;
 import com.cannontech.yukon.IDatabaseCache;
@@ -603,7 +604,7 @@ public void setValue(Object val) {
 	{
 		getDefaultRouteCheckBox().setVisible(true);
 		if( rb.getDefaultRoute() != null )
-			com.cannontech.common.util.CtiUtilities.setCheckBoxState(getDefaultRouteCheckBox(),
+			SwingUtil.setCheckBoxState(getDefaultRouteCheckBox(),
 				new Character(rb.getDefaultRoute().charAt(0)) );
 		else
 			getDefaultRouteCheckBox().setSelected(true);
@@ -612,7 +613,7 @@ public void setValue(Object val) {
 		{
 			com.cannontech.database.data.route.CCURoute ccuRoute = (com.cannontech.database.data.route.CCURoute)val;
 			if( ccuRoute.getDefaultRoute() != null )
-				com.cannontech.common.util.CtiUtilities.setCheckBoxState(getDefaultRouteCheckBox(),
+				SwingUtil.setCheckBoxState(getDefaultRouteCheckBox(),
 						new Character(ccuRoute.getDefaultRoute().charAt(0)) );
 			else
 				getDefaultRouteCheckBox().setSelected(true);

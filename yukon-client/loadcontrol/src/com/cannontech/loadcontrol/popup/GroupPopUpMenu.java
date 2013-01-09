@@ -9,6 +9,7 @@ import javax.swing.JOptionPane;
 
 import com.cannontech.common.gui.util.OkCancelDialog;
 import com.cannontech.common.util.CtiUtilities;
+import com.cannontech.common.util.SwingUtil;
 import com.cannontech.loadcontrol.LCUtils;
 import com.cannontech.loadcontrol.LoadControlClientConnection;
 import com.cannontech.loadcontrol.data.LMGroupBase;
@@ -80,11 +81,7 @@ public class GroupPopUpMenu extends javax.swing.JPopupMenu implements java.awt.e
 	private void executeTrueCycle(java.awt.event.ActionEvent e) 
 	{
 		GroupMsgPanel panel = new GroupMsgPanel();
-		OkCancelDialog dialog = new OkCancelDialog(
-				CtiUtilities.getParentFrame(this), 
-				"Enter Values", 
-				true, 
-				panel );
+		OkCancelDialog dialog = new OkCancelDialog(SwingUtil.getParentFrame(this), "Enter Values", true, panel);
 		
 		dialog.setLocationRelativeTo(this);
 		dialog.show();
@@ -120,11 +117,7 @@ public class GroupPopUpMenu extends javax.swing.JPopupMenu implements java.awt.e
 	private void executeSmartCycle(java.awt.event.ActionEvent e) 
 	{
 		GroupMsgPanel panel = new GroupMsgPanel();
-		OkCancelDialog dialog = new OkCancelDialog(
-				CtiUtilities.getParentFrame(this), 
-				"Enter Values", 
-				true, 
-				panel );
+		OkCancelDialog dialog = new OkCancelDialog(SwingUtil.getParentFrame(this), "Enter Values", true, panel);
 		
 		dialog.setLocationRelativeTo(this);
 		dialog.show();
@@ -232,7 +225,7 @@ public class GroupPopUpMenu extends javax.swing.JPopupMenu implements java.awt.e
 		{
 			int seconds = 0;
 			if( val instanceof String )  //a StringBuffer will be here if RippleGroup is used
-				seconds = CtiUtilities.getIntervalSecondsValue(val.toString()).intValue();
+				seconds = SwingUtil.getIntervalSecondsValue(val.toString()).intValue();
 
 			//send a message to the server telling it to SHED this group
 			LoadControlClientConnection.getInstance().write(

@@ -1,16 +1,12 @@
 package com.cannontech.dbeditor.editor.point;
 
-/**
- * This type was created in VisualAge.
- */
-
 import java.util.List;
 import java.util.Vector;
 
 import javax.swing.JComboBox;
 
 import com.cannontech.common.gui.util.TextFieldDocument;
-import com.cannontech.common.util.CtiUtilities;
+import com.cannontech.common.util.SwingUtil;
 import com.cannontech.core.dao.DaoFactory;
 import com.cannontech.database.data.lite.LitePoint;
 import com.cannontech.database.data.lite.LiteState;
@@ -1311,7 +1307,7 @@ public void setValue(Object val)
 	Integer closeTime1 = point.getPointStatusControl().getCloseTime1();
 	Integer closeTime2 = point.getPointStatusControl().getCloseTime2();
 
-	CtiUtilities.setSelectedInComboBox( getControlTypeComboBox(), controlType );
+    SwingUtil.setSelectedInComboBox(getControlTypeComboBox(), controlType);
 
 	getControlPointOffsetSpinner().setValue( controlPointOffset );
 	getCloseTime1Spinner().setValue( closeTime1 );

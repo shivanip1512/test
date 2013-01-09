@@ -3,7 +3,7 @@ package com.cannontech.dbeditor.wizard.device.lmcontrolarea;
  * This type was created in VisualAge.
  */
 
-import com.cannontech.common.util.CtiUtilities;
+import com.cannontech.common.util.SwingUtil;
 import com.cannontech.database.db.device.lm.IlmDefines;
 import com.cannontech.database.db.device.lm.LMControlAreaTrigger;
 
@@ -332,8 +332,7 @@ public Object getValue(Object o)
 	trigger.setProjectionType( getJComboBoxType().getSelectedItem().toString() );
 	trigger.setProjectionPoints( (Integer)getJComboBoxSamples().getSelectedItem() );
 
-	trigger.setProjectAheadDuration( 
-			CtiUtilities.getIntervalComboBoxSecondsValue(getJComboBoxAhead()) );
+	trigger.setProjectAheadDuration(SwingUtil.getIntervalComboBoxSecondsValue(getJComboBoxAhead()) );
 
 	return trigger;
 }
@@ -518,8 +517,6 @@ public void setValue(Object o)
 	getJComboBoxType().setSelectedItem( trigger.getProjectionType() );
 	getJComboBoxSamples().setSelectedItem( trigger.getProjectionPoints() );
 
-	CtiUtilities.setIntervalComboBoxSelectedItem( 
-				getJComboBoxAhead(),
-				trigger.getProjectAheadDuration().doubleValue() );
+	SwingUtil.setIntervalComboBoxSelectedItem(getJComboBoxAhead(), trigger.getProjectAheadDuration().doubleValue() );
 }
 }

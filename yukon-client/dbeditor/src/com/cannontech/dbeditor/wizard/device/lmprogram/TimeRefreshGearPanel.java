@@ -6,7 +6,10 @@ package com.cannontech.dbeditor.wizard.device.lmprogram;
  * @author: 
  */
 
+import javax.swing.JComboBox;
+
 import com.cannontech.common.util.StringUtils;
+import com.cannontech.common.util.SwingUtil;
 import com.cannontech.database.db.device.lm.LMProgramDirectGear;
  
 public class TimeRefreshGearPanel extends GenericGearPanel {
@@ -50,9 +53,9 @@ public class TimeRefreshGearPanel extends GenericGearPanel {
 	private javax.swing.JTextField ivjJTextFieldRampInInterval = null;
 	private javax.swing.JTextField ivjJTextFieldRampOutInterval = null;
 	IvjEventHandler ivjEventHandler = new IvjEventHandler();
-	private javax.swing.JComboBox ivjJComboBoxShedTimeDigits = null;
-	private javax.swing.JComboBox ivjJComboBoxShedTimeUnits = null;
-	private javax.swing.JComboBox ivjJComboBoxStopOrder = null;
+	private JComboBox<String> ivjJComboBoxShedTimeDigits = null;
+	private JComboBox<String> ivjJComboBoxShedTimeUnits = null;
+	private JComboBox<String> ivjJComboBoxStopOrder = null;
 	private javax.swing.JLabel ivjJLabelStopOrder = null;
 
 class IvjEventHandler implements java.awt.event.ActionListener {
@@ -457,15 +460,11 @@ private javax.swing.JComboBox getJComboBoxSendRateUnits() {
 	}
 	return ivjJComboBoxSendRateUnits;
 }
-/**
- * Return the JComboBoxSendRateDigits1 property value.
- * @return javax.swing.JComboBox
- */
-/* WARNING: THIS METHOD WILL BE REGENERATED. */
-private javax.swing.JComboBox getJComboBoxShedTimeDigits() {
+
+private JComboBox<String> getJComboBoxShedTimeDigits() {
 	if (ivjJComboBoxShedTimeDigits == null) {
 		try {
-			ivjJComboBoxShedTimeDigits = new javax.swing.JComboBox();
+			ivjJComboBoxShedTimeDigits = new JComboBox<>();
 			ivjJComboBoxShedTimeDigits.setName("JComboBoxShedTimeDigits");
 			ivjJComboBoxShedTimeDigits.setAlignmentY(java.awt.Component.TOP_ALIGNMENT);
 			ivjJComboBoxShedTimeDigits.setMaximumSize(new java.awt.Dimension(67, 23));
@@ -1566,14 +1565,14 @@ public Object getValue(Object o)
 	com.cannontech.database.data.device.lm.TimeRefreshGear t = (com.cannontech.database.data.device.lm.TimeRefreshGear)gear;
 
 	String shedTimeString = (String)(getJComboBoxShedTimeDigits().getSelectedItem()) + " " + (String)(getJComboBoxShedTimeUnits().getSelectedItem());	
-	t.setShedTime( com.cannontech.common.util.CtiUtilities.getIntervalSecondsValue( shedTimeString ) );
+    t.setShedTime(SwingUtil.getIntervalSecondsValue(shedTimeString));
 
 
 	t.setNumberOfGroups( getJComboBoxNumGroups().getSelectedItem() );
 
 	String sendRateString = (String)(getJComboBoxSendRateDigits().getSelectedItem()) + " " + (String)(getJComboBoxSendRateUnits().getSelectedItem());	
-	t.setRefreshRate( com.cannontech.common.util.CtiUtilities.getIntervalSecondsValue( sendRateString ) );
-		
+    t.setRefreshRate(SwingUtil.getIntervalSecondsValue(sendRateString));
+
 	t.setGroupSelectionMethod( StringUtils.removeChars( ' ', getJComboBoxGroupSelection().getSelectedItem().toString() ) );
 		
 	return t;
@@ -2121,12 +2120,12 @@ public void setValue(Object o)
 	if(t.getMethodOptionType().compareTo(LMProgramDirectGear.OPTION_COUNT_DOWN) == 0)
 	{
 		getJLabelShedTime().setText("Max Shed Time   ");
-		com.cannontech.common.util.CtiUtilities.setIntervalComboBoxSelectedItem( 
+		SwingUtil.setIntervalComboBoxSelectedItem( 
 			getJComboBoxShedTimeDigits(), getJComboBoxShedTimeUnits(), t.getShedTime().intValue() );
 	}
 	else
 	{
-		com.cannontech.common.util.CtiUtilities.setIntervalComboBoxSelectedItem( 
+	    SwingUtil.setIntervalComboBoxSelectedItem( 
 			getJComboBoxShedTimeDigits(), getJComboBoxShedTimeUnits(), t.getShedTime().intValue() );
 	}
 	
@@ -2138,7 +2137,7 @@ public void setValue(Object o)
 	else
 		getJComboBoxCycleCountSndType().setSelectedItem(StringUtils.addCharBetweenWords( ' ', LMProgramDirectGear.OPTION_FIXED_SHED));
 
-	com.cannontech.common.util.CtiUtilities.setIntervalComboBoxSelectedItem( 
+	SwingUtil.setIntervalComboBoxSelectedItem( 
 			getJComboBoxSendRateDigits(), getJComboBoxSendRateUnits(), t.getRefreshRate().intValue() );
 		
 	getJComboBoxGroupSelection().setSelectedItem( StringUtils.addCharBetweenWords( ' ', t.getGroupSelectionMethod() ) );

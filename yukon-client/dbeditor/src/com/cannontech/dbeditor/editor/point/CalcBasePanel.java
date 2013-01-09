@@ -6,13 +6,13 @@ package com.cannontech.dbeditor.editor.point;
 
 import java.util.List;
 
-import com.cannontech.common.util.CtiUtilities;
+import com.cannontech.common.util.SwingUtil;
 import com.cannontech.core.dao.DaoFactory;
 import com.cannontech.database.cache.DefaultDatabaseCache;
 import com.cannontech.database.data.lite.LiteStateGroup;
 import com.cannontech.database.data.lite.LiteUnitMeasure;
-import com.cannontech.database.data.point.PointArchiveType;
 import com.cannontech.database.data.point.CalculatedPoint;
+import com.cannontech.database.data.point.PointArchiveType;
 import com.cannontech.yukon.IDatabaseCache;
 
 public class CalcBasePanel extends com.cannontech.common.gui.util.DataInputPanel implements com.klg.jclass.util.value.JCValueListener, java.awt.event.ActionListener {
@@ -528,9 +528,9 @@ public Object getValue(Object val)
     }else {
 		calcPoint.getPoint().setArchiveType((String) getArchiveTypeComboBox().getSelectedItem());
     }
-	calcPoint.getPoint().setArchiveInterval(CtiUtilities.getIntervalComboBoxSecondsValue(getArchiveIntervalComboBox()));
+	calcPoint.getPoint().setArchiveInterval(SwingUtil.getIntervalComboBoxSecondsValue(getArchiveIntervalComboBox()));
 	calcPoint.getCalcBase().setUpdateType((String) getUpdateTypeComboBox().getSelectedItem());
-	calcPoint.getCalcBase().setPeriodicRate(CtiUtilities.getIntervalComboBoxSecondsValue(getPeriodicRateComboBox()));
+	calcPoint.getCalcBase().setPeriodicRate(SwingUtil.getIntervalComboBoxSecondsValue(getPeriodicRateComboBox()));
     
     if( getJCheckboxCalcQual().isSelected() ) {
         calcPoint.getCalcBase().setCalculateQuality('Y');
@@ -759,7 +759,7 @@ public void setValue(Object val) {
 		{
 			getArchiveTypeComboBox().setSelectedIndex(i);
 			if( getArchiveIntervalComboBox().isEnabled() )
-				CtiUtilities.setIntervalComboBoxSelectedItem(getArchiveIntervalComboBox(),archiveInteger.intValue());
+			    SwingUtil.setIntervalComboBoxSelectedItem(getArchiveIntervalComboBox(),archiveInteger.intValue());
 			break;
 		}
 	}
@@ -786,7 +786,7 @@ public void setValue(Object val) {
 		{
 			getUpdateTypeComboBox().setSelectedIndex(i);
 			if( getPeriodicRateComboBox().isEnabled() )
-				CtiUtilities.setIntervalComboBoxSelectedItem(getPeriodicRateComboBox(),periodicRate.intValue());
+			    SwingUtil.setIntervalComboBoxSelectedItem(getPeriodicRateComboBox(),periodicRate.intValue());
 			break;
 		}
 	}

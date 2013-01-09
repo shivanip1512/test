@@ -6,6 +6,7 @@ package com.cannontech.dbeditor.wizard.device.lmprogram;
 import com.cannontech.common.editor.PropertyPanelEvent;
 import com.cannontech.common.gui.util.TextFieldDocument;
 import com.cannontech.common.pao.PaoType;
+import com.cannontech.common.pao.PaoUtils;
 import com.cannontech.database.db.device.lm.GearControlMethod;
 import com.cannontech.database.db.device.lm.LMProgramDirectGear;
 
@@ -338,7 +339,7 @@ private javax.swing.JTextField getJTextFieldGearName() {
             ivjJTextFieldGearName.setDocument(
                     new TextFieldDocument(
                         TextFieldDocument.MAX_BASELINE_NAME_LENGTH,
-                        TextFieldDocument.INVALID_CHARS_PAO) );
+                        PaoUtils.ILLEGAL_NAME_CHARS) );
         } catch (java.lang.Throwable ivjExc) {
 
             handleException(ivjExc);

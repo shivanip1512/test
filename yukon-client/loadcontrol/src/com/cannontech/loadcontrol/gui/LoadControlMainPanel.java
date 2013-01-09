@@ -1,7 +1,9 @@
 package com.cannontech.loadcontrol.gui;
 
+import java.awt.Frame;
 import java.util.Hashtable;
 
+import javax.swing.JDialog;
 import javax.swing.JOptionPane;
 import javax.swing.event.TableModelListener;
 import javax.swing.table.TableModel;
@@ -12,6 +14,8 @@ import com.cannontech.common.gui.panel.ManualChangeJPanel;
 import com.cannontech.common.gui.util.OkCancelDialog;
 import com.cannontech.common.login.ClientSession;
 import com.cannontech.common.util.CtiUtilities;
+import com.cannontech.common.util.SwingUtil;
+import com.cannontech.debug.gui.ObjectInfoDialog;
 import com.cannontech.loadcontrol.LCUtils;
 import com.cannontech.loadcontrol.LoadControlClientConnection;
 import com.cannontech.loadcontrol.data.LMControlArea;
@@ -311,7 +315,7 @@ private void showContScenWindow( final int panelMode )
 			allProgs.put( prog.getYukonID(), prog );
 		}
 	
-	final javax.swing.JDialog d = new javax.swing.JDialog( CtiUtilities.getParentFrame(this) );
+	final JDialog d = new JDialog(SwingUtil.getParentFrame(this));
 	DirectControlJPanel panel = new DirectControlJPanel( allProgs )
 	{
 		public void exit()
@@ -365,11 +369,8 @@ private void showContScenWindow( final int panelMode )
 				if( !success )
 				{
 					final ConstraintResponsePanel constrPanel = new ConstraintResponsePanel();
-					OkCancelDialog diag = new OkCancelDialog(
-						CtiUtilities.getParentFrame(this),
-						"Results of Constraint Check",
-						true,
-						constrPanel );
+					OkCancelDialog diag = new OkCancelDialog(SwingUtil.getParentFrame(this),
+					    "Results of Constraint Check", true, constrPanel);
 
 					//set our responses
 					constrPanel.setValue( programResp );
@@ -407,11 +408,8 @@ private void showContScenWindow( final int panelMode )
                     
                     if(checkedButNoConstraintsViolated) {
                         final NoViolationResponsePanel noViolationsPanel = new NoViolationResponsePanel();
-                        OkCancelDialog diag = new OkCancelDialog(
-                            CtiUtilities.getParentFrame(this),
-                            "No Program Constraints Currently Violated",
-                            true,
-                            noViolationsPanel );
+                        OkCancelDialog diag = new OkCancelDialog(SwingUtil.getParentFrame(this),
+                            "No Program Constraints Currently Violated", true, noViolationsPanel);
     
                         //set our responses
                         noViolationsPanel.setValue( programResp );
@@ -577,9 +575,8 @@ public void executeRefreshButton() {
  * Creation date: (8/7/00 3:41:18 PM)
  */
 // This method is used to export a set of data to a file
-public void exportDataSet()
-{
-	java.awt.Frame f = CtiUtilities.getParentFrame( this );
+public void exportDataSet() {
+	Frame f = SwingUtil.getParentFrame(this);
 
 	com.cannontech.clientutils.commonutils.ModifiedDate date = new com.cannontech.clientutils.commonutils.ModifiedDate();
 	
@@ -1515,15 +1512,8 @@ public void setAlarmMute( boolean muted ) {}
 public void silenceAlarms() {}
 
 
-/**
- * Insert the method's description here.
- * Creation date: (4/5/00 4:29:59 PM)
- * Version: <version>
- */
-private void showDebugInfo( Object value ) 
-{
-	com.cannontech.debug.gui.ObjectInfoDialog d = new com.cannontech.debug.gui.ObjectInfoDialog(
-		CtiUtilities.getParentFrame(this) ); 
+private void showDebugInfo(Object value) {
+	ObjectInfoDialog d = new ObjectInfoDialog(SwingUtil.getParentFrame(this) ); 
 
 	d.setLocation( this.getLocationOnScreen() );
 	d.setModal( true );
@@ -1584,7 +1574,7 @@ public void update(java.util.Observable source, Object val)
 				// set the frames Title to a connected/not connected text
 				final String connectedString = getConnectionState();
 	
-				java.awt.Frame f = CtiUtilities.getParentFrame(LoadControlMainPanel.this);
+				Frame f = SwingUtil.getParentFrame(LoadControlMainPanel.this);
 				if( f != null ) {
 					f.setTitle(connectedString);
 				}

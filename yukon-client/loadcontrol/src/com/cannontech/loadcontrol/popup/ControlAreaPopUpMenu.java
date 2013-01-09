@@ -6,11 +6,13 @@ package com.cannontech.loadcontrol.popup;
  * @author: 
  */
 import java.awt.Dimension;
+import java.awt.Frame;
 
+import javax.swing.JDialog;
 import javax.swing.JOptionPane;
 
 import com.cannontech.common.gui.panel.ManualChangeJPanel;
-import com.cannontech.common.util.CtiUtilities;
+import com.cannontech.common.util.SwingUtil;
 import com.cannontech.loadcontrol.LoadControlClientConnection;
 import com.cannontech.loadcontrol.data.LMControlArea;
 import com.cannontech.loadcontrol.data.LMProgramBase;
@@ -234,7 +236,7 @@ private void showDirectManualEntry( final int panelMode )
  */
 private void showProgramAblementPanel( final int cmd ) 
 {
-	final javax.swing.JDialog d = new javax.swing.JDialog( CtiUtilities.getParentFrame(this.getInvoker()) );
+	final JDialog d = new JDialog(SwingUtil.getParentFrame(this.getInvoker()));
 	DirectControlJPanel panel = new DirectControlJPanel()
 	{
 		public void exit()
@@ -493,7 +495,7 @@ private void jMenuItemDailyTime_ActionPerformed(java.awt.event.ActionEvent actio
 {
 	if( !getLoadControlArea().getDisableFlag().booleanValue() )
 	{
-		java.awt.Frame frame = CtiUtilities.getParentFrame( this.getInvoker() );
+		Frame frame = SwingUtil.getParentFrame(this.getInvoker());
 		java.awt.Cursor savedCursor = null;
 		
 		try
@@ -651,7 +653,7 @@ private void jMenuItemResetPeak_ActionPerformed(java.awt.event.ActionEvent actio
  */
 private void jMenuItemTriggers_ActionPerformed(java.awt.event.ActionEvent actionEvent) 
 {
-	java.awt.Frame frame = CtiUtilities.getParentFrame( this.getInvoker() );
+	Frame frame = SwingUtil.getParentFrame(this.getInvoker());
 	java.awt.Cursor savedCursor = null;
 	
 	try

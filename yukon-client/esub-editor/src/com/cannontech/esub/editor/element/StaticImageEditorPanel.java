@@ -8,7 +8,7 @@ import com.cannontech.clientutils.CTILogger;
 import com.cannontech.common.editor.PropertyPanelEvent;
 import com.cannontech.common.gui.util.DataInputPanel;
 import com.cannontech.common.gui.util.DataInputPanelListener;
-import com.cannontech.common.util.CtiUtilities;
+import com.cannontech.common.util.SwingUtil;
 import com.cannontech.database.Transaction;
 import com.cannontech.database.data.lite.LiteYukonImage;
 import com.cannontech.database.db.CTIDbChange;
@@ -235,8 +235,7 @@ public class StaticImageEditorPanel extends DataInputPanel {
 
 		getImageNameLabel().addMouseListener(new MouseAdapter() {
 			public void mousePressed(MouseEvent e) {
-				Frame parent =
-					CtiUtilities.getParentFrame(StaticImageEditorPanel.this);
+				Frame parent = SwingUtil.getParentFrame(StaticImageEditorPanel.this);
 				final javax.swing.JDialog d = new javax.swing.JDialog(parent);
 
 				com.cannontech.dbeditor.wizard.state.YukonImagePanel yPanel =

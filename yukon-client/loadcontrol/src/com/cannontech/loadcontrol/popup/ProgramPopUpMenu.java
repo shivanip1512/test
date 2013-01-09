@@ -5,9 +5,12 @@ package com.cannontech.loadcontrol.popup;
  * Creation date: (1/21/2001 4:40:03 PM)
  * @author: 
  */
+import java.awt.Frame;
+
 import javax.swing.JMenuItem;
 import javax.swing.JOptionPane;
 
+import com.cannontech.common.util.SwingUtil;
 import com.cannontech.loadcontrol.LCUtils;
 import com.cannontech.loadcontrol.LoadControlClientConnection;
 import com.cannontech.loadcontrol.data.LMProgramBase;
@@ -306,7 +309,7 @@ private void showCurtailManualEntry()
 	}
 	else
 	{
-		java.awt.Frame frame = com.cannontech.common.util.CtiUtilities.getParentFrame( this.getInvoker() );
+		Frame frame = SwingUtil.getParentFrame(this.getInvoker());
 		java.awt.Cursor savedCursor = null;
 		
 		try

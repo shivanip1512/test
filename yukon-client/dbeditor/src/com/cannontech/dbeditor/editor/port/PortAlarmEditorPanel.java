@@ -4,7 +4,7 @@ package com.cannontech.dbeditor.editor.port;
  * This type was created in VisualAge.
  */
 
- import com.cannontech.common.util.CtiUtilities;
+ import com.cannontech.common.util.SwingUtil;
 import com.cannontech.database.data.port.DirectPort;
 import com.cannontech.database.db.port.CommPort;
  
@@ -453,8 +453,8 @@ public void setValue(Object val) {
 	Character performanceAlarm = cp.getPerformanceAlarm();
 	Integer performThreshold = cp.getPerformThreshold();
 	
-	CtiUtilities.setCheckBoxState( getAlarmInhibitCheckBox(), alarmInhibit );
-	CtiUtilities.setCheckBoxState( getPerformanceAlarmCheckBox(), performanceAlarm );
+	SwingUtil.setCheckBoxState( getAlarmInhibitCheckBox(), alarmInhibit );
+	SwingUtil.setCheckBoxState( getPerformanceAlarmCheckBox(), performanceAlarm );
 	getPerformanceThresholdTextField().setText( performThreshold.toString() );		
 }
 }

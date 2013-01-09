@@ -1,5 +1,9 @@
 package com.cannontech.palm.test;
 
+import java.awt.Frame;
+
+import com.cannontech.common.util.SwingUtil;
+
 
 //================================================================================================
 // This is just a wrapper for daPanel (which is the Prsu config file builder) 
@@ -485,7 +489,7 @@ public void Load_ActionPerformed(java.awt.event.ActionEvent actionEvent)
 	if( actionEvent.getSource() == getMenuItem_Load() )
 	{
 		//This will need to be updated someday for a new version of swing
-		java.awt.Frame parent = com.cannontech.common.util.CtiUtilities.getParentFrame(this);
+		Frame parent = SwingUtil.getParentFrame(this);
 		javax.swing.JFileChooser fileChooser = new javax.swing.JFileChooser();
 
 		if (fileChooser.showOpenDialog(this) == javax.swing.JFileChooser.APPROVE_OPTION)
@@ -545,7 +549,7 @@ public void Save_ActionPerformed(java.awt.event.ActionEvent actionEvent)
 	if( actionEvent.getSource() == getMenuItem_Save() )
 	{
 		//This will need to be updated someday for a new version of swing
-		java.awt.Frame parent = com.cannontech.common.util.CtiUtilities.getParentFrame(this);
+		Frame parent = SwingUtil.getParentFrame(this);
 		javax.swing.JFileChooser fileChooser = new javax.swing.JFileChooser();
 
 		fileChooser.setSelectedFile( new java.io.File(CONFIG_FILENAME) );

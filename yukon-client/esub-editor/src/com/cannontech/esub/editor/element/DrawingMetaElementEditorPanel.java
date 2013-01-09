@@ -18,7 +18,7 @@ import javax.swing.SpinnerNumberModel;
 
 import com.cannontech.clientutils.CTILogger;
 import com.cannontech.common.gui.util.DataInputPanel;
-import com.cannontech.common.util.CtiUtilities;
+import com.cannontech.common.util.SwingUtil;
 import com.cannontech.core.dao.DaoFactory;
 import com.cannontech.database.data.lite.LiteYukonRole;
 import com.cannontech.esub.editor.EditorPrefs;
@@ -39,7 +39,7 @@ public class DrawingMetaElementEditorPanel extends DataInputPanel {
     private JLabel ivjRoleLabel;
     private JLabel ivjWidthLabel;
     private JLabel ivjWidthPixelLabel;
-    private JComboBox ivjYukonRoleComboBox;
+    private JComboBox<LiteYukonRole> ivjYukonRoleComboBox;
 
     private JSpinner widthSpinner;
     private JSpinner heightSpinner;
@@ -330,10 +330,10 @@ public class DrawingMetaElementEditorPanel extends DataInputPanel {
      * Return the YukonRoleComboBox property value.
      * @return javax.swing.JComboBox
      */
-    private javax.swing.JComboBox getYukonRoleComboBox() {
+    private JComboBox<LiteYukonRole> getYukonRoleComboBox() {
         if (ivjYukonRoleComboBox == null) {
             try {
-                ivjYukonRoleComboBox = new javax.swing.JComboBox();
+                ivjYukonRoleComboBox = new JComboBox<>();
                 ivjYukonRoleComboBox.setName("YukonRoleComboBox");
                 LiteYukonRole r = DaoFactory.getAuthDao().getRole(EsubDrawingsRole.ROLEID);
                 ivjYukonRoleComboBox.addItem(r);
@@ -394,7 +394,7 @@ public class DrawingMetaElementEditorPanel extends DataInputPanel {
      */ 
     public static void main(java.lang.String[] args) {
         try {
-            CtiUtilities.setLaF();
+            SwingUtil.setLaF();
             javax.swing.JFrame frame = new javax.swing.JFrame();
             DrawingMetaElementEditorPanel aDrawingPropertiesPanel;
             aDrawingPropertiesPanel = new DrawingMetaElementEditorPanel(); 

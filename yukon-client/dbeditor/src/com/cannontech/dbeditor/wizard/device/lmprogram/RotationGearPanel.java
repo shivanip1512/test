@@ -5,7 +5,10 @@ package com.cannontech.dbeditor.wizard.device.lmprogram;
  * @author: 
  */
 
+import javax.swing.JComboBox;
+
 import com.cannontech.common.util.StringUtils;
+import com.cannontech.common.util.SwingUtil;
 import com.cannontech.database.db.device.lm.LMProgramDirectGear;
  
 public class RotationGearPanel extends GenericGearPanel {
@@ -336,11 +339,10 @@ private javax.swing.JComboBox getJComboBoxSendRateUnits() {
  * Return the JComboBoxShedTime property value.
  * @return javax.swing.JComboBox
  */
-/* WARNING: THIS METHOD WILL BE REGENERATED. */
-private javax.swing.JComboBox getJComboBoxShedTime() {
+private JComboBox<String> getJComboBoxShedTime() {
 	if (ivjJComboBoxShedTime == null) {
 		try {
-			ivjJComboBoxShedTime = new javax.swing.JComboBox();
+			ivjJComboBoxShedTime = new JComboBox<>();
 			ivjJComboBoxShedTime.setName("JComboBoxShedTime");
 			ivjJComboBoxShedTime.setPreferredSize(new java.awt.Dimension(137, 23));
 			ivjJComboBoxShedTime.setAlignmentX(java.awt.Component.LEFT_ALIGNMENT);
@@ -1027,12 +1029,12 @@ public Object getValue(Object o)
 
 	com.cannontech.database.data.device.lm.RotationGear r = (com.cannontech.database.data.device.lm.RotationGear)gear;
 
-	r.setShedTime( com.cannontech.common.util.CtiUtilities.getIntervalComboBoxSecondsValue( getJComboBoxShedTime() ) );
+    r.setShedTime(SwingUtil.getIntervalComboBoxSecondsValue(getJComboBoxShedTime()));
 
 	r.setNumberOfGroups( getJComboBoxNumGroups().getSelectedItem() );
 
 	String sendRateString = (String)(getJComboBoxSendRateDigits().getSelectedItem()) + " " + (String)(getJComboBoxSendRateUnits().getSelectedItem());	
-	r.setSendRate( com.cannontech.common.util.CtiUtilities.getIntervalSecondsValue( sendRateString ) );
+    r.setSendRate(SwingUtil.getIntervalSecondsValue(sendRateString));
 		
 	r.setGroupSelectionMethod( StringUtils.removeChars( ' ', getJComboBoxGroupSelection().getSelectedItem().toString() ) );
 	
@@ -1373,12 +1375,12 @@ public void setValue(Object o)
 
 	com.cannontech.database.data.device.lm.RotationGear r = (com.cannontech.database.data.device.lm.RotationGear)gear;
 
-	com.cannontech.common.util.CtiUtilities.setIntervalComboBoxSelectedItem( getJComboBoxShedTime(), r.getShedTime().intValue() );
+    SwingUtil.setIntervalComboBoxSelectedItem(getJComboBoxShedTime(), r.getShedTime().intValue());
 
 	getJComboBoxNumGroups().setSelectedIndex( r.getNumberOfGroups() );
 
-	com.cannontech.common.util.CtiUtilities.setIntervalComboBoxSelectedItem( 
-			getJComboBoxSendRateDigits(), getJComboBoxSendRateUnits(), r.getSendRate().intValue() );
+    SwingUtil.setIntervalComboBoxSelectedItem(getJComboBoxSendRateDigits(), getJComboBoxSendRateUnits(),
+        r.getSendRate().intValue());
 		
 	getJComboBoxGroupSelection().setSelectedItem( StringUtils.addCharBetweenWords( ' ', r.getGroupSelectionMethod() ) );
 	

@@ -20,7 +20,7 @@ import javax.swing.event.TreeSelectionListener;
 import com.cannontech.clientutils.CTILogger;
 import com.cannontech.common.gui.util.DataInputPanel;
 import com.cannontech.common.gui.util.TitleBorder;
-import com.cannontech.common.util.CtiUtilities;
+import com.cannontech.common.util.SwingUtil;
 import com.cannontech.core.dao.DaoFactory;
 import com.cannontech.core.dao.NotFoundException;
 import com.cannontech.database.data.lite.LitePoint;
@@ -1103,31 +1103,31 @@ public void actionPerformed(ActionEvent e) {
             getBlinkCheckBox().setEnabled(true);
         }
     }else if(e.getSource() == getColorPointButton()) {
-        pointPanelDialog = new JDialog(CtiUtilities.getParentFrame(this), true);
+        pointPanelDialog = new JDialog(SwingUtil.getParentFrame(this), true);
         pointPanelDialog.setContentPane(getTextColorPointPanel());
         pointPanelDialog.setSize(new java.awt.Dimension(540, 630));
         getTextColorPointPanel().setValue(dynamicText);
         pointPanelDialog.setVisible(true);
     }else if(e.getSource() == getEnableControlPointButton()) {
-        pointPanelDialog = new JDialog(CtiUtilities.getParentFrame(this), true);
+        pointPanelDialog = new JDialog(SwingUtil.getParentFrame(this), true);
         pointPanelDialog.setContentPane(getEnableControlPointPanel());
         pointPanelDialog.setSize(new java.awt.Dimension(300, 500));
         pointPanelDialog.setVisible(true);
     }else if(e.getSource() == getBlinkPointButton()) {
-        pointPanelDialog = new JDialog(CtiUtilities.getParentFrame(this), true);
+        pointPanelDialog = new JDialog(SwingUtil.getParentFrame(this), true);
         pointPanelDialog.setContentPane(getBlinkPointPanel());
         pointPanelDialog.setSize(new java.awt.Dimension(540, 630));
         getBlinkPointPanel().setValue(dynamicText);
         pointPanelDialog.setVisible(true);
     }else if(e.getSource() == getTextPointButton()) {
         if(getDisplayAttributesComboBox().getSelectedItem().toString().equals(ATTRIBUTE_CURRENT_STATE)){
-            pointPanelDialog = new JDialog(CtiUtilities.getParentFrame(this), true);
+            pointPanelDialog = new JDialog(SwingUtil.getParentFrame(this), true);
             pointPanelDialog.setContentPane(getTextPointPanel());
             pointPanelDialog.setSize(new java.awt.Dimension(540, 630));
             getTextPointPanel().setValue(dynamicText);
             pointPanelDialog.setVisible(true);
         } else {
-            pointPanelDialog = new JDialog(CtiUtilities.getParentFrame(this), true);
+            pointPanelDialog = new JDialog(SwingUtil.getParentFrame(this), true);
             pointPanelDialog.setContentPane(getPointSelectionPropertyPanel());
             pointPanelDialog.setSize(new java.awt.Dimension(300, 500));
             pointPanelDialog.setVisible(true);

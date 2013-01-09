@@ -1,5 +1,6 @@
 package com.cannontech.common.pao;
 
+import org.apache.commons.lang.StringUtils;
 import org.apache.commons.lang.Validate;
 
 import com.cannontech.common.device.model.SimpleDevice;
@@ -18,6 +19,8 @@ import com.google.common.collect.Maps;
 import com.google.common.collect.Multimaps;
 
 public class PaoUtils {
+    public final static char[] ILLEGAL_NAME_CHARS = {'\'', ',', '|', '"'};
+
     private static final Function<PaoIdentifier, Integer> paoIdentifierToPaoIdFunction = new Function<PaoIdentifier, Integer>() {
         public Integer apply(PaoIdentifier from) {
             return from.getPaoIdentifier().getPaoId();
@@ -150,5 +153,9 @@ public class PaoUtils {
                 return from.getPao();
             }
         });
+    }
+
+    public static boolean isValidPaoName(String name) {
+        return StringUtils.containsNone(name, ILLEGAL_NAME_CHARS);
     }
 }

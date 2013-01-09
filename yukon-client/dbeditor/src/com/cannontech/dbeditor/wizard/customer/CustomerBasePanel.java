@@ -16,6 +16,7 @@ import com.cannontech.common.gui.util.DataInputPanelListener;
 import com.cannontech.common.gui.util.OkCancelDialog;
 import com.cannontech.common.util.CtiUtilities;
 import com.cannontech.common.util.SimpleCallback;
+import com.cannontech.common.util.SwingUtil;
 import com.cannontech.core.dao.ContactDao;
 import com.cannontech.core.dao.CustomerDao;
 import com.cannontech.core.dao.DaoFactory;
@@ -554,12 +555,8 @@ public boolean isInputValid()
 public void jButtonNewContact_ActionPerformed(java.awt.event.ActionEvent actionEvent) 
 {
 	QuickContactPanel qPanel = new QuickContactPanel();
-	
-	OkCancelDialog dialog = new OkCancelDialog(
-			CtiUtilities.getParentFrame( this ),
-			"New Contact",
-			true,
-			qPanel );
+
+    OkCancelDialog dialog = new OkCancelDialog(SwingUtil.getParentFrame(this), "New Contact", true, qPanel);
 
 	dialog.setSize(350, 200);
    dialog.setLocationRelativeTo( this );

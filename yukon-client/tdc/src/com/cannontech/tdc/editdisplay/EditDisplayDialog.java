@@ -11,7 +11,7 @@ import java.math.BigDecimal;
 
 import javax.swing.JCheckBox;
 
-import com.cannontech.common.util.CtiUtilities;
+import com.cannontech.common.util.SwingUtil;
 import com.cannontech.tdc.TDCMainFrame;
 import com.cannontech.tdc.createdisplay.ColumnData;
 import com.cannontech.tdc.createdisplay.CreateTopPanel;
@@ -457,7 +457,7 @@ private com.cannontech.common.gui.util.OkCancelPanel getOkCancelPanel() {
 public com.cannontech.tdc.createdisplay.TemplatePanel getTemplatePanel() {
 	if (ivjTemplatePanel == null) {
 		try {
-			ivjTemplatePanel = new com.cannontech.tdc.createdisplay.TemplatePanel(CtiUtilities.getParentFrame(this));
+			ivjTemplatePanel = new com.cannontech.tdc.createdisplay.TemplatePanel(SwingUtil.getParentFrame(this));
 			ivjTemplatePanel.setName("TemplatePanel");
 			ivjTemplatePanel.setPreferredSize(new java.awt.Dimension(611, 94));
 			ivjTemplatePanel.setMinimumSize(new java.awt.Dimension(611, 94));
@@ -776,7 +776,7 @@ public void updateCurrentDisplay(boolean templatize) {
     	updateDisplayTable();
     	
     	removeAllColumnsFromDB();
-        Frame owner = CtiUtilities.getParentFrame(this);
+        Frame owner = SwingUtil.getParentFrame(this);
         if (templatize)
         {
             Integer dispNum = new Integer ((int)currentDisplayNumber);

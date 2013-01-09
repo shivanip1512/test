@@ -38,10 +38,12 @@ import com.cannontech.common.model.PaoProperty;
 import com.cannontech.common.model.PaoPropertyName;
 import com.cannontech.common.pao.PaoIdentifier;
 import com.cannontech.common.pao.PaoType;
+import com.cannontech.common.pao.PaoUtils;
 import com.cannontech.common.pao.definition.model.PaoTag;
 import com.cannontech.common.rfn.message.RfnIdentifier;
 import com.cannontech.common.rfn.model.RfnDevice;
 import com.cannontech.common.util.CtiUtilities;
+import com.cannontech.common.util.SwingUtil;
 import com.cannontech.core.dao.NotFoundException;
 import com.cannontech.core.dao.PaoPropertyDao;
 import com.cannontech.database.cache.DefaultDatabaseCache;
@@ -1158,7 +1160,7 @@ public class DeviceBaseEditorPanel extends DataInputPanel {
     			ivjNameTextField.setDocument(
     					new TextFieldDocument(
     					TextFieldDocument.MAX_DEVICE_NAME_LENGTH,
-    					TextFieldDocument.INVALID_CHARS_PAO));
+    					PaoUtils.ILLEGAL_NAME_CHARS));
     
     			// user code end
     		} catch (java.lang.Throwable ivjExc) {
@@ -2390,7 +2392,7 @@ public class DeviceBaseEditorPanel extends DataInputPanel {
     	AdvancedPropertiesDialog dialog = new AdvancedPropertiesDialog( 
     						getAdvancedPanel(), "Advanced Dialup Properties");
     
-    	int result = dialog.showPanel( com.cannontech.common.util.CtiUtilities.getParentFrame(this) );
+    	int result = dialog.showPanel(SwingUtil.getParentFrame(this));
     
     	if( result == AdvancedPropertiesDialog.RESPONSE_ACCEPT )
     		fireInputUpdate(); //there has been a change!!!!
@@ -2947,8 +2949,8 @@ public class DeviceBaseEditorPanel extends DataInputPanel {
     	getTypeTextField().setText(typeStr);
     	getNameTextField().setText(deviceBase.getPAOName());
     	
-    	CtiUtilities.setCheckBoxState(getDisableFlagCheckBox(), deviceBase.getPAODisableFlag());
-    	CtiUtilities.setCheckBoxState( getControlInhibitCheckBox(), deviceBase.getDevice().getControlInhibit());
+    	SwingUtil.setCheckBoxState(getDisableFlagCheckBox(), deviceBase.getPAODisableFlag());
+    	SwingUtil.setCheckBoxState( getControlInhibitCheckBox(), deviceBase.getDevice().getControlInhibit());
     	
     	//This is a bit ugly
     	//The address could come from one of three different types of

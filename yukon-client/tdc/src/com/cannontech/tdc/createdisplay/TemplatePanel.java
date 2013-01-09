@@ -15,7 +15,7 @@ import java.util.Vector;
 import javax.swing.JCheckBox;
 import javax.swing.event.TableColumnModelEvent;
 
-import com.cannontech.common.util.CtiUtilities;
+import com.cannontech.common.util.SwingUtil;
 import com.cannontech.tdc.TDCMainFrame;
 import com.cannontech.tdc.TDCMainPanel;
 import com.cannontech.tdc.editdisplay.EditDisplayDialog;
@@ -288,7 +288,7 @@ public void initProperties() {
 }
 
 private void setSelectedIndex() {
-    EditDisplayDialog d = (EditDisplayDialog) CtiUtilities.getParentDialog(this);
+    EditDisplayDialog d = (EditDisplayDialog) SwingUtil.getParentDialog(this);
     Integer dispNum = new Integer (new Integer ((int)d.getCurrentDisplayNumber()));
     TemplateDisplayModel componentDataModel = getTempDispModel();
     componentDataModel.initModel(dispNum);
@@ -667,7 +667,7 @@ public void jButtonAdvanced_ActionPerformed(java.awt.event.ActionEvent actionEve
  */
 public void jComboBoxTemplate_ActionPerformed(java.awt.event.ActionEvent actionEvent) 
 {
-    java.awt.Frame owner = com.cannontech.common.util.CtiUtilities.getParentFrame(this);
+    Frame owner = SwingUtil.getParentFrame(this);
     java.awt.Cursor original = owner.getCursor();
     owner.setCursor( new java.awt.Cursor( java.awt.Cursor.WAIT_CURSOR ) );  
     setUnCustomized();

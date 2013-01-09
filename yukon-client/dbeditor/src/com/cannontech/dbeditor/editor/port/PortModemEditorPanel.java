@@ -1,10 +1,8 @@
 package com.cannontech.dbeditor.editor.port;
 
-/**
- * This type was created in VisualAge.
- */
+import javax.swing.JComboBox;
 
-import com.cannontech.common.util.CtiUtilities;
+import com.cannontech.common.util.SwingUtil;
 import com.cannontech.database.data.pao.PAOGroups;
 import com.cannontech.database.data.port.DirectPort;
 import com.cannontech.database.data.port.LocalDialupPort;
@@ -14,7 +12,7 @@ import com.cannontech.database.db.port.PortDialupModem;
 public class PortModemEditorPanel extends com.cannontech.common.gui.util.DataInputPanel implements java.awt.event.ActionListener, javax.swing.event.CaretListener {
 	private javax.swing.JLabel ivjInitializationStringLabel = null;
 	private javax.swing.JTextField ivjInitializationStringTextField = null;
-	private javax.swing.JComboBox ivjModemTypeComboBox = null;
+	private JComboBox<String> ivjModemTypeComboBox = null;
 	private javax.swing.JLabel ivjModemTypeLabel = null;
 	private javax.swing.JLabel ivjPrefixNumberLabel = null;
 	private javax.swing.JTextField ivjPrefixNumberTextField = null;
@@ -297,11 +295,10 @@ private javax.swing.JTextField getInitializationStringTextField() {
  * Return the ModemTypeComboBox property value.
  * @return javax.swing.JComboBox
  */
-/* WARNING: THIS METHOD WILL BE REGENERATED. */
-private javax.swing.JComboBox getModemTypeComboBox() {
+private JComboBox<String> getModemTypeComboBox() {
 	if (ivjModemTypeComboBox == null) {
 		try {
-			ivjModemTypeComboBox = new javax.swing.JComboBox();
+			ivjModemTypeComboBox = new JComboBox<>();
 			ivjModemTypeComboBox.setName("ModemTypeComboBox");
 			ivjModemTypeComboBox.setMaximumSize(new java.awt.Dimension(32767, 25));
 			ivjModemTypeComboBox.setSelectedItem("U.S. Robotics Sportster");
@@ -625,7 +622,7 @@ public void setValue(Object val)
 								+ val.getClass().getName() );
 		
 
-	CtiUtilities.setSelectedInComboBox( getModemTypeComboBox(), modemType );	
+    SwingUtil.setSelectedInComboBox(getModemTypeComboBox(), modemType);	
 	getInitializationStringTextField().setText( initString );
 }
 
