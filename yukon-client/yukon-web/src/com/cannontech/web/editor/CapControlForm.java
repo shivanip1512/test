@@ -1058,20 +1058,45 @@ public class CapControlForm extends DBEditorForm implements ICapControlModel{
             
             /* Does the actually redirection to the editor url */
             JSFUtil.redirect(url);
-            
-        }catch (DataIntegrityViolationException e) { //TODO do something smarter with this
-            facesMsg.setDetail(e.getMessage());
-            facesMsg.setSeverity(FacesMessage.SEVERITY_ERROR);
+        } catch (RuntimeException e) {
+            /*
+             * Entering a duplicate name throws a 
+             * RuntimeException caused by a
+             * DataIntegrityViolationException caused by a
+             * SQLException. 
+             * If this is the case, give the user a sensible error message.
+             * Otherwise, handle it as a generic Exception
+             */
 
-            if (isCapBankAndNested) {
-                String cbcName = wizard.getNestedWizard().getName();
-                if (name.equalsIgnoreCase(cbcName)) {
-                    facesMsg.setDetail("ERROR - Cannot create new Capacitor Bank and CBC with the same name. " + e.getMessage());
-                }
+            Throwable rootCause = e;
+            while(rootCause.getCause() != null) {
+                rootCause = rootCause.getCause();
             }
+            if(rootCause instanceof SQLException){
+                facesMsg.setSeverity(FacesMessage.SEVERITY_ERROR);
+                if (isCapBankAndNested) {
+                    String cbcName = wizard.getNestedWizard().getName();
+                    if (name.equalsIgnoreCase(cbcName)) {
+                        facesMsg.setDetail("ERROR - Cannot create new Capacitor Bank and CBC with the same name. ");
+                        return "";
+                    }
+                }
+                String article = "a ";
+                if(getEditorTitle().matches("^[aeiouAEIOU].*")){
+                    article = "an ";
+                }
 
-            return "";
-        } catch (Exception e) {
+                facesMsg.setDetail(
+                        "ERROR - There is already " + article + getEditorTitle() + 
+                        " with the name '" + name +  "'.");
+                return "";
+            } else { //Handle the same as a generic exception
+                facesMsg.setSeverity(FacesMessage.SEVERITY_ERROR);
+                facesMsg.setDetail(e.getCause().getMessage());
+                return "";
+            }
+        }
+        catch (Exception e) {
             facesMsg.setDetail(e.getCause().getMessage());
             facesMsg.setSeverity(FacesMessage.SEVERITY_ERROR);
             return "";
