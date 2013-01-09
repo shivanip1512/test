@@ -446,14 +446,28 @@ public class JobManagerImpl implements JobManager {
     }
 
     public boolean abortJob(YukonJob job) {
-        YukonTask task = currentlyRunning.get(job);
+    	int jobId = job.getId();
+    	YukonTask task = currentlyRunning.get(job);
         if (task == null) {
-            return false;
+            log.error("Unable to abort job with id " + jobId + " - no task currently running.");
+        	return false;
         }
+        JobStatus<YukonJob> status = jobStatusDao.findLatestStatusByJobId(jobId);
+        
         try {
-            task.stop();
+        	status.setJobState(JobState.STOPPING);
+        	jobStatusDao.saveOrUpdate(status);
+        	
+        	task.stop();
+
+        	status.setJobState(JobState.CANCELLED);
+        	status.setStopTime(timeSource.getCurrentTime());
+        	jobStatusDao.saveOrUpdate(status);
+        	currentlyRunning.remove(job);
         } catch (UnsupportedOperationException e) {
-            log.warn("tried to stop an unstoppable task, job was: " + job, e);
+            log.warn("Tried to stop an unstoppable task, job was: " + job, e);
+            status.setJobState(JobState.STARTED);
+            jobStatusDao.saveOrUpdate(status);
             return false;
         }
         return true;

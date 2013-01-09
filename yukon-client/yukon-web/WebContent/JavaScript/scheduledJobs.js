@@ -1,3 +1,23 @@
+var stopJobId;
+jQuery(document).ready(function() {
+	jQuery(document).bind('yukonDialogConfirmOk', function(event) {
+	    event.preventDefault();
+	    //close the dialog
+	    Yukon.Dialog.ConfirmationManager.cancel();
+	    //submit job cancellation request
+	    jQuery.ajax({
+	 		url: "/group/scheduledGroupRequestExecutionResults/cancelJob",
+	 		dataType: 'json',
+	 		data: {'jobId': stopJobId}
+	 	});
+	});
+	 
+	jQuery('table#jobsTable button.stopButton').on('click', function(event) {	
+		var stopButton = event.currentTarget;
+		stopJobId = stopButton.id.replace('cancel_', '');
+	});
+});
+
 jQuery('table#jobsTable button.toggleEnabled').live('click', function(event) {
     var toggleButton = event.currentTarget;
     var jobId = toggleButton.id.substring(7); //omit "toggle_"
@@ -25,21 +45,21 @@ function setTrClassByJobState(jobId) {
         var jobRow = '#tr_' + jobId;
         jQuery(jobRow).removeClass('success subtle');
         var state = data.get('state');
-        if (state == 'DISABLED') {
+        if (state == 'Disabled') {
             jQuery(jobRow).addClass('subtle');
             jQuery('#disableSpan_' + jobId).hide();
             jQuery('#enableSpan_' + jobId).show();
             
             jQuery('#jobRunningSpan_' + jobId).hide();
             jQuery('#jobNotRunningSpan_' + jobId).show();
-        } else if (state == 'RUNNING') {
+        } else if (state == 'Running') {
             jQuery(jobRow).addClass('success');
             jQuery('#disableSpan_' + jobId).hide();
             jQuery('#enableSpan_' + jobId).hide();
             
             jQuery('#jobRunningSpan_' + jobId).show();
             jQuery('#jobNotRunningSpan_' + jobId).hide();
-        } else if (state == 'ENABLED') {
+        } else if (state == 'Scheduled') {
             jQuery('#disableSpan_' + jobId).show();
             jQuery('#enableSpan_' + jobId).hide();
             

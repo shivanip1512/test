@@ -12,7 +12,7 @@ import com.cannontech.clientutils.YukonLogManager;
 import com.cannontech.common.device.DeviceRequestType;
 import com.cannontech.common.device.commands.CommandCompletionCallback;
 import com.cannontech.common.device.commands.CommandCompletionRetryCallback;
-import com.cannontech.common.device.commands.CommandRequestExecutionContextId;
+import com.cannontech.common.device.commands.CommandRequestExecutionObjects;
 import com.cannontech.common.device.commands.CommandRequestExecutionTemplate;
 import com.cannontech.common.device.commands.CommandRequestExecutor;
 import com.cannontech.core.dynamic.PointValueHolder;
@@ -24,6 +24,7 @@ public class CommandRequestRetryExecutor<T> {
     private int retryCount = 0;
     private Date stopRetryAfterDate = null;
     private Integer turnOffQueuingAfterRetryCount = null;
+    private boolean cancelPending = false;
     
     private Logger log = YukonLogManager.getLogger(CommandRequestRetryExecutor.class);
     
@@ -44,7 +45,7 @@ public class CommandRequestRetryExecutor<T> {
     }
     
     // EXECUTE
-    public CommandRequestExecutionContextId execute(List<T> commands, 
+    public CommandRequestExecutionObjects<T> execute(List<T> commands, 
                                                   CommandCompletionCallback<? super T> callback,
                                                   DeviceRequestType type,
                                                   LiteYukonUser user) {
@@ -55,12 +56,13 @@ public class CommandRequestRetryExecutor<T> {
         log.debug("Starting intial execution attempt using retry executor: contextId=" + template.getContextId().getId() + " retryCount=" + retryCount + " stopRetryAfterDate=" + stopRetryAfterDate + " turnOffQueuingAfterRetryCount=" + turnOffQueuingAfterRetryCount);
         template.execute(commands, retryCallback);
         
-        return template.getContextId();
+        CommandRequestExecutionObjects<T> executionObjects = new CommandRequestExecutionObjects<T>(commandRequestExecutor, retryCallback, template.getContextId());
+        return executionObjects;
     }
     
     
     
-    // RERTY CALLBACK
+    // RETRY CALLBACK
     private class RetryCallback implements CommandCompletionRetryCallback<T> {
         
         private CommandRequestExecutor<T> commandRequestExecutor;
@@ -122,16 +124,19 @@ public class CommandRequestRetryExecutor<T> {
         	log.debug("Completed request. initialRetryCount = " + initialRetryCount + ", retryNumber = " + thisRetryNumber + ", nextRetryNumber = " + nextRetryNumber);
             
             // no more retry OR time up OR no more failures
+        	// (or execution was cancelled)
             // ok to call complete() on delegate callback
             boolean noMoreRetrys = retryCount == 0;
             boolean timeUp = stopRetryAfterDate != null && stopRetryAfterDate.compareTo(new Date()) <= 0;
             boolean noMoreFails = failedCommands.size() == 0 && !noMoreRetrys && !timeUp;
             
-            if (noMoreRetrys || 
+            if (cancelPending ||
+            	noMoreRetrys || 
                 timeUp ||
                 noMoreFails) {
                 
-                log.debug("Stop retry excutor after " + retryDescription + ". contextId= " + executionTemplate.getContextId().getId() + ". Reason: noMoreRetrys=" + noMoreRetrys + " timeUp=" + timeUp + " noMoreFails=" + noMoreFails +
+                log.debug("Stop retry excutor after " + retryDescription + ". contextId= " + executionTemplate.getContextId().getId() + 
+                		  ". Reason: noMoreRetrys=" + noMoreRetrys + " timeUp=" + timeUp + " noMoreFails=" + noMoreFails + " cancelPending=" + cancelPending +
                           ". " + failedCommands.size() + " failed commands remain and will be handled by delegate callback: " + delegateCallback);
                 
                 // these won't be retried after all, send to delegate
@@ -219,7 +224,10 @@ public class CommandRequestRetryExecutor<T> {
         
         @Override
         public void cancel() {
-            delegateCallback.cancel();
+        	//This will prevent any further retries
+        	cancelPending = true;
+        	//Cancel the current execution
+        	delegateCallback.cancel();
         }
     }
     

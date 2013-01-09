@@ -29,7 +29,7 @@ public class LastRunDateHandler implements ScheduledGroupRequestExecutionUpdater
 		
 		if (lastCre != null) {
 		
-			Date lastRunDate = jobStatusDao.getJobLastSuccessfulRunDate(jobId);
+			Date lastRunDate = jobStatusDao.getJobLastCompletedRunDate(jobId);
 			return dateFormattingService.format(lastRunDate, DateFormatEnum.DATEHM, userContext);
 		
 		} else {

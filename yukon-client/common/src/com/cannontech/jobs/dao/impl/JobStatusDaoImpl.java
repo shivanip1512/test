@@ -11,6 +11,7 @@ import org.springframework.dao.EmptyResultDataAccessException;
 import org.springframework.jdbc.core.namedparam.MapSqlParameterSource;
 
 import com.cannontech.common.util.SqlStatementBuilder;
+import com.cannontech.database.DateRowMapper;
 import com.cannontech.database.FieldMapper;
 import com.cannontech.database.SimpleTableAccessTemplate;
 import com.cannontech.database.YukonJdbcTemplate;
@@ -115,6 +116,22 @@ public class JobStatusDaoImpl implements JobStatusDao, InitializingBean {
             return null;
         }
         return result;
+    }
+    
+    public Date getJobLastCompletedRunDate(int jobId) {
+    	Date result = null;
+    	try {
+    		SqlStatementBuilder sql = new SqlStatementBuilder();
+    		sql.append("SELECT MAX(js.StartTime) AS lastOkRun");
+            sql.append("FROM JobStatus js");
+            sql.append("JOIN Job j ON js.jobid = j.jobid");
+            sql.append("WHERE js.jobId").eq(jobId);
+            sql.append("AND js.JobState").in(JobState.getCompletedJobStateNames());
+            result = yukonJdbcTemplate.queryForObject(sql, new DateRowMapper());
+    	} catch (EmptyResultDataAccessException e) {
+    		return null;
+    	}
+    	return result;
     }
     
     public void afterPropertiesSet() throws Exception {

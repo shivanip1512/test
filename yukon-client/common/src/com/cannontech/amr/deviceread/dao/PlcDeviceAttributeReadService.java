@@ -9,7 +9,7 @@ import com.cannontech.common.bulk.collection.device.DeviceCollection;
 import com.cannontech.common.device.DeviceRequestType;
 import com.cannontech.common.device.commands.CommandCompletionCallback;
 import com.cannontech.common.device.commands.CommandRequestDevice;
-import com.cannontech.common.device.commands.CommandRequestExecutionContextId;
+import com.cannontech.common.device.commands.CommandRequestExecutionObjects;
 import com.cannontech.common.device.commands.CommandResultHolder;
 import com.cannontech.common.pao.YukonDevice;
 import com.cannontech.common.pao.YukonPao;
@@ -31,7 +31,7 @@ public interface PlcDeviceAttributeReadService {
      * This method only exists to support old code that hasn't been converted 
      * to the DeviceAttributeReadService.
      */
-    public CommandRequestExecutionContextId backgroundReadDeviceCollection(DeviceCollection deviceCollection, 
+    public CommandRequestExecutionObjects<CommandRequestDevice> backgroundReadDeviceCollection(DeviceCollection deviceCollection, 
                                                                            Set<? extends Attribute> attributes, 
                                                                            DeviceRequestType type, 
                                                                            CommandCompletionCallback<CommandRequestDevice> callback, 
@@ -51,7 +51,7 @@ public interface PlcDeviceAttributeReadService {
      * @param retryParameters
      * @return
      */
-    public CommandRequestExecutionContextId backgroundReadDeviceCollection(final Iterable<PaoMultiPointIdentifier> points, 
+    public CommandRequestExecutionObjects<CommandRequestDevice> backgroundReadDeviceCollection(final Iterable<PaoMultiPointIdentifier> points, 
                                                                            DeviceRequestType type, 
                                                                            CommandCompletionCallback<CommandRequestDevice> callback, 
                                                                            LiteYukonUser user,

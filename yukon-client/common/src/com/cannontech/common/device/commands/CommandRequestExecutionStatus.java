@@ -7,7 +7,8 @@ public enum CommandRequestExecutionStatus implements DisplayableEnum {
     @Deprecated IN_PROGRESS, // may still exist in a customer's DB, no longer written
 	STARTED,
 	COMPLETE,
-	FAILED;
+	FAILED,
+	CANCELLED;
 	
 	@Override
 	public String getFormatKey() {

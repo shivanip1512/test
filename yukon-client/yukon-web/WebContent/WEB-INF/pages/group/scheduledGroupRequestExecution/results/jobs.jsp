@@ -5,6 +5,7 @@
 <%@ taglib prefix="form" uri="http://www.springframework.org/tags/form" %>
 <%@ taglib prefix="i" tagdir="/WEB-INF/tags/i18n"%>
 <%@ taglib prefix="dt" tagdir="/WEB-INF/tags/dateTime" %>
+<%@ taglib prefix="d" tagdir="/WEB-INF/tags/dialog" %>
 
 <cti:standardPage page="scheduledGroupRequestAllJobs" module="amr">
     
@@ -80,7 +81,7 @@
 	
 	<tags:pagedBox2 nameKey="tableTitle" searchResult="${filterResult}" baseUrl="jobs" filterDialog="filterPopup">
 	<table id="jobsTable" class="compactResultsTable">
-		<tr>
+		<thead>
 			<th><tags:sortLink nameKey="executions.tableHeader.scheduleName" baseUrl="jobs" fieldName="NAME" isDefault="false" /></th>
 			<th><tags:sortLink nameKey="executions.tableHeader.deviceGroup" baseUrl="jobs" fieldName="DEVICE_GROUP" /></th>
 			<th><tags:sortLink nameKey="executions.tableHeader.attributeOrCommand" baseUrl="jobs" fieldName="ATTR_OR_COMM" /></th>
@@ -88,7 +89,7 @@
 			<th><tags:sortLink nameKey="executions.tableHeader.nextRun" baseUrl="jobs" fieldName="NEXT_RUN" isDefault="true"/></th>
 			<th><tags:sortLink nameKey="executions.tableHeader.status" baseUrl="jobs" fieldName="ENABLED_STATUS" /></th>
 			<th class="enabledStatus"><i:inline key=".executions.tableHeader.enabled"/></th>
-		</tr>
+		</thead>
 		<c:forEach var="jobWrapper" items="${filterResult.resultList}">
 	    	<c:set var="trClass" value=""/>
 			<c:if test="${jobWrapper.job.disabled}">
@@ -142,6 +143,8 @@
                             countKey="SCHEDULED_GROUP_REQUEST_EXECUTION/${jobWrapper.job.id}/LAST_SUCCESS_RESULTS_COUNT_FOR_JOB"
                             failureCountKey="SCHEDULED_GROUP_REQUEST_EXECUTION/${jobWrapper.job.id}/LAST_FAILURE_RESULTS_COUNT_FOR_JOB"
                             borderClasses="scheduledRequestProgressBarBorder" hideCount="true" hidePercent="true"/>
+                        <cti:button nameKey="cancel" id="cancel_${jobWrapper.job.id}" styleClass="stopButton" renderMode="image" arguments="${jobWrapper.name}" />
+                        <d:confirm on="#cancel_${jobWrapper.job.id}" nameKey="cancelConfirm" argument="${jobWrapper.name}" />
                     </span>
 				</td>
                 <cti:checkRolesAndProperties value="MANAGE_SCHEDULES">

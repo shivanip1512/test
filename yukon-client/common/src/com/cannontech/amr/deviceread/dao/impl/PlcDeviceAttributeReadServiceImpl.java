@@ -21,7 +21,7 @@ import com.cannontech.common.device.commands.CollectingCommandCompletionCallback
 import com.cannontech.common.device.commands.CommandCompletionCallback;
 import com.cannontech.common.device.commands.CommandRequestDevice;
 import com.cannontech.common.device.commands.CommandRequestDeviceExecutor;
-import com.cannontech.common.device.commands.CommandRequestExecutionContextId;
+import com.cannontech.common.device.commands.CommandRequestExecutionObjects;
 import com.cannontech.common.device.commands.CommandRequestExecutionTemplate;
 import com.cannontech.common.device.commands.CommandResultHolder;
 import com.cannontech.common.device.commands.GroupCommandCompletionCallback;
@@ -97,7 +97,7 @@ public class PlcDeviceAttributeReadServiceImpl implements PlcDeviceAttributeRead
     }
     
     @Override
-    public CommandRequestExecutionContextId backgroundReadDeviceCollection(final Iterable<PaoMultiPointIdentifier> pointsToRead, 
+    public CommandRequestExecutionObjects<CommandRequestDevice> backgroundReadDeviceCollection(final Iterable<PaoMultiPointIdentifier> pointsToRead, 
                                                                            DeviceRequestType type, 
                                                                            CommandCompletionCallback<CommandRequestDevice> callback, 
                                                                            LiteYukonUser user,
@@ -108,13 +108,13 @@ public class PlcDeviceAttributeReadServiceImpl implements PlcDeviceAttributeRead
 
         CommandRequestRetryExecutor<CommandRequestDevice> retryExecutor = new CommandRequestRetryExecutor<CommandRequestDevice>(commandRequestDeviceExecutor, retryParameters);
 
-        CommandRequestExecutionContextId contextId = retryExecutor.execute(commandRequests, callback, type, user);
+        CommandRequestExecutionObjects<CommandRequestDevice> executionObjects = retryExecutor.execute(commandRequests, callback, type, user);
 
-        return contextId;
+        return executionObjects;
     }
 
     @Override
-    public CommandRequestExecutionContextId backgroundReadDeviceCollection(DeviceCollection deviceCollection,
+    public CommandRequestExecutionObjects<CommandRequestDevice> backgroundReadDeviceCollection(DeviceCollection deviceCollection,
                                                                            Set<? extends Attribute> attributes,
                                                                            DeviceRequestType type,
                                                                            CommandCompletionCallback<CommandRequestDevice> callback,

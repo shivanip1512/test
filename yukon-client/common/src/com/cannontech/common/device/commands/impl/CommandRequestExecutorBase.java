@@ -114,7 +114,11 @@ public abstract class CommandRequestExecutorBase<T extends CommandRequestBase> i
                 pendingUserMessageIds.put(requestHolder.request.getUserMessageID(), requestHolder.command);
             }
         }
-
+        
+        public CommandRequestExecution getCommandRequestExecution() {
+        	return commandRequestExecution;
+        }
+        
         public synchronized void messageReceived(MessageEvent e) {
         	
             boolean debug = log.isDebugEnabled();
@@ -468,13 +472,17 @@ public abstract class CommandRequestExecutorBase<T extends CommandRequestBase> i
     public long cancelExecution(CommandCompletionCallback<? super T> callback, LiteYukonUser user) {
         
         if(msgListeners.isEmpty()){
-            return 0;
+            log.debug("No message listeners found while cancelling command request execution.");
+        	return 0;
         }
         // get listener
         CommandResultMessageListener messageListener = msgListeners.get(callback);
         
         // The callback has already returned.
-        if(messageListener == null) return 0;
+        if(messageListener == null) {
+        	log.debug("No message listeners matching callback found while cancelling command request execution.");
+        	return 0;
+        }
         
         // cancel listener
         // - settings listener to canceled will cause the commandRequests write loop to stop sending
@@ -496,6 +504,8 @@ public abstract class CommandRequestExecutorBase<T extends CommandRequestBase> i
         // run cancel command
         log.debug("Sending cancel request. groupMessageId = " + messageListener.getGroupMessageId());
         long commandsCanceled = porterRequestCancelService.cancelRequests(messageListener.getGroupMessageId(), CANCEL_PRIORITY);
+        
+        completeCommandRequestExecutionRecord(messageListener.getCommandRequestExecution(), CommandRequestExecutionStatus.CANCELLED);
         
         // cancel callback
         log.debug("Calling callback. groupMessageId = " + messageListener.getGroupMessageId());

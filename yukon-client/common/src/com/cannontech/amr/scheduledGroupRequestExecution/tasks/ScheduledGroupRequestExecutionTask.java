@@ -5,6 +5,7 @@ import java.util.Collections;
 import java.util.Date;
 import java.util.List;
 import java.util.Set;
+import java.util.concurrent.CountDownLatch;
 
 import org.apache.commons.lang.time.DateUtils;
 import org.apache.log4j.Logger;
@@ -18,9 +19,11 @@ import com.cannontech.clientutils.YukonLogManager;
 import com.cannontech.common.bulk.collection.device.DeviceCollection;
 import com.cannontech.common.bulk.collection.device.DeviceGroupCollectionHelper;
 import com.cannontech.common.device.DeviceRequestType;
+import com.cannontech.common.device.commands.CommandCompletionCallback;
 import com.cannontech.common.device.commands.CommandRequestDevice;
 import com.cannontech.common.device.commands.CommandRequestDeviceExecutor;
-import com.cannontech.common.device.commands.CommandRequestExecutionContextId;
+import com.cannontech.common.device.commands.CommandRequestExecutionObjects;
+import com.cannontech.common.device.commands.CommandRequestExecutor;
 import com.cannontech.common.device.commands.impl.CommandCallbackBase;
 import com.cannontech.common.device.commands.impl.CommandRequestRetryExecutor;
 import com.cannontech.common.device.groups.model.DeviceGroup;
@@ -44,7 +47,9 @@ public class ScheduledGroupRequestExecutionTask extends YukonTaskBase {
     private int retryCount = 0;
     private Integer stopRetryAfterHoursCount = null;
     private Integer turnOffQueuingAfterRetryCount = null;
-
+    private CommandRequestExecutor<CommandRequestDevice> currentExecutor = null;
+    private CommandCompletionCallback<? super CommandRequestDevice> currentCallback = null;
+    
     // Injected services and daos
     private CommandRequestDeviceExecutor commandRequestDeviceExecutor;
     private DeviceGroupService deviceGroupService;
@@ -57,6 +62,15 @@ public class ScheduledGroupRequestExecutionTask extends YukonTaskBase {
         startTask(getJobContext().getJob().getId());
     }
     
+    @Override
+    public void stop() {
+    	int jobId = getJobContext().getJob().getId();
+    	
+    	log.info("Stopping job with id " + jobId);
+    	long commandsCancelled = currentExecutor.cancelExecution(currentCallback, getYukonUser());
+    	log.info("Stopped job with id " + jobId + ". " + commandsCancelled + " commands were cancelled.");
+    }
+    
     private void startTask(int jobId){
     	
     	LiteYukonUser user = getYukonUser();
@@ -64,19 +78,23 @@ public class ScheduledGroupRequestExecutionTask extends YukonTaskBase {
     	log.info("Starting scheduled group command execution. user = " + user.getUsername() + ".");
         
         try {
-        	
-            CommandRequestExecutionContextId contextId = null;
-            
-            DeviceGroup deviceGroup = getDeviceGroup();
+        	DeviceGroup deviceGroup = getDeviceGroup();
             if (deviceGroup == null) {
                 throw new IllegalArgumentException("DeviceGroup does not exist, task cannot run.");
             }
             
-            if (getCommand() != null) {
+            final CountDownLatch taskCompletionLatch = new CountDownLatch(1);
+            CommandCompletionCallbackAdapter<CommandRequestDevice> dummyCallback = new CommandCompletionCallbackAdapter<CommandRequestDevice>() {
+        		@Override
+        		public void complete() {
+        			taskCompletionLatch.countDown();
+        		}
+        	};
             
-            	CommandCompletionCallbackAdapter<CommandRequestDevice> dummyCallback = new CommandCompletionCallbackAdapter<CommandRequestDevice>();
-                
-                Set<SimpleDevice> devices = deviceGroupService.getDevices(Collections.singletonList(getDeviceGroup()));
+        	CommandRequestExecutionObjects<CommandRequestDevice> executionObjects = null;
+        	
+            if (getCommand() != null) {
+            	Set<SimpleDevice> devices = deviceGroupService.getDevices(Collections.singletonList(getDeviceGroup()));
                 List<CommandRequestDevice> commandRequests = new ArrayList<CommandRequestDevice>();
                 for (SimpleDevice device : devices) {
                     
@@ -90,32 +108,40 @@ public class ScheduledGroupRequestExecutionTask extends YukonTaskBase {
                 CommandRequestRetryExecutor<CommandRequestDevice> retryExecutor = 
                     new CommandRequestRetryExecutor<CommandRequestDevice>(commandRequestDeviceExecutor, 
                             getRetryParameters());
-                contextId = retryExecutor.execute(commandRequests, dummyCallback, getCommandRequestExecutionType(), user);
+                executionObjects = retryExecutor.execute(commandRequests, dummyCallback, getCommandRequestExecutionType(), user);
+                currentExecutor = commandRequestDeviceExecutor;
+                currentCallback = executionObjects.getCallback();
 
             } else if (getAttributes() != null) {
-            	
-                CommandCompletionCallbackAdapter<CommandRequestDevice> dummyCallback = new CommandCompletionCallbackAdapter<CommandRequestDevice>();
-                
-    	        DeviceCollection deviceCollection = deviceGroupCollectionHelper.buildDeviceCollection(getDeviceGroup());
+            	DeviceCollection deviceCollection = deviceGroupCollectionHelper.buildDeviceCollection(getDeviceGroup());
     	        
-    	        contextId = plcDeviceAttributeReadService.backgroundReadDeviceCollection(deviceCollection, 
+    	        executionObjects = plcDeviceAttributeReadService.backgroundReadDeviceCollection(deviceCollection, 
     	                                                                                 attributes, 
     	                                                                                 getCommandRequestExecutionType(), 
     	                                                                                 dummyCallback, 
     	                                                                                 user, 
     	                                                                                 getRetryParameters());
     	        
-            
+    	        currentExecutor = executionObjects.getCommandRequestExecutor();
+    	        currentCallback = executionObjects.getCallback();
+    	        
             } else {
             	throw new UnsupportedOperationException("A command string or attribute is required to run task.");
             }
             
 	        // create ScheduledGroupRequestExecutionResult record
 	        ScheduledGroupRequestExecutionPair pair = new ScheduledGroupRequestExecutionPair();
-	        pair.setCommandRequestExecutionContextId(contextId);
-	        pair.setJobId(jobId);
+	        pair.setCommandRequestExecutionContextId(executionObjects.getContextId());
+	        pair.setJobId(getJobContext().getJob().getId());
 	        
 	        scheduledGroupRequestExecutionResultsDao.insert(pair);
+	        
+	        //Causes the method to block until the task completes
+	        try {
+				taskCompletionLatch.await();
+			} catch (InterruptedException e) {
+				throw new IllegalStateException("Task thread was interrupted while waiting for completion.", e);
+			}
 	        
         } catch (NotFoundException e) {
         	log.error("Could not run command due to missing device group. command = " + getCommand() + ", name=" + getName() + ", groupName = " + getDeviceGroup().getFullName() + ", user = " + user.getUsername() + 

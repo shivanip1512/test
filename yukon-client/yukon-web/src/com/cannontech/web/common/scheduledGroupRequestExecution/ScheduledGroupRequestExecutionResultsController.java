@@ -93,6 +93,20 @@ public class ScheduledGroupRequestExecutionResultsController extends MultiAction
     }
     
     @RequestMapping
+    public void cancelJob(HttpServletResponse response, int jobId) throws IOException {
+    	YukonJob job = jobManager.getJob(jobId);
+    	boolean isJobStopped = jobManager.abortJob(job);
+    	
+    	JSONObject object = new JSONObject();
+    	object.put("isJobStopped", isJobStopped);
+    	
+    	response.setContentType("application/json");
+        try (PrintWriter out = response.getWriter()) {
+    		out.print(object.toString());
+    	}
+    }
+    
+    @RequestMapping
     public void toggleEnabled(HttpServletResponse response, YukonUserContext userContext, int jobId)
             throws IOException {
         rolePropertyDao.verifyProperty(YukonRoleProperty.MANAGE_SCHEDULES, userContext.getYukonUser());

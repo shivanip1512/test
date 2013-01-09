@@ -4,6 +4,7 @@
 <%@ taglib prefix="tags" tagdir="/WEB-INF/tags"%>
 <%@ taglib prefix="amr" tagdir="/WEB-INF/tags/amr"%>
 <%@ taglib prefix="i" tagdir="/WEB-INF/tags/i18n"%>
+<%@ taglib prefix="d" tagdir="/WEB-INF/tags/dialog" %>
 
 <cti:includeScript link="/JavaScript/scheduledJobs.js"/>
 
@@ -23,9 +24,8 @@
 		</c:otherwise>
 	</c:choose>
 </c:if>
-<table class="compactResultsTable">
-	
-	<tr>
+<table id="jobsTable" class="compactResultsTable">
+	<thead>
 		<th style="width:20px;">&nbsp;</th>
 		<th><i:inline key=".tableHeader.scheduleName"/></th>
 		<th><i:inline key=".tableHeader.scheduleDescription"/></th>
@@ -33,7 +33,7 @@
 		<c:if test="${canManage}">
 			<th style="text-align:right;width:80px;"><i:inline key=".tableHeader.enabled"/></th>
 		</c:if>
-	</tr>
+	</thead>
 
 	<c:forEach var="jobWrapper" items="${jobWrappers}">
 	
@@ -67,10 +67,12 @@
                         countKey="SCHEDULED_GROUP_REQUEST_EXECUTION/${jobWrapper.job.id}/LAST_SUCCESS_RESULTS_COUNT_FOR_JOB"
                         failureCountKey="SCHEDULED_GROUP_REQUEST_EXECUTION/${jobWrapper.job.id}/LAST_FAILURE_RESULTS_COUNT_FOR_JOB"
                         borderClasses="scheduledRequestProgressBarBorder" hideCount="true" hidePercent="true"/>
+                	<cti:button nameKey="cancel" id="cancel_${jobWrapper.job.id}" styleClass="stopButton" renderMode="image" arguments="${jobWrapper.name}" />
+                	<d:confirm on="#cancel_${jobWrapper.job.id}" nameKey="cancelConfirm" argument="${jobWrapper.name}" />
                 </span>
             </td>
 
-            <%-- delete --%>
+            <%-- enable/disable --%>
 			<c:if test="${canManage}">
                 <td style="text-align:right;">
                     <span id="disableSpan_${jobWrapper.job.id}" <c:if test="${jobWrapper.jobStatus eq 'DISABLED' || jobWrapper.jobStatus eq 'RUNNING'}">style="display:none;"</c:if>>
@@ -87,7 +89,8 @@
 
         <cti:dataUpdaterCallback function="buildTooltipText('status_${jobWrapper.job.id}')" initialize="true"
             tooltip="SCHEDULED_GROUP_REQUEST_EXECUTION/${jobWrapper.job.id}/LAST_TOOLTIP_TEXT_FOR_JOB" />
-
+		
+		<%-- Determines which styles and spans to show based on the job's current status --%>
         <cti:dataUpdaterCallback function="setTrClassByJobState(${jobWrapper.job.id})" initialize="true" state="JOB/${jobWrapper.job.id}/STATE"/>   
 	</c:forEach>
 

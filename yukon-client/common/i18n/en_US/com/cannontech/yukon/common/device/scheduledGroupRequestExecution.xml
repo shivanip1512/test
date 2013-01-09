@@ -23,6 +23,12 @@
 	<entry key="yukon.web.widgets.scheduledGroupRequestExecutionWidget.enable.imageUrl">/WebConfig/yukon/Icons/gray_circle.png</entry>
     <entry key="yukon.web.widgets.scheduledGroupRequestExecutionWidget.disable.hoverText">Disable ({0})</entry>
     <entry key="yukon.web.widgets.scheduledGroupRequestExecutionWidget.disable.imageUrl">/WebConfig/yukon/Icons/green_circle.png</entry>
+    <entry key="yukon.web.widgets.scheduledGroupRequestExecutionWidget.cancel.hoverText">Cancel current run of {0}</entry>
+    <entry key="yukon.web.widgets.scheduledGroupRequestExecutionWidget.cancel.imageUrl">/WebConfig/yukon/Icons/delete.png</entry>
+    <entry key="yukon.web.widgets.scheduledGroupRequestExecutionWidget.cancelConfirm.title">Stop Scheduled Request Execution</entry>
+    <entry key="yukon.web.widgets.scheduledGroupRequestExecutionWidget.cancelConfirm.message">Are you sure you want to stop "{0}"?</entry>
+    <entry key="yukon.web.widgets.scheduledGroupRequestExecutionWidget.cancelConfirm.ok">Yes</entry>
+    <entry key="yukon.web.widgets.scheduledGroupRequestExecutionWidget.cancelConfirm.cancel">No</entry>
     
     <!-- ScheduledGroupRequestExecutionController home.jsp -->
     <!-- ================================================================================================================================================= -->
@@ -84,6 +90,12 @@
     <entry key="yukon.web.modules.amr.scheduledGroupRequestAllJobs.enable.imageUrl">/WebConfig/yukon/Icons/gray_circle.png</entry>
     <entry key="yukon.web.modules.amr.scheduledGroupRequestAllJobs.disable.hoverText">Disable ({0})</entry>
     <entry key="yukon.web.modules.amr.scheduledGroupRequestAllJobs.disable.imageUrl">/WebConfig/yukon/Icons/green_circle.png</entry>
+    <entry key="yukon.web.modules.amr.scheduledGroupRequestAllJobs.cancel.hoverText">Cancel current run of {0}</entry>
+    <entry key="yukon.web.modules.amr.scheduledGroupRequestAllJobs.cancel.imageUrl">/WebConfig/yukon/Icons/delete.png</entry>
+    <entry key="yukon.web.modules.amr.scheduledGroupRequestAllJobs.cancelConfirm.title">Stop Scheduled Request Execution</entry>
+    <entry key="yukon.web.modules.amr.scheduledGroupRequestAllJobs.cancelConfirm.message">Are you sure you want to stop "{0}"?</entry>
+    <entry key="yukon.web.modules.amr.scheduledGroupRequestAllJobs.cancelConfirm.ok">Yes</entry>
+    <entry key="yukon.web.modules.amr.scheduledGroupRequestAllJobs.cancelConfirm.cancel">No</entry>
     <entry key="yukon.web.modules.amr.scheduledGroupRequestAllJobs.noJobs.createAccess"><![CDATA[
     	No schedules setup, use the "Create" link to create a schedule.
     ]]></entry>
