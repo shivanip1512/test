@@ -23,6 +23,10 @@ ALTER TABLE ProgramToSeasonalProgram
 INSERT INTO YukonRoleProperty VALUES(-1126, -2, 'Alternate Program Enrollment', 'false', 'Enables the use of alternate program enrollments.');
 /* End YUK-11744 */
 
+/* Start YUK-11754 */
+INSERT INTO YukonRoleProperty VALUES(-1125, -2, 'Broadcast Cancel All Opt Out SPID', 'false', 'Which SPID to use when sending the broadcast cancel all opt out command.'); 
+/* End YUK-11754 */
+
 /**************************************************************/
 /* VERSION INFO                                               */
 /* Inserted when update script is run                         */
