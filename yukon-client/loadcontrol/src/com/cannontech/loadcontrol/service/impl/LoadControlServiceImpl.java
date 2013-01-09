@@ -19,10 +19,8 @@ import com.cannontech.common.pao.YukonPao;
 import com.cannontech.common.util.ScheduledExecutor;
 import com.cannontech.core.authorization.service.PaoAuthorizationService;
 import com.cannontech.core.authorization.support.Permission;
-import com.cannontech.core.dao.GearNotFoundException;
 import com.cannontech.core.dao.NotFoundException;
 import com.cannontech.core.dao.PaoDao;
-import com.cannontech.core.dao.ProgramNotFoundException;
 import com.cannontech.database.data.lite.LiteYukonUser;
 import com.cannontech.dr.program.service.ConstraintContainer;
 import com.cannontech.dr.program.service.ConstraintViolations;
@@ -108,51 +106,6 @@ public class LoadControlServiceImpl implements LoadControlService {
        return programStatuses;
     }
     
-    // START CONTROL BY PROGRAM NAME
-    @Override
-	public ProgramStatus startControlByProgramName(String programName,
-			Date startTime, Date stopTime, String gearName, boolean forceStart,
-			boolean observeConstraintsAndExecute, LiteYukonUser user)
-			throws ProgramNotFoundException, GearNotFoundException, TimeoutException, NotAuthorizedException, BadServerResponseException {
-        
-		int programId;
-		int gearNumber;
-		try {
-			programId = loadControlProgramDao.getProgramIdByProgramName(programName);
-		} catch (NotFoundException e) {
-			throw new ProgramNotFoundException(e.getMessage(), e);
-		}
-			
-		try {
-			gearNumber = loadControlProgramDao.getGearNumberForGearName(programId, gearName);
-		} catch (NotFoundException e) {
-			throw new GearNotFoundException(e.getMessage(), e);
-		}
-		
-        validateProgramIsVisibleToUser(programName, programId, user);
-        
-        LMProgramBase program = loadControlClientConnection.getProgramSafe(programId);
-        
-        return doExecuteStartRequest(program, startTime, null, stopTime, null, gearNumber, forceStart, observeConstraintsAndExecute, user);
-    }
-    
-    // START CONTROL BY PROGRAM NAME
-    @Override
-    public ProgramStatus startControlByProgramName(String programName,
-			Date startTime, Date stopTime, boolean forceStart,
-			boolean observeConstraintsAndExecute, LiteYukonUser user)
-			throws NotFoundException, TimeoutException, NotAuthorizedException, BadServerResponseException {
-        
-        int programId = loadControlProgramDao.getProgramIdByProgramName(programName);
-        validateProgramIsVisibleToUser(programName, programId, user);
-        
-        LMProgramBase program = loadControlClientConnection.getProgramSafe(programId);
-
-        int gearNumber = ((LMProgramDirect)program).getCurrentGearNumber();
-        
-        return doExecuteStartRequest(program, startTime, null, stopTime, null, gearNumber, forceStart, observeConstraintsAndExecute, user);
-    }
-
     // STOP CONTROL BY PROGRAM NAME
     @Override
 	public ProgramStatus stopControlByProgramName(String programName,
@@ -396,7 +349,6 @@ public class LoadControlServiceImpl implements LoadControlService {
     private ProgramStatus doExecuteStartRequest(LMProgramBase program, Date startTime, Duration startOffset, Date stopTime, Duration stopOffset, int gearNumber, boolean forceStart, boolean observeConstraintsAndExecute, LiteYukonUser user) throws TimeoutException, NotAuthorizedException, BadServerResponseException {
         
         ProgramStatus programStatus = new ProgramStatus(program);
-        programStatus.setProgram(program);
         
         // build control msg
         LMManualControlRequest controlRequest = ProgramUtils.createStartRequest(program, startTime, startOffset, stopTime, stopOffset, gearNumber, forceStart);

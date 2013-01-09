@@ -12,6 +12,7 @@ import java.util.Set;
 import java.util.Vector;
 
 import org.apache.log4j.Logger;
+import org.joda.time.Duration;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Required;
 
@@ -28,14 +29,21 @@ import com.cannontech.common.point.PointQuality;
 import com.cannontech.core.dao.FdrTranslationDao;
 import com.cannontech.core.dao.NotFoundException;
 import com.cannontech.core.dao.PaoDao;
+import com.cannontech.core.dao.ProgramNotFoundException;
 import com.cannontech.core.dao.SimplePointAccessDao;
+import com.cannontech.core.roleproperties.YukonRoleProperty;
+import com.cannontech.core.roleproperties.dao.RolePropertyDao;
 import com.cannontech.database.data.lite.LiteYukonPAObject;
 import com.cannontech.database.data.lite.LiteYukonUser;
 import com.cannontech.database.data.point.PointTypes;
+import com.cannontech.dr.program.service.ConstraintContainer;
+import com.cannontech.dr.program.service.ConstraintViolations;
+import com.cannontech.dr.program.service.ProgramService;
 import com.cannontech.loadcontrol.LoadControlClientConnection;
 import com.cannontech.loadcontrol.dao.LoadControlProgramDao;
 import com.cannontech.loadcontrol.data.LMGroupBase;
 import com.cannontech.loadcontrol.data.LMProgramBase;
+import com.cannontech.loadcontrol.data.LMProgramDirect;
 import com.cannontech.loadcontrol.service.LoadControlService;
 import com.cannontech.loadcontrol.service.data.ProgramStatus;
 import com.cannontech.loadcontrol.service.data.ScenarioStatus;
@@ -68,19 +76,20 @@ import com.cannontech.stars.dr.enrollment.dao.EnrollmentDao;
 
 public class MultispeakLMServiceImpl implements MultispeakLMService {
 
-	public MspLMInterfaceMappingDao mspLMInterfaceMappingDao;
-	public PaoDao paoDao;
-	public LoadControlService loadControlService;
-	public FdrTranslationDao fdrTranslationDao;
-	public SimplePointAccessDao simplePointAccessDao;
-	public MspObjectDao mspObjectDao;
-    public EnrollmentDao enrollmentDao;
-    public LoadControlClientConnection loadControlClientConnection;
-    public LoadControlProgramDao loadControlProgramDao;
-    public MspLMGroupDao mspLMGroupDao;
-    public PaoDefinitionDao paoDefinitionDao;
+    @Autowired private MspLMInterfaceMappingDao mspLMInterfaceMappingDao;
+	@Autowired private PaoDao paoDao;
+	@Autowired private LoadControlService loadControlService;
+	@Autowired private FdrTranslationDao fdrTranslationDao;
+	@Autowired private SimplePointAccessDao simplePointAccessDao;
+	@Autowired private MspObjectDao mspObjectDao;
+	@Autowired private EnrollmentDao enrollmentDao;
+    @Autowired private LoadControlClientConnection loadControlClientConnection;
+    @Autowired private LoadControlProgramDao loadControlProgramDao;
+    @Autowired private MspLMGroupDao mspLMGroupDao;
+    @Autowired private PaoDefinitionDao paoDefinitionDao;
+    @Autowired private ProgramService programService;
+    @Autowired private RolePropertyDao rolePropertyDao;
 
-    private List<? extends String> strategyNames;
     private List<? extends String> strategiesToExcludeInReport;
     
     private static Logger log = YukonLogManager.getLogger(MultispeakLMServiceImpl.class);
@@ -158,28 +167,16 @@ public class MultispeakLMServiceImpl implements MultispeakLMService {
 			    	}
 			    	CTILogger.info("Control Status: " + scenarioStatus.toString());
 				}
-			} catch (NotFoundException e) {
-	        	errorObject = mspObjectDao.getErrorObject(null, 
-	        			mspLMInterfaceMapping.getSubstationName() + "/" + mspLMInterfaceMapping.getStrategyName() + " - " + e.getMessage(),
-	        			"LoadManagementEvent", "control", liteYukonUser.getUsername());
-	        } catch (TimeoutException e) {
+			} catch (TimeoutException e) {
 	        	errorObject = mspObjectDao.getErrorObject(null, 
 	        			mspLMInterfaceMapping.getSubstationName() + "/" + mspLMInterfaceMapping.getStrategyName() + " - " + e.getMessage() + 
 	        			". TimeoutException. Verify the scheduedStartTime (" + mspLoadControl.getStartTime() + ") is not in the past.",
 	        			"LoadManagementEvent", "control", liteYukonUser.getUsername());
-	        } catch (NotAuthorizedException e) {
+	        } catch (NotAuthorizedException | NotFoundException | BadServerResponseException | ConnectionException e) {
 	        	errorObject = mspObjectDao.getErrorObject(null, 
 	        			mspLMInterfaceMapping.getSubstationName() + "/" + mspLMInterfaceMapping.getStrategyName() + " - " + e.getMessage(),
 	        			"LoadManagementEvent", "control", liteYukonUser.getUsername());
-	        } catch (BadServerResponseException e) {
-	            errorObject = mspObjectDao.getErrorObject(null, 
-                        mspLMInterfaceMapping.getSubstationName() + "/" + mspLMInterfaceMapping.getStrategyName() + " - " + e.getMessage(),
-                        "LoadManagementEvent", "control", liteYukonUser.getUsername());
-            } catch (ConnectionException e) {
-                errorObject = mspObjectDao.getErrorObject(null, 
-                      mspLMInterfaceMapping.getSubstationName() + "/" + mspLMInterfaceMapping.getStrategyName() + " - " + e.getMessage(),
-                      "LoadManagementEvent", "control", liteYukonUser.getUsername());
-            }  catch (Exception e) {
+	        } catch (Exception e) {
                 errorObject = mspObjectDao.getErrorObject(null, 
                       mspLMInterfaceMapping.getSubstationName() + "/" + mspLMInterfaceMapping.getStrategyName() + " - " + e.getMessage(),
                       "LoadManagementEvent", "control", liteYukonUser.getUsername());
@@ -192,7 +189,33 @@ public class MultispeakLMServiceImpl implements MultispeakLMService {
 	@Override
 	public ProgramStatus startControlByProgramName(String programName, Date startTime,
 			Date stopTime, LiteYukonUser liteYukonUser) throws NotAuthorizedException, NotFoundException, TimeoutException, BadServerResponseException  {
-   		return loadControlService.startControlByProgramName(programName, startTime, stopTime, false, true, liteYukonUser);
+
+	    boolean stopScheduled = rolePropertyDao.getPropertyBooleanValue(YukonRoleProperty.SCHEDULE_STOP_CHECKED_BY_DEFAULT, liteYukonUser);
+        boolean overrideConstraints = false;
+
+        int programId;
+        try {
+            programId = loadControlProgramDao.getProgramIdByProgramName(programName);
+        } catch (NotFoundException e) {
+            throw new ProgramNotFoundException(e.getMessage(), e);
+        }
+
+        LMProgramBase program = loadControlClientConnection.getProgramSafe(programId);
+        ProgramStatus programStatus = new ProgramStatus(program);
+        int gearNumber = ((LMProgramDirect)program).getCurrentGearNumber();
+
+        ConstraintViolations checkViolations = programService.getConstraintViolationForStartProgram(programId, gearNumber, startTime, Duration.ZERO, stopTime, Duration.ZERO, null);
+        if (checkViolations.isViolated()) {
+            for (ConstraintContainer violation : checkViolations.getConstraintContainers()) {
+                log.info("Constraint Violation: " + violation.toString() + " for request");
+            }
+            programStatus.setConstraintViolations(checkViolations.getConstraintContainers());
+        } else {
+            log.info("No constraint violations for request.");
+            programStatus = programService.startProgramBlocking(programId, gearNumber, startTime, Duration.ZERO, stopScheduled, stopTime, Duration.ZERO, overrideConstraints, null);
+        } 
+
+        return programStatus;
 	}
 
 	@Override
@@ -492,59 +515,6 @@ public class MultispeakLMServiceImpl implements MultispeakLMService {
 		return controlledCount;
 	}
 
-	@Autowired
-	public void setMspLMInterfaceMappingDao(
-			MspLMInterfaceMappingDao mspLMInterfaceMappingDao) {
-		this.mspLMInterfaceMappingDao = mspLMInterfaceMappingDao;
-	}
-    @Autowired
-	public void setPaoDao(PaoDao paoDao) {
-		this.paoDao = paoDao;
-	}
-    @Autowired
-	public void setLoadControlService(LoadControlService loadControlService) {
-		this.loadControlService = loadControlService;
-	}
-    @Autowired
-	public void setFdrTranslationDao(FdrTranslationDao fdrTranslationDao) {
-		this.fdrTranslationDao = fdrTranslationDao;
-	}
-    @Autowired
-	public void setSimplePointAccessDao(
-			SimplePointAccessDao simplePointAccessDao) {
-		this.simplePointAccessDao = simplePointAccessDao;
-	}
-    @Autowired
-	public void setMspObjectDao(MspObjectDao mspObjectDao) {
-		this.mspObjectDao = mspObjectDao;
-	}
-    @Autowired
-    public void setEnrollmentDao(EnrollmentDao enrollmentDao) {
-		this.enrollmentDao = enrollmentDao;
-	}
-    @Autowired
-    public void setLoadControlClientConnection(
-			LoadControlClientConnection loadControlClientConnection) {
-		this.loadControlClientConnection = loadControlClientConnection;
-	}
-    @Autowired
-    public void setLoadControlProgramDao(
-			LoadControlProgramDao loadControlProgramDao) {
-		this.loadControlProgramDao = loadControlProgramDao;
-	}
-    @Autowired
-    public void setMspLMGroupDao(MspLMGroupDao mspLMGroupDao) {
-		this.mspLMGroupDao = mspLMGroupDao;
-	}
-    @Autowired
-    public void setPaoDefinitionDao(PaoDefinitionDao paoDefinitionDao) {
-		this.paoDefinitionDao = paoDefinitionDao;
-	}
-    
-    @Required
-    public void setStrategyNames(List<? extends String> strategyNames) {
-		this.strategyNames = strategyNames;
-	}
     @Required
     public void setStrategiesToExcludeInReport(
 			List<? extends String> strategiesToExcludeInReport) {

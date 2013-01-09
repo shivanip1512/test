@@ -8,12 +8,26 @@ import javax.servlet.ServletException;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
+import org.apache.log4j.Logger;
+import org.joda.time.Duration;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.ServletRequestUtils;
 import org.springframework.web.servlet.ModelAndView;
 import org.springframework.web.servlet.mvc.multiaction.MultiActionController;
 
+import com.cannontech.clientutils.YukonLogManager;
+import com.cannontech.core.dao.GearNotFoundException;
+import com.cannontech.core.dao.NotFoundException;
+import com.cannontech.core.dao.ProgramNotFoundException;
+import com.cannontech.core.roleproperties.YukonRoleProperty;
+import com.cannontech.core.roleproperties.dao.RolePropertyDao;
 import com.cannontech.core.service.DateFormattingService;
+import com.cannontech.dr.program.service.ConstraintContainer;
+import com.cannontech.dr.program.service.ConstraintViolations;
+import com.cannontech.dr.program.service.ProgramService;
+import com.cannontech.loadcontrol.LoadControlClientConnection;
+import com.cannontech.loadcontrol.dao.LoadControlProgramDao;
+import com.cannontech.loadcontrol.data.LMProgramBase;
 import com.cannontech.loadcontrol.service.LoadControlService;
 import com.cannontech.loadcontrol.service.data.ProgramStatus;
 import com.cannontech.loadcontrol.service.data.ScenarioProgramStartingGears;
@@ -29,10 +43,16 @@ import com.cannontech.util.ServletUtil;
 
 public class LoadControlServiceInputsTestController extends MultiActionController {
     
+    private Logger log = YukonLogManager.getLogger(LoadControlServiceInputsTestController.class);
+
     private DateFormattingService dateformattingService;
     private LoadControlService loadControlService;
     private EnrollmentHelperService enrollmentHelperService;
     private StarsControllableDeviceHelper starsControllableDeviceHelper;
+    @Autowired private ProgramService programService;
+    @Autowired private RolePropertyDao rolePropertyDao;
+    @Autowired private LoadControlProgramDao loadControlProgramDao;
+    @Autowired private LoadControlClientConnection loadControlClientConnection;
     
     public ModelAndView home(HttpServletRequest request, HttpServletResponse response) throws ServletException {
         return returnMav(request, new ArrayList<String>(0));
@@ -114,21 +134,50 @@ public class LoadControlServiceInputsTestController extends MultiActionControlle
         YukonUserContext userContext = YukonUserContextUtils.getYukonUserContext(request);
 
         List<String> results = new ArrayList<String>();
-        
+
         String programName = ServletRequestUtils.getRequiredStringParameter(request, "programName");
         Date startTime = parseDateTime(request, "start", userContext);
         Date stopTime = parseDateTime(request, "stop", userContext);
         String gearName = ServletRequestUtils.getRequiredStringParameter(request, "gearName");
         boolean force = ServletRequestUtils.getBooleanParameter(request, "force", false);
         boolean observeConstraintsAndExecute = ServletRequestUtils.getBooleanParameter(request, "observeConstraintsAndExecute", false);
-        
-        ProgramStatus programStatus = loadControlService.startControlByProgramName(programName, startTime, stopTime, gearName, force, observeConstraintsAndExecute, userContext.getYukonUser());
+        boolean stopScheduled = rolePropertyDao.getPropertyBooleanValue(YukonRoleProperty.SCHEDULE_STOP_CHECKED_BY_DEFAULT, userContext.getYukonUser());
+
+        int programId;
+        try {
+            programId = loadControlProgramDao.getProgramIdByProgramName(programName);
+        } catch (NotFoundException e) {
+            throw new ProgramNotFoundException(e.getMessage(), e);
+        }
+
+        int gearNumber;
+        try {
+            gearNumber = loadControlProgramDao.getGearNumberForGearName(programId, gearName);
+        } catch (NotFoundException e) {
+            throw new GearNotFoundException(e.getMessage(), e);
+        }
+
+        LMProgramBase program = loadControlClientConnection.getProgramSafe(programId);
+        ProgramStatus programStatus = new ProgramStatus(program);
+
+        ConstraintViolations checkViolations = programService.getConstraintViolationForStartProgram(programId, gearNumber, startTime, Duration.ZERO, stopTime, Duration.ZERO, null);
+        if (checkViolations.isViolated()) {
+            for (ConstraintContainer violation : checkViolations.getConstraintContainers()) {
+                log.info("Constraint Violation: " + violation.toString() + " for request");
+            }
+            programStatus.setConstraintViolations(checkViolations.getConstraintContainers());
+        } 
+
+        if (observeConstraintsAndExecute){
+            programStatus = programService.startProgramBlocking(programId, gearNumber, startTime, Duration.ZERO, stopScheduled, stopTime, Duration.ZERO, force, null);
+        } 
+
         results.add(programStatus.toString());
-        
+
         if (programStatus.getConstraintViolations().size() > 0) {
             results.add("Contains Constraint Violations");
         }
-        
+
         return returnMav(request, results);
     }
     

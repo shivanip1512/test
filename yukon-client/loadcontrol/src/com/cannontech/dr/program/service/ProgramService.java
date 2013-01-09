@@ -15,6 +15,8 @@ import com.cannontech.common.util.DatedObject;
 import com.cannontech.dr.program.model.GearAdjustment;
 import com.cannontech.dr.scenario.model.ScenarioProgram;
 import com.cannontech.loadcontrol.data.LMProgramBase;
+import com.cannontech.loadcontrol.service.data.ProgramStatus;
+import com.cannontech.message.util.TimeoutException;
 import com.cannontech.user.YukonUserContext;
 
 public interface ProgramService {
@@ -44,8 +46,12 @@ public interface ProgramService {
             YukonUserContext userContext);
 
     /**
+     * 
      * Check to see if any constraints would be violated by starting the program
      * specified by programId using the specified gear and start/end time.
+     * 
+     * Null safe on gearAdjustments
+     * 
      * @param programId The PAO id of the program to check.
      * @param gearNumber The gear number.
      * @param startDate The time chosen to start the program. Must not be null.
@@ -66,11 +72,27 @@ public interface ProgramService {
      * @param stopDate The time chosen to end the program. Cannot be null.
      * @param overrideConstraints If this is set to true, constraints will be
      *            overridden. If not, they will be observed.
+     * @throws TimeoutException 
      */
-    public void startProgram(int programId, int gearNumber, Date startDate,
+    public ProgramStatus startProgramBlocking(int programId, int gearNumber, Date startDate,
             Duration startOffset, boolean stopScheduled, Date stopDate,
             Duration stopOffset, boolean overrideConstraints,
-            List<GearAdjustment> gearAdjustments);
+            List<GearAdjustment> gearAdjustments) throws TimeoutException;
+
+    /**
+     * Start the given program with the given gear number, start and end time.
+     * @param programId The PAO id of the program to check.
+     * @param gearNumber The gear number.
+     * @param startDate The time chosen to start the program. Must not be null.
+     * @param stopDate The time chosen to end the program. Cannot be null.
+     * @param overrideConstraints If this is set to true, constraints will be
+     *            overridden. If not, they will be observed.
+     * @throws TimeoutException 
+     */
+    public void startProgram(int programId, int gearNumber, Date startDate,
+                             Duration startOffset, boolean stopScheduled, Date stopDate,
+                             Duration stopOffset, boolean overrideConstraints,
+                             List<GearAdjustment> gearAdjustments);
 
     public void scheduleProgramStop(int programId, Date stopDate,
             Duration stopOffset);

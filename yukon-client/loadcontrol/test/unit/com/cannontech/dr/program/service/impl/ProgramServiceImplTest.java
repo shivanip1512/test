@@ -17,10 +17,8 @@ import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
 
-import com.cannontech.common.exception.BadConfigurationException;
 import com.cannontech.core.service.DateFormattingService;
 import com.cannontech.core.service.impl.DateFormattingServiceImpl;
-import com.cannontech.core.service.impl.SystemDateFormattingServiceImpl;
 import com.cannontech.dr.program.model.GearAdjustment;
 import com.cannontech.dr.scenario.model.ScenarioProgram;
 import com.cannontech.user.SimpleYukonUserContext;
@@ -41,12 +39,6 @@ public class ProgramServiceImplTest {
         programService = new ProgramServiceImpl();
         DateFormattingService dateFormattingService = new DateFormattingServiceImpl();
         programService.setDateFormattingService(dateFormattingService);
-        programService.setSystemDateFormattingService(new SystemDateFormattingServiceImpl() {
-            @Override
-            public TimeZone getSystemTimeZone() throws BadConfigurationException {
-                return TimeZone.getTimeZone("America/Chicago");
-            }
-        });
     }
 
     @After

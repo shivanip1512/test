@@ -4,9 +4,7 @@ import java.util.Date;
 import java.util.List;
 
 import com.cannontech.common.exception.NotAuthorizedException;
-import com.cannontech.core.dao.GearNotFoundException;
 import com.cannontech.core.dao.NotFoundException;
-import com.cannontech.core.dao.ProgramNotFoundException;
 import com.cannontech.database.data.lite.LiteYukonUser;
 import com.cannontech.loadcontrol.service.data.ProgramControlHistory;
 import com.cannontech.loadcontrol.service.data.ProgramStatus;
@@ -37,63 +35,6 @@ public interface LoadControlService {
      * @return
      */
     public List<ProgramStatus> getAllCurrentlyActivePrograms(LiteYukonUser user);
-
-    /**
-     * Starts control of program of given programName. Returns a ProgramStatus
-     * object containing the updated program status info if successful, if
-     * program has constraint violations will contain current program status
-     * info and the list of violations in the ProgramStatus.
-     * @param programName
-     * @param startTime
-     * @param stopTime
-     * @param gearName
-     * @param forceStart should normally always be set to false, set to true only if
-     * @param user will be checked against user/group pao permission tables to validate access to program,
-     * a program is visible to the user either because it is directly visible, or belongs to a control area that is visible.
-     * you're sure you really need want to ignore constraint violations.
-     * @param observeConstraintsAndExecute If false, do not execute if there are constraint violations.
-     * If true, allow the server to alter our request to abide by the constraints and execute (i.e. "Observe") 
-     * Note: This value only matters when using forceStart=false. 
-     * @return
-     * @throws ProgramNotFoundException if no program exists for given programName
-     * @throws GearNotFoundException if no gear exists for given gearName, belonging to the program
-     * @throws TimeoutException if server fails to send an update response for the control start
-     * @throws NotAuthorizedException if neither the user (nor any groups user belongs to) have neither the program (nor any of
-     * the control areas the program belongs to) made visible to them.
-     * to them
-     * @throws BadServerResponseException 
-     */
-    public ProgramStatus startControlByProgramName(String programName,
-            Date startTime, Date stopTime, String gearName, boolean forceStart, boolean observeConstraintsAndExecute, LiteYukonUser user)
-            throws ProgramNotFoundException, GearNotFoundException, TimeoutException, NotAuthorizedException, BadServerResponseException;
-    
-    /**
-     * Starts control of program of given programName. Returns a ProgramStatus
-     * object containing the updated program status info if successful, if
-     * program has constraint violations will contain current program status
-     * info and the list of violations in the ProgramStatus.
-     * Does not take a gearName parameter, uses program's current gear always.
-     * @param programName
-     * @param startTime
-     * @param stopTime
-     * @param gearNumber
-     * @param forceStart should normally always be set to false, set to true only if
-     * @param user will be checked against user/group pao permission tables to validate access to program,
-     * a program is visible to the user either because it is directly visible, or belongs to a control area that is visible.
-     * you're sure you really need want to ignore constraint violations.
-     * @param observeConstraintsAndExecute If false, do not execute if there are constraint violations.
-     * If true, allow the server to alter our request to abide by the constraints and execute (i.e. "Observe") 
-     * Note: This value only matters when using forceStart=false. 
-     * @return
-     * @throws NotFoundException if no program exists for given programName
-     * @throws TimeoutException if server fails to send an update response for the control start
-     * @throws NotAuthorizedException if neither the user (nor any groups user belongs to) have neither the program (nor any of
-     * the control areas the program belongs to) made visible to them.
-     * @throws BadServerResponseException 
-     */
-    public ProgramStatus startControlByProgramName(String programName,
-            Date startTime, Date stopTime, boolean forceStart, boolean observeConstraintsAndExecute, LiteYukonUser user)
-            throws NotFoundException, TimeoutException, NotAuthorizedException, BadServerResponseException;
 
     /**
      * Stops control of program of given programName. Returns a ProgramStatus

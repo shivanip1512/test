@@ -54,18 +54,6 @@
   <bean id="multispeakDeviceGroupSyncService" class="com.cannontech.multispeak.service.impl.MultispeakDeviceGroupSyncServiceImpl"/>
      
   <bean id="multispeakLMService" class="com.cannontech.multispeak.service.impl.MultispeakLMServiceImpl">
-	<property name="strategyNames">
-	  <list>
-		<value>WATER HEATERS</value>
-		<value>VOLTAGE CONTROL</value>
-		<value>AIR CONDITIONERS</value>
-		<value>ETS</value>
-		<value>MISC</value>
-		<value>PJM DEMAND RESPONSE</value>
-		<value>ALL DEVICES</value>
-		<value>SCRAM</value>
-	  </list>
-	</property>
 	<property name="strategiesToExcludeInReport">
 	  <list>
 		<value>ALL DEVICES</value>

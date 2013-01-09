@@ -46,22 +46,6 @@ public class LoadControlServiceAdapter implements LoadControlService {
     }
 
     @Override
-    public ProgramStatus startControlByProgramName(String programName,
-            Date startTime, Date stopTime, String gearName, boolean forceStart,
-            boolean observeConstraintsAndExecute, LiteYukonUser user) throws NotFoundException,
-            TimeoutException, NotAuthorizedException {
-        throw new UnsupportedOperationException("Not Implemented");
-    }
-
-    @Override
-    public ProgramStatus startControlByProgramName(String programName,
-            Date startTime, Date stopTime, boolean forceStart,
-            boolean observeConstraintsAndExecute, LiteYukonUser user) throws NotFoundException,
-            TimeoutException, NotAuthorizedException {
-        throw new UnsupportedOperationException("Not Implemented");
-    }
-
-    @Override
     public ScenarioStatus startControlByScenarioName(String scenarioName,
             Date startTime, Date stopTime, boolean forceStart,
             boolean observeConstraintsAndExecute, LiteYukonUser user) throws NotFoundException,

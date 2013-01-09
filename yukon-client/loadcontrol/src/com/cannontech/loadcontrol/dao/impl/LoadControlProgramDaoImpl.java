@@ -309,7 +309,7 @@ public class LoadControlProgramDaoImpl implements LoadControlProgramDao {
     		return yukonJdbcOperations.queryForInt(sql, gearName, programId);
     	
     	} catch (IncorrectResultSizeDataAccessException e) {
-    		throw new NotFoundException("Gear not found (programId = " + programId + ", geanName = " + gearName + ")");
+    		throw new NotFoundException("Gear not found (programId = " + programId + ", gearName = " + gearName + ")");
     	}
     }
     
