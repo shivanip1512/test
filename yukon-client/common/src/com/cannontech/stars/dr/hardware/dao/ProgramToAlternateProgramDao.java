@@ -45,8 +45,7 @@ public interface ProgramToAlternateProgramDao {
     /**
      * Returns a list of all program to alternate program mappings
      */
-	public List<ProgramToAlternateProgram> getAll();
-	
+    public List<ProgramToAlternateProgram> getAll();
 
     /**
      * Returns a list of program ids for all programs that are being used as alternate programs.
