@@ -16,6 +16,7 @@ import com.cannontech.stars.dr.optout.model.OptOutEvent;
 import com.cannontech.stars.dr.optout.model.OptOutEventDto;
 import com.cannontech.stars.dr.optout.model.OptOutLog;
 import com.cannontech.stars.dr.optout.model.OverrideHistory;
+import com.cannontech.stars.energyCompany.model.YukonEnergyCompany;
 import com.google.common.collect.Multimap;
 
 public class OptOutEventDaoAdapter implements OptOutEventDao {
@@ -123,12 +124,12 @@ public class OptOutEventDaoAdapter implements OptOutEventDao {
     }
 
     @Override
-    public int getTotalNumberOfActiveOptOuts(LiteStarsEnergyCompany energyCompany) {
+    public int getTotalNumberOfActiveOptOuts(YukonEnergyCompany yukonEnergyCompany, List<Integer> assignedProgramIds) {
         throw new UnsupportedOperationException("not implemented");
     }
 
     @Override
-    public int getTotalNumberOfScheduledOptOuts(LiteStarsEnergyCompany energyCompany) {
+    public int getTotalNumberOfScheduledOptOuts(YukonEnergyCompany yukonEnergyCompany, List<Integer> assignedProgramIds) {
         throw new UnsupportedOperationException("not implemented");
     }
 

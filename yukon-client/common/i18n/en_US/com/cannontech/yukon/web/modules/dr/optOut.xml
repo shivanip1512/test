@@ -11,6 +11,7 @@
     <entry key="yukon.web.modules.dr.optOutAdmin.totalAccounts">Total Consumer Accounts</entry>
     <entry key="yukon.web.modules.dr.optOutAdmin.todaysOptOuts">Today's Opt Outs</entry>
     <entry key="yukon.web.modules.dr.optOutAdmin.futureOptOuts">Future Opt Outs</entry>
+    <entry key="yukon.web.modules.dr.optOutAdmin.alternateEnrollments">Devices in Alternate Enrollment</entry>
 
     <entry key="yukon.web.modules.dr.optOutAdmin.title">Opt Out Admin</entry>
     
@@ -49,8 +50,10 @@
     <entry key="yukon.web.modules.dr.optOutAdmin.countOptOuts.countOptOutsButton">Count Today's Opt Outs</entry>
     <entry key="yukon.web.modules.dr.optOutAdmin.countOptOuts.dontCountOptOutsButton">Don't Count Today's Opt Outs</entry>
     <entry key="yukon.web.modules.dr.optOutAdmin.countOptOuts.byProgramName.label">Optional:</entry>
-    <entry key="yukon.web.modules.dr.optOutAdmin.countOptOuts.byProgramName.instruction">Only Change For A Single Program</entry>
-
+    <entry key="yukon.web.modules.dr.optOutAdmin.countOptOuts.byProgramName.instruction">Only {0} For A Single Program</entry>
+    <entry key="yukon.web.modules.dr.optOutAdmin.countOptOuts.byProgramName.instruction.show">Show</entry>
+    <entry key="yukon.web.modules.dr.optOutAdmin.countOptOuts.byProgramName.instruction.change">Change</entry>
+    
 	<entry key="yukon.web.modules.dr.chooseProgram">Choose Program</entry>
     
     <entry key="yukon.web.modules.dr.byProgramName.confirm.ENABLED">Enabled the Consumer''s Ability to Opt Out for the program {0} and communicate with devices.</entry>

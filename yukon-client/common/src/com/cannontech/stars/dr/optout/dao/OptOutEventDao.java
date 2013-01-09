@@ -15,6 +15,7 @@ import com.cannontech.stars.dr.optout.model.OptOutEvent;
 import com.cannontech.stars.dr.optout.model.OptOutEventDto;
 import com.cannontech.stars.dr.optout.model.OptOutLog;
 import com.cannontech.stars.dr.optout.model.OverrideHistory;
+import com.cannontech.stars.energyCompany.model.YukonEnergyCompany;
 import com.google.common.collect.Multimap;
 
 /**
@@ -180,17 +181,13 @@ public interface OptOutEventDao {
 	
 	/**
 	 * Method to get a count of all currently active Opt Outs
-	 * @param energyCompany - Company to get opt outs for
-	 * @return Count of active Opt Outs
 	 */
-	public int getTotalNumberOfActiveOptOuts(LiteStarsEnergyCompany energyCompany);
+	public int getTotalNumberOfActiveOptOuts(YukonEnergyCompany yukonEnergyCompany, List<Integer> assignedProgramIds);
 
 	/**
 	 * Method to get a count of all scheduled Opt Outs
-	 * @param energyCompany - Company to get opt outs for
-	 * @return Count of scheduled Opt Outs
 	 */
-	public int getTotalNumberOfScheduledOptOuts(LiteStarsEnergyCompany energyCompany);
+	public int getTotalNumberOfScheduledOptOuts(YukonEnergyCompany yukonEnergyCompany, List<Integer> assignedProgramIds);
 	
 	/**
 	 * Method to change the current count state of all active opt outs to the given value

@@ -18,6 +18,7 @@ import org.springframework.jdbc.core.ResultSetExtractor;
 import org.springframework.jdbc.core.simple.ParameterizedRowMapper;
 import org.springframework.transaction.annotation.Propagation;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.util.CollectionUtils;
 
 import com.cannontech.common.util.ChunkingMappedSqlTemplate;
 import com.cannontech.common.util.SqlFragmentGenerator;
@@ -48,6 +49,7 @@ import com.cannontech.stars.dr.optout.model.OptOutLog;
 import com.cannontech.stars.dr.optout.model.OverrideHistory;
 import com.cannontech.stars.dr.optout.model.OverrideStatus;
 import com.cannontech.stars.dr.program.model.Program;
+import com.cannontech.stars.energyCompany.model.YukonEnergyCompany;
 import com.google.common.base.Function;
 import com.google.common.collect.Maps;
 import com.google.common.collect.Multimap;
@@ -574,26 +576,30 @@ public class OptOutEventDaoImpl implements OptOutEventDao {
 	
 
 	@Override
-	public int getTotalNumberOfActiveOptOuts(LiteStarsEnergyCompany energyCompany) {
+    public int getTotalNumberOfActiveOptOuts(YukonEnergyCompany yukonEnergyCompany, List<Integer> assignedProgramIds) {
 
-		Date now = new Date();
+        Instant now = Instant.now();
 		
-		SqlStatementBuilder sql = new SqlStatementBuilder();
-		sql.append("SELECT COUNT(*)");
-		sql.append("FROM OptOutEvent ooe");
-		sql.append("	JOIN ECToAccountMapping ectam ON ooe.CustomerAccountId = ectam.AccountId");
-		sql.append("WHERE ooe.EventState = ?");
-		sql.append("	AND ooe.StartDate <= ?");
-		sql.append("	AND ooe.StopDate >= ?");
-		sql.append("	AND ectam.EnergyCompanyId = ?");
+        SqlStatementBuilder sql = new SqlStatementBuilder();
+        sql.append("SELECT COUNT(1)");
+        sql.append("FROM OptOutEvent OOE");
+        sql.append("  JOIN ECToAccountMapping ectam ON OOE.CustomerAccountId = ECTAM.AccountId");
+        // If the assigned programs are supplied let's use the active enrollments of those programs to calculate the total number of accounts.
+        if (!CollectionUtils.isEmpty(assignedProgramIds)) {
+            sql.append("  JOIN LMHardwareControlGroup LMHCG ON (ECTAM.AccountId = LMHCG.AccountId  AND " +
+                                                                                                  " LMHCG.GroupEnrollStart IS NOT NULL AND " +
+                                                                                                  " LMHCG.GroupEnrollStop IS NULL)");
+        }
+
+		sql.append("WHERE OOE.EventState").eq_k(OptOutEventState.START_OPT_OUT_SENT);
+        sql.append("	AND OOE.StartDate").lte(now);
+        sql.append("	AND OOE.StopDate").gte(now);
+        sql.append("	AND ECTAM.EnergyCompanyId").eq_k(yukonEnergyCompany.getEnergyCompanyId());
+        if (!CollectionUtils.isEmpty(assignedProgramIds)) {
+            sql.append("  AND LMHCG.ProgramId").in(assignedProgramIds);
+        }
 		
-		int currentOptOutCount = yukonJdbcTemplate.queryForInt(sql.toString(), 
-													OptOutEventState.START_OPT_OUT_SENT.toString(),
-													now,
-													now,
-													energyCompany.getEnergyCompanyId());
-		
-		return currentOptOutCount;
+		return yukonJdbcTemplate.queryForInt(sql);
 	}
 	
 	@Override
@@ -620,20 +626,26 @@ public class OptOutEventDaoImpl implements OptOutEventDao {
 	}
 
 	@Override
-	public int getTotalNumberOfScheduledOptOuts(LiteStarsEnergyCompany energyCompany) {
+    public int getTotalNumberOfScheduledOptOuts(YukonEnergyCompany yukonEnergyCompany, List<Integer> assignedProgramIds) {
 		
-		SqlStatementBuilder sql = new SqlStatementBuilder();
-		sql.append("SELECT COUNT(*)");
-		sql.append("FROM OptOutEvent ooe");
-		sql.append("	JOIN ECToAccountMapping ectam ON ooe.CustomerAccountId = ectam.AccountId");
-		sql.append("WHERE ooe.EventState = ?");
-		sql.append("	AND ectam.EnergyCompanyId = ?");
-		
-		int scheduledOptOutCount = yukonJdbcTemplate.queryForInt(sql.toString(), 
-													OptOutEventState.SCHEDULED.toString(),
-													energyCompany.getEnergyCompanyId());
-		
-		return scheduledOptOutCount;
+        SqlStatementBuilder sql = new SqlStatementBuilder();
+        sql.append("SELECT COUNT(1)");
+        sql.append("FROM OptOutEvent OOE");
+        sql.append("	JOIN ECToAccountMapping ECTAM ON OOE.CustomerAccountId = ECTAM.AccountId");
+	    // If the assigned programs are supplied let's use the active enrollments of those programs to calculate the total number of accounts.
+        if (!CollectionUtils.isEmpty(assignedProgramIds)) {
+                    sql.append("  JOIN LMHardwareControlGroup LMHCG ON (ECTAM.AccountId = LMHCG.AccountId  AND " +
+                                                                                                          " LMHCG.GroupEnrollStart IS NOT NULL AND " +
+                                                                                                          " LMHCG.GroupEnrollStop IS NULL)");
+        }
+
+		sql.append("WHERE OOE.EventState").eq_k(OptOutEventState.SCHEDULED);
+        sql.append("	AND ECTAM.EnergyCompanyId").eq_k(yukonEnergyCompany.getEnergyCompanyId());
+        if (!CollectionUtils.isEmpty(assignedProgramIds)) {
+            sql.append("  AND LMHCG.ProgramId").in(assignedProgramIds);
+        }
+
+		return yukonJdbcTemplate.queryForInt(sql);
 	}
 
 	@Override

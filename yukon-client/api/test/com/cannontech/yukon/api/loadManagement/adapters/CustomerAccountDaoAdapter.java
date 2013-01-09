@@ -7,7 +7,6 @@ import java.util.Map;
 
 import com.cannontech.common.exception.NotAuthorizedException;
 import com.cannontech.database.data.lite.LiteYukonUser;
-import com.cannontech.stars.database.data.lite.LiteStarsEnergyCompany;
 import com.cannontech.stars.dr.account.dao.CustomerAccountDao;
 import com.cannontech.stars.dr.account.model.CustomerAccount;
 import com.cannontech.stars.dr.account.model.CustomerAccountWithNames;
@@ -48,11 +47,6 @@ public class CustomerAccountDaoAdapter implements CustomerAccountDao{
 
     @Override
     public List<CustomerAccount> getAll() {
-        throw new UnsupportedOperationException("not implemented");
-    }
-
-    @Override
-    public List<CustomerAccountWithNames> getAllAccountsWithNamesByEC(int ecId) {
         throw new UnsupportedOperationException("not implemented");
     }
 
@@ -110,7 +104,7 @@ public class CustomerAccountDaoAdapter implements CustomerAccountDao{
     }
 
     @Override
-    public int getTotalNumberOfAccounts(LiteStarsEnergyCompany energyCompany) {
+    public int getTotalNumberOfAccounts(YukonEnergyCompany yukonEnergyCompany, List<Integer> assignedProgramIds) {
         throw new UnsupportedOperationException("not implemented");
     }
 

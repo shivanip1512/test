@@ -10,9 +10,12 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.jdbc.core.namedparam.MapSqlParameterSource;
 
+import com.cannontech.common.util.ChunkingSqlTemplate;
+import com.cannontech.common.util.SqlFragmentGenerator;
+import com.cannontech.common.util.SqlFragmentSource;
 import com.cannontech.common.util.SqlStatementBuilder;
 import com.cannontech.database.FieldMapper;
-import com.cannontech.database.IntegerRowMapper;
+import com.cannontech.database.RowMapper;
 import com.cannontech.database.SimpleTableAccessTemplate;
 import com.cannontech.database.YukonJdbcTemplate;
 import com.cannontech.database.YukonResultSet;
@@ -50,6 +53,18 @@ public class ProgramToAlternateProgramDaoImpl implements ProgramToAlternateProgr
     //Row Mappers
     private static YukonRowMapper<ProgramToAlternateProgram> ProgramToAlternateProgramRowMapper = new YukonRowMapper<ProgramToAlternateProgram>() {
 
+        @Override
+        public ProgramToAlternateProgram mapRow(YukonResultSet rs) throws SQLException {
+            ProgramToAlternateProgram programToAlternateProgram = new ProgramToAlternateProgram();
+            
+            programToAlternateProgram.setAssignedProgramId(rs.getInt("AssignedProgramId"));
+            programToAlternateProgram.setAlternateProgramId(rs.getInt("SeasonalProgramId"));
+            
+            return programToAlternateProgram;
+        }
+    };
+    
+    private static YukonRowMapper<ProgramToAlternateProgram> ProgramToAlternateProgramParameterizedRowMapper = new YukonRowMapper<ProgramToAlternateProgram>() {
         @Override
         public ProgramToAlternateProgram mapRow(YukonResultSet rs) throws SQLException {
             ProgramToAlternateProgram programToAlternateProgram = new ProgramToAlternateProgram();
@@ -110,13 +125,25 @@ public class ProgramToAlternateProgramDaoImpl implements ProgramToAlternateProgr
     
     @Override
     public List<ProgramToAlternateProgram> getByEitherAssignedProgramIdOrSeasonalProgramId(Iterable<Integer> programIds) {
-        SqlStatementBuilder sql = new SqlStatementBuilder();
-        sql.append("SELECT *");
-        sql.append("FROM ProgramToSeasonalProgram");
-        sql.append("WHERE AssignedProgramId").in(programIds);
-        sql.append("  OR SeasonalProgramId").in(programIds);
         
-        return yukonJdbcTemplate.query(sql, ProgramToAlternateProgramRowMapper);
+        ChunkingSqlTemplate template = new ChunkingSqlTemplate(yukonJdbcTemplate);
+        
+        SqlFragmentGenerator<Integer> sqlGenerator = new SqlFragmentGenerator<Integer>() {
+            @Override
+            public SqlFragmentSource generate(List<Integer> subList) {
+                SqlStatementBuilder sql = new SqlStatementBuilder();
+                sql.append("SELECT *");
+                sql.append("FROM ProgramToSeasonalProgram");
+                sql.append("WHERE AssignedProgramId").in(subList);
+                sql.append("  OR SeasonalProgramId").in(subList);
+                return sql;
+            }
+        };
+
+        List<ProgramToAlternateProgram> retVal =
+                template.query(sqlGenerator, programIds, ProgramToAlternateProgramParameterizedRowMapper);
+        
+        return retVal;
     }
 
     
@@ -135,7 +162,7 @@ public class ProgramToAlternateProgramDaoImpl implements ProgramToAlternateProgr
         sql.append("SELECT DISTINCT SeasonalProgramId");
         sql.append("FROM ProgramToSeasonalProgram");
         
-        return yukonJdbcTemplate.query(sql, new IntegerRowMapper());
+        return yukonJdbcTemplate.query(sql, RowMapper.INTEGER);
     }
 
     @Override

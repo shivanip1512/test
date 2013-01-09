@@ -1,6 +1,7 @@
 package com.cannontech.web.stars.dr.operator.optout;
 
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
@@ -12,6 +13,7 @@ import org.springframework.stereotype.Controller;
 import org.springframework.ui.ModelMap;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
+import org.springframework.web.servlet.View;
 
 import com.cannontech.common.constants.YukonListEntry;
 import com.cannontech.common.constants.YukonListEntryTypes;
@@ -26,11 +28,13 @@ import com.cannontech.core.roleproperties.dao.RolePropertyDao;
 import com.cannontech.database.data.lite.LiteYukonUser;
 import com.cannontech.i18n.YukonMessageSourceResolvable;
 import com.cannontech.stars.core.dao.InventoryBaseDao;
+import com.cannontech.stars.core.service.YukonEnergyCompanyService;
 import com.cannontech.stars.database.cache.StarsDatabaseCache;
-import com.cannontech.stars.database.data.lite.LiteStarsEnergyCompany;
 import com.cannontech.stars.database.data.lite.LiteLmHardwareBase;
+import com.cannontech.stars.database.data.lite.LiteStarsEnergyCompany;
 import com.cannontech.stars.dr.account.dao.CustomerAccountDao;
 import com.cannontech.stars.dr.account.model.CustomerAccount;
+import com.cannontech.stars.dr.hardware.dao.ProgramToAlternateProgramDao;
 import com.cannontech.stars.dr.optout.dao.OptOutEventDao;
 import com.cannontech.stars.dr.optout.model.OptOutCounts;
 import com.cannontech.stars.dr.optout.model.OptOutCountsTemporaryOverride;
@@ -40,9 +44,11 @@ import com.cannontech.stars.dr.optout.service.OptOutService;
 import com.cannontech.stars.dr.optout.service.OptOutStatusService;
 import com.cannontech.stars.dr.program.dao.ProgramDao;
 import com.cannontech.stars.dr.program.model.Program;
+import com.cannontech.stars.energyCompany.model.YukonEnergyCompany;
 import com.cannontech.user.YukonUserContext;
 import com.cannontech.web.common.flashScope.FlashScope;
 import com.cannontech.web.security.annotation.CheckRole;
+import com.cannontech.web.util.JsonView;
 import com.google.common.collect.Maps;
 
 /**
@@ -52,18 +58,20 @@ import com.google.common.collect.Maps;
 @Controller
 public class OptOutAdminController {
 
-	@Autowired private OptOutEventDao optOutEventDao;
-	@Autowired private CustomerAccountDao customerAccountDao;
-	@Autowired private OptOutStatusService optOutStatusService;
-	@Autowired private StarsDatabaseCache starsDatabaseCache;
-	@Autowired private OptOutService optOutService;
-	@Autowired private StarsEventLogService starsEventLogService;
-	@Autowired private InventoryBaseDao inventoryBaseDao;
-	@Autowired private ProgramDao programDao;
-	@Autowired private RolePropertyDao rolePropertyDao;
+    @Autowired private CustomerAccountDao customerAccountDao;
+    @Autowired private InventoryBaseDao inventoryBaseDao;
+    @Autowired private OptOutEventDao optOutEventDao;
+    @Autowired private OptOutService optOutService;
+    @Autowired private OptOutStatusService optOutStatusService;
+    @Autowired private ProgramDao programDao;
+    @Autowired private RolePropertyDao rolePropertyDao;
+    @Autowired private ProgramToAlternateProgramDao programToAlternameProgramDao;
+    @Autowired private StarsDatabaseCache starsDatabaseCache;
+    @Autowired private StarsEventLogService starsEventLogService;
+    @Autowired private YukonEnergyCompanyService yukonEnergyCompanyService;
 	
     @RequestMapping(value = "/operator/optOut/admin", method = RequestMethod.GET)
-    public String view(YukonUserContext userContext, ModelMap map, Boolean emptyProgramName, Boolean programNotFound) throws Exception {
+    public String view(YukonUserContext userContext, ModelMap model, Boolean emptyProgramName, Boolean programNotFound) throws Exception {
         
     	rolePropertyDao.verifyAnyProperties(userContext.getYukonUser(), 
         		YukonRoleProperty.OPERATOR_OPT_OUT_ADMIN_STATUS,
@@ -72,16 +80,9 @@ public class OptOutAdminController {
         		YukonRoleProperty.OPERATOR_OPT_OUT_ADMIN_CANCEL_CURRENT);
     	
     	LiteStarsEnergyCompany energyCompany = starsDatabaseCache.getEnergyCompanyByUser(userContext.getYukonUser());
-    	map.addAttribute("energyCompanyId", energyCompany.getEnergyCompanyId());
+    	model.addAttribute("energyCompanyId", energyCompany.getEnergyCompanyId());
 
-    	int totalNumberOfAccounts = customerAccountDao.getTotalNumberOfAccounts(energyCompany);
-    	map.addAttribute("totalNumberOfAccounts", totalNumberOfAccounts);
-
-    	Integer currentOptOuts = optOutEventDao.getTotalNumberOfActiveOptOuts(energyCompany);
-    	map.addAttribute("currentOptOuts", currentOptOuts);
-    	
-    	Integer scheduledOptOuts = optOutEventDao.getTotalNumberOfScheduledOptOuts(energyCompany);
-    	map.addAttribute("scheduledOptOuts", scheduledOptOuts);
+    	systemOptOuts(null, userContext, model);
 
     	// programNameEnabledMap
     	OptOutEnabled defaultOptOutEnabledSetting = optOutStatusService.getDefaultOptOutEnabled(userContext.getYukonUser());
@@ -95,8 +96,8 @@ public class OptOutAdminController {
             Program program = programDao.getByProgramId(programId);
             programNameEnabledMap.put(program.getProgramName(), programOptOutEnabledEntry.getValue());
         }
-        map.addAttribute("programNameEnabledMap", programNameEnabledMap);
-        map.addAttribute("energyCompanyOptOutEnabledSetting", defaultOptOutEnabledSetting);
+        model.addAttribute("programNameEnabledMap", programNameEnabledMap);
+        model.addAttribute("energyCompanyOptOutEnabledSetting", defaultOptOutEnabledSetting);
 
         // programNameCountsMap
         OptOutCountsTemporaryOverride defaultOptOutCountsSetting = optOutStatusService.getDefaultOptOutCounts(userContext.getYukonUser());
@@ -109,8 +110,8 @@ public class OptOutAdminController {
 			Program program = programDao.getByProgramId(programId);
 			programNameCountsMap.put(program.getProgramName(), setting.getOptOutCounts());
 		}
-    	map.addAttribute("programNameCountsMap", programNameCountsMap);
-        map.addAttribute("energyCompanyOptOutCountsSetting", defaultOptOutCountsSetting.getOptOutCounts());
+    	model.addAttribute("programNameCountsMap", programNameCountsMap);
+        model.addAttribute("energyCompanyOptOutCountsSetting", defaultOptOutCountsSetting.getOptOutCounts());
     	
     	// Get the customer search by list for search drop down box
     	YukonSelectionList yukonSelectionList = energyCompany.getYukonSelectionList(YukonSelectionListDefs.YUK_LIST_NAME_SEARCH_TYPE);
@@ -121,12 +122,25 @@ public class OptOutAdminController {
 				customerSearchList.add(entry);
 			}
 		}
-		map.addAttribute("customerSearchList", customerSearchList);
+		model.addAttribute("customerSearchList", customerSearchList);
 		
-		map.addAttribute("emptyProgramName", emptyProgramName);
-		map.addAttribute("programNotFound", programNotFound);
+		model.addAttribute("emptyProgramName", emptyProgramName);
+		model.addAttribute("programNotFound", programNotFound);
 		
 		return "operator/optout/optOutAdmin.jsp";
+    }
+
+    @RequestMapping(value = "/operator/optOut/systemOptOuts", method = RequestMethod.POST)
+    public View systemOptOuts(Integer assignedProgramId, YukonUserContext userContext, ModelMap model) throws Exception {
+        List<Integer> assignedProgramIds = assignedProgramId != null ? Collections.singletonList(assignedProgramId): null;
+
+        YukonEnergyCompany yukonEnergyCompany = yukonEnergyCompanyService.getEnergyCompanyByOperator(userContext.getYukonUser());
+        model.addAttribute("totalNumberOfAccounts", customerAccountDao.getTotalNumberOfAccounts(yukonEnergyCompany, assignedProgramIds));
+        model.addAttribute("currentOptOuts", optOutEventDao.getTotalNumberOfActiveOptOuts(yukonEnergyCompany, assignedProgramIds));
+        model.addAttribute("scheduledOptOuts", optOutEventDao.getTotalNumberOfScheduledOptOuts(yukonEnergyCompany, assignedProgramIds));
+        model.addAttribute("alternateEnrollments", programToAlternameProgramDao.getTotalNumberOfAccountsInSeasonalOptOuts(yukonEnergyCompany, assignedProgramIds));
+
+        return new JsonView();
     }
     
     @RequestMapping(value = "/operator/optOut/admin/setDisabled", params="enableOptOuts", method = RequestMethod.POST)

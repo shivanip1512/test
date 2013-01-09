@@ -117,16 +117,11 @@
 		<property name="lmHardwareControlGroupDao" ref="lmHardwareControlGroupDao"/>
 	</bean>
 	
-	<bean id="lmHardwareControlGroupDao"
-        class="com.cannontech.stars.dr.hardware.dao.impl.LMHardwareControlGroupDaoImpl">
+	<bean id="lmHardwareControlGroupDao" class="com.cannontech.stars.dr.hardware.dao.impl.LMHardwareControlGroupDaoImpl">
         <property name="nextValueHelper" ref="nextValueHelper" />
     </bean>
 	
-    <bean id="customerAccountDao"
-        class="com.cannontech.stars.dr.account.dao.impl.CustomerAccountDaoImpl">
-        <property name="nextValueHelper" ref="nextValueHelper" />
-        <property name="starsDatabaseCache" ref="starsDatabaseCache"/>
-    </bean>
+    <bean id="customerAccountDao" class="com.cannontech.stars.dr.account.dao.impl.CustomerAccountDaoImpl"/>
 
     <bean id="starsSearchDao" class="com.cannontech.stars.core.dao.impl.StarsSearchDaoImpl"/>
 
