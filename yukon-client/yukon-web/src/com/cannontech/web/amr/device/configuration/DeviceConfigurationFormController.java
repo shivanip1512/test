@@ -14,6 +14,7 @@ import org.springframework.web.servlet.ModelAndView;
 import com.cannontech.common.device.config.dao.DeviceConfigurationDao;
 import com.cannontech.common.device.config.model.CategoryTemplate;
 import com.cannontech.common.device.config.model.ConfigurationBase;
+import com.cannontech.common.device.config.model.ConfigurationBaseValidator;
 import com.cannontech.common.device.config.model.ConfigurationTemplate;
 import com.cannontech.core.roleproperties.YukonRoleProperty;
 import com.cannontech.i18n.YukonMessageSourceResolvable;
@@ -64,7 +65,11 @@ public class DeviceConfigurationFormController extends InputFormController {
         for (CategoryTemplate catTemplate : configurationTemplate.getCategoryList()) {
             result.addAll(catTemplate.getValidatorList());
         }
-        
+
+        ConfigurationBaseValidator validator = new ConfigurationBaseValidator();
+        validator.setDeviceConfigurationDao(deviceConfigurationDao);
+        result.add(validator);
+
         return result;
     }
 

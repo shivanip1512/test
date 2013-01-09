@@ -101,4 +101,10 @@ public interface DeviceConfigurationDao {
      * Returns the DNP configuration in the database with the lowest ID
      */
     public ConfigurationBase getDefaultDNPConfiguration();
+    
+    /**
+     * Returns true if there is already a configuration in the database
+     * with a different ID
+     */
+    public boolean checkForNameConflict(String name, Integer id);
 }

@@ -422,4 +422,17 @@ public class DeviceConfigurationDaoImpl implements DeviceConfigurationDao {
     public ConfigurationBase getDefaultDNPConfiguration() {
         return getConfiguration(DNPConfiguration.DEFAULT_DNP_CONFIG_ID);
     }
+
+    @Override
+    public boolean checkForNameConflict(String name, Integer id){
+        SqlStatementBuilder sql = new SqlStatementBuilder();
+        sql.append("SELECT COUNT(*)");
+        sql.append("FROM deviceconfiguration");
+        sql.append("WHERE name").eq(name);
+        if(id != null){
+            sql.append("AND deviceconfigurationId").neq(id);
+        }
+        int otherIds = jdbcTemplate.queryForInt(sql);
+        return otherIds != 0;
+    }
 }
