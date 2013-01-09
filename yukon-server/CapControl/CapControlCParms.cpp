@@ -54,7 +54,6 @@ bool    _LIMIT_ONE_WAY_COMMANDS;
 bool    _IVVC_STATIC_DELTA_VOLTAGES;
 bool    _IVVC_INDIVIDUAL_DEVICE_VOLTAGE_TARGETS;
 unsigned long _IVVC_REGULATOR_AUTO_MODE_MSG_DELAY;
-unsigned long _SQL_RETRY_COUNT;
 
 void refreshGlobalCParms()
 {
@@ -657,11 +656,5 @@ void refreshGlobalCParms()
         dout << CtiTime() << " - CAP_CONTROL_IVVC_REGULATOR_AUTO_MODE_MSG_DELAY: " << _IVVC_REGULATOR_AUTO_MODE_MSG_DELAY << " seconds." << endl;
     }
     
-    _SQL_RETRY_COUNT = gConfigParms.getValueAsULong("YUKON_SQL_RETRY_COUNT", 3);
-    if ( _CC_DEBUG & CC_DEBUG_STANDARD )
-    {
-        CtiLockGuard<CtiLogger> logger_guard(dout);
-        dout << CtiTime() << " - YUKON_SQL_RETRY_COUNT: " << _SQL_RETRY_COUNT << endl;
-    }
 }
 

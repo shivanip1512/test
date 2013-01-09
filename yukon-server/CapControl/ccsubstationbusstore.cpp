@@ -50,7 +50,6 @@ extern string _MAXOPS_ALARM_CAT;
 extern long _MAXOPS_ALARM_CATID;
 extern bool _OP_STATS_DYNAMIC_UPDATE;
 extern double _IVVC_DEFAULT_DELTA;
-extern unsigned long _SQL_RETRY_COUNT;
 
 using namespace std;
 using namespace Cti::CapControl;
@@ -10086,7 +10085,7 @@ void CtiCCSubstationBusStore::reCalculateConfirmationStatsFromDatabase( )
 
             rdr << oneMonthAgo;
 
-            rdr.executeWithRetries(_SQL_RETRY_COUNT);
+            rdr.executeWithRetries();
 
             if ( _CC_DEBUG & CC_DEBUG_DATABASE )
             {

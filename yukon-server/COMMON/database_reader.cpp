@@ -57,38 +57,32 @@ bool DatabaseReader::isValid()
 }
 
 
-bool DatabaseReader::executeWithRetries(int retries)
+bool DatabaseReader::executeWithRetries()
 {
     unsigned long waitTimer = gConfigParms.getValueAsULong("YUKON_RETRY_SQL_WAIT_MS", 500);
-    _executeCalled = true;
+    unsigned long retries   = gConfigParms.getValueAsULong("YUKON_SQL_RETRY_COUNT", 3);
+
     while( retries > 0)
     {
         try
         {
-            _command.Execute();
-            _isValid = true;
-            return _isValid;
-
-        }
+            executeCommand();
+            return true;
+        }        
         catch(SAException &x)
         {
-            _isValid = false;
-            retries--;
-            {
-                CtiLockGuard<CtiLogger> doubt_guard(dout);
-                dout << CtiTime() << " ** Attempt failed for SQL query, due to native code Error: " << x.ErrNativeCode() <<". Retrying." << endl;
-
-            }
-            Sleep(waitTimer);
+            CtiLockGuard<CtiLogger> doubt_guard(dout);
+            dout << CtiTime() << " ** Attempt failed for SQL query, due to native code Error: " << x.ErrNativeCode() <<". Retrying." << endl;
         }
+        retries--;
+        Sleep(waitTimer);
     };
-    execute();
-    
 
-    return _isValid;
+    return execute(); 
+
 }
 
-bool DatabaseReader::execute()
+void DatabaseReader::executeCommand()
 {
     _executeCalled = true;
     try
@@ -99,15 +93,26 @@ bool DatabaseReader::execute()
     catch(SAException &x)
     {
         _isValid = false;
-        {
-            CtiLockGuard<CtiLogger> doubt_guard(dout);
-            dout << CtiTime() << " **** ERROR **** DB EXCEPTION " << (string)x.ErrText() << " Class "
-                 << x.ErrClass() << " Pos " << x.ErrPos() << " nativeCode " << x.ErrNativeCode() << " in query: " << endl;
-            dout << asString() << " " << __FILE__ << " " << __LINE__ << endl;
-        }
+        throw x;
+    }
+}
+
+bool DatabaseReader::execute()
+{
+    try
+    {
+        executeCommand();
+        return true;
+    }
+    catch(SAException &x)
+    {
+        CtiLockGuard<CtiLogger> doubt_guard(dout);
+        dout << CtiTime() << " **** ERROR **** DB EXCEPTION " << (string)x.ErrText() << " Class "
+             << x.ErrClass() << " Pos " << x.ErrPos() << " nativeCode " << x.ErrNativeCode() << " in query: " << endl;
+        dout << asString() << " " << __FILE__ << " " << __LINE__ << endl;
     }
 
-    return _isValid;
+    return false;
 }
 
 // Checks if the current index is null.
