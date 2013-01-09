@@ -11,9 +11,9 @@ import junit.framework.Assert;
 import org.junit.Test;
 import org.springframework.dao.DataAccessException;
 import org.springframework.jdbc.core.simple.ParameterizedRowMapper;
-import org.springframework.jdbc.core.simple.SimpleJdbcTemplate;
 
 import com.cannontech.common.mock.MockDataSource;
+import com.cannontech.database.YukonJdbcTemplate;
 
 public class ChunkingSqlTemplateTest {
     private final int customChunkSize = 5;
@@ -63,7 +63,7 @@ public class ChunkingSqlTemplateTest {
     }
     
     
-    private class CustomerSimpleJdbcTemplate extends SimpleJdbcTemplate {
+    private class CustomerSimpleJdbcTemplate extends YukonJdbcTemplate {
         public CustomerSimpleJdbcTemplate() {
             super(new MockDataSource());
         }
