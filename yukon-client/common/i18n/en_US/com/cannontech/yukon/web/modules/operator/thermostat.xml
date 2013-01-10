@@ -380,7 +380,8 @@
     <entry key="yukon.web.components.button.recommendedSettings.label">Recommended Settings</entry>
 
     <!-- validation errors -->    
-	<entry key="yukon.web.components.thermostat.schedule.error.blankName">Name cannot be blank, please provide a different schedule name.</entry>    
+	<entry key="yukon.web.components.thermostat.schedule.error.blankName">Name cannot be blank, please provide a different schedule name.</entry>
+    <entry key="yukon.web.components.thermostat.schedule.error.scheduleNameTooLong">Schedule Name length cannot exceed {0} characters.</entry>      
     <entry key="yukon.web.components.thermostat.schedule.error.duplicateName">Name already in use, please provide a different schedule name.</entry>
     <entry key="yukon.web.components.thermostat.schedule.error.invalidScheduleEntry">This schedule contains errors. To correct this, please edit the schedule choose a different mode and save.  You may then edit the schedule again to restore the original mode.</entry>
     <entry key="yukon.web.components.thermostat.schedule.error.invalidScheduleEntryTimeOfWeek">This schedule contains incompatible days of the week: {0}.</entry>

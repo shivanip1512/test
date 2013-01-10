@@ -20,6 +20,8 @@ public class AccountThermostatScheduleValidator extends SimpleValidator<AccountT
     
     private AccountThermostatScheduleDao accountThermostatScheduleDao;
     private MessageSourceAccessor messageSourceAccessor;
+    
+    private static final int SCHEDULE_NAME_LENGTH = 60;
 
     public AccountThermostatScheduleValidator(AccountThermostatScheduleDao accountThermostatScheduleDao, MessageSourceAccessor messageSourceAccessor) {
         super(AccountThermostatSchedule.class);
@@ -33,6 +35,12 @@ public class AccountThermostatScheduleValidator extends SimpleValidator<AccountT
         
         if (StringUtils.isBlank(target.getScheduleName())) {
             errors.rejectValue("scheduleName", "yukon.web.components.thermostat.schedule.error.blankName");
+        }
+
+        if (target.getScheduleName().length() > SCHEDULE_NAME_LENGTH) {
+            errors.rejectValue("scheduleName", "yukon.web.components.thermostat.schedule.error.scheduleNameTooLong",
+                             new Object[] { SCHEDULE_NAME_LENGTH },
+                             null);
         }
         
         //we only care about the schedule name on real accounts.  per com.cannontech.stars.dr.thermostat.dao.impl.DefaultAccountThermostatScheduleHelper
