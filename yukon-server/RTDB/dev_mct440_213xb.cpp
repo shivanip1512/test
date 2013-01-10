@@ -3742,9 +3742,9 @@ int Mct440_213xBDevice::decodeGetConfigOptions(INMESS         *InMessage,
 
     string resultStr = getName() + " / MCT Configuration:\n";
 
-    resultStr += (DSt->Message[5] & 0x20) ? "Role enabled\n" : "Role disabled\n";
-    resultStr += (DSt->Message[5] & 0x02) ? "LED test enabled\n" : "LED test disabled\n";
-    resultStr += (DSt->Message[5] & 0x01) ? "DST enabled\n" : "DST disabled\n";
+    resultStr += (DSt->Message[6] & 0x20) ? "Role enabled\n" : "Role disabled\n";
+    resultStr += (DSt->Message[6] & 0x02) ? "LED test enabled\n" : "LED test disabled\n";
+    resultStr += (DSt->Message[6] & 0x01) ? "DST enabled\n" : "DST disabled\n";
 
     ReturnMsg->setUserMessageId(InMessage->Return.UserID);
     ReturnMsg->setResultString(resultStr);
@@ -4002,8 +4002,6 @@ int Mct440_213xBDevice::executePutConfigInstallDST(CtiRequestMsg     *pReq,
                                                    OutMessageList    &outList,
                                                    bool               readsOnly)
 {
-    return NoMethod;
-
     DeviceConfigSPtr deviceConfig = getDeviceConfig();
 
     if( !deviceConfig )
