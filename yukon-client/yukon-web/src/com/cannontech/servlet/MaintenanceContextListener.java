@@ -12,8 +12,8 @@ public class MaintenanceContextListener extends ErrorAwareContextListener{
     public void doContextInitialized(ServletContextEvent sce) {
         
         TemporaryDeviceGroupService temporaryDeviceGroupService = YukonSpringHook.getBean("temporaryDeviceGroupService", TemporaryDeviceGroupService.class);
-        CTILogger.info("Attempting to delete temporary device groups on startup.");
-        temporaryDeviceGroupService.deleteTemporaryGroups();        
+        CTILogger.info("Attempting to delete temporary groups and schedule a task for temporary groups to be deleted once a day.");
+        temporaryDeviceGroupService.scheduleTempGroupsDeletion();        
     }
 
 }

@@ -10,8 +10,10 @@ import java.util.Set;
 import org.apache.commons.lang.StringUtils;
 import org.apache.commons.lang.Validate;
 import org.apache.log4j.Logger;
+import org.joda.time.Instant;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Required;
+import org.springframework.dao.DataAccessException;
 import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.dao.EmptyResultDataAccessException;
 import org.springframework.transaction.annotation.Propagation;
@@ -37,8 +39,10 @@ import com.cannontech.common.util.SqlBuilder;
 import com.cannontech.common.util.SqlStatementBuilder;
 import com.cannontech.core.dao.DuplicateException;
 import com.cannontech.core.dao.NotFoundException;
+import com.cannontech.database.SqlParameterSink;
 import com.cannontech.database.SqlUtils;
 import com.cannontech.database.YukonJdbcOperations;
+import com.cannontech.database.YukonJdbcTemplate;
 import com.cannontech.database.db.device.Device;
 import com.cannontech.database.incrementer.NextValueHelper;
 import com.cannontech.database.vendor.DatabaseVendor;
@@ -52,6 +56,7 @@ public class DeviceGroupEditorDaoImpl implements DeviceGroupEditorDao, DeviceGro
     private YukonJdbcOperations jdbcTemplate;
     private NextValueHelper nextValueHelper;
     private VendorSpecificSqlBuilderFactory vendorSpecificSqlBuilderFactory;
+    @Autowired private YukonJdbcTemplate yukonJdbcTemplate;
     
     private StoredDeviceGroup rootGroupCache = null;
     
@@ -319,18 +324,21 @@ public class DeviceGroupEditorDaoImpl implements DeviceGroupEditorDao, DeviceGro
     public StoredDeviceGroup addGroup(StoredDeviceGroup parentGroup, DeviceGroupType type, String groupName, DeviceGroupPermission permission) throws IllegalGroupNameException {
         DeviceGroupUtil.validateName(groupName);
         
+        Instant now = new Instant();
         int nextValue = nextValueHelper.getNextValue("DeviceGroup");
-        SqlStatementBuilder sql = new SqlStatementBuilder();
-        sql.append("insert into DeviceGroup");
-        sql.append("(DeviceGroupId, GroupName, ParentDeviceGroupId, Permission, Type)");
-        sql.append("values");
-        sql.append("(?, ?, ?, ?, ?)");
-        
         String rawName = SqlUtils.convertStringToDbValue(groupName);
         
+        SqlStatementBuilder sql = new SqlStatementBuilder();
+        SqlParameterSink sink = sql.insertInto("DeviceGroup");
+        sink.addValue("DeviceGroupId", nextValue);
+        sink.addValue("GroupName", rawName);
+        sink.addValue("ParentDeviceGroupId", parentGroup.getId());
+        sink.addValue("Permission",  permission.name());
+        sink.addValue("Type",  type.name());
+        sink.addValue("CreatedDate", now);               
         try {
-            jdbcTemplate.update(sql.toString(), nextValue, rawName, parentGroup.getId(), permission.name(), type.name());
-        } catch (DataIntegrityViolationException e) {
+            yukonJdbcTemplate.update(sql);
+        } catch (DataAccessException e) {
             throw new DuplicateException("Cannot create group with the same name as an existing group with the same parent.", e);
         }
         
@@ -340,6 +348,7 @@ public class DeviceGroupEditorDaoImpl implements DeviceGroupEditorDao, DeviceGro
         result.setParent(parentGroup);
         result.setPermission(permission);
         result.setType(type);
+        result.setCreatedDate(now);
         return result;
     }
 

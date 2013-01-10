@@ -2,7 +2,9 @@ package com.cannontech.common.device.groups.editor.dao.impl;
 
 import java.sql.ResultSet;
 import java.sql.SQLException;
+import java.sql.Timestamp;
 
+import org.joda.time.Instant;
 import org.springframework.jdbc.core.simple.ParameterizedRowMapper;
 
 import com.cannontech.common.device.groups.dao.DeviceGroupPermission;
@@ -44,6 +46,9 @@ public class PartialDeviceGroupRowMapper implements ParameterizedRowMapper<Parti
         String typeStr = rs.getString("type");
         DeviceGroupType type = DeviceGroupType.valueOf(typeStr);
         group.setType(type);
+        
+        Timestamp date = rs.getTimestamp("createddate");
+        group.setCreatedDate(new Instant(date));
         
         return partialDeviceGroup;
     }

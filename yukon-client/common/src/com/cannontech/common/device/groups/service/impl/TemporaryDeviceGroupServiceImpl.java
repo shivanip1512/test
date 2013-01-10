@@ -6,6 +6,8 @@ import java.util.concurrent.TimeUnit;
 
 import org.apache.commons.lang.StringUtils;
 import org.apache.log4j.Logger;
+import org.joda.time.Duration;
+import org.joda.time.Instant;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Required;
 
@@ -30,8 +32,6 @@ public class TemporaryDeviceGroupServiceImpl implements TemporaryDeviceGroupServ
     public StoredDeviceGroup createTempGroup(String groupName, int deleteDelay, TimeUnit deleteDelayUnit) {
         
         StoredDeviceGroup group = doCreateTempGroup(groupName);
-        scheduleTempGroupDeletion(group, deleteDelay, deleteDelayUnit);
-        
         return group;
     }
     
@@ -39,8 +39,6 @@ public class TemporaryDeviceGroupServiceImpl implements TemporaryDeviceGroupServ
     public StoredDeviceGroup createTempGroup(String groupName) {
         
         StoredDeviceGroup group = doCreateTempGroup(groupName);
-        scheduleTempGroupDeletion(group);
-        
         return group;
     }
 
@@ -60,32 +58,35 @@ public class TemporaryDeviceGroupServiceImpl implements TemporaryDeviceGroupServ
         
         return group;
     }
-    
-    private void scheduleTempGroupDeletion(final StoredDeviceGroup group) {
-        int days = globalSettingDao.getInteger(GlobalSettingType.TEMP_DEVICE_GROUP_DELETION_IN_DAYS);
-        scheduleTempGroupDeletion(group, days, TimeUnit.DAYS);
-    }    
-    
-    private void scheduleTempGroupDeletion(final StoredDeviceGroup group, int delay, TimeUnit unit) {
         
-        scheduledExecutor.schedule(new Runnable() {
+    public void scheduleTempGroupsDeletion() {
+       scheduledExecutor.scheduleAtFixedRate(new Runnable() {
             public void run() {
-                log.info("deleting temporary group after delay: " + group);
-                deviceGroupEditorDao.removeGroup(group);
+                deleteTemporaryGroups();
             }
             
-        }, delay, unit);
+        }, 0, 1, TimeUnit.DAYS);
+        log.info("Scheduled a task to delete temporary device groups once a day.");
     }
     
-    @Override
-    public void deleteTemporaryGroups() {
+    /* Delete temp groups older then the number of days specified in the Global Settings*/
+    private void deleteTemporaryGroups() {
+        
+        int days = globalSettingDao.getInteger(GlobalSettingType.TEMP_DEVICE_GROUP_DELETION_IN_DAYS);
+        Instant now = new Instant();
+        Instant earliestDate = now.minus(Duration.standardDays(days));
+        
+        int groupsDeleted = 0;
         
         StoredDeviceGroup parentGroup = deviceGroupEditorDao.getSystemGroup(SystemGroupEnum.TEMPORARYGROUPS);
         List<StoredDeviceGroup> childGroups = deviceGroupEditorDao.getChildGroups(parentGroup);
         for (StoredDeviceGroup childGroup : childGroups) {
-            deviceGroupEditorDao.removeGroup(childGroup);
+            if(childGroup.getCreatedDate().isBefore(earliestDate)){
+                deviceGroupEditorDao.removeGroup(childGroup);
+                groupsDeleted++;
+            }
         }
-        log.info(childGroups.size()+" temporary device groups deleted.");
+        log.info(groupsDeleted +" temporary device groups deleted.");
     }
     
     @Required

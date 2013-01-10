@@ -1,6 +1,7 @@
 package com.cannontech.common.device.groups.model;
 
 import org.apache.commons.lang.Validate;
+import org.joda.time.Instant;
 
 import com.cannontech.common.device.groups.dao.DeviceGroupType;
 import com.cannontech.user.YukonUserContext;
@@ -16,12 +17,14 @@ public abstract class MutableDeviceGroup extends DeviceGroup {
     private String name;
     private DeviceGroup parent;
     private DeviceGroupType type;
+    private Instant createdDate;
     
     
     public MutableDeviceGroup(MutableDeviceGroup group) {
         this.name = group.name;
         this.parent = group.parent;
         this.type = group.type;
+        this.createdDate = group.createdDate;
     }
     
     public MutableDeviceGroup() {
@@ -45,6 +48,10 @@ public abstract class MutableDeviceGroup extends DeviceGroup {
     public void setType(DeviceGroupType type) {
         this.type = type;
     }
+    
+    public void setCreatedDate(Instant createdDate) {
+        this.createdDate = createdDate;
+    }
 
     public String getName() {
         return name;
@@ -63,4 +70,7 @@ public abstract class MutableDeviceGroup extends DeviceGroup {
         return type;
     }
 
+    public Instant getCreatedDate() {
+        return createdDate;
+    }
 }
