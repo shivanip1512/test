@@ -7,6 +7,7 @@
     
 <cti:standardPage module="operator" page="thermostat.schedules.${pageName}">
 
+<cti:includeCss link="/WebConfig/yukon/styles/shared/thermostat.css"/>
 <cti:msg var="timeFormatter" key="yukon.common.timeFormatter" />
 <cti:includeScript link="${timeFormatter}"/>
 <cti:includeScript link="/JavaScript/temperature.js"/>

@@ -299,13 +299,11 @@ public class StandardMenuRenderer implements MenuRenderer {
         alertSpan.setClass("fl");
         
         A alertSpanAnchor = new A("javascript:alert_handleOnClick();");
-        alertSpanAnchor.addElement(messageSource.getMessage("yukon.web.menu.alertBeforeNum"));
 
         Span countSpan = new Span();
         countSpan.setID("alertCountSpan");
 
         alertSpanAnchor.addElement(countSpan);
-        alertSpanAnchor.addElement(messageSource.getMessage("yukon.web.menu.alertAfterNum"));
         alertSpan.addElement(alertSpanAnchor);
         right.addElement(alertSpan);
         

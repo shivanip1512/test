@@ -31,7 +31,7 @@ input, button, textarea, select {border:solid 1px #ccc; border-radius:2px; color
 input, button, textarea {padding:2px 5px;}
 input:focus, button:focus, textarea:focus, select:focus, button:hover, input[type=submit]:hover, input[type=submit]:focus, input[type=button]:hover, input[type=button]:focus {border:solid 1px #4373A3;box-shadow:0 0 5px lightBlue;outline:0;color:black;}
 input::-moz-focus-inner, button::-moz-focus-inner, textarea::-moz-focus-inner, select::-moz-focus-inner {border:0}
-
+select {margin:0;}
 input {background:white;padding:2px 5px;}
 button, input[type=submit], input[type=button] {color:#333;border:solid 1px #888; cursor:pointer; background-color:#efefef; background:linear-gradient(#efefef, #cccccc); text-shadow: 1px 1px 0 white;}
 
@@ -59,10 +59,12 @@ button.naked, button.naked:hover {border:none; background:transparent; box-shado
 #topMenu a.first{padding-left: 0;}
 #topMenu a:hover, #topMenu a:focus {text-decoration:none;}
 #subMenu {min-height:1.3em; background:#efefef; border-bottom:solid 1px #ccc;}
+#topMenu a, #subMenu a {font-weight: bold;}
 .StandardWithNavLayout #ContentWrapper {margin-left:139px; padding-left: 10px;border-left: solid 1px #ccc; min-height:600px; /*I guess... but specifying a height here just feels wrong*/}
 #LeftColumn {float:left; width: 140px;}
 #LeftColumn .detail {margin-bottom:10px;}
-#alertSpan a, #alertSpan a:hover, #alertSpan a:focus {color: #FF9900;}
+#alertSpan a, #alertSpan a:hover, #alertSpan a:focus {color: white;}
+#alertSpan {background-color: #D14836; border-radius: 2px;margin: 0 5px;height: 20px;line-height: 20px; padding: 0 2px;}
 
 /* vertical menus */
 .vertical_menu {background:#EEE; border:solid 1px #ccc; border-style:solid none solid solid; overflow:hidden; z-index:100;}

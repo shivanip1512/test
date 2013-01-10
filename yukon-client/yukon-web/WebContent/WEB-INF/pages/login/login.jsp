@@ -30,7 +30,7 @@
         </div>
         <div id='Menu'>
 
-            <div id='topMenu'>
+            <div id='topMenu' class="primary_background">
                 <div>
                     <div class='stdhdr_leftSide'></div>
                     <div class='stdhdr_rightSide'></div>
@@ -59,7 +59,7 @@
             <div class="loginMainSection">
             
                 <cti:msg var="loginTitle" key="yukon.web.login.login"></cti:msg>
-                <ct:abstractContainer title="${loginTitle}" type="rounded">
+                <ct:boxContainer title="${loginTitle}" hideEnabled="false">
                     <cti:flashScopeMessages/>
                     
                     <c:if test="${!empty param.failed}">
@@ -136,7 +136,7 @@
                         <input type="hidden" name="ACTION" value="LOGIN">
                     </form>
 
-                </ct:abstractContainer>
+                </ct:boxContainer>
             </div>
             <div class="loginTopSection">
                 <div class="formBottomLogo">

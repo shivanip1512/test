@@ -1,4 +1,8 @@
 
+#topMenu {
+    min-height: 20px;
+}
+
 .loginErrorMsg { 
 	padding: 20px 0px;
 	font-family: Arial, Helvetica, sans-serif; 
