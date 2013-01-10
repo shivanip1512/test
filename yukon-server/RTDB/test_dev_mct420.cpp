@@ -1780,9 +1780,9 @@ BOOST_FIXTURE_TEST_SUITE(test_getOperation, getOperation_helper)
     BOOST_AUTO_TEST_CASE(test_getOperation_53)
     {
         BOOST_REQUIRE(mct.getOperation(EmetconProtocol::GetConfig_DailyReadInterest, BSt));
-        BOOST_CHECK_EQUAL(BSt.IO, EmetconProtocol::IO_Read);
-        BOOST_CHECK_EQUAL(BSt.Function, 0xf3);
-        BOOST_CHECK_EQUAL(BSt.Length,   2);
+        BOOST_CHECK_EQUAL(BSt.IO, EmetconProtocol::IO_Function_Read);
+        BOOST_CHECK_EQUAL(BSt.Function, 0x1e);
+        BOOST_CHECK_EQUAL(BSt.Length,   11);
     }
     BOOST_AUTO_TEST_CASE(test_getOperation_54)
     {

@@ -36,8 +36,12 @@ Mct410Device::Mct410Device( ) :
 {
     _daily_read_info.request.multi_day_retries = -1;
     _daily_read_info.request.in_progress = false;
+    _daily_read_info.request.channel = -1;
+    _daily_read_info.request.type = daily_read_info_t::Request_None;
+    _daily_read_info.request.user_id = INT_MIN;
 
     _daily_read_info.interest.date = DawnOfTime_Date;
+    _daily_read_info.interest.needs_verification = false;
 }
 
 Mct410Device::Mct410Device( const Mct410Device &aRef )
@@ -903,7 +907,7 @@ INT Mct410Device::ModelDecode(INMESS *InMessage, CtiTime &TimeNow, CtiMessageLis
 
         case EmetconProtocol::GetValue_DailyRead:           status = decodeGetValueDailyRead(InMessage, TimeNow, vgList, retList, outList);     break;
 
-        case EmetconProtocol::GetConfig_DailyReadInterest:  status = decodeGetConfigDailyReadInterest(InMessage, TimeNow, vgList, retList, outList);  break;
+        case EmetconProtocol::GetConfig_DailyReadInterest:  status = decodeGetConfigDailyReadInterest(*InMessage, TimeNow, vgList, retList, outList);  break;
 
         case EmetconProtocol::GetStatus_Internal:           status = decodeGetStatusInternal(InMessage, TimeNow, vgList, retList, outList);     break;
 
@@ -2078,8 +2082,6 @@ INT Mct410Device::executeGetValue( CtiRequestMsg              *pReq,
 
                 if( _daily_read_info.request.type == daily_read_info_t::Request_SingleDay )
                 {
-                    //  dates should always be sent, since they're more likely to change than channels
-                    //    also, they are vulnerable to aliasing in older MCT-410 firmware
                     if( _daily_read_info.request.begin != _daily_read_info.interest.date )
                     {
                         _daily_read_info.interest.date = _daily_read_info.request.begin;
@@ -2093,18 +2095,18 @@ INT Mct410Device::executeGetValue( CtiRequestMsg              *pReq,
                         outList.push_back(interest_om.release());
                     }
 
-                    if( _daily_read_info.interest.needs_verification )
+                    if( _daily_read_info.interest.needs_verification && _daily_read_info.request.channel == 1 )
                     {
-                        //  we need to set it to the requested interval
-                        CtiOutMessage *alias_check_om = new CtiOutMessage(*OutMessage);
+                        //  we need to read the period of interest and validate it to prevent aliasing errors
+                        auto_ptr<CtiOutMessage> alias_check_om(new CtiOutMessage(*OutMessage));
 
                         alias_check_om->Sequence = EmetconProtocol::GetConfig_DailyReadInterest;
 
                         getOperation(EmetconProtocol::GetConfig_DailyReadInterest, alias_check_om->Buffer.BSt);
 
-                        alias_check_om->MessageFlags |= MessageFlag_ExpectMore;
+                        alias_check_om->Request.Connection = 0;
 
-                        outList.push_back(alias_check_om);
+                        outList.push_back(alias_check_om.release());
                     }
                 }
                 else if( _daily_read_info.request.type == daily_read_info_t::Request_MultiDay &&
@@ -3480,25 +3482,36 @@ INT Mct410Device::decodeGetValueLoadProfilePeakReport(INMESS *InMessage, CtiTime
 }
 
 
-INT Mct410Device::decodeGetConfigDailyReadInterest(INMESS *InMessage, CtiTime &TimeNow, CtiMessageList &vgList, CtiMessageList &retList, OutMessageList &outList)
+INT Mct410Device::decodeGetConfigDailyReadInterest(const INMESS &InMessage, CtiTime &TimeNow, CtiMessageList &vgList, CtiMessageList &retList, OutMessageList &outList)
 {
-    INT status = NORMAL;
+    const DSTRUCT &DSt = InMessage.Buffer.DSt;
 
-    const DSTRUCT * const DSt  = &InMessage->Buffer.DSt;
-    CtiReturnMsg    *ReturnMsg = new CtiReturnMsg(getID(), InMessage->Return.CommandStr);
+    auto_ptr<CtiReturnMsg> ReturnMsg(new CtiReturnMsg(getID(), InMessage.Return.CommandStr));
 
-    ReturnMsg->setUserMessageId(InMessage->Return.UserID);
+    ReturnMsg->setUserMessageId(InMessage.Return.UserID);
 
     string resultString;
 
-    unsigned interest_day     =   DSt->Message[0] & 0x1f;
-    unsigned interest_month   =  (DSt->Message[1] & 0x0f) + 1;
-    unsigned interest_channel = ((DSt->Message[1] & 0x30) >> 4) + 1;
+    const unsigned interest_day     =   DSt.Message[0] & 0x1f;
+    const unsigned interest_month   =  (DSt.Message[1] & 0x0f) + 1;
+    const unsigned interest_channel = ((DSt.Message[1] & 0x30) >> 4) + 1;
 
     resultString  = getName() + " / Daily read interest channel: " + CtiNumStr(interest_channel) + "\n";
     resultString += getName() + " / Daily read interest month: "   + CtiNumStr(interest_month) + "\n";
     resultString += getName() + " / Daily read interest day: "     + CtiNumStr(interest_day) + "\n";
 
+    tryVerifyDailyReadInterestDate(interest_day, interest_month, TimeNow);
+
+    ReturnMsg->setResultString(resultString);
+
+    retMsgHandler( InMessage.Return.CommandStr, NORMAL, ReturnMsg.release(), vgList, retList );
+
+    return NORMAL;
+}
+
+
+void Mct410Device::tryVerifyDailyReadInterestDate(const unsigned interest_day, const unsigned interest_month, const CtiTime TimeNow)
+{
     const CtiDate DateNow(TimeNow);
 
     unsigned interest_year = DateNow.year();
@@ -3515,14 +3528,6 @@ INT Mct410Device::decodeGetConfigDailyReadInterest(INMESS *InMessage, CtiTime &T
     {
         _daily_read_info.interest.needs_verification = false;
     }
-
-    ReturnMsg->setResultString(resultString);
-
-    const bool expectMore = true;
-
-    retMsgHandler( InMessage->Return.CommandStr, status, ReturnMsg, vgList, retList, expectMore );
-
-    return status;
 }
 
 
@@ -3693,17 +3698,22 @@ INT Mct410Device::decodeGetValueDailyRead(INMESS *InMessage, CtiTime &TimeNow, C
         {
             int day, month, channel;
 
+            int       expected_month   = _daily_read_info.request.begin.month() - 1;
+            const int expected_day     = _daily_read_info.request.begin.dayOfMonth();
+
             if( _daily_read_info.request.channel == 1 &&
                 _daily_read_info.request.type == daily_read_info_t::Request_SingleDay )
             {
                 channel = 1;
                 month   =  (DSt->Message[8] & 0xc0) >> 6;  //  2 bits
                 day     =  (DSt->Message[8] & 0x3e) >> 1;  //  5 bits
+
+                expected_month &= 0x03;  //  only 2 bits returned for month, so mask the expected month to match
             }
             else
             {
                 channel = ((DSt->Message[10] & 0x30) >> 4) + 1;
-                month   =   DSt->Message[10] & 0x0f;
+                month   =   DSt->Message[10] & 0x0f;  //  4 bits, all 12 months can be represented
                 day     =   DSt->Message[9];
 
                 setDynamicInfo(CtiTableDynamicPaoInfo::Key_MCT_DailyReadInterestChannel, channel);
@@ -3720,19 +3730,11 @@ INT Mct410Device::decodeGetValueDailyRead(INMESS *InMessage, CtiTime &TimeNow, C
 
                 status = ErrorInvalidChannel;
             }
-            else if( _daily_read_info.interest.needs_verification )
-            {
-                resultString  = getName() + " / Daily read period of interest date was not verified, try read again";
-
-                //  when they try the read again, it'll re-read the period of interest from the meter
-
-                status = ErrorInvalidTimestamp;
-            }
-            else if(  day        !=   _daily_read_info.request.begin.dayOfMonth() ||
-                     (month % 4) != ((_daily_read_info.request.begin.month() - 1) % 4) )
+            else if( day   != expected_day ||
+                     month != expected_month )
             {
                 resultString  = getName() + " / Invalid day/month returned by daily read ";
-                resultString += "(" + CtiNumStr(day) + "/" + CtiNumStr(month + 1) + ", expecting " + CtiNumStr(_daily_read_info.request.begin.dayOfMonth()) + "/" + CtiNumStr(((_daily_read_info.request.begin.month() - 1) % 4) + 1) + ")";
+                resultString += "(" + CtiNumStr(day) + "/" + CtiNumStr(month + 1) + ", expecting " + CtiNumStr(expected_day) + "/" + CtiNumStr(expected_month + 1) + ")";
 
                 //  These come back as 0x7ff.. if daily reads are disabled, but also if the request really was out of range
                 //  Ideally, this check would be against an enum or similar rather than a string,
@@ -3745,6 +3747,16 @@ INT Mct410Device::decodeGetValueDailyRead(INMESS *InMessage, CtiTime &TimeNow, C
                 }
 
                 _daily_read_info.interest.date = DawnOfTime_Date;  //  reset it - it doesn't match what the MCT has
+
+                status = ErrorInvalidTimestamp;
+            }
+            else if( _daily_read_info.request.channel == 1
+                     && _daily_read_info.request.type == daily_read_info_t::Request_SingleDay
+                     && _daily_read_info.interest.needs_verification )
+            {
+                resultString  = getName() + " / Daily read period of interest date was not verified, try read again";
+
+                //  when they try the read again, it'll re-read the period of interest from the meter
 
                 status = ErrorInvalidTimestamp;
             }
