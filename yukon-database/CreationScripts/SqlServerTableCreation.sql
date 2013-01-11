@@ -1,7 +1,7 @@
 /*==============================================================*/
 /* Database name:  YukonDatabase                                */
 /* DBMS name:      Microsoft SQL Server 2005                    */
-/* Created on:     1/9/2013 5:03:19 PM                          */
+/* Created on:     1/11/2013 10:45:48 AM                        */
 /*==============================================================*/
 
 /*==============================================================*/
@@ -2152,6 +2152,7 @@ create table DEVICEGROUP (
    ParentDeviceGroupId  numeric(18,0)        null,
    Permission           nvarchar(50)         not null,
    Type                 varchar(255)         not null,
+   CreatedDate          datetime             not null,
    constraint PK_DEVICEGROUP primary key (DeviceGroupId)
 )
 go

@@ -1,7 +1,7 @@
 /*==============================================================*/
 /* Database name:  YukonDatabase                                */
 /* DBMS name:      ORACLE Version 9i                            */
-/* Created on:     1/9/2013 5:04:19 PM                          */
+/* Created on:     1/11/2013 10:34:09 AM                        */
 /*==============================================================*/
 
 
@@ -2011,6 +2011,7 @@ create table DEVICEGROUP  (
    ParentDeviceGroupId  NUMBER(18,0),
    Permission           NVARCHAR2(50)                   not null,
    Type                 VARCHAR2(255)                   not null,
+   CreatedDate          DATE                            not null,
    constraint PK_DEVICEGROUP primary key (DeviceGroupId)
 );
 

@@ -31,6 +31,15 @@ INSERT INTO YukonRoleProperty VALUES (-1125, -2, 'Broadcast Cancel All Opt Out S
 INSERT INTO YukonRoleProperty VALUES (-40012, -400, 'Grouped Control History Display', 'true', 'Controls whether to enable grouped control history display');
 /* End YUK-11733 */
 
+/* Start YUK-11794 */
+ALTER TABLE DeviceGroup 
+ADD CreatedDate DATE;
+UPDATE DeviceGroup 
+SET CreatedDate = '01-JAN-2013';
+ALTER TABLE DeviceGroup 
+MODIFY CreatedDate DATE NOT NULL;
+/* End YUK-11794 */
+
 /**************************************************************/
 /* VERSION INFO                                               */
 /* Inserted when update script is run                         */
