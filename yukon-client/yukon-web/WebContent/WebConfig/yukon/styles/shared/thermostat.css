@@ -17,6 +17,7 @@
 .cool {background-color: lightBlue; border-radius: 0 5px 5px 0; -moz-border-radius: 0 5px 5px 0; -webkit-border-radius: 0 5px 5px 0;}
 .name {color: green; font-size: 12px;}
 .time {font-size: 18px;}
+/* input.time {height: 18px;} */
 .small .days{margin: 10px 0; width: 615px; overflow: hidden;}
 .day {clear: both; display: block; overflow:hidden;}
 .actions {overflow: hidden; clear: both; margin: 10px 0; max-width: 560px;}
@@ -42,7 +43,8 @@
 .small .name {color: green; font-size: 10px;}
 .small .time {font-size: 10px; text-align:right; padding: 3px 2px 2px 0;}
 .schedule_editor .time{padding: 0;}
-.schedule_editor .time input {padding: 2px 2px; border-radius: 5px 0 0 5px; -moz-border-radius: 5px 0 0 5px; -webkit-border-radius: 5px 0 0 5px; border: solid 1px #ccc;}
+.schedule_editor .time {padding: 2px 2px; border-radius: 5px 0 0 5px; -moz-border-radius: 5px 0 0 5px; -webkit-border-radius: 5px 0 0 5px; border: solid 1px #ccc;}
+.schedule_editor .time input {border: none;padding: 0;height: 18px; /* the degree mark bumps the temp heights from 13px to 18px for some reason */}
 .small .schedule {margin-top: -1px; border-top: dotted 1px #ccc; padding: 20px; display: inline-block;}
 .small .period {padding: 2px 0; width: 145px;}
 .small .period .name {display:none;}

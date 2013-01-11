@@ -411,36 +411,25 @@ Yukon.ThermostatScheduleEditor = {
         Yukon.ThermostatScheduleEditor.commitTempValue(this.value, this);
     },
     
-    commitTempValue: function(value, input){
+    commitTempValue: function(value, input) {
     	input = jQuery(input);
         var _self = Yukon.ThermostatScheduleEditor;
         value = parseFloat(value);
         
-        if(!isNaN(value)){
-        	var windowModeType = input.attr("data-temperatureMode")
-            _self.thermostat.assignDegreesOrSnapToLimit(value, windowModeType);
-
-            //determine range
-            var start = null;
-            var end = null;
-                    
-            if(input.hasClass("heat_F")) {
-                start = _self.thermostat.HEAT.lower;
-                end = _self.thermostat.HEAT.upper;
-            } else if(input.hasClass("cool_F")) {
-                start = _self.thermostat.COOL.lower;
-                end = _self.thermostat.COOL.upper;
-            }
-            
-            //put value into REAL input
-            input.siblings("input:hidden")[0].value = _self.thermostat[windowModeType].temperature.getF();
-            input.value = _self.thermostat[windowModeType].temperature.sanitizedString();
-            input.closest('.temp').css({backgroundColor:_self.thermostat.color(input.attr("data-temperatureMode"))});
-            return true;
+        if (isNaN(value)) {
+            //revert to previousValue
+            input.val(input.attr('previousValue'));
+            return false;
         }
-        //revert to previousValue
-        input.value = input.attr('previousValue');
-        return false;
+        
+        var windowModeType = input.attr("data-temperatureMode");
+        _self.thermostat.assignDegreesOrSnapToLimit(value, windowModeType);
+
+        //put value into REAL input
+        input.siblings("input:hidden")[0].value = _self.thermostat[windowModeType].temperature.getF();
+        input.val(_self.thermostat[windowModeType].temperature.sanitizedString());
+        input.closest('.temp').css({backgroundColor:_self.thermostat.color(input.attr("data-temperatureMode"))});
+        return true;
     },
     
     timeKeydown: function(event){
