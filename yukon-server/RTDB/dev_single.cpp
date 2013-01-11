@@ -2116,7 +2116,6 @@ bool CtiDeviceSingle::isDeviceAddressGlobal()
         case TYPE_TCU5000:
         case TYPE_TCU5500:
         case TYPE_DAVIS:
-        case TYPE_VTU:
         {
             switch ( getAddress() )
             {

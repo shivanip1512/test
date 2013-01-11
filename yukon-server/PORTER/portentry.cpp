@@ -27,7 +27,6 @@ extern CtiLocalConnect<INMESS, OUTMESS> PorterToPil;
 
 INT PorterEntryPoint(OUTMESS *&OutMessage);
 INT RemoteComm(OUTMESS *&OutMessage);
-INT RemotePort(OUTMESS *&OutMessage);
 INT ValidateRemote(OUTMESS *&OutMessage, CtiDeviceSPtr TransmitterDev);
 INT ValidatePort(OUTMESS *&OutMessage);
 INT ValidateEmetconMessage(OUTMESS *&OutMessage);
@@ -359,19 +358,6 @@ INT ValidateOutMessage(OUTMESS *&OutMessage)
     return nRet;
 }
 
-INT RemotePort(OUTMESS *&OutMessage)
-{
-    /* No Local processing */
-    if(PortManager.writeQueue(OutMessage->Port, OutMessage->Request.GrpMsgID, sizeof (*OutMessage), (char *) OutMessage, OutMessage->Priority))
-    {
-        printf("Error Writing to Queue for Port %2hd\n", OutMessage->Port);
-        SendError (OutMessage, QUEUE_WRITE);
-        return QUEUE_WRITE;
-    }
-    /* Leave the memory intact */
-    return NORMAL;
-}
-
 /*----------------------------------------------------------------------------*
  * This function verifies that we know about and have started up the indicated
  * remote.
@@ -684,7 +670,7 @@ INT ExecuteGoodRemote(OUTMESS *&OutMessage, CtiDeviceSPtr pDev)
             QueueBookkeeping(OutMessage);
 
             /* transfer the message to the appropriate port queue */
-            if(PortManager.writeQueue (OutMessage->Port, OutMessage->Request.GrpMsgID, sizeof (*OutMessage), (char *)OutMessage, OutMessage->Priority))
+            if(PortManager.writeQueue (OutMessage->Port, OutMessage->Request.GrpMsgID, OutMessage, OutMessage->Priority))
             {
                 printf("Error Writing to Queue for Port %2hd\n", OutMessage->Port);
                 SendError(OutMessage, QUEUE_WRITE);
@@ -717,7 +703,7 @@ INT RemoteComm(OUTMESS *&OutMessage)
     }
     else
     {
-        if(PortManager.writeQueue(OutMessage->Port, OutMessage->Request.GrpMsgID, sizeof (*OutMessage), (char *) OutMessage, OutMessage->Priority))
+        if(PortManager.writeQueue(OutMessage->Port, OutMessage->Request.GrpMsgID, OutMessage, OutMessage->Priority))
         {
             printf("Error Writing to Queue for Port %2hd\n", OutMessage->Port);
             SendError (OutMessage, QUEUE_WRITE);

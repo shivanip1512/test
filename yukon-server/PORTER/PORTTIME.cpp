@@ -126,7 +126,7 @@ struct timeSyncCCU711
         OutMessage->MessageFlags = MessageFlag_ApplyExclusionLogic;
         OutMessage->ExpirationTime = getNextTimeSync();
 
-        if(PortManager.writeQueue(OutMessage->Port, OutMessage->Request.GrpMsgID, sizeof (*OutMessage), (char *) OutMessage, OutMessage->Priority))
+        if(PortManager.writeQueue(OutMessage->Port, OutMessage->Request.GrpMsgID, OutMessage, OutMessage->Priority))
         {
             printf ("Error Writing to Queue for Port %2hd\n", RemoteRecord->getPortID());
             delete (OutMessage);
@@ -213,7 +213,7 @@ struct timeSyncCCU710
                         //  ... but because we're not executing on the route, we have to do this manually
                         EmetconProtocol::buildBWordMessage(OutMessage);
 
-                        if(PortManager.writeQueue(OutMessage->Port, OutMessage->Request.GrpMsgID, sizeof (*OutMessage), (char *) OutMessage, OutMessage->Priority))
+                        if(PortManager.writeQueue(OutMessage->Port, OutMessage->Request.GrpMsgID, OutMessage, OutMessage->Priority))
                         {
                             printf ("Error Writing to Queue for Port %2hd\n", port_id);
                             delete (OutMessage);
@@ -319,7 +319,7 @@ struct timeSyncTDMarkV
         OutMessage->MessageFlags = MessageFlag_ApplyExclusionLogic;
         OutMessage->ExpirationTime = getNextTimeSync();
 
-        if(PortManager.writeQueue(OutMessage->Port, OutMessage->Request.GrpMsgID, sizeof (*OutMessage), (char *) OutMessage, OutMessage->Priority))
+        if(PortManager.writeQueue(OutMessage->Port, OutMessage->Request.GrpMsgID, OutMessage, OutMessage->Priority))
         {
             printf ("Error Writing to Queue for Port %2hd\n", RemoteRecord->getPortID());
             delete (OutMessage);
@@ -370,7 +370,7 @@ struct timeSyncILEX
         OutMessage->MessageFlags = MessageFlag_ApplyExclusionLogic;
         OutMessage->ExpirationTime = getNextTimeSync();
 
-        if(PortManager.writeQueue(OutMessage->Port, OutMessage->Request.GrpMsgID, sizeof (*OutMessage), (char *) OutMessage, OutMessage->Priority))
+        if(PortManager.writeQueue(OutMessage->Port, OutMessage->Request.GrpMsgID, OutMessage, OutMessage->Priority))
         {
             printf ("Error Writing to Queue for Port %2hd\n", RemoteRecord->getPortID());
             delete (OutMessage);
@@ -422,7 +422,7 @@ struct timeSyncWelco_VTU
         OutMessage->MessageFlags = MessageFlag_ApplyExclusionLogic;
         OutMessage->ExpirationTime = getNextTimeSync();
 
-        if(PortManager.writeQueue(OutMessage->Port, OutMessage->Request.GrpMsgID, sizeof (*OutMessage), (char *) OutMessage, OutMessage->Priority))
+        if(PortManager.writeQueue(OutMessage->Port, OutMessage->Request.GrpMsgID, OutMessage, OutMessage->Priority))
         {
             printf ("Error Writing to Queue for Port %2hd\n", RemoteRecord->getPortID());
             delete (OutMessage);
@@ -466,7 +466,7 @@ struct timeSyncSeriesVLMIRTU
         OutMessage->MessageFlags = MessageFlag_ApplyExclusionLogic;
         OutMessage->ExpirationTime = getNextTimeSync();
 
-        if(PortManager.writeQueue(OutMessage->Port, OutMessage->Request.GrpMsgID, sizeof (*OutMessage), (char *) OutMessage, OutMessage->Priority))
+        if(PortManager.writeQueue(OutMessage->Port, OutMessage->Request.GrpMsgID, OutMessage, OutMessage->Priority))
         {
             printf ("Error Writing to Queue for Port %2hd\n", RemoteRecord->getPortID());
             delete (OutMessage);
@@ -499,7 +499,7 @@ struct timeSyncCCU721
             OutMessage->MessageFlags = MessageFlag_ApplyExclusionLogic;
             OutMessage->ExpirationTime = getNextTimeSync();
 
-            if(PortManager.writeQueue(OutMessage->Port, OutMessage->Request.GrpMsgID, sizeof (*OutMessage), (char *) OutMessage, OutMessage->Priority))
+            if(PortManager.writeQueue(OutMessage->Port, OutMessage->Request.GrpMsgID, OutMessage, OutMessage->Priority))
             {
                 printf ("Error Writing to Queue for Port %2hd\n", RemoteRecord->getPortID());
                 delete (OutMessage);
@@ -573,7 +573,7 @@ struct timeSyncDNPDevices
                 OutMessage->MessageFlags = MessageFlag_ApplyExclusionLogic;
                 OutMessage->ExpirationTime = getNextTimeSync();
 
-                if(PortManager.writeQueue(OutMessage->Port, OutMessage->Request.GrpMsgID, sizeof (*OutMessage), (char *) OutMessage, OutMessage->Priority))
+                if(PortManager.writeQueue(OutMessage->Port, OutMessage->Request.GrpMsgID, OutMessage, OutMessage->Priority))
                 {
                     printf ("Error Writing to Queue for Port %2hd\n", RemoteRecord->getPortID());
                     delete (OutMessage);
@@ -647,7 +647,7 @@ static void applyMCT400TimeSync(const long key, CtiRouteSPtr pRoute, void* d)
                 //  because we're not executing on the route, we have to do this manually
                 EmetconProtocol::buildBWordMessage(OutMessage);
 
-                if(PortManager.writeQueue(OutMessage->Port, OutMessage->Request.GrpMsgID, sizeof (*OutMessage), (char *) OutMessage, OutMessage->Priority))
+                if(PortManager.writeQueue(OutMessage->Port, OutMessage->Request.GrpMsgID, OutMessage, OutMessage->Priority))
                 {
                     printf ("Error Writing to Queue for Port %2hd\n", portid);
                     delete (OutMessage);
@@ -719,7 +719,7 @@ static void applyPortSendTime(const long unusedid, CtiPortSPtr PortRecord, void 
                 OutMessage->MessageFlags = MessageFlag_ApplyExclusionLogic;
                 OutMessage->ExpirationTime = getNextTimeSync();
 
-                if(PortRecord->writeQueue(OutMessage->Request.GrpMsgID, sizeof (*OutMessage), (char *) OutMessage, OutMessage->Priority, PortThread))
+                if(PortRecord->writeQueue(OutMessage->Request.GrpMsgID, OutMessage, OutMessage->Priority, PortThread))
                 {
                     printf ("Error Writing to Queue for Port %2hd\n", PortRecord->getPortID());
                     delete (OutMessage);
@@ -765,7 +765,6 @@ static void applyPortSendTime(const long unusedid, CtiPortSPtr PortRecord, void 
             devices.clear();
 
             DeviceManager.getDevicesByType(TYPE_WELCORTU, devices);
-            DeviceManager.getDevicesByType(TYPE_VTU,      devices);
             for_each(devices.begin(), devices.end(), timeSyncWelco_VTU(PortRecord->getPortID()));
             devices.clear();
 

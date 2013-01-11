@@ -225,14 +225,12 @@ INT CtiPort::logBytes(BYTE *Message, ULONG Length) const
     return status;
 }
 
-INT CtiPort::writeQueue(ULONG Request, LONG DataSize, PVOID Data, ULONG Priority, HANDLE hQuit)
+INT CtiPort::writeQueue(ULONG Request, OUTMESS *OutMessage, ULONG Priority, HANDLE hQuit)
 {
     int status = NORMAL;
     ULONG QueEntries;
-    //static ULONG _queueGripe = DEFAULT_QUEUE_GRIPE_POINT;
 
 #ifdef DEBUG
-    OUTMESS *OutMessage = (OUTMESS*)Data;
     if(OutMessage->DeviceID == 0 && OutMessage->TargetID == 0)
     {
         {
@@ -244,8 +242,7 @@ INT CtiPort::writeQueue(ULONG Request, LONG DataSize, PVOID Data, ULONG Priority
     }
 #endif
 
-    OUTMESS *OutMessage = (OUTMESS*)Data;
-    if(OutMessage && (DataSize == sizeof(CtiOutMessage)) &&
+    if(OutMessage &&
        OutMessage->HeadFrame[0] == 0x02 && OutMessage->HeadFrame[1] == 0xe0 &&
        OutMessage->TailFrame[0] == 0xea && OutMessage->TailFrame[1] == 0x03)
     {
@@ -270,7 +267,7 @@ INT CtiPort::writeQueue(ULONG Request, LONG DataSize, PVOID Data, ULONG Priority
 
             if( !blockTime || ((_lastWrite + blockTime) < CtiTime::now()) )
             {
-                status = writeShareQueue(Request, DataSize, Data, Priority, &QueEntries);
+                status = writeShareQueue(Request, sizeof(OUTMESS), OutMessage, Priority, &QueEntries);
             }
             else
             {
@@ -291,7 +288,7 @@ INT CtiPort::writeQueue(ULONG Request, LONG DataSize, PVOID Data, ULONG Priority
 
             _lastWrite = CtiTime::now();
 
-            status = WriteQueue( _portQueue, Request, DataSize, Data, Priority, &QueEntries);
+            status = WriteQueue( _portQueue, Request, sizeof(OUTMESS), OutMessage, Priority, &QueEntries);
 
             if(QueEntries >= _queueGripe)
             {
@@ -1342,10 +1339,6 @@ INT CtiPort::searchQueue( void *ptr, BOOL (*myFunc)(void*, void*), bool useFirst
 }
 
 
-#ifndef  COMM_FAIL_REPORT_TIME
-    #define COMM_FAIL_REPORT_TIME 300
-#endif
-
 INT CtiPort::portMaxCommFails() const
 {
     return gDefaultPortCommFailCount;
@@ -1421,7 +1414,7 @@ INT CtiPort::requeueToParent(OUTMESS *&OutMessage)
             NewOutMessage = CTIDBG_new CtiOutMessage(*OutMessage);
 
             NewOutMessage->Retry = 2;
-            _parentPort->writeQueue( NewOutMessage->Request.GrpMsgID, sizeof(*NewOutMessage), (char *)NewOutMessage, NewOutMessage->Priority );
+            _parentPort->writeQueue( NewOutMessage->Request.GrpMsgID, NewOutMessage, NewOutMessage->Priority );
         }
 
         BYTE           ReadPriority;
@@ -1435,7 +1428,7 @@ INT CtiPort::requeueToParent(OUTMESS *&OutMessage)
             // Move the OM from the pool queue to the child queue.
             if( readQueue( &ReadLength, (PPVOID) &NewOutMessage, DCWW_WAIT, &ReadPriority, &QueEntries ) == NORMAL )
             {
-                _parentPort->writeQueue( NewOutMessage->Request.GrpMsgID, sizeof(*NewOutMessage), (char *) NewOutMessage, NewOutMessage->Priority );
+                _parentPort->writeQueue( NewOutMessage->Request.GrpMsgID, NewOutMessage, NewOutMessage->Priority );
                 {
                     CtiLockGuard<CtiLogger> doubt_guard(dout);
                     dout << CtiTime() << " Port " << getName() << " Moving OutMessage back to parent port " << _parentPort->getName() << endl;

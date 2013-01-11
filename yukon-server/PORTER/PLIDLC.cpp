@@ -142,9 +142,6 @@ INT PreUnSequenced (PBYTE  Message,        /* resulting command string */
 
       break;
 
-   case TYPE_VTU:
-      break;
-
    default:
       Message[6] = (UCHAR)Length;
       break;
@@ -330,28 +327,6 @@ INT IDLCRej (PBYTE Reply, PUSHORT ReqNum)
    }
 
    return(BADSEQUENCE);
-}
-
-
-/* Routine to generate retransmit request for idlc */
-INT IDLCSRej (PBYTE Message,      /* resulting command */
-          USHORT Remote,         /* ccu address */
-          USHORT SeqNum)         /* expected sequence number */
-
-{
-   /* flag */
-   Message[0] = 0x7e;
-
-   /* ccu address */
-   Message[1] = Remote << 1 | 0x01;
-
-   /* framing and command */
-   Message[2] = SeqNum << 5 | SREJ;
-
-   /* crc */
-   PostIDLC (Message, 3);
-
-   return(NORMAL);
 }
 
 

@@ -6,6 +6,8 @@
 #include "activemq/library/activemqcpp.h"
 #include "cms/connection.h"
 
+#include <boost/scoped_ptr.hpp>
+
 #include <queue>
 
 namespace Cti {

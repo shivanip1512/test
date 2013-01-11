@@ -1,18 +1,4 @@
-/*-----------------------------------------------------------------------------*
-*
-* File:   mgr_port
-*
-* Date:   7/23/2001
-*
-* PVCS KEYWORDS:
-* ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/RTDB/mgr_port.cpp-arc  $
-* REVISION     :  $Revision: 1.35.2.1 $
-* DATE         :  $Date: 2008/11/20 16:49:19 $
-*
-* Copyright (c) 1999, 2000, 2001 Cannon Technologies Inc. All rights reserved.
-*-----------------------------------------------------------------------------*/
 #include "precompiled.h"
-
 
 #include "mgr_port.h"
 
@@ -600,7 +586,7 @@ void CtiPortManager::RefreshDialableEntries(bool &rowFound, Cti::RowReader& rdr,
     }
 }
 
-INT CtiPortManager::writeQueue(INT pid, ULONG Request, ULONG DataSize, PVOID Data, ULONG Priority)
+INT CtiPortManager::writeQueue(INT pid, ULONG Request, OUTMESS *OutMessage, ULONG Priority)
 {
     INT status = NORMAL;
 
@@ -614,7 +600,7 @@ INT CtiPortManager::writeQueue(INT pid, ULONG Request, ULONG DataSize, PVOID Dat
         }
         else
         {
-            status = pPort->writeQueue(Request, DataSize, Data, Priority);
+            status = pPort->writeQueue(Request, OutMessage, Priority);
         }
     }
     else

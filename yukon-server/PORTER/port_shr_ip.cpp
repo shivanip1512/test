@@ -339,7 +339,7 @@ void CtiPortShareIP::inThread()
                                 memcpy (OutMessage->Buffer.OutMessage, Buffer, bytesRead);
 
                                 //  ... and put it on the correct port's queue
-                                if(getPort()->writeQueue(OutMessage->EventCode, sizeof (*OutMessage), (char *) OutMessage, OutMessage->Priority))
+                                if(getPort()->writeQueue(OutMessage->EventCode, OutMessage, OutMessage->Priority))
                                 {
                                     {
                                         CtiLockGuard<CtiLogger> doubt_guard(dout);

@@ -15,7 +15,6 @@ INT GenReply (PBYTE, USHORT, PUSHORT, PUSHORT, USHORT, USHORT, bool*);
 INT RTUReply (PBYTE, USHORT);
 INT RTUReplyHeader (USHORT, USHORT, PBYTE, PULONG);
 INT IDLCRej (PBYTE, PUSHORT);
-INT IDLCSRej (PBYTE, USHORT, USHORT);
 INT IDLCSArm (PBYTE, USHORT);
 INT IDLCua (PBYTE, PUSHORT, PUSHORT);
 INT IDLCAlgStat (PBYTE, PUSHORT);
@@ -33,7 +32,6 @@ void FillerThread (PVOID);
 void PorterConnectionThread (PVOID);
 
 void PorterInterfaceThread (PVOID);
-void PorterGWThread (PVOID);
 
 /*  */
 void PortThread(void *);

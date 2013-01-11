@@ -142,8 +142,6 @@ static LONG GetCommFailPointID(LONG devid);
 typedef map< LONG, LONG > CtiCommFailPoints_t;              // pair< LONG deviceid, LONG pointid >
 static CtiCommFailPoints_t commFailDeviceIDToPointIDMap;
 
-static RWWinSockInfo  winsock;
-
 ULONG WorkCountPointOffset = 0;
 
 struct isTAPTerm

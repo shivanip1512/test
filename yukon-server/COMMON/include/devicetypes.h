@@ -82,7 +82,6 @@
 #define TYPE_TCU5500                         1255
 #define TYPE_TDMARKV                         1500
 #define TYPE_DAVIS                           1600
-#define TYPE_VTU                             1700
 #define TYPE_ALPHA_PPLUS                     1800
 #define TYPE_FULCRUM                         1805  // Schlumberger Fulcrum....
 #define TYPE_LGS4                            1810  // Landis and Gyr S4....

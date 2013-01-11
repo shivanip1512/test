@@ -345,7 +345,7 @@ void CtiPorterVerification::processWorkQueue(bool purge)
                 {
                     CtiOutMessage *om = work->getRetryOM();
 
-                    PortManager.writeQueue(om->Port, om->Request.GrpMsgID, sizeof(*om), static_cast<void *>(om), om->Priority);
+                    PortManager.writeQueue(om->Port, om->Request.GrpMsgID, om, om->Priority);
 
                     //  possible addition to enhance retry logic  ----
                     //_retry_queue.push_back(work);  //  this is where we keep track of the receivers on which we've already heard this code
