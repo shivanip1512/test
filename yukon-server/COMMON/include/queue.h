@@ -4,6 +4,7 @@
 #include <functional>
 #include <iostream>
 #include <LIMITS>
+#include <queue>
 
 #include "cparms.h"
 #include "dlldefs.h"
@@ -592,3 +593,82 @@ public:
         return *this;
     }
 };
+
+
+
+template<class T>
+class CtiValueQueue
+{
+private:
+
+    std::queue<T>   _col;
+
+    boost::condition            _dataAvailable;
+    mutable boost::timed_mutex  _mux;
+    typedef boost::timed_mutex::scoped_timed_lock   lock_t;
+
+    struct boost::xtime _xt_eot;
+
+public:
+
+    CtiValueQueue()
+    {
+        _xt_eot.sec  = INT_MAX;
+        _xt_eot.nsec = 0;
+    }
+
+    std::size_t size() const
+    {
+        lock_t scoped_lock(_mux, _xt_eot);
+        return _col.size();
+    }
+
+    bool empty() const
+    {
+        lock_t scoped_lock(_mux, _xt_eot);
+        return _col.empty();
+    }
+
+    bool putQueue(const T & item)
+    {
+        try
+        {
+            lock_t scoped_lock(_mux, _xt_eot);
+            _col.push(item);
+            _dataAvailable.notify_one();
+
+            return true;
+        }
+        catch(...)
+        {
+            CtiLockGuard<CtiLogger> doubt_guard(dout);
+            dout << CtiTime() << " **** Exception **** " << FO(__FILE__) << " (" << __LINE__ << ")" << std::endl;
+        }
+
+        return false;
+    }
+
+    T getQueue()
+    {
+        T value;
+
+        try
+        {
+            lock_t scoped_lock(_mux, _xt_eot);
+            while(_col.empty())
+            {
+                _dataAvailable.wait(scoped_lock);
+            }
+            value = _col.front();
+            _col.pop();
+        }
+        catch(...)
+        {
+            CtiLockGuard<CtiLogger> doubt_guard(dout);
+            dout << CtiTime() << " **** Exception **** " << FO(__FILE__) << " (" << __LINE__ << ")" << std::endl;
+        }
+
+        return value;
+    }
+};
+

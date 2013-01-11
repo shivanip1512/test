@@ -272,4 +272,32 @@ BOOST_AUTO_TEST_CASE(test_fifoqueue_multi_threaded)
     t4.join();
 }
 
+BOOST_AUTO_TEST_CASE(test_valuequeue_basic_ops)
+{
+    CtiValueQueue<int>  q;
+
+    BOOST_CHECK_EQUAL(    0, q.size() );
+    BOOST_CHECK_EQUAL( true, q.empty() );
+
+    q.putQueue(1);
+
+    BOOST_CHECK_EQUAL(     1, q.size() );
+    BOOST_CHECK_EQUAL( false, q.empty() );
+
+    BOOST_CHECK_EQUAL(    1, q.getQueue() );
+
+    BOOST_CHECK_EQUAL(    0, q.size() );
+    BOOST_CHECK_EQUAL( true, q.empty() );
+
+    for (int v = 0; v < 10; v++)
+    {
+        q.putQueue(v);
+    }
+
+    for (int v = 0; v < 10; v++)
+    {
+        BOOST_CHECK_EQUAL( v, q.getQueue() );
+    }
+}
+
 BOOST_AUTO_TEST_SUITE_END()
