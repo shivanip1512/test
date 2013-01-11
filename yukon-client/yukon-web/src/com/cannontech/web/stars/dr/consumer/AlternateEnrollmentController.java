@@ -23,12 +23,10 @@ import com.cannontech.stars.dr.program.model.Program;
 import com.cannontech.stars.energyCompany.model.YukonEnergyCompany;
 import com.cannontech.user.YukonUserContext;
 import com.cannontech.web.common.flashScope.FlashScope;
-import com.cannontech.web.security.annotation.CheckRoleProperty;
 import com.google.common.collect.Maps;
 
 @Controller
 @RequestMapping("/consumer/ae/*")
-@CheckRoleProperty(YukonRoleProperty.RESIDENTIAL_CONSUMER_INFO_PROGRAMS_ENROLLMENT)
 public class AlternateEnrollmentController extends AbstractConsumerController {
 	
 	@Autowired private AlternateEnrollmentService aeService;
