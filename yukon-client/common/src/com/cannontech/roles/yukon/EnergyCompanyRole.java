@@ -33,6 +33,6 @@ public interface EnergyCompanyRole {
     public static final int ALLOW_THERMOSTAT_SCHEDULE_WEEKDAY_WEEKEND = EnergyCompanyRoleDefs.ENERGY_COMPANY_PROPERTYID_BASE - 22;
     public static final int ALLOW_THERMOSTAT_SCHEDULE_WEEKDAY_SATURDAY_SUNDAY = EnergyCompanyRoleDefs.ENERGY_COMPANY_PROPERTYID_BASE - 23;
     public static final int ALLOW_THERMOSTAT_SCHEDULE_7_DAY = EnergyCompanyRoleDefs.ENERGY_COMPANY_PROPERTYID_BASE - 24;
-    
+    public static final int BROADCAST_OPT_OUT_CANCEL_SPID = EnergyCompanyRoleDefs.ENERGY_COMPANY_PROPERTYID_BASE - 25;
     public static final int ALTERNATE_PROGRAM_ENROLLMENT = EnergyCompanyRoleDefs.ENERGY_COMPANY_PROPERTYID_BASE - 26;
 }
