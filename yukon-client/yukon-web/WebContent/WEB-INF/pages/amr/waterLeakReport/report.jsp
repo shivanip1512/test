@@ -214,7 +214,7 @@
                 <tags:filteredBy labelKey="yukon.common.filteredBy.reset.label" value="${reset_value}" isClearable="false" isReset="true" cssClass="f_reset_filter_submit"/>
 			</c:if>
         </tags:filteredByContainer>
-		<table id="leaksTable" class="compactResultsTable traversable contextual-menu-list">
+		<table id="leaksTable" class="compactResultsTable f_traversable contextual-menu-list">
             <c:choose>
                 <c:when test="${fn:length(filterResult.resultList) > 0}">
 					<thead>

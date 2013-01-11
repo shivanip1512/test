@@ -11,28 +11,36 @@ import com.cannontech.web.contextualMenu.MenuTypeApplicabilityDecider;
 import com.google.common.collect.ImmutableSet;
 import com.google.common.collect.ImmutableSet.Builder;
 
-public abstract class BaseMenuEntry implements DeviceAction {
+/**
+ * Contains the generic functionality and methods for both a single device and a device collection
+ * for an individual MenuAction
+ */
+public abstract class DeviceMenuAction implements DeviceAction {
 
     protected String baseUrl;
+    protected String inputParamName;
+    protected String outputParamName;
+
     private YukonRole requiredRole;
     private Set<YukonRoleProperty> requiredRoleProperties;
     private MenuTypeApplicabilityDecider decider;
     private String beanName;
     
+    protected final static String defaultDeviceIdParamName = "deviceId";
     private static final String BASE_KEY = "yukon.web.modules.common.contextualMenu.";
 
-    public BaseMenuEntry() {
+    public DeviceMenuAction() {
         super();
     }
     
-    public BaseMenuEntry(String baseUrl, YukonRole requiredRole) {
-        this.baseUrl = getBaseUrlWithappendedAmpersand(baseUrl);
+    public DeviceMenuAction(String baseUrl, YukonRole requiredRole) {
+        this.baseUrl = getBaseUrlWithAppendedAmpersand(baseUrl);
         this.requiredRole = requiredRole;
     }
 
-    public BaseMenuEntry(String baseUrl, YukonRole requiredRole,
+    public DeviceMenuAction(String baseUrl, YukonRole requiredRole,
                                 YukonRoleProperty... requiredRoleProperties) {
-        this.baseUrl = getBaseUrlWithappendedAmpersand(baseUrl);
+        this.baseUrl = getBaseUrlWithAppendedAmpersand(baseUrl);
         this.requiredRole = requiredRole;
         
         Builder<YukonRoleProperty> builder = ImmutableSet.builder();
@@ -41,8 +49,16 @@ public abstract class BaseMenuEntry implements DeviceAction {
         }
         this.requiredRoleProperties = builder.build();
     }
+
+    public DeviceMenuAction(String baseUrl, String inputParamName, String outputParamName,
+                         YukonRole requiredRole,
+                         YukonRoleProperty... requiredRoleProperties) {
+        this(baseUrl, requiredRole, requiredRoleProperties);
+        this.inputParamName = inputParamName;
+        this.outputParamName = outputParamName;
+    }
     
-    private String getBaseUrlWithappendedAmpersand(String baseUrl) {  
+    private String getBaseUrlWithAppendedAmpersand(String baseUrl) {  
         return baseUrl.contains("?") ? (baseUrl + "&") : (baseUrl + "?");
     }
 
@@ -69,6 +85,13 @@ public abstract class BaseMenuEntry implements DeviceAction {
             return decider.isApplicable(paoIdentifier);
         }
         return true;
+    }
+    
+    public Integer getDeviceId(CollectionCategory collectionCategory, Map<String, String> inputs) {
+        if (collectionCategory == CollectionCategory.PAO_ID) {
+            return Integer.valueOf(inputs.get(inputParamName));
+        }
+        return null;
     }
     
     @Override

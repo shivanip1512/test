@@ -53,7 +53,8 @@ Yukon.ui = {
     autoWire: function() {
         // register listeners
         
-        jQuery(".compactResultsTable.traversable").traverse('tr', {
+        /* initialize our keyboard table traversal (j/k keys) */
+        jQuery(".compactResultsTable.f_traversable").traverse('tr', {
             table_row_helper: true
         });
         

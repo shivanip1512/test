@@ -6,32 +6,32 @@ import com.cannontech.core.roleproperties.YukonRole;
 import com.cannontech.core.roleproperties.YukonRoleProperty;
 import com.cannontech.web.contextualMenu.CollectionCategory;
 
-public class SingleDeviceMenuEntry extends DeviceMenuEntry {
+public class SingleDeviceMenuAction extends DeviceMenuAction {
     
-    public SingleDeviceMenuEntry(String baseUrl) {
+    public SingleDeviceMenuAction(String baseUrl) {
         this(baseUrl, defaultDeviceIdParamName, defaultDeviceIdParamName, null);
     }
 
-    public SingleDeviceMenuEntry(String baseUrl, YukonRole requiredRole) {
+    public SingleDeviceMenuAction(String baseUrl, YukonRole requiredRole) {
         this(baseUrl, defaultDeviceIdParamName, defaultDeviceIdParamName, requiredRole);
     }
 
-    public SingleDeviceMenuEntry(String baseUrl, YukonRoleProperty... requiredRoleProperties) {
+    public SingleDeviceMenuAction(String baseUrl, YukonRoleProperty... requiredRoleProperties) {
         this(baseUrl, defaultDeviceIdParamName, defaultDeviceIdParamName, null, requiredRoleProperties);
     }
 
-    public SingleDeviceMenuEntry(String baseUrl, YukonRole requiredRole,
+    public SingleDeviceMenuAction(String baseUrl, YukonRole requiredRole,
                               YukonRoleProperty... requiredRoleProperties) {
         this(baseUrl, defaultDeviceIdParamName, defaultDeviceIdParamName, requiredRole, requiredRoleProperties);
     }
 
-    public SingleDeviceMenuEntry(String baseUrl, String inputParamName,
+    public SingleDeviceMenuAction(String baseUrl, String inputParamName,
                               YukonRole requiredRole,
                               YukonRoleProperty... requiredRoleProperties) {
         this(baseUrl, inputParamName, inputParamName, requiredRole, requiredRoleProperties);
     }
 
-    public SingleDeviceMenuEntry(String baseUrl, String inputParamName, String outputParamName,
+    public SingleDeviceMenuAction(String baseUrl, String inputParamName, String outputParamName,
                               YukonRole requiredRole,
                               YukonRoleProperty... requiredRoleProperties) {
         super(baseUrl, inputParamName, outputParamName, requiredRole, requiredRoleProperties);

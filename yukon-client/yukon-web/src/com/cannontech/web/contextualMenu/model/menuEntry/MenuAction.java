@@ -9,6 +9,9 @@ import com.cannontech.core.roleproperties.YukonRole;
 import com.cannontech.core.roleproperties.YukonRoleProperty;
 import com.cannontech.web.contextualMenu.CollectionCategory;
 
+/**
+ * This interface represents the required methods for each individual MenuEntry
+ */
 public interface MenuAction extends MenuEntry, BeanNameAware {
     String getUrl(CollectionCategory collectionCategory, Map<String, String> inputs);
     YukonRole getRequiredRole();

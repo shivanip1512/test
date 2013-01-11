@@ -283,7 +283,7 @@
 	</c:if>
 
 	<tags:pagedBox2 nameKey="tableTitle" searchResult="${filterResult}" baseUrl="report" titleLinkHtml="${linkHeaderHtml}">
-		<table id="eventsTable" class="compactResultsTable traversable contextual-menu-list">
+		<table id="eventsTable" class="compactResultsTable f_traversable contextual-menu-list">
             <thead>
     			<tr>
     				<th><tags:sortLink nameKey="tableHeader.deviceName" baseUrl="report" fieldName="NAME" isDefault="false" /></th>

@@ -8,7 +8,7 @@
 
 <cti:standardPage module="amr" page="meterSearchResults">
 
-<cti:url value="/meter/home" var="meterHomeUrl"/>
+    <cti:url value="/meter/home" var="meterHomeUrl"/>
 
     <script type="text/javascript">
     
@@ -70,7 +70,7 @@
     <cti:msg2 var="meterSearchTitle" key=".meterSearchResultsTitle" />
     <tags:pagedBox title="${meterSearchTitle}" searchResult="${meterSearchResults}" baseUrl="${baseUrl}"
         pageByHundereds="true" titleLinkHtml="${linkHeaderHtml}">
-        <table class="compactResultsTable traversable rowHighlighting contextual-menu-list">
+        <table class="compactResultsTable f_traversable rowHighlighting contextual-menu-list">
             <c:if test="${meterSearchResults.hitCount > 0}">
                 <thead>
                     <tr>

@@ -7,8 +7,7 @@
 
 <cti:includeScript link="/JavaScript/dropdown_actions.js"/>
 
-<%@ tag trimDirectiveWhitespaces="true"%>
-<%-- <%@ tag body-content="empty" %> --%>
+<%@ tag trimDirectiveWhitespaces="true" description="This tag is used to generate a contextual menu based on the passed in menuBeanId"%>
 
 <%@ attribute name="menuBeanId" required="true" description="The bean id of the menu you want to render"%>
 <%@ attribute name="key" %>

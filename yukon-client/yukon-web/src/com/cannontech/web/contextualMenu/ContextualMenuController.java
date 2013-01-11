@@ -29,12 +29,11 @@ import com.cannontech.user.YukonUserContext;
 import com.cannontech.util.ServletUtil;
 import com.cannontech.web.contextualMenu.model.menu.DeviceMenu;
 import com.cannontech.web.contextualMenu.model.menu.Menu;
-import com.cannontech.web.contextualMenu.model.menuEntry.BaseMenuEntry;
-import com.cannontech.web.contextualMenu.model.menuEntry.DeviceCollectionMenuEntry;
-import com.cannontech.web.contextualMenu.model.menuEntry.DeviceMenuEntry;
+import com.cannontech.web.contextualMenu.model.menuEntry.DeviceCollectionMenuAction;
+import com.cannontech.web.contextualMenu.model.menuEntry.DeviceMenuAction;
 import com.cannontech.web.contextualMenu.model.menuEntry.MenuEntry;
 import com.cannontech.web.contextualMenu.model.menuEntry.MenuSeparator;
-import com.cannontech.web.contextualMenu.model.menuEntry.SingleDeviceMenuEntry;
+import com.cannontech.web.contextualMenu.model.menuEntry.SingleDeviceMenuAction;
 import com.google.common.collect.Maps;
 
 @Controller
@@ -57,7 +56,7 @@ public class ContextualMenuController {
         Map<String, String> inputParams = ServletUtil.getParameterMap(request);
         JSONArray array = null;
 
-        if (menu != null && menu instanceof DeviceMenu) {
+        if (menu instanceof DeviceMenu) {
             array = getDeviceMenu((DeviceMenu) menu, inputParams, request, userContext);
         } else {
             throw new RuntimeException("Couldn't find menu with beanId " + menuBeanId);
@@ -78,17 +77,17 @@ public class ContextualMenuController {
             if (menuEntry instanceof MenuSeparator) {
                 addMenuSeperator(array);
                 continue;
-            } else if (menuEntry instanceof SingleDeviceMenuEntry) {
-                SingleDeviceMenuEntry singleDeviceMenuEntry = (SingleDeviceMenuEntry) menuEntry;
+            } else if (menuEntry instanceof SingleDeviceMenuAction) {
+                SingleDeviceMenuAction singleDeviceMenuEntry = (SingleDeviceMenuAction) menuEntry;
                 url = singleDeviceMenuEntry.getUrl(deviceMenu.getCollectionCategory(), inputParams);
-            } else if (menuEntry instanceof DeviceCollectionMenuEntry) {
-                DeviceCollectionMenuEntry deviceCollectionMenuEntry = (DeviceCollectionMenuEntry) menuEntry;
+            } else if (menuEntry instanceof DeviceCollectionMenuAction) {
+                DeviceCollectionMenuAction deviceCollectionMenuEntry = (DeviceCollectionMenuAction) menuEntry;
                 url = deviceCollectionMenuEntry.getUrl(deviceMenu.getCollectionCategory(), inputParams);
             } else {
-                throw new RuntimeException("DeviceMenu can only contain MenuEntry elements of type MenuSeperator, SingleDeviceMenuEntry, and DeviceCollectionMenuEntry");
+                throw new RuntimeException("DeviceMenu can only contain MenuEntry elements of type MenuSeperator, SingleDeviceMenuAction, and DeviceCollectionMenuAction");
             }
             
-            DeviceMenuEntry deviceMenuEntry = (DeviceMenuEntry) menuEntry;
+            DeviceMenuAction deviceMenuEntry = (DeviceMenuAction) menuEntry;
             checkMenuEntrySupports(deviceMenu, deviceMenuEntry, inputParams);
             if (!canViewMenuEntry(deviceMenuEntry, yukonUser)) continue;
             
@@ -101,7 +100,7 @@ public class ContextualMenuController {
         return array;
     }
     
-    private <T extends BaseMenuEntry> boolean canViewMenuEntry(T menuEntry, LiteYukonUser yukonUser) {
+    private <T extends DeviceMenuAction> boolean canViewMenuEntry(T menuEntry, LiteYukonUser yukonUser) {
         if (menuEntry.getRequiredRole() != null
                 && !rolePropertyDao.checkRole(menuEntry.getRequiredRole(), yukonUser))
             return false;
@@ -111,7 +110,7 @@ public class ContextualMenuController {
         return true;
     }
     
-    private void checkMenuEntrySupports(Menu menu, DeviceMenuEntry menuEntry, Map<String, String> inputParams) {
+    private void checkMenuEntrySupports(Menu menu, DeviceMenuAction menuEntry, Map<String, String> inputParams) {
         Integer deviceId = menuEntry.getDeviceId(menu.getCollectionCategory(), inputParams);
         if (deviceId != null) {
             YukonPao yukonPao = paoDao.getYukonPao(deviceId);

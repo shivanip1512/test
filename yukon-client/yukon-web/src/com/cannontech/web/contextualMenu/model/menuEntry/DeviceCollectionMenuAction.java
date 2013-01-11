@@ -9,26 +9,26 @@ import com.cannontech.util.ServletUtil;
 import com.cannontech.web.contextualMenu.CollectionCategory;
 import com.google.common.collect.Maps;
 
-public class DeviceCollectionMenuEntry extends DeviceMenuEntry {
+public class DeviceCollectionMenuAction extends DeviceMenuAction {
     
-    public DeviceCollectionMenuEntry(String baseUrl) {
+    public DeviceCollectionMenuAction(String baseUrl) {
         this(baseUrl, defaultDeviceIdParamName, null);
     }
 
-    public DeviceCollectionMenuEntry(String baseUrl, YukonRole requiredRole) {
+    public DeviceCollectionMenuAction(String baseUrl, YukonRole requiredRole) {
         this(baseUrl, defaultDeviceIdParamName, requiredRole);
     }
 
-    public DeviceCollectionMenuEntry(String baseUrl, YukonRoleProperty... requiredRoleProperties) {
+    public DeviceCollectionMenuAction(String baseUrl, YukonRoleProperty... requiredRoleProperties) {
         this(baseUrl, null, requiredRoleProperties);
     }
     
-    public DeviceCollectionMenuEntry(String baseUrl, YukonRole requiredRole,
+    public DeviceCollectionMenuAction(String baseUrl, YukonRole requiredRole,
                                      YukonRoleProperty... requiredRoleProperties) {
         this(baseUrl, defaultDeviceIdParamName, requiredRole, requiredRoleProperties);
     }
 
-    public DeviceCollectionMenuEntry(String baseUrl, String inputParamName, YukonRole requiredRole,
+    public DeviceCollectionMenuAction(String baseUrl, String inputParamName, YukonRole requiredRole,
                                      YukonRoleProperty... requiredRoleProperties) {
         super(baseUrl, defaultDeviceIdParamName, defaultDeviceIdParamName, requiredRole, requiredRoleProperties);
     }
@@ -59,7 +59,7 @@ public class DeviceCollectionMenuEntry extends DeviceMenuEntry {
         } else {
             throw new RuntimeException("this url doesn't support " + collectionCategory);
         }
-        return baseUrl + ServletUtil.buildQueryStringFromMap(queryParams);
+        return baseUrl + ServletUtil.buildQueryStringFromMap(queryParams, false);
     }
 
 }
