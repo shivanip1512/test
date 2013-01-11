@@ -6,7 +6,7 @@ Helper singleton TreeHelper
 if(typeof(TreeHelper) == 'undefined'){
     TreeHelper = new function(){
         this.class_type = typeof(this) +":TreeHelper";
-        this.description = "Singleton for supporting common search and expand/collapse toggles for dynatrees."
+        this.description = "Singleton for supporting common search and expand/collapse toggles for dynatrees.";
         this.search_index = 0;
         this.search_count = 0;
         this.timeout = null;
@@ -106,6 +106,6 @@ if(typeof(TreeHelper) == 'undefined'){
             }
         };
         
-        this.init();
+//        this.init();
     };
 }

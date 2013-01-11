@@ -16,10 +16,12 @@ import com.cannontech.i18n.YukonMessageSourceResolvable;
 public enum ChartInterval {
 
     MONTH {
+        @Override
         public void increment(Calendar cal) {
             cal.add(Calendar.MONTH, 1);
         }
         
+        @Override
         public Date roundDownToIntervalUnit(Date date) {
 
             Calendar cal = new GregorianCalendar();
@@ -36,10 +38,12 @@ public enum ChartInterval {
 
     },
     DAY {
+        @Override
         public void increment(Calendar cal) {
             cal.add(Calendar.DATE, 1);
         }
 
+        @Override
         public Date roundDownToIntervalUnit(Date date) {
 
             Calendar cal = new GregorianCalendar();
@@ -54,10 +58,12 @@ public enum ChartInterval {
         }
     },
     DAY_MIDNIGHT {
+        @Override
         public void increment(Calendar cal) {
             cal.add(Calendar.DATE, 1);
         }
 
+        @Override
         public Date roundDownToIntervalUnit(Date date) {
 
             Calendar cal = new GregorianCalendar();
@@ -83,6 +89,7 @@ public enum ChartInterval {
         }
     },
     HOUR {
+        @Override
         public Date increment(Date date) {
             long time = date.getTime();
             time += (60 * 60 * 1000);
@@ -95,6 +102,7 @@ public enum ChartInterval {
             cal.add(Calendar.HOUR_OF_DAY, 1);
         }
 
+        @Override
         public Date roundDownToIntervalUnit(Date date) {
 
             Calendar cal = new GregorianCalendar();
@@ -108,6 +116,7 @@ public enum ChartInterval {
         }
     },
     MINUTE {
+        @Override
         public Date increment(Date date) {
             long time = date.getTime();
             time += (60 * 1000);
@@ -115,11 +124,13 @@ public enum ChartInterval {
             return new Date(time);
          }
 
+        @Override
         public void increment(Calendar cal) {
             
             cal.add(Calendar.MINUTE, 1);
         }
         
+        @Override
         public Date roundDownToIntervalUnit(Date date) {
 
             Calendar cal = new GregorianCalendar();
@@ -138,6 +149,7 @@ public enum ChartInterval {
 
     },
     FIFTEENSECOND {
+        @Override
         public Date increment(Date date) {
             long time = date.getTime();
             time += (15 * 1000);
@@ -145,10 +157,12 @@ public enum ChartInterval {
             return new Date(time);
         }
 
+        @Override
         public void increment(Calendar cal) {
             cal.add(Calendar.SECOND, 15);
         }
         
+        @Override
         public Date roundDownToIntervalUnit(Date date) {
 
             Calendar cal = new GregorianCalendar();
@@ -168,10 +182,12 @@ public enum ChartInterval {
 
     }, 
     WEEK {
+        @Override
         public void increment(Calendar cal) {
             cal.add(Calendar.DATE, 7);
         }
 
+        @Override
         public Date roundDownToIntervalUnit(Date date) {
 
             Calendar cal = new GregorianCalendar();
@@ -189,6 +205,7 @@ public enum ChartInterval {
     }, 
     
     FIVEMINUTE {
+        @Override
         public Date increment(Date date) {
             long time = date.getTime();
             time += (5 * 60 * 1000);
@@ -196,10 +213,12 @@ public enum ChartInterval {
             return new Date(time);
         }
         
+        @Override
         public void increment(Calendar cal) {
             cal.add(Calendar.MINUTE, 5);
         }
 
+        @Override
         public Date roundDownToIntervalUnit(Date date) {
 
             Calendar cal = new GregorianCalendar();
@@ -221,6 +240,7 @@ public enum ChartInterval {
     },
     
     FIFTEENMINUTE {
+        @Override
         public Date increment(Date date) {
             long time = date.getTime();
             time += (15 * 60 * 1000);
@@ -228,10 +248,12 @@ public enum ChartInterval {
             return new Date(time);
         }
         
+        @Override
         public void increment(Calendar cal) {
             cal.add(Calendar.MINUTE, 15);
         }
 
+        @Override
         public Date roundDownToIntervalUnit(Date date) {
 
             Calendar cal = new GregorianCalendar();

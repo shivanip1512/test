@@ -1,16 +1,16 @@
-<%@ taglib uri="http://java.sun.com/jsp/jstl/core" prefix="c"%>
-<%@ taglib uri="http://cannontech.com/tags/cti" prefix="cti"%>
-<%@ taglib uri="http://www.springframework.org/tags" prefix="spring" %>
-<%@ taglib tagdir="/WEB-INF/tags" prefix="tags"%>
-<%@ taglib tagdir="/WEB-INF/tags/capcontrol" prefix="capTags"%>
+<%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core"%>
+<%@ taglib prefix="cti" uri="http://cannontech.com/tags/cti"%>
+<%@ taglib prefix="spring" uri="http://www.springframework.org/tags"%>
+<%@ taglib prefix="tags" tagdir="/WEB-INF/tags"%>
+<%@ taglib prefix="capTags" tagdir="/WEB-INF/tags/capcontrol"%>
 <%@ taglib prefix="i" tagdir="/WEB-INF/tags/i18n" %>
+<%@ taglib prefix="flot" tagdir="/WEB-INF/tags/flotChart" %>
 
 <cti:standardPage module="capcontrol" page="ivvc.zoneDetail">
 	<cti:includeScript link="/JavaScript/tableCreation.js" />
 	<cti:includeScript link="/JavaScript/simpleDialog.js"/>
     <cti:includeScript link="/JavaScript/dynamicTable.js"/>
 	<cti:includeScript link="/JavaScript/picker.js" />
-    <cti:includeScript link="/JavaScript/ivvcAmCharts.js" />
 
 	<%@include file="/capcontrol/capcontrolHeader.jspf"%>
 	<cti:includeCss link="/WebConfig/yukon/styles/da/ivvc.css"/>
@@ -416,18 +416,16 @@
 			<cti:tabbedContentSelector>
 				<cti:msg2 var="tabName" key=".voltageProfile.title" />
 				<cti:tabbedContentSelectorContent selectorName="${tabName}">
-					<%@ include file="aboveGraph.jspf"%>
+					<c:set var="chartId" value="zone_${zoneId}_chart" />
+                    <cti:url var="chartJsonDataUrl" value="/capcontrol/ivvc/zone/chart"/>
+                    <flot:ivvcChart
+                        chartId="${chartId}"
+                        jsonDataAndOptions="${graphAsJSON}"
+                        title="${graphSettings.graphTitle}"/>
 
-					<c:set var="chartId" value="zone_${subBusId}_IVVCGraph" />
-					<input type="hidden" value="${chartId}" id="ivvcChartIdValue" />
-					<c:url var="amChartFile" value="/capcontrol/ivvc/zone/chart">
-						<cti:param name="zoneId" value="${zoneId}" />
-					</c:url>
-					<tags:amchart chartType="amline" settingsUrl="${amChartFile}" chartId="${chartId}" cssClass="ivvcGraphContainer" />
-
-					<cti:dataUpdaterCallback function="checkGraphExpired('${chartId}')" initialize="true" 
-	                    largestTime="CAPCONTROL/${zoneId}/IVVC_LARGEST_GRAPH_TIME_FOR_ZONE"/>
-	                
+					<cti:dataUpdaterCallback function="Yukon.Flot.reloadChartIfExpired({chartId:'${chartId}', dataUrl:'${chartJsonDataUrl}',
+                                                       attrName:\'subBusId\', attrVal: '${zoneId}'})" initialize="false" 
+                                             largestTime="CAPCONTROL/${zoneId}/IVVC_LARGEST_GRAPH_TIME_FOR_ZONE"/>
 				</cti:tabbedContentSelectorContent>
 				<cti:msg2 var="voltagePointsTab" key=".voltagePoints.title" />
 				<cti:tabbedContentSelectorContent selectorName="${voltagePointsTab}">

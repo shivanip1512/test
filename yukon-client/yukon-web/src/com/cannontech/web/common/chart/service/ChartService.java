@@ -1,4 +1,4 @@
-package com.cannontech.common.chart.service;
+package com.cannontech.web.common.chart.service;
 
 import java.util.Date;
 import java.util.List;
@@ -7,7 +7,6 @@ import com.cannontech.common.chart.model.ChartInterval;
 import com.cannontech.common.chart.model.ChartValue;
 import com.cannontech.common.chart.model.ConverterType;
 import com.cannontech.common.chart.model.Graph;
-import com.cannontech.common.chart.model.GraphType;
 import com.cannontech.user.YukonUserContext;
 
 /**
@@ -24,8 +23,8 @@ public interface ChartService {
      * @param userContext
      * @return A list containing one graph per point
      */
-    public List<Graph> getGraphs(int[] pointIds, Date startDate, Date stopDate, ChartInterval unit,
-                                 GraphType graphType, ConverterType converterType, YukonUserContext userContext);
+    public List<Graph> getGraphs(List<Integer> pointIds, Date startDate, Date stopDate, ChartInterval unit,
+                                 ConverterType converterType, YukonUserContext userContext);
 
     /**
      * Method to get the x-axis tick marks for a given time period and interval

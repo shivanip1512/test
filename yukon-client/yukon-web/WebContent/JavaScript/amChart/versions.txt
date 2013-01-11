@@ -1,4 +1,0 @@
-amline_1.6.4.1
-amcolumn_1.6.4.2
-ampie_1.6.3.0
-amxy_1.6.4.2

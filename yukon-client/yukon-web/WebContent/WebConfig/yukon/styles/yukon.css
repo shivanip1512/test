@@ -201,7 +201,7 @@ ul.pipes li.first {padding-left:0;}
 .success, .successMessage {color: #093;}
 .warn, .warning, .warningMessage {color:#FBB117}
 .disabled, .disabled a {color:#555; cursor:default;}
-.disabled a:hover {text-decoration: none;}
+.disabled, .disabled a, .disabled:hover, .disabled a:hover {text-decoration: none;}
 .subtle, .setting .detail > span {color:#555;}
 
 /* used on consumer pages, delete during consumer overhaul */

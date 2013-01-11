@@ -8,7 +8,7 @@ import javax.servlet.ServletException;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
-import net.sf.jsonOLD.JSONObject;
+import net.sf.json.JSONObject;
 
 import org.apache.commons.lang.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -17,6 +17,7 @@ import org.springframework.ui.ModelMap;
 import org.springframework.web.bind.ServletRequestUtils;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
+import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.servlet.View;
 
 import com.cannontech.amr.meter.dao.MeterDao;
@@ -52,6 +53,7 @@ import com.cannontech.core.roleproperties.YukonRoleProperty;
 import com.cannontech.database.data.lite.LiteYukonUser;
 import com.cannontech.i18n.YukonUserContextMessageSourceResolver;
 import com.cannontech.user.YukonUserContext;
+import com.cannontech.web.common.chart.service.FlotChartService;
 import com.cannontech.web.security.annotation.CheckRoleProperty;
 import com.cannontech.web.util.JsonView;
 import com.google.common.collect.Iterables;
@@ -63,21 +65,23 @@ import com.google.common.collect.Maps;
 @CheckRoleProperty(YukonRoleProperty.PHASE_DETECT)
 public class PhaseDetectController {
     
-    private SubstationToRouteMappingDao strmDao;
-    private SubstationDao substationDao;
-    private PhaseDetectService phaseDetectService;
-    private DeviceDao deviceDao;
-    private DeviceGroupMemberEditorDao deviceGroupMemberEditorDao;
-    private MeterDao meterDao;
+    @Autowired private SubstationToRouteMappingDao strmDao;
+    @Autowired private SubstationDao substationDao;
+    @Autowired private PhaseDetectService phaseDetectService;
+    @Autowired private DeviceDao deviceDao;
+    @Autowired private DeviceGroupMemberEditorDao deviceGroupMemberEditorDao;
+    @Autowired private MeterDao meterDao;
+    @Autowired private DeviceGroupCollectionHelper deviceGroupCollectionHelper;
+    @Autowired private TemporaryDeviceGroupService temporaryDeviceGroupService;
+    @Autowired private DeviceGroupService deviceGroupService;
+    @Autowired private DeviceGroupEditorDao deviceGroupEditorDao;
+    @Autowired private CommandRequestExecutionDao commandRequestExecutionDao;
+    @Autowired private PaoDefinitionDao paoDefinitionDao;
+    @Autowired private YukonUserContextMessageSourceResolver messageSourceResolver = null;
+    @Autowired private FlotChartService flotChartService;
+
     private PhaseDetectResult resultCopy = null;
     private PhaseDetectData dataCopy = null;
-    private DeviceGroupCollectionHelper deviceGroupCollectionHelper;
-    private TemporaryDeviceGroupService temporaryDeviceGroupService;
-    private DeviceGroupService deviceGroupService;
-    private DeviceGroupEditorDao deviceGroupEditorDao;
-    private CommandRequestExecutionDao commandRequestExecutionDao;
-    private PaoDefinitionDao paoDefinitionDao;
-    private YukonUserContextMessageSourceResolver messageSourceResolver = null;
 
     @RequestMapping
     public String home(ModelMap model, String errorMsg) throws ServletException {
@@ -490,77 +494,75 @@ public class PhaseDetectController {
     }
     
     @RequestMapping
-    public String chartData(ModelMap model) {
+    public @ResponseBody JSONObject chart() {
+        Map<String, Integer> phaseResultsMap = getChartPhaseResults();
+        JSONObject phaseDetectResults = flotChartService.getPieGraphData(phaseResultsMap);
+        return phaseDetectResults;
+    }
+
+    private Map<String, Integer> getChartPhaseResults() {
+        Map<String, Integer> phaseResultsMap = Maps.newHashMap();
         try {
             DeviceGroup aGroup = deviceGroupService.resolveGroupName(SystemGroupEnum.PHASE_DETECT_LAST_RESULTS_A.getFullPath());
             int groupACount = deviceGroupService.getDeviceCount(Collections.singletonList(aGroup));
-            model.addAttribute("phaseA", groupACount);
+            phaseResultsMap.put("phaseA", groupACount);
         } catch (NotFoundException e){
-            model.addAttribute("phaseA", 0);
+            phaseResultsMap.put("phaseA", 0);
         }
         
         try {
             DeviceGroup bGroup = deviceGroupService.resolveGroupName(SystemGroupEnum.PHASE_DETECT_LAST_RESULTS_B.getFullPath());
             int groupBCount = deviceGroupService.getDeviceCount(Collections.singletonList(bGroup));
-            model.addAttribute("phaseB", groupBCount);
+            phaseResultsMap.put("phaseB", groupBCount);
         } catch (NotFoundException e){
-            model.addAttribute("phaseB", 0);
+            phaseResultsMap.put("phaseB", 0);
         }
         
         try {
             DeviceGroup cGroup = deviceGroupService.resolveGroupName(SystemGroupEnum.PHASE_DETECT_LAST_RESULTS_C.getFullPath());
             int groupCCount = deviceGroupService.getDeviceCount(Collections.singletonList(cGroup));
-            model.addAttribute("phaseC", groupCCount);
+            phaseResultsMap.put("phaseC", groupCCount);
         } catch (NotFoundException e){
-            model.addAttribute("phaseC", 0);
+            phaseResultsMap.put("phaseC", 0);
         }
         
         List<Meter> undefinedMeters = getUndefinedMeters();
-        model.addAttribute("undefined", undefinedMeters.size());
+        phaseResultsMap.put("undefined", undefinedMeters.size());
         
         if(!dataCopy.isReadAfterAll()){
             try {
                 DeviceGroup abGroup = deviceGroupService.resolveGroupName(SystemGroupEnum.PHASE_DETECT_LAST_RESULTS_AB.getFullPath());
                 int groupABCount = deviceGroupService.getDeviceCount(Collections.singletonList(abGroup));
-                model.addAttribute("phaseAB", groupABCount);
+                phaseResultsMap.put("phaseAB", groupABCount);
             } catch (NotFoundException e){
-                model.addAttribute("phaseAB", 0);
+                phaseResultsMap.put("phaseAB", 0);
             }
             
             try {
                 DeviceGroup acGroup = deviceGroupService.resolveGroupName(SystemGroupEnum.PHASE_DETECT_LAST_RESULTS_AC.getFullPath());
                 int groupACCount = deviceGroupService.getDeviceCount(Collections.singletonList(acGroup));
-                model.addAttribute("phaseAC", groupACCount);
+                phaseResultsMap.put("phaseAC", groupACCount);
             } catch (NotFoundException e){
-                model.addAttribute("phaseAC", 0);
+                phaseResultsMap.put("phaseAC", 0);
             }
             
             try {
                 DeviceGroup bcGroup = deviceGroupService.resolveGroupName(SystemGroupEnum.PHASE_DETECT_LAST_RESULTS_BC.getFullPath());
                 int groupBCCount = deviceGroupService.getDeviceCount(Collections.singletonList(bcGroup));
-                model.addAttribute("phaseBC", groupBCCount);
+                phaseResultsMap.put("phaseBC", groupBCCount);
             } catch (NotFoundException e){
-                model.addAttribute("phaseBC", 0);
+                phaseResultsMap.put("phaseBC", 0);
             }
             
             try {
                 DeviceGroup abcGroup = deviceGroupService.resolveGroupName(SystemGroupEnum.PHASE_DETECT_LAST_RESULTS_ABC.getFullPath());
                 int groupABCCount = deviceGroupService.getDeviceCount(Collections.singletonList(abcGroup));
-                model.addAttribute("phaseABC", groupABCCount);
+                phaseResultsMap.put("phaseABC", groupABCCount);
             } catch (NotFoundException e){
-                model.addAttribute("phaseABC", 0);
+                phaseResultsMap.put("phaseABC", 0);
             }
-            
-            return "phaseDetect/readBetweenPieChartDataFile.jsp";
         }
-        
-        
-        return "phaseDetect/pieChartDataFile.jsp";
-    }
-    
-    @RequestMapping
-    public String chartSettings(ModelMap model) {
-        return "phaseDetect/pieChartSettingsFile.jsp";
+        return phaseResultsMap;
     }
     
     private List<Meter> getUndefinedMeters(){
@@ -607,70 +609,4 @@ public class PhaseDetectController {
         }
         return meters;
     }
-
-    @Autowired
-    public void setSubstationToRouteMappingDao(final SubstationToRouteMappingDao strmDao) {
-        this.strmDao = strmDao;
-    }
-    
-    @Autowired
-    public void setSubstationDao(SubstationDao substationDao) {
-        this.substationDao = substationDao;
-    }
-    
-    @Autowired
-    public void setDeviceDao(DeviceDao deviceDao) {
-        this.deviceDao = deviceDao;
-    }
-    
-    @Autowired
-    public void setPhaseDetectService(PhaseDetectService phaseDetectService) {
-        this.phaseDetectService = phaseDetectService;
-    }
-    
-    @Autowired
-    public void setDeviceGroupMemberEditorDao(DeviceGroupMemberEditorDao deviceGroupMemberEditorDao) {
-        this.deviceGroupMemberEditorDao = deviceGroupMemberEditorDao;
-    }
-    
-    @Autowired
-    public void setMeterDao(MeterDao meterDao){
-        this.meterDao = meterDao;
-    }
-    
-    @Autowired
-    public void setDeviceGroupCollectionHelper(DeviceGroupCollectionHelper deviceGroupCollectionHelper) {
-        this.deviceGroupCollectionHelper = deviceGroupCollectionHelper;
-    }
-    
-    @Autowired
-    public void setTemporaryDeviceGroupService(TemporaryDeviceGroupService temporaryDeviceGroupService) {
-        this.temporaryDeviceGroupService = temporaryDeviceGroupService;
-    }
-    
-    @Autowired
-    public void setDeviceGroupService(DeviceGroupService deviceGroupService) {
-        this.deviceGroupService = deviceGroupService;
-    }
-    
-    @Autowired
-    public void setDeviceGroupEditorDao(DeviceGroupEditorDao deviceGroupEditorDao) {
-        this.deviceGroupEditorDao = deviceGroupEditorDao;
-    }
-    
-    @Autowired
-    public void setCommandRequestExecutionDao(CommandRequestExecutionDao commandRequestExecutionDao) {
-        this.commandRequestExecutionDao = commandRequestExecutionDao;
-    }
-    
-    @Autowired
-    public void setPaoDefinitionDao(PaoDefinitionDao paoDefinitionDao) {
-        this.paoDefinitionDao = paoDefinitionDao;
-    }
-
-    @Autowired
-    public void setMessageSourceResolver(YukonUserContextMessageSourceResolver messageSourceResolver) {
-        this.messageSourceResolver = messageSourceResolver;
-    }
-
 }

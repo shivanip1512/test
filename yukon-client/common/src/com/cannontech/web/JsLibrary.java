@@ -35,6 +35,14 @@ public enum JsLibrary {
     JQUERY_UI_ACTION_WHEN("/JavaScript/lib/jQuery/plugins/actionWhen/jquery.actionwhen.js"), //in-house
     JQUERY_TRAVERSABLE("/JavaScript/lib/jQuery/plugins/traversable/jquery.traversable.js"), //https://github.com/adelegard/jquery-traverse
 
+    YUKON_FLOTCHARTS("/JavaScript/yukon.flot.js"), //in-house
+    JQUERY_FLOTCHARTS("/JavaScript/lib/jQuery/plugins/flotcharts/jquery.flot.js"), //http://www.flotcharts.org/
+    JQUERY_FLOTCHARTS_PIE("/JavaScript/lib/jQuery/plugins/flotcharts/jquery.flot.pie.js"), //http://www.flotcharts.org/
+    JQUERY_FLOTCHARTS_SELECTION("/JavaScript/lib/jQuery/plugins/flotcharts/jquery.flot.selection.js"), //http://www.flotcharts.org/
+    JQUERY_FLOTCHARTS_AXIS_LABEL("/JavaScript/lib/jQuery/plugins/flotcharts/jquery.flot.axislabels.js"), //https://github.com/markrcote/flot-axislabels
+    JQUERY_FLOTCHARTS_RESIZE("/JavaScript/lib/jQuery/plugins/flotcharts/jquery.flot.resize.js"), //http://www.flotcharts.org/
+    JQUERY_EXCANVAS("/JavaScript/lib/jQuery/plugins/flotcharts/excanvas.min.js"), //http://www.flotcharts.org/
+
     JSON("/JavaScript/lib/JSON/2.0/json2.js"),
     OVERLIB("/JavaScript/ol/overlib_mini.js"),
     PROTOTYPE("/JavaScript/lib/prototype/1.7.0.0/prototype.js"),

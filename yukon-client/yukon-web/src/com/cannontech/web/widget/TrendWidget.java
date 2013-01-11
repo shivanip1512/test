@@ -33,6 +33,8 @@ import com.cannontech.i18n.YukonMessageSourceResolvable;
 import com.cannontech.i18n.YukonUserContextMessageSourceResolver;
 import com.cannontech.servlet.YukonUserContextUtils;
 import com.cannontech.user.YukonUserContext;
+import com.cannontech.web.common.chart.service.ChartService;
+import com.cannontech.web.common.chart.service.FlotChartService;
 import com.cannontech.web.widget.support.WidgetControllerBase;
 import com.cannontech.web.widget.support.WidgetParameterHelper;
 import com.cannontech.web.widget.support.impl.CachingWidgetParameterGrabber;
@@ -50,11 +52,9 @@ public class TrendWidget extends WidgetControllerBase {
     private CachingWidgetParameterGrabber cachingWidgetParameterGrabber = null;
     private BuiltInAttribute defaultAttribute = null;
     @Autowired private YukonUserContextMessageSourceResolver messageSourceResolver;
+    @Autowired private ChartService chartService;
+    @Autowired private FlotChartService flotChartService;
 
-    /*
-     * (non-Javadoc)
-     * @see com.cannontech.web.widget.support.WidgetController#render(javax.servlet.http.HttpServletRequest, javax.servlet.http.HttpServletResponse)
-     */
     @Override
     public ModelAndView render(HttpServletRequest request,
             HttpServletResponse response) throws Exception {
@@ -105,23 +105,23 @@ public class TrendWidget extends WidgetControllerBase {
         Date startDate = new Date();
         Date stopDate = new Date();
 
-        if (period.equalsIgnoreCase("YEAR")) { 
+        if (chartPeriod == ChartPeriod.YEAR) { 
             startDate = DateUtils.addYears(startDate, -1); 
         }
-        else if (period.equalsIgnoreCase("THREEMONTH")) {
+        else if (chartPeriod == ChartPeriod.THREEMONTH) {
             startDate = DateUtils.addMonths(startDate, -3);
         }
-        else if (period.equalsIgnoreCase("MONTH")) {
+        else if (chartPeriod == ChartPeriod.MONTH) {
             startDate = DateUtils.addMonths(startDate, -1);
         }
-        else if (period.equalsIgnoreCase("WEEK")) {
+        else if (chartPeriod == ChartPeriod.WEEK) {
             startDate = DateUtils.addWeeks(startDate, -1);
         }
-        else if (period.equalsIgnoreCase("DAY")) {
+        else if (chartPeriod == ChartPeriod.DAY) {
             startDate = DateUtils.addDays(startDate, -1);
         }
 
-        if (period.equalsIgnoreCase("NOPERIOD")) {
+        if (chartPeriod == ChartPeriod.NOPERIOD) {
             
             String startDateParam = cachingWidgetParameterGrabber.getCachedStringParameter(request, "startDateParam", null);
             String stopDateParam = cachingWidgetParameterGrabber.getCachedStringParameter(request, "stopDateParam", null);
@@ -143,9 +143,7 @@ public class TrendWidget extends WidgetControllerBase {
             cachingWidgetParameterGrabber.removeFromCache("stopDateParam");
         }
         
-        ChartPeriod periodEnum = ChartPeriod.valueOf(period);
-        ChartInterval chartInteval = periodEnum.getChartUnit(startDate, stopDate);
-        
+        ChartInterval chartInterval = chartPeriod.getChartUnit(startDate, stopDate);
 
         // GET DATES STRINGS
         String startDateStr = dateFormattingService.format(startDate, DateFormattingService.DateFormatEnum.DATE, userContext);
@@ -173,15 +171,13 @@ public class TrendWidget extends WidgetControllerBase {
         mav.addObject("attributeGraphType", attributeGraphType);
         mav.addObject("availableAttributeGraphs", availableAttributeGraphs);
         mav.addObject("period", period);
-        mav.addObject("interval", chartInteval);
+        mav.addObject("interval", chartInterval);
         mav.addObject("startDate", startDate);
         mav.addObject("stopDate", stopDate);
         mav.addObject("graphType", graphType);
         
         MessageSourceAccessor accessor = messageSourceResolver.getMessageSourceAccessor(userContext);
-		if (!period.equals("NOPERIOD")) {
-        	
-        	
+		if (chartPeriod != ChartPeriod.NOPERIOD) {
         	MessageSourceResolvable chartPeriodResolvable = new YukonMessageSourceResolvable(chartPeriod.getFormatKey());
         	MessageSourceResolvable converterTypeResolvable = new YukonMessageSourceResolvable(attributeGraphType.getConverterType().getFormatKey() + ".label");
         	MessageSourceResolvable attributeResolvable = attribute.getMessage();
@@ -191,7 +187,8 @@ public class TrendWidget extends WidgetControllerBase {
         			accessor.getMessage(converterTypeResolvable),
         			accessor.getMessage(attributeResolvable));
         	
-			mav.addObject("title", title);
+        	String escapedTitle = title.replace("'", "\\'");
+			mav.addObject("title", escapedTitle);
         } else {
         	MessageSourceResolvable converterTypeResolvable = new YukonMessageSourceResolvable(attributeGraphType.getConverterType().getFormatKey() + ".label");
         	MessageSourceResolvable attributeResolvable = attribute.getMessage();
@@ -202,15 +199,14 @@ public class TrendWidget extends WidgetControllerBase {
         			startDateStr,
         			stopDateStr);
         	
-            mav.addObject("title", title);
+            String escapedTitle = title.replace("'", "\\'");
+            mav.addObject("title", escapedTitle);
         }
         
         mav.addObject("pointId", pointId);
         mav.addObject("startDateMillis", startDateMillis);
         mav.addObject("stopDateMillis", stopDateMillis);
         mav.addObject("tabularDataViewer", tabularDataViewer);
-        
-
         return mav;
     }
 

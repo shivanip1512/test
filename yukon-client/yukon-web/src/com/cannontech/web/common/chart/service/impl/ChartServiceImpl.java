@@ -1,4 +1,4 @@
-package com.cannontech.common.chart.service.impl;
+package com.cannontech.web.common.chart.service.impl;
 
 import java.text.DecimalFormat;
 import java.text.NumberFormat;
@@ -17,9 +17,7 @@ import com.cannontech.common.chart.model.ChartInterval;
 import com.cannontech.common.chart.model.ChartValue;
 import com.cannontech.common.chart.model.ConverterType;
 import com.cannontech.common.chart.model.Graph;
-import com.cannontech.common.chart.model.GraphType;
 import com.cannontech.common.chart.service.ChartDataConverter;
-import com.cannontech.common.chart.service.ChartService;
 import com.cannontech.common.i18n.MessageSourceAccessor;
 import com.cannontech.core.dao.PointDao;
 import com.cannontech.core.dao.RawPointHistoryDao;
@@ -32,6 +30,7 @@ import com.cannontech.database.data.lite.LitePointUnit;
 import com.cannontech.database.data.lite.LiteUnitMeasure;
 import com.cannontech.i18n.YukonUserContextMessageSourceResolver;
 import com.cannontech.user.YukonUserContext;
+import com.cannontech.web.common.chart.service.ChartService;
 
 /**
  * Implementation of the ChartService
@@ -46,8 +45,9 @@ public class ChartServiceImpl implements ChartService {
     
     private SimpleDateFormat timeFormat = new SimpleDateFormat("MM/dd/yyyy hh:mm:ss.SSS a");
     
-    public List<Graph> getGraphs(int[] pointIds, Date startDate, Date stopDate, ChartInterval interval,
-                                 GraphType graphType, ConverterType converterType, YukonUserContext userContext) {
+    @Override
+    public List<Graph> getGraphs(List<Integer> pointIds, Date startDate, Date stopDate, ChartInterval interval,
+                                 ConverterType converterType, YukonUserContext userContext) {
 
         List<Graph> graphList = new ArrayList<Graph>();
 
@@ -81,7 +81,7 @@ public class ChartServiceImpl implements ChartService {
                 chartValue.setId(data.getPointDataTimeStamp().getTime());
                 chartValue.setTime(data.getPointDataTimeStamp().getTime());
                 chartValue.setValue(data.getValue());
-                chartValue.setDescription(units + "\n" + timeFormat.format(data.getPointDataTimeStamp()) + "\n" + lPoint.getPointName());
+                chartValue.setDescription("<div>" + pointValueFormat.format(data.getValue()) + "</div>" + "<div>" + units + "</div>" + "<div>" + timeFormat.format(data.getPointDataTimeStamp()) + "</div>" + "<div>" + lPoint.getPointName() + "</div>");
                 chartValue.setFormattedValue(pointValueFormat.format(data.getValue()));
 
                 chartData.add(chartValue);
@@ -107,7 +107,7 @@ public class ChartServiceImpl implements ChartService {
             }
             
             // don't include zero-data graphs if there are more than one graph - amCharts chokes.
-            if (pointIds.length == 1 || chartData.size() > 0) {
+            if (pointIds.size() == 1 || chartData.size() > 0) {
             	graphList.add(graph);
             }
         }
@@ -116,6 +116,7 @@ public class ChartServiceImpl implements ChartService {
 
     }
 
+    @Override
     public List<ChartValue<Date>> getXAxisData(Date startDate, Date stopDate, ChartInterval interval, YukonUserContext userContext) {
 
         Date currDate = interval.roundDownToIntervalUnit(startDate);
@@ -139,6 +140,7 @@ public class ChartServiceImpl implements ChartService {
         return xAxisData;
     }
     
+    @Override
     public int getXAxisDataCount(Date startDate, Date stopDate, ChartInterval interval) {
 
         Date currDate = interval.roundDownToIntervalUnit(startDate);

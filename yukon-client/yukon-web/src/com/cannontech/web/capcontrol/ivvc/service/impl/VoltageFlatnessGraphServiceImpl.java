@@ -12,7 +12,6 @@ import java.util.concurrent.atomic.AtomicInteger;
 
 import javax.annotation.PostConstruct;
 
-import org.apache.commons.lang.StringEscapeUtils;
 import org.apache.commons.lang.StringUtils;
 import org.apache.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -138,43 +137,27 @@ public class VoltageFlatnessGraphServiceImpl implements VoltageFlatnessGraphServ
         
         graph.setLines(lines);
         setSubBusGraphLineLegendVisibility(graph);
-        
-        if (settings.isShowZoneTransitionTextBusGraph()) {
-            addZoneTransitionText(graph);
-        }
+        addYAxisLimitsToSettings(graph, userContext);
         
         transformToLineGraph(graph);
         return graph;
     }
     
-    private void addZoneTransitionText(VfGraph graph) {
-        Map<Double, VfPoint> zoneTransitionPoints = Maps.newHashMap(); //so we don't add multiple transition points for a "no phase" point (which actually has all 3 phase points)
-        for (VfLine line : graph.getLines()) {
-            for (VfPoint point : line.getPoints()) {
-                if (point.isRegulator()) {
-                    if (zoneTransitionPoints.containsKey(point.getX())) {
-                        VfPoint transitionPoint = zoneTransitionPoints.get(point.getX());
-                        if (transitionPoint.getY() < point.getY()) {
-                            zoneTransitionPoints.put(point.getX(), point);
-                        }
-                    } else {
-                        zoneTransitionPoints.put(point.getX(), point);
-                    }
-                }
-            }
-        }
+    private void addYAxisLimitsToSettings(VfGraph graph, YukonUserContext userContext) {
+        MessageSourceAccessor messageSourceAccessor = messageSourceResolver.getMessageSourceAccessor(userContext);
+        double yLowest = getMinYValue(graph.getLines());
+        double yHighest = getMaxYValue(graph.getLines());
+        double yMinLimit = (yLowest < graph.getSettings().getYLowerBound()) ? yLowest : graph.getSettings().getYLowerBound(); 
+        double yMaxLimit = (yHighest > graph.getSettings().getYUpperBound()) ? yHighest : graph.getSettings().getYUpperBound();
 
-        List<VfLine> linesWithZoneTransitions = Lists.newArrayList(graph.getLines());
-        for (Entry<Double, VfPoint> entry : zoneTransitionPoints.entrySet()) {
-            VfPoint point = entry.getValue();
-            VfPoint transitionPoint = new VfPoint(point.getZoneName(), null, null, false, point.getX(), point.getY());
-            List<VfPoint> points = Lists.newArrayListWithCapacity(1);
-            points.add(transitionPoint);
-            VfLineSettings lineSettings = getZoneTransitionLineSetting(graph.getSettings());
-            VfLine zoneLine = new VfLine(graphId.getAndIncrement(), null, point.getZoneName(), null, lineSettings, points);
-            linesWithZoneTransitions.add(zoneLine);
-        }
-        graph.setLines(linesWithZoneTransitions);
+        Double yMin = yMinLimit + 
+                Double.valueOf(messageSourceAccessor.getMessage(
+                    "yukon.web.modules.capcontrol.ivvc.voltProfileGraph.values.yLeft.min"));
+        Double yMax = yMaxLimit + 
+                Double.valueOf(messageSourceAccessor.getMessage(
+                    "yukon.web.modules.capcontrol.ivvc.voltProfileGraph.values.yLeft.max"));
+        graph.getSettings().setyMin(yMin);
+        graph.getSettings().setyMax(yMax);
     }
     
     private void setSubBusGraphLineLegendVisibility(VfGraph graph) {
@@ -210,9 +193,7 @@ public class VoltageFlatnessGraphServiceImpl implements VoltageFlatnessGraphServ
         lines.addAll(zoneLines);
         graph.setLines(lines);
 
-        if (settings.isShowZoneTransitionTextZoneGraph()) {
-            addZoneTransitionText(graph);
-        }
+        addYAxisLimitsToSettings(graph, userContext);
 
         transformToLineGraph(graph);
         return graph;
@@ -352,6 +333,30 @@ public class VoltageFlatnessGraphServiceImpl implements VoltageFlatnessGraphServ
             }
         }
         return largestTime;
+    }
+    
+    private double getMinYValue(List<VfLine> lines) {
+        double yMin = -1;
+        for (VfLine line : lines) {
+            for (VfPoint point : line.getPoints()) {
+                if (yMin == -1 || point.getY() < yMin) {
+                    yMin = point.getY();
+                }
+            }
+        }
+        return yMin;
+    }
+    
+    private double getMaxYValue(List<VfLine> lines) {
+        double yMax = -1;
+        for (VfLine line : lines) {
+            for (VfPoint point : line.getPoints()) {
+                if (yMax == -1 || point.getY() > yMax) {
+                    yMax = point.getY();
+                }
+            }
+        }
+        return yMax;
     }
     
     private LitePoint getRegulatorVoltagePoint(int regulatorId) {
@@ -604,34 +609,7 @@ public class VoltageFlatnessGraphServiceImpl implements VoltageFlatnessGraphServ
         String balloonText = messageSourceAccessor.
             getMessage("yukon.web.modules.capcontrol.ivvc.voltProfileGraph.balloonText",
                        value, phase, pointName, paoName, timeStamp, zone, distance);
-        
-        balloonText = cleanUpBalloonText(balloonText);
         return balloonText;
-    }
-    
-    private String cleanUpBalloonText(String value) {
-        value = StringEscapeUtils.unescapeJava(value);
-        value = removeEmptyLines(value);
-        value = StringUtils.trimToEmpty(value);
-        value = StringUtils.replace(value, "\n", "<br>");
-        value = StringEscapeUtils.escapeHtml(value);
-        return value;
-    }
-    
-    private String removeEmptyLines(String value) {
-        if (StringUtils.contains(value, "\n\n")) {
-            value = StringUtils.replace(value, "\n\n", "\n");
-            value = removeEmptyLines(value);
-        }
-        return value;
-    }
-    
-    private VfLineSettings getZoneTransitionLineSetting(VfGraphSettings graphSettings) {
-        String zoneTransitionDataLabel = graphSettings.getZoneTransitionDataLabel();
-        VfLineSettings lineSetting = new VfLineSettings(null, null, null, 
-                                                        false, false, false, false, false, 
-                                                        false, zoneTransitionDataLabel);
-        return lineSetting;
     }
     
     private VfLineSettings getLineSettingsForPhase(VfGraphSettings settings, Phase phase) {

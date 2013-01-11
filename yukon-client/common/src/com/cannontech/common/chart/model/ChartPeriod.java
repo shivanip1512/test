@@ -10,31 +10,37 @@ import com.cannontech.common.i18n.DisplayableEnum;
  */
 public enum ChartPeriod implements DisplayableEnum {
     YEAR {
+        @Override
         public ChartInterval getChartUnit(Date startDate, Date endDate) {
             return ChartInterval.WEEK;
         }
     },
     THREEMONTH {
+        @Override
         public ChartInterval getChartUnit(Date startDate, Date endDate) {
             return ChartInterval.DAY;
         }
     },
     MONTH {
+        @Override
         public ChartInterval getChartUnit(Date startDate, Date endDate) {
             return ChartInterval.DAY;
         }
     },
     WEEK {
+        @Override
         public ChartInterval getChartUnit(Date startDate, Date endDate) {
             return ChartInterval.HOUR;
         }
     },
     DAY {
+        @Override
         public ChartInterval getChartUnit(Date startDate, Date endDate) {
             return ChartInterval.FIVEMINUTE;
         }
     },
     NOPERIOD {
+        @Override
         public ChartInterval getChartUnit(Date startDate, Date endDate) {
             
             // choose interval based on how many days apart the two dates are
@@ -50,9 +56,8 @@ public enum ChartPeriod implements DisplayableEnum {
                 return ChartInterval.HOUR;
             }
             else{
-                return ChartInterval.MINUTE;
+                return ChartInterval.FIFTEENMINUTE;
             }
-            
         }
 
     };

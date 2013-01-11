@@ -3,10 +3,14 @@ package com.cannontech.web.capcontrol.ivvc;
 import java.util.List;
 import java.util.Map;
 
+import net.sf.json.JSONObject;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.ModelMap;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestMethod;
+import org.springframework.web.bind.annotation.ResponseBody;
 
 import com.cannontech.capcontrol.dao.CcMonitorBankListDao;
 import com.cannontech.capcontrol.dao.StrategyDao;
@@ -29,7 +33,7 @@ import com.cannontech.message.capcontrol.streamable.SubStation;
 import com.cannontech.user.YukonUserContext;
 import com.cannontech.web.capcontrol.ivvc.models.VfGraph;
 import com.cannontech.web.capcontrol.ivvc.service.VoltageFlatnessGraphService;
-import com.cannontech.web.common.flashScope.FlashScope;
+import com.cannontech.web.common.chart.service.FlotChartService;
 import com.google.common.collect.Lists;
 import com.google.common.collect.Maps;
 
@@ -44,8 +48,9 @@ public class BusViewController {
     @Autowired private VoltageFlatnessGraphService voltageFlatnessGraphService;
     @Autowired private PointDao pointDao;
     @Autowired private CcMonitorBankListDao ccMonitorBankListDao;
+    @Autowired private FlotChartService flotChartService;
     
-    @RequestMapping
+    @RequestMapping(method = RequestMethod.GET)
     public String detail(ModelMap model, YukonUserContext userContext, Boolean isSpecialArea, int subBusId) {
         setupDetails(model, userContext, isSpecialArea, subBusId);
         return "ivvc/busView.jsp";
@@ -73,24 +78,40 @@ public class BusViewController {
         setupZoneList(model,cache,subBusId);
         setupStrategyDetails(model,cache,subBusId);
 
+        VfGraph graph = setupChart(model, userContext, subBusId);
+        JSONObject graphAsJSON = flotChartService.getIVVCGraphData(graph, true);
+        model.addAttribute("graphAsJSON", graphAsJSON);
+
         model.addAttribute("gangOperatedZone", ZoneType.GANG_OPERATED);
         model.addAttribute("threePhaseOperatedZone", ZoneType.THREE_PHASE);
         model.addAttribute("singlePhaseZone", ZoneType.SINGLE_PHASE);
     }
     
-    @RequestMapping
-    public String chart(ModelMap model, FlashScope flash, YukonUserContext userContext, int subBusId) {
+    @RequestMapping(method = RequestMethod.GET)
+    public @ResponseBody JSONObject chart(YukonUserContext userContext, int subBusId) {
         boolean zoneAttributesExist = voltageFlatnessGraphService.
-                                                allZonesHaveRequiredRegulatorPointMapping(subBusId,
-                                                                               userContext.getYukonUser());
-        model.addAttribute("zoneAttributesExist", zoneAttributesExist);
+                allZonesHaveRequiredRegulatorPointMapping(subBusId,
+                                                          userContext.getYukonUser());
         if (zoneAttributesExist) {
             VfGraph graph = voltageFlatnessGraphService.getSubBusGraph(userContext, subBusId);
+            JSONObject graphAsJSON = flotChartService.getIVVCGraphData(graph, true);
+            return graphAsJSON;
+        }
+        return new JSONObject();
+    }
+
+    private VfGraph setupChart(ModelMap model, YukonUserContext userContext, int subBusId) {
+        boolean zoneAttributesExist = voltageFlatnessGraphService.
+                allZonesHaveRequiredRegulatorPointMapping(subBusId,
+                                                          userContext.getYukonUser());
+        model.addAttribute("zoneAttributesExist", zoneAttributesExist);
+        VfGraph graph = null;
+        if (zoneAttributesExist) {
+            graph = voltageFlatnessGraphService.getSubBusGraph(userContext, subBusId);
             model.addAttribute("graph", graph);
             model.addAttribute("graphSettings", graph.getSettings());
         }
-        
-        return "ivvc/flatnessGraphLine.jsp";
+        return graph;
     }
     
     private void setupStrategyDetails(ModelMap model, CapControlCache cache, int subBusId) {

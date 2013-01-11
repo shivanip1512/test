@@ -195,7 +195,7 @@
     <entry key="yukon.web.modules.capcontrol.ivvc.voltProfileGraph.phaseBulletTypeA">round_outlined</entry>
     <entry key="yukon.web.modules.capcontrol.ivvc.voltProfileGraph.phaseBulletTypeB">round_outlined</entry>
     <entry key="yukon.web.modules.capcontrol.ivvc.voltProfileGraph.phaseBulletTypeC">round_outlined</entry>
-    <entry key="yukon.web.modules.capcontrol.ivvc.voltProfileGraph.balloonText">{0}\n{1}\n{2}\n{3}\n{4}\n{5}\n{6}</entry>
+    <entry key="yukon.web.modules.capcontrol.ivvc.voltProfileGraph.balloonText"><![CDATA[<div>{0}</div><div>{1}</div><div>{2}</div><div>{3}</div><div>{4}</div><div>{5}</div><div>{6}</div>]]></entry>
     <entry key="yukon.web.modules.capcontrol.ivvc.voltProfileGraph.balloonText.distance">Dist: </entry>
     <entry key="yukon.web.modules.capcontrol.ivvc.voltProfileGraph.zoneLineColorPhaseA">#993333</entry>
     <entry key="yukon.web.modules.capcontrol.ivvc.voltProfileGraph.zoneLineColorPhaseB">#2929FF</entry>

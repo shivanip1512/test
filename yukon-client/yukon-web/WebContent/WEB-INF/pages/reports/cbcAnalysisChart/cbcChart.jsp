@@ -1,8 +1,7 @@
 <%@ taglib uri="http://java.sun.com/jsp/jstl/core" prefix="c"%>
 <%@ taglib uri="http://java.sun.com/jsp/jstl/functions" prefix="fn" %>
 <%@ taglib uri="http://cannontech.com/tags/cti" prefix="cti"%>
-<%@ taglib prefix="tags" tagdir="/WEB-INF/tags" %>
-
+<%@ taglib prefix="flot" tagdir="/WEB-INF/tags/flotChart" %>
 
 <cti:standardPage title="${title}" module="capcontrol">
 
@@ -56,15 +55,13 @@
 			
 					<div style="margin-left:20px;height: 250px">
 					
-						<tags:trend title="${graph.pointName}" 
+						<flot:trend title="${graph.pointName}" 
 									pointIds="${graph.pointIds}" 
 									startDate="${graph.startDateMillis}" 
 									endDate="${graph.endDateMillis}" 
 									interval="${graph.interval}" 
 									converterType="${graph.converterType}" 
-									graphType="${graph.graphType}">
-						</tags:trend>
-					
+									graphType="${graph.graphType}"/>
 					</div>
 					
 				</c:forEach>

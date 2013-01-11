@@ -2,6 +2,7 @@
 <%@ taglib prefix="cti" uri="http://cannontech.com/tags/cti"%>
 <%@ taglib prefix="amr" tagdir="/WEB-INF/tags/amr"%>
 <%@ taglib prefix="tags" tagdir="/WEB-INF/tags"%>
+<%@ taglib prefix="flot" tagdir="/WEB-INF/tags/flotChart"%>
 <%@ taglib prefix="i" tagdir="/WEB-INF/tags/i18n"%>
 <%@ taglib prefix="dt" tagdir="/WEB-INF/tags/dateTime" %>
 
@@ -229,9 +230,14 @@
                         <c:set var="preChartTitle" value="${chartTitleStartDate} - ${chartTitleStopDate}" />
                     </c:when>
                 </c:choose>
-                
-                <tags:trend title="${preChartTitle}" width="600" height="220" reloadInterval="30" min="${yMin}" max="${yMax}" pointIds="${pointId}" startDate="${preChartStartDateMillis}" endDate="${preChartStopDateMillis}" interval="${preChartInterval}" converterType="${converterType}" graphType="${graphType}"/>
-                <br>
+
+				<flot:trend title="${preChartTitle}"
+					reloadInterval="30" min="${yMin}" max="${yMax}"
+					pointIds="${pointId}" startDate="${preChartStartDateMillis}"
+					endDate="${preChartStopDateMillis}"
+					interval="${preChartInterval}"
+					converterType="${converterType}" graphType="${graphType}" />
+				<br>
                 
                 <%-- tabular data links --%>
                 <div class="smallBoldLabel" style="display:inline;"><i:inline key=".tabularData"/> </div>
@@ -286,9 +292,14 @@
                         <c:set var="postChartTitle" value="${chartTitleStartDate} - ${chartTitleStopDate}" />
                     </c:when>
                 </c:choose>
-                
-                <tags:trend title="${postChartTitle}" width="600" height="220" reloadInterval="30" min="${yMin}" max="${yMax}" pointIds="${pointId}" startDate="${postChartStartDateMillis}" endDate="${postChartStopDateMillis}" interval="${postChartInterval}" converterType="${converterType}" graphType="${graphType}"/>
-                <br>
+
+				<flot:trend title="${postChartTitle}"
+					reloadInterval="30" min="${yMin}" max="${yMax}"
+					pointIds="${pointId}" startDate="${postChartStartDateMillis}"
+					endDate="${postChartStopDateMillis}"
+					interval="${postChartInterval}"
+					converterType="${converterType}" graphType="${graphType}" />
+				<br>
                 
                 <%-- tabular data links --%>
                 <div class="smallBoldLabel" style="display:inline;"><i:inline key=".tabularData"/> </div>

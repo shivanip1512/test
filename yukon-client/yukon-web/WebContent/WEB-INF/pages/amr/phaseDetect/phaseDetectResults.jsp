@@ -1,4 +1,5 @@
 <%@ taglib prefix="tags" tagdir="/WEB-INF/tags"%>
+<%@ taglib prefix="flot" tagdir="/WEB-INF/tags/flotChart"%>
 <%@ taglib prefix="cti" uri="http://cannontech.com/tags/cti"%>
 <%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core"%>
 <%@ taglib prefix="i" tagdir="/WEB-INF/tags/i18n"%>
@@ -432,43 +433,8 @@
                 </td>
                 <td height="100%" width="50%" valign="top">
                     <!-- Pie Chart -->
-			        <c:set var="amChartsProduct" value="ampie"/>
-			        <c:url var="amDataFile" scope="page" value="/amr/phaseDetect/chartData"/>
-			        <c:url var="amSettingsFile" scope="page" value="/amr/phaseDetect/chartSettings"/>
-			        <c:url var="amSrc" scope="page" value="/JavaScript/amChart/${amChartsProduct}.swf">
-			            <c:param name="${amChartsProduct}_path" value="/JavaScript/amChart/" />
-			            <c:param name="${amChartsProduct}_flashWidth" value="100%" />
-			            <c:param name="${amChartsProduct}_flashHeight" value="100%" />
-			            <c:param name="${amChartsProduct}_preloaderColor" value="#000000" />
-			            <c:param name="${amChartsProduct}_settingsFile" value="${amSettingsFile}" />
-			            <c:param name="${amChartsProduct}_dataFile" value="${amDataFile}" />
-			        </c:url>
-			        
-			        <c:url var="expressInstallSrc" scope="page" value="/JavaScript/expressinstall.swf" />
-			        <cti:includeScript link="/JavaScript/swfobject.js"/>
-			
-			        <cti:uniqueIdentifier var="uniqueId" prefix="flashDiv_"/>
-			        <div id="${uniqueId}">
-			            <div style="width:90%;text-align:center;">
-			                <br>
-			                <br>
-			                <h4><i:inline key=".adobeRequired"/></h4>
-			                <br>
-			                <i:inline key=".adobePleaseDL"/>
-			                <br>
-			                <br>
-			                <a href="http://www.adobe.com" target="_blank"><img border="0" src="<c:url value="/WebConfig/yukon/Icons/visitadobe.gif"/>" /></a>
-			                <br>
-			            </div>
-			        </div>
-			        
-			        <c:set var="swfWidth" value="100%"/>
-			        
-			        <script type="text/javascript">
-			           var so = new SWFObject("${amSrc}", "dataGraph", "${swfWidth}", "500", "8", "#FFFFFF");
-			           so.useExpressInstall('${expressInstallSrc}');
-			           so.write("${uniqueId}");
-			        </script>
+                    <c:url var="chartUrl" scope="page" value="/amr/phaseDetect/chart"/>
+                    <flot:ajaxChart url="${chartUrl}"/>
                 </td>
             </tr>
         </table>

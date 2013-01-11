@@ -4,6 +4,7 @@
 <%@ taglib prefix="cti" uri="http://cannontech.com/tags/cti"%>
 <%@ taglib prefix="form" uri="http://www.springframework.org/tags/form" %>
 <%@ taglib prefix="tags" tagdir="/WEB-INF/tags" %>
+<%@ taglib prefix="flot" tagdir="/WEB-INF/tags/flotChart" %>
 <%@ taglib prefix="dr" tagdir="/WEB-INF/tags/dr" %>
 <%@ taglib prefix="dt" tagdir="/WEB-INF/tags/dateTime" %>
 <%@ taglib prefix="dialog" tagdir="/WEB-INF/tags/dialog" %>
@@ -53,41 +54,10 @@ jQuery(function() {
         <div class="col2">
             <c:if test="${not empty auditId}">
                 <!-- Pie Chart -->
-                <c:set var="amChartsProduct" value="ampie"/>
-                <c:url var="amDataFile" scope="page" value="/stars/operator/inventory/controlAudit/chartData?auditId=${auditId}"/>
-                <c:url var="amSettingsFile" scope="page" value="/stars/operator/inventory/controlAudit/chartSettings"/>
-                <c:url var="amSrc" scope="page" value="/JavaScript/amChart/${amChartsProduct}.swf">
-                    <c:param name="${amChartsProduct}_path" value="/JavaScript/amChart/" />
-                    <c:param name="${amChartsProduct}_flashWidth" value="100%" />
-                    <c:param name="${amChartsProduct}_flashHeight" value="100%" />
-                    <c:param name="${amChartsProduct}_preloaderColor" value="#000000" />
-                    <c:param name="${amChartsProduct}_settingsFile" value="${amSettingsFile}" />
-                    <c:param name="${amChartsProduct}_dataFile" value="${amDataFile}" />
+                <c:url var="chartUrl" scope="page" value="/stars/operator/inventory/controlAudit/chart">
+                    <c:param name="auditId" value="${auditId}"/>
                 </c:url>
-                
-                <c:url var="expressInstallSrc" scope="page" value="/JavaScript/expressinstall.swf" />
-                <cti:includeScript link="/JavaScript/swfobject.js"/>
-        
-                <cti:uniqueIdentifier var="uniqueId" prefix="flashDiv_"/>
-                <div id="${uniqueId}">
-                    <div style="width:90%;text-align:center;">
-                        <br>
-                        <br>
-                        <h4><i:inline key="yukon.common.adobeRequired"/></h4>
-                        <br>
-                        <i:inline key="yukon.common.adobePleaseDL"/>
-                        <br>
-                        <br>
-                        <a href="http://www.adobe.com" target="_blank"><img border="0" src="<c:url value="/WebConfig/yukon/Icons/visitadobe.gif"/>" /></a>
-                        <br>
-                    </div>
-                </div>
-                
-                <script type="text/javascript">
-                   var so = new SWFObject("${amSrc}", "dataGraph", "400", "230", "8", "#FFFFFF");
-                   so.useExpressInstall('${expressInstallSrc}');
-                   so.write("${uniqueId}");
-                </script>
+                <flot:ajaxChart url="${chartUrl}"/>
             </c:if>
         </div>
     </div>

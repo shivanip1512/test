@@ -4,6 +4,7 @@
 <%@ taglib prefix="i" tagdir="/WEB-INF/tags/i18n"%>
 <%@ taglib prefix="tags" tagdir="/WEB-INF/tags" %>
 <%@ taglib prefix="dt" tagdir="/WEB-INF/tags/dateTime" %>
+<%@ taglib prefix="flot" tagdir="/WEB-INF/tags/flotChart" %>
 
 <script type="text/javascript"> 
 	
@@ -28,10 +29,12 @@
 		</c:if>
 		
 		<%-- THE CHART --%>
-		<tags:trend title="${title}" pointIds="${pointId}" startDate="${startDateMillis}" endDate="${stopDateMillis}" 
-                    interval="${interval}" converterType="${attributeGraphType.converterType}" graphType="${graphType}"
-                    height="250px" width="100%"/>
-		
+		<flot:trend title="${title}" pointIds="${pointId}"
+			startDate="${startDateMillis}" endDate="${stopDateMillis}"
+			interval="${interval}"
+			converterType="${attributeGraphType.converterType}"
+			graphType="${graphType}"/>
+
 		<table class="compactResultsTable">
 		
     		<%-- ATTRIBUTES GRAPH TYPES --%>

@@ -9,6 +9,8 @@ import java.util.Map.Entry;
 
 import javax.servlet.http.HttpServletRequest;
 
+import net.sf.json.JSONObject;
+
 import org.joda.time.DateTime;
 import org.joda.time.Instant;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -23,6 +25,7 @@ import org.springframework.web.bind.annotation.InitBinder;
 import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
+import org.springframework.web.bind.annotation.ResponseBody;
 
 import com.cannontech.capcontrol.dao.CcMonitorBankListDao;
 import com.cannontech.capcontrol.dao.StrategyDao;
@@ -72,6 +75,7 @@ import com.cannontech.web.capcontrol.ivvc.models.VfGraph;
 import com.cannontech.web.capcontrol.ivvc.service.VoltageFlatnessGraphService;
 import com.cannontech.web.capcontrol.models.ViewableCapBank;
 import com.cannontech.web.capcontrol.util.CapControlWebUtils;
+import com.cannontech.web.common.chart.service.FlotChartService;
 import com.cannontech.web.common.flashScope.FlashScope;
 import com.cannontech.web.common.flashScope.FlashScopeMessageType;
 import com.cannontech.web.input.PaoIdentifierPropertyEditor;
@@ -98,6 +102,7 @@ public class ZoneDetailController {
     @Autowired private CcMonitorBankListDao ccMonitorBankListDao;
     @Autowired private StrategyDao strategyDao;
     @Autowired private ZoneDao zoneDao;
+    @Autowired private FlotChartService flotChartService;
 
     public static class ZoneVoltageDeltas {
         private List<CapBankPointDelta> pointDeltas = LazyList
@@ -117,7 +122,7 @@ public class ZoneDetailController {
         }
     }
 
-    @RequestMapping
+    @RequestMapping(method = RequestMethod.GET)
     public String detail(ModelMap model, HttpServletRequest request, YukonUserContext context,
                          int zoneId, Boolean isSpecialArea) {
         setupDetails(model, request, context, zoneId, isSpecialArea);
@@ -129,7 +134,7 @@ public class ZoneDetailController {
         return "ivvc/zoneDetail.jsp";
     }
 
-    @RequestMapping
+    @RequestMapping(method = RequestMethod.GET)
     public String voltagePoints(ModelMap model, HttpServletRequest request,
                                 YukonUserContext context, int zoneId, Boolean isSpecialArea) {
         List<VoltageLimitedDeviceInfo> infos = ccMonitorBankListDao.getDeviceInfoByZoneId(zoneId);
@@ -196,7 +201,7 @@ public class ZoneDetailController {
         model.addAttribute("strategy", strategyLimitsHolder.getStrategy());
     }
 
-    @RequestMapping
+    @RequestMapping(method = RequestMethod.GET)
     public String voltageDeltas(ModelMap model, HttpServletRequest request,
                                 YukonUserContext context, int zoneId, Boolean isSpecialArea) {
         setupDeltas(model, request, zoneId);
@@ -274,20 +279,18 @@ public class ZoneDetailController {
         return "redirect:/capcontrol/ivvc/zone/voltageDeltas";
     }
     
-    @RequestMapping
-    public String chart(ModelMap model, YukonUserContext context, int zoneId) {
-        LiteYukonUser user = context.getYukonUser();
-        
-        boolean zoneAttributesExist = voltageFlatnessGraphService. zoneHasRequiredRegulatorPointMapping(zoneId, RegulatorPointMapping.VOLTAGE_Y, user);
-        model.addAttribute("zoneAttributesExist", zoneAttributesExist);
-
+    @RequestMapping(method = RequestMethod.GET)
+    public @ResponseBody JSONObject chart(YukonUserContext context, int zoneId) {
+        boolean zoneAttributesExist = voltageFlatnessGraphService
+                .zoneHasRequiredRegulatorPointMapping(zoneId,
+                                                      RegulatorPointMapping.VOLTAGE_Y,
+                                                      context.getYukonUser());
         if (zoneAttributesExist) {
             VfGraph graph = voltageFlatnessGraphService.getZoneGraph(context, zoneId);
-            model.addAttribute("graph", graph);
-            model.addAttribute("graphSettings", graph.getSettings());
+            JSONObject obj = flotChartService.getIVVCGraphData(graph, false);
+            return obj;
         }
-        
-        return "ivvc/flatnessGraphLine.jsp";
+        return new JSONObject();
     }
     
     private void setupDetails(ModelMap model, HttpServletRequest request, YukonUserContext context, int zoneId, Boolean isSpecialArea) {
@@ -312,6 +315,8 @@ public class ZoneDetailController {
         setupBreadCrumbs(model, cache, zoneDto, isSpecialArea);
         setupRegulatorPointMappings(model, zoneDto);
         setupRegulatorCommands(model, zoneDto);
+        
+        setupChart(model, context, zoneId);
         
         int strategyId = cache.getSubBus(zoneDto.getSubstationBusId()).getStrategyId();
         StrategyLimitsHolder strategyLimitsHolder = strategyDao.getStrategyLimitsHolder(strategyId);
@@ -338,6 +343,24 @@ public class ZoneDetailController {
         model.addAttribute("zoneDto", zoneDto);
         model.addAttribute("zoneId", zoneDto.getZoneId());
         addZoneEnums(model);
+    }
+    
+    private VfGraph setupChart(ModelMap model, YukonUserContext userContext, int zoneId) {
+        boolean zoneAttributesExist = voltageFlatnessGraphService
+                .zoneHasRequiredRegulatorPointMapping(zoneId,
+                                                      RegulatorPointMapping.VOLTAGE_Y,
+                                                      userContext.getYukonUser());
+        model.addAttribute("zoneAttributesExist", zoneAttributesExist);
+
+        VfGraph graph = null;
+        if (zoneAttributesExist) {
+            graph = voltageFlatnessGraphService.getZoneGraph(userContext, zoneId);
+            JSONObject graphAsJSON = flotChartService.getIVVCGraphData(graph, false);
+            model.addAttribute("graphAsJSON", graphAsJSON);
+            model.addAttribute("graph", graph);
+            model.addAttribute("graphSettings", graph.getSettings());
+        }
+        return graph;
     }
 
     private void addZoneEnums(ModelMap model) {

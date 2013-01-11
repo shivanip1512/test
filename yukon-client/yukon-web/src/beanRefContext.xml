@@ -11,7 +11,6 @@
             <value>com/cannontech/web/devDatabaseContext.xml</value>
             <value>com/cannontech/web/serverContext.xml</value>
             <value>com/cannontech/common/alert/alertContext.xml</value>
-			<value>com/cannontech/common/chart/chartContext.xml</value>
 			<value>com/cannontech/common/search/searchContext.xml</value>
 			<value>com/cannontech/multispeak/client/applicationContext.xml</value>
 			<value>com/cannontech/billing/billingContext.xml</value>

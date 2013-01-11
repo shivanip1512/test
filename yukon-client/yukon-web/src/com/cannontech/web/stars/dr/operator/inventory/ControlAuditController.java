@@ -4,10 +4,13 @@ import java.beans.PropertyEditor;
 import java.io.IOException;
 import java.util.Iterator;
 import java.util.List;
+import java.util.Map;
 
 import javax.annotation.Resource;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
+
+import net.sf.json.JSONObject;
 
 import org.joda.time.Instant;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -20,6 +23,7 @@ import org.springframework.web.bind.WebDataBinder;
 import org.springframework.web.bind.annotation.InitBinder;
 import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.ResponseBody;
 
 import com.cannontech.common.bulk.collection.inventory.InventoryCollection;
 import com.cannontech.common.i18n.MessageSourceAccessor;
@@ -31,6 +35,7 @@ import com.cannontech.core.roleproperties.YukonRoleProperty;
 import com.cannontech.core.service.DateFormattingService.DateFormatEnum;
 import com.cannontech.i18n.YukonUserContextMessageSourceResolver;
 import com.cannontech.user.YukonUserContext;
+import com.cannontech.web.common.chart.service.FlotChartService;
 import com.cannontech.web.common.collection.InventoryCollectionFactoryImpl;
 import com.cannontech.web.common.flashScope.FlashScope;
 import com.cannontech.web.common.flashScope.FlashScopeMessageType;
@@ -44,6 +49,7 @@ import com.cannontech.web.stars.dr.operator.inventory.model.collection.MemoryCol
 import com.cannontech.web.stars.dr.operator.inventory.service.ControlAuditService;
 import com.cannontech.web.util.WebFileUtils;
 import com.google.common.collect.Lists;
+import com.google.common.collect.Maps;
 
 @Controller
 @RequestMapping("/operator/inventory/controlAudit/*")
@@ -55,6 +61,7 @@ public class ControlAuditController {
     @Autowired private MemoryCollectionProducer memoryCollectionProducer;
     @Autowired private ControlAuditService controlAuditService;
     @Autowired private DatePropertyEditorFactory datePropertyEditorFactory;
+    @Autowired private FlotChartService flotChartService;
     
     private RecentResultsCache<ControlAuditResult> resultsCache;
     
@@ -190,22 +197,18 @@ public class ControlAuditController {
     }
     
     @RequestMapping
-    public String chartData(ModelMap model, String auditId) {
-        
+    public @ResponseBody JSONObject chart(String auditId) {
         ControlAuditResult result = resultsCache.getResult(auditId);
-        model.addAttribute("controlled", result.getControlled().getCount());
-        model.addAttribute("uncontrolled", result.getUncontrolled().getCount());
-        model.addAttribute("unknown", result.getUnknown().getCount());
-        model.addAttribute("unsupported", result.getUnsupported().getCount());
+        Map<String, Integer> labelValueMap = Maps.newHashMapWithExpectedSize(4);
+        labelValueMap.put("controlled", result.getControlled().getCount());
+        labelValueMap.put("uncontrolled", result.getUncontrolled().getCount());
+        labelValueMap.put("unknown", result.getUnknown().getCount());
+        labelValueMap.put("unsupported", result.getUnsupported().getCount());
         
-        return "operator/inventory/controlAudit/piechartDataFile.jsp";
+        JSONObject pieJSONData = flotChartService.getPieGraphData(labelValueMap);
+        return pieJSONData;
     }
-    
-    @RequestMapping
-    public String chartSettings(ModelMap model) {
-        return "operator/inventory/controlAudit/piechartSettings.jsp";
-    }
-    
+
     @RequestMapping
     public String page(ModelMap model, ResultType type, int index, Direction direction, String auditId) {
         

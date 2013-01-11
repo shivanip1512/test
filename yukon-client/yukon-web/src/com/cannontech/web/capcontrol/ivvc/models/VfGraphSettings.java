@@ -7,8 +7,10 @@ import com.cannontech.enums.Phase;
 
 public class VfGraphSettings {
 
-	private double yLowerBound;
-	private double yUpperBound;
+	private double yLowerBound; // strategyLow
+	private double yUpperBound; // strategyHigh
+	private double yMin; // aren't set in the constructor
+	private double yMax; // aren't set in the constructor
 	private String yAxisLabel;
 	private String xAxisLabel;
 	private String graphTitle;
@@ -24,11 +26,14 @@ public class VfGraphSettings {
     private String balloonDistanceText;
     
 
-    public VfGraphSettings(double yLowerBound, double yUpperBound, String yAxisLabel, String xAxisLabel,
-                           String graphTitle, String graphWidgetName, Map<Phase, String> phaseStringMap,
+    public VfGraphSettings(double yLowerBound, double yUpperBound,
+                           String yAxisLabel, String xAxisLabel,
+                           String graphTitle, String graphWidgetName,
+                           Map<Phase, String> phaseStringMap,
                            Map<Phase, String> phaseZoneLineColorMap, String zoneLineColorNoPhase,
-                           Map<Phase, String> phaseBulletTypeMap, boolean showZoneTransitionTextBusGraph,
-                           boolean showZoneTransitionTextZoneGraph, String zoneTransitionDataLabel, 
+                           Map<Phase, String> phaseBulletTypeMap,
+                           boolean showZoneTransitionTextBusGraph,
+                           boolean showZoneTransitionTextZoneGraph, String zoneTransitionDataLabel,
                            String balloonDistanceText) {
         this.yLowerBound = yLowerBound;
         this.yUpperBound = yUpperBound;
@@ -62,7 +67,23 @@ public class VfGraphSettings {
 		this.yUpperBound = yUpperBound;
 	}
 
-	public String getYAxisLabel() {
+    public double getyMin() {
+        return yMin;
+    }
+
+    public void setyMin(double yMin) {
+        this.yMin = yMin;
+    }
+
+    public double getyMax() {
+        return yMax;
+    }
+
+    public void setyMax(double yMax) {
+        this.yMax = yMax;
+    }
+
+    public String getYAxisLabel() {
 		return yAxisLabel;
 	}
 
