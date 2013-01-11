@@ -40,15 +40,20 @@ public class SupportBundleDateRangeFileWriter extends AbstractSupportBundleWrite
 
         for (File file : files) {
             File candidate = new File(directory, file.getName());
-            Instant modified = new Instant(candidate.lastModified());
-            if (candidate.isFile()
-                        && modified.isAfter(start)
-                        && modified.isBefore(stop)) {
+            if (addCandidate(candidate,start,stop)) {
                 fileList.add(candidate);
             }
         }
 
         return fileList;
+    }
+    
+    protected boolean addCandidate(File candidate, ReadableInstant start,
+            ReadableInstant stop)  {
+        Instant modified = new Instant(candidate.lastModified());
+    	return (candidate.isFile()
+                && modified.isAfter(start)
+                && modified.isBefore(stop));
     }
 
     public void setZipDirectory(String zipDirectory) {

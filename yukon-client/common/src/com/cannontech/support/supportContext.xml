@@ -78,18 +78,32 @@
     </bean>  
     
     <bean class="com.cannontech.support.service.impl.SupportBundleDateRangeFileWriter"> 
-        <property name="zipDirectory" value="Logs"/>
+        <property name="zipDirectory" value="Logs/Server"/>
         <property name="dirName" value="/Server/log/"/>
         <property name="name" value="logsFilesSource"/>
     </bean>  
     
     <bean class="com.cannontech.support.service.impl.SupportBundleDateRangeFileWriter"> 
-        <property name="zipDirectory" value="Logs/Comm"/>
+        <property name="zipDirectory" value="Logs/Server/Comm"/>
         <property name="dirName" value="/Server/log/Comm/"/>
         <property name="optional" value="true"/>
         <property name="name" value="commFilesSource"/>
     </bean> 
 
+    <bean class="com.cannontech.support.service.impl.SupportBundleDateRangeFileWriter"> 
+        <property name="zipDirectory" value="Logs/Client/Log"/>
+        <property name="dirName" value="/Client/Log/"/>
+        <property name="optional" value="true"/>
+        <property name="name" value="clientLogFilesSource"/>
+    </bean> 
+
+    <bean class="com.cannontech.support.service.impl.SupportBundleDateRangeAndNameFileWriter"> 
+        <property name="zipDirectory" value="Logs/Server/web/logs"/>
+        <property name="dirName" value="/Server/web/logs/"/>
+        <property name="name" value="weblogsFilesSource"/>
+        <property name="checkBoth" value="false"/>
+    </bean>  
+    
     <bean class="com.cannontech.support.service.impl.SupportBundleFileSystemToCsvWriter"> 
         <property name="zipDirectory" value="Other"/>
         <property name="zipFilename" value="Yukon File Sructure.csv"/>
