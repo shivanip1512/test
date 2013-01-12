@@ -309,11 +309,15 @@ function makeFirstSelectedFilterValueVisible() {
 				  <table width="100%" border="0" cellspacing="0" cellpadding="0">				
 				    <tr>
 				      <td valign="bottom">
+                        <%if( controller != null && controller.useStartStopTimes() ){%><BR><%}%>
 						<dt:date id="startCal" name="startDate" disabled="<%=(model != null && model.useStartDate() ? false : true)%>" value="${REPORT_BEAN.startDate}" />
 					  </td>
 					  <td valign="bottom">&nbsp</td>
 			   		  <%if( controller != null && controller.useStartStopTimes() ){%>
-					  <td class="columnHeader" align="center">Hour<BR>
+					  <td align="center">
+                         <div class="fwb">
+                           <cti:msg key="yukon.common.time.hour"/>
+                         </div>
 					    <select name="startHour" id="startHourID">
 					    <% for (int i = 0; i < 24; i++) {
 						    String iStr = String.valueOf(i);
@@ -322,7 +326,10 @@ function makeFirstSelectedFilterValueVisible() {
 						  <%}%>
 						</select>
 					  </td>
-					  <td width="100%" class="columnHeader" align="center"><cti:msg key="yukon.common.time.min"/><BR>
+					  <td width="100%" align="center">
+                        <div class="fwb">
+                            <cti:msg key="yukon.common.time.min"/>
+                        </div>
 					    <select name="startMinute" id="startMinuteID">
 					    <% for (int i = 0; i < 60; i=i+5) {
 						    String iStr = String.valueOf(i);
@@ -339,13 +346,17 @@ function makeFirstSelectedFilterValueVisible() {
 				<td valign="top" style="padding-left:5; padding-top:5">
 				  <table width="100%" border="0" cellspacing="0" cellpadding="0">				
 				    <tr>
-					  <td valign="bottom">			
+					  <td valign="bottom">		
+                        <%if( controller != null && controller.useStartStopTimes() ){%><BR><%}%>	
                       	<dt:date id="stopCal" name="stopDate" disabled="<%=(model != null && model.useStopDate() ? false : true)%>" value="${REPORT_BEAN.stopDate}" />
                 	  </td>
 					  <td valign="bottom">&nbsp</td>
 					  <% if( controller != null && controller.useStartStopTimes() ){%>
 
-					  <td class="columnHeader" align="center"><cti:msg key="yukon.common.time.hour"/><BR>
+					  <td align="center">
+                        <div class="fwb">
+                           <cti:msg key="yukon.common.time.hour"/>
+                        </div>
 					    <select name="stopHour" id="stopHourID">
 					    <% for (int i = 0; i < 24; i++) {
 						    String iStr = String.valueOf(i);
@@ -354,7 +365,10 @@ function makeFirstSelectedFilterValueVisible() {
 						  <%}%>
 						</select>
 					  </td>
-					  <td width="100%" class="columnHeader" align="center"><cti:msg key="yukon.common.time.min"/><BR>
+					  <td width="100%" align="center">
+                        <div class="fwb">
+                           <cti:msg key="yukon.common.time.min"/>
+                        </div>
 					    <select name="stopMinute" id="stopMinuteID">
 					    <% for (int i = 0; i < 60; i=i+5) {
 						    String iStr = String.valueOf(i);
