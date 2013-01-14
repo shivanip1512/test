@@ -4139,6 +4139,33 @@ void CtiCapController::handleRejectionMessaging(CtiCCCapBankPtr currentCapBank, 
         getDispatchConnection()->WriteConnQue(new CtiPointDataMsg(currentCapBank->getOperationAnalogPointId(),currentCapBank->getTotalOperations(),NormalQuality,AnalogPointType,"Command Refused, Forced ccServer Update", TAG_POINT_FORCE_UPDATE));
         ccEvents.push_back( new CtiCCEventLogMsg(0, currentCapBank->getOperationAnalogPointId(), spAreaId, areaId, stationId, currentSubstationBus->getPaoId(), currentFeeder->getPaoId(), capControlSetOperationCount, currentSubstationBus->getEventSequence(), currentCapBank->getTotalOperations(), "Command Refused, opCount adjustment", userName, 0, 0, 0, currentCapBank->getIpAddress(), currentCapBank->getActionId(), currentCapBank->getControlStatusQualityString()));
     }
+
+    if ( currentFeeder->getDailyOperationsAnalogPointId() > 0 )
+    {
+        if ( currentFeeder->getCurrentDailyOperations() > 0 )
+        {
+            currentFeeder->setCurrentDailyOperations( currentFeeder->getCurrentDailyOperations() - 1 );
+            getDispatchConnection()->WriteConnQue( new CtiPointDataMsg( currentFeeder->getDailyOperationsAnalogPointId(),
+                                                                        currentFeeder->getCurrentDailyOperations(),
+                                                                        NormalQuality,
+                                                                        AnalogPointType,
+                                                                        "Command Refused, Forced ccServer Update",
+                                                                        TAG_POINT_FORCE_UPDATE ) );
+            ccEvents.push_back( new CtiCCEventLogMsg( 0,
+                                                      currentFeeder->getDailyOperationsAnalogPointId(),
+                                                      spAreaId,
+                                                      areaId,
+                                                      stationId,
+                                                      currentSubstationBus->getPaoId(),
+                                                      currentFeeder->getPaoId(),
+                                                      capControlSetOperationCount,
+                                                      currentSubstationBus->getEventSequence(),
+                                                      currentFeeder->getCurrentDailyOperations(),
+                                                      "Command Refused, opCount adjustment",
+                                                      userName ) );
+        }
+    }
+
     getCCEventMsgQueueHandle().write(multiCCEventMsg);
 
     currentCapBank->setLastStatusChangeTime(CtiTime());
