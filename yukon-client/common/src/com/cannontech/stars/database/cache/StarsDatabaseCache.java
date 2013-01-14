@@ -131,19 +131,19 @@ public class StarsDatabaseCache implements DBChangeListener {
 	 */
 	public synchronized List<LiteStarsEnergyCompany> getAllEnergyCompanies() {
 		if (energyCompanies == null) {
-			energyCompanies = new ArrayList<LiteStarsEnergyCompany>();
-	    	
-            com.cannontech.database.db.company.EnergyCompany[] companies =
-                com.cannontech.database.db.company.EnergyCompany.getEnergyCompanies();
-            
-            if (companies == null) return null;
-	    	
-            LiteStarsEnergyCompanyFactory factory = 
-                YukonSpringHook.getBean("liteStarsEnergyCompanyFactory", LiteStarsEnergyCompanyFactory.class);
+		    energyCompanies = Lists.newArrayList();
+
+		    EnergyCompany[] companies = EnergyCompany.getEnergyCompanies();
+		    if (companies == null) {
+		        return null;
+		    }
+
+		    LiteStarsEnergyCompanyFactory factory =  YukonSpringHook.getBean("liteStarsEnergyCompanyFactory", LiteStarsEnergyCompanyFactory.class);
             
             synchronized (energyCompanies) {
-                for (int i = 0; i < companies.length; i++)
-                    energyCompanies.add(factory.createEnergyCompany(companies[i]));
+                for (EnergyCompany energyCompany : companies) {
+                    energyCompanies.add(factory.createEnergyCompany(energyCompany));
+                }
             }
 	    	
 	    	CTILogger.info( "All energy companies loaded" );
@@ -301,8 +301,8 @@ public class StarsDatabaseCache implements DBChangeListener {
 		synchronized (starsUsers) { starsUsers.remove( new Integer(userID) ); }
 	}
 	
-	public void dbChangeReceived(DBChangeMsg msg)
-	{
+	@Override
+	public void dbChangeReceived(DBChangeMsg msg) {
 		CTILogger.debug(" ## DBChangeMsg ##\n" + msg);
 		
         List<LiteStarsEnergyCompany> companies = getAllEnergyCompanies();
@@ -396,7 +396,6 @@ public class StarsDatabaseCache implements DBChangeListener {
         } else if (msg.getDatabase() == DBChangeMsg.CHANGE_STARS_PUBLISHED_PROGRAM_DB) {
             handlePublishedProgramChange(msg);
         }
-
 	}
 
 	private synchronized void handlePublishedProgramChange(DBChangeMsg msg) {
