@@ -2399,11 +2399,11 @@ mgr_port.obj:	precompiled.h mgr_port.h dlldefs.h smartmap.h \
 		string_utility.h tbl_static_paoinfo.h pointdefs.h \
 		encryption.h tbl_base.h tbl_scanrate.h tbl_dyn_paoinfo.h \
 		pt_base.h tbl_pt_base.h tbl_port_base.h xfer.h counter.h \
-		slctprt.h port_direct.h port_serial.h tbl_port_settings.h \
+		port_direct.h port_serial.h tbl_port_settings.h \
 		tbl_port_timing.h port_dialable.h port_modem.h \
-		tbl_port_dialup.h tbl_port_serial.h port_dialout.h \
-		port_pool_out.h port_tcpipdirect.h tbl_port_tcpip.h \
-		port_tcp.h port_udp.h
+		tbl_port_dialup.h tbl_port_serial.h port_dialin.h \
+		port_dialout.h port_pool_out.h port_tcpipdirect.h \
+		tbl_port_tcpip.h port_tcp.h port_udp.h
 mgr_route.obj:	precompiled.h mgr_route.h repeaterrole.h dlldefs.h \
 		rte_base.h boostutil.h utility.h ctitime.h queues.h \
 		cticalls.h os2_2w32.h types.h numstr.h dsm2.h cticonnect.h \
@@ -2877,25 +2877,6 @@ slctdev.obj:	precompiled.h dev_710.h dev_idlc.h types.h os2_2w32.h \
 		tbl_rtcarrier.h tbl_rtrepeater.h rte_versacom.h \
 		tbl_rtversacom.h master.h rte_expresscom.h dev_fmu.h rtdb.h \
 		hashkey.h hash_functions.h slctdev.h
-slctprt.obj:	precompiled.h port_dialout.h dsm2.h cticonnect.h yukon.h \
-		types.h ctidbgmem.h dlldefs.h netports.h mutex.h guard.h \
-		utility.h ctitime.h queues.h cticalls.h os2_2w32.h numstr.h \
-		dsm2err.h words.h optional.h port_base.h dev_base.h \
-		cmdparse.h ctitokenizer.h parsevalue.h dev_exclusion.h \
-		boostutil.h tbl_paoexclusion.h row_reader.h rwutil.h \
-		database_connection.h dbaccess.h dllbase.h database_reader.h \
-		boost_time.h rte_base.h dbmemobject.h ctibase.h ctinexus.h \
-		message.h collectable.h tbl_pao_lite.h tbl_rtcomm.h \
-		resolvers.h pointtypes.h db_entry_defines.h desolvers.h \
-		logger.h thread.h CtiPCPtrQueue.h msg_signal.h \
-		string_utility.h tbl_static_paoinfo.h pointdefs.h \
-		encryption.h tbl_base.h tbl_scanrate.h tbl_dyn_paoinfo.h \
-		pt_base.h tbl_pt_base.h tbl_port_base.h xfer.h \
-		critical_section.h counter.h port_dialable.h port_modem.h \
-		tbl_port_dialup.h port_dialin.h port_direct.h port_serial.h \
-		tbl_port_settings.h tbl_port_timing.h tbl_port_serial.h \
-		port_pool_out.h port_tcpipdirect.h tbl_port_tcpip.h \
-		port_tcp.h port_udp.h devicetypes.h slctprt.h
 test_cmd_dlc.obj:	cmd_dlc.h cmd_base.h dev_single.h dsm2.h \
 		cticonnect.h yukon.h types.h ctidbgmem.h dlldefs.h netports.h \
 		mutex.h guard.h utility.h ctitime.h queues.h cticalls.h \

@@ -7,6 +7,7 @@
 #include "utility.h"
 
 #include "port_direct.h"
+#include "port_dialin.h"
 #include "port_dialout.h"
 #include "port_pool_out.h"
 #include "port_tcpipdirect.h"
@@ -19,14 +20,9 @@ using std::string;
 using std::endl;
 using std::vector;
 
-/* SQL to get every column used */
-/* Seems far more efficient that using 4 simpler queries without outer join */
-// static const CHAR AllPortSql[] = "SELECT DISTINCT COMMPORT.PORTID,COMMPORT.PORTTYPE,COMMPORT.DISABLEFLAG,COMMPORT.ALARMINHIBIT,COMMPORT.DESCRIPTION,COMMPORT.COMMONPROTOCOL,PORTTIMING.PRETXWAIT,PORTTIMING.RTSTOTXWAIT,PORTTIMING.POSTTXWAIT,PORTTIMING.RECEIVEDATAWAIT,PORTSETTINGS.CDWAIT,PORTSETTINGS.BAUDRATE,PORTLOCALSERIAL.PHYSICALPORT,PORTTERMINALSERVER.IPADDRESS,PORTTERMINALSERVER.SOCKETPORTNUMBER,PORTDIALUPMODEM.INITIALIZATIONSTRING FROM COMMPORT,PORTTIMING,PORTRADIOSETTINGS,PORTLOCALSERIAL,PORTTERMINALSERVER,PORTSETTINGS,PORTDIALUPMODEM WHERE PORTSETTINGS.PORTID(+)=COMMPORT.PORTID AND PORTTIMING.PORTID(+)=COMMPORT.PORTID AND PORTRADIOSETTINGS.PORTID(+)=COMMPORT.PORTID AND PORTLOCALSERIAL.PORTID(+)=COMMPORT.PORTID AND PORTTERMINALSERVER.PORTID(+)=COMMPORT.PORTID AND PORTDIALUPMODEM.PORTID(+)=COMMPORT.PORTID";
 
 bool findExecutingAndExcludedPort(const long key, CtiPortSPtr Port, void* d)
 {
-    bool bstatus = false;
-
     CtiPort *pAnxiousPort = (CtiPort *)d;       // This is the port that wishes to execute!
 
     if(pAnxiousPort->getPortID() != Port->getPortID())      // And it is not me...
@@ -36,11 +32,11 @@ bool findExecutingAndExcludedPort(const long key, CtiPortSPtr Port, void* d)
         if(portexcluded)
         {
             // Ok, now decide if that excluded port is executing....
-            bstatus = Port->isExecuting();
+            return Port->isExecuting();
         }
     }
 
-    return bstatus;
+    return false;
 }
 
 BOOL APIENTRY DllMain(HANDLE hModule, DWORD  ul_reason_for_call, LPVOID lpReserved)
@@ -69,22 +65,6 @@ BOOL APIENTRY DllMain(HANDLE hModule, DWORD  ul_reason_for_call, LPVOID lpReserv
     return TRUE;
 }
 
-DLLEXPORT BOOL isAPort(CtiPort *pSp, void *arg)
-{
-    BOOL bRet = FALSE;
-
-    switch(pSp->getType())
-    {
-    default:
-        {
-            bRet = TRUE;
-            break;
-        }
-    }
-
-    return bRet;
-}
-
 inline bool isNotUpdated(CtiPortSPtr &Port, void* d)
 {
     // Return TRUE if it is NOT SET
@@ -95,41 +75,35 @@ inline void applyRemoveProhibit(const long key, CtiPortSPtr Port, void* d)
 {
     try
     {
-    CtiPort *pAnxiousPort = (CtiPort *)d;       // This is the port that wishes to execute!
-    LONG pid = (LONG)pAnxiousPort->getPortID();       // This is the port id which is to be pulled from the prohibition list.
+        CtiPort *pAnxiousPort = (CtiPort *)d;       // This is the port that wishes to execute!
+        LONG pid = (LONG)pAnxiousPort->getPortID();       // This is the port id which is to be pulled from the prohibition list.
 
-    if(Port->isExecutionProhibited())   // There is at least one entry in the list...
-    {
-        bool found = Port->removeInfiniteExclusion( pid );
-
-        if(found && getDebugLevel() & DEBUGLEVEL_EXCLUSIONS)
+        if(Port->isExecutionProhibited())   // There is at least one entry in the list...
         {
-            CtiLockGuard<CtiLogger> doubt_guard(dout);
-            dout << CtiTime() << " Port " << Port->getName() << " no longer prohibited because of " << pAnxiousPort->getName() << "." << endl;
+            bool found = Port->removeInfiniteExclusion( pid );
+
+            if(found && getDebugLevel() & DEBUGLEVEL_EXCLUSIONS)
+            {
+                CtiLockGuard<CtiLogger> doubt_guard(dout);
+                dout << CtiTime() << " Port " << Port->getName() << " no longer prohibited because of " << pAnxiousPort->getName() << "." << endl;
+            }
         }
-    }
     }
     catch(...)
     {
-        {
-            CtiLockGuard<CtiLogger> doubt_guard(dout);
-            dout << CtiTime() << " **** EXCEPTION Checkpoint **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
-        }
+        CtiLockGuard<CtiLogger> doubt_guard(dout);
+        dout << CtiTime() << " **** EXCEPTION Checkpoint **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
     }
-
-    return;
 }
 
 inline void applyClearExclusions(const long key, CtiPortSPtr Port, void* d)
 {
     Port->clearExclusions();
-    return;
 }
 
 inline void ApplyResetUpdated(const long key, CtiPortSPtr Port, void* d)
 {
     Port->resetUpdatedFlag();
-    return;
 }
 
 void ApplyInvalidateNotUpdated(const long key, CtiPortSPtr Port, void* d)
@@ -138,13 +112,11 @@ void ApplyInvalidateNotUpdated(const long key, CtiPortSPtr Port, void* d)
     {
         Port->setValid(FALSE);   //   NOT NOT NOT Valid
     }
-    return;
 }
 
 void ApplyHaltLog(const long key, CtiPortSPtr Port, void* d)
 {
     Port->haltLog();
-    return;
 }
 
 CtiPortManager::CtiPortManager(CTI_PORTTHREAD_FUNC_FACTORY_PTR fn) :
@@ -153,10 +125,9 @@ _portThreadFuncFactory(fn)
 
 CtiPortManager::~CtiPortManager()
 {
-    // cleanupDB();  // Deallocate all the DB stuff.
 }
 
-void CtiPortManager::RefreshList(CtiPort* (*Factory)(Cti::RowReader &), BOOL (*testFunc)(CtiPort*,void*), void *arg)
+void CtiPortManager::RefreshList()
 {
     ptr_type pTempPort;
 
@@ -193,7 +164,7 @@ void CtiPortManager::RefreshList(CtiPort* (*Factory)(Cti::RowReader &), BOOL (*t
                     }
                 }
 
-                RefreshEntries(rowFound, rdr, Factory, testFunc, arg);
+                RefreshEntries(rowFound, rdr);
                 if(DebugLevel & 0x00080000)
                 {
                     CtiLockGuard<CtiLogger> doubt_guard(dout); dout  << "Done looking for Direct Ports" << endl;
@@ -219,7 +190,7 @@ void CtiPortManager::RefreshList(CtiPort* (*Factory)(Cti::RowReader &), BOOL (*t
                     }
                 }
 
-                RefreshEntries(rowFound, rdr, Factory, testFunc, arg);
+                RefreshEntries(rowFound, rdr);
                 if(DebugLevel & 0x00080000)
                 {
                     CtiLockGuard<CtiLogger> doubt_guard(dout); dout  << "Done looking for TCPIP Terminal Server Ports" << endl;
@@ -246,7 +217,7 @@ void CtiPortManager::RefreshList(CtiPort* (*Factory)(Cti::RowReader &), BOOL (*t
                     }
                 }
 
-                RefreshEntries(rowFound, rdr, Factory, testFunc, arg);
+                RefreshEntries(rowFound, rdr);
                 if(DebugLevel & 0x00080000)
                 {
                     CtiLockGuard<CtiLogger> doubt_guard(dout); dout  << "Done looking for TCP Ports" << endl;
@@ -271,7 +242,7 @@ void CtiPortManager::RefreshList(CtiPort* (*Factory)(Cti::RowReader &), BOOL (*t
                     }
                 }
 
-                RefreshDialableEntries(rowFound, rdr, Factory, testFunc, arg);
+                RefreshDialableEntries(rowFound, rdr);
                 if(DebugLevel & 0x00080000)
                 {
                     CtiLockGuard<CtiLogger> doubt_guard(dout); dout  << "Done looking for DialABLE Ports" << endl;
@@ -296,7 +267,7 @@ void CtiPortManager::RefreshList(CtiPort* (*Factory)(Cti::RowReader &), BOOL (*t
                     }
                 }
 
-                RefreshEntries(rowFound, rdr, Factory, testFunc, arg);
+                RefreshEntries(rowFound, rdr);
 
                 if(DebugLevel & 0x00080000)
                 {
@@ -323,7 +294,7 @@ void CtiPortManager::RefreshList(CtiPort* (*Factory)(Cti::RowReader &), BOOL (*t
                     }
                 }
 
-                RefreshPooledPortEntries(rowFound, rdr, Factory, testFunc, arg);
+                RefreshPooledPortEntries(rowFound, rdr);
 
                 if(DebugLevel & 0x00080000)
                 {
@@ -478,7 +449,7 @@ CtiPortManager::ptr_type CtiPortManager::getPortById(LONG pid)
     return p;
 }
 
-void CtiPortManager::RefreshEntries(bool &rowFound, Cti::RowReader& rdr, CtiPort* (*Factory)(Cti::RowReader &), BOOL (*testFunc)(CtiPort*,void*), void *arg)
+void CtiPortManager::RefreshEntries(bool &rowFound, Cti::RowReader& rdr)
 {
     LONG     portID = 0;
     ptr_type tempPort;
@@ -531,7 +502,7 @@ void CtiPortManager::RefreshEntries(bool &rowFound, Cti::RowReader& rdr, CtiPort
         }
         else
         {
-            CtiPort* pSp = (*Factory)(rdr);  // Use the reader to get me an object of the proper type
+            CtiPort* pSp = PortFactory(rdr);  // Use the reader to get me an object of the proper type
 
             if(pSp)
             {
@@ -542,22 +513,15 @@ void CtiPortManager::RefreshEntries(bool &rowFound, Cti::RowReader& rdr, CtiPort
                     pSp->setPortThreadFunc( (*_portThreadFuncFactory)( pSp->getType() ) );  // Make the thing know who runs it.
                 }
 
-                if(((*testFunc)(pSp, arg)))             // If I care about this point in the db in question....
-                {
-                    pSp->setUpdatedFlag();              // Mark it updated
-                    pSp->setValid();
-                    _smartMap.insert( pSp->getPortID(), pSp );    // Stuff it in the list
-                }
-                else
-                {
-                    delete pSp;                         // I don't want it!
-                }
+                pSp->setUpdatedFlag();              // Mark it updated
+                pSp->setValid();
+                _smartMap.insert( pSp->getPortID(), pSp );    // Stuff it in the list
             }
         }
     }
 }
 
-void CtiPortManager::RefreshDialableEntries(bool &rowFound, Cti::RowReader& rdr, CtiPort* (*Factory)(Cti::RowReader &), BOOL (*testFunc)(CtiPort*,void*), void *arg)
+void CtiPortManager::RefreshDialableEntries(bool &rowFound, Cti::RowReader& rdr)
 {
     LONG     lTemp = 0;
     ptr_type pTempPort;
@@ -630,7 +594,7 @@ CtiPortManager::spiterator CtiPortManager::end()
     return _smartMap.getMap().end();
 }
 
-void CtiPortManager::RefreshPooledPortEntries(bool &rowFound, Cti::RowReader& rdr, CtiPort* (*Factory)(Cti::RowReader &), BOOL (*testFunc)(CtiPort*,void*), void *arg)
+void CtiPortManager::RefreshPooledPortEntries(bool &rowFound, Cti::RowReader& rdr)
 {
     LONG     owner = 0;
     LONG     child = 0;
@@ -797,31 +761,6 @@ bool CtiPortManager::mayPortExecuteExclusionFree(ptr_type anxiousPort, CtiTableP
     return bstatus;
 }
 
-/*
- * ptr_type anxiousPort has completed an execution.  We must cleanup his mess.
- */
-bool CtiPortManager::removePortExclusionBlocks(ptr_type anxiousPort)
-{
-    bool bstatus = false;
-
-    try
-    {
-        if(anxiousPort)
-        {
-            apply( applyRemoveProhibit, (void*)anxiousPort.get());   // Remove prohibit mark from any port.
-            anxiousPort->setExecuting(false);
-        }
-    }
-    catch(...)
-    {
-        CtiLockGuard<CtiLogger> doubt_guard(dout);
-        dout << CtiTime() << " **** EXCEPTION Checkpoint **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
-    }
-
-    return bstatus;
-}
-
-
 bool CtiPortManager::refreshExclusions(LONG id)
 {
     LONG     lTemp = 0;
@@ -890,5 +829,57 @@ bool CtiPortManager::refreshExclusions(LONG id)
     }
 
     return rdr.isValid();
+}
+
+
+CtiPort* CtiPortManager::PortFactory(Cti::RowReader &rdr)
+{
+    string portTypeString;
+
+    rdr["type"]  >> portTypeString;
+
+    if(getDebugLevel() & DEBUGLEVEL_FACTORY)
+    {
+        CtiLockGuard<CtiLogger> doubt_guard(dout);
+        dout << CtiTime() << " Creating a Port of type " << portTypeString << endl;
+    }
+
+   switch( resolvePortType(portTypeString) )
+   {
+        case PortTypeLocalDirect:
+            return new CtiPortDirect;
+
+        case PortTypeLocalDialup:
+            return new CtiPortDirect( new CtiPortDialout );
+
+        case PortTypeLocalDialBack:
+            return new CtiPortDirect( new CtiPortDialin );
+
+        case PortTypeTServerDirect:
+            return new CtiPortTCPIPDirect;
+
+        case PortTypeTcp:
+            return new Cti::Ports::TcpPort;
+
+        case PortTypeUdp:
+            return new Cti::Ports::UdpPort;
+
+        case PortTypeTServerDialup:
+            return new CtiPortTCPIPDirect( new CtiPortDialout );
+
+        case PortTypeTServerDialBack:
+            return new CtiPortTCPIPDirect( new CtiPortDialin );
+
+        case PortTypePoolDialout:
+            return new CtiPortPoolDialout;
+
+        default:
+        {
+            CtiLockGuard<CtiLogger> doubt_guard(dout);
+            dout << CtiTime() << " Port Factory has failed to produce for type " << portTypeString << "!" << endl;
+
+            return 0;
+        }
+    }
 }
 
