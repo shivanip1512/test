@@ -11,6 +11,7 @@ import javax.servlet.http.HttpServletResponse;
 import net.sf.json.JSONObject;
 
 import org.apache.commons.lang.StringUtils;
+import org.apache.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.ModelMap;
@@ -22,11 +23,12 @@ import org.springframework.web.servlet.View;
 
 import com.cannontech.amr.meter.dao.MeterDao;
 import com.cannontech.amr.meter.model.Meter;
-import com.cannontech.enums.Phase;
 import com.cannontech.amr.phaseDetect.data.PhaseDetectData;
 import com.cannontech.amr.phaseDetect.data.PhaseDetectResult;
 import com.cannontech.amr.phaseDetect.data.PhaseDetectState;
+import com.cannontech.amr.phaseDetect.service.PhaseDetectCancelledException;
 import com.cannontech.amr.phaseDetect.service.PhaseDetectService;
+import com.cannontech.clientutils.YukonLogManager;
 import com.cannontech.common.bulk.collection.device.DeviceCollection;
 import com.cannontech.common.bulk.collection.device.DeviceGroupCollectionHelper;
 import com.cannontech.common.device.commands.dao.CommandRequestExecutionDao;
@@ -46,11 +48,12 @@ import com.cannontech.common.pao.definition.dao.PaoDefinitionDao;
 import com.cannontech.common.pao.definition.model.PaoTag;
 import com.cannontech.core.dao.DeviceDao;
 import com.cannontech.core.dao.NotFoundException;
-import com.cannontech.core.substation.dao.SubstationDao;
-import com.cannontech.core.substation.dao.SubstationToRouteMappingDao;
 import com.cannontech.core.dynamic.exception.DispatchNotConnectedException;
 import com.cannontech.core.roleproperties.YukonRoleProperty;
+import com.cannontech.core.substation.dao.SubstationDao;
+import com.cannontech.core.substation.dao.SubstationToRouteMappingDao;
 import com.cannontech.database.data.lite.LiteYukonUser;
+import com.cannontech.enums.Phase;
 import com.cannontech.i18n.YukonUserContextMessageSourceResolver;
 import com.cannontech.user.YukonUserContext;
 import com.cannontech.web.common.chart.service.FlotChartService;
@@ -64,6 +67,8 @@ import com.google.common.collect.Maps;
 @Controller
 @CheckRoleProperty(YukonRoleProperty.PHASE_DETECT)
 public class PhaseDetectController {
+    
+    private static final Logger log = YukonLogManager.getLogger(PhaseDetectController.class);
     
     @Autowired private SubstationToRouteMappingDao strmDao;
     @Autowired private SubstationDao substationDao;
@@ -85,8 +90,12 @@ public class PhaseDetectController {
 
     @RequestMapping
     public String home(ModelMap model, String errorMsg) throws ServletException {
-        if(phaseDetectService.getPhaseDetectData() != null){
+        try {
+            phaseDetectService.getPhaseDetectData();
             return "redirect:testPage";
+        } catch (PhaseDetectCancelledException e) {
+            /* we don't have a previous test to show them. no biggie - move along */
+            log.debug("no previous phase detection tests to display, continuing on to test home");
         }
         
         List<Substation> substations = substationDao.getAll();
@@ -196,12 +205,15 @@ public class PhaseDetectController {
         
         phaseDetectService.clearPhaseData(user);/* Will block until done */
         
-        if(phaseDetectService.getPhaseDetectResult() != null){
+        try {
             String errorMsg = phaseDetectService.getPhaseDetectResult().getErrorMsg();
             if(StringUtils.isNotBlank(errorMsg)) {
                 model.addAttribute("errorReason", StringUtils.abbreviate(errorMsg, 65));
                 return "redirect:clearPhaseData";
             }
+        } catch (PhaseDetectCancelledException e) {
+            /* user canceled the test - no biggie */
+            log.debug("could not clear phase detect test because user canceled it");
         }
         return "redirect:testSettings";
     }
@@ -273,26 +285,31 @@ public class PhaseDetectController {
     
     @RequestMapping(method=RequestMethod.POST)
     public View startTest(String phase, ModelMap model, LiteYukonUser user) {
-        Phase phaseEnumValue = Phase.valueOf(phase);
-        phaseDetectService.startPhaseDetect(user, phaseEnumValue); /* Will block until done */
-        model.addAttribute("phase", phase);
-        model.addAttribute("complete", phaseDetectService.getPhaseDetectState().isPhaseDetectComplete());
-        String errorMsg = phaseDetectService.getPhaseDetectResult().getErrorMsg();
-        if(StringUtils.isNotBlank(errorMsg)) {
-            model.addAttribute("errorOccurred", Boolean.TRUE);
-            model.addAttribute("errorMsg", StringUtils.abbreviate(errorMsg, 80));
-            phaseDetectService.getPhaseDetectState().setTestStep("send");
-        } else {
-            model.addAttribute("errorOccurred", Boolean.FALSE);
-            if(phaseDetectService.getPhaseDetectData().isReadAfterAll()){
-                if(phaseDetectService.getPhaseDetectState().isPhaseDetectComplete()){
-                    phaseDetectService.getPhaseDetectState().setTestStep("read");
-                } else {
-                    phaseDetectService.getPhaseDetectState().setTestStep("send");
-                }
+        try {
+            Phase phaseEnumValue = Phase.valueOf(phase);
+            phaseDetectService.startPhaseDetect(user, phaseEnumValue); /* Will block until done */
+            model.addAttribute("phase", phase);
+            model.addAttribute("complete", phaseDetectService.getPhaseDetectState().isPhaseDetectComplete());
+            String errorMsg = phaseDetectService.getPhaseDetectResult().getErrorMsg();
+            if(StringUtils.isNotBlank(errorMsg)) {
+                model.addAttribute("errorOccurred", Boolean.TRUE);
+                model.addAttribute("errorMsg", StringUtils.abbreviate(errorMsg, 80));
+                phaseDetectService.getPhaseDetectState().setTestStep("send");
             } else {
-                phaseDetectService.getPhaseDetectState().setTestStep("read");
+                model.addAttribute("errorOccurred", Boolean.FALSE);
+                if(phaseDetectService.getPhaseDetectData().isReadAfterAll()){
+                    if(phaseDetectService.getPhaseDetectState().isPhaseDetectComplete()){
+                        phaseDetectService.getPhaseDetectState().setTestStep("read");
+                    } else {
+                        phaseDetectService.getPhaseDetectState().setTestStep("send");
+                    }
+                } else {
+                    phaseDetectService.getPhaseDetectState().setTestStep("read");
+                }
             }
+        } catch (PhaseDetectCancelledException e) {
+            /* ignore since this means the user cancelled the test right away */
+            log.debug("user canceled phase detection before test could be started");
         }
         
         return new JsonView();

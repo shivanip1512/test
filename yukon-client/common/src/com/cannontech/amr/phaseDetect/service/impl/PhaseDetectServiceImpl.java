@@ -19,6 +19,7 @@ import com.cannontech.amr.phaseDetect.data.PhaseDetectResult;
 import com.cannontech.amr.phaseDetect.data.PhaseDetectState;
 import com.cannontech.amr.phaseDetect.data.PhaseDetectVoltageReading;
 import com.cannontech.amr.phaseDetect.data.UndefinedPhaseException;
+import com.cannontech.amr.phaseDetect.service.PhaseDetectCancelledException;
 import com.cannontech.amr.phaseDetect.service.PhaseDetectService;
 import com.cannontech.clientutils.YukonLogManager;
 import com.cannontech.common.bulk.mapper.ObjectMappingException;
@@ -174,6 +175,7 @@ public class PhaseDetectServiceImpl implements PhaseDetectService{
         final String command = "getconfig emetcon phasedetect read ";
         phaseDetectResult.setErrorMsg(null);
         ObjectMapper<YukonDevice, CommandRequestDevice> objectMapper = new ObjectMapper<YukonDevice, CommandRequestDevice>() {
+            @Override
             public CommandRequestDevice map(YukonDevice from) throws ObjectMappingException {
                 CommandRequestDevice request = new CommandRequestDevice();
                 request.setDevice(new SimpleDevice(from.getPaoIdentifier()));
@@ -240,6 +242,7 @@ public class PhaseDetectServiceImpl implements PhaseDetectService{
         phaseDetectResult.setCallback(callback);
     }
     
+    @Override
     public void cancelReadPhaseDetect(LiteYukonUser user){
         try{
             commandRequestExecutor.cancelExecution(phaseDetectResult.getCallback(), user);
@@ -488,16 +491,19 @@ public class PhaseDetectServiceImpl implements PhaseDetectService{
 
     @Override
     public PhaseDetectData getPhaseDetectData() {
+        if (phaseDetectData == null) throw new PhaseDetectCancelledException();
         return phaseDetectData;
     }
 
     @Override
     public PhaseDetectState getPhaseDetectState() {
+        if (phaseDetectState == null) throw new PhaseDetectCancelledException();
         return phaseDetectState;
     }
 
     @Override
     public PhaseDetectResult getPhaseDetectResult() {
+        if (phaseDetectResult == null) throw new PhaseDetectCancelledException();
         return phaseDetectResult;
     }
 
