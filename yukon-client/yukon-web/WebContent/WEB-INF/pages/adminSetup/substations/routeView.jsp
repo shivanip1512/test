@@ -7,7 +7,7 @@
 <cti:url var="updateUrl" value="/adminSetup/substations/routeMapping/update" />
 
 <b>Assigned Routes</b>
-<form name="routeform" action="${routeUrl}" method="post">
+<form name="routeform" class="pr" action="${routeUrl}" method="post">
     <table>
         <tr>
             <td>
@@ -19,14 +19,16 @@
                     </c:forEach>
                 </select>
             </td>
-            <td>
-                <div style="padding-bottom: 5px">
-                    <input type="button" value="&#9650" class="formSubmit" name="up"
-                        onclick="javascript:yukonGeneral_moveOptionPositionInSelect(routeIdSelectList, -1)" />
-                </div>
-                <div>
-                    <input type="button" value="&#9660" class="formSubmit" name="down"
-                        onclick="javascript:yukonGeneral_moveOptionPositionInSelect(routeIdSelectList, 1)" />
+            <td class="vab">
+                <div class="pa T0">
+	                <div style="padding-bottom: 5px">
+	                    <input type="button" value="&#9650" class="formSubmit" name="up"
+	                        onclick="javascript:yukonGeneral_moveOptionPositionInSelect(routeIdSelectList, -1)" />
+	                </div>
+	                <div>
+	                    <input type="button" value="&#9660" class="formSubmit" name="down"
+	                        onclick="javascript:yukonGeneral_moveOptionPositionInSelect(routeIdSelectList, 1)" />
+	                </div>
                 </div>
                 <div style="padding-top: 55px">
                     <input type="button" value="Delete" class="formSubmit" name="removeRoute"
@@ -53,7 +55,7 @@
                     </c:forEach>
                 </select>
             </td>
-            <td valign="bottom">
+            <td class="vab">
                 <input type="button" value="Add" name="add" class="formSubmit"
                     onclick="javascript:SubstationToRouteMappings_addRoute()" />
             </td>

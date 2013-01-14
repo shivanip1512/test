@@ -27,7 +27,7 @@
     <table>
     
     <tr>
-    	<td style="vertical-align:top;">
+    	<td class="vat">
 			<select id="subSelectList" name="selection_list" size="10" style="width:200px" onclick='javascript:SubstationToRouteMappings_SelectListener("${routeUrl}")'>
 		        <c:forEach var="substation" items="${list}">
 		            <option value="${substation.id}">
@@ -36,7 +36,7 @@
 		        </c:forEach>
 		    </select>
     	</td>
-    	<td style="vertical-align:bottom;">
+    	<td class="vab">
     		<input type="submit" value="Delete" name="remove" class="formSubmit"/>
 		    <br><br>
 		    <input type="button" value="Delete All" onclick="removeAllCheck();" class="formSubmit"/>
@@ -50,7 +50,7 @@
     		Substation Name<br>
     		<input type="text" value="" name="name" size="20" style="width:200px;"/>
     	</td>
-    	<td style="vertical-align:bottom;">
+    	<td class="vab">
     		<input id="addButton" type="submit" value="Add" name="add" class="formSubmit"/>
     		
     		<c:if test="${hasVendorId}"> 

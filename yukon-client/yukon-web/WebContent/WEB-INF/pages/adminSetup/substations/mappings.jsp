@@ -7,7 +7,7 @@
     <table>
         <tr>
             
-            <td valign="top">
+            <td class="vat">
                 <div id="sub_element">
                     <jsp:include page="/adminSetup/substations/routeMapping/viewSubstation">
                         <jsp:param name="view" value="" />
@@ -17,7 +17,7 @@
             
             <td style="width:50px;">&nbsp;</td>
             
-            <td valign="top">
+            <td class="vat">
                 <div id="route_element">
                     <jsp:include page="/adminSetup/substations/routeMapping/viewRoute">
                         <jsp:param name="view" value="" />
