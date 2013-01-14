@@ -22,6 +22,7 @@ import com.cannontech.cbc.util.CapControlUtils;
 import com.cannontech.core.roleproperties.YukonRoleProperty;
 import com.cannontech.core.roleproperties.dao.RolePropertyDao;
 import com.cannontech.database.data.lite.LiteYukonUser;
+import com.cannontech.i18n.WebMessageSourceResolvable;
 import com.cannontech.message.capcontrol.model.CommandType;
 import com.cannontech.message.capcontrol.streamable.Area;
 import com.cannontech.message.capcontrol.streamable.CapBankDevice;
@@ -31,11 +32,13 @@ import com.cannontech.message.capcontrol.streamable.StreamableCapObject;
 import com.cannontech.message.capcontrol.streamable.SubBus;
 import com.cannontech.message.capcontrol.streamable.SubStation;
 import com.cannontech.servlet.nav.CBCNavigationUtil;
+import com.cannontech.user.YukonUserContext;
 import com.cannontech.web.capcontrol.models.ViewableArea;
 import com.cannontech.web.capcontrol.models.ViewableCapBank;
 import com.cannontech.web.capcontrol.models.ViewableFeeder;
 import com.cannontech.web.capcontrol.models.ViewableSubBus;
 import com.cannontech.web.capcontrol.util.CapControlWebUtils;
+import com.cannontech.web.common.flashScope.FlashScope;
 import com.cannontech.web.security.annotation.CheckRoleProperty;
 
 
@@ -133,8 +136,10 @@ public class TierController {
 	
 	@RequestMapping
 	public String feeders(HttpServletRequest request, 
+	                      FlashScope flashScope,
 	                      HttpSession session,
 	                      ModelMap model,
+	                      YukonUserContext userContext,
 	                      LiteYukonUser user, 
 						  int substationId, 
 						  Boolean isSpecialArea) {
@@ -201,6 +206,26 @@ public class TierController {
 		
 		boolean hasEditingRole = rolePropertyDao.checkProperty(YukonRoleProperty.CBC_DATABASE_EDIT, user);
 		model.addAttribute("hasEditingRole", hasEditingRole);
+		
+		for (ViewableSubBus subbus : viewableSubBusList) {
+	        if (!CapControlUtils.isStrategyAttachedToSubBusOrSubBusParentArea(subbus.getSubBus())) {
+	            SubStation subBusSubstation = cache.getSubstation(subbus.getSubBus().getParentID());
+	            int parentAreaId;
+	            if (subBusSubstation.getSpecialAreaEnabled()) {
+	                parentAreaId = subBusSubstation.getSpecialAreaId();
+	            } else {
+	                parentAreaId = cache.getParentAreaID(subbus.getSubBus().getCcId());
+	            }
+	            StreamableCapObject area = cache.getArea(parentAreaId);
+
+	            String areaLinkHtml = CapControlWebUtils.getCapControlFacesEditorLinkHtml(area.getCcId(), userContext);
+	            String subBusLinkHtml = CapControlWebUtils.getCapControlFacesEditorLinkHtml(subbus.getSubBus().getCcId(), userContext);
+	            areaLinkHtml = "<strong>" + areaLinkHtml + "</strong>";
+	            subBusLinkHtml = "<strong>" + subBusLinkHtml + "</strong>";
+	            WebMessageSourceResolvable noStrategyMessage = new WebMessageSourceResolvable("yukon.web.modules.capcontrol.substation.noStrategyAssigned", areaLinkHtml, subBusLinkHtml);
+	            flashScope.setError(noStrategyMessage);
+	        }
+		}
 
 	    //Security risk? They can change the link if they intercept
 	    String url = request.getRequestURL().toString();

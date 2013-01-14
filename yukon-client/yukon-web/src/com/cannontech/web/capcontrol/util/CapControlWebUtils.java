@@ -1,16 +1,24 @@
 package com.cannontech.web.capcontrol.util;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
+import java.util.Map.Entry;
 
 import com.cannontech.capcontrol.ControlAlgorithm;
 import com.cannontech.capcontrol.dao.StrategyDao;
 import com.cannontech.cbc.cache.CapControlCache;
 import com.cannontech.cbc.util.CapControlUtils;
+import com.cannontech.common.pao.DisplayablePao;
+import com.cannontech.common.pao.YukonPao;
+import com.cannontech.core.dao.NotFoundException;
 import com.cannontech.core.dao.PaoDao;
 import com.cannontech.core.dao.PointDao;
+import com.cannontech.core.service.PaoLoadingService;
 import com.cannontech.database.data.lite.LitePoint;
 import com.cannontech.database.data.lite.LiteYukonPAObject;
+import com.cannontech.database.data.pao.DBEditorTypes;
 import com.cannontech.database.db.capcontrol.CapControlStrategy;
 import com.cannontech.message.capcontrol.streamable.Area;
 import com.cannontech.message.capcontrol.streamable.CapBankDevice;
@@ -19,6 +27,7 @@ import com.cannontech.message.capcontrol.streamable.StreamableCapObject;
 import com.cannontech.message.capcontrol.streamable.SubBus;
 import com.cannontech.message.capcontrol.streamable.SubStation;
 import com.cannontech.spring.YukonSpringHook;
+import com.cannontech.user.YukonUserContext;
 import com.cannontech.web.capcontrol.models.NavigableArea;
 import com.cannontech.web.capcontrol.models.NavigableCapBank;
 import com.cannontech.web.capcontrol.models.NavigableFeeder;
@@ -232,5 +241,29 @@ public class CapControlWebUtils {
             capbanks.add(navigableCapBank);
         }
         return capbanks;
+    }
+    
+    public static String getCapControlFacesEditorLinkHtml(int ccId, YukonUserContext userContext) {
+        String name = getPaoNameWithId(ccId, userContext);
+        String html = getLinkHtml("/editor/cbcBase.jsf?type=" + DBEditorTypes.EDITOR_CAPCONTROL
+                                + "&amp;itemid=" + ccId, name, new HashMap<String, String>());
+        return html;
+    }
+    
+    private static String getPaoNameWithId(int paoId, YukonUserContext userContext) throws NotFoundException {
+        PaoDao paoDao = YukonSpringHook.getBean(PaoDao.class);
+        PaoLoadingService paoLoadingService = YukonSpringHook.getBean(PaoLoadingService.class);
+        YukonPao yukonPao = paoDao.getYukonPao(paoId);
+        DisplayablePao displayablePao = paoLoadingService.getDisplayablePao(yukonPao);
+        return displayablePao.getName();
+    }
+    
+    private static String getLinkHtml(String url, String value, Map<String, String> argMap) {
+        String html = "<a href=\"" + url;
+        for (Entry<String, String> argEntry : argMap.entrySet()) {
+            html += "?" + argEntry.getKey() + "=" + argEntry.getValue();
+        }
+        html += "\">" + value + "</a>";
+        return html;
     }
 }

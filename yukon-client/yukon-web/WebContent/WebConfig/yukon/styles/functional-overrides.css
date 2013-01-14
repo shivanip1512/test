@@ -61,10 +61,5 @@ h1, h2, h3, h4, h5, h6, b, strong, .fwb{font-weight:bold}
 .vh {visibility:hidden;} /* when you want to hide, but still flow */
 .vv {visibility:visible;}
 
-.scroll_y {
-    overflow-y: auto;
-}
-
-.scroll_x {
-    overflow-x: auto;
-}
+.scroll_y {overflow-y: auto;}
+.scroll_x {overflow-x: auto;}

@@ -44,7 +44,8 @@ public class FilterCapControlCacheImpl implements CapControlCache {
         this.cache = cache;
     }
 	
-	public List<Area> getCbcAreas() {
+	@Override
+    public List<Area> getCbcAreas() {
         List<Area> aList = cache.getCbcAreas();
         List<Area> retList = new ArrayList<Area>();
 
@@ -58,7 +59,8 @@ public class FilterCapControlCacheImpl implements CapControlCache {
         return retList;
     }
 	
-	public List<SpecialArea> getSpecialCbcAreas() {
+	@Override
+    public List<SpecialArea> getSpecialCbcAreas() {
         List<SpecialArea> aList = cache.getSpecialCbcAreas();
         List<SpecialArea> retList = new ArrayList<SpecialArea>(aList.size());
         
@@ -78,30 +80,35 @@ public class FilterCapControlCacheImpl implements CapControlCache {
 	    return null;
 	}
 
-	public Area getCBCArea(int id) {
+	@Override
+    public Area getCBCArea(int id) {
 		Area area = cache.getCBCArea(id);
 		if (filter.valid(area)) return area;
 		return null;
 	}
 
+    @Override
     public VoltageRegulatorFlags getVoltageRegulatorFlags(int id) {
         VoltageRegulatorFlags regulatorFlags = cache.getVoltageRegulatorFlags(id);
         return regulatorFlags;
     }
     
-	public SpecialArea getCBCSpecialArea(int id) {
+	@Override
+    public SpecialArea getCBCSpecialArea(int id) {
 		SpecialArea area = cache.getCBCSpecialArea(id);
 		if (filter.valid(area)) return area;
 			return null;
 	}
 	
-	public StreamableCapObject getObject(int id) {
+	@Override
+    public StreamableCapObject getObject(int id) {
 	    StreamableCapObject area = cache.getObject(id);
 	    if (filter.valid(area)) return area;
 	    return null;
 	}
 
-	public CapBankDevice getCapBankDevice(int capBankDeviceID) {
+	@Override
+    public CapBankDevice getCapBankDevice(int capBankDeviceID) {
 		CapBankDevice cap = cache.getCapBankDevice(capBankDeviceID);
 		int id = cache.getParentAreaID(cap.getCcId());
 		StreamableCapObject area = cache.getArea(id);
@@ -109,37 +116,43 @@ public class FilterCapControlCacheImpl implements CapControlCache {
 		return null;
 	}
 
-	public LiteState getCapBankState(int rawState) {
+	@Override
+    public LiteState getCapBankState(int rawState) {
 		return cache.getCapBankState(rawState);
 	}
 
-	public List<CapBankDevice> getCapBanksByArea(int areaID) {
+	@Override
+    public List<CapBankDevice> getCapBanksByArea(int areaID) {
 		StreamableCapObject area = cache.getArea(areaID);
 		if (filter.valid(area)) return cache.getCapBanksByArea(areaID);
 		return null;
 	}
 
-	public List<CapBankDevice> getCapBanksByFeeder(int feederID) {
+	@Override
+    public List<CapBankDevice> getCapBanksByFeeder(int feederID) {
 		int id = cache.getParentAreaID(feederID);
 		StreamableCapObject area = cache.getArea(id);
 		if (filter.valid(area)) return cache.getCapBanksByFeeder(feederID);
 		return null;
 	}
 
+    @Override
     public String getSubBusNameForFeeder(Feeder fdr){
         int id = cache.getParentAreaID(fdr.getCcId());
         StreamableCapObject area = cache.getArea(id);
         if (filter.valid(area)) return cache.getSubBusNameForFeeder(fdr);
         return emptyName;
     }
-	public List<CapBankDevice> getCapBanksBySubBus(int subBusID) {
+	@Override
+    public List<CapBankDevice> getCapBanksBySubBus(int subBusID) {
 		int id = cache.getParentAreaID(subBusID);
 		StreamableCapObject area = cache.getArea(id);
 		if (filter.valid(area)) return cache.getCapBanksBySubBus(subBusID);
 		return null;
 	}
 
-	public List<CapBankDevice> getCapBanksBySubStation(SubStation sub) {
+	@Override
+    public List<CapBankDevice> getCapBanksBySubStation(SubStation sub) {
 	    if (sub == null) return Collections.emptyList();
 	    
 	    int id = cache.getParentAreaID(sub.getCcId());
@@ -149,31 +162,36 @@ public class FilterCapControlCacheImpl implements CapControlCache {
 	    return Collections.emptyList();
 	}
 
-	public StreamableCapObject getCapControlPAO(int paoID) {
+	@Override
+    public StreamableCapObject getCapControlPAO(int paoID) {
 		return cache.getCapControlPAO(paoID);
 	}
 
-	public Feeder getFeeder(int feederID) {
+	@Override
+    public Feeder getFeeder(int feederID) {
 		int id = cache.getParentAreaID(feederID);
 		StreamableCapObject area = cache.getArea(id);
 		if (filter.valid(area)) return cache.getFeeder(feederID);
 		return null;
 	}
 
-	public List<Feeder> getFeedersByArea(int areaID) {
+	@Override
+    public List<Feeder> getFeedersByArea(int areaID) {
 		StreamableCapObject area = cache.getArea(areaID);
 		if (filter.valid(area)) return cache.getFeedersByArea(areaID);
 		return Collections.emptyList();
 	}
 
-	public List<Feeder> getFeedersBySubBus(int subBusID) {
+	@Override
+    public List<Feeder> getFeedersBySubBus(int subBusID) {
 		int id = cache.getParentAreaID(subBusID);
 		StreamableCapObject area = cache.getArea(id);
 		if (filter.valid(area)) return cache.getFeedersBySubBus(subBusID);
 		return Collections.emptyList();
 	}
 
-	public List<Feeder> getFeedersBySubStation(SubStation sub) {
+	@Override
+    public List<Feeder> getFeedersBySubStation(SubStation sub) {
 	    if (sub == null) return Collections.emptyList();
 
 	    int id = cache.getParentAreaID(sub.getCcId());
@@ -185,11 +203,20 @@ public class FilterCapControlCacheImpl implements CapControlCache {
 	    return Collections.emptyList();
 	}
 
-	public int getParentSubBusID(int childID) {
+	@Override
+    public int getParentSubBusID(int childID) {
 		int id = cache.getParentAreaID(childID);
 		StreamableCapObject area = cache.getArea(id);
 		if (filter.valid(area)) return cache.getParentSubBusID(childID);
 		return CtiUtilities.NONE_ZERO_ID;
+	}
+	
+	@Override
+    public SubBus getParentSubBus(int childID) {
+	    int id = cache.getParentAreaID(childID);
+	    StreamableCapObject area = cache.getArea(id);
+	    if (filter.valid(area)) return cache.getParentSubBus(childID);
+	    return null;
 	}
 	
 	@Override
@@ -200,20 +227,23 @@ public class FilterCapControlCacheImpl implements CapControlCache {
 	    return CtiUtilities.NONE_ZERO_ID;
 	}
 
-	public SubBus getSubBus(int subID) {
+	@Override
+    public SubBus getSubBus(int subID) {
 		int id = cache.getParentAreaID(subID);
 		StreamableCapObject area = cache.getArea(id);
 		if (filter.valid(area)) return cache.getSubBus(subID);
 		return null;
 	}
 
-	public List<SubBus> getSubBusesByArea(int areaId) {
+	@Override
+    public List<SubBus> getSubBusesByArea(int areaId) {
 		StreamableCapObject area = cache.getArea(areaId);
 		if (filter.valid(area)) return cache.getSubBusesByArea(areaId);
 	    return Collections.emptyList();
 	}
 
-	public List<SubBus> getSubBusesBySubStation(SubStation sub) {
+	@Override
+    public List<SubBus> getSubBusesBySubStation(SubStation sub) {
 	    if (sub == null) return Collections.emptyList();
 
 	    int id = cache.getParentAreaID(sub.getCcId());
@@ -222,14 +252,16 @@ public class FilterCapControlCacheImpl implements CapControlCache {
 	    return Collections.emptyList();
 	}
 
-	public SubStation getSubstation(int subId) {
+	@Override
+    public SubStation getSubstation(int subId) {
 		int id = cache.getParentAreaID(subId);
 		StreamableCapObject area = cache.getArea(id);
 		if (filter.valid(area)) return cache.getSubstation(subId);
 		return null;
 	}
 
-	public List<SubStation> getSubstationsByArea(int areaId) {
+	@Override
+    public List<SubStation> getSubstationsByArea(int areaId) {
 		StreamableCapObject area = cache.getArea(areaId);
 		if ( filter.valid(area) )
 			return cache.getSubstationsByArea(areaId);
@@ -237,42 +269,52 @@ public class FilterCapControlCacheImpl implements CapControlCache {
         return Collections.emptyList();
 	}
 
-	public boolean isCBCArea(int id) {
+	@Override
+    public boolean isCBCArea(int id) {
 		return cache.isCBCArea(id);
 	}
 
-	public boolean isCapBank(int id) {
+	@Override
+    public boolean isCapBank(int id) {
 		return cache.isCapBank(id);
 	}
 
-	public boolean isFeeder(int id) {
+	@Override
+    public boolean isFeeder(int id) {
 		return cache.isFeeder(id);
 	}
 
-	public boolean isSpecialCBCArea(int id) {
+	@Override
+    public boolean isSpecialCBCArea(int id) {
 		return cache.isSpecialCBCArea(id);
 	}
 
-	public boolean isSubBus(int id) {
+	@Override
+    public boolean isSubBus(int id) {
 		return cache.isSubBus(id);
 	}
 
+    @Override
     public int getParentAreaID(int childID) {
         return cache.getParentAreaID(childID);
     }
 
+    @Override
     public CapControlClientConnection getConnection() {
         return cache.getConnection();
     }
 
+    @Override
     public Boolean getSystemStatusOn() {
         return cache.getSystemStatusOn();
     }
 
+    @Override
     public CBCWebUpdatedObjectMap getUpdatedObjMap() {
         return cache.getUpdatedObjMap();
     }
 
+    @Override
     public List<CapBankDevice> getCapBanksBySpecialArea(int areaId) {
         SpecialArea area = cache.getCBCSpecialArea(areaId);
         if (filter.valid(area)) {
@@ -282,6 +324,7 @@ public class FilterCapControlCacheImpl implements CapControlCache {
         return null;
     }
     
+    @Override
     public List<CapBankDevice> getCapBanksByTypeAndId(CapControlType type, int id) {
     	
     	int areaId = getParentAreaID(id);
@@ -292,6 +335,7 @@ public class FilterCapControlCacheImpl implements CapControlCache {
     	return null;
     }
     
+    @Override
     public List<SubStation> getSubstationsBySpecialArea(int areaId) {
         SpecialArea area = cache.getCBCSpecialArea(areaId);
         if (filter.valid(area)) {

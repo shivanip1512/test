@@ -359,6 +359,9 @@
     <entry key="yukon.web.modules.capcontrol.substation.filter.hoverText"></entry>
     <entry key="yukon.web.modules.capcontrol.substation.filter.label">Filter:</entry>
     
+    <!-- Substation.jsp (errors/warnings) -->
+    <entry key="yukon.web.modules.capcontrol.substation.noStrategyAssigned">Strategy assignment required on either area {0} or substation bus {1}</entry>
+
     <!-- capBankLocations.jsp -->
     <entry key="yukon.web.modules.capcontrol.capbankLocations.pageName">Cap Bank Locations</entry>
     <entry key="yukon.web.modules.capcontrol.capbankLocations.capbankName">Cap Bank Name</entry>

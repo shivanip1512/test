@@ -17,7 +17,6 @@ import org.springframework.web.util.HtmlUtils;
 
 import com.cannontech.clientutils.YukonLogManager;
 import com.cannontech.i18n.WebMessageSourceResolvable;
-import com.cannontech.i18n.YukonMessageSourceResolvable;
 import com.cannontech.web.common.flashScope.FlashScope;
 import com.cannontech.web.common.flashScope.FlashScopeMessage;
 import com.google.common.collect.Iterables;
@@ -60,23 +59,14 @@ public class FlashScopeMessagesTag extends YukonTagSupport {
 				out.println("<div class=\"userMessage " + flashScopeMessage.getType() + "\">");
 				
 				if (flashScopeMessage.getMessages().size() == 1) {
-					String resolvedMessage = resolveMessage(flashScopeMessage.getMessages().get(0));
-					out.println(resolvedMessage);
+				    MessageSourceResolvable messageSourceResolvable = Iterables.getOnlyElement(flashScopeMessage.getMessages());
+				    String displayableMessage = getDisplayableMessage(messageSourceResolvable, false);
+					out.println(displayableMessage);
 				} else {
-					
 					out.println("<ul>");
 					for (MessageSourceResolvable messageSourceResolvable : flashScopeMessage.getMessages()) {
-						String resolvedMessage = resolveMessage(messageSourceResolvable);
-						String className = "";
-					    if(messageSourceResolvable instanceof WebMessageSourceResolvable){
-					        YukonMessageSourceResolvable yukonMessageSourceResolvable = (YukonMessageSourceResolvable)messageSourceResolvable;
-					        className = ((WebMessageSourceResolvable)yukonMessageSourceResolvable).getClassName();
-					    }
-						if(StringUtils.isEmpty(className)){
-							out.println("<li>" + resolvedMessage + "</li>");
-						}else{
-							out.println("<li class=\"" + className + "\">" + resolvedMessage + "</li>");
-						}
+	                    String displayableMessage = getDisplayableMessage(messageSourceResolvable, true);
+	                    out.println(displayableMessage);
 					}
 					out.println("</ul>");
 				}
@@ -86,15 +76,31 @@ public class FlashScopeMessagesTag extends YukonTagSupport {
 		}
     }
 	
-	private String resolveMessage(MessageSourceResolvable messageSourceResolvable) {
-		try {
-		    String resolvedMessage = getMessageSource().getMessage(messageSourceResolvable);
-		    return htmlEscape ? HtmlUtils.htmlEscape(resolvedMessage) : resolvedMessage;
-		}
-		catch (NoSuchMessageException nsme) {
-		    log.error("error resolving flash scope message", nsme);
-		    throw nsme;
-		}
+	private String getDisplayableMessage(MessageSourceResolvable messageSourceResolvable, boolean isMessageInList) {
+        if (messageSourceResolvable instanceof WebMessageSourceResolvable){
+            WebMessageSourceResolvable webMessageSourceResolvable = (WebMessageSourceResolvable)messageSourceResolvable;
+            String className = webMessageSourceResolvable.getClassName();
+            String resolvedMessage = resolveMessage(messageSourceResolvable, webMessageSourceResolvable.isHtmlEscape());
+
+            String htmlTag = isMessageInList ? "li" : "span";
+            if (StringUtils.isEmpty(className)) {
+                return "<" + htmlTag + ">" + resolvedMessage + "</" + htmlTag + ">";
+            } else {
+                return "<" + htmlTag + " class=\"" + className + "\">" + resolvedMessage + "</" + htmlTag + ">";
+            }
+        }
+        return resolveMessage(messageSourceResolvable, htmlEscape);
+	}
+	
+	private String resolveMessage(MessageSourceResolvable messageSourceResolvable, boolean htmlEscape) {
+	    try {
+	        String resolvedMessage = getMessageSource().getMessage(messageSourceResolvable);
+	        return htmlEscape ? HtmlUtils.htmlEscape(resolvedMessage) : resolvedMessage;
+	    }
+	    catch (NoSuchMessageException nsme) {
+	        log.error("error resolving flash scope message", nsme);
+	        throw nsme;
+	    }
 	}
 	
 	public void setHtmlEscape(boolean htmlEscape) throws JspException {

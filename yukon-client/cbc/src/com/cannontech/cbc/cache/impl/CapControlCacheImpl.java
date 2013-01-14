@@ -83,6 +83,7 @@ public class CapControlCacheImpl implements MessageListener, CapControlCache {
     
     public void initialize() {
         Runnable task = new Runnable() {
+            @Override
             public void run() {
                 refresh();
             }
@@ -91,6 +92,7 @@ public class CapControlCacheImpl implements MessageListener, CapControlCache {
         refreshTimer.scheduleWithFixedDelay(task, STARTUP_REF_RATE, NORMAL_REF_RATE, TimeUnit.MILLISECONDS);
     }
     
+    @Override
     public synchronized StreamableCapObject getArea(final int paoId) throws NotFoundException {
         StreamableCapObject object;
         try {
@@ -104,6 +106,7 @@ public class CapControlCacheImpl implements MessageListener, CapControlCache {
     /**
      * @return SubBus
      */
+    @Override
     public synchronized SubBus getSubBus(int subBusId) throws NotFoundException {        
     	SubBus bus = subBusMap.get(subBusId);
     	checkObjectFound(bus, subBusId, SubBus.class);
@@ -113,12 +116,14 @@ public class CapControlCacheImpl implements MessageListener, CapControlCache {
     /**
      * @return SubBus
      */
+    @Override
     public synchronized SubStation getSubstation(int subStationId) throws NotFoundException {
     	SubStation station = subStationMap.get(subStationId);
     	checkObjectFound(station, subStationId, SubStation.class);
     	return station;
     }
     
+    @Override
     public synchronized String getSubBusNameForFeeder(Feeder feeder) {
         Validate.notNull(feeder,"Feeder cannot be null, method: getSubBusNameForFeeder");
     	
@@ -135,6 +140,7 @@ public class CapControlCacheImpl implements MessageListener, CapControlCache {
     /**
      * Returns the base object type for a SubBus, Feeder or CapBankDevice
      */
+    @Override
     public synchronized StreamableCapObject getCapControlPAO(int paoId) {
         StreamableCapObject retObj = subBusMap.get(paoId);
         if( retObj == null ) retObj = subStationMap.get(paoId);
@@ -147,6 +153,7 @@ public class CapControlCacheImpl implements MessageListener, CapControlCache {
         return retObj;
     }
     
+    @Override
     public synchronized Feeder getFeeder(int feederId) throws NotFoundException{
         Feeder feeder = feederMap.get( feederId );
         checkObjectFound(feeder, feederId, Feeder.class);
@@ -156,6 +163,7 @@ public class CapControlCacheImpl implements MessageListener, CapControlCache {
     /**
      * @return CapBankDevice
      */
+    @Override
     public synchronized CapBankDevice getCapBankDevice(int capBankDeviceId) throws NotFoundException {
     	CapBankDevice cap = capBankMap.get( capBankDeviceId );
     	checkObjectFound(cap, capBankDeviceId, CapBankDevice.class);
@@ -165,6 +173,7 @@ public class CapControlCacheImpl implements MessageListener, CapControlCache {
     /**
      * @return List<Feeder>
      */
+    @Override
     public List<Feeder> getFeedersBySubBus(int subBusId) {
     	SubBus subBus = getSubBus(subBusId);
         try {
@@ -178,6 +187,7 @@ public class CapControlCacheImpl implements MessageListener, CapControlCache {
     /**
      * @return List<Feeder>
      */
+    @Override
     public synchronized List<Feeder> getFeedersBySubStation(SubStation sub) {
     	Validate.notNull(sub, "Substation cannot be null");
     	
@@ -197,6 +207,7 @@ public class CapControlCacheImpl implements MessageListener, CapControlCache {
     /**
      * @return List<CapBankDevice>
      */
+    @Override
     public synchronized List<CapBankDevice> getCapBanksBySubStation(SubStation sub) {
     	Validate.notNull(sub, "Substation cannot be null");
         
@@ -219,6 +230,7 @@ public class CapControlCacheImpl implements MessageListener, CapControlCache {
     /**
      * @return CapBankDevice[]
      */
+    @Override
     public List<CapBankDevice> getCapBanksByFeeder(int feederId) {
         try {
             Feeder feeder = getFeeder(feederId);
@@ -244,6 +256,7 @@ public class CapControlCacheImpl implements MessageListener, CapControlCache {
      * Instant lookup to check if this paoID is used by a SubBus
      * 
      */
+    @Override
     public boolean isSubBus(int id) {
         try {
             getSubBus(id);
@@ -268,6 +281,7 @@ public class CapControlCacheImpl implements MessageListener, CapControlCache {
      * Instant lookup to check if this paoID is used by a Feeder
      * 
      */
+    @Override
     public boolean isFeeder(int id) {
         try {
             getFeeder(id);
@@ -281,6 +295,7 @@ public class CapControlCacheImpl implements MessageListener, CapControlCache {
      * Instant lookup to check if this paoID is used by a CapBankDevice
      * 
      */
+    @Override
     public boolean isCapBank(int id) {
         try {
             getCapBankDevice(id);
@@ -290,6 +305,7 @@ public class CapControlCacheImpl implements MessageListener, CapControlCache {
         }
     }
     
+    @Override
     public boolean isCBCArea(int deviceId) {
         try {
             getCBCArea(deviceId);
@@ -299,6 +315,7 @@ public class CapControlCacheImpl implements MessageListener, CapControlCache {
         }
     }
     
+    @Override
     public synchronized boolean isSpecialCBCArea(int deviceId) {
         List<SpecialArea> areaList = getSpecialCbcAreas();
         for (final SpecialArea area : areaList) {
@@ -314,6 +331,7 @@ public class CapControlCacheImpl implements MessageListener, CapControlCache {
      * 
      * Can throw a not found exception if the subToBankMap is holding bad bank ID's.
      */
+    @Override
     public synchronized List<CapBankDevice> getCapBanksBySubBus(int subBusId) {
         int[] bankIds = subToBankMap.get( subBusId );
         
@@ -336,6 +354,7 @@ public class CapControlCacheImpl implements MessageListener, CapControlCache {
      * @return SubBus[]
      * @param areaId Integer
      */
+    @Override
     public synchronized List<SubBus> getSubBusesByArea(int areaId) throws NotFoundException {
         
         try {
@@ -369,6 +388,7 @@ public class CapControlCacheImpl implements MessageListener, CapControlCache {
         }
     }
     
+    @Override
     public synchronized List<SubBus> getSubBusesBySubStation(SubStation sub) {
         int[] busIds = sub.getSubBusIds();
         List<SubBus> buses = new ArrayList<SubBus>(busIds.length);
@@ -386,6 +406,7 @@ public class CapControlCacheImpl implements MessageListener, CapControlCache {
     /**
      * Returns all CapBanks for a given Area
      */
+    @Override
     public synchronized List<CapBankDevice> getCapBanksByArea(int areaID) {
         try {
             List<SubBus> subs = getSubBusesByArea( areaID );
@@ -409,6 +430,7 @@ public class CapControlCacheImpl implements MessageListener, CapControlCache {
     /**
      * Returns all Feeders for a given Area
      */
+    @Override
     public synchronized List<Feeder> getFeedersByArea(int areaID) {
         try {
             List<SubBus> subs = getSubBusesByArea(areaID);
@@ -433,6 +455,7 @@ public class CapControlCacheImpl implements MessageListener, CapControlCache {
      * Distinct area Strings that are used by substations
      * @return List
      */
+    @Override
     public synchronized List<Area> getCbcAreas() {
         List<Area> list = new ArrayList<Area>(cbcAreaMap.values());
         Collections.sort(list, CapControlUtils.CBC_AREA_COMPARATOR);
@@ -443,6 +466,7 @@ public class CapControlCacheImpl implements MessageListener, CapControlCache {
      * Distinct special area Strings that are used by substations
      * @return List
      */
+    @Override
     public synchronized List<SpecialArea> getSpecialCbcAreas() {
         List<SpecialArea> list = new ArrayList<SpecialArea>(cbcSpecialAreaMap.values());
         Collections.sort(list, CapControlUtils.CBC_SPECIAL_AREA_COMPARATOR);
@@ -453,6 +477,7 @@ public class CapControlCacheImpl implements MessageListener, CapControlCache {
      * State group & states to use for CapBanks
      * @return LiteState
      */
+    @Override
     public LiteState getCapBankState( int rawState ) {
         return stateDao.findLiteState( StateGroupUtils.STATEGROUPID_CAPBANK, rawState );
     }
@@ -460,6 +485,7 @@ public class CapControlCacheImpl implements MessageListener, CapControlCache {
     /**
      * Returns the Parent SubBus ID for the given child id
      */
+    @Override
     public synchronized int getParentSubBusID(int childID) throws NotFoundException {
         if( isSubBus(childID) ) {
             return childID;
@@ -470,6 +496,18 @@ public class CapControlCacheImpl implements MessageListener, CapControlCache {
         } else {
             return CtiUtilities.NONE_ZERO_ID;
         }
+    }
+
+    @Override
+    public synchronized SubBus getParentSubBus(int childID) throws NotFoundException {
+        if( isSubBus(childID) ) {
+            return getSubBus(childID);
+        } else if( isFeeder(childID) ) {
+            return getSubBus(getFeeder(new Integer(childID)).getParentID());
+        } else if( isCapBank(childID) ) {
+            return getSubBus(getFeeder(new Integer(getCapBankDevice(new Integer(childID)).getParentID())).getParentID());
+        }
+        throw new NotFoundException("could not find SubBus from child id of " + childID);
     }
     
     /**
@@ -493,6 +531,7 @@ public class CapControlCacheImpl implements MessageListener, CapControlCache {
     /**
      * Returns the Parent Area ID for the given child id
      */
+    @Override
     public synchronized int getParentAreaID(int childID) throws NotFoundException {
         int id;
         SubStation station;
@@ -831,6 +870,7 @@ public class CapControlCacheImpl implements MessageListener, CapControlCache {
      * Allows access the a CBCClientConnection instance
      * @return
      */
+    @Override
     public CapControlClientConnection getConnection() {
         return (CapControlClientConnection)ConnPool.getInstance().getDefCapControlConn();
     }
@@ -854,6 +894,7 @@ public class CapControlCacheImpl implements MessageListener, CapControlCache {
      * Handles any type of message received from the connection.
      * @param MessageEvent
      */
+    @Override
     public synchronized void messageReceived(MessageEvent event) {
         Message message = event.getMessage();
         
@@ -874,24 +915,28 @@ public class CapControlCacheImpl implements MessageListener, CapControlCache {
         }
     }
     
+    @Override
     public synchronized Area getCBCArea(int id) throws NotFoundException {
         Area area = cbcAreaMap.get(id);
         checkObjectFound(area, id, Area.class);
         return area;
     }
     
+    @Override
     public synchronized VoltageRegulatorFlags getVoltageRegulatorFlags(int id) throws NotFoundException {
         VoltageRegulatorFlags regulatorFlags = voltageRegulatorMap.get(id);
         checkObjectFound(regulatorFlags, id, VoltageRegulatorFlags.class);
         return regulatorFlags;
     }
     
+    @Override
     public synchronized SpecialArea getCBCSpecialArea(int id) throws NotFoundException {
         SpecialArea area = cbcSpecialAreaMap.get(id);
         checkObjectFound(area, id, SpecialArea.class);        
         return area;
     }
     
+    @Override
     public synchronized StreamableCapObject getObject(int id) throws NotFoundException {
         StreamableCapObject object = cbcAreaMap.get(id);
         if (object != null) return object;
@@ -917,16 +962,19 @@ public class CapControlCacheImpl implements MessageListener, CapControlCache {
         throw new NotFoundException("StreamableCapObject with id: " + id + " not found.");
     }
     
+    @Override
     public synchronized CBCWebUpdatedObjectMap getUpdatedObjMap() {
         if (updatedObjMap == null)
             updatedObjMap = new CBCWebUpdatedObjectMap();
         return updatedObjMap;
     }
     
+    @Override
     public Boolean getSystemStatusOn() {
         return systemStatusOn;
     }
 
+    @Override
     public synchronized List<SubStation> getSubstationsByArea(int areaId) throws NotFoundException {
         try {
             getCBCArea(areaId);
@@ -961,14 +1009,17 @@ public class CapControlCacheImpl implements MessageListener, CapControlCache {
         throw new NotFoundException(message);
     }
     
+    @Override
     public List<CapBankDevice> getCapBanksBySpecialArea(int areaID) {
         return getCapBanksByArea(areaID);
     }
     
+    @Override
     public List<SubStation> getSubstationsBySpecialArea(int areaId) {
         return getSubstationsByArea(areaId);
     }
 
+    @Override
     public List<CapBankDevice> getCapBanksByTypeAndId(CapControlType type, int id) {
     	
     	List<CapBankDevice> deviceList = null;

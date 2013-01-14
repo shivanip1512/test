@@ -7,6 +7,8 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Comparator;
 import java.util.List;
+import java.util.Map;
+import java.util.Map.Entry;
 
 import org.apache.commons.lang.StringUtils;
 
@@ -17,6 +19,7 @@ import com.cannontech.common.point.PointQuality;
 import com.cannontech.common.util.CtiUtilities;
 import com.cannontech.core.dao.DaoFactory;
 import com.cannontech.core.dao.NotFoundException;
+import com.cannontech.core.dao.SeasonScheduleDao;
 import com.cannontech.core.dao.StateDao;
 import com.cannontech.core.roleproperties.UserNotInRoleException;
 import com.cannontech.core.roleproperties.YukonRoleProperty;
@@ -39,6 +42,7 @@ import com.cannontech.database.db.capcontrol.CCFeederBankList;
 import com.cannontech.database.db.capcontrol.CCSubAreaAssignment;
 import com.cannontech.database.db.capcontrol.CCSubstationSubBusList;
 import com.cannontech.database.db.state.StateGroupUtils;
+import com.cannontech.database.model.Season;
 import com.cannontech.message.capcontrol.streamable.Area;
 import com.cannontech.message.capcontrol.streamable.CapBankDevice;
 import com.cannontech.message.capcontrol.streamable.Feeder;
@@ -57,6 +61,7 @@ public final class CapControlUtils {
     private static final CapControlCache ccCache = YukonSpringHook.getBean("cbcCache", CapControlCache.class);
     private static final StateDao stateDao = YukonSpringHook.getBean("stateDao", StateDao.class);
     private static final RolePropertyDao rolePropertyDao = YukonSpringHook.getBean("rolePropertyDao", RolePropertyDao.class);
+    private static final SeasonScheduleDao seasonScheduleDao = YukonSpringHook.getBean(SeasonScheduleDao.class);
 
     public static final Comparator<SubBus> SUB_DISPLAY_COMPARATOR = new Comparator<SubBus>() {
         @Override
@@ -69,6 +74,7 @@ public final class CapControlUtils {
     };
     
     public static final Comparator<Area> CBC_AREA_COMPARATOR = new Comparator<Area>() {
+        @Override
         public int compare(Area o1, Area o2) {
             try {
                 String thisArea = o1.getPaoName();
@@ -85,6 +91,7 @@ public final class CapControlUtils {
     };
     
     public static final Comparator<SpecialArea> CBC_SPECIAL_AREA_COMPARATOR = new Comparator<SpecialArea>() {
+        @Override
         public int compare(SpecialArea o1, SpecialArea o2) {
             try {
                 String thisArea = o1.getPaoName();
@@ -101,6 +108,7 @@ public final class CapControlUtils {
     };
 
     public static final Comparator<SubBus> SUB_AREA_COMPARATOR = new Comparator<SubBus>() {
+        @Override
         public int compare(SubBus o1, SubBus o2) {
             try {
                 String thisArea = o1.getCcArea();
@@ -123,6 +131,7 @@ public final class CapControlUtils {
     };
 
     public static final Comparator<StreamableCapObject> CCNAME_COMPARATOR = new Comparator<StreamableCapObject>() {
+        @Override
         public int compare(StreamableCapObject o1, StreamableCapObject o2) {
             try {
                 String strA = o1.getCcName();
@@ -756,6 +765,34 @@ public final class CapControlUtils {
      */
     public static LiteState getCapBankState(int rawState) {
         return stateDao.findLiteState(StateGroupUtils.STATEGROUPID_CAPBANK, rawState);
+    }
+    
+    public static boolean isStrategyAttachedToSubBusOrSubBusParentArea(SubBus subBus) {
+        SubStation subBusSubstation = ccCache.getSubstation(subBus.getParentID());
+        int parentAreaId;
+        if (subBusSubstation.getSpecialAreaEnabled()) {
+            parentAreaId = subBusSubstation.getSpecialAreaId();
+        } else {
+            parentAreaId = ccCache.getParentAreaID(subBus.getCcId());
+        }
+        StreamableCapObject area = ccCache.getArea(parentAreaId);
+        Map<Season, Integer> areaSeasonSchedule = seasonScheduleDao.getSeasonStrategyAssignments(area.getCcId());
+        if (!isSeasonStrategyAssigned(areaSeasonSchedule)) {
+            Map<Season, Integer> subBusSeasonSchedule = seasonScheduleDao.getSeasonStrategyAssignments(subBus.getCcId());
+            if (!isSeasonStrategyAssigned(subBusSeasonSchedule)) {
+                return false;
+            }
+        }
+        return true;
+    }
+    
+    private static boolean isSeasonStrategyAssigned(Map<Season, Integer> seasonSchedule) {
+        for (Entry<Season, Integer> entry : seasonSchedule.entrySet()) {
+            if (entry.getValue() != -1) {
+                return true;
+            }
+        }
+        return false;
     }
     
     /**

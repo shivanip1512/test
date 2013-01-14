@@ -176,6 +176,11 @@ public interface CapControlCache {
 	 * Returns the Parent SubBus ID for the given child id
 	 */
 	public abstract int getParentSubBusID(int childID);
+	
+	/**
+	 * Returns the Parent SubBus for the given child id
+	 */
+	public abstract SubBus getParentSubBus(int childID);
 
 	/**
 	 * Returns the parent substation id for the given child id

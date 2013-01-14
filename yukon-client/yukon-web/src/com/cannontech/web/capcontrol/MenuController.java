@@ -18,6 +18,7 @@ import com.cannontech.cbc.dao.CommentAction;
 import com.cannontech.cbc.service.CapControlCommentService;
 import com.cannontech.cbc.util.CapControlUtils;
 import com.cannontech.common.i18n.MessageSourceAccessor;
+import com.cannontech.core.dao.NotFoundException;
 import com.cannontech.core.dao.PaoDao;
 import com.cannontech.core.roleproperties.YukonRoleProperty;
 import com.cannontech.core.roleproperties.dao.RolePropertyDao;
@@ -135,11 +136,18 @@ public class MenuController {
         commands.add(CommandType.SEND_TIME_SYNC);
         commands.add(CommandType.SEND_SYNC_CBC_CAPBANK_STATE);
         if (!subBus.getVerificationFlag()) {
-            commands.add(CommandType.VERIFY_ALL_BANKS);
-            commands.add(CommandType.VERIFY_FQ_BANKS);
-            commands.add(CommandType.VERIFY_FAILED_BANKS);
-            commands.add(CommandType.VERIFY_Q_BANKS);
-            commands.add(CommandType.VERIFY_SA_BANKS);
+            /*
+             * You shouldn't be able to Initiated any "Verify ..." commands from the subbus level
+             * without a strategy attached. They require a strategy and rely on knowing VAR change
+             * to determine the outcome of a control sent.
+             */
+            if (CapControlUtils.isStrategyAttachedToSubBusOrSubBusParentArea(subBus)) {
+                commands.add(CommandType.VERIFY_ALL_BANKS);
+                commands.add(CommandType.VERIFY_FQ_BANKS);
+                commands.add(CommandType.VERIFY_FAILED_BANKS);
+                commands.add(CommandType.VERIFY_Q_BANKS);
+                commands.add(CommandType.VERIFY_SA_BANKS);
+            }
         } else {
             commands.add(CommandType.STOP_VERIFICATION);
             commands.add(CommandType.EMERGENCY_VERIFICATION_STOP);
@@ -265,7 +273,26 @@ public class MenuController {
         model.addAttribute("changeOpState", CommandType.CHANGE_OP_STATE);
         
         LiteState[] states = CapControlUtils.getCBCStateNames();
-        model.addAttribute("states", states);
+        List<LiteState> filteredStatesList = Lists.newArrayList(states);
+        boolean strategyAttachedToSubBus = true;
+        try {
+            SubBus parentSubBus = cache.getParentSubBus(id);
+            strategyAttachedToSubBus = CapControlUtils.isStrategyAttachedToSubBusOrSubBusParentArea(parentSubBus);
+        } catch (NotFoundException nfe) {/* no parent subbus assigned - that's fine, move along */}
+        if (!strategyAttachedToSubBus) {
+            for (LiteState state : states) {
+                /*
+                 * These two commands (open and close) require a strategy to be attached for the
+                 * server to determine how long to wait and what point to look at to know if enough
+                 * VAR change was seen to confirm a control
+                 */
+                if ("open".equalsIgnoreCase(state.getStateText())
+                    || "close".equalsIgnoreCase(state.getStateText())) {
+                    filteredStatesList.remove(state);
+                }
+            }
+        }
+        model.addAttribute("states", filteredStatesList);
 
         return "tier/popupmenu/menu.jsp";
     }

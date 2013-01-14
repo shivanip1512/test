@@ -9,7 +9,8 @@ public class WebMessageSourceResolvable extends YukonMessageSourceResolvable{
 
 	private static final long serialVersionUID = 1L;
 
-	private String className = "";
+	private String className;
+    private boolean htmlEscape = false;
 
 	public String getClassName() {
 		return className;
@@ -18,8 +19,16 @@ public class WebMessageSourceResolvable extends YukonMessageSourceResolvable{
 	public void setClassName(String className) {
 		this.className = className;
 	}
-	
-	public WebMessageSourceResolvable(MessageSourceResolvable resolvable) {
+
+	public boolean isHtmlEscape() {
+        return htmlEscape;
+    }
+
+    public void setHtmlEscape(boolean htmlEscape) {
+        this.htmlEscape = htmlEscape;
+    }
+
+    public WebMessageSourceResolvable(MessageSourceResolvable resolvable) {
 		super(resolvable);
 	}
 
