@@ -179,9 +179,7 @@ public class OptOutEventDaoImpl implements OptOutEventDao {
 	@SuppressWarnings("unchecked")
 	@Override
 	@Transactional
-	public List<OptOutEventDto> getOptOutHistoryForAccount(
-			int customerAccountId, int... numberOfRecords) {
-		
+	public List<OptOutEventDto> getOptOutHistoryForAccount(int customerAccountId, int... numberOfRecords) {
 		
 		SqlStatementBuilder sql = new SqlStatementBuilder();
 		sql.append("SELECT * ");
