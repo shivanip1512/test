@@ -258,13 +258,13 @@ public class CapControlOperationsModel extends BareDatedReportModelBase<CapContr
         sql.append("cbc.serialnumber serialNum, da.slaveAddress slaveAddress "); 
         sql.append("from ( select op.logid oid,  min(aaa.confid) cid  from (select logid, pointid from cceventlog where datetime > ").appendArgument(new java.sql.Timestamp(getStartDate().getTime()));
         sql.append(" and datetime < ").appendArgument(new java.sql.Timestamp(getStopDate().getTime()));
-        sql.append(" and (text like '%Close Sent,%' or text like '%Open Sent,%' )) op ");
+        sql.append(" and (UPPER(text) like '%CLOSE SENT,%' or UPPER(text) like '%OPEN SENT,%' )) op ");
         sql.append("left join (select el.logid opid, min(el2.logid) confid from cceventlog el ");
         sql.append("join cceventlog el2 on el2.pointid = el.pointid left outer join  (select a.logid aid, min(b.logid) next_aid "); 
         sql.append("from cceventlog a, cceventlog b where a.pointid = b.pointid ");
-        sql.append("and (a.text like '%Close Sent,%' or a.text like '%Open Sent,%') and (b.text like '%Close Sent,%' or b.text like '%Open Sent,%')  ");
+        sql.append("and (UPPER(a.text) like '%CLOSE SENT,%' or UPPER(a.text) like '%OPEN SENT,%') and (UPPER(b.text) like '%CLOSE SENT,%' or UPPER(b.text) like '%OPEN SENT,%')  ");
         sql.append("and b.logid > a.logid group by a.logid) el3 on el3.aid = el.logid ");
-        sql.append("where (el.text like '%Close Sent,%'  or el.text like '%Open Sent,%') and el2.text like 'Var: %' ");
+        sql.append("where (UPPER(el.text) like '%CLOSE SENT,%'  or UPPER(el.text) like '%OPEN SENT,%') and UPPER(el2.text) like 'VAR: %' ");
         sql.append("and el2.logid > el.logid and (el2.logid < el3.next_aid  or el3.next_aid is null) ");
         sql.append("group by el.logid ) aaa on op.logid = aaa.opid group by op.logid ) OpConf ");
         sql.append("join cceventlog el on el.logid = opConf.oid left join cceventlog el2 on el2.logid = opConf.cid ");
@@ -280,7 +280,7 @@ public class CapControlOperationsModel extends BareDatedReportModelBase<CapContr
         sql.append("left join deviceaddress da on da.deviceid = cb.controldeviceid ");
         sql.append("join yukonpaobject yp3 on yp3.paobjectid = cb.controldeviceid ");
         sql.append("left join devicecbc cbc on cbc.deviceid = cb.controldeviceid ");
-        sql.append("left outer join (select * from dynamicpaoinfo where infokey like '%udp ip%') p ");
+        sql.append("left outer join (select * from dynamicpaoinfo where UPPER(infokey) like '%UDP IP%') p ");
         sql.append("on p.paobjectid = cb.controldeviceid ");
         sql.append("left outer join ccsubstationsubbuslist sbb on sbb.substationbusid = yp2.paobjectid ");
         sql.append("left outer join ccsubareaassignment saa on saa.substationbusid = sbb.substationid  ");
