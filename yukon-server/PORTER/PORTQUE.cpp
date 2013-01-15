@@ -136,7 +136,7 @@ struct buildLGRPQ
                     if( ccu->hasWaitingWork()
                         && ccu->buildCommand(OutMessage, Ccu721Device::Command_LoadQueue) )
                     {
-                        PortManager.writeQueue(OutMessage->Port, OutMessage->Request.GrpMsgID, OutMessage, OutMessage->Priority);
+                        PortManager.writeQueue(OutMessage);
                     }
                     else
                     {
@@ -413,7 +413,7 @@ INT CCUResponseDecode (INMESS *InMessage, CtiDeviceSPtr Dev, OUTMESS *OutMessage
 
                     if(QueueHandle(InMessage->Port) != NULL)
                     {
-                        if(PortManager.writeQueue (TimeSyncMessage->Port, TimeSyncMessage->Request.GrpMsgID, TimeSyncMessage, TimeSyncMessage->Priority))
+                        if(PortManager.writeQueue(TimeSyncMessage))
                         {
                             _snprintf(tempstr, 99,"Error Writing to Queue for Port %2hd\n", InMessage->Port);
                             {
@@ -780,7 +780,7 @@ INT CCUResponseDecode (INMESS *InMessage, CtiDeviceSPtr Dev, OUTMESS *OutMessage
             OutMessage->Retry--;
 
             /* Put it back on the queue for this port */
-            if(PortManager.writeQueue(OutMessage->Port, OutMessage->Request.GrpMsgID, OutMessage, OutMessage->Priority))
+            if(PortManager.writeQueue(OutMessage))
             {
                 CtiLockGuard<CtiLogger> doubt_guard(dout);
                 dout << "Error Requeing Command on device \"" << Dev->getName() << "\"" << endl;
@@ -1191,7 +1191,7 @@ struct kick
             if( ccu->hasRemoteWork()
                 && ccu->buildCommand(OutMessage, Ccu721Device::Command_ReadQueue) )
             {
-                PortManager.writeQueue(OutMessage->Port, OutMessage->Request.GrpMsgID, OutMessage, OutMessage->Priority);
+                PortManager.writeQueue(OutMessage);
             }
             else
             {
@@ -1643,7 +1643,7 @@ INT BuildLGrpQ (CtiDeviceSPtr Dev)
                     OutMessage->Priority = gConfigParms.getValueAsInt("PORTER_MINIMUM_CCUQUEUE_PRIORITY",11);
 
                 PorterStatisticsManager.newRequest(OutMessage->Port, OutMessage->DeviceID, 0, OutMessage->MessageFlags);
-                if(PortManager.writeQueue (OutMessage->Port, OutMessage->Request.GrpMsgID, OutMessage, OutMessage->Priority))
+                if(PortManager.writeQueue (OutMessage))
                 {
                     _snprintf(tempstr, 99,"Error Writing to Queue for Port %2hd\n", OutMessage->Port);
                     {
@@ -1771,7 +1771,7 @@ INT BuildActinShed (CtiDeviceSPtr Dev)
         /* we are done with the request message */
         delete (MyOutMessage);
 
-        if(PortManager.writeQueue (Dev->getPortID(), OutMessage->Request.GrpMsgID, OutMessage, OutMessage->Priority))
+        if(PortManager.writeQueue(OutMessage))
         {
             _snprintf(tempstr, 99,"Error Writing to Queue for Port %2hd\n", Dev->getPortID());
             {

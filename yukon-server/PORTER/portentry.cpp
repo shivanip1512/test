@@ -670,7 +670,7 @@ INT ExecuteGoodRemote(OUTMESS *&OutMessage, CtiDeviceSPtr pDev)
             QueueBookkeeping(OutMessage);
 
             /* transfer the message to the appropriate port queue */
-            if(PortManager.writeQueue (OutMessage->Port, OutMessage->Request.GrpMsgID, OutMessage, OutMessage->Priority))
+            if(PortManager.writeQueue (OutMessage))
             {
                 printf("Error Writing to Queue for Port %2hd\n", OutMessage->Port);
                 SendError(OutMessage, QUEUE_WRITE);
@@ -703,7 +703,7 @@ INT RemoteComm(OUTMESS *&OutMessage)
     }
     else
     {
-        if(PortManager.writeQueue(OutMessage->Port, OutMessage->Request.GrpMsgID, OutMessage, OutMessage->Priority))
+        if(PortManager.writeQueue(OutMessage))
         {
             printf("Error Writing to Queue for Port %2hd\n", OutMessage->Port);
             SendError (OutMessage, QUEUE_WRITE);

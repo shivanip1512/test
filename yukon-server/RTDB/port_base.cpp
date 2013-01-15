@@ -225,7 +225,12 @@ INT CtiPort::logBytes(BYTE *Message, ULONG Length) const
     return status;
 }
 
-INT CtiPort::writeQueue(ULONG Request, OUTMESS *OutMessage, ULONG Priority, HANDLE hQuit)
+INT CtiPort::writeQueue(OUTMESS *OutMessage, HANDLE hQuit)
+{
+    return writeQueueWithPriority(OutMessage, OutMessage->Priority, hQuit);
+}
+
+INT CtiPort::writeQueueWithPriority(OUTMESS *OutMessage, int priority, HANDLE hQuit)
 {
     int status = NORMAL;
     ULONG QueEntries;
@@ -267,7 +272,7 @@ INT CtiPort::writeQueue(ULONG Request, OUTMESS *OutMessage, ULONG Priority, HAND
 
             if( !blockTime || ((_lastWrite + blockTime) < CtiTime::now()) )
             {
-                status = writeShareQueue(Request, sizeof(OUTMESS), OutMessage, Priority, &QueEntries);
+                status = writeShareQueue(OutMessage->Request.GrpMsgID, sizeof(OUTMESS), OutMessage, priority, &QueEntries);
             }
             else
             {
@@ -288,7 +293,7 @@ INT CtiPort::writeQueue(ULONG Request, OUTMESS *OutMessage, ULONG Priority, HAND
 
             _lastWrite = CtiTime::now();
 
-            status = WriteQueue( _portQueue, Request, sizeof(OUTMESS), OutMessage, Priority, &QueEntries);
+            status = WriteQueue( _portQueue, OutMessage->Request.GrpMsgID, sizeof(OUTMESS), OutMessage, priority, &QueEntries);
 
             if(QueEntries >= _queueGripe)
             {
@@ -1284,11 +1289,11 @@ INT CtiPort::readQueue( PULONG DataSize, PPVOID Data, BOOL32 WaitFlag, PBYTE Pri
              */
             // We are sharing the port and the share toggle is set to select a shared queue entry.
             setShareToggle(false);    // Indicates that the next queue read should look for an UN-flagged (MSGFLG_PORT_SHARING) OM (One from Yukon that is)
-            
+
             // Always read the _first_ element of the port share queue!
             status = ReadFrontElement(_portShareQueue, DataSize, Data, WaitFlag, Priority);
 
-            if(!status) 
+            if(!status)
             {
                 readPortQueue = false; // We pulled one from the share queue.
             }
@@ -1414,7 +1419,7 @@ INT CtiPort::requeueToParent(OUTMESS *&OutMessage)
             NewOutMessage = CTIDBG_new CtiOutMessage(*OutMessage);
 
             NewOutMessage->Retry = 2;
-            _parentPort->writeQueue( NewOutMessage->Request.GrpMsgID, NewOutMessage, NewOutMessage->Priority );
+            _parentPort->writeQueue( NewOutMessage );
         }
 
         BYTE           ReadPriority;
@@ -1428,7 +1433,7 @@ INT CtiPort::requeueToParent(OUTMESS *&OutMessage)
             // Move the OM from the pool queue to the child queue.
             if( readQueue( &ReadLength, (PPVOID) &NewOutMessage, DCWW_WAIT, &ReadPriority, &QueEntries ) == NORMAL )
             {
-                _parentPort->writeQueue( NewOutMessage->Request.GrpMsgID, NewOutMessage, NewOutMessage->Priority );
+                _parentPort->writeQueue( NewOutMessage );
                 {
                     CtiLockGuard<CtiLogger> doubt_guard(dout);
                     dout << CtiTime() << " Port " << getName() << " Moving OutMessage back to parent port " << _parentPort->getName() << endl;

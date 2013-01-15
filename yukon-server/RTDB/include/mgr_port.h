@@ -43,7 +43,8 @@ public:
 
     ptr_type getPortById(LONG pid);
 
-    INT writeQueue(INT pid, ULONG Request, OUTMESS *OutMessage, ULONG Priority);
+    INT writeQueue(OUTMESS *OutMessage);
+    INT writeQueueWithPriority(OUTMESS *OutMessage, INT Priority);
 
     void haltLogs();
 

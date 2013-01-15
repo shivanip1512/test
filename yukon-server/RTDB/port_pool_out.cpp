@@ -294,7 +294,7 @@ INT CtiPortPoolDialout::allocateQueueEntsToChildPort()
                                 // Move the OM from the pool queue to the child queue.
                                 if( readQueue( &ReadLength, (PPVOID) &OutMessage, DCWW_WAIT, &ReadPriority, &QueEntries ) == NORMAL )
                                 {
-                                    childport->writeQueue( OutMessage->Request.GrpMsgID, OutMessage, OutMessage->Priority );
+                                    childport->writeQueue( OutMessage );
 
                                     if(CtiPortPoolDialout::_poolDebugLevel & PORTPOOL_DEBUGLEVL_CHILDALLOCATION)
                                     {

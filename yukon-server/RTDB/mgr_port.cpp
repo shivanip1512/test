@@ -550,29 +550,41 @@ void CtiPortManager::RefreshDialableEntries(bool &rowFound, Cti::RowReader& rdr)
     }
 }
 
-INT CtiPortManager::writeQueue(INT pid, ULONG Request, OUTMESS *OutMessage, ULONG Priority)
+
+
+INT CtiPortManager::writeQueue(OUTMESS *OutMessage)
 {
-    INT status = NORMAL;
+    ptr_type pPort = getPortById(OutMessage->Port);
 
-    ptr_type pPort = getPortById(pid);
-
-    if(pPort)
+    if( ! pPort )
     {
-        if(pPort->isInhibited())
-        {
-            status = PORTINHIBITED;
-        }
-        else
-        {
-            status = pPort->writeQueue(Request, OutMessage, Priority);
-        }
-    }
-    else
-    {
-        status = BADPORT;
+        return BADPORT;
     }
 
-    return status;
+    if( pPort->isInhibited() )
+    {
+        return PORTINHIBITED;
+    }
+
+    return pPort->writeQueue(OutMessage);
+}
+
+
+INT CtiPortManager::writeQueueWithPriority(OUTMESS *OutMessage, int priority)
+{
+    ptr_type pPort = getPortById(OutMessage->Port);
+
+    if( ! pPort )
+    {
+        return BADPORT;
+    }
+
+    if( pPort->isInhibited() )
+    {
+        return PORTINHIBITED;
+    }
+
+    return pPort->writeQueueWithPriority(OutMessage, priority);
 }
 
 

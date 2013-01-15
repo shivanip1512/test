@@ -119,7 +119,7 @@ INT IDLCFunction (CtiDeviceSPtr &Dev,
     PorterStatisticsManager.newRequest(OutMessage->Port, OutMessage->DeviceID, 0, OutMessage->MessageFlags);
 
     /* Now output message to appropriate port queue */
-    if(PortManager.writeQueue(Dev->getPortID(), OutMessage->Request.GrpMsgID, OutMessage, OutMessage->Priority))
+    if(PortManager.writeQueue(OutMessage))
     {
         {
             CtiLockGuard<CtiLogger> doubt_guard(dout);
@@ -198,7 +198,7 @@ INT IDLCRCont (CtiDeviceSPtr &Dev)
     PorterStatisticsManager.newRequest(OutMessage->Port, OutMessage->DeviceID, 0, OutMessage->MessageFlags);
 
     /* Now output message to appropriate port queue */
-    if(PortManager.writeQueue(Dev->getPortID(), OutMessage->Request.GrpMsgID, OutMessage, OutMessage->Priority))
+    if(PortManager.writeQueue(OutMessage))
     {
         printf ("Error Writing to Port Queue\n");
 
@@ -304,7 +304,7 @@ INT IDLCRColQ (CtiDeviceSPtr &Dev, INT priority)
         OutMessage->Buffer.OutMessage[PREIDL] = (UCHAR)p711Info->RContInLength;
 
         /* Now output message to appropriate port queue */
-        if(PortManager.writeQueue(Dev->getPortID(), OutMessage->Request.GrpMsgID, OutMessage, OutMessage->Priority))
+        if(PortManager.writeQueue(OutMessage))
         {
             printf ("Error Writing to Port Queue\n");
             delete (OutMessage);
@@ -388,7 +388,7 @@ INT IDLCSetTSStores (CtiDeviceSPtr &Dev, USHORT Priority, USHORT Trigger, USHORT
     OutMessage->OutLength = Index - PREIDL + 2;
 
     PorterStatisticsManager.newRequest(OutMessage->Port, OutMessage->DeviceID, 0, OutMessage->MessageFlags);
-    if(PortManager.writeQueue(OutMessage->Port, OutMessage->Request.GrpMsgID, OutMessage, OutMessage->Priority))
+    if(PortManager.writeQueue(OutMessage))
     {
         printf ("Error Writing to Queue for Port %2hd\n", OutMessage->Port);
 
@@ -460,7 +460,7 @@ INT IDLCSetBaseSList (CtiDeviceSPtr &Dev)
     OutMessage->OutLength = Index - PREIDL + 2;
 
     PorterStatisticsManager.newRequest(OutMessage->Port, OutMessage->DeviceID, 0, OutMessage->MessageFlags);
-    if(PortManager.writeQueue(OutMessage->Port, OutMessage->Request.GrpMsgID, OutMessage, OutMessage->Priority))
+    if(PortManager.writeQueue(OutMessage))
     {
         printf ("Error Writing to Queue for Port %2hd\n", OutMessage->Port);
 
@@ -732,7 +732,7 @@ INT IDLCSetDelaySets (CtiDeviceSPtr &Dev)
         OutMessage->OutLength = Index - PREIDL + 2;
 
         PorterStatisticsManager.newRequest(OutMessage->Port, OutMessage->DeviceID, 0, OutMessage->MessageFlags);
-        if(PortManager.writeQueue(OutMessage->Port, OutMessage->Request.GrpMsgID, OutMessage, OutMessage->Priority))
+        if(PortManager.writeQueue(OutMessage))
         {
             printf ("Error Writing to Queue for Port %2hd\n", OutMessage->Port);
             delete (OutMessage);

@@ -674,7 +674,7 @@ void WriteMessageToPorter(OUTMESS *&OutMessage)
 {
     /* Now add it to the collection of outbound messages */
     // In the beginning (6/25/01) ALL will send a sync message.
-    if(OutMessage && PortManager.writeQueue(OutMessage->Port, OutMessage->Request.GrpMsgID, OutMessage, OutMessage->Priority))
+    if(OutMessage && PortManager.writeQueue(OutMessage))
     {
         printf ("Error Writing to Queue for Port %2hd\n", OutMessage->Port);
         delete (OutMessage);

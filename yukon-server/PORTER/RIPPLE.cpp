@@ -321,7 +321,7 @@ INT LCUPreSend(OUTMESS *&OutMessage, CtiDeviceSPtr Dev)
 
         if(StageOutMessage != NULL)      // Only STANDARD LCU's return non-NULL on the above call.  And only when needed
         {
-            if(PortManager.writeQueue (StageOutMessage->Port, StageOutMessage->Request.GrpMsgID, StageOutMessage, StageOutMessage->Priority))
+            if( PortManager.writeQueue(StageOutMessage) )
             {
                 printf ("\nError putting \"Staging LCU\" entry onto Queue\n");
             }
@@ -330,7 +330,7 @@ INT LCUPreSend(OUTMESS *&OutMessage, CtiDeviceSPtr Dev)
              * Write the control OutMessage back to the queue util the staging operation completes.
              * At which time, the getStageTime() will be set to current time, or 0 if the stage command fails...
              */
-            if(PortManager.writeQueue (OutMessage->Port, OutMessage->Request.GrpMsgID, OutMessage, OutMessage->Priority))
+            if( PortManager.writeQueue(OutMessage) )
             {
                 printf ("\nError Replacing entry onto Queue\n");
             }
@@ -1299,7 +1299,7 @@ INT RequeueLCUCommand( CtiDeviceSPtr splcu )
             lcu->setExecutionProhibited(lcu->getID(), CtiTime(0UL));
             lcu->resetFlags(LCUTRANSMITSENT | LCUWASTRANSMITTING);
 
-            if(PortManager.writeQueue (OutMessage->Port, OutMessage->Request.GrpMsgID, OutMessage, OutMessage->Priority))
+            if( PortManager.writeQueue(OutMessage) )
             {
                 {
                     CtiLockGuard<CtiLogger> doubt_guard(dout);
@@ -1416,7 +1416,7 @@ INT QueueForScan( CtiDeviceSPtr splcu, bool mayqueuescans )
             {
                 ScanOutMessage->Priority = MAXPRIORITY - 1;  // This is the only thing that really matters now.
 
-                if(PortManager.writeQueue(ScanOutMessage->Port, ScanOutMessage->Request.GrpMsgID, ScanOutMessage, MAXPRIORITY - 1))
+                if(PortManager.writeQueueWithPriority(ScanOutMessage, MAXPRIORITY - 1))
                 {
                     {
                         CtiLockGuard<CtiLogger> doubt_guard(dout);

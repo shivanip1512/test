@@ -139,7 +139,7 @@ INT LoadRemoteRoutes(CtiDeviceSPtr Dev)
                 OutMessage->ReturnNexus  = NULL;
                 OutMessage->SaveNexus    = NULL;
 
-                if( PortManager.writeQueue(OutMessage->Port, OutMessage->Request.GrpMsgID, OutMessage, OutMessage->Priority) )
+                if( PortManager.writeQueue(OutMessage) )
                 {
                     printf ("Error Writing to Queue for Port %2ld\n", Dev->getPortID());
                     delete (OutMessage);
@@ -289,7 +289,7 @@ INT LoadRemoteRoutes(CtiDeviceSPtr Dev)
                             dout << "OutLength " << OutMessage->OutLength << endl;
                         }
 
-                        if( PortManager.writeQueue(OutMessage->Port, OutMessage->Request.GrpMsgID, OutMessage, OutMessage->Priority) )
+                        if( PortManager.writeQueue(OutMessage) )
                         {
                             printf ("Error Writing to Queue for Port %2hd\n", Dev->getPortID());
                             delete (OutMessage);
@@ -474,7 +474,7 @@ INT LoadRemoteRoutes(CtiDeviceSPtr Dev)
                     dout << "OutLength " << OutMessage->OutLength << endl;
                 }
 
-                if( PortManager.writeQueue(OutMessage->Port, OutMessage->Request.GrpMsgID, OutMessage, OutMessage->Priority) )
+                if( PortManager.writeQueue(OutMessage) )
                 {
                     printf ("Error Writing to Queue for Port %2ld\n", Dev->getPortID());
                     delete (OutMessage);

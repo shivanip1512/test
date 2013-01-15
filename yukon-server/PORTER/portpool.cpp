@@ -232,12 +232,12 @@ void PortPoolDialoutThread(void *pid)
 
         if(childport)
         {
-            childport->writeQueue(OutMessage->Request.GrpMsgID, OutMessage, OutMessage->Priority);
+            childport->writeQueue(OutMessage);
         }
         else if(OutMessage != NULL)
         {
             // Plop it back onto the main pool queue.
-            ParentPort->writeQueue(OutMessage->Request.GrpMsgID, OutMessage, OutMessage->Priority );
+            ParentPort->writeQueue(OutMessage);
         }
 
         OutMessage = 0; // It is not ours anymore to touch!

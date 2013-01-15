@@ -107,7 +107,8 @@ public:
     virtual void DecodeDialableDatabaseReader(Cti::RowReader &rdr);
 
     HCTIQUEUE&  getPortQueueHandle();
-    INT writeQueue(ULONG Request, OUTMESS *OutMessage, ULONG Priority, HANDLE hQuit = NULL);
+    INT writeQueue( OUTMESS *OutMessage, HANDLE hQuit = NULL );
+    INT writeQueueWithPriority( OUTMESS *OutMessage, int priority, HANDLE hQuit = NULL );
     INT readQueue( PULONG DataSize, PPVOID Data, BOOL32 WaitFlag, PBYTE Priority, ULONG* pElementCount);
     INT searchQueue( void *ptr, BOOL (*myFunc)(void*, void*), bool useFirstElement = true );
 
