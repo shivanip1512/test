@@ -78,64 +78,69 @@ updateSubmitButtons = function() {
     <form:hidden path="now"/>
 
     <table class="compactResultsTable">
-        <tr class="headerRow">
-            <th><cti:msg key="yukon.web.modules.dr.program.startProgram.gear"/></th>
-            <th><cti:msg key="yukon.web.modules.dr.program.startProgram.startTime"/></th>
-            <th><cti:msg key="yukon.web.modules.dr.program.startProgram.stopTime"/></th>
-        </tr>
-        <tr valign="top">
-            <td width="33%">
-                <table>
-                    <tr><td>
-                        <form:select path="gearNumber" id="gearNumber" onchange="gearChanged()">
-                            <c:forEach var="gear" varStatus="status" items="${gears}">
-                                <form:option value="${status.index + 1}"><spring:escapeBody htmlEscape="true">${gear.gearName}</spring:escapeBody></form:option>
-                            </c:forEach>
-                        </form:select>
-                    </td></tr>
-                    <tr><td>
-                        <c:set var="addAdjustmentAreaStyle" value="none"/>
-                        <c:if test="${!empty gears && gears[0].targetCycle}">
-                            <c:set var="addAdjustmentAreaStyle" value="block"/>
-                        </c:if>
-                        <div id="addAdjustmentsArea" style="display: ${addAdjustmentAreaStyle};">
-                            <form:checkbox path="addAdjustments" id="addAdjustmentsCheckbox"
-                                onclick="updateSubmitButtons();"/>
-                            <label for="addAdjustmentsCheckbox">
-                                <cti:msg key="yukon.web.modules.dr.program.startProgram.addAdjustments"/>
+        <thead>
+            <tr class="headerRow">
+                <th><cti:msg key="yukon.web.modules.dr.program.startProgram.gear"/></th>
+                <th><cti:msg key="yukon.web.modules.dr.program.startProgram.startTime"/></th>
+                <th><cti:msg key="yukon.web.modules.dr.program.startProgram.stopTime"/></th>
+            </tr>
+        </thead>
+        <tfoot></tfoot>
+        <tbody>
+            <tr valign="top">
+                <td width="33%">
+                    <table>
+                        <tr><td>
+                            <form:select path="gearNumber" id="gearNumber" onchange="gearChanged()">
+                                <c:forEach var="gear" varStatus="status" items="${gears}">
+                                    <form:option value="${status.index + 1}"><spring:escapeBody htmlEscape="true">${gear.gearName}</spring:escapeBody></form:option>
+                                </c:forEach>
+                            </form:select>
+                        </td></tr>
+                        <tr><td>
+                            <c:set var="addAdjustmentAreaStyle" value="none"/>
+                            <c:if test="${!empty gears && gears[0].targetCycle}">
+                                <c:set var="addAdjustmentAreaStyle" value="block"/>
+                            </c:if>
+                            <div id="addAdjustmentsArea" style="display: ${addAdjustmentAreaStyle};">
+                                <form:checkbox path="addAdjustments" id="addAdjustmentsCheckbox"
+                                    onclick="updateSubmitButtons();"/>
+                                <label for="addAdjustmentsCheckbox">
+                                    <cti:msg key="yukon.web.modules.dr.program.startProgram.addAdjustments"/>
+                                </label><br>
+                            </div>
+                        </td></tr>
+                    </table>
+                </td>
+                <td width="33%">
+                    <table>
+                        <tr><td>
+                            <form:checkbox path="startNow" id="startNowCheckbox" onclick="startNowChecked()"/>
+                            <label for="startNowCheckbox">
+                                <cti:msg key="yukon.web.modules.dr.program.startProgram.startNow"/>
                             </label><br>
-                        </div>
-                    </td></tr>
-                </table>
-            </td>
-            <td width="33%">
-                <table>
-                    <tr><td>
-                        <form:checkbox path="startNow" id="startNowCheckbox" onclick="startNowChecked()"/>
-                        <label for="startNowCheckbox">
-                            <cti:msg key="yukon.web.modules.dr.program.startProgram.startNow"/>
-                        </label><br>
-                    </td></tr>
-                    <tr><td>
-                        <tags:dateTimeInput path="startDate" fieldValue="${backingBean.startDate}"
-                            disabled="true"/>
-                    </td></tr>
-                </table>
-            </td>
-            <td width="33%">
-                <table>
-                    <tr><td>
-                        <form:checkbox path="scheduleStop" id="scheduleStopCheckbox" onclick="scheduleStopChecked()"/>
-                        <label for="scheduleStopCheckbox">
-                            <cti:msg key="yukon.web.modules.dr.program.startProgram.scheduleStop"/>
-                        </label><br>
-                    </td></tr>
-                    <tr><td>
-                        <tags:dateTimeInput path="stopDate" fieldValue="${backingBean.stopDate}"/>
-                    </td></tr>
-                </table>
-            </td>
-        </tr>
+                        </td></tr>
+                        <tr><td>
+                            <tags:dateTimeInput path="startDate" fieldValue="${backingBean.startDate}"
+                                disabled="true"/>
+                        </td></tr>
+                    </table>
+                </td>
+                <td width="33%">
+                    <table>
+                        <tr><td>
+                            <form:checkbox path="scheduleStop" id="scheduleStopCheckbox" onclick="scheduleStopChecked()"/>
+                            <label for="scheduleStopCheckbox">
+                                <cti:msg key="yukon.web.modules.dr.program.startProgram.scheduleStop"/>
+                            </label><br>
+                        </td></tr>
+                        <tr><td>
+                            <tags:dateTimeInput path="stopDate" fieldValue="${backingBean.stopDate}"/>
+                        </td></tr>
+                    </table>
+                </td>
+            </tr>
+        </tbody>
     </table>
 
     <script type="text/javascript">

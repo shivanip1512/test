@@ -71,27 +71,32 @@
 			</c:when>
 			<c:otherwise>
 				<table id="scenarioList" class="compactResultsTable rowHighlighting">
-					<tr>
-						<th class="favoritesColumn"></th>
-						<th><tags:sortLink nameKey="heading.name"
-							baseUrl="${baseUrl}" fieldName="NAME"/></th>
-						<th><cti:msg
-							key="yukon.web.modules.dr.scenarioList.heading.actions" /></th>
-					</tr>
-					<c:forEach var="scenario" items="${scenarios}">
-						<c:set var="scenarioId" value="${scenario.paoIdentifier.paoId}" />
-						<c:url var="scenarioUrl" value="/dr/scenario/detail">
-							<c:param name="scenarioId" value="${scenarioId}" />
-						</c:url>
-						<tr class="<tags:alternateRow odd="" even="altRow"/>">
-							<td><dr:favoriteIcon paoId="${scenarioId}"
-								isFavorite="${favoritesByPaoId[scenarioId]}" /></td>
-							<td><a href="${scenarioUrl}"><spring:escapeBody
-								htmlEscape="true">${scenario.name}</spring:escapeBody></a></td>
-							<td style="white-space: nowrap;"><dr:scenarioListActions
-								pao="${scenario}" /></td>
-						</tr>
-					</c:forEach>
+                    <thead>
+    					<tr>
+    						<th class="favoritesColumn"></th>
+    						<th><tags:sortLink nameKey="heading.name"
+    							baseUrl="${baseUrl}" fieldName="NAME"/></th>
+    						<th><cti:msg
+    							key="yukon.web.modules.dr.scenarioList.heading.actions" /></th>
+    					</tr>
+                    </thead>
+                    <tfoot></tfoot>
+                    <tbody>
+    					<c:forEach var="scenario" items="${scenarios}">
+    						<c:set var="scenarioId" value="${scenario.paoIdentifier.paoId}" />
+    						<c:url var="scenarioUrl" value="/dr/scenario/detail">
+    							<c:param name="scenarioId" value="${scenarioId}" />
+    						</c:url>
+    						<tr class="<tags:alternateRow odd="" even="altRow"/>">
+    							<td><dr:favoriteIcon paoId="${scenarioId}"
+    								isFavorite="${favoritesByPaoId[scenarioId]}" /></td>
+    							<td><a href="${scenarioUrl}"><spring:escapeBody
+    								htmlEscape="true">${scenario.name}</spring:escapeBody></a></td>
+    							<td style="white-space: nowrap;"><dr:scenarioListActions
+    								pao="${scenario}" /></td>
+    						</tr>
+    					</c:forEach>
+                    </tbody>
 				</table>
 			</c:otherwise>
 		</c:choose>

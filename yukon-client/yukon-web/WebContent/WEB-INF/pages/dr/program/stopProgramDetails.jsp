@@ -50,48 +50,53 @@ updateComponentAvailability = function() {
     </c:if>
 
     <table class="compactResultsTable">
-        <tr>
-            <th><cti:msg key="yukon.web.modules.dr.program.stopProgram.stopTime"/></th>
-            <c:if test="${stopGearAllowed}">
-                <th><cti:msg key="yukon.web.modules.dr.program.stopProgram.stopGear"/></th>
-            </c:if>
-        </tr>
-        <tr valign="top">
-            <td width="50%">
-                <table>
-                    <tr><td>
-                        <form:checkbox path="stopNow" id="stopNowCheckbox" onclick="updateComponentAvailability()"/>
-                        <label for="stopNowCheckbox">
-                            <cti:msg key="yukon.web.modules.dr.program.stopProgram.stopNow"/>
-                        </label>
-                    </td></tr>
-                    <tr><td>
-                        <tags:dateTimeInput path="stopDate" fieldValue="${backingBean.stopDate}"
-                            disabled="true"/>
-                    </td></tr>
-                </table>
-            </td>
-            <c:if test="${stopGearAllowed}">
-            <td width="50%">
-                <table>
-                    <tr><td>
-                        <form:checkbox path="useStopGear" id="useStopGearCheckbox" onclick="updateComponentAvailability()"/>
-                        <label for="useStopGearCheckbox">
-                            <cti:msg key="yukon.web.modules.dr.program.stopProgram.useStopGear"/>
-                        </label>
-                    </td></tr>
-                    <tr><td>
-                        <form:select path="gearNumber" id="gearNumber" onchange="gearChanged()">
-                            <c:forEach var="gear" varStatus="status" items="${gears}">
-                                <form:option value="${status.index + 1}"><spring:escapeBody htmlEscape="true">${gear.gearName}</spring:escapeBody></form:option>
-                            </c:forEach>
-                        </form:select><br>
-                        <script type="text/javascript">updateComponentAvailability();</script>
-                    </td></tr>
-                </table>
-            </td>
-            </c:if>
-        </tr>
+        <thead>
+            <tr>
+                <th><cti:msg key="yukon.web.modules.dr.program.stopProgram.stopTime"/></th>
+                <c:if test="${stopGearAllowed}">
+                    <th><cti:msg key="yukon.web.modules.dr.program.stopProgram.stopGear"/></th>
+                </c:if>
+            </tr>
+        </thead>
+        <tfoot></tfoot>
+        <tbody>
+            <tr valign="top">
+                <td width="50%">
+                    <table>
+                        <tr><td>
+                            <form:checkbox path="stopNow" id="stopNowCheckbox" onclick="updateComponentAvailability()"/>
+                            <label for="stopNowCheckbox">
+                                <cti:msg key="yukon.web.modules.dr.program.stopProgram.stopNow"/>
+                            </label>
+                        </td></tr>
+                        <tr><td>
+                            <tags:dateTimeInput path="stopDate" fieldValue="${backingBean.stopDate}"
+                                disabled="true"/>
+                        </td></tr>
+                    </table>
+                </td>
+                <c:if test="${stopGearAllowed}">
+                <td width="50%">
+                    <table>
+                        <tr><td>
+                            <form:checkbox path="useStopGear" id="useStopGearCheckbox" onclick="updateComponentAvailability()"/>
+                            <label for="useStopGearCheckbox">
+                                <cti:msg key="yukon.web.modules.dr.program.stopProgram.useStopGear"/>
+                            </label>
+                        </td></tr>
+                        <tr><td>
+                            <form:select path="gearNumber" id="gearNumber" onchange="gearChanged()">
+                                <c:forEach var="gear" varStatus="status" items="${gears}">
+                                    <form:option value="${status.index + 1}"><spring:escapeBody htmlEscape="true">${gear.gearName}</spring:escapeBody></form:option>
+                                </c:forEach>
+                            </form:select><br>
+                            <script type="text/javascript">updateComponentAvailability();</script>
+                        </td></tr>
+                    </table>
+                </td>
+                </c:if>
+            </tr>
+        </tbody>
     </table>
 
     <br>
