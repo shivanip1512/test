@@ -6,7 +6,7 @@
 #CalendarControl th {font-weight: normal;border-bottom: none;}
 #CalendarControl th a {text-decoration: none;color: #fff;}
 #CalendarControl td, #CalendarControl th {padding: 1px;}
-#CalendarControl td, #CalendarControl th, #CalendarControl .title {text-align: center;}
+#CalendarControl td, #CalendarControl th {text-align: center;}
 
 #CalendarControl .empty, #CalendarControl .current, #CalendarControl .weekday, #CalendarControl .weekend {border: 1px solid #FFF;}
 #CalendarControl .header th, #CalendarControl .header, #CalendarControl .current {background-color: #06C;}
