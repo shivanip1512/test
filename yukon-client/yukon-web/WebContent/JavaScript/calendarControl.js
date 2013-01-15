@@ -229,9 +229,9 @@ function CalendarControl() {
 
     var table = "<table cellspacing='0' cellpadding='0' border='0'>";
     table = table + "<tr class='header'>";
-    table = table + "  <td colspan='2' class='previous'><a href='javascript:changeCalendarControlMonth(-1);'>&lt;</a> <a href='javascript:changeCalendarControlYear(-1);'>&laquo;</a></td>";
+    table = table + "  <td colspan='2' class='_previous'><a href='javascript:changeCalendarControlMonth(-1);'>&lt;</a> <a href='javascript:changeCalendarControlYear(-1);'>&laquo;</a></td>";
     table = table + "  <td colspan='3' class='title'>" + months[currentMonth-1] + "<br>" + currentYear + "</td>";
-    table = table + "  <td colspan='2' class='next'><a href='javascript:changeCalendarControlYear(1);'>&raquo;</a> <a href='javascript:changeCalendarControlMonth(1);'>&gt;</a></td>";
+    table = table + "  <td colspan='2' class='_next'><a href='javascript:changeCalendarControlYear(1);'>&raquo;</a> <a href='javascript:changeCalendarControlMonth(1);'>&gt;</a></td>";
     table = table + "</tr>";
     table = table + "<tr>" + days + "</tr>";
 
@@ -253,7 +253,7 @@ function CalendarControl() {
             css_class = 'weekday';
           }
 
-          table = table + "<td><a class='"+css_class+"' href=\"javascript:setCalendarControlDate("+currentYear+","+currentMonth+","+dayOfMonth+")\">"+dayOfMonth+"</a></td>";
+          table = table + "<td class='"+css_class+"'><a href=\"javascript:setCalendarControlDate("+currentYear+","+currentMonth+","+dayOfMonth+")\">"+dayOfMonth+"</a></td>";
           dayOfMonth++;
         } else {
           table = table + "<td class='empty'>&nbsp;</td>";
@@ -383,4 +383,4 @@ function changeCalendarControlMonth(change) {
 var disabledCalendars = {};
 
 document.write("<iframe id='CalendarControlIFrame' src='javascript:false;' frameBorder='0' scrolling='no'></iframe>");
-document.write("<div style='z-index:500;' id='CalendarControl'></div>");
+document.write("<div style='z-index:1001;' id='CalendarControl'></div>");

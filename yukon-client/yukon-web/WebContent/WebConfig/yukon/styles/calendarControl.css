@@ -1,111 +1,24 @@
 /* @TODO: DELETE THIS FILE ONCE NEW CALENDAR PICKERS HAVE BEEN FULLY IMPLEMENTED  */
 
-#CalendarControlIFrame {
-  display: none;
-  left: 0px;
-  position: absolute;
-  top: 0px;
-  height: 250px;
-  width: 250px;
-  z-index: 99;
-}
+#CalendarControlIFrame {position: absolute;display: none;left: 0px;top: 0px;height: 250px;width: 250px;z-index: 99;}
+#CalendarControl {position:absolute;margin:0;padding:0;display:none;z-index: 100;background-color: #fff;}
+#CalendarControl table {font-size: 11px;border: 1px solid #336;border-collapse: separate;}
+#CalendarControl th {font-weight: normal;border-bottom: none;}
+#CalendarControl th a {text-decoration: none;color: #fff;}
+#CalendarControl td, #CalendarControl th {padding: 1px;}
+#CalendarControl td, #CalendarControl th, #CalendarControl .title {text-align: center;}
 
-#CalendarControl {
-  position:absolute;
-  background-color:#FFF;
-  margin:0;
-  padding:0;
-  display:none;
-  z-index: 100;
-}
+#CalendarControl .empty, #CalendarControl .current, #CalendarControl .weekday, #CalendarControl .weekend {border: 1px solid #FFF;}
+#CalendarControl .header th, #CalendarControl .header, #CalendarControl .current {background-color: #06C;}
+#CalendarControl .weekday {background-color: #DDD;}
+#CalendarControl .weekend {background-color: #FFC;}
+#CalendarControl .empty {background-color: #CCC;}
+#CalendarControl .current a {color: #FFF;}
+#CalendarControl .weekday a, #CalendarControl .weekend a, #CalendarControl .current a {display: block;text-decoration: none;width: 2em;}
+#CalendarControl .weekday:hover a, #CalendarControl .weekend:hover a, #CalendarControl .current:hover a {color: #FFF;background-color: #336;}
 
-#CalendarControl table {
-  font-family: arial, verdana, helvetica, sans-serif !important;
-  font-size: 8pt !important;
-  border-left: 1px solid #336;
-  border-right: 1px solid #336;
-}
-
-#CalendarControl th {
-  font-weight: normal;
-}
-
-#CalendarControl th a {
-  font-weight: normal;
-  text-decoration: none;
-  color: #FFF;
-  padding: 1px;
-}
-
-#CalendarControl td {
-  text-align: center;
-}
-
-#CalendarControl .header {
-  background-color: #06C;
-}
-
-#CalendarControl .weekday {
-  background-color: #DDD;
-  color: #000;
-}
-
-#CalendarControl .weekend {
-  background-color: #FFC;
-  color: #000;
-}
-
-#CalendarControl .current {
-  border: 1px solid #339;
-  background-color: #06C;
-  color: #FFF;
-}
-
-#CalendarControl .weekday,
-#CalendarControl .weekend,
-#CalendarControl .current {
-  display: block;
-  text-decoration: none;
-  border: 1px solid #FFF;
-  width: 2em;
-}
-
-#CalendarControl .weekday:hover,
-#CalendarControl .weekend:hover,
-#CalendarControl .current:hover {
-  color: #FFF;
-  background-color: #336;
-  border: 1px solid #999;
-}
-
-#CalendarControl .previous {
-  text-align: left;
-}
-
-#CalendarControl .next {
-  text-align: right;
-}
-
-#CalendarControl .previous,
-#CalendarControl .next {
-  padding: 1px 3px 1px 3px;
-  font-size: 1.4em;
-}
-
-#CalendarControl .previous a,
-#CalendarControl .next a {
-  color: #FFF;
-  text-decoration: none;
-  font-weight: bold;
-}
-
-#CalendarControl .title {
-  text-align: center;
-  font-weight: bold;
-  color: #FFF;
-}
-
-#CalendarControl .empty {
-  background-color: #CCC;
-  border: 1px solid #FFF;
-}
+#CalendarControl ._previous {text-align: left;}
+#CalendarControl ._next {text-align: right;}
+#CalendarControl ._previous, #CalendarControl ._next {padding: 1px 3px;}
+#CalendarControl ._previous a,#CalendarControl ._next a {color: #FFF;text-decoration: none;}
+#CalendarControl .title, #CalendarControl ._previous, #CalendarControl ._next{font-weight: bold;color: #FFF;font-size: 15px;}
