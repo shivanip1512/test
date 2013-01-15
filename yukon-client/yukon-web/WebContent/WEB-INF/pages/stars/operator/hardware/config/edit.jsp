@@ -66,7 +66,12 @@ jQuery(function() {
 
 <cti:url var="submitUrl" value="/stars/operator/hardware/config/commit"/>
 
-<div class="colmask rightmenu">
+
+<c:if test="${!isZigbee}">
+    <c:set var="nonZigbeeFormat" value="rightmenu"/>
+</c:if>
+
+<div class="colmask ${nonZigbeeFormat}">
     <div class="colleft">
         <div class="col1">
                 <form:form id="editForm" name="editForm" action="${submitUrl}" commandName="configuration">
@@ -190,48 +195,44 @@ jQuery(function() {
                     </tags:formElementContainer>
                 </c:if>
         </div>
-        
-        <div class="col2">
-            <div class="columnContent">
-                <c:if test="${configurable}">
-                    <tags:formElementContainer nameKey="serviceStatus">
-                        <div class="wsnp stacked">
-                            <c:choose>
-                                <c:when test="${showStaticServiceStatus}">
-                                    <c:if test="${inService}">
-                                        <i:inline key=".inService"/>
-                                    </c:if>
-                                    <c:if test="${!inService}">
-                                        <i:inline key=".outOfService"/>
-                                    </c:if>
-                                </c:when>
-                                <c:otherwise>
-                                    <cti:pointValue pointId="${serviceStatusPointId}" cssClass="pointStat" format="VALUE" colorForStatus="true"/>
-                                    <cti:pointValue pointId="${serviceStatusPointId}" cssClass="pointStat nonStatusPointStat" format="DATE"/>
-                                </c:otherwise>
-                            </c:choose>
-                        </div>
-                        <ul class="labeledImageStack">
-                            <li>
-                                <cti:url var="enableUrl" value="/stars/operator/hardware/config/enable">
-                                   <cti:param name="accountId" value="${accountId}"/>
-                                   <cti:param name="inventoryId" value="${param.inventoryId}"/>
-                                </cti:url>
-                                <a class="labeled_icon enable" href="${enableUrl}"><i:inline key="yukon.web.components.button.enable.label"/></a>
-                            </li>
-                            
-                            <li>
-                                <cti:url var="disableUrl" value="/stars/operator/hardware/config/disable">
-                                   <cti:param name="accountId" value="${accountId}"/>
-                                   <cti:param name="inventoryId" value="${param.inventoryId}"/>
-                                </cti:url>
-                                <a class="labeled_icon disable cl" href="${disableUrl}"><i:inline key="yukon.web.components.button.disable.label"/></a>
-                            </li>
-                        </ul>
-                    </tags:formElementContainer>
-                </c:if>
+        <c:if test="${!isZigbee}">
+            <div class="col2">
+                <div class="columnContent">
+                    <c:if test="${configurable}">
+                        <tags:formElementContainer nameKey="serviceStatus">
+                            <div class="wsnp stacked">
+                                <c:choose>
+                                    <c:when test="${showStaticServiceStatus}">
+                                        <i:inline key="${inService}"/>
+                                    </c:when>
+                                    <c:otherwise>
+                                        <cti:pointValue pointId="${serviceStatusPointId}" cssClass="pointStat" format="VALUE" colorForStatus="true"/>
+                                        <cti:pointValue pointId="${serviceStatusPointId}" cssClass="pointStat nonStatusPointStat" format="DATE"/>
+                                    </c:otherwise>
+                                </c:choose>
+                            </div>
+                            <ul class="labeledImageStack">
+                                <li>
+                                    <cti:url var="enableUrl" value="/stars/operator/hardware/config/enable">
+                                       <cti:param name="accountId" value="${accountId}"/>
+                                       <cti:param name="inventoryId" value="${param.inventoryId}"/>
+                                    </cti:url>
+                                    <a class="labeled_icon enable" href="${enableUrl}"><i:inline key="yukon.web.components.button.enable.label"/></a>
+                                </li>
+                                
+                                <li>
+                                    <cti:url var="disableUrl" value="/stars/operator/hardware/config/disable">
+                                       <cti:param name="accountId" value="${accountId}"/>
+                                       <cti:param name="inventoryId" value="${param.inventoryId}"/>
+                                    </cti:url>
+                                    <a class="labeled_icon disable cl" href="${disableUrl}"><i:inline key="yukon.web.components.button.disable.label"/></a>
+                                </li>
+                            </ul>
+                        </tags:formElementContainer>
+                    </c:if>
+                </div>
             </div>
-        </div>
+        </c:if>
     </div>
 </div>
 

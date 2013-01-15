@@ -65,6 +65,7 @@ import com.cannontech.stars.dr.appliance.model.AssignedProgram;
 import com.cannontech.stars.dr.displayable.dao.DisplayableInventoryEnrollmentDao;
 import com.cannontech.stars.dr.displayable.model.DisplayableInventoryEnrollment;
 import com.cannontech.stars.dr.enrollment.dao.EnrollmentDao;
+import com.cannontech.stars.dr.enrollment.model.EnrollmentInService;
 import com.cannontech.stars.dr.hardware.dao.InventoryDao;
 import com.cannontech.stars.dr.hardware.dao.LmHardwareBaseDao;
 import com.cannontech.stars.dr.hardware.dao.StaticLoadGroupMappingDao;
@@ -174,7 +175,7 @@ public class OperatorHardwareConfigController {
         
         HardwareSummary hardware = inventoryDao.findHardwareSummaryById(inventoryId);
         model.addAttribute("hardware", hardware);
-        model.addAttribute("inService", enrollmentDao.isInService(inventoryId));
+        
         List<DisplayableInventoryEnrollment> enrollments =
             displayableInventoryEnrollmentDao.find(accountInfo.getAccountId(), inventoryId);
         Collections.sort(enrollments, new Comparator<DisplayableInventoryEnrollment>() {
@@ -234,6 +235,13 @@ public class OperatorHardwareConfigController {
         model.addAttribute("applianceCategories", applianceCategories);
         
         InventoryIdentifier inventory = inventoryDao.getYukonInventory(inventoryId);
+        
+        EnrollmentInService inService = EnrollmentInService.NA;
+        if (!inventory.getHardwareType().isZigbee()) {
+            inService = EnrollmentInService.determineInService(enrollmentDao.isInService(inventoryId));
+        }
+        model.addAttribute("inService", inService);
+        model.addAttribute("isZigbee", inventory.getHardwareType().isZigbee());
         int deviceId = inventoryDao.getDeviceId(inventoryId);
         
         boolean supportsAddressReporting = inventory.getHardwareType().isRf() || inventory.getHardwareType().isZigbee();
@@ -260,7 +268,7 @@ public class OperatorHardwareConfigController {
                 model.addAttribute("reportedConfig", address);
             } catch (NotFoundException e) {/* Ignore */}
         }
-
+        
         YukonEnergyCompany yukonEnergyCompany = 
                 yukonEnergyCompanyService.getEnergyCompanyByAccountId(accountInfo.getAccountId());
         model.addAttribute("energyCompanyId", yukonEnergyCompany.getEnergyCompanyId());

@@ -9,6 +9,7 @@ import org.apache.commons.lang.builder.CompareToBuilder;
 
 import com.cannontech.stars.dr.appliance.model.ApplianceCategory;
 import com.cannontech.stars.dr.appliance.model.ApplianceTypeEnum;
+import com.cannontech.stars.dr.enrollment.model.EnrollmentInService;
 import com.cannontech.stars.dr.program.model.Program;
 
 public final class DisplayableEnrollment {
@@ -236,13 +237,13 @@ public final class DisplayableEnrollment {
         private final int inventoryId;
         private final String displayName;
         private final boolean enrolled;
-        private final boolean inService;
+        private final EnrollmentInService inService;
         private final int loadGroupId;
         private final int relay;
         private final int numRelays;
 
         public DisplayableEnrollmentInventory(int inventoryId,
-                String displayName, boolean enrolled, boolean inService,
+                String displayName, boolean enrolled, EnrollmentInService inService,
                 int loadGroupId, int relay, int numRelays) {
             this.inventoryId = inventoryId;
             this.displayName = displayName;
@@ -265,7 +266,7 @@ public final class DisplayableEnrollment {
             return enrolled;
         }
 
-        public boolean isInService() {
+        public EnrollmentInService getInService() {
             return inService;
         }
 

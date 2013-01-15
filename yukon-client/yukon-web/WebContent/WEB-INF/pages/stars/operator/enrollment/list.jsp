@@ -83,7 +83,7 @@ var programIdsAlreadyEnrolled = [];
                     <td class="status">
                         <c:forEach var="hardware" items="${enrollmentProgram.inventory}">
                             <c:if test="${hardware.enrolled}">
-                                <i:inline key=".inService.${hardware.inService}"/><br>
+                                <i:inline key="${hardware.inService.shortFormatKey}"/>
                             </c:if>
                         </c:forEach>
                     </td>

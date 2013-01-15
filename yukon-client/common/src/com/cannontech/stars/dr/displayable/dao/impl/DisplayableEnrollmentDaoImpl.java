@@ -24,6 +24,7 @@ import com.cannontech.stars.dr.displayable.model.DisplayableEnrollment;
 import com.cannontech.stars.dr.displayable.model.DisplayableEnrollment.DisplayableEnrollmentInventory;
 import com.cannontech.stars.dr.displayable.model.DisplayableEnrollment.DisplayableEnrollmentProgram;
 import com.cannontech.stars.dr.enrollment.dao.EnrollmentDao;
+import com.cannontech.stars.dr.enrollment.model.EnrollmentInService;
 import com.cannontech.stars.dr.hardware.model.HardwareSummary;
 import com.cannontech.stars.dr.program.model.Program;
 import com.cannontech.stars.dr.program.service.ProgramEnrollment;
@@ -203,10 +204,15 @@ public class DisplayableEnrollmentDaoImpl extends AbstractDisplayableDao impleme
 				break;
 			}
 		}
-		boolean inService = false;
+		
+		EnrollmentInService inService = EnrollmentInService.OUTOFSERVICE;
 		if (enrolled) {
-	        inService =
-	            enrollmentDao.isInService(inventoryId);
+	        if(hardware.getHardwareType().isZigbee()) {
+	            inService = EnrollmentInService.NA;
+	        } else {
+	            boolean isInService = enrollmentDao.isInService(inventoryId);
+	            inService = EnrollmentInService.determineInService(isInService);
+	        }
 		}
 
         int numRelays = hardware.getNumRelays();
