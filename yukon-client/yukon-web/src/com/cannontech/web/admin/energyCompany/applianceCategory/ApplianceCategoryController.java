@@ -34,6 +34,8 @@ import com.cannontech.common.search.SearchResult;
 import com.cannontech.common.validator.SimpleValidator;
 import com.cannontech.common.validator.YukonValidationUtils;
 import com.cannontech.core.dao.PaoDao;
+import com.cannontech.core.roleproperties.YukonRoleProperty;
+import com.cannontech.core.roleproperties.dao.EnergyCompanyRolePropertyDao;
 import com.cannontech.i18n.YukonMessageSourceResolvable;
 import com.cannontech.stars.core.service.YukonEnergyCompanyService;
 import com.cannontech.stars.database.cache.StarsDatabaseCache;
@@ -84,6 +86,7 @@ public class ApplianceCategoryController {
     @Autowired private EnergyCompanyService energyCompanyService;
     @Autowired private ConfigurationSource configurationSource;
     @Autowired private ProgramToAlternateProgramDao ptapDao;
+    @Autowired private EnergyCompanyRolePropertyDao ecRolePropertyDao;
 
     private Validator detailsValidator = new SimpleValidator<ApplianceCategory>(ApplianceCategory.class) {
         @Override
@@ -385,8 +388,8 @@ public class ApplianceCategoryController {
         model.addAttribute("backingBean", bean);
 
         YukonEnergyCompany yec = yecService.getEnergyCompanyByOperator(context.getYukonUser());
-        LiteStarsEnergyCompany ec = cache.getEnergyCompany(yec);
-        StarsCustSelectionList chanceOfControlList = ec.getStarsCustSelectionList(YukonSelectionListDefs.YUK_LIST_NAME_CHANCE_OF_CONTROL);
+        LiteStarsEnergyCompany lsec = cache.getEnergyCompany(yec);
+        StarsCustSelectionList chanceOfControlList = lsec.getStarsCustSelectionList(YukonSelectionListDefs.YUK_LIST_NAME_CHANCE_OF_CONTROL);
         List<ChanceOfControl> chanceOfControls = Lists.newArrayList();
 
         String chanceOfControl = "Not Specified";
@@ -419,11 +422,15 @@ public class ApplianceCategoryController {
         model.addAttribute("mode", mode);
         model.addAttribute("isEditable", isEditable);
         
-        // Programs that are already an alternate on another program and this program should be excluded from the Alternate Enrollment picker
-        List<Integer> excludedProgramIds = ptapDao.getAllAlternateProgramIds();
-        excludedProgramIds.removeAll(Collections.singleton(bean.getAssignedProgram().getAlternateProgramId()));
-        excludedProgramIds.add(bean.getAssignedProgram().getAssignedProgramId());
-        model.addAttribute("excludedProgramIds", excludedProgramIds);
+        boolean showAlternateEnrollment = ecRolePropertyDao.checkProperty(YukonRoleProperty.ALTERNATE_PROGRAM_ENROLLMENT, yec);
+        if (showAlternateEnrollment) {
+            model.addAttribute("showAlternateEnrollment", showAlternateEnrollment);
+            // Programs that are already an alternate on another program and this program should be excluded from the Alternate Enrollment picker
+            List<Integer> excludedProgramIds = ptapDao.getAllAlternateProgramIds();
+            excludedProgramIds.removeAll(Collections.singleton(bean.getAssignedProgram().getAlternateProgramId()));
+            excludedProgramIds.add(bean.getAssignedProgram().getAssignedProgramId());
+            model.addAttribute("excludedProgramIds", excludedProgramIds);
+        }
         
         return "applianceCategory/editAssignedProgram.jsp";
     }

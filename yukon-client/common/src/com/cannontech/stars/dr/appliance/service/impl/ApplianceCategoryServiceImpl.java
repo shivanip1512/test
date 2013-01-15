@@ -9,6 +9,8 @@ import org.springframework.transaction.annotation.Transactional;
 
 import com.cannontech.common.constants.YukonSelectionListDefs;
 import com.cannontech.core.dao.DBPersistentDao;
+import com.cannontech.core.roleproperties.YukonRoleProperty;
+import com.cannontech.core.roleproperties.dao.EnergyCompanyRolePropertyDao;
 import com.cannontech.database.TransactionException;
 import com.cannontech.database.TransactionType;
 import com.cannontech.database.db.web.YukonWebConfiguration;
@@ -38,6 +40,7 @@ public class ApplianceCategoryServiceImpl implements ApplianceCategoryService {
     @Autowired private ApplianceCategoryDao applianceCategoryDao;
     @Autowired private DBPersistentDao dbPersistentDao;
     @Autowired private ProgramToAlternateProgramDao programToSeasonalProgramDao;
+    @Autowired private EnergyCompanyRolePropertyDao ecRolePropertyDao;
 
     private static final String LINE_SEPARATOR = System.getProperty("line.separator");
 
@@ -252,7 +255,7 @@ public class ApplianceCategoryServiceImpl implements ApplianceCategoryService {
                               assignedProgram, liteProgramToSwapWith);
     }
 
-    private void updateAssignedProgram(LiteStarsEnergyCompany lec,
+    private void updateAssignedProgram(LiteStarsEnergyCompany lsec,
             LiteApplianceCategory lac,
             AssignedProgram ap,
             LiteLMProgramWebPublishing liteLmPWP) {
@@ -288,19 +291,22 @@ public class ApplianceCategoryServiceImpl implements ApplianceCategoryService {
         } else {
             dbPersistentDao.performDBChange(pubProg, TransactionType.INSERT);
             liteLmPWP = (LiteLMProgramWebPublishing) StarsLiteFactory.createLite(pubProg.getLMProgramWebPublishing());
-            lec.addProgram(liteLmPWP, lac);
+            lsec.addProgram(liteLmPWP, lac);
 
             LiteWebConfiguration liteCfg = (LiteWebConfiguration) StarsLiteFactory.createLite(pubProg.getWebConfiguration());
             starsDatabaseCache.addWebConfiguration(liteCfg);
         }
         
-        Integer altProgramId = ap.getAlternateProgramId();
-	 	if (altProgramId != null) {
-	 	    ProgramToAlternateProgram mapping = ProgramToAlternateProgram.of(liteLmPWP.getProgramID(), altProgramId);
-	 	    programToSeasonalProgramDao.save(mapping);
-	 	} else {
-	 		programToSeasonalProgramDao.delete(liteLmPWP.getProgramID());
-	 	}
+        boolean useAlternateEnrollment = ecRolePropertyDao.checkProperty(YukonRoleProperty.ALTERNATE_PROGRAM_ENROLLMENT, lsec);
+        if (useAlternateEnrollment) {
+            Integer altProgramId = ap.getAlternateProgramId();
+    	 	if (altProgramId != null) {
+    	 	    ProgramToAlternateProgram mapping = ProgramToAlternateProgram.of(liteLmPWP.getProgramID(), altProgramId);
+    	 	    programToSeasonalProgramDao.save(mapping);
+    	 	} else {
+    	 		programToSeasonalProgramDao.delete(liteLmPWP.getProgramID());
+    	 	}
+        }
     }
 
 }

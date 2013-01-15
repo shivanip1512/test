@@ -190,22 +190,23 @@ YEvent.observeSelectorClick('#sameAsDisplayName', sameAsDisplayNameClicked);
                     selectedIcon="${backingBean.assignedProgram.environmentIconEnum}"/>
             </tags:nameValue>
         </tags:nameValue>
-        <cti:msg2 var="fieldName" key=".alternateEnrollment"/>
-	 	<tags:nameValue name="${fieldName}">
- 	 	    <form:hidden path="assignedProgram.alternateProgramId" id="alternateProgramId"/>
- 	 	    <tags:pickerDialog type="assignedProgramPicker" 
- 	 	        id="assignedProgramPicker"
- 	 	        linkType="selection"
- 	 	        selectionProperty="displayName" 
- 	 	        multiSelectMode="false" 
- 	 	        memoryGroup="programPicker"
- 	 	        destinationFieldId="alternateProgramId"
- 	 	        excludeIds="${excludedProgramIds}"
- 	 	        allowEmptySelection="true"
- 	 	        endAction="showProgramEditor"
- 	 	        cancelAction="showProgramEditor" initialId="${backingBean.assignedProgram.alternateProgramId}">
- 	 	    </tags:pickerDialog>
- 	 	</tags:nameValue>
+        <c:if test="${showAlternateEnrollment}">
+            <cti:msg2 var="fieldName" key=".alternateEnrollment"/>
+    	 	<tags:nameValue name="${fieldName}">
+     	 	    <form:hidden path="assignedProgram.alternateProgramId" id="alternateProgramId"/>
+     	 	    <tags:pickerDialog type="assignedProgramPicker" 
+     	 	        id="assignedProgramPicker"
+     	 	        linkType="selection"
+     	 	        selectionProperty="displayName" 
+     	 	        multiSelectMode="false" 
+     	 	        memoryGroup="programPicker"
+     	 	        destinationFieldId="alternateProgramId"
+     	 	        excludeIds="${excludedProgramIds}"
+     	 	        allowEmptySelection="true"
+     	 	        endAction="showProgramEditor"
+     	 	        cancelAction="showProgramEditor" initialId="${backingBean.assignedProgram.alternateProgramId}"/>
+     	 	</tags:nameValue>
+        </c:if>
     </tags:nameValueContainer>
     <cti:displayForPageEditModes modes="EDIT,CREATE">
     <c:if test="${!backingBean.multiple}">
