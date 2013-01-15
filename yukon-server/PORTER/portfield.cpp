@@ -757,9 +757,8 @@ INT DevicePreprocessing(CtiPortSPtr Port, OUTMESS *&OutMessage, CtiDeviceSPtr &D
         CtiDeviceTapPagingTerminal *pTap = (CtiDeviceTapPagingTerminal *)Device.get();
         if(pTap->devicePacingExceeded())        // Check if the pacing rate has been exceeded.
         {
-            // Put it back & slow it down!
-
-            if(Port->writeQueue(OutMessage, PortThread))
+            //  Requeue the OM at the head of its priority so it will be examined next
+            if(Port->writeQueueWithPriority(OutMessage, std::min(MAXPRIORITY, OutMessage->Priority + 1), PortThread))
             {
                 {
                     CtiLockGuard<CtiLogger> doubt_guard(dout);
@@ -788,9 +787,8 @@ INT DevicePreprocessing(CtiPortSPtr Port, OUTMESS *&OutMessage, CtiDeviceSPtr &D
         CtiDeviceWctpTerminal *pWctp = (CtiDeviceWctpTerminal *)Device.get();
         if(pWctp->devicePacingExceeded())        // Check if the pacing rate has been exceeded.
         {
-            // Put it back & slow it down!
-
-            if(Port->writeQueue(OutMessage, PortThread))
+            //  Requeue the OM at the head of its priority so it will be examined next
+            if(Port->writeQueueWithPriority(OutMessage, std::min(MAXPRIORITY, OutMessage->Priority + 1), PortThread))
             {
                 {
                     CtiLockGuard<CtiLogger> doubt_guard(dout);
@@ -3421,10 +3419,9 @@ INT ValidateDevice(CtiPortSPtr Port, CtiDeviceSPtr &Device, OUTMESS *&OutMessage
                 /* Go Ahead an start this one up */
                 if( RemoteReset(Device, Port) )
                 {
-                    // This device probably sourced some OMs.  We should requeue the OM which got us here!
-                    OutMessage->Priority = MAXPRIORITY - 1;     // Get this message out next (after the reset messages).
-
-                    if(Port->writeQueue(OutMessage, PortThread))
+                    //  Requeue the original OM.  Writing at Priority + 1 effectively
+                    //    puts it at the head of its priority so it will be examined next
+                    if(Port->writeQueueWithPriority(OutMessage, std::min(MAXPRIORITY, OutMessage->Priority + 1), PortThread))
                     {
                         {
                             CtiLockGuard<CtiLogger> doubt_guard(dout);
@@ -3447,10 +3444,9 @@ INT ValidateDevice(CtiPortSPtr Port, CtiDeviceSPtr &Device, OUTMESS *&OutMessage
             if( boost::static_pointer_cast<Cti::Devices::Ccu721Device>(Device)->needsReset()
                 && RemoteReset(Device, Port) )
             {
-                // This device probably sourced some OMs.  We should requeue the OM which got us here!
-                OutMessage->Priority = MAXPRIORITY - 1;     // Get this message out next (after the reset messages).
-
-                if(Port->writeQueue(OutMessage, PortThread))
+                //  Requeue the original OM.  Writing at Priority + 1 effectively
+                //    puts it at the head of its priority so it will be examined next
+                if(Port->writeQueueWithPriority(OutMessage, std::min(MAXPRIORITY, OutMessage->Priority + 1), PortThread))
                 {
                     {
                         CtiLockGuard<CtiLogger> doubt_guard(dout);
