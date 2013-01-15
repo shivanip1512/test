@@ -39,7 +39,6 @@ public:
     void RefreshList();
 
     void apply(void (*applyFun)(const long, ptr_type, void*), void* d);
-    ptr_type  find(bool (*findFun)(const long, ptr_type, void*), void* d);
 
     ptr_type getPortById(LONG pid);
 
@@ -48,8 +47,7 @@ public:
 
     void haltLogs();
 
-    spiterator begin();
-    spiterator end();
+    std::vector<CtiPortSPtr> getPorts() const;
 
     coll_type::lock_t &getLock()
     {

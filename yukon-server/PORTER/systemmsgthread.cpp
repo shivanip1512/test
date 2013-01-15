@@ -156,25 +156,6 @@ void SystemMsgThread::executePortEntryRequest(CtiRequestMsg *msg, CtiCommandPars
     }
 }
 
-vector<CtiPortManager::ptr_type> getPorts(CtiPortManager &portManager)
-{
-    CtiPortManager::coll_type::reader_lock_guard_t guard(portManager.getLock());
-    CtiPortManager::spiterator iter = portManager.begin();
-    CtiPortManager::spiterator end = portManager.end();
-
-    vector<CtiPortManager::ptr_type> ports;
-
-    for( ; iter != end; iter++)
-    {
-        if( iter->second )
-        {
-            ports.push_back(iter->second);
-        }
-    }
-
-    return ports;
-}
-
 void SystemMsgThread::executeRequestCount(CtiRequestMsg *msg, CtiCommandParser &parse)
 {
     if( ULONG requestID = msg->GroupMessageId() )
@@ -183,7 +164,7 @@ void SystemMsgThread::executeRequestCount(CtiRequestMsg *msg, CtiCommandParser &
         {
             unsigned int entries = msg->OptionsField(); // set by Pil.
 
-            for each( CtiPortSPtr port in getPorts(_portManager) )
+            for each( CtiPortSPtr port in _portManager.getPorts() )
             {
                 entries += port->getWorkCount(requestID);
 
@@ -235,7 +216,7 @@ void SystemMsgThread::executeCancelRequest(CtiRequestMsg *msg, CtiCommandParser 
 
     unsigned int entries = 0;
 
-    for each( CtiPortSPtr port in getPorts(_portManager) )
+    for each( CtiPortSPtr port in _portManager.getPorts() )
     {
         if( port->getWorkCount(requestID) > 0 )
         {

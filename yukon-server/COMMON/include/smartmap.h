@@ -135,7 +135,7 @@ public:
     }
 
     template<typename Predicate>
-    std::vector<ptr_type> findAll(const Predicate &predicate)
+    std::vector<ptr_type> findAll(const Predicate &predicate) const
     {
         reader_lock_guard_t guard(_lock);
 

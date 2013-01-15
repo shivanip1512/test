@@ -369,9 +369,9 @@ void CtiPortManager::apply(void (*applyFun)(const long, ptr_type, void*), void* 
             }
         }
 
-        spiterator itr, itr_end = end();
+        spiterator itr, itr_end = _smartMap.getMap().end();
 
-        for(itr = begin(); itr != itr_end; itr++)
+        for(itr = _smartMap.getMap().begin(); itr != itr_end; itr++)
         {
             applyFun( itr->first, itr->second, d);
         }
@@ -383,52 +383,21 @@ void CtiPortManager::apply(void (*applyFun)(const long, ptr_type, void*), void* 
     }
 }
 
-CtiPortManager::ptr_type CtiPortManager::find(bool (*findFun)(const long, ptr_type, void*), void* d)
+
+struct PortNotNull
 {
-    ptr_type p;
-
-    try
+    bool operator()(CtiPortSPtr p) const
     {
-        int trycount=0;
-        coll_type::reader_lock_guard_t guard(getLock(), 30000);
-
-        while(!guard.isAcquired())
-        {
-            {
-                CtiLockGuard<CtiLogger> doubt_guard(dout);
-                dout << CtiTime() << " **** Checkpoint: Unable to lock port mutex **** " << __FILE__ << " (" << __LINE__ << ") Last Acquired By TID: " << static_cast<string>(getLock()) << endl;
-            }
-            guard.tryAcquire(30000);
-
-            if(trycount++ > 6)
-            {
-                {
-                    CtiLockGuard<CtiLogger> doubt_guard(dout);
-                    dout << CtiTime() << " **** Checkpoint: Unable to lock port mutex **** " << __FILE__ << " (" << __LINE__ << ")" << " CtiPortManager::find " << endl;
-                }
-                break;
-            }
-        }
-
-        spiterator itr, itr_end = end();
-
-        for(itr = begin(); itr != itr_end; itr++)
-        {
-            if( findFun( itr->first, itr->second, d ) )
-            {
-                p = itr->second;
-                break;
-            }
-        }
+        return p;
     }
-    catch(...)
-    {
-        CtiLockGuard<CtiLogger> doubt_guard(dout);
-        dout << CtiTime() << " **** Checkpoint **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
-    }
+};
 
-    return p;
+
+std::vector<CtiPortSPtr> CtiPortManager::getPorts() const
+{
+    return _smartMap.findAll(PortNotNull());
 }
+
 
 
 CtiPortManager::ptr_type CtiPortManager::getPortById(LONG pid)
@@ -595,15 +564,6 @@ void CtiPortManager::haltLogs()
     {
         apply(ApplyHaltLog, NULL);
     }
-}
-
-CtiPortManager::spiterator CtiPortManager::begin()
-{
-    return _smartMap.getMap().begin();
-}
-CtiPortManager::spiterator CtiPortManager::end()
-{
-    return _smartMap.getMap().end();
 }
 
 void CtiPortManager::RefreshPooledPortEntries(bool &rowFound, Cti::RowReader& rdr)
