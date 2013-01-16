@@ -12,6 +12,7 @@ public class EnrollmentSystemConfigurationException extends EnrollmentException 
         super(message);
     }
     
+    @Override
     public String getKey() {
         return key;
     }

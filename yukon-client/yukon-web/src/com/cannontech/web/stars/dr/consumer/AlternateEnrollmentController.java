@@ -17,6 +17,7 @@ import com.cannontech.i18n.YukonMessageSourceResolvable;
 import com.cannontech.stars.core.service.YukonEnergyCompanyService;
 import com.cannontech.stars.dr.account.dao.CustomerAccountDao;
 import com.cannontech.stars.dr.account.model.CustomerAccount;
+import com.cannontech.stars.dr.enrollment.exception.EnrollmentException;
 import com.cannontech.stars.dr.enrollment.service.AlternateEnrollmentService;
 import com.cannontech.stars.dr.hardware.model.HardwareSummary;
 import com.cannontech.stars.dr.program.model.Program;
@@ -33,7 +34,7 @@ public class AlternateEnrollmentController extends AbstractConsumerController {
 	@Autowired private CustomerAccountDao customerAccountDao;
     @Autowired private YukonEnergyCompanyService yecService;
     @Autowired private EnergyCompanyRolePropertyDao ecRolePropertyDao;
-	
+    
     private static final String VIEW = "consumer/alternateEnrollment.jsp";
        
     @RequestMapping
@@ -63,13 +64,15 @@ public class AlternateEnrollmentController extends AbstractConsumerController {
     		final FlashScope flash, 
     		final YukonUserContext context) {
     	
-        if(alternate != null || normal != null){
+        if (alternate != null || normal != null) {
             YukonEnergyCompany yec = yecService.getEnergyCompanyByAccountId(customerAccount.getAccountId());
             ecRolePropertyDao.verifyProperty(YukonRoleProperty.ALTERNATE_PROGRAM_ENROLLMENT, yec);
-    	
-            aeService.doEnrollment(alternate, normal, customerAccount.getAccountId(), context);
-        
-            flash.setConfirm(new YukonMessageSourceResolvable("yukon.web.modules.consumer.alternateEnrollment.alternate.success"));
+            try {
+                aeService.doEnrollment(alternate, normal, customerAccount.getAccountId(), context);
+                flash.setConfirm(new YukonMessageSourceResolvable("yukon.web.modules.consumer.alternateEnrollment.alternate.success"));
+            } catch (EnrollmentException e) {
+                flash.setError(new YukonMessageSourceResolvable(e.getKey()));
+            }
         }
     	return "redirect:view";
     }

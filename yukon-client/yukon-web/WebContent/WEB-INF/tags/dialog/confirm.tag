@@ -25,12 +25,12 @@
 <script type="text/javascript">
 jQuery(function(){
     Yukon.Dialog.ConfirmationManager.add({
-        on: '${on}',
-        strings:{
-            title: "${dialogTitleMsg}",
-            message: "${confirmationMsg}",
-            ok: "${okBtnMsg}",
-            cancel: "${cancelBtnMsg}"
+        'on': '${on}',
+        'strings':{
+            'title': '${dialogTitleMsg}',
+            'message': '${confirmationMsg}',
+            'ok': '${okBtnMsg}',
+            'cancel': '${cancelBtnMsg}'
         }
     });
 });

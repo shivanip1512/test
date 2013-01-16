@@ -277,7 +277,7 @@ public class EnrollmentHelperServiceImpl implements EnrollmentHelperService {
             programEnrollmentService.applyEnrollmentRequests(customerAccount, enrollmentData, user);
         
         if (applyEnrollmentRequests == ProgramEnrollmentResultEnum.FAILURE){
-            throw new EnrollmentException("Program Enrollment Failed.");
+            throw new EnrollmentException();
         }
         if (applyEnrollmentRequests == ProgramEnrollmentResultEnum.NOT_CONFIGURED_CORRECTLY){
             throw new EnrollmentSystemConfigurationException();

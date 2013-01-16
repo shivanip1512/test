@@ -36,7 +36,7 @@ if(typeof(Yukon.Dialog.ConfirmationManager) === 'undefined'){
             /*
              * Add a confirmation dialog, does not show the dialog
              * 
-             * arguments = object {}
+             * args = object {}
              *      on:string               - jQuery selector to activate this dialog
              *      eventType:string        - the event type that will trigger this dialog to open
              *      strings:object          - contains all of the i18n'd strings for the dialog
@@ -52,12 +52,12 @@ if(typeof(Yukon.Dialog.ConfirmationManager) === 'undefined'){
                 //the default values are NOT i18n'd.  The intent is for the developer to resolve
                 //these strings [title, message, ok, cancel] when calling this function
                 var defaults = {on: null,
-                                eventType: 'click',
-                                strings: {
-                                    title: "UNDEFINED TITLE",
-                                    message: "UNDEFINED MESSAGE",
-                                    ok: 'UNDEFINED OK TEXT',
-                                    cancel: 'UNDEFINED CANCEL TEXT'}
+                                'eventType': 'click',
+                                'strings': {
+                                    'title': "UNDEFINED TITLE",
+                                    'message': "UNDEFINED MESSAGE",
+                                    'ok': 'UNDEFINED OK TEXT',
+                                    'cancel': 'UNDEFINED CANCEL TEXT'}
                                 };
                 
                 jQuery.extend(defaults, args);
@@ -163,18 +163,23 @@ if(typeof(Yukon.Dialog.ConfirmationManager) === 'undefined'){
                 
                 //dialog default options
                 var defaults = {
-                        position: 'center',
-                        width: 'auto',
-                        height: 'auto',
-                        buttons: buttons,
-                        title: args.strings.title,
-                        modal: true 
-                }
+                    'position': 'center',
+                    'width': 'auto',
+                    'height': 'auto',
+                    'buttons': buttons,
+                    'title': args.strings.title,
+                    'modal': true 
+                };
 
                 //inject the message into the dialog
                 jQuery("#yukon_dialog_confirm .message").text(args.strings.message);
                 //show the dialog
                 _self._current_dialog = jQuery('#yukon_dialog_confirm').dialog(jQuery.extend(defaults, args));
+                
+                // kindof a hack to get buttons disabled when the action is slow 
+                jQuery('#yukon_dialog_confirm').closest('.ui-dialog').find('.ui-dialog-buttonset button').each(function(idx, button) {
+                    jQuery(button).addClass('f_disableAfterClick');
+                });
             },
             
             _default: {

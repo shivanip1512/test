@@ -261,7 +261,8 @@ public class OperatorEnrollmentController {
             flashScope.setWarning(message);
         } catch (EnrollmentException e2) {
             String msgKey = "yukon.web.modules.operator.enrollmentList.failed";
-            MessageSourceResolvable message = new YukonMessageSourceResolvable(msgKey, assignedProgram.getDisplayName(),e2.getMessage());
+            MessageSourceAccessor accessor = messageSourceResolver.getMessageSourceAccessor(userContext);
+            MessageSourceResolvable message = new YukonMessageSourceResolvable(msgKey, assignedProgram.getDisplayName(), accessor.getMessage(e2.getKey()));
             flashScope.setError(message);
         }
      
