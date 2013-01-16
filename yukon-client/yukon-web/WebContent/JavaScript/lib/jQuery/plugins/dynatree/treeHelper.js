@@ -106,6 +106,6 @@ if(typeof(TreeHelper) == 'undefined'){
             }
         };
         
-//        this.init();
+        this.init();
     };
 }
