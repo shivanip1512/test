@@ -294,7 +294,7 @@
                 </c:choose>
 
 				<flot:trend title="${postChartTitle}"
-					reloadInterval="30" min="${yMin}" max="${yMax}"
+					reloadInterval="30" ymin="${yMin}" ymax="${yMax}"
 					pointIds="${pointId}" startDate="${postChartStartDateMillis}"
 					endDate="${postChartStopDateMillis}"
 					interval="${postChartInterval}"
