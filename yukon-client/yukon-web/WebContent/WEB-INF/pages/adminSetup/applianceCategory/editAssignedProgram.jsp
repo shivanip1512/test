@@ -194,7 +194,8 @@ YEvent.observeSelectorClick('#sameAsDisplayName', sameAsDisplayNameClicked);
             <cti:msg2 var="fieldName" key=".alternateEnrollment"/>
     	 	<tags:nameValue name="${fieldName}">
      	 	    <form:hidden path="assignedProgram.alternateProgramId" id="alternateProgramId"/>
-     	 	    <tags:pickerDialog type="assignedProgramPicker" 
+     	 	    <tags:pickerDialog type="assignedProgramPicker"
+                    extraArgs="${energycompanyId}" 
      	 	        id="assignedProgramPicker"
      	 	        linkType="selection"
      	 	        selectionProperty="displayName" 

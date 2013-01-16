@@ -381,6 +381,8 @@ public class ApplianceCategoryController {
     private String editAssignedProgram(ModelMap model, int ecId, int acId, AssignProgramBackingBean bean, 
                                        YukonUserContext context, PageEditMode mode) {
         
+        model.addAttribute("energycompanyId", ecId);
+        
         ApplianceCategory applianceCategory = applianceCategoryDao.getById(acId);
         model.addAttribute("applianceCategory", applianceCategory);
 
