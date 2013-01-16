@@ -259,14 +259,15 @@
 				<cti:msg2 var="tabName" key=".voltageProfile.title" />
 				<cti:tabbedContentSelectorContent selectorName="${tabName}">
                     <c:set var="chartId" value="sub_${subBusId}_chart" />
-				    <cti:url var="chartJsonDataUrl" value="/capcontrol/ivvc/bus/chart"/>
+				    <cti:url var="chartJsonDataUrl" value="/capcontrol/ivvc/bus/chart">
+                        <cti:param name="subBusId" value="${subBusId}"/>
+				    </cti:url>
 		            <flot:ivvcChart
 		                chartId="${chartId}"
 		                jsonDataAndOptions="${graphAsJSON}"
 		                title="${graphSettings.graphTitle}"/>
 
-	                <cti:dataUpdaterCallback function="Yukon.Flot.reloadChartIfExpired({chartId:'${chartId}', dataUrl:'${chartJsonDataUrl}',
-	                                                   attrName:\'subBusId\', attrVal: '${subBusId}'})"
+	                <cti:dataUpdaterCallback function="Yukon.Flot.reloadChartIfExpired({chartId:'${chartId}', dataUrl:'${chartJsonDataUrl}'})"
                                              initialize="false" largestTime="CAPCONTROL/${subBusId}/IVVC_LARGEST_GRAPH_TIME_FOR_SUBBUS"/>
 				</cti:tabbedContentSelectorContent>
 				<cti:msg2 var="voltagePointsTab" key=".voltagePoints.title" />

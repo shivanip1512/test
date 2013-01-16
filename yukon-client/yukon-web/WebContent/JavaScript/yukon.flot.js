@@ -111,6 +111,12 @@ if(typeof(Yukon.Flot) === 'undefined'){
         /* public methods */
         /* -------------- */
 
+        /**
+         * Add a flotChart. This method simply adds the options, methods, and data to the Singleton.
+         * Calling plotGraph (Yukon.Flot.charts[chartId].methods.plotGraph(chartId)) is still required for the chart to show up
+         * 
+         * Required parameters: chartId, type (bar, line, pie), data
+         */
         addChart: function(params) {
             var chartId = params.chartId,
                 type = params.type.toLowerCase(),
@@ -131,6 +137,8 @@ if(typeof(Yukon.Flot) === 'undefined'){
 
         /**
          * Method that is meant to work with the cti:dataUpdaterCallback tag
+         * 
+         * Required parameters: chartId, dataUrl
          */
         reloadChartIfExpired: function(params) {
             /* validation */
@@ -150,16 +158,43 @@ if(typeof(Yukon.Flot) === 'undefined'){
                 }
             };
         },
+        /**
+         * This method currently only supports reloading one chart per page.
+         * If you can figure out the setTimeout call to support multiple charts, let me know :)
+         * 
+         *  Required parameters: chartId, dataUrl, reloadInterval (in milliseconds)
+         */
+        reloadChartOnInterval: function(params) {
+            /* validation */
+            Yukon.Flot._validateReloadParams(params);
+            if (typeof params.reloadInterval === 'undefined') throw "no reloadInterval specified";
+
+            Yukon.Flot._timeoutArgs = params;
+            clearTimeout(Yukon.Flot._timeout);
+            Yukon.Flot._timeout = setTimeout('Yukon.Flot.reloadChartOnInterval(Yukon.Flot._timeoutArgs)', params.reloadInterval);
+            Yukon.Flot.reloadFlotChart({chartId: params.chartId, dataUrl: params.dataUrl});
+        },
+        /**
+         * Reload a chart. If the chart hasn't been added yet, then it is added
+         * 
+         *  Required parameters: chartId, dataUrl
+         */
         reloadFlotChart: function(params) {
             /* validation */
             Yukon.Flot._validateReloadParams(params);
-
-            var ajaxData = {};
-            ajaxData[params.attrName] = params.attrVal;
             jQuery.ajax({
                 url: params.dataUrl,
-                data: ajaxData,
                 success: function(data) {
+                    /* if the chart hasn't been added yet, add it */
+                    if (typeof Yukon.Flot.charts[params.chartId] === 'undefined') {
+                        Yukon.Flot.addChart({
+                            chartId : params.chartId,
+                            type : data.type,
+                            options : data.options,
+                            methods : data.methods,
+                            data : data.datas
+                        });
+                    }
                     Yukon.Flot.charts[params.chartId].options = Yukon.Flot._getDefaultMergedOptions(data.type, data.options);
                     Yukon.Flot.charts[params.chartId].data_with_meta = data.datas;
                     Yukon.Flot.charts[params.chartId].methods.plotGraph(params.chartId);
@@ -224,8 +259,6 @@ if(typeof(Yukon.Flot) === 'undefined'){
         _validateReloadParams: function(params) {
             if (typeof params.chartId === 'undefined') throw "no chartId specified";
             if (typeof params.dataUrl === 'undefined') throw "no dataUrl specified";
-            if (typeof params.attrName === 'undefined') throw "no attrName specified";
-            if (typeof params.attrVal === 'undefined') throw "no attrVal specified";
         },
 
         _getDefaultMergedOptions: function(type, options) {

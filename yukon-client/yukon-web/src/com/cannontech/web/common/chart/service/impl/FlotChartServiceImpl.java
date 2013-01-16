@@ -29,7 +29,7 @@ public class FlotChartServiceImpl implements FlotChartService {
     @Autowired ChartService chartService;
 
     @Override
-    public JSONObject getMeterGraphData(List<Integer> pointIds, Date startDate, Date stopDate,
+    public JSONObject getMeterGraphData(List<Integer> pointIds, Date startDate, Date stopDate, Double yMin, Double yMax,
                                        ChartInterval interval, ConverterType converterType, GraphType graphType, String yLabel,
                                        YukonUserContext userContext) {
         List<Graph> graphs = chartService.getGraphs(pointIds,
@@ -67,6 +67,9 @@ public class FlotChartServiceImpl implements FlotChartService {
         JSONObject yAxis = new JSONObject();
         setFlotOption(yAxis, FlotOptionKey.YAXIS_POSITION, "left");
         setFlotOption(yAxis, FlotOptionKey.YAXIS_AXISLABEL, yLabel);
+        
+        if (yMin != null) setFlotOption(yAxis, FlotOptionKey.YAXIS_MIN, yMin);
+        if (yMax != null) setFlotOption(yAxis, FlotOptionKey.YAXIS_MAX, yMax);
         setFlotOption(options, FlotOptionKey.YAXIS, yAxis);
         
         JSONObject xAxis = new JSONObject();

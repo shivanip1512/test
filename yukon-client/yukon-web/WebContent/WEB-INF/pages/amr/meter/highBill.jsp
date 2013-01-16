@@ -232,7 +232,7 @@
                 </c:choose>
 
 				<flot:trend title="${preChartTitle}"
-					reloadInterval="30" min="${yMin}" max="${yMax}"
+					reloadInterval="30" ymin="${yMin}" ymax="${yMax}"
 					pointIds="${pointId}" startDate="${preChartStartDateMillis}"
 					endDate="${preChartStopDateMillis}"
 					interval="${preChartInterval}"

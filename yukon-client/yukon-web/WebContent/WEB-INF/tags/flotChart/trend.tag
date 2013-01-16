@@ -10,9 +10,9 @@
 <%@ attribute name="interval" required="true" description="Either ChartInterval.java object or the String representation"%>
 <%@ attribute name="converterType" required="true"  description="Either ConverterType.java object or the String representation"%>
 <%@ attribute name="graphType"  description="Either GraphType.java object or the String representation"%>
-<%@ attribute name="reloadInterval"%>
-<%@ attribute name="min"%>
-<%@ attribute name="max"%>
+<%@ attribute name="reloadInterval" description="The reload interval of the added chart (in seconds)"%>
+<%@ attribute name="ymin"%>
+<%@ attribute name="ymax"%>
 
 <cti:uniqueIdentifier var="chartId" prefix="flotChart_"/>
 
@@ -20,41 +20,48 @@
     <%@ include file="defaultElements.jspf" %>
 </div>
 
-<c:url var="chartUrl" scope="page" value="/amr/chart/chart?title=${title}">
-<%-- 	<c:param name="title" value="${title}" /> --%>
+<c:url var="chartUrl" scope="page" value="/amr/chart/chart">
 	<c:param name="pointIds" value="${pointIds}" />
 	<c:param name="startDate" value="${startDate}" />
 	<c:param name="endDate" value="${endDate}" />
 	<c:param name="interval" value="${interval}" />
 	<c:param name="graphType" value="${pageScope.graphType}" />
 	<c:param name="converterType" value="${converterType}" />
-    <c:if test="${not empty pageScope.reloadInterval}">
-        <c:param name="reloadInterval" value="${pageScope.reloadInterval}" />
-    </c:if>
     <!-- to set the charts y min/max values -->
-    <c:if test="${not empty pageScope.min && not empty pageScope.max}">
-        <c:param name="yMin" value="${pageScope.min}" />
-        <c:param name="yMax" value="${pageScope.max}" />
+    <c:if test="${not empty pageScope.ymin && not empty pageScope.ymax}">
+        <c:param name="yMin" value="${pageScope.ymin}" />
+        <c:param name="yMax" value="${pageScope.ymax}" />
     </c:if>
 </c:url>
 
-<script>
-jQuery(function() {
-    var chartId = '${chartId}';
-    jQuery.ajax({
-        url: '${chartUrl}',
-        success: function(data) {
-            jQuery(document.getElementById(chartId)).closest(".flotchart_container").find(".xaxis.axis_label").text(data.title);
-            jQuery(document.getElementById(chartId)).closest(".flotchart_container").find(".yaxis.axis_label").text(data.ylabel);
-            Yukon.Flot.addChart({
-                chartId: chartId,
-                type: data.type,
-                data: data.datas,
-                options: data.options
-            });
-		    /* chart it!! */
-		    Yukon.Flot.charts[chartId].methods.plotGraph(chartId);
-        }
-    });
-});
-</script>
+<c:choose>
+	<c:when test="${not empty reloadInterval}">
+		<script>
+		   jQuery(function() {
+	           Yukon.Flot.reloadChartOnInterval({chartId: '${chartId}',
+	                                             dataUrl: '${chartUrl}',
+	                                             reloadInterval: ${reloadInterval}*1000});
+		   });
+		</script>
+	</c:when>
+	<c:otherwise>
+		<script>
+			jQuery(function() {
+			    var chartId = '${chartId}';
+			    jQuery.ajax({
+			        url: '${chartUrl}',
+			        success: function(data) {
+			            Yukon.Flot.addChart({
+			                chartId: chartId,
+			                type: data.type,
+			                data: data.datas,
+			                options: data.options
+			            });
+					    Yukon.Flot.charts[chartId].methods.plotGraph(chartId);
+			        }
+			    });
+			});
+		</script>
+	</c:otherwise>
+</c:choose>
+

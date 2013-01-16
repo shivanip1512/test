@@ -199,8 +199,7 @@ public class TrendWidget extends WidgetControllerBase {
         			startDateStr,
         			stopDateStr);
         	
-            String escapedTitle = title.replace("'", "\\'");
-            mav.addObject("title", escapedTitle);
+            mav.addObject("title", title);
         }
         
         mav.addObject("pointId", pointId);

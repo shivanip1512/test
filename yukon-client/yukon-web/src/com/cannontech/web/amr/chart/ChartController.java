@@ -41,7 +41,6 @@ public class ChartController {
 
     @RequestMapping(method = RequestMethod.GET)
     public @ResponseBody JSONObject chart(YukonUserContext userContext,
-                        String title,
                         String pointIds,
                         ChartInterval interval,
                         long startDate,
@@ -49,7 +48,6 @@ public class ChartController {
                         Double yMin,
                         Double yMax,
                         @RequestParam(required = false, defaultValue = "LINE") GraphType graphType,
-                        @RequestParam(required = false, defaultValue = "0") int reloadInterval,
                         @RequestParam(required = false, defaultValue = "RAW") ConverterType converterType) {
         List<Integer> ids = StringUtils.parseIntStringForList(pointIds);
         
@@ -64,12 +62,13 @@ public class ChartController {
         JSONObject graphAsJSON = flotChartService.getMeterGraphData(ids,
                                                                    startDateObj,
                                                                    stopDateObj,
+                                                                   yMin,
+                                                                   yMax,
                                                                    interval,
                                                                    converterType, 
                                                                    graphType,
                                                                    yLabelUnits,
                                                                    userContext);
-        graphAsJSON.put("title", title);
         
         return graphAsJSON;
     }

@@ -46,7 +46,7 @@ public interface FlotChartService {
      *  
      *  @return JSONObject
      */
-    JSONObject getMeterGraphData(List<Integer> pointIds, Date startDate, Date stopDate,
+    JSONObject getMeterGraphData(List<Integer> pointIds, Date startDate, Date stopDate, Double yMin, Double yMax,
                                 ChartInterval interval, ConverterType converterType, GraphType graphType, String yLabel,
                                 YukonUserContext userContext);
     /**
