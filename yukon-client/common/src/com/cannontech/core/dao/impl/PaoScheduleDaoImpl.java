@@ -129,6 +129,23 @@ public class PaoScheduleDaoImpl implements PaoScheduleDao {
 
     @Override
     @Transactional(readOnly = true)
+    public List<PaoScheduleAssignment> getScheduleAssignmentByScheduleId(Integer scheduleId) {
+        final String selectAssignmentByEventId =
+            "SELECT sa.EventID, sa.ScheduleID, s.ScheduleName, s.NextRunTime, " +
+                    "s.LastRunTime, sa.PaoID, po.PAOName, sa.Command, sa.disableOvUv " +
+                    "FROM PAOScheduleAssignment sa, PAOSchedule s, YukonPAObject po " +
+                    "WHERE s.ScheduleID = sa.ScheduleID AND sa.PaoID = po.PAObjectID ";
+        SqlStatementBuilder sql = new SqlStatementBuilder();
+        sql.append(selectAssignmentByEventId);
+        sql.append("AND sa.ScheduleId").eq(scheduleId);
+
+        
+        List<PaoScheduleAssignment> assignment = yukonJdbcTemplate.query(sql, assignmentRowMapper);
+        return assignment;
+    }
+    
+    @Override
+    @Transactional(readOnly = true)
     public boolean updateAssignment(PaoScheduleAssignment assignment) {
         SqlStatementBuilder sql = new SqlStatementBuilder();
         

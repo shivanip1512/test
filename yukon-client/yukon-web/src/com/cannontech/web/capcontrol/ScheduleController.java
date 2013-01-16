@@ -31,6 +31,7 @@ import com.cannontech.common.bulk.filter.UiFilter;
 import com.cannontech.common.bulk.filter.service.FilterService;
 import com.cannontech.common.bulk.filter.service.UiFilterList;
 import com.cannontech.common.i18n.MessageSourceAccessor;
+import com.cannontech.common.pao.PaoType;
 import com.cannontech.common.search.SearchResult;
 import com.cannontech.common.util.CommandExecutionException;
 import com.cannontech.common.util.CtiUtilities;
@@ -42,9 +43,12 @@ import com.cannontech.database.db.pao.PAOSchedule;
 import com.cannontech.database.db.pao.PaoScheduleAssignment;
 import com.cannontech.i18n.YukonMessageSourceResolvable;
 import com.cannontech.i18n.YukonUserContextMessageSourceResolver;
+import com.cannontech.message.DbChangeManager;
 import com.cannontech.message.capcontrol.model.CapControlCommand;
 import com.cannontech.message.capcontrol.model.CommandType;
 import com.cannontech.message.capcontrol.model.VerifyBanks;
+import com.cannontech.message.dispatch.message.DBChangeMsg;
+import com.cannontech.message.dispatch.message.DbChangeType;
 import com.cannontech.servlet.nav.CBCNavigationUtil;
 import com.cannontech.user.YukonUserContext;
 import com.cannontech.util.ServletUtil;
@@ -70,6 +74,7 @@ public class ScheduleController {
     @Autowired private FilterService filterService;
     @Autowired private CapControlCommandExecutor executor;
     @Autowired private YukonUserContextMessageSourceResolver messageSourceResolver;
+	@Autowired private DbChangeManager dbChangeManager;
 	
 	private final String NO_FILTER = "All";
 	
@@ -341,11 +346,17 @@ public class ScheduleController {
 	}
 	
 	@RequestMapping(method=RequestMethod.POST)
-    public String removePao(Integer eventId, ModelMap map, FlashScope flash) {
+    public String removePao(Integer eventId, Integer paoId, ModelMap map, FlashScope flash) {
         boolean success = paoScheduleDao.unassignCommandByEventId(eventId);
         
         if (success) {
-            //Send DB Change YUK-11757
+            //Send DB Change for affected bus.
+            DBChangeMsg dbChange = new DBChangeMsg(paoId,
+                                                   DBChangeMsg.CHANGE_PAO_DB,
+                                                   PaoType.CAP_CONTROL_SUBBUS.getPaoCategory().getDbString(),
+                                                   PaoType.CAP_CONTROL_SUBBUS.getDbString(),
+                                                   DbChangeType.UPDATE);
+            dbChangeManager.processDbChange(dbChange);
             flash.setConfirm(new YukonMessageSourceResolvable("yukon.web.modules.capcontrol.scheduleAssignments.deleteSuccess"));
         } else {
             //Warn the user, the only way this happens is if we attempted to delete something that didn't exist.
@@ -357,10 +368,20 @@ public class ScheduleController {
 	
 	@RequestMapping(method=RequestMethod.POST)
     public String deleteSchedule(int scheduleId, ModelMap map, FlashScope flash) {
-	    boolean success = paoScheduleDao.delete(scheduleId); 
-	    
+	    List<PaoScheduleAssignment> assignments = paoScheduleDao.getScheduleAssignmentByScheduleId(scheduleId);
+	    boolean success = paoScheduleDao.delete(scheduleId);
         if (success) {
-            //Send DB Change YUK-11757
+            //Send DB Change
+            //These can only be assigned to sub bus objects right now, if that changes, this needs to change with it.
+            for (PaoScheduleAssignment assignment : assignments) {
+                //Each assignment is a bus to be reloaded.
+                DBChangeMsg dbChange = new DBChangeMsg(assignment.getPaoId(),
+                                                       DBChangeMsg.CHANGE_PAO_DB,
+                                                       PaoType.CAP_CONTROL_SUBBUS.getPaoCategory().getDbString(),
+                                                       PaoType.CAP_CONTROL_SUBBUS.getDbString(),
+                                                       DbChangeType.UPDATE);
+                dbChangeManager.processDbChange(dbChange);
+            }
             flash.setConfirm(new YukonMessageSourceResolvable("yukon.web.modules.capcontrol.schedules.deleteSuccess"));
         } else {
             flash.setError(new YukonMessageSourceResolvable("yukon.web.modules.capcontrol.schedules.deleteFailed"));
@@ -414,7 +435,20 @@ public class ScheduleController {
     			try {
     				paoScheduleDao.assignCommand(assignments);
     				message = new YukonMessageSourceResolvable("yukon.web.modules.capcontrol.scheduleAssignments.addSuccessful", assignments.size());
-    				//Send DB Change YUK-11757
+    				
+    				//Send DB Change
+    				//These can only be assigned to sub bus objects right now, if that changes, this needs to change with it.
+                    for (Integer paoId : paoIds) {
+                        //Each paoId is a bus to be reloaded.
+                        DBChangeMsg dbChange = new DBChangeMsg(paoId,
+                                                               DBChangeMsg.CHANGE_PAO_DB,
+                                                               PaoType.CAP_CONTROL_SUBBUS.getPaoCategory().getDbString(),
+                                                               PaoType.CAP_CONTROL_SUBBUS.getDbString(),
+                                                               DbChangeType.UPDATE);
+                        dbChangeManager.processDbChange(dbChange);
+                    }
+    				
+    				
     			} catch (DataIntegrityViolationException e) {
     				success = false;
     				message = new YukonMessageSourceResolvable("yukon.web.modules.capcontrol.scheduleAssignments.duplicate");

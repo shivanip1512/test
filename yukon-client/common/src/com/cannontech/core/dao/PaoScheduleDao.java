@@ -16,6 +16,14 @@ public interface PaoScheduleDao {
      */
     public PaoScheduleAssignment getScheduleAssignmentByEventId(Integer eventId);
 
+    /**
+     * Returns the assignments with the given schedule id
+     * 
+     * @param scheduleId
+     * @return list of assignments or empty list if there are none.
+     */
+    public List<PaoScheduleAssignment> getScheduleAssignmentByScheduleId(Integer scheduleId);
+    
     public List<PaoScheduleAssignment> getAllScheduleAssignments();
 
     public List<PAOSchedule> getAllPaoScheduleNames();

@@ -25,20 +25,25 @@
 
 <form id="removeAssignmentForm" action="/capcontrol/schedule/removePao" method="post">
     <input type="hidden" name="eventId">
+    <input type="hidden" name="paoId">
 </form> 
-    
+
 <script type="text/javascript">
 jQuery(function() {
     jQuery(document).on('click', 'button.deleteAssignment', function(event){
         var jEvent = jQuery(event.currentTarget);
         var row = jEvent.closest('tr');
         var rowid = row[0].id;
-        var eventId = rowid.split('_')[1];
+        var rowIdSplit = rowid.split('_'); 
+        var eventId = rowIdSplit[1];
+        var paoId = rowIdSplit[2];
         var confirmMsg = jEvent.siblings('span.dn').html();
         if (confirm(confirmMsg)) {
             var removeForm = jQuery('#removeAssignmentForm');
             var input = removeForm.children('input[name=eventId]');
             input.val(eventId);
+            var paoInput = removeForm.children('input[name=paoId]');
+            paoInput.val(paoId);
             removeForm.submit();
         }
     });
@@ -204,7 +209,7 @@ function newScheduleAssignmentPopup(schedule, command) {
                         <tbody id="tableBody">
                         <c:forEach var="item" items="${itemList}">
                         
-                            <tr class="<tags:alternateRow odd="" even="altRow"/>" id="s_${item.eventId}">
+                            <tr class="<tags:alternateRow odd="" even="altRow"/>" id="s_${item.eventId}_${item.paoId}">
                                 <td name="schedName"><spring:escapeBody htmlEscape="true">${item.scheduleName}</spring:escapeBody></td>
                                 
                                 <!-- Device -->
