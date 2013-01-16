@@ -9,16 +9,23 @@
 <%@ attribute name="fieldName"          required="true"     type="java.lang.String"%>
 <%@ attribute name="fieldValue"         required="false"    type="java.lang.String"%>
 <%@ attribute name="nodeValueName"      required="true"     type="java.lang.String"%>
-<%@ attribute name="multiSelect"        required="false"     type="java.lang.Boolean"%>
+<%@ attribute name="multiSelect"        required="false"    type="java.lang.Boolean"%>
 
 <%-- PASS THROUGH PARAMETERS TO jsTree:inlineTree --%>
 <%-- see inlineTree.tag for parameter descriptions --%>
 <%@ attribute name="id"                 required="true"     type="java.lang.String"%>
 <%@ attribute name="dataJson"           required="true"     type="java.lang.String"%>
-<%@ attribute name="width"              required="true"     type="java.lang.Integer"%>
-<%@ attribute name="height"             required="true"     type="java.lang.Integer"%>
+<%@ attribute name="width"              required="false"    type="java.lang.Integer"%>
+<%@ attribute name="height"             required="false"    type="java.lang.Integer"%>
 <%@ attribute name="highlightNodePath"  required="false"    type="java.lang.String"%>
-<%@ attribute name="includeControlBar" required="false" type="java.lang.Boolean"%>
+<%@ attribute name="includeControlBar"  required="false"    type="java.lang.Boolean"%>
+<%@ attribute name="styleClass"         required="false"    type="java.lang.String"%>
+<%@ attribute name="displayCheckboxes"  required="false"    type="java.lang.Boolean"%>
+
+<c:set var="treeParams" value="{onActivate:recordNameValue_${id}}"/>
+<c:if test="${displayCheckboxes}">
+    <c:set var="treeParams" value="{checkbox: true, onActivate:recordNameValue_${id}}"/>
+</c:if>
 
 <%-- DEVICE GROUP SELECTION HANDLER CODE --%>
 <script type="text/javascript">
@@ -56,7 +63,6 @@
             jQuery(document.getElementById("${fieldId}")).val(nodeValue);
         }
     }
-
 </script>
 
 <%-- VALUE HIDDEN FIELD --%>
@@ -69,7 +75,6 @@
         <input type="hidden" name="${fieldName}" id="${fieldId}" value="${pageScope.fieldValue}">
     </c:otherwise>
 </c:choose>
-
 <%-- INLINE TREE --%>
 <%-- Use onActivate here since clicking the node activaties AND selects it.  We pre-select
                     a node on page load.  Doing onSelect would cause the page to loop infinitely (since we redirect onSelect)
@@ -77,10 +82,11 @@
                     to deal with. --%>
 <jsTree:inlineTree  id="${id}"
                     treeCss="/WebConfig/yukon/styles/lib/dynatree/deviceGroup.css"
-                    treeParameters="{onActivate:recordNameValue_${id}}"
+                    treeParameters="${pageScope.treeParams}"
                     dataJson="${dataJson}"
                     multiSelect="${pageScope.multiSelect}"
                     width="${width}"
                     height="${height}"
                     highlightNodePath="${pageScope.highlightNodePath}"
-                    includeControlBar="${pageScope.includeControlBar}" />
+                    includeControlBar="${pageScope.includeControlBar}" 
+                    styleClass="${pageScope.styleClass}"/>

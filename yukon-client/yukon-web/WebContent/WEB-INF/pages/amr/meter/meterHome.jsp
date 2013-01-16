@@ -6,6 +6,8 @@
 
 <cti:standardPage module="amr" page="meterDetail.electric">
 
+    <cti:includeCss link="/WebConfig/yukon/styles/lib/dynatree/deviceGroup.css"/>
+
 	<div style="float: right;">
 		<amr:searchResultsLink></amr:searchResultsLink>
 	</div>

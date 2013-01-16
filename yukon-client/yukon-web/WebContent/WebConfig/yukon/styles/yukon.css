@@ -182,6 +182,7 @@ div.progressBarInnerFailure {
 .boxContainerFooter {border:1px solid #ccc;border-radius: 0 0 3px 3px;border-top: none;}
 .flyover, .tooltip {background-color: white; padding: 2px; border: 2px solid #666;box-shadow: 9px;}
 .list-none {font-style: italic;}
+.inlineTree.contained {border: none;}
 /* END CONTAINERS */
 
 /* Flash Scope */

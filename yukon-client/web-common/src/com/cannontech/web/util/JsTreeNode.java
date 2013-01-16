@@ -65,6 +65,18 @@ public class JsTreeNode {
             map.put("unselectable", true);
         }
         
+        if(map.keySet().contains("select") && map.get("select").toString().equals("true")){
+            map.put("select", map.get("select"));
+        }
+        
+        if(map.keySet().contains("expand") && map.get("expand").toString().equals("true")){
+            map.put("expand", map.get("expand"));
+        }
+        
+        if(map.keySet().contains("") && map.get("unselectable").toString().equals("true")){
+            map.put("unselectable", map.get("unselectable"));
+        }
+        
         if (map.keySet().contains("info")) {
             ((Map<String, Object>)map.get("info")).put("id", map.get("id"));
             map.put("metadata", map.get("info"));

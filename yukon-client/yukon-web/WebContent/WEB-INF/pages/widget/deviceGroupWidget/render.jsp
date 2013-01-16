@@ -5,37 +5,65 @@
 
 <script type="text/javascript">
     
-    // to submit widget form once the hidden groupIds field has been set
-    function commitGroupIds() {
-        ${widgetParameters.jsWidget}.doDirectActionContainerRefresh('add', 'currentGroups');
-    }
+    jQuery(document).ready(function() {
+        
+        var dlg = document.getElementById('multiNodeValueSelectingTreeDialog');
+        if (!dlg) {
+            jQuery('body').append('<div id="multiNodeValueSelectingTreeDialog"></div>');
+        }
+
+        jQuery('#showPopupButton').click(function() {
+            var parameters = ${cti:jsonString(widgetParameters)};
+            jQuery('#multiNodeValueSelectingTreeDialog').load('/widget/deviceGroupWidget/edit', parameters);
+        });
+
+        jQuery('#multiNodeValueSelectingTreeDialog').bind('dialogSubmit', function() {
+            if (!setNodeValues_deviceGroupWidgetTree()) {
+                return;
+            }
+            var groupIds = jQuery(document.getElementById('groupIds')).val();
+            ${widgetParameters.jsWidget}.setParameter('groupIds', groupIds);
+            ${widgetParameters.jsWidget}.doDirectActionContainerRefresh('update', 'currentGroups');
+            jQuery('#multiNodeValueSelectingTreeDialog').dialog('close');
+        });
+        
+        var successMsg = "${successMsg}";
+        if (successMsg != null && successMsg.length > 0 ) {
+            jQuery('.success').show();
+            setTimeout(function() {
+                jQuery('.success').fadeOut('slow', function() {
+                    jQuery('.success').hide();
+                });
+            }, 5000);
+         }
+    });
     
 </script>
 
 <div id="currentGroups">
-    <jsp:include page="/WEB-INF/pages/widget/deviceGroupWidget/currentGroups.jsp" />
-</div>
 
-<cti:checkRole role="operator.DeviceActionsRole.ROLEID">
-<cti:checkProperty property="operator.DeviceActionsRole.DEVICE_GROUP_MODIFY">
-
-    <div class="actionArea">
-        <cti:button nameKey="groupTree" type="button" id="showPopupButton"/>
+    <div class="success">
+        <c:if test="${successMsg != null}"> ${successMsg} </c:if>
     </div>
-                                          
-    <jsTree:multiNodeValueSelectingPopupTree fieldId="groupIds"
-                                          fieldName="groupIds"
-                                          nodeValueName="groupId"
-                                          submitButton=".groupTree.submitButtonText"
-                                          cancelButton=".groupTree.closeButtonText"
-                                          submitCallback="commitGroupIds();"
-                                          id="deviceGroupWidgetPopupTree"
-                                          triggerElement="showPopupButton"
-                                          dataJson="${groupDataJson}"
-                                          title=".groupTree.label"
-                                          width="432"
-                                          height="600"
-                                          noSelectionAlert="yukon.common.device.bulk.deviceSelection.selectDevicesByGroupTree.noGroupSelectedAlertText" />                                      
-</cti:checkProperty>
-</cti:checkRole>
-                                                    
+                    
+    <jsTree:nodeValueSelectingInlineTree fieldId="groupName" 
+                                         fieldName="groupName"
+                                         nodeValueName="groupName" 
+                                         fieldValue="${groupName}"
+                                         multiSelect="true"
+                                         id="selectGroupTree" 
+                                         dataJson="${currentGroupsDataJson}"
+                                         includeControlBar="true"
+                                         highlightNodePath="${selectedNodePath}"
+                                         displayCheckboxes="true"
+                                         styleClass="contained static-mode"/>
+
+    <cti:checkRole role="operator.DeviceActionsRole.ROLEID">
+        <cti:checkProperty property="operator.DeviceActionsRole.DEVICE_GROUP_MODIFY">
+            <div class="actionArea">
+                <cti:button nameKey="edit" type="button" id="showPopupButton" />
+            </div>
+        </cti:checkProperty>
+    </cti:checkRole>
+
+</div>

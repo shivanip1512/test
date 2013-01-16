@@ -340,6 +340,26 @@ span.dynatree-selected .dynatree-title {
     color: black !important;
 }
 
+.static-mode span.dynatree-selected .dynatree-title {
+    background-color: white !important;
+    color: black !important;
+}
+.static-mode .dynatree-title {
+    cursor: default;
+}
+.static-mode a.dynatree-title:hover {
+    color: black;
+}
+.static-mode span.dynatree-focused a:link,
+span.dynatree-active a
+{
+    color: black;
+    background: white; 
+}
+.contained .tree_helper_controls {
+    background: white;
+}
+
 /*******************************************************************************
  * Drag'n'drop support
  */

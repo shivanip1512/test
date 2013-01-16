@@ -1,10 +1,11 @@
 <%@ taglib prefix="c"   uri="http://java.sun.com/jsp/jstl/core" %>
 <%@ taglib prefix="cti" uri="http://cannontech.com/tags/cti" %>
+<%@ taglib prefix="fn" uri="http://java.sun.com/jsp/jstl/functions"%>
 
 <%-- RENDER TO DIV SETUP --%>
 <%-- width and height are used to size either the div element the tree is rendered to --%>
-<%@ attribute name="width" required="true" type="java.lang.Integer"%>
-<%@ attribute name="height" required="true" type="java.lang.Integer"%>
+<%@ attribute name="width" required="false" type="java.lang.Integer"%>
+<%@ attribute name="height" required="false" type="java.lang.Integer"%>
 
 <%-- BASICS --%>
 <%-- id will be the internal id of the tree, also will be name of dom elememt to access tree in jsp --%>
@@ -130,8 +131,14 @@
         jQuery(document.getElementById("${id}")).dynatree(args);
     });
 </script>
+<c:if test="${not empty width && width > 0}">
+    <c:set var="treeWidth" value="width:${width}px;"/>
+</c:if>
+<c:if test="${not empty height && height > 0}">
+    <c:set var="treeHeight" value="height:${height}px;"/>
+</c:if>
 
-<div id="internalTreeContainer_${id}"  class="inlineTree ${pageScope.styleClass}" style="width:${width}px; height:${height}px;">
+<div id="internalTreeContainer_${id}"  class="inlineTree ${pageScope.styleClass}" style="${treeWidth} ${treeHeight}">
 
     <c:if test="${not empty pageScope.includeControlBar and pageScope.includeControlBar}">
         <div class="tree_helper_controls">
