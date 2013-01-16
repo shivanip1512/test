@@ -1,16 +1,3 @@
-/*-----------------------------------------------------------------------------*
-*
-* File:   mc_interp
-*
-* Date:   7/19/2001
-*
-* PVCS KEYWORDS:
-* ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/MACS/mc_interp.cpp-arc  $
-* REVISION     :  $Revision: 1.5 $
-* DATE         :  $Date: 2007/03/16 19:10:22 $
-*
-* Copyright (c) 1999, 2000, 2001 Cannon Technologies Inc. All rights reserved.
-*-----------------------------------------------------------------------------*/
 #include "precompiled.h"
 
 
@@ -31,8 +18,8 @@ CtiCriticalSection CtiInterpreter::_mutex;
     Creates a Tcl interpreter, loads the MACS package into the interpreter
     and sets the temporary file name used to obtain results
 ---------------------------------------------------------------------------*/
-CtiInterpreter::CtiInterpreter()
-: _isevaluating(false), _dostop(false), _block(false), _eval_barrier(2), _interp(NULL), preEvalFunction(NULL), postEvalFunction(NULL), _scheduleId(0)
+CtiInterpreter::CtiInterpreter(std::set<string> macsCommands)
+: _isevaluating(false), _dostop(false), _block(false), _eval_barrier(2), _interp(NULL), preEvalFunction(NULL), postEvalFunction(NULL), _scheduleId(0), _macsCommands(macsCommands)
 {
     set( CtiInterpreter::EVALUATE, false);
     set( CtiInterpreter::EVALUATE_FILE, false );
@@ -46,7 +33,62 @@ CtiInterpreter::~CtiInterpreter()
 {
 }
 
+string CtiInterpreter::escapeQuotationMarks(const string &command)
+{
+    string tok_str, escaped;
+
+    boost::char_separator<char> sep("\n");
+    Boost_char_tokenizer tok(command, sep);
+    Boost_char_tokenizer::iterator tok_iter = tok.begin();
+
+    while( (tok_iter != tok.end()) && !(tok_str = *tok_iter++).empty() )
+    {
+        // trim whitespace in the front
+        trim_left(tok_str);
+
+        if (isEscapeCommand(tok_str))
+        {
+            // command is a macs command, we need to escape any non-escaped quotes
+            size_t n = tok_str.length();
+
+            for (int i = 0; i < n; i++)
+            {
+                switch (tok_str[i])
+                {
+                    case '\"':
+                        escaped.append(1, '\\');
+                    default:
+                        escaped.append(1, tok_str[i]);
+                }
+            }
+        }
+        else
+        {
+            escaped.append(tok_str);
+        }
+    }
+
+    return escaped;
+}
+
+bool CtiInterpreter::isEscapeCommand(const string &command)
+{
+    size_t pos = command.find(' ');
+
+    string strCmd = command.substr(0, pos);
+
+    std::set<string>::iterator itr = _macsCommands.find(strCmd);
+
+    return _macsCommands.find(strCmd) != _macsCommands.end();
+}
+
 bool CtiInterpreter::evaluate(const string& command, bool block, void (*preEval)(CtiInterpreter* interp), void (*postEval)(CtiInterpreter* interp))
+{
+    string escapedString = escapeQuotationMarks(command);
+    return evaluateRaw(escapedString, block, preEval, postEval);
+}
+
+bool CtiInterpreter::evaluateRaw(const string& command, bool block, void (*preEval)(CtiInterpreter* interp), void (*postEval)(CtiInterpreter* interp))
 {
     //Hack to handle the condition that the thread hasn't started up yet
     //but evaluate has been called
@@ -95,7 +137,7 @@ bool CtiInterpreter::evaluateFile(const string& file, bool block )
 
     {
         _isevaluating = true;
-        _evalstring = file;
+        _evalstring = escapeQuotationMarks(file);;
         _block = block;
 
         interrupt( CtiInterpreter::EVALUATE_FILE );

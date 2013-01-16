@@ -6,7 +6,7 @@
 
 INCLPATHS+= \
 -I$(COMMON)\include \
--I$(MCCMD)\include \
+-I$(MACS)\include \
 -I$(CPARMS)\include \
 -I$(DATABASE)\include \
 -I$(MSG)\include \

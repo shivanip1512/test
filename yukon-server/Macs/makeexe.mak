@@ -46,13 +46,16 @@ $(TCL_LIBS) \
 $(COMPILEBASE)\lib\service.lib \
 $(COMPILEBASE)\lib\ctimsg.lib \
 $(COMPILEBASE)\lib\ctibase.lib \
-$(COMPILEBASE)\lib\mccmd.lib \
 $(COMPILEBASE)\lib\ctidbsrc.lib \
 $(COMPILEBASE)\lib\ctiholidaydb.lib \
 $(COMPILEBASE)\lib\interp.lib
 
 
 BASEOBJS= \
+mccmd.obj \
+wpsc.obj  \
+decodetextcmdfile.obj \
+xcel.obj \
 clientconn.obj \
 clistener.obj \
 mc_dbthr.obj \

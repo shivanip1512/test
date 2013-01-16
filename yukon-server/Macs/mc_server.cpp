@@ -1,32 +1,5 @@
 #include "precompiled.h"
 
-
-/*-----------------------------------------------------------------------------*
-*
-* File:   mcserver
-*
-* Date:   7/19/2001
-*
-* PVCS KEYWORDS:
-* ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/MACS/mc_server.cpp-arc  $
-* REVISION     :  $Revision: 1.32.4.1 $
-* DATE         :  $Date: 2008/11/21 20:56:59 $
-*
-* Copyright (c) 1999, 2000, 2001 Cannon Technologies Inc. All rights reserved.
-*-----------------------------------------------------------------------------*/
-
-/*---------------------------------------------------------------------------
-        Filename:  mc_server.cpp
-
-        Programmer:  Aaron Lauinger
-
-        Description:  Source file for CtiMCServer
-
-
-        Initial Date: 1/9/01
-
-        COPYRIGHT:  Copyright (C) Cannon Technologies, Inc., 2001
----------------------------------------------------------------------------*/
 #include "mc_server.h"
 #include "numstr.h"
 #include "thread_monitor.h"
@@ -53,12 +26,51 @@ CtiMCServer::CtiMCServer()
   _client_listener(MC_PORT),
   _db_update_thread(_schedule_manager),
   _scheduler(_schedule_manager),
-  _file_interface(_schedule_manager)
+  _file_interface(_schedule_manager),
+  _interp_pool(createMacsCommandSet())
 {
 }
 
 CtiMCServer::~CtiMCServer()
 {
+}
+
+set<string> CtiMCServer::createMacsCommandSet() 
+{
+    std::set<string> macsCommands, upperCommands, lowerCommands;
+
+    // Grab all of the command strings from the tcl maps in mccmd.
+    std::transform(
+        tclCamelCommandMap.begin(),
+        tclCamelCommandMap.end(),
+        inserter(macsCommands, macsCommands.begin()),
+        bind(&TclCommandMap::value_type::first, _1));
+
+    for each(const string &str in macsCommands)
+    {   
+        string upperStr(str); // initialize to get the correct size.
+        std::transform(str.begin(), str.end(), upperStr.begin(), ::toupper);
+        upperCommands.insert(upperStr);
+    }
+
+    for each(const string &str in macsCommands)
+    {   
+        string lowerStr(str); // initialize to get the correct size.
+        std::transform(str.begin(), str.end(), lowerStr.begin(), ::tolower);
+        lowerCommands.insert(lowerStr);
+    }
+
+    macsCommands.insert(upperCommands.begin(), upperCommands.end());
+
+    macsCommands.insert(lowerCommands.begin(), lowerCommands.end());
+
+    std::transform(
+        tclNonCamelCommandMap.begin(),
+        tclNonCamelCommandMap.end(),
+        inserter(macsCommands, macsCommands.begin()),
+        bind(&TclCommandMap::value_type::first, _1));
+
+    return macsCommands;
 }
 
 void CtiMCServer::run()
@@ -273,7 +285,7 @@ void CtiMCServer::logEvent(const string& user, const string& text) const
 
     // Acquire an interpreter and send out the command
     CtiInterpreter* interp = _interp_pool.acquireInterpreter();
-    interp->evaluate( cmd_string, true ); //block
+    interp->evaluateRaw( cmd_string, true ); //block
     _interp_pool.releaseInterpreter(interp);
 }
 
@@ -331,69 +343,69 @@ bool CtiMCServer::init()
 
     try
     {
-    /* Start Initialization */
-    {
-        CtiLockGuard<CtiLogger> guard(dout);
-        dout << CtiTime() << " Metering and Control starting up..." << endl;
-    }
-
-    // load up the database and start the db update thread
-    // do not proceed until we have loaded the db successfully
-    // but do respect interruptions
-
-    while( !(status = loadDB()) )
-    {
+        /* Start Initialization */
         {
             CtiLockGuard<CtiLogger> guard(dout);
-            dout << CtiTime() << " An error occured retrieving accessing the database, it may not be initialized.  Retry in 15 seconds." << endl;
+            dout << CtiTime() << " Metering and Control starting up..." << endl;
         }
 
-        if( sleep(15000) )
-            break;
-    }
+        // load up the database and start the db update thread
+        // do not proceed until we have loaded the db successfully
+        // but do respect interruptions
 
-    if( !loadCParms() )
-    {
-        CtiLockGuard< CtiLogger > guard(dout);
-        dout << CtiTime() << " At least one cparm not found in master.cfg" << endl;
-    }
+        while( !(status = loadDB()) )
+        {
+            {
+                CtiLockGuard<CtiLogger> guard(dout);
+                dout << CtiTime() << " An error occured retrieving accessing the database, it may not be initialized.  Retry in 15 seconds." << endl;
+            }
 
-    if( status )
-    {
-        CtiLockGuard<CtiMutex> map_guard(_schedule_manager.getMux() );
-        CtiLockGuard<CtiLogger> dout_guard(dout);
-        dout << CtiTime() << " Loaded " << _schedule_manager.getMap().size() << " schedules from the database." << endl;
-    }
-    else
-    {
-        CtiLockGuard<CtiLogger> guard(dout);
-        dout << CtiTime() << " An error occured retrieving schedules from the database." << endl;
-        status = false;
-    }
+            if( sleep(15000) )
+                break;
+        }
 
-    /* Set up our events */
-    CtiTime now = stripSeconds(CtiTime::now());
-    _scheduler.initEvents(now);
+        if( !loadCParms() )
+        {
+            CtiLockGuard< CtiLogger > guard(dout);
+            dout << CtiTime() << " At least one cparm not found in master.cfg" << endl;
+        }
 
-    _db_update_thread.start();
+        if( status )
+        {
+            CtiLockGuard<CtiMutex> map_guard(_schedule_manager.getMux() );
+            CtiLockGuard<CtiLogger> dout_guard(dout);
+            dout << CtiTime() << " Loaded " << _schedule_manager.getMap().size() << " schedules from the database." << endl;
+        }
+        else
+        {
+            CtiLockGuard<CtiLogger> guard(dout);
+            dout << CtiTime() << " An error occured retrieving schedules from the database." << endl;
+            status = false;
+        }
 
-    /* start up the client listener */
-    _client_listener.setQueue(&_main_queue);
-    _client_listener.start();
+        /* Set up our events */
+        CtiTime now = stripSeconds(CtiTime::now());
+        _scheduler.initEvents(now);
 
-    /* start up the file interface */
-    _file_interface.setQueue(&_main_queue);
-    _file_interface.start();
+        _db_update_thread.start();
 
-    /* load commands into the interpreter &
-        init connections */
-   _interp_pool.evalOnInit("load mccmd");
+        /* start up the client listener */
+        _client_listener.setQueue(&_main_queue);
+        _client_listener.start();
 
-   /* start up connections to other services */
-   CtiInterpreter* interp = _interp_pool.acquireInterpreter();
-   interp->evaluate("pilstartup", true );
-   _interp_pool.releaseInterpreter(interp);
+        /* start up the file interface */
+        _file_interface.setQueue(&_main_queue);
+        _file_interface.start();
 
+
+        /* load commands into the interpreter &
+            init connections */
+        _interp_pool.evalOnInit("load mccmd");
+
+        /* start up connections to other services */
+        CtiInterpreter* interp = _interp_pool.acquireInterpreter();
+        interp->evaluate("pilstartup", true );
+        _interp_pool.releaseInterpreter(interp);
     }
     catch(...)
     {

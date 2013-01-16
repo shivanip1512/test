@@ -38,7 +38,6 @@ SCANNER         = $(COMPILEBASE)\scanner
 SERVER          = $(COMPILEBASE)\server
 CPARMS          = $(COMPILEBASE)\cparms
 MACS            = $(COMPILEBASE)\macs
-MCCMD           = $(COMPILEBASE)\mccmd
 MSG             = $(COMPILEBASE)\message
 PROT            = $(COMPILEBASE)\protocol
 SERVICE         = $(COMPILEBASE)\service

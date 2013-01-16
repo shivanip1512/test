@@ -42,7 +42,6 @@ $(TCL_LIBS) \
 $(COMPILEBASE)\lib\service.lib \
 $(COMPILEBASE)\lib\ctimsg.lib \
 $(COMPILEBASE)\lib\ctibase.lib \
-$(COMPILEBASE)\lib\mccmd.lib \
 $(COMPILEBASE)\lib\ctidbsrc.lib \
 $(COMPILEBASE)\lib\ctiholidaydb.lib \
 $(COMPILEBASE)\lib\interp.lib
@@ -50,7 +49,8 @@ $(COMPILEBASE)\lib\interp.lib
 
 MACS_TEST_OBJS= \
 test_main.obj \
-test_scheduletime.obj
+test_scheduletime.obj \
+test_decodeTextCmdFile.obj \
 
 MACSBASEOBJS= \
 clientconn.obj \
@@ -64,7 +64,11 @@ mc_server.obj \
 mc_script.obj \
 mgr_mcsched.obj \
 tbl_mcsched.obj \
-tbl_mcsimpsched.obj
+tbl_mcsimpsched.obj \
+decodeTextCmdFile.obj \
+mccmd.obj \
+wpsc.obj \
+xcel.obj
 
 MACS_TEST_FULLBUILD = $[Filename,$(OBJ),MacsTestFullBuild,target]
 

@@ -1,25 +1,11 @@
 #include "precompiled.h"
 
-
-/*-----------------------------------------------------------------------------*
-*
-* File:   mc_interp_pool
-*
-* Date:   7/19/2001
-*
-* PVCS KEYWORDS:
-* ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/MACS/mc_interp_pool.cpp-arc  $
-* REVISION     :  $Revision: 1.4 $
-* DATE         :  $Date: 2007/03/16 19:10:22 $
-*
-* Copyright (c) 1999, 2000, 2001 Cannon Technologies Inc. All rights reserved.
-*-----------------------------------------------------------------------------*/
-
 #include "interp_pool.h"
 
 using namespace std;
 
-CtiInterpreterPool::CtiInterpreterPool()
+CtiInterpreterPool::CtiInterpreterPool(std::set<std::string> macsCommands) :
+        _macsCommands(macsCommands)
 {
 }
 
@@ -173,7 +159,7 @@ void CtiInterpreterPool::evalOnInit(const string& cmd)
 ----------------------------------------------------------------------------*/
 CtiInterpreter* CtiInterpreterPool::createInterpreter()
 {
-  CtiInterpreter* interp = new CtiInterpreter();
+  CtiInterpreter* interp = new CtiInterpreter(_macsCommands);
   interp->start();
   if(_init_cmd.length() > 0)
   {

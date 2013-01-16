@@ -14,7 +14,6 @@ build_dirs = \
         scanner \
         simulator \
         interp \
-        mccmd \
         logic \
         macs \
         fdr \

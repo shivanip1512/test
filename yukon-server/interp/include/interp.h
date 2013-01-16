@@ -14,14 +14,19 @@
 #include "guard.h"
 #include "thread.h"
 
+#include "boostutil.h"
+
+#include <set>
+
 class IM_EX_INTERP CtiInterpreter : public CtiThread
 {
 
 public:
 
-    CtiInterpreter();
+    CtiInterpreter(std::set<std::string> macsCommands);
     virtual ~CtiInterpreter();
 
+    bool evaluateRaw(const std::string& command, bool block = true, void (*preEval)(CtiInterpreter* interp) = NULL, void (*postEval)(CtiInterpreter* interp) = NULL);
     bool evaluate(const std::string& command, bool block = true, void (*preEval)(CtiInterpreter* interp) = NULL, void (*postEval)(CtiInterpreter* interp) = NULL);
     bool evaluateFile(const std::string& file, bool block = true );
     void setScheduleId(long schedId);
@@ -36,6 +41,9 @@ public:
 protected:
 
     Tcl_Interp* _interp;
+
+    std::string escapeQuotationMarks(const std::string &command);
+    bool isEscapeCommand(const std::string &command);
 
 private:
 
@@ -58,6 +66,8 @@ private:
     long _scheduleId;
 
     std::string _evalstring;
+
+    std::set<std::string> _macsCommands;
 
     static CtiCriticalSection _mutex;
 

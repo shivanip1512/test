@@ -11,7 +11,7 @@ class IM_EX_INTERP CtiInterpreterPool
 {
 public:
 
-    CtiInterpreterPool();
+    CtiInterpreterPool(std::set<std::string> macsCommands);
     virtual ~CtiInterpreterPool();
 
     void evalOnInit(const std::string& command);
@@ -29,6 +29,8 @@ private:
 
     // Used to protect the interpreter sets
     CtiMutex _mux;
+
+    std::set<std::string> _macsCommands;
 
     std::set< CtiInterpreter* > _available_interps;
     std::set< CtiInterpreter* > _active_interps;

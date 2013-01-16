@@ -1,16 +1,3 @@
-/*-----------------------------------------------------------------------------*
-*
-* File:   mccmd
-*
-* Date:   7/19/2001
-*
-* PVCS KEYWORDS:
-* ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/MCCMD/mccmd.cpp-arc  $
-* REVISION     :  $Revision: 1.81.2.1 $
-* DATE         :  $Date: 2008/11/21 20:56:59 $
-*
-* Copyright (c) 1999, 2000, 2001 Cannon Technologies Inc. All rights reserved.
-*-----------------------------------------------------------------------------*/
 #include "precompiled.h"
 #include <boost/regex.hpp>
 
@@ -53,7 +40,6 @@
 #include "decodetextcmdfile.h"
 #include "utility.h"
 
-
 #include <rw/collstr.h>
 #include <rw/thr/thrutil.h>
 
@@ -94,6 +80,44 @@ CtiTime gLastReturnMessageReceived(0UL);
 
 // Used to distinguish unique requests/responses to/from pil
 unsigned short gUserMessageID = 0;
+
+static const TclCommandMap tclCamelCommandMap = boost::assign::map_list_of
+    ("PILStartup", &Mccmd_Connect)
+    ("PILShutdown", &Mccmd_Disconnect)
+    ("MCCMDReset", &Mccmd_Reset)
+    ("Command", &Command)
+    ("GetValue", &GetValue)
+    ("PutValue", &PutValue)
+    ("GetStatus", &GetStatus)
+    ("PutStatus", &PutStatus)
+    ("GetConfig", &GetConfig)
+    ("PutConfig", &PutConfig)
+    ("Loop", &Loop)
+    ("Ping", &Loop)
+    ("Control", &Control)
+    ("Pil", &Pil)
+    ("Wait", &Wait)
+    ("LogEvent", &LogEvent)
+    ("SendDBChange", &SendDBChange)
+    ("Dout", &Dout)
+    ("SendNotification", &SendNotification)
+    ("ImportCommandFile", &importCommandFile)
+    ("createProcess", &CTICreateProcess);
+
+static const TclCommandMap tclNonCamelCommandMap = boost::assign::map_list_of
+    ("holiday", &isHoliday)
+    ("exit", &Exit)
+    ("mcu8100", &mcu8100)
+    ("mcu9000eoi", &mcu9000eoi)
+    ("mcu8100wepco", &mcu8100wepco)
+    ("mcu8100service", &mcu8100service)
+    ("mcu8100program", &mcu8100program)
+    ("PMSI", &pmsi)
+    ("pmsi", &pmsi)
+    ("getDeviceID", &getDeviceID)
+    ("getDeviceName", &getDeviceName)
+    ("formatError", &formatError)
+    ("getYukonBaseDir", &getYukonBaseDir);
 
 void _MessageThrFunc()
 {
@@ -470,109 +494,22 @@ int Mccmd_Init(Tcl_Interp* interp)
 {
     /* Register MACS commands with the interpreter */
 
-    Tcl_CreateCommand( interp, "PILStartup", Mccmd_Connect, NULL, NULL );
-    Tcl_CreateCommand( interp, "PILSTARTUP", Mccmd_Connect, NULL, NULL );
-    Tcl_CreateCommand( interp, "pilstartup", Mccmd_Connect, NULL, NULL );
+    for each(const TclCommandMap::value_type& itr in tclCamelCommandMap)
+    {
+        string commandName_lower(itr.first), commandName_upper(itr.first), commandName_camel(itr.first);
 
-    Tcl_CreateCommand( interp, "PILShutdown", Mccmd_Disconnect, NULL, NULL );
-    Tcl_CreateCommand( interp, "PILSHUTDOWN", Mccmd_Disconnect, NULL, NULL );
-    Tcl_CreateCommand( interp, "pilshutdown", Mccmd_Disconnect, NULL, NULL );
+        CtiToLower(commandName_lower);
+        CtiToUpper(commandName_upper);
 
-    Tcl_CreateCommand( interp, "MCCMDReset", Mccmd_Reset, NULL, NULL );
-    Tcl_CreateCommand( interp, "MCCMDRESET", Mccmd_Reset, NULL, NULL );
-    Tcl_CreateCommand( interp, "mccmdreset", Mccmd_Reset, NULL, NULL );
+        Tcl_CreateCommand( interp, const_cast<char*>(commandName_camel.c_str()), itr.second, NULL, NULL );
+        Tcl_CreateCommand( interp, const_cast<char*>(commandName_lower.c_str()), itr.second, NULL, NULL );
+        Tcl_CreateCommand( interp, const_cast<char*>(commandName_upper.c_str()), itr.second, NULL, NULL );
+    }
 
-    Tcl_CreateCommand( interp, "Command", Command, NULL, NULL );
-    Tcl_CreateCommand( interp, "command", Command, NULL, NULL );
-    Tcl_CreateCommand( interp, "COMMAND", Command, NULL, NULL );
-
-    Tcl_CreateCommand( interp, "GetValue", GetValue, NULL, NULL );
-    Tcl_CreateCommand( interp, "getvalue", GetValue, NULL, NULL );
-    Tcl_CreateCommand( interp, "GETVALUE", GetValue, NULL, NULL );
-
-    Tcl_CreateCommand( interp, "PutValue", PutValue, NULL, NULL );
-    Tcl_CreateCommand( interp, "putvalue", PutValue, NULL, NULL );
-    Tcl_CreateCommand( interp, "PUTVALUE", PutValue, NULL, NULL );
-
-    Tcl_CreateCommand( interp, "GetStatus", GetStatus, NULL, NULL );
-    Tcl_CreateCommand( interp, "getstatus", GetStatus, NULL, NULL );
-    Tcl_CreateCommand( interp, "GETSTATUS", GetStatus, NULL, NULL );
-
-    Tcl_CreateCommand( interp, "PutStatus", PutStatus, NULL, NULL );
-    Tcl_CreateCommand( interp, "putstatus", PutStatus, NULL, NULL );
-    Tcl_CreateCommand( interp, "PUTSTATUS", PutStatus, NULL, NULL );
-
-    Tcl_CreateCommand( interp, "GetConfig", GetConfig, NULL, NULL );
-    Tcl_CreateCommand( interp, "getconfig", GetConfig, NULL, NULL );
-    Tcl_CreateCommand( interp, "GETCONFIG", GetConfig, NULL, NULL );
-
-    Tcl_CreateCommand( interp, "PutConfig", PutConfig, NULL, NULL );
-    Tcl_CreateCommand( interp, "putconfig", PutConfig, NULL, NULL );
-    Tcl_CreateCommand( interp, "PUTCONFIG", PutConfig, NULL, NULL );
-
-    Tcl_CreateCommand( interp, "Loop", Loop, NULL, NULL );
-    Tcl_CreateCommand( interp, "loop", Loop, NULL, NULL );
-    Tcl_CreateCommand( interp, "LOOP", Loop, NULL, NULL );
-
-    Tcl_CreateCommand( interp, "Ping", Loop, NULL, NULL );
-    Tcl_CreateCommand( interp, "ping", Loop, NULL, NULL );
-    Tcl_CreateCommand( interp, "PING", Loop, NULL, NULL );
-
-    Tcl_CreateCommand( interp, "Control", Control, NULL, NULL );
-    Tcl_CreateCommand( interp, "control", Control, NULL, NULL );
-    Tcl_CreateCommand( interp, "CONTROL", Control, NULL, NULL );
-
-    Tcl_CreateCommand( interp, "Pil", Pil, NULL, NULL );
-    Tcl_CreateCommand( interp, "pil", Pil, NULL, NULL );
-    Tcl_CreateCommand( interp, "PIL", Pil, NULL, NULL );
-
-    Tcl_CreateCommand( interp, "Wait", Wait, NULL, NULL );
-    Tcl_CreateCommand( interp, "wait", Wait, NULL, NULL );
-    Tcl_CreateCommand( interp, "WAIT", Wait, NULL, NULL );
-
-    Tcl_CreateCommand( interp, "LogEvent", LogEvent, NULL, NULL );
-    Tcl_CreateCommand( interp, "logevent", LogEvent, NULL, NULL );
-    Tcl_CreateCommand( interp, "LOGEVENT", LogEvent, NULL, NULL );
-
-    Tcl_CreateCommand( interp, "SendDBChange", SendDBChange, NULL, NULL );
-    Tcl_CreateCommand( interp, "senddbchange", SendDBChange, NULL, NULL );
-    Tcl_CreateCommand( interp, "SENDDBCHANGE", SendDBChange, NULL, NULL );
-
-    Tcl_CreateCommand( interp, "Dout", Dout, NULL, NULL );
-    Tcl_CreateCommand( interp, "dout", Dout, NULL, NULL );
-    Tcl_CreateCommand( interp, "DOUT", Dout, NULL, NULL );
-
-    Tcl_CreateCommand( interp, "SendNotification", SendNotification, NULL, NULL );
-    Tcl_CreateCommand( interp, "sendnotification", SendNotification, NULL, NULL );
-    Tcl_CreateCommand( interp, "SENDNOTIFICATION", SendNotification, NULL, NULL );
-
-    Tcl_CreateCommand( interp, "holiday", isHoliday, NULL, NULL );
-
-    Tcl_CreateCommand( interp, "exit", Exit, NULL, NULL );
-
-    Tcl_CreateCommand( interp, "mcu8100", mcu8100, NULL, NULL );
-    Tcl_CreateCommand( interp, "mcu9000eoi", mcu9000eoi, NULL, NULL );
-    Tcl_CreateCommand( interp, "mcu8100wepco", mcu8100wepco, NULL, NULL );
-    Tcl_CreateCommand( interp, "mcu8100service", mcu8100service, NULL, NULL );
-    Tcl_CreateCommand( interp, "mcu8100program", mcu8100program, NULL, NULL );
-
-    Tcl_CreateCommand( interp, "PMSI", pmsi, NULL, NULL );
-    Tcl_CreateCommand( interp, "pmsi", pmsi, NULL, NULL );
-
-    Tcl_CreateCommand( interp, "importcommandfile", importCommandFile, NULL, NULL );
-    Tcl_CreateCommand( interp, "ImportCommandFile", importCommandFile, NULL, NULL );
-    Tcl_CreateCommand( interp, "IMPORTCOMMANDFILE", importCommandFile, NULL, NULL );
-
-    Tcl_CreateCommand( interp, "getDeviceID", getDeviceID, NULL, NULL);
-    Tcl_CreateCommand( interp, "getDeviceName", getDeviceName, NULL, NULL);
-
-    Tcl_CreateCommand( interp, "formatError", formatError, NULL, NULL);
-
-    Tcl_CreateCommand( interp, "getYukonBaseDir", getYukonBaseDir, NULL, NULL);
-
-    Tcl_CreateCommand( interp, "createProcess", CTICreateProcess, NULL, NULL);
-    Tcl_CreateCommand( interp, "CREATEPROCESS", CTICreateProcess, NULL, NULL);
-    Tcl_CreateCommand( interp, "createprocess", CTICreateProcess, NULL, NULL);
+    for each (const TclCommandMap::value_type& itr in tclNonCamelCommandMap)
+    {
+        Tcl_CreateCommand( interp, const_cast<char*>(itr.first.c_str()), itr.second, NULL, NULL );
+    }
 
     /* Load up the initialization script */
     string init_script;

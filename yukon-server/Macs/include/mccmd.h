@@ -14,6 +14,8 @@
 #include <rw/thr/threadid.h>
 #include <rw/thr/countptr.h>
 
+#include <boost/assign/list_of.hpp>
+
 #include "msg_pcrequest.h"
 #include "msg_pcreturn.h"
 
@@ -38,6 +40,14 @@
 #define MCCMD_DEBUG_PILREQUEST 0x00000002
 
 extern unsigned gMccmdDebugLevel;
+
+typedef int (*MacsCommandPtr)(ClientData, Tcl_Interp*, int, char*[]);
+
+typedef std::map< std::string, MacsCommandPtr > TclCommandMap;
+typedef TclCommandMap::value_type TclCommandPair;
+
+extern const TclCommandMap tclCamelCommandMap;
+extern const TclCommandMap tclNonCamelCommandMap;
 
 #ifdef __cplusplus
 extern "C" {
@@ -195,7 +205,6 @@ void DumpRequestMessage(CtiRequestMsg& msg);
 /* Let the world know of any interesting output - it will put the output onto the
    queue stored for the current thread, if there is one */
 void WriteOutput(const char* output);
-
 
 #ifdef __cplusplus
 }
