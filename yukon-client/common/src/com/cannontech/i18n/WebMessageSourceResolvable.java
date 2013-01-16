@@ -10,7 +10,7 @@ public class WebMessageSourceResolvable extends YukonMessageSourceResolvable{
 	private static final long serialVersionUID = 1L;
 
 	private String className;
-    private boolean htmlEscape = false;
+	private boolean htmlEscape = false;
 
 	public String getClassName() {
 		return className;
