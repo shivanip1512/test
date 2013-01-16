@@ -755,9 +755,9 @@ int Mct420Device::decodeGetConfigDailyReadInterest(const INMESS &InMessage, CtiT
 
     ReturnMsg->setUserMessageId(InMessage.Return.UserID);
 
-    unsigned interest_day     =   DSt.Message[9];
-    unsigned interest_month   =  (DSt.Message[10] & 0x0f) + 1;
-    unsigned interest_channel = ((DSt.Message[10] & 0x30) >> 4) + 1;
+    const unsigned interest_day     =   DSt.Message[9];
+    const unsigned interest_month   =  (DSt.Message[10] & 0x0f) + 1;
+    const unsigned interest_channel = ((DSt.Message[10] & 0x30) >> 4) + 1;
 
     string resultString;
 
