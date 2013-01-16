@@ -115,7 +115,7 @@ public class ControlAuditController {
     }
     
     @RequestMapping
-    public String download(HttpServletResponse response, YukonUserContext context, String auditId, ResultType type) throws IOException {
+    public void download(HttpServletResponse response, YukonUserContext context, String auditId, ResultType type) throws IOException {
         MessageSourceAccessor accessor = resolver.getMessageSourceAccessor(context);
         
         ControlAuditResult result = resultsCache.getResult(auditId);
@@ -155,8 +155,6 @@ public class ControlAuditController {
         
         //write out the file
         WebFileUtils.writeToCSV(response, headerRow, dataRows, "LmControlAudit_" + type + ".csv");
-        
-        return null;
     }
     
     @RequestMapping
