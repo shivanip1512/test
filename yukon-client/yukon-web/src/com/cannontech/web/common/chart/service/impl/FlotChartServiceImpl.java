@@ -122,6 +122,7 @@ public class FlotChartServiceImpl implements FlotChartService {
         JSONObject dataAndOptions = new JSONObject();
         JSONArray jsonDataContainer = new JSONArray();
 
+        /* data */
         for (VfLine line : graph.getLines()) {
             JSONArray linesArray = new JSONArray();
             VfPoint labelPoint = null;
@@ -153,34 +154,8 @@ public class FlotChartServiceImpl implements FlotChartService {
             dataObj.put("phase", line.getPhase());
             jsonDataContainer.add(dataObj);
         }
-        
-        /* ---------------------------
-           JSON Options - please keep this comment up to date
-           ---------------------------
-        xaxis: {
-            autoscaleMargin: 0.1,
-        },
-        yaxis: {
-            position: 'left',
-            axisLabel: yLabel,
-            min: graph_xmin,
-            max: graph_xmax,
-            autoscaleMargin: 0.1,
-        },
-        grid: {
-            markings: [
-                    { 
-                        color: '#f1f1f1',
-                        yaxis: { from: strategyHigh }
-                    },
-                    { 
-                        color: '#f1f1f1',
-                        yaxis: { to: strategyLow }
-                    }
-                ]
-        }
-        --------------------------- */
-        
+
+        /* options */
         JSONObject options = new JSONObject();
         
         JSONObject xAxis = new JSONObject();

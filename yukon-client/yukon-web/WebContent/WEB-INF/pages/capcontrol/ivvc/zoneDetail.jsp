@@ -417,13 +417,12 @@
 				<cti:msg2 var="tabName" key=".voltageProfile.title" />
 				<cti:tabbedContentSelectorContent selectorName="${tabName}">
 					<c:set var="chartId" value="zone_${zoneId}_chart" />
-                    <cti:url var="chartJsonDataUrl" value="/capcontrol/ivvc/zone/chart">
-                        <cti:param name="zoneId" value="${zoneId}"/>
-                    </cti:url>
-                    <flot:ivvcChart
-                        chartId="${chartId}"
-                        jsonDataAndOptions="${graphAsJSON}"
-                        title="${graphSettings.graphTitle}"/>
+					<cti:url var="chartJsonDataUrl" value="/capcontrol/ivvc/zone/chart">
+						<cti:param name="zoneId" value="${zoneId}" />
+					</cti:url>
+					<flot:ivvcChart chartId="${chartId}"
+						jsonDataAndOptions="${graphAsJSON}"
+						title="${graphSettings.graphTitle}" />
 
 					<cti:dataUpdaterCallback function="Yukon.Flot.reloadChartIfExpired({chartId:'${chartId}', dataUrl:'${chartJsonDataUrl}'})"
 						initialize="false" largestTime="CAPCONTROL/${zoneId}/IVVC_LARGEST_GRAPH_TIME_FOR_ZONE"/>

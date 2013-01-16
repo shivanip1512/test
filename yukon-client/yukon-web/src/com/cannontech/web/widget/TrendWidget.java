@@ -187,8 +187,7 @@ public class TrendWidget extends WidgetControllerBase {
         			accessor.getMessage(converterTypeResolvable),
         			accessor.getMessage(attributeResolvable));
         	
-        	String escapedTitle = title.replace("'", "\\'");
-			mav.addObject("title", escapedTitle);
+			mav.addObject("title", title);
         } else {
         	MessageSourceResolvable converterTypeResolvable = new YukonMessageSourceResolvable(attributeGraphType.getConverterType().getFormatKey() + ".label");
         	MessageSourceResolvable attributeResolvable = attribute.getMessage();
