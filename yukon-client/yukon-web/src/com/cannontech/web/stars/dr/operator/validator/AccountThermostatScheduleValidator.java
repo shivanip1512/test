@@ -39,7 +39,7 @@ public class AccountThermostatScheduleValidator extends SimpleValidator<AccountT
 
         if (target.getScheduleName().length() > SCHEDULE_NAME_LENGTH) {
             errors.rejectValue("scheduleName", "yukon.web.components.thermostat.schedule.error.scheduleNameTooLong",
-                             new Object[] { SCHEDULE_NAME_LENGTH },
+                             new Integer[] { SCHEDULE_NAME_LENGTH },
                              null);
         }
         
