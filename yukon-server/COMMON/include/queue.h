@@ -629,44 +629,22 @@ public:
         return _col.empty();
     }
 
-    bool putQueue(const T & item)
+    void putQueue(const T & item)
     {
-        try
-        {
-            lock_t scoped_lock(_mux, _xt_eot);
-            _col.push(item);
-            _dataAvailable.notify_one();
-
-            return true;
-        }
-        catch(...)
-        {
-            CtiLockGuard<CtiLogger> doubt_guard(dout);
-            dout << CtiTime() << " **** Exception **** " << FO(__FILE__) << " (" << __LINE__ << ")" << std::endl;
-        }
-
-        return false;
+        lock_t scoped_lock(_mux, _xt_eot);
+        _col.push(item);
+        _dataAvailable.notify_one();
     }
 
     T getQueue()
     {
-        T value;
-
-        try
+        lock_t scoped_lock(_mux, _xt_eot);
+        while(_col.empty())
         {
-            lock_t scoped_lock(_mux, _xt_eot);
-            while(_col.empty())
-            {
-                _dataAvailable.wait(scoped_lock);
-            }
-            value = _col.front();
-            _col.pop();
+            _dataAvailable.wait(scoped_lock);
         }
-        catch(...)
-        {
-            CtiLockGuard<CtiLogger> doubt_guard(dout);
-            dout << CtiTime() << " **** Exception **** " << FO(__FILE__) << " (" << __LINE__ << ")" << std::endl;
-        }
+        T value = _col.front();
+        _col.pop();
 
         return value;
     }

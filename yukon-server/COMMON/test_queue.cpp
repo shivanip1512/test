@@ -294,10 +294,16 @@ BOOST_AUTO_TEST_CASE(test_valuequeue_basic_ops)
         q.putQueue(v);
     }
 
-    for (int v = 0; v < 10; v++)
-    {
-        BOOST_CHECK_EQUAL( v, q.getQueue() );
-    }
+    BOOST_CHECK_EQUAL( 0, q.getQueue() );
+    BOOST_CHECK_EQUAL( 1, q.getQueue() );
+    BOOST_CHECK_EQUAL( 2, q.getQueue() );
+    BOOST_CHECK_EQUAL( 3, q.getQueue() );
+    BOOST_CHECK_EQUAL( 4, q.getQueue() );
+    BOOST_CHECK_EQUAL( 5, q.getQueue() );
+    BOOST_CHECK_EQUAL( 6, q.getQueue() );
+    BOOST_CHECK_EQUAL( 7, q.getQueue() );
+    BOOST_CHECK_EQUAL( 8, q.getQueue() );
+    BOOST_CHECK_EQUAL( 9, q.getQueue() );
 }
 
 BOOST_AUTO_TEST_SUITE_END()
