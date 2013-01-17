@@ -128,7 +128,11 @@
     <entry key="yukon.web.modules.operator.filterSelection.noRules">No Filter Rules Defined</entry>
     <entry key="yukon.web.modules.operator.filterSelection.filterMode.OR">At Least One</entry>
     <entry key="yukon.web.modules.operator.filterSelection.filterMode.AND">Every One</entry>
+    
+    <entry key="yukon.web.modules.operator.filterSelection.assigned">Assigned to an account.</entry>
     <entry key="yukon.web.modules.operator.filterSelection.unenrolled">Not enrolled in any program.</entry>
+    <entry key="yukon.web.modules.operator.filterSelection.warehouse">Not assigned to an account.</entry>
+
     <entry key="yukon.web.modules.operator.filterSelection.select.label">Select</entry>
     <entry key="yukon.web.modules.operator.filterSelection.cancel">Cancel</entry>
     <entry key="yukon.web.modules.operator.filterSelection.error.noInventory">Filter returned no inventory.</entry>
@@ -155,6 +159,7 @@
     <entry key="yukon.web.modules.operator.filterSelection.serialNumberRangeSeperator"> to </entry>
     
     <entry key="yukon.web.modules.operator.filterSelection.filterRuleType.APPLIANCE_TYPE">Appliance Type</entry>
+    <entry key="yukon.web.modules.operator.filterSelection.filterRuleType.ASSIGNED">Assigned</entry>
     <entry key="yukon.web.modules.operator.filterSelection.filterRuleType.CUSTOMER_TYPE">Customer Type</entry>
     <entry key="yukon.web.modules.operator.filterSelection.filterRuleType.DEVICE_STATUS">Device Status</entry>
     <entry key="yukon.web.modules.operator.filterSelection.filterRuleType.DEVICE_STATUS_DATE_RANGE">Device Status Date Range</entry>

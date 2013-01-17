@@ -16,6 +16,9 @@ public class RuleModel {
 
     /* Appliance Type */
     private int applianceType;
+
+    /* Assigned to a Customer Account*/
+    private String assigned;
     
     /* Customer Type */
     private int modelCustomerType;
@@ -82,6 +85,13 @@ public class RuleModel {
     }
     public void setApplianceType(int applianceType) {
         this.applianceType = applianceType;
+    }
+    
+    public String getAssigned() {
+        return assigned;
+    }
+    public void setAssigned(String assigned) {
+        this.assigned = assigned;
     }
     
     /* Customer type */

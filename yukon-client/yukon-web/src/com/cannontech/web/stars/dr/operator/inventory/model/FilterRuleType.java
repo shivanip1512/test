@@ -4,6 +4,7 @@ import com.cannontech.common.i18n.DisplayableEnum;
 
 public enum FilterRuleType implements DisplayableEnum {
     APPLIANCE_TYPE,
+    ASSIGNED,
     CUSTOMER_TYPE,
     DEVICE_STATUS,
     DEVICE_STATUS_DATE_RANGE,

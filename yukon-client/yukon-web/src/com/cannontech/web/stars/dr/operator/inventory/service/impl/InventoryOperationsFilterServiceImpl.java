@@ -18,6 +18,8 @@ import com.cannontech.common.util.SqlBuilder;
 import com.cannontech.common.util.SqlFragmentCollection;
 import com.cannontech.common.util.SqlFragmentSource;
 import com.cannontech.common.util.SqlStatementBuilder;
+import com.cannontech.core.roleproperties.YukonRoleProperty;
+import com.cannontech.core.roleproperties.dao.RolePropertyDao;
 import com.cannontech.database.YukonJdbcTemplate;
 import com.cannontech.database.data.customer.CustomerTypes;
 import com.cannontech.database.vendor.DatabaseVendor;
@@ -35,9 +37,10 @@ import com.google.common.collect.Sets;
 
 public class InventoryOperationsFilterServiceImpl implements InventoryOperationsFilterService {
     
+    @Autowired private RolePropertyDao rolePropertyDao;
+    @Autowired private YukonEnergyCompanyService yukonEnergyCompanyService;
     @Autowired private YukonJdbcTemplate yukonJdbcTemplate;
     @Autowired private VendorSpecificSqlBuilderFactory vendorSpecificSqlBuilderFactory;
-    @Autowired private YukonEnergyCompanyService yukonEnergyCompanyService;
     
     @Override
     public Set<InventoryIdentifier> getInventory(FilterMode filterMode, List<RuleModel> rules, DateTimeZone timeZone, YukonUserContext userContext) throws ParseException {
@@ -52,7 +55,7 @@ public class InventoryOperationsFilterServiceImpl implements InventoryOperations
         
         SqlStatementBuilder sql = new SqlStatementBuilder();
         sql.append("SELECT DISTINCT ib.inventoryId InventoryId, yle.YukonDefinitionId YukonDefinitionId");
-        sql.append("FROM InventoryBase ib");
+        sql.append("FROM InventoryBase IB");
         sql.append(  "JOIN LMHardwareBase lmhb ON lmhb.InventoryId = ib.InventoryId");
         sql.append(  "LEFT JOIN LmHardwareControlGroup lmhcg ON lmhcg.InventoryId = ib.InventoryId");
         sql.append(  "JOIN YukonListEntry yle ON yle.EntryID = lmhb.LMHardwareTypeID");
@@ -98,6 +101,10 @@ public class InventoryOperationsFilterServiceImpl implements InventoryOperations
             inventoryIdsByAppType.append("WHERE AB.ApplianceCategoryId").eq(rule.getApplianceType());
             
             sql.append("IB.InventoryId").in(inventoryIdsByAppType);
+            break;
+            
+        case ASSIGNED:
+            sql.append("IB.AccountId").neq_k(0);
             break;
             
         case CUSTOMER_TYPE:
@@ -201,7 +208,7 @@ public class InventoryOperationsFilterServiceImpl implements InventoryOperations
         case SERVICE_COMPANY:
             sql.append("IB.InstallationCompanyId").eq(rule.getServiceCompanyId());
             break;
-            
+        
         case UNENROLLED:
             sql.append("ib.InventoryId NOT IN (");
             sql.append(  "SELECT InventoryId");
@@ -213,12 +220,17 @@ public class InventoryOperationsFilterServiceImpl implements InventoryOperations
             break;
 
         case WAREHOUSE:
-            SqlStatementBuilder inventoryIdsByWarehouseIdSql = new SqlStatementBuilder();
-            inventoryIdsByWarehouseIdSql.append("SELECT ITWM.InventoryId");
-            inventoryIdsByWarehouseIdSql.append("FROM InventoryToWarehouseMapping ITWM");
-            inventoryIdsByWarehouseIdSql.append("WHERE ITWM.WarehouseId").eq(rule.getWarehouseId());
-            
-            sql.append("IB.InventoryId").in(inventoryIdsByWarehouseIdSql);
+            boolean multipleWarehousesEnabled = rolePropertyDao.checkProperty(YukonRoleProperty.ADMIN_MULTI_WAREHOUSE, userContext.getYukonUser());
+            if (multipleWarehousesEnabled) {
+                SqlStatementBuilder inventoryIdsByWarehouseIdSql = new SqlStatementBuilder();
+                inventoryIdsByWarehouseIdSql.append("SELECT ITWM.InventoryId");
+                inventoryIdsByWarehouseIdSql.append("FROM InventoryToWarehouseMapping ITWM");
+                inventoryIdsByWarehouseIdSql.append("WHERE ITWM.WarehouseId").eq(rule.getWarehouseId());
+                
+                sql.append("IB.InventoryId").in(inventoryIdsByWarehouseIdSql);
+            } else {
+                sql.append("IB.AccountId").eq_k(0);
+            }
             break;
             
         default:

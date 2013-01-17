@@ -35,6 +35,7 @@ import com.cannontech.core.dao.ServiceCompanyDao;
 import com.cannontech.core.roleproperties.YukonRole;
 import com.cannontech.core.roleproperties.YukonRoleProperty;
 import com.cannontech.core.roleproperties.dao.EnergyCompanyRolePropertyDao;
+import com.cannontech.core.roleproperties.dao.RolePropertyDao;
 import com.cannontech.core.roleproperties.enums.SerialNumberValidation;
 import com.cannontech.i18n.YukonMessageSourceResolvable;
 import com.cannontech.i18n.YukonUserContextMessageSourceResolver;
@@ -72,17 +73,18 @@ import com.google.common.collect.Sets;
 @RequestMapping(value = "/operator/inventory/*")
 public class InventoryFilterController {
     
-    private ApplianceCategoryDao applianceCategoryDao;
-    private DatePropertyEditorFactory datePropertyEditorFactory;
-    private ECMappingDao ecMappingDao;
-    private InventoryOperationsFilterService inventoryOperationsFilterService;
-    private MemoryCollectionProducer memoryCollectionProducer;
-    private StarsDatabaseCache starsDatabaseCache;
-    private YukonUserContextMessageSourceResolver messageSourceResolver;
-    private FilterModelValidator filterModelValidator;
-    private ServiceCompanyDao serviceCompanyDao;
-    private EnergyCompanyRolePropertyDao energyCompanyRolePropertyDao;
-    private YukonEnergyCompanyService yukonEnergyCompanyService;
+    @Autowired private ApplianceCategoryDao applianceCategoryDao;
+    @Autowired private DatePropertyEditorFactory datePropertyEditorFactory;
+    @Autowired private ECMappingDao ecMappingDao;
+    @Autowired private EnergyCompanyRolePropertyDao energyCompanyRolePropertyDao;
+    @Autowired private FilterModelValidator filterModelValidator;
+    @Autowired private InventoryOperationsFilterService inventoryOperationsFilterService;
+    @Autowired private MemoryCollectionProducer memoryCollectionProducer;
+    @Autowired private RolePropertyDao rolePropertyDao;
+    @Autowired private ServiceCompanyDao serviceCompanyDao;
+    @Autowired private StarsDatabaseCache starsDatabaseCache;
+    @Autowired private YukonEnergyCompanyService yukonEnergyCompanyService;
+    @Autowired private YukonUserContextMessageSourceResolver messageSourceResolver;
     
     /* Setup Filter Rules */
     @RequestMapping(value = "setupFilterRules")
@@ -200,7 +202,8 @@ public class InventoryFilterController {
         
         // Check to see if warehouses exist.  If they don't remove the warehouse rule type.
         List<Warehouse> warehouses = getAvailableWarehouses(userContext);
-        if (warehouses.isEmpty()) {
+        boolean multipleWarehousesEnabled = rolePropertyDao.checkProperty(YukonRoleProperty.ADMIN_MULTI_WAREHOUSE, userContext.getYukonUser());
+        if (warehouses.isEmpty() && multipleWarehousesEnabled) {
             ruleTypes.remove(FilterRuleType.WAREHOUSE);
         }
         
@@ -302,61 +305,4 @@ public class InventoryFilterController {
             binder.setMessageCodesResolver(msgCodesResolver);
         }
     }
-
-    /* DI Setters */
-    @Autowired
-    public void setApplianceCategoryDao(ApplianceCategoryDao applianceCategoryDao) {
-        this.applianceCategoryDao = applianceCategoryDao;
-    }
-    
-    @Autowired
-    public void setDatePropertyEditorFactory(DatePropertyEditorFactory datePropertyEditorFactory) {
-        this.datePropertyEditorFactory = datePropertyEditorFactory;
-    }
-    
-    @Autowired
-    public void setEcMappingDao(ECMappingDao ecMappingDao) {
-        this.ecMappingDao = ecMappingDao;
-    }
-    
-    @Autowired
-    public void setEnergyCompanyRolePropertyDao(EnergyCompanyRolePropertyDao energyCompanyRolePropertyDao) {
-        this.energyCompanyRolePropertyDao = energyCompanyRolePropertyDao;
-    }
-    
-    @Autowired
-    public void setInventoryOperationsFilterService(InventoryOperationsFilterService inventoryOperationsFilterService) {
-        this.inventoryOperationsFilterService = inventoryOperationsFilterService;
-    }
-    
-    @Autowired
-    public void setMemoryCollectionProducer(MemoryCollectionProducer memoryCollectionProducer) {
-        this.memoryCollectionProducer = memoryCollectionProducer;
-    }
-    
-    @Autowired
-    public void setStarsDatabaseCache(StarsDatabaseCache starsDatabaseCache) {
-        this.starsDatabaseCache = starsDatabaseCache;
-    }
-    
-    @Autowired
-    public void setMessageSourceResolver(YukonUserContextMessageSourceResolver messageSourceResolver) {
-        this.messageSourceResolver = messageSourceResolver;
-    }
-    
-    @Autowired
-    public void setFilterModelValidator(FilterModelValidator filterModelValidator) {
-        this.filterModelValidator = filterModelValidator;
-    }
-    
-    @Autowired
-    public void setServiceCompanyDao(ServiceCompanyDao serviceCompanyDao) {
-        this.serviceCompanyDao = serviceCompanyDao;
-    }
-    
-    @Autowired
-    public void setYukonEnergyCompanyService(YukonEnergyCompanyService yukonEnergyCompanyService) {
-        this.yukonEnergyCompanyService = yukonEnergyCompanyService;
-    }
-    
 }

@@ -81,6 +81,10 @@
                                             </form:select>
                                         </c:when>
 
+                                        <c:when test="${rule.ruleType eq 'ASSIGNED'}">
+                                            <i:inline key=".assigned"/>
+                                        </c:when>
+
                                         <c:when test="${rule.ruleType eq 'CUSTOMER_TYPE'}">
                                             <form:select path="filterRules[${row.index}].modelCustomerType">
                                                 <cti:msg2 var="residentialLabel" key=".filterEntry.residential"/>
@@ -199,9 +203,16 @@
                                         </c:when>
 
                                         <c:when test="${rule.ruleType eq 'WAREHOUSE'}">
-                                            <form:select path="filterRules[${row.index}].warehouseId">
-                                                <form:options items="${warehouses}" itemLabel="warehouseName" itemValue="warehouseID"/>
-                                            </form:select>
+                                            <c:choose>
+                                                <c:when test="">
+                                                    <form:select path="filterRules[${row.index}].warehouseId">
+                                                        <form:options items="${warehouses}" itemLabel="warehouseName" itemValue="warehouseID"/>
+                                                    </form:select>
+                                                </c:when>
+                                                <c:otherwise>
+                                                    <i:inline key=".warehouse"/>
+                                                </c:otherwise>
+                                            </c:choose>
                                         </c:when>
                                         
                                     </c:choose>
