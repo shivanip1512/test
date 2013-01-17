@@ -17,7 +17,7 @@
             jQuery('#multiNodeValueSelectingTreeDialog').load('/widget/deviceGroupWidget/edit', parameters);
         });
 
-        jQuery('#multiNodeValueSelectingTreeDialog').bind('dialogSubmit', function() {
+        jQuery('#multiNodeValueSelectingTreeDialog').on('dialogSubmit', function() {
             if (!setNodeValues_deviceGroupWidgetTree()) {
                 return;
             }
@@ -42,9 +42,7 @@
 
 <div id="currentGroups">
 
-    <div class="success">
-        <c:if test="${successMsg != null}"> ${successMsg} </c:if>
-    </div>
+    <div class="success">${successMsg}</div>
                     
     <jsTree:nodeValueSelectingInlineTree fieldId="groupName" 
                                          fieldName="groupName"

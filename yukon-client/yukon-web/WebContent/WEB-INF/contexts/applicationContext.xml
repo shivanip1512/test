@@ -210,11 +210,6 @@
               <ref local="widgetInput.deviceId"/>
            </set>
         </property>
-        <property name="deviceGroupDao" ref="deviceGroupDao"/>
-        <property name="deviceGroupEditorDao" ref="deviceGroupEditorDao"/>
-        <property name="deviceGroupMemberEditorDao" ref="deviceGroupMemberEditorDao"/>
-        <property name="meterDao" ref="meterDao"/>
-        <property name="deviceGroupService" ref="deviceGroupService"/>
     </bean>
 
 	<bean id="touWidget"

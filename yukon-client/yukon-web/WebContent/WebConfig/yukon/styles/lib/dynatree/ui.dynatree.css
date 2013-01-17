@@ -489,7 +489,7 @@ ul.dynatree-container .found a { color: blue !important; }
     border: solid 1px #ccc;
 }
 
-.inlineTree.bn, .popupTree {
+.inlineTree.bn, .popupTree, .inlineTree.contained{
     border: none;
 }
 

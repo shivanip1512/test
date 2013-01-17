@@ -48,15 +48,15 @@ import com.google.common.collect.Sets;
  */
 public class DeviceGroupWidget extends WidgetControllerBase {
 
-    private DeviceGroupService deviceGroupService;
-    private DeviceGroupUiService deviceGroupUiService;
-    private DeviceGroupProviderDao deviceGroupDao;
-    private DeviceGroupEditorDao deviceGroupEditorDao;
-    private DeviceGroupMemberEditorDao deviceGroupMemberEditorDao;
-    private MeterDao meterDao;
-    private RolePropertyDao rolePropertyDao;
+    @Autowired private DeviceGroupService deviceGroupService;
+    @Autowired private DeviceGroupUiService deviceGroupUiService;
+    @Autowired private DeviceGroupProviderDao deviceGroupDao;
+    @Autowired private DeviceGroupEditorDao deviceGroupEditorDao;
+    @Autowired private DeviceGroupMemberEditorDao deviceGroupMemberEditorDao;
+    @Autowired private MeterDao meterDao;
+    @Autowired private RolePropertyDao rolePropertyDao;
     @Autowired private YukonUserContextMessageSourceResolver messageSourceResolver;
-
+    
     /**
      * This method renders the default deviceGroupWidget
      * 
@@ -78,19 +78,13 @@ public class DeviceGroupWidget extends WidgetControllerBase {
         // Gets all the current groups of the device
         final List<DeviceGroup> currentGroups = getCurrentGroups(meter);
 
-        
         DeviceGroupHierarchy groupHierarchy =
             deviceGroupUiService.getDeviceGroupHierarchy(deviceGroupService.getRootGroup(),
                                                          new AnyDeviceGroupPredicate());
         
         final Map<DeviceGroup,DeviceGroup> groupsToExpand = getGroupsToExpand(currentGroups);
         DeviceGroupHierarchy hierarchyCurrentGroups = getCurrentGroupsHierarchy(groupHierarchy, groupsToExpand);
-
-        YukonUserContext userContext = YukonUserContextUtils.getYukonUserContext(request);
-        String groupsLabel =
-            messageSourceResolver.getMessageSourceAccessor(userContext)
-                .getMessage("yukon.web.deviceGroups.widget.groupTree.rootName");
-        
+  
         class ExpandAndSelectCurrentGroups implements NodeAttributeSettingCallback<DeviceGroup> {
 
             public void setAdditionalAttributes(JsTreeNode node, DeviceGroup deviceGroup) {
@@ -107,9 +101,9 @@ public class DeviceGroupWidget extends WidgetControllerBase {
             }
         }
 
+        YukonUserContext userContext = YukonUserContextUtils.getYukonUserContext(request);
         String currentGroupsDataJson =
             getGroupDataJson(userContext,
-                             groupsLabel,
                              hierarchyCurrentGroups,
                              new ExpandAndSelectCurrentGroups());
         
@@ -146,16 +140,11 @@ public class DeviceGroupWidget extends WidgetControllerBase {
             deviceGroupUiService.getDeviceGroupHierarchy(deviceGroupService.getRootGroup(),
                                                          new ModifiableDeviceGroupPredicate());
         
-        YukonUserContext userContext = YukonUserContextUtils.getYukonUserContext(request);
-        String groupsLabel =
-            messageSourceResolver.getMessageSourceAccessor(userContext)
-                .getMessage("yukon.web.deviceGroups.widget.groupTree.rootName");
-        
         class ExpandAndSelectCurrentGroups implements NodeAttributeSettingCallback<DeviceGroup> {
             
             public void setAdditionalAttributes(JsTreeNode node, DeviceGroup deviceGroup) {
 
-                String groupId = ((Integer) ((StoredDeviceGroup) deviceGroup).getId()).toString();
+                String groupId = String.valueOf(((StoredDeviceGroup) deviceGroup).getId());
                 JsTreeNode.addToNodeInfo(node, "groupId", groupId);
                 
                 // selects current group
@@ -169,9 +158,9 @@ public class DeviceGroupWidget extends WidgetControllerBase {
             }
         }
 
+        YukonUserContext userContext = YukonUserContextUtils.getYukonUserContext(request);
         String allGroupsDataJson =
             getGroupDataJson(userContext,
-                             groupsLabel,
                              hierarchyAllGroups,
                              new ExpandAndSelectCurrentGroups());
         
@@ -190,9 +179,12 @@ public class DeviceGroupWidget extends WidgetControllerBase {
         return currentGroups;
         
     }
-    private String getGroupDataJson(YukonUserContext userContext, String groupsLabel,
+    private String getGroupDataJson(YukonUserContext userContext,
                                     DeviceGroupHierarchy groupHierarchy,
                                     NodeAttributeSettingCallback<DeviceGroup> callback) {
+        String groupsLabel =
+                messageSourceResolver.getMessageSourceAccessor(userContext)
+                    .getMessage("yukon.web.deviceGroups.widget.groupTree.rootName");
         JsTreeNode root =
             DeviceGroupTreeUtils.makeDeviceGroupJsTree(groupHierarchy,
                                                        groupsLabel,
@@ -319,41 +311,4 @@ public class DeviceGroupWidget extends WidgetControllerBase {
         
         return render(request, response);
     }
-    
-    
-    @Required
-    public void setMeterDao(MeterDao meterDao) {
-        this.meterDao = meterDao;
-    }
-
-    @Required
-    public void setDeviceGroupDao(DeviceGroupProviderDao deviceGroupDao) {
-        this.deviceGroupDao = deviceGroupDao;
-    }
-
-    @Required
-    public void setDeviceGroupMemberEditorDao(
-            DeviceGroupMemberEditorDao deviceGroupMemberEditorDao) {
-        this.deviceGroupMemberEditorDao = deviceGroupMemberEditorDao;
-    }
-
-    @Required
-    public void setDeviceGroupEditorDao(DeviceGroupEditorDao deviceGroupEditorDao) {
-        this.deviceGroupEditorDao = deviceGroupEditorDao;
-    }
-
-    @Required
-    public void setDeviceGroupService(DeviceGroupService deviceGroupService) {
-        this.deviceGroupService = deviceGroupService;
-    }
-    
-    @Autowired
-    public void setRolePropertyDao(RolePropertyDao rolePropertyDao) {
-		this.rolePropertyDao = rolePropertyDao;
-	}
-    
-    @Autowired
-    public void setDeviceGroupUiService(DeviceGroupUiService deviceGroupUiService) {
-		this.deviceGroupUiService = deviceGroupUiService;
-	}
 }
