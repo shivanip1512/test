@@ -1881,42 +1881,42 @@
             </command>
             <command id="READ_TOU_RATE_A">
                 <name>Read TOU Rate A</name>
-                <cmd text="getvalue kWh rate a"/>
+                <cmd text="getvalue kWh tou"/>
                 <pointRef name="Rate A kWh"/>
             </command>
             <command id="READ_TOU_RATE_B">
                 <name>Read TOU Rate B</name>
-                <cmd text="getvalue kWh rate b"/>
+                <cmd text="getvalue kWh tou"/>
                 <pointRef name="Rate B kWh"/>
             </command>
             <command id="READ_TOU_RATE_C">
                 <name>Read TOU Rate C</name>
-                <cmd text="getvalue kWh rate c"/>
+                <cmd text="getvalue kWh tou"/>
                 <pointRef name="Rate C kWh"/>
             </command>
             <command id="READ_TOU_RATE_D">
                 <name>Read TOU Rate D</name>
-                <cmd text="getvalue kWh rate d"/>
+                <cmd text="getvalue kWh tou"/>
                 <pointRef name="Rate D kWh"/>
             </command>
             <command id="READ_TOU_RATE_A_FROZEN" enabled="false">
                 <name>Read TOU Rate A (Frozen)</name>
-                <cmd text="getvalue kWh rate a frozen"/>
+                <cmd text="getvalue kWh tou frozen"/>
                 <pointRef name="Rate A kWh"/>
             </command>
             <command id="READ_TOU_RATE_B_FROZEN" enabled="false">
                 <name>Read TOU Rate B (Frozen)</name>
-                <cmd text="getvalue kWh rate b frozen"/>
+                <cmd text="getvalue kWh tou frozen"/>
                 <pointRef name="Rate B kWh"/>
             </command>
             <command id="READ_TOU_RATE_C_FROZEN" enabled="false">
                 <name>Read TOU Rate C (Frozen)</name>
-                <cmd text="getvalue kWh rate c frozen"/>
+                <cmd text="getvalue kWh tou frozen"/>
                 <pointRef name="Rate C kWh"/>
             </command>
             <command id="READ_TOU_RATE_D_FROZEN" enabled="false">
                 <name>Read TOU Rate D (Frozen)</name>
-                <cmd text="getvalue kWh rate d frozen"/>
+                <cmd text="getvalue kWh tou frozen"/>
                 <pointRef name="Rate D kWh"/>
             </command>
             <command id="READ_LP_REQUEST_STATUS">
