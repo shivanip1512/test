@@ -93,11 +93,8 @@ public class GeneralInfoService {
         /* Address */
         addressDao.update(generalInfo.getAddress().getLiteAddress(addressId));
 
-        dbChangeManager.processDbChange(contactId,
-                                        DBChangeMsg.CHANGE_CONTACT_DB,
-                                        DBChangeMsg.CAT_CUSTOMERCONTACT,
-                                        DBChangeMsg.CAT_CUSTOMERCONTACT,
-                                        DbChangeType.UPDATE);
+        dbChangeManager.processDbChange(contactId, DBChangeMsg.CHANGE_CONTACT_DB, DBChangeMsg.CAT_CUSTOMERCONTACT,
+                                        DBChangeMsg.CAT_CUSTOMERCONTACT, DbChangeType.UPDATE);
         
         /* Route */
         defaultRouteService.updateDefaultRoute(energyCompany, generalInfo.getDefaultRouteId(), user);
