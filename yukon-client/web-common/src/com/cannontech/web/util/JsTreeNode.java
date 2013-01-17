@@ -42,8 +42,7 @@ public class JsTreeNode {
     public Boolean hasChildren() {
         return this.children.size() > 0 ? true : false;
     }
-    
-
+   
     /**
      * Convert self to a map of values containing all attributes.
      * Children are represented as a nested list of themselves as maps.
@@ -63,18 +62,6 @@ public class JsTreeNode {
         if(map.keySet().contains("disabled") && map.get("disabled").toString().equals("true")){
             map.put("addClass", map.get("addClass") + " disabled");
             map.put("unselectable", true);
-        }
-        
-        if(map.keySet().contains("select") && map.get("select").toString().equals("true")){
-            map.put("select", map.get("select"));
-        }
-        
-        if(map.keySet().contains("expand") && map.get("expand").toString().equals("true")){
-            map.put("expand", map.get("expand"));
-        }
-        
-        if(map.keySet().contains("") && map.get("unselectable").toString().equals("true")){
-            map.put("unselectable", map.get("unselectable"));
         }
         
         if (map.keySet().contains("info")) {
