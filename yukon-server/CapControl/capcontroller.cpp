@@ -4137,7 +4137,7 @@ void CtiCapController::handleRejectionMessaging(CtiCCCapBankPtr currentCapBank, 
         if (currentCapBank->getCurrentDailyOperations() > 0)
             currentCapBank->setCurrentDailyOperations( currentCapBank->getCurrentDailyOperations() - 1);
         getDispatchConnection()->WriteConnQue(new CtiPointDataMsg(currentCapBank->getOperationAnalogPointId(),currentCapBank->getTotalOperations(),NormalQuality,AnalogPointType,"Command Refused, Forced ccServer Update", TAG_POINT_FORCE_UPDATE));
-        ccEvents.push_back( new CtiCCEventLogMsg(0, currentCapBank->getOperationAnalogPointId(), spAreaId, areaId, stationId, currentSubstationBus->getPaoId(), currentFeeder->getPaoId(), capControlSetOperationCount, currentSubstationBus->getEventSequence(), currentCapBank->getTotalOperations(), "Command Refused, opCount adjustment", userName, 0, 0, 0, currentCapBank->getIpAddress(), currentCapBank->getActionId(), currentCapBank->getControlStatusQualityString()));
+        ccEvents.push_back( new CtiCCEventLogMsg(0, currentCapBank->getOperationAnalogPointId(), spAreaId, areaId, stationId, currentSubstationBus->getPaoId(), currentFeeder->getPaoId(), capControlSetOperationCount, currentSubstationBus->getEventSequence(), currentCapBank->getTotalOperations(), "Command Refused, CapBank opCount adjustment", userName, 0, 0, 0, currentCapBank->getIpAddress(), currentCapBank->getActionId(), currentCapBank->getControlStatusQualityString()));
     }
 
     if ( currentFeeder->getDailyOperationsAnalogPointId() > 0 )
@@ -4161,7 +4161,7 @@ void CtiCapController::handleRejectionMessaging(CtiCCCapBankPtr currentCapBank, 
                                                       capControlSetOperationCount,
                                                       currentSubstationBus->getEventSequence(),
                                                       currentFeeder->getCurrentDailyOperations(),
-                                                      "Command Refused, opCount adjustment",
+                                                      "Command Refused, Feeder opCount adjustment",
                                                       userName ) );
         }
     }
