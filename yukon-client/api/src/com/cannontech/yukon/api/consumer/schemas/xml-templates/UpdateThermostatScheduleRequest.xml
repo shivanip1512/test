@@ -1,0 +1,54 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<updateThermostatScheduleRequest xmlns="http://yukon.cannontech.com/api"
+           xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+           xsi:schemaLocation="http://yukon.cannontech.com/api ../UpdateThermostatScheduleRequest.xsd"
+           version="1.0">
+    
+    <thermostatSchedule accountNumber="987654" thermostatType="Utility Pro G2" thermostatScheduleMode="Weekday Weekend">
+        <scheduleName>test schedule</scheduleName>
+        <schedulePeriod timeOfWeek="Weekday">
+            <thermostatSchedulePeriod>
+                <startTime>6:00</startTime>
+                <coolTemp unit="F">76</coolTemp>
+                <heatTemp unit="F">71</heatTemp>
+            </thermostatSchedulePeriod>
+            <thermostatSchedulePeriod>
+                <startTime>8:50</startTime>
+                <coolTemp unit="F">78</coolTemp>
+                <heatTemp unit="F">69</heatTemp>
+            </thermostatSchedulePeriod>
+            <thermostatSchedulePeriod>
+                <startTime>16:00</startTime>
+                <coolTemp unit="F">76</coolTemp>
+                <heatTemp unit="F">71</heatTemp>
+            </thermostatSchedulePeriod>
+            <thermostatSchedulePeriod>
+                <startTime>22:00</startTime>
+                <coolTemp unit="F">75</coolTemp>
+                <heatTemp unit="F">70</heatTemp>
+            </thermostatSchedulePeriod>
+        </schedulePeriod>
+        <schedulePeriod timeOfWeek="Weekend">
+            <thermostatSchedulePeriod>
+                <startTime>6:00</startTime>
+                <coolTemp unit="F">76</coolTemp>
+                <heatTemp unit="F">71</heatTemp>
+            </thermostatSchedulePeriod>
+            <thermostatSchedulePeriod>
+                <startTime>8:50</startTime>
+                <coolTemp unit="F">78</coolTemp>
+                <heatTemp unit="F">69</heatTemp>
+            </thermostatSchedulePeriod>
+            <thermostatSchedulePeriod>
+                <startTime>16:00</startTime>
+                <coolTemp unit="F">76</coolTemp>
+                <heatTemp unit="F">71</heatTemp>
+            </thermostatSchedulePeriod>
+            <thermostatSchedulePeriod>
+                <startTime>22:00</startTime>
+                <coolTemp unit="F">75</coolTemp>
+                <heatTemp unit="F">70</heatTemp>
+            </thermostatSchedulePeriod>
+        </schedulePeriod>
+    </thermostatSchedule>
+</updateThermostatScheduleRequest>

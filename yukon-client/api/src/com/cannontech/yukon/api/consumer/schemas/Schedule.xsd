@@ -1,0 +1,41 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<xsd:schema xmlns:xsd="http://www.w3.org/2001/XMLSchema" 
+            xmlns:yukon="http://yukon.cannontech.com/api" 
+            targetNamespace="http://yukon.cannontech.com/api"
+            elementFormDefault="qualified" version="1.0">
+
+    <xsd:include schemaLocation="../../common/schemas/Types.xsd"/>
+
+    <xsd:complexType name="ThermostatSchedulePeriod">
+        <xsd:sequence>
+            <xsd:element name="startTime" type="yukon:LocalTime"/>
+            <xsd:element name="coolTemp" type="yukon:Temperature"/>
+            <xsd:element name="heatTemp" type="yukon:Temperature"/>
+        </xsd:sequence>
+    </xsd:complexType>
+    
+    <xsd:complexType name="SchedulePeriod">
+        <xsd:sequence>
+            <xsd:element name="thermostatSchedulePeriod" type="yukon:ThermostatSchedulePeriod" minOccurs="2" maxOccurs="4"/>
+        </xsd:sequence>
+        <xsd:attribute name="timeOfWeek" type="yukon:TimeOfWeek" />
+    </xsd:complexType>
+
+    <xsd:complexType name="ThermostatSchedule">
+        <xsd:annotation>
+            <xsd:documentation xml:lang="en">
+                A thermostat schedule representation used for both updating and retrieving thermostat schedules.
+            </xsd:documentation>
+        </xsd:annotation>
+        <xsd:sequence>
+            <xsd:element name="scheduleName" type="xsd:string"/>
+            <xsd:element name="schedulePeriod" type="yukon:SchedulePeriod" maxOccurs="7"/>
+        </xsd:sequence>
+        <xsd:attribute name="accountNumber" type="yukon:AccountNumber"/>
+        <xsd:attribute name="thermostatScheduleId" type="xsd:int" use="optional" />
+        <xsd:attribute name="thermostatScheduleMode" type="yukon:ThermostatScheduleMode"/>
+        <xsd:attribute name="thermostatType" type="yukon:SchedulableThermostatType" />
+    </xsd:complexType>
+
+</xsd:schema>

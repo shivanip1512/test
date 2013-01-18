@@ -1,0 +1,30 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<xsd:schema xmlns:xsd="http://www.w3.org/2001/XMLSchema" 
+            xmlns:yukon="http://yukon.cannontech.com/api" 
+            targetNamespace="http://yukon.cannontech.com/api"
+            elementFormDefault="qualified" version="1.0">
+
+    <xsd:include schemaLocation="../../common/schemas/YukonMessage.xsd" />
+    
+    <xsd:complexType name="DeleteThermostatScheduleResponse">
+        <xsd:annotation>
+            <xsd:documentation xml:lang="en">
+                This is the response for deleting a thermostat schedule.
+            </xsd:documentation>
+        </xsd:annotation>
+    
+        <xsd:complexContent>
+            <xsd:extension base="yukon:YukonMessage">
+                <xsd:sequence>
+                    <xsd:choice>
+                        <xsd:element name="success" />
+                        <xsd:element name="failure" type="yukon:Failure" />
+                    </xsd:choice>
+                </xsd:sequence>
+            </xsd:extension>
+        </xsd:complexContent>
+    </xsd:complexType>
+
+    <xsd:element name="deleteThermostatScheduleResponse" type="yukon:DeleteThermostatScheduleResponse"/>
+
+</xsd:schema>

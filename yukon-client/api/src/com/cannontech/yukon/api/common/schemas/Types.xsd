@@ -67,36 +67,37 @@
 
     <xsd:simpleType name="ThermostatScheduleMode">
         <xsd:restriction base="xsd:string">
-            <xsd:enumeration value="ALL" />
-            <xsd:enumeration value="WEEKDAY_SAT_SUN" />
-            <xsd:enumeration value="WEEKDAY_WEEKEND" />
-            <xsd:enumeration value="SEVEN_DAY" />
+            <xsd:enumeration value="All" />
+            <xsd:enumeration value="Weekday Sat Sun" />
+            <xsd:enumeration value="Weekday Weekend" />
+            <xsd:enumeration value="Seven Day" />
         </xsd:restriction>
     </xsd:simpleType>
 
-    <xsd:simpleType name="ThermostatSchedulePeriodType">
+    <xsd:simpleType name="SchedulableThermostatType">
         <xsd:restriction base="xsd:string">
-            <xsd:enumeration value="OCCUPIED" />
-            <xsd:enumeration value="UNOCCUPIED" />
-            <xsd:enumeration value="WAKE" />
-            <xsd:enumeration value="LEAVE" />
-            <xsd:enumeration value="RETURN" />
-            <xsd:enumeration value="SLEEP" />
+            <xsd:enumeration value="Residential Expressstat" />
+            <xsd:enumeration value="Heat Pump Expressstat" />
+            <xsd:enumeration value="Commercial Expressstat" />
+            <xsd:enumeration value="Utility Pro" />
+            <xsd:enumeration value="Utility Pro G2" />
+            <xsd:enumeration value="Utility Pro G3" />
+            <xsd:enumeration value="Utility Pro ZigBee" />
         </xsd:restriction>
     </xsd:simpleType>
 
     <xsd:simpleType name="TimeOfWeek">
         <xsd:restriction base="xsd:string">
-            <xsd:enumeration value="WEEKDAY" />
-            <xsd:enumeration value="MONDAY" />
-            <xsd:enumeration value="TUESDAY" />
-            <xsd:enumeration value="WEDNESDAY" />
-            <xsd:enumeration value="THURSDAY" />
-            <xsd:enumeration value="FRIDAY" />
-            <xsd:enumeration value="SATURDAY" />
-            <xsd:enumeration value="SUNDAY" />
-            <xsd:enumeration value="WEEKEND" />
-            <xsd:enumeration value="EVERYDAY" />
+            <xsd:enumeration value="Weekday" />
+            <xsd:enumeration value="Monday" />
+            <xsd:enumeration value="Tuesday" />
+            <xsd:enumeration value="Wednesday" />
+            <xsd:enumeration value="Thursday" />
+            <xsd:enumeration value="Friday" />
+            <xsd:enumeration value="Saturday" />
+            <xsd:enumeration value="Sunday" />
+            <xsd:enumeration value="Weekend" />
+            <xsd:enumeration value="Everyday" />
         </xsd:restriction>
     </xsd:simpleType>
 
