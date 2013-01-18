@@ -108,7 +108,7 @@ public class PlcDemandResetServiceImpl implements PlcDemandResetService {
             }
         };
         groupCommandExecutor.execute(deviceCollection, DEMAND_RESET_COMMAND,
-                                     DeviceRequestType.GROUP_COMMAND, gceCallback, user);
+                                     DeviceRequestType.DEMAND_RESET_COMMAND, gceCallback, user);
         retreiveLastResetTime(deviceCollection, callback, whenRequested.toInstant(), user);
     }
 

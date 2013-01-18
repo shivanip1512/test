@@ -58,6 +58,7 @@ public final class CommandRequestExecutionDefaults {
         // This is used to ensure that a verification gets sent out after the request.
         b.put(GROUP_COMMAND,                                      new ExecutionInfo(false, 8, false));
         b.put(GROUP_COMMAND_VERIFY,                               new ExecutionInfo(false, 7, false));
+        b.put(DEMAND_RESET_COMMAND,                               new ExecutionInfo(false, 14, false));
         b.put(GROUP_ATTRIBUTE_READ,                               new ExecutionInfo(false, 8, false));
         b.put(SCHEDULED_GROUP_COMMAND,                            new ExecutionInfo(false, 8, true));
         b.put(SCHEDULED_GROUP_ATTRIBUTE_READ,                     new ExecutionInfo(false, 8, true));
