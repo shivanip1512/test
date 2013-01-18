@@ -48,7 +48,7 @@
     <tr>
     	<td>
     		Substation Name<br>
-    		<input type="text" value="" name="name" size="20" style="width:200px;"/>
+    		<input type="text" value="" name="name" size="20" style="width:188px;"/>
     	</td>
     	<td class="vab">
     		<input id="addButton" type="submit" value="Add" name="add" class="formSubmit"/>
