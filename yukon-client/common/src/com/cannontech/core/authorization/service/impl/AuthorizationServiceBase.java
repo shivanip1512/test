@@ -52,25 +52,19 @@ public abstract class AuthorizationServiceBase<T,Y> implements AuthorizationServ
         return false;
     }
     
-    public void verifyAllPermissions(LiteYukonUser user, T object, Permission... permissions) 
-            throws NotAuthorizedException {
+    public void verifyAllPermissions(LiteYukonUser user, T object, Permission... permissions) throws NotAuthorizedException {
         
         for(Permission permission : permissions) {
-            if (!this.isAuthorized(user,
-                                   permission,
-                                   object)) {
-                throw new NotAuthorizedException("The user is not autorized for object " + 
-                                                 object.toString());
+            if (!this.isAuthorized(user, permission, object)) {
+                throw new NotAuthorizedException("The user is not autorized for object " + object.toString());
             }
         }
     }
 
     @Override
-    public <K extends T> List<K> filterAuthorized(LiteYukonUser user, 
-                                                  Iterable<K> objectsToFilter, 
-                                                  Permission permission) {
+    public <K extends T> List<K> filterAuthorized(LiteYukonUser user,  Iterable<K> objectsToFilter,  Permission permission) {
         Set<Y> authorizedObjects = Sets.newHashSet();
-        List<Y> inputList = new ArrayList<Y>();
+        List<Y> inputList = Lists.newArrayList();
         
         Iterable<Y> transform = Iterables.transform(objectsToFilter, new Function<K,Y>() {
             public Y apply(K from) {
