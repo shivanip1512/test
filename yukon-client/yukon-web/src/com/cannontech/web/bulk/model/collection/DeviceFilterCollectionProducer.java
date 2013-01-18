@@ -17,7 +17,7 @@ import com.cannontech.amr.meter.model.Meter;
 import com.cannontech.amr.meter.search.dao.MeterSearchDao;
 import com.cannontech.amr.meter.search.model.FilterBy;
 import com.cannontech.amr.meter.search.model.MeterSearchField;
-import com.cannontech.amr.meter.search.model.OrderBy;
+import com.cannontech.amr.meter.search.model.MeterSearchOrderBy;
 import com.cannontech.amr.meter.search.model.StandardFilterByGenerator;
 import com.cannontech.common.bulk.collection.device.DeviceCollection;
 import com.cannontech.common.bulk.collection.device.DeviceCollectionProducer;
@@ -57,7 +57,7 @@ public class DeviceFilterCollectionProducer implements DeviceCollectionProducer,
         boolean orderByDescending = ServletRequestUtils.getBooleanParameter(request,
                                                                             getSupportedType().getParameterName("descending"),
                                                                             false);
-        OrderBy orderBy = new OrderBy(orderByField,
+        MeterSearchOrderBy orderBy = new MeterSearchOrderBy(orderByField,
                                       orderByDescending);
         
         // all filters
@@ -79,7 +79,7 @@ public class DeviceFilterCollectionProducer implements DeviceCollectionProducer,
     }
 
     @Override
-    public DeviceCollection createDeviceGroupCollection(final List<FilterBy> filterBys, final OrderBy orderBy) {
+    public DeviceCollection createDeviceGroupCollection(final List<FilterBy> filterBys, final MeterSearchOrderBy orderBy) {
         return new RangeBasedDeviceCollection() {
 
             @Override

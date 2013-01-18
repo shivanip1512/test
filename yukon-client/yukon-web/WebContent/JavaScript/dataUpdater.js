@@ -53,12 +53,21 @@ function initiateCannonDataUpdate(url, delayMs) {
             // use the cannonUpdater "id" to look up value in response
             var newData = responseStruc.data[id];
             try{
-	            if (newData && newData != it.style.color) {
+                var format = jQuery(it).attr('data-format');
+                var current_value = format == 'background' ? it.style.backgroundColor : it.style.color;
+	            if (newData && newData != current_value) {
 	                // data was sent and is different than current
-	                it.setStyle({color: newData});
-	                it.childElements().each(function(child) {
-	                    child.setStyle({color: newData});
-	                });
+	                if (format == 'background') {
+	                    it.setStyle({'background-color': newData});
+	                    it.childElements().each(function(child) {
+	                        child.setStyle({'background-color': newData});
+	                    });
+	                } else {
+	                    it.setStyle({'color': newData});
+	                    it.childElements().each(function(child) {
+	                        child.setStyle({'color': newData});
+	                    });
+	                }
 	            }
             }catch(err){
             	//do nothing, thanks ie!

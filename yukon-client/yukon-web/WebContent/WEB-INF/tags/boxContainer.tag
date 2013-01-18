@@ -5,6 +5,7 @@
 <%@ attribute name="showInitially" required="false" type="java.lang.Boolean"%>
 <%@ attribute name="helpText" required="false" type="java.lang.String"%>
 <%@ attribute name="escapeTitle" required="false" type="java.lang.Boolean" %>
+<%@ attribute name="titleLinkHtml" required="false" type="java.lang.String" %>
 
 <%@ taglib uri="http://cannontech.com/tags/cti" prefix="cti" %>
 <%@ taglib uri="http://java.sun.com/jsp/jstl/core" prefix="c" %>
@@ -36,7 +37,8 @@
 					src="<c:url value="/WebConfig/yukon/Icons/expand.gif"/>">
 		      </div>
 			</c:if>
-		<div class="title boxContainer_title">
+            <c:if test="${!empty pageScope.titleLinkHtml}">${pageScope.titleLinkHtml}</c:if>
+		<h3 class="title boxContainer_title">
             <c:choose>
               <c:when test="${pageScope.escapeTitle}">
                 <spring:escapeBody htmlEscape="true">${pageScope.title}</spring:escapeBody>
@@ -52,7 +54,7 @@
             	</a>
         	</c:if>
         	
-		</div>
+		</h3>
 	</div>
 	
 	<div id="${thisId}_content" class="content boxContainer_content">

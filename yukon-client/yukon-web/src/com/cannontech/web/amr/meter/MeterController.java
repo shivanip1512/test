@@ -18,7 +18,7 @@ import org.springframework.web.servlet.view.RedirectView;
 import com.cannontech.amr.meter.model.Meter;
 import com.cannontech.amr.meter.search.model.FilterBy;
 import com.cannontech.amr.meter.search.model.MeterSearchField;
-import com.cannontech.amr.meter.search.model.OrderBy;
+import com.cannontech.amr.meter.search.model.MeterSearchOrderBy;
 import com.cannontech.amr.meter.search.model.StandardFilterByGenerator;
 import com.cannontech.amr.meter.search.service.MeterSearchService;
 import com.cannontech.common.bulk.collection.device.DeviceCollection;
@@ -56,27 +56,24 @@ import com.google.common.collect.ImmutableMap;
 import com.google.common.collect.Maps;
 import com.google.common.collect.Sets;
 
-/**
- * Spring controller class
- */
 @CheckRole({YukonRole.METERING,YukonRole.APPLICATION_BILLING,YukonRole.SCHEDULER,YukonRole.DEVICE_ACTIONS})
 public class MeterController extends MultiActionController {
 
-    private MeterSearchService meterSearchService = null;
-    private AttributeService attributeService = null;
-    private DeviceDao deviceDao = null;
-    private MultispeakFuncs multispeakFuncs;
-    private PaoDetailUrlHelper paoDetailUrlHelper;
-    private PointDao pointDao = null;
-    private PointService pointService = null;
-    private PaoLoadingService paoLoadingService = null;
-    private DeviceFilterCollectionHelper filterCollectionHelper = null;
-    private CachingPointFormattingService cachingPointFormattingService = null;
-    private PointUpdateBackingService pointUpdateBackingService = null;
-    private RolePropertyDao rolePropertyDao = null;
-    private PaoDefinitionDao paoDefinitionDao = null;
-    private MspMeterSearchService mspMeterSearchService;
-    private DeviceConfigService deviceConfigService;
+    @Autowired private MeterSearchService meterSearchService = null;
+    @Autowired private AttributeService attributeService = null;
+    @Autowired private DeviceDao deviceDao = null;
+    @Autowired private MultispeakFuncs multispeakFuncs;
+    @Autowired private PaoDetailUrlHelper paoDetailUrlHelper;
+    @Autowired private PointDao pointDao = null;
+    @Autowired private PointService pointService = null;
+    @Autowired private PaoLoadingService paoLoadingService = null;
+    @Autowired private DeviceFilterCollectionHelper filterCollectionHelper = null;
+    @Autowired private CachingPointFormattingService cachingPointFormattingService = null;
+    @Autowired private PointUpdateBackingService pointUpdateBackingService = null;
+    @Autowired private RolePropertyDao rolePropertyDao = null;
+    @Autowired private PaoDefinitionDao paoDefinitionDao = null;
+    @Autowired private MspMeterSearchService mspMeterSearchService;
+    @Autowired private DeviceConfigService deviceConfigService;
 
     public MeterController() {
         super();
@@ -110,7 +107,7 @@ public class MeterController extends MultiActionController {
 
         // Get the order by field
         String orderByField = ServletRequestUtils.getStringParameter(request, "orderBy", defaultField.toString());
-        OrderBy orderBy = new OrderBy(orderByField, ServletRequestUtils.getBooleanParameter(request, "descending", false));
+        MeterSearchOrderBy orderBy = new MeterSearchOrderBy(orderByField, ServletRequestUtils.getBooleanParameter(request, "descending", false));
 
         // all filters
         List<FilterBy> filterByList = new ArrayList<FilterBy>();
@@ -269,80 +266,4 @@ public class MeterController extends MultiActionController {
         
         return mav;
     }
-
-    // DI Setters
-    @Autowired
-    public void setMeterSearchService(MeterSearchService meterSearchService) {
-        this.meterSearchService = meterSearchService;
-    }
-    
-    @Autowired
-    public void setAttributeService(AttributeService attributeService) {
-        this.attributeService = attributeService;
-    }
-
-    @Autowired
-    public void setDeviceDao(DeviceDao deviceDao) {
-        this.deviceDao = deviceDao;
-    }
-
-    @Autowired
-    public void setMultispeakFuncs(MultispeakFuncs multispeakFuncs) {
-        this.multispeakFuncs = multispeakFuncs;
-    }
-    
-    @Autowired
-    public void setPaoDetailUrlHelper(PaoDetailUrlHelper paoDetailUrlHelper) {
-        this.paoDetailUrlHelper = paoDetailUrlHelper;
-    }
-    
-    @Autowired
-    public void setPointDao(PointDao pointDao) {
-        this.pointDao = pointDao;
-    }
-    
-    @Autowired
-    public void setPointService(PointService pointService) {
-        this.pointService = pointService;
-    }
-    
-    @Autowired
-    public void setPaoLoadingService(PaoLoadingService paoLoadingService) {
-        this.paoLoadingService = paoLoadingService;
-    }
-    
-    @Autowired
-    public void setFilterCollectionHelper(DeviceFilterCollectionHelper filterCollectionHelper) {
-        this.filterCollectionHelper = filterCollectionHelper;
-    }
-    
-    @Autowired
-    public void setCachingPointFormattingService(CachingPointFormattingService cachingPointFormattingService) {
-        this.cachingPointFormattingService = cachingPointFormattingService;
-    }
-    
-    @Autowired
-    public void setPointUpdateBackingService(PointUpdateBackingService pointUpdateBackingService) {
-        this.pointUpdateBackingService = pointUpdateBackingService;
-    }
-    
-    @Autowired
-    public void setRolePropertyDao(RolePropertyDao rolePropertyDao) {
-        this.rolePropertyDao = rolePropertyDao;
-    }
-    
-    @Autowired
-    public void setPaoDefinitionDao(PaoDefinitionDao paoDefinitionDao) {
-        this.paoDefinitionDao = paoDefinitionDao;
-    }
-    
-    @Autowired
-    public void setMspMeterSearchService(MspMeterSearchService mspMeterSearchService) {
-        this.mspMeterSearchService = mspMeterSearchService;
-    }
-
-    @Autowired
-    public void setDeviceConfigService(DeviceConfigService deviceConfigService) {
-		this.deviceConfigService = deviceConfigService;
-	}
 }

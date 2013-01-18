@@ -34,7 +34,7 @@ import com.cannontech.amr.meter.model.YukonMeter;
 import com.cannontech.amr.meter.search.dao.MeterSearchDao;
 import com.cannontech.amr.meter.search.model.FilterBy;
 import com.cannontech.amr.meter.search.model.MeterSearchField;
-import com.cannontech.amr.meter.search.model.OrderBy;
+import com.cannontech.amr.meter.search.model.MeterSearchOrderBy;
 import com.cannontech.amr.meter.search.model.StandardFilterBy;
 import com.cannontech.amr.rfn.dao.RfnDeviceDao;
 import com.cannontech.amr.rfn.message.disconnect.RfnMeterDisconnectState;
@@ -1885,7 +1885,7 @@ public class MultispeakMeterServiceImpl implements MultispeakMeterService, Messa
         FilterBy filterBy = new StandardFilterBy("deviceName", MeterSearchField.PAONAME);
         filterBy.setFilterValue(filterValue);
         searchFilter.add(filterBy);
-        OrderBy orderBy = new OrderBy(MeterSearchField.PAONAME.toString(), true);
+        MeterSearchOrderBy orderBy = new MeterSearchOrderBy(MeterSearchField.PAONAME.toString(), true);
         SearchResult<com.cannontech.amr.meter.model.Meter> result = meterSearchDao.search(searchFilter, orderBy, 0, 25);
         List<com.cannontech.amr.meter.model.Meter> meters = result.getResultList();
        return meters;

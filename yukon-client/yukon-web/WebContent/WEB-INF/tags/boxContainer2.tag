@@ -9,6 +9,7 @@
 <%@ attribute name="styleClass" required="false" type="java.lang.String"%>
 <%@ attribute name="hideEnabled" required="false" type="java.lang.Boolean"%>
 <%@ attribute name="showInitially" required="false" type="java.lang.Boolean"%>
+<%@ attribute name="titleLinkHtml" %>
 
 <cti:msgScope paths=".${nameKey},">
 	<c:choose>
@@ -27,6 +28,7 @@
 				   styleClass="${pageScope.styleClass}" 
 				   hideEnabled="${pageScope.hideEnabled}" 
 				   showInitially="${pageScope.showInitially}"
+                   titleLinkHtml="${pageScope.titleLinkHtml}"
 				   helpText="${pageScope.helpText}">
 	<jsp:doBody/>
 

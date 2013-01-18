@@ -552,7 +552,17 @@
       <required>false</required>
       <rtexprvalue>false</rtexprvalue>
     </attribute>
-  </tag>  
+    <attribute>
+      <name>styleClass</name>
+      <required>false</required>
+      <rtexprvalue>false</rtexprvalue>
+    </attribute>
+    <attribute>
+      <name>background</name>
+      <required>false</required>
+      <rtexprvalue>false</rtexprvalue>
+    </attribute>
+  </tag>
   
   <tag>
     <name>capBankStateColor</name>

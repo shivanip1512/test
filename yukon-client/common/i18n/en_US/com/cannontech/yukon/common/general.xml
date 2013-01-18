@@ -65,6 +65,11 @@
 <entry key="yukon.common.thousandSeparator">,</entry>
 <entry key="yukon.common.comma">,</entry>
 
+<entry key="yukon.common.attribute">Attribute</entry>
+<entry key="yukon.common.units">Units</entry>
+<entry key="yukon.common.timestamp">Timestamp</entry>
+<entry key="yukon.common.value">Value</entry>
+
 <entry key="yukon.common.attributes.pointNotFound">Point not configured.</entry>
 
 <entry key="yukon.common.attributeGroups.BLINK_AND_OUTAGE">Blink &amp; Outage</entry>

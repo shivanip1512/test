@@ -3,15 +3,15 @@ package com.cannontech.amr.meter.search.model;
 /**
  * Class used to sort a meter search
  */
-public class OrderBy {
+public class MeterSearchOrderBy {
 
     private boolean descending = false;
     private MeterSearchField field = MeterSearchField.PAONAME;
 
-    public OrderBy() {
+    public MeterSearchOrderBy() {
     }
 
-    public OrderBy(String field, boolean descending) {
+    public MeterSearchOrderBy(String field, boolean descending) {
 
         if (field != null && field.length() > 0) {
             this.field = MeterSearchField.valueOf(field);

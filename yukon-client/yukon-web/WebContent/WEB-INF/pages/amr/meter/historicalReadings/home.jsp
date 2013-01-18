@@ -23,35 +23,41 @@
     </c:if>
 
     <div class="scrollingContainer_large">
-            <table id="pointValueList" class="compactResultsTable rowHighlighting">
-                <tr>
-                    <th><tags:sortLink nameKey="tableHeader.timestamp" baseUrl="${viewUrl}" fieldName="TIMESTAMP"
-                            isDefault="${points.size() > 0}" styleClass="f_ajaxPage" descendingByDefault="true"
-                            moreAttributes="data-selector=\"#${dialogId}\""
-                        />
-                    </th>
-                    <th><tags:sortLink nameKey="tableHeader.value" baseUrl="${viewUrl}" fieldName="VALUE"
-                            isDefault="false" styleClass="f_ajaxPage" moreAttributes="data-selector=\"#${dialogId}\""
-                        />
-                    </th>
-                </tr>
-                <c:if test="${points.size() == 0}">
+        <c:choose>
+            <c:when test="${points.size() == 0}">
+                <i:inline key=".notFound" />
+            </c:when>
+            <c:otherwise>
+                <table id="pointValueList" class="compactResultsTable rowHighlighting">
                     <tr>
-                        <td><i:inline key=".notFound" />
-                        </td>
-                    <tr>
-                </c:if>
-
-                <c:if test="${points.size() > 0}">
+                        <th>
+                            <tags:sortLink nameKey="tableHeader.timestamp" 
+                                baseUrl="${viewUrl}" 
+                                fieldName="TIMESTAMP"
+                                isDefault="${points.size() > 0}" 
+                                styleClass="f_ajaxPage" 
+                                descendingByDefault="true"
+                                moreAttributes="data-selector=\"#${dialogId}\""/>
+                        </th>
+                        <th>
+                            <tags:sortLink nameKey="tableHeader.value" 
+                                baseUrl="${viewUrl}" 
+                                fieldName="VALUE"
+                                isDefault="false" 
+                                styleClass="f_ajaxPage" 
+                                moreAttributes="data-selector=\"#${dialogId}\""/>
+                        </th>
+                    </tr>
+    
                     <c:forEach var="row" items="${points}">
                         <tr>
                             <td>${fn:escapeXml(row[0])}</td>
                             <td>${fn:escapeXml(row[1])}</td>
                         </tr>
-
-
                     </c:forEach>
-                </c:if>
-            </table>
-        </div>
+                </table>
+            </c:otherwise>
+        </c:choose>
+            
+    </div>
 </dialog:ajaxPage>

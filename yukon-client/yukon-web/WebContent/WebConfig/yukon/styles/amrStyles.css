@@ -215,9 +215,9 @@ div.attributeSetupContainer {
     min-width: 500px;
 }
 .stateBox {
-    width: 6px;
-    height: 8px;
+    width: 14px;
+    height: 14px;
     border: 1px solid #888;
     display: inline-block !important;
-    margin: 4px 5px 0 0;
+    margin: 1px 0 0 0;
 }

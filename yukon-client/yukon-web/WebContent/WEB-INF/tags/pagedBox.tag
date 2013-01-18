@@ -18,7 +18,7 @@
 
 <div class="pagedBox<c:if test="${!empty pageScope.styleClass}"> ${pageScope.styleClass}</c:if>"<c:if test="${!empty pageScope.id}"> id="${pageScope.id}"</c:if>>
     <div class="title">
-        <span class="titleArea">${pageScope.title}</span>
+        <h3 class="titleArea">${pageScope.title}</h3>
         <span class="pagingArea fr">
             <tags:nextPrevLinks searchResult="${pageScope.searchResult}" baseUrl="${pageScope.baseUrl}" mode="jsp"/>
         </span>

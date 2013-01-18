@@ -113,6 +113,10 @@ function ${widgetParameters.widgetId}_updateDifference() {
 </c:if>
 
 <div id="${widgetParameters.widgetId}_results"></div>
+<cti:url var="meterPointsUrl" value="/common/device/points">
+    <cti:param name="deviceId">${device.deviceId}</cti:param>
+</cti:url>
 <div class="actionArea">
-	<tags:widgetActionUpdate hide="${!readable}" method="read" nameKey="readNow" container="${widgetParameters.widgetId}_results"/>
+    <a href="${meterPointsUrl}" class="fl"><i:inline key="yukon.web.defaults.showAll"/></a>
+    <tags:widgetActionUpdate hide="${!readable}" method="read" nameKey="readNow" container="${widgetParameters.widgetId}_results"/>
 </div>

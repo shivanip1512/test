@@ -4,7 +4,7 @@ import java.util.List;
 
 import com.cannontech.amr.meter.model.Meter;
 import com.cannontech.amr.meter.search.model.FilterBy;
-import com.cannontech.amr.meter.search.model.OrderBy;
+import com.cannontech.amr.meter.search.model.MeterSearchOrderBy;
 import com.cannontech.common.search.SearchResult;
 
 /**
@@ -20,7 +20,7 @@ public interface MeterSearchDao {
      * @param count - Number of paos we want from the sorted, filtered list
      * @return A sorted list of paos that match the filter criteria
      */
-    public SearchResult<Meter> search(List<FilterBy> filterByList, OrderBy orderBy, int start,
+    public SearchResult<Meter> search(List<FilterBy> filterByList, MeterSearchOrderBy orderBy, int start,
             int count);
 
 }

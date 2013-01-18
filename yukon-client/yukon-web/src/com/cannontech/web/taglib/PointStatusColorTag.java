@@ -19,6 +19,9 @@ public class PointStatusColorTag extends YukonTagSupport {
     private boolean isPointIdSet;
     private String var;
     private String format = "{stateColor|#%02X%02X%02X}";
+    private String styleClass;
+    private boolean background;
+    
     private PointDataRegistrationService pointDataRegistrationService;
     
     @Override
@@ -36,7 +39,13 @@ public class PointStatusColorTag extends YukonTagSupport {
         } else {
             
             final StringBuilder beforeBodyBuilder = new StringBuilder();
-            beforeBodyBuilder.append("<span style=\"color: " + color + " !important;\"");
+            String style = background ? " style=\"background-color: " + color + " !important;\"" : " style=\"color: " + color + " !important;\"";
+            beforeBodyBuilder.append("<span" + style);
+            String format = background ? "background" : "format";
+            beforeBodyBuilder.append(" data-format=\"" + format + "\"");
+            if (!StringUtils.isBlank(styleClass)) {
+                beforeBodyBuilder.append(" class=\"" + styleClass + "\"");
+            }
             beforeBodyBuilder.append(" cannonColorUpdater=\"" + latestValue.getFullIdentifier() + "\">");
             String before = beforeBodyBuilder.toString();
             
@@ -63,6 +72,14 @@ public class PointStatusColorTag extends YukonTagSupport {
     
     public void setVar(final String var) {
         this.var = var;
+    }
+    
+    public void setStyleClass(String styleClass) {
+        this.styleClass = styleClass;
+    }
+    
+    public void setBackground(boolean background) {
+        this.background = background;
     }
 
     @Required
