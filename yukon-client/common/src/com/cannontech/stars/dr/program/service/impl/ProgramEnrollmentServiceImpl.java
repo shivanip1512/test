@@ -149,18 +149,27 @@ public class ProgramEnrollmentServiceImpl implements ProgramEnrollmentService {
                     // Whether to send the config command is controlled by the AUTOMATIC_CONFIGURATION role property.
                     if (autoConfig) {
                         if (!trackAddressing || hardwareType.isZigbee()) {
-                            LmHardwareCommand.Builder b = new LmHardwareCommand.Builder(liteHw, LmHardwareCommandType.CONFIG, user);
-                            LmHardwareCommand command = b.build();
+                            LmHardwareCommand command = new LmHardwareCommand();
+                            command.setDevice(liteHw);
+                            command.setType(LmHardwareCommandType.CONFIG);
+                            command.setUser(user);
+                            
                             lmHardwareCommandService.sendConfigCommand(command);
                         }
                     } else if (inventoryBaseDao.getDeviceStatus(liteHw.getInventoryID()) == YukonListEntryTypes.YUK_DEF_ID_DEV_STAT_UNAVAIL) {
-                        LmHardwareCommand.Builder b = new LmHardwareCommand.Builder(liteHw, LmHardwareCommandType.IN_SERVICE, user);
-                        LmHardwareCommand command = b.build();
+                        LmHardwareCommand command = new LmHardwareCommand();
+                        command.setDevice(liteHw);
+                        command.setType(LmHardwareCommandType.IN_SERVICE);
+                        command.setUser(user);
+                        
                         lmHardwareCommandService.sendInServiceCommand(command);
                     }
                 } else {
-                    LmHardwareCommand.Builder b = new LmHardwareCommand.Builder(liteHw, LmHardwareCommandType.OUT_OF_SERVICE, user);
-                    LmHardwareCommand command = b.build();
+                    LmHardwareCommand command = new LmHardwareCommand();
+                    command.setDevice(liteHw);
+                    command.setType(LmHardwareCommandType.OUT_OF_SERVICE);
+                    command.setUser(user);
+                    
                     lmHardwareCommandService.sendOutOfServiceCommand(command);
                 }
             }

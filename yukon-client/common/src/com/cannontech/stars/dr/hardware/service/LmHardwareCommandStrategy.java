@@ -7,6 +7,7 @@ import com.cannontech.common.model.YukonTextMessage;
 import com.cannontech.common.pao.PaoType;
 import com.cannontech.database.data.lite.LiteYukonUser;
 import com.cannontech.stars.dr.account.model.CustomerAccount;
+import com.cannontech.stars.dr.hardware.model.LmCommand;
 import com.cannontech.stars.dr.hardware.model.LmHardwareCommand;
 import com.cannontech.stars.dr.hardware.model.Thermostat;
 import com.cannontech.stars.dr.thermostat.model.AccountThermostatSchedule;
@@ -65,4 +66,8 @@ public interface LmHardwareCommandStrategy {
      */
     public void cancelTextMessage(YukonCancelTextMessage message);
 
+    /**
+     * Will broadcast a command to all devices.
+     */
+    public void sendBroadcastCommand(LmCommand command);
 }

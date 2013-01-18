@@ -18,9 +18,11 @@ import com.cannontech.core.roleproperties.dao.EnergyCompanyRolePropertyDao;
 import com.cannontech.core.roleproperties.dao.RolePropertyDao;
 import com.cannontech.database.data.lite.LiteYukonUser;
 import com.cannontech.stars.core.service.YukonEnergyCompanyService;
+import com.cannontech.stars.database.data.lite.LiteStarsEnergyCompany;
 import com.cannontech.stars.dr.account.model.CustomerAccount;
 import com.cannontech.stars.dr.hardware.dao.InventoryDao;
 import com.cannontech.stars.dr.hardware.model.HardwareSummary;
+import com.cannontech.stars.dr.hardware.model.LmCommand;
 import com.cannontech.stars.dr.hardware.model.LmHardwareCommand;
 import com.cannontech.stars.dr.hardware.model.LmHardwareCommandParam;
 import com.cannontech.stars.dr.hardware.model.LmHardwareCommandType;
@@ -178,6 +180,25 @@ public class PorterExpressComCommandStrategy implements LmHardwareCommandStrateg
                 executor.execute(parameters.getDevice().getInventoryID(), command, parameters.getUser());
             }
         }
+    }
+    
+    @Override
+    public void sendBroadcastCommand(LmCommand command) {
+        log.debug("Sending porter ExpressCom broadcast command: " + command.getType().toString());
+        
+        if (command.getType() == LmHardwareCommandType.CANCEL_TEMP_OUT_OF_SERVICE) {
+            LiteStarsEnergyCompany energyCompany = (LiteStarsEnergyCompany) yecService.getEnergyCompanyByOperator(command.getUser());
+            int routeId = energyCompany.getDefaultRouteId();
+            Integer spid = (Integer) command.getParams().get(LmHardwareCommandParam.SPID);
+            String xcomCommand = xcomCommandBuilder.getBroadcastCancelAllOptOuts(spid);
+            
+            try {
+                executor.executeOnRoute(xcomCommand, routeId, command.getUser());
+            } catch (CommandCompletionException e) {
+                log.error("Error executing porter ExpressCom broadcast command: " + e);
+            }
+        }
+
     }
     
     @Override

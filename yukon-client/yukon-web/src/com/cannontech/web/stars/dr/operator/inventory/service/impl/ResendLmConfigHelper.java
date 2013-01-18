@@ -74,10 +74,13 @@ public class ResendLmConfigHelper extends InventoryActionsHelper {
                                 LiteLmHardwareBase lmhb = inventoryBaseDao.getHardwareByInventoryId(identifier.getInventoryId());
                                 YukonEnergyCompany yec = yecService.getEnergyCompanyByInventoryId(identifier.getInventoryId());
                                 
-                                LmHardwareCommand.Builder b = new LmHardwareCommand.Builder(lmhb, LmHardwareCommandType.CONFIG, yec.getEnergyCompanyUser());
-                                b.withParam(LmHardwareCommandParam.BULK, true);
+                                LmHardwareCommand command = new LmHardwareCommand();
+                                command.setDevice(lmhb);
+                                command.setType(LmHardwareCommandType.CONFIG);
+                                command.setUser(yec.getEnergyCompanyUser());
+                                command.getParams().put(LmHardwareCommandParam.BULK, true);
                                 
-                                commandService.sendConfigCommand(b.build());
+                                commandService.sendConfigCommand(command);
                                 
                                 successful.add(identifier);
                                 successCount++;

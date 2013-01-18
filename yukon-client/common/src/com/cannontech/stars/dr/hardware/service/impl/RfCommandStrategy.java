@@ -8,8 +8,11 @@ import org.springframework.context.MessageSourceResolvable;
 
 import com.cannontech.clientutils.LogHelper;
 import com.cannontech.clientutils.YukonLogManager;
+import com.cannontech.common.config.ConfigurationSource;
 import com.cannontech.common.constants.YukonListEntry;
+import com.cannontech.common.device.DeviceRequestType;
 import com.cannontech.common.device.commands.exception.CommandCompletionException;
+import com.cannontech.common.device.commands.impl.CommandRequestExecutionDefaults;
 import com.cannontech.common.inventory.HardwareType;
 import com.cannontech.common.model.YukonCancelTextMessage;
 import com.cannontech.common.model.YukonTextMessage;
@@ -18,6 +21,7 @@ import com.cannontech.common.rfn.message.RfnMessageClass;
 import com.cannontech.common.rfn.model.RfnManufacturerModel;
 import com.cannontech.core.dao.YukonListDao;
 import com.cannontech.database.data.lite.LiteYukonUser;
+import com.cannontech.dr.rfn.message.broadcast.RfnExpressComBroadcastRequest;
 import com.cannontech.dr.rfn.message.unicast.RfnExpressComUnicastReplyType;
 import com.cannontech.dr.rfn.message.unicast.RfnExpressComUnicastRequest;
 import com.cannontech.dr.rfn.service.RawExpressComCommandBuilder;
@@ -25,8 +29,10 @@ import com.cannontech.dr.rfn.service.RfnExpressComMessageService;
 import com.cannontech.dr.rfn.service.RfnUnicastCallback;
 import com.cannontech.stars.database.data.lite.LiteLmHardwareBase;
 import com.cannontech.stars.dr.account.model.CustomerAccount;
+import com.cannontech.stars.dr.hardware.model.LmCommand;
 import com.cannontech.stars.dr.hardware.model.LmHardwareCommand;
 import com.cannontech.stars.dr.hardware.model.LmHardwareCommandParam;
+import com.cannontech.stars.dr.hardware.model.LmHardwareCommandType;
 import com.cannontech.stars.dr.hardware.model.Thermostat;
 import com.cannontech.stars.dr.hardware.service.HardwareStrategyType;
 import com.cannontech.stars.dr.hardware.service.LmHardwareCommandStrategy;
@@ -39,10 +45,12 @@ public class RfCommandStrategy implements LmHardwareCommandStrategy {
     
     private static final Logger log = YukonLogManager.getLogger(RfCommandStrategy.class);
     private static final LogHelper logHelper = LogHelper.getInstance(log);
-    
-    @Autowired private YukonListDao yukonListDao;
+
+    @Autowired private RawExpressComCommandBuilder rawExpressComCommandBuilder;
     @Autowired private RfnExpressComMessageService rfnExpressComMessageService;
     @Autowired private RawExpressComCommandBuilder commandBuilder;
+    @Autowired private ConfigurationSource configurationSource;
+    @Autowired private YukonListDao yukonListDao;
 
     @Override
     public void sendCommand(final LmHardwareCommand parameters) throws CommandCompletionException {
@@ -103,6 +111,29 @@ public class RfCommandStrategy implements LmHardwareCommandStrategy {
                     logHelper.debug("Recieved status error %s for %s", replyType, parameters.getType());
                 }
             });
+        }
+    }
+    
+    @Override
+    public void sendBroadcastCommand(LmCommand command) {
+        // On a Network Manager enabled system the following CPARM will be set; if not it will return null.
+        String jmsConfiguration = configurationSource.getString("JMS_SERVER_BROKER_LISTEN_CONNECTION");
+        if (jmsConfiguration != null) {
+            log.debug("Sending RFN ExpressCom broadcast command: " + command.getType().toString());
+
+            if (command.getType() == LmHardwareCommandType.CANCEL_TEMP_OUT_OF_SERVICE) {
+                RfnExpressComBroadcastRequest request = new RfnExpressComBroadcastRequest();
+                request.setRfnMessageClass(RfnMessageClass.NONE);
+                request.setExpirationDuration(-1);
+                int commandPriority = configurationSource.getInteger("OVERRIDE_PRIORITY_LM_HARDWARE_COMMAND", 
+                        CommandRequestExecutionDefaults.getPriority(DeviceRequestType.LM_HARDWARE_COMMAND));
+                request.setMessagePriority(commandPriority);
+                Integer spid = (Integer) command.getParams().get(LmHardwareCommandParam.SPID);
+                request.setPayload(rawExpressComCommandBuilder.getBroadcastCancelAllTempOutOfServiceCommand(spid));
+            
+                rfnExpressComMessageService.sendBroadcastRequest(request);
+            }
+            
         }
     }
     

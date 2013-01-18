@@ -38,6 +38,7 @@ import com.cannontech.stars.database.db.event.LMCustomerEventBase;
 import com.cannontech.stars.dr.account.model.CustomerAccount;
 import com.cannontech.stars.dr.hardware.dao.InventoryDao;
 import com.cannontech.stars.dr.hardware.model.HardwareSummary;
+import com.cannontech.stars.dr.hardware.model.LmCommand;
 import com.cannontech.stars.dr.hardware.model.LmHardwareCommand;
 import com.cannontech.stars.dr.hardware.model.LmHardwareCommandParam;
 import com.cannontech.stars.dr.hardware.model.LmHardwareCommandType;
@@ -131,12 +132,12 @@ public class LmHardwareCommandServiceImpl implements LmHardwareCommandService {
         if (unavailableOrForceInService && supportsServiceInOut) {
             
             // Send an in service command first
-            LmHardwareCommand.Builder b = new LmHardwareCommand.Builder(device, LmHardwareCommandType.IN_SERVICE, command.getUser());
-            ImmutableMap<LmHardwareCommandParam, Object> optionsCopy = command.optionsCopy();
-            for (LmHardwareCommandParam option : optionsCopy.keySet()) {
-                b.withParam(option, optionsCopy.get(option));
-            }
-            LmHardwareCommand inservice = b.build();
+            LmHardwareCommand inservice = new LmHardwareCommand();
+            inservice.setDevice(device);
+            inservice.setType(LmHardwareCommandType.IN_SERVICE);
+            inservice.setUser(command.getUser());
+            inservice.setParams(command.optionsCopy());
+            
             sendInServiceCommand(inservice);
             log.debug("Automated in-service LM command sent: " + inservice);
             if (autoConfig) {
@@ -324,6 +325,13 @@ public class LmHardwareCommandServiceImpl implements LmHardwareCommandService {
                           + hardwareType.getHardwareConfigType() + " for " + message.getInventoryIds().size()
                           + " devices.");
             }
+        }
+    }
+    
+    @Override
+    public void sendBroadcastCommand(LmCommand command) {
+        for (LmHardwareCommandStrategy strategy : strategies.values() ) {
+            strategy.sendBroadcastCommand(command);
         }
     }
     

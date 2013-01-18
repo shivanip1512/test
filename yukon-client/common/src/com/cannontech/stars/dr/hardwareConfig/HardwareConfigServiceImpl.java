@@ -54,8 +54,11 @@ public class HardwareConfigServiceImpl implements HardwareConfigService {
                              SwitchCommandQueue.SWITCH_COMMAND_DISABLE);
         } else {
             LiteYukonUser user = yecService.getEnergyCompanyByInventoryId(inventoryId).getEnergyCompanyUser();
-            LmHardwareCommand.Builder b = new LmHardwareCommand.Builder(liteHw, LmHardwareCommandType.OUT_OF_SERVICE, user);
-            LmHardwareCommand command = b.build();
+            LmHardwareCommand command = new LmHardwareCommand();
+            command.setDevice(liteHw);
+            command.setType(LmHardwareCommandType.OUT_OF_SERVICE);
+            command.setUser(user);
+
             commandService.sendOutOfServiceCommand(command);
         }
         logEvent(accountId, energyCompanyId,
@@ -73,8 +76,11 @@ public class HardwareConfigServiceImpl implements HardwareConfigService {
                              SwitchCommandQueue.SWITCH_COMMAND_ENABLE);
         } else {
             LiteYukonUser user = yecService.getEnergyCompanyByInventoryId(inventoryId).getEnergyCompanyUser();
-            LmHardwareCommand.Builder b = new LmHardwareCommand.Builder(liteHw, LmHardwareCommandType.IN_SERVICE, user);
-            LmHardwareCommand command = b.build();
+            LmHardwareCommand command = new LmHardwareCommand();
+            command.setDevice(liteHw);
+            command.setType(LmHardwareCommandType.IN_SERVICE);
+            command.setUser(user);
+
             commandService.sendInServiceCommand(command);
         }
         logEvent(accountId, energyCompanyId,

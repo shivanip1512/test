@@ -40,7 +40,6 @@ import com.cannontech.stars.database.data.lite.LiteLmHardwareBase;
 import com.cannontech.stars.dr.enrollment.dao.EnrollmentDao;
 import com.cannontech.stars.dr.hardware.dao.InventoryDao;
 import com.cannontech.stars.dr.hardware.model.LmHardwareCommand;
-import com.cannontech.stars.dr.hardware.model.LmHardwareCommand.Builder;
 import com.cannontech.stars.dr.hardware.model.LmHardwareCommandType;
 import com.cannontech.stars.dr.hardware.service.LmHardwareCommandService;
 import com.cannontech.stars.dr.program.service.ProgramEnrollment;
@@ -120,9 +119,13 @@ public class LcrReadingArchiveRequestListener extends RfnArchiveRequestListenerB
                     boolean autoConfig = ecRolePropertyDao.checkProperty(YukonRoleProperty.AUTOMATIC_CONFIGURATION, yec);
                     if (autoConfig) {
                         LiteLmHardwareBase lmhb = inventoryBaseDao.getHardwareByInventoryId(inventoryId);
-                        LmHardwareCommand.Builder b = new Builder(lmhb, LmHardwareCommandType.CONFIG, yec.getEnergyCompanyUser());
+                        LmHardwareCommand lmhc = new LmHardwareCommand();
+                        lmhc.setDevice(lmhb);
+                        lmhc.setType(LmHardwareCommandType.CONFIG);
+                        lmhc.setUser(yec.getEnergyCompanyUser());
+                        
                         try {
-                            commandService.sendConfigCommand(b.build());
+                            commandService.sendConfigCommand(lmhc);
                             log.debug("Sent config command for RfnLcrArchiveRequest");
                         } catch (CommandCompletionException e) {
                             log.error("Unable to send config command for RfnLcrArchiveRequest", e);

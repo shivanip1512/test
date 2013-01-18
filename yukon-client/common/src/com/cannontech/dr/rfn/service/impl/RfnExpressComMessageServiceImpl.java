@@ -21,6 +21,7 @@ import com.cannontech.common.util.jms.JmsReplyReplyHandler;
 import com.cannontech.common.util.jms.RequestReplyReplyTemplate;
 import com.cannontech.common.util.jms.RequestReplyTemplate;
 import com.cannontech.core.dynamic.PointValueHolder;
+import com.cannontech.dr.rfn.message.broadcast.RfnExpressComBroadcastRequest;
 import com.cannontech.dr.rfn.message.unicast.RfnExpressComUnicastDataReply;
 import com.cannontech.dr.rfn.message.unicast.RfnExpressComUnicastDataReplyType;
 import com.cannontech.dr.rfn.message.unicast.RfnExpressComUnicastReply;
@@ -34,7 +35,6 @@ import com.cannontech.i18n.YukonMessageSourceResolvable;
 import com.cannontech.stars.core.dao.InventoryBaseDao;
 import com.cannontech.stars.database.data.lite.LiteLmHardwareBase;
 import com.cannontech.stars.dr.hardware.model.LmHardwareCommand;
-import com.cannontech.stars.dr.hardware.model.LmHardwareCommand.Builder;
 import com.cannontech.stars.dr.hardware.model.LmHardwareCommandType;
 import com.google.common.collect.Lists;
 import com.google.common.collect.Sets;
@@ -197,12 +197,15 @@ public class RfnExpressComMessageServiceImpl implements RfnExpressComMessageServ
     @Override
     public void readDevice(RfnDevice device, final RfnUnicastCallback callback) {
         LiteLmHardwareBase lmhb = inventoryBaseDao.getHardwareByDeviceId(device.getPaoIdentifier().getPaoId());
-        LmHardwareCommand.Builder b = new Builder(lmhb, LmHardwareCommandType.READ_NOW, null);
-        
+        LmHardwareCommand lmhc = new LmHardwareCommand();
+        lmhc.setDevice(lmhb);
+        lmhc.setType(LmHardwareCommandType.READ_NOW);
+        lmhc.setUser(null);
+
         RfnExpressComUnicastRequest request = new RfnExpressComUnicastRequest(device.getRfnIdentifier());
         request.setMessageId(nextMessageId());
         request.setMessagePriority(6);
-        request.setPayload(commandBuilder.getCommandAsHexStringByteArray(b.build()));
+        request.setPayload(commandBuilder.getCommandAsHexStringByteArray(lmhc));
         request.setResponseExpected(false);
         request.setRfnMessageClass(RfnMessageClass.DR);
         
@@ -216,8 +219,12 @@ public class RfnExpressComMessageServiceImpl implements RfnExpressComMessageServ
         request.setMessagePriority(6);
         LiteLmHardwareBase lmhb = inventoryBaseDao.getHardwareByDeviceId(device.getPaoIdentifier().getPaoId());
         // The rf command strategy does not actually need the user, so null for now.
-        LmHardwareCommand.Builder b = new Builder(lmhb, LmHardwareCommandType.READ_NOW, null);
-        request.setPayload(commandBuilder.getCommandAsHexStringByteArray(b.build()));
+        LmHardwareCommand lmhc = new LmHardwareCommand();
+        lmhc.setDevice(lmhb);
+        lmhc.setType(LmHardwareCommandType.READ_NOW);
+        lmhc.setUser(null);
+        
+        request.setPayload(commandBuilder.getCommandAsHexStringByteArray(lmhc));
         request.setResponseExpected(true);
         request.setRfnMessageClass(RfnMessageClass.DR);
         
@@ -253,6 +260,11 @@ public class RfnExpressComMessageServiceImpl implements RfnExpressComMessageServ
         jmsTemplate = new JmsTemplate(connectionFactory);
         jmsTemplate.setExplicitQosEnabled(true);
         jmsTemplate.setDeliveryPersistent(false);
+    }
+
+    @Override
+    public void sendBroadcastRequest(RfnExpressComBroadcastRequest request) {
+        jmsTemplate.convertAndSend("yukon.qr.obj.dr.rfn.ExpressComBroadcastRequest", request);
     }
     
 }

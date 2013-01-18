@@ -158,15 +158,17 @@ public class InventoryManagerUtil {
     			if (writeToFile) {
     			    xcomCommandBuilder.fileWriteConfigCommand(energyCompany, liteHw, true, cmd.getInfoString());
     			} else {
-    			    LmHardwareCommand.Builder b = new LmHardwareCommand.Builder(liteHw, LmHardwareCommandType.CONFIG, energyCompany.getUser());
-    			    b.withParam(LmHardwareCommandParam.FORCE_IN_SERVICE, true);
+                    LmHardwareCommand command = new LmHardwareCommand();
+                    command.setDevice(liteHw);
+                    command.setType(LmHardwareCommandType.CONFIG);
+                    command.setUser(energyCompany.getUser());
+    			    command.getParams().put(LmHardwareCommandParam.FORCE_IN_SERVICE, true);
     			    if (optGroupId != null) {
-    			        b.withParam(LmHardwareCommandParam.OPTIONAL_GROUP_ID, optGroupId);
+    			        command.getParams().put(LmHardwareCommandParam.OPTIONAL_GROUP_ID, optGroupId);
     			    }
     			    if (optRouteId != null) {
-                        b.withParam(LmHardwareCommandParam.OPTIONAL_ROUTE_ID, optRouteId);
+    			        command.getParams().put(LmHardwareCommandParam.OPTIONAL_ROUTE_ID, optRouteId);
                     }
-		            LmHardwareCommand command = b.build();
                     commandService.sendConfigCommand(command);
                 }
             }
@@ -174,30 +176,34 @@ public class InventoryManagerUtil {
                 if (writeToFile) { 
                     xcomCommandBuilder.fileWriteDisableCommand(energyCompany, liteHw);
                 } else {
-                    LmHardwareCommand.Builder b = new LmHardwareCommand.Builder(liteHw, LmHardwareCommandType.OUT_OF_SERVICE, energyCompany.getUser());
-                    b.withParam(LmHardwareCommandParam.FORCE_IN_SERVICE, true);
+                    LmHardwareCommand command = new LmHardwareCommand();
+                    command.setDevice(liteHw);
+                    command.setType(LmHardwareCommandType.OUT_OF_SERVICE);
+                    command.setUser(energyCompany.getUser());
+                    command.getParams().put(LmHardwareCommandParam.FORCE_IN_SERVICE, true);
                     if (optGroupId != null) {
-                        b.withParam(LmHardwareCommandParam.OPTIONAL_GROUP_ID, optGroupId);
+                        command.getParams().put(LmHardwareCommandParam.OPTIONAL_GROUP_ID, optGroupId);
                     }
                     if (optRouteId != null) {
-                        b.withParam(LmHardwareCommandParam.OPTIONAL_ROUTE_ID, optRouteId);
+                        command.getParams().put(LmHardwareCommandParam.OPTIONAL_ROUTE_ID, optRouteId);
                     }
-                    LmHardwareCommand command = b.build();
                     commandService.sendOutOfServiceCommand(command);
                 }
             } else if (cmd.getCommandType().equalsIgnoreCase(SwitchCommandQueue.SWITCH_COMMAND_ENABLE)) {
                 if (writeToFile) { 
                     xcomCommandBuilder.fileWriteEnableCommand(energyCompany, liteHw);
                 } else {
-                    LmHardwareCommand.Builder b = new LmHardwareCommand.Builder(liteHw, LmHardwareCommandType.IN_SERVICE, energyCompany.getUser());
-                    b.withParam(LmHardwareCommandParam.FORCE_IN_SERVICE, true);
+                    LmHardwareCommand command = new LmHardwareCommand();
+                    command.setDevice(liteHw);
+                    command.setType(LmHardwareCommandType.IN_SERVICE);
+                    command.setUser(energyCompany.getUser());
+                    command.getParams().put(LmHardwareCommandParam.FORCE_IN_SERVICE, true);
                     if (optGroupId != null) {
-                        b.withParam(LmHardwareCommandParam.OPTIONAL_GROUP_ID, optGroupId);
+                        command.getParams().put(LmHardwareCommandParam.OPTIONAL_GROUP_ID, optGroupId);
                     }
                     if (optRouteId != null) {
-                        b.withParam(LmHardwareCommandParam.OPTIONAL_ROUTE_ID, optRouteId);
+                        command.getParams().put(LmHardwareCommandParam.OPTIONAL_ROUTE_ID, optRouteId);
                     }
-                    LmHardwareCommand command = b.build();
                     commandService.sendInServiceCommand(command);
                 }
             }

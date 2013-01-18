@@ -50,12 +50,14 @@ import com.cannontech.core.dao.ProgramNotFoundException;
 import com.cannontech.core.dao.YukonUserDao;
 import com.cannontech.core.roleproperties.YukonRole;
 import com.cannontech.core.roleproperties.YukonRoleProperty;
+import com.cannontech.core.roleproperties.dao.EnergyCompanyRolePropertyDao;
 import com.cannontech.core.roleproperties.dao.RolePropertyDao;
 import com.cannontech.core.service.SystemDateFormattingService;
 import com.cannontech.database.data.activity.ActivityLogActions;
 import com.cannontech.database.data.lite.LiteContact;
 import com.cannontech.database.data.lite.LiteYukonGroup;
 import com.cannontech.database.data.lite.LiteYukonUser;
+import com.cannontech.dr.rfn.service.RfnExpressComMessageService;
 import com.cannontech.stars.core.dao.InventoryBaseDao;
 import com.cannontech.stars.core.dao.StarsSearchDao;
 import com.cannontech.stars.core.service.YukonEnergyCompanyService;
@@ -70,10 +72,11 @@ import com.cannontech.stars.dr.displayable.dao.DisplayableInventoryEnrollmentDao
 import com.cannontech.stars.dr.displayable.model.DisplayableInventory;
 import com.cannontech.stars.dr.displayable.model.DisplayableInventoryEnrollment;
 import com.cannontech.stars.dr.enrollment.dao.EnrollmentDao;
+import com.cannontech.stars.dr.hardware.dao.InventoryDao;
 import com.cannontech.stars.dr.hardware.dao.LmHardwareBaseDao;
 import com.cannontech.stars.dr.hardware.model.LMHardwareBase;
+import com.cannontech.stars.dr.hardware.model.LmCommand;
 import com.cannontech.stars.dr.hardware.model.LmHardwareCommand;
-import com.cannontech.stars.dr.hardware.model.LmHardwareCommand.Builder;
 import com.cannontech.stars.dr.hardware.model.LmHardwareCommandParam;
 import com.cannontech.stars.dr.hardware.model.LmHardwareCommandType;
 import com.cannontech.stars.dr.hardware.service.LMHardwareControlInformationService;
@@ -124,6 +127,7 @@ public class OptOutServiceImpl implements OptOutService {
 	@Autowired private DisplayableInventoryDao displayableInventoryDao;
     @Autowired private YukonEnergyCompanyService yukonEnergyCompanyService;
 	@Autowired private InventoryBaseDao inventoryBaseDao;
+	@Autowired private InventoryDao inventoryDao;
 	@Autowired private OptOutEventDao optOutEventDao;
 	@Autowired private OptOutAdditionalDao optOutAdditionalDao;
 	@Autowired private OptOutNotificationService optOutNotificationService;
@@ -144,7 +148,9 @@ public class OptOutServiceImpl implements OptOutService {
 	@Autowired private OptOutSurveyDao optOutSurveyDao;
 	@Autowired @Qualifier("main") private Executor executor;
 	@Autowired private LmHardwareCommandService lmHardwareCommandService;
-	
+	@Autowired private RfnExpressComMessageService rfnExpressComMessageService;
+	@Autowired private EnergyCompanyRolePropertyDao energyCompanyRolePropertyDao;
+
 	private RolePropertyDao rolePropertyDao;
 	
 	private final Logger logger = YukonLogManager.getLogger(OptOutServiceImpl.class);
@@ -499,14 +505,91 @@ public class OptOutServiceImpl implements OptOutService {
 
 	@Override
 	public void cancelAllOptOuts(LiteYukonUser user) {
-
+	    logger.debug("Broadcast cancel all opt outs command initiated by user: " + user.getUsername());
+	    
 		LiteStarsEnergyCompany energyCompany = starsDatabaseCache.getEnergyCompanyByUser(user);
 		List<OptOutEvent> currentOptOuts = optOutEventDao.getAllCurrentOptOuts(energyCompany);
-		
-		for (OptOutEvent ooe : currentOptOuts) {
-			cancelOptOutEvent(ooe, energyCompany, user);
-		}
+
+	    try {
+	        String broadcastRolePropertyValue = energyCompanyRolePropertyDao.getPropertyStringValue(
+	                YukonRoleProperty.BROADCAST_OPT_OUT_CANCEL_SPID, 
+	                (YukonEnergyCompany) energyCompany);
+            Integer broadcastSpid = Integer.parseInt(broadcastRolePropertyValue);  // An exception is thrown if a valid SPID is not found.
+            // Range-check the SPID value. Valid SPID values are 1 – 65534.
+            if (broadcastSpid < 1) {
+                logger.warn("Out-of-range SPID address specified for broadcast cancel all opt out command.\n\r" +
+                        "Valid values are 1 - 65534.  The invalid SPID was: " + broadcastSpid + ". The value 1 will be used instead.");
+                broadcastSpid = 1;
+            }
+            if (broadcastSpid > 65534) {
+                logger.warn("Out-of-range SPID address specified for broadcast cancel all opt out command.\n\r" +
+                        "Valid values are 1 - 65534.  The invalid SPID was: " + broadcastSpid + ". The value 65534 will be used instead.");
+                broadcastSpid = 65534;
+            }
+            logger.debug("Valid numeric SPID found in role property 'Broadcast Opt Out Cancel SPID'. SPID used:" + broadcastSpid);
+
+            broadcastCancelAllOptOuts(user, broadcastSpid, energyCompany, currentOptOuts);
+
+	    } catch (NumberFormatException e) {
+	        logger.debug("No valid numeric SPID found in role property 'Broadcast Opt Out Cancel SPID'.");
+	        // No valid SPID value found so use per-device messages.
+	        for (OptOutEvent ooe : currentOptOuts) {
+	            cancelOptOutEvent(ooe, energyCompany, user);
+	        }
+	    }
 	}
+	
+	/**
+	 * This method cancels all active opt outs using broadcast messaging.  
+	 * One message is generated per communication protocol and is sent to
+	 * all devices on the network using SPID addressing.  
+	 * 
+	 * @param user The user performing the broadcast cancel override.
+	 * @param spid The SPID address to use in the ExpressCom messages.
+	 * @param energyCompany The energy company used when looking up the SPID role property.
+	 */
+    private void broadcastCancelAllOptOuts(LiteYukonUser user, int spid, 
+            LiteStarsEnergyCompany energyCompany, List<OptOutEvent> currentOptOuts) {
+        
+        LmCommand command = new LmCommand();
+
+        command.setType(LmHardwareCommandType.CANCEL_TEMP_OUT_OF_SERVICE);
+        command.setUser(user);
+        command.getParams().put(LmHardwareCommandParam.SPID, spid);
+        
+        // Send the broadcast command via all available strategies.
+        lmHardwareCommandService.sendBroadcastCommand(command);
+        
+        // Perform logging.
+        starsEventLogService.cancelCurrentOptOuts(user);
+        Instant momentCancelled = new Instant();
+        
+        for (OptOutEvent ooe : currentOptOuts) {
+            lmHardwareControlInformationService.stopOptOut(ooe.getInventoryId(), user, momentCancelled);
+
+            LiteLmHardwareBase inventory = null;
+            try {
+                inventory = inventoryBaseDao.getHardwareByInventoryId(ooe.getInventoryId());
+    
+                // Record cancellation in OptOutEvent table.
+                ooe.setState(OptOutEventState.CANCEL_SENT);
+                ooe.setStopDate(momentCancelled);
+                ooe.setEventCounts(OptOutCounts.DONT_COUNT);
+                optOutEventDao.save(ooe, OptOutAction.CANCEL, user);
+    
+                int customerAccountId = ooe.getCustomerAccountId();
+                CustomerAccount customerAccount = customerAccountDao.getById(customerAccountId);
+                
+                // Log cancellations and send notifications.
+                logCancelCommand(inventory, energyCompany, user, customerAccount , customerAccountId);
+                sendCancelCommandNotification(energyCompany, user, ooe, customerAccount, ooe.getInventoryId());
+        
+            } catch (NotFoundException e) {
+                logger.warn("Inventory couldn't be found" + ooe.getInventoryId(), e);
+            }
+        }
+        
+    }
 	
 	@Override
 	public void cancelAllOptOutsByProgramName(String programName, LiteYukonUser user) throws ProgramNotFoundException {
@@ -1073,30 +1156,44 @@ public class OptOutServiceImpl implements OptOutService {
 		// Send the command to cancel opt out to the field
 		this.sendCancelRequest(inventory, user);
 		
-		ActivityLogger.logEvent(
+		logCancelCommand(inventory, yukonEnergyCompany, user, customerAccount, accountId);
+		
+		sendCancelCommandNotification(yukonEnergyCompany, user, event,
+                customerAccount, inventoryId);
+	}
+
+    private void logCancelCommand(LiteLmHardwareBase inventory,
+            YukonEnergyCompany yukonEnergyCompany, LiteYukonUser user,
+            CustomerAccount customerAccount, int accountId) {
+        
+        ActivityLogger.logEvent(
 				user.getUserID(), 
 				accountId, 
 				yukonEnergyCompany.getEnergyCompanyId(), 
 				customerAccount.getCustomerId(),
 				ActivityLogActions.PROGRAM_REENABLE_ACTION, 
 				"Serial #:" + inventory.getManufacturerSerialNumber());
-		
-		// Send re-enable (cancel opt out) notification
-		try {
-			OptOutRequest request = new OptOutRequest();
-			request.setStartDate(event.getStartDate());
-			request.setInventoryIdList(Collections.singletonList(inventoryId));
-			request.setDurationInHours(event.getDurationInHours());
-			request.setQuestions(new ArrayList<ScheduledOptOutQuestion>());
-			
-			LiteStarsEnergyCompany energyCompany = starsDatabaseCache.getEnergyCompany(yukonEnergyCompany.getEnergyCompanyId());
-			optOutNotificationService.sendReenableNotification(customerAccount, energyCompany, request, user);
+    }
 
-		} catch (MessagingException e) {
-			// Not much we can do - tried to send notification
-			logger.error(e);
-		}
-	}
+    private void sendCancelCommandNotification(
+            YukonEnergyCompany yukonEnergyCompany, LiteYukonUser user,
+            OptOutEvent event, CustomerAccount customerAccount, int inventoryId) {
+        // Send re-enable (cancel opt out) notification
+        try {
+            OptOutRequest request = new OptOutRequest();
+            request.setStartDate(event.getStartDate());
+            request.setInventoryIdList(Collections.singletonList(inventoryId));
+            request.setDurationInHours(event.getDurationInHours());
+            request.setQuestions(new ArrayList<ScheduledOptOutQuestion>());
+            
+            LiteStarsEnergyCompany energyCompany = starsDatabaseCache.getEnergyCompany(yukonEnergyCompany.getEnergyCompanyId());
+            optOutNotificationService.sendReenableNotification(customerAccount, energyCompany, request, user);
+
+        } catch (MessagingException e) {
+            // Not much we can do - tried to send notification
+            logger.error(e);
+        }
+    }
 
 	/**
 	 * Helper method to update the LMHardwareControlGroup opt out row when an opt out is complete
@@ -1149,10 +1246,13 @@ public class OptOutServiceImpl implements OptOutService {
 	private void sendOptOutRequest(LiteLmHardwareBase inventory, int durationInHours, LiteYukonUser user) 
 		throws CommandCompletionException {
 		
-	    Builder b = new LmHardwareCommand.Builder(inventory, LmHardwareCommandType.TEMP_OUT_OF_SERVICE, user);
-		b.withParam(LmHardwareCommandParam.DURATION, Duration.standardHours(durationInHours));
+	    LmHardwareCommand lmhc = new LmHardwareCommand();
+        lmhc.setDevice(inventory);
+        lmhc.setType(LmHardwareCommandType.TEMP_OUT_OF_SERVICE);
+        lmhc.setUser(user);
+        lmhc.getParams().put(LmHardwareCommandParam.DURATION, Duration.standardHours(durationInHours));
 		
-		lmHardwareCommandService.sendOptOutCommand(b.build());
+		lmHardwareCommandService.sendOptOutCommand(lmhc);
 	}
 	
 	/**
@@ -1165,8 +1265,13 @@ public class OptOutServiceImpl implements OptOutService {
 	private void sendCancelRequest(LiteLmHardwareBase inventory,  LiteYukonUser user) 
 	throws CommandCompletionException {
 	    
-	    Builder b = new LmHardwareCommand.Builder(inventory, LmHardwareCommandType.CANCEL_TEMP_OUT_OF_SERVICE, user);
-        lmHardwareCommandService.sendOptOutCommand(b.build());
+	    LmHardwareCommand lmhc = new LmHardwareCommand();
+
+	    lmhc.setDevice(inventory);
+	    lmhc.setType(LmHardwareCommandType.CANCEL_TEMP_OUT_OF_SERVICE);
+	    lmhc.setUser(user);
+	    
+        lmHardwareCommandService.sendOptOutCommand(lmhc);
 	}
 	
     public String checkOptOutStartDate(int accountId, LocalDate startDate, 
@@ -1220,10 +1325,9 @@ public class OptOutServiceImpl implements OptOutService {
         
         return null;
     }
-    
+ 
     @Autowired
     public void setRolePropertyDao(RolePropertyDao rolePropertyDao) {
         this.rolePropertyDao = rolePropertyDao;
     }
-    
 }

@@ -7,7 +7,7 @@ public interface RawExpressComCommandBuilder {
     /**
      * Builds byte[] representing a 'read now' request to an RF ExpressCom device.
      */
-    public byte[] getCommand(LmHardwareCommand parameters);
+    public byte[] getCommand(LmHardwareCommand command);
 
     /**
      * Builds byte[] representing a 'read now' request to an RF ExpressCom device
@@ -24,6 +24,17 @@ public interface RawExpressComCommandBuilder {
      * appended to an output string, and finally that string is converted back into a byte array.  
      * This effectively doubles the number of bytes used to represent the inner payload for any command.
      */
-    public byte[] getCommandAsHexStringByteArray(LmHardwareCommand parameters);
+    public byte[] getCommandAsHexStringByteArray(LmHardwareCommand command);
+
+    /**
+     * Builds a raw ExpressCom command which will broadcast a command that cancels all
+     * temporary out of service commands (opt outs).  Every device that responds to the 
+     * specified SPID that was temp out of service will return to in service.
+     *  
+     * @param spid The SPID to use when broadcasting the cancel all opt out commands.  
+     *             Comes from energy company role property BROADCAST_OPT_OUT_CANCEL_SPID.
+     * @param outputBuffer The ByteBuffer that holds the resultant ExpressCom message.
+     */
+    public byte[] getBroadcastCancelAllTempOutOfServiceCommand(int spid);
     
 }

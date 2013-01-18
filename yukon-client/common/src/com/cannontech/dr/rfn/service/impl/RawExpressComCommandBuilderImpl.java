@@ -125,8 +125,7 @@ public class RawExpressComCommandBuilderImpl implements RawExpressComCommandBuil
                 
                 break;
             case CANCEL_TEMP_OUT_OF_SERVICE:
-                outputBuffer.put((byte) 0x16); // Temporary Service Change
-                outputBuffer.put((byte) 0x00); // Cancel a previous temporary out of service command
+                getTempOutOfServiceInnerBytes(outputBuffer);
                 break;
             default:
                 throw new IllegalArgumentException("Command Type: " + type + " not implemented");
@@ -134,6 +133,25 @@ public class RawExpressComCommandBuilderImpl implements RawExpressComCommandBuil
         ByteBuffer trimmedOutput = ByteBuffer.allocate(outputBuffer.position());
         trimmedOutput.put(outputBuffer.array(), 0, outputBuffer.position());
         return trimmedOutput;
+    }
+
+    @Override
+    public byte[] getBroadcastCancelAllTempOutOfServiceCommand(int spid) {
+        ByteBuffer outputBuffer = ByteBuffer.allocate(32);
+        outputBuffer.putChar('s');
+        outputBuffer.put((byte) 0x80); // Use only SPID level addressing.
+        outputBuffer.putShort((short) spid); 
+        getTempOutOfServiceInnerBytes(outputBuffer);
+        outputBuffer.putChar('t');
+        return outputBuffer.array();
+    }
+    
+    private void getTempOutOfServiceInnerBytes(ByteBuffer outputBuffer) {
+        outputBuffer.put((byte) 0x03); // Priority Change Message
+        outputBuffer.put((byte) 0x00); // Max Priority
+        
+        outputBuffer.put((byte) 0x16); // Temporary Service Change
+        outputBuffer.put((byte) 0x00); // Cancel a previous temporary out of service command
     }
 
     private ByteBuffer getExpressComForConfigCommand(LmHardwareCommand parameters) {

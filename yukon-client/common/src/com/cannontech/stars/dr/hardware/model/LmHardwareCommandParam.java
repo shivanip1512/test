@@ -12,7 +12,8 @@ public enum LmHardwareCommandParam {
     BULK(Boolean.class), // NM ONLY
     PRIORITY(Integer.class),
     DURATION(Duration.class), // Currently only used for opt out duration in hours
-    FORCE_IN_SERVICE(Boolean.class);
+    FORCE_IN_SERVICE(Boolean.class),
+    SPID(Integer.class);
     
     private Class<?> clazz;
     private LmHardwareCommandParam(Class<?> clazz) {

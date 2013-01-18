@@ -29,6 +29,7 @@ import com.cannontech.loadcontrol.loadgroup.model.SEPGroupAttributes;
 import com.cannontech.stars.database.data.lite.LiteLmHardwareBase;
 import com.cannontech.stars.dr.account.model.CustomerAccount;
 import com.cannontech.stars.dr.hardware.dao.InventoryDao;
+import com.cannontech.stars.dr.hardware.model.LmCommand;
 import com.cannontech.stars.dr.hardware.model.LmHardwareCommand;
 import com.cannontech.stars.dr.hardware.model.LmHardwareCommandType;
 import com.cannontech.stars.dr.hardware.model.Thermostat;
@@ -130,6 +131,13 @@ public class ZigbeeCommandStrategy implements LmHardwareCommandStrategy {
             }
         } else {
             log.debug("Nothing to send for " + parameters.getType() + " command.");
+        }
+    }
+    
+    @Override
+    public void sendBroadcastCommand(LmCommand command) {
+        if (command.getType() == LmHardwareCommandType.CANCEL_TEMP_OUT_OF_SERVICE) {
+            // Command not implemented.
         }
     }
 

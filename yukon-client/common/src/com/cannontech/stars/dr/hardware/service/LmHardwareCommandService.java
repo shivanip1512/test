@@ -5,6 +5,7 @@ import com.cannontech.common.model.YukonCancelTextMessage;
 import com.cannontech.common.model.YukonTextMessage;
 import com.cannontech.database.data.lite.LiteYukonUser;
 import com.cannontech.stars.dr.account.model.CustomerAccount;
+import com.cannontech.stars.dr.hardware.model.LmCommand;
 import com.cannontech.stars.dr.hardware.model.LmHardwareCommand;
 import com.cannontech.stars.dr.hardware.model.Thermostat;
 import com.cannontech.stars.dr.thermostat.model.AccountThermostatSchedule;
@@ -64,5 +65,10 @@ public interface LmHardwareCommandService {
      * Will attempt to cancel text message
      */
     public void cancelTextMessage(YukonCancelTextMessage message);
+
+    /**
+     * Will send a command to the entire LM network.
+     */
+    void sendBroadcastCommand(LmCommand command);
     
 }

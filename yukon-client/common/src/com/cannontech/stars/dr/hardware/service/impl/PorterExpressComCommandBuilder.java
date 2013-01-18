@@ -427,6 +427,10 @@ public class PorterExpressComCommandBuilder {
         return commands;
     }
     
+    public String getBroadcastCancelAllOptOuts(Integer spid) {
+        return "putconfig xcom service in temp spid " + spid;
+    }
+    
     /**
      * Helper method to build a command string for updating schedule (creates a
      * command for only the mode and time of week specified)

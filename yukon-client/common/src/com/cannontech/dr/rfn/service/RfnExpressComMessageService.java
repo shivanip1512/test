@@ -5,6 +5,7 @@ import java.util.Set;
 
 import com.cannontech.amr.rfn.service.RfnDeviceReadCompletionCallback;
 import com.cannontech.common.rfn.model.RfnDevice;
+import com.cannontech.dr.rfn.message.broadcast.RfnExpressComBroadcastRequest;
 import com.cannontech.dr.rfn.message.unicast.RfnExpressComUnicastDataReplyType;
 import com.cannontech.dr.rfn.message.unicast.RfnExpressComUnicastReplyType;
 import com.cannontech.dr.rfn.message.unicast.RfnExpressComUnicastRequest;
@@ -67,7 +68,12 @@ public interface RfnExpressComMessageService {
      * @return set of message id's that were sent.
      */
     public Set<String> sendUnicastBulkRequest(Collection<RfnExpressComUnicastRequest> requests);
-
+    
+    /**
+     * Sends a broadcast message request out to the entire RFN network.  Does not explicitly expect responses at this point.
+     */
+    public void sendBroadcastRequest(final RfnExpressComBroadcastRequest request);
+    
     /**
      * Method to specifically send a 'read now' request to a RF ExpressCom device.  Will expect up to two responses, uses
      * {@link #sendUnicastDataRequest} to do the transaction.
