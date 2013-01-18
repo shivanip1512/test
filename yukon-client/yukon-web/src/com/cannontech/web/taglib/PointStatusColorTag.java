@@ -22,15 +22,21 @@ public class PointStatusColorTag extends YukonTagSupport {
     private String styleClass;
     private boolean background;
     
-    private PointDataRegistrationService pointDataRegistrationService;
+    private PointDataRegistrationService registrationService;
     
     @Override
     public void doTag() throws JspException ,IOException {
         
         if (!isPointIdSet) throw new JspException("pointId must be set");
         
-        final UpdateValue latestValue = pointDataRegistrationService.getLatestValue(pointId, format, getUserContext());
-        final String color = latestValue.isUnavailable() ? "black" :  latestValue.getValue();
+        final UpdateValue value = registrationService.getLatestValue(pointId, format, getUserContext());
+        
+        final String color;
+        if (value.isUnavailable()) {
+            color = background ? "rgb(255,255,255)" : "rgb(0,0,0)";
+        } else {
+            color = value.getValue();
+        }
         
         if (!StringUtils.isBlank(var)) {
             
@@ -39,14 +45,18 @@ public class PointStatusColorTag extends YukonTagSupport {
         } else {
             
             final StringBuilder beforeBodyBuilder = new StringBuilder();
-            String style = background ? " style=\"background-color: " + color + " !important;\"" : " style=\"color: " + color + " !important;\"";
-            beforeBodyBuilder.append("<span" + style);
+            
             String format = background ? "background" : "format";
+            String style = background ? " style=\"background-color: " + color + " \"" : " style=\"color: " + color + " !important;\"";
+            
+            beforeBodyBuilder.append("<span" + style);
             beforeBodyBuilder.append(" data-format=\"" + format + "\"");
+            
             if (!StringUtils.isBlank(styleClass)) {
                 beforeBodyBuilder.append(" class=\"" + styleClass + "\"");
             }
-            beforeBodyBuilder.append(" cannonColorUpdater=\"" + latestValue.getFullIdentifier() + "\">");
+            
+            beforeBodyBuilder.append(" cannonColorUpdater=\"" + value.getFullIdentifier() + "\">");
             String before = beforeBodyBuilder.toString();
             
             final StringBuilder afterBodyBuilder = new StringBuilder();
@@ -84,7 +94,7 @@ public class PointStatusColorTag extends YukonTagSupport {
 
     @Required
     public void setPointDataRegistrationService(PointDataRegistrationService pointDataRegistrationService) {
-        this.pointDataRegistrationService = pointDataRegistrationService;
+        this.registrationService = pointDataRegistrationService;
     }
     
 }

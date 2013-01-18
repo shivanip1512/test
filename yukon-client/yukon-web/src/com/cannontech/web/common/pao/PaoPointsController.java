@@ -1,8 +1,6 @@
 package com.cannontech.web.common.pao;
 
 import java.io.IOException;
-import java.util.ArrayList;
-import java.util.Collections;
 import java.util.List;
 
 import javax.servlet.http.HttpServletRequest;
@@ -17,23 +15,18 @@ import org.springframework.web.bind.annotation.RequestMethod;
 import com.cannontech.amr.meter.model.PointSortField;
 import com.cannontech.common.device.model.SimpleDevice;
 import com.cannontech.common.i18n.MessageSourceAccessor;
-import com.cannontech.common.pao.PaoType;
-import com.cannontech.common.pao.attribute.model.BuiltInAttribute;
 import com.cannontech.common.pao.definition.dao.PaoDefinitionDao;
-import com.cannontech.common.pao.definition.model.PaoPointIdentifier;
-import com.cannontech.common.pao.definition.model.PaoTypePointIdentifier;
-import com.cannontech.common.pao.definition.model.PointIdentifier;
 import com.cannontech.core.dao.DeviceDao;
 import com.cannontech.core.dao.PointDao;
 import com.cannontech.core.service.PaoLoadingService;
 import com.cannontech.core.service.PointFormattingService.Format;
-import com.cannontech.database.data.lite.LitePoint;
 import com.cannontech.i18n.YukonUserContextMessageSourceResolver;
 import com.cannontech.user.YukonUserContext;
+import com.cannontech.web.common.pao.service.YukonPoint;
+import com.cannontech.web.common.pao.service.YukonPointHelper;
 import com.cannontech.web.updater.UpdateValue;
 import com.cannontech.web.updater.point.PointDataRegistrationService;
 import com.cannontech.web.util.WebFileUtils;
-import com.google.common.base.Function;
 import com.google.common.collect.Lists;
 
 @Controller
@@ -46,15 +39,13 @@ public class PaoPointsController {
     @Autowired private PaoDefinitionDao paoDefinitionDao;
     @Autowired private YukonUserContextMessageSourceResolver resolver;
     @Autowired private PointDataRegistrationService registrationService;
+    @Autowired private YukonPointHelper yph;
     
     @RequestMapping(method = RequestMethod.GET)
     public String points(ModelMap model, HttpServletRequest request, YukonUserContext context, int deviceId, String orderBy, Boolean descending) {
         final SimpleDevice device = deviceDao.getYukonDevice(deviceId);
 
-        orderBy = (orderBy == null) ? PointSortField.POINTNAME.name() : orderBy;
-        descending = (descending == null) ? false : descending;
-        
-        List<YukonPoint> yukonPoints = getDevicePoints(deviceId, orderBy, descending);
+        List<YukonPoint> yukonPoints = yph.getYukonPoints(deviceId, orderBy, descending);
         
         model.addAttribute("device", device);
         model.addAttribute("deviceId", deviceId);
@@ -83,7 +74,7 @@ public class PaoPointsController {
         
         orderBy = (orderBy == null) ? PointSortField.POINTNAME.name() : orderBy;
         descending = (descending == null) ? false : descending;
-        List<YukonPoint> points = getDevicePoints(deviceId, orderBy, descending);
+        List<YukonPoint> points = yph.getYukonPoints(deviceId, orderBy, descending);
         
         List<String[]> dataRows = Lists.newArrayList();
         for (YukonPoint point: points) {
@@ -111,30 +102,6 @@ public class PaoPointsController {
         
         //write out the file
         WebFileUtils.writeToCSV(response, headerRow, dataRows, deviceName + "_Points.csv");
-    }
-    
-    private List<YukonPoint> getDevicePoints(int deviceId, String orderBy, boolean descending) {
-        final SimpleDevice device = deviceDao.getYukonDevice(deviceId);
-        Function<LitePoint, YukonPoint> pointFunction = new Function<LitePoint, YukonPoint>() {
-            @Override
-            public YukonPoint apply(LitePoint lp) {
-                PointIdentifier pointId = new PointIdentifier(lp.getPointTypeEnum(), lp.getPointOffset());
-                PaoType paoType = device.getDeviceType();
-                BuiltInAttribute attribute = paoDefinitionDao.findAttributeForPaoTypeAndPoint(new PaoTypePointIdentifier(paoType, pointId));
-                return YukonPoint.of(new PaoPointIdentifier(device.getPaoIdentifier(), pointId), attribute, lp.getPointName(), lp.getPointID());
-            }
-        };
-        
-        List<LitePoint> points = pointDao.getLitePointsByPaObjectId(deviceId);
-        
-        List<YukonPoint> yukonPoints = new ArrayList<>(Lists.transform(points, pointFunction));
-        Collections.sort(yukonPoints, YukonPoint.getComparatorForSortField(PointSortField.valueOf(orderBy)));
-        
-        if (descending) {
-            yukonPoints = Lists.reverse(yukonPoints);
-        }
-        
-        return yukonPoints;
     }
     
 }

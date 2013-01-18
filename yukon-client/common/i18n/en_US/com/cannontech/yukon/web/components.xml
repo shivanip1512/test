@@ -298,6 +298,12 @@
     <entry key="yukon.web.components.dialog.ok">OK</entry>
     <entry key="yukon.web.components.dialog.cancel">Cancel</entry>
     <entry key="yukon.web.components.dialog.close">Close</entry>
+    
+    <entry key="yukon.web.components.dialog.devicePoints.title">{0} Points</entry>
+    <entry key="yukon.web.components.dialog.devicePoints.pointName">Name</entry>
+    <entry key="yukon.web.components.dialog.devicePoints.value">Value/State</entry>
+    <entry key="yukon.web.components.dialog.devicePoints.timestamp">Timestamp</entry>
+    
     <entry key="yukon.web.components.ajaxConfirm.confirmDelete.title">Confirm Delete</entry>
     <entry key="yukon.web.components.ajaxConfirm.confirmDelete.message">Are you sure you want to delete "{0}"?</entry>
     

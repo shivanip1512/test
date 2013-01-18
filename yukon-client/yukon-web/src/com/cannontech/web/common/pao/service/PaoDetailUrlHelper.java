@@ -1,4 +1,4 @@
-package com.cannontech.web.common.pao;
+package com.cannontech.web.common.pao.service;
 
 import java.util.Map;
 

@@ -33,7 +33,7 @@
              <tfoot></tfoot>
              <tbody>
                  <c:forEach var="pointResultRow" items="${points}">
-                     <tr class="<tags:alternateRow odd="" even="altRow"/>">
+                     <tr>
                          <td>
                              <c:choose>
                                  <c:when test="${empty pointResultRow.attribute}"><i:inline key="yukon.web.defaults.na"/></c:when> 

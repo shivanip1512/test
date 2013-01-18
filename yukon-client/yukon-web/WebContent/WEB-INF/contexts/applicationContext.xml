@@ -1498,7 +1498,8 @@
     <bean id="cayentaApiService" class="com.cannontech.web.cayenta.service.impl.CayentaApiServiceImpl">
     </bean>
     
-    <bean id="paoDetailUrlHelper" class="com.cannontech.web.common.pao.PaoDetailUrlHelper"/>
+    <bean id="paoDetailUrlHelper" class="com.cannontech.web.common.pao.service.PaoDetailUrlHelper"/>
+    <bean id="yukonPointHelper" class="com.cannontech.web.common.pao.service.YukonPointHelperImpl"/>
     
     <bean id="scheduledGroupRequestExecutionJobWrapperFactory" class="com.cannontech.web.common.scheduledGroupRequestExecution.ScheduledGroupRequestExecutionJobWrapperFactory"/>
     <bean id="commandRequestExecutionWrapperFactory" class="com.cannontech.web.common.commandRequestExecution.CommandRequestExecutionWrapperFactory"/>

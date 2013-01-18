@@ -48,7 +48,7 @@ import com.cannontech.multispeak.client.MultispeakFuncs;
 import com.cannontech.util.ServletUtil;
 import com.cannontech.web.amr.meter.service.MspMeterSearchService;
 import com.cannontech.web.bulk.model.collection.DeviceFilterCollectionHelper;
-import com.cannontech.web.common.pao.PaoDetailUrlHelper;
+import com.cannontech.web.common.pao.service.PaoDetailUrlHelper;
 import com.cannontech.web.security.annotation.CheckRole;
 import com.cannontech.web.updater.point.PointUpdateBackingService;
 import com.google.common.base.Function;

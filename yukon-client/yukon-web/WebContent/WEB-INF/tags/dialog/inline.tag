@@ -11,11 +11,20 @@
 <%@ attribute name="okEvent" required="true" description="Use 'submit' to submit a form, 'none' to skip the ok button or an event name to trigger that event on the dialog."%>
 <%@ attribute name="on" description="registers click event on the element with this CSS selector"%>
 <%@ attribute name="options" description="Options to use for the dialog.  See http://jqueryui.com/demos/dialog/#options" %>
+<%@ attribute name="arguments" required="false" type="java.lang.Object"%>
+<%@ attribute name="argumentSeparator" required="false" type="java.lang.String"%>
 
 <cti:includeScript link="/JavaScript/ajaxDialog.js"/>
 
 <cti:msgScope paths=".${nameKey},components.dialog.${nameKey},components.dialog">
-    <cti:msg2 var="titleMsg" key=".title"/>
+    <c:choose>
+        <c:when test="${not empty argumentSeparator}">
+            <cti:msg2 var="titleMsg" key=".title" arguments="${arguments}" argumentSeparator="${argumentSeparator}"/>
+        </c:when>
+        <c:otherwise>
+            <cti:msg2 var="titleMsg" key=".title" arguments="${arguments}"/>
+        </c:otherwise>
+    </c:choose>
     <cti:msg2 var="okBtnMsg" key=".ok"/>
     <cti:msg2 var="cancelBtnMsg" key=".cancel"/>
     <cti:msg2 var="closeBtnMsg" key=".close"/>

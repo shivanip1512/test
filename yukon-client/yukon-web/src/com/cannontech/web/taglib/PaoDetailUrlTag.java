@@ -9,7 +9,7 @@ import org.springframework.beans.factory.annotation.Configurable;
 import org.springframework.web.util.TagUtils;
 
 import com.cannontech.common.pao.YukonPao;
-import com.cannontech.web.common.pao.PaoDetailUrlHelper;
+import com.cannontech.web.common.pao.service.PaoDetailUrlHelper;
 
 @Configurable("paoDetailUrlTagPrototype")
 public class PaoDetailUrlTag extends YukonTagSupport {

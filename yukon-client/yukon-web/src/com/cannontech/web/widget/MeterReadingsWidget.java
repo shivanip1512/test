@@ -22,9 +22,12 @@ import com.cannontech.common.pao.attribute.model.BuiltInAttribute;
 import com.cannontech.common.pao.attribute.service.AttributeService;
 import com.cannontech.common.pao.service.PointService;
 import com.cannontech.core.dao.PointDao;
+import com.cannontech.core.service.PaoLoadingService;
 import com.cannontech.database.data.lite.LitePoint;
 import com.cannontech.database.data.lite.LiteYukonUser;
 import com.cannontech.util.ServletUtil;
+import com.cannontech.web.common.pao.service.YukonPoint;
+import com.cannontech.web.common.pao.service.YukonPointHelper;
 import com.cannontech.web.widget.support.WidgetControllerBase;
 
 /**
@@ -34,10 +37,12 @@ public class MeterReadingsWidget extends WidgetControllerBase {
 
     @Autowired private AttributeReadingWidgetHelper widgetHelper;
     @Autowired private DeviceAttributeReadService deviceAttributeReadService;
+    @Autowired private PaoLoadingService paoLoadingService;
     @Autowired private AttributeService attributeService;
     @Autowired private MeteringEventLogService meteringEventLogService;
     @Autowired private PointService pointService;
     @Autowired private PointDao pointDao;
+    @Autowired private YukonPointHelper yph;
     
     private List<? extends Attribute> attributesToShow;
     private Attribute previousReadingsAttributeToShow;
@@ -87,8 +92,9 @@ public class MeterReadingsWidget extends WidgetControllerBase {
         boolean readable = deviceAttributeReadService.isReadable(Collections.singleton(meter), allExistingAttributes, user);
         mav.addObject("readable", readable);
         
-        List<LitePoint> points = pointDao.getLitePointsByPaObjectId(meter.getDeviceId());
+        List<YukonPoint> points = yph.getYukonPoints(meter.getDeviceId(), null, null);
         mav.addObject("points", points);
+        mav.addObject("deviceName", paoLoadingService.getDisplayablePao(meter).getName());
         
         return mav;
     }
