@@ -3,7 +3,7 @@
 <%@ taglib prefix="jsTree" tagdir="/WEB-INF/tags/jsTree" %>
 
 
-<dialog:ajaxPage nameKey="multiNodeValueSelectingTree" id="multiNodeValueSelectingTreeDialog" module="amr" page="meterDetail" okEvent="dialogSubmit">      
+<dialog:ajaxPage nameKey="editGroupTree" id="editGroupTreeDialog" module="amr" page="meterDetail" okEvent="dialogSubmit">      
 <cti:msgScope paths="yukon.web.widgets.deviceGroupWidget,">
     <jsTree:multiNodeValueSelectingInlineTree fieldId="groupIds"
                                           fieldName="groupIds"

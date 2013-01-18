@@ -7,24 +7,24 @@
     
     jQuery(document).ready(function() {
         
-        var dlg = document.getElementById('multiNodeValueSelectingTreeDialog');
+        var dlg = document.getElementById('editGroupTreeDialog');
         if (!dlg) {
-            jQuery('body').append('<div id="multiNodeValueSelectingTreeDialog"></div>');
+            jQuery('body').append('<div id="editGroupTreeDialog"></div>');
         }
 
         jQuery('#showPopupButton').click(function() {
             var parameters = ${cti:jsonString(widgetParameters)};
-            jQuery('#multiNodeValueSelectingTreeDialog').load('/widget/deviceGroupWidget/edit', parameters);
+            jQuery('#editGroupTreeDialog').load('/widget/deviceGroupWidget/edit', parameters);
         });
 
-        jQuery('#multiNodeValueSelectingTreeDialog').on('dialogSubmit', function() {
+        jQuery('#editGroupTreeDialog').on('dialogSubmit', function() {
             if (!setNodeValues_deviceGroupWidgetTree()) {
                 return;
             }
             var groupIds = jQuery(document.getElementById('groupIds')).val();
             ${widgetParameters.jsWidget}.setParameter('groupIds', groupIds);
             ${widgetParameters.jsWidget}.doDirectActionContainerRefresh('update', 'currentGroups');
-            jQuery('#multiNodeValueSelectingTreeDialog').dialog('close');
+            jQuery('#editGroupTreeDialog').dialog('close');
         });
         
         var successMsg = "${successMsg}";

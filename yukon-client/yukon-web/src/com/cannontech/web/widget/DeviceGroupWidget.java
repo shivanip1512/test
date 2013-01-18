@@ -125,7 +125,7 @@ public class DeviceGroupWidget extends WidgetControllerBase {
     @RequestMapping
     public ModelAndView edit(HttpServletRequest request,
                              HttpServletResponse response) throws Exception {
-        ModelAndView mav = new ModelAndView("deviceGroupWidget/multiNodeValueSelectingTree.jsp");
+        ModelAndView mav = new ModelAndView("deviceGroupWidget/editGroupTree.jsp");
 
         // Grabs the deviceId from the request
         int deviceId = WidgetParameterHelper.getRequiredIntParameter(request,

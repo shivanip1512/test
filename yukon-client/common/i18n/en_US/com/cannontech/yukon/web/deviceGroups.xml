@@ -16,8 +16,8 @@
 <entry key="yukon.web.widgets.deviceGroupWidget.noGroups">No Groups</entry>
 <entry key="yukon.web.widgets.deviceGroupWidget.saveSuccessful">Device Groups have been saved.</entry>
 
-<!-- multiNodeValueSelectingTree.jsp -->
-<entry key="yukon.web.modules.amr.meterDetail.multiNodeValueSelectingTree.title">Device Groups</entry>
+<!-- editGroupTree.jsp -->
+<entry key="yukon.web.modules.amr.meterDetail.editGroupTree.title">Device Groups</entry>
 <entry key="yukon.web.modules.amr.meterDetail.groupTree.label">Device Groups</entry>
 
 <!-- EDITOR home.jsp and related jsps -->
