@@ -28,6 +28,7 @@ import com.cannontech.dr.program.service.ProgramService;
 import com.cannontech.loadcontrol.LoadControlClientConnection;
 import com.cannontech.loadcontrol.dao.LoadControlProgramDao;
 import com.cannontech.loadcontrol.data.LMProgramBase;
+import com.cannontech.loadcontrol.data.LMProgramDirect;
 import com.cannontech.loadcontrol.service.LoadControlService;
 import com.cannontech.loadcontrol.service.data.ProgramStatus;
 import com.cannontech.loadcontrol.service.data.ScenarioProgramStartingGears;
@@ -222,8 +223,40 @@ public class LoadControlServiceInputsTestController extends MultiActionControlle
         Date stopTime = parseDateTime(request, "stop", userContext);
         boolean force = ServletRequestUtils.getBooleanParameter(request, "force", false);
         boolean observeConstraintsAndExecute = ServletRequestUtils.getBooleanParameter(request, "observeConstraintsAndExecute", false);
-        
-        ProgramStatus programStatus = loadControlService.stopControlByProgramName(programName, stopTime, force, observeConstraintsAndExecute, userContext.getYukonUser());
+        boolean continueExec = true;
+
+        int programId;
+        try {
+            programId = loadControlProgramDao.getProgramIdByProgramName(programName);
+        } catch (NotFoundException e) {
+            throw new ProgramNotFoundException(e.getMessage(), e);
+        }
+
+        LMProgramBase program = loadControlClientConnection.getProgramSafe(programId);
+        int gearNumber = ((LMProgramDirect)program).getCurrentGearNumber();
+
+        ProgramStatus programStatus = new ProgramStatus(program);
+
+        ConstraintViolations checkViolations = null;
+        if (!force) {
+            checkViolations = programService.getConstraintViolationsForStopProgram(programId, gearNumber, stopTime);
+            
+            if (checkViolations.isViolated()) {
+                for (ConstraintContainer violation : checkViolations.getConstraintContainers()) {
+                    log.info("Constraint Violation: " + violation.toString() + " for request");
+                }
+                programStatus.setConstraintViolations(checkViolations.getConstraintContainers());
+                continueExec = false;
+            }
+
+        } else {
+            log.info("No constraint violations for request");
+        }
+
+        if (continueExec && (force || observeConstraintsAndExecute)) {
+            programStatus = programService.scheduleProgramStopBlocking(programId, stopTime, Duration.ZERO);
+        }
+
         results.add(programStatus.toString());
         
         if (programStatus.getConstraintViolations().size() > 0) {

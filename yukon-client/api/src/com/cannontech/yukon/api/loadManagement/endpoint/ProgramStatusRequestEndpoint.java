@@ -2,7 +2,6 @@ package com.cannontech.yukon.api.loadManagement.endpoint;
 
 import javax.annotation.PostConstruct;
 
-import org.jdom.Attribute;
 import org.jdom.Element;
 import org.jdom.JDOMException;
 import org.jdom.Namespace;

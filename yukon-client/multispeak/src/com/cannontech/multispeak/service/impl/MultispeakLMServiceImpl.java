@@ -26,6 +26,7 @@ import com.cannontech.common.pao.PaoType;
 import com.cannontech.common.pao.definition.dao.PaoDefinitionDao;
 import com.cannontech.common.pao.definition.model.PaoTag;
 import com.cannontech.common.point.PointQuality;
+import com.cannontech.common.util.CtiUtilities;
 import com.cannontech.core.dao.FdrTranslationDao;
 import com.cannontech.core.dao.NotFoundException;
 import com.cannontech.core.dao.PaoDao;
@@ -220,8 +221,19 @@ public class MultispeakLMServiceImpl implements MultispeakLMService {
 
 	@Override
 	public ProgramStatus stopControlByProgramName(String programName, Date stopTime,
-			LiteYukonUser liteYukonUser) throws NotAuthorizedException, NotFoundException, TimeoutException, BadServerResponseException{
-       	return loadControlService.stopControlByProgramName(programName, stopTime, false, true, liteYukonUser);
+			LiteYukonUser liteYukonUser) throws NotAuthorizedException, NotFoundException, TimeoutException, BadServerResponseException {
+	    int programId;
+        try {
+            programId = loadControlProgramDao.getProgramIdByProgramName(programName);
+        } catch (NotFoundException e) {
+            throw new ProgramNotFoundException(e.getMessage(), e);
+        }
+
+        if (stopTime == null) {
+            stopTime = CtiUtilities.get1990GregCalendar().getTime();
+        }
+
+	    return programService.scheduleProgramStopBlocking(programId, stopTime, Duration.ZERO);
 	}
 
 	@Override

@@ -12,12 +12,14 @@ import com.cannontech.common.pao.DisplayablePao;
 import com.cannontech.common.pao.YukonPao;
 import com.cannontech.common.search.SearchResult;
 import com.cannontech.common.util.DatedObject;
+import com.cannontech.core.dao.NotFoundException;
 import com.cannontech.dr.program.model.GearAdjustment;
 import com.cannontech.dr.program.service.ConstraintViolations;
 import com.cannontech.dr.program.service.ProgramService;
 import com.cannontech.dr.scenario.model.ScenarioProgram;
 import com.cannontech.loadcontrol.data.LMProgramBase;
 import com.cannontech.loadcontrol.service.data.ProgramStatus;
+import com.cannontech.message.util.ConnectionException;
 import com.cannontech.message.util.TimeoutException;
 import com.cannontech.user.YukonUserContext;
 
@@ -123,6 +125,18 @@ public class ProgramServiceAdapter implements ProgramService {
     public ProgramStatus startProgramBlocking(int programId, int gearNumber, Date startDate, Duration startOffset,
                              boolean stopScheduled, Date stopDate, Duration stopOffset,
                              boolean overrideConstraints, List<GearAdjustment> gearAdjustments) throws TimeoutException {
+        throw new UnsupportedOperationException("Not Implemented");
+    }
+
+    @Override
+    public ProgramStatus scheduleProgramStopBlocking(int programId, Date stopDate,
+                                                     Duration stopOffset) throws TimeoutException {
+        throw new UnsupportedOperationException("Not Implemented");
+    }
+
+    @Override
+    public LMProgramBase getProgramSafe(int programId) throws ConnectionException,
+            NotFoundException {
         throw new UnsupportedOperationException("Not Implemented");
     }
 

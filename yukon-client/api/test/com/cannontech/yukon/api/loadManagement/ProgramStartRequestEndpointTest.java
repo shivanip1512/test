@@ -28,7 +28,10 @@ import com.cannontech.dr.program.model.GearAdjustment;
 import com.cannontech.dr.program.service.ConstraintContainer;
 import com.cannontech.dr.program.service.ConstraintViolations;
 import com.cannontech.loadcontrol.dao.LoadControlProgramDao;
+import com.cannontech.loadcontrol.data.LMProgramBase;
+import com.cannontech.loadcontrol.data.LMProgramDirect;
 import com.cannontech.loadcontrol.service.data.ProgramStatus;
+import com.cannontech.message.util.ConnectionException;
 import com.cannontech.message.util.TimeoutException;
 import com.cannontech.yukon.api.loadManagement.adapters.LoadControlProgramDaoAdapter;
 import com.cannontech.yukon.api.loadManagement.adapters.ProgramServiceAdapter;
@@ -134,6 +137,13 @@ public class ProgramStartRequestEndpointTest {
             this.stopTime = stopDate;
             
             return null;
+        }
+
+        @Override
+        public LMProgramBase getProgramSafe(int programId) throws ConnectionException, NotFoundException {
+            LMProgramDirect program = new LMProgramDirect();
+            program.setCurrentGearNumber(1);
+            return program;
         }
 
         public int getProgramId() { return programId; }

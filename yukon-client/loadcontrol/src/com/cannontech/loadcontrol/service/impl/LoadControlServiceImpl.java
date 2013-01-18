@@ -32,7 +32,6 @@ import com.cannontech.loadcontrol.ProgramUtils;
 import com.cannontech.loadcontrol.dao.LoadControlProgramDao;
 import com.cannontech.loadcontrol.data.LMControlArea;
 import com.cannontech.loadcontrol.data.LMProgramBase;
-import com.cannontech.loadcontrol.data.LMProgramDirect;
 import com.cannontech.loadcontrol.messages.LMManualControlRequest;
 import com.cannontech.loadcontrol.service.LoadControlCommandService;
 import com.cannontech.loadcontrol.service.LoadControlService;
@@ -104,21 +103,6 @@ public class LoadControlServiceImpl implements LoadControlService {
         }
         
        return programStatuses;
-    }
-    
-    // STOP CONTROL BY PROGRAM NAME
-    @Override
-	public ProgramStatus stopControlByProgramName(String programName,
-			Date stopTime, boolean forceStop,
-			boolean observeConstraintsAndExecute, LiteYukonUser user)
-			throws NotFoundException, TimeoutException, NotAuthorizedException, BadServerResponseException {
-
-        int programId = loadControlProgramDao.getProgramIdByProgramName(programName);
-        validateProgramIsVisibleToUser(programName, programId, user);
-        
-        LMProgramBase program = loadControlClientConnection.getProgramSafe(programId);
-      
-        return doExecuteStopRequest(program, stopTime, null, ((LMProgramDirect)program).getCurrentGearNumber(), forceStop, observeConstraintsAndExecute, user);
     }
     
     // START CONTROL BY SCENAIO NAME

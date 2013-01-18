@@ -5,24 +5,27 @@ import java.util.Date;
 import javax.annotation.PostConstruct;
 
 import org.apache.log4j.Logger;
-import org.jdom.Attribute;
 import org.jdom.Element;
 import org.jdom.JDOMException;
 import org.jdom.Namespace;
+import org.joda.time.Duration;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.ws.server.endpoint.annotation.Endpoint;
 import org.springframework.ws.server.endpoint.annotation.PayloadRoot;
 
 import com.cannontech.clientutils.YukonLogManager;
 import com.cannontech.common.exception.NotAuthorizedException;
+import com.cannontech.common.util.CtiUtilities;
 import com.cannontech.common.util.xml.SimpleXPathTemplate;
 import com.cannontech.common.util.xml.XmlUtils;
 import com.cannontech.common.util.xml.YukonXml;
 import com.cannontech.core.dao.NotFoundException;
+import com.cannontech.core.dao.ProgramNotFoundException;
 import com.cannontech.core.roleproperties.YukonRoleProperty;
 import com.cannontech.core.roleproperties.dao.RolePropertyDao;
 import com.cannontech.database.data.lite.LiteYukonUser;
-import com.cannontech.loadcontrol.service.LoadControlService;
+import com.cannontech.dr.program.service.ProgramService;
+import com.cannontech.loadcontrol.dao.LoadControlProgramDao;
 import com.cannontech.message.util.BadServerResponseException;
 import com.cannontech.message.util.ConnectionException;
 import com.cannontech.message.util.TimeoutException;
@@ -32,12 +35,13 @@ import com.cannontech.yukon.api.util.XmlVersionUtils;
 @Endpoint
 public class ProgramStopRequestEndpoint {
 
-    private LoadControlService loadControlService;
     private RolePropertyDao rolePropertyDao;
+    private ProgramService programService;
+    private LoadControlProgramDao loadControlProgramDao;
     
-    private Namespace ns = YukonXml.getYukonNamespace();
-    private String programNameExpressionStr = "/y:programStopRequest/y:programName";
-    private String stopTimeExpressionStr = "/y:programStopRequest/y:stopDateTime";
+    private final Namespace ns = YukonXml.getYukonNamespace();
+    private final String programNameExpressionStr = "/y:programStopRequest/y:programName";
+    private final String stopTimeExpressionStr = "/y:programStopRequest/y:stopDateTime";
     
     private static Logger log = YukonLogManager.getLogger(ProgramStopRequestEndpoint.class);
     
@@ -55,18 +59,27 @@ public class ProgramStopRequestEndpoint {
         
         String programName = requestTemplate.evaluateAsString(programNameExpressionStr);
         Date stopTime = requestTemplate.evaluateAsDate(stopTimeExpressionStr);
+        if (stopTime == null) {
+            stopTime = CtiUtilities.get1990GregCalendar().getTime();
+        }
 
         // init response
         Element resp = new Element("programStopResponse", ns);
         XmlVersionUtils.addVersionAttribute(resp, XmlVersionUtils.YUKON_MSG_VERSION_1_0);
-        
+
         // run service
         try {
-            
             // Check authorization
             rolePropertyDao.verifyProperty(YukonRoleProperty.OPERATOR_CONSUMER_INFO_WS_LM_CONTROL_ACCESS, user);
-            
-            loadControlService.stopControlByProgramName(programName, stopTime, false, true, user);
+
+            int programId;
+            try {
+                programId = loadControlProgramDao.getProgramIdByProgramName(programName);
+            } catch (NotFoundException e) {
+                throw new ProgramNotFoundException(e.getMessage(), e);
+            }
+
+            programService.scheduleProgramStopBlocking(programId, stopTime, Duration.ZERO);
         } catch (NotFoundException e) {
             Element fe = XMLFailureGenerator.generateFailure(programStopRequest, e, "InvalidProgramName", "No program named: " + programName);
             resp.addContent(fe);
@@ -99,15 +112,18 @@ public class ProgramStopRequestEndpoint {
         return resp;
     }
     
-    
-    @Autowired
-    public void setLoadControlService(LoadControlService loadControlService) {
-        this.loadControlService = loadControlService;
-    }
-    
     @Autowired
     public void setRolePropertyDao(RolePropertyDao rolePropertyDao) {
         this.rolePropertyDao = rolePropertyDao;
     }
     
+    @Autowired
+    public void setProgramService(ProgramService programService) {
+        this.programService = programService;
+    }
+    
+    @Autowired
+    public void setLoadControlProgramDao(LoadControlProgramDao loadControlProgramDao) {
+        this.loadControlProgramDao = loadControlProgramDao;
+    }
 }

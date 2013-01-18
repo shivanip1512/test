@@ -12,10 +12,13 @@ import com.cannontech.common.pao.DisplayablePao;
 import com.cannontech.common.pao.YukonPao;
 import com.cannontech.common.search.SearchResult;
 import com.cannontech.common.util.DatedObject;
+import com.cannontech.core.dao.NotFoundException;
 import com.cannontech.dr.program.model.GearAdjustment;
 import com.cannontech.dr.scenario.model.ScenarioProgram;
 import com.cannontech.loadcontrol.data.LMProgramBase;
 import com.cannontech.loadcontrol.service.data.ProgramStatus;
+import com.cannontech.message.util.BadServerResponseException;
+import com.cannontech.message.util.ConnectionException;
 import com.cannontech.message.util.TimeoutException;
 import com.cannontech.user.YukonUserContext;
 
@@ -87,15 +90,28 @@ public interface ProgramService {
      * @param stopDate The time chosen to end the program. Cannot be null.
      * @param overrideConstraints If this is set to true, constraints will be
      *            overridden. If not, they will be observed.
-     * @throws TimeoutException 
      */
     public void startProgram(int programId, int gearNumber, Date startDate,
                              Duration startOffset, boolean stopScheduled, Date stopDate,
                              Duration stopOffset, boolean overrideConstraints,
                              List<GearAdjustment> gearAdjustments);
 
-    public void scheduleProgramStop(int programId, Date stopDate,
-            Duration stopOffset);
+    /**
+     * Schedules the program stop. Non-blocking
+     * @throws BadServerResponseException 
+
+     * @throws TimeoutException 
+     */
+    public void scheduleProgramStop(int programId, Date stopDate, Duration stopOffset);
+
+    /**
+     * Schedules the program stop. Blocks on Program Stop Scheduled
+     * @throws BadServerResponseException 
+
+     * @throws TimeoutException 
+     */
+    public ProgramStatus scheduleProgramStopBlocking(int programId, Date stopDate,
+                                    Duration stopOffset) throws TimeoutException;
 
     public void stopProgram(int programId);
 
@@ -118,4 +134,14 @@ public interface ProgramService {
      * for the program with the specified id.
      */
     public void disableAndSupressRestoration(int programId);
+
+    /**
+     * Calls LoadControlClientConnection.getProgramSafe()
+     * 
+     * @param programId
+     * @return
+     * @throws ConnectionException
+     * @throws NotFoundException
+     */
+    public LMProgramBase getProgramSafe(int programId) throws ConnectionException, NotFoundException;
 }

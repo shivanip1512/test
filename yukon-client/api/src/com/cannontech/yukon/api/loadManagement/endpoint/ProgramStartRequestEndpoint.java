@@ -27,7 +27,6 @@ import com.cannontech.database.data.lite.LiteYukonUser;
 import com.cannontech.dr.program.service.ConstraintContainer;
 import com.cannontech.dr.program.service.ConstraintViolations;
 import com.cannontech.dr.program.service.ProgramService;
-import com.cannontech.loadcontrol.LoadControlClientConnection;
 import com.cannontech.loadcontrol.dao.LoadControlProgramDao;
 import com.cannontech.loadcontrol.data.LMProgramBase;
 import com.cannontech.loadcontrol.data.LMProgramDirect;
@@ -41,7 +40,6 @@ import com.cannontech.yukon.api.util.XmlVersionUtils;
 public class ProgramStartRequestEndpoint {
 
     private LoadControlProgramDao loadControlProgramDao;
-    private LoadControlClientConnection loadControlClientConnection;
     private ProgramService programService;
     private RolePropertyDao rolePropertyDao;
     
@@ -96,7 +94,7 @@ public class ProgramStartRequestEndpoint {
                     throw new GearNotFoundException(e.getMessage(), e);
                 }
             } else {
-                LMProgramBase program = loadControlClientConnection.getProgramSafe(programId);
+                LMProgramBase program = programService.getProgramSafe(programId);
                 gearNumber = ((LMProgramDirect)program).getCurrentGearNumber();
             }
 
@@ -150,11 +148,6 @@ public class ProgramStartRequestEndpoint {
     @Autowired
     public void setRolePropertyDao(RolePropertyDao rolePropertyDao) {
         this.rolePropertyDao = rolePropertyDao;
-    }
-    
-    @Autowired
-    public void setLoadControLClientConnection(LoadControlClientConnection loadControlClientConnection) {
-        this.loadControlClientConnection = loadControlClientConnection;
     }
     
     @Autowired

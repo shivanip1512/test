@@ -32,6 +32,7 @@ import com.cannontech.common.util.DatedObject;
 import com.cannontech.common.util.SqlFragmentSource;
 import com.cannontech.common.util.SqlStatementBuilder;
 import com.cannontech.core.authorization.service.PaoAuthorizationService;
+import com.cannontech.core.dao.NotFoundException;
 import com.cannontech.core.dao.PaoDao;
 import com.cannontech.core.service.DateFormattingService;
 import com.cannontech.database.YukonResultSet;
@@ -56,6 +57,7 @@ import com.cannontech.loadcontrol.service.LoadControlCommandService;
 import com.cannontech.loadcontrol.service.ProgramChangeBlocker;
 import com.cannontech.loadcontrol.service.data.ProgramStatus;
 import com.cannontech.message.server.ServerResponseMsg;
+import com.cannontech.message.util.ConnectionException;
 import com.cannontech.message.util.Message;
 import com.cannontech.message.util.ServerRequest;
 import com.cannontech.message.util.ServerRequestImpl;
@@ -64,10 +66,10 @@ import com.cannontech.user.YukonUserContext;
 import com.google.common.collect.Lists;
 
 public class ProgramServiceImpl implements ProgramService {
-    private Logger log = YukonLogManager.getLogger(ProgramServiceImpl.class);
+    private final Logger log = YukonLogManager.getLogger(ProgramServiceImpl.class);
 
-    @Autowired private ProgramDao programDao = null;
-    @Autowired private LoadControlClientConnection loadControlClientConnection = null;
+    @Autowired private final ProgramDao programDao = null;
+    @Autowired private final LoadControlClientConnection loadControlClientConnection = null;
     @Autowired private FilterService filterService;
     @Autowired private DemandResponseEventLogService demandResponseEventLogService;
     @Autowired private PaoDefinitionDao paoDefinitionDao;
@@ -79,7 +81,7 @@ public class ProgramServiceImpl implements ProgramService {
     private DateFormattingService dateFormattingService;
     private static final long PROGRAM_CHANGE_TIMEOUT_MS = 5000;
 
-    private RowMapperWithBaseQuery<DisplayablePao> rowMapper =
+    private final RowMapperWithBaseQuery<DisplayablePao> rowMapper =
         new AbstractRowMapperWithBaseQuery<DisplayablePao>() {
 
             @Override
@@ -352,8 +354,7 @@ public class ProgramServiceImpl implements ProgramService {
     }
 
     @Override
-    public void scheduleProgramStop(int programId, Date stopDate,
-            Duration stopOffset) {
+    public void scheduleProgramStop(int programId, Date stopDate, Duration stopOffset) {
         LMProgramBase program = loadControlClientConnection.getProgram(programId);
         Date programStopDate = datePlusOffset(stopDate, stopOffset);
         Date startDate = CtiUtilities.get1990GregCalendar().getTime();
@@ -365,6 +366,29 @@ public class ProgramServiceImpl implements ProgramService {
                                                            programStopDate, null);
     }
 
+    @Override
+    public ProgramStatus scheduleProgramStopBlocking(int programId, Date stopDate, Duration stopOffset) throws TimeoutException {
+        
+        LMProgramBase program = loadControlClientConnection.getProgram(programId);
+        Date programStopDate = datePlusOffset(stopDate, stopOffset);
+        Date startDate = CtiUtilities.get1990GregCalendar().getTime();
+        LMManualControlRequest controlRequest =
+            program.createScheduledStopMsg(startDate, programStopDate, 1, null);
+
+        ProgramStatus programStatus = new ProgramStatus(program);
+        ProgramChangeBlocker programChangeBlocker = new ProgramChangeBlocker(controlRequest, 
+                                                                             programStatus,
+                                                                             this.loadControlCommandService,
+                                                                             this.loadControlClientConnection,
+                                                                             PROGRAM_CHANGE_TIMEOUT_MS);
+        programChangeBlocker.updateProgramStatus();
+
+        demandResponseEventLogService.programStopScheduled(program.getYukonName(),
+                                                           programStopDate, null);
+
+        return programStatus;
+    }
+    
     @Override
     public void stopProgram(int programId) {
         LMProgramBase program = loadControlClientConnection.getProgram(programId);
@@ -508,6 +532,12 @@ public class ProgramServiceImpl implements ProgramService {
 
         return program.createScheduledStartMsg(startDate, stopDate, gearNumber,
                                                null, additionalInfo, constraintId);
+    }
+
+    @Override
+    public LMProgramBase getProgramSafe(int programId) throws ConnectionException,
+            NotFoundException {
+        return loadControlClientConnection.getProgramSafe(programId);
     }
 
     @Autowired

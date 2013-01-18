@@ -37,32 +37,6 @@ public interface LoadControlService {
     public List<ProgramStatus> getAllCurrentlyActivePrograms(LiteYukonUser user);
 
     /**
-     * Stops control of program of given programName. Returns a ProgramStatus
-     * object containing the updated program status info if successful, if
-     * program has constraint violations will contain current program status
-     * info and the list of violations in the ProgramStatus.
-     * @param programName
-     * @param stopTime
-     * @param gearNumber
-     * @param forceStop Should normally always be set to false, set to true only if
-     * you're sure you really need want to ignore constraint violations.
-     * @param observeConstraintsAndExecute If false, do not execute if there are constraint violations.
-     * If true, allow the server to alter our request to abide by the constraints and execute (i.e. "Observe") 
-     * @param user will be checked against user/group pao permission tables to validate access to program,
-     * a program is visible to the user either because it is directly visible, or belongs to a control area that is visible.
-     * Note: This value only matters when using forceStop=false.
-     * @return
-     * @throws NotFoundException if no program exists for given programName
-     * @throws TimeoutException if server fails to send an update response for the control stop
-     * @throws NotAuthorizedException if neither the user (nor any groups user belongs to) have neither the program (nor any of
-     * the control areas the program belongs to) made visible to them.
-     * @throws BadServerResponseException 
-     */
-    public ProgramStatus stopControlByProgramName(String programName,
-            Date stopTime, boolean forceStop, boolean observeConstraintsAndExecute, LiteYukonUser user)
-            throws NotFoundException, TimeoutException, NotAuthorizedException, BadServerResponseException;
-    
-    /**
      * Starts control for all programs belonging to a given scenario. Returns a
      * ScenarioStatus object which contains the scenarioName, and a list of
      * ProgramStatus for each program that control start was attempted. Each
