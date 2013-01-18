@@ -407,14 +407,20 @@ public class UpdateLMHardwareConfigAction implements ActionBase {
 				else {
 				    LmHardwareCommandService commandService = YukonSpringHook.getBean("lmHardwareCommandService", LmHardwareCommandService.class);
 					if (toConfig) {
-					    LmHardwareCommand.Builder b = new LmHardwareCommand.Builder(liteHw, LmHardwareCommandType.CONFIG, energyCompany.getUser());
-					    b.withParam(LmHardwareCommandParam.FORCE_IN_SERVICE, true);
-			            LmHardwareCommand command = b.build();
-    					commandService.sendConfigCommand(command);
+                        LmHardwareCommand command = new LmHardwareCommand();
+                        command.setDevice(liteHw);
+                        command.setType(LmHardwareCommandType.CONFIG);
+                        command.setUser(energyCompany.getUser());
+                        command.getParams().put(LmHardwareCommandParam.FORCE_IN_SERVICE, true);
+                        
+                        commandService.sendConfigCommand(command);
 					} else {
-					    LmHardwareCommand.Builder b = new LmHardwareCommand.Builder(liteHw, LmHardwareCommandType.OUT_OF_SERVICE, energyCompany.getUser());
-					    LmHardwareCommand command = b.build();
-				        commandService.sendOutOfServiceCommand(command);
+                        LmHardwareCommand command = new LmHardwareCommand();
+                        command.setDevice(liteHw);
+                        command.setType(LmHardwareCommandType.OUT_OF_SERVICE);
+                        command.setUser(energyCompany.getUser());
+                        
+                        commandService.sendOutOfServiceCommand(command);
 					}
 				}
 			}
