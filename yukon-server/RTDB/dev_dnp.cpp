@@ -219,12 +219,19 @@ INT DnpDevice::ExecuteRequest(CtiRequestMsg *pReq, CtiCommandParser &parse, OUTM
             if( pointid > 0 )
             {
                 //  select by raw pointid
-                if( CtiPointSPtr point = getDevicePointEqual(pointid) )
+                CtiPointSPtr point = getDevicePointByID(pointid);
+
+                if ( ! point )
                 {
-                    if( point->isStatus() )
-                    {
-                        pStatus = boost::static_pointer_cast<CtiPointStatus>(point);
-                    }
+                    std::string errorMessage = "The specified point is not on device " + getName();
+                    returnErrorMessage(ErrorPointLookupFailed, OutMessage, retList, errorMessage);
+
+                    return ErrorPointLookupFailed;
+                }
+
+                if( point->isStatus() )
+                {
+                    pStatus = boost::static_pointer_cast<CtiPointStatus>(point);
                 }
             }
             else if( parse.getFlags() & CMD_FLAG_OFFSET )
@@ -490,39 +497,46 @@ INT DnpDevice::ExecuteRequest(CtiRequestMsg *pReq, CtiCommandParser &parse, OUTM
                 {
                     const long pointid = parse.getiValue("point");
 
-                    if( const CtiPointSPtr point = getDevicePointEqual(pointid) )
+                    const CtiPointSPtr point = getDevicePointByID(pointid);
+
+                    if ( ! point )
                     {
-                        if( point->getType() == AnalogPointType )
+                        std::string errorMessage = "The specified point is not on device " + getName();
+                        returnErrorMessage(ErrorPointLookupFailed, OutMessage, retList, errorMessage);
+
+                        return ErrorPointLookupFailed;
+                    }
+
+                    if( point->getType() == AnalogPointType )
+                    {
+                        CtiPointAnalogSPtr pAnalog = boost::static_pointer_cast<CtiPointAnalog>(point);
+
+                        if( pAnalog &&
+                            pAnalog->getControl() &&
+                            pAnalog->getControl()->isControlInhibited() )
                         {
-                            CtiPointAnalogSPtr pAnalog = boost::static_pointer_cast<CtiPointAnalog>(point);
-
-                            if( pAnalog &&
-                                pAnalog->getControl() &&
-                                pAnalog->getControl()->isControlInhibited() )
                             {
-                                {
-                                    CtiLockGuard<CtiLogger> doubt_guard(dout);
-                                    dout << CtiTime() << " **** Checkpoint - control inhibited for device \"" << getName() << 
-                                            "\" point \"" << pAnalog->getName() << "\" in DNP::ExecuteRequest() **** " << 
-                                            __FILE__ << " (" << __LINE__ << ")" << endl;
-                                }
-
-                                std::string temp = "Control is inhibited for the specified analog point on device " + getName();
-
-                                returnErrorMessage(ControlInhibitedOnPoint, OutMessage, retList, temp);
-
-                                return ControlInhibitedOnPoint;
+                                CtiLockGuard<CtiLogger> doubt_guard(dout);
+                                dout << CtiTime() << " **** Checkpoint - control inhibited for device \"" << getName() << 
+                                        "\" point \"" << pAnalog->getName() << "\" in DNP::ExecuteRequest() **** " << 
+                                        __FILE__ << " (" << __LINE__ << ")" << endl;
                             }
-                            else 
+
+                            std::string temp = "Control is inhibited for the specified analog point on device " + getName();
+
+                            returnErrorMessage(ControlInhibitedOnPoint, OutMessage, retList, temp);
+
+                            return ControlInhibitedOnPoint;
+                        }
+                        else 
+                        {
+                            if( const CtiTablePointControl *control = pAnalog->getControl() )
                             {
-                                if( const CtiTablePointControl *control = pAnalog->getControl() )
-                                {
-                                    control_offset = control->getControlOffset();
-                                }
-                                else if( pAnalog->getPointOffset() > AnalogOutputStatus::AnalogOutputOffset )
-                                {
-                                    control_offset = point->getPointOffset() % AnalogOutputStatus::AnalogOutputOffset;
-                                }
+                                control_offset = control->getControlOffset();
+                            }
+                            else if( pAnalog->getPointOffset() > AnalogOutputStatus::AnalogOutputOffset )
+                            {
+                                control_offset = point->getPointOffset() % AnalogOutputStatus::AnalogOutputOffset;
                             }
                         }
                     }

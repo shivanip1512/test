@@ -269,6 +269,8 @@ enum YukonError_t
 
     ErrorDnsLookupFailed,
 
+    ErrorPointLookupFailed,
+
     FinalError
 };
 

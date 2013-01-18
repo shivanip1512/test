@@ -210,7 +210,8 @@ const std::vector<std::string> ErrorStrings = boost::assign::list_of
     ("Command requires a valid date.")
     //  280
     ("Failed to resolve an IP for the given DNS name.")
-    .repeat(69, "Unknown Error");
+    ("Failed to find a point for the given device.")
+    .repeat(68, "Unknown Error");
 
 BOOST_AUTO_TEST_CASE(test_GetError)
 {

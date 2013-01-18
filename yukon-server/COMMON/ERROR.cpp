@@ -219,6 +219,8 @@ ERRSTRUCT CTIErrors[] = {
 
     { ErrorDnsLookupFailed,         "Failed to resolve an IP for the given DNS name.",  ERRTYPESYSTEM },
 
+    { ErrorPointLookupFailed,       "Failed to find a point for the given device.",     ERRTYPESYSTEM },
+
     { UnknownError,                 "Unknown Error",                                ERRTYPESYSTEM   },
 
 };

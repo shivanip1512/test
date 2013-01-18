@@ -214,13 +214,18 @@ void CtiDeviceBase::getDevicePoints(vector<CtiPointSPtr> &points) const
 }
 
 
-CtiPointSPtr CtiDeviceBase::getDevicePointEqual(INT pointID)
+CtiPointSPtr CtiDeviceBase::getDevicePointByID(INT pointID)
 {
     CtiPointSPtr pPoint;
 
     if(_pointMgr != NULL)
     {
-        pPoint = _pointMgr->getPoint(pointID, getID());
+        CtiPointSPtr point = _pointMgr->getPoint(pointID, getID());
+
+        if (point && point->getDeviceID() == getID())
+        {
+            pPoint = point;
+        }
     }
 
     return pPoint;

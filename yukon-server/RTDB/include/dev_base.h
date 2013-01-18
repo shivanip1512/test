@@ -192,7 +192,7 @@ public:
     CtiDeviceBase&    setLogOnNeeded(BOOL b = TRUE);
 
     virtual void getDevicePoints(std::vector<CtiPointSPtr> &points) const;
-    virtual CtiPointSPtr getDevicePointEqual(INT id);
+    virtual CtiPointSPtr getDevicePointByID(INT id);
     virtual CtiPointSPtr getDevicePointEqualByName(std::string pname);
     virtual CtiPointSPtr getDevicePointOffsetTypeEqual(INT offset, CtiPointType_t type);
     virtual CtiPointSPtr getDeviceControlPointOffsetEqual(INT offset);

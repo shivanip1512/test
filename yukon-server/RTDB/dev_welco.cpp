@@ -1838,7 +1838,17 @@ INT CtiDeviceWelco::executeControl(CtiRequestMsg *pReq, CtiCommandParser &parse,
         }
         else
         {
-            ctlPoint = boost::static_pointer_cast<CtiPointStatus>(getDevicePointEqual(ctlpt));
+            CtiPointSPtr point = getDevicePointByID(ctlpt);
+
+            if ( ! point )
+            {
+                std::string errorMessage = "The specified point is not on device " + getName();
+                returnErrorMessage(ErrorPointLookupFailed, OutMessage, retList, errorMessage);
+
+                return ErrorPointLookupFailed;
+            }
+
+            ctlPoint = boost::static_pointer_cast<CtiPointStatus>(point);
         }
 
 

@@ -189,9 +189,21 @@ INT CtiDeviceION::ExecuteRequest( CtiRequestMsg *pReq, CtiCommandParser &parse, 
             unsigned int offset = 0;
             CtiPointSPtr point;
 
-            if( parse.getiValue("point") > 0 )
+            const int pointid = parse.getiValue("point");
+
+            if( pointid > 0 )
             {
-                if( (point = getDevicePointEqual(parse.getiValue("point"))) && point->isStatus() )
+                point = getDevicePointByID(pointid);
+
+                if ( ! point )
+                {
+                    std::string errorMessage = "The specified point is not on device " + getName();
+                    returnErrorMessage(ErrorPointLookupFailed, OutMessage, retList, errorMessage);
+
+                    return ErrorPointLookupFailed;
+                }
+
+                if( point->isStatus() )
                 {
                     CtiPointStatusSPtr statusPoint = boost::static_pointer_cast<CtiPointStatus>(point);
 

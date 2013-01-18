@@ -138,18 +138,25 @@ INT Cbc8020Device::ExecuteRequest(CtiRequestMsg *pReq, CtiCommandParser &parse, 
         if( pointid > 0 )
         {
             //  select by raw pointid
-            if( CtiPointSPtr point = getDevicePointEqual(pointid) )
-            {
-                if( point->isStatus() )
-                {
-                    CtiPointStatusSPtr pStatus = boost::static_pointer_cast<CtiPointStatus>(point);
+            CtiPointSPtr point = getDevicePointByID(pointid);
 
-                    if( const boost::optional<CtiTablePointStatusControl> controlParameters = pStatus->getControlParameters() )
+            if ( ! point )
+            {
+                std::string errorMessage = "The specified point is not on device " + getName();
+                returnErrorMessage(ErrorPointLookupFailed, OutMessage, retList, errorMessage);
+
+                return ErrorPointLookupFailed;
+            }
+
+            if( point->isStatus() )
+            {
+                CtiPointStatusSPtr pStatus = boost::static_pointer_cast<CtiPointStatus>(point);
+
+                if( const boost::optional<CtiTablePointStatusControl> controlParameters = pStatus->getControlParameters() )
+                {
+                    if( controlParameters->getControlOffset() > 0 )
                     {
-                        if( controlParameters->getControlOffset() > 0 )
-                        {
-                            parse = CtiCommandParser(pReq->CommandString() + " offset " + CtiNumStr(controlParameters->getControlOffset()));
-                        }
+                        parse = CtiCommandParser(pReq->CommandString() + " offset " + CtiNumStr(controlParameters->getControlOffset()));
                     }
                 }
             }
