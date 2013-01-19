@@ -10,9 +10,9 @@ using std::endl;
 
 namespace Cti {
 namespace Protocols {
+namespace EmetconProtocol {
 
-
-void EmetconProtocol::buildAWordMessage(OUTMESS *&out_result)
+void buildAWordMessage(OUTMESS *&out_result)
 {
    const OUTMESS out_template = *out_result;
 
@@ -28,7 +28,7 @@ void EmetconProtocol::buildAWordMessage(OUTMESS *&out_result)
    out_result->InLength = 2;
 }
 
-void EmetconProtocol::buildBWordMessage(OUTMESS *&out_result, bool double_message)
+void buildBWordMessage(OUTMESS *&out_result, bool double_message)
 {
    const OUTMESS out_template = *out_result;
 
@@ -83,7 +83,7 @@ void EmetconProtocol::buildBWordMessage(OUTMESS *&out_result, bool double_messag
 }
 
 
-unsigned EmetconProtocol::determineDWordCount(unsigned length)
+unsigned determineDWordCount(unsigned length)
 {
     unsigned count = 0;
 
@@ -103,7 +103,7 @@ unsigned EmetconProtocol::determineDWordCount(unsigned length)
     return count;
 }
 
-int EmetconProtocol::calculateControlInterval(int interval)
+int calculateControlInterval(int interval)
 {
     int nRet = 0;
 
@@ -118,7 +118,6 @@ int EmetconProtocol::calculateControlInterval(int interval)
 }
 
 
-
-};
-};
-
+}
+}
+}

@@ -7,7 +7,7 @@
 
 #include <boost/assign/list_of.hpp>
 
-using Cti::Protocols::EmetconProtocol;
+using namespace Cti::Protocols;
 using std::vector;
 
 struct test_Mct470Device : Cti::Devices::Mct470Device
@@ -1437,8 +1437,6 @@ BOOST_AUTO_TEST_SUITE_END()
 
 BOOST_AUTO_TEST_CASE(test_dev_mct470_decodeGetValueIED)
 {
-    using Cti::Protocols::EmetconProtocol;
-
     test_Mct470Device dev;
 
     INMESS im;

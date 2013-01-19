@@ -32,7 +32,7 @@ using std::endl;
 using std::list;
 using std::pair;
 
-using Cti::Protocols::EmetconProtocol;
+using namespace Cti::Protocols;
 
 using namespace Cti::Devices::Commands;
 

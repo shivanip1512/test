@@ -175,7 +175,7 @@ struct timeSyncCCU710
                     {
                         using Cti::Devices::DlcBaseDevice;
                         using Cti::Devices::MctDevice;
-                        using Cti::Protocols::EmetconProtocol;
+                        using namespace Cti::Protocols;
 
                         //  load up all of the port/route specific items
                         OutMessage->DeviceID  = RemoteRecord->getID();
@@ -611,7 +611,7 @@ static void applyMCT400TimeSync(const long key, CtiRouteSPtr pRoute, void* d)
             if( OutMessage )
             {
                 using Cti::Devices::Mct4xxDevice;
-                using Cti::Protocols::EmetconProtocol;
+                using namespace Cti::Protocols;
 
                 //  load up all of the port/route specific items
                 OutMessage->DeviceID  = pRoute->getTrxDeviceID();
@@ -939,7 +939,7 @@ INT RefreshMCTTimeSync(OUTMESS *OutMessage)
     using Cti::Devices::DlcBaseDevice;
     using Cti::Devices::MctDevice;
     using Cti::Devices::Mct4xxDevice;
-    using Cti::Protocols::EmetconProtocol;
+    using namespace Cti::Protocols;
 
     if( address == Mct4xxDevice::UniversalAddress
           || (io == EmetconProtocol::IO_Function_Write

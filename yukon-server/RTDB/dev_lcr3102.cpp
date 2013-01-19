@@ -9,7 +9,7 @@ using std::string;
 using std::endl;
 using std::list;
 using std::deque;
-using Cti::Protocols::EmetconProtocol;
+using namespace Cti::Protocols;
 using namespace Cti::Devices::Commands;
 
 namespace Cti {
@@ -573,9 +573,9 @@ INT Lcr3102Device::decodeGetValueControlTime( INMESS *InMessage, CtiTime &TimeNo
         {
             /**
              * Revision 1.0 sent back the relay value in the range of 1-4.
-             * Revision 1.1+ sends the relay in the range of 0-3. In this 
-             * case we need to add one to the relay value received from the 
-             * LCR to match the way the 1.0 revision was decoded. 
+             * Revision 1.1+ sends the relay in the range of 0-3. In this
+             * case we need to add one to the relay value received from the
+             * LCR to match the way the 1.0 revision was decoded.
              */
             relay += 1;
         }
@@ -1091,9 +1091,9 @@ INT Lcr3102Device::executeGetValue ( CtiRequestMsg *pReq, CtiCommandParser &pars
         {
             executeBackgroundRequest("getconfig install", OutMessage, outList);
 
-            CtiReturnMsg *ReturnMsg = 
+            CtiReturnMsg *ReturnMsg =
                 new CtiReturnMsg(
-                   getID(), 
+                   getID(),
                    OutMessage->Request.CommandStr,
                    getName() + " / SSPEC revision not retrieved yet, attempting to read it automatically; please retry command in a few minutes");
 
@@ -1466,7 +1466,7 @@ int Lcr3102Device::executeGetValueHistorical( CtiRequestMsg *pReq, CtiCommandPar
 
             /**
              * Handle the retries if necessary.
-             * 
+             *
              *  If optionsField is 0, we aren't a retry: Continue function
              *      normally.
              *  If optionsField is 1, we're a retry of the first "part" of
@@ -1485,7 +1485,7 @@ int Lcr3102Device::executeGetValueHistorical( CtiRequestMsg *pReq, CtiCommandPar
              *  Any other optionsField value is invalid and will result in
              *      treating this message as though it were the original
              *      attempts.
-             * 
+             *
              *  The switch statement below uses fall-throughs to achieve the
              *      functionality noted above.
              */
@@ -1521,7 +1521,7 @@ int Lcr3102Device::executeGetValueHistorical( CtiRequestMsg *pReq, CtiCommandPar
                 default:
                 {
                     CtiLockGuard<CtiLogger> doubt_guard(dout);
-                    dout << CtiTime() << " Invalid optionsField value " << optionsField << " for device " << getName() 
+                    dout << CtiTime() << " Invalid optionsField value " << optionsField << " for device " << getName()
                          << ". Treating this message as an initial attempt." << endl;
                 }
             }

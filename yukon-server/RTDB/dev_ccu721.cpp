@@ -13,7 +13,7 @@
 using namespace std;
 
 using Cti::Protocols::KlondikeProtocol;
-using Cti::Protocols::EmetconProtocol;
+using namespace Cti::Protocols;
 
 namespace Cti {
 namespace Devices {

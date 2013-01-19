@@ -18,7 +18,7 @@
 
 #include <boost/assign/list_of.hpp>
 
-using Cti::Protocols::EmetconProtocol;
+using namespace Cti::Protocols;
 using namespace Cti::Config;
 using std::string;
 using std::endl;
@@ -1403,77 +1403,59 @@ const Mct470Device::FunctionReadValueMappings *Mct470Device::getFunctionReadValu
 }
 
 
-/*
- *  ModelDecode MUST decode all CtiDLCCommand_t which are defined in the initCommandStore object.  The only exception to this
- *  would be a child whose decode was identical to the parent, but whose request was done differently..
- *  This MAY be the case for example in an IED scan.
- */
 INT Mct470Device::ModelDecode(INMESS *InMessage, CtiTime &TimeNow, CtiMessageList &vgList, CtiMessageList &retList, OutMessageList &outList)
 {
-    INT status = NORMAL;
-
-    switch(InMessage->Sequence)
+    if( !InMessage )
     {
-        case EmetconProtocol::Scan_Accum:
-        case EmetconProtocol::GetValue_KWH:
-        case EmetconProtocol::GetValue_FrozenKWH:       status = decodeGetValueKWH(InMessage, TimeNow, vgList, retList, outList);           break;
-
-        case EmetconProtocol::Scan_Integrity:
-        case EmetconProtocol::GetValue_Demand:          status = decodeGetValueDemand(InMessage, TimeNow, vgList, retList, outList);        break;
-
-        case EmetconProtocol::GetValue_IED:
-        case EmetconProtocol::GetValue_IEDDemand:       status = decodeGetValueIED(InMessage, TimeNow, vgList, retList, outList);           break;
-
-        case EmetconProtocol::GetValue_PeakDemand:
-        case EmetconProtocol::GetValue_FrozenPeakDemand: status = decodeGetValueMinMaxDemand(InMessage, TimeNow, vgList, retList, outList); break;
-        case EmetconProtocol::GetValue_PhaseCurrent:     status = decodeGetValuePhaseCurrent(InMessage, TimeNow, vgList, retList, outList); break;
-
-        case EmetconProtocol::GetConfig_IEDDNP:
-        case EmetconProtocol::GetConfig_IEDTime:
-        case EmetconProtocol::GetConfig_IEDScan:        status = decodeGetConfigIED(InMessage, TimeNow, vgList, retList, outList);          break;
-
-        case EmetconProtocol::GetValue_LoadProfile:     status = decodeGetValueLoadProfile(InMessage, TimeNow, vgList, retList, outList);   break;
-
-        case EmetconProtocol::Scan_LoadProfile:         status = decodeScanLoadProfile(InMessage, TimeNow, vgList, retList, outList);       break;
-
-        case EmetconProtocol::GetStatus_Internal:       status = decodeGetStatusInternal(InMessage, TimeNow, vgList, retList, outList);     break;
-
-        case EmetconProtocol::GetStatus_IEDDNP:         status = decodeGetStatusDNP(InMessage, TimeNow, vgList, retList, outList);          break;
-
-        case EmetconProtocol::GetConfig_IEDDNPAddress:  status = decodeGetConfigIedDnpAddress(InMessage, TimeNow, vgList, retList, outList);    break;
-
-        case EmetconProtocol::GetStatus_LoadProfile:    status = decodeGetStatusLoadProfile(InMessage, TimeNow, vgList, retList, outList);  break;
-
-        case EmetconProtocol::GetConfig_Intervals:      status = decodeGetConfigIntervals(InMessage, TimeNow, vgList, retList, outList);    break;
-
-        case EmetconProtocol::GetConfig_ChannelSetup:   status = decodeGetConfigChannelSetup(InMessage, TimeNow, vgList, retList, outList); break;
-
-        case EmetconProtocol::GetConfig_Multiplier:     status = decodeGetConfigMultiplier(InMessage, TimeNow, vgList, retList, outList);   break;
-
-        case EmetconProtocol::GetConfig_Model:          status = decodeGetConfigModel(InMessage, TimeNow, vgList, retList, outList);        break;
-
-        case EmetconProtocol::PutConfig_PrecannedTable:
-        {
-            status = decodePutConfig(InMessage, TimeNow, vgList, retList, outList);
-            break;
-        }
-
-        default:
-        {
-            status = Inherited::ModelDecode(InMessage, TimeNow, vgList, retList, outList);
-
-            if(status != NORMAL)
-            {
-                CtiLockGuard<CtiLogger> doubt_guard(dout);
-                dout << CtiTime() << " **** Checkpoint **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
-                dout << " IM->Sequence = " << InMessage->Sequence << " " << getName() << endl;
-            }
-            break;
-        }
+        return MEMORY;
     }
 
+    typedef Mct470Device self;
+    typedef int (self::*DecodeMethod)(INMESS *, CtiTime &, CtiDeviceBase::CtiMessageList &, CtiDeviceBase::CtiMessageList &, CtiDeviceBase::OutMessageList &);
 
-    return status;
+    typedef std::map<int, DecodeMethod> DecodeLookup;
+    namespace EP = EmetconProtocol;
+
+    const DecodeLookup decodeMethods = boost::assign::map_list_of
+        (EP::GetConfig_ChannelSetup,     &self::decodeGetConfigChannelSetup)
+        (EP::GetConfig_IEDDNP,           &self::decodeGetConfigIED)
+        (EP::GetConfig_IEDDNPAddress,    &self::decodeGetConfigIedDnpAddress)
+        (EP::GetConfig_IEDScan,          &self::decodeGetConfigIED)
+        (EP::GetConfig_IEDTime,          &self::decodeGetConfigIED)
+        (EP::GetConfig_Intervals,        &self::decodeGetConfigIntervals)
+        (EP::GetConfig_Model,            &self::decodeGetConfigModel)
+        (EP::GetConfig_Multiplier,       &self::decodeGetConfigMultiplier)
+        // ---
+        (EP::GetStatus_IEDDNP,           &self::decodeGetStatusDNP)
+        (EP::GetStatus_Internal,         &self::decodeGetStatusInternal)
+        (EP::GetStatus_LoadProfile,      &self::decodeGetStatusLoadProfile)
+        // ---
+        (EP::GetValue_Demand,            &self::decodeGetValueDemand)
+        (EP::GetValue_FrozenKWH,         &self::decodeGetValueKWH)
+        (EP::GetValue_FrozenPeakDemand,  &self::decodeGetValueMinMaxDemand)
+        (EP::GetValue_IED,               &self::decodeGetValueIED)
+        (EP::GetValue_IEDDemand,         &self::decodeGetValueIED)
+        (EP::GetValue_KWH,               &self::decodeGetValueKWH)
+        (EP::GetValue_LoadProfile,       &self::decodeGetValueLoadProfile)
+        (EP::GetValue_PeakDemand,        &self::decodeGetValueMinMaxDemand)
+        (EP::GetValue_PhaseCurrent,      &self::decodeGetValuePhaseCurrent)
+        // ---
+        (EP::PutConfig_PrecannedTable,   &self::decodePutConfig)
+        // ---
+        (EP::Scan_Accum,                 &self::decodeGetValueKWH)
+        (EP::Scan_Integrity,             &self::decodeGetValueDemand)
+        (EP::Scan_LoadProfile,           &self::decodeScanLoadProfile);
+
+    DecodeLookup::const_iterator itr = decodeMethods.find(InMessage->Sequence);
+
+    if( itr != decodeMethods.end() )
+    {
+        const DecodeMethod decoder = itr->second;
+
+        return (this->*decoder)(InMessage, TimeNow, vgList, retList, outList);
+    }
+
+    return Inherited::ModelDecode(InMessage, TimeNow, vgList, retList, outList);
 }
 
 INT Mct470Device::ErrorDecode(const INMESS &InMessage, const CtiTime TimeNow, CtiMessageList &retList)

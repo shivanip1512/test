@@ -3,7 +3,7 @@
 #include "dev_mct310.h"
 #include "devicetypes.h"
 
-using Cti::Protocols::EmetconProtocol;
+using namespace Cti::Protocols;
 
 BOOST_AUTO_TEST_SUITE( test_dev_mct310 )
 

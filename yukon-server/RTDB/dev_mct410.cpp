@@ -13,13 +13,15 @@
 
 #include "portglob.h"
 
+#include <boost/assign/list_of.hpp>
+
 #include <stack>
 
 using namespace std;
 
 using namespace Cti::Config;
 using namespace Cti::Devices::Commands;
-using Cti::Protocols::EmetconProtocol;
+using namespace Cti::Protocols;
 
 namespace Cti {
 namespace Devices {
@@ -867,11 +869,6 @@ const Mct410Device::FunctionReadValueMappings *Mct410Device::getFunctionReadValu
 }
 
 
-/*
- *  ModelDecode MUST decode all CtiDLCCommand_t which are defined in the initCommandStore object.  The only exception to this
- *  would be a child whose decode was identical to the parent, but whose request was done differently..
- *  This MAY be the case for example in an IED scan.
- */
 INT Mct410Device::ModelDecode(INMESS *InMessage, CtiTime &TimeNow, CtiMessageList &vgList, CtiMessageList &retList, OutMessageList &outList)
 {
     if( !InMessage )
@@ -879,81 +876,65 @@ INT Mct410Device::ModelDecode(INMESS *InMessage, CtiTime &TimeNow, CtiMessageLis
         return MEMORY;
     }
 
-    INT status = NORMAL;
+    typedef Mct410Device self;
+    typedef int (self::*DecodeMethod)(INMESS *, CtiTime &, CtiDeviceBase::CtiMessageList &, CtiDeviceBase::CtiMessageList &, CtiDeviceBase::OutMessageList &);
 
-    switch(InMessage->Sequence)
+    typedef std::map<int, DecodeMethod> DecodeLookup;
+    namespace EP = EmetconProtocol;
+
+    const DecodeLookup decodeMethods = boost::assign::map_list_of
+        (EP::GetConfig_Disconnect,              &self::decodeGetConfigDisconnect)
+        (EP::GetConfig_Freeze,                  &self::decodeGetConfigFreeze)
+        (EP::GetConfig_Intervals,               &self::decodeGetConfigIntervals)
+        (EP::GetConfig_LongLoadProfile,         &self::decodeGetConfigLongLoadProfileStorageDays)
+        (EP::GetConfig_MeterParameters,         &self::decodeGetConfigMeterParameters)
+        (EP::GetConfig_Model,                   &self::decodeGetConfigModel)
+        (EP::GetConfig_Multiplier,              &self::decodeGetConfigMeterParameters)
+        (EP::GetConfig_PhaseDetect,             &self::decodeGetConfigPhaseDetect)
+        (EP::GetConfig_PhaseDetectArchive,      &self::decodeGetConfigPhaseDetect)
+        (EP::GetConfig_Thresholds,              &self::decodeGetConfigThresholds)
+        (EP::GetConfig_UniqueAddress,           &self::decodeGetConfigAddress)
+        (EP::GetConfig_WaterMeterReadInterval,  &self::decodeGetConfigWaterMeterReadInterval)
+        // ---
+        (EP::GetStatus_Disconnect,              &self::decodeGetStatusDisconnect)
+        (EP::GetStatus_Internal,                &self::decodeGetStatusInternal)
+        (EP::GetStatus_LoadProfile,             &self::decodeGetStatusLoadProfile)
+        // ---
+        (EP::GetValue_DailyRead,                &self::decodeGetValueDailyRead)
+        (EP::GetValue_Demand,                   &self::decodeGetValueDemand)
+        (EP::GetValue_FreezeCounter,            &self::decodeGetValueFreezeCounter)
+        (EP::GetValue_FrozenKWH,                &self::decodeGetValueKWH)
+        (EP::GetValue_FrozenPeakDemand,         &self::decodeGetValuePeakDemand)
+        (EP::GetValue_FrozenTOUkWh,             &self::decodeGetValueTOUkWh)
+        (EP::GetValue_FrozenVoltage,            &self::decodeGetValueVoltage)
+        (EP::GetValue_KWH,                      &self::decodeGetValueKWH)
+        (EP::GetValue_LoadProfilePeakReport,    &self::decodeGetValueLoadProfilePeakReport)
+        (EP::GetValue_Outage,                   &self::decodeGetValueOutage)
+        (EP::GetValue_PeakDemand,               &self::decodeGetValuePeakDemand)
+        (EP::GetValue_TOUkWh,                   &self::decodeGetValueTOUkWh)
+        (EP::GetValue_Voltage,                  &self::decodeGetValueVoltage)
+        // ---
+        (EP::Scan_Accum,                        &self::decodeGetValueKWH)
+        (EP::Scan_Integrity,                    &self::decodeGetValueDemand);
+
+    DecodeLookup::const_iterator itr = decodeMethods.find(InMessage->Sequence);
+
+    if( itr != decodeMethods.end() )
     {
-        case EmetconProtocol::Scan_Accum:
-        case EmetconProtocol::GetValue_KWH:
-        case EmetconProtocol::GetValue_FrozenKWH:           status = decodeGetValueKWH(InMessage, TimeNow, vgList, retList, outList);           break;
+        const DecodeMethod decoder = itr->second;
 
-        case EmetconProtocol::GetValue_TOUkWh:
-        case EmetconProtocol::GetValue_FrozenTOUkWh:        status = decodeGetValueTOUkWh(InMessage, TimeNow, vgList, retList, outList);        break;
-
-        case EmetconProtocol::Scan_Integrity:
-        case EmetconProtocol::GetValue_Demand:              status = decodeGetValueDemand(InMessage, TimeNow, vgList, retList, outList);        break;
-
-        case EmetconProtocol::GetValue_PeakDemand:
-        case EmetconProtocol::GetValue_FrozenPeakDemand:    status = decodeGetValuePeakDemand(InMessage, TimeNow, vgList, retList, outList);    break;
-
-        case EmetconProtocol::GetValue_Voltage:
-        case EmetconProtocol::GetValue_FrozenVoltage:       status = decodeGetValueVoltage(InMessage, TimeNow, vgList, retList, outList);       break;
-
-        case EmetconProtocol::GetValue_Outage:              status = decodeGetValueOutage(InMessage, TimeNow, vgList, retList, outList);        break;
-
-        case EmetconProtocol::GetValue_FreezeCounter:       status = decodeGetValueFreezeCounter(InMessage, TimeNow, vgList, retList, outList); break;
-
-        case EmetconProtocol::GetValue_LoadProfilePeakReport:   status = decodeGetValueLoadProfilePeakReport(InMessage, TimeNow, vgList, retList, outList); break;
-
-        case EmetconProtocol::GetValue_DailyRead:           status = decodeGetValueDailyRead(InMessage, TimeNow, vgList, retList, outList);     break;
-
-        case EmetconProtocol::GetConfig_DailyReadInterest:  status = decodeGetConfigDailyReadInterest(*InMessage, TimeNow, vgList, retList, outList);  break;
-
-        case EmetconProtocol::GetStatus_Internal:           status = decodeGetStatusInternal(InMessage, TimeNow, vgList, retList, outList);     break;
-
-        case EmetconProtocol::GetStatus_LoadProfile:        status = decodeGetStatusLoadProfile(InMessage, TimeNow, vgList, retList, outList);  break;
-
-        case EmetconProtocol::GetStatus_Disconnect:         status = decodeGetStatusDisconnect(InMessage, TimeNow, vgList, retList, outList);   break;
-
-        case EmetconProtocol::GetConfig_Disconnect:         status = decodeGetConfigDisconnect(InMessage, TimeNow, vgList, retList, outList);   break;
-
-        case EmetconProtocol::GetConfig_UniqueAddress:      status = decodeGetConfigAddress(InMessage, TimeNow, vgList, retList, outList);      break;
-
-        case EmetconProtocol::GetConfig_Intervals:          status = decodeGetConfigIntervals(InMessage, TimeNow, vgList, retList, outList);    break;
-
-        case EmetconProtocol::GetConfig_Thresholds:         status = decodeGetConfigThresholds(InMessage, TimeNow, vgList, retList, outList);   break;
-
-        case EmetconProtocol::GetConfig_Model:              status = decodeGetConfigModel(InMessage, TimeNow, vgList, retList, outList);        break;
-
-        case EmetconProtocol::GetConfig_Freeze:             status = decodeGetConfigFreeze(InMessage, TimeNow, vgList, retList, outList);       break;
-
-        case EmetconProtocol::GetConfig_Multiplier:
-        case EmetconProtocol::GetConfig_MeterParameters:    status = decodeGetConfigMeterParameters(InMessage, TimeNow, vgList, retList, outList);      break;
-
-        case EmetconProtocol::GetConfig_PhaseDetectArchive:
-        case EmetconProtocol::GetConfig_PhaseDetect:        status = decodeGetConfigPhaseDetect(InMessage, TimeNow, vgList, retList, outList);      break;
-
-        case EmetconProtocol::GetConfig_WaterMeterReadInterval: status = decodeGetConfigWaterMeterReadInterval(InMessage, TimeNow, vgList, retList, outList);      break;
-
-        case EmetconProtocol::GetConfig_LongLoadProfile: status = decodeGetConfigLongLoadProfileStorageDays(InMessage, TimeNow, vgList, retList, outList);      break;
-
-        default:
-        {
-            status = Inherited::ModelDecode(InMessage, TimeNow, vgList, retList, outList);
-
-            if(status != NORMAL)
-            {
-                CtiLockGuard<CtiLogger> doubt_guard(dout);
-                dout << CtiTime() << " **** Checkpoint **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
-                dout << " IM->Sequence = " << InMessage->Sequence << " " << getName() << endl;
-            }
-
-            break;
-        }
+        return (this->*decoder)(InMessage, TimeNow, vgList, retList, outList);
     }
 
+    //  Special case, takes InMessage by const reference.
+    //    All decode methods will do this in the near future, then this can be moved above.
+    switch(InMessage->Sequence)
+    {
+        case EmetconProtocol::GetConfig_DailyReadInterest:
+            return decodeGetConfigDailyReadInterest(*InMessage, TimeNow, vgList, retList, outList);
+    }
 
-    return status;
+    return Inherited::ModelDecode(InMessage, TimeNow, vgList, retList, outList);
 }
 
 
@@ -3026,7 +3007,6 @@ INT Mct410Device::decodeGetValueDemand(INMESS *InMessage, CtiTime &TimeNow, CtiM
 
     point_info pi;
 
-    INT ErrReturn = InMessage->EventCode & 0x3fff;
     DSTRUCT *DSt  = &InMessage->Buffer.DSt;
 
     CtiPointSPtr    pPoint;
@@ -3149,7 +3129,6 @@ INT Mct410Device::decodeGetValueOutage( INMESS *InMessage, CtiTime &TimeNow, Cti
 
     CtiCommandParser parse(InMessage->Return.CommandStr);
 
-    INT ErrReturn =  InMessage->EventCode & 0x3fff;
     unsigned char   *msgbuf = InMessage->Buffer.DSt.Message;
     CtiReturnMsg    *ReturnMsg = NULL;    // Message sent to VanGogh, inherits from Multi
     CtiPointSPtr    pPoint;
@@ -3334,7 +3313,6 @@ INT Mct410Device::decodeGetValueFreezeCounter( INMESS *InMessage, CtiTime &TimeN
 {
     INT status = NORMAL;
 
-    INT ErrReturn =  InMessage->EventCode & 0x3fff;
     unsigned char   *msgbuf = InMessage->Buffer.DSt.Message;
     CtiReturnMsg    *ReturnMsg = NULL;    // Message sent to VanGogh, inherits from Multi
 
@@ -3354,7 +3332,6 @@ INT Mct410Device::decodeGetValueLoadProfilePeakReport(INMESS *InMessage, CtiTime
 {
     INT status = NORMAL;
 
-    INT ErrReturn =  InMessage->EventCode & 0x3fff;
     DSTRUCT *DSt  = &InMessage->Buffer.DSt;
 
     string result_string;
@@ -4249,7 +4226,6 @@ INT Mct410Device::decodeGetConfigMeterParameters(INMESS *InMessage, CtiTime &Tim
 {
     INT status = NORMAL;
 
-    INT ErrReturn  = InMessage->EventCode & 0x3fff;
     DSTRUCT *DSt   = &InMessage->Buffer.DSt;
 
     CtiReturnMsg *ReturnMsg = NULL;    // Message sent to VanGogh, inherits from Multi

@@ -5,7 +5,7 @@
 
 #include <boost/assign/list_of.hpp>
 
-using Cti::Protocols::EmetconProtocol;
+using namespace Cti::Protocols;
 
 BOOST_AUTO_TEST_SUITE( test_dev_mct31x )
 

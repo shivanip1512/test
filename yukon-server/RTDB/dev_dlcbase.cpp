@@ -17,7 +17,7 @@ using std::string;
 using std::endl;
 using std::list;
 
-using Cti::Protocols::EmetconProtocol;
+using namespace Cti::Protocols;
 
 using namespace Cti::Devices::Commands;
 
@@ -398,7 +398,7 @@ bool DlcBaseDevice::dlcAddressMismatch(const DSTRUCT dst, const CtiDeviceBase & 
         }
         return true;
     }
-    return false;    
+    return false;
 }
 
 

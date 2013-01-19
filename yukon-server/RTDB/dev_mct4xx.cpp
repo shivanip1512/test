@@ -17,7 +17,7 @@
 
 #include <boost/assign/list_of.hpp>
 
-using Cti::Protocols::EmetconProtocol;
+using namespace Cti::Protocols;
 using std::string;
 using std::endl;
 using std::list;
@@ -3368,64 +3368,39 @@ INT Mct4xxDevice::decodeGetValuePeakDemand(INMESS *InMessage, CtiTime &TimeNow, 
 
 INT Mct4xxDevice::ModelDecode(INMESS *InMessage, CtiTime &TimeNow, CtiMessageList &vgList, CtiMessageList &retList, OutMessageList &outList)
 {
-    INT status = NORMAL;
-
-
-    switch(InMessage->Sequence)
+    if( !InMessage )
     {
-        case (EmetconProtocol::GetConfig_Time):
-        case (EmetconProtocol::GetConfig_TSync):
-        {
-            status = decodeGetConfigTime(InMessage, TimeNow, vgList, retList, outList);
-            break;
-        }
-
-        case (EmetconProtocol::GetConfig_TOU):
-        {
-            status = decodeGetConfigTOU(InMessage, TimeNow, vgList, retList, outList);
-            break;
-        }
-
-        case EmetconProtocol::GetStatus_Freeze:
-        {
-            status = decodeGetStatusFreeze(InMessage, TimeNow, vgList, retList, outList);
-            break;
-        }
-
-        case EmetconProtocol::GetValue_TOUPeak:
-        {
-            status = decodeGetValuePeakDemand(InMessage, TimeNow, vgList, retList, outList);
-            break;
-        }
-
-        case EmetconProtocol::GetValue_LoadProfile:
-        {
-            status = decodeGetValueLoadProfile(InMessage, TimeNow, vgList, retList, outList);
-            break;
-        }
-
-        case EmetconProtocol::Scan_LoadProfile:
-        {
-            status = decodeScanLoadProfile(InMessage, TimeNow, vgList, retList, outList);
-            break;
-        }
-
-        default:
-        {
-            status = Inherited::ModelDecode(InMessage, TimeNow, vgList, retList, outList);
-
-            if(status != NORMAL)
-            {
-                CtiLockGuard<CtiLogger> doubt_guard(dout);
-                dout << CtiTime() << " **** Checkpoint **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
-                dout << " IM->Sequence = " << InMessage->Sequence << " " << getName() << endl;
-            }
-            break;
-        }
+        return MEMORY;
     }
 
+    typedef Mct4xxDevice self;
+    typedef int (self::*DecodeMethod)(INMESS *, CtiTime &, CtiDeviceBase::CtiMessageList &, CtiDeviceBase::CtiMessageList &, CtiDeviceBase::OutMessageList &);
 
-    return status;
+    typedef std::map<int, DecodeMethod> DecodeLookup;
+    namespace EP = EmetconProtocol;
+
+    const DecodeLookup decodeMethods = boost::assign::map_list_of
+        (EP::GetConfig_Time,       &self::decodeGetConfigTime)
+        (EP::GetConfig_TSync,      &self::decodeGetConfigTime)
+        (EP::GetConfig_TOU,        &self::decodeGetConfigTOU)
+        // ---
+        (EP::GetStatus_Freeze,     &self::decodeGetStatusFreeze)
+        // ---
+        (EP::GetValue_TOUPeak,     &self::decodeGetValuePeakDemand)
+        (EP::GetValue_LoadProfile, &self::decodeGetValueLoadProfile)
+        // ---
+        (EP::Scan_LoadProfile,     &self::decodeScanLoadProfile);
+
+    DecodeLookup::const_iterator itr = decodeMethods.find(InMessage->Sequence);
+
+    if( itr != decodeMethods.end() )
+    {
+        const DecodeMethod decoder = itr->second;
+
+        return (this->*decoder)(InMessage, TimeNow, vgList, retList, outList);
+    }
+
+    return Inherited::ModelDecode(InMessage, TimeNow, vgList, retList, outList);
 }
 
 

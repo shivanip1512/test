@@ -4,7 +4,7 @@
 
 BOOST_AUTO_TEST_SUITE( test_dev_mct_lmt2 )
 
-using Cti::Protocols::EmetconProtocol;
+using namespace Cti::Protocols;
 
 struct test_Lmt2Device : Cti::Devices::Lmt2Device
 {

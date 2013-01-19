@@ -6,7 +6,7 @@
 #include "pt_numeric.h"
 #include "numstr.h"
 
-using Cti::Protocols::EmetconProtocol;
+using namespace Cti::Protocols;
 using std::string;
 using std::endl;
 using std::list;

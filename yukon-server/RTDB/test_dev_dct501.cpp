@@ -2,7 +2,7 @@
 
 #include "dev_dct501.h"
 
-using Cti::Protocols::EmetconProtocol;
+using namespace Cti::Protocols;
 
 BOOST_AUTO_TEST_SUITE( test_dev_dct501 )
 

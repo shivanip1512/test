@@ -2884,7 +2884,7 @@ INT DoProcessInMessage(INT CommResult, CtiPortSPtr Port, INMESS *InMessage, OUTM
     ULONG          j;
     struct timeb   TimeB;
 
-    using Cti::Protocols::EmetconProtocol;
+    using namespace Cti::Protocols;
     using Cti::Devices::MctDevice;
 
     if( InMessage && OutMessage )
