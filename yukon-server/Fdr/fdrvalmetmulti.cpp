@@ -106,8 +106,10 @@ void CtiFDR_ValmetMulti::startMultiListeners()
 {
     CtiLockGuard<CtiMutex> lockGuard(_listeningThreadManagementMutex);
 
-    for each(int port in _listeningPortNumbers)
+    while ( ! _listeningPortNumbers.empty())
     {
+        int port = _listeningPortNumbers.getQueue();
+
         PortNumToListenerThreadMap::iterator itr = _listenerThreads.find(port);
         if (itr == _listenerThreads.end())
         {
@@ -120,8 +122,6 @@ void CtiFDR_ValmetMulti::startMultiListeners()
             _listenerThreads[port] = thr;
         } // There is already a thread running.
     }
-
-    _listeningPortNumbers.clear();
 }
 
 void CtiFDR_ValmetMulti::stopMultiListeners()
@@ -264,9 +264,7 @@ bool CtiFDR_ValmetMulti::translateSinglePoint(CtiFDRPointSPtr & translationPoint
 
         if (valmetPortId.PortNumber != 0)
         {
-
-            CtiLockGuard<CtiMutex> lockGuard(_listeningThreadManagementMutex);
-            _listeningPortNumbers.insert(valmetPortId.PortNumber);
+            _listeningPortNumbers.putQueue(valmetPortId.PortNumber);
         }
 
         if (sendList)

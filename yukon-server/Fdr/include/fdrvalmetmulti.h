@@ -95,7 +95,8 @@ class IM_EX_FDRVALMETMULTI CtiFDR_ValmetMulti : public CtiFDRScadaServer
 
         RWThreadFunction _listenerStarterThread;
         CtiMutex _listeningThreadManagementMutex;
-        std::set<int> _listeningPortNumbers;
+
+        CtiValueQueue<int>  _listeningPortNumbers;
 
         static const CHAR * KEY_LISTEN_PORT_NUMBER;
         static const CHAR * KEY_TIMESTAMP_WINDOW;
