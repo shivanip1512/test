@@ -987,7 +987,6 @@ INT MctDevice::ModelDecode(INMESS *InMessage, CtiTime &TimeNow, CtiMessageList &
         case EmetconProtocol::PutConfig_UniqueAddress:
         case EmetconProtocol::PutConfig_LoadProfileInterest:
         case EmetconProtocol::PutConfig_Disconnect:
-        case EmetconProtocol::PutConfig_LoadProfileReportPeriod:
         case EmetconProtocol::PutConfig_TOU:
         case EmetconProtocol::PutConfig_FreezeDay:
         case EmetconProtocol::PutConfig_TimeZoneOffset:
@@ -3372,7 +3371,6 @@ INT MctDevice::decodePutConfig(INMESS *InMessage, CtiTime &TimeNow, CtiMessageLi
         case EmetconProtocol::PutConfig_GroupAddressInhibit:        resultString = getName() + " / Group addressing inhibit sent";  break;
 
         case EmetconProtocol::PutConfig_LoadProfileInterest:        resultString = getName() + " / Load profile period of interest sent";   break;
-        case EmetconProtocol::PutConfig_LoadProfileReportPeriod:    resultString = getName() + " / Load profile reporting period sent";     break;
         case EmetconProtocol::PutConfig_DailyReadInterest:          resultString = getName() + " / Daily read period of interest sent";     break;
 
         case EmetconProtocol::PutConfig_Raw:                        resultString = getName() + " / Raw bytes sent";         break;

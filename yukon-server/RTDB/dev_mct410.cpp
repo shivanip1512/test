@@ -496,6 +496,8 @@ Mct410Device::CommandSet Mct410Device::initCommandStore()
     cs.insert(CommandStore(EmetconProtocol::GetConfig_Multiplier,       EmetconProtocol::IO_Read,           Memory_TransformerRatioPos,     Memory_TransformerRatioLen));
     cs.insert(CommandStore(EmetconProtocol::GetConfig_MeterParameters,  EmetconProtocol::IO_Read,           Memory_DisplayParametersPos,    Memory_DisplayParametersLen));
     cs.insert(CommandStore(EmetconProtocol::GetConfig_Freeze,           EmetconProtocol::IO_Read,           Memory_DayOfScheduledFreezePos, Memory_DayOfScheduledFreezeLen));
+    cs.insert(CommandStore(EmetconProtocol::GetConfig_LoadProfileExistingPeak,
+                                                                        EmetconProtocol::IO_Function_Read,  0,                              7));
 
     //******************************** Config Related starts here *************************
     cs.insert(CommandStore(EmetconProtocol::PutConfig_LongLoadProfile,  EmetconProtocol::IO_Function_Write, FuncWrite_LLPStoragePos,        FuncWrite_LLPStorageLen));
@@ -886,6 +888,7 @@ INT Mct410Device::ModelDecode(INMESS *InMessage, CtiTime &TimeNow, CtiMessageLis
         (EP::GetConfig_Disconnect,              &self::decodeGetConfigDisconnect)
         (EP::GetConfig_Freeze,                  &self::decodeGetConfigFreeze)
         (EP::GetConfig_Intervals,               &self::decodeGetConfigIntervals)
+        (EP::GetConfig_LoadProfileExistingPeak, &self::decodeGetConfigLoadProfileExistingPeak)
         (EP::GetConfig_LongLoadProfile,         &self::decodeGetConfigLongLoadProfileStorageDays)
         (EP::GetConfig_MeterParameters,         &self::decodeGetConfigMeterParameters)
         (EP::GetConfig_Model,                   &self::decodeGetConfigModel)
@@ -3328,6 +3331,93 @@ INT Mct410Device::decodeGetValueFreezeCounter( INMESS *InMessage, CtiTime &TimeN
 }
 
 
+int Mct410Device::decodeGetConfigLoadProfileExistingPeak(INMESS *InMessage, CtiTime &TimeNow, CtiMessageList &vgList, CtiMessageList &retList, OutMessageList &outList)
+{
+    int status = NoError;
+
+    const DSTRUCT &DSt = InMessage->Buffer.DSt;
+    unsigned long peak_time = ntohl(*reinterpret_cast<const unsigned long *>(DSt.Message + 3));
+
+    const CtiTime request_begin = CtiTime(_llpPeakInterest.end_date - _llpPeakInterest.range + 1);
+    const CtiTime request_end   = CtiTime(_llpPeakInterest.end_date + 1);
+
+    unsigned long utc_time = request_end.seconds();
+    unsigned short request_range   = _llpPeakInterest.range;
+    const unsigned char request_channel = _llpPeakInterest.channel;
+
+    std::auto_ptr<OUTMESS> OutMessage(new OUTMESS);
+
+    InEchoToOut(*InMessage, OutMessage.get());
+
+    //  Ideally, this would be a broadcast write if this is a macro route, but that
+    //    can't be accomplished without running through ExecuteRequest.
+    // Also, the multiple decodes from the macro subroutes would need to be
+    //    handled differently so each one didn't send out a read.
+
+    if( peak_time >= request_begin.seconds() &&
+        peak_time <= request_end.seconds() )
+    {
+        //  Set the report date outside of the requested range to ensure we won't have an overlap when they retry the request.
+        utc_time = CtiTime(_llpPeakInterest.end_date - _llpPeakInterest.range - 2).seconds();
+        request_range = 1;
+
+        status = ErrorNeedsDateRangeReset;
+
+        OutMessage->Request.Connection = 0;  //  Make this a background request - do not report to the client.
+
+        std::auto_ptr<CtiReturnMsg> ReturnMsg(new CtiReturnMsg(getID()));
+
+        ReturnMsg->setUserMessageId(InMessage->Return.UserID);
+
+        ReturnMsg->setResultString("Requested date range overlaps the device's previous peak.  Resetting automatically, please retry command.");
+
+        retMsgHandler( InMessage->Return.CommandStr, status, ReturnMsg.release(), vgList, retList );
+
+        InterlockedExchange(&_llpPeakInterest.in_progress, false);
+    }
+    else
+    {
+        //  verified that the existing peak is outside the new range
+        _llpPeakInterest.no_overlap = true;
+    }
+
+    OutMessage->Sequence = EmetconProtocol::PutConfig_LoadProfileReportPeriod;
+
+    OutMessage->Buffer.BSt.Function = FuncWrite_LLPPeakInterestPos;
+    OutMessage->Buffer.BSt.IO       = EmetconProtocol::IO_Function_Write;
+    OutMessage->Buffer.BSt.Length   = FuncWrite_LLPPeakInterestLen;
+    OutMessage->MessageFlags |= MessageFlag_ExpectMore;
+
+    OutMessage->Buffer.BSt.Message[0] = gMCT400SeriesSPID;
+
+    OutMessage->Buffer.BSt.Message[1] = request_channel;
+
+    OutMessage->Buffer.BSt.Message[2] = utc_time >> 24;
+    OutMessage->Buffer.BSt.Message[3] = utc_time >> 16;
+    OutMessage->Buffer.BSt.Message[4] = utc_time >>  8;
+    OutMessage->Buffer.BSt.Message[5] = utc_time;
+
+    if( request_range <= 0xff )
+    {
+        OutMessage->Buffer.BSt.Message[6] = request_range & 0xff;
+
+        OutMessage->Buffer.BSt.Message[7] = 0;
+        OutMessage->Buffer.BSt.Message[8] = 0;
+    }
+    else
+    {
+        OutMessage->Buffer.BSt.Message[6] = 0;
+
+        OutMessage->Buffer.BSt.Message[7] = (request_range >> 8) & 0xff;
+        OutMessage->Buffer.BSt.Message[8] = (request_range     ) & 0xff;
+    }
+
+    outList.push_back(OutMessage.release());
+
+    return status;
+}
+
+
 INT Mct410Device::decodeGetValueLoadProfilePeakReport(INMESS *InMessage, CtiTime &TimeNow, CtiMessageList &vgList, CtiMessageList &retList, OutMessageList &outList)
 {
     INT status = NORMAL;
@@ -3353,7 +3443,7 @@ INT Mct410Device::decodeGetValueLoadProfilePeakReport(INMESS *InMessage, CtiTime
              DSt->Message[1] <<  8 |
              DSt->Message[2];
 
-    if( _llpPeakInterest.command == FuncRead_LLPPeakDayPos )
+    if( InMessage->Return.ProtocolInfo.Emetcon.Function == FuncRead_LLPPeakDayPos )
     {
         //  daily usage is in 0.1 kWH units
         max_usage = (double)pulses / 10;
@@ -3380,24 +3470,42 @@ INT Mct410Device::decodeGetValueLoadProfilePeakReport(INMESS *InMessage, CtiTime
 
     total_usage = (double)pulses / 10;
 
+    const double expected_avg_daily = total_usage / _llpPeakInterest.range;
+    const double effective_range = avg_daily ? total_usage / avg_daily : 0.0;
+
+    const double avg_daily_difference = std::abs(expected_avg_daily - avg_daily);
+
     ReturnMsg->setUserMessageId(InMessage->Return.UserID);
 
     result_string  = getName() + " / Channel " + CtiNumStr(_llpPeakInterest.channel + 1) + string(" Load Profile Report\n");
-    result_string += "Report range: " + CtiTime(_llpPeakInterest.time - (_llpPeakInterest.period * 86400)).asString() + " - " +
-                                        CtiTime(_llpPeakInterest.time).asString() + "\n";
+    result_string += "Report range: " + (_llpPeakInterest.end_date - _llpPeakInterest.range).asStringUSFormat() + " - " +
+                                         _llpPeakInterest.end_date.asStringUSFormat() + "\n";
 
-    if( max_demand_timestamp > _llpPeakInterest.time ||
-        max_demand_timestamp < (_llpPeakInterest.time - _llpPeakInterest.period * 86400) )
+    if( max_demand_timestamp > CtiTime(_llpPeakInterest.end_date + 1).seconds() ||
+        max_demand_timestamp < CtiTime(_llpPeakInterest.end_date + 1 - _llpPeakInterest.range).seconds() )
     {
         result_string = "Peak timestamp (" + CtiTime(max_demand_timestamp).asString() + ") outside of requested range - retry report";
-        _llpPeakInterest.time = 0;
-        _llpPeakInterest.period = 0;
+        _llpPeakInterest.end_date = DawnOfTime_Date;
+        _llpPeakInterest.range = 0;
+        status = ErrorInvalidTimestamp;
+        InMessage->Return.MacroOffset = 0;  //  stop the retries!
+    }
+    else if( avg_daily_difference > 0.1 )
+    {
+        result_string  = "Mismatch between expected and average daily usage:\n";
+        result_string += "Reported total usage over range: " + CtiNumStr(total_usage, 1) + string(" kWH\n");
+        result_string += "Reported average daily usage over range: " + CtiNumStr(avg_daily, 1) + string(" kWH\n");
+        result_string += "Expected average daily usage: " + CtiNumStr(expected_avg_daily, 1) + string(" kWH\n");
+        result_string += "Effective days: " + CtiNumStr(effective_range) + string("\n");
+
+        _llpPeakInterest.end_date = DawnOfTime_Date;
+        _llpPeakInterest.range = 0;
         status = ErrorInvalidTimestamp;
         InMessage->Return.MacroOffset = 0;  //  stop the retries!
     }
     else
     {
-        switch( _llpPeakInterest.command )
+        switch( InMessage->Return.ProtocolInfo.Emetcon.Function )
         {
             case FuncRead_LLPPeakDayPos:
             {

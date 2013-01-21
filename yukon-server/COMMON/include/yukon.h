@@ -271,6 +271,8 @@ enum YukonError_t
 
     ErrorPointLookupFailed,
 
+    ErrorNeedsDateRangeReset,
+
     FinalError
 };
 

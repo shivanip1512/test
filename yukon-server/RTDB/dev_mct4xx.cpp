@@ -70,9 +70,9 @@ Mct4xxDevice::Mct4xxDevice()
     _llpRequest.failed     = false;
 
     _llpPeakInterest.channel     = 0;
-    _llpPeakInterest.command     = 0;
-    _llpPeakInterest.period      = 0;
-    _llpPeakInterest.time        = 0;
+    _llpPeakInterest.range       = 0;
+    _llpPeakInterest.end_date    = DawnOfTime_Date;
+    _llpPeakInterest.no_overlap  = false;
     _llpPeakInterest.in_progress = false;
 
     for( int i = 0; i < LPChannels; i++ )
@@ -874,78 +874,50 @@ INT Mct4xxDevice::executeGetValue(CtiRequestMsg *pReq,
                                 string lp_peaktype = parse.getsValue("lp_peaktype");
                                 int request_range  = parse.getiValue("lp_range");  //  add safeguards to check that we're not >30 days... ?
 
-                                if( !lp_peaktype.compare("day") )
+                                if( lp_peaktype == "day" )
                                 {
                                     lp_peak_command = FuncRead_LLPPeakDayPos;
                                 }
-                                else if( !lp_peaktype.compare("hour") )
+                                else if( lp_peaktype == "hour" )
                                 {
                                     lp_peak_command = FuncRead_LLPPeakHourPos;
                                 }
-                                else if( !lp_peaktype.compare("interval") )
+                                else if( lp_peaktype == "interval" )
                                 {
                                     lp_peak_command = FuncRead_LLPPeakIntervalPos;
                                 }
 
                                 if( lp_peak_command > 0 )
                                 {
-                                    //  add on a day - this is the end of the interval, not the beginning,
-                                    //    so we need to start at midnight of the following day
-                                    unsigned long request_time  = CtiTime(CtiDate(day, month, year)).seconds() + 86400;
+                                    const CtiDate request_date = CtiDate(day, month, year);
 
-                                    //  if we need to send the period of interest, we'll use this later to
-                                    //    generate the actual read command
-                                    _llpPeakInterest.command = lp_peak_command;
-
-                                    if( request_time    != _llpPeakInterest.time    ||
-                                        request_channel != _llpPeakInterest.channel ||
-                                        request_range   != _llpPeakInterest.period )
-                                    {
-                                        //  we need to set it to the requested interval
-                                        _llpPeakInterest.time    = request_time;
-                                        _llpPeakInterest.channel = request_channel;
-                                        _llpPeakInterest.period  = request_range;
-
-                                        OutMessage->Sequence = EmetconProtocol::PutConfig_LoadProfileReportPeriod;
-
-                                        OutMessage->Buffer.BSt.Function = FuncWrite_LLPPeakInterestPos;
-                                        OutMessage->Buffer.BSt.IO       = EmetconProtocol::IO_Function_Write;
-                                        OutMessage->Buffer.BSt.Length   = FuncWrite_LLPPeakInterestLen;
-                                        OutMessage->MessageFlags |= MessageFlag_ExpectMore;
-
-                                        unsigned long utc_time = request_time;
-
-                                        OutMessage->Buffer.BSt.Message[0] = gMCT400SeriesSPID;
-
-                                        OutMessage->Buffer.BSt.Message[1] = (request_channel + 1) & 0x000000ff;
-
-                                        OutMessage->Buffer.BSt.Message[2] = (utc_time >> 24)      & 0x000000ff;
-                                        OutMessage->Buffer.BSt.Message[3] = (utc_time >> 16)      & 0x000000ff;
-                                        OutMessage->Buffer.BSt.Message[4] = (utc_time >>  8)      & 0x000000ff;
-                                        OutMessage->Buffer.BSt.Message[5] = (utc_time)            & 0x000000ff;
-
-                                        if( request_range < 256 )
-                                        {
-                                            OutMessage->Buffer.BSt.Message[6] = request_range & 0xff;
-
-                                            OutMessage->Buffer.BSt.Message[7] = 0;
-                                            OutMessage->Buffer.BSt.Message[8] = 0;
-                                        }
-                                        else
-                                        {
-                                            OutMessage->Buffer.BSt.Message[6] = 0;
-
-                                            OutMessage->Buffer.BSt.Message[7] = (request_range >> 8) & 0xff;
-                                            OutMessage->Buffer.BSt.Message[8] = (request_range     ) & 0xff;
-                                        }
-                                    }
-                                    else
+                                    if( _llpPeakInterest.no_overlap
+                                        && request_date    == _llpPeakInterest.end_date
+                                        && request_channel == _llpPeakInterest.channel
+                                        && request_range   == _llpPeakInterest.range )
                                     {
                                         OutMessage->Sequence = EmetconProtocol::GetValue_LoadProfilePeakReport;
 
-                                        OutMessage->Buffer.BSt.Function = _llpPeakInterest.command;
+                                        OutMessage->Buffer.BSt.Function = lp_peak_command;
                                         OutMessage->Buffer.BSt.IO       = EmetconProtocol::IO_Function_Read;
                                         OutMessage->Buffer.BSt.Length   = 13;
+                                    }
+                                    else
+                                    {
+                                        _llpPeakInterest.no_overlap = false;
+                                        _llpPeakInterest.end_date = request_date;
+                                        _llpPeakInterest.channel  = request_channel;
+                                        _llpPeakInterest.range    = request_range;
+
+                                        //  We need to verify the existing peak is outside the requested interval
+                                        //    by reading the existing peak.
+                                        //  This will set _llpPeakRequest.overlap_prevented=true if the existing peak is not
+                                        //    within the request period, or send an out-of-bounds write if it is.
+                                        OutMessage->Sequence = EmetconProtocol::GetConfig_LoadProfileExistingPeak;
+
+                                        OutMessage->Buffer.BSt.Function = lp_peak_command;
+
+                                        found = getOperation(OutMessage->Sequence, OutMessage->Buffer.BSt);
                                     }
 
                                     nRet = NoError;
@@ -2071,10 +2043,16 @@ INT Mct4xxDevice::decodePutConfig(INMESS *InMessage, CtiTime &TimeNow, CtiMessag
                     getName() + " / Channel " + CtiNumStr(_llpPeakInterest.channel + 1)
                     + " LP Interval returned " + CtiNumStr(interval_len) + ".\n"
                     "Verify the LP Interval and attempt the request again.";
+
+                ReturnMsg->setResultString(resultString);
+
+                retMsgHandler(InMessage->Return.CommandStr, status, ReturnMsg.release(), vgList, retList);
+
+                InterlockedExchange(&_llpPeakInterest.in_progress, false);
             }
-            else
+            else if( InMessage->Return.Connection )
             {
-                int delay = getUsageReportDelay(interval_len, _llpPeakInterest.period);
+                int delay = getUsageReportDelay(interval_len, _llpPeakInterest.range);
 
                 if( delay > 2 && !strstr(InMessage->Return.CommandStr, " noqueue") )
                 {
@@ -2106,10 +2084,11 @@ INT Mct4xxDevice::decodePutConfig(INMESS *InMessage, CtiTime &TimeNow, CtiMessag
                     + (CtiTime::now() + delay).asString() + ")";
 
                 ReturnMsg->setExpectMore(true);
-            }
 
-            ReturnMsg->setResultString(resultString);
-            retMsgHandler(InMessage->Return.CommandStr, status, ReturnMsg.release(), vgList, retList);
+                ReturnMsg->setResultString(resultString);
+
+                retMsgHandler(InMessage->Return.CommandStr, status, ReturnMsg.release(), vgList, retList);
+            }
 
             break;
         }
@@ -3380,16 +3359,19 @@ INT Mct4xxDevice::ModelDecode(INMESS *InMessage, CtiTime &TimeNow, CtiMessageLis
     namespace EP = EmetconProtocol;
 
     const DecodeLookup decodeMethods = boost::assign::map_list_of
-        (EP::GetConfig_Time,       &self::decodeGetConfigTime)
-        (EP::GetConfig_TSync,      &self::decodeGetConfigTime)
-        (EP::GetConfig_TOU,        &self::decodeGetConfigTOU)
+        (EP::GetConfig_Time,        &self::decodeGetConfigTime)
+        (EP::GetConfig_TSync,       &self::decodeGetConfigTime)
+        (EP::GetConfig_TOU,         &self::decodeGetConfigTOU)
         // ---
-        (EP::GetStatus_Freeze,     &self::decodeGetStatusFreeze)
+        (EP::GetStatus_Freeze,      &self::decodeGetStatusFreeze)
         // ---
-        (EP::GetValue_TOUPeak,     &self::decodeGetValuePeakDemand)
-        (EP::GetValue_LoadProfile, &self::decodeGetValueLoadProfile)
+        (EP::GetValue_TOUPeak,      &self::decodeGetValuePeakDemand)
+        (EP::GetValue_LoadProfile,  &self::decodeGetValueLoadProfile)
         // ---
-        (EP::Scan_LoadProfile,     &self::decodeScanLoadProfile);
+        (EP::PutConfig_LoadProfileReportPeriod,
+        /* --- */                   &self::decodePutConfig)
+        // ---
+        (EP::Scan_LoadProfile,      &self::decodeScanLoadProfile);
 
     DecodeLookup::const_iterator itr = decodeMethods.find(InMessage->Sequence);
 
@@ -3465,8 +3447,10 @@ INT Mct4xxDevice::ErrorDecode(const INMESS &InMessage, const CtiTime TimeNow, Ct
     {
         case EmetconProtocol::GetValue_LoadProfilePeakReport:
         {
-            _llpPeakInterest.time = 0;  //  force a resubmit next time
-
+            _llpPeakInterest.end_date = DawnOfTime_Date;  //  force a resubmit next time
+        }  //  fall through
+        case EmetconProtocol::GetConfig_LoadProfileExistingPeak:
+        {
             InterlockedExchange(&_llpPeakInterest.in_progress, false);
 
             return NoError;

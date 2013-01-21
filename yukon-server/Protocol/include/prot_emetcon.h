@@ -116,7 +116,7 @@ enum Commands
     GetConfig_ChannelSetup,
     GetConfig_LoadProfileInterval,
     GetConfig_LongLoadProfile,
-    GetConfig_LoadProfileReportPeak,
+    GetConfig_LoadProfileExistingPeak,
     GetConfig_DemandInterval,
     GetConfig_Options,
     GetConfig_GroupAddress,

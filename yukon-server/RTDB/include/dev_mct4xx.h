@@ -197,10 +197,10 @@ protected:
 
     struct llp_peak_report_interest_t
     {
-        unsigned long time;
+        CtiDate end_date;
         int channel;
-        int period;
-        int command;
+        int range;
+        bool no_overlap;
         long in_progress;
 
     } _llpPeakInterest;
