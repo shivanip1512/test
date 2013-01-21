@@ -40,6 +40,8 @@
     </bean>
 
     <bean id="meterDao" class="com.cannontech.amr.meter.dao.impl.MeterDaoImpl"/>
+    
+    <bean class="com.cannontech.amr.plc.impl.PlcBasicDaoImpl"/>
 
     <bean id="groupMetersDao" class="com.cannontech.amr.meter.dao.impl.GroupMetersDaoImpl">
         <property name="simpleJdbcTemplate" ref="simpleJdbcTemplate" />

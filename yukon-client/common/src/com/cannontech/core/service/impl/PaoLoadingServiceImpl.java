@@ -10,6 +10,7 @@ import org.springframework.beans.factory.InitializingBean;
 import org.springframework.beans.factory.annotation.Autowired;
 
 import com.cannontech.amr.meter.dao.MeterDao;
+import com.cannontech.amr.plc.impl.PlcBasicDaoImpl;
 import com.cannontech.common.device.model.DeviceCollectionReportDevice;
 import com.cannontech.common.pao.DisplayablePao;
 import com.cannontech.common.pao.PaoIdentifier;
@@ -18,10 +19,10 @@ import com.cannontech.core.dao.DeviceDao;
 import com.cannontech.core.dao.PaoDao;
 import com.cannontech.core.service.PaoLoadingService;
 import com.google.common.collect.ImmutableList;
+import com.google.common.collect.ImmutableList.Builder;
 import com.google.common.collect.Lists;
 import com.google.common.collect.Maps;
 import com.google.common.collect.Sets;
-import com.google.common.collect.ImmutableList.Builder;
 
 /**
  * This class uses lists of PaoLoaders to load PAOs in a flexible manner
@@ -36,9 +37,10 @@ import com.google.common.collect.ImmutableList.Builder;
  *
  */
 public class PaoLoadingServiceImpl implements PaoLoadingService, InitializingBean {
-    private MeterDao meterDao;
-    private DeviceDao deviceDao;
-    private PaoDao paoDao;
+    @Autowired private MeterDao meterDao;
+    @Autowired private DeviceDao deviceDao;
+    @Autowired private PaoDao paoDao;
+    @Autowired private PlcBasicDaoImpl plcBasicDao;
     
     private List<PaoLoader<DisplayablePao>> displayablePaoloaders;
     private List<PaoLoader<DeviceCollectionReportDevice>> deviceCollectionReportDeviceLoaders;
@@ -52,6 +54,7 @@ public class PaoLoadingServiceImpl implements PaoLoadingService, InitializingBea
 
         Builder<PaoLoader<DeviceCollectionReportDevice>> builder2 = ImmutableList.builder();
         builder2.add(meterDao.getDeviceCollectionReportDeviceLoader());
+        builder2.add(plcBasicDao.getDeviceCollectionReportDeviceLoader());
         builder2.add(deviceDao.getDeviceCollectionReportDeviceLoader());
         deviceCollectionReportDeviceLoaders = builder2.build();
     }
@@ -111,20 +114,5 @@ public class PaoLoadingServiceImpl implements PaoLoadingService, InitializingBea
 
     	List<DisplayablePao> displayableDevices = getDisplayableDevices(Collections.singletonList(pao));
     	return displayableDevices.get(0);
-    }
-    
-    @Autowired
-    public void setDeviceDao(DeviceDao deviceDao) {
-        this.deviceDao = deviceDao;
-    }
-    
-    @Autowired
-    public void setMeterDao(MeterDao meterDao) {
-        this.meterDao = meterDao;
-    }
-    
-    @Autowired
-    public void setPaoDao(PaoDao paoDao) {
-        this.paoDao = paoDao;
     }
 }
