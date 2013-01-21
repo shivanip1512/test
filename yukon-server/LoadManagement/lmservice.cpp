@@ -243,6 +243,23 @@ void CtiLMService::Run()
         SetStatus(SERVICE_RUNNING, 0, 0,
                   SERVICE_ACCEPT_STOP | SERVICE_ACCEPT_SHUTDOWN );
 
+        // Make sure the database is available before we try to load anything from it.
+        {
+            bool writeLogMessage = true;
+
+            while ( ! ( _quit || load_management_do_quit || TestDatabaseConnectivity() ) )
+            {
+                if ( writeLogMessage )
+                {
+                    CtiLockGuard<CtiLogger> doubt_guard(dout);
+                    dout << CtiTime( ) << " - Database connectivity failed." << std::endl;
+
+                    writeLogMessage = false;
+                }
+                Sleep( 5000 );
+            }
+        }
+
         do
         {
             if( trouble )

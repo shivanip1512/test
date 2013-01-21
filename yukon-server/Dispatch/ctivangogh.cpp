@@ -260,6 +260,23 @@ void CtiVanGogh::VGMainThread()
          *  MAIN: The main Dispatch loop lives here for all time!
          */
 
+        // Make sure the database is available before we try to load anything from it.
+        {
+            bool writeLogMessage = true;
+
+            while ( ! ( bGCtrlC || TestDatabaseConnectivity() ) )
+            {
+                if ( writeLogMessage )
+                {
+                    CtiLockGuard<CtiLogger> doubt_guard(dout);
+                    dout << CtiTime( ) << " - Database connectivity failed." << std::endl;
+
+                    writeLogMessage = false;
+                }
+                Sleep( 5000 );
+            }
+        }
+
         {
             CtiLockGuard<CtiLogger> doubt_guard(dout);
             dout << CtiTime() << " Initial Database Load" << endl;

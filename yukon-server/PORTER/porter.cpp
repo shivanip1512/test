@@ -777,10 +777,8 @@ INT PorterMainFunction (INT argc, CHAR **argv)
         CTIExit (-1, -1);
     }
 
-    if(RefreshPorterRTDB())             // Loads globals and the RTDB
-    {
-        return -1;
-    }
+    while ( ! PorterQuit && RefreshPorterRTDB() )
+        ;
 
     SET_CRT_OUTPUT_MODES;
     if(gConfigParms.isOpt("DEBUG_MEMORY") && gConfigParms.isTrue("DEBUG_MEMORY") )
@@ -1364,6 +1362,24 @@ INT RefreshPorterRTDB(const CtiDBChangeMsg *pChg)
     // Reload the globals used by the porter app too.
     InitYukonBaseGlobals();
     LoadPorterGlobals();
+
+    // Make sure the database is available before we try to load anything from it.
+    {
+        static bool writeLogMessage = true;
+
+        if ( ! TestDatabaseConnectivity() )
+        {
+            if ( writeLogMessage )
+            {
+                CtiLockGuard<CtiLogger> doubt_guard(dout);
+                dout << CtiTime( ) << " - Database connectivity failed." << std::endl;
+
+                writeLogMessage = false;
+            }
+            Sleep( 5000 );
+            return -1;
+        }
+    }
 
     if( !PorterQuit && (pChg == NULL || (pChg->getDatabase() == ChangeStateGroupDb)) )
     {

@@ -164,6 +164,8 @@ IM_EX_CTIBASE std::vector< std::vector<std::string> > getLmXmlParametersByGroupI
 IM_EX_CTIBASE std::string getEncodingTypeForPort(long portId);
 IM_EX_CTIBASE std::string getEncodingKeyForPort(long portId);
 
+IM_EX_CTIBASE bool TestDatabaseConnectivity();
+
 //String Functions
 inline void CtiToLower( std::string& str)
 {

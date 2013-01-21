@@ -72,6 +72,8 @@ using namespace std;  // get the STL into our namespace for use.  Do NOT use ios
 
 CtiConnection     FdrVanGoghConnection;
 
+bool UserQuit = false;
+
 
 BOOL MyCtrlHandler( DWORD fdwCtrlType )
 {
@@ -82,6 +84,7 @@ BOOL MyCtrlHandler( DWORD fdwCtrlType )
         case CTRL_BREAK_EVENT:
         case CTRL_LOGOFF_EVENT:
         case CTRL_SHUTDOWN_EVENT:
+            UserQuit = true;
             // notify of shutdown
             SetEvent(iShutdown);
             Sleep(30000);
@@ -282,6 +285,27 @@ void CtiFDRService::OnStop( )
 
 void CtiFDRService::Run( )
 {
+    // Make sure the database is available before we try to load anything from it.
+    {
+        bool writeLogMessage = true;
+
+        while ( ! ( UserQuit || TestDatabaseConnectivity() ) )
+        {
+            if ( writeLogMessage )
+            {
+                CtiLockGuard<CtiLogger> doubt_guard(dout);
+                dout << CtiTime( ) << " - Database connectivity failed." << std::endl;
+
+                writeLogMessage = false;
+            }
+            Sleep( 5000 );
+        }
+        if ( UserQuit )
+        {
+            return;
+        }
+    }
+
     long pointID = ThreadMonitor.getPointIDFromOffset(CtiThreadMonitor::FDR);
     CtiTime NextThreadMonitorReportTime;
     CtiThreadMonitor::State previous = CtiThreadMonitor::Normal;

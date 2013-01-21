@@ -32,6 +32,8 @@
 
 using namespace std;
 
+bool UserQuit = false;
+
 /* CtrlHandler handles is used to catch ctrl-c in the case where macs is being
    run in a console */
 BOOL CtrlHandler(DWORD fdwCtrlType)
@@ -50,7 +52,7 @@ BOOL CtrlHandler(DWORD fdwCtrlType)
         CtiLockGuard<CtiLogger> dout_guard(dout);
         dout << CtiTime() << " **Checkpoint** " << "MACS received one of these events, Ctrl-C, Shutdown, or Close.  About to signal the server to shut down! " << __FILE__ << "(" << __LINE__ << ")" << endl;
     }
-
+        UserQuit = true;
         SetEvent(hShutdown);
         Sleep(30000);
         return TRUE;
@@ -134,6 +136,27 @@ void CtiMCService::Run()
     dout.setWriteInterval(1000);
     dout.setToStdOut(true);
     dout.start();
+
+    // Make sure the database is available before we try to load anything from it.
+    {
+        bool writeLogMessage = true;
+
+        while ( ! ( UserQuit || TestDatabaseConnectivity() ) )
+        {
+            if ( writeLogMessage )
+            {
+                CtiLockGuard<CtiLogger> doubt_guard(dout);
+                dout << CtiTime( ) << " - Database connectivity failed." << std::endl;
+
+                writeLogMessage = false;
+            }
+            Sleep( 5000 );
+        }
+        if ( UserQuit )
+        {
+            return;
+        }
+    }
 
     ThreadMonitor.start();
 

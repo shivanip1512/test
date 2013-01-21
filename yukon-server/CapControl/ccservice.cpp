@@ -158,6 +158,23 @@ void CtiCCService::Run()
 
     SetStatus(SERVICE_START_PENDING, 1, 5000 );
 
+    // Make sure the database is available before we try to load anything from it.
+    {
+        bool writeLogMessage = true;
+
+        while ( ! ( _quit || capcontrol_do_quit || TestDatabaseConnectivity() ) )
+        {
+            if ( writeLogMessage )
+            {
+                CtiLockGuard<CtiLogger> doubt_guard(dout);
+                dout << CtiTime( ) << " - Database connectivity failed." << std::endl;
+
+                writeLogMessage = false;
+            }
+            Sleep( 5000 );
+        }
+    }
+
     //Make sure the database gets hit so we'll know if the database
     //connection is legit now rather than later
     bool trouble = false;

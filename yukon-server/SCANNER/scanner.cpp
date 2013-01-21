@@ -359,6 +359,23 @@ INT ScannerMainFunction (INT argc, CHAR **argv)
     if(gConfigParms.isOpt("DEBUG_MEMORY") && gConfigParms.isTrue("DEBUG_MEMORY") )
         ENABLE_CRT_SHUTDOWN_CHECK;
 
+    // Make sure the database is available before we try to load anything from it.
+    {
+        bool writeLogMessage = true;
+
+        while ( ! ( ScannerQuit || TestDatabaseConnectivity() ) )
+        {
+            if ( writeLogMessage )
+            {
+                CtiLockGuard<CtiLogger> doubt_guard(dout);
+                dout << CtiTime( ) << " - Database connectivity failed." << std::endl;
+
+                writeLogMessage = false;
+            }
+            Sleep( 5000 );
+        }
+    }
+
     long pointID = ThreadMonitor.getPointIDFromOffset(CtiThreadMonitor::Scanner);
     CtiTime NextThreadMonitorReportTime;
     CtiThreadMonitor::State previous = CtiThreadMonitor::Normal;

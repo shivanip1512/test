@@ -2568,3 +2568,15 @@ void CreateMiniDump( const std::string &dumpfilePrefix )
 
     CloseHandle(outfile);
 }
+
+
+// Attempt to forge a connection to the database and return the result of the attempt.  We use
+//  this when a service starts up as a barrier to assure the database is connected before we
+//  begin operation.
+IM_EX_CTIBASE bool TestDatabaseConnectivity()
+{
+    DatabaseConnection  trialConnection;
+
+    return trialConnection.isValid();
+}
+

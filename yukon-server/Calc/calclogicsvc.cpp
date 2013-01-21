@@ -143,13 +143,29 @@ void CtiCalcLogicService::Run( )
     time_t   timeNow;
 
     int conncnt= 0;
-    long pointID;
+
+    // Make sure the database is available before we try to load anything from it.
+    {
+        bool writeLogMessage = true;
+
+        while ( ! ( UserQuit || TestDatabaseConnectivity() ) )
+        {
+            if ( writeLogMessage )
+            {
+                CtiLockGuard<CtiLogger> doubt_guard(dout);
+                dout << CtiTime( ) << " - Database connectivity failed." << std::endl;
+
+                writeLogMessage = false;
+            }
+            Sleep( 5000 );
+        }
+    }
 
     ThreadMonitor.start(); //ecs 1/4/2005
     CtiTime NextThreadMonitorReportTime;
     CtiThreadMonitor::State previous;
 
-    pointID = ThreadMonitor.getPointIDFromOffset(CtiThreadMonitor::Calc);
+    long pointID = ThreadMonitor.getPointIDFromOffset(CtiThreadMonitor::Calc);
 
     {
         CtiLockGuard<CtiLogger> doubt_guard(dout);
