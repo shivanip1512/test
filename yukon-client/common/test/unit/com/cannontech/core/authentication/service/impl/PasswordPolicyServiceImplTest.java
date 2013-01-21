@@ -11,6 +11,8 @@ import org.junit.Assert;
 import org.junit.Test;
 import org.springframework.test.util.ReflectionTestUtils;
 
+import com.cannontech.common.user.UserAuthenticationInfo;
+import com.cannontech.core.authentication.model.AuthType;
 import com.cannontech.core.authentication.model.PasswordPolicy;
 import com.cannontech.core.authentication.model.PolicyRule;
 import com.cannontech.core.authentication.service.PasswordPolicyService;
@@ -25,24 +27,20 @@ public class PasswordPolicyServiceImplTest {
     private static final Instant ONE_HUNDRED_DAYS_AGO = Instant.now().minus(Duration.standardDays(80));
     
     private static final LiteYukonUser USER_ONE = new LiteYukonUser(1, "userOne");
-    {
-        USER_ONE.setLastChangedDate(EIGHTEN_HOURS_AGO);        
-    }
+    private static final UserAuthenticationInfo USER_ONE_AUTH_INFO =
+            new UserAuthenticationInfo(1, AuthType.HASH_SHA_V2, EIGHTEN_HOURS_AGO);
 
     private static final LiteYukonUser USER_TWO = new LiteYukonUser(2, "userTwo");
-    {
-        USER_TWO.setLastChangedDate(TWO_DAYS_AGO);        
-    }
+    private static final UserAuthenticationInfo USER_TWO_AUTH_INFO =
+            new UserAuthenticationInfo(2, AuthType.HASH_SHA_V2, TWO_DAYS_AGO);
 
     private static final LiteYukonUser USER_NO_POLICY = new LiteYukonUser(3, "userNoPolicy");
-    {
-        USER_NO_POLICY.setLastChangedDate(ONE_HUNDRED_DAYS_AGO);        
-    }
+    private static final UserAuthenticationInfo USER_NO_POLICY_AUTH_INFO =
+            new UserAuthenticationInfo(3, AuthType.HASH_SHA_V2, ONE_HUNDRED_DAYS_AGO);
 
     private static final LiteYukonUser USER_SYSTEM_POLICY = new LiteYukonUser(4, "userSystemPolicy");
-    {
-        USER_SYSTEM_POLICY.setLastChangedDate(FIFTY_DAYS_AGO);        
-    }
+    private static final UserAuthenticationInfo USER_SYSTEM_POLICY_AUTH_INFO =
+            new UserAuthenticationInfo(4, AuthType.HASH_SHA_V2, FIFTY_DAYS_AGO);
 
     private static final MockRolePropertyDaoImpl rolePropertyDaoMock = new MockRolePropertyDaoImpl();
     { 
@@ -118,7 +116,7 @@ public class PasswordPolicyServiceImplTest {
         Assert.assertEquals(6, passwordPolicy.getMinPasswordLength());
         Assert.assertEquals(3, passwordPolicy.getPasswordHistory());
         Assert.assertEquals(2, passwordPolicy.getPasswordQualityCheck());
-        Assert.assertEquals(new Duration(EIGHTEN_HOURS_AGO, Instant.now()), passwordPolicy.getPasswordAge(USER_ONE));
+        Assert.assertEquals(new Duration(EIGHTEN_HOURS_AGO, Instant.now()), passwordPolicy.getPasswordAge(USER_ONE_AUTH_INFO));
         Assert.assertEquals(expectedPolicyRules, passwordPolicy.getPolicyRules());
 
     }
@@ -141,7 +139,7 @@ public class PasswordPolicyServiceImplTest {
         Assert.assertEquals(9, passwordPolicy.getMinPasswordLength());
         Assert.assertEquals(10, passwordPolicy.getPasswordHistory());
         Assert.assertEquals(1, passwordPolicy.getPasswordQualityCheck());
-        Assert.assertEquals(new Duration(TWO_DAYS_AGO, Instant.now()), passwordPolicy.getPasswordAge(USER_TWO));
+        Assert.assertEquals(new Duration(TWO_DAYS_AGO, Instant.now()), passwordPolicy.getPasswordAge(USER_TWO_AUTH_INFO));
         Assert.assertEquals(expectedPolicyRules, passwordPolicy.getPolicyRules());
 
     }
@@ -163,7 +161,7 @@ public class PasswordPolicyServiceImplTest {
         Assert.assertEquals(0, passwordPolicy.getMinPasswordLength());
         Assert.assertEquals(0, passwordPolicy.getPasswordHistory());
         Assert.assertEquals(0, passwordPolicy.getPasswordQualityCheck());
-        Assert.assertEquals(new Duration(ONE_HUNDRED_DAYS_AGO, Instant.now()), passwordPolicy.getPasswordAge(USER_NO_POLICY));
+        Assert.assertEquals(new Duration(ONE_HUNDRED_DAYS_AGO, Instant.now()), passwordPolicy.getPasswordAge(USER_NO_POLICY_AUTH_INFO));
         Assert.assertEquals(expectedPolicyRules, passwordPolicy.getPolicyRules());
     }
     
@@ -184,7 +182,7 @@ public class PasswordPolicyServiceImplTest {
         Assert.assertEquals(8, passwordPolicy.getMinPasswordLength());
         Assert.assertEquals(5, passwordPolicy.getPasswordHistory());
         Assert.assertEquals(3, passwordPolicy.getPasswordQualityCheck());
-        Assert.assertEquals(new Duration(FIFTY_DAYS_AGO, Instant.now()), passwordPolicy.getPasswordAge(USER_SYSTEM_POLICY));
+        Assert.assertEquals(new Duration(FIFTY_DAYS_AGO, Instant.now()), passwordPolicy.getPasswordAge(USER_SYSTEM_POLICY_AUTH_INFO));
         Assert.assertEquals(expectedPolicyRules, passwordPolicy.getPolicyRules());
         
     }

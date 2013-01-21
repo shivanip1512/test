@@ -265,7 +265,6 @@ public class AccountServiceTest extends EasyMockSupport {
         LiteYukonUser newuser = new LiteYukonUser(); 
         newuser.setUsername(updatableAccount.getAccountDto().getUserName());
         newuser.setLoginStatus(LoginStatusEnum.ENABLED);
-        newuser.setAuthType(AuthType.NONE);
 
         LiteCustomer liteCustomer = new LiteCustomer();
         liteCustomer.setCustomerNumber(CtiUtilities.STRING_NONE);

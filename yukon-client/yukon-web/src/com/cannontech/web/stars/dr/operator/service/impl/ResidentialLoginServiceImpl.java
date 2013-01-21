@@ -9,6 +9,7 @@ import org.springframework.transaction.support.TransactionCallback;
 import org.springframework.transaction.support.TransactionOperations;
 
 import com.cannontech.core.authentication.model.AuthType;
+import com.cannontech.core.authentication.model.AuthenticationCategory;
 import com.cannontech.core.authentication.service.AuthenticationService;
 import com.cannontech.core.dao.ContactDao;
 import com.cannontech.core.dao.YukonUserDao;
@@ -34,10 +35,9 @@ public class ResidentialLoginServiceImpl implements ResidentialLoginService{
     @Autowired private YukonUserDao yukonUserDao;
 
     @Override
-    public Integer createResidentialLogin(final LoginBackingBean loginBackingBean, final LiteYukonUser user, final int accountId, final int energyCompanyId) {
-
+    public Integer createResidentialLogin(final LoginBackingBean loginBackingBean, final LiteYukonUser user,
+            final int accountId, final int energyCompanyId) {
         Integer newUserId = transactionTemplate.execute(new TransactionCallback<Integer>() {
-            
             @Override
             public Integer doInTransaction(TransactionStatus status) {
                 checkSuppliedResidentialUserGroup(energyCompanyId, loginBackingBean);
@@ -56,19 +56,18 @@ public class ResidentialLoginServiceImpl implements ResidentialLoginService{
                     newUser.setLoginStatus(LoginStatusEnum.DISABLED);
                 }
 
-                // Get the default authType
-                AuthType authType = authenticationService.getDefaultAuthType();
-                String password = loginBackingBean.getPassword1();
-                // This is problematic.  It should be fixed with YUK-10019.
-                if (password == null) {
-                    authType = AuthType.NONE;
-                }
-                newUser.setAuthType(authType);
                 yukonUserDao.save(newUser);
 
                 // We need to use the AuthenticationService so the password gets encoded properly.
-                if (authenticationService.supportsPasswordSet(authType)) {
+                AuthenticationCategory authenticationCategory = authenticationService.getDefaultAuthenticationCategory();
+                String password = loginBackingBean.getPassword1();
+                if (authenticationService.supportsPasswordSet(authenticationCategory)) {
+                    if (StringUtils.isBlank(password)) {
+                        throw new RuntimeException("password required for authentication category " + authenticationCategory);
+                    }
                     authenticationService.setPassword(newUser, loginBackingBean.getPassword1());
+                } else {
+                    authenticationService.setAuthenticationCategory(newUser, authenticationCategory);
                 }
 
                 // Update primaryContact to new loginId

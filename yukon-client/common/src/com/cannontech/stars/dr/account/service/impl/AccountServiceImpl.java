@@ -15,7 +15,7 @@ import com.cannontech.common.events.loggers.AccountEventLogService;
 import com.cannontech.common.model.Address;
 import com.cannontech.common.model.ContactNotificationType;
 import com.cannontech.common.util.CtiUtilities;
-import com.cannontech.core.authentication.model.AuthType;
+import com.cannontech.core.authentication.model.AuthenticationCategory;
 import com.cannontech.core.authentication.service.AuthenticationService;
 import com.cannontech.core.dao.AddressDao;
 import com.cannontech.core.dao.AuthDao;
@@ -158,8 +158,6 @@ public class AccountServiceImpl implements AccountService {
          * AuthType. If it's empty set the password to a space(done by dao);
          */
         LiteYukonUser user = null;
-        String emptyPassword = "";
-        AuthType defaultAuthType = authenticationService.getDefaultAuthType();
         if(!StringUtils.isBlank(accountDto.getUserName())) {
             user = new LiteYukonUser(); 
             user.setUsername(accountDto.getUserName());
@@ -171,16 +169,13 @@ public class AccountServiceImpl implements AccountService {
                 log.error("Account " + accountNumber + " could not be added: The provided user group '"+ accountDto.getUserGroup() + "' doesn't exist.");
                 throw new InvalidLoginGroupException("The provided role group '"+ accountDto.getUserGroup() + "' doesn't exist.");
             }
-            String password = accountDto.getPassword();
-            if(password != null) {
-                user.setAuthType(defaultAuthType);
-            }else {
-                user.setAuthType(AuthType.NONE);
-                password = emptyPassword;
-            }
 
             yukonUserDao.save(user);
-            authenticationService.setPassword(user, password);
+            String password = accountDto.getPassword();
+            if (!StringUtils.isBlank(password)) {
+                authenticationService.setPassword(user, authenticationService.getDefaultAuthenticationCategory(),
+                        password);
+            }
 
             dbChangeManager.processDbChange(user.getLiteID(), 
                                             DBChangeMsg.CHANGE_YUKON_USER_DB,
@@ -626,33 +621,30 @@ public class AccountServiceImpl implements AccountService {
          *  to a space(done by dao).
          */
         int newLoginId = UserUtils.USER_DEFAULT_ID;
-        AuthType defaultAuthType = authenticationService.getDefaultAuthType();
-        String emptyPassword = ""; // Dao will end up setting this to a space for oracle reasons.
+        AuthenticationCategory defaultAuthenticationCategory = authenticationService.getDefaultAuthenticationCategory();
         if(StringUtils.isNotBlank(username)) {
             LiteYukonUser login = yukonUserDao.getLiteYukonUser(primaryContact.getLoginID());
             if(login != null && login.getUserID() != UserUtils.USER_DEFAULT_ID) {
-                /*
-                 * Update their login info.
-                 */
-                
+                // Update their login info.
+
                 if (accountDto.getUserGroup() != null) {
                     updateUserGroup(login, accountDto.getUserGroup(), accountNumber);
                 }
                 
                 login.setUsername(username);
-                // passwords should be handled better than plain text
+                yukonUserDao.update(login);
+
                 String password = accountDto.getPassword();
-                if(password != null) {
-                    login.setAuthType(defaultAuthType);
-                    if(authenticationService.supportsPasswordSet(login.getAuthType())) {
-                        authenticationService.setPassword(login, SqlUtils.convertStringToDbValue(password));
+                if (password != null) {
+                    if (authenticationService.supportsPasswordSet(defaultAuthenticationCategory)) {
+                        authenticationService.setPassword(login, defaultAuthenticationCategory,
+                                SqlUtils.convertStringToDbValue(password));
+                    } else {
+                        authenticationService.setAuthenticationCategory(login, defaultAuthenticationCategory);
                     }
                 }
-                yukonUserDao.update(login);
             } else {
-                /*
-                 * Create a new login.
-                 */
+                // Create a new login.
                 LiteYukonUser newUser = new LiteYukonUser(); 
                 newUser.setUsername(accountDto.getUserName());
                 newUser.setLoginStatus(LoginStatusEnum.ENABLED);
@@ -660,17 +652,12 @@ public class AccountServiceImpl implements AccountService {
                 if (accountDto.getUserGroup() != null) {
                     updateUserGroup(newUser, accountDto.getUserGroup(), accountNumber);
                 }
-                
-                String password = accountDto.getPassword();
-                if(password != null) {
-                    newUser.setAuthType(defaultAuthType);
-                }else {
-                    newUser.setAuthType(AuthType.NONE);
-                    password = emptyPassword;
-                }
 
                 yukonUserDao.save(newUser);
-                authenticationService.setPassword(user, password);
+                String password = accountDto.getPassword();
+                if (!StringUtils.isBlank(password)) {
+                    authenticationService.setPassword(user, defaultAuthenticationCategory, password);
+                }
 
                 newLoginId = newUser.getUserID();
                 dbChangeManager.processDbChange(newUser.getLiteID(),

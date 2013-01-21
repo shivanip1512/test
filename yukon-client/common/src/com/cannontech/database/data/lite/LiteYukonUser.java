@@ -3,22 +3,23 @@ package com.cannontech.database.data.lite;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 
-import org.joda.time.Instant;
 import org.springframework.dao.DataAccessException;
 import org.springframework.jdbc.core.ResultSetExtractor;
 
+import com.cannontech.common.user.UserAuthenticationInfo;
 import com.cannontech.common.util.SqlStatementBuilder;
-import com.cannontech.core.authentication.model.AuthType;
-import com.cannontech.core.authentication.model.AuthenticationCategory;
+import com.cannontech.core.authentication.service.AuthenticationService;
 import com.cannontech.core.dao.impl.LoginStatusEnum;
 import com.cannontech.database.YukonJdbcTemplate;
 import com.cannontech.spring.YukonSpringHook;
 
+/**
+ * This class represents the non-password related bits of a user. For the password-related bits, see
+ * {@link AuthenticationService} and {@link UserAuthenticationInfo}.
+ */
 public class LiteYukonUser extends LiteBase {
     private String username;
     private LoginStatusEnum loginStatus;
-    private AuthType authType;
-    private Instant lastChangedDate;
     private boolean forceReset;
     private Integer userGroupId;
 
@@ -35,45 +36,37 @@ public class LiteYukonUser extends LiteBase {
     }
 
     public LiteYukonUser(int id, String username, LoginStatusEnum loginStatus) {
-        // TODO:  should this use the role property to know which authentication type to use?
-        this(id, username, loginStatus, AuthType.HASH_SHA_V2, Instant.now(), false, null);
+        this(id, username, loginStatus, false, null);
     }
 
-    public LiteYukonUser(int id, String username, LoginStatusEnum loginStatus, AuthType authType, Instant lastChangedDate,
-                         boolean forceReset, Integer userGroupId) {
+    public LiteYukonUser(int id, String username, LoginStatusEnum loginStatus, boolean forceReset, Integer userGroupId) {
         setLiteType(LiteTypes.YUKON_USER);
-        setUserID(id);
-        setUsername(username);
-        setLoginStatus(loginStatus);
-        setAuthType(authType);
-        setLastChangedDate(lastChangedDate);
-        setForceReset(forceReset);
-        setUserGroupId(userGroupId);
+        setLiteID(id);
+        this.username = username;
+        this.loginStatus = loginStatus;
+        this.forceReset = forceReset;
+        this.userGroupId = userGroupId;
     }
 
     public void retrieve( String dbAlias ) {
-        
         YukonJdbcTemplate yukonJdbcTemplate = YukonSpringHook.getBean("simpleJdbcTemplate", YukonJdbcTemplate.class);
 
         SqlStatementBuilder sql = new SqlStatementBuilder();
-        sql.append("SELECT Username, Status, AuthType, LastChangedDate, ForceReset, UserGroupId");
+        sql.append("SELECT Username, Status, ForceReset, UserGroupId");
         sql.append("FROM YukonUser");
-        sql.append("WHERE  UserId").eq(getUserID());
+        sql.append("WHERE UserId").eq(getUserID());
 
         yukonJdbcTemplate.query(sql, new ResultSetExtractor<LiteYukonUser>() {
             @Override
             public LiteYukonUser extractData(ResultSet rs) throws SQLException, DataAccessException {
                 rs.next();
-                setUsername(rs.getString("Username").trim() );
-                setLoginStatus(LoginStatusEnum.retrieveLoginStatus(rs.getString("Status")));
-                setAuthType(AuthType.valueOf(rs.getString("AuthType")));
-                setLastChangedDate(new Instant(rs.getDate("lastChangedDate")));
-                setForceReset("Y".equals(rs.getString("ForceReset")));
-                setUserGroupId(rs.getInt("UserGroupId"));
+                username = rs.getString("Username").trim();
+                loginStatus = LoginStatusEnum.retrieveLoginStatus(rs.getString("Status"));
+                forceReset = "Y".equals(rs.getString("ForceReset"));
+                userGroupId = rs.getInt("UserGroupId");
                 return null;
             }
         });
-
     }
 
     @Override
@@ -100,23 +93,6 @@ public class LiteYukonUser extends LiteBase {
     }
     public void setLoginStatus(LoginStatusEnum loginStatus) {
         this.loginStatus = loginStatus;
-    }
-
-    public AuthType getAuthType() {
-        return authType;
-    }
-    public void setAuthType(AuthType authType) {
-        this.authType = authType;
-    }
-    public AuthenticationCategory getAuthenticationCategory() {
-        return AuthenticationCategory.getByAuthType(authType);
-    }
-
-    public Instant getLastChangedDate() {
-        return lastChangedDate;
-    }
-    public void setLastChangedDate(Instant lastChangedDate) {
-        this.lastChangedDate = lastChangedDate;
     }
 
     public boolean isForceReset() {

@@ -6,7 +6,6 @@ import org.apache.commons.lang.RandomStringUtils;
 import org.springframework.jdbc.core.JdbcOperations;
 
 import com.cannontech.clientutils.CTILogger;
-import com.cannontech.core.authentication.model.AuthType;
 import com.cannontech.core.dao.DBPersistentDao;
 import com.cannontech.core.dao.DaoFactory;
 import com.cannontech.core.dao.impl.LoginStatusEnum;
@@ -24,7 +23,6 @@ public class CreateYukonUsers {
      * with no associated YukonUser.
      * @param args
      */
-    @SuppressWarnings("unchecked")
     public static void main(String[] args) {
         JdbcOperations template = JdbcTemplateHelper.getYukonTemplate();
         String sql = "select contactid from contact where loginid=-9999 and contactid > 1";
@@ -52,7 +50,6 @@ public class CreateYukonUsers {
         String salt = RandomStringUtils.randomNumeric(5);
         String stupidUserName = firstName.toLowerCase().substring(0, 1) + lastName.toLowerCase() + salt;
         user.getYukonUser().setUsername(stupidUserName);
-        user.getYukonUser().setAuthType(AuthType.NONE);
         user.getYukonUser().setLoginStatus(LoginStatusEnum.ENABLED);
         dbPersistentDao.performDBChange(user, Transaction.INSERT);
         return user;

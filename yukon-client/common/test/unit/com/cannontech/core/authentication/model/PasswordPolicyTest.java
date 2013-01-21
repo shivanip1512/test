@@ -8,7 +8,7 @@ import org.joda.time.Instant;
 import org.junit.Assert;
 import org.junit.Test;
 
-import com.cannontech.database.data.lite.LiteYukonUser;
+import com.cannontech.common.user.UserAuthenticationInfo;
 import com.google.common.collect.Lists;
 
 public class PasswordPolicyTest {
@@ -20,19 +20,13 @@ public class PasswordPolicyTest {
     private static final String PASSWORD_ONE = "ABCDabcd";
     private static final String PASSWORD_TWO = "ABCabc123";
     private static final String PASSWORD_THREE = "ABCabc123!?@";
-    
-    private static final LiteYukonUser USER_JUST_CHANGED = new LiteYukonUser();
-    {
-        USER_JUST_CHANGED.setLastChangedDate(Instant.now().minus(Duration.standardHours(18)));
-    }
-    private static final LiteYukonUser USER_CHANGED_TWO_DAYS_AGO = new LiteYukonUser();
-    {
-        USER_CHANGED_TWO_DAYS_AGO.setLastChangedDate(Instant.now().minus(Duration.standardDays(2)));
-    }
-    private static final LiteYukonUser USER_CHANGED_THREE_MONTHS_AGO = new LiteYukonUser();
-    {
-        USER_CHANGED_THREE_MONTHS_AGO.setLastChangedDate(Instant.now().minus(Duration.standardDays(90)));
-    }
+
+    private static final UserAuthenticationInfo USER_JUST_CHANGED =
+            new UserAuthenticationInfo(1, AuthType.HASH_SHA_V2, Instant.now().minus(Duration.standardHours(18)));
+    private static final UserAuthenticationInfo USER_CHANGED_TWO_DAYS_AGO =
+            new UserAuthenticationInfo(2, AuthType.HASH_SHA_V2, Instant.now().minus(Duration.standardDays(2)));
+    private static final UserAuthenticationInfo USER_CHANGED_THREE_MONTHS_AGO =
+            new UserAuthenticationInfo(3, AuthType.HASH_SHA_V2, Instant.now().minus(Duration.standardDays(90)));
 
     private static final PasswordPolicy passwordPolicyOne = new PasswordPolicy(); {
         passwordPolicyOne.setPolicyRules(Lists.newArrayList(PolicyRule.values()));

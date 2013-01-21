@@ -15,7 +15,9 @@ import com.cannontech.common.config.ConfigurationSource;
 import com.cannontech.common.config.MasterConfigStringKeysEnum;
 import com.cannontech.common.exception.BadAuthenticationException;
 import com.cannontech.common.exception.PasswordExpiredException;
+import com.cannontech.common.user.UserAuthenticationInfo;
 import com.cannontech.core.authentication.dao.PasswordHistoryDao;
+import com.cannontech.core.authentication.dao.YukonUserPasswordDao;
 import com.cannontech.core.authentication.model.AuthType;
 import com.cannontech.core.authentication.model.AuthenticationCategory;
 import com.cannontech.core.authentication.model.AuthenticationThrottleDto;
@@ -43,6 +45,7 @@ public class AuthenticationServiceImpl implements AuthenticationService, Initial
     @Autowired private PasswordPolicyService passwordPolicyService;
     @Autowired private GlobalSettingDao globalSettingDao;
     @Autowired private YukonUserDao yukonUserDao;
+    @Autowired protected YukonUserPasswordDao yukonUserPasswordDao;
 
     @Override
     public AuthType getDefaultAuthType() {
@@ -63,72 +66,88 @@ public class AuthenticationServiceImpl implements AuthenticationService, Initial
         authenticationThrottleService.loginAttempted(username);
 
         // find user in database
-        LiteYukonUser liteYukonUser = yukonUserDao.findUserByUsername(username);
-        if (liteYukonUser == null) {
+        LiteYukonUser user = yukonUserDao.findUserByUsername(username);
+        if (user == null) {
             log.info("Authentication failed (unknown user): username=" + username);
             throw new BadAuthenticationException();
         }
 
         // ensure that user is enabled
-        if (liteYukonUser.getLoginStatus().isDisabled()) {
-            log.info("Authentication failed (disabled): username=" + username + ", id=" + liteYukonUser.getUserID() + ", status=" + liteYukonUser.getLoginStatus());
+        if (user.getLoginStatus().isDisabled()) {
+            log.info("Authentication failed (disabled): username=" + username + ", id=" + user.getUserID() + ", status=" + user.getLoginStatus());
             throw new BadAuthenticationException();
         }
 
-        AuthenticationProvider provider = getProvder(liteYukonUser);
+        UserAuthenticationInfo authenticationInfo = yukonUserDao.getUserAuthenticationInfo(user.getUserID());
+        AuthenticationProvider provider = providerMap.get(authenticationInfo.getAuthType());
+        if (provider == null) {
+            throw new RuntimeException("Unknown AuthType: userid=" + user.getUserID()
+                + ", authtype=" + authenticationInfo.getAuthType());
+        }
 
         // attempt login; remove auth throttle if login successful
-        if (provider.login(liteYukonUser, password)) {
+        if (provider.login(user, password)) {
             log.debug("Authentication succeeded: username=" + username);
             authenticationThrottleService.loginSucceeded(username);
             
             // Check to see if the user's password is expired.
-            boolean passwordExpired = isPasswordExpired(liteYukonUser);
+            boolean passwordExpired = isPasswordExpired(user);
             if (passwordExpired) {
-                throw new PasswordExpiredException("The user's password is expired.  Please login to the web interface to reset it. ("+liteYukonUser.getUsername()+")" );
+                throw new PasswordExpiredException("The user's password is expired.  Please login to the web interface to reset it. ("+user.getUsername()+")" );
             }
 
-            return liteYukonUser;
-            
+            return user;
         } else {
             // login must have failed
-            log.info("Authentication failed (auth failed): username=" + username + ", id=" + liteYukonUser.getUserID());
+            log.info("Authentication failed (auth failed): username=" + username + ", id=" + user.getUserID());
             throw new BadAuthenticationException();
         }
     }
 
     @Override
     public boolean isPasswordExpired(LiteYukonUser user) {
+        UserAuthenticationInfo userAuthenticationInfo = yukonUserDao.getUserAuthenticationInfo(user.getUserID());
         PasswordPolicy passwordPolicy = passwordPolicyService.getPasswordPolicy(user);
         if (user.isForceReset() || 
             (passwordPolicy != null &&
              passwordPolicy.getMaxPasswordAge() != Duration.ZERO && 
-             passwordPolicy.getMaxPasswordAge().isShorterThan(passwordPolicy.getPasswordAge(user)))) {
+             passwordPolicy.getMaxPasswordAge().isShorterThan(passwordPolicy.getPasswordAge(userAuthenticationInfo)))) {
             return true;
         }
-        
+
         return false;
     }
 
-    private AuthenticationProvider getProvder(LiteYukonUser user) {
-        AuthenticationProvider provider = providerMap.get(user.getAuthType());
-        if (provider == null) {
-            throw new RuntimeException("Unknown AuthType: userid=" + user.getUserID() + ", authtype=" + user.getAuthType());
+    @Override
+    public void setAuthenticationCategory(LiteYukonUser user, AuthenticationCategory authenticationCategory) {
+        AuthType authType = authenticationCategory.getSupportingAuthType();
+
+        boolean supportsSetPassword = supportsPasswordSet(authType);
+        if (supportsSetPassword) {
+            throw new UnsupportedOperationException("A password is required for authentication type: " + authType);
         }
-        return provider;
+
+        yukonUserPasswordDao.setAuthType(user, authType);
     }
 
     @Override
-    public void setPassword(LiteYukonUser yukonUser, String newPassword) {
-        // Update to the current authentication type when password is changed.
-        AuthType authType = getDefaultAuthType();
+    public void setPassword(LiteYukonUser user, AuthenticationCategory authenticationCategory, String newPassword) {
+        AuthType authType = authenticationCategory.getSupportingAuthType();
+
         boolean supportsSetPassword = supportsPasswordSet(authType);
         if (!supportsSetPassword) {
             throw new UnsupportedOperationException("setPassword not supported for type: " + authType);
         }
 
         PasswordSetProvider provider = (PasswordSetProvider) providerMap.get(authType);
-        provider.setPassword(yukonUser, newPassword);
+        provider.setPassword(user, newPassword);
+    }
+
+    @Override
+    public void setPassword(LiteYukonUser user, String newPassword) {
+        // Update to the current authentication type when password is changed.
+        AuthenticationCategory authenticationCategory = getDefaultAuthenticationCategory();
+        setPassword(user, authenticationCategory, newPassword);
     }
 
     @Override
@@ -166,7 +185,12 @@ public class AuthenticationServiceImpl implements AuthenticationService, Initial
     public void expireAllPasswords(int groupId) {
         yukonUserDao.updateForceResetByGroupId(groupId, true);
     }
-    
+
+    @Override
+    public boolean supportsPasswordSet(AuthenticationCategory authenticationCategory) {
+        return supportsPasswordSet(authenticationCategory.getSupportingAuthType());
+    }
+
     @Override
     public boolean supportsPasswordSet(AuthType type) {
         AuthenticationProvider provider = providerMap.get(type);

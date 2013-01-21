@@ -1,7 +1,5 @@
 package com.cannontech.database.data.lite;
 
-import org.joda.time.Instant;
-
 import com.cannontech.common.pao.PaoType;
 import com.cannontech.common.pao.YukonPao;
 import com.cannontech.core.dao.DaoFactory;
@@ -198,7 +196,6 @@ public final static com.cannontech.database.db.DBPersistent createDBPersistent(L
 			returnObject = new com.cannontech.database.data.user.YukonUser();
 	 		((com.cannontech.database.data.user.YukonUser)returnObject).setUserID( new Integer(((LiteYukonUser)liteObject).getUserID()) );
 	 		((com.cannontech.database.data.user.YukonUser)returnObject).getYukonUser().setUsername( ((LiteYukonUser)liteObject).getUsername() );
-	 		((com.cannontech.database.data.user.YukonUser)returnObject).getYukonUser().setAuthType( ((LiteYukonUser)liteObject).getAuthType() );
 	 		break;
 		case LiteTypes.YUKON_GROUP:
 			returnObject = new com.cannontech.database.data.user.YukonGroup();
@@ -261,11 +258,11 @@ public final static LiteBase createLite(com.cannontech.database.db.DBPersistent 
 
 	if( val instanceof com.cannontech.database.data.multi.SmartMultiDBPersistent )
 	{
-		returnLite = createLite( ((com.cannontech.database.db.DBPersistent)(((com.cannontech.database.data.multi.SmartMultiDBPersistent)val).getOwnerDBPersistent())) );
+		returnLite = createLite( ((((com.cannontech.database.data.multi.SmartMultiDBPersistent)val).getOwnerDBPersistent())) );
 	}
 	else if( val instanceof com.cannontech.database.data.multi.MultiDBPersistent )
 	{
-		returnLite = createLite( ((com.cannontech.database.db.DBPersistent)(((com.cannontech.database.data.multi.MultiDBPersistent)val).getDBPersistentVector().get(0))) );
+		returnLite = createLite( ((((com.cannontech.database.data.multi.MultiDBPersistent)val).getDBPersistentVector().get(0))) );
 	}
 	else if( val instanceof CICustomerBase )
 	{
@@ -409,11 +406,10 @@ public final static LiteBase createLite(com.cannontech.database.db.DBPersistent 
 				yukonPao.getPaoIdentifier().getPaoType());
 
 	} else if( val instanceof YukonUser ) {
-	       com.cannontech.database.db.user.YukonUser user = ((YukonUser)val).getYukonUser();
+        com.cannontech.database.db.user.YukonUser user = ((YukonUser)val).getYukonUser();
 
-	       Instant lastChangedDate = user.getLastChangedDate() == null ? null : new Instant(user.getLastChangedDate());
-	        returnLite = new LiteYukonUser(user.getUserID(), user.getUsername(), user.getLoginStatus(), user.getAuthType(), 
-	                                       lastChangedDate, user.isForceReset(), user.getUserGroupId());
+        returnLite = new LiteYukonUser(user.getUserID(), user.getUsername(), user.getLoginStatus(),
+                user.isForceReset(), user.getUserGroupId());
     } else if( val instanceof UserGroup ) {
         returnLite = ((UserGroup)val).getUserGroup().getLiteUserGroup();
     } else if( val instanceof YukonGroup ) {

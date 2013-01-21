@@ -21,4 +21,8 @@ final class MockYukonUserPasswordDao implements YukonUserPasswordDao {
     public String getDigest(LiteYukonUser user) throws IllegalArgumentException {
         return digest;
     }
+
+    @Override
+    public void setAuthType(LiteYukonUser user, AuthType authType) {
+    }
 }

@@ -16,6 +16,7 @@ import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 
+import com.cannontech.common.user.UserAuthenticationInfo;
 import com.cannontech.common.util.Pair;
 import com.cannontech.common.validator.SimpleValidator;
 import com.cannontech.common.validator.YukonMessageCodeResolver;
@@ -34,7 +35,6 @@ import com.cannontech.core.roleproperties.YukonRole;
 import com.cannontech.core.roleproperties.YukonRoleCategory;
 import com.cannontech.core.roleproperties.YukonRoleProperty;
 import com.cannontech.core.roleproperties.dao.RolePropertyDao;
-import com.cannontech.core.service.YukonUserService;
 import com.cannontech.core.users.dao.UserGroupDao;
 import com.cannontech.core.users.model.LiteUserGroup;
 import com.cannontech.database.data.lite.LiteYukonGroup;
@@ -60,7 +60,6 @@ public class UserEditorController {
     @Autowired private RolePropertyDao rolePropertyDao;
     @Autowired private UserGroupDao userGroupDao;
     @Autowired private YukonUserDao yukonUserDao;
-    @Autowired private YukonUserService yukonUserService;
     @Autowired private PasswordPolicyService passwordPolicyService;
 
     private UserValidator userValidator = new UserValidator();
@@ -74,7 +73,9 @@ public class UserEditorController {
     @RequestMapping
     public String view(YukonUserContext userContext, ModelMap model, int userId) {
         LiteYukonUser yukonUser = yukonUserDao.getLiteYukonUser(userId);
-        User user = new User(yukonUser);
+        UserAuthenticationInfo userAuthenticationInfo = yukonUserDao.getUserAuthenticationInfo(userId);
+
+        User user = new User(yukonUser, userAuthenticationInfo);
 
         setupModelMap(model, user, PageEditMode.VIEW, userContext);
         return "userGroupEditor/user.jsp";
@@ -83,7 +84,8 @@ public class UserEditorController {
     /* User Editor Edit Page */
     @RequestMapping(value="edit", method=RequestMethod.POST, params="edit")
     public String edit(YukonUserContext userContext, ModelMap model, int userId) {
-        User user = new User(yukonUserDao.getLiteYukonUser(userId));
+        UserAuthenticationInfo userAuthenticationInfo = yukonUserDao.getUserAuthenticationInfo(userId);
+        User user = new User(yukonUserDao.getLiteYukonUser(userId), userAuthenticationInfo);
         setupModelMap(model, user, PageEditMode.EDIT, userContext);
         return "userGroupEditor/user.jsp";
     }
@@ -127,9 +129,10 @@ public class UserEditorController {
     @RequestMapping(value="edit", method=RequestMethod.POST, params="update")
     public String update(YukonUserContext userContext, @ModelAttribute User user, BindingResult result, ModelMap model, FlashScope flash) {
         LiteYukonUser yukonUser = yukonUserDao.getLiteYukonUser(user.getUserId());
-        user.updateForSave(yukonUser);
+        UserAuthenticationInfo userAuthenticationInfo = yukonUserDao.getUserAuthenticationInfo(user.getUserId());
+        user.updateForSave(yukonUser, userAuthenticationInfo);
         boolean requiresPasswordChanged = user.isAuthenticationChanged()
-                && authenticationService.supportsPasswordSet(yukonUser.getAuthType());
+                && authenticationService.supportsPasswordSet(user.getAuthCategory());
         if (requiresPasswordChanged) {
             new PasswordValidator(yukonUser, "password.password", "password.confirmPassword" ).validate(user.getPassword(), result);
             if (result.hasErrors()) {
@@ -145,10 +148,9 @@ public class UserEditorController {
             return "userGroupEditor/user.jsp";
         }
 
+        yukonUserDao.save(yukonUser);
         if (requiresPasswordChanged) {
-            yukonUserService.saveAndSetPassword(yukonUser, user.getPassword().getPassword());
-        } else {
-            yukonUserDao.save(yukonUser);
+            authenticationService.setPassword(yukonUser, user.getAuthCategory(), user.getPassword().getPassword());
         }
 
         flash.setConfirm(new YukonMessageSourceResolvable("yukon.web.modules.adminSetup.userEditor.updateSuccessful"));
@@ -162,7 +164,8 @@ public class UserEditorController {
         LiteYukonUser yukonUser = yukonUserDao.getLiteYukonUser(userId);
         PasswordValidator validator = new PasswordValidator(yukonUser,  "password", "confirmPassword");
         validator.validate(password, result);
-        User user = new User(yukonUser);
+        UserAuthenticationInfo userAuthenticationInfo = yukonUserDao.getUserAuthenticationInfo(userId);
+        User user = new User(yukonUser, userAuthenticationInfo);
 
         if (result.hasErrors()) {
             model.addAttribute("showChangePasswordErrors", true);

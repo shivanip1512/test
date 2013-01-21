@@ -108,7 +108,6 @@
   </bean>
   <bean id="yukonListDao" class="com.cannontech.core.dao.impl.YukonListDaoImpl" />
   <bean id="yukonUserDao" class="com.cannontech.core.dao.impl.YukonUserDaoImpl" />
-  <bean class="com.cannontech.core.service.impl.YukonUserServiceImpl"/>
 
   <bean id="userGroupDao" class="com.cannontech.core.users.dao.impl.UserGroupDaoImpl" />
 

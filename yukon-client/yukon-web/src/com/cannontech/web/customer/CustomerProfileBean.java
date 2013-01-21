@@ -8,7 +8,6 @@ import javax.faces.model.SelectItem;
 import org.apache.commons.lang.RandomStringUtils;
 
 import com.cannontech.common.constants.YukonSelectionListDefs;
-import com.cannontech.core.authentication.model.AuthType;
 import com.cannontech.core.dao.CustomerDao;
 import com.cannontech.core.dao.DBPersistentDao;
 import com.cannontech.core.dao.impl.LoginStatusEnum;
@@ -130,7 +129,6 @@ public class CustomerProfileBean {
         String salt = RandomStringUtils.randomNumeric(5);
         String stupidUserName = firstName.toLowerCase().substring(0, 1) + lastName.toLowerCase() + salt;
         user.getYukonUser().setUsername(stupidUserName);
-        user.getYukonUser().setAuthType(AuthType.NONE);
         user.getYukonUser().setLoginStatus(LoginStatusEnum.ENABLED);
         dbPersistentDao.performDBChange(user, Transaction.INSERT);
         return user;

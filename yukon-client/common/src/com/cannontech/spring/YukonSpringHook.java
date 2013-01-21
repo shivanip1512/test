@@ -70,18 +70,16 @@ public class YukonSpringHook {
     public static Object getBean(String name) {
         return getContext().getBean(name);
     }
-    
-    @SuppressWarnings("unchecked")
+
     public static <T> T getBean(String name, Class<T> expectedType) {
-        return (T) getContext().getBean(name, expectedType);
+        return getContext().getBean(name, expectedType);
     }
-    
-    @SuppressWarnings("unchecked")
+
     public static <T> T getBean(Class<T> expectedType) {
         BeanFactoryUtils.beanOfTypeIncludingAncestors(getContext(), expectedType);
-        return (T) BeanFactoryUtils.beanOfTypeIncludingAncestors(getContext(), expectedType);
+        return BeanFactoryUtils.beanOfTypeIncludingAncestors(getContext(), expectedType);
     }
-    
+
     public static NextValueHelper getNextValueHelper() {
         // I'm not sure if this is the best spot for this...
         return (NextValueHelper) getBean("nextValueHelper");

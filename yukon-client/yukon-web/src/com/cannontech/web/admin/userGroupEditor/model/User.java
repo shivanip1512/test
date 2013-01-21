@@ -2,6 +2,7 @@ package com.cannontech.web.admin.userGroupEditor.model;
 
 import org.apache.commons.lang.Validate;
 
+import com.cannontech.common.user.UserAuthenticationInfo;
 import com.cannontech.core.authentication.model.AuthenticationCategory;
 import com.cannontech.core.dao.impl.LoginStatusEnum;
 import com.cannontech.database.data.lite.LiteYukonUser;
@@ -20,13 +21,11 @@ public class User {
 
     /**
      * Create an instance for editing.
-     * 
-     * Use of default scope is intentional.
      */
-    public User(LiteYukonUser yukonUser) {
+    public User(LiteYukonUser yukonUser, UserAuthenticationInfo userAuthenticationInfo) {
         userId = yukonUser.getUserID();
         username = yukonUser.getUsername();
-        authCategory = AuthenticationCategory.getByAuthType(yukonUser.getAuthType());
+        authCategory = userAuthenticationInfo.getAuthenticationCategory();
         loginStatus = yukonUser.getLoginStatus();
         userGroupId = yukonUser.getUserGroupId();
     }
@@ -38,15 +37,12 @@ public class User {
      * 
      * @return true if the authentication category was changed and the password needs to be updated.
      */
-    public void updateForSave(LiteYukonUser yukonUser) {
+    public void updateForSave(LiteYukonUser yukonUser, UserAuthenticationInfo userAuthenticationInfo) {
         // This page doesn't allow creation so the user ids have to match.
         Validate.isTrue(userId == yukonUser.getUserID());
         yukonUser.setUsername(username);
-        AuthenticationCategory oldAuthCategory = AuthenticationCategory.getByAuthType(yukonUser.getAuthType());
+        AuthenticationCategory oldAuthCategory = userAuthenticationInfo.getAuthenticationCategory();
         authenticationChanged = authCategory != oldAuthCategory;
-        if (authenticationChanged) {
-            yukonUser.setAuthType(authCategory.getSupportingAuthType());
-        }
         yukonUser.setLoginStatus(loginStatus);
         yukonUser.setUserGroupId(userGroupId);
     }

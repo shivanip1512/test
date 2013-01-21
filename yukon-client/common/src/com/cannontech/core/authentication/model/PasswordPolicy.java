@@ -14,7 +14,7 @@ import org.apache.commons.lang.RandomStringUtils;
 import org.joda.time.Duration;
 import org.joda.time.Instant;
 
-import com.cannontech.database.data.lite.LiteYukonUser;
+import com.cannontech.common.user.UserAuthenticationInfo;
 import com.google.common.collect.Sets;
 import com.google.common.primitives.Ints;
 
@@ -134,26 +134,26 @@ public class PasswordPolicy {
     	
     	return validRules;
     }
-    
+
     /**
-     * This method get's the password
+     * Get the password age.
      */
-    public Duration getPasswordAge(LiteYukonUser user) {
-        Duration passwordAge = new Duration(user.getLastChangedDate(), Instant.now());
+    public Duration getPasswordAge(UserAuthenticationInfo userAuthenticationInfo) {
+        Duration passwordAge = new Duration(userAuthenticationInfo.getLastChangedDate(), Instant.now());
         
         return passwordAge;
     }
-    
+
     /**
      * Checks to see if the password is old enough to be changed.
      */
-    public boolean isPasswordAgeRequirementMet(LiteYukonUser user) {
-        if (user == null) {
+    public boolean isPasswordAgeRequirementMet(UserAuthenticationInfo userAuthenticationInfo) {
+        if (userAuthenticationInfo == null) {
             return true;
         }
-        
-        Duration passwordAge = getPasswordAge(user);
-        
+
+        Duration passwordAge = getPasswordAge(userAuthenticationInfo);
+
         if (passwordAge.isLongerThan(minPasswordAge)) {
             return true;
         }

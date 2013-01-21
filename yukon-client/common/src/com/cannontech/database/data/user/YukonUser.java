@@ -5,7 +5,6 @@ import java.sql.SQLException;
 import java.util.Vector;
 
 import org.apache.log4j.Logger;
-import org.joda.time.Instant;
 
 import com.cannontech.clientutils.YukonLogManager;
 import com.cannontech.common.editor.EditorPanel;
@@ -95,7 +94,6 @@ public class YukonUser extends DBPersistent implements CTIDbChange, EditorPanel
 			setUserID(com.cannontech.database.db.user.YukonUser.getNextUserID(getDbConnection()) );
 		}
 
-		getYukonUser().setLastChangedDate(Instant.now().toDate());
 		getYukonUser().add();
 
 		//This is not null if this login has been linked to an energy company
@@ -260,7 +258,8 @@ public class YukonUser extends DBPersistent implements CTIDbChange, EditorPanel
 	/**
 	 * @see com.cannontech.database.db.CTIDbChange#getDBChangeMsgs(int)
 	 */
-	public DBChangeMsg[] getDBChangeMsgs(DbChangeType dbChangeType) {
+	@Override
+    public DBChangeMsg[] getDBChangeMsgs(DbChangeType dbChangeType) {
 		
 	    DBChangeMsg[] msgs = {
 	            new DBChangeMsg(

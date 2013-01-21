@@ -24,6 +24,7 @@ import org.springframework.web.bind.annotation.RequestMethod;
 
 import com.cannontech.common.validator.YukonValidationUtils;
 import com.cannontech.core.authentication.model.AuthType;
+import com.cannontech.core.authentication.model.AuthenticationCategory;
 import com.cannontech.core.authentication.service.AuthenticationService;
 import com.cannontech.core.dao.YukonUserDao;
 import com.cannontech.core.dao.impl.LoginStatusEnum;
@@ -184,32 +185,36 @@ public class OperatorLoginController {
     }
     
     @RequestMapping("edit")
-    public String editOperatorLogin(YukonUserContext userContext,
-                                   ModelMap modelMap,
-                                   int ecId,
-                                   int operatorLoginId,
-                                   EnergyCompanyInfoFragment energyCompanyInfoFragment) {
-      //check permissions
-        checkPermissionsAndSetupModel(energyCompanyInfoFragment, modelMap, userContext);
+    public String editOperatorLogin(YukonUserContext userContext, ModelMap model, int ecId, int operatorLoginId,
+            EnergyCompanyInfoFragment energyCompanyInfoFragment) {
+        // check permissions
+        checkPermissionsAndSetupModel(energyCompanyInfoFragment, model, userContext);
         LoginBackingBean login = loginBackingBeanFromYukonUser(yukonUserDao.getLiteYukonUser(operatorLoginId));
-        modelMap.addAttribute("operatorLogin", login);
-        modelMap.addAttribute("username", login.getUsername());
-        modelMap.addAttribute("mode", PageEditMode.EDIT);
-        modelMap.addAttribute("supportsPasswordSet", authenticationService.supportsPasswordSet(yukonUserDao.getLiteYukonUser(login.getUserId()).getAuthType()));
-        modelMap.addAttribute("isPrimaryOperator", yukonEnergyCompanyService.isPrimaryOperator(operatorLoginId));
-        modelMap.addAttribute("showOperatorGroupSelect", ecMappingDao.isOperatorInOperatorUserGroup(operatorLoginId));
+        model.addAttribute("operatorLogin", login);
+        model.addAttribute("username", login.getUsername());
+        addEditFieldsToModel(model, operatorLoginId, login.getUserId());
 
         return "energyCompany/operatorLogin/create.jsp"; 
     }
+
+    private void addEditFieldsToModel(ModelMap model, int operatorLoginId, int userId) {
+        model.addAttribute("mode", PageEditMode.EDIT);
+        AuthenticationCategory authenticationCategory =
+                yukonUserDao.getUserAuthenticationInfo(userId).getAuthenticationCategory();
+        boolean supportsPasswordSet = authenticationService.supportsPasswordSet(authenticationCategory);
+        model.addAttribute("supportsPasswordSet", supportsPasswordSet);
+        model.addAttribute("isPrimaryOperator", yukonEnergyCompanyService.isPrimaryOperator(operatorLoginId));
+        model.addAttribute("showOperatorGroupSelect", ecMappingDao.isOperatorInOperatorUserGroup(operatorLoginId));
+    }
     
     @RequestMapping(method=RequestMethod.POST, value="update", params="update")
-    public String updateOperatorLogin(YukonUserContext userContext, ModelMap modelMap, int ecId,
+    public String updateOperatorLogin(YukonUserContext userContext, ModelMap model, int ecId,
                                       final @ModelAttribute ("operatorLogin") LoginBackingBean operatorLogin,
                                       BindingResult bindingResult, FlashScope flashScope,
                                       EnergyCompanyInfoFragment energyCompanyInfoFragment) throws Exception {
 
         //check permissions
-        checkPermissionsAndSetupModel(energyCompanyInfoFragment, modelMap, userContext);
+        checkPermissionsAndSetupModel(energyCompanyInfoFragment, model, userContext);
         
         //validate login
         LiteYukonUser user = yukonUserDao.getLiteYukonUser(operatorLogin.getUserId());
@@ -226,10 +231,7 @@ public class OperatorLoginController {
         if (bindingResult.hasErrors()) {
             List<MessageSourceResolvable> messages = YukonValidationUtils.errorsForBindingResult(bindingResult);
             flashScope.setMessage(messages, FlashScopeMessageType.ERROR);
-            modelMap.addAttribute("mode", PageEditMode.EDIT);
-            modelMap.addAttribute("supportsPasswordSet", authenticationService.supportsPasswordSet(user.getAuthType()));
-            modelMap.addAttribute("isPrimaryOperator", yukonEnergyCompanyService.isPrimaryOperator(operatorLogin.getUserId()));
-            modelMap.addAttribute("showOperatorGroupSelect", ecMappingDao.isOperatorInOperatorUserGroup(operatorLogin.getUserId()));
+            addEditFieldsToModel(model, operatorLogin.getUserId(), user.getUserID());
 
             return "energyCompany/operatorLogin/create.jsp";
         }
@@ -237,15 +239,15 @@ public class OperatorLoginController {
         //save login
         LiteYukonUser liteUser = yukonUserDao.getLiteYukonUser(operatorLogin.getUserId());
         LiteUserGroup userGroup = userGroupDao.getLiteUserGroupByUserGroupName(operatorLogin.getUserGroupName());
-        StarsAdminUtil.updateLogin( liteUser, operatorLogin.getUsername(), operatorLogin.getPassword1(), operatorLogin.getLoginStatus(),
-                                    userGroup, false);
+        StarsAdminUtil.updateLogin(liteUser, operatorLogin.getUsername(), operatorLogin.getPassword1(),
+            operatorLogin.getLoginStatus(), userGroup);
         
         //add message
         flashScope.setConfirm(new YukonMessageSourceResolvable("yukon.web.modules.adminSetup.operatorLogin.operatorLoginUpdated"));
         
         return "redirect:home";
     }
-    
+
     @RequestMapping(value="toggleOperatorLoginStatus",
                     method = {RequestMethod.POST, RequestMethod.HEAD},     
                     headers = "x-requested-with=XMLHttpRequest")
@@ -275,7 +277,7 @@ public class OperatorLoginController {
             LiteUserGroup userGroup = userGroupDao.getLiteUserGroupByUserId(liteUser.getLiteID());
             
             // null here ensures password doesn't change
-            StarsAdminUtil.updateLogin( liteUser, liteUser.getUsername(),null, liteUser.getLoginStatus(), userGroup, false);
+            StarsAdminUtil.updateLogin( liteUser, liteUser.getUsername(),null, liteUser.getLoginStatus(), userGroup);
         }
         returnJSON.put("loginStatus", liteUser.getLoginStatus());
         response.setContentType("application/json");

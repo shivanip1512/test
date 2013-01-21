@@ -10,19 +10,20 @@ import java.util.Map;
 import javax.naming.ConfigurationException;
 
 import org.apache.commons.lang.StringUtils;
-import org.joda.time.Instant;
 
 import com.cannontech.clientutils.CTILogger;
 import com.cannontech.common.constants.YukonListEntry;
 import com.cannontech.common.constants.YukonSelectionList;
 import com.cannontech.common.constants.YukonSelectionListDefs;
+import com.cannontech.common.user.UserAuthenticationInfo;
 import com.cannontech.common.util.CommandExecutionException;
 import com.cannontech.common.util.CtiUtilities;
-import com.cannontech.core.authentication.model.AuthType;
+import com.cannontech.core.authentication.model.AuthenticationCategory;
 import com.cannontech.core.authentication.service.AuthenticationService;
 import com.cannontech.core.dao.DBPersistentDao;
 import com.cannontech.core.dao.DaoFactory;
 import com.cannontech.core.dao.RoleDao;
+import com.cannontech.core.dao.YukonUserDao;
 import com.cannontech.core.dao.impl.LoginStatusEnum;
 import com.cannontech.core.roleproperties.YukonRoleProperty;
 import com.cannontech.core.users.dao.UserGroupDao;
@@ -743,21 +744,17 @@ public class StarsAdminUtil {
 		return userGroup.getUserGroup();
 	}
 
-	public static LiteYukonUser createOperatorLogin(String username, String password, LoginStatusEnum status, com.cannontech.database.db.user.UserGroup liteUserGroup,
-		LiteStarsEnergyCompany energyCompany) 
-    throws TransactionException, CommandExecutionException {
+	public static LiteYukonUser createOperatorLogin(String username, String password, LoginStatusEnum status,
+	        com.cannontech.database.db.user.UserGroup liteUserGroup, LiteStarsEnergyCompany energyCompany)
+	                throws TransactionException, CommandExecutionException {
+        AuthenticationService authenticationService = YukonSpringHook.getBean(AuthenticationService.class);
+	    ECMappingDao ecMappingDao = YukonSpringHook.getBean(ECMappingDao.class);
 
-	    AuthenticationService authenticationService = YukonSpringHook.getBean("authenticationService", AuthenticationService.class);
-	    ECMappingDao ecMappingDao = YukonSpringHook.getBean("ecMappingDao", ECMappingDao.class);
-
-        AuthType defaultAuthType = authenticationService.getDefaultAuthType();
 		com.cannontech.database.data.user.YukonUser yukonUser = new com.cannontech.database.data.user.YukonUser();
 		com.cannontech.database.db.user.YukonUser userDB = yukonUser.getYukonUser();
 		
 		userDB.setUsername( username );
-        userDB.setAuthType(defaultAuthType);
 		userDB.setLoginStatus(status);
-		userDB.setLastChangedDate(Instant.now().toDate());
 		userDB.setForceReset(false);
 		userDB.setUserGroupId(liteUserGroup.getUserGroupId());
 		
@@ -768,44 +765,45 @@ public class StarsAdminUtil {
 		}
 		
 		// Setting the password for the new account.
-		LiteYukonUser liteUser = new LiteYukonUser(userDB.getUserID().intValue(), userDB.getUsername(), userDB.getLoginStatus());
-        liteUser.setAuthType(defaultAuthType);
+		LiteYukonUser liteUser = new LiteYukonUser(userDB.getUserID().intValue(), userDB.getUsername(),
+		    userDB.getLoginStatus());
 		handleDBChange( liteUser, DbChangeType.ADD );
-        
-        if (authenticationService.supportsPasswordSet(defaultAuthType)) {
+
+        AuthenticationCategory defaultAuthenticationCategory = authenticationService.getDefaultAuthenticationCategory();
+        if (authenticationService.supportsPasswordSet(defaultAuthenticationCategory)) {
+            if (StringUtils.isBlank(password)) {
+                throw new RuntimeException("password cannot be blank");
+            }
             authenticationService.setPassword(liteUser, password);
         }
-		
+
 		return liteUser;
 	}
 	
 	public static void updateLogin(LiteYukonUser liteUser, String username, String password, LoginStatusEnum status,
-		LiteUserGroup userGroup, boolean authTypeChange) 
-	throws WebClientException, TransactionException {
-	    AuthenticationService authenticationService = (AuthenticationService) YukonSpringHook.getBean("authenticationService");
-	    
-		if (!liteUser.getUsername().equalsIgnoreCase(username) && DaoFactory.getYukonUserDao().findUserByUsername(username) != null){
+		    LiteUserGroup userGroup)  throws WebClientException, TransactionException {
+	    AuthenticationService authenticationService = YukonSpringHook.getBean(AuthenticationService.class);
+	    YukonUserDao yukonUserDao = YukonSpringHook.getBean(YukonUserDao.class);
+	    UserAuthenticationInfo userAuthenticationInfo = yukonUserDao.getUserAuthenticationInfo(liteUser.getUserID());
+
+		if (!liteUser.getUsername().equalsIgnoreCase(username) && yukonUserDao.findUserByUsername(username) != null){
 		    throw new WebClientException( "Username '" + username + "' already exists" );
 		}
-		
-		if (StringUtils.isNotEmpty(password) && !authenticationService.supportsPasswordSet(liteUser.getAuthType())) {
-		    throw new WebClientException( "Password cannot be changed when authentication type is " + liteUser.getAuthType() );
+
+		AuthenticationCategory authenticationCategory = userAuthenticationInfo.getAuthenticationCategory();
+        if (StringUtils.isNotEmpty(password) && !authenticationService.supportsPasswordSet(authenticationCategory)) {
+		    throw new WebClientException("Password cannot be changed when authentication type is " +
+	                authenticationCategory);
 		}
-		
+
 		com.cannontech.database.data.user.YukonUser user = new com.cannontech.database.data.user.YukonUser();
 		com.cannontech.database.db.user.YukonUser dbUser = user.getYukonUser();
 
 		StarsLiteFactory.setYukonUser( dbUser, liteUser );
 		dbUser.setUsername( username );
-        
-        if(authTypeChange) {
-            liteUser.setAuthType(AuthType.NONE);
-            dbUser.setAuthType(AuthType.NONE);
-        }
-        
+
 		if (status != null) dbUser.setLoginStatus(status);
-		dbUser.setLastChangedDate(Instant.now().toDate());
-		
+
 		if (userGroup != null) {
 		    dbUser.setUserGroupId(userGroup.getUserGroupId());
 		}

@@ -3,8 +3,8 @@ package com.cannontech.core.authentication.service;
 import com.cannontech.common.exception.BadAuthenticationException;
 import com.cannontech.common.exception.PasswordExpiredException;
 import com.cannontech.core.authentication.model.AuthType;
-import com.cannontech.core.authentication.model.AuthenticationThrottleDto;
 import com.cannontech.core.authentication.model.AuthenticationCategory;
+import com.cannontech.core.authentication.model.AuthenticationThrottleDto;
 import com.cannontech.database.data.lite.LiteYukonUser;
 
 /**
@@ -50,18 +50,49 @@ public interface AuthenticationService {
      * or for the login's password age to be longer that the password policy's allowed age.
      */
     public boolean isPasswordExpired(LiteYukonUser user);
-    
+
     /**
      * Indicates if the underlying authentication method for the user
      * supports setting the password to a new value. For example, LDAP 
      * and RADIUS do not support this.
      * @return true if supported
      */
-    public boolean supportsPasswordSet(AuthType type);
-    
+    public boolean supportsPasswordSet(AuthenticationCategory authenticationCategory);
+
     /**
-     * Sets the user's password assuming the underlying authentication 
-     * method supports it.
+     * Indicates if the underlying authentication method for the user
+     * supports setting the password to a new value. For example, LDAP 
+     * and RADIUS do not support this.
+     * @return true if supported
+     * TODO:  deprecate???
+     */
+    public boolean supportsPasswordSet(AuthType type);
+
+    /**
+     * Sets the authentication category for a user. This method should only be used for
+     * authentication categories
+     * for which the password cannot be changed by Yukon. If Yukon can change the password,
+     * {@link #setPassword(LiteYukonUser, AuthenticationCategory, String) should be used instead.}
+     */
+    public void setAuthenticationCategory(LiteYukonUser user, AuthenticationCategory authenticationCategory);
+
+    /**
+     * Encrypts the password according to the specified authentication category and updates the database.  This
+     * should only be used when a specific authentication category (other than the default) is desired.  The normal
+     * case is to call {@link #setPassword(LiteYukonUser, String)}.
+     * 
+     * @throws UnsupportedOperationException If the specified authentication category does not support password sets
+     *             via Yukon.
+     */
+    public void setPassword(LiteYukonUser user, AuthenticationCategory authenticationCategory, String newPassword);
+
+    /**
+     * Encrypts the password according to the specified authentication category and updates the database.
+     * 
+     * This method uses the GlobalSettingType.DEFAULT_AUTH_TYPE to determine the authentication method.
+     * 
+     * @throws UnsupportedOperationException If the authentication category specified by the global setting does not
+     *             support password sets via Yukon.
      */
     public void setPassword(LiteYukonUser user, String newPassword);
 

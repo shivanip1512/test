@@ -21,6 +21,7 @@ import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.servlet.support.RequestContextUtils;
 
+import com.cannontech.common.user.UserAuthenticationInfo;
 import com.cannontech.common.validator.YukonValidationUtils;
 import com.cannontech.core.authentication.model.PasswordPolicyError;
 import com.cannontech.core.authentication.model.PolicyRule;
@@ -98,8 +99,10 @@ public class PasswordResetController {
             return "forgottenPassword.jsp";
         }
 
-        // Are we allowed to set this password.
-        if (!authenticationService.supportsPasswordSet(passwordResetInfo.getUser().getAuthType())) {
+        // Are we allowed to set this password?
+        UserAuthenticationInfo userAuthenticationInfo =
+                yukonUserDao.getUserAuthenticationInfo(passwordResetInfo.getUser().getUserID());
+        if (!authenticationService.supportsPasswordSet(userAuthenticationInfo.getAuthenticationCategory())) {
             flashScope.setError(new YukonMessageSourceResolvable("yukon.web.modules.login.passwordChange.passwordChangeNotSupported"));
             return "redirect:login.jsp";
         }

@@ -7,13 +7,16 @@ import java.util.Set;
 import org.apache.commons.lang.Validate;
 import org.joda.time.Duration;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.dao.EmptyResultDataAccessException;
 
+import com.cannontech.common.user.UserAuthenticationInfo;
 import com.cannontech.core.authentication.model.PasswordPolicy;
 import com.cannontech.core.authentication.model.PasswordPolicyError;
 import com.cannontech.core.authentication.model.PolicyRule;
 import com.cannontech.core.authentication.service.AuthenticationService;
 import com.cannontech.core.authentication.service.PasswordPolicyService;
 import com.cannontech.core.dao.YukonGroupDao;
+import com.cannontech.core.dao.YukonUserDao;
 import com.cannontech.core.roleproperties.YukonRole;
 import com.cannontech.core.roleproperties.YukonRoleProperty;
 import com.cannontech.core.roleproperties.dao.RolePropertyDao;
@@ -27,6 +30,7 @@ public class PasswordPolicyServiceImpl implements PasswordPolicyService {
     @Autowired private AuthenticationService authenticationService;
     @Autowired private RolePropertyDao rolePropertyDao;
     @Autowired private YukonGroupDao yukonGroupDao;
+    @Autowired private YukonUserDao yukonUserDao;
 
     @Override
     public List<PolicyRule> getPolicyRules(LiteYukonUser user) {
@@ -117,14 +121,19 @@ public class PasswordPolicyServiceImpl implements PasswordPolicyService {
         if (password.length() < passwordPolicy.getMinPasswordLength()) {
             return PasswordPolicyError.MIN_PASSWORD_LENGTH_NOT_MET;
         }
-        
-      //DB Column limit
+
+        // DB Column limit
         if (password.length() > 64) {
         	return PasswordPolicyError.MAX_PASSWORD_LENGTH_EXCEEDED;
         }
-        
-        if (!passwordPolicy.isPasswordAgeRequirementMet(user)) {
-            return PasswordPolicyError.MIN_PASSWORD_AGE_NOT_MET;
+
+        try {
+            UserAuthenticationInfo userAuthenticationInfo = yukonUserDao.getUserAuthenticationInfo(user.getUserID());
+            if (!passwordPolicy.isPasswordAgeRequirementMet(userAuthenticationInfo)) {
+                return PasswordPolicyError.MIN_PASSWORD_AGE_NOT_MET;
+            }
+        } catch (EmptyResultDataAccessException e) {
+            // This is a new user so the password has no age...pass.
         }
         
         if (authenticationService.isPasswordBeingReused(user, password, passwordPolicy.getPasswordHistory())) {
@@ -156,8 +165,9 @@ public class PasswordPolicyServiceImpl implements PasswordPolicyService {
         if (password.length() > 64) {
         	errors.add(PasswordPolicyError.MAX_PASSWORD_LENGTH_EXCEEDED);
         }
-        
-        if (!passwordPolicy.isPasswordAgeRequirementMet(user)) {
+
+        UserAuthenticationInfo userAuthenticationInfo = yukonUserDao.getUserAuthenticationInfo(user.getUserID());
+        if (!passwordPolicy.isPasswordAgeRequirementMet(userAuthenticationInfo)) {
             errors.add(PasswordPolicyError.MIN_PASSWORD_AGE_NOT_MET);
         }
         
@@ -172,10 +182,12 @@ public class PasswordPolicyServiceImpl implements PasswordPolicyService {
         return errors;
     }
     
+    @Override
     public Set<PolicyRule> getValidPolicyRules(String password, LiteYukonUser user) {
     	return getValidPolicyRules(password, user, null);
     }
 
+    @Override
     public Set<PolicyRule> getValidPolicyRules(String password, LiteYukonUser user, LiteUserGroup liteUserGroup) {
     	PasswordPolicy passwordPolicy = getPasswordPolicy(user, liteUserGroup);
     	return passwordPolicy.getValidPolicyRules(password);

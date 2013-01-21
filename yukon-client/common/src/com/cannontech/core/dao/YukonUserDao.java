@@ -5,7 +5,9 @@ import java.util.List;
 import org.springframework.dao.DataAccessException;
 
 import com.cannontech.common.search.SearchResult;
+import com.cannontech.common.user.UserAuthenticationInfo;
 import com.cannontech.common.util.SimpleCallback;
+import com.cannontech.core.authentication.service.AuthenticationService;
 import com.cannontech.core.dao.impl.LoginStatusEnum;
 import com.cannontech.core.users.model.LiteUserGroup;
 import com.cannontech.database.data.lite.LiteContact;
@@ -23,6 +25,13 @@ public interface YukonUserDao {
      * @return the LiteYukonUser or null if no user with that id exists
      */
     public LiteYukonUser getLiteYukonUser(int userId);
+
+    /**
+     * Get user authentication information for the given user id.  This information is stored in the same
+     * database table as the stuff in {@link LiteYukonUser} but needs to be updated via
+     * {@link AuthenticationService#setAuthenticationCategory} or {@link AuthenticationService#setPassword}.
+     */
+    public UserAuthenticationInfo getUserAuthenticationInfo(int userId);
 
     /**
      * Returns a LiteYukonUser by username or null if none exists.

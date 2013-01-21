@@ -20,7 +20,8 @@ import com.cannontech.common.exception.AuthenticationThrottleException;
 import com.cannontech.common.exception.BadAuthenticationException;
 import com.cannontech.common.exception.NotAuthorizedException;
 import com.cannontech.common.exception.PasswordExpiredException;
-import com.cannontech.core.authentication.model.AuthType;
+import com.cannontech.common.user.UserAuthenticationInfo;
+import com.cannontech.core.authentication.model.AuthenticationCategory;
 import com.cannontech.core.authentication.model.PasswordPolicyError;
 import com.cannontech.core.authentication.service.AuthenticationService;
 import com.cannontech.core.authentication.service.PasswordPolicyService;
@@ -46,16 +47,18 @@ public class ChangeLoginController {
     @Autowired private YukonUserDao yukonUserDao;
     
     @RequestMapping(value = "/changelogin", method = RequestMethod.GET)
-    public String view(String redirectUrl, HttpServletRequest request, HttpServletResponse response, ModelMap map) {
+    public String view(String redirectUrl, HttpServletRequest request, HttpServletResponse response, ModelMap model) {
         
         YukonUserContext yukonUserContext = YukonUserContextUtils.getYukonUserContext(request);
         LiteYukonUser user = yukonUserContext.getYukonUser();
-        map.addAttribute("user", user);
+        model.addAttribute("user", user);
 
-        boolean disablePasswordChange = !authenticationService.supportsPasswordSet(user.getAuthType());
-        map.addAttribute("disablePasswordChange", disablePasswordChange);
-        
-        map.addAttribute("redirectUrl", redirectUrl);
+        UserAuthenticationInfo userAuthenticationInfo = yukonUserDao.getUserAuthenticationInfo(user.getUserID());
+        boolean disablePasswordChange =
+                !authenticationService.supportsPasswordSet(userAuthenticationInfo.getAuthenticationCategory());
+        model.addAttribute("disablePasswordChange", disablePasswordChange);
+
+        model.addAttribute("redirectUrl", redirectUrl);
         
         return "changeLogin.jsp";
     }
@@ -67,8 +70,7 @@ public class ChangeLoginController {
         final LiteYukonUser user = yukonUserContext.getYukonUser();
         
         systemEventLogService.loginPasswordChangeAttempted(user, EventSource.CONSUMER);
-        
-        final AuthType type = user.getAuthType();
+
         rolePropertyDao.verifyProperty(YukonRoleProperty.RESIDENTIAL_CONSUMER_INFO_CHANGE_LOGIN_PASSWORD, user);
         
         boolean isValidPassword = false;
@@ -83,7 +85,9 @@ public class ChangeLoginController {
             String passwordResetUrl = passwordResetService.getPasswordResetUrl(user.getUsername(), request);
             return new ModelAndView("redirect:"+passwordResetUrl);
         }
-        ChangeLoginMessage loginMsg = validatePassword(oldPassword, newPassword, confirm, user, type, isValidPassword);
+        UserAuthenticationInfo userAuthenticationInfo = yukonUserDao.getUserAuthenticationInfo(user.getUserID());
+        AuthenticationCategory authenticationCategory = userAuthenticationInfo.getAuthenticationCategory();
+        ChangeLoginMessage loginMsg = validatePassword(oldPassword, newPassword, confirm, user, authenticationCategory, isValidPassword);
         
         if (loginMsg.equals(ChangeLoginMessage.LOGIN_PASSWORD_CHANGED)) {
             authenticationService.setPassword(user, newPassword);
@@ -97,9 +101,8 @@ public class ChangeLoginController {
      * This method validates the password and makes sure it follows the password policy if one exists.
      */
     private ChangeLoginMessage validatePassword(String oldPassword, String newPassword, String confirmPassword, final LiteYukonUser user,
-                                               final AuthType type, boolean isValidPassword) {
-        
-        boolean supportsPasswordChange = authenticationService.supportsPasswordSet(type);
+                                               AuthenticationCategory authenticationCategory, boolean isValidPassword) {
+        boolean supportsPasswordChange = authenticationService.supportsPasswordSet(authenticationCategory);
 
         if (!isValidPassword) {
             return ChangeLoginMessage.INVALID_CREDENTIALS_PASSWORD_CHANGE;

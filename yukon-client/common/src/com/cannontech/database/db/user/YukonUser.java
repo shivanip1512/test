@@ -4,7 +4,10 @@ import java.sql.SQLException;
 import java.util.Date;
 
 import com.cannontech.core.authentication.model.AuthType;
+import com.cannontech.core.authentication.model.AuthenticationCategory;
+import com.cannontech.core.authentication.service.AuthenticationService;
 import com.cannontech.core.dao.impl.LoginStatusEnum;
+import com.cannontech.database.data.lite.LiteYukonUser;
 import com.cannontech.database.db.DBPersistent;
 import com.cannontech.database.incrementer.NextValueHelper;
 import com.cannontech.spring.YukonSpringHook;
@@ -15,32 +18,32 @@ public class YukonUser extends DBPersistent {
     private Integer userID = null;
     private String username = null;
     private LoginStatusEnum loginStatus = LoginStatusEnum.DISABLED;
-    private AuthType authType = AuthType.HASH_SHA_V2;
-    private Date lastChangedDate = null;
     private boolean forceReset = false;
     private Integer userGroupId;
 
-    private static final String[] SELECT_COLUMNS = {
+    String[] SELECT_COLUMNS = {
         "Username",
         "Status",
-        "AuthType",
-        "LastChangedDate",
         "ForceReset",
         "UserGroupId",
     };
 
     /**
+     * Because the addValues must include a value for every column, a blank value
+     * for the password is included here even though the rest of this class ignores
+     * that column. This method leaves the newly created user without an authentication
+     * type set up. After calling it, one should necessarily call
+     * {@link AuthenticationService#setAuthenticationCategory(LiteYukonUser, AuthenticationCategory)}
+     * or {@link AuthenticationService#setPassword(LiteYukonUser, AuthenticationCategory, String)}
+     * 
      * @see com.cannontech.database.db.DBPersistent#add()
      */
     @Override
     public void add() throws SQLException {
-        // Because the addValues must include a value for every column, a blank value
-        // for the password is included here even though the rest of this class ignores
-        // that column.
         String dummyPasswordValue = "";
         Object[] addValues =
-            { getUserID(), getUsername(), dummyPasswordValue, getLoginStatus().getDatabaseRepresentation(),
-                getAuthType().name(), getLastChangedDate(), isForceReset() ? "Y" : "N", getUserGroupId() };
+            { userID, username, dummyPasswordValue, loginStatus.getDatabaseRepresentation(),
+                AuthType.NONE.name(), new Date(), forceReset ? "Y" : "N", userGroupId };
 
         add(TABLE_NAME, addValues);
     }
@@ -71,12 +74,10 @@ public class YukonUser extends DBPersistent {
         Object[] results = retrieve(SELECT_COLUMNS, TABLE_NAME, constraintColumns, constraintValues);
 
         if (results.length == SELECT_COLUMNS.length) {
-            setUsername((String) results[0]);
-            setLoginStatus(LoginStatusEnum.retrieveLoginStatus((String) results[1]));
-            setAuthType(AuthType.valueOf((String) results[2]));
-            setLastChangedDate((Date) results[3]);
-            setForceReset("Y".equals(results[4]));
-            setUserGroupId(((Integer) results[5]));
+            username = (String) results[0];
+            loginStatus = LoginStatusEnum.retrieveLoginStatus((String) results[1]);
+            forceReset = "Y".equals(results[2]);
+            userGroupId = ((Integer) results[3]);
         }
     }
 
@@ -86,7 +87,7 @@ public class YukonUser extends DBPersistent {
     @Override
     public void update() throws SQLException {
         Object[] setValues = { getUsername(), getLoginStatus().getDatabaseRepresentation(),
-            getAuthType().name(), getLastChangedDate(), isForceReset() ? 'Y' : 'N', getUserGroupId() };
+            isForceReset() ? 'Y' : 'N', getUserGroupId() };
 
         String[] constraintColumns = { "UserID" };
         Object[] constraintValues = { getUserID() };
@@ -116,22 +117,6 @@ public class YukonUser extends DBPersistent {
 
     public void setLoginStatus(LoginStatusEnum loginStatus) {
         this.loginStatus = loginStatus;
-    }
-
-    public AuthType getAuthType() {
-        return authType;
-    }
-
-    public void setAuthType(AuthType authType) {
-        this.authType = authType;
-    }
-
-    public Date getLastChangedDate() {
-        return lastChangedDate;
-    }
-
-    public void setLastChangedDate(Date lastChangedDate) {
-        this.lastChangedDate = lastChangedDate;
     }
 
     public boolean isForceReset() {

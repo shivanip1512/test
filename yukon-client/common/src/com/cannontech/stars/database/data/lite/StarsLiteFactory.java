@@ -887,7 +887,6 @@ public class StarsLiteFactory {
 		user.setUserID( new Integer(liteUser.getUserID()) );
 		user.setUsername( liteUser.getUsername() );
 		user.setLoginStatus( liteUser.getLoginStatus() );
-		user.setAuthType( liteUser.getAuthType() );
 	}
 	
 	public static void setLMThermostatManualEvent(com.cannontech.stars.database.data.event.LMThermostatManualEvent event, LiteLMThermostatManualEvent liteEvent) {
