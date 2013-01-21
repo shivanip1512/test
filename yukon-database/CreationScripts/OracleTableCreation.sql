@@ -1,7 +1,7 @@
 /*==============================================================*/
 /* Database name:  YukonDatabase                                */
 /* DBMS name:      ORACLE Version 9i                            */
-/* Created on:     1/15/2013 12:05:04 PM                        */
+/* Created on:     1/21/2013 1:42:31 AM                         */
 /*==============================================================*/
 
 
@@ -2015,34 +2015,34 @@ create table DEVICEGROUP  (
    constraint PK_DEVICEGROUP primary key (DeviceGroupId)
 );
 
-INSERT INTO DeviceGroup VALUES (0,' ',null,'NOEDIT_MOD','STATIC', '01-JAN-2013');
-INSERT INTO DeviceGroup VALUES (1,'Meters',0,'NOEDIT_MOD','STATIC', '01-JAN-2013');
-INSERT INTO DeviceGroup VALUES (2,'Billing',1,'NOEDIT_MOD','STATIC', '01-JAN-2013');
-INSERT INTO DeviceGroup VALUES (3,'Collection',1,'NOEDIT_MOD','STATIC', '01-JAN-2013');
-INSERT INTO DeviceGroup VALUES (4,'Alternate',1,'NOEDIT_MOD','STATIC', '01-JAN-2013');
-INSERT INTO DeviceGroup VALUES (8,'Flags',1,'NOEDIT_MOD','STATIC', '01-JAN-2013');
-INSERT INTO DeviceGroup VALUES (9,'Inventory',8,'NOEDIT_MOD','STATIC', '01-JAN-2013');
-INSERT INTO DeviceGroup VALUES (10,'DisconnectedStatus',8,'NOEDIT_MOD','STATIC', '01-JAN-2013');
-INSERT INTO DeviceGroup VALUES (11,'UsageMonitoring',8,'NOEDIT_MOD','STATIC', '01-JAN-2013');
-INSERT INTO DeviceGroup VALUES (12,'System',0,'NOEDIT_NOMOD','STATIC', '01-JAN-2013');
-INSERT INTO DeviceGroup VALUES (13,'Routes',12,'NOEDIT_NOMOD','ROUTE', '01-JAN-2013');
-INSERT INTO DeviceGroup VALUES (14,'Device Types',12,'NOEDIT_NOMOD','DEVICETYPE', '01-JAN-2013'); 
-INSERT INTO DeviceGroup VALUES (15,'Meters',12,'NOEDIT_NOMOD','STATIC', '01-JAN-2013'); 
-INSERT INTO DeviceGroup VALUES (16,'Scanning',15,'NOEDIT_NOMOD','STATIC', '01-JAN-2013'); 
-INSERT INTO DeviceGroup VALUES (17,'Load Profile',16,'NOEDIT_NOMOD','METERS_SCANNING_LOAD_PROFILE', '01-JAN-2013'); 
-INSERT INTO DeviceGroup VALUES (18,'Voltage Profile',16,'NOEDIT_NOMOD','METERS_SCANNING_VOLTAGE_PROFILE', '01-JAN-2013'); 
-INSERT INTO DeviceGroup VALUES (19,'Integrity',16,'NOEDIT_NOMOD','METERS_SCANNING_INTEGRITY', '01-JAN-2013'); 
-INSERT INTO DeviceGroup VALUES (20,'Accumulator',16,'NOEDIT_NOMOD','METERS_SCANNING_ACCUMULATOR', '01-JAN-2013'); 
-INSERT INTO DeviceGroup VALUES (21,'Temporary',12,'HIDDEN','STATIC', '01-JAN-2013'); 
-INSERT INTO DeviceGroup VALUES (22,'Disabled',15,'NOEDIT_NOMOD','METERS_DISABLED', '01-JAN-2013');
-INSERT INTO DeviceGroup VALUES (23,'Disconnect',15,'NOEDIT_MOD','STATIC', '01-JAN-2013');
-INSERT INTO DeviceGroup VALUES (24,'Collars',23,'NOEDIT_MOD','METERS_DISCONNECT_COLLAR', '01-JAN-2013');
-INSERT INTO DeviceGroup VALUES (25,'CIS Substation',1,'NOEDIT_MOD','STATIC', '01-JAN-2013');
-INSERT INTO DeviceGroup VALUES (26,'Substations',12,'NOEDIT_NOMOD','SUBSTATION_TO_ROUTE', '01-JAN-2013');
-INSERT INTO DeviceGroup VALUES (27,'Attributes',12,'NOEDIT_NOMOD','STATIC', '01-JAN-2013');
-INSERT INTO DeviceGroup VALUES (28,'Supported',27,'NOEDIT_NOMOD','ATTRIBUTE_DEFINED', '01-JAN-2013');
-INSERT INTO DeviceGroup VALUES (29,'Existing',27,'NOEDIT_NOMOD','ATTRIBUTE_EXISTS', '01-JAN-2013');
-INSERT INTO DeviceGroup VALUES (30,'Device Configs',12,'NOEDIT_NOMOD','DEVICECONFIG', '01-JAN-2013');
+INSERT INTO DeviceGroup VALUES (0,' ',null,'NOEDIT_MOD','STATIC');
+INSERT INTO DeviceGroup VALUES (1,'Meters',0,'NOEDIT_MOD','STATIC');
+INSERT INTO DeviceGroup VALUES (2,'Billing',1,'NOEDIT_MOD','STATIC');
+INSERT INTO DeviceGroup VALUES (3,'Collection',1,'NOEDIT_MOD','STATIC');
+INSERT INTO DeviceGroup VALUES (4,'Alternate',1,'NOEDIT_MOD','STATIC');
+INSERT INTO DeviceGroup VALUES (8,'Flags',1,'NOEDIT_MOD','STATIC');
+INSERT INTO DeviceGroup VALUES (9,'Inventory',8,'NOEDIT_MOD','STATIC');
+INSERT INTO DeviceGroup VALUES (10,'DisconnectedStatus',8,'NOEDIT_MOD','STATIC');
+INSERT INTO DeviceGroup VALUES (11,'UsageMonitoring',8,'NOEDIT_MOD','STATIC');
+INSERT INTO DeviceGroup VALUES (12,'System',0,'NOEDIT_NOMOD','STATIC');
+INSERT INTO DeviceGroup VALUES (13,'Routes',12,'NOEDIT_NOMOD','ROUTE');
+INSERT INTO DeviceGroup VALUES (14,'Device Types',12,'NOEDIT_NOMOD','DEVICETYPE'); 
+INSERT INTO DeviceGroup VALUES (15,'Meters',12,'NOEDIT_NOMOD','STATIC'); 
+INSERT INTO DeviceGroup VALUES (16,'Scanning',15,'NOEDIT_NOMOD','STATIC'); 
+INSERT INTO DeviceGroup VALUES (17,'Load Profile',16,'NOEDIT_NOMOD','METERS_SCANNING_LOAD_PROFILE'); 
+INSERT INTO DeviceGroup VALUES (18,'Voltage Profile',16,'NOEDIT_NOMOD','METERS_SCANNING_VOLTAGE_PROFILE'); 
+INSERT INTO DeviceGroup VALUES (19,'Integrity',16,'NOEDIT_NOMOD','METERS_SCANNING_INTEGRITY'); 
+INSERT INTO DeviceGroup VALUES (20,'Accumulator',16,'NOEDIT_NOMOD','METERS_SCANNING_ACCUMULATOR'); 
+INSERT INTO DeviceGroup VALUES (21,'Temporary',12,'HIDDEN','STATIC'); 
+INSERT INTO DeviceGroup VALUES (22,'Disabled',15,'NOEDIT_NOMOD','METERS_DISABLED');
+INSERT INTO DeviceGroup VALUES (23,'Disconnect',15,'NOEDIT_MOD','STATIC');
+INSERT INTO DeviceGroup VALUES (24,'Collars',23,'NOEDIT_MOD','METERS_DISCONNECT_COLLAR');
+INSERT INTO DeviceGroup VALUES (25,'CIS Substation',1,'NOEDIT_MOD','STATIC');
+INSERT INTO DeviceGroup VALUES (26,'Substations',12,'NOEDIT_NOMOD','SUBSTATION_TO_ROUTE');
+INSERT INTO DeviceGroup VALUES (27,'Attributes',12,'NOEDIT_NOMOD','STATIC');
+INSERT INTO DeviceGroup VALUES (28,'Supported',27,'NOEDIT_NOMOD','ATTRIBUTE_DEFINED');
+INSERT INTO DeviceGroup VALUES (29,'Existing',27,'NOEDIT_NOMOD','ATTRIBUTE_EXISTS');
+INSERT INTO DeviceGroup VALUES (30,'Device Configs',12,'NOEDIT_NOMOD','DEVICECONFIG');
 
 alter table DEVICEGROUP
    add constraint AK_DEVICEGR_PDG_GN unique (GroupName, ParentDeviceGroupId);
@@ -9140,9 +9140,9 @@ create table YukonUser  (
    constraint PK_YUKONUSER primary key (UserID)
 );
 
-INSERT INTO yukonuser VALUES (-9999, '(none)', '(none)', 'Enabled', 'PLAIN', '01-JAN-2000', 'N', null);
-INSERT INTO yukonuser VALUES (-100, 'DefaultCTI', '$cti_default', 'Enabled', 'PLAIN', '01-JAN-2000', 'Y', -1);
-INSERT INTO yukonuser VALUES (-2, 'yukon', 'yukon', 'Enabled', 'PLAIN', '01-JAN-2000', 'Y', -1);
+INSERT INTO yukonuser VALUES (-9999, '(none)', '(none)', 'Disabled', 'PLAIN', '01-JAN-2000', 'N', null);
+INSERT INTO yukonuser VALUES (-100, 'DefaultCTI', '$cti_default', 'Disabled', 'PLAIN', '01-JAN-2000', 'Y', -1);
+INSERT INTO yukonuser VALUES (-2, 'yukon', 'yukon', 'Disabled', 'PLAIN', '01-JAN-2000', 'Y', -1);
 INSERT INTO yukonuser VALUES (-1, 'admin', 'admin', 'Enabled', 'PLAIN', '01-JAN-2000', 'Y', -1);
 
 /*==============================================================*/
