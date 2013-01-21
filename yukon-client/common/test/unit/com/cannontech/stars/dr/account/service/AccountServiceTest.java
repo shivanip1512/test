@@ -130,10 +130,7 @@ public class AccountServiceTest extends EasyMockSupport {
         starsCustAccountInformationDaoMock = createMock(StarsCustAccountInformationDao.class);
         dbChangeManager = createNiceMock(DbChangeManager.class);
         accountEventLogServiceMock = createMock(AccountEventLogService.class);
-        authenticationServiceMock = createMock(AuthenticationService.class);
 
-        
-        
         YukonEnergyCompanyService yecServiceMock = new YukonEnergyCompanyServiceAdapter() {
             @Override
             public YukonEnergyCompany getEnergyCompanyByOperator(LiteYukonUser operator) {
