@@ -18,7 +18,7 @@
 <entry key="yukon.web.widgets.disconnectMeterWidget">Disconnect</entry>
 <entry key="yukon.web.widgets.rfnMeterDisconnectWidget">Disconnect</entry>
 <entry key="yukon.web.widgets.rfnOutagesWidget">Outages</entry>
-<entry key="yukon.web.widgets.rfnDeviceMetadataWidget">RF Metadata</entry>
+<entry key="yukon.web.widgets.rfnDeviceMetadataWidget">Network Information</entry>
 <entry key="yukon.web.widgets.meterOutagesWidget">Outages</entry>
 <entry key="yukon.web.widgets.meterEventsWidget">Meter Events</entry>
 <entry key="yukon.web.widgets.meterInformationWidget">Meter Information</entry>
@@ -58,7 +58,7 @@
 <entry key="yukon.web.widgets.disconnectMeterWidget.widgetIdentity">Disconnect {0}</entry>
 <entry key="yukon.web.widgets.rfnMeterDisconnectWidget.widgetIdentity">Disconnect {0}</entry>
 <entry key="yukon.web.widgets.rfnOutagesWidget.widgetIdentity">Outages {0}</entry>
-<entry key="yukon.web.widgets.rfnDeviceMetadataWidget.widgetIdentity">RF Metadata {0}</entry>
+<entry key="yukon.web.widgets.rfnDeviceMetadataWidget.widgetIdentity">Network Information {0}</entry>
 <entry key="yukon.web.widgets.meterOutagesWidget.widgetIdentity">Outages {0}</entry>
 <entry key="yukon.web.widgets.meterEventsWidget.widgetIdentity">Meter Events {0}</entry>
 <entry key="yukon.web.widgets.meterInformationWidget.widgetIdentity">Meter Information {0}</entry>
