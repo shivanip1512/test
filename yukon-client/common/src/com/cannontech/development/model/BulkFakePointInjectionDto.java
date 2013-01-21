@@ -22,8 +22,8 @@ public class BulkFakePointInjectionDto {
     private Period period = Period.days(1);
     private Period periodWindow = Period.minutes(5);
     private List<PointQuality> pointQualities = Lists.newArrayList(PointQuality.Normal);
-    private String algorithm;
-    private boolean incremental;
+    private String algorithm = "normal";
+    private boolean incremental = false;
     private double valueLow;
     private double valueHigh;
     private int decimalPlaces;

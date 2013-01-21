@@ -152,14 +152,28 @@ public class DevBuildDatabasePopulationService {
     }
     
     private static void insertMeterUsagePointData() {
-        BulkFakePointInjectionDto bulkInjection = new BulkFakePointInjectionDto();
-        bulkInjection.setAttribute(BuiltInAttribute.USAGE);
-        bulkInjection.setIncremental(true);
-        bulkInjection.setValueLow(2);
-        bulkInjection.setValueHigh(4);
-        bulkInjection.setAlgorithm("normal");
+        /* USAGE */
+        BulkFakePointInjectionDto usageData = new BulkFakePointInjectionDto();
+        usageData.setAttribute(BuiltInAttribute.USAGE);
+        usageData.setIncremental(true);
+        usageData.setDecimalPlaces(3);
+        /* random values */
+        usageData.setValueLow(2.123);
+        usageData.setValueHigh(4.123);
 
         log.info("inserting meter usage point data...");
-        bulkPointDataInjectionService.excecuteInjection(bulkInjection);
+        bulkPointDataInjectionService.excecuteInjection(usageData);
+
+        /* DEMAND */
+        BulkFakePointInjectionDto demandData = new BulkFakePointInjectionDto();
+        demandData.setAttribute(BuiltInAttribute.DEMAND);
+        demandData.setIncremental(false);
+        demandData.setDecimalPlaces(3);
+        /* random values */
+        demandData.setValueLow(1.513);
+        demandData.setValueHigh(4.981);
+        
+        log.info("inserting meter demand point data...");
+        bulkPointDataInjectionService.excecuteInjection(demandData);
     }
 }

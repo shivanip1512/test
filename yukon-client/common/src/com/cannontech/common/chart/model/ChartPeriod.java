@@ -48,14 +48,15 @@ public enum ChartPeriod implements DisplayableEnum {
             long diff = Math.abs( startDate.getTime() - endDate.getTime() );
             int dayDiff = (int)Math.floor(diff/1000/60/60/24);  
 
-            // week and day are smaller intervals, everything else uses a day interval
-            if(dayDiff > 7){
+            if (dayDiff >= 450) {
+                return ChartInterval.MONTH;
+            } else if (dayDiff >= 180) {
+                return ChartInterval.WEEK;
+            } else if(dayDiff >= 7) {
                 return ChartInterval.DAY;
-            }
-            else if(dayDiff <=7 && dayDiff > 1){
+            } else if(dayDiff < 7 && dayDiff > 1) {
                 return ChartInterval.HOUR;
-            }
-            else{
+            } else {
                 return ChartInterval.FIFTEENMINUTE;
             }
         }
