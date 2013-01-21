@@ -27,7 +27,7 @@ CtiMCServer::CtiMCServer()
   _db_update_thread(_schedule_manager),
   _scheduler(_schedule_manager),
   _file_interface(_schedule_manager),
-  _interp_pool(createMacsCommandSet())
+  _interp_pool(createEscapeCommandSet())
 {
 }
 
@@ -35,42 +35,42 @@ CtiMCServer::~CtiMCServer()
 {
 }
 
-set<string> CtiMCServer::createMacsCommandSet() 
+set<string> CtiMCServer::createEscapeCommandSet() 
 {
-    std::set<string> macsCommands, upperCommands, lowerCommands;
+    std::set<string> escapeCommands, upperCommands, lowerCommands;
 
     // Grab all of the command strings from the tcl maps in mccmd.
     std::transform(
-        tclCamelCommandMap.begin(),
-        tclCamelCommandMap.end(),
-        inserter(macsCommands, macsCommands.begin()),
+        caseSensitiveTclCommands.begin(),
+        caseSensitiveTclCommands.end(),
+        inserter(escapeCommands, escapeCommands.begin()),
         bind(&TclCommandMap::value_type::first, _1));
 
-    for each(const string &str in macsCommands)
+    for each(const string &str in escapeCommands)
     {   
-        string upperStr(str); // initialize to get the correct size.
-        std::transform(str.begin(), str.end(), upperStr.begin(), ::toupper);
+        string upperStr(str);
+        CtiToUpper(upperStr);
         upperCommands.insert(upperStr);
     }
 
-    for each(const string &str in macsCommands)
+    for each(const string &str in escapeCommands)
     {   
-        string lowerStr(str); // initialize to get the correct size.
-        std::transform(str.begin(), str.end(), lowerStr.begin(), ::tolower);
+        string lowerStr(str);
+        CtiToLower(lowerStr);
         lowerCommands.insert(lowerStr);
     }
 
-    macsCommands.insert(upperCommands.begin(), upperCommands.end());
+    escapeCommands.insert(upperCommands.begin(), upperCommands.end());
 
-    macsCommands.insert(lowerCommands.begin(), lowerCommands.end());
+    escapeCommands.insert(lowerCommands.begin(), lowerCommands.end());
 
     std::transform(
-        tclNonCamelCommandMap.begin(),
-        tclNonCamelCommandMap.end(),
-        inserter(macsCommands, macsCommands.begin()),
+        tclCommands.begin(),
+        tclCommands.end(),
+        inserter(escapeCommands, escapeCommands.begin()),
         bind(&TclCommandMap::value_type::first, _1));
 
-    return macsCommands;
+    return escapeCommands;
 }
 
 void CtiMCServer::run()

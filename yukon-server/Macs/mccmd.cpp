@@ -81,7 +81,7 @@ CtiTime gLastReturnMessageReceived(0UL);
 // Used to distinguish unique requests/responses to/from pil
 unsigned short gUserMessageID = 0;
 
-static const TclCommandMap tclCamelCommandMap = boost::assign::map_list_of
+static const TclCommandMap caseSensitiveTclCommands = boost::assign::map_list_of
     ("PILStartup", &Mccmd_Connect)
     ("PILShutdown", &Mccmd_Disconnect)
     ("MCCMDReset", &Mccmd_Reset)
@@ -104,7 +104,7 @@ static const TclCommandMap tclCamelCommandMap = boost::assign::map_list_of
     ("ImportCommandFile", &importCommandFile)
     ("createProcess", &CTICreateProcess);
 
-static const TclCommandMap tclNonCamelCommandMap = boost::assign::map_list_of
+static const TclCommandMap tclCommands = boost::assign::map_list_of
     ("holiday", &isHoliday)
     ("exit", &Exit)
     ("mcu8100", &mcu8100)
@@ -492,21 +492,30 @@ int Mccmd_Reset(ClientData clientData, Tcl_Interp* interp, int argc, char* argv[
 
 int Mccmd_Init(Tcl_Interp* interp)
 {
-    /* Register MACS commands with the interpreter */
+    /* Register escape commands with the interpreter */
 
-    for each(const TclCommandMap::value_type& itr in tclCamelCommandMap)
+    for each(const TclCommandMap::value_type& itr in caseSensitiveTclCommands)
     {
         string commandName_lower(itr.first), commandName_upper(itr.first), commandName_camel(itr.first);
 
         CtiToLower(commandName_lower);
         CtiToUpper(commandName_upper);
 
-        Tcl_CreateCommand( interp, const_cast<char*>(commandName_camel.c_str()), itr.second, NULL, NULL );
-        Tcl_CreateCommand( interp, const_cast<char*>(commandName_lower.c_str()), itr.second, NULL, NULL );
-        Tcl_CreateCommand( interp, const_cast<char*>(commandName_upper.c_str()), itr.second, NULL, NULL );
+        std::vector<char> cmdCamel(commandName_camel.begin(), commandName_camel.end());
+        cmdCamel.push_back('\0');
+
+        std::vector<char> cmdUpper(commandName_upper.begin(), commandName_upper.end());
+        cmdUpper.push_back('\0');
+
+        std::vector<char> cmdLower(commandName_lower.begin(), commandName_lower.end());
+        cmdLower.push_back('\0');
+
+        Tcl_CreateCommand( interp, &cmdCamel[0], itr.second, NULL, NULL );
+        Tcl_CreateCommand( interp, &cmdUpper[0], itr.second, NULL, NULL );
+        Tcl_CreateCommand( interp, &cmdLower[0], itr.second, NULL, NULL );
     }
 
-    for each (const TclCommandMap::value_type& itr in tclNonCamelCommandMap)
+    for each (const TclCommandMap::value_type& itr in tclCommands)
     {
         Tcl_CreateCommand( interp, const_cast<char*>(itr.first.c_str()), itr.second, NULL, NULL );
     }

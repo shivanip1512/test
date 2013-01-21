@@ -37,8 +37,13 @@ string CtiInterpreter::escapeQuotationMarks(const string &command)
 {
     string tok_str, escaped;
 
+    // The command string may have multiple commands, separated by newline characters.
     boost::char_separator<char> sep("\n");
+
+    // Tokenize the command on the newline character.
     Boost_char_tokenizer tok(command, sep);
+
+    // Bite off the first matching token and start the escaping process.
     Boost_char_tokenizer::iterator tok_iter = tok.begin();
 
     while( (tok_iter != tok.end()) && !(tok_str = *tok_iter++).empty() )
@@ -137,7 +142,7 @@ bool CtiInterpreter::evaluateFile(const string& file, bool block )
 
     {
         _isevaluating = true;
-        _evalstring = escapeQuotationMarks(file);;
+        _evalstring = escapeQuotationMarks(file);
         _block = block;
 
         interrupt( CtiInterpreter::EVALUATE_FILE );

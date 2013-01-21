@@ -14,7 +14,7 @@ struct test_CtiInterpreter : CtiInterpreter
     using CtiInterpreter::escapeQuotationMarks;
 };
 
-std::set<std::string> commandsToEscape = boost::assign::list_of
+const std::set<std::string> commandsToEscape = boost::assign::list_of
     ("jack")
     ("kate")
     ("hurley")
@@ -51,7 +51,7 @@ BOOST_AUTO_TEST_CASE( test_escapeQuotes )
 
     std::vector<std::string> expected = boost::assign::list_of
         ("jack said, \\\"Last week most of us were strangers.\\\"") // jack is okay, escape it
-        ("locke said something about \\\\\"The Island.\\\\\"")      // lock is okay, even with already-escaped quotes, escape it
+        ("locke said something about \\\\\"The Island.\\\\\"")      // locke is okay, even with already-escaped quotes, escape it
         ("Sawyer called her \"Freckles.\"")                         // wrong case, don't escape
         ("he caught kate reading his letter to \"Sawyer.\"")        // kate isn't at the start of the string, and sawyer is the wrong case, don't escape
         ("ben said, \"You have thin doors.\"");                     // ben isn't a keyword, don't escape

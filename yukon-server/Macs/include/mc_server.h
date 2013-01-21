@@ -84,7 +84,7 @@ private:
     bool loadDB();
     bool loadCParms();
 
-    std::set<std::string> createMacsCommandSet();
+    std::set<std::string> createEscapeCommandSet();
 
     // log an event with dispatch
     void logEvent(const std::string& user, const std::string& text) const;

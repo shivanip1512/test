@@ -4,8 +4,8 @@
 
 using namespace std;
 
-CtiInterpreterPool::CtiInterpreterPool(std::set<std::string> macsCommands) :
-        _macsCommands(macsCommands)
+CtiInterpreterPool::CtiInterpreterPool(const std::set<std::string> commandsToEscape) :
+        _commandsToEscape(commandsToEscape)
 {
 }
 
@@ -159,7 +159,7 @@ void CtiInterpreterPool::evalOnInit(const string& cmd)
 ----------------------------------------------------------------------------*/
 CtiInterpreter* CtiInterpreterPool::createInterpreter()
 {
-  CtiInterpreter* interp = new CtiInterpreter(_macsCommands);
+  CtiInterpreter* interp = new CtiInterpreter(_commandsToEscape);
   interp->start();
   if(_init_cmd.length() > 0)
   {

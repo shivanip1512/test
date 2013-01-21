@@ -46,8 +46,8 @@ typedef int (*MacsCommandPtr)(ClientData, Tcl_Interp*, int, char*[]);
 typedef std::map< std::string, MacsCommandPtr > TclCommandMap;
 typedef TclCommandMap::value_type TclCommandPair;
 
-extern const TclCommandMap tclCamelCommandMap;
-extern const TclCommandMap tclNonCamelCommandMap;
+extern const TclCommandMap caseSensitiveTclCommands;
+extern const TclCommandMap tclCommands;
 
 #ifdef __cplusplus
 extern "C" {
