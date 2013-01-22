@@ -3,26 +3,38 @@ package com.cannontech.web.support;
 import org.springframework.web.multipart.commons.CommonsMultipartFile;
 
 public class LocalizationBackingBean {
-    private String task;
+    private String task = "NOTHING";
     private String query;
     private boolean caseSensitive;
     private String searchBy;
-    private String searchInChoice;
+    private String searchInChoice = "DEFAULT";
     private String searchInTheme;
     private CommonsMultipartFile searchInCustom;
-    private String modifiedChoice;
+    private String modifiedChoice = "DEFAULT";
     private String modifiedTheme;
     private CommonsMultipartFile modifiedCustom;
-    private String baseChoice;
+    private String baseChoice = "DEFAULT";
     private String baseTheme;
     private CommonsMultipartFile baseCustom;
     private String compareAction;
 
-    public LocalizationBackingBean() {
-    }
-    
-    public String getTask() {
+    public static enum Task{SEARCH, COMPARE, DUMP, NOTHING}
+    public static enum Choice{THEME, CUSTOM, DEFAULT}
+
+    public String getTask(){
         return task;
+    }
+    /**
+     * @return task component as an enum value.
+     *  Any invalid task is treated as Task.NOTHING
+     */
+    public Task getTaskEnum(){
+        try{
+            return Task.valueOf(task);
+        }
+        catch(IllegalArgumentException e){
+            return Task.NOTHING;
+        }
     }
     public void setTask(String task) {
         this.task = task;
@@ -48,6 +60,18 @@ public class LocalizationBackingBean {
     public String getSearchInChoice() {
         return searchInChoice;
     }
+    /**
+     * @return searchInChoice as an enum value.
+     * Any invalid task is treated as Choice.DEFAULT
+     */
+    public Choice getSearchInChoiceEnum() {
+        try{
+            return Choice.valueOf(searchInChoice);
+        }
+        catch(IllegalArgumentException e){
+            return Choice.DEFAULT;
+        }
+    }
     public void setSearchInChoice(String searchInChoice) {
         this.searchInChoice = searchInChoice;
     }
@@ -65,6 +89,18 @@ public class LocalizationBackingBean {
     }
     public String getModifiedChoice() {
         return modifiedChoice;
+    }
+    /**
+     * @return modifiedChoice as an enum value.
+     * Any invalid task is treated as Choice.DEFAULT
+     */
+    public Choice getModifiedChoiceEnum() {
+        try{
+            return Choice.valueOf(modifiedChoice);
+        }
+        catch(IllegalArgumentException e){
+            return Choice.DEFAULT;
+        }
     }
     public void setModifiedChoice(String modifiedChoice) {
         this.modifiedChoice = modifiedChoice;
@@ -84,6 +120,18 @@ public class LocalizationBackingBean {
     public String getBaseChoice() {
         return baseChoice;
     }
+    /**
+     * @return baseChoice as an enum value.
+     * Any invalid task is treated as Choice.DEFAULT
+     */
+    public Choice getBaseChoiceEnum() {
+        try{
+            return Choice.valueOf(baseChoice);
+        }
+        catch(IllegalArgumentException e){
+            return Choice.DEFAULT;
+        }
+    }
     public void setBaseChoice(String baseChoice) {
         this.baseChoice = baseChoice;
     }
@@ -99,25 +147,10 @@ public class LocalizationBackingBean {
     public void setBaseCustom(CommonsMultipartFile baseCustom) {
         this.baseCustom = baseCustom;
     }
-    
     public String getCompareAction() {
         return compareAction;
     }
-
     public void setCompareAction(String compareAction) {
         this.compareAction = compareAction;
     }
-
-    public void setDefaultsIfNotSet(){
-        if(getSearchInChoice() == null){
-            setSearchInChoice("default");
-        }
-        if(getModifiedChoice() == null){
-            setModifiedChoice("default");
-        }
-        if(getBaseChoice() == null){
-            setBaseChoice("default");
-        }
-    }
-    
 }

@@ -85,7 +85,7 @@ table.naturalWidth {width: auto;}
 .compactResultsTable, .resultsTable, .nameValueTable {width:100%;border-collapse:collapse;}
 .compactResultsTable tr.focused, .compactResultsTable tr.focused:nth-child(2n) { background-color: #DAE2FF;}
 .compactResultsTable {font-size:0.8em;}
-.compactResultsTable tr:nth-child(even), .resultsTable tr:nth-child(even) {background-color:#f6f6f6;}
+.compactResultsTable tr:nth-child(even), .resultsTable tr:nth-child(even), .striped-list > div:nth-child(even) {background-color:#f6f6f6;}
 .compactResultsTable td, .resultsTable td, .nameValueTable td {border:none;}
 .compactResultsPaging {border-top: 1px solid #ccc;}
 .compactResultsPaging .pagingArea {float: right; margin: -1px 50px 0 0; border: 1px solid #ccc; border-style: none solid solid solid; padding: 5px 10px;background-color: white;}
@@ -132,7 +132,7 @@ div.progressBarInnerFailure {
 .toggle-title {cursor: pointer; background: white url(../Icons/icon_blockexpanded.png) no-repeat scroll 0 8px; padding-left: 14px; display: inline;}
 .collapsed .toggle-title {background: url("../Icons/icon_blockcollapsed.png") no-repeat scroll 3px 5px #FFFFFF;}
 
-.titledContainer, .pagedBox, .sectionContainer {margin-bottom: 20px;}
+.titledContainer, .pagedBox, .sectionContainer, .tabbedContainer {margin-bottom: 20px;}
 .pagedBox, .sectionContainer, .boxContainer, .inlineTree, .resultsTable, .liteContainer {border:solid 1px #ccc; border-radius:3px;} /* .titledContainer, */
 .pagedBox > .title, .inlineTree > .tree_helper_controls, .resultsTable th {border-radius:3px 3px 0 0;} /* .titledContainer > .titleBar, */
 .resultsTable th {border-bottom: solid 1px #ccc;}

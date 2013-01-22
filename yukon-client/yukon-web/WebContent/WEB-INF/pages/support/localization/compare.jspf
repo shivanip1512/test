@@ -5,55 +5,67 @@
 <%@ taglib prefix="form" uri="http://www.springframework.org/tags/form"%>
 
 <cti:msgScope paths="modules.support.localization">
-	<form:form action="view" modelAttribute="localizationBackingBean" enctype="multipart/form-data">
-		<div class="doublepage">
-			<div class="colleft">
-				<div class="col1">
-					<div>
-						<label><i:inline key=".modified" /></label>
-					</div>
-					<div>
-						<form:radiobutton path="modifiedChoice"	value="default" />
-						<label><i:inline key=".default" /></label>
-					</div>
-					
-					<div>
-						<form:radiobutton path="modifiedChoice"	value="theme" />
-						<label><i:inline key=".installed" /></label>
-						<tags:selectWithItems path="modifiedTheme" items="${installedThemes}" />						
-					</div>
-					<div>
-						<form:radiobutton path="modifiedChoice" value="custom" />
-						<label><i:inline key=".custom" /></label>
-						<input type="file" name="modifiedCustom">
-					</div>
-				</div>
+    <form:form action="view" modelAttribute="localizationBackingBean" enctype="multipart/form-data">
+        <div class="doublepage">
+            <div class="colleft">
+                <div class="col1">
+                    <div>
+                        <i:inline key=".modified" />
+                    </div>
+                    <div>
+                        <label>
+                            <form:radiobutton path="modifiedChoice" value="DEFAULT" />
+                            <i:inline key=".default" />
+                        </label>
+                    </div>
 
-				<div class="col2">
-					<div>
-						<label><i:inline key=".base" /></label>
-					</div>
-					<div>
-						<form:radiobutton path="baseChoice"	value="default" />
-						<label><i:inline key=".default" /></label>
-					</div>
-					
-					<div>
-						<form:radiobutton path="baseChoice"	value="theme" />
-						<label><i:inline key=".installed" /></label>
-						<tags:selectWithItems path="baseTheme" items="${installedThemes}" />						
-					</div>
-					<div>
-						<form:radiobutton path="baseChoice" value="custom" />
-						<label><i:inline key=".custom" /></label>
-						<input type="file" name="baseCustom">
-					</div>
-				</div>
-			</div>
-		</div>
-		
-		<input type="hidden" name="task" value="compare"/> 
-		<button type="submit" name="compareAction" value="display"><i:inline key=".display"/></button>
-		<button type="submit" name="compareAction" value="download"><i:inline key=".download"/></button>
-	</form:form>
+                    <div>
+                        <label>
+                            <form:radiobutton path="modifiedChoice" value="THEME" />
+                            <i:inline key=".installed" />
+                            <tags:selectWithItems path="modifiedTheme" items="${installedThemes}" />
+                        </label>
+                    </div>
+                    <div>
+                        <label>
+                            <form:radiobutton path="modifiedChoice" value="CUSTOM" />
+                            <i:inline key=".custom" />
+                            <input type="file" name="modifiedCustom">
+                        </label>
+                    </div>
+                </div>
+
+                <div class="col2">
+                    <div>
+                        <i:inline key=".base" />
+                    </div>
+                    <div>
+                        <label>
+                            <form:radiobutton path="baseChoice" value="DEFAULT" />
+                            <i:inline key=".default" />
+                        </label>
+                    </div>
+
+                    <div>
+                        <label>
+                            <form:radiobutton path="baseChoice" value="THEME" />
+                            <i:inline key=".installed" />
+                            <tags:selectWithItems path="baseTheme" items="${installedThemes}" />
+                        </label>
+                    </div>
+                    <div>
+                        <label>
+                            <form:radiobutton path="baseChoice" value="CUSTOM" />
+                            <i:inline key=".custom" />
+                            <input type="file" name="baseCustom">
+                        </label>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <input type="hidden" name="task" value="COMPARE" /> 
+        <cti:button type="submit" name="compareAction" value="DISPLAY" nameKey="display" />
+        <cti:button type="submit" name="compareAction" value="DOWNLOAD" nameKey="download" />
+    </form:form>
 </cti:msgScope>

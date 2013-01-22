@@ -7,7 +7,6 @@ import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.UnsupportedEncodingException;
-import java.util.ArrayList;
 import java.util.Collections;
 import java.util.InvalidPropertiesFormatException;
 import java.util.List;
@@ -15,23 +14,23 @@ import java.util.Properties;
 import java.util.Set;
 import java.util.regex.Pattern;
 
+import javax.annotation.Resource;
+
 import org.apache.log4j.Logger;
 import org.springframework.beans.BeansException;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.context.ApplicationContext;
 import org.springframework.context.ApplicationContextAware;
-import org.springframework.core.io.Resource;
 import org.springframework.web.multipart.commons.CommonsMultipartFile;
 
 import com.cannontech.clientutils.YukonLogManager;
 import com.cannontech.common.util.CtiUtilities;
+import com.cannontech.web.support.LocalizationBackingBean.Choice;
 import com.google.common.collect.Lists;
 
 public class LocalizationService implements ApplicationContextAware {
     private static final String themesFolderName = CtiUtilities.getYukonBase() + "/Server/Config/Themes/";
     private static final String workspaceDir = System.getProperty("com.cooperindustries.dev.wsdir");
-    @Autowired @Qualifier("i18nFileBasenames") ArrayList<String> defaultI18nFiles;
+    @Resource(name="i18nBasenames") private List<String> defaultI18nFiles;
     private ApplicationContext applicationContext;
     private Logger log = YukonLogManager.getLogger(LocalizationService.class);
     private Properties builtInProperties = null;
@@ -90,7 +89,7 @@ public class LocalizationService implements ApplicationContextAware {
      * @throws InvalidPropertiesFormatException when a theme/custom file cannot be parsed as an xml properties file
      */
     public List<String> search(LocalizationBackingBean backingBean) throws FileNotFoundException, InvalidPropertiesFormatException {
-        boolean searchByKey = "key".equals(backingBean.getSearchBy());
+        boolean searchByKey = "KEY".equals(backingBean.getSearchBy());
 
         Properties properties = getProperties(backingBean, SelectorType.SEARCH_IN);
         List<String> results = search(backingBean.getQuery(), properties, searchByKey, backingBean.isCaseSensitive());
@@ -151,31 +150,31 @@ public class LocalizationService implements ApplicationContextAware {
     /**
      * Generates a Properties out of a backing bean's choices and the selectorType
      * @param backingBean contains selected choices, as well as custom uploaded file
-     * @param selectorType (MODIFIED, BASE, or SEARCH_IN)
+     * @param selector (MODIFIED, BASE, or SEARCH_IN)
      * @throws FileNotFoundException when a theme/custom file is not found or cannot be opened
      * @throws InvalidPropertiesFormatException when a theme/custom file cannot be parsed as an xml properties file
      */
-    private Properties getProperties(LocalizationBackingBean backingBean, SelectorType selectorType) throws FileNotFoundException, InvalidPropertiesFormatException {
-        String choice = null;
+    private Properties getProperties(LocalizationBackingBean backingBean, SelectorType selector) throws FileNotFoundException, InvalidPropertiesFormatException {
+        Choice choice = null;
 
-        switch (selectorType) {
+        switch (selector) {
         case MODIFIED:
-            choice = backingBean.getModifiedChoice();
+            choice = backingBean.getModifiedChoiceEnum();
             break;
         case BASE:
-            choice = backingBean.getBaseChoice();
+            choice = backingBean.getBaseChoiceEnum();
             break;
         case SEARCH_IN:
-            choice = backingBean.getSearchInChoice();
+            choice = backingBean.getSearchInChoiceEnum();
             break;
         }
         
         Properties properties = new Properties();
         
         switch (choice) {
-        case "theme":
+        case THEME:
             String themeName = null;
-            switch (selectorType) {
+            switch (selector) {
             case MODIFIED:
                 themeName = backingBean.getModifiedTheme();
                 break;
@@ -186,29 +185,32 @@ public class LocalizationService implements ApplicationContextAware {
                 themeName = backingBean.getSearchInTheme();
             }
             if(! getThemeFilesList().contains(themeName)){
-                throw new FileNotFoundException("Cannot open theme " + themeName );
+                log.error("Selected theme not found in Themes folder: " + themeName);
+               throw new FileNotFoundException(selector.toString());
             }
             File theme = new File(themesFolderName + themeName);
             FileInputStream stream;
             try {
                 stream = new FileInputStream(theme);
             } catch (FileNotFoundException e) {
-                throw new FileNotFoundException("Cannot open theme " + themeName );
+                log.error("Cannot open theme " + themeName);
+                throw new FileNotFoundException(selector.toString());
             }
             
             try {
                 properties.loadFromXML(stream);
             } catch (InvalidPropertiesFormatException e1) {
-                System.out.println(e1.getMessage() + "\n" + e1.getCause());
-                throw new InvalidPropertiesFormatException("Cannot process theme " + themeName );
+                log.error("Cannot process theme " + themeName + ": " + e1.getMessage());
+                throw new InvalidPropertiesFormatException(selector.toString());
             } catch (IOException e) {
-                throw new FileNotFoundException("Cannot open theme " + themeName );
+                log.error("Cannot open theme " + themeName + ": " + e.getMessage());
+                throw new FileNotFoundException(selector.toString() );
             }
             break;
 
-        case "custom":
+        case CUSTOM:
             CommonsMultipartFile custom = null;
-            switch (selectorType) {
+            switch (selector) {
             case MODIFIED:
                 custom = backingBean.getModifiedCustom();
                 break;
@@ -221,12 +223,14 @@ public class LocalizationService implements ApplicationContextAware {
             try {
                 properties.loadFromXML(custom.getInputStream());
             } catch (InvalidPropertiesFormatException e) {
-                throw new FileNotFoundException("Cannot process uploaded file");
+                log.error("Cannot process uploaded file");
+                throw new InvalidPropertiesFormatException(selector.toString());
             } catch (IOException e) {
-                throw new FileNotFoundException("Cannot open uploaded file");
+                log.error("Cannot open uploaded file");
+                throw new FileNotFoundException(selector.toString());
             }
             break;
-        case "default":
+        case DEFAULT:
         default:
             boolean devMode = (workspaceDir != null);
             
@@ -235,14 +239,8 @@ public class LocalizationService implements ApplicationContextAware {
             }
             
             for (String i18nFile : defaultI18nFiles) {
-                Resource res;
+                org.springframework.core.io.Resource res = applicationContext.getResource(i18nFile + ".xml");
 
-                if (devMode) {
-                    res = applicationContext.getResource(i18nFile.replace( "classpath:", "file:" + workspaceDir + "/common/i18n/en_US/") + ".xml");
-                } else {
-                    res = applicationContext.getResource(i18nFile + ".xml");
-                }
-                
                 Properties newProperties = new Properties();
                 try {
                     newProperties.loadFromXML(res.getInputStream());

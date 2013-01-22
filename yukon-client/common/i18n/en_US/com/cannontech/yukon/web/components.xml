@@ -270,6 +270,7 @@
     <entry key="yukon.web.components.button.down.disabled.hoverUrl">/WebConfig/yukon/Icons/green_arrow_down_over.gif</entry>
 
     <entry key="yukon.web.components.button.search.label">Search</entry>
+    <entry key="yukon.web.components.button.download.label">Download</entry>
 
     <entry key="yukon.web.components.pageloading">Loading…</entry>
     <entry key="yukon.web.components.waiting">Waiting…</entry>

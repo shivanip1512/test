@@ -6,48 +6,55 @@
 
 
 <cti:msgScope paths="modules.support.localization">
-	<form:form action="view" modelAttribute="localizationBackingBean" enctype="multipart/form-data">
+    <form:form action="view" modelAttribute="localizationBackingBean" enctype="multipart/form-data">
 
-		<div class="doublepage">
-			<div class="colleft">
-				<div class="col1">
-					<div>
-						<label><i:inline key=".search" /></label>
-						<tags:input path="query" />
-					</div>
-					<div>
-						<label><i:inline key=".caseSensitive" /></label>
-						<tags:checkbox path="caseSensitive" />
-					</div>
-				</div>
+        <div class="doublepage">
+            <div class="colleft">
+                <div class="col1">
+                    <div>
+                        <label>
+                            <i:inline key=".search" />
+                            <tags:input path="query" id="search_query" />
+                        </label>
+                    </div>
+                    <div>
+                        <label>
+                            <i:inline key=".caseSensitive" />
+                            <tags:checkbox path="caseSensitive" />
+                        </label>
+                    </div>
+                </div>
 
-				<div class="col2">
-					<div>
-						<label><i:inline key=".searchIn" /></label>
-					</div>
-					<div>
-						<form:radiobutton path="searchInChoice"	value="default" />
-						<label><i:inline key=".default" /></label>
-					</div>
-					
-					<div>
-						<form:radiobutton path="searchInChoice"	value="theme" />
-						<label><i:inline key=".installed" /></label>
-						<tags:selectWithItems path="searchInTheme" items="${installedThemes}" />						
-					</div>
-					<div>
-						<form:radiobutton path="searchInChoice" value="custom" />
-						<label><i:inline key=".custom" /></label>
-						<input type="file" name="searchInCustom">
-					</div>
-				</div>
-			</div>
-		</div>
-		
-		<input type="hidden" name="task" value="search"/>
+                <div class="col2">
+                    <div>
+                        <i:inline key=".searchIn" />
+                    </div>
+                    <div>
+                        <label>
+                            <form:radiobutton path="searchInChoice" value="DEFAULT" />
+                            <i:inline key=".default" />
+                        </label>
+                    </div>
 
-		<button type="submit" name="searchBy" value="value"><i:inline key=".searchByValue"/></button>
-		<button type="submit" name="searchBy" value="key"><i:inline key=".searchByKey"/></button>
-		
-	</form:form>
+                    <div>
+                        <label>
+                            <form:radiobutton path="searchInChoice" value="THEME" />
+                            <i:inline key=".installed" />
+                            <tags:selectWithItems path="searchInTheme" items="${installedThemes}" />
+                        </label>
+                    </div>
+                    <div>
+                        <label>
+                            <form:radiobutton path="searchInChoice" value="CUSTOM" />
+                            <i:inline key=".custom" />
+                            <input type="file" name="searchInCustom">
+                        </label>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <input type="hidden" name="task" value="SEARCH" />
+        <cti:button type="submit" name="searchBy" value="VALUE" nameKey="searchByValue" />
+        <cti:button type="submit" name="searchBy" value="KEY" nameKey="searchByKey" />
+    </form:form>
 </cti:msgScope>

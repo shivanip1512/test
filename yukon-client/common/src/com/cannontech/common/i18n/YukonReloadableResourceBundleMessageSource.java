@@ -20,18 +20,6 @@ public class YukonReloadableResourceBundleMessageSource extends ReloadableResour
         }
     }
 
-    @Override
-    public void setBasenames(String... basenames) {
-        String wsDir = System.getProperty("com.cooperindustries.dev.wsdir");
-        if (wsDir != null) {
-            for (int index = 0; index < basenames.length; index++) {
-                String basename = basenames[index];
-                basenames[index] = basename.replace("classpath:", "file:" + wsDir + "/common/i18n/en_US/");
-            }
-        }
-        super.setBasenames(basenames);
-    }
-
     public void setConfigurationSource(ConfigurationSource configurationSource) {
         this.configurationSource = configurationSource;
     }
