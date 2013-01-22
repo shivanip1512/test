@@ -1,6 +1,7 @@
 package com.cannontech.support.service.impl;
 
 import java.io.File;
+import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.Date;
 
@@ -17,13 +18,19 @@ public class SupportBundleDateRangeAndNameFileWriterTest {
 
 	@Test
 	public void testAddCandidate() throws Exception {
-        LocalDate stopDate = new LocalDate(DateTimeZone.getDefault());
+        SimpleDateFormat formatter = new SimpleDateFormat("yyyyMMdd");
+        Date jan10 = null;
+        try {
+            jan10 = formatter.parse("20130110");
+        } catch (ParseException e) {
+            Assert.fail("Could not parse the date 20130110");
+        }
+        LocalDate stopDate = new LocalDate(jan10, DateTimeZone.getDefault());
         LocalDate startDate = stopDate.minus(Weeks.TWO);
 
         ReadableInstant start = TimeUtil.toMidnightAtBeginningOfDay(startDate, DateTimeZone.getDefault());
         ReadableInstant stop = TimeUtil.toMidnightAtEndOfDay(stopDate, DateTimeZone.getDefault());
 
-		SimpleDateFormat formatter = new SimpleDateFormat("yyyyMMdd");
 
 		SupportBundleDateRangeAndNameFileWriter writer = new SupportBundleDateRangeAndNameFileWriter();
 
@@ -77,7 +84,14 @@ public class SupportBundleDateRangeAndNameFileWriterTest {
 		
 	@Test
 	public void testIsMatch() {
-        LocalDate stopDate = new LocalDate(DateTimeZone.getDefault());
+        SimpleDateFormat formatter = new SimpleDateFormat("yyyyMMdd");
+        Date jan10 = null;
+        try {
+            jan10 = formatter.parse("20130110");
+        } catch (ParseException e) {
+            Assert.fail("Could not parse the date 2013-01-10");
+        }
+        LocalDate stopDate = new LocalDate(jan10, DateTimeZone.getDefault());
         LocalDate startDate = stopDate.minus(Weeks.TWO);
 
         ReadableInstant start = TimeUtil.toMidnightAtBeginningOfDay(startDate, DateTimeZone.getDefault());
