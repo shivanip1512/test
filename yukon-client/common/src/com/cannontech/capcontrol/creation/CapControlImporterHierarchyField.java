@@ -1,9 +1,12 @@
 package com.cannontech.capcontrol.creation;
 
+import java.util.List;
+
 import org.apache.commons.lang.Validate;
 
 import com.google.common.collect.ImmutableMap;
 import com.google.common.collect.ImmutableSet;
+import com.google.common.collect.Lists;
 
 public enum CapControlImporterHierarchyField {
 	TYPE("Type", true),
@@ -60,9 +63,25 @@ public enum CapControlImporterHierarchyField {
 		return requiredFields;
 	}
 	
+    public static List<String> getRequiredFieldNames() {
+        List<String> requiredFieldNames = Lists.newArrayList();
+        for(CapControlImporterHierarchyField field : requiredFields){
+            requiredFieldNames.add(field.getColumnName());
+        }
+        return requiredFieldNames;
+    }
+	
 	public static ImmutableSet<CapControlImporterHierarchyField> getNonRequiredFields() {
 	    return nonRequiredFields;
 	}
+	
+    public static List<String> getOptionalFieldNames() {
+        List<String> optionalFieldNames = Lists.newArrayList();
+        for(CapControlImporterHierarchyField field : nonRequiredFields){
+            optionalFieldNames.add(field.getColumnName());
+        }
+        return optionalFieldNames;
+    }
 	
 	public String getColumnName() {
 		return columnName;

@@ -16,28 +16,49 @@
     });
     </script>
     
+    <script>
+        jQuery(function() {
+            updateImportTypeSelection();
+            jQuery("#importTypeSelector").change(function() {
+                updateImportTypeSelection();
+            });
+        });
+
+        function updateImportTypeSelection() {
+            var itemSelected = jQuery("#importTypeSelector").val();
+            //hide all rows
+            jQuery("[class^='importType_']").hide();
+            //show rows for the selected interface
+            jQuery(".importType_" + itemSelected).show();
+        }
+    </script>
+
     <div style="width:50%;">
     <tags:boxContainer2 nameKey="importContainer">
-        <i:inline key=".importTypeSelect"/>
-        <select id="importTypeSelector">
-            <c:forEach var="importType" items="${importTypes}">
-                <option value="${importType}">
-                    <i:inline key="${importType}"/>
-                </option>
-            </c:forEach>
-        </select>
-        <br><br>
-        <form id="importForm" method="post" action="/capcontrol/import/cbcFile" enctype="multipart/form-data">
-            <cti:url var="folderImg" value="/WebConfig/yukon/Icons/folder_edit.gif"/>
-            <img src="${folderImg}">&nbsp;<input type="file" name="dataFile"><br>
-            <div style="float:right">
-                <cti:button type="submit" nameKey="importSubmitButton" id="importSubmitButton" styleClass="f_blocker"/>
-            </div>
-        </form>
-	</tags:boxContainer2>
+        <div>
+            <i:inline key=".importTypeSelect" />
+            <select id="importTypeSelector">
+                <c:forEach var="importType" items="${importTypes}">
+                    <option value="${importType}">
+                        <i:inline key="${importType}" />
+                    </option>
+                </c:forEach>
+            </select>
+        </div>
+        <div>
+            <form id="importForm" method="post" action="/capcontrol/import/cbcFile" enctype="multipart/form-data">
+                <div>
+                    <img src="/WebConfig/yukon/Icons/folder_edit.gif">
+                    <input type="file" name="dataFile">
+                </div>
+                <div>
+                    <cti:button type="submit" nameKey="importSubmitButton" id="importSubmitButton" styleClass="f_blocker" />
+                </div>
+            </form>
+        </div>
+        </tags:boxContainer2>
     </div>
-	
-    <br>
+
     <c:if test="${!empty results}">
     <tags:boxContainer2 nameKey="resultContainer">
         <ol style="list-style-type:decimal; padding-left: 35px">
@@ -57,4 +78,45 @@
         </ol>
     </tags:boxContainer2>
     </c:if>
+
+    <div style="width: 50%">
+        <c:forEach var="importType" items="${importTypes}">
+            <div class="importType_${importType}" style="display: none;">
+                <table class="resultsTable detail">
+                    <tr>
+                        <td colspan="2" style="background-color: #CDCDCD;">
+                            <cti:msg2 var="displayImportType" key="${importType}" />
+                            <div class="fwb"> ${displayImportType} File Format</div>
+                            <a href="<cti:url value="/WebConfig/custom/sample_capcontrol_files/Sample ${displayImportType} Import.csv"/>">
+                                <img src="/WebConfig/yukon/Icons/download_file.gif">
+                                <i:inline key="yukon.web.modules.capcontrol.import.sampleFile" />
+                            </a>
+                        </td>
+                    </tr>
+
+                    <c:forEach var="columnType" items="${importType.columnTypes}">
+                        <c:if test="${not empty columnType.value}">
+                            <tr>
+                                <th align="left">
+                                    <i:inline key="yukon.web.modules.capcontrol.import.header.${columnType.key}" />
+                                </th>
+                                <th>
+                                    <i:inline key="yukon.web.modules.capcontrol.import.header.description" />
+                                </th>
+                            </tr>
+                            <c:forEach var="column" items="${columnType.value}">
+                                <tr>
+                                    <td class="smallBoldLabel">${column}</td>
+                                    <td>
+                                        <i:inline key="yukon.web.modules.capcontrol.import.description.${importType}.${column}" />
+                                    </td>
+                                </tr>
+                            </c:forEach>
+                        </c:if>
+                    </c:forEach>
+                </table>
+            </td>
+            </div>
+        </c:forEach>
+    </div>
 </cti:standardPage>

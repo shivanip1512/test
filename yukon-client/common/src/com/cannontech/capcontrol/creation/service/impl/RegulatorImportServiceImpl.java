@@ -4,6 +4,7 @@ import java.util.List;
 
 import org.springframework.beans.factory.annotation.Autowired;
 
+import com.cannontech.capcontrol.creation.RegulatorImportField;
 import com.cannontech.capcontrol.creation.service.RegulatorImportService;
 import com.cannontech.capcontrol.dao.VoltageRegulatorDao;
 import com.cannontech.common.csvImport.CsvImportResult;
@@ -16,7 +17,6 @@ import com.cannontech.common.csvImport.ImportResult;
 import com.cannontech.common.csvImport.ImportRow;
 import com.cannontech.common.csvImport.ImportValidationResult;
 import com.cannontech.common.csvImport.types.RegulatorType;
-import com.cannontech.common.csvImport.types.StrictBoolean;
 import com.cannontech.common.pao.YukonPao;
 import com.cannontech.common.pao.model.CompleteRegulator;
 import com.cannontech.common.pao.service.PaoPersistenceService;
@@ -32,16 +32,30 @@ public class RegulatorImportServiceImpl implements RegulatorImportService {
     //This block specifies the format for voltage regulator import files
     static {
         importFormat = new ImportFileFormat();
-        //REQUIRED
-        importFormat.addRequiredColumn("ACTION", ImportAction.class, false, true);
-        importFormat.addRequiredColumn("NAME", String.class);
-        //VALUE DEPENDENT
-        importFormat.addValueDependentColumn("TYPE", RegulatorType.class, false, true, "ACTION", ImportAction.ADD);
-        //OPTIONAL
-        importFormat.addOptionalColumn("DESCRIPTION", String.class);
-        importFormat.addOptionalColumn("DISABLED", StrictBoolean.class);
-        importFormat.addOptionalColumn("KEEP ALIVE TIMER", Integer.class);
-        importFormat.addOptionalColumn("KEEP ALIVE CONFIG", Integer.class);
+        for(RegulatorImportField format : RegulatorImportField.values()){
+            switch(format.getInputType()){
+            case REQUIRED:
+                importFormat.addRequiredColumn(format.getName(),
+                                               format.getTypeClass(),
+                                               format.isNullable(),
+                                               format.isUppercaseValue());
+                break;
+            case VALUE_DEPENDENT:
+                importFormat.addValueDependentColumn(format.getName(),
+                                                     format.getTypeClass(),
+                                                     format.isNullable(),
+                                                     format.isUppercaseValue(),
+                                                     format.getDependedColumnName(),
+                                                     format.getDependedColumnValues());
+                break;
+            case OPTIONAL:
+                importFormat.addOptionalColumn(format.getName(),
+                                               format.getTypeClass(),
+                                               format.isNullable(),
+                                               format.isUppercaseValue());
+                break;
+            }
+        }
     }
     
     /**
@@ -99,19 +113,8 @@ public class RegulatorImportServiceImpl implements RegulatorImportService {
         
         CompleteRegulator regulator = new CompleteRegulator();
         regulator.setPaoName(name);
-        if(row.hasValue("DESCRIPTION")) {
-            regulator.setDescription(row.getValue("DESCRIPTION"));
-        }
-        if(row.hasValue("DISABLED")) {
-            regulator.setDisabled(Boolean.valueOf(row.getValue("DISABLED")));
-        }
-        if(row.hasValue("KEEP ALIVE TIMER")) {
-            regulator.setKeepAliveTimer(Integer.valueOf(row.getValue("KEEP ALIVE TIMER")));
-        }
-        if(row.hasValue("KEEP ALIVE CONFIG")) {
-            regulator.setKeepAliveConfig(Integer.valueOf(row.getValue("KEEP ALIVE CONFIG")));
-        }
-        
+        setOptionalColumns(regulator, row);
+
         RegulatorType type = RegulatorType.valueOf(row.getValue("TYPE"));
         paoPersistenceService.createPaoWithDefaultPoints(regulator, type.getPaoType());
         return new CsvImportResult(ImportAction.ADD, CsvImportResultType.SUCCESS, name);
@@ -126,19 +129,8 @@ public class RegulatorImportServiceImpl implements RegulatorImportService {
         }
         
         CompleteRegulator regulator = paoPersistenceService.retreivePao(pao.getPaoIdentifier(), CompleteRegulator.class);
-        if(row.hasValue("DESCRIPTION")) {
-            regulator.setDescription(row.getValue("DESCRIPTION"));
-        }
-        if(row.hasValue("DISABLED")) {
-            regulator.setDisabled(Boolean.valueOf(row.getValue("DISABLED")));
-        }
-        if(row.hasValue("KEEP ALIVE TIMER")) {
-            regulator.setKeepAliveTimer(Integer.valueOf(row.getValue("KEEP ALIVE TIMER")));
-        }
-        if(row.hasValue("KEEP ALIVE CONFIG")) {
-            regulator.setKeepAliveConfig(Integer.valueOf(row.getValue("KEEP ALIVE CONFIG")));
-        }
-        
+        setOptionalColumns(regulator, row);
+
         paoPersistenceService.updatePao(regulator);
         return new CsvImportResult(ImportAction.UPDATE, CsvImportResultType.SUCCESS, name);
     }
@@ -157,5 +149,32 @@ public class RegulatorImportServiceImpl implements RegulatorImportService {
         
         paoPersistenceService.deletePao(pao.getPaoIdentifier());
         return new CsvImportResult(ImportAction.REMOVE, CsvImportResultType.SUCCESS, name);
+    }
+
+    private void setOptionalColumns(CompleteRegulator regulator, ImportRow row){
+        for(String field : RegulatorImportField.getOptionalFieldNames()){
+            if(row.hasValue(field)){
+                String value = row.getValue(field);
+                switch(RegulatorImportField.getByFieldName(field)){
+                case DESCRIPTION:
+                    regulator.setDescription(value);
+                    break;
+                case DISABLED:
+                    regulator.setDisabled(Boolean.valueOf(value));
+                    break;
+                case KEEP_ALIVE_CONFIG:
+                    regulator.setKeepAliveConfig(Integer.valueOf(value));
+                    break;
+                case KEEP_ALIVE_TIMER:
+                    regulator.setKeepAliveTimer(Integer.valueOf(value));
+                    break;
+                case VOLT_CHANGE_PER_TAP:
+                    regulator.setVoltChangePerTap(Double.valueOf(value));
+                    break;
+                default:
+                    break;
+                }
+            }
+        }
     }
 }

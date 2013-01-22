@@ -536,6 +536,47 @@
     <entry key="yukon.web.modules.capcontrol.import.cbcImportFailure">{0} - Import failed for CBC named "{1}"</entry>
     <entry key="yukon.web.modules.capcontrol.import.cbcImportSuccess">{0} - Import succeeded for CBC named "{1}"</entry>
     <entry key="yukon.web.modules.capcontrol.import.regulatorMappingBadPointType">Invalid Value - {0} failed. Point type "{1}" is invalid for mapping "{2}"</entry>
+
+    <entry key="yukon.web.modules.capcontrol.import.sampleFile">Sample File</entry>
+    <entry key="yukon.web.modules.capcontrol.import.header.required">Required Columns</entry>
+    <entry key="yukon.web.modules.capcontrol.import.header.valueDependent">Value Dependent Columns</entry>
+    <entry key="yukon.web.modules.capcontrol.import.header.optional">Optional Columns</entry>
+    <entry key="yukon.web.modules.capcontrol.import.header.description">Description</entry>
+    <entry key="yukon.web.modules.capcontrol.import.description.CBC.CBC Name">The name of the CBC device being created</entry>
+    <entry key="yukon.web.modules.capcontrol.import.description.CBC.CBC Type">The type of CBC&lt;br&gt;Options: CBC Versacom, CBC Expresscom, CBC 7010, CBC 7011, CBC 7012, CBC 7020, CBC 7022, CBC 7023, CBC 7024, CBC 8020, CBC 8024, CBC DNP, CBC FP-2800, CBC 6510</entry>
+    <entry key="yukon.web.modules.capcontrol.import.description.CBC.CBC Serial Number">The serial number of the new CBC</entry>
+    <entry key="yukon.web.modules.capcontrol.import.description.CBC.Master Address">Master address of the CBC</entry>
+    <entry key="yukon.web.modules.capcontrol.import.description.CBC.Slave Address">Slave address of the CBC</entry>
+    <entry key="yukon.web.modules.capcontrol.import.description.CBC.Comm Channel">The comm channel the CBC will operate on</entry>
+    <entry key="yukon.web.modules.capcontrol.import.description.CBC.Import Action">Options: Add, Update, or Remove</entry>
+    <entry key="yukon.web.modules.capcontrol.import.description.CBC.Template Name">The name of the CBC to serve as the template.</entry>
+    <entry key="yukon.web.modules.capcontrol.import.description.CBC.Cap Bank Name">The name of the parent Cap Bank of the CBC</entry>
+    <entry key="yukon.web.modules.capcontrol.import.description.CBC.Scan Enabled">Whether Scanning is enabled for the CBC&lt;br&gt;Options:Y,N</entry>
+    <entry key="yukon.web.modules.capcontrol.import.description.CBC.Scan Interval">Scan Interval for the CBC in seconds</entry>
+    <entry key="yukon.web.modules.capcontrol.import.description.CBC.Alt Interval">Alt Scan Interval for the CBC in seconds</entry>
+    <entry key="yukon.web.modules.capcontrol.import.description.HIERARCHY.Type">The type of object&lt;br&gt;Options:CCAREA, CCSPECIALAREA, CCSUBSTATION, CCSUBBUS, CCFEEDER, CAP BANK</entry>
+    <entry key="yukon.web.modules.capcontrol.import.description.HIERARCHY.Name">The name of the hierarchy object being created</entry>
+    <entry key="yukon.web.modules.capcontrol.import.description.HIERARCHY.Import Action">Options: Add, Update, or Remove</entry>
+    <entry key="yukon.web.modules.capcontrol.import.description.HIERARCHY.Parent">The name of the parent for this object</entry>
+    <entry key="yukon.web.modules.capcontrol.import.description.HIERARCHY.Description">Any description desired for the object</entry>
+    <entry key="yukon.web.modules.capcontrol.import.description.HIERARCHY.Disabled">Whether or not this object should be disabled&lt;br&gt;Options: Y,N</entry>
+    <entry key="yukon.web.modules.capcontrol.import.description.HIERARCHY.MapLocationId">Any map location identifier desired for the object</entry>
+    <entry key="yukon.web.modules.capcontrol.import.description.HIERARCHY.Operational State">For Cap Banks, the Operational State&lt;br&gt;Options: Fixed, Switched, StandAlone, Uninstalled</entry>
+    <entry key="yukon.web.modules.capcontrol.import.description.HIERARCHY.Capbank Size">For Cap Banks, the size in kVars</entry>
+    <entry key="yukon.web.modules.capcontrol.import.description.REGULATOR.NAME">Name of the Regulator to create</entry>
+    <entry key="yukon.web.modules.capcontrol.import.description.REGULATOR.ACTION">Options: Add, Update, or Remove</entry>
+    <entry key="yukon.web.modules.capcontrol.import.description.REGULATOR.KEEP ALIVE CONFIG">Time sent to device to stay alive for (in seconds)</entry>
+    <entry key="yukon.web.modules.capcontrol.import.description.REGULATOR.DISABLED">Name of the CBC</entry>
+    <entry key="yukon.web.modules.capcontrol.import.description.REGULATOR.TYPE">Required when ACTION is Add&lt;br&gt;Type of Regulator&lt;br&gt;Options:LTC, Phase_Operated, Gang_Operated</entry>
+    <entry key="yukon.web.modules.capcontrol.import.description.REGULATOR.DESCRIPTION">Any description desired for the object</entry>
+    <entry key="yukon.web.modules.capcontrol.import.description.REGULATOR.KEEP ALIVE TIMER">Time interval to resend keep alive message (in seconds)</entry>
+    <entry key="yukon.web.modules.capcontrol.import.description.REGULATOR.VOLT CHANGE PER TAP">Voltage Change per Tap&lt;br&gt;(Default:0.75)</entry>
+    <entry key="yukon.web.modules.capcontrol.import.description.POINT_MAPPING.REGULATOR NAME">Parent regulator to map the point to</entry>
+    <entry key="yukon.web.modules.capcontrol.import.description.POINT_MAPPING.ACTION">Options: Add, Update, or Remove</entry>
+    <entry key="yukon.web.modules.capcontrol.import.description.POINT_MAPPING.MAPPING">Attribute the point will be associated with on the parent regulator&lt;br&gt;Options: Auto/Remote Control, Auto Block Enable, Raise Tap Position, Lower Tap Position, Tap Position, Terminate, Voltage X, Voltage Y, Keep Alive, Keep Alive Timer</entry>
+    <entry key="yukon.web.modules.capcontrol.import.description.POINT_MAPPING.POINT NAME">Required when ACTION is Add or Update&lt;br&gt;Name of the point to map</entry>
+    <entry key="yukon.web.modules.capcontrol.import.description.POINT_MAPPING.DEVICE TYPE">Required when ACTION is Add or Update&lt;br&gt;Type of physical device which reports points&lt;br&gt;Ex. RTU_DNP</entry>
+    <entry key="yukon.web.modules.capcontrol.import.description.POINT_MAPPING.DEVICE NAME">Required when ACTION is Add or Update&lt;br&gt;Name of the Physical device</entry>
     
     <!-- ControlAlgorithm.java -->
     <entry key="yukon.web.modules.capcontrol.controlAlgorithm.NONE">NONE</entry>

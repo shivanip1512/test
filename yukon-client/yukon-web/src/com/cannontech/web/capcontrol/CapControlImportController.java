@@ -4,6 +4,7 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
 import java.util.UUID;
 import java.util.concurrent.ExecutionException;
 import java.util.concurrent.TimeUnit;
@@ -22,6 +23,9 @@ import org.springframework.web.multipart.MultipartFile;
 import org.springframework.web.multipart.MultipartHttpServletRequest;
 
 import com.cannontech.capcontrol.creation.CapControlImporterCbcField;
+import com.cannontech.capcontrol.creation.CapControlImporterHierarchyField;
+import com.cannontech.capcontrol.creation.RegulatorImportField;
+import com.cannontech.capcontrol.creation.RegulatorPointMappingImportField;
 import com.cannontech.capcontrol.creation.model.CbcImportCompleteDataResult;
 import com.cannontech.capcontrol.creation.model.CbcImportData;
 import com.cannontech.capcontrol.creation.model.CbcImportResult;
@@ -61,6 +65,7 @@ import com.google.common.cache.Cache;
 import com.google.common.cache.CacheBuilder;
 import com.google.common.collect.Iterables;
 import com.google.common.collect.Lists;
+import com.google.common.collect.Maps;
 
 @Controller
 @RequestMapping("/import/*")
@@ -83,13 +88,49 @@ public class CapControlImportController {
         }
     };
 	
-    private static enum ImportType implements DisplayableEnum {
-        CBC,
-        HIERARCHY,
-        REGULATOR,
-        POINT_MAPPING,
+    public static enum ImportType implements DisplayableEnum {
+        CBC( CapControlImporterCbcField.getRequiredFieldNames(),
+             new ArrayList<String>(),
+             CapControlImporterCbcField.getOptionalFieldNames() ),
+        HIERARCHY( CapControlImporterHierarchyField.getRequiredFieldNames(),
+                   new ArrayList<String>(),
+                   CapControlImporterHierarchyField.getOptionalFieldNames() ),
+        REGULATOR( RegulatorImportField.getRequiredFieldNames(),
+                   RegulatorImportField.getValueDependentFieldNames(),
+                   RegulatorImportField.getOptionalFieldNames() ),
+        POINT_MAPPING( RegulatorPointMappingImportField.getRequiredFieldNames(),
+                       RegulatorPointMappingImportField.getValueDependentFieldNames(),
+                       RegulatorPointMappingImportField.getOptionalFieldNames() ),
         ;
         
+
+        private List<String> requiredColumns;
+        private List<String> valueDependentColumns;
+        private List<String> optionalColumns;
+
+        private ImportType(List<String> requiredColumns, List<String> valueDependentColumns, List<String> optionalColumns){
+            this.requiredColumns = requiredColumns;
+            this.valueDependentColumns = valueDependentColumns;
+            this.optionalColumns = optionalColumns;
+        }
+
+       public List<String> getRequiredColumns() {
+           return requiredColumns;
+       }
+        public List<String> getValueDependentColumns() {
+            return valueDependentColumns;
+        }
+        public List<String> getOptionalColumns() {
+            return optionalColumns;
+        }
+
+        public Map<String,List<String>> getColumnTypes(){
+            Map<String,List<String>> results = Maps.newLinkedHashMap();
+            results.put("required", getRequiredColumns());
+            results.put("valueDependent", getValueDependentColumns());
+            results.put("optional", getOptionalColumns());
+            return results;
+        }
         public String getFormatKey() {
             return "yukon.web.modules.capcontrol.import.importTypes." + name();
         }

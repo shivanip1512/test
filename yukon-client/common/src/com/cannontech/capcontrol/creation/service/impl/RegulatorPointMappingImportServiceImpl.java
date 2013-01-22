@@ -5,6 +5,7 @@ import java.util.Set;
 
 import org.springframework.beans.factory.annotation.Autowired;
 
+import com.cannontech.capcontrol.creation.RegulatorPointMappingImportField;
 import com.cannontech.capcontrol.creation.service.RegulatorPointMappingImportService;
 import com.cannontech.capcontrol.dao.CcMonitorBankListDao;
 import com.cannontech.common.csvImport.CsvImportResult;
@@ -40,14 +41,30 @@ public class RegulatorPointMappingImportServiceImpl implements RegulatorPointMap
     //This block specifies the format for regulator point mapping import files
     static {
         importFormat = new ImportFileFormat();
-        //REQUIRED
-        importFormat.addRequiredColumn("ACTION", ImportAction.class, false, true);
-        importFormat.addRequiredColumn("REGULATOR NAME", String.class);
-        importFormat.addRequiredColumn("MAPPING", RegulatorPointMapping.class, false, true);
-        //VALUE-DEPENDENT
-        importFormat.addValueDependentColumn("DEVICE TYPE", ImportPaoType.class, "ACTION", ImportAction.ADD, ImportAction.UPDATE);
-        importFormat.addValueDependentColumn("DEVICE NAME", String.class, "ACTION", ImportAction.ADD, ImportAction.UPDATE);
-        importFormat.addValueDependentColumn("POINT NAME", String.class, "ACTION", ImportAction.ADD, ImportAction.UPDATE);
+        for(RegulatorPointMappingImportField format : RegulatorPointMappingImportField.values()){
+            switch(format.getInputType()){
+            case REQUIRED:
+                importFormat.addRequiredColumn(format.getName(), 
+                                               format.getTypeClass(), 
+                                               format.isNullable(),
+                                               format.isUppercaseValue());
+                break;
+            case VALUE_DEPENDENT:
+                importFormat.addValueDependentColumn(format.getName(), 
+                                                     format.getTypeClass(),
+                                                     format.isNullable(),
+                                                     format.isUppercaseValue(),
+                                                     format.getDependedColumnName(),
+                                                     format.getDependedColumnValues());
+                break;
+            case OPTIONAL:
+                importFormat.addOptionalColumn(format.getName(), 
+                                               format.getTypeClass(), 
+                                               format.isNullable(),
+                                               format.isUppercaseValue());
+                break;
+            }
+        }
     }
     
     /**

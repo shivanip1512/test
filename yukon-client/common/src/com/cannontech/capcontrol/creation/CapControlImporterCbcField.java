@@ -1,9 +1,12 @@
 package com.cannontech.capcontrol.creation;
 
+import java.util.List;
+
 import org.apache.commons.lang.Validate;
 
 import com.google.common.collect.ImmutableMap;
 import com.google.common.collect.ImmutableSet;
+import com.google.common.collect.Lists;
 
 public enum CapControlImporterCbcField {
 	TEMPLATE_NAME("Template Name", false),
@@ -64,10 +67,26 @@ public enum CapControlImporterCbcField {
 		return requiredFields;
 	}
 	
+    public static List<String> getRequiredFieldNames() {
+        List<String> requiredFieldNames = Lists.newArrayList();
+        for(CapControlImporterCbcField field : requiredFields){
+            requiredFieldNames.add(field.getColumnName());
+        }
+        return requiredFieldNames;
+    }
+
 	public static ImmutableSet<CapControlImporterCbcField> getNonRequiredFields() {
 	    return nonRequiredFields;
 	}
 	
+    public static List<String> getOptionalFieldNames() {
+        List<String> optionalFieldNames = Lists.newArrayList();
+        for(CapControlImporterCbcField field : nonRequiredFields){
+            optionalFieldNames.add(field.getColumnName());
+        }
+        return optionalFieldNames;
+    }
+
 	public String getColumnName() {
 		return columnName;
 	}
