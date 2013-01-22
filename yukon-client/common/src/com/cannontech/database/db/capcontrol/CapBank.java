@@ -1,6 +1,8 @@
 package com.cannontech.database.db.capcontrol;
 
 import com.cannontech.common.util.CtiUtilities;
+import com.cannontech.database.SqlUtils;
+import com.google.common.base.Strings;
 
 /**
  * This type was created in VisualAge.
@@ -10,12 +12,12 @@ public class CapBank extends com.cannontech.database.db.DBPersistent
 {
 	private Integer deviceID = null;
 	private String operationalState = com.cannontech.database.data.capcontrol.CapBank.SWITCHED_OPSTATE;
-	private String controllerType = com.cannontech.common.util.CtiUtilities.STRING_NONE;
+	private String controllerType = null;
 	private Integer controlDeviceID = new Integer(com.cannontech.database.db.device.Device.SYSTEM_DEVICE_ID);
 	private Integer controlPointID = new Integer(com.cannontech.database.data.point.PointTypes.SYS_PID_SYSTEM);
 	private Integer bankSize = new Integer(600);
-	private String typeOfSwitch = com.cannontech.common.util.CtiUtilities.STRING_NONE;
-	private String switchManufacture = com.cannontech.common.util.CtiUtilities.STRING_NONE;
+	private String typeOfSwitch = null;
+	private String switchManufacture = null;
 	private String mapLocationID = "0";  //old integer default
 	private Integer recloseDelay = new Integer(0);
 	private Integer maxDailyOps = new Integer(0);
@@ -55,7 +57,8 @@ public void add() throws java.sql.SQLException
 		getDeviceID(), getOperationalState(),
 		getControllerType(), getControlDeviceID(), 
 		getControlPointID(), getBankSize(), 
-		getTypeOfSwitch(), getSwitchManufacture(),
+		SqlUtils.convertStringToDbValue(Strings.nullToEmpty(getTypeOfSwitch())), 
+		SqlUtils.convertStringToDbValue(Strings.nullToEmpty(getSwitchManufacture())),
 		getMapLocationID(), getRecloseDelay(),
 		getMaxDailyOps(), getMaxOpDisable()
 	};
@@ -158,8 +161,8 @@ public void retrieve() throws java.sql.SQLException
 		setControlDeviceID( (Integer) results[2] );
 		setControlPointID( (Integer) results[3] );
 		setBankSize( (Integer) results[4] );
-		setTypeOfSwitch( (String) results[5] );
-		setSwitchManufacture( (String) results[6] );
+		setTypeOfSwitch( SqlUtils.convertDbValueToString(Strings.emptyToNull((String) results[5])) );
+		setSwitchManufacture( SqlUtils.convertDbValueToString(Strings.emptyToNull((String) results[6])) );
 		setMapLocationID( (String) results[7] );
 		setRecloseDelay( (Integer) results[8] );		
 		setMaxDailyOps( (Integer) results[9] );
@@ -255,7 +258,8 @@ public void update() throws java.sql.SQLException
 		getOperationalState(),
 		getControllerType(), getControlDeviceID(), 
 		getControlPointID(), getBankSize(), 
-		getTypeOfSwitch(), getSwitchManufacture(),
+		SqlUtils.convertStringToDbValue(Strings.nullToEmpty(getTypeOfSwitch())), 
+		SqlUtils.convertStringToDbValue(Strings.nullToEmpty(getSwitchManufacture())),
 		getMapLocationID(), getRecloseDelay(),
 		getMaxDailyOps(), getMaxOpDisable()
 	};
