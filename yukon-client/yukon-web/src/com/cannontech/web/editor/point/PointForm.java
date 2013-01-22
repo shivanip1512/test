@@ -271,10 +271,11 @@ public class PointForm extends DBEditorForm {
 
     /**
      * Reset any data structures and allow the parent to do its thing
-     * 
      */
     @Override
     public void resetForm() {
+        getWizData().reset();
+        
         stateGroups = null;
         initialStates = null;
         notifGroups = null;
@@ -296,7 +297,7 @@ public class PointForm extends DBEditorForm {
         }
         String edType = "pointEditor";
         FacesMessage fcsMessage = new FacesMessage();
-        int pointType = getWizData().getPointType().intValue();
+        int pointType = getWizData().getPointType();
         String name = getWizData().getName();
         Integer paoId = getWizData().getParentId();
         boolean disabled = getWizData().getDisabled();

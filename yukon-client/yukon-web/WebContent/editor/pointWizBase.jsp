@@ -76,14 +76,6 @@
 	                            required="true" onchange="submit();" >
 	                        <f:selectItems value="#{selLists.pointTypes}" />
 	                    </x:selectOneMenu>
-	
-	                    <f:verbatim><br/><br/></f:verbatim>
-	                    <x:outputLabel for="Calc_Output" value="Calc. Output: "
-	                            title="The calculated output only applies to calculated points"/>
-	                    <x:selectOneMenu id="Calc_Output" disabled="#{!ptEditorForm.wizData.subtypeNeeded}"
-	                            value="#{ptEditorForm.wizData.subType}" onchange="submit();">
-	                        <f:selectItems value="#{selLists.pointSubtypes}"/>
-	                    </x:selectOneMenu>
                     </x:htmlTag>
 
                 </x:panelGroup>             

@@ -73,14 +73,10 @@ public class CBCSelectionLists {
       new SelectItem(new Integer (PointTypes.ANALOG_POINT), "Analog"),
       new SelectItem(new Integer (PointTypes.STATUS_POINT), "Status"),
       new SelectItem(new Integer (PointTypes.DEMAND_ACCUMULATOR_POINT), "Accumulator"),
-      new SelectItem(new Integer (PointTypes.CALCULATED_POINT), "Calculated"),        
+      new SelectItem(new Integer (PointTypes.CALCULATED_POINT), "Calculated Analog"),
+      new SelectItem(new Integer (PointTypes.CALCULATED_STATUS_POINT), "Calculated Status"),
     };
     
-    private static final SelectItem[] pSubtypes = {
-        new SelectItem(new Integer (PointTypes.CALCULATED_POINT), "Analog Output"),
-        new SelectItem(new Integer (PointTypes.CALCULATED_STATUS_POINT), "Status Output"),
-    };
-
     private static final SelectItem[] typeList701X = {
         new SelectItem(PaoType.CBC_EXPRESSCOM.getDeviceTypeId(), PaoType.CBC_EXPRESSCOM.getDbString() ),
         new SelectItem(PaoType.CAPBANKCONTROLLER.getDeviceTypeId(), PaoType.CAPBANKCONTROLLER.getDbString() ),
@@ -516,10 +512,6 @@ public class CBCSelectionLists {
 
     public SelectItem[] getPointTypes() {
         return pTypes;
-    }
-
-    public SelectItem[] getPointSubtypes() {
-        return pSubtypes;
     }
 
 	public  SelectItem[] getTypeList701X() {

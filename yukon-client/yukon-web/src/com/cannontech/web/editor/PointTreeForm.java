@@ -13,7 +13,6 @@ import org.apache.myfaces.custom.tree2.HtmlTree;
 import org.apache.myfaces.custom.tree2.TreeNode;
 import org.apache.myfaces.custom.tree2.TreeNodeBase;
 
-
 import com.cannontech.clientutils.CTILogger;
 import com.cannontech.core.dao.DaoFactory;
 import com.cannontech.core.dao.NotFoundException;
@@ -117,7 +116,7 @@ public class PointTreeForm {
                         analogSet.add(litePoint);
                     } else if (pointType == PointTypes.STATUS_POINT || pointType == PointTypes.CALCULATED_STATUS_POINT) {
                         statusSet.add(litePoint);
-                    } else if (pointType == PointTypes.PULSE_ACCUMULATOR_POINT){
+                    } else if (pointType == PointTypes.PULSE_ACCUMULATOR_POINT || pointType == PointTypes.DEMAND_ACCUMULATOR_POINT){
                         accumSet.add(litePoint);
                     }
                 }
