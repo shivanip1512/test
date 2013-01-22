@@ -13,8 +13,16 @@ private:
 
     typedef Mct4xxDevice Inherited;
 
-    static const CommandSet       _commandStore;
-    static       CommandSet       initCommandStore();
+    typedef Mct470Device Self;
+    typedef int (Self::*DecodeMethod)(INMESS *, CtiTime &, CtiMessageList &, CtiMessageList &, OutMessageList &);
+
+    typedef std::map<int, DecodeMethod> DecodeMapping;
+
+    static const DecodeMapping _decodeMethods;
+    static       DecodeMapping initDecodeLookup();
+
+    static const CommandSet    _commandStore;
+    static       CommandSet    initCommandStore();
 
     static const  ValueMapping _memoryMap;
     static        ValueMapping initMemoryMap();
@@ -24,8 +32,8 @@ private:
 
     static const ConfigPartsList  _config_parts_430;
     static const ConfigPartsList  _config_parts_470;
-    static ConfigPartsList  initConfigParts430();
-    static ConfigPartsList  initConfigParts470();
+    static       ConfigPartsList  initConfigParts430();
+    static       ConfigPartsList  initConfigParts470();
 
     struct IedResetCommand
     {

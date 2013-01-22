@@ -20,8 +20,16 @@ private:
 
     typedef MctDevice Inherited;
 
+    typedef Mct4xxDevice Self;
+    typedef int (Self::*DecodeMethod)(INMESS *, CtiTime &, CtiMessageList &, CtiMessageList &, OutMessageList &);
+
+    typedef std::map<int, DecodeMethod> DecodeMapping;
+
+    static const DecodeMapping _decodeMethods;
+    static       DecodeMapping initDecodeLookup();
+
     static const CommandSet _commandStore;
-    static CommandSet initCommandStore();
+    static       CommandSet initCommandStore();
 
     int executePutConfigSingle(CtiRequestMsg *pReq, CtiCommandParser &parse, OUTMESS *&OutMessage, CtiMessageList &vgList, CtiMessageList &retList, OutMessageList &outList, bool readsOnly);
     int executePutConfigMultiple(ConfigPartsList & partsList, CtiRequestMsg *pReq, CtiCommandParser &parse, OUTMESS *&OutMessage, CtiMessageList &vgList, CtiMessageList &retList, OutMessageList &outList, bool readsOnly);

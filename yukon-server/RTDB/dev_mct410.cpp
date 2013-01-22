@@ -871,6 +871,51 @@ const Mct410Device::FunctionReadValueMappings *Mct410Device::getFunctionReadValu
 }
 
 
+Mct410Device::DecodeMapping Mct410Device::initDecodeLookup()
+{
+    namespace EP = EmetconProtocol;
+
+    return boost::assign::map_list_of
+        (EP::GetConfig_Disconnect,              &Self::decodeGetConfigDisconnect)
+        (EP::GetConfig_Freeze,                  &Self::decodeGetConfigFreeze)
+        (EP::GetConfig_Intervals,               &Self::decodeGetConfigIntervals)
+        (EP::GetConfig_LoadProfileExistingPeak, &Self::decodeGetConfigLoadProfileExistingPeak)
+        (EP::GetConfig_LongLoadProfile,         &Self::decodeGetConfigLongLoadProfileStorageDays)
+        (EP::GetConfig_MeterParameters,         &Self::decodeGetConfigMeterParameters)
+        (EP::GetConfig_Model,                   &Self::decodeGetConfigModel)
+        (EP::GetConfig_Multiplier,              &Self::decodeGetConfigMeterParameters)
+        (EP::GetConfig_PhaseDetect,             &Self::decodeGetConfigPhaseDetect)
+        (EP::GetConfig_PhaseDetectArchive,      &Self::decodeGetConfigPhaseDetect)
+        (EP::GetConfig_Thresholds,              &Self::decodeGetConfigThresholds)
+        (EP::GetConfig_UniqueAddress,           &Self::decodeGetConfigAddress)
+        (EP::GetConfig_WaterMeterReadInterval,  &Self::decodeGetConfigWaterMeterReadInterval)
+        // ---
+        (EP::GetStatus_Disconnect,              &Self::decodeGetStatusDisconnect)
+        (EP::GetStatus_Internal,                &Self::decodeGetStatusInternal)
+        (EP::GetStatus_LoadProfile,             &Self::decodeGetStatusLoadProfile)
+        // ---
+        (EP::GetValue_DailyRead,                &Self::decodeGetValueDailyRead)
+        (EP::GetValue_Demand,                   &Self::decodeGetValueDemand)
+        (EP::GetValue_FreezeCounter,            &Self::decodeGetValueFreezeCounter)
+        (EP::GetValue_FrozenKWH,                &Self::decodeGetValueKWH)
+        (EP::GetValue_FrozenPeakDemand,         &Self::decodeGetValuePeakDemand)
+        (EP::GetValue_FrozenTOUkWh,             &Self::decodeGetValueTOUkWh)
+        (EP::GetValue_FrozenVoltage,            &Self::decodeGetValueVoltage)
+        (EP::GetValue_KWH,                      &Self::decodeGetValueKWH)
+        (EP::GetValue_LoadProfilePeakReport,    &Self::decodeGetValueLoadProfilePeakReport)
+        (EP::GetValue_Outage,                   &Self::decodeGetValueOutage)
+        (EP::GetValue_PeakDemand,               &Self::decodeGetValuePeakDemand)
+        (EP::GetValue_TOUkWh,                   &Self::decodeGetValueTOUkWh)
+        (EP::GetValue_Voltage,                  &Self::decodeGetValueVoltage)
+        // ---
+        (EP::Scan_Accum,                        &Self::decodeGetValueKWH)
+        (EP::Scan_Integrity,                    &Self::decodeGetValueDemand);
+}
+
+
+const Mct410Device::DecodeMapping Mct410Device::_decodeMethods = Mct410Device::initDecodeLookup();
+
+
 INT Mct410Device::ModelDecode(INMESS *InMessage, CtiTime &TimeNow, CtiMessageList &vgList, CtiMessageList &retList, OutMessageList &outList)
 {
     if( !InMessage )
@@ -878,51 +923,9 @@ INT Mct410Device::ModelDecode(INMESS *InMessage, CtiTime &TimeNow, CtiMessageLis
         return MEMORY;
     }
 
-    typedef Mct410Device self;
-    typedef int (self::*DecodeMethod)(INMESS *, CtiTime &, CtiDeviceBase::CtiMessageList &, CtiDeviceBase::CtiMessageList &, CtiDeviceBase::OutMessageList &);
+    DecodeMapping::const_iterator itr = _decodeMethods.find(InMessage->Sequence);
 
-    typedef std::map<int, DecodeMethod> DecodeLookup;
-    namespace EP = EmetconProtocol;
-
-    const DecodeLookup decodeMethods = boost::assign::map_list_of
-        (EP::GetConfig_Disconnect,              &self::decodeGetConfigDisconnect)
-        (EP::GetConfig_Freeze,                  &self::decodeGetConfigFreeze)
-        (EP::GetConfig_Intervals,               &self::decodeGetConfigIntervals)
-        (EP::GetConfig_LoadProfileExistingPeak, &self::decodeGetConfigLoadProfileExistingPeak)
-        (EP::GetConfig_LongLoadProfile,         &self::decodeGetConfigLongLoadProfileStorageDays)
-        (EP::GetConfig_MeterParameters,         &self::decodeGetConfigMeterParameters)
-        (EP::GetConfig_Model,                   &self::decodeGetConfigModel)
-        (EP::GetConfig_Multiplier,              &self::decodeGetConfigMeterParameters)
-        (EP::GetConfig_PhaseDetect,             &self::decodeGetConfigPhaseDetect)
-        (EP::GetConfig_PhaseDetectArchive,      &self::decodeGetConfigPhaseDetect)
-        (EP::GetConfig_Thresholds,              &self::decodeGetConfigThresholds)
-        (EP::GetConfig_UniqueAddress,           &self::decodeGetConfigAddress)
-        (EP::GetConfig_WaterMeterReadInterval,  &self::decodeGetConfigWaterMeterReadInterval)
-        // ---
-        (EP::GetStatus_Disconnect,              &self::decodeGetStatusDisconnect)
-        (EP::GetStatus_Internal,                &self::decodeGetStatusInternal)
-        (EP::GetStatus_LoadProfile,             &self::decodeGetStatusLoadProfile)
-        // ---
-        (EP::GetValue_DailyRead,                &self::decodeGetValueDailyRead)
-        (EP::GetValue_Demand,                   &self::decodeGetValueDemand)
-        (EP::GetValue_FreezeCounter,            &self::decodeGetValueFreezeCounter)
-        (EP::GetValue_FrozenKWH,                &self::decodeGetValueKWH)
-        (EP::GetValue_FrozenPeakDemand,         &self::decodeGetValuePeakDemand)
-        (EP::GetValue_FrozenTOUkWh,             &self::decodeGetValueTOUkWh)
-        (EP::GetValue_FrozenVoltage,            &self::decodeGetValueVoltage)
-        (EP::GetValue_KWH,                      &self::decodeGetValueKWH)
-        (EP::GetValue_LoadProfilePeakReport,    &self::decodeGetValueLoadProfilePeakReport)
-        (EP::GetValue_Outage,                   &self::decodeGetValueOutage)
-        (EP::GetValue_PeakDemand,               &self::decodeGetValuePeakDemand)
-        (EP::GetValue_TOUkWh,                   &self::decodeGetValueTOUkWh)
-        (EP::GetValue_Voltage,                  &self::decodeGetValueVoltage)
-        // ---
-        (EP::Scan_Accum,                        &self::decodeGetValueKWH)
-        (EP::Scan_Integrity,                    &self::decodeGetValueDemand);
-
-    DecodeLookup::const_iterator itr = decodeMethods.find(InMessage->Sequence);
-
-    if( itr != decodeMethods.end() )
+    if( itr != _decodeMethods.end() )
     {
         const DecodeMethod decoder = itr->second;
 

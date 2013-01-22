@@ -3345,6 +3345,30 @@ INT Mct4xxDevice::decodeGetValuePeakDemand(INMESS *InMessage, CtiTime &TimeNow, 
 }
 
 
+Mct4xxDevice::DecodeMapping Mct4xxDevice::initDecodeLookup()
+{
+    namespace EP = EmetconProtocol;
+
+    return boost::assign::map_list_of
+        (EP::GetConfig_Time,        &Self::decodeGetConfigTime)
+        (EP::GetConfig_TSync,       &Self::decodeGetConfigTime)
+        (EP::GetConfig_TOU,         &Self::decodeGetConfigTOU)
+        // ---
+        (EP::GetStatus_Freeze,      &Self::decodeGetStatusFreeze)
+        // ---
+        (EP::GetValue_TOUPeak,      &Self::decodeGetValuePeakDemand)
+        (EP::GetValue_LoadProfile,  &Self::decodeGetValueLoadProfile)
+        // ---
+        (EP::PutConfig_LoadProfileReportPeriod,
+        /* --- */                   &Self::decodePutConfig)
+        // ---
+        (EP::Scan_LoadProfile,      &Self::decodeScanLoadProfile);
+}
+
+
+const Mct4xxDevice::DecodeMapping Mct4xxDevice::_decodeMethods = Mct4xxDevice::initDecodeLookup();
+
+
 INT Mct4xxDevice::ModelDecode(INMESS *InMessage, CtiTime &TimeNow, CtiMessageList &vgList, CtiMessageList &retList, OutMessageList &outList)
 {
     if( !InMessage )
@@ -3356,26 +3380,10 @@ INT Mct4xxDevice::ModelDecode(INMESS *InMessage, CtiTime &TimeNow, CtiMessageLis
     typedef int (self::*DecodeMethod)(INMESS *, CtiTime &, CtiDeviceBase::CtiMessageList &, CtiDeviceBase::CtiMessageList &, CtiDeviceBase::OutMessageList &);
 
     typedef std::map<int, DecodeMethod> DecodeLookup;
-    namespace EP = EmetconProtocol;
 
-    const DecodeLookup decodeMethods = boost::assign::map_list_of
-        (EP::GetConfig_Time,        &self::decodeGetConfigTime)
-        (EP::GetConfig_TSync,       &self::decodeGetConfigTime)
-        (EP::GetConfig_TOU,         &self::decodeGetConfigTOU)
-        // ---
-        (EP::GetStatus_Freeze,      &self::decodeGetStatusFreeze)
-        // ---
-        (EP::GetValue_TOUPeak,      &self::decodeGetValuePeakDemand)
-        (EP::GetValue_LoadProfile,  &self::decodeGetValueLoadProfile)
-        // ---
-        (EP::PutConfig_LoadProfileReportPeriod,
-        /* --- */                   &self::decodePutConfig)
-        // ---
-        (EP::Scan_LoadProfile,      &self::decodeScanLoadProfile);
+    DecodeLookup::const_iterator itr = _decodeMethods.find(InMessage->Sequence);
 
-    DecodeLookup::const_iterator itr = decodeMethods.find(InMessage->Sequence);
-
-    if( itr != decodeMethods.end() )
+    if( itr != _decodeMethods.end() )
     {
         const DecodeMethod decoder = itr->second;
 

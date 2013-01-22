@@ -12,11 +12,19 @@ private:
 
     typedef Mct4xxDevice Inherited;
 
+    typedef Mct410Device Self;
+    typedef int (Self::*DecodeMethod)(INMESS *, CtiTime &, CtiMessageList &, CtiMessageList &, OutMessageList &);
+
+    typedef std::map<int, DecodeMethod> DecodeMapping;
+
+    static const DecodeMapping    _decodeMethods;
+    static       DecodeMapping    initDecodeLookup();
+
     static const CommandSet       _commandStore;
     static       CommandSet       initCommandStore();
 
-    static const  ValueMapping _memoryMap;
-    static const  FunctionReadValueMappings _functionReadValueMaps;
+    static const ValueMapping _memoryMap;
+    static const FunctionReadValueMappings _functionReadValueMaps;
 
     static const ConfigPartsList  _config_parts;
     static       ConfigPartsList  initConfigParts();

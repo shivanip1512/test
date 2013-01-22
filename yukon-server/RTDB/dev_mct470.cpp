@@ -1403,6 +1403,45 @@ const Mct470Device::FunctionReadValueMappings *Mct470Device::getFunctionReadValu
 }
 
 
+Mct470Device::DecodeMapping Mct470Device::initDecodeLookup()
+{
+    namespace EP = EmetconProtocol;
+
+    return boost::assign::map_list_of
+        (EP::GetConfig_ChannelSetup,     &Self::decodeGetConfigChannelSetup)
+        (EP::GetConfig_IEDDNP,           &Self::decodeGetConfigIED)
+        (EP::GetConfig_IEDDNPAddress,    &Self::decodeGetConfigIedDnpAddress)
+        (EP::GetConfig_IEDScan,          &Self::decodeGetConfigIED)
+        (EP::GetConfig_IEDTime,          &Self::decodeGetConfigIED)
+        (EP::GetConfig_Intervals,        &Self::decodeGetConfigIntervals)
+        (EP::GetConfig_Model,            &Self::decodeGetConfigModel)
+        (EP::GetConfig_Multiplier,       &Self::decodeGetConfigMultiplier)
+        // ---
+        (EP::GetStatus_IEDDNP,           &Self::decodeGetStatusDNP)
+        (EP::GetStatus_Internal,         &Self::decodeGetStatusInternal)
+        (EP::GetStatus_LoadProfile,      &Self::decodeGetStatusLoadProfile)
+        // ---
+        (EP::GetValue_Demand,            &Self::decodeGetValueDemand)
+        (EP::GetValue_FrozenKWH,         &Self::decodeGetValueKWH)
+        (EP::GetValue_FrozenPeakDemand,  &Self::decodeGetValueMinMaxDemand)
+        (EP::GetValue_IED,               &Self::decodeGetValueIED)
+        (EP::GetValue_IEDDemand,         &Self::decodeGetValueIED)
+        (EP::GetValue_KWH,               &Self::decodeGetValueKWH)
+        (EP::GetValue_LoadProfile,       &Self::decodeGetValueLoadProfile)
+        (EP::GetValue_PeakDemand,        &Self::decodeGetValueMinMaxDemand)
+        (EP::GetValue_PhaseCurrent,      &Self::decodeGetValuePhaseCurrent)
+        // ---
+        (EP::PutConfig_PrecannedTable,   &Self::decodePutConfig)
+        // ---
+        (EP::Scan_Accum,                 &Self::decodeGetValueKWH)
+        (EP::Scan_Integrity,             &Self::decodeGetValueDemand)
+        (EP::Scan_LoadProfile,           &Self::decodeScanLoadProfile);
+}
+
+
+const Mct470Device::DecodeMapping Mct470Device::_decodeMethods = Mct470Device::initDecodeLookup();
+
+
 INT Mct470Device::ModelDecode(INMESS *InMessage, CtiTime &TimeNow, CtiMessageList &vgList, CtiMessageList &retList, OutMessageList &outList)
 {
     if( !InMessage )
@@ -1410,45 +1449,9 @@ INT Mct470Device::ModelDecode(INMESS *InMessage, CtiTime &TimeNow, CtiMessageLis
         return MEMORY;
     }
 
-    typedef Mct470Device self;
-    typedef int (self::*DecodeMethod)(INMESS *, CtiTime &, CtiDeviceBase::CtiMessageList &, CtiDeviceBase::CtiMessageList &, CtiDeviceBase::OutMessageList &);
+    DecodeMapping::const_iterator itr = _decodeMethods.find(InMessage->Sequence);
 
-    typedef std::map<int, DecodeMethod> DecodeLookup;
-    namespace EP = EmetconProtocol;
-
-    const DecodeLookup decodeMethods = boost::assign::map_list_of
-        (EP::GetConfig_ChannelSetup,     &self::decodeGetConfigChannelSetup)
-        (EP::GetConfig_IEDDNP,           &self::decodeGetConfigIED)
-        (EP::GetConfig_IEDDNPAddress,    &self::decodeGetConfigIedDnpAddress)
-        (EP::GetConfig_IEDScan,          &self::decodeGetConfigIED)
-        (EP::GetConfig_IEDTime,          &self::decodeGetConfigIED)
-        (EP::GetConfig_Intervals,        &self::decodeGetConfigIntervals)
-        (EP::GetConfig_Model,            &self::decodeGetConfigModel)
-        (EP::GetConfig_Multiplier,       &self::decodeGetConfigMultiplier)
-        // ---
-        (EP::GetStatus_IEDDNP,           &self::decodeGetStatusDNP)
-        (EP::GetStatus_Internal,         &self::decodeGetStatusInternal)
-        (EP::GetStatus_LoadProfile,      &self::decodeGetStatusLoadProfile)
-        // ---
-        (EP::GetValue_Demand,            &self::decodeGetValueDemand)
-        (EP::GetValue_FrozenKWH,         &self::decodeGetValueKWH)
-        (EP::GetValue_FrozenPeakDemand,  &self::decodeGetValueMinMaxDemand)
-        (EP::GetValue_IED,               &self::decodeGetValueIED)
-        (EP::GetValue_IEDDemand,         &self::decodeGetValueIED)
-        (EP::GetValue_KWH,               &self::decodeGetValueKWH)
-        (EP::GetValue_LoadProfile,       &self::decodeGetValueLoadProfile)
-        (EP::GetValue_PeakDemand,        &self::decodeGetValueMinMaxDemand)
-        (EP::GetValue_PhaseCurrent,      &self::decodeGetValuePhaseCurrent)
-        // ---
-        (EP::PutConfig_PrecannedTable,   &self::decodePutConfig)
-        // ---
-        (EP::Scan_Accum,                 &self::decodeGetValueKWH)
-        (EP::Scan_Integrity,             &self::decodeGetValueDemand)
-        (EP::Scan_LoadProfile,           &self::decodeScanLoadProfile);
-
-    DecodeLookup::const_iterator itr = decodeMethods.find(InMessage->Sequence);
-
-    if( itr != decodeMethods.end() )
+    if( itr != _decodeMethods.end() )
     {
         const DecodeMethod decoder = itr->second;
 
