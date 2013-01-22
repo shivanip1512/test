@@ -151,6 +151,8 @@ public class UserEditorController {
         yukonUserDao.save(yukonUser);
         if (requiresPasswordChanged) {
             authenticationService.setPassword(yukonUser, user.getAuthCategory(), user.getPassword().getPassword());
+        } else if (user.isAuthenticationChanged()) {
+            authenticationService.setAuthenticationCategory(yukonUser, user.getAuthCategory());
         }
 
         flash.setConfirm(new YukonMessageSourceResolvable("yukon.web.modules.adminSetup.userEditor.updateSuccessful"));
