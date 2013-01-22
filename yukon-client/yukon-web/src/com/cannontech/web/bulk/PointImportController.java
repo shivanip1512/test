@@ -53,6 +53,7 @@ import com.google.common.collect.Lists;
 @RequestMapping("/pointImport/*")
 @CheckRoleProperty(YukonRoleProperty.ADD_REMOVE_POINTS)
 public class PointImportController {
+    public static final Integer MAX_LOGGED_LINES = 1000;
     @Resource(name="recentResultsCache")
     private RecentResultsCache<PointImportCallbackResult> recentResultsCache;
     @Autowired PointImportService pointImportService;
@@ -201,6 +202,10 @@ public class PointImportController {
     public String updateLog(HttpServletResponse response, String resultId) throws IOException {
         PointImportCallbackResult result = recentResultsCache.getResult(resultId);
         Integer index = result.getLogIndex();
+        if(index >= PointImportController.MAX_LOGGED_LINES){
+            return null;
+        }
+
         List<String> logLines = result.getNewLogLines();
         List<Integer> failedLines = result.getFailedRowNumbers();
         
@@ -213,6 +218,9 @@ public class PointImportController {
             }
             jsonObject.put(line, quality);
             index++;
+            if(index >= PointImportController.MAX_LOGGED_LINES){
+                break;
+            }
         }
         
         PrintWriter writer = response.getWriter();

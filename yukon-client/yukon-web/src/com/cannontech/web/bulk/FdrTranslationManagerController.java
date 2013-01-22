@@ -229,7 +229,6 @@ public class FdrTranslationManagerController {
                     
                 }
                 dataGrid[i][row.length] = log.get(i);
-                i++;
             }
         }
         
@@ -256,6 +255,10 @@ public class FdrTranslationManagerController {
         TranslationImportCallbackResult result = recentResultsCache.getResult(resultId);
         
         Integer index = result.getLogIndex(); //must get this before getNewLogLines()!
+        if(index >= PointImportController.MAX_LOGGED_LINES){
+            return null;
+        }
+
         List<String> logLines = result.getNewLogLines();
         List<Integer> failedLines = result.getFailedRowNumbers();
         
@@ -266,6 +269,9 @@ public class FdrTranslationManagerController {
             if(failedLines.contains(index)) quality = "errorMessage";
             jsonObject.put(line, quality);
             index++;
+            if(index >= PointImportController.MAX_LOGGED_LINES){
+                break;
+            }
         }
         
         PrintWriter writer = response.getWriter();
