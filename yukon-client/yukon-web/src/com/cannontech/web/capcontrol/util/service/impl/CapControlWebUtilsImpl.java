@@ -6,6 +6,8 @@ import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
 
+import org.springframework.beans.factory.annotation.Autowired;
+
 import com.cannontech.capcontrol.ControlAlgorithm;
 import com.cannontech.capcontrol.dao.StrategyDao;
 import com.cannontech.cbc.cache.CapControlCache;
@@ -26,7 +28,6 @@ import com.cannontech.message.capcontrol.streamable.Feeder;
 import com.cannontech.message.capcontrol.streamable.StreamableCapObject;
 import com.cannontech.message.capcontrol.streamable.SubBus;
 import com.cannontech.message.capcontrol.streamable.SubStation;
-import com.cannontech.spring.YukonSpringHook;
 import com.cannontech.user.YukonUserContext;
 import com.cannontech.web.capcontrol.models.NavigableArea;
 import com.cannontech.web.capcontrol.models.NavigableCapBank;
@@ -44,12 +45,16 @@ import com.google.common.collect.ImmutableSet;
 public class CapControlWebUtilsImpl implements CapControlWebUtils {
 
     private final ImmutableSet<ControlAlgorithm> showToolTipAlgorithms = ImmutableSet.of(ControlAlgorithm.PFACTOR_KW_KVAR);
+    
+    @Autowired private CapControlCache capControlCache;
+    @Autowired private PaoDao paoDao;
+    @Autowired private PaoLoadingService paoLoadingService;
+    @Autowired private PointDao pointDao;
+    @Autowired private StrategyDao strategyDao;
 
     @Override
     public List<ViewableSubBus> createViewableSubBus(List<SubBus> subBusList) {
         List<ViewableSubBus> viewableList = new ArrayList<ViewableSubBus>(subBusList.size());
-        PointDao pointDao = YukonSpringHook.getBean("pointDao", PointDao.class);
-        CapControlCache cache = YukonSpringHook.getBean("capControlCache", CapControlCache.class);
         
         for(SubBus subBus: subBusList) {
             ViewableSubBus viewable = new ViewableSubBus();
@@ -61,8 +66,8 @@ public class CapControlWebUtilsImpl implements CapControlWebUtils {
             int alternateAreaId = 0;
             
             if (subBus.getAlternateBusId() > 0) {
-                SubBus linkedSub = cache.getSubBus(subBus.getAlternateBusId());
-                SubStation station = cache.getSubstation(linkedSub.getParentID());
+                SubBus linkedSub = capControlCache.getSubBus(subBus.getAlternateBusId());
+                SubStation station = capControlCache.getSubstation(linkedSub.getParentID());
                 
                 alternateStationId = station.getCcId();
                 alternateAreaId = station.getParentID();
@@ -86,7 +91,6 @@ public class CapControlWebUtilsImpl implements CapControlWebUtils {
 
             if(subBus.getStrategyId() > 0) {
                 //Check to see if we are an IVVC enabled
-                StrategyDao strategyDao = YukonSpringHook.getBean("strategyDao", StrategyDao.class);
                 CapControlStrategy strategy = strategyDao.getForId(subBus.getStrategyId());
                 if(strategy.getControlUnits() == ControlAlgorithm.INTEGRATED_VOLT_VAR) {
                     viewable.setIvvcControlled(true);
@@ -128,7 +132,6 @@ public class CapControlWebUtilsImpl implements CapControlWebUtils {
     @Override
     public List<ViewableCapBank> createViewableCapBank(List<CapBankDevice> capBanks) {
         List<ViewableCapBank> viewableList = new ArrayList<ViewableCapBank>(capBanks.size());
-        PaoDao paoDao = YukonSpringHook.getBean("paoDao", PaoDao.class);
         for (CapBankDevice cbc: capBanks) {
             LiteYukonPAObject controller = paoDao.getLiteYukonPAO(cbc.getControlDeviceID());
             ViewableCapBank viewable = new ViewableCapBank();
@@ -190,8 +193,7 @@ public class CapControlWebUtilsImpl implements CapControlWebUtils {
     @Override
     public List<NavigableArea> buildSimpleHierarchy(){
         List<NavigableArea> areas = new ArrayList<NavigableArea>();
-        CapControlCache cache = YukonSpringHook.getBean("capControlCache", CapControlCache.class);
-        for(Area area : cache.getCbcAreas()) {
+        for(Area area : capControlCache.getCbcAreas()) {
             NavigableArea navigableArea = new NavigableArea(getSimpleSubstations(area));
             navigableArea.setName(area.getCcName());
             navigableArea.setId(area.getCcId());
@@ -203,8 +205,7 @@ public class CapControlWebUtilsImpl implements CapControlWebUtils {
     @Override
     public List<NavigableSubstation> getSimpleSubstations(Area area){
         List<NavigableSubstation> substations = new ArrayList<NavigableSubstation>();
-        CapControlCache cache = YukonSpringHook.getBean("capControlCache", CapControlCache.class);
-        for(SubStation substation : cache.getSubstationsByArea(area.getCcId())) {
+        for(SubStation substation : capControlCache.getSubstationsByArea(area.getCcId())) {
             NavigableSubstation navigableSubstation = new NavigableSubstation(getSimpleSubstationBuses(substation));
             navigableSubstation.setName(substation.getCcName());
             navigableSubstation.setId(substation.getCcId());
@@ -216,8 +217,7 @@ public class CapControlWebUtilsImpl implements CapControlWebUtils {
     @Override
     public List<NavigableSubstationBus> getSimpleSubstationBuses(SubStation substation){
         List<NavigableSubstationBus> substationBuses = new ArrayList<NavigableSubstationBus>();
-        CapControlCache cache = YukonSpringHook.getBean("capControlCache", CapControlCache.class);
-        for(SubBus substationBus : cache.getSubBusesBySubStation(substation)) {
+        for(SubBus substationBus : capControlCache.getSubBusesBySubStation(substation)) {
             NavigableSubstationBus navigableSubstationBus = new NavigableSubstationBus(getSimpleFeeders(substationBus));
             navigableSubstationBus.setName(substationBus.getCcName());
             navigableSubstationBus.setId(substationBus.getCcId());
@@ -229,8 +229,7 @@ public class CapControlWebUtilsImpl implements CapControlWebUtils {
     @Override
     public List<NavigableFeeder> getSimpleFeeders(SubBus subBus){
         List<NavigableFeeder> feeders = new ArrayList<NavigableFeeder>();
-        CapControlCache cache = YukonSpringHook.getBean("capControlCache", CapControlCache.class);
-        for(Feeder feeder : cache.getFeedersBySubBus(subBus.getCcId())) {
+        for(Feeder feeder : capControlCache.getFeedersBySubBus(subBus.getCcId())) {
             NavigableFeeder navigableFeeder = new NavigableFeeder(getSimpleCapBanks(feeder));
             navigableFeeder.setName(feeder.getCcName());
             navigableFeeder.setId(feeder.getCcId());
@@ -242,8 +241,7 @@ public class CapControlWebUtilsImpl implements CapControlWebUtils {
     @Override
     public List<NavigableCapBank> getSimpleCapBanks(Feeder feeder){
         List<NavigableCapBank> capbanks = new ArrayList<NavigableCapBank>();
-        CapControlCache cache = YukonSpringHook.getBean("capControlCache", CapControlCache.class);
-        for(CapBankDevice capBank : cache.getCapBanksByFeeder(feeder.getCcId())) {
+        for(CapBankDevice capBank : capControlCache.getCapBanksByFeeder(feeder.getCcId())) {
             NavigableCapBank navigableCapBank = new NavigableCapBank();
             navigableCapBank.setName(capBank.getCcName());
             navigableCapBank.setId(capBank.getCcId());
@@ -261,8 +259,6 @@ public class CapControlWebUtilsImpl implements CapControlWebUtils {
     }
     
     private String getPaoNameWithId(int paoId, YukonUserContext userContext) throws NotFoundException {
-        PaoDao paoDao = YukonSpringHook.getBean(PaoDao.class);
-        PaoLoadingService paoLoadingService = YukonSpringHook.getBean(PaoLoadingService.class);
         YukonPao yukonPao = paoDao.getYukonPao(paoId);
         DisplayablePao displayablePao = paoLoadingService.getDisplayablePao(yukonPao);
         return displayablePao.getName();
