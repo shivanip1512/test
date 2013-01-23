@@ -3336,6 +3336,8 @@ INT Mct410Device::decodeGetValueFreezeCounter( INMESS *InMessage, CtiTime &TimeN
 
 int Mct410Device::decodeGetConfigLoadProfileExistingPeak(INMESS *InMessage, CtiTime &TimeNow, CtiMessageList &vgList, CtiMessageList &retList, OutMessageList &outList)
 {
+    typedef llp_peak_report_interest_t llp_pri;
+
     int status = NoError;
 
     const DSTRUCT &DSt = InMessage->Buffer.DSt;
@@ -3357,31 +3359,43 @@ int Mct410Device::decodeGetConfigLoadProfileExistingPeak(INMESS *InMessage, CtiT
     // Also, the multiple decodes from the macro subroutes would need to be
     //    handled differently so each one didn't send out a read.
 
-    if( peak_time >= request_begin.seconds() &&
-        peak_time <= request_end.seconds() )
+    if( peak_time < request_begin.seconds() ||
+        peak_time > request_end.seconds() )
     {
-        //  Set the report date outside of the requested range to ensure we won't have an overlap when they retry the request.
-        utc_time = CtiTime(_llpPeakInterest.end_date - _llpPeakInterest.range - 2).seconds();
-        request_range = 1;
-
-        status = ErrorNeedsDateRangeReset;
-
-        OutMessage->Request.Connection = 0;  //  Make this a background request - do not report to the client.
-
+        //  verified that the existing peak is outside the new range
+        InterlockedExchange(&_llpPeakInterest.state, llp_pri::NoOverlap);
+    }
+    else
+    {
         std::auto_ptr<CtiReturnMsg> ReturnMsg(new CtiReturnMsg(getID()));
 
         ReturnMsg->setUserMessageId(InMessage->Return.UserID);
 
-        ReturnMsg->setResultString("Requested date range overlaps the device's previous peak.  Resetting automatically, please retry command.");
+        //  Set the report date outside of the requested range to reset the overlap
+        utc_time = CtiTime(_llpPeakInterest.end_date - _llpPeakInterest.range - 2).seconds();
+
+        request_range = 1;
+
+        //  If we already attempted a reset, abort the request and return an error
+        if( _llpPeakInterest.state == llp_pri::ReadingExistingPeak )
+        {
+            ReturnMsg->setResultString("Requested date range overlaps the device's previous peak.  Attempting to reset device report range.");
+            ReturnMsg->setExpectMore(true);
+
+            InterlockedExchange(&_llpPeakInterest.state, llp_pri::AttemptingReset);
+        }
+        else
+        {
+            status = ErrorNeedsDateRangeReset;
+
+            ReturnMsg->setResultString("Requested date range overlaps the device's previous peak.");
+
+            OutMessage->Request.Connection = 0;
+
+            InterlockedExchange(&_llpPeakInterest.state, llp_pri::Idle);
+        }
 
         retMsgHandler( InMessage->Return.CommandStr, status, ReturnMsg.release(), vgList, retList );
-
-        InterlockedExchange(&_llpPeakInterest.in_progress, false);
-    }
-    else
-    {
-        //  verified that the existing peak is outside the new range
-        _llpPeakInterest.no_overlap = true;
     }
 
     OutMessage->Sequence = EmetconProtocol::PutConfig_LoadProfileReportPeriod;
@@ -3423,6 +3437,8 @@ int Mct410Device::decodeGetConfigLoadProfileExistingPeak(INMESS *InMessage, CtiT
 
 INT Mct410Device::decodeGetValueLoadProfilePeakReport(INMESS *InMessage, CtiTime &TimeNow, CtiMessageList &vgList, CtiMessageList &retList, OutMessageList &outList)
 {
+    typedef llp_peak_report_interest_t llp_pri;
+
     INT status = NORMAL;
 
     DSTRUCT *DSt  = &InMessage->Buffer.DSt;
@@ -3488,8 +3504,6 @@ INT Mct410Device::decodeGetValueLoadProfilePeakReport(INMESS *InMessage, CtiTime
         max_demand_timestamp < CtiTime(_llpPeakInterest.end_date + 1 - _llpPeakInterest.range).seconds() )
     {
         result_string = "Peak timestamp (" + CtiTime(max_demand_timestamp).asString() + ") outside of requested range - retry report";
-        _llpPeakInterest.end_date = DawnOfTime_Date;
-        _llpPeakInterest.range = 0;
         status = ErrorInvalidTimestamp;
         InMessage->Return.MacroOffset = 0;  //  stop the retries!
     }
@@ -3501,8 +3515,6 @@ INT Mct410Device::decodeGetValueLoadProfilePeakReport(INMESS *InMessage, CtiTime
         result_string += "Expected average daily usage: " + CtiNumStr(expected_avg_daily, 1) + string(" kWH\n");
         result_string += "Effective days: " + CtiNumStr(effective_range) + string("\n");
 
-        _llpPeakInterest.end_date = DawnOfTime_Date;
-        _llpPeakInterest.range = 0;
         status = ErrorInvalidTimestamp;
         InMessage->Return.MacroOffset = 0;  //  stop the retries!
     }
@@ -3564,7 +3576,7 @@ INT Mct410Device::decodeGetValueLoadProfilePeakReport(INMESS *InMessage, CtiTime
     ReturnMsg->setResultString(result_string);
 
     retMsgHandler( InMessage->Return.CommandStr, status, ReturnMsg, vgList, retList );
-    InterlockedExchange(&_llpPeakInterest.in_progress, false);
+    InterlockedExchange(&_llpPeakInterest.state, llp_pri::Idle);
 
     return status;
 }

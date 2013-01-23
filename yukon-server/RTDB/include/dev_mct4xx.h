@@ -206,10 +206,18 @@ protected:
     struct llp_peak_report_interest_t
     {
         CtiDate end_date;
-        int channel;
-        int range;
-        bool no_overlap;
-        long in_progress;
+        unsigned short range   : 10;
+        unsigned short channel :  2;
+
+        enum States {
+            Idle,
+            NewRequest,
+            ReadingExistingPeak,
+            AttemptingReset,
+            NoOverlap
+        };
+
+        long state;
 
     } _llpPeakInterest;
 

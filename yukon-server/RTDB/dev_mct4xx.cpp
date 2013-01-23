@@ -69,11 +69,10 @@ Mct4xxDevice::Mct4xxDevice()
     _llpRequest.retry      = 0;
     _llpRequest.failed     = false;
 
-    _llpPeakInterest.channel     = 0;
-    _llpPeakInterest.range       = 0;
-    _llpPeakInterest.end_date    = DawnOfTime_Date;
-    _llpPeakInterest.no_overlap  = false;
-    _llpPeakInterest.in_progress = false;
+    _llpPeakInterest.channel  = 0;
+    _llpPeakInterest.range    = 0;
+    _llpPeakInterest.end_date = DawnOfTime_Date;
+    _llpPeakInterest.state = llp_peak_report_interest_t::Idle;
 
     for( int i = 0; i < LPChannels; i++ )
     {
@@ -345,6 +344,8 @@ INT Mct4xxDevice::executeGetValue(CtiRequestMsg *pReq,
                                   CtiMessageList &retList,
                                   OutMessageList &outList)
 {
+    typedef Mct4xxDevice::llp_peak_report_interest_t llp_pri;
+
     INT nRet = NoMethod;
 
     bool found = false;
@@ -794,135 +795,138 @@ INT Mct4xxDevice::executeGetValue(CtiRequestMsg *pReq,
                     }
                     else if( !cmd.compare("peak") )
                     {
+                        const CtiDate today = CtiDate();
+                        const CtiDate request_date =  CtiDate(day,month,year);
+                        const int request_range  = parse.getiValue("lp_range");
                         CtiString cmdString = parse.getCommandStr();
-                        if( InterlockedCompareExchange(&_llpPeakInterest.in_progress, true, false) &&
-                            !cmdString.contains("read") )
+
+                        const bool request_lock = cmdString.contains("read")
+                            || InterlockedCompareExchange(&_llpPeakInterest.state, llp_pri::NewRequest, llp_pri::Idle);
+
+                        if( ! request_lock )
                         {
-                            if( errRet )
-                            {
-                                CtiString temp = "Load profile peak request already in progress\n";
-                                errRet->setResultString(temp);
-                                errRet->setStatus(ErrorCommandAlreadyInProgress);
-                                retList.push_back(errRet);
-                                errRet = NULL;
-                            }
+                            errRet->setResultString(getName() + " / Load profile peak request already in progress\n");
+                            retMsgHandler( OutMessage->Request.CommandStr, ErrorCommandAlreadyInProgress, errRet, vgList, retList );
+
+                            delete OutMessage;
+                            OutMessage = 0;
+
+                            return ExecutionComplete;
                         }
-                        else
+                        else if( request_date > today )  //  must begin on or before today
                         {
-                            const CtiDate today = CtiDate();
-                            const CtiDate request_date =  CtiDate(day,month,year);
-                            if( request_date > today )  //  must begin on or before today
+                            errRet->setResultString(getName() + " / Invalid date for peak request: cannot be after today (" + request_date.asStringUSFormat() + ")" );
+                            retMsgHandler( OutMessage->Request.CommandStr, BADPARAM, errRet, vgList, retList );
+
+                            delete OutMessage;
+                            OutMessage = 0;
+
+                            InterlockedExchange(&_llpPeakInterest.state, llp_pri::Idle);
+
+                            return ExecutionComplete;
+                        }
+                        else if( request_range <= 0 ||
+                                 request_range >= 1000 )
+                        {
+                            errRet->setResultString(getName() + " / Invalid range for peak request: must be 1-999 (" + CtiNumStr(request_range) + ")" );
+                            retMsgHandler( OutMessage->Request.CommandStr, BADPARAM, errRet, vgList, retList );
+
+                            delete OutMessage;
+                            OutMessage = 0;
+
+                            InterlockedExchange(&_llpPeakInterest.state, llp_pri::Idle);
+
+                            return ExecutionComplete;
+                        }
+                        else if( ! hasDynamicInfo(CtiTableDynamicPaoInfo::Key_MCT_SSpec) ||
+                                 ! hasDynamicInfo(CtiTableDynamicPaoInfo::Key_MCT_SSpecRevision) )
+                        {
+                            //  we need to read the SSPEC out of the meter
+                            executeBackgroundRequest("getconfig model", *OutMessage, outList);
+
+                            errRet->setResultString(getName() + " / SSPEC revision not retrieved yet, attempting to read it automatically; please retry command in a few minutes");
+
+                            retMsgHandler( OutMessage->Request.CommandStr, ErrorVerifySSPEC, errRet, vgList, retList );
+
+                            delete OutMessage;
+                            OutMessage = 0;
+
+                            InterlockedExchange(&_llpPeakInterest.state, llp_pri::Idle);
+
+                            return ExecutionComplete;
+                        }
+                        else if( !isSupported(Feature_LoadProfilePeakReport) )
+                        {
+                            CtiReturnMsg *ReturnMsg = new CtiReturnMsg(getID(), OutMessage->Request.CommandStr);
+
+                            ReturnMsg->setUserMessageId(OutMessage->Request.UserID);
+                            ReturnMsg->setResultString(getName() + " / Load profile reporting not supported for this device's SSPEC revision");
+
+                            retMsgHandler( OutMessage->Request.CommandStr, ErrorInvalidSSPEC, ReturnMsg, vgList, retList );
+
+                            delete OutMessage;
+                            OutMessage = 0;
+
+                            InterlockedExchange(&_llpPeakInterest.state, llp_pri::Idle);
+
+                            return ExecutionComplete;
+                        }
+
+                        int lp_peak_command = -1;
+                        string lp_peaktype = parse.getsValue("lp_peaktype");
+
+                        if( lp_peaktype == "day" )
+                        {
+                            lp_peak_command = FuncRead_LLPPeakDayPos;
+                        }
+                        else if( lp_peaktype == "hour" )
+                        {
+                            lp_peak_command = FuncRead_LLPPeakHourPos;
+                        }
+                        else if( lp_peaktype == "interval" )
+                        {
+                            lp_peak_command = FuncRead_LLPPeakIntervalPos;
+                        }
+
+                        if( lp_peak_command > 0 )
+                        {
+                            switch( _llpPeakInterest.state )
                             {
-                                CtiReturnMsg *ReturnMsg = new CtiReturnMsg(getID(), OutMessage->Request.CommandStr);
-
-                                ReturnMsg->setUserMessageId(OutMessage->Request.UserID);
-                                ReturnMsg->setResultString(getName() + " / Invalid date for value request: cannot be after today (" + request_date.asStringUSFormat() + ")" );
-                                retMsgHandler( OutMessage->Request.CommandStr, BADPARAM, ReturnMsg, vgList, retList );
-
-                                delete OutMessage;
-                                OutMessage = 0;
-                                found = false;
-                                nRet  = ExecutionComplete;
-
-                                InterlockedExchange(&_llpPeakInterest.in_progress, false);
-                            }
-                            else if( ! hasDynamicInfo(CtiTableDynamicPaoInfo::Key_MCT_SSpec) ||
-                                     ! hasDynamicInfo(CtiTableDynamicPaoInfo::Key_MCT_SSpecRevision) )
-                            {
-                                //  we need to read the SSPEC out of the meter
-                                executeBackgroundRequest("getconfig model", *OutMessage, outList);
-
-                                CtiReturnMsg *ReturnMsg = new CtiReturnMsg(getID(), OutMessage->Request.CommandStr);
-
-                                ReturnMsg->setUserMessageId(OutMessage->Request.UserID);
-                                ReturnMsg->setResultString(getName() + " / SSPEC revision not retrieved yet, attempting to read it automatically; please retry command in a few minutes");
-
-                                retMsgHandler( OutMessage->Request.CommandStr, ErrorVerifySSPEC, ReturnMsg, vgList, retList );
-
-                                delete OutMessage;
-                                OutMessage = 0;
-                                found = false;
-                                nRet  = ExecutionComplete;
-
-                                InterlockedExchange(&_llpPeakInterest.in_progress, false);
-                            }
-                            else if( !isSupported(Feature_LoadProfilePeakReport) )
-                            {
-                                CtiReturnMsg *ReturnMsg = new CtiReturnMsg(getID(), OutMessage->Request.CommandStr);
-
-                                ReturnMsg->setUserMessageId(OutMessage->Request.UserID);
-                                ReturnMsg->setResultString(getName() + " / Load profile reporting not supported for this device's SSPEC revision");
-
-                                retMsgHandler( OutMessage->Request.CommandStr, ErrorInvalidSSPEC, ReturnMsg, vgList, retList );
-
-                                delete OutMessage;
-                                OutMessage = 0;
-                                found = false;
-                                nRet  = ExecutionComplete;
-
-                                InterlockedExchange(&_llpPeakInterest.in_progress, false);
-                            }
-                            else
-                            {
-                                OutMessage->Sequence = EmetconProtocol::GetValue_LoadProfilePeakReport;
-                                found = getOperation(OutMessage->Sequence, OutMessage->Buffer.BSt);
-                            }
-
-                            if( found )
-                            {
-                                int lp_peak_command = -1;
-                                string lp_peaktype = parse.getsValue("lp_peaktype");
-                                int request_range  = parse.getiValue("lp_range");  //  add safeguards to check that we're not >30 days... ?
-
-                                if( lp_peaktype == "day" )
+                                case llp_pri::NoOverlap:
                                 {
-                                    lp_peak_command = FuncRead_LLPPeakDayPos;
+                                    OutMessage->Sequence = EmetconProtocol::GetValue_LoadProfilePeakReport;
+
+                                    found = getOperation(OutMessage->Sequence, OutMessage->Buffer.BSt);
+
+                                    OutMessage->Buffer.BSt.Function = lp_peak_command;
+                                    OutMessage->Buffer.BSt.IO       = EmetconProtocol::IO_Function_Read;
+                                    OutMessage->Buffer.BSt.Length   = 13;
+
+                                    break;
                                 }
-                                else if( lp_peaktype == "hour" )
+
+                                case llp_pri::NewRequest:
                                 {
-                                    lp_peak_command = FuncRead_LLPPeakHourPos;
+                                    _llpPeakInterest.end_date = CtiDate(day, month, year);
+                                    _llpPeakInterest.channel  = request_channel;  //  request_channel is 0-3, enforced above
+                                    _llpPeakInterest.range    = request_range;
+                                    //  ...Fall through...
                                 }
-                                else if( lp_peaktype == "interval" )
+                                case llp_pri::AttemptingReset:
                                 {
-                                    lp_peak_command = FuncRead_LLPPeakIntervalPos;
-                                }
+                                    //  We need to verify the existing peak is outside the requested interval
+                                    //    by reading the existing peak.
+                                    //  This will set _llpPeakRequest.overlap_prevented=true if the existing peak is not
+                                    //    within the request period, or send an out-of-bounds write if it is.
+                                    OutMessage->Sequence = EmetconProtocol::GetConfig_LoadProfileExistingPeak;
 
-                                if( lp_peak_command > 0 )
-                                {
-                                    const CtiDate request_date = CtiDate(day, month, year);
+                                    found = getOperation(OutMessage->Sequence, OutMessage->Buffer.BSt);
 
-                                    if( _llpPeakInterest.no_overlap
-                                        && request_date    == _llpPeakInterest.end_date
-                                        && request_channel == _llpPeakInterest.channel
-                                        && request_range   == _llpPeakInterest.range )
-                                    {
-                                        OutMessage->Sequence = EmetconProtocol::GetValue_LoadProfilePeakReport;
-
-                                        OutMessage->Buffer.BSt.Function = lp_peak_command;
-                                        OutMessage->Buffer.BSt.IO       = EmetconProtocol::IO_Function_Read;
-                                        OutMessage->Buffer.BSt.Length   = 13;
-                                    }
-                                    else
-                                    {
-                                        _llpPeakInterest.no_overlap = false;
-                                        _llpPeakInterest.end_date = request_date;
-                                        _llpPeakInterest.channel  = request_channel;
-                                        _llpPeakInterest.range    = request_range;
-
-                                        //  We need to verify the existing peak is outside the requested interval
-                                        //    by reading the existing peak.
-                                        //  This will set _llpPeakRequest.overlap_prevented=true if the existing peak is not
-                                        //    within the request period, or send an out-of-bounds write if it is.
-                                        OutMessage->Sequence = EmetconProtocol::GetConfig_LoadProfileExistingPeak;
-
-                                        OutMessage->Buffer.BSt.Function = lp_peak_command;
-
-                                        found = getOperation(OutMessage->Sequence, OutMessage->Buffer.BSt);
-                                    }
-
-                                    nRet = NoError;
+                                    OutMessage->Buffer.BSt.Function = lp_peak_command;
                                 }
                             }
+
+                            nRet = NoError;
                         }
                     }
                 }
@@ -2030,6 +2034,8 @@ INT Mct4xxDevice::decodePutConfig(INMESS *InMessage, CtiTime &TimeNow, CtiMessag
 
         case EmetconProtocol::PutConfig_LoadProfileReportPeriod:
         {
+            typedef Mct4xxDevice::llp_peak_report_interest_t llp_pri;
+
             const int interval_len = getLoadProfileInterval(_llpPeakInterest.channel);
 
             ReturnMsg->setUserMessageId(InMessage->Return.UserID);
@@ -2048,7 +2054,7 @@ INT Mct4xxDevice::decodePutConfig(INMESS *InMessage, CtiTime &TimeNow, CtiMessag
 
                 retMsgHandler(InMessage->Return.CommandStr, status, ReturnMsg.release(), vgList, retList);
 
-                InterlockedExchange(&_llpPeakInterest.in_progress, false);
+                InterlockedExchange(&_llpPeakInterest.state, llp_pri::Idle);
             }
             else if( InMessage->Return.Connection )
             {
@@ -3451,6 +3457,8 @@ INT Mct4xxDevice::SubmitRetry(const INMESS &InMessage, const CtiTime TimeNow, Ct
 
 INT Mct4xxDevice::ErrorDecode(const INMESS &InMessage, const CtiTime TimeNow, CtiMessageList &retList)
 {
+    typedef Mct4xxDevice::llp_peak_report_interest_t llp_pri;
+
     switch( InMessage.Sequence )
     {
         case EmetconProtocol::GetValue_LoadProfilePeakReport:
@@ -3459,7 +3467,7 @@ INT Mct4xxDevice::ErrorDecode(const INMESS &InMessage, const CtiTime TimeNow, Ct
         }  //  fall through
         case EmetconProtocol::GetConfig_LoadProfileExistingPeak:
         {
-            InterlockedExchange(&_llpPeakInterest.in_progress, false);
+            InterlockedExchange(&_llpPeakInterest.state, llp_pri::Idle);
 
             return NoError;
         }
