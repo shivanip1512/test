@@ -148,7 +148,7 @@ void CtiCalcLogicService::Run( )
     {
         bool writeLogMessage = true;
 
-        while ( ! ( UserQuit || TestDatabaseConnectivity() ) )
+        while ( ! ( UserQuit || canConnectToDatabase() ) )
         {
             if ( writeLogMessage )
             {
@@ -158,6 +158,13 @@ void CtiCalcLogicService::Run( )
                 writeLogMessage = false;
             }
             Sleep( 5000 );
+        }
+        if ( UserQuit )
+        {
+            dout.interrupt(CtiThread::SHUTDOWN);
+            dout.join();
+
+            return;
         }
     }
 

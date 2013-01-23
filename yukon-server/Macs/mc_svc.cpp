@@ -141,7 +141,7 @@ void CtiMCService::Run()
     {
         bool writeLogMessage = true;
 
-        while ( ! ( UserQuit || TestDatabaseConnectivity() ) )
+        while ( ! ( UserQuit || canConnectToDatabase() ) )
         {
             if ( writeLogMessage )
             {
@@ -154,6 +154,13 @@ void CtiMCService::Run()
         }
         if ( UserQuit )
         {
+            SetStatus( SERVICE_STOP_PENDING, 50, 2500 );
+
+            dout.interrupt(CtiThread::SHUTDOWN);
+            dout.join();
+
+            SetStatus( SERVICE_STOPPED );
+
             return;
         }
     }

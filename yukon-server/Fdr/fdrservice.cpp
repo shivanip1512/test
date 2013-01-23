@@ -289,7 +289,7 @@ void CtiFDRService::Run( )
     {
         bool writeLogMessage = true;
 
-        while ( ! ( UserQuit || TestDatabaseConnectivity() ) )
+        while ( ! ( UserQuit || canConnectToDatabase() ) )
         {
             if ( writeLogMessage )
             {

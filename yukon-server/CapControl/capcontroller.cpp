@@ -232,11 +232,14 @@ void CtiCapController::stop()
 
     try
     {
-        if( _dispatchConnection != NULL && _dispatchConnection->valid() )
+        if ( _dispatchConnection )
         {
-            _dispatchConnection->WriteConnQue( new CtiCommandMsg( CtiCommandMsg::ClientAppShutdown, 15) );
+            if( _dispatchConnection->valid() )
+            {
+                _dispatchConnection->WriteConnQue( new CtiCommandMsg( CtiCommandMsg::ClientAppShutdown, 15) );
+            }
+            _dispatchConnection->ShutdownConnection();
         }
-        _dispatchConnection->ShutdownConnection();
     }
     catch(...)
     {

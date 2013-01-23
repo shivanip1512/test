@@ -777,8 +777,23 @@ INT PorterMainFunction (INT argc, CHAR **argv)
         CTIExit (-1, -1);
     }
 
+    bool writeLogMessage = true;
+
     while ( ! PorterQuit && RefreshPorterRTDB() )
-        ;
+    {
+        if ( writeLogMessage )
+        {
+            CtiLockGuard<CtiLogger> doubt_guard(dout);
+            dout << CtiTime( ) << " - Database connectivity failed." << std::endl;
+
+            writeLogMessage = false;
+        }
+        Sleep( 5000 );
+    }
+    if ( PorterQuit )
+    {
+        return -1;
+    }
 
     SET_CRT_OUTPUT_MODES;
     if(gConfigParms.isOpt("DEBUG_MEMORY") && gConfigParms.isTrue("DEBUG_MEMORY") )
@@ -1364,21 +1379,9 @@ INT RefreshPorterRTDB(const CtiDBChangeMsg *pChg)
     LoadPorterGlobals();
 
     // Make sure the database is available before we try to load anything from it.
+    if ( ! canConnectToDatabase() )
     {
-        static bool writeLogMessage = true;
-
-        if ( ! TestDatabaseConnectivity() )
-        {
-            if ( writeLogMessage )
-            {
-                CtiLockGuard<CtiLogger> doubt_guard(dout);
-                dout << CtiTime( ) << " - Database connectivity failed." << std::endl;
-
-                writeLogMessage = false;
-            }
-            Sleep( 5000 );
-            return -1;
-        }
+        return -1;
     }
 
     if( !PorterQuit && (pChg == NULL || (pChg->getDatabase() == ChangeStateGroupDb)) )

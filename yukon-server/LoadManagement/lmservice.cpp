@@ -235,19 +235,11 @@ void CtiLMService::Run()
 {
     try
     {
-        SetStatus(SERVICE_START_PENDING, 1, 5000 );
-        //Make sure the database gets hit so we'll know if the database
-        //connection is legit now rather than later
-        bool trouble = false;
-
-        SetStatus(SERVICE_RUNNING, 0, 0,
-                  SERVICE_ACCEPT_STOP | SERVICE_ACCEPT_SHUTDOWN );
-
         // Make sure the database is available before we try to load anything from it.
         {
             bool writeLogMessage = true;
 
-            while ( ! ( _quit || load_management_do_quit || TestDatabaseConnectivity() ) )
+            while ( ! ( _quit || load_management_do_quit || canConnectToDatabase() ) )
             {
                 if ( writeLogMessage )
                 {
@@ -258,7 +250,19 @@ void CtiLMService::Run()
                 }
                 Sleep( 5000 );
             }
+            if ( _quit || load_management_do_quit )
+            {
+                return;
+            }
         }
+
+        SetStatus(SERVICE_START_PENDING, 1, 5000 );
+        //Make sure the database gets hit so we'll know if the database
+        //connection is legit now rather than later
+        bool trouble = false;
+
+        SetStatus(SERVICE_RUNNING, 0, 0,
+                  SERVICE_ACCEPT_STOP | SERVICE_ACCEPT_SHUTDOWN );
 
         do
         {

@@ -155,14 +155,11 @@ void CtiCCService::OnStop()
 
 void CtiCCService::Run()
 {
-
-    SetStatus(SERVICE_START_PENDING, 1, 5000 );
-
     // Make sure the database is available before we try to load anything from it.
     {
         bool writeLogMessage = true;
 
-        while ( ! ( _quit || capcontrol_do_quit || TestDatabaseConnectivity() ) )
+        while ( ! ( _quit || capcontrol_do_quit || canConnectToDatabase() ) )
         {
             if ( writeLogMessage )
             {
@@ -173,7 +170,13 @@ void CtiCCService::Run()
             }
             Sleep( 5000 );
         }
+        if ( _quit || capcontrol_do_quit )
+        {
+            return;
+        }
     }
+
+    SetStatus(SERVICE_START_PENDING, 1, 5000 );
 
     //Make sure the database gets hit so we'll know if the database
     //connection is legit now rather than later

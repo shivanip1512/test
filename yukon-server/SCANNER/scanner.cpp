@@ -363,7 +363,7 @@ INT ScannerMainFunction (INT argc, CHAR **argv)
     {
         bool writeLogMessage = true;
 
-        while ( ! ( ScannerQuit || TestDatabaseConnectivity() ) )
+        while ( ! ( ScannerQuit || canConnectToDatabase() ) )
         {
             if ( writeLogMessage )
             {
@@ -373,6 +373,10 @@ INT ScannerMainFunction (INT argc, CHAR **argv)
                 writeLogMessage = false;
             }
             Sleep( 5000 );
+        }
+        if ( ScannerQuit )
+        {
+            return -1;
         }
     }
 

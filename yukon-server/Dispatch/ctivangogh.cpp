@@ -264,7 +264,7 @@ void CtiVanGogh::VGMainThread()
         {
             bool writeLogMessage = true;
 
-            while ( ! ( bGCtrlC || TestDatabaseConnectivity() ) )
+            while ( ! ( bGCtrlC || canConnectToDatabase() ) )
             {
                 if ( writeLogMessage )
                 {
@@ -275,7 +275,14 @@ void CtiVanGogh::VGMainThread()
                 }
                 Sleep( 5000 );
             }
+            if ( bGCtrlC )
+            {
+                stopDispatch();
+                return;
+            }
         }
+
+        _tagManager.start();
 
         {
             CtiLockGuard<CtiLogger> doubt_guard(dout);
@@ -5461,7 +5468,6 @@ CtiVanGogh::CtiVanGogh() : _notificationConnection(NULL)
         }
     }
     ShutdownOnThreadTimeout = true;
-    _tagManager.start();
 }
 
 void  CtiVanGogh::shutdown()
