@@ -1,6 +1,7 @@
 package com.cannontech.web.widget;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Collections;
 import java.util.HashSet;
 import java.util.List;
@@ -266,10 +267,12 @@ public class DeviceGroupWidget extends WidgetControllerBase {
         Set<? extends DeviceGroup> currentGroupsSet = deviceGroupDao.getGroupMembership(meter);
         
         String groupIdsStr = WidgetParameterHelper.getRequiredStringParameter(request, "groupIds");
-        
-        String groupIds[] = groupIdsStr.split(",");
-        
-        Set<String> selectedGroupIds = Sets.newHashSet(groupIds);
+         
+        Set<String> selectedGroupIds = Sets.newHashSet();
+        if(!groupIdsStr.isEmpty()){
+            String groupIds[] = groupIdsStr.split(",");
+            selectedGroupIds.addAll(Arrays.asList(groupIds)); 
+        }
 
         Set<String> currentGroupIds = Sets.newHashSet();
         for (DeviceGroup group : currentGroupsSet) {
@@ -281,34 +284,44 @@ public class DeviceGroupWidget extends WidgetControllerBase {
                 
         Set<String> commonGroupIds = Sets.intersection(currentGroupIds, selectedGroupIds);
        
-        //groups to remove
-        HashSet<String> idsToRemove = Sets.newHashSet(currentGroupIds);
-        idsToRemove.removeAll(commonGroupIds);
+        boolean deviceGroupsUpdated = false;
+        
+        // groups to remove
+        if (!currentGroupIds.isEmpty()) {
+            HashSet<String> idsToRemove = Sets.newHashSet(currentGroupIds);
+            idsToRemove.removeAll(commonGroupIds);
+            List<Meter> devices = Collections.singletonList(meter);
+            for (String groupId : idsToRemove) {
+                StoredDeviceGroup storedDeviceGroup =
+                    deviceGroupEditorDao.getGroupById(Integer.parseInt(groupId));
+                deviceGroupMemberEditorDao.removeDevices(storedDeviceGroup, devices);
+            }
+            if(!idsToRemove.isEmpty()){
+                deviceGroupsUpdated = true;
+            }
+        }
 
-        //groups to add
-        HashSet<String> idsToAdd = Sets.newHashSet(selectedGroupIds);
-        idsToAdd.removeAll(commonGroupIds);
-        
-        
-        for(String groupId : idsToAdd) {
-            StoredDeviceGroup storedDeviceGroup = deviceGroupEditorDao.getGroupById(Integer.parseInt(groupId));
-            deviceGroupMemberEditorDao.addDevices(storedDeviceGroup, meter);
+        // groups to add
+        if (!selectedGroupIds.isEmpty()) {
+            HashSet<String> idsToAdd = Sets.newHashSet(selectedGroupIds);
+            idsToAdd.removeAll(commonGroupIds);
+            for (String groupId : idsToAdd) {
+                StoredDeviceGroup storedDeviceGroup =
+                    deviceGroupEditorDao.getGroupById(Integer.parseInt(groupId));
+                deviceGroupMemberEditorDao.addDevices(storedDeviceGroup, meter);
+            }
+            if(!idsToAdd.isEmpty()){
+                deviceGroupsUpdated = true;
+            }
         }
         
-        List<Meter> devices = Collections.singletonList(meter);
-        for(String groupId : idsToRemove) {
-            StoredDeviceGroup storedDeviceGroup = deviceGroupEditorDao.getGroupById(Integer.parseInt(groupId));
-            deviceGroupMemberEditorDao.removeDevices(storedDeviceGroup, devices);
-        }
-        String successMsg =
-                messageSourceResolver.getMessageSourceAccessor(userContext)
-                    .getMessage("yukon.web.widgets.deviceGroupWidget.saveSuccessful");
-        
-        request.setAttribute("deviceId", deviceId);
-        if (!idsToRemove.isEmpty() || !idsToAdd.isEmpty()) {
+        if (deviceGroupsUpdated) {
+            String successMsg =
+                    messageSourceResolver.getMessageSourceAccessor(userContext)
+                        .getMessage("yukon.web.widgets.deviceGroupWidget.saveSuccessful");
             request.setAttribute("successMsg", successMsg);
         }
-        
+        request.setAttribute("deviceId", deviceId);
         return render(request, response);
     }
 }

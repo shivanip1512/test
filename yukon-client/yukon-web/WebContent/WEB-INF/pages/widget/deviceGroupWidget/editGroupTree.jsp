@@ -13,7 +13,6 @@
                                           dataJson="${allGroupsDataJson}"
                                           title=".groupTree.label"
                                           width="432"
-                                          height="600"
-                                          noSelectionAlert="yukon.common.device.bulk.deviceSelection.selectDevicesByGroupTree.noGroupSelectedAlertText" />  
+                                          height="600"/>  
 </cti:msgScope>
 </dialog:ajaxPage>
