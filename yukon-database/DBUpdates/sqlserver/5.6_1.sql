@@ -28,7 +28,7 @@ INSERT INTO YukonRoleProperty VALUES (-1125, -2, 'Broadcast Cancel All Opt Out S
 /* End YUK-11754 */
 
 /* Start YUK-11733 */
-INSERT INTO YukonRoleProperty VALUES (-40012, -400, 'Grouped Control History Display', 'true', 'Controls whether to enable grouped control history display');
+INSERT INTO YukonRoleProperty VALUES (-40012, -400, 'Grouped Control History Display', 'true', 'Controls whether to enable grouped control history display.');
 /* End YUK-11733 */
 
 /* Start YUK-11794 */
