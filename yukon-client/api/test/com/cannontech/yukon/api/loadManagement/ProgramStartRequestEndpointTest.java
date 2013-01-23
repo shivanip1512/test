@@ -13,6 +13,7 @@ import org.junit.Before;
 import org.junit.Test;
 import org.springframework.core.io.ClassPathResource;
 import org.springframework.core.io.Resource;
+import org.springframework.test.util.ReflectionTestUtils;
 
 import com.cannontech.common.exception.NotAuthorizedException;
 import com.cannontech.common.util.Iso8601DateUtil;
@@ -27,6 +28,7 @@ import com.cannontech.database.data.lite.LiteYukonUser;
 import com.cannontech.dr.program.model.GearAdjustment;
 import com.cannontech.dr.program.service.ConstraintContainer;
 import com.cannontech.dr.program.service.ConstraintViolations;
+import com.cannontech.dr.program.service.ProgramService;
 import com.cannontech.loadcontrol.dao.LoadControlProgramDao;
 import com.cannontech.loadcontrol.data.LMProgramBase;
 import com.cannontech.loadcontrol.data.LMProgramDirect;
@@ -52,7 +54,7 @@ public class ProgramStartRequestEndpointTest {
     private static final String PROG3= "Program3";
     private static final String PROG_TIMEOUT = "TIMEOUT";
     
-    private Map<String, Integer> programIds = new HashMap<String, Integer>() {{
+    private final Map<String, Integer> programIds = new HashMap<String, Integer>() {{
         put(PROG1, 1);
         put(PROG2, 2);
         put(PROG3, 3);
@@ -100,9 +102,9 @@ public class ProgramStartRequestEndpointTest {
         };
         
         impl = new ProgramStartRequestEndpoint();
-        impl.setProgramService(mockService);
-        impl.setRolePropertyDao(mockRolePropertyDao);
-        impl.setLoadControlProgramDao(mockLoadControlProgramDao);
+        ReflectionTestUtils.setField(impl, "programService", mockService,ProgramService.class);
+        ReflectionTestUtils.setField(impl, "rolePropertyDao", mockRolePropertyDao, RolePropertyDao.class);
+        ReflectionTestUtils.setField(impl, "loadControlProgramDao", mockLoadControlProgramDao, LoadControlProgramDao.class);
         impl.initialize();
     }
     

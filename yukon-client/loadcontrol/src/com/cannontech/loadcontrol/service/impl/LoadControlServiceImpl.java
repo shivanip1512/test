@@ -49,8 +49,8 @@ import com.google.common.collect.Sets;
 
 public class LoadControlServiceImpl implements LoadControlService {
     
-    private Logger log = YukonLogManager.getLogger(LoadControlServiceImpl.class);
-    private long programChangeTimeout = 5000; //ms
+    private final Logger log = YukonLogManager.getLogger(LoadControlServiceImpl.class);
+    private final long programChangeTimeout = 5000; //ms
     
     private LoadControlProgramDao loadControlProgramDao;
     private LoadControlCommandService loadControlCommandService;
@@ -146,7 +146,8 @@ public class LoadControlServiceImpl implements LoadControlService {
 		final List<Integer> programIds = loadControlProgramDao.getProgramIdsByScenarioId(scenarioId);
 		
 		executor.execute(new Runnable() {
-			public void run() {
+			@Override
+            public void run() {
 				try {
 					doStartProgramsInScenario(programIds, scenarioId,
 							scenarioName, startTime, stopTime, forceStart,
@@ -221,7 +222,8 @@ public class LoadControlServiceImpl implements LoadControlService {
         final List<Integer> programIds = loadControlProgramDao.getProgramIdsByScenarioId(scenarioId);
                 
         executor.execute(new Runnable() {
-    		public void run() {
+    		@Override
+            public void run() {
     			try {
     				doStopProgramsInScenario(programIds, scenarioId, scenarioName, stopTime, forceStop, observeConstraintsAndExecute, user);
     			} catch (Exception e) {
@@ -411,7 +413,7 @@ public class LoadControlServiceImpl implements LoadControlService {
             }
         }
 
-        // execute for real in wither "observe" (CONSTRAINTS_FLAG_USE) or OVERRIDE mode
+        // execute for real in either "observe" (CONSTRAINTS_FLAG_USE) or OVERRIDE mode
         // either because this is a force, or because its not a force but we are going to let server
         // "observe" any constraints violations (i.e. alter our request to meet constraint requirements)
         // wait for server to respond with the updated program

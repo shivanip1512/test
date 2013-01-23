@@ -8,7 +8,6 @@ import org.apache.log4j.Logger;
 import org.jdom.Element;
 import org.jdom.JDOMException;
 import org.jdom.Namespace;
-import org.joda.time.Duration;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.ws.server.endpoint.annotation.Endpoint;
 import org.springframework.ws.server.endpoint.annotation.PayloadRoot;
@@ -20,16 +19,11 @@ import com.cannontech.common.util.xml.XmlUtils;
 import com.cannontech.common.util.xml.YukonXml;
 import com.cannontech.core.dao.GearNotFoundException;
 import com.cannontech.core.dao.NotFoundException;
-import com.cannontech.core.dao.ProgramNotFoundException;
 import com.cannontech.core.roleproperties.YukonRoleProperty;
 import com.cannontech.core.roleproperties.dao.RolePropertyDao;
 import com.cannontech.database.data.lite.LiteYukonUser;
-import com.cannontech.dr.program.service.ConstraintContainer;
-import com.cannontech.dr.program.service.ConstraintViolations;
 import com.cannontech.dr.program.service.ProgramService;
 import com.cannontech.loadcontrol.dao.LoadControlProgramDao;
-import com.cannontech.loadcontrol.data.LMProgramBase;
-import com.cannontech.loadcontrol.data.LMProgramDirect;
 import com.cannontech.message.util.BadServerResponseException;
 import com.cannontech.message.util.ConnectionException;
 import com.cannontech.message.util.TimeoutException;
@@ -39,22 +33,22 @@ import com.cannontech.yukon.api.util.XmlVersionUtils;
 @Endpoint
 public class ProgramStartRequestEndpoint {
 
-    private LoadControlProgramDao loadControlProgramDao;
-    private ProgramService programService;
-    private RolePropertyDao rolePropertyDao;
-    
-    private Logger log = YukonLogManager.getLogger(ProgramStartRequestEndpoint.class);
-    
-    private Namespace ns = YukonXml.getYukonNamespace();
-    private String programNameExpressionStr = "/y:programStartRequest/y:programName";
-    private String startTimeExpressionStr = "/y:programStartRequest/y:startDateTime";
-    private String stopTimeExpressionStr = "/y:programStartRequest/y:stopDateTime";
-    private String gearNameExpressionStr = "/y:programStartRequest/y:gearName";
-    
+    @Autowired private LoadControlProgramDao loadControlProgramDao;
+    @Autowired private ProgramService programService;
+    @Autowired private RolePropertyDao rolePropertyDao;
+
+    private final Logger log = YukonLogManager.getLogger(ProgramStartRequestEndpoint.class);
+
+    private final Namespace ns = YukonXml.getYukonNamespace();
+    private final String programNameExpressionStr = "/y:programStartRequest/y:programName";
+    private final String startTimeExpressionStr = "/y:programStartRequest/y:startDateTime";
+    private final String stopTimeExpressionStr = "/y:programStartRequest/y:stopDateTime";
+    private final String gearNameExpressionStr = "/y:programStartRequest/y:gearName";
+
     @PostConstruct
     public void initialize() throws JDOMException {
     }
-    
+
     @PayloadRoot(namespace="http://yukon.cannontech.com/api", localPart="programStartRequest")
     public Element invoke(Element programStartRequest, LiteYukonUser user) throws Exception {
         
@@ -76,37 +70,9 @@ public class ProgramStartRequestEndpoint {
         try {
             // Check authorization
             rolePropertyDao.verifyProperty(YukonRoleProperty.OPERATOR_CONSUMER_INFO_WS_LM_CONTROL_ACCESS, user);
-            boolean stopScheduled = rolePropertyDao.getPropertyBooleanValue(YukonRoleProperty.SCHEDULE_STOP_CHECKED_BY_DEFAULT, user);
         	boolean overrideConstraints = false;
-        	
-            int programId;
-            try {
-                programId = loadControlProgramDao.getProgramIdByProgramName(programName);
-            } catch (NotFoundException e) {
-                throw new ProgramNotFoundException(e.getMessage(), e);
-            }
-
-            int gearNumber;
-            if (gearName != null) {
-                try {
-                    gearNumber = loadControlProgramDao.getGearNumberForGearName(programId, gearName);
-                } catch (NotFoundException e) {
-                    throw new GearNotFoundException(e.getMessage(), e);
-                }
-            } else {
-                LMProgramBase program = programService.getProgramSafe(programId);
-                gearNumber = ((LMProgramDirect)program).getCurrentGearNumber();
-            }
-
-            ConstraintViolations checkViolations = programService.getConstraintViolationForStartProgram(programId, gearNumber, startTime, Duration.ZERO, stopTime, Duration.ZERO, null);
-            if (checkViolations.isViolated()) {
-                for (ConstraintContainer violation : checkViolations.getConstraintContainers()) {
-                    log.info("Constraint Violation: " + violation.toString() + " for request");
-                }
-            } else {
-                log.info("No constraint violations for request.");
-                programService.startProgramBlocking(programId, gearNumber, startTime, Duration.ZERO, stopScheduled, stopTime, Duration.ZERO, overrideConstraints, null);
-            }
+        	boolean ovserveConstaints = true;
+        	programService.startProgramByName(programName, startTime, stopTime, gearName, overrideConstraints, ovserveConstaints, user);
         } catch (GearNotFoundException e) {
         	Element fe = XMLFailureGenerator.generateFailure(programStartRequest, e, "InvalidGearName", "No gear named: " + gearName);
             resp.addContent(fe);
@@ -138,20 +104,5 @@ public class ProgramStartRequestEndpoint {
         resp.addContent(XmlUtils.createStringElement("success", ns, ""));
         
         return resp;
-    }
-    
-    @Autowired
-    public void setProgramService(ProgramService programService) {
-        this.programService = programService;
-    }
-    
-    @Autowired
-    public void setRolePropertyDao(RolePropertyDao rolePropertyDao) {
-        this.rolePropertyDao = rolePropertyDao;
-    }
-    
-    @Autowired
-    public void setLoadControlProgramDao(LoadControlProgramDao loadControlProgramDao) {
-        this.loadControlProgramDao = loadControlProgramDao;
     }
 }

@@ -12,7 +12,6 @@ import java.util.Set;
 import java.util.Vector;
 
 import org.apache.log4j.Logger;
-import org.joda.time.Duration;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Required;
 
@@ -26,25 +25,19 @@ import com.cannontech.common.pao.PaoType;
 import com.cannontech.common.pao.definition.dao.PaoDefinitionDao;
 import com.cannontech.common.pao.definition.model.PaoTag;
 import com.cannontech.common.point.PointQuality;
-import com.cannontech.common.util.CtiUtilities;
 import com.cannontech.core.dao.FdrTranslationDao;
 import com.cannontech.core.dao.NotFoundException;
 import com.cannontech.core.dao.PaoDao;
-import com.cannontech.core.dao.ProgramNotFoundException;
 import com.cannontech.core.dao.SimplePointAccessDao;
-import com.cannontech.core.roleproperties.YukonRoleProperty;
 import com.cannontech.core.roleproperties.dao.RolePropertyDao;
 import com.cannontech.database.data.lite.LiteYukonPAObject;
 import com.cannontech.database.data.lite.LiteYukonUser;
 import com.cannontech.database.data.point.PointTypes;
-import com.cannontech.dr.program.service.ConstraintContainer;
-import com.cannontech.dr.program.service.ConstraintViolations;
 import com.cannontech.dr.program.service.ProgramService;
 import com.cannontech.loadcontrol.LoadControlClientConnection;
 import com.cannontech.loadcontrol.dao.LoadControlProgramDao;
 import com.cannontech.loadcontrol.data.LMGroupBase;
 import com.cannontech.loadcontrol.data.LMProgramBase;
-import com.cannontech.loadcontrol.data.LMProgramDirect;
 import com.cannontech.loadcontrol.service.LoadControlService;
 import com.cannontech.loadcontrol.service.data.ProgramStatus;
 import com.cannontech.loadcontrol.service.data.ScenarioStatus;
@@ -190,50 +183,13 @@ public class MultispeakLMServiceImpl implements MultispeakLMService {
 	@Override
 	public ProgramStatus startControlByProgramName(String programName, Date startTime,
 			Date stopTime, LiteYukonUser liteYukonUser) throws NotAuthorizedException, NotFoundException, TimeoutException, BadServerResponseException  {
-
-	    boolean stopScheduled = rolePropertyDao.getPropertyBooleanValue(YukonRoleProperty.SCHEDULE_STOP_CHECKED_BY_DEFAULT, liteYukonUser);
-        boolean overrideConstraints = false;
-
-        int programId;
-        try {
-            programId = loadControlProgramDao.getProgramIdByProgramName(programName);
-        } catch (NotFoundException e) {
-            throw new ProgramNotFoundException(e.getMessage(), e);
-        }
-
-        LMProgramBase program = loadControlClientConnection.getProgramSafe(programId);
-        ProgramStatus programStatus = new ProgramStatus(program);
-        int gearNumber = ((LMProgramDirect)program).getCurrentGearNumber();
-
-        ConstraintViolations checkViolations = programService.getConstraintViolationForStartProgram(programId, gearNumber, startTime, Duration.ZERO, stopTime, Duration.ZERO, null);
-        if (checkViolations.isViolated()) {
-            for (ConstraintContainer violation : checkViolations.getConstraintContainers()) {
-                log.info("Constraint Violation: " + violation.toString() + " for request");
-            }
-            programStatus.setConstraintViolations(checkViolations.getConstraintContainers());
-        } else {
-            log.info("No constraint violations for request.");
-            programStatus = programService.startProgramBlocking(programId, gearNumber, startTime, Duration.ZERO, stopScheduled, stopTime, Duration.ZERO, overrideConstraints, null);
-        } 
-
-        return programStatus;
+	    return programService.startProgramByName(programName, startTime, stopTime, null, false, true, liteYukonUser);
 	}
 
 	@Override
 	public ProgramStatus stopControlByProgramName(String programName, Date stopTime,
 			LiteYukonUser liteYukonUser) throws NotAuthorizedException, NotFoundException, TimeoutException, BadServerResponseException {
-	    int programId;
-        try {
-            programId = loadControlProgramDao.getProgramIdByProgramName(programName);
-        } catch (NotFoundException e) {
-            throw new ProgramNotFoundException(e.getMessage(), e);
-        }
-
-        if (stopTime == null) {
-            stopTime = CtiUtilities.get1990GregCalendar().getTime();
-        }
-
-	    return programService.scheduleProgramStopBlocking(programId, stopTime, Duration.ZERO);
+	    return programService.scheduleProgramStopByProgramName(programName, stopTime, false, true);
 	}
 
 	@Override
@@ -285,7 +241,7 @@ public class MultispeakLMServiceImpl implements MultispeakLMService {
 		pointData.setType(PointTypes.ANALOG_POINT);
 		pointData.setStr("MultiSpeak ScadaAnalog Analog point update.");
 		pointData.setUserName(userName);
-		if ( scadaAnalog.getTimeStamp() != null) {
+		if (scadaAnalog.getTimeStamp() != null) {
 			pointData.setTime(scadaAnalog.getTimeStamp().getTime());
 		}
 		return pointData;

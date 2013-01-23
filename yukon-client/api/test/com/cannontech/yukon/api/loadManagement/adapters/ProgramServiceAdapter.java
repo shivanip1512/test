@@ -8,17 +8,20 @@ import java.util.List;
 import org.joda.time.Duration;
 
 import com.cannontech.common.bulk.filter.UiFilter;
+import com.cannontech.common.exception.NotAuthorizedException;
 import com.cannontech.common.pao.DisplayablePao;
 import com.cannontech.common.pao.YukonPao;
 import com.cannontech.common.search.SearchResult;
 import com.cannontech.common.util.DatedObject;
 import com.cannontech.core.dao.NotFoundException;
+import com.cannontech.database.data.lite.LiteYukonUser;
 import com.cannontech.dr.program.model.GearAdjustment;
 import com.cannontech.dr.program.service.ConstraintViolations;
 import com.cannontech.dr.program.service.ProgramService;
 import com.cannontech.dr.scenario.model.ScenarioProgram;
 import com.cannontech.loadcontrol.data.LMProgramBase;
 import com.cannontech.loadcontrol.service.data.ProgramStatus;
+import com.cannontech.message.util.BadServerResponseException;
 import com.cannontech.message.util.ConnectionException;
 import com.cannontech.message.util.TimeoutException;
 import com.cannontech.user.YukonUserContext;
@@ -137,6 +140,22 @@ public class ProgramServiceAdapter implements ProgramService {
     @Override
     public LMProgramBase getProgramSafe(int programId) throws ConnectionException,
             NotFoundException {
+        throw new UnsupportedOperationException("Not Implemented");
+    }
+
+    @Override
+    public ProgramStatus scheduleProgramStopByProgramName(String programName, Date stopTime,
+                                                          boolean force, boolean observeConstraints)
+            throws TimeoutException {
+        throw new UnsupportedOperationException("Not Implemented");
+    }
+
+    @Override
+    public ProgramStatus startProgramByName(String programName, Date startTime, Date stopTime,
+                                            String gearName, boolean force,
+                                            boolean observeConstraints, LiteYukonUser liteYukonUser)
+            throws NotAuthorizedException, NotFoundException, TimeoutException,
+            BadServerResponseException {
         throw new UnsupportedOperationException("Not Implemented");
     }
 

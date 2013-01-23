@@ -12,6 +12,7 @@ import org.junit.Before;
 import org.junit.Test;
 import org.springframework.core.io.ClassPathResource;
 import org.springframework.core.io.Resource;
+import org.springframework.test.util.ReflectionTestUtils;
 
 import com.cannontech.common.exception.NotAuthorizedException;
 import com.cannontech.common.util.CtiUtilities;
@@ -26,6 +27,7 @@ import com.cannontech.core.roleproperties.dao.RolePropertyDao;
 import com.cannontech.database.data.lite.LiteYukonUser;
 import com.cannontech.dr.program.service.ConstraintContainer;
 import com.cannontech.dr.program.service.ConstraintViolations;
+import com.cannontech.dr.program.service.ProgramService;
 import com.cannontech.loadcontrol.dao.LoadControlProgramDao;
 import com.cannontech.loadcontrol.data.LMProgramBase;
 import com.cannontech.loadcontrol.data.LMProgramDirect;
@@ -97,9 +99,9 @@ public class ProgramStopRequestEndpointTest {
         };
         
         impl = new ProgramStopRequestEndpoint();
-        impl.setProgramService(mockService);
-        impl.setRolePropertyDao(mockRolePropertyDao);
-        impl.setLoadControlProgramDao(mockLoadControlProgramDao);
+        ReflectionTestUtils.setField(impl, "programService", mockService,ProgramService.class);
+        ReflectionTestUtils.setField(impl, "rolePropertyDao", mockRolePropertyDao, RolePropertyDao.class);
+        ReflectionTestUtils.setField(impl, "loadControlProgramDao", mockLoadControlProgramDao, LoadControlProgramDao.class);
         impl.initialize();
     }
     

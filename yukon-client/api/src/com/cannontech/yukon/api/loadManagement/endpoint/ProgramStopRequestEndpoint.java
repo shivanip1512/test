@@ -8,7 +8,6 @@ import org.apache.log4j.Logger;
 import org.jdom.Element;
 import org.jdom.JDOMException;
 import org.jdom.Namespace;
-import org.joda.time.Duration;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.ws.server.endpoint.annotation.Endpoint;
 import org.springframework.ws.server.endpoint.annotation.PayloadRoot;
@@ -20,7 +19,6 @@ import com.cannontech.common.util.xml.SimpleXPathTemplate;
 import com.cannontech.common.util.xml.XmlUtils;
 import com.cannontech.common.util.xml.YukonXml;
 import com.cannontech.core.dao.NotFoundException;
-import com.cannontech.core.dao.ProgramNotFoundException;
 import com.cannontech.core.roleproperties.YukonRoleProperty;
 import com.cannontech.core.roleproperties.dao.RolePropertyDao;
 import com.cannontech.database.data.lite.LiteYukonUser;
@@ -35,9 +33,9 @@ import com.cannontech.yukon.api.util.XmlVersionUtils;
 @Endpoint
 public class ProgramStopRequestEndpoint {
 
-    private RolePropertyDao rolePropertyDao;
-    private ProgramService programService;
-    private LoadControlProgramDao loadControlProgramDao;
+    @Autowired private RolePropertyDao rolePropertyDao;
+    @Autowired private ProgramService programService;
+    @Autowired private LoadControlProgramDao loadControlProgramDao;
     
     private final Namespace ns = YukonXml.getYukonNamespace();
     private final String programNameExpressionStr = "/y:programStopRequest/y:programName";
@@ -51,12 +49,12 @@ public class ProgramStopRequestEndpoint {
     
     @PayloadRoot(namespace="http://yukon.cannontech.com/api", localPart="programStopRequest")
     public Element invoke(Element programStopRequest, LiteYukonUser user) throws Exception {
-        
+
     	XmlVersionUtils.verifyYukonMessageVersion(programStopRequest, XmlVersionUtils.YUKON_MSG_VERSION_1_0);
-    	
+
         // create template and parse data
         SimpleXPathTemplate requestTemplate = YukonXml.getXPathTemplateForElement(programStopRequest);
-        
+
         String programName = requestTemplate.evaluateAsString(programNameExpressionStr);
         Date stopTime = requestTemplate.evaluateAsDate(stopTimeExpressionStr);
         if (stopTime == null) {
@@ -71,15 +69,9 @@ public class ProgramStopRequestEndpoint {
         try {
             // Check authorization
             rolePropertyDao.verifyProperty(YukonRoleProperty.OPERATOR_CONSUMER_INFO_WS_LM_CONTROL_ACCESS, user);
-
-            int programId;
-            try {
-                programId = loadControlProgramDao.getProgramIdByProgramName(programName);
-            } catch (NotFoundException e) {
-                throw new ProgramNotFoundException(e.getMessage(), e);
-            }
-
-            programService.scheduleProgramStopBlocking(programId, stopTime, Duration.ZERO);
+            boolean overrideConstraints = false;
+            boolean observeConstraints = true;
+            programService.scheduleProgramStopByProgramName(programName, stopTime, overrideConstraints, observeConstraints);
         } catch (NotFoundException e) {
             Element fe = XMLFailureGenerator.generateFailure(programStopRequest, e, "InvalidProgramName", "No program named: " + programName);
             resp.addContent(fe);
@@ -110,20 +102,5 @@ public class ProgramStopRequestEndpoint {
         resp.addContent(XmlUtils.createStringElement("success", ns, ""));
         
         return resp;
-    }
-    
-    @Autowired
-    public void setRolePropertyDao(RolePropertyDao rolePropertyDao) {
-        this.rolePropertyDao = rolePropertyDao;
-    }
-    
-    @Autowired
-    public void setProgramService(ProgramService programService) {
-        this.programService = programService;
-    }
-    
-    @Autowired
-    public void setLoadControlProgramDao(LoadControlProgramDao loadControlProgramDao) {
-        this.loadControlProgramDao = loadControlProgramDao;
     }
 }

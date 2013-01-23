@@ -8,11 +8,13 @@ import java.util.List;
 import org.joda.time.Duration;
 
 import com.cannontech.common.bulk.filter.UiFilter;
+import com.cannontech.common.exception.NotAuthorizedException;
 import com.cannontech.common.pao.DisplayablePao;
 import com.cannontech.common.pao.YukonPao;
 import com.cannontech.common.search.SearchResult;
 import com.cannontech.common.util.DatedObject;
 import com.cannontech.core.dao.NotFoundException;
+import com.cannontech.database.data.lite.LiteYukonUser;
 import com.cannontech.dr.program.model.GearAdjustment;
 import com.cannontech.dr.scenario.model.ScenarioProgram;
 import com.cannontech.loadcontrol.data.LMProgramBase;
@@ -97,6 +99,25 @@ public interface ProgramService {
                              List<GearAdjustment> gearAdjustments);
 
     /**
+     * Starts a program. Blocks on Program Start Scheduled. Looks up program by programName.
+     * 
+     * Handles constraints based on observeConstraints boolean. If overrideConstraints is set true, constraints
+     * will not be checked before starting.
+     * 
+     * @param overrideConstraints : If true causes constraints to not be checked before starting program
+     * @param observeConstraints : If true will start a program if it is ok, modifying time as constraints specify
+
+     * @throws NotAuthorizedException
+     * @throws NotFoundException
+     * @throws TimeoutException
+     * @throws BadServerResponseException
+     */
+    public ProgramStatus startProgramByName(String programName, Date startTime,
+                       Date stopTime, String gearName, boolean overrideConstraints,
+                       boolean observeConstraints, LiteYukonUser liteYukonUser)
+                       throws NotAuthorizedException, NotFoundException, TimeoutException, BadServerResponseException;
+
+    /**
      * Schedules the program stop. Non-blocking
      * @throws BadServerResponseException 
 
@@ -107,11 +128,26 @@ public interface ProgramService {
     /**
      * Schedules the program stop. Blocks on Program Stop Scheduled
      * @throws BadServerResponseException 
-
      * @throws TimeoutException 
      */
     public ProgramStatus scheduleProgramStopBlocking(int programId, Date stopDate,
                                     Duration stopOffset) throws TimeoutException;
+
+    /**
+     * Schedules a stop program. Blocks on Program Stop Scheduled. Looks up program by programName.
+     * 
+     * Handles constraints based on observeConstraints boolean. If overrideConstraints is set true, constraints
+     * will not be checked before scheduling program stop.
+     * 
+     * @param programName
+     * @param stopTime
+     * @param overrideConstraints
+     * @param observeConstraints
+     * @return
+     * @throws TimeoutException
+     */
+    public ProgramStatus scheduleProgramStopByProgramName(String programName, Date stopTime,
+                                                          boolean overrideConstraints, boolean observeConstraints) throws TimeoutException;
 
     public void stopProgram(int programId);
 
