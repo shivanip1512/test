@@ -3,6 +3,7 @@
 /******************************************/ 
 
 /* Start YUK-11672 */
+/* @error ignore-begin */
 CREATE TABLE ProgramToSeasonalProgram  (
    AssignedProgramId      NUMBER                 NOT NULL,
    SeasonalProgramId      NUMBER                 NOT NULL,
@@ -17,6 +18,7 @@ ALTER TABLE ProgramToSeasonalProgram
 ALTER TABLE ProgramToSeasonalProgram
     ADD CONSTRAINT FK_ProgSeaProg_LMProgWebPub_SP FOREIGN KEY (SeasonalProgramId)
         REFERENCES LMProgramWebPublishing (ProgramId);
+/* @error ignore-end */
 /* End YUK-11672 */
 
 /* Start YUK-11744 */
