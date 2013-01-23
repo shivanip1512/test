@@ -28,7 +28,9 @@ INSERT INTO YukonRoleProperty VALUES (-1126, -2, 'Alternate Program Enrollment',
 /* End YUK-11744 */
 
 /* Start YUK-11754 */
-INSERT INTO YukonRoleProperty VALUES (-1125, -2, 'Broadcast Cancel All Opt Out SPID', 'false', 'Which SPID to use when sending the broadcast cancel all opt out command.'); 
+/* @error ignore-begin */
+INSERT INTO YukonRoleProperty VALUES (-1125, -2, 'Broadcast Cancel All Opt Out SPID', ' ', 'The SPID to use when sending the broadcast cancel all opt out command.'); 
+/* @error ignore-end */
 /* End YUK-11754 */
 
 /* Start YUK-11733 */
