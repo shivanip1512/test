@@ -22,7 +22,9 @@ ALTER TABLE ProgramToSeasonalProgram
 /* End YUK-11672 */
 
 /* Start YUK-11744 */
+/* @error ignore-begin */
 INSERT INTO YukonRoleProperty VALUES (-1126, -2, 'Alternate Program Enrollment', 'false', 'Enables the use of alternate program enrollments.');
+/* @error ignore-end */
 /* End YUK-11744 */
 
 /* Start YUK-11754 */
