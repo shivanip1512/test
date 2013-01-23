@@ -206,8 +206,8 @@ protected:
     struct llp_peak_report_interest_t
     {
         CtiDate end_date;
-        unsigned short range   : 10;
-        unsigned short channel :  2;
+        unsigned range   : 10;
+        unsigned channel :  2;
 
         enum States {
             Idle,
