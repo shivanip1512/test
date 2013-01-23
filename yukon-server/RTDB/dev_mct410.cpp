@@ -3376,7 +3376,7 @@ int Mct410Device::decodeGetConfigLoadProfileExistingPeak(INMESS *InMessage, CtiT
 
         request_range = 1;
 
-        //  If we already attempted a reset, abort the request and return an error
+        //  If this is the first time we've read the peak, report the reset back to the user
         if( _llpPeakInterest.state == llp_pri::ReadingExistingPeak )
         {
             ReturnMsg->setResultString("Requested date range overlaps the device's previous peak.  Attempting to reset device report range.");
@@ -3386,11 +3386,12 @@ int Mct410Device::decodeGetConfigLoadProfileExistingPeak(INMESS *InMessage, CtiT
         }
         else
         {
+            //  If we already attempted a reset, abort the request and return an error
             status = ErrorNeedsDateRangeReset;
 
             ReturnMsg->setResultString("Requested date range overlaps the device's previous peak.");
 
-            OutMessage->Request.Connection = 0;
+            OutMessage->Request.Connection = 0;  //  don't report the read to the client
 
             InterlockedExchange(&_llpPeakInterest.state, llp_pri::Idle);
         }

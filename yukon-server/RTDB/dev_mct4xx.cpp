@@ -801,7 +801,7 @@ INT Mct4xxDevice::executeGetValue(CtiRequestMsg *pReq,
                         CtiString cmdString = parse.getCommandStr();
 
                         const bool request_lock = cmdString.contains("read")
-                            || InterlockedCompareExchange(&_llpPeakInterest.state, llp_pri::NewRequest, llp_pri::Idle);
+                            || (InterlockedCompareExchange(&_llpPeakInterest.state, llp_pri::NewRequest, llp_pri::Idle) == llp_pri::Idle);
 
                         if( ! request_lock )
                         {
