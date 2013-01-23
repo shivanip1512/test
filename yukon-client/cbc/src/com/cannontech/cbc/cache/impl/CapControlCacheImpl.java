@@ -493,21 +493,13 @@ public class CapControlCacheImpl implements MessageListener, CapControlCache {
             return getFeeder(new Integer(childID)).getParentID();
         } else if( isCapBank(childID) ) {
             return getFeeder(new Integer(getCapBankDevice(new Integer(childID)).getParentID())).getParentID();
-        } else {
-            return CtiUtilities.NONE_ZERO_ID;
         }
+        throw new NotFoundException("could not find SubBus from child id of " + childID);
     }
 
     @Override
     public synchronized SubBus getParentSubBus(int childID) throws NotFoundException {
-        if( isSubBus(childID) ) {
-            return getSubBus(childID);
-        } else if( isFeeder(childID) ) {
-            return getSubBus(getFeeder(new Integer(childID)).getParentID());
-        } else if( isCapBank(childID) ) {
-            return getSubBus(getFeeder(new Integer(getCapBankDevice(new Integer(childID)).getParentID())).getParentID());
-        }
-        throw new NotFoundException("could not find SubBus from child id of " + childID);
+        return getSubBus(getParentSubBusID(childID));
     }
     
     /**

@@ -30,7 +30,7 @@ import com.cannontech.message.capcontrol.streamable.SubStation;
 import com.cannontech.user.YukonUserContext;
 import com.cannontech.web.capcontrol.models.MovedBank;
 import com.cannontech.web.capcontrol.models.NavigableArea;
-import com.cannontech.web.capcontrol.util.CapControlWebUtils;
+import com.cannontech.web.capcontrol.util.service.CapControlWebUtils;
 import com.cannontech.web.security.annotation.CheckRoleProperty;
 import com.google.common.collect.Lists;
 
@@ -39,9 +39,10 @@ import com.google.common.collect.Lists;
 @CheckRoleProperty(YukonRoleProperty.CAP_CONTROL_ACCESS)
 public class BankMoveController {
     
-    private FilterCacheFactory cacheFactory;
-    private UpdaterHelper updaterHelper;
-    private YukonUserContextMessageSourceResolver messageSourceResolver;
+    @Autowired private FilterCacheFactory cacheFactory;
+    @Autowired private UpdaterHelper updaterHelper;
+    @Autowired private YukonUserContextMessageSourceResolver messageSourceResolver;
+    @Autowired private CapControlWebUtils capControlWebUtils;
     
     @RequestMapping
     public String bankMove(ModelMap model, YukonUserContext context, int bankid, Boolean oneline) {
@@ -51,7 +52,7 @@ public class BankMoveController {
         }
         CapControlCache filterCapControlCache = cacheFactory.createUserAccessFilteredCache(context.getYukonUser());
         int subBusId = 0;
-        List<NavigableArea> navigableAreas = CapControlWebUtils.buildSimpleHierarchy();
+        List<NavigableArea> navigableAreas = capControlWebUtils.buildSimpleHierarchy();
         model.addAttribute("allAreas", navigableAreas);
         CapBankDevice capBank = filterCapControlCache.getCapBankDevice( new Integer(bankid) );
         
@@ -151,20 +152,4 @@ public class BankMoveController {
         
         return "move/movedCapBanks.jsp";
     }
-    
-    @Autowired
-    public void setFilterCacheFactory (FilterCacheFactory filterCacheFactory) {
-        this.cacheFactory = filterCacheFactory;
-    }
-    
-    @Autowired
-    public void setUpdaterHelper(UpdaterHelper updaterHelper) {
-        this.updaterHelper = updaterHelper;
-    }
-    
-    @Autowired
-    public void setMessageSourceResolver(YukonUserContextMessageSourceResolver messageSourceResolver) {
-        this.messageSourceResolver = messageSourceResolver;
-    }
-    
 }

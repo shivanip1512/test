@@ -189,8 +189,16 @@ public class MenuController {
         } else {
             commands.add(CommandType.CONFIRM_OPEN);
         }
-        commands.add(CommandType.SEND_OPEN_CAPBANK);
-        commands.add(CommandType.SEND_CLOSE_CAPBANK);
+        
+        boolean strategyAttachedToSubBus = true;
+        try {
+            SubBus parentSubBus = cache.getParentSubBus(capBank.getCcId());
+            strategyAttachedToSubBus = CapControlUtils.isStrategyAttachedToSubBusOrSubBusParentArea(parentSubBus);
+        } catch (NotFoundException nfe) {/* no parent subbus assigned - that's fine, move along */}
+        if (strategyAttachedToSubBus) {
+            commands.add(CommandType.SEND_OPEN_CAPBANK);
+            commands.add(CommandType.SEND_CLOSE_CAPBANK);
+        }
         if (isTwoWay) {
             commands.add(CommandType.SEND_SCAN_2WAY_DEVICE);
         }
@@ -273,26 +281,7 @@ public class MenuController {
         model.addAttribute("changeOpState", CommandType.CHANGE_OP_STATE);
         
         LiteState[] states = CapControlUtils.getCBCStateNames();
-        List<LiteState> filteredStatesList = Lists.newArrayList(states);
-        boolean strategyAttachedToSubBus = true;
-        try {
-            SubBus parentSubBus = cache.getParentSubBus(id);
-            strategyAttachedToSubBus = CapControlUtils.isStrategyAttachedToSubBusOrSubBusParentArea(parentSubBus);
-        } catch (NotFoundException nfe) {/* no parent subbus assigned - that's fine, move along */}
-        if (!strategyAttachedToSubBus) {
-            for (LiteState state : states) {
-                /*
-                 * These two commands (open and close) require a strategy to be attached for the
-                 * server to determine how long to wait and what point to look at to know if enough
-                 * VAR change was seen to confirm a control
-                 */
-                if ("open".equalsIgnoreCase(state.getStateText())
-                    || "close".equalsIgnoreCase(state.getStateText())) {
-                    filteredStatesList.remove(state);
-                }
-            }
-        }
-        model.addAttribute("states", filteredStatesList);
+        model.addAttribute("states", states);
 
         return "tier/popupmenu/menu.jsp";
     }
