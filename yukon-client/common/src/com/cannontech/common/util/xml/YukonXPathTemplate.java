@@ -1,7 +1,5 @@
 package com.cannontech.common.util.xml;
 
-import java.lang.reflect.Field;
-
 import org.apache.commons.lang.StringUtils;
 import org.joda.time.LocalTime;
 import org.joda.time.format.DateTimeFormat;
@@ -12,6 +10,7 @@ import com.cannontech.common.temperature.CelsiusTemperature;
 import com.cannontech.common.temperature.FahrenheitTemperature;
 import com.cannontech.common.temperature.Temperature;
 import com.cannontech.common.temperature.TemperatureUnit;
+import com.cannontech.common.util.EnumUtils;
 
 public class YukonXPathTemplate extends SimpleXPathTemplate {
 
@@ -42,32 +41,20 @@ public class YukonXPathTemplate extends SimpleXPathTemplate {
      * @throws XPathException
      */
     public <E extends Enum<E>> E evaluateAsEnum(String expression, Class<E> enumClass) throws XPathException {
-        // Getting the string value from the expression and also converting it to an Enum format.
         String originalStringValue = evaluateAsString(expression);
-        if (StringUtils.isBlank(originalStringValue)) {
-            return null;
-        }
-        String stringValue = originalStringValue.toUpperCase().replaceAll(" ", "_");
+        String stringValue = EnumUtils.convertToEnumFormat(originalStringValue);
 
-        // Check to see if an enum value exists for the formated string.
+        // Try getting the value from the enum
         try {
             return Enum.valueOf(enumClass, stringValue);
         } catch (IllegalArgumentException e) {}
-            
-        // Checking if there is an XmlRepresentation that we should be using for our value.
-        Field[] enumValues = enumClass.getFields();
-        for (Field enumValue : enumValues) {
-            XmlRepresentation annotation = enumValue.getAnnotation(XmlRepresentation.class);
-            if (annotation != null && annotation.value().equals(originalStringValue)) {
-                try {
-                    Object type = enumValue.get(enumClass);
-                    return enumClass.cast(type);
-                } catch (IllegalArgumentException | IllegalAccessException e) {
-                    e.printStackTrace();
-                }
-            }
+        
+        // See if there is an xmlRepresentation of this value.
+        E enumValue = XmlUtils.findEnumFromXmlRepresentation(originalStringValue, enumClass);
+        if (enumValue != null) {
+            return enumValue;
         }
-            
+        
         throw new XPathException(stringValue + " is not a legal representation of " + enumClass);
     }
 

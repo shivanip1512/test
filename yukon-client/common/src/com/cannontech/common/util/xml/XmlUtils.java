@@ -1,6 +1,7 @@
 package com.cannontech.common.util.xml;
 
 import java.io.IOException;
+import java.lang.reflect.Field;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
@@ -12,6 +13,7 @@ import javax.xml.transform.TransformerException;
 import javax.xml.transform.TransformerFactory;
 
 import org.apache.commons.lang.StringUtils;
+import org.apache.commons.lang.Validate;
 import org.jdom.Document;
 import org.jdom.Element;
 import org.jdom.JDOMException;
@@ -137,4 +139,37 @@ public class XmlUtils {
         transformer.transform(source, result);
     }
 
+    /**
+     * This method searches for the xmlRepresentation in the supplied enumClass.  If it finds the xmlRepresentation it will
+     * return the enum associated with it.  If not it will return null.
+     */
+    public static <E extends Enum<E>> E findEnumFromXmlRepresentation(String xmlRepresentation, Class<E> enumClass) {
+        Validate.notNull(enumClass);
+        Validate.notEmpty(xmlRepresentation);
+        
+        Field[] enumValues = enumClass.getFields();
+        for (Field enumValue : enumValues) {
+            XmlRepresentation annotation = enumValue.getAnnotation(XmlRepresentation.class);
+            if (annotation != null && annotation.value().equals(xmlRepresentation)) {
+                try {
+                    Object type = enumValue.get(enumClass);
+                    return enumClass.cast(type);
+                } catch (IllegalArgumentException | IllegalAccessException e) {
+                    e.printStackTrace();
+                }
+            }
+        }
+
+        return null;
+    }
+
+    /**
+     * This method returns the XmlRepresentation of the enum value suppied.
+     */
+    public static <E extends Enum<E>> String findXmlRepresentation(E enumObj) {
+        Validate.notNull(enumObj);
+        
+        XmlRepresentation xmlRepresentation = enumObj.getDeclaringClass().getAnnotation(XmlRepresentation.class);
+        return xmlRepresentation.value();
+    }
 }
