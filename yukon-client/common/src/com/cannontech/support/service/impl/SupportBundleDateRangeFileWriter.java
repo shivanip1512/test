@@ -40,7 +40,7 @@ public class SupportBundleDateRangeFileWriter extends AbstractSupportBundleWrite
 
         for (File file : files) {
             File candidate = new File(directory, file.getName());
-            if (addCandidate(candidate,start,stop)) {
+            if (isFileInDateRange(candidate,start,stop)) {
                 fileList.add(candidate);
             }
         }
@@ -48,7 +48,7 @@ public class SupportBundleDateRangeFileWriter extends AbstractSupportBundleWrite
         return fileList;
     }
     
-    protected boolean addCandidate(File candidate, ReadableInstant start,
+    protected boolean isFileInDateRange(File candidate, ReadableInstant start,
             ReadableInstant stop)  {
         Instant modified = new Instant(candidate.lastModified());
     	return (candidate.isFile()

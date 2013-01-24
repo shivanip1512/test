@@ -101,7 +101,6 @@
         <property name="zipDirectory" value="Logs/Server/web/logs"/>
         <property name="dirName" value="/Server/web/logs/"/>
         <property name="name" value="weblogsFilesSource"/>
-        <property name="checkBoth" value="false"/>
     </bean>  
     
     <bean class="com.cannontech.support.service.impl.SupportBundleFileSystemToCsvWriter"> 

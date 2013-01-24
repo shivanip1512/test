@@ -4,6 +4,7 @@ import java.io.File;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.Date;
+import java.util.Locale;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
@@ -22,49 +23,37 @@ public class SupportBundleDateRangeAndNameFileWriter extends
     private static final String NO_HYPHEN_FORMAT = "yyyyMMdd";
 	private static final String WITH_HYPHEN_FORMAT = "yyyy-MM-dd";
 	
-	private static final Pattern PATTERN_NO_HYPHEN = Pattern.compile("\\d{8}\\.log", Pattern.CASE_INSENSITIVE);
-	private static final Pattern PATTERN_W_HYPHEN = Pattern.compile("\\d{4}-\\d{2}-\\d{2}\\.log", Pattern.CASE_INSENSITIVE);
-	
-	private boolean checkBoth;
+	private static final Pattern PATTERN_NO_HYPHEN = Pattern.compile("\\d{8}\\.log$", Pattern.CASE_INSENSITIVE);
+	private static final Pattern PATTERN_W_HYPHEN = Pattern.compile("\\d{4}-\\d{2}-\\d{2}\\.log$", Pattern.CASE_INSENSITIVE);
 
-	protected boolean addCandidate(File candidate, ReadableInstant start,
+	@Override
+	protected boolean isFileInDateRange(File candidate, ReadableInstant start,
             ReadableInstant stop) {
 		if ( ! candidate.isFile()) {
 			return false;
 		}
         String filename = candidate.getName();
         
-        if ( ! filename.endsWith(".log")) {
+        if ( ! filename.toLowerCase(Locale.US).endsWith(".log")) {
         	return false;
         }
 
-        boolean isInDate = super.addCandidate(candidate, start, stop);
+        boolean isInDate = super.isFileInDateRange(candidate, start, stop);
 
         if (log.isDebugEnabled()) {
         	log.debug("Check file " + filename + " if the filename indicates a valid date.");
         }
         // Require that both checks are valid
-        if (checkBoth) {
-        	return isInDate && isMatch(filename, start, stop);
-        }
-        // Otherwise, see if either check passes
-        else {
-        	// No need to check file name
-        	if (isInDate) {
-        		return true;
-        	}
-        	// If matches file name, then match
-        	return isMatch(filename, start, stop);
-        }
+        return isInDate || isMatch(filename, start, stop);
     }
 
 	protected boolean isMatch(String filename, ReadableInstant start, ReadableInstant stop) {
         Matcher noHyphenMatcher = PATTERN_NO_HYPHEN.matcher(filename);
-        while (noHyphenMatcher.find()) {
+        if (noHyphenMatcher.find()) {
         	return isInGroup(noHyphenMatcher,NO_HYPHEN_FORMAT, start, stop);
         }
         Matcher withHyphenMatcher = PATTERN_W_HYPHEN.matcher(filename);
-        while (withHyphenMatcher.find()) {
+        if (withHyphenMatcher.find()) {
         	return isInGroup(withHyphenMatcher,WITH_HYPHEN_FORMAT, start, stop);
         }
         return false;
@@ -81,20 +70,11 @@ public class SupportBundleDateRangeAndNameFileWriter extends
 		try {
 			fileDate = dateFormatter.parse(fileDateStr);
 		} catch (ParseException e) {
-			e.printStackTrace();
-			throw new RuntimeException(e);
+			log.error("Unable to parse date: " + fileDateStr);
+			return false;
 		}
         Instant fileDateInstant = new Instant(fileDate);
         return (fileDateInstant.isAfter(start)
                     && fileDateInstant.isBefore(stop));
 	}
-	
-	public void setCheckBoth(boolean checkBoth) {
-		this.checkBoth = checkBoth;
-	}
-	
-	public boolean isCheckBoth() {
-		return checkBoth;
-	}
-
 }

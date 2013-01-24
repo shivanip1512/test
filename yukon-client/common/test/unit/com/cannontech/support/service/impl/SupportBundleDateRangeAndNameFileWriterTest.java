@@ -19,13 +19,7 @@ public class SupportBundleDateRangeAndNameFileWriterTest {
 	@Test
 	public void testAddCandidate() throws Exception {
         SimpleDateFormat formatter = new SimpleDateFormat("yyyyMMdd");
-        Date jan10 = null;
-        try {
-            jan10 = formatter.parse("20130110");
-        } catch (ParseException e) {
-            Assert.fail("Could not parse the date 20130110");
-        }
-        LocalDate stopDate = new LocalDate(jan10, DateTimeZone.getDefault());
+        LocalDate stopDate = new LocalDate(formatter.parse("20130110"), DateTimeZone.getDefault());
         LocalDate startDate = stopDate.minus(Weeks.TWO);
 
         ReadableInstant start = TimeUtil.toMidnightAtBeginningOfDay(startDate, DateTimeZone.getDefault());
@@ -36,62 +30,25 @@ public class SupportBundleDateRangeAndNameFileWriterTest {
 
 		// Testing with "checkBoth" set to false
 		File testFile = new TestFile("foo20130108.log",true,formatter.parse("20130108"));
-		Assert.assertTrue("File name should be valid no-hyphen example",writer.addCandidate(testFile, start, stop));
+		Assert.assertTrue("File name should be valid no-hyphen example",writer.isFileInDateRange(testFile, start, stop));
 
 		testFile = new TestFile("foo2013-01-08.log",true,formatter.parse("20130108"));
-        Assert.assertTrue("File name should be valid with-hyphen example",writer.addCandidate(testFile, start, stop));
+        Assert.assertTrue("File name should be valid with-hyphen example",writer.isFileInDateRange(testFile, start, stop));
 
 		testFile = new TestFile("foo20130108.txt",true,formatter.parse("20130108"));
-        Assert.assertFalse("File name should NOT be valid due to suffix",writer.addCandidate(testFile, start, stop));
+        Assert.assertFalse("File name should NOT be valid due to suffix",writer.isFileInDateRange(testFile, start, stop));
 
 		testFile = new TestFile("foo20120108.log",true,formatter.parse("20120108"));
-        Assert.assertFalse("File name should NOT be valid due to date range",writer.addCandidate(testFile, start, stop));
+        Assert.assertFalse("File name should NOT be valid due to date range",writer.isFileInDateRange(testFile, start, stop));
 
 		testFile = new TestFile("foo2012-01-08.log",true,formatter.parse("20120108"));
-        Assert.assertFalse("File name should NOT be valid due to date range",writer.addCandidate(testFile, start, stop));
-
-
-		// Testing with "checkBoth" set to false
-        writer.setCheckBoth(true);
-
-		testFile = new TestFile("foo20130108.log",true,formatter.parse("20130108"));
-		Assert.assertTrue("File name should be valid no-hyphen example",writer.addCandidate(testFile, start, stop));
-
-		testFile = new TestFile("foo20130108.log",true,formatter.parse("20120108"));
-		Assert.assertFalse("File name should NOT be valid no-hyphen due to date",writer.addCandidate(testFile, start, stop));
-
-		testFile = new TestFile("foo20120108.log",true,formatter.parse("20130108"));
-		Assert.assertFalse("File name should NOT be valid no-hyphen due to filename",writer.addCandidate(testFile, start, stop));
-
-		testFile = new TestFile("foo2013-01-08.log",true,formatter.parse("20130108"));
-        Assert.assertTrue("File name should be valid with-hyphen example",writer.addCandidate(testFile, start, stop));
-
-		testFile = new TestFile("foo2013-01-08.log",true,formatter.parse("20120108"));
-        Assert.assertFalse("File name should NOT be valid with-hyphen due to date",writer.addCandidate(testFile, start, stop));
-
-		testFile = new TestFile("foo2012-01-08.log",true,formatter.parse("20130108"));
-        Assert.assertFalse("File name should NOT be valid with-hyphen due to filename",writer.addCandidate(testFile, start, stop));
-
-        testFile = new TestFile("foo20130108.txt",true,formatter.parse("20130108"));
-        Assert.assertFalse("File name should NOT be valid due to suffix",writer.addCandidate(testFile, start, stop));
-
-		testFile = new TestFile("foo20120108.log",true,formatter.parse("20120108"));
-        Assert.assertFalse("File name should NOT be valid due to date range",writer.addCandidate(testFile, start, stop));
-
-		testFile = new TestFile("foo2012-01-08.log",true,formatter.parse("20120108"));
-        Assert.assertFalse("File name should NOT be valid due to date range",writer.addCandidate(testFile, start, stop));
+        Assert.assertFalse("File name should NOT be valid due to date range",writer.isFileInDateRange(testFile, start, stop));
 }
 		
 	@Test
-	public void testIsMatch() {
+	public void testIsMatch() throws ParseException {
         SimpleDateFormat formatter = new SimpleDateFormat("yyyyMMdd");
-        Date jan10 = null;
-        try {
-            jan10 = formatter.parse("20130110");
-        } catch (ParseException e) {
-            Assert.fail("Could not parse the date 2013-01-10");
-        }
-        LocalDate stopDate = new LocalDate(jan10, DateTimeZone.getDefault());
+        LocalDate stopDate = new LocalDate(formatter.parse("20130110"), DateTimeZone.getDefault());
         LocalDate startDate = stopDate.minus(Weeks.TWO);
 
         ReadableInstant start = TimeUtil.toMidnightAtBeginningOfDay(startDate, DateTimeZone.getDefault());
@@ -118,7 +75,7 @@ public class SupportBundleDateRangeAndNameFileWriterTest {
 		
 		private String name;
 		private boolean isFile;
-		private Date lastModified = new Date();
+		private Date lastModified;
 		
 		public String getName() {
 			return name;
