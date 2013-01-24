@@ -5,12 +5,11 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Comparator;
 import java.util.List;
-import java.util.Map;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
-import org.apache.axis.utils.StringUtils;
+import org.apache.commons.lang.StringUtils;
 import org.joda.time.DateTime;
 import org.joda.time.Instant;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -19,15 +18,10 @@ import org.springframework.ui.ModelMap;
 import org.springframework.web.bind.ServletRequestBindingException;
 import org.springframework.web.bind.ServletRequestUtils;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
 
 import com.cannontech.common.i18n.MessageSourceAccessor;
-import com.cannontech.common.pao.PaoType;
-import com.cannontech.common.pao.attribute.model.BuiltInAttribute;
-import com.cannontech.common.pao.definition.dao.PaoDefinitionDao;
-import com.cannontech.common.pao.definition.model.PaoTypePointIdentifier;
-import com.cannontech.common.pao.definition.model.PointIdentifier;
-import com.cannontech.core.dao.PaoDao;
-import com.cannontech.core.dao.PointDao;
+import com.cannontech.common.pao.attribute.service.AttributeService;
 import com.cannontech.core.dao.RawPointHistoryDao;
 import com.cannontech.core.dao.RawPointHistoryDao.Clusivity;
 import com.cannontech.core.dao.RawPointHistoryDao.Order;
@@ -35,24 +29,20 @@ import com.cannontech.core.dao.RawPointHistoryDao.OrderBy;
 import com.cannontech.core.dynamic.PointValueHolder;
 import com.cannontech.core.service.PointFormattingService;
 import com.cannontech.core.service.PointFormattingService.Format;
-import com.cannontech.database.data.point.PointInfo;
 import com.cannontech.i18n.YukonUserContextMessageSourceResolver;
 import com.cannontech.user.YukonUserContext;
 import com.cannontech.web.util.WebFileUtils;
 import com.google.common.base.Function;
 import com.google.common.collect.Lists;
-import com.google.common.collect.Sets;
 
 @Controller
 @RequestMapping("/historicalReadings/*")
 public class HistoricalReadingsController {
     
     @Autowired private RawPointHistoryDao rawPointHistoryDao;
-    @Autowired private PaoDefinitionDao paoDefinitionDao;
     @Autowired private YukonUserContextMessageSourceResolver messageSourceResolver;
     @Autowired private PointFormattingService pointFormattingService;
-    @Autowired private PointDao pointDao;
-    @Autowired private PaoDao paoDao;
+    @Autowired private AttributeService attributeService;
     
     private static String baseKey = "yukon.web.modules.amr.widgetClasses.MeterReadingsWidget.historicalReadings.";
     
@@ -65,38 +55,36 @@ public class HistoricalReadingsController {
     private static final String DISPLAY = "display";
 
     @RequestMapping
-    public String view(ModelMap model,
-                       HttpServletRequest request,
-                       final YukonUserContext context) throws ServletRequestBindingException{
-       
-        Integer deviceId = ServletRequestUtils.getIntParameter(request, "deviceId");
-        String attribute = ServletRequestUtils.getStringParameter(request, "attribute");
-        String dialogId = ServletRequestUtils.getRequiredStringParameter(request, "div_id");
-        Integer pointId = ServletRequestUtils.getRequiredIntParameter(request, "pointId");
-
+    public String view(ModelMap model, HttpServletRequest request, Integer deviceId, String attribute,
+                       @RequestParam(value="div_id", required=true) String dialogId, int pointId,
+                       @RequestParam(value="sort", required=false) String sortBy,
+                       @RequestParam(value="descending", required=false, defaultValue="false") Boolean isDescending,
+                       final YukonUserContext context) throws ServletRequestBindingException {
         //default sort
         OrderBy orderBy =  OrderBy.TIMESTAMP;   
         Order order = Order.REVERSE;
         
-        String sortBy = ServletRequestUtils.getStringParameter(request, "sort");
-        
-        if(!StringUtils.isEmpty(sortBy)){
+        if (!StringUtils.isEmpty(sortBy)) {
             //change the sort order
             orderBy = OrderBy.valueOf(sortBy);         
-            boolean isDescending = ServletRequestUtils.getBooleanParameter(request, "descending", false);
-            if(isDescending){
+            if (isDescending) {
                 order = Order.FORWARD;
-            }else{
+            } else {
                 order = Order.REVERSE; 
             }
-        }else{
+        } else {
             model.addAttribute("descending", false);
         }
 
         List<List<String>> points  = getLimitedPointData(DISPLAY, context, order, orderBy, pointId); 
         
-        //setup ModelMap
         MessageSourceAccessor accessor = messageSourceResolver.getMessageSourceAccessor(context);
+
+        String attributeMsg = attributeService.getAttributeMessage(deviceId, attribute, pointId);      
+        String readings = accessor.getMessage(baseKey+"readings");
+        String title = StringUtils.isBlank(attributeMsg) ? readings : attributeMsg + " " + readings;
+        
+        //setup ModelMap
         model.addAttribute("points", points);
         model.addAttribute("pointId", pointId);
         model.addAttribute("dialogId", dialogId);
@@ -104,33 +92,12 @@ public class HistoricalReadingsController {
         model.addAttribute("attribute", attribute);
         model.addAttribute(ALL, accessor.getMessage(baseKey + ALL));
         model.addAttribute(ONE_MONTH,  accessor.getMessage(baseKey + ONE_MONTH));
-        
-        String attributeMsg = "";
-        if (attribute != null) {
-            attributeMsg = BuiltInAttribute.valueOf(attribute).getMessage().getDefaultMessage();
-        } else if (deviceId != null) {
-            // We have a deviceId and a pointId, we can find the attribute.
-            Map<Integer, PointInfo> pointInfoByPointIds = pointDao.getPointInfoByPointIds(Sets.newHashSet(pointId));
-            PointInfo pointInfo = pointInfoByPointIds.get(pointId);
-            if (pointInfo != null) {
-                PaoType paoType = paoDao.getYukonPao(deviceId).getPaoIdentifier().getPaoType();
-                PointIdentifier pointIdentifier = pointInfo.getPointIdentifier();
-                BuiltInAttribute builtInAttribute = paoDefinitionDao.findAttributeForPaoTypeAndPoint(new PaoTypePointIdentifier(paoType, pointIdentifier));
-                if (builtInAttribute != null) {
-                    attributeMsg = builtInAttribute.getMessage().getDefaultMessage();
-                }
-            }
-        }
-        
-        String readings = accessor.getMessage(baseKey+"readings");
-        String title = attributeMsg +" "+ readings;
         model.addAttribute("title", title);
         model.addAttribute("allUrl", getDownloadUrl(ALL, pointId, order, orderBy));
         model.addAttribute("oneMonthUrl", getDownloadUrl(ONE_MONTH, pointId, order, orderBy));
         
         return "historicalReadings/home.jsp";
     }
-    
      
     @RequestMapping
     public String download(ModelMap model,

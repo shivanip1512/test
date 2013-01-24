@@ -137,9 +137,6 @@
     <entry key="yukon.web.modules.amr.meterPoints.columnHeader.pointName.linkText">Point Name</entry>
     <entry key="yukon.web.modules.amr.meterPoints.columnHeader.pointType.linkText">Point Type</entry>
     <entry key="yukon.web.modules.amr.meterPoints.columnHeader.pointOffset.linkText">Point Offset</entry>
-    <entry key="yukon.web.modules.amr.meterPoints.columnHeader.timestamp">Timestamp</entry>
-    <entry key="yukon.web.modules.amr.meterPoints.columnHeader.value">State/Value</entry>
-    <entry key="yukon.web.modules.amr.meterPoints.columnHeader.quality">Quality</entry>
     
     <!-- voltageAndTou.jsp -->
     <entry key="yukon.web.modules.amr.meterDetailVoltageAndTou.pageName">Voltage &amp; TOU</entry>

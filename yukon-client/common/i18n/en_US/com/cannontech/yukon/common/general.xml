@@ -68,7 +68,8 @@
 <entry key="yukon.common.attribute">Attribute</entry>
 <entry key="yukon.common.units">Units</entry>
 <entry key="yukon.common.timestamp">Timestamp</entry>
-<entry key="yukon.common.value">Value</entry>
+<entry key="yukon.common.value">State/Value</entry>
+<entry key="yukon.common.quality">Quality</entry>
 
 <entry key="yukon.common.attributes.pointNotFound">Point not configured.</entry>
 

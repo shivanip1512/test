@@ -1,12 +1,11 @@
 <%@ attribute name="device" required="true" type="com.cannontech.common.pao.YukonDevice"%>
 <%@ attribute name="pointId" required="true" type="java.lang.Integer"%>
+<%@ attribute name="showHistoricalReadings" required="false" type="java.lang.Boolean"%>
 
 <%@ taglib prefix="cti" uri="http://cannontech.com/tags/cti"%>
 <%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core"%>
 <%@ taglib prefix="tags" tagdir="/WEB-INF/tags"%>
 <%@ taglib prefix="i" tagdir="/WEB-INF/tags/i18n"%>
-
-<%@ attribute name="showHistoricalReadings" required="false" type="java.lang.Boolean"%>
 
 <c:choose>
     <c:when test="${pointId == 0}">

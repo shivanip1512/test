@@ -15,9 +15,7 @@ import org.springframework.web.bind.annotation.RequestMethod;
 import com.cannontech.amr.meter.model.PointSortField;
 import com.cannontech.common.device.model.SimpleDevice;
 import com.cannontech.common.i18n.MessageSourceAccessor;
-import com.cannontech.common.pao.definition.dao.PaoDefinitionDao;
 import com.cannontech.core.dao.DeviceDao;
-import com.cannontech.core.dao.PointDao;
 import com.cannontech.core.service.PaoLoadingService;
 import com.cannontech.core.service.PointFormattingService.Format;
 import com.cannontech.i18n.YukonUserContextMessageSourceResolver;
@@ -34,18 +32,24 @@ import com.google.common.collect.Lists;
 public class PaoPointsController {
     
     @Autowired private DeviceDao deviceDao;
-    @Autowired private PointDao pointDao;
     @Autowired private PaoLoadingService paoLoadingService;
-    @Autowired private PaoDefinitionDao paoDefinitionDao;
     @Autowired private YukonUserContextMessageSourceResolver resolver;
     @Autowired private PointDataRegistrationService registrationService;
-    @Autowired private YukonPointHelper yph;
+    @Autowired private YukonPointHelper yukonPointHelper;
     
+    /**
+     * Get the list of all points for the device specified and order them as requested.
+     * @param model - the model
+     * @param request - the request
+     * @param deviceId - the device id of the device whose point list we want to see
+     * @param orderBy - ordering criterion
+     * @param descending - whether or not the sorting is in descending order
+     */
     @RequestMapping(method = RequestMethod.GET)
-    public String points(ModelMap model, HttpServletRequest request, YukonUserContext context, int deviceId, String orderBy, Boolean descending) {
+    public String points(ModelMap model, HttpServletRequest request, int deviceId, String orderBy, Boolean descending) {
         final SimpleDevice device = deviceDao.getYukonDevice(deviceId);
 
-        List<YukonPoint> yukonPoints = yph.getYukonPoints(deviceId, orderBy, descending);
+        List<YukonPoint> yukonPoints = yukonPointHelper.getYukonPoints(deviceId, orderBy, descending);
         
         model.addAttribute("device", device);
         model.addAttribute("deviceId", deviceId);
@@ -57,6 +61,16 @@ public class PaoPointsController {
         return "device/points.jsp";
     }
     
+    /**
+     * Requests the point data for a specific device to be written out to a CSV file ordered by
+     * user-defined criteria
+     * @param response - the response
+     * @param context - the user context (used for string formatting)
+     * @param deviceId - the device id of the device whose point list we want to see
+     * @param orderBy - ordering criterion
+     * @param descending - whether or not the sorting is in descending order
+     * @throws IOException if an error occurs writing the data to the CSV file
+     */
     @RequestMapping(value="/device/download")
     public void download(HttpServletResponse response, YukonUserContext context, int deviceId, String orderBy, Boolean descending) throws IOException {
         MessageSourceAccessor accessor = resolver.getMessageSourceAccessor(context);
@@ -68,13 +82,13 @@ public class PaoPointsController {
         headerRow[2] = accessor.getMessage("yukon.common.value");
         headerRow[3] = accessor.getMessage("yukon.common.units");
         headerRow[4] = accessor.getMessage("yukon.common.timestamp");
-        headerRow[5] = accessor.getMessage("yukon.web.modules.amr.meterPoints.columnHeader.quality");
+        headerRow[5] = accessor.getMessage("yukon.common.quality");
         headerRow[6] = accessor.getMessage("yukon.common.events.pointType");
         headerRow[7] = accessor.getMessage("yukon.common.events.pointOffset");
         
         orderBy = (orderBy == null) ? PointSortField.POINTNAME.name() : orderBy;
         descending = (descending == null) ? false : descending;
-        List<YukonPoint> points = yph.getYukonPoints(deviceId, orderBy, descending);
+        List<YukonPoint> points = yukonPointHelper.getYukonPoints(deviceId, orderBy, descending);
         
         List<String[]> dataRows = Lists.newArrayList();
         for (YukonPoint point: points) {

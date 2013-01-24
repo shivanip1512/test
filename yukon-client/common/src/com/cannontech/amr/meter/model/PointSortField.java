@@ -12,12 +12,4 @@ public enum PointSortField {
     VALUE,
     QUALITY,
     ;
-
-    /**
-     * Method to get the toString() value for this PointSortField (neccessary for JSP EL) 
-     * @return toString() value
-     */
-    public String getName() {
-        return toString();
-    }
 }

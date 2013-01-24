@@ -22,9 +22,9 @@
                      <th><tags:sortLink nameKey="columnHeader.attribute" baseUrl="${baseUrl}" fieldName="ATTRIBUTE" sortParam="orderBy" /></th> 
                      <th><tags:sortLink nameKey="columnHeader.pointName" baseUrl="${baseUrl}" fieldName="POINTNAME" sortParam="orderBy" /></th> 
                      <th class="state-indicator tar"></th>
-                     <th><i:inline key=".columnHeader.value"/></th> 
-                     <th><i:inline key=".columnHeader.timestamp"/></th> 
-                     <th><i:inline key=".columnHeader.quality"/></th> 
+                     <th><i:inline key="yukon.common.value"/></th> 
+                     <th><i:inline key="yukon.common.timestamp"/></th> 
+                     <th><i:inline key="yukon.common.quality"/></th> 
                      <th><tags:sortLink nameKey="columnHeader.pointType" baseUrl="${baseUrl}" fieldName="POINTTYPE" sortParam="orderBy" /></th> 
                      <th><tags:sortLink nameKey="columnHeader.pointOffset" baseUrl="${baseUrl}" fieldName="POINTOFFSET" sortParam="orderBy"/></th> 
                      <th></th>
@@ -49,7 +49,7 @@
                          <td><cti:pointValue pointId="${pointResultRow.pointId}" format="VALUE_UNIT"/></td> 
                          <td><tags:historicalValue device="${device}" pointId="${pointResultRow.pointId}"/></td> 
                          <td><cti:pointValue pointId="${pointResultRow.pointId}" format="{quality}"/></td> 
-                         <td>${fn:escapeXml(pointResultRow.paoPointIdentifier.pointIdentifier.pointType.pointTypeString)}</td> 
+                         <td><i:inline key="${pointResultRow.paoPointIdentifier.pointIdentifier.pointType}"/></td>
                          <td>${fn:escapeXml(pointResultRow.paoPointIdentifier.pointIdentifier.offset)}</td> 
                      </tr>
                  </c:forEach>

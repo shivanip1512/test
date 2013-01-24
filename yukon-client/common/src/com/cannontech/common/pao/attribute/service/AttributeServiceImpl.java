@@ -6,10 +6,10 @@ import java.util.Collections;
 import java.util.Comparator;
 import java.util.List;
 import java.util.Map;
-import java.util.TreeMap;
 import java.util.Map.Entry;
 import java.util.Set;
 import java.util.SortedMap;
+import java.util.TreeMap;
 
 import org.apache.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -43,11 +43,14 @@ import com.cannontech.common.util.SqlFragmentSource;
 import com.cannontech.common.util.SqlStatementBuilder;
 import com.cannontech.core.dao.DBPersistentDao;
 import com.cannontech.core.dao.NotFoundException;
+import com.cannontech.core.dao.PaoDao;
 import com.cannontech.core.dao.PersistenceException;
+import com.cannontech.core.dao.PointDao;
 import com.cannontech.database.TransactionType;
 import com.cannontech.database.YukonJdbcTemplate;
 import com.cannontech.database.data.lite.LitePoint;
 import com.cannontech.database.data.point.PointBase;
+import com.cannontech.database.data.point.PointInfo;
 import com.cannontech.user.YukonUserContext;
 import com.google.common.base.Function;
 import com.google.common.base.Predicate;
@@ -72,10 +75,11 @@ public class AttributeServiceImpl implements AttributeService {
     @Autowired private DeviceGroupService deviceGroupService;
     @Autowired private YukonJdbcTemplate yukonJdbcTemplate;
     @Autowired private ObjectFormattingService objectFormattingService;
+    @Autowired private PointDao pointDao;
+    @Autowired private PaoDao paoDao;
 
     private Logger log = YukonLogManager.getLogger(AttributeServiceImpl.class);
     
-
     private Set<Attribute> readableAttributes;
     {
         Iterable<BuiltInAttribute> readableAttributes = Iterables.filter(Arrays.asList(BuiltInAttribute.values()), new Predicate<BuiltInAttribute>() {
@@ -159,6 +163,27 @@ public class AttributeServiceImpl implements AttributeService {
                 }
             }
             return devicesAndPoints;
+    }
+    
+    @Override
+    public String getAttributeMessage(Integer deviceId, String attribute, int pointId) {
+        String attributeMsg = "";
+        if (attribute != null) {
+            attributeMsg = BuiltInAttribute.valueOf(attribute).getMessage().getDefaultMessage();
+        } else if (deviceId != null) {
+            // We have a deviceId and a pointId, we can find the attribute.
+            Map<Integer, PointInfo> pointInfoByPointIds = pointDao.getPointInfoByPointIds(Sets.newHashSet(pointId));
+            PointInfo pointInfo = pointInfoByPointIds.get(pointId);
+            if (pointInfo != null) {
+                PaoType paoType = paoDao.getYukonPao(deviceId).getPaoIdentifier().getPaoType();
+                PointIdentifier pointIdentifier = pointInfo.getPointIdentifier();
+                BuiltInAttribute builtInAttribute = paoDefinitionDao.findAttributeForPaoTypeAndPoint(new PaoTypePointIdentifier(paoType, pointIdentifier));
+                if (builtInAttribute != null) {
+                    attributeMsg = builtInAttribute.getMessage().getDefaultMessage();
+                }
+            }
+        }
+        return attributeMsg;
     }
     
     @Override

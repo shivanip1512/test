@@ -4,6 +4,7 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 
+import org.apache.commons.lang.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 
 import com.cannontech.amr.meter.model.PointSortField;
@@ -27,7 +28,7 @@ public class YukonPointHelperImpl implements YukonPointHelper {
     @Autowired private PaoDefinitionDao paoDefinitionDao;
 
     public List<YukonPoint> getYukonPoints(int deviceId, String orderBy, Boolean descending) {
-        orderBy = (orderBy == null) ? PointSortField.POINTNAME.name() : orderBy;
+        orderBy = StringUtils.isBlank(orderBy) ? PointSortField.POINTNAME.name() : orderBy;
         descending = (descending == null) ? false : descending;
         
         final SimpleDevice device = deviceDao.getYukonDevice(deviceId);
