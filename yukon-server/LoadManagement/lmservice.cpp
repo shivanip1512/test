@@ -82,6 +82,8 @@ void CtiLMService::RunInConsole(DWORD argc, LPTSTR* argv)
 
 void CtiLMService::Init()
 {
+    SetStatus(SERVICE_START_PENDING, 1, 5000 );
+
     string logFile = "loadmanagement";
     dout.start();     // fire up the logger thread
     dout.setOwnerInfo(CompileInfo);
@@ -233,6 +235,9 @@ void CtiLMService::OnStop()
 
 void CtiLMService::Run()
 {
+    SetStatus(SERVICE_RUNNING, 0, 0,
+              SERVICE_ACCEPT_STOP | SERVICE_ACCEPT_SHUTDOWN );
+
     try
     {
         // Make sure the database is available before we try to load anything from it.
@@ -244,7 +249,7 @@ void CtiLMService::Run()
                 if ( writeLogMessage )
                 {
                     CtiLockGuard<CtiLogger> doubt_guard(dout);
-                    dout << CtiTime( ) << " - Database connectivity failed." << std::endl;
+                    dout << CtiTime( ) << " - Database connection attempt failed." << std::endl;
 
                     writeLogMessage = false;
                 }
@@ -256,13 +261,9 @@ void CtiLMService::Run()
             }
         }
 
-        SetStatus(SERVICE_START_PENDING, 1, 5000 );
         //Make sure the database gets hit so we'll know if the database
         //connection is legit now rather than later
         bool trouble = false;
-
-        SetStatus(SERVICE_RUNNING, 0, 0,
-                  SERVICE_ACCEPT_STOP | SERVICE_ACCEPT_SHUTDOWN );
 
         do
         {

@@ -157,6 +157,8 @@ void CtiFDRService::Init( )
     // add FDR stuff here
     string   interfaces;
 
+    SetStatus(SERVICE_START_PENDING, 33, 5000 );
+
     try
     {
         ThreadMonitor.start();
@@ -285,6 +287,10 @@ void CtiFDRService::OnStop( )
 
 void CtiFDRService::Run( )
 {
+    // set service as running
+    SetStatus(SERVICE_RUNNING, 0, 0,
+              SERVICE_ACCEPT_STOP | SERVICE_ACCEPT_SHUTDOWN );
+
     // Make sure the database is available before we try to load anything from it.
     {
         bool writeLogMessage = true;
@@ -294,7 +300,7 @@ void CtiFDRService::Run( )
             if ( writeLogMessage )
             {
                 CtiLockGuard<CtiLogger> doubt_guard(dout);
-                dout << CtiTime( ) << " - Database connectivity failed." << std::endl;
+                dout << CtiTime( ) << " - Database connection attempt failed." << std::endl;
 
                 writeLogMessage = false;
             }
@@ -315,16 +321,10 @@ void CtiFDRService::Run( )
     // for shutting down
     iShutdown = CreateEvent(NULL,TRUE,FALSE,NULL);
 
-    SetStatus(SERVICE_START_PENDING, 33, 5000 );
-
     try
     {
         //call run method to start interfaces
         startInterfaces();
-
-        // set service as running
-        SetStatus(SERVICE_RUNNING, 0, 0,
-                  SERVICE_ACCEPT_STOP | SERVICE_ACCEPT_SHUTDOWN );
 
         // Initialize the connection to VanGogh....
         FdrVanGoghConnection.doConnect(VANGOGHNEXUS, FdrVanGoghMachine);

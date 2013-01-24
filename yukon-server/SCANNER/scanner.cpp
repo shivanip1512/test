@@ -368,7 +368,7 @@ INT ScannerMainFunction (INT argc, CHAR **argv)
             if ( writeLogMessage )
             {
                 CtiLockGuard<CtiLogger> doubt_guard(dout);
-                dout << CtiTime( ) << " - Database connectivity failed." << std::endl;
+                dout << CtiTime( ) << " - Database connection attempt failed." << std::endl;
 
                 writeLogMessage = false;
             }

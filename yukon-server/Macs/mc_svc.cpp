@@ -115,6 +115,9 @@ void CtiMCService::Run()
 {
     SetStatus(SERVICE_START_PENDING, 1, 5000 );
 
+    SetStatus(SERVICE_RUNNING, 0, 0,
+              SERVICE_ACCEPT_STOP | SERVICE_ACCEPT_SHUTDOWN );
+
     hShutdown = CreateEvent(NULL,TRUE,FALSE,NULL);
 
     CtiMCScript::setScriptPath(gConfigParms.getValueAsPath("CTL_SCRIPTS_DIR", "server\\macsscripts"));
@@ -125,8 +128,6 @@ void CtiMCService::Run()
     {
         macs_debug = true;
     }
-
-    SetStatus(SERVICE_START_PENDING, 33, 5000 );
 
     // Initialize the global logger
     dout.setOwnerInfo(CompileInfo);
@@ -146,7 +147,7 @@ void CtiMCService::Run()
             if ( writeLogMessage )
             {
                 CtiLockGuard<CtiLogger> doubt_guard(dout);
-                dout << CtiTime( ) << " - Database connectivity failed." << std::endl;
+                dout << CtiTime( ) << " - Database connection attempt failed." << std::endl;
 
                 writeLogMessage = false;
             }
@@ -167,14 +168,9 @@ void CtiMCService::Run()
 
     ThreadMonitor.start();
 
-    SetStatus(SERVICE_START_PENDING, 66, 5000 );
-
     _mc_server = new CtiMCServer();
     _mc_server->setDebug(macs_debug);
     _mc_server->start();
-
-    SetStatus(SERVICE_RUNNING, 0, 0,
-              SERVICE_ACCEPT_STOP | SERVICE_ACCEPT_SHUTDOWN );
 
     //Wait for the shutdown event to become signalled
     WaitForSingleObject( hShutdown, INFINITE );

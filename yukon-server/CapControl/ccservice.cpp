@@ -102,6 +102,8 @@ void CtiCCService::RunInConsole(DWORD argc, LPTSTR* argv)
 
 void CtiCCService::Init()
 {
+    SetStatus(SERVICE_START_PENDING, 33, 5000 );
+
     dout.setOwnerInfo(CompileInfo);
     dout.setOutputFile("capcontrol");
     dout.setOutputPath(gLogDirectory);
@@ -155,6 +157,9 @@ void CtiCCService::OnStop()
 
 void CtiCCService::Run()
 {
+    SetStatus(SERVICE_RUNNING, 0, 0,
+              SERVICE_ACCEPT_STOP | SERVICE_ACCEPT_SHUTDOWN );
+
     // Make sure the database is available before we try to load anything from it.
     {
         bool writeLogMessage = true;
@@ -164,7 +169,7 @@ void CtiCCService::Run()
             if ( writeLogMessage )
             {
                 CtiLockGuard<CtiLogger> doubt_guard(dout);
-                dout << CtiTime( ) << " - Database connectivity failed." << std::endl;
+                dout << CtiTime( ) << " - Database connection attempt failed." << std::endl;
 
                 writeLogMessage = false;
             }
@@ -175,8 +180,6 @@ void CtiCCService::Run()
             return;
         }
     }
-
-    SetStatus(SERVICE_START_PENDING, 1, 5000 );
 
     //Make sure the database gets hit so we'll know if the database
     //connection is legit now rather than later
@@ -206,8 +209,6 @@ void CtiCCService::Run()
     }
     while ( trouble );
 
-    SetStatus(SERVICE_START_PENDING, 33, 5000 );
-
     if( _CC_DEBUG & CC_DEBUG_STANDARD )
     {
         CtiLockGuard<CtiLogger> logger_guard(dout);
@@ -215,8 +216,6 @@ void CtiCCService::Run()
     }
     CtiCapController* controller = CtiCapController::getInstance();
     controller->start();
-
-    SetStatus(SERVICE_START_PENDING, 66, 5000 );
 
     if( _CC_DEBUG & CC_DEBUG_STANDARD )
     {
@@ -230,9 +229,6 @@ void CtiCCService::Run()
         CtiLockGuard<CtiLogger> logger_guard(dout);
         dout << CtiTime() << " - Cap Control started." << endl;
     }*/
-
-    SetStatus(SERVICE_RUNNING, 0, 0,
-              SERVICE_ACCEPT_STOP | SERVICE_ACCEPT_SHUTDOWN );
 
     while ( !_quit && !capcontrol_do_quit )
     {

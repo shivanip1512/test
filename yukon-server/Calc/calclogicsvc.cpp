@@ -100,6 +100,8 @@ void CtiCalcLogicService::DeInit( )
 
 void CtiCalcLogicService::Init( )
 {
+    SetStatus(SERVICE_START_PENDING, 33, 5000 );
+
     try
     {
         //defaults
@@ -144,6 +146,9 @@ void CtiCalcLogicService::Run( )
 
     int conncnt= 0;
 
+    // set service as running
+    SetStatus(SERVICE_RUNNING, 0, 0, SERVICE_ACCEPT_STOP | SERVICE_ACCEPT_SHUTDOWN );
+
     // Make sure the database is available before we try to load anything from it.
     {
         bool writeLogMessage = true;
@@ -153,7 +158,7 @@ void CtiCalcLogicService::Run( )
             if ( writeLogMessage )
             {
                 CtiLockGuard<CtiLogger> doubt_guard(dout);
-                dout << CtiTime( ) << " - Database connectivity failed." << std::endl;
+                dout << CtiTime( ) << " - Database connection attempt failed." << std::endl;
 
                 writeLogMessage = false;
             }
@@ -183,8 +188,6 @@ void CtiCalcLogicService::Run( )
 
     }
 
-    SetStatus(SERVICE_START_PENDING, 33, 5000 );
-
     try
     {
         ThreadStatusKeeper threadStatus("CalcLogicSvc main");
@@ -197,11 +200,6 @@ void CtiCalcLogicService::Run( )
             }
             throw( RWxmsg( "NOT OK...  errors during initialization" ) );
         }
-
-        SetStatus(SERVICE_START_PENDING, 66, 5000 );
-
-        // set service as running
-        SetStatus(SERVICE_RUNNING, 0, 0, SERVICE_ACCEPT_STOP | SERVICE_ACCEPT_SHUTDOWN );
 
         _conxion = NULL;
         ULONG attempts = 0;
