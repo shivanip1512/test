@@ -42,6 +42,10 @@ public class YukonXPathTemplate extends SimpleXPathTemplate {
      */
     public <E extends Enum<E>> E evaluateAsEnum(String expression, Class<E> enumClass) throws XPathException {
         String originalStringValue = evaluateAsString(expression);
+        if (StringUtils.isEmpty(originalStringValue)) {
+            return null;
+        }
+
         String stringValue = EnumUtils.convertToEnumFormat(originalStringValue);
 
         // Try getting the value from the enum
