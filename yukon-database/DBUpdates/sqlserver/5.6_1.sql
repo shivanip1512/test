@@ -524,8 +524,18 @@ WHERE String6 IS NULL
 );
 /* End YUK-11742 */
 
+/* Start YUK-11823 */
+UPDATE CAPBANK
+SET TypeOfSwitch = ' '
+WHERE TypeOfSwitch = '(none)';
+ 
+UPDATE CAPBANK
+SET SwitchManufacture = ' '
+WHERE SwitchManufacture = '(none)';
+/* End YUK-11823 */
+
 /**************************************************************/
 /* VERSION INFO                                               */
 /* Inserted when update script is run                         */
 /**************************************************************/
-INSERT INTO CTIDatabase VALUES ('5.6', '21-JAN-2013', 'Latest Update', 1, GETDATE());
+INSERT INTO CTIDatabase VALUES ('5.6', '25-JAN-2013', 'Latest Update', 1, GETDATE());
