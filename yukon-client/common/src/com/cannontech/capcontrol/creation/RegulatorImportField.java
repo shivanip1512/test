@@ -81,12 +81,9 @@ public enum RegulatorImportField {
     public static List<String> getRequiredFieldNames(){
         List<String> requiredFields = Lists.newArrayList();
         for(RegulatorImportField format : values()){
-            switch(format.getInputType()){
-            case REQUIRED:
+            if(format.getInputType() == InputType.REQUIRED){
                 requiredFields.add(format.getName());
-                break;
-            default:
-                break;
+
             }
         }
         return requiredFields;
@@ -95,12 +92,8 @@ public enum RegulatorImportField {
     public static List<String> getValueDependentFieldNames(){
         List<String> valueDependentFields = Lists.newArrayList();
         for(RegulatorImportField format : values()){
-            switch(format.getInputType()){
-            case VALUE_DEPENDENT:
+            if(format.getInputType() == InputType.VALUE_DEPENDENT){
                 valueDependentFields.add(format.getName());
-                break;
-            default:
-                break;
             }
         }
         return valueDependentFields;
@@ -108,12 +101,8 @@ public enum RegulatorImportField {
     public static List<String> getOptionalFieldNames(){
         List<String> optionalFields = Lists.newArrayList();
         for(RegulatorImportField format : values()){
-            switch(format.getInputType()){
-            case OPTIONAL:
+            if(format.getInputType() == InputType.OPTIONAL){
                 optionalFields.add(format.getName());
-                break;
-            default:
-                break;
             }
         }
         return optionalFields;

@@ -7,30 +7,23 @@
 <cti:standardPage module="capcontrol" page="import">    
     <script>
     jQuery(document).ready(function(){
+        updateImportTypeSelection();
         jQuery("#importTypeSelector").change(function(){
+            updateImportTypeSelection();
             //get the import type value, remove spaces, lowercase
-            var importType = jQuery('#importTypeSelector').val().replace(/_/g, '')
+            var importType = jQuery('#importTypeSelector').val().replace(/_/g, '');
             importType = importType.toLowerCase();
             jQuery("#importForm").attr("action", "/capcontrol/import/" + importType + "File");
         });
     });
-    </script>
-    
-    <script>
-        jQuery(function() {
-            updateImportTypeSelection();
-            jQuery("#importTypeSelector").change(function() {
-                updateImportTypeSelection();
-            });
-        });
 
-        function updateImportTypeSelection() {
-            var itemSelected = jQuery("#importTypeSelector").val();
-            //hide all rows
-            jQuery("[class^='importType_']").hide();
-            //show rows for the selected interface
-            jQuery(".importType_" + itemSelected).show();
-        }
+    function updateImportTypeSelection() {
+        var itemSelected = jQuery("#importTypeSelector").val();
+        //hide all rows
+        jQuery("[class^='importType_']").hide();
+        //show rows for the selected interface
+        jQuery(".importType_" + itemSelected).show();
+    }
     </script>
 
     <div style="width:50%;">

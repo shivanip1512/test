@@ -566,7 +566,7 @@
     <entry key="yukon.web.modules.capcontrol.import.description.REGULATOR.NAME">Name of the Regulator to create</entry>
     <entry key="yukon.web.modules.capcontrol.import.description.REGULATOR.ACTION">Options: Add, Update, or Remove</entry>
     <entry key="yukon.web.modules.capcontrol.import.description.REGULATOR.KEEP ALIVE CONFIG">Time sent to device to stay alive for (in seconds)</entry>
-    <entry key="yukon.web.modules.capcontrol.import.description.REGULATOR.DISABLED">Name of the CBC</entry>
+    <entry key="yukon.web.modules.capcontrol.import.description.REGULATOR.DISABLED">Whether or not this object should be disabled.&lt;br&gt;Options: True or False. If omitted on Add, the device will be enabled</entry>
     <entry key="yukon.web.modules.capcontrol.import.description.REGULATOR.TYPE">Required when ACTION is Add&lt;br&gt;Type of Regulator&lt;br&gt;Options:LTC, Phase_Operated, Gang_Operated</entry>
     <entry key="yukon.web.modules.capcontrol.import.description.REGULATOR.DESCRIPTION">Any description desired for the object</entry>
     <entry key="yukon.web.modules.capcontrol.import.description.REGULATOR.KEEP ALIVE TIMER">Time interval to resend keep alive message (in seconds)</entry>
