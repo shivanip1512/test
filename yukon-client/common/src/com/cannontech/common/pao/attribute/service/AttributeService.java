@@ -198,13 +198,4 @@ public interface AttributeService {
      * @return
      */
     public SortedMap<BuiltInAttribute, String> resolveAllToString(Set<BuiltInAttribute> bins, YukonUserContext context);
-    
-    /**
-     * Get the i18n'd message for an attribute.
-     * @param deviceId - the deviceId for the device used for lookup of the attribute
-     * @param pointId - the pointId for the device's point for which the attribute might exist
-     * @param attribute - the attribute's default description (if known)
-     * @return the i18n'd message for the attribute if it exists, an empty string otherwise.
-     */
-    public String getAttributeMessage(Integer deviceId, String attribute, int pointId);
 }

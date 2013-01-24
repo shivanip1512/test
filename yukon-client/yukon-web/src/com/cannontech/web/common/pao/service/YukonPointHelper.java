@@ -12,7 +12,7 @@ public interface YukonPointHelper {
      * @param orderBy An optional parameter, will default to the point name.
      * @param descending An optional parameter, will default to the descending.
      */
-    public List<YukonPoint> getYukonPoints(final YukonPao pao, String orderBy, Boolean descending);
+    public List<YukonPoint> getYukonPoints(YukonPao pao, String orderBy, Boolean descending);
     
-    public List<YukonPoint> getYukonPoints(final YukonPao pao);
+    public List<YukonPoint> getYukonPoints(YukonPao pao);
 }

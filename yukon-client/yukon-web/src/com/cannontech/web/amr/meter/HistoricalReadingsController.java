@@ -5,6 +5,7 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Comparator;
 import java.util.List;
+import java.util.Map;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
@@ -21,7 +22,14 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 
 import com.cannontech.common.i18n.MessageSourceAccessor;
-import com.cannontech.common.pao.attribute.service.AttributeService;
+import com.cannontech.common.i18n.ObjectFormattingService;
+import com.cannontech.common.pao.PaoType;
+import com.cannontech.common.pao.attribute.model.BuiltInAttribute;
+import com.cannontech.common.pao.definition.dao.PaoDefinitionDao;
+import com.cannontech.common.pao.definition.model.PaoTypePointIdentifier;
+import com.cannontech.common.pao.definition.model.PointIdentifier;
+import com.cannontech.core.dao.PaoDao;
+import com.cannontech.core.dao.PointDao;
 import com.cannontech.core.dao.RawPointHistoryDao;
 import com.cannontech.core.dao.RawPointHistoryDao.Clusivity;
 import com.cannontech.core.dao.RawPointHistoryDao.Order;
@@ -29,11 +37,13 @@ import com.cannontech.core.dao.RawPointHistoryDao.OrderBy;
 import com.cannontech.core.dynamic.PointValueHolder;
 import com.cannontech.core.service.PointFormattingService;
 import com.cannontech.core.service.PointFormattingService.Format;
+import com.cannontech.database.data.point.PointInfo;
 import com.cannontech.i18n.YukonUserContextMessageSourceResolver;
 import com.cannontech.user.YukonUserContext;
 import com.cannontech.web.util.WebFileUtils;
 import com.google.common.base.Function;
 import com.google.common.collect.Lists;
+import com.google.common.collect.Sets;
 
 @Controller
 @RequestMapping("/historicalReadings/*")
@@ -42,7 +52,10 @@ public class HistoricalReadingsController {
     @Autowired private RawPointHistoryDao rawPointHistoryDao;
     @Autowired private YukonUserContextMessageSourceResolver messageSourceResolver;
     @Autowired private PointFormattingService pointFormattingService;
-    @Autowired private AttributeService attributeService;
+    @Autowired private ObjectFormattingService objectFormattingService;
+    @Autowired private PointDao pointDao;
+    @Autowired private PaoDao paoDao;
+    @Autowired private PaoDefinitionDao paoDefinitionDao;
     
     private static String baseKey = "yukon.web.modules.amr.widgetClasses.MeterReadingsWidget.historicalReadings.";
     
@@ -80,7 +93,7 @@ public class HistoricalReadingsController {
         
         MessageSourceAccessor accessor = messageSourceResolver.getMessageSourceAccessor(context);
 
-        String attributeMsg = attributeService.getAttributeMessage(deviceId, attribute, pointId);      
+        String attributeMsg = getAttributeMessage(deviceId, attribute, pointId, context);      
         String readings = accessor.getMessage(baseKey+"readings");
         String title = StringUtils.isBlank(attributeMsg) ? readings : attributeMsg + " " + readings;
         
@@ -115,6 +128,34 @@ public class HistoricalReadingsController {
         buildCsv(context, points, response);
 
         return null;
+    }
+    
+    /**
+     * Get the i18n'd message for an attribute.
+     * @param deviceId - the deviceId for the device used for lookup of the attribute
+     * @param pointId - the pointId for the device's point for which the attribute might exist
+     * @param attribute - the attribute's default description (if known)
+     * @return the i18n'd message for the attribute if it exists, an empty string otherwise.
+     */
+    private String getAttributeMessage(Integer deviceId, String attribute, int pointId, YukonUserContext context) {
+        String attributeMsg = "";
+        if (attribute != null) {
+            attributeMsg = objectFormattingService.formatObjectAsString(BuiltInAttribute.valueOf(attribute), context);
+            attributeMsg = BuiltInAttribute.valueOf(attribute).getMessage().getDefaultMessage();
+        } else if (deviceId != null) {
+            // We have a deviceId and a pointId, we can find the attribute.
+            Map<Integer, PointInfo> pointInfoByPointIds = pointDao.getPointInfoByPointIds(Sets.newHashSet(pointId));
+            PointInfo pointInfo = pointInfoByPointIds.get(pointId);
+            if (pointInfo != null) {
+                PaoType paoType = paoDao.getYukonPao(deviceId).getPaoIdentifier().getPaoType();
+                PointIdentifier pointIdentifier = pointInfo.getPointIdentifier();
+                BuiltInAttribute builtInAttribute = paoDefinitionDao.findAttributeForPaoTypeAndPoint(new PaoTypePointIdentifier(paoType, pointIdentifier));
+                if (builtInAttribute != null) {
+                    attributeMsg = builtInAttribute.getMessage().getDefaultMessage();
+                }
+            }
+        }
+        return attributeMsg;
     }
     
     private void buildCsv(YukonUserContext userContext, List<List<String>> points, HttpServletResponse response) throws IOException{
