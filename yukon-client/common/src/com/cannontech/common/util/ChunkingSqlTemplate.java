@@ -22,6 +22,9 @@ public class ChunkingSqlTemplate {
     private YukonJdbcTemplate yukonJdbcTemplate;
     private int chunkSize = DEFAULT_SIZE;
     
+    /**
+     * @deprecated - instead of using this constructor use the YukonJdbTemplate constructor.
+     */
     @Deprecated
     public ChunkingSqlTemplate(final SimpleJdbcOperations simpleJdbcTemplate) {
         this.yukonJdbcTemplate = new YukonJdbcTemplate(simpleJdbcTemplate.getJdbcOperations());
@@ -31,6 +34,9 @@ public class ChunkingSqlTemplate {
         this.yukonJdbcTemplate = yukonJdbcTemplate;
     }
     
+    /**
+     * @deprecated - args should not be passed into this method.  We should include them in the sqlGenerator.
+     */
     @Deprecated
     public <I, R> List<R> query(final SqlGenerator<I> sqlGenerator, final Iterable<I> input, 
                  final ParameterizedRowMapper<R> rowMapper, final Object... args) {
@@ -100,7 +106,7 @@ public class ChunkingSqlTemplate {
     /**
      * This is a chunking version of the queryForInt jdbc call.  This should be used when ever more than 1000 ids need to be used in a query
      */
-    public <I> int queryForInt(final SqlFragmentGenerator<I> sqlGenerator, final Iterable<I> input) {
+    public <I> int queryForSum(final SqlFragmentGenerator<I> sqlGenerator, final Iterable<I> input) {
         final List<I> tempInputList = Lists.newArrayList(input);
         final List<SqlFragmentSource> queryList = Lists.newArrayList();
         
@@ -121,7 +127,9 @@ public class ChunkingSqlTemplate {
         return result;
     }
     
-    @Deprecated
+    /**
+     * @deprecated - args should not be passed into this method.  We should include them in the sqlGenerator.
+     */
     public <I> void update(final SqlGenerator<I> sqlGenerator, final Iterable<I> input, final Object... args) {
         final List<I> tempInputList = Lists.newArrayList(input);
         final List<String> queryList = new ArrayList<String>();

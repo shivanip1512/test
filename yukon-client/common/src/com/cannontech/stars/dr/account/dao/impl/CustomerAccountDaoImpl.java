@@ -56,7 +56,7 @@ import com.google.common.collect.SetMultimap;
 
 public class CustomerAccountDaoImpl implements CustomerAccountDao, InitializingBean {
 	
-	private final Logger logger = YukonLogManager.getLogger(CustomerAccountDaoImpl.class);
+    private final Logger logger = YukonLogManager.getLogger(CustomerAccountDaoImpl.class);
 
     @Autowired private ContactDao contactDao;
     @Autowired private NextValueHelper nextValueHelper;
@@ -469,7 +469,7 @@ public class CustomerAccountDaoImpl implements CustomerAccountDao, InitializingB
     public int getTotalNumberOfAccounts(final YukonEnergyCompany yukonEnergyCompany, List<Integer> assignedProgramIds) {
 
         final SqlStatementBuilder sql = new SqlStatementBuilder();
-        sql.append("SELECT COUNT(1)");
+        sql.append("SELECT COUNT(DISTINCT CA.AccountId)");
         sql.append("FROM CustomerAccount CA");
         sql.append("    JOIN ECToAccountMapping ECTAM ON CA.AccountId = ECTAM.AccountId");
         
@@ -481,11 +481,6 @@ public class CustomerAccountDaoImpl implements CustomerAccountDao, InitializingB
         }
 
         sql.append("WHERE ECTAM.EnergyCompanyId").eq_k(yukonEnergyCompany.getEnergyCompanyId());
-        if (!CollectionUtils.isEmpty(assignedProgramIds)) {
-            sql.append("  AND LMHCG.ProgramId").in(assignedProgramIds);
-        }
-        
-
         if (CollectionUtils.isEmpty(assignedProgramIds)) {
             return yukonJdbcTemplate.queryForInt(sql);
         } else {
@@ -494,11 +489,11 @@ public class CustomerAccountDaoImpl implements CustomerAccountDao, InitializingB
             SqlFragmentGenerator<Integer> sqlGenerator = new SqlFragmentGenerator<Integer>() {
                 @Override
                 public SqlFragmentSource generate(List<Integer> subList) {
-                    return sql;
+                    return sql.append("  AND LMHCG.ProgramId").in(subList);
                 };
             };
             
-            return template.queryForInt(sqlGenerator, assignedProgramIds);
+            return template.queryForSum(sqlGenerator, assignedProgramIds);
         }
     }
 
