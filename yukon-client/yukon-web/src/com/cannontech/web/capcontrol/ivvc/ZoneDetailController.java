@@ -74,7 +74,7 @@ import com.cannontech.user.YukonUserContext;
 import com.cannontech.web.capcontrol.ivvc.models.VfGraph;
 import com.cannontech.web.capcontrol.ivvc.service.VoltageFlatnessGraphService;
 import com.cannontech.web.capcontrol.models.ViewableCapBank;
-import com.cannontech.web.capcontrol.util.service.CapControlWebUtils;
+import com.cannontech.web.capcontrol.util.service.CapControlWebUtilsService;
 import com.cannontech.web.common.chart.service.FlotChartService;
 import com.cannontech.web.common.flashScope.FlashScope;
 import com.cannontech.web.common.flashScope.FlashScopeMessageType;
@@ -103,7 +103,7 @@ public class ZoneDetailController {
     @Autowired private StrategyDao strategyDao;
     @Autowired private ZoneDao zoneDao;
     @Autowired private FlotChartService flotChartService;
-    @Autowired private CapControlWebUtils capControlWebUtils;
+    @Autowired private CapControlWebUtilsService capControlWebUtilsService;
 
     public static class ZoneVoltageDeltas {
         private List<CapBankPointDelta> pointDeltas = LazyList
@@ -425,7 +425,7 @@ public class ZoneDetailController {
             capBankList.add(bank);
         }
         
-        List<ViewableCapBank> viewableCapBankList = capControlWebUtils.createViewableCapBank(capBankList);
+        List<ViewableCapBank> viewableCapBankList = capControlWebUtilsService.createViewableCapBank(capBankList);
         for (ViewableCapBank bank:viewableCapBankList) {
             List<Integer> monitorPoints = zoneService.getMonitorPointsForBank(bank.getCapBankDevice().getCcId());
             if (monitorPoints.size() > 0) {

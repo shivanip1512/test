@@ -39,10 +39,10 @@ import com.cannontech.web.capcontrol.models.ViewableCapBank;
 import com.cannontech.web.capcontrol.models.ViewableFeeder;
 import com.cannontech.web.capcontrol.models.ViewableSubBus;
 import com.cannontech.web.capcontrol.models.ViewableSubStation;
-import com.cannontech.web.capcontrol.util.service.CapControlWebUtils;
+import com.cannontech.web.capcontrol.util.service.CapControlWebUtilsService;
 import com.google.common.collect.ImmutableSet;
 
-public class CapControlWebUtilsImpl implements CapControlWebUtils {
+public class CapControlWebUtilsServiceImpl implements CapControlWebUtilsService {
 
     private final ImmutableSet<ControlAlgorithm> showToolTipAlgorithms = ImmutableSet.of(ControlAlgorithm.PFACTOR_KW_KVAR);
     

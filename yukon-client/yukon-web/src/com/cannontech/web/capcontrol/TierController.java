@@ -37,7 +37,7 @@ import com.cannontech.web.capcontrol.models.ViewableArea;
 import com.cannontech.web.capcontrol.models.ViewableCapBank;
 import com.cannontech.web.capcontrol.models.ViewableFeeder;
 import com.cannontech.web.capcontrol.models.ViewableSubBus;
-import com.cannontech.web.capcontrol.util.service.CapControlWebUtils;
+import com.cannontech.web.capcontrol.util.service.CapControlWebUtilsService;
 import com.cannontech.web.common.flashScope.FlashScope;
 import com.cannontech.web.security.annotation.CheckRoleProperty;
 
@@ -50,7 +50,7 @@ public class TierController {
 	@Autowired private FilterCacheFactory filterCacheFactory;
 	@Autowired private RolePropertyDao rolePropertyDao;
 	@Autowired private SubstationDao substationDao;
-	@Autowired private CapControlWebUtils capControlWebUtils;
+	@Autowired private CapControlWebUtilsService capControlWebUtilsService;
 	
 	@RequestMapping
 	public String areas(HttpServletRequest request, LiteYukonUser user, Boolean isSpecialArea, ModelMap model) {
@@ -74,7 +74,7 @@ public class TierController {
 			model.addAttribute("type", "normal");
 		}
 		
-		List<ViewableArea> viewableAreas = capControlWebUtils.createViewableAreas(ccAreas, cache, isSpecialArea);
+		List<ViewableArea> viewableAreas = capControlWebUtilsService.createViewableAreas(ccAreas, cache, isSpecialArea);
 		model.addAttribute("ccAreas", viewableAreas);
 		
 		boolean hasEditingRole = rolePropertyDao.checkProperty(YukonRoleProperty.CBC_DATABASE_EDIT, user);
@@ -176,15 +176,15 @@ public class TierController {
 		
 		List<SubBus> subBusList = cache.getSubBusesBySubStation(cachedSubstation);
 		Collections.sort(subBusList, CapControlUtils.SUB_DISPLAY_COMPARATOR);
-		List<ViewableSubBus> viewableSubBusList = capControlWebUtils.createViewableSubBus(subBusList);
+		List<ViewableSubBus> viewableSubBusList = capControlWebUtilsService.createViewableSubBus(subBusList);
 		model.addAttribute("subBusList", viewableSubBusList);
 		
 		List<Feeder> feederList = cache.getFeedersBySubStation(cachedSubstation);
-		List<ViewableFeeder> viewableFeederList = capControlWebUtils.createViewableFeeder(feederList,cache);
+		List<ViewableFeeder> viewableFeederList = capControlWebUtilsService.createViewableFeeder(feederList,cache);
 		model.addAttribute("feederList", viewableFeederList);
 
 		List<CapBankDevice> capBankList = cache.getCapBanksBySubStation(cachedSubstation);
-		List<ViewableCapBank> viewableCapBankList = capControlWebUtils.createViewableCapBank(capBankList);
+		List<ViewableCapBank> viewableCapBankList = capControlWebUtilsService.createViewableCapBank(capBankList);
 		model.addAttribute("capBankList", viewableCapBankList);
 
 		boolean hasSubstationControl = rolePropertyDao.checkProperty(YukonRoleProperty.ALLOW_SUBSTATION_CONTROLS, user);
@@ -219,8 +219,8 @@ public class TierController {
 	            }
 	            StreamableCapObject area = cache.getArea(parentAreaId);
 
-	            String areaLinkHtml = capControlWebUtils.getCapControlFacesEditorLinkHtml(area.getCcId(), userContext);
-	            String subBusLinkHtml = capControlWebUtils.getCapControlFacesEditorLinkHtml(subbus.getSubBus().getCcId(), userContext);
+	            String areaLinkHtml = capControlWebUtilsService.getCapControlFacesEditorLinkHtml(area.getCcId(), userContext);
+	            String subBusLinkHtml = capControlWebUtilsService.getCapControlFacesEditorLinkHtml(subbus.getSubBus().getCcId(), userContext);
 	            areaLinkHtml = "<strong>" + areaLinkHtml + "</strong>";
 	            subBusLinkHtml = "<strong>" + subBusLinkHtml + "</strong>";
 	            WebMessageSourceResolvable noStrategyMessage = new WebMessageSourceResolvable("yukon.web.modules.capcontrol.substation.noStrategyAssigned", areaLinkHtml, subBusLinkHtml);

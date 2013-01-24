@@ -30,7 +30,7 @@ import com.cannontech.message.capcontrol.streamable.SubStation;
 import com.cannontech.user.YukonUserContext;
 import com.cannontech.web.capcontrol.models.MovedBank;
 import com.cannontech.web.capcontrol.models.NavigableArea;
-import com.cannontech.web.capcontrol.util.service.CapControlWebUtils;
+import com.cannontech.web.capcontrol.util.service.CapControlWebUtilsService;
 import com.cannontech.web.security.annotation.CheckRoleProperty;
 import com.google.common.collect.Lists;
 
@@ -42,7 +42,7 @@ public class BankMoveController {
     @Autowired private FilterCacheFactory cacheFactory;
     @Autowired private UpdaterHelper updaterHelper;
     @Autowired private YukonUserContextMessageSourceResolver messageSourceResolver;
-    @Autowired private CapControlWebUtils capControlWebUtils;
+    @Autowired private CapControlWebUtilsService capControlWebUtilsService;
     
     @RequestMapping
     public String bankMove(ModelMap model, YukonUserContext context, int bankid, Boolean oneline) {
@@ -52,7 +52,7 @@ public class BankMoveController {
         }
         CapControlCache filterCapControlCache = cacheFactory.createUserAccessFilteredCache(context.getYukonUser());
         int subBusId = 0;
-        List<NavigableArea> navigableAreas = capControlWebUtils.buildSimpleHierarchy();
+        List<NavigableArea> navigableAreas = capControlWebUtilsService.buildSimpleHierarchy();
         model.addAttribute("allAreas", navigableAreas);
         CapBankDevice capBank = filterCapControlCache.getCapBankDevice( new Integer(bankid) );
         

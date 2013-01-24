@@ -21,7 +21,7 @@ import com.cannontech.web.capcontrol.models.ViewableFeeder;
 import com.cannontech.web.capcontrol.models.ViewableSubBus;
 import com.cannontech.web.capcontrol.models.ViewableSubStation;
 
-public interface CapControlWebUtils {
+public interface CapControlWebUtilsService {
     List<ViewableSubBus> createViewableSubBus(List<SubBus> subBusList);
 
     List<ViewableFeeder> createViewableFeeder(List<Feeder> feeders, CapControlCache cache);

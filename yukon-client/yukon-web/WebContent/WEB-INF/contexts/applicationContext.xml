@@ -953,7 +953,7 @@
           parent="abstractFormattingService" abstract="true">
     </bean>
     
-    <bean class="com.cannontech.web.capcontrol.util.service.impl.CapControlWebUtilsImpl"/>
+    <bean class="com.cannontech.web.capcontrol.util.service.impl.CapControlWebUtilsServiceImpl"/>
 
     <bean id="capControlBackingService" class="com.cannontech.web.updater.capcontrol.CapControlBackingService"/>
     <bean id="capControlSystemEnableCommandHandler" class="com.cannontech.web.updater.capcontrol.handler.CapControlSystemEnableCommandHandler"/>
