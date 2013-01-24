@@ -15,6 +15,7 @@ import com.google.common.collect.Sets;
 
 public enum SchedulableThermostatType {
 
+    @XmlRepresentation("Residential ExpressStat")
 	RESIDENTIAL_EXPRESSSTAT(HardwareType.EXPRESSSTAT,
                             Temperature.fromFahrenheit(45), Temperature.fromFahrenheit(88),
                             Temperature.fromFahrenheit(45), Temperature.fromFahrenheit(88),
@@ -29,6 +30,7 @@ public enum SchedulableThermostatType {
                                                   ThermostatMode.HEAT,
                                                   ThermostatMode.OFF)
 	),
+    @XmlRepresentation("Heat Pump ExpressStat")
 	HEAT_PUMP_EXPRESSSTAT(HardwareType.EXPRESSSTAT_HEAT_PUMP,
 	                      Temperature.fromFahrenheit(45), Temperature.fromFahrenheit(88), 
 	                      Temperature.fromFahrenheit(45), Temperature.fromFahrenheit(88),
@@ -44,6 +46,7 @@ public enum SchedulableThermostatType {
                                                 ThermostatMode.EMERGENCY_HEAT,
                                                 ThermostatMode.OFF)
 	),
+    @XmlRepresentation("Commercial ExpressStat")
     COMMERCIAL_EXPRESSSTAT(HardwareType.COMMERCIAL_EXPRESSSTAT,
                            Temperature.fromFahrenheit(45), Temperature.fromFahrenheit(88),
                            Temperature.fromFahrenheit(45), Temperature.fromFahrenheit(88),
