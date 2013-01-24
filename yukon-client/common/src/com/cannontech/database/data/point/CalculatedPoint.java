@@ -70,8 +70,6 @@ public void addPartial() throws java.sql.SQLException {
  */
 public void delete() throws java.sql.SQLException 
 {
-    delete(DynamicCalcHistorical.TABLE_NAME, "PointId", getPoint().getPointID());
-    
 	CalcComponent.deleteCalcComponents( getPoint().getPointID(), getDbConnection() );
 	if(! baselineAssigned)
 		CalcPointBaseline.deleteCalcBaselinePoint( getPoint().getPointID(), getDbConnection() );

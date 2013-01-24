@@ -73,8 +73,8 @@ public class CBCSelectionLists {
       new SelectItem(new Integer (PointTypes.ANALOG_POINT), "Analog"),
       new SelectItem(new Integer (PointTypes.STATUS_POINT), "Status"),
       new SelectItem(new Integer (PointTypes.DEMAND_ACCUMULATOR_POINT), "Accumulator"),
-      new SelectItem(new Integer (PointTypes.CALCULATED_POINT), "Calculated Analog"),
-      new SelectItem(new Integer (PointTypes.CALCULATED_STATUS_POINT), "Calculated Status"),
+      new SelectItem(new Integer (PointTypes.CALCULATED_POINT), "Calculated Analog Output"),
+      new SelectItem(new Integer (PointTypes.CALCULATED_STATUS_POINT), "Calculated Status Output"),
     };
     
     private static final SelectItem[] typeList701X = {

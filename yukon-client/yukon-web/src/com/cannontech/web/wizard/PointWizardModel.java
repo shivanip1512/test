@@ -5,9 +5,9 @@ import com.cannontech.database.data.point.PointTypes;
 public class PointWizardModel {
 
     private String name = null;
-    private Boolean disabled = new Boolean(false);
+    private Boolean disabled = false;
     private int pointType = PointTypes.INVALID_POINT;
-    private Integer parentId = new Integer(0);
+    private Integer parentId = 0;
 
     public Boolean getDisabled() {
         return disabled;
@@ -43,8 +43,8 @@ public class PointWizardModel {
 
     public void reset() {
         name = null;
-        disabled = new Boolean(false);
+        disabled = false;
         pointType = PointTypes.INVALID_POINT;
-        parentId = new Integer(0);
+        parentId = 0;
     }
 }
