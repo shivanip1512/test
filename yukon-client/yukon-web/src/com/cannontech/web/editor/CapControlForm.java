@@ -996,7 +996,7 @@ public class CapControlForm extends DBEditorForm implements ICapControlModel{
     public String create() {
         FacesMessage facesMsg = new FacesMessage();
         FacesContext facesContext = FacesContext.getCurrentInstance();
-        
+
         final CBCWizardModel wizard = (CBCWizardModel) getWizData();
 
         DataBinder binder = new DataBinder(wizard);
@@ -1019,63 +1019,64 @@ public class CapControlForm extends DBEditorForm implements ICapControlModel{
         final boolean disabled = wizard.getDisabled();
         final int portId = wizard.getPortID();
         final boolean isCapBankAndNested = (type == CapControlTypes.CAP_CONTROL_CAPBANK && wizard.isCreateNested());
-        
 
-            transactionTemplate.execute(new TransactionCallbackWithoutResult() {
-                @Override
-                protected void doInTransactionWithoutResult(TransactionStatus status) {
-                    //If this is a Schedule or Strategy it is NOT a Pao, handle accordingly.
-                    if (type == CapControlTypes.CAP_CONTROL_SCHEDULE) {
-                        itemId = paoScheduleDao.add(name, disabled);
-                        return;
-                    } else if (type == CapControlTypes.CAP_CONTROL_STRATEGY) {
-                        itemId = strategyDao.add(name);
-                        return;
-                    }
-                    
-                    //Must be a Pao
-                    PaoType paoType = PaoType.getForId(type);
-                    boolean isController = CapControlUtils.checkControllerByType(paoType);
-                    
-                    if (isCapBankAndNested) {
-                        /* Create the cbc, then the cap bank, then assign cbc to cap bank */
-                        CBCWizardModel cbcWizard = wizard.getNestedWizard();
-                        PaoType cbcType = PaoType.getForId(cbcWizard.getSelectedType());
-                        boolean cbcDisabled = cbcWizard.getDisabled();
-                        String cbcName = cbcWizard.getName();
-                        int cbcPortId = cbcWizard.getPortID();
-                        PaoIdentifier controller = capControlCreationService.createCbc(cbcType, cbcName, cbcDisabled, cbcPortId, getDefaultDnpConfiguration());
-                        PaoIdentifier capbank = capControlCreationService.createCapControlObject(paoType, name, disabled);
-                        int controllerId = controller.getPaoId();
-                        int tempItemId = capbank.getPaoId();
-                        capbankControllerDao.assignController(tempItemId, controllerId);
-                        itemId = tempItemId;
-                    } else if (isController) {
-                        PaoType cbcType = PaoType.getForId(wizard.getSelectedType());
-                	    PaoIdentifier item = capControlCreationService.createCbc(cbcType, name, disabled, portId, getDefaultDnpConfiguration());
-                	    itemId = item.getPaoId();
-                    } else {
-                        PaoIdentifier item = capControlCreationService.createCapControlObject(paoType, name, disabled);
-                        itemId = item.getPaoId();
-                    }
+        transactionTemplate.execute(new TransactionCallbackWithoutResult() {
+            @Override
+            protected void doInTransactionWithoutResult(TransactionStatus status) {
+                // If this is a Schedule or Strategy it is NOT a Pao, handle
+                // accordingly.
+                if (type == CapControlTypes.CAP_CONTROL_SCHEDULE) {
+                    itemId = paoScheduleDao.add(name, disabled);
+                    return;
+                } else if (type == CapControlTypes.CAP_CONTROL_STRATEGY) {
+                    itemId = strategyDao.add(name);
+                    return;
                 }
-            });
-            
-            /* Redirect to the editor after creation */
-            facesMsg.setDetail("Database add was SUCCESSFUL");
-            String url = "/editor/cbcBase.jsf?type=" + getEditorType(type) + "&itemid=" + itemId;
-            
-            /* Sets the navigation history so the return buttons work */
-            HttpSession session = (HttpSession) facesContext.getExternalContext().getSession(false);
-            CBCNavigationUtil.redirect(url, session);
-            
-            /* Does the actually redirection to the editor url */
-            JSFUtil.redirect(url);
-            
+
+                // Must be a Pao
+                PaoType paoType = PaoType.getForId(type);
+                boolean isController = CapControlUtils
+                        .checkControllerByType(paoType);
+
+                if (isCapBankAndNested) {
+                    /* Create the cbc, then the cap bank, then assign cbc to cap bank */
+                    CBCWizardModel cbcWizard = wizard.getNestedWizard();
+                    PaoType cbcType = PaoType.getForId(cbcWizard.getSelectedType());
+                    boolean cbcDisabled = cbcWizard.getDisabled();
+                    String cbcName = cbcWizard.getName();
+                    int cbcPortId = cbcWizard.getPortID();
+                    PaoIdentifier controller = capControlCreationService.createCbc(cbcType, cbcName, cbcDisabled, cbcPortId, getDefaultDnpConfiguration());
+                    PaoIdentifier capbank = capControlCreationService.createCapControlObject(paoType, name, disabled);
+                    int controllerId = controller.getPaoId();
+                    int tempItemId = capbank.getPaoId();
+                    capbankControllerDao.assignController(tempItemId, controllerId);
+                    itemId = tempItemId;
+                } else if (isController) {
+                    PaoType cbcType = PaoType.getForId(wizard.getSelectedType());
+                    PaoIdentifier item = capControlCreationService.createCbc(cbcType, name, disabled, portId, getDefaultDnpConfiguration());
+                    itemId = item.getPaoId();
+                } else {
+                    PaoIdentifier item = capControlCreationService.createCapControlObject(paoType, name, disabled);
+                    itemId = item.getPaoId();
+                }
+            }
+        });
+
+        /* Redirect to the editor after creation */
+        facesMsg.setDetail("Database add was SUCCESSFUL");
+        String url = "/editor/cbcBase.jsf?type=" + getEditorType(type) + "&itemid=" + itemId;
+
+        /* Sets the navigation history so the return buttons work */
+        HttpSession session = (HttpSession) facesContext.getExternalContext().getSession(false);
+        CBCNavigationUtil.redirect(url, session);
+
+        /* Does the actually redirection to the editor url */
+        JSFUtil.redirect(url);
+
         facesContext.addMessage("cti_db_add", facesMsg);
-        
+
         return StringUtils.EMPTY;
-	}
+    }
 
     public void showScanRate(ValueChangeEvent ev) {
 		if (ev == null || ev.getNewValue() == null) {
