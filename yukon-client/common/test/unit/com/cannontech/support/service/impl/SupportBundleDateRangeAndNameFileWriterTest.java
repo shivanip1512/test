@@ -17,7 +17,7 @@ import com.cannontech.common.util.TimeUtil;
 public class SupportBundleDateRangeAndNameFileWriterTest {
 
 	@Test
-	public void testAddCandidate() throws Exception {
+	public void testAddCandidate() throws ParseException  {
         SimpleDateFormat formatter = new SimpleDateFormat("yyyyMMdd");
         LocalDate stopDate = new LocalDate(formatter.parse("20130110"), DateTimeZone.getDefault());
         LocalDate startDate = stopDate.minus(Weeks.TWO);
@@ -28,20 +28,23 @@ public class SupportBundleDateRangeAndNameFileWriterTest {
 
 		SupportBundleDateRangeAndNameFileWriter writer = new SupportBundleDateRangeAndNameFileWriter();
 
-		// Testing with "checkBoth" set to false
-		File testFile = new TestFile("foo20130108.log",true,formatter.parse("20130108"));
+
+		
+        Date jan0813 = formatter.parse("20130108");
+        Date jan0812 = formatter.parse("20120108");
+        File testFile = new TestFile("foo20130108.log",true,jan0813);
 		Assert.assertTrue("File name should be valid no-hyphen example",writer.isFileInDateRange(testFile, start, stop));
 
-		testFile = new TestFile("foo2013-01-08.log",true,formatter.parse("20130108"));
+		testFile = new TestFile("foo2013-01-08.log",true,jan0813);
         Assert.assertTrue("File name should be valid with-hyphen example",writer.isFileInDateRange(testFile, start, stop));
 
-		testFile = new TestFile("foo20130108.txt",true,formatter.parse("20130108"));
+		testFile = new TestFile("foo20130108.txt",true,jan0813);
         Assert.assertFalse("File name should NOT be valid due to suffix",writer.isFileInDateRange(testFile, start, stop));
 
-		testFile = new TestFile("foo20120108.log",true,formatter.parse("20120108"));
+        testFile = new TestFile("foo20120108.log",true,jan0812);
         Assert.assertFalse("File name should NOT be valid due to date range",writer.isFileInDateRange(testFile, start, stop));
 
-		testFile = new TestFile("foo2012-01-08.log",true,formatter.parse("20120108"));
+		testFile = new TestFile("foo2012-01-08.log",true,jan0812);
         Assert.assertFalse("File name should NOT be valid due to date range",writer.isFileInDateRange(testFile, start, stop));
 }
 		
