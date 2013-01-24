@@ -52,35 +52,29 @@ GO
 /* End YUK-11794 */
 
 /* Start YUK-11742 */
-/* Special Cases: */
 UPDATE EventLog
-SET
-    String3 = String2,
+SET String3 = String2,
     String2 = NULL
-WHERE (
-        EventType = 'hardware.hardwareUpdateAttemptedByOperator' OR
-        EventType = 'hardware.hardwareUpdateAttemptedThroughAccountImporter' OR
-        EventType = 'hardware.hardwareCreationAttemptedThroughAccountImporter' OR
-        EventType = 'hardware.hardwareRemovalAttemptedThroughAccountImporter'
-    )
-AND String3 IS NULL;
+WHERE String3 IS NULL 
+  AND EventType IN (
+    'hardware.hardwareUpdateAttemptedByOperator',
+    'hardware.hardwareUpdateAttemptedThroughAccountImporter',
+    'hardware.hardwareCreationAttemptedThroughAccountImporter',
+    'hardware.hardwareRemovalAttemptedThroughAccountImporter'
+);
 
 UPDATE EventLog
-SET
-    String4 = String3,
+SET String4 = String3,
     String3 = String2,
     String2 = NULL
 WHERE EventType = 'stars.account.thermostat.thermostatManualSetAttemptedByApi';
 
-/* General Cases: */
 /* - ByApi        */
-   
 UPDATE EventLog
-SET
-    EventType = SUBSTRING(EventType, 1, CHARINDEX('ByApi', EventType) - 1),
+SET EventType = SUBSTRING(EventType, 1, CHARINDEX('ByApi', EventType) - 1),
     String2 = 'API'
-WHERE  String2 = NULL 
-AND EventType IN (
+WHERE String2 = NULL 
+  AND EventType IN (
     'stars.optOutAdmin.cancelCurrentOptOutsAttemptedByApi',
     'stars.optOutAdmin.countTowardOptOutLimitTodayAttemptedByApi',
     'stars.optOutAdmin.disablingOptOutUsageForTodayAttemptedByApi',
@@ -89,11 +83,10 @@ AND EventType IN (
 );
 
 UPDATE EventLog
-SET
-    EventType = SUBSTRING(EventType, 1, CHARINDEX('ByApi', EventType) - 1),
+SET EventType = SUBSTRING(EventType, 1, CHARINDEX('ByApi', EventType) - 1),
     String3 = 'API'
 WHERE String3 IS NULL 
-AND EventType IN (
+  AND EventType IN (
     'hardware.hardwareDeletionAttemptedByApi',
     'hardware.hardwareMeterCreationAttemptedByApi',
     'hardware.hardwareRemovalAttemptedByApi',
@@ -120,11 +113,10 @@ AND EventType IN (
 );
 
 UPDATE EventLog
-SET
-    EventType = SUBSTRING(EventType, 1, CHARINDEX('ByApi', EventType) - 1),
+SET EventType = SUBSTRING(EventType, 1, CHARINDEX('ByApi', EventType) - 1),
     String4 = 'API'
 WHERE String4 IS NULL 
-AND EventType IN (
+  AND EventType IN (
     'hardware.assigningHardwareAttemptedByApi',
     'hardware.config.hardwareConfigAttemptedByApi',
     'hardware.config.hardwareDisableAttemptedByApi',
@@ -150,17 +142,15 @@ AND EventType IN (
 );
 
 UPDATE EventLog
-SET
-    EventType = SUBSTRING(EventType, 1, CHARINDEX('ByApi', EventType) - 1),
+SET EventType = SUBSTRING(EventType, 1, CHARINDEX('ByApi', EventType) - 1),
     String5 = 'API'
 WHERE EventType = 'stars.account.thermostat.thermostatScheduleSavingAttemptedByApi';
 
 UPDATE EventLog
-SET
-    EventType = SUBSTRING(EventType, 1, CHARINDEX('ByApi', EventType) - 1),
+SET EventType = SUBSTRING(EventType, 1, CHARINDEX('ByApi', EventType) - 1),
     String6 = 'API'
 WHERE String6 IS NULL 
-AND EventType IN (
+  AND EventType IN (
     'stars.account.appliance.applianceAdditionAttemptedByApi',
     'stars.account.enrollment.enrollmentAttemptedByApi',
     'stars.account.enrollment.unenrollmentAttemptedByApi',
@@ -170,11 +160,10 @@ AND EventType IN (
 
 /* - ThroughApi */
 UPDATE EventLog
-SET
-    EventType = SUBSTRING(EventType, 1, CHARINDEX('ThroughApi', EventType) - 1),
+SET EventType = SUBSTRING(EventType, 1, CHARINDEX('ThroughApi', EventType) - 1),
     String2 = 'API'
 WHERE String2 IS NULL 
-AND EventType IN (
+  AND EventType IN (
     'stars.optOutAdmin.cancelCurrentOptOutsAttemptedThroughApi',
     'stars.optOutAdmin.countTowardOptOutLimitTodayAttemptedThroughApi',
     'stars.optOutAdmin.disablingOptOutUsageForTodayAttemptedThroughApi',
@@ -184,11 +173,10 @@ AND EventType IN (
 );
 
 UPDATE EventLog
-SET
-    EventType = SUBSTRING(EventType, 1, CHARINDEX('ThroughApi', EventType) - 1),
+SET EventType = SUBSTRING(EventType, 1, CHARINDEX('ThroughApi', EventType) - 1),
     String3 = 'API'
 WHERE String3 IS NULL 
-AND EventType IN (
+  AND EventType IN (
     'hardware.hardwareDeletionAttemptedThroughApi',
     'hardware.hardwareMeterCreationAttemptedThroughApi',
     'hardware.hardwareRemovalAttemptedThroughApi',
@@ -214,11 +202,10 @@ AND EventType IN (
 );
 
 UPDATE EventLog
-SET
-    EventType = SUBSTRING(EventType, 1, CHARINDEX('ThroughApi', EventType) - 1),
+SET EventType = SUBSTRING(EventType, 1, CHARINDEX('ThroughApi', EventType) - 1),
     String4 = 'API'
 WHERE String4 IS NULL 
-AND EventType IN (
+  AND EventType IN (
     'hardware.assigningHardwareAttemptedThroughApi',
     'hardware.config.hardwareConfigAttemptedThroughApi',
     'hardware.config.hardwareDisableAttemptedThroughApi',
@@ -244,17 +231,15 @@ AND EventType IN (
 );
 
 UPDATE EventLog
-SET
-    EventType = SUBSTRING(EventType, 1, CHARINDEX('ThroughApi', EventType) - 1),
+SET EventType = SUBSTRING(EventType, 1, CHARINDEX('ThroughApi', EventType) - 1),
     String5 = 'API'
 WHERE EventType = 'stars.account.thermostat.thermostatScheduleSavingAttemptedThroughApi';
 
 UPDATE EventLog
-SET
-    EventType = SUBSTRING(EventType, 1, CHARINDEX('ThroughApi', EventType) - 1),
+SET EventType = SUBSTRING(EventType, 1, CHARINDEX('ThroughApi', EventType) - 1),
     String6 = 'API'
 WHERE String6 IS NULL 
-AND EventType IN (
+  AND EventType IN (
     'stars.account.appliance.applianceAdditionAttemptedThroughApi',
     'stars.account.enrollment.enrollmentAttemptedThroughApi',
     'stars.account.thermostat.thermostatManualSetAttemptedThroughApi',
@@ -264,11 +249,10 @@ AND EventType IN (
 
 /* - ByConsumer */
 UPDATE EventLog
-SET
-    EventType = SUBSTRING(EventType, 1, CHARINDEX('ByConsumer', EventType) - 1),
+SET EventType = SUBSTRING(EventType, 1, CHARINDEX('ByConsumer', EventType) - 1),
     String2 = 'CONSUMER'
 WHERE String2 IS NULL 
-AND EventType IN (
+  AND EventType IN (
     'stars.optOutAdmin.cancelCurrentOptOutsAttemptedByConsumer',
     'stars.optOutAdmin.countTowardOptOutLimitTodayAttemptedByConsumer',
     'stars.optOutAdmin.disablingOptOutUsageForTodayAttemptedByConsumer',
@@ -278,11 +262,10 @@ AND EventType IN (
 );
 
 UPDATE EventLog
-SET
-    EventType = SUBSTRING(EventType, 1, CHARINDEX('ByConsumer', EventType) - 1),
+SET EventType = SUBSTRING(EventType, 1, CHARINDEX('ByConsumer', EventType) - 1),
     String3 = 'CONSUMER'
 WHERE String3 IS NULL 
-AND EventType IN (
+  AND EventType IN (
     'hardware.hardwareDeletionAttemptedByConsumer',
     'hardware.hardwareMeterCreationAttemptedByConsumer',
     'hardware.hardwareRemovalAttemptedByConsumer',
@@ -309,11 +292,10 @@ AND EventType IN (
 );
 
 UPDATE EventLog
-SET
-    EventType = SUBSTRING(EventType, 1, CHARINDEX('ByConsumer', EventType) - 1),
+SET EventType = SUBSTRING(EventType, 1, CHARINDEX('ByConsumer', EventType) - 1),
     String4 = 'CONSUMER'
 WHERE String4 IS NULL 
-AND EventType IN (
+  AND EventType IN (
     'hardware.assigningHardwareAttemptedByConsumer',
     'hardware.config.hardwareConfigAttemptedByConsumer',
     'hardware.config.hardwareDisableAttemptedByConsumer',
@@ -339,17 +321,15 @@ AND EventType IN (
 );
 
 UPDATE EventLog
-SET
-    EventType = SUBSTRING(EventType, 1, CHARINDEX('ByConsumer', EventType) - 1),
+SET EventType = SUBSTRING(EventType, 1, CHARINDEX('ByConsumer', EventType) - 1),
     String5 = 'API'
 WHERE EventType = 'stars.account.thermostat.thermostatScheduleSavingAttemptedByConsumer';
 
 UPDATE EventLog
-SET
-    EventType = SUBSTRING(EventType, 1, CHARINDEX('ByConsumer', EventType) - 1),
+SET EventType = SUBSTRING(EventType, 1, CHARINDEX('ByConsumer', EventType) - 1),
     String6 = 'API'
 WHERE String6 IS NULL 
-AND EventType IN (
+  AND EventType IN (
     'stars.account.appliance.applianceAdditionAttemptedByConsumer',
     'stars.account.enrollment.enrollmentAttemptedByConsumer',
     'stars.account.thermostat.thermostatManualSetAttemptedByConsumer',
@@ -359,11 +339,10 @@ AND EventType IN (
 
 /* - ByOperator */
 UPDATE EventLog
-SET
-    EventType = SUBSTRING(EventType, 1, CHARINDEX('ByOperator', EventType) - 1),
+SET EventType = SUBSTRING(EventType, 1, CHARINDEX('ByOperator', EventType) - 1),
     String2 = 'OPERATOR'
 WHERE String2 IS NULL 
-AND EventType IN (
+  AND EventType IN (
     'stars.optOutAdmin.cancelCurrentOptOutsAttemptedByOperator',
     'stars.optOutAdmin.countTowardOptOutLimitTodayAttemptedByOperator',
     'stars.optOutAdmin.disablingOptOutUsageForTodayAttemptedByOperator',
@@ -373,11 +352,10 @@ AND EventType IN (
 );
 
 UPDATE EventLog
-SET
-    EventType = SUBSTRING(EventType, 1, CHARINDEX('ByOperator', EventType) - 1),
+SET EventType = SUBSTRING(EventType, 1, CHARINDEX('ByOperator', EventType) - 1),
     String3 = 'OPERATOR'
 WHERE String3 IS NULL 
-AND EventType IN (
+  AND EventType IN (
     'hardware.commands.config.zigbeeDeviceCommissionByOperator',
     'hardware.commands.config.zigbeeDeviceDecommissionByOperator',
     'hardware.commands.status.zigbeeDeviceRefreshByOperator',
@@ -407,11 +385,10 @@ AND EventType IN (
 );
 
 UPDATE EventLog
-SET
-    EventType = SUBSTRING(EventType, 1, CHARINDEX('ByOperator', EventType) - 1),
+SET EventType = SUBSTRING(EventType, 1, CHARINDEX('ByOperator', EventType) - 1),
     String4 = 'OPERATOR'
 WHERE String4 IS NULL 
-AND EventType IN (
+  AND EventType IN (
     'hardware.assigningHardwareAttemptedByOperator',
     'hardware.commands.actions.zigbeeSendTextByOperator',
     'hardware.config.hardwareConfigAttemptedByOperator',
@@ -440,17 +417,15 @@ AND EventType IN (
 );
 
 UPDATE EventLog
-SET
-    EventType = SUBSTRING(EventType, 1, CHARINDEX('ByOperator', EventType) - 1),
+SET EventType = SUBSTRING(EventType, 1, CHARINDEX('ByOperator', EventType) - 1),
     String5 = 'API'
 WHERE EventType = 'stars.account.thermostat.thermostatScheduleSavingAttemptedByOperator';
 
 UPDATE EventLog
-SET
-    EventType = SUBSTRING(EventType, 1, CHARINDEX('ByOperator', EventType) - 1),
+SET EventType = SUBSTRING(EventType, 1, CHARINDEX('ByOperator', EventType) - 1),
     String6 = 'API'
 WHERE String6 IS NULL 
-AND EventType IN (
+  AND EventType IN (
     'stars.account.appliance.applianceAdditionAttemptedByOperator',
     'stars.account.enrollment.enrollmentAttemptedByOperator',
     'stars.account.thermostat.thermostatManualSetAttemptedByOperator',
@@ -460,11 +435,10 @@ AND EventType IN (
 
 /* - ThroughAccountImporter */
 UPDATE EventLog
-SET
-    EventType = SUBSTRING(EventType, 1, CHARINDEX('ThroughAccountImporter', EventType) - 1),
+SET EventType = SUBSTRING(EventType, 1, CHARINDEX('ThroughAccountImporter', EventType) - 1),
     String2 = 'ACCOUNT_IMPORTER'
 WHERE String2 IS NULL 
-AND EventType IN (
+  AND EventType IN (
     'stars.optOutAdmin.cancelCurrentOptOutsAttemptedThroughAccountImporter',
     'stars.optOutAdmin.countTowardOptOutLimitTodayAttemptedThroughAccountImporter',
     'stars.optOutAdmin.disablingOptOutUsageForTodayAttemptedThroughAccountImporter',
@@ -474,11 +448,10 @@ AND EventType IN (
 );
 
 UPDATE EventLog
-SET
-    EventType = SUBSTRING(EventType, 1, CHARINDEX('ThroughAccountImporter', EventType) - 1),
+SET EventType = SUBSTRING(EventType, 1, CHARINDEX('ThroughAccountImporter', EventType) - 1),
     String3 = 'ACCOUNT_IMPORTER'
 WHERE String3 IS NULL 
-AND EventType IN (
+  AND EventType IN (
     'hardware.hardwareDeletionAttemptedThroughAccountImporter',
     'hardware.hardwareMeterCreationAttemptedThroughAccountImporter',
     'hardware.hardwareRemovalAttemptedThroughAccountImporter',
@@ -505,11 +478,10 @@ AND EventType IN (
 );
 
 UPDATE EventLog
-SET
-    EventType = SUBSTRING(EventType, 1, CHARINDEX('ThroughAccountImporter', EventType) - 1),
+SET EventType = SUBSTRING(EventType, 1, CHARINDEX('ThroughAccountImporter', EventType) - 1),
     String4 = 'ACCOUNT_IMPORTER'
 WHERE String4 IS NULL 
-AND EventType IN (
+  AND EventType IN (
     'hardware.assigningHardwareAttemptedThroughAccountImporter',
     'hardware.config.hardwareConfigAttemptedThroughAccountImporter',
     'hardware.config.hardwareDisableAttemptedThroughAccountImporter',
@@ -535,17 +507,15 @@ AND EventType IN (
 );
 
 UPDATE EventLog
-SET
-    EventType = SUBSTRING(EventType, 1, CHARINDEX('ThroughAccountImporter', EventType) - 1),
+SET EventType = SUBSTRING(EventType, 1, CHARINDEX('ThroughAccountImporter', EventType) - 1),
     String5 = 'API'
 WHERE EventType = 'stars.account.thermostat.thermostatScheduleSavingAttemptedThroughAccountImporter';
 
 UPDATE EventLog
-SET
-    EventType = SUBSTRING(EventType, 1, CHARINDEX('ThroughAccountImporter', EventType) - 1),
+SET EventType = SUBSTRING(EventType, 1, CHARINDEX('ThroughAccountImporter', EventType) - 1),
     String6 = 'API'
 WHERE String6 IS NULL 
-AND EventType IN (
+  AND EventType IN (
     'stars.account.appliance.applianceAdditionAttemptedThroughAccountImporter',
     'stars.account.enrollment.enrollmentAttemptedThroughAccountImporter',
     'stars.account.thermostat.thermostatManualSetAttemptedThroughAccountImporter',
