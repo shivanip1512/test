@@ -68,7 +68,7 @@
     <xsd:simpleType name="ThermostatScheduleMode">
         <xsd:restriction base="xsd:string">
             <xsd:enumeration value="All" />
-            <xsd:enumeration value="Weekday Sat Sun" />
+            <xsd:enumeration value="Weekday Saturday Sunday" />
             <xsd:enumeration value="Weekday Weekend" />
             <xsd:enumeration value="Seven Day" />
         </xsd:restriction>
@@ -76,13 +76,13 @@
 
     <xsd:simpleType name="SchedulableThermostatType">
         <xsd:restriction base="xsd:string">
-            <xsd:enumeration value="Residential Expressstat" />
-            <xsd:enumeration value="Heat Pump Expressstat" />
-            <xsd:enumeration value="Commercial Expressstat" />
-            <xsd:enumeration value="Utility Pro" />
-            <xsd:enumeration value="Utility Pro G2" />
-            <xsd:enumeration value="Utility Pro G3" />
-            <xsd:enumeration value="Utility Pro ZigBee" />
+            <xsd:enumeration value="Residential ExpressStat" />
+            <xsd:enumeration value="Heat Pump ExpressStat" />
+            <xsd:enumeration value="Commercial ExpressStat" />
+            <xsd:enumeration value="UtilityPRO" />
+            <xsd:enumeration value="UtilityPRO G2" />
+            <xsd:enumeration value="UtilityPRO G3" />
+            <xsd:enumeration value="UtilityPRO ZigBee" />
         </xsd:restriction>
     </xsd:simpleType>
 

@@ -94,6 +94,22 @@ public class YukonXPathTemplateTest {
 
     /**
      * <testElement>
+     *      <enumElement thermostatScheduleMode="Weekday Saturday Sunday" />
+     * </testElement>
+     */
+    @Test
+    public void testEvaluateAsEnum_usingXmlRepresentationAnnotation() {
+        Element testElement = createEnumElement("Weekday Saturday Sunday", null);
+
+        YukonXPathTemplate yukonTemplate = YukonXml.getXPathTemplateForElement(testElement);
+        ThermostatScheduleMode thermostatScheduleMode = yukonTemplate.evaluateAsEnum("/testElement/enumElement/@thermostatScheduleMode", ThermostatScheduleMode.class);
+        
+        Assert.assertNotNull(thermostatScheduleMode);
+        Assert.assertEquals(ThermostatScheduleMode.WEEKDAY_SAT_SUN, thermostatScheduleMode);
+    }
+
+    /**
+     * <testElement>
      *      <enumElement>WeekDay_WeekEnd<enumElement>
      * </testElement>
      */
@@ -141,7 +157,7 @@ public class YukonXPathTemplateTest {
 
     /**
      * <testElement>
-     *      <enumElement>19:24<enumElement>
+     *      <localTimeElement>19:24</localTimeElement>
      * </testElement>
      */
     @Test
@@ -157,7 +173,7 @@ public class YukonXPathTemplateTest {
     
     /**
      * <testElement>
-     *      <enumElement>5:42<enumElement>
+     *      <localTimeElement>5:42</localTimeElement>
      * </testElement>
      */
     @Test
@@ -173,7 +189,7 @@ public class YukonXPathTemplateTest {
 
     /**
      * <testElement>
-     *      <enumElement><enumElement>
+     *      <localTimeElement></localTimeElement>
      * </testElement>
      */
     @Test
@@ -188,7 +204,7 @@ public class YukonXPathTemplateTest {
 
     /**
      * <testElement>
-     *      <enumElement>19:4<enumElement>
+     *      <localTimeElement>19:4</localTimeElement>
      * </testElement>
      */
     @Test
@@ -204,7 +220,7 @@ public class YukonXPathTemplateTest {
 
     /**
      * <testElement>
-     *      <enumElement>42:4<enumElement>
+     *      <localTimeElement>42:4</localTimeElement>
      * </testElement>
      */
     @Test(expected=XPathException.class)

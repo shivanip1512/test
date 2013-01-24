@@ -2,6 +2,7 @@ package com.cannontech.stars.dr.thermostat.model;
 
 import java.util.Set;
 
+import com.cannontech.common.util.xml.XmlRepresentation;
 import com.cannontech.core.roleproperties.YukonRoleProperty;
 import com.google.common.collect.Sets;
 
@@ -13,6 +14,7 @@ public enum ThermostatScheduleMode {
 	
     ALL(Sets.immutableEnumSet(TimeOfWeek.WEEKDAY),
         YukonRoleProperty.ADMIN_ALLOW_THERMOSTAT_SCHEDULE_ALL),
+    @XmlRepresentation("Weekday Saturday Sunday")
     WEEKDAY_SAT_SUN(Sets.immutableEnumSet(TimeOfWeek.WEEKDAY, TimeOfWeek.SATURDAY, TimeOfWeek.SUNDAY),
                     YukonRoleProperty.ADMIN_ALLOW_THERMOSTAT_SCHEDULE_WEEKDAY_SATURDAY_SUNDAY),
     WEEKDAY_WEEKEND(Sets.immutableEnumSet(TimeOfWeek.WEEKDAY, TimeOfWeek.WEEKEND),

@@ -6,6 +6,7 @@ import org.joda.time.Duration;
 
 import com.cannontech.common.inventory.HardwareType;
 import com.cannontech.common.temperature.Temperature;
+import com.cannontech.common.util.xml.XmlRepresentation;
 import com.cannontech.stars.dr.thermostat.model.ThermostatFanState;
 import com.cannontech.stars.dr.thermostat.model.ThermostatMode;
 import com.cannontech.stars.dr.thermostat.model.ThermostatScheduleMode;
@@ -57,6 +58,7 @@ public enum SchedulableThermostatType {
                                                  ThermostatMode.HEAT,
                                                  ThermostatMode.OFF)
     ),
+    @XmlRepresentation("UtilityPRO")
 	UTILITY_PRO(HardwareType.UTILITY_PRO,
 				Temperature.fromFahrenheit(50), Temperature.fromFahrenheit(99),
 				Temperature.fromFahrenheit(40), Temperature.fromFahrenheit(90),
@@ -73,6 +75,7 @@ public enum SchedulableThermostatType {
                                       ThermostatMode.HEAT,
                                       ThermostatMode.OFF)
 	),
+	@XmlRepresentation("UtilityPRO G2")
 	UTILITY_PRO_G2(HardwareType.UTILITY_PRO_G2,
                    Temperature.fromFahrenheit(50), Temperature.fromFahrenheit(99),
                    Temperature.fromFahrenheit(40), Temperature.fromFahrenheit(90),
@@ -91,6 +94,7 @@ public enum SchedulableThermostatType {
                                          ThermostatMode.HEAT,
                                          ThermostatMode.OFF)
     ),
+    @XmlRepresentation("UtilityPRO G3")
     UTILITY_PRO_G3(HardwareType.UTILITY_PRO_G3,
                    Temperature.fromFahrenheit(50), Temperature.fromFahrenheit(99),
                    Temperature.fromFahrenheit(40), Temperature.fromFahrenheit(90),
@@ -109,6 +113,7 @@ public enum SchedulableThermostatType {
                                          ThermostatMode.HEAT,
                                          ThermostatMode.OFF)
     ),
+    @XmlRepresentation("UtilityPRO ZigBee")
 	UTILITY_PRO_ZIGBEE(HardwareType.UTILITY_PRO_ZIGBEE,
 	                   Temperature.fromFahrenheit(50), Temperature.fromFahrenheit(99),
 	                   Temperature.fromFahrenheit(40), Temperature.fromFahrenheit(90),
