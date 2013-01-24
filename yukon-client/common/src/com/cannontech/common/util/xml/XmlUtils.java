@@ -155,6 +155,7 @@ public class XmlUtils {
                     Object type = enumValue.get(enumClass);
                     return enumClass.cast(type);
                 } catch (IllegalArgumentException | IllegalAccessException e) {
+                    // Because of the way were getting these variables there is absolutely no way for these exceptions to be thrown.
                     e.printStackTrace();
                 }
             }
