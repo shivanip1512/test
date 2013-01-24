@@ -14,6 +14,8 @@ public interface CapControlCreationService {
 	 */
 	public PaoIdentifier createCapControlObject(PaoType paoType, String name, boolean disabled);
 	
+	public boolean createsNameConflict(PaoType paoType, String name);
+	
 	/**
 	 * Creates a new CBC object with the specified information
 	 * @param paoType the type of CBC

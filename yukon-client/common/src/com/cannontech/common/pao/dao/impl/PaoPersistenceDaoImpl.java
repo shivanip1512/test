@@ -625,4 +625,18 @@ public class PaoPersistenceDaoImpl implements PaoPersistenceDao {
             }
         }
     }
+
+    @Override
+    public boolean createsNameConflict(PaoType paoType, String name) {
+        SqlStatementBuilder sql = new SqlStatementBuilder();
+        sql.append("SELECT COUNT(*)");
+        sql.append("FROM YukonPAObject");
+        sql.append("WHERE PAOName").eq(name);
+        sql.append("AND PAOClass").eq(paoType.getPaoClass());
+        sql.append("AND Category").eq(paoType.getPaoCategory());
+        
+        int result = jdbcTemplate.queryForInt(sql);
+        
+        return result != 0;
+    }
 }

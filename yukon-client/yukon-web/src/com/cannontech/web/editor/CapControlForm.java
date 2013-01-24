@@ -22,12 +22,15 @@ import javax.faces.model.SelectItem;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpSession;
 
+import org.apache.commons.lang.StringUtils;
 import org.apache.log4j.Logger;
-import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.dao.EmptyResultDataAccessException;
 import org.springframework.transaction.TransactionStatus;
 import org.springframework.transaction.support.TransactionCallbackWithoutResult;
 import org.springframework.transaction.support.TransactionTemplate;
+import org.springframework.validation.BindingResult;
+import org.springframework.validation.DataBinder;
+import org.springframework.validation.ObjectError;
 
 import com.cannontech.capcontrol.ControlAlgorithm;
 import com.cannontech.capcontrol.ControlMethod;
@@ -49,6 +52,7 @@ import com.cannontech.cbc.model.ICBControllerModel;
 import com.cannontech.cbc.model.ICapControlModel;
 import com.cannontech.cbc.service.CapControlCreationModel;
 import com.cannontech.cbc.util.CapControlUtils;
+import com.cannontech.cbc.validators.CapControlCreationModelValidator;
 import com.cannontech.clientutils.YukonLogManager;
 import com.cannontech.common.device.config.dao.DeviceConfigurationDao;
 import com.cannontech.common.device.config.model.ConfigurationBase;
@@ -56,7 +60,6 @@ import com.cannontech.common.exception.NotAuthorizedException;
 import com.cannontech.common.pao.PaoIdentifier;
 import com.cannontech.common.pao.PaoType;
 import com.cannontech.common.util.CtiUtilities;
-import com.cannontech.common.util.StringUtils;
 import com.cannontech.core.dao.DaoFactory;
 import com.cannontech.core.dao.HolidayScheduleDao;
 import com.cannontech.core.dao.NotFoundException;
@@ -890,7 +893,7 @@ public class CapControlForm extends DBEditorForm implements ICapControlModel{
                 if(dataModelOK) {
                     updateDBObject(dbPers, facesMsg);
                 } else {
-                    String dups = StringUtils.toStringList(duplicates);
+                    String dups = com.cannontech.common.util.StringUtils.toStringList(duplicates);
                     facesMsg.setDetail("Error: Some of the substations assigned are already assigned to another enabled Special Area: " + dups );
                     facesMsg.setSeverity(FacesMessage.SEVERITY_ERROR);
                 }
@@ -995,19 +998,29 @@ public class CapControlForm extends DBEditorForm implements ICapControlModel{
         FacesContext facesContext = FacesContext.getCurrentInstance();
         
         final CBCWizardModel wizard = (CBCWizardModel) getWizData();
-        final String name = wizard.getName();
-        if(org.apache.commons.lang.StringUtils.isBlank(name)) {
-            facesMsg.setDetail("A name must be specified for this object.");
-            facesMsg.setSeverity(FacesMessage.SEVERITY_ERROR);
-            facesContext.addMessage("cti_db_add", facesMsg);
-            return "";
+
+        DataBinder binder = new DataBinder(wizard);
+        CapControlCreationModelValidator validator = new CapControlCreationModelValidator(capControlCreationService);
+        binder.setValidator(validator);
+        binder.validate();
+        BindingResult bindingResult = binder.getBindingResult();
+
+        if (bindingResult.hasErrors()) {
+            for (ObjectError error : bindingResult.getAllErrors()) {
+                facesMsg.setSeverity(FacesMessage.SEVERITY_ERROR);
+                facesMsg.setDetail(error.getCode());
+                facesContext.addMessage("cti_db_add", facesMsg);
+            }
+            return StringUtils.EMPTY;
         }
+
+        final String name = wizard.getName();
         final int type = wizard.getSelectedType();
         final boolean disabled = wizard.getDisabled();
         final int portId = wizard.getPortID();
         final boolean isCapBankAndNested = (type == CapControlTypes.CAP_CONTROL_CAPBANK && wizard.isCreateNested());
         
-        try {
+
             transactionTemplate.execute(new TransactionCallbackWithoutResult() {
                 @Override
                 protected void doInTransactionWithoutResult(TransactionStatus status) {
@@ -1058,53 +1071,10 @@ public class CapControlForm extends DBEditorForm implements ICapControlModel{
             
             /* Does the actually redirection to the editor url */
             JSFUtil.redirect(url);
-        } catch (RuntimeException e) {
-            /*
-             * Entering a duplicate name throws a 
-             * RuntimeException caused by a
-             * DataIntegrityViolationException caused by a
-             * SQLException. 
-             * If this is the case, give the user a sensible error message.
-             * Otherwise, handle it as a generic Exception
-             */
-
-            Throwable rootCause = e;
-            while(rootCause.getCause() != null) {
-                rootCause = rootCause.getCause();
-            }
-            if(rootCause instanceof SQLException){
-                facesMsg.setSeverity(FacesMessage.SEVERITY_ERROR);
-                if (isCapBankAndNested) {
-                    String cbcName = wizard.getNestedWizard().getName();
-                    if (name.equalsIgnoreCase(cbcName)) {
-                        facesMsg.setDetail("ERROR - Cannot create new Capacitor Bank and CBC with the same name. ");
-                        return "";
-                    }
-                }
-                String article = "a ";
-                if(getEditorTitle().matches("^[aeiouAEIOU].*")){
-                    article = "an ";
-                }
-
-                facesMsg.setDetail(
-                        "ERROR - There is already " + article + getEditorTitle() + 
-                        " with the name '" + name +  "'.");
-                return "";
-            } else { //Handle the same as a generic exception
-                facesMsg.setSeverity(FacesMessage.SEVERITY_ERROR);
-                facesMsg.setDetail(e.getCause().getMessage());
-                return "";
-            }
-        }
-        catch (Exception e) {
-            facesMsg.setDetail(e.getCause().getMessage());
-            facesMsg.setSeverity(FacesMessage.SEVERITY_ERROR);
-            return "";
-        } finally {
-            facesContext.addMessage("cti_db_add", facesMsg);
-        }
+            
+        facesContext.addMessage("cti_db_add", facesMsg);
         
-        return "";
+        return StringUtils.EMPTY;
 	}
 
     public void showScanRate(ValueChangeEvent ev) {

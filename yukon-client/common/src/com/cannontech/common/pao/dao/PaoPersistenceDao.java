@@ -42,4 +42,6 @@ public interface PaoPersistenceDao {
      * @param paoIdentifier the {@link PaoIdentifier} containing the paoId of the PAO to be deleted.
      */
     public void deletePao(PaoIdentifier paoIdentifier);
+
+    public boolean createsNameConflict(PaoType paoType, String name);
 }

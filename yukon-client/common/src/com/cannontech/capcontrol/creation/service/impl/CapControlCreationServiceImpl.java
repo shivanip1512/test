@@ -102,4 +102,9 @@ public class CapControlCreationServiceImpl implements CapControlCreationService 
         
         return pao.getPaoIdentifier();
     }
+
+    @Override
+    public boolean createsNameConflict(PaoType paoType, String name) {
+        return paoPersistenceService.createsNameConflict(paoType, name);
+    }
 }

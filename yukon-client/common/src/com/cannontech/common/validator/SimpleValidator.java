@@ -12,9 +12,8 @@ public abstract class SimpleValidator<T> implements Validator {
     }
     
     @Override
-    @SuppressWarnings("unchecked")
     public boolean supports(Class clazz) {
-        return clazz.isAssignableFrom(objectType);
+        return objectType.isAssignableFrom(clazz);
     }
 
     @Override
