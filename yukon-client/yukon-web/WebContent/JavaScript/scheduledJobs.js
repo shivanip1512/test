@@ -1,6 +1,6 @@
 var stopJobId;
-jQuery(document).ready(function() {
-	jQuery(document).bind('yukonDialogConfirmOk', function(event) {
+jQuery(function() {
+	jQuery(document).on('yukonDialogConfirmOk', function(event) {
 	    event.preventDefault();
 	    //close the dialog
 	    Yukon.Dialog.ConfirmationManager.cancel();

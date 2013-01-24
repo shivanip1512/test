@@ -14,22 +14,23 @@ public enum JobState {
     CANCELLED(true),  // the job was cancelled and has stopped
     ;
     
-    private boolean isCompleted;
-    private static List<String> completedStates = null;
+    private final boolean isCompleted;
+    private final static List<String> completedStates;
+    
+    static {
+    	completedStates = Lists.newArrayList();
+    	for(JobState state : values()) {
+    		if(state.isCompleted) {
+    			completedStates.add(state.name());
+    		}
+    	}
+    }
     
     private JobState(boolean isCompleted) {
     	this.isCompleted = isCompleted;
     }
     
     public static List<String> getCompletedJobStateNames() {
-    	if(completedStates == null) {
-    		completedStates = Lists.newArrayList();
-	    	for(JobState state : values()) {
-	    		if(state.isCompleted) {
-	    			completedStates.add(state.name());
-	    		}
-	    	}
-    	}
     	return completedStates;
     }
 }

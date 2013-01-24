@@ -70,6 +70,6 @@
     <entry key="yukon.web.modules.amr.commandRequestExecution.status.STARTED">Started</entry>
     <entry key="yukon.web.modules.amr.commandRequestExecution.status.COMPLETE">Completed</entry>
     <entry key="yukon.web.modules.amr.commandRequestExecution.status.FAILED">Failed</entry>
-    <entry key="yukon.web.modules.amr.commandRequestExecution.status.CANCELLED">Cancelled</entry>
+    <entry key="yukon.web.modules.amr.commandRequestExecution.status.CANCELLED">Canceled</entry>
     
 </properties>

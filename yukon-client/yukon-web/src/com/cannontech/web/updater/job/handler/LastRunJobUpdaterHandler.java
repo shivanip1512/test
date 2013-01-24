@@ -20,7 +20,7 @@ public class LastRunJobUpdaterHandler implements JobUpdaterHandler {
 	@Override
 	public String handle(int jobId, YukonUserContext userContext) {
 
-		Date lastRun = jobStatusDao.getJobLastSuccessfulRunDate(jobId);
+		Date lastRun = jobStatusDao.findJobLastSuccessfulRunDate(jobId);
 
 		String dateStr = messageSourceResolver.getMessageSourceAccessor(userContext).getMessage("yukon.web.defaults.na");
 		if (lastRun != null) {

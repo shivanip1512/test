@@ -29,10 +29,10 @@ public interface JobStatusDao {
     /**
      * Gets the most recent StopTime for given job whose status is 'COMPLETED'
      */
-    public Date getJobLastSuccessfulRunDate(int jobId);
+    public Date findJobLastSuccessfulRunDate(int jobId);
     
     /**
      * Gets the most recent StopTime for given job whose status is 'COMPLETED' or 'CANCELLED'
      */
-    public Date getJobLastCompletedRunDate(int jobId);
+    public Date findJobLastCompletedRunDate(int jobId);
 }

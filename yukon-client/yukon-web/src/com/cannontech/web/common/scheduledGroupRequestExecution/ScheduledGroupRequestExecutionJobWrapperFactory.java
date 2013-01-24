@@ -73,7 +73,7 @@ public class ScheduledGroupRequestExecutionJobWrapperFactory {
 		}
 		
 		public Date getLastRun() {
-			return jobStatusDao.getJobLastSuccessfulRunDate(this.job.getId());
+			return jobStatusDao.findJobLastSuccessfulRunDate(this.job.getId());
 		}
 		
 		public Date getNextRun() {

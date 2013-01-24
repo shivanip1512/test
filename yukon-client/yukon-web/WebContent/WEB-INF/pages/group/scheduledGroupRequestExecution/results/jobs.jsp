@@ -90,97 +90,101 @@
 			<th><tags:sortLink nameKey="executions.tableHeader.status" baseUrl="jobs" fieldName="ENABLED_STATUS" /></th>
 			<th class="enabledStatus"><i:inline key=".executions.tableHeader.enabled"/></th>
 		</thead>
-		<c:forEach var="jobWrapper" items="${filterResult.resultList}">
-	    	<c:set var="trClass" value=""/>
-			<c:if test="${jobWrapper.job.disabled}">
-				<c:set var="trClass" value="subtle"/>
+		<tfoot>
+		</tfoot>
+		<tbody>
+			<c:forEach var="jobWrapper" items="${filterResult.resultList}">
+		    	<c:set var="trClass" value=""/>
+				<c:if test="${jobWrapper.job.disabled}">
+					<c:set var="trClass" value="subtle"/>
+				</c:if>
+				<tr id="tr_${jobWrapper.job.id}" class="${trClass}"
+	                title="Job ID: ${jobWrapper.job.id}">
+					<td>
+	                    <cti:url var="jobDetailUrl" value="/group/scheduledGroupRequestExecutionResults/detail">
+	                        <cti:param name="jobId" value="${jobWrapper.job.id}"/>
+	                    </cti:url>
+	                    <a href="${jobDetailUrl}">
+	                        ${jobWrapper.name}
+	                    </a>
+	                </td>
+	                <td>
+	                    <c:choose>
+	                        <c:when test="${not empty jobWrapper.deviceGroupName}">
+	                            <cti:url var="deviceGroupUrl" value="/group/editor/home">
+	                                <cti:param name="groupName" value="${jobWrapper.deviceGroupName}"/>
+	                            </cti:url>
+	                            <a href="${deviceGroupUrl}">
+	                                ${jobWrapper.deviceGroupName}
+	                            </a>
+	                        </c:when>
+	                        <c:otherwise>
+	                            <span class="errorMessage"><i:inline key=".groupDoesNotExist"/></span>
+	                        </c:otherwise>
+	                    </c:choose>
+	                </td>
+					<td>
+						<c:if test="${not empty jobWrapper.attributes}">
+							${jobWrapper.attributeDescriptions} 
+	                        <i:inline key=".executions.tableHeader.attributeOrCommand.attribute" />
+	                    </c:if>
+						<c:if test="${not empty jobWrapper.command}">
+							${jobWrapper.command}
+						</c:if>
+					</td>
+					<td class="runSchedule">${jobWrapper.scheduleDescription}</td>
+					<td class="nextRunDate">
+	                    <cti:dataUpdaterValue type="JOB" identifier="${jobWrapper.job.id}/NEXT_RUN_DATE"/>
+	                </td>
+					<td id="status_${jobWrapper.job.id}">
+	                    <%-- status --%>
+	                    <span id="jobNotRunningSpan_${jobWrapper.job.id}" <c:if test="${jobWrapper.jobStatus eq 'RUNNING'}">style="display:none;"</c:if>>
+	                        <cti:dataUpdaterValue type="JOB" identifier="${jobWrapper.job.id}/STATE_TEXT"/>
+	                    </span>
+	                    <span id="jobRunningSpan_${jobWrapper.job.id}" <c:if test="${not (jobWrapper.jobStatus eq 'RUNNING')}">style="display:none;"</c:if>>
+	                        <tags:updateableProgressBar totalCountKey="SCHEDULED_GROUP_REQUEST_EXECUTION/${jobWrapper.job.id}/LAST_REQUEST_COUNT_FOR_JOB"
+	                            countKey="SCHEDULED_GROUP_REQUEST_EXECUTION/${jobWrapper.job.id}/LAST_SUCCESS_RESULTS_COUNT_FOR_JOB"
+	                            failureCountKey="SCHEDULED_GROUP_REQUEST_EXECUTION/${jobWrapper.job.id}/LAST_FAILURE_RESULTS_COUNT_FOR_JOB"
+	                            borderClasses="scheduledRequestProgressBarBorder" hideCount="true" hidePercent="true"/>
+	                        <cti:button nameKey="cancel" id="cancel_${jobWrapper.job.id}" styleClass="stopButton" renderMode="image" arguments="${jobWrapper.name}" />
+	                        <d:confirm on="#cancel_${jobWrapper.job.id}" nameKey="cancelConfirm" argument="${jobWrapper.name}" />
+	                    </span>
+					</td>
+	                <cti:checkRolesAndProperties value="MANAGE_SCHEDULES">
+	                    <td class="tar">
+	                        <span id="disableSpan_${jobWrapper.job.id}" 
+	                            <c:if test="${jobWrapper.jobStatus eq 'DISABLED' || jobWrapper.jobStatus eq 'RUNNING'}">style="display:none;"</c:if>>
+	                                <cti:button nameKey="disable" id="toggle_${jobWrapper.job.id}"
+	                                    styleClass="toggleEnabled" renderMode="image" arguments="${jobWrapper.name}" />
+	                        </span>
+	                        <span id="enableSpan_${jobWrapper.job.id}" 
+	                            <c:if test="${jobWrapper.jobStatus eq 'ENABLED' || jobWrapper.jobStatus eq 'RUNNING'}">style="display:none;"</c:if>>
+	                                <cti:button nameKey="enable" id="toggle_${jobWrapper.job.id}"
+	                                    styleClass="toggleEnabled" renderMode="image" arguments="${jobWrapper.name}" />
+	                        </span>
+	                    </td>
+	                </cti:checkRolesAndProperties>
+				</tr>
+	            <cti:dataUpdaterCallback function="buildTooltipText('status_${jobWrapper.job.id}')" initialize="true"
+	                tooltip="SCHEDULED_GROUP_REQUEST_EXECUTION/${jobWrapper.job.id}/LAST_TOOLTIP_TEXT_FOR_JOB" />
+	            <cti:dataUpdaterCallback function="setTrClassByJobState(${jobWrapper.job.id})" initialize="true" state="JOB/${jobWrapper.job.id}/STATE"/>
+			</c:forEach>
+			
+			<c:if test="${fn:length(filterResult.resultList) == 0}">
+				<tr>
+					<td class="noResults subtle" colspan="7">
+						<c:choose>
+							<c:when test="${canManage}">
+	                            <i:inline key=".noJobs.createAccess"/>
+							</c:when>
+							<c:otherwise>
+	                            <i:inline key=".noJobs.noCreateAccess"/>
+							</c:otherwise>
+						</c:choose>
+					</td>
+				</tr>
 			</c:if>
-			<tr id="tr_${jobWrapper.job.id}" class="<tags:alternateRow odd="" even="altRow"/> ${trClass}"
-                title="Job ID: ${jobWrapper.job.id}">
-				<td>
-                    <cti:url var="jobDetailUrl" value="/group/scheduledGroupRequestExecutionResults/detail">
-                        <cti:param name="jobId" value="${jobWrapper.job.id}"/>
-                    </cti:url>
-                    <a href="${jobDetailUrl}">
-                        ${jobWrapper.name}
-                    </a>
-                </td>
-                <td>
-                    <c:choose>
-                        <c:when test="${not empty jobWrapper.deviceGroupName}">
-                            <cti:url var="deviceGroupUrl" value="/group/editor/home">
-                                <cti:param name="groupName" value="${jobWrapper.deviceGroupName}"/>
-                            </cti:url>
-                            <a href="${deviceGroupUrl}">
-                                ${jobWrapper.deviceGroupName}
-                            </a>
-                        </c:when>
-                        <c:otherwise>
-                            <span class="errorMessage"><i:inline key=".groupDoesNotExist"/></span>
-                        </c:otherwise>
-                    </c:choose>
-                </td>
-				<td>
-					<c:if test="${not empty jobWrapper.attributes}">
-						${jobWrapper.attributeDescriptions} 
-                        <i:inline key=".executions.tableHeader.attributeOrCommand.attribute" />
-                    </c:if>
-					<c:if test="${not empty jobWrapper.command}">
-						${jobWrapper.command}
-					</c:if>
-				</td>
-				<td class="runSchedule">${jobWrapper.scheduleDescription}</td>
-				<td class="nextRunDate">
-                    <cti:dataUpdaterValue type="JOB" identifier="${jobWrapper.job.id}/NEXT_RUN_DATE"/>
-                </td>
-				<td id="status_${jobWrapper.job.id}">
-                    <%-- status --%>
-                    <span id="jobNotRunningSpan_${jobWrapper.job.id}" <c:if test="${jobWrapper.jobStatus eq 'RUNNING'}">style="display:none;"</c:if>>
-                        <cti:dataUpdaterValue type="JOB" identifier="${jobWrapper.job.id}/STATE_TEXT"/>
-                    </span>
-                    <span id="jobRunningSpan_${jobWrapper.job.id}" <c:if test="${not (jobWrapper.jobStatus eq 'RUNNING')}">style="display:none;"</c:if>>
-                        <tags:updateableProgressBar totalCountKey="SCHEDULED_GROUP_REQUEST_EXECUTION/${jobWrapper.job.id}/LAST_REQUEST_COUNT_FOR_JOB"
-                            countKey="SCHEDULED_GROUP_REQUEST_EXECUTION/${jobWrapper.job.id}/LAST_SUCCESS_RESULTS_COUNT_FOR_JOB"
-                            failureCountKey="SCHEDULED_GROUP_REQUEST_EXECUTION/${jobWrapper.job.id}/LAST_FAILURE_RESULTS_COUNT_FOR_JOB"
-                            borderClasses="scheduledRequestProgressBarBorder" hideCount="true" hidePercent="true"/>
-                        <cti:button nameKey="cancel" id="cancel_${jobWrapper.job.id}" styleClass="stopButton" renderMode="image" arguments="${jobWrapper.name}" />
-                        <d:confirm on="#cancel_${jobWrapper.job.id}" nameKey="cancelConfirm" argument="${jobWrapper.name}" />
-                    </span>
-				</td>
-                <cti:checkRolesAndProperties value="MANAGE_SCHEDULES">
-                    <td class="tar">
-                        <span id="disableSpan_${jobWrapper.job.id}" 
-                            <c:if test="${jobWrapper.jobStatus eq 'DISABLED' || jobWrapper.jobStatus eq 'RUNNING'}">style="display:none;"</c:if>>
-                                <cti:button nameKey="disable" id="toggle_${jobWrapper.job.id}"
-                                    styleClass="toggleEnabled" renderMode="image" arguments="${jobWrapper.name}" />
-                        </span>
-                        <span id="enableSpan_${jobWrapper.job.id}" 
-                            <c:if test="${jobWrapper.jobStatus eq 'ENABLED' || jobWrapper.jobStatus eq 'RUNNING'}">style="display:none;"</c:if>>
-                                <cti:button nameKey="enable" id="toggle_${jobWrapper.job.id}"
-                                    styleClass="toggleEnabled" renderMode="image" arguments="${jobWrapper.name}" />
-                        </span>
-                    </td>
-                </cti:checkRolesAndProperties>
-			</tr>
-            <cti:dataUpdaterCallback function="buildTooltipText('status_${jobWrapper.job.id}')" initialize="true"
-                tooltip="SCHEDULED_GROUP_REQUEST_EXECUTION/${jobWrapper.job.id}/LAST_TOOLTIP_TEXT_FOR_JOB" />
-            <cti:dataUpdaterCallback function="setTrClassByJobState(${jobWrapper.job.id})" initialize="true" state="JOB/${jobWrapper.job.id}/STATE"/>
-		</c:forEach>
-		
-		<c:if test="${fn:length(filterResult.resultList) == 0}">
-			<tr>
-				<td class="noResults subtle" colspan="7">
-					<c:choose>
-						<c:when test="${canManage}">
-                            <i:inline key=".noJobs.createAccess"/>
-						</c:when>
-						<c:otherwise>
-                            <i:inline key=".noJobs.noCreateAccess"/>
-						</c:otherwise>
-					</c:choose>
-				</td>
-			</tr>
-		</c:if>
+		</tbody>
 	</table>
 	</tags:pagedBox2>
 </cti:standardPage>

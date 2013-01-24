@@ -100,7 +100,7 @@ public class JobStatusDaoImpl implements JobStatusDao, InitializingBean {
         return results.get(0);
     }
     
-    public Date getJobLastSuccessfulRunDate(int jobId) {
+    public Date findJobLastSuccessfulRunDate(int jobId) {
         
         Date result = null;
         try {
@@ -118,7 +118,7 @@ public class JobStatusDaoImpl implements JobStatusDao, InitializingBean {
         return result;
     }
     
-    public Date getJobLastCompletedRunDate(int jobId) {
+    public Date findJobLastCompletedRunDate(int jobId) {
     	Date result = null;
     	try {
     		SqlStatementBuilder sql = new SqlStatementBuilder();
