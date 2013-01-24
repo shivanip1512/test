@@ -489,7 +489,7 @@ public class CustomerAccountDaoImpl implements CustomerAccountDao, InitializingB
             SqlFragmentGenerator<Integer> sqlGenerator = new SqlFragmentGenerator<Integer>() {
                 @Override
                 public SqlFragmentSource generate(List<Integer> subList) {
-                    return sql.append("  AND LMHCG.ProgramId").in(subList);
+                    return new SqlStatementBuilder().append(sql).append("  AND LMHCG.ProgramId").in(subList);
                 };
             };
             
