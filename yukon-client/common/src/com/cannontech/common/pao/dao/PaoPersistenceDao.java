@@ -43,5 +43,9 @@ public interface PaoPersistenceDao {
      */
     public void deletePao(PaoIdentifier paoIdentifier);
 
+    /**
+     * Checks if there is already a PAO of the same name and type
+     * @return true if there is a conflict
+     */
     public boolean createsNameConflict(PaoType paoType, String name);
 }
