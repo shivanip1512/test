@@ -342,7 +342,6 @@ span.dynatree-selected .dynatree-title {
 
 .static-mode span.dynatree-selected .dynatree-title {
     background-color: white !important;
-    color: black !important;
 }
 .static-mode .dynatree-title {
     cursor: default;
