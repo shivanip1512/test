@@ -2,6 +2,8 @@ package com.cannontech.web.common.pao.service;
 
 import java.util.List;
 
+import com.cannontech.common.pao.YukonPao;
+
 public interface YukonPointHelper {
 
     /**
@@ -10,7 +12,7 @@ public interface YukonPointHelper {
      * @param orderBy An optional parameter, will default to the point name.
      * @param descending An optional parameter, will default to the descending.
      */
-    public List<YukonPoint> getYukonPoints(int deviceId, String orderBy, Boolean descending);
+    public List<YukonPoint> getYukonPoints(final YukonPao pao, String orderBy, Boolean descending);
     
-    public List<YukonPoint> getYukonPoints(int deviceId);
+    public List<YukonPoint> getYukonPoints(final YukonPao pao);
 }

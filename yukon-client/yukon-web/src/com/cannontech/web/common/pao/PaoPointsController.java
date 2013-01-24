@@ -49,7 +49,7 @@ public class PaoPointsController {
     public String points(ModelMap model, HttpServletRequest request, int deviceId, String orderBy, Boolean descending) {
         final SimpleDevice device = deviceDao.getYukonDevice(deviceId);
 
-        List<YukonPoint> yukonPoints = yukonPointHelper.getYukonPoints(deviceId, orderBy, descending);
+        List<YukonPoint> yukonPoints = yukonPointHelper.getYukonPoints(device, orderBy, descending);
         
         model.addAttribute("device", device);
         model.addAttribute("deviceId", deviceId);
@@ -88,7 +88,10 @@ public class PaoPointsController {
         
         orderBy = (orderBy == null) ? PointSortField.POINTNAME.name() : orderBy;
         descending = (descending == null) ? false : descending;
-        List<YukonPoint> points = yukonPointHelper.getYukonPoints(deviceId, orderBy, descending);
+        
+        final SimpleDevice device = deviceDao.getYukonDevice(deviceId);
+        
+        List<YukonPoint> points = yukonPointHelper.getYukonPoints(device, orderBy, descending);
         
         List<String[]> dataRows = Lists.newArrayList();
         for (YukonPoint point: points) {
@@ -111,7 +114,6 @@ public class PaoPointsController {
             dataRows.add(dataRow);
         }
         
-        final SimpleDevice device = deviceDao.getYukonDevice(deviceId);
         String deviceName = paoLoadingService.getDisplayablePao(device).getName();
         
         //write out the file
