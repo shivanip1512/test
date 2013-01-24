@@ -200,7 +200,8 @@ public class InventoryFilterController {
             ruleTypes.remove(FilterRuleType.SERIAL_NUMBER_RANGE);
         }
         
-        // Check to see if warehouses exist.  If they don't remove the warehouse rule type.
+        // Only show the warehouse option if multiple warehouses are enabled and more than one exists or mutliple warehouses are 
+        // disabled and thus every inventory not assigned to an account is considered in the warehouse.
         List<Warehouse> warehouses = getAvailableWarehouses(userContext);
         boolean multipleWarehousesEnabled = rolePropertyDao.checkProperty(YukonRoleProperty.ADMIN_MULTI_WAREHOUSE, userContext.getYukonUser());
         if (warehouses.isEmpty() && multipleWarehousesEnabled) {

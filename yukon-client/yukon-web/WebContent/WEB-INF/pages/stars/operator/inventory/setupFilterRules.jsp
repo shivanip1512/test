@@ -203,18 +203,15 @@
                                         </c:when>
 
                                         <c:when test="${rule.ruleType eq 'WAREHOUSE'}">
-                                            <c:choose>
-                                                <c:when test="">
+                                            <cti:checkRolesAndProperties value="ADMIN_MULTI_WAREHOUSE">
                                                     <form:select path="filterRules[${row.index}].warehouseId">
                                                         <form:options items="${warehouses}" itemLabel="warehouseName" itemValue="warehouseID"/>
                                                     </form:select>
-                                                </c:when>
-                                                <c:otherwise>
-                                                    <i:inline key=".warehouse"/>
-                                                </c:otherwise>
-                                            </c:choose>
+                                            </cti:checkRolesAndProperties>
+                                            <cti:checkRolesAndProperties value="!ADMIN_MULTI_WAREHOUSE">
+                                                    <i:inline key=".inWarehouse"/>
+                                            </cti:checkRolesAndProperties>
                                         </c:when>
-                                        
                                     </c:choose>
                                 </td>
                                 <td class="removeColumn"><cti:img nameKey="remove" href="javascript:removeRule(${row.index})"/></td>

@@ -131,7 +131,7 @@
     
     <entry key="yukon.web.modules.operator.filterSelection.assigned">Assigned to an account.</entry>
     <entry key="yukon.web.modules.operator.filterSelection.unenrolled">Not enrolled in any program.</entry>
-    <entry key="yukon.web.modules.operator.filterSelection.warehouse">Not assigned to an account.</entry>
+    <entry key="yukon.web.modules.operator.filterSelection.inWarehouse">Not assigned to an account.</entry>
 
     <entry key="yukon.web.modules.operator.filterSelection.select.label">Select</entry>
     <entry key="yukon.web.modules.operator.filterSelection.cancel">Cancel</entry>
