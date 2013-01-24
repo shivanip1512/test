@@ -84,6 +84,7 @@ int BinaryInput::restoreBits(const unsigned char *buf, int bitoffset, int len)
     {
         case BI_SingleBitPacked:
         {
+            _bi.flags.online = true;
             _bi.flags.state = (buf[bitpos/8] >> (bitpos++)) & 0x01;
 
             break;
