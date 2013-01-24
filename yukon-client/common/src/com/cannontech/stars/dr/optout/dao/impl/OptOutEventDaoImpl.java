@@ -589,7 +589,7 @@ public class OptOutEventDaoImpl implements OptOutEventDao {
                                                                                                   " LMHCG.GroupEnrollStop IS NULL)");
         }
 
-		sql.append("WHERE OOE.EventState").eq_k(OptOutEventState.START_OPT_OUT_SENT);
+        sql.append("WHERE OOE.EventState").eq_k(OptOutEventState.START_OPT_OUT_SENT);
         sql.append("	AND OOE.StartDate").lte(now);
         sql.append("	AND OOE.StopDate").gte(now);
         sql.append("	AND ECTAM.EnergyCompanyId").eq_k(yukonEnergyCompany.getEnergyCompanyId());
@@ -600,28 +600,28 @@ public class OptOutEventDaoImpl implements OptOutEventDao {
 		return yukonJdbcTemplate.queryForInt(sql);
 	}
 	
-	@Override
-	public List<Integer> getOptedOutDeviceIdsForAccount(int accountId, Date startTime, Date stopTime) {
+    @Override
+    public List<Integer> getOptedOutDeviceIdsForAccount(int accountId, Date startTime, Date stopTime) {
 
-		SqlStatementBuilder sql = new SqlStatementBuilder();
-		sql.append("SELECT DISTINCT InventoryId");
-		sql.append("FROM OptOutEvent");
-		sql.append("WHERE (EventState = ?");
-		sql.append("	   OR EventState = ?)");
-		sql.append("	AND StartDate <= ?");
-		sql.append("	AND StopDate >= ?");
-		sql.append("	AND CustomerAccountId = ?");
-		
-		List<Integer> optOutDeviceList = 
-			yukonJdbcTemplate.query(sql.toString(), new IntegerRowMapper(),
-					OptOutEventState.START_OPT_OUT_SENT.toString(),
-					OptOutEventState.CANCEL_SENT.toString(),
-					stopTime,
-					startTime,
-					accountId);
-		
-		return optOutDeviceList;
-	}
+        SqlStatementBuilder sql = new SqlStatementBuilder();
+        sql.append("SELECT DISTINCT InventoryId");
+        sql.append("FROM OptOutEvent");
+        sql.append("WHERE (EventState = ?");
+        sql.append("       OR EventState = ?)");
+        sql.append("    AND StartDate <= ?");
+        sql.append("    AND StopDate >= ?");
+        sql.append("    AND CustomerAccountId = ?");
+        
+        List<Integer> optOutDeviceList = 
+            yukonJdbcTemplate.query(sql.toString(), new IntegerRowMapper(),
+                    OptOutEventState.START_OPT_OUT_SENT.toString(),
+                    OptOutEventState.CANCEL_SENT.toString(),
+                    stopTime,
+                    startTime,
+                    accountId);
+        
+        return optOutDeviceList;
+    }
 
 	@Override
     public int getTotalNumberOfScheduledOptOuts(YukonEnergyCompany yukonEnergyCompany, List<Integer> assignedProgramIds) {
@@ -632,17 +632,17 @@ public class OptOutEventDaoImpl implements OptOutEventDao {
         sql.append("	JOIN ECToAccountMapping ECTAM ON OOE.CustomerAccountId = ECTAM.AccountId");
 	    // If the assigned programs are supplied let's use the active enrollments of those programs to calculate the total number of accounts.
         if (!CollectionUtils.isEmpty(assignedProgramIds)) {
-                    sql.append("  JOIN LMHardwareControlGroup LMHCG ON (ECTAM.AccountId = LMHCG.AccountId  AND " +
-                                                                                                          " LMHCG.GroupEnrollStart IS NOT NULL AND " +
-                                                                                                          " LMHCG.GroupEnrollStop IS NULL)");
+            sql.append("  JOIN LMHardwareControlGroup LMHCG ON (ECTAM.AccountId = LMHCG.AccountId  AND " +
+                                                                                                  " LMHCG.GroupEnrollStart IS NOT NULL AND " +
+                                                                                                  " LMHCG.GroupEnrollStop IS NULL)");
         }
 
-		sql.append("WHERE OOE.EventState").eq_k(OptOutEventState.SCHEDULED);
-        sql.append("	AND ECTAM.EnergyCompanyId").eq_k(yukonEnergyCompany.getEnergyCompanyId());
+        sql.append("WHERE OOE.EventState").eq_k(OptOutEventState.SCHEDULED);
+        sql.append("  AND ECTAM.EnergyCompanyId").eq_k(yukonEnergyCompany.getEnergyCompanyId());
         if (!CollectionUtils.isEmpty(assignedProgramIds)) {
             sql.append("  AND LMHCG.ProgramId").in(assignedProgramIds);
         }
-
+		
 		return yukonJdbcTemplate.queryForInt(sql);
 	}
 
