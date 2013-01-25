@@ -505,40 +505,37 @@ public class OptOutServiceImpl implements OptOutService {
 
 	@Override
 	public void cancelAllOptOuts(LiteYukonUser user) {
-	    logger.debug("Broadcast cancel all opt outs command initiated by user: " + user.getUsername());
+	    logger.debug("Cancel all opt outs command initiated by user: " + user.getUsername());
 	    
 		LiteStarsEnergyCompany energyCompany = starsDatabaseCache.getEnergyCompanyByUser(user);
 		List<OptOutEvent> currentOptOuts = optOutEventDao.getAllCurrentOptOuts(energyCompany);
 
-	    try {
-	        String broadcastRolePropertyValue = energyCompanyRolePropertyDao.getPropertyStringValue(
-	                YukonRoleProperty.BROADCAST_OPT_OUT_CANCEL_SPID, 
-	                (YukonEnergyCompany) energyCompany);
-            Integer broadcastSpid = Integer.parseInt(broadcastRolePropertyValue);  // An exception is thrown if a valid SPID is not found.
-            // Range-check the SPID value. Valid SPID values are 1 – 65534.
-            if (broadcastSpid < 1) {
-                logger.warn("Out-of-range SPID address specified for broadcast cancel all opt out command.\n\r" +
-                        "Valid values are 1 - 65534.  The invalid SPID was: " + broadcastSpid + ". The value 1 will be used instead.");
-                broadcastSpid = 1;
-            }
-            if (broadcastSpid > 65534) {
-                logger.warn("Out-of-range SPID address specified for broadcast cancel all opt out command.\n\r" +
-                        "Valid values are 1 - 65534.  The invalid SPID was: " + broadcastSpid + ". The value 65534 will be used instead.");
-                broadcastSpid = 65534;
-            }
-            logger.debug("Valid numeric SPID found in role property 'Broadcast Opt Out Cancel SPID'. SPID used:" + broadcastSpid);
-
+        int broadcastSpid = energyCompanyRolePropertyDao.getPropertyIntegerValue(
+                YukonRoleProperty.BROADCAST_OPT_OUT_CANCEL_SPID, 
+                (YukonEnergyCompany) energyCompany);
+		
+		if (isValidSpid(broadcastSpid)) {
+		    // Valid SPID found, use broadcast messages.
             broadcastCancelAllOptOuts(user, broadcastSpid, energyCompany, currentOptOuts);
-
-	    } catch (NumberFormatException e) {
-	        logger.debug("No valid numeric SPID found in role property 'Broadcast Opt Out Cancel SPID'.");
-	        // No valid SPID value found so use per-device messages.
-	        for (OptOutEvent ooe : currentOptOuts) {
-	            cancelOptOutEvent(ooe, energyCompany, user);
-	        }
+	    } else {
+            // No valid SPID found so use per-device messages.
+            for (OptOutEvent ooe : currentOptOuts) {
+                cancelOptOutEvent(ooe, energyCompany, user);
+            }
 	    }
 	}
-	
+	private boolean isValidSpid(int spid) {
+	    if (spid > 1 && spid <= 65534) {
+            logger.debug("Valid numeric SPID found in role property 'Broadcast Opt Out Cancel SPID'. Broadcast messaging will be used with SPID:" + spid);
+            return true;
+	    } else if (spid == 0) {
+            logger.debug("Role property value 'Broadcast Opt Out Cancel SPID' was blank or 0.  Per-device messaging will be used.");
+        } else {
+            logger.error("Out-of-range SPID address specified for broadcast cancel all opt out command.\n\r" +
+                    "Valid values are 1 - 65534.  The invalid SPID was: " + spid);
+	    }
+	    return false;    
+	}
 	/**
 	 * This method cancels all active opt outs using broadcast messaging.  
 	 * One message is generated per communication protocol and is sent to
@@ -550,7 +547,7 @@ public class OptOutServiceImpl implements OptOutService {
 	 */
     private void broadcastCancelAllOptOuts(LiteYukonUser user, int spid, 
             LiteStarsEnergyCompany energyCompany, List<OptOutEvent> currentOptOuts) {
-        
+        logger.debug("Using broadcast messaging for cancel all opt outs command.");
         LmCommand command = new LmCommand();
 
         command.setType(LmHardwareCommandType.CANCEL_TEMP_OUT_OF_SERVICE);
@@ -581,8 +578,7 @@ public class OptOutServiceImpl implements OptOutService {
                 CustomerAccount customerAccount = customerAccountDao.getById(customerAccountId);
                 
                 // Log cancellations and send notifications.
-                logCancelCommand(inventory, energyCompany, user, customerAccount , customerAccountId);
-                sendCancelCommandNotification(energyCompany, user, ooe, customerAccount, ooe.getInventoryId());
+                logCancelCommandAndSendNotification(inventory, energyCompany, user, customerAccount, ooe);
         
             } catch (NotFoundException e) {
                 logger.warn("Inventory couldn't be found" + ooe.getInventoryId(), e);
@@ -1150,40 +1146,32 @@ public class OptOutServiceImpl implements OptOutService {
 	throws CommandCompletionException {
 		
 	    CustomerAccount customerAccount = customerAccountDao.getById(event.getCustomerAccountId());
-	    int accountId = customerAccount.getAccountId();
-		int inventoryId = inventory.getInventoryID();
 		
 		// Send the command to cancel opt out to the field
 		this.sendCancelRequest(inventory, user);
 		
-		logCancelCommand(inventory, yukonEnergyCompany, user, customerAccount, accountId);
-		
-		sendCancelCommandNotification(yukonEnergyCompany, user, event,
-                customerAccount, inventoryId);
+		logCancelCommandAndSendNotification(inventory, yukonEnergyCompany, user, customerAccount, event);
 	}
 
-    private void logCancelCommand(LiteLmHardwareBase inventory,
+    private void logCancelCommandAndSendNotification(LiteLmHardwareBase inventory,
             YukonEnergyCompany yukonEnergyCompany, LiteYukonUser user,
-            CustomerAccount customerAccount, int accountId) {
+            CustomerAccount customerAccount, OptOutEvent ooe) {
+        accountEventLogService.optOutCanceled(user, customerAccount.getAccountNumber(), inventory.getDeviceLabel());
         
         ActivityLogger.logEvent(
 				user.getUserID(), 
-				accountId, 
+				customerAccount.getAccountId(), 
 				yukonEnergyCompany.getEnergyCompanyId(), 
 				customerAccount.getCustomerId(),
 				ActivityLogActions.PROGRAM_REENABLE_ACTION, 
 				"Serial #:" + inventory.getManufacturerSerialNumber());
-    }
-
-    private void sendCancelCommandNotification(
-            YukonEnergyCompany yukonEnergyCompany, LiteYukonUser user,
-            OptOutEvent event, CustomerAccount customerAccount, int inventoryId) {
+        
         // Send re-enable (cancel opt out) notification
         try {
             OptOutRequest request = new OptOutRequest();
-            request.setStartDate(event.getStartDate());
-            request.setInventoryIdList(Collections.singletonList(inventoryId));
-            request.setDurationInHours(event.getDurationInHours());
+            request.setStartDate(ooe.getStartDate());
+            request.setInventoryIdList(Collections.singletonList(ooe.getInventoryId()));
+            request.setDurationInHours(ooe.getDurationInHours());
             request.setQuestions(new ArrayList<ScheduledOptOutQuestion>());
             
             LiteStarsEnergyCompany energyCompany = starsDatabaseCache.getEnergyCompany(yukonEnergyCompany.getEnergyCompanyId());

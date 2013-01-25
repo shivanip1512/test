@@ -116,15 +116,16 @@ public class RfCommandStrategy implements LmHardwareCommandStrategy {
     
     @Override
     public void sendBroadcastCommand(LmCommand command) {
-        // On a Network Manager enabled system the following CPARM will be set; if not it will return null.
-        String jmsConfiguration = configurationSource.getString("JMS_SERVER_BROKER_LISTEN_CONNECTION");
-        if (jmsConfiguration != null) {
+        // On a Network Manager enabled system utilizing LCR devices for load control,
+        // the following CPARM will be set; if not it will return null.
+        String rfnEcName = configurationSource.getString("RFN_ENERGY_COMPANY_NAME");
+        if (rfnEcName != null) {
             log.debug("Sending RFN ExpressCom broadcast command: " + command.getType().toString());
 
             if (command.getType() == LmHardwareCommandType.CANCEL_TEMP_OUT_OF_SERVICE) {
                 RfnExpressComBroadcastRequest request = new RfnExpressComBroadcastRequest();
                 request.setRfnMessageClass(RfnMessageClass.NONE);
-                request.setExpirationDuration(-1);
+                request.setExpirationDuration(-1); // Messages will not expire.
                 int commandPriority = configurationSource.getInteger("OVERRIDE_PRIORITY_LM_HARDWARE_COMMAND", 
                         CommandRequestExecutionDefaults.getPriority(DeviceRequestType.LM_HARDWARE_COMMAND));
                 request.setMessagePriority(commandPriority);

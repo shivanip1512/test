@@ -427,6 +427,14 @@ public class PorterExpressComCommandBuilder {
         return commands;
     }
     
+    /**
+     * This method returns the ExpressCom command that performs a system-wide
+     *  broadcast cancel all opt out event.  All devices on a given customer's network 
+     *  should share a common SPID, the highest addressing level, so they can all be
+     *  cancelled by sending a single command targeting only the SPID address level.  
+     *  
+     * @param spid The SPID address to build the broadcast command with.
+     */
     public String getBroadcastCancelAllOptOuts(Integer spid) {
         return "putconfig xcom service in temp spid " + spid;
     }

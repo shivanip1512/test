@@ -137,7 +137,7 @@ public class ZigbeeCommandStrategy implements LmHardwareCommandStrategy {
     @Override
     public void sendBroadcastCommand(LmCommand command) {
         if (command.getType() == LmHardwareCommandType.CANCEL_TEMP_OUT_OF_SERVICE) {
-            // Command not implemented.
+            throw new UnsupportedOperationException("Not yet implemented");
         }
     }
 
