@@ -4,10 +4,7 @@ import com.cannontech.stars.database.data.lite.LiteLmHardwareBase;
 
 /**
  * Class representing the command parameters for a command to send to an LM device.
- * Extends {@link LmCommand} and adds the private field 'device'.
- *  
- * {@link LmHardwareCommandParam} values can only be added if they are the proper class type for that particular
- * parameter, otherwise {@link IllegalArgumentException}.
+ * Extends {@link LmCommand} and adds the private field 'device' to target a single piece of hardware.
  */
 public class LmHardwareCommand extends LmCommand {
     

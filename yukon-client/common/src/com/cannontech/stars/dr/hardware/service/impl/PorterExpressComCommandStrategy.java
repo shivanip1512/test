@@ -183,8 +183,8 @@ public class PorterExpressComCommandStrategy implements LmHardwareCommandStrateg
     }
     
     @Override
-    public void sendBroadcastCommand(LmCommand command) {
-        log.debug("Sending porter ExpressCom broadcast command: " + command.getType().toString());
+    public void sendBroadcastCommand(LmCommand command) throws CommandCompletionException {
+        log.debug("Sending porter ExpressCom broadcast command: " + command.getType());
         
         if (command.getType() == LmHardwareCommandType.CANCEL_TEMP_OUT_OF_SERVICE) {
             LiteStarsEnergyCompany energyCompany = (LiteStarsEnergyCompany) yecService.getEnergyCompanyByOperator(command.getUser());
@@ -195,7 +195,8 @@ public class PorterExpressComCommandStrategy implements LmHardwareCommandStrateg
             try {
                 executor.executeOnRoute(xcomCommand, routeId, command.getUser());
             } catch (CommandCompletionException e) {
-                log.error("Error executing porter ExpressCom broadcast command: " + e);
+                
+                throw new CommandCompletionException("Error executing porter ExpressCom broadcast command.");
             }
         }
 

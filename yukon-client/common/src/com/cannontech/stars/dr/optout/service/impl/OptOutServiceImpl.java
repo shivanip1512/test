@@ -507,8 +507,8 @@ public class OptOutServiceImpl implements OptOutService {
 	public void cancelAllOptOuts(LiteYukonUser user) {
 	    logger.debug("Cancel all opt outs command initiated by user: " + user.getUsername());
 	    
-		LiteStarsEnergyCompany energyCompany = starsDatabaseCache.getEnergyCompanyByUser(user);
-		List<OptOutEvent> currentOptOuts = optOutEventDao.getAllCurrentOptOuts(energyCompany);
+		YukonEnergyCompany energyCompany = yukonEnergyCompanyService.getEnergyCompanyByOperator(user);
+		List<OptOutEvent> currentOptOuts = optOutEventDao.getAllCurrentOptOuts((LiteStarsEnergyCompany) energyCompany);
 
         int broadcastSpid = energyCompanyRolePropertyDao.getPropertyIntegerValue(
                 YukonRoleProperty.BROADCAST_OPT_OUT_CANCEL_SPID, 
@@ -519,13 +519,14 @@ public class OptOutServiceImpl implements OptOutService {
             broadcastCancelAllOptOuts(user, broadcastSpid, energyCompany, currentOptOuts);
 	    } else {
             // No valid SPID found so use per-device messages.
+	        logger.debug("Using per-device messaging for cancel all opt outs command.");
             for (OptOutEvent ooe : currentOptOuts) {
-                cancelOptOutEvent(ooe, energyCompany, user);
+                cancelOptOutEvent(ooe, (LiteStarsEnergyCompany) energyCompany, user);
             }
 	    }
 	}
 	private boolean isValidSpid(int spid) {
-	    if (spid > 1 && spid <= 65534) {
+	    if (spid >= 1 && spid <= 65534) {
             logger.debug("Valid numeric SPID found in role property 'Broadcast Opt Out Cancel SPID'. Broadcast messaging will be used with SPID:" + spid);
             return true;
 	    } else if (spid == 0) {
@@ -546,7 +547,7 @@ public class OptOutServiceImpl implements OptOutService {
 	 * @param energyCompany The energy company used when looking up the SPID role property.
 	 */
     private void broadcastCancelAllOptOuts(LiteYukonUser user, int spid, 
-            LiteStarsEnergyCompany energyCompany, List<OptOutEvent> currentOptOuts) {
+            YukonEnergyCompany energyCompany, List<OptOutEvent> currentOptOuts) {
         logger.debug("Using broadcast messaging for cancel all opt outs command.");
         LmCommand command = new LmCommand();
 
@@ -608,7 +609,7 @@ public class OptOutServiceImpl implements OptOutService {
         }
 	}
 	
-	private void cancelOptOutEvent(OptOutEvent ooe, LiteStarsEnergyCompany energyCompany, LiteYukonUser user) {
+	private void cancelOptOutEvent(OptOutEvent ooe, YukonEnergyCompany energyCompany, LiteYukonUser user) {
 			
 		Integer inventoryId = ooe.getInventoryId();
 		LiteLmHardwareBase inventory = null;

@@ -68,6 +68,11 @@ public interface LmHardwareCommandStrategy {
 
     /**
      * Will broadcast a command to all devices.
+     * Currently only one command is supported: CANCEL_TEMP_OUT_OF_SERVICE
+     * Supporting additional command types could be added by adding them to this method
+     * in each *CommandStrategy class that implements this interface.
+     * 
+     * @throws {@link CommandCompletionException} 
      */
-    public void sendBroadcastCommand(LmCommand command);
+    public void sendBroadcastCommand(LmCommand command) throws CommandCompletionException;
 }

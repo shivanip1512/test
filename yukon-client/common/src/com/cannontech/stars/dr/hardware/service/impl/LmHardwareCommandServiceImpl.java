@@ -331,7 +331,11 @@ public class LmHardwareCommandServiceImpl implements LmHardwareCommandService {
     @Override
     public void sendBroadcastCommand(LmCommand command) {
         for (LmHardwareCommandStrategy strategy : strategies.values() ) {
-            strategy.sendBroadcastCommand(command);
+            try {
+                strategy.sendBroadcastCommand(command);
+            } catch (CommandCompletionException e) {
+                log.error("Error executing broadcast command: ", e);
+            }
         }
     }
     

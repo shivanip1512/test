@@ -5,7 +5,10 @@ import java.util.Map;
 import com.cannontech.database.data.lite.LiteYukonUser;
 import com.google.common.collect.ImmutableMap;
 import com.google.common.collect.Maps;
-
+/** 
+ * Class representing the command and parameters for a load management command to
+ * be sent to the entire network via broadcast messaging.
+ */
 public class LmCommand {
     protected LmHardwareCommandType type;
     protected LiteYukonUser user;
