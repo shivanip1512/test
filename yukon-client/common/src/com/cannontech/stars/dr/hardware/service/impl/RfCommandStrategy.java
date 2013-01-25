@@ -115,6 +115,16 @@ public class RfCommandStrategy implements LmHardwareCommandStrategy {
     }
     
     @Override
+    public boolean canBroadcast(LmCommand command) {
+        if (command.getType() == LmHardwareCommandType.CANCEL_TEMP_OUT_OF_SERVICE) {
+            return true;
+        }
+        // No other broadcast commands are implemented for the RF command strategy.
+        return false;
+    }
+    
+    
+    @Override
     public void sendBroadcastCommand(LmCommand command) {
         // On a Network Manager enabled system utilizing LCR devices for load control,
         // the following CPARM will be set; if not it will return null.

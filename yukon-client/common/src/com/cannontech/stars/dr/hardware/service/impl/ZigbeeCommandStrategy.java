@@ -135,9 +135,21 @@ public class ZigbeeCommandStrategy implements LmHardwareCommandStrategy {
     }
     
     @Override
+    public boolean canBroadcast(LmCommand command) {
+        if (command.getType() == LmHardwareCommandType.CANCEL_TEMP_OUT_OF_SERVICE) {
+            // ZigBee devices can't be TEMP_OUT_OF_SERVICE, so we have no need to cancel that state.
+            return false;
+        }
+        // No other broadcast commands are implemented for the Zigbee command strategy.
+        return false;
+    }
+    
+    @Override
     public void sendBroadcastCommand(LmCommand command) {
         if (command.getType() == LmHardwareCommandType.CANCEL_TEMP_OUT_OF_SERVICE) {
-            throw new UnsupportedOperationException("Not yet implemented");
+            // TEMP_OUT_OF_SERVICE (opt out) is not supported by ZigBee.
+            // So CANCEL_TEMP_OUT_OF_SERVICE should do nothing in the ZigBee strategy.
+            throw new UnsupportedOperationException("ZigBee doesn't currently support opt outs, so they can't be canceled.");
         }
     }
 

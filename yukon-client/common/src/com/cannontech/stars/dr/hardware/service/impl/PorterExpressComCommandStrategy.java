@@ -181,7 +181,16 @@ public class PorterExpressComCommandStrategy implements LmHardwareCommandStrateg
             }
         }
     }
-    
+
+    @Override
+    public boolean canBroadcast(LmCommand command) {
+        if (command.getType() == LmHardwareCommandType.CANCEL_TEMP_OUT_OF_SERVICE) {
+            return true;
+        }
+        // No other broadcast commands are implemented for the porter ExpressCom command strategy.
+        return false;
+    }
+
     @Override
     public void sendBroadcastCommand(LmCommand command) throws CommandCompletionException {
         log.debug("Sending porter ExpressCom broadcast command: " + command.getType());

@@ -332,7 +332,9 @@ public class LmHardwareCommandServiceImpl implements LmHardwareCommandService {
     public void sendBroadcastCommand(LmCommand command) {
         for (LmHardwareCommandStrategy strategy : strategies.values() ) {
             try {
-                strategy.sendBroadcastCommand(command);
+                if(strategy.canBroadcast(command)) {
+                    strategy.sendBroadcastCommand(command);
+                }
             } catch (CommandCompletionException e) {
                 log.error("Error executing broadcast command: ", e);
             }

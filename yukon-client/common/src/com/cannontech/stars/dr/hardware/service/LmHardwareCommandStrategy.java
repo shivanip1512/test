@@ -67,6 +67,16 @@ public interface LmHardwareCommandStrategy {
     public void cancelTextMessage(YukonCancelTextMessage message);
 
     /**
+     * This method will decide whether a given command can be broadcast
+     * by the implementing command strategy.  If an implementation's method 
+     * returns false for a particular LmHardwareCommandType, the command
+     * will not be broadcast by that command strategy.
+     *  
+     * @param command The command object which holds the LmHardwareCommandType to be inspected.
+     */
+    public boolean canBroadcast(LmCommand command);
+    
+    /**
      * Will broadcast a command to all devices.
      * Currently only one command is supported: CANCEL_TEMP_OUT_OF_SERVICE
      * Supporting additional command types could be added by adding them to this method
