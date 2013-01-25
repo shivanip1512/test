@@ -23,15 +23,15 @@
                         <label>
                             <form:radiobutton path="modifiedChoice" value="THEME" />
                             <i:inline key=".installed" />
-                            <tags:selectWithItems path="modifiedTheme" items="${installedThemes}" />
                         </label>
+                        <tags:selectWithItems path="modifiedTheme" items="${installedThemes}" />
                     </div>
                     <div>
                         <label>
                             <form:radiobutton path="modifiedChoice" value="CUSTOM" />
                             <i:inline key=".custom" />
-                            <input type="file" name="modifiedCustom">
                         </label>
+                        <input type="file" name="modifiedCustom">
                     </div>
                 </div>
 
@@ -50,15 +50,15 @@
                         <label>
                             <form:radiobutton path="baseChoice" value="THEME" />
                             <i:inline key=".installed" />
-                            <tags:selectWithItems path="baseTheme" items="${installedThemes}" />
                         </label>
+                        <tags:selectWithItems path="baseTheme" items="${installedThemes}" />
                     </div>
                     <div>
                         <label>
                             <form:radiobutton path="baseChoice" value="CUSTOM" />
                             <i:inline key=".custom" />
-                            <input type="file" name="baseCustom">
                         </label>
+                        <input type="file" name="baseCustom">
                     </div>
                 </div>
             </div>

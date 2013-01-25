@@ -40,15 +40,15 @@
                         <label>
                             <form:radiobutton path="searchInChoice" value="THEME" />
                             <i:inline key=".installed" />
-                            <tags:selectWithItems path="searchInTheme" items="${installedThemes}" />
                         </label>
+                        <tags:selectWithItems path="searchInTheme" items="${installedThemes}" />
                     </div>
                     <div>
                         <label>
                             <form:radiobutton path="searchInChoice" value="CUSTOM" />
                             <i:inline key=".custom" />
-                            <input type="file" name="searchInCustom">
                         </label>
+                        <input type="file" name="searchInCustom">
                     </div>
                 </div>
             </div>
