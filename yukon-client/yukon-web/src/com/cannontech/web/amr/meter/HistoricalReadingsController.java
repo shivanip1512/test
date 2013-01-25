@@ -141,7 +141,6 @@ public class HistoricalReadingsController {
         String attributeMsg = "";
         if (attribute != null) {
             attributeMsg = objectFormattingService.formatObjectAsString(BuiltInAttribute.valueOf(attribute), context);
-            attributeMsg = BuiltInAttribute.valueOf(attribute).getMessage().getDefaultMessage();
         } else if (deviceId != null) {
             // We have a deviceId and a pointId, we can find the attribute.
             Map<Integer, PointInfo> pointInfoByPointIds = pointDao.getPointInfoByPointIds(Sets.newHashSet(pointId));
@@ -151,7 +150,7 @@ public class HistoricalReadingsController {
                 PointIdentifier pointIdentifier = pointInfo.getPointIdentifier();
                 BuiltInAttribute builtInAttribute = paoDefinitionDao.findAttributeForPaoTypeAndPoint(new PaoTypePointIdentifier(paoType, pointIdentifier));
                 if (builtInAttribute != null) {
-                    attributeMsg = builtInAttribute.getMessage().getDefaultMessage();
+                    attributeMsg = objectFormattingService.formatObjectAsString(builtInAttribute, context);
                 }
             }
         }
