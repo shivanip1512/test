@@ -64,8 +64,9 @@ public interface AuthenticationService {
      * supports setting the password to a new value. For example, LDAP 
      * and RADIUS do not support this.
      * @return true if supported
-     * TODO:  deprecate???
+     * @deprecated Use {@link #supportsPasswordSet(AuthenticationCategory)}
      */
+    @Deprecated
     public boolean supportsPasswordSet(AuthType type);
 
     /**

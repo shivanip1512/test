@@ -772,7 +772,7 @@ public class StarsAdminUtil {
         AuthenticationCategory defaultAuthenticationCategory = authenticationService.getDefaultAuthenticationCategory();
         if (authenticationService.supportsPasswordSet(defaultAuthenticationCategory)) {
             if (StringUtils.isBlank(password)) {
-                throw new RuntimeException("password cannot be blank");
+                throw new IllegalArgumentException("password cannot be blank");
             }
             authenticationService.setPassword(liteUser, password);
         }

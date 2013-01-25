@@ -43,10 +43,8 @@ public class YukonUserPasswordDaoImpl implements YukonUserPasswordDao {
 
     @Override
     public void setAuthType(LiteYukonUser user, AuthType authType) {
-        Instant now = Instant.now();
-
         SqlStatementBuilder sql = new SqlStatementBuilder();
-        sql.append("UPDATE YukonUser").set("Password", " ", "AuthType", authType, "LastChangedDate", now,
+        sql.append("UPDATE YukonUser").set("Password", " ", "AuthType", authType, "LastChangedDate", new Instant(),
                 "ForceReset", YNBoolean.NO);
         sql.append("WHERE UserId").eq(user.getUserID());
         jdbcTemplate.update(sql);

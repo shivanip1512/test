@@ -197,6 +197,9 @@ public class OperatorLoginController {
         return "energyCompany/operatorLogin/create.jsp"; 
     }
 
+    /**
+     * Add edit fields to model.
+     */
     private void addEditFieldsToModel(ModelMap model, int operatorLoginId, int userId) {
         model.addAttribute("mode", PageEditMode.EDIT);
         AuthenticationCategory authenticationCategory =
