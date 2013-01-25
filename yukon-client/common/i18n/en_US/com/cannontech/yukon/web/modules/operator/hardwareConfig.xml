@@ -21,7 +21,7 @@
     <entry key="yukon.web.modules.operator.hardwareConfig.inService">This device is in service.</entry>
     <entry key="yukon.web.modules.operator.hardwareConfig.outOfService">This device is out of service.</entry>
     <entry key="yukon.web.modules.operator.hardwareConfig.notApplicable">Not applicable to this device.</entry>
-    <entry key="yukon.web.modules.operator.hardwareConfig.inService.short">In Service.</entry>
+    <entry key="yukon.web.modules.operator.hardwareConfig.inService.short">In Service</entry>
     <entry key="yukon.web.modules.operator.hardwareConfig.outOfService.short">Out of Service</entry>
     <entry key="yukon.web.modules.operator.hardwareConfig.notApplicable.short">N/A</entry>
     <entry key="yukon.web.modules.operator.hardwareConfig.otherDeviceActions.helpText">
