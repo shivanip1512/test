@@ -14,21 +14,24 @@ import org.springframework.jdbc.core.simple.ParameterizedRowMapper;
 
 import com.cannontech.common.mock.MockDataSource;
 import com.cannontech.database.YukonJdbcTemplate;
+import com.google.common.collect.Lists;
 
 public class ChunkingSqlTemplateTest {
     private final int customChunkSize = 5;
-    private final List<Integer> chunkedList1 = Arrays.asList(new Integer[] {0,1,2,3,4});
-    private final List<Integer> chunkedList2 = Arrays.asList(new Integer[] {5,6,7,8,9});
-    private final List<Integer> chunkedList3 = Arrays.asList(new Integer[] {10});
-    
-    @Test
-    public void test_no_elements_missed_in_chunking() {
-        int initSize = chunkedList1.size() + chunkedList2.size() + chunkedList3.size();
-        List<Integer> fullSizeList = new ArrayList<Integer>(initSize);
+    private final List<Integer> chunkedList1 = Lists.newArrayList(0,1,2,3,4);
+    private final List<Integer> chunkedList2 = Lists.newArrayList(5,6,7,8,9);
+    private final List<Integer> chunkedList3 = Lists.newArrayList(10);
+    private int initSize = chunkedList1.size() + chunkedList2.size() + chunkedList3.size();
+
+    List<Integer> fullSizeList = new ArrayList<Integer>(initSize);
+    {
         fullSizeList.addAll(chunkedList1);
         fullSizeList.addAll(chunkedList2);
         fullSizeList.addAll(chunkedList3);
-        
+    }
+    
+    @Test
+    public void test_no_elements_missed_in_chunking() {
         ChunkingSqlTemplate template = new ChunkingSqlTemplate(new CustomerSimpleJdbcTemplate());
         template.setChunkSize(customChunkSize);
         
@@ -62,7 +65,24 @@ public class ChunkingSqlTemplateTest {
         Assert.assertEquals("incorrect subList elements in third chunk", chunkedList3String, resultString3);
     }
     
-    
+    @Test
+    public void test_queryForSum_Chunking() {
+        ChunkingSqlTemplate template = new ChunkingSqlTemplate(new CustomerSimpleJdbcTemplate());
+        template.setChunkSize(customChunkSize);
+        
+        int result = template.queryForSum(new SqlFragmentGenerator<Integer>() {
+            @Override
+            public SqlFragmentSource generate(List<Integer> subList) {
+                return new SqlStatementBuilder().append(subList);
+            }
+        }, fullSizeList);
+        
+        Assert.assertEquals(11, result);
+    }
+
+    /**
+     * Creates a mock database connection that can be used for the chunking tests.
+     */
     private class CustomerSimpleJdbcTemplate extends YukonJdbcTemplate {
         public CustomerSimpleJdbcTemplate() {
             super(new MockDataSource());
@@ -72,6 +92,11 @@ public class ChunkingSqlTemplateTest {
         @Override
         public <T> List<T> query(String sql, ParameterizedRowMapper<T> rm, Object... args) throws DataAccessException {
             return (List<T>) Arrays.asList(new String[]{sql});
+        }
+
+        @Override
+        public int queryForInt(SqlFragmentSource sql) throws DataAccessException {
+            return Arrays.asList(sql.getSql().split(",")).size();
         }
     }
 }
