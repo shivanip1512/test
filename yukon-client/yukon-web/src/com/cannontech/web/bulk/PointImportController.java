@@ -35,6 +35,7 @@ import com.cannontech.common.exception.DuplicateColumnNameException;
 import com.cannontech.common.exception.InvalidColumnNameException;
 import com.cannontech.common.exception.RequiredColumnMissingException;
 import com.cannontech.common.point.PointCalculation;
+import com.cannontech.common.util.CtiUtilities;
 import com.cannontech.common.util.RecentResultsCache;
 import com.cannontech.core.roleproperties.YukonRoleProperty;
 import com.cannontech.i18n.YukonMessageSourceResolvable;
@@ -53,7 +54,6 @@ import com.google.common.collect.Lists;
 @RequestMapping("/pointImport/*")
 @CheckRoleProperty(YukonRoleProperty.ADD_REMOVE_POINTS)
 public class PointImportController {
-    public static final Integer MAX_LOGGED_LINES = 1000;
     @Resource(name="recentResultsCache")
     private RecentResultsCache<PointImportCallbackResult> recentResultsCache;
     @Autowired PointImportService pointImportService;
@@ -202,7 +202,7 @@ public class PointImportController {
     public String updateLog(HttpServletResponse response, String resultId) throws IOException {
         PointImportCallbackResult result = recentResultsCache.getResult(resultId);
         Integer index = result.getLogIndex();
-        if(index >= PointImportController.MAX_LOGGED_LINES){
+        if(index >= CtiUtilities.MAX_LOGGED_LINES){
             return null;
         }
 
@@ -218,7 +218,7 @@ public class PointImportController {
             }
             jsonObject.put(line, quality);
             index++;
-            if(index >= PointImportController.MAX_LOGGED_LINES){
+            if(index >= CtiUtilities.MAX_LOGGED_LINES){
                 break;
             }
         }

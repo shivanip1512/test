@@ -38,6 +38,7 @@ import com.cannontech.common.fdr.FdrInterfaceType;
 import com.cannontech.common.fdr.FdrTranslation;
 import com.cannontech.common.fdr.FdrUtils;
 import com.cannontech.common.i18n.MessageSourceAccessor;
+import com.cannontech.common.util.CtiUtilities;
 import com.cannontech.common.util.RecentResultsCache;
 import com.cannontech.core.roleproperties.YukonRoleProperty;
 import com.cannontech.i18n.YukonMessageSourceResolvable;
@@ -255,7 +256,7 @@ public class FdrTranslationManagerController {
         TranslationImportCallbackResult result = recentResultsCache.getResult(resultId);
         
         Integer index = result.getLogIndex(); //must get this before getNewLogLines()!
-        if(index >= PointImportController.MAX_LOGGED_LINES){
+        if(index >= CtiUtilities.MAX_LOGGED_LINES){
             return null;
         }
 
@@ -269,7 +270,7 @@ public class FdrTranslationManagerController {
             if(failedLines.contains(index)) quality = "errorMessage";
             jsonObject.put(line, quality);
             index++;
-            if(index >= PointImportController.MAX_LOGGED_LINES){
+            if(index >= CtiUtilities.MAX_LOGGED_LINES){
                 break;
             }
         }
