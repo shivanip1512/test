@@ -45,6 +45,7 @@ public AccumulatorBasePanel() {
  * Method to handle events for the ActionListener interface.
  * @param e java.awt.event.ActionEvent
  */
+@Override
 public void actionPerformed(java.awt.event.ActionEvent e) {
 	if (e.getSource() == getUnitOfMeasureComboBox()) 
 		connEtoC2(e);
@@ -340,6 +341,7 @@ private javax.swing.JLabel getUnitOfMeasureLabel() {
  * @return java.lang.Object
  * @param val java.lang.Object
  */
+@Override
 public Object getValue(Object val)
 {
 	//Assuming that commonObject is an instance of com.cannontech.database.data.point.AccumulatorPoint
@@ -356,7 +358,7 @@ public Object getValue(Object val)
     }else {
 		point.getPoint().setArchiveType((String) getArchiveTypeComboBox().getSelectedItem());
     }
-	point.getPoint().setArchiveInterval(getIntervalComboBoxSecondsValue(getArchiveIntervalComboBox()));
+	point.getPoint().setArchiveInterval(SwingUtil.getIntervalComboBoxSecondsValue(getArchiveIntervalComboBox()));
     LiteStateGroup stateGroup = (LiteStateGroup) getStateGroupComboBox().getSelectedItem();
     point.getPoint().setStateGroupID( new Integer(stateGroup.getStateGroupID()) );
 
@@ -536,6 +538,7 @@ private javax.swing.JPanel getJPanelHolder() {
  * Creation date: (5/1/2001 9:11:36 AM)
  * @return boolean
  */
+@Override
 public boolean isInputValid() {
 	return true;
 }
@@ -544,6 +547,7 @@ public boolean isInputValid() {
  * This method was created in VisualAge.
  * @param val java.lang.Object
  */
+@Override
 public void setValue(Object val)
 {
 	//Assuming defaultObject is an instance of com.cannontech.database.data.point.AccumulatorPoint
@@ -601,6 +605,7 @@ public void setValue(Object val)
  * Method to handle events for the JCValueListener interface.
  * @param arg1 com.klg.jclass.util.value.JCValueEvent
  */
+@Override
 public void valueChanged(com.klg.jclass.util.value.JCValueEvent arg1) 
 {
 	if (arg1.getSource() == getDecimalPlacesSpinner() || arg1.getSource() == getMeterDialsSpinner()) 
@@ -611,6 +616,7 @@ public void valueChanged(com.klg.jclass.util.value.JCValueEvent arg1)
  * Method to handle events for the JCValueListener interface.
  * @param arg1 com.klg.jclass.util.value.JCValueEvent
  */
+@Override
 public void valueChanging(com.klg.jclass.util.value.JCValueEvent arg1) 
 {
 }

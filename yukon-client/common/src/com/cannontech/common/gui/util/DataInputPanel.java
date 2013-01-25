@@ -135,8 +135,9 @@ public abstract class DataInputPanel extends JPanel {
             multiplier = 3600;
         } else if (selectedString.toLowerCase().indexOf("day") != -1) {
             multiplier = 86400;
-        } else
+        } else {
             multiplier = 0; // we have no idea, just use zero
+        }
 
         try {
             int loc = selectedString.toLowerCase().indexOf(" ");

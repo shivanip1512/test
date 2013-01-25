@@ -50,7 +50,6 @@
 
         // js implementation of DeviceGroupUtil.isValidName(name).
         function isValidGroupName(name) {
-        	return true;
             if(name == null || name.strip() == '' || (name.indexOf('/') != -1) || (name.indexOf('\\') != -1)) {
                 return false;
             }
