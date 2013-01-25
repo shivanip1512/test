@@ -10,8 +10,8 @@
 
 <cti:standardPage module="operator" page="alternateEnrollment">
 
-<dialog:confirm nameKey="confirmAlternate" on="#enroll_alternate"/>
-<dialog:confirm nameKey="confirmNormal" on="#enroll_normal"/>
+<dialog:confirm nameKey="confirmAlternate" on="#enroll_alternate" disableGroup="alternate_confirm"/>
+<dialog:confirm nameKey="confirmNormal" on="#enroll_normal" disableGroup="normal_confirm"/>
 
 <tags:boxContainer2 nameKey="available">
     <c:choose>

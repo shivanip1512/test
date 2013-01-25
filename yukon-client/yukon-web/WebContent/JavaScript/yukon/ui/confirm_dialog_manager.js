@@ -136,25 +136,23 @@ if(typeof(Yukon.Dialog.ConfirmationManager) === 'undefined'){
                 buttons.push({text: args.strings.cancel, click: _self._default._cancel_action});
                 
                 //is the intent to redirect on ok?
-                if(element.attr("href")){
+                if (element.attr("href")) {
                     buttons[0].click = function(){window.location = element.attr("href");};
-                }
-                //is the intent to redirect on ok?
-                else if(element.attr("data-href")){
+                } else if(element.attr("data-href")) {
                     buttons[0].click = function(){window.location = element.attr("data-href");};
-                }else if(element.data("href")){
+                } else if(element.data("href")) {
                     buttons[0].click = function(){window.location = element.data("href");};
                 }
                 //is the intent to submit a form on ok?
-                else if(element.attr("type").toLowerCase() == "submit"){
-                    buttons[0].click = function(){
+                else if (element.attr("type").toLowerCase() == "submit") {
+                    buttons[0].click = function() {
                     	var form = element.closest("form")[0];
                     	if(!(typeof(element.attr("value")) == "undefined") 
                     		&& !(typeof(element.attr("name")) == "undefined")){
                     		jQuery(form).prepend('<input type="hidden" name="'+ element.attr("name") +'" value="'+ element.attr("value") +'">');
                     	}
                     	form.submit();
-                    	};
+                    };
                 }
                 //is the intent to submit a specific form on ok?
                 else if(element.attr("data-form")){
@@ -176,10 +174,15 @@ if(typeof(Yukon.Dialog.ConfirmationManager) === 'undefined'){
                 //show the dialog
                 _self._current_dialog = jQuery('#yukon_dialog_confirm').dialog(jQuery.extend(defaults, args));
                 
-                // kindof a hack to get buttons disabled when the action is slow 
-                jQuery('#yukon_dialog_confirm').closest('.ui-dialog').find('.ui-dialog-buttonset button').each(function(idx, button) {
-                    jQuery(button).addClass('f_disableAfterClick');
-                });
+                // kindof a hack to get buttons disabled when the action is slow
+                if (args.disable_group) {
+                    jQuery('#yukon_dialog_confirm').closest('.ui-dialog').find('.ui-dialog-buttonset button').each(function(idx, button) {
+                        var b = jQuery(button);
+                        b.addClass('f_disableAfterClick');
+                        b.attr('data-disable-group', args.disable_group);
+                        
+                    });
+                }
             },
             
             _default: {

@@ -10,6 +10,7 @@
 <%@ attribute name="on" required="true" description="registers click event on the element with this CSS selector"%>
 <%@ attribute name="nameKey" required="true" description="The base i18n key.  This tag requires dialogTitle and confirmationMsg keys."%>
 <%@ attribute name="argument" type="java.lang.Object"%>
+<%@ attribute name="disableGroup" description="Creates a 'data-disable-group' attribute on buttons at time of show to allow disabling all dialog buttons on click."%>
 
 <cti:includeScript link="/JavaScript/yukon/ui/confirm_dialog_manager.js"/>
 
@@ -22,10 +23,14 @@
     </cti:msgScope>
 </cti:msgScope>
 
+<c:if test="${not empty pageScope.disableGroup}">
+    <c:set var="disable_group">'disable_group': '${disableGroup}',</c:set>
+</c:if>
 <script type="text/javascript">
 jQuery(function(){
     Yukon.Dialog.ConfirmationManager.add({
         'on': '${on}',
+        ${disable_group}
         'strings':{
             'title': '${dialogTitleMsg}',
             'message': '${confirmationMsg}',

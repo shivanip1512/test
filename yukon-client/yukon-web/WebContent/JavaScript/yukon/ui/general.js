@@ -83,6 +83,12 @@ Yukon.ui = {
         	var button = jQuery(this);
             if(button.is(":input")){
                 this.disabled = true;
+                var group = button.attr('data-disable-group');
+                if (group != '') {
+                    jQuery("button[data-disable-group='" + group + "']").each(function(idx){
+                        this.disabled = true;
+                    });
+                }
               
                 //if this is a submit button, trigger the submit event on the form
                 if(button.is(":submit")){
