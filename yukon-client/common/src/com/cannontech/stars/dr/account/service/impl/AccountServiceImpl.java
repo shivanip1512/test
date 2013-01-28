@@ -380,7 +380,6 @@ public class AccountServiceImpl implements AccountService {
     @Transactional
     public void deleteAccount(int accountId, LiteYukonUser user) {
         CustomerAccount account = customerAccountDao.getById(accountId);
-        log.info("Deleting account id# " + accountId);
         deleteAccount(account, user);
     }
     
@@ -390,7 +389,6 @@ public class AccountServiceImpl implements AccountService {
     	YukonEnergyCompany yukonEnergyCompany = yukonEnergyCompanyService.getEnergyCompanyByOperator(user);
     	try {
     	    CustomerAccount account = customerAccountDao.getByAccountNumber(accountNumber, yukonEnergyCompany.getEnergyCompanyId());
-    	    log.info("Deleting account id# " + account.getAccountId());
             deleteAccount(account, user);
     	} catch (NotFoundException e ) {
             log.error("Account " + accountNumber + " could not be deleted: Unable to find account for account#: " + accountNumber);
@@ -399,6 +397,7 @@ public class AccountServiceImpl implements AccountService {
     }
 
     private void deleteAccount(CustomerAccount account, LiteYukonUser user) {
+        log.info("Deleting account id# " + account.getAccountId());
         LiteAccountInfo customerInfo = starsCustAccountInformationDao.getByAccountId(account.getAccountId());
         AccountSite accountSite = accountSiteDao.getByAccountSiteId(account.getAccountSiteId());
         LiteSiteInformation siteInfo = siteInformationDao.getSiteInfoById(accountSite.getSiteInformationId());
