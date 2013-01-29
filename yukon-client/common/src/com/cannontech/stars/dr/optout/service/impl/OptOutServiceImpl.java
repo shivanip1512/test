@@ -57,6 +57,7 @@ import com.cannontech.database.data.activity.ActivityLogActions;
 import com.cannontech.database.data.lite.LiteContact;
 import com.cannontech.database.data.lite.LiteYukonGroup;
 import com.cannontech.database.data.lite.LiteYukonUser;
+import com.cannontech.dr.rfn.service.RawExpressComCommandBuilder;
 import com.cannontech.dr.rfn.service.RfnExpressComMessageService;
 import com.cannontech.stars.core.dao.InventoryBaseDao;
 import com.cannontech.stars.core.dao.StarsSearchDao;
@@ -150,6 +151,7 @@ public class OptOutServiceImpl implements OptOutService {
 	@Autowired private LmHardwareCommandService lmHardwareCommandService;
 	@Autowired private RfnExpressComMessageService rfnExpressComMessageService;
 	@Autowired private EnergyCompanyRolePropertyDao energyCompanyRolePropertyDao;
+	@Autowired private RawExpressComCommandBuilder rawExpressComCommandBuilder;  
 
 	private RolePropertyDao rolePropertyDao;
 	
@@ -514,7 +516,7 @@ public class OptOutServiceImpl implements OptOutService {
                 YukonRoleProperty.BROADCAST_OPT_OUT_CANCEL_SPID, 
                 (YukonEnergyCompany) energyCompany);
 		
-		if (isValidSpid(broadcastSpid)) {
+		if (rawExpressComCommandBuilder.isValidBroadcastSpid(broadcastSpid)) {
 		    // Valid SPID found, use broadcast messages.
             broadcastCancelAllOptOuts(user, broadcastSpid, energyCompany, currentOptOuts);
 	    } else {
@@ -525,18 +527,7 @@ public class OptOutServiceImpl implements OptOutService {
             }
 	    }
 	}
-	private boolean isValidSpid(int spid) {
-	    if (spid >= 1 && spid <= 65534) {
-            logger.debug("Valid numeric SPID found in role property 'Broadcast Opt Out Cancel SPID'. Broadcast messaging will be used with SPID:" + spid);
-            return true;
-	    } else if (spid == 0) {
-            logger.debug("Role property value 'Broadcast Opt Out Cancel SPID' was blank or 0.  Per-device messaging will be used.");
-        } else {
-            logger.error("Out-of-range SPID address specified for broadcast cancel all opt out command.\n\r" +
-                    "Valid values are 1 - 65534.  The invalid SPID was: " + spid);
-	    }
-	    return false;    
-	}
+
 	/**
 	 * This method cancels all active opt outs using broadcast messaging.  
 	 * One message is generated per communication protocol and is sent to

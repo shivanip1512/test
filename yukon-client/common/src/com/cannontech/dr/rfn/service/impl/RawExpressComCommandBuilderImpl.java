@@ -341,4 +341,17 @@ public class RawExpressComCommandBuilderImpl implements RawExpressComCommandBuil
         }
         return new String(hexChars);
     }
+    
+    public boolean isValidBroadcastSpid(int spid) {
+        if (spid >= 1 && spid <= 65534) {
+            log.debug("Valid numeric SPID found in role property 'Broadcast Opt Out Cancel SPID'. Broadcast messaging will be used with SPID:" + spid);
+            return true;
+        } else if (spid == 0) {
+            log.debug("Role property value 'Broadcast Opt Out Cancel SPID' was blank or 0.  Per-device messaging will be used.");
+        } else {
+            log.error("Out-of-range SPID address specified for broadcast cancel all opt out command.\n" +
+                    "Valid values are 1 - 65534.  The invalid SPID was: " + spid);
+        }
+        return false;
+    }
 }

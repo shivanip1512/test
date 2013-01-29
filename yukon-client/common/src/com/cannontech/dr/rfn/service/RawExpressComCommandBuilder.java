@@ -37,4 +37,13 @@ public interface RawExpressComCommandBuilder {
      */
     public byte[] getBroadcastCancelAllTempOutOfServiceCommand(int spid);
     
+    /**
+     * This method determines if the SPID passed in is within the range of
+     * valid values for the SPID address level.  The ExpressCom documentation
+     * states that the valid SPID address range is 1-65534.
+     * 
+     * @param spid The SPID to test.
+     * @return
+     */
+    public boolean isValidBroadcastSpid(int spid);
 }
