@@ -147,6 +147,7 @@
                 <value>wsdl4j.jar</value>
                 <value>servlet-api.jar</value>
                 <value>mail.jar</value>
+                <value>jloox30.jar</value>
                 <value>exificient.jar</value>
             </set>
         </property>
