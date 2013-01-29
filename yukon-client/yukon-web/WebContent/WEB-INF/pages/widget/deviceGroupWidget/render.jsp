@@ -54,7 +54,7 @@
                                          includeControlBar="true"
                                          highlightNodePath="${selectedNodePath}"
                                          displayCheckboxes="true"
-                                         styleClass="contained static-mode"/>
+                                         styleClass="contained static-mode scroll-large"/>
 
     <cti:checkRole role="operator.DeviceActionsRole.ROLEID">
         <cti:checkProperty property="operator.DeviceActionsRole.DEVICE_GROUP_MODIFY">

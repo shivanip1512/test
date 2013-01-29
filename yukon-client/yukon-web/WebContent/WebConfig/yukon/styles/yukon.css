@@ -265,7 +265,7 @@ input.error {background: pink;border-color:#D14836;}
 /* END NORMAL LAYOUTS */
 
 /* scrollable divs */
-.scrollingContainer_350, .scrollingContainer_large {overflow: auto; overflow-x: hidden; max-height:350px;}
+.scrollingContainer_350, .scrollingContainer_large, .inlineTree.scroll-large .treeCanvas {overflow: auto; overflow-x: hidden; max-height:350px;}
 .scrollingContainer_350 td.last, .scrollingContainer_large td.last {padding-right: 20px !important;} /* make sure scrollbar does not hide content */
 .scrollingContainer_160, .scrollingContainer_small {overflow: auto; overflow-x: hidden; max-height:160px;}
 .scrollingContainer_160 td.last, .scrollingContainer_small td.last {padding-right: 20px !important;} /* make sure scrollbar does not hide content */
