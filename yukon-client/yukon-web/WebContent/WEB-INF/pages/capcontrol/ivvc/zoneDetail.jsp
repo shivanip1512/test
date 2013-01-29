@@ -89,7 +89,7 @@
                         } else {
                             rows[i].addClassName('tableCell');
                         }
-                        $('recentEventsHeaderRow').insert({'after': rows[i]});
+                        $('recentEventsHeaderRow').insert({'after':rows[i]});
                         flashYellow(rows[i]);
                     }
                     // Keep table size <= 20 rows
@@ -115,7 +115,7 @@
     	<cti:param name="zoneId" value="${zoneId}"/>
     </cti:url>
     
-	<cti:dataGrid cols="2" tableClasses="ivvcGridLayout">
+	<cti:dataGrid cols="2" tableClasses="ivvcGridLayout twoColumnLayout">
 		<cti:dataGridCell>
     		<tags:boxContainer2 nameKey="details" hideEnabled="true" showInitially="true">
     			<tags:alternateRowReset/>			

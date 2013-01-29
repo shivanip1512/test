@@ -1,9 +1,9 @@
 package com.cannontech.web.common.chart.service.impl;
 
-import java.util.Date;
 import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
+import java.util.Set;
 
 import net.sf.json.JSONArray;
 import net.sf.json.JSONObject;
@@ -26,15 +26,15 @@ import com.cannontech.web.common.chart.service.FlotChartService;
 
 public class FlotChartServiceImpl implements FlotChartService {
 
-    @Autowired ChartService chartService;
+    @Autowired private ChartService chartService;
 
     @Override
-    public JSONObject getMeterGraphData(List<Integer> pointIds, Date startDate, Date stopDate, Double yMin, Double yMax,
+    public JSONObject getMeterGraphData(Set<Integer> pointIds, Instant start, Instant stop, Double yMin, Double yMax,
                                        ChartInterval interval, ConverterType converterType, GraphType graphType, String yLabel,
                                        YukonUserContext userContext) {
         List<Graph> graphs = chartService.getGraphs(pointIds,
-                                                    startDate,
-                                                    stopDate,
+                                                    start.toDate(),
+                                                    stop.toDate(),
                                                     interval,
                                                     converterType,
                                                     userContext);
@@ -49,12 +49,14 @@ public class FlotChartServiceImpl implements FlotChartService {
             dataObj.put("data", jsonArrayContainer);
             jsonDataContainer.add(dataObj);
         }
+        /* if we have no data, then add an empty array to jsonData so a blank graph is displayed properly */
+        if (jsonDataContainer.isEmpty()) jsonDataContainer.add(new JSONArray());
         
         // options
-        Integer xAxisDataCount = chartService.getXAxisDataCount(startDate,
-                                                                stopDate,
+        Integer xAxisDataCount = chartService.getXAxisDataCount(start.toDate(),
+                                                                stop.toDate(),
                                                                 interval);
-        int barWidthForTime = getBarWidthForTime(new Instant(startDate), new Instant(stopDate), xAxisDataCount);
+        int barWidthForTime = getBarWidthForTime(start, stop, xAxisDataCount);
         
         JSONObject options = new JSONObject();
 
@@ -68,14 +70,15 @@ public class FlotChartServiceImpl implements FlotChartService {
         setFlotOption(yAxis, FlotOptionKey.YAXIS_POSITION, "left");
         setFlotOption(yAxis, FlotOptionKey.YAXIS_AXISLABEL, yLabel);
         
-        if (yMin != null) setFlotOption(yAxis, FlotOptionKey.YAXIS_MIN, yMin);
+        if (yMin == null) yMin = 0.0; 
+        setFlotOption(yAxis, FlotOptionKey.YAXIS_MIN, yMin);
         if (yMax != null) setFlotOption(yAxis, FlotOptionKey.YAXIS_MAX, yMax);
         setFlotOption(options, FlotOptionKey.YAXIS, yAxis);
         
         JSONObject xAxis = new JSONObject();
         setFlotOption(xAxis, FlotOptionKey.XAXIS_MODE, "time");
-        setFlotOption(xAxis, FlotOptionKey.XAXIS_MIN, startDate.getTime());
-        setFlotOption(xAxis, FlotOptionKey.XAXIS_MAX, stopDate.getTime());
+        setFlotOption(xAxis, FlotOptionKey.XAXIS_MIN, start.getMillis());
+        setFlotOption(xAxis, FlotOptionKey.XAXIS_MAX, stop.getMillis());
         setFlotOption(xAxis, FlotOptionKey.XAXIS_AUTOSCALEMARGIN, 0.1);
         setFlotOption(options, FlotOptionKey.XAXIS, xAxis);
         
@@ -113,7 +116,7 @@ public class FlotChartServiceImpl implements FlotChartService {
         }
         
         dataAndOptions.put("datas", jsonDataContainer);
-        dataAndOptions.put("type", "pie");
+        dataAndOptions.put("type", GraphType.PIE.getFlotType());
         return dataAndOptions;
     }
 
@@ -154,12 +157,17 @@ public class FlotChartServiceImpl implements FlotChartService {
             dataObj.put("phase", line.getPhase());
             jsonDataContainer.add(dataObj);
         }
+        /* if we have no data, then add an empty array to jsonData so a blank graph is displayed properly */
+        boolean noData = jsonDataContainer.isEmpty();
+        if (noData) jsonDataContainer.add(new JSONArray());
 
         /* options */
         JSONObject options = new JSONObject();
         
         JSONObject xAxis = new JSONObject();
         setFlotOption(xAxis, FlotOptionKey.XAXIS_AUTOSCALEMARGIN, 0.1);
+        
+        if (noData) setFlotOption(xAxis, FlotOptionKey.XAXIS_MIN, 0);
         setFlotOption(options, FlotOptionKey.XAXIS, xAxis);
         
         JSONObject yAxis = new JSONObject();
@@ -192,7 +200,7 @@ public class FlotChartServiceImpl implements FlotChartService {
         setFlotOption(options, FlotOptionKey.GRID, markingsObj);
         
         dataAndOptions.put("datas", jsonDataContainer);
-        dataAndOptions.put("type", "line");
+        dataAndOptions.put("type", GraphType.LINE.getFlotType());
         dataAndOptions.put("options", options);
         
         return dataAndOptions;

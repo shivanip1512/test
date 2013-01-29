@@ -145,10 +145,10 @@ public class VoltageFlatnessGraphServiceImpl implements VoltageFlatnessGraphServ
     
     private void addYAxisLimitsToSettings(VfGraph graph, YukonUserContext userContext) {
         MessageSourceAccessor messageSourceAccessor = messageSourceResolver.getMessageSourceAccessor(userContext);
-        double yLowest = getMinYValue(graph.getLines());
-        double yHighest = getMaxYValue(graph.getLines());
-        double yMinLimit = (yLowest < graph.getSettings().getYLowerBound()) ? yLowest : graph.getSettings().getYLowerBound(); 
-        double yMaxLimit = (yHighest > graph.getSettings().getYUpperBound()) ? yHighest : graph.getSettings().getYUpperBound();
+        Double yLowest = getMinYValue(graph.getLines());
+        Double yHighest = getMaxYValue(graph.getLines());
+        double yMinLimit = (yLowest != null && yLowest < graph.getSettings().getYLowerBound()) ? yLowest : graph.getSettings().getYLowerBound(); 
+        double yMaxLimit = (yHighest != null && yHighest > graph.getSettings().getYUpperBound()) ? yHighest : graph.getSettings().getYUpperBound();
 
         Double yMin = yMinLimit + 
                 Double.valueOf(messageSourceAccessor.getMessage(
@@ -235,15 +235,12 @@ public class VoltageFlatnessGraphServiceImpl implements VoltageFlatnessGraphServ
         
         Map<Phase, String> phaseStringMap = Maps.newHashMapWithExpectedSize(3);
         Map<Phase, String> zoneLineColorPhaseMap = Maps.newHashMapWithExpectedSize(3);
-        Map<Phase, String> bulletTypePhaseMap = Maps.newHashMapWithExpectedSize(3);
         for (Phase phase : Phase.getRealPhases()) {
             String phaseString = messageSourceAccessor.getMessage("yukon.common.phase");
             phaseString += " " + messageSourceAccessor.getMessage("yukon.common.phase.phase" + phase);
             phaseStringMap.put(phase, phaseString);
             String zoneLineColorPhase = messageSourceAccessor.getMessage("yukon.web.modules.capcontrol.ivvc.voltProfileGraph.zoneLineColorPhase" + phase);
             zoneLineColorPhaseMap.put(phase, zoneLineColorPhase);
-            String phaseBulletType = messageSourceAccessor.getMessage("yukon.web.modules.capcontrol.ivvc.voltProfileGraph.phaseBulletType" + phase);
-            bulletTypePhaseMap.put(phase, phaseBulletType);
         }
 
         String zoneTransitionDataLabel = messageSourceAccessor.getMessage("yukon.web.modules.capcontrol.ivvc.voltProfileGraph.zoneTransitionDataLabel");
@@ -262,7 +259,6 @@ public class VoltageFlatnessGraphServiceImpl implements VoltageFlatnessGraphServ
                                 phaseStringMap,
                                 zoneLineColorPhaseMap,
                                 zoneLineColorNoPhase,
-                                bulletTypePhaseMap,
                                 showZoneTransitionTextBusGraph,
                                 showZoneTransitionTextZoneGraph,
                                 zoneTransitionDataLabel,
@@ -335,11 +331,11 @@ public class VoltageFlatnessGraphServiceImpl implements VoltageFlatnessGraphServ
         return largestTime;
     }
     
-    private double getMinYValue(List<VfLine> lines) {
-        double yMin = -1;
+    private Double getMinYValue(List<VfLine> lines) {
+        Double yMin = null;
         for (VfLine line : lines) {
             for (VfPoint point : line.getPoints()) {
-                if (yMin == -1 || point.getY() < yMin) {
+                if (yMin == null || point.getY() < yMin) {
                     yMin = point.getY();
                 }
             }
@@ -347,11 +343,11 @@ public class VoltageFlatnessGraphServiceImpl implements VoltageFlatnessGraphServ
         return yMin;
     }
     
-    private double getMaxYValue(List<VfLine> lines) {
-        double yMax = -1;
+    private Double getMaxYValue(List<VfLine> lines) {
+        Double yMax = null;
         for (VfLine line : lines) {
             for (VfPoint point : line.getPoints()) {
-                if (yMax == -1 || point.getY() > yMax) {
+                if (yMax == null || point.getY() > yMax) {
                     yMax = point.getY();
                 }
             }
@@ -614,18 +610,14 @@ public class VoltageFlatnessGraphServiceImpl implements VoltageFlatnessGraphServ
     
     private VfLineSettings getLineSettingsForPhase(VfGraphSettings settings, Phase phase) {
         String phaseZoneLineColor = settings.getPhaseZoneLineColor(phase);
-        String phaseBulletType = settings.getPhaseBulletType(phase);
         VfLineSettings lineSettings = new VfLineSettings(phaseZoneLineColor, 
-                                                        phaseBulletType, 
                                                         true, true, true, true, true);
         return lineSettings;
     }
     
     private VfLineSettings getNoPhaseLineSetting(VfGraphSettings settings) {
         String zoneLineColorNoPhase = settings.getZoneLineColorNoPhase();
-        String phaseABulletType = settings.getPhaseBulletType(Phase.A); // Just use the same as phase A, since this will almost never happen
         VfLineSettings lineSetting = new VfLineSettings(zoneLineColorNoPhase, 
-                                                        phaseABulletType, 
                                                         true, true, true, false, true);
         return lineSetting;
     }

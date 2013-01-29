@@ -286,12 +286,13 @@ public class ZoneDetailController {
                 .zoneHasRequiredRegulatorPointMapping(zoneId,
                                                       RegulatorPointMapping.VOLTAGE_Y,
                                                       context.getYukonUser());
+        JSONObject graphAsJSON = new JSONObject();
         if (zoneAttributesExist) {
             VfGraph graph = voltageFlatnessGraphService.getZoneGraph(context, zoneId);
-            JSONObject obj = flotChartService.getIVVCGraphData(graph, false);
-            return obj;
+            graphAsJSON = flotChartService.getIVVCGraphData(graph, false);
+            return graphAsJSON;
         }
-        return new JSONObject();
+        return graphAsJSON;
     }
     
     private void setupDetails(ModelMap model, HttpServletRequest request, YukonUserContext context, int zoneId, Boolean isSpecialArea) {
@@ -351,12 +352,10 @@ public class ZoneDetailController {
                 .zoneHasRequiredRegulatorPointMapping(zoneId,
                                                       RegulatorPointMapping.VOLTAGE_Y,
                                                       userContext.getYukonUser());
-        model.addAttribute("zoneAttributesExist", zoneAttributesExist);
-
         VfGraph graph = null;
         if (zoneAttributesExist) {
             graph = voltageFlatnessGraphService.getZoneGraph(userContext, zoneId);
-            JSONObject graphAsJSON = flotChartService.getIVVCGraphData(graph, false);
+            JSONObject graphAsJSON = flotChartService.getIVVCGraphData(graph, graph.getSettings().isShowZoneTransitionTextZoneGraph());
             model.addAttribute("graphAsJSON", graphAsJSON);
             model.addAttribute("graph", graph);
             model.addAttribute("graphSettings", graph.getSettings());

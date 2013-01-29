@@ -1,10 +1,11 @@
 package com.cannontech.web.common.chart.service;
 
-import java.util.Date;
-import java.util.List;
 import java.util.Map;
+import java.util.Set;
 
 import net.sf.json.JSONObject;
+
+import org.joda.time.Instant;
 
 import com.cannontech.common.chart.model.ChartInterval;
 import com.cannontech.common.chart.model.ConverterType;
@@ -46,9 +47,10 @@ public interface FlotChartService {
      *  
      *  @return JSONObject
      */
-    JSONObject getMeterGraphData(List<Integer> pointIds, Date startDate, Date stopDate, Double yMin, Double yMax,
+    JSONObject getMeterGraphData(Set<Integer> pointIds, Instant start, Instant stop, Double yMin, Double yMax,
                                 ChartInterval interval, ConverterType converterType, GraphType graphType, String yLabel,
                                 YukonUserContext userContext);
+
     /**
      * This method returns a JSONObject for IVVC SubBus and Zone charts
      * to be consumed by yukon.flot.js (our implementation of FlotCharts.js)

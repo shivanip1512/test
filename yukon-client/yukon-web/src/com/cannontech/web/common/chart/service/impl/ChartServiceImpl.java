@@ -46,7 +46,7 @@ public class ChartServiceImpl implements ChartService {
     private SimpleDateFormat timeFormat = new SimpleDateFormat("MM/dd/yyyy hh:mm:ss.SSS a");
     
     @Override
-    public List<Graph> getGraphs(List<Integer> pointIds, Date startDate, Date stopDate, ChartInterval interval,
+    public List<Graph> getGraphs(Set<Integer> pointIds, Date startDate, Date stopDate, ChartInterval interval,
                                  ConverterType converterType, YukonUserContext userContext) {
 
         List<Graph> graphList = new ArrayList<Graph>();

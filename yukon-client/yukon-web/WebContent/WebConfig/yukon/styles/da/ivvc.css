@@ -30,7 +30,6 @@ table.ivvcGridLayout {width: 100%;}
 table.ivvcGridLayout td {white-space: nowrap;}
 table.ivvcGridLayout td.first, table.ivvcGridLayout td.middle {padding-right: 10px;}
 table.ivvcGridLayout td.first, table.ivvcGridLayout td.middle, table.ivvcGridLayout td.last {width: 50%;}
-table.ivvcGridLayout td.last {padding-left: 15px;}
 table.ivvcGridLayout tr {vertical-align: top;}
 
 .zoneWizardTableScrollArea {height: 97px;overflow: auto;}

@@ -4,7 +4,6 @@ public class VfLineSettings {
     
     private String color;
     private String lineAlpha = null;
-    private String bullet = null;
     private boolean minMax = true;
     private boolean showBullet = true;
     private boolean showBalloon = true;
@@ -13,24 +12,23 @@ public class VfLineSettings {
     private boolean verticalLines = false;
     private String dataLabel = null;
     
-    public VfLineSettings(String color, String bullet, boolean minMax, 
+    public VfLineSettings(String color, boolean minMax, 
                           boolean showBullet, boolean showBalloon, boolean visibleInLegend, 
                           boolean selected) {
-        this(color, null, bullet, minMax, showBullet, showBalloon, visibleInLegend, selected, false, null);
+        this(color, null, minMax, showBullet, showBalloon, visibleInLegend, selected, false, null);
     }
     
-    public VfLineSettings(String color, String lineAlpha, String bullet, boolean minMax, 
+    public VfLineSettings(String color, String lineAlpha, boolean minMax, 
                           boolean showBullet, boolean showBalloon, boolean visibleInLegend, 
                           boolean selected) {
-        this(color, lineAlpha, bullet, minMax, showBullet, showBalloon, visibleInLegend, selected, false, null);
+        this(color, lineAlpha, minMax, showBullet, showBalloon, visibleInLegend, selected, false, null);
     }
     
-    public VfLineSettings(String color, String lineAlpha, String bullet, boolean minMax, 
+    public VfLineSettings(String color, String lineAlpha, boolean minMax, 
                           boolean showBullet, boolean showBalloon, boolean visibleInLegend, 
                           boolean selected, boolean verticalLines, String dataLabel) {
         this.color = color;
         this.lineAlpha = lineAlpha;
-        this.bullet = bullet;
         this.minMax = minMax;
         this.showBullet = showBullet;
         this.showBalloon = showBalloon;
@@ -86,14 +84,6 @@ public class VfLineSettings {
 
 	public void setVisibleInLegend(boolean visibleInLegend) {
 		this.visibleInLegend = visibleInLegend;
-	}
-
-	public String getBullet() {
-		return bullet;
-	}
-
-	public void setBullet(String bullet) {
-		this.bullet = bullet;
 	}
 
     public boolean isSelected() {

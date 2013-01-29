@@ -24,13 +24,11 @@ if(typeof(Yukon.Flot) === 'undefined'){
         
         defaults: {
             base_options: {
-                xaxes: {
+                xaxis: {
                     position: 'bottom',
-                    axisLabel: 'xlabel',
                 },
-                yaxes: {
+                yaxis: {
                     position: 'left',
-                    axisLabel: 'bar',
                 },
                 grid: {
                     hoverable: true,
@@ -269,12 +267,13 @@ if(typeof(Yukon.Flot) === 'undefined'){
             var labels = {};
             var tooltipMap = {};
             for (var i=0; i < data.length; i++) {
+                /* check if we have an empty data set "[[]]" */
+                if (typeof data[i].data === 'undefined') continue;
                 /* if data isn't an array then we are a pie chart (much simpler) */
-                if (typeof data[i].data.length === 'undefined') {
-                    if (typeof data[i].tooltip !== 'undefined') {
-                        tooltipMap[data[i].label] = data[i].tooltip;
-                        delete data[i].tooltip;
-                    }
+                if (typeof data[i].data.length === 'undefined' &&
+                    typeof data[i].tooltip !== 'undefined') {
+                    tooltipMap[data[i].label] = data[i].tooltip;
+                    delete data[i].tooltip;
                 } else {
                     /* we are graphing a line or bar chart */
                     for (var j=0; j < data[i].data.length; j++) {

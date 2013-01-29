@@ -2,6 +2,7 @@ package com.cannontech.web.common.chart.service;
 
 import java.util.Date;
 import java.util.List;
+import java.util.Set;
 
 import com.cannontech.common.chart.model.ChartInterval;
 import com.cannontech.common.chart.model.ChartValue;
@@ -23,7 +24,7 @@ public interface ChartService {
      * @param userContext
      * @return A list containing one graph per point
      */
-    public List<Graph> getGraphs(List<Integer> pointIds, Date startDate, Date stopDate, ChartInterval unit,
+    public List<Graph> getGraphs(Set<Integer> pointIds, Date startDate, Date stopDate, ChartInterval unit,
                                  ConverterType converterType, YukonUserContext userContext);
 
     /**

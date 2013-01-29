@@ -18,7 +18,6 @@ public class VfGraphSettings {
     private Map<Phase, String> phaseStringMap;
     private Map<Phase, String> phaseZoneLineColorMap;
     private String zoneLineColorNoPhase;
-    private Map<Phase, String> phaseBulletTypeMap;
     private boolean showZoneTransitionTextBusGraph;
     private boolean showZoneTransitionTextZoneGraph;
     private String zoneTransitionDataLabel;
@@ -31,7 +30,6 @@ public class VfGraphSettings {
                            String graphTitle, String graphWidgetName,
                            Map<Phase, String> phaseStringMap,
                            Map<Phase, String> phaseZoneLineColorMap, String zoneLineColorNoPhase,
-                           Map<Phase, String> phaseBulletTypeMap,
                            boolean showZoneTransitionTextBusGraph,
                            boolean showZoneTransitionTextZoneGraph, String zoneTransitionDataLabel,
                            String balloonDistanceText) {
@@ -44,7 +42,6 @@ public class VfGraphSettings {
         this.phaseStringMap = phaseStringMap;
         this.phaseZoneLineColorMap = phaseZoneLineColorMap;
         this.zoneLineColorNoPhase = zoneLineColorNoPhase;
-        this.phaseBulletTypeMap = phaseBulletTypeMap;
         this.showZoneTransitionTextBusGraph = showZoneTransitionTextBusGraph;
         this.showZoneTransitionTextZoneGraph = showZoneTransitionTextZoneGraph;
         this.zoneTransitionDataLabel = zoneTransitionDataLabel;
@@ -145,18 +142,6 @@ public class VfGraphSettings {
 
     public void setZoneLineColorNoPhase(String zoneLineColorNoPhase) {
         this.zoneLineColorNoPhase = zoneLineColorNoPhase;
-    }
-
-    public Map<Phase, String> getPhaseBulletTypeMap() {
-        return phaseBulletTypeMap;
-    }
-    
-    public String getPhaseBulletType(Phase phase) {
-        return phaseBulletTypeMap.get(phase);
-    }
-
-    public void setPhaseBulletTypeMap(Map<Phase, String> phaseBulletTypeMap) {
-        this.phaseBulletTypeMap = phaseBulletTypeMap;
     }
 
     public boolean isShowZoneTransitionTextBusGraph() {

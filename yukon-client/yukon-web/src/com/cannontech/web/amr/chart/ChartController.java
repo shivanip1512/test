@@ -1,10 +1,10 @@
 package com.cannontech.web.amr.chart;
 
-import java.util.Date;
-import java.util.List;
+import java.util.Set;
 
 import net.sf.json.JSONObject;
 
+import org.joda.time.Instant;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.WebDataBinder;
@@ -28,6 +28,8 @@ import com.cannontech.user.YukonUserContext;
 import com.cannontech.web.common.chart.service.ChartService;
 import com.cannontech.web.common.chart.service.FlotChartService;
 import com.cannontech.web.input.EnumPropertyEditor;
+import com.google.common.collect.Iterables;
+import com.google.common.collect.Sets;
 
 @Controller
 @RequestMapping("/chart/*")
@@ -47,21 +49,21 @@ public class ChartController {
                         long endDate,
                         Double yMin,
                         Double yMax,
-                        @RequestParam(required = false, defaultValue = "LINE") GraphType graphType,
-                        @RequestParam(required = false, defaultValue = "RAW") ConverterType converterType) {
-        List<Integer> ids = StringUtils.parseIntStringForList(pointIds);
+                        @RequestParam(defaultValue = "LINE") GraphType graphType,
+                        @RequestParam(defaultValue = "RAW") ConverterType converterType) {
+        Set<Integer> ids = Sets.newHashSet(StringUtils.parseIntStringForList(pointIds));
         
-        LitePoint point = pointDao.getLitePoint(ids.get(0));
+        LitePoint point = pointDao.getLitePoint(Iterables.get(ids, 0));
         LiteUnitMeasure unitMeasure = unitMeasureDao.getLiteUnitMeasure(point.getUofmID());
         MessageSourceAccessor messageSourceAccessor = messageSourceResolver.getMessageSourceAccessor(userContext);
         String chartIntervalString = messageSourceAccessor.getMessage(interval.getIntervalString());
         String yLabelUnits = messageSourceAccessor.getMessage(converterType.getFormattedUnits(unitMeasure, chartIntervalString));
         
-        Date startDateObj = new Date(startDate);
-        Date stopDateObj = new Date(endDate);
+        Instant start = new Instant(startDate);
+        Instant stop = new Instant(endDate);
         JSONObject graphAsJSON = flotChartService.getMeterGraphData(ids,
-                                                                   startDateObj,
-                                                                   stopDateObj,
+                                                                   start,
+                                                                   stop,
                                                                    yMin,
                                                                    yMax,
                                                                    interval,
