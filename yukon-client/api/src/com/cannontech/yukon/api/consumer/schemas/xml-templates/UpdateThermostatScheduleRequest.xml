@@ -4,7 +4,7 @@
            xsi:schemaLocation="http://yukon.cannontech.com/api ../UpdateThermostatScheduleRequest.xsd"
            version="1.0">
     
-    <thermostatSchedule accountNumber="987654" thermostatType="Utility Pro G2" thermostatScheduleMode="Weekday Weekend">
+    <thermostatSchedule accountNumber="987654" thermostatType="UtilityPRO G2" thermostatScheduleMode="Weekday Weekend">
         <scheduleName>test schedule</scheduleName>
         <schedulePeriod timeOfWeek="Weekday">
             <thermostatSchedulePeriod>
