@@ -2285,6 +2285,8 @@ void  CtiCommandParser::doParsePutConfigEmetcon(const string &_CmdStr)
 
     static const boost::regex  re_loadlimit(CtiString("load limit ") + str_floatnum + CtiString(" ") + str_num);
     static const boost::regex  re_llp_interest(CtiString("llp interest channel ") + str_num + CtiString(" ") + str_date + CtiString("( ") + str_time + CtiString(")?"));
+    static const boost::regex  re_llp_peak_interest(CtiString("llp peak interest channel ") + str_num + CtiString(" date ") + str_date + CtiString(" range ") + str_num);
+
     static const boost::regex  re_cycle(CtiString("cycle ") + str_num + CtiString(" ") + str_num);
 
     static const boost::regex  re_freeze_day(CtiString("freeze day ") + str_num);
@@ -2410,6 +2412,25 @@ void  CtiCommandParser::doParsePutConfigEmetcon(const string &_CmdStr)
                 _cmd["llp interest channel"] = CtiParseValue(atoi(cmdtok().c_str()));
                 _cmd["llp interest date"] = cmdtok();
                 _cmd["llp interest time"] = cmdtok();  //  this might just be an empty string, which is okay
+            }
+        }
+        if(CmdStr.contains(" llp peak interest"))
+        {
+            if(!(token = CmdStr.match(re_llp_peak_interest)).empty())
+            {
+                CtiTokenizer cmdtok(token);
+                cmdtok();  //  go past "llp"
+                cmdtok();  //  go past "peak"
+                cmdtok();  //  go past "interest"
+
+                cmdtok();  //  go past "channel"
+                _cmd["llp peak interest channel"] = atoi(cmdtok().c_str());
+
+                cmdtok();  //  go past "date"
+                _cmd["llp peak interest date"] = cmdtok();
+
+                cmdtok();  //  go past "range"
+                _cmd["llp peak interest range"] = atoi(cmdtok().c_str());
             }
         }
         if(CmdStr.contains(" group"))

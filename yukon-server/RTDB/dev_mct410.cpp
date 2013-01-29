@@ -3336,109 +3336,92 @@ INT Mct410Device::decodeGetValueFreezeCounter( INMESS *InMessage, CtiTime &TimeN
 
 int Mct410Device::decodeGetConfigLoadProfileExistingPeak(INMESS *InMessage, CtiTime &TimeNow, CtiMessageList &vgList, CtiMessageList &retList, OutMessageList &outList)
 {
-    typedef llp_peak_report_interest_t llp_pri;
+    long requestId = InMessage->Return.OptionsField;
 
-    int status = NoError;
-
-    const DSTRUCT &DSt = InMessage->Buffer.DSt;
-    unsigned long peak_time = ntohl(*reinterpret_cast<const unsigned long *>(DSt.Message + 3));
-
-    const CtiTime request_begin = CtiTime(_llpPeakInterest.end_date - _llpPeakInterest.range + 1);
-    const CtiTime request_end   = CtiTime(_llpPeakInterest.end_date + 1);
-
-    unsigned long utc_time = request_end.seconds();
-    unsigned short request_range   = _llpPeakInterest.range;
-    const unsigned char request_channel = _llpPeakInterest.channel;
-
-    std::auto_ptr<OUTMESS> OutMessage(new OUTMESS);
-
-    InEchoToOut(*InMessage, OutMessage.get());
-
-    //  Ideally, this would be a broadcast write if this is a macro route, but that
-    //    can't be accomplished without running through ExecuteRequest.
-    // Also, the multiple decodes from the macro subroutes would need to be
-    //    handled differently so each one didn't send out a read.
-
-    if( peak_time < request_begin.seconds() ||
-        peak_time > request_end.seconds() )
+    if( ! _llpPeakInterest.tryContinueRequest(requestId) )
     {
-        //  verified that the existing peak is outside the new range
-        InterlockedExchange(&_llpPeakInterest.state, llp_pri::NoOverlap);
+        CtiLockGuard<CtiLogger> doubt_guard(dout);
+        dout << CtiTime() << " **** Checkpoint - orphaned GetConfig_LoadProfileExistingPeak in Mct410Device::decodeGetConfigLoadProfileExistingPeak() for device \"" << getName() << "\" **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
+
+        //  We're not executing any more, just disappear.
+        return NoError;
+    }
+
+    unsigned long peak_time = ntohl(*reinterpret_cast<const unsigned long *>(InMessage->Buffer.DSt.Message + 3));
+
+    unsigned new_range   = _llpPeakInterest.range;
+    unsigned new_channel = _llpPeakInterest.channel + 1;
+    CtiDate  new_date    = _llpPeakInterest.end_date;
+
+    const bool overlap =
+        peak_time >= CtiTime(new_date - new_range + 1).seconds() &&
+        peak_time <= CtiTime(new_date + 1).seconds();
+
+    if( ! overlap )
+    {
+        _llpPeakInterest.no_overlap = true;
     }
     else
     {
+        //  Set the report date outside of the requested range to ensure we won't have an overlap when they retry the request.
+        new_date -= (new_range + 1);
+        new_range = 1;
+
         std::auto_ptr<CtiReturnMsg> ReturnMsg(new CtiReturnMsg(getID()));
 
         ReturnMsg->setUserMessageId(InMessage->Return.UserID);
 
-        //  Set the report date outside of the requested range to reset the overlap
-        utc_time = CtiTime(_llpPeakInterest.end_date - _llpPeakInterest.range - 2).seconds();
+        ReturnMsg->setResultString("Requested date range overlaps the device's previous peak.  Resetting automatically, please retry command.");
 
-        request_range = 1;
-
-        //  If this is the first time we've read the peak, report the reset back to the user
-        if( _llpPeakInterest.state == llp_pri::ReadingExistingPeak )
-        {
-            ReturnMsg->setResultString("Requested date range overlaps the device's previous peak.  Attempting to reset device report range.");
-            ReturnMsg->setExpectMore(true);
-
-            InterlockedExchange(&_llpPeakInterest.state, llp_pri::AttemptingReset);
-        }
-        else
-        {
-            //  If we already attempted a reset, abort the request and return an error
-            status = ErrorNeedsDateRangeReset;
-
-            ReturnMsg->setResultString("Requested date range overlaps the device's previous peak.");
-
-            OutMessage->Request.Connection = 0;  //  don't report the read to the client
-
-            InterlockedExchange(&_llpPeakInterest.state, llp_pri::Idle);
-        }
-
-        retMsgHandler( InMessage->Return.CommandStr, status, ReturnMsg.release(), vgList, retList );
+        retMsgHandler( InMessage->Return.CommandStr, ErrorNeedsDateRangeReset, ReturnMsg.release(), vgList, retList );
     }
 
-    OutMessage->Sequence = EmetconProtocol::PutConfig_LoadProfileReportPeriod;
+    stringstream request;
 
-    OutMessage->Buffer.BSt.Function = FuncWrite_LLPPeakInterestPos;
-    OutMessage->Buffer.BSt.IO       = EmetconProtocol::IO_Function_Write;
-    OutMessage->Buffer.BSt.Length   = FuncWrite_LLPPeakInterestLen;
-    OutMessage->MessageFlags |= MessageFlag_ExpectMore;
+    //  EmetconProtocol::PutConfig_LoadProfileReportPeriod
+    request << "putconfig emetcon llp peak interest";
+    request << " channel " << new_channel;
+    request << " date "    << new_date.asStringUSFormat();
+    request << " range "   << new_range;
 
-    OutMessage->Buffer.BSt.Message[0] = gMCT400SeriesSPID;
-
-    OutMessage->Buffer.BSt.Message[1] = request_channel;
-
-    OutMessage->Buffer.BSt.Message[2] = utc_time >> 24;
-    OutMessage->Buffer.BSt.Message[3] = utc_time >> 16;
-    OutMessage->Buffer.BSt.Message[4] = utc_time >>  8;
-    OutMessage->Buffer.BSt.Message[5] = utc_time;
-
-    if( request_range <= 0xff )
+    if( strstr(InMessage->Return.CommandStr, " noqueue") )
     {
-        OutMessage->Buffer.BSt.Message[6] = request_range & 0xff;
-
-        OutMessage->Buffer.BSt.Message[7] = 0;
-        OutMessage->Buffer.BSt.Message[8] = 0;
+        request << " noqueue";
     }
-    else
+
+    CtiRequestMsg newReq(getID(),
+                         request.str(),
+                         InMessage->Return.UserID,
+                         InMessage->Return.GrpMsgID,
+                         0,
+                         0,
+                         0,
+                         requestId,
+                         InMessage->Priority);
+
+    if( ! overlap )
     {
-        OutMessage->Buffer.BSt.Message[6] = 0;
-
-        OutMessage->Buffer.BSt.Message[7] = (request_range >> 8) & 0xff;
-        OutMessage->Buffer.BSt.Message[8] = (request_range     ) & 0xff;
+        newReq.setConnectionHandle(InMessage->Return.Connection);
     }
 
-    outList.push_back(OutMessage.release());
+    beginExecuteRequest(&newReq, CtiCommandParser(newReq.CommandString()), vgList, retList, outList);
 
-    return status;
+    return NoError;  //  Return NoError even in case of overlap so macro subroutes don't consider this successful decode a failure
 }
 
 
 INT Mct410Device::decodeGetValueLoadProfilePeakReport(INMESS *InMessage, CtiTime &TimeNow, CtiMessageList &vgList, CtiMessageList &retList, OutMessageList &outList)
 {
-    typedef llp_peak_report_interest_t llp_pri;
+    long requestId = InMessage->Return.OptionsField;
+
+    if( ! _llpPeakInterest.tryContinueRequest(requestId) )
+    {
+        CtiLockGuard<CtiLogger> doubt_guard(dout);
+        dout << CtiTime() << " **** Checkpoint - orphaned GetValue_LoadProfilePeakReport in Mct410Device::decodeGetConfigLoadProfileExistingPeak() for device \"" << getName() << "\" **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
+
+        //  We're not executing any more, just disappear.
+        return NoError;
+    }
 
     INT status = NORMAL;
 
@@ -3577,7 +3560,8 @@ INT Mct410Device::decodeGetValueLoadProfilePeakReport(INMESS *InMessage, CtiTime
     ReturnMsg->setResultString(result_string);
 
     retMsgHandler( InMessage->Return.CommandStr, status, ReturnMsg, vgList, retList );
-    InterlockedExchange(&_llpPeakInterest.state, llp_pri::Idle);
+
+    _llpPeakInterest.tryEndRequest(requestId);
 
     return status;
 }
