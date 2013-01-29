@@ -93,6 +93,12 @@ number nResult;
 BOOL opt, bOptYes, bOptNo;
 pointer pEnv;
 begin
+	//IMPORTANT NOTE: using LaunchApplication with the SW_HIDDEN flag will
+ 	//cause ALL APPLICATIONS LAUNCHED HENCEFORTH to be hidden! Even if they
+ 	//are launched through LaunchApp or LaunchAppAndWait.  You must call
+ 	//LaunchApplication with the SW_NORMAL flag to un-hide launched apps.
+	LaunchApplication("", "", "", SW_NORMAL, 0, LAAW_OPTION_WAIT);
+	
 	//set the YUKON_BASE environment variable to the TARGETDIR
 	//where we just installed Yukon
 	sName = "YUKON_BASE";
