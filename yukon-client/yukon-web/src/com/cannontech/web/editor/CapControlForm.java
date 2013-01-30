@@ -1000,7 +1000,7 @@ public class CapControlForm extends DBEditorForm implements ICapControlModel{
         final CBCWizardModel wizard = (CBCWizardModel) getWizData();
 
         DataBinder binder = new DataBinder(wizard);
-        CapControlCreationModelValidator validator = new CapControlCreationModelValidator(capControlCreationService);
+        CapControlCreationModelValidator validator = new CapControlCreationModelValidator(paoScheduleDao, strategyDao, paoDao);
         binder.setValidator(validator);
         binder.validate();
         BindingResult bindingResult = binder.getBindingResult();

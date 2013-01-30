@@ -238,4 +238,16 @@ public class PaoScheduleDaoImpl implements PaoScheduleDao {
         int rowsAffected = yukonJdbcTemplate.update(sql);
         return rowsAffected == 1;
     }
+
+    @Override
+    public boolean isUniqueName(String name) {
+        SqlStatementBuilder sql = new SqlStatementBuilder();
+        
+        sql.append("SELECT COUNT(*) FROM PaoSchedule");
+        sql.append("WHERE ScheduleName").eq(name);
+        
+        int numWithName = yukonJdbcTemplate.queryForInt(sql);
+
+        return numWithName != 0;
+    }
 }

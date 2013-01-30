@@ -41,4 +41,10 @@ public interface PaoScheduleDao {
     public boolean deletePaoScheduleAssignmentsByScheduleId(int scheduleId);
 
     public int add(String name, boolean disabled);
+
+    /**
+     * Checks if there is already a schedule of the same name
+     * @return true if there is a conflict
+     */
+    public boolean isUniqueName(String name);
 }

@@ -69,9 +69,4 @@ public class PaoPersistenceServiceImpl implements PaoPersistenceService {
         
         dbChangeManager.processPaoDbChange(paoIdentifier, DbChangeType.DELETE);
     }
-
-    @Override
-    public boolean createsNameConflict(PaoType paoType, String name) {
-        return paoPersistenceDao.createsNameConflict(paoType, name);
-    }
 }

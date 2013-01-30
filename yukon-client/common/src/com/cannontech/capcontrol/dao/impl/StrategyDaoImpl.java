@@ -593,4 +593,14 @@ public class StrategyDaoImpl implements StrategyDao, InitializingBean {
         strategyTemplate.setPrimaryKeyField("StrategyId");
         strategyTemplate.setFieldMapper(strategyFieldMapper); 
     }
+
+    @Override
+    public boolean isUniqueName(String name) {
+        SqlStatementBuilder sql = new SqlStatementBuilder();
+        sql.append("SELECT COUNT(*) FROM CapControlStrategy");
+        sql.append("WHERE StrategyName").eq(name);
+        
+        int duplicateNames =  yukonJdbcTemplate.queryForInt(sql);
+        return duplicateNames != 0;
+    }
 }

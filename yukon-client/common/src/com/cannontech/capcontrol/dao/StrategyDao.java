@@ -63,4 +63,9 @@ public interface StrategyDao {
 
     public StrategyLimitsHolder getStrategyLimitsHolder(int strategyId);
 
+    /**
+     * Checks if there is already a strategy of the same name and type
+     * @return true if there is a conflict
+     */
+    public boolean isUniqueName(String name);
 }
