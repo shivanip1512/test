@@ -5,9 +5,6 @@ import org.apache.commons.lang.StringUtils;
 import com.cannontech.common.util.CtiUtilities;
 import com.cannontech.database.SqlUtils;
 
-/**
- * This type was created in VisualAge.
- */
 @SuppressWarnings("serial")
 public class CapBank extends com.cannontech.database.db.DBPersistent 
 {
@@ -35,22 +32,13 @@ public class CapBank extends com.cannontech.database.db.DBPersistent
 	public static final String CONSTRAINT_COLUMNS[] = { "DeviceID" };
 
 	public static final String TABLE_NAME = "CapBank";
-/**
- * DeviceTwoWayFlags constructor comment.
- */
 public CapBank() {
 	super();
 }
-/**
- * DeviceTwoWayFlags constructor comment.
- */
 public CapBank(Integer capBankID) {
 	super();
 	setDeviceID( capBankID );
 }
-/**
- * add method comment.
- */
 public void add() throws java.sql.SQLException
 {
 	Object[] addValues = 
@@ -71,78 +59,35 @@ public void add() throws java.sql.SQLException
 
 	add( TABLE_NAME, addValues );
 }
-/**
- * delete method comment.
- */
 public void delete() throws java.sql.SQLException {
 
 	delete( TABLE_NAME, "DeviceID", getDeviceID() );
 	
 }
-/**
- * Insert the method's description here.
- * Creation date: (11/9/2001 11:42:46 AM)
- * @return java.lang.Integer
- */
 public java.lang.Integer getBankSize() {
 	return bankSize;
 }
-/**
- * This method was created in VisualAge.
- * @return java.lang.Integer
- */
 public Integer getControlDeviceID() {
 	return controlDeviceID;
 }
-/**
- * Insert the method's description here.
- * Creation date: (11/9/2001 11:35:12 AM)
- * @return java.lang.String
- */
 public java.lang.String getControllerType() {
 	return controllerType;
 }
-/**
- * This method was created in VisualAge.
- * @return java.lang.Integer
- */
 public Integer getControlPointID() {
 	return controlPointID;
 }
-/**
- * This method was created in VisualAge.
- * @return java.lang.Integer
- */
 public Integer getDeviceID() {
 	return deviceID;
 }
-/**
- * @return String
- */
 public String getMapLocationID() {
 	return mapLocationID;
 }
-/**
- * Insert the method's description here.
- * Creation date: (11/9/2001 11:35:12 AM)
- * @return java.lang.String
- */
 public java.lang.String getOperationalState() {
 	return operationalState;
 }
-/**
- * Insert the method's description here.
- * Creation date: (11/9/2001 11:43:31 AM)
- * @return java.lang.String
- */
 public java.lang.String getSwitchManufacture() {
 	return switchManufacture;
 }
-/**
- * Insert the method's description here.
- * Creation date: (11/9/2001 11:43:31 AM)
- * @return java.lang.String
- */
 public java.lang.String getTypeOfSwitch() {
 	return typeOfSwitch;
 }
@@ -151,9 +96,6 @@ public Integer getRecloseDelay() {
 	return recloseDelay;
 }
 
-/**
- * retrieve method comment.
- */
 public void retrieve() throws java.sql.SQLException 
 {
 	Object constraintValues[] = { getDeviceID() };
@@ -176,18 +118,9 @@ public void retrieve() throws java.sql.SQLException
 	}
 
 }
-/**
- * Insert the method's description here.
- * Creation date: (11/9/2001 11:42:46 AM)
- * @param newBankSize java.lang.Integer
- */
 public void setBankSize(java.lang.Integer newBankSize) {
 	bankSize = newBankSize;
 }
-/**
- * This method was created in VisualAge.
- * @param newValue java.lang.Integer
- */
 public void setControlDeviceID(Integer newValue) {
 	this.controlDeviceID = newValue;
 }
@@ -198,31 +131,15 @@ public void setControlDeviceID(Integer newValue) {
 public void setControllerType(java.lang.String newControllerType) {
     controllerType = com.cannontech.common.util.StringUtils.stripNone(newControllerType);
 }
-/**
- * This method was created in VisualAge.
- * @param newValue java.lang.Integer
- */
 public void setControlPointID(Integer newValue) {
 	this.controlPointID = newValue;
 }
-/**
- * This method was created in VisualAge.
- * @param newValue java.lang.Integer
- */
 public void setDeviceID(Integer newValue) {
 	this.deviceID = newValue;
 }
-/**
- * @param newMapLocationID String
- */
 public void setMapLocationID(String newMapLocationID) {
 	mapLocationID = newMapLocationID;
 }
-/**
- * Insert the method's description here.
- * Creation date: (11/9/2001 11:35:12 AM)
- * @param newOperationalState java.lang.String
- */
 public void setOperationalState(java.lang.String newOperationalState) {
     if(!(newOperationalState.equalsIgnoreCase(com.cannontech.database.data.capcontrol.CapBank.SWITCHED_OPSTATE) ||
        newOperationalState.equalsIgnoreCase(com.cannontech.database.data.capcontrol.CapBank.STANDALONE_OPSTATE) ||
@@ -250,9 +167,6 @@ public void setTypeOfSwitch(java.lang.String newTypeOfSwitch) {
 public void setRecloseDelay(Integer newValue) {
 	recloseDelay = newValue;
 }
-/**
- * update method comment.
- */
 public void update() throws java.sql.SQLException 
 {
 
@@ -276,36 +190,21 @@ public void update() throws java.sql.SQLException
 	update( TABLE_NAME, SETTER_COLUMNS, setValues, CONSTRAINT_COLUMNS, constraintValues );
 }
 
-
-
-	/**
-	 * @return
-	 */
 	public Integer getMaxDailyOps() {
 		return maxDailyOps;
 	}
 
-	/**
-	 * @return
-	 */
 	public Character getMaxOpDisable() {
 		return maxOpDisable;
 	}
 
-	/**
-	 * @param integer
-	 */
 	public void setMaxDailyOps(Integer integer) {
 		maxDailyOps = integer;
 	}
 
-	/**
-	 * @param character
-	 */
 	public void setMaxOpDisable(Character character) {
 		maxOpDisable = character;
 	}
-
 
 	/**
 	 * Boolean method for MaxOperations diable flag
