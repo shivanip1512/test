@@ -281,8 +281,10 @@ public class LocalizationService implements ApplicationContextAware {
         File folder = new File(themesFolderName);
 
         List<String> themes = Lists.newArrayList();
-        for (File file : folder.listFiles()) {
-            themes.add(file.getName());
+        if(folder != null){
+            for (File file : folder.listFiles()) {
+                themes.add(file.getName());
+            }
         }
         return themes;
     }
