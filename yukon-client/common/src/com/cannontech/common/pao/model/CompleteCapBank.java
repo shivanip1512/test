@@ -1,10 +1,11 @@
 package com.cannontech.common.pao.model;
 
+import org.apache.commons.lang.StringUtils;
+
 import com.cannontech.capcontrol.BankOpState;
 import com.cannontech.common.pao.PaoType;
 import com.cannontech.common.pao.annotation.YukonPao;
 import com.cannontech.common.pao.annotation.YukonPaoField;
-import com.cannontech.common.util.CtiUtilities;
 import com.google.common.base.Objects;
 
 @YukonPao(idColumnName = "deviceId", paoTypes=PaoType.CAPBANK)
@@ -15,9 +16,9 @@ public class CompleteCapBank extends CompleteDevice {
     private int bankSize = 600;
     private int recloseDelay = 0;
     private int maxDailyOps = 0;
-    private String typeOfSwitch = CtiUtilities.STRING_NONE;
-    private String controllerType = CtiUtilities.STRING_NONE;
-    private String switchManufacturer = CtiUtilities.STRING_NONE;
+    private String typeOfSwitch = StringUtils.EMPTY;
+    private String controllerType = StringUtils.EMPTY;
+    private String switchManufacturer = StringUtils.EMPTY;
     private String mapLocationId = "0";
     private boolean maxOpDisable = false;
     private CompleteCapBankAdditional capBankAdditional = new CompleteCapBankAdditional();
