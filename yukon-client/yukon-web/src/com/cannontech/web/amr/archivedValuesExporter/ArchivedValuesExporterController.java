@@ -5,7 +5,6 @@ import java.io.IOException;
 import java.io.OutputStream;
 import java.io.OutputStreamWriter;
 import java.math.RoundingMode;
-import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.List;
@@ -73,14 +72,14 @@ public class ArchivedValuesExporterController {
 
     public static String baseKey = "yukon.web.modules.amr.archivedValueExporter.";
     
+    @Autowired private ArchiveValuesExportFormatDao archiveValuesExportFormatDao;
+    @Autowired private DatePropertyEditorFactory datePropertyEditorFactory;
     @Autowired private DeviceCollectionFactory deviceCollectionFactory;
-    @Autowired private ExportReportValidator exportReportValidator;
-    @Autowired private ExportFormatValidator exportFormatValidator;
     @Autowired private ExportAttributeValidator exportAttributeValidator;
     @Autowired private ExportFieldValidator exportFieldValidator;
-    @Autowired private ArchiveValuesExportFormatDao archiveValuesExportFormatDao;
+    @Autowired private ExportFormatValidator exportFormatValidator;
     @Autowired private ExportReportGeneratorService exportReportGeneratorService;
-    @Autowired private DatePropertyEditorFactory datePropertyEditorFactory;
+    @Autowired private ExportReportValidator exportReportValidator;
     @Autowired private GlobalSettingDao globalSettingDao;
     @Autowired private MeterDao meterDao;
     @Autowired private ObjectFormattingService objectFormattingService;
@@ -92,8 +91,7 @@ public class ArchivedValuesExporterController {
 
     @ModelAttribute("groupedAttributes")
     public Map<AttributeGroup, List<BuiltInAttribute>> getGroupedAttributes(YukonUserContext userContext) {
-        return objectFormattingService.sortDisplayableValues(
-                BuiltInAttribute.getAllGroupedAttributes(), userContext);
+        return objectFormattingService.sortDisplayableValues(BuiltInAttribute.getAllGroupedAttributes(), userContext);
     }
 
     @ModelAttribute("dataSelection")
@@ -122,12 +120,10 @@ public class ArchivedValuesExporterController {
     }
 
     @RequestMapping
-    public String view(ModelMap model,
-                       HttpServletRequest request,
-                       @ModelAttribute("backingBean") ArchivedValuesExporterBackingBean backingBean,
+    public String view(ModelMap model, HttpServletRequest request, @ModelAttribute("backingBean") ArchivedValuesExporterBackingBean backingBean,
                        YukonUserContext userContext)
-            throws ServletException {
-        String view = getView(model, request, PageEditMode.VIEW, backingBean, userContext);
+    throws ServletException {
+        String view = getView(model, request, PageEditMode.VIEW, userContext, backingBean);
         ExportFormat format = null;
         if (backingBean.getSelectedFormatId() != 0) {
             format = archiveValuesExportFormatDao.getByFormatId(backingBean.getSelectedFormatId());
@@ -141,49 +137,43 @@ public class ArchivedValuesExporterController {
     }
 
     @RequestMapping
-    public String cancel(ModelMap model,
-                         HttpServletRequest request,
-                         @ModelAttribute("backingBean") ArchivedValuesExporterBackingBean backingBean,
-                         YukonUserContext userContext)
-            throws DeviceCollectionCreationException, ServletException {
+    public String cancel(ModelMap model, HttpServletRequest request, YukonUserContext userContext,
+                         @ModelAttribute("backingBean") ArchivedValuesExporterBackingBean backingBean)
+     throws DeviceCollectionCreationException, ServletException {
+
         backingBean.setSelectedFormatId(backingBean.getFormat().getFormatId());
         return view(model, request, backingBean, userContext);
     }
     
     @RequestMapping
-    public String copy(ModelMap model,
-                       HttpServletRequest request,
-                       @ModelAttribute("backingBean") ArchivedValuesExporterBackingBean backingBean,
-                       YukonUserContext userContext)
-            throws ServletRequestBindingException, DeviceCollectionCreationException {
-        ExportFormat format =
-            archiveValuesExportFormatDao.getByFormatId(backingBean.getSelectedFormatId());
+    public String copy(ModelMap model, HttpServletRequest request, YukonUserContext userContext,
+                       @ModelAttribute("backingBean") ArchivedValuesExporterBackingBean backingBean)
+    throws ServletRequestBindingException, DeviceCollectionCreationException {
+
+        ExportFormat format = archiveValuesExportFormatDao.getByFormatId(backingBean.getSelectedFormatId());
         format.setFormatId(0);
         format.setFormatName("");
         backingBean.setFormat(format);
-        return getView(model, request, PageEditMode.CREATE, backingBean, userContext);
+        return getView(model, request, PageEditMode.CREATE, userContext, backingBean);
     }
 
     @RequestMapping
-    public String edit(ModelMap model,
-                       HttpServletRequest request,
-                       @ModelAttribute("backingBean") ArchivedValuesExporterBackingBean backingBean,
-                       YukonUserContext userContext)
-            throws ServletRequestBindingException, DeviceCollectionCreationException {
-        ExportFormat format =
-            archiveValuesExportFormatDao.getByFormatId(backingBean.getSelectedFormatId());
+    public String edit(ModelMap model, HttpServletRequest request, YukonUserContext userContext, 
+                       @ModelAttribute("backingBean") ArchivedValuesExporterBackingBean backingBean)
+    throws ServletRequestBindingException, DeviceCollectionCreationException {
+
+        ExportFormat format = archiveValuesExportFormatDao.getByFormatId(backingBean.getSelectedFormatId());
         backingBean.setFormat(format);
-        return getView(model, request, PageEditMode.EDIT, backingBean, userContext);
+        return getView(model, request, PageEditMode.EDIT, userContext, backingBean);
     }
 
     @RequestMapping
-    public String create(ModelMap model,
-                         HttpServletRequest request,
-                         @ModelAttribute("backingBean") ArchivedValuesExporterBackingBean backingBean,
-                         YukonUserContext userContext)
-            throws ServletRequestBindingException, DeviceCollectionCreationException {
+    public String create(ModelMap model, HttpServletRequest request, YukonUserContext userContext,
+                         @ModelAttribute("backingBean") ArchivedValuesExporterBackingBean backingBean)
+    throws ServletRequestBindingException, DeviceCollectionCreationException {
+
         backingBean.resetFormat();
-        return getView(model, request, PageEditMode.CREATE, backingBean, userContext);
+        return getView(model, request, PageEditMode.CREATE, userContext, backingBean);
     }
 
     @RequestMapping
@@ -192,30 +182,27 @@ public class ArchivedValuesExporterController {
     }
 
     @RequestMapping
-    public String selected(ModelMap model,
-                           HttpServletRequest request,
-                           @ModelAttribute("backingBean") ArchivedValuesExporterBackingBean backingBean,
-                           YukonUserContext userContext)
-            throws DeviceCollectionCreationException, ServletException {
+    public String selected(ModelMap model, HttpServletRequest request, YukonUserContext userContext,
+                           @ModelAttribute("backingBean") ArchivedValuesExporterBackingBean backingBean)
+    throws DeviceCollectionCreationException, ServletException {
+
         return view(model, request, backingBean, userContext);
     }
 
     @RequestMapping
-    public String removeAttribute(ModelMap model,
-                                  HttpServletRequest request,
-                                  @ModelAttribute("backingBean") ArchivedValuesExporterBackingBean backingBean,
-                                  YukonUserContext userContext)
-            throws ServletRequestBindingException, DeviceCollectionCreationException {
+    public String removeAttribute(ModelMap model, HttpServletRequest request, YukonUserContext userContext,
+                                  @ModelAttribute("backingBean") ArchivedValuesExporterBackingBean backingBean)
+    throws ServletRequestBindingException, DeviceCollectionCreationException {
+
         backingBean.removeSelectedAttribute();
-        return getView(model, request, PageEditMode.EDIT, backingBean, userContext);
+        return getView(model, request, PageEditMode.EDIT, userContext, backingBean);
     }
 
     @RequestMapping
-    public String addAttribute(ModelMap model,
-                               @ModelAttribute("backingBean") ArchivedValuesExporterBackingBean backingBean,
-                               BindingResult bindingResult, HttpServletRequest request,
-                               YukonUserContext userContext)
-            throws ServletRequestBindingException, DeviceCollectionCreationException {
+    public String addAttribute(ModelMap model, HttpServletRequest request, YukonUserContext userContext,
+                               @ModelAttribute("backingBean") ArchivedValuesExporterBackingBean backingBean, BindingResult bindingResult)
+    throws ServletRequestBindingException, DeviceCollectionCreationException {
+
         PageEditMode mode = PageEditMode.EDIT;
         exportAttributeValidator.validate(backingBean, bindingResult);
         if (bindingResult.hasErrors()) {
@@ -227,12 +214,11 @@ public class ArchivedValuesExporterController {
         if(backingBean.getFormat().getFormatId() == 0){
             mode = PageEditMode.CREATE;
         }
-        return getView(model, request, mode, backingBean, userContext);
+        return getView(model, request, mode, userContext, backingBean);
     }
 
     @RequestMapping
-    public String ajaxEditAttribute(ModelMap model,
-                                    @ModelAttribute("backingBean") ArchivedValuesExporterBackingBean backingBean) {
+    public String ajaxEditAttribute(ModelMap model, @ModelAttribute("backingBean") ArchivedValuesExporterBackingBean backingBean) {
         if (backingBean.getRowIndex() == -1) {
             backingBean.setExportAttribute(new ExportAttribute());
             backingBean.setPageNameKey("addAttribute");
@@ -245,42 +231,38 @@ public class ArchivedValuesExporterController {
     }
 
     @RequestMapping
-    public String addField(ModelMap model,
-                           @ModelAttribute("backingBean") ArchivedValuesExporterBackingBean backingBean,
-                           BindingResult bindingResult, HttpServletRequest request,
-                           YukonUserContext userContext)
-            throws ServletRequestBindingException, DeviceCollectionCreationException {
+    public String addField(ModelMap model, HttpServletRequest request, YukonUserContext userContext,
+                           @ModelAttribute("backingBean") ArchivedValuesExporterBackingBean backingBean, BindingResult bindingResult)
+    throws ServletRequestBindingException, DeviceCollectionCreationException {
+
         PageEditMode mode = PageEditMode.EDIT;
         backingBean.resetExportFieldValues();
         exportFieldValidator.validate(backingBean, bindingResult);
         if (bindingResult.hasErrors()) {
-            backingBean.setPopupToOpen("addFieldPopup");            
+            backingBean.setPopupToOpen("addFieldPopup");
         } else {
             backingBean.addSelectedField();
         }
         if(backingBean.getFormat().getFormatId() == 0){
             mode = PageEditMode.CREATE;
         }
-        return getView(model, request, mode, backingBean, userContext);
+        return getView(model, request, mode, userContext, backingBean);
     }
 
     @RequestMapping
-    public String removeField(ModelMap model,
-                              @ModelAttribute("backingBean") ArchivedValuesExporterBackingBean backingBean,
-                              HttpServletRequest request,
-                              YukonUserContext userContext)
-            throws ServletRequestBindingException, DeviceCollectionCreationException {
+    public String removeField(ModelMap model, HttpServletRequest request, YukonUserContext userContext, 
+                              @ModelAttribute("backingBean") ArchivedValuesExporterBackingBean backingBean)
+    throws ServletRequestBindingException, DeviceCollectionCreationException {
+
         backingBean.removeSelectedField();
-        return getView(model, request, PageEditMode.EDIT, backingBean, userContext);
+        return getView(model, request, PageEditMode.EDIT, userContext, backingBean);
     }
     
     @RequestMapping
-    public String ajaxEditField(ModelMap model,
-                                @ModelAttribute("backingBean") ArchivedValuesExporterBackingBean backingBean) {
+    public String ajaxEditField(ModelMap model, @ModelAttribute("backingBean") ArchivedValuesExporterBackingBean backingBean) {
+
         if (backingBean.getRowIndex() == -1) {
-            RoundingMode roundingMode =
-                    globalSettingDao.getEnum(GlobalSettingType.DEFAULT_ROUNDING_MODE,
-                                                     RoundingMode.class);
+            RoundingMode roundingMode = globalSettingDao.getEnum(GlobalSettingType.DEFAULT_ROUNDING_MODE, RoundingMode.class);
             backingBean.resetField(YukonRoundingMode.valueOf(roundingMode.name()));
             backingBean.setPageNameKey("addField");
         } else {
@@ -289,44 +271,38 @@ public class ArchivedValuesExporterController {
             backingBean.copyPattern(backingBean.getExportField());
             backingBean.setPageNameKey("editField");
         }
+
         model.addAttribute("backingBean", backingBean);
         return "archivedValuesExporter/editField.jsp";
     }
 
-    
     @RequestMapping
-    public String moveFieldUp(ModelMap model,
-                              @ModelAttribute("backingBean") ArchivedValuesExporterBackingBean backingBean,
-                              HttpServletRequest request,
-                              YukonUserContext userContext)
-            throws ServletRequestBindingException, DeviceCollectionCreationException {
+    public String moveFieldUp(ModelMap model, HttpServletRequest request, YukonUserContext userContext, 
+                              @ModelAttribute("backingBean") ArchivedValuesExporterBackingBean backingBean)
+    throws ServletRequestBindingException, DeviceCollectionCreationException {
+
         backingBean.moveFieldUp(true);
-        return getView(model, request, PageEditMode.EDIT, backingBean, userContext);
+        return getView(model, request, PageEditMode.EDIT, userContext, backingBean);
     }
 
     @RequestMapping
-    public String moveFieldDown(ModelMap model,
-                                @ModelAttribute("backingBean") ArchivedValuesExporterBackingBean backingBean,
-                                HttpServletRequest request,
-                                YukonUserContext userContext)
-            throws ServletRequestBindingException, DeviceCollectionCreationException {
+    public String moveFieldDown(ModelMap model, HttpServletRequest request, YukonUserContext userContext,
+                                @ModelAttribute("backingBean") ArchivedValuesExporterBackingBean backingBean)
+    throws ServletRequestBindingException, DeviceCollectionCreationException {
+
         backingBean.moveFieldUp(false);
-        return getView(model, request, PageEditMode.EDIT, backingBean, userContext);
+        return getView(model, request, PageEditMode.EDIT, userContext, backingBean);
     }
 
     @RequestMapping
-    public String saveFormat(FlashScope flashScope,
-                             ModelMap model,
-                             HttpServletRequest request,
-                             @ModelAttribute("backingBean") ArchivedValuesExporterBackingBean backingBean,
-                             BindingResult bindingResult, YukonUserContext userContext)
-            throws ServletRequestBindingException,
-            DeviceCollectionCreationException {
+    public String saveFormat(FlashScope flashScope, ModelMap model, HttpServletRequest request, YukonUserContext userContext,
+                             @ModelAttribute("backingBean") ArchivedValuesExporterBackingBean backingBean, BindingResult bindingResult)
+    throws ServletRequestBindingException, DeviceCollectionCreationException {
+
         PageEditMode mode = PageEditMode.VIEW;
         exportFormatValidator.validate(backingBean, bindingResult);
         if (bindingResult.hasErrors()) {
-            List<MessageSourceResolvable> messages =
-                YukonValidationUtils.errorsForBindingResult(bindingResult);
+            List<MessageSourceResolvable> messages = YukonValidationUtils.errorsForBindingResult(bindingResult);
             flashScope.setError(messages);
             if(backingBean.getFormat().getFormatId() == 0){
                 mode = PageEditMode.CREATE;
@@ -343,15 +319,14 @@ public class ArchivedValuesExporterController {
             backingBean.setSelectedFormatId(format.getFormatId());
             model.addAttribute("editMode", PageEditMode.EDIT);
         }
-        return getView(model, request, mode, backingBean, userContext);
+        return getView(model, request, mode, userContext, backingBean);
     }
 
     @RequestMapping
-    public String deleteFormat(ModelMap model,
-                               HttpServletRequest request,
-                               @ModelAttribute("backingBean") ArchivedValuesExporterBackingBean backingBean,
-                               YukonUserContext userContext)
-            throws ServletException {
+    public String deleteFormat(ModelMap model, HttpServletRequest request, YukonUserContext userContext,
+                               @ModelAttribute("backingBean") ArchivedValuesExporterBackingBean backingBean)
+    throws ServletException {
+
         archiveValuesExportFormatDao.delete(backingBean.getFormat().getFormatId());
         backingBean.setSelectedFieldId(0);
         return view(model, request, backingBean, userContext);
@@ -360,23 +335,16 @@ public class ArchivedValuesExporterController {
     @InitBinder
     public void initBinder(WebDataBinder binder, YukonUserContext userContext) {
         if (binder.getTarget() != null) {
-            MessageCodesResolver msgCodesResolver =
-                new YukonMessageCodeResolver(baseKey);
+            MessageCodesResolver msgCodesResolver = new YukonMessageCodeResolver(baseKey);
             binder.setMessageCodesResolver(msgCodesResolver);
         }
 
-        EnumPropertyEditor<BuiltInAttribute> attributeEditor =
-            new EnumPropertyEditor<BuiltInAttribute>(BuiltInAttribute.class);
-        EnumPropertyEditor<FieldType> fieldTypeEditor =
-            new EnumPropertyEditor<FieldType>(FieldType.class);
-        EnumPropertyEditor<AttributeField> attributeFieldEditor =
-            new EnumPropertyEditor<AttributeField>(AttributeField.class);
-        EnumPropertyEditor<PadSide> padSideFieldEditor =
-            new EnumPropertyEditor<PadSide>(PadSide.class);
-        EnumPropertyEditor<MissingAttribute> missingAttributeFieldEditor =
-            new EnumPropertyEditor<MissingAttribute>(MissingAttribute.class);
-        EnumPropertyEditor<YukonRoundingMode> roundingModeEditor =
-                new EnumPropertyEditor<YukonRoundingMode>(YukonRoundingMode.class);
+        EnumPropertyEditor<BuiltInAttribute> attributeEditor = new EnumPropertyEditor<BuiltInAttribute>(BuiltInAttribute.class);
+        EnumPropertyEditor<FieldType> fieldTypeEditor = new EnumPropertyEditor<FieldType>(FieldType.class);
+        EnumPropertyEditor<AttributeField> attributeFieldEditor = new EnumPropertyEditor<AttributeField>(AttributeField.class);
+        EnumPropertyEditor<PadSide> padSideFieldEditor = new EnumPropertyEditor<PadSide>(PadSide.class);
+        EnumPropertyEditor<MissingAttribute> missingAttributeFieldEditor = new EnumPropertyEditor<MissingAttribute>(MissingAttribute.class);
+        EnumPropertyEditor<YukonRoundingMode> roundingModeEditor = new EnumPropertyEditor<YukonRoundingMode>(YukonRoundingMode.class);
      
         binder.registerCustomEditor(Attribute.class, attributeEditor);
         binder.registerCustomEditor(FieldType.class, fieldTypeEditor);
@@ -387,13 +355,11 @@ public class ArchivedValuesExporterController {
         binder.registerCustomEditor(Date.class, "endDate", datePropertyEditorFactory.getPropertyEditor(DateFormatEnum.DATE, userContext));
     }
 
-    private void addDeviceCollectionAttribute(ModelMap model, HttpServletRequest request,
-                                              ArchivedValuesExporterBackingBean backingBean)
-            throws ServletRequestBindingException, DeviceCollectionCreationException {
+    private void addDeviceCollectionAttribute(ModelMap model, HttpServletRequest request, ArchivedValuesExporterBackingBean backingBean)
+    throws ServletRequestBindingException, DeviceCollectionCreationException {
 
         if (StringUtils.isNotBlank(request.getParameter("collectionType"))) {
-            DeviceCollection deviceCollection =
-                this.deviceCollectionFactory.createDeviceCollection(request);
+            DeviceCollection deviceCollection = this.deviceCollectionFactory.createDeviceCollection(request);
             model.addAllAttributes(deviceCollection.getCollectionParameters());
             model.addAttribute("deviceCollection", deviceCollection);
             backingBean.setDeviceCollection(deviceCollection);
@@ -401,10 +367,10 @@ public class ArchivedValuesExporterController {
 
     }
 
-    private String getView(ModelMap model, HttpServletRequest request, PageEditMode mode,
-                           ArchivedValuesExporterBackingBean backingBean,
-                           YukonUserContext userContext)
-            throws ServletRequestBindingException, DeviceCollectionCreationException {
+    private String getView(ModelMap model, HttpServletRequest request, PageEditMode mode, YukonUserContext userContext,
+                           ArchivedValuesExporterBackingBean backingBean)
+    throws ServletRequestBindingException, DeviceCollectionCreationException {
+
         model.addAttribute("mode", mode);
         model.addAttribute("backingBean", backingBean);
         addDeviceCollectionAttribute(model, request, backingBean);
@@ -428,34 +394,25 @@ public class ArchivedValuesExporterController {
     }
 
     @RequestMapping
-    public String generateReport(FlashScope flashScope,
-                                 ModelMap model,
-                                 HttpServletResponse response,
-                                 HttpServletRequest request,
-                                 @ModelAttribute("backingBean") ArchivedValuesExporterBackingBean backingBean,
-                                 BindingResult bindingResult,
+    public String generateReport(FlashScope flashScope, ModelMap model, HttpServletResponse response, HttpServletRequest request,
+                                 @ModelAttribute("backingBean") ArchivedValuesExporterBackingBean backingBean, BindingResult bindingResult,
                                  YukonUserContext userContext)
-            throws ParseException, IOException, ServletRequestBindingException,
-            DeviceCollectionCreationException {
+    throws IOException, ServletRequestBindingException, DeviceCollectionCreationException {
+
         exportReportValidator.validate(backingBean, bindingResult);
         if (!bindingResult.hasErrors()) {
-            DeviceCollection deviceCollection =
-                deviceCollectionFactory.createDeviceCollection(request);
+            DeviceCollection deviceCollection = deviceCollectionFactory.createDeviceCollection(request);
             List<SimpleDevice> deviceList = deviceCollection.getDeviceList();
             List<Meter> meters = meterDao.getMetersForYukonPaos(deviceList);
-            ExportFormat format =
-                archiveValuesExportFormatDao.getByFormatId(backingBean.getSelectedFormatId());
-            List<String> report =
-                exportReportGeneratorService.generateReport(meters,
-                                                            format,
-                                                            backingBean.getEndDate(),
-                                                            userContext);
+            ExportFormat format = archiveValuesExportFormatDao.getByFormatId(backingBean.getSelectedFormatId());
+            List<String> report = exportReportGeneratorService.generateReport(meters, format, backingBean.getEndDate(), userContext);
             String fileName = getFileName(backingBean.getEndDate(), format.getFormatName());
             setupResponse(response, fileName);
             createReportFile(response, report);
             return  "";
         }
-        String view = getView(model, request, PageEditMode.VIEW, backingBean, userContext);
+
+        String view = getView(model, request, PageEditMode.VIEW, userContext, backingBean);
         List<MessageSourceResolvable> messages = YukonValidationUtils.errorsForBindingResult(bindingResult);
         flashScope.setError(messages);
         ExportFormat format = archiveValuesExportFormatDao.getByFormatId(backingBean.getSelectedFormatId());
@@ -465,11 +422,10 @@ public class ArchivedValuesExporterController {
         return view;
     }
 
-    private String getFileName(Date endDate, String formatName) throws ParseException {
+    private String getFileName(Date endDate, String formatName) {
         SimpleDateFormat fileNameDateFormat = new SimpleDateFormat("MMddyyyy");
         String fileNameDateFormatString = fileNameDateFormat.format(endDate);
-        String fileName =
-            ServletUtil.makeWindowsSafeFileName(formatName + fileNameDateFormatString) + ".txt";
+        String fileName = ServletUtil.makeWindowsSafeFileName(formatName + fileNameDateFormatString) + ".txt";
         return fileName;
     }
 
@@ -480,7 +436,8 @@ public class ArchivedValuesExporterController {
     }
 
     private void createReportFile(HttpServletResponse response, List<String> report)
-            throws IOException {
+    throws IOException {
+
         OutputStream outputStream = response.getOutputStream();
         BufferedWriter writer = new BufferedWriter(new OutputStreamWriter(outputStream));
         for (String row : report) {
