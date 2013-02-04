@@ -118,6 +118,12 @@ begin
     AllowWriteAccessForUsers(TARGETDIR ^ "Server\\Config\\remoteLogging.xml");
     AllowWriteAccessForUsers(TARGETDIR ^ "Server\\Config\\yukonLogging.xml");
     
+    //Remove Lucene indexes so they're rebuilt on startup
+	nResult = DeleteDir(TARGETDIR ^ "cache", ALLCONTENTS);
+	if(nResult < 0) then
+	   MessageBox("Unable to clear Lucene indexes. Please manually rebuild indexes.", WARNING);
+	endif;
+    
     Dialog_MasterConfig:
     Disable(BACKBUTTON);
     Disable(CANCELBUTTON); //You just installed.  There's no going back.
