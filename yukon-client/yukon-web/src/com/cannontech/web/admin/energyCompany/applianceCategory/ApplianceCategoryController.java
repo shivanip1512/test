@@ -424,14 +424,16 @@ public class ApplianceCategoryController {
         model.addAttribute("mode", mode);
         model.addAttribute("isEditable", isEditable);
         
-        boolean showAlternateEnrollment = ecRolePropertyDao.checkProperty(YukonRoleProperty.ALTERNATE_PROGRAM_ENROLLMENT, yec);
-        if (showAlternateEnrollment) {
-            model.addAttribute("showAlternateEnrollment", showAlternateEnrollment);
-            // Programs that are already an alternate on another program and this program should be excluded from the Alternate Enrollment picker
-            List<Integer> excludedProgramIds = ptapDao.getAllAlternateProgramIds();
-            excludedProgramIds.removeAll(Collections.singleton(bean.getAssignedProgram().getAlternateProgramId()));
-            excludedProgramIds.add(bean.getAssignedProgram().getAssignedProgramId());
-            model.addAttribute("excludedProgramIds", excludedProgramIds);
+        if(!bean.isMultiple()){
+            boolean showAlternateEnrollment = ecRolePropertyDao.checkProperty(YukonRoleProperty.ALTERNATE_PROGRAM_ENROLLMENT, yec);
+            if (showAlternateEnrollment) {
+                model.addAttribute("showAlternateEnrollment", showAlternateEnrollment);
+                // Programs that are already an alternate on another program and this program should be excluded from the Alternate Enrollment picker
+                List<Integer> excludedProgramIds = ptapDao.getAllAlternateProgramIds();
+                excludedProgramIds.removeAll(Collections.singleton(bean.getAssignedProgram().getAlternateProgramId()));
+                excludedProgramIds.add(bean.getAssignedProgram().getAssignedProgramId());
+                model.addAttribute("excludedProgramIds", excludedProgramIds);
+            }
         }
         
         return "applianceCategory/editAssignedProgram.jsp";
