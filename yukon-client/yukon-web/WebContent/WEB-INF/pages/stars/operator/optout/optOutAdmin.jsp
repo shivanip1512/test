@@ -148,7 +148,7 @@
                         <form action="/stars/operator/optOut/admin/setDisabled" method="post">
                             <table style="padding:10px;background-color:#EEE;width:100%;">
                                 <tr><td>
-                                    <b><i:inline key=".countOptOuts.byProgramName.label"/></b> <i:inline key=".countOptOuts.byProgramName.instruction"/>
+                                    <b><i:inline key=".countOptOuts.byProgramName.label"/></b> <i:inline key=".countOptOuts.byProgramName.instruction" arguments="${change}"/>
                                 </td></tr>
                                 <tr><td style="padding-top:10px;">
                                     
@@ -269,7 +269,7 @@
 				                
 		                	<table style="padding:10px;background-color:#EEE;width:100%;">
 				        		<tr><td>
-				        			<b><i:inline key=".countOptOuts.byProgramName.label"/></b> <i:inline key=".countOptOuts.byProgramName.instruction"/>
+				        			<b><i:inline key=".countOptOuts.byProgramName.label"/></b> <i:inline key=".countOptOuts.byProgramName.instruction" arguments="${change}"/>
 				        		</td></tr>
 				        		<tr><td style="padding-top:10px;">
 				        			

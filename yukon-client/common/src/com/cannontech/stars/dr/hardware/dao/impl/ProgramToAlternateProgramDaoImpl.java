@@ -166,7 +166,7 @@ public class ProgramToAlternateProgramDaoImpl implements ProgramToAlternateProgr
     }
 
     @Override
-    public int getTotalNumberOfAccountsInSeasonalOptOuts(YukonEnergyCompany yukonEnergyCompany, List<Integer> assignedProgramIds) {
+    public int getTotalNumberOfDevicesInSeasonalOptOuts(YukonEnergyCompany yukonEnergyCompany, List<Integer> assignedProgramIds) {
         List<Integer> seasonalOptOutProgramIds = null;
         if (CollectionUtils.isEmpty(assignedProgramIds)) {
             seasonalOptOutProgramIds = Lists.transform(getAll(), ProgramToAlternateProgram.ALTERNATE_PROGRAM_IDS_FUNCTION);
@@ -176,7 +176,7 @@ public class ProgramToAlternateProgramDaoImpl implements ProgramToAlternateProgr
         }
 
         SqlStatementBuilder sql = new SqlStatementBuilder();
-        sql.append("SELECT COUNT(DISTINCT CA.AccountId)");
+        sql.append("SELECT COUNT (CA.AccountId)");
         sql.append("FROM CustomerAccount CA");
         sql.append("  JOIN ECToAccountMapping ECTAM ON CA.AccountId = ECTAM.AccountId");
         sql.append("  JOIN LMHardwareControlGroup LMHCG ON (CA.AccountId = LMHCG.AccountId  AND " +

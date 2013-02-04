@@ -53,8 +53,8 @@ public interface ProgramToAlternateProgramDao {
     public List<Integer> getAllAlternateProgramIds();
 
 	/**
-	 * Returns the number of accounts that are currently in a seasonal opt out.
+	 * Returns the number of devices that are currently in a seasonal opt out.
 	 */
-    public int getTotalNumberOfAccountsInSeasonalOptOuts(YukonEnergyCompany yukonEnergyCompany, List<Integer> assignedProgramIds);
+    public int getTotalNumberOfDevicesInSeasonalOptOuts(YukonEnergyCompany yukonEnergyCompany, List<Integer> assignedProgramIds);
 
 }

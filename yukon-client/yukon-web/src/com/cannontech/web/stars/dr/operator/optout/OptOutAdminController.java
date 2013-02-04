@@ -138,7 +138,7 @@ public class OptOutAdminController {
         model.addAttribute("totalNumberOfAccounts", customerAccountDao.getTotalNumberOfAccounts(yukonEnergyCompany, assignedProgramIds));
         model.addAttribute("currentOptOuts", optOutEventDao.getTotalNumberOfActiveOptOuts(yukonEnergyCompany, assignedProgramIds));
         model.addAttribute("scheduledOptOuts", optOutEventDao.getTotalNumberOfScheduledOptOuts(yukonEnergyCompany, assignedProgramIds));
-        model.addAttribute("alternateEnrollments", programToAlternameProgramDao.getTotalNumberOfAccountsInSeasonalOptOuts(yukonEnergyCompany, assignedProgramIds));
+        model.addAttribute("alternateEnrollments", programToAlternameProgramDao.getTotalNumberOfDevicesInSeasonalOptOuts(yukonEnergyCompany, assignedProgramIds));
 
         return new JsonView();
     }
