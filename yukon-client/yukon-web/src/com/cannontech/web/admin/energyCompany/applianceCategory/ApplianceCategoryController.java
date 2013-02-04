@@ -54,6 +54,7 @@ import com.cannontech.stars.dr.appliance.model.SavingsIcon;
 import com.cannontech.stars.dr.appliance.service.ApplianceCategoryService;
 import com.cannontech.stars.dr.appliance.service.AssignedProgramService;
 import com.cannontech.stars.dr.hardware.dao.ProgramToAlternateProgramDao;
+import com.cannontech.stars.dr.hardware.model.ProgramToAlternateProgram;
 import com.cannontech.stars.energyCompany.model.YukonEnergyCompany;
 import com.cannontech.stars.service.EnergyCompanyService;
 import com.cannontech.stars.util.ServletUtils;
@@ -428,10 +429,19 @@ public class ApplianceCategoryController {
             boolean showAlternateEnrollment = ecRolePropertyDao.checkProperty(YukonRoleProperty.ALTERNATE_PROGRAM_ENROLLMENT, yec);
             if (showAlternateEnrollment) {
                 model.addAttribute("showAlternateEnrollment", showAlternateEnrollment);
-                // Programs that are already an alternate on another program and this program should be excluded from the Alternate Enrollment picker
-                List<Integer> excludedProgramIds = ptapDao.getAllAlternateProgramIds();
-                excludedProgramIds.removeAll(Collections.singleton(bean.getAssignedProgram().getAlternateProgramId()));
+                /*
+                 * Programs that should be excluded from Alternate Enrollment picker
+                 * --programs that are alternate on another program
+                 * --programs that have an alternate program assigned
+                 */
+                List<ProgramToAlternateProgram> allMappings = ptapDao.getAll();
+                List<Integer> alternateProgramIds = Lists.transform(allMappings, ProgramToAlternateProgram.ALTERNATE_PROGRAM_IDS_FUNCTION);
+                List<Integer> assignedProgramIds = Lists.transform(allMappings, ProgramToAlternateProgram.ASSIGNED_PROGRAM_IDS_FUNCTION);
+                List<Integer> excludedProgramIds = Lists.newArrayList();
+                excludedProgramIds.addAll(alternateProgramIds);
+                excludedProgramIds.addAll(assignedProgramIds);
                 excludedProgramIds.add(bean.getAssignedProgram().getAssignedProgramId());
+                excludedProgramIds.removeAll(Collections.singleton(bean.getAssignedProgram().getAlternateProgramId()));
                 model.addAttribute("excludedProgramIds", excludedProgramIds);
             }
         }

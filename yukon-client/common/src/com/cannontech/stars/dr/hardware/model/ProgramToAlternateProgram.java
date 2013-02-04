@@ -12,6 +12,13 @@ public class ProgramToAlternateProgram {
         public Integer apply(ProgramToAlternateProgram programToAlternateProgram) {
             return programToAlternateProgram.getAlternateProgramId();
         }};
+        
+    public static final Function<ProgramToAlternateProgram, Integer> ASSIGNED_PROGRAM_IDS_FUNCTION = new Function<ProgramToAlternateProgram, Integer>() {
+            @Override
+            public Integer apply(ProgramToAlternateProgram programToAlternateProgram) {
+                return programToAlternateProgram.getAssignedProgramId();
+            }
+        };
     
     public int getAssignedProgramId() {
         return assignedProgramId;
