@@ -8,5 +8,8 @@
     <entry key="yukon.web.device.bulk.selectDevicesTabbed.deviceGroup">Device Group</entry>
     <entry key="yukon.web.device.bulk.selectDevicesTabbed.devices">Devices</entry>
     <entry key="yukon.web.device.bulk.selectDevicesTabbed.devicesCount">Count</entry>
-
+    
+     <!-- CheckYukonUserAssociatedWithECTag.java -->
+     <entry key="yukon.web.taglib.checkYukonUserAssociatedWithECTag.userNotAssociatedWithEC">The logged in user must be associated with an energy company to access this page.</entry>
+     
 </properties>

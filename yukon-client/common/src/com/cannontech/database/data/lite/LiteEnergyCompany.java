@@ -191,4 +191,42 @@ public class LiteEnergyCompany extends LiteBase
 	{
 		return getName();
 	}
+	
+	@Override
+    public int hashCode() {
+        final int prime = 31;
+        int result = super.hashCode();
+        result = prime * result + ((ciCustumerIDs == null) ? 0 : ciCustumerIDs.hashCode());
+        result = prime * result + ((name == null) ? 0 : name.hashCode());
+        result = prime * result + primaryContactID;
+        result = prime * result + userID;
+        return result;
+    }
+
+    @Override
+    public boolean equals(Object obj) {
+        if (this == obj)
+            return true;
+        if (!super.equals(obj))
+            return false;
+        if (getClass() != obj.getClass())
+            return false;
+        LiteEnergyCompany other = (LiteEnergyCompany) obj;
+        if (ciCustumerIDs == null) {
+            if (other.ciCustumerIDs != null)
+                return false;
+        } else if (!ciCustumerIDs.equals(other.ciCustumerIDs))
+            return false;
+        if (name == null) {
+            if (other.name != null)
+                return false;
+        } else if (!name.equals(other.name))
+            return false;
+        if (primaryContactID != other.primaryContactID)
+            return false;
+        if (userID != other.userID)
+            return false;
+        return true;
+    }
+
 }

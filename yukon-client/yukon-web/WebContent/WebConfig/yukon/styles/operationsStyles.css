@@ -104,6 +104,11 @@ div.linkBorder {
 	width: 120px;
 }
 
+div.boxedLink.disabled {
+    border-color: #777
+}
+div.boxedLink.disabled a:active, div.boxedLink.disabled a:link, div.boxedLink.disabled a:hover, div.boxedLink.disabled a:visited {color: #777;}
+
 div.boxedLink { 
 	text-align: center;
 	margin-left: 10px;

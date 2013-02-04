@@ -50,15 +50,33 @@
 
         <cti:operationsSetup />
         <cti:starsOperations />
+        <c:set var="isUserAssociatedWithEC" value="false" />
+        <cti:checkYukonUserAssociatedWithEC>
+            <c:set var="isUserAssociatedWithEC" value="true" />
+        </cti:checkYukonUserAssociatedWithEC>
 
         <cti:checkRole role="ConsumerInfoRole.ROLEID">
 
             <tags:operationSection sectionName="Consumer Account Information" sectionImageName="ConsumerLogo">
                 <cti:checkRolesAndProperties value="OPERATOR_NEW_ACCOUNT_WIZARD">
-                    <tags:sectionLink>
-                        <a href="/stars/operator/account/accountCreate"><cti:msg key="yukon.web.menu.portal.consumerAccountInformation.newAccount" />
-                        </a>
-                    </tags:sectionLink>
+                    <c:choose>
+                        <c:when test="${isUserAssociatedWithEC}">
+                            <tags:sectionLink>
+                                <a href="/stars/operator/account/accountCreate"><cti:msg
+                                        key="yukon.web.menu.portal.consumerAccountInformation.newAccount" /></a>
+                            </tags:sectionLink>
+                        </c:when>
+                        <c:otherwise>
+                            <div class="linkBorder">
+                                <div class="boxedLink disabled">
+                                    <a class="disabled"
+                                        title="<cti:msg key="yukon.web.taglib.checkYukonUserAssociatedWithECTag.userNotAssociatedWithEC" />"><cti:msg
+                                            key="yukon.web.menu.portal.consumerAccountInformation.newAccount" /></a>
+                                </div>
+                            </div>
+                            <class="linkBorder">
+                        </c:otherwise>
+                    </c:choose>
                 </cti:checkRolesAndProperties>
                 
 				<c:if test="${isEnergyCompanyOperator}">
@@ -98,26 +116,28 @@
                 </cti:checkMultiProperty>
 
                 <!-- Customer search form -->
-                <cti:checkRolesAndProperties value="OPERATOR_ACCOUNT_SEARCH">
-                    <div class="sectionForm">
-                        <form id="accountSearchForm" action="/stars/operator/account/search" method="get">
-                            <div class="sectionFormLabel">
-                                <cti:msg key="yukon.web.modules.operator.search.searchPrompt" />
-                            </div>
-                            <div>
-                                <select name="searchBy" data-input="#accountSearchValue" class="resetFieldOnChange">
-                                    <c:forEach var="operatorAccountSearchBy" items="${operatorAccountSearchBys}">
-                                        <option value="${operatorAccountSearchBy}" <c:if test="${operatorAccountSearchBy == searchBy}">selected</c:if>>
-                                            <cti:msg key="${operatorAccountSearchBy.formatKey}" />
-                                        </option>
-                                    </c:forEach>
-                                </select> <input type="text" name="searchValue" id="accountSearchValue" value="" size="15"> 
-                                <img class="cssicon" src="<cti:url value="/WebConfig/yukon/Icons/clearbits/search.gif"/>" 
-                                     alt="search" onClick="$('accountSearchForm').submit();">
-                            </div>
-                        </form>
-                    </div>
-                </cti:checkRolesAndProperties>
+                <cti:checkYukonUserAssociatedWithEC>
+                    <cti:checkRolesAndProperties value="OPERATOR_ACCOUNT_SEARCH">
+                        <div class="sectionForm">
+                            <form id="accountSearchForm" action="/stars/operator/account/search" method="get">
+                                <div class="sectionFormLabel">
+                                    <cti:msg key="yukon.web.modules.operator.search.searchPrompt" />
+                                </div>
+                                <div>
+                                    <select name="searchBy" data-input="#accountSearchValue" class="resetFieldOnChange">
+                                        <c:forEach var="operatorAccountSearchBy" items="${operatorAccountSearchBys}">
+                                            <option value="${operatorAccountSearchBy}" <c:if test="${operatorAccountSearchBy == searchBy}">selected</c:if>>
+                                                <cti:msg key="${operatorAccountSearchBy.formatKey}" />
+                                            </option>
+                                        </c:forEach>
+                                    </select> <input type="text" name="searchValue" id="accountSearchValue" value="" size="15"> 
+                                    <img class="cssicon" src="<cti:url value="/WebConfig/yukon/Icons/clearbits/search.gif"/>" 
+                                         alt="search" onClick="$('accountSearchForm').submit();">
+                                </div>
+                            </form>
+                        </div>
+                    </cti:checkRolesAndProperties>
+                </cti:checkYukonUserAssociatedWithEC>
             </tags:operationSection>
         </cti:checkRole>
 
@@ -227,31 +247,32 @@
                     </tags:sectionLink>
                 </cti:checkProperty>
 
-
+                <cti:checkYukonUserAssociatedWithEC>
                 <!-- Hardware search form -->
-				<cti:checkRolesAndProperties value="INVENTORY_SEARCH">
-					<div class="sectionForm">
-						<form id="invSearchForm"
-							action="/stars/operator/inventory/search" method="get">
-						  <div class="sectionFormLabel">
-                                <cti:msg key="yukon.web.modules.operator.search.hardwareSearchPrompt" />
-                            </div>
-							<div>
-								<select name="searchBy" data-input="#invSearchValue" class="resetFieldOnChange">
-									<c:forEach var="operatorInventorySearchBy" items="${operatorInventorySearchBys}">
-										<option value="${operatorInventorySearchBy}">
-											<cti:msg key="${operatorInventorySearchBy.formatKey}" />
-										</option>
-									</c:forEach>
-								</select> <input type="text" name="searchValue" id="invSearchValue"
-									value="" size="15"> <img class="cssicon" src="<cti:url value="/WebConfig/yukon/Icons/clearbits/search.gif"/>"
-									alt="search" onClick="$('invSearchForm').submit();" />
-							</div>
-						</form>
-					</div>
-				</cti:checkRolesAndProperties>
+    				<cti:checkRolesAndProperties value="INVENTORY_SEARCH">
+    					<div class="sectionForm">
+    						<form id="invSearchForm"
+    							action="/stars/operator/inventory/search" method="get">
+    						  <div class="sectionFormLabel">
+                                    <cti:msg key="yukon.web.modules.operator.search.hardwareSearchPrompt" />
+                                </div>
+    							<div>
+    								<select name="searchBy" data-input="#invSearchValue" class="resetFieldOnChange">
+    									<c:forEach var="operatorInventorySearchBy" items="${operatorInventorySearchBys}">
+    										<option value="${operatorInventorySearchBy}">
+    											<cti:msg key="${operatorInventorySearchBy.formatKey}" />
+    										</option>
+    									</c:forEach>
+    								</select> <input type="text" name="searchValue" id="invSearchValue"
+    									value="" size="15"> <img class="cssicon" src="<cti:url value="/WebConfig/yukon/Icons/clearbits/search.gif"/>"
+    									alt="search" onClick="$('invSearchForm').submit();" />
+    							</div>
+    						</form>
+    					</div>
+    				</cti:checkRolesAndProperties>
+                </cti:checkYukonUserAssociatedWithEC>
 			</tags:operationSection>
-
+ 
         </cti:checkRole>
 
         <!-- Work Orders section -->
@@ -331,12 +352,27 @@
                 </c:if>
 
                 <cti:checkProperty property="operator.AdministratorRole.ADMIN_VIEW_BATCH_COMMANDS">
-                    <tags:sectionLink>
-                        <a href="Admin/SwitchCommands.jsp"><cti:msg key="yukon.web.viewBatchCommands"/></a>
-                    </tags:sectionLink>
+                    <c:choose>
+                        <c:when test="${isUserAssociatedWithEC}">
+                            <tags:sectionLink>
+                                <a href="Admin/SwitchCommands.jsp"><cti:msg
+                                        key="yukon.web.viewBatchCommands" /></a>
+                            </tags:sectionLink>
+                        </c:when>
+                        <c:otherwise>
+                            <div class="linkBorder">
+                                <div class="boxedLink disabled">
+                                    <a class="disabled"
+                                        title="<cti:msg key="yukon.web.taglib.checkYukonUserAssociatedWithECTag.userNotAssociatedWithEC" />"><cti:msg
+                                            key="yukon.web.viewBatchCommands" /></a>
+                                </div>
+                            </div>
+                            <class="linkBorder">
+                        </c:otherwise>
+                    </c:choose>
                 </cti:checkProperty>
 
-				<cti:checkRole role="ConsumerInfoRole.ROLEID">
+                <cti:checkRole role="ConsumerInfoRole.ROLEID">
 	                <cti:checkProperty property="operator.AdministratorRole.ADMIN_VIEW_OPT_OUT_EVENTS">
 	                    <tags:sectionLink>
 	                        <a href="/stars/operator/optOut/admin/viewScheduled"> <cti:msg key="yukon.web.menu.portal.administration.viewScheduledOptOutEvents" /> </a>

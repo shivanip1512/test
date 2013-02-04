@@ -211,7 +211,17 @@
         <rtexprvalue>true</rtexprvalue>
     </attribute>   
   </tag>
-  
+
+  <tag>
+      <name>checkYukonUserAssociatedWithEC</name>
+      <tag-class>com.cannontech.web.taglib.CheckYukonUserAssociatedWithECTag</tag-class>
+      <attribute>
+          <name>showError</name>
+          <required>false</required>
+          <rtexprvalue>false</rtexprvalue>
+      </attribute>    
+  </tag>
+      
   <tag>
     <name>checkUserChecker</name>
     <tag-class>com.cannontech.web.taglib.CheckUserCheckerTag</tag-class>
