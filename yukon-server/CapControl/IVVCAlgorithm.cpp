@@ -1187,7 +1187,7 @@ bool IVVCAlgorithm::determineWatchPoints(CtiCCSubstationBusPtr subbus, DispatchC
 }
 
 
-void IVVCAlgorithm::operateBank(long bankId, CtiCCSubstationBusPtr subbus, DispatchConnectionPtr dispatchConnection)
+void IVVCAlgorithm::operateBank(long bankId, CtiCCSubstationBusPtr subbus, DispatchConnectionPtr dispatchConnection, IVVCStrategy* strategy)
 {
     CtiCCSubstationBusStore* store = CtiCCSubstationBusStore::getInstance();
 
@@ -1212,6 +1212,16 @@ void IVVCAlgorithm::operateBank(long bankId, CtiCCSubstationBusPtr subbus, Dispa
             double varValueA = subbus->getPhaseAValue();
             double varValueB = subbus->getPhaseBValue();
             double varValueC = subbus->getPhaseCValue();
+
+            if ( strategy->getMethodType() == ControlStrategy::BusOptimizedFeeder )
+            {
+                // Use feeder values instead of bus values for call to create(In/De)creaseVarRequest()
+
+                beforeKvar = feeder->getCurrentVarLoadPointValue();
+                varValueA  = feeder->getPhaseAValue();
+                varValueB  = feeder->getPhaseBValue();
+                varValueC  = feeder->getPhaseCValue();
+            }
 
             CtiRequestMsg* request = NULL;
 
@@ -2125,7 +2135,7 @@ bool IVVCAlgorithm::busAnalysisState(IVVCStatePtr state, CtiCCSubstationBusPtr s
         }
 
         //send cap bank command
-        operateBank(operatePaoId,subbus,dispatchConnection);
+        operateBank(operatePaoId,subbus,dispatchConnection, strategy);
 
         state->setState(IVVCState::IVVC_VERIFY_CONTROL_LOOP);
     }
