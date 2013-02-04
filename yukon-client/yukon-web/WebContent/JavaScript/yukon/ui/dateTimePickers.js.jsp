@@ -200,20 +200,18 @@ if(typeof(Yukon.ui.dateTimePickers) == 'undefined') {
          * @param {String} self.attr('data-step-hour') The step hour value
          */
     	_getStepHour: function(self){
-    	    var step_hour = self.attr('data-step-hour');
-    	    return typeof(step_hour) !== 'undefined' && step_hour !== "" ? parseInt(step_hour) : 1;
+    	    return this._parseIntSafe(self.attr('data-step-hour'));
     	},
-        
+
         /**
          * Gets the step minute for the datetimepicker and timepicker plugins. Defaults to 1.
          * @param {Object} self The jQuery object of the input field
          * @param {String} self.attr('data-step-minute') The step minute value
          */
     	_getStepMinute: function(self){
-            var step_minute = self.attr('data-step-minute');
-            return typeof(step_minute) !== 'undefined' && step_minute !== "" ? parseInt(step_minute) : 1;
+            return this._parseIntSafe(self.attr('data-step-minute'));
     	},
-        
+
         /**
          * Gets the timeSteps for the dateTimeEntry (keyboard & mouse manipulation) plugin. Both hour and minute default to 1.
          * @param {Object} self The jQuery object of the input field
@@ -221,11 +219,17 @@ if(typeof(Yukon.ui.dateTimePickers) == 'undefined') {
          * @param {String} self.attr('data-step-minute') The step minute value
          */
     	_getTimeSteps: function(self){
-            var step_hour = self.attr('data-step-hour');
-            step_hour = typeof(step_hour) !== 'undefined' ? parseFloat(step_hour) : 1;
-            var step_minute = self.attr('data-step-minute');
-            step_minute = typeof(step_minute) !== 'undefined' ? parseFloat(step_minute) : 1;
-    	    return [step_hour, step_minute, 1];
+            var step_hour = this._parseIntSafe(self.attr('data-step-hour'));
+            var step_minute = this._parseIntSafe(self.attr('data-step-minute'));
+            return [step_hour, step_minute, 1];
+    	},
+
+        /**
+         * Returns an integer, parsing num if posible. Otherwise 1 is returned as default.
+         * @param {String} numString - The integer to parse
+         */
+    	_parseIntSafe: function(numString) {
+    		return (typeof(numString) !== 'undefined' && numString !== "") ? parseInt(numString) : 1;
     	}
     };
 }

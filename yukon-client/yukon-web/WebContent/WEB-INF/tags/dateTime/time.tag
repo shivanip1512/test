@@ -45,7 +45,7 @@
 	    </c:if>
 	</c:when>
 	<c:otherwise>
-	    <cti:formatDate var="dateTimeValue" value="${pageScope.value}" type="TIME24H"/>
+	    <cti:formatDate var="timeValue" value="${pageScope.value}" type="TIME24H"/>
 	    <cti:formatDate var="timeZoneShort" value="${pageScope.value}" type="TIMEZONE"/>
 	    <cti:formatDate var="timeZoneFull" value="${pageScope.value}" type="TIMEZONE_EXTENDED"/>
 	</c:otherwise>

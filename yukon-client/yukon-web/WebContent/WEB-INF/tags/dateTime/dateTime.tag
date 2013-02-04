@@ -9,7 +9,7 @@
 <%@ attribute name="cssDialogClass" type="java.lang.String" description="Class added to the outer dialog div" %>
 <%@ attribute name="maxDate" type="java.lang.Object" description="Set a maximum selectable date via a Date object or as a string in the current dateFormat, or a number of days from today (e.g. +7) or a string of values and periods ('y' for years, 'm' for months, 'w' for weeks, 'd' for days, e.g. '+1m +1w'), or null for no limit." %>
 <%@ attribute name="minDate" type="java.lang.Object" description="Set a maximum selectable date via a Date object or as a string in the current dateFormat, or a number of days from today (e.g. +7) or a string of values and periods ('y' for years, 'm' for months, 'w' for weeks, 'd' for days, e.g. '+1m +1w'), or null for no limit." %>
-<%@ attribute name="stepHour" type="java.lang.String" description="Steps when incrementing/decrementing hours" %>
+<%@ attribute name="stepHour" type="java.lang.String" description="Steps when incrementing/decrementing hours. If step hours is greater than 1, step minutes will be ignored." %>
 <%@ attribute name="stepMinute" type="java.lang.String" description="Steps when incrementing/decrementing minutes" %>
 <%@ attribute name="forceIncludes" type="java.lang.Boolean" description="Force includes of the JS assets, needed when ajaxed in." %>
 
@@ -52,10 +52,10 @@
 </c:choose>
 
 <c:if test="${!empty pageScope.minDate}">
-    <cti:formatDate var="minFormattedDate" value="${pageScope.minDate}" type="DATE"/>
+    <cti:formatDate var="minFormattedDate" value="${pageScope.minDate}" type="DATEHM"/>
 </c:if>
 <c:if test="${!empty pageScope.maxDate}">
-    <cti:formatDate var="maxFormattedDate" value="${pageScope.maxDate}" type="DATE"/>
+    <cti:formatDate var="maxFormattedDate" value="${pageScope.maxDate}" type="DATEHM"/>
 </c:if>
 
 <c:if test="${empty pageScope.disabled}">
