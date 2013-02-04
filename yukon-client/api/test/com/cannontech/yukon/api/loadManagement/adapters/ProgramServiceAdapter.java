@@ -21,6 +21,7 @@ import com.cannontech.dr.program.service.ProgramService;
 import com.cannontech.dr.scenario.model.ScenarioProgram;
 import com.cannontech.loadcontrol.data.LMProgramBase;
 import com.cannontech.loadcontrol.service.data.ProgramStatus;
+import com.cannontech.loadcontrol.service.data.ScenarioStatus;
 import com.cannontech.message.util.BadServerResponseException;
 import com.cannontech.message.util.ConnectionException;
 import com.cannontech.message.util.TimeoutException;
@@ -156,6 +157,41 @@ public class ProgramServiceAdapter implements ProgramService {
                                             boolean observeConstraints, LiteYukonUser liteYukonUser)
             throws NotAuthorizedException, NotFoundException, TimeoutException,
             BadServerResponseException {
+        throw new UnsupportedOperationException("Not Implemented");
+    }
+
+    @Override
+    public ScenarioStatus startScenarioByNameBlocking(String scenarioName, Date startTime,
+                                                      Date stopTime, boolean forceStart,
+                                                      boolean observeConstraintsAndExecute,
+                                                      LiteYukonUser user) throws NotFoundException,
+            TimeoutException, NotAuthorizedException, BadServerResponseException,
+            ConnectionException {
+        throw new UnsupportedOperationException("Not Implemented");
+    }
+
+    @Override
+    public void startScenarioByNameAsynch(String scenarioName, Date startTime, Date stopTime,
+                                          boolean overrideConstraints, boolean observeConstraints,
+                                          LiteYukonUser user) throws NotFoundException,
+            TimeoutException, NotAuthorizedException, BadServerResponseException,
+            ConnectionException {
+        throw new UnsupportedOperationException("Not Implemented");
+    }
+
+    @Override
+    public void stopScenarioByNameAsynch(String scenarioName, Date stopTime, boolean forceStop,
+                                         boolean observeConstraintsAndExecute, LiteYukonUser user)
+            throws NotFoundException, NotAuthorizedException {
+        throw new UnsupportedOperationException("Not Implemented");
+    }
+
+    @Override
+    public ScenarioStatus stopScenarioByNameBlocking(String scenarioName, Date stopTime,
+                                                     boolean forceStop,
+                                                     boolean observeConstraintsAndExecute,
+                                                     LiteYukonUser user) throws NotFoundException,
+            TimeoutException, NotAuthorizedException, BadServerResponseException {
         throw new UnsupportedOperationException("Not Implemented");
     }
 

@@ -8,6 +8,7 @@ import org.junit.Before;
 import org.junit.Test;
 import org.springframework.core.io.ClassPathResource;
 import org.springframework.core.io.Resource;
+import org.springframework.test.util.ReflectionTestUtils;
 
 import com.cannontech.common.exception.NotAuthorizedException;
 import com.cannontech.common.util.Iso8601DateUtil;
@@ -15,10 +16,15 @@ import com.cannontech.common.util.xml.SimpleXPathTemplate;
 import com.cannontech.common.util.xml.XmlUtils;
 import com.cannontech.common.util.xml.YukonXml;
 import com.cannontech.core.dao.NotFoundException;
+import com.cannontech.core.roleproperties.UserNotInRoleException;
+import com.cannontech.core.roleproperties.YukonRoleProperty;
+import com.cannontech.core.roleproperties.dao.RolePropertyDao;
 import com.cannontech.database.data.lite.LiteYukonUser;
+import com.cannontech.dr.program.service.ProgramService;
 import com.cannontech.loadcontrol.service.data.ScenarioStatus;
 import com.cannontech.message.util.TimeoutException;
-import com.cannontech.yukon.api.loadManagement.adapters.LoadControlServiceAdapter;
+import com.cannontech.yukon.api.loadManagement.adapters.ProgramServiceAdapter;
+import com.cannontech.yukon.api.loadManagement.adapters.RolePropertyDaoAdapter;
 import com.cannontech.yukon.api.loadManagement.endpoint.ScenarioStopRequestEndpoint;
 import com.cannontech.yukon.api.utils.LoadManagementTestUtils;
 import com.cannontech.yukon.api.utils.TestUtils;
@@ -26,26 +32,40 @@ import com.cannontech.yukon.api.utils.TestUtils;
 public class ScenarioStopRequestEndpointTest {
 
     private ScenarioStopRequestEndpoint impl;
-    private MockLoadControlService mockService;
+    private MockProgramService mockService;
+    private RolePropertyDao mockRolePropertyDao;
     
     @Before
     public void setUp() throws Exception {
         
-        mockService = new MockLoadControlService();
+        mockService = new MockProgramService();
+
+        mockRolePropertyDao = new RolePropertyDaoAdapter() {
+            @Override
+            public void verifyProperty(YukonRoleProperty property, LiteYukonUser user) throws NotAuthorizedException {
+                return;
+            }
+
+            @Override
+            public boolean getPropertyBooleanValue(YukonRoleProperty property, LiteYukonUser user) throws UserNotInRoleException {
+                return true; // stopScheduled variable - YukonRoleProperty.SCHEDULE_STOP_CHECKED_BY_DEFAULT
+            }
+        };
         
         impl = new ScenarioStopRequestEndpoint();
-        impl.setLoadControlService(mockService);
+        ReflectionTestUtils.setField(impl, "programService", mockService,ProgramService.class);
+        ReflectionTestUtils.setField(impl, "rolePropertyDao", mockRolePropertyDao, RolePropertyDao.class);
         impl.initialize();
     }
-    
-    private class MockLoadControlService extends LoadControlServiceAdapter {
+
+    private class MockProgramService extends ProgramServiceAdapter {
         
     	private boolean isAsync;
         private String scenarioName;
         private Date stopTime;
         
         @Override
-        public ScenarioStatus stopControlByScenarioName(String scenarioName, Date stopTime, boolean forceStop, boolean observeConstraintsAndExecute, LiteYukonUser user) throws NotFoundException, TimeoutException, NotAuthorizedException {
+        public ScenarioStatus stopScenarioByNameBlocking(String scenarioName, Date stopTime, boolean forceStop, boolean observeConstraintsAndExecute, LiteYukonUser user) throws NotFoundException, TimeoutException, NotAuthorizedException {
 
         	this.isAsync = false;
             this.scenarioName = scenarioName;
@@ -63,7 +83,7 @@ public class ScenarioStopRequestEndpointTest {
         }
         
         @Override
-        public void asynchStopControlByScenarioName(String scenarioName, Date stopTime, boolean forceStop, boolean observeConstraintsAndExecute, LiteYukonUser user) throws NotFoundException, NotAuthorizedException {
+        public void stopScenarioByNameAsynch(String scenarioName, Date stopTime, boolean forceStop, boolean observeConstraintsAndExecute, LiteYukonUser user) throws NotFoundException, NotAuthorizedException {
 
         	this.isAsync = true;
             this.scenarioName = scenarioName;

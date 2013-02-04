@@ -5,7 +5,6 @@ import java.util.Date;
 import javax.annotation.PostConstruct;
 
 import org.apache.log4j.Logger;
-import org.jdom.Attribute;
 import org.jdom.Element;
 import org.jdom.JDOMException;
 import org.jdom.Namespace;
@@ -16,13 +15,12 @@ import org.springframework.ws.server.endpoint.annotation.PayloadRoot;
 import com.cannontech.clientutils.YukonLogManager;
 import com.cannontech.common.exception.NotAuthorizedException;
 import com.cannontech.common.util.xml.SimpleXPathTemplate;
-import com.cannontech.common.util.xml.XmlUtils;
 import com.cannontech.common.util.xml.YukonXml;
 import com.cannontech.core.dao.NotFoundException;
 import com.cannontech.core.roleproperties.YukonRoleProperty;
 import com.cannontech.core.roleproperties.dao.RolePropertyDao;
 import com.cannontech.database.data.lite.LiteYukonUser;
-import com.cannontech.loadcontrol.service.LoadControlService;
+import com.cannontech.dr.program.service.ProgramService;
 import com.cannontech.message.util.BadServerResponseException;
 import com.cannontech.message.util.ConnectionException;
 import com.cannontech.message.util.TimeoutException;
@@ -32,16 +30,16 @@ import com.cannontech.yukon.api.util.XmlVersionUtils;
 @Endpoint
 public class ScenarioStartRequestEndpoint {
 
-    private LoadControlService loadControlService;
-    private RolePropertyDao rolePropertyDao;
+    @Autowired private ProgramService programService;
+    @Autowired private RolePropertyDao rolePropertyDao;
     
-    private Namespace ns = YukonXml.getYukonNamespace();
-    private String scenarioNameExpressionStr = "/y:scenarioStartRequest/y:scenarioName";
-    private String startTimeExpressionStr = "/y:scenarioStartRequest/y:startDateTime";
-    private String stopTimeExpressionStr = "/y:scenarioStartRequest/y:stopDateTime";
-    private String waitForResponseExpressionStr = "/y:scenarioStartRequest/y:waitForResponse";
+    private final Namespace ns = YukonXml.getYukonNamespace();
+    private final String scenarioNameExpressionStr = "/y:scenarioStartRequest/y:scenarioName";
+    private final String startTimeExpressionStr = "/y:scenarioStartRequest/y:startDateTime";
+    private final String stopTimeExpressionStr = "/y:scenarioStartRequest/y:stopDateTime";
+    private final String waitForResponseExpressionStr = "/y:scenarioStartRequest/y:waitForResponse";
     
-    private Logger log = YukonLogManager.getLogger(ScenarioStartRequestEndpoint.class);
+    private final Logger log = YukonLogManager.getLogger(ScenarioStartRequestEndpoint.class);
     
     @PostConstruct
     public void initialize() throws JDOMException {
@@ -51,10 +49,10 @@ public class ScenarioStartRequestEndpoint {
     public Element invoke(Element scenarioStartRequest, LiteYukonUser user) throws Exception {
         
     	XmlVersionUtils.verifyYukonMessageVersion(scenarioStartRequest, XmlVersionUtils.YUKON_MSG_VERSION_1_0);
-    	
+
         // create template and parse data
         SimpleXPathTemplate requestTemplate = YukonXml.getXPathTemplateForElement(scenarioStartRequest);
-        
+
         String scenarioName = requestTemplate.evaluateAsString(scenarioNameExpressionStr);
         Date startTime = requestTemplate.evaluateAsDate(startTimeExpressionStr);
         Date stopTime = requestTemplate.evaluateAsDate(stopTimeExpressionStr);
@@ -63,7 +61,7 @@ public class ScenarioStartRequestEndpoint {
         // init response
         Element resp = new Element("scenarioStartResponse", ns);
         XmlVersionUtils.addVersionAttribute(resp, XmlVersionUtils.YUKON_MSG_VERSION_1_0);
-        
+
         // run service
         try {
             
@@ -71,9 +69,9 @@ public class ScenarioStartRequestEndpoint {
             rolePropertyDao.verifyProperty(YukonRoleProperty.OPERATOR_CONSUMER_INFO_WS_LM_CONTROL_ACCESS, user);
             
         	if (waitForResponse) {
-        		loadControlService.startControlByScenarioName(scenarioName, startTime, stopTime, false, true, user);
+        		programService.startScenarioByNameBlocking(scenarioName, startTime, stopTime, false, true, user);
         	} else {
-        		loadControlService.asynchStartControlByScenarioName(scenarioName, startTime, stopTime, false, true, user);
+        	    programService.startScenarioByNameAsynch(scenarioName, startTime, stopTime, false, true, user);
         	}
             // build response
         	resp.addContent(new Element("success", ns));
@@ -87,10 +85,7 @@ public class ScenarioStartRequestEndpoint {
         } catch (NotAuthorizedException e) {
             Element fe = XMLFailureGenerator.generateFailure(scenarioStartRequest, e, "UserNotAuthorized", "The user is not authorized to start scenario.");
             resp.addContent(fe);
-        } catch (BadServerResponseException e) {
-            Element fe = XMLFailureGenerator.generateFailure(scenarioStartRequest, e, "ServerCommunicationError", e.getMessage());
-            resp.addContent(fe);
-        } catch (ConnectionException e) {
+        } catch (BadServerResponseException | ConnectionException e) {
             Element fe = XMLFailureGenerator.generateFailure(scenarioStartRequest, e, "ServerCommunicationError", e.getMessage());
             resp.addContent(fe);
         } catch (Exception e) {
@@ -98,19 +93,7 @@ public class ScenarioStartRequestEndpoint {
             resp.addContent(fe);
             log.error(e.getMessage(), e);
         }
-                
+
         return resp;
     }
-    
-    
-    @Autowired
-    public void setLoadControlService(LoadControlService loadControlService) {
-        this.loadControlService = loadControlService;
-    }
-    
-    @Autowired
-    public void setRolePropertyDao(RolePropertyDao rolePropertyDao) {
-        this.rolePropertyDao = rolePropertyDao;
-    }
-    
 }

@@ -195,13 +195,13 @@ public class MultispeakLMServiceImpl implements MultispeakLMService {
 	@Override
 	public ScenarioStatus startControlByControlScenario(String scenarioName, Date startTime,
 			Date stopTime, LiteYukonUser liteYukonUser) throws NotAuthorizedException, NotFoundException, TimeoutException, BadServerResponseException {
-   		return loadControlService.startControlByScenarioName(scenarioName, startTime, stopTime, false, true, liteYukonUser);
+   		return programService.startScenarioByNameBlocking(scenarioName, startTime, stopTime, false, true, liteYukonUser);
 	}
 
 	@Override
 	public ScenarioStatus stopControlByControlScenario(String scenarioName, Date stopTime,
 			LiteYukonUser liteYukonUser) throws NotAuthorizedException, NotFoundException, TimeoutException, BadServerResponseException{
-       	return loadControlService.stopControlByScenarioName(scenarioName, stopTime, false, true, liteYukonUser);
+       	return programService.stopScenarioByNameBlocking(scenarioName, stopTime, false, true, liteYukonUser);
 	}
 
 	@Override

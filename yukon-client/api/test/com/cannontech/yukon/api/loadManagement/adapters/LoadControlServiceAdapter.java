@@ -10,8 +10,6 @@ import com.cannontech.loadcontrol.service.LoadControlService;
 import com.cannontech.loadcontrol.service.data.ProgramControlHistory;
 import com.cannontech.loadcontrol.service.data.ProgramStatus;
 import com.cannontech.loadcontrol.service.data.ScenarioProgramStartingGears;
-import com.cannontech.loadcontrol.service.data.ScenarioStatus;
-import com.cannontech.message.util.TimeoutException;
 
 public class LoadControlServiceAdapter implements LoadControlService {
 
@@ -42,36 +40,6 @@ public class LoadControlServiceAdapter implements LoadControlService {
     @Override
     public ScenarioProgramStartingGears getScenarioProgramStartingGearsByScenarioName(
             String scenarioName, LiteYukonUser user) throws NotFoundException, NotAuthorizedException {
-        throw new UnsupportedOperationException("Not Implemented");
-    }
-
-    @Override
-    public ScenarioStatus startControlByScenarioName(String scenarioName,
-            Date startTime, Date stopTime, boolean forceStart,
-            boolean observeConstraintsAndExecute, LiteYukonUser user) throws NotFoundException,
-            TimeoutException, NotAuthorizedException {
-        throw new UnsupportedOperationException("Not Implemented");
-    }
-    
-    @Override
-    public void asynchStartControlByScenarioName(String scenarioName,
-            Date startTime, Date stopTime, boolean forceStart,
-            boolean observeConstraintsAndExecute, LiteYukonUser user) throws NotFoundException, NotAuthorizedException {
-        throw new UnsupportedOperationException("Not Implemented");
-    }
-
-    @Override
-    public ScenarioStatus stopControlByScenarioName(String scenarioName,
-            Date stopTime, boolean forceStop,
-            boolean observeConstraintsAndExecute, LiteYukonUser user) throws NotFoundException,
-            TimeoutException, NotAuthorizedException {
-        throw new UnsupportedOperationException("Not Implemented");
-    }
-
-    @Override
-    public void asynchStopControlByScenarioName(String scenarioName,
-            Date stopTime, boolean forceStop,
-            boolean observeConstraintsAndExecute, LiteYukonUser user) throws NotFoundException, NotAuthorizedException {
         throw new UnsupportedOperationException("Not Implemented");
     }
 

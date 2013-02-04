@@ -1,18 +1,22 @@
 package com.cannontech.dr.program.service.impl;
 
 import java.sql.SQLException;
+import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Collection;
 import java.util.Comparator;
 import java.util.Date;
 import java.util.List;
+import java.util.Map;
 import java.util.Set;
+import java.util.concurrent.Executor;
 
 import org.apache.log4j.Logger;
 import org.joda.time.DateTime;
 import org.joda.time.Duration;
 import org.joda.time.Instant;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Qualifier;
 
 import com.cannontech.clientutils.YukonLogManager;
 import com.cannontech.common.bulk.filter.AbstractRowMapperWithBaseQuery;
@@ -31,9 +35,11 @@ import com.cannontech.common.pao.definition.model.PaoTag;
 import com.cannontech.common.search.SearchResult;
 import com.cannontech.common.util.CtiUtilities;
 import com.cannontech.common.util.DatedObject;
+import com.cannontech.common.util.ScheduledExecutor;
 import com.cannontech.common.util.SqlFragmentSource;
 import com.cannontech.common.util.SqlStatementBuilder;
 import com.cannontech.core.authorization.service.PaoAuthorizationService;
+import com.cannontech.core.authorization.support.Permission;
 import com.cannontech.core.dao.GearNotFoundException;
 import com.cannontech.core.dao.NotFoundException;
 import com.cannontech.core.dao.PaoDao;
@@ -49,9 +55,11 @@ import com.cannontech.dr.program.model.GearAdjustment;
 import com.cannontech.dr.program.service.ConstraintContainer;
 import com.cannontech.dr.program.service.ConstraintViolations;
 import com.cannontech.dr.program.service.ProgramService;
+import com.cannontech.dr.scenario.dao.ScenarioDao;
 import com.cannontech.dr.scenario.model.ScenarioProgram;
 import com.cannontech.loadcontrol.LCUtils;
 import com.cannontech.loadcontrol.LoadControlClientConnection;
+import com.cannontech.loadcontrol.ProgramUtils;
 import com.cannontech.loadcontrol.dao.LoadControlProgramDao;
 import com.cannontech.loadcontrol.data.IGearProgram;
 import com.cannontech.loadcontrol.data.LMProgramBase;
@@ -63,6 +71,7 @@ import com.cannontech.loadcontrol.messages.LMManualControlResponse;
 import com.cannontech.loadcontrol.service.LoadControlCommandService;
 import com.cannontech.loadcontrol.service.ProgramChangeBlocker;
 import com.cannontech.loadcontrol.service.data.ProgramStatus;
+import com.cannontech.loadcontrol.service.data.ScenarioStatus;
 import com.cannontech.message.server.ServerResponseMsg;
 import com.cannontech.message.util.BadServerResponseException;
 import com.cannontech.message.util.ConnectionException;
@@ -86,8 +95,10 @@ public class ProgramServiceImpl implements ProgramService {
     @Autowired private PaoDao paoDao;
     @Autowired private LoadControlCommandService loadControlCommandService;
     @Autowired private RolePropertyDao rolePropertyDao;
+    @Autowired private ScenarioDao scenarioDao;
+    @Autowired private DateFormattingService dateFormattingService;
 
-    private DateFormattingService dateFormattingService;
+    private Executor executor;
     private static final long PROGRAM_CHANGE_TIMEOUT_MS = 5000;
 
     private final RowMapperWithBaseQuery<DisplayablePao> rowMapper =
@@ -342,6 +353,65 @@ public class ProgramServiceImpl implements ProgramService {
         return programStatus;
     }
     
+    private List<ProgramStatus> startScenarioBlocking(int scenarioId, Date startTime,
+                                             Date stopTime, boolean overrideConstraints, boolean observeConstraints,
+                                                         LiteYukonUser user)
+                             throws NotFoundException, TimeoutException, NotAuthorizedException,
+                                     BadServerResponseException, ConnectionException {
+
+        if (!loadControlClientConnection.isValid()) {
+            throw new ConnectionException("The Load Management server connection is not valid.");
+        }
+
+        if (!paoAuthorizationService.isAuthorized(user, Permission.LM_VISIBLE, paoDao.getLiteYukonPAO(scenarioId))) {
+            throw new NotAuthorizedException("Scenario is not visible to user id=" + scenarioId + "");
+        }
+
+        boolean stopScheduled = rolePropertyDao.getPropertyBooleanValue(YukonRoleProperty.SCHEDULE_STOP_CHECKED_BY_DEFAULT, user);
+        List<Integer> programIds = loadControlProgramDao.getProgramIdsByScenarioId(scenarioId);
+        List<LMProgramBase> programs = loadControlClientConnection.getProgramsForProgramIds(programIds);
+        Map<Integer, ScenarioProgram> scenarioPrograms =  scenarioDao.findScenarioProgramsForScenario(scenarioId);
+        List<ProgramStatus> programStatuses = new ArrayList<>();
+
+        for (LMProgramBase program : programs) {
+            int startingGearNumber = loadControlProgramDao.getStartingGearForScenarioAndProgram(ProgramUtils.getProgramId(program), scenarioId);
+            ScenarioProgram scenarioProgram = scenarioPrograms.get(program.getYukonID());
+
+            ProgramStatus programStatus = startProgramBlocking(program.getYukonID(), startingGearNumber, startTime, scenarioProgram.getStartOffset(), stopScheduled, stopTime, scenarioProgram.getStopOffset(), overrideConstraints, null, true);
+            programStatuses.add(programStatus);
+        }
+
+        return programStatuses;   
+    }
+
+    @Override
+    public ScenarioStatus startScenarioByNameBlocking(String scenarioName, Date startTime, Date stopTime,
+                                                             boolean overrideConstraints, boolean observeConstraints, LiteYukonUser user)
+                                                                     throws NotFoundException, TimeoutException, NotAuthorizedException, BadServerResponseException,
+                                                                     ConnectionException {
+        int scenarioId = loadControlProgramDao.getScenarioIdForScenarioName(scenarioName);
+        List<ProgramStatus> programStatuses = startScenarioBlocking(scenarioId, startTime, stopTime, overrideConstraints, observeConstraints, user);
+        return new ScenarioStatus(scenarioName, programStatuses);
+    }
+    
+    @Override
+    public void startScenarioByNameAsynch(final String scenarioName,final  Date startTime,final  Date stopTime,
+                                          final boolean overrideConstraints,final boolean observeConstraints,final  LiteYukonUser user)
+                                                  throws NotFoundException, TimeoutException, NotAuthorizedException, BadServerResponseException,
+                                                  ConnectionException {
+        final int scenarioId = loadControlProgramDao.getScenarioIdForScenarioName(scenarioName);
+        executor.execute(new Runnable() {
+            @Override
+            public void run() {
+                try {
+                    startScenarioBlocking(scenarioId, startTime, stopTime, overrideConstraints, observeConstraints, user);
+                } catch (Exception e) {
+                    log.debug("Error while running scenario start asynchronously. scenarioId = " + scenarioId, e);
+                }
+            }
+        });
+    }
+
     private LMManualControlRequest getStartProgramRequest(int programId, int gearNumber, Date programStartDate,
                                                           boolean stopScheduled, Date programStopDate, boolean overrideConstraints,
                                                           List<GearAdjustment> gearAdjustments) {
@@ -506,7 +576,68 @@ public class ProgramServiceImpl implements ProgramService {
 
         return programStatus;
     }
-    
+
+    @Override
+    public void stopScenarioByNameAsynch(final String scenarioName,final  Date stopTime,
+                                         final boolean overrideConstraints,
+                                         final boolean observeConstraints,
+                                         final LiteYukonUser user) throws NotFoundException,
+            NotAuthorizedException {
+        
+        final int scenarioId = loadControlProgramDao.getScenarioIdForScenarioName(scenarioName);
+        executor.execute(new Runnable() {
+            @Override
+            public void run() {
+                try {
+                    stopScenarioBlocking(scenarioId,  stopTime, overrideConstraints, observeConstraints, user);
+                } catch (Exception e) {
+                    log.debug("Error while running scenario start asynchronously. scenarioId = " + scenarioId, e);
+                }
+            }
+        });
+    }
+
+    @Override
+    public ScenarioStatus stopScenarioByNameBlocking(String scenarioName, Date stopTime,
+                                                    boolean overrideConstraints,
+                                                    boolean observeConstraints,
+                                                    LiteYukonUser user) throws NotFoundException,
+            TimeoutException, NotAuthorizedException, BadServerResponseException {
+        
+        int scenarioId = loadControlProgramDao.getScenarioIdForScenarioName(scenarioName);
+        List<ProgramStatus> programStatuses = stopScenarioBlocking(scenarioId,  stopTime, overrideConstraints, observeConstraints, user);
+
+        return new ScenarioStatus(scenarioName, programStatuses);
+    }
+
+    private List<ProgramStatus> stopScenarioBlocking(int scenarioId,  Date stopTime, boolean overrideConstraints,
+                                                     boolean observeConstraints, LiteYukonUser user)
+                         throws NotFoundException, TimeoutException, NotAuthorizedException,
+                         BadServerResponseException, ConnectionException {
+
+        if (!loadControlClientConnection.isValid()) {
+            throw new ConnectionException("The Load Management server connection is not valid.");
+        }
+
+        if (!paoAuthorizationService.isAuthorized(user, Permission.LM_VISIBLE, paoDao.getLiteYukonPAO(scenarioId))) {
+            throw new NotAuthorizedException("Scenario is not visible to user id=" + scenarioId + "");
+        }
+
+        List<Integer> programIds = loadControlProgramDao.getProgramIdsByScenarioId(scenarioId);
+        List<LMProgramBase> programs = loadControlClientConnection.getProgramsForProgramIds(programIds);
+        Map<Integer, ScenarioProgram> scenarioPrograms =  scenarioDao.findScenarioProgramsForScenario(scenarioId);
+        List<ProgramStatus> programStatuses = new ArrayList<>();
+
+        for (LMProgramBase program : programs) {
+            ScenarioProgram scenarioProgram = scenarioPrograms.get(program.getYukonID());
+
+            ProgramStatus programStatus = scheduleProgramStopBlocking(program.getYukonID(), stopTime, scenarioProgram.getStopOffset(), true);
+            programStatuses.add(programStatus);
+        }
+
+        return programStatuses;   
+    }
+
     @Override
     public ConstraintViolations getConstraintViolationsForStopProgram(int programId, int gearNumber, 
                                                                       Date stopDate) {
@@ -646,7 +777,8 @@ public class ProgramServiceImpl implements ProgramService {
     }
 
     @Autowired
-    public void setDateFormattingService(DateFormattingService dateFormattingService) {
-        this.dateFormattingService = dateFormattingService;
+    @Qualifier("main")
+    public void setExecutor(ScheduledExecutor executor) {
+        this.executor = executor;
     }
 }
