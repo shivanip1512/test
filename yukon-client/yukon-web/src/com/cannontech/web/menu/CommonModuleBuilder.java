@@ -1,6 +1,7 @@
 package com.cannontech.web.menu;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Collections;
 import java.util.Iterator;
 import java.util.List;
@@ -293,14 +294,21 @@ public class CommonModuleBuilder implements ModuleBuilder {
             String name = child.getName();
             if (name.equals("requireRoleProperty")) {
                 checker = roleAndPropertyDescriptionService.compile(prop);
-            } else if (name.equals("requireEcOperator")) {
-                checker = energyCompanyService.createEcOperatorChecker();
+            }else if (name.equals("requireEcOperatorOrSuperUser")) {
+                checker = energyCompanyService.createEcOperatorOrSuperUserChecker();
             }
             
             if (checker != null) {
                 checkers.add(checker);
             }
+            if (StringUtils.isNotEmpty(prop)) {
+                String[] valueArray = prop.split("[\\s,\\n]+");
+                if (Arrays.asList(valueArray).contains("OPERATOR_IMPORT_CUSTOMER_ACCOUNT")) {
+                    checkers.add(energyCompanyService.createEcOperatorChecker());
+                }
+            }
         }
+
         if (checkers.isEmpty()) {
             return NullUserChecker.getInstance();
         } else if (checkers.size() == 1){

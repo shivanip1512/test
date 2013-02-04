@@ -82,8 +82,6 @@ public interface EnergyCompanyService {
      * Returns true if the user has the Residential Consumer role
      */
     public boolean isResidentialUser(LiteYukonUser user);
-
-    public UserChecker createEcOperatorChecker();
     
     /**
      * This method adds a route to the supplied energy company.
@@ -106,4 +104,14 @@ public interface EnergyCompanyService {
      * @return returns 1 if a substation was deleted.
      */
     public int removeSubstationFromEnergyCompany(int energyCompanyId, int substationId);
+    
+    /**
+     * This method creates an energy company operator checker.
+     */
+    public UserChecker createEcOperatorChecker();
+
+    /**
+     * This method creates an energy company operator or super user checker.
+     */
+    public UserChecker createEcOperatorOrSuperUserChecker();
 }

@@ -1318,7 +1318,7 @@
         <menu>
             <options>
                 <option name="energyCompanySetup">
-                    <requireEcOperator/>
+                    <requireEcOperatorOrSuperUser/>
                     <link>/adminSetup/energyCompany/home</link>
                     <options>
                         <option name="home">

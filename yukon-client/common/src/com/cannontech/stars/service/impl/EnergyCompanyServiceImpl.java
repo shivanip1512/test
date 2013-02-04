@@ -302,7 +302,7 @@ public class EnergyCompanyServiceImpl implements EnergyCompanyService {
     }
     
     @Override
-    public UserChecker createEcOperatorChecker() {
+    public UserChecker createEcOperatorOrSuperUserChecker() {
         
         UserCheckerBase checker = new UserCheckerBase() {
             @Override
@@ -315,6 +315,19 @@ public class EnergyCompanyServiceImpl implements EnergyCompanyService {
                 } else {
                     return false;
                 }
+            };
+            
+        };
+        return checker;
+    }
+    
+    @Override
+    public UserChecker createEcOperatorChecker() {
+        
+        UserCheckerBase checker = new UserCheckerBase() {
+            @Override
+            public boolean check(LiteYukonUser user) {
+                return isOperator(user);
             };
             
         };
