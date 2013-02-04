@@ -200,6 +200,7 @@
         <data name="TriggerOffset" />
         <data name="RestoreOffset" />
         <data name="NotifyInactiveOffset" />
+        <data name="NotifyAdjust" />
     </table>
     
     <table name="LMProgramDirectGroup">

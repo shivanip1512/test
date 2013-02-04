@@ -16,6 +16,11 @@
         				<table name="PointLimits" />
         				<table name="PointStatus" />
         				<table name="PointUnit" />
+                        <table name="PointControl" >
+                            <references>
+                                <table name="PointStatusControl" />
+                            </references>
+                        </table>
         			</references>
 				</table>
 				<table name="LMProgramControlWindow" />
@@ -46,6 +51,11 @@
         										<table name="PointLimits" />
         										<table name="PointStatus" />
         										<table name="PointUnit" />
+                                                <table name="PointControl" >
+                                                    <references>
+                                                        <table name="PointStatusControl" />
+                                                    </references>
+                                                </table>
 						        			</references>
         								</table>
 									</references>

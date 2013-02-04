@@ -16,6 +16,11 @@
         				<table name="PointStatus" />
         				<table name="PointLimits" />
         				<table name="PointUnit" />
+                        <table name="PointControl" >
+                            <references>
+                                <table name="PointStatusControl" />
+                            </references>
+                        </table>
         			</references>
         		</table>
         	</references>
