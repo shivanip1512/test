@@ -43,7 +43,7 @@ public class ControlAuditServiceImpl implements ControlAuditService {
     @Override
     public ControlAuditResult runAudit(AuditSettings settings) {
         
-        BiMap<InventoryIdentifier, PaoIdentifier> hardwareToPao = HashBiMap.create();
+        BiMap<InventoryIdentifier, PaoIdentifier> inventoryToPao = HashBiMap.create();
         
         ListMultimap<BuiltInAttribute, YukonPao> rphLookup = ArrayListMultimap.create();
         
@@ -70,8 +70,9 @@ public class ControlAuditServiceImpl implements ControlAuditService {
             if (deviceId > 0) {
                 
                 YukonPao pao = paoDao.getYukonPao(deviceId);
-                hardwareToPao.put(inventory, pao.getPaoIdentifier());
+                inventoryToPao.put(inventory, pao.getPaoIdentifier());
                 
+                /* Devices that support relay shed time will always at least support relay #1 shed time. */
                 if (!attributeService.isAttributeSupported(pao, r1)) {
                     unsupporedList.add(new Pair<InventoryIdentifier, AuditRow>(inventory, row));
                 } else {
@@ -88,14 +89,14 @@ public class ControlAuditServiceImpl implements ControlAuditService {
             }
         }
         
-        BiMap<PaoIdentifier, InventoryIdentifier> pToI = hardwareToPao.inverse();
+        BiMap<PaoIdentifier, InventoryIdentifier> pToI = inventoryToPao.inverse();
         
         Date start = settings.getFrom().toDate();
         Date end = settings.getTo().toDate();
         
-        ListMultimap<PaoIdentifier, PointValueQualityHolder> r1Data = rphDao.getLimitedAttributeData(rphLookup.get(r1), r1, start, end, 10000, true, Clusivity.INCLUSIVE_EXCLUSIVE, Order.FORWARD);
-        ListMultimap<PaoIdentifier, PointValueQualityHolder> r2Data = rphDao.getLimitedAttributeData(rphLookup.get(r2), r2, start, end, 10000, true, Clusivity.INCLUSIVE_EXCLUSIVE, Order.FORWARD);
-        ListMultimap<PaoIdentifier, PointValueQualityHolder> r3Data = rphDao.getLimitedAttributeData(rphLookup.get(r3), r3, start, end, 10000, true, Clusivity.INCLUSIVE_EXCLUSIVE, Order.FORWARD);
+        ListMultimap<PaoIdentifier, PointValueQualityHolder> r1Data = rphDao.getAttributeData(rphLookup.get(r1), r1, start, end, true, Clusivity.INCLUSIVE_EXCLUSIVE, Order.FORWARD);
+        ListMultimap<PaoIdentifier, PointValueQualityHolder> r2Data = rphDao.getAttributeData(rphLookup.get(r2), r2, start, end, true, Clusivity.INCLUSIVE_EXCLUSIVE, Order.FORWARD);
+        ListMultimap<PaoIdentifier, PointValueQualityHolder> r3Data = rphDao.getAttributeData(rphLookup.get(r3), r3, start, end, true, Clusivity.INCLUSIVE_EXCLUSIVE, Order.FORWARD);
         
         ListMultimap<PaoIdentifier, PointValueQualityHolder> all = ArrayListMultimap.create();
         all.putAll(r1Data);
