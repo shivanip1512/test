@@ -164,6 +164,6 @@ public class PlcDemandResetServiceImpl implements PlcDemandResetService {
             }
         };
         groupCommandExecutor.execute(deviceCollection, LAST_RESET_TIME_COMMAND,
-                                     DeviceRequestType.DEMAND_RESET_VERIFY, callback, user);
+                                     DeviceRequestType.DEMAND_RESET_COMMAND_VERIFY, callback, user);
     }
 }

@@ -22,7 +22,7 @@ public enum DeviceRequestType {
     GROUP_COMMAND("Group Command", "A command sent to a group of devices.", false),
     GROUP_COMMAND_VERIFY("Group Command Verify", "A command sent to a group of devices to verify.", false),
     DEMAND_RESET_COMMAND("Demand Reset Command", "Demand reset command sent to a group of devices.", false),
-    DEMAND_RESET_VERIFY("Demand Reset Verify", "A demand reset command sent to a group of devices to verify.", false),
+    DEMAND_RESET_COMMAND_VERIFY("Demand Reset Command Verify", "A command sent to a group of devices to verify demand reset.", false),
     GROUP_ATTRIBUTE_READ("Group Attribute Read", "An attribute read command sent to a group of devices.", false),
     SCHEDULED_GROUP_COMMAND("Scheduled Group Command", "A command sent to a group of devices periodically.", true),
     SCHEDULED_GROUP_ATTRIBUTE_READ("Scheduled Group Attribute Read", "An attribute read command sent to a group of devices periodically.", true),
