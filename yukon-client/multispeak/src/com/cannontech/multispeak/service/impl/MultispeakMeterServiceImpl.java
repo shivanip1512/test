@@ -1232,6 +1232,10 @@ public class MultispeakMeterServiceImpl implements MultispeakMeterService, Messa
                                         String billingCycle = mspServiceLocation.getBillingCycle();
                                         updateBillingCyle(billingCycle, meter.getMeterNumber(), meter, SERV_LOC_CHANGED_STRING, mspVendor);
                                         updateAltGroup(mspServiceLocation, meter.getMeterNumber(), meter, SERV_LOC_CHANGED_STRING, mspVendor);
+                                        //Update substation group and device's route
+                                        // using null for mspMeter. See comments in getMeterSubstationName(...)
+                                        String substationName = getMeterSubstationName(null, mspServiceLocation);
+                                        updateSubstationGroupAndRoute(meter, mspVendor, substationName, SERV_LOC_CHANGED_STRING, false);
                                     }
                                 }
                             }
@@ -1450,11 +1454,18 @@ public class MultispeakMeterServiceImpl implements MultispeakMeterService, Messa
         updateSubstationGroup(substationName, meterNumber, newDevice, METER_ADD_STRING, mspVendor);
         
         // ROUTES
+        //update routing info regardless of substation "change" (like update method does)...because this is a _create new_ method.
         updateMeterRouteForSubstation(newDevice, mspVendor, substationName, meterNumber);
     }
     
     private void updateMeterRouteForSubstation(YukonDevice meterDevice, MultispeakVendor mspVendor, String substationName, String meterNumber) {
     	
+        // not valid for RFN meter types
+        if (meterDevice.getPaoIdentifier().getPaoType().isRfn()) {
+            mspObjectDao.logMSPActivity(METER_ADD_STRING, "MeterNumber(" + meterNumber + ") - RFN Meter type; No route locate perfomed.", mspVendor.getCompanyName());
+            return;
+        }
+
     	try {
     		
 	    	// get routes
@@ -2115,16 +2126,28 @@ public class MultispeakMeterServiceImpl implements MultispeakMeterService, Messa
 
         changeDeviceType(mspMeter, meter, mspVendor, METER_ADD_STRING);
         
+        updateSubstationGroupAndRoute(meter, mspVendor, substationName, METER_ADD_STRING, true);
+        return null;
+    }
+
+    /**
+     * Update the (CIS) Substation Group. If changed, update route (perform route locate).
+     * If substationName is blank, do nothing.
+     * @param meter
+     * @param mspVendor
+     * @param substationName
+     * @param forceRouteUpdate - when true, route locate will occur; else, it will only occur if changed. 
+     */
+    private void updateSubstationGroupAndRoute(YukonMeter meter, MultispeakVendor mspVendor, String substationName, String logActionStr, boolean forceRouteUpdate) {
         if (!StringUtils.isBlank(substationName)) {
             //update the substation group
-            updateSubstationGroup(substationName, meter.getMeterNumber(), meter, METER_ADD_STRING, mspVendor);
-            //Update route (_after_ meter is enabled).
-            if (!meter.getPaoIdentifier().getPaoType().isRfn()) {
+            boolean addedToGroup = updateSubstationGroup(substationName, meter.getMeterNumber(), meter, logActionStr, mspVendor);
+            if (forceRouteUpdate || addedToGroup) {
+                //If the substation changed, we should attempt to update the route info too.
+                //Update route (_after_ meter is enabled).
                 updateMeterRouteForSubstation(meter, mspVendor, substationName, meter.getMeterNumber());
             }
         }
-        //TODO Read the Meter.
-        return null;
     }
 
     /** Helper method to update meter based on the mspMeter.
@@ -2175,13 +2198,7 @@ public class MultispeakMeterServiceImpl implements MultispeakMeterService, Messa
 
         //update the substation group
         String substationName = getMeterSubstationName(mspMeter, mspServiceLocation);
-        boolean addedToGroup = updateSubstationGroup(substationName, meter.getMeterNumber(), meter, logActionStr, mspVendor);
-        if (addedToGroup) {
-            //If the substation changed, we should attempt to update the route info too.
-            updateMeterRouteForSubstation(meter, mspVendor, substationName, meter.getMeterNumber());
-        }
-
-        //TODO Read the Meter.
+        updateSubstationGroupAndRoute(meter, mspVendor, substationName, logActionStr, false);
     }
     
     /**
