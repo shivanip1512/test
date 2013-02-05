@@ -14,38 +14,54 @@ public class SimpleYukonJobDefinition implements YukonJobDefinition, BeanFactory
     private String title;
     private BeanFactory beanFactory;
     private InputRoot inputs;
-    
+
     public String getTaskName() {
         return taskName;
     }
+
     public void setTaskName(String taskName) {
         this.taskName = taskName;
     }
+
+    @Override
     public String getTitle() {
         return title;
     }
+
     public void setTitle(String title) {
         this.title = title;
     }
+
+    @Override
     public Object createBean() {
-        Validate.isTrue(beanFactory.isPrototype(getTaskName()), "Bean must be defined as prototype to be a task. Could not create task: ", getTaskName());
+        Validate.isTrue(beanFactory.isPrototype(getTaskName()),
+            "Bean must be defined as prototype to be a task. Could not create task: ", getTaskName());
         return beanFactory.getBean(getTaskName());
     }
+
+    @Override
     public void setBeanFactory(BeanFactory beanFactory) throws BeansException {
-        Validate.isTrue(beanFactory.isPrototype(getTaskName()), "Bean must be defined as prototype to be a task. Could not create job definition: ", getTaskName());
+        Validate.isTrue(beanFactory.isPrototype(getTaskName()),
+            "Bean must be defined as prototype to be a task. Could not create job definition: ", getTaskName());
         this.beanFactory = beanFactory;
     }
+
+    @Override
     public InputRoot getInputs() {
         return inputs;
     }
+
     public void setInputs(InputRoot inputs) {
         this.inputs = inputs;
     }
+
+    @Override
     public String getName() {
         return name;
     }
+
+    @Override
     public void setBeanName(String name) {
         this.name = name;
     }
-
 }
