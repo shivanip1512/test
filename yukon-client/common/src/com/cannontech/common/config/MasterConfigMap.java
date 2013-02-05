@@ -26,9 +26,9 @@ import com.cannontech.encryption.CryptoException;
 import com.cannontech.encryption.MasterConfigCryptoUtils;
 
 public class MasterConfigMap implements ConfigurationSource {
-    private Map<String, String> configMap = new HashMap<String, String>();
+    private final Map<String, String> configMap = new HashMap<String, String>();
     private File masterCfgFile;
-    private Logger log = YukonLogManager.getLogger(MasterConfigMap.class);
+    private final Logger log = YukonLogManager.getLogger(MasterConfigMap.class);
 
     public MasterConfigMap(File file) throws IOException, CryptoException {
         super();
@@ -82,6 +82,7 @@ public class MasterConfigMap implements ConfigurationSource {
                 if (configMap.containsKey(key)) {
                     LogHelper.warn(log, "Line %d: Duplicate key found while reading Master Config file: %s", lineNum, key);
                 }
+
                 if (MasterConfigStringKeysEnum.isEncryptedKey(key) 
                         && !MasterConfigCryptoUtils.isEncrypted(value)) {
                     // Found a value that needs to be encrypted
@@ -90,11 +91,15 @@ public class MasterConfigMap implements ConfigurationSource {
                     tempWriter.append(key).append(" : ").append(valueEncrypted).append(" ").append(comment);
                     configMap.put(key, valueEncrypted);
                     log.info("Line " + lineNum + ": Value for " + key + " encrypted and rewritten in Master Config file."); // Do not log value here for security
-                    LogHelper.debug(log, "Found line match for key: %s containing an encrypted value.", key); // Do no log entire line here because it contains sensitive data
                 } else {
                     // Either plain-text data, or data already encrypted and safe to place into memory
                     configMap.put(key, value);
                     tempWriter.append(line);
+                }
+
+                if (MasterConfigStringKeysEnum.isEncryptedKey(key)) {
+                    LogHelper.debug(log, "Found line match: %s [encrypted value]", key); // Do no log entire line here because it contains sensitive data
+                } else {
                     LogHelper.debug(log, "Found line match: %s", line);
                 }
             } else {
