@@ -47,7 +47,6 @@ import com.cannontech.web.input.InputRoot;
 import com.cannontech.web.input.InputUtil;
 import com.google.common.collect.Lists;
 
-
 public class JobManagerImpl implements JobManager {
     private Logger log = YukonLogManager.getLogger(JobManagerImpl.class);
     private TimeSource timeSource;
@@ -58,8 +57,9 @@ public class JobManagerImpl implements JobManager {
     private ScheduledExecutor scheduledExecutor;
     private TransactionTemplate transactionTemplate;
 
-    private ConcurrentMap<YukonJob, YukonTask> currentlyRunning = new ConcurrentHashMap<YukonJob, YukonTask>(10, .75f, 2);
-    
+    private ConcurrentMap<YukonJob, YukonTask> currentlyRunning =
+            new ConcurrentHashMap<YukonJob, YukonTask>(10, .75f, 2);
+
     // JobId -> ScheduledJobInfoImpl
     private ConcurrentMap<Integer, ScheduledInfo> scheduledJobs = new ConcurrentHashMap<Integer, ScheduledInfo>();
 
@@ -67,7 +67,6 @@ public class JobManagerImpl implements JobManager {
     private int startOffsetIncrement = 1000;
 
     public void initialize() {
-        
         // get all jobs
         Set<ScheduledRepeatingJob> allRepeatingJobs = scheduledRepeatingJobDao.getAll();
 
@@ -96,7 +95,7 @@ public class JobManagerImpl implements JobManager {
         }
 
         for (ScheduledRepeatingJob job : allRepeatingJobs) {
-            // this means we never do a catchup if the server was
+            // this means we never do a catch-up if the server was
             // off when a job was supposed to run
             if (!job.isDisabled()) {
                 doScheduleScheduledJob(job, null);
@@ -150,53 +149,61 @@ public class JobManagerImpl implements JobManager {
         return time;
     }
 
+    @Override
     public YukonJob getJob(int jobId) {
         return yukonJobDao.getById(jobId);
     }
-    
+
+    @Override
     public JobDisabledStatus getJobDisabledStatus(int jobId) {
         return yukonJobDao.getJobDisabledStatusById(jobId);
     }
-    
+
+    @Override
     public ScheduledRepeatingJob getRepeatingJob(int jobId) {
-        return (ScheduledRepeatingJob)yukonJobDao.getById(jobId);
+        return (ScheduledRepeatingJob) yukonJobDao.getById(jobId);
     }
-    
+
+    @Override
     public Set<ScheduledOneTimeJob> getUnRunOneTimeJobsByDefinition(YukonJobDefinition<? extends YukonTask> definition) {
-        Set<ScheduledOneTimeJob> defJobs =  scheduledOneTimeJobDao.getJobsByDefinition(definition);
-        
+        Set<ScheduledOneTimeJob> defJobs = scheduledOneTimeJobDao.getJobsByDefinition(definition);
+
         Set<ScheduledOneTimeJob> unrunJobs = new HashSet<ScheduledOneTimeJob>();
-        for (ScheduledOneTimeJob j : defJobs) {
-            if(isJobStillRunnable(j)) {
-                unrunJobs.add(j);
+        for (ScheduledOneTimeJob job : defJobs) {
+            if (isJobStillRunnable(job)) {
+                unrunJobs.add(job);
             }
         }
         return unrunJobs;
     }
-    
-    public Set<ScheduledRepeatingJob> getUnRunRepeatingJobsByDefinition(YukonJobDefinition<? extends YukonTask> definition) {
+
+    @Override
+    public Set<ScheduledRepeatingJob> getUnRunRepeatingJobsByDefinition(
+            YukonJobDefinition<? extends YukonTask> definition) {
         Set<ScheduledRepeatingJob> defJobs = scheduledRepeatingJobDao.getJobsByDefinition(definition);
-        
+
         Set<ScheduledRepeatingJob> unrunJobs = new HashSet<ScheduledRepeatingJob>();
-        for (ScheduledRepeatingJob j : defJobs) {
-            if(isJobStillRunnable(j)) {
-                unrunJobs.add(j);
+        for (ScheduledRepeatingJob job : defJobs) {
+            if (isJobStillRunnable(job)) {
+                unrunJobs.add(job);
             }
         }
         return unrunJobs;
     }
-    
-    public List<ScheduledRepeatingJob> getNotDeletedRepeatingJobsByDefinition(YukonJobDefinition<? extends YukonTask> definition) {
+
+    @Override
+    public List<ScheduledRepeatingJob> getNotDeletedRepeatingJobsByDefinition(
+            YukonJobDefinition<? extends YukonTask> definition) {
         Set<ScheduledRepeatingJob> repeatingJobs = scheduledRepeatingJobDao.getJobsByDefinition(definition);
         List<ScheduledRepeatingJob> jobsNotDeleted = Lists.newArrayList();
-        for (ScheduledRepeatingJob job: repeatingJobs) {
+        for (ScheduledRepeatingJob job : repeatingJobs) {
             if (!job.isDeleted()) {
                 jobsNotDeleted.add(job);
             }
         }
         return jobsNotDeleted;
     }
-    
+
     private boolean isJobStillRunnable(YukonJob job) {
         if (!job.isDisabled()) {
             int jobId = job.getId();
@@ -207,13 +214,15 @@ public class JobManagerImpl implements JobManager {
         }
         return false;
     }
-    
-    // SCHEDULE JOB
+
+    @Override
     public YukonJob scheduleJob(YukonJobDefinition<?> jobDefinition, YukonTask task, Date time) {
         return scheduleJob(jobDefinition, task, time, new SystemUserContext());
     }
 
-    public YukonJob scheduleJob(YukonJobDefinition<?> jobDefinition, YukonTask task, Date time, YukonUserContext userContext) {
+    @Override
+    public YukonJob scheduleJob(YukonJobDefinition<?> jobDefinition, YukonTask task, Date time,
+        YukonUserContext userContext) {
         log.info("scheduling onetime job: jobDefinition=" + jobDefinition + ", task=" + task + ", time=" + time);
         ScheduledOneTimeJob oneTimeJob = new ScheduledOneTimeJob();
         scheduleJobCommon(oneTimeJob, jobDefinition, task, userContext);
@@ -222,23 +231,29 @@ public class JobManagerImpl implements JobManager {
         scheduledOneTimeJobDao.save(oneTimeJob);
 
         doScheduleOneTimeJob(oneTimeJob);
-        
+
         return oneTimeJob;
     }
-    
-    public YukonJob replaceScheduledJob(int jobId, YukonJobDefinition<?> jobDefinition, YukonTask task, String cronExpression, YukonUserContext userContext) {
+
+    @Override
+    public YukonJob replaceScheduledJob(int jobId, YukonJobDefinition<?> jobDefinition, YukonTask task,
+        String cronExpression, YukonUserContext userContext) {
         YukonJob job = getJob(jobId);
         deleteJob(job);
         YukonJob scheduledJob = scheduleJob(jobDefinition, task, cronExpression, userContext);
         return scheduledJob;
     }
 
+    @Override
     public YukonJob scheduleJob(YukonJobDefinition<?> jobDefinition, YukonTask task, String cronExpression) {
         return scheduleJob(jobDefinition, task, cronExpression, new SystemUserContext());
     }
 
-    public YukonJob scheduleJob(YukonJobDefinition<?> jobDefinition, YukonTask task, String cronExpression, YukonUserContext userContext) {
-        log.info("scheduling repeating job: jobDefinition=" + jobDefinition + ", task=" + task + ", cronExpression=" + cronExpression);
+    @Override
+    public YukonJob scheduleJob(YukonJobDefinition<?> jobDefinition, YukonTask task, String cronExpression,
+        YukonUserContext userContext) {
+        log.info("scheduling repeating job: jobDefinition=" + jobDefinition + ", task=" + task + ", cronExpression="
+            + cronExpression);
         ScheduledRepeatingJob repeatingJob = new ScheduledRepeatingJob();
         scheduleJobCommon(repeatingJob, jobDefinition, task, userContext);
 
@@ -246,12 +261,13 @@ public class JobManagerImpl implements JobManager {
         scheduledRepeatingJobDao.save(repeatingJob);
 
         doScheduleScheduledJob(repeatingJob, null);
-        
+
         return repeatingJob;
     }
-    
+
     // PRIVATE HELPERS
-    private void scheduleJobCommon(YukonJob job, YukonJobDefinition<?> jobDefinition, YukonTask task, YukonUserContext userContext) throws BeansException {
+    private void scheduleJobCommon(YukonJob job, YukonJobDefinition<?> jobDefinition, YukonTask task,
+        YukonUserContext userContext) throws BeansException {
         InputRoot inputRoot = jobDefinition.getInputs();
 
         Map<String, String> properties = InputUtil.extractProperties(inputRoot, task);
@@ -276,8 +292,8 @@ public class JobManagerImpl implements JobManager {
             };
 
             if (nextRuntime != null) {
-            	
-            	doSchedule(job, runnable, nextRuntime);
+
+                doSchedule(job, runnable, nextRuntime);
                 log.info("job " + job + " scheduled for " + nextRuntime);
             } else {
                 log.debug("job " + job + " has no next runtime, it will not be scheduled.");
@@ -305,79 +321,80 @@ public class JobManagerImpl implements JobManager {
         }
         try {
             Runnable runnerToSchedule = new Runnable() {
+                @Override
                 public void run() {
                     ScheduledInfo removed = scheduledJobs.remove(jobId);
                     if (removed != null) {
                         runnable.run();
                     } else {
-                        log.info("time came to run schedule and it wasn't in scheduledJobs, must have been removed: jobId=" + jobId);
+                        log.info("time came to run schedule and it wasn't in scheduledJobs, must have been removed: jobId="
+                            + jobId);
                     }
                 }
             };
-            ScheduledFuture<?> future =
-                scheduledExecutor.schedule(runnerToSchedule, delay, TimeUnit.MILLISECONDS);
+            ScheduledFuture<?> future = scheduledExecutor.schedule(runnerToSchedule, delay, TimeUnit.MILLISECONDS);
             info.future = future;
         } catch (RuntimeException e) {
             log.error("Couldn't add runnable to the scheduledExecutor", e);
             scheduledJobs.remove(jobId);
         }
     }
-    
+
     // MISC PUBLIC
+    @Override
     public void disableJob(YukonJob job) {
         log.info("disabling job: " + job);
         job.setDisabled(true);
         yukonJobDao.update(job);
-        
+
         // see if we can cancel it
         ScheduledInfo jobInfo = scheduledJobs.remove(job.getId());
-        
+
         if (jobInfo != null) {
             // this should unschedule it, but since we removed it from the map
             // the is no longer any way it could run
-            
+
             // there is no need to pass true because it is taken out of scheduledJobs
             // before it actually runs
             if (jobInfo.future != null) {
-            	jobInfo.future.cancel(false);
+                jobInfo.future.cancel(false);
             }
         } else {
             log.info("tried to remove job while disabling, it no longer existed: " + job);
         }
-        
-        
     }
-    
+
+    @Override
     public void deleteJob(YukonJob job) {
-    	
-    	disableJob(job);
-    	
-    	log.info("deleting job: " + job);
-    	job.setDeleted(true);
+
+        disableJob(job);
+
+        log.info("deleting job: " + job);
+        job.setDeleted(true);
         yukonJobDao.update(job);
     }
-    
+
+    @Override
     public void enableJob(YukonJob job) {
         log.info("enabling job: " + job);
         job.setDisabled(false);
         yukonJobDao.update(job);
-        
+
         // not great, but I don't really have a better way
         if (job instanceof ScheduledOneTimeJob) {
             ScheduledOneTimeJob oneTimeJob = (ScheduledOneTimeJob) job;
-            
+
             // put it into the schedule
             doScheduleOneTimeJob(oneTimeJob);
         } else if (job instanceof ScheduledRepeatingJob) {
             ScheduledRepeatingJob repeatingJob = (ScheduledRepeatingJob) job;
-            
+
             // put it into the schedule
             doScheduleScheduledJob(repeatingJob, null);
         }
-        
-        
     }
 
+    @Override
     public Date getNextRuntime(ScheduledRepeatingJob job, Date from) throws ScheduleException {
         try {
             CronExpression cronExpression = new CronExpression(job.getCronString());
@@ -388,41 +405,42 @@ public class JobManagerImpl implements JobManager {
             return nextValidTimeAfter;
 
         } catch (ParseException e) {
-            throw new ScheduleException("Could not calculate next runtime for " + job.getBeanName()
-                + " with " + job.getCronString(), e);
+            throw new ScheduleException("Could not calculate next runtime for " + job.getBeanName() + " with "
+                + job.getCronString(), e);
         } catch (UnsupportedOperationException e) {
-        	throw new ScheduleException("Could not calculate next runtime for " + job.getBeanName()
-                    + " with " + job.getCronString(), e);
+            throw new ScheduleException("Could not calculate next runtime for " + job.getBeanName() + " with "
+                + job.getCronString(), e);
         }
     }
 
     private void executeJob(final JobStatus<?> status) throws TransactionException {
-    	// assume the best
-    	status.setJobState(JobState.COMPLETED);
-    	try {
-    		YukonTask task = instantiateTask(status.getJob());
-    		
-    		YukonTask existingTask = currentlyRunning.putIfAbsent(status.getJob(), task);
-    		if (existingTask != null) {
-    			// this should have been caught before the job was
-    			// executed
-    			throw new IllegalStateException("a task for " + status.getJob()
-    					+ " is already running: " + existingTask);
-    		}
-    		task.start(); // this should block until task is complete
-    	} catch (Exception e) {
-    		log.error("YukonTask failed", e);
-    		status.setJobState(JobState.FAILED);
-    		status.setMessage(e.toString());
-    	} finally {
-    		currentlyRunning.remove(status.getJob());
-    	}
+        // assume the best
+        status.setJobState(JobState.COMPLETED);
+        try {
+            YukonTask task = instantiateTask(status.getJob());
 
-    	// record status in database
-    	status.setStopTime(timeSource.getCurrentTime());
-    	jobStatusDao.saveOrUpdate(status);
+            YukonTask existingTask = currentlyRunning.putIfAbsent(status.getJob(), task);
+            if (existingTask != null) {
+                // this should have been caught before the job was
+                // executed
+                throw new IllegalStateException("a task for " + status.getJob() + " is already running: "
+                    + existingTask);
+            }
+            task.start(); // this should block until task is complete
+        } catch (Exception e) {
+            log.error("YukonTask failed", e);
+            status.setJobState(JobState.FAILED);
+            status.setMessage(e.toString());
+        } finally {
+            currentlyRunning.remove(status.getJob());
+        }
+
+        // record status in database
+        status.setStopTime(timeSource.getCurrentTime());
+        jobStatusDao.saveOrUpdate(status);
     }
 
+    @Override
     public synchronized YukonTask instantiateTask(YukonJob job) {
         YukonJobDefinition<? extends YukonTask> jobDefinition = job.getJobDefinition();
 
@@ -430,40 +448,42 @@ public class JobManagerImpl implements JobManager {
         YukonTask task = jobDefinition.createBean();
 
         InputRoot inputRoot = jobDefinition.getInputs();
-        if(inputRoot != null) {
-        	// Set the inputs if there are any
-        	InputUtil.applyProperties(inputRoot, task, job.getJobProperties());
+        if (inputRoot != null) {
+            // Set the inputs if there are any
+            InputUtil.applyProperties(inputRoot, task, job.getJobProperties());
         }
-        
+
         JobContext jobContext = new JobContext(job);
         task.setJobContext(jobContext);
 
         return task;
     }
 
+    @Override
     public Collection<YukonJob> getCurrentlyExecuting() {
         return currentlyRunning.keySet();
     }
 
+    @Override
     public boolean abortJob(YukonJob job) {
-    	int jobId = job.getId();
-    	YukonTask task = currentlyRunning.get(job);
+        int jobId = job.getId();
+        YukonTask task = currentlyRunning.get(job);
         if (task == null) {
             log.error("Unable to abort job with id " + jobId + " - no task currently running.");
-        	return false;
+            return false;
         }
         JobStatus<YukonJob> status = jobStatusDao.findLatestStatusByJobId(jobId);
-        
-        try {
-        	status.setJobState(JobState.STOPPING);
-        	jobStatusDao.saveOrUpdate(status);
-        	
-        	task.stop();
 
-        	status.setJobState(JobState.CANCELLED);
-        	status.setStopTime(timeSource.getCurrentTime());
-        	jobStatusDao.saveOrUpdate(status);
-        	currentlyRunning.remove(job);
+        try {
+            status.setJobState(JobState.STOPPING);
+            jobStatusDao.saveOrUpdate(status);
+
+            task.stop();
+
+            status.setJobState(JobState.CANCELLED);
+            status.setStopTime(timeSource.getCurrentTime());
+            jobStatusDao.saveOrUpdate(status);
+            currentlyRunning.remove(job);
         } catch (UnsupportedOperationException e) {
             log.warn("Tried to stop an unstoppable task, job was: " + job, e);
             status.setJobState(JobState.STARTED);
@@ -481,17 +501,19 @@ public class JobManagerImpl implements JobManager {
             this.jobId = job.getId();
         }
 
+        @Override
         public void run() {
             // record startup in database
             try {
                 final JobStatus<YukonJob> status = new JobStatus<YukonJob>();
-                transactionTemplate.execute(new TransactionCallback() {
+                transactionTemplate.execute(new TransactionCallback<Object>() {
+                    @Override
                     public Object doInTransaction(TransactionStatus transactionStatus) {
                         log.info("starting runnable: jobId=" + jobId);
-                        
+
                         // fetch the job
                         YukonJob job = yukonJobDao.getById(jobId);
-                        
+
                         beforeRun();
                         status.setStartTime(timeSource.getCurrentTime());
                         status.setJobState(JobState.STARTED);
@@ -570,8 +592,6 @@ public class JobManagerImpl implements JobManager {
                 return false;
             return true;
         }
-
-
     }
 
     @Required
@@ -611,7 +631,7 @@ public class JobManagerImpl implements JobManager {
     public void setTransactionTemplate(TransactionTemplate transactionTemplate) {
         this.transactionTemplate = transactionTemplate;
     }
-    
+
     @Required
     public void setYukonJobDao(YukonJobDao yukonJobDao) {
         this.yukonJobDao = yukonJobDao;
