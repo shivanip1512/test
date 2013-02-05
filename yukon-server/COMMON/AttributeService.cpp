@@ -65,13 +65,13 @@ std::vector<LitePoint> AttributeService::getLitePointsById(const std::vector<int
     std::string sql =
         "SELECT"
             " P.PointId, P.PointType, P.PointName, P.PAOBjectId, P.PointOffset,"
-            " PSC.StateOneControl,"
+            " PSC.StateZeroControl, PSC.StateOneControl,"
             " PC.ControlOffset"
         " FROM"
             " Point P"
             " LEFT OUTER JOIN POINTSTATUSCONTROL PSC ON P.PointId = PSC.PointId"
             " LEFT OUTER JOIN POINTCONTROL PC ON P.PointId = PC.PointId"
-        " WHERE P.PointId in (";
+        " WHERE P.PointId IN (";
 
     for each(int pointId in pointIds)
     {
@@ -106,6 +106,12 @@ std::vector<LitePoint> AttributeService::getLitePointsById(const std::vector<int
 
             rdr["PointOffset"] >> tempInt;
             point.setPointOffset(tempInt);
+
+            if ( ! rdr["StateZeroControl"].isNull() )
+            {
+                rdr["StateZeroControl"] >> tempStr;
+                point.setStateZeroControl(tempStr);
+            }
 
             if ( ! rdr["StateOneControl"].isNull() )
             {

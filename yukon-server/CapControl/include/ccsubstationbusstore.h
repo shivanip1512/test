@@ -685,4 +685,8 @@ public:
     boost::shared_ptr<Cti::CapControl::VoltageRegulatorManager> getVoltageRegulatorManager();
     bool reloadVoltageRegulatorFromDatabase(const long regulatorId);
 
+    AttributeService & getAttributeService()
+    {
+        return _attributeService;
+    }
 };

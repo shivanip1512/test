@@ -3921,18 +3921,19 @@ void CtiCapController::porterReturnMsg( long deviceId, const string& _commandStr
         if( currentSubstationBus->getRecentlyControlledFlag() ||
              currentSubstationBus->getVerificationFlag() )
         {
+            CtiToLower(commandString);
+            LitePoint controlPoint = store->getAttributeService().getLitePointsById( currentCapBank->getControlPointId() );
 
             if( status == 0 )
             {
-                std::transform(commandString.begin(), commandString.end(), commandString.begin(), tolower);
                 if ( !currentCapBank->isControlDeviceTwoWay() &&
                      !currentSubstationBus->getVerificationFlag() )
                 {
-                    if( commandString == "control open" )
+                    if( commandString == controlPoint.getStateZeroControl() )
                     {
                         currentCapBank->setControlStatus(CtiCCCapBank::OpenPending);
                     }
-                    else if( commandString == "control close" )
+                    else if( commandString == controlPoint.getStateOneControl() )
                     {
                         currentCapBank->setControlStatus(CtiCCCapBank::ClosePending);
                     }
@@ -3944,18 +3945,17 @@ void CtiCapController::porterReturnMsg( long deviceId, const string& _commandStr
             }
             else
             {
-                std::transform(commandString.begin(), commandString.end(), commandString.begin(), tolower);
-                if( commandString == "control open" )
+                if( commandString == controlPoint.getStateZeroControl() )
                 {
                     if (!currentCapBank->isControlDeviceTwoWay() )
                         currentCapBank->setControlStatus(CtiCCCapBank::OpenQuestionable);
                 }
-                else if( commandString == "control close" )
+                else if( commandString == controlPoint.getStateOneControl() )
                 {
                     if (!currentCapBank->isControlDeviceTwoWay() )
                         currentCapBank->setControlStatus(CtiCCCapBank::CloseQuestionable);
                 }
-                else if( commandString == "control flip" )
+                else if( commandString == "control flip" )  // CBC7010 special case...
                 {
                     if (currentCapBank->getControlStatus() == CtiCCCapBank::ClosePending)
                     {

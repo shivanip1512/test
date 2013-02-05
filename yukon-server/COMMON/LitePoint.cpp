@@ -13,13 +13,16 @@ LitePoint::LitePoint() :
 }
 
 LitePoint::LitePoint( const int Id, const CtiPointType_t Type, const std::string & Name,
-                      const int PaoId, const int Offset, const std::string & stateOneControl )
+                      const int PaoId, const int Offset,
+                      const std::string & stateZeroControl,
+                      const std::string & stateOneControl )
     : _pointId(Id),
     _pointType(Type),
     _pointName(Name),
     _paoId(PaoId),
     _pointOffset(Offset),
     _controlOffset(0),
+    _stateZeroControl(stateZeroControl),
     _stateOneControl(stateOneControl)
 {
 
@@ -83,6 +86,16 @@ void LitePoint::setControlOffset(int controlOffset)
 int LitePoint::getControlOffset() const
 {
     return _controlOffset;
+}
+
+void LitePoint::setStateZeroControl(const std::string & stateZeroControl)
+{
+    _stateZeroControl = stateZeroControl;
+}
+
+std::string LitePoint::getStateZeroControl() const
+{
+    return _stateZeroControl;
 }
 
 void LitePoint::setStateOneControl(const std::string & stateOneControl)

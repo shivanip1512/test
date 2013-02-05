@@ -1629,7 +1629,8 @@ CtiRequestMsg* CtiCCFeeder::createIncreaseVarRequest(CtiCCCapBank* capBank, CtiM
         }
     }
 
-    reqMsg = createPorterRequestMsg(capBank->getControlDeviceId(),"control open");
+    LitePoint controlPoint = store->getAttributeService().getLitePointsById( capBank->getControlPointId() );
+    reqMsg = createPorterRequestMsg(capBank->getControlDeviceId(), controlPoint.getStateZeroControl() );
     reqMsg->setSOE(4);
 
     return reqMsg;
@@ -1722,7 +1723,8 @@ CtiRequestMsg* CtiCCFeeder::createIncreaseVarVerificationRequest(CtiCCCapBank* c
     }
     else
     {
-        reqMsg = createPorterRequestMsg(capBank->getControlDeviceId(),"control open");
+        LitePoint controlPoint = store->getAttributeService().getLitePointsById( capBank->getControlPointId() );
+        reqMsg = createPorterRequestMsg(capBank->getControlDeviceId(), controlPoint.getStateZeroControl() );
     }
     reqMsg->setSOE(4);
 
@@ -1815,8 +1817,9 @@ CtiRequestMsg* CtiCCFeeder::createDecreaseVarVerificationRequest(CtiCCCapBank* c
         reqMsg = createPorterRequestMsg(capBank->getControlDeviceId(),"control flip");
     }
     else
-    {
-        reqMsg = createPorterRequestMsg(capBank->getControlDeviceId(),"control close");
+    {   
+        LitePoint controlPoint = store->getAttributeService().getLitePointsById( capBank->getControlPointId() );
+        reqMsg = createPorterRequestMsg(capBank->getControlDeviceId(), controlPoint.getStateOneControl() );
     }
     reqMsg->setSOE(4);
 
@@ -1930,7 +1933,8 @@ CtiRequestMsg* CtiCCFeeder::createDecreaseVarRequest(CtiCCCapBank* capBank, CtiM
         }
     }
 
-    reqMsg = createPorterRequestMsg( capBank->getControlDeviceId(),"control close" );
+    LitePoint controlPoint = store->getAttributeService().getLitePointsById( capBank->getControlPointId() );
+    reqMsg = createPorterRequestMsg(capBank->getControlDeviceId(), controlPoint.getStateOneControl() );
     reqMsg->setSOE(4);
 
     return reqMsg;
@@ -2044,12 +2048,17 @@ CtiRequestMsg* CtiCCFeeder::createForcedVarRequest(CtiCCCapBank* capBank, CtiMul
             ((CtiPointDataMsg*)pointChanges[pointChanges.size()-1])->setSOE(4);
         }
     }
+
+    LitePoint controlPoint = store->getAttributeService().getLitePointsById( capBank->getControlPointId() );
+
     if (capBank->getControlStatus() == CtiCCCapBank::Close )
     {
-        reqMsg = createPorterRequestMsg( capBank->getControlDeviceId(),"control close" );
+        reqMsg = createPorterRequestMsg(capBank->getControlDeviceId(), controlPoint.getStateOneControl() );
     }
     else
-        reqMsg = createPorterRequestMsg( capBank->getControlDeviceId(),"control open" );
+    {
+        reqMsg = createPorterRequestMsg(capBank->getControlDeviceId(), controlPoint.getStateZeroControl() );
+    }
 
     reqMsg->setSOE(4);
 
@@ -4661,7 +4670,8 @@ bool CtiCCFeeder::attemptToResendControl(const CtiTime& currentDateTime, CtiMult
                             << " DeviceID: " << currentCapBank->getPaoId() << " doesn't have a status point!" << endl;
                         }
 
-                        CtiRequestMsg* reqMsg = createPorterRequestMsg(currentCapBank->getControlDeviceId(),"control open");
+                        LitePoint controlPoint = store->getAttributeService().getLitePointsById( currentCapBank->getControlPointId() );
+                        CtiRequestMsg* reqMsg = createPorterRequestMsg(currentCapBank->getControlDeviceId(), controlPoint.getStateZeroControl() );
                         pilMessages.push_back(reqMsg);
                         if (_RETRY_ADJUST_LAST_OP_TIME)
                         {
@@ -4703,7 +4713,8 @@ bool CtiCCFeeder::attemptToResendControl(const CtiTime& currentDateTime, CtiMult
                             << " DeviceID: " << currentCapBank->getPaoId() << " doesn't have a status point!" << endl;
                         }
 
-                        CtiRequestMsg* reqMsg = createPorterRequestMsg(currentCapBank->getControlDeviceId(),"control close");
+                        LitePoint controlPoint = store->getAttributeService().getLitePointsById( currentCapBank->getControlPointId() );
+                        CtiRequestMsg* reqMsg = createPorterRequestMsg(currentCapBank->getControlDeviceId(), controlPoint.getStateOneControl() );
                         pilMessages.push_back(reqMsg);
                         if (_RETRY_ADJUST_LAST_OP_TIME)
                         {

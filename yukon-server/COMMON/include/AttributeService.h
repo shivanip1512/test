@@ -24,8 +24,10 @@ class IM_EX_CTIBASE AttributeService
     public:
         virtual LitePoint getPointByPaoAndAttribute(int paoId, const PointAttribute& attribute);
 
+        // sacrilege
+        LitePoint getLitePointsById(int pointId);
+
     private:
 
-        LitePoint getLitePointsById(int pointId);
         std::vector<LitePoint> getLitePointsById(const std::vector<int>& pointIds);
 };

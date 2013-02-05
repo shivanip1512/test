@@ -2008,6 +2008,7 @@ void CtiCCCommandExecutor::OpenCapBank(long bankId, bool confirmImmediately)
     CtiCCSubstationPtr parentStation = NULL;
     CtiCCSubstation_vec updatedStations;
 
+    CtiCCCapBank* operatingCapBank = NULL;
 
     if (bankId != 0)
     {
@@ -2027,6 +2028,7 @@ void CtiCCCommandExecutor::OpenCapBank(long bankId, bool confirmImmediately)
                     if( bankId == currentCapBank->getPaoId() )
                     {
                         found = true;
+                        operatingCapBank = currentCapBank;
                         controlID = currentCapBank->getControlDeviceId();
                         if(!confirmImmediately &&
                            checkForCommandRefusal(currentFeeder))
@@ -2261,7 +2263,8 @@ void CtiCCCommandExecutor::OpenCapBank(long bankId, bool confirmImmediately)
 
     if( controlID > 0 )
     {
-        CtiRequestMsg* reqMsg = createPorterRequestMsg(controlID,"control open");
+        LitePoint controlPoint = store->getAttributeService().getLitePointsById( operatingCapBank->getControlPointId() );
+        CtiRequestMsg* reqMsg = createPorterRequestMsg(controlID, controlPoint.getStateZeroControl() );
         reqMsg->setSOE(5);
         CtiCapController::getInstance()->manualCapBankControl( reqMsg, multi );
 
@@ -2315,6 +2318,8 @@ void CtiCCCommandExecutor::CloseCapBank(long bankId, bool confirmImmediately)
     CtiCCSubstationPtr parentStation = NULL;
     CtiCCSubstation_vec updatedStations;
 
+    CtiCCCapBank* operatingCapBank = NULL;
+
     if (bankId != 0)
     {
 
@@ -2334,6 +2339,7 @@ void CtiCCCommandExecutor::CloseCapBank(long bankId, bool confirmImmediately)
                     if( bankId == currentCapBank->getPaoId() )
                     {
                         found = true;
+                        operatingCapBank = currentCapBank;
                         controlID = currentCapBank->getControlDeviceId();
 
                         if(!confirmImmediately &&
@@ -2567,7 +2573,8 @@ void CtiCCCommandExecutor::CloseCapBank(long bankId, bool confirmImmediately)
 
     if( controlID > 0 )
     {
-        CtiRequestMsg* reqMsg = createPorterRequestMsg(controlID,"control close");
+        LitePoint controlPoint = store->getAttributeService().getLitePointsById( operatingCapBank->getControlPointId() );
+        CtiRequestMsg* reqMsg = createPorterRequestMsg(controlID, controlPoint.getStateOneControl() );
         reqMsg->setSOE(5);
         CtiCapController::getInstance()->manualCapBankControl( reqMsg, multi );
 
@@ -2860,18 +2867,18 @@ void CtiCCCommandExecutor::ControlAllCapBanksByFeeder(long feederId, int control
 
                             if( controlID > 0 )
                             {
+                                CtiRequestMsg* reqMsg = NULL;
+                                LitePoint controlPoint = store->getAttributeService().getLitePointsById( currentCapBank->getControlPointId() );
                                 if (currentCapBank->getControlStatus() == CtiCCCapBank::OpenPending)
                                 {
-                                    CtiRequestMsg* reqMsg = createPorterRequestMsg(controlID,"control open");
-                                    reqMsg->setSOE(2);
-                                    pilMessages.push_back(reqMsg);
+                                    reqMsg = createPorterRequestMsg(controlID, controlPoint.getStateZeroControl() );
                                 }
                                 else //CLOSE
                                 {
-                                    CtiRequestMsg* reqMsg = createPorterRequestMsg(controlID,"control close");
-                                    reqMsg->setSOE(2);
-                                    pilMessages.push_back(reqMsg);
+                                    reqMsg = createPorterRequestMsg(controlID, controlPoint.getStateOneControl() );
                                 }
+                                reqMsg->setSOE(2);
+                                pilMessages.push_back(reqMsg);
                             }
                             else
                             {
@@ -4002,18 +4009,18 @@ void CtiCCCommandExecutor::ConfirmSubstationBus()
 
                             if( controlID > 0 )
                             {
+                                CtiRequestMsg* reqMsg = NULL;
+                                LitePoint controlPoint = store->getAttributeService().getLitePointsById( currentCapBank->getControlPointId() );
                                 if (currentCapBank->getControlStatus() == CtiCCCapBank::OpenPending)
                                 {
-                                    CtiRequestMsg* reqMsg = createPorterRequestMsg(controlID,"control open");
-                                    reqMsg->setSOE(2);
-                                    pilMessages.push_back(reqMsg);
+                                    reqMsg = createPorterRequestMsg(controlID, controlPoint.getStateZeroControl() );
                                 }
                                 else //CLOSE
                                 {
-                                    CtiRequestMsg* reqMsg = createPorterRequestMsg(controlID,"control close");
-                                    reqMsg->setSOE(2);
-                                    pilMessages.push_back(reqMsg);
+                                    reqMsg = createPorterRequestMsg(controlID, controlPoint.getStateOneControl() );
                                 }
+                                reqMsg->setSOE(2);
+                                pilMessages.push_back(reqMsg);
                             }
                             else
                             {
@@ -4197,18 +4204,18 @@ void CtiCCCommandExecutor::ConfirmFeeder()
 
                 if( controlID > 0 )
                 {
+                    CtiRequestMsg* reqMsg = NULL;
+                    LitePoint controlPoint = store->getAttributeService().getLitePointsById( currentCapBank->getControlPointId() );
                     if (currentCapBank->getControlStatus() == CtiCCCapBank::OpenPending)
                     {
-                        CtiRequestMsg* reqMsg = createPorterRequestMsg(controlID,"control open");
-                        reqMsg->setSOE(2);
-                        pilMessages.push_back(reqMsg);
+                        reqMsg = createPorterRequestMsg(controlID, controlPoint.getStateZeroControl() );
                     }
                     else //CLOSE
                     {
-                        CtiRequestMsg* reqMsg = createPorterRequestMsg(controlID,"control close");
-                        reqMsg->setSOE(2);
-                        pilMessages.push_back(reqMsg);
+                        reqMsg = createPorterRequestMsg(controlID, controlPoint.getStateOneControl() );
                     }
+                    reqMsg->setSOE(2);
+                    pilMessages.push_back(reqMsg);
                 }
                 else
                 {
@@ -4506,6 +4513,8 @@ void CtiCCCommandExecutor::ConfirmOpen()
     CtiCCSubstationBus_vec& ccSubstationBuses = *store->getCCSubstationBuses(CtiTime().seconds());
     CtiCCSubstationBus_vec updatedSubs;
 
+    CtiCCCapBank* operatingCapBank = NULL;
+
     if (bankID != 0)
     {
 
@@ -4525,6 +4534,7 @@ void CtiCCCommandExecutor::ConfirmOpen()
                     if( bankID == currentCapBank->getPaoId() )
                     {
                         found = true;
+                        operatingCapBank = currentCapBank;
                         controlID = currentCapBank->getControlDeviceId();
 
                         updatedSubs.push_back(currentSubstationBus);
@@ -4756,7 +4766,8 @@ void CtiCCCommandExecutor::ConfirmOpen()
 
     if( controlID > 0 )
     {
-        CtiRequestMsg* reqMsg = createPorterRequestMsg(controlID,"control open");
+        LitePoint controlPoint = store->getAttributeService().getLitePointsById( operatingCapBank->getControlPointId() );
+        CtiRequestMsg* reqMsg = createPorterRequestMsg(controlID, controlPoint.getStateZeroControl() );
         reqMsg->setSOE(5);
         CtiCapController::getInstance()->manualCapBankControl( reqMsg, multi );
 
@@ -4809,6 +4820,7 @@ void CtiCCCommandExecutor::ConfirmClose()
     CtiCCSubstationBus_vec& ccSubstationBuses = *store->getCCSubstationBuses(CtiTime().seconds());
     CtiCCSubstationBus_vec updatedSubs;
 
+    CtiCCCapBank* operatingCapBank = NULL;
 
     if (bankID != 0)
     {
@@ -4828,6 +4840,7 @@ void CtiCCCommandExecutor::ConfirmClose()
                     if( bankID == currentCapBank->getPaoId() )
                     {
                         found = true;
+                        operatingCapBank = currentCapBank;
                         controlID = currentCapBank->getControlDeviceId();
 
                         updatedSubs.push_back(currentSubstationBus);
@@ -5054,7 +5067,8 @@ void CtiCCCommandExecutor::ConfirmClose()
 
     if( controlID > 0 )
     {
-        CtiRequestMsg* reqMsg = createPorterRequestMsg(controlID,"control close");
+        LitePoint controlPoint = store->getAttributeService().getLitePointsById( operatingCapBank->getControlPointId() );
+        CtiRequestMsg* reqMsg = createPorterRequestMsg(controlID, controlPoint.getStateOneControl() );
         reqMsg->setSOE(5);
         CtiCapController::getInstance()->manualCapBankControl( reqMsg, multi );
 
