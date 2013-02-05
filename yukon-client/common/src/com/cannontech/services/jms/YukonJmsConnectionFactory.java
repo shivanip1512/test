@@ -12,13 +12,13 @@ import com.cannontech.clientutils.YukonLogManager;
 import com.cannontech.common.config.ConfigurationSource;
 import com.cannontech.common.util.CtiUtilities;
 
-public class YukonJmsConnectionFactory implements FactoryBean {
+public class YukonJmsConnectionFactory implements FactoryBean<ConnectionFactory> {
     private static final Logger log = YukonLogManager.getLogger(YukonJmsConnectionFactory.class);
 
-    private ConfigurationSource configurationSource;
+    @Autowired private ConfigurationSource configurationSource;
 
     @Override
-    public Object getObject() throws Exception {
+    public ConnectionFactory getObject() throws Exception {
 
         final String applicationName = CtiUtilities.getApplicationName();
 
@@ -59,10 +59,4 @@ public class YukonJmsConnectionFactory implements FactoryBean {
     public boolean isSingleton() {
         return true;
     }
-
-    @Autowired
-    public void setConfigurationSource(ConfigurationSource configurationSource) {
-        this.configurationSource = configurationSource;
-    }
-    
 }

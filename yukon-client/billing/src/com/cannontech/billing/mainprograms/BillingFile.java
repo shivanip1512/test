@@ -231,7 +231,7 @@ public class BillingFile extends java.util.Observable implements Runnable
 		try {
 			boolean success = simpleBillingFormat.writeToFile(out);
 			if( !success) {
-				notify("Unsuccessfull database query" );
+				notify("Unsuccessful database query");
 			} else {
 	            setChanged();
 	            notify("Successfully created the file : " + simpleBillingFormat.getBillingFileDefaults().getOutputFileDir() + "\n" + simpleBillingFormat.getReadingCount() + " Valid Readings Reported.");

@@ -6,7 +6,6 @@
 		<project>cbc</project>
 		<project>common</project>
 		<project>resource</project>
-		<project>stars</project>
 		<project>yukonappserver</project>
 	</projects>
 	<buildSpec>
