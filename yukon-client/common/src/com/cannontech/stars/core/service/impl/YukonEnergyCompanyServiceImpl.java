@@ -42,14 +42,14 @@ public class YukonEnergyCompanyServiceImpl implements YukonEnergyCompanyService 
     }
 
     @Override
-    public YukonEnergyCompany getEnergyCompanyByOperator(LiteYukonUser operator){
+    public YukonEnergyCompany getEnergyCompanyByOperator(LiteYukonUser operator) {
         int energyCompanyId = getEnergyCompanyIdByOperator(operator);
         LiteStarsEnergyCompany energyCompany = starsDatabaseCache.getEnergyCompany(energyCompanyId);
         return energyCompany;
     }
 
     @Override
-    public int getEnergyCompanyIdByOperator(LiteYukonUser operator){
+    public int getEnergyCompanyIdByOperator(LiteYukonUser operator) {
         SqlStatementBuilder sql = new SqlStatementBuilder();
         sql.append("SELECT ECOLL.EnergyCompanyId");
         sql.append("FROM EnergyCompanyOperatorLoginList ECOLL");
@@ -64,7 +64,7 @@ public class YukonEnergyCompanyServiceImpl implements YukonEnergyCompanyService 
     }
     
     @Override
-    public boolean isEnergyCompanyOperator(LiteYukonUser operator){
+    public boolean isEnergyCompanyOperator(LiteYukonUser operator) {
         try {
             getEnergyCompanyIdByOperator(operator);
         } catch (EnergyCompanyNotFoundException e) {
