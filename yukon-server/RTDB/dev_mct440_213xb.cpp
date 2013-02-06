@@ -1266,7 +1266,8 @@ int Mct440_213xBDevice::executePutConfigTOU(CtiRequestMsg     *pReq,
         {
             for( int switchtime = 0; switchtime < TOU_SCHEDULE_TIME_NBR; switchtime++ )
             {
-                if( timeStringValues[schedule][switchtime].length() < 4 ) //A time needs at least 4 digits X:XX
+                // A time needs at least 4 digits X:XX and no more then 5 digits XX:XX
+                if( timeStringValues[schedule][switchtime].length() < 4 || timeStringValues[schedule][switchtime].length() > 5 )
                 {
                     CtiLockGuard<CtiLogger> doubt_guard(dout);
                     dout << CtiTime() << " **** Checkpoint - bad time string stored **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
@@ -1291,24 +1292,41 @@ int Mct440_213xBDevice::executePutConfigTOU(CtiRequestMsg     *pReq,
                     }
                 }
             }
+
             for( int schedule = 0; schedule < TOU_SCHEDULE_NBR; schedule++ )
             {
                 for( int switchtime = 0; switchtime < TOU_SCHEDULE_TIME_NBR; switchtime++ )
                 {
-                    // Im going to remove the :, get the remaining value, and do simple math on it. I think this
-                    // results in less error checking needed.
-                    timeStringValues[schedule][switchtime].erase(timeStringValues[schedule][switchtime].find(':'), 1);
-                    tempTime                    = strtol(timeStringValues[schedule][switchtime].c_str(),NULL,10);
-                    times[schedule][switchtime] = ((tempTime/100) * 60) + (tempTime%100);
+                    char sep;
+                    int  hour, minute;
+
+                    istringstream ss(timeStringValues[schedule][switchtime]);
+                    ss >> hour >> sep >> minute;
+
+                    if( hour   >= 0 && hour   < 24 &&
+                        minute >= 0 && minute < 60 &&
+                        sep == ':' )
+                    {
+                        times[schedule][switchtime] = hour*60 + minute;
+                    }
+                    else
+                    {
+                        CtiLockGuard<CtiLogger> doubt_guard(dout);
+                        dout << CtiTime() << " **** Checkpoint - bad time string stored **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
+                        nRet = NoConfigData;
+                    }
                 }
-            }
-            // Time is currently the actual minutes, we need the difference. Also the MCT has 5 minute resolution.
-            for( int schedule = 0; schedule < TOU_SCHEDULE_NBR; schedule++ )
-            {
-                for( int switchtime = (TOU_SCHEDULE_TIME_NBR-1); switchtime > 0; switchtime-- )
+
+                // Time is currently the actual minutes, we need the difference. Also the MCT has 5 minute resolution.
+                for( int switchtime = (TOU_SCHEDULE_TIME_NBR-1); switchtime >= 0; switchtime-- )
                 {
-                    times[schedule][switchtime] = times[schedule][switchtime]-times[schedule][switchtime-1];
-                    times[schedule][switchtime] = times[schedule][switchtime]/5;
+                    if( switchtime > 0 )
+                    {
+                        times[schedule][switchtime] = times[schedule][switchtime] - times[schedule][switchtime - 1];
+                    }
+
+                    times[schedule][switchtime] = times[schedule][switchtime] / 5;
+
                     if( times[schedule][switchtime] < 0 || times[schedule][switchtime] > 255 )
                     {
                         CtiLockGuard<CtiLogger> doubt_guard(dout);
@@ -2804,10 +2822,10 @@ INT Mct440_213xBDevice::decodeGetConfigTOU(INMESS          *InMessage,
 
         long schedules[4];
 
-        schedules[0] = (InMessage->Buffer.DSt.Message[1] >> 0) & 0x03;  // Sunday
-        schedules[1] = (InMessage->Buffer.DSt.Message[1] >> 2) & 0x03;  // Monday-Friday
-        schedules[2] = (InMessage->Buffer.DSt.Message[0] >> 4) & 0x03;  // Saturday
-        schedules[3] = (InMessage->Buffer.DSt.Message[0] >> 6) & 0x03;  // Holiday
+        schedules[0] = ((InMessage->Buffer.DSt.Message[1] >> 0) & 0x03) + 1;  // Sunday
+        schedules[1] = ((InMessage->Buffer.DSt.Message[1] >> 2) & 0x03) + 1;  // Monday-Friday
+        schedules[2] = ((InMessage->Buffer.DSt.Message[0] >> 4) & 0x03) + 1;  // Saturday
+        schedules[3] = ((InMessage->Buffer.DSt.Message[0] >> 6) & 0x03) + 1;  // Holiday
 
         for( int day_nbr = 0; day_nbr < 4; day_nbr++ )
         {
