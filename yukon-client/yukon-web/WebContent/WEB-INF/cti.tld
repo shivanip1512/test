@@ -213,8 +213,8 @@
   </tag>
 
   <tag>
-      <name>checkYukonUserAssociatedWithEC</name>
-      <tag-class>com.cannontech.web.taglib.CheckYukonUserAssociatedWithECTag</tag-class>
+      <name>checkEnergyCompanyOperator</name>
+      <tag-class>com.cannontech.web.taglib.CheckEnergyCompanyOperatorTag</tag-class>
       <attribute>
           <name>showError</name>
           <required>false</required>

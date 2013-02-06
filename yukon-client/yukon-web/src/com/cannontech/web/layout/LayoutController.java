@@ -29,13 +29,13 @@ import com.cannontech.common.config.ConfigurationSource;
 import com.cannontech.common.config.MasterConfigBooleanKeysEnum;
 import com.cannontech.common.i18n.MessageSourceAccessor;
 import com.cannontech.common.version.VersionTools;
+import com.cannontech.core.dao.EnergyCompanyNotFoundException;
 import com.cannontech.core.roleproperties.YukonRoleProperty;
 import com.cannontech.core.roleproperties.dao.RolePropertyDao;
 import com.cannontech.database.data.lite.LiteYukonUser;
 import com.cannontech.i18n.YukonUserContextMessageSourceResolver;
 import com.cannontech.servlet.YukonUserContextUtils;
 import com.cannontech.stars.core.service.YukonEnergyCompanyService;
-import com.cannontech.stars.database.cache.StarsDatabaseCache;
 import com.cannontech.stars.energyCompany.model.YukonEnergyCompany;
 import com.cannontech.user.YukonUserContext;
 import com.cannontech.util.ServletUtil;
@@ -229,10 +229,11 @@ public class LayoutController {
         String username = yukonUser.getUsername();
         String energyCompanyName = null;
         
-        
-        YukonEnergyCompany energyCompany = yukonEnergyCompanyService.getEnergyCompanyByOperator(yukonUser);
-        if (energyCompany.getEnergyCompanyId() != StarsDatabaseCache.DEFAULT_ENERGY_COMPANY_ID) {
+        try{
+            YukonEnergyCompany energyCompany = yukonEnergyCompanyService.getEnergyCompanyByOperator(yukonUser);
             energyCompanyName = energyCompany.getName();
+        }catch(EnergyCompanyNotFoundException e){
+           
         }
         
         map.addAttribute("energyCompanyName", energyCompanyName);

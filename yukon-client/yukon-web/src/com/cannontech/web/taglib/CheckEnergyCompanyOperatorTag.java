@@ -8,17 +8,16 @@ import javax.servlet.jsp.JspWriter;
 import javax.servlet.jsp.tagext.TagSupport;
 
 import com.cannontech.common.i18n.MessageSourceAccessor;
-import com.cannontech.database.data.lite.LiteEnergyCompany;
 import com.cannontech.database.data.lite.LiteYukonUser;
 import com.cannontech.i18n.YukonUserContextMessageSourceResolver;
 import com.cannontech.servlet.YukonUserContextUtils;
 import com.cannontech.spring.YukonSpringHook;
-import com.cannontech.stars.energyCompany.dao.EnergyCompanyDao;
+import com.cannontech.stars.core.service.YukonEnergyCompanyService;
 import com.cannontech.user.YukonUserContext;
 import com.cannontech.util.ServletUtil;
 
 
-public class CheckYukonUserAssociatedWithECTag extends TagSupport {
+public class CheckEnergyCompanyOperatorTag extends TagSupport {
 
     private boolean showError;
 
@@ -26,21 +25,18 @@ public class CheckYukonUserAssociatedWithECTag extends TagSupport {
     public int doStartTag() throws JspException {
        
         int returnValue = EVAL_BODY_INCLUDE;
-        EnergyCompanyDao energyCompanyDao =
-                YukonSpringHook.getBean("energyCompanyDao", EnergyCompanyDao.class);
+        YukonEnergyCompanyService ecService =
+                YukonSpringHook.getBean("yukonEnergyCompanyService", YukonEnergyCompanyService.class);
         
         LiteYukonUser user = ServletUtil.getYukonUser(pageContext.getRequest());
-        LiteEnergyCompany liteEnergyCompany = energyCompanyDao.getEnergyCompany(user);
-        LiteEnergyCompany defaultEnergyCompany =
-            energyCompanyDao.getEnergyCompany(EnergyCompanyDao.DEFAULT_ENERGY_COMPANY_ID);
 
-        if (liteEnergyCompany.equals(defaultEnergyCompany)) {
+        if (!ecService.isEnergyCompanyOperator(user)) {
             if (showError) {
                 YukonUserContext userContext = YukonUserContextUtils.getYukonUserContext((HttpServletRequest)pageContext.getRequest());
                 YukonUserContextMessageSourceResolver messageSourceResolver =
                         YukonSpringHook.getBean("yukonUserContextMessageSourceResolver", YukonUserContextMessageSourceResolver.class);
                 MessageSourceAccessor messageAccessor = messageSourceResolver.getMessageSourceAccessor(userContext);
-                String error = messageAccessor.getMessage("yukon.web.taglib.checkYukonUserAssociatedWithECTag.userNotAssociatedWithEC");
+                String error = messageAccessor.getMessage("yukon.web.taglib.CheckEnergyCompanyOperatorTag.userIsNotECOperator");
                 JspWriter out = pageContext.getOut();
                 try {
                     out.print("<div class=\"error\">");

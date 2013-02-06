@@ -79,53 +79,55 @@ public class OptOutAdminController {
         		YukonRoleProperty.OPERATOR_OPT_OUT_ADMIN_CHANGE_COUNTS,
         		YukonRoleProperty.OPERATOR_OPT_OUT_ADMIN_CANCEL_CURRENT);
     	
-    	LiteStarsEnergyCompany energyCompany = starsDatabaseCache.getEnergyCompanyByUser(userContext.getYukonUser());
-    	model.addAttribute("energyCompanyId", energyCompany.getEnergyCompanyId());
-
-    	systemOptOuts(null, userContext, model);
-
-    	// programNameEnabledMap
-    	OptOutEnabled defaultOptOutEnabledSetting = optOutStatusService.getDefaultOptOutEnabled(userContext.getYukonUser());
-    	Map<Integer, OptOutEnabled> programSpecificEnabledOptOuts = 
-    	    optOutStatusService.getProgramSpecificEnabledOptOuts(energyCompany.getEnergyCompanyId()); 
-
-        Map<String, OptOutEnabled> programNameEnabledMap = Maps.newLinkedHashMap();
-        for (Entry<Integer, OptOutEnabled> programOptOutEnabledEntry : programSpecificEnabledOptOuts.entrySet()) {
-            
-            int programId = programOptOutEnabledEntry.getKey();
-            Program program = programDao.getByProgramId(programId);
-            programNameEnabledMap.put(program.getProgramName(), programOptOutEnabledEntry.getValue());
-        }
-        model.addAttribute("programNameEnabledMap", programNameEnabledMap);
-        model.addAttribute("energyCompanyOptOutEnabledSetting", defaultOptOutEnabledSetting);
-
-        // programNameCountsMap
-        OptOutCountsTemporaryOverride defaultOptOutCountsSetting = optOutStatusService.getDefaultOptOutCounts(userContext.getYukonUser());
-		List<OptOutCountsTemporaryOverride> programSpecificOptOutCounts = optOutStatusService.getProgramSpecificOptOutCounts(userContext.getYukonUser());
-		
-		Map<String, OptOutCounts> programNameCountsMap = Maps.newLinkedHashMap();
-		for (OptOutCountsTemporaryOverride setting : programSpecificOptOutCounts) {
-			
-			int programId = setting.getAssignedProgramId();
-			Program program = programDao.getByProgramId(programId);
-			programNameCountsMap.put(program.getProgramName(), setting.getOptOutCounts());
-		}
-    	model.addAttribute("programNameCountsMap", programNameCountsMap);
-        model.addAttribute("energyCompanyOptOutCountsSetting", defaultOptOutCountsSetting.getOptOutCounts());
-    	
-    	// Get the customer search by list for search drop down box
-    	YukonSelectionList yukonSelectionList = energyCompany.getYukonSelectionList(YukonSelectionListDefs.YUK_LIST_NAME_SEARCH_TYPE);
-    	List<YukonListEntry> customerSearchList = new ArrayList<YukonListEntry>();
-		List<YukonListEntry> yukonListEntries = yukonSelectionList.getYukonListEntries();
-		for (YukonListEntry entry : yukonListEntries) {
-			if (entry.getYukonDefID() != YukonListEntryTypes.YUK_DEF_ID_SEARCH_TYPE_METER_NO) {
-				customerSearchList.add(entry);
-			}
-		}
-		model.addAttribute("customerSearchList", customerSearchList);
-		
-		model.addAttribute("emptyProgramName", emptyProgramName);
-		model.addAttribute("programNotFound", programNotFound);
+    	if(yukonEnergyCompanyService.isEnergyCompanyOperator(userContext.getYukonUser())){
+        	LiteStarsEnergyCompany energyCompany = starsDatabaseCache.getEnergyCompanyByUser(userContext.getYukonUser());
+        	model.addAttribute("energyCompanyId", energyCompany.getEnergyCompanyId());
+    
+        	systemOptOuts(null, userContext, model);
+    
+        	// programNameEnabledMap
+        	OptOutEnabled defaultOptOutEnabledSetting = optOutStatusService.getDefaultOptOutEnabled(userContext.getYukonUser());
+        	Map<Integer, OptOutEnabled> programSpecificEnabledOptOuts = 
+        	    optOutStatusService.getProgramSpecificEnabledOptOuts(energyCompany.getEnergyCompanyId()); 
+    
+            Map<String, OptOutEnabled> programNameEnabledMap = Maps.newLinkedHashMap();
+            for (Entry<Integer, OptOutEnabled> programOptOutEnabledEntry : programSpecificEnabledOptOuts.entrySet()) {
+                
+                int programId = programOptOutEnabledEntry.getKey();
+                Program program = programDao.getByProgramId(programId);
+                programNameEnabledMap.put(program.getProgramName(), programOptOutEnabledEntry.getValue());
+            }
+            model.addAttribute("programNameEnabledMap", programNameEnabledMap);
+            model.addAttribute("energyCompanyOptOutEnabledSetting", defaultOptOutEnabledSetting);
+    
+            // programNameCountsMap
+            OptOutCountsTemporaryOverride defaultOptOutCountsSetting = optOutStatusService.getDefaultOptOutCounts(userContext.getYukonUser());
+    		List<OptOutCountsTemporaryOverride> programSpecificOptOutCounts = optOutStatusService.getProgramSpecificOptOutCounts(userContext.getYukonUser());
+    		
+    		Map<String, OptOutCounts> programNameCountsMap = Maps.newLinkedHashMap();
+    		for (OptOutCountsTemporaryOverride setting : programSpecificOptOutCounts) {
+    			
+    			int programId = setting.getAssignedProgramId();
+    			Program program = programDao.getByProgramId(programId);
+    			programNameCountsMap.put(program.getProgramName(), setting.getOptOutCounts());
+    		}
+        	model.addAttribute("programNameCountsMap", programNameCountsMap);
+            model.addAttribute("energyCompanyOptOutCountsSetting", defaultOptOutCountsSetting.getOptOutCounts());
+        	
+        	// Get the customer search by list for search drop down box
+        	YukonSelectionList yukonSelectionList = energyCompany.getYukonSelectionList(YukonSelectionListDefs.YUK_LIST_NAME_SEARCH_TYPE);
+        	List<YukonListEntry> customerSearchList = new ArrayList<YukonListEntry>();
+    		List<YukonListEntry> yukonListEntries = yukonSelectionList.getYukonListEntries();
+    		for (YukonListEntry entry : yukonListEntries) {
+    			if (entry.getYukonDefID() != YukonListEntryTypes.YUK_DEF_ID_SEARCH_TYPE_METER_NO) {
+    				customerSearchList.add(entry);
+    			}
+    		}
+    		model.addAttribute("customerSearchList", customerSearchList);
+    		
+    		model.addAttribute("emptyProgramName", emptyProgramName);
+    		model.addAttribute("programNotFound", programNotFound);
+    	}
 		
 		return "operator/optout/optOutAdmin.jsp";
     }

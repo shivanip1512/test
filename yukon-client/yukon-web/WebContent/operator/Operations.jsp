@@ -50,36 +50,17 @@
 
         <cti:operationsSetup />
         <cti:starsOperations />
-        <c:set var="isUserAssociatedWithEC" value="false" />
-        <cti:checkYukonUserAssociatedWithEC>
-            <c:set var="isUserAssociatedWithEC" value="true" />
-        </cti:checkYukonUserAssociatedWithEC>
-
+        
         <cti:checkRole role="ConsumerInfoRole.ROLEID">
 
             <tags:operationSection sectionName="Consumer Account Information" sectionImageName="ConsumerLogo">
                 <cti:checkRolesAndProperties value="OPERATOR_NEW_ACCOUNT_WIZARD">
-                    <c:choose>
-                        <c:when test="${isUserAssociatedWithEC}">
-                            <tags:sectionLink>
-                                <a href="/stars/operator/account/accountCreate"><cti:msg
-                                        key="yukon.web.menu.portal.consumerAccountInformation.newAccount" /></a>
-                            </tags:sectionLink>
-                        </c:when>
-                        <c:otherwise>
-                            <div class="linkBorder">
-                                <div class="boxedLink disabled">
-                                    <a class="disabled"
-                                        title="<cti:msg key="yukon.web.taglib.checkYukonUserAssociatedWithECTag.userNotAssociatedWithEC" />"><cti:msg
-                                            key="yukon.web.menu.portal.consumerAccountInformation.newAccount" /></a>
-                                </div>
-                            </div>
-                            <class="linkBorder">
-                        </c:otherwise>
-                    </c:choose>
+                    <tags:sectionLink enabled="${isEnergyCompanyOperator}" href="/stars/operator/account/accountCreate"
+                        titleKey="yukon.web.taglib.CheckEnergyCompanyOperatorTag.userIsNotECOperator"
+                        textKey="yukon.web.menu.portal.consumerAccountInformation.newAccount" />
                 </cti:checkRolesAndProperties>
-                
-				<c:if test="${isEnergyCompanyOperator}">
+
+                <c:if test="${isEnergyCompanyOperator}">
 					<cti:checkRolesAndProperties value="OPERATOR_IMPORT_CUSTOMER_ACCOUNT">
                     	<c:set var="importUri" scope="page" value="/stars/operator/account/accountImport" />
                     	<c:set var="importLabel" scope="page" value="Import Account" />
@@ -109,14 +90,13 @@
 				
                 <cti:checkMultiProperty
                     property="ConsumerInfoRole.OPT_OUT_ADMIN_STATUS,ConsumerInfoRole.OPT_OUT_ADMIN_CHANGE_ENABLE,ConsumerInfoRole.OPT_OUT_ADMIN_CANCEL_CURRENT,ConsumerInfoRole.OPT_OUT_ADMIN_CHANGE_COUNTS">
-                    <tags:sectionLink>
-                        <a href="/stars/operator/optOut/admin"><cti:msg key="yukon.web.menu.portal.consumerAccountInformation.optOutAdmin" />
-                        </a>
-                    </tags:sectionLink>
+                    <tags:sectionLink enabled="${isEnergyCompanyOperator}" href="/stars/operator/optOut/admin"
+                        titleKey="yukon.web.taglib.CheckEnergyCompanyOperatorTag.userIsNotECOperator"
+                        textKey="yukon.web.menu.portal.consumerAccountInformation.optOutAdmin" />
                 </cti:checkMultiProperty>
 
                 <!-- Customer search form -->
-                <cti:checkYukonUserAssociatedWithEC>
+                 <c:if test="${isEnergyCompanyOperator}">
                     <cti:checkRolesAndProperties value="OPERATOR_ACCOUNT_SEARCH">
                         <div class="sectionForm">
                             <form id="accountSearchForm" action="/stars/operator/account/search" method="get">
@@ -137,7 +117,7 @@
                             </form>
                         </div>
                     </cti:checkRolesAndProperties>
-                </cti:checkYukonUserAssociatedWithEC>
+                 </c:if>
             </tags:operationSection>
         </cti:checkRole>
 
@@ -237,9 +217,9 @@
 			<cti:msg key="yukon.web.hardwareInventory" var="sectionTitle" />
             <tags:operationSection sectionName="${sectionTitle}" sectionImageName="HardwareInventoryLogo">
                 <cti:checkRole role="InventoryRole.ROLEID">
-                    <tags:sectionLink>
-                        <a href="/stars/operator/inventory/home"><cti:msg key="yukon.web.operations.inventory"/></a>
-                    </tags:sectionLink>
+                    <tags:sectionLink enabled="${isEnergyCompanyOperator}" href="/stars/operator/inventory/home"
+                        titleKey="yukon.web.taglib.CheckEnergyCompanyOperatorTag.userIsNotECOperator"
+                        textKey="yukon.web.operations.inventory" />
                 </cti:checkRole>
                 <cti:checkProperty property="InventoryRole.PURCHASING_ACCESS">
                     <tags:sectionLink>
@@ -247,7 +227,7 @@
                     </tags:sectionLink>
                 </cti:checkProperty>
 
-                <cti:checkYukonUserAssociatedWithEC>
+                <c:if test="${isEnergyCompanyOperator}">
                 <!-- Hardware search form -->
     				<cti:checkRolesAndProperties value="INVENTORY_SEARCH">
     					<div class="sectionForm">
@@ -270,7 +250,7 @@
     						</form>
     					</div>
     				</cti:checkRolesAndProperties>
-                </cti:checkYukonUserAssociatedWithEC>
+                 </c:if>
 			</tags:operationSection>
  
         </cti:checkRole>
@@ -352,24 +332,9 @@
                 </c:if>
 
                 <cti:checkProperty property="operator.AdministratorRole.ADMIN_VIEW_BATCH_COMMANDS">
-                    <c:choose>
-                        <c:when test="${isUserAssociatedWithEC}">
-                            <tags:sectionLink>
-                                <a href="Admin/SwitchCommands.jsp"><cti:msg
-                                        key="yukon.web.viewBatchCommands" /></a>
-                            </tags:sectionLink>
-                        </c:when>
-                        <c:otherwise>
-                            <div class="linkBorder">
-                                <div class="boxedLink disabled">
-                                    <a class="disabled"
-                                        title="<cti:msg key="yukon.web.taglib.checkYukonUserAssociatedWithECTag.userNotAssociatedWithEC" />"><cti:msg
-                                            key="yukon.web.viewBatchCommands" /></a>
-                                </div>
-                            </div>
-                            <class="linkBorder">
-                        </c:otherwise>
-                    </c:choose>
+                    <tags:sectionLink href="Admin/SwitchCommands.jsp" enabled="${isEnergyCompanyOperator}"
+                        titleKey="yukon.web.taglib.CheckEnergyCompanyOperatorTag.userIsNotECOperator"
+                        textKey="yukon.web.viewBatchCommands" />
                 </cti:checkProperty>
 
                 <cti:checkRole role="ConsumerInfoRole.ROLEID">

@@ -7,7 +7,7 @@
 
 <cti:standardPage module="operator" page="accountList">
 
-    <cti:checkYukonUserAssociatedWithEC showError="true" >
+    <cti:checkEnergyCompanyOperator showError="true" >
         <%-- SEACRH WIDGET --%>
         <cti:checkRolesAndProperties value="OPERATOR_ACCOUNT_SEARCH">
             <form id="searchForm" action="/stars/operator/account/search" method="get">
@@ -92,5 +92,5 @@
             </tags:pagedBox>
             
         </c:if>
-    </cti:checkYukonUserAssociatedWithEC>
+    </cti:checkEnergyCompanyOperator>
 </cti:standardPage>

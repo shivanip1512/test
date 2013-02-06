@@ -8,7 +8,7 @@
 <%@ taglib prefix="fn" uri="http://java.sun.com/jsp/jstl/functions" %>
 
 <cti:standardPage module="operator" page="account.${mode}">
-    <cti:checkYukonUserAssociatedWithEC showError="true" >
+    <cti:checkEnergyCompanyOperator showError="true" >
     	<tags:setFormEditMode mode="${mode}"/>
     	
     	<cti:includeScript link="/JavaScript/yukonGeneral.js"/>
@@ -470,5 +470,5 @@
                 </c:if>
             </cti:checkRolesAndProperties>
         </cti:displayForPageEditModes>
-    </cti:checkYukonUserAssociatedWithEC>
+    </cti:checkEnergyCompanyOperator>
 </cti:standardPage>

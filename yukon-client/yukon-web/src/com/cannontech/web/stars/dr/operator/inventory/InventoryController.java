@@ -108,52 +108,54 @@ public class InventoryController {
         LiteYukonUser user = context.getYukonUser();
         rolePropertyDao.verifyRole(YukonRole.INVENTORY, user);
         
-        YukonEnergyCompany energyCompany = yukonEnergyCompanyService.getEnergyCompanyByOperator(user);
-        LiteStarsEnergyCompany liteEc = starsDatabaseCache.getEnergyCompany(energyCompany);
-        
-        model.addAttribute("energyCompanyId", energyCompany.getEnergyCompanyId());
-        
-        MessageSourceAccessor messageSourceAccessor = messageSourceResolver.getMessageSourceAccessor(context);
-        String title = messageSourceAccessor.getMessage("yukon.web.modules.operator.inventory.home.fileUploadTitle");
-        model.addAttribute("fileUploadTitle", title);
-        
-        MeteringType type = ecRolePropertyDao.getPropertyEnumValue(YukonRoleProperty.METER_MCT_BASE_DESIGNATION, EnergyCompanyRole.MeteringType.class, energyCompany);
-        model.addAttribute("showAddMeter", type == MeteringType.yukon);
-        
-        boolean showLinks = configurationSource.getBoolean(MasterConfigBooleanKeysEnum.DIGI_ENABLED);
-        model.addAttribute("showLinks", showLinks);
-        
-        boolean showSearch = rolePropertyDao.checkProperty(YukonRoleProperty.INVENTORY_SEARCH, user);
-        model.addAttribute("showSearch", showSearch);
-        
-        boolean hasAddRange = rolePropertyDao.getPropertyBooleanValue(YukonRoleProperty.SN_ADD_RANGE, user);
-        boolean hasCreate = rolePropertyDao.getPropertyBooleanValue(YukonRoleProperty.INVENTORY_CREATE_HARDWARE, user);
-        boolean showActions = hasAddRange || hasCreate;
-        model.addAttribute("showActions", showActions);
-        
-        SerialNumberValidation snv = ecRolePropertyDao.getPropertyEnumValue(YukonRoleProperty.SERIAL_NUMBER_VALIDATION, SerialNumberValidation.class, energyCompany);
-        model.addAttribute("showAddByRange", snv == SerialNumberValidation.NUMERIC && hasAddRange);
-        
-        model.addAttribute("inventorySearch", new InventorySearch());
-        
-        List<YukonListEntry> yukonListEntries = liteEc.getYukonSelectionList(YukonSelectionListEnum.DEVICE_TYPE.getListName()).getYukonListEntries();
-        Iterable<YukonListEntry> addHardwareTypes = Iterables.filter(yukonListEntries, new Predicate<YukonListEntry>() {
-            @Override
-            public boolean apply(YukonListEntry input) {
-                HardwareType type = HardwareType.valueOf(input.getYukonDefID());
-                return type != HardwareType.YUKON_METER && type != HardwareType.NON_YUKON_METER;
-            }
-        });
-        model.addAttribute("addHardwareTypes", addHardwareTypes.iterator());
-        
-        Iterable<YukonListEntry> addHardwareByRangeTypes = Iterables.filter(yukonListEntries, new Predicate<YukonListEntry>() {
-            @Override
-            public boolean apply(YukonListEntry input) {
-                HardwareType type = HardwareType.valueOf(input.getYukonDefID()); 
-                return type.isSupportsAddByRange();
-            }
-        });
-        model.addAttribute("addHardwareByRangeTypes", addHardwareByRangeTypes.iterator());
+        if(yukonEnergyCompanyService.isEnergyCompanyOperator(context.getYukonUser())){
+            YukonEnergyCompany energyCompany = yukonEnergyCompanyService.getEnergyCompanyByOperator(user);
+            LiteStarsEnergyCompany liteEc = starsDatabaseCache.getEnergyCompany(energyCompany);
+            
+            model.addAttribute("energyCompanyId", energyCompany.getEnergyCompanyId());
+            
+            MessageSourceAccessor messageSourceAccessor = messageSourceResolver.getMessageSourceAccessor(context);
+            String title = messageSourceAccessor.getMessage("yukon.web.modules.operator.inventory.home.fileUploadTitle");
+            model.addAttribute("fileUploadTitle", title);
+            
+            MeteringType type = ecRolePropertyDao.getPropertyEnumValue(YukonRoleProperty.METER_MCT_BASE_DESIGNATION, EnergyCompanyRole.MeteringType.class, energyCompany);
+            model.addAttribute("showAddMeter", type == MeteringType.yukon);
+            
+            boolean showLinks = configurationSource.getBoolean(MasterConfigBooleanKeysEnum.DIGI_ENABLED);
+            model.addAttribute("showLinks", showLinks);
+            
+            boolean showSearch = rolePropertyDao.checkProperty(YukonRoleProperty.INVENTORY_SEARCH, user);
+            model.addAttribute("showSearch", showSearch);
+            
+            boolean hasAddRange = rolePropertyDao.getPropertyBooleanValue(YukonRoleProperty.SN_ADD_RANGE, user);
+            boolean hasCreate = rolePropertyDao.getPropertyBooleanValue(YukonRoleProperty.INVENTORY_CREATE_HARDWARE, user);
+            boolean showActions = hasAddRange || hasCreate;
+            model.addAttribute("showActions", showActions);
+            
+            SerialNumberValidation snv = ecRolePropertyDao.getPropertyEnumValue(YukonRoleProperty.SERIAL_NUMBER_VALIDATION, SerialNumberValidation.class, energyCompany);
+            model.addAttribute("showAddByRange", snv == SerialNumberValidation.NUMERIC && hasAddRange);
+            
+            model.addAttribute("inventorySearch", new InventorySearch());
+            
+            List<YukonListEntry> yukonListEntries = liteEc.getYukonSelectionList(YukonSelectionListEnum.DEVICE_TYPE.getListName()).getYukonListEntries();
+            Iterable<YukonListEntry> addHardwareTypes = Iterables.filter(yukonListEntries, new Predicate<YukonListEntry>() {
+                @Override
+                public boolean apply(YukonListEntry input) {
+                    HardwareType type = HardwareType.valueOf(input.getYukonDefID());
+                    return type != HardwareType.YUKON_METER && type != HardwareType.NON_YUKON_METER;
+                }
+            });
+            model.addAttribute("addHardwareTypes", addHardwareTypes.iterator());
+            
+            Iterable<YukonListEntry> addHardwareByRangeTypes = Iterables.filter(yukonListEntries, new Predicate<YukonListEntry>() {
+                @Override
+                public boolean apply(YukonListEntry input) {
+                    HardwareType type = HardwareType.valueOf(input.getYukonDefID()); 
+                    return type.isSupportsAddByRange();
+                }
+            });
+            model.addAttribute("addHardwareByRangeTypes", addHardwareByRangeTypes.iterator());
+        }
         
         return "operator/inventory/home.jsp";
     }

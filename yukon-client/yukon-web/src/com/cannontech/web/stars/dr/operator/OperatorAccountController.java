@@ -268,7 +268,7 @@ public class OperatorAccountController {
 		String searchByStr = ServletRequestUtils.getStringParameter(request, "searchBy", null);
 		
 		// no search
-		if (StringUtils.isBlank(searchByStr)) {
+		if (StringUtils.isBlank(searchByStr) || !yukonEnergyCompanyService.isEnergyCompanyOperator(userContext.getYukonUser())) {
 			modelMap.addAttribute("accountSearchResultHolder", AccountSearchResultHolder.emptyAccountSearchResultHolder());
 			modelMap.addAttribute("operatorAccountSearchBys", OperatorAccountSearchBy.values());
 			return "operator/account/accountList.jsp";
@@ -321,32 +321,35 @@ public class OperatorAccountController {
 	// NEW ACCOUNT PAGE
 	@RequestMapping
     public String accountCreate(ModelMap modelMap, YukonUserContext userContext) throws ServletRequestBindingException {
-
-	    rolePropertyDao.verifyProperty(YukonRoleProperty.OPERATOR_NEW_ACCOUNT_WIZARD, userContext.getYukonUser());
-	    
-	    boolean hasOddForControlRole = rolePropertyDao.checkRole(YukonRole.ODDS_FOR_CONTROL, userContext.getYukonUser());
-	    
-	    /* AccountDto */
-	    AccountDto accountDto = new AccountDto();
-	    accountDto.setIsCommercial(false);
-
-	    /* OperatorGeneralUiExtras */
-	    OperatorGeneralUiExtras uiExtras = new OperatorGeneralUiExtras();
-	    uiExtras.setHasOddsForControlRole(hasOddForControlRole);
-
-	    /* LoginBackingBean */
-	    LoginBackingBean loginBackingBean = new LoginBackingBean();
-	    loginBackingBean.setLoginEnabled(LoginStatusEnum.ENABLED);
-
-	    /* AccountGeneral */
-	    AccountGeneral accountGeneral = new AccountGeneral();
-	    accountGeneral.setAccountDto(new AccountDto());
-	    accountGeneral.setOperatorGeneralUiExtras(uiExtras);
-	    accountGeneral.setLoginBackingBean(loginBackingBean);
-
-	    modelMap.addAttribute("accountGeneral", accountGeneral);
-        
-	    setupAccountCreationModelMap(modelMap, userContext.getYukonUser());
+	    if(yukonEnergyCompanyService.isEnergyCompanyOperator(userContext.getYukonUser())){
+    	    rolePropertyDao.verifyProperty(YukonRoleProperty.OPERATOR_NEW_ACCOUNT_WIZARD, userContext.getYukonUser());
+    	    
+    	    boolean hasOddForControlRole = rolePropertyDao.checkRole(YukonRole.ODDS_FOR_CONTROL, userContext.getYukonUser());
+    	    
+    	    /* AccountDto */
+    	    AccountDto accountDto = new AccountDto();
+    	    accountDto.setIsCommercial(false);
+    
+    	    /* OperatorGeneralUiExtras */
+    	    OperatorGeneralUiExtras uiExtras = new OperatorGeneralUiExtras();
+    	    uiExtras.setHasOddsForControlRole(hasOddForControlRole);
+    
+    	    /* LoginBackingBean */
+    	    LoginBackingBean loginBackingBean = new LoginBackingBean();
+    	    loginBackingBean.setLoginEnabled(LoginStatusEnum.ENABLED);
+    
+    	    /* AccountGeneral */
+    	    AccountGeneral accountGeneral = new AccountGeneral();
+    	    accountGeneral.setAccountDto(new AccountDto());
+    	    accountGeneral.setOperatorGeneralUiExtras(uiExtras);
+    	    accountGeneral.setLoginBackingBean(loginBackingBean);
+    
+    	    modelMap.addAttribute("accountGeneral", accountGeneral);
+            
+    	    setupAccountCreationModelMap(modelMap, userContext.getYukonUser());
+	    }else{
+	        modelMap.addAttribute("mode", PageEditMode.CREATE);
+	    }
 	    return "operator/account/account.jsp";
 	}
 	

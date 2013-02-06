@@ -12,6 +12,7 @@ import org.springframework.dao.IncorrectResultSizeDataAccessException;
 
 import com.cannontech.clientutils.YukonLogManager;
 import com.cannontech.common.util.SqlStatementBuilder;
+import com.cannontech.core.dao.EnergyCompanyNotFoundException;
 import com.cannontech.database.RowMapper;
 import com.cannontech.database.YukonJdbcTemplate;
 import com.cannontech.database.YukonResultSet;
@@ -28,7 +29,6 @@ import com.google.common.collect.Maps;
 
 
 public class YukonEnergyCompanyServiceImpl implements YukonEnergyCompanyService {
-    private static final Logger log = YukonLogManager.getLogger(YukonEnergyCompanyServiceImpl.class);
     
     @Autowired private ECMappingDao ecMappingDao;
     @Autowired private StarsDatabaseCache starsDatabaseCache;
@@ -42,33 +42,35 @@ public class YukonEnergyCompanyServiceImpl implements YukonEnergyCompanyService 
     }
 
     @Override
-    public YukonEnergyCompany getEnergyCompanyByOperator(LiteYukonUser operator) {
+    public YukonEnergyCompany getEnergyCompanyByOperator(LiteYukonUser operator){
         int energyCompanyId = getEnergyCompanyIdByOperator(operator);
         LiteStarsEnergyCompany energyCompany = starsDatabaseCache.getEnergyCompany(energyCompanyId);
         return energyCompany;
     }
 
     @Override
-    public int getEnergyCompanyIdByOperator(LiteYukonUser operator) {
+    public int getEnergyCompanyIdByOperator(LiteYukonUser operator){
         SqlStatementBuilder sql = new SqlStatementBuilder();
         sql.append("SELECT ECOLL.EnergyCompanyId");
         sql.append("FROM EnergyCompanyOperatorLoginList ECOLL");
         sql.append("WHERE ECOLL.OperatorLoginId").eq(operator.getUserID());
         
-        int energyCompanyId = 0;
         try {
-            energyCompanyId = yukonJdbcTemplate.queryForInt(sql);
+            int energyCompanyId = yukonJdbcTemplate.queryForInt(sql);
+            return energyCompanyId;
         } catch (EmptyResultDataAccessException e) {
-            log.debug("No energy company found for user id: " + operator.getUserID() + ". Using default energy company.");
-            energyCompanyId = StarsDatabaseCache.DEFAULT_ENERGY_COMPANY_ID;
+            throw new EnergyCompanyNotFoundException("No energy company found for user id: " + operator.getUserID(), e);
         }
-        return energyCompanyId;
     }
     
     @Override
-    public boolean isEnergyCompanyOperator(LiteYukonUser operator) {
-        int ecId = getEnergyCompanyIdByOperator(operator);
-        return ecId != StarsDatabaseCache.DEFAULT_ENERGY_COMPANY_ID;
+    public boolean isEnergyCompanyOperator(LiteYukonUser operator){
+        try {
+            getEnergyCompanyIdByOperator(operator);
+        } catch (EnergyCompanyNotFoundException e) {
+            return false;
+        }
+        return true;
     }
 
     @Override
