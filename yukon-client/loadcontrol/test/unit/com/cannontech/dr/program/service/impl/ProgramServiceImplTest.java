@@ -16,6 +16,7 @@ import org.junit.After;
 import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
+import org.springframework.test.util.ReflectionTestUtils;
 
 import com.cannontech.core.service.DateFormattingService;
 import com.cannontech.core.service.impl.DateFormattingServiceImpl;
@@ -38,7 +39,7 @@ public class ProgramServiceImplTest {
         userContext.setTimeZone(TimeZone.getTimeZone("America/Chicago"));
         programService = new ProgramServiceImpl();
         DateFormattingService dateFormattingService = new DateFormattingServiceImpl();
-        programService.setDateFormattingService(dateFormattingService);
+        ReflectionTestUtils.setField(programService, "dateFormattingService", dateFormattingService, DateFormattingService.class);
     }
 
     @After
