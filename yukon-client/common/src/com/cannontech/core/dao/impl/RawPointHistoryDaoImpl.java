@@ -347,6 +347,7 @@ public class RawPointHistoryDaoImpl implements RawPointHistoryDao {
                         sql.append(  "AND p.PointType").eq_k(pointIdentifier.getPointType());
                         appendChangeIdClause(sql, changeIdRange);
                         appendTimeStampClause(sql, dateRange);
+                        sql.append(  "AND yp.PAObjectID").in(subList);
                         if (excludeDisabledPaos) {
                             sql.append(  "AND yp.DisableFlag").eq(YNBoolean.NO);
                         }
