@@ -32,7 +32,7 @@ public class DeviceCollectionFactoryImpl implements DeviceCollectionFactory, Web
     }
 
     public DeviceCollection createDeviceCollection(HttpServletRequest request)
-            throws ServletRequestBindingException {
+    throws ServletRequestBindingException {
 
         String type = request.getParameter("collectionType");
         DeviceCollectionType deviceCollectionType = DeviceCollectionType.valueOf(type);

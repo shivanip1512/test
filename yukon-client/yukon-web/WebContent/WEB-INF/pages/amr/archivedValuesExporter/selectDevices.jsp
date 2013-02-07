@@ -10,8 +10,6 @@
 <cti:standardPage page="archivedValueExporter.selectDevices" module="amr">
     <tags:boxContainer2 nameKey="selectionContainer">
         <cti:deviceGroupHierarchyJson predicates="NON_HIDDEN" var="groupDataJson"/>
-        <tags:deviceSelection action="selected"
-            groupDataJson="${groupDataJson}"
-            pickerType="devicePicker"/>
+        <tags:deviceSelection action="selected" groupDataJson="${groupDataJson}" pickerType="devicePicker"/>
     </tags:boxContainer2>
 </cti:standardPage>
