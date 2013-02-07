@@ -13,7 +13,7 @@ public class ProgramToAlternateProgram {
             return programToAlternateProgram.getAlternateProgramId();
         }};
         
-    public static final Function<ProgramToAlternateProgram, Integer> ASSIGNED_PROGRAM_IDS_FUNCTION = new Function<ProgramToAlternateProgram, Integer>() {
+    public static final Function<ProgramToAlternateProgram, Integer> PARENT_PROGRAM_IDS_FUNCTION = new Function<ProgramToAlternateProgram, Integer>() {
             @Override
             public Integer apply(ProgramToAlternateProgram programToAlternateProgram) {
                 return programToAlternateProgram.getAssignedProgramId();

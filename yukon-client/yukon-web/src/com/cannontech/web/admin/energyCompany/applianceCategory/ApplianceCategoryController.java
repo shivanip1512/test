@@ -424,11 +424,10 @@ public class ApplianceCategoryController {
         }
         model.addAttribute("mode", mode);
         model.addAttribute("isEditable", isEditable);
-        
+                
         if(!bean.isMultiple()){
             boolean showAlternateEnrollment = ecRolePropertyDao.checkProperty(YukonRoleProperty.ALTERNATE_PROGRAM_ENROLLMENT, yec);
             if (showAlternateEnrollment) {
-                model.addAttribute("showAlternateEnrollment", showAlternateEnrollment);
                 /*
                  * Programs that should be excluded from Alternate Enrollment picker
                  * --programs that are alternate on another program
@@ -436,13 +435,17 @@ public class ApplianceCategoryController {
                  */
                 List<ProgramToAlternateProgram> allMappings = ptapDao.getAll();
                 List<Integer> alternateProgramIds = Lists.transform(allMappings, ProgramToAlternateProgram.ALTERNATE_PROGRAM_IDS_FUNCTION);
-                List<Integer> assignedProgramIds = Lists.transform(allMappings, ProgramToAlternateProgram.ASSIGNED_PROGRAM_IDS_FUNCTION);
-                List<Integer> excludedProgramIds = Lists.newArrayList();
-                excludedProgramIds.addAll(alternateProgramIds);
-                excludedProgramIds.addAll(assignedProgramIds);
-                excludedProgramIds.add(bean.getAssignedProgram().getAssignedProgramId());
-                excludedProgramIds.removeAll(Collections.singleton(bean.getAssignedProgram().getAlternateProgramId()));
-                model.addAttribute("excludedProgramIds", excludedProgramIds);
+                // The Alternate Enrollment selection option should not display if the program is an alternate for another program
+                if(!alternateProgramIds.contains(bean.getAssignedProgram().getAssignedProgramId())){
+                    List<Integer> parentProgramIds = Lists.transform(allMappings, ProgramToAlternateProgram.PARENT_PROGRAM_IDS_FUNCTION);
+                    List<Integer> excludedProgramIds = Lists.newArrayList();
+                    excludedProgramIds.addAll(alternateProgramIds);
+                    excludedProgramIds.addAll(parentProgramIds);
+                    excludedProgramIds.add(bean.getAssignedProgram().getAssignedProgramId());
+                    excludedProgramIds.removeAll(Collections.singleton(bean.getAssignedProgram().getAlternateProgramId()));
+                    model.addAttribute("showAlternateEnrollment", showAlternateEnrollment);
+                    model.addAttribute("excludedProgramIds", excludedProgramIds);
+                }
             }
         }
         
