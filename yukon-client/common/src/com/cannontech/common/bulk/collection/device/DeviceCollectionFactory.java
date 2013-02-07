@@ -18,6 +18,6 @@ public interface DeviceCollectionFactory {
      * @throws ServletRequestBindingException, DeviceCollectionCreationException
      */
     public DeviceCollection createDeviceCollection(HttpServletRequest request)
-            throws ServletRequestBindingException, DeviceCollectionCreationException;
+    throws ServletRequestBindingException, DeviceCollectionCreationException;
 
 }
