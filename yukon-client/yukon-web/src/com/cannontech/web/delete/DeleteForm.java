@@ -60,7 +60,9 @@ public abstract class DeleteForm extends DBEditorForm {
                     Area area = null;
                     
                     Deleteable deleteable = deletables[i];
+                    boolean isSubstation = false;
                     if(deleteable.getDbPersistent() instanceof CapControlSubstation) { // get these before the delete
+                        isSubstation = true;
                         com.cannontech.database.db.capcontrol.CapControlSubstation subDB = ((CapControlSubstation)deleteable.getDbPersistent()).getCapControlSubstation();
                         Integer subId = subDB.getSubstationID();
                         Integer areaId = 0;
@@ -90,12 +92,23 @@ public abstract class DeleteForm extends DBEditorForm {
                         if(area != null) {
                             HttpSession session = (HttpSession) ex.getSession(false);
                             CtiNavObject navObject = (CtiNavObject) session.getAttribute("CtiNavObject");
-                            String currentPage = navObject.getCurrentPage();
-                            if(currentPage.contains("feeders")) {
+                            String previousPage = navObject.getPreviousPage();
+                            if (previousPage.contains("feeders")) {
+                                // We came from the substation's page, and that station doesn't exist anymore. Go to the areas page instead.
                                 navObject.setModuleExitPage(ServletUtil.createSafeUrl((ServletRequest)ex.getRequest(), "/capcontrol/tier/areas"));
-                            }else {
-                                
-                                if(area.getStations().length < 1) {
+                            } else {
+                                if (isSubstation && area.getStations().length <= 1) {
+                                    /* 
+                                     * Sort of a hack. We can't trust that the cache updated immediately, so it's likely that 
+                                     * if there was only one substation on the area, even though we just deleted it, the cache
+                                     * would still show that the area has one last station. If the length of the substations
+                                     * list in the area has a length of one or less and what we just deleted was a substation, 
+                                     * redirect the user to the areas page. 
+                                     * 
+                                     * Worst-case scenario, the cache was right and the user is redirected to the areas page 
+                                     * instead of the page for this area with its one last substation. The alternative would 
+                                     * be directing them back to an empty area page, which is much less user-friendly.
+                                     */
                                     navObject.setModuleExitPage(ServletUtil.createSafeUrl((ServletRequest)ex.getRequest(), "/capcontrol/tier/areas"));
                                 }
                             }
