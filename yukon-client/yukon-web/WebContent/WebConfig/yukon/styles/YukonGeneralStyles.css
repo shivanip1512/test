@@ -2650,3 +2650,15 @@ a.pv_history:hover {
     text-align: right;
     font-size: 12px;
 }
+
+div.searchFilterContainer {
+	width: 21em;
+	text-align: right;
+	float: left;
+	margin-bottom: 5px;
+	margin-right: 5px;
+}
+
+div.searchFilterContainer input {
+	width: 10em;
+}

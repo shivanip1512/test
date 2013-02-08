@@ -95,7 +95,9 @@ Mct440_213xBDevice::FunctionReadValueMappings Mct440_213xBDevice::initReadValueM
         { 0x000,  1, { 2, CtiTableDynamicPaoInfo::Key_MCT_SSpec                     } },
 
         // 0x005 – Status and Event Flags and Masks
-        // (mask are check in function 0x101)
+        { 0x005,  5, { 1, CtiTableDynamicPaoInfo::Key_MCT_EventFlagsMask1           } },
+        { 0x005,  6, { 1, CtiTableDynamicPaoInfo::Key_MCT_EventFlagsMask2           } },
+        { 0x005,  7, { 2, CtiTableDynamicPaoInfo::Key_MCT_MeterAlarmMask            } },
 
         // 0x00F – Display Parameters
         { 0x00f,  0, { 1, CtiTableDynamicPaoInfo::Key_MCT_DisplayParameters         } },
@@ -1264,7 +1266,8 @@ int Mct440_213xBDevice::executePutConfigTOU(CtiRequestMsg     *pReq,
         {
             for( int switchtime = 0; switchtime < TOU_SCHEDULE_TIME_NBR; switchtime++ )
             {
-                if( timeStringValues[schedule][switchtime].length() < 4 ) //A time needs at least 4 digits X:XX
+                // A time needs at least 4 digits X:XX and no more then 5 digits XX:XX
+                if( timeStringValues[schedule][switchtime].length() < 4 || timeStringValues[schedule][switchtime].length() > 5 )
                 {
                     CtiLockGuard<CtiLogger> doubt_guard(dout);
                     dout << CtiTime() << " **** Checkpoint - bad time string stored **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
@@ -1289,24 +1292,41 @@ int Mct440_213xBDevice::executePutConfigTOU(CtiRequestMsg     *pReq,
                     }
                 }
             }
+
             for( int schedule = 0; schedule < TOU_SCHEDULE_NBR; schedule++ )
             {
                 for( int switchtime = 0; switchtime < TOU_SCHEDULE_TIME_NBR; switchtime++ )
                 {
-                    // Im going to remove the :, get the remaining value, and do simple math on it. I think this
-                    // results in less error checking needed.
-                    timeStringValues[schedule][switchtime].erase(timeStringValues[schedule][switchtime].find(':'), 1);
-                    tempTime                    = strtol(timeStringValues[schedule][switchtime].c_str(),NULL,10);
-                    times[schedule][switchtime] = ((tempTime/100) * 60) + (tempTime%100);
+                    char sep;
+                    int  hour, minute;
+
+                    istringstream ss(timeStringValues[schedule][switchtime]);
+                    ss >> hour >> sep >> minute;
+
+                    if( hour   >= 0 && hour   < 24 &&
+                        minute >= 0 && minute < 60 &&
+                        sep == ':' )
+                    {
+                        times[schedule][switchtime] = hour*60 + minute;
+                    }
+                    else
+                    {
+                        CtiLockGuard<CtiLogger> doubt_guard(dout);
+                        dout << CtiTime() << " **** Checkpoint - bad time string stored **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
+                        nRet = NoConfigData;
+                    }
                 }
-            }
-            // Time is currently the actual minutes, we need the difference. Also the MCT has 5 minute resolution.
-            for( int schedule = 0; schedule < TOU_SCHEDULE_NBR; schedule++ )
-            {
-                for( int switchtime = (TOU_SCHEDULE_TIME_NBR-1); switchtime > 0; switchtime-- )
+
+                // Time is currently the actual minutes, we need the difference. Also the MCT has 5 minute resolution.
+                for( int switchtime = (TOU_SCHEDULE_TIME_NBR-1); switchtime >= 0; switchtime-- )
                 {
-                    times[schedule][switchtime] = times[schedule][switchtime]-times[schedule][switchtime-1];
-                    times[schedule][switchtime] = times[schedule][switchtime]/5;
+                    if( switchtime > 0 )
+                    {
+                        times[schedule][switchtime] = times[schedule][switchtime] - times[schedule][switchtime - 1];
+                    }
+
+                    times[schedule][switchtime] = times[schedule][switchtime] / 5;
+
                     if( times[schedule][switchtime] < 0 || times[schedule][switchtime] > 255 )
                     {
                         CtiLockGuard<CtiLogger> doubt_guard(dout);
@@ -2497,38 +2517,54 @@ int Mct440_213xBDevice::executePutConfigAlarmMask(CtiRequestMsg     *pReq,
     }
 
                                                                 /* ----------------- EVENT FLAGS MASK ----------------- */
-    MctConfigInfo.eventMask = parse.getiValue("alarm_mask", 0);
+    const int eventMask = parse.getiValue("alarm_mask", 0);
 
-    OutMessage->Buffer.BSt.Message[0] = ((MctConfigInfo.eventMask >> 8) & 0xFF);
-    OutMessage->Buffer.BSt.Message[1] = (MctConfigInfo.eventMask & 0xFF);
+    OutMessage->Buffer.BSt.Message[0] = (eventMask >> 8) & 0xFF;
+    OutMessage->Buffer.BSt.Message[1] = eventMask & 0xFF;
 
                                                                 /* ----------- METER ALARM MASK (OPTIONAL) ------------ */
+    int meterAlarmMask;
+
     if( parse.isKeyValid("alarm_mask_meter") )
     {
-        MctConfigInfo.meterAlarmMask = parse.getiValue("alarm_mask_meter", 0);
+        meterAlarmMask = parse.getiValue("alarm_mask_meter", 0);
+    }
+    else if( CtiDeviceBase::hasDynamicInfo(CtiTableDynamicPaoInfo::Key_MCT_MeterAlarmMask) )
+    {
+        meterAlarmMask = (int)CtiDeviceBase::getDynamicInfo(CtiTableDynamicPaoInfo::Key_MCT_MeterAlarmMask);
     }
     else
     {
-        CtiLockGuard<CtiLogger> doubt_guard(dout);
-        dout << CtiTime() << " **** Checkpoint - parameter alarm_mask_meter is not specified for device \"" << getName() << "\", using default or previous value " << (CtiNumStr(MctConfigInfo.meterAlarmMask).hex().zpad(4)).toString() << "**** " << __FILE__ << " (" << __LINE__ << ")" << endl;
+        returnErrorMessage(MISPARAM, OutMessage, retList,
+                           "parameter \"alarm_mask_meter\" is not specified for device \"" + getName() + "\"");
+
+        return ExecutionComplete;
     }
 
-    OutMessage->Buffer.BSt.Message[2] = ((MctConfigInfo.meterAlarmMask >> 8) & 0xFF);
-    OutMessage->Buffer.BSt.Message[3] = (MctConfigInfo.meterAlarmMask & 0xFF);
+    OutMessage->Buffer.BSt.Message[2] = ((meterAlarmMask >> 8) & 0xFF);
+    OutMessage->Buffer.BSt.Message[3] = (meterAlarmMask & 0xFF);
 
                                                                 /* ----------- MCT CONFIGURATION (OPTIONAL) ----------- */
+    int configuration;
+
     if( parse.isKeyValid("config_byte") )
     {
-        MctConfigInfo.configuration = parse.getiValue("config_byte", 0);
+        configuration = parse.getiValue("config_byte", 0);
+    }
+    else if( CtiDeviceBase::hasDynamicInfo(CtiTableDynamicPaoInfo::Key_MCT_Configuration) )
+    {
+        configuration = (int)CtiDeviceBase::getDynamicInfo(CtiTableDynamicPaoInfo::Key_MCT_Configuration);
     }
     else
     {
-        CtiLockGuard<CtiLogger> doubt_guard(dout);
-        dout << CtiTime() << " **** Checkpoint - parameter config_byte is not specified set for device \"" << getName() << "\", using default or previous value " << (CtiNumStr(MctConfigInfo.configuration).hex().zpad(4)).toString() << "**** " << __FILE__ << " (" << __LINE__ << ")" << endl;
+        returnErrorMessage(MISPARAM, OutMessage, retList,
+                           "parameter \"config_byte\" is not specified for device \"" + getName() + "\"");
+
+        return ExecutionComplete;
     }
 
-    OutMessage->Buffer.BSt.Message[5] = ((MctConfigInfo.configuration>> 8) & 0xFF);
-    OutMessage->Buffer.BSt.Message[6] = (MctConfigInfo.configuration & 0xFF);
+    OutMessage->Buffer.BSt.Message[5] = ((configuration>> 8) & 0xFF);
+    OutMessage->Buffer.BSt.Message[6] = (configuration & 0xFF);
 
     return NoError;
 }
@@ -2786,10 +2822,10 @@ INT Mct440_213xBDevice::decodeGetConfigTOU(INMESS          *InMessage,
 
         long schedules[4];
 
-        schedules[0] = (InMessage->Buffer.DSt.Message[1] >> 0) & 0x03;  // Sunday
-        schedules[1] = (InMessage->Buffer.DSt.Message[1] >> 2) & 0x03;  // Monday-Friday
-        schedules[2] = (InMessage->Buffer.DSt.Message[0] >> 4) & 0x03;  // Saturday
-        schedules[3] = (InMessage->Buffer.DSt.Message[0] >> 6) & 0x03;  // Holiday
+        schedules[0] = ((InMessage->Buffer.DSt.Message[1] >> 0) & 0x03) + 1;  // Sunday
+        schedules[1] = ((InMessage->Buffer.DSt.Message[1] >> 2) & 0x03) + 1;  // Monday-Friday
+        schedules[2] = ((InMessage->Buffer.DSt.Message[0] >> 4) & 0x03) + 1;  // Saturday
+        schedules[3] = ((InMessage->Buffer.DSt.Message[0] >> 6) & 0x03) + 1;  // Holiday
 
         for( int day_nbr = 0; day_nbr < 4; day_nbr++ )
         {
@@ -3106,9 +3142,6 @@ int Mct440_213xBDevice::decodeGetConfigAlarmMask(INMESS          *InMessage,
     INT status    = NORMAL;
     INT ErrReturn = InMessage->EventCode & 0x3fff;
     DSTRUCT *DSt  = &InMessage->Buffer.DSt;
-
-    MctConfigInfo.eventMask      = ((DSt->Message[1] & 0xFF) << 8) | (DSt->Message[2] & 0xFF); // update the event mask info
-    MctConfigInfo.meterAlarmMask = ((DSt->Message[3] & 0xFF) << 8) | (DSt->Message[4] & 0xFF); // update the meter alarm mask info
 
     std::auto_ptr<CtiReturnMsg> ReturnMsg(CTIDBG_new CtiReturnMsg(getID(), InMessage->Return.CommandStr));
 
@@ -3723,22 +3756,45 @@ int Mct440_213xBDevice::decodeGetConfigOptions(INMESS         *InMessage,
     INT status   = NORMAL;
     DSTRUCT *DSt = &InMessage->Buffer.DSt;
 
-    MctConfigInfo.eventMask      = ((DSt->Message[1] & 0xFF) << 8) | (DSt->Message[2] & 0xFF); // update the event mask info
-    MctConfigInfo.meterAlarmMask = ((DSt->Message[3] & 0xFF) << 8) | (DSt->Message[4] & 0xFF); // update the meter alarm mask info
-    MctConfigInfo.configuration  = ((DSt->Message[5] & 0xFF) << 8) | (DSt->Message[6] & 0xFF); // update the configuration info
-
     std::auto_ptr<CtiReturnMsg> ReturnMsg(CTIDBG_new CtiReturnMsg(getID(), InMessage->Return.CommandStr));
 
     string resultStr = getName() + " / MCT Configuration:\n";
 
-    resultStr += (DSt->Message[5] & 0x20) ? "Role enabled\n" : "Role disabled\n";
-    resultStr += (DSt->Message[5] & 0x02) ? "LED test enabled\n" : "LED test disabled\n";
-    resultStr += (DSt->Message[5] & 0x01) ? "DST enabled\n" : "DST disabled\n";
+    resultStr += (DSt->Message[6] & 0x20) ? "Role enabled\n" : "Role disabled\n";
+    resultStr += (DSt->Message[6] & 0x02) ? "LED test enabled\n" : "LED test disabled\n";
+    resultStr += (DSt->Message[6] & 0x01) ? "DST enabled\n" : "DST disabled\n";
 
     ReturnMsg->setUserMessageId(InMessage->Return.UserID);
     ReturnMsg->setResultString(resultStr);
 
     retMsgHandler( InMessage->Return.CommandStr, status, ReturnMsg.release(), vgList, retList );
+
+    if( InstallDstPending.is_pending )
+    {
+        InstallDstPending.is_pending = false;
+
+        string putconfig_cmd = string("putconfig install ") + Mct4xxDevice::PutConfigPart_dst;
+
+        if(InstallDstPending.force)
+        {
+             putconfig_cmd += " force"; // add force parameter
+        }
+
+        // create putconfig install request
+        std::auto_ptr<CtiRequestMsg> newReq(CTIDBG_new CtiRequestMsg(getID(),
+                                                                     putconfig_cmd,
+                                                                     InMessage->Return.UserID,
+                                                                     InMessage->Return.GrpMsgID,
+                                                                     InMessage->Return.RouteID,
+                                                                     0,  //  PIL will recalculate this;  if we include it, we will potentially be bypassing the initial macro routes
+                                                                     0,
+                                                                     InMessage->Return.OptionsField,
+                                                                     InMessage->Priority));
+
+        newReq->setConnectionHandle((void *)InMessage->Return.Connection);
+
+        retList.push_back(newReq.release()); // re-add request to do a putconfig
+    }
 
     return status;
 }
@@ -3964,8 +4020,6 @@ int Mct440_213xBDevice::executePutConfigInstallDST(CtiRequestMsg     *pReq,
                                                    OutMessageList    &outList,
                                                    bool               readsOnly)
 {
-    return NoMethod;
-
     DeviceConfigSPtr deviceConfig = getDeviceConfig();
 
     if( !deviceConfig )
@@ -3993,29 +4047,58 @@ int Mct440_213xBDevice::executePutConfigInstallDST(CtiRequestMsg     *pReq,
         {
             if( !parse.isKeyValid("verify") )
             {
-                if( !getOperation(EmetconProtocol::PutConfig_Options, OutMessage->Buffer.BSt) )
+                if( CtiDeviceBase::hasDynamicInfo(CtiTableDynamicPaoInfo::Key_MCT_EventFlagsMask1)
+                    && CtiDeviceBase::hasDynamicInfo(CtiTableDynamicPaoInfo::Key_MCT_EventFlagsMask2)
+                    && CtiDeviceBase::hasDynamicInfo(CtiTableDynamicPaoInfo::Key_MCT_MeterAlarmMask)
+                    && CtiDeviceBase::hasDynamicInfo(CtiTableDynamicPaoInfo::Key_MCT_Configuration) ) // Check if all dynamic value is available
                 {
-                    CtiLockGuard<CtiLogger> doubt_guard(dout);
-                    dout << CtiTime() << " **** Checkpoint - Operation EmetconProtocol::PutConfig_Options not found **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
-                    return NoConfigData;
-                }
+                    if( !getOperation(EmetconProtocol::PutConfig_Options, OutMessage->Buffer.BSt) )
+                    {
+                        CtiLockGuard<CtiLogger> doubt_guard(dout);
+                        dout << CtiTime() << " **** Checkpoint - Operation EmetconProtocol::PutConfig_Options not found **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
+                        return NoConfigData;
+                    }
 
-                const bool config_enable_dst = ((MctConfigInfo.configuration & 0x1) != 0x0);
-                if( enable_dst != config_enable_dst )
+                    long configuration = CtiDeviceBase::getDynamicInfo(CtiTableDynamicPaoInfo::Key_MCT_Configuration);
+
+                    const bool config_enable_dst = ((configuration & 0x1) != 0x0);
+                    if( enable_dst != config_enable_dst )
+                    {
+                        configuration ^= 0x1; // flip the bit
+                    }
+
+                    const long eventFlagsMask1 = CtiDeviceBase::getDynamicInfo(CtiTableDynamicPaoInfo::Key_MCT_EventFlagsMask1),
+                               eventFlagsMask2 = CtiDeviceBase::getDynamicInfo(CtiTableDynamicPaoInfo::Key_MCT_EventFlagsMask2),
+                               meterAlarmMask  = CtiDeviceBase::getDynamicInfo(CtiTableDynamicPaoInfo::Key_MCT_MeterAlarmMask);
+
+                    OutMessage->Buffer.BSt.Message[0] = (eventFlagsMask1 & 0xFF);
+                    OutMessage->Buffer.BSt.Message[1] = (eventFlagsMask2 & 0xFF);
+
+                    OutMessage->Buffer.BSt.Message[2] = ((meterAlarmMask >> 8) & 0xFF);
+                    OutMessage->Buffer.BSt.Message[3] = (meterAlarmMask & 0xFF);
+
+                    OutMessage->Buffer.BSt.Message[4] = ((configuration >> 8) & 0xFF);
+                    OutMessage->Buffer.BSt.Message[5] = (configuration & 0xFF);
+
+                    outList.push_back( CTIDBG_new OUTMESS(*OutMessage) );
+                }
+                else // if dynamic data is not available
                 {
-                    MctConfigInfo.configuration ^= 0x1; // flip the bit
+                    if( !getOperation(EmetconProtocol::GetConfig_Options, OutMessage->Buffer.BSt) )
+                    {
+                        CtiLockGuard<CtiLogger> doubt_guard(dout);
+                        dout << CtiTime() << " **** Checkpoint - Operation GetStatus_Internal not found **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
+                        return NoConfigData;
+                    }
+
+                    OutMessage->Sequence = EmetconProtocol::GetConfig_Options;
+
+                    outList.push_back( CTIDBG_new OUTMESS(*OutMessage) );
+
+                    // set put config install dst pending (will be done once GetConfig_Options)
+                    InstallDstPending.is_pending = true;
+                    InstallDstPending.force      = parse.isKeyValid("force");
                 }
-
-                OutMessage->Buffer.BSt.Message[0] = ((MctConfigInfo.eventMask >> 8) & 0xFF);
-                OutMessage->Buffer.BSt.Message[1] = (MctConfigInfo.eventMask & 0xFF);
-
-                OutMessage->Buffer.BSt.Message[2] = ((MctConfigInfo.meterAlarmMask >> 8) & 0xFF);
-                OutMessage->Buffer.BSt.Message[3] = (MctConfigInfo.meterAlarmMask & 0xFF);
-
-                OutMessage->Buffer.BSt.Message[4] = ((MctConfigInfo.configuration >> 8) & 0xFF);
-                OutMessage->Buffer.BSt.Message[5] = (MctConfigInfo.configuration & 0xFF);
-
-                outList.push_back( CTIDBG_new OUTMESS(*OutMessage) );
             }
             else
             {

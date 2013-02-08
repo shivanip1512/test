@@ -321,6 +321,13 @@ public class SqlStatementBuilder implements SqlFragmentSource, SqlBuilder {
         return this;
     }
     
+    public SqlStatementBuilder startsWithUppercase(String argument) {
+        addString("like upper(");
+        appendArgument(argument + "%");
+        addString(") ");
+        return this;
+    }
+    
     public SqlStatementBuilder endsWith(String argument) {
         addString("like ");
         appendArgument("%" + argument);
@@ -330,6 +337,13 @@ public class SqlStatementBuilder implements SqlFragmentSource, SqlBuilder {
     public SqlStatementBuilder contains(String argument) {
         addString("like ");
         appendArgument("%" + argument + "%");
+        return this;
+    }
+    
+    public SqlStatementBuilder upperAppend(String statement) {
+        addString("upper(");
+        append(statement);
+        addString(") ");
         return this;
     }
     

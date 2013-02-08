@@ -1,24 +1,18 @@
 <%@ taglib uri="http://java.sun.com/jsp/jstl/core" prefix="c"%>
 <%@ taglib uri="http://cannontech.com/tags/cti" prefix="cti"%>
 <%@ taglib prefix="ct" tagdir="/WEB-INF/tags"%>
+<%@ taglib prefix="i" tagdir="/WEB-INF/tags/i18n" %>
 
-<cti:standardPage module="support">
-<cti:standardMenu menuSelection="scheduler|jobs" />
-<cti:breadCrumbs>
-    <cti:crumbLink url="/operator/Operations.jsp" title="Operations Home"  />
-	<cti:crumbLink url="/spring/support/" title="Support" />
-    <cti:crumbLink url="/spring/support/scheduler/active" title="Jobs"/>
-    <cti:crumbLink>All</cti:crumbLink>
-</cti:breadCrumbs>
+<cti:standardPage module="support" page="scheduler.jobs">
 
-<h2>Repeating Jobs</h2>
+<h2><i:inline key=".repeatingJobs"/></h2>
   <table class="resultsTable">
     <tr>
-      <th width="15%">Job Name</th>
-      <th>Bean Name</th>
-      <th>Username</th>
-      <th>Cron String</th>
-      <th>Enable/Disable</th>
+      <th width="15%"><i:inline key=".column.jobName"/></th>
+      <th><i:inline key=".column.beanName"/></th>
+      <th><i:inline key=".column.username"/></th>
+      <th><i:inline key=".column.cronString"/></th>
+      <th><i:inline key=".column.enabled"/></th>
     </tr>
     <c:forEach items="${allRepeating}" var="job">
       <tr>
@@ -41,21 +35,24 @@
             </form>
         </c:if>
         --%>
-        ${job.disabled ? "Disabled" : "Enabled"}
+        <c:choose>
+            <c:when test="${job.disabled}"><i:inline key=".disabled"/></c:when>
+            <c:otherwise><i:inline key=".enabled"/></c:otherwise>
+        </c:choose>
         </td>
       </tr>
     </c:forEach>
   </table>
 
 
-<h2>One Time Jobs</h2>
+<h2><i:inline key=".oneTimeJobs"/></h2>
   <table class="resultsTable">
     <tr>
-      <th width="15%">Job Name</th>
-      <th>Bean Name</th>
-      <th>Username</th>
-      <th>Scheduled Start</th>
-      <th>Enable/Disable</th>
+      <th width="15%"><i:inline key=".column.jobName"/></th>
+      <th><i:inline key=".column.beanName"/></th>
+      <th><i:inline key=".column.username"/></th>
+      <th><i:inline key=".column.scheduledStart"/></th>
+      <th><i:inline key=".column.enabled"/></th>
     </tr>
     <c:forEach items="${allOneTime}" var="job">
       <tr>
@@ -63,7 +60,10 @@
         <td title="${job.id}">${job.beanName}</td>
         <td>${job.userContext.yukonUser.username}</td>
         <td>${job.startTime}</td>
-        <td>${job.disabled ? "Disabled" : "Enabled"}</td>
+        <td><c:choose>
+            <c:when test="${job.disabled}"><i:inline key=".disabled"/></c:when>
+            <c:otherwise><i:inline key=".enabled"/></c:otherwise>
+        </c:choose></td>
       </tr>
     </c:forEach>
   </table>

@@ -12,6 +12,9 @@
     <entry key="yukon.web.modules.support.category">Category</entry>
     <entry key="yukon.web.modules.support.generateReports">Generate Reports</entry>
 
+    <entry key="yukon.web.modules.support.eventViewer.byCategory.filterOptions">Filter Options</entry>
+    <entry key="yukon.web.modules.support.eventViewer.byCategory.filterButton">Filter</entry>
+
     <entry key="yukon.web.modules.support.eventViewer.byCategory.categories">Categories</entry>
     <entry key="yukon.web.modules.support.eventViewer.byCategory.filterValue">Filter Value</entry>
     <entry key="yukon.web.modules.support.eventViewer.byCategory.dateRange">Date Range</entry>

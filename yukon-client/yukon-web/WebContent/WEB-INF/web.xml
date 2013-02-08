@@ -292,6 +292,14 @@
 		</servlet-class>
 		<load-on-startup>1</load-on-startup>
 	</servlet>
+
+    <servlet>
+        <servlet-name>commander</servlet-name>
+        <servlet-class>
+            com.cannontech.web.spring.CannonDispatcherServlet
+        </servlet-class>
+        <load-on-startup>1</load-on-startup>
+    </servlet>
 	
 	<servlet>
 		<servlet-name>picker</servlet-name>
@@ -988,6 +996,11 @@
 		<servlet-name>static</servlet-name>
 		<url-pattern>/spring/static/*</url-pattern>
 	</servlet-mapping>
+
+    <servlet-mapping>
+        <servlet-name>commander</servlet-name>
+        <url-pattern>/commander/*</url-pattern>
+    </servlet-mapping>
 
 	<!--  The following mappings used to be handled by the invoker servlet -->
 	<servlet-mapping>

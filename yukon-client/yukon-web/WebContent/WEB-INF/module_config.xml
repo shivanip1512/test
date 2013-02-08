@@ -152,7 +152,7 @@
           </option>
 
           <option name="commander">
-            <link>/apps/SelectDevice.jsp</link>
+            <link>/commander/select</link>
             <requireRoleProperty value="ENABLE_WEB_COMMANDER" />
           </option>
           <option name="archivedDateExport">
@@ -1219,6 +1219,12 @@
                         </page>
                     </pages>
                 </page>
+                <page name="databaseInfo" type="BASIC">
+                    <menu>database|info</menu>
+                </page>
+                <page name="databaseValidate" type="BASIC">
+                    <menu>database|compare</menu>
+                </page>
                 <page name="databaseMigration" type="BASIC">
                     <requireRoleProperty value="ADMIN_DATABASE_MIGRATION"/>
                     <menu>database|migration</menu>
@@ -1247,6 +1253,12 @@
                 <page name="setup" type="BASIC">
                     <requireRoleProperty value="OPERATOR_ADMINISTRATOR" />
                     <menu>other|setup</menu>
+                </page>
+                <page name="system" type="BASIC">
+                    <menu>information|system</menu>
+                </page>
+                <page name="deviceDef" type="BASIC">
+                    <menu>information|deviceDef</menu>
                 </page>
                 <page name="errorCodes" type="BASIC">
                     <menu>information|errorCodes</menu>
@@ -1280,6 +1292,26 @@
                             <menu>development|rfn</menu>
                         </page>
                     </pages>
+                </page>
+                <page name="scheduler" type="BASIC">
+                    <menu>scheduler|active</menu>
+                    <pages>
+                        <page name="scheduler.active" type="BASIC">
+                            <menu>scheduler|active</menu>
+                        </page>
+                        <page name="scheduler.status" type="BASIC">
+                            <menu>scheduler|status</menu>
+                        </page>
+                        <page name="scheduler.jobs" type="BASIC">
+                            <menu>scheduler|jobs</menu>
+                        </page>
+                    </pages>
+                </page>
+                <page name="threadDump" type="BASIC">
+                    <menu>other|threadDump</menu>
+                </page>
+                <page name="routeUsage" type="BASIC">
+                    <menu>other|routeUsage</menu>
                 </page>
             </pages>
             <link>/spring/support/</link>
@@ -2084,7 +2116,7 @@
     <menu>
       <options>
         <option name="deviceselection">
-          <link>/apps/SelectDevice.jsp</link>
+          <link>/commander/select</link>
         </option>
       </options>
     </menu>
@@ -2102,16 +2134,16 @@
         <option name="devices">
           <options>
             <option name="mct">
-              <link>SelectDevice.jsp?SortBy=1004</link>
+              <link>/commander/select?category=MCT</link>
             </option>
             <option name="ied">
-              <link>SelectDevice.jsp?SortBy=1002</link>
+              <link>/commander/select?category=IED</link>
             </option>
             <option name="rtu">
-              <link>SelectDevice.jsp?SortBy=1001</link>
+              <link>/commander/select?category=RTU</link>
             </option>
             <option name="transmitter">
-              <link>SelectDevice.jsp?SortBy=1000</link>
+              <link>/commander/select?category=TRANSMITTER</link>
             </option>
             <option name="group">
               <link>/spring/group/commander/groupProcessing</link>
@@ -2122,22 +2154,22 @@
         <option name="lm">
           <options>
             <option name="group">
-              <link>SelectDevice.jsp?SortBy=1005</link>
+              <link>/commander/select?category=LMGROUP</link>
             </option>
             <option name="xcom">
-              <link>CommandDevice.jsp?deviceID=-1&amp;manual&amp;xcom</link>
+              <link>/commander/command/xcom</link>
               <requireRoleProperty value="EXPRESSCOM_SERIAL_MODEL" />
             </option>
             <option name="vcom">
-              <link>CommandDevice.jsp?deviceID=-1&amp;manual&amp;vcom</link>
+              <link>/commander/command/vcom</link>
               <requireRoleProperty value="VERSACOM_SERIAL_MODEL" />
             </option>
             <option name="205serial">
-              <link>CommandDevice.jsp?deviceID=-1&amp;manual&amp;sa205</link>
+              <link>/commander/command/sa205</link>
               <requireRoleProperty value="DCU_SA205_SERIAL_MODEL" />
             </option>
             <option name="305serial">
-              <link>CommandDevice.jsp?deviceID=-1&amp;manual&amp;sa305</link>
+              <link>/commander/command/sa305</link>
               <requireRoleProperty value="DCU_SA305_SERIAL_MODEL" />
             </option>
           </options>
@@ -2145,7 +2177,7 @@
         <option name="capcontrol">
           <options>
             <option name="capcontrolsub">
-              <link>SelectDevice.jsp?SortBy=4</link>
+              <link>/commander/select?category=CAP</link>
             </option>
           </options>
         </option>

@@ -230,7 +230,7 @@ public class LoadGroupDaoImpl implements LoadGroupDao {
 
         return yukonJdbcTemplate.query(sql, loadGroupRowMapper);
     }
-    
+
     // rowMappers
     private final YukonRowMapper<LoadGroup> loadGroupRowMapper =
         new YukonRowMapper<LoadGroup>() {

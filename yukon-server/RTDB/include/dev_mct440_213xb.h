@@ -31,20 +31,19 @@ class IM_EX_DEVDB Mct440_213xBDevice : public Mct420Device
         Sspec                                   = 1030,
     };
 
-protected:
-
-    struct MctConfigInfo_t
+    struct PutConfigPending_t
     {
-        int eventMask, meterAlarmMask, configuration;
-        MctConfigInfo_t()
+        bool is_pending, force;
+        PutConfigPending_t()
         {
-            eventMask                           = 0x0; // set default values
-            meterAlarmMask                      = 0x0;
-            configuration                       = 0x0;
+            is_pending = false;
+            force      = false;
         }
     };
 
-    MctConfigInfo_t MctConfigInfo;
+    PutConfigPending_t InstallDstPending;
+
+protected:
 
     enum PointOffsets
     {

@@ -12,7 +12,8 @@
     <c:set var="baseUrl" value="/spring/common/eventLog/viewByCategory"/>
     
     <%-- Filter Options --%>
-    <tags:sectionContainer title="Filter Options">
+    <cti:msg2 var="filterOptionsLabel" key=".filterOptions"/>
+    <tags:sectionContainer title="${filterOptionsLabel}">
         <form:form id="byCategoryForm" action="/spring/common/eventLog/viewByCategory" 
                    commandName="eventLogCategoryBackingBean" method="get">
             <tags:hidden path="itemsPerPage"/>
@@ -37,7 +38,8 @@
                 
             </tags:nameValueContainer2>
             <br>
-            <input value="Filter" type="submit">
+            <cti:msg2 var="filterButtonLabel" key=".filterButton"/>
+            <input value="${filterButtonLabel}" type="submit">
         </form:form>
     </tags:sectionContainer>
 

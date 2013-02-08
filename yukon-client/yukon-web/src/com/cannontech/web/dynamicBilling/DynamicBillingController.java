@@ -155,11 +155,13 @@ public class DynamicBillingController {
      * 
      */
     @RequestMapping
-    public String copy(int availableFormat, ModelMap model) {
+    public String copy(int availableFormat, ModelMap model, final YukonUserContext context) {
         // retrieve the format information, 
         // assert that this is a copy into the name
         DynamicFormat formatSelected = dynamicBillingFileDao.retrieve(availableFormat);
-        formatSelected.setName(formatSelected.getName() + " (copy)");
+
+        MessageSourceAccessor messageSourceAccessor = messageSourceResolver.getMessageSourceAccessor(context);
+        formatSelected.setName(messageSourceAccessor.getMessage("yukon.web.billing.formatNameCopy", formatSelected.getName()));
 
         // to give it new format id, give it -1
         model.addAttribute("initiallySelected", -1);
@@ -243,14 +245,16 @@ public class DynamicBillingController {
     }
 
     @RequestMapping
-    public @ResponseBody String updateFormatName(int formatId, String formatName, ModelMap model) throws ServletException {
+    public @ResponseBody String updateFormatName(int formatId, String formatName, ModelMap model, final YukonUserContext context) throws ServletException {
 
         DynamicFormat format = new DynamicFormat();
         format.setFormatId(formatId);
         format.setName(formatName);
             
         if (!dynamicBillingFileDao.isFormatNameUnique(format)){
-            return "The format name is not unique.  Please supply a unique format name";
+            
+            MessageSourceAccessor messageSourceAccessor = messageSourceResolver.getMessageSourceAccessor(context);
+            return messageSourceAccessor.getMessage("yukon.web.billing.nonUniqueFormatName");
         }
 
         // returns a blank text view since to error occured.   

@@ -14,19 +14,14 @@ import com.cannontech.user.YukonUserContext;
 @RequestMapping("/errorCodes/*")
 public class ErrorCodesViewerController {
     
-    private DeviceErrorTranslatorDao deviceErrorTranslatorDao;
+    @Autowired private DeviceErrorTranslatorDao deviceErrorTranslatorDao;
     
     @RequestMapping
     public String view(ModelMap model, YukonUserContext userContext)
             throws ServletRequestBindingException {
         
-        Iterable<DeviceErrorDescription> allErrors = deviceErrorTranslatorDao.getAllErrors();
+        Iterable<DeviceErrorDescription> allErrors = deviceErrorTranslatorDao.getAllErrors(userContext);
         model.addAttribute("allErrors", allErrors);
         return "errorCodes/errorCodes.jsp";
-    }
-    
-    @Autowired
-    public void setDeviceErrorTranslatorDao(DeviceErrorTranslatorDao deviceErrorTranslatorDao) {
-        this.deviceErrorTranslatorDao = deviceErrorTranslatorDao;
     }
 }

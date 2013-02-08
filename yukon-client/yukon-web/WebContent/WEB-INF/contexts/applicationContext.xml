@@ -1002,7 +1002,7 @@
     <bean id="capControlValueTagPrototype" class="com.cannontech.web.updater.capcontrol.CapControlValueTag">
         <property name="updaterService" ref="dataUpdaterService" />
     </bean>
-    
+
     <bean id="navigableHierarchyTagPrototype" class="com.cannontech.web.capcontrol.NavigableHierarchyTag"/>
     
     <bean id="paoDetailUrlTagPrototype" class="com.cannontech.web.taglib.PaoDetailUrlTag">
