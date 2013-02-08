@@ -1,7 +1,7 @@
 /*==============================================================*/
 /* Database name:  YukonDatabase                                */
 /* DBMS name:      ORACLE Version 9i                            */
-/* Created on:     1/21/2013 12:39:40 PM                        */
+/* Created on:     2/8/2013 12:56:06 AM                         */
 /*==============================================================*/
 
 
@@ -406,6 +406,14 @@ create table ArchiveDataAnalysisSlot  (
 );
 
 /*==============================================================*/
+/* Index: Indx_ADAS_AnalysisId_SlotId                           */
+/*==============================================================*/
+create index Indx_ADAS_AnalysisId_SlotId on ArchiveDataAnalysisSlot (
+   AnalysisId ASC,
+   SlotId ASC
+);
+
+/*==============================================================*/
 /* Table: ArchiveDataAnalysisSlotValue                          */
 /*==============================================================*/
 create table ArchiveDataAnalysisSlotValue  (
@@ -413,6 +421,14 @@ create table ArchiveDataAnalysisSlotValue  (
    SlotId               NUMBER                          not null,
    ChangeId             NUMBER,
    constraint PK_ArcDataAnalSlotValue primary key (DeviceId, SlotId)
+);
+
+/*==============================================================*/
+/* Index: Indx_ADASV_SlotId_DeviceId                            */
+/*==============================================================*/
+create index Indx_ADASV_SlotId_DeviceId on ArchiveDataAnalysisSlotValue (
+   SlotId ASC,
+   DeviceId ASC
 );
 
 /*==============================================================*/

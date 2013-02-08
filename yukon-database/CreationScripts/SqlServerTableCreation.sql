@@ -1,7 +1,7 @@
 /*==============================================================*/
 /* Database name:  YukonDatabase                                */
 /* DBMS name:      Microsoft SQL Server 2005                    */
-/* Created on:     1/21/2013 12:52:06 PM                        */
+/* Created on:     2/8/2013 12:54:06 AM                         */
 /*==============================================================*/
 
 
@@ -427,6 +427,15 @@ create table ArchiveDataAnalysisSlot (
 go
 
 /*==============================================================*/
+/* Index: Indx_ADAS_AnalysisId_SlotId                           */
+/*==============================================================*/
+create index Indx_ADAS_AnalysisId_SlotId on ArchiveDataAnalysisSlot (
+AnalysisId ASC,
+SlotId ASC
+)
+go
+
+/*==============================================================*/
 /* Table: ArchiveDataAnalysisSlotValue                          */
 /*==============================================================*/
 create table ArchiveDataAnalysisSlotValue (
@@ -434,6 +443,15 @@ create table ArchiveDataAnalysisSlotValue (
    SlotId               numeric              not null,
    ChangeId             numeric              null,
    constraint PK_ArcDataAnalSlotValue primary key (DeviceId, SlotId)
+)
+go
+
+/*==============================================================*/
+/* Index: Indx_ADASV_SlotId_DeviceId                            */
+/*==============================================================*/
+create index Indx_ADASV_SlotId_DeviceId on ArchiveDataAnalysisSlotValue (
+SlotId ASC,
+DeviceId ASC
 )
 go
 
