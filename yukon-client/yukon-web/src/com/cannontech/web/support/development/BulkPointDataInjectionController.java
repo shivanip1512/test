@@ -83,7 +83,7 @@ public class BulkPointDataInjectionController {
             return "development/bulkPointInjection/main.jsp";
         }
 
-        bulkPointDataInjectionSerivce.excecuteInjection(bulkInjection);
+        bulkPointDataInjectionSerivce.excecuteInjectionByDevice(bulkInjection);
 
         this.bulkInjection = bulkInjection;
         flashScope.setConfirm(YukonMessageSourceResolvable

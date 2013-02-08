@@ -89,6 +89,71 @@ public class BulkPointDataInjectionServiceImpl implements BulkPointDataInjection
         log.info("Number of points sent from bulk injector: " + bulkInjection.getInjectionCount());
     }
     
+
+    @Override
+    public void excecuteInjectionByDevice(BulkFakePointInjectionDto bulkInjection) {
+        log.info("[Bulk injector] ----------Starting bulk injection----------");
+        if (CollectionUtils.isEmpty(bulkInjection.getYukonPaos())) {
+             DeviceGroup group = deviceGroupService.resolveGroupName(bulkInjection.getGroupName());
+            List<SimpleDevice> supportedDevices = attributeService.getDevicesInGroupThatSupportAttribute(group,
+                                                                       bulkInjection.getAttribute());
+            for(SimpleDevice device: supportedDevices){
+                log.info("[Bulk injector] Device " + device.getPaoIdentifier());
+                LitePoint point = getLitePointsFromSimpleDevicesWithAttribute(device, bulkInjection.getAttribute());
+                List<LitePoint> litePoints = Lists.newArrayList(point);
+                List<PointData> data = getPointData(bulkInjection, litePoints);
+                dynamicDataSource.putValues(data);
+                bulkInjection.setInjectionCount(bulkInjection.getInjectionCount() + data.size());
+                log.info("[Bulk injector] Points injected "+ data.size());
+            }
+        }
+        log.info("[Bulk injector] ----------Total points injected " + bulkInjection.getInjectionCount()+" ----------");
+    }
+
+    
+    private List<PointData> getPointData(BulkFakePointInjectionDto bulkInjection, List<LitePoint> litePoints){
+        List<PointData> data = Lists.newArrayList();
+        Random rand = new Random();
+        Instant iterableInstant = new Instant(bulkInjection.getStart());
+        Duration duration = bulkInjection.getPeriod().toStandardDuration();
+        double incrementalValue = 0;
+        while (iterableInstant.isBefore(bulkInjection.getStop())) {
+            for (LitePoint litePoint : litePoints) {
+                PointData pointData = new PointData();
+                pointData.setId(litePoint.getPointID());
+                long randWindow = (long) getRandomWithinRange(0, bulkInjection.getPeriodWindow()
+                        .toStandardDuration().getMillis());
+                pointData.setTime(iterableInstant.plus(randWindow).toInstant().toDate());
+                Collections.shuffle(bulkInjection.getPointQualities());
+                pointData.setPointQuality(bulkInjection.getPointQualities().get(0));
+                double value = 0.0;
+                if (bulkInjection.getAlgorithm().equalsIgnoreCase("normal")) {
+                    do {
+                        double nextGaussian = rand.nextGaussian();
+                        double standDeviation =
+                            (bulkInjection.getValueHigh() - bulkInjection.getValueLow()) / 6; // +-3 standard deviations
+                        value = nextGaussian * standDeviation + bulkInjection.getMean();
+                    } while (value < bulkInjection.getValueLow()
+                             || value > bulkInjection.getValueHigh());
+                    if (bulkInjection.isIncremental()) {
+                        incrementalValue = incrementalValue + value; 
+                        value = incrementalValue;
+                    }
+                } else {
+                    value = getRandomWithinRange(bulkInjection.getValueLow(), bulkInjection.getValueHigh());
+                }
+                
+                double roundedVal = getRoundedValue(value, bulkInjection.getDecimalPlaces());
+                pointData.setValue(roundedVal);
+                pointData.setTagsPointMustArchive(bulkInjection.isArchive());
+                pointData.setType(litePoint.getPointTypeEnum().getPointTypeId());
+                data.add(pointData);
+            }
+            iterableInstant = iterableInstant.plus(duration);
+        }
+        return data;
+    }
+    
     private double getRoundedValue(double value, int decimalPlaces) {
         double scaler = Math.pow(10, decimalPlaces);
         double roundedValue = (double)Math.round(value * scaler) / scaler;
@@ -112,6 +177,13 @@ public class BulkPointDataInjectionServiceImpl implements BulkPointDataInjection
         }
         return litePoints;
     }
+    
+    private LitePoint getLitePointsFromSimpleDevicesWithAttribute(SimpleDevice simpleDevice, Attribute attribute) {
+        YukonPao yukonPao = paoDao.getYukonPao(simpleDevice.getDeviceId());
+        LitePoint point = attributeService.getPointForAttribute(yukonPao, attribute);
+        return point;
+    }
+    
 
     private List<LitePoint> getLitePointsFromPaosWithAttribute(List<YukonPao> yukonPaos, Attribute attribute) {
         List<LitePoint> litePoints = Lists.newArrayList();

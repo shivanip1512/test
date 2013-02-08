@@ -4,4 +4,6 @@ import com.cannontech.development.model.BulkFakePointInjectionDto;
 
 public interface BulkPointDataInjectionService {
     void excecuteInjection(BulkFakePointInjectionDto bulkInjection);
+
+    void excecuteInjectionByDevice(BulkFakePointInjectionDto bulkInjection);
 }
