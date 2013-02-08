@@ -1,17 +1,12 @@
-package com.cannontech.web.amr.archivedValuesExporter;
+package com.cannontech.web.amr.archivedValuesExporter.model;
 
 import java.util.ArrayList;
 import java.util.Collections;
-import java.util.Date;
 import java.util.Iterator;
 import java.util.List;
 import java.util.ListIterator;
 
 import org.apache.commons.lang.StringUtils;
-import org.joda.time.DateTime;
-import org.joda.time.DateTimeZone;
-import org.joda.time.format.DateTimeFormat;
-import org.joda.time.format.DateTimeFormatter;
 
 import com.cannontech.amr.archivedValueExporter.model.AttributeField;
 import com.cannontech.amr.archivedValueExporter.model.ExportAttribute;
@@ -22,19 +17,13 @@ import com.cannontech.amr.archivedValueExporter.model.FieldType;
 import com.cannontech.amr.archivedValueExporter.model.MissingAttribute;
 import com.cannontech.amr.archivedValueExporter.model.PadSide;
 import com.cannontech.amr.archivedValueExporter.model.YukonRoundingMode;
-import com.cannontech.common.bulk.collection.device.DeviceCollection;
-import com.cannontech.common.util.LazyList;
 import com.google.common.collect.Lists;
 
 public class ArchivedValuesExporterBackingBean{
 
-    private DeviceCollection deviceCollection;
-
-    private int selectedFormatId;
     private int selectedFieldId;
     private int selectedAttributeId;
 
-    private List<ExportFormat> allFormats = LazyList.ofInstance(ExportFormat.class);
     private List<Field> fieldSelect = Lists.newArrayList();
 
     private ExportFormat format = new ExportFormat();
@@ -45,12 +34,8 @@ public class ArchivedValuesExporterBackingBean{
     private String valuePattern;
     private String timestampPattern;
 
-    private String popupToOpen;
     private int rowIndex = -1;
-    private List<String> preview;
-    private Date endDate;
     private String pageNameKey;
-    private String timezone;
 
     public ArchivedValuesExporterBackingBean(){
         int id = 0;
@@ -60,81 +45,34 @@ public class ArchivedValuesExporterBackingBean{
                 fieldSelect.add(field);
             }
         }
-        endDate = new Date();
-    }
-
-    public DeviceCollection getDeviceCollection() {
-        return deviceCollection;
-    }
-
-    public void setDeviceCollection(DeviceCollection deviceCollection) {
-        this.deviceCollection = deviceCollection;
-    }
-
-    public List<ExportFormat> getAllFormats() {
-        return allFormats;
-    }
-
-    public void setAllFormats(List<ExportFormat> allFormats) {
-        this.allFormats = allFormats;
     }
 
     public ExportFormat getFormat() {
         return format;
     }
-
     public void setFormat(ExportFormat format) {
         this.format = format;
-    }
-
-    public int getSelectedFormatId() {
-        return selectedFormatId;
-    }
-
-    public void setSelectedFormatId(int selectedFormatId) {
-        this.selectedFormatId = selectedFormatId;
     }
 
     public ExportAttribute getExportAttribute() {
         return exportAttribute;
     }
-
     public void setExportAttribute(ExportAttribute exportAttribute) {
         this.exportAttribute = exportAttribute;
-    }
-
-    public String getPopupToOpen() {
-        return popupToOpen;
-    }
-
-    public void setPopupToOpen(String popupToReopen) {
-        this.popupToOpen = popupToReopen;
     }
 
     public int getRowIndex() {
         return rowIndex;
     }
-
     public void setRowIndex(int rowIndex) {
         this.rowIndex = rowIndex;
-    }
-
-    public ExportAttribute getSelectedAttribute() {
-        return format.getAttributes().get(getRowIndex());
     }
 
     public ExportField getSelectedField() {
         return format.getFields().get(getRowIndex());
     }
-
     public void removeSelectedField() {
         format.getFields().remove(getRowIndex());
-    }
-
-    public void removeSelectedAttribute() {
-        ExportAttribute attribute = getSelectedAttribute();
-        removeExportFields(attribute.getAttributeId());
-        format.getAttributes().remove(getRowIndex());
     }
 
     private void removeExportFields(int attributeId) {
@@ -148,6 +86,14 @@ public class ArchivedValuesExporterBackingBean{
         }
     }
 
+    public ExportAttribute getSelectedAttribute() {
+        return format.getAttributes().get(getRowIndex());
+    }
+    public void removeSelectedAttribute() {
+        ExportAttribute attribute = getSelectedAttribute();
+        removeExportFields(attribute.getAttributeId());
+        format.getAttributes().remove(getRowIndex());
+    }
     public void addSelectedAttribute() {
         ExportAttribute exportAttribute = getExportAttribute();
         if (rowIndex == -1) {
@@ -178,7 +124,6 @@ public class ArchivedValuesExporterBackingBean{
         }
         return nextId;
     }
-
 
     public void addSelectedField() {
         ExportField exportField = getExportField();
@@ -222,7 +167,6 @@ public class ArchivedValuesExporterBackingBean{
     public int getSelectedFieldId() {
         return selectedFieldId;
     }
-
     public void setSelectedFieldId(int selectedFieldId) {
         this.selectedFieldId = selectedFieldId;
     }
@@ -260,7 +204,6 @@ public class ArchivedValuesExporterBackingBean{
     public int getSelectedAttributeId() {
         return selectedAttributeId;
     }
-
     public void setSelectedAttributeId(int selectedAttributeId) {
         this.selectedAttributeId = selectedAttributeId;
     }
@@ -268,7 +211,6 @@ public class ArchivedValuesExporterBackingBean{
     public ExportField getExportField() {
         return exportField;
     }
-
     public void setExportField(ExportField exportField) {
         this.exportField = exportField;
     }
@@ -293,7 +235,6 @@ public class ArchivedValuesExporterBackingBean{
         }
     }
 
-
     public int findSelectedFieldId() {
         int id = 0;
         List<Field> fields = getFieldSelect();
@@ -312,7 +253,6 @@ public class ArchivedValuesExporterBackingBean{
         return id;
     }
     
-    
     public FieldType findSelectedFieldType() {
         FieldType fieldType = null;
         List<Field> fields = getFieldSelect();
@@ -325,11 +265,6 @@ public class ArchivedValuesExporterBackingBean{
         return fieldType;
     }
     
-    public  void resetFormat() {
-        setFormat(new ExportFormat());
-        getFormat().setDelimiter(",");
-    }
-    
     public void resetField(YukonRoundingMode roundingMode) {
         setExportField(new ExportField());
         setRowIndex(-1);
@@ -338,19 +273,9 @@ public class ArchivedValuesExporterBackingBean{
         getExportField().setRoundingMode(roundingMode);
     }
     
-
-    public Date getEndDate() {
-        return endDate;
-    }
-
-    public void setEndDate(Date endDate) {
-        this.endDate = endDate;
-    }
-
     public String getPageNameKey() {
         return pageNameKey;
     }
-
     public void setPageNameKey(String pageNameKey) {
         this.pageNameKey = pageNameKey;
     }
@@ -359,7 +284,6 @@ public class ArchivedValuesExporterBackingBean{
     public String getValuePattern() {
         return valuePattern;
     }
-
     public void setValuePattern(String valuePattern) {
         this.valuePattern = valuePattern;
     }
@@ -367,7 +291,6 @@ public class ArchivedValuesExporterBackingBean{
     public String getTimestampPattern() {
         return timestampPattern;
     }
-
     public void setTimestampPattern(String timeStampPattern) {
         this.timestampPattern = timeStampPattern;
     }
@@ -375,28 +298,7 @@ public class ArchivedValuesExporterBackingBean{
     public String getPlainText() {
         return plainText;
     }
-
     public void setPlainText(String plainText) {
         this.plainText = plainText;
-    }
-
-    public String getTimezone() {
-        return timezone;
-    }
-    
-    public void setTimezone(DateTimeZone dateTimeZone){
-        if (timezone == null) {
-            DateTime dt = new DateTime(dateTimeZone);
-            DateTimeFormatter fmt = DateTimeFormat.forPattern("z");
-            timezone = fmt.print(dt);
-        }
-    }
-
-    public List<String> getPreview() {
-        return preview;
-    }
-
-    public void setPreview(List<String> preview) {
-        this.preview = preview;
     }
 }

@@ -3,11 +3,11 @@ package com.cannontech.web.amr.archivedValuesExporter.validator;
 import org.springframework.validation.Errors;
 
 import com.cannontech.common.validator.SimpleValidator;
-import com.cannontech.web.amr.archivedValuesExporter.ArchivedValuesExporterBackingBean;
 import com.cannontech.web.amr.archivedValuesExporter.ArchivedValuesExporterController;
+import com.cannontech.web.amr.archivedValuesExporter.model.ArchivedValuesExporterBackingBean;
 
 public class ExportAttributeValidator extends SimpleValidator<ArchivedValuesExporterBackingBean> {
-    private static final String invalidDaysPreviousMsgKey = ArchivedValuesExporterController.baseKey +"formatError.lessThanZero.daysPrevious";
+    private static final String invalidDaysPreviousMsgKey = ArchivedValuesExporterController.baseKey+"formatError.lessThanZero.daysPrevious";
 
     public ExportAttributeValidator() {
         super(ArchivedValuesExporterBackingBean.class);
