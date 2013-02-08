@@ -8447,6 +8447,26 @@
         </i__foreignKeys>
         <i__indexes>
           <entry>
+            <string>Indx_ADAS_AnalysisId_SlotId</string>
+            <com.cariboulake.db.schemacompare.business.domain.db.Index>
+              <indexSegments>
+                <com.cariboulake.db.schemacompare.business.domain.db.IndexSegment>
+                  <i__tableName>ArchiveDataAnalysisSlot</i__tableName>
+                  <i__ordinalPosition>1</i__ordinalPosition>
+                  <i__columnName>AnalysisId</i__columnName>
+                  <i__nonNonUnique>true</i__nonNonUnique>
+                </com.cariboulake.db.schemacompare.business.domain.db.IndexSegment>
+                <com.cariboulake.db.schemacompare.business.domain.db.IndexSegment>
+                  <i__tableName>ArchiveDataAnalysisSlot</i__tableName>
+                  <i__ordinalPosition>2</i__ordinalPosition>
+                  <i__columnName>SlotId</i__columnName>
+                  <i__nonNonUnique>true</i__nonNonUnique>
+                </com.cariboulake.db.schemacompare.business.domain.db.IndexSegment>
+              </indexSegments>
+              <indexName>Indx_ADAS_AnalysisId_SlotId</indexName>
+            </com.cariboulake.db.schemacompare.business.domain.db.Index>
+          </entry>
+          <entry>
             <string>PK_ArcDataAnalSlot</string>
             <com.cariboulake.db.schemacompare.business.domain.db.Index>
               <indexSegments>
@@ -36049,6 +36069,26 @@
                 </com.cariboulake.db.schemacompare.business.domain.db.IndexSegment>
               </indexSegments>
               <indexName>PK_ArcDataAnalSlotValue</indexName>
+            </com.cariboulake.db.schemacompare.business.domain.db.Index>
+          </entry>
+          <entry>
+            <string>Indx_ADASV_SlotId_DeviceId</string>
+            <com.cariboulake.db.schemacompare.business.domain.db.Index>
+              <indexSegments>
+                <com.cariboulake.db.schemacompare.business.domain.db.IndexSegment>
+                  <i__tableName>ArchiveDataAnalysisSlotValue</i__tableName>
+                  <i__ordinalPosition>1</i__ordinalPosition>
+                  <i__columnName>SlotId</i__columnName>
+                  <i__nonNonUnique>true</i__nonNonUnique>
+                </com.cariboulake.db.schemacompare.business.domain.db.IndexSegment>
+                <com.cariboulake.db.schemacompare.business.domain.db.IndexSegment>
+                  <i__tableName>ArchiveDataAnalysisSlotValue</i__tableName>
+                  <i__ordinalPosition>2</i__ordinalPosition>
+                  <i__columnName>DeviceId</i__columnName>
+                  <i__nonNonUnique>true</i__nonNonUnique>
+                </com.cariboulake.db.schemacompare.business.domain.db.IndexSegment>
+              </indexSegments>
+              <indexName>Indx_ADASV_SlotId_DeviceId</indexName>
             </com.cariboulake.db.schemacompare.business.domain.db.Index>
           </entry>
         </i__indexes>
