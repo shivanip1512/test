@@ -92,13 +92,14 @@ public class BulkPointDataInjectionServiceImpl implements BulkPointDataInjection
 
     @Override
     public void excecuteInjectionByDevice(BulkFakePointInjectionDto bulkInjection) {
-        log.info("[Bulk injector] ----------Starting bulk injection----------");
+        log.info("[Bulk injector] ----------Starting bulk point injection----------");
         if (CollectionUtils.isEmpty(bulkInjection.getYukonPaos())) {
              DeviceGroup group = deviceGroupService.resolveGroupName(bulkInjection.getGroupName());
             List<SimpleDevice> supportedDevices = attributeService.getDevicesInGroupThatSupportAttribute(group,
                                                                        bulkInjection.getAttribute());
+            int deviceCount = 0;
             for(SimpleDevice device: supportedDevices){
-                log.info("[Bulk injector] Device " + device.getPaoIdentifier());
+                log.info("[Bulk injector] #" + ++deviceCount + " Device " + device.getPaoIdentifier());
                 LitePoint point = getLitePointsFromSimpleDevicesWithAttribute(device, bulkInjection.getAttribute());
                 List<LitePoint> litePoints = Lists.newArrayList(point);
                 List<PointData> data = getPointData(bulkInjection, litePoints);
