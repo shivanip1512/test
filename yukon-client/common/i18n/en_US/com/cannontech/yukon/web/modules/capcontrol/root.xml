@@ -82,7 +82,7 @@
     <entry key="yukon.web.modules.capcontrol.bankMove.capbank">Cap Bank</entry>
     <entry key="yukon.web.modules.capcontrol.bankMove.tempMove.label">Temp Move</entry>
     <entry key="yukon.web.modules.capcontrol.bankMove.move.label">Move</entry>
-    <entry key="yukon.web.modules.capcontrol.bankMove.displayOrder">Display Order</entry>
+    <entry key="yukon.web.modules.capcontrol.bankMove.controlOrder">Control Order</entry>
     <entry key="yukon.web.modules.capcontrol.bankMove.closeOrder">Close Order</entry>
     <entry key="yukon.web.modules.capcontrol.bankMove.tripOrder">Trip Order</entry>
     <entry key="yukon.web.modules.capcontrol.bankMove.bankName">Bank Name</entry>

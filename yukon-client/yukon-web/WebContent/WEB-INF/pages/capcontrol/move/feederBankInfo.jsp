@@ -11,7 +11,7 @@
     <table class="compactResultsTable">
     	<tr>
     		<th><i:inline key=".bankName"/></th>
-    		<th><i:inline key=".displayOrder"/></th>
+    		<th><i:inline key=".controlOrder"/></th>
     		<th><i:inline key=".closeOrder"/></th>
     		<th><i:inline key=".tripOrder"/></th>
     	</tr>

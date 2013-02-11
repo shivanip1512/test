@@ -448,7 +448,7 @@
 
 						<h:column>
 							<f:facet name="header">
-								<x:outputText value="Display Order"
+								<x:outputText value="Control Order"
 									title="Order used for control (Range: 1 to 1000 )" />
 							</f:facet>
 							<x:inputText value="#{capBank.controlOrder}"
