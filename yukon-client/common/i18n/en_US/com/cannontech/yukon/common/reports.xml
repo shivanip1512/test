@@ -119,7 +119,7 @@
 <entry key="yukon.web.reportTypes.CAP_BANK_RECENT_MAX_DAILY_OPERATIONS.description">Detailed report showing a 6 week history of capbanks that have reached max daily operations limit.</entry>
 <entry key="yukon.web.reportTypes.CAP_BANK_MAX_OPS_EXCEEDED">Cap Bank Max Ops Exceeded</entry>
 <entry key="yukon.web.reportTypes.CAP_BANK_MAX_OPS_EXCEEDED.description">Report showing capbanks that have reached max daily operations limit for a custom date range.</entry>
-<entry key="yukon.web.reportTypes.CAP_CONTROL_RETRIES">Retries</entry>
+<entry key="yukon.web.reportTypes.CAP_CONTROL_RETRIES">Cap Control Retries</entry>
 <entry key="yukon.web.reportTypes.CAP_CONTROL_RETRIES.description">Detailed report showing capbank control retry information.</entry>
 <entry key="yukon.web.reportTypes.CAP_CONTROL_VAR_CHANGE">Var Change</entry>
 <entry key="yukon.web.reportTypes.CAP_CONTROL_VAR_CHANGE.description">Report showing change in var values.</entry>
