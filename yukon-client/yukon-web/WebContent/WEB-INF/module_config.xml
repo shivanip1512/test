@@ -467,7 +467,7 @@
 		        </page>
             </pages>
         </page>
-        <page name="archivedValueExporter.VIEW" type="BASIC">
+        <page name="archivedValueExporter" type="BASIC">
             <menu></menu>
             <link>/amr/archivedValuesExporter/view</link>
             <pages>
