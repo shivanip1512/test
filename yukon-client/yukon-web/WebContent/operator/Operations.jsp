@@ -56,42 +56,32 @@
             <tags:operationSection sectionName="Consumer Account Information" sectionImageName="ConsumerLogo">
                 <cti:checkRolesAndProperties value="OPERATOR_NEW_ACCOUNT_WIZARD">
                     <tags:sectionLink enabled="${isEnergyCompanyOperator}" href="/stars/operator/account/accountCreate"
-                        titleKey="yukon.web.taglib.CheckEnergyCompanyOperatorTag.userIsNotECOperator"
+                        disabledMessageKey="yukon.web.taglib.CheckEnergyCompanyOperatorTag.userIsNotECOperator"
                         textKey="yukon.web.menu.portal.consumerAccountInformation.newAccount" />
                 </cti:checkRolesAndProperties>
 
-                <c:if test="${isEnergyCompanyOperator}">
-					<cti:checkRolesAndProperties value="OPERATOR_IMPORT_CUSTOMER_ACCOUNT">
-                    	<c:set var="importUri" scope="page" value="/stars/operator/account/accountImport" />
-                    	<c:set var="importLabel" scope="page" value="Import Account" />
-                    	<cti:msg key="yukon.web.importAccount" var="importLabel"/>
-                    	<tags:sectionLink>
-                        	    <a href="${pageScope.importUri}">${pageScope.importLabel}</a>
-                    	</tags:sectionLink>
-        	        </cti:checkRolesAndProperties>
-                
-					<cti:checkRolesAndProperties value="ENABLE_MIGRATE_ENROLLMENT">
-						<c:set var="importUri" scope="page" value="MigrateEnrollment.jsp" />
-                    	<cti:msg key="yukon.web.migrateEnrollmentInformation" var="importLabel"/>
-                    	<tags:sectionLink>
-                    	    <a href="Consumer/${pageScope.importUri}">${pageScope.importLabel}</a>
-                    	</tags:sectionLink>
-            	    </cti:checkRolesAndProperties>
-                
-                	<cti:checkRolesAndProperties value="ENABLE_GENERIC_UPLOAD">
-	                    <c:set var="importUri" scope="page" value="GenericUpload.jsp" />
-	                    <cti:msg key="yukon.web.migrateEnrollmentInformation" var="importLabel"/>
-	                    <c:set var="importLabel" scope="page" value="Upload File" />
-	                    <tags:sectionLink>
-	                        <a href="Consumer/${pageScope.importUri}">${pageScope.importLabel}</a>
-	                    </tags:sectionLink>
-                	</cti:checkRolesAndProperties>
-				</c:if>
-				
+                <cti:checkRolesAndProperties value="OPERATOR_IMPORT_CUSTOMER_ACCOUNT">
+                    <tags:sectionLink enabled="${isEnergyCompanyOperator}" href="/stars/operator/account/accountImport"
+                        disabledMessageKey="yukon.web.taglib.CheckEnergyCompanyOperatorTag.userIsNotECOperator"
+                        textKey="yukon.web.menu.portal.consumerAccountInformation.accountImport" />
+                </cti:checkRolesAndProperties>
+
+                <cti:checkRolesAndProperties value="ENABLE_MIGRATE_ENROLLMENT">
+                    <tags:sectionLink enabled="${isEnergyCompanyOperator}" href="Consumer/MigrateEnrollment.jsp"
+                        disabledMessageKey="yukon.web.taglib.CheckEnergyCompanyOperatorTag.userIsNotECOperator"
+                        textKey="yukon.web.migrateEnrollmentInformation" />
+                </cti:checkRolesAndProperties>
+
+                <cti:checkRolesAndProperties value="ENABLE_GENERIC_UPLOAD">
+                    <tags:sectionLink enabled="${isEnergyCompanyOperator}" href="Consumer/GenericUpload.jsp"
+                        disabledMessageKey="yukon.web.taglib.CheckEnergyCompanyOperatorTag.userIsNotECOperator"
+                        textKey="yukon.web.migrateEnrollmentInformation" />
+                </cti:checkRolesAndProperties>
+						
                 <cti:checkMultiProperty
                     property="ConsumerInfoRole.OPT_OUT_ADMIN_STATUS,ConsumerInfoRole.OPT_OUT_ADMIN_CHANGE_ENABLE,ConsumerInfoRole.OPT_OUT_ADMIN_CANCEL_CURRENT,ConsumerInfoRole.OPT_OUT_ADMIN_CHANGE_COUNTS">
                     <tags:sectionLink enabled="${isEnergyCompanyOperator}" href="/stars/operator/optOut/admin"
-                        titleKey="yukon.web.taglib.CheckEnergyCompanyOperatorTag.userIsNotECOperator"
+                        disabledMessageKey="yukon.web.taglib.CheckEnergyCompanyOperatorTag.userIsNotECOperator"
                         textKey="yukon.web.menu.portal.consumerAccountInformation.optOutAdmin" />
                 </cti:checkMultiProperty>
 
@@ -218,7 +208,7 @@
             <tags:operationSection sectionName="${sectionTitle}" sectionImageName="HardwareInventoryLogo">
                 <cti:checkRole role="InventoryRole.ROLEID">
                     <tags:sectionLink enabled="${isEnergyCompanyOperator}" href="/stars/operator/inventory/home"
-                        titleKey="yukon.web.taglib.CheckEnergyCompanyOperatorTag.userIsNotECOperator"
+                        disabledMessageKey="yukon.web.taglib.CheckEnergyCompanyOperatorTag.userIsNotECOperator"
                         textKey="yukon.web.operations.inventory" />
                 </cti:checkRole>
                 <cti:checkProperty property="InventoryRole.PURCHASING_ACCESS">
@@ -333,7 +323,7 @@
 
                 <cti:checkProperty property="operator.AdministratorRole.ADMIN_VIEW_BATCH_COMMANDS">
                     <tags:sectionLink href="Admin/SwitchCommands.jsp" enabled="${isEnergyCompanyOperator}"
-                        titleKey="yukon.web.taglib.CheckEnergyCompanyOperatorTag.userIsNotECOperator"
+                        disabledMessageKey="yukon.web.taglib.CheckEnergyCompanyOperatorTag.userIsNotECOperator"
                         textKey="yukon.web.viewBatchCommands" />
                 </cti:checkProperty>
 

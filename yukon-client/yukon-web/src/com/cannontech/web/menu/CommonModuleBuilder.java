@@ -301,12 +301,6 @@ public class CommonModuleBuilder implements ModuleBuilder {
             if (checker != null) {
                 checkers.add(checker);
             }
-            if (StringUtils.isNotEmpty(prop)) {
-                String[] valueArray = prop.split("[\\s,\\n]+");
-                if (Arrays.asList(valueArray).contains("OPERATOR_IMPORT_CUSTOMER_ACCOUNT")) {
-                    checkers.add(energyCompanyService.createEcOperatorChecker());
-                }
-            }
         }
 
         if (checkers.isEmpty()) {

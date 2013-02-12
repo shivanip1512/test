@@ -82,6 +82,7 @@ function validate(form) {
 </head>
 
 <body class="Background" leftmargin="0" topmargin="0">
+
 <table width="760" border="0" cellspacing="0" cellpadding="0">
   <tr>
     <td>
@@ -110,6 +111,7 @@ function validate(form) {
                   if (confirmMsg != null) out.write("<span class=\"ConfirmMsg\">* " + confirmMsg + "</span><br>");
               %>
               <br>
+              <cti:checkEnergyCompanyOperator showError="true" >
               <table width="600" border="0" cellspacing="0" cellpadding="0">
                 <tr>
                   <c:choose>
@@ -296,6 +298,7 @@ function validate(form) {
       </table>
     </td>
 	</tr>
+</cti:checkEnergyCompanyOperator>
 </table>
 <br>
 </body>

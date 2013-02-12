@@ -5,7 +5,7 @@
 <%@ attribute name="enabled" required="false" type="java.lang.Boolean"%>
 <%@ attribute name="href" required="false" type="java.lang.String"%>
 <%@ attribute name="textKey" required="false" type="java.lang.String"%>
-<%@ attribute name="titleKey" required="false" type="java.lang.String"%>
+<%@ attribute name="disabledMessageKey" required="false" type="java.lang.String"%>
 
 <div class="linkBorder">
     <c:choose>
@@ -23,7 +23,7 @@
                 </c:when>
                 <c:otherwise>
                     <div class="boxedLink disabled">
-                        <a class="disabled" title="<cti:msg key="${titleKey}"/>"><cti:msg key="${textKey}" /></a>
+                        <a class="disabled" title="<cti:msg key="${disabledMessageKey}"/>"><cti:msg key="${textKey}" /></a>
                     </div>
                 </c:otherwise>
             </c:choose>

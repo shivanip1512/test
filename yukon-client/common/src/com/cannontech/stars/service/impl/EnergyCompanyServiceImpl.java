@@ -320,20 +320,7 @@ public class EnergyCompanyServiceImpl implements EnergyCompanyService {
         };
         return checker;
     }
-    
-    @Override
-    public UserChecker createEcOperatorChecker() {
         
-        UserCheckerBase checker = new UserCheckerBase() {
-            @Override
-            public boolean check(LiteYukonUser user) {
-                return isOperator(user);
-            };
-            
-        };
-        return checker;
-    }
-    
     @Override
     @Transactional
     public void deleteEnergyCompany(LiteYukonUser user, int energyCompanyId) {

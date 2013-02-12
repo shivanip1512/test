@@ -106,11 +106,6 @@ public interface EnergyCompanyService {
     public int removeSubstationFromEnergyCompany(int energyCompanyId, int substationId);
     
     /**
-     * This method creates an energy company operator checker.
-     */
-    public UserChecker createEcOperatorChecker();
-
-    /**
      * This method creates an energy company operator or super user checker.
      */
     public UserChecker createEcOperatorOrSuperUserChecker();
