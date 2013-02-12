@@ -107,8 +107,7 @@ public class AlternateEnrollmentServiceImpl implements AlternateEnrollmentServic
             public Object call() {
         		/* unenroll from normal programs and enroll in alternate programs */
             	if (alternate != null) {
-            		List<ProgramEnrollment> unenrollFromNormal = Lists.newArrayList();
-            		List<ProgramEnrollment> enrollInAlternate = Lists.newArrayList();
+            		List<ProgramEnrollment> updatedEnrollments = Lists.newArrayList();
         	    	for (Integer inventoryId : alternate) {
         	    		for (ProgramEnrollment enrollment : enrollmentDao.getActiveEnrollmentsByInventory(inventoryId)) {
         	    			if (normalMappings.containsKey(enrollment.getAssignedProgramId())){
@@ -116,24 +115,22 @@ public class AlternateEnrollmentServiceImpl implements AlternateEnrollmentServic
         	    				ProgramEnrollment enrollIn = enrollment.copyOf();
         	    				
         	    				unenrollFrom.setEnroll(false);
-        	    				unenrollFromNormal.add(unenrollFrom);
+        	    				updatedEnrollments.add(unenrollFrom);
         	    				
         	    				Program alternateProgram = mappings.get(normalMappings.get(enrollment.getAssignedProgramId()));
         						enrollIn.setAssignedProgramId(alternateProgram.getProgramId());
         						enrollIn.setApplianceCategoryId(alternateProgram.getApplianceCategoryId());
         						enrollIn.setLmGroupId(programDao.getLoadGroupIdForProgramId(alternateProgram.getProgramId()));
-        						enrollInAlternate.add(enrollIn);
+        						updatedEnrollments.add(enrollIn);
         	    			}
         	    		}
         			}
-        	    	enrollmentHelperService.updateProgramEnrollments(unenrollFromNormal, accountId, context);
-        	    	enrollmentHelperService.updateProgramEnrollments(enrollInAlternate, accountId, context);
+        	    	enrollmentHelperService.updateProgramEnrollments(updatedEnrollments, accountId, context);
             	}
             	
             	/* unenroll from alternate programs and enroll in normal programs */
             	if (normal != null) {
-            		List<ProgramEnrollment> unenrollFromAlternate = Lists.newArrayList();
-            		List<ProgramEnrollment> enrollInNormal = Lists.newArrayList();
+            	    List<ProgramEnrollment> updatedEnrollments = Lists.newArrayList();
         	    	for (Integer inventoryId : normal) {
         	    		for (ProgramEnrollment enrollment : enrollmentDao.getActiveEnrollmentsByInventory(inventoryId)) {
         	    			if (alternateMappings.containsKey(enrollment.getAssignedProgramId())){
@@ -141,18 +138,17 @@ public class AlternateEnrollmentServiceImpl implements AlternateEnrollmentServic
         	    				ProgramEnrollment enrollIn = enrollment.copyOf();
         	    				
         	    				unenrollFrom.setEnroll(false);
-        	    				unenrollFromAlternate.add(unenrollFrom);
+        	    				updatedEnrollments.add(unenrollFrom);
         	    				
         	    				Program normalProgram = mappings.inverse().get(alternateMappings.get(enrollment.getAssignedProgramId()));
         						enrollIn.setAssignedProgramId(normalProgram.getProgramId());
         						enrollIn.setApplianceCategoryId(normalProgram.getApplianceCategoryId());
         						enrollIn.setLmGroupId(programDao.getLoadGroupIdForProgramId(normalProgram.getProgramId()));
-        						enrollInNormal.add(enrollIn);
+        						updatedEnrollments.add(enrollIn);
         	    			}
         	    		}
         			}
-        	    	enrollmentHelperService.updateProgramEnrollments(unenrollFromAlternate, accountId, context);
-        	    	enrollmentHelperService.updateProgramEnrollments(enrollInNormal, accountId, context);
+        	    	enrollmentHelperService.updateProgramEnrollments(updatedEnrollments, accountId, context);
             	}
             	
         		return null;
