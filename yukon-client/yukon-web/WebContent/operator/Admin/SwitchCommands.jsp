@@ -104,201 +104,202 @@ function validate(form) {
           <td width="657" height="400" valign="top" bgcolor="#FFFFFF">
             <div align="center"> <br>
               <span class="TitleHeader">ADMINISTRATION - SWITCH COMMANDS</span><br>
-              <%
-                  if (errorMsg != null) out.write("<span class=\"ErrorMsg\">* " + errorMsg + "</span><br>");
-              %>
-              <%
-                  if (confirmMsg != null) out.write("<span class=\"ConfirmMsg\">* " + confirmMsg + "</span><br>");
-              %>
-              <br>
-              <cti:checkEnergyCompanyOperator showError="true" >
-              <table width="600" border="0" cellspacing="0" cellpadding="0">
-                <tr>
-                  <c:choose>
-						<c:when test="${configBean.writeToFileAllowed}">
-                            <td align="center" class="MainText">All switch commands marked<div class="ErrorMsg">manual</div>must 
-                                be moved to output files from this screen.</td> 
-						</c:when>
-	                    <c:otherwise>
-	             			<td align="center" class="MainText">All switch commands marked<div class="ErrorMsg">auto</div>will 
-		                    be sent out automatically at midnight.</td>
-		               	</c:otherwise>
-	             </c:choose> 	
-                </tr>
-              </table>
+                <cti:checkEnergyCompanyOperator showError="true" >
+                  <%
+                      if (errorMsg != null) out.write("<span class=\"ErrorMsg\">* " + errorMsg + "</span><br>");
+                  %>
+                  <%
+                      if (confirmMsg != null) out.write("<span class=\"ConfirmMsg\">* " + confirmMsg + "</span><br>");
+                  %>
+                  <br>
+                  <table width="600" border="0" cellspacing="0" cellpadding="0">
+                    <tr>
+                      <c:choose>
+    						<c:when test="${configBean.writeToFileAllowed}">
+                                <td align="center" class="MainText">All switch commands marked<div class="ErrorMsg">manual</div>must 
+                                    be moved to output files from this screen.</td> 
+    						</c:when>
+    	                    <c:otherwise>
+    	             			<td align="center" class="MainText">All switch commands marked<div class="ErrorMsg">auto</div>will 
+    		                    be sent out automatically at midnight.</td>
+    		               	</c:otherwise>
+    	             </c:choose> 	
+                    </tr>
+                  </table>
+                </cti:checkEnergyCompanyOperator>
             </div>
-			
-			<form name="form1" method="post" action="<%=request.getContextPath()%>/servlet/InventoryManager" onsubmit="return validate(this)">
-              <input type="hidden" name="action" value="SendSwitchCommands">
-              <input type="hidden" name="<%=ServletUtils.CONFIRM_ON_MESSAGE_PAGE%>">
-<%
-    if (showEnergyCompany) {
-%>
-              <table width="400" border="0" cellspacing="0" cellpadding="1" align="center">
-                <tr>
-                  <td align="center" class="MainText">Member: 
-                    <select name="Member" onchange="changeMember(this.form)">
-                      <option value="-1">All</option>
-                      <%
-                          for (int i = 0; i < descendants.size(); i++) {
-                                                  		LiteStarsEnergyCompany company = (LiteStarsEnergyCompany) descendants.get(i);
-                                                  		String selected = (member != null && company.equals(member))? "selected" : "";
-                      %>
-                      <option value="<%=company.getLiteID()%>" <%=selected%>><%=company.getName()%></option>
-                      <%
-                          }
-                      %>
-                    </select>
-                  </td>
-                </tr>
-              </table>
-              <br>
-<%
-    }
-%>
-              <table width="500" border="1" cellspacing="0" cellpadding="1" align="center">
-                <tr> 
-                  <td class="HeaderCell" width="5%"> 
-                    <input type="checkbox" name="All" value="<%=memberID%>" onclick="selectAll(this.checked)">
-                  </td>
-                  <td class="HeaderCell" width="19%">Serial #</td>
-                  <td class="HeaderCell" width="19%">Account #</td>
-                  <td class="HeaderCell" width="19%">Command Type</td>
-<%
-    if (showEnergyCompany) {
-%>
-                  <td class="HeaderCell" width="19%">Member</td>
-                  <td class="HeaderCell" width="19%">Process</td>
-<%
-    }
-%>
-                </tr>
-<%
-    InventoryBaseDao inventoryBaseDao = 
-        YukonSpringHook.getBean("inventoryBaseDao", InventoryBaseDao.class);
-
-	for (int i = 0; i < descendants.size(); i++) {
-		LiteStarsEnergyCompany company = (LiteStarsEnergyCompany) descendants.get(i);
-		if (member != null && !company.equals(member)) continue;
-		
-		SwitchCommandQueue.SwitchCommand[] commands = SwitchCommandQueue.getInstance().getCommands(company.getLiteID(), false);
-		
-		TreeMap serialMap = new TreeMap();
-		for (int j = 0; j < commands.length; j++) {
-			String serialNo = ((LiteLmHardwareBase) inventoryBaseDao.getByInventoryId(commands[j].getInventoryID())).getManufacturerSerialNumber();
-			try {
-				Integer num = Integer.valueOf(serialNo);
-				serialMap.put(num, commands[j]);
-			}
-			catch (NumberFormatException e) {
-				serialMap.put(serialNo, commands[j]);
-			}
-		}
-		
-		Iterator it = serialMap.entrySet().iterator();
-		while (it.hasNext()) {
-			Map.Entry entry = (Map.Entry) it.next();
-			Object serialNo = entry.getKey();
-			SwitchCommandQueue.SwitchCommand cmd = (SwitchCommandQueue.SwitchCommand) entry.getValue();
-			String accountNo = "(none)";
-			if (cmd.getAccountID() > 0)
-				accountNo = starsCustAccountInformationDao.getById(cmd.getAccountID(), company.getEnergyCompanyId()).getCustomerAccount().getAccountNumber();
-%>
-                <tr> 
-                  <td width="5%" class="TableCell"> 
-                    <input type="checkbox" name="InvID" value="<%=cmd.getInventoryID()%>" onclick="selectSingle(this.form)">
-                  </td>
-                  <td width="19%" class="TableCell"><%=serialNo.toString()%></td>
-                  <td width="19%" class="TableCell"><%=accountNo%></td>
-                  <td width="19%" class="TableCell"><%=cmd.getCommandType()%></td>
-<%
-    if (showEnergyCompany) {
-%>
-                  <td width="19%" class="TableCell"><%=company.getName()%></td>
-                  <c:choose>
-                        <c:when test="${configBean.writeToFileAllowed}"> 
-                            <td width="19%" class="TableCell"><div class="ErrorMsg">Manual<div></td>
-                        </c:when>
-                        <c:otherwise>
-                            <td width="19%" class="TableCell"><div class="ErrorMsg">Auto<div></td>
-                        </c:otherwise>
-                  </c:choose> 
-                  
-<%
-                       }
-                   %>
-                </tr>
-                <%
-                    }
-                	}
-                %>
-              </table>
-              <br>
-              <table width="600" border="0" cellspacing="0" cellpadding="5" align="center">
-                <tr> 
-                	<c:choose>
-						<c:when test="${configBean.writeToFileAllowed}"> 
-							<td align="right" width="50%"> 
-                    			<input type="button" name="fileWrite" value="Write to File" onclick="fileWriteCommands(this.form)">
-                    		</td>
-						</c:when>
-	                    <c:otherwise>
-	             			<td align="right" width="50%"> 
-                    			<input type="submit" name="Submit" value="Send">
-                  			</td>
-		               	</c:otherwise>
-	             	</c:choose> 
-                 	<td width="50%"> 
-                    	<input type="button" name="Remove" value="Remove" onclick="removeCommands(this.form)">
-                  	</td>
-                </tr>
-              </table>
-              </form>
-            <div align="center"><span class="TitleHeader">Last Batch Submission</span><br>
-<%
-    Map<Integer,Object[]> batchConfig = InventoryManagerUtil.getBatchConfigSubmission();
-	if (showEnergyCompany) {
-%>
-              <table border="0" cellspacing="0" cellpadding="3" class="MainText">
-                <%
-                    for (int i = 0; i < descendants.size(); i++) {
-                			LiteStarsEnergyCompany company = (LiteStarsEnergyCompany) descendants.get(i);
-                			Object[] lastSubmission = (Object[]) batchConfig.get(company.getEnergyCompanyId());
-                			if (lastSubmission == null) continue;
-                %>
-                <tr>
-                  <td width="150" align="right"><%=company.getName()%>:</td>
-                  <td width="100" align="center"><%=ServletUtils.formatDate((Date)lastSubmission[0], dateTimeFormat)%></td>
-                  <td width="250"><%=(String)lastSubmission[1]%></td>
-                </tr>
-<%
-    }
-%>
-              </table>
-<%
-    }
-	else {
-		Object[] lastSubmission = (Object[]) batchConfig.get(liteEC.getEnergyCompanyId());
-		if (lastSubmission != null) {
-%>
-              <table border="0" cellspacing="0" cellpadding="3" class="MainText">
-                <tr> 
-                  <td width="100"><%= ServletUtils.formatDate((Date)lastSubmission[0], dateTimeFormat) %></td>
-                  <td width="250"><%= (String)lastSubmission[1] %></td>
-                </tr>
-              </table>
-<%
-		}
-	}
-%>
-            </div>
+            <cti:checkEnergyCompanyOperator>
+    			<form name="form1" method="post" action="<%=request.getContextPath()%>/servlet/InventoryManager" onsubmit="return validate(this)">
+                  <input type="hidden" name="action" value="SendSwitchCommands">
+                  <input type="hidden" name="<%=ServletUtils.CONFIRM_ON_MESSAGE_PAGE%>">
+    <%
+        if (showEnergyCompany) {
+    %>
+                  <table width="400" border="0" cellspacing="0" cellpadding="1" align="center">
+                    <tr>
+                      <td align="center" class="MainText">Member: 
+                        <select name="Member" onchange="changeMember(this.form)">
+                          <option value="-1">All</option>
+                          <%
+                              for (int i = 0; i < descendants.size(); i++) {
+                                                      		LiteStarsEnergyCompany company = (LiteStarsEnergyCompany) descendants.get(i);
+                                                      		String selected = (member != null && company.equals(member))? "selected" : "";
+                          %>
+                          <option value="<%=company.getLiteID()%>" <%=selected%>><%=company.getName()%></option>
+                          <%
+                              }
+                          %>
+                        </select>
+                      </td>
+                    </tr>
+                  </table>
+                  <br>
+    <%
+        }
+    %>
+                  <table width="500" border="1" cellspacing="0" cellpadding="1" align="center">
+                    <tr> 
+                      <td class="HeaderCell" width="5%"> 
+                        <input type="checkbox" name="All" value="<%=memberID%>" onclick="selectAll(this.checked)">
+                      </td>
+                      <td class="HeaderCell" width="19%">Serial #</td>
+                      <td class="HeaderCell" width="19%">Account #</td>
+                      <td class="HeaderCell" width="19%">Command Type</td>
+    <%
+        if (showEnergyCompany) {
+    %>
+                      <td class="HeaderCell" width="19%">Member</td>
+                      <td class="HeaderCell" width="19%">Process</td>
+    <%
+        }
+    %>
+                    </tr>
+    <%
+        InventoryBaseDao inventoryBaseDao = 
+            YukonSpringHook.getBean("inventoryBaseDao", InventoryBaseDao.class);
+    
+    	for (int i = 0; i < descendants.size(); i++) {
+    		LiteStarsEnergyCompany company = (LiteStarsEnergyCompany) descendants.get(i);
+    		if (member != null && !company.equals(member)) continue;
+    		
+    		SwitchCommandQueue.SwitchCommand[] commands = SwitchCommandQueue.getInstance().getCommands(company.getLiteID(), false);
+    		
+    		TreeMap serialMap = new TreeMap();
+    		for (int j = 0; j < commands.length; j++) {
+    			String serialNo = ((LiteLmHardwareBase) inventoryBaseDao.getByInventoryId(commands[j].getInventoryID())).getManufacturerSerialNumber();
+    			try {
+    				Integer num = Integer.valueOf(serialNo);
+    				serialMap.put(num, commands[j]);
+    			}
+    			catch (NumberFormatException e) {
+    				serialMap.put(serialNo, commands[j]);
+    			}
+    		}
+    		
+    		Iterator it = serialMap.entrySet().iterator();
+    		while (it.hasNext()) {
+    			Map.Entry entry = (Map.Entry) it.next();
+    			Object serialNo = entry.getKey();
+    			SwitchCommandQueue.SwitchCommand cmd = (SwitchCommandQueue.SwitchCommand) entry.getValue();
+    			String accountNo = "(none)";
+    			if (cmd.getAccountID() > 0)
+    				accountNo = starsCustAccountInformationDao.getById(cmd.getAccountID(), company.getEnergyCompanyId()).getCustomerAccount().getAccountNumber();
+    %>
+                    <tr> 
+                      <td width="5%" class="TableCell"> 
+                        <input type="checkbox" name="InvID" value="<%=cmd.getInventoryID()%>" onclick="selectSingle(this.form)">
+                      </td>
+                      <td width="19%" class="TableCell"><%=serialNo.toString()%></td>
+                      <td width="19%" class="TableCell"><%=accountNo%></td>
+                      <td width="19%" class="TableCell"><%=cmd.getCommandType()%></td>
+    <%
+        if (showEnergyCompany) {
+    %>
+                      <td width="19%" class="TableCell"><%=company.getName()%></td>
+                      <c:choose>
+                            <c:when test="${configBean.writeToFileAllowed}"> 
+                                <td width="19%" class="TableCell"><div class="ErrorMsg">Manual<div></td>
+                            </c:when>
+                            <c:otherwise>
+                                <td width="19%" class="TableCell"><div class="ErrorMsg">Auto<div></td>
+                            </c:otherwise>
+                      </c:choose> 
+                      
+    <%
+                           }
+                       %>
+                    </tr>
+                    <%
+                        }
+                    	}
+                    %>
+                  </table>
+                  <br>
+                  <table width="600" border="0" cellspacing="0" cellpadding="5" align="center">
+                    <tr> 
+                    	<c:choose>
+    						<c:when test="${configBean.writeToFileAllowed}"> 
+    							<td align="right" width="50%"> 
+                        			<input type="button" name="fileWrite" value="Write to File" onclick="fileWriteCommands(this.form)">
+                        		</td>
+    						</c:when>
+    	                    <c:otherwise>
+    	             			<td align="right" width="50%"> 
+                        			<input type="submit" name="Submit" value="Send">
+                      			</td>
+    		               	</c:otherwise>
+    	             	</c:choose> 
+                     	<td width="50%"> 
+                        	<input type="button" name="Remove" value="Remove" onclick="removeCommands(this.form)">
+                      	</td>
+                    </tr>
+                  </table>
+                  </form>
+                <div align="center"><span class="TitleHeader">Last Batch Submission</span><br>
+    <%
+        Map<Integer,Object[]> batchConfig = InventoryManagerUtil.getBatchConfigSubmission();
+    	if (showEnergyCompany) {
+    %>
+                  <table border="0" cellspacing="0" cellpadding="3" class="MainText">
+                    <%
+                        for (int i = 0; i < descendants.size(); i++) {
+                    			LiteStarsEnergyCompany company = (LiteStarsEnergyCompany) descendants.get(i);
+                    			Object[] lastSubmission = (Object[]) batchConfig.get(company.getEnergyCompanyId());
+                    			if (lastSubmission == null) continue;
+                    %>
+                    <tr>
+                      <td width="150" align="right"><%=company.getName()%>:</td>
+                      <td width="100" align="center"><%=ServletUtils.formatDate((Date)lastSubmission[0], dateTimeFormat)%></td>
+                      <td width="250"><%=(String)lastSubmission[1]%></td>
+                    </tr>
+    <%
+        }
+    %>
+                  </table>
+    <%
+        }
+    	else {
+    		Object[] lastSubmission = (Object[]) batchConfig.get(liteEC.getEnergyCompanyId());
+    		if (lastSubmission != null) {
+    %>
+                  <table border="0" cellspacing="0" cellpadding="3" class="MainText">
+                    <tr> 
+                      <td width="100"><%= ServletUtils.formatDate((Date)lastSubmission[0], dateTimeFormat) %></td>
+                      <td width="250"><%= (String)lastSubmission[1] %></td>
+                    </tr>
+                  </table>
+    <%
+    		}
+    	}
+    %>
+                </div>
+            </cti:checkEnergyCompanyOperator>
           </td>
         <td width="1" bgcolor="#000000"><img src="../../WebConfig/yukon/Icons/VerticalRule.gif" width="1"></td>
     </tr>
       </table>
     </td>
 	</tr>
-</cti:checkEnergyCompanyOperator>
 </table>
 <br>
 </body>

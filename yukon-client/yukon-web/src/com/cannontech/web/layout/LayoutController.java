@@ -233,7 +233,7 @@ public class LayoutController {
             YukonEnergyCompany energyCompany = yukonEnergyCompanyService.getEnergyCompanyByOperator(yukonUser);
             energyCompanyName = energyCompany.getName();
         }catch(EnergyCompanyNotFoundException e){
-           //The user is not associated with an Energy Company.
+           //The user does not need an Energy Company just to log in.
         }
         
         map.addAttribute("energyCompanyName", energyCompanyName);
