@@ -149,7 +149,7 @@
                 <value>mail.jar</value>
                 <value>jfreechart.jar</value>
                 <value>jloox30.jar</value>
-                <value>exificient.jar</value>
+                <value>nagasena.jar</value>
             </set>
         </property>
     </bean>

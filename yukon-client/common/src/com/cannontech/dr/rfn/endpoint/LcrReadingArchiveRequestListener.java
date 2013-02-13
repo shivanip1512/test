@@ -1,8 +1,5 @@
 package com.cannontech.dr.rfn.endpoint;
 
-import java.io.IOException;
-import java.io.InputStream;
-import java.text.ParseException;
 import java.util.List;
 import java.util.concurrent.atomic.AtomicInteger;
 
@@ -11,14 +8,13 @@ import javax.annotation.PreDestroy;
 
 import org.apache.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.core.io.Resource;
-import org.springframework.core.io.ResourceLoader;
 import org.springframework.jmx.export.annotation.ManagedAttribute;
 import org.springframework.jmx.export.annotation.ManagedResource;
 
 import com.cannontech.clientutils.LogHelper;
 import com.cannontech.clientutils.YukonLogManager;
 import com.cannontech.common.device.commands.exception.CommandCompletionException;
+import com.cannontech.common.exception.ParseExiException;
 import com.cannontech.common.inventory.InventoryIdentifier;
 import com.cannontech.common.rfn.endpoint.RfnArchiveRequestListenerBase;
 import com.cannontech.common.rfn.model.RfnDevice;
@@ -50,7 +46,6 @@ import com.google.common.collect.Lists;
 @ManagedResource
 public class LcrReadingArchiveRequestListener extends RfnArchiveRequestListenerBase<RfnLcrArchiveRequest> {
     
-    @Autowired ResourceLoader loader;
     @Autowired RfnLcrDataMappingService rfnLcrDataMappingService;
     @Autowired ExiParsingService exiParsingService;
     @Autowired PaoDao paoDao;
@@ -64,7 +59,6 @@ public class LcrReadingArchiveRequestListener extends RfnArchiveRequestListenerB
     
     private static final Logger log = YukonLogManager.getLogger(LcrReadingArchiveRequestListener.class);
     private static final String archiveResponseQueueName = "yukon.qr.obj.dr.rfn.LcrReadingArchiveResponse";
-    private static final String informingSchemaLocation = "classpath:com/cannontech/dr/rfn/endpoint/rfnLcrExiMessageSchema.xsd";
     
     private List<Worker> workers;
     private AtomicInteger archivedReadings = new AtomicInteger();
@@ -79,20 +73,14 @@ public class LcrReadingArchiveRequestListener extends RfnArchiveRequestListenerB
             
             if (archiveRequest instanceof RfnLcrReadingArchiveRequest) {
                 RfnLcrReadingArchiveRequest readingArchiveRequest = ((RfnLcrReadingArchiveRequest) archiveRequest);
-                InputStream informingSchema = null;
                 SimpleXPathTemplate decodedPayload = null;
 
                 byte[] payload = readingArchiveRequest.getData().getPayload();
-                Resource informingSchemaResource = loader.getResource(informingSchemaLocation);
                 try {
-                    informingSchema = informingSchemaResource.getInputStream();
-                    decodedPayload = exiParsingService.decodeExiMessage(payload, informingSchema);
-                } catch (IOException e1) {
-                    log.error("Unable to open informing schema as an input stream: " + informingSchemaLocation, e1);
-                    throw new RuntimeException();
-                } catch (ParseException e) {
-                    log.error("Unable to parse EXI message payload for device: " + rfnDevice.getName(), e);
-                    throw new RuntimeException();
+                    decodedPayload = exiParsingService.parseRfLcrReading(payload);
+                } catch (ParseExiException e) {
+                    log.error("Can't parse incoming RF LCR payload data.  Payload may be corrupt or not schema compliant.", e);
+                    throw new RuntimeException("Error parsing RF LCR payload.", e);
                 }
                 
                 /** Handle point data */

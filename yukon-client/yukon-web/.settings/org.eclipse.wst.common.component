@@ -194,7 +194,7 @@
         <dependent-module archiveName="jloox30.jar" deploy-path="/WEB-INF/lib" handle="module:/classpath/lib/third-party/jloox30.jar">
             <dependency-type>uses</dependency-type>
         </dependent-module>
-        <dependent-module archiveName="exificient.jar" deploy-path="/WEB-INF/lib" handle="module:/classpath/lib/third-party/exificient.jar">
+        <dependent-module archiveName="nagasena.jar" deploy-path="/WEB-INF/lib" handle="module:/classpath/lib/third-party/nagasena.jar">
             <dependency-type>uses</dependency-type>
         </dependent-module>
         <dependent-module archiveName="xml-apis.jar" deploy-path="/WEB-INF/lib" handle="module:/classpath/lib/third-party/xml-apis.jar">

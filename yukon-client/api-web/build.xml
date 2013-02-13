@@ -44,7 +44,7 @@
         <include name="commons-pool-1.4.jar"/>
         <include name="dom4j-1.6.1.jar"/>
         <include name="ecs-1.4.2.jar"/>
-        <include name="exificient.jar"/>
+        <include name="nagasena.jar"/>
         <include name="geronimo-j2ee-management_1.1_spec-1.0.1.jar"/>
         <include name="geronimo-jms_1.1_spec-1.1.1.jar"/>
         <include name="guava-13.0.1.jar"/>
