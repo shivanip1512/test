@@ -6,7 +6,6 @@
 INCLPATHS+= \
 -I$(MACS)\include \
 -I$(COMMON)\include \
--I$(MCCMD)\include \
 -I$(SERVICE)\include \
 -I$(CPARMS)\include \
 -I$(DATABASE)\include \
@@ -22,7 +21,6 @@ INCLPATHS+= \
 .\include \
 ;$(COMMON)\include \
 ;$(MACS)\include \
-;$(MCCMD)\include \
 ;$(SCANNER)\include \
 ;$(PORTER)\include \
 ;$(CPARMS)\include \
@@ -43,14 +41,15 @@ $(COMPILEBASE)\lib\service.lib \
 $(COMPILEBASE)\lib\ctimsg.lib \
 $(COMPILEBASE)\lib\ctibase.lib \
 $(COMPILEBASE)\lib\ctidbsrc.lib \
-$(COMPILEBASE)\lib\ctiholidaydb.lib \
-$(COMPILEBASE)\lib\interp.lib
+$(COMPILEBASE)\lib\ctiholidaydb.lib
 
 
 MACS_TEST_OBJS= \
 test_main.obj \
+test_interp.obj \
 test_scheduletime.obj \
 test_decodeTextCmdFile.obj \
+test_mccmd.obj \
 
 MACSBASEOBJS= \
 clientconn.obj \
@@ -67,6 +66,8 @@ tbl_mcsched.obj \
 tbl_mcsimpsched.obj \
 decodeTextCmdFile.obj \
 mccmd.obj \
+interp.obj \
+interp_pool.obj \
 wpsc.obj \
 xcel.obj
 
@@ -118,6 +119,16 @@ deps:
 
 ######################################################################################
 #UPDATE#
+test_decodetextcmdfile.obj:	decodetextcmdfile.h logger.h dlldefs.h \
+		thread.h mutex.h guard.h utility.h ctitime.h queues.h \
+		cticalls.h os2_2w32.h types.h numstr.h CtiPCPtrQueue.h \
+		rwutil.h yukon.h ctidbgmem.h database_connection.h dbaccess.h \
+		dllbase.h dsm2.h cticonnect.h netports.h dsm2err.h words.h \
+		optional.h database_reader.h row_reader.h boost_time.h \
+		boostutil.h
+test_interp.obj:	interp.h critical_section.h dlldefs.h guard.h \
+		utility.h ctitime.h queues.h cticalls.h os2_2w32.h types.h \
+		numstr.h thread.h mutex.h
 test_scheduletime.obj:	ctitime.h dlldefs.h mc_scheduler.h mc.h \
 		logger.h thread.h mutex.h guard.h utility.h queues.h \
 		cticalls.h os2_2w32.h types.h numstr.h CtiPCPtrQueue.h \

@@ -22,12 +22,11 @@ unsigned gMacsDebugLevel = 0x00000000;
 
 
 CtiMCServer::CtiMCServer()
-: _debug(false),
-  _client_listener(MC_PORT),
+: _client_listener(MC_PORT),
   _db_update_thread(_schedule_manager),
   _scheduler(_schedule_manager),
   _file_interface(_schedule_manager),
-  _interp_pool(createEscapeCommandSet())
+  _interp_pool(Mccmd_Init, createEscapeCommandSet())
 {
 }
 
@@ -260,7 +259,7 @@ void CtiMCServer::interrupt(int id)
   user - the user who caused whatever that needs to be logged
   text - short description of what happened
 ----------------------------------------------------------------------------*/
-void CtiMCServer::logEvent(const string& user, const string& text) const
+void CtiMCServer::logEvent(const string& user, const string& text)
 {
     // build up the logevent tcl command
     // make sure to embed " in case there are spaces in
@@ -325,11 +324,6 @@ void CtiMCServer::executeCommand(const string& command, long target)
     _executing_commands.push_back(interp);
 }
 
-void CtiMCServer::setDebug(bool val)
-{
-    _debug = val;
-}
-
 
 bool CtiMCServer::init()
 {
@@ -390,11 +384,6 @@ bool CtiMCServer::init()
         /* start up the file interface */
         _file_interface.setQueue(&_main_queue);
         _file_interface.start();
-
-
-        /* load commands into the interpreter &
-            init connections */
-        _interp_pool.evalOnInit("load mccmd");
 
         /* start up connections to other services */
         CtiInterpreter* interp = _interp_pool.acquireInterpreter();
@@ -1313,7 +1302,7 @@ bool CtiMCServer::isToday(const CtiTime& t) const
     return ( CtiDate(t) == CtiDate::now() );
 }
 
-unsigned long CtiMCServer::secondsToNextMinute() const
+unsigned long CtiMCServer::secondsToNextMinute()
 {
     struct tm* b_time;
 
@@ -1322,7 +1311,7 @@ unsigned long CtiMCServer::secondsToNextMinute() const
     return (60 - b_time->tm_sec);
 }
 
-unsigned long CtiMCServer::secondsToTime(const CtiTime& t) const
+unsigned long CtiMCServer::secondsToTime(const CtiTime& t)
 {
     unsigned long t_secs = t.seconds();
     unsigned long now_secs = CtiTime::now().seconds();
@@ -1356,7 +1345,7 @@ void CtiMCServer::dumpRunningScripts()
   user - the user who caused whatever that needs to be logged
   text - short description of what happened
 ----------------------------------------------------------------------------*/
-void CtiMCServer::sendDBChange(const int& paoid, const string& user) const
+void CtiMCServer::sendDBChange(const int& paoid, const string& user)
 {
     // build up the SendDBChange tcl command
     // make sure to embed " in case there are spaces in

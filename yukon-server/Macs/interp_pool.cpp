@@ -2,10 +2,13 @@
 
 #include "interp_pool.h"
 
+#include "logger.h"
+
 using namespace std;
 
-CtiInterpreterPool::CtiInterpreterPool(const std::set<std::string> commandsToEscape) :
-        _commandsToEscape(commandsToEscape)
+CtiInterpreterPool::CtiInterpreterPool(CtiInterpreter::InitFunction initFunction, const std::set<std::string> commandsToEscape) :
+    _initFunction(initFunction),
+    _commandsToEscape(commandsToEscape)
 {
 }
 
@@ -140,18 +143,6 @@ void CtiInterpreterPool::dumpPool()
 }
 
 /*----------------------------------------------------------------------------
-  evalOnInit
-
-  This string will be evaluated every time a new interpreter is initialized
-
-----------------------------------------------------------------------------*/
-void CtiInterpreterPool::evalOnInit(const string& cmd)
-{
-  CtiLockGuard< CtiMutex > guard(_mux);
-  _init_cmd = cmd;
-}
-
-/*----------------------------------------------------------------------------
   createInterpreter
 
   Creates and initializes a new CtiInterpreter
@@ -159,12 +150,8 @@ void CtiInterpreterPool::evalOnInit(const string& cmd)
 ----------------------------------------------------------------------------*/
 CtiInterpreter* CtiInterpreterPool::createInterpreter()
 {
-  CtiInterpreter* interp = new CtiInterpreter(_commandsToEscape);
+  CtiInterpreter* interp = new CtiInterpreter(_initFunction, _commandsToEscape);
   interp->start();
-  if(_init_cmd.length() > 0)
-  {
-    interp->evaluate(_init_cmd, true);
-  }
 
   return interp;
 }

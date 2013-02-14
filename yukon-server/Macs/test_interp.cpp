@@ -3,10 +3,15 @@
 
 #include "interp.h"
 
+int NoOp( Tcl_Interp * )
+{
+    return 0;
+}
+
 struct test_CtiInterpreter : CtiInterpreter
 {
     test_CtiInterpreter(std::set<std::string> commandsToEscape) :
-        CtiInterpreter(commandsToEscape)
+        CtiInterpreter(NoOp, commandsToEscape)
     {
     }
 
@@ -60,16 +65,23 @@ BOOST_AUTO_TEST_CASE( test_escapeQuotes )
         ("sawyer ate a burrito and exclaimed, \\\"Ole!\\\"\r\n"
          "Sayid ate macaroons and mumbled, \"Coconut.\"");
 
-    const std::vector<std::string> output = boost::assign::list_of
-        (interp.escapeQuotationMarks("jack said, \"Last week most of us were strangers.\""))
-        (interp.escapeQuotationMarks("locke said something about \\\"The Island.\\\""))
-        (interp.escapeQuotationMarks("Sawyer called her \"Freckles.\""))
-        (interp.escapeQuotationMarks("he caught kate reading his letter to \"Sawyer.\""))
-        (interp.escapeQuotationMarks("ben said, \"You have thin doors.\""))
-        (interp.escapeQuotationMarks("ben wondered about multiline commands.\n"
-                                     "locke said, \"My command is to escape.\""))
-        (interp.escapeQuotationMarks("sawyer ate a burrito and exclaimed, \"Ole!\"\r\n"
-                                     "Sayid ate macaroons and mumbled, \"Coconut.\""));
+    const std::vector<std::string> input = boost::assign::list_of
+        ("jack said, \"Last week most of us were strangers.\"")
+        ("locke said something about \\\"The Island.\\\"")
+        ("Sawyer called her \"Freckles.\"")
+        ("he caught kate reading his letter to \"Sawyer.\"")
+        ("ben said, \"You have thin doors.\"")
+        ("ben wondered about multiline commands.\n"
+         "locke said, \"My command is to escape.\"")
+        ("sawyer ate a burrito and exclaimed, \"Ole!\"\r\n"
+         "Sayid ate macaroons and mumbled, \"Coconut.\"");
+
+    std::vector<std::string> output;
+
+    for each( std::string inputString in input )
+    {
+        output.push_back(interp.escapeQuotationMarks(inputString));
+    }
 
     BOOST_CHECK_EQUAL_COLLECTIONS(expected.begin(), expected.end(), output.begin(), output.end());
 }

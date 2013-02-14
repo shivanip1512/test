@@ -1,12 +1,5 @@
 #pragma once
 
-#include <time.h>
-#include <deque>
-#include <set>
-#include <map>
-
-#include <rw/rwdate.h>
-
 #include "mc.h"
 #include "CParms.h"
 #include "thread.h"
@@ -25,6 +18,11 @@
 #include "mc_scheduler.h"
 #include "mc_fileint.h"
 
+#include <time.h>
+#include <deque>
+#include <set>
+#include <map>
+
 class CtiMCServer : public CtiThread
 {
 public:
@@ -35,10 +33,6 @@ public:
     // These funcs are overriden CtiThread funcs
     virtual void run();  // <-- MACS main loop
     virtual void interrupt(int id);
-
-    // set this to true to dump the schedule list
-    // and event queue at the top of each minute
-    void setDebug(bool val);
 
     void dumpRunningScripts();
 private:
@@ -71,9 +65,7 @@ private:
     CtiMCFileInterface _file_interface;
 
     // pool of interpreters to use
-    mutable CtiInterpreterPool _interp_pool;
-
-    bool _debug;
+    CtiInterpreterPool _interp_pool;
 
     bool init();
     bool deinit();
@@ -87,12 +79,12 @@ private:
     std::set<std::string> createEscapeCommandSet();
 
     // log an event with dispatch
-    void logEvent(const std::string& user, const std::string& text) const;
+    void logEvent(const std::string& user, const std::string& text);
 
     // execute a command on a tcl interpreter
     void executeCommand(const std::string& command, long target = 0);
 
-    void sendDBChange(const int& paoid, const std::string& user) const;
+    void sendDBChange(const int& paoid, const std::string& user);
 
     // start and stops scripts
     void executeScript(const CtiMCSchedule& sched);
@@ -113,6 +105,6 @@ private:
     CtiTime stripSeconds(const CtiTime& now) const;
     bool isToday(const CtiTime& now) const;
 
-    unsigned long secondsToNextMinute() const;
-    unsigned long secondsToTime(const CtiTime& t) const;
+    static unsigned long secondsToNextMinute();
+    static unsigned long secondsToTime(const CtiTime& t);
 };

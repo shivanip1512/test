@@ -1,20 +1,15 @@
 #pragma once
 
-#include <set>
-
-#include "logger.h"
-#include "guard.h"
-
 #include "interp.h"
 
-class IM_EX_INTERP CtiInterpreterPool
+#include <set>
+
+class CtiInterpreterPool
 {
 public:
 
-    CtiInterpreterPool(const std::set<std::string> commandsToEscape);
+    CtiInterpreterPool(CtiInterpreter::InitFunction initFunction, const std::set<std::string> commandsToEscape);
     virtual ~CtiInterpreterPool();
-
-    void evalOnInit(const std::string& command);
 
     CtiInterpreter* acquireInterpreter();
     void releaseInterpreter(CtiInterpreter* interp);
@@ -34,8 +29,8 @@ private:
 
     std::set< CtiInterpreter* > _available_interps;
     std::set< CtiInterpreter* > _active_interps;
-    
-    std::string _init_cmd;
+
+    CtiInterpreter::InitFunction _initFunction;
 
     CtiInterpreter* createInterpreter();
 };

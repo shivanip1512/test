@@ -20,11 +20,10 @@ CtiCriticalSection CtiInterpreter::_mutex;
     Creates a Tcl interpreter, loads the MACS package into the interpreter
     and sets the temporary file name used to obtain results
 ---------------------------------------------------------------------------*/
-CtiInterpreter::CtiInterpreter(std::set<string> macsCommands)
-: _isevaluating(false), _dostop(false), _block(false), _eval_barrier(2), _interp(NULL), preEvalFunction(NULL), postEvalFunction(NULL), _scheduleId(0), _macsCommands(macsCommands)
+CtiInterpreter::CtiInterpreter(InitFunction initFunction, std::set<string> macsCommands)
+: _initFunction(initFunction), _isevaluating(false), _dostop(false), _block(false), _eval_barrier(2), _interp(NULL), preEvalFunction(NULL), postEvalFunction(NULL), _scheduleId(0), _macsCommands(macsCommands)
 {
     set( CtiInterpreter::EVALUATE, false);
-    set( CtiInterpreter::EVALUATE_FILE, false );
 }
 
 /*---------------------------------------------------------------------------
@@ -112,32 +111,6 @@ bool CtiInterpreter::evaluateRaw(const string& command, bool block, void (*preEv
     return true;
 }
 
-bool CtiInterpreter::evaluateFile(const string& file, bool block )
-{
-    //Hack to handle the condition that the thread hasn't started up yet
-    //but evaluate has been called
-
-    while( isSet( CtiThread::STARTING ) ||
-          !isSet( CtiInterpreter::WAITING ) )
-
-    {
-        Sleep(200);
-    }
-
-    {
-        _isevaluating = true;
-        _evalstring = escapeQuotationMarks(file);
-        _block = block;
-
-        interrupt( CtiInterpreter::EVALUATE_FILE );
-
-        if( block )
-            _eval_barrier.wait();
-    }
-
-    return true;
-}
-
 void CtiInterpreter::setScheduleId(long schedId)
 {
     _scheduleId = schedId;
@@ -194,6 +167,8 @@ void CtiInterpreter::run()
     {
         _interp = Tcl_CreateInterp();
 
+        _initFunction(_interp);
+
         Tcl_CreateEventSource( &CtiInterpreter::event_setup_proc, &CtiInterpreter::event_check_proc, this );
 
         for ( ; ; )
@@ -211,7 +186,7 @@ void CtiInterpreter::run()
                 {
                     break;
                 }
-                else
+
                 if( isSet( CtiInterpreter::EVALUATE ) )
                 {
                     if( preEvalFunction != NULL)
@@ -246,26 +221,8 @@ void CtiInterpreter::run()
                        }
                     }
                 }
-                else
-                if( isSet( CtiInterpreter::EVALUATE_FILE ) )
-                {
-                    int r = Tcl_EvalFile( _interp, (char*) _evalstring.c_str() );
-                    if(r != 0)
-                    {
-                        char* result = Tcl_GetStringResult(_interp);
-                        CtiLockGuard< CtiLogger > guard(dout);
-
-                        char* err = Tcl_GetVar(_interp, "errorInfo", 0 );
-                        if( err != NULL )
-                        {
-                            dout << CtiTime() << " [" << rwThreadId() << "] INTERPRETER ERROR: " << endl;
-                            dout << CtiTime() << " " << err << endl;
-                        }
-                    }
-                }
 
                 set( CtiInterpreter::EVALUATE, false );
-                set( CtiInterpreter::EVALUATE_FILE, false );
                 _isevaluating = false;
             }
 
@@ -337,7 +294,6 @@ void CtiInterpreter::event_check_proc( ClientData clientData, int flags )
 ---------------------------------------------------------------------------*/
 int CtiInterpreter::event_proc(Tcl_Event* evtPtr, int flags )
 {
-    //CtiLockGuard<CtiCriticalSection> guard(_mutex);
     return 1;
 }
 

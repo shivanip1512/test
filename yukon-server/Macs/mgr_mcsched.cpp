@@ -1,16 +1,3 @@
-/*-----------------------------------------------------------------------------*
-*
-* File:   mgr_mcsched
-*
-* Date:   7/19/2001
-*
-* PVCS KEYWORDS:
-* ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/MACS/mgr_mcsched.cpp-arc  $
-* REVISION     :  $Revision: 1.15.24.1 $
-* DATE         :  $Date: 2008/11/21 20:56:59 $
-*
-* Copyright (c) 1999, 2000, 2001 Cannon Technologies Inc. All rights reserved.
-*-----------------------------------------------------------------------------*/
 #include "precompiled.h"
 
 #include <algorithm>
@@ -21,38 +8,6 @@
 #include "database_connection.h"
 #include "database_reader.h"
 using namespace std;
-
-ostream& operator<<( ostream& ostrm, CtiMCScheduleManager& mgr )
-{
-    CtiMCSchedule *sched = NULL;
-    try
-    {
-        CtiLockGuard<CtiMutex> guard(mgr.getMux() );
-
-        ostrm << " " << mgr.getMap().size() << " schedules are loaded." << endl;
-
-        CtiMCScheduleManager::MapIterator itr = mgr.getMap().begin();
-
-        for( ; itr != mgr.getMap().end() ; ++itr)
-        {
-            sched = (*itr).second;
-
-            {
-                CtiLockGuard<CtiMutex> sched_guard(sched->getMux());
-                ostrm << CtiTime() << endl << *sched << endl;
-            }
-        }
-    }
-    catch(RWExternalErr e )
-    {
-        CtiLockGuard<CtiLogger> guard(dout);
-        ostrm <<      CtiTime()
-        <<      " operator<<(ostream&,const CtiMCScheduleManager mgr) - "
-        <<      e.why()
-        <<      endl;
-    }
-    return ostrm;
-}
 
 
 bool CtiMCScheduleManager::refreshAllSchedules()

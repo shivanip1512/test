@@ -43,6 +43,9 @@
 #include <rw/collstr.h>
 #include <rw/thr/thrutil.h>
 
+#include <boost/algorithm/string.hpp>
+#include <boost/range.hpp>
+
 using std::string;
 using std::endl;
 using std::vector;
@@ -74,9 +77,6 @@ CtiConnection* VanGoghConnection = 0;
 CtiConnection* NotificationConnection = 0;
 
 RWThread MessageThr;
-
-// Seconds from 1970, updated every time we hear from porter
-CtiTime gLastReturnMessageReceived(0UL);
 
 // Used to distinguish unique requests/responses to/from pil
 unsigned short gUserMessageID = 0;
@@ -140,8 +140,6 @@ void _MessageThrFunc()
 
                 if( in->isA() == MSG_PCRETURN )
                 {
-                    // update global message received timestamp, this is not used at the moment
-                    gLastReturnMessageReceived = gLastReturnMessageReceived.now();
                     msgid =((CtiReturnMsg *)in)->UserMessageId();
                 }
                 else if( in->isA() == MSG_QUEUEDATA )
@@ -215,15 +213,11 @@ void _MessageThrFunc()
     }
 }
 
-void AppendToString(string& str, int argc, char* argv[])
+string BuildCommandString(int argc, const char* argv[])
 {
-    str += " ";
+    std::vector<std::string> args(argv, argv + argc);
 
-    for( int i = 0; i < argc; i++ )
-    {
-        str += argv[i];
-        str += " ";
-    }
+    return boost::algorithm::join(args, " ");
 }
 
 void DumpReturnMessage(CtiReturnMsg& msg)
@@ -580,9 +574,6 @@ int Mccmd_Init(Tcl_Interp* interp)
 
     Tcl_EvalFile(interp, (char*) init_script.c_str() );
 
-    /* declare that we are implementing the MCCmd package so that scripts that have
-    "package require McCmd" can load McCmd automatically. */
-    Tcl_PkgProvide(interp, "mccmd", "1.0");
     return TCL_OK;
 }
 
@@ -621,102 +612,88 @@ int Exit(ClientData clientData, Tcl_Interp* interp, int argc, char* argv[])
 
 int Command(ClientData clientdata, Tcl_Interp* interp, int argc, char* argv[])
 {
-    string cmd;
-    AppendToString(cmd, argc, argv);
+    const string cmd = BuildCommandString(argc, argv);
 
     return DoTwoWayRequest(interp, cmd);
 }
 
 int GetValue(ClientData clientData, Tcl_Interp* interp, int argc, char* argv[])
 {
-    string cmd;
-    AppendToString(cmd, argc, argv);
+    const string cmd = BuildCommandString(argc, argv);
 
     return DoTwoWayRequest(interp, cmd);
 }
 
 int PutValue(ClientData clientData, Tcl_Interp* interp, int argc, char* argv[])
 {
-    string cmd;
-    AppendToString(cmd, argc, argv);
+    const string cmd = BuildCommandString(argc, argv);
+
     return DoOneWayRequest(interp, cmd);
 }
 
 int GetStatus(ClientData clientData, Tcl_Interp* interp, int argc, char* argv[])
 {
-    string cmd;
-    AppendToString(cmd, argc, argv);
+    const string cmd = BuildCommandString(argc, argv);
+
     return DoTwoWayRequest(interp, cmd);
 }
 
 int PutStatus(ClientData clientData, Tcl_Interp* interp, int argc, char* argv[])
 {
-    string cmd;
-    AppendToString(cmd, argc, argv);
+    const string cmd = BuildCommandString(argc, argv);
+
     return DoOneWayRequest(interp, cmd);
 }
 
 int GetConfig(ClientData clientData, Tcl_Interp* interp, int argc, char* argv[])
 {
-    string cmd;
-    AppendToString(cmd, argc, argv);
+    const string cmd = BuildCommandString(argc, argv);
+
     return DoTwoWayRequest(interp, cmd);
 }
 
 int PutConfig(ClientData clientData, Tcl_Interp* interp, int argc, char* argv[])
 {
-    string cmd;
-    AppendToString(cmd, argc, argv);
+    const string cmd = BuildCommandString(argc, argv);
 
     return DoOneWayRequest(interp, cmd);
 }
 
 int Loop(ClientData clientData, Tcl_Interp* interp, int argc, char* argv[])
 {
-    string cmd;
-    AppendToString(cmd, argc, argv);
+    const string cmd = BuildCommandString(argc, argv);
+
     return DoOneWayRequest(interp, cmd);
 }
 
 int Control(ClientData clientData, Tcl_Interp* interp, int argc, char* argv[])
 {
-    string cmd;
-    AppendToString(cmd, argc, argv);
+    const string cmd = BuildCommandString(argc, argv);
+
     return DoOneWayRequest(interp, cmd);
 }
 
 int Scan(ClientData clientData, Tcl_Interp* interp, int argc, char* argv[])
 {
-    string cmd;
-    AppendToString(cmd, argc, argv);
+    const string cmd = BuildCommandString(argc, argv);
+
     return DoOneWayRequest(interp, cmd);
 }
 
 int Pil(ClientData clientData, Tcl_Interp* interp, int argc, char* argv[])
 {
-    string cmd;
-    string firsttok;
-    AppendToString(cmd, argc, argv);
-
-    Boost_char_tokenizer optoken(cmd);
-
-    if( optoken.begin() != optoken.end() )
-    {
-        firsttok = *optoken.begin();
-    }
-
-    if(ciStringEqual(firsttok,"pil"))
-    {   // Hack slash rip. CGP 11/07/2002  White rabbit entry point.
-        cmd.replace((size_t)0, (size_t)4, "");    // erase the existence of "pil "
-    }
-    else
+    if( argc <= 1 )
     {
         WriteOutput("Usage: pil command cmd_params");
         return TCL_ERROR;
     }
 
-    return DoOneWayRequest(interp, cmd);
-}
+    //  trim off "pil" - this is the way to pass arbitrary commands to Porter that aren't explicitly handled by MACS
+    std::vector<std::string> args(argv + 1, argv + argc);
+
+    string cmd = boost::algorithm::join(args, " ");
+
+    return DoOneWayRequest(interp, cmd);}
 
 int mcu8100(ClientData clientData, Tcl_Interp* interp, int argc, char* argv[])
 {
@@ -1461,7 +1438,6 @@ int Select(ClientData clientData, Tcl_Interp* interp, int argc, char* argv[])
     if( argc == 1 )
     {
         string selection = Tcl_GetVar(interp, SelectedVariable, 0 );
-        //GetSelected(interp,selection);
 
         string out("current selection: ");
         out += selection;
@@ -1470,11 +1446,10 @@ int Select(ClientData clientData, Tcl_Interp* interp, int argc, char* argv[])
     }
     else
     {
-        string cmd;
-        AppendToString(cmd, argc, argv);
+        //  create a "select deviceid 8"-style string to append to the MACS command
+        string cmd = BuildCommandString(argc, argv);
 
         Tcl_SetVar(interp, SelectedVariable, (char*) cmd.c_str(), 0 );
-        //SetSelected(interp,cmd);
     }
     return TCL_OK;
 }
@@ -1560,7 +1535,7 @@ int getYukonBaseDir(ClientData clientData, Tcl_Interp* interp, int argc, char* a
   return TCL_OK;
 }
 
-int DoOneWayRequest(Tcl_Interp* interp, string& cmd_line)
+int DoOneWayRequest(Tcl_Interp* interp, const string &cmd_line)
 {
     char* p;
     long timeout = DEFAULT_ONE_WAY_TIMEOUT;
@@ -1578,7 +1553,7 @@ int DoOneWayRequest(Tcl_Interp* interp, string& cmd_line)
     return DoRequest(interp,cmd_line,timeout,false);
 }
 
-int DoTwoWayRequest(Tcl_Interp* interp, string& cmd_line)
+int DoTwoWayRequest(Tcl_Interp* interp, const string &cmd_line)
 {
     char* p;
     long timeout = DEFAULT_TWO_WAY_TIMEOUT;
@@ -1643,7 +1618,7 @@ static bool isBreakStatus( int status )
     }
 }
 
-static int DoRequest(Tcl_Interp* interp, string& cmd_line, long timeout, bool two_way)
+static int DoRequest(Tcl_Interp* interp, const string &cmd_line, long timeout, bool two_way)
 {
     bool interrupted = false;
     bool timed_out = false;
@@ -1652,8 +1627,6 @@ static int DoRequest(Tcl_Interp* interp, string& cmd_line, long timeout, bool tw
     long requestLogId = 0;
     unsigned long porterCount = 0;
     CtiTime lastReturnMessageReceived;
-
-    RWSet req_set;
 
     //Create a CountedPCPtrQueue and place it into the InQueueStore
     //Be sure to remove it before exiting
@@ -1689,19 +1662,17 @@ static int DoRequest(Tcl_Interp* interp, string& cmd_line, long timeout, bool tw
         }
     }
 
-    BuildRequestSet(interp, cmd_line,req_set);
+    std::vector<CtiRequestMsg *> requests = BuildRequestSet(interp, cmd_line);
 
     // Nothing to do get outta here
-    if( req_set.entries() == 0 )
+    if( requests.empty() )
         return TCL_OK;
 
     //build up a multi and write out all of the requests
     CtiMultiMsg* multi_req = new CtiMultiMsg();
 
-    RWSetIterator iter(req_set);
-    for( ; iter(); )
+    for each( CtiRequestMsg *req in requests )
     {
-        CtiRequestMsg* req = (CtiRequestMsg*) iter.key();
         req->setUserMessageId(msgid);
         req->setGroupMessageId(msgid);
 
@@ -2020,38 +1991,6 @@ static int DoRequest(Tcl_Interp* interp, string& cmd_line, long timeout, bool tw
                 TCL_ERROR : TCL_OK);
 }
 
-/***
-    Handles the sorting of an incoming message form PIL
-    This appears to be Deprecated and unused.
-****/
-void HandleMessage(RWCollectable* msg,
-           PILReturnMap& good_map,
-           PILReturnMap& bad_map,
-           PILReturnMap& device_map,
-           std::vector<string>& bad_names,
-           std::deque<CtiTableMeterReadLog>& resultQueue )
-{
-    if( msg->isA() == MSG_PCRETURN )
-    {
-        HandleReturnMessage( (CtiReturnMsg*) msg, good_map, bad_map, device_map, bad_names, resultQueue);
-    }
-    if( msg->isA() == MSG_MULTI )
-    {
-        CtiMultiMsg* multi_msg = (CtiMultiMsg*) msg;
-
-        for( unsigned i = 0; i < multi_msg->getData( ).size( ); i++ )
-        {
-            HandleMessage( multi_msg->getData()[i], good_map, bad_map, device_map, bad_names, resultQueue);
-        }
-    }
-    else
-    {
-        string warn("received an unkown message with class id: ");
-        warn += CtiNumStr(msg->isA());
-        WriteOutput(warn.c_str());
-    }
-}
-
 void HandleReturnMessage(CtiReturnMsg* msg,
              PILReturnMap& good_map,
              PILReturnMap& bad_map,
@@ -2279,9 +2218,10 @@ static long GetDeviceID(const string& name)
   return id;
 }
 
-void BuildRequestSet(Tcl_Interp* interp, string& cmd_line_b, RWSet& req_set)
+std::vector<CtiRequestMsg *> BuildRequestSet(Tcl_Interp* interp, CtiString cmd_line)
 {
-    CtiString cmd_line(cmd_line_b);
+    std::vector<CtiRequestMsg *> req_set;
+
     unsigned int * ptr;
     if( cmd_line.find("select")==string::npos )
     {
@@ -2367,7 +2307,7 @@ void BuildRequestSet(Tcl_Interp* interp, string& cmd_line_b, RWSet& req_set)
 
                 msg->setCommandString(cmd);
                 msg->setMessagePriority(priority);
-                req_set.insert(msg);
+                req_set.push_back(msg);
             }
         }
 
@@ -2382,7 +2322,7 @@ void BuildRequestSet(Tcl_Interp* interp, string& cmd_line_b, RWSet& req_set)
         msg->setDeviceId(0);
         msg->setCommandString(cmd_line);
         msg->setMessagePriority(priority);
-        req_set.insert(msg);
+        req_set.push_back(msg);
     }
     else
     if( cmd_line.index(select_regex, end_index) != string::npos )
@@ -2408,9 +2348,11 @@ void BuildRequestSet(Tcl_Interp* interp, string& cmd_line_b, RWSet& req_set)
         msg->setDeviceId(0);
         msg->setCommandString(cmd_line);
         msg->setMessagePriority(priority);
-        req_set.insert(msg);
+        req_set.push_back(msg);
     }
     delete end_index;
+
+    return req_set;
 }
 
 /*

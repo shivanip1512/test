@@ -23,6 +23,7 @@
 #include "ctdpcptrq.h"
 #include "dllBase.h"
 #include "tbl_meterreadlog.h"
+#include "ctistring.h"
 
 #define DEFAULT_ONE_WAY_TIMEOUT 0
 #define DEFAULT_TWO_WAY_TIMEOUT 900
@@ -39,8 +40,6 @@
 #define MCCMD_DEBUG_INIT       0x00000001
 #define MCCMD_DEBUG_PILREQUEST 0x00000002
 
-extern unsigned gMccmdDebugLevel;
-
 typedef int (*MacsCommandPtr)(ClientData, Tcl_Interp*, int, char*[]);
 
 typedef std::map< std::string, MacsCommandPtr > TclCommandMap;
@@ -49,10 +48,6 @@ typedef TclCommandMap::value_type TclCommandPair;
 extern const TclCommandMap pilCommands;
 extern const TclCommandMap caseSensitiveTclCommands;
 extern const TclCommandMap tclCommands;
-
-#ifdef __cplusplus
-extern "C" {
-#endif
 
 // Store for the data that we need out of the return message.
 struct MACS_Return_Data
@@ -138,10 +133,10 @@ static int CTICreateProcess(ClientData clientData, Tcl_Interp* interp, int argc,
 
 //MORE............
 
-static int DoOneWayRequest(Tcl_Interp* interp, std::string& cmd_line);
-static int DoTwoWayRequest(Tcl_Interp* interp, std::string& cmd_line);
+static int DoOneWayRequest(Tcl_Interp* interp, const std::string &cmd_line);
+static int DoTwoWayRequest(Tcl_Interp* interp, const std::string &cmd_line);
 
-static int DoRequest(Tcl_Interp* interp, std::string& cmd_line, long timeout, bool two_way);
+static int DoRequest(Tcl_Interp* interp, const std::string &cmd_line, long timeout, bool two_way);
 
 static void HandleReturnMessage(CtiReturnMsg* msg,
                 PILReturnMap& good_map,
@@ -171,7 +166,7 @@ static long GetDeviceID(const std::string& name);
    to remove the original select statement */
 static void StripSelectListCmd(std::string& cmd, RWSet& sel_set);
 
-static void BuildRequestSet(Tcl_Interp* interp, std::string& cmd, RWSet& req_set);
+static std::vector<CtiRequestMsg *> BuildRequestSet(Tcl_Interp* interp, CtiString cmd);
 /* Nothing below here should be called from within this dll unless you have a good
    pretty good reason */
 
@@ -199,7 +194,7 @@ static RWTValHashDictionary<RWThreadId, boost::shared_ptr< CtiCountedPCPtrQueue<
    PIL for incoming messages and places them in the appropriate queue */
 static void _MessageThrFunc();
 
-void AppendToString(std::string& str, int argc, char* argv[]);
+std::string BuildCommandString(int argc, char* argv[]);
 void DumpReturnMessage(CtiReturnMsg& msg);
 void DumpRequestMessage(CtiRequestMsg& msg);
 
@@ -207,6 +202,3 @@ void DumpRequestMessage(CtiRequestMsg& msg);
    queue stored for the current thread, if there is one */
 void WriteOutput(const char* output);
 
-#ifdef __cplusplus
-}
-#endif

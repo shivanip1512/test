@@ -13,7 +13,6 @@ build_dirs = \
         porter \
         scanner \
         simulator \
-        interp \
         logic \
         macs \
         fdr \

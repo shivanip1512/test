@@ -9,7 +9,7 @@
 
 using std::string;
 
-CtiTblDeviceReadRequestLog::CtiTblDeviceReadRequestLog( long requestLogId, long requestId, string& cmd_line, CtiTime& start, CtiTime& stop, long jobId) :
+CtiTblDeviceReadRequestLog::CtiTblDeviceReadRequestLog( long requestLogId, long requestId, const string &cmd_line, CtiTime& start, CtiTime& stop, long jobId) :
 _requestLogId(requestLogId),
 _requestId(requestId),
 _command(cmd_line),

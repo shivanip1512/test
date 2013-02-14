@@ -85,22 +85,6 @@
    #define IM_EX_MSG __declspec(dllimport)
 #endif
 
-#ifdef _DLL_INTERP
-   #define IM_EX_INTERP __declspec(dllexport)
-#elif defined( STI_UNDERSTAND )
-   #define IM_EX_INTERP
-#else
-   #define IM_EX_INTERP __declspec(dllimport)
-#endif
-
-#ifdef _DLL_MCCMD
-   #define IM_EX_MCCMD __declspec(dllexport)
-#elif defined( STI_UNDERSTAND )
-   #define IM_EX_MCCMD
-#else
-   #define IM_EX_MCCMD __declspec(dllimport)
-#endif
-
 #ifdef _DLL_C_CPARM
    #define IM_EX_C_CPARM   __declspec(dllexport)
 #elif defined( STI_UNDERSTAND )

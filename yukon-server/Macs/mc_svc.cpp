@@ -122,13 +122,6 @@ void CtiMCService::Run()
 
     CtiMCScript::setScriptPath(gConfigParms.getValueAsPath("CTL_SCRIPTS_DIR", "server\\macsscripts"));
 
-    // sets a simple debug level if MACS_DEBUG exists
-    bool macs_debug = false;
-    if( gConfigParms.isOpt("MACS_DEBUG") )
-    {
-        macs_debug = true;
-    }
-
     // Initialize the global logger
     dout.setOwnerInfo(CompileInfo);
     dout.setOutputFile("macs");
@@ -169,7 +162,6 @@ void CtiMCService::Run()
     ThreadMonitor.start();
 
     _mc_server = new CtiMCServer();
-    _mc_server->setDebug(macs_debug);
     _mc_server->start();
 
     //Wait for the shutdown event to become signalled

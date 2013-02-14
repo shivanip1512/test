@@ -45,4 +45,3 @@ private:
     long nextScheduleID();
 };
 
-std::ostream& operator<<( std::ostream& ostrm, CtiMCScheduleManager& mgr );

@@ -1,34 +1,26 @@
 #pragma once
 
-#include <rw/thr/thread.h>
-#include <rw/thr/thrfunc.h>
-#include <rw/thr/recursiv.h>
-#include <rw/thr/barrier.h>
-
-#include <tcl.h>
-
-#include "mutex.h"
-#include "ctdpcptrq.h"
-#include "logger.h"
 #include "critical_section.h"
 #include "guard.h"
 #include "thread.h"
 
-#include "boostutil.h"
+#include <tcl.h>
+
+#include <rw/thr/barrier.h>
 
 #include <set>
 
-class IM_EX_INTERP CtiInterpreter : public CtiThread
+class CtiInterpreter : public CtiThread
 {
-
 public:
 
-    CtiInterpreter(std::set<std::string> macsCommands);
+    typedef int (&InitFunction)(Tcl_Interp *);
+
+    CtiInterpreter(InitFunction initFunction, std::set<std::string> macsCommands);
     virtual ~CtiInterpreter();
 
     bool evaluateRaw(const std::string& command, bool block = true, void (*preEval)(CtiInterpreter* interp) = NULL, void (*postEval)(CtiInterpreter* interp) = NULL);
     bool evaluate(const std::string& command, bool block = true, void (*preEval)(CtiInterpreter* interp) = NULL, void (*postEval)(CtiInterpreter* interp) = NULL);
-    bool evaluateFile(const std::string& file, bool block = true );
     void setScheduleId(long schedId);
 
     long getScheduleId();
@@ -47,11 +39,11 @@ protected:
 
 private:
 
-    // Two additional thread states
+    InitFunction _initFunction;
+
     enum
     {
         EVALUATE = CtiThread::LAST,
-        EVALUATE_FILE,
         WAITING
     };
 
@@ -71,8 +63,6 @@ private:
 
     static CtiCriticalSection _mutex;
 
-    static const CHAR _loadcommand[];
-
     //callback functions for tcl interpreter
 
     //called before an event is deleted
@@ -87,5 +77,4 @@ private:
 
     //the actual event handler
     static int event_proc(Tcl_Event* evtPtr, int flags );
-
 };

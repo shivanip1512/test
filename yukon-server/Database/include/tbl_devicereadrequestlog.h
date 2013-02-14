@@ -29,7 +29,7 @@ public:
 
     CtiTblDeviceReadRequestLog( long requestLogId,
                                 long requestId,
-                                std::string& cmd_line,
+                                const std::string &cmd_line,
                                 CtiTime& start,
                                 CtiTime& end,
                                 long jobId);
