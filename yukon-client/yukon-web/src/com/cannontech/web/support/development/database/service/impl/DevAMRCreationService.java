@@ -87,7 +87,7 @@ public class DevAMRCreationService extends DevObjectCreationBase {
         // if this comm channel exists already, then return
         LiteYukonPAObject existingCommChannel = paoDao.findUnique(commChannel.getName(), PaoCategory.PORT, PaoClass.PORT);
         if (existingCommChannel != null) {
-            log.info("Comm Channel with name " + commChannel.getName() + " already exists. Skipping.");
+            log.debug("Comm Channel with name " + commChannel.getName() + " already exists. Skipping.");
             return;
         }
 
@@ -119,7 +119,7 @@ public class DevAMRCreationService extends DevObjectCreationBase {
         terminalServerSharedPort.setPortName(commChannel.getName());
 
         dbPersistentDao.performDBChange(terminalServerSharedPort, TransactionType.INSERT);
-        log.info("Comm Channel with name " + commChannel.getName() + " created.");
+        log.debug("Comm Channel with name " + commChannel.getName() + " created.");
     }
 
     private void createAllCCUs(DevAMR devAmr) {
@@ -142,7 +142,7 @@ public class DevAMRCreationService extends DevObjectCreationBase {
                                                PaoClass.TRANSMITTER.getPaoClassId(),
                                                PaoType.CCU711.getDeviceTypeId());
             if (liteYukonPAObject != null) {
-                log.info("CCU with name " + devCCU.getName() + " already exists. Skipping.");
+                log.debug("CCU with name " + devCCU.getName() + " already exists. Skipping.");
                 return;
             }
         } catch (NotFoundException e) {
@@ -194,7 +194,7 @@ public class DevAMRCreationService extends DevObjectCreationBase {
         newVal.addDBPersistent(route);
 
         dbPersistentDao.performDBChange(newVal, TransactionType.INSERT);
-        log.info("CCU with name " + devCCU.getName() + " created.");
+        log.debug("CCU with name " + devCCU.getName() + " created.");
     }
 
     private List<YukonPao> createAllMeters(DevAMR devAMR) {
@@ -251,7 +251,7 @@ public class DevAMRCreationService extends DevObjectCreationBase {
     private boolean canCreateMeter(DevAMR devAMR, String name, Integer address) {
 //        checkIsCancelled();
         if (address != null && address >= devAMR.getAddressRangeMax()) {
-            log.info("Meter with name " + name + " has address greater than max address range of "
+            log.debug("Meter with name " + name + " has address greater than max address range of "
                     + devAMR.getAddressRangeMax() + " . Skipping.");
             devAMR.incrementFailureCount();
             return false;
@@ -260,7 +260,7 @@ public class DevAMRCreationService extends DevObjectCreationBase {
             // if this device exists already, then return
             SimpleDevice existingMeter = deviceDao.findYukonDeviceObjectByName(name);
             if (existingMeter != null) {
-                log.info("Meter with name " + name + " already exists. Skipping.");
+                log.debug("Meter with name " + name + " already exists. Skipping.");
                 devAMR.incrementFailureCount();
                 return false;
             }
@@ -280,7 +280,7 @@ public class DevAMRCreationService extends DevObjectCreationBase {
         YukonDevice yukonDevice = deviceCreationService.createCarrierDeviceByDeviceType(type.getDeviceTypeId(), name, address, routeId, createPoints);
         deviceDao.changeMeterNumber(yukonDevice, Integer.toString(address));
         devAMR.incrementSuccessCount();
-        log.info("Plc Meter with name " + name + " created.");
+        log.debug("Plc Meter with name " + name + " created.");
         return yukonDevice;
     }
     
@@ -289,7 +289,7 @@ public class DevAMRCreationService extends DevObjectCreationBase {
         
         YukonDevice yukonDevice = deviceCreationService.createRfnDeviceByDeviceType(type, name, model, manufacturer, serialNumber, createPoints);
         devAMR.incrementSuccessCount();
-        log.info("Rfn Meter with name " + name + " created.");
+        log.debug("Rfn Meter with name " + name + " created.");
         return yukonDevice;
     }
     

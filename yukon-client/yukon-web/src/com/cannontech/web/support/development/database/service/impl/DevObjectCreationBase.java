@@ -92,7 +92,7 @@ public abstract class DevObjectCreationBase {
     protected void setRoleProperty(LiteYukonGroup group, YukonRoleProperty yukonRoleProperty, String newVal)  {
 
         roleDao.updateGroupRoleProperty(group,yukonRoleProperty.getRole().getRoleId(),yukonRoleProperty.getPropertyId(),newVal);
-        log.info("Group " + group.getGroupName() + " YukonRole " + yukonRoleProperty.getRole().name() + " and YukonRoleProperty " + yukonRoleProperty.name() + " set to " + newVal);
+        log.debug("Group " + group.getGroupName() + " YukonRole " + yukonRoleProperty.getRole().name() + " and YukonRoleProperty " + yukonRoleProperty.name() + " set to " + newVal);
     }
 
     protected void setRoleProperty(LiteYukonGroup group, YukonRoleProperty yukonRoleProperty, boolean newVal) {
@@ -101,7 +101,7 @@ public abstract class DevObjectCreationBase {
         valueMap.put(yukonRoleProperty, newVal);
         propertyValues.putAll(valueMap);
         rolePropertyEditorDao.save(propertyValues);
-        log.info("Group " + group.getGroupName() + " YukonRole " + yukonRoleProperty.getRole().name() + " and YukonRoleProperty " + yukonRoleProperty.name() + " set to " + newVal);
+        log.debug("Group " + group.getGroupName() + " YukonRole " + yukonRoleProperty.getRole().name() + " and YukonRoleProperty " + yukonRoleProperty.name() + " set to " + newVal);
     }
     
 }
