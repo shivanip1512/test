@@ -3256,7 +3256,7 @@ INT DoProcessInMessage(INT CommResult, CtiPortSPtr Port, INMESS *InMessage, OUTM
 
 Cti::Optional<repeater_info> findRepeaterInRouteByAddress( const int routeId, const int macroOffset, const unsigned echo_address )
 {
-    CtiRouteSPtr route = RouteManager.getEqual(routeId);
+    CtiRouteSPtr route = RouteManager.getRouteById(routeId);
 
     if( macroOffset > 0 )
     {

@@ -35,7 +35,7 @@ CtiRouteSPtr CtiDeviceBase::getRoute(LONG RteId) const
 
     if(_routeMgr != NULL)
     {
-        Rte = _routeMgr->getEqual(RteId);
+        Rte = _routeMgr->getRouteById(RteId);
     }
 
     return Rte;

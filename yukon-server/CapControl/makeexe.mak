@@ -1362,7 +1362,8 @@ mgr_paosched.obj:	precompiled.h mgr_paosched.h pao_schedule.h \
 		database_writer.h row_writer.h ccexecutor.h msg_signal.h \
 		ctdpcptrq.h ctitokenizer.h thread_monitor.h smartmap.h \
 		thread_register_data.h ctistring.h database_transaction.h \
-		ThreadStatusKeeper.h ExecutorFactory.h MsgVerifyBanks.h
+		ThreadStatusKeeper.h ExecutorFactory.h MsgVerifyBanks.h \
+		MsgVerifyInactiveBanks.h
 msgareas.obj:	precompiled.h MsgAreas.h MsgCapControlMessage.h \
 		message.h ctitime.h dlldefs.h ctidbgmem.h collectable.h \
 		rwutil.h yukon.h types.h database_connection.h dbaccess.h \

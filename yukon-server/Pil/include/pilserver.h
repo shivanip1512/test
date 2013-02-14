@@ -54,7 +54,7 @@ class IM_EX_CTIPIL CtiPILServer : public CtiServer
    CtiFIFOQueue< CtiOutMessage > _porterOMQueue;    // Queue for items to be sent to Porter!
    bool                          _broken;           // When the PILServer knows he's sick.
 
-   int  getDeviceGroupMembers( std::string groupname, std::vector<long> &paoids );
+   std::vector<long> getDeviceGroupMembers( std::string groupname ) const;
 
    void copyReturnMessageToResponseMonitorQueue(const CtiReturnMsg &returnMsg, void *connectionHandle);
 
@@ -96,7 +96,7 @@ public:
    void  schedulerThread();
    void  periodicActionThread();
 
-   INT analyzeWhiteRabbits(CtiRequestMsg& pReq, CtiCommandParser &parse, std::list< CtiRequestMsg* > & execList, std::list< CtiMessage* > & retList);
+   void analyzeWhiteRabbits(CtiRequestMsg& pReq, CtiCommandParser &parse, std::list< CtiRequestMsg* > & execList, std::list< CtiMessage* > & retList);
    INT analyzeAutoRole(CtiRequestMsg& Req, CtiCommandParser &parse, std::list< CtiRequestMsg* > & execList, std::list< CtiMessage* > & retList);
    INT analyzePointGroup(CtiRequestMsg& Req, CtiCommandParser &parse, std::list< CtiRequestMsg* > & execList, std::list< CtiMessage* > & retList);
 

@@ -744,7 +744,7 @@ INT VSend (VSTRUCT *VSt,
 
    default:
       /* get the route */
-      RouteRecord = RouteManager.getEqual(atol(Route));
+      RouteRecord = RouteManager.getRouteById(atol(Route));
 
       if(RouteRecord)
       {

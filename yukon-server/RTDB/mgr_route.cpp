@@ -438,7 +438,7 @@ void CtiRouteManager::RefreshVersacomRoutes(bool &rowFound, Cti::RowReader& rdr,
     }
 }
 
-CtiRouteManager::ptr_type CtiRouteManager::getEqual( LONG Rte )
+CtiRouteManager::ptr_type CtiRouteManager::getRouteById( LONG Rte )
 {
     ptr_type p;
     try
@@ -458,7 +458,7 @@ CtiRouteManager::ptr_type CtiRouteManager::getEqual( LONG Rte )
 
 
 
-CtiRouteManager::ptr_type CtiRouteManager::getEqualByName( string &rname )
+CtiRouteManager::ptr_type CtiRouteManager::getRouteByName( string rname )
 {
     ptr_type p;
     string tmpName;
@@ -693,7 +693,7 @@ void CtiRouteManager::refreshStaticPaoInfo(const Cti::Database::id_set &paoids)
                 rdr["paobjectid"]       >> tmp_paobjectid;
                 rdr["staticpaoinfoid"]  >> tmp_entryid;
 
-                route = getEqual(tmp_paobjectid);
+                route = getRouteById(tmp_paobjectid);
 
                 if( route )
                 {
@@ -773,7 +773,7 @@ void CtiRouteManager::refreshRouteEncryptionKeys( const Cti::Database::id_set & 
 
     for each ( long ID in paoids )
     {
-        CtiRouteManager::ptr_type route = getEqual( ID );
+        CtiRouteManager::ptr_type route = getRouteById( ID );
 
         if ( route )
         {
@@ -813,7 +813,7 @@ void CtiRouteManager::refreshRouteEncryptionKeys( const Cti::Database::id_set & 
             rdr[ "Name" ]       >> name;
             rdr[ "Value" ]      >> encryptedKey;
 
-            CtiRouteManager::ptr_type route = getEqual( paoId );
+            CtiRouteManager::ptr_type route = getRouteById( paoId );
 
             if ( route )
             {

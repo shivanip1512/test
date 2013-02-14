@@ -53,8 +53,8 @@ public:
     void DeleteList(void);
 
     void RefreshList(CtiRouteBase* (*Factory)(Cti::RowReader &) = RouteFactory, BOOL (*fn)(CtiRouteBase*,void*) = isARoute, void *d = NULL);
-    ptr_type getEqual( LONG rid );
-    ptr_type getEqualByName( std::string &rname );
+    ptr_type getRouteById( LONG rid );
+    ptr_type getRouteByName( std::string rname );
 
     spiterator begin();
     spiterator end();

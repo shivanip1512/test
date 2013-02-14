@@ -7,6 +7,7 @@
 #include "cms/connection.h"
 
 #include <boost/scoped_ptr.hpp>
+#include <boost/ptr_container/ptr_map.hpp>
 
 #include <queue>
 

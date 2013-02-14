@@ -224,7 +224,7 @@ void attachTransmitterDeviceToRoutes(CtiDeviceManager *DM, CtiRouteManager *RM)
 
                         for(int i = 0; i < pMac->getRouteList().length(); i++)
                         {
-                            CtiRouteSPtr pSingleRoute = RM->getEqual(pMac->getRouteList()[i].getSingleRouteID());
+                            CtiRouteSPtr pSingleRoute = RM->getRouteById(pMac->getRouteList()[i].getSingleRouteID());
                             pMac->getRoutePtrList().insert( pSingleRoute );
                         }
                     }

@@ -1,19 +1,5 @@
 #include "precompiled.h"
 
-#include <iomanip>
-#include <iostream>
-#include <vector>
-#include <boost/regex.hpp>
-#include <boost/bind.hpp>
-
-#include <rw/toolpro/winsock.h>
-#include <rw/thr/thrfunc.h>
-#include <rw/toolpro/socket.h>
-#include <rw/toolpro/neterr.h>
-#include <rw/toolpro/inetaddr.h>
-#include <rw/rwerr.h>
-#include <rw/thr/mutex.h>
-
 #include "os2_2w32.h"
 #include "cticalls.h"
 
@@ -55,6 +41,22 @@
 #include "PorterResponseMessage.h"
 
 #include "ctistring.h"
+
+#include <rw/toolpro/winsock.h>
+#include <rw/thr/thrfunc.h>
+#include <rw/toolpro/socket.h>
+#include <rw/toolpro/neterr.h>
+#include <rw/toolpro/inetaddr.h>
+#include <rw/rwerr.h>
+#include <rw/thr/mutex.h>
+
+#include <boost/regex.hpp>
+#include <boost/bind.hpp>
+#include <boost/algorithm/string.hpp>
+
+#include <iomanip>
+#include <iostream>
+#include <vector>
 
 using namespace std;
 
@@ -1519,101 +1521,76 @@ void CtiPILServer::schedulerThread()
     }
 }
 
-int CtiPILServer::getDeviceGroupMembers( string groupname, vector<long> &paoids )
+vector<long> CtiPILServer::getDeviceGroupMembers( string groupname ) const
 {
-    int deviceid;
+    vector<long> paoids;
 
-    if(DebugLevel & 0x00020000)
+    //  ensure the group name starts with '/'
+    if( ! groupname.empty() && groupname[0] == '/' )
     {
-        CtiLockGuard<CtiLogger> doubt_guard(dout);
-        dout << CtiTime() << " Loading group \"" << groupname << "\"" << endl;
-    }
+        vector<string> groupSegments;
 
-    vector< string > group_taxonomy;
-    string::size_type slashpos = 0;
+        boost::split(groupSegments, groupname, boost::is_any_of("/"));
 
-    while( (slashpos = groupname.find_last_of('/')) != string::npos )
-    {
-        //  substr will copy all available if length == string::npos
-        group_taxonomy.push_back(groupname.substr(slashpos + 1));
+        std::ostringstream sql;
 
-        //  erase everything after the slash
-        groupname.erase(slashpos);
-    }
+        sql << "SELECT DGM.yukonpaoid FROM DeviceGroupMember DGM";
 
-    std::stringstream ss;
+        string childTableAlias  = "DGM";
+        string childColumn      = "devicegroupid";
 
-    const string basicSQL = "SELECT DGM.yukonpaoid "
-                            "FROM DeviceGroupMember DGM";
-
-    unsigned group_size = group_taxonomy.size();
-
-    ss << basicSQL;
-
-    for(int i = group_size; i >= 0; i--)
-    {
-        ss << ", DeviceGroup GP" << i;
-    }
-
-    ss << " WHERE GP0.parentdevicegroupid IS NULL";
-
-    if(group_size)
-    {
-        ss << " AND GP" << group_size << ".devicegroupid = DGM.devicegroupid";
-    }
-    else
-    {
-        ss << " AND GP0.devicegroupid = DGM.devicegroupid";
-    }
-
-    while( !group_taxonomy.empty() )
-    {
-        ss << " AND GP" << group_size - 1 << ".devicegroupid = GP" << group_size << ".parentdevicegroupid AND ";
-        ss << "lower (GP" << group_size << ".groupname) = ";
-
-        const string str = group_taxonomy.front().c_str();
-
-        if(str.size() == 0)
+        //  Join to each table in the group heirarchy
+        for( int i = groupSegments.size() - 1; i >= 0; i-- )
         {
-                ss << "NULL";
-        }
-        else
-        {
-                ss << "'" << str << "'";
+            string parentTableAlias = "DG" + CtiNumStr(i);
+
+            sql << " JOIN DeviceGroup " << parentTableAlias << " ON " << parentTableAlias << ".devicegroupid = " << childTableAlias << "." << childColumn;
+
+            childTableAlias = parentTableAlias;
+            childColumn = "parentdevicegroupid";
         }
 
-        group_taxonomy.erase(group_taxonomy.begin());
+        //  Anchor the root group
+        sql << " WHERE DG0.parentdevicegroupid IS NULL";
 
-        group_size--;
-    }
-
-    Cti::Database::DatabaseConnection connection;
-    Cti::Database::DatabaseReader rdr(connection, ss.str());
-    rdr.execute();
-
-    if( DebugLevel & 0x00020000 || !rdr.isValid() )
-    {
-        string loggedSQLstring = rdr.asString();
+        //  Add the group name checks
+        for( int i = 0; i < groupSegments.size(); i++ )
         {
-            CtiLockGuard<CtiLogger> logger_guard(dout);
-            dout << loggedSQLstring << endl;
+            sql  << " AND lower(DG" << i << ".groupname) = ?";
+        }
+
+        Cti::Database::DatabaseConnection connection;
+        Cti::Database::DatabaseReader rdr(connection, sql.str());
+
+        //  Fill in the parameters
+        for each( const string &groupSegment in groupSegments )
+        {
+            rdr << groupSegment;
+        }
+
+        rdr.execute();
+
+        if( DebugLevel & 0x00020000 || !rdr.isValid() )
+        {
+            string loggedSQLstring = rdr.asString();
+            {
+                CtiLockGuard<CtiLogger> logger_guard(dout);
+                dout << loggedSQLstring << endl;
+            }
+        }
+
+        while( rdr() )
+        {
+            rdr[0] >> *(paoids.insert(paoids.end(), 0));
         }
     }
 
-    while( rdr() )
-    {
-        rdr[0] >> deviceid;
-
-        paoids.push_back(deviceid);
-    }
-
-    return rdr.isValid() ? 0 : 1;
+    return paoids;
 }
 
 
-INT CtiPILServer::analyzeWhiteRabbits(CtiRequestMsg& Req, CtiCommandParser &parse, list< CtiRequestMsg* > & execList, list< CtiMessage* > & retList)
+void CtiPILServer::analyzeWhiteRabbits(CtiRequestMsg& Req, CtiCommandParser &parse, list< CtiRequestMsg* > & execList, list< CtiMessage* > & retList)
 {
-    INT status = NORMAL;
     INT i;
     bool isGroupCommand = false;
 
@@ -1668,7 +1645,7 @@ INT CtiPILServer::analyzeWhiteRabbits(CtiRequestMsg& Req, CtiCommandParser &pars
                 retList.push_back(pcRet);
                 delete pReq;
 
-                return status;
+                return;
             }
         }
     }
@@ -1687,7 +1664,7 @@ INT CtiPILServer::analyzeWhiteRabbits(CtiRequestMsg& Req, CtiCommandParser &pars
             string routeName = parse.getsValue(str_route);
             CtiRouteSPtr tmpRoute;
 
-            tmpRoute = RouteManager->getEqualByName( routeName );
+            tmpRoute = RouteManager->getRouteByName( routeName );
 
             if(tmpRoute)
             {
@@ -1755,9 +1732,9 @@ INT CtiPILServer::analyzeWhiteRabbits(CtiRequestMsg& Req, CtiCommandParser &pars
             }
             else
             {
-                std::transform(groupname.begin(), groupname.end(), groupname.begin(), ::tolower);
+                CtiToLower(groupname);
 
-                getDeviceGroupMembers(groupname, members);
+                members = getDeviceGroupMembers(groupname);
                 isGroupCommand = true; // We will take the remaining pReq and place it on the group queue as well.
             }
 
@@ -1835,7 +1812,7 @@ INT CtiPILServer::analyzeWhiteRabbits(CtiRequestMsg& Req, CtiCommandParser &pars
             char newparse[256];
 
             CtiDeviceGroupVersacom *GrpDev = (CtiDeviceGroupVersacom *)DeviceManager->getDeviceByID(pReq->DeviceId()).get();
-            // Dev = DeviceManager->getEqual(SYS_DID_SYSTEM);     // This is the guy who does ALL configs.
+
             if(GrpDev != NULL)
             {
                 _snprintf(newparse, 255, "%s %s", pReq->CommandString().c_str(), GrpDev->getPutConfigAssignment(modifier).c_str());
@@ -1875,26 +1852,11 @@ INT CtiPILServer::analyzeWhiteRabbits(CtiRequestMsg& Req, CtiCommandParser &pars
                     groupname = CtiString("/Meters/Collection/") + groupname;
                 }
 
-                //  this catches any old-style group names with embedded slashes
-                if( groupname.find_first_of('/') > 0 )
+                CtiToLower(groupname);
+
+                for each( const long deviceid in getDeviceGroupMembers(groupname) )
                 {
-                    CtiLockGuard<CtiLogger> doubt_guard(dout);
-                    dout << CtiTime() << " **** Checkpoint - groupname \"" << groupname << "\" is malformed - cannot determine group hierarchy **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
-                }
-                else
-                {
-                    std::transform(groupname.begin(), groupname.end(), groupname.begin(), ::tolower);
-
-                    getDeviceGroupMembers(groupname, members);
-                }
-
-                vector<long>::iterator itr, members_end = members.end();
-
-                for( itr = members.begin(); itr != members_end; itr++ )
-                {
-                    CtiDeviceManager::ptr_type device = DeviceManager->getDeviceByID(*itr);
-
-                    if( device )
+                    if( CtiDeviceSPtr device = DeviceManager->getDeviceByID(deviceid) )
                     {
                         //  if a freeze wasn't specified, grab the first MCT and initialize the freeze counter
                         //    with what he expects to hear next
@@ -1908,13 +1870,6 @@ INT CtiPILServer::analyzeWhiteRabbits(CtiRequestMsg& Req, CtiCommandParser &pars
                         device->setExpectedFreeze(next_freeze);
                     }
                 }
-
-                //  this is where we'd attempt to correct devices that have an incorrect freeze counter
-            }
-
-            if(parse.isKeyValid("voltage"))
-            {
-
             }
         }
     }
@@ -1938,8 +1893,6 @@ INT CtiPILServer::analyzeWhiteRabbits(CtiRequestMsg& Req, CtiCommandParser &pars
     {
         delete pReq;
     }
-
-    return status;
 }
 
 void ReportMessagePriority( CtiMessage *MsgPtr, CtiDeviceManager *&DeviceManager )

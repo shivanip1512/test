@@ -260,7 +260,8 @@ database_reader.obj:	precompiled.h database_reader.h \
 		cticonnect.h yukon.h types.h ctidbgmem.h dlldefs.h netports.h \
 		mutex.h guard.h utility.h ctitime.h queues.h cticalls.h \
 		os2_2w32.h numstr.h dsm2err.h words.h optional.h row_reader.h \
-		logger.h thread.h CtiPCPtrQueue.h
+		logger.h thread.h CtiPCPtrQueue.h CParms.h rwutil.h \
+		boost_time.h boostutil.h configkey.h configval.h
 database_transaction.obj:	precompiled.h database_transaction.h \
 		database_connection.h dbaccess.h dllbase.h dsm2.h \
 		cticonnect.h yukon.h types.h ctidbgmem.h dlldefs.h netports.h \
@@ -336,7 +337,7 @@ logger.obj:	precompiled.h utility.h ctitime.h dlldefs.h queues.h \
 		dllbase.h dsm2.h cticonnect.h netports.h mutex.h guard.h \
 		dsm2err.h words.h optional.h database_reader.h row_reader.h \
 		boost_time.h boostutil.h configkey.h configval.h logger.h \
-		thread.h CtiPCPtrQueue.h ctidate.h
+		thread.h CtiPCPtrQueue.h ctidate.h ctistring.h
 master.obj:	precompiled.h os2_2w32.h dlldefs.h types.h cticalls.h \
 		cti_asmc.h queues.h dsm2.h cticonnect.h yukon.h ctidbgmem.h \
 		netports.h mutex.h guard.h utility.h ctitime.h numstr.h \
@@ -416,7 +417,7 @@ test_encryption.obj:	encryption.h dlldefs.h
 test_hash.obj:	hashkey.h hash_functions.h dlldefs.h
 test_logger.obj:	logger.h dlldefs.h thread.h mutex.h guard.h utility.h \
 		ctitime.h queues.h cticalls.h os2_2w32.h types.h numstr.h \
-		CtiPCPtrQueue.h
+		CtiPCPtrQueue.h ctidate.h
 test_multiset.obj:	utility.h ctitime.h dlldefs.h queues.h cticalls.h \
 		os2_2w32.h types.h numstr.h
 test_numstr.obj:	numstr.h dlldefs.h
