@@ -81,10 +81,7 @@ CtiTime gLastReturnMessageReceived(0UL);
 // Used to distinguish unique requests/responses to/from pil
 unsigned short gUserMessageID = 0;
 
-static const TclCommandMap caseSensitiveTclCommands = boost::assign::map_list_of
-    ("PILStartup", &Mccmd_Connect)
-    ("PILShutdown", &Mccmd_Disconnect)
-    ("MCCMDReset", &Mccmd_Reset)
+static const TclCommandMap pilCommands = boost::assign::map_list_of
     ("Command", &Command)
     ("GetValue", &GetValue)
     ("PutValue", &PutValue)
@@ -95,7 +92,12 @@ static const TclCommandMap caseSensitiveTclCommands = boost::assign::map_list_of
     ("Loop", &Loop)
     ("Ping", &Loop)
     ("Control", &Control)
-    ("Pil", &Pil)
+    ("Pil", &Pil);
+
+static const TclCommandMap caseSensitiveTclCommands = boost::assign::map_list_of
+    ("PILStartup", &Mccmd_Connect)
+    ("PILShutdown", &Mccmd_Disconnect)
+    ("MCCMDReset", &Mccmd_Reset)
     ("Wait", &Wait)
     ("LogEvent", &LogEvent)
     ("SendDBChange", &SendDBChange)
@@ -494,6 +496,27 @@ int Mccmd_Init(Tcl_Interp* interp)
 {
     /* Register escape commands with the interpreter */
 
+    for each(const TclCommandMap::value_type& itr in pilCommands)
+    {
+        string commandName_lower(itr.first), commandName_upper(itr.first), commandName_camel(itr.first);
+
+        CtiToLower(commandName_lower);
+        CtiToUpper(commandName_upper);
+
+        std::vector<char> cmdCamel(commandName_camel.begin(), commandName_camel.end());
+        cmdCamel.push_back('\0');
+
+        std::vector<char> cmdUpper(commandName_upper.begin(), commandName_upper.end());
+        cmdUpper.push_back('\0');
+
+        std::vector<char> cmdLower(commandName_lower.begin(), commandName_lower.end());
+        cmdLower.push_back('\0');
+
+        Tcl_CreateCommand( interp, &cmdCamel[0], itr.second, NULL, NULL );
+        Tcl_CreateCommand( interp, &cmdUpper[0], itr.second, NULL, NULL );
+        Tcl_CreateCommand( interp, &cmdLower[0], itr.second, NULL, NULL );
+    }
+
     for each(const TclCommandMap::value_type& itr in caseSensitiveTclCommands)
     {
         string commandName_lower(itr.first), commandName_upper(itr.first), commandName_camel(itr.first);
@@ -517,7 +540,10 @@ int Mccmd_Init(Tcl_Interp* interp)
 
     for each (const TclCommandMap::value_type& itr in tclCommands)
     {
-        Tcl_CreateCommand( interp, const_cast<char*>(itr.first.c_str()), itr.second, NULL, NULL );
+        std::vector<char> cmd(itr.first.begin(), itr.first.end());
+        cmd.push_back('\0');
+
+        Tcl_CreateCommand( interp, &cmd[0], itr.second, NULL, NULL );
     }
 
     /* Load up the initialization script */

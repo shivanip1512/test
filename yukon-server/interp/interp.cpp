@@ -1,14 +1,16 @@
 #include "precompiled.h"
 
-
-#include <fstream>
-using namespace std;
+#include "dllbase.h"
+#include "interp.h"
+#include "logger.h"
 
 #include <tcl.h>
-#include <rw/thr/threadid.h>
 
-#include "interp.h"
-#include "ctibase.h"
+#include <rw/thr/thrutil.h>
+
+#include <boost/algorithm/string.hpp>
+
+using namespace std;
 
 CtiCriticalSection CtiInterpreter::_mutex;
 
@@ -37,52 +39,33 @@ string CtiInterpreter::escapeQuotationMarks(const string &command)
 {
     string tok_str, escaped;
 
+    std::vector<std::string> input_lines, output_lines;
+
     // The command string may have multiple commands, separated by newline characters.
-    boost::char_separator<char> sep("\n");
+    boost::split(input_lines, command, boost::is_any_of("\n"));
 
-    // Tokenize the command on the newline character.
-    Boost_char_tokenizer tok(command, sep);
-
-    // Bite off the first matching token and start the escaping process.
-    Boost_char_tokenizer::iterator tok_iter = tok.begin();
-
-    while( (tok_iter != tok.end()) && !(tok_str = *tok_iter++).empty() )
+    for each( const std::string &input in input_lines )
     {
-        // trim whitespace in the front
-        trim_left(tok_str);
-
-        if (isEscapeCommand(tok_str))
+        if( isEscapeCommand(input) )
         {
-            // command is a macs command, we need to escape any non-escaped quotes
-            size_t n = tok_str.length();
-
-            for (int i = 0; i < n; i++)
-            {
-                switch (tok_str[i])
-                {
-                    case '\"':
-                        escaped.append(1, '\\');
-                    default:
-                        escaped.append(1, tok_str[i]);
-                }
-            }
+            output_lines.push_back(
+               boost::algorithm::replace_all_copy(input, "\"", "\\\""));
         }
         else
         {
-            escaped.append(tok_str);
+            output_lines.push_back(input);
         }
     }
 
-    return escaped;
+    return boost::join(output_lines, "\n");
 }
 
 bool CtiInterpreter::isEscapeCommand(const string &command)
 {
-    size_t pos = command.find(' ');
+    size_t start_pos = command.find_first_not_of(' ');
+    size_t end_pos   = command.find_first_of(' ', start_pos);
 
-    string strCmd = command.substr(0, pos);
-
-    std::set<string>::iterator itr = _macsCommands.find(strCmd);
+    const string strCmd = command.substr(start_pos, end_pos - start_pos);
 
     return _macsCommands.find(strCmd) != _macsCommands.end();
 }
@@ -90,6 +73,7 @@ bool CtiInterpreter::isEscapeCommand(const string &command)
 bool CtiInterpreter::evaluate(const string& command, bool block, void (*preEval)(CtiInterpreter* interp), void (*postEval)(CtiInterpreter* interp))
 {
     string escapedString = escapeQuotationMarks(command);
+
     return evaluateRaw(escapedString, block, preEval, postEval);
 }
 
