@@ -194,7 +194,7 @@ static RWTValHashDictionary<RWThreadId, boost::shared_ptr< CtiCountedPCPtrQueue<
    PIL for incoming messages and places them in the appropriate queue */
 static void _MessageThrFunc();
 
-std::string BuildCommandString(int argc, char* argv[]);
+std::string BuildCommandString(const int argc, const char * const argv[]);
 void DumpReturnMessage(CtiReturnMsg& msg);
 void DumpRequestMessage(CtiRequestMsg& msg);
 

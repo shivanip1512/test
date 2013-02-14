@@ -213,7 +213,7 @@ void _MessageThrFunc()
     }
 }
 
-string BuildCommandString(int argc, const char* argv[])
+string BuildCommandString(const int argc, const char * const argv[])
 {
     std::vector<std::string> args(argv, argv + argc);
 
