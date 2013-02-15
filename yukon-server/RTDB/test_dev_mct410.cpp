@@ -59,6 +59,18 @@ public:
 
     PointTypeOffsetMap points;
 
+    bool test_isSupported_Mct410Feature_HourlyKwh() const
+            {  return isSupported(Feature_HourlyKwh);  }
+
+    bool test_isSupported_Mct410Feature_DisconnectCollar() const
+            {  return isSupported(Feature_DisconnectCollar);  }
+
+    bool test_isSupported_Mct4xxFeature_LoadProfilePeakReport() const
+            {  return isSupported(Feature_LoadProfilePeakReport);  }
+
+    bool test_isSupported_Mct4xxFeature_TouPeaks() const
+            {  return isSupported(Feature_TouPeaks);  }
+
     virtual CtiPointSPtr getDevicePointOffsetTypeEqual(int offset, CtiPointType_t type)
     {
         CtiPointSPtr point = points[type][offset];
@@ -152,6 +164,78 @@ namespace test_tools {
 }
 
 BOOST_AUTO_TEST_SUITE( test_dev_mct410 )
+
+BOOST_AUTO_TEST_CASE(test_isSupported_Mct410Feature_DisconnectCollar)
+{
+    BOOST_CHECK_EQUAL(true, test_Mct410CentronDevice()
+                                .test_isSupported_Mct410Feature_DisconnectCollar());
+
+    BOOST_CHECK_EQUAL(true, test_Mct410FocusDevice()
+                                .test_isSupported_Mct410Feature_DisconnectCollar());
+
+    BOOST_CHECK_EQUAL(true, test_Mct410IconDevice()
+                                .test_isSupported_Mct410Feature_DisconnectCollar());
+}
+
+BOOST_AUTO_TEST_CASE(test_isSupported_Mct410Feature_HourlyKwh)
+{
+    test_Mct410CentronDevice mct;
+
+    mct.setDynamicInfo(CtiTableDynamicPaoInfo::Key_MCT_SSpec, 10291);
+    mct.setDynamicInfo(CtiTableDynamicPaoInfo::Key_MCT_SSpecRevision, 40);
+
+    BOOST_CHECK_EQUAL(false, mct.test_isSupported_Mct410Feature_HourlyKwh());
+
+    mct.setDynamicInfo(CtiTableDynamicPaoInfo::Key_MCT_SSpec, 1029);
+    mct.setDynamicInfo(CtiTableDynamicPaoInfo::Key_MCT_SSpecRevision, 20);
+
+    BOOST_CHECK_EQUAL(false, mct.test_isSupported_Mct410Feature_HourlyKwh());
+
+    mct.setDynamicInfo(CtiTableDynamicPaoInfo::Key_MCT_SSpec, 1029);
+    mct.setDynamicInfo(CtiTableDynamicPaoInfo::Key_MCT_SSpecRevision, 40);
+
+    BOOST_CHECK_EQUAL(true, mct.test_isSupported_Mct410Feature_HourlyKwh());
+}
+
+BOOST_AUTO_TEST_CASE(test_isSupported_Mct4xxFeature_LoadProfilePeakReport)
+{
+    test_Mct410CentronDevice mct;
+
+    mct.setDynamicInfo(CtiTableDynamicPaoInfo::Key_MCT_SSpec, 10291);
+    mct.setDynamicInfo(CtiTableDynamicPaoInfo::Key_MCT_SSpecRevision, 9);
+
+    BOOST_CHECK_EQUAL(false, mct.test_isSupported_Mct4xxFeature_LoadProfilePeakReport());
+
+    mct.setDynamicInfo(CtiTableDynamicPaoInfo::Key_MCT_SSpec, 1029);
+    mct.setDynamicInfo(CtiTableDynamicPaoInfo::Key_MCT_SSpecRevision, 1);
+
+    BOOST_CHECK_EQUAL(false, mct.test_isSupported_Mct4xxFeature_LoadProfilePeakReport());
+
+    mct.setDynamicInfo(CtiTableDynamicPaoInfo::Key_MCT_SSpec, 1029);
+    mct.setDynamicInfo(CtiTableDynamicPaoInfo::Key_MCT_SSpecRevision, 9);
+
+    BOOST_CHECK_EQUAL(true, mct.test_isSupported_Mct4xxFeature_LoadProfilePeakReport());
+}
+
+BOOST_AUTO_TEST_CASE(test_isSupported_Mct4xxFeature_TouPeaks)
+{
+    test_Mct410CentronDevice mct;
+
+    mct.setDynamicInfo(CtiTableDynamicPaoInfo::Key_MCT_SSpec, 10291);
+    mct.setDynamicInfo(CtiTableDynamicPaoInfo::Key_MCT_SSpecRevision, 13);
+
+    BOOST_CHECK_EQUAL(false, mct.test_isSupported_Mct4xxFeature_TouPeaks());
+
+    mct.setDynamicInfo(CtiTableDynamicPaoInfo::Key_MCT_SSpec, 1029);
+    mct.setDynamicInfo(CtiTableDynamicPaoInfo::Key_MCT_SSpecRevision, 12);
+
+    BOOST_CHECK_EQUAL(false, mct.test_isSupported_Mct4xxFeature_TouPeaks());
+
+    mct.setDynamicInfo(CtiTableDynamicPaoInfo::Key_MCT_SSpec, 1029);
+    mct.setDynamicInfo(CtiTableDynamicPaoInfo::Key_MCT_SSpecRevision, 13);
+
+    BOOST_CHECK_EQUAL(true, mct.test_isSupported_Mct4xxFeature_TouPeaks());
+}
 
 BOOST_AUTO_TEST_CASE(test_dev_mct410_getDemandData)
 {

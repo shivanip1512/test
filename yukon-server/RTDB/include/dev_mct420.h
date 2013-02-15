@@ -53,8 +53,21 @@ protected:
 
     int decodeGetConfigOptions( INMESS *InMessage, CtiTime &TimeNow, CtiMessageList &vgList, CtiMessageList &retList, OutMessageList &outList );
 
-    //  overriding the MCT-410's definitions
+    enum Features
+    {
+        Feature_LcdDisplayDigitConfiguration,
+    };
+
+    enum
+    {
+        Sspec = 10290,
+        SspecRev_LcdDisplayDigitConfiguration = 44
+    };
+
+    virtual bool sspecValid(const unsigned sspec, const unsigned rev) const;
+
     virtual bool isSupported(const Mct410Device::Features feature) const;
+    virtual bool isSupported(const Mct420Device::Features feature) const;
 
     virtual point_info getAccumulatorData(const unsigned char *buf, const unsigned len, const unsigned char *freeze_counter) const;
     virtual point_info getDemandData     (const unsigned char *buf, const unsigned len, const unsigned char *freeze_counter) const;

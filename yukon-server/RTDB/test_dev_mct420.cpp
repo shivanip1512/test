@@ -41,22 +41,17 @@ struct test_Mct420Device : Cti::Devices::Mct420Device
     using Mct420Device::decodeDisconnectStatus;
     using Mct420Device::isProfileTablePointerCurrent;
 
-    enum test_Features
-    {
-        test_Feature_DisconnectCollar,
-        test_Feature_HourlyKwh
-    };
+    bool test_isSupported_Mct410Feature_HourlyKwh() const
+            {  return isSupported(Feature_HourlyKwh);  }
 
-    bool test_isSupported(test_Features f)
-    {
-        switch(f)
-        {
-            case test_Feature_DisconnectCollar: return isSupported(Feature_DisconnectCollar);
-            case test_Feature_HourlyKwh:        return isSupported(Feature_HourlyKwh);
-        }
+    bool test_isSupported_Mct410Feature_DisconnectCollar() const
+            {  return isSupported(Feature_DisconnectCollar);  }
 
-        return false;
-    }
+    bool test_isSupported_Mct4xxFeature_LoadProfilePeakReport() const
+            {  return Mct410Device::isSupported(Feature_LoadProfilePeakReport);  }
+
+    bool test_isSupported_Mct4xxFeature_TouPeaks() const
+            {  return Mct410Device::isSupported(Feature_TouPeaks);  }
 
     typedef std::map<int, CtiPointSPtr>              PointOffsetMap;
     typedef std::map<CtiPointType_t, PointOffsetMap> PointTypeOffsetMap;
@@ -153,15 +148,66 @@ namespace test_tools {
 
 BOOST_AUTO_TEST_SUITE( test_dev_mct420 )
 
-BOOST_AUTO_TEST_CASE(test_isSupported_DisconnectCollar)
+BOOST_AUTO_TEST_CASE(test_isSupported_Mct410Feature_DisconnectCollar)
 {
-    BOOST_CHECK_EQUAL(false, test_Mct420CL().test_isSupported(test_Mct420Device::test_Feature_DisconnectCollar));
+    BOOST_CHECK_EQUAL(false, test_Mct420CL().test_isSupported_Mct410Feature_DisconnectCollar());
 
-    BOOST_CHECK_EQUAL(true,  test_Mct420FL().test_isSupported(test_Mct420Device::test_Feature_DisconnectCollar));
+    BOOST_CHECK_EQUAL(true,  test_Mct420FL().test_isSupported_Mct410Feature_DisconnectCollar());
 
-    BOOST_CHECK_EQUAL(false, test_Mct420CD().test_isSupported(test_Mct420Device::test_Feature_DisconnectCollar));
+    BOOST_CHECK_EQUAL(false, test_Mct420CD().test_isSupported_Mct410Feature_DisconnectCollar());
 
-    BOOST_CHECK_EQUAL(false, test_Mct420FD().test_isSupported(test_Mct420Device::test_Feature_DisconnectCollar));
+    BOOST_CHECK_EQUAL(false, test_Mct420FD().test_isSupported_Mct410Feature_DisconnectCollar());
+}
+
+BOOST_AUTO_TEST_CASE(test_isSupported_Mct410Feature_HourlyKwh)
+{
+    BOOST_CHECK_EQUAL(true, test_Mct420CL().test_isSupported_Mct410Feature_HourlyKwh());
+
+    BOOST_CHECK_EQUAL(true, test_Mct420FL().test_isSupported_Mct410Feature_HourlyKwh());
+
+    BOOST_CHECK_EQUAL(true, test_Mct420CD().test_isSupported_Mct410Feature_HourlyKwh());
+
+    BOOST_CHECK_EQUAL(true, test_Mct420FD().test_isSupported_Mct410Feature_HourlyKwh());
+}
+
+BOOST_AUTO_TEST_CASE(test_isSupported_Mct4xxFeature_LoadProfilePeakReport)
+{
+    test_Mct420CL mct;
+
+    mct.setDynamicInfo(CtiTableDynamicPaoInfo::Key_MCT_SSpec, 1029);
+    mct.setDynamicInfo(CtiTableDynamicPaoInfo::Key_MCT_SSpecRevision, 9);
+
+    BOOST_CHECK_EQUAL(false, mct.test_isSupported_Mct4xxFeature_LoadProfilePeakReport());
+
+    mct.setDynamicInfo(CtiTableDynamicPaoInfo::Key_MCT_SSpec, 10291);
+    mct.setDynamicInfo(CtiTableDynamicPaoInfo::Key_MCT_SSpecRevision, 1);
+
+    BOOST_CHECK_EQUAL(false, mct.test_isSupported_Mct4xxFeature_LoadProfilePeakReport());
+
+    mct.setDynamicInfo(CtiTableDynamicPaoInfo::Key_MCT_SSpec, 10291);
+    mct.setDynamicInfo(CtiTableDynamicPaoInfo::Key_MCT_SSpecRevision, 9);
+
+    BOOST_CHECK_EQUAL(true, mct.test_isSupported_Mct4xxFeature_LoadProfilePeakReport());
+}
+
+BOOST_AUTO_TEST_CASE(test_isSupported_Mct4xxFeature_TouPeaks)
+{
+    test_Mct420CL mct;
+
+    mct.setDynamicInfo(CtiTableDynamicPaoInfo::Key_MCT_SSpec, 1029);
+    mct.setDynamicInfo(CtiTableDynamicPaoInfo::Key_MCT_SSpecRevision, 13);
+
+    BOOST_CHECK_EQUAL(false, mct.test_isSupported_Mct4xxFeature_TouPeaks());
+
+    mct.setDynamicInfo(CtiTableDynamicPaoInfo::Key_MCT_SSpec, 10291);
+    mct.setDynamicInfo(CtiTableDynamicPaoInfo::Key_MCT_SSpecRevision, 12);
+
+    BOOST_CHECK_EQUAL(false, mct.test_isSupported_Mct4xxFeature_TouPeaks());
+
+    mct.setDynamicInfo(CtiTableDynamicPaoInfo::Key_MCT_SSpec, 10291);
+    mct.setDynamicInfo(CtiTableDynamicPaoInfo::Key_MCT_SSpecRevision, 13);
+
+    BOOST_CHECK_EQUAL(true, mct.test_isSupported_Mct4xxFeature_TouPeaks());
 }
 
 BOOST_AUTO_TEST_CASE(test_decodeDisconnectConfig)
@@ -2473,7 +2519,7 @@ BOOST_AUTO_TEST_CASE(test_getValueMappingForRead_IO_Function_Read_1Dword)
         (empty)
         (empty)
         (empty)
-        (empty)
+        (tuple_list_of(0,1,141))
         (empty)
         (empty)
         (tuple_list_of(0,1,176)(1,1,177)(2,1,178))
@@ -2548,7 +2594,7 @@ BOOST_AUTO_TEST_CASE(test_getValueMappingForRead_IO_Function_Read_2Dwords)
         (empty)
         (empty)
         (empty)
-        (empty)
+        (tuple_list_of(0,1,141))
         (empty)
         (empty)
         (tuple_list_of(0,1,176)(1,1,177)(2,1,178)(3,1,179)(4,1,180)(5,1,181)(6,1,182)(7,1,183))
@@ -2628,7 +2674,7 @@ BOOST_AUTO_TEST_CASE(test_getValueMappingForRead_IO_Function_Read_3Dwords)
         (empty)
         (empty)
         (empty)
-        (empty)
+        (tuple_list_of(0,1,141))
         (empty)
         (empty)
         (tuple_list_of(0,1,176)(1,1,177)(2,1,178)(3,1,179)(4,1,180)(5,1,181)(6,1,182)(7,1,183)(8,1,184)(9,1,185)(10,1,186)(11,1,187)(12,1,188))

@@ -89,6 +89,8 @@ const Mct420Device::FunctionReadValueMappings Mct420Device::_readValueMaps = boo
         ( 0, make_value_descriptor(2, CtiTableDynamicPaoInfo::Key_MCT_DayTable))
         ( 2, make_value_descriptor(1, CtiTableDynamicPaoInfo::Key_MCT_DefaultTOURate))
         (10, make_value_descriptor(1, CtiTableDynamicPaoInfo::Key_MCT_TimeZoneOffset)))
+    (0x1f3, boost::assign::map_list_of
+        ( 0, make_value_descriptor(1, CtiTableDynamicPaoInfo::Key_MCT_DisplayParameters)))
     (0x1f6, boost::assign::map_list_of
         ( 0, make_value_descriptor(1, CtiTableDynamicPaoInfo::Key_MCT_LcdMetric01))
         ( 1, make_value_descriptor(1, CtiTableDynamicPaoInfo::Key_MCT_LcdMetric02))
@@ -262,6 +264,59 @@ int Mct420Device::executePutConfig( CtiRequestMsg        *pReq,
         {
             returnErrorMessage(BADPARAM, OutMessage, retList,
                                "Invalid LCD cycle time (" + CtiNumStr(cycle_time) + "), must be 0-15");
+
+            return ExecutionComplete;
+        }
+
+        if( ! isSupported(Feature_LcdDisplayDigitConfiguration) )
+        {
+            if( parse.isKeyValid("lcd display digits") )
+            {
+                returnErrorMessage(ErrorInvalidSSPEC, OutMessage, retList,
+                                   "LCD display digits not supported for this device's SSPEC");
+
+                return ExecutionComplete;
+            }
+        }
+        else
+        {
+            unsigned char display_digits;
+
+            if( parse.isKeyValid("lcd display digits") )
+            {
+                const std::map<std::string, unsigned char> digit_mapping = boost::assign::map_list_of
+                    ("4x1", 0x20)
+                    ("5x1", 0x00)
+                    ("6x1", 0x10);
+
+                std::map<std::string, unsigned char>::const_iterator itr =
+                    digit_mapping.find(parse.getsValue("lcd display digits"));
+
+                if( itr == digit_mapping.end() )
+                {
+                    returnErrorMessage(BADPARAM, OutMessage, retList,
+                                       "Invalid LCD display digit configuration specified");
+
+                    return ExecutionComplete;
+                }
+
+                display_digits = itr->second;
+            }
+            else
+            {
+                if( ! hasDynamicInfo(CtiTableDynamicPaoInfo::Key_MCT_DisplayParameters) )
+                {
+                    returnErrorMessage(MISPARAM, OutMessage, retList,
+                                       "LCD display digit configuration must be specified manually if not yet retrieved");
+
+                    return ExecutionComplete;
+                }
+
+                //  mask out just the three bits
+                display_digits = 0x70 & getDynamicInfo(CtiTableDynamicPaoInfo::Key_MCT_DisplayParameters);
+            }
+
+            OutMessage->Buffer.BSt.Message[0] |= display_digits;
         }
 
         OutMessage->Buffer.BSt.Message[1] = cycle_time;
@@ -442,8 +497,8 @@ int Mct420Device::executeGetConfig( CtiRequestMsg        *pReq,
     }
     else
     {
-    return Inherited::executeGetConfig(pReq, parse, OutMessage, vgList, retList, outList);
-}
+        return Inherited::executeGetConfig(pReq, parse, OutMessage, vgList, retList, outList);
+    }
 
     if( found )
     {
@@ -601,13 +656,23 @@ string Mct420Device::decodeDisconnectStatus(const DSTRUCT &DSt)
 
 int Mct420Device::decodeGetConfigMeterParameters(INMESS *InMessage, CtiTime &TimeNow, list< CtiMessage* > &vgList, list< CtiMessage* > &retList, list< OUTMESS* > &outList)
 {
-
     DSTRUCT *DSt   = &InMessage->Buffer.DSt;
 
     string resultString = getName() + " / Meter Parameters:\n";
 
     resultString += "Disconnect display ";
     resultString += (DSt->Message[0] & 0x80) ? "disabled\n" : "enabled\n";
+
+    if( isSupported(Feature_LcdDisplayDigitConfiguration) )
+    {
+        switch( DSt->Message[0] & 0x70 )
+        {
+            case 0x00:  resultString += "Display digits: 5x1\n";  break;
+            case 0x10:  resultString += "Display digits: 6x1\n";  break;
+            case 0x20:  resultString += "Display digits: 4x1\n";  break;
+            default:    resultString += "Display digits: unknown\n";  break;
+        }
+    }
 
     resultString += "LCD cycle time: ";
 
@@ -809,6 +874,27 @@ Mct420Device::point_info Mct420Device::getDemandData(const unsigned char *buf, c
 }
 
 
+bool Mct420Device::sspecValid(const unsigned sspec, const unsigned rev) const
+{
+    //  next-gen SSPEC is 10290-10299, split per meter type
+    return (sspec / 10 * 10) == Mct420Device::Sspec;
+}
+
+
+bool Mct420Device::isSupported(const Mct420Device::Features feature) const
+{
+    switch( feature )
+    {
+        case Feature_LcdDisplayDigitConfiguration:
+        {
+            return sspecAtLeast(SspecRev_LcdDisplayDigitConfiguration);
+        }
+    }
+
+    return false;
+}
+
+
 //  I wanted to keep devicetypes.h away from everything else...
 //    In The Year 2000, we shouldn't have to compare against types, but that's where we're at right now
 #include "devicetypes.h"
@@ -817,16 +903,18 @@ bool Mct420Device::isSupported(const Mct410Device::Features feature) const
 {
     switch( feature )
     {
+        case Feature_HourlyKwh:
+        {
+            return true;
+        }
         case Feature_DisconnectCollar:
         {
-            //  this is the only MCT-420 that supports the collar right now
+            //  this is the only MCT-420 that supports the collar
             return getType() == TYPEMCT420FL;
         }
-        default:
-        {
-            return Mct410Device::isSupported(feature);
-        }
     }
+
+    return Mct410Device::isSupported(feature);
 }
 
 

@@ -27,6 +27,11 @@ struct test_Mct470Device : Cti::Devices::Mct470Device
     using Mct470Device::convertTimestamp;
     using Mct470Device::computeResolutionByte;
     using Mct470Device::ResultDecode;
+
+    bool test_isSupported_Mct4xxFeature_LoadProfilePeakReport()
+            {  return isSupported(Feature_LoadProfilePeakReport);  }
+    bool test_isSupported_Mct4xxFeature_TouPeaks()
+            {  return isSupported(Feature_TouPeaks);  }
 };
 
 namespace std {
@@ -44,6 +49,20 @@ namespace test_tools {
 }
 
 BOOST_AUTO_TEST_SUITE( test_dev_mct470 )
+
+BOOST_AUTO_TEST_CASE(test_isSupported_Mct4xxFeature_LoadProfilePeakReport)
+{
+    test_Mct470Device mct;
+
+    BOOST_CHECK_EQUAL(true, mct.test_isSupported_Mct4xxFeature_LoadProfilePeakReport());
+}
+
+BOOST_AUTO_TEST_CASE(test_isSupported_Mct4xxFeature_TouPeaks)
+{
+    test_Mct470Device mct;
+
+    BOOST_CHECK_EQUAL(true, mct.test_isSupported_Mct4xxFeature_TouPeaks());
+}
 
 struct utc34_checker_base_date
 {

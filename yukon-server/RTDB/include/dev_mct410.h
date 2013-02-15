@@ -70,8 +70,6 @@ private:
     {
         Sspec = 1029,
 
-        SspecRev_NextGen = 40,
-
         SspecRev_NewLLP_Min         =    9,  //  rev  0.9
         SspecRev_TOUPeak_Min        =   13,  //  rev  1.3
         SspecRev_NewOutage_Min      =    8,  //  rev  0.8

@@ -4862,17 +4862,6 @@ bool Mct410Device::isSupported(const Mct4xxDevice::Features feature) const
 
 bool Mct410Device::sspecValid(const unsigned sspec, const unsigned rev) const
 {
-    if( rev >= SspecRev_BetaHi )
-    {
-        return (sspec == Mct410Device::Sspec) || ((sspec / 10) == Mct410Device::Sspec);
-    }
-
-    if( rev >= SspecRev_NextGen )
-    {
-        //  next-gen SSPEC is 10290-10299, split per meter type
-        return (sspec / 10) == Mct410Device::Sspec;
-    }
-
     return sspec == Mct410Device::Sspec;
 }
 

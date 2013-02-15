@@ -155,9 +155,6 @@ private:
         SspecRev_IED_Precanned11     = 42,  //  rev 4.2
     };
 
-    virtual bool isSupported(const Mct4xxDevice::Features feature) const  {  return true;  };
-    virtual bool sspecValid(const unsigned sspec, const unsigned rev) const  {  return true;  };  //  not checking SSPECs yet
-
     bool hasIedInputs()   const;
     bool hasPulseInputs() const;
 
@@ -206,6 +203,9 @@ private:
     static long      resolveScheduleName(const std::string & scheduleName);
 
 protected:
+
+    virtual bool isSupported(const Mct4xxDevice::Features feature) const  {  return true;  };
+    virtual bool sspecValid(const unsigned sspec, const unsigned rev) const  {  return true;  };  //  not checking SSPECs yet
 
     virtual bool getOperation( const UINT &cmd, BSTRUCT &bst ) const;
 

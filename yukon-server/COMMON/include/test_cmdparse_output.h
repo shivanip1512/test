@@ -238,5 +238,10 @@ std::string parse_asString[] = {
 "command=8:flags=2147484672::sa_dlc_mode=(none),1,1.000:sa_f0bit=(none),0,0.000:sa_f1bit=(none),0,0.000:shed=(none),1800,1800.000:type=sa205,5,5.000",
 "command=6:flags=0::lcd_cycle_time=(none),13,13.000:transformer_ratio=(none),25,25.000:type=emetcon,7,7.000",
 "command=6:flags=0::lcd_cycle_time=(none),13,13.000:type=emetcon,7,7.000",
+"command=6:flags=0::lcd_cycle_time=(none),13,13.000:type=emetcon,7,7.000",
+"command=6:flags=0::lcd display digits=4x1,-2147483648,0.000:lcd_cycle_time=(none),13,13.000:type=emetcon,7,7.000",
+"command=6:flags=0::lcd display digits=5x1,-2147483648,0.000:lcd_cycle_time=(none),13,13.000:type=emetcon,7,7.000",
+"command=6:flags=0::lcd display digits=6x1,-2147483648,0.000:lcd_cycle_time=(none),13,13.000:type=emetcon,7,7.000",
+"command=6:flags=0::lcd_cycle_time=(none),13,13.000:type=emetcon,7,7.000",
 "command=5:flags=0::configuration=(none),1,1.000:type=versacom,0,0.000",
 };

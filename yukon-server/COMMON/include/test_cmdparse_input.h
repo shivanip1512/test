@@ -239,6 +239,11 @@ std::string inputStrings[] = {
 "control sa205 shed 30m update",
 "putconfig emetcon parameters ratio 25 lcd cycle time 13",
 "putconfig emetcon parameters lcd cycle time 13",
+"putconfig emetcon parameters lcd cycle time 13 lcd display digits gecko",
+"putconfig emetcon parameters lcd cycle time 13 lcd display digits 4x1",
+"putconfig emetcon parameters lcd cycle time 13 lcd display digits 5x1",
+"putconfig emetcon parameters lcd cycle time 13 lcd display digits 6x1",
+"putconfig emetcon parameters lcd cycle time 13 lcd display digits 7x1",
 "getconfig configuration",
 };
 

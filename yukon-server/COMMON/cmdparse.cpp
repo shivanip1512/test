@@ -1143,7 +1143,7 @@ void  CtiCommandParser::doParseControl(const string &_CmdStr)
             if(!(token = CmdStr.match( (const boost::regex) (CtiString("shed *") + str_floatnum + CtiString(" *[hms]?( |$)")))).empty())      // Sourcing from CmdStr, which is the entire command string.
             {
                 double shedTime = getDurationInSeconds(token);
-                      
+
                 if(shedTime == -1.0)
                 {
                     CtiLockGuard<CtiLogger> doubt_guard(dout);
@@ -1152,7 +1152,7 @@ void  CtiCommandParser::doParseControl(const string &_CmdStr)
                 }
 
                 _snprintf(tbuf2, sizeof(tbuf2),"SHED %dS", (INT)dValue);
-                
+
                 _cmd["shed"] = CtiParseValue( shedTime );
             }
             else
@@ -2280,7 +2280,7 @@ void  CtiCommandParser::doParsePutConfigEmetcon(const string &_CmdStr)
     static const boost::regex  re_group_address("group (enable|disable)");
     static const boost::regex  re_address("address ((uniq(ue)? [0-9]+)|(gold [0-9]+ silver [0-9]+)|(bronze [0-9]+)|(lead meter [0-9]+ load [0-9]+))");
     static const boost::regex  re_mct410_meter_parameters("(centron|parameters)( ratio [0-9]+)?( display( [0-9]x[0-9]+)( test [0-9]+s?)( errors (en|dis)able))");
-    static const boost::regex  re_mct420_meter_parameters("parameters( ratio [0-9]+)? lcd cycle time [0-9]+");
+    static const boost::regex  re_mct420_meter_parameters("parameters( ratio [0-9]+)? lcd cycle time [0-9]+( lcd display digits [456]x1)?");
     static const boost::regex  re_centron_reading("centron reading [0-9]+( [0-9]+)?");
 
     static const boost::regex  re_loadlimit(CtiString("load limit ") + str_floatnum + CtiString(" ") + str_num);
@@ -2565,6 +2565,14 @@ void  CtiCommandParser::doParsePutConfigEmetcon(const string &_CmdStr)
                 cmdtok();        // move past "time"
 
                 _cmd["lcd_cycle_time"] = atoi(cmdtok().c_str());
+
+                if( cmdtok() == "lcd" )
+                {
+                    cmdtok();        // move past "display"
+                    cmdtok();        // move past "digits"
+
+                    _cmd["lcd display digits"] = cmdtok();
+                }
             }
             if(!(token = CmdStr.match(re_mct410_meter_parameters)).empty())
             {
@@ -4591,7 +4599,7 @@ void  CtiCommandParser::doParseControlExpresscom(const string &_CmdStr)
     if(CmdStr.contains(" btp"))
     {
         _cmd["btp"] = CtiParseValue(true);
- 
+
         const boost::regex btpCmd = (const boost::regex) ( CtiString("btp \\w* ") + str_floatnum + CtiString(" ?[hms]?( |$)") );
 
         if(!(temp = CmdStr.match( btpCmd ) ).empty() )
@@ -6949,8 +6957,8 @@ std::vector<float> CtiCommandParser::parseListOfFloats(const std::string &floatL
     return retVal;
 }
 
-/* 
-  matches a float followed by possibly h/m/s (hours/minutes/seconds) 
+/*
+  matches a float followed by possibly h/m/s (hours/minutes/seconds)
   no units specified is assumed to be minutes
   returns time in seconds
   returns -1 on in an invalidly formatted string
