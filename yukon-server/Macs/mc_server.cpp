@@ -36,32 +36,14 @@ CtiMCServer::~CtiMCServer()
 
 set<string> CtiMCServer::createEscapeCommandSet()
 {
-    std::set<string> escapeCommands, upperCommands, lowerCommands;
+    std::set<string> escapeCommands;
 
-    // Grab all of the command strings from the tcl maps in mccmd.
-    std::transform(
-        pilCommands.begin(),
-        pilCommands.end(),
-        inserter(escapeCommands, escapeCommands.begin()),
-        bind(&TclCommandMap::value_type::first, _1));
-
-    for each(const string &str in escapeCommands)
+    for each(const TclCommandMap::value_type &command in pilCommands)
     {
-        string upperStr(str);
-        CtiToUpper(upperStr);
-        upperCommands.insert(upperStr);
+        escapeCommands.insert(command.first);
+        escapeCommands.insert(boost::to_lower_copy(command.first));
+        escapeCommands.insert(boost::to_upper_copy(command.first));
     }
-
-    for each(const string &str in escapeCommands)
-    {
-        string lowerStr(str);
-        CtiToLower(lowerStr);
-        lowerCommands.insert(lowerStr);
-    }
-
-    escapeCommands.insert(upperCommands.begin(), upperCommands.end());
-
-    escapeCommands.insert(lowerCommands.begin(), lowerCommands.end());
 
     return escapeCommands;
 }
