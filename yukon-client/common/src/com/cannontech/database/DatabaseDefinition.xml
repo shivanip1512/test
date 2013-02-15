@@ -347,6 +347,11 @@
         <data name="DecimalDigits"/>
     </table>
     
+    <table name="ProgramToSeasonalProgram">
+        <primaryKey name="AssignedProgramId" tableRef="LMProgramWebPublishing" refType="MANY_TO_ONE" />
+        <data name="SeasonalProgramId" tableRef="LMProgramWebPublishing" refType="MANY_TO_ONE"/>
+    </table>
+    
     <table name="Route">
         <primaryKey name="RouteID" tableRef="YukonPAObject"/>
         <data name="DeviceID" tableRef="Device" refType="ONE_TO_ONE" />

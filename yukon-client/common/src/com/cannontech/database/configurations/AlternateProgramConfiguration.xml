@@ -1,0 +1,5 @@
+<configurations>
+    <configuration name="ALTERNATE_PROGRAM"><!-- Alternate Program -->
+        <table name="ProgramToSeasonalProgram"/>
+    </configuration>
+</configurations>

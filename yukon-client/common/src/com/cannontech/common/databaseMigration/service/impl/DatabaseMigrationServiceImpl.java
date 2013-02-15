@@ -1494,6 +1494,8 @@ public class DatabaseMigrationServiceImpl implements DatabaseMigrationService, R
 
             List<Resource> configurationResourceList = Lists.newArrayList();
             configurationResourceList.add(resourceLoader.getResource(
+                    "classpath:com/cannontech/database/configurations/AlternateProgramConfiguration.xml"));
+            configurationResourceList.add(resourceLoader.getResource(
             		"classpath:com/cannontech/database/configurations/ApplianceCategoriesAndRelatedPrograms.xml"));
             configurationResourceList.add(resourceLoader.getResource(
             		"classpath:com/cannontech/database/configurations/DirectLoadProgram.xml"));

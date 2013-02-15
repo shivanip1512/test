@@ -1815,6 +1815,19 @@
             </list>
         </property>
     </bean>
+    
+    <bean name="databaseMigrationALTERNATE_PROGRAMPicker" class="com.cannontech.web.picker.v2.DatabaseMigrationPicker">
+        <property name="databaseMigrationService" ref="databaseMigrationService" />
+        <property name="exportType" value="ALTERNATE_PROGRAM" />
+        <property name="outputColumns">
+            <list>
+                <bean class="com.cannontech.web.picker.v2.OutputColumn">
+                    <constructor-arg index="0" value="databaseMigrationDisplay" />
+                    <constructor-arg index="1" value="yukon.web.picker.databaseMigrationALTERNATE_PROGRAMPicker.programName" />
+                </bean>
+            </list>
+        </property>
+    </bean>
 
     <bean name="databaseMigrationEXPRESSCOM_LOAD_GROUPPicker" class="com.cannontech.web.picker.v2.DatabaseMigrationPicker">
         <property name="databaseMigrationService" ref="databaseMigrationService" />

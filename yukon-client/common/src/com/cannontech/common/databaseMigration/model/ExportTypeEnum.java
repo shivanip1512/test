@@ -2,6 +2,7 @@ package com.cannontech.common.databaseMigration.model;
 
 
 public enum ExportTypeEnum {
+    ALTERNATE_PROGRAM,
     APP_CATEGORY,
     DIRECT_PROGRAM,
     EXPRESSCOM_LOAD_GROUP,
