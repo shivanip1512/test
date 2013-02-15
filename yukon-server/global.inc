@@ -43,7 +43,6 @@ PROT            = $(COMPILEBASE)\protocol
 SERVICE         = $(COMPILEBASE)\service
 SIGNAL          = $(COMPILEBASE)\dbsignal
 RTDB            = $(COMPILEBASE)\rtdb
-INTERP          = $(COMPILEBASE)\interp
 DEVICECONFIGURATION = $(COMPILEBASE)\deviceconfiguration
 
 CPP_LIBRARIES   = $(DEV_ENVIRONMENT)\libraries

@@ -11,7 +11,6 @@ INCLPATHS+= \
 -I$(DATABASE)\include \
 -I$(RTDB)\include \
 -I$(MSG)\include \
--I$(INTERP)\include \
 -I$(TCL)\include \
 -I$(RW) \
 -I$(BOOST_INCLUDE) \
