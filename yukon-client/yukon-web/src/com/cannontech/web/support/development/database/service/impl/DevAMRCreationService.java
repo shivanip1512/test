@@ -23,12 +23,13 @@ import com.cannontech.database.data.multi.SmartMultiDBPersistent;
 import com.cannontech.database.data.pao.RouteTypes;
 import com.cannontech.database.data.port.DirectPort;
 import com.cannontech.database.data.port.PortFactory;
-import com.cannontech.database.data.port.TerminalServerDirectPort;
+import com.cannontech.database.data.port.TerminalServerSharedPort;
 import com.cannontech.database.data.route.CCURoute;
 import com.cannontech.database.data.route.RouteBase;
 import com.cannontech.database.data.route.RouteFactory;
 import com.cannontech.database.db.port.PortSettings;
 import com.cannontech.database.db.port.PortTerminalServer;
+import com.cannontech.database.db.port.PortTiming;
 import com.cannontech.database.db.route.CarrierRoute;
 import com.cannontech.web.support.development.database.objects.DevAMR;
 import com.cannontech.web.support.development.database.objects.DevCCU;
@@ -97,7 +98,7 @@ public class DevAMRCreationService extends DevObjectCreationBase {
         PortSettings portSettings = new PortSettings();
         portSettings.setPortID(directPort.getCommPort().getPortID());
         portSettings.setBaudRate(commChannel.getBaudRate());
-        
+
         String ipAddress = commChannel.getIpAddress();
         String cparmIpAddress = configurationSource.getString("DEVELOPMENT_DB_IP_ADDRESS_" + commChannel.name());
         if (cparmIpAddress != null) {
@@ -107,7 +108,7 @@ public class DevAMRCreationService extends DevObjectCreationBase {
         PortTerminalServer portTerminalServer =
             new PortTerminalServer(directPort.getCommPort().getPortID(), ipAddress, commChannel.getPort());
 
-        TerminalServerDirectPort terminalServerSharedPort = new TerminalServerDirectPort();
+        TerminalServerSharedPort terminalServerSharedPort = new TerminalServerSharedPort();
         terminalServerSharedPort.setCommPort(directPort.getCommPort());
         terminalServerSharedPort.setPortSettings(portSettings);
         terminalServerSharedPort.setPortTerminalServer(portTerminalServer);
@@ -117,6 +118,7 @@ public class DevAMRCreationService extends DevObjectCreationBase {
         terminalServerSharedPort.setPortType(PaoType.TSERVER_SHARED.getPaoTypeName());
         terminalServerSharedPort.setPortID(directPort.getCommPort().getPortID());
         terminalServerSharedPort.setPortName(commChannel.getName());
+        terminalServerSharedPort.setPortTiming(new PortTiming(portTerminalServer.getPortID(),commChannel.getPortTimingPreTxWait(),0,0,0,0));
 
         dbPersistentDao.performDBChange(terminalServerSharedPort, TransactionType.INSERT);
         log.debug("Comm Channel with name " + commChannel.getName() + " created.");
