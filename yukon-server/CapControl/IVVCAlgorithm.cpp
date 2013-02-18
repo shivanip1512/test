@@ -557,36 +557,28 @@ void IVVCAlgorithm::execute(IVVCStatePtr state, CtiCCSubstationBusPtr subbus, IV
             CtiTime scanTime = state->getTimeStamp();
             CtiTime now;
 
-            //We only check to make sure enough banks are reporting here. The
-            if ((request->isComplete()))
+            const bool requestIsComplete = request->isComplete();
+            const bool scanHasTimedOut   = ( scanTime + ( 60 * _SCAN_WAIT_EXPIRE ) ) < now;     // _SCAN_WAIT_EXPIRE is in minutes
+
+            if ( requestIsComplete || scanHasTimedOut )
             {
                 if (_CC_DEBUG & CC_DEBUG_IVVC)
                 {
                     CtiLockGuard<CtiLogger> logger_guard(dout);
-                    dout << CtiTime() << " - IVVC Algorithm: "<<subbus->getPaoName() <<"  Post Scan Complete. " << std::endl;
+                    dout << CtiTime() << " - IVVC Algorithm: " << subbus->getPaoName()
+                         << " - Post Scan " << ( requestIsComplete ? "Complete" : "Timed Out" ) << std::endl;
                 }
 
-                std::set<long> reportedControllers = state->getReportedControllers();
+                // Update the point response data with whatever data we got back from the post scan
+                //  --- only if we're not using static deltas
 
-                if ( ! _IVVC_STATIC_DELTA_VOLTAGES )    // if we're not using static deltas - update them
+                if ( ! _IVVC_STATIC_DELTA_VOLTAGES )    
                 {
-                    subbus->updatePointResponseDeltas(reportedControllers);
+                    subbus->updatePointResponseDeltas( state->getReportedControllers() );
                 }
-
                 state->setState(IVVCState::IVVC_WAIT);
             }
-            else if ((scanTime + (_SCAN_WAIT_EXPIRE/*minutes*/*60)) < now)
-            {
-                if (_CC_DEBUG & CC_DEBUG_IVVC)
-                {
-                    CtiLockGuard<CtiLogger> logger_guard(dout);
-                    dout << CtiTime() << " - IVVC Algorithm: "<<subbus->getPaoName() <<"  Post Scan Timed out. " << std::endl;
-                }
-                //scan timed out.
-                state->setState(IVVCState::IVVC_WAIT);
-            }
-
-            break;//never fall through past this
+            break;
         }
         case IVVCState::IVVC_OPERATE_TAP:
         {
