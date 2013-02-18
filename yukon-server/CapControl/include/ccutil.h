@@ -101,4 +101,9 @@ void static sendCapControlOperationMessage( Cti::Messaging::CapControl::CapContr
     Cti::Messaging::gActiveMQConnection.enqueueMessage( ActiveMQConnectionManager::Queue_CapControlOperationMessage, msg );
 }
 
+
+double calculatePowerFactor( const double kvar, const double kwatt );
+
+
+
 }}

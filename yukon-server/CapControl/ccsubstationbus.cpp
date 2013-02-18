@@ -2001,8 +2001,8 @@ void CtiCCSubstationBus::figureAndSetPowerFactorByFeederValues( )
             wattTotal += ((CtiCCFeeder*)_ccfeeders[i])->getCurrentWattLoadPointValue();
             estVarTotal += ((CtiCCFeeder*)_ccfeeders[i])->getEstimatedVarLoadPointValue();
         }
-        setPowerFactorValue(calculatePowerFactor(varTotal, wattTotal));
-        setEstimatedPowerFactorValue(calculatePowerFactor(estVarTotal, wattTotal));
+        setPowerFactorValue(Cti::CapControl::calculatePowerFactor(varTotal, wattTotal));
+        setEstimatedPowerFactorValue(Cti::CapControl::calculatePowerFactor(estVarTotal, wattTotal));
         setBusUpdatedFlag(true);
     }
     return;
@@ -6466,35 +6466,6 @@ void CtiCCSubstationBus::dumpDynamicData(Cti::Database::DatabaseConnection& conn
         }
     }
 
-}
-
-/*-------------------------------------------------------------------------
-    calculatePowerFactor
-
-
---------------------------------------------------------------------------*/
-double CtiCCSubstationBus::calculatePowerFactor(double kvar, double kw)
-{
-    double newPowerFactorValue = 1.0;
-    double kva = 0.0;
-
-    kva = sqrt((kw*kw)+(kvar*kvar));
-
-    if( kva != 0.0 )
-    {
-        if( kw < 0 )
-        {
-            kw = -kw;
-        }
-        newPowerFactorValue = kw / kva;
-        //check if this is leading
-        if( kvar < 0.0 && newPowerFactorValue != 1.0 )
-        {
-            newPowerFactorValue = 2.0-newPowerFactorValue;
-        }
-    }
-
-    return newPowerFactorValue;
 }
 
 /*-------------------------------------------------------------------------

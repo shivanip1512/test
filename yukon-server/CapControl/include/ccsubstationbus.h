@@ -291,7 +291,6 @@ RWDECLARE_COLLECTABLE( CtiCCSubstationBus )
     void optimizedSubstationBusControl(double lagLevel, double leadLevel, const CtiTime& currentDateTime, CtiMultiMsg_vec& pointChanges, CtiMultiMsg_vec& ccEvents, CtiMultiMsg_vec& pilMessages);
     CtiCCSubstationBus& figureEstimatedVarLoadPointValue();
     bool isAlreadyControlled();
-    double calculatePowerFactor(double kvar, double kw);
     double convertKQToKVAR(double kq, double kw);
     double convertKVARToKQ(double kvar, double kw);
     static double calculateKVARSolution(const string& controlUnits, double setPoint, double varValue, double wattValue);

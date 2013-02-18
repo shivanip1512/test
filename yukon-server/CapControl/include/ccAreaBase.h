@@ -1,22 +1,16 @@
 #pragma once
 
-#include <rw/collect.h>
-#include <rw/vstream.h>
-#include <rw/thr/mutex.h>
-#include <rw/thr/recursiv.h>
-
-#include "dbaccess.h"
-#include "connection.h"
-#include "types.h"
-#include "observe.h"
-#include "ccsubstationbus.h"
-#include "ccfeeder.h"
-#include "cccapbank.h"
-#include "msg_pcrequest.h"
-#include "msg_cmd.h"
-#include "StrategyManager.h"
-#include "ccmonitorpoint.h"
 #include "Controllable.h"
+#include "ccOperationStats.h"
+#include "ccConfirmationStats.h"
+
+namespace Cti
+{
+    class RowReader;
+}
+
+using std::string;
+
 
 class CtiCCAreaBase : public Controllable, public RWCollectable
 {
@@ -49,6 +43,8 @@ public:
     CtiCCAreaBase& setOvUvDisabledFlag(bool flag);
     CtiCCAreaBase& setPFactor(double pfactor);
     CtiCCAreaBase& setEstPFactor(double estPfactor);
+
+    void updatePowerFactorData();
 
     void setDirty(bool flag);
     bool isDirty() {return _dirty;};

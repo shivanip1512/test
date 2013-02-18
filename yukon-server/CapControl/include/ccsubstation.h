@@ -70,7 +70,9 @@ RWDECLARE_COLLECTABLE( CtiCCSubstation )
     CtiCCSubstation& setVoltReductionControlId(long pointid);
     CtiCCSubstation& setChildVoltReductionFlag(bool flag);
 
-    double calculatePowerFactor(double kvar, double kw);
+    void getPowerFactorData( double & watts, double & vars, double & estimatedVars );
+    void updatePowerFactorData();
+
     void checkForAndStopVerificationOnChildSubBuses(CtiMultiMsg_vec& capMessages);
     CtiCCSubstation& checkAndUpdateRecentlyControlledFlag();
     CtiCCSubstation& checkAndUpdateChildVoltReductionFlags();

@@ -9406,101 +9406,40 @@ void CtiCCSubstationBusStore::setVoltDisabledCount(long value)
     return;
 }
 
-void CtiCCSubstationBusStore::calculateParentPowerFactor(long subBusId)
+void CtiCCSubstationBusStore::calculateParentPowerFactor( long subBusId )
 {
-    double varTotal = 0;
-    double wattTotal = 0;
-    double estVarTotal  = 0;
-    double pf = 0;
-    double epf = 0;
-    long numStations = 0;
-    long numBuses = 0;
-
-    long stationId = findSubstationIDbySubBusID(subBusId);
-    if (stationId != NULL)
+    const long stationId = findSubstationIDbySubBusID( subBusId );
+    if ( stationId )
     {
-        CtiCCSubstation* station = findSubstationByPAObjectID(stationId);
-        if (station != NULL)
+        CtiCCSubstationPtr station = findSubstationByPAObjectID( stationId );
+        if ( station )
         {
-            pf = 0;
-            epf = 0;
-            numBuses = 0;
-            for each (long busId in station->getCCSubIds())
-            {
-                CtiCCSubstationBus *bus = findSubBusByPAObjectID(busId);
-                if (bus != NULL)
-                {
-                     pf += bus->getPowerFactorValue();
-                     epf += bus->getEstimatedPowerFactorValue();
-                }
-                numBuses++;
-            }
-            if (numBuses != 0)
-            {
-                station->setPFactor( pf/numBuses );
-                station->setEstPFactor( epf/numBuses );
-            }
-
+            station->updatePowerFactorData();
         }
 
-        long areaId = findAreaIDbySubstationID(stationId);
-        if (areaId != NULL)
+        const long areaId = findAreaIDbySubstationID( stationId );
+        if ( areaId )
         {
-            CtiCCArea* area = findAreaByPAObjectID(areaId);
-            if (area != NULL)
+            CtiCCAreaPtr area = findAreaByPAObjectID( areaId );
+            if ( area )
             {
-                pf = 0;
-                epf = 0;
-                numStations = 0;
-                for each (long stationId in area->getSubstationIds())
-                {
-                    CtiCCSubstation *station = findSubstationByPAObjectID(stationId);
-                    if (station != NULL)
-                    {
-                         pf += station->getPFactor();
-                         epf += station->getEstPFactor();
-                    }
-                    numStations++;
-                }
-                if (numStations != 0)
-                {
-                    area->setPFactor( pf/numStations );
-                    area->setEstPFactor( epf/numStations );
-                }
+                area->updatePowerFactorData();
             }
         }
+
         ChildToParentMultiMap::iterator spAreaIter, end;
-        findSpecialAreaIDbySubstationID(stationId, spAreaIter, end);
+        findSpecialAreaIDbySubstationID( stationId, spAreaIter, end );
 
-        while (spAreaIter != end)
+        for ( ; spAreaIter != end; ++spAreaIter )
         {
-            long spAreaId = spAreaIter->second;
-            CtiCCSpecial* spArea = findSpecialAreaByPAObjectID(spAreaId);
-            if (spArea != NULL)
+            const long spAreaId = spAreaIter->second;
+            CtiCCSpecialPtr spArea = findSpecialAreaByPAObjectID( spAreaId );
+            if ( spArea )
             {
-                pf = 0;
-                epf = 0;
-                numStations = 0;
-                for each (long stationId in spArea->getSubstationIds())
-                {
-                    station = findSubstationByPAObjectID(stationId);
-                    if (station != NULL)
-                    {
-                         pf += station->getPFactor();
-                         epf += station->getEstPFactor();
-                    }
-                    numStations++;
-                }
-                if (numStations != 0)
-                {
-                    spArea->setPFactor( pf/numStations );
-                    spArea->setEstPFactor( epf/numStations );
-                }
+                spArea->updatePowerFactorData();
             }
-            spAreaIter++;
         }
     }
-
 }
 
 /* Relating to Max Kvar Cparm */

@@ -3033,8 +3033,8 @@ void CtiCapController::pointDataMsgBySubBus( long pointID, double value, unsigne
                             {
                                 currentSubstationBus->setCurrentVarLoadPointValue(currentSubstationBus->convertKQToKVAR(value,currentSubstationBus->getCurrentWattLoadPointValue()),timestamp);
                             }
-                            currentSubstationBus->setPowerFactorValue(currentSubstationBus->calculatePowerFactor(currentSubstationBus->getCurrentVarLoadPointValue(),currentSubstationBus->getCurrentWattLoadPointValue()));
-                            currentSubstationBus->setEstimatedPowerFactorValue(currentSubstationBus->calculatePowerFactor(currentSubstationBus->getEstimatedVarLoadPointValue(),currentSubstationBus->getCurrentWattLoadPointValue()));
+                            currentSubstationBus->setPowerFactorValue(Cti::CapControl::calculatePowerFactor(currentSubstationBus->getCurrentVarLoadPointValue(),currentSubstationBus->getCurrentWattLoadPointValue()));
+                            currentSubstationBus->setEstimatedPowerFactorValue(Cti::CapControl::calculatePowerFactor(currentSubstationBus->getEstimatedVarLoadPointValue(),currentSubstationBus->getCurrentWattLoadPointValue()));
                             store->calculateParentPowerFactor(currentSubstationBus->getPaoId());
                             currentSubstationBus->setBusUpdatedFlag(true);
                             if( currentSubstationBus->getPowerFactorPointId() > 0 )
@@ -3084,8 +3084,8 @@ void CtiCapController::pointDataMsgBySubBus( long pointID, double value, unsigne
 
                         if( currentSubstationBus->getCurrentVarLoadPointId() > 0 )
                         {
-                            currentSubstationBus->setPowerFactorValue(currentSubstationBus->calculatePowerFactor(currentSubstationBus->getCurrentVarLoadPointValue(),currentSubstationBus->getCurrentWattLoadPointValue()));
-                            currentSubstationBus->setEstimatedPowerFactorValue(currentSubstationBus->calculatePowerFactor(currentSubstationBus->getEstimatedVarLoadPointValue(),currentSubstationBus->getCurrentWattLoadPointValue()));
+                            currentSubstationBus->setPowerFactorValue(Cti::CapControl::calculatePowerFactor(currentSubstationBus->getCurrentVarLoadPointValue(),currentSubstationBus->getCurrentWattLoadPointValue()));
+                            currentSubstationBus->setEstimatedPowerFactorValue(Cti::CapControl::calculatePowerFactor(currentSubstationBus->getEstimatedVarLoadPointValue(),currentSubstationBus->getCurrentWattLoadPointValue()));
                             store->calculateParentPowerFactor(currentSubstationBus->getPaoId());
                             currentSubstationBus->setBusUpdatedFlag(true);
                             if( currentSubstationBus->getPowerFactorPointId() > 0 )
@@ -3370,8 +3370,8 @@ void CtiCapController::pointDataMsgByFeeder( long pointID, double value, unsigne
                                 {
                                     currentFeeder->setCurrentVarLoadPointValue(currentSubstationBus->convertKQToKVAR(value,currentFeeder->getCurrentWattLoadPointValue()), timestamp);
                                 }
-                                currentFeeder->setPowerFactorValue(currentSubstationBus->calculatePowerFactor(currentFeeder->getCurrentVarLoadPointValue(),currentFeeder->getCurrentWattLoadPointValue()));
-                                currentFeeder->setEstimatedPowerFactorValue(currentSubstationBus->calculatePowerFactor(currentFeeder->getEstimatedVarLoadPointValue(),currentFeeder->getCurrentWattLoadPointValue()));
+                                currentFeeder->setPowerFactorValue(Cti::CapControl::calculatePowerFactor(currentFeeder->getCurrentVarLoadPointValue(),currentFeeder->getCurrentWattLoadPointValue()));
+                                currentFeeder->setEstimatedPowerFactorValue(Cti::CapControl::calculatePowerFactor(currentFeeder->getEstimatedVarLoadPointValue(),currentFeeder->getCurrentWattLoadPointValue()));
                                 currentSubstationBus->figureAndSetPowerFactorByFeederValues();
                                 store->calculateParentPowerFactor(currentSubstationBus->getPaoId());
                                 if( currentFeeder->getPowerFactorPointId() > 0 )
@@ -3413,8 +3413,8 @@ void CtiCapController::pointDataMsgByFeeder( long pointID, double value, unsigne
 
                             if( currentFeeder->getCurrentVarLoadPointId() > 0 )
                             {
-                                currentFeeder->setPowerFactorValue(currentSubstationBus->calculatePowerFactor(currentFeeder->getCurrentVarLoadPointValue(),currentFeeder->getCurrentWattLoadPointValue()));
-                                currentFeeder->setEstimatedPowerFactorValue(currentSubstationBus->calculatePowerFactor(currentFeeder->getEstimatedVarLoadPointValue(),currentFeeder->getCurrentWattLoadPointValue()));
+                                currentFeeder->setPowerFactorValue(Cti::CapControl::calculatePowerFactor(currentFeeder->getCurrentVarLoadPointValue(),currentFeeder->getCurrentWattLoadPointValue()));
+                                currentFeeder->setEstimatedPowerFactorValue(Cti::CapControl::calculatePowerFactor(currentFeeder->getEstimatedVarLoadPointValue(),currentFeeder->getCurrentWattLoadPointValue()));
                                 currentSubstationBus->figureAndSetPowerFactorByFeederValues();
                                 store->calculateParentPowerFactor(currentSubstationBus->getPaoId());
                                 if( currentFeeder->getPowerFactorPointId() > 0 )
@@ -3631,7 +3631,7 @@ void CtiCapController::pointDataMsgByCapBank( long pointID, double value, unsign
 
                         if( currentSubstationBus->getCurrentWattLoadPointId() > 0 )
                         {
-                            currentSubstationBus->setEstimatedPowerFactorValue(currentSubstationBus->calculatePowerFactor(currentSubstationBus->getEstimatedVarLoadPointValue(),currentSubstationBus->getCurrentWattLoadPointValue()));
+                            currentSubstationBus->setEstimatedPowerFactorValue(Cti::CapControl::calculatePowerFactor(currentSubstationBus->getEstimatedVarLoadPointValue(),currentSubstationBus->getCurrentWattLoadPointValue()));
                             if( currentSubstationBus->getEstimatedPowerFactorPointId() > 0 )
                             {
                                 sendMessageToDispatch(new CtiPointDataMsg(currentSubstationBus->getEstimatedPowerFactorPointId(),convertPowerFactorToSend(currentSubstationBus->getEstimatedPowerFactorValue()),NormalQuality,AnalogPointType));
@@ -3639,7 +3639,7 @@ void CtiCapController::pointDataMsgByCapBank( long pointID, double value, unsign
                         }
                         if( currentFeeder->getCurrentWattLoadPointId() > 0 )
                         {
-                            currentFeeder->setEstimatedPowerFactorValue(currentSubstationBus->calculatePowerFactor(currentFeeder->getEstimatedVarLoadPointValue(),currentFeeder->getCurrentWattLoadPointValue()));
+                            currentFeeder->setEstimatedPowerFactorValue(Cti::CapControl::calculatePowerFactor(currentFeeder->getEstimatedVarLoadPointValue(),currentFeeder->getCurrentWattLoadPointValue()));
                             if( currentFeeder->getEstimatedPowerFactorPointId() > 0 )
                             {
                                 sendMessageToDispatch(new CtiPointDataMsg(currentFeeder->getEstimatedPowerFactorPointId(),convertPowerFactorToSend(currentFeeder->getEstimatedPowerFactorValue()),NormalQuality,AnalogPointType));

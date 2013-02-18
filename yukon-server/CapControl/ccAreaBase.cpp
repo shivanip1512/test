@@ -1,23 +1,11 @@
-
 #include "precompiled.h"
 
-#include <rw/tpsrtvec.h>
-
-#include "dbaccess.h"
-#include "msg_signal.h"
-
 #include "ccareabase.h"
+#include "ccutil.h"
 #include "ccid.h"
-#include "cccapbank.h"
-#include "pointdefs.h"
-#include "pointtypes.h"
-#include "logger.h"
-#include "capcontroller.h"
-#include "resolvers.h"
-#include "utility.h"
-#include "ccOperationStats.h"
-#include "ccConfirmationStats.h"
-#include "database_writer.h"
+#include "row_reader.h"
+#include "ccsubstationbusstore.h"
+#include "ccsubstation.h"
 
 using std::endl;
 using namespace Cti::CapControl;
@@ -282,3 +270,34 @@ void CtiCCAreaBase::removeSubstationId(long subId)
     _subStationIds.erase(remove(_subStationIds.begin(), _subStationIds.end(), subId), _subStationIds.end());
 }
             
+
+void CtiCCAreaBase::updatePowerFactorData()
+{
+    double  totalWatts         = 0.0,
+            totalVars          = 0.0,
+            totalEstimatedVars = 0.0;
+
+    CtiCCSubstationBusStore * store = CtiCCSubstationBusStore::getInstance();
+    RWRecursiveLock<RWMutexLock>::LockGuard  guard( store->getMux() );
+
+    for each ( long stationID in getSubstationIds() )
+    {
+        CtiCCSubstationPtr station = store->findSubstationByPAObjectID( stationID );
+        if ( station )
+        {
+            double  watts         = 0.0,
+                    vars          = 0.0,
+                    estimatedVars = 0.0;
+
+            station->getPowerFactorData( watts, vars, estimatedVars );
+
+            totalWatts         += watts;
+            totalVars          += vars;
+            totalEstimatedVars += estimatedVars;
+        }
+    }
+
+    setPFactor( calculatePowerFactor( totalVars, totalWatts ) );
+    setEstPFactor( calculatePowerFactor( totalEstimatedVars, totalWatts ) );
+}
+

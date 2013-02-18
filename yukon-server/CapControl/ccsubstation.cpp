@@ -577,34 +577,6 @@ CtiCCSubstation& CtiCCSubstation::setSaEnabledId(long saId)
     return *this;
 }
 
-/*-------------------------------------------------------------------------
-    calculatePowerFactor
-
-
---------------------------------------------------------------------------*/
-double CtiCCSubstation::calculatePowerFactor(double kvar, double kw)
-{
-    double newPowerFactorValue = 1.0;
-    double kva = 0.0;
-
-    kva = sqrt((kw*kw)+(kvar*kvar));
-
-    if( kva != 0.0 )
-    {
-        if( kw < 0 )
-        {
-            kw = -kw;
-        }
-        newPowerFactorValue = kw / kva;
-        //check if this is leading
-        if( kvar < 0.0 && newPowerFactorValue != 1.0 )
-        {
-            newPowerFactorValue = 2.0-newPowerFactorValue;
-        }
-    }
-
-    return newPowerFactorValue;
-}
 
 void CtiCCSubstation::checkForAndStopVerificationOnChildSubBuses(CtiMultiMsg_vec& capMessages)
 {
@@ -693,3 +665,40 @@ CtiCCSubstation& CtiCCSubstation::checkAndUpdateChildVoltReductionFlags()
 
     return *this;
 }
+
+
+void CtiCCSubstation::getPowerFactorData( double & watts, double & vars, double & estimatedVars )
+{
+    watts         = 0.0;
+    vars          = 0.0;
+    estimatedVars = 0.0;
+
+    CtiCCSubstationBusStore * store = CtiCCSubstationBusStore::getInstance();
+    RWRecursiveLock<RWMutexLock>::LockGuard  guard( store->getMux() );
+
+    for each ( const long busID in getCCSubIds() )
+    {
+        CtiCCSubstationBusPtr bus = store->findSubBusByPAObjectID( busID );
+
+        if ( bus )
+        {
+            watts         += bus->getCurrentWattLoadPointValue();
+            vars          += bus->getTotalizedVarLoadPointValue();
+            estimatedVars += bus->getEstimatedVarLoadPointValue();
+        }
+    }
+}
+
+
+void CtiCCSubstation::updatePowerFactorData()
+{
+    double  totalWatts,
+            totalVars,
+            totalEstimatedVars;
+
+    getPowerFactorData( totalWatts, totalVars, totalEstimatedVars );
+
+    setPFactor( Cti::CapControl::calculatePowerFactor( totalVars, totalWatts ) );
+    setEstPFactor( Cti::CapControl::calculatePowerFactor( totalEstimatedVars, totalWatts ) );
+}
+

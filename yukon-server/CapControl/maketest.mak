@@ -53,7 +53,8 @@ test_likeDayControl.obj \
 test_pointHolder.obj \
 test_IVVCAlgorithm.obj \
 test_GangOperatedVoltageRegulator.obj \
-test_PhaseOperatedVoltageRegulator.obj
+test_PhaseOperatedVoltageRegulator.obj \
+test_utils.obj
 
 
 CAPCTRLBASEOBJS= \
@@ -462,6 +463,16 @@ test_strategymanager.obj:	StrategyManager.h readers_writer_lock.h \
 		queues.h cticalls.h os2_2w32.h types.h numstr.h \
 		ControlStrategy.h StrategyLoader.h KVarStrategy.h \
 		NoStrategy.h PFactorKWKVarStrategy.h
+test_utils.obj:	ccutil.h pointattribute.h yukon.h types.h ctidbgmem.h \
+		dlldefs.h devicetypes.h msg_pcrequest.h message.h ctitime.h \
+		collectable.h rwutil.h database_connection.h dbaccess.h \
+		dllbase.h dsm2.h cticonnect.h netports.h mutex.h guard.h \
+		utility.h queues.h cticalls.h os2_2w32.h numstr.h dsm2err.h \
+		words.h optional.h database_reader.h row_reader.h \
+		boost_time.h boostutil.h mgr_paosched.h pao_schedule.h \
+		ctibase.h ctinexus.h logger.h thread.h CtiPCPtrQueue.h \
+		pao_event.h dbmemobject.h amq_connection.h critical_section.h \
+		CapControlOperationMessage.h StreamableMessage.h
 test_voltageregulatormanager.obj:	GangOperatedVoltageRegulator.h \
 		VoltageRegulator.h yukon.h types.h ctidbgmem.h \
 		CapControlPao.h row_reader.h ctitime.h dlldefs.h rwutil.h \

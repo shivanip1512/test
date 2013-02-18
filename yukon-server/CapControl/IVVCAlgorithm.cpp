@@ -1747,7 +1747,7 @@ bool IVVCAlgorithm::busAnalysisState(IVVCStatePtr state, CtiCCSubstationBusPtr s
     double targetPowerFactorVars = calculateTargetPFVars( strategy->getTargetPF(isPeakTime), powerFactorData[0].wattValue );
     double Vf = calculateVf( pointValues );
     double violationCost = calculateVoltageViolation( pointValues, strategy, isPeakTime );
-    double PFBus = subbus->calculatePowerFactor( powerFactorData[0].varValue, powerFactorData[0].wattValue );
+    double PFBus = Cti::CapControl::calculatePowerFactor( powerFactorData[0].varValue, powerFactorData[0].wattValue );
 
     if (_CC_DEBUG & CC_DEBUG_IVVC)
     {
@@ -1781,7 +1781,7 @@ bool IVVCAlgorithm::busAnalysisState(IVVCStatePtr state, CtiCCSubstationBusPtr s
 
         for ( int i = 1 ; i < powerFactorData.size() ; i++ )
         {
-            double PFFeeder = subbus->calculatePowerFactor( powerFactorData[i].varValue, powerFactorData[i].wattValue );
+            double PFFeeder = Cti::CapControl::calculatePowerFactor( powerFactorData[i].varValue, powerFactorData[i].wattValue );
 
             // add in each feeder power factor component
 
@@ -1925,7 +1925,7 @@ bool IVVCAlgorithm::busAnalysisState(IVVCStatePtr state, CtiCCSubstationBusPtr s
                    }
                 }
 
-                state->_estimated[currentBank->getPaoId()].powerFactor = subbus->calculatePowerFactor(estVarValue, powerFactorData[0].wattValue);
+                state->_estimated[currentBank->getPaoId()].powerFactor = Cti::CapControl::calculatePowerFactor(estVarValue, powerFactorData[0].wattValue);
 
                 if (_CC_DEBUG & CC_DEBUG_IVVC)
                 {
@@ -1966,7 +1966,7 @@ bool IVVCAlgorithm::busAnalysisState(IVVCStatePtr state, CtiCCSubstationBusPtr s
                             feederVarValue += isCapBankOpen ? -currentBank->getBankSize() : currentBank->getBankSize();
                         }
 
-                        double PFFeeder = subbus->calculatePowerFactor( feederVarValue, powerFactorData[i].wattValue );
+                        double PFFeeder = Cti::CapControl::calculatePowerFactor( feederVarValue, powerFactorData[i].wattValue );
 
                         // add in each feeder power factor component
 
