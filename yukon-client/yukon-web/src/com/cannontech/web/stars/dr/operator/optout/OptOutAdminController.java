@@ -1,7 +1,6 @@
 package com.cannontech.web.stars.dr.operator.optout;
 
 import java.util.ArrayList;
-import java.util.Collections;
 import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
@@ -46,6 +45,7 @@ import com.cannontech.stars.dr.program.dao.ProgramDao;
 import com.cannontech.stars.dr.program.model.Program;
 import com.cannontech.stars.energyCompany.model.YukonEnergyCompany;
 import com.cannontech.user.YukonUserContext;
+import com.cannontech.util.ServletUtil;
 import com.cannontech.web.common.flashScope.FlashScope;
 import com.cannontech.web.security.annotation.CheckRole;
 import com.cannontech.web.util.JsonView;
@@ -133,10 +133,10 @@ public class OptOutAdminController {
     }
 
     @RequestMapping(value = "/operator/optOut/systemOptOuts", method = RequestMethod.POST)
-    public View systemOptOuts(Integer assignedProgramId, YukonUserContext userContext, ModelMap model) throws Exception {
-        List<Integer> assignedProgramIds = assignedProgramId != null ? Collections.singletonList(assignedProgramId): null;
-
+    public View systemOptOuts(String assignedProgramIdsStr, YukonUserContext userContext, ModelMap model) throws Exception {
         YukonEnergyCompany yukonEnergyCompany = yukonEnergyCompanyService.getEnergyCompanyByOperator(userContext.getYukonUser());
+        List<Integer> assignedProgramIds = ServletUtil.getIntegerListFromString(assignedProgramIdsStr);
+        
         model.addAttribute("totalNumberOfAccounts", customerAccountDao.getTotalNumberOfAccounts(yukonEnergyCompany, assignedProgramIds));
         model.addAttribute("currentOptOuts", optOutEventDao.getTotalNumberOfActiveOptOuts(yukonEnergyCompany, assignedProgramIds));
         model.addAttribute("scheduledOptOuts", optOutEventDao.getTotalNumberOfScheduledOptOuts(yukonEnergyCompany, assignedProgramIds));
@@ -144,7 +144,7 @@ public class OptOutAdminController {
 
         return new JsonView();
     }
-    
+
     @RequestMapping(value = "/operator/optOut/admin/setDisabled", params="enableOptOuts", method = RequestMethod.POST)
     public String enableOptOutsAndCommsToday(LiteYukonUser user, ModelMap map, String programName, FlashScope flashScope) throws Exception {
         return toggleOptOutsToday(user, map, programName, OptOutEnabled.ENABLED, flashScope);

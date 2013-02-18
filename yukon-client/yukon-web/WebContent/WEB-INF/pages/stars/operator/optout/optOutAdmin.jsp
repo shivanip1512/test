@@ -8,77 +8,161 @@
 <cti:verifyRolesAndProperties value="CONSUMER_INFO"/>
     
 <cti:standardPage module="dr" page="optOutAdmin">
-    
     <cti:checkEnergyCompanyOperator showError="true" >
+
+    <cti:url var="systemOptOutsUrl" value="/stars/operator/optOut/systemOptOuts" />
     
-        <cti:url var="systemOptOutsUrl" value="/stars/operator/optOut/systemOptOuts" />
-        
-        <script type="text/javascript">
-    
-            function systemOptOutInfo() {
-            	var assignedProgramId = $('systemProgramPaoId').value;
-    
-                var url = "/stars/operator/optOut/systemOptOuts";
-                new Ajax.Request(url, {'parameters': {'assignedProgramId': assignedProgramId},
-                onComplete: function(transport, json) {
-                    jQuery('.totalAccounts .value').html(json.totalNumberOfAccounts);
-                    jQuery('.todaysOptOuts .value').html(json.currentOptOuts);
-                    jQuery('.futureOptOuts .value').html(json.scheduledOptOuts);
-                    jQuery('.alternateEnrollments .value').html(json.alternateEnrollments);
-                } });
-    
-    /*        	This should be uncommented and fixed when we figure out the json to spring controller issue.
-    
-            	jQuery.ajax({
-            		url: "${systemOptOutsUrl}",
-            		data: { assignedProgramIds: assignedProgramIds},
-                    dataType: 'json',
-    
-                    success: function(data){
-                        jQuery('.totalAccounts .value').html(data.totalNumberOfAccounts);
-                        jQuery('.todaysOptOuts .value').html(data.scheduledOptOuts);
-                        jQuery('.futureOptOuts .value').html(data.currentOptOuts);
-                        jQuery('.totalSeasonalOptOuts .value').html(data.totalSeasonalOptOuts);
-                   }
-                });
-    */            
+    <script type="text/javascript">
+
+        function setPickerSelectedProgramNamesFunction(spanId) {
+            return function(ids) {
+                var selectedNames = [];
+                for (var index = 0; index < ids.length; index++) {
+                    selectedNames.push(ids[index].displayName);
+                }
+                jQuery('#'+spanId).html(selectedNames.join(","));
+                
+                systemOptOutInfoRequest();
             }
-      
-        	function toggleProgramNameEnabled(toggleEl, txtEl) {
-        		if (toggleEl.checked) {
-        			txtEl.enable();
-        		} else {
-        			txtEl.value = '';
-        			txtEl.disable();
-        		}
-        	}
-        </script>
+        }
     
-    	<table class="widgetColumns">
-    		<c:set var="show">
-    			<i:inline key=".countOptOuts.byProgramName.instruction.show" />
-    		</c:set>
-    		<c:set var="change">
-    			<i:inline key=".countOptOuts.byProgramName.instruction.change" />
-    		</c:set>
-    		<tr>
-    		    <td class="widgetColumnCell" valign="top" style="padding: 9px 0px 0px 0px">    
-    		        <!-- System Information -->
-    		        <cti:checkProperty property="ConsumerInfoRole.OPT_OUT_ADMIN_STATUS">
-    			    <tags:boxContainer2 nameKey="systemInfo" hideEnabled="false">
-    		                <tags:nameValueContainer2>
-    			                 <tags:nameValue2 rowClass="totalAccounts" nameKey=".totalAccounts">${totalNumberOfAccounts}</tags:nameValue2>
-    		                     <tags:nameValue2 rowClass="todaysOptOuts" nameKey=".todaysOptOuts">${currentOptOuts}</tags:nameValue2>
-    			                 <tags:nameValue2 rowClass="futureOptOuts" nameKey=".futureOptOuts">${scheduledOptOuts}</tags:nameValue2>
-    			                 <cti:checkEnergyCompanySetting value="ALTERNATE_PROGRAM_ENROLLMENT" energyCompanyId="${energyCompanyId}" >
-                                      <tags:nameValue2 rowClass="alternateEnrollments" nameKey=".alternateEnrollments">${alternateEnrollments}</tags:nameValue2>
-                                 </cti:checkEnergyCompanySetting>
-    			            </tags:nameValueContainer2>
-                            <br>
-    
+        function systemOptOutInfoRequest() {
+        	var assignedProgramIds = $('systemProgramPaoIds').value;
+
+            var url = "/stars/operator/optOut/systemOptOuts";
+            new Ajax.Request(url, {'parameters': {'assignedProgramIdsStr': assignedProgramIds},
+            onComplete: function(transport, json) {
+                jQuery('.totalAccounts .value').html(json.totalNumberOfAccounts);
+                jQuery('.todaysOptOuts .value').html(json.currentOptOuts);
+                jQuery('.futureOptOuts .value').html(json.scheduledOptOuts);
+                jQuery('.alternateEnrollments .value').html(json.alternateEnrollments);
+            } });
+
+/*        	This should be uncommented and fixed when we figure out the json to spring controller issue.
+
+        	jQuery.ajax({
+        		url: "${systemOptOutsUrl}",
+        		data: { assignedProgramIds: assignedProgramIds},
+                dataType: 'json',
+
+                success: function(data){
+                    jQuery('.totalAccounts .value').html(data.totalNumberOfAccounts);
+                    jQuery('.todaysOptOuts .value').html(data.scheduledOptOuts);
+                    jQuery('.futureOptOuts .value').html(data.currentOptOuts);
+                    jQuery('.totalSeasonalOptOuts .value').html(data.totalSeasonalOptOuts);
+               }
+            });
+*/            
+        }
+  
+    	function toggleProgramNameEnabled(toggleEl, txtEl) {
+    		if (toggleEl.checked) {
+    			txtEl.enable();
+    		} else {
+    			txtEl.value = '';
+    			txtEl.disable();
+    		}
+    	}
+    </script>
+
+	<table class="widgetColumns">
+		<c:set var="show">
+			<i:inline key=".countOptOuts.byProgramName.instruction.show" />
+		</c:set>
+		<c:set var="change">
+			<i:inline key=".countOptOuts.byProgramName.instruction.change" />
+		</c:set>
+		<tr>
+		    <td class="widgetColumnCell" valign="top" style="padding: 9px 0px 0px 0px">    
+		        <!-- System Information -->
+		        <cti:checkProperty property="ConsumerInfoRole.OPT_OUT_ADMIN_STATUS">
+			    <tags:boxContainer2 nameKey="systemInfo" hideEnabled="false">
+		                <tags:nameValueContainer2>
+			                 <tags:nameValue2 rowClass="totalAccounts" nameKey=".totalAccounts">${totalNumberOfAccounts}</tags:nameValue2>
+		                     <tags:nameValue2 rowClass="todaysOptOuts" nameKey=".todaysOptOuts">${currentOptOuts}</tags:nameValue2>
+			                 <tags:nameValue2 rowClass="futureOptOuts" nameKey=".futureOptOuts">${scheduledOptOuts}</tags:nameValue2>
+			                 <cti:checkEnergyCompanySetting value="ALTERNATE_PROGRAM_ENROLLMENT" energyCompanyId="${energyCompanyId}" >
+                                  <tags:nameValue2 rowClass="alternateEnrollments" nameKey=".alternateEnrollments">${alternateEnrollments}</tags:nameValue2>
+                             </cti:checkEnergyCompanySetting>
+			            </tags:nameValueContainer2>
+                        <br>
+
+                        <table style="padding:10px;background-color:#EEE;width:100%;">
+                            <tr><td>
+                                <span class="fwb"><i:inline key=".countOptOuts.byProgramName.label"/></span> <i:inline key=".countOptOuts.byProgramNames.instruction" arguments="${show}"/>
+                            </td></tr>
+                            <tr><td style="padding-top:10px;">
+
+                                  <%-- PROGRAM PICKER --%>
+                                  <input type="hidden" id="systemProgramPaoIds">
+                                  <input type="hidden" id="systemProgramName" name="programName" value="">
+                                
+                                  <tags:pickerDialog type="assignedProgramPicker"
+                                                           id="systemProgramPicker" 
+                                                           destinationFieldId="systemProgramPaoIds"
+                                                           styleClass="simpleLink"
+                                                           allowEmptySelection="true"
+                                                           extraArgs="${energyCompanyId}"
+                                                           endAction="setPickerSelectedProgramNamesFunction('systemProgramNameDisplaySpan');"
+                                                           multiSelectMode="true">
+                                                           
+                                    <cti:img nameKey="add"/> <cti:msg2 key="yukon.web.modules.dr.chooseProgram"/>
+                                </tags:pickerDialog>
+                                 
+                                <span id="systemProgramNameDisplaySpan" style="font-weight:bold;"></span>
+                                 
+                           </td></tr>
+                    </table>
+                </tags:boxContainer2>
+                
+                <br/>
+                     
+                <span id="systemProgramNameDisplaySpan" style="font-weight:bold;"></span>
+
+		        </cti:checkProperty>
+		        <br>
+
+                <!-- Disable Consumer Opt Out Ability for Today -->
+                <cti:checkProperty property="ConsumerInfoRole.OPT_OUT_ADMIN_CHANGE_ENABLE">
+                    <tags:boxContainer2 nameKey="disableOptOuts" hideEnabled="false">
+                        
+                        <div style="font-size:11px;"><b><i:inline key=".disableOptOuts.note.label"/></b> <i:inline key=".disableOptOuts.note.text"/></div>
+                        <br>
+                        
+                        <b><i:inline key=".disableOptOuts.currentDisabledPrograms"/></b>
+                        <br><br>
+                        <table class="compactResultsTable">
+                            <tr>
+                                <th><i:inline key=".disableOptOuts.currentDisabledPrograms.header.programName"/></th>
+                                <th><i:inline key=".disableOptOuts.currentDisabledPrograms.header.enabled"/></th>
+                            </tr>
+                            
+                            <c:forEach var="program" items="${programNameEnabledMap}">
+                                <tr>
+                                    <td>${program.key}</td>
+                                    <td><cti:msg key="${program.value.formatKey}"/></td>
+                                </tr>
+                            </c:forEach>
+                            
+                            <tr>
+                                <c:choose>
+                                    <c:when test="${fn:length(programNameEnabledMap) > 0}">
+                                        <td><i:inline key=".otherPrograms" /></td>
+                                    </c:when>
+                                    <c:otherwise>
+                                        <td><i:inline key=".allPrograms" /></td>
+                                    </c:otherwise>
+                                </c:choose>
+                                <td><cti:msg key="${energyCompanyOptOutEnabledSetting}"/></td>
+                            </tr>
+                        
+                        </table>
+                        <br>
+                    
+                        <form action="/stars/operator/optOut/admin/setDisabled" method="post">
                             <table style="padding:10px;background-color:#EEE;width:100%;">
                                 <tr><td>
-                                    <span class="fwb"><i:inline key=".countOptOuts.byProgramName.label"/></span> <i:inline key=".countOptOuts.byProgramName.instruction" arguments="${show}"/>
+                                    <b><i:inline key=".countOptOuts.byProgramName.label"/></b> <i:inline key=".countOptOuts.byProgramName.instruction"/>
                                 </td></tr>
                                 <tr><td style="padding-top:10px;">
     
