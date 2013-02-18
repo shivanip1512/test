@@ -1,6 +1,3 @@
-/*
- * Created on Mar 8, 2004
- */
 package com.cannontech.message.server;
 
 import org.springframework.core.style.ToStringCreator;
@@ -15,7 +12,6 @@ import com.cannontech.message.util.ServerRequest;
  * well as a collectable payload.  That might be some updated
  * state info or whatever is relevant to the response to a request.
  * 
- * @author aaron
  */
 public class ServerResponseMsg extends Message {
 	//Possible values for status

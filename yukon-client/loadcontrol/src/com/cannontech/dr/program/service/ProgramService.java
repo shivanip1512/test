@@ -268,14 +268,4 @@ public interface ProgramService {
      * for the program with the specified id.
      */
     public void disableAndSupressRestoration(int programId);
-
-    /**
-     * Calls LoadControlClientConnection.getProgramSafe()
-     * 
-     * @param programId
-     * @return
-     * @throws ConnectionException
-     * @throws NotFoundException
-     */
-    public LMProgramBase getProgramSafe(int programId) throws ConnectionException, NotFoundException;
 }

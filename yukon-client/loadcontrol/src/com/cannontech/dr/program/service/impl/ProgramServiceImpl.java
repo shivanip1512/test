@@ -97,8 +97,8 @@ public class ProgramServiceImpl implements ProgramService {
     @Autowired private RolePropertyDao rolePropertyDao;
     @Autowired private ScenarioDao scenarioDao;
     @Autowired private DateFormattingService dateFormattingService;
+    @Autowired @Qualifier("main") private Executor executor;
 
-    private Executor executor;
     private static final long PROGRAM_CHANGE_TIMEOUT_MS = 5000;
 
     private final RowMapperWithBaseQuery<DisplayablePao> rowMapper =
@@ -377,7 +377,9 @@ public class ProgramServiceImpl implements ProgramService {
             int startingGearNumber = loadControlProgramDao.getStartingGearForScenarioAndProgram(ProgramUtils.getProgramId(program), scenarioId);
             ScenarioProgram scenarioProgram = scenarioPrograms.get(program.getYukonID());
 
-            ProgramStatus programStatus = startProgramBlocking(program.getYukonID(), startingGearNumber, startTime, scenarioProgram.getStartOffset(), stopScheduled, stopTime, scenarioProgram.getStopOffset(), overrideConstraints, null, true);
+            ProgramStatus programStatus = startProgramBlocking(program.getYukonID(), startingGearNumber, startTime,
+                    scenarioProgram.getStartOffset(), stopScheduled, stopTime, scenarioProgram.getStopOffset(),
+                    overrideConstraints, null, true);
             programStatuses.add(programStatus);
         }
 
@@ -768,17 +770,5 @@ public class ProgramServiceImpl implements ProgramService {
 
         return program.createScheduledStartMsg(startDate, stopDate, gearNumber,
                                                null, additionalInfo, constraintId);
-    }
-
-    @Override
-    public LMProgramBase getProgramSafe(int programId) throws ConnectionException,
-            NotFoundException {
-        return loadControlClientConnection.getProgramSafe(programId);
-    }
-
-    @Autowired
-    @Qualifier("main")
-    public void setExecutor(ScheduledExecutor executor) {
-        this.executor = executor;
     }
 }

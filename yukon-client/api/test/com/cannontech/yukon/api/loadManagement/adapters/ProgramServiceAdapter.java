@@ -139,12 +139,6 @@ public class ProgramServiceAdapter implements ProgramService {
     }
 
     @Override
-    public LMProgramBase getProgramSafe(int programId) throws ConnectionException,
-            NotFoundException {
-        throw new UnsupportedOperationException("Not Implemented");
-    }
-
-    @Override
     public ProgramStatus scheduleProgramStopByProgramName(String programName, Date stopTime,
                                                           boolean force, boolean observeConstraints)
             throws TimeoutException {
