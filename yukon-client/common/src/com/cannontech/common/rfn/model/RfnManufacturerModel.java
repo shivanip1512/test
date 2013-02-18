@@ -27,7 +27,13 @@ public enum RfnManufacturerModel {
     RFN_420CD(PaoType.RFN420CD, "ITRN", "C2SX-SD"),
     
     RFN_420ELO(PaoType.RFN420ELO, "ELO", "2131T"),
-    RFN_430ELO(PaoType.RFN430ELO, "ELO", "2131xT");
+    RFN_430ELO(PaoType.RFN430ELO, "ELO", "2131xT"),
+    
+    RFN_410FL(PaoType.RFN410FL, "LGYR", "FocuskWh"),
+    RFN_410FX_D(PaoType.RFN410FX, "LGYR", "FocusAXD"),
+    RFN_410FX_R(PaoType.RFN410FX, "LGYR", "FocusAXR"),
+    RFN_410FD_D(PaoType.RFN410FD, "LGYR", "FocusAXR-SD"),
+    RFN_410FD_R(PaoType.RFN410FD, "LGYR", "FocusAXD-SD");
     
     private PaoType type;
     private String manufacturer;

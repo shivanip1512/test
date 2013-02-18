@@ -17,6 +17,7 @@ import com.cannontech.clientutils.LogHelper;
 import com.cannontech.clientutils.YukonLogManager;
 import com.cannontech.common.config.ConfigurationSource;
 import com.cannontech.common.config.MasterConfigBooleanKeysEnum;
+import com.cannontech.common.device.creation.BadTemplateDeviceCreationException;
 import com.cannontech.common.rfn.message.RfnIdentifier;
 import com.cannontech.common.rfn.message.RfnIdentifyingMessage;
 import com.cannontech.common.rfn.model.RfnDevice;
@@ -111,8 +112,12 @@ public abstract class RfnArchiveRequestListenerBase<T extends RfnIdentifyingMess
                 return rfnDevice;
             } catch (IgnoredTemplateException e) {
                 throw new RuntimeException("Unable to create device for " + rfnIdentifier + " because template is ignored", e);
-            } catch (Exception e) {
-                LogHelper.debug(log, "Creation failed for %s: %s", rfnIdentifier, e);
+            } catch (BadTemplateDeviceCreationException e) {
+                LogHelper.warn(log, "Creation failed for %s. Manufacture, Model and Serial Number combination do not match the template. This could be caused by an existing device with the same serial and manufacturer as the new device.  %s", rfnIdentifier, e);
+                throw new RuntimeException("Creation failed for " + rfnIdentifier, e);
+            } 
+            catch (Exception e) {
+                LogHelper.warn(log, "Creation failed for %s: %s", rfnIdentifier, e);
                 throw new RuntimeException("Creation failed for " + rfnIdentifier, e);
             }
         }

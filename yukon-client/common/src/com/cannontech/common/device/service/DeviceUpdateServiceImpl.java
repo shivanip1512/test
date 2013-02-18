@@ -2,6 +2,7 @@ package com.cannontech.common.device.service;
 
 import java.util.Collections;
 import java.util.List;
+import java.util.Map;
 import java.util.Set;
 
 import org.apache.commons.lang.StringUtils;
@@ -31,6 +32,7 @@ import com.cannontech.common.pao.definition.service.PaoDefinitionService;
 import com.cannontech.common.pao.definition.service.PaoDefinitionService.PointTemplateTransferPair;
 import com.cannontech.common.pao.service.PointCreationService;
 import com.cannontech.common.pao.service.PointService;
+import com.cannontech.common.rfn.model.RfnManufacturerModel;
 import com.cannontech.common.util.CtiUtilities;
 import com.cannontech.common.util.SimpleCallback;
 import com.cannontech.core.dao.DeviceDao;
@@ -61,10 +63,14 @@ import com.cannontech.database.data.pao.PAOGroups;
 import com.cannontech.database.data.point.PointBase;
 import com.cannontech.database.data.point.PointUtil;
 import com.cannontech.database.db.DBPersistent;
+import com.cannontech.database.db.device.RfnAddress;
 import com.cannontech.device.range.DlcAddressRangeService;
 import com.cannontech.message.DbChangeManager;
 import com.cannontech.message.dispatch.message.DBChangeMsg;
 import com.cannontech.message.dispatch.message.DbChangeType;
+import com.google.common.base.Function;
+import com.google.common.base.Functions;
+import com.google.common.collect.Maps;
 
 public class DeviceUpdateServiceImpl implements DeviceUpdateService {
 
@@ -275,7 +281,24 @@ public class DeviceUpdateServiceImpl implements DeviceUpdateService {
         }
         
         if (newDevice instanceof RfnBase && oldDevice instanceof RfnBase) {
-            ((RfnBase) newDevice).setRfnAddress((((RfnBase) oldDevice).getRfnAddress()));
+            RfnAddress rfnAddress = (((RfnBase) oldDevice).getRfnAddress());
+            List<RfnManufacturerModel> rfnManufacturerModels = RfnManufacturerModel.getForType(newDefinition.getType());
+            
+            Map<String, RfnManufacturerModel> models =
+                Maps.uniqueIndex(rfnManufacturerModels,
+                                 new Function<RfnManufacturerModel, String>() {
+                                     public String apply(RfnManufacturerModel from) {
+                                         return from.getModel();
+                                     }
+                                 });
+            
+            /* For RFN-410fD the we can choose from 2 models FocusAXR-SD and FocusAXD-SD.
+             * If RFN-420fD is changed to RFN-410fD model should remain the same as the model on RFN-420fD which is FocusAXR-SD*/
+            if(!models.containsKey(rfnAddress.getModel())){
+                // update model only if the model for the new device is not a valid model choice for the old device
+                rfnAddress.setModel(rfnManufacturerModels.get(0).getModel());   
+            }
+            ((RfnBase) newDevice).setRfnAddress(rfnAddress);
         }
 
         if (newDevice instanceof TwoWayDevice && oldDevice instanceof TwoWayDevice) {

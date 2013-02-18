@@ -68,7 +68,7 @@ public class ChangeDeviceTypeController extends BulkControllerBase {
         }
 
         // Only add device types that are valid for the collection 
-        Map<String, Integer> deviceTypes = Maps.newLinkedHashMap();
+        Map<String, Integer> deviceTypes = Maps.newTreeMap();
         for (PaoType paoType : paoTypes) {
             Set<PaoDefinition> changeablePaos = paoDefinitionService.getChangeablePaos(paoType);
             for (PaoDefinition paoDefinition : changeablePaos) {
