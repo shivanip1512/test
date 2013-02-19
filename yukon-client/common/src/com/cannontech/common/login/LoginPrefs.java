@@ -56,8 +56,8 @@ class LoginPrefs extends CtiPreferences {
 			try {
                 password = aesCipher.decryptHexStr(password);
             } catch (CryptoException | DecoderException e) {
-                log.warn("Unable to decrypt saved password.",e);
-                password=null;
+                log.warn("Unable to decrypt saved password.", e);
+                password = null;
             } 
 			return (password == null ? "" : password);
 		} else {
@@ -79,8 +79,8 @@ class LoginPrefs extends CtiPreferences {
             try {
                 password = aesCipher.decryptHexStr(password);
             } catch (CryptoException | DecoderException e) {
-                log.warn("Unable to decrypt saved password.",e);
-                password=null;
+                log.warn("Unable to decrypt saved password.", e);
+                password = null;
             } 
             return (password == null ? "" : password);
         } else {
