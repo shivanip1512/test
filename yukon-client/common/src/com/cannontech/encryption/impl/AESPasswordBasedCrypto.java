@@ -1,5 +1,6 @@
 package com.cannontech.encryption.impl;
 
+import java.io.UnsupportedEncodingException;
 import java.security.Key;
 import java.security.MessageDigest;
 import java.security.Security;
@@ -11,6 +12,8 @@ import javax.crypto.Mac;
 import javax.crypto.spec.IvParameterSpec;
 import javax.crypto.spec.SecretKeySpec;
 
+import org.apache.commons.codec.DecoderException;
+import org.apache.commons.codec.binary.Hex;
 import org.apache.commons.lang.ArrayUtils;
 import org.bouncycastle.jce.provider.BouncyCastleProvider;
 
@@ -104,6 +107,41 @@ public class AESPasswordBasedCrypto implements PasswordBasedCrypto {
             decryptingCipher.init(Cipher.DECRYPT_MODE, aesSpec, new IvParameterSpec(initVector));
         } catch (Exception e) {
             throw new CryptoException(e);
+        }
+    }
+
+    /**
+     * Encrypts the string returning a hex encoded string.
+     * 
+     * Returns a hex string (e.g. "1234567890abcdef") encoded UTF-8 bytes
+     * 
+     * @param plainText : String
+     * @throws CryptoException 
+     */
+    @Override
+    public synchronized String encryptToHexStr(String plainText) throws CryptoException {
+        try {
+            return new String(Hex.encodeHex(encrypt(plainText.getBytes("UTF-8"))));
+        }  catch (UnsupportedEncodingException e) {
+            throw new AssertionError("UTF-8 is unknown");
+        }
+    }
+
+    /**
+     * Decrypts the hex encoded string (UTF-8 bytes) returning a plain text string. The hex string must
+     * be an even number of hex characters. If hexStr has an odd number or non hex characters a DecoderException will
+     * be thrown. 
+     * 
+     * @param hexStr : String
+     * @throws CryptoException 
+     * @throws DecoderException 
+     */
+    @Override
+    public synchronized String decryptHexStr(String hexStr) throws CryptoException, DecoderException {
+        try {
+            return new String(decrypt(Hex.decodeHex(hexStr.toCharArray())),"UTF-8");
+        } catch (UnsupportedEncodingException e) {
+            throw new AssertionError("UTF-8 is unknown");
         }
     }
 
