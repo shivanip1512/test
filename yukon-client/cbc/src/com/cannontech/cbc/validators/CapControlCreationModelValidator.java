@@ -3,9 +3,9 @@ package com.cannontech.cbc.validators;
 import org.apache.commons.lang.StringUtils;
 import org.springframework.validation.Errors;
 
-import com.cannontech.capcontrol.creation.service.CapControlCreationService;
 import com.cannontech.capcontrol.dao.StrategyDao;
 import com.cannontech.cbc.service.CapControlCreationModel;
+import com.cannontech.common.pao.PaoCategory;
 import com.cannontech.common.pao.PaoType;
 import com.cannontech.common.validator.SimpleValidator;
 import com.cannontech.core.dao.PaoDao;
@@ -48,8 +48,7 @@ public class CapControlCreationModelValidator extends SimpleValidator<CapControl
             return;
         }
 
-        //Must be a PAO
-
+        //Check for Cap Bank and CBC having the same name
         if (model.isCreateNested()) {
             String cbcName = model.getNestedWizard().getName();
             if (name.equalsIgnoreCase(cbcName)) {
@@ -57,10 +56,24 @@ public class CapControlCreationModelValidator extends SimpleValidator<CapControl
             }
         }
 
-        final PaoType paoType = PaoType.getForId(type);
+        /*
+         * The tuple (name, PaoCategory, PaoClass) must be unique in the database.
+         * At this point, the device is one of: Area, Special Area, Substation, Substation Bus, Feeder, CapBank, CBC, and Regulator.
+         * These all have PaoClass CAPCONTROL. 
+         * CBC and CapBank have PaoCategory DEVICE, the rest have PaoCategory CAPCONTROL
+         */
 
-        if(paoDao.findUnique(name, paoType.getPaoCategory(), paoType.getPaoClass()) != null){
-            errors.reject("There is already a Cap Control item with the name '" + name + "'");
+        final PaoType paoType = PaoType.getForId(type);
+        final PaoCategory paoCategory = paoType.getPaoCategory();
+
+
+        if(paoDao.findUnique(name, paoCategory, paoType.getPaoClass()) != null) {
+            if(paoCategory.equals(PaoCategory.CAPCONTROL)){
+                errors.reject("There is already an Area, Substation, Substation Bus, Feeder, or Regulator with the name '" + name + "'");
+            }
+            else {
+                errors.reject("There is already a Cap Bank or CBC with the name '" + name + "'");
+            }
         }
     }
 
