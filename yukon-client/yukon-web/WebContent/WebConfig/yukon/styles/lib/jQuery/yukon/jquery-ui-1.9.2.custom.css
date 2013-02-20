@@ -237,10 +237,10 @@ button.ui-button::-moz-focus-inner { border: 0; padding: 0; } /* reset extra pad
     padding: 0;
     width: 300px;
     overflow: hidden;
-    border: 12px solid #666;
-    -webkit-box-shadow: #BBB 3px 3px 3px;
-    -moz-box-shadow: #BBB 3px 3px 3px;
-    box-shadow: #BBB 3px 3px 3px;
+    border: 1px solid #bbb;
+    -webkit-box-shadow: #444 0 10px 30px;
+    -moz-box-shadow: #444 0 10px 30px;
+    box-shadow: #444 0 10px 30px;
 }
 .ui-dialog.smallDialog {
     border: 6px solid #666;
@@ -249,6 +249,7 @@ button.ui-button::-moz-focus-inner { border: 0; padding: 0; } /* reset extra pad
     position: relative;
     background-color: #F7F7F7;
     border: 1px solid #BBBBBB;
+    border-style: none none solid none;
     background-image: url(../../../../Icons/boxContainerBg26px.gif);
     background-position: left bottom;
     background-repeat:repeat-x;
