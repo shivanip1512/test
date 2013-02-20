@@ -61,8 +61,8 @@ string CtiInterpreter::escapeQuotationMarks(const string &command)
 
 bool CtiInterpreter::isEscapeCommand(const string &command)
 {
-    size_t start_pos = command.find_first_not_of(' ');
-    size_t end_pos   = command.find_first_of(' ', start_pos);
+    size_t start_pos = command.find_first_not_of(" \t");
+    size_t end_pos   = command.find_first_of(" \t", start_pos);
 
     const string strCmd = command.substr(start_pos, end_pos - start_pos);
 

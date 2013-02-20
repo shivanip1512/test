@@ -35,12 +35,12 @@ BOOST_AUTO_TEST_CASE( test_isEscapeCommand )
 
     BOOST_REQUIRE( interp.isEscapeCommand("jack is a surgeon"));
     BOOST_REQUIRE(!interp.isEscapeCommand("Jack is a surgeon"));      // case-sensitive
-    BOOST_REQUIRE( interp.isEscapeCommand("kate is a thief"));
-    BOOST_REQUIRE(!interp.isEscapeCommand("Kate is a thief"));        // case-sensitive
-    BOOST_REQUIRE( interp.isEscapeCommand("hurley is a millionaire"));
-    BOOST_REQUIRE(!interp.isEscapeCommand("Hurley is a millionaire"));// case-sensitive
-    BOOST_REQUIRE( interp.isEscapeCommand("sawyer is a con artist"));
-    BOOST_REQUIRE(!interp.isEscapeCommand("Sawyer is a con artist")); // case-sensitive
+    BOOST_REQUIRE( interp.isEscapeCommand(" kate is a thief"));
+    BOOST_REQUIRE(!interp.isEscapeCommand(" Kate is a thief"));        // case-sensitive
+    BOOST_REQUIRE( interp.isEscapeCommand("\thurley is a millionaire"));
+    BOOST_REQUIRE(!interp.isEscapeCommand("\tHurley is a millionaire"));// case-sensitive
+    BOOST_REQUIRE( interp.isEscapeCommand(" \tsawyer is a con artist"));
+    BOOST_REQUIRE(!interp.isEscapeCommand(" \tSawyer is a con artist")); // case-sensitive
     BOOST_REQUIRE( interp.isEscapeCommand("sayid is a soldier"));
     BOOST_REQUIRE(!interp.isEscapeCommand("Sayid is a soldier"));     // case-sensitive
     BOOST_REQUIRE( interp.isEscapeCommand("locke is a salesman"));
