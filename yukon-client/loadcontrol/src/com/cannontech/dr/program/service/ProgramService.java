@@ -19,7 +19,6 @@ import com.cannontech.dr.program.model.GearAdjustment;
 import com.cannontech.dr.scenario.model.ScenarioProgram;
 import com.cannontech.loadcontrol.data.LMProgramBase;
 import com.cannontech.loadcontrol.service.data.ProgramStatus;
-import com.cannontech.loadcontrol.service.data.ScenarioStatus;
 import com.cannontech.message.util.BadServerResponseException;
 import com.cannontech.message.util.ConnectionException;
 import com.cannontech.message.util.TimeoutException;
@@ -92,7 +91,7 @@ public interface ProgramService {
      * ProgramStatus will contain the updated program status info if successful,
      * those programs that have constraint violations will contain current
      * program status info and the list of violations in their ProgramStatus.
-     * @param scenarioName
+     * @param scenarioId
      * @param startTime
      * @param stopTime
      * @param overrideConstraints Should normally always be set to false, set to true only if
@@ -102,12 +101,11 @@ public interface ProgramService {
      * Note: This value only matters when using forceStart=false.
      * @param user will be checked against user/group pao permission tables to validate visibility of a scenario.
      * @return
-     * @throws NotFoundException if no scenario exists for given scenarioName.
      * @throws TimeoutException if server fails to send an program update response for any of the program control start attempted.
      * @throws NotAuthorizedException if neither the user (nor any groups user belongs to) have the scenario made visible to them.
      * @throws BadServerResponseException 
      */
-    public ScenarioStatus startScenarioByNameBlocking(String scenarioName, Date startTime,
+    public List<ProgramStatus> startScenarioBlocking(int scenarioId, Date startTime,
                                  Date stopTime, boolean overrideConstraints,
                                  boolean observeConstraintsAndExecute,
                                  LiteYukonUser user)
@@ -138,11 +136,10 @@ public interface ProgramService {
      * @param observeConstraints : If true will start a program if it is ok, modifying time as constraints specify
 
      * @throws NotAuthorizedException
-     * @throws NotFoundException
      * @throws TimeoutException
      * @throws BadServerResponseException
      */
-    public ProgramStatus startProgramByName(String programName, Date startTime,
+    public ProgramStatus startProgram(int programId, Date startTime,
                        Date stopTime, String gearName, boolean overrideConstraints,
                        boolean observeConstraints, LiteYukonUser liteYukonUser)
                        throws NotAuthorizedException, NotFoundException, TimeoutException, BadServerResponseException;
@@ -151,7 +148,7 @@ public interface ProgramService {
      * Starts control for all programs belonging to a given scenario. 
      * Only checks for valid scenario name and user permission, then starts each program in the scenario as a
      * background process and returns immediately.
-     * @param scenarioName
+     * @param scenarioId
      * @param startTime
      * @param stopTime
      * @param overrideConstraints Should normally always be set to false, set to true only if
@@ -161,13 +158,19 @@ public interface ProgramService {
      * Note: This value only matters when using forceStart=false.
      * @param user will be checked against user/group pao permission tables to validate visibility of a scenario.
      * @return
-     * @throws NotFoundException if no scenario exists for given scenarioName.
      * @throws NotAuthorizedException if neither the user (nor any groups user belongs to) have the scenario made visible to them.
      */
-    public void startScenarioByNameAsynch(String scenarioName, Date startTime, Date stopTime,
+    public void startScenario(int scenarioId, Date startTime, Date stopTime,
                                    boolean overrideConstraints, boolean observeConstraints,
                                    LiteYukonUser user) throws NotFoundException, TimeoutException,
             NotAuthorizedException, BadServerResponseException, ConnectionException;
+
+    /**
+     * Schedules the program stop. Blocks on Program Stop Scheduled
+     * @throws BadServerResponseException 
+     * @throws TimeoutException 
+     */
+    public ProgramStatus stopProgramBlocking(int programId, Date stopDate, Duration stopOffset) throws TimeoutException;
 
     /**
      * Schedules the program stop. Non-blocking
@@ -175,15 +178,7 @@ public interface ProgramService {
 
      * @throws TimeoutException 
      */
-    public void scheduleProgramStop(int programId, Date stopDate, Duration stopOffset);
-
-    /**
-     * Schedules the program stop. Blocks on Program Stop Scheduled
-     * @throws BadServerResponseException 
-     * @throws TimeoutException 
-     */
-    public ProgramStatus scheduleProgramStopBlocking(int programId, Date stopDate,
-                                    Duration stopOffset) throws TimeoutException;
+    public void stopProgram(int programId, Date stopDate, Duration stopOffset);
 
     /**
      * Schedules a stop program. Blocks on Program Stop Scheduled. Looks up program by programName.
@@ -191,15 +186,15 @@ public interface ProgramService {
      * Handles constraints based on observeConstraints boolean. If overrideConstraints is set true, constraints
      * will not be checked before scheduling program stop.
      * 
-     * @param programName
+     * @param scenarioId
      * @param stopTime
      * @param overrideConstraints
      * @param observeConstraints
      * @return
      * @throws TimeoutException
      */
-    public ProgramStatus scheduleProgramStopByProgramName(String programName, Date stopTime,
-                                                          boolean overrideConstraints, boolean observeConstraints) throws TimeoutException;
+    public ProgramStatus stopProgram(int programId, Date stopTime, boolean overrideConstraints, boolean observeConstraints)
+                                                          throws TimeoutException;
 
     public void stopProgram(int programId);
 
@@ -207,7 +202,7 @@ public interface ProgramService {
      * Stop control for all programs belonging to a given scenario.
      * Only checks for valid scenario name and user permission, then stops each program in the scenario as a
      * background process and returns immediately.
-     * @param scenarioName
+     * @param scenarioId
      * @param stopTime
      * @param forceStop Should normally always be set to false, set to true only if
      * you're sure you really need want to ignore constraint violations.
@@ -216,10 +211,9 @@ public interface ProgramService {
      * Note: This value only matters when using forceStop=false.
      * @param user will be checked against user/group pao permission tables to validate visibility of a scenario.
      * @return
-     * @throws NotFoundException if no scenario exists for given scenarioName.
      * @throws NotAuthorizedException if neither the user (nor any groups user belongs to) have the scenario made visible to them.
      */
-    public void stopScenarioByNameAsynch(String scenarioName, Date stopTime, boolean forceStop,
+    public void stopScenario(int scenarioId, Date stopTime, boolean forceStop,
                                          boolean observeConstraintsAndExecute, LiteYukonUser user)
                              throws NotFoundException, NotAuthorizedException;
 
@@ -231,7 +225,7 @@ public interface ProgramService {
      * successful, those programs that have constraint violations will contain
      * current program status info and the list of violations in their
      * ProgramStatus.
-     * @param scenarioName
+     * @param scenarioId
      * @param stopTime
      * @param forceStop Should normally always be set to false, set to true only if
      * you're sure you really need want to ignore constraint violations.
@@ -240,13 +234,12 @@ public interface ProgramService {
      * Note: This value only matters when using forceStop=false.
      * @param user will be checked against user/group pao permission tables to validate visibility of a scenario.
      * @return
-     * @throws NotFoundException if no scenario exists for given scenarioName.
      * @throws TimeoutException if server fails to send an program update response for any of the program control stop attempted.
      * @throws NotAuthorizedException if neither the user (nor any groups user belongs to) have the scenario made visible to them.
      * @throws BadServerResponseException 
      */
-    public ScenarioStatus stopScenarioByNameBlocking(String scenarioName,
-                        Date stopTime, boolean forceStop, boolean observeConstraintsAndExecute, LiteYukonUser user) 
+    public List<ProgramStatus> stopScenarioBlocking(int scenarioid, Date stopTime, boolean forceStop,
+                                                     boolean observeConstraintsAndExecute, LiteYukonUser user) 
                     throws NotFoundException, TimeoutException, NotAuthorizedException, BadServerResponseException;
     
     public ConstraintViolations getConstraintViolationsForStopProgram(int programId, int gearNumber,

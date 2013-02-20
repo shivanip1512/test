@@ -27,8 +27,10 @@ import com.cannontech.dr.program.model.GearAdjustment;
 import com.cannontech.dr.program.service.ConstraintContainer;
 import com.cannontech.dr.program.service.ConstraintViolations;
 import com.cannontech.dr.program.service.ProgramService;
+import com.cannontech.loadcontrol.dao.LoadControlProgramDao;
 import com.cannontech.loadcontrol.service.data.ProgramStatus;
 import com.cannontech.message.util.TimeoutException;
+import com.cannontech.yukon.api.loadManagement.adapters.LoadControlProgramDaoAdapter;
 import com.cannontech.yukon.api.loadManagement.adapters.ProgramServiceAdapter;
 import com.cannontech.yukon.api.loadManagement.adapters.RolePropertyDaoAdapter;
 import com.cannontech.yukon.api.loadManagement.endpoint.ProgramStartRequestEndpoint;
@@ -40,12 +42,22 @@ public class ProgramStartRequestEndpointTest {
     private ProgramStartRequestEndpoint impl;
     private MockProgramService mockService;    
     private RolePropertyDao mockRolePropertyDao;
+    private LoadControlProgramDao mockLoadControlProgramDao;
     
     private static final String PROG1 = "Program1";
     private static final String PROG2 = "Program2";
     private static final String PROG3= "Program3";
     private static final String PROG_TIMEOUT = "TIMEOUT";
+    private static final String PROG_NOT_FOUND = "NOT_FOUND";
+    private static final String PROG_NOT_AUTH = "NOT_AUTH";
     
+    private static final int PROG1_ID = 2;
+    private static final int PROG2_ID = 3;
+    private static final int PROG3_ID = 4;
+    private static final int PROG_TIMEOUT_ID = 5;
+    private static final int PROG_NOT_FOUND_ID = 6;
+    private static final int PROG_NOT_AUTH_ID = 7;
+
     @Before
     public void setUp() throws Exception {
         
@@ -62,17 +74,38 @@ public class ProgramStartRequestEndpointTest {
                 return true; // stopScheduled variable - YukonRoleProperty.SCHEDULE_STOP_CHECKED_BY_DEFAULT
             }
         };
+        
+        mockLoadControlProgramDao = new LoadControlProgramDaoAdapter() {
+            @Override
+            public int getProgramIdByProgramName(String programName) {
+                if (programName.equals(PROG_TIMEOUT)) {
+                    return PROG_TIMEOUT_ID;
+                }else if (programName.equals(PROG_NOT_FOUND)) {
+                    return PROG_NOT_FOUND_ID;
+                } else if (programName.equals(PROG_NOT_AUTH)) {
+                    return PROG_NOT_AUTH_ID;
+                } else if (programName.equals(PROG1)) {
+                    return PROG1_ID;
+                } else if (programName.equals(PROG2)) {
+                    return PROG2_ID;
+                } else if (programName.equals(PROG3)) {
+                    return PROG3_ID;
+                }
+                return 0;
+            }
+        };
 
         impl = new ProgramStartRequestEndpoint();
         ReflectionTestUtils.setField(impl, "programService", mockService, ProgramService.class);
         ReflectionTestUtils.setField(impl, "rolePropertyDao", mockRolePropertyDao, RolePropertyDao.class);
+        ReflectionTestUtils.setField(impl, "loadControlProgramDao", mockLoadControlProgramDao);
         impl.initialize();
     }
     
     private class MockProgramService extends ProgramServiceAdapter {
         private Date startTime;
         private Date stopTime;
-        private String programName;
+        private int programId;
         
         @Override
         public ConstraintViolations getConstraintViolationForStartProgram(int programId, int gearNumber, Date startDate, Duration startOffset, Date stopDate, Duration stopOffset, List<GearAdjustment> gearAdjustments) {
@@ -80,29 +113,30 @@ public class ProgramStartRequestEndpointTest {
         }
         
         @Override
-        public ProgramStatus startProgramByName(String programName, Date startTime, Date stopTime,
+        public ProgramStatus startProgram(int programId, Date startTime, Date stopTime,
                                                 String gearName, boolean force,
                                                 boolean observeConstraints, LiteYukonUser liteYukonUser)
                                                         throws TimeoutException {
-            if (programName.equals(PROG_TIMEOUT)) {
+            if (programId == PROG_TIMEOUT_ID) {
                 throw new TimeoutException();
-            }else if (programName.equals("NOT_FOUND")) {
+            }else if (programId == PROG_NOT_FOUND_ID) {
                 throw new NotFoundException("");
-            } else if (programName.equals("NOT_AUTH")) {
+            } else if (programId == PROG_NOT_AUTH_ID) {
                 throw new NotAuthorizedException("");
             }
+            
             if (gearName.equals("BAD_GEAR")) {
                 throw new GearNotFoundException("");
             }
             
-            this.programName = programName;
+            this.programId = programId;
             this.startTime = startTime;
             this.stopTime = stopTime;
 
             return null;
         }
 
-        public String getProgramName() {return programName;}
+        public int getProgramId() {return programId;}
         public Date getStartTime() { return startTime; }
         public Date getStopTime() { return stopTime; }
     }
@@ -126,7 +160,7 @@ public class ProgramStartRequestEndpointTest {
         
         outputTemplate = YukonXml.getXPathTemplateForElement(responseElement);
         
-        Assert.assertEquals("Incorrect programName.", PROG1, mockService.getProgramName());
+        Assert.assertEquals("Incorrect program.", PROG1_ID, mockService.getProgramId());
         Assert.assertEquals("Incorrect startDateTime - should be null.", null, mockService.getStartTime());
         Assert.assertEquals("Incorrect stopDateTime - should null.", null, mockService.getStopTime());
         
@@ -141,7 +175,7 @@ public class ProgramStartRequestEndpointTest {
         
         outputTemplate = YukonXml.getXPathTemplateForElement(responseElement);
         
-        Assert.assertEquals("Incorrect programName.", PROG2, mockService.getProgramName());
+        Assert.assertEquals("Incorrect program.", PROG2_ID, mockService.getProgramId());
         Assert.assertEquals("Incorrect startDateTime.", "2008-10-13T12:30:00Z", Iso8601DateUtil.formatIso8601Date(mockService.getStartTime()));
         Assert.assertEquals("Incorrect startDateTime - should be null.", null, mockService.getStopTime());
         
@@ -157,7 +191,7 @@ public class ProgramStartRequestEndpointTest {
         
         outputTemplate = YukonXml.getXPathTemplateForElement(responseElement);
         
-        Assert.assertEquals("Incorrect programName.", PROG3, mockService.getProgramName());
+        Assert.assertEquals("Incorrect program.", PROG3_ID, mockService.getProgramId());
         Assert.assertEquals("Incorrect startDateTime.", "2008-10-13T12:30:00Z", Iso8601DateUtil.formatIso8601Date(mockService.getStartTime()));
         Assert.assertEquals("Incorrect stopDateTime.", "2008-10-13T21:49:01Z", Iso8601DateUtil.formatIso8601Date(mockService.getStopTime()));
         
@@ -165,7 +199,7 @@ public class ProgramStartRequestEndpointTest {
         
         // not found
         //==========================================================================================
-        requestElement = LoadManagementTestUtils.createStartStopRequestElement("programStartRequest", "programName", "NOT_FOUND", null, null, "", "1.0", false, requestSchemaResource);
+        requestElement = LoadManagementTestUtils.createStartStopRequestElement("programStartRequest", "programName", PROG_NOT_FOUND, null, null, "", "1.0", false, requestSchemaResource);
         
         responseElement = impl.invoke(requestElement, null);
         TestUtils.validateAgainstSchema(responseElement, responseSchemaResource);
@@ -198,7 +232,7 @@ public class ProgramStartRequestEndpointTest {
         
         // not auth
         //==========================================================================================
-        requestElement = LoadManagementTestUtils.createStartStopRequestElement("programStartRequest", "programName", "NOT_AUTH", null, null, "", "1.0", false, requestSchemaResource);
+        requestElement = LoadManagementTestUtils.createStartStopRequestElement("programStartRequest", "programName", PROG_NOT_AUTH, null, null, "", "1.0", false, requestSchemaResource);
         
         responseElement = impl.invoke(requestElement, null);
         TestUtils.validateAgainstSchema(responseElement, responseSchemaResource);

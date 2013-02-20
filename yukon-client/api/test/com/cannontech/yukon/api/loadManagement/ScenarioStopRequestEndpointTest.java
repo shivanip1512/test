@@ -1,6 +1,7 @@
 package com.cannontech.yukon.api.loadManagement;
 
 import java.util.Date;
+import java.util.List;
 
 import org.jdom.Element;
 import org.junit.Assert;
@@ -21,8 +22,10 @@ import com.cannontech.core.roleproperties.YukonRoleProperty;
 import com.cannontech.core.roleproperties.dao.RolePropertyDao;
 import com.cannontech.database.data.lite.LiteYukonUser;
 import com.cannontech.dr.program.service.ProgramService;
-import com.cannontech.loadcontrol.service.data.ScenarioStatus;
+import com.cannontech.loadcontrol.dao.LoadControlProgramDao;
+import com.cannontech.loadcontrol.service.data.ProgramStatus;
 import com.cannontech.message.util.TimeoutException;
+import com.cannontech.yukon.api.loadManagement.adapters.LoadControlProgramDaoAdapter;
 import com.cannontech.yukon.api.loadManagement.adapters.ProgramServiceAdapter;
 import com.cannontech.yukon.api.loadManagement.adapters.RolePropertyDaoAdapter;
 import com.cannontech.yukon.api.loadManagement.endpoint.ScenarioStopRequestEndpoint;
@@ -34,6 +37,21 @@ public class ScenarioStopRequestEndpointTest {
     private ScenarioStopRequestEndpoint impl;
     private MockProgramService mockService;
     private RolePropertyDao mockRolePropertyDao;
+    private LoadControlProgramDao mockLoadControlProgramDao;
+
+    private static final String TIMEOUT = "TIMEOUT";
+    private static final String NOT_FOUND = "NOT_FOUND";
+    private static final String NOT_AUTH = "NOT_AUTH";
+    private static final String SCEN1 = "Program1";
+    private static final String SCEN2 = "Program2";
+    private static final String SCEN3= "Program3";
+
+    private static final int SCEN1_ID = 2;
+    private static final int SCEN2_ID = 3;
+    private static final int SCEN3_ID = 4;
+    private static final int TIMEOUT_ID = 5;
+    private static final int NOT_FOUND_ID = 6;
+    private static final int NOT_AUTH_ID = 7;
     
     @Before
     public void setUp() throws Exception {
@@ -52,30 +70,51 @@ public class ScenarioStopRequestEndpointTest {
             }
         };
         
+        mockLoadControlProgramDao = new LoadControlProgramDaoAdapter() {
+            @Override
+            public int getScenarioIdForScenarioName(String scenarioName) {
+                if (scenarioName.equals(TIMEOUT)) {
+                    return TIMEOUT_ID;
+                }else if (scenarioName.equals(NOT_FOUND)) {
+                    return NOT_FOUND_ID;
+                } else if (scenarioName.equals(NOT_AUTH)) {
+                    return NOT_AUTH_ID;
+                } else if (scenarioName.equals(SCEN1)) {
+                    return SCEN1_ID;
+                } else if (scenarioName.equals(SCEN2)) {
+                    return SCEN2_ID;
+                } else if (scenarioName.equals(SCEN3)) {
+                    return SCEN3_ID;
+                }
+                return 0;
+            }
+        };
+        
         impl = new ScenarioStopRequestEndpoint();
         ReflectionTestUtils.setField(impl, "programService", mockService,ProgramService.class);
         ReflectionTestUtils.setField(impl, "rolePropertyDao", mockRolePropertyDao, RolePropertyDao.class);
+        ReflectionTestUtils.setField(impl, "loadControlProgramDao", mockLoadControlProgramDao);
         impl.initialize();
     }
 
     private class MockProgramService extends ProgramServiceAdapter {
         
     	private boolean isAsync;
-        private String scenarioName;
+        private int scenarioId;
         private Date stopTime;
         
         @Override
-        public ScenarioStatus stopScenarioByNameBlocking(String scenarioName, Date stopTime, boolean forceStop, boolean observeConstraintsAndExecute, LiteYukonUser user) throws NotFoundException, TimeoutException, NotAuthorizedException {
+        public List<ProgramStatus> stopScenarioBlocking(int scenarioId, Date stopTime, boolean forceStop, boolean observeConstraintsAndExecute, LiteYukonUser user) throws NotFoundException, TimeoutException, NotAuthorizedException {
 
-        	this.isAsync = false;
-            this.scenarioName = scenarioName;
+            this.isAsync = false;
+            this.scenarioId = scenarioId;
             this.stopTime = stopTime;
-
-            if (scenarioName.equals("NOT_FOUND")) {
+            
+            if (scenarioId == NOT_FOUND_ID) {
                 throw new NotFoundException("");
-            } else if (scenarioName.equals("TIMEOUT")) {
+            } else if (scenarioId == TIMEOUT_ID) {
                 throw new TimeoutException();
-            } else if (scenarioName.equals("NOT_AUTH")) {
+            } else if (scenarioId == NOT_AUTH_ID) {
                 throw new NotAuthorizedException("");
             }
             
@@ -83,21 +122,23 @@ public class ScenarioStopRequestEndpointTest {
         }
         
         @Override
-        public void stopScenarioByNameAsynch(String scenarioName, Date stopTime, boolean forceStop, boolean observeConstraintsAndExecute, LiteYukonUser user) throws NotFoundException, NotAuthorizedException {
+        public void stopScenario(int scenarioId, Date stopTime, boolean forceStop, 
+                                       boolean observeConstraintsAndExecute, LiteYukonUser user) 
+                                               throws NotFoundException, NotAuthorizedException {
 
-        	this.isAsync = true;
-            this.scenarioName = scenarioName;
+            this.isAsync = true;
+            this.scenarioId = scenarioId;
             this.stopTime = stopTime;
             
-            if (scenarioName.equals("NOT_FOUND")) {
+            if (scenarioId == NOT_FOUND_ID) {
                 throw new NotFoundException("");
-            } else if (scenarioName.equals("NOT_AUTH")) {
+            } else if (scenarioId == NOT_FOUND_ID) {
                 throw new NotAuthorizedException("");
             }
         }
         
-        public String getScenarioName() {
-            return scenarioName;
+        public int getScenarioId() {
+            return scenarioId;
         }
         public Date getStopTime() {
             return stopTime;
@@ -119,35 +160,35 @@ public class ScenarioStopRequestEndpointTest {
         
         // stop time
         //==========================================================================================
-        requestElement = LoadManagementTestUtils.createStartStopRequestElement("scenarioStopRequest", "scenarioName", "Scenario1", null, "2008-10-13T21:49:01Z", null, "1.0", false, requestSchemaResource);
+        requestElement = LoadManagementTestUtils.createStartStopRequestElement("scenarioStopRequest", "scenarioName",SCEN1, null, "2008-10-13T21:49:01Z", null, "1.0", false, requestSchemaResource);
         
         responseElement = impl.invoke(requestElement, null);
         TestUtils.validateAgainstSchema(responseElement, responseSchemaResource);
         
         outputTemplate = YukonXml.getXPathTemplateForElement(responseElement);
         
-        Assert.assertEquals("Incorrect scenarioName", "Scenario1", mockService.getScenarioName());
+        Assert.assertEquals("Incorrect scenarioName", SCEN1_ID, mockService.getScenarioId());
         Assert.assertEquals("Incorrect stopDateTime", "2008-10-13T21:49:01Z", Iso8601DateUtil.formatIso8601Date(mockService.getStopTime()));
         
         TestUtils.runSuccessAssertion(outputTemplate, "scenarioStopResponse");
         
         // no stop time
         //==========================================================================================
-        requestElement = LoadManagementTestUtils.createStartStopRequestElement("scenarioStopRequest", "scenarioName", "Scenario2", null, null, null, "1.0", false, requestSchemaResource);
+        requestElement = LoadManagementTestUtils.createStartStopRequestElement("scenarioStopRequest", "scenarioName", SCEN2, null, null, null, "1.0", false, requestSchemaResource);
         
         responseElement = impl.invoke(requestElement, null);
         TestUtils.validateAgainstSchema(responseElement, responseSchemaResource);
         
         outputTemplate = YukonXml.getXPathTemplateForElement(responseElement);
         
-        Assert.assertEquals("Incorrect scenarioName", "Scenario2", mockService.getScenarioName());
+        Assert.assertEquals("Incorrect scenarioName", SCEN2_ID, mockService.getScenarioId());
         Assert.assertEquals("Incorrect stopDateTime - should be null", null, mockService.getStopTime());
         
         TestUtils.runSuccessAssertion(outputTemplate, "scenarioStopResponse");
         
         // not found
         //==========================================================================================
-        requestElement = LoadManagementTestUtils.createStartStopRequestElement("scenarioStopRequest", "scenarioName", "NOT_FOUND", null, null, null, "1.0", true, requestSchemaResource);
+        requestElement = LoadManagementTestUtils.createStartStopRequestElement("scenarioStopRequest", "scenarioName", NOT_FOUND, null, null, null, "1.0", true, requestSchemaResource);
         XmlUtils.printElement(requestElement, "requestElement");
         
         responseElement = impl.invoke(requestElement, null);
@@ -161,7 +202,7 @@ public class ScenarioStopRequestEndpointTest {
         
         // timeout
         //==========================================================================================
-        requestElement = LoadManagementTestUtils.createStartStopRequestElement("scenarioStopRequest", "scenarioName", "TIMEOUT", null, null, null, "1.0", true, requestSchemaResource);
+        requestElement = LoadManagementTestUtils.createStartStopRequestElement("scenarioStopRequest", "scenarioName", TIMEOUT, null, null, null, "1.0", true, requestSchemaResource);
         
         responseElement = impl.invoke(requestElement, null);
         TestUtils.validateAgainstSchema(responseElement, responseSchemaResource);
@@ -172,7 +213,7 @@ public class ScenarioStopRequestEndpointTest {
         
         // not auth
         //==========================================================================================
-        requestElement = LoadManagementTestUtils.createStartStopRequestElement("scenarioStopRequest", "scenarioName", "NOT_AUTH", null, null, null, "1.0", true, requestSchemaResource);
+        requestElement = LoadManagementTestUtils.createStartStopRequestElement("scenarioStopRequest", "scenarioName", NOT_AUTH, null, null, null, "1.0", true, requestSchemaResource);
         
         responseElement = impl.invoke(requestElement, null);
         TestUtils.validateAgainstSchema(responseElement, responseSchemaResource);

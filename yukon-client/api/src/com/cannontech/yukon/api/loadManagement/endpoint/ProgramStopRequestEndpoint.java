@@ -71,7 +71,8 @@ public class ProgramStopRequestEndpoint {
             rolePropertyDao.verifyProperty(YukonRoleProperty.OPERATOR_CONSUMER_INFO_WS_LM_CONTROL_ACCESS, user);
             boolean overrideConstraints = false;
             boolean observeConstraints = true;
-            programService.scheduleProgramStopByProgramName(programName, stopTime, overrideConstraints, observeConstraints);
+            int programId = loadControlProgramDao.getProgramIdByProgramName(programName);
+            programService.stopProgram(programId, stopTime, overrideConstraints, observeConstraints);
         } catch (NotFoundException e) {
             Element fe = XMLFailureGenerator.generateFailure(programStopRequest, e, "InvalidProgramName", "No program named: " + programName);
             resp.addContent(fe);

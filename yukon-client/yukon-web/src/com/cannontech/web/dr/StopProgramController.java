@@ -65,7 +65,7 @@ public class StopProgramController extends ProgramControllerBase {
             }
         }
     }
-    private StopProgramValidator validator = new StopProgramValidator();
+    private final StopProgramValidator validator = new StopProgramValidator();
 
     @RequestMapping
     public String details(ModelMap model, Boolean fromBack,
@@ -160,7 +160,7 @@ public class StopProgramController extends ProgramControllerBase {
                                                                   program.getName(),
                                                                   new Date());
         } else {
-            programService.scheduleProgramStop(backingBean.getProgramId(),
+            programService.stopProgram(backingBean.getProgramId(),
                                                stopDate, null);
             demandResponseEventLogService.threeTierProgramStopScheduled(yukonUser,
                                                                         program.getName(),
@@ -320,20 +320,9 @@ public class StopProgramController extends ProgramControllerBase {
                     demandResponseEventLogService.threeTierProgramChangeGear(yukonUser, program.getName());
 
                 } else {
-                    programService.scheduleProgramStop(programStopInfo.getProgramId(),
+                    programService.stopProgram(programStopInfo.getProgramId(),
                                                        stopDate, stopOffset);
                 }
-                
-                
-                
-//                if (stopGearAllowed && programStopInfo.isUseStopGear()) {
-//                    DisplayablePao program = programService.getProgram(programStopInfo.getProgramId());
-//        
-//                    LiteYukonUser yukonUser = userContext.getYukonUser();
-//                    programService.changeGear(programStopInfo.getProgramId(), programStopInfo.getGearNumber());
-//                    demandResponseEventLogService.threeTierProgramChangeGear(yukonUser, program.getName());
-//    
-//                }
             }
         }
         

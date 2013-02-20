@@ -72,7 +72,8 @@ public class ProgramStartRequestEndpoint {
             rolePropertyDao.verifyProperty(YukonRoleProperty.OPERATOR_CONSUMER_INFO_WS_LM_CONTROL_ACCESS, user);
         	boolean overrideConstraints = false;
         	boolean observeConstaints = true;
-        	programService.startProgramByName(programName, startTime, stopTime, gearName, overrideConstraints, observeConstaints, user);
+            int programId = loadControlProgramDao.getProgramIdByProgramName(programName);
+        	programService.startProgram(programId, startTime, stopTime, gearName, overrideConstraints, observeConstaints, user);
         } catch (GearNotFoundException e) {
         	Element fe = XMLFailureGenerator.generateFailure(programStartRequest, e, "InvalidGearName", "No gear named: " + gearName);
             resp.addContent(fe);

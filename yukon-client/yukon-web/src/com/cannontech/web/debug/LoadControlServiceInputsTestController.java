@@ -13,6 +13,8 @@ import org.springframework.web.bind.ServletRequestUtils;
 import org.springframework.web.servlet.ModelAndView;
 import org.springframework.web.servlet.mvc.multiaction.MultiActionController;
 
+import com.cannontech.core.dao.NotFoundException;
+import com.cannontech.core.dao.ProgramNotFoundException;
 import com.cannontech.core.roleproperties.dao.RolePropertyDao;
 import com.cannontech.core.service.DateFormattingService;
 import com.cannontech.dr.program.service.ProgramService;
@@ -100,7 +102,9 @@ public class LoadControlServiceInputsTestController extends MultiActionControlle
         boolean force = ServletRequestUtils.getBooleanParameter(request, "force", false);
         boolean observeConstraintsAndExecute = ServletRequestUtils.getBooleanParameter(request, "observeConstraintsAndExecute", false);
         
-        ScenarioStatus scenarioStatus = programService.startScenarioByNameBlocking(scenarioName, startTime, stopTime, force, observeConstraintsAndExecute, userContext.getYukonUser());
+        int scenarioId = loadControlProgramDao.getScenarioIdForScenarioName(scenarioName);
+        List<ProgramStatus> programStatuses = programService.startScenarioBlocking(scenarioId, startTime, stopTime, force, observeConstraintsAndExecute, userContext.getYukonUser());
+        ScenarioStatus scenarioStatus = new ScenarioStatus(scenarioName, programStatuses);
         
         for (ProgramStatus programStatus : scenarioStatus.getProgramStatuses()) {
             
@@ -130,7 +134,13 @@ public class LoadControlServiceInputsTestController extends MultiActionControlle
         boolean force = ServletRequestUtils.getBooleanParameter(request, "force", false);
         boolean observeConstraintsAndExecute = ServletRequestUtils.getBooleanParameter(request, "observeConstraintsAndExecute", false);
 
-        ProgramStatus programStatus = programService.startProgramByName(programName, startTime, stopTime, gearName, force, observeConstraintsAndExecute, userContext.getYukonUser());
+        int programId;
+        try {
+            programId = loadControlProgramDao.getProgramIdByProgramName(programName);
+        } catch (NotFoundException e) {
+            throw new ProgramNotFoundException(e.getMessage(), e);
+        }
+        ProgramStatus programStatus = programService.startProgram(programId, startTime, stopTime, gearName, force, observeConstraintsAndExecute, userContext.getYukonUser());
 
         results.add(programStatus.toString());
 
@@ -155,7 +165,9 @@ public class LoadControlServiceInputsTestController extends MultiActionControlle
         boolean force = ServletRequestUtils.getBooleanParameter(request, "force", false);
         boolean observeConstraintsAndExecute = ServletRequestUtils.getBooleanParameter(request, "observeConstraintsAndExecute", false);
         
-        ScenarioStatus scenarioStatus = programService.stopScenarioByNameBlocking(scenarioName, stopTime, force, observeConstraintsAndExecute, userContext.getYukonUser());
+        int scenarioId = loadControlProgramDao.getScenarioIdForScenarioName(scenarioName);
+        List<ProgramStatus> programStatuses = programService.stopScenarioBlocking(scenarioId, stopTime, force, observeConstraintsAndExecute, userContext.getYukonUser());
+        ScenarioStatus scenarioStatus = new ScenarioStatus(scenarioName, programStatuses);
         
         for (ProgramStatus programStatus : scenarioStatus.getProgramStatuses()) {
             
@@ -183,7 +195,13 @@ public class LoadControlServiceInputsTestController extends MultiActionControlle
         boolean force = ServletRequestUtils.getBooleanParameter(request, "force", false);
         boolean observeConstraintsAndExecute = ServletRequestUtils.getBooleanParameter(request, "observeConstraintsAndExecute", false);
 
-        ProgramStatus programStatus = programService.scheduleProgramStopByProgramName(programName, stopTime, force, observeConstraintsAndExecute);
+        int programId;
+        try {
+            programId = loadControlProgramDao.getProgramIdByProgramName(programName);
+        } catch (NotFoundException e) {
+            throw new ProgramNotFoundException(e.getMessage(), e);
+        }
+        ProgramStatus programStatus = programService.stopProgram(programId, stopTime, force, observeConstraintsAndExecute);
 
         results.add(programStatus.toString());
         

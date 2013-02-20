@@ -21,6 +21,7 @@ import com.cannontech.core.roleproperties.YukonRoleProperty;
 import com.cannontech.core.roleproperties.dao.RolePropertyDao;
 import com.cannontech.database.data.lite.LiteYukonUser;
 import com.cannontech.dr.program.service.ProgramService;
+import com.cannontech.loadcontrol.dao.LoadControlProgramDao;
 import com.cannontech.message.util.BadServerResponseException;
 import com.cannontech.message.util.ConnectionException;
 import com.cannontech.message.util.TimeoutException;
@@ -32,6 +33,7 @@ public class ScenarioStartRequestEndpoint {
 
     @Autowired private ProgramService programService;
     @Autowired private RolePropertyDao rolePropertyDao;
+    @Autowired private LoadControlProgramDao loadControlProgramDao;
     
     private final Namespace ns = YukonXml.getYukonNamespace();
     private final String scenarioNameExpressionStr = "/y:scenarioStartRequest/y:scenarioName";
@@ -67,11 +69,12 @@ public class ScenarioStartRequestEndpoint {
             
             // Check authorization
             rolePropertyDao.verifyProperty(YukonRoleProperty.OPERATOR_CONSUMER_INFO_WS_LM_CONTROL_ACCESS, user);
+            int scenarioId = loadControlProgramDao.getScenarioIdForScenarioName(scenarioName);
             
         	if (waitForResponse) {
-        		programService.startScenarioByNameBlocking(scenarioName, startTime, stopTime, false, true, user);
+        		programService.startScenarioBlocking(scenarioId, startTime, stopTime, false, true, user);
         	} else {
-        	    programService.startScenarioByNameAsynch(scenarioName, startTime, stopTime, false, true, user);
+        	    programService.startScenario(scenarioId, startTime, stopTime, false, true, user);
         	}
             // build response
         	resp.addContent(new Element("success", ns));

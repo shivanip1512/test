@@ -28,6 +28,7 @@ import com.cannontech.common.point.PointQuality;
 import com.cannontech.core.dao.FdrTranslationDao;
 import com.cannontech.core.dao.NotFoundException;
 import com.cannontech.core.dao.PaoDao;
+import com.cannontech.core.dao.ProgramNotFoundException;
 import com.cannontech.core.dao.SimplePointAccessDao;
 import com.cannontech.core.roleproperties.dao.RolePropertyDao;
 import com.cannontech.database.data.lite.LiteYukonPAObject;
@@ -183,25 +184,45 @@ public class MultispeakLMServiceImpl implements MultispeakLMService {
 	@Override
 	public ProgramStatus startControlByProgramName(String programName, Date startTime,
 			Date stopTime, LiteYukonUser liteYukonUser) throws NotAuthorizedException, NotFoundException, TimeoutException, BadServerResponseException  {
-	    return programService.startProgramByName(programName, startTime, stopTime, null, false, true, liteYukonUser);
+	    int programId;
+	    try {
+	        programId = loadControlProgramDao.getProgramIdByProgramName(programName);
+	    } catch (NotFoundException e) {
+	        throw new ProgramNotFoundException(e.getMessage(), e);
+	    }
+	    return programService.startProgram(programId, startTime, stopTime, null, false, true, liteYukonUser);
 	}
 
 	@Override
 	public ProgramStatus stopControlByProgramName(String programName, Date stopTime,
 			LiteYukonUser liteYukonUser) throws NotAuthorizedException, NotFoundException, TimeoutException, BadServerResponseException {
-	    return programService.scheduleProgramStopByProgramName(programName, stopTime, false, true);
+	    int programId;
+	    try {
+	        programId = loadControlProgramDao.getProgramIdByProgramName(programName);
+	    } catch (NotFoundException e) {
+	        throw new ProgramNotFoundException(e.getMessage(), e);
+	    }
+	    return programService.stopProgram(programId, stopTime, false, true);
 	}
 
 	@Override
 	public ScenarioStatus startControlByControlScenario(String scenarioName, Date startTime,
 			Date stopTime, LiteYukonUser liteYukonUser) throws NotAuthorizedException, NotFoundException, TimeoutException, BadServerResponseException {
-   		return programService.startScenarioByNameBlocking(scenarioName, startTime, stopTime, false, true, liteYukonUser);
+	    int scenarioId = loadControlProgramDao.getScenarioIdForScenarioName(scenarioName);
+        List<ProgramStatus> programStatuses = programService.startScenarioBlocking(scenarioId, startTime, stopTime, false, true, liteYukonUser);
+        ScenarioStatus scenarioStatus = new ScenarioStatus(scenarioName, programStatuses);
+
+   		return scenarioStatus;
 	}
 
 	@Override
 	public ScenarioStatus stopControlByControlScenario(String scenarioName, Date stopTime,
 			LiteYukonUser liteYukonUser) throws NotAuthorizedException, NotFoundException, TimeoutException, BadServerResponseException{
-       	return programService.stopScenarioByNameBlocking(scenarioName, stopTime, false, true, liteYukonUser);
+        int scenarioId = loadControlProgramDao.getScenarioIdForScenarioName(scenarioName);
+        List<ProgramStatus> programStatuses = programService.stopScenarioBlocking(scenarioId, stopTime, false, true, liteYukonUser);
+        ScenarioStatus scenarioStatus = new ScenarioStatus(scenarioName, programStatuses);
+
+       	return scenarioStatus;
 	}
 
 	@Override

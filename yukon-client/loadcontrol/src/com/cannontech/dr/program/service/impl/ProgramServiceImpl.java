@@ -35,7 +35,6 @@ import com.cannontech.common.pao.definition.model.PaoTag;
 import com.cannontech.common.search.SearchResult;
 import com.cannontech.common.util.CtiUtilities;
 import com.cannontech.common.util.DatedObject;
-import com.cannontech.common.util.ScheduledExecutor;
 import com.cannontech.common.util.SqlFragmentSource;
 import com.cannontech.common.util.SqlStatementBuilder;
 import com.cannontech.core.authorization.service.PaoAuthorizationService;
@@ -43,7 +42,6 @@ import com.cannontech.core.authorization.support.Permission;
 import com.cannontech.core.dao.GearNotFoundException;
 import com.cannontech.core.dao.NotFoundException;
 import com.cannontech.core.dao.PaoDao;
-import com.cannontech.core.dao.ProgramNotFoundException;
 import com.cannontech.core.roleproperties.YukonRoleProperty;
 import com.cannontech.core.roleproperties.dao.RolePropertyDao;
 import com.cannontech.core.service.DateFormattingService;
@@ -71,7 +69,6 @@ import com.cannontech.loadcontrol.messages.LMManualControlResponse;
 import com.cannontech.loadcontrol.service.LoadControlCommandService;
 import com.cannontech.loadcontrol.service.ProgramChangeBlocker;
 import com.cannontech.loadcontrol.service.data.ProgramStatus;
-import com.cannontech.loadcontrol.service.data.ScenarioStatus;
 import com.cannontech.message.server.ServerResponseMsg;
 import com.cannontech.message.util.BadServerResponseException;
 import com.cannontech.message.util.ConnectionException;
@@ -244,18 +241,11 @@ public class ProgramServiceImpl implements ProgramService {
     } 
 
     @Override
-    public ProgramStatus startProgramByName(String programName, Date startTime, Date stopTime, String gearName,
+    public ProgramStatus startProgram(int programId, Date startTime, Date stopTime, String gearName,
             boolean overrideConstraints, boolean observeConstraints, LiteYukonUser liteYukonUser)
                     throws NotAuthorizedException, NotFoundException, TimeoutException, BadServerResponseException  {
 
         boolean stopScheduled = rolePropertyDao.getPropertyBooleanValue(YukonRoleProperty.SCHEDULE_STOP_CHECKED_BY_DEFAULT, liteYukonUser);
-
-        int programId;
-        try {
-            programId = loadControlProgramDao.getProgramIdByProgramName(programName);
-        } catch (NotFoundException e) {
-            throw new ProgramNotFoundException(e.getMessage(), e);
-        }
 
         LMProgramBase program = loadControlClientConnection.getProgramSafe(programId);
         ProgramStatus programStatus = new ProgramStatus(program);
@@ -353,7 +343,8 @@ public class ProgramServiceImpl implements ProgramService {
         return programStatus;
     }
     
-    private List<ProgramStatus> startScenarioBlocking(int scenarioId, Date startTime,
+    @Override
+    public List<ProgramStatus> startScenarioBlocking(int scenarioId, Date startTime,
                                              Date stopTime, boolean overrideConstraints, boolean observeConstraints,
                                                          LiteYukonUser user)
                              throws NotFoundException, TimeoutException, NotAuthorizedException,
@@ -387,21 +378,10 @@ public class ProgramServiceImpl implements ProgramService {
     }
 
     @Override
-    public ScenarioStatus startScenarioByNameBlocking(String scenarioName, Date startTime, Date stopTime,
-                                                             boolean overrideConstraints, boolean observeConstraints, LiteYukonUser user)
-                                                                     throws NotFoundException, TimeoutException, NotAuthorizedException, BadServerResponseException,
-                                                                     ConnectionException {
-        int scenarioId = loadControlProgramDao.getScenarioIdForScenarioName(scenarioName);
-        List<ProgramStatus> programStatuses = startScenarioBlocking(scenarioId, startTime, stopTime, overrideConstraints, observeConstraints, user);
-        return new ScenarioStatus(scenarioName, programStatuses);
-    }
-    
-    @Override
-    public void startScenarioByNameAsynch(final String scenarioName,final  Date startTime,final  Date stopTime,
+    public void startScenario(final int scenarioId,final  Date startTime,final  Date stopTime,
                                           final boolean overrideConstraints,final boolean observeConstraints,final  LiteYukonUser user)
                                                   throws NotFoundException, TimeoutException, NotAuthorizedException, BadServerResponseException,
                                                   ConnectionException {
-        final int scenarioId = loadControlProgramDao.getScenarioIdForScenarioName(scenarioName);
         executor.execute(new Runnable() {
             @Override
             public void run() {
@@ -495,30 +475,23 @@ public class ProgramServiceImpl implements ProgramService {
     }
 
     @Override
-    public ProgramStatus scheduleProgramStopBlocking(int programId, Date stopDate, Duration stopOffset) throws TimeoutException {
-        return scheduleProgramStopBlocking(programId, stopDate, stopOffset, true);
+    public ProgramStatus stopProgramBlocking(int programId, Date stopDate, Duration stopOffset) throws TimeoutException {
+        return stopProgramBlocking(programId, stopDate, stopOffset, true);
     }
 
     @Override
-    public void scheduleProgramStop(int programId, Date stopDate, Duration stopOffset) {
+    public void stopProgram(int programId, Date stopDate, Duration stopOffset) {
         try {
-            scheduleProgramStopBlocking(programId, stopDate, stopOffset, false);
+            stopProgramBlocking(programId, stopDate, stopOffset, false);
         } catch (TimeoutException e) {
             // This isn't actually thrown since we're passing false for block.
         }
     }
 
     @Override
-    public ProgramStatus scheduleProgramStopByProgramName(String programName, Date stopTime,
+    public ProgramStatus stopProgram(int programId, Date stopTime,
                                                           boolean force, boolean observeConstraints)
                                                                   throws TimeoutException {
-
-        int programId;
-        try {
-            programId = loadControlProgramDao.getProgramIdByProgramName(programName);
-        } catch (NotFoundException e) {
-            throw new ProgramNotFoundException(e.getMessage(), e);
-        }
         
         if (stopTime == null) {
             stopTime = CtiUtilities.get1990GregCalendar().getTime();
@@ -546,12 +519,12 @@ public class ProgramServiceImpl implements ProgramService {
         }
 
         if (force || observeConstraints) {
-            programStatus = scheduleProgramStopBlocking(programId, stopTime, Duration.ZERO);
+            programStatus = stopProgramBlocking(programId, stopTime, Duration.ZERO);
         }
         return programStatus;
     }
 
-    private ProgramStatus scheduleProgramStopBlocking(int programId, Date stopDate, Duration stopOffset, boolean block)
+    private ProgramStatus stopProgramBlocking(int programId, Date stopDate, Duration stopOffset, boolean block)
             throws TimeoutException {
         
         LMProgramBase program = loadControlClientConnection.getProgram(programId);
@@ -580,13 +553,10 @@ public class ProgramServiceImpl implements ProgramService {
     }
 
     @Override
-    public void stopScenarioByNameAsynch(final String scenarioName,final  Date stopTime,
+    public void stopScenario(final int scenarioId, final  Date stopTime,
                                          final boolean overrideConstraints,
                                          final boolean observeConstraints,
-                                         final LiteYukonUser user) throws NotFoundException,
-            NotAuthorizedException {
-        
-        final int scenarioId = loadControlProgramDao.getScenarioIdForScenarioName(scenarioName);
+                                         final LiteYukonUser user) throws NotFoundException, NotAuthorizedException {
         executor.execute(new Runnable() {
             @Override
             public void run() {
@@ -600,19 +570,7 @@ public class ProgramServiceImpl implements ProgramService {
     }
 
     @Override
-    public ScenarioStatus stopScenarioByNameBlocking(String scenarioName, Date stopTime,
-                                                    boolean overrideConstraints,
-                                                    boolean observeConstraints,
-                                                    LiteYukonUser user) throws NotFoundException,
-            TimeoutException, NotAuthorizedException, BadServerResponseException {
-        
-        int scenarioId = loadControlProgramDao.getScenarioIdForScenarioName(scenarioName);
-        List<ProgramStatus> programStatuses = stopScenarioBlocking(scenarioId,  stopTime, overrideConstraints, observeConstraints, user);
-
-        return new ScenarioStatus(scenarioName, programStatuses);
-    }
-
-    private List<ProgramStatus> stopScenarioBlocking(int scenarioId,  Date stopTime, boolean overrideConstraints,
+    public List<ProgramStatus> stopScenarioBlocking(int scenarioId,  Date stopTime, boolean overrideConstraints,
                                                      boolean observeConstraints, LiteYukonUser user)
                          throws NotFoundException, TimeoutException, NotAuthorizedException,
                          BadServerResponseException, ConnectionException {
@@ -633,7 +591,7 @@ public class ProgramServiceImpl implements ProgramService {
         for (LMProgramBase program : programs) {
             ScenarioProgram scenarioProgram = scenarioPrograms.get(program.getYukonID());
 
-            ProgramStatus programStatus = scheduleProgramStopBlocking(program.getYukonID(), stopTime, scenarioProgram.getStopOffset(), true);
+            ProgramStatus programStatus = stopProgramBlocking(program.getYukonID(), stopTime, scenarioProgram.getStopOffset(), true);
             programStatuses.add(programStatus);
         }
 
