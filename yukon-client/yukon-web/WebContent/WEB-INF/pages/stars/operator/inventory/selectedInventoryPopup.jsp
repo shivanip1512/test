@@ -1,29 +1,29 @@
 <%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core"%>
-<%@ taglib prefix="cti" uri="http://cannontech.com/tags/cti"%>
+<%@ taglib prefix="fn" uri="http://java.sun.com/jsp/jstl/functions" %>
 <%@ taglib prefix="i" tagdir="/WEB-INF/tags/i18n" %>
-<%@ taglib prefix="spring" uri="http://www.springframework.org/tags"%>
 
 <c:if test="${not empty resultsLimitedTo}">
-    <div class="error" style="width:95%;text-align:right;">
-        <cti:msg key="yukon.common.collection.inventory.selectedInventoryPopup.selectedDevicesResultsLimited" arguments="${resultsLimitedTo}" />
-    </div>
-    <br>
+    <div class="error"><i:inline key="yukon.common.collection.inventory.selectedInventoryPopup.selectedDevicesResultsLimited" arguments="${resultsLimitedTo}"/></div>
 </c:if>
 
-<table class="compactResultsTable">
-    <tr>
-        <th><i:inline key="yukon.common.collection.inventory.serialNumber"/></th>
-        <th><i:inline key="yukon.common.collection.inventory.hardwareType"/></th>
-        <th><i:inline key="yukon.common.collection.inventory.label"/></th>
-    </tr>
-    
-    <c:forEach var="inventoryInfoRow" items="${inventoryInfoList}" varStatus="status">
-    
-        <tr>
-            <c:forEach var="info" items="${inventoryInfoRow}">
-                <td style="text-align:left;"><spring:escapeBody htmlEscape="true">${info}</spring:escapeBody></td>
+<div class="scrollingContainer_large" style="margin-bottom: 10px;">
+    <table class="compactResultsTable">
+        <thead>
+            <tr>
+                <th class="wsnw"><i:inline key="yukon.common.collection.inventory.serialNumber"/></th>
+                <th class="wsnw"><i:inline key="yukon.common.collection.inventory.hardwareType"/></th>
+                <th class="wsnw"><i:inline key="yukon.common.collection.inventory.label"/></th>
+            </tr>
+        </thead>
+        <tfoot></tfoot>
+        <tbody>
+            <c:forEach var="row" items="${inventoryInfoList}">
+                <tr>
+                    <c:forEach var="info" items="${row}" varStatus="status">
+                        <td class="wsnw<c:if test="${status.last}"> last</c:if>">${fn:escapeXml(info)}</td>
+                    </c:forEach>
+                </tr>
             </c:forEach>
-        </tr>
-        
-    </c:forEach>
-</table>
+        </tbody>
+    </table>
+</div>

@@ -1,22 +1,23 @@
 package com.cannontech.web.bulk;
 
-import java.io.FileNotFoundException;
 import java.io.IOException;
-import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Map;
 import java.util.Set;
+import java.util.concurrent.ConcurrentHashMap;
 
+import javax.annotation.Resource;
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpServletResponse;
 
 import org.apache.commons.lang.StringUtils;
-import org.springframework.beans.factory.annotation.Required;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.core.io.FileSystemResource;
+import org.springframework.stereotype.Controller;
+import org.springframework.ui.ModelMap;
+import org.springframework.web.bind.ServletRequestBindingException;
 import org.springframework.web.bind.ServletRequestUtils;
-import org.springframework.web.servlet.ModelAndView;
-import org.springframework.web.servlet.mvc.multiaction.MultiActionController;
+import org.springframework.web.bind.annotation.RequestMapping;
 
 import com.cannontech.common.bulk.callbackResult.BackgroundProcessResultHolder;
 import com.cannontech.common.bulk.callbackResult.ImportUpdateCallbackResult;
@@ -33,54 +34,54 @@ import com.cannontech.web.bulk.util.BulkFileUploadUtils;
 import com.cannontech.web.security.annotation.CheckRoleProperty;
 
 @CheckRoleProperty(YukonRoleProperty.BULK_UPDATE_OPERATION)
-public class UpdateController extends MultiActionController {
-
-    private BulkFieldService bulkFieldService = null;
-    private BulkUpdateService bulkUpdateService = null;
-    private RecentResultsCache<BackgroundProcessResultHolder> recentResultsCache = null;
+@Controller
+@RequestMapping("update/*")
+public class UpdateController {
+    
+    @Autowired private BulkFieldService bulkFieldService;
+    @Autowired private BulkUpdateService bulkUpdateService;
+    @Resource(name="recentResultsCache") private RecentResultsCache<BackgroundProcessResultHolder> recentResultsCache;
    
-    private Map<String, BulkUpdateFileInfo> bulkUpdateFileInfoMap = new HashMap<String, BulkUpdateFileInfo>();
+    private Map<String, BulkUpdateFileInfo> bulkUpdateFileInfoMap = new ConcurrentHashMap<>();
     
     // UPLOAD
-    public ModelAndView upload(HttpServletRequest request, HttpServletResponse response) throws ServletException {
+    @RequestMapping
+    public String upload(ModelMap model, HttpServletRequest request) throws ServletException {
 
-        // direct to upload page
-        ModelAndView mav = new ModelAndView("update/updateUpload.jsp");
-        
         // column info
-        addColumnInfoToMav(mav);
+        addColumnInfoToMav(model);
         
         // errors
         String errors = ServletRequestUtils.getStringParameter(request, "fileErrorKeys", "");
-        mav.addObject("fileErrorKeysList", StringUtils.split(errors, "||"));
+        model.addAttribute("fileErrorKeysList", StringUtils.split(errors, "||"));
         
         // options checked included? pass along
         Boolean ignoreInvalidCols = ServletRequestUtils.getBooleanParameter(request, "ignoreInvalidCols", true);
         Boolean ignoreInvalidIdentifiers = ServletRequestUtils.getBooleanParameter(request, "ignoreInvalidIdentifiers", false);
-        mav.addObject("ignoreInvalidCols", ignoreInvalidCols);
-        mav.addObject("ignoreInvalidIdentifiers", ignoreInvalidIdentifiers);
+        model.addAttribute("ignoreInvalidCols", ignoreInvalidCols);
+        model.addAttribute("ignoreInvalidIdentifiers", ignoreInvalidIdentifiers);
         
-        return mav;
+        return "update/updateUpload.jsp";
     }
 
     // PARSE
-    public ModelAndView parseUpload(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
+    @RequestMapping
+    public String parseUpload(ModelMap model, HttpServletRequest request) {
         
         // options 
         Boolean ignoreInvalidCols = ServletRequestUtils.getBooleanParameter(request, "ignoreInvalidCols", false);
         Boolean ignoreInvalidIdentifiers = ServletRequestUtils.getBooleanParameter(request, "ignoreInvalidIdentifiers", false);
         
-        // error mav
-        ModelAndView errorMav = new ModelAndView("redirect:/bulk/update/upload");
-        errorMav.addObject("ignoreInvalidCols", ignoreInvalidCols);
-        errorMav.addObject("ignoreInvalidIdentifiers", ignoreInvalidIdentifiers);
-        
         // detect file
         BulkFileUpload bulkFileUpload = BulkFileUploadUtils.getBulkFileUpload(request);
         
         if (bulkFileUpload.hasErrors()) {
-            errorMav.addObject("fileErrorKeys", StringUtils.join(bulkFileUpload.getErrors(), "||"));
-            return errorMav;
+            // error mav
+            model.addAttribute("ignoreInvalidCols", ignoreInvalidCols);
+            model.addAttribute("ignoreInvalidIdentifiers", ignoreInvalidIdentifiers);
+            
+            model.addAttribute("fileErrorKeys", StringUtils.join(bulkFileUpload.getErrors(), "||"));
+            return "redirect:/bulk/update/upload";
         }
         
         // init file info
@@ -92,51 +93,45 @@ public class UpdateController extends MultiActionController {
         bulkUpdateFileInfoMap.put(fileInfoId, bulkUpdateFileInfo);
         
         // confirm
-        ModelAndView mav = new ModelAndView("redirect:/bulk/update/updateConfirm");
-        mav.addObject("fileInfoId", fileInfoId);
+        model.addAttribute("fileInfoId", fileInfoId);
         
-        return mav;
+        return "redirect:/bulk/update/updateConfirm";
     }
     
-   
-    
     // CONFIRM
-    public ModelAndView updateConfirm(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
-        
-        ModelAndView mav = new ModelAndView("update/updateConfirm.jsp");
+    @RequestMapping
+    public String updateConfirm(ModelMap model, HttpServletRequest request) throws ServletRequestBindingException {
         
         // get file info
         String fileInfoId = ServletRequestUtils.getRequiredStringParameter(request, "fileInfoId");
         BulkUpdateFileInfo bulkUpdateFileInfo = bulkUpdateFileInfoMap.get(fileInfoId);
-        mav.addObject("bulkUpdateFileInfo", bulkUpdateFileInfo);
+        model.addAttribute("bulkUpdateFileInfo", bulkUpdateFileInfo);
         
         ParsedBulkUpdateFileInfo parsedResult = bulkUpdateService.createParsedBulkUpdateFileInfo(bulkUpdateFileInfo);
-        mav.addObject("parsedResult", parsedResult);
+        model.addAttribute("parsedResult", parsedResult);
         
         // has file errors
         if (parsedResult.hasErrors()) {
             
             // options
-            ModelAndView errorMav = new ModelAndView("update/updateUpload.jsp");
-            errorMav.addObject("ignoreInvalidCols", bulkUpdateFileInfo.isIgnoreInvalidCols());
-            errorMav.addObject("ignoreInvalidIdentifiers", bulkUpdateFileInfo.isIgnoreInvalidIdentifiers());
+            model.addAttribute("ignoreInvalidCols", bulkUpdateFileInfo.isIgnoreInvalidCols());
+            model.addAttribute("ignoreInvalidIdentifiers", bulkUpdateFileInfo.isIgnoreInvalidIdentifiers());
             
             // column info
-            addColumnInfoToMav(errorMav);
+            addColumnInfoToMav(model);
             
             // errors
-            errorMav.addObject("headersErrorResolverList", parsedResult.getErrorResolvers());
+            model.addAttribute("headersErrorResolverList", parsedResult.getErrorResolvers());
             
-            return errorMav;
+            return "update/updateUpload.jsp";
         }
         
-        return mav;
+        return "update/updateConfirm.jsp";
     }
     
     // DO UPDATE
-    public ModelAndView doUpdate(HttpServletRequest request, HttpServletResponse response) throws ServletException, FileNotFoundException, IOException {
-        
-        ModelAndView mav = new ModelAndView("redirect:/bulk/update/updateResults");
+    @RequestMapping
+    public String doUpdate(ModelMap model, HttpServletRequest request) throws ServletRequestBindingException, IOException {
         
         // open file as csv
         String fileInfoId = ServletRequestUtils.getRequiredStringParameter(request, "fileInfoId");
@@ -145,15 +140,14 @@ public class UpdateController extends MultiActionController {
        
         String resultsId = bulkUpdateService.startBulkUpdate(parsedResult);
         
-        mav.addObject("resultsId", resultsId);
+        model.addAttribute("resultsId", resultsId);
         
-        return mav;
+        return "redirect:/bulk/update/updateResults";
     }
     
     // VIEW RESULTS
-    public ModelAndView updateResults(HttpServletRequest request, HttpServletResponse response) throws ServletException {
-
-        ModelAndView mav = new ModelAndView("update/updateResults.jsp");
+    @RequestMapping
+    public String updateResults(ModelMap model, HttpServletRequest request) throws ServletRequestBindingException {
 
         // result info
         String resultsId = ServletRequestUtils.getRequiredStringParameter(request, "resultsId");
@@ -161,14 +155,14 @@ public class UpdateController extends MultiActionController {
         
         BulkUpdateFileInfo bulkUpdateFileInfo = (BulkUpdateFileInfo)callbackResult.getBulkFileInfo();
         
-        mav.addObject("ignoreInvalidCols", bulkUpdateFileInfo.isIgnoreInvalidCols());
-        mav.addObject("ignoreInvalidIdentifiers", bulkUpdateFileInfo.isIgnoreInvalidIdentifiers());
-        mav.addObject("callbackResult", callbackResult);
+        model.addAttribute("ignoreInvalidCols", bulkUpdateFileInfo.isIgnoreInvalidCols());
+        model.addAttribute("ignoreInvalidIdentifiers", bulkUpdateFileInfo.isIgnoreInvalidIdentifiers());
+        model.addAttribute("callbackResult", callbackResult);
 
-        return mav;
+        return "update/updateResults.jsp";
     }
     
-    private void addColumnInfoToMav(ModelAndView mav) {
+    private void addColumnInfoToMav(ModelMap model) {
         
         // column info
         Set<BulkFieldColumnHeader> updateableFields = bulkFieldService.getUpdateableBulkFieldColumnHeaders();
@@ -178,24 +172,9 @@ public class UpdateController extends MultiActionController {
         allFields.addAll(updateableFields);
         allFields.addAll(identifierFields);
         
-        mav.addObject("allFields", allFields);
+        model.addAttribute("allFields", allFields);
         Map<BulkFieldColumnHeader, Boolean> identifierFieldsMap = ServletUtil.convertSetToMap(identifierFields);
-        mav.addObject("identifierFieldsMap", identifierFieldsMap);
-    }
-
-    @Required
-    public void setBulkFieldService(BulkFieldService bulkFieldService) {
-        this.bulkFieldService = bulkFieldService;
-    }
-    
-    @Required
-    public void setRecentResultsCache(RecentResultsCache<BackgroundProcessResultHolder> recentResultsCache) {
-        this.recentResultsCache = recentResultsCache;
-    }
-    
-    @Required
-    public void setBulkUpdateService(BulkUpdateService bulkUpdateService) {
-        this.bulkUpdateService = bulkUpdateService;
+        model.addAttribute("identifierFieldsMap", identifierFieldsMap);
     }
 
 }

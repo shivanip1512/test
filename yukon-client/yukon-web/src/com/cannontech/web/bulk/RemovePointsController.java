@@ -6,16 +6,19 @@ import java.util.Set;
 
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpServletResponse;
 
 import org.apache.commons.lang.StringUtils;
 import org.apache.log4j.Logger;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Controller;
+import org.springframework.ui.ModelMap;
 import org.springframework.web.bind.ServletRequestUtils;
-import org.springframework.web.servlet.ModelAndView;
+import org.springframework.web.bind.annotation.RequestMapping;
 
 import com.cannontech.clientutils.YukonLogManager;
 import com.cannontech.common.bulk.callbackResult.BackgroundProcessTypeEnum;
 import com.cannontech.common.bulk.collection.device.DeviceCollection;
+import com.cannontech.common.bulk.collection.device.DeviceCollectionFactory;
 import com.cannontech.common.bulk.processor.ProcessingException;
 import com.cannontech.common.bulk.processor.SingleProcessor;
 import com.cannontech.common.device.model.SimpleDevice;
@@ -31,24 +34,27 @@ import com.cannontech.web.bulk.model.PaoTypeMasks;
 import com.cannontech.web.common.flashScope.FlashScope;
 import com.google.common.collect.HashMultimap;
 
+@Controller
+@RequestMapping("removePoints/*")
 public class RemovePointsController extends AddRemovePointsControllerBase {
 
 	private Logger log = YukonLogManager.getLogger(AddPointsController.class);
+	@Autowired DeviceCollectionFactory deviceCollectionFactory;
 	
 	// HOME
-    public ModelAndView home(HttpServletRequest request, HttpServletResponse response) throws Exception, ServletException {
-        
-        ModelAndView mav = new ModelAndView("removePoints/removePointsHome.jsp");
+	@Override
+	@RequestMapping
+    public String home(ModelMap model, HttpServletRequest request) throws Exception, ServletException {
         
         // device collection
-        DeviceCollection deviceCollection = this.deviceCollectionFactory.createDeviceCollection(request);
-        mav.addObject("deviceCollection", deviceCollection);
+        DeviceCollection deviceCollection = deviceCollectionFactory.createDeviceCollection(request);
+        model.addAttribute("deviceCollection", deviceCollection);
         
         // options
         boolean sharedPoints = ServletRequestUtils.getBooleanParameter(request, "sharedPoints", true);
         boolean maskMissingPoints = ServletRequestUtils.getBooleanParameter(request, "maskMissingPoints", true);
-        mav.addObject("sharedPoints", sharedPoints);
-        mav.addObject("maskMissingPoints", maskMissingPoints);
+        model.addAttribute("sharedPoints", sharedPoints);
+        model.addAttribute("maskMissingPoints", maskMissingPoints);
         
         String errorMsg = ServletRequestUtils.getStringParameter(request, "errorMsg");
         if(StringUtils.isNotBlank(errorMsg)){
@@ -60,29 +66,23 @@ public class RemovePointsController extends AddRemovePointsControllerBase {
         Set<PaoType> deviceTypeSet = getDeviceTypesSet(deviceCollection);
         
         Map<PaoType, DeviceCollection> deviceTypeDeviceCollectionMap = getDeviceTypeDeviceCollectionMap(deviceTypeSet, deviceCollection);
-        mav.addObject("deviceTypeDeviceCollectionMap", deviceTypeDeviceCollectionMap);
+        model.addAttribute("deviceTypeDeviceCollectionMap", deviceTypeDeviceCollectionMap);
         
         // device type points map
         List<PaoTypeMasks> paoTypeMasksList = createExistsPointsMap(deviceTypeSet, maskMissingPoints, false, deviceCollection);
-        mav.addObject("paoTypeMasksList", paoTypeMasksList);
+        model.addAttribute("paoTypeMasksList", paoTypeMasksList);
         
         // shared points map
         Map<PointTemplate, Boolean> sharedPointTemplateMaskMap = createSharedPointsTemplateMap(paoTypeMasksList);
 
         PaoTypeMasks sharedPaoTypeMasks = new PaoTypeMasks();
         sharedPaoTypeMasks.setPointTemplateMaskMap(sharedPointTemplateMaskMap);
-        mav.addObject("sharedPaoTypeMasks", sharedPaoTypeMasks);
+        model.addAttribute("sharedPaoTypeMasks", sharedPaoTypeMasks);
         
-        return mav;
+        return"removePoints/removePointsHome.jsp";
     }
     
     @Override
-    /**
-     * @param maskIfExistOnAllDevices
-     * @param paoTypeToSimpleDeviceMultiMap
-     * @param paoType
-     * @param pointTemplateMaskMap
-     */
     protected void fillInPointTemplateMask(boolean maskIfExistOnAllDevices,
                                            HashMultimap<PaoType, SimpleDevice> paoTypeToSimpleDeviceMultiMap,
                                            PaoType paoType,
@@ -109,29 +109,27 @@ public class RemovePointsController extends AddRemovePointsControllerBase {
         }
     }
     
-    
     // EXECUTE REMOVE
-    public ModelAndView execute(HttpServletRequest request, HttpServletResponse response) throws ServletException, Exception {
+    @Override
+    @RequestMapping
+    public String execute(ModelMap model, HttpServletRequest request) throws ServletException, Exception {
     	
-    	ModelAndView mav = new ModelAndView("redirect:removePointsResults");
-        
     	// device collection
         DeviceCollection deviceCollection = this.deviceCollectionFactory.createDeviceCollection(request);
         
     	// options
         boolean sharedPoints = ServletRequestUtils.getRequiredBooleanParameter(request, "sharedPoints");
         boolean maskMissingPoints = ServletRequestUtils.getRequiredBooleanParameter(request, "maskMissingPoints");
-        mav.addObject("sharedPoints", sharedPoints);
-        mav.addObject("maskMissingPoints", maskMissingPoints);
+        model.addAttribute("sharedPoints", sharedPoints);
+        model.addAttribute("maskMissingPoints", maskMissingPoints);
         
         // maskExisting POINTS REDIRECT
     	String maskMissingPointsSubmitButton = ServletRequestUtils.getStringParameter(request, "maskMissingPointsSubmitButton");
     	if (maskMissingPointsSubmitButton != null) {
     		
-    		mav.setViewName("redirect:home");
-    		mav.addAllObjects(deviceCollection.getCollectionParameters());
-            mav.addObject("maskMissingPoints", !maskMissingPoints); // toggle it!
-            return mav;
+    		model.addAllAttributes(deviceCollection.getCollectionParameters());
+            model.addAttribute("maskMissingPoints", !maskMissingPoints); // toggle it!
+            return "redirect:home";
     	}
     	
     	// create processor
@@ -140,16 +138,15 @@ public class RemovePointsController extends AddRemovePointsControllerBase {
     	
     	if(pointTemplatesMap.isEmpty()){
             String noPointsSuppliedMsg = "noPointsSuppliedMsg";
-            ModelAndView home = redirectWithError(noPointsSuppliedMsg, deviceCollection);
-            return home;
+            return redirectWithError(model, noPointsSuppliedMsg, deviceCollection);
         }
     	
     	// start processor
     	String id = startBulkProcessor(deviceCollection, addPointsProcessor, BackgroundProcessTypeEnum.REMOVE_POINTS);
     	
     	// redirect to results page
-        mav.addObject("resultsId", id);
-        return mav;
+        model.addAttribute("resultsId", id);
+        return "redirect:removePointsResults";
     }
     
     // remove points processor
@@ -187,21 +184,19 @@ public class RemovePointsController extends AddRemovePointsControllerBase {
         return removePointsProcessor;
     }
     
-    
     // VIEW RESULTS
-    public ModelAndView removePointsResults(HttpServletRequest request, HttpServletResponse response) throws ServletException {
-
-        ModelAndView mav = new ModelAndView("removePoints/removePointsResults.jsp");
+    @RequestMapping
+    public String removePointsResults(ModelMap model, HttpServletRequest request) throws ServletException {
         
         // prepare mav with basic results data
-        prepResultsView(request, mav);
+        prepResultsView(model, request);
         
         // options
         boolean sharedPoints = ServletRequestUtils.getBooleanParameter(request, "sharedPoints", true);
         boolean maskMissingPoints = ServletRequestUtils.getBooleanParameter(request, "maskMissingPoints", false);
-        mav.addObject("sharedPoints", sharedPoints);
-        mav.addObject("maskMissingPoints", maskMissingPoints);
+        model.addAttribute("sharedPoints", sharedPoints);
+        model.addAttribute("maskMissingPoints", maskMissingPoints);
         
-        return mav;
+        return "removePoints/removePointsResults.jsp";
     }
 }

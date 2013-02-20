@@ -14,14 +14,13 @@ import java.util.UUID;
 import javax.annotation.Resource;
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpServletResponse;
 
 import org.apache.commons.lang.StringUtils;
 import org.apache.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.ui.ModelMap;
 import org.springframework.web.bind.ServletRequestBindingException;
 import org.springframework.web.bind.ServletRequestUtils;
-import org.springframework.web.servlet.ModelAndView;
 
 import com.cannontech.clientutils.YukonLogManager;
 import com.cannontech.common.bulk.BulkProcessor;
@@ -51,7 +50,6 @@ import com.cannontech.core.dao.PaoDao;
 import com.cannontech.core.dao.PointDao;
 import com.cannontech.core.roleproperties.YukonRoleProperty;
 import com.cannontech.database.data.point.PointType;
-import com.cannontech.i18n.YukonUserContextMessageSourceResolver;
 import com.cannontech.web.bulk.model.PaoTypeMasks;
 import com.cannontech.web.security.annotation.CheckRoleProperty;
 import com.google.common.base.Function;
@@ -64,36 +62,35 @@ import com.google.common.collect.SetMultimap;
 import com.google.common.collect.Sets;
 
 @CheckRoleProperty(YukonRoleProperty.ADD_REMOVE_POINTS)
-public abstract class AddRemovePointsControllerBase extends BulkControllerBase {
+public abstract class AddRemovePointsControllerBase {
 
-	protected BulkProcessor bulkProcessor = null;
-    protected PaoDefinitionDao paoDefinitionDao;
-    protected PointService pointService;
-    protected PointCreationService pointCreationService;
-    protected DBPersistentDao dbPersistentDao;
-    protected TemporaryDeviceGroupService temporaryDeviceGroupService;
-    protected DeviceGroupMemberEditorDao deviceGroupMemberEditorDao;
-    protected DeviceGroupCollectionHelper deviceGroupCollectionHelper;
-    protected RecentResultsCache<BackgroundProcessResultHolder> recentResultsCache;
-    protected YukonUserContextMessageSourceResolver messageSourceResolver;
-    protected PointDao pointDao;
-    protected PaoDao paoDao;
+    @Autowired protected PaoDefinitionDao paoDefinitionDao;
+    @Autowired protected PointService pointService;
+    @Autowired protected PointCreationService pointCreationService;
+    @Autowired protected DBPersistentDao dbPersistentDao;
+    @Autowired protected TemporaryDeviceGroupService temporaryDeviceGroupService;
+    @Autowired protected DeviceGroupMemberEditorDao deviceGroupMemberEditorDao;
+    @Autowired protected DeviceGroupCollectionHelper deviceGroupCollectionHelper;
+    @Autowired protected PointDao pointDao;
+    @Autowired protected PaoDao paoDao;
+    
+    @Resource(name="transactionPerItemProcessor") protected BulkProcessor bulkProcessor;
+    @Resource(name="recentResultsCache") protected RecentResultsCache<BackgroundProcessResultHolder> recentResultsCache;
     
     private Logger log = YukonLogManager.getLogger(AddRemovePointsControllerBase.class);
     
     // ABSTRACT
-    public abstract ModelAndView home(HttpServletRequest request, HttpServletResponse response) throws Exception, ServletException;
-    public abstract ModelAndView execute(HttpServletRequest request, HttpServletResponse response) throws ServletException, Exception;
+    public abstract String home(ModelMap model, HttpServletRequest request) throws Exception, ServletException;
+    public abstract String execute(ModelMap model, HttpServletRequest request) throws ServletException, Exception;
     
-    protected ModelAndView redirectWithError(String errorMsg, DeviceCollection deviceCollection) {
-        ModelAndView mav = new ModelAndView("redirect:home");
-        mav.addAllObjects(deviceCollection.getCollectionParameters());
-        mav.addObject("errorMsg", errorMsg);
-        return mav;
+    protected String redirectWithError(ModelMap model, String errorMsg, DeviceCollection deviceCollection) {
+        model.addAllAttributes(deviceCollection.getCollectionParameters());
+        model.addAttribute("errorMsg", errorMsg);
+        return "redirect:home";
     }
     
     // START BULK PROCESSOR
-    public String startBulkProcessor(DeviceCollection deviceCollection, Processor<? super YukonDevice> processor, BackgroundProcessTypeEnum backgroundProcessType) throws ServletException, Exception {
+    public String startBulkProcessor(DeviceCollection deviceCollection, Processor<? super YukonDevice> processor, BackgroundProcessTypeEnum backgroundProcessType) {
         
         // CALLBACK
     	String resultsId = StringUtils.replace(UUID.randomUUID().toString(), "-", "");
@@ -119,15 +116,15 @@ public abstract class AddRemovePointsControllerBase extends BulkControllerBase {
     }
     
     // PREP RESULTS PAGE
-    protected void prepResultsView(HttpServletRequest request, ModelAndView mav) throws ServletRequestBindingException {
+    protected void prepResultsView(ModelMap model, HttpServletRequest request) throws ServletRequestBindingException {
     	
     	// result info
         String resultsId = ServletRequestUtils.getRequiredStringParameter(request, "resultsId");
         AddRemovePointsCallbackResult callbackResult = (AddRemovePointsCallbackResult)recentResultsCache.getResult(resultsId);
-        mav.addObject("callbackResult", callbackResult);
+        model.addAttribute("callbackResult", callbackResult);
         
         // device collection
-        mav.addObject("deviceCollection", callbackResult.getDeviceCollection());
+        model.addAttribute("deviceCollection", callbackResult.getDeviceCollection());
     }
     
     // MISC LIST/MAP ORGANIZING HELPERS
@@ -215,7 +212,6 @@ public abstract class AddRemovePointsControllerBase extends BulkControllerBase {
         allPointTemplates.putAll(pointTypePointList);
     }
     
-    @SuppressWarnings("unchecked")
     protected Map<PaoType, Set<PointTemplate>> extractPointTemplatesMapFromParameters (HttpServletRequest request, DeviceCollection deviceCollection, boolean commonPoints) {
     	
     	// POINT TAMPLATES MAP
@@ -375,66 +371,6 @@ public abstract class AddRemovePointsControllerBase extends BulkControllerBase {
             
         }
         
-    }
-    
-    @Resource(name="transactionPerItemProcessor")
-    public void setBulkProcessor(BulkProcessor bulkProcessor) {
-		this.bulkProcessor = bulkProcessor;
-	}
-    
-   @Autowired
-    public void setPaoDefinitionDao(PaoDefinitionDao paoDefinitionDao) {
-		this.paoDefinitionDao = paoDefinitionDao;
-	}
-    
-    @Autowired
-    public void setDbPersistentDao(DBPersistentDao dbPersistentDao) {
-		this.dbPersistentDao = dbPersistentDao;
-	}
-    
-    @Autowired
-    public void setPointService(PointService pointService) {
-		this.pointService = pointService;
-	}
-    
-    @Autowired
-    public void setPointCreationService(PointCreationService pointCreationService) {
-		this.pointCreationService = pointCreationService;
-	}
-    
-    @Autowired
-    public void setTemporaryDeviceGroupService(TemporaryDeviceGroupService temporaryDeviceGroupService) {
-		this.temporaryDeviceGroupService = temporaryDeviceGroupService;
-	}
-    
-    @Autowired
-    public void setDeviceGroupCollectionHelper(DeviceGroupCollectionHelper deviceGroupCollectionHelper) {
-		this.deviceGroupCollectionHelper = deviceGroupCollectionHelper;
-	}
-    
-    @Autowired
-    public void setDeviceGroupMemberEditorDao(DeviceGroupMemberEditorDao deviceGroupMemberEditorDao) {
-		this.deviceGroupMemberEditorDao = deviceGroupMemberEditorDao;
-	}
-    
-    @Autowired
-    public void setMessageSourceResolver(YukonUserContextMessageSourceResolver messageSourceResolver) {
-        this.messageSourceResolver = messageSourceResolver;
-    }
-    
-    @Resource(name="recentResultsCache")
-    public void setRecentResultsCache(RecentResultsCache<BackgroundProcessResultHolder> recentResultsCache) {
-        this.recentResultsCache = recentResultsCache;
-    }
-    
-    @Autowired
-    public void setPointDao(PointDao pointDao) {
-        this.pointDao = pointDao;
-    }
-    
-    @Autowired
-    public void setPaoDao(PaoDao paoDao) {
-        this.paoDao = paoDao;
     }
     
 }

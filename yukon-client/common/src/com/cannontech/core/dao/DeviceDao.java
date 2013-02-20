@@ -27,6 +27,17 @@ public interface DeviceDao {
     public SimpleDevice getYukonDevice(LiteYukonPAObject yukonPAObject);
     
     public SimpleDevice getYukonDeviceObjectById(int deviceId);
+    
+    /**
+     * This will fail for paos that have the same name; 
+     * ie repeaters and their routes are always named the same
+     * but they have differing category and class so having the same 
+     * name is legal. Also it only handles devices that are of the 
+     * classes: PaoClass.CARRIER, PaoClass.METER, PaoClass.IED, PaoClass.RFMESH;
+     * So cbc's would not qualify.
+     * 
+     * @param name - The name of the device
+     */
     public SimpleDevice getYukonDeviceObjectByName(String name);
     
     /**
@@ -179,4 +190,9 @@ public interface DeviceDao {
      * @return int
      */
     public int getRouteDeviceCount(int routeId);
+
+    /**
+     * Returns a list of {@link SimpleDevice} objects for a list of pao ids.
+     */
+    public List<SimpleDevice> getYukonDeviceObjectByIds(Iterable<Integer> ids);
 }

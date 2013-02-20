@@ -4,20 +4,22 @@ import java.util.Map;
 import java.util.Set;
 import java.util.UUID;
 
+import javax.annotation.Resource;
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpServletResponse;
 
 import org.apache.commons.lang.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.beans.factory.annotation.Required;
+import org.springframework.stereotype.Controller;
+import org.springframework.ui.ModelMap;
 import org.springframework.web.bind.ServletRequestUtils;
-import org.springframework.web.servlet.ModelAndView;
+import org.springframework.web.bind.annotation.RequestMapping;
 
 import com.cannontech.common.bulk.BulkProcessor;
 import com.cannontech.common.bulk.callbackResult.BackgroundProcessResultHolder;
 import com.cannontech.common.bulk.callbackResult.ChangeDeviceTypeCallbackResult;
 import com.cannontech.common.bulk.collection.device.DeviceCollection;
+import com.cannontech.common.bulk.collection.device.DeviceCollectionFactory;
 import com.cannontech.common.bulk.collection.device.DeviceGroupCollectionHelper;
 import com.cannontech.common.bulk.mapper.PassThroughMapper;
 import com.cannontech.common.bulk.processor.ProcessingException;
@@ -38,29 +40,28 @@ import com.google.common.collect.Maps;
 import com.google.common.collect.Sets;
 
 @CheckRoleProperty(YukonRoleProperty.MASS_CHANGE)
-public class ChangeDeviceTypeController extends BulkControllerBase {
+@Controller
+@RequestMapping("changeDeviceType/*")
+public class ChangeDeviceTypeController {
 
-    private RecentResultsCache<BackgroundProcessResultHolder> recentResultsCache;
-    private BulkProcessor bulkProcessor;
-    private PaoDefinitionService paoDefinitionService;
-    private TemporaryDeviceGroupService temporaryDeviceGroupService;
-    private DeviceGroupMemberEditorDao deviceGroupMemberEditorDao;
-    private DeviceGroupCollectionHelper deviceGroupCollectionHelper;
-    private ChangeDeviceTypeService changeDeviceTypeService;
+    @Resource(name="recentResultsCache") private RecentResultsCache<BackgroundProcessResultHolder> recentResultsCache;
+    @Resource(name="resubmittingBulkProcessor") private BulkProcessor bulkProcessor;
+    
+    @Autowired private PaoDefinitionService paoDefinitionService;
+    @Autowired private TemporaryDeviceGroupService temporaryDeviceGroupService;
+    @Autowired private DeviceGroupMemberEditorDao deviceGroupMemberEditorDao;
+    @Autowired private DeviceGroupCollectionHelper deviceGroupCollectionHelper;
+    @Autowired private ChangeDeviceTypeService changeDeviceTypeService;
+    @Autowired private DeviceCollectionFactory deviceCollectionFactory;
     
     /**
      * CHOOSE DEVICE TYPE TO CHANGE TO
-     * @param request
-     * @param response
-     * @return
-     * @throws ServletException
      */
-    public ModelAndView chooseDeviceType(HttpServletRequest request, HttpServletResponse response) throws ServletException {
+    @RequestMapping
+    public String chooseDeviceType(ModelMap model, HttpServletRequest request) throws ServletException {
 
-        ModelAndView mav = new ModelAndView("changeDeviceType/chooseDeviceType.jsp");
-        
         DeviceCollection deviceCollection = this.deviceCollectionFactory.createDeviceCollection(request);
-        mav.addObject("deviceCollection", deviceCollection);
+        model.addAttribute("deviceCollection", deviceCollection);
 
         Set<PaoType> paoTypes = Sets.newHashSet();
         for (SimpleDevice device : deviceCollection.getDeviceList()) {
@@ -75,21 +76,17 @@ public class ChangeDeviceTypeController extends BulkControllerBase {
                 deviceTypes.put(paoDefinition.getDisplayName(), paoDefinition.getType().getDeviceTypeId());
             }
         }
-        mav.addObject("deviceTypes", deviceTypes);
+        model.addAttribute("deviceTypes", deviceTypes);
 
-        return mav;
+        return "changeDeviceType/chooseDeviceType.jsp";
     }
     
     /**
      * DO DEVICE TYPE CHANGE
-     * @param request
-     * @param response
-     * @return
-     * @throws ServletException
      */
-    public ModelAndView changeDeviceType(HttpServletRequest request, HttpServletResponse response) throws ServletException {
+    @RequestMapping
+    public String changeDeviceType(ModelMap model, HttpServletRequest request) throws ServletException {
 
-        ModelAndView mav = null;
         DeviceCollection deviceCollection = this.deviceCollectionFactory.createDeviceCollection(request);
         
         // CALLBACK
@@ -110,7 +107,6 @@ public class ChangeDeviceTypeController extends BulkControllerBase {
         // PROCESS
         final int selectedDeviceType = ServletRequestUtils.getRequiredIntParameter(request, "deviceTypes"); 
         SingleProcessor<SimpleDevice> bulkUpdater = new SingleProcessor<SimpleDevice>() {
-
             @Override
             public void process(SimpleDevice device) throws ProcessingException {
                 changeDeviceTypeService.changeDeviceType(device, PaoType.getForId(selectedDeviceType));
@@ -120,65 +116,25 @@ public class ChangeDeviceTypeController extends BulkControllerBase {
         ObjectMapper<SimpleDevice, SimpleDevice> mapper = new PassThroughMapper<SimpleDevice>();
         bulkProcessor.backgroundBulkProcess(deviceCollection.iterator(), mapper, bulkUpdater, callbackResult);
         
-        mav = new ModelAndView("redirect:changeDeviceTypeResults");
-        mav.addObject("resultsId", resultsId);
+        model.addAttribute("resultsId", resultsId);
         
-        return mav;
+        return "redirect:changeDeviceTypeResults";
     }
     
     /**
      * CHANGE DEVICE TYPE RESULTS
-     * @param request
-     * @param response
-     * @return
-     * @throws ServletException
      */
-    public ModelAndView changeDeviceTypeResults(HttpServletRequest request, HttpServletResponse response) throws ServletException {
-
-        ModelAndView mav = new ModelAndView("changeDeviceType/changeDeviceTypeResults.jsp");
+    @RequestMapping
+    public String changeDeviceTypeResults(ModelMap model, HttpServletRequest request) throws ServletException {
 
         // result info
         String resultsId = ServletRequestUtils.getRequiredStringParameter(request, "resultsId");
         ChangeDeviceTypeCallbackResult callbackResult = (ChangeDeviceTypeCallbackResult)recentResultsCache.getResult(resultsId);
         
-        mav.addObject("deviceCollection", callbackResult.getDeviceCollection());
-        mav.addObject("callbackResult", callbackResult);
+        model.addAttribute("deviceCollection", callbackResult.getDeviceCollection());
+        model.addAttribute("callbackResult", callbackResult);
 
-        return mav;
+        return "changeDeviceType/changeDeviceTypeResults.jsp";
     }
     
-    @Required
-    public void setRecentResultsCache(RecentResultsCache<BackgroundProcessResultHolder> recentResultsCache) {
-        this.recentResultsCache = recentResultsCache;
-    }
-    
-    @Required
-    public void setBulkProcessor(BulkProcessor bulkProcessor) {
-        this.bulkProcessor = bulkProcessor;
-    }
-    
-    @Autowired
-    public void setPaoDefinitionService(PaoDefinitionService paoDefinitionService) {
-        this.paoDefinitionService = paoDefinitionService;
-    }
-    
-    @Autowired
-    public void setTemporaryDeviceGroupService(TemporaryDeviceGroupService temporaryDeviceGroupService) {
-        this.temporaryDeviceGroupService = temporaryDeviceGroupService;
-    }
-    
-    @Autowired
-    public void setDeviceGroupMemberEditorDao(DeviceGroupMemberEditorDao deviceGroupMemberEditorDao) {
-        this.deviceGroupMemberEditorDao = deviceGroupMemberEditorDao;
-    }
-    
-    @Autowired
-    public void setDeviceGroupCollectionHelper(DeviceGroupCollectionHelper deviceGroupCollectionHelper) {
-		this.deviceGroupCollectionHelper = deviceGroupCollectionHelper;
-	}
-    
-    @Autowired
-    public void setChangeDeviceTypeService(ChangeDeviceTypeService changeDeviceTypeService) {
-        this.changeDeviceTypeService = changeDeviceTypeService;
-    }
 }

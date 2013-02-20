@@ -2,21 +2,23 @@ package com.cannontech.web.bulk;
 
 import java.util.UUID;
 
+import javax.annotation.Resource;
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpServletResponse;
 
 import org.apache.commons.lang.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.beans.factory.annotation.Required;
 import org.springframework.dao.DataRetrievalFailureException;
+import org.springframework.stereotype.Controller;
+import org.springframework.ui.ModelMap;
 import org.springframework.web.bind.ServletRequestUtils;
-import org.springframework.web.servlet.ModelAndView;
+import org.springframework.web.bind.annotation.RequestMapping;
 
 import com.cannontech.common.bulk.BulkProcessor;
 import com.cannontech.common.bulk.callbackResult.BackgroundProcessResultHolder;
 import com.cannontech.common.bulk.callbackResult.MassDeleteCallbackResult;
 import com.cannontech.common.bulk.collection.device.DeviceCollection;
+import com.cannontech.common.bulk.collection.device.DeviceCollectionFactory;
 import com.cannontech.common.bulk.collection.device.DeviceGroupCollectionHelper;
 import com.cannontech.common.bulk.mapper.PassThroughMapper;
 import com.cannontech.common.bulk.processor.ProcessingException;
@@ -33,49 +35,42 @@ import com.cannontech.core.service.PaoLoadingService;
 import com.cannontech.web.security.annotation.CheckRoleProperty;
 
 @CheckRoleProperty(YukonRoleProperty.MASS_DELETE)
-public class MassDeleteController extends BulkControllerBase {
+@Controller
+@RequestMapping("massDelete/*")
+public class MassDeleteController {
 
-    private DeviceDao deviceDao;
-    private RecentResultsCache<BackgroundProcessResultHolder> recentResultsCache;
-    private BulkProcessor bulkProcessor;
-    private TemporaryDeviceGroupService temporaryDeviceGroupService;
-    private DeviceGroupMemberEditorDao deviceGroupMemberEditorDao;
-    private DeviceGroupCollectionHelper deviceGroupCollectionHelper;
-    private PaoLoadingService paoLoadingService;
+    @Autowired private DeviceDao deviceDao;
+    @Autowired private TemporaryDeviceGroupService temporaryDeviceGroupService;
+    @Autowired private DeviceGroupMemberEditorDao deviceGroupMemberEditorDao;
+    @Autowired private DeviceGroupCollectionHelper deviceGroupCollectionHelper;
+    @Autowired private PaoLoadingService paoLoadingService;
+    @Autowired private DeviceCollectionFactory deviceCollectionFactory;
+    
+    @Resource(name="recentResultsCache") private RecentResultsCache<BackgroundProcessResultHolder> recentResultsCache;
+    @Resource(name="resubmittingBulkProcessor") private BulkProcessor bulkProcessor;
     
     /**
      * CONFIRM MASS DELETE
-     * @param request
-     * @param response
-     * @return
-     * @throws ServletException
      */
-    public ModelAndView massDelete(HttpServletRequest request, HttpServletResponse response) throws ServletException {
+    @RequestMapping
+    public String massDelete(ModelMap model, HttpServletRequest request) throws ServletException {
 
-        ModelAndView mav = new ModelAndView("massDelete/massDeleteConfirm.jsp");
-        
         // pass along deviceCollection
         DeviceCollection deviceCollection = this.deviceCollectionFactory.createDeviceCollection(request);
-        mav.addObject("deviceCollection", deviceCollection);
+        model.addAttribute("deviceCollection", deviceCollection);
         
         long deviceCount = deviceCollection.getDeviceCount();
-        mav.addObject("deviceCount", deviceCount);
+        model.addAttribute("deviceCount", deviceCount);
         
-        
-        return mav;
+        return "massDelete/massDeleteConfirm.jsp";
     }
-    
     
     /**
      * DO MASS DELETE
-     * @param request
-     * @param response
-     * @return
-     * @throws ServletException
      */
-    public ModelAndView doMassDelete(HttpServletRequest request, HttpServletResponse response) throws ServletException {
+    @RequestMapping
+    public String doMassDelete(ModelMap model, HttpServletRequest request) throws ServletException {
 
-        ModelAndView mav = null;
         DeviceCollection deviceCollection = this.deviceCollectionFactory.createDeviceCollection(request);
         
         // CALLBACK
@@ -93,7 +88,6 @@ public class MassDeleteController extends BulkControllerBase {
         
         // PROCESS
         SingleProcessor<SimpleDevice> bulkUpdater = new SingleProcessor<SimpleDevice>() {
-
             @Override
             public void process(SimpleDevice device) throws ProcessingException {
                 processDeviceDelete(device);
@@ -103,14 +97,12 @@ public class MassDeleteController extends BulkControllerBase {
         ObjectMapper<SimpleDevice, SimpleDevice> mapper = new PassThroughMapper<SimpleDevice>();
         bulkProcessor.backgroundBulkProcess(deviceCollection.iterator(), mapper, bulkUpdater, callbackResult);
         
-        mav = new ModelAndView("redirect:massDeleteResults");
-        mav.addObject("resultsId", resultsId);
+        model.addAttribute("resultsId", resultsId);
         
-        return mav;
+        return "redirect:massDeleteResults";
     }
     
     private void processDeviceDelete(SimpleDevice device) {
-
         try {
             deviceDao.removeDevice(device);
         } catch (DataRetrievalFailureException e) {
@@ -122,56 +114,16 @@ public class MassDeleteController extends BulkControllerBase {
     
     /**
      * MASS DELETE RESULTS
-     * @param request
-     * @param response
-     * @return
-     * @throws ServletException
      */
-    public ModelAndView massDeleteResults(HttpServletRequest request, HttpServletResponse response) throws ServletException {
-
-        ModelAndView mav = new ModelAndView("massDelete/massDeleteResults.jsp");
+    @RequestMapping
+    public String massDeleteResults(ModelMap model, HttpServletRequest request) throws ServletException {
 
         // result info
         String resultsId = ServletRequestUtils.getRequiredStringParameter(request, "resultsId");
         MassDeleteCallbackResult callbackResult = (MassDeleteCallbackResult)recentResultsCache.getResult(resultsId);
-        mav.addObject("callbackResult", callbackResult);
+        model.addAttribute("callbackResult", callbackResult);
 
-        return mav;
+        return "massDelete/massDeleteResults.jsp";
     }
 
-    
-    @Required
-    public void setDeviceDao(DeviceDao deviceDao) {
-        this.deviceDao = deviceDao;
-    }
-    
-    @Required
-    public void setRecentResultsCache(RecentResultsCache<BackgroundProcessResultHolder> recentResultsCache) {
-        this.recentResultsCache = recentResultsCache;
-    }
-    
-    @Required
-    public void setBulkProcessor(BulkProcessor bulkProcessor) {
-        this.bulkProcessor = bulkProcessor;
-    }
-    
-    @Autowired
-    public void setTemporaryDeviceGroupService(TemporaryDeviceGroupService temporaryDeviceGroupService) {
-        this.temporaryDeviceGroupService = temporaryDeviceGroupService;
-    }
-    
-    @Autowired
-    public void setDeviceGroupMemberEditorDao(DeviceGroupMemberEditorDao deviceGroupMemberEditorDao) {
-        this.deviceGroupMemberEditorDao = deviceGroupMemberEditorDao;
-    }
-    
-    @Autowired
-    public void setDeviceGroupCollectionHelper(DeviceGroupCollectionHelper deviceGroupCollectionHelper) {
-		this.deviceGroupCollectionHelper = deviceGroupCollectionHelper;
-	}
-    
-    @Autowired
-    public void setPaoLoadingService(PaoLoadingService paoLoadingService) {
-		this.paoLoadingService = paoLoadingService;
-	}
 }

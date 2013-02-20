@@ -15,7 +15,7 @@
 <div class="titledContainer boxContainer ${pageScope.styleClass}">
     <div class="titleBar boxContainer_titleBar">
         <div class="controls" onclick="${pageScope.onClose}"><img class="minMax" alt="close" src="/WebConfig/yukon/Icons/close_x.gif"></div>
-        <div id="${id}_title" class="title boxContainer_title">${title}</div>
+        <h3 id="${id}_title" class="title boxContainer_title">${title}</h3>
     </div>
     <div id="${id}_body" class="content boxContainer_content"><jsp:doBody/></div>
 </div>

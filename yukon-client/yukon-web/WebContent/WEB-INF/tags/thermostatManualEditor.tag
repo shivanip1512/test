@@ -17,7 +17,7 @@
 
 <div class="titledContainer boxContainer manualThermostat box fl">
     <div class="titleBar boxContainer_titleBar">
-        <div class="title boxContainer_title">
+        <h3 class="title boxContainer_title">
         <c:set var="multipleThermostatsSelected" value="${fn:length(fn:split(thermostatIds, ',')) > 1}"></c:set>
             <c:choose>
                 <c:when test="${not multipleThermostatsSelected and canEditLabel}">
@@ -49,7 +49,7 @@
                     </span>
                 </c:otherwise>
             </c:choose>
-        </div>
+        </h3>
     </div>
     <div class="content boxContainer_content">
         <div class="box clear" style="padding-bottom: .5em; font-size: .75em;">

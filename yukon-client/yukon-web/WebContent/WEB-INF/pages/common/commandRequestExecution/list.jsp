@@ -122,69 +122,71 @@
 		<cti:button nameKey="filter" styleClass="navlink" renderMode="labeledImage" id="filterButton" />
     </div>
 
-    <table id="cresTable" class="resultsTable activeResultsTable">
-    
-        <tr>
-            <c:if test="${!singleJob}">
-                <th>${executionsTypeText}</th>
-            </c:if>
-            <th>${executionsStartTimeText}</th>
-            <th>${executionsStopTimeText}</th>
-            <th>${successCountText}</th>
-            <th>${failCountText}</th>
-            <th>${totalCountText}</th>
-            <th>${executionsStatusText}</th>
-            <th>${executionsUserText}</th>
-        </tr>
-        
-        <c:if test="${fn:length(creWrappers) <= 0}">
-            <c:set var="colCount" value="7"/>
-            <c:if test="${!singleJob}">
-                <c:set var="colCount" value="8"/>
-            </c:if>
+    <table id="cresTable" class="resultsTable activeResultsTable rowHighlighting">
+        <thead>
             <tr>
-                <td colspan="${colCount}" style="text-align:center;" class="subtle">${noExecutionsText}</td>
-            </tr>
-        </c:if>
-    
-        <c:forEach var="creWrapper" items="${creWrappers}" varStatus="status">
-        
-            <tr class="<tags:alternateRow odd="" even="altRow"/>" 
-                onclick="forwardToCreDetail(this, ${creWrapper.cre.id})" 
-                onmouseover="activeResultsTable_highLightRow(this)" 
-                onmouseout="activeResultsTable_unHighLightRow(this)"
-                title="${creWrapper.cre.commandRequestExecutionType.description} ID: ${creWrapper.cre.id}">
-                
                 <c:if test="${!singleJob}">
-                    <td>${creWrapper.cre.commandRequestExecutionType.shortName}</td>
+                    <th>${executionsTypeText}</th>
                 </c:if>
-                <td style="white-space:nowrap;"><cti:formatDate type="DATEHM" value="${creWrapper.cre.startTime}"/></td>
-                <td style="white-space:nowrap;"><cti:formatDate type="DATEHM" value="${creWrapper.cre.stopTime}" nullText="N/A"/></td>
-                <td>${creWrapper.successCount}</td>
-                <td>${creWrapper.failCount}</td>
-                <td>${creWrapper.totalCount}</td>
-                <td style="white-space:nowrap;">
-                    <c:choose>
-                        <c:when test="${creWrapper.cre.commandRequestExecutionStatus == 'FAILED'}">
-                            <c:set var="statusSpanClass" value="error"/>
-                        </c:when>
-                        <c:when test="${creWrapper.cre.commandRequestExecutionStatus == 'IN_PROGRESS'}">
-                            <c:set var="statusSpanClass" value="success"/>
-                        </c:when>
-                        <c:otherwise>
-                            <c:set var="statusSpanClass" value=""/>
-                        </c:otherwise>
-                    </c:choose>
-                    <span class="${statusSpanClass}">
-                        <cti:msg key="${creWrapper.cre.commandRequestExecutionStatus.formatKey}" />
-                    </span>
-                </td>
-                <td>${creWrapper.cre.userName}</td>
-                
-            </tr>
+                <th>${executionsStartTimeText}</th>
+                <th>${executionsStopTimeText}</th>
+                <th>${successCountText}</th>
+                <th>${failCountText}</th>
+                <th>${totalCountText}</th>
+                <th>${executionsStatusText}</th>
+                <th>${executionsUserText}</th>
+        </tr>
+        </thead>
+        <tfoot></tfoot>
+        <tbody>
+            <c:if test="${fn:length(creWrappers) <= 0}">
+                <c:set var="colCount" value="7"/>
+                <c:if test="${!singleJob}">
+                    <c:set var="colCount" value="8"/>
+                </c:if>
+                <tr>
+                    <td colspan="${colCount}" style="text-align:center;" class="subtle">${noExecutionsText}</td>
+                </tr>
+            </c:if>
         
-        </c:forEach>
-    
+            <c:forEach var="creWrapper" items="${creWrappers}" varStatus="status">
+            
+                <tr class="cp" 
+                    onclick="forwardToCreDetail(this, ${creWrapper.cre.id})" 
+                    onmouseover="activeResultsTable_highLightRow(this)" 
+                    onmouseout="activeResultsTable_unHighLightRow(this)"
+                    title="${creWrapper.cre.commandRequestExecutionType.description} ID: ${creWrapper.cre.id}">
+                    
+                    <c:if test="${!singleJob}">
+                        <td>${creWrapper.cre.commandRequestExecutionType.shortName}</td>
+                    </c:if>
+                    <td style="white-space:nowrap;"><cti:formatDate type="DATEHM" value="${creWrapper.cre.startTime}"/></td>
+                    <td style="white-space:nowrap;"><cti:formatDate type="DATEHM" value="${creWrapper.cre.stopTime}" nullText="N/A"/></td>
+                    <td>${creWrapper.successCount}</td>
+                    <td>${creWrapper.failCount}</td>
+                    <td>${creWrapper.totalCount}</td>
+                    <td style="white-space:nowrap;">
+                        <c:choose>
+                            <c:when test="${creWrapper.cre.commandRequestExecutionStatus == 'FAILED'}">
+                                <c:set var="statusSpanClass" value="error"/>
+                            </c:when>
+                            <c:when test="${creWrapper.cre.commandRequestExecutionStatus == 'IN_PROGRESS'}">
+                                <c:set var="statusSpanClass" value="success"/>
+                            </c:when>
+                            <c:otherwise>
+                                <c:set var="statusSpanClass" value=""/>
+                            </c:otherwise>
+                        </c:choose>
+                        <span class="${statusSpanClass}">
+                            <cti:msg key="${creWrapper.cre.commandRequestExecutionStatus.formatKey}" />
+                        </span>
+                    </td>
+                    <td>${creWrapper.cre.userName}</td>
+                    
+                </tr>
+            
+            </c:forEach>
+        </tbody>
     </table>
 </cti:msgScope>
 </cti:standardPage>

@@ -4,42 +4,32 @@
 <%@ taglib prefix="fn" uri="http://java.sun.com/jsp/jstl/functions" %>
 
 <c:if test="${not empty resultsLimitedTo}">
-    <div class="error" style="width:95%;text-align:right;">
-        <cti:msg key="yukon.common.device.bulk.selectedDevicesResultsLimited" arguments="${resultsLimitedTo}" />
-    </div>
-    <br>
+    <div class="error"><i:inline key="yukon.common.device.bulk.selectedDevicesResultsLimited" arguments="${resultsLimitedTo}"/></div>
 </c:if>
 
 <c:choose>
 	<c:when test="${fn:length(deviceInfoList) == 0}">
-	    <div class="errorMessage">
-	        <i:inline key="yukon.common.device.bulk.selectedDevicesEmpty"/>
-	    </div>
+	    <div class="errorMessage"><i:inline key="yukon.common.device.bulk.selectedDevicesEmpty"/></div>
 	</c:when>
-<c:otherwise>
-<table class="compactResultsTable">
-    
-    <c:forEach var="deviceInfoMap" items="${deviceInfoList}" varStatus="status">
-    
-        <c:if test="${status.count == 1}">
-        
-            <tr>
-                <c:forEach var="info" items="${deviceInfoMap}">
-                    <th>
-                        ${info.key}
-                    </th>
-                </c:forEach>
-            </tr>
-        
-        </c:if>
-    
-        <tr>
-            <c:forEach var="info" items="${deviceInfoMap}">
-                <td style="text-align:left;">${info.value}</td>
-            </c:forEach>
-        </tr>
-        
-    </c:forEach>
-</table>
-</c:otherwise>
+    <c:otherwise>
+        <div class="scrollingContainer_large" style="margin-bottom: 10px;">
+            <table class="compactResultsTable">
+                <thead>
+                    <tr>
+                        <c:forEach var="th" items="${deviceInfoList[0]}"><th>${th}</th></c:forEach>
+                    </tr>
+                </thead>
+                <tfoot></tfoot>
+                <tbody>
+                    <c:forEach var="row" items="${deviceInfoList}" begin="1">
+                        <tr>
+                            <c:forEach var="info" items="${row}" varStatus="status">
+                                <td class="wsnw<c:if test="${status.last}"> last</c:if>">${fn:escapeXml(info)}</td>
+                            </c:forEach>
+                        </tr>
+                    </c:forEach>
+                </tbody>
+            </table>
+        </div>
+    </c:otherwise>
 </c:choose>

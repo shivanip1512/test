@@ -105,28 +105,32 @@ Event.observe(window, "load", function() {
                                 <c:otherwise>
                                     <div class="membersContainer">
                                         <table class="compactResultsTable listTable">
-                                            <tr>
-                                                <th><i:inline key=".companyName"/></th>
-                                                <c:if test="${canManageMembers}">
-                                                    <th class="removeColumn"><i:inline key=".remove"/></th>
-                                                </c:if>
-                                            </tr>
-                                            
-                                            <c:forEach var="company" items="${members}">
-                                                <cti:url value="/adminSetup/energyCompany/general/view" var="viewEcUrl">
-                                                    <cti:param name="ecId" value="${company.energyCompanyId}"/>
-                                                </cti:url>
+                                            <thead>
                                                 <tr>
-                                                    <td><a href="${viewEcUrl}">${company.name}</a></td>
+                                                    <th><i:inline key=".companyName"/></th>
                                                     <c:if test="${canManageMembers}">
-                                                        <td class="removeColumn">
-                                                            <div class="dib">
-                                                                <cti:button nameKey="remove" type="submit" name="remove" value="${company.energyCompanyId}" renderMode="image"/>
-                                                            </div>
-                                                        </td>
+                                                        <th class="removeColumn"><i:inline key=".remove"/></th>
                                                     </c:if>
                                                 </tr>
-                                            </c:forEach>
+                                            </thead>
+                                            <tfoot></tfoot>
+                                            <tbody>
+                                                <c:forEach var="company" items="${members}">
+                                                    <cti:url value="/adminSetup/energyCompany/general/view" var="viewEcUrl">
+                                                        <cti:param name="ecId" value="${company.energyCompanyId}"/>
+                                                    </cti:url>
+                                                    <tr>
+                                                        <td><a href="${viewEcUrl}">${company.name}</a></td>
+                                                        <c:if test="${canManageMembers}">
+                                                            <td class="removeColumn">
+                                                                <div class="dib">
+                                                                    <cti:button nameKey="remove" type="submit" name="remove" value="${company.energyCompanyId}" renderMode="image"/>
+                                                                </div>
+                                                            </td>
+                                                        </c:if>
+                                                    </tr>
+                                                </c:forEach>
+                                            </tbody>
                                         </table>
                                     </div>
                                 </c:otherwise>
@@ -158,22 +162,27 @@ Event.observe(window, "load", function() {
                             <input type="hidden" name="operatorUserGroupIds" id="operatorUserGroupIds">
                             <div class="operatorGroupTable">
                                 <table class="compactResultsTable listTable">
-                                    <tr>
-                                        <th><i:inline key=".operatorGroups"/></th>
-                                        <c:if test="${fn:length(operatorUserGroups) > 1}"><th class="removeColumn"><i:inline key=".remove"/></th></c:if>
-                                    </tr>
-                                    <c:forEach var="userGroup" items="${operatorUserGroups}">
+                                    <thead>
                                         <tr>
-                                            <td><spring:escapeBody htmlEscape="true">${userGroup.userGroupName}</spring:escapeBody></td>
-                                            <c:if test="${fn:length(operatorUserGroups) > 1}">
-                                                <td class="removeColumn">
-                                                    <div class="dib">
-                                                        <cti:button nameKey="remove" type="submit" name="removeOperatorUserGroup" value="${userGroup.userGroupId}" renderMode="image"/>
-                                                    </div>
-                                                </td>
-                                            </c:if>
+                                            <th><i:inline key=".operatorGroups"/></th>
+                                            <c:if test="${fn:length(operatorUserGroups) > 1}"><th class="removeColumn"><i:inline key=".remove"/></th></c:if>
                                         </tr>
-                                    </c:forEach>
+                                    </thead>
+                                    <tfoot></tfoot>
+                                    <tbody>
+                                        <c:forEach var="userGroup" items="${operatorUserGroups}">
+                                            <tr>
+                                                <td><spring:escapeBody htmlEscape="true">${userGroup.userGroupName}</spring:escapeBody></td>
+                                                <c:if test="${fn:length(operatorUserGroups) > 1}">
+                                                    <td class="removeColumn">
+                                                        <div class="dib">
+                                                            <cti:button nameKey="remove" type="submit" name="removeOperatorUserGroup" value="${userGroup.userGroupId}" renderMode="image"/>
+                                                        </div>
+                                                    </td>
+                                                </c:if>
+                                            </tr>
+                                        </c:forEach>
+                                    </tbody>
                                 </table>
                             </div>
                             <div class="actionArea">
@@ -189,29 +198,34 @@ Event.observe(window, "load", function() {
                             <input type="hidden" name="customerUserGroupIds" id="customerUserGroupIds">
                             <div class="customerGroupTable">
                                 <table class="compactResultsTable listTable">
-                                    <tr>
-                                        <th><i:inline key=".customerGroups"/></th>
-                                        <c:if test="${not empty customerUserGroups}"><th class="removeColumn"><i:inline key=".remove"/></th></c:if>
-                                    </tr>
-                                    <c:choose>
-                                        <c:when test="${not empty customerUserGroups}">
-                                            <c:forEach var="userGroup" items="${customerUserGroups}">
+                                    <thead>
+                                        <tr>
+                                            <th><i:inline key=".customerGroups"/></th>
+                                            <c:if test="${not empty customerUserGroups}"><th class="removeColumn"><i:inline key=".remove"/></th></c:if>
+                                        </tr>
+                                    </thead>
+                                    <tfoot></tfoot>
+                                    <tbody>
+                                        <c:choose>
+                                            <c:when test="${not empty customerUserGroups}">
+                                                <c:forEach var="userGroup" items="${customerUserGroups}">
+                                                    <tr>
+                                                        <td><spring:escapeBody htmlEscape="true">${userGroup.userGroupName}</spring:escapeBody></td>
+                                                        <td class="removeColumn">
+                                                            <div class="dib">
+                                                                <cti:button nameKey="remove" type="submit" name="removeCustomerUserGroup" value="${userGroup.userGroupId}" renderMode="image"/>
+                                                            </div>
+                                                        </td>
+                                                    </tr>
+                                                </c:forEach>
+                                            </c:when>
+                                            <c:otherwise>
                                                 <tr>
-                                                    <td><spring:escapeBody htmlEscape="true">${userGroup.userGroupName}</spring:escapeBody></td>
-                                                    <td class="removeColumn">
-                                                        <div class="dib">
-                                                            <cti:button nameKey="remove" type="submit" name="removeCustomerUserGroup" value="${userGroup.userGroupId}" renderMode="image"/>
-                                                        </div>
-                                                    </td>
+                                                    <td colspan="2"><i:inline key=".noCustomerGroups"/></td>
                                                 </tr>
-                                            </c:forEach>
-                                        </c:when>
-                                        <c:otherwise>
-                                            <tr>
-                                                <td colspan="2"><i:inline key=".noCustomerGroups"/></td>
-                                            </tr>
-                                        </c:otherwise>
-                                    </c:choose>
+                                            </c:otherwise>
+                                        </c:choose>
+                                    </tbody>
                                 </table>
                             </div>
                             <div class="actionArea">

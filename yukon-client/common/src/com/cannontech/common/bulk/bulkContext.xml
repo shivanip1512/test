@@ -415,8 +415,7 @@
     </bean>
 
     <!-- BULK FIELD SERVICE -->
-    <bean id="bulkFieldService" class="com.cannontech.common.bulk.field.impl.BulkFieldServiceImpl">
-    </bean>
+    <bean id="bulkFieldService" class="com.cannontech.common.bulk.field.impl.BulkFieldServiceImpl"/>
     
     <bean id="templateBulkImportMethod" class="com.cannontech.common.bulk.service.impl.TemplateBulkImportMethod">
         <property name="type" value="MCT"/>

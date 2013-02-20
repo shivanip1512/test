@@ -2,6 +2,7 @@
 <%@ taglib uri="http://java.sun.com/jsp/jstl/core" prefix="c" %>
 <%@ taglib uri="http://java.sun.com/jsp/jstl/functions" prefix="fn" %>
 <%@ taglib prefix="tags" tagdir="/WEB-INF/tags" %>
+<%@ taglib prefix="i" tagdir="/WEB-INF/tags/i18n" %>
 <c:url var="DirUpImg" value="/WebConfig/yukon/Icons/arrow_turn_left.png"/>
 
 <cti:standardPage module="support" page="logMenu">
@@ -11,25 +12,32 @@
 		<a href="?file=${rootlessParentDir}&sortType=${oldStateSort}"><img src="${DirUpImg}" /></a>
 	</c:if>
 </tags:layoutHeadingSuffixPart>
-	
-<h4>Sort By: <a href="?file=${file}&sortType=alphabetic" id="alphabetic" name="alphabetic">Alphabetic</a> or <a href="?file=${file}&sortType=date" id="date" name="alphabetic">Date</a></h4>
 
-<!-- Display and link to the local log files -->
-<h3 class="indentedElementHeading">Directories</h3>
-<div>
-<c:forEach var="dirName" items="${dirList}">
-	<a href="?file=${file}${dirName}/&sortType=${oldStateSort}">${dirName}/</a><br/>
-</c:forEach>
+<div class="stacked clearfix">
+    <div class="fl">
+        <h3><i:inline key=".directories"/></h3>
+        <ul>
+            <c:forEach var="dirName" items="${dirList}">
+                <li style="margin-left: 20px;"><a style="float: none;" class="labeled_icon icon_folder" href="?file=${file}${dirName}/&sortType=${oldStateSort}">${dirName}/</a></li>
+            </c:forEach>
+        </ul>
+    </div>
+    <h3 class="fl" style="margin-left: 40px;"><i:inline key=".sortBy"/>&nbsp;<a href="?file=${file}&sortType=alphabetic" id="alphabetic" name="alphabetic"><i:inline key=".alphabetic"/></a> or <a href="?file=${file}&sortType=date" id="date" name="alphabetic"><i:inline key=".date"/></a></h3>
 </div>
 
 <!-- Display and link to the local log files -->
-<c:forEach var="logSection" items="${localLogList}">
-	<h3 class="indentedElementHeading">${logSection.key}</h3>
-    <div>
-	<c:forEach var="fileName" items="${logSection.value}">
-		<a href="tail?file=${file}${fileName}" >${fileName}</a><br/>
-	</c:forEach>
-	</div>
-</c:forEach>
-
+<cti:dataGrid cols="4" tableClasses="stacked clear">
+    <c:forEach var="logSection" items="${localLogList}">
+        <cti:dataGridCell>
+            <tags:sectionContainer title="${logSection.key}">
+                <ul>
+                    <c:forEach var="fileName" items="${logSection.value}">
+                        <li><a href="tail?file=${file}${fileName}" >${fileName}</a></li>
+                    </c:forEach>
+                </ul>
+            </tags:sectionContainer>
+        </cti:dataGridCell>
+    </c:forEach>
+    
+</cti:dataGrid>
 </cti:standardPage>

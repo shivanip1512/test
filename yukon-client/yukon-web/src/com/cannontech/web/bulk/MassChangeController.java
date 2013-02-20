@@ -2,17 +2,21 @@ package com.cannontech.web.bulk;
 
 import java.util.List;
 
-import javax.servlet.ServletException;
+import javax.annotation.Resource;
 import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpServletResponse;
 
-import org.springframework.beans.factory.annotation.Required;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Controller;
+import org.springframework.ui.ModelMap;
+import org.springframework.web.bind.ServletRequestBindingException;
 import org.springframework.web.bind.ServletRequestUtils;
-import org.springframework.web.servlet.ModelAndView;
+import org.springframework.web.bind.annotation.RequestMapping;
 
 import com.cannontech.common.bulk.callbackResult.BackgroundProcessResultHolder;
 import com.cannontech.common.bulk.callbackResult.MassChangeCallbackResult;
 import com.cannontech.common.bulk.collection.device.DeviceCollection;
+import com.cannontech.common.bulk.collection.device.DeviceCollectionCreationException;
+import com.cannontech.common.bulk.collection.device.DeviceCollectionFactory;
 import com.cannontech.common.bulk.field.BulkField;
 import com.cannontech.common.bulk.field.BulkFieldService;
 import com.cannontech.common.util.RecentResultsCache;
@@ -20,60 +24,50 @@ import com.cannontech.core.roleproperties.YukonRoleProperty;
 import com.cannontech.web.security.annotation.CheckRoleProperty;
 
 @CheckRoleProperty(YukonRoleProperty.MASS_CHANGE)
-public class MassChangeController extends BulkControllerBase {
+@Controller
+@RequestMapping("massChange/*")
+public class MassChangeController {
 
-    private BulkFieldService bulkFieldService = null;
-    private RecentResultsCache<BackgroundProcessResultHolder> recentResultsCache = null;
+    @Autowired private DeviceCollectionFactory deviceCollectionFactory;
+    @Autowired private BulkFieldService bulkFieldService;
+    @Resource(name="recentResultsCache") private RecentResultsCache<BackgroundProcessResultHolder> recentResultsCache;
     
     /**
      * SELECT MASS CHANGE TYPE
-     * @param request
-     * @param response
-     * @return
-     * @throws ServletException
+     * @throws DeviceCollectionCreationException 
+     * @throws ServletRequestBindingException 
      */
-    public ModelAndView massChangeSelect(HttpServletRequest request, HttpServletResponse response) throws ServletException {
-
-        ModelAndView mav = new ModelAndView("massChange/massChangeSelect.jsp");
+    @RequestMapping
+    public String massChangeSelect(ModelMap model, HttpServletRequest request) throws ServletRequestBindingException, DeviceCollectionCreationException {
         
         // pass along deviceCollection
-        DeviceCollection deviceCollection = this.deviceCollectionFactory.createDeviceCollection(request);
-        mav.addObject("deviceCollection", deviceCollection);
+        DeviceCollection deviceCollection = deviceCollectionFactory.createDeviceCollection(request);
+        model.addAttribute("deviceCollection", deviceCollection);
         
         // available mass change operations
         List<BulkField<?, ?>> massChangableBulkFields = bulkFieldService.getMassChangableBulkFields();
-        mav.addObject("massChangableBulkFields", massChangableBulkFields);
+        model.addAttribute("massChangableBulkFields", massChangableBulkFields);
         
         // pass previously selected bulk field name through
-        mav.addObject("selectedBulkFieldName", ServletRequestUtils.getStringParameter(request, "selectedBulkFieldName", ""));
+        model.addAttribute("selectedBulkFieldName", ServletRequestUtils.getStringParameter(request, "selectedBulkFieldName", ""));
         
-        return mav;
+        return "massChange/massChangeSelect.jsp";
     }
     
     // VIEW RESULTS
-    public ModelAndView massChangeResults(HttpServletRequest request, HttpServletResponse response) throws ServletException {
-
-        ModelAndView mav = new ModelAndView("massChange/massChangeResults.jsp");
+    @RequestMapping
+    public String massChangeResults(ModelMap model, HttpServletRequest request) throws ServletRequestBindingException  {
 
         // result info
         String resultsId = ServletRequestUtils.getRequiredStringParameter(request, "resultsId");
         MassChangeCallbackResult callbackResult = (MassChangeCallbackResult)recentResultsCache.getResult(resultsId);
         
         // results
-        mav.addObject("deviceCollection", callbackResult.getDeviceCollection());
-        mav.addObject("massChangeBulkFieldName", callbackResult.getMassChangeBulkFieldColumnHeader().getFieldName());
-        mav.addObject("callbackResult", callbackResult);
+        model.addAttribute("deviceCollection", callbackResult.getDeviceCollection());
+        model.addAttribute("massChangeBulkFieldName", callbackResult.getMassChangeBulkFieldColumnHeader().getFieldName());
+        model.addAttribute("callbackResult", callbackResult);
 
-        return mav;
+        return "massChange/massChangeResults.jsp";
     }
 
-    @Required
-    public void setBulkFieldService(BulkFieldService bulkFieldService) {
-        this.bulkFieldService = bulkFieldService;
-    }
-
-    @Required
-    public void setRecentResultsCache(RecentResultsCache<BackgroundProcessResultHolder> recentResultsCache) {
-        this.recentResultsCache = recentResultsCache;
-    }
 }

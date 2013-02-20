@@ -421,7 +421,7 @@
                     <div class="controls" onclick="closeOrphanedCBCPopup()">
                         <img class="minMax" alt="close" src="/WebConfig/yukon/Icons/collapse.gif">
                     </div>
-                    <div class="title boxContainer_title">Orphaned CBC's</div>
+                    <h3 class="title boxContainer_title">Orphaned CBC's</h3>
                 </div>
 
                 <div class="content boxContainer_content">

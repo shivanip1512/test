@@ -110,9 +110,9 @@
             
             <div class="titledContainer boxContainer">
             <div class="titleBar boxContainer_titleBar">
-                <div class="title boxContainer_title">
+                <h3 class="title boxContainer_title">
                     Navigation
-                </div>
+                </h3>
             </div>
             
 			<div id="commandDevice_content" class="content boxContainer_content">

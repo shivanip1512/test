@@ -20,12 +20,7 @@
     </cti:url>
 
     <cti:msg2 var="popupTitle" key="yukon.common.collection.inventory.selectedInventoryPopup.popupTitle"/>
-
-    <tags:simplePopup id="${id}" title="${popupTitle}">
-        <div style="max-height:300px;overflow:auto;min-width:300px;">
-        <div class="smallBoldLabel" id="${id}InnerDiv" style="text-align:left;"></div>
-        </div>
-    </tags:simplePopup>
+    <div title="${popupTitle}" id="${id}" class="dn"></div>
     
 </c:if>
 

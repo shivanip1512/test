@@ -34,6 +34,8 @@ td {display:table-cell;vertical-align:top}
 .clear{clear:both}
 .self_clear,.box,.db,.pr,.fl,.fr,.z1{position:relative}
 
+.cp {cursor: pointer;}
+
 .pa{position:absolute}
 .T0{top:0px}
 .R0{right:0px}

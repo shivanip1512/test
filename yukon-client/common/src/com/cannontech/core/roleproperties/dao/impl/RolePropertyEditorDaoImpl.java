@@ -9,10 +9,12 @@ import java.util.Set;
 import javax.annotation.PostConstruct;
 import javax.naming.ConfigurationException;
 
+import org.apache.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.MessageSourceResolvable;
 import org.springframework.transaction.annotation.Transactional;
 
+import com.cannontech.clientutils.YukonLogManager;
 import com.cannontech.common.util.SqlStatementBuilder;
 import com.cannontech.core.dao.RoleDao;
 import com.cannontech.core.roleproperties.DescriptiveRoleProperty;
@@ -65,6 +67,8 @@ public class RolePropertyEditorDaoImpl implements RolePropertyEditorDao {
     @Autowired private UserGroupDao userGroupDao;
     @Autowired private YukonJdbcOperations yukonJdbcOperations;
 
+    private static final Logger log = YukonLogManager.getLogger(RolePropertyEditorDaoImpl.class);
+    
     private ImmutableMap<YukonRoleProperty, DescriptiveRoleProperty> descriptiveRoleProperties;
     private static boolean WRITE_NULL_FOR_DEFAULTS = false; // set to true when db editor support is no longer needed
     
@@ -148,7 +152,13 @@ public class RolePropertyEditorDaoImpl implements RolePropertyEditorDao {
             public void processRow(YukonResultSet rs) throws SQLException {
                 YukonRoleProperty property = YukonRoleProperty.getForId(rs.getInt("rolePropertyId"));
                 String value = rs.getStringSafe("value");
-                Object convertedValue = InputTypeFactory.convertPropertyValue(property.getType(), value);
+                Object convertedValue = null;
+                try {
+                    convertedValue = InputTypeFactory.convertPropertyValue(property.getType(), value);
+                } catch (Exception e) {
+                    log.error(String.format("Could not convert property value [%s] to expected type [%s] for role property [%s]", value, property.getType(), property), e);
+                    throw e;
+                }
                 if (convertedValue == null) {
                     convertedValue = descriptiveRoleProperties.get(property).getDefaultValue();
                 }

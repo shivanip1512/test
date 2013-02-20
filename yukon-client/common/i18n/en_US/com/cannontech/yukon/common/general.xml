@@ -3,6 +3,10 @@
 
 <properties>
 
+<entry key="yukon.common.deviceName">Device Name</entry>
+<entry key="yukon.common.route">Route</entry>
+<entry key="yukon.common.address">Address</entry>
+
 <entry key="yukon.common.okButton">OK</entry>
 <entry key="yukon.common.disable">Disable</entry>
 <entry key="yukon.common.enable">Enable</entry>

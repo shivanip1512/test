@@ -151,6 +151,9 @@ div.progressBarInnerFailure {
 .titledContainer .filter_container a , .pagedBox .filter_container a , .sectionContainer .filter_container a {border: solid 1px #ccc; background: #EEEEEE; border-radius: 3px; color: #555; font-size: 10px; padding:2px; margin: 0 5px 5px;} 
 .titledContainer .filter_container .value , .pagedBox .filter_container .value , .sectionContainer .filter_container .value {color: #444; font-weight: bold;}
 
+.triangleContainer {margin-bottom: 0px;}
+.triangleContainer h3.toggle-title{color: #555;}
+
 .sectionContainer {border:none;}
 .sectionContainer > .titleBar {background:transparent;font-weight:bold;}
 .liteContainer {border-style:solid none;}
@@ -304,6 +307,10 @@ strong, span.smallBoldLabel, .groupedList .group {font-weight: bold;}
 .inlineTree {overflow:hidden;}
 
 /* MISC */
+.clearfix:after {clear: both;content: ".";display: block;height: 0;line-height: 0;visibility: hidden}
+.clearfix {display: inline-block}
+html[xmlns] .clearfix {display: block;}
+* html .clearfix {height: 1%;}
 .code {font-color: #333; background-color: #ccc; border: dashed 1px #666; padding: 4px 8px; overflow-x: auto; margin: 10px;}
 .no_padding {padding:0;}
 .no_margin {margin:0;}

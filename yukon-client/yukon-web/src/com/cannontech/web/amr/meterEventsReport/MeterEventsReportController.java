@@ -34,6 +34,7 @@ import org.springframework.web.bind.WebDataBinder;
 import org.springframework.web.bind.annotation.InitBinder;
 import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestMethod;
 
 import com.cannontech.amr.meter.model.Meter;
 import com.cannontech.amr.meter.service.impl.MeterEventLookupService;
@@ -133,9 +134,10 @@ public class MeterEventsReportController {
         return "meterEventsReport/selectDevices.jsp";
     }
     
-    @RequestMapping
+    @RequestMapping(method = RequestMethod.POST)
     public String selected(HttpServletRequest request, YukonUserContext userContext, ModelMap model)
-            throws ServletRequestBindingException, DeviceCollectionCreationException {
+    throws ServletRequestBindingException, DeviceCollectionCreationException {
+        
         setupModelMap(new MeterEventsReportFilterBackingBean(userContext), request, model, null, null, userContext, null);
         return reportJspPath;
     }

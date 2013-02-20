@@ -17,9 +17,7 @@
 <cti:uniqueIdentifier prefix="formElementContainer_" var="thisId"/>
 
 <div class="titledContainer formElementContainer ${pageScope.styleClass}" <c:if test="${not empty pageScope.id}">id="${pageScope.id}"</c:if>>
-    
     <div class="titleBar formElementContainer_titleBar">
-        
         <div class="titleBar formElementContainer_title">
         
             <c:choose>

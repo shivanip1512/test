@@ -33,6 +33,8 @@ import com.cannontech.core.dao.PaoDao;
 import com.cannontech.core.service.impl.PaoLoader;
 import com.cannontech.database.TransactionType;
 import com.cannontech.database.YukonJdbcTemplate;
+import com.cannontech.database.YukonResultSet;
+import com.cannontech.database.YukonRowMapper;
 import com.cannontech.database.data.device.DeviceBase;
 import com.cannontech.database.data.lite.LiteDeviceMeterNumber;
 import com.cannontech.database.data.lite.LiteYukonPAObject;
@@ -125,6 +127,26 @@ public final class DeviceDaoImpl implements DeviceDao, InitializingBean {
         return device;
     }
 
+    @Override
+    public List<SimpleDevice> getYukonDeviceObjectByIds(Iterable<Integer> ids) {
+        SqlStatementBuilder sql = new SqlStatementBuilder();
+        sql.append("SELECT ypo.PAObjectID, ypo.Type");
+        sql.append("FROM YukonPaObject ypo");
+        sql.append("WHERE ypo.PAObjectID").in(ids);
+        
+        List<SimpleDevice> device = yukonJdbcTemplate.query(sql, new YukonRowMapper<SimpleDevice>() {
+            @Override
+            public SimpleDevice mapRow(YukonResultSet rs) throws SQLException {
+                int deviceId = rs.getInt("paobjectid");
+                String typeStr = rs.getString("type");
+                PaoType paoType = PaoType.getForDbString(typeStr);
+                return new SimpleDevice(deviceId, paoType);
+            }
+            
+        });
+        return device;
+    }
+    
     /**
      * A leaner version of getYukonDevice()
      */

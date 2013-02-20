@@ -1,22 +1,23 @@
 package com.cannontech.web.bulk;
 
-import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
+import java.util.concurrent.ConcurrentHashMap;
 
-import javax.servlet.ServletException;
+import javax.annotation.Resource;
 import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpServletResponse;
 
 import org.apache.commons.lang.StringUtils;
-import org.springframework.beans.factory.annotation.Required;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.core.io.FileSystemResource;
+import org.springframework.stereotype.Controller;
+import org.springframework.ui.ModelMap;
+import org.springframework.web.bind.ServletRequestBindingException;
 import org.springframework.web.bind.ServletRequestUtils;
-import org.springframework.web.servlet.ModelAndView;
-import org.springframework.web.servlet.mvc.multiaction.MultiActionController;
+import org.springframework.web.bind.annotation.RequestMapping;
 
 import com.cannontech.common.bulk.callbackResult.BackgroundProcessResultHolder;
 import com.cannontech.common.bulk.callbackResult.ImportUpdateCallbackResult;
@@ -33,38 +34,39 @@ import com.cannontech.web.bulk.util.BulkFileUploadUtils;
 import com.cannontech.web.security.annotation.CheckRoleProperty;
 
 @CheckRoleProperty(YukonRoleProperty.BULK_IMPORT_OPERATION)
-public class ImportController extends MultiActionController {
+@Controller
+@RequestMapping("import/*")
+public class ImportController {
 
-    private BulkImportService bulkImportService = null;
-    private RecentResultsCache<BackgroundProcessResultHolder> recentResultsCache = null;
+    @Autowired private BulkImportService bulkImportService;
+    @Autowired private List<BulkImportMethod> importMethods;
+    @Resource(name="recentResultsCache") private RecentResultsCache<BackgroundProcessResultHolder> recentResultsCache;
     
-    private List<BulkImportMethod> importMethods = null;
-    private Map<String, BulkImportFileInfo> bulkImportFileInfoMap = new HashMap<String, BulkImportFileInfo>();
+    private Map<String, BulkImportFileInfo> bulkImportFileInfoMap = new ConcurrentHashMap<>();
     
     // UPLOAD
-    public ModelAndView upload(HttpServletRequest request, HttpServletResponse response) throws ServletException {
+    @RequestMapping
+    public String upload(ModelMap model, HttpServletRequest request) throws ServletRequestBindingException {
         
         String importTypeSelector = ServletRequestUtils.getStringParameter(request, "importTypeSelector");
-
-        ModelAndView mav = new ModelAndView("import/importUpload.jsp");
         
         // template method columns
-        mav.addObject("importMethods", importMethods);
-        mav.addObject("methodUpdateableFieldsMap", getMethodUpdateabledFieldsMap());
+        model.addAttribute("importMethods", importMethods);
+        model.addAttribute("methodUpdateableFieldsMap", getMethodUpdateabledFieldsMap());
         
         // errors
         String errors = ServletRequestUtils.getStringParameter(request, "fileErrorKeys", "");
-        mav.addObject("fileErrorKeysList", StringUtils.split(errors, "||"));
+        model.addAttribute("fileErrorKeysList", StringUtils.split(errors, "||"));
         
         // options
         Boolean ignoreInvalidCols = ServletRequestUtils.getBooleanParameter(request, "ignoreInvalidCols", true);
-        mav.addObject("ignoreInvalidCols", ignoreInvalidCols);
+        model.addAttribute("ignoreInvalidCols", ignoreInvalidCols);
         
-        mav.addObject("bulkImportTypes", BulkImportType.values());
+        model.addAttribute("bulkImportTypes", BulkImportType.values());
         
-        mav.addObject("importTypeSelector", importTypeSelector);
+        model.addAttribute("importTypeSelector", importTypeSelector);
         
-        return mav;
+        return "import/importUpload.jsp";
     }
     
     private Map<BulkImportMethod, Set<BulkFieldColumnHeader>> getMethodUpdateabledFieldsMap() {
@@ -80,25 +82,23 @@ public class ImportController extends MultiActionController {
     
     
     // PARSE
-    public ModelAndView parseUpload(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
+    @RequestMapping
+    public String parseUpload(ModelMap model, HttpServletRequest request) throws ServletRequestBindingException {
         
         String importTypeSelector = ServletRequestUtils.getStringParameter(request, "importTypeSelector");
         
         // options 
         Boolean ignoreInvalidCols = ServletRequestUtils.getBooleanParameter(request, "ignoreInvalidCols", false);
         
-        // error mav
-        ModelAndView errorMav = new ModelAndView("redirect:/bulk/import/upload");
-        errorMav.addObject("ignoreInvalidCols", ignoreInvalidCols);
-        
         // detect file
         BulkFileUpload bulkFileUpload = BulkFileUploadUtils.getBulkFileUpload(request);
         
         if (bulkFileUpload.hasErrors()) {
-            
-            errorMav.addObject("importTypeSelector", importTypeSelector);
-            errorMav.addObject("fileErrorKeys", StringUtils.join(bulkFileUpload.getErrors(), "||"));
-            return errorMav;
+            // error mav
+            model.addAttribute("ignoreInvalidCols", ignoreInvalidCols);
+            model.addAttribute("importTypeSelector", importTypeSelector);
+            model.addAttribute("fileErrorKeys", StringUtils.join(bulkFileUpload.getErrors(), "||"));
+            return "redirect:/bulk/import/upload";
         }
         
         // init file info
@@ -110,19 +110,16 @@ public class ImportController extends MultiActionController {
         bulkImportFileInfoMap.put(fileInfoId, bulkImportFileInfo);
             
         // confirm
-        ModelAndView mav = new ModelAndView("redirect:/bulk/import/importConfirm");
-        mav.addObject("fileInfoId", fileInfoId);
-        mav.addObject("bulkImportType", importTypeSelector);
+        model.addAttribute("fileInfoId", fileInfoId);
+        model.addAttribute("bulkImportType", importTypeSelector);
         
-        return mav;
+        return "redirect:/bulk/import/importConfirm";
     }
     
     // CONFIRM
-    public ModelAndView importConfirm(HttpServletRequest request, HttpServletResponse response) throws ServletException {
+    @RequestMapping
+    public String importConfirm(ModelMap model, HttpServletRequest request) throws ServletRequestBindingException {
         
-        ModelAndView mav = new ModelAndView("import/importConfirm.jsp");
-        
- 
         BulkImportType bulkImportType = BulkImportType.valueOf(ServletRequestUtils.getStringParameter(request, "bulkImportType"));
         
         // get file info
@@ -130,30 +127,28 @@ public class ImportController extends MultiActionController {
         BulkImportFileInfo bulkImportFileInfo = bulkImportFileInfoMap.get(fileInfoId);
         
         ParsedBulkImportFileInfo parsedResult = bulkImportService.createParsedBulkImportFileInfo(bulkImportFileInfo, bulkImportType);
-        mav.addObject("parsedResult", parsedResult);
-        mav.addObject("bulkImportType", bulkImportType);
+        model.addAttribute("parsedResult", parsedResult);
+        model.addAttribute("bulkImportType", bulkImportType);
 
         // header errors
         if (parsedResult.hasErrors()) {
             
-            ModelAndView errorMav = new ModelAndView("import/importUpload.jsp");
-            errorMav.addObject("ignoreInvalidCols", bulkImportFileInfo.isIgnoreInvalidCols());
-            errorMav.addObject("importTypeSelector", bulkImportType);
-            errorMav.addObject("importMethods", importMethods);
-            errorMav.addObject("methodUpdateableFieldsMap", getMethodUpdateabledFieldsMap());
-            errorMav.addObject("headersErrorResolverList", parsedResult.getErrorResolvers());
-            errorMav.addObject("bulkImportTypes", BulkImportType.values());
+            model.addAttribute("ignoreInvalidCols", bulkImportFileInfo.isIgnoreInvalidCols());
+            model.addAttribute("importTypeSelector", bulkImportType);
+            model.addAttribute("importMethods", importMethods);
+            model.addAttribute("methodUpdateableFieldsMap", getMethodUpdateabledFieldsMap());
+            model.addAttribute("headersErrorResolverList", parsedResult.getErrorResolvers());
+            model.addAttribute("bulkImportTypes", BulkImportType.values());
             
-            return errorMav;
+            return "import/importUpload.jsp";
         }
         
-        return mav;
+        return "import/importConfirm.jsp";
     }
     
     // DO IMPORT
-    public ModelAndView doImport(HttpServletRequest request, HttpServletResponse response) throws ServletException, FileNotFoundException, IOException {
-        
-        ModelAndView mav = new ModelAndView("redirect:/bulk/import/importResults");
+    @RequestMapping
+    public String doImport(ModelMap model, HttpServletRequest request) throws ServletRequestBindingException, IOException {
         
         BulkImportType bulkImportType = BulkImportType.valueOf(ServletRequestUtils.getStringParameter(request, "bulkImportType"));
      
@@ -163,15 +158,14 @@ public class ImportController extends MultiActionController {
         ParsedBulkImportFileInfo parsedResult = bulkImportService.createParsedBulkImportFileInfo(bulkImportFileInfo, bulkImportType);
         String resultsId = bulkImportService.startBulkImport(parsedResult);
         
-        mav.addObject("resultsId", resultsId);
+        model.addAttribute("resultsId", resultsId);
         
-        return mav;
+        return "redirect:/bulk/import/importResults";
     }
     
     // VIEW RESULTS
-    public ModelAndView importResults(HttpServletRequest request, HttpServletResponse response) throws ServletException {
-        
-        ModelAndView mav = new ModelAndView("import/importResults.jsp");
+    @RequestMapping
+    public String importResults(ModelMap model, HttpServletRequest request) throws ServletRequestBindingException {
         
         // result info
         String resultsId = ServletRequestUtils.getRequiredStringParameter(request, "resultsId");
@@ -179,23 +173,10 @@ public class ImportController extends MultiActionController {
         
         BulkImportFileInfo bulkImportFileInfo = (BulkImportFileInfo)callbackResult.getBulkFileInfo();
         
-        mav.addObject("ignoreInvalidCols", bulkImportFileInfo.isIgnoreInvalidCols());
-        mav.addObject("callbackResult", callbackResult);
+        model.addAttribute("ignoreInvalidCols", bulkImportFileInfo.isIgnoreInvalidCols());
+        model.addAttribute("callbackResult", callbackResult);
         
-        return mav;
+        return "import/importResults.jsp";
     }
-
-    @Required
-    public void setRecentResultsCache(RecentResultsCache<BackgroundProcessResultHolder> recentResultsCache) {
-        this.recentResultsCache = recentResultsCache;
-    }
-
-    public void setBulkImportService(BulkImportService bulkImportService) {
-        this.bulkImportService = bulkImportService;
-    }
-
-    @Required
-    public void setImportMethods(List<BulkImportMethod> importMethods) {
-        this.importMethods = importMethods;
-    }
+    
 }

@@ -6,7 +6,8 @@ public enum DeviceCollectionType {
     deviceFilter, 
     fileUpload, 
     addressRange,
-    archiveDataAnalysis,
+    archiveDataAnalysis, 
+    memory,
     ;
     
     public String getParameterName(String parameter) {

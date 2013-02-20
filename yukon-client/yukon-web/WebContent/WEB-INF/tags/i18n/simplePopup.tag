@@ -23,9 +23,9 @@
               <div class="controls" onclick="${pageScope.onClose}">
                 <img class="minMax" alt="close" src="/WebConfig/yukon/Icons/close_x.gif">
               </div>
-        <div id="${id}_title" class="title boxContainer_title">
+        <h3 id="${id}_title" class="title boxContainer_title">
             <i:inline key="${titleKey}" arguments="${arguments}"/>
-        </div>
+        </h3>
     </div>
     
     <div id="${id}_body" class="content boxContainer_content">

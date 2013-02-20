@@ -8,6 +8,10 @@
     <entry key="yukon.web.modules.support.logLanding.pageName">Logs</entry>
     <entry key="yukon.web.modules.support.logMenu.pageName">Log Explorer</entry>
     <entry key="yukon.web.modules.support.logMenu.pageDescription">{0}</entry>
+    <entry key="yukon.web.modules.support.logMenu.sortBy">Sort By:</entry>
+    <entry key="yukon.web.modules.support.logMenu.alphabetic">Alphabetic</entry>
+    <entry key="yukon.web.modules.support.logMenu.date">Date</entry>
+    <entry key="yukon.web.modules.support.logMenu.directories">Directories</entry>
 
     <entry key="yukon.web.modules.support.logTail.pageName">Log Tail</entry>
     <entry key="yukon.web.modules.support.logTail.pageDescription">{0}</entry>

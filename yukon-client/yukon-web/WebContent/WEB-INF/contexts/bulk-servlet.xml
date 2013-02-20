@@ -21,19 +21,7 @@
     <bean class="org.springframework.web.servlet.handler.SimpleUrlHandlerMapping">
         <property name="mappings">
             <props>
-                <prop key="/massChange/*">MassChangeController</prop>
                 <prop key="/massChangeOptions">MassChangeOptionsController</prop>
-                <prop key="/changeDeviceType/*">ChangeDeviceTypeController</prop>
-                <prop key="/massDelete/*">MassDeleteController</prop>
-                <prop key="/update/*">UpdateController</prop>
-                <prop key="/group/*">AddRemoveCollectionToGroupController</prop>
-                <prop key="/import/*">ImportController</prop>
-                <prop key="/routeLocate/*">RouteLocateController</prop>
-                <prop key="/addPoints/*">addPointsController</prop>
-                <prop key="/updatePoints/*">updatePointsController</prop>
-                <prop key="/removePoints/*">removePointsController</prop>
-                <prop key="/config/*">deviceConfigController</prop>
-                <prop key="/*">BulkController</prop>
             </props>
         </property>
         <property name="order" value="2"></property>
@@ -43,29 +31,13 @@
         <property name="suffix" value=".jsp"/>
     </bean>
     
-    <bean id="viewResolver"
-      class="org.springframework.web.servlet.view.UrlBasedViewResolver">
+    <bean id="viewResolver" class="org.springframework.web.servlet.view.UrlBasedViewResolver">
         <property name="viewClass" value="org.springframework.web.servlet.view.JstlView"/>
         <property name="prefix" value="/WEB-INF/pages/bulk/"/>
     </bean>
     
-    <!-- BASIC BULK CONTROLLER -->
-	<bean id="BulkController" class="com.cannontech.web.bulk.BulkController" >
-        
-        <property name="deviceCollectionFactory" ref="deviceCollectionFactory" />
-        <property name="recentResultsCache" ref="recentResultsCache" />
-        
-    </bean>
-    
-    
-    <!-- MASS CHANGE CONTROLLER -->
-    <bean id="MassChangeController" class="com.cannontech.web.bulk.MassChangeController" >
-
-        <property name="deviceCollectionFactory" ref="deviceCollectionFactory" />
-        <property name="bulkFieldService" ref="bulkFieldService" />
-        <property name="recentResultsCache" ref="recentResultsCache" />
-        
-    </bean>
+    <!-- UPDATE CONTROLLER (UPDATE BY FILE) NEEDS THIS TO HANDLE FILE UPLOADS  -->
+    <bean id="multipartResolver" class="org.springframework.web.multipart.commons.CommonsMultipartResolver"/>
     
     <!-- MASS CHANGE OPTIONS CONTROLLER -->
     <bean id="MassChangeOptionsController" class="com.cannontech.web.bulk.MassChangeOptionsController" >
@@ -86,89 +58,6 @@
         
     </bean>
     
-    <!-- CHANGE DEVICE TYPE CONTROLLER -->
-    <bean id="ChangeDeviceTypeController" class="com.cannontech.web.bulk.ChangeDeviceTypeController" >
-        
-        <property name="deviceCollectionFactory" ref="deviceCollectionFactory" />
-        <property name="recentResultsCache" ref="recentResultsCache" />
-        <property name="bulkProcessor" ref="resubmittingBulkProcessor" />
-        
-    </bean>
-    
-    <!-- MASS DELETE CONTROLLER -->
-    <bean id="MassDeleteController" class="com.cannontech.web.bulk.MassDeleteController" >
-        
-        <property name="deviceCollectionFactory" ref="deviceCollectionFactory" />
-        <property name="deviceDao" ref="deviceDao" />
-        <property name="recentResultsCache" ref="recentResultsCache" />
-        <property name="bulkProcessor" ref="resubmittingBulkProcessor" />
-        
-    </bean>
-    
-    <!-- UPDATE CONTROLLER (UPDATE BY FILE) -->
-    <bean id="multipartResolver" class="org.springframework.web.multipart.commons.CommonsMultipartResolver"/>
-    
-    <bean id="UpdateController" class="com.cannontech.web.bulk.UpdateController" >
-        
-        <property name="bulkFieldService" ref="bulkFieldService" />
-        <property name="bulkUpdateService" ref="bulkUpdateService" />
-        <property name="recentResultsCache" ref="recentResultsCache" />
-        
-    </bean>
-    
-    
-    <!-- ADD/REMOVE FROM GROUP CONTROLLER -->
-    <bean id="AddRemoveCollectionToGroupController" class="com.cannontech.web.bulk.AddRemoveCollectionToGroupController" >
-        <property name="deviceCollectionFactory" ref="deviceCollectionFactory" />
-    </bean>
-    
-    
-    <!-- IMPORT CONTROLLER (IMPORT BY FILE) -->
-    <bean id="ImportController" class="com.cannontech.web.bulk.ImportController" >
-        
-        <property name="bulkImportService" ref="bulkImportService" />
-        <property name="recentResultsCache" ref="recentResultsCache" />
-        <property name="importMethods">
-            <list>
-                <ref bean="templateBulkImportMethod" />
-                <ref bean="deviceTypeBulkImportMethod" />
-                <ref bean="rfnTemplateBulkImportMethod" />
-                <ref bean="rfnDeviceTypeBulkImportMethod" />
-            </list>
-        </property>
-        
-    </bean>
-    
-    <!-- ROUTE LOCATE CONTROLLER -->
-    <bean id="RouteLocateController" class="com.cannontech.web.routeLocate.RouteLocateController" >
-        <property name="deviceCollectionFactory" ref="deviceCollectionFactory" />
-        <property name="paoDao" ref="paoDao"/>
-        <property name="messageSourceResolver" ref="yukonUserContextMessageSourceResolver" />
-        <property name="routeLocateExecutor" ref="routeLocateExecutor" />
-        <property name="deviceUpdateService" ref="deviceUpdateService" />
-        <property name="deviceDao" ref="deviceDao" />
-    </bean>
-    
-    <!-- ADD/REMOVE POINTS CONTROLLER -->
-    <bean id="addPointsController" class="com.cannontech.web.bulk.AddPointsController" >
-    	<property name="deviceCollectionFactory" ref="deviceCollectionFactory" />
-    </bean>
-    
-    <bean id="updatePointsController" class="com.cannontech.web.bulk.UpdatePointsController" >
-        <property name="deviceCollectionFactory" ref="deviceCollectionFactory" />
-    </bean>
-    
     <bean id="updatePointsProcessorFactory" class="com.cannontech.web.bulk.UpdatePointsProcessorFactory"/>
-    
-    <bean id="removePointsController" class="com.cannontech.web.bulk.RemovePointsController" >
-    	<property name="deviceCollectionFactory" ref="deviceCollectionFactory" />
-    </bean>
-    
-    <!-- DEVICE CONFIG CONTROLLER -->
-    <bean id="deviceConfigController" class="com.cannontech.web.bulk.DeviceConfigController">
-        <property name="deviceCollectionFactory" ref="deviceCollectionFactory" />
-        <property name="bulkProcessor" ref="oneAtATimeProcessor" />
-        <property name="recentResultsCache" ref="recentResultsCache" />
-    </bean>
     
 </beans>

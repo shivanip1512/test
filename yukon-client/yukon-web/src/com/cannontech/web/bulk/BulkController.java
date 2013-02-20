@@ -6,20 +6,23 @@ import java.io.InputStreamReader;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
-import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
+import javax.annotation.Resource;
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
 import org.apache.commons.lang.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.beans.factory.annotation.Required;
+import org.springframework.stereotype.Controller;
+import org.springframework.ui.ModelMap;
+import org.springframework.web.bind.ServletRequestBindingException;
 import org.springframework.web.bind.ServletRequestUtils;
-import org.springframework.web.servlet.ModelAndView;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
 
 import com.cannontech.common.bulk.callbackResult.BackgroundProcessResultHolder;
 import com.cannontech.common.bulk.callbackResult.BackgroundProcessTypeEnum;
@@ -27,6 +30,7 @@ import com.cannontech.common.bulk.callbackResult.BulkFieldBackgroupProcessResult
 import com.cannontech.common.bulk.callbackResult.ImportUpdateCallbackResult;
 import com.cannontech.common.bulk.collection.device.DeviceCollection;
 import com.cannontech.common.bulk.collection.device.DeviceCollectionCreationException;
+import com.cannontech.common.bulk.collection.device.DeviceCollectionFactory;
 import com.cannontech.common.bulk.field.BulkFieldColumnHeader;
 import com.cannontech.common.bulk.mapper.ObjectMappingException;
 import com.cannontech.common.device.groups.editor.dao.DeviceGroupMemberEditorDao;
@@ -36,6 +40,7 @@ import com.cannontech.common.device.groups.service.DeviceGroupService;
 import com.cannontech.common.device.groups.service.TemporaryDeviceGroupService;
 import com.cannontech.common.device.model.DeviceCollectionReportDevice;
 import com.cannontech.common.device.model.SimpleDevice;
+import com.cannontech.common.i18n.MessageSourceAccessor;
 import com.cannontech.common.util.MappingList;
 import com.cannontech.common.util.ObjectMapper;
 import com.cannontech.common.util.RecentResultsCache;
@@ -44,30 +49,36 @@ import com.cannontech.core.roleproperties.YukonRoleProperty;
 import com.cannontech.core.roleproperties.dao.RolePropertyDao;
 import com.cannontech.core.service.PaoLoadingService;
 import com.cannontech.database.data.lite.LiteYukonUser;
+import com.cannontech.i18n.YukonUserContextMessageSourceResolver;
 import com.cannontech.servlet.YukonUserContextUtils;
 import com.cannontech.tools.csv.CSVReader;
 import com.cannontech.user.YukonUserContext;
 import com.cannontech.web.util.WebFileUtils;
+import com.google.common.collect.Lists;
 
 /**
- * Spring controller class for bulk operations
+ * Handles request directly off the /bulk/* url.
+ * Other controllers handle specific sections like the {@link AddPointsController} (/bulk/addPoints/*)
  */
-public class BulkController extends BulkControllerBase {
+@Controller
+@RequestMapping("/*")
+public class BulkController {
 
     private final static int MAX_SELECTED_DEVICES_DISPLAYED = 1000;
     
-    private PaoLoadingService paoLoadingService = null;
-    private RecentResultsCache<BackgroundProcessResultHolder> recentResultsCache = null;
-    private RolePropertyDao rolePropertyDao;
-    private DeviceGroupService deviceGroupService;
-    private TemporaryDeviceGroupService temporaryDeviceGroupService;
-    private DeviceGroupMemberEditorDao deviceGroupMemberEditorDao;
+    @Autowired private PaoLoadingService paoLoadingService;
+    @Autowired private RolePropertyDao rolePropertyDao;
+    @Autowired private DeviceGroupService deviceGroupService;
+    @Autowired private TemporaryDeviceGroupService temporaryDeviceGroupService;
+    @Autowired private DeviceGroupMemberEditorDao deviceGroupMemberEditorDao;
+    @Autowired private YukonUserContextMessageSourceResolver resolver;
+    @Autowired private DeviceCollectionFactory deviceCollectionFactory;
+    @Resource(name="recentResultsCache") private RecentResultsCache<BackgroundProcessResultHolder> recentResultsCache;
     
     // BULK HOME
-    public ModelAndView bulkHome(HttpServletRequest request, HttpServletResponse response) throws ServletException {
+    @RequestMapping
+    public String bulkHome(ModelMap model, LiteYukonUser user) {
 
-        ModelAndView mav = new ModelAndView("bulkHome.jsp");
-        
         // INIT RESULT LISTS
         //------------------------------------------------------------------------------------------
         
@@ -77,8 +88,6 @@ public class BulkController extends BulkControllerBase {
         // ADD RESULTS TO LISTS
         // -----------------------------------------------------------------------------------------
         
-        YukonUserContext userContext = YukonUserContextUtils.getYukonUserContext(request);
-        LiteYukonUser user = userContext.getYukonUser();
         boolean hasBulkImportRP = rolePropertyDao.checkProperty(YukonRoleProperty.BULK_IMPORT_OPERATION, user);
         boolean hasBulkUpdateRP = rolePropertyDao.checkProperty(YukonRoleProperty.BULK_UPDATE_OPERATION, user);
         boolean hasMassChangeRP = rolePropertyDao.checkProperty(YukonRoleProperty.MASS_CHANGE, user);
@@ -94,105 +103,102 @@ public class BulkController extends BulkControllerBase {
                                                                                                      hasMassChangeRP,
                                                                                                      hasMassDeleteRP,
                                                                                                      hasAddRemovePointsRP);
-        MappingList<BackgroundProcessResultHolder, BulkOperationDisplayableResult> resultsList = new MappingList<BackgroundProcessResultHolder, BulkOperationDisplayableResult>(rawResultsList, bulkOpToViewableBulkOpMapper);
+        MappingList<BackgroundProcessResultHolder, BulkOperationDisplayableResult> resultsList = new MappingList<>(rawResultsList, bulkOpToViewableBulkOpMapper);
         
-        mav.addObject("hasBulkImportRP", hasBulkImportRP);
-        mav.addObject("hasBulkUpdateRP", hasBulkUpdateRP);
-        mav.addObject("hasMassChangeRP", hasMassChangeRP);
-        mav.addObject("hasMassDeleteRP", hasMassDeleteRP);
-        mav.addObject("resultsList", resultsList);
+        model.addAttribute("hasBulkImportRP", hasBulkImportRP);
+        model.addAttribute("hasBulkUpdateRP", hasBulkUpdateRP);
+        model.addAttribute("hasMassChangeRP", hasMassChangeRP);
+        model.addAttribute("hasMassDeleteRP", hasMassDeleteRP);
+        model.addAttribute("resultsList", resultsList);
         
-        return mav;
+        return "bulkHome.jsp";
     }
     
-
     // COLLECTION ACTIONS
-    public ModelAndView collectionActions(HttpServletRequest request, HttpServletResponse response) throws ServletException {
+    @RequestMapping
+    public String collectionActions(ModelMap model, HttpServletRequest request, @RequestParam(defaultValue="false") boolean isFileUpload) throws ServletRequestBindingException {
 
-        ModelAndView mav;
+        String view = "";
         YukonUserContext userContext = YukonUserContextUtils.getYukonUserContext(request);
         LiteYukonUser user = userContext.getYukonUser();
         
+        DeviceCollection colleciton = deviceCollectionFactory.createDeviceCollection(request);
         try {
         
-            if (request.getMethod().equals("POST")) {
-                // if we got here from a post (like the file upload), let's redirect
-                mav = new ModelAndView("redirect:/bulk/collectionActions");
-                Map<String, String> collectionParameters = this.getDeviceCollection(request).getCollectionParameters();
-                mav.addAllObjects(collectionParameters);
-            } else {
-                mav = new ModelAndView("collectionActions.jsp");
-                this.addDeviceCollectionToModel(mav, request);
-                boolean showGroupManagement = rolePropertyDao.checkProperty(YukonRoleProperty.DEVICE_GROUP_MODIFY, user);
-                boolean showAddRemovePoints = rolePropertyDao.checkProperty(YukonRoleProperty.ADD_REMOVE_POINTS, user);
-                boolean hasMassDelete = rolePropertyDao.checkProperty(YukonRoleProperty.MASS_DELETE, user);
-                boolean hasMassChange = rolePropertyDao.checkProperty(YukonRoleProperty.MASS_CHANGE, user);
-                boolean showEditing = hasMassChange || hasMassDelete;
-                
-                
-                mav.addObject("showGroupManagement", showGroupManagement);
-                mav.addObject("showEditing", showEditing);
-                mav.addObject("showAddRemovePoints", showAddRemovePoints);
+            if (isFileUpload) {
+                Map<String, String> collectionParameters = colleciton.getCollectionParameters();
+                model.addAllAttributes(collectionParameters);
             }
-        } catch (ObjectMappingException e) {
+            view = "collectionActions.jsp";
+            model.addAttribute("deviceCollection", colleciton);
+            boolean showGroupManagement = rolePropertyDao.checkProperty(YukonRoleProperty.DEVICE_GROUP_MODIFY, user);
+            boolean showAddRemovePoints = rolePropertyDao.checkProperty(YukonRoleProperty.ADD_REMOVE_POINTS, user);
+            boolean hasMassDelete = rolePropertyDao.checkProperty(YukonRoleProperty.MASS_DELETE, user);
+            boolean hasMassChange = rolePropertyDao.checkProperty(YukonRoleProperty.MASS_CHANGE, user);
+            boolean showEditing = hasMassChange || hasMassDelete;
             
-            mav = new ModelAndView("redirect:/bulk/deviceSelection");
-            mav.addObject("errorMsg", e.getMessage());
+            model.addAttribute("showGroupManagement", showGroupManagement);
+            model.addAttribute("showEditing", showEditing);
+            model.addAttribute("showAddRemovePoints", showAddRemovePoints);
+        } catch (ObjectMappingException e) {
+            view = "redirect:/bulk/deviceSelection";
+            model.addAttribute("errorMsg", e.getMessage());
         }
         
-        return mav;
+        return view;
     }
     
-    public ModelAndView deviceSelection(HttpServletRequest request, HttpServletResponse response) throws ServletException {
-
-        ModelAndView mav = new ModelAndView("deviceSelection.jsp");
+    @RequestMapping
+    public String deviceSelection(ModelMap model, HttpServletRequest request) {
         
         String errorMsg = ServletRequestUtils.getStringParameter(request, "errorMsg", null);
         if (!StringUtils.isBlank(errorMsg)) {
-            mav.addObject("errorMsg", errorMsg);
+            model.addAttribute("errorMsg", errorMsg);
         }
         
-        return mav;
+        return "deviceSelection.jsp";
     }
     
-    public ModelAndView deviceSelectionGetDevices(HttpServletRequest request, HttpServletResponse response) throws ServletException {
+    @RequestMapping
+    public String deviceSelectionGetDevices(ModelMap model, HttpServletRequest request, @RequestParam(defaultValue="false") boolean isFileUpload) throws ServletRequestBindingException {
 
     	try {
-    		return collectionActions(request, response);
+    		return collectionActions(model, request, isFileUpload);
     	} catch (DeviceCollectionCreationException e) {
-    		ModelAndView mav = new ModelAndView("redirect:/bulk/deviceSelection");
-            mav.addObject("errorMsg", e.getMessage());
-            return mav;
+            model.addAttribute("errorMsg", e.getMessage());
+            return "redirect:/bulk/deviceSelection";
     	}
     }
     
     // DEVICE COLLECTION REPORT
-    public ModelAndView deviceCollectionReport(HttpServletRequest request, HttpServletResponse response) throws ServletException {
+    @RequestMapping
+    public String deviceCollectionReport(ModelMap model, HttpServletRequest request) throws ServletRequestBindingException {
         
-        ModelAndView mav = new ModelAndView("deviceCollectionReport.jsp");
-        DeviceCollection deviceCollection = this.deviceCollectionFactory.createDeviceCollection(request);
-        mav.addObject("deviceCollection", deviceCollection);
+        DeviceCollection deviceCollection = deviceCollectionFactory.createDeviceCollection(request);
+        model.addAttribute("deviceCollection", deviceCollection);
         
         StoredDeviceGroup tempDeviceGroup = temporaryDeviceGroupService.createTempGroup(null);
         deviceGroupMemberEditorDao.addDevices(tempDeviceGroup, deviceCollection.getDeviceList());
         
-        mav.addObject("tempDeviceGroup", tempDeviceGroup);
-        mav.addObject("collectionDescriptionResovlable", deviceCollection.getDescription());
+        model.addAttribute("tempDeviceGroup", tempDeviceGroup);
+        model.addAttribute("collectionDescriptionResovlable", deviceCollection.getDescription());
         
-        return mav;
+        return "deviceCollectionReport.jsp";
     }
     
-    // SELECTED DEVICES POPUP TBALE
-    public ModelAndView selectedDevicesTableForDeviceCollection(HttpServletRequest request, HttpServletResponse response) throws ServletException {
+    // SELECTED DEVICES POPUP TABLE
+    @RequestMapping
+    public String selectedDevicesTableForDeviceCollection(ModelMap model, HttpServletRequest request) throws ServletRequestBindingException {
         
         DeviceCollection deviceCollection = this.deviceCollectionFactory.createDeviceCollection(request);
         int totalDeviceCount = (int)deviceCollection.getDeviceCount();
         List<SimpleDevice> devicesToLoad = deviceCollection.getDevices(0, MAX_SELECTED_DEVICES_DISPLAYED);
 
-        return getSelectedDevicesTableMav(devicesToLoad, totalDeviceCount);
+        return getSelectedDevicesTablemodel(model, devicesToLoad, totalDeviceCount, YukonUserContextUtils.getYukonUserContext(request));
     }
     
-    public ModelAndView selectedDevicesTableForGroupName(HttpServletRequest request, HttpServletResponse response) throws ServletException {
+    @RequestMapping
+    public String selectedDevicesTableForGroupName(ModelMap model, HttpServletRequest request) throws ServletRequestBindingException {
         
         String groupName = ServletRequestUtils.getRequiredStringParameter(request, "groupName");
         DeviceGroup group = deviceGroupService.resolveGroupName(groupName);
@@ -200,51 +206,56 @@ public class BulkController extends BulkControllerBase {
         int totalDeviceCount = deviceGroupService.getDeviceCount(Collections.singletonList(group));
         Set<SimpleDevice> devicesToLoad = deviceGroupService.getDevices(Collections.singletonList(group), MAX_SELECTED_DEVICES_DISPLAYED);
         
-        return getSelectedDevicesTableMav(devicesToLoad, totalDeviceCount);
+        return getSelectedDevicesTablemodel(model, devicesToLoad, totalDeviceCount, YukonUserContextUtils.getYukonUserContext(request));
         
     }
     
-    private ModelAndView getSelectedDevicesTableMav(Collection<SimpleDevice> devicesToLoad, int totalDeviceCount) {
+    private String getSelectedDevicesTablemodel(ModelMap model, 
+                                                Collection<SimpleDevice> devicesToLoad, 
+                                                int totalDeviceCount, 
+                                                YukonUserContext context) {
         
-        ModelAndView mav = new ModelAndView("selectedDevicesPopup.jsp");
+        MessageSourceAccessor accessor = resolver.getMessageSourceAccessor(context);
         
         List<DeviceCollectionReportDevice> deviceCollectionReportDevices = paoLoadingService.getDeviceCollectionReportDevices(devicesToLoad);
         Collections.sort(deviceCollectionReportDevices);
         
-        List<Map<String, Object>> deviceInfoList = new ArrayList<Map<String, Object>>();
+        List<List<String>> rows = Lists.newArrayList();
+        
+        List<String> header = Lists.newArrayList();
+        header.add(accessor.getMessage("yukon.common.deviceName"));
+        header.add(accessor.getMessage("yukon.common.address"));
+        header.add(accessor.getMessage("yukon.common.route"));
+        rows.add(header);
+        
         for (DeviceCollectionReportDevice device : deviceCollectionReportDevices) {
-            
-            Map<String, Object> deviceInfo = new LinkedHashMap<String, Object>();
-            
-            deviceInfo.put("Device Name", device.getName());
-            deviceInfo.put("Address", device.getAddress());
-            deviceInfo.put("Route", device.getRoute());
-            
-            deviceInfoList.add(deviceInfo);
+            List<String> row = Lists.newArrayList();
+            row.add(device.getName());
+            row.add(device.getAddress());
+            row.add(device.getRoute());
+            rows.add(row);
         }
         
         if (totalDeviceCount > MAX_SELECTED_DEVICES_DISPLAYED) {
-            mav.addObject("resultsLimitedTo", MAX_SELECTED_DEVICES_DISPLAYED);
+            model.addAttribute("resultsLimitedTo", MAX_SELECTED_DEVICES_DISPLAYED);
         }
-        mav.addObject("deviceInfoList", deviceInfoList);
+        model.addAttribute("deviceInfoList", rows);
         
-        return mav;
+        return "selectedDevicesPopup.jsp";
     }
     
-    
-    public ModelAndView processingExceptionErrorsRefresh(HttpServletRequest request, HttpServletResponse response) throws ServletException {
-
-        ModelAndView mav = new ModelAndView("processingExceptionErrorsList.jsp");
+    @RequestMapping
+    public String processingExceptionErrorsRefresh(ModelMap model, HttpServletRequest request) throws ServletRequestBindingException {
 
         String resultsId = ServletRequestUtils.getRequiredStringParameter(request, "resultsId");
         BackgroundProcessResultHolder bulkUpdateOperationResults = recentResultsCache.getResult(resultsId);
         
-        mav.addObject("exceptionRowNumberMap", bulkUpdateOperationResults.getProcessingExceptionRowNumberMap());
-        return mav;
+        model.addAttribute("exceptionRowNumberMap", bulkUpdateOperationResults.getProcessingExceptionRowNumberMap());
+        return "processingExceptionErrorsList.jsp";
     }
     
-    public ModelAndView processingExceptionFileDownload(HttpServletRequest request, HttpServletResponse response) throws IOException, ServletException {
-
+    @RequestMapping
+    public void processingExceptionFileDownload(HttpServletRequest request, HttpServletResponse response) throws IOException, ServletException {
 
         String resultsId = ServletRequestUtils.getRequiredStringParameter(request, "resultsId");
         BackgroundProcessResultHolder backGroundCallback = recentResultsCache.getResult(resultsId);
@@ -262,8 +273,6 @@ public class BulkController extends BulkControllerBase {
         List<String[]> fileLines = callback.getProcesingExceptionObjects();
         
         WebFileUtils.writeToCSV(response, headerRow, fileLines, "ExceptionsFile_" + resultsId + ".csv");
-        
-        return null;
     }
     
     // HELPER MAPPER TO CREATE RESULTS THAT HAVE A "DETAIL VIEWABLE" PROPERTY BASED ON USER ROLE PROP
@@ -368,34 +377,5 @@ public class BulkController extends BulkControllerBase {
             return detailViewable;
         }
     }
-    
-    @Required
-    public void setRecentResultsCache(RecentResultsCache<BackgroundProcessResultHolder> recentResultsCache) {
-        this.recentResultsCache = recentResultsCache;
-    }
 
-    @Autowired
-    public void setRolePropertyDao(RolePropertyDao rolePropertyDao) {
-		this.rolePropertyDao = rolePropertyDao;
-	}
-    
-    @Autowired
-    public void setPaoLoadingService(PaoLoadingService paoLoadingService) {
-        this.paoLoadingService = paoLoadingService;
-    }
-    
-    @Autowired
-    public void setDeviceGroupService(DeviceGroupService deviceGroupService) {
-        this.deviceGroupService = deviceGroupService;
-    }
-    
-    @Autowired
-    public void setTemporaryDeviceGroupService(TemporaryDeviceGroupService temporaryDeviceGroupService) {
-		this.temporaryDeviceGroupService = temporaryDeviceGroupService;
-	}
-    
-    @Autowired
-    public void setDeviceGroupMemberEditorDao(DeviceGroupMemberEditorDao deviceGroupMemberEditorDao) {
-		this.deviceGroupMemberEditorDao = deviceGroupMemberEditorDao;
-	}
 }

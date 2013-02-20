@@ -2,15 +2,14 @@ package com.cannontech.web.bulk;
 
 import java.util.Date;
 
-import javax.servlet.ServletException;
 import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpServletResponse;
 
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.beans.factory.annotation.Required;
+import org.springframework.stereotype.Controller;
+import org.springframework.ui.ModelMap;
+import org.springframework.web.bind.ServletRequestBindingException;
 import org.springframework.web.bind.ServletRequestUtils;
-import org.springframework.web.servlet.ModelAndView;
-import org.springframework.web.servlet.mvc.multiaction.MultiActionController;
+import org.springframework.web.bind.annotation.RequestMapping;
 
 import com.cannontech.common.bulk.collection.device.DeviceCollection;
 import com.cannontech.common.bulk.collection.device.DeviceCollectionFactory;
@@ -19,26 +18,28 @@ import com.cannontech.web.group.DeviceCollectionDeviceGroupHelper;
 import com.cannontech.web.security.annotation.CheckRoleProperty;
 
 @CheckRoleProperty(YukonRoleProperty.DEVICE_GROUP_MODIFY)
-public class AddRemoveCollectionToGroupController extends MultiActionController {
+@Controller
+@RequestMapping("/group/*")
+public class AddRemoveCollectionToGroupController {
     
-    private DeviceCollectionDeviceGroupHelper deviceCollectionDeviceGroupHelper = null;
-    private DeviceCollectionFactory deviceCollectionFactory = null;
+    @Autowired private DeviceCollectionDeviceGroupHelper deviceCollectionDeviceGroupHelper;
+    @Autowired private DeviceCollectionFactory deviceCollectionFactory;
     
-    public ModelAndView selectGroup(HttpServletRequest request, HttpServletResponse response) throws ServletException, Exception {
-        
-        ModelAndView mav = new ModelAndView("group/selectGroup.jsp");
+    @RequestMapping
+    public String selectGroup(ModelMap model, HttpServletRequest request) throws ServletRequestBindingException {
         
         // pass through device collection
         DeviceCollection deviceCollection = deviceCollectionFactory.createDeviceCollection(request);
-        mav.addObject("deviceCollection", deviceCollection);
+        model.addAttribute("deviceCollection", deviceCollection);
         
         String addRemove = ServletRequestUtils.getRequiredStringParameter(request, "addRemove");
-        mav.addObject("addRemove", addRemove);
+        model.addAttribute("addRemove", addRemove);
         
-        return mav;
+        return "group/selectGroup.jsp";
     }
     
-    public ModelAndView addToGroup(HttpServletRequest request, HttpServletResponse response) throws ServletException {
+    @RequestMapping
+    public String addToGroup(ModelMap model, HttpServletRequest request) throws ServletRequestBindingException {
         
         // get groupNmae and deviceCollection from request
         String groupName = ServletRequestUtils.getRequiredStringParameter(request, "groupName");
@@ -47,13 +48,13 @@ public class AddRemoveCollectionToGroupController extends MultiActionController 
         // add devices to group
         deviceCollectionDeviceGroupHelper.addCollectionToGroup(groupName, deviceCollection);
         
-        ModelAndView mav = new ModelAndView("redirect:/group/editor/home");
-        mav.addObject("groupName", groupName);
+        model.addAttribute("groupName", groupName);
         
-        return mav;
+        return "redirect:/group/editor/home";
     }
     
-    public ModelAndView removeFromGroup(HttpServletRequest request, HttpServletResponse response) throws ServletException {
+    @RequestMapping
+    public String removeFromGroup(ModelMap model, HttpServletRequest request) throws ServletRequestBindingException {
         
         // get groupNmae and deviceCollection from request
         String groupName = ServletRequestUtils.getRequiredStringParameter(request, "groupName");
@@ -62,22 +63,10 @@ public class AddRemoveCollectionToGroupController extends MultiActionController 
         // remove devices from group
         deviceCollectionDeviceGroupHelper.removeCollectionFromGroup(groupName, deviceCollection);
         
-        ModelAndView mav = new ModelAndView("redirect:/group/editor/home");
-        mav.addObject("groupName", groupName);
-        mav.addObject("t", (new Date()).getTime());
+        model.addAttribute("groupName", groupName);
+        model.addAttribute("t", (new Date()).getTime());
         
-        return mav;
+        return "redirect:/group/editor/home";
     }
     
-    @Autowired
-    public void setDeviceCollectionDeviceGroupHelper(
-            DeviceCollectionDeviceGroupHelper deviceCollectionDeviceGroupHelper) {
-        this.deviceCollectionDeviceGroupHelper = deviceCollectionDeviceGroupHelper;
-    }
-    
-    @Required
-    public void setDeviceCollectionFactory(
-            DeviceCollectionFactory deviceCollectionFactory) {
-        this.deviceCollectionFactory = deviceCollectionFactory;
-    }
 }

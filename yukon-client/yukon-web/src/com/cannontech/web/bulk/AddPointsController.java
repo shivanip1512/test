@@ -6,16 +6,19 @@ import java.util.Set;
 
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpServletResponse;
 
 import org.apache.commons.lang.StringUtils;
 import org.apache.log4j.Logger;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Controller;
+import org.springframework.ui.ModelMap;
 import org.springframework.web.bind.ServletRequestUtils;
-import org.springframework.web.servlet.ModelAndView;
+import org.springframework.web.bind.annotation.RequestMapping;
 
 import com.cannontech.clientutils.YukonLogManager;
 import com.cannontech.common.bulk.callbackResult.BackgroundProcessTypeEnum;
 import com.cannontech.common.bulk.collection.device.DeviceCollection;
+import com.cannontech.common.bulk.collection.device.DeviceCollectionFactory;
 import com.cannontech.common.bulk.processor.ProcessingException;
 import com.cannontech.common.bulk.processor.SingleProcessor;
 import com.cannontech.common.pao.PaoType;
@@ -33,26 +36,28 @@ import com.cannontech.i18n.YukonMessageSourceResolvable;
 import com.cannontech.web.bulk.model.PaoTypeMasks;
 import com.cannontech.web.common.flashScope.FlashScope;
 
+@Controller
+@RequestMapping("addPoints/*")
 public class AddPointsController extends AddRemovePointsControllerBase {
 	
-	private Logger log = YukonLogManager.getLogger(AddPointsController.class);
+	private static final Logger log = YukonLogManager.getLogger(AddPointsController.class);
+	@Autowired private DeviceCollectionFactory deviceCollectionFactory;
 
 	// HOME
-    public ModelAndView home(HttpServletRequest request, HttpServletResponse response) throws Exception, ServletException {
-        
-        ModelAndView mav = new ModelAndView("addPoints/addPointsHome.jsp");
+	@RequestMapping
+    public String home(ModelMap model, HttpServletRequest request) throws Exception, ServletException {
         
         // device collection
-        DeviceCollection deviceCollection = this.deviceCollectionFactory.createDeviceCollection(request);
-        mav.addObject("deviceCollection", deviceCollection);
+        DeviceCollection deviceCollection = deviceCollectionFactory.createDeviceCollection(request);
+        model.addAttribute("deviceCollection", deviceCollection);
         
         // options
         boolean sharedPoints = ServletRequestUtils.getBooleanParameter(request, "sharedPoints", true);
         boolean updatePoints = ServletRequestUtils.getBooleanParameter(request, "updatePoints", false);
         boolean maskExistingPoints = ServletRequestUtils.getBooleanParameter(request, "maskExistingPoints", true);
-        mav.addObject("sharedPoints", sharedPoints);
-        mav.addObject("updatePoints", updatePoints);
-        mav.addObject("maskExistingPoints", maskExistingPoints);
+        model.addAttribute("sharedPoints", sharedPoints);
+        model.addAttribute("updatePoints", updatePoints);
+        model.addAttribute("maskExistingPoints", maskExistingPoints);
         
         String errorMsg = ServletRequestUtils.getStringParameter(request, "errorMsg");
         if(StringUtils.isNotBlank(errorMsg)){
@@ -62,49 +67,47 @@ public class AddPointsController extends AddRemovePointsControllerBase {
         
         // device types set
         Set<PaoType> deviceTypeSet = getDeviceTypesSet(deviceCollection);
-        mav.addObject("deviceTypeEnumSet", deviceTypeSet);
+        model.addAttribute("deviceTypeEnumSet", deviceTypeSet);
         
         Map<PaoType, DeviceCollection> deviceTypeDeviceCollectionMap = getDeviceTypeDeviceCollectionMap(deviceTypeSet, deviceCollection);
-        mav.addObject("deviceTypeDeviceCollectionMap", deviceTypeDeviceCollectionMap);
+        model.addAttribute("deviceTypeDeviceCollectionMap", deviceTypeDeviceCollectionMap);
 
         // device type points map
         List<PaoTypeMasks> paoTypeMasksList = createExistsPointsMap(deviceTypeSet, maskExistingPoints, true, deviceCollection);
-        mav.addObject("paoTypeMasksList", paoTypeMasksList);
+        model.addAttribute("paoTypeMasksList", paoTypeMasksList);
         
         // shared points map
         Map<PointTemplate, Boolean> sharedPointTemplateMaskMap = createSharedPointsTemplateMap(paoTypeMasksList);
         
         PaoTypeMasks sharedPaoTypeMasks = new PaoTypeMasks();
         sharedPaoTypeMasks.setPointTemplateMaskMap(sharedPointTemplateMaskMap);
-        mav.addObject("sharedPaoTypeMasks", sharedPaoTypeMasks);
+        model.addAttribute("sharedPaoTypeMasks", sharedPaoTypeMasks);
         
-        return mav;
+        return "addPoints/addPointsHome.jsp";
     }
     
     // EXECUTE ADD
-    public ModelAndView execute(HttpServletRequest request, HttpServletResponse response) throws ServletException, Exception {
+    @RequestMapping
+    public String execute(ModelMap model, HttpServletRequest request) throws ServletException, Exception {
     	
-    	ModelAndView mav = new ModelAndView("redirect:addPointsResults");
-        
     	// device collection
-        DeviceCollection deviceCollection = this.deviceCollectionFactory.createDeviceCollection(request);
+        DeviceCollection deviceCollection = deviceCollectionFactory.createDeviceCollection(request);
         
     	// options
         boolean sharedPoints = ServletRequestUtils.getRequiredBooleanParameter(request, "sharedPoints");
         final boolean updatePoints = ServletRequestUtils.getBooleanParameter(request, "updatePoints", false);
         boolean maskExistingPoints = ServletRequestUtils.getRequiredBooleanParameter(request, "maskExistingPoints");
-        mav.addObject("sharedPoints", sharedPoints);
-        mav.addObject("updatePoints", updatePoints);
-        mav.addObject("maskExistingPoints", maskExistingPoints);
+        model.addAttribute("sharedPoints", sharedPoints);
+        model.addAttribute("updatePoints", updatePoints);
+        model.addAttribute("maskExistingPoints", maskExistingPoints);
         
         // mask existing points redirect
     	String maskExistingPointsSubmitButton = ServletRequestUtils.getStringParameter(request, "maskExistingPointsSubmitButton");
     	if (maskExistingPointsSubmitButton != null) {
     		
-    		mav.setViewName("redirect:home");
-    		mav.addAllObjects(deviceCollection.getCollectionParameters());
-    		mav.addObject("maskExistingPoints", !maskExistingPoints); // toggle it!
-            return mav;
+    		model.addAllAttributes(deviceCollection.getCollectionParameters());
+    		model.addAttribute("maskExistingPoints", !maskExistingPoints); // toggle it!
+            return "redirect:home";
     	}
     	
     	// Check to see if points were supplied and create processor
@@ -112,17 +115,15 @@ public class AddPointsController extends AddRemovePointsControllerBase {
     	SingleProcessor<YukonDevice> addPointsProcessor = getAddPointsProcessor(pointTemplatesMap, updatePoints);
 
     	if (pointTemplatesMap.isEmpty()) {
-            String noPointsSuppliedMsg = "noPointsSuppliedMsg";
-            ModelAndView home = redirectWithError(noPointsSuppliedMsg, deviceCollection);
-            return home;
+            return redirectWithError(model, "noPointsSuppliedMsg", deviceCollection);
     	}
     	
     	// start processor
     	String id = startBulkProcessor(deviceCollection, addPointsProcessor, BackgroundProcessTypeEnum.ADD_POINTS);
     	
     	// redirect to results page
-    	mav.addObject("resultsId", id);
-        return mav;
+    	model.addAttribute("resultsId", id);
+    	return "redirect:addPointsResults";
     }
     
     // add points processor
@@ -220,22 +221,21 @@ public class AddPointsController extends AddRemovePointsControllerBase {
     }
     
     // VIEW RESULTS
-    public ModelAndView addPointsResults(HttpServletRequest request, HttpServletResponse response) throws ServletException {
+    @RequestMapping
+    public String addPointsResults(ModelMap model, HttpServletRequest request) throws ServletException {
 
-        ModelAndView mav = new ModelAndView("addPoints/addPointsResults.jsp");
-        
         // prepare mav with basic results data
-        prepResultsView(request, mav);
+        prepResultsView(model, request);
         
         // options
         boolean sharedPoints = ServletRequestUtils.getBooleanParameter(request, "sharedPoints", true);
         boolean updatePoints = ServletRequestUtils.getBooleanParameter(request, "updatePoints", false);
         boolean maskExistingPoints = ServletRequestUtils.getBooleanParameter(request, "maskExistingPoints", false);
-        mav.addObject("sharedPoints", sharedPoints);
-        mav.addObject("updatePoints", updatePoints);
-        mav.addObject("maskExistingPoints", maskExistingPoints);
+        model.addAttribute("sharedPoints", sharedPoints);
+        model.addAttribute("updatePoints", updatePoints);
+        model.addAttribute("maskExistingPoints", maskExistingPoints);
         
-        return mav;
+        return "addPoints/addPointsResults.jsp";
     }
     
 }

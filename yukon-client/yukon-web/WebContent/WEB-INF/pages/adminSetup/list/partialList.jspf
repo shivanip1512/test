@@ -10,7 +10,7 @@
         <c:forEach var="listEntry" items="${lists}" begin="${listBegin}" end="${listEnd}">
             <c:set var="listCategory" value="${listEntry.key}"/>
             <tr><td colspan="2">
-                <h3><i:inline key="${listCategory}"/></h3>
+                <h3 style="margin-top: 10px;"><i:inline key="${listCategory}"/></h3>
             </td></tr>
             <c:set var="listList" value="${listEntry.value}"/>
             <c:forEach var="list" items="${listList}">

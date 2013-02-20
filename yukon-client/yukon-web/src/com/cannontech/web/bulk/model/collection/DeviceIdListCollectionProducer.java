@@ -2,6 +2,7 @@ package com.cannontech.web.bulk.model.collection;
 
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 
@@ -9,6 +10,7 @@ import javax.servlet.http.HttpServletRequest;
 
 import org.apache.commons.lang.Validate;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.context.MessageSourceResolvable;
 import org.springframework.web.bind.ServletRequestBindingException;
 import org.springframework.web.bind.ServletRequestUtils;
@@ -18,6 +20,8 @@ import com.cannontech.common.bulk.collection.device.DeviceCollectionProducer;
 import com.cannontech.common.bulk.collection.device.DeviceCollectionType;
 import com.cannontech.common.bulk.collection.device.ListBasedDeviceCollection;
 import com.cannontech.common.device.model.SimpleDevice;
+import com.cannontech.common.pao.PaoIdentifier;
+import com.cannontech.common.pao.PaoUtils;
 import com.cannontech.core.dao.DeviceDao;
 import com.cannontech.database.db.device.Device;
 import com.cannontech.i18n.YukonMessageSourceResolvable;
@@ -30,13 +34,8 @@ import com.google.common.collect.Iterables;
  */
 public class DeviceIdListCollectionProducer implements DeviceCollectionProducer {
 
-
-    private DeviceDao deviceDao = null;
-
-    @Autowired
-    public void setDeviceDao(DeviceDao deviceDao) {
-        this.deviceDao = deviceDao;
-    }
+    @Autowired private DeviceDao deviceDao;
+    @Autowired @Qualifier("memory") private DeviceMemoryCollectionProducer memoryCollectionProducer;
 
     public DeviceCollectionType getSupportedType() {
         return DeviceCollectionType.idList;
@@ -48,6 +47,12 @@ public class DeviceIdListCollectionProducer implements DeviceCollectionProducer 
         
         boolean containsSystemDevice = Iterables.any(idList, Predicates.equalTo(Device.SYSTEM_DEVICE_ID));
         Validate.isTrue(!containsSystemDevice, "cannot create DeviceCollection that contains the system device");
+        
+        if (idList.size() > 200) {
+            /* For large lists of ids, convert to memory list since url's can only be so long. */
+            Iterator<PaoIdentifier> paos = PaoUtils.asPaoIdentifiers(deviceDao.getYukonDeviceObjectByIds(idList)).iterator();
+            return memoryCollectionProducer.createDeviceCollection(paos);
+        }
 
         return new ListBasedDeviceCollection() {
 

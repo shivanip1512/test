@@ -85,7 +85,7 @@ th.variableColumn {
 </style>
     
     <c:forEach var="level" items="${routeTables}" varStatus="levelStatus">
-        <tags:hideReveal title="Level ${levelStatus.index + 1}" showInitially="true">
+        <tags:hideReveal title="Level ${levelStatus.index + 1}">
             <table id="level${levelStatus.index + 1}" class="resultsTable routeTable">
                 <thead>
                     <tr>
@@ -175,7 +175,6 @@ th.variableColumn {
                 
             </table>
         </tags:hideReveal>
-        <br>
     </c:forEach>
     
 </cti:standardPage>

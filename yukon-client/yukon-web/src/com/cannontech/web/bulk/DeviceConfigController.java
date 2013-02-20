@@ -9,22 +9,21 @@ import java.util.UUID;
 import javax.annotation.Resource;
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpServletResponse;
 
 import org.apache.commons.lang.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.beans.factory.annotation.Required;
+import org.springframework.stereotype.Controller;
 import org.springframework.ui.ModelMap;
 import org.springframework.web.bind.ServletRequestUtils;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
-import org.springframework.web.servlet.ModelAndView;
 
 import com.cannontech.common.alert.service.AlertService;
 import com.cannontech.common.bulk.BulkProcessor;
 import com.cannontech.common.bulk.callbackResult.BackgroundProcessResultHolder;
 import com.cannontech.common.bulk.callbackResult.ConfigurationCallbackResult;
 import com.cannontech.common.bulk.collection.device.DeviceCollection;
+import com.cannontech.common.bulk.collection.device.DeviceCollectionFactory;
 import com.cannontech.common.bulk.collection.device.DeviceGroupCollectionHelper;
 import com.cannontech.common.bulk.mapper.PassThroughMapper;
 import com.cannontech.common.bulk.processor.Processor;
@@ -49,12 +48,13 @@ import com.cannontech.user.YukonUserContext;
 import com.cannontech.web.group.GroupCommandCompletionAlert;
 import com.cannontech.web.security.annotation.CheckRoleProperty;
 
+@Controller
 @RequestMapping("/config/*")
 @CheckRoleProperty(YukonRoleProperty.MASS_CHANGE)
-public class DeviceConfigController extends BulkControllerBase {
+public class DeviceConfigController {
 
-    private BulkProcessor bulkProcessor;
-    private RecentResultsCache<BackgroundProcessResultHolder> recentResultsCache;
+    @Resource(name="oneAtATimeProcessor") private BulkProcessor bulkProcessor;
+    @Resource(name="recentResultsCache") private RecentResultsCache<BackgroundProcessResultHolder> recentResultsCache;
 
     @Autowired private ProcessorFactory processorFactory;
     @Autowired private DeviceConfigurationDao deviceConfigurationDao;
@@ -64,6 +64,7 @@ public class DeviceConfigController extends BulkControllerBase {
     @Autowired private DeviceConfigService deviceConfigService;
     @Autowired private AlertService alertService;
     @Autowired private RolePropertyDao rolePropertyDao;
+    @Autowired private DeviceCollectionFactory deviceCollectionFactory;
     
     @RequestMapping
     public String assignConfig(DeviceCollection deviceCollection, ModelMap model, YukonUserContext userContext) throws ServletException {
@@ -81,9 +82,8 @@ public class DeviceConfigController extends BulkControllerBase {
     }
     
     @RequestMapping(method=RequestMethod.POST)
-    public ModelAndView doAssignConfig(HttpServletRequest request, HttpServletResponse response, YukonUserContext userContext) throws ServletException {
+    public String doAssignConfig(ModelMap model, HttpServletRequest request, YukonUserContext userContext) throws ServletException {
         rolePropertyDao.verifyProperty(YukonRoleProperty.ASSIGN_CONFIG, userContext.getYukonUser());
-        ModelAndView mav = null;
         DeviceCollection deviceCollection = deviceCollectionFactory.createDeviceCollection(request);
         // CALLBACK
         String resultsId = StringUtils.replace(UUID.randomUUID().toString(), "-", "");
@@ -110,10 +110,9 @@ public class DeviceConfigController extends BulkControllerBase {
         ObjectMapper<SimpleDevice, SimpleDevice> mapper = new PassThroughMapper<>();
         bulkProcessor.backgroundBulkProcess(deviceCollection.iterator(), mapper, processor, callbackResult);
         
-        mav = new ModelAndView("redirect:assignConfigResults");
-        mav.addObject("resultsId", resultsId);
+        model.addAttribute("resultsId", resultsId);
         
-        return mav;
+        return "redirect:assignConfigResults";
     }
     
     @RequestMapping
@@ -136,7 +135,7 @@ public class DeviceConfigController extends BulkControllerBase {
     }
     
     @RequestMapping(method=RequestMethod.POST)
-    public ModelAndView doUnassignConfig(HttpServletRequest request, HttpServletResponse response, YukonUserContext userContext) throws ServletException {
+    public String doUnassignConfig(ModelMap model, HttpServletRequest request, YukonUserContext userContext) throws ServletException {
         rolePropertyDao.verifyProperty(YukonRoleProperty.ASSIGN_CONFIG, userContext.getYukonUser());
         
         DeviceCollection deviceCollection = deviceCollectionFactory.createDeviceCollection(request);
@@ -169,10 +168,9 @@ public class DeviceConfigController extends BulkControllerBase {
         ObjectMapper<SimpleDevice, SimpleDevice> mapper = new PassThroughMapper<>();
         bulkProcessor.backgroundBulkProcess(deviceCollection.iterator(), mapper, processor, callbackResult);
         
-        ModelAndView mav = new ModelAndView("redirect:unassignConfigResults");
-        mav.addObject("resultsId", resultsId);
+        model.addAttribute("resultsId", resultsId);
         
-        return mav;
+        return "redirect:unassignConfigResults";
     }
     
     @RequestMapping
@@ -332,13 +330,4 @@ public class DeviceConfigController extends BulkControllerBase {
         return "redirect:/group/commander/resultDetail";
     }
     
-    @Required
-    public void setBulkProcessor(BulkProcessor bulkProcessor) {
-        this.bulkProcessor = bulkProcessor;
-    }
-    
-    @Resource(name="recentResultsCache")
-    public void setRecentResultsCache(RecentResultsCache<BackgroundProcessResultHolder> recentResultsCache) {
-        this.recentResultsCache = recentResultsCache;
-    }
 }

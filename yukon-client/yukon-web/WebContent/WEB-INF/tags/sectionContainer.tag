@@ -4,14 +4,16 @@
 <%@ taglib tagdir="/WEB-INF/tags" prefix="tags" %>
 
 <%@ attribute name="title" required="false" type="java.lang.String"%>
-<%@ attribute name="titleIcon" required="false" type="java.lang.String"%>
 <%@ attribute name="id" required="false" type="java.lang.String"%>
 <%@ attribute name="styleClass" required="false" type="java.lang.String"%>
 <%@ attribute name="helpText" required="false" type="java.lang.String"%>
 <%@ attribute name="escapeTitle" required="false" type="java.lang.Boolean" %>
+<%@ attribute name="hideEnabled" required="false" type="java.lang.Boolean" %>
 
 <c:url var="help" value="/WebConfig/yukon/Icons/help.gif"/>
 <c:url var="helpOver" value="/WebConfig/yukon/Icons/help_over.gif"/>
+
+<c:if test="${hideEnabled}"><c:set var="h3Class" value="toggle-title"/></c:if>
 
 <cti:uniqueIdentifier prefix="sectionContainer_" var="thisId"/>
 
@@ -19,16 +21,13 @@
     
     <div class="titleBar sectionContainer_titleBar">
         <div class="titleBar sectionContainer_title">
-            <c:if test="${not empty pageScope.titleIcon}">
-              <img src="${pageScope.titleIcon}" style="height: 32px; width: 32px;" />
-            </c:if>
             
             <c:choose>
               <c:when test="${pageScope.escapeTitle}">
-                <spring:escapeBody htmlEscape="true">${pageScope.title}</spring:escapeBody>
+                <h3 class="${h3Class}"><spring:escapeBody htmlEscape="true">${pageScope.title}</spring:escapeBody></h3>
               </c:when>
               <c:otherwise>
-                ${pageScope.title} 
+                <h3 class="${h3Class}">${pageScope.title}</h3>
               </c:otherwise>
             </c:choose>
             

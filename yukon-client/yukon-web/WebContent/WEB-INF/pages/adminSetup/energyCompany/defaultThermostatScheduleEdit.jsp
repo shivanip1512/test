@@ -80,9 +80,9 @@
     <div class="schedule small vh <c:if test="${schedule.accountThermostatScheduleId eq currentScheduleId }">current titledContainer boxContainer</c:if>" id="scheduleId_${schedule.accountThermostatScheduleId}">
         <c:if test="${schedule.accountThermostatScheduleId eq currentScheduleId }">
             <div class="titleBar boxContainer_titleBar">
-                <div class="title boxContainer_title">
+                <h3 class="title boxContainer_title">
                     <cti:msg2 key=".lastSent"/>
-                </div>
+                </h3>
             </div>
         </c:if>
         <div class="boxContainer_content">
