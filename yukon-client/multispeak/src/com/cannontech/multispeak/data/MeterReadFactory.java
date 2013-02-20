@@ -54,6 +54,10 @@ public class MeterReadFactory {
         case MCT410IL:
         case MCT410FL:
         case MCT410GL:
+        case MCT420CD:
+        case MCT420CL:
+        case MCT420FD:
+        case MCT420FL:
             meterReadObject = new MCT410();
             break;
 
