@@ -132,7 +132,7 @@ void CtiCCAreaBase::restore(Cti::RowReader& rdr)
 }
 void CtiCCAreaBase::setDynamicData(Cti::RowReader& rdr)
 {
-    string tempBoolString;
+    std::string tempBoolString;
 
     rdr["additionalflags"] >> _additionalFlags;
     std::transform(_additionalFlags.begin(), _additionalFlags.end(), _additionalFlags.begin(), tolower);
@@ -145,7 +145,7 @@ void CtiCCAreaBase::setDirty(bool flag)
     _dirty = flag;
 }
 
-string CtiCCAreaBase::getAdditionalFlags() const
+std::string CtiCCAreaBase::getAdditionalFlags() const
 {
     return _additionalFlags;
 }

@@ -9,7 +9,6 @@ namespace Cti
     class RowReader;
 }
 
-using std::string;
 
 
 class CtiCCAreaBase : public Controllable, public RWCollectable
@@ -27,7 +26,7 @@ public:
     long getVoltReductionControlPointId() const;
     bool getVoltReductionControlValue() const;
     bool getOvUvDisabledFlag() const;
-    string getAdditionalFlags() const;
+    std::string getAdditionalFlags() const;
 
     Cti::CapControl::PaoIdVector getSubstationIds() const {return _subStationIds;};
     void addSubstationId(long subId);
@@ -68,7 +67,7 @@ private:
     bool _voltReductionControlValue;
     double _pfactor;
     double _estPfactor;
-    string _additionalFlags;
+    std::string _additionalFlags;
     bool _ovUvDisabledFlag;
     bool _dirty;
 
