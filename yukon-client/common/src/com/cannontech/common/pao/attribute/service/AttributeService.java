@@ -198,4 +198,7 @@ public interface AttributeService {
      * @return
      */
     public SortedMap<BuiltInAttribute, String> resolveAllToString(Set<BuiltInAttribute> bins, YukonUserContext context);
+
+    public PaoTypePointIdentifier getPaoTypePointIdentifierForAttribute(PaoType type, Attribute attribute)
+    throws IllegalUseOfAttribute;
 }

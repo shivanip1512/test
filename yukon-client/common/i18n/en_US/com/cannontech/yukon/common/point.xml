@@ -162,5 +162,26 @@
     <entry key="yukon.common.attribute.builtInAttribute.VOLTAGE_PHASE_B_OUT">Voltage Phase B Out</entry>
     <entry key="yukon.common.attribute.builtInAttribute.VOLTAGE_PHASE_C_OUT">Voltage Phase C Out</entry>
     <entry key="yukon.common.attribute.builtInAttribute.VOLTAGE_PHASE_ERROR">Voltage Phase Error</entry>
+    
+    <entry key="yukon.common.attribute.builtInAttribute.DELIVERED_KWH">Delivered kWh</entry>
+    <entry key="yukon.common.attribute.builtInAttribute.RECEIVED_KWH">Received kWh</entry>
+    <entry key="yukon.common.attribute.builtInAttribute.NET_KWH">Net kWh</entry>
+    <entry key="yukon.common.attribute.builtInAttribute.SUM_KWH">Sum kWh</entry>
+    <entry key="yukon.common.attribute.builtInAttribute.SUM_KVAH">Sum kVAh</entry>
+    <entry key="yukon.common.attribute.builtInAttribute.SUM_KVARH">Sum kVArh</entry>
+    <entry key="yukon.common.attribute.builtInAttribute.DELIVERED_KWH_PER_INTERVAL">Delivered kWh per Interval</entry>
+    <entry key="yukon.common.attribute.builtInAttribute.RECEIVED_KWH_PER_INTERVAL">Received kWh per Interval</entry>
+    <entry key="yukon.common.attribute.builtInAttribute.SUM_KWH_PER_INTERVAL">Sum kWh per Interval</entry>
+    <entry key="yukon.common.attribute.builtInAttribute.NET_KWH_PER_INTERVAL">Net kWh per Interval</entry>
+    <entry key="yukon.common.attribute.builtInAttribute.SUM_KVAH_PER_INTERVAL">Sum kVAh per Interval</entry>
+    <entry key="yukon.common.attribute.builtInAttribute.SUM_KVARH_PER_INTERVAL">Sum kVArh per Interval</entry>
+    <entry key="yukon.common.attribute.builtInAttribute.WATER_USAGE_PER_INTERVAL">Water Usage per Interval</entry>
+    <entry key="yukon.common.attribute.builtInAttribute.DELIVERED_KW_LOAD_PROFILE">Delivered kW Load Profile</entry>
+    <entry key="yukon.common.attribute.builtInAttribute.RECEIVED_KW_LOAD_PROFILE">Received kW Load Profile</entry>
+    <entry key="yukon.common.attribute.builtInAttribute.SUM_KW_LOAD_PROFILE">Sum kW Load Profile</entry>
+    <entry key="yukon.common.attribute.builtInAttribute.NET_KW_LOAD_PROFILE">Net kW Load Profile</entry>
+    <entry key="yukon.common.attribute.builtInAttribute.SUM_KVA_LOAD_PROFILE">Sum kVA Load Profile</entry>
+    <entry key="yukon.common.attribute.builtInAttribute.SUM_KVAR_LOAD_PROFILE">Sum kVAr Load Profile</entry>
+    
     <!-- BuiltInAttribute see note above about changing values-->
 </properties>

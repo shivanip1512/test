@@ -4,8 +4,10 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import javax.annotation.PostConstruct;
 import javax.servlet.http.HttpServletRequest;
 
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.core.MethodParameter;
 import org.springframework.web.bind.ServletRequestBindingException;
 import org.springframework.web.bind.support.WebArgumentResolver;
@@ -22,16 +24,16 @@ import com.cannontech.common.bulk.collection.device.DeviceCollectionType;
 public class DeviceCollectionFactoryImpl implements DeviceCollectionFactory, WebArgumentResolver {
 
     private Map<DeviceCollectionType, DeviceCollectionProducer> collectionProducerMap = new HashMap<DeviceCollectionType, DeviceCollectionProducer>();
-
-    public void setCollectionProducerList(
-            List<DeviceCollectionProducer> collectionProducerList) {
-
+    @Autowired List<DeviceCollectionProducer> collectionProducerList;
+    
+    @PostConstruct
+    public void setCollectionProducerList() {
         for (DeviceCollectionProducer producer : collectionProducerList) {
             collectionProducerMap.put(producer.getSupportedType(), producer);
         }
     }
 
-    public DeviceCollection createDeviceCollection(HttpServletRequest request)
+    public DeviceCollection createDeviceCollection(HttpServletRequest request) 
     throws ServletRequestBindingException {
 
         String type = request.getParameter("collectionType");
@@ -55,7 +57,5 @@ public class DeviceCollectionFactoryImpl implements DeviceCollectionFactory, Web
         }
         return UNRESOLVED;
     }
-    
-    
 
 }

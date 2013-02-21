@@ -20,7 +20,7 @@ import com.cannontech.core.service.PaoLoadingService;
 import com.cannontech.core.service.PointFormattingService.Format;
 import com.cannontech.i18n.YukonUserContextMessageSourceResolver;
 import com.cannontech.user.YukonUserContext;
-import com.cannontech.web.common.pao.service.YukonPoint;
+import com.cannontech.web.common.pao.service.LiteYukonPoint;
 import com.cannontech.web.common.pao.service.YukonPointHelper;
 import com.cannontech.web.updater.UpdateValue;
 import com.cannontech.web.updater.point.PointDataRegistrationService;
@@ -49,12 +49,12 @@ public class PaoPointsController {
     public String points(ModelMap model, HttpServletRequest request, int deviceId, String orderBy, Boolean descending) {
         final SimpleDevice device = deviceDao.getYukonDevice(deviceId);
 
-        List<YukonPoint> yukonPoints = yukonPointHelper.getYukonPoints(device, orderBy, descending);
+        List<LiteYukonPoint> liteYukonPoints = yukonPointHelper.getYukonPoints(device, orderBy, descending);
         
         model.addAttribute("device", device);
         model.addAttribute("deviceId", deviceId);
         model.addAttribute("deviceName", paoLoadingService.getDisplayablePao(device).getName());
-        model.addAttribute("points", yukonPoints);
+        model.addAttribute("points", liteYukonPoints);
         model.addAttribute("orderBy", orderBy);
         model.addAttribute("descending", descending);
         
@@ -91,10 +91,10 @@ public class PaoPointsController {
         
         final SimpleDevice device = deviceDao.getYukonDevice(deviceId);
         
-        List<YukonPoint> points = yukonPointHelper.getYukonPoints(device, orderBy, descending);
+        List<LiteYukonPoint> points = yukonPointHelper.getYukonPoints(device, orderBy, descending);
         
         List<String[]> dataRows = Lists.newArrayList();
-        for (YukonPoint point: points) {
+        for (LiteYukonPoint point: points) {
             UpdateValue value = registrationService.getLatestValue(point.getPointId(), Format.VALUE.toString(), context);
             UpdateValue units = registrationService.getLatestValue(point.getPointId(), Format.UNIT.toString(), context);
             UpdateValue date = registrationService.getLatestValue(point.getPointId(), Format.DATE.toString(), context);

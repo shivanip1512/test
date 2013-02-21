@@ -122,6 +122,21 @@ public class AttributeServiceImpl implements AttributeService {
         AttributeDefinition attributeDefinition = paoDefinitionDao.getAttributeLookup(pao.getPaoIdentifier().getPaoType(), builtInAttribute);
         return attributeDefinition.getPointIdentifier(pao);
     }
+    
+    @Override
+    public PaoTypePointIdentifier getPaoTypePointIdentifierForAttribute(PaoType type, Attribute attribute) 
+    throws IllegalUseOfAttribute {
+        BuiltInAttribute builtInAttribute = (BuiltInAttribute) attribute;
+        AttributeDefinition attributeDefinition = paoDefinitionDao.getAttributeLookup(type, builtInAttribute);
+        return PaoTypePointIdentifier.of(type, attributeDefinition.getPointTemplate().getPointIdentifier());
+    }
+    
+    @Override
+    public PaoPointTemplate getPaoPointTemplateForAttribute(YukonPao pao, Attribute attribute) throws IllegalUseOfAttribute {
+        BuiltInAttribute builtInAttribute = (BuiltInAttribute) attribute;
+        AttributeDefinition attributeDefinition = paoDefinitionDao.getAttributeLookup(pao.getPaoIdentifier().getPaoType(), builtInAttribute);
+        return attributeDefinition.getPointTemplate(pao);
+    }
 
     @Override
     public List<PaoMultiPointIdentifier> findPaoMultiPointIdentifiersForAttributes(Iterable<? extends YukonPao> devices, Set<? extends Attribute> attributes) {
@@ -214,13 +229,6 @@ public class AttributeServiceImpl implements AttributeService {
         }
 
         return pointService.pointExistsForPao(paoPointIdentifier);
-    }
-
-    @Override
-    public PaoPointTemplate getPaoPointTemplateForAttribute(YukonPao pao, Attribute attribute) throws IllegalUseOfAttribute {
-        BuiltInAttribute builtInAttribute = (BuiltInAttribute) attribute;
-        AttributeDefinition attributeDefinition = paoDefinitionDao.getAttributeLookup(pao.getPaoIdentifier().getPaoType(), builtInAttribute);
-        return attributeDefinition.getPointTemplate(pao);
     }
 
     @Override

@@ -17,6 +17,7 @@ import com.cannontech.common.pao.definition.model.PaoTagDefinition;
 import com.cannontech.common.pao.definition.model.PaoTypePointIdentifier;
 import com.cannontech.common.pao.definition.model.PointIdentifier;
 import com.cannontech.common.pao.definition.model.PointTemplate;
+import com.cannontech.core.dao.NotFoundException;
 import com.google.common.collect.ImmutableBiMap;
 import com.google.common.collect.ListMultimap;
 import com.google.common.collect.Multimap;
@@ -167,7 +168,13 @@ public interface PaoDefinitionDao {
 
     public ImmutableBiMap<PaoTag, PaoTagDefinition> getSupportedTagsForPaoType(PaoType paoType);
 
-    public PointIdentifier getPointIdentifierByDefaultName(PaoType key, String defaultPointName);
+    /**
+     * Uses the cached pao definition of the given type to return the point identifier matching
+     * the given default point name Throws {@link NotFoundException} when no point identifier
+     * matches that default point name. 
+     */
+    public PointIdentifier getPointIdentifierByDefaultName(PaoType key, String defaultPointName) 
+    throws NotFoundException;
     
     // UNIT TESTING SETTERS
     //===========================================

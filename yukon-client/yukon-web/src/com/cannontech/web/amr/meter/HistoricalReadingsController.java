@@ -148,7 +148,7 @@ public class HistoricalReadingsController {
             if (pointInfo != null) {
                 PaoType paoType = paoDao.getYukonPao(deviceId).getPaoIdentifier().getPaoType();
                 PointIdentifier pointIdentifier = pointInfo.getPointIdentifier();
-                BuiltInAttribute builtInAttribute = paoDefinitionDao.findAttributeForPaoTypeAndPoint(new PaoTypePointIdentifier(paoType, pointIdentifier));
+                BuiltInAttribute builtInAttribute = paoDefinitionDao.findAttributeForPaoTypeAndPoint(PaoTypePointIdentifier.of(paoType, pointIdentifier));
                 if (builtInAttribute != null) {
                     attributeMsg = objectFormattingService.formatObjectAsString(builtInAttribute, context);
                 }

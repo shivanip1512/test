@@ -3,20 +3,24 @@ package com.cannontech.web.common.pao.service;
 import java.util.Comparator;
 
 import com.cannontech.amr.meter.model.PointSortField;
+import com.cannontech.common.pao.PaoIdentifier;
+import com.cannontech.common.pao.YukonPao;
 import com.cannontech.common.pao.attribute.model.BuiltInAttribute;
 import com.cannontech.common.pao.definition.model.PaoPointIdentifier;
+import com.cannontech.common.pao.definition.model.PointIdentifier;
+import com.cannontech.common.point.YukonPoint;
 import com.google.common.collect.ImmutableMap;
 
-public class YukonPoint {
+public class LiteYukonPoint implements YukonPao, YukonPoint {
     
     private final String pointName;
     private final int pointId;
     private final PaoPointIdentifier paoPointIdentifier;
     private final BuiltInAttribute attribute;
     
-    public static Comparator<YukonPoint> ATTRIBUTE_COMPARATOR = new Comparator<YukonPoint>() {
+    public static Comparator<LiteYukonPoint> ATTRIBUTE_COMPARATOR = new Comparator<LiteYukonPoint>() {
         @Override
-        public int compare(YukonPoint o1, YukonPoint o2) {
+        public int compare(LiteYukonPoint o1, LiteYukonPoint o2) {
             if (o1.attribute == null) {
                 return 1;
             } else if (o2.attribute == null) {
@@ -27,9 +31,9 @@ public class YukonPoint {
         }
     };
     
-    public static Comparator<YukonPoint> POINTNAME_COMPARATOR = new Comparator<YukonPoint>() {
+    public static Comparator<LiteYukonPoint> POINTNAME_COMPARATOR = new Comparator<LiteYukonPoint>() {
         @Override
-        public int compare(YukonPoint o1, YukonPoint o2) {
+        public int compare(LiteYukonPoint o1, LiteYukonPoint o2) {
             if (o1.pointName == null) {
                 return 1;
             } else if (o2.pointName == null) {
@@ -40,9 +44,9 @@ public class YukonPoint {
         }
     };
     
-    public static Comparator<YukonPoint> POINTTYPE_COMPARATOR = new Comparator<YukonPoint>() {
+    public static Comparator<LiteYukonPoint> POINTTYPE_COMPARATOR = new Comparator<LiteYukonPoint>() {
         @Override
-        public int compare(YukonPoint o1, YukonPoint o2) {
+        public int compare(LiteYukonPoint o1, LiteYukonPoint o2) {
             if (o1.paoPointIdentifier == null ||
                 o1.paoPointIdentifier.getPointIdentifier() == null) {
                 return 1;
@@ -57,9 +61,9 @@ public class YukonPoint {
         }
     };
     
-    public static Comparator<YukonPoint> POINTOFFSET_COMPARATOR = new Comparator<YukonPoint>() {
+    public static Comparator<LiteYukonPoint> POINTOFFSET_COMPARATOR = new Comparator<LiteYukonPoint>() {
         @Override
-        public int compare(YukonPoint o1, YukonPoint o2) {
+        public int compare(LiteYukonPoint o1, LiteYukonPoint o2) {
             if (o1.paoPointIdentifier == null || 
                 o1.paoPointIdentifier.getPointIdentifier() == null) {
                 return 1;
@@ -73,10 +77,10 @@ public class YukonPoint {
         }
     };
     
-    private final static ImmutableMap<PointSortField, Comparator<YukonPoint>> orderByToComparatorMap;
+    private final static ImmutableMap<PointSortField, Comparator<LiteYukonPoint>> orderByToComparatorMap;
     
     static {
-        ImmutableMap.Builder<PointSortField, Comparator<YukonPoint>> mapBuilder = ImmutableMap.builder();
+        ImmutableMap.Builder<PointSortField, Comparator<LiteYukonPoint>> mapBuilder = ImmutableMap.builder();
         mapBuilder.put(PointSortField.ATTRIBUTE, ATTRIBUTE_COMPARATOR);
         mapBuilder.put(PointSortField.POINTNAME, POINTNAME_COMPARATOR);
         mapBuilder.put(PointSortField.POINTOFFSET, POINTOFFSET_COMPARATOR);
@@ -84,7 +88,7 @@ public class YukonPoint {
         orderByToComparatorMap = mapBuilder.build();
     }
     
-    private YukonPoint(PaoPointIdentifier paoPointId, BuiltInAttribute attribute, String name, int pointId) {
+    private LiteYukonPoint(PaoPointIdentifier paoPointId, BuiltInAttribute attribute, String name, int pointId) {
         this.paoPointIdentifier = paoPointId;
         this.attribute = attribute;
         this.pointName = name;
@@ -107,11 +111,22 @@ public class YukonPoint {
         return paoPointIdentifier;
     }
     
-    public static YukonPoint of(PaoPointIdentifier paoPointId, BuiltInAttribute attribute, String name, int pointId) {
-        return new YukonPoint(paoPointId, attribute, name, pointId);
+    public static LiteYukonPoint of(PaoPointIdentifier paoPointId, BuiltInAttribute attribute, String name, int pointId) {
+        return new LiteYukonPoint(paoPointId, attribute, name, pointId);
     }
     
-    public static Comparator<YukonPoint> getComparatorForSortField(PointSortField pointSortField) {
+    public static Comparator<LiteYukonPoint> getComparatorForSortField(PointSortField pointSortField) {
         return orderByToComparatorMap.get(pointSortField);
     }
+
+    @Override
+    public PointIdentifier getPointIdentifier() {
+        return paoPointIdentifier.getPointIdentifier();
+    }
+
+    @Override
+    public PaoIdentifier getPaoIdentifier() {
+        return paoPointIdentifier.getPaoIdentifier();
+    }
+    
 }

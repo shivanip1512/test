@@ -7,7 +7,7 @@ import com.cannontech.amr.rfn.message.event.RfnEvent;
 import com.cannontech.common.rfn.model.RfnDevice;
 import com.cannontech.message.dispatch.message.PointData;
 
-public interface RfnArchiveRequestProcessorBase {
+public interface RfnArchiveRequestProcessor {
 
     /**
      * Process the Rfn Event/Alarm. New PointData objects added to this pointDatas list 

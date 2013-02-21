@@ -24,7 +24,7 @@ public final class PaoPointIdentifier implements Serializable {
         return pointIdentifier;
     }
     public PaoTypePointIdentifier getPaoTypePointIdentifier() {
-        return new PaoTypePointIdentifier(paoIdentifier.getPaoType(), pointIdentifier);
+        return PaoTypePointIdentifier.of(paoIdentifier.getPaoType(), pointIdentifier);
     }
     @Override
     public int hashCode() {

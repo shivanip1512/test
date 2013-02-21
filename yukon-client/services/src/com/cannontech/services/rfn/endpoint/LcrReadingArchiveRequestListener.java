@@ -1,4 +1,4 @@
-package com.cannontech.dr.rfn.endpoint;
+package com.cannontech.services.rfn.endpoint;
 
 import java.util.List;
 import java.util.concurrent.atomic.AtomicInteger;
@@ -16,7 +16,6 @@ import com.cannontech.clientutils.YukonLogManager;
 import com.cannontech.common.device.commands.exception.CommandCompletionException;
 import com.cannontech.common.exception.ParseExiException;
 import com.cannontech.common.inventory.InventoryIdentifier;
-import com.cannontech.common.rfn.endpoint.RfnArchiveRequestListenerBase;
 import com.cannontech.common.rfn.model.RfnDevice;
 import com.cannontech.common.util.xml.SimpleXPathTemplate;
 import com.cannontech.core.dao.PaoDao;
@@ -44,7 +43,7 @@ import com.google.common.collect.ImmutableList;
 import com.google.common.collect.Lists;
 
 @ManagedResource
-public class LcrReadingArchiveRequestListener extends RfnArchiveRequestListenerBase<RfnLcrArchiveRequest> {
+public class LcrReadingArchiveRequestListener extends ArchiveRequestListenerBase<RfnLcrArchiveRequest> {
     
     @Autowired RfnLcrDataMappingService rfnLcrDataMappingService;
     @Autowired ExiParsingService exiParsingService;
@@ -63,7 +62,7 @@ public class LcrReadingArchiveRequestListener extends RfnArchiveRequestListenerB
     private List<Worker> workers;
     private AtomicInteger archivedReadings = new AtomicInteger();
     
-    public class Worker extends WorkerBase {
+    public class Worker extends ConverterBase {
         public Worker(int workerNumber, int queueSize) {
             super(workerNumber, queueSize);
         }
@@ -150,7 +149,7 @@ public class LcrReadingArchiveRequestListener extends RfnArchiveRequestListenerB
     }
     
     @Override
-    protected List<Worker> getWorkers() {
+    protected List<Worker> getConverters() {
         return workers;
     }
 

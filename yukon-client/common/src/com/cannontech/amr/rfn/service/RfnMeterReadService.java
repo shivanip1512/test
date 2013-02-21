@@ -5,14 +5,9 @@ import java.util.List;
 import javax.annotation.PostConstruct;
 import javax.jms.ConnectionFactory;
 
-import org.apache.log4j.Logger;
-import org.joda.time.Instant;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.MessageSourceResolvable;
 
-import com.cannontech.amr.rfn.message.read.ChannelData;
-import com.cannontech.amr.rfn.message.read.ChannelDataStatus;
-import com.cannontech.amr.rfn.message.read.DatedChannelData;
 import com.cannontech.amr.rfn.message.read.RfnMeterReadDataReply;
 import com.cannontech.amr.rfn.message.read.RfnMeterReadReply;
 import com.cannontech.amr.rfn.message.read.RfnMeterReadRequest;
@@ -20,32 +15,21 @@ import com.cannontech.amr.rfn.message.read.RfnMeterReadingDataReplyType;
 import com.cannontech.amr.rfn.message.read.RfnMeterReadingReplyType;
 import com.cannontech.amr.rfn.model.RfnMeter;
 import com.cannontech.amr.rfn.model.RfnMeterPlusReadingData;
-import com.cannontech.amr.rfn.service.pointmapping.PointValueHandler;
-import com.cannontech.amr.rfn.service.pointmapping.UnitOfMeasureToPointMapper;
-import com.cannontech.clientutils.LogHelper;
-import com.cannontech.clientutils.YukonLogManager;
 import com.cannontech.common.config.ConfigurationSource;
-import com.cannontech.common.point.PointQuality;
 import com.cannontech.common.rfn.model.RfnDevice;
 import com.cannontech.common.util.jms.JmsReplyReplyHandler;
 import com.cannontech.common.util.jms.RequestReplyReplyTemplate;
-import com.cannontech.core.dao.NotFoundException;
-import com.cannontech.core.dao.PointDao;
 import com.cannontech.core.dynamic.PointValueHolder;
 import com.cannontech.i18n.YukonMessageSourceResolvable;
-import com.cannontech.message.dispatch.message.PointData;
 import com.google.common.collect.Lists;
 
 public class RfnMeterReadService {
     
     @Autowired private ConfigurationSource configurationSource;
     @Autowired private ConnectionFactory connectionFactory;
-    @Autowired private UnitOfMeasureToPointMapper unitOfMeasureToPointMapper;
-    @Autowired private PointDao pointDao;
-    
+    @Autowired private RfnChannelDataConverter rfnChannelDataConverter;
+
     private RequestReplyReplyTemplate<RfnMeterReadReply, RfnMeterReadDataReply> rrrTemplate;
-    
-    private static final Logger log = YukonLogManager.getLogger(RfnMeterReadService.class);
     
     /**
      * Attempts to send a read request for a RFN meter. Will use a separate thread to make the request.
@@ -114,7 +98,7 @@ public class RfnMeterReadService {
                     /* Data response successful, process point data */
                     List<PointValueHolder> pointDatas = Lists.newArrayList();
                     RfnDevice rfnDevice = new RfnDevice(rfnMeter.getPaoIdentifier(), rfnMeter.getRfnIdentifier());
-                    processMeterReadingDataMessage(new RfnMeterPlusReadingData(rfnDevice, dataReplyMessage.getData()), pointDatas);
+                    rfnChannelDataConverter.convert(new RfnMeterPlusReadingData(rfnDevice, dataReplyMessage.getData()), pointDatas);
 
                     for (PointValueHolder pointValueHolder : pointDatas) {
                         callback.receivedData(pointValueHolder);
@@ -134,71 +118,6 @@ public class RfnMeterReadService {
         };
         
         rrrTemplate.send(new RfnMeterReadRequest(rfnMeter.getRfnIdentifier()), handler);
-    }
-    
-    public void processMeterReadingDataMessage(RfnMeterPlusReadingData meterReadingData, List<? super PointData> pointDatas) {
-        
-        List<ChannelData> nonDatedChannelData = meterReadingData.getRfnMeterReadingData().getChannelDataList();
-        List<? extends ChannelData> datedChannelData = meterReadingData.getRfnMeterReadingData().getDatedChannelDataList();
-        
-        List<ChannelData> allChannelData = Lists.newArrayList();
-        
-        if (nonDatedChannelData != null) {
-            allChannelData.addAll(nonDatedChannelData);
-        }
-        
-        if (datedChannelData != null) {
-            allChannelData.addAll(datedChannelData);
-        }
-        
-        Instant readingInstant = new Instant(meterReadingData.getRfnMeterReadingData().getTimeStamp());
-        
-        for (ChannelData channelData : allChannelData) {
-            RfnDevice rfnDevice= meterReadingData.getRfnDevice();
-            LogHelper.debug(log, "Processing %s for %s", channelData, rfnDevice);
-            ChannelDataStatus status = channelData.getStatus();
-            if (status == null) {
-                LogHelper.debug(log, "Received null status for channelData, skipping");
-                continue;
-            }
-            if (!status.isOk()) {
-                LogHelper.debug(log, "Received status of %s for channelData, skipping", status);
-                continue;
-            }
-            
-            PointValueHandler pointValueHandler = unitOfMeasureToPointMapper.findMatch(rfnDevice, channelData);
-            if (pointValueHandler == null) {
-                log.debug("No PointValueHandler for this channelData");
-                continue;
-            }
-            LogHelper.debug(log, "Got PointValueHandler %s", pointValueHandler);
-            
-            int pointId;
-            try {
-                pointId = pointDao.getPointId(pointValueHandler.getPaoPointIdentifier());
-            } catch (NotFoundException e) {
-                LogHelper.debug(log, "Unable to find point for channelData: %s", channelData);
-                continue;
-            }
-            
-            PointData pointData = new PointData();
-            pointData.setId(pointId);
-            pointData.setPointQuality(PointQuality.Normal);
-            double value = pointValueHandler.convert(channelData.getValue());
-            pointData.setValue(value);
-            if (channelData instanceof DatedChannelData) {
-                DatedChannelData dated = (DatedChannelData)channelData;
-                pointData.setTime(new Instant(dated.getTimeStamp()).toDate());
-            } else {
-                pointData.setTime(readingInstant.toDate());
-            }
-            pointData.setType(pointValueHandler.getPaoPointIdentifier().getPointIdentifier().getPointType().getPointTypeId());
-            pointData.setTagsPointMustArchive(true); // temporary solution
-            
-            LogHelper.debug(log, "Generated PointData: %s", pointData);
-            
-            pointDatas.add(pointData);
-        }
     }
     
     @PostConstruct

@@ -94,7 +94,7 @@
         </tags>
     </pao>
     
-    <pao id="RFN_EVENTS"  abstract="true">
+    <pao id="RFN_EVENTS" abstract="true">
         <tags>
             <tag name="RFN_EVENTS"/>
         </tags>
@@ -103,20 +103,16 @@
     <pao id="ROUTE_WCTP_TERMINAL" inherits="ROUTE_ENCRYPTION">
         <displayName>WCTP Terminal Route</displayName>
     </pao>
-
     <pao id="ROUTE_SNPP_TERMINAL" inherits="ROUTE_ENCRYPTION">
         <displayName>SNPP Terminal Route</displayName>
     </pao>
-
     <pao id="ROUTE_TAP_PAGING" inherits="ROUTE_ENCRYPTION">
         <displayName>Tap Paging</displayName>
     </pao>
-
     <pao id="ROUTE_RDS_TERMINAL" inherits="ROUTE_ENCRYPTION">
         <displayName>RDS Terminal Route</displayName>
     </pao>
-    
-    <pao id= "ROUTE_TNPP_TERMINAL" inherits="ROUTE_ENCRYPTION">
+    <pao id="ROUTE_TNPP_TERMINAL" inherits="ROUTE_ENCRYPTION">
         <displayName>TNPP Terminal Route</displayName>
     </pao>
     
@@ -4966,6 +4962,12 @@
                 <unitofmeasure value="kWH"/>
                 <decimalplaces value="3"/>
             </point>
+            <point type="Analog" offset="4">
+                <name>Net kWh</name>
+                <multiplier value="1.0"/>
+                <unitofmeasure value="kWh"/>
+                <decimalplaces value="3"/>
+            </point>
             <point type="Analog" offset="20">
                 <init>true</init>
                 <name>Blink Count</name>
@@ -5456,6 +5458,18 @@
             </point>
         </points>
         <attributes>
+            <attribute name="DELIVERED_KWH">
+            	<basicLookup point="Delivered kWh" />
+			</attribute>
+            <attribute name="RECEIVED_KWH">
+                <basicLookup point="Received kWh"/>
+            </attribute>
+            <attribute name="NET_KWH">
+                <basicLookup point="Net kWh"/>
+            </attribute>
+            <attribute name="SUM_KWH">
+                <basicLookup point="Sum kWh"/>
+            </attribute>
             <attribute name="USAGE">
             	<basicLookup point="Delivered kWh" />
 			</attribute>
@@ -6177,17 +6191,6 @@
         </tags>
     </pao>
     
-    <pao id="RFN_NET_METERING" abstract="true">
-        <points>
-            <point type="Analog" offset="4">
-                <init>false</init>
-                <name>Net kWh</name>
-                <multiplier value="1.0"/>
-                <unitofmeasure value="kWH"/>
-                <decimalplaces value="3"/>
-            </point>
-        </points>
-    </pao>
     <pao id="RFN_NET_TOU_METERING" abstract="true">
         <points>
             <point type="Analog" offset="33">
@@ -6511,17 +6514,165 @@
         </points>
         <attributes>
             <attribute name="PEAK_KVAR">
-                <basicLookup point="Peak kVAr" />
+                <basicLookup point="Peak kVAr"/>
+            </attribute>
+            <attribute name="SUM_KVARH">
+                <basicLookup point="Sum kVArh"/>
+            </attribute>
+            <attribute name="SUM_KVAH">
+                <basicLookup point="kVAh Sum"/>
             </attribute>
         </attributes>
     </pao>
     
+    <pao id="RFN_POINT_CALCULATION_ELECTRIC" abstract="true">
+        <points>
+            <point type="Analog" offset="180">
+                <init>true</init>
+                <name>Sum kWh per Interval</name>
+                <multiplier value="1.0"/>
+                <unitofmeasure value="kWh"/>
+                <decimalplaces value="3"/>
+            </point>
+            <point type="Analog" offset="181">
+                <name>Net kWh per Interval</name>
+                <multiplier value="1.0"/>
+                <unitofmeasure value="kWh"/>
+                <decimalplaces value="3"/>
+            </point>
+            <point type="Analog" offset="182">
+                <init>true</init>
+                <name>Delivered kWh per Interval</name>
+                <multiplier value="1.0"/>
+                <unitofmeasure value="kWh"/>
+                <decimalplaces value="3"/>
+            </point>
+            <point type="Analog" offset="183">
+                <name>Received kWh per Interval</name>
+                <multiplier value="1.0"/>
+                <unitofmeasure value="kWh"/>
+                <decimalplaces value="3"/>
+            </point>
+            <point type="Analog" offset="184">
+                <name>Sum kVAh per Interval</name>
+                <multiplier value="1.0"/>
+                <unitofmeasure value="kVAh"/>
+                <decimalplaces value="3"/>
+            </point>
+            <point type="Analog" offset="185">
+                <name>Sum kVArh per Interval</name>
+                <multiplier value="1.0"/>
+                <unitofmeasure value="kVArh"/>
+                <decimalplaces value="3"/>
+            </point>
+            <point type="Analog" offset="187">
+                <init>true</init>
+                <name>Sum kW Load Profile</name>
+                <multiplier value="1.0"/>
+                <unitofmeasure value="kW"/>
+                <decimalplaces value="3"/>
+            </point>
+            <point type="Analog" offset="188">
+                <init>true</init>
+                <name>Delivered kW Load Profile</name>
+                <multiplier value="1.0"/>
+                <unitofmeasure value="kW"/>
+                <decimalplaces value="3"/>
+            </point>
+            <point type="Analog" offset="189">
+                <name>Received kW Load Profile</name>
+                <multiplier value="1.0"/>
+                <unitofmeasure value="kW"/>
+                <decimalplaces value="3"/>
+            </point>
+            <point type="Analog" offset="190">
+                <name>Net kW Load Profile</name>
+                <multiplier value="1.0"/>
+                <unitofmeasure value="kW"/>
+                <decimalplaces value="3"/>
+            </point>
+            <point type="Analog" offset="191">
+                <name>Sum kVA Load Profile</name>
+                <multiplier value="1.0"/>
+                <unitofmeasure value="kVA"/>
+                <decimalplaces value="3"/>
+            </point>
+            <point type="Analog" offset="192">
+                <name>Sum kVAr Load Profile</name>
+                <multiplier value="1.0"/>
+                <unitofmeasure value="kVAr"/>
+                <decimalplaces value="3"/>
+            </point>
+        </points>
+        <attributes>
+            <attribute name="SUM_KWH_PER_INTERVAL">
+                <basicLookup point="Sum kWh per Interval"/>
+            </attribute>
+            <attribute name="NET_KWH_PER_INTERVAL">
+                <basicLookup point="Net kWh per Interval"/>
+            </attribute>
+            <attribute name="DELIVERED_KWH_PER_INTERVAL">
+                <basicLookup point="Delivered kWh per Interval"/>
+            </attribute>
+            <attribute name="RECEIVED_KWH_PER_INTERVAL">
+                <basicLookup point="Received kWh per Interval"/>
+            </attribute>
+            <attribute name="SUM_KVAH_PER_INTERVAL">
+                <basicLookup point="Sum kVAh per Interval"/>
+            </attribute>
+            <attribute name="SUM_KVARH_PER_INTERVAL">
+                <basicLookup point="Sum kVArh per Interval"/>
+            </attribute>
+            <attribute name="SUM_KW_LOAD_PROFILE">
+                <basicLookup point="Sum kW Load Profile"/>
+            </attribute>
+            <attribute name="NET_KW_LOAD_PROFILE">
+                <basicLookup point="Net kW Load Profile"/>
+            </attribute>
+            <attribute name="DELIVERED_KW_LOAD_PROFILE">
+                <basicLookup point="Delivered kW Load Profile"/>
+            </attribute>
+            <attribute name="RECEIVED_KW_LOAD_PROFILE">
+                <basicLookup point="Received kW Load Profile"/>
+            </attribute>
+            <attribute name="SUM_KVA_LOAD_PROFILE">
+                <basicLookup point="Sum kVA Load Profile"/>
+            </attribute>
+            <attribute name="SUM_KVAR_LOAD_PROFILE">
+                <basicLookup point="Sum kVAr Load Profile"/>
+            </attribute>
+        </attributes>
+        <tags>
+            <tag name="RFN_POINT_CALCULATION"/>
+        </tags>
+    </pao>
+    
+    <pao id="RFN_POINT_CALCULATION_WATER" abstract="true">
+        <points>
+            <point type="Analog" offset="186">
+                <init>true</init>
+                <name>Water Usage per Interval</name>
+                <multiplier value="1.0"/>
+                <unitofmeasure value="Gallons"/>
+                <decimalplaces value="3"/>
+            </point>
+        </points>
+        <attributes>
+            <attribute name="WATER_USAGE_PER_INTERVAL">
+                <basicLookup point="Water Usage per Interval"/>
+            </attribute>
+        </attributes>
+        <tags>
+            <tag name="RFN_POINT_CALCULATION"/>
+        </tags>
+    </pao>
+    
     <!-- FOCUS RFN METERS -->
-    <pao id="RFN410FL" inherits="RFN_ELECTRIC_BASE, RFN_TWO_POINT_VOLTAGE, RFN_NET_METERING">
+    <pao id="RFN410FL" inherits="RFN_ELECTRIC_BASE, RFN_TWO_POINT_VOLTAGE">
         <displayName>RFN-410fL</displayName>
     </pao>
     
-    <pao id="RFN410FX" inherits="RFN_EXTENDED, RFN_ADVANCED, RFN_THREE_PHASE_VOLTAGE, RFN_TOU, RFN_NET_METERING, RFN_NET_TOU_METERING">
+    <pao id="RFN410FX" inherits="RFN_EXTENDED, RFN_ADVANCED, RFN_THREE_PHASE_VOLTAGE, RFN_TOU, RFN_NET_TOU_METERING">
         <displayName>RFN-410fX</displayName>
     </pao>
     
@@ -6529,10 +6680,10 @@
         <displayName>RFN-410fD</displayName>
     </pao>
     
-    <pao id="RFN420FL" inherits="RFN_ELECTRIC_BASE, RFN_TWO_POINT_VOLTAGE, RFN_NET_METERING">
+    <pao id="RFN420FL" inherits="RFN_ELECTRIC_BASE, RFN_TWO_POINT_VOLTAGE, RFN_POINT_CALCULATION_ELECTRIC">
         <displayName>RFN-420fL</displayName>
     </pao>
-    <pao id="RFN420FX" inherits="RFN_EXTENDED, RFN_ADVANCED, RFN_THREE_PHASE_VOLTAGE, RFN_TOU, RFN_NET_METERING, RFN_NET_TOU_METERING, SUPPORTS_RFN_DEMAND_RESET_TAG">
+    <pao id="RFN420FX" inherits="RFN_EXTENDED, RFN_ADVANCED, RFN_THREE_PHASE_VOLTAGE, RFN_TOU, RFN_NET_TOU_METERING, SUPPORTS_RFN_DEMAND_RESET_TAG, RFN_POINT_CALCULATION_ELECTRIC">
         <displayName>RFN-420fX</displayName>
     </pao>
     <pao id="RFN420FD" inherits="RFN420FX, RFN_DISCONNECT">
@@ -6540,7 +6691,7 @@
     </pao>
     
     <!-- ITRON RFN METERS -->
-    <pao id="RFN420CL" inherits="RFN_EXTENDED, RFN_BASIC_VOLTAGE, RFN_TOU, SUPPORTS_RFN_DEMAND_RESET_TAG">
+    <pao id="RFN420CL" inherits="RFN_EXTENDED, RFN_BASIC_VOLTAGE, RFN_TOU, SUPPORTS_RFN_DEMAND_RESET_TAG, RFN_POINT_CALCULATION_ELECTRIC">
         <displayName>RFN-420cL</displayName>
     </pao>
     <pao id="RFN420CD" inherits="RFN420CL, RFN_DISCONNECT">
@@ -6548,12 +6699,12 @@
     </pao>
 	
     <!-- ELSTER RFN METERS -->
-    <pao id="RFN430A3" inherits="RFN_EXTENDED, RFN_ADVANCED, RFN_THREE_PHASE_VOLTAGE, RFN_COINCIDENT_VALUES, RFN_TOU, RFN_NET_METERING, RFN_NET_TOU_METERING, SUPPORTS_RFN_DEMAND_RESET_TAG, RFN_ELSTER_A3_ONLY">
+    <pao id="RFN430A3" inherits="RFN_EXTENDED, RFN_ADVANCED, RFN_THREE_PHASE_VOLTAGE, RFN_COINCIDENT_VALUES, RFN_TOU, RFN_NET_TOU_METERING, SUPPORTS_RFN_DEMAND_RESET_TAG, RFN_ELSTER_A3_ONLY, RFN_POINT_CALCULATION_ELECTRIC">
         <displayName>RFN-430A3</displayName>
     </pao>
     
     <!-- GE RFN METERS -->
-    <pao id="RFN430KV" inherits="RFN_EXTENDED, RFN_ADVANCED, RFN_THREE_PHASE_VOLTAGE, RFN_TOU, RFN_NET_METERING, RFN_NET_TOU_METERING">
+    <pao id="RFN430KV" inherits="RFN_EXTENDED, RFN_ADVANCED, RFN_THREE_PHASE_VOLTAGE, RFN_TOU, RFN_NET_TOU_METERING, RFN_POINT_CALCULATION_ELECTRIC">
         <displayName>RFN-430KV</displayName>
     </pao>
     
@@ -6834,7 +6985,7 @@
         </tags>
     </pao>
 
-    <pao id="RFWMETER" inherits="RFN_WATER_BASE">
+    <pao id="RFWMETER" inherits="RFN_WATER_BASE, RFN_POINT_CALCULATION_WATER">
         <displayName>RFW-Meter</displayName>
     </pao>
     

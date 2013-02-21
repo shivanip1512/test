@@ -90,6 +90,28 @@ public enum BuiltInAttribute implements Attribute {
     USAGE_WATER("Water Usage Reading"),
     ZERO_USAGE_FLAG("Zero Usage Flag"),
     ZIGBEE_LINK_STATUS("ZigBee Link Status"),
+    
+    DELIVERED_KWH("Delivered kWh"),
+    RECEIVED_KWH("Received kWh"),
+    NET_KWH("Net kWh"),
+    SUM_KWH("Sum kWh"),
+    SUM_KVAH("Sum kVAh"),
+    SUM_KVARH("Sum kVArh"),
+    
+    DELIVERED_KWH_PER_INTERVAL("Delivered kWh per Interval"),
+    RECEIVED_KWH_PER_INTERVAL("Received kWh per Interval"),
+    SUM_KWH_PER_INTERVAL("Sum kWh per Interval"),
+    NET_KWH_PER_INTERVAL("Net kWh per Interval"),
+    SUM_KVAH_PER_INTERVAL("Sum kVAh per Interval"),
+    SUM_KVARH_PER_INTERVAL("Sum kVArh per Interval"),
+    WATER_USAGE_PER_INTERVAL("Water Usage per Interval"),
+    
+    DELIVERED_KW_LOAD_PROFILE("Delivered kW Load Profile"),
+    RECEIVED_KW_LOAD_PROFILE("Received kW Load Profile"),
+    SUM_KW_LOAD_PROFILE("Sum kW Load Profile"),
+    NET_KW_LOAD_PROFILE("Net kW Load Profile"),
+    SUM_KVA_LOAD_PROFILE("Sum kVA Load Profile"),
+    SUM_KVAR_LOAD_PROFILE("Sum kVAr Load Profile"),
 
     // Rfn Events that map to Event Status points (this list must be kept in sync with both 
     // our rfn set below AND its version in RfnConditionType.java. Outages and restores are

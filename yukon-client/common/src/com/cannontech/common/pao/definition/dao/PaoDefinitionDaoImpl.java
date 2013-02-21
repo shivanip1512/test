@@ -489,7 +489,9 @@ public class PaoDefinitionDaoImpl implements PaoDefinitionDao {
     }
 
     @Override
-    public PointIdentifier getPointIdentifierByDefaultName(PaoType type, String defaultPointName) {
+    public PointIdentifier getPointIdentifierByDefaultName(PaoType type, String defaultPointName) 
+    throws NotFoundException {
+        
         Set<PointTemplate> templates = getAllPointTemplates(type);
         for (PointTemplate template : templates) {
             if (template.getName().equals(defaultPointName)) {

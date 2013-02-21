@@ -40,6 +40,14 @@
 <entry key="yukon.web.attributeGraphType.USAGE.description"><![CDATA[The <b>Normalized Usage</b> graph is a normalized view of the usage data.<br><br>  Each
 							point on the graph is generated using the following formula: (reading - 
 							previousReading) / (days between readings)]]></entry>
+<entry key="yukon.web.attributeGraphType.DELIVERED_KWH_PER_INTERVAL.label">Delivered kWh per Interval</entry>
+<entry key="yukon.web.attributeGraphType.DELIVERED_KWH_PER_INTERVAL.description"><![CDATA[Graph of the delivered kWh difference at each interval.]]></entry>
+<entry key="yukon.web.attributeGraphType.DELIVERED_KW_LOAD_PROFILE.label">Delivered kW Load Profile</entry>
+<entry key="yukon.web.attributeGraphType.DELIVERED_KW_LOAD_PROFILE.description"><![CDATA[Graph of the delivered kWh load profile.]]></entry>
+<entry key="yukon.web.attributeGraphType.SUM_KWH_PER_INTERVAL.label">Sum kWh per Interval</entry>
+<entry key="yukon.web.attributeGraphType.SUM_KWH_PER_INTERVAL.description"><![CDATA[Graph of the sum kWh difference at each interval.]]></entry>
+<entry key="yukon.web.attributeGraphType.SUM_KW_LOAD_PROFILE.label">Sum kW Load Profile</entry>
+<entry key="yukon.web.attributeGraphType.SUM_KW_LOAD_PROFILE.description"><![CDATA[Graph of the Sum kWh load profile.]]></entry>
 				
 <!-- systemGroupEnum -->			
 	<entry key="yukon.common.systemGroupEnum.ROOT">/</entry>

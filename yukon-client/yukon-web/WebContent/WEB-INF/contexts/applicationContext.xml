@@ -1127,6 +1127,26 @@
         <property name="supportedAttributeGraphSet">
 			<list>
 				<bean class="com.cannontech.common.chart.model.AttributeGraphType">
+					<property name="attribute" value="SUM_KWH_PER_INTERVAL"/>
+					<property name="graphType" value="LINE"/>
+					<property name="converterType" value="RAW"/>
+				</bean>
+				<bean class="com.cannontech.common.chart.model.AttributeGraphType">
+					<property name="attribute" value="SUM_KW_LOAD_PROFILE"/>
+					<property name="graphType" value="LINE"/>
+					<property name="converterType" value="RAW"/>
+				</bean>
+				<bean class="com.cannontech.common.chart.model.AttributeGraphType">
+					<property name="attribute" value="DELIVERED_KWH_PER_INTERVAL"/>
+					<property name="graphType" value="LINE"/>
+					<property name="converterType" value="RAW"/>
+				</bean>
+				<bean class="com.cannontech.common.chart.model.AttributeGraphType">
+					<property name="attribute" value="DELIVERED_KW_LOAD_PROFILE"/>
+					<property name="graphType" value="LINE"/>
+					<property name="converterType" value="RAW"/>
+				</bean>
+				<bean class="com.cannontech.common.chart.model.AttributeGraphType">
 					<property name="attribute" value="LOAD_PROFILE"/>
 					<property name="graphType" value="LINE"/>
 					<property name="converterType" value="RAW"/>
@@ -1440,28 +1460,15 @@
     <bean id="archiveDataAnalysisDao" class="com.cannontech.core.dao.impl.ArchiveDataAnalysisDaoImpl"/>
     <bean id="archiveDataAnalysisHelper" class="com.cannontech.common.bulk.service.ArchiveDataAnalysisHelper"/>
     
-    <bean id="deviceFilterCollectionProducer" class="com.cannontech.web.bulk.model.collection.DeviceFilterCollectionProducer"/>
-    <bean id="deviceGroupCollectionProducer" class="com.cannontech.web.bulk.model.collection.DeviceGroupCollectionProducer"/>
-
-    <bean id="deviceFileUploadCollectionProducer" class="com.cannontech.web.bulk.model.collection.DeviceFileUploadCollectionProducer" />
+    <bean id="deviceFilterCollectionProducer" class="com.cannontech.web.bulk.model.collection.DeviceFilterCollectionProducer"><qualifier value="filter"/></bean>
+    <bean id="deviceGroupCollectionProducer" class="com.cannontech.web.bulk.model.collection.DeviceGroupCollectionProducer"><qualifier value="group"/></bean>
+    <bean id="deviceFileUploadCollectionProducer" class="com.cannontech.web.bulk.model.collection.DeviceFileUploadCollectionProducer"><qualifier value="fileUpload"/></bean>
+    <bean id="deviceIdListCollectionProducer" class="com.cannontech.web.bulk.model.collection.DeviceIdListCollectionProducer"><qualifier value="idList"/></bean>
+    <bean id="deviceAddressRangeCollectionProducer" class="com.cannontech.web.bulk.model.collection.DeviceAddressRangeCollectionProducer"><qualifier value="addressRange"/></bean>
+    <bean id="deviceMemoryCollectionProducer" class="com.cannontech.web.bulk.model.collection.DeviceMemoryCollectionProducer"><qualifier value="memory"/></bean>
+    <bean id="archiveDataAnalysisCollectionProducer" class="com.cannontech.common.bulk.collection.device.ArchiveDataAnalysisCollectionProducer"><qualifier value="ada"/></bean>
     
-    <bean id="deviceCollectionFactory"
-        class="com.cannontech.web.bulk.model.DeviceCollectionFactoryImpl">
-        <property name="collectionProducerList">
-            <list>
-                <ref bean="deviceGroupCollectionProducer" />
-                <bean class="com.cannontech.web.bulk.model.collection.DeviceAddressRangeCollectionProducer" />
-                <bean class="com.cannontech.web.bulk.model.collection.DeviceIdListCollectionProducer" />
-                <ref bean="deviceFileUploadCollectionProducer"/>
-                <ref bean="deviceFilterCollectionProducer"/>
-                <ref bean="archiveDataAnalysisCollectionProducer"/>
-            </list>
-        </property>
-    </bean>
-    
-    <bean id="archiveDataAnalysisCollectionProducer" class="com.cannontech.common.bulk.collection.device.ArchiveDataAnalysisCollectionProducer" />
-    
-    <bean id="deviceIdListCollectionProducer" class="com.cannontech.web.bulk.model.collection.DeviceIdListCollectionProducer" />
+    <bean id="deviceCollectionFactory" class="com.cannontech.web.bulk.model.DeviceCollectionFactoryImpl"/>
     
     <bean id="deviceCollectionDeviceGroupHelper" class="com.cannontech.web.group.DeviceCollectionDeviceGroupHelper">
         <property name="deviceGroupEditorDao" ref="deviceGroupEditorDao" />

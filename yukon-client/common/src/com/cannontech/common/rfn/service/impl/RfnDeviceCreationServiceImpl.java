@@ -39,7 +39,6 @@ import com.cannontech.database.TransactionTemplateHelper;
 import com.cannontech.database.cache.DBChangeListener;
 import com.cannontech.database.data.lite.LiteEnergyCompany;
 import com.cannontech.database.data.lite.LiteYukonUser;
-import com.cannontech.dr.rfn.endpoint.LcrReadingArchiveRequestListener;
 import com.cannontech.message.dispatch.message.DBChangeMsg;
 import com.cannontech.stars.database.cache.StarsDatabaseCache;
 import com.cannontech.stars.database.data.lite.LiteStarsEnergyCompany;
@@ -117,7 +116,7 @@ public class RfnDeviceCreationServiceImpl implements RfnDeviceCreationService {
      * hardware argument (and user) is expected to be null the stars tables will be stubbed out with defaults.  Otherwise 
      * callers of the {@link #create(final RfnIdentifier rfnIdentifier, Hardware hardware, LiteYukonUser user)} method are expected to
      * pass in a fully filled out (not null) hardware (and user).  This allows a single creation service for both types of 
-     * users: rf message listeners {@link LcrReadingArchiveRequestListener} and 
+     *  
      * stars operator controllers {@link OperatorHardwareController}, {@link InventoryController}.
      */
     private RfnDevice createDevice(final RfnIdentifier rfnIdentifier, final Hardware hardware, final LiteYukonUser user) {

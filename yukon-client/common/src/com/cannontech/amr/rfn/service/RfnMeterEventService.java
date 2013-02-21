@@ -12,7 +12,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import com.cannontech.amr.rfn.message.event.RfnConditionDataType;
 import com.cannontech.amr.rfn.message.event.RfnConditionType;
 import com.cannontech.amr.rfn.message.event.RfnEvent;
-import com.cannontech.amr.rfn.service.processor.RfnArchiveRequestProcessorBase;
+import com.cannontech.amr.rfn.service.processor.RfnArchiveRequestProcessor;
 import com.cannontech.clientutils.YukonLogManager;
 import com.cannontech.common.pao.attribute.model.BuiltInAttribute;
 import com.cannontech.common.pao.attribute.service.AttributeService;
@@ -29,9 +29,9 @@ public class RfnMeterEventService {
     private static final Logger log = YukonLogManager.getLogger(RfnMeterEventService.class);
 
     @Autowired private AttributeService attributeService;
-    @Autowired private List<RfnArchiveRequestProcessorBase> processors;
+    @Autowired private List<RfnArchiveRequestProcessor> processors;
 
-    private Map<RfnConditionType, RfnArchiveRequestProcessorBase> processorsMap;
+    private Map<RfnConditionType, RfnArchiveRequestProcessor> processorsMap;
     private Map<Boolean, Integer> clearedStateMap = ImmutableMap.of(Boolean.TRUE, EventStatus.CLEARED.getRawState(),
                                                                     Boolean.FALSE, EventStatus.ACTIVE.getRawState());
     
@@ -39,7 +39,7 @@ public class RfnMeterEventService {
     public void initialize() {
         // Build up our map of processors
         processorsMap = Maps.newHashMap();
-        for (RfnArchiveRequestProcessorBase processor : processors) {
+        for (RfnArchiveRequestProcessor processor : processors) {
             processorsMap.put(processor.getRfnConditionType(), processor);
         }
     }
@@ -52,7 +52,7 @@ public class RfnMeterEventService {
         log.debug("Event Recieved - event: " + event + " Meter: " + device);
 
         boolean handledStatusEvent = handleRfnEventStatusEvents(device, event, pointDatas);
-        RfnArchiveRequestProcessorBase processor = processorsMap.get(event.getType());
+        RfnArchiveRequestProcessor processor = processorsMap.get(event.getType());
         if (processor != null) {
             processor.process(device, event, pointDatas);
         } else if (handledStatusEvent == false){

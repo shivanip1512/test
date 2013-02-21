@@ -91,19 +91,19 @@
     <!-- Porter Response Monitor Service -->
     <bean id="porterResponseMonitorService" class="com.cannontech.amr.porterResponseMonitor.service.impl.PorterResponseMonitorServiceImpl"/>
 
-    <!-- RFN Meter Read Service -->
     <bean id="rfnMeterReadService" class="com.cannontech.amr.rfn.service.RfnMeterReadService"/>
-
     <bean id="rfnMeterEventService" class="com.cannontech.amr.rfn.service.RfnMeterEventService"/>
     
+    <bean id="rfnChannelDataConverter" class="com.cannontech.amr.rfn.service.RfnChannelDataConverter"/>
+    
     <!-- RFN Event Processors to handle certain events in special ways -->
-    <bean id="rfnOutageEventArchiveRequestProcessor" class="com.cannontech.amr.rfn.service.processor.event.RfnOutageEventArchiveRequestProcessor"/>
-    <bean id="rfnOutageBlinkEventArchiveRequestProcessor" class="com.cannontech.amr.rfn.service.processor.event.RfnOutageBlinkEventArchiveRequestProcessor"/>
-    <bean id="rfnRestoreEventArchiveRequestProcessor" class="com.cannontech.amr.rfn.service.processor.event.RfnRestoreEventArchiveRequestProcessor"/>
-    <bean id="rfnRestoreBlinkEventArchiveRequestProcessor" class="com.cannontech.amr.rfn.service.processor.event.RfnRestoreBlinkEventArchiveRequestProcessor"/>
-    <bean id="rfnTamperDetectEventArchiveRequestProcessor" class="com.cannontech.amr.rfn.service.processor.event.RfnTamperDetectEventArchiveRequestProcessor"/>
-    <bean id="rfnPowerFailureEventArchiveRequestProcessor" class="com.cannontech.amr.rfn.service.processor.event.RfnPowerFailureEventArchiveRequestProcessor"/>
-    <bean id="rfnReverseRotationEventArchiveRequestProcessor" class="com.cannontech.amr.rfn.service.processor.event.RfnReverseRotationEventArchiveRequestProcessor"/>
+    <bean id="rfnOutageEventArchiveRequestProcessor" class="com.cannontech.amr.rfn.service.processor.impl.RfnOutageEventArchiveRequestProcessor"/>
+    <bean id="rfnOutageBlinkEventArchiveRequestProcessor" class="com.cannontech.amr.rfn.service.processor.impl.RfnOutageBlinkEventArchiveRequestProcessor"/>
+    <bean id="rfnRestoreEventArchiveRequestProcessor" class="com.cannontech.amr.rfn.service.processor.impl.RfnRestoreEventArchiveRequestProcessor"/>
+    <bean id="rfnRestoreBlinkEventArchiveRequestProcessor" class="com.cannontech.amr.rfn.service.processor.impl.RfnRestoreBlinkEventArchiveRequestProcessor"/>
+    <bean id="rfnTamperDetectEventArchiveRequestProcessor" class="com.cannontech.amr.rfn.service.processor.impl.RfnTamperDetectEventArchiveRequestProcessor"/>
+    <bean id="rfnPowerFailureEventArchiveRequestProcessor" class="com.cannontech.amr.rfn.service.processor.impl.RfnPowerFailureEventArchiveRequestProcessor"/>
+    <bean id="rfnReverseRotationEventArchiveRequestProcessor" class="com.cannontech.amr.rfn.service.processor.impl.RfnReverseRotationEventArchiveRequestProcessor"/>
 
     <bean id="meterEventLookupService" class="com.cannontech.amr.meter.service.impl.MeterEventLookupService"/>
     

@@ -1,4 +1,4 @@
-package com.cannontech.amr.rfn.service.processor.event;
+package com.cannontech.amr.rfn.service.processor;
 
 import org.springframework.beans.factory.annotation.Autowired;
 
