@@ -678,9 +678,7 @@ void CtiCCSubstation::getPowerFactorData( double & watts, double & vars, double 
 
     for each ( const long busID in getCCSubIds() )
     {
-        CtiCCSubstationBusPtr bus = store->findSubBusByPAObjectID( busID );
-
-        if ( bus )
+        if ( CtiCCSubstationBusPtr bus = store->findSubBusByPAObjectID( busID ) )
         {
             watts         += bus->getCurrentWattLoadPointValue();
             vars          += bus->getTotalizedVarLoadPointValue();

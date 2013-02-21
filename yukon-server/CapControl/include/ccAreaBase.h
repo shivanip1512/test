@@ -27,8 +27,6 @@ public:
     long getVoltReductionControlPointId() const;
     bool getVoltReductionControlValue() const;
     bool getOvUvDisabledFlag() const;
-    double getPFactor() const;
-    double getEstPFactor() const;
     string getAdditionalFlags() const;
 
     Cti::CapControl::PaoIdVector getSubstationIds() const {return _subStationIds;};
@@ -41,8 +39,6 @@ public:
     CtiCCAreaBase& setVoltReductionControlPointId(long pointId);
     CtiCCAreaBase& setVoltReductionControlValue(bool flag);
     CtiCCAreaBase& setOvUvDisabledFlag(bool flag);
-    CtiCCAreaBase& setPFactor(double pfactor);
-    CtiCCAreaBase& setEstPFactor(double estPfactor);
 
     void updatePowerFactorData();
 
@@ -58,6 +54,13 @@ public:
     void saveGuts(RWvostream& ) const;
 
     CtiCCAreaBase& operator=(const CtiCCAreaBase& right);
+
+protected:
+
+    double getPFactor() const;
+    double getEstPFactor() const;
+    CtiCCAreaBase& setPFactor(double pfactor);
+    CtiCCAreaBase& setEstPFactor(double estPfactor);
 
 private:
 

@@ -160,8 +160,8 @@ CtiPAOScheduleManager::VerificationStrategy ConvertIntToVerificationStrategy(int
 
 double calculatePowerFactor( const double kvar, const double kwatt )
 {
-    double pf   = 1.0;
-    double kva  = std::sqrt( std::pow( kwatt, 2.0 ) + std::pow( kvar, 2.0 ) );
+    double pf        = 1.0;
+    const double kva = std::sqrt( std::pow( kwatt, 2 ) + std::pow( kvar, 2 ) );
 
     if ( kva != 0.0 )
     {

@@ -282,8 +282,7 @@ void CtiCCAreaBase::updatePowerFactorData()
 
     for each ( long stationID in getSubstationIds() )
     {
-        CtiCCSubstationPtr station = store->findSubstationByPAObjectID( stationID );
-        if ( station )
+        if ( CtiCCSubstationPtr station = store->findSubstationByPAObjectID( stationID ) )
         {
             double  watts         = 0.0,
                     vars          = 0.0,

@@ -9408,20 +9408,16 @@ void CtiCCSubstationBusStore::setVoltDisabledCount(long value)
 
 void CtiCCSubstationBusStore::calculateParentPowerFactor( long subBusId )
 {
-    const long stationId = findSubstationIDbySubBusID( subBusId );
-    if ( stationId )
+    if ( const long stationId = findSubstationIDbySubBusID( subBusId ) )
     {
-        CtiCCSubstationPtr station = findSubstationByPAObjectID( stationId );
-        if ( station )
+        if ( CtiCCSubstationPtr station = findSubstationByPAObjectID( stationId ) )
         {
             station->updatePowerFactorData();
         }
 
-        const long areaId = findAreaIDbySubstationID( stationId );
-        if ( areaId )
+        if ( const long areaId = findAreaIDbySubstationID( stationId ) )
         {
-            CtiCCAreaPtr area = findAreaByPAObjectID( areaId );
-            if ( area )
+            if ( CtiCCAreaPtr area = findAreaByPAObjectID( areaId ) )
             {
                 area->updatePowerFactorData();
             }
@@ -9432,9 +9428,7 @@ void CtiCCSubstationBusStore::calculateParentPowerFactor( long subBusId )
 
         for ( ; spAreaIter != end; ++spAreaIter )
         {
-            const long spAreaId = spAreaIter->second;
-            CtiCCSpecialPtr spArea = findSpecialAreaByPAObjectID( spAreaId );
-            if ( spArea )
+            if ( CtiCCSpecialPtr spArea = findSpecialAreaByPAObjectID( spAreaIter->second ) )
             {
                 spArea->updatePowerFactorData();
             }
