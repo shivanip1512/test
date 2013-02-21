@@ -12,6 +12,7 @@ import org.joda.time.Duration;
 import org.joda.time.Instant;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.jmx.export.annotation.ManagedAttribute;
+import org.springframework.jmx.export.annotation.ManagedResource;
 
 import com.cannontech.amr.rfn.model.CalculationData;
 import com.cannontech.clientutils.LogHelper;
@@ -41,6 +42,7 @@ import com.google.common.collect.ImmutableSet;
  * implementations have the responsibility of cleaning out cache values when they detect
  * that they are no longer needed.
  */
+@ManagedResource
 public class CalculatedPointDataProducer {
 
     @Autowired private PaoDefinitionDao paoDefinitionDao;
