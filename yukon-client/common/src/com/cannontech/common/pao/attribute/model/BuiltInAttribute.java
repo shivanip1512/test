@@ -219,6 +219,12 @@ public enum BuiltInAttribute implements Attribute {
         profile.add(PROFILE_CHANNEL_2);
         profile.add(PROFILE_CHANNEL_3);
         profile.add(VOLTAGE_PROFILE);
+        profile.add(DELIVERED_KW_LOAD_PROFILE);
+        profile.add(RECEIVED_KW_LOAD_PROFILE);
+        profile.add(SUM_KW_LOAD_PROFILE);
+        profile.add(NET_KW_LOAD_PROFILE);
+        profile.add(SUM_KVA_LOAD_PROFILE);
+        profile.add(SUM_KVAR_LOAD_PROFILE);
         profileAttributes = profile.build();
         
         //point is an accumulation; Example: Usage 
@@ -229,6 +235,10 @@ public enum BuiltInAttribute implements Attribute {
         accumulators.add(TOU_RATE_D_USAGE);
         accumulators.add(USAGE);
         accumulators.add(USAGE_WATER);
+        accumulators.add(DELIVERED_KWH);
+        accumulators.add(RECEIVED_KWH);
+        accumulators.add(NET_KWH);
+        accumulators.add(SUM_KWH);
         accumulatorAttributes = accumulators.build();
         
         ImmutableSet.Builder<BuiltInAttribute> analogBuilder = ImmutableSet.builder();
@@ -251,6 +261,15 @@ public enum BuiltInAttribute implements Attribute {
         other.add(TEMPORARY_OUT_OF_SERVICE);
         other.add(TOTAL_LUF_COUNT);
         other.add(TOTAL_LUV_COUNT);
+        other.add(SUM_KVAH);
+        other.add(SUM_KVARH);
+        other.add(DELIVERED_KWH_PER_INTERVAL);
+        other.add(RECEIVED_KWH_PER_INTERVAL);
+        other.add(SUM_KWH_PER_INTERVAL);
+        other.add(NET_KWH_PER_INTERVAL);
+        other.add(SUM_KVAH_PER_INTERVAL);
+        other.add(SUM_KVARH_PER_INTERVAL);
+        other.add(WATER_USAGE_PER_INTERVAL);
         otherAttributes = other.build();
         
         ImmutableSet.Builder<BuiltInAttribute> demand = ImmutableSet.builder();
