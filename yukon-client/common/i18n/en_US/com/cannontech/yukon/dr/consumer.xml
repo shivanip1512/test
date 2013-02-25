@@ -324,7 +324,10 @@
     <entry key="yukon.dr.consumer.hardware.type.LCR_5000_EXPRESSCOM">LCR 5000 ExpressCom</entry>
     <entry key="yukon.dr.consumer.hardware.type.LCR_5000_VERSACOM">LCR 5000 VERSACOM</entry>
     <entry key="yukon.dr.consumer.hardware.type.LCR_4000">LCR 4000</entry>
+    <entry key="yukon.dr.consumer.hardware.type.LCR_4600">LCR 4600</entry>
+    <entry key="yukon.dr.consumer.hardware.type.LCR_4700">LCR 4700</entry>
     <entry key="yukon.dr.consumer.hardware.type.LCR_3000">LCR 3000</entry>
+    <entry key="yukon.dr.consumer.hardware.type.LCR_3100">LCR 3100</entry>
     <entry key="yukon.dr.consumer.hardware.type.LCR_3102">LCR 3102</entry>
     <entry key="yukon.dr.consumer.hardware.type.LCR_2000">LCR 2000</entry>
     <entry key="yukon.dr.consumer.hardware.type.LCR_1000">LCR 1000</entry>
