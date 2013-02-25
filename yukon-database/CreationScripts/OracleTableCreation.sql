@@ -8091,31 +8091,6 @@ insert into YukonListEntry values (1034,1003,0,'Non Yukon Meter',1204);
 insert into YukonListEntry values (1041,1004,0,' ',0);
 insert into YukonListEntry values (1042,1004,0,'120/120',0);
 
-INSERT INTO YukonListEntry VALUES (1045, 1005, 0, 'LCR-6200(RFN)', 1324);
-INSERT INTO YukonListEntry VALUES (1046, 1005, 0, 'LCR-6600(RFN)', 1325);
-INSERT INTO YukonListEntry VALUES (1047, 1005, 0, 'LCR-6200(ZIGBEE)', 1320); 
-INSERT INTO YukonListEntry VALUES (1048, 1005, 0, 'LCR-6200(EXPRESSCOM)', 1321); 
-INSERT INTO YukonListEntry VALUES (1049, 1005, 0, 'LCR-6600(ZIGBEE)', 1322); 
-INSERT INTO YukonListEntry VALUES (1050, 1005, 0, 'LCR-6600(EXPRESSCOM)', 1323);
-INSERT INTO YukonListEntry VALUES (1051, 1005, 0, 'LCR-5000(EXPRESSCOM)', 1302);
-INSERT INTO YukonListEntry VALUES (1052, 1005, 0, 'LCR-4000', 1305);
-INSERT INTO YukonListEntry VALUES (1053, 1005, 0, 'LCR-3000', 1306);
-INSERT INTO YukonListEntry VALUES (1054, 1005, 0, 'LCR-2000', 1307);
-INSERT INTO YukonListEntry VALUES (1055, 1005, 0, 'LCR-1000', 1308);
-INSERT INTO YukonListEntry VALUES (1056, 1005, 0, 'ExpressStat', 1301);
-
-INSERT INTO YukonListEntry VALUES (1058, 1005, 0, 'Meter', 1303);
-INSERT INTO YukonListEntry VALUES (1059, 1005, 0, 'Commercial ExpressStat', 1304);
-INSERT INTO YukonListEntry VALUES (1062, 1005, 0, 'LCR-5000(VERSACOM)', 1311);
-INSERT INTO YukonListEntry VALUES (1064, 1005, 0, 'ExpressStat Heat Pump', 1313);
-INSERT INTO YukonListEntry VALUES (1065, 1005, 0, 'UtilityPRO', 1314);
-INSERT INTO YukonListEntry VALUES (1066, 1005, 0, 'LCR-3102', 1315);
-INSERT INTO YukonListEntry VALUES (1067, 1005, 0, 'UtilityPRO ZigBee', 1316);
-
-INSERT INTO YukonListEntry VALUES (1068, 1005, 0, 'Digi Gateway', 1317);
-INSERT INTO YukonListEntry VALUES (1069, 1005, 0, 'UtilityPRO G2', 1318); 
-INSERT INTO YukonListEntry VALUES (1070, 1005, 0, 'UtilityPRO G3', 1319); 
-
 insert into YukonListEntry values (1071,1006,0,'Available',1701);
 insert into YukonListEntry values (1072,1006,0,'Temp Unavail',1702);
 insert into YukonListEntry values (1073,1006,0,'Unavailable',1703);
@@ -8467,6 +8442,34 @@ insert into YukonListEntry values (1930,1071,0, 'Commercial', 0);
 insert into YukonListEntry values (1931,1071,0, 'Industrial', 0);
 insert into YukonListEntry values (1932,1071,0, 'Manufacturing', 0);
 insert into YukonListEntry values (1933,1071,0, 'Municipal', 0);
+
+INSERT INTO YukonListEntry VALUES (2000, 1005, 0, 'LCR-6200(RFN)', 1324);
+INSERT INTO YukonListEntry VALUES (2001, 1005, 0, 'LCR-6600(RFN)', 1325);
+INSERT INTO YukonListEntry VALUES (2002, 1005, 0, 'LCR-6200(ZIGBEE)', 1320); 
+INSERT INTO YukonListEntry VALUES (2003, 1005, 0, 'LCR-6200(EXPRESSCOM)', 1321); 
+INSERT INTO YukonListEntry VALUES (2004, 1005, 0, 'LCR-6600(ZIGBEE)', 1322); 
+INSERT INTO YukonListEntry VALUES (2005, 1005, 0, 'LCR-6600(EXPRESSCOM)', 1323);
+INSERT INTO YukonListEntry VALUES (2006, 1005, 0, 'LCR-5000(EXPRESSCOM)', 1302);
+INSERT INTO YukonListEntry VALUES (2007, 1005, 0, 'LCR-4000', 1305);
+INSERT INTO YukonListEntry VALUES (2008, 1005, 0, 'LCR-4600', 1327);
+INSERT INTO YukonListEntry VALUES (2009, 1005, 0, 'LCR-4700', 1328);
+INSERT INTO YukonListEntry VALUES (2010, 1005, 0, 'LCR-3000', 1306);
+INSERT INTO YukonListEntry VALUES (2011, 1005, 0, 'LCR-3100', 1326);
+INSERT INTO YukonListEntry VALUES (2012, 1005, 0, 'LCR-2000', 1307);
+INSERT INTO YukonListEntry VALUES (2013, 1005, 0, 'LCR-1000', 1308);
+INSERT INTO YukonListEntry VALUES (2014, 1005, 0, 'ExpressStat', 1301);
+
+INSERT INTO YukonListEntry VALUES (2015, 1005, 0, 'Meter', 1303);
+INSERT INTO YukonListEntry VALUES (2016, 1005, 0, 'Commercial ExpressStat', 1304);
+INSERT INTO YukonListEntry VALUES (2017, 1005, 0, 'LCR-5000(VERSACOM)', 1311);
+INSERT INTO YukonListEntry VALUES (2018, 1005, 0, 'ExpressStat Heat Pump', 1313);
+INSERT INTO YukonListEntry VALUES (2019, 1005, 0, 'UtilityPRO', 1314);
+INSERT INTO YukonListEntry VALUES (2020, 1005, 0, 'LCR-3102', 1315);
+INSERT INTO YukonListEntry VALUES (2021, 1005, 0, 'UtilityPRO ZigBee', 1316);
+
+INSERT INTO YukonListEntry VALUES (2022, 1005, 0, 'Digi Gateway', 1317);
+INSERT INTO YukonListEntry VALUES (2023, 1005, 0, 'UtilityPRO G2', 1318); 
+INSERT INTO YukonListEntry VALUES (2024, 1005, 0, 'UtilityPRO G3', 1319); 
 
 insert into yukonlistentry values (10101, 1067, 0, 'CustomerAccount', 0);
 insert into yukonlistentry values (10102, 1067, 0, 'Inventory', 0);
