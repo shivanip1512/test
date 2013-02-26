@@ -14,7 +14,8 @@ public class DevAMR extends DevObject {
     private Integer addressRangeMax = 999999999;
     private List<DevPaoType> meterTypes =
         Lists
-            .newArrayList(new DevPaoType(PaoType.MCT410CL),
+            .newArrayList(new DevPaoType(PaoType.MCT420CD),
+                          new DevPaoType(PaoType.MCT410CL),
                           new DevPaoType(PaoType.MCT410FL),
                           new DevPaoType(PaoType.MCT410IL),
                           new DevPaoType(PaoType.MCT420CL),
