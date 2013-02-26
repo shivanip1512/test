@@ -272,7 +272,6 @@ public class ProgramServiceImpl implements ProgramService {
         }
 
         if (observeConstraints || overrideConstraints) {
-                        
             log.info("No constraint violations for request.");
             programStatus = startProgramBlocking(programId, gearNumber, startTime, Duration.ZERO, stopScheduled, stopTime, Duration.ZERO, observeConstraints, null);
         }
@@ -358,7 +357,6 @@ public class ProgramServiceImpl implements ProgramService {
             throw new NotAuthorizedException("Scenario is not visible to user id=" + scenarioId + "");
         }
 
-        boolean stopScheduled = rolePropertyDao.getPropertyBooleanValue(YukonRoleProperty.SCHEDULE_STOP_CHECKED_BY_DEFAULT, user);
         List<Integer> programIds = loadControlProgramDao.getProgramIdsByScenarioId(scenarioId);
         List<LMProgramBase> programs = loadControlClientConnection.getProgramsForProgramIds(programIds);
         Map<Integer, ScenarioProgram> scenarioPrograms =  scenarioDao.findScenarioProgramsForScenario(scenarioId);
@@ -368,9 +366,13 @@ public class ProgramServiceImpl implements ProgramService {
             int startingGearNumber = loadControlProgramDao.getStartingGearForScenarioAndProgram(ProgramUtils.getProgramId(program), scenarioId);
             ScenarioProgram scenarioProgram = scenarioPrograms.get(program.getYukonID());
 
-            ProgramStatus programStatus = startProgramBlocking(program.getYukonID(), startingGearNumber, startTime,
-                    scenarioProgram.getStartOffset(), stopScheduled, stopTime, scenarioProgram.getStopOffset(),
-                    overrideConstraints, null, true);
+            Date programStartDate = datePlusOffset(startTime, scenarioProgram.getStartOffset());
+            Date programStopDate = datePlusOffset(stopTime, scenarioProgram.getStopOffset());
+
+            String gearName = getGearNameForProgram(program, startingGearNumber);
+            ProgramStatus programStatus = startProgram(program.getYukonID(), programStartDate, programStopDate, gearName,
+                          overrideConstraints, observeConstraints, user);
+            
             programStatuses.add(programStatus);
         }
 
@@ -591,7 +593,9 @@ public class ProgramServiceImpl implements ProgramService {
         for (LMProgramBase program : programs) {
             ScenarioProgram scenarioProgram = scenarioPrograms.get(program.getYukonID());
 
-            ProgramStatus programStatus = stopProgramBlocking(program.getYukonID(), stopTime, scenarioProgram.getStopOffset(), true);
+            Date programStopDate = datePlusOffset(stopTime, scenarioProgram.getStopOffset());
+            ProgramStatus programStatus = stopProgram(program.getYukonID(), programStopDate, overrideConstraints, observeConstraints);
+
             programStatuses.add(programStatus);
         }
 
