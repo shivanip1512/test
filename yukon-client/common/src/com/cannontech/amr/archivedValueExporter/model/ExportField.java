@@ -3,14 +3,11 @@ package com.cannontech.amr.archivedValueExporter.model;
 import java.text.DecimalFormat;
 
 import org.joda.time.DateTime;
-import org.joda.time.DateTimeZone;
-import org.joda.time.Instant;
 import org.joda.time.format.DateTimeFormat;
 import org.joda.time.format.DateTimeFormatter;
 import org.springframework.context.MessageSourceResolvable;
 
 import com.cannontech.common.i18n.Displayable;
-
 
 public class ExportField implements Displayable{
     private int fieldId;
@@ -30,7 +27,6 @@ public class ExportField implements Displayable{
     public int getFieldId() {
         return fieldId;
     }
-
     public void setFieldId(int fieldId) {
         this.fieldId = fieldId;
     }
@@ -38,7 +34,6 @@ public class ExportField implements Displayable{
     public int getFormatId() {
         return formatId;
     }
-
     public void setFormatId(int formatId) {
         this.formatId = formatId;
     }
@@ -46,7 +41,6 @@ public class ExportField implements Displayable{
     public String getPattern() {
         return pattern;
     }
-
     public void setPattern(String pattern) {
         this.pattern = pattern;
     }
@@ -54,7 +48,6 @@ public class ExportField implements Displayable{
     public Integer getMaxLength() {
         return maxLength;
     }
-
     public void setMaxLength(Integer maxLength) {
         this.maxLength = maxLength;
     }
@@ -62,7 +55,6 @@ public class ExportField implements Displayable{
     public String getPadChar() {
         return padChar;
     }
-
     public void setPadChar(String padChar) {
         this.padChar = padChar;
     }
@@ -70,7 +62,6 @@ public class ExportField implements Displayable{
     public String getMissingAttributeValue() {
         return missingAttributeValue;
     }
-
     public void setMissingAttributeValue(String missingAttributeValue) {
         this.missingAttributeValue = missingAttributeValue;
     }
@@ -78,7 +69,6 @@ public class ExportField implements Displayable{
     public YukonRoundingMode getRoundingMode() {
         return roundingMode;
     }
-
     public void setRoundingMode(YukonRoundingMode roundingMode) {
         this.roundingMode = roundingMode;
     }
@@ -86,7 +76,6 @@ public class ExportField implements Displayable{
     public FieldType getFieldType() {
         return fieldType;
     }
-
     public void setFieldType(FieldType fieldType) {
         this.fieldType = fieldType;
     }
@@ -94,7 +83,6 @@ public class ExportField implements Displayable{
     public AttributeField getAttributeField() {
         return attributeField;
     }
-
     public void setAttributeField(AttributeField attributeField) {
         this.attributeField = attributeField;
     }
@@ -102,7 +90,6 @@ public class ExportField implements Displayable{
     public ExportAttribute getAttribute() {
         return attribute;
     }
-
     public void setAttribute(ExportAttribute attribute) {
         this.attribute = attribute;
     }
@@ -110,7 +97,6 @@ public class ExportField implements Displayable{
     public PadSide getPadSide() {
         return padSide;
     }
-
     public void setPadSide(PadSide padSide) {
         this.padSide = padSide;
     }
@@ -118,7 +104,6 @@ public class ExportField implements Displayable{
     public MissingAttribute getMissingAttribute() {
         return missingAttribute;
     }
-
     public void setMissingAttribute(MissingAttribute missingAttribute) {
         this.missingAttribute = missingAttribute;
     }

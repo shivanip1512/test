@@ -179,8 +179,7 @@ public class DatePropertyEditorFactory {
         private YukonUserContext userContext;
         private BlankMode blankMode;
         
-        private LocalDatePropertyEditor(DateFormatEnum dateFormat, YukonUserContext userContext, 
-                                        BlankMode blankMode) {
+        private LocalDatePropertyEditor(DateFormatEnum dateFormat, YukonUserContext userContext, BlankMode blankMode) {
             this.dateFormat = dateFormat;
             this.userContext = userContext;
             this.blankMode = blankMode;

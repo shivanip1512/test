@@ -768,8 +768,7 @@ public class RawPointHistoryDaoImpl implements RawPointHistoryDao {
         for (YukonPao pao : paos) {
             try {
                 // for non-mapped attributes, the following does not require a DB hit
-                PaoPointIdentifier identifier = attributeService.getPaoPointIdentifierForAttribute(pao,
-                                                                                                   attribute);
+                PaoPointIdentifier identifier = attributeService.getPaoPointIdentifierForAttribute(pao, attribute);
                 paoIdentifierLookup.put(identifier, pao.getPaoIdentifier());
             } catch (IllegalUseOfAttribute e) {
                 LogHelper.debug(log, "unable to look up values for %s on %s: %s", attribute, pao, e.toString());
