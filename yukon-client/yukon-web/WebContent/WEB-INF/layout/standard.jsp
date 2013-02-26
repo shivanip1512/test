@@ -95,6 +95,12 @@
 <%-- FLASH SCOPE MESSAGES --%>
 <cti:flashScopeMessages/>
 
+<noscript>
+	<div class="page_error">
+		<cti:msg2 key="yukon.web.error.noJs" htmlEscapeArguments="false"/>
+	</div>
+</noscript>
+
 <cti:outputContent writable="${bodyContent}"/>
 </div> <!-- Content -->
 </div> <!-- ContentWrapper -->
