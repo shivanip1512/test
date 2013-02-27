@@ -15,6 +15,7 @@ public class JnlpExtensionController extends JnlpControllerBase {
         setCacheSeconds(0);
     }
 
+    @Override
     protected ModelAndView handleRequestInternal(HttpServletRequest request, HttpServletResponse response)
             throws Exception {
         response.setContentType("application/x-java-jnlp-file");
@@ -29,11 +30,9 @@ public class JnlpExtensionController extends JnlpControllerBase {
         String codebase = url.substring(0, url.lastIndexOf("/"));
         jnlpElem.setAttribute("codebase", codebase);
 
-        if (path.equals("client_libs.jnlp")) {
-            Element securityElem = new Element("security");
-            jnlpElem.addContent(securityElem);
-            securityElem.addContent(new Element("all-permissions"));
-        }
+        Element securityElem = new Element("security");
+        jnlpElem.addContent(securityElem);
+        securityElem.addContent(new Element("all-permissions"));
 
         Element infoElem = new Element("information");
         jnlpElem.addContent(infoElem);
