@@ -97,7 +97,7 @@
 
 <noscript>
 	<div class="page_error">
-		<cti:msg2 key="yukon.web.error.noJs" htmlEscapeArguments="false"/>
+		<cti:msg2 key="yukon.web.error.noJs"/>
 	</div>
 </noscript>
 
