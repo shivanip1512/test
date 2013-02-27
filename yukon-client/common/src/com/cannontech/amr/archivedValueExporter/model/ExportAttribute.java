@@ -11,6 +11,13 @@ public class ExportAttribute{
     private DataSelection dataSelection;
     private Integer daysPrevious = 1;
     
+    public ExportAttribute(){}
+    public ExportAttribute(Attribute attribute, DataSelection dataSelection, Integer daysPrevious){
+        this.attribute = attribute;
+        this.dataSelection = dataSelection;
+        this.daysPrevious = daysPrevious;
+    }
+    
     public int getAttributeId() {
         return attributeId;
     }

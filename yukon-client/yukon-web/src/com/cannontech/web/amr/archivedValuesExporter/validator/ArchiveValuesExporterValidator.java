@@ -14,7 +14,7 @@ public class ArchiveValuesExporterValidator extends SimpleValidator<ArchivedValu
 
     @Override
     protected void doValidation(ArchivedValuesExporter target, Errors errors) {
-        if (target.getEndDate() == null) {
+        if (target.getDataRange().getEndDate() == null) {
             errors.reject(ArchivedValuesExporterController.baseKey+"formatError.endDateRequired");
         }
     }

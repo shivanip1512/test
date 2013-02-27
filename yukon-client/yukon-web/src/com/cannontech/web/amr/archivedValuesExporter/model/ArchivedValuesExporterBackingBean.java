@@ -8,6 +8,7 @@ import java.util.ListIterator;
 
 import org.apache.commons.lang.StringUtils;
 
+import com.cannontech.amr.archivedValueExporter.model.ArchivedValuesExportFormatType;
 import com.cannontech.amr.archivedValueExporter.model.AttributeField;
 import com.cannontech.amr.archivedValueExporter.model.ExportAttribute;
 import com.cannontech.amr.archivedValueExporter.model.ExportField;
@@ -36,16 +37,6 @@ public class ArchivedValuesExporterBackingBean{
 
     private int rowIndex = -1;
     private String pageNameKey;
-
-    public ArchivedValuesExporterBackingBean(){
-        int id = 0;
-        for (FieldType type : FieldType.values()) {
-            if (type != FieldType.ATTRIBUTE) {
-                Field field = new Field(--id, type, null);
-                fieldSelect.add(field);
-            }
-        }
-    }
 
     public ExportFormat getFormat() {
         return format;
@@ -142,7 +133,12 @@ public class ArchivedValuesExporterBackingBean{
             }
         }else if (FieldType.PLAIN_TEXT == exportField.getFieldType()) {
             exportField.setPattern(getPlainText());
+        } else if (FieldType.POINT_TIMESTAMP == exportField.getFieldType()){
+            exportField.setPattern(getTimestampPattern());
+        } else if (FieldType.POINT_VALUE == exportField.getFieldType()){
+            exportField.setPattern(getValuePattern());
         }
+        
         if (rowIndex == -1) {
             format.getFields().add(exportField);
         } else {
@@ -172,6 +168,22 @@ public class ArchivedValuesExporterBackingBean{
     }
 
     public List<Field> getFieldSelect() {
+        int id = 0;
+        
+        List<FieldType> fieldTypes = null;
+        if (format.getFormatType() == ArchivedValuesExportFormatType.FIXED_ATTRIBUTE) {
+            fieldTypes = Lists.newArrayList(FieldType.FIXED_ATTRIBUTE_FIELD_TYPES);
+        } else if (format.getFormatType() == ArchivedValuesExportFormatType.DYNAMIC_ATTRIBUTE) {
+            fieldTypes = Lists.newArrayList(FieldType.DYNAMIC_ATTRIBUTE_FIELD_TYPES);
+        }
+        
+        for (FieldType type : fieldTypes) {
+            if (type != FieldType.ATTRIBUTE) {
+                Field field = new Field(--id, type, null);
+                fieldSelect.add(field);
+            }
+        }
+        
         ListIterator<Field> it = fieldSelect.listIterator();
         while (it.hasNext()) {
             Field field = it.next();

@@ -11,6 +11,7 @@ import org.springframework.transaction.annotation.Transactional;
 import com.cannontech.amr.archivedValueExporter.dao.ArchiveValuesExportAttributeDao;
 import com.cannontech.amr.archivedValueExporter.dao.ArchiveValuesExportFieldDao;
 import com.cannontech.amr.archivedValueExporter.dao.ArchiveValuesExportFormatDao;
+import com.cannontech.amr.archivedValueExporter.model.ArchivedValuesExportFormatType;
 import com.cannontech.amr.archivedValueExporter.model.ExportAttribute;
 import com.cannontech.amr.archivedValueExporter.model.ExportField;
 import com.cannontech.amr.archivedValueExporter.model.ExportFormat;
@@ -49,6 +50,7 @@ public class ArchiveValuesExportFormatDaoImpl implements ArchiveValuesExportForm
         sink.addValue("Delimiter", format.getDelimiter());
         sink.addValue("Header",  format.getHeader());
         sink.addValue("Footer",  format.getFooter());
+        sink.addValue("FormatType", format.getFormatType());
         yukonJdbcTemplate.update(sql);
         createAttributesAndFields(format);
         return format;
@@ -65,6 +67,7 @@ public class ArchiveValuesExportFormatDaoImpl implements ArchiveValuesExportForm
         sink.addValue("Delimiter", format.getDelimiter());
         sink.addValue("Header",  format.getHeader());
         sink.addValue("Footer",  format.getFooter());
+        sink.addValue("FormatType", format.getFormatType());
         sql.append("WHERE FormatID").eq(format.getFormatId());
         yukonJdbcTemplate.update(sql);
         createAttributesAndFields(format);
@@ -88,7 +91,7 @@ public class ArchiveValuesExportFormatDaoImpl implements ArchiveValuesExportForm
         ExportFormat format = null;
         try {
             SqlStatementBuilder sql = new SqlStatementBuilder();
-            sql.append("SELECT FormatID, FormatName, Delimiter, Header, Footer");
+            sql.append("SELECT FormatID, FormatName, Delimiter, Header, Footer, FormatType");
             sql.append("FROM");
             sql.append(TABLE_NAME);
             sql.append("WHERE FormatID").eq(formatId);
@@ -104,7 +107,7 @@ public class ArchiveValuesExportFormatDaoImpl implements ArchiveValuesExportForm
         ExportFormat format = null;
         try {
             SqlStatementBuilder sql = new SqlStatementBuilder();
-            sql.append("SELECT FormatID, FormatName, Delimiter, Header, Footer");
+            sql.append("SELECT FormatID, FormatName, Delimiter, Header, Footer, FormatType");
             sql.append("FROM");
             sql.append(TABLE_NAME);
             sql.append("WHERE upper(FormatName)").eq(formatName.toUpperCase());
@@ -134,6 +137,7 @@ public class ArchiveValuesExportFormatDaoImpl implements ArchiveValuesExportForm
                 format.setDelimiter(SqlUtils.convertDbValueToString(rs.getString("Delimiter")));
                 format.setHeader(SqlUtils.convertDbValueToString(rs.getString("Header")));
                 format.setFooter(SqlUtils.convertDbValueToString(rs.getString("Footer")));
+                format.setFormatType(rs.getEnum("FormatType", ArchivedValuesExportFormatType.class));
                 format.setAttributes(archiveValuesExportAttributeDao.getByFormatId(format.getFormatId()));
                 format.setFields(archiveValuesExportFieldDao.getByFormatId(format.getFormatId()));
                 return format ;

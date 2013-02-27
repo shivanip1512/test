@@ -262,14 +262,6 @@
             Yukon.Dialog.ConfirmationManager.cancel();
             submitForm(-1, 'deleteFormat');
         });
-
-        jQuery(document).on('change', '#patternSelect', function() {
-            var value = $("#patternSelect").is("selected").text();
-            alert(value);
-            if (value != "Custom") {
-                readingPattern.val(value);
-            }
-        });
     });
 </script>
 
@@ -294,6 +286,7 @@
     <form:form id="exporterForm" commandName="backingBean" action="${action}">
         <tags:setFormEditMode mode="${mode}" />
         <form:hidden path="format.formatId" />
+        <form:hidden path="format.formatType" />
         <form:hidden path="rowIndex" />
 
         <!-- Helper Popups -->
@@ -344,40 +337,37 @@
             </tags:nameValueContainer2>
         </tags:boxContainer2>
 
-        <tags:boxContainer2 nameKey="attributeSetup" id="attributes" styleClass="stacked attributeSetupContainer">
-            <c:set var="attributes" value="${backingBean.format.attributes}"/>
-            <table class="compactResultsTable">
-                <tr>
-                    <th class="nonwrapping"><i:inline key=".attribute" /></th>
-                    <th class="nonwrapping"><i:inline key=".dataSelection" />
-                    </th>
-                    <th class="nonwrapping"><i:inline key=".daysPrevious" />
-                    </th>
-                    <cti:displayForPageEditModes modes="CREATE,EDIT">
-                        <th class="nonwrapping"><i:inline key=".actions" />
-                        </th>
-                    </cti:displayForPageEditModes>
-                </tr>
-
-                <c:forEach var="attribute" items="${attributes}" varStatus="row">
-                    <tr data-row-index="${row.index}">
-                        <td class="nonwrapping"><tags:hidden path="format.attributes[${row.index}].attributeId" /> <tags:hidden path="format.attributes[${row.index}].formatId" /> <tags:hidden
-                                path="format.attributes[${row.index}].attribute" /> <tags:hidden path="format.attributes[${row.index}].dataSelection" /> <tags:hidden
-                                path="format.attributes[${row.index}].daysPrevious" /> <i:inline key="${attribute.attribute}" /></td>
-                        <td class="nonwrapping"><cti:msg2 key="${attribute.dataSelection}" />
-                        </td>
-                        <td class="nonwrapping">${fn:escapeXml(attribute.daysPrevious)}</td>
-                        <td class="nonwrapping"><cti:button nameKey="edit" styleClass="editAttributeBtn f_blocker" renderMode="image" /> <cti:button nameKey="remove"
-                                styleClass="removeAttributeBtn f_blocker" renderMode="image" />
+        <c:if test="${showAttributeSection}">
+            <tags:boxContainer2 nameKey="attributeSetup" id="attributes" styleClass="stacked attributeSetupContainer">
+                <c:set var="attributes" value="${backingBean.format.attributes}"/>
+                <table class="compactResultsTable">
+                    <tr>
+                        <th class="nonwrapping"><i:inline key=".attribute" /></th>
+                        <th class="nonwrapping"><i:inline key=".dataSelection" /></th>
+                        <th class="nonwrapping"><i:inline key=".daysPrevious" /></th>
+                        <th class="nonwrapping"><i:inline key=".actions" /></th>
+                    </tr>
+    
+                    <c:forEach var="attribute" items="${attributes}" varStatus="row">
+                        <tr data-row-index="${row.index}">
+                            <td class="nonwrapping"><tags:hidden path="format.attributes[${row.index}].attributeId" /> <tags:hidden path="format.attributes[${row.index}].formatId" /> <tags:hidden
+                                    path="format.attributes[${row.index}].attribute" /> <tags:hidden path="format.attributes[${row.index}].dataSelection" /> <tags:hidden
+                                    path="format.attributes[${row.index}].daysPrevious" /> <i:inline key="${attribute.attribute}" /></td>
+                            <td class="nonwrapping"><cti:msg2 key="${attribute.dataSelection}" />
+                            </td>
+                            <td class="nonwrapping">${fn:escapeXml(attribute.daysPrevious)}</td>
+                            <td class="nonwrapping"><cti:button nameKey="edit" styleClass="editAttributeBtn f_blocker" renderMode="image" /> <cti:button nameKey="remove"
+                                    styleClass="removeAttributeBtn f_blocker" renderMode="image" />
+                            </td>
+                        </tr>
+                    </c:forEach>
+                    <tr>
+                        <td align="right" colspan="4"><br> <cti:button id="addAttributeBtn" nameKey="add" styleClass="f_blocker" />
                         </td>
                     </tr>
-                </c:forEach>
-                <tr>
-                    <td align="right" colspan="4"><br> <cti:button id="addAttributeBtn" nameKey="add" styleClass="f_blocker" />
-                    </td>
-                </tr>
-            </table>
-        </tags:boxContainer2>
+                </table>
+            </tags:boxContainer2>
+        </c:if>
 
         <tags:boxContainer2 nameKey="fieldSetup" id="selectedFields" styleClass="stacked">
             <c:set var="fields" value="${backingBean.format.fields}"/>
@@ -456,7 +446,7 @@
             </table>
         </tags:boxContainer2>
         
-        <c:if test="${not empty format.fields}">
+        <c:if test="${not empty backingBean.format.fields}">
             <tags:boxContainer2 nameKey="preview">
                <div class="code">
             <!-- Please do not format this code -->
@@ -468,7 +458,7 @@
         <div class="pageActionArea">
             <cti:button id="saveBtn" nameKey="save" styleClass="f_blocker" />
             <dialog:confirm on="#deleteBtn" nameKey="confirmDelete" argument="${backingBean.format.formatName}" />
-            <c:if test="${format.formatId != 0}">
+            <c:if test="${backingBean.format.formatId != 0}">
                 <cti:button id="deleteBtn" nameKey="delete" />
             </c:if>
 

@@ -18,7 +18,7 @@ import com.cannontech.database.data.lite.LiteUnitMeasure;
  * Creation date: (7/11/2006 9:40:33 AM)
  * @author: alauinger
  */
-public final class UnitMeasureDaoImpl implements UnitMeasureDao {
+public class UnitMeasureDaoImpl implements UnitMeasureDao {
     private YukonJdbcOperations yukonJdbcOperations;
     
     

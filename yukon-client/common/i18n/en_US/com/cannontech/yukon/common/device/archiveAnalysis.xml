@@ -121,7 +121,13 @@
     <entry key="yukon.web.modules.amr.archivedValueExporter.CREATE.pageName">Archived Data Export</entry>
     <entry key="yukon.web.modules.amr.archivedValueExporter.CREATE.pageDescription">Create</entry>
 
-    <entry key="yukon.web.modules.amr.archivedValueExporter.format">Format</entry>
+    <entry key="yukon.web.modules.amr.archivedValueExporter.formatType">Format Type</entry>
+    <entry key="yukon.web.modules.amr.archivedValueExporter.existingFormat">Existing Format</entry>
+
+    <entry key="yukon.web.modules.amr.archivedValueExporter.createdFormat">Created the format {0}</entry>
+    <entry key="yukon.web.modules.amr.archivedValueExporter.updatedFormat">Updated the format {0}</entry>
+    <entry key="yukon.web.modules.amr.archivedValueExporter.deletedFormat">Deleted the format {0}</entry>
+
     <entry key="yukon.web.modules.amr.archivedValueExporter.formatSettings.title">Format Settings:</entry>
     <entry key="yukon.web.modules.amr.archivedValueExporter.nameOfFormat">Name of Format</entry>
     <entry key="yukon.web.modules.amr.archivedValueExporter.delimiter">Delimiter</entry>
@@ -130,6 +136,7 @@
     <entry key="yukon.web.modules.amr.archivedValueExporter.selectDevices.label">Select Devices</entry>
     <entry key="yukon.web.modules.amr.archivedValueExporter.noSelectedDevice">Devices Selected: None</entry>
     <entry key="yukon.web.modules.amr.archivedValueExporter.attributeSetup.title">Attribute Setup:</entry>
+
 
     <entry key="yukon.web.modules.amr.archivedValueExporter.attribute">Attribute</entry>
     <entry key="yukon.web.modules.amr.archivedValueExporter.dataSelection">Data Selection</entry>
@@ -152,8 +159,14 @@
     <entry key="yukon.web.modules.amr.archivedValueExporter.editAttribute">Edit Attribute</entry>
     <entry key="yukon.web.modules.amr.archivedValueExporter.editField">Edit Field</entry>
 
+    <entry key="yukon.web.modules.amr.archivedValueExporter.schedule">Schedule</entry>
+    <entry key="yukon.web.modules.amr.archivedValueExporter.schedule.label">Schedule</entry>
+    <entry key="yukon.web.modules.amr.archivedValueExporter.run">Run</entry>
+    <entry key="yukon.web.modules.amr.archivedValueExporter.run.label">Run Now</entry>
 
     <entry key="yukon.web.modules.amr.archivedValueExporter.attribute">Attribute</entry>
+    <entry key="yukon.web.modules.amr.archivedValueExporter.startDate">Start Date</entry>
+    <entry key="yukon.web.modules.amr.archivedValueExporter.endDate">End Date</entry>
     <entry key="yukon.web.modules.amr.archivedValueExporter.daysPrevious">Days Previous</entry>
     <entry key="yukon.web.modules.amr.archivedValueExporter.field">Field</entry>
     <entry key="yukon.web.modules.amr.archivedValueExporter.unsupportedField">Unsupported Field</entry>
@@ -223,6 +236,8 @@
     <entry key="yukon.web.modules.amr.archivedValueExporter.timezone"> * All times are {0} </entry>
     <entry key="yukon.web.modules.amr.archivedValueExporter.noMax">No Max</entry>
     <entry key="yukon.web.modules.amr.archivedValueExporter.attributeFieldOption">{0} ({1}, {2})</entry>
+    <entry key="yukon.web.modules.amr.archivedValueExporter.formatType.FIXED_ATTRIBUTE">Fixed Attribute</entry>
+    <entry key="yukon.web.modules.amr.archivedValueExporter.formatType.DYNAMIC_ATTRIBUTE">Dynamic Attribute</entry>
 
     <!-- archivedValueExporter validation -->
     <entry key="yukon.web.modules.amr.archivedValueExporter.formatError.formatNameRequired">The name of format cannot be blank.</entry>
@@ -251,6 +266,14 @@
     <entry key="yukon.web.modules.amr.archivedValueExporter.fieldType.PLAIN_TEXT">Plain Text</entry>
     <entry key="yukon.web.modules.amr.archivedValueExporter.fieldType.ROUTE">Route</entry>
 
+    <entry key="yukon.web.modules.amr.archivedValueExporter.fieldType.ATTRIBUTE">Attribute</entry>
+    <entry key="yukon.web.modules.amr.archivedValueExporter.fieldType.ATTRIBUTE_NAME">Attribute Name</entry>
+    <entry key="yukon.web.modules.amr.archivedValueExporter.fieldType.UNIT_OF_MEASURE">Unit of Measure</entry>
+    <entry key="yukon.web.modules.amr.archivedValueExporter.fieldType.POINT_NAME">Point Name</entry>
+    <entry key="yukon.web.modules.amr.archivedValueExporter.fieldType.VALUE">Point Value</entry>
+    <entry key="yukon.web.modules.amr.archivedValueExporter.fieldType.TIMESTAMP">Point Timestamp</entry>
+    <entry key="yukon.web.modules.amr.archivedValueExporter.fieldType.QUALITY">Point Quality</entry>
+
     <entry key="yukon.web.modules.amr.archivedValueExporter.attributeField.TIMESTAMP">Timestamp</entry>
     <entry key="yukon.web.modules.amr.archivedValueExporter.attributeField.VALUE">Value</entry>
     <entry key="yukon.web.modules.amr.archivedValueExporter.attributeField.UNIT_OF_MEASURE">Unit of Measure</entry>
@@ -272,12 +295,18 @@
     <entry key="yukon.web.modules.amr.archivedValueExporter.roundingMode.HALF_DOWN">Half Down</entry>
     <entry key="yukon.web.modules.amr.archivedValueExporter.roundingMode.HALF_EVEN">Half Even</entry>
 
+    <entry key="yukon.web.modules.amr.archivedValueExporter.dataRangeType.END_DATE">End Date</entry>
+    <entry key="yukon.web.modules.amr.archivedValueExporter.dataRangeType.DATE_RANGE">Date Range</entry>
+    <entry key="yukon.web.modules.amr.archivedValueExporter.dataRangeType.DAYS_PREVIOUS">Days Previous</entry>
+    <entry key="yukon.web.modules.amr.archivedValueExporter.dataRangeType.SINCE_LAST_CHANGE_ID">Since Last Changed</entry>
+
     <!-- preview  -->
     <entry key="yukon.web.modules.amr.archivedValueExporter.previewUOMValue">kWh</entry>
     <entry key="yukon.web.modules.amr.archivedValueExporter.previewMeterNumber">111111111</entry>
     <entry key="yukon.web.modules.amr.archivedValueExporter.previewMeterName">Default Device</entry>
     <entry key="yukon.web.modules.amr.archivedValueExporter.previewMeterAddress">123456789</entry>
     <entry key="yukon.web.modules.amr.archivedValueExporter.previewMeterRoute">Default Route</entry>
+    <entry key="yukon.web.modules.amr.archivedValueExporter.previewAttributeName">Usage</entry>
 
     <!-- DEVICE COLLECTION SELECTION selectDevices.jsp -->
     <entry key="yukon.web.modules.amr.archivedValueExporter.selectDevices.pageName">Archived Data Export Device Selection</entry>

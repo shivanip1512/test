@@ -6,6 +6,7 @@ import com.cannontech.common.util.LazyList;
 
 public class ExportFormat {
     private int formatId;
+    private ArchivedValuesExportFormatType formatType;
     private String formatName;
     private String delimiter;
     private String header;
@@ -21,43 +22,55 @@ public class ExportFormat {
         this.formatId = formatId;
     }
 
+    public ArchivedValuesExportFormatType getFormatType() {
+        return formatType;
+    }
+    public void setFormatType(ArchivedValuesExportFormatType formatType) {
+        this.formatType = formatType;
+    }
+
     public String getFooter() {
         return footer;
     }
     public void setFooter(String footer) {
         this.footer = footer;
     }
+
     public String getHeader() {
         return header;
     }
     public void setHeader(String header) {
         this.header = header;
     }
+
     public String getFormatName() {
         return formatName;
     }
     public void setFormatName(String formatName) {
         this.formatName = formatName;
     }
+
     public String getDelimiter() {
         return delimiter;
     }
     public void setDelimiter(String delimiter) {
         this.delimiter = delimiter;
     }
+
     public List<ExportAttribute> getAttributes() {
         return attributes;
     }
     public void setAttributes(List<ExportAttribute> attributes) {
         this.attributes = attributes;
     }
+    public void addAttribute(ExportAttribute attribute) {
+        attributes.add(attribute);
+    }
+
     public List<ExportField> getFields() {
         return fields;
     }
     public void setFields(List<ExportField> fields) {
         this.fields = fields;
-    }
-    public void addAttribute(ExportAttribute attribute) {
-        attributes.add(attribute);
     }
 }

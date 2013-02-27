@@ -55,7 +55,7 @@
         </tags:sectionContainer2>
         <tags:sectionContainer2 nameKey="defineLayout" styleClass="f_renderFields">
             <tags:nameValueContainer2>
-                <tags:nameValue2 nameKey=".roundingMode" rowClass="ATTRIBUTE_VALUE">
+                <tags:nameValue2 nameKey=".roundingMode" rowClass="ATTRIBUTE_VALUE POINT_VALUE">
                     <form:select path="exportField.roundingMode">
                         <c:forEach var="roundingMode" items="${roundingModes}">
                             <form:option value="${roundingMode}"><cti:msg2 key="${roundingMode}"/></form:option>
@@ -63,7 +63,7 @@
                     </form:select>
                  <a id="helperRounding" href="javascript:void(0);"><cti:img nameKey="helpRoundingMode" styleClass="hoverableImage" /> </a>
                 </tags:nameValue2>
-                <tags:nameValue2 nameKey=".readingPattern" rowClass="ATTRIBUTE_VALUE">
+                <tags:nameValue2 nameKey=".readingPattern" rowClass="ATTRIBUTE_VALUE POINT_VALUE">
                     <select name="patternSelect" id="patternSelect" data-selection="#patternSelect" data-field-to-display="#readingPattern" data-skip-disable="true">
                         <option value="#####" <c:if test="${backingBean.valuePattern ==  '#####'}">selected="selected" </c:if>>
                             <cti:msg2 key=".#####" />
@@ -82,7 +82,7 @@
                     <tags:input id="readingPattern" path="valuePattern" size="10" maxlength="30" />
                     <a id="helperValue" href="javascript:void(0);"> <cti:img nameKey="helpReadingPattern" styleClass="hoverableImage" /> </a>
                 </tags:nameValue2>
-                <tags:nameValue2 nameKey=".timestampPattern" rowClass="ATTRIBUTE_TIMESTAMP">
+                <tags:nameValue2 nameKey=".timestampPattern" rowClass="ATTRIBUTE_TIMESTAMP POINT_TIMESTAMP">
                     <select id="timestampPatternSelect" data-selection="#timestampPatternSelect" data-field-to-display="#timestampPattern" data-skip-disable="true">
                          <option value="MM/dd/yyyy" <c:if test="${backingBean.timestampPattern  == 'MM/dd/yyyy' || empty backingBean.timestampPattern}">selected="selected" </c:if>>
                             <cti:msg2 key=".MM/dd/yyyy" />
@@ -105,12 +105,12 @@
                     <a id="helperTimestamp" href="javascript:void(0);"> <cti:img nameKey="helpTimestampPattern" styleClass="hoverableImage" /> </a>
                 </tags:nameValue2>
                 <tags:nameValue2 nameKey=".fieldSize"
-                    rowClass="METER_NUMBER ROUTE DEVICE_NAME ADDRESS RF_MANUFACTURER RF_MODEL RF_SERIAL_NUMBER ATTRIBUTE ATTRIBUTE_TIMESTAMP ATTRIBUTE_VALUE ATTRIBUTE_UNIT_OF_MEASURE ATTRIBUTE_QUALITY">
+                    rowClass="METER_NUMBER ROUTE DEVICE_NAME ADDRESS RF_MANUFACTURER RF_MODEL RF_SERIAL_NUMBER ATTRIBUTE ATTRIBUTE_NAME ATTRIBUTE_TIMESTAMP ATTRIBUTE_VALUE ATTRIBUTE_UNIT_OF_MEASURE ATTRIBUTE_QUALITY POINT_QUALITY POINT_NAME POINT_TIMESTAMP POINT_VALUE UNIT_OF_MEASURE">
                     <tags:input id="exportField.maxLength" path="exportField.maxLength" size="5" maxlength="5" />
                     <i:inline key=".fieldSizeMax" />
                 </tags:nameValue2>
                 <tags:nameValue2 nameKey=".padding"
-                    rowClass="METER_NUMBER ROUTE DEVICE_NAME ADDRESS RF_MANUFACTURER RF_MODEL RF_SERIAL_NUMBER ATTRIBUTE_TIMESTAMP ATTRIBUTE_VALUE ATTRIBUTE_UNIT_OF_MEASURE ATTRIBUTE_QUALITY">
+                    rowClass="METER_NUMBER ROUTE DEVICE_NAME ADDRESS RF_MANUFACTURER RF_MODEL RF_SERIAL_NUMBER ATTRIBUTE_NAME ATTRIBUTE_TIMESTAMP ATTRIBUTE_VALUE ATTRIBUTE_UNIT_OF_MEASURE ATTRIBUTE_QUALITY POINT_QUALITY POINT_NAME POINT_TIMESTAMP POINT_VALUE UNIT_OF_MEASURE" >
                     <form:select id="padSideSelect" path="exportField.padSide" data-selection="#padSideSelect" data-field-to-display="#padCharSelectFields">
                         <c:forEach var="padSide" items="${padSide}">
                             <form:option value="${padSide}">
@@ -139,7 +139,7 @@
         <tags:sectionContainer2 nameKey="otherOptions" styleClass="f_renderFields">
             <tags:nameValueContainer2>
                 <tags:nameValue2 nameKey=".unsupportedField"
-                    rowClass="METER_NUMBER ROUTE DEVICE_NAME ADDRESS RF_MANUFACTURER RF_MODEL RF_SERIAL_NUMBER ATTRIBUTE ATTRIBUTE_TIMESTAMP ATTRIBUTE_VALUE ATTRIBUTE_UNIT_OF_MEASURE ATTRIBUTE_QUALITY">
+                    rowClass="METER_NUMBER ROUTE DEVICE_NAME ADDRESS RF_MANUFACTURER RF_MODEL RF_SERIAL_NUMBER ATTRIBUTE ATTRIBUTE_NAME ATTRIBUTE_TIMESTAMP ATTRIBUTE_VALUE ATTRIBUTE_UNIT_OF_MEASURE ATTRIBUTE_QUALITY POINT_QUALITY POINT_NAME POINT_TIMESTAMP POINT_VALUE UNIT_OF_MEASURE">
                     <form:select id="unsupportedFieldSelect" path="exportField.missingAttribute" data-selection="#unsupportedFieldSelect" data-field-to-display="#fixedValue">
                         <c:forEach var="missingAttribute" items="${missingAttribute}">
                             <form:option value="${missingAttribute}">

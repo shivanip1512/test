@@ -1,9 +1,12 @@
 package com.cannontech.amr.archivedValueExporter.model;
 
+import java.util.Set;
+
 import org.springframework.context.MessageSourceResolvable;
 
 import com.cannontech.common.i18n.Displayable;
 import com.cannontech.i18n.YukonMessageSourceResolvable;
+import com.google.common.collect.Sets;
 
 public enum FieldType implements Displayable{
     METER_NUMBER("Meter Number"),
@@ -11,14 +14,26 @@ public enum FieldType implements Displayable{
     ADDRESS("Address"),
     ROUTE("Route"),
     PLAIN_TEXT("Plain Text"),
-    ATTRIBUTE("Attribute");
+    ATTRIBUTE("Attribute"),
+    ATTRIBUTE_NAME("Attribute Name"),
+    UNIT_OF_MEASURE("Unit of Measure"),
+    POINT_NAME("Point Name"),
+    POINT_VALUE("Value"),
+    POINT_TIMESTAMP("Timestamp"),
+    POINT_QUALITY("Quality"),
+    ;
 
     /*
         RF_MANUFACTURER("RF Manufacturer"),
         RF_MODEL("RF Model"),
         RF_SERIAL_NUMBER("RF Serial Number"),
-        
      */
+    
+    public static final Set<FieldType> FIXED_ATTRIBUTE_FIELD_TYPES = 
+            Sets.newHashSet(ADDRESS, ATTRIBUTE, DEVICE_NAME, METER_NUMBER, PLAIN_TEXT, ROUTE); 
+    public static final Set<FieldType> DYNAMIC_ATTRIBUTE_FIELD_TYPES = 
+            Sets.newHashSet(ADDRESS, ATTRIBUTE_NAME, DEVICE_NAME, METER_NUMBER, PLAIN_TEXT, POINT_NAME, ROUTE, POINT_TIMESTAMP, UNIT_OF_MEASURE, POINT_VALUE, POINT_QUALITY); 
+    
     private final static String keyPrefix = "yukon.web.modules.amr.archivedValueExporter.fieldType.";
     
     private String description;
@@ -34,7 +49,6 @@ public enum FieldType implements Displayable{
     public String getDescription() {
         return description;
     }
-
     public void setDescription(String description) {
         this.description = description;
     }

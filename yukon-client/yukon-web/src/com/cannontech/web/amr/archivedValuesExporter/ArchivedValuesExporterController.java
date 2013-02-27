@@ -1,11 +1,13 @@
 package com.cannontech.web.amr.archivedValuesExporter;
 
+import java.beans.PropertyEditor;
 import java.io.BufferedWriter;
 import java.io.IOException;
 import java.io.OutputStream;
 import java.io.OutputStreamWriter;
 import java.math.RoundingMode;
 import java.text.SimpleDateFormat;
+import java.util.Arrays;
 import java.util.Date;
 import java.util.List;
 import java.util.Map;
@@ -14,7 +16,11 @@ import javax.servlet.ServletException;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
+import net.sf.json.JSONArray;
+
 import org.apache.commons.lang.StringUtils;
+import org.joda.time.Instant;
+import org.joda.time.LocalDate;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.MessageSourceResolvable;
 import org.springframework.stereotype.Controller;
@@ -28,6 +34,7 @@ import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.RequestMapping;
 
 import com.cannontech.amr.archivedValueExporter.dao.ArchiveValuesExportFormatDao;
+import com.cannontech.amr.archivedValueExporter.model.ArchivedValuesExportFormatType;
 import com.cannontech.amr.archivedValueExporter.model.AttributeField;
 import com.cannontech.amr.archivedValueExporter.model.DataSelection;
 import com.cannontech.amr.archivedValueExporter.model.ExportAttribute;
@@ -36,6 +43,8 @@ import com.cannontech.amr.archivedValueExporter.model.FieldType;
 import com.cannontech.amr.archivedValueExporter.model.MissingAttribute;
 import com.cannontech.amr.archivedValueExporter.model.PadSide;
 import com.cannontech.amr.archivedValueExporter.model.YukonRoundingMode;
+import com.cannontech.amr.archivedValueExporter.model.dataRange.DataRange;
+import com.cannontech.amr.archivedValueExporter.model.dataRange.DataRangeType;
 import com.cannontech.amr.archivedValueExporter.service.ExportReportGeneratorService;
 import com.cannontech.amr.meter.dao.MeterDao;
 import com.cannontech.amr.meter.model.Meter;
@@ -51,6 +60,7 @@ import com.cannontech.common.validator.YukonMessageCodeResolver;
 import com.cannontech.common.validator.YukonValidationUtils;
 import com.cannontech.core.roleproperties.YukonRoleProperty;
 import com.cannontech.core.service.DateFormattingService.DateFormatEnum;
+import com.cannontech.i18n.YukonMessageSourceResolvable;
 import com.cannontech.system.GlobalSettingType;
 import com.cannontech.system.dao.GlobalSettingDao;
 import com.cannontech.user.YukonUserContext;
@@ -64,6 +74,7 @@ import com.cannontech.web.amr.archivedValuesExporter.validator.ExportFieldValida
 import com.cannontech.web.amr.archivedValuesExporter.validator.ExportFormatValidator;
 import com.cannontech.web.common.flashScope.FlashScope;
 import com.cannontech.web.input.DatePropertyEditorFactory;
+import com.cannontech.web.input.DatePropertyEditorFactory.BlankMode;
 import com.cannontech.web.input.EnumPropertyEditor;
 import com.cannontech.web.security.annotation.CheckRoleProperty;
 
@@ -74,6 +85,11 @@ public class ArchivedValuesExporterController {
 
     public static String baseKey = "yukon.web.modules.amr.archivedValueExporter.";
 
+    private static DataRangeType[] FIXED_RUN_DATA_RANGE_TYPES = {DataRangeType.END_DATE};
+    private static DataRangeType[] FIXED_SCHEDULE_DATA_RANGE_TYPES = {};
+    private static DataRangeType[] DYNAMIC_RUN_DATA_RANGE_TYPES = {DataRangeType.DATE_RANGE, DataRangeType.DAYS_PREVIOUS};
+    private static DataRangeType[] DYNAMIC_SCHEDULE_DATA_RANGE_TYPES = {DataRangeType.DAYS_PREVIOUS, DataRangeType.SINCE_LAST_CHANGE_ID};
+    
     @Autowired private ArchiveValuesExporterValidator archiveValuesExporterValidator;
     @Autowired private ArchiveValuesExportFormatDao archiveValuesExportFormatDao;
     @Autowired private DatePropertyEditorFactory datePropertyEditorFactory;
@@ -87,31 +103,30 @@ public class ArchivedValuesExporterController {
     @Autowired private ObjectFormattingService objectFormattingService;
     
     @RequestMapping
-    public String view(ModelMap model, YukonUserContext userContext, @ModelAttribute ArchivedValuesExporter archivedValuesExporter) {
-
-        if (archivedValuesExporter.getEndDate() == null) {
-            archivedValuesExporter.setEndDate(new Date());
-        }
+    public String view(ModelMap model, HttpServletRequest request, YukonUserContext userContext, 
+                       @ModelAttribute ArchivedValuesExporter archivedValuesExporter) throws ServletRequestBindingException, DeviceCollectionCreationException {
         
         List<ExportFormat> allFormats = archiveValuesExportFormatDao.getAllFormats();
         ExportFormat format = getExportFormat(archivedValuesExporter.getFormatId(), allFormats);
         List<String> generatePreview = exportReportGeneratorService.generatePreview(format, userContext);
 
+        archivedValuesExporter.setFormatId(format.getFormatId());
+        archivedValuesExporter.setArchivedValuesExportFormatType(format.getFormatType());
+        model.addAttribute("archivedValuesExporter", archivedValuesExporter);
+
+        Map<AttributeGroup, List<BuiltInAttribute>> groupedAttributes = 
+                objectFormattingService.sortDisplayableValues(BuiltInAttribute.getAllGroupedAttributes(), userContext);
+        model.addAttribute("groupedAttributes", groupedAttributes);
+        
         model.addAttribute("allFormats", allFormats);
-        model.addAttribute("format", format);
+        model.addAttribute("formatTypes", ArchivedValuesExportFormatType.values());
         model.addAttribute("preview", generatePreview);
-        return "archivedValuesExporter/archiveDataExporterHome.jsp";
-    }
-
-    @RequestMapping
-    public String selectDevices() {
-        return "archivedValuesExporter/selectDevices.jsp";
-    }
-
-    @RequestMapping
-    public String selected(ModelMap model, HttpServletRequest request, YukonUserContext userContext,
-                           @ModelAttribute ArchivedValuesExporter archivedValuesExporter)
-    throws DeviceCollectionCreationException, ServletException {
+        
+        model.addAttribute("dataRangeTypes", createJSONArray(DataRangeType.values()));
+        model.addAttribute("fixedRunDataRangeTypes", createJSONArray(FIXED_RUN_DATA_RANGE_TYPES));
+        model.addAttribute("fixedScheduleDataRangeTypes", createJSONArray(FIXED_SCHEDULE_DATA_RANGE_TYPES));
+        model.addAttribute("dynamicRunDataRangeTypes", createJSONArray(DYNAMIC_RUN_DATA_RANGE_TYPES ));
+        model.addAttribute("dynamicScheduleAttributes", createJSONArray(DYNAMIC_SCHEDULE_DATA_RANGE_TYPES));
 
         if (StringUtils.isNotBlank(request.getParameter("collectionType"))) {
             DeviceCollection deviceCollection = deviceCollectionFactory.createDeviceCollection(request);
@@ -119,19 +134,32 @@ public class ArchivedValuesExporterController {
             model.addAttribute("deviceCollection", deviceCollection);
             archivedValuesExporter.setDeviceCollection(deviceCollection);
         }
-
-        return view(model, userContext, archivedValuesExporter);
+        
+        return "archivedValuesExporter/archiveDataExporterHome.jsp";
     }
 
     @RequestMapping
-    public String create(ModelMap model, YukonUserContext userContext) {
+    public String selectDevices(ModelMap model, HttpServletRequest request) {
+        return "archivedValuesExporter/selectDevices.jsp";
+    }
+
+    @RequestMapping
+    public String selected(ModelMap model, HttpServletRequest request, YukonUserContext userContext,
+                           @ModelAttribute ArchivedValuesExporter archivedValuesExporter)
+    throws DeviceCollectionCreationException, ServletException {
+        return view(model, request, userContext, archivedValuesExporter);
+    }
+
+    @RequestMapping
+    public String create(ModelMap model, YukonUserContext userContext, ArchivedValuesExportFormatType formatType) {
         ArchivedValuesExporterBackingBean backingBean = new ArchivedValuesExporterBackingBean();
+        backingBean.getFormat().setFormatType(formatType);
         List<String> generatePreview = exportReportGeneratorService.generatePreview(backingBean.getFormat(), userContext);
 
         model.addAttribute("backingBean", backingBean);
         model.addAttribute("preview", generatePreview);
         model.addAttribute("mode", PageEditMode.CREATE);
-        setupModel(model, userContext);
+        setupModel(model, userContext, backingBean.getFormat());
         return "archivedValuesExporter/exporter.jsp";
     }
 
@@ -150,7 +178,7 @@ public class ArchivedValuesExporterController {
         model.addAttribute("backingBean", backingBean);
         model.addAttribute("preview", generatePreview);
         model.addAttribute("mode", PageEditMode.CREATE);
-        setupModel(model, userContext);
+        setupModel(model, userContext, backingBean.getFormat());
         return "archivedValuesExporter/exporter.jsp";
     }
 
@@ -166,7 +194,7 @@ public class ArchivedValuesExporterController {
         model.addAttribute("backingBean", backingBean);
         model.addAttribute("preview", generatePreview);
         model.addAttribute("mode", PageEditMode.EDIT);
-        setupModel(model, userContext);
+        setupModel(model, userContext, backingBean.getFormat());
         return "archivedValuesExporter/exporter.jsp";
     }
 
@@ -176,7 +204,7 @@ public class ArchivedValuesExporterController {
 
         backingBean.removeSelectedAttribute();
         model.addAttribute("mode", PageEditMode.EDIT);
-        setupModel(model, userContext);
+        setupModel(model, userContext, backingBean.getFormat());
         return "archivedValuesExporter/exporter.jsp";
     }
 
@@ -184,19 +212,15 @@ public class ArchivedValuesExporterController {
     public String addAttribute(ModelMap model, YukonUserContext userContext,
                                @ModelAttribute("backingBean") ArchivedValuesExporterBackingBean backingBean, BindingResult bindingResult) {
 
-        PageEditMode mode = PageEditMode.EDIT;
         exportAttributeValidator.validate(backingBean, bindingResult);
         if (bindingResult.hasErrors()) {
             model.addAttribute("showAttributePopup", true);
         } else {
             backingBean.addSelectedAttribute();
         }
-        if(backingBean.getFormat().getFormatId() == 0){
-            mode = PageEditMode.CREATE;
-        }
         
-        model.addAttribute("mode", mode);
-        setupModel(model, userContext);
+        model.addAttribute("mode", backingBean.getFormat().getFormatId() == 0 ? PageEditMode.CREATE : PageEditMode.EDIT);
+        setupModel(model, userContext, backingBean.getFormat());
         return "archivedValuesExporter/exporter.jsp";
     }
 
@@ -212,7 +236,7 @@ public class ArchivedValuesExporterController {
             backingBean.setPageNameKey("editAttribute");
         }
         
-        setupModel(model, userContext);
+        setupModel(model, userContext, backingBean.getFormat());
         return "archivedValuesExporter/editAttribute.jsp";
     }
 
@@ -220,7 +244,6 @@ public class ArchivedValuesExporterController {
     public String addField(ModelMap model, YukonUserContext userContext,
                            @ModelAttribute("backingBean") ArchivedValuesExporterBackingBean backingBean, BindingResult bindingResult) {
 
-        PageEditMode mode = PageEditMode.EDIT;
         backingBean.resetExportFieldValues();
         exportFieldValidator.validate(backingBean, bindingResult);
         if (bindingResult.hasErrors()) {
@@ -228,12 +251,9 @@ public class ArchivedValuesExporterController {
         } else {
             backingBean.addSelectedField();
         }
-        if(backingBean.getFormat().getFormatId() == 0){
-            mode = PageEditMode.CREATE;
-        }
 
-        model.addAttribute("mode", mode);
-        setupModel(model, userContext);
+        model.addAttribute("mode", backingBean.getFormat().getFormatId() == 0 ? PageEditMode.CREATE : PageEditMode.EDIT);
+        setupModel(model, userContext, backingBean.getFormat());
         return "archivedValuesExporter/exporter.jsp";
     }
 
@@ -243,7 +263,7 @@ public class ArchivedValuesExporterController {
 
         backingBean.removeSelectedField();
         model.addAttribute("mode", PageEditMode.EDIT);
-        setupModel(model, userContext);
+        setupModel(model, userContext, backingBean.getFormat());
         return "archivedValuesExporter/exporter.jsp";
     }
     
@@ -262,7 +282,7 @@ public class ArchivedValuesExporterController {
             backingBean.setPageNameKey("editField");
         }
 
-        setupModel(model, userContext);
+        setupModel(model, userContext, backingBean.getFormat());
         return "archivedValuesExporter/editField.jsp";
     }
 
@@ -272,7 +292,7 @@ public class ArchivedValuesExporterController {
 
         backingBean.moveFieldUp(true);
         model.addAttribute("mode", PageEditMode.EDIT);
-        setupModel(model, userContext);
+        setupModel(model, userContext, backingBean.getFormat());
         return "archivedValuesExporter/exporter.jsp";
     }
 
@@ -282,7 +302,7 @@ public class ArchivedValuesExporterController {
 
         backingBean.moveFieldUp(false);
         model.addAttribute("mode", PageEditMode.EDIT);
-        setupModel(model, userContext);
+        setupModel(model, userContext, backingBean.getFormat());
         return "archivedValuesExporter/exporter.jsp";
     }
 
@@ -295,37 +315,31 @@ public class ArchivedValuesExporterController {
             List<MessageSourceResolvable> messages = YukonValidationUtils.errorsForBindingResult(bindingResult);
             flashScope.setError(messages);
             
-            if(backingBean.getFormat().getFormatId() == 0){
-                model.addAttribute("mode",PageEditMode.CREATE);
-            }else{
-                model.addAttribute("mode", PageEditMode.EDIT);
-            }
-
-            setupModel(model, userContext);
+            model.addAttribute("mode", backingBean.getFormat().getFormatId() == 0 ? PageEditMode.CREATE : PageEditMode.EDIT);
+            setupModel(model, userContext, backingBean.getFormat());
             return "archivedValuesExporter/exporter.jsp";
         }
         
         if (backingBean.getFormat().getFormatId() == 0) {
             archiveValuesExportFormatDao.create(backingBean.getFormat());
+            flashScope.setConfirm(new YukonMessageSourceResolvable(baseKey+"createdFormat", backingBean.getFormat().getFormatName()));
         } else {
             archiveValuesExportFormatDao.update(backingBean.getFormat());
+            flashScope.setConfirm(new YukonMessageSourceResolvable(baseKey+"updatedFormat", backingBean.getFormat().getFormatName()));
         }
 
-//        TODO We should have a confirm message here.  This will be uncommented when I work on the Dynamic Attribute stuff.        
-//        flashScope.setConfirm(message);
         ArchivedValuesExporter archivedValuesExporter = new ArchivedValuesExporter();
         archivedValuesExporter.setFormatId(backingBean.getFormat().getFormatId());
-        archivedValuesExporter.setEndDate(new Date());
         return "redirect:view";
     }
 
     @RequestMapping
     public String deleteFormat(ModelMap model, HttpServletRequest request, YukonUserContext userContext, FlashScope flashScope,
                                @ModelAttribute("backingBean") ArchivedValuesExporterBackingBean backingBean) {
-//      TODO We should have a confirm message here.  This will be uncommented when I work on the Dynamic Attribute stuff.        
-//      flashScope.setConfirm(message);
 
         archiveValuesExportFormatDao.delete(backingBean.getFormat().getFormatId());
+
+        flashScope.setConfirm(new YukonMessageSourceResolvable(baseKey+"deletedFormat", backingBean.getFormat().getFormatName()));
         return "redirect:view";
     }
 
@@ -342,28 +356,16 @@ public class ArchivedValuesExporterController {
         binder.registerCustomEditor(MissingAttribute.class, new EnumPropertyEditor<>(MissingAttribute.class));
         binder.registerCustomEditor(PadSide.class, new EnumPropertyEditor<>(PadSide.class));
         binder.registerCustomEditor(YukonRoundingMode.class, new EnumPropertyEditor<>(YukonRoundingMode.class));
-
+        binder.registerCustomEditor(DataRangeType.class, new EnumPropertyEditor<>(DataRangeType.class));
         
-        binder.registerCustomEditor(Date.class, "endDate", datePropertyEditorFactory.getPropertyEditor(DateFormatEnum.DATE, userContext));
-    }
+        PropertyEditor localDatePropertyEditor = datePropertyEditorFactory.getLocalDatePropertyEditor(DateFormatEnum.DATE, userContext, BlankMode.CURRENT);
+        binder.registerCustomEditor(LocalDate.class, "dataRange.endDate", localDatePropertyEditor);
+        
+        PropertyEditor dayStartDateEditor = datePropertyEditorFactory.getLocalDatePropertyEditor(DateFormatEnum.DATE, userContext, BlankMode.CURRENT);
+        PropertyEditor dayEndDateEditor = datePropertyEditorFactory.getLocalDatePropertyEditor(DateFormatEnum.DATE, userContext, BlankMode.CURRENT);
 
-    private ExportFormat getExportFormat(int selectedFormatId, List<ExportFormat> allFormats) {
-        if (selectedFormatId != 0) {
-            return archiveValuesExportFormatDao.getByFormatId(selectedFormatId);
-        } else {
-            return getFirstFormat(allFormats);
-        }
-    }
-
-    private ExportFormat getFirstFormat(List<ExportFormat> formats) {
-        ExportFormat format = null;
-        if (!formats.isEmpty()) {
-            int formatId = formats.get(0).getFormatId();
-            format = archiveValuesExportFormatDao.getByFormatId(formatId);
-        } else {
-            format = new ExportFormat();
-        }
-        return format;
+        binder.registerCustomEditor(LocalDate.class, "dataRange.dateRange.startDate", dayStartDateEditor);
+        binder.registerCustomEditor(LocalDate.class, "dataRange.dateRange.endDate", dayEndDateEditor);
     }
 
     @RequestMapping
@@ -383,15 +385,23 @@ public class ArchivedValuesExporterController {
         }
             
         List<SimpleDevice> deviceList = archivedValuesExporter.getDeviceCollection().getDeviceList();
+        DataRange dataRange = archivedValuesExporter.getDataRange();
         List<Meter> meters = meterDao.getMetersForYukonPaos(deviceList);
         ExportFormat format = archiveValuesExportFormatDao.getByFormatId(archivedValuesExporter.getFormatId());
-        List<String> report = exportReportGeneratorService.generateReport(meters, format, archivedValuesExporter.getEndDate(), userContext);
-        String fileName = getFileName(archivedValuesExporter.getEndDate(), format.getFormatName());
+        List<String> report = exportReportGeneratorService.generateReport(meters, format, dataRange, userContext, archivedValuesExporter.getAttribute());
+        String fileName = getFileName(Instant.now().toDate(), format.getFormatName());
         setupResponse(response, fileName);
         createReportFile(response, report);
         return  "";
     }
 
+    private <E> JSONArray createJSONArray(E[] objectArray) {
+        JSONArray jsonArray = new JSONArray();
+        jsonArray .addAll(Arrays.asList(objectArray));
+        return jsonArray;
+    }
+
+    
     private String getFileName(Date endDate, String formatName) {
         SimpleDateFormat fileNameDateFormat = new SimpleDateFormat("MMddyyyy");
         String fileNameDateFormatString = fileNameDateFormat.format(endDate);
@@ -416,15 +426,38 @@ public class ArchivedValuesExporterController {
         }
         writer.close();
     }
+
+    private ExportFormat getExportFormat(int selectedFormatId, List<ExportFormat> allFormats) {
+        if (selectedFormatId != 0) {
+            return archiveValuesExportFormatDao.getByFormatId(selectedFormatId);
+        } else {
+            return getFirstFormat(allFormats);
+        }
+    }
+
+    private ExportFormat getFirstFormat(List<ExportFormat> formats) {
+        ExportFormat format = null;
+        if (!formats.isEmpty()) {
+            int formatId = formats.get(0).getFormatId();
+            format = archiveValuesExportFormatDao.getByFormatId(formatId);
+        } else {
+            format = new ExportFormat();
+        }
+        return format;
+    }
     
     /**
      * This method sets up the model for all the base information for the create and edit methods 
      * @param model
      */
-    private void setupModel(ModelMap model, YukonUserContext userContext) {
+    private void setupModel(ModelMap model, YukonUserContext userContext, ExportFormat format) {
         Map<AttributeGroup, List<BuiltInAttribute>> groupedAttributes = 
                 objectFormattingService.sortDisplayableValues(BuiltInAttribute.getAllGroupedAttributes(), userContext);
         model.addAttribute("groupedAttributes", groupedAttributes);
+
+        List<String> generatePreview = exportReportGeneratorService.generatePreview(format, userContext);
+        model.addAttribute("preview", generatePreview);
+        model.addAttribute("showAttributeSection", format.getFormatType() == ArchivedValuesExportFormatType.FIXED_ATTRIBUTE);
 
         model.addAttribute("attributeFields", AttributeField.values());
         model.addAttribute("attributes", BuiltInAttribute.values());
