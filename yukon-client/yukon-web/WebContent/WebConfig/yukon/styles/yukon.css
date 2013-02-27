@@ -48,6 +48,12 @@ button.danger:active {background:#F55656;}
 button.naked, button.naked:hover {border:none; background:transparent; box-shadow:none;}
 .button_container button {margin-right: 4px;}
 
+input:not([type="submit"]):not([type="radio"]):not([type="checkbox"]) { -webkit-background-clip: padding-box; background-clip: padding-box; -webkit-transition: border .2s ease-in-out,background-color .2s ease-in-out; -moz-transition: border .2s ease-in-out,background-color .2s ease-in-out; -ms-transition: border .2s ease-in-out,background-color .2s ease-in-out; -o-transition: border .2s ease-in-out,background-color .2s ease-in-out; transition: border .2s ease-in-out,background-color .2s ease-in-out; }
+/* containing block may need to float left or clear, should be variable width for these to work */
+.equalWidthButtons input { margin-bottom: 0.75em; margin-top: 0; width: 100%; float: left; clear: both; }
+.equalWidthButtons input:last-child { margin-bottom: 0; }
+
+
 #MainContainer {padding: 20px;}
 #Content > .centeredContainer, .dashboard {margin:0 auto; width: 960px;}
 
@@ -265,6 +271,10 @@ input.error {background: pink;border-color:#D14836;}
     width:21%; /* right column content width (right column width minus left and right padding) */
     left:31%; /* (right column width) plus (left column left and right padding) plus (right column left padding) */
 }
+
+ /* Use these for blocks that need to sit horizontally adjacent */
+.leftChildren { float: left; clear: both; }
+.leftChildren div { float: left; }
 /* END NORMAL LAYOUTS */
 
 /* scrollable divs */
@@ -390,12 +400,5 @@ span.info {font-size: 11px; color: #333; background: lightYellow; border: solid 
 #cannonUpdaterErrorDiv {position: fixed;bottom: 0;left: 0;right: 0;background: #D14836;color: white;font-weight: bold;text-align: center;padding: 3px;}
 #cannonUpdaterErrorDiv .alert {padding-top: 64px;width: 64px;position: absolute;bottom: 0;left: 10px;}
 
-input:not([type="submit"]):not([type="radio"]):not([type="checkbox"]) {
-    -webkit-background-clip: padding-box;
-    background-clip: padding-box;
-    -webkit-transition: border .2s ease-in-out,background-color .2s ease-in-out;
-    -moz-transition: border .2s ease-in-out,background-color .2s ease-in-out;
-    -ms-transition: border .2s ease-in-out,background-color .2s ease-in-out;
-    -o-transition: border .2s ease-in-out,background-color .2s ease-in-out;
-    transition: border .2s ease-in-out,background-color .2s ease-in-out;
-}
+
+#dbgFormatPreview {clear:both;}

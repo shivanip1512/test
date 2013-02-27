@@ -72,7 +72,7 @@
 	    	<input type="hidden" name="fileKey" value="${migrationStatus.id}">
 	    </form>
 	    
-	    <input type="button" id="downloadButton" value="${downloadButton}" onclick="$('downloadExportFileForm').submit();" style="width:80px;"/>
+	    <input type="button" id="downloadButton" value="${downloadButton}" onclick="$('downloadExportFileForm').submit();" />
 
    </tags:boxContainer>
    	

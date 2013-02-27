@@ -60,36 +60,27 @@ function unfreeze(){ //used to enable or disable buttons
 
 <form method="get" id="begin" name="begin" action="" onclick="unfreeze();">
 
-	<h2><cti:msg2 key=".availableFormats"/></h2> <br>
-	<table width="400" border="0" cellspacing="0" cellpadding="0">
-		<tr>
-		   <td width="300" align="center">
-
-		   	<select style="width:275px;" size="10" id="availableFormat" 
-		     name="availableFormat" onchange="unfreeze();"  >
-		
-				<c:forEach var="elem" items="${allRows}">
-					<option value="${elem.formatId}" isSystem="${elem.isSystem}"> 
-						<c:out value="${elem.name}" /> 
-					</option>
-				</c:forEach>
-		
-		     </select>
-		  </td>
-		  
-		  <td width="100px" valign="top">
-            <div style="padding-left:10px;">
-    			<input type="button" id="create" name="create" value="<cti:msg2 key=".create"/>" onclick="createButton();"  style="width:100px;margin-bottom:10px;">
-    			<input type="button" id="edit" name="edit" value="<cti:msg2 key=".edit"/>" onclick="editButton();" disabled="disabled" style="width:100px;margin-bottom:10px;">
-    			<input type="button" id="copy" name="copy" value="<cti:msg2 key=".copy"/>" onclick="copyButton();" disabled="disabled" style="width:100px;margin-bottom:10px;">
-    			<input type="button" id="delete" name="delete" value="<cti:msg2 key=".delete"/>" onclick="deleteButton();" disabled="disabled" style="width:100px;margin-bottom:10px;">
-		    </div>
-          </td>
-
-		</tr>
-		
-	</table>
-	<br />
+	<h2><cti:msg2 key=".availableFormats"/></h2>
+    <div class="leftChildren">
+        <div style="width: 300px;">
+            <select style="width:275px;" size="10" id="availableFormat" 
+             name="availableFormat" onchange="unfreeze();"  >
+        
+                <c:forEach var="elem" items="${allRows}">
+                    <option value="${elem.formatId}" isSystem="${elem.isSystem}"> 
+                        <c:out value="${elem.name}" /> 
+                    </option>
+                </c:forEach>
+        
+             </select>
+        </div>
+        <div class="equalWidthButtons">
+            <input type="button" id="create" name="create" value="<cti:msg2 key=".create"/> YUKYUKYUKYUKYUK" onclick="createButton();">
+            <input type="button" id="edit" name="edit" value="<cti:msg2 key=".edit"/>" onclick="editButton();" disabled="disabled">
+            <input type="button" id="copy" name="copy" value="<cti:msg2 key=".copy"/> YUKYUKYUKYUKYUK" onclick="copyButton();" disabled="disabled">
+            <input type="button" id="delete" name="delete" value="<cti:msg2 key=".delete"/>" onclick="deleteButton();" disabled="disabled">
+        </div>
+    </div>
 </form>
 
 </cti:standardPage>

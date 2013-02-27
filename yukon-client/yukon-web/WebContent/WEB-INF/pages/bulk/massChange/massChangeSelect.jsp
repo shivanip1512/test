@@ -62,7 +62,7 @@
                     
                         <tr>
                             <td>
-                            	<input type="button" id="massChangeTypeButton" value="<cti:msg key="${bulkField.displayKey}"/>" onclick="submitForm('${bulkField.inputSource.field}');" style="width:140px;"/>
+                            	<input type="button" id="massChangeTypeButton" value="<cti:msg key="${bulkField.displayKey}"/>" onclick="submitForm('${bulkField.inputSource.field}');" class="full_width"/>
                             </td>
                             <td><cti:msg key="${bulkField.displayKey}.description"/></td>
                         </tr>
