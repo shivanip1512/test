@@ -18,15 +18,15 @@ class IM_EX_DEVDB Mct420Device : public Mct410Device
     static const FlagSet _eventFlags;
     static const FlagSet _meterAlarmFlags;
 
-    virtual bool getOperation( const UINT &cmd, BSTRUCT &bst ) const;
-
     typedef Mct410Device Inherited;
-
-    virtual ConfigPartsList getPartsList();
 
     virtual unsigned getUsageReportDelay(const unsigned interval_length, const unsigned days) const;
 
 protected:
+
+    virtual ConfigPartsList getPartsList();
+
+    virtual bool getOperation( const UINT &cmd, BSTRUCT &bst ) const;
 
     virtual INT ModelDecode( INMESS *InMessage, CtiTime &TimeNow, CtiMessageList &vgList, CtiMessageList &retList, OutMessageList &outList );
 

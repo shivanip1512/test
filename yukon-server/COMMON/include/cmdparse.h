@@ -164,6 +164,9 @@ public:
 /* Defined below.... be careful
 #define CMD_FLAG_OFFSET          0x10000000     // A specific offset is defined in the next cmd field
 */
+#define CMD_FLAG_GV_REVERSE      0x20000000
+
+
 #define CMD_FLAG_GV_ALIASMASK    0x000FFFF0
 
 /* GetStatus flags

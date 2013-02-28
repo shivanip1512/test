@@ -27,7 +27,10 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 
 import com.cannontech.clientutils.YukonLogManager;
+import com.cannontech.common.i18n.MessageSourceAccessor;
 import com.cannontech.core.roleproperties.YukonRoleProperty;
+import com.cannontech.i18n.YukonUserContextMessageSourceResolver;
+import com.cannontech.user.YukonUserContext;
 import com.cannontech.web.amr.outageProcessing.OutageMonitorEditorController;
 import com.cannontech.web.security.annotation.CheckRoleProperty;
 import com.cariboulake.db.schemacompare.app.SchemaCompare;
@@ -39,17 +42,20 @@ import com.cariboulake.db.schemacompare.business.domain.dbcompare.DbDifferences;
 @CheckRoleProperty(YukonRoleProperty.ADMIN_VIEW_LOGS)
 public class DatabaseValidationController implements ResourceLoaderAware {
     
+    @Autowired private YukonUserContextMessageSourceResolver messageSourceResolver;
+
     private ResourceLoader resourceLoader;
     private JdbcTemplate jdbcTemplate;
     private Semaphore running = new Semaphore(1);
     private Logger log = YukonLogManager.getLogger(OutageMonitorEditorController.class);
         
     @RequestMapping(value="/database/validate/home")
-    public String home(ModelMap map) {
+    public String home(ModelMap map, final YukonUserContext context) {
         
         // Checks to see if the validation is currently running.
         if(running.availablePermits() == 0){
-            String msgError = "Database validation process is already running.  Please try again later.";
+            MessageSourceAccessor messageSourceAccessor = messageSourceResolver.getMessageSourceAccessor(context);
+            String msgError = messageSourceAccessor.getMessage("yukon.web.modules.support.databaseValidate.msgError.alreadyRunning");
             map.addAttribute("msgError", msgError);
             log.error(msgError);
             return "database/validate.jsp";
@@ -60,7 +66,8 @@ public class DatabaseValidationController implements ResourceLoaderAware {
         try{
             displayOracleWarning = isDatabaseOracle();
         }catch (MetaDataAccessException e) {
-            map.addAttribute("msgError", "System does not have access to database metadata.  Database validation cannot be completed.");
+            MessageSourceAccessor messageSourceAccessor = messageSourceResolver.getMessageSourceAccessor(context);
+            map.addAttribute("msgError", messageSourceAccessor.getMessage("yukon.web.modules.support.databaseValidate.msgError.noAccessToMetadata"));
             log.error(e.getStackTrace());
             return "database/validate.jsp";
         }
@@ -70,7 +77,7 @@ public class DatabaseValidationController implements ResourceLoaderAware {
     }
     
     @RequestMapping(value = "/database/validate/results", method = RequestMethod.POST)
-    public String validate(HttpServletResponse response) throws Exception {
+    public String validate(HttpServletResponse response, final YukonUserContext context) throws Exception {
 
         boolean isRunnable = running.tryAcquire();
         
@@ -79,7 +86,7 @@ public class DatabaseValidationController implements ResourceLoaderAware {
         }
         try{
             
-            Resource databaseSnapshot = getDatabaseXMLFile();
+            Resource databaseSnapshot = getDatabaseXMLFile(context);
             File xmlCompareFile = convertToTempFile(databaseSnapshot);
             
             Connection connection = jdbcTemplate.getDataSource().getConnection();
@@ -128,7 +135,7 @@ public class DatabaseValidationController implements ResourceLoaderAware {
      * @throws NotSupportedException
      * @throws MetaDataAccessException
      */
-    private Resource getDatabaseXMLFile() throws NotSupportedException, MetaDataAccessException  {
+    private Resource getDatabaseXMLFile(final YukonUserContext context) throws NotSupportedException, MetaDataAccessException  {
         String databaseProductName = (String)JdbcUtils.extractDatabaseMetaData(jdbcTemplate.getDataSource(), "getDatabaseProductName");
         
         if (databaseProductName.contains("SQL Server"))
@@ -136,7 +143,8 @@ public class DatabaseValidationController implements ResourceLoaderAware {
         if (databaseProductName.contains("Oracle"))
             return resourceLoader.getResource("classpath:com/cannontech/database/snapshot/oracle.xml");
         
-        throw new NotSupportedException("Your current database configuration is not currently supported by our validation system.");
+        MessageSourceAccessor messageSourceAccessor = messageSourceResolver.getMessageSourceAccessor(context);
+        throw new NotSupportedException(messageSourceAccessor.getMessage("yukon.web.modules.support.databaseValidate.msgError.valitationNotSupported"));
     }
     
     /**

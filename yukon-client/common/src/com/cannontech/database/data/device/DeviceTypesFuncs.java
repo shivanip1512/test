@@ -159,10 +159,12 @@ public final static boolean isLoopable(int intType)
 		intType == MCT420FD ||
 		intType == MCT420CL ||
 		intType == MCT420CD ||
-        intType == MCT430A ||
+        intType == MCT430A  ||
         intType == MCT430S4 ||
         intType == MCT430SL ||
         intType == MCT430A3 ||
+        intType == MCT440_2131B  ||
+        intType == MCT440_2133B   ||
 		intType == MCT470) //||
 //		isRTU(intType) ) //FUTURE
 		return true;
@@ -226,6 +228,8 @@ public final static boolean isCarrier(int deviceType)
         case MCT430S4:
         case MCT430SL:
         case MCT430A3:
+        case MCT440_2131B:
+        case MCT440_2133B:
 		case MCT470:
       	case MCT310CT:
       	case MCT310IM:      
@@ -458,6 +462,8 @@ public final static boolean isLoadProfile4Channel(int deviceType)
         case MCT430S4:
         case MCT430SL:
         case MCT430A3:
+        case MCT440_2131B:
+        case MCT440_2133B:
 		case MCT470:
 			return true;
 	
@@ -503,6 +509,8 @@ public final static boolean isLoadProfileVoltage(int deviceType)
         case MCT420FD:
         case MCT420CL:
         case MCT420CD:
+        case MCT440_2131B:
+        case MCT440_2133B:
 		case MCT470:
 			return true;
 		default:
@@ -544,6 +552,8 @@ public final static boolean isMCTOnly(int deviceType)
         case MCT430S4:
         case MCT430SL:
         case MCT430A3:
+        case MCT440_2131B:
+        case MCT440_2133B:
 		case MCT470:
 		case MCT310CT:
     	case MCT310IM:
@@ -591,6 +601,8 @@ public final static boolean isMCT(int deviceType)
         case MCT430S4:
         case MCT430SL:
         case MCT430A3:
+        case MCT440_2131B:
+        case MCT440_2133B:
 		case MCT470:
       	case MCT310CT:
       	case MCT310IM:
@@ -671,6 +683,8 @@ public static boolean isMCT4XX( int type )
         case MCT430S4:
         case MCT430SL:
         case MCT430A3:
+        case MCT440_2131B:
+        case MCT440_2133B:
 		case MCT470:  
 			return true;
 		default :
@@ -734,6 +748,19 @@ public static boolean isMCT420( int type )
     }
 }
 
+public static boolean isMCT440( int type )
+{
+    switch (type)
+    {
+        case MCT440_2131B:
+        case MCT440_2133B:
+            return true;
+        default:
+            return false;
+    }
+}
+
+
 public static boolean isDisconnectMCT( int type)
 {
 	switch (type)
@@ -743,6 +770,8 @@ public static boolean isDisconnectMCT( int type)
         case MCT310IDL:
         case MCT420FD:
         case MCT420CD:
+        case MCT440_2131B:
+        case MCT440_2133B:
 			return true;
 		default:
 			return false;
@@ -765,6 +794,8 @@ public final static boolean isTouMCT(int deviceType)
         case MCT430S4:
         case MCT430SL:
         case MCT430A3:
+        case MCT440_2131B:
+        case MCT440_2133B:
         case MCT470:
             return true;
     

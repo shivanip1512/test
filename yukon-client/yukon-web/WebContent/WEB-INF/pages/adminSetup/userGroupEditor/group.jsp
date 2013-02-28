@@ -66,7 +66,7 @@
                             <div class="rolesContainer wsnw">
                                 <c:forEach var="category" items="${categoryRoleMap}">
                                     <ul class="groupedList">
-                                        <li><span class="group detail">${category.key}</span>
+                                        <li><span class="group detail"><cti:formatObject value="${category.key}"/></span>
                                             <ul class="groupedItem">
                                                 <c:forEach var="role" items="${category.value}">
                                                     <li class="detail">

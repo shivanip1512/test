@@ -8,8 +8,7 @@ import java.util.List;
 public class Schedule {
     List<TimeRatePair> timeRateList = new ArrayList<TimeRatePair>();
 
-    public Schedule(){
-        
+    public Schedule(final int numberOftimeRate){
         // Add midnight time/rate
         TimeRatePair midnightPair = new TimeRatePair();
         
@@ -21,7 +20,7 @@ public class Schedule {
         timeRateList.add(midnightPair);
         
         // Add other time/rates
-        for(int i = 0;i<5;i++){
+        for(int i = 0; i < numberOftimeRate; i++){
             timeRateList.add(new TimeRatePair());
         }
     }

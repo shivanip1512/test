@@ -146,7 +146,11 @@ BOOST_AUTO_TEST_CASE(test_dev_mct4xx_isProfileTablePointerCurrent)
     // The math for the Mct4xx devices is (seconds_from_utc_midnight / interval) % 96.
 
     {
-        const CtiTime t(CtiDate(1, 1, 2011), 19, 16, 0);  //  76 minutes past UTC midnight
+        CtiTime t(CtiDate(1, 1, 2011), 19, 16, 0);  //  76 minutes past UTC midnight
+
+        long tz;
+        _get_timezone(&tz);
+        t.addSeconds(21600 - tz);
 
         BOOST_CHECK_EQUAL(false, dev.isProfileTablePointerCurrent(95, t, 3600));
         BOOST_CHECK_EQUAL(true,  dev.isProfileTablePointerCurrent( 0, t, 3600));
@@ -175,7 +179,11 @@ BOOST_AUTO_TEST_CASE(test_dev_mct4xx_isProfileTablePointerCurrent)
     }
 
     {
-        const CtiTime t(CtiDate(1, 1, 2011), 1, 16, 0);  //  436 minutes past UTC midnight
+        CtiTime t(CtiDate(1, 1, 2011), 1, 16, 0);  //  436 minutes past UTC midnight
+
+        long tz;
+        _get_timezone(&tz);
+        t.addSeconds(21600 - tz);
 
         BOOST_CHECK_EQUAL(false, dev.isProfileTablePointerCurrent(77, t, 3600));
         BOOST_CHECK_EQUAL(true,  dev.isProfileTablePointerCurrent(78, t, 3600));
@@ -204,7 +212,11 @@ BOOST_AUTO_TEST_CASE(test_dev_mct4xx_isProfileTablePointerCurrent)
     }
 
     {
-        const CtiTime t(CtiDate(1, 1, 2011), 9, 16, 0);  //  916 minutes past UTC midnight
+        CtiTime t(CtiDate(1, 1, 2011), 9, 16, 0);  //  916 minutes past UTC midnight
+
+        long tz;
+        _get_timezone(&tz);
+        t.addSeconds(21600 - tz);
 
         BOOST_CHECK_EQUAL(false, dev.isProfileTablePointerCurrent(83, t, 3600));
         BOOST_CHECK_EQUAL(true,  dev.isProfileTablePointerCurrent(84, t, 3600));
@@ -233,7 +245,11 @@ BOOST_AUTO_TEST_CASE(test_dev_mct4xx_isProfileTablePointerCurrent)
     }
 
     {
-        const CtiTime t(CtiDate(1, 1, 2011), 12, 26, 0);  //  1106 minutes past UTC midnight
+        CtiTime t(CtiDate(1, 1, 2011), 12, 26, 0);  //  1106 minutes past UTC midnight
+
+        long tz;
+        _get_timezone(&tz);
+        t.addSeconds(21600 - tz);
 
         BOOST_CHECK_EQUAL(false, dev.isProfileTablePointerCurrent(89, t, 3600));
         BOOST_CHECK_EQUAL(true,  dev.isProfileTablePointerCurrent(90, t, 3600));
@@ -262,7 +278,11 @@ BOOST_AUTO_TEST_CASE(test_dev_mct4xx_isProfileTablePointerCurrent)
     }
 
     {
-        const CtiTime t(CtiDate(2, 1, 2011), 12, 26, 0);  //  1106 minutes past UTC midnight
+        CtiTime t(CtiDate(2, 1, 2011), 12, 26, 0);  //  1106 minutes past UTC midnight
+
+        long tz;
+        _get_timezone(&tz);
+        t.addSeconds(21600 - tz);
 
         BOOST_CHECK_EQUAL(false, dev.isProfileTablePointerCurrent(17, t, 3600));
         BOOST_CHECK_EQUAL(true,  dev.isProfileTablePointerCurrent(18, t, 3600));

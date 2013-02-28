@@ -5,6 +5,7 @@ import com.cannontech.common.device.config.model.DNPConfiguration;
 import com.cannontech.common.device.config.model.MCT410Configuration;
 import com.cannontech.common.device.config.model.MCT420Configuration;
 import com.cannontech.common.device.config.model.MCT430Configuration;
+import com.cannontech.common.device.config.model.MCT440Configuration;
 import com.cannontech.common.device.config.model.MCT470Configuration;
 import com.cannontech.common.pao.definition.model.PaoTag;
 
@@ -24,6 +25,19 @@ public enum ConfigurationType {
 
         public PaoTag getSupportedDeviceTag() {
             return PaoTag.DEVICE_CONFIGURATION_470;
+        }
+    },
+    MCT440 {
+        public ConfigurationBase getConfigurationClass() {
+            return new MCT440Configuration();
+        }
+
+        public String getConfigurationTemplateName() {
+            return "MCT 440 Configuration";
+        }
+
+        public PaoTag getSupportedDeviceTag() {
+            return PaoTag.DEVICE_CONFIGURATION_440;
         }
     },
     MCT430 {

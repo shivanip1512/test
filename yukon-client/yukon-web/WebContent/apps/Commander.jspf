@@ -62,7 +62,7 @@ div.scroll { font-size: 12px;
 %>
 
 
-<h3>Control Commands:&nbsp;&nbsp;<%=name%></h3>
+<h3><cti:msg key="yukon.web.apps.commander.title"/>&nbsp;&nbsp;<%=name%></h3>
 
 	<form name="commandForm" method="POST" action="<%= request.getContextPath() %>/servlet/CommanderServlet">
 		<input type="hidden" name="deviceID" value="<%=deviceID%>">
@@ -73,7 +73,7 @@ div.scroll { font-size: 12px;
 					
 		<table class="nameValueTable">
 	    	<tr> 
-	          	<td class="name">Type:</td>
+	          	<td class="name"><cti:msg key="yukon.web.apps.commander.type"/></td>
 	            <td class="value"><%=YC_BEAN.getDeviceType()%></td>
 	        </tr>
 		
@@ -81,16 +81,16 @@ div.scroll { font-size: 12px;
 	if( serialType.length() > 0) {
 %>
 			<tr> 
-               	<td class="name">Serial Number:</td>
+               	<td class="name"><cti:msg key="yukon.web.apps.commander.serialNumber"/></td>
                	<td class="value">
                 	<input type="text" name="serialNumber" size="20" value="<%=serialNum%>">
                	</td>
 			</tr>
             <tr> 
-                <td class="name">Route:</td>
+                <td class="name"><cti:msg key="yukon.web.apps.commander.route"/></td>
                 <td class="value"> 
                 	<select id="routeID" name="routeID">
-                   		<option VALUE="-1">Select a Route
+                   		<option VALUE="-1"><cti:msg key="yukon.web.apps.commander.route.select"/>
 <%
 		LiteYukonPAObject[] validRoutes = YC_BEAN.getValidRoutes();
 		for (int i = 0; i < validRoutes.length; i++) {
@@ -106,11 +106,11 @@ div.scroll { font-size: 12px;
 	}
 %>
 			<tr> 
-	        	<td class="name">Common Commands:</td>
+	        	<td class="name"><cti:msg key="yukon.web.apps.commander.commonCommands"/></td>
 	            <td class="value">
                     <tags:commanderPrompter/>
 	            	<select name="commonCommand" class="f_loadCommanderCommand" data-cmdfield="command">
-	                	<option value="">Select a Command</option>                
+	                	<option value=""><cti:msg key="yukon.web.apps.commander.commonCommands.select"/></option>                
 <%
 	Object commandObject = YC_BEAN.getLiteYukonPao();
 	if(serialType.length() > 0){
@@ -134,10 +134,11 @@ div.scroll { font-size: 12px;
 				</td>
 			</tr>
 	        <tr> 
-	        	<td class="name">Execute Command:</td>
+	        	<td class="name"><cti:msg key="yukon.web.apps.commander.executeCommand"/></td>
 	            <td class="value">
 	            	<input type="text" id="command" name="command" <cti:isPropertyFalse property="CommanderRole.EXECUTE_MANUAL_COMMAND">readonly</cti:isPropertyFalse> size="40" value="<%=YC_BEAN.getCommandString()%>">
-	                <input type="submit" name="execute" value="Execute" onClick="disableButton(this)">
+                    <cti:msg var="executeButtonLabel" key="yukon.web.apps.commander.executeButton"/>
+	                <input type="submit" name="execute" value="${executeButtonLabel}" onClick="disableButton(this)">
                 </td>
 	        </tr>
 			<tr>
@@ -146,8 +147,10 @@ div.scroll { font-size: 12px;
     	    		<c:out value="${YC_BEAN.resultText}" escapeXml="false"/>
 	        	</div>
                 <br>
-	    		<input type="submit" name="clearText" value="Clear Results">
-        		<input type="reset" name="refresh" value="Refresh" onClick="window.location.reload()">
+                <cti:msg var="clearResultsButtonLabel" key="yukon.web.apps.commander.clearResultsButton"/>
+                <cti:msg var="refreshButtonLabel" key="yukon.web.apps.commander.refreshButton"/>
+	    		<input type="submit" name="clearText" value="${clearResultsButtonLabel}">
+        		<input type="reset" name="refresh" value="${refreshButtonLabel}" onClick="window.location.reload()">
 				</td>
 			</tr>
 		</table>

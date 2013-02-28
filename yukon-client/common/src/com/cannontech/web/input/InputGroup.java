@@ -2,6 +2,7 @@ package com.cannontech.web.input;
 
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 
@@ -12,7 +13,7 @@ public class InputGroup<T> implements Input<T> {
     private String field = null;
     private String displayName = null;
     private String renderer = null;
-    private Map<String, Input<T>> inputMap = new HashMap<String, Input<T>>();
+    private Map<String, Input<T>> inputMap = new LinkedHashMap<String, Input<T>>();
     private InputSecurity security = new SimpleInputSecurity();
     private List<InputValidator<T>> validatorList = new ArrayList<InputValidator<T>>();
 

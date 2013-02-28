@@ -25,7 +25,7 @@ BOOST_AUTO_TEST_CASE(test_is_carrier_lp_device_type)
         (_)(_)(_)(_)(_) (_)(_)(_)(_)(X)  //  60
         (X)(_)(_)(_)(_) (_)(_)(_)(_)(_)  //  70
         (_)(_)(X)(X)(X) (X)(X)(X)(X)(X)  //  80
-        (X)(X)(X)(X)(X) (_)(_)(_)(_)(_)  //  90
+        (X)(X)(X)(X)(X) (X)(X)(_)(_)(_)  //  90
         .repeat(9900, _);
 
     std::vector<bool> results;

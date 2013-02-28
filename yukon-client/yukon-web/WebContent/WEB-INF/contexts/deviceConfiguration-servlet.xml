@@ -59,7 +59,28 @@
 		<property name="deviceConfigurationDao" ref="deviceConfigurationDao"/>
 		<property name="inputRoot" ref="deviceConfigInputRoot" />
     </bean>
-    
+   
+    <bean name="/440Config" class="com.cannontech.web.amr.device.configuration.DeviceConfigurationFormController" init-method="init">
+        
+        <property name="cacheSeconds">
+            <value type="int">0</value>
+        </property>
+        <property name="requireSession">
+            <value type="boolean">true</value>
+        </property>
+        <property name="synchronizeOnSession">
+            <value type="boolean">true</value>
+        </property>
+        <property name="commandName" value="deviceConfiguration" />
+        <property name="commandClass" value="com.cannontech.common.device.config.model.MCT440Configuration" />
+        <property name="formView" value="edit" />
+        <property name="successView" value="redirect:/spring/deviceConfiguration?home" />
+        
+        <property name="configurationTemplate" ref="mct440Config" />
+        <property name="deviceConfigurationDao" ref="deviceConfigurationDao"/>
+        <property name="inputRoot" ref="deviceConfigInputRoot" />
+    </bean>
+
     <bean name="/430Config" class="com.cannontech.web.amr.device.configuration.DeviceConfigurationFormController" init-method="init">
     	
         <property name="cacheSeconds">

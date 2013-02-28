@@ -54,7 +54,7 @@
                                 <c:forEach var="category" items="${roles}">
                                     <c:if test="${not empty category.key}">
                                         <ul class="groupedList">
-                                            <li><span class="group detail">${category.key}</span>
+                                            <li><span class="group detail"><cti:formatObject value="${category.key}"/></span>
                                                 <ul class="groupedItem">
                                                     <c:forEach var="roleGroupPair" items="${category.value}">
                                                         <li class="detail">

@@ -139,6 +139,7 @@
                 <value>classpath:com/cannontech/yukon/common/constraintErrors</value>
                 <value>classpath:com/cannontech/yukon/common/chart</value>
                 <value>classpath:com/cannontech/yukon/common/device/pointImport</value>
+                <value>classpath:com/cannontech/yukon/web/apps</value>
                 <value>classpath:com/cannontech/yukon/web/operations</value>
                 <value>classpath:com/cannontech/yukon/web/menu</value>
                 <value>classpath:com/cannontech/yukon/web/layout/standard</value>
@@ -239,6 +240,7 @@
                 <value>classpath:com/cannontech/yukon/web/modules/widgets/commandScheduleWidget</value>
                 <value>classpath:com/cannontech/yukon/web/modules/widgets/deviceReconfigMonitorsWidget</value>
                 <value>classpath:com/cannontech/yukon/web/modules/widgets/systemActionsMenuWidget</value>
+                <value>classpath:com/cannontech/yukon/web/modules/commander/root</value>
             </list>
         </constructor-arg>
     </bean>

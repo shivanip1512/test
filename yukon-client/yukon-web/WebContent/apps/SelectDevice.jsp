@@ -1,7 +1,7 @@
 <%@page import="com.cannontech.stars.util.ServletUtils"%>
 <%@page import="com.cannontech.util.ServletUtil"%>
 <%@page import="com.cannontech.database.data.lite.LiteYukonUser"%>
-<%@ page import="com.cannontech.yc.bean.CommandDeviceBean"%>
+<%@page import="com.cannontech.yc.bean.CommandDeviceBean"%>
 
 <%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core"%>
 <%@ taglib prefix="cti" uri="http://cannontech.com/tags/cti"%>
@@ -66,7 +66,7 @@
 	
 	<div class="mainFull">
 		
-		<h2>Device Selection</h2>
+		<h2><cti:msg key="yukon.web.apps.selectDevice.title"/></h2>
 	
 		<!-- Order / Filter by form -->
 		<form name="MForm" method="post" action="">
@@ -76,7 +76,7 @@
 	
 			<!-- Order by section -->
 			<div class="formSection">
-		        Order by:
+		        <cti:msg key="yukon.web.apps.selectDevice.orderBy"/>
 		        <span class="selection">
 					<select name="OrderBy">
 						<c:set var="count" scope="page" value="0" />
@@ -88,8 +88,8 @@
 				</span>
 		        <span class="selection">
 					<select name="OrderDir">
-						<option value="${cti:constantValue('com.cannontech.yc.bean.CommandDeviceBean.ORDER_DIR_ASCENDING')}" ${commandDeviceBean.orderDir == cti:constantValue('com.cannontech.yc.bean.CommandDeviceBean.ORDER_DIR_ASCENDING') ? 'selected' : ''}>Ascending</option>
-			            <option value="${cti:constantValue('com.cannontech.yc.bean.CommandDeviceBean.ORDER_DIR_DESCENDING')}" ${commandDeviceBean.orderDir == cti:constantValue('com.cannontech.yc.bean.CommandDeviceBean.ORDER_DIR_DESCENDING') ? 'selected' : ''}>Descending</option>
+						<option value="${cti:constantValue('com.cannontech.yc.bean.CommandDeviceBean.ORDER_DIR_ASCENDING')}" ${commandDeviceBean.orderDir == cti:constantValue('com.cannontech.yc.bean.CommandDeviceBean.ORDER_DIR_ASCENDING') ? 'selected' : ''}><cti:msg key="yukon.web.apps.selectDevice.orderBy.ascending"/></option>
+			            <option value="${cti:constantValue('com.cannontech.yc.bean.CommandDeviceBean.ORDER_DIR_DESCENDING')}" ${commandDeviceBean.orderDir == cti:constantValue('com.cannontech.yc.bean.CommandDeviceBean.ORDER_DIR_DESCENDING') ? 'selected' : ''}><cti:msg key="yukon.web.apps.selectDevice.orderBy.descending"/></option>
 			        </select>
 				</span>
 			</div>
@@ -102,7 +102,7 @@
 							  currentSortBy == cti:constantValue('com.cannontech.database.data.pao.DeviceClasses.CARRIER') ||
 							  currentSortBy == cti:constantValue('com.cannontech.database.data.pao.DeviceClasses.TRANSMITTER') ||
 							  currentSortBy == cti:constantValue('com.cannontech.database.data.pao.PAOGroups.CAT_CAPCONTROL')}">
-						Filter by:
+						<cti:msg key="yukon.web.apps.selectDevice.filterBy"/>
 				</c:if>
 			
 				<!-- Filter by drop down -->
@@ -117,30 +117,30 @@
 					<c:when test="${currentSortBy == cti:constantValue('com.cannontech.database.data.pao.DeviceClasses.CARRIER')}">
 						<!-- Carrier options -->
 					    <select name="FilterBy" onChange="changeFilter(this.value)">
-					    	<option value="${cti:constantValue('com.cannontech.yc.bean.CommandDeviceBean.NO_FILTER')}" ${noSelected ? 'selected' : ''}>(none)</option>
-					      	<option value="${cti:constantValue('com.cannontech.yc.bean.CommandDeviceBean.ROUTE_FILTER')}" ${routeSelected ? 'selected' : ''}>Route</option>
+					    	<option value="${cti:constantValue('com.cannontech.yc.bean.CommandDeviceBean.NO_FILTER')}" ${noSelected ? 'selected' : ''}><cti:msg key="yukon.web.apps.selectDevice.filterBy.none"/></option>
+					      	<option value="${cti:constantValue('com.cannontech.yc.bean.CommandDeviceBean.ROUTE_FILTER')}" ${routeSelected ? 'selected' : ''}><cti:msg key="yukon.web.apps.selectDevice.filterBy.route"/></option>
 				        </select>
 				    </c:when>
 					<c:when test="${currentSortBy == cti:constantValue('com.cannontech.database.data.pao.DeviceClasses.IED') ||
 									  currentSortBy == cti:constantValue('com.cannontech.database.data.pao.DeviceClasses.RTU')}">
 						<!-- IED/RTU options -->
 				        <select name="FilterBy" onChange="changeFilter(this.value)">
-				        	<option value="${cti:constantValue('com.cannontech.yc.bean.CommandDeviceBean.NO_FILTER')}" ${noSelected ? 'selected' : ''}>(none)</option>
-				          	<option value="${cti:constantValue('com.cannontech.yc.bean.CommandDeviceBean.COMM_CHANNEL_FILTER')}" ${commChannelSelected ? 'selected' : ''}>Comm Channel</option>
+				        	<option value="${cti:constantValue('com.cannontech.yc.bean.CommandDeviceBean.NO_FILTER')}" ${noSelected ? 'selected' : ''}><cti:msg key="yukon.web.apps.selectDevice.filterBy.none"/></option>
+				          	<option value="${cti:constantValue('com.cannontech.yc.bean.CommandDeviceBean.COMM_CHANNEL_FILTER')}" ${commChannelSelected ? 'selected' : ''}><cti:msg key="yukon.web.apps.selectDevice.filterBy.commChannel"/></option>
 				        </select>
 				    </c:when>
 					<c:when test="${currentSortBy == cti:constantValue('com.cannontech.database.data.pao.DeviceClasses.TRANSMITTER')}">
 						<!-- Transmitter options -->
 					    <select name="FilterBy" onChange="changeFilter(this.value)">
-				        	<option value="${cti:constantValue('com.cannontech.yc.bean.CommandDeviceBean.NO_FILTER')}" ${noSelected ? 'selected' : ''}>(none)</option>
-				          	<option value="${cti:constantValue('com.cannontech.yc.bean.CommandDeviceBean.COMM_CHANNEL_FILTER')}" ${commChannelSelected ? 'selected' : ''}>Comm Channel</option>
+				        	<option value="${cti:constantValue('com.cannontech.yc.bean.CommandDeviceBean.NO_FILTER')}" ${noSelected ? 'selected' : ''}><cti:msg key="yukon.web.apps.selectDevice.filterBy.none"/></option>
+				          	<option value="${cti:constantValue('com.cannontech.yc.bean.CommandDeviceBean.COMM_CHANNEL_FILTER')}" ${commChannelSelected ? 'selected' : ''}><cti:msg key="yukon.web.apps.selectDevice.filterBy.commChannel"/></option>
 					    </select>
 				    </c:when>
 					<c:when test="${currentSortBy == cti:constantValue('com.cannontech.database.data.pao.PAOGroups.CAT_CAPCONTROL')}">
 						<!-- Cap Control options -->
 					    <select name="FilterBy" onChange="changeFilter(this.value)">
-				        	<option value="${cti:constantValue('com.cannontech.yc.bean.CommandDeviceBean.NO_FILTER')}" ${noSelected ? 'selected' : ''}>(none)</option>
-					      	<option value="${cti:constantValue('com.cannontech.yc.bean.CommandDeviceBean.CBC_TYPE_FILTER')}" ${cbcSelected ?  'selected' : ''}>CBC Type</option>
+				        	<option value="${cti:constantValue('com.cannontech.yc.bean.CommandDeviceBean.NO_FILTER')}" ${noSelected ? 'selected' : ''}><cti:msg key="yukon.web.apps.selectDevice.filterBy.none"/></option>
+					      	<option value="${cti:constantValue('com.cannontech.yc.bean.CommandDeviceBean.CBC_TYPE_FILTER')}" ${cbcSelected ?  'selected' : ''}><cti:msg key="yukon.web.apps.selectDevice.filterBy.cbcType"/></option>
 					    </select> 
 				    </c:when>
 				    <c:otherwise>
@@ -172,15 +172,17 @@
 			      			<option value="${type}" ${commandDeviceBean.filterValue == type ? 'selected' : ''}>${type}</option>
 			      		</c:forEach>
 			      	</select>
-			    </span>   
+			    </span>
+                <cti:msg var="showButtonLabel" key="yukon.web.apps.selectDevice.showButton"/>
+                <cti:msg var="showAllButtonLabel" key="yukon.web.apps.selectDevice.showAllButton"/>
 			    <span class="filterButtons">
-					<input type="button" name="Submit" value="Show" onClick="setFilterValue(this.form);">
-					<input type="button" name="ShowAll" value="Show All" onClick="showAll(this.form)">
+					<input type="button" name="Submit" value="${showButtonLabel}" onClick="setFilterValue(this.form);">
+					<input type="button" name="ShowAll" value="${showAllButtonLabel}" onClick="showAll(this.form)">
 				</span>
 				
 				<!-- Search form -->
 				<div class="searchForm">
-					Find specific device:
+					<i:inline key="yukon.web.apps.selectDevice.specificDevice"/>
 					<form name="SearchForm" method="POST" action="">
 						<select name="SearchBy">
 							<c:forEach items="${commandDeviceBean.searchByStrings}" var="entry" varStatus="status">
@@ -188,8 +190,9 @@
 							</c:forEach>
 						</select>
 						<input type="text" name="SearchValue" size="14" value="${commandDeviceBean.searchValue}">
-						<input type="submit" name="Submit" value="Search" >
-					</form>			
+                        <cti:msg var="searchButtonLabel" key="yukon.web.apps.selectDevice.searchButton"/>
+						<input type="submit" name="Submit" value="${searchButtonLabel}">
+					</form>
 				
 				</div>
 			</div>
@@ -200,7 +203,8 @@
 		    ${commandDeviceBean.deviceTableHTML}
 		
 			<div class="filterCancel">
-				<input type='button' name='Cancel' value='Cancel' onclick='location.href="../operator/Operations.jsp"'>
+                <cti:msg var="cancelButtonLabel" key="yukon.web.apps.selectDevice.cancelButton"/>
+				<input type='button' name='Cancel' value='${cancelButtonLabel}' onclick='location.href="../operator/Operations.jsp"'>
 			</div>
 	</div>
 

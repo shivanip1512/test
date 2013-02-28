@@ -360,6 +360,8 @@ device_lookup_t init_device_lookups()
     device_types.insert(make_pair("mct-430s4",          TYPEMCT430S4));
     device_types.insert(make_pair("mct-430sl",          TYPEMCT430SL));
     device_types.insert(make_pair("mct-470",            TYPEMCT470));
+    device_types.insert(make_pair("mct-440-2131b",      TYPEMCT440_2131B));
+    device_types.insert(make_pair("mct-440-2133b",      TYPEMCT440_2133B));
     device_types.insert(make_pair("repeater 800",       TYPE_REPEATER800));
     device_types.insert(make_pair("repeater 801",       TYPE_REPEATER800));
     device_types.insert(make_pair("repeater 850",       TYPE_REPEATER850));
@@ -877,6 +879,8 @@ bool resolveIsDeviceTypeSingle(INT Type)
         case TYPEMCT430S4:
         case TYPEMCT430SL:
         case TYPEMCT470:
+        case TYPEMCT440_2131B:
+        case TYPEMCT440_2133B:
         case TYPELCR3102:
         case TYPELTC:
         case TYPE_MODBUS:

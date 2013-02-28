@@ -37,9 +37,10 @@ public class DeviceErrorTranslatorDaoImpl implements DeviceErrorTranslatorDao {
 	@Autowired private YukonUserContextMessageSourceResolver messageSourceResolver;
     private Logger log = YukonLogManager.getLogger(DeviceErrorTranslatorDaoImpl.class);
     private InputStream errorDefinitions;
-    private Map<Locale, Map<Integer, DeviceErrorDescription>> store = new HashMap<Locale, Map<Integer, DeviceErrorDescription>>();
+    private Map<String, Map<Integer, DeviceErrorDescription>> store = new HashMap<String, Map<Integer, DeviceErrorDescription>>();
     private DeviceErrorDescription defaultTranslation;
     private String baseKey = "yukon.web.errorCodes_";
+    private String defaultThemeKey = getThemeKey(Locale.US, ThemeUtils.getDefaultThemeName());
 
     /**
      * Returns the US translation for the error code.
@@ -53,16 +54,15 @@ public class DeviceErrorTranslatorDaoImpl implements DeviceErrorTranslatorDao {
         }
 
         // Clone the defaultTranslation and set the error code
-        DeviceErrorDescription ded = defaultTranslation;
-        return new DeviceErrorDescription(error, ded.getCategory(), ded.getPorter(), 
-                                          ded.getDescription(), ded.getTroubleshooting());
+        return new DeviceErrorDescription(error, defaultTranslation.getCategory(), defaultTranslation.getPorter(), 
+                defaultTranslation.getDescription(), defaultTranslation.getTroubleshooting());
     }
 
     @Override
     public DeviceErrorDescription translateErrorCode(int error, YukonUserContext userContext) {
     	
     	//check the cache
-    	Map<Integer, DeviceErrorDescription> localeStore = store.get(userContext.getLocale());
+    	Map<Integer, DeviceErrorDescription> localeStore = store.get(getThemeKey(userContext.getLocale(), userContext.getThemeName()));
     	if(localeStore != null){
 	    	if (localeStore.get(error) != null) {
 	    		return localeStore.get(error);
@@ -72,7 +72,7 @@ public class DeviceErrorTranslatorDaoImpl implements DeviceErrorTranslatorDao {
 	    	try{
 	    		//the first time we encounter a new Locale, try to cache the errors
 	    		cacheErrorsForLocale(userContext);
-	    		localeStore = store.get(userContext.getLocale());
+	    		localeStore = store.get(getThemeKey(userContext.getLocale(), userContext.getThemeName()));
 	    		return localeStore.get(error);
 	    	}catch(Exception exception){
 	    		log.info("Unable to load errors for ("+ userContext.getLocale().getDisplayCountry() +"): " + error);
@@ -80,7 +80,8 @@ public class DeviceErrorTranslatorDaoImpl implements DeviceErrorTranslatorDao {
     	}
 
     	// Clone the defaultTranslation and set the error code
-    	return defaultTranslation;
+        return new DeviceErrorDescription(error, defaultTranslation.getCategory(), defaultTranslation.getPorter(), 
+                defaultTranslation.getDescription(), defaultTranslation.getTroubleshooting());
     }
 
     /**
@@ -127,7 +128,7 @@ public class DeviceErrorTranslatorDaoImpl implements DeviceErrorTranslatorDao {
             }
         }
         Validate.notNull(defaultTranslation, "No default translation found");
-        store.put(Locale.US, mapBuilder.build());
+        store.put(defaultThemeKey, mapBuilder.build());
         log.info("Device error code descriptions loaded: " + store.size());
     }
 
@@ -137,17 +138,25 @@ public class DeviceErrorTranslatorDaoImpl implements DeviceErrorTranslatorDao {
 
     @Override
     public Iterable<DeviceErrorDescription> getAllErrors() {
-        return getAllErrors(Locale.US);
+        return getAllErrors(new SimpleYukonUserContext(null, Locale.US, TimeZone.getDefault(), ThemeUtils.getDefaultThemeName()));
     }
 
-    public Iterable<DeviceErrorDescription> getAllErrors(Locale locale) {
-    	return store.get(locale).values();
+    @Override
+    public Iterable<DeviceErrorDescription> getAllErrors(YukonUserContext userContext) {
+        Map<Integer, DeviceErrorDescription> localeStore = store.get(getThemeKey(userContext.getLocale(), userContext.getThemeName()));
+        if(localeStore == null) {
+            localeStore = cacheErrorsForLocale(userContext);
+        }
+        
+    	return localeStore.values();
     }
     
-    private void cacheErrorsForLocale(YukonUserContext userContext) {
+    private Map<Integer, DeviceErrorDescription> cacheErrorsForLocale(YukonUserContext userContext) {
+        final String themeKey = getThemeKey(userContext.getLocale(), userContext.getThemeName());
+        
     	//loop over us entries
     	Builder<Integer, DeviceErrorDescription> mapBuilder = ImmutableMap.builder();
-    	for(Integer errorCode : store.get(Locale.US).keySet()){
+    	for(Integer errorCode : store.get(defaultThemeKey).keySet()){
 
     		try{
 	    		//resolve each message
@@ -170,7 +179,7 @@ public class DeviceErrorTranslatorDaoImpl implements DeviceErrorTranslatorDao {
 	    			+ errorCode + " and Locale: " 
 	    			+ userContext.getLocale().getDisplayCountry());
     			
-    			DeviceErrorDescription fallback = store.get(Locale.US).get(errorCode);
+    			DeviceErrorDescription fallback = store.get(defaultThemeKey).get(errorCode);
     			DeviceErrorDescription dded = new DeviceErrorDescription(errorCode, 
     					fallback.getCategory(), 
     					fallback.getPorter(), 
@@ -181,7 +190,14 @@ public class DeviceErrorTranslatorDaoImpl implements DeviceErrorTranslatorDao {
     		}
     	}
     	
-        store.put((Locale)userContext.getLocale().clone(), mapBuilder.build());
-        log.info("Device error code descriptions loaded ("+ userContext.getLocale().getDisplayCountry() +"): " + store.get(userContext.getLocale()).size());
+    	Map<Integer, DeviceErrorDescription> localeStore = mapBuilder.build();
+        store.put(themeKey, localeStore);
+        log.info("Device error code descriptions loaded ("+ userContext.getLocale().getDisplayCountry() +"): " + store.get(themeKey).size());
+        
+        return localeStore;
+    }
+    
+    private String getThemeKey(Locale locale, String themeName) {
+        return String.format("%s|%s", locale.toString(), themeName);
     }
 }

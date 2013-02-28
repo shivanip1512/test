@@ -7,6 +7,7 @@ import java.util.Comparator;
 import java.util.Date;
 import java.util.HashSet;
 import java.util.List;
+import java.util.Scanner;
 import java.util.Set;
 
 import javax.servlet.http.HttpServletRequest;
@@ -206,7 +207,13 @@ public class MeterOutagesWidget extends WidgetControllerBase {
                 // based on the string returned from porter, parse out the outage index
                 int outageStrIndex = ((PointData)holder).getStr().indexOf("/ Outage ");
                 int beginIndex = outageStrIndex + 9;   // 9 = num chars from "/ Outage " to the log index in the log
-                String outageLogIndex = ((PointData)holder).getStr().substring(beginIndex, beginIndex+1);
+                
+                // Substring from the outage log index to the end of the string
+                String outageLogIndexSubStr = ((PointData)holder).getStr().substring(beginIndex);
+                
+                // Read the index value with a Scanner
+                Scanner scanner = new Scanner(outageLogIndexSubStr);
+                String outageLogIndex = String.valueOf(scanner.nextInt());
                 
                 OutageData od = new OutageData(outageLogIndex, timestamp, duration);
                 outageData.add(od);

@@ -83,6 +83,9 @@ enum Commands
     GetStatus_Internal,
     GetStatus_External,
     GetStatus_Freeze,
+        GetValue_InstantLineData,
+        GetValue_TOUkWhReverse,
+        GetValue_FrozenTOUkWhReverse,
 
     // PutStatus Commands
     PutStatus_Reset,
@@ -184,10 +187,15 @@ enum Commands
     PutConfig_IEDDNPAddress,
     PutConfig_WaterMeterReadInterval,
     PutConfig_Channel2NetMetering,      // GetConfig_Options was hijacked for the config byte/alarm mask in the 410....
+        PutStatus_SetTOUHolidayRate,                            /* Set TOU Holiday Rate Active                          */
+        PutStatus_ClearTOUHolidayRate,                          /* Clear TOU Holiday Rate and Resort to Normal Rate     */
 
     PutConfig_ARMC,
     PutConfig_ARML,
     PutConfig_ARMS,
+        GetConfig_PhaseLossThreshold,
+        GetConfig_AlarmMask,
+        GetConfig_TimeAdjustTolerance,
 
     // Control Commands
     Control_Shed,     //  for MCT Group Addressing
@@ -195,6 +203,7 @@ enum Commands
     Control_Connect,
     Control_Disconnect,
     Control_Latch,
+        PutConfig_PhaseLossThreshold,
 
     Command_Loop,
 

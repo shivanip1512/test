@@ -286,7 +286,7 @@
                 </cti:checkRole>
                 <cti:checkProperty property="CommanderRole.ENABLE_WEB_COMMANDER">
                     <tags:sectionLink>
-                        <a href="../apps/SelectDevice.jsp"><cti:msg key="yukon.web.commander"/></a>
+                        <a href="<cti:url value="/commander/select"/>"><cti:msg key="yukon.web.commander"/></a>
                     </tags:sectionLink>
                 </cti:checkProperty>
                 <cti:checkRolesAndProperties value="ARCHIVED_DATA_EXPORT">
