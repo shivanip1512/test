@@ -16,7 +16,7 @@ import org.springframework.context.ConfigurableApplicationContext;
 import org.springframework.jdbc.core.RowCallbackHandler;
 
 import com.cannontech.clientutils.YukonLogManager;
-import com.cannontech.common.util.CtiUtilities;
+import com.cannontech.common.util.BootstrapUtils;
 import com.cannontech.common.util.SqlStatementBuilder;
 import com.cannontech.database.YukonJdbcOperations;
 import com.cannontech.spring.YukonBaseXmlApplicationContext;
@@ -34,7 +34,7 @@ public class YukonServiceManagerImpl implements YukonServiceManager, Application
         SqlStatementBuilder sql = new SqlStatementBuilder();
         sql.append("SELECT ServiceID, ServiceName, ServiceClass"); 
         sql.append("FROM YukonServices");
-        sql.append("WHERE ServiceID > 0 and AppName = ").appendArgument(CtiUtilities.getApplicationName());
+        sql.append("WHERE ServiceID > 0 and AppName = ").appendArgument(BootstrapUtils.getApplicationName());
         
         yukonJdbcOperations.query(sql, new RowCallbackHandler() {
             @Override

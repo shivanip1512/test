@@ -6,7 +6,7 @@ import java.util.Hashtable;
 import org.springframework.beans.factory.annotation.Autowired;
 
 import com.cannontech.clientutils.CTILogger;
-import com.cannontech.common.util.CtiUtilities;
+import com.cannontech.common.util.BootstrapUtils;
 import com.cannontech.message.dispatch.ClientConnection;
 import com.cannontech.message.dispatch.message.Registration;
 import com.cannontech.spring.YukonSpringHook;
@@ -90,7 +90,7 @@ public class ConnPool
          /*
          * App name will be value of cti.app.name environment variable
          */
-        reg.setAppName(CtiUtilities.getApplicationName());
+        reg.setAppName(BootstrapUtils.getApplicationName());
 		reg.setAppIsUnique(0);
 		reg.setAppKnownPort(0);
 		reg.setAppExpirationDelay(300); // 5 minutes should be OK

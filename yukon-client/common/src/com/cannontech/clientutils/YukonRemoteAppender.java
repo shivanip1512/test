@@ -9,6 +9,7 @@ import org.springframework.aop.framework.ProxyFactory;
 import org.springframework.remoting.httpinvoker.HttpInvokerClientInterceptor;
 import org.springframework.remoting.httpinvoker.SimpleHttpInvokerRequestExecutor;
 
+import com.cannontech.common.util.BootstrapUtils;
 import com.cannontech.common.util.CtiUtilities;
 
 /**
@@ -65,7 +66,7 @@ public class YukonRemoteAppender extends AppenderSkeleton {
             interceptor.setHttpInvokerRequestExecutor(requestExecutor);
             interceptor.setServiceUrl(hostName + "/remote/RemoteLogger" + "?" + "USERNAME=" + URLEncoder.encode(userName, "UTF-8") + "&PASSWORD=" + URLEncoder.encode(password, "UTF-8") + "&noLoginRedirect=true");
             remoteLogger = (RemoteLogger) ProxyFactory.getProxy(RemoteLogger.class, interceptor);
-            applicationName = CtiUtilities.getApplicationName();
+            applicationName = BootstrapUtils.getApplicationName();
             clientId = CtiUtilities.getIPAddress();
         } catch (UnsupportedEncodingException e) {
             remoteLogger = null;

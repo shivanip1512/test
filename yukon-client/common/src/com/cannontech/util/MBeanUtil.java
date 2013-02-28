@@ -16,7 +16,7 @@ import javax.management.remote.JMXServiceURL;
 import javax.naming.Context;
 
 import com.cannontech.clientutils.CTILogger;
-import com.cannontech.common.util.CtiUtilities;
+import com.cannontech.common.util.BootstrapUtils;
 
 /**
  * Utility class. Creates an rmiregistry at port 1099, creates an MBeanServer
@@ -56,13 +56,13 @@ public class MBeanUtil {
             // Unbind the connector server for the current application if one
             // exists
             try {
-                registry.unbind(CtiUtilities.getApplicationName());
+                registry.unbind(BootstrapUtils.getApplicationName());
             } catch (NotBoundException e) {
                 // ignore - only unbind if exists
             }
 
             // The address of the connector server
-            JMXServiceURL address = new JMXServiceURL(jmxUrl + CtiUtilities.getApplicationName());
+            JMXServiceURL address = new JMXServiceURL(jmxUrl + BootstrapUtils.getApplicationName());
 
             // The environment map, null in this case
             Map<String, ?> environment = null;

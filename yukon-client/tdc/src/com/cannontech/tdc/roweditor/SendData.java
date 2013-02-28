@@ -5,7 +5,7 @@ package com.cannontech.tdc.roweditor;
  * Creation date: (3/20/00 4:27:31 PM)
  * @author: 
  */
-import com.cannontech.common.util.CtiUtilities;
+import com.cannontech.common.util.BootstrapUtils;
 import com.cannontech.message.dispatch.ClientConnection;
 import com.cannontech.message.dispatch.message.Multi;
 import com.cannontech.message.dispatch.message.PointData;
@@ -42,7 +42,7 @@ private void buildRegistration()
 	//First do a registration
 	Multi multi = new Multi();
 	Registration reg = new Registration();
-	reg.setAppName( CtiUtilities.getApplicationName() );
+	reg.setAppName( BootstrapUtils.getApplicationName() );
 	reg.setAppIsUnique(0);
 	reg.setAppKnownPort(0);
 	reg.setAppExpirationDelay( 300 );  // 5 minutes

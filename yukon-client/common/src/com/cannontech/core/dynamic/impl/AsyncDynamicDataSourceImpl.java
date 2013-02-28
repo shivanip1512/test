@@ -18,7 +18,7 @@ import org.springframework.jmx.export.annotation.ManagedResource;
 import com.cannontech.clientutils.CTILogger;
 import com.cannontech.clientutils.YukonLogManager;
 import com.cannontech.clientutils.tags.TagUtils;
-import com.cannontech.common.util.CtiUtilities;
+import com.cannontech.common.util.BootstrapUtils;
 import com.cannontech.core.dynamic.AllPointDataListener;
 import com.cannontech.core.dynamic.AsyncDynamicDataSource;
 import com.cannontech.core.dynamic.DatabaseChangeEventListener;
@@ -66,7 +66,7 @@ public class AsyncDynamicDataSourceImpl implements AsyncDynamicDataSource, Messa
     // Note that this is purposefully different than the default com.cannontech.common.util.CtiUtilities.DEFAULT_MSG_SOURCE
     // that is set in the message class because there is already code that attaches
     // specific meaning to that. 
-    private String applicationSourceIdentifier = CtiUtilities.getApplicationName() + "$" + UUID.randomUUID();
+    private String applicationSourceIdentifier = BootstrapUtils.getApplicationName() + "$" + UUID.randomUUID();
     // For example, see 
     // com.cannontech.dbeditor.DatabaseEditor.queueDBChangeMsgs(DBPersistent, int, DBChangeMsg[]).
     // The problem is that the DatabaseEditor sends its own DB Changes, but registers directly with 

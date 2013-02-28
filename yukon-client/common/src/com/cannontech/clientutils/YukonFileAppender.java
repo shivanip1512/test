@@ -81,7 +81,7 @@ public class YukonFileAppender extends AppenderSkeleton {
         //initialize dailyRollingFileAppender
         //get the name of the application running this appender
 
-        String nameOfApp = CtiUtilities.getApplicationName();
+        String nameOfApp = BootstrapUtils.getApplicationName();
         String directory = BootstrapUtils.getServerLogDir();
         String fileName = directory + nameOfApp + ".log";
 

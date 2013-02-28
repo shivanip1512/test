@@ -29,5 +29,6 @@
     <!--
     <Valve className="org.apache.catalina.valves.CometConnectionManagerValve" />
     -->
+    <Parameter name="cti.app.name" value="eim" override="false"/> 
 
 </Context>

@@ -362,7 +362,7 @@ public final class CtiUtilities {
      * @return java.lang.String
      */
     public final static String getAppRegistration() {
-        return getApplicationName() + "-" + getIPAddress() + ":" +
+        return BootstrapUtils.getApplicationName() + "-" + getIPAddress() + ":" +
                Integer.toHexString(Thread.currentThread().hashCode()) + "  (" +
                getUserName() + ")";
     }
@@ -437,29 +437,6 @@ public final class CtiUtilities {
 
     public static boolean isRunningAsWebApplication() {
         return (System.getProperty("catalina.base") != null);
-    }
-
-    /**
-     * This method will return the name of this application.
-     * If no name is found, a dummy string is returned.
-     */
-    public final static String getApplicationName() {
-        if (System.getProperty("cti.app.name") == null) {
-            if (isRunningAsWebApplication()) {
-                System.setProperty("cti.app.name", "Webserver");
-            } else {
-                System.setProperty("cti.app.name", "UnknownApplication");
-            }
-        }
-        String appName = System.getProperty("cti.app.name");
-        return appName;
-    }
-
-    public final static void setDefaultApplicationName(String defaultName) {
-        String existingName = System.getProperty("cti.app.name");
-        if (existingName == null) {
-            System.setProperty("cti.app.name", defaultName);
-        }
     }
 
     /**

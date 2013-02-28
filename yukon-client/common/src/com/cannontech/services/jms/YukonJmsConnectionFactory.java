@@ -10,6 +10,7 @@ import org.springframework.jms.connection.CachingConnectionFactory;
 
 import com.cannontech.clientutils.YukonLogManager;
 import com.cannontech.common.config.ConfigurationSource;
+import com.cannontech.common.util.BootstrapUtils;
 import com.cannontech.common.util.CtiUtilities;
 
 public class YukonJmsConnectionFactory implements FactoryBean<ConnectionFactory> {
@@ -20,7 +21,7 @@ public class YukonJmsConnectionFactory implements FactoryBean<ConnectionFactory>
     @Override
     public ConnectionFactory getObject() throws Exception {
 
-        final String applicationName = CtiUtilities.getApplicationName();
+        final String applicationName = BootstrapUtils.getApplicationName();
 
         ConnectionFactory delegate;
         if (applicationName.equals("ServiceManager")) {

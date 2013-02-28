@@ -10,7 +10,7 @@ import java.util.Enumeration;
 
 import com.cannontech.clientutils.CTILogger;
 import com.cannontech.clientutils.CommonUtils;
-import com.cannontech.common.util.CtiUtilities;
+import com.cannontech.common.util.BootstrapUtils;
 import com.cannontech.database.SqlStatement;
 import com.cannontech.message.dispatch.ClientConnection;
 import com.cannontech.message.dispatch.message.DBChangeMsg;
@@ -58,7 +58,7 @@ public Message buildRegistrationMessage()
 {		
 	//First do a registration
 	Registration reg = new Registration();
-	reg.setAppName( CtiUtilities.getApplicationName() );
+	reg.setAppName( BootstrapUtils.getApplicationName() );
 	reg.setAppIsUnique(0);
 	reg.setAppKnownPort(0);
 	reg.setAppExpirationDelay( 500 );

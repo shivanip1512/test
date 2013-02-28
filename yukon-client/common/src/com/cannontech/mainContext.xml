@@ -287,8 +287,7 @@
     </bean>
 
     <!-- will pick up the ObjectName from the annotation -->
-    <bean id="namingStrategy"
-          class="org.springframework.jmx.export.naming.MetadataNamingStrategy">
+    <bean id="namingStrategy" class="com.cannontech.util.mbean.YukonNamingStrategy">
         <property name="attributeSource" ref="jmxAttributeSource"/>
         <property name="defaultDomain" value="com.cannontech.yukon"/>
     </bean>

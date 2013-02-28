@@ -8,6 +8,8 @@ import javax.naming.InitialContext;
 
 import org.apache.commons.lang.StringUtils;
 
+import com.cannontech.spring.YukonSpringHook;
+
 /**
  * The purpose of this utility class is to limit dependencies on other classes.  This class should never depend
  * on anything more complicated than a simple utility class.  It should never have any dependencies on anything
@@ -127,5 +129,47 @@ public class BootstrapUtils {
 
     public final static String getKeysFolder() {
         return getYukonBase(false) + KEYS_DIRECTORY;
+    }
+
+    /**
+     * Set the name of the application. In many cases, this does not need to be called. See
+     * {@link #getApplicationName()}.  If this is called, it must be called before Spring starts up
+     * (i.e. before any calls to {@link YukonSpringHook}.
+     */
+    public final static void setApplicationName(String defaultName) {
+        String existingName = System.getProperty("cti.app.name");
+        if (existingName == null) {
+            System.setProperty("cti.app.name", defaultName);
+        }
+    }
+
+    /**
+     * This method will return the name of this application. If no name is found, a dummy string is
+     * returned.
+     * <p>
+     * 
+     * The "application name" is a short string defining naming the application. It's used by the
+     * logger for part of the filename and by JMX to as a suffix to domain ("com.cannontech.yukon").
+     * <p>
+     * 
+     * Different applications set this in different ways:
+     * <ul>
+     * <li>The main web application essentially hard-codes it here as "Webserver".</li>
+     * <li>Most Java applications (e.g. the swing clients or Yukon Service Manager call
+     * {@link #setApplicationName(String)} to set it on start-up.</li>
+     * <li>In a web application like the EIM server, it should be set in the context file (api.xml
+     * in this case).</li>
+     * </ul>
+     */
+    public final static String getApplicationName() {
+        if (System.getProperty("cti.app.name") == null) {
+            if (CtiUtilities.isRunningAsWebApplication()) {
+                System.setProperty("cti.app.name", "Webserver");
+            } else {
+                System.setProperty("cti.app.name", "UnknownApplication");
+            }
+        }
+        String appName = System.getProperty("cti.app.name");
+        return appName;
     }
 }
