@@ -22,6 +22,16 @@ INSERT INTO YukonListEntry VALUES ((SELECT MAX(EntryId)+1 FROM YukonListEntry), 
 INSERT INTO YukonListEntry VALUES ((SELECT MAX(EntryId)+1 FROM YukonListEntry), 1005, 0, 'LCR-4700', 1328);
 /* End YUK-11904 */
 
+/* Start YUK-11878 */
+UPDATE YukonUser 
+SET Password = ' ' 
+WHERE AuthType IN ('NONE', 'AD', 'LDAP', 'RADIUS');
+
+UPDATE YukonUser 
+SET AuthType = 'NONE', Password = ' ' 
+WHERE UserId = -9999;
+/* End YUK-11878 */
+
 /**************************************************************/
 /* VERSION INFO                                               */
 /* Inserted when update script is run                         */

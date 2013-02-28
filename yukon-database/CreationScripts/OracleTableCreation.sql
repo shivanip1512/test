@@ -1,7 +1,7 @@
 /*==============================================================*/
 /* Database name:  YukonDatabase                                */
 /* DBMS name:      ORACLE Version 9i                            */
-/* Created on:     2/23/2013 1:48:02 PM                         */
+/* Created on:     2/27/2013 9:58:49 PM                         */
 /*==============================================================*/
 
 
@@ -9159,10 +9159,10 @@ create table YukonUser  (
    constraint PK_YUKONUSER primary key (UserID)
 );
 
-INSERT INTO yukonuser VALUES (-9999, '(none)', '(none)', 'Disabled', 'PLAIN', '01-JAN-2000', 'N', null);
-INSERT INTO yukonuser VALUES (-100, 'DefaultCTI', '$cti_default', 'Disabled', 'PLAIN', '01-JAN-2000', 'Y', -1);
-INSERT INTO yukonuser VALUES (-2, 'yukon', 'yukon', 'Disabled', 'PLAIN', '01-JAN-2000', 'Y', -1);
-INSERT INTO yukonuser VALUES (-1, 'admin', 'admin', 'Enabled', 'PLAIN', '01-JAN-2000', 'Y', -1);
+INSERT INTO YukonUser VALUES (-9999, '(none)', ' ', 'Disabled', 'NONE', '01-JAN-2000', 'N', null);
+INSERT INTO YukonUser VALUES (-100, 'DefaultCTI', '3EfsZdxGY7ne6qD6xxKlyqVFesQ8wB157s7OzMHreIkphNoqRAZwPbH58YoH1B+Z', 'Disabled', 'HASH_SHA_V2', '01-JAN-2000', 'Y', -1);
+INSERT INTO YukonUser VALUES (-2, 'yukon', '2QDwdtssSTx++kF70rwT1Y4HUmUBZHukDX1VVb27e0ngSxzZOeM4FhFNwsTSVFRd', 'Disabled', 'HASH_SHA_V2', '01-JAN-2000', 'Y', -1);
+INSERT INTO YukonUser VALUES (-1, 'admin', '4zMkmR0POZE5ZF7v1B3gVL7XWGs/cG5dQJvDkwltIRvE3XD4Y+rgfQDAcLA+rITO', 'Enabled', 'HASH_SHA_V2', '01-JAN-2000', 'Y', -1);
 
 /*==============================================================*/
 /* Index: Indx_YukonUser_Username                               */
