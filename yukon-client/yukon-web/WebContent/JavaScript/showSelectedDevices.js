@@ -11,8 +11,8 @@ function showSelectedDevices(imgEl, divId, url) {
     jQuery.ajax({
         url: url,
         success: function(transport) {
-        	jQuery("#" + divId).html(transport);
-        	jQuery("#" + divId).dialog({width: "auto", minWidth: 500});
+        	jQuery(document.getElementById(divId)).html(transport);
+        	jQuery(document.getElementById(divId)).dialog({width: "auto", minWidth: 500});
             jQuery(imgEl).toggleClass("loading magnifier");
         }
     });
