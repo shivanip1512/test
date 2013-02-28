@@ -65,7 +65,7 @@ public class LocalizationPair implements Comparable<LocalizationPair> {
         }
 
         String clean = unclean;
-        if(unclean.contains("<") || unclean.contains(">")){
+        if(unclean.contains("<") || unclean.contains(">") || unclean.contains("\n")){
             clean = unclean.replaceAll("]]>", "]]><![CDATA[");
             clean = "<![CDATA[" + clean + "]]>";
         }

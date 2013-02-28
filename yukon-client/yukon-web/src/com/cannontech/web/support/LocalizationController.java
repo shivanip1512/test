@@ -111,7 +111,9 @@ public class LocalizationController {
     private List<String> sanitizeHtml(List<String> unsanitizedStrings){
         List<String> sanitizedStrings = Lists.newArrayList();
         for(String unsanitizedString : unsanitizedStrings){
-            sanitizedStrings.add(StringEscapeUtils.escapeHtml(unsanitizedString));
+            String sanitized = StringEscapeUtils.escapeHtml(unsanitizedString);
+            sanitized = sanitized.replaceAll("(\r\n|\n)", "<br />");
+            sanitizedStrings.add(sanitized);
         }
         return sanitizedStrings;
     }

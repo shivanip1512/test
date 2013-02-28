@@ -142,8 +142,7 @@ public class LocalizationService implements ApplicationContextAware {
         query = query.replace("\\\\E.*\\Q", "*"); //Change '\*' in original to '*'
         query = query.replace("\\Q\\E", "");
         query = ".*" + query + ".*";
-        
-        Pattern regex = Pattern.compile(query);
+        Pattern regex = Pattern.compile(query, Pattern.DOTALL);
         return regex;
     }
 
