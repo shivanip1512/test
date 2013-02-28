@@ -30,7 +30,6 @@ import com.cannontech.core.dao.NotFoundException;
 import com.cannontech.core.dao.PaoDao;
 import com.cannontech.core.dao.ProgramNotFoundException;
 import com.cannontech.core.dao.SimplePointAccessDao;
-import com.cannontech.core.roleproperties.dao.RolePropertyDao;
 import com.cannontech.database.data.lite.LiteYukonPAObject;
 import com.cannontech.database.data.lite.LiteYukonUser;
 import com.cannontech.database.data.point.PointTypes;
@@ -39,7 +38,6 @@ import com.cannontech.loadcontrol.LoadControlClientConnection;
 import com.cannontech.loadcontrol.dao.LoadControlProgramDao;
 import com.cannontech.loadcontrol.data.LMGroupBase;
 import com.cannontech.loadcontrol.data.LMProgramBase;
-import com.cannontech.loadcontrol.service.LoadControlService;
 import com.cannontech.loadcontrol.service.data.ProgramStatus;
 import com.cannontech.loadcontrol.service.data.ScenarioStatus;
 import com.cannontech.message.dispatch.message.PointData;
@@ -73,7 +71,6 @@ public class MultispeakLMServiceImpl implements MultispeakLMService {
 
     @Autowired private MspLMInterfaceMappingDao mspLMInterfaceMappingDao;
 	@Autowired private PaoDao paoDao;
-	@Autowired private LoadControlService loadControlService;
 	@Autowired private FdrTranslationDao fdrTranslationDao;
 	@Autowired private SimplePointAccessDao simplePointAccessDao;
 	@Autowired private MspObjectDao mspObjectDao;
@@ -83,7 +80,6 @@ public class MultispeakLMServiceImpl implements MultispeakLMService {
     @Autowired private MspLMGroupDao mspLMGroupDao;
     @Autowired private PaoDefinitionDao paoDefinitionDao;
     @Autowired private ProgramService programService;
-    @Autowired private RolePropertyDao rolePropertyDao;
 
     private List<? extends String> strategiesToExcludeInReport;
     
