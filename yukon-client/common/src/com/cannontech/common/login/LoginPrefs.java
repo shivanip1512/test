@@ -1,6 +1,7 @@
 package com.cannontech.common.login;
 
 import org.apache.commons.codec.DecoderException;
+import org.apache.commons.lang.StringUtils;
 import org.apache.log4j.Logger;
 
 import com.cannontech.clientutils.YukonLogManager;
@@ -50,20 +51,19 @@ class LoginPrefs extends CtiPreferences {
 	}
 	
 	public String getDefaultPassword() {
-		//if we have a value, we must decrypt it
-		String password = get(DEFAULT_PASSWORD, null);
-		if(password != null) {
-			try {
-                password = aesCipher.decryptHexStr(password);
-            } catch (CryptoException | DecoderException e) {
-                log.warn("Unable to decrypt saved password.", e);
-                password = null;
-            } 
-			return (password == null ? "" : password);
-		} else {
-			return "";
-		}
-	}
+        //if we have a value, we must decrypt it
+        String password = get(DEFAULT_PASSWORD, null);
+        if(StringUtils.isEmpty(password)) {
+            return "";
+        }
+
+        try {
+            return aesCipher.decryptHexStr(password);
+        } catch (CryptoException | DecoderException e) {
+            log.warn("Unable to decrypt saved password.", e);
+            return "";
+        } 
+    }
 
 	/**
 	 * Checks the username to see if it matches the name that

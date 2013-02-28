@@ -55,7 +55,7 @@ public class AESPasswordBasedCrypto implements PasswordBasedCrypto {
      * with values saltIters=2005, ivIters=4019, hmacKeyIters=7003, aesKeyIters=10098.
      *      and generates a random password using CryptoUtils.generateRandomPasskey(16)
      *
-     * @throws PasswordBasedCryptoException
+     * @throws CryptoException
      */
     public AESPasswordBasedCrypto() throws CryptoException {
         this(CryptoUtils.generateRandomPasskey(keyByteLength));
@@ -66,7 +66,7 @@ public class AESPasswordBasedCrypto implements PasswordBasedCrypto {
      * with values saltIters=2005, ivIters=4019, hmacKeyIters=7003, aesKeyIters=10098.
      * 
      * @param password : char[] - password which is used to derive data used by the cipher
-     * @throws PasswordBasedCryptoException
+     * @throws CryptoException
      */
     public AESPasswordBasedCrypto(char[] password) throws CryptoException {
         this(password,defaultSaltIters,defaultIvIters,defaultHmacKeyIters,defaultAesKeyIters);
@@ -79,12 +79,7 @@ public class AESPasswordBasedCrypto implements PasswordBasedCrypto {
      * A password with a high amount of information entropy is suggested.
      * 
      * @param password : char[] - password which is used to derive data used by the cipher
-     * @param saltIters : int
-     * @param ivIters : int
-     * @param hmacKeyIters : int
-     * @param aesKeyIters : int
-     * 
-     * @throws PasswordBasedCryptoException
+     * @throws CryptoException
      */
     private AESPasswordBasedCrypto(char[] password, int saltIters, int ivIters, int hmacKeyIters, int aesKeyIters) throws CryptoException {
         try {
@@ -114,9 +109,6 @@ public class AESPasswordBasedCrypto implements PasswordBasedCrypto {
      * Encrypts the string returning a hex encoded string.
      * 
      * Returns a hex string (e.g. "1234567890abcdef") encoded UTF-8 bytes
-     * 
-     * @param plainText : String
-     * @throws CryptoException 
      */
     @Override
     public synchronized String encryptToHexStr(String plainText) throws CryptoException {
@@ -128,13 +120,10 @@ public class AESPasswordBasedCrypto implements PasswordBasedCrypto {
     }
 
     /**
-     * Decrypts the hex encoded string (UTF-8 bytes) returning a plain text string. The hex string must
-     * be an even number of hex characters. If hexStr has an odd number or non hex characters a DecoderException will
-     * be thrown. 
+     * Decrypts the hex encoded string (UTF-8 bytes) returning a plain text string.
      * 
-     * @param hexStr : String
-     * @throws CryptoException 
-     * @throws DecoderException 
+     * The hex string must be an even number of hex characters. If hexStr has an odd number or non hex characters
+     * a DecoderException will be thrown. 
      */
     @Override
     public synchronized String decryptHexStr(String hexStr) throws CryptoException, DecoderException {
@@ -147,12 +136,10 @@ public class AESPasswordBasedCrypto implements PasswordBasedCrypto {
 
     /**
      * Encrypts the byte array using a symmetric cipher.
+     * 
      * Returns an encrypted byte array.
      * This should use the same internal cipher as decrypt() so anything encrypted by this
      * object will be decrypted into its original byte array
-     * 
-     * @param plainText : byte[]
-     * @throws CryptoException 
      */
     @Override
     public synchronized byte[] encrypt(byte[] plainText) throws CryptoException  {
@@ -174,12 +161,10 @@ public class AESPasswordBasedCrypto implements PasswordBasedCrypto {
 
     /**
      * Decrypts the byte array using a symmetric cipher.
+     * 
      * Returns the plain text version as byte array.
      * This should use the same internal cipher as encrypt() so anything encrypted by this
      * object will be decrypted into its original byte array
-     * 
-     * @param encryptedText : byte[]
-     * @throws PasswordBasedCryptoException 
      */
     @Override
     public synchronized byte[] decrypt(byte[] cipherText) throws CryptoException {
@@ -203,7 +188,6 @@ public class AESPasswordBasedCrypto implements PasswordBasedCrypto {
 
     /**
      * Checks the cipher text against the current cipher for validity
-     * 
      */
     public synchronized boolean isAuthentic(byte[] cipherText) {
         boolean isAuthentic = false;
