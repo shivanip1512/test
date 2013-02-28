@@ -148,6 +148,7 @@
                 <value>servlet-api.jar</value>
                 <value>mail.jar</value>
                 <value>jfreechart.jar</value>
+                <value>jcommon.jar</value>
                 <value>jloox30.jar</value>
                 <value>nagasena.jar</value>
             </set>
@@ -212,6 +213,11 @@
           <bean factory-bean="rolePropertyUserCheckerFactory" factory-method="createRoleChecker">
             <constructor-arg value="APPLICATION_ESUBSTATION_EDITOR"/>
           </bean>
+        </property>
+        <property name="jars">
+            <set>
+                <value>esub.jar</value>
+            </set>
         </property>
     </bean>
     
