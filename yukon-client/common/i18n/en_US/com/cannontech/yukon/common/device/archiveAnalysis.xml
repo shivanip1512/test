@@ -115,7 +115,7 @@
     <entry key="yukon.web.modules.amr.archivedValueExporter.generateReport.label">Generate Report</entry>
     <entry key="yukon.web.modules.amr.archivedValueExporter.saveFormatAndGenerateReport.label">Save Format and Generate Report</entry>
     
-    <entry key="yukon.web.modules.amr.archivedValueExporter.VIEW.pageName">Archived Data Export</entry>
+    <entry key="yukon.web.modules.amr.archivedValueExporter.pageName">Archived Data Export</entry>
     <entry key="yukon.web.modules.amr.archivedValueExporter.EDIT.pageName">Archived Data Export</entry>
     <entry key="yukon.web.modules.amr.archivedValueExporter.EDIT.pageDescription">Edit</entry>
     <entry key="yukon.web.modules.amr.archivedValueExporter.CREATE.pageName">Archived Data Export</entry>

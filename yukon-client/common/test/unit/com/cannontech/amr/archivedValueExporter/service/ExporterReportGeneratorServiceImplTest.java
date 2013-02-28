@@ -161,7 +161,7 @@ public class ExporterReportGeneratorServiceImplTest {
         // Unit of Measure Test 
         Meter meter = meterDao.getForMeterNumber("Meter Number 1");
         ExportField exportFieldUnitOfMeasure = getExportField(0, FieldType.UNIT_OF_MEASURE, earliestUsageAttribute, AttributeField.UNIT_OF_MEASURE, null);
-        String unitOfMeasureValue = exporterReportGeneratorService.getValue(exportFieldUnitOfMeasure, meter, null, pointValueQualityHolder, userContextOne);
+        String unitOfMeasureValue = exporterReportGeneratorService.getValue(exportFieldUnitOfMeasure, meter, USAGE, pointValueQualityHolder, userContextOne);
         
         Assert.assertEquals(unitOfMeasureValue, "kWH");
         

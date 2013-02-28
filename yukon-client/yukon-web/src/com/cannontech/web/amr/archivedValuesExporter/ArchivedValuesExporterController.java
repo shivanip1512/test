@@ -290,7 +290,7 @@ public class ArchivedValuesExporterController {
     public String moveFieldUp(ModelMap model, HttpServletRequest request, YukonUserContext userContext, 
                               @ModelAttribute("backingBean") ArchivedValuesExporterBackingBean backingBean) {
 
-        backingBean.moveFieldUp(true);
+        backingBean.moveFieldUp();
         model.addAttribute("mode", PageEditMode.EDIT);
         setupModel(model, userContext, backingBean.getFormat());
         return "archivedValuesExporter/exporter.jsp";
@@ -300,7 +300,7 @@ public class ArchivedValuesExporterController {
     public String moveFieldDown(ModelMap model, HttpServletRequest request, YukonUserContext userContext,
                                 @ModelAttribute("backingBean") ArchivedValuesExporterBackingBean backingBean) {
 
-        backingBean.moveFieldUp(false);
+        backingBean.moveFieldDown();
         model.addAttribute("mode", PageEditMode.EDIT);
         setupModel(model, userContext, backingBean.getFormat());
         return "archivedValuesExporter/exporter.jsp";

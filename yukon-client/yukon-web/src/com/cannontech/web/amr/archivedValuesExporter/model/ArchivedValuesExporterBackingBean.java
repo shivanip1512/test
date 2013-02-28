@@ -201,13 +201,19 @@ public class ArchivedValuesExporterBackingBean{
         return fieldSelect;
     }
 
-    public void moveFieldUp(boolean moveUp) {
+    public void moveFieldUp() {
         int newIndex = getRowIndex();
-        if (moveUp) {
-            --newIndex;
-        } else {
-            ++newIndex;
-        }
+        --newIndex;
+
+        ExportField exportField = format.getFields().get(getRowIndex());
+        format.getFields().remove(getRowIndex());
+        format.getFields().add(newIndex, exportField);
+    }
+
+    public void moveFieldDown() {
+        int newIndex = getRowIndex();
+        ++newIndex;
+
         ExportField exportField = format.getFields().get(getRowIndex());
         format.getFields().remove(getRowIndex());
         format.getFields().add(newIndex, exportField);

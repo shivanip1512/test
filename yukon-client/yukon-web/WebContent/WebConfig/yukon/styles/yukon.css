@@ -88,6 +88,8 @@ table td, table th {padding:2px 5px;}
 table th, .TitleHeader, .columnHeader {background:white; text-align:left; font-weight:bold; border-bottom:solid 1px #ccc;}
 table.naturalWidth {width: auto;}
 
+table.nowrap th, table.nowrap td {white-space: nowrap;}
+
 .compactResultsTable, .resultsTable, .nameValueTable {width:100%;border-collapse:collapse;}
 .compactResultsTable tr.focused, .compactResultsTable tr.focused:nth-child(2n) { background-color: #DAE2FF;}
 .compactResultsTable {font-size:0.8em;}
