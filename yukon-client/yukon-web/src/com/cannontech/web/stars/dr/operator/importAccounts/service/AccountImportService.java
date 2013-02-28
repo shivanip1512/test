@@ -59,6 +59,7 @@ import com.cannontech.stars.ws.StarsControllableDeviceHelper;
 import com.cannontech.system.GlobalSettingType;
 import com.cannontech.system.dao.GlobalSettingDao;
 import com.cannontech.tools.email.EmailMessage;
+import com.cannontech.tools.email.EmailService;
 import com.cannontech.user.UserUtils;
 import com.cannontech.user.YukonUserContext;
 import com.cannontech.util.ServletUtil;
@@ -87,6 +88,7 @@ public class AccountImportService {
     @Autowired private StarsControllableDeviceHelper deviceHelper;
     @Autowired private EnrollmentHelperService enrollmentHelperService;
     @Autowired private GlobalSettingDao globalSettingDao;
+    @Autowired private EmailService emailService;
     
     private static final Logger log = YukonLogManager.getLogger(AccountImportService.class);
     private static final String LINE_SEPARATOR = System.getProperty("line.separator");
@@ -1286,7 +1288,7 @@ public class AccountImportService {
         emailMsg.setBody("The log file containing information of the import process is attached." + LINE_SEPARATOR + LINE_SEPARATOR);
         emailMsg.addAttachment(importLog, null);
         
-        emailMsg.send();
+        emailService.send(emailMsg);
     }
 
     @Resource(name="longRunningExecutor")

@@ -27,16 +27,17 @@ import com.cannontech.database.data.lite.LiteYukonUser;
 import com.cannontech.i18n.YukonUserContextMessageSourceResolver;
 import com.cannontech.i18n.service.YukonUserContextService;
 import com.cannontech.roles.yukon.EnergyCompanyRole;
-import com.cannontech.stars.core.dao.StarsCustAccountInformationDao;
 import com.cannontech.stars.core.dao.InventoryBaseDao;
+import com.cannontech.stars.core.dao.StarsCustAccountInformationDao;
 import com.cannontech.stars.database.data.lite.LiteAccountInfo;
-import com.cannontech.stars.database.data.lite.LiteStarsEnergyCompany;
 import com.cannontech.stars.database.data.lite.LiteLmHardwareBase;
+import com.cannontech.stars.database.data.lite.LiteStarsEnergyCompany;
 import com.cannontech.stars.dr.account.model.CustomerAccount;
 import com.cannontech.stars.dr.optout.service.OptOutNotificationService;
 import com.cannontech.stars.dr.optout.service.OptOutNotificationUtil;
 import com.cannontech.stars.dr.optout.service.OptOutRequest;
 import com.cannontech.tools.email.EmailMessage;
+import com.cannontech.tools.email.EmailService;
 import com.cannontech.user.YukonUserContext;
 
 public class OptOutNotificationServiceImpl implements OptOutNotificationService {
@@ -49,11 +50,13 @@ public class OptOutNotificationServiceImpl implements OptOutNotificationService 
     private static final String REENABLE_MESSAGEBODY = "yukon.dr.consumer.reenableoptoutnotification.messageBody";
     
     private final Logger logger = YukonLogManager.getLogger(OptOutNotificationServiceImpl.class);
-    private YukonUserContextMessageSourceResolver messageSourceResolver;
-    private DateFormattingService dateFormattingService;
-    private StarsCustAccountInformationDao starsCustAccountInformationDao;
-    private InventoryBaseDao inventoryBaseDao;
-    private YukonUserContextService yukonUserContextService;
+    
+    @Autowired private YukonUserContextMessageSourceResolver messageSourceResolver;
+    @Autowired private DateFormattingService dateFormattingService;
+    @Autowired private StarsCustAccountInformationDao starsCustAccountInformationDao;
+    @Autowired private InventoryBaseDao inventoryBaseDao;
+    @Autowired private YukonUserContextService yukonUserContextService;
+    @Autowired private EmailService emailService;
     
     @Override
     public void sendOptOutNotification(final CustomerAccount customerAccount,  
@@ -176,7 +179,8 @@ public class OptOutNotificationServiceImpl implements OptOutNotificationService 
         
         EmailMessage emailMsg = new EmailMessage(recipients, subject, messageBody);
         emailMsg.setFrom(fromAddress);
-        emailMsg.send();
+        
+        emailService.send(emailMsg);
 	}
     
     private String getMessageBody(Holder holder) {
@@ -239,35 +243,4 @@ public class OptOutNotificationServiceImpl implements OptOutNotificationService 
         String messageBody;
         YukonUserContext yukonUserContext;
     }
-    
-    @Autowired
-    public void setMessageSourceResolver(
-            YukonUserContextMessageSourceResolver messageSourceResolver) {
-        this.messageSourceResolver = messageSourceResolver;
-    }
-
-    @Autowired
-    public void setDateFormattingService(
-            DateFormattingService dateFormattingService) {
-        this.dateFormattingService = dateFormattingService;
-    }
-    
-    @Autowired
-    public void setStarsCustAccountInformationDao(
-            StarsCustAccountInformationDao starsCustAccountInformationDao) {
-        this.starsCustAccountInformationDao = starsCustAccountInformationDao;
-    }
-    
-    @Autowired
-    public void setInventoryBaseDao(
-			InventoryBaseDao inventoryBaseDao) {
-		this.inventoryBaseDao = inventoryBaseDao;
-	}
-
-    @Autowired
-    public void setYukonUserContextService(
-			YukonUserContextService yukonUserContextService) {
-		this.yukonUserContextService = yukonUserContextService;
-	}
-    
 }

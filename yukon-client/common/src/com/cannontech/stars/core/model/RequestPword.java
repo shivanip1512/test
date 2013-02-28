@@ -15,6 +15,7 @@ import com.cannontech.spring.YukonSpringHook;
 import com.cannontech.system.GlobalSettingType;
 import com.cannontech.system.dao.GlobalSettingDao;
 import com.cannontech.tools.email.EmailMessage;
+import com.cannontech.tools.email.EmailService;
 
 /**
  * @author rneuharth
@@ -260,7 +261,8 @@ public class RequestPword
 
 		try
 		{
-			msg.send();
+		    EmailService emailService = YukonSpringHook.getBean(EmailService.class);
+			emailService.send(msg);
 		}
 		catch( Exception e )
 		{

@@ -231,6 +231,12 @@
     <entry key="yukon.common.setting.MAIL_FROM_ADDRESS.description">Name of the FROM email address the mail server will use</entry>
     <entry key="yukon.common.setting.SMTP_HOST">SMTP Host</entry>
     <entry key="yukon.common.setting.SMTP_HOST.description">Name or IP address of the mail server</entry>
+    <entry key="yukon.common.setting.SMTP_PORT">SMTP Port</entry>
+    <entry key="yukon.common.setting.SMTP_PORT.description">TCP/IP port of the mail server</entry>
+    <entry key="yukon.common.setting.SMTP_USERNAME">SMTP Username</entry>
+    <entry key="yukon.common.setting.SMTP_USERNAME.description">Username of the mail server</entry>
+    <entry key="yukon.common.setting.SMTP_PASSWORD">SMTP Password</entry>
+    <entry key="yukon.common.setting.SMTP_PASSWORD.description">Password of the mail server</entry>
     <entry key="yukon.common.setting.LOADCONTROL_PORT">Load Control Port</entry>
     <entry key="yukon.common.setting.LOADCONTROL_PORT.description">TCP/IP port of the Yukon Load Management Service</entry>
     <entry key="yukon.common.setting.LOADCONTROL_MACHINE">Load Control Machine</entry>

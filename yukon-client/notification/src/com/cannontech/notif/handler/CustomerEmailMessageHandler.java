@@ -1,10 +1,13 @@
 package com.cannontech.notif.handler;
 
-import java.util.*;
+import java.util.HashSet;
+import java.util.Set;
 
 import javax.mail.MessagingException;
+import javax.mail.internet.InternetAddress;
 
 import org.apache.log4j.Logger;
+import org.springframework.beans.factory.annotation.Autowired;
 
 import com.cannontech.clientutils.YukonLogManager;
 import com.cannontech.common.constants.YukonListEntryTypes;
@@ -15,11 +18,14 @@ import com.cannontech.message.util.Message;
 import com.cannontech.notif.outputs.ContactableCustomer;
 import com.cannontech.notif.outputs.StandardEmailHandler;
 import com.cannontech.notif.server.NotifServerConnection;
-import com.cannontech.tools.email.SimpleEmailMessage;
+import com.cannontech.tools.email.EmailService;
+import com.cannontech.tools.email.EmailServiceMessage;
 
 public class CustomerEmailMessageHandler implements MessageHandler<NotifCustomerEmailMsg> {
     
     private static final Logger log = YukonLogManager.getLogger(CustomerEmailMessageHandler.class);
+    
+    @Autowired private EmailService emailService;
     
     public static final Set<Integer> EMAIL_NOTIFICATION_TYPES = new HashSet<Integer>(1);
     
@@ -38,25 +44,19 @@ public class CustomerEmailMessageHandler implements MessageHandler<NotifCustomer
         
         ContactableCustomer customer = new ContactableCustomer(DaoFactory.getCustomerDao().getLiteCICustomer(msg.getCustomerID()));
         
-        try {
-            SimpleEmailMessage emailMsg = new SimpleEmailMessage();
-
-            emailMsg.setSubject(msg.getSubject());
-            emailMsg.setBody(msg.getBody());
-            
-            for (Iterator iter = customer.getNotifications(StandardEmailHandler.checker).iterator(); iter.hasNext();) {
-                LiteContactNotification addr = (LiteContactNotification) iter.next();
-                String emailTo = addr.getNotification();
-                try {
-                    emailMsg.setRecipient(emailTo);
-                    emailMsg.send();
-                } catch (MessagingException e) {
-                    log.warn("Unable to email message for " + customer + " to address " + emailTo + ".", e);
-                }
-
+        for (LiteContactNotification notif : customer.getNotifications(StandardEmailHandler.checker)) {
+            String emailTo = notif.getNotification();
+            try {
+                EmailServiceMessage data = 
+                        new EmailServiceMessage(
+                            InternetAddress.parse(emailTo), 
+                            msg.getSubject(), 
+                            msg.getBody());
+                
+                emailService.sendMessage(data);
+            } catch (MessagingException e) {
+                log.warn("Unable to email message for " + customer + " to address " + emailTo + ".", e);
             }
-        } catch (MessagingException e) {
-            log.error("Unable to email message '" + msg.getSubject() + "' to " + customer + ".", e );
         }
     }
 }

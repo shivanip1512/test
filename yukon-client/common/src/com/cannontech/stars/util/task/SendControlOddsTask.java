@@ -14,16 +14,16 @@ import com.cannontech.common.util.CtiUtilities;
 import com.cannontech.core.dao.DaoFactory;
 import com.cannontech.database.data.lite.LiteContact;
 import com.cannontech.database.data.lite.LiteContactNotification;
-import com.cannontech.roles.operator.ConsumerInfoRole;
 import com.cannontech.spring.YukonSpringHook;
 import com.cannontech.stars.core.dao.StarsCustAccountInformationDao;
 import com.cannontech.stars.database.cache.StarsDatabaseCache;
-import com.cannontech.stars.database.data.lite.LiteLMProgramWebPublishing;
 import com.cannontech.stars.database.data.lite.LiteAccountInfo;
+import com.cannontech.stars.database.data.lite.LiteLMProgramWebPublishing;
 import com.cannontech.stars.database.data.lite.LiteStarsEnergyCompany;
 import com.cannontech.stars.database.data.lite.LiteStarsLMProgram;
 import com.cannontech.stars.util.StarsUtils;
 import com.cannontech.tools.email.EmailMessage;
+import com.cannontech.tools.email.EmailService;
 import com.cannontech.util.ServletUtil;
 
 /**
@@ -160,9 +160,11 @@ public class SendControlOddsTask implements Runnable {
 					messageText.append( LINE_SEPARATOR );
 					
 					try {
+				        EmailService emailService = YukonSpringHook.getBean(EmailService.class);
+					    
 						EmailMessage emailMsg = new EmailMessage( to, subject, messageText.toString() );
 						emailMsg.setFrom( energyCompany.getAdminEmailAddress() );
-						emailMsg.send();
+						emailService.send(emailMsg);
 					}
 					catch (Exception e) {
 						com.cannontech.clientutils.CTILogger.error( e.getMessage(), e );

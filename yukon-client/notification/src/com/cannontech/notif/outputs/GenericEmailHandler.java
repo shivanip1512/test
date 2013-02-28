@@ -3,6 +3,7 @@ package com.cannontech.notif.outputs;
 import java.util.List;
 
 import javax.mail.MessagingException;
+import javax.mail.internet.InternetAddress;
 
 import org.apache.commons.lang.StringUtils;
 import org.apache.log4j.Logger;
@@ -12,7 +13,9 @@ import com.cannontech.clientutils.YukonLogManager;
 import com.cannontech.common.util.NotificationTypeChecker;
 import com.cannontech.database.data.lite.LiteContactNotification;
 import com.cannontech.database.data.notification.NotifType;
-import com.cannontech.tools.email.SimpleEmailMessage;
+import com.cannontech.spring.YukonSpringHook;
+import com.cannontech.tools.email.EmailService;
+import com.cannontech.tools.email.EmailServiceMessage;
 
 public abstract class GenericEmailHandler implements OutputHandler {
     private static final Logger log = YukonLogManager.getLogger(GenericEmailHandler.class);
@@ -51,26 +54,27 @@ public abstract class GenericEmailHandler implements OutputHandler {
                 return;
             }
 
-            SimpleEmailMessage emailMsg = new SimpleEmailMessage();
-            emailMsg.setSubject(emailSubject);
-            emailMsg.setBody(emailBody);
-            
-            // override default from address (SystemRole.MAIL_FROM_ADDRESS) and set using address from XML
-            if(StringUtils.isNotBlank(from)) {
-                emailMsg.setFrom(from);
-            }
+            EmailService emailService = YukonSpringHook.getBean(EmailService.class);
 
             for (LiteContactNotification emailNotif : emailList) {
                 boolean success = false;
                 String emailTo = emailNotif.getNotification();
                 
-                // Set the recipient of the email message and attempt to send.
                 // The try/catch here prevents a single bad address from
                 // preventing other addresses in the contact from being tried.
-                
                 try {
-                    emailMsg.setRecipient(emailTo);
-                    emailMsg.send();
+                    InternetAddress fromAddr = 
+                            StringUtils.isNotBlank(from) ? new InternetAddress(from) : null;
+                    
+                    EmailServiceMessage message = 
+                            new EmailServiceMessage(
+                                fromAddr,
+                                InternetAddress.parse(emailTo), 
+                                emailSubject, 
+                                emailBody);
+                    
+                    emailService.sendMessage(message);
+                    
                     atLeastOneSucceeded = true;
                     success = true;
                     log.debug("Sent \"" + emailSubject + "\" to " + emailTo);

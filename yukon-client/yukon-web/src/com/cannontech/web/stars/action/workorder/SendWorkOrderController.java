@@ -9,6 +9,7 @@ import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.HttpSession;
 
 import org.jfree.report.JFreeReport;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.ServletRequestUtils;
 
 import com.cannontech.analysis.ReportFuncs;
@@ -19,6 +20,7 @@ import com.cannontech.clientutils.CTILogger;
 import com.cannontech.common.model.ContactNotificationType;
 import com.cannontech.database.data.lite.LiteContact;
 import com.cannontech.database.data.lite.LiteContactNotification;
+import com.cannontech.spring.YukonSpringHook;
 import com.cannontech.stars.database.data.lite.LiteServiceCompany;
 import com.cannontech.stars.database.data.lite.LiteStarsEnergyCompany;
 import com.cannontech.stars.database.data.lite.LiteWorkOrderBase;
@@ -26,10 +28,13 @@ import com.cannontech.stars.util.ServletUtils;
 import com.cannontech.stars.util.StarsUtils;
 import com.cannontech.stars.web.StarsYukonUser;
 import com.cannontech.tools.email.EmailMessage;
+import com.cannontech.tools.email.EmailService;
 import com.cannontech.web.stars.action.StarsWorkorderActionController;
 
 public class SendWorkOrderController extends StarsWorkorderActionController {
 
+    @Autowired private EmailService emailService;
+    
     @Override
     public void doAction(final HttpServletRequest request, final HttpServletResponse response, 
             final HttpSession session, final StarsYukonUser user, final LiteStarsEnergyCompany energyCompany) throws Exception {
@@ -96,7 +101,7 @@ public class SendWorkOrderController extends StarsWorkorderActionController {
             emailMsg.setBody( "" );
             emailMsg.addAttachment( tempFile, fileName );
             
-            emailMsg.send();
+            emailService.send(emailMsg);
             
             session.setAttribute( ServletUtils.ATT_CONFIRM_MESSAGE, "Sent work order to the service company successfully." );
         }

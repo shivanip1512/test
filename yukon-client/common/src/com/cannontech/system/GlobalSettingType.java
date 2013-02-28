@@ -1,8 +1,6 @@
 package com.cannontech.system;
 
-import static com.cannontech.core.roleproperties.InputTypeFactory.booleanType;
-import static com.cannontech.core.roleproperties.InputTypeFactory.integerType;
-import static com.cannontech.core.roleproperties.InputTypeFactory.stringType;
+import static com.cannontech.core.roleproperties.InputTypeFactory.*;
 
 import java.math.RoundingMode;
 import java.util.Set;
@@ -76,6 +74,9 @@ public enum GlobalSettingType implements DisplayableEnum {
     LOADCONTROL_MACHINE(GlobalSettingSubCategory.YUKON_SERVICES, stringType(), "127.0.0.1"),
     LOADCONTROL_PORT(GlobalSettingSubCategory.YUKON_SERVICES, integerType(), 1920),
     SMTP_HOST(GlobalSettingSubCategory.YUKON_SERVICES, stringType(), "127.0.0.1"),
+    SMTP_PORT(GlobalSettingSubCategory.YUKON_SERVICES, integerType(), null),
+    SMTP_USERNAME(GlobalSettingSubCategory.YUKON_SERVICES, stringType(), null),
+    SMTP_PASSWORD(GlobalSettingSubCategory.YUKON_SERVICES, stringType(), null),
     MAIL_FROM_ADDRESS(GlobalSettingSubCategory.YUKON_SERVICES, stringType(), "yukon@cannontech.com"),
     NOTIFICATION_HOST(GlobalSettingSubCategory.YUKON_SERVICES, stringType(), "127.0.0.1"),
     NOTIFICATION_PORT(GlobalSettingSubCategory.YUKON_SERVICES, integerType(), 1515),
