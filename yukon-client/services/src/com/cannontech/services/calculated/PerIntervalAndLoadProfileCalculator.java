@@ -125,14 +125,22 @@ public class PerIntervalAndLoadProfileCalculator implements PointCalculator {
         if (previousValue != null && previousValue.getInterval() == interval) {
             previous = previousValue.getValue();
             foundPrevious = true;
+            log.debug(String.format("Found previous interval from Cache: %s", previousValue));
         } else {
             // Didn't cache it, ask dispatch, this is really just a hope that it hasn't gotten blown away yet by the archiving thread
             PointValueQualityHolder previousDispatch = dds.getPointValue(pvqh.getId());
             if (previousDispatch.getPointDataTimeStamp().equals(previousInterval.toDate())) {
                 previous = previousDispatch.getValue();
                 foundPrevious = true;
+                log.debug(String.format("Found previous interval from Dispatch: %s", previousDispatch));
             } else {
                 // try getting it from rph?
+                PointValueQualityHolder previousRph = rphDao.getSpecificValue(pvqh.getId(), previousInterval.getMillis());
+                if (previousRph != null) {
+                    previous = previousRph.getValue();
+                    foundPrevious = true;
+                    log.debug(String.format("Found previous interval from RPH: %s", previousRph));
+                }
             }
         }
         

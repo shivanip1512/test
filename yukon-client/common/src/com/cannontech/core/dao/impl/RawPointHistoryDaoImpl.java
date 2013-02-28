@@ -260,9 +260,15 @@ public class RawPointHistoryDaoImpl implements RawPointHistoryDao {
     
     @Override
     public ListMultimap<PaoIdentifier, PointValueQualityHolder> getLimitedAttributeData(
-            Iterable<? extends YukonPao> displayableDevices, Attribute attribute, final Range<Instant> dateRange,
-            final Range<Long> changeIdRange, final int maxRows, final boolean excludeDisabledPaos, final Order order,
+            Iterable<? extends YukonPao> displayableDevices, 
+            Attribute attribute, 
+            final Range<Instant> dateRange,
+            final Range<Long> changeIdRange, 
+            final int maxRows, 
+            final boolean excludeDisabledPaos, 
+            final Order order,
             final OrderBy orderBy) {
+        
         SqlFragmentGeneratorFactory factory = new SqlFragmentGeneratorFactory() {
             @Override
             public SqlFragmentGenerator<Integer> create(final PointIdentifier pointIdentifier) {
@@ -901,6 +907,24 @@ public class RawPointHistoryDaoImpl implements RawPointHistoryDao {
     	sql.append("WHERE rph.changeId").eq(changeId);
     	
     	return yukonTemplate.queryForObject(sql, new LiteRPHQualityRowMapper());
+    }
+    
+    
+    @Override
+    public PointValueQualityHolder getSpecificValue(int pointId, long timestamp) {
+        SqlStatementBuilder sql = new SqlStatementBuilder();
+        sql.append("SELECT");
+        sql.append("rph.pointId,");
+        sql.append("rph.timestamp,");
+        sql.append("rph.value,");
+        sql.append("rph.quality,");
+        sql.append("p.pointtype");
+        sql.append("FROM RawPointHistory rph");
+        sql.append("JOIN Point p ON (rph.pointId = p.pointId)");
+        sql.append("WHERE p.pointid").eq(pointId);
+        sql.append("AND timestamp").eq(new Date(timestamp));
+        
+        return yukonTemplate.queryForObject(sql, new LiteRPHQualityRowMapper());
     }
 
     private interface SqlFragmentGeneratorFactory {

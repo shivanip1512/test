@@ -94,6 +94,7 @@ public class CalculatedPointDataProducer {
             }
             CacheValue value = CacheValue.of(pvqh.getValue(), newValue.getInterval(), previous, next);
             recentReadings.put(currentKey, value);
+            log.debug("Recent readings cache size (approximate): " + recentReadings.size());
         }
     }
     
