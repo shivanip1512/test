@@ -22,7 +22,7 @@ import com.google.common.collect.Lists;
 public class DeleteInventory {
 
 	private Logger log = YukonLogManager.getLogger(DeleteInventory.class);
-	private String appName = "DeleteInventory";
+	private final static String appName = "DeleteInventory";
 	private InventoryBaseDao inventoryBaseDao;
 	private HardwareService hardwareService;
 
@@ -39,11 +39,12 @@ public class DeleteInventory {
 	}
 
 	public void init() {
-		YukonSpringHook.setDefaultContext("com.cannontech.context.tools");
+        BootstrapUtils.setApplicationName(appName);
+
+        YukonSpringHook.setDefaultContext("com.cannontech.context.tools");
 		inventoryBaseDao = YukonSpringHook.getBean( "inventoryBaseDao", InventoryBaseDao.class);
 		hardwareService = YukonSpringHook.getBean("hardwareService", HardwareService.class);
 
-		BootstrapUtils.setApplicationName(appName);
 		CtiUtilities.setRunningAsClient();
 		CTILogger.info(appName + " starting...");
 	}
