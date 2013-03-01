@@ -53,6 +53,19 @@ public class ProgramServiceAdapter implements ProgramService {
                                                          YukonUserContext userContext) {
         throw new UnsupportedOperationException("Not Implemented");
     }
+    
+    @Override
+    public List<ConstraintViolations> getConstraintViolationForStartScenario(int scenarioId,
+                                                                             Date startDate,
+                                                                             Date stopDate) {
+        throw new UnsupportedOperationException("Not Implemented");
+    }
+    
+    @Override
+    public List<ConstraintViolations> getConstraintViolationForStopScenario(int scenarioId,
+                                                                            Date stopDate) {
+        throw new UnsupportedOperationException("Not Implemented");
+    }
 
     @Override
     public SearchResult<DisplayablePao> filterPrograms(UiFilter<DisplayablePao> filter,
@@ -81,9 +94,9 @@ public class ProgramServiceAdapter implements ProgramService {
     }
 
     @Override
-    public void startProgram(int programId, int gearNumber, Date startDate, Duration startOffset,
-                             boolean stopScheduled, Date stopDate, Duration stopOffset,
-                             boolean overrideConstraints, List<GearAdjustment> gearAdjustments) {
+    public ProgramStatus startProgram(int programId, int gearNumber, Date startDate, Duration startOffset,
+                                      boolean stopScheduled, Date stopDate, Duration stopOffset,
+                                      boolean overrideConstraints, List<GearAdjustment> gearAdjustments) {
         throw new UnsupportedOperationException("Not Implemented");
     }
 

@@ -1,0 +1,17 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE beans PUBLIC "-//SPRING//DTD BEAN//EN" "http://www.springframework.org/dtd/spring-beans.dtd">
+
+<beans>
+    <!-- The application context files that are loaded by Tomcat -->
+    <bean id="com.cannontech.context.openadr-web" 
+        class="org.springframework.context.support.ClassPathXmlApplicationContext"
+        lazy-init="true">
+        <constructor-arg>
+            <list>
+            </list>
+        </constructor-arg>
+        <constructor-arg>
+            <ref bean="com.cannontech.context.common"/>
+        </constructor-arg>
+    </bean>
+</beans>

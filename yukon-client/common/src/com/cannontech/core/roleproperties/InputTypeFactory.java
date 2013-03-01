@@ -15,6 +15,7 @@ import com.cannontech.web.input.type.InputOption;
 import com.cannontech.web.input.type.InputOptionProvider;
 import com.cannontech.web.input.type.InputType;
 import com.cannontech.web.input.type.IntegerType;
+import com.cannontech.web.input.type.UserType;
 import com.cannontech.web.input.type.LongType;
 import com.cannontech.web.input.type.StringType;
 import com.google.common.collect.ImmutableList;
@@ -24,7 +25,6 @@ import com.google.common.collect.ImmutableList.Builder;
  * This class should never have any bean dependencies.
  * 
  * For Role Properties, we need to keep in simple.
- *
  */
 public class InputTypeFactory {
     private static final Logger log = YukonLogManager.getLogger(InputTypeFactory.class);
@@ -33,7 +33,7 @@ public class InputTypeFactory {
     private static final InputType<Boolean> booleanType = new BooleanType(true);
     private static final InputType<Integer> integerType = new IntegerType();
     private static final InputType<Long> longType = new LongType();
-
+    private static final InputType<Integer> userType = new UserType();
 
     public static <T extends Enum<T>> InputType<T> enumType(final Class<T> enumClass) {
         BaseEnumeratedType<T> type = new BaseEnumeratedType<T>() {
@@ -90,6 +90,10 @@ public class InputTypeFactory {
     
     public static InputType<Long> longType() {
         return longType;
+    }
+    
+    public static InputType<Integer> userType() {
+        return userType;
     }
     
     public static Object convertPropertyValue(InputType<?> type, String value) {

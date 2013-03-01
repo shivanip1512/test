@@ -111,6 +111,8 @@
     <entry key="yukon.common.setting.subcategory.MULTISPEAK.description">Vendor info, device mapping, billing groups</entry>
     <entry key="yukon.common.setting.subcategory.VOICE">Voice</entry>
     <entry key="yukon.common.setting.subcategory.VOICE.description">Voice server call prefix, call repsonse time</entry>
+    <entry key="yukon.common.setting.subcategory.OPEN_ADR">OpenADR</entry>
+    <entry key="yukon.common.setting.subcategory.OPEN_ADR.description">OpenADR connection settings</entry>
     <entry key="yukon.common.setting.subcategory.GRAPHING">Graphing</entry>
     <entry key="yukon.common.setting.subcategory.GRAPHING.description">Graph directory, interval settings</entry>
     <entry key="yukon.common.setting.subcategory.DR">Demand Reponse</entry>
@@ -271,6 +273,28 @@
     <entry key="yukon.common.setting.GOOGLE_ANALYTICS_ENABLED.description">Turn on Google analytics for the web server.</entry>
     <entry key="yukon.common.setting.GOOGLE_ANALYTICS_TRACKING_IDS">Google Analytics Tracking ID's</entry>
     <entry key="yukon.common.setting.GOOGLE_ANALYTICS_TRACKING_IDS.description">The tracking ID that google analytics will use.</entry>
+    <entry key="yukon.common.setting.OADR_REQUEST_INTERVAL">Request Interval</entry>
+    <entry key="yukon.common.setting.OADR_REQUEST_INTERVAL.description">The number of milliseconds between OpenADR pull requests.</entry>
+    <entry key="yukon.common.setting.OADR_VEN_ID">VEN ID</entry>
+    <entry key="yukon.common.setting.OADR_VEN_ID.description">The unique identifier of the VEN.</entry>
+    <entry key="yukon.common.setting.OADR_VTN_ID">VTN ID</entry>
+    <entry key="yukon.common.setting.OADR_VTN_ID.description">The unique identifier of the VTN.</entry>
+    <entry key="yukon.common.setting.OADR_VTN_URL">VTN URL</entry>
+    <entry key="yukon.common.setting.OADR_VTN_URL.description">The URL of the OpenADR VTN.</entry>
+    <entry key="yukon.common.setting.OADR_KEYSTORE_PATH">Keystore Path</entry>
+    <entry key="yukon.common.setting.OADR_KEYSTORE_PATH.description">The complete path of the keystore file which contains the VEN certificate.</entry>
+    <entry key="yukon.common.setting.OADR_TRUSTSTORE_PATH">Truststore Path</entry>
+    <entry key="yukon.common.setting.OADR_TRUSTSTORE_PATH.description">The complete path of the truststore file which contains the VTN certificate.</entry>
+    <entry key="yukon.common.setting.OADR_KEYSTORE_PASSWORD">Keystore Password</entry>
+    <entry key="yukon.common.setting.OADR_KEYSTORE_PASSWORD.description">The keystore's password.</entry>
+    <entry key="yukon.common.setting.OADR_TRUSTSTORE_PASSWORD">Truststore Password</entry>
+    <entry key="yukon.common.setting.OADR_TRUSTSTORE_PASSWORD.description">The truststore's password.</entry>
+    <entry key="yukon.common.setting.OADR_REPLY_LIMIT">Reply Limit</entry>
+    <entry key="yukon.common.setting.OADR_REPLY_LIMIT.description">The maximum number of distribute events to receive from the VTN (No limit if 0.)</entry>
+    <entry key="yukon.common.setting.OADR_VTN_THUMBPRINT">VTN Thumprint</entry>
+    <entry key="yukon.common.setting.OADR_VTN_THUMBPRINT.description">The certificate thumbprint of the VTN.</entry>
+    <entry key="yukon.common.setting.OADR_YUKON_USER">OpenADR Yukon User</entry>
+    <entry key="yukon.common.setting.OADR_YUKON_USER.description">The Yukon User for which the load management requests will be executed.</entry>
     
     <entry key="yukon.common.setting.DATABASE_MIGRATION_FILE_LOCATION">Database Migration File Location</entry>
     <entry key="yukon.common.setting.DATABASE_MIGRATION_FILE_LOCATION.description">File location of the database migration export process.</entry>

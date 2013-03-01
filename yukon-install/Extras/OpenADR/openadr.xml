@@ -1,0 +1,4 @@
+<Context path="/openadr" docBase="C:\Yukon\Server\Extras\OpenADR\openadr.war">
+    <Environment name="yukon.base" value="C:\Yukon" type="java.lang.String" override="false"/>
+    <Parameter name="cti.app.name" value="openadr" override="false"/> 
+</Context>

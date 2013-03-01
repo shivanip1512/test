@@ -1,0 +1,46 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<web-app xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns="http://java.sun.com/xml/ns/javaee"
+    xmlns:web="http://java.sun.com/xml/ns/javaee/web-app_2_5.xsd" xsi:schemaLocation="http://java.sun.com/xml/ns/javaee http://java.sun.com/xml/ns/javaee/web-app_3_0.xsd"
+    id="WebApp_ID" version="3.0">
+    <display-name>openadr-web</display-name>
+
+    <context-param>
+        <param-name>locatorFactorySelector</param-name>
+        <param-value>classpath*:beanRefContext.xml</param-value>
+    </context-param>
+
+    <context-param>
+        <!-- In addition to its normal Spring meaning, this is used to set the default context on the 
+            YukonSpringHook. -->
+        <param-name>parentContextKey</param-name>
+        <param-value>com.cannontech.context.openadr-web</param-value>
+    </context-param>
+
+    <context-param>
+        <param-name>contextClass</param-name>
+        <!-- A special class is used here to override the default location of the .xml files. -->
+        <param-value>com.cannontech.spring.CannonXmlWebApplicationContext</param-value>
+    </context-param>
+    
+    <context-param>
+        <!-- This is read by the CannonContextLoaderListener and then used to set a system property
+             with the same name and value. -->
+        <param-name>cti.app.name</param-name>
+        <param-value>OpenADR</param-value>
+    </context-param>
+
+    <listener>
+        <listener-class>
+            com.cannontech.web.util.CannonContextLoaderListener
+        </listener-class>
+    </listener>
+
+    <welcome-file-list>
+        <welcome-file>index.html</welcome-file>
+        <welcome-file>index.htm</welcome-file>
+        <welcome-file>index.jsp</welcome-file>
+        <welcome-file>default.html</welcome-file>
+        <welcome-file>default.htm</welcome-file>
+        <welcome-file>default.jsp</welcome-file>
+    </welcome-file-list>
+</web-app>

@@ -62,6 +62,19 @@ public enum GlobalSettingType implements DisplayableEnum {
     MSP_LM_MAPPING_SETUP(GlobalSettingSubCategory.MULTISPEAK, booleanType(), false),
     MSP_METER_LOOKUP_FIELD(GlobalSettingSubCategory.MULTISPEAK, InputTypeFactory.enumType(MultispeakMeterLookupFieldEnum.class), MultispeakMeterLookupFieldEnum.AUTO_METER_NUMBER_FIRST),
     
+    // OpenADR
+    OADR_REQUEST_INTERVAL(GlobalSettingSubCategory.OPEN_ADR, integerType(), 60000),
+    OADR_VEN_ID(GlobalSettingSubCategory.OPEN_ADR, stringType(), "VEN"),
+    OADR_VTN_ID(GlobalSettingSubCategory.OPEN_ADR, stringType(), "VTN"),
+    OADR_VTN_URL(GlobalSettingSubCategory.OPEN_ADR, stringType(), null),
+    OADR_KEYSTORE_PATH(GlobalSettingSubCategory.OPEN_ADR, stringType(), null),
+    OADR_KEYSTORE_PASSWORD(GlobalSettingSubCategory.OPEN_ADR, stringType(), null),
+    OADR_TRUSTSTORE_PATH(GlobalSettingSubCategory.OPEN_ADR, stringType(), null),
+    OADR_TRUSTSTORE_PASSWORD(GlobalSettingSubCategory.OPEN_ADR, stringType(), null),
+    OADR_REPLY_LIMIT(GlobalSettingSubCategory.OPEN_ADR, integerType(), 0),
+    OADR_VTN_THUMBPRINT(GlobalSettingSubCategory.OPEN_ADR, stringType(), null),
+    OADR_YUKON_USER(GlobalSettingSubCategory.OPEN_ADR, userType(), null),
+    
     // Yukon Services
     DISPATCH_MACHINE(GlobalSettingSubCategory.YUKON_SERVICES, stringType(), "127.0.0.1"),
     DISPATCH_PORT(GlobalSettingSubCategory.YUKON_SERVICES, integerType(), 1510),

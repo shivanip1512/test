@@ -80,6 +80,7 @@ public class YukonConfigurationController {
         b.put(GlobalSettingSubCategory.GRAPHING, "stats_lines");
         b.put(GlobalSettingSubCategory.MULTISPEAK, "access_point");
         b.put(GlobalSettingSubCategory.VOICE, "phone");
+        b.put(GlobalSettingSubCategory.OPEN_ADR, "openadr");
         b.put(GlobalSettingSubCategory.MISC, "folder");
         iconMap = b.build();
     }
@@ -129,6 +130,7 @@ public class YukonConfigurationController {
         List<Pair<GlobalSettingSubCategory, String>> integration = Lists.newArrayList();
         integration.add(Pair.of(GlobalSettingSubCategory.MULTISPEAK, iconMap.get(GlobalSettingSubCategory.MULTISPEAK)));
         integration.add(Pair.of(GlobalSettingSubCategory.VOICE, iconMap.get(GlobalSettingSubCategory.VOICE)));
+        integration.add(Pair.of(GlobalSettingSubCategory.OPEN_ADR, iconMap.get(GlobalSettingSubCategory.OPEN_ADR)));
         Collections.sort(integration, sorter);
         
         List<Pair<GlobalSettingSubCategory, String>> other = Lists.newArrayList();

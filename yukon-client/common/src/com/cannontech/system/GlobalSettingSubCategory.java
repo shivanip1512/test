@@ -10,6 +10,7 @@ public enum GlobalSettingSubCategory implements DisplayableEnum {
     
     MULTISPEAK(GlobalSettingCategory.INTEGRATION),
     VOICE(GlobalSettingCategory.INTEGRATION),
+    OPEN_ADR(GlobalSettingCategory.INTEGRATION),
     
     MISC(GlobalSettingCategory.OTHER),
     

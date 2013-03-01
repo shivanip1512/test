@@ -14,6 +14,7 @@ import com.cannontech.common.pao.YukonPao;
 import com.cannontech.common.search.SearchResult;
 import com.cannontech.common.util.DatedObject;
 import com.cannontech.core.dao.NotFoundException;
+import com.cannontech.core.roleproperties.UserNotInRoleException;
 import com.cannontech.database.data.lite.LiteYukonUser;
 import com.cannontech.dr.program.model.GearAdjustment;
 import com.cannontech.dr.scenario.model.ScenarioProgram;
@@ -68,6 +69,25 @@ public interface ProgramService {
             int programId, int gearNumber, Date startDate,
             Duration startOffset, Date stopDate, Duration stopOffset,
             List<GearAdjustment> gearAdjustments);
+    
+    /**
+     * Check to see if any constraints would be violated by starting the scenario
+     * specified by scenarioId using the specified start/end time.
+     * @param scenarioId the paoId of the scenario.
+     * @param startDate - the time chosen to start the scenario
+     * @param stopDate - the time chosen to stop the scenario
+     */
+    public List<ConstraintViolations> getConstraintViolationForStartScenario(
+            int scenarioId, Date startDate, Date stopDate);
+    
+    /**
+     * Check to see if any constraints would be violated by stopping the scenario
+     * specified by scenarioId using the specified end time.
+     * @param scenarioId the paoId of the scenario.
+     * @param stopDate - the time chosen to stop the scenario
+     */
+    public List<ConstraintViolations> getConstraintViolationForStopScenario(
+            int scenarioId, Date stopDate);
 
     /**
      * Start the given program with the given gear number, start and end time.
@@ -103,28 +123,28 @@ public interface ProgramService {
      * @return
      * @throws TimeoutException if server fails to send an program update response for any of the program control start attempted.
      * @throws NotAuthorizedException if neither the user (nor any groups user belongs to) have the scenario made visible to them.
-     * @throws BadServerResponseException 
+     * @throws NotFoundException
+     * @throws ConnectionException
      */
     public List<ProgramStatus> startScenarioBlocking(int scenarioId, Date startTime,
                                  Date stopTime, boolean overrideConstraints,
                                  boolean observeConstraintsAndExecute,
                                  LiteYukonUser user)
-             throws NotFoundException, TimeoutException, NotAuthorizedException,
-             BadServerResponseException, ConnectionException;
+             throws NotFoundException, TimeoutException, NotAuthorizedException, ConnectionException;
 
     /**
      * Start the given program with the given gear number, start and end time.
      * @param programId The PAO id of the program to check.
-     * @param gearNumber The gear number.
+     * @param gearNumber The one-based index of the program gear.
      * @param startDate The time chosen to start the program. Must not be null.
      * @param stopDate The time chosen to end the program. Cannot be null.
      * @param overrideConstraints If this is set to true, constraints will be
      *            overridden. If not, they will be observed.
      */
-    public void startProgram(int programId, int gearNumber, Date startDate,
-                             Duration startOffset, boolean stopScheduled, Date stopDate,
-                             Duration stopOffset, boolean overrideConstraints,
-                             List<GearAdjustment> gearAdjustments);
+    public ProgramStatus startProgram(int programId, int gearNumber, Date startDate,
+                                      Duration startOffset, boolean stopScheduled, Date stopDate,
+                                      Duration stopOffset, boolean overrideConstraints,
+                                      List<GearAdjustment> gearAdjustments);
 
     /**
      * Starts a program. Blocks on Program Start Scheduled. Looks up program by programName.
@@ -135,14 +155,15 @@ public interface ProgramService {
      * @param overrideConstraints : If true causes constraints to not be checked before starting program
      * @param observeConstraints : If true will start a program if it is ok, modifying time as constraints specify
 
-     * @throws NotAuthorizedException
+     * @throws NotFoundException
      * @throws TimeoutException
-     * @throws BadServerResponseException
+     * @throws UserNotInRoleException
+     * @throws ConnectionException
      */
     public ProgramStatus startProgram(int programId, Date startTime,
                        Date stopTime, String gearName, boolean overrideConstraints,
                        boolean observeConstraints, LiteYukonUser liteYukonUser)
-                       throws NotAuthorizedException, NotFoundException, TimeoutException, BadServerResponseException;
+                       throws NotFoundException, TimeoutException, UserNotInRoleException, ConnectionException;
 
     /**
      * Starts control for all programs belonging to a given scenario. 
@@ -236,11 +257,10 @@ public interface ProgramService {
      * @return
      * @throws TimeoutException if server fails to send an program update response for any of the program control stop attempted.
      * @throws NotAuthorizedException if neither the user (nor any groups user belongs to) have the scenario made visible to them.
-     * @throws BadServerResponseException 
      */
     public List<ProgramStatus> stopScenarioBlocking(int scenarioid, Date stopTime, boolean forceStop,
                                                      boolean observeConstraintsAndExecute, LiteYukonUser user) 
-                    throws NotFoundException, TimeoutException, NotAuthorizedException, BadServerResponseException;
+                    throws NotFoundException, TimeoutException, NotAuthorizedException;
     
     public ConstraintViolations getConstraintViolationsForStopProgram(int programId, int gearNumber,
                                                                       Date stopDate);

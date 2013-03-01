@@ -42,6 +42,7 @@ import com.cannontech.core.authorization.support.Permission;
 import com.cannontech.core.dao.GearNotFoundException;
 import com.cannontech.core.dao.NotFoundException;
 import com.cannontech.core.dao.PaoDao;
+import com.cannontech.core.roleproperties.UserNotInRoleException;
 import com.cannontech.core.roleproperties.YukonRoleProperty;
 import com.cannontech.core.roleproperties.dao.RolePropertyDao;
 import com.cannontech.core.service.DateFormattingService;
@@ -203,6 +204,53 @@ public class ProgramServiceImpl implements ProgramService {
 
         return retVal;
     }
+    
+    @Override
+    public List<ConstraintViolations> getConstraintViolationForStartScenario(int scenarioId, Date startDate, Date stopDate) {
+        List<Integer> programIds = loadControlProgramDao.getProgramIdsByScenarioId(scenarioId);
+        List<LMProgramBase> programs = loadControlClientConnection.getProgramsForProgramIds(programIds);
+        Map<Integer, ScenarioProgram> scenarioPrograms =  scenarioDao.findScenarioProgramsForScenario(scenarioId);
+        List<ConstraintViolations> programViolations = new ArrayList<>();
+
+        for (LMProgramBase program : programs) {
+            final int programId = program.getPaoIdentifier().getPaoId();
+            final int startingGearNumber = loadControlProgramDao.getStartingGearForScenarioAndProgram(ProgramUtils.getProgramId(program), scenarioId);
+            final ScenarioProgram scenarioProgram = scenarioPrograms.get(programId);
+
+            ConstraintViolations violations = 
+                getConstraintViolationForStartProgram(
+                    programId, 
+                    startingGearNumber, 
+                    startDate, 
+                    scenarioProgram.getStartOffset(), 
+                    stopDate, 
+                    scenarioProgram.getStopOffset(), 
+                    null);
+            
+            programViolations.add(violations);
+        }
+        
+        return programViolations;
+    }
+    
+    @Override
+    public List<ConstraintViolations> getConstraintViolationForStopScenario(int scenarioId, Date stopDate) {
+        List<Integer> programIds = loadControlProgramDao.getProgramIdsByScenarioId(scenarioId);
+        List<LMProgramBase> programs = loadControlClientConnection.getProgramsForProgramIds(programIds);
+        List<ConstraintViolations> programViolations = new ArrayList<>();
+
+        for (LMProgramBase program : programs) {
+            final int programId = program.getPaoIdentifier().getPaoId();
+            final int startingGearNumber = loadControlProgramDao.getStartingGearForScenarioAndProgram(ProgramUtils.getProgramId(program), scenarioId);
+
+            ConstraintViolations violations = 
+                getConstraintViolationsForStopProgram(programId, startingGearNumber, stopDate);
+
+            programViolations.add(violations);
+        }
+        
+        return programViolations;
+    }
 
     @Override
     public ConstraintViolations getConstraintViolationForStartProgram(int programId, int gearNumber, Date startDate,
@@ -243,7 +291,7 @@ public class ProgramServiceImpl implements ProgramService {
     @Override
     public ProgramStatus startProgram(int programId, Date startTime, Date stopTime, String gearName,
             boolean overrideConstraints, boolean observeConstraints, LiteYukonUser liteYukonUser)
-                    throws NotAuthorizedException, NotFoundException, TimeoutException, BadServerResponseException  {
+                    throws NotFoundException, TimeoutException, UserNotInRoleException, ConnectionException {
 
         boolean stopScheduled = rolePropertyDao.getPropertyBooleanValue(YukonRoleProperty.SCHEDULE_STOP_CHECKED_BY_DEFAULT, liteYukonUser);
 
@@ -287,15 +335,17 @@ public class ProgramServiceImpl implements ProgramService {
     }
 
     @Override
-    public void startProgram(int programId, int gearNumber, Date startDate,
+    public ProgramStatus startProgram(int programId, int gearNumber, Date startDate,
                              Duration startOffset, boolean stopScheduled, Date stopDate,
                              Duration stopOffset, boolean overrideConstraints,
                              List<GearAdjustment> gearAdjustments) {
         try {
-            startProgramBlocking(programId, gearNumber, startDate, startOffset, stopScheduled, stopDate, stopOffset,
-                                 overrideConstraints, gearAdjustments, false);
+            return startProgramBlocking(programId, gearNumber, startDate, startOffset, 
+                                        stopScheduled, stopDate, stopOffset, overrideConstraints, 
+                                        gearAdjustments, false);
         } catch (TimeoutException e) {
             // This isn't actually thrown since we're passing false for block.
+            return null;
         }
     }
 
@@ -347,7 +397,7 @@ public class ProgramServiceImpl implements ProgramService {
                                              Date stopTime, boolean overrideConstraints, boolean observeConstraints,
                                                          LiteYukonUser user)
                              throws NotFoundException, TimeoutException, NotAuthorizedException,
-                                     BadServerResponseException, ConnectionException {
+                                     ConnectionException {
 
         if (!loadControlClientConnection.isValid()) {
             throw new ConnectionException("The Load Management server connection is not valid.");
@@ -574,8 +624,7 @@ public class ProgramServiceImpl implements ProgramService {
     @Override
     public List<ProgramStatus> stopScenarioBlocking(int scenarioId,  Date stopTime, boolean overrideConstraints,
                                                      boolean observeConstraints, LiteYukonUser user)
-                         throws NotFoundException, TimeoutException, NotAuthorizedException,
-                         BadServerResponseException, ConnectionException {
+                         throws NotFoundException, TimeoutException, NotAuthorizedException, ConnectionException {
 
         if (!loadControlClientConnection.isValid()) {
             throw new ConnectionException("The Load Management server connection is not valid.");

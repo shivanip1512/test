@@ -106,6 +106,8 @@ a .arrow-down, a .arrow-up {left: 3px;}
 .next:hover {background-image: url(../Icons/resultset_next.gif);}
 .next_disabled {background-image: url(../Icons/resultset_next_disabled.gif);}
 
+.openadr {background-image: url(../Icons/32/openadr.png);}
+
 .pass {background: transparent url(../Icons/tick.png) top left no-repeat}
 .phone {background-image: url(../Icons/32/phone.png);}
 .prev, .prev_disabled, .next, .next_disabled {line-height:15px;}
