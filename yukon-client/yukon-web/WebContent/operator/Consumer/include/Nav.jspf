@@ -371,7 +371,7 @@
               <table width="100%" border="0" cellspacing="0" cellpadding="0">
 <%
             // Get the METER_MCT_BASE_DESIGNATION role property using the ec user
-            String meterMCTBaseDesignation = energyCompanySettingDao.getString(EnergyCompanySettingType.METER_MCT_BASE_DESIGNATION, liteEC.getLiteID);
+            String meterMCTBaseDesignation = energyCompanySettingDao.getString(EnergyCompanySettingType.METER_MCT_BASE_DESIGNATION, liteEC.getLiteID());
             
             for (int i = 0; i < meterLabels.size(); i++) {
 				String[] linkFields = (String[]) meterLabels.get(i);
@@ -466,7 +466,7 @@ pageLinks = new Array(<%= inventories.getStarsInventoryCount() %>);
 <%
 	}
     // Get the METER_MCT_BASE_DESIGNATION role property using the ec user
-    String meterMCTBaseDesignation = energyCompanySettingDao.getString(EnergyCompanySettingType.METER_MCT_BASE_DESIGNATION, liteEC.getLiteID);
+    String meterMCTBaseDesignation = energyCompanySettingDao.getString(EnergyCompanySettingType.METER_MCT_BASE_DESIGNATION, liteEC.getLiteID());
 
 	if(meterMCTBaseDesignation.compareTo(StarsUtils.METER_BASE_DESIGNATION) == 0) 
 	{
