@@ -14,20 +14,17 @@ import org.joda.time.Instant;
 import com.cannontech.analysis.ReportFuncs;
 import com.cannontech.clientutils.CTILogger;
 import com.cannontech.common.util.OpenInterval;
-import com.cannontech.core.roleproperties.YukonRoleProperty;
-import com.cannontech.core.roleproperties.dao.RolePropertyDao;
 import com.cannontech.database.data.lite.LiteYukonPAObject;
-import com.cannontech.database.data.lite.LiteYukonUser;
 import com.cannontech.spring.YukonSpringHook;
 import com.cannontech.stars.dr.account.dao.ApplianceAndProgramDao;
 import com.cannontech.stars.dr.account.dao.CustomerAccountDao;
 import com.cannontech.stars.dr.account.model.CustomerAccountWithNames;
 import com.cannontech.stars.dr.account.model.ProgramLoadGroup;
-import com.cannontech.stars.dr.controlHistory.service.LmControlHistoryUtilService;
 import com.cannontech.stars.dr.hardware.dao.LMHardwareControlGroupDao;
 import com.cannontech.stars.dr.hardware.model.LMHardwareControlGroup;
 import com.cannontech.stars.dr.program.dao.ProgramDao;
-import com.cannontech.stars.energyCompany.dao.EnergyCompanyDao;
+import com.cannontech.stars.energyCompany.EnergyCompanySettingType;
+import com.cannontech.stars.energyCompany.dao.EnergyCompanySettingDao;
 import com.cannontech.stars.util.LMControlHistoryUtil;
 import com.cannontech.stars.util.model.CustomerControlTotals;
 import com.cannontech.stars.xml.serialize.StarsLMControlHistory;
@@ -46,12 +43,12 @@ public class LMControlSummaryModel extends BareDatedReportModelBase<LMControlSum
     private final int TOTAL_OPT_OUT_HOURS_DURING_CONTROL = 3;
     private final int TOTAL_OPT_OUT_EVENTS = 4;
     
-    private CustomerAccountDao customerAccountDao = (CustomerAccountDao) YukonSpringHook.getBean("customerAccountDao");
-    private LMHardwareControlGroupDao lmHardwareControlGroupDao = (LMHardwareControlGroupDao) YukonSpringHook.getBean("lmHardwareControlGroupDao");
-    private LmControlHistoryUtilService lmControlHistoryUtilService = (LmControlHistoryUtilService) YukonSpringHook.getBean("lmControlHistoryUtilService", LmControlHistoryUtilService.class); 
-    private ApplianceAndProgramDao applianceAndProgramDao = (ApplianceAndProgramDao) YukonSpringHook.getBean("applianceAndProgramDao");
-    private ProgramDao programDao = (ProgramDao)YukonSpringHook.getBean("starsProgramDao");
-    private double oneHour = Duration.standardHours(1).getMillis();
+    private final CustomerAccountDao customerAccountDao = (CustomerAccountDao) YukonSpringHook.getBean("customerAccountDao");
+    private final LMHardwareControlGroupDao lmHardwareControlGroupDao = (LMHardwareControlGroupDao) YukonSpringHook.getBean("lmHardwareControlGroupDao");
+    private final ApplianceAndProgramDao applianceAndProgramDao = (ApplianceAndProgramDao) YukonSpringHook.getBean("applianceAndProgramDao");
+    private final ProgramDao programDao = (ProgramDao)YukonSpringHook.getBean("starsProgramDao");
+    private final EnergyCompanySettingDao energyCompanySettingDao = YukonSpringHook.getBean(EnergyCompanySettingDao.class);
+    private final double oneHour = Duration.standardHours(1).getMillis();
     private static DecimalFormat decFormat = new java.text.DecimalFormat("0.##");
     
     private List<ModelRow> data = Collections.emptyList();
@@ -78,14 +75,17 @@ public class LMControlSummaryModel extends BareDatedReportModelBase<LMControlSum
         return ModelRow.class;
     }
     
+    @Override
     public String getTitle() {
         return "Customer Control Summary";
     }
 
+    @Override
     public int getRowCount() {
         return data.size();
     }
 
+    @Override
     public void doLoadData() {
         // Validate that neither getStartDate and getStopDate are null and then create
         // a closed openInterval with those dates.
@@ -102,15 +102,13 @@ public class LMControlSummaryModel extends BareDatedReportModelBase<LMControlSum
         }
         // get all of the customers
         List<Integer> groupIdsFromSQL = programDao.getDistinctGroupIdsByYukonProgramIds(programIds);
-        List<CustomerAccountWithNames> accountsFromSQL = customerAccountDao.getAllAccountsWithNamesByGroupIds(energyCompanyId, 
-                                                                                                              groupIdsFromSQL,
-                                                                                                              getStartDate(),
-                                                                                                              getStopDate());
+        List<CustomerAccountWithNames> accountsFromSQL 
+            = customerAccountDao.getAllAccountsWithNamesByGroupIds(energyCompanyId, 
+                                                               groupIdsFromSQL,
+                                                               getStartDate(),
+                                                               getStopDate());
         
-        EnergyCompanyDao energyCompanyDao = YukonSpringHook.getBean("energyCompanyDao", EnergyCompanyDao.class);
-        RolePropertyDao rolePropertyDao = YukonSpringHook.getBean("rolePropertyDao", RolePropertyDao.class);
-        LiteYukonUser ecAdminUser = energyCompanyDao.getEnergyCompanyUser(energyCompanyId);
-        boolean inheritCategories = rolePropertyDao.checkProperty(YukonRoleProperty.INHERIT_PARENT_APP_CATS, ecAdminUser);
+        boolean inheritCategories = energyCompanySettingDao.checkSetting(EnergyCompanySettingType.INHERIT_PARENT_APP_CATS, energyCompanyId);
         List<ProgramLoadGroup> ecPrograms;
         if(inheritCategories) {
             ecPrograms = applianceAndProgramDao.getAllProgramsForAnECAndParentEC(energyCompanyId);

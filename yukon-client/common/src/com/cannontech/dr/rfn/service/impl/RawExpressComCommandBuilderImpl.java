@@ -14,8 +14,6 @@ import com.cannontech.common.exception.BadConfigurationException;
 import com.cannontech.common.rfn.model.RfnDevice;
 import com.cannontech.core.dao.LMGroupDao;
 import com.cannontech.core.dao.NotFoundException;
-import com.cannontech.core.roleproperties.YukonRoleProperty;
-import com.cannontech.core.roleproperties.dao.EnergyCompanyRolePropertyDao;
 import com.cannontech.dr.rfn.service.RawExpressComCommandBuilder;
 import com.cannontech.stars.core.dao.StarsCustAccountInformationDao;
 import com.cannontech.stars.core.service.YukonEnergyCompanyService;
@@ -27,6 +25,8 @@ import com.cannontech.stars.dr.hardware.model.ExpressComAddressView;
 import com.cannontech.stars.dr.hardware.model.LmHardwareCommand;
 import com.cannontech.stars.dr.hardware.model.LmHardwareCommandParam;
 import com.cannontech.stars.dr.hardware.model.LmHardwareCommandType;
+import com.cannontech.stars.energyCompany.EnergyCompanySettingType;
+import com.cannontech.stars.energyCompany.dao.EnergyCompanySettingDao;
 import com.cannontech.stars.energyCompany.model.YukonEnergyCompany;
 
 public class RawExpressComCommandBuilderImpl implements RawExpressComCommandBuilder {
@@ -34,11 +34,11 @@ public class RawExpressComCommandBuilderImpl implements RawExpressComCommandBuil
     private static final Logger log = YukonLogManager.getLogger(RawExpressComCommandBuilderImpl.class);
     
     @Autowired private YukonEnergyCompanyService yukonEnergyCompanyService;
-    @Autowired private EnergyCompanyRolePropertyDao ecRolePropertyDao;
     @Autowired private StarsCustAccountInformationDao caiDao;
     @Autowired private RfnDeviceDao rfnDeviceDao;
     @Autowired private LMGroupDao lmGroupDao;
-    
+    @Autowired private EnergyCompanySettingDao energyCompanySettingDao;
+
     @Override
     public byte[] getCommand(LmHardwareCommand lmHardwareCommand) {
         ByteBuffer cmd = ByteBuffer.allocate(1024);
@@ -61,6 +61,7 @@ public class RawExpressComCommandBuilderImpl implements RawExpressComCommandBuil
         return output;
     }
 
+    @Override
     public byte[] getCommandAsHexStringByteArray(LmHardwareCommand lmHardwareCommand) {
         StringWriter sw = new StringWriter();
         // Commands begin with the 's' character.
@@ -157,8 +158,9 @@ public class RawExpressComCommandBuilderImpl implements RawExpressComCommandBuil
     private ByteBuffer getExpressComForConfigCommand(LmHardwareCommand parameters) {
         ByteBuffer configCommand = ByteBuffer.allocate(1024);
         YukonEnergyCompany yec = yukonEnergyCompanyService.getEnergyCompanyByInventoryId(parameters.getDevice().getInventoryID());
-        boolean trackAddressing = ecRolePropertyDao.getPropertyBooleanValue(YukonRoleProperty.TRACK_HARDWARE_ADDRESSING, yec);
-        
+//        boolean trackAddressing = ecRolePropertyDao.getPropertyBooleanValue(YukonRoleProperty.TRACK_HARDWARE_ADDRESSING, yec);
+        boolean trackAddressing = energyCompanySettingDao.getBoolean(EnergyCompanySettingType.TRACK_HARDWARE_ADDRESSING, yec.getEnergyCompanyId());
+
         // Either we have track hardware addressing on or we need a group/appliance category.
         if (trackAddressing) {
             //Use per-device addressing info.
@@ -284,7 +286,7 @@ public class RawExpressComCommandBuilderImpl implements RawExpressComCommandBuil
             addressing.put((byte) 0x10); // Denotes a Config message.
             addressing.put((byte) 0x01); // GEO level addressing config message.
             addressing.put((byte) (geoBuffer.position() + xcomAddressFieldSize)); // Length
-            addressing.put((byte) xcomAddressField);
+            addressing.put(xcomAddressField);
             addressing.put(geoBuffer.array(),0,geoBuffer.position()); 
         }
       
@@ -321,7 +323,7 @@ public class RawExpressComCommandBuilderImpl implements RawExpressComCommandBuil
                 addressing.put((byte) 0x10); // Denotes a Config message.
                 addressing.put((byte) 0x07); // Load level addressing config message.
                 addressing.put((byte) (loadBuffer.position() + xcomAddressFieldSize));
-                addressing.put((byte) xcomAddressField);
+                addressing.put(xcomAddressField);
                 addressing.put(loadBuffer.array(),0,loadBuffer.position());   
             }
         }
@@ -342,6 +344,7 @@ public class RawExpressComCommandBuilderImpl implements RawExpressComCommandBuil
         return new String(hexChars);
     }
     
+    @Override
     public boolean isValidBroadcastSpid(int spid) {
         if (spid >= 1 && spid <= 65534) {
             log.debug("Valid numeric SPID found in role property 'Broadcast Opt Out Cancel SPID'. Broadcast messaging will be used with SPID:" + spid);

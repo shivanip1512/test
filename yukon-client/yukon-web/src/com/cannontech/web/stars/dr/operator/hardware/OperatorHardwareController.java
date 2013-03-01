@@ -49,7 +49,6 @@ import com.cannontech.core.dao.ServiceCompanyDao;
 import com.cannontech.core.dao.YukonListDao;
 import com.cannontech.core.roleproperties.YukonRole;
 import com.cannontech.core.roleproperties.YukonRoleProperty;
-import com.cannontech.core.roleproperties.dao.EnergyCompanyRolePropertyDao;
 import com.cannontech.core.roleproperties.dao.RolePropertyDao;
 import com.cannontech.database.data.lite.LiteAddress;
 import com.cannontech.database.data.lite.LiteContact;
@@ -59,8 +58,6 @@ import com.cannontech.database.data.lite.LiteYukonUser;
 import com.cannontech.database.data.point.PointType;
 import com.cannontech.i18n.YukonMessageSourceResolvable;
 import com.cannontech.i18n.YukonUserContextMessageSourceResolver;
-import com.cannontech.roles.yukon.EnergyCompanyRole;
-import com.cannontech.roles.yukon.EnergyCompanyRole.MeteringType;
 import com.cannontech.stars.core.dao.InventoryBaseDao;
 import com.cannontech.stars.core.dao.StarsSearchDao;
 import com.cannontech.stars.core.dao.WarehouseDao;
@@ -81,7 +78,10 @@ import com.cannontech.stars.dr.hardware.exception.StarsDeviceSerialNumberAlready
 import com.cannontech.stars.dr.hardware.model.LMHardwareBase;
 import com.cannontech.stars.dr.hardware.service.HardwareService;
 import com.cannontech.stars.dr.hardware.service.HardwareUiService;
+import com.cannontech.stars.energyCompany.EnergyCompanySettingType;
+import com.cannontech.stars.energyCompany.MeteringType;
 import com.cannontech.stars.energyCompany.dao.EnergyCompanyDao;
+import com.cannontech.stars.energyCompany.dao.EnergyCompanySettingDao;
 import com.cannontech.stars.energyCompany.model.YukonEnergyCompany;
 import com.cannontech.stars.util.EventUtils;
 import com.cannontech.stars.util.ObjectInOtherEnergyCompanyException;
@@ -93,6 +93,7 @@ import com.cannontech.web.PageEditMode;
 import com.cannontech.web.common.flashScope.FlashScope;
 import com.cannontech.web.common.flashScope.FlashScopeMessageType;
 import com.cannontech.web.input.type.DateType;
+import com.cannontech.web.security.annotation.CheckEnergyCompanySetting;
 import com.cannontech.web.security.annotation.CheckRoleProperty;
 import com.cannontech.web.stars.dr.operator.HardwareModelHelper;
 import com.cannontech.web.stars.dr.operator.general.AccountInfoFragment;
@@ -124,7 +125,6 @@ public class OperatorHardwareController {
     @Autowired private ServiceCompanyDao serviceCompanyDao;
     @Autowired private AddressDao addressDao;
     @Autowired private RolePropertyDao rolePropertyDao;
-    @Autowired private EnergyCompanyRolePropertyDao ecRolePropertyDao;
     @Autowired private SerialNumberValidator serialNumberValidator;
     @Autowired private YukonUserContextMessageSourceResolver messageSourceResolver;
     @Autowired private StarsSearchDao starsSearchDao;
@@ -141,6 +141,7 @@ public class OperatorHardwareController {
     @Autowired private InventoryDao inventoryDao;
     @Autowired private HardwareModelHelper helper;
     @Autowired private OperatorAccountService operatorAccountService;
+    @Autowired private EnergyCompanySettingDao energyCompanySettingDao;
 
     /* HARDWARE LIST PAGE */
     @RequestMapping
@@ -969,7 +970,7 @@ public class OperatorHardwareController {
         model.addAttribute("meterClass", HardwareClass.METER);
         model.addAttribute("gatewayClass", HardwareClass.GATEWAY);
         
-        MeteringType meterDesignation= ecRolePropertyDao.getPropertyEnumValue(YukonRoleProperty.METER_MCT_BASE_DESIGNATION, EnergyCompanyRole.MeteringType.class,  ec);
+        MeteringType meterDesignation = energyCompanySettingDao.getEnum(EnergyCompanySettingType.METER_MCT_BASE_DESIGNATION, MeteringType.class, ec.getEnergyCompanyId());
         boolean starsMeters = meterDesignation == MeteringType.stars; 
         model.addAttribute("starsMeters", starsMeters);
         

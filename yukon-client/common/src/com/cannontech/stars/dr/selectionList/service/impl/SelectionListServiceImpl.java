@@ -18,7 +18,6 @@ import com.cannontech.common.inventory.HardwareType;
 import com.cannontech.core.dao.YukonListDao;
 import com.cannontech.core.roleproperties.YukonRole;
 import com.cannontech.core.roleproperties.YukonRoleProperty;
-import com.cannontech.core.roleproperties.dao.EnergyCompanyRolePropertyDao;
 import com.cannontech.core.roleproperties.dao.RolePropertyDao;
 import com.cannontech.database.data.lite.LiteYukonUser;
 import com.cannontech.stars.database.cache.StarsDatabaseCache;
@@ -26,6 +25,8 @@ import com.cannontech.stars.database.data.lite.LiteApplianceCategory;
 import com.cannontech.stars.database.data.lite.LiteStarsEnergyCompany;
 import com.cannontech.stars.dr.selectionList.dao.SelectionListDao;
 import com.cannontech.stars.dr.selectionList.service.SelectionListService;
+import com.cannontech.stars.energyCompany.EnergyCompanySettingType;
+import com.cannontech.stars.energyCompany.dao.EnergyCompanySettingDao;
 import com.cannontech.stars.util.ECUtils;
 import com.cannontech.user.YukonUserContext;
 import com.google.common.base.Function;
@@ -36,11 +37,11 @@ import com.google.common.collect.SortedSetMultimap;
 import com.google.common.collect.TreeMultimap;
 
 public class SelectionListServiceImpl implements SelectionListService {
-    private SelectionListDao selectionListDao;
-    private StarsDatabaseCache starsDatabaseCache;
-    private RolePropertyDao rolePropertyDao;
-    private EnergyCompanyRolePropertyDao energyCompanyRolePropertyDao;
-    private YukonListDao yukonListDao;
+    @Autowired private SelectionListDao selectionListDao;
+    @Autowired private StarsDatabaseCache starsDatabaseCache;
+    @Autowired private RolePropertyDao rolePropertyDao;
+    @Autowired private YukonListDao yukonListDao;
+    @Autowired private EnergyCompanySettingDao energyCompanySettingDao;
 
     @Override
     public SortedSetMultimap<SelectionListCategory, DisplayableSelectionList> getUserEditableLists(int ecId, YukonUserContext context) {
@@ -133,10 +134,9 @@ public class SelectionListServiceImpl implements SelectionListService {
     }
 
     private boolean showAdditionalProtocols(LiteStarsEnergyCompany energyCompany) {
-        String optionalProductDevStr =
-            energyCompanyRolePropertyDao.getPropertyStringValue(YukonRoleProperty.OPTIONAL_PRODUCT_DEV,
-                                                                energyCompany);
-        if (StringUtils.isEmpty(optionalProductDevStr)) {
+        String optionalProductDevStr = energyCompanySettingDao.getString(EnergyCompanySettingType.OPTIONAL_PRODUCT_DEV, energyCompany.getEnergyCompanyId());
+        boolean isEnabled = energyCompanySettingDao.isSet(EnergyCompanySettingType.OPTIONAL_PRODUCT_DEV, energyCompany.getEnergyCompanyId());
+        if (!isEnabled || StringUtils.isEmpty(optionalProductDevStr)) {
             return false;
         }
         try {
@@ -197,30 +197,5 @@ public class SelectionListServiceImpl implements SelectionListService {
         }
 
         return lists;
-    }
-
-    @Autowired
-    public void setSelectionListDao(SelectionListDao selectionListDao) {
-        this.selectionListDao = selectionListDao;
-    }
-
-    @Autowired
-    public void setStarsDatabaseCache(StarsDatabaseCache starsDatabaseCache) {
-        this.starsDatabaseCache = starsDatabaseCache;
-    }
-
-    @Autowired
-    public void setRolePropertyDao(RolePropertyDao rolePropertyDao) {
-        this.rolePropertyDao = rolePropertyDao;
-    }
-
-    @Autowired
-    public void setEnergyCompanyRolePropertyDao(EnergyCompanyRolePropertyDao energyCompanyRolePropertyDao) {
-        this.energyCompanyRolePropertyDao = energyCompanyRolePropertyDao;
-    }
-
-    @Autowired
-    public void setYukonListDao(YukonListDao yukonListDao) {
-        this.yukonListDao = yukonListDao;
     }
 }

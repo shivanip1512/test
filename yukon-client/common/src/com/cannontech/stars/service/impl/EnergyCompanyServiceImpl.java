@@ -83,7 +83,7 @@ import com.google.common.collect.Iterables;
 import com.google.common.collect.Sets;
 
 public class EnergyCompanyServiceImpl implements EnergyCompanyService {
-    private Logger log = YukonLogManager.getLogger(EnergyCompanyServiceImpl.class);
+    private final Logger log = YukonLogManager.getLogger(EnergyCompanyServiceImpl.class);
 
     @Autowired private AccountThermostatScheduleDao accountThermostatScheduleDao;
     @Autowired private ContactDao contactDao;
@@ -118,9 +118,8 @@ public class EnergyCompanyServiceImpl implements EnergyCompanyService {
             throw new EnergyCompanyNameUnavailableException();
         }
 
-        /* Create a privilege group with EnergyCompany and Administrator role */
-        UserGroup ecAdminUserGrp = 
-                StarsAdminUtil.createOperatorAdminUserGroup(energyCompanyDto.getName(), energyCompanyDto.getPrimaryOperatorUserGroupId(), topLevelEc);
+        /* Create a privilege group with Administrator role */
+        UserGroup ecAdminUserGrp =  StarsAdminUtil.createOperatorAdminUserGroup(energyCompanyDto.getName(), energyCompanyDto.getPrimaryOperatorUserGroupId(), topLevelEc);
         
         /* Create the primary operator login */
         LiteYukonUser adminUser = 
@@ -167,7 +166,7 @@ public class EnergyCompanyServiceImpl implements EnergyCompanyService {
         
         /* Add as member to parent */
         if (parentId != null) {
-            StarsAdminUtil.addMember(starsDatabaseCache.getEnergyCompany(parentId), liteEnergyCompany, adminUser.getUserID());
+            StarsAdminUtil.addMember(starsDatabaseCache.getEnergyCompany(parentId), liteEnergyCompany, adminUser.getUserID(), user);
         }
         
         starsDatabaseCache.addEnergyCompany(liteEnergyCompany);
@@ -205,7 +204,7 @@ public class EnergyCompanyServiceImpl implements EnergyCompanyService {
         boolean superUser = rolePropertyDao.getPropertyBooleanValue(YukonRoleProperty.ADMIN_SUPER_USER, user);
         boolean edit = rolePropertyDao.getPropertyBooleanValue(YukonRoleProperty.ADMIN_EDIT_ENERGY_COMPANY, user);
         boolean manage = rolePropertyDao.getPropertyBooleanValue(YukonRoleProperty.ADMIN_MANAGE_MEMBERS, user);
-        boolean isOperator =energyCompany.getOperatorLoginIDs().contains(user.getUserID());
+        boolean isOperator = energyCompany.getOperatorLoginIDs().contains(user.getUserID());
         boolean isParentOp = isParentOperator(user.getUserID(), ecId);
         
         /* Can edit 
@@ -214,7 +213,7 @@ public class EnergyCompanyServiceImpl implements EnergyCompanyService {
          * OR user is operator of one of the parent energy companies 
          *     AND has manage members role property 
          *     AND has edit energy company role property */
-        boolean canEdit = superUser || (edit && (isOperator ||(isParentOp && manage)));
+        boolean canEdit = superUser || (edit && (isOperator || (isParentOp && manage)));
         
         return canEdit;
     }
@@ -317,6 +316,21 @@ public class EnergyCompanyServiceImpl implements EnergyCompanyService {
                 }
             };
             
+        };
+        return checker;
+    }
+
+    @Override
+    public UserChecker createCanEditEnergyCompany() {
+        UserCheckerBase checker = new UserCheckerBase() {
+            @Override
+            public boolean check(LiteYukonUser user) {
+                boolean superUser = rolePropertyDao.getPropertyBooleanValue(YukonRoleProperty.ADMIN_SUPER_USER, user);
+                boolean edit = rolePropertyDao.getPropertyBooleanValue(YukonRoleProperty.ADMIN_EDIT_ENERGY_COMPANY, user);
+                boolean isEcOperator = isOperator(user);
+
+                return superUser || (edit && isEcOperator);
+            }
         };
         return checker;
     }
@@ -742,5 +756,5 @@ public class EnergyCompanyServiceImpl implements EnergyCompanyService {
             callbackWithSelfAndEachDescendant(liteStarsEnergyCompany, simpleCallback);
         }
     }
-    
+
 }

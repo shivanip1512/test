@@ -1,6 +1,5 @@
 <%@ page import="com.cannontech.core.dao.DaoFactory" %>
 <%@ page import="com.cannontech.database.data.lite.LiteYukonRoleProperty" %>
-<%@ page import="com.cannontech.roles.EnergyCompanyRoleDefs" %>
 <%@ page import="com.cannontech.database.data.lite.LiteComparators" %>
 <%@ page import="java.util.Arrays" %>
 
@@ -37,13 +36,13 @@
             </c:forEach>
         </table>
         <br>
-<%--        <tags:csrfTokenRequest> --%>
+
           <cti:button nameKey="save" name="save" type="submit"/>
           <c:if test="${showDelete}">
               <cti:button nameKey="delete" id="deleteButton" type="button"/>
               <tags:confirmDialog nameKey=".confirmDelete" on="#deleteButton" argument="${roleGroupName}" submitName="delete"/>
           </c:if>
           <cti:button nameKey="cancel" name="cancel" type="submit"/>
-<%--        </tags:csrfTokenRequest> --%>
+
     </form:form>
 </cti:standardPage>

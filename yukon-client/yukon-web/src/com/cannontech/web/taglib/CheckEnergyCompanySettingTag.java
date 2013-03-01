@@ -3,11 +3,9 @@ package com.cannontech.web.taglib;
 import javax.servlet.jsp.JspException;
 import javax.servlet.jsp.tagext.TagSupport;
 
-import com.cannontech.core.roleproperties.YukonRoleProperty;
-import com.cannontech.core.roleproperties.dao.EnergyCompanyRolePropertyDao;
 import com.cannontech.spring.YukonSpringHook;
-import com.cannontech.stars.database.cache.StarsDatabaseCache;
-import com.cannontech.stars.energyCompany.model.YukonEnergyCompany;
+import com.cannontech.stars.energyCompany.EnergyCompanySettingType;
+import com.cannontech.stars.energyCompany.dao.EnergyCompanySettingDao;
 
 
 /**
@@ -20,24 +18,21 @@ public class CheckEnergyCompanySettingTag extends TagSupport {
 
     @Override
     public int doStartTag() throws JspException {
-        
-        EnergyCompanyRolePropertyDao ecRoleDao = YukonSpringHook.getBean(EnergyCompanyRolePropertyDao.class);
-        StarsDatabaseCache starsDatabaseCache = YukonSpringHook.getBean(StarsDatabaseCache.class);
-        
+
+        EnergyCompanySettingDao energyCompanySettingDao = YukonSpringHook.getBean(EnergyCompanySettingDao.class);
+
         boolean inverted = false;
         if (value.startsWith("!")) {
             value = value.substring(1);
             inverted = true;
         }
-        
+
         boolean isSet = false;
         try {
-            YukonRoleProperty role = YukonRoleProperty.valueOf(YukonRoleProperty.class, value);
-            YukonEnergyCompany yukonEnergyCompany = starsDatabaseCache.getEnergyCompany(energyCompanyId); 
-            isSet = ecRoleDao.checkProperty(role, yukonEnergyCompany);
+            EnergyCompanySettingType type = EnergyCompanySettingType.valueOf(EnergyCompanySettingType.class, value);
+            isSet = energyCompanySettingDao.checkSetting(type, energyCompanyId);
         } catch (IllegalArgumentException ignore) {
-            throw new IllegalArgumentException("Can't use '" + value + "', check that it is a valid EnergyCompanyRole");
-
+            throw new IllegalArgumentException("Can't use '" + value + "', check that it is a valid EnergyCompanySetting");
         }
         
         if (inverted) {

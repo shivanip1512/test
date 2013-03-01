@@ -1,6 +1,7 @@
 package com.cannontech.stars.dr.account.service;
 
-import static org.easymock.EasyMock.*;
+import static org.easymock.EasyMock.expect;
+import static org.easymock.EasyMock.expectLastCall;
 
 import java.lang.reflect.Method;
 import java.util.List;
@@ -23,8 +24,6 @@ import com.cannontech.core.dao.CustomerDao;
 import com.cannontech.core.dao.UserNameUnavailableException;
 import com.cannontech.core.dao.YukonUserDao;
 import com.cannontech.core.dao.impl.LoginStatusEnum;
-import com.cannontech.core.roleproperties.YukonRoleProperty;
-import com.cannontech.core.roleproperties.dao.RolePropertyDao;
 import com.cannontech.core.users.dao.UserGroupDao;
 import com.cannontech.core.users.model.LiteUserGroup;
 import com.cannontech.database.data.lite.LiteAddress;
@@ -67,6 +66,8 @@ import com.cannontech.stars.dr.general.service.ContactService;
 import com.cannontech.stars.dr.hardware.dao.InventoryDao;
 import com.cannontech.stars.dr.hardware.dao.LmHardwareBaseDao;
 import com.cannontech.stars.dr.thermostat.dao.AccountThermostatScheduleDao;
+import com.cannontech.stars.energyCompany.EnergyCompanySettingType;
+import com.cannontech.stars.energyCompany.dao.EnergyCompanySettingDao;
 import com.cannontech.stars.energyCompany.model.YukonEnergyCompany;
 import com.google.common.base.Function;
 import com.google.common.collect.Lists;
@@ -80,7 +81,7 @@ public class AccountServiceTest extends EasyMockSupport {
     private AuthenticationService authenticationServiceMock;
     private YukonUserDao yukonUserDaoMock;
     private UserGroupDao userGroupDaoMock;
-    private RolePropertyDao rolePropertyDaoMock;
+    private EnergyCompanySettingDao energyCompanySettingDaoMock;
     private AuthDao authDaoMock;
     private AddressDao addressDaoMock;
     private ContactNotificationService contactNotificationServiceMock;
@@ -109,7 +110,7 @@ public class AccountServiceTest extends EasyMockSupport {
         authenticationServiceMock = createNiceMock(AuthenticationService.class);
         yukonUserDaoMock = createNiceMock(YukonUserDao.class);
         userGroupDaoMock = createNiceMock(UserGroupDao.class);
-        rolePropertyDaoMock = createMock(RolePropertyDao.class);
+        energyCompanySettingDaoMock = createMock(EnergyCompanySettingDao.class);
         authDaoMock = createMock(AuthDao.class);
         addressDaoMock = createMock(AddressDao.class);
         
@@ -175,7 +176,7 @@ public class AccountServiceTest extends EasyMockSupport {
         accountService = new AccountServiceImpl();
         ReflectionTestUtils.setField(accountService, "authenticationService", authenticationServiceMock);
         ReflectionTestUtils.setField(accountService, "yukonUserDao", yukonUserDaoMock);
-        ReflectionTestUtils.setField(accountService, "rolePropertyDao", rolePropertyDaoMock);
+        ReflectionTestUtils.setField(accountService, "energyCompanySettingDao", energyCompanySettingDaoMock);
         ReflectionTestUtils.setField(accountService, "authDao", authDaoMock);
         ReflectionTestUtils.setField(accountService, "addressDao", addressDaoMock);
         ReflectionTestUtils.setField(accountService, "contactService", contactServiceMock);
@@ -302,7 +303,7 @@ public class AccountServiceTest extends EasyMockSupport {
         expectLastCall().times(3);
         expect(authDaoMock.getUserTimeZone(user)).andReturn(TimeZone.getDefault());
         expect(authDaoMock.getRolePropertyValue(-9999, -1110)).andReturn(null);
-        expect(rolePropertyDaoMock.getPropertyStringValue(YukonRoleProperty.DEFAULT_TEMPERATURE_UNIT, YukonEnergyCompanyMockFactory.getYukonEC1().getEnergyCompanyUser())).andReturn(null);
+        expect(energyCompanySettingDaoMock.getString(EnergyCompanySettingType.DEFAULT_TEMPERATURE_UNIT, YukonEnergyCompanyMockFactory.getYukonEC1().getEnergyCompanyId())).andReturn(null);
         customerDaoMock.addCustomer(liteCustomer);
         dbChangeManager.processDbChange(1,
                                         DBChangeMsg.CHANGE_CUSTOMER_DB,

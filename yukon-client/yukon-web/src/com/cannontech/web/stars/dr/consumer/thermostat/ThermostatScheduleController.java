@@ -37,6 +37,7 @@ import com.cannontech.database.TransactionException;
 import com.cannontech.database.data.lite.LiteYukonUser;
 import com.cannontech.i18n.YukonMessageSourceResolvable;
 import com.cannontech.i18n.YukonUserContextMessageSourceResolver;
+import com.cannontech.stars.core.service.YukonEnergyCompanyService;
 import com.cannontech.stars.dr.account.model.CustomerAccount;
 import com.cannontech.stars.dr.hardware.dao.InventoryDao;
 import com.cannontech.stars.dr.hardware.model.SchedulableThermostatType;
@@ -73,6 +74,7 @@ public class ThermostatScheduleController extends AbstractThermostatController {
     @Autowired private ThermostatEventHistoryDao thermostatEventHistoryDao;
     @Autowired private ThermostatService thermostatService;
     @Autowired private YukonUserContextMessageSourceResolver messageSourceResolver;
+    @Autowired private YukonEnergyCompanyService yukonEnergyCompanyService;
     
     @RequestMapping(value = "send", method = RequestMethod.POST)
     public String sendSchedule(HttpServletRequest request,
@@ -92,8 +94,9 @@ public class ThermostatScheduleController extends AbstractThermostatController {
         AccountThermostatSchedule ats = accountThermostatScheduleDao.findByIdAndAccountId(scheduleId, account.getAccountId());
         ThermostatScheduleMode thermostatScheduleMode = ats.getThermostatScheduleMode();
         
-        
-        ThermostatScheduleUpdateResult message = thermostatService.sendSchedule(account, ats, thermostatIds, thermostatScheduleMode, yukonUserContext.getYukonUser());
+        int yukonEnergyCompanyId = yukonEnergyCompanyService.getEnergyCompanyIdByOperator(yukonUserContext.getYukonUser());
+
+        ThermostatScheduleUpdateResult message = thermostatService.sendSchedule(account, ats, thermostatIds, thermostatScheduleMode, yukonEnergyCompanyId, yukonUserContext.getYukonUser());
     
         String pageName = "single.send.";
         if(thermostatIds.size() > 1){

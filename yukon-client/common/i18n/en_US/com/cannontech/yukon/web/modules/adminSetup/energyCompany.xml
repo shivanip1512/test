@@ -27,7 +27,7 @@
     <entry key="yukon.web.modules.adminSetup.createEnergyCompany.groups.title">Operator and Residential Groups</entry>
     <entry key="yukon.web.modules.adminSetup.createEnergyCompany.primaryOperatorGroup">Primary Operator Group</entry>
     <entry key="yukon.web.modules.adminSetup.createEnergyCompany.primaryOperatorGroup.roleGroupConflict">The primary operator user group supplied has the Energy Company and/or the Admin role in one of its role groups.  Please select a different user group or remove these Roles.</entry>
-    
+
     <entry key="yukon.web.modules.adminSetup.createEnergyCompany.additionalOperatorGroups">Additional Operator Group(s)</entry>
     <entry key="yukon.web.modules.adminSetup.createEnergyCompany.residentialGroups">Residential Group(s)</entry>
     <entry key="yukon.web.modules.adminSetup.createEnergyCompany.optional">(Optional)</entry>
@@ -42,7 +42,23 @@
     <entry key="yukon.web.modules.adminSetup.createEnergyCompany.adminPassword2.required">Confirm Password is required.</entry>
     <entry key="yukon.web.modules.adminSetup.createEnergyCompany.adminPassword.mismatch">Password fields did not match.</entry>
     <entry key="yukon.web.modules.adminSetup.createEnergyCompany.creationSuccessful">Energy Company {0} Created Successfully</entry>
-    
+
+    <!--  Energy company settings -->
+    <entry key="yukon.web.modules.adminSetup.energyCompanySettings.pageName">Settings</entry>
+    <entry key="yukon.web.modules.adminSetup.energyCompanySettings.addComment.label">Add Comment</entry>
+    <entry key="yukon.web.modules.adminSetup.energyCompanySettings.addComment.imageUrl">/WebConfig/yukon/Icons/pencil.png</entry>
+    <entry key="yukon.web.modules.adminSetup.energyCompanySettings.addComment.hoverUrl">/WebConfig/yukon/Icons/pencil_over.png</entry>
+    <entry key="yukon.web.modules.adminSetup.energyCompanySettings.nonDefault"><![CDATA[<b>*</b>]]></entry>
+    <entry key="yukon.web.modules.adminSetup.energyCompanySettings.default">Default</entry>
+    <entry key="yukon.web.modules.adminSetup.energyCompanySettings.updated">Updated</entry>
+    <entry key="yukon.web.modules.adminSetup.energyCompanySettings.pageTitle">Energy Company Settings</entry>
+    <entry key="yukon.web.modules.adminSetup.energyCompanySettings.description">TODO: Write a description</entry>
+    <entry key="yukon.web.modules.adminSetup.energyCompanySettings.legend"><![CDATA[<b>*</b> - non default value]]></entry>
+    <entry key="yukon.web.modules.adminSetup.energyCompanySettings.updateSuccessful">Settings saved successfully.</entry>
+    <entry key="yukon.web.modules.adminSetup.energyCompanySettings.disabledInput">Cannot edit disabled settings.</entry>
+    <entry key="yukon.web.modules.adminSetup.energyCompanySettings.cannotDisable">Cannot disable this setting.</entry>
+    <entry key="yukon.web.modules.adminSetup.energyCompanySettings.wrongEcId">The Energy Company Id cannot be set.</entry>
+
     <!-- generalInfo.jsp -->
     <entry key="yukon.web.modules.adminSetup.generalInfo.EDIT.pageName">Edit General Info</entry>
     <entry key="yukon.web.modules.adminSetup.generalInfo.EDIT.contextualPageName">Edit</entry>

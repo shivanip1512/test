@@ -30,7 +30,6 @@
 <%@ page import="com.cannontech.roles.operator.ConsumerInfoRole" %>
 <%@ page import="com.cannontech.roles.operator.InventoryRole" %>
 <%@ page import="com.cannontech.roles.operator.WorkOrderRole" %>
-<%@ page import="com.cannontech.roles.yukon.EnergyCompanyRole" %>
 <%@ page import="com.cannontech.stars.core.dao.StarsCustAccountInformationDao"%>
 <%@ page import="com.cannontech.stars.util.ECUtils" %> 
 <%@ page import="com.cannontech.stars.util.InventoryUtils" %> 
@@ -60,7 +59,6 @@
 
 <%@page import="com.cannontech.stars.core.dao.StarsCustAccountInformationDao"%>
 <%@page import="com.cannontech.core.roleproperties.dao.RolePropertyDao"%>
-<%@page import="com.cannontech.core.roleproperties.dao.EnergyCompanyRolePropertyDao"%>
 <%@page import="com.cannontech.core.roleproperties.enums.SerialNumberValidation"%>
 <%@page import="com.cannontech.core.roleproperties.YukonRoleProperty"%>
 <jsp:directive.page import="com.cannontech.stars.dr.hardware.service.LMHardwareControlInformationService"/>

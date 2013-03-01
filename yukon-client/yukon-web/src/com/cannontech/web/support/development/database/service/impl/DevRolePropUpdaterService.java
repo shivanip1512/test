@@ -238,7 +238,6 @@ public class DevRolePropUpdaterService extends DevObjectCreationBase {
                 setRoleProperty(group, YukonRoleProperty.ADMIN_VIEW_OPT_OUT_EVENTS,true);
                 setRoleProperty(group, YukonRoleProperty.ADMIN_MEMBER_LOGIN_CNTRL,true);
                 setRoleProperty(group, YukonRoleProperty.ADMIN_MEMBER_ROUTE_SELECT,true);
-                setRoleProperty(group, YukonRoleProperty.ADMIN_ALLOW_DESIGNATION_CODES,true);
                 setRoleProperty(group, YukonRoleProperty.ADMIN_MULTI_WAREHOUSE,true);
                 setRoleProperty(group, YukonRoleProperty.ADMIN_AUTO_PROCESS_BATCH_COMMANDS,true);
                 setRoleProperty(group, YukonRoleProperty.ADMIN_MULTISPEAK_SETUP,true);

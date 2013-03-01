@@ -11,8 +11,6 @@ import com.cannontech.clientutils.YukonLogManager;
 import com.cannontech.common.device.commands.exception.CommandCompletionException;
 import com.cannontech.common.events.loggers.HardwareEventLogService;
 import com.cannontech.common.version.VersionTools;
-import com.cannontech.core.roleproperties.YukonRoleProperty;
-import com.cannontech.core.roleproperties.dao.EnergyCompanyRolePropertyDao;
 import com.cannontech.database.data.activity.ActivityLogActions;
 import com.cannontech.database.data.lite.LiteYukonUser;
 import com.cannontech.stars.core.dao.InventoryBaseDao;
@@ -27,6 +25,8 @@ import com.cannontech.stars.dr.hardware.model.LmHardwareCommand;
 import com.cannontech.stars.dr.hardware.model.LmHardwareCommandType;
 import com.cannontech.stars.dr.hardware.service.LmHardwareCommandService;
 import com.cannontech.stars.dr.hardware.service.impl.PorterExpressComCommandBuilder;
+import com.cannontech.stars.energyCompany.EnergyCompanySettingType;
+import com.cannontech.stars.energyCompany.dao.EnergyCompanySettingDao;
 import com.cannontech.stars.util.SwitchCommandQueue;
 import com.cannontech.user.YukonUserContext;
 import com.google.common.collect.Lists;
@@ -37,10 +37,10 @@ public class HardwareConfigServiceImpl implements HardwareConfigService {
     @Autowired private CustomerAccountDao customerAccountDao;
     @Autowired private InventoryBaseDao inventoryBaseDao;
     @Autowired private EnrollmentDao enrollmentDao;
-    @Autowired private EnergyCompanyRolePropertyDao ecRolePropertyDao;
     @Autowired private LmHardwareCommandService commandService;
     @Autowired private PorterExpressComCommandBuilder xcomCommandBuilder;
     @Autowired private YukonEnergyCompanyService yecService;
+    @Autowired private EnergyCompanySettingDao energyCompanySettingDao;
 
     private static Logger log = YukonLogManager.getLogger(HardwareConfigServiceImpl.class);
     
@@ -92,8 +92,8 @@ public class HardwareConfigServiceImpl implements HardwareConfigService {
     public List<String> getConfigCommands(int inventoryId, int energyCompanyId, boolean includeInService) {
         LiteLmHardwareBase liteHw = (LiteLmHardwareBase) inventoryBaseDao.getByInventoryId(inventoryId);
         LiteStarsEnergyCompany lsec = StarsDatabaseCache.getInstance().getEnergyCompany(energyCompanyId);
-        boolean hardwareAddressing =
-            ecRolePropertyDao.getPropertyBooleanValue(YukonRoleProperty.TRACK_HARDWARE_ADDRESSING, lsec);
+        boolean hardwareAddressing = energyCompanySettingDao.getBoolean(EnergyCompanySettingType.TRACK_HARDWARE_ADDRESSING, lsec.getEnergyCompanyId());
+
         List<String> retVal = Lists.newArrayList();
 
         if (enrollmentDao.isEnrolled(inventoryId)) {

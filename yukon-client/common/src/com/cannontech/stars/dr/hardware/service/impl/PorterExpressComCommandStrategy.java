@@ -14,7 +14,6 @@ import com.cannontech.common.inventory.HardwareType;
 import com.cannontech.common.model.YukonCancelTextMessage;
 import com.cannontech.common.model.YukonTextMessage;
 import com.cannontech.core.roleproperties.YukonRoleProperty;
-import com.cannontech.core.roleproperties.dao.EnergyCompanyRolePropertyDao;
 import com.cannontech.core.roleproperties.dao.RolePropertyDao;
 import com.cannontech.database.data.lite.LiteYukonUser;
 import com.cannontech.stars.core.service.YukonEnergyCompanyService;
@@ -36,6 +35,8 @@ import com.cannontech.stars.dr.thermostat.model.ThermostatManualEvent;
 import com.cannontech.stars.dr.thermostat.model.ThermostatScheduleMode;
 import com.cannontech.stars.dr.thermostat.model.ThermostatScheduleUpdateResult;
 import com.cannontech.stars.dr.thermostat.model.TimeOfWeek;
+import com.cannontech.stars.energyCompany.EnergyCompanySettingType;
+import com.cannontech.stars.energyCompany.dao.EnergyCompanySettingDao;
 import com.cannontech.stars.energyCompany.model.YukonEnergyCompany;
 import com.google.common.collect.Lists;
 
@@ -48,8 +49,8 @@ public class PorterExpressComCommandStrategy implements LmHardwareCommandStrateg
     @Autowired private RolePropertyDao rolePropertyDao;
     @Autowired private PorterExpressComCommandBuilder xcomCommandBuilder;
     @Autowired private CustomerEventDao customerEventDao;
-    @Autowired private EnergyCompanyRolePropertyDao ecRolePropertyDao;
     @Autowired private YukonEnergyCompanyService yecService;
+    @Autowired private EnergyCompanySettingDao energyCompanySettingDao;
 
     @Override
     public void doManualAdjustment(ThermostatManualEvent event, Thermostat thermostat, LiteYukonUser user) 
@@ -63,13 +64,14 @@ public class PorterExpressComCommandStrategy implements LmHardwareCommandStrateg
     public ThermostatScheduleUpdateResult doScheduleUpdate(CustomerAccount account, 
                                                            AccountThermostatSchedule ats,
                                                            ThermostatScheduleMode mode, 
-                                                           Thermostat stat, 
+                                                           Thermostat stat,
+                                                           int ecId,
                                                            LiteYukonUser user) {
         
         ThermostatScheduleUpdateResult result = ThermostatScheduleUpdateResult.SEND_SCHEDULE_SUCCESS;
         
         for (TimeOfWeek timeOfWeek : mode.getAssociatedTimeOfWeeks()) {
-            ThermostatScheduleUpdateResult tempResult = sendSchedulePart(account, ats, stat.getId(), timeOfWeek, mode, user);
+            ThermostatScheduleUpdateResult tempResult = sendSchedulePart(account, ats, stat.getId(), timeOfWeek, mode, ecId, user);
             if (tempResult.isFailed()) {
                 result = tempResult;  // do we really want to keep trying here? doesn't make a lot of sense
             }
@@ -83,7 +85,8 @@ public class PorterExpressComCommandStrategy implements LmHardwareCommandStrateg
                                                             AccountThermostatSchedule ats, 
                                                             int thermostatId, 
                                                             TimeOfWeek tow, 
-                                                            ThermostatScheduleMode mode, 
+                                                            ThermostatScheduleMode mode,
+                                                            int ecId,
                                                             LiteYukonUser user) {
 
         Thermostat stat = inventoryDao.getThermostatById(thermostatId);
@@ -93,11 +96,9 @@ public class PorterExpressComCommandStrategy implements LmHardwareCommandStrateg
             try {
                 // We have to update the schedule mode for Utility Pro thermostats every
                 // time we update the schedule if 5-2 mode is enabled
-                YukonRoleProperty modeProperty;
-                modeProperty = YukonRoleProperty.ADMIN_ALLOW_THERMOSTAT_SCHEDULE_WEEKDAY_WEEKEND;
-                
-                boolean mode52Enabled = rolePropertyDao.checkProperty(modeProperty, user);
 
+                boolean mode52Enabled = energyCompanySettingDao.checkSetting(EnergyCompanySettingType.ADMIN_ALLOW_THERMOSTAT_SCHEDULE_WEEKDAY_WEEKEND, ecId);
+                
                 if (mode52Enabled) {
                     String serialString = " serial " + stat.getSerialNumber();
                     if (mode == ThermostatScheduleMode.WEEKDAY_SAT_SUN 
@@ -135,7 +136,7 @@ public class PorterExpressComCommandStrategy implements LmHardwareCommandStrateg
         
         List<String> commands = Lists.newArrayList();
         YukonEnergyCompany yec = yecService.getEnergyCompanyByInventoryId(parameters.getDevice().getInventoryID());
-        boolean trackAddressing = ecRolePropertyDao.getPropertyBooleanValue(YukonRoleProperty.TRACK_HARDWARE_ADDRESSING, yec);
+        boolean trackAddressing = energyCompanySettingDao.getBoolean(EnergyCompanySettingType.TRACK_HARDWARE_ADDRESSING, yec.getEnergyCompanyId());
         
         if (parameters.getType() == LmHardwareCommandType.CONFIG) {
             

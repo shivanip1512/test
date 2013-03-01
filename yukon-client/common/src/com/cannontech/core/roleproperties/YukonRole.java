@@ -17,7 +17,6 @@ import com.cannontech.roles.ConsumerRoleDefs;
 import com.cannontech.roles.LMRoleDefs;
 import com.cannontech.roles.NotificationsRoleDefs;
 import com.cannontech.roles.OperatorRoleDefs;
-import com.cannontech.roles.EnergyCompanyRoleDefs;
 import com.cannontech.roles.capcontrol.CBCOnelineSettingsRole;
 import com.google.common.base.Function;
 import com.google.common.collect.ImmutableCollection;
@@ -55,7 +54,6 @@ public enum YukonRole implements DisplayableEnum, DatabaseRepresentationSource {
     CI_CURTAILMENT(Operator, OperatorRoleDefs.CI_CURTAILMENT_ROLEID),
     CONSUMER_INFO(Operator, OperatorRoleDefs.CONSUMER_INFO_ROLEID),
     DEVICE_ACTIONS(Operator, OperatorRoleDefs.DEVICE_ACTIONS_ROLEID),
-    ENERGY_COMPANY(Operator, EnergyCompanyRoleDefs.ENERGY_COMPANY_ROLEID),
     OPERATOR_ESUBSTATION_DRAWINGS(Operator, OperatorRoleDefs.ESUBSTATION_DRAWINGS_ROLEID),
     INVENTORY(Operator, OperatorRoleDefs.INVENTORY_ROLEID),
     METERING(Operator, OperatorRoleDefs.METERING_ROLEID),

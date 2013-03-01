@@ -20,7 +20,6 @@ import com.cannontech.core.dao.CustomerDao;
 import com.cannontech.core.dao.YukonUserDao;
 import com.cannontech.core.roleproperties.YukonRole;
 import com.cannontech.core.roleproperties.YukonRoleProperty;
-import com.cannontech.core.roleproperties.dao.EnergyCompanyRolePropertyDao;
 import com.cannontech.core.roleproperties.dao.RolePropertyDao;
 import com.cannontech.database.data.activity.ActivityLogActions;
 import com.cannontech.database.data.lite.LiteContact;
@@ -49,6 +48,7 @@ import com.cannontech.stars.dr.thermostat.model.ThermostatSchedulePeriod;
 import com.cannontech.stars.dr.thermostat.model.ThermostatScheduleUpdateResult;
 import com.cannontech.stars.dr.thermostat.model.TimeOfWeek;
 import com.cannontech.stars.dr.thermostat.service.ThermostatService;
+import com.cannontech.stars.energyCompany.dao.EnergyCompanySettingDao;
 import com.cannontech.stars.energyCompany.model.YukonEnergyCompany;
 import com.cannontech.user.UserUtils;
 import com.cannontech.user.YukonUserContext;
@@ -60,21 +60,21 @@ import com.google.common.collect.Sets;
  */
 public class ThermostatServiceImpl implements ThermostatService {
 
-    private Logger logger = YukonLogManager.getLogger(ThermostatServiceImpl.class);
+    private final Logger logger = YukonLogManager.getLogger(ThermostatServiceImpl.class);
 
     @Autowired private AccountEventLogService accountEventLogService;
     @Autowired private AccountThermostatScheduleDao accountThermostatScheduleDao;
     @Autowired private CustomerAccountDao customerAccountDao;
     @Autowired private CustomerDao customerDao;
     @Autowired private CustomerEventDao customerEventDao;
-    @Autowired private EnergyCompanyRolePropertyDao energyCompanyRolePropertyDao;
     @Autowired private InventoryDao inventoryDao;
     @Autowired private RolePropertyDao rolePropertyDao;
     @Autowired private ThermostatEventHistoryDao thermostatEventHistoryDao;
     @Autowired private YukonEnergyCompanyService yukonEnergyCompanyService;
     @Autowired private YukonUserDao yukonUserDao;
     @Autowired private LmHardwareCommandService lmHardwareCommandService;
-    
+    @Autowired private EnergyCompanySettingDao energyCompanySettingDao;
+
     @Override
     public ThermostatManualEventResult executeManualEvent(int thermostatId, Temperature heatTemp, Temperature coolTemp,
                                                           ThermostatMode thermostatMode, ThermostatFanState fanState, boolean hold, boolean autoModeEnabledCommand,
@@ -194,13 +194,14 @@ public class ThermostatServiceImpl implements ThermostatService {
                                                        AccountThermostatSchedule ats,
                                                        Iterable<Integer> thermostatIdsList,
                                                        ThermostatScheduleMode mode,
+                                                       int ecId,
                                                        LiteYukonUser user) {
         
         ThermostatScheduleUpdateResult message = ThermostatScheduleUpdateResult.SEND_SCHEDULE_SUCCESS; // these enums suck, generalize (used to be SAVE_SCHEDULE_SUCCESS)
         int thermostatCount = 0;
         for (int thermostatId : thermostatIdsList) {
             thermostatCount++;
-            message = sendScheduleToThermostat(account, ats, mode, thermostatId, user);
+            message = sendScheduleToThermostat(account, ats, mode, thermostatId, ecId, user);
 
             if(!message.isFailed()) {
                 //Log schedule send to thermostat history
@@ -219,6 +220,7 @@ public class ThermostatServiceImpl implements ThermostatService {
                                           AccountThermostatSchedule ats,
                                           ThermostatScheduleMode mode,
                                           int thermostatId,
+                                          int ecId,
                                           LiteYukonUser user) {
         
         Thermostat stat = inventoryDao.getThermostatById(thermostatId);
@@ -234,7 +236,7 @@ public class ThermostatServiceImpl implements ThermostatService {
             return ThermostatScheduleUpdateResult.NO_SERIAL_ERROR;
         }
         try {
-            return lmHardwareCommandService.doScheduleUpdate(account, ats, mode, stat, user);
+            return lmHardwareCommandService.doScheduleUpdate(account, ats, mode, stat, ecId, user);
         } catch (CommandCompletionException e) {
             return ThermostatScheduleUpdateResult.SEND_SCHEDULE_ERROR;
         }
@@ -564,7 +566,7 @@ public class ThermostatServiceImpl implements ThermostatService {
         
         for(ThermostatScheduleMode mode : ThermostatScheduleMode.values()){
           //check to see if this mode is allowed by the energy company
-            if(energyCompanyRolePropertyDao.getPropertyBooleanValue(mode.getAssociatedRoleProperty(), yukonEnergyCompany)){
+            if(energyCompanySettingDao.getBoolean(mode.getAssociatedEnergyCompanySetting(), yukonEnergyCompany.getEnergyCompanyId())){
                 allowedModes.add(mode);
             }
         }

@@ -7,12 +7,14 @@ import org.springframework.core.annotation.AnnotationUtils;
 import com.cannontech.common.config.MasterConfigBooleanKeysEnum;
 import com.cannontech.core.roleproperties.YukonRole;
 import com.cannontech.core.roleproperties.YukonRoleProperty;
+import com.cannontech.stars.energyCompany.EnergyCompanySettingType;
 import com.cannontech.system.GlobalSettingType;
 import com.cannontech.web.security.annotation.AuthorizeByCparm;
+import com.cannontech.web.security.annotation.CheckEnergyCompanySetting;
 import com.cannontech.web.security.annotation.CheckFalseRoleProperty;
+import com.cannontech.web.security.annotation.CheckGlobalSetting;
 import com.cannontech.web.security.annotation.CheckRole;
 import com.cannontech.web.security.annotation.CheckRoleProperty;
-import com.cannontech.web.security.annotation.CheckGlobalSetting;
 import com.cannontech.web.widget.support.WidgetMultiActionController;
 
 
@@ -35,6 +37,11 @@ public class WebSecurityAnnotationProcessor {
         boolean hasCheckGlobalSetting = hasCheckGlobalSetting(clazz);
         if (hasCheckGlobalSetting) {
             doHasCheckGlobalSetting(getCheckGlobalSetting(clazz));
+        }
+        
+        boolean hasCheckEnergyCompanySetting = hasCheckEnergyCompanySetting(clazz);
+        if (hasCheckEnergyCompanySetting) {
+            doHasCheckEnergyCompanySetting(getCheckEnergyCompanySetting(clazz));
         }
         
         boolean hasCheckRoleProperty = hasCheckRoleProperty(clazz);
@@ -76,6 +83,11 @@ public class WebSecurityAnnotationProcessor {
         GlobalSettingType setting = checkGlobalSetting.value();
         webSecurityChecker.checkGlobalSetting(setting);
     }
+    
+    private void doHasCheckEnergyCompanySetting(CheckEnergyCompanySetting checkEnergyCompanySetting) {
+        EnergyCompanySettingType setting = checkEnergyCompanySetting.value();
+        webSecurityChecker.checkEnergyCompanySetting(setting);
+    }
 
     private void doHasCheckRoleProperty(CheckRoleProperty checkRoleProperty) throws Exception {
         YukonRoleProperty[] roleProperties = checkRoleProperty.value();
@@ -108,6 +120,11 @@ public class WebSecurityAnnotationProcessor {
         return checkGlobalSetting;
     }
     
+    private CheckEnergyCompanySetting getCheckEnergyCompanySetting(Class<?> clazz) {
+        CheckEnergyCompanySetting checkEnergyCompanySetting = AnnotationUtils.findAnnotation(clazz, CheckEnergyCompanySetting.class);
+        return checkEnergyCompanySetting;
+    }
+    
     private CheckFalseRoleProperty getCheckFalseRoleProperty(Class<?> clazz) {
     	CheckFalseRoleProperty checkFalseRoleProperty = AnnotationUtils.findAnnotation(clazz, CheckFalseRoleProperty.class);
         return checkFalseRoleProperty;
@@ -128,6 +145,11 @@ public class WebSecurityAnnotationProcessor {
     private boolean hasCheckGlobalSetting(Class<?> clazz) {
         CheckGlobalSetting checkGlobalSetting = AnnotationUtils.findAnnotation(clazz, CheckGlobalSetting.class);
         return checkGlobalSetting != null;
+    }
+    
+    private boolean hasCheckEnergyCompanySetting(Class<?> clazz) {
+        CheckEnergyCompanySetting checkEnergyCompanySetting = AnnotationUtils.findAnnotation(clazz, CheckEnergyCompanySetting.class);
+        return checkEnergyCompanySetting != null;
     }
     
     private boolean hasCheckRoleProperty(Class<?> clazz) {

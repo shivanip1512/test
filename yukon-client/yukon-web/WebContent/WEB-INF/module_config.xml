@@ -1580,6 +1580,12 @@
                                         <menu>energyCompanySetup|home</menu>
                                         <labelArgument>${energyCompanyName}</labelArgument>
                                     </page>
+                                    <page name="energyCompanySettings" type="DETAIL_CHILD_WITH_INFO" contributeToMenu="true">
+                                        <requireCanEditEnergyCompany/>
+                                        <menu>energyCompanySetup|home</menu>
+                                        <link>/adminSetup/energyCompany/settings/view?ecId=${ecId}</link>
+                                        <labelArgument>${energyCompanyName}</labelArgument>
+                                    </page>
                                     <page name="operatorLogin.home" type="DETAIL_CHILD_WITH_INFO" contributeToMenu="true">
                                         <menu>energyCompany|home</menu>
                                         <link>/adminSetup/energyCompany/operatorLogin/home?ecId=${ecId}</link>

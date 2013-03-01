@@ -11,14 +11,15 @@ import com.cannontech.web.input.type.InputType;
 import com.google.common.collect.Lists;
 
 public class MappedPropertiesHelper<T> {
-    private String mapField;
-    private List<MappedPropertiesHelper.MappableProperty<T, ?>> mappableProperties = Lists.newArrayList();
+    private final String mapField;
+    private final List<MappedPropertiesHelper.MappableProperty<T, ?>> mappableProperties = Lists.newArrayList();
     
     public MappedPropertiesHelper(String mapField) {
         this.mapField = mapField;
     }
 
     public List<MappedPropertiesHelper.MappableProperty<T,?>> getMappableProperties() {
+
         return mappableProperties;
     }
     
@@ -26,12 +27,18 @@ public class MappedPropertiesHelper<T> {
         return mapField;
     }
     
+    public <V> void add(String keyText, String fieldText, T extra, InputType<V> valueType) {
+        String path = mapField + "[" + keyText + "]." + fieldText;
+        MappedPropertiesHelper.MappableProperty<T,V> result = new MappedPropertiesHelper.MappableProperty<T,V>(path, extra, valueType);
+        mappableProperties.add(result);
+    }
+    
     public <V> void add(String keyText, T extra, InputType<V> valueType) {
         String path = mapField + "[" + keyText + "]";
         MappedPropertiesHelper.MappableProperty<T,V> result = new MappedPropertiesHelper.MappableProperty<T,V>(path, extra, valueType);
         mappableProperties.add(result);
     }
-    
+
     public void register(DataBinder binder) {
         for (MappedPropertiesHelper.MappableProperty<T, ?> property : getMappableProperties()) {
             binder.registerCustomEditor(property.getValueType().getClass(), property.getPath(), property.getValueType().getPropertyEditor());
@@ -39,9 +46,9 @@ public class MappedPropertiesHelper<T> {
     }
     
     public static class MappableProperty<E,V> {
-        private String path;
-        private InputType<V> valueType;
-        private E extra;
+        private final String path;
+        private final InputType<V> valueType;
+        private final E extra;
         
         public MappableProperty(String path, E extra, InputType<V> valueType) {
             this.path = path;

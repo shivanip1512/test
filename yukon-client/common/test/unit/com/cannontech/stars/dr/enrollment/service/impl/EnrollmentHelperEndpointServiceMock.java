@@ -3,23 +3,28 @@ package com.cannontech.stars.dr.enrollment.service.impl;
 import java.util.ArrayList;
 import java.util.List;
 
+import org.springframework.test.util.ReflectionTestUtils;
+
 import com.cannontech.database.data.lite.LiteYukonUser;
+import com.cannontech.stars.dr.account.dao.CustomerAccountDao;
 import com.cannontech.stars.dr.account.dao.impl.CustomerAccountDaoImpl;
 import com.cannontech.stars.dr.account.model.CustomerAccount;
+import com.cannontech.stars.dr.appliance.dao.ApplianceDao;
 import com.cannontech.stars.dr.appliance.dao.impl.ApplianceDaoImpl;
 import com.cannontech.stars.dr.appliance.model.Appliance;
+import com.cannontech.stars.dr.enrollment.dao.EnrollmentDao;
 import com.cannontech.stars.dr.enrollment.dao.impl.EnrollmentDaoImpl;
-import com.cannontech.stars.dr.enrollment.service.impl.EnrollmentHelperServiceImpl;
 import com.cannontech.stars.dr.program.model.ProgramEnrollmentResultEnum;
 import com.cannontech.stars.dr.program.service.ProgramEnrollment;
+import com.cannontech.stars.dr.program.service.ProgramEnrollmentService;
 import com.cannontech.stars.dr.program.service.impl.ProgramEnrollmentServiceImpl;
 
 public class EnrollmentHelperEndpointServiceMock extends EnrollmentHelperServiceImpl {
 
-    ApplianceDaoMock applianceDao;
-    CustomerAccountDaoMock customerAccountDao;
-    EnrollmentDaoMock enrollmentDao;
-    ProgramEnrollmentServiceMock programEnrollmentService;
+    private ApplianceDaoMock applianceDao;
+    private CustomerAccountDaoMock customerAccountDao;
+    /*package visiblity*/ EnrollmentDaoMock enrollmentDao;
+    private ProgramEnrollmentServiceMock programEnrollmentService;
 
     public EnrollmentHelperEndpointServiceMock() throws Exception {
         setUp();
@@ -27,13 +32,13 @@ public class EnrollmentHelperEndpointServiceMock extends EnrollmentHelperService
     
     public void setUp() throws Exception {
         applianceDao = new ApplianceDaoMock();
-        super.setApplianceDao(applianceDao);
+        ReflectionTestUtils.setField(this, "applianceDao", applianceDao, ApplianceDao.class);
         customerAccountDao = new CustomerAccountDaoMock();
-        super.setCustomerAccountDao(customerAccountDao);
+        ReflectionTestUtils.setField(this, "customerAccountDao", customerAccountDao, CustomerAccountDao.class);
         enrollmentDao = new EnrollmentDaoMock();
-        super.setEnrollmentDao(enrollmentDao);
+        ReflectionTestUtils.setField(this, "enrollmentDao", enrollmentDao, EnrollmentDao.class);
         programEnrollmentService = new ProgramEnrollmentServiceMock();
-        super.setProgramEnrollmentService(programEnrollmentService);
+        ReflectionTestUtils.setField(this, "programEnrollmentService", programEnrollmentService, ProgramEnrollmentService.class);
     }
     
     public ProgramEnrollment getEnrollmentOne(){

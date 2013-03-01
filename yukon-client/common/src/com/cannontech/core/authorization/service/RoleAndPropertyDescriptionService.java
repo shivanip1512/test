@@ -1,7 +1,5 @@
 package com.cannontech.core.authorization.service;
 
-import static com.cannontech.core.roleproperties.YukonRole.ENERGY_COMPANY;
-
 import java.util.List;
 
 import org.springframework.beans.factory.annotation.Autowired;
@@ -12,6 +10,9 @@ import com.cannontech.core.roleproperties.YukonRole;
 import com.cannontech.core.roleproperties.YukonRoleCategory;
 import com.cannontech.core.roleproperties.YukonRoleProperty;
 import com.cannontech.database.data.lite.LiteYukonUser;
+import com.cannontech.stars.core.service.YukonEnergyCompanyService;
+import com.cannontech.stars.energyCompany.EnergyCompanySettingType;
+import com.cannontech.stars.energyCompany.dao.EnergyCompanySettingDao;
 import com.cannontech.system.GlobalSettingType;
 import com.cannontech.system.dao.GlobalSettingDao;
 import com.cannontech.user.checker.AggregateOrUserChecker;
@@ -26,7 +27,9 @@ public class RoleAndPropertyDescriptionService {
     @Autowired private RolePropertyUserCheckerFactory userCheckerFactory;
     @Autowired private ConfigurationSource configurationSource;
     @Autowired private GlobalSettingDao globalSettingDao;
-    
+    @Autowired private EnergyCompanySettingDao energyCompanySettingDao;
+    @Autowired private YukonEnergyCompanyService yukonEnergyCompanyService;
+
     /**
      * This will check that the user has the given roles, categories, has a 
      * true value for the given role properties, or a true GlobalSetting value.
@@ -92,21 +95,12 @@ public class RoleAndPropertyDescriptionService {
             try {
                 YukonRoleProperty property = YukonRoleProperty.valueOf(someEnumName);
                 UserChecker propertyChecker;
-                if (property.getRole() == ENERGY_COMPANY) {
-                    if (inverted) {
-                        propertyChecker = userCheckerFactory.createECFalsePropertyChecker(property);
-                    } else {
-                        propertyChecker = userCheckerFactory.createECPropertyChecker(property);
-                    }
-                    checkers.add(propertyChecker);
+                if (inverted) {
+                    propertyChecker = userCheckerFactory.createFalsePropertyChecker(property);
                 } else {
-                    if (inverted) {
-                        propertyChecker = userCheckerFactory.createFalsePropertyChecker(property);
-                    } else {
-                        propertyChecker = userCheckerFactory.createPropertyChecker(property);
-                    }
-                    checkers.add(propertyChecker);
+                    propertyChecker = userCheckerFactory.createPropertyChecker(property);
                 }
+                checkers.add(propertyChecker);
                 continue;
 
             } catch (IllegalArgumentException ignore) { }
@@ -121,6 +115,20 @@ public class RoleAndPropertyDescriptionService {
                     propertyChecker = bool ? UserCheckerBase.FALSE : UserCheckerBase.TRUE;
                 }
                 checkers.add(propertyChecker);
+                continue;
+
+            } catch (IllegalArgumentException ignore) { }
+
+            // see if it is a supported energy company setting 
+            try {
+                EnergyCompanySettingType setting = EnergyCompanySettingType.valueOf(someEnumName);
+                UserChecker settingChecker;
+                if (inverted) {
+                    settingChecker = userCheckerFactory.createECFalseSettingChecker(setting);
+                } else {
+                    settingChecker = userCheckerFactory.createECSettingChecker(setting);
+                }
+                checkers.add(settingChecker);
                 continue;
 
             } catch (IllegalArgumentException ignore) { }

@@ -31,17 +31,12 @@ public interface ConsumerInfoRole {
 	public static final int NEW_ACCOUNT_WIZARD = OperatorRoleDefs.CONSUMER_INFO_PROPERTYID_BASE - 51;
 	public static final int IMPORT_CUSTOMER_ACCOUNT = OperatorRoleDefs.CONSUMER_INFO_PROPERTYID_BASE - 52;
 	public static final int INVENTORY_CHECKING = OperatorRoleDefs.CONSUMER_INFO_PROPERTYID_BASE - 53;
-//    moved to energy company role.
-//	public static final int AUTOMATIC_CONFIGURATION = OperatorRoleDefs.CONSUMER_INFO_PROPERTYID_BASE - 54;
 	public static final int ORDER_NUMBER_AUTO_GEN = OperatorRoleDefs.CONSUMER_INFO_PROPERTYID_BASE - 55;
 	public static final int CALL_NUMBER_AUTO_GEN = OperatorRoleDefs.CONSUMER_INFO_PROPERTYID_BASE - 56;
 	public static final int OPT_OUT_PERIOD = OperatorRoleDefs.CONSUMER_INFO_PROPERTYID_BASE - 57;
     public static final int DISABLE_SWITCH_SENDING = OperatorRoleDefs.CONSUMER_INFO_PROPERTYID_BASE - 58;
     public static final int METER_SWITCH_ASSIGNMENT = OperatorRoleDefs.CONSUMER_INFO_PROPERTYID_BASE - 59;
     public static final int CREATE_LOGIN_FOR_ACCOUNT = OperatorRoleDefs.CONSUMER_INFO_PROPERTYID_BASE - 60;
-//    moved to energy company role
-//    public static final int ACCOUNT_NUMBER_LENGTH = OperatorRoleDefs.CONSUMER_INFO_PROPERTYID_BASE - 61;
-//    public static final int ROTATION_DIGIT_LENGTH = OperatorRoleDefs.CONSUMER_INFO_PROPERTYID_BASE - 62;
     public static final int ALLOW_ACCOUNT_EDITING = OperatorRoleDefs.CONSUMER_INFO_PROPERTYID_BASE - 63;
     public static final int ENROLLMENT_MULTIPLE_PROGRAMS_PER_CATEGORY = OperatorRoleDefs.CONSUMER_INFO_PROPERTYID_BASE - 64;
     public static final int ACCOUNT_SEARCH = OperatorRoleDefs.CONSUMER_INFO_PROPERTYID_BASE - 65;

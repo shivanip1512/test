@@ -291,5 +291,8 @@
       <sequence name="ProgramToSeasonalProgram">
  	    <table name="ProgramToSeasonalProgram" identitycolumn="AssignedProgramId" initsequence="true" />
       </sequence>
+            <sequence name="EnergyCompanySetting">
+        <table name="EnergyCompanySetting" identitycolumn="EnergyCompanySettingId" initsequence="true" />
+      </sequence>
   </sequencetable>
 </sequencetables>

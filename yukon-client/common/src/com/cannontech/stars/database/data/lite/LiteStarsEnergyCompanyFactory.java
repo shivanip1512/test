@@ -10,7 +10,6 @@ import com.cannontech.core.dao.YukonGroupDao;
 import com.cannontech.core.dao.YukonListDao;
 import com.cannontech.core.dynamic.AsyncDynamicDataSource;
 import com.cannontech.core.dynamic.DatabaseChangeEventListener;
-import com.cannontech.core.roleproperties.dao.EnergyCompanyRolePropertyDao;
 import com.cannontech.core.service.SystemDateFormattingService;
 import com.cannontech.database.YukonJdbcTemplate;
 import com.cannontech.database.db.company.EnergyCompany;
@@ -25,6 +24,7 @@ import com.cannontech.stars.core.dao.WarehouseDao;
 import com.cannontech.stars.core.service.YukonEnergyCompanyService;
 import com.cannontech.stars.database.cache.StarsDatabaseCache;
 import com.cannontech.stars.energyCompany.dao.EnergyCompanyDao;
+import com.cannontech.stars.energyCompany.dao.EnergyCompanySettingDao;
 import com.cannontech.stars.service.DefaultRouteService;
 import com.cannontech.stars.service.EnergyCompanyService;
 
@@ -36,7 +36,6 @@ public class LiteStarsEnergyCompanyFactory {
     @Autowired private DefaultRouteService defaultRouteService;
     @Autowired private ECMappingDao ecMappingDao;
     @Autowired private EnergyCompanyDao energyCompanyDao;
-    @Autowired private EnergyCompanyRolePropertyDao energyCompanyRolePropertyDao;
     @Autowired private EnergyCompanyService energyCompanyService;
     @Autowired private PaoDao paoDao;
     @Autowired private RoleDao roleDao;
@@ -50,7 +49,8 @@ public class LiteStarsEnergyCompanyFactory {
     @Autowired private YukonGroupDao yukonGroupDao;
     @Autowired private YukonJdbcTemplate yukonJdbcTemplate;
     @Autowired private YukonListDao yukonListDao;
-	
+    @Autowired private EnergyCompanySettingDao energyCompanySettingDao;
+    
     public LiteStarsEnergyCompany createEnergyCompany(EnergyCompany energyCompany) {
         LiteStarsEnergyCompany liteStarsEnergyCompany = new LiteStarsEnergyCompany(energyCompany);
         applyPropertySetters(liteStarsEnergyCompany);
@@ -68,7 +68,6 @@ public class LiteStarsEnergyCompanyFactory {
         energyCompany.setDbPersistentDao(dbPersistentDao);
         energyCompany.setDbChangeManager(dbChangeManager);
         energyCompany.setEcMappingDao(ecMappingDao);
-        energyCompany.setEnergyCompanyRolePropertyDao(energyCompanyRolePropertyDao);
         energyCompany.setDefaultRouteService(defaultRouteService);
         energyCompany.setStarsCustAccountInformationDao(starsCustAccountInformationDao);
         energyCompany.setSystemDateFormattingService(systemDateFormattingService);
@@ -84,6 +83,7 @@ public class LiteStarsEnergyCompanyFactory {
         energyCompany.setEnergyCompanyService(energyCompanyService);
         energyCompany.setRoleDao(roleDao);
         energyCompany.setYukonEnergyCompanyService(yukonEnergyCompanyService);
+        energyCompany.setEnergyCompanySettingDao(energyCompanySettingDao);
 
         energyCompany.initialize();
 

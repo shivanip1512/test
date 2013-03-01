@@ -14,8 +14,6 @@ import com.cannontech.common.util.MappingList;
 import com.cannontech.common.util.ObjectMapper;
 import com.cannontech.core.dao.AccountNotFoundException;
 import com.cannontech.core.dao.NotFoundException;
-import com.cannontech.core.roleproperties.YukonRoleProperty;
-import com.cannontech.core.roleproperties.dao.EnergyCompanyRolePropertyDao;
 import com.cannontech.database.data.lite.LiteYukonUser;
 import com.cannontech.loadcontrol.loadgroup.dao.LoadGroupDao;
 import com.cannontech.loadcontrol.loadgroup.model.LoadGroup;
@@ -24,8 +22,8 @@ import com.cannontech.stars.core.dao.StarsSearchDao;
 import com.cannontech.stars.core.service.YukonEnergyCompanyService;
 import com.cannontech.stars.database.cache.StarsDatabaseCache;
 import com.cannontech.stars.database.data.lite.LiteInventoryBase;
-import com.cannontech.stars.database.data.lite.LiteStarsEnergyCompany;
 import com.cannontech.stars.database.data.lite.LiteLmHardwareBase;
+import com.cannontech.stars.database.data.lite.LiteStarsEnergyCompany;
 import com.cannontech.stars.dr.account.dao.CustomerAccountDao;
 import com.cannontech.stars.dr.account.model.CustomerAccount;
 import com.cannontech.stars.dr.appliance.dao.ApplianceCategoryDao;
@@ -33,8 +31,8 @@ import com.cannontech.stars.dr.appliance.dao.ApplianceDao;
 import com.cannontech.stars.dr.appliance.model.Appliance;
 import com.cannontech.stars.dr.appliance.model.ApplianceCategory;
 import com.cannontech.stars.dr.enrollment.dao.EnrollmentDao;
-import com.cannontech.stars.dr.enrollment.exception.EnrollmentSystemConfigurationException;
 import com.cannontech.stars.dr.enrollment.exception.EnrollmentException;
+import com.cannontech.stars.dr.enrollment.exception.EnrollmentSystemConfigurationException;
 import com.cannontech.stars.dr.enrollment.model.EnrolledDevicePrograms;
 import com.cannontech.stars.dr.enrollment.model.EnrollmentEnum;
 import com.cannontech.stars.dr.enrollment.model.EnrollmentEventLoggingData;
@@ -50,6 +48,8 @@ import com.cannontech.stars.dr.program.model.ProgramEnrollmentResultEnum;
 import com.cannontech.stars.dr.program.service.ProgramEnrollment;
 import com.cannontech.stars.dr.program.service.ProgramEnrollmentService;
 import com.cannontech.stars.dr.program.service.ProgramService;
+import com.cannontech.stars.energyCompany.EnergyCompanySettingType;
+import com.cannontech.stars.energyCompany.dao.EnergyCompanySettingDao;
 import com.cannontech.stars.energyCompany.model.YukonEnergyCompany;
 import com.cannontech.stars.util.ObjectInOtherEnergyCompanyException;
 import com.cannontech.user.YukonUserContext;
@@ -58,22 +58,22 @@ import com.google.common.collect.Maps;
 
 public class EnrollmentHelperServiceImpl implements EnrollmentHelperService {
     
-    private AccountEventLogService accountEventLogService;
-    private ApplianceDao applianceDao;
-    private ApplianceCategoryDao applianceCategoryDao;
-    private CustomerAccountDao customerAccountDao;
-    private EnrollmentDao enrollmentDao;
-    private EnergyCompanyRolePropertyDao energyCompanyRolePropertyDao;
-    private YukonEnergyCompanyService yukonEnergyCompanyService;
-    private LoadGroupDao loadGroupDao;
-    private LmHardwareBaseDao lmHardwareBaseDao;
-    private ProgramDao programDao;
-    private ProgramService programService;
-    private ProgramEnrollmentService programEnrollmentService;
-    private StarsDatabaseCache starsDatabaseCache;
-    private StarsSearchDao starsSearchDao;    
-	private InventoryDao inventoryDao;
-    private InventoryBaseDao inventoryBaseDao;
+    @Autowired private AccountEventLogService accountEventLogService;
+    @Autowired private ApplianceDao applianceDao;
+    @Autowired private ApplianceCategoryDao applianceCategoryDao;
+    @Autowired private CustomerAccountDao customerAccountDao;
+    @Autowired private EnrollmentDao enrollmentDao;
+    @Autowired private YukonEnergyCompanyService yukonEnergyCompanyService;
+    @Autowired private LoadGroupDao loadGroupDao;
+    @Autowired private LmHardwareBaseDao lmHardwareBaseDao;
+    @Autowired private ProgramDao programDao;
+    @Autowired private ProgramService programService;
+    @Autowired private ProgramEnrollmentService programEnrollmentService;
+    @Autowired private StarsDatabaseCache starsDatabaseCache;
+    @Autowired private StarsSearchDao starsSearchDao;
+    @Autowired private InventoryDao inventoryDao;
+	@Autowired private InventoryBaseDao inventoryBaseDao;
+    @Autowired private EnergyCompanySettingDao energyCompanySettingDao;
 
     @Override
     public void updateProgramEnrollments(List<ProgramEnrollment> programEnrollments, 
@@ -209,8 +209,7 @@ public class EnrollmentHelperServiceImpl implements EnrollmentHelperService {
         // Adding or Removing the new program enrollment to the active enrollment list, which is needed
         // in legacy code to process enrollment
         if (enrollmentEnum == EnrollmentEnum.ENROLL) {
-            boolean trackHardwareAddressingEnabled =
-                energyCompanyRolePropertyDao.getPropertyBooleanValue(YukonRoleProperty.TRACK_HARDWARE_ADDRESSING, yukonEnergyCompany);
+            boolean trackHardwareAddressingEnabled = energyCompanySettingDao.getBoolean(EnergyCompanySettingType.TRACK_HARDWARE_ADDRESSING, yukonEnergyCompany.getEnergyCompanyId());
             addProgramEnrollment(enrollmentData, programEnrollment, enrollmentHelper.isSeasonalLoad(), trackHardwareAddressingEnabled);
         } else if (enrollmentEnum == EnrollmentEnum.UNENROLL) {
             removeProgramEnrollment(enrollmentData, programEnrollment);
@@ -411,7 +410,8 @@ public class EnrollmentHelperServiceImpl implements EnrollmentHelperService {
 			
 			List<Program> programs = enrollmentDao.getEnrolledProgramIdsByInventory(lmHardware.getInventoryID(), startDate, stopDate);
 			MappingList<Program, String> programNames = new MappingList<Program, String>(programs, new ObjectMapper<Program, String>() {
-	            public String map(Program from) {
+	            @Override
+                public String map(Program from) {
 	                return from.getProgramPaoName();
 	            }
 	        });
@@ -451,86 +451,4 @@ public class EnrollmentHelperServiceImpl implements EnrollmentHelperService {
     	EnrollmentHelperHolder enrollmentHelperHolder = new EnrollmentHelperHolder(enrollmentHelper, customerAccount, lmHardwareBase, energyCompany);
     	return enrollmentHelperHolder;
     }
-
-	@Autowired
-	public void setAccountEventLogService(AccountEventLogService accountEventLogService) {
-        this.accountEventLogService = accountEventLogService;
-    }
-	
-    @Autowired
-    public void setApplianceCategoryDao(ApplianceCategoryDao applianceCategoryDao) {
-        this.applianceCategoryDao = applianceCategoryDao;
-    }
-
-    @Autowired
-    public void setCustomerAccountDao(CustomerAccountDao customerAccountDao) {
-        this.customerAccountDao = customerAccountDao;
-    }
-
-    @Autowired
-    public void setEnrollmentDao(EnrollmentDao enrollmentDao) {
-        this.enrollmentDao = enrollmentDao;
-    }
-
-    @Autowired
-    public void setEnergyCompanyRolePropertyDao(EnergyCompanyRolePropertyDao energyCompanyRolePropertyDao) {
-        this.energyCompanyRolePropertyDao = energyCompanyRolePropertyDao;
-    }
-    
-    @Autowired
-    public void setYukonEnergyCompanyService(YukonEnergyCompanyService yukonEnergyCompanyService) {
-        this.yukonEnergyCompanyService = yukonEnergyCompanyService;
-    }
-    
-    @Autowired
-    public void setLoadGroupDao(LoadGroupDao loadGroupDao) {
-        this.loadGroupDao = loadGroupDao;
-    }
-
-    @Autowired
-    public void setProgramEnrollmentService(
-            ProgramEnrollmentService programEnrollmentService) {
-        this.programEnrollmentService = programEnrollmentService;
-    }
-
-    @Autowired
-    public void setApplianceDao(ApplianceDao applianceDao) {
-        this.applianceDao = applianceDao;
-    }
-    
-    @Autowired
-    public void setProgramService(ProgramService programService) {
-        this.programService = programService;
-    }
-
-    @Autowired
-    public void setLmHardwareBaseDao(LmHardwareBaseDao lmHardwareBaseDao) {
-        this.lmHardwareBaseDao = lmHardwareBaseDao;
-    }
-    
-    @Autowired
-    public void setProgramDao(ProgramDao programDao) {
-        this.programDao = programDao;
-    }
-    
-    @Autowired
-    public void setStarsDatabaseCache(StarsDatabaseCache starsDatabaseCache) {
-        this.starsDatabaseCache = starsDatabaseCache;
-    }
-    
-    @Autowired
-    public void setStarsSearchDao(StarsSearchDao starsSearchDao) {
-        this.starsSearchDao = starsSearchDao;
-    }
-    
-    @Autowired
-	public void setInventoryDao(InventoryDao inventoryDao) {
-		this.inventoryDao = inventoryDao;
-	}
-    
-    @Autowired
-    public void setInventoryBaseDao(InventoryBaseDao inventoryBaseDao) {
-		this.inventoryBaseDao = inventoryBaseDao;
-	}
-    
 }

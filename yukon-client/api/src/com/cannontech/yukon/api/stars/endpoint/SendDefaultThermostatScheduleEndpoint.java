@@ -43,8 +43,8 @@ public class SendDefaultThermostatScheduleEndpoint {
     @Autowired private ThermostatService thermostatService;
     @Autowired private YukonEnergyCompanyService yukonEnergyCompanyService;
     
-    private Namespace ns = YukonXml.getYukonNamespace();
-    private Logger log = YukonLogManager.getLogger(SendDefaultThermostatScheduleEndpoint.class);
+    private final Namespace ns = YukonXml.getYukonNamespace();
+    private final Logger log = YukonLogManager.getLogger(SendDefaultThermostatScheduleEndpoint.class);
     
     @PayloadRoot(namespace="http://yukon.cannontech.com/api", localPart="sendDefaultThermostatScheduleRequest")
     public Element invoke(Element sendDefaultThermostatSchedule, LiteYukonUser user) throws Exception {
@@ -94,7 +94,7 @@ public class SendDefaultThermostatScheduleEndpoint {
 
                 // Save the default schedule and send it out.
                 accountThermostatScheduleDao.save(defaultSchedule);
-                thermostatService.sendSchedule(customerAccount, defaultSchedule, Collections.singleton(inventoryId), defaultSchedule.getThermostatScheduleMode(), user);
+                thermostatService.sendSchedule(customerAccount, defaultSchedule, Collections.singleton(inventoryId), defaultSchedule.getThermostatScheduleMode(), yukonEnergyCompanyId, user);
             }
             
         } catch (NotAuthorizedException e) {

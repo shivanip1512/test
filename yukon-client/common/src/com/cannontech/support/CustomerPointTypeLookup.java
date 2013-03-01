@@ -10,20 +10,25 @@ import java.util.TreeSet;
 
 import org.apache.commons.lang.StringUtils;
 import org.apache.commons.lang.Validate;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Required;
 
-import com.cannontech.stars.energyCompany.dao.EnergyCompanyDao;
 import com.cannontech.database.data.lite.LiteCICustomer;
 import com.cannontech.database.data.lite.LiteEnergyCompany;
 import com.cannontech.database.db.customer.CICustomerPointType;
-import com.cannontech.roles.yukon.EnergyCompanyRole;
+import com.cannontech.stars.energyCompany.EnergyCompanySettingType;
+import com.cannontech.stars.energyCompany.dao.EnergyCompanyDao;
+import com.cannontech.stars.energyCompany.dao.EnergyCompanySettingDao;
 
 public class CustomerPointTypeLookup {
-    private EnergyCompanyDao energyCompanyDao;
+
+    @Autowired private EnergyCompanyDao energyCompanyDao;
+    @Autowired private EnergyCompanySettingDao energyCompanySettingDao;
+
     /**
      * This holds the map of keys to list of point types. In this
      * context, the "key" is the string value that is stored under
-     * the EnergyCompanyRole.APPLICABLE_POINT_TYPE_KEY property and
+     * the EnergyCompanySettingType.APPLICABLE_POINT_TYPE_KEY property and
      * the list of point types are the list of strings that correspond
      * to the TYPE column of the CICUSTOMERPOINTDATA table.
      * 
@@ -67,11 +72,11 @@ public class CustomerPointTypeLookup {
     }
 
     public Set<String> getPointTypeGroups(LiteEnergyCompany energyCompany) {
-        String property = 
-            energyCompanyDao.getEnergyCompanyProperty(energyCompany, 
-                                                        EnergyCompanyRole.APPLICABLE_POINT_TYPE_KEY);
+
+        String property = energyCompanySettingDao.getString(EnergyCompanySettingType.APPLICABLE_POINT_TYPE_KEY, energyCompany.getEnergyCompanyID());
+        boolean propertyEnabled = energyCompanySettingDao.isSet(EnergyCompanySettingType.APPLICABLE_POINT_TYPE_KEY, energyCompany.getEnergyCompanyID());
         
-        if (StringUtils.isBlank(property)) {
+        if (!propertyEnabled || StringUtils.isBlank(property)) {
             return Collections.emptySet();
         }
         property = property.trim();
@@ -117,12 +122,4 @@ public class CustomerPointTypeLookup {
             applicablePointLookup.put(key, enumSet);
         }
     }
-
-    @Required
-    public void setEnergyCompanyDao(EnergyCompanyDao energyCompanyDao) {
-        this.energyCompanyDao = energyCompanyDao;
-    }
-
-    
-    
 }

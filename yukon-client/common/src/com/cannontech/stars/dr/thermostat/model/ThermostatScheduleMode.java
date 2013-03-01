@@ -3,7 +3,7 @@ package com.cannontech.stars.dr.thermostat.model;
 import java.util.Set;
 
 import com.cannontech.common.util.xml.XmlRepresentation;
-import com.cannontech.core.roleproperties.YukonRoleProperty;
+import com.cannontech.stars.energyCompany.EnergyCompanySettingType;
 import com.google.common.collect.Sets;
 
 
@@ -13,28 +13,28 @@ import com.google.common.collect.Sets;
 public enum ThermostatScheduleMode {
 	
     ALL(Sets.immutableEnumSet(TimeOfWeek.WEEKDAY),
-        YukonRoleProperty.ADMIN_ALLOW_THERMOSTAT_SCHEDULE_ALL),
+        EnergyCompanySettingType.ADMIN_ALLOW_THERMOSTAT_SCHEDULE_ALL),
     @XmlRepresentation("Weekday Saturday Sunday")
     WEEKDAY_SAT_SUN(Sets.immutableEnumSet(TimeOfWeek.WEEKDAY, TimeOfWeek.SATURDAY, TimeOfWeek.SUNDAY),
-                    YukonRoleProperty.ADMIN_ALLOW_THERMOSTAT_SCHEDULE_WEEKDAY_SATURDAY_SUNDAY),
+                    EnergyCompanySettingType.ADMIN_ALLOW_THERMOSTAT_SCHEDULE_WEEKDAY_SATURDAY_SUNDAY),
     WEEKDAY_WEEKEND(Sets.immutableEnumSet(TimeOfWeek.WEEKDAY, TimeOfWeek.WEEKEND),
-                    YukonRoleProperty.ADMIN_ALLOW_THERMOSTAT_SCHEDULE_WEEKDAY_WEEKEND),
+                    EnergyCompanySettingType.ADMIN_ALLOW_THERMOSTAT_SCHEDULE_WEEKDAY_WEEKEND),
     SEVEN_DAY(Sets.immutableEnumSet(TimeOfWeek.MONDAY, TimeOfWeek.TUESDAY, TimeOfWeek.WEDNESDAY, TimeOfWeek.THURSDAY, TimeOfWeek.FRIDAY, TimeOfWeek.SATURDAY, TimeOfWeek.SUNDAY),
-              YukonRoleProperty.ADMIN_ALLOW_THERMOSTAT_SCHEDULE_7_DAY);
+              EnergyCompanySettingType.ADMIN_ALLOW_THERMOSTAT_SCHEDULE_7_DAY);
 
     private Set<TimeOfWeek> associatedTimeOfWeeks;
-    private YukonRoleProperty associatedRoleProperty;
+    private EnergyCompanySettingType associatedSetting;
     
-    ThermostatScheduleMode(Set<TimeOfWeek> associatedTimeofWeeks, YukonRoleProperty associatedRoleProperty) {
+    ThermostatScheduleMode(Set<TimeOfWeek> associatedTimeofWeeks, EnergyCompanySettingType associatedSetting) {
     	this.associatedTimeOfWeeks = associatedTimeofWeeks;
-    	this.associatedRoleProperty = associatedRoleProperty;
+    	this.associatedSetting = associatedSetting;
     }
     
     public Set<TimeOfWeek> getAssociatedTimeOfWeeks() {
 		return associatedTimeOfWeeks;
 	}
     
-    public YukonRoleProperty getAssociatedRoleProperty() {
-        return associatedRoleProperty;
+    public EnergyCompanySettingType getAssociatedEnergyCompanySetting() {
+        return associatedSetting;
     }
 }

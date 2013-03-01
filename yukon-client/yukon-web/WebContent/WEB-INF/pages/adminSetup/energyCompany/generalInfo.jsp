@@ -67,12 +67,6 @@ Event.observe(window, "load", function() {
                             <c:if test="${canEdit}">
                                 <cti:button nameKey="edit" type="submit" name="edit"/>
                             </c:if>
-                            <c:if test="${canEditRoles}">
-                                <cti:url var="editRolesUrl" value="/adminSetup/roleGroup/view">
-                                    <cti:param name="roleGroupId" value="${roleGroupId}"/>
-                                </cti:url>
-                                <cti:button nameKey="editRoles" name="editRoles" type="button" href="${editRolesUrl}"/>
-                            </c:if>
                         </cti:displayForPageEditModes>
                         <cti:displayForPageEditModes modes="EDIT">
                             <cti:button nameKey="save" type="submit" name="save"/>

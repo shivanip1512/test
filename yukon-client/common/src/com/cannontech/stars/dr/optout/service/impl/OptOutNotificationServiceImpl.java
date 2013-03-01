@@ -26,7 +26,6 @@ import com.cannontech.core.service.DateFormattingService.DateFormatEnum;
 import com.cannontech.database.data.lite.LiteYukonUser;
 import com.cannontech.i18n.YukonUserContextMessageSourceResolver;
 import com.cannontech.i18n.service.YukonUserContextService;
-import com.cannontech.roles.yukon.EnergyCompanyRole;
 import com.cannontech.stars.core.dao.InventoryBaseDao;
 import com.cannontech.stars.core.dao.StarsCustAccountInformationDao;
 import com.cannontech.stars.database.data.lite.LiteAccountInfo;
@@ -36,6 +35,8 @@ import com.cannontech.stars.dr.account.model.CustomerAccount;
 import com.cannontech.stars.dr.optout.service.OptOutNotificationService;
 import com.cannontech.stars.dr.optout.service.OptOutNotificationUtil;
 import com.cannontech.stars.dr.optout.service.OptOutRequest;
+import com.cannontech.stars.energyCompany.EnergyCompanySettingType;
+import com.cannontech.stars.energyCompany.dao.EnergyCompanySettingDao;
 import com.cannontech.tools.email.EmailMessage;
 import com.cannontech.tools.email.EmailService;
 import com.cannontech.user.YukonUserContext;
@@ -57,7 +58,8 @@ public class OptOutNotificationServiceImpl implements OptOutNotificationService 
     @Autowired private InventoryBaseDao inventoryBaseDao;
     @Autowired private YukonUserContextService yukonUserContextService;
     @Autowired private EmailService emailService;
-    
+    @Autowired private EnergyCompanySettingDao energyCompanySettingDao;
+
     @Override
     public void sendOptOutNotification(final CustomerAccount customerAccount,  
             final LiteStarsEnergyCompany energyCompany, final OptOutRequest request, 
@@ -153,8 +155,7 @@ public class OptOutNotificationServiceImpl implements OptOutNotificationService 
 		
 		LiteStarsEnergyCompany energyCompany = holder.energyCompany;
 		
-		String recipientsCsvString = 
-            energyCompany.getEnergyCompanySetting( EnergyCompanyRole.OPTOUT_NOTIFICATION_RECIPIENTS );
+		String recipientsCsvString = energyCompanySettingDao.getString(EnergyCompanySettingType.OPTOUT_NOTIFICATION_RECIPIENTS, energyCompany.getEnergyCompanyId());
         
         if (StringUtils.isBlank(recipientsCsvString)) {
             throw new AddressException("Property \"optout_notification_recipients\" is not set."); 
@@ -179,7 +180,7 @@ public class OptOutNotificationServiceImpl implements OptOutNotificationService 
         
         EmailMessage emailMsg = new EmailMessage(recipients, subject, messageBody);
         emailMsg.setFrom(fromAddress);
-        
+
         emailService.send(emailMsg);
 	}
     

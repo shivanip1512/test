@@ -12,6 +12,7 @@ public enum ArgEnum {
     deviceLabel, 
     deviceName, 
     energyCompanyName,
+    energyCompanyId,
     eventSource,
     fileName, 
     gatewayName,
@@ -45,5 +46,7 @@ public enum ArgEnum {
     commandRequestExecutionIdentifier,
     globalSettingType,
     globalSettingValue,
+    energyCompanySettingType,
+    energyCompanySettingValue,
     ;
 }

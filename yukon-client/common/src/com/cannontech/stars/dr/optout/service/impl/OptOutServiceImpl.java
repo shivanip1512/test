@@ -50,7 +50,6 @@ import com.cannontech.core.dao.ProgramNotFoundException;
 import com.cannontech.core.dao.YukonUserDao;
 import com.cannontech.core.roleproperties.YukonRole;
 import com.cannontech.core.roleproperties.YukonRoleProperty;
-import com.cannontech.core.roleproperties.dao.EnergyCompanyRolePropertyDao;
 import com.cannontech.core.roleproperties.dao.RolePropertyDao;
 import com.cannontech.core.service.SystemDateFormattingService;
 import com.cannontech.database.data.activity.ActivityLogActions;
@@ -110,6 +109,8 @@ import com.cannontech.stars.dr.optout.service.OptOutService;
 import com.cannontech.stars.dr.optout.service.OptOutStatusService;
 import com.cannontech.stars.dr.program.model.Program;
 import com.cannontech.stars.dr.program.service.ProgramService;
+import com.cannontech.stars.energyCompany.EnergyCompanySettingType;
+import com.cannontech.stars.energyCompany.dao.EnergyCompanySettingDao;
 import com.cannontech.stars.energyCompany.model.YukonEnergyCompany;
 import com.cannontech.stars.util.ObjectInOtherEnergyCompanyException;
 import com.cannontech.stars.util.ServletUtils;
@@ -150,8 +151,8 @@ public class OptOutServiceImpl implements OptOutService {
 	@Autowired @Qualifier("main") private Executor executor;
 	@Autowired private LmHardwareCommandService lmHardwareCommandService;
 	@Autowired private RfnExpressComMessageService rfnExpressComMessageService;
-	@Autowired private EnergyCompanyRolePropertyDao energyCompanyRolePropertyDao;
 	@Autowired private RawExpressComCommandBuilder rawExpressComCommandBuilder;  
+    @Autowired private EnergyCompanySettingDao energyCompanySettingDao;
 
 	private RolePropertyDao rolePropertyDao;
 	
@@ -389,7 +390,8 @@ public class OptOutServiceImpl implements OptOutService {
         optOut(customerAccount, request, user, optOutCounts);
     }
 
-	@Transactional
+	@Override
+    @Transactional
 	public void resendOptOut(int inventoryId, int customerAccountId, LiteYukonUser user) 
 		throws CommandCompletionException {
 
@@ -512,20 +514,28 @@ public class OptOutServiceImpl implements OptOutService {
 		YukonEnergyCompany energyCompany = yukonEnergyCompanyService.getEnergyCompanyByOperator(user);
 		List<OptOutEvent> currentOptOuts = optOutEventDao.getAllCurrentOptOuts((LiteStarsEnergyCompany) energyCompany);
 
-        int broadcastSpid = energyCompanyRolePropertyDao.getPropertyIntegerValue(
-                YukonRoleProperty.BROADCAST_OPT_OUT_CANCEL_SPID, 
-                (YukonEnergyCompany) energyCompany);
-		
-		if (rawExpressComCommandBuilder.isValidBroadcastSpid(broadcastSpid)) {
+		boolean broadCastSpidEnabled 
+		= energyCompanySettingDao.isSet(EnergyCompanySettingType.BROADCAST_OPT_OUT_CANCEL_SPID, energyCompany.getEnergyCompanyId());
+
+		boolean validSpid;
+		int broadcastSpid = 0;
+		if (!broadCastSpidEnabled) {
+		    validSpid = false;
+		} else {
+		    broadcastSpid = energyCompanySettingDao.getInteger(EnergyCompanySettingType.BROADCAST_OPT_OUT_CANCEL_SPID, energyCompany.getEnergyCompanyId());
+		    validSpid = rawExpressComCommandBuilder.isValidBroadcastSpid(broadcastSpid);
+		}
+
+		if (validSpid) {
 		    // Valid SPID found, use broadcast messages.
-            broadcastCancelAllOptOuts(user, broadcastSpid, energyCompany, currentOptOuts);
-	    } else {
-            // No valid SPID found so use per-device messages.
-	        logger.debug("Using per-device messaging for cancel all opt outs command.");
-            for (OptOutEvent ooe : currentOptOuts) {
-                cancelOptOutEvent(ooe, (LiteStarsEnergyCompany) energyCompany, user);
-            }
-	    }
+		    broadcastCancelAllOptOuts(user, broadcastSpid, energyCompany, currentOptOuts);
+		} else {
+		    // No valid SPID found so use per-device messages.
+		    logger.debug("Using per-device messaging for cancel all opt outs command.");
+		    for (OptOutEvent ooe : currentOptOuts) {
+		        cancelOptOutEvent(ooe, energyCompany, user);
+		    }
+		}
 	}
 
 	/**
@@ -1254,6 +1264,7 @@ public class OptOutServiceImpl implements OptOutService {
         lmHardwareCommandService.sendOptOutCommand(lmhc);
 	}
 	
+    @Override
     public String checkOptOutStartDate(int accountId, LocalDate startDate, 
                                        YukonUserContext userContext, boolean isOperator) {
 

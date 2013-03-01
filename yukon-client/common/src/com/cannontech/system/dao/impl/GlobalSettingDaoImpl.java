@@ -14,7 +14,6 @@ import com.cannontech.core.roleproperties.InputTypeFactory;
 import com.cannontech.database.YukonJdbcTemplate;
 import com.cannontech.database.YukonResultSet;
 import com.cannontech.database.YukonRowMapper;
-import com.cannontech.system.BadSettingTypeException;
 import com.cannontech.system.GlobalSettingType;
 import com.cannontech.system.dao.GlobalSettingDao;
 import com.cannontech.system.model.GlobalSetting;
@@ -120,21 +119,6 @@ public class GlobalSettingDaoImpl implements GlobalSettingDao {
      */
     private <T> T getConvertedValue(GlobalSettingType setting, Class<T> returnType) {
         return returnType.cast(getSetting(setting).getValue());
-    }
-
-    @Override
-    public Object convertSettingValue(GlobalSettingType type, String value) {
-        Object convertedValue;
-        try {
-            convertedValue = InputTypeFactory.convertPropertyValue(type.getType(), value);
-        } catch (Exception e) {
-            throw new BadSettingTypeException(type, value, e);
-        }
-        if (convertedValue == null) {
-            log.debug("ConvertedValue was null for "+ type.name() +", using default.");
-            convertedValue = type.getDefaultValue();
-        }
-        return convertedValue;
     }
 
     private GlobalSetting findSetting(GlobalSettingType setting) {

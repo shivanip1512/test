@@ -26,8 +26,6 @@ import com.cannontech.common.inventory.HardwareType;
 import com.cannontech.core.dao.DBPersistentDao;
 import com.cannontech.core.dao.NotFoundException;
 import com.cannontech.core.dao.YukonListDao;
-import com.cannontech.core.roleproperties.YukonRoleProperty;
-import com.cannontech.core.roleproperties.dao.EnergyCompanyRolePropertyDao;
 import com.cannontech.database.TransactionType;
 import com.cannontech.database.data.activity.ActivityLogActions;
 import com.cannontech.database.data.lite.LiteYukonUser;
@@ -39,12 +37,12 @@ import com.cannontech.stars.core.dao.StarsCustAccountInformationDao;
 import com.cannontech.stars.core.service.YukonEnergyCompanyService;
 import com.cannontech.stars.database.cache.StarsDatabaseCache;
 import com.cannontech.stars.database.data.appliance.ApplianceBase;
+import com.cannontech.stars.database.data.lite.LiteAccountInfo;
 import com.cannontech.stars.database.data.lite.LiteInventoryBase;
 import com.cannontech.stars.database.data.lite.LiteLMProgramEvent;
 import com.cannontech.stars.database.data.lite.LiteLMProgramWebPublishing;
 import com.cannontech.stars.database.data.lite.LiteLmHardwareBase;
 import com.cannontech.stars.database.data.lite.LiteStarsAppliance;
-import com.cannontech.stars.database.data.lite.LiteAccountInfo;
 import com.cannontech.stars.database.data.lite.LiteStarsEnergyCompany;
 import com.cannontech.stars.database.data.lite.LiteStarsLMProgram;
 import com.cannontech.stars.database.data.lite.StarsLiteFactory;
@@ -66,6 +64,8 @@ import com.cannontech.stars.dr.program.model.Program;
 import com.cannontech.stars.dr.program.model.ProgramEnrollmentResultEnum;
 import com.cannontech.stars.dr.program.service.ProgramEnrollment;
 import com.cannontech.stars.dr.program.service.ProgramEnrollmentService;
+import com.cannontech.stars.energyCompany.EnergyCompanySettingType;
+import com.cannontech.stars.energyCompany.dao.EnergyCompanySettingDao;
 import com.cannontech.stars.energyCompany.model.YukonEnergyCompany;
 import com.cannontech.stars.util.LMControlHistoryUtil;
 import com.cannontech.stars.util.ServletUtils;
@@ -86,7 +86,6 @@ public class ProgramEnrollmentServiceImpl implements ProgramEnrollmentService {
     @Autowired private ControlHistoryService controlHistoryService;
     @Autowired private DBPersistentDao dbPersistentDao;
     @Autowired private YukonEnergyCompanyService yukonEnergyCompanyService;
-    @Autowired private EnergyCompanyRolePropertyDao ecRolePropertyDao;
     @Autowired private EnrollmentDao enrollmentDao;
     @Autowired private LMHardwareControlGroupDao lmHardwareControlGroupDao;
     @Autowired private LoadGroupDao loadGroupDao;
@@ -95,7 +94,8 @@ public class ProgramEnrollmentServiceImpl implements ProgramEnrollmentService {
     @Autowired private YukonListDao yukonListDao;
     @Autowired private LmHardwareCommandService lmHardwareCommandService;
     @Autowired private ProgramDao programDao;
-    
+    @Autowired private EnergyCompanySettingDao energyCompanySettingDao;
+
     @Override
     @Transactional
     public ProgramEnrollmentResultEnum applyEnrollmentRequests(final CustomerAccount account,
@@ -105,8 +105,8 @@ public class ProgramEnrollmentServiceImpl implements ProgramEnrollmentService {
         final int accountId = account.getAccountId();
         YukonEnergyCompany yec = yukonEnergyCompanyService.getEnergyCompanyByAccountId(accountId);
 
-        boolean trackAddressing = ecRolePropertyDao.getPropertyBooleanValue(YukonRoleProperty.TRACK_HARDWARE_ADDRESSING, yec);
-        boolean autoConfig = ecRolePropertyDao.getPropertyBooleanValue(YukonRoleProperty.AUTOMATIC_CONFIGURATION, yec);
+        boolean trackAddressing = energyCompanySettingDao.getBoolean(EnergyCompanySettingType.TRACK_HARDWARE_ADDRESSING, yec.getEnergyCompanyId());
+        boolean autoConfig = energyCompanySettingDao.getBoolean(EnergyCompanySettingType.AUTOMATIC_CONFIGURATION, yec.getEnergyCompanyId());
 
         LiteAccountInfo liteAccount = starsCustAccountInformationDao.getByAccountId(accountId);
         List<LiteStarsLMProgram> previouslyEnrolledPrograms = liteAccount.getPrograms();
@@ -287,9 +287,8 @@ public class ProgramEnrollmentServiceImpl implements ProgramEnrollmentService {
         YukonEnergyCompany yukonEnergyCompany = yukonEnergyCompanyService.getEnergyCompanyByAccountId(customerAccount.getAccountId());
         LiteAccountInfo liteCustomerAccount = 
             starsCustAccountInformationDao.getByAccountId(customerAccountId);
-        boolean trackHardwareAddressingEnabled = 
-            ecRolePropertyDao.getPropertyBooleanValue(YukonRoleProperty.TRACK_HARDWARE_ADDRESSING, yukonEnergyCompany);
-        
+        boolean trackHardwareAddressingEnabled = energyCompanySettingDao.getBoolean(EnergyCompanySettingType.TRACK_HARDWARE_ADDRESSING, yukonEnergyCompany.getEnergyCompanyId());
+
         StarsOperation operation = 
             createStarsOperation(customerAccount, programEnrollmentList, yukonEnergyCompany, liteCustomerAccount, trackHardwareAddressingEnabled);
         StarsProgramSignUp programSignUp = operation.getStarsProgramSignUp();
@@ -529,9 +528,8 @@ public class ProgramEnrollmentServiceImpl implements ProgramEnrollmentService {
             }
         }
         
-        boolean hardwareAddressingEnabled =
-            ecRolePropertyDao.getPropertyBooleanValue(YukonRoleProperty.TRACK_HARDWARE_ADDRESSING, energyCompany);
-        
+        boolean hardwareAddressingEnabled = energyCompanySettingDao.getBoolean(EnergyCompanySettingType.TRACK_HARDWARE_ADDRESSING, energyCompany.getEnergyCompanyId());
+
         for (int i = 0; i < processedPrograms.getSULMProgramCount(); i++) {
             SULMProgram program = processedPrograms.getSULMProgram(i);
             

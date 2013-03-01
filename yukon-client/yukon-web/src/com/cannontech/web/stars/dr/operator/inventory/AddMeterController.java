@@ -9,14 +9,14 @@ import com.cannontech.common.events.loggers.HardwareEventLogService;
 import com.cannontech.common.events.model.EventSource;
 import com.cannontech.core.dao.PaoDao;
 import com.cannontech.core.roleproperties.YukonRoleProperty;
-import com.cannontech.core.roleproperties.dao.EnergyCompanyRolePropertyDao;
 import com.cannontech.database.data.lite.LiteYukonPAObject;
 import com.cannontech.database.data.lite.LiteYukonUser;
 import com.cannontech.i18n.YukonMessageSourceResolvable;
-import com.cannontech.roles.yukon.EnergyCompanyRole;
-import com.cannontech.roles.yukon.EnergyCompanyRole.MeteringType;
 import com.cannontech.stars.core.service.YukonEnergyCompanyService;
 import com.cannontech.stars.dr.hardware.service.HardwareUiService;
+import com.cannontech.stars.energyCompany.EnergyCompanySettingType;
+import com.cannontech.stars.energyCompany.MeteringType;
+import com.cannontech.stars.energyCompany.dao.EnergyCompanySettingDao;
 import com.cannontech.stars.energyCompany.model.YukonEnergyCompany;
 import com.cannontech.web.common.flashScope.FlashScope;
 import com.cannontech.web.security.annotation.CheckRoleProperty;
@@ -30,14 +30,13 @@ public class AddMeterController {
     @Autowired private HardwareEventLogService hardwareEventLogService;
     @Autowired private HardwareUiService hardwareUiService;
     @Autowired private YukonEnergyCompanyService yukonEnergyCompanyService;
-    @Autowired private EnergyCompanyRolePropertyDao ecRolePropertyDao;
+    @Autowired private EnergyCompanySettingDao energyCompanySettingDao;
 
     @RequestMapping
     public String view(ModelMap model, LiteYukonUser user, FlashScope flash, Integer mctId) {
         String view = "redirect:../view";
         YukonEnergyCompany ec = yukonEnergyCompanyService.getEnergyCompanyByOperator(user);
-        MeteringType value= ecRolePropertyDao.getPropertyEnumValue(YukonRoleProperty.METER_MCT_BASE_DESIGNATION, EnergyCompanyRole.MeteringType.class,  ec);
-        
+        MeteringType value = energyCompanySettingDao.getEnum(EnergyCompanySettingType.METER_MCT_BASE_DESIGNATION, MeteringType.class, ec.getEnergyCompanyId());
         if (value == MeteringType.yukon) {
             LiteYukonPAObject liteYukonPAO = paoDao.getLiteYukonPAO(mctId);
             String meterName = liteYukonPAO.getPaoName();

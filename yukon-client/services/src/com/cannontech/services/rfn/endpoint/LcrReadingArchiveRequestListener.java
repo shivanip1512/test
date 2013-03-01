@@ -20,8 +20,6 @@ import com.cannontech.common.rfn.model.RfnDevice;
 import com.cannontech.common.util.xml.SimpleXPathTemplate;
 import com.cannontech.core.dao.PaoDao;
 import com.cannontech.core.dao.PointDao;
-import com.cannontech.core.roleproperties.YukonRoleProperty;
-import com.cannontech.core.roleproperties.dao.EnergyCompanyRolePropertyDao;
 import com.cannontech.dr.rfn.message.archive.RfnLcrArchiveRequest;
 import com.cannontech.dr.rfn.message.archive.RfnLcrArchiveResponse;
 import com.cannontech.dr.rfn.message.archive.RfnLcrReadingArchiveRequest;
@@ -38,6 +36,8 @@ import com.cannontech.stars.dr.hardware.model.LmHardwareCommand;
 import com.cannontech.stars.dr.hardware.model.LmHardwareCommandType;
 import com.cannontech.stars.dr.hardware.service.LmHardwareCommandService;
 import com.cannontech.stars.dr.program.service.ProgramEnrollment;
+import com.cannontech.stars.energyCompany.EnergyCompanySettingType;
+import com.cannontech.stars.energyCompany.dao.EnergyCompanySettingDao;
 import com.cannontech.stars.energyCompany.model.YukonEnergyCompany;
 import com.google.common.collect.ImmutableList;
 import com.google.common.collect.Lists;
@@ -51,8 +51,8 @@ public class LcrReadingArchiveRequestListener extends ArchiveRequestListenerBase
     @Autowired PointDao pointDao;
     @Autowired EnrollmentDao enrollmentService;
     @Autowired InventoryDao inventoryDao;
-    @Autowired EnergyCompanyRolePropertyDao ecRolePropertyDao;
     @Autowired YukonEnergyCompanyService yecService;
+    @Autowired EnergyCompanySettingDao energyCompanySettingDao;
     @Autowired LmHardwareCommandService commandService;
     @Autowired InventoryBaseDao inventoryBaseDao;
     
@@ -60,7 +60,7 @@ public class LcrReadingArchiveRequestListener extends ArchiveRequestListenerBase
     private static final String archiveResponseQueueName = "yukon.qr.obj.dr.rfn.LcrReadingArchiveResponse";
     
     private List<Worker> workers;
-    private AtomicInteger archivedReadings = new AtomicInteger();
+    private final AtomicInteger archivedReadings = new AtomicInteger();
     
     public class Worker extends ConverterBase {
         public Worker(int workerNumber, int queueSize) {
@@ -103,7 +103,7 @@ public class LcrReadingArchiveRequestListener extends ArchiveRequestListenerBase
                 if (!activeEnrollments.isEmpty()) {
                     /** Send config if auto-config is enabled */
                     YukonEnergyCompany yec = yecService.getEnergyCompanyByInventoryId(inventoryId);
-                    boolean autoConfig = ecRolePropertyDao.checkProperty(YukonRoleProperty.AUTOMATIC_CONFIGURATION, yec);
+                    boolean autoConfig = energyCompanySettingDao.checkSetting(EnergyCompanySettingType.AUTOMATIC_CONFIGURATION, yec.getEnergyCompanyId());
                     if (autoConfig) {
                         LiteLmHardwareBase lmhb = inventoryBaseDao.getHardwareByInventoryId(inventoryId);
                         LmHardwareCommand lmhc = new LmHardwareCommand();
@@ -125,6 +125,7 @@ public class LcrReadingArchiveRequestListener extends ArchiveRequestListenerBase
         }
     }
     
+    @Override
     @PostConstruct
     public void init() {
      // setup as many workers as requested

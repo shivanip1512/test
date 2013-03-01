@@ -12,8 +12,6 @@ import com.cannontech.common.constants.YukonSelectionListDefs;
 import com.cannontech.common.util.CtiUtilities;
 import com.cannontech.common.util.Pair;
 import com.cannontech.core.dao.DaoFactory;
-import com.cannontech.core.roleproperties.YukonRoleProperty;
-import com.cannontech.core.roleproperties.dao.EnergyCompanyRolePropertyDao;
 import com.cannontech.core.roleproperties.enums.SerialNumberValidation;
 import com.cannontech.database.data.lite.LiteYukonUser;
 import com.cannontech.roles.operator.AdministratorRole;
@@ -23,6 +21,8 @@ import com.cannontech.stars.database.data.lite.LiteServiceCompany;
 import com.cannontech.stars.database.data.lite.LiteStarsEnergyCompany;
 import com.cannontech.stars.database.db.hardware.Warehouse;
 import com.cannontech.stars.database.db.report.ServiceCompanyDesignationCode;
+import com.cannontech.stars.energyCompany.EnergyCompanySettingType;
+import com.cannontech.stars.energyCompany.dao.EnergyCompanySettingDao;
 import com.cannontech.stars.util.ECUtils;
 
 
@@ -44,21 +44,22 @@ public class FilterBean
     private YukonSelectionList availableServiceStatuses;
     
     boolean hasAssignedFilters = false;
-    private ArrayList assignedFilters = new ArrayList();
+    private ArrayList<?> assignedFilters = new ArrayList();
     private YukonListEntry defaultFilterSelection;
     private String filterListName = YukonSelectionListDefs.YUK_LIST_NAME_INV_FILTER_BY;
     
-    private String noneString = CtiUtilities.STRING_NONE;
+    private final String noneString = CtiUtilities.STRING_NONE;
 
 	private class CodeComparator implements Comparator<ServiceCompanyDesignationCode>, Serializable
 	{
-		public int compare(ServiceCompanyDesignationCode code1, ServiceCompanyDesignationCode code2){
+		@Override
+        public int compare(ServiceCompanyDesignationCode code1, ServiceCompanyDesignationCode code2){
 		    String thisVal = code1.getDesignationCodeValue();
 		    String anotherVal = code2.getDesignationCodeValue();
 			return (thisVal.compareToIgnoreCase(anotherVal));
 		}
 	};
-	private CodeComparator codeComparator = new CodeComparator();
+	private final CodeComparator codeComparator = new CodeComparator();
     /**
      * Need further filters:
      * --General location (need to figure out how to work new Warehouse idea into this)
@@ -98,9 +99,8 @@ public class FilterBean
     }
     
     public boolean isRangeValid() {
-        EnergyCompanyRolePropertyDao energyCompanyRolePropertyDao = YukonSpringHook.getBean("energyCompanyRolePropertyDao", EnergyCompanyRolePropertyDao.class);
-        SerialNumberValidation value = energyCompanyRolePropertyDao.getPropertyEnumValue(
-            YukonRoleProperty.SERIAL_NUMBER_VALIDATION, SerialNumberValidation.class, energyCompany);
+        EnergyCompanySettingDao energyCompanySettingDao = YukonSpringHook.getBean(EnergyCompanySettingDao.class);
+        SerialNumberValidation value = energyCompanySettingDao.getEnum(EnergyCompanySettingType.SERIAL_NUMBER_VALIDATION, SerialNumberValidation.class, energyCompany.getEnergyCompanyId());
         return (value == SerialNumberValidation.NUMERIC);
     }
     
@@ -183,11 +183,11 @@ public class FilterBean
     	if( defaultFilterSelection == null)
     	{
 	    	if( getFilterListName() == YukonSelectionListDefs.YUK_LIST_NAME_SO_FILTER_BY)
-	    		defaultFilterSelection = (YukonListEntry)getAvailableServiceStatuses().getYukonListEntries().get(0);
+	    		defaultFilterSelection = getAvailableServiceStatuses().getYukonListEntries().get(0);
 	    	else if( getFilterListName() == YukonSelectionListDefs.YUK_LIST_NAME_INV_FILTER_BY)
-	    		defaultFilterSelection = (YukonListEntry)getAvailableDeviceTypes().getYukonListEntries().get(0);
+	    		defaultFilterSelection = getAvailableDeviceTypes().getYukonListEntries().get(0);
 	    	else
-	    		defaultFilterSelection = (YukonListEntry)getAvailableDeviceTypes().getYukonListEntries().get(0);
+	    		defaultFilterSelection = getAvailableDeviceTypes().getYukonListEntries().get(0);
     	}
         return defaultFilterSelection;
     }

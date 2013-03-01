@@ -5,6 +5,7 @@ import java.util.Set;
 
 import javax.naming.ConfigurationException;
 
+import com.cannontech.common.exception.NotAuthorizedException;
 import com.cannontech.common.util.CommandExecutionException;
 import com.cannontech.database.TransactionException;
 import com.cannontech.database.data.lite.LiteYukonUser;
@@ -109,4 +110,9 @@ public interface EnergyCompanyService {
      * This method creates an energy company operator or super user checker.
      */
     public UserChecker createEcOperatorOrSuperUserChecker();
+
+    /**
+     * Creates an energy company operator or super user checker.
+     */
+    public UserChecker createCanEditEnergyCompany();
 }

@@ -16,14 +16,13 @@ import com.cannontech.database.Transaction;
 import com.cannontech.database.TransactionException;
 import com.cannontech.database.data.activity.ActivityLogActions;
 import com.cannontech.database.data.lite.LiteYukonUser;
-import com.cannontech.roles.yukon.EnergyCompanyRole;
 import com.cannontech.spring.YukonSpringHook;
 import com.cannontech.stars.core.dao.InventoryBaseDao;
 import com.cannontech.stars.database.cache.StarsDatabaseCache;
+import com.cannontech.stars.database.data.lite.LiteAccountInfo;
 import com.cannontech.stars.database.data.lite.LiteLMConfiguration;
 import com.cannontech.stars.database.data.lite.LiteLmHardwareBase;
 import com.cannontech.stars.database.data.lite.LiteStarsAppliance;
-import com.cannontech.stars.database.data.lite.LiteAccountInfo;
 import com.cannontech.stars.database.data.lite.LiteStarsEnergyCompany;
 import com.cannontech.stars.database.data.lite.StarsLiteFactory;
 import com.cannontech.stars.dr.account.dao.CustomerAccountDao;
@@ -34,6 +33,8 @@ import com.cannontech.stars.dr.hardware.model.LmHardwareCommandType;
 import com.cannontech.stars.dr.hardware.service.LmHardwareCommandService;
 import com.cannontech.stars.dr.program.service.ProgramEnrollment;
 import com.cannontech.stars.dr.program.service.ProgramEnrollmentService;
+import com.cannontech.stars.energyCompany.EnergyCompanySettingType;
+import com.cannontech.stars.energyCompany.dao.EnergyCompanySettingDao;
 import com.cannontech.stars.util.ServletUtils;
 import com.cannontech.stars.util.SwitchCommandQueue;
 import com.cannontech.stars.util.WebClientException;
@@ -69,7 +70,8 @@ public class UpdateLMHardwareConfigAction implements ActionBase {
 	/**
 	 * @see com.cannontech.web.action.ActionBase#build(HttpServletRequest, HttpSession)
 	 */
-	public SOAPMessage build(HttpServletRequest req, HttpSession session) {
+	@Override
+    public SOAPMessage build(HttpServletRequest req, HttpSession session) {
 		try {
 			StarsYukonUser user = (StarsYukonUser) session.getAttribute( ServletUtils.ATT_STARS_YUKON_USER );
 			if (user == null) return null;
@@ -126,7 +128,8 @@ public class UpdateLMHardwareConfigAction implements ActionBase {
 	/**
 	 * @see com.cannontech.web.action.ActionBase#process(SOAPMessage, HttpSession)
 	 */
-	public SOAPMessage process(SOAPMessage reqMsg, HttpSession session) {
+	@Override
+    public SOAPMessage process(SOAPMessage reqMsg, HttpSession session) {
 		StarsOperation respOper = new StarsOperation();
         
 		try {
@@ -178,7 +181,8 @@ public class UpdateLMHardwareConfigAction implements ActionBase {
 	/**
 	 * @see com.cannontech.web.action.ActionBase#parse(SOAPMessage, SOAPMessage, HttpSession)
 	 */
-	public int parse(SOAPMessage reqMsg, SOAPMessage respMsg, HttpSession session) {
+	@Override
+    public int parse(SOAPMessage reqMsg, SOAPMessage respMsg, HttpSession session) {
 		try {
 			StarsOperation operation = SOAPUtil.parseSOAPMsgForOperation( respMsg );
 
@@ -387,8 +391,8 @@ public class UpdateLMHardwareConfigAction implements ActionBase {
 		StarsInventories starsInvs = new StarsInventories();
 		boolean disabled = false;
 		
-		String trackHwAddr = energyCompany.getEnergyCompanySetting( EnergyCompanyRole.TRACK_HARDWARE_ADDRESSING );
-		boolean useHardwareAddressing = Boolean.valueOf( trackHwAddr ).booleanValue();
+		EnergyCompanySettingDao energyCompanySettingDao = YukonSpringHook.getBean(EnergyCompanySettingDao.class);            
+		boolean useHardwareAddressing = energyCompanySettingDao.getBoolean(EnergyCompanySettingType.TRACK_HARDWARE_ADDRESSING, energyCompany.getEnergyCompanyId());
 		
 		for (int i = 0; i < hwsToConfig.size(); i++) {
 			LiteLmHardwareBase lHw = hwsToConfig.get(i);

@@ -45,8 +45,8 @@ public class SendThermostatScheduleEndpoint {
     @Autowired private ThermostatService thermostatService;
     @Autowired private YukonEnergyCompanyService yukonEnergyCompanyService;
     
-    private Namespace ns = YukonXml.getYukonNamespace();
-    private Logger log = YukonLogManager.getLogger(SendThermostatScheduleEndpoint.class);
+    private final Namespace ns = YukonXml.getYukonNamespace();
+    private final Logger log = YukonLogManager.getLogger(SendThermostatScheduleEndpoint.class);
     
     @PostConstruct
     public void initialize() throws JDOMException {}
@@ -99,7 +99,7 @@ public class SendThermostatScheduleEndpoint {
                     
                     AccountThermostatSchedule ats = 
                             accountThermostatScheduleDao.getSchedulesForAccountByScheduleName(customerAccount.getAccountId(), scheduleName);
-                    thermostatService.sendSchedule(customerAccount, ats, Collections.singleton(inventoryId), ats.getThermostatScheduleMode(), user);
+                    thermostatService.sendSchedule(customerAccount, ats, Collections.singleton(inventoryId), ats.getThermostatScheduleMode(), yukonEnergyCompanyId, user);
                 }
                 // build response
                 resp.addContent(new Element("success", ns));

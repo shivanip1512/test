@@ -28,7 +28,6 @@ import com.cannontech.common.i18n.MessageSourceAccessor;
 import com.cannontech.common.inventory.HardwareType;
 import com.cannontech.common.validator.YukonValidationUtils;
 import com.cannontech.core.roleproperties.YukonRoleProperty;
-import com.cannontech.core.roleproperties.dao.RolePropertyDao;
 import com.cannontech.i18n.YukonMessageSourceResolvable;
 import com.cannontech.i18n.YukonUserContextMessageSourceResolver;
 import com.cannontech.stars.database.cache.StarsDatabaseCache;
@@ -38,6 +37,8 @@ import com.cannontech.stars.dr.thermostat.dao.AccountThermostatScheduleDao;
 import com.cannontech.stars.dr.thermostat.model.AccountThermostatSchedule;
 import com.cannontech.stars.dr.thermostat.model.ThermostatScheduleMode;
 import com.cannontech.stars.dr.thermostat.service.ThermostatService;
+import com.cannontech.stars.energyCompany.EnergyCompanySettingType;
+import com.cannontech.stars.energyCompany.dao.EnergyCompanySettingDao;
 import com.cannontech.user.YukonUserContext;
 import com.cannontech.web.PageEditMode;
 import com.cannontech.web.admin.energyCompany.general.model.EnergyCompanyInfoFragment;
@@ -61,14 +62,14 @@ import com.google.common.collect.Sets;
 @CheckRoleProperty(YukonRoleProperty.OPERATOR_CONSUMER_INFO_HARDWARES_THERMOSTAT)
 public class DefaultThermostatScheduleController { 
 
-    private AccountThermostatScheduleDao accountThermostatScheduleDao;
-    private GeneralInfoService generalInfoService;
-    private OperatorThermostatHelper operatorThermostatHelper;
-    private RolePropertyDao rolePropertyDao;   
-    private StarsDatabaseCache starsDatabaseCache;
-    private ThermostatService thermostatService;
+    @Autowired private AccountThermostatScheduleDao accountThermostatScheduleDao;
+    @Autowired private GeneralInfoService generalInfoService;
+    @Autowired private OperatorThermostatHelper operatorThermostatHelper;
+    @Autowired private StarsDatabaseCache starsDatabaseCache;
+    @Autowired private ThermostatService thermostatService;
     @Autowired private YukonUserContextMessageSourceResolver messageSourceResolver;
-    
+    @Autowired private EnergyCompanySettingDao energyCompanySettingDao;
+
     @RequestMapping
     public String view(YukonUserContext userContext, ModelMap modelMap, int ecId, 
                        EnergyCompanyInfoFragment energyCompanyInfoFragment) {
@@ -119,7 +120,7 @@ public class DefaultThermostatScheduleController {
         modelMap.addAttribute("schedule", schedule);
         
         // temperatureUnit
-        String temperatureUnit = rolePropertyDao.getPropertyStringValue(YukonRoleProperty.DEFAULT_TEMPERATURE_UNIT, energyCompany.getUser());
+        String temperatureUnit = energyCompanySettingDao.getString(EnergyCompanySettingType.DEFAULT_TEMPERATURE_UNIT, energyCompany.getEnergyCompanyId());
         modelMap.addAttribute("temperatureUnit", temperatureUnit);
 
         modelMap.addAttribute("thermostatType", schedulableThermostatType);
@@ -218,36 +219,5 @@ public class DefaultThermostatScheduleController {
         MessageSourceAccessor messageSourceAccessor = new MessageSourceAccessor(messageSource, locale);
         
         return messageSourceAccessor;
-    }
-
-    // DI Setters
-    @Autowired
-    public void setGeneralInfoService(GeneralInfoService generalInfoService) {
-        this.generalInfoService = generalInfoService;
-    }
-    
-    @Autowired
-    public void setStarsDatabaseCache(StarsDatabaseCache starsDatabaseCache) {
-        this.starsDatabaseCache = starsDatabaseCache;
-    }
-    
-    @Autowired
-    public void setRolePropertyDao(RolePropertyDao rolePropertyDao) {
-        this.rolePropertyDao = rolePropertyDao;
-    }
-    
-    @Autowired
-    public void setOperatorThermostatHelper(OperatorThermostatHelper operatorThermostatHelper) {
-        this.operatorThermostatHelper = operatorThermostatHelper;
-    }
-    
-    @Autowired
-    public void setAccountThermostatScheduleDao(AccountThermostatScheduleDao accountThermostatScheduleDao) {
-        this.accountThermostatScheduleDao = accountThermostatScheduleDao;
-    }
-    
-    @Autowired
-    public void setThermostatService(ThermostatService thermostatService) {
-        this.thermostatService = thermostatService;
     }
 }

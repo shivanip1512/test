@@ -27,14 +27,13 @@ import com.cannontech.common.i18n.ObjectFormattingService;
 import com.cannontech.common.validator.SimpleValidator;
 import com.cannontech.common.validator.YukonValidationUtils;
 import com.cannontech.core.dao.YukonListDao;
-import com.cannontech.core.roleproperties.YukonRoleProperty;
-import com.cannontech.core.roleproperties.dao.EnergyCompanyRolePropertyDao;
 import com.cannontech.i18n.YukonMessageSourceResolvable;
-import com.cannontech.roles.yukon.EnergyCompanyRole;
-import com.cannontech.roles.yukon.EnergyCompanyRole.MeteringType;
 import com.cannontech.stars.core.service.YukonEnergyCompanyService;
 import com.cannontech.stars.dr.selectionList.dao.SelectionListDao;
 import com.cannontech.stars.dr.selectionList.service.SelectionListService;
+import com.cannontech.stars.energyCompany.EnergyCompanySettingType;
+import com.cannontech.stars.energyCompany.MeteringType;
+import com.cannontech.stars.energyCompany.dao.EnergyCompanySettingDao;
 import com.cannontech.stars.energyCompany.model.YukonEnergyCompany;
 import com.cannontech.stars.service.EnergyCompanyService;
 import com.cannontech.user.YukonUserContext;
@@ -57,10 +56,10 @@ public class ListController {
     @Autowired private SelectionListService selectionListService;
     @Autowired private EnergyCompanyService energyCompanyService;
     @Autowired private ObjectFormattingService objectFormattingService;
-    @Autowired private EnergyCompanyRolePropertyDao ecRolePropertyDao; 
     @Autowired private YukonEnergyCompanyService yukonEnergyCompanyService;
+    @Autowired private EnergyCompanySettingDao energyCompanySettingDao;
 
-    private Validator validator = new SimpleValidator<SelectionListDto>(SelectionListDto.class) {
+    private final Validator validator = new SimpleValidator<SelectionListDto>(SelectionListDto.class) {
         @Override
         protected void doValidation(SelectionListDto list, Errors errors) {
             YukonValidationUtils.checkExceedsMaxLength(errors, "selectionLabel",
@@ -167,9 +166,10 @@ public class ListController {
         YukonEnergyCompany energyCompany =
             yukonEnergyCompanyService.getEnergyCompanyByOperator(context.getYukonUser());
         MeteringType meteringType =
-            ecRolePropertyDao.getPropertyEnumValue(YukonRoleProperty.METER_MCT_BASE_DESIGNATION,
-                                                   EnergyCompanyRole.MeteringType.class,
-                                                   energyCompany);
+                energyCompanySettingDao.getEnum(EnergyCompanySettingType.METER_MCT_BASE_DESIGNATION,
+                                                MeteringType.class,
+                                                energyCompany.getEnergyCompanyId());
+
         /*
          * For metering type yukon (z_meter_mct_base_desig = yukon) the  "Meter" type should be
          * displayed in selection list only if entry with the "Meter" type already exists.
@@ -177,6 +177,7 @@ public class ListController {
         if (meteringType == MeteringType.yukon) {
             List<YukonListEntry> entries = list.getYukonListEntries();
             final Predicate<YukonListEntry> meterTypeEntry = new Predicate<YukonListEntry>() {
+                @Override
                 public boolean apply(YukonListEntry entry) {
                     return entry.getDefinition() == YukonDefinition.DEV_TYPE_METER;
                 }

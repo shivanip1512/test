@@ -21,7 +21,6 @@ import com.cannontech.common.i18n.MessageSourceAccessor;
 import com.cannontech.common.version.VersionTools;
 import com.cannontech.core.dao.PaoDao;
 import com.cannontech.core.roleproperties.YukonRoleProperty;
-import com.cannontech.core.roleproperties.dao.EnergyCompanyRolePropertyDao;
 import com.cannontech.core.roleproperties.dao.RolePropertyDao;
 import com.cannontech.i18n.YukonMessageSourceResolvable;
 import com.cannontech.i18n.YukonUserContextMessageSourceResolver;
@@ -40,6 +39,8 @@ import com.cannontech.stars.dr.enrollment.service.EnrollmentHelperService;
 import com.cannontech.stars.dr.hardware.dao.LMHardwareControlGroupDao;
 import com.cannontech.stars.dr.hardware.dao.StaticLoadGroupMappingDao;
 import com.cannontech.stars.dr.hardware.model.HardwareConfigAction;
+import com.cannontech.stars.energyCompany.EnergyCompanySettingType;
+import com.cannontech.stars.energyCompany.dao.EnergyCompanySettingDao;
 import com.cannontech.stars.energyCompany.model.YukonEnergyCompany;
 import com.cannontech.stars.util.ServletUtils;
 import com.cannontech.stars.util.StarsUtils;
@@ -66,13 +67,14 @@ public class OperatorEnrollmentController {
     @Autowired private LoadGroupDao loadGroupDao;
     @Autowired private StaticLoadGroupMappingDao staticLoadGroupMappingDao;
     @Autowired private AssignedProgramDao assignedProgramDao;
-    @Autowired private EnergyCompanyRolePropertyDao energyCompanyRolePropertyDao;
     @Autowired private YukonEnergyCompanyService yukonEnergyCompanyService; 
     @Autowired private EnrollmentDao enrollmentDao;
     @Autowired private EnrollmentHelperService enrollmentHelperService;
     @Autowired private RolePropertyDao rolePropertyDao;
     @Autowired private GlobalSettingDao globalSettingDao;
     @Autowired private YukonUserContextMessageSourceResolver messageSourceResolver;
+    @Autowired private EnergyCompanySettingDao energyCompanySettingDao;
+
     /**
      * The main operator "enrollment" page. Lists all current enrollments and
      * has icons for adding, removing and editing these enrollments.
@@ -161,7 +163,9 @@ public class OperatorEnrollmentController {
             yukonEnergyCompanyService.getEnergyCompanyByAccountId(accountInfoFragment.getAccountId());
         model.addAttribute("energyCompanyId", yukonEnergyCompany.getEnergyCompanyId());
         boolean trackHardwareAddressingEnabled =
-            energyCompanyRolePropertyDao.getPropertyBooleanValue(YukonRoleProperty.TRACK_HARDWARE_ADDRESSING, yukonEnergyCompany);
+                energyCompanySettingDao.getBoolean(EnergyCompanySettingType.TRACK_HARDWARE_ADDRESSING,
+                                                   yukonEnergyCompany.getEnergyCompanyId());
+
       String batchedSwitchCommandToggle =
       globalSettingDao.getString(GlobalSettingType.BATCHED_SWITCH_COMMAND_TOGGLE);
         boolean useStaticLoadGroups =

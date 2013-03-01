@@ -1,7 +1,6 @@
 package com.cannontech.web.menu;
 
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.Collections;
 import java.util.Iterator;
 import java.util.List;
@@ -43,16 +42,17 @@ import com.google.common.collect.Lists;
  * ever need to understand the module_config.xml file.
  */
 public class CommonModuleBuilder implements ModuleBuilder {
-    private RoleAndPropertyDescriptionService roleAndPropertyDescriptionService;
-    private Map<String, ModuleBase> moduleMap = new TreeMap<String, ModuleBase>();
+    @Autowired private ConfigurationSource configurationSource;
+    @Autowired private EnergyCompanyService energyCompanyService;
+    @Autowired private RoleAndPropertyDescriptionService roleAndPropertyDescriptionService;
+
+    private final Map<String, ModuleBase> moduleMap = new TreeMap<String, ModuleBase>();
     private MenuBase portalLinksBase = null;
     private MenuOptionProducerFactory menuOptionProducerFactory;
     private SearchProducerFactory searchProducerFactory;
     private final Resource moduleConfigFile;
     private final String menuKeyPrefix = "yukon.web.menu.portal";
     private final String menuKeyModPrefix = "yukon.web.menu.config.";
-    private ConfigurationSource configurationSource;
-    private EnergyCompanyService energyCompanyService;
     
     public CommonModuleBuilder(Resource moduleConfigFile) throws CommonMenuException {
         this.moduleConfigFile = moduleConfigFile;
@@ -294,10 +294,12 @@ public class CommonModuleBuilder implements ModuleBuilder {
             String name = child.getName();
             if (name.equals("requireRoleProperty")) {
                 checker = roleAndPropertyDescriptionService.compile(prop);
-            }else if (name.equals("requireEcOperatorOrSuperUser")) {
+            } else if (name.equals("requireEcOperatorOrSuperUser")) {
                 checker = energyCompanyService.createEcOperatorOrSuperUserChecker();
+            } else if (name.equals("requireCanEditEnergyCompany")) {
+                checker = energyCompanyService.createCanEditEnergyCompany();
             }
-            
+
             if (checker != null) {
                 checkers.add(checker);
             }
@@ -313,6 +315,7 @@ public class CommonModuleBuilder implements ModuleBuilder {
         }
     }
     
+    @Override
     public ModuleBase getModuleBase(String moduleName) {
         
         refreshModules();
@@ -331,6 +334,7 @@ public class CommonModuleBuilder implements ModuleBuilder {
         }
     }
     
+    @Override
     public List<ModuleBase> getAllModules() {
         refreshModules();
         
@@ -345,21 +349,4 @@ public class CommonModuleBuilder implements ModuleBuilder {
     public void setSearchProducerFactory(SearchProducerFactory searchProducerFactory) {
 		this.searchProducerFactory = searchProducerFactory;
 	}
-    
-    @Autowired
-    public void setRoleAndPropertyDescriptionService(
-            RoleAndPropertyDescriptionService roleAndPropertyDescriptionService) {
-        this.roleAndPropertyDescriptionService = roleAndPropertyDescriptionService;
-    }
-    
-    @Autowired
-    public void setConfigurationSource(ConfigurationSource configurationSource) {
-        this.configurationSource = configurationSource;
-    }
-    
-    @Autowired
-    public void setEnergyCompanyService(EnergyCompanyService energyCompanyService) {
-        this.energyCompanyService = energyCompanyService;
-    }
-    
 }

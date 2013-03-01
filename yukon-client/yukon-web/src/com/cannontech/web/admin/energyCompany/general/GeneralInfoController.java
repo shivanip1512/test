@@ -22,13 +22,10 @@ import com.cannontech.common.util.StringUtils;
 import com.cannontech.common.validator.YukonValidationUtils;
 import com.cannontech.core.dao.InUseException;
 import com.cannontech.core.dao.YukonUserDao;
-import com.cannontech.core.roleproperties.YukonRole;
-import com.cannontech.core.roleproperties.YukonRoleProperty;
 import com.cannontech.core.roleproperties.dao.RolePropertyDao;
 import com.cannontech.core.service.YukonGroupService;
 import com.cannontech.core.users.model.LiteUserGroup;
 import com.cannontech.database.TransactionException;
-import com.cannontech.database.data.lite.LiteYukonGroup;
 import com.cannontech.database.data.lite.LiteYukonPAObject;
 import com.cannontech.database.data.lite.LiteYukonUser;
 import com.cannontech.i18n.YukonMessageSourceResolvable;
@@ -180,7 +177,7 @@ public class GeneralInfoController {
             throw new NotAuthorizedException("User " + user.getUsername() + " is not authorized to add member energy companies");
         }
         
-        StarsAdminUtil.addMember(starsDatabaseCache.getEnergyCompany(ecId), starsDatabaseCache.getEnergyCompany(newMemberId), -1);
+        StarsAdminUtil.addMember(starsDatabaseCache.getEnergyCompany(ecId), starsDatabaseCache.getEnergyCompany(newMemberId), -1, user);
         /* Member Added Successfully */
         EnergyCompanyInfoFragmentHelper.setupModelMapBasics(fragment, model);
         flash.setConfirm(new YukonMessageSourceResolvable(baseKey + "memberAddSuccessful"));
@@ -351,22 +348,6 @@ public class GeneralInfoController {
     @ModelAttribute("canManageMembers")
     public boolean getCanManageMembers (YukonUserContext context, ModelMap modelMap, int ecId) {
         return energyCompanyService.canManageMembers(context.getYukonUser());
-    }
-    
-    @ModelAttribute("canEditRoles")
-    public boolean getCanEditRoles(ModelMap model, YukonUserContext context, int ecId) {
-        LiteYukonUser user = context.getYukonUser();
-        boolean superUser = rolePropertyDao.checkProperty(YukonRoleProperty.ADMIN_SUPER_USER, user);
-        if (superUser) {
-            LiteYukonUser ecAdminUser = starsDatabaseCache.getEnergyCompany(ecId).getUser();
-            LiteYukonGroup roleGroup = yukonGroupService.getGroupByYukonRoleAndUser(YukonRole.ENERGY_COMPANY, ecAdminUser.getUserID());
-            if (roleGroup == null) {
-                return false;
-            }
-            model.addAttribute("roleGroupId", roleGroup.getGroupID());
-            model.addAttribute("roleId", YukonRole.ENERGY_COMPANY.getRoleId());
-        }
-        return superUser;
     }
     
     @ModelAttribute("canEdit")

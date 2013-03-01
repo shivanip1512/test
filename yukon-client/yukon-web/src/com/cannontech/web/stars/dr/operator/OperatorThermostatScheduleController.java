@@ -164,8 +164,7 @@ public class OperatorThermostatScheduleController {
         AccountThermostatSchedule ats = accountThermostatScheduleDao.findByIdAndAccountId(scheduleId, account.getAccountId());
         ThermostatScheduleMode thermostatScheduleMode = ats.getThermostatScheduleMode();
         
-        
-        ThermostatScheduleUpdateResult message = thermostatService.sendSchedule(account, ats, thermostatIdList, thermostatScheduleMode, yukonUserContext.getYukonUser());
+        ThermostatScheduleUpdateResult message = thermostatService.sendSchedule(account, ats, thermostatIdList, thermostatScheduleMode, fragment.getEnergyCompanyId(), yukonUserContext.getYukonUser());
         
         String pageName = "single.send.";
         if(thermostatIdList.size() > 1){

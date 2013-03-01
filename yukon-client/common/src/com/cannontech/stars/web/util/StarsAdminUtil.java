@@ -47,7 +47,6 @@ import com.cannontech.message.dispatch.message.DBChangeMsg;
 import com.cannontech.message.dispatch.message.DbChangeCategory;
 import com.cannontech.message.dispatch.message.DbChangeType;
 import com.cannontech.roles.operator.AdministratorRole;
-import com.cannontech.roles.yukon.EnergyCompanyRole;
 import com.cannontech.spring.YukonSpringHook;
 import com.cannontech.stars.core.dao.ECMappingDao;
 import com.cannontech.stars.core.dao.StarsSearchDao;
@@ -63,6 +62,8 @@ import com.cannontech.stars.database.data.lite.StarsLiteFactory;
 import com.cannontech.stars.database.db.ECToGenericMapping;
 import com.cannontech.stars.database.db.report.ServiceCompanyDesignationCode;
 import com.cannontech.stars.dr.hardware.dao.LMHardwareControlGroupDao;
+import com.cannontech.stars.energyCompany.EnergyCompanySettingType;
+import com.cannontech.stars.energyCompany.dao.EnergyCompanySettingDao;
 import com.cannontech.stars.energyCompany.model.YukonEnergyCompany;
 import com.cannontech.stars.util.ECUtils;
 import com.cannontech.stars.util.WebClientException;
@@ -585,39 +586,43 @@ public class StarsAdminUtil {
 	                                    energyCompany.getEnergyCompanyId());
 	}
 	
-	public static void addMember(LiteStarsEnergyCompany energyCompany, LiteStarsEnergyCompany member, int loginID) throws TransactionException {
+	public static void addMember(LiteStarsEnergyCompany energyCompany, LiteStarsEnergyCompany member, int loginID, LiteYukonUser user) throws TransactionException {
 		ECToGenericMapping map = new ECToGenericMapping();
-		map.setEnergyCompanyID( energyCompany.getEnergyCompanyId() );
-		map.setItemID( member.getEnergyCompanyId() );
-		map.setMappingCategory( ECToGenericMapping.MAPPING_CATEGORY_MEMBER );
-		Transaction.createTransaction( Transaction.INSERT, map ).execute();
-		
+		map.setEnergyCompanyID(energyCompany.getEnergyCompanyId());
+		map.setItemID(member.getEnergyCompanyId());
+		map.setMappingCategory(ECToGenericMapping.MAPPING_CATEGORY_MEMBER);
+		Transaction.createTransaction(Transaction.INSERT, map).execute();
+
 		if (loginID != -1) {
-			map.setItemID( new Integer(loginID) );
-			map.setMappingCategory( ECToGenericMapping.MAPPING_CATEGORY_MEMBER_LOGIN );
-			Transaction.createTransaction( Transaction.INSERT, map ).execute();
+			map.setItemID(new Integer(loginID));
+			map.setMappingCategory(ECToGenericMapping.MAPPING_CATEGORY_MEMBER_LOGIN);
+			Transaction.createTransaction(Transaction.INSERT, map).execute();
 		}
-		
+
 		energyCompany.clearHierarchy();
 		member.clearHierarchy();
-		
+
 		// Modify energy company hierarchy related role properties
-		LiteYukonGroup adminGroup = energyCompany.getOperatorAdminGroup();
-		boolean adminGroupUpdated = false;
-		adminGroupUpdated |= DaoFactory.getRoleDao().updateGroupRoleProperty( adminGroup, EnergyCompanyRole.ROLEID, EnergyCompanyRole.SINGLE_ENERGY_COMPANY, CtiUtilities.FALSE_STRING );
-		adminGroupUpdated |= DaoFactory.getRoleDao().updateGroupRoleProperty( adminGroup, AdministratorRole.ROLEID, AdministratorRole.ADMIN_MANAGE_MEMBERS, CtiUtilities.TRUE_STRING );
+		EnergyCompanySettingDao energyCompanySettingDao = YukonSpringHook.getBean(EnergyCompanySettingDao.class);
+
+		energyCompanySettingDao.updateSettingValue(EnergyCompanySettingType.SINGLE_ENERGY_COMPANY, false, user, energyCompany.getEnergyCompanyId());
+
+		DaoFactory.getRoleDao().updateGroupRoleProperty(energyCompany.getOperatorAdminGroup(),
+		                                                AdministratorRole.ROLEID,
+		                                                AdministratorRole.ADMIN_MANAGE_MEMBERS,
+		                                                CtiUtilities.TRUE_STRING);
+
+		handleDBChange(energyCompany.getOperatorAdminGroup(), DbChangeType.UPDATE);
+
+		// Get parents settings
+		Boolean parentValue = energyCompanySettingDao.getBoolean(EnergyCompanySettingType.TRACK_HARDWARE_ADDRESSING, energyCompany.getEnergyCompanyId());
+		String parentValueStr = energyCompanySettingDao.getString(EnergyCompanySettingType.OPTIONAL_PRODUCT_DEV, energyCompany.getEnergyCompanyId());
+
+		// Transfer them over to child energy company
+		energyCompanySettingDao.updateSettingValue(EnergyCompanySettingType.TRACK_HARDWARE_ADDRESSING, parentValue, user, member.getEnergyCompanyId());
+		energyCompanySettingDao.updateSettingValue(EnergyCompanySettingType.OPTIONAL_PRODUCT_DEV, parentValueStr, user, member.getEnergyCompanyId());
 		
-		if (adminGroupUpdated)
-			handleDBChange( adminGroup, DbChangeType.UPDATE );
-		
-		adminGroup = member.getOperatorAdminGroup();
-		String value = null;
-		if (DaoFactory.getRoleDao().updateGroupRoleProperty( adminGroup, EnergyCompanyRole.ROLEID, EnergyCompanyRole.SINGLE_ENERGY_COMPANY, CtiUtilities.FALSE_STRING)
-			|| ((value = energyCompany.getEnergyCompanySetting( EnergyCompanyRole.TRACK_HARDWARE_ADDRESSING )) != null
-				&& DaoFactory.getRoleDao().updateGroupRoleProperty( adminGroup, EnergyCompanyRole.ROLEID, EnergyCompanyRole.TRACK_HARDWARE_ADDRESSING, value ))
-			|| ((value = energyCompany.getEnergyCompanySetting( EnergyCompanyRole.OPTIONAL_PRODUCT_DEV )) != null
-				&& DaoFactory.getRoleDao().updateGroupRoleProperty( adminGroup, EnergyCompanyRole.ROLEID, EnergyCompanyRole.OPTIONAL_PRODUCT_DEV, value )))
-			handleDBChange( adminGroup, DbChangeType.UPDATE );
+		handleDBChange(member.getOperatorAdminGroup(), DbChangeType.UPDATE);
 	}
 	
 	public static void removeMember(LiteStarsEnergyCompany energyCompany, int memberID) throws TransactionException {
@@ -697,20 +702,8 @@ public class StarsAdminUtil {
 		groupDB.setGroupName(userGroupName + " " + ROLE_GROUP_EXTENSION);
 		groupDB.setGroupDescription( "Privilege group for the energy company's default operator login" );
 		
-		// Including the Energy Company Role to the EC admin role group
-		LiteYukonRoleProperty[] roleProps = roleDao.getRoleProperties( EnergyCompanyRole.ROLEID );
-		for (int i = 0; i < roleProps.length; i++) {
-			com.cannontech.database.db.user.YukonGroupRole groupRole = new com.cannontech.database.db.user.YukonGroupRole();
-			
-			groupRole.setRoleID(EnergyCompanyRole.ROLEID);
-			groupRole.setRolePropertyID(roleProps[i].getRolePropertyID());
-		    groupRole.setValue(" ");	// default value is a single space
-			
-			adminGrp.addYukonGroupRole(groupRole);
-		}
-		
 		// Including the Admin Role to the EC admin role group
-		roleProps = roleDao.getRoleProperties( AdministratorRole.ROLEID );
+		LiteYukonRoleProperty[] roleProps = roleDao.getRoleProperties( AdministratorRole.ROLEID );
 		for (int i = 0; i < roleProps.length; i++) {
 			com.cannontech.database.db.user.YukonGroupRole groupRole = new com.cannontech.database.db.user.YukonGroupRole();
 			

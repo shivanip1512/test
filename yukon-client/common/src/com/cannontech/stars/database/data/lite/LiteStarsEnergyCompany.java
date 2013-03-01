@@ -38,8 +38,6 @@ import com.cannontech.core.dao.RoleDao;
 import com.cannontech.core.dao.YukonGroupDao;
 import com.cannontech.core.dao.YukonListDao;
 import com.cannontech.core.roleproperties.YukonRole;
-import com.cannontech.core.roleproperties.YukonRoleProperty;
-import com.cannontech.core.roleproperties.dao.EnergyCompanyRolePropertyDao;
 import com.cannontech.core.service.SystemDateFormattingService;
 import com.cannontech.database.IntegerRowMapper;
 import com.cannontech.database.PoolManager;
@@ -61,7 +59,6 @@ import com.cannontech.message.DbChangeManager;
 import com.cannontech.message.dispatch.message.DBChangeMsg;
 import com.cannontech.message.dispatch.message.DbChangeType;
 import com.cannontech.roles.operator.ConsumerInfoRole;
-import com.cannontech.roles.yukon.EnergyCompanyRole;
 import com.cannontech.stars.core.dao.ECMappingDao;
 import com.cannontech.stars.core.dao.StarsCustAccountInformationDao;
 import com.cannontech.stars.core.dao.StarsSearchDao;
@@ -74,11 +71,12 @@ import com.cannontech.stars.database.db.LMProgramWebPublishing;
 import com.cannontech.stars.database.db.appliance.ApplianceCategory;
 import com.cannontech.stars.database.db.customer.CustomerAccount;
 import com.cannontech.stars.database.db.hardware.Warehouse;
+import com.cannontech.stars.energyCompany.EnergyCompanySettingType;
 import com.cannontech.stars.energyCompany.dao.EnergyCompanyDao;
+import com.cannontech.stars.energyCompany.dao.EnergyCompanySettingDao;
 import com.cannontech.stars.energyCompany.model.YukonEnergyCompany;
 import com.cannontech.stars.service.DefaultRouteService;
 import com.cannontech.stars.service.EnergyCompanyService;
-import com.cannontech.stars.util.ECUtils;
 import com.cannontech.stars.util.StarsUtils;
 import com.cannontech.stars.web.StarsYukonUser;
 import com.cannontech.stars.xml.serialize.StarsCustAccountInformation;
@@ -102,7 +100,6 @@ public class LiteStarsEnergyCompany extends LiteBase implements YukonEnergyCompa
     private DBPersistentDao dbPersistentDao;
     private DbChangeManager dbChangeManager;
     private ECMappingDao ecMappingDao;
-    private EnergyCompanyRolePropertyDao energyCompanyRolePropertyDao;
     private DefaultRouteService defaultRouteService;
     private StarsCustAccountInformationDao starsCustAccountInformationDao;
     private StarsDatabaseCache starsDatabaseCache;
@@ -116,8 +113,9 @@ public class LiteStarsEnergyCompany extends LiteBase implements YukonEnergyCompa
     private EnergyCompanyService energyCompanyService;
     private RoleDao roleDao;
     private YukonEnergyCompanyService yukonEnergyCompanyService;
+    private EnergyCompanySettingDao energyCompanySettingDao;
 
-	private final static long serialVersionUID = 1L;
+    private final static long serialVersionUID = 1L;
 	
     public static final int FAKE_LIST_ID = -9999;   // Magic number for YukonSelectionList ID, used for substation and service company list
     public static final int INVALID_ROUTE_ID = -1;  // Mark that a valid default route id is not found, and prevent futher attempts
@@ -348,12 +346,13 @@ public class LiteStarsEnergyCompany extends LiteBase implements YukonEnergyCompa
     
     public TimeZone getDefaultTimeZone() {
         TimeZone timeZone;
-        String timeZoneStr = energyCompanyRolePropertyDao.getPropertyStringValue(YukonRoleProperty.ENERGY_COMPANY_DEFAULT_TIME_ZONE, this);
+
+        String timeZoneStr = energyCompanySettingDao.getString(EnergyCompanySettingType.ENERGY_COMPANY_DEFAULT_TIME_ZONE, this.getEnergyCompanyId());
         
         if (StringUtils.isNotBlank(timeZoneStr)) {
             try {
                 timeZone = CtiUtilities.getValidTimeZone(timeZoneStr);
-                CTILogger.debug("Energy Company Role Default TimeZone found: " + timeZone.getDisplayName());
+                CTILogger.debug("Energy Company Setting Default TimeZone found: " + timeZone.getDisplayName());
             } catch (BadConfigurationException e) {
                 throw new BadConfigurationException (e.getMessage() + ". Invalid value in Energy Company Role Default TimeZone property.");
             }
@@ -369,22 +368,11 @@ public class LiteStarsEnergyCompany extends LiteBase implements YukonEnergyCompa
     }
     
     public String getAdminEmailAddress() {
-        String adminEmail = getEnergyCompanySetting( EnergyCompanyRole.ADMIN_EMAIL_ADDRESS );
+        String adminEmail = energyCompanySettingDao.getString(EnergyCompanySettingType.ADMIN_EMAIL_ADDRESS, this.getEnergyCompanyId());
         if (adminEmail == null || adminEmail.trim().length() == 0)
             adminEmail = StarsUtils.ADMIN_EMAIL_ADDRESS;
         
         return adminEmail;
-    }
-    
-    /**
-     * @Deprecated The energyCompanyRolePropertyDao should be used instead of this method.
-     */
-    @Deprecated
-    public String getEnergyCompanySetting(int rolePropertyID) {
-        String value = DaoFactory.getAuthDao().getRolePropertyValue(user, rolePropertyID);
-        if (value != null && value.equalsIgnoreCase(CtiUtilities.STRING_NONE))
-            value = "";
-        return value;
     }
     
     public LiteYukonGroup getOperatorAdminGroup() {
@@ -445,9 +433,8 @@ public class LiteStarsEnergyCompany extends LiteBase implements YukonEnergyCompa
         
     	Iterable<LiteApplianceCategory> allApplianceCategories = getApplianceCategories();
         
-        boolean inheritCats = 
-        	energyCompanyRolePropertyDao.checkProperty(YukonRoleProperty.INHERIT_PARENT_APP_CATS, this);
-        
+    	boolean inheritCats = energyCompanySettingDao.getBoolean(EnergyCompanySettingType.INHERIT_PARENT_APP_CATS, this.getEnergyCompanyId());
+
         if (getParent() != null && inheritCats) {
             Iterable<LiteApplianceCategory> parentCategories = 
             	getParent().getAllApplianceCategories();
@@ -736,7 +723,7 @@ public class LiteStarsEnergyCompany extends LiteBase implements YukonEnergyCompa
      * if it is a single energy company system), ordered alphabetically.
      */
     public List<LiteYukonPAObject> getAllRoutes() {
-        if (ECUtils.isSingleEnergyCompany(this)) {
+        if (energyCompanySettingDao.checkSetting(EnergyCompanySettingType.SINGLE_ENERGY_COMPANY, this.getEnergyCompanyId())) {
             List<LiteYukonPAObject> result = IterableUtils.safeList(paoDao.getAllLiteRoutes());
             return result; 
         }
@@ -812,9 +799,12 @@ public class LiteStarsEnergyCompany extends LiteBase implements YukonEnergyCompa
         }
         
         try {
-            String val = getEnergyCompanySetting( ConsumerInfoRole.CALL_NUMBER_AUTO_GEN );
-            if (val != null) {
-                long initCallNo = Long.parseLong( val );
+            String value = DaoFactory.getAuthDao().getRolePropertyValue(user, ConsumerInfoRole.CALL_NUMBER_AUTO_GEN);
+            if (value != null && value.equalsIgnoreCase(CtiUtilities.STRING_NONE)) {
+                value = "";
+            }
+            if (value != null) {
+                long initCallNo = Long.parseLong(value);
                 if (nextCallNo < initCallNo) nextCallNo = initCallNo;
             }
         }
@@ -823,7 +813,7 @@ public class LiteStarsEnergyCompany extends LiteBase implements YukonEnergyCompa
         return String.valueOf( nextCallNo++ );
     }
     
-    public synchronized void resetNextCallNumber() {
+    public void resetNextCallNumber() {
         nextCallNo = 0;
     }
     
@@ -857,9 +847,12 @@ public class LiteStarsEnergyCompany extends LiteBase implements YukonEnergyCompa
         }
         
         try {
-            String val = getEnergyCompanySetting( ConsumerInfoRole.ORDER_NUMBER_AUTO_GEN );
-            if (val != null) {
-                long initOrderNo = Long.parseLong( val );
+            String value = DaoFactory.getAuthDao().getRolePropertyValue(user, ConsumerInfoRole.ORDER_NUMBER_AUTO_GEN);
+            if (value != null && value.equalsIgnoreCase(CtiUtilities.STRING_NONE)) {
+                value = "";
+            }
+            if (value != null) {
+                long initOrderNo = Long.parseLong(value);
                 if (nextOrderNo < initOrderNo) nextOrderNo = initOrderNo;
             }
         }
@@ -1147,10 +1140,8 @@ public class LiteStarsEnergyCompany extends LiteBase implements YukonEnergyCompa
     public LiteAccountInfo searchAccountByAccountNo(String accountNo) 
     {
     	List<Object> accounts = searchAccountByAccountNumber(accountNo, false, true);
-    	int accountNumberLength = 
-    	    energyCompanyRolePropertyDao.getPropertyIntegerValue(YukonRoleProperty.ACCOUNT_NUMBER_LENGTH, this);
-    	int rotationDigitLength = 
-    	    energyCompanyRolePropertyDao.getPropertyIntegerValue(YukonRoleProperty.ROTATION_DIGIT_LENGTH, this);
+    	int accountNumberLength = energyCompanySettingDao.getInteger(EnergyCompanySettingType.ACCOUNT_NUMBER_LENGTH, this.getEnergyCompanyId());
+    	int rotationDigitLength = energyCompanySettingDao.getInteger(EnergyCompanySettingType.ROTATION_DIGIT_LENGTH, this.getEnergyCompanyId());
         int accountNumSansRotationDigitsIndex = accountNo.length();
         boolean adjustForRotationDigits = false;
         boolean adjustForAccountLength = false;
@@ -1168,7 +1159,6 @@ public class LiteStarsEnergyCompany extends LiteBase implements YukonEnergyCompa
             }
             adjustForAccountLength = true;
         }
-
         
         for (Object object : accounts) {
         	if (object instanceof Integer) {
@@ -1890,10 +1880,6 @@ public class LiteStarsEnergyCompany extends LiteBase implements YukonEnergyCompa
         this.ecMappingDao = ecMappingDao;
     }
         
-    public void setEnergyCompanyRolePropertyDao(EnergyCompanyRolePropertyDao energyCompanyRolePropertyDao) {
-        this.energyCompanyRolePropertyDao = energyCompanyRolePropertyDao;
-    }
-
     public void setStarsCustAccountInformationDao(StarsCustAccountInformationDao starsCustAccountInformationDao) {
         this.starsCustAccountInformationDao = starsCustAccountInformationDao;
     }
@@ -1952,5 +1938,9 @@ public class LiteStarsEnergyCompany extends LiteBase implements YukonEnergyCompa
 
     public void setStarsDatabaseCache(StarsDatabaseCache starsDatabaseCache) {
         this.starsDatabaseCache = starsDatabaseCache;
+    }
+
+    public void setEnergyCompanySettingDao(EnergyCompanySettingDao energyCompanySettingDao) {
+        this.energyCompanySettingDao = energyCompanySettingDao;
     }
 }

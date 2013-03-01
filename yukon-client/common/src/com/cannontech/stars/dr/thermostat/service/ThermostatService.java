@@ -114,6 +114,7 @@ public interface ThermostatService {
                                                        AccountThermostatSchedule ats,
                                                        Iterable<Integer> thermostatIds,
                                                        ThermostatScheduleMode mode,
+                                                       int ecId,
                                                        LiteYukonUser user);
     
     /**

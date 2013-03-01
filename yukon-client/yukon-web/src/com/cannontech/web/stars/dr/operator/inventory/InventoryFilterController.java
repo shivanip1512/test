@@ -34,7 +34,6 @@ import com.cannontech.common.validator.YukonValidationUtils;
 import com.cannontech.core.dao.ServiceCompanyDao;
 import com.cannontech.core.roleproperties.YukonRole;
 import com.cannontech.core.roleproperties.YukonRoleProperty;
-import com.cannontech.core.roleproperties.dao.EnergyCompanyRolePropertyDao;
 import com.cannontech.core.roleproperties.dao.RolePropertyDao;
 import com.cannontech.core.roleproperties.enums.SerialNumberValidation;
 import com.cannontech.i18n.YukonMessageSourceResolvable;
@@ -46,6 +45,8 @@ import com.cannontech.stars.database.data.lite.LiteStarsEnergyCompany;
 import com.cannontech.stars.database.db.hardware.Warehouse;
 import com.cannontech.stars.dr.appliance.dao.ApplianceCategoryDao;
 import com.cannontech.stars.dr.appliance.model.ApplianceCategory;
+import com.cannontech.stars.energyCompany.EnergyCompanySettingType;
+import com.cannontech.stars.energyCompany.dao.EnergyCompanySettingDao;
 import com.cannontech.stars.energyCompany.model.YukonEnergyCompany;
 import com.cannontech.stars.util.ECUtils;
 import com.cannontech.user.YukonUserContext;
@@ -76,7 +77,6 @@ public class InventoryFilterController {
     @Autowired private ApplianceCategoryDao applianceCategoryDao;
     @Autowired private DatePropertyEditorFactory datePropertyEditorFactory;
     @Autowired private ECMappingDao ecMappingDao;
-    @Autowired private EnergyCompanyRolePropertyDao energyCompanyRolePropertyDao;
     @Autowired private FilterModelValidator filterModelValidator;
     @Autowired private InventoryOperationsFilterService inventoryOperationsFilterService;
     @Autowired private MemoryCollectionProducer memoryCollectionProducer;
@@ -85,7 +85,8 @@ public class InventoryFilterController {
     @Autowired private StarsDatabaseCache starsDatabaseCache;
     @Autowired private YukonEnergyCompanyService yukonEnergyCompanyService;
     @Autowired private YukonUserContextMessageSourceResolver messageSourceResolver;
-    
+    @Autowired private EnergyCompanySettingDao energyCompanySettingDao;
+
     /* Setup Filter Rules */
     @RequestMapping(value = "setupFilterRules")
     public String setupFilterRules(HttpServletRequest request, ModelMap modelMap, YukonUserContext userContext, String filterButton) 
@@ -193,9 +194,9 @@ public class InventoryFilterController {
         YukonEnergyCompany yukonEnergyCompany = yukonEnergyCompanyService.getEnergyCompanyByOperator(userContext.getYukonUser());
         
         List<FilterRuleType> ruleTypes = Lists.newArrayList(FilterRuleType.values());
-        SerialNumberValidation value = energyCompanyRolePropertyDao.getPropertyEnumValue(
-            YukonRoleProperty.SERIAL_NUMBER_VALIDATION, SerialNumberValidation.class, yukonEnergyCompany);
-        
+        SerialNumberValidation value = energyCompanySettingDao.getEnum(EnergyCompanySettingType.SERIAL_NUMBER_VALIDATION,
+                                                                       SerialNumberValidation.class,
+                                                                       yukonEnergyCompany.getEnergyCompanyId());
         if (value == SerialNumberValidation.ALPHANUMERIC) {
             ruleTypes.remove(FilterRuleType.SERIAL_NUMBER_RANGE);
         }

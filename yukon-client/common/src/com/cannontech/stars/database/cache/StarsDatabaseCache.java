@@ -55,8 +55,9 @@ import com.cannontech.stars.database.db.LMProgramWebPublishing;
 import com.cannontech.stars.dr.account.dao.CustomerAccountDao;
 import com.cannontech.stars.dr.account.model.CustomerAccount;
 import com.cannontech.stars.dr.appliance.dao.ApplianceCategoryDao;
+import com.cannontech.stars.energyCompany.EnergyCompanySettingType;
+import com.cannontech.stars.energyCompany.dao.EnergyCompanySettingDao;
 import com.cannontech.stars.energyCompany.model.YukonEnergyCompany;
-import com.cannontech.stars.util.ECUtils;
 import com.cannontech.stars.util.LMControlHistoryUtil;
 import com.cannontech.stars.util.ServletUtils;
 import com.cannontech.stars.util.StarsUtils;
@@ -326,8 +327,11 @@ public class StarsDatabaseCache implements DBChangeListener {
     			LiteStarsEnergyCompany energyCompany = companies.get(i);
     			
     			if (litePao.getPaoType().getPaoCategory().getCategoryId() == PAOGroups.CAT_ROUTE) {
-    				if (!ECUtils.isSingleEnergyCompany( energyCompany ))
-    					handleRouteChange( msg, energyCompany );
+    			    EnergyCompanySettingDao energyCompanySettingDao = YukonSpringHook.getBean(EnergyCompanySettingDao.class);            
+    			    boolean singleEc = energyCompanySettingDao.getBoolean(EnergyCompanySettingType.SINGLE_ENERGY_COMPANY, energyCompany.getEnergyCompanyId());
+    			    if (!singleEc) {
+    			        handleRouteChange(msg, energyCompany);
+    			    }
     			}
     			else if (DeviceTypesFuncs.isLMProgramDirect( litePao.getPaoType().getDeviceTypeId() )) {
     				if (energyCompany.getPrograms() != null) {
@@ -605,7 +609,7 @@ public class StarsDatabaseCache implements DBChangeListener {
 	}
 
 	private void handleRouteChange(DBChangeMsg msg, LiteStarsEnergyCompany energyCompany) {
-		switch( msg.getDbChangeType()) {
+		switch(msg.getDbChangeType()) {
 			case ADD:
 				// Don't need to do anything
 				break;

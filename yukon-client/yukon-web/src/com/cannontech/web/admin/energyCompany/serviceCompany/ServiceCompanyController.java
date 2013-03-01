@@ -23,6 +23,8 @@ import com.cannontech.core.service.PhoneNumberFormattingService;
 import com.cannontech.database.data.lite.LiteYukonUser;
 import com.cannontech.database.db.contact.Contact;
 import com.cannontech.i18n.YukonMessageSourceResolvable;
+import com.cannontech.stars.energyCompany.EnergyCompanySettingType;
+import com.cannontech.stars.energyCompany.dao.EnergyCompanySettingDao;
 import com.cannontech.stars.service.EnergyCompanyService;
 import com.cannontech.user.UserUtils;
 import com.cannontech.user.YukonUserContext;
@@ -46,6 +48,7 @@ public class ServiceCompanyController {
     @Autowired private ServiceCompanyDtoValidator serviceCompanyDtoValidator;
     @Autowired private YukonUserDao yukonUserDao;
     @Autowired private PhoneNumberFormattingService phoneNumberFormattingService;
+    @Autowired private EnergyCompanySettingDao energyCompanySettingDao;
     
     private void checkPermissionsAndSetupModel(EnergyCompanyInfoFragment energyCompanyInfoFragment,
                       ModelMap modelMap,
@@ -224,7 +227,7 @@ public class ServiceCompanyController {
     
     @ModelAttribute ("canEditDesignationCodes")
     public boolean getEditDesignationCodes(YukonUserContext userContext, int ecId) {
-        return rolePropertyDao.checkProperty(YukonRoleProperty.ADMIN_ALLOW_DESIGNATION_CODES, userContext.getYukonUser());
+        return energyCompanySettingDao.checkSetting(EnergyCompanySettingType.ADMIN_ALLOW_DESIGNATION_CODE, ecId);
     }
     
     @ModelAttribute ("canViewDesignationCodes")

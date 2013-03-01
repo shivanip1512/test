@@ -47,7 +47,8 @@ public interface LmHardwareCommandStrategy {
     public ThermostatScheduleUpdateResult doScheduleUpdate(CustomerAccount account, 
                                                            AccountThermostatSchedule ats, 
                                                            ThermostatScheduleMode mode, 
-                                                           Thermostat stat, 
+                                                           Thermostat stat,
+                                                           int ecId,
                                                            LiteYukonUser user);
 
     /**

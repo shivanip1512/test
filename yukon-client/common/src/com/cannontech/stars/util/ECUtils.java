@@ -9,7 +9,6 @@ package com.cannontech.stars.util;
 import java.util.ArrayList;
 import java.util.List;
 
-import com.cannontech.roles.yukon.EnergyCompanyRole;
 import com.cannontech.stars.database.cache.StarsDatabaseCache;
 import com.cannontech.stars.database.data.lite.LiteStarsEnergyCompany;
 
@@ -73,11 +72,6 @@ public class ECUtils {
 		return (company == null) ? false : company.getLiteID() == StarsDatabaseCache.DEFAULT_ENERGY_COMPANY_ID;
 	}
 	
-	public static boolean isSingleEnergyCompany(LiteStarsEnergyCompany company) {
-		String value = company.getEnergyCompanySetting( EnergyCompanyRole.SINGLE_ENERGY_COMPANY );
-		return (value == null) || Boolean.valueOf(value).booleanValue();
-	}
-
     /**
      * 
      * @param energyCompanyList

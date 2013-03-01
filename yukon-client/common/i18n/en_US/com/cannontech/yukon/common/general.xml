@@ -10,6 +10,8 @@
 <entry key="yukon.common.okButton">OK</entry>
 <entry key="yukon.common.disable">Disable</entry>
 <entry key="yukon.common.enable">Enable</entry>
+<entry key="yukon.common.disabled">Disabled</entry>
+<entry key="yukon.common.enabled">Enabled</entry>
 <entry key="yukon.common.cancel">Cancel</entry>
 <entry key="yukon.common.save">Save</entry>
 <entry key="yukon.common.historyTooltip">Click to view history</entry>
@@ -110,5 +112,8 @@
 
 <entry key="yukon.common.adobeRequired">The Adobe Flash Player is required to view this graph.</entry>
 <entry key="yukon.common.adobePleaseDL">Please download the latest version of the Flash Player by following the link below.</entry>
+
+<entry key="yukon.common.true">True</entry>
+<entry key="yukon.common.false">False</entry>
 
 </properties>

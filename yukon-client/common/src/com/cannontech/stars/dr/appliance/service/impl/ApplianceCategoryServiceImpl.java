@@ -9,8 +9,6 @@ import org.springframework.transaction.annotation.Transactional;
 
 import com.cannontech.common.constants.YukonSelectionListDefs;
 import com.cannontech.core.dao.DBPersistentDao;
-import com.cannontech.core.roleproperties.YukonRoleProperty;
-import com.cannontech.core.roleproperties.dao.EnergyCompanyRolePropertyDao;
 import com.cannontech.database.TransactionException;
 import com.cannontech.database.TransactionType;
 import com.cannontech.database.db.web.YukonWebConfiguration;
@@ -29,6 +27,8 @@ import com.cannontech.stars.dr.appliance.service.ApplianceCategoryService;
 import com.cannontech.stars.dr.hardware.dao.ProgramToAlternateProgramDao;
 import com.cannontech.stars.dr.hardware.model.ProgramToAlternateProgram;
 import com.cannontech.stars.dr.util.YukonListEntryHelper;
+import com.cannontech.stars.energyCompany.EnergyCompanySettingType;
+import com.cannontech.stars.energyCompany.dao.EnergyCompanySettingDao;
 import com.cannontech.stars.web.util.StarsAdminUtil;
 import com.cannontech.user.YukonUserContext;
 import com.google.common.collect.Lists;
@@ -40,7 +40,7 @@ public class ApplianceCategoryServiceImpl implements ApplianceCategoryService {
     @Autowired private ApplianceCategoryDao applianceCategoryDao;
     @Autowired private DBPersistentDao dbPersistentDao;
     @Autowired private ProgramToAlternateProgramDao programToSeasonalProgramDao;
-    @Autowired private EnergyCompanyRolePropertyDao ecRolePropertyDao;
+    @Autowired private EnergyCompanySettingDao energyCompanySettingDao;
 
     private static final String LINE_SEPARATOR = System.getProperty("line.separator");
 
@@ -297,7 +297,8 @@ public class ApplianceCategoryServiceImpl implements ApplianceCategoryService {
             starsDatabaseCache.addWebConfiguration(liteCfg);
         }
         
-        boolean useAlternateEnrollment = ecRolePropertyDao.checkProperty(YukonRoleProperty.ALTERNATE_PROGRAM_ENROLLMENT, lsec);
+        boolean useAlternateEnrollment = energyCompanySettingDao.checkSetting(EnergyCompanySettingType.ALTERNATE_PROGRAM_ENROLLMENT, lsec.getEnergyCompanyId());
+
         if (useAlternateEnrollment) {
             Integer altProgramId = ap.getAlternateProgramId();
     	 	if (altProgramId != null) {

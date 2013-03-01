@@ -1,7 +1,6 @@
 package com.cannontech.core.roleproperties;
 
 import static com.cannontech.core.roleproperties.InputTypeFactory.booleanType;
-import static com.cannontech.core.roleproperties.InputTypeFactory.enumType;
 import static com.cannontech.core.roleproperties.InputTypeFactory.integerType;
 import static com.cannontech.core.roleproperties.InputTypeFactory.stringType;
 import static com.cannontech.core.roleproperties.YukonRole.APPLICATION_BILLING;
@@ -15,7 +14,6 @@ import static com.cannontech.core.roleproperties.YukonRole.COMMANDER;
 import static com.cannontech.core.roleproperties.YukonRole.CONSUMER_INFO;
 import static com.cannontech.core.roleproperties.YukonRole.DATABASE_EDITOR;
 import static com.cannontech.core.roleproperties.YukonRole.DEVICE_ACTIONS;
-import static com.cannontech.core.roleproperties.YukonRole.ENERGY_COMPANY;
 import static com.cannontech.core.roleproperties.YukonRole.INVENTORY;
 import static com.cannontech.core.roleproperties.YukonRole.IVR;
 import static com.cannontech.core.roleproperties.YukonRole.LM_DIRECT_LOADCONTROL;
@@ -36,7 +34,6 @@ import static com.cannontech.core.roleproperties.YukonRole.WORK_ORDER;
 import org.apache.commons.lang.Validate;
 
 import com.cannontech.core.roleproperties.enums.CsrfTokenMode;
-import com.cannontech.core.roleproperties.enums.SerialNumberValidation;
 import com.cannontech.roles.application.CommanderRole;
 import com.cannontech.roles.application.DBEditorRole;
 import com.cannontech.roles.application.EsubEditorRole;
@@ -61,7 +58,6 @@ import com.cannontech.roles.operator.MeteringRole;
 import com.cannontech.roles.operator.OddsForControlRole;
 import com.cannontech.roles.operator.SchedulerRole;
 import com.cannontech.roles.operator.WorkOrderRole;
-import com.cannontech.roles.yukon.EnergyCompanyRole;
 import com.cannontech.web.input.type.InputType;
 import com.google.common.collect.ImmutableMap;
 import com.google.common.collect.ImmutableMap.Builder;
@@ -362,13 +358,12 @@ public enum YukonRoleProperty {
     ARCHIVED_DATA_ANALYSIS(DEVICE_ACTIONS, DeviceActionsRole.ARCHIVED_DATA_ANALYSIS, booleanType()),   
     FDR_TRANSLATION_MANAGER(DEVICE_ACTIONS, DeviceActionsRole.FDR_TRANSLATION_MANAGER, booleanType()),
     ARCHIVED_DATA_EXPORT(DEVICE_ACTIONS, DeviceActionsRole.ARCHIVED_DATA_EXPORT, booleanType()),  
-    
-    
+
     OPERATOR_ESUBSTATION_DRAWINGS_VIEW(OPERATOR_ESUBSTATION_DRAWINGS, EsubDrawingsRole.VIEW, booleanType()),
     OPERATOR_ESUBSTATION_DRAWINGS_EDIT(OPERATOR_ESUBSTATION_DRAWINGS, EsubDrawingsRole.EDIT, booleanType()),
     OPERATOR_ESUBSTATION_DRAWINGS_CONTROL(OPERATOR_ESUBSTATION_DRAWINGS, EsubDrawingsRole.CONTROL, booleanType()),
     OPERATOR_ESUBSTATION_DRAWINGS_HOME_URL(OPERATOR_ESUBSTATION_DRAWINGS, EsubDrawingsRole.ESUB_HOME_URL, stringType()),
-    
+
     INVENTORY_SHOW_ALL(INVENTORY, InventoryRole.INVENTORY_SHOW_ALL, booleanType()),
     SN_ADD_RANGE(INVENTORY, InventoryRole.SN_ADD_RANGE, booleanType()),
     SN_UPDATE_RANGE(INVENTORY, InventoryRole.SN_UPDATE_RANGE, booleanType()),
@@ -407,31 +402,7 @@ public enum YukonRoleProperty {
     WORK_ORDER_CREATE_NEW(WORK_ORDER, WorkOrderRole.WORK_ORDER_CREATE_NEW, stringType()),
     WORK_ORDER_REPORT(WORK_ORDER, WorkOrderRole.WORK_ORDER_REPORT, stringType()),
     ADDTL_ORDER_NUMBER_LABEL(WORK_ORDER, WorkOrderRole.ADDTL_ORDER_NUMBER_LABEL, stringType()),
-    
-    
-    /* Use EnergyCompanyRolePropertyDao when dealing with these role properties */
-    ADMIN_EMAIL_ADDRESS(ENERGY_COMPANY, EnergyCompanyRole.ADMIN_EMAIL_ADDRESS, stringType()),
-    OPTOUT_NOTIFICATION_RECIPIENTS(ENERGY_COMPANY, EnergyCompanyRole.OPTOUT_NOTIFICATION_RECIPIENTS, stringType()),
-    ENERGY_COMPANY_DEFAULT_TIME_ZONE(ENERGY_COMPANY, EnergyCompanyRole.DEFAULT_TIME_ZONE, stringType()),
-    TRACK_HARDWARE_ADDRESSING(ENERGY_COMPANY, EnergyCompanyRole.TRACK_HARDWARE_ADDRESSING, booleanType()),
-    SINGLE_ENERGY_COMPANY(ENERGY_COMPANY, EnergyCompanyRole.SINGLE_ENERGY_COMPANY, booleanType()),
-    OPTIONAL_PRODUCT_DEV(ENERGY_COMPANY, EnergyCompanyRole.OPTIONAL_PRODUCT_DEV, stringType()),
-    DEFAULT_TEMPERATURE_UNIT(ENERGY_COMPANY, EnergyCompanyRole.DEFAULT_TEMPERATURE_UNIT, stringType()),
-    METER_MCT_BASE_DESIGNATION(ENERGY_COMPANY, EnergyCompanyRole.METER_MCT_BASE_DESIGNATION, enumType(EnergyCompanyRole.MeteringType.class)),
-    APPLICABLE_POINT_TYPE_KEY(ENERGY_COMPANY, EnergyCompanyRole.APPLICABLE_POINT_TYPE_KEY, stringType()),
-    INHERIT_PARENT_APP_CATS(ENERGY_COMPANY, EnergyCompanyRole.INHERIT_PARENT_APP_CATS, booleanType()),
-    AUTO_CREATE_LOGIN_FOR_ADDITIONAL_CONTACTS(ENERGY_COMPANY, EnergyCompanyRole.AUTO_CREATE_LOGIN_FOR_ADDITIONAL_CONTACTS, booleanType()),
-    ACCOUNT_NUMBER_LENGTH(ENERGY_COMPANY, EnergyCompanyRole.ACCOUNT_NUMBER_LENGTH, integerType()),
-    ROTATION_DIGIT_LENGTH(ENERGY_COMPANY, EnergyCompanyRole.ROTATION_DIGIT_LENGTH, integerType()),
-    SERIAL_NUMBER_VALIDATION(ENERGY_COMPANY, EnergyCompanyRole.SERIAL_NUMBER_VALIDATION, InputTypeFactory.enumType(SerialNumberValidation.class)),
-    AUTOMATIC_CONFIGURATION(ENERGY_COMPANY, EnergyCompanyRole.AUTOMATIC_CONFIGURATION, booleanType()),
-    ADMIN_ALLOW_DESIGNATION_CODES(ENERGY_COMPANY, EnergyCompanyRole.ALLOW_DESIGNATION_CODES, booleanType()),
-    ADMIN_ALLOW_THERMOSTAT_SCHEDULE_ALL(ENERGY_COMPANY, EnergyCompanyRole.ALLOW_THERMOSTAT_SCHEDULE_ALL, booleanType()),
-    ADMIN_ALLOW_THERMOSTAT_SCHEDULE_WEEKDAY_WEEKEND(ENERGY_COMPANY, EnergyCompanyRole.ALLOW_THERMOSTAT_SCHEDULE_WEEKDAY_WEEKEND, booleanType()),
-    ADMIN_ALLOW_THERMOSTAT_SCHEDULE_WEEKDAY_SATURDAY_SUNDAY(ENERGY_COMPANY, EnergyCompanyRole.ALLOW_THERMOSTAT_SCHEDULE_WEEKDAY_SATURDAY_SUNDAY, booleanType()),
-    ADMIN_ALLOW_THERMOSTAT_SCHEDULE_7_DAY(ENERGY_COMPANY, EnergyCompanyRole.ALLOW_THERMOSTAT_SCHEDULE_7_DAY, booleanType()),
-    BROADCAST_OPT_OUT_CANCEL_SPID(ENERGY_COMPANY, EnergyCompanyRole.BROADCAST_OPT_OUT_CANCEL_SPID, integerType()),
-    ALTERNATE_PROGRAM_ENROLLMENT(ENERGY_COMPANY, EnergyCompanyRole.ALTERNATE_PROGRAM_ENROLLMENT, booleanType()),
+ 
     ;
     
     private final YukonRole role;

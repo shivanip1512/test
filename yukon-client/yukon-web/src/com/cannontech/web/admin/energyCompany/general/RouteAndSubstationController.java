@@ -13,7 +13,6 @@ import com.cannontech.common.i18n.DisplayableEnum;
 import com.cannontech.common.model.Substation;
 import com.cannontech.core.dao.PaoDao;
 import com.cannontech.core.roleproperties.YukonRoleProperty;
-import com.cannontech.core.roleproperties.dao.EnergyCompanyRolePropertyDao;
 import com.cannontech.core.roleproperties.dao.RolePropertyDao;
 import com.cannontech.core.substation.dao.SubstationDao;
 import com.cannontech.database.data.lite.LiteYukonPAObject;
@@ -22,6 +21,8 @@ import com.cannontech.i18n.YukonMessageSourceResolvable;
 import com.cannontech.stars.database.cache.StarsDatabaseCache;
 import com.cannontech.stars.database.data.lite.LiteStarsEnergyCompany;
 import com.cannontech.stars.database.data.lite.LiteSubstation;
+import com.cannontech.stars.energyCompany.EnergyCompanySettingType;
+import com.cannontech.stars.energyCompany.dao.EnergyCompanySettingDao;
 import com.cannontech.stars.service.EnergyCompanyService;
 import com.cannontech.user.YukonUserContext;
 import com.cannontech.web.PageEditMode;
@@ -41,7 +42,7 @@ import com.google.common.collect.Maps;
 @Controller
 public class RouteAndSubstationController { 
 
-    public enum Reason implements DisplayableEnum {
+    private enum Reason implements DisplayableEnum {
         CAN_DELETE(true),
         THIS_DEFAULT(false),
         CHILD_DEFAULT(false),
@@ -64,14 +65,14 @@ public class RouteAndSubstationController {
         }
     }
 
-    private EnergyCompanyRolePropertyDao energyCompanyRolePropertyDao;
-    private EnergyCompanyService energyCompanyService;
-    private GeneralInfoService generalInfoService;
-    private PaoDao paoDao;
-    private RolePropertyDao rolePropertyDao;
-    private StarsDatabaseCache starsDatabaseCache;
-    private SubstationDao substationDao;
-    
+    @Autowired private EnergyCompanyService energyCompanyService;
+    @Autowired private GeneralInfoService generalInfoService;
+    @Autowired private PaoDao paoDao;
+    @Autowired private RolePropertyDao rolePropertyDao;
+    @Autowired private StarsDatabaseCache starsDatabaseCache;
+    @Autowired private SubstationDao substationDao;
+    @Autowired private EnergyCompanySettingDao energyCompanySettingDao;
+
     /**
      * This method handles the view version of the route and substation controller.
      */
@@ -223,7 +224,7 @@ public class RouteAndSubstationController {
             routeToReason.put(childDefault, Reason.CHILD_DEFAULT);
         }
         
-        modelMap.addAttribute("isSingleEnergyCompany", energyCompanyRolePropertyDao.getPropertyBooleanValue(YukonRoleProperty.SINGLE_ENERGY_COMPANY, energyCompany));
+        modelMap.addAttribute("isSingleEnergycompany", energyCompanySettingDao.getBoolean(EnergyCompanySettingType.SINGLE_ENERGY_COMPANY, energyCompany.getEnergyCompanyId()));
         modelMap.addAttribute("ecRoutes", routeToReason);
 
         List<LiteSubstation> inheritedSubstations = getInheritedSubstations(energyCompany);
@@ -338,41 +339,5 @@ public class RouteAndSubstationController {
         ecSubstations.removeAll(inheritedSubstations);
         
         return ecSubstations;
-    }
-
-    // DI Setters
-    @Autowired
-    public void setEnergyCompanyRolePropertyDao(EnergyCompanyRolePropertyDao energyCompanyRolePropertyDao) {
-        this.energyCompanyRolePropertyDao = energyCompanyRolePropertyDao;
-    }
-    
-    @Autowired
-    public void setEnergyCompanyService(EnergyCompanyService energyCompanyService) {
-        this.energyCompanyService = energyCompanyService;
-    }
-    
-    @Autowired
-    public void setGeneralInfoService(GeneralInfoService generalInfoService) {
-        this.generalInfoService = generalInfoService;
-    }
-    
-    @Autowired
-    public void setPaoDao(PaoDao paoDao) {
-        this.paoDao = paoDao;
-    }
-    
-    @Autowired
-    public void setRolePropertyDao(RolePropertyDao rolePropertyDao) {
-        this.rolePropertyDao = rolePropertyDao;
-    }
-    
-    @Autowired
-    public void setStarsDatabaseCache(StarsDatabaseCache starsDatabaseCache) {
-        this.starsDatabaseCache = starsDatabaseCache;
-    }
-    
-    @Autowired
-    public void setSubstationDao(SubstationDao substationDao) {
-        this.substationDao = substationDao;
     }
 }

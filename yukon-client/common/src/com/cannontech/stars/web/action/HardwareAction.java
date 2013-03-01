@@ -15,7 +15,6 @@ import com.cannontech.database.Transaction;
 import com.cannontech.database.TransactionException;
 import com.cannontech.database.data.activity.ActivityLogActions;
 import com.cannontech.database.data.lite.LiteYukonUser;
-import com.cannontech.roles.yukon.EnergyCompanyRole;
 import com.cannontech.spring.YukonSpringHook;
 import com.cannontech.stars.core.dao.InventoryBaseDao;
 import com.cannontech.stars.database.data.lite.LiteAccountInfo;
@@ -40,6 +39,8 @@ import com.cannontech.stars.dr.hardware.model.LmHardwareCommandType;
 import com.cannontech.stars.dr.hardware.service.LmHardwareCommandService;
 import com.cannontech.stars.dr.program.service.ProgramEnrollment;
 import com.cannontech.stars.dr.program.service.ProgramEnrollmentService;
+import com.cannontech.stars.energyCompany.EnergyCompanySettingType;
+import com.cannontech.stars.energyCompany.dao.EnergyCompanySettingDao;
 import com.cannontech.stars.util.InventoryUtils;
 import com.cannontech.stars.util.ServletUtils;
 import com.cannontech.stars.util.SwitchCommandQueue;
@@ -388,8 +389,8 @@ public class HardwareAction {
         StarsInventories starsInvs = new StarsInventories();
         boolean disabled = false;
     
-        String trackHwAddr = energyCompany.getEnergyCompanySetting(EnergyCompanyRole.TRACK_HARDWARE_ADDRESSING);
-        boolean useHardwareAddressing = Boolean.valueOf(trackHwAddr).booleanValue();
+        EnergyCompanySettingDao energyCompanySettingDao = YukonSpringHook.getBean("energyCompanySettingDao", EnergyCompanySettingDao.class);
+        boolean useHardwareAddressing = energyCompanySettingDao.checkSetting(EnergyCompanySettingType.TRACK_HARDWARE_ADDRESSING, energyCompany.getEnergyCompanyId());
     
         for (int i = 0; i < hwsToConfig.size(); i++) {
             LiteLmHardwareBase lHw = hwsToConfig.get(i);

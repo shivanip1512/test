@@ -10,6 +10,10 @@ import com.cannontech.core.roleproperties.YukonRole;
 import com.cannontech.core.roleproperties.YukonRoleProperty;
 import com.cannontech.core.roleproperties.dao.RolePropertyDao;
 import com.cannontech.database.data.lite.LiteYukonUser;
+import com.cannontech.stars.core.service.YukonEnergyCompanyService;
+import com.cannontech.stars.energyCompany.EnergyCompanySettingType;
+import com.cannontech.stars.energyCompany.dao.EnergyCompanySettingDao;
+import com.cannontech.stars.energyCompany.model.YukonEnergyCompany;
 import com.cannontech.system.GlobalSettingType;
 import com.cannontech.system.dao.GlobalSettingDao;
 import com.cannontech.web.util.SpringWebUtil;
@@ -18,6 +22,8 @@ public class WebSecurityChecker {
     @Autowired private RolePropertyDao rolePropertyDao;
     @Autowired private ConfigurationSource configurationSource;
     @Autowired private GlobalSettingDao globalSettingDao;
+    @Autowired private EnergyCompanySettingDao energyCompanySettingDao;
+    @Autowired private YukonEnergyCompanyService yukonEnergyCompanyService;
     
     public void authorizeByCparm(MasterConfigBooleanKeysEnum configKey) {
         final LiteYukonUser user = getYukonUser();
@@ -80,6 +86,15 @@ public class WebSecurityChecker {
             return user;
         } catch (ServletRequestBindingException e) {
             throw new UnsupportedOperationException("Web security checks cannont be done outside of a DispatcherServlet request");
+        }
+    }
+
+    public void checkEnergyCompanySetting(EnergyCompanySettingType setting) {
+        final LiteYukonUser user = getYukonUser();
+        YukonEnergyCompany yec = yukonEnergyCompanyService.getEnergyCompanyByOperator(user);
+        
+        if (yec == null || !energyCompanySettingDao.checkSetting(setting, yec.getEnergyCompanyId())) {
+            throw new NotAuthorizedException("User " + user + " is not authorized to access this page.");
         }
     }
 

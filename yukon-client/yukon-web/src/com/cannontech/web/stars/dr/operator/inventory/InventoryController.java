@@ -39,7 +39,6 @@ import com.cannontech.core.dao.PersistenceException;
 import com.cannontech.core.dao.YukonListDao;
 import com.cannontech.core.roleproperties.YukonRole;
 import com.cannontech.core.roleproperties.YukonRoleProperty;
-import com.cannontech.core.roleproperties.dao.EnergyCompanyRolePropertyDao;
 import com.cannontech.core.roleproperties.dao.RolePropertyDao;
 import com.cannontech.core.roleproperties.enums.SerialNumberValidation;
 import com.cannontech.core.service.PhoneNumberFormattingService;
@@ -47,8 +46,6 @@ import com.cannontech.database.data.lite.LiteYukonPAObject;
 import com.cannontech.database.data.lite.LiteYukonUser;
 import com.cannontech.i18n.YukonMessageSourceResolvable;
 import com.cannontech.i18n.YukonUserContextMessageSourceResolver;
-import com.cannontech.roles.yukon.EnergyCompanyRole;
-import com.cannontech.roles.yukon.EnergyCompanyRole.MeteringType;
 import com.cannontech.stars.InventorySearchResult;
 import com.cannontech.stars.core.service.YukonEnergyCompanyService;
 import com.cannontech.stars.database.cache.StarsDatabaseCache;
@@ -62,7 +59,10 @@ import com.cannontech.stars.dr.hardware.exception.Lcr3102YukonDeviceCreationExce
 import com.cannontech.stars.dr.hardware.exception.StarsDeviceSerialNumberAlreadyExistsException;
 import com.cannontech.stars.dr.hardware.service.HardwareService;
 import com.cannontech.stars.dr.hardware.service.HardwareUiService;
+import com.cannontech.stars.energyCompany.EnergyCompanySettingType;
+import com.cannontech.stars.energyCompany.MeteringType;
 import com.cannontech.stars.energyCompany.dao.EnergyCompanyDao;
+import com.cannontech.stars.energyCompany.dao.EnergyCompanySettingDao;
 import com.cannontech.stars.energyCompany.model.YukonEnergyCompany;
 import com.cannontech.stars.model.InventorySearch;
 import com.cannontech.stars.util.ObjectInOtherEnergyCompanyException;
@@ -86,7 +86,6 @@ public class InventoryController {
     @Autowired private HardwareUiService hardwareUiService;
     @Autowired private HardwareService hardwareService;
     @Autowired private RolePropertyDao rolePropertyDao; 
-    @Autowired private EnergyCompanyRolePropertyDao ecRolePropertyDao; 
     @Autowired private StarsDatabaseCache starsDatabaseCache;
     @Autowired private YukonUserContextMessageSourceResolver messageSourceResolver;
     @Autowired private PaoDao paoDao;
@@ -100,7 +99,8 @@ public class InventoryController {
     @Autowired private HardwareModelHelper helper;
     @Autowired private PhoneNumberFormattingService phoneNumberFormattingService;
     @Autowired private CustomerAccountDao customerAccountDao;
-    
+    @Autowired private EnergyCompanySettingDao energyCompanySettingDao;
+
     /* Home - Landing Page */
     @RequestMapping
     public String home(ModelMap model, YukonUserContext context) {
@@ -118,7 +118,9 @@ public class InventoryController {
             String title = messageSourceAccessor.getMessage("yukon.web.modules.operator.inventory.home.fileUploadTitle");
             model.addAttribute("fileUploadTitle", title);
             
-            MeteringType type = ecRolePropertyDao.getPropertyEnumValue(YukonRoleProperty.METER_MCT_BASE_DESIGNATION, EnergyCompanyRole.MeteringType.class, energyCompany);
+            MeteringType type = energyCompanySettingDao.getEnum(EnergyCompanySettingType.METER_MCT_BASE_DESIGNATION,
+                                                                MeteringType.class,
+                                                                energyCompany.getEnergyCompanyId());
             model.addAttribute("showAddMeter", type == MeteringType.yukon);
             
             boolean showLinks = configurationSource.getBoolean(MasterConfigBooleanKeysEnum.DIGI_ENABLED);
@@ -132,7 +134,9 @@ public class InventoryController {
             boolean showActions = hasAddRange || hasCreate;
             model.addAttribute("showActions", showActions);
             
-            SerialNumberValidation snv = ecRolePropertyDao.getPropertyEnumValue(YukonRoleProperty.SERIAL_NUMBER_VALIDATION, SerialNumberValidation.class, energyCompany);
+            SerialNumberValidation snv = energyCompanySettingDao.getEnum(EnergyCompanySettingType.SERIAL_NUMBER_VALIDATION,
+                                                                         SerialNumberValidation.class,
+                                                                         energyCompany.getEnergyCompanyId());
             model.addAttribute("showAddByRange", snv == SerialNumberValidation.NUMERIC && hasAddRange);
             
             model.addAttribute("inventorySearch", new InventorySearch());
@@ -156,7 +160,7 @@ public class InventoryController {
             });
             model.addAttribute("addHardwareByRangeTypes", addHardwareByRangeTypes.iterator());
         }
-        
+
         return "operator/inventory/home.jsp";
     }
     
@@ -194,7 +198,8 @@ public class InventoryController {
         }
                 
         if(!hasWarnings){
-            MeteringType value= ecRolePropertyDao.getPropertyEnumValue(YukonRoleProperty.METER_MCT_BASE_DESIGNATION, EnergyCompanyRole.MeteringType.class,  ec);
+            MeteringType value = energyCompanySettingDao.getEnum(EnergyCompanySettingType.METER_MCT_BASE_DESIGNATION, MeteringType.class, ec.getEnergyCompanyId());
+
             boolean starsMeters = value == MeteringType.stars;
             model.addAttribute("starsMeters", starsMeters);
             

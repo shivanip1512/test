@@ -42,6 +42,7 @@ public class YukonJdbcTemplate extends SimpleJdbcTemplate implements
         getJdbcOperations().query(sql.getSql(), sql.getArguments(), new YukonRowCallbackHandlerAdapter(rch));
     }
     
+    @Override
     public <T> Object query(SqlFragmentSource sql, ResultSetExtractor<T> rse) throws DataAccessException {
         return getJdbcOperations().query(sql.getSql(), sql.getArguments(), rse);
     }
@@ -58,6 +59,7 @@ public class YukonJdbcTemplate extends SimpleJdbcTemplate implements
         return query(sql, new YukonRowMapperAdapter<T>(rm));
     }
     
+    @Override
     public <T> List<T> queryForLimitedResults(SqlFragmentSource sql, ParameterizedRowMapper<T> rm, int maxResults) throws DataAccessException {
         
         MaxListResultSetExtractor<T> rse = new MaxListResultSetExtractor<T>(rm, maxResults);
@@ -86,6 +88,7 @@ public class YukonJdbcTemplate extends SimpleJdbcTemplate implements
         return queryForInt(sql.getSql(), sql.getArguments());
     }
 
+    @Override
     public long queryForLong(SqlFragmentSource sql) throws DataAccessException {
     	return queryForLong(sql.getSql(), sql.getArguments());
     }

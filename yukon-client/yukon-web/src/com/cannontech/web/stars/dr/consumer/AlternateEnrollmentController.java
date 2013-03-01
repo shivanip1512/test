@@ -11,8 +11,6 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 
 import com.cannontech.common.util.Pair;
-import com.cannontech.core.roleproperties.YukonRoleProperty;
-import com.cannontech.core.roleproperties.dao.EnergyCompanyRolePropertyDao;
 import com.cannontech.i18n.YukonMessageSourceResolvable;
 import com.cannontech.stars.core.service.YukonEnergyCompanyService;
 import com.cannontech.stars.dr.account.dao.CustomerAccountDao;
@@ -21,6 +19,8 @@ import com.cannontech.stars.dr.enrollment.exception.EnrollmentException;
 import com.cannontech.stars.dr.enrollment.service.AlternateEnrollmentService;
 import com.cannontech.stars.dr.hardware.model.HardwareSummary;
 import com.cannontech.stars.dr.program.model.Program;
+import com.cannontech.stars.energyCompany.EnergyCompanySettingType;
+import com.cannontech.stars.energyCompany.dao.EnergyCompanySettingDao;
 import com.cannontech.stars.energyCompany.model.YukonEnergyCompany;
 import com.cannontech.user.YukonUserContext;
 import com.cannontech.web.common.flashScope.FlashScope;
@@ -33,7 +33,7 @@ public class AlternateEnrollmentController extends AbstractConsumerController {
 	@Autowired private AlternateEnrollmentService aeService;
 	@Autowired private CustomerAccountDao customerAccountDao;
     @Autowired private YukonEnergyCompanyService yecService;
-    @Autowired private EnergyCompanyRolePropertyDao ecRolePropertyDao;
+    @Autowired private EnergyCompanySettingDao energyCompanySettingDao;
     
     private static final String VIEW = "consumer/alternateEnrollment.jsp";
        
@@ -41,7 +41,7 @@ public class AlternateEnrollmentController extends AbstractConsumerController {
     public String view(@ModelAttribute CustomerAccount customerAccount, ModelMap model, YukonUserContext context) {
     	
         YukonEnergyCompany yec = yecService.getEnergyCompanyByAccountId(customerAccount.getAccountId());
-        ecRolePropertyDao.verifyProperty(YukonRoleProperty.ALTERNATE_PROGRAM_ENROLLMENT, yec);
+        energyCompanySettingDao.verifySetting(EnergyCompanySettingType.ALTERNATE_PROGRAM_ENROLLMENT, yec.getEnergyCompanyId());
         
         /* inventory to: set of normal programs, set of alternate programs */
         Map<HardwareSummary, Pair<Set<Program>, Set<Program>>> available = Maps.newHashMap();
@@ -66,7 +66,8 @@ public class AlternateEnrollmentController extends AbstractConsumerController {
     	
         if (alternate != null || normal != null) {
             YukonEnergyCompany yec = yecService.getEnergyCompanyByAccountId(customerAccount.getAccountId());
-            ecRolePropertyDao.verifyProperty(YukonRoleProperty.ALTERNATE_PROGRAM_ENROLLMENT, yec);
+            energyCompanySettingDao.verifySetting(EnergyCompanySettingType.ALTERNATE_PROGRAM_ENROLLMENT, yec.getEnergyCompanyId());
+
             try {
                 aeService.doEnrollment(alternate, normal, customerAccount.getAccountId(), context);
                 flash.setConfirm(new YukonMessageSourceResolvable("yukon.web.modules.consumer.alternateEnrollment.alternate.success"));

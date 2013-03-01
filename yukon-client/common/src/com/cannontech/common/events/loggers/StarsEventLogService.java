@@ -5,6 +5,7 @@ import com.cannontech.common.events.YukonEventLog;
 import com.cannontech.common.events.model.EventSource;
 import com.cannontech.common.util.TransactionExecutor.ExecutorTransactionality;
 import com.cannontech.database.data.lite.LiteYukonUser;
+import com.cannontech.stars.energyCompany.EnergyCompanySettingType;
 
 public interface StarsEventLogService {
 
@@ -27,6 +28,13 @@ public interface StarsEventLogService {
                                                  @Arg(ArgEnum.energyCompanyName) String energyCompanyName,
                                                  @Arg(ArgEnum.routeId) int oldRouteId,
                                                  @Arg(ArgEnum.routeId) int newRouteId);
+
+    @YukonEventLog(transactionality=ExecutorTransactionality.TRANSACTIONAL, category="system.energyCompanySettings")
+    public void energyCompanySettngUpdated(@Arg(ArgEnum.username) LiteYukonUser user, 
+                                           @Arg(ArgEnum.energyCompanySettingType) EnergyCompanySettingType type, 
+                                           @Arg(ArgEnum.energyCompanyId) int ecId, 
+                                           @Arg(ArgEnum.energyCompanySettingValue) String value);
+
 
     // Warehouse
     @YukonEventLog(transactionality = ExecutorTransactionality.ASYNCHRONOUS, category = "stars.warehouse")

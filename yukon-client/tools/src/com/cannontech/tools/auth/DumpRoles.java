@@ -24,7 +24,6 @@ import com.cannontech.roles.operator.AdministratorRole;
 import com.cannontech.roles.operator.ConsumerInfoRole;
 import com.cannontech.roles.operator.MeteringRole;
 import com.cannontech.roles.operator.OddsForControlRole;
-import com.cannontech.roles.yukon.EnergyCompanyRole;
 
 /*
  * Created on May 22, 2003
@@ -55,9 +54,6 @@ public class DumpRoles {
 		com.cannontech.roles.loadcontrol.DirectLoadcontrolRole.class,
 		com.cannontech.roles.operator.EsubDrawingsRole.class,
 		OddsForControlRole.class,
-		
-		EnergyCompanyRole.class,
-		
 	};
 	
 	public static void main(String[] args) throws Throwable{

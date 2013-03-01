@@ -89,6 +89,8 @@
   <bean class="com.cannontech.system.dao.impl.GlobalSettingEditorDaoImpl"/>
   <bean class="com.cannontech.system.dao.impl.GlobalSettingUpdateDaoImpl"/>
 
+  <bean class="com.cannontech.stars.energyCompany.dao.impl.EnergyCompanySettingDaoImpl"/>
+
   <bean id="simplePointAccessDao" class="com.cannontech.core.dao.impl.SimplePointAccessDaoImpl" >
     <property name="dynamicDataSource" ref="dynamicDataSource"/>
   </bean>

@@ -23,8 +23,6 @@ import com.cannontech.common.model.YukonCancelTextMessage;
 import com.cannontech.common.model.YukonTextMessage;
 import com.cannontech.core.dao.DBPersistentDao;
 import com.cannontech.core.dao.YukonListDao;
-import com.cannontech.core.roleproperties.YukonRoleProperty;
-import com.cannontech.core.roleproperties.dao.EnergyCompanyRolePropertyDao;
 import com.cannontech.database.TransactionType;
 import com.cannontech.database.data.lite.LiteYukonUser;
 import com.cannontech.spring.YukonSpringHook;
@@ -50,6 +48,8 @@ import com.cannontech.stars.dr.thermostat.model.AccountThermostatSchedule;
 import com.cannontech.stars.dr.thermostat.model.ThermostatManualEvent;
 import com.cannontech.stars.dr.thermostat.model.ThermostatScheduleMode;
 import com.cannontech.stars.dr.thermostat.model.ThermostatScheduleUpdateResult;
+import com.cannontech.stars.energyCompany.EnergyCompanySettingType;
+import com.cannontech.stars.energyCompany.dao.EnergyCompanySettingDao;
 import com.cannontech.stars.energyCompany.model.YukonEnergyCompany;
 import com.google.common.collect.ImmutableMap;
 import com.google.common.collect.ImmutableMap.Builder;
@@ -61,12 +61,12 @@ public class LmHardwareCommandServiceImpl implements LmHardwareCommandService {
     
     @Autowired private YukonListDao yukonListDao;
     @Autowired private StarsDatabaseCache cache;
-    @Autowired private EnergyCompanyRolePropertyDao ecRolePropertyDao;
     @Autowired private YukonEnergyCompanyService yecService;
     @Autowired private InventoryBaseDao inventoryBaseDao;
     @Autowired private DBPersistentDao dbPersistentDao;
     @Autowired private InventoryDao inventoryDao;
-    
+    @Autowired private EnergyCompanySettingDao energyCompanySettingDao;
+
     //@Autowired by setter
     private JmsTemplate jmsTemplate;
 
@@ -96,12 +96,12 @@ public class LmHardwareCommandServiceImpl implements LmHardwareCommandService {
     public ThermostatScheduleUpdateResult doScheduleUpdate(CustomerAccount account,
                                                            AccountThermostatSchedule ats,
                                                            ThermostatScheduleMode mode,
-                                                           Thermostat stat, LiteYukonUser user) throws CommandCompletionException {
+                                                           Thermostat stat, int ecId, LiteYukonUser user) throws CommandCompletionException {
         HardwareType type = stat.getType();
         HardwareStrategyType foundStrategy = getStrategy(type);
         LmHardwareCommandStrategy impl = strategies.get(foundStrategy);
         
-        return impl.doScheduleUpdate(account, ats, mode, stat, user);
+        return impl.doScheduleUpdate(account, ats, mode, stat, ecId, user);
     }
     
     @Override
@@ -117,7 +117,7 @@ public class LmHardwareCommandServiceImpl implements LmHardwareCommandService {
         int ecId = yec.getEnergyCompanyId();
         LiteStarsEnergyCompany lsec = cache.getEnergyCompany(ecId);
         
-        boolean autoConfig = ecRolePropertyDao.getPropertyBooleanValue(YukonRoleProperty.AUTOMATIC_CONFIGURATION, yec);
+        boolean autoConfig = energyCompanySettingDao.getBoolean(EnergyCompanySettingType.AUTOMATIC_CONFIGURATION, ecId);
         
         int inventoryId = device.getInventoryID();
         int unavailable = YukonListEntryTypes.YUK_DEF_ID_DEV_STAT_UNAVAIL;
@@ -143,6 +143,7 @@ public class LmHardwareCommandServiceImpl implements LmHardwareCommandService {
             if (autoConfig) {
                 // Send the config command a while later
                 TimerTask sendConfigLater = new TimerTask() {
+                    @Override
                     public void run() {
                         try {
                             impl.sendCommand(command);
@@ -359,6 +360,4 @@ public class LmHardwareCommandServiceImpl implements LmHardwareCommandService {
         }
         return hardwareTypeToInventoryIds;
     }
-    
-    
 }

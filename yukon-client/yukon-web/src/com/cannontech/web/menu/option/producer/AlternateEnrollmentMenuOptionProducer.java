@@ -8,8 +8,6 @@ import java.util.Set;
 import org.springframework.beans.factory.annotation.Autowired;
 
 import com.cannontech.common.util.Pair;
-import com.cannontech.core.roleproperties.YukonRoleProperty;
-import com.cannontech.core.roleproperties.dao.EnergyCompanyRolePropertyDao;
 import com.cannontech.i18n.YukonMessageSourceResolvable;
 import com.cannontech.stars.core.service.YukonEnergyCompanyService;
 import com.cannontech.stars.dr.account.dao.CustomerAccountDao;
@@ -18,6 +16,8 @@ import com.cannontech.stars.dr.enrollment.service.AlternateEnrollmentService;
 import com.cannontech.stars.dr.hardware.model.HardwareSummary;
 import com.cannontech.stars.dr.optout.service.OptOutStatusService;
 import com.cannontech.stars.dr.program.model.Program;
+import com.cannontech.stars.energyCompany.EnergyCompanySettingType;
+import com.cannontech.stars.energyCompany.dao.EnergyCompanySettingDao;
 import com.cannontech.stars.energyCompany.model.YukonEnergyCompany;
 import com.cannontech.user.YukonUserContext;
 import com.cannontech.web.menu.option.MenuOption;
@@ -29,8 +29,8 @@ public class AlternateEnrollmentMenuOptionProducer extends DynamicMenuOptionProd
     @Autowired private OptOutStatusService optOutStatusService;
     @Autowired private CustomerAccountDao customerAccountDao;
     @Autowired private YukonEnergyCompanyService yecService;
-    @Autowired private EnergyCompanyRolePropertyDao ecRolePropertyDao;
     @Autowired private AlternateEnrollmentService aeService;
+    @Autowired private EnergyCompanySettingDao energyCompanySettingDao;
 
     @Override
     public List<MenuOption> doGetMenuOptions(YukonUserContext userContext) {
@@ -39,7 +39,7 @@ public class AlternateEnrollmentMenuOptionProducer extends DynamicMenuOptionProd
         
         CustomerAccount customer = customerAccountDao.getByUser(userContext.getYukonUser()).get(0);
         YukonEnergyCompany yec = yecService.getEnergyCompanyByAccountId(customer.getAccountId());
-        boolean altProgramEnrollment = ecRolePropertyDao.checkProperty(YukonRoleProperty.ALTERNATE_PROGRAM_ENROLLMENT, yec);
+        boolean altProgramEnrollment = energyCompanySettingDao.checkSetting(EnergyCompanySettingType.ALTERNATE_PROGRAM_ENROLLMENT, yec.getEnergyCompanyId());
         
         // Generate a menu option if opt out is enabled and actual enrollment exists 
         if (altProgramEnrollment && optOutStatusService.getOptOutEnabled(userContext.getYukonUser()).isCommunicationEnabled()) {

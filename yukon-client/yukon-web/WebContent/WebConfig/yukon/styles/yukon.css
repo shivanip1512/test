@@ -332,13 +332,14 @@ html[xmlns] .clearfix {display: block;}
 .wall_of_text .value {max-width: 300px;}
 .title-bar-tool {float:right !important;margin-right: 10px;}
 
-.setting {border-top: dotted 1px #ccc; margin-top: -1px; padding: 5px 0;}
+.setting {border-top: dotted 1px #ccc; margin-top: -1px; padding: 10px 0;}
 .setting > .fl {margin-left: 10px;}
 .setting_details {width: 460px;}
 .setting_default_indicator {width:10px; min-height:1px;}
-.setting_comments {width:250px;}
+.setting_comments {width:250px; text-align: center;}
 .setting_name {width:192px;}
 .setting .detail {color: #888; font-size: 90%}
+.categoryTitle {padding: 12px; padding-top: 16px; font-weight: bold; border-bottom:solid 1px #CCC;}
 .groupedList .group {font-weight: bold;}
 .groupedList .groupedItem {margin: 2px 0 0 20px;}
  

@@ -87,8 +87,6 @@ public interface GlobalSettingDao {
     
     public GlobalSetting getSetting(GlobalSettingType globalSetting);
 
-    public Object convertSettingValue(GlobalSettingType type, String value);
-
     /**
      * 
      * Let the Dao know that a value has changed. This is useful

@@ -17,8 +17,6 @@ import com.cannontech.common.bulk.filter.AbstractRowMapperWithBaseQuery;
 import com.cannontech.common.util.SqlFragmentSource;
 import com.cannontech.common.util.SqlStatementBuilder;
 import com.cannontech.core.dao.NotFoundException;
-import com.cannontech.core.roleproperties.YukonRoleProperty;
-import com.cannontech.core.roleproperties.dao.EnergyCompanyRolePropertyDao;
 import com.cannontech.database.IntegerRowMapper;
 import com.cannontech.database.YukonJdbcTemplate;
 import com.cannontech.database.YukonResultSet;
@@ -29,6 +27,8 @@ import com.cannontech.stars.dr.appliance.dao.ApplianceCategoryDao;
 import com.cannontech.stars.dr.appliance.model.ApplianceCategory;
 import com.cannontech.stars.dr.appliance.model.ApplianceTypeEnum;
 import com.cannontech.stars.energyCompany.EcMappingCategory;
+import com.cannontech.stars.energyCompany.EnergyCompanySettingType;
+import com.cannontech.stars.energyCompany.dao.EnergyCompanySettingDao;
 import com.cannontech.stars.energyCompany.model.YukonEnergyCompany;
 import com.cannontech.stars.webconfiguration.dao.WebConfigurationDao;
 import com.cannontech.stars.webconfiguration.model.WebConfiguration;
@@ -36,16 +36,17 @@ import com.google.common.collect.Lists;
 import com.google.common.collect.Maps;
 
 public class ApplianceCategoryDaoImpl implements ApplianceCategoryDao {
-    private ECMappingDao ecMappingDao;
-    private YukonEnergyCompanyService yukonEnergyCompanyService;
-    private EnergyCompanyRolePropertyDao energyCompanyRolePropertyDao;
-    private StarsDatabaseCache starsDatabaseCache;
-    private WebConfigurationDao webConfigurationDao;
-    private YukonJdbcTemplate yukonJdbcTemplate;
+
+    @Autowired private ECMappingDao ecMappingDao;
+    @Autowired private YukonEnergyCompanyService yukonEnergyCompanyService;
+    @Autowired private StarsDatabaseCache starsDatabaseCache;
+    @Autowired private WebConfigurationDao webConfigurationDao;
+    @Autowired private YukonJdbcTemplate yukonJdbcTemplate;
+    @Autowired private EnergyCompanySettingDao energyCompanySettingDao;
 
     private static class RowMapper extends
             AbstractRowMapperWithBaseQuery<ApplianceCategory> {
-        private Map<Integer, WebConfiguration> webConfigurations;
+        private final Map<Integer, WebConfiguration> webConfigurations;
         private RowMapper() {
             webConfigurations = Maps.newHashMap();
         }
@@ -222,8 +223,8 @@ public class ApplianceCategoryDaoImpl implements ApplianceCategoryDao {
 
     @Override
     public Set<Integer> getAppCatEnergyCompanyIds(YukonEnergyCompany yukonEnergyCompany) {
-
-        if (energyCompanyRolePropertyDao.checkProperty(YukonRoleProperty.INHERIT_PARENT_APP_CATS, yukonEnergyCompany)) {
+        boolean inheritParentAppCats = energyCompanySettingDao.checkSetting(EnergyCompanySettingType.INHERIT_PARENT_APP_CATS, yukonEnergyCompany.getEnergyCompanyId());
+        if (inheritParentAppCats) {
             return ecMappingDao.getParentEnergyCompanyIds(yukonEnergyCompany.getEnergyCompanyId());
         } else {
             return Collections.singleton(yukonEnergyCompany.getEnergyCompanyId());
@@ -244,35 +245,5 @@ public class ApplianceCategoryDaoImpl implements ApplianceCategoryDao {
             }});
         
         return applianceCategories;
-    }
-
-    @Autowired
-    public void setEcMappingDao(ECMappingDao ecMappingDao) {
-        this.ecMappingDao = ecMappingDao;
-    }
-    
-    @Autowired
-    public void setYukonEnergyCompanyService(YukonEnergyCompanyService yukonEnergyCompanyService) {
-        this.yukonEnergyCompanyService = yukonEnergyCompanyService;
-    }
-    
-    @Autowired
-    public void setEnergyCompanyRolePropertyDao(EnergyCompanyRolePropertyDao energyCompanyRolePropertyDao) {
-        this.energyCompanyRolePropertyDao = energyCompanyRolePropertyDao;
-    }
-    
-    @Autowired
-    public void setStarsDatabaseCache(StarsDatabaseCache starsDatabaseCache) {
-        this.starsDatabaseCache = starsDatabaseCache;
-    }
-    
-    @Autowired
-    public void setWebConfigurationDao(WebConfigurationDao webConfigurationDao) {
-        this.webConfigurationDao = webConfigurationDao;
-    }
-
-    @Autowired
-    public void setYukonJdbcTemplate(YukonJdbcTemplate yukonJdbcTemplate) {
-        this.yukonJdbcTemplate = yukonJdbcTemplate;
     }
 }

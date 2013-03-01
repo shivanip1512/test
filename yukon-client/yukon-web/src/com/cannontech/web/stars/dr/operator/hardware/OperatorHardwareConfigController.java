@@ -72,6 +72,8 @@ import com.cannontech.stars.dr.hardware.dao.StaticLoadGroupMappingDao;
 import com.cannontech.stars.dr.hardware.model.HardwareSummary;
 import com.cannontech.stars.dr.hardware.model.LMHardwareBase;
 import com.cannontech.stars.dr.hardwareConfig.HardwareConfigService;
+import com.cannontech.stars.energyCompany.EnergyCompanySettingType;
+import com.cannontech.stars.energyCompany.dao.EnergyCompanySettingDao;
 import com.cannontech.stars.energyCompany.model.YukonEnergyCompany;
 import com.cannontech.stars.util.StarsUtils;
 import com.cannontech.stars.web.action.HardwareAction;
@@ -125,6 +127,7 @@ public class OperatorHardwareConfigController {
     @Autowired private AttributeService attributeService;
     @Autowired private GlobalSettingDao globalSettingDao;
     @Autowired private YukonEnergyCompanyService yukonEnergyCompanyService;
+    @Autowired private EnergyCompanySettingDao energyCompanySettingDao;
 
     private final ColdLoadPickupValidator coldLoadPickupValidator = new ColdLoadPickupValidator();
     private final TamperDetectValidator tamperDetectValidator = new TamperDetectValidator();
@@ -144,8 +147,9 @@ public class OperatorHardwareConfigController {
         configuration.setAccountId(accountInfo.getAccountId());
         configuration.setInventoryId(inventoryId);
         boolean trackHardwareAddressing =
-            rolePropertyDao.checkProperty(YukonRoleProperty.TRACK_HARDWARE_ADDRESSING,
-                                          userContext.getYukonUser());
+                energyCompanySettingDao.getBoolean(EnergyCompanySettingType.TRACK_HARDWARE_ADDRESSING,
+                                                   accountInfo.getEnergyCompanyId());
+
         if (trackHardwareAddressing) {
             // add the STARS LM configuration for the device to the model
             LiteStarsEnergyCompany energyCompany =
@@ -320,8 +324,9 @@ public class OperatorHardwareConfigController {
         hardwareConfig.setSaveConfigOnly("saveConfigOnly".equals(action));
 
         boolean trackHardwareAddressing =
-            rolePropertyDao.checkProperty(YukonRoleProperty.TRACK_HARDWARE_ADDRESSING,
-                                          userContext.getYukonUser());
+                energyCompanySettingDao.getBoolean(EnergyCompanySettingType.TRACK_HARDWARE_ADDRESSING,
+                                                   accountInfo.getEnergyCompanyId());
+
         for (ProgramEnrollmentDto programEnrollment: configuration.getProgramEnrollments()) {
             StarsLMHardwareConfig starsConfig = new StarsLMHardwareConfig();
             if (!trackHardwareAddressing) {

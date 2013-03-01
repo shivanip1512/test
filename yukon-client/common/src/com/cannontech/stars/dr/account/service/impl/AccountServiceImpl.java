@@ -26,7 +26,6 @@ import com.cannontech.core.dao.NotFoundException;
 import com.cannontech.core.dao.UserNameUnavailableException;
 import com.cannontech.core.dao.YukonUserDao;
 import com.cannontech.core.dao.impl.LoginStatusEnum;
-import com.cannontech.core.roleproperties.YukonRoleProperty;
 import com.cannontech.core.roleproperties.dao.RolePropertyDao;
 import com.cannontech.core.service.PhoneNumberFormattingService;
 import com.cannontech.core.service.SystemDateFormattingService;
@@ -75,6 +74,8 @@ import com.cannontech.stars.dr.hardware.dao.InventoryDao;
 import com.cannontech.stars.dr.hardware.dao.LMHardwareControlGroupDao;
 import com.cannontech.stars.dr.hardware.dao.LmHardwareBaseDao;
 import com.cannontech.stars.dr.thermostat.dao.AccountThermostatScheduleDao;
+import com.cannontech.stars.energyCompany.EnergyCompanySettingType;
+import com.cannontech.stars.energyCompany.dao.EnergyCompanySettingDao;
 import com.cannontech.stars.energyCompany.model.YukonEnergyCompany;
 import com.cannontech.user.UserUtils;
 import com.cannontech.user.YukonUserContext;
@@ -114,6 +115,7 @@ public class AccountServiceImpl implements AccountService {
     @Autowired private AccountThermostatScheduleDao accountThermostatScheduleDao;
     @Autowired private UserGroupDao userGroupDao;
     @Autowired private YukonEnergyCompanyService yukonEnergyCompanyService;
+    @Autowired private EnergyCompanySettingDao energyCompanySettingDao;
 
     @Override
     @Transactional
@@ -263,7 +265,7 @@ public class AccountServiceImpl implements AccountService {
         	liteCustomer.setRateScheduleID(CtiUtilities.NONE_ZERO_ID);
         }
         liteCustomer.setAltTrackingNumber(accountDto.getAltTrackingNumber());
-        liteCustomer.setTemperatureUnit(rolePropertyDao.getPropertyStringValue(YukonRoleProperty.DEFAULT_TEMPERATURE_UNIT, yukonEnergyCompany.getEnergyCompanyUser()));
+        liteCustomer.setTemperatureUnit(energyCompanySettingDao.getString(EnergyCompanySettingType.DEFAULT_TEMPERATURE_UNIT, yukonEnergyCompany.getEnergyCompanyId()));
         customerDao.addCustomer(liteCustomer);
         dbChangeManager.processDbChange(liteCustomer.getLiteID(),
                                         DBChangeMsg.CHANGE_CUSTOMER_DB,

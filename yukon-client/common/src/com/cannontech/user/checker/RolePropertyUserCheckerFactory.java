@@ -6,11 +6,11 @@ import org.springframework.beans.factory.annotation.Autowired;
 import com.cannontech.core.roleproperties.YukonRole;
 import com.cannontech.core.roleproperties.YukonRoleCategory;
 import com.cannontech.core.roleproperties.YukonRoleProperty;
-import com.cannontech.core.roleproperties.dao.EnergyCompanyRolePropertyDao;
 import com.cannontech.core.roleproperties.dao.RolePropertyDao;
 import com.cannontech.database.data.lite.LiteYukonUser;
 import com.cannontech.stars.core.service.YukonEnergyCompanyService;
-import com.cannontech.stars.energyCompany.model.YukonEnergyCompany;
+import com.cannontech.stars.energyCompany.EnergyCompanySettingType;
+import com.cannontech.stars.energyCompany.dao.EnergyCompanySettingDao;
 
 /**
  * This is both a base class and a factory for OptionPropertyCheckers.
@@ -21,7 +21,7 @@ import com.cannontech.stars.energyCompany.model.YukonEnergyCompany;
  */
 public class RolePropertyUserCheckerFactory {
     @Autowired private RolePropertyDao rolePropertyDao;
-    @Autowired private EnergyCompanyRolePropertyDao ecRolePropertyDao;
+    @Autowired private EnergyCompanySettingDao energyCompanSettingDao;
     @Autowired private YukonEnergyCompanyService yecService;
     
     public UserChecker createPropertyChecker(final YukonRoleProperty property) {
@@ -41,19 +41,17 @@ public class RolePropertyUserCheckerFactory {
         return checker;
     }
     
-    public UserChecker createECPropertyChecker(final YukonRoleProperty property) {
-        Validate.isTrue(ecRolePropertyDao.isCheckPropertyCompatible(property), "Property must return a Boolean: " + property);
+    public UserChecker createECSettingChecker(final EnergyCompanySettingType setting) {
 
         UserCheckerBase checker = new UserCheckerBase() {
             @Override
             public boolean check(LiteYukonUser user) {
-                
-                return ecRolePropertyDao.checkProperty(property, yecService.getEnergyCompanyByOperator(user));
+                return energyCompanSettingDao.checkSetting(setting, yecService.getEnergyCompanyByOperator(user).getEnergyCompanyId());
             };
             
             @Override
             public String toString() {
-                return property + " EC checker";
+                return setting + " EC checker";
             }
         };
         return checker;
@@ -75,19 +73,18 @@ public class RolePropertyUserCheckerFactory {
         };
         return checker;
     }
-    
-    public UserChecker createECFalsePropertyChecker(final YukonRoleProperty property) {
-        Validate.isTrue(rolePropertyDao.isCheckPropertyCompatible(property), "Property must return a Boolean: " + property);
-        
+
+    public UserChecker createECFalseSettingChecker(final EnergyCompanySettingType setting) {
+
         UserCheckerBase checker = new UserCheckerBase() {
             @Override
             public boolean check(LiteYukonUser user) {
-                return ecRolePropertyDao.checkFalseProperty(property, yecService.getEnergyCompanyByOperator(user));
+                return energyCompanSettingDao.checkFalseSetting(setting, yecService.getEnergyCompanyByOperator(user).getEnergyCompanyId());
             };
             
             @Override
             public String toString() {
-                return property + " false EC checker";
+                return setting + " false EC checker";
             }
         };
         return checker;

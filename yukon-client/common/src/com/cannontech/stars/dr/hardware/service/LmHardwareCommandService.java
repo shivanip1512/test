@@ -29,7 +29,8 @@ public interface LmHardwareCommandService {
     public ThermostatScheduleUpdateResult doScheduleUpdate(CustomerAccount account, 
                                                            AccountThermostatSchedule ats, 
                                                            ThermostatScheduleMode mode, 
-                                                           Thermostat stat, 
+                                                           Thermostat stat,
+                                                           int ecId,
                                                            LiteYukonUser user) throws CommandCompletionException;
 
     /**

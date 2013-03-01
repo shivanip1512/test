@@ -42,14 +42,15 @@ import com.cannontech.common.pao.PaoType;
 import com.cannontech.common.util.ObjectMapper;
 import com.cannontech.database.data.lite.LiteYukonUser;
 import com.cannontech.database.data.point.PointType;
+import com.cannontech.stars.energyCompany.EnergyCompanySettingType;
 import com.cannontech.system.GlobalSettingType;
 import com.google.common.base.Function;
 import com.google.common.collect.ArrayListMultimap;
 import com.google.common.collect.ImmutableList;
+import com.google.common.collect.ImmutableList.Builder;
 import com.google.common.collect.ListMultimap;
 import com.google.common.collect.Lists;
 import com.google.common.collect.Maps;
-import com.google.common.collect.ImmutableList.Builder;
 
 public class EventLogServiceImpl implements EventLogService {
     private static final Logger log = YukonLogManager.getLogger(EventLogServiceImpl.class);
@@ -57,8 +58,8 @@ public class EventLogServiceImpl implements EventLogService {
     private ConfigurationSource configurationSource;
     private EventLogDao eventLogDao;
 
-    private Map<Method, MethodLogDetail> methodLogDetailLookup = Maps.newHashMap();
-    private Map<String, MethodLogDetail> methodLogDetailCatalog = Maps.newHashMap();
+    private final Map<Method, MethodLogDetail> methodLogDetailLookup = Maps.newHashMap();
+    private final Map<String, MethodLogDetail> methodLogDetailCatalog = Maps.newHashMap();
 
     private ImmutableList<String> excludedEventLogPaths; 
     
@@ -92,6 +93,7 @@ public class EventLogServiceImpl implements EventLogService {
         public static <TT extends Enum<TT>> ArgumentMapper<TT> createForEnum(Class<TT> javaType) {
             return new ArgumentMapper<TT>(javaType, Types.VARCHAR, new ObjectMapper<TT, String>() {
                 
+                @Override
                 public String map(TT from) throws ObjectMappingException {
                     return from.name();
                 }
@@ -130,7 +132,9 @@ public class EventLogServiceImpl implements EventLogService {
         builder.add(ArgumentMapper.createForEnum(DeviceRequestType.class));
         builder.add(ArgumentMapper.createForEnum(GlobalSettingType.class));
         builder.add(ArgumentMapper.createForEnum(EventSource.class));
+        builder.add(ArgumentMapper.createForEnum(EnergyCompanySettingType.class));
         builder.add(ArgumentMapper.create(ReadableInstant.class, Types.TIMESTAMP, new ObjectMapper<ReadableInstant, Date>() {
+            @Override
             public Date map(ReadableInstant from) throws ObjectMappingException {
                 return new Instant(from).toDate();
             }
@@ -306,6 +310,7 @@ public class EventLogServiceImpl implements EventLogService {
         return methodLogDetailLookup.get(method);
     }
     
+    @Override
     public List<MappedEventLog> findAllByCategories(Iterable<EventCategory> eventCategory, ReadableInstant startDate, ReadableInstant stopDate) {
         List<EventLog> eventLogs = eventLogDao.findAllByCategories(eventCategory, startDate, stopDate);
         
@@ -315,6 +320,7 @@ public class EventLogServiceImpl implements EventLogService {
     
     private List<MappedEventLog> mapEventLogParameters(List<EventLog> eventLogs) {
         return Lists.transform(eventLogs, new Function<EventLog, MappedEventLog> () {
+            @Override
             public MappedEventLog apply(EventLog from) {
                 return mapEventLogParameters(from);
             }

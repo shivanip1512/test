@@ -27,7 +27,6 @@ import com.cannontech.core.dao.CustomerDao;
 import com.cannontech.core.dao.YukonListDao;
 import com.cannontech.core.dao.YukonUserDao;
 import com.cannontech.core.roleproperties.YukonRoleProperty;
-import com.cannontech.core.roleproperties.dao.EnergyCompanyRolePropertyDao;
 import com.cannontech.core.users.model.LiteUserGroup;
 import com.cannontech.database.data.lite.LiteContact;
 import com.cannontech.database.data.lite.LiteContactNotification;
@@ -39,6 +38,8 @@ import com.cannontech.stars.core.dao.ECMappingDao;
 import com.cannontech.stars.core.service.YukonEnergyCompanyService;
 import com.cannontech.stars.dr.account.dao.CustomerAccountDao;
 import com.cannontech.stars.dr.account.model.CustomerAccount;
+import com.cannontech.stars.energyCompany.EnergyCompanySettingType;
+import com.cannontech.stars.energyCompany.dao.EnergyCompanySettingDao;
 import com.cannontech.stars.energyCompany.model.YukonEnergyCompany;
 import com.cannontech.system.GlobalSettingType;
 import com.cannontech.system.dao.GlobalSettingDao;
@@ -59,12 +60,12 @@ public class ContactController extends AbstractConsumerController {
     @Autowired private CustomerDao customerDao;
     @Autowired private CustomerAccountDao customerAccountDao;
     @Autowired private ECMappingDao ecMappingDao;
-    @Autowired private EnergyCompanyRolePropertyDao energyCompanyRolePropertyDao;
     @Autowired private YukonEnergyCompanyService yukonEnergyCompanyService;
     @Autowired private YukonListDao yukonListDao;
     @Autowired private YukonUserDao yukonUserDao;
     @Autowired private GlobalSettingDao globalSettingsDao;
     @Autowired private LiteContactValidator liteContactValidator;
+    @Autowired private EnergyCompanySettingDao energyCompanySettingDao;
     
     @RequestMapping(value = "/consumer/contacts", method = RequestMethod.GET)
     public String index(@ModelAttribute("customerAccount") CustomerAccount customerAccount,
@@ -203,7 +204,7 @@ public class ContactController extends AbstractConsumerController {
 
     	// If Auto Create Login is true AND this is not the primary contact AND there is no login for this contact, create one.
     	YukonEnergyCompany energyCompany =  yukonEnergyCompanyService.getEnergyCompanyByAccountId(account.getAccountId());
-        boolean autoCreateLogin = energyCompanyRolePropertyDao.checkProperty(YukonRoleProperty.AUTO_CREATE_LOGIN_FOR_ADDITIONAL_CONTACTS, energyCompany);
+    	boolean autoCreateLogin = energyCompanySettingDao.checkSetting(EnergyCompanySettingType.AUTO_CREATE_LOGIN_FOR_ADDITIONAL_CONTACTS, energyCompany.getEnergyCompanyId());
         
         if (autoCreateLogin && !contactDao.isPrimaryContact(contact.getContactID()) 
                 && contact.getLoginID() == UserUtils.USER_DEFAULT_ID) {

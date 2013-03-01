@@ -34,8 +34,6 @@ import com.cannontech.common.search.SearchResult;
 import com.cannontech.common.validator.SimpleValidator;
 import com.cannontech.common.validator.YukonValidationUtils;
 import com.cannontech.core.dao.PaoDao;
-import com.cannontech.core.roleproperties.YukonRoleProperty;
-import com.cannontech.core.roleproperties.dao.EnergyCompanyRolePropertyDao;
 import com.cannontech.i18n.YukonMessageSourceResolvable;
 import com.cannontech.stars.core.service.YukonEnergyCompanyService;
 import com.cannontech.stars.database.cache.StarsDatabaseCache;
@@ -55,6 +53,8 @@ import com.cannontech.stars.dr.appliance.service.ApplianceCategoryService;
 import com.cannontech.stars.dr.appliance.service.AssignedProgramService;
 import com.cannontech.stars.dr.hardware.dao.ProgramToAlternateProgramDao;
 import com.cannontech.stars.dr.hardware.model.ProgramToAlternateProgram;
+import com.cannontech.stars.energyCompany.EnergyCompanySettingType;
+import com.cannontech.stars.energyCompany.dao.EnergyCompanySettingDao;
 import com.cannontech.stars.energyCompany.model.YukonEnergyCompany;
 import com.cannontech.stars.service.EnergyCompanyService;
 import com.cannontech.stars.util.ServletUtils;
@@ -87,9 +87,9 @@ public class ApplianceCategoryController {
     @Autowired private EnergyCompanyService energyCompanyService;
     @Autowired private ConfigurationSource configurationSource;
     @Autowired private ProgramToAlternateProgramDao ptapDao;
-    @Autowired private EnergyCompanyRolePropertyDao ecRolePropertyDao;
+    @Autowired private EnergyCompanySettingDao energyCompanySettingDao;
 
-    private Validator detailsValidator = new SimpleValidator<ApplianceCategory>(ApplianceCategory.class) {
+    private final Validator detailsValidator = new SimpleValidator<ApplianceCategory>(ApplianceCategory.class) {
         @Override
         public void doValidation(ApplianceCategory target, Errors errors) {
             String[] requiredFields = new String[] { "name", "displayName" };
@@ -105,7 +105,7 @@ public class ApplianceCategoryController {
         }
     };
 
-    private Validator assignedProgramValidator = new SimpleValidator<AssignProgramBackingBean>(AssignProgramBackingBean.class) {
+    private final Validator assignedProgramValidator = new SimpleValidator<AssignProgramBackingBean>(AssignProgramBackingBean.class) {
         @Override
         public void doValidation(AssignProgramBackingBean assignedProgram, Errors errors) {
             if (assignedProgram.isVirtual()) {
@@ -425,8 +425,8 @@ public class ApplianceCategoryController {
         model.addAttribute("mode", mode);
         model.addAttribute("isEditable", isEditable);
                 
-        if(!bean.isMultiple()){
-            boolean showAlternateEnrollment = ecRolePropertyDao.checkProperty(YukonRoleProperty.ALTERNATE_PROGRAM_ENROLLMENT, yec);
+        if(!bean.isMultiple()) {
+            boolean showAlternateEnrollment = energyCompanySettingDao.checkSetting(EnergyCompanySettingType.ALTERNATE_PROGRAM_ENROLLMENT, yec.getEnergyCompanyId());
             if (showAlternateEnrollment) {
                 /*
                  * Programs that should be excluded from Alternate Enrollment picker
@@ -586,8 +586,8 @@ public class ApplianceCategoryController {
     }
 
     public static class ChanceOfControl {
-        private int chanceOfControlId;
-        private String name;
+        private final int chanceOfControlId;
+        private final String name;
         private ChanceOfControl(int chanceOfControlId, String name) {
             this.chanceOfControlId = chanceOfControlId;
             this.name = name;
