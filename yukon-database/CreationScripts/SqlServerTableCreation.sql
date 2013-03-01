@@ -1,7 +1,7 @@
 /*==============================================================*/
 /* Database name:  YukonDatabase                                */
 /* DBMS name:      Microsoft SQL Server 2005                    */
-/* Created on:     2/27/2013 10:12:10 PM                        */
+/* Created on:     2/28/2013 5:45:32 PM                         */
 /*==============================================================*/
 
 
@@ -4761,6 +4761,21 @@ create table EnergyCompanyOperatorLoginList (
 go
 
 INSERT INTO EnergyCompanyOperatorLoginList VALUES (-1,-1);
+
+/*==============================================================*/
+/* Table: EnergyCompanySetting                                  */
+/*==============================================================*/
+create table EnergyCompanySetting (
+   EnergyCompanySettingId numeric              not null,
+   EnergyCompanyId      numeric              not null,
+   Name                 varchar(100)         not null,
+   Value                varchar(1000)        null,
+   Status               varchar(100)         null,
+   Comments             varchar(1000)        null,
+   LastChangedDate      datetime             null,
+   constraint PK_EnergyCompanySetting primary key (EnergyCompanySettingId)
+)
+go
 
 /*==============================================================*/
 /* Table: EsubDisplayIndex                                      */

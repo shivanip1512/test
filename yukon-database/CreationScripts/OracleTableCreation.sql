@@ -1,7 +1,7 @@
 /*==============================================================*/
 /* Database name:  YukonDatabase                                */
 /* DBMS name:      ORACLE Version 9i                            */
-/* Created on:     2/27/2013 9:58:49 PM                         */
+/* Created on:     2/28/2013 5:49:53 PM                         */
 /*==============================================================*/
 
 
@@ -4527,6 +4527,20 @@ create table EnergyCompanyOperatorLoginList  (
 );
 
 INSERT INTO EnergyCompanyOperatorLoginList VALUES (-1,-1);
+
+/*==============================================================*/
+/* Table: EnergyCompanySetting                                  */
+/*==============================================================*/
+create table EnergyCompanySetting  (
+   EnergyCompanySettingId NUMBER                          not null,
+   EnergyCompanyId      NUMBER                          not null,
+   Name                 VARCHAR2(100)                   not null,
+   Value                VARCHAR2(1000),
+   Status               VARCHAR2(100),
+   Comments             VARCHAR2(1000),
+   LastChangedDate      DATE,
+   constraint PK_EnergyCompanySetting primary key (EnergyCompanySettingId)
+);
 
 /*==============================================================*/
 /* Table: EsubDisplayIndex                                      */
