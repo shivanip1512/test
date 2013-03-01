@@ -86,14 +86,14 @@ BEGIN
             EnergyCompanyId,
             RoleName, 
             CASE
-                WHEN value = null THEN DefaultValue
-                WHEN LTRIM(RTRIM(value)) = '' THEN DefaultValue
+                WHEN value IS NULL THEN DefaultValue
+                WHEN LTRIM(RTRIM(value)) IS NULL THEN DefaultValue
                 WHEN value = '(none)' THEN DefaultValue
                 ELSE value
             END,
             CASE
-                WHEN rpts.Status = 'ALWAYS_SET'THEN rpts.Status
-                WHEN LTRIM(RTRIM(value)) = '' THEN 'UNSET'
+                WHEN rpts.Status = 'ALWAYS_SET' THEN rpts.Status
+                WHEN LTRIM(RTRIM(value)) IS NULL THEN 'UNSET'
                 WHEN value = '(none)' THEN 'UNSET'
                 ELSE 'SET'
             END
