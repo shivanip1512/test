@@ -123,7 +123,7 @@ BEGIN
     
     IF 0 < @count
     BEGIN
-        RAISERROR('There was a problem converting energy company role properties for one or more energy companies. Multiple role groups contained the Energy Company role for an energy company''s primary operator user group, which is not a legal configuration. Please see YUK-11878 for instructions on how to resolve the problem.', 16, 1);
+        RAISERROR('There was a problem converting energy company role properties for one or more energy companies. Multiple role groups contained the Energy Company role for an energy company''s primary operator user group, which is not a legal configuration. Please see YUK-11876 for instructions on how to resolve the problem.', 16, 1);
     END
 END;
 /* @end-block */

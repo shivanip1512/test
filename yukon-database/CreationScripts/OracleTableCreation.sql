@@ -1,7 +1,7 @@
 /*==============================================================*/
 /* Database name:  YukonDatabase                                */
 /* DBMS name:      ORACLE Version 9i                            */
-/* Created on:     2/28/2013 5:49:53 PM                         */
+/* Created on:     3/1/2013 1:38:43 PM                          */
 /*==============================================================*/
 
 
@@ -7983,9 +7983,6 @@ insert into YukonGroupRole values (-1096,-2, -108, -10807, ' ');
 insert into YukonGroupRole values (-1097,-2, -108, -10808, ' ');
 insert into YukonGroupRole values (-1098,-2, -108, -10811, ' ');
 
-/* Give energy company role to system admin group */
-insert into YukonGroupRole values (-1500,-2, -2, -1100, ' ');
-
 /* Give admin super user access to system administrator group */
 insert into YukonGroupRole values (-2000, -2, -200, -20019, 'true');
 
@@ -8590,7 +8587,6 @@ INSERT INTO YukonRole VALUES(-202,'Metering','Operator','Operator access to mete
 /* Operator roles */
 INSERT INTO YukonRole VALUES(-206,'Esubstation Drawings','Operator','Operator access to esubstation drawings');
 INSERT INTO YukonRole VALUES(-207,'Odds For Control','Operator','Operator access to odds for control');
-INSERT INTO YukonRole VALUES(-2,'Energy Company','Operator','Energy company role');
 
 /* Inventory Role */
 INSERT INTO YukonRole VALUES(-209,'Inventory','Operator','Operator Access to hardware inventory');
@@ -8643,31 +8639,6 @@ create table YukonRoleProperty  (
    Description          VARCHAR2(1000)                  not null,
    constraint PK_YUKONROLEPROPERTY primary key (RolePropertyID)
 );
-
-/* Energy Company Role Properties */
-INSERT INTO YukonRoleProperty VALUES(-1100,-2,'admin_email_address','info@cannontech.com','Sender address of emails sent on behalf of energy company, e.g. control odds and opt out notification emails.');
-INSERT INTO YukonRoleProperty VALUES(-1101,-2,'optout_notification_recipients',' ','Recipients of the opt out notification email');
-INSERT INTO YukonRoleProperty VALUES(-1102,-2,'default_time_zone','CST','Default time zone of the energy company');
-INSERT INTO YukonRoleProperty VALUES(-1107,-2,'track_hardware_addressing','false','Controls whether to track the hardware addressing information.');
-INSERT INTO YukonRoleProperty VALUES(-1108,-2,'single_energy_company','true','Indicates whether this is a single energy company system.');
-INSERT INTO YukonRoleProperty VALUES(-1109,-2,'z_optional_product_dev','00000000','This feature is for development purposes only');
-INSERT INTO YukonRoleProperty VALUES(-1110,-2,'Default Temperature Unit','F','Default temperature unit for an energy company, F(ahrenheit) or C(elsius)');
-INSERT INTO YukonRoleProperty VALUES(-1111,-2,'z_meter_mct_base_desig','stars','Allow meters to be used general STARS entries versus Yukon MCTs');
-INSERT INTO YukonRoleProperty VALUES(-1112,-2,'applicable_point_type_key',' ','The name of the set of CICustomerPointData TYPES that should be set for customers.');
-INSERT INTO YukonRoleProperty VALUES(-1114,-2,'Inherit Parent App Cats','true','If part of a member structure, should appliance categories be inherited from the parent.');
-INSERT INTO YukonRoleProperty VALUES(-1115,-2,'Auto Create Login For Additional Contacts','true','Automatically create a default login for each additional contact created on a STARS account.');
-INSERT INTO YukonRoleProperty VALUES(-1116,-2,'Account Number Length',' ','Specifies the number of account number characters to consider for comparison purposes during the customer account import process.'); 
-INSERT INTO YukonRoleProperty VALUES(-1117,-2,'Rotation Digit Length',' ','Specifies the number of rotation digit characters to ignore during the customer account import process.'); 
-INSERT INTO YukonRoleProperty VALUES(-1118,-2,'Serial Number Validation','NUMERIC','Treat serial numbers as numeric or alpha-numberic. Possible values (NUMERIC, ALPHANUMERIC)');
-INSERT INTO YukonRoleProperty VALUES(-1119,-2,'Automatic Configuration','false','Controls whether to automatically send out config command when creating hardware or changing program enrollment.');
-
-INSERT INTO YukonRoleProperty VALUES(-1120, -2, 'Allow Designation Codes', 'false', 'Toggles on or off the regional (usually zip) code option for service companies.');
-INSERT INTO YukonRoleProperty VALUES(-1121, -2, 'Allow Single Day Thermostat Schedules', 'true', 'Allow the use of schedules where every day shares the same values for compatible thermostats.'); 
-INSERT INTO YukonRoleProperty VALUES(-1122, -2, 'Allow 5/2 Thermostat Schedules', 'false', 'Allow the use of 5/2 day schedules for compatible thermostats. Weekday/Weekend.'); 
-INSERT INTO YukonRoleProperty VALUES(-1123, -2, 'Allow 5/1/1 Thermostat Schedules', 'true', 'Allow the use of 5/1/1 schedules for compatible thermostats. Weekday/Saturday/Sunday.'); 
-INSERT INTO YukonRoleProperty VALUES(-1124, -2, 'Allow 7 Day Thermostat Schedules', 'false', 'Allow the use of 7 day schedules (different schedule each day of the week) for compatible thermostats.'); 
-INSERT INTO YukonRoleProperty VALUES(-1125, -2, 'Broadcast Cancel All Opt Out SPID', ' ', 'Which SPID to use when sending the broadcast cancel all opt out command.');
-INSERT INTO YukonRoleProperty VALUES(-1126, -2, 'Alternate Program Enrollment', 'false', 'Enables the use of alternate program enrollments.');
 
 /* Database Editor Role */
 INSERT INTO YukonRoleProperty VALUES(-10000,-100,'point_id_edit','false','Controls whether point ids can be edited');

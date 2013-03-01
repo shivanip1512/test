@@ -120,7 +120,7 @@ BEGIN
     WHERE t.DuplicateCount > 1;
     
     IF 0 < v_count THEN
-        RAISE_APPLICATION_ERROR(-20001, 'There was a problem converting energy company role properties for one or more energy companies. Multiple role groups contained the Energy Company role for an energy company''s primary operator user group, which is not a legal configuration. Please see YUK-11878 for instructions on how to resolve the problem.');
+        RAISE_APPLICATION_ERROR(-20001, 'There was a problem converting energy company role properties for one or more energy companies. Multiple role groups contained the Energy Company role for an energy company''s primary operator user group, which is not a legal configuration. Please see YUK-11876 for instructions on how to resolve the problem.');
     END IF;
 END;
 /
