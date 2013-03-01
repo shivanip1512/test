@@ -16,4 +16,4 @@
     <input type="hidden" name="menuId" value="${pageScope.menuBeanId}"/>
     <jsp:doBody/>
 </div>
-<cm:dropdownActions containerCssClass="ajax-menu" menuCssClass="long-menu-list" key="${pageScope.key}"/>
+<cm:dropdownActions containerCssClass="ajax-menu fr" menuCssClass="long-menu-list" key="${pageScope.key}"/>

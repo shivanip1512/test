@@ -146,7 +146,7 @@
 	</c:choose>
 
     <c:set var="actionsMenu">
-        <cm:dropdownActions>
+        <cm:dropdownActions containerCssClass="fr">
             <c:if test="${collectionFromReportResults != null && filterResult.hitCount > 0}">
                 <li>
                     <cti:link href="/bulk/collectionActions"

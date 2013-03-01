@@ -3,12 +3,15 @@
 <%@ attribute name="nameKey" required="true"%>
 <%@ attribute name="showConfirm" required="false" type="java.lang.String"%>
 <%@ attribute name="hide" type="java.lang.Boolean" %>
+<%@ attribute name="type" description="The type of this element. Either 'button' or 'link'. Defaults to 'button'"%>
 
 <%@ taglib prefix="cti" uri="http://cannontech.com/tags/cti"%>
 <%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core"%>
 <%@ taglib prefix="i" tagdir="/WEB-INF/tags/i18n" %>
 
 <%@ tag  dynamic-attributes="linkParameters" %>
+
+<cti:default var="type" value="button"/>
 
 <c:if test="${!pageScope.hide}">
 	<cti:uniqueIdentifier var="thisId" prefix="widgetAction_"/>
@@ -27,8 +30,15 @@
         <%-- Prepending '.' and appending '.labelBusy' here to stay consistent with the xml key style of cti:button --%>
         <cti:msg2 var="labelBusyText" key=".${nameKey}.labelBusy"/>
     
-        <cti:button nameKey="${nameKey}" id="${buttonId}"/>
-        <script type="text/javascript">
+        <c:choose>
+	        <c:when test="${type == 'button'}">
+	            <cti:button nameKey="${nameKey}" id="${buttonId}"/>
+	        </c:when>
+	        <c:otherwise>
+                <a id="${buttonId}" href="javascript:void(0);"><i:inline key=".${nameKey}.label"/></a>
+	        </c:otherwise>
+        </c:choose>
+        <script>
             jQuery(document.getElementById("${buttonId}")).click(function() {
                 var confirmText = '${cti:escapeJavaScript(pageScope.confirmText)}';
                 var confirmed = true;

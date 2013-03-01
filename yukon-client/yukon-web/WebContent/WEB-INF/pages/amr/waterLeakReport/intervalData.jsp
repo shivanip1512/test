@@ -22,7 +22,7 @@
 
 	<c:if test="${collectionFromReportResults != null && filterResult.hitCount > 0}">
 		<c:set var="actionsMenu">
-			<cm:dropdownActions>
+			<cm:dropdownActions containerCssClass="fr">
 				<li>
                     <cti:link href="/bulk/collectionActions"
                         key="yukon.web.modules.amr.waterLeakReport.report.performCollectionAction">

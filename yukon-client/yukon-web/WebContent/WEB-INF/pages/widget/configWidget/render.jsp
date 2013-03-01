@@ -3,6 +3,7 @@
 <%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core" %>
 <%@ taglib prefix="fn" uri="http://java.sun.com/jsp/jstl/functions" %>
 <%@ taglib prefix="i" tagdir="/WEB-INF/tags/i18n"%>
+<%@ taglib prefix="cm" tagdir="/WEB-INF/tags/contextualMenu" %>
 
 <cti:includeCss link="/WebConfig/yukon/styles/yukon.css"/>
     <div>
@@ -17,14 +18,34 @@
                 </td>
                 <td>
                     <c:if test="${not empty currentConfigId}">
-                        <cti:checkRolesAndProperties value="ASSIGN_CONFIG">
-                            <ct:widgetActionRefresh method="unassignConfig" nameKey="unassign"/>
-                        </cti:checkRolesAndProperties>
-                        <cti:checkRolesAndProperties value="SEND_READ_CONFIG">
-                            <ct:widgetActionUpdate method="sendConfig" nameKey="send" container="${widgetParameters.widgetId}_config_results"/>
-                            <ct:widgetActionUpdate method="readConfig" nameKey="read" container="${widgetParameters.widgetId}_config_results"/>
-                        </cti:checkRolesAndProperties>
-                        <ct:widgetActionUpdate method="verifyConfig" nameKey="verify" container="${widgetParameters.widgetId}_config_results"/>
+						<cm:dropdownActions type="button">
+							<cti:checkRolesAndProperties value="ASSIGN_CONFIG">
+								<li>
+                                    <ct:widgetActionRefresh method="unassignConfig"
+										nameKey="unassign" type="link"/>
+                                </li>
+							</cti:checkRolesAndProperties>
+							<cti:checkRolesAndProperties value="SEND_READ_CONFIG">
+								<li>
+								    <ct:widgetActionUpdate method="sendConfig"
+										nameKey="send"
+										container="${widgetParameters.widgetId}_config_results"
+										type="link"/>
+                                </li>
+								<li>
+								    <ct:widgetActionUpdate method="readConfig"
+										nameKey="read"
+										container="${widgetParameters.widgetId}_config_results"
+										type="link"/>
+                                </li>
+							</cti:checkRolesAndProperties>
+							<li>
+                                <ct:widgetActionUpdate method="verifyConfig"
+									nameKey="verify"
+									container="${widgetParameters.widgetId}_config_results"
+									type="link"/>
+                            </li>
+						</cm:dropdownActions>
                     </c:if>
                 </td>
             </tr>

@@ -9,20 +9,33 @@
 <%@ attribute name="containerCssClass" %>
 <%@ attribute name="menuCssClass" %>
 <%@ attribute name="key" %>
+<%@ attribute name="type" description="The type of this element. Either 'button', 'link', or 'cog'. Defaults to 'cog'. 'link' and 'button' require a 'key'"%>
 
 <cti:includeScript link="/JavaScript/dropdown_actions.js"/>
 
-<c:if test="${not empty pageScope.key}">
-    <c:set var="textClass" value="with-text"/>
+<cti:default var="type" value="cog"/>
+
+<c:if test="${type == 'link' && not empty pageScope.key}">
+    <c:set var="containerClass" value="with-text"/>
+</c:if>
+<c:if test="${type == 'cog'}">
+    <c:set var="containerClass" value="with-cog"/>
 </c:if>
 
-<div class="dropdown-container ${textClass} usn ${pageScope.containerCssClass}">
+<div class="dropdown-container ${containerClass} usn ${pageScope.containerCssClass}">
     <c:choose>
-	    <c:when test="${not empty pageScope.key}">
+	    <c:when test="${type == 'link' && not empty pageScope.key}">
 	        <a class="text_with_chevron">
 	            <span><cti:msg2 key="${pageScope.key}"/></span>
 	            <span class="arrow-down"></span>
 	        </a>
+	    </c:when>
+	    <c:when test="${type == 'button'}">
+            <cti:default var="key" value="yukon.web.defaults.actions"/>
+	        <button class="text_with_chevron">
+	            <span><cti:msg2 key="${pageScope.key}"/></span>
+	            &nbsp;<span class="arrow-down"></span>
+	        </button>
 	    </c:when>
 	    <c:otherwise>
 		    <a class="icon icon_with_chevron cog">
