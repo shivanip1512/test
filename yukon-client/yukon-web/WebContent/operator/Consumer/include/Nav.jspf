@@ -1,6 +1,7 @@
 <%@ page import="com.cannontech.stars.database.data.hardware.MeterHardwareBase" %>
 <%@page import="com.cannontech.spring.YukonSpringHook"%>
 <%@page import="com.cannontech.stars.energyCompany.dao.EnergyCompanySettingDao"%>
+<%@page import="com.cannontech.stars.energyCompany.EnergyCompanySettingType"%>
 
 <%
     final EnergyCompanySettingDao energyCompanySettingDao = YukonSpringHook.getBean(EnergyCompanySettingDao.class);
