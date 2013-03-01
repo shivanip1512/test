@@ -158,7 +158,6 @@ public class RawExpressComCommandBuilderImpl implements RawExpressComCommandBuil
     private ByteBuffer getExpressComForConfigCommand(LmHardwareCommand parameters) {
         ByteBuffer configCommand = ByteBuffer.allocate(1024);
         YukonEnergyCompany yec = yukonEnergyCompanyService.getEnergyCompanyByInventoryId(parameters.getDevice().getInventoryID());
-//        boolean trackAddressing = ecRolePropertyDao.getPropertyBooleanValue(YukonRoleProperty.TRACK_HARDWARE_ADDRESSING, yec);
         boolean trackAddressing = energyCompanySettingDao.getBoolean(EnergyCompanySettingType.TRACK_HARDWARE_ADDRESSING, yec.getEnergyCompanyId());
 
         // Either we have track hardware addressing on or we need a group/appliance category.
@@ -168,33 +167,6 @@ public class RawExpressComCommandBuilderImpl implements RawExpressComCommandBuil
             if (config == null) {
                 throw new BadConfigurationException("There is no configuration saved for serial #" + parameters.getDevice().getDeviceID() + ".");
             }
-            String[] programs = config.getExpressCom().getProgram().split(",");
-            String[] splinters = config.getExpressCom().getSplinter().split(",");
-            ByteBuffer loadBuffer = ByteBuffer.allocate(1024);
-            byte xcomAddressField = 0;
-            // TODO: Handle varying program/splinter config between loads.
-            /*
-            for (int loadNo = 1; loadNo <= 8; loadNo++) {
-                int prog = 0;
-                if (programs.length >= loadNo && programs[loadNo - 1].length() > 0) {
-                    prog = Integer.parseInt(programs[loadNo - 1]);
-                }
-                int splt = 0;
-                if (splinters.length >= loadNo && splinters[loadNo - 1].length() > 0) {
-                    splt = Integer.parseInt(splinters[loadNo - 1]);
-                }
-
-                if (prog > 0) {
-                    xcomAddressField |= 0x20; 
-                    //loadBuffer.put((byte) config.getProgramID().intValue());
-                }
-                if (splt > 0) {
-                    xcomAddressField |= 0x10; 
-                    //loadBuffer.put((byte) group.getSplinterID().intValue()); 
-                }
-             
-            }
-            */
         } else if (!trackAddressing) {
             Integer optionalGroupId = null;
             Object param = parameters.findParam(LmHardwareCommandParam.OPTIONAL_GROUP_ID,

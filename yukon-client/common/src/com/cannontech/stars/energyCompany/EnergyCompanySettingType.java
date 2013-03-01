@@ -12,6 +12,7 @@ import static com.cannontech.stars.energyCompany.model.SettingStatus.UNSET;
 import com.cannontech.common.i18n.DisplayableEnum;
 import com.cannontech.core.roleproperties.InputTypeFactory;
 import com.cannontech.core.roleproperties.enums.SerialNumberValidation;
+import com.cannontech.enums.TemperatureUnit;
 import com.cannontech.stars.energyCompany.model.SettingCategory;
 import com.cannontech.stars.energyCompany.model.SettingStatus;
 import com.cannontech.web.input.type.InputType;
@@ -31,7 +32,7 @@ public enum EnergyCompanySettingType implements DisplayableEnum {
     ADMIN_ALLOW_THERMOSTAT_SCHEDULE_WEEKDAY_WEEKEND(HARDWARE, ALWAYS_SET, booleanType(), false),
     ADMIN_ALLOW_THERMOSTAT_SCHEDULE_7_DAY(HARDWARE, ALWAYS_SET, booleanType(), false),
     ADMIN_ALLOW_THERMOSTAT_SCHEDULE_ALL(HARDWARE, ALWAYS_SET, booleanType(), true),
-    DEFAULT_TEMPERATURE_UNIT(HARDWARE, ALWAYS_SET, stringType(), "F"),
+    DEFAULT_TEMPERATURE_UNIT(HARDWARE, ALWAYS_SET,  InputTypeFactory.enumType(TemperatureUnit.class), TemperatureUnit.F),
     METER_MCT_BASE_DESIGNATION(HARDWARE, ALWAYS_SET, InputTypeFactory.enumType(MeteringType.class), MeteringType.stars),
     SERIAL_NUMBER_VALIDATION(HARDWARE, ALWAYS_SET, InputTypeFactory.enumType(SerialNumberValidation.class), SerialNumberValidation.NUMERIC),
     TRACK_HARDWARE_ADDRESSING(HARDWARE, ALWAYS_SET, booleanType(), false),
