@@ -245,5 +245,8 @@ std::string inputStrings[] = {
 "putconfig emetcon parameters lcd cycle time 13 lcd display digits 6x1",
 "putconfig emetcon parameters lcd cycle time 13 lcd display digits 7x1",
 "getconfig configuration",
+//  220
+"putconfig xcom data 'Offpeak rate:6.5*CENTSSIGN*/kWh' msgpriority 7 timeout 150 min",
+"putconfig xcom data 'Offpeak rate:6.5*C*/kWh' msgpriority 7 timeout 150 min",
 };
 

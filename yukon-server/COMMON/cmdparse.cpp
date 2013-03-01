@@ -4144,11 +4144,7 @@ void CtiCommandParser::resolveProtocolType(const string &_CmdStr)
     {
         if( isKeyValid("serial") )
         {
-            if(CmdStr.contains("fp"))            // Sourcing from CmdStr, which is the entire command string.
-            {
-                _cmd["type"] = CtiParseValue( "fp",  ProtocolFisherPierceType );
-            }
-            else if(CmdStr.contains("golay"))       // Sourcing from CmdStr, which is the entire command string.
+            if(CmdStr.contains("golay"))       // Sourcing from CmdStr, which is the entire command string.
             {
                 _cmd["type"] = CtiParseValue( "golay", ProtocolGolayType );
             }
@@ -4181,6 +4177,10 @@ void CtiCommandParser::resolveProtocolType(const string &_CmdStr)
                 //  _cmd["type"] = CtiParseValue( "emetcon",  ProtocolEmetconType );
 
                 _cmd["type"] = CtiParseValue( "versacom", ProtocolVersacomType );
+            }
+            else if(CmdStr.contains("fp"))            // Sourcing from CmdStr, which is the entire command string.
+            {
+                _cmd["type"] = CtiParseValue( "fp",  ProtocolFisherPierceType );
             }
             else
             {
@@ -5213,6 +5213,9 @@ void  CtiCommandParser::doParsePutConfigExpresscom(const string &_CmdStr)
         _cmd["xcascii"] = CtiParseValue(TRUE);
         if(!(str = token.match((const boost::regex) str_quoted_token)).empty() )
         {
+            boost::regex centSignWorkaround("[/*]CENTSSIGN[/*]"); //Workaround for our improper ascii conversions
+            str.replace(centSignWorkaround, "¢");
+
             _cmd["xcdata"] = CtiParseValue(str.substr(1, str.length() - 2));
         }
         if(!(temp = CmdStr.match((const boost::regex) ( CtiString("port ") + str_num) ) ).empty())

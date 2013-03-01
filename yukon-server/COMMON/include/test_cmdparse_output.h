@@ -244,4 +244,7 @@ std::string parse_asString[] = {
 "command=6:flags=0::lcd display digits=6x1,-2147483648,0.000:lcd_cycle_time=(none),13,13.000:type=emetcon,7,7.000",
 "command=6:flags=0::lcd_cycle_time=(none),13,13.000:type=emetcon,7,7.000",
 "command=5:flags=0::configuration=(none),1,1.000:type=versacom,0,0.000",
+//  220
+"command=6:flags=0::type=expresscom,8,8.000:xcascii=(none),1,1.000:xcdata=Offpeak rate:6.5¢/kWh,-2147483648,0.000:xcdatapriority=(none),7,7.000:xcdatatimeout=(none),150,150.000",
+"command=6:flags=0::type=expresscom,8,8.000:xcascii=(none),1,1.000:xcdata=Offpeak rate:6.5*C*/kWh,-2147483648,0.000:xcdatapriority=(none),7,7.000:xcdatatimeout=(none),150,150.000",
 };
