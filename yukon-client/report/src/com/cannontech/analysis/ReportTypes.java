@@ -32,6 +32,7 @@ public enum ReportTypes implements DisplayableEnum {
     MCT_CONFIG(MCTConfigController.class, ReportGroup.METERING),
     DISCONNECT_COLLAR_DATA(DisconnectCollarController.class, ReportGroup.METERING),
     SCAN_RATE_SETUP_DATA(ScanRateSetupDBModel.class, ReportGroup.METERING),
+    METER_READ_PERCENTAGE(MeterReadPercentageController.class, ReportGroup.METERING),
         
     LM_SYSTEM_LOG(LMControlLogModel.class, ReportGroup.LOAD_MANAGEMENT),
     LG_ACCOUNTING(LoadGroupModel.class, ReportGroup.LOAD_MANAGEMENT),

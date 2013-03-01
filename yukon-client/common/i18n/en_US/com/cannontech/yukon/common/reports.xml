@@ -65,6 +65,8 @@
 <entry key="yukon.web.reportTypes.DISCONNECT_COLLAR_DATA.description">Utility report for meters with disconnect collar assignments; includes meter information and collar address.</entry>
 <entry key="yukon.web.reportTypes.SCAN_RATE_SETUP_DATA">Scan Rate Setup Data</entry>
 <entry key="yukon.web.reportTypes.SCAN_RATE_SETUP_DATA.description">Utility report for meters and scanning configurations; includes meter information and scan intervals (as defined in meter setup).</entry>
+<entry key="yukon.web.reportTypes.METER_READ_PERCENTAGE">Meter Reading Percentage Report</entry>
+<entry key="yukon.web.reportTypes.METER_READ_PERCENTAGE.description">Report successful reading percentage, number of successful devices, missed devices, disabled devices and devices that have not yet joined the network in the group.</entry>
 
 <entry key="yukon.web.reportTypes.LM_SYSTEM_LOG">Load Management System Log</entry>
 <entry key="yukon.web.reportTypes.LM_SYSTEM_LOG.description">Detailed report of load management actions, including username and time, which have occurred in the Yukon database.</entry>
