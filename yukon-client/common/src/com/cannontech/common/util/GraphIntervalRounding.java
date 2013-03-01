@@ -7,10 +7,13 @@ public class GraphIntervalRounding {
     /**
      * Rounds up a given number based on a passed in precision and returns that number in
      * BigDecimal format.
+     * Passed in number should be greater than 0. If a number is passed in
+     * that is <= 0, then new BigDecimal(0) is returned.
      * Precision should be greater than 1.<br>
      * <br>
      * <b>Examples:</b><br>
      * <br>
+     * roundUp(-1.5, 2.0); --> 0.0 (This is the case for any negative value and any precision)<br><br>
      * roundUp(0.0, 2.0); --> 0.0 (This is the case for any precision)<br><br>
      * roundUp(0.00534, 2.0); --> 0.006<br>
      * roundUp(0.00534, 2.5); --> 0.0075<br>
@@ -26,7 +29,7 @@ public class GraphIntervalRounding {
      * @param precision
      */
     public static BigDecimal roundUp(double number, double precision) {
-        if (number == 0) {
+        if (number <= 0) {
             BigDecimal zeroResult = new BigDecimal(0);
             return zeroResult;
         }

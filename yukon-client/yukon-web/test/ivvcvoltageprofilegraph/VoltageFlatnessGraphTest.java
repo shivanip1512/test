@@ -99,6 +99,23 @@ public class VoltageFlatnessGraphTest {
     }
 
     @Test
+    public void test_calculateBucketSizeNegativeNum_1() {
+        Double num = -1.5;
+        BigDecimal rounded = GraphIntervalRounding.roundUp(num, 2);
+        Double result = rounded.doubleValue();
+        Double expected = 0.0;
+        Assert.assertEquals(expected, result);
+    }
+    @Test
+    public void test_calculateBucketSizeNegativeNum_2() {
+        Double num = -111.5;
+        BigDecimal rounded = GraphIntervalRounding.roundUp(num, 2);
+        Double result = rounded.doubleValue();
+        Double expected = 0.0;
+        Assert.assertEquals(expected, result);
+    }
+
+    @Test
     public void test_calculateAllBuckets_0() {
         Double num = 0.0;
         BigDecimal bucketSize = GraphIntervalRounding.roundUp(num, 2);
