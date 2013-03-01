@@ -111,6 +111,12 @@ public abstract class CronTagStyleHandlerBase implements CronTagStyleHandler {
 			}
 		}
 		
+		// hours field must not have - . Example: 0 0 15-18 ? * * (hours: 15,16,17,18)
+        String hourStr = parts[2];
+        if (!NumberUtils.isDigits(hourStr)) {
+            return true;
+        }
+		
 		// must be multiple of 5
 		String minuteStr = parts[1];
 		if (!NumberUtils.isDigits(minuteStr)) {
@@ -120,7 +126,7 @@ public abstract class CronTagStyleHandlerBase implements CronTagStyleHandler {
 				return true;
 			}
 		}
-		
+				
 		return false;
 	}
 	
