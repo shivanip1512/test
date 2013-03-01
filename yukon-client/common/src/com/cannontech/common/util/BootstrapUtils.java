@@ -157,8 +157,7 @@ public class BootstrapUtils {
      * <li>The main web application essentially hard-codes it here as "Webserver".</li>
      * <li>Most Java applications (e.g. the swing clients or Yukon Service Manager call
      * {@link #setApplicationName(String)} to set it on start-up.</li>
-     * <li>In a web application like the EIM server, it should be set in the context file (api.xml
-     * in this case).</li>
+     * <li>In a web application like the EIM server, it should be set in web.xml.</li>
      * </ul>
      */
     public final static String getApplicationName() {

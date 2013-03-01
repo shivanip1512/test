@@ -1,4 +1,3 @@
 <Context path="/api" docBase="C:\Yukon\Server\Extras\Enterprise Integration Module\api.war">
     <Environment name="yukon.base" value="C:\Yukon" type="java.lang.String" override="false"/>
-    <Parameter name="cti.app.name" value="eim" override="false"/> 
 </Context>
