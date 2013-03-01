@@ -175,7 +175,7 @@
     <entry key="yukon.common.events.hardware.twoWayHardwareCreationAttempted">The user {1} is attempting to create the two way device {2}.  They are attempting this through source: {3}.</entry>
     <entry key="yukon.common.events.hardware.assigningHardwareAttempted">The user {1} is attempting to assign the hardware {3} to the account {2}.</entry>
     <entry key="yukon.common.events.hardware.hardwareAdditionAttempted">The user {1} is attempting to add the device {3} to the account {2}.</entry>
-    <entry key="yukon.common.events.hardware.hardwareDeletionAttempte">The user {1} is attempting to delete the device {2}.  They are attempting this through source: {3}.</entry>
+    <entry key="yukon.common.events.hardware.hardwareDeletionAttempted">The user {1} is attempting to delete the device {2}.  They are attempting this through source: {3}.</entry>
     <entry key="yukon.common.events.hardware.hardwareRemovalAttempted">The user {1} is attempting to delete the device {2} from account number {3}.  They are attempting this through source: {4}.</entry>
     <entry key="yukon.common.events.hardware.hardwareUpdateAttempted">The user {1} is attempting to delete the device {3} from the account {2}.  They are attempting this through source: {4}.</entry>
     

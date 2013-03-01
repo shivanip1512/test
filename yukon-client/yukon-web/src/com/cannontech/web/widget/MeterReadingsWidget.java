@@ -54,6 +54,7 @@ public class MeterReadingsWidget extends WidgetControllerBase {
         this.previousReadingsAttributeToShow = previousReadingsAttributeToShow;
     }
     
+    @Override
     public ModelAndView render(HttpServletRequest request, HttpServletResponse response)
             throws ServletRequestBindingException {
 
@@ -97,7 +98,7 @@ public class MeterReadingsWidget extends WidgetControllerBase {
         return mav;
     }
     
-    public ModelAndView read(HttpServletRequest request, HttpServletResponse response, LiteYukonUser user)
+    public ModelAndView read(HttpServletRequest request, HttpServletResponse response)
     throws ServletRequestBindingException {
         
         Meter meter = widgetHelper.getMeter(request);
@@ -105,7 +106,8 @@ public class MeterReadingsWidget extends WidgetControllerBase {
         
         // allExisting is a copy...
         allExistingAttributes.retainAll(attributesToShow);
-
+        
+        LiteYukonUser user = ServletUtil.getYukonUser(request);
         meteringEventLogService.readNowPushedForReadingsWidget(user, meter.getDeviceId());
         
         return widgetHelper.initiateRead(request, 
