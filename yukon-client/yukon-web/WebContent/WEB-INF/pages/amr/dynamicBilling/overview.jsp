@@ -75,9 +75,9 @@ function unfreeze(){ //used to enable or disable buttons
              </select>
         </div>
         <div class="equalWidthButtons">
-            <input type="button" id="create" name="create" value="<cti:msg2 key=".create"/> YUKYUKYUKYUKYUK" onclick="createButton();">
+            <input type="button" id="create" name="create" value="<cti:msg2 key=".create"/>" onclick="createButton();">
             <input type="button" id="edit" name="edit" value="<cti:msg2 key=".edit"/>" onclick="editButton();" disabled="disabled">
-            <input type="button" id="copy" name="copy" value="<cti:msg2 key=".copy"/> YUKYUKYUKYUKYUK" onclick="copyButton();" disabled="disabled">
+            <input type="button" id="copy" name="copy" value="<cti:msg2 key=".copy"/>" onclick="copyButton();" disabled="disabled">
             <input type="button" id="delete" name="delete" value="<cti:msg2 key=".delete"/>" onclick="deleteButton();" disabled="disabled">
         </div>
     </div>
