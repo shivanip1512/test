@@ -70,7 +70,7 @@ function changeStatus(form) {
                     <td valign="top" bgcolor="#FFFFFF"> 
                       <table width="360" border="0" cellspacing="0" cellpadding="3" align="center" class="TableCell">
 <%
-	String autoGen = liteEC.getEnergyCompanySetting(ConsumerInfoRole.ORDER_NUMBER_AUTO_GEN);
+	String autoGen = liteEC.getRoleProperty(ConsumerInfoRole.ORDER_NUMBER_AUTO_GEN);
 	if (autoGen == null || CtiUtilities.isFalse(autoGen)) {
 %>
                         <tr> 

@@ -374,7 +374,14 @@ public class LiteStarsEnergyCompany extends LiteBase implements YukonEnergyCompa
         
         return adminEmail;
     }
-    
+
+    public String getRoleProperty(int rolePropertyID) {
+        String value = DaoFactory.getAuthDao().getRolePropertyValue(user, rolePropertyID);
+        if (value != null && value.equalsIgnoreCase(CtiUtilities.STRING_NONE))
+            value = "";
+        return value;
+    }
+
     public LiteYukonGroup getOperatorAdminGroup() {
         if (operDftGroupID < YukonGroup.EDITABLE_MIN_GROUP_ID) {
 
