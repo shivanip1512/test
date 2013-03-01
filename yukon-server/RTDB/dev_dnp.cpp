@@ -23,28 +23,6 @@
 using namespace std;
 using namespace Cti::Config;
 
-std::set<long> parseCsvLongs(const std::string &csv)
-{
-    boost::char_separator<char> sep(",");
-    Boost_char_tokenizer tok(csv, sep);
-    Boost_char_tokenizer::iterator tok_iter = tok.begin();
-
-    string id_str;
-    long   id;
-
-    set<long> longs;
-
-    while( (tok_iter != tok.end()) && !(id_str = *tok_iter++).empty() )
-    {
-        if( id = atol(id_str.c_str()) )
-        {
-            longs.insert(id);
-        }
-    }
-
-    return longs;
-}
-
 namespace Cti {
 namespace Devices {
 
@@ -373,7 +351,12 @@ INT DnpDevice::ExecuteRequest(CtiRequestMsg *pReq, CtiCommandParser &parse, OUTM
 
                     if( const boost::optional<CtiTablePointStatusControl> controlParameters = pStatus->getControlParameters() )
                     {
-                        controlTimeout = controlParameters->getCommandTimeout();
+                        const int dbCommandTimeout = controlParameters->getCommandTimeout();
+
+                        if( dbCommandTimeout > 0 )
+                        {
+                            controlTimeout = dbCommandTimeout;
+                        }
                     }
 
                     OutMessage->ExpirationTime = CtiTime().seconds() + controlTimeout;
@@ -517,8 +500,8 @@ INT DnpDevice::ExecuteRequest(CtiRequestMsg *pReq, CtiCommandParser &parse, OUTM
                         {
                             {
                                 CtiLockGuard<CtiLogger> doubt_guard(dout);
-                                dout << CtiTime() << " **** Checkpoint - control inhibited for device \"" << getName() << 
-                                        "\" point \"" << pAnalog->getName() << "\" in DNP::ExecuteRequest() **** " << 
+                                dout << CtiTime() << " **** Checkpoint - control inhibited for device \"" << getName() <<
+                                        "\" point \"" << pAnalog->getName() << "\" in DNP::ExecuteRequest() **** " <<
                                         __FILE__ << " (" << __LINE__ << ")" << endl;
                             }
 
@@ -528,7 +511,7 @@ INT DnpDevice::ExecuteRequest(CtiRequestMsg *pReq, CtiCommandParser &parse, OUTM
 
                             return ControlInhibitedOnPoint;
                         }
-                        else 
+                        else
                         {
                             if( const CtiTablePointControl *control = pAnalog->getControl() )
                             {
