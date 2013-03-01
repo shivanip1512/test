@@ -42,13 +42,13 @@ import com.google.common.collect.Lists;
 
 public class AccountThermostatScheduleDaoImpl implements AccountThermostatScheduleDao {
 
-    private AccountEventLogService accountEventLogService;
-    private CustomerAccountDao customerAccountDao;
-	private NextValueHelper nextValueHelper;
-    private YukonJdbcTemplate yukonJdbcTemplate;
-    private AccountThermostatScheduleEntryDao accountThermostatScheduleEntryDao;
-    private ECMappingDao ecMappingDao;
-    private ThermostatService thermostatService;
+    @Autowired private AccountEventLogService accountEventLogService;
+    @Autowired private AccountThermostatScheduleEntryDao accountThermostatScheduleEntryDao;
+    @Autowired private CustomerAccountDao customerAccountDao;
+    @Autowired private ECMappingDao ecMappingDao;
+    @Autowired private NextValueHelper nextValueHelper;
+    @Autowired private ThermostatService thermostatService;
+    @Autowired private YukonJdbcTemplate yukonJdbcTemplate;
     
     private SimpleTableAccessTemplate<AccountThermostatSchedule> accountThermostatScheduleTemplate;
     
@@ -171,6 +171,14 @@ public class AccountThermostatScheduleDaoImpl implements AccountThermostatSchedu
                                                          ats.getScheduleName());
 	}
     
+    @Override
+    @Transactional
+    public void deleteByThermostatScheduleIds(Iterable<Integer> thermostatScheduleIds) {
+        for (Integer thermostatScheduleId : thermostatScheduleIds) {
+            deleteById(thermostatScheduleId);
+        }
+    }
+
 	// DELETE ALL BY ACCOUNT ID
 	@Override
 	@Transactional
@@ -518,40 +526,4 @@ public class AccountThermostatScheduleDaoImpl implements AccountThermostatSchedu
 			return (new Integer(o1.getStartTime())).compareTo(new Integer(o2.getStartTime()));
 		}
 	};
-    
-    
-	@Autowired
-	public void setAccountEventLogService(AccountEventLogService accountEventLogService) {
-        this.accountEventLogService = accountEventLogService;
-    }
-	
-	@Autowired
-	public void setCustomerAccountDao(CustomerAccountDao customerAccountDao) {
-        this.customerAccountDao = customerAccountDao;
-    }
-	
-    @Autowired
-    public void setNextValueHelper(NextValueHelper nextValueHelper) {
-		this.nextValueHelper = nextValueHelper;
-	}
-    
-    @Autowired
-    public void setYukonJdbcTemplate(YukonJdbcTemplate yukonJdbcTemplate) {
-		this.yukonJdbcTemplate = yukonJdbcTemplate;
-	}
-    
-    @Autowired
-    public void setAccountThermostatScheduleEntryDao(AccountThermostatScheduleEntryDao accountThermostatScheduleEntryDao) {
-		this.accountThermostatScheduleEntryDao = accountThermostatScheduleEntryDao;
-	}
-    
-    @Autowired
-    public void setEcMappingDao(ECMappingDao ecMappingDao) {
-		this.ecMappingDao = ecMappingDao;
-	}
-    
-    @Autowired
-    public void setThermostatService(ThermostatService thermostatService){
-        this.thermostatService = thermostatService;
-    }
 }

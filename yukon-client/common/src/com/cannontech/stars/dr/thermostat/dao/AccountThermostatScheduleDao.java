@@ -34,6 +34,11 @@ public interface AccountThermostatScheduleDao {
 	public void deleteById(int atsId);
 	
 	/**
+	 * Deletes all of the thermostat schedule ids supplied.
+	 */
+    public void deleteByThermostatScheduleIds(Iterable<Integer> thermostatScheduleIds);
+	
+	/**
 	 * Deletes all of the AccountThermostatSchedule (and all of its associated date such as entries and account/inventory links) 
 	 * associated with the given accountId.
 	 */

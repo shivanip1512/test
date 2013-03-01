@@ -309,16 +309,15 @@ public interface AccountEventLogService {
 
     @YukonEventLog(transactionality=ExecutorTransactionality.FORCED, category="stars.account.thermostat")
     public void thermostatScheduleSendAttempted(@Arg(ArgEnum.username) LiteYukonUser yukonUser,
-                                                            @Arg(ArgEnum.serialNumber) String serialNumber,
-                                                            @Arg(ArgEnum.scheduleName) String scheduleName,
-                                                            @Arg(ArgEnum.eventSource) EventSource source);
+                                                @Arg(ArgEnum.serialNumber) String serialNumber,
+                                                @Arg(ArgEnum.scheduleName) String scheduleName,
+                                                @Arg(ArgEnum.eventSource) EventSource source);
 
     @YukonEventLog(transactionality=ExecutorTransactionality.FORCED, category="stars.account.thermostat")
     public void thermostatScheduleDeleteAttempted(@Arg(ArgEnum.username) LiteYukonUser yukonUser,
                                                             @Arg(ArgEnum.accountNumber) String accountNumber, 
                                                             @Arg(ArgEnum.scheduleName) String scheduleName,
                                                             @Arg(ArgEnum.eventSource) EventSource source);
-
 
     @YukonEventLog(transactionality=ExecutorTransactionality.FORCED, category="stars.account.thermostat")
     public void thermostatRunProgramAttempted(@Arg(ArgEnum.username) LiteYukonUser yukonUser,

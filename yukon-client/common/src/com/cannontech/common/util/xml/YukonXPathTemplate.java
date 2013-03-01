@@ -10,7 +10,6 @@ import com.cannontech.common.temperature.CelsiusTemperature;
 import com.cannontech.common.temperature.FahrenheitTemperature;
 import com.cannontech.common.temperature.Temperature;
 import com.cannontech.common.temperature.TemperatureUnit;
-import com.cannontech.common.util.EnumUtils;
 
 public class YukonXPathTemplate extends SimpleXPathTemplate {
 
@@ -41,25 +40,16 @@ public class YukonXPathTemplate extends SimpleXPathTemplate {
      * @throws XPathException
      */
     public <E extends Enum<E>> E evaluateAsEnum(String expression, Class<E> enumClass) throws XPathException {
-        String originalStringValue = evaluateAsString(expression);
-        if (StringUtils.isEmpty(originalStringValue)) {
+        String enumString = evaluateAsString(expression);
+        if (StringUtils.isEmpty(enumString)) {
             return null;
         }
 
-        String stringValue = EnumUtils.convertToEnumFormat(originalStringValue);
-
-        // Try getting the value from the enum
         try {
-            return Enum.valueOf(enumClass, stringValue);
-        } catch (IllegalArgumentException e) {}
-        
-        // See if there is an xmlRepresentation of this value.
-        E enumValue = XmlUtils.findEnumFromXmlRepresentation(originalStringValue, enumClass);
-        if (enumValue != null) {
-            return enumValue;
+            return XmlUtils.convertXmlRepresentionToEnum(enumString, enumClass);
+        } catch (IllegalArgumentException e) {
+            throw new XPathException(enumString + " is not a legal representation");
         }
-        
-        throw new XPathException(stringValue + " is not a legal representation of " + enumClass);
     }
 
     /**

@@ -19,10 +19,11 @@ import com.cannontech.common.pao.PaoType;
 import com.cannontech.common.pao.definition.model.PointIdentifier;
 import com.cannontech.common.util.DatabaseRepresentationSource;
 import com.cannontech.database.data.point.PointType;
-import com.google.common.base.Function;
+import com.google.common.cache.CacheBuilder;
+import com.google.common.cache.CacheLoader;
+import com.google.common.cache.LoadingCache;
 import com.google.common.collect.ImmutableMap;
 import com.google.common.collect.ImmutableMap.Builder;
-import com.google.common.collect.MapMaker;
 
 public class YukonResultSet {
     private ResultSet rs;
@@ -137,28 +138,29 @@ public class YukonResultSet {
         return ISOPeriodFormat.standard().parsePeriod(periodStr);
     }
 
-    private static Map<Class<Enum<?>>, Map<String, Enum<?>>> enumValueLookup = 
-        new MapMaker().concurrencyLevel(10).makeComputingMap(new Function<Class<Enum<?>>, Map<String, Enum<?>>>() {
-            public Map<String, Enum<?>> apply(Class<Enum<?>> from) {
-                Enum<?>[] enumConstants = from.getEnumConstants();
-                Builder<String, Enum<?>> builder = ImmutableMap.builder();
-                for (Enum<?> enum1 : enumConstants) {
-                    DatabaseRepresentationSource drs = (DatabaseRepresentationSource) enum1;
-                    Object databaseRepresentation = drs.getDatabaseRepresentation();
-                    String stringRepresentation;
-                    if (databaseRepresentation instanceof Number) {
-                        long longValue = ((Number) databaseRepresentation).longValue();
-                        stringRepresentation = Long.toString(longValue);
-                    } else if (databaseRepresentation instanceof String){
-                        stringRepresentation = databaseRepresentation.toString();
-                    } else {
-                        throw new UnsupportedOperationException("DatabaseRepresentationSource for " + from + " returned a non-Number, non-String for " + enum1);
+    private static LoadingCache<Class<Enum<?>>, Map<String, Enum<?>>> enumValueLookup = 
+            CacheBuilder.newBuilder().concurrencyLevel(10).build(new CacheLoader<Class<Enum<?>>, Map<String, Enum<?>>>() {
+                @Override
+                public Map<String, Enum<?>> load(Class<Enum<?>> key) throws Exception {
+                    Enum<?>[] enumConstants = key.getEnumConstants();
+                    Builder<String, Enum<?>> builder = ImmutableMap.builder();
+                    for (Enum<?> enum1 : enumConstants) {
+                        DatabaseRepresentationSource drs = (DatabaseRepresentationSource) enum1;
+                        Object databaseRepresentation = drs.getDatabaseRepresentation();
+                        String stringRepresentation;
+                        if (databaseRepresentation instanceof Number) {
+                            long longValue = ((Number) databaseRepresentation).longValue();
+                            stringRepresentation = Long.toString(longValue);
+                        } else if (databaseRepresentation instanceof String){
+                            stringRepresentation = databaseRepresentation.toString();
+                        } else {
+                            throw new UnsupportedOperationException("DatabaseRepresentationSource for " + key + " returned a non-Number, non-String for " + enum1);
+                        }
+                        builder.put(stringRepresentation, enum1);
                     }
-                    builder.put(stringRepresentation, enum1);
+                    return builder.build();
                 }
-                return builder.build();
-            }
-    });
+        });
     
     /**
      * This method will attempt to return the Enum that may be stored in a column. There are two specific
@@ -181,7 +183,8 @@ public class YukonResultSet {
         }
         E result;
         if (DatabaseRepresentationSource.class.isAssignableFrom(enumClass)) {
-            Map<String, Enum<?>> map = enumValueLookup.get(enumClass);
+            @SuppressWarnings("unchecked") // This cast is needed since the LoadingCache class uses k and not ? extends k.  When they fix that we can remove this suppress warning.
+            Map<String, Enum<?>> map = enumValueLookup.getUnchecked((Class<Enum<?>>) enumClass);
             Enum<?> enum1 = map.get(stringValue);
             result = enumClass.cast(enum1);
         } else {
@@ -198,6 +201,4 @@ public class YukonResultSet {
     public boolean wasNull() throws SQLException {
         return rs.wasNull();
     }
-    
-    
 }

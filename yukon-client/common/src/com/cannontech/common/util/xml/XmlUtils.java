@@ -14,6 +14,7 @@ import javax.xml.transform.TransformerFactory;
 
 import org.apache.commons.lang.StringUtils;
 import org.apache.commons.lang.Validate;
+import org.apache.commons.lang.WordUtils;
 import org.jdom.Document;
 import org.jdom.Element;
 import org.jdom.JDOMException;
@@ -140,10 +141,49 @@ public class XmlUtils {
     }
 
     /**
+     * This method translates the supplied enumString into the enum supplied
+     * 
+     * @throws IllegalArgumentException the enumString is not a valid representation of the enum class.
+     */
+    public static <E extends Enum<E>> E  convertXmlRepresentionToEnum(String enumString, Class<E> enumClass) throws IllegalArgumentException {
+        
+        // Try getting the value from the enum
+        try {
+            String stringValue = convertReadableToEnum(enumString);
+            return Enum.valueOf(enumClass, stringValue);
+        } catch (IllegalArgumentException e) {}
+        
+        // See if there is an xmlRepresentation of this value.
+        E enumValue = findEnumFromXmlRepresentation(enumString, enumClass);
+        if (enumValue != null) {
+            return enumValue;
+        }
+        
+        throw new IllegalArgumentException(enumString + " is not a legal representation of " + enumClass);
+    }
+    
+    /**
+     * This method translates the supplied enumString into the enum supplied
+     * 
+     * @throws IllegalArgumentException the enumString is not a valid representation of the enum class.
+     */
+    public static <E extends Enum<E>> String convertEnumToXmlRepresention(E enumValue) throws IllegalArgumentException{
+        
+        // See if there is an xmlRepresentation of this value.
+        String enumStr = findXmlRepresentation(enumValue);
+        if (enumStr != null) {
+            return enumStr;
+        }
+        
+        // Try getting the value from the enum
+        return convertEnumToReadable(enumValue);
+    }
+    
+    /**
      * This method searches for the xmlRepresentation in the supplied enumClass.  If it finds the xmlRepresentation it will
      * return the enum associated with it.  If not it will return null.
      */
-    public static <E extends Enum<E>> E findEnumFromXmlRepresentation(String xmlRepresentation, Class<E> enumClass) {
+    private static <E extends Enum<E>> E findEnumFromXmlRepresentation(String xmlRepresentation, Class<E> enumClass) {
         Validate.notNull(enumClass);
         Validate.notEmpty(xmlRepresentation);
         
@@ -167,10 +207,33 @@ public class XmlUtils {
     /**
      * This method returns the XmlRepresentation of the enum value suppied.
      */
-    public static <E extends Enum<E>> String findXmlRepresentation(E enumObj) {
+    private static <E extends Enum<E>> String findXmlRepresentation(E enumObj) {
         Validate.notNull(enumObj);
         
         XmlRepresentation xmlRepresentation = enumObj.getDeclaringClass().getAnnotation(XmlRepresentation.class);
         return xmlRepresentation.value();
+    }
+    
+    /**
+     * Converts the supplied enum from our standard enum format to a more user friendly format. <br><br>
+     * ABC_DEF_GHI > Abc Def Ghi <br>
+     * WEEKDAY_WEEKEND > Weekday Weekend
+     */
+    private static <E extends Enum<E>> String convertEnumToReadable(E enumObject) {
+        Validate.notNull(enumObject);
+        
+        String enumString = enumObject.name();
+        return WordUtils.capitalize(enumString.replace('_', ' '));
+    }
+    
+    /**
+     * Converts the supplied enum string into our standard enum format <br><br>
+     * Abc Def Ghi > ABC_DEF_GHI <br>
+     * Weekday Weekend > WEEKDAY_WEEKEND
+     */
+    private static String convertReadableToEnum(String enumString) {
+        Validate.notNull(enumString);
+        
+        return enumString.toUpperCase().replaceAll(" ", "_");
     }
 }
