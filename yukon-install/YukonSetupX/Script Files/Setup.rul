@@ -373,8 +373,11 @@ end;
 function OnUpdateUIAfter()
 number nResult, nNewVersion, nVMajor, nVMinor, nVBuild;
 string sCMD, sProg, sVTemp;
-BOOL bOpt, bOptYes, bOptNo;
+BOOL bOpt, bOptYes, bOptNo, needsPasswordEncryption;
 begin
+	//We need to check if encryption is needed before the installed version changes.
+	needsPasswordEncryption = NeedsPasswordEncryption();
+
 	//get the DWORD representing the new version number
 	VerProductStrToNum (nNewVersion, IFX_PRODUCT_VERSION);
 	//get the version parts: major.minor.build
@@ -422,7 +425,15 @@ begin
 		LaunchAppAndWait(sProg, "", LAAW_OPTION_WAIT);
     endif;
     Enable(BACKBUTTON);
-    
+
+	if(needsPasswordEncryption) then
+		//make sure CMD window is not hidden, so we can see logs
+		LaunchApplication("", "", "", SW_NORMAL, 0, LAAW_OPTION_WAIT);
+		//Encrypt plain text passwords.
+		sProg = TARGETDIR ^ "\\Client\\bin\\EncryptPlainPasswords.bat";
+		LaunchAppAndWait(sProg, "", LAAW_OPTION_WAIT);
+	endif;
+
 	Dialog_StartServices:
 	//only give the option to start services if services were installed
 	//and only if a restart is not necessary

@@ -170,6 +170,49 @@ begin
 end;
 
 //-------------------------------------------------------
+// Helper function to determine we need to encrypt plain
+// text passwords (which were allowed prior to 5.6.2).
+//-------------------------------------------------------
+export prototype BOOL NeedsPasswordEncryption();
+function BOOL NeedsPasswordEncryption()
+string sOldVersion, sTemp;
+number nV1, nV2, nV3;
+begin
+	sOldVersion = IFX_INSTALLED_VERSION;
+    //split version into three version components
+    StrSub(sTemp, sOldVersion, 0, 1);
+    StrToNum(nV1, sTemp);
+    StrSub(sTemp, sOldVersion, 2, 2);
+    StrToNum(nV2, sTemp);
+    StrSub(sTemp, sOldVersion, 5, 3);
+    StrToNum(nV3, sTemp);
+    //if version is prior to 5.6.2, we need to encrypt
+    if(nV1 < 5) then
+    	//4.x.x or earlier
+    	return TRUE;
+    elseif(nV1 > 5) then
+    	//6.x.x or later
+    	return FALSE;
+    endif;
+    //if we didn't return above, version is 5.x.x
+    if(nV2 < 6) then
+    	//<5.6.0
+    	return TRUE;
+    elseif(nV2 > 6) then
+    	//5.7.0 or later
+    	return FALSE;
+    endif;
+    //if we didn't return above, version is 5.6.x
+    if(nV3 < 2) then
+    	//5.6.2 or earlier
+    	return TRUE;
+    else
+    	//5.6.2 or later
+    	return FALSE;
+    endif;    
+end;
+
+//-------------------------------------------------------
 // Helper function to determine if the installed version
 // is newer than the version that is attempting to 
 // install.
