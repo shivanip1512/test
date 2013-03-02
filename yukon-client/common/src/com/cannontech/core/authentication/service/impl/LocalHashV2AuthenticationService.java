@@ -32,4 +32,13 @@ public class LocalHashV2AuthenticationService implements AuthenticationProvider,
         String previousDigest) {
         return digester.checkPassword(newPassword, previousDigest);
     }
+
+    /**
+     * Encrypt the given password.  This is exposed as an extra public method (which is not part of
+     * {@link AuthenticationProvider}) because it is only needed when we are encrypting old plain text passwords
+     * from the database.  See YUK-11346. 
+     */
+    public String encryptPassword(String password) {
+        return digester.encryptPassword(password);
+    }
 }
