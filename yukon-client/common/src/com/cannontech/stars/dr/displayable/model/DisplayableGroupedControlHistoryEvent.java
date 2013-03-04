@@ -1,5 +1,6 @@
 package com.cannontech.stars.dr.displayable.model;
 
+import java.util.Collections;
 import java.util.SortedSet;
 
 import org.joda.time.Duration;
@@ -7,6 +8,7 @@ import org.joda.time.Instant;
 
 import com.cannontech.stars.dr.controlHistory.model.ControlHistoryEvent;
 import com.google.common.collect.Ordering;
+import com.google.common.collect.Sets;
 
 public class DisplayableGroupedControlHistoryEvent {
    
@@ -15,8 +17,9 @@ public class DisplayableGroupedControlHistoryEvent {
     private Duration duration;
     private boolean controlling;
 
-    private SortedSet<ControlHistoryEvent> controlHistory;
-    
+    private SortedSet<ControlHistoryEvent> controlHistory = Sets.newTreeSet(Collections
+        .reverseOrder(ControlHistoryEvent.getStartDateComparator()));
+
     public Instant getStartDate() {
         return startDate;
     }
@@ -56,8 +59,8 @@ public class DisplayableGroupedControlHistoryEvent {
     public SortedSet<ControlHistoryEvent> getControlHistory() {
         return controlHistory;
     }
-    public void setControlHistory(SortedSet<ControlHistoryEvent> controlHistory) {
-        this.controlHistory = controlHistory;
+    public void addControlHistory(SortedSet<ControlHistoryEvent> controlHistoryEvents) {
+        controlHistory.addAll(controlHistoryEvents);
     }
     
     @Override

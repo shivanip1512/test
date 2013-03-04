@@ -205,7 +205,7 @@ public class DisplayableProgramDaoImpl extends AbstractDisplayableDao implements
         DisplayableGroupedControlHistory history = new DisplayableGroupedControlHistory();
         history.setDisplayName(controlHistory.getDisplayName());
         SortedSet<DisplayableGroupedControlHistoryEvent> groupedHistory =
-            Sets.newTreeSet(DisplayableGroupedControlHistoryEvent.getStartDateComparator());
+            Sets.newTreeSet(Collections.reverseOrder(DisplayableGroupedControlHistoryEvent.getStartDateComparator()));
         List<SortedSet<ControlHistoryEvent>> contiguousEvents = Lists.newArrayList();
         SortedSet<ControlHistoryEvent> contiguousEvent =
             Sets.newTreeSet(ControlHistoryEvent.getStartDateComparator());
@@ -248,7 +248,7 @@ public class DisplayableProgramDaoImpl extends AbstractDisplayableDao implements
         for (ControlHistoryEvent event : contiguousEvent) {
             duration.plus(event.getDuration()); 
         }
-        groupedEvent.setControlHistory(contiguousEvent);
+        groupedEvent.addControlHistory(contiguousEvent);
         groupedEvent.setStartDate(contiguousEvent.first().getStartDate());
         groupedEvent.setEndDate(contiguousEvent.last().getEndDate());
         groupedEvent.setControlling(contiguousEvent.last().isControlling());
