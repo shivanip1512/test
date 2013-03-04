@@ -23,6 +23,7 @@ import org.jdom.Text;
 import org.jdom.input.SAXBuilder;
 import org.jdom.output.Format;
 import org.jdom.output.XMLOutputter;
+import org.joda.time.LocalTime;
 import org.springframework.core.io.Resource;
 
 import com.cannontech.common.util.Iso8601DateUtil;
@@ -77,10 +78,6 @@ public class XmlUtils {
     /**
      * Creates an element containing a date in ISO format with a UTC zone.
      * Ex: 2008-10-13T12:30:00Z
-     * @param name
-     * @param namespace
-     * @param value
-     * @return
      */
     public static Element createDateElement(String name, Namespace namespace, Date value) {
         Element element = new Element(name, namespace);
@@ -88,6 +85,19 @@ public class XmlUtils {
         String dateStr = Iso8601DateUtil.formatIso8601Date(value);
         
         element.setText(dateStr);
+        
+        return element;
+    }
+
+    /**
+     * Creates an element containing a local time.
+     * Ex: 14:25
+     */
+    public static Element createLocalTimeElement(String name, Namespace namespace, LocalTime value) {
+        Element element = new Element(name, namespace);
+        
+        String localTimeStr = YukonXPathTemplate.PERIOD_START_TIME_FORMATTER.print(value);
+        element.setText(localTimeStr);
         
         return element;
     }
@@ -210,7 +220,17 @@ public class XmlUtils {
     private static <E extends Enum<E>> String findXmlRepresentation(E enumObj) {
         Validate.notNull(enumObj);
         
-        XmlRepresentation xmlRepresentation = enumObj.getDeclaringClass().getAnnotation(XmlRepresentation.class);
+        XmlRepresentation xmlRepresentation = null;
+        try {
+            xmlRepresentation = enumObj.getClass().getField(enumObj.name()).getAnnotation(XmlRepresentation.class);
+        } catch (NoSuchFieldException | SecurityException e) {
+            // Because of the way were getting these variables there is absolutely no way for these exceptions to be thrown.
+            e.printStackTrace();
+        }
+
+        if (xmlRepresentation == null) {
+            return null;
+        }
         return xmlRepresentation.value();
     }
     
@@ -223,7 +243,7 @@ public class XmlUtils {
         Validate.notNull(enumObject);
         
         String enumString = enumObject.name();
-        return WordUtils.capitalize(enumString.replace('_', ' '));
+        return WordUtils.capitalizeFully(enumString.replace('_', ' '));
     }
     
     /**

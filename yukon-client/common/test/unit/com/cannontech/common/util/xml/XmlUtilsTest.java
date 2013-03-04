@@ -1,0 +1,24 @@
+package com.cannontech.common.util.xml;
+
+import org.junit.Assert;
+import org.junit.Test;
+
+import com.cannontech.core.authentication.model.PasswordPolicyError;
+import com.cannontech.stars.dr.hardware.model.SchedulableThermostatType;
+
+public class XmlUtilsTest {
+    
+    @Test
+    public void convertEnumToXmlRepresentionTest() {
+        String xmlRepresention = XmlUtils.convertEnumToXmlRepresention(SchedulableThermostatType.UTILITY_PRO_G2);
+        
+        Assert.assertEquals("UtilityPRO G2", xmlRepresention);
+    }
+    
+    @Test
+    public void convertEnumToXmlRepresentionTest_NoneXMLRepresentationEnum() {
+        String xmlRepresention = XmlUtils.convertEnumToXmlRepresention(PasswordPolicyError.MAX_PASSWORD_LENGTH_EXCEEDED);
+        
+        Assert.assertEquals("Max Password Length Exceeded", xmlRepresention);
+    }
+}

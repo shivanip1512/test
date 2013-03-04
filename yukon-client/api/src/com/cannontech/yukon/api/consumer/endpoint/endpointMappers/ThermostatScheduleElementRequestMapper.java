@@ -26,6 +26,7 @@ public class ThermostatScheduleElementRequestMapper implements ObjectMapper<Elem
 
         ThermostatSchedule thermostatSchedule = new ThermostatSchedule();
         thermostatSchedule.setAccountNumber(yukonTemplate.evaluateAsString("y:*/@accountNumber"));
+        thermostatSchedule.setAcctThermostatScheduleId(yukonTemplate.evaluateAsInt("y:*/@accountThermostatScheduleId", 0));
         
         thermostatSchedule.setSchedulableThermostatType(yukonTemplate.evaluateAsEnum("y:*/@thermostatType", SchedulableThermostatType.class));
         thermostatSchedule.setScheduleName(yukonTemplate.evaluateAsString("y:*/y:scheduleName"));

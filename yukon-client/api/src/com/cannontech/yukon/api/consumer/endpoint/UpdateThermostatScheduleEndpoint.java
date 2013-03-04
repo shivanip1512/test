@@ -11,7 +11,6 @@ import org.jdom.Element;
 import org.jdom.JDOMException;
 import org.jdom.Namespace;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.dao.EmptyResultDataAccessException;
 import org.springframework.ws.server.endpoint.annotation.Endpoint;
 import org.springframework.ws.server.endpoint.annotation.PayloadRoot;
 
@@ -86,28 +85,15 @@ public class UpdateThermostatScheduleEndpoint {
             }
             List<AccountThermostatSchedule> accountThermostatSchedules = convertThermostatSchedules(thermostatSchedules, userContext.getYukonUser());
             
-            // Validate the accountThermostatSchedule stuff submitted.
-//            for (AccountThermostatSchedule accountThermostatSchedule : accountThermostatSchedules) {
-//                DataBinder binder = new DataBinder(accountThermostatSchedule);
-//                AccountThermostatScheduleValidator accountThermostatScheduleValidator =
-//                        new AccountThermostatScheduleValidator(accountThermostatScheduleDao, messageSourceResolver.getMessageSourceAccessor(userContext));
-//                binder.setValidator(accountThermostatScheduleValidator);
-//                binder.validate();
-//                BindingResult bindingResult = binder.getBindingResult();
-//                System.out.println("errors" +bindingResult.getAllErrors());
-//            }
-
             // Save the schedule
             for (AccountThermostatSchedule newATS: accountThermostatSchedules) {
                 accountThermostatScheduleDao.save(newATS);
+                Element thermostatScheduleIdElement = XmlUtils.createIntegerElement("accountThermostatScheduleId", ns, newATS.getAccountThermostatScheduleId());
+                resp.addContent(thermostatScheduleIdElement);
             }
             
         } catch (NotAuthorizedException e) {
             Element fe = XMLFailureGenerator.generateFailure(updateThermostatSchedule, e, "UserNotAuthorized", "The user is not authorized to send text messages.");
-            resp.addContent(fe);
-            return resp;
-        } catch (EmptyResultDataAccessException e) {
-            Element fe = XMLFailureGenerator.generateFailure(updateThermostatSchedule, e, "ScheduleNameDoesNotExist", "The schedule name supplied does not exist.");
             resp.addContent(fe);
             return resp;
         } catch (Exception e) {
@@ -131,7 +117,7 @@ public class UpdateThermostatScheduleEndpoint {
 
         for (ThermostatSchedule thermostatSchedule : thermostatSchedules) {
             AccountThermostatSchedule accountThermostatSchedule = new AccountThermostatSchedule();
-            
+            accountThermostatSchedule.setAccountThermostatScheduleId(thermostatSchedule.getAcctThermostatScheduleId());
             accountThermostatSchedule.setScheduleName(thermostatSchedule.getScheduleName());
             accountThermostatSchedule.setThermostatScheduleMode(thermostatSchedule.getThermostatScheduleMode());
             

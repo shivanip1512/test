@@ -13,7 +13,7 @@ import com.cannontech.common.temperature.TemperatureUnit;
 
 public class YukonXPathTemplate extends SimpleXPathTemplate {
 
-    private static final DateTimeFormatter PERIOD_START_TIME_FORMATTER = DateTimeFormat.forPattern("HH:mm");
+    public static final DateTimeFormatter PERIOD_START_TIME_FORMATTER = DateTimeFormat.forPattern("HH:mm");
     
     public Temperature evaluateAsTemperature(String expression) {
         Temperature temperature = null;
