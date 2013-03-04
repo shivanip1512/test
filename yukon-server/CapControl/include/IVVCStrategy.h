@@ -56,6 +56,11 @@ public:
     const double getPowerFactorCorrectionCost() const;
     const double getPowerFactorCorrectionMaxCost() const;
 
+    // reporting ratios
+    const double getRegulatorCommReportingPercentage() const;
+    const double getCapbankCommReportingPercentage() const;
+    const double getVoltageMonitorCommReportingPercentage() const;
+
     const unsigned getMaxConsecutiveCapBankOps(const bool isPeak) const;
 
     virtual void registerControllable(const long paoid);
@@ -108,6 +113,10 @@ private:
     double _powerFactorCorrectionBandwidth;
     double _powerFactorCorrectionCost;
     double _powerFactorCorrectionMaxCost;
+
+    double _regulatorCommReportingPercentage;
+    double _capbankCommReportingPercentage;
+    double _voltageMonitorCommReportingPercentage;
 
     std::string _controlMethod;
 

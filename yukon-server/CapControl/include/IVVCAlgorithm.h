@@ -36,16 +36,7 @@ class IVVCAlgorithm
 
         bool checkConfigAllZonesHaveRegulator(IVVCStatePtr state, CtiCCSubstationBusPtr subbus);
 
-        enum DataStatus
-        {
-            DataStatus_Good,
-            DataStatus_Incomplete,
-            DataStatus_Stale,
-        };
-        typedef std::pair<DataStatus, double>   DataCheckResult;
-
-        virtual bool            hasValidData( const PointDataRequestPtr& request, CtiTime timeNow, CtiCCSubstationBusPtr subbus, IVVCStrategy* strategy );
-        virtual DataCheckResult hasEnoughRecentData(const PointDataRequestPtr& request, CtiTime timeNow, double desiredRatio, PointRequestType pointRequestType, const std::string & requestTypeString);
+        virtual bool hasValidData( PointDataRequestPtr& request, CtiTime timeNow, CtiCCSubstationBusPtr subbus, IVVCStrategy* strategy );
 
         virtual bool determineWatchPoints(CtiCCSubstationBusPtr subbus, DispatchConnectionPtr conn, bool sendScan, std::set<PointRequest>& pointRequests, IVVCStrategy* strategy);
 
@@ -106,6 +97,14 @@ class IVVCAlgorithm
                                                IVVCState::TapOperationZoneMap & solution );
 
         double getVmaxForPoint( const long pointID, CtiCCSubstationBusPtr subbus, IVVCStrategy * strategy ) const;
+
+        void findPointInRequest( const long pointID, const PointValueMap & pointValues, PointDataRequestPtr & request, const CtiTime & timeNow,
+                                 int & totalPoints, int & missingPoints, int & stalePoints );
+        bool analysePointRequestData( const long subbusID, const int totalPoints, const int missingPoints, const int stalePoints,
+                                      const double minimum, const int incompleteScenario, const int staleScenario, const CtiTime & timeNow,
+                                      const std::string & type );
+
+
 
         PointDataRequestFactoryPtr _requestFactory;
 };

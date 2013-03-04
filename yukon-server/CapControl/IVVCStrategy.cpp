@@ -40,6 +40,9 @@ IVVCStrategy::IVVCStrategy(const PointDataRequestFactoryPtr& factory)
     _powerFactorCorrectionBandwidth(0.02),
     _powerFactorCorrectionCost(20.0),
     _powerFactorCorrectionMaxCost(2.0),
+    _regulatorCommReportingPercentage(100.0),
+    _capbankCommReportingPercentage(100.0),
+    _voltageMonitorCommReportingPercentage(100.0),
     _controlMethod(SubstationBusControlMethod)
 {
 }
@@ -223,6 +226,21 @@ void IVVCStrategy::restoreParameters( const std::string &name, const std::string
             _powerFactorCorrectionMaxCost = newValue;
         }
     }
+    else if (name == "Comm Reporting Percentage")
+    {
+        if (type == "REGULATOR")
+        {
+            _regulatorCommReportingPercentage = newValue;
+        }
+        else if (type == "CAPBANK")
+        {
+            _capbankCommReportingPercentage = newValue;
+        }
+        else    // type == "VOLTAGE_MONITOR"
+        {
+            _voltageMonitorCommReportingPercentage = newValue;
+        }
+    }
 }
 
 
@@ -386,6 +404,23 @@ const double IVVCStrategy::getPowerFactorCorrectionMaxCost() const
     return _powerFactorCorrectionMaxCost;
 }
 
+
+const double IVVCStrategy::getRegulatorCommReportingPercentage() const
+{
+    return _regulatorCommReportingPercentage;
+}
+
+
+const double IVVCStrategy::getCapbankCommReportingPercentage() const
+{
+    return _capbankCommReportingPercentage;
+}
+
+
+const double IVVCStrategy::getVoltageMonitorCommReportingPercentage() const
+{
+    return _voltageMonitorCommReportingPercentage;
+}
 
 /**
  * These five are overloaded to return the proper messaging
