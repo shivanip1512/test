@@ -317,7 +317,7 @@
     	                <td><spring:escapeBody>${event.pointName}</spring:escapeBody></td>
     					<td class="eventStatus${event.formattedValue}">${event.formattedValue}</td>
                         <td class="contextual-menu">
-                            <cm:singleDeviceMenu deviceId="${event.meter.paoIdentifier.paoId}"/>
+                            <cm:singleDeviceMenu deviceId="${event.meter.paoIdentifier.paoId}" containerCssClass="fr"/>
                         </td>
     				</tr>
     			</c:forEach>

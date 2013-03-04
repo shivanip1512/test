@@ -16,34 +16,38 @@
 <cti:default var="type" value="cog"/>
 
 <c:if test="${type == 'link' && not empty pageScope.key}">
-    <c:set var="containerClass" value="with-text"/>
+    <c:set var="dropdownTypeClass" value="with-text"/>
 </c:if>
 <c:if test="${type == 'cog'}">
-    <c:set var="containerClass" value="with-cog"/>
+    <c:set var="dropdownTypeClass" value="with-cog"/>
 </c:if>
 
-<div class="dropdown-container ${containerClass} usn ${pageScope.containerCssClass}">
-    <c:choose>
-	    <c:when test="${type == 'link' && not empty pageScope.key}">
-	        <a class="text_with_chevron">
-	            <span><cti:msg2 key="${pageScope.key}"/></span>
-	            <span class="arrow-down"></span>
-	        </a>
-	    </c:when>
-	    <c:when test="${type == 'button'}">
-            <cti:default var="key" value="yukon.web.defaults.actions"/>
-	        <button class="text_with_chevron">
-	            <span><cti:msg2 key="${pageScope.key}"/></span>
-	            &nbsp;<span class="arrow-down"></span>
-	        </button>
-	    </c:when>
-	    <c:otherwise>
-		    <a class="icon icon_with_chevron cog">
-				<span class="arrow-down"></span>
-		    </a>
-	    </c:otherwise>
-    </c:choose>
-	<ul class="dropdown-menu dn ${pageScope.menuCssClass}">
-	    <jsp:doBody/>
-	</ul>
+<div class="f_dropdown_outer_container ${pageScope.containerCssClass}">
+	<div class="clearfix">
+		<div class="dropdown-container ${dropdownTypeClass} usn fr">
+			    <c:choose>
+				    <c:when test="${type == 'link' && not empty pageScope.key}">
+				        <a class="text_with_chevron">
+				            <span><cti:msg2 key="${pageScope.key}"/></span>
+				            <span class="arrow-down"></span>
+				        </a>
+				    </c:when>
+				    <c:when test="${type == 'button'}">
+			            <cti:default var="key" value="yukon.web.defaults.actions"/>
+				        <button class="text_with_chevron">
+				            <span><cti:msg2 key="${pageScope.key}"/></span>
+				            &nbsp;<span class="arrow-down"></span>
+				        </button>
+				    </c:when>
+				    <c:otherwise>
+					    <a class="icon icon_with_chevron cog">
+							<span class="arrow-down"></span>
+					    </a>
+				    </c:otherwise>
+			    </c:choose>
+				<ul class="dropdown-menu dn ${pageScope.menuCssClass}">
+				    <jsp:doBody/>
+				</ul>
+		</div>
+	</div>
 </div>

@@ -121,7 +121,7 @@
                         </c:choose>
                     </td>
                     <td class="contextual-menu">
-                        <cm:singleDeviceMenu deviceId="${searchResultRow.paoIdentifier.paoId}"/>
+                        <cm:singleDeviceMenu deviceId="${searchResultRow.paoIdentifier.paoId}" containerCssClass="fr"/>
                     </td>
                 </tr>
             </c:forEach>

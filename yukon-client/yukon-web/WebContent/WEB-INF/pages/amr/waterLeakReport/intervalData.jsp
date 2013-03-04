@@ -47,7 +47,7 @@
 
 	<tags:pagedBox2 nameKey="tableTitle" searchResult="${filterResult}"
 		baseUrl="intervalData" titleLinkHtml="${actionsMenu}">
-		<table class="compactResultsTable">
+		<table class="compactResultsTable contextual-menu-list">
 			<tr>
 				<th>
                     <tags:sortLink nameKey="tableHeader.deviceName" baseUrl="intervalData" fieldName="DEVICE_NAME" isDefault="false" />
@@ -86,7 +86,7 @@
 					<td><cti:pointValueFormatter value="${row.pointValueHolder}" format="VALUE" /></td>
 					<td><cti:formatDate type="BOTH" value="${row.pointValueHolder.pointDataTimeStamp}" /></td>
 					<td class="contextual-menu">
-                        <cm:singleDeviceMenu deviceId="${row.meter.paoIdentifier.paoId}"/>
+                        <cm:singleDeviceMenu deviceId="${row.meter.paoIdentifier.paoId}" containerCssClass="fr"/>
 					</td>
 				</tr>
 			</c:forEach>

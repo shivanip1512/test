@@ -1,8 +1,8 @@
-<%@ taglib uri="http://java.sun.com/jsp/jstl/core" prefix="c"%>
-<%@ taglib uri="http://cannontech.com/tags/cti" prefix="cti"%>
+<%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core"%>
 <%@ taglib prefix="tags" tagdir="/WEB-INF/tags"%>
 <%@ taglib prefix="i" tagdir="/WEB-INF/tags/i18n"%>
 <%@ taglib prefix="cti" uri="http://cannontech.com/tags/cti"%>
+<%@ taglib prefix="cm" tagdir="/WEB-INF/tags/contextualMenu" %>
 
 <cti:standardPage module="support" page="uiToolkitDemo">
 
@@ -16,20 +16,8 @@
     background: #ff0000;
 }
 
-.icon {
-    float: left;
-    overflow: hidden;
-    position: relative;
-    width: 16px;
-    height: 1px;
-    padding-top: 16px;
-}
-
-.icon_remove {
-    background: transparent url(WebConfig/yukon/Icons/error.gif) top left no-repeat;
-}
-
 table.example {
+    width: 100%;
     border: solid 1px #ccc;
     margin: 20px auto;
     border-collapse:collapse;
@@ -201,6 +189,161 @@ button
                     </td>
                 </tr>
             </table>
+        </cti:tabbedContentSelectorContent>
+
+        <!-- MENUS -->
+        <cti:tabbedContentSelectorContent selectorName="Menus">
+            <table class="example menus">
+                <tr>
+                    <th>Cog Menu</th>
+                    <th>Relevant Markup</th>
+                </tr>
+                <tr>
+                    <td>
+				        <cm:dropdownActions>
+				            <li><a>Some Item 1</a></li>
+				            <li><a>Some Item 2</a></li>
+				            <li><a>Some Item 3</a></li>
+			                <li class="divider"></li>
+				            <li><a>Last Item</a></li>
+				        </cm:dropdownActions>
+                    </td>
+                    <td>
+                    The default behavior of the menu is to first try to display to the left, but will switch to displaying to the right if the initial positioning places it off the left of the screen. 
+<pre class="code">
+&lt;cm:dropdownActions&gt;
+    &lt;li&gt;&lt;a&gt;Some Item 1&lt;/a&gt;&lt;/li&gt;
+    &lt;li&gt;&lt;a&gt;Some Item 2&lt;/a&gt;&lt;/li&gt;
+    &lt;li&gt;&lt;a&gt;Some Item 3&lt;/a&gt;&lt;/li&gt;
+    &lt;li class="divider"&gt;&lt;/li&gt;
+    &lt;li&gt;&lt;a&gt;Last Item&lt;/a&gt;&lt;/li&gt;
+&lt;/cm:dropdownActions&gt;
+</pre>
+					</td>
+                </tr>
+                <tr>
+                    <th>Text Menu</th>
+                    <th>Relevant Markup</th>
+                </tr>
+                <tr>
+                    <td>
+				        <cm:dropdownActions type="link" key="yukon.web.defaults.actions">
+				            <li><a>Some Item 1</a></li>
+				            <li><a>Some Item 2</a></li>
+				            <li><a>Some Item 3</a></li>
+			                <li class="divider"></li>
+				            <li><a>Last Item</a></li>
+				        </cm:dropdownActions>
+                    </td>
+                    <td>
+                    Again, this one first tries opening to the left, but switches to the right so it doesn't go off the screen. 
+<pre class="code">
+&lt;cm:dropdownActions type="link" key="yukon.web.defaults.actions"&gt;
+    &lt;li&gt;&lt;a&gt;Some Item 1&lt;/a&gt;&lt;/li&gt;
+    &lt;li&gt;&lt;a&gt;Some Item 2&lt;/a&gt;&lt;/li&gt;
+    &lt;li&gt;&lt;a&gt;Some Item 3&lt;/a&gt;&lt;/li&gt;
+    &lt;li class="divider"&gt;&lt;/li&gt;
+    &lt;li&gt;&lt;a&gt;Last Item&lt;/a&gt;&lt;/li&gt;
+&lt;/cm:dropdownActions&gt;
+</pre>
+					</td>
+                </tr>
+                <tr>
+                    <th>Button Menu</th>
+                    <th>Relevant Markup</th>
+                </tr>
+                <tr>
+                    <td style="width: 175px;">
+				        <cm:dropdownActions type="button" key="yukon.web.defaults.actions" containerCssClass="fr">
+				            <li><a>Some Item 1</a></li>
+				            <li><a>Some Item 2</a></li>
+				            <li><a>Some Item 3</a></li>
+			                <li class="divider"></li>
+				            <li><a>Last Item</a></li>
+				        </cm:dropdownActions>
+                    </td>
+                    <td>
+                    Floating this one right so it can open in the "default" manner, which is to the left.
+<pre class="code">
+&lt;cm:dropdownActions type="button" key="yukon.web.defaults.actions" containerCssClass="fr"&gt;
+    &lt;li&gt;&lt;a&gt;Some Item 1&lt;/a&gt;&lt;/li&gt;
+    &lt;li&gt;&lt;a&gt;Some Item 2&lt;/a&gt;&lt;/li&gt;
+    &lt;li&gt;&lt;a&gt;Some Item 3&lt;/a&gt;&lt;/li&gt;
+    &lt;li class="divider"&gt;&lt;/li&gt;
+    &lt;li&gt;&lt;a&gt;Last Item&lt;/a&gt;&lt;/li&gt;
+&lt;/cm:dropdownActions&gt;
+</pre>
+					</td>
+                </tr>
+            </table>
+            <div class="clearfix">
+		    <div class="colmask doublepage">
+		        <div class="colleft">
+		            <div class="col1">
+                        <div class="columnHeader"><h2>Inside A Table</h2></div><br/>
+                        <table class="compactResultsTable rowHighlighting contextual-menu-list">
+                            <thead>
+                                <tr>
+                                    <th>Some Column 1</th>
+                                    <th>Some Column 2</th>
+                                    <th class="tar">Actions</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                   <c:forEach begin="0" end="10" varStatus="status">
+	                                <tr class="<tags:alternateRow odd="" even="altRow"/>">
+	                                    <td>Some Data ${status.index+1}</td>
+	                                    <td>Some Data ${status.index+2}</td>
+	                                    <td class="contextual-menu">
+	                                        <cm:dropdownActions containerCssClass="fr">
+	                                            <li><a>Some Item 1</a></li>
+	                                            <li><a>Some Item 2</a></li>
+	                                            <li><a>Some Item 3</a></li>
+	                                            <li class="divider"></li>
+	                                            <li><a>Last Item</a></li>
+	                                        </cm:dropdownActions>
+	                                    </td>
+	                                </tr>
+                                   </c:forEach>
+                            </tbody>
+                        </table>
+                       </div>
+                       <div class="col2">
+                           <div class="columnHeader"><h2>Relavent Markup</h2></div><br/>
+							The only real "required" markup for this to work correctly is to
+							have a class of <strong>contextual-menu-list</strong> on the table, a class of
+							<strong>contextual-menu</strong> on the td that will contain the menu, and the
+							<strong>&lt;cm:dropdownActions</strong> tag within that td
+							<pre class="code">
+&lt;table class="compactResultsTable rowHighlighting contextual-menu-list"&gt;
+    &lt;thead&gt;
+        &lt;tr&gt;
+            &lt;th&gt;Some Column 1&lt;/th&gt;
+            &lt;th&gt;Some Column 2&lt;/th&gt;
+            &lt;th&gt;Actions&lt;/th&gt;
+        &lt;/tr&gt;
+    &lt;/thead&gt;
+    &lt;c:forEach begin="0" end="10" varStatus="status"&gt;
+        &lt;tr class="&lt;tags:alternateRow odd="" even="altRow"/&gt;"&gt;
+            &lt;td&gt;Some Data ${status.index+1}&lt;/td&gt;
+            &lt;td&gt;Some Data ${status.index+2}&lt;/td&gt;
+            &lt;td class="contextual-menu"&gt;
+                &lt;cm:dropdownActions containerCssClass="fr"&gt;
+                    &lt;li&gt;&lt;a&gt;Some Item 1&lt;/a&gt;&lt;/li&gt;
+                    &lt;li&gt;&lt;a&gt;Some Item 2&lt;/a&gt;&lt;/li&gt;
+                    &lt;li&gt;&lt;a&gt;Some Item 3&lt;/a&gt;&lt;/li&gt;
+                    &lt;li class="divider"&gt;&lt;/li&gt;
+                    &lt;li&gt;&lt;a&gt;Last Item&lt;/a&gt;&lt;/li&gt;
+                &lt;/cm:dropdownActions&gt;
+            &lt;/td&gt;
+        &lt;/tr&gt;
+    &lt;/c:forEach&gt;
+&lt;/table&gt;
+</pre>
+                    </div>
+                </div>
+            </div>
+            </div>
         </cti:tabbedContentSelectorContent>
 
         <!-- BLOCKING -->

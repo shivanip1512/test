@@ -11,9 +11,10 @@
 
 <%@ attribute name="menuBeanId" required="true" description="The bean id of the menu you want to render"%>
 <%@ attribute name="key" %>
+<%@ attribute name="containerCssClass" %>
 
 <div class="params dn">
     <input type="hidden" name="menuId" value="${pageScope.menuBeanId}"/>
     <jsp:doBody/>
 </div>
-<cm:dropdownActions containerCssClass="ajax-menu fr" menuCssClass="long-menu-list" key="${pageScope.key}"/>
+<cm:dropdownActions containerCssClass="ajax-menu ${containerCssClass}" menuCssClass="long-menu-list" key="${pageScope.key}"/>

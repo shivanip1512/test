@@ -256,7 +256,7 @@
 			                        </td>
 		                        </c:if>
 			                    <td class="contextual-menu">
-			                        <cm:singleDeviceMenu deviceId="${row.meter.paoIdentifier.paoId}"/>
+			                        <cm:singleDeviceMenu deviceId="${row.meter.paoIdentifier.paoId}" containerCssClass="fr"/>
 			                    </td>
 							</tr>
 						</c:forEach>
