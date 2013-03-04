@@ -76,14 +76,16 @@
         function toggleForm(dialogId, archivedValuesExporterFormat, dataRangeTypes, fixedDataRangeTypes, dynamicDataRangeTypes) {
         	for (var i = 0;  i < dataRangeTypes.size(); i++) {
         		var dataRangeType = dataRangeTypes[i];
-        		var  dataRangeTypeDiv= dialogId+' .'+dataRangeType;
+        		var dataRangeTypeDiv= dialogId+' .'+dataRangeType;
+        		var dataRangeTypeInput = dataRangeTypeDiv + ' [name = \'dataRange.dataRangeType\'] ';
         		if (archivedValuesExporterFormat == 'FIXED_ATTRIBUTE' &&
         			jQuery.inArray(dataRangeType, fixedDataRangeTypes) != -1 ) {
                     jQuery(dataRangeTypeDiv).show();
-        			
+        			jQuery(dataRangeTypeInput).attr('checked', true);
         		} else if (archivedValuesExporterFormat == 'DYNAMIC_ATTRIBUTE' &&
         				jQuery.inArray(dataRangeType, dynamicDataRangeTypes) != -1) {
                     jQuery(dataRangeTypeDiv).show();
+                    jQuery(dataRangeTypeInput).attr('checked', true);
         			
         		} else {
         		    jQuery(dataRangeTypeDiv).hide();
