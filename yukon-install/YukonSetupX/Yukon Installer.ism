@@ -116,6 +116,7 @@
 		<row><td>Dispatch</td><td>{5174E651-225D-41C3-A7BC-752EB116A9CC}</td><td>BIN1</td><td>0</td><td/><td/><td>2577</td><td/><td/><td/><td>/LogFile=</td><td>/LogFile=</td><td>/LogFile=</td><td>/LogFile=</td></row>
 		<row><td>ESubstation Editor</td><td>{B35D5561-321C-4776-AAEB-62A90576A69B}</td><td>CLIENT</td><td>0</td><td/><td/><td>2577</td><td/><td/><td/><td>/LogFile=</td><td>/LogFile=</td><td>/LogFile=</td><td>/LogFile=</td></row>
 		<row><td>Esub Sublist Files</td><td>{8D52C986-9F4C-4D28-9DA6-1B78B258D43D}</td><td>ESUB</td><td>16</td><td/><td/><td>10769</td><td>These files must be linked in their own component so that we can set them to not be overwritten in an upgrade.</td><td/><td/><td>/LogFile=</td><td>/LogFile=</td><td>/LogFile=</td><td>/LogFile=</td></row>
+		<row><td>ExportArchive</td><td>{529B3DD1-6EC7-489B-A37B-8C3A4F5ABD8C}</td><td>EXPORTARCHIVE</td><td>0</td><td/><td/><td>51729</td><td>Used to create the empty ExportArchive directory.</td><td/><td/><td>/LogFile=</td><td>/LogFile=</td><td>/LogFile=</td><td>/LogFile=</td></row>
 		<row><td>Foreign Data Router</td><td>{1C0CB6C2-0516-4948-8D46-EAC8D3A315E8}</td><td>BIN1</td><td>0</td><td/><td/><td>2577</td><td/><td/><td/><td>/LogFile=</td><td>/LogFile=</td><td>/LogFile=</td><td>/LogFile=</td></row>
 		<row><td>Java Runtime</td><td>{2CC1FA0A-82AB-4F8D-8F4E-36D42D067EC6}</td><td>RUNTIME</td><td>0</td><td/><td/><td>2577</td><td/><td/><td/><td>/LogFile=</td><td>/LogFile=</td><td>/LogFile=</td><td>/LogFile=</td></row>
 		<row><td>Java Service Wrapper</td><td>{24F3BE7F-396F-45C3-A5B8-8EE07F0615D4}</td><td>BIN</td><td>0</td><td/><td/><td>2577</td><td/><td/><td/><td>/LogFile=</td><td>/LogFile=</td><td>/LogFile=</td><td>/LogFile=</td></row>
@@ -247,6 +248,7 @@
 		<row><td>ENTERPRISE_INTEGRATION_MODULE</td><td>EXTRAS</td><td>Enterprise Integration Module</td><td/><td>0</td><td/></row>
 		<row><td>ENTERPRISE_INTEGRATION_MODULE1</td><td>EXTRAS1</td><td>Enterprise Integration Module</td><td/><td>0</td><td/></row>
 		<row><td>ESUB</td><td>ROOT</td><td>esub</td><td/><td>0</td><td/></row>
+		<row><td>EXPORTARCHIVE</td><td>TARGETDIR</td><td>ExportArchive</td><td/><td>0</td><td/></row>
 		<row><td>EXTRAS</td><td>TARGETDIR</td><td>Extras</td><td/><td>0</td><td/></row>
 		<row><td>EXTRAS1</td><td>SERVER</td><td>Extras</td><td/><td>0</td><td/></row>
 		<row><td>FOLDER_FONTS</td><td>WINDIR</td><td>Fonts Folder</td><td/><td>0</td><td/></row>
@@ -327,6 +329,7 @@
 		<row><td>{424AC885-B168-4B71-922E-6A22C47FB177}</td><td>Calc Logic</td></row>
 		<row><td>{43D78ABC-C78A-445C-83BB-2710B1337AAF}</td><td>Prophecy Examples</td></row>
 		<row><td>{461D2490-036C-4FBE-B04A-7B82E9AF225F}</td><td>Default Master Config</td></row>
+		<row><td>{461D2490-036C-4FBE-B04A-7B82E9AF225F}</td><td>ExportArchive</td></row>
 		<row><td>{461D2490-036C-4FBE-B04A-7B82E9AF225F}</td><td>Master Config Example</td></row>
 		<row><td>{461D2490-036C-4FBE-B04A-7B82E9AF225F}</td><td>Server Base</td></row>
 		<row><td>{4ACFFB62-6E17-49AE-B063-E56B4FC5D9A5}</td><td>MACS</td></row>
@@ -349,6 +352,7 @@
 		<row><td>{CAEEBC8B-716D-4DC2-A248-89CA71879A6B}</td><td>Commander</td></row>
 		<row><td>{D4977EFB-6FBF-4DC4-9DB9-BA687BDA090E}</td><td>Client Base</td></row>
 		<row><td>{D4977EFB-6FBF-4DC4-9DB9-BA687BDA090E}</td><td>Default Master Config</td></row>
+		<row><td>{D4977EFB-6FBF-4DC4-9DB9-BA687BDA090E}</td><td>ExportArchive</td></row>
 		<row><td>{D4977EFB-6FBF-4DC4-9DB9-BA687BDA090E}</td><td>Master Config Example</td></row>
 		<row><td>{DB8BF790-EC25-4438-B29B-00CB57ED9746}</td><td>Java Service Wrapper</td></row>
 		<row><td>{DB8BF790-EC25-4438-B29B-00CB57ED9746}</td><td>Notification Server</td></row>
@@ -414,6 +418,7 @@
 		<row><td>Dispatch</td><td/><td/><td>_D03D8F94_6642_440E_BA33_CD83D90D8849_FILTER</td><td/><td/><td/><td/></row>
 		<row><td>ESubstation Editor</td><td/><td/><td>_9BCA8A2E_BC79_4C53_B6EF_B316B4C9D418_FILTER</td><td/><td/><td/><td/></row>
 		<row><td>Esub Sublist Files</td><td/><td/><td>_66646CE6_A312_47A4_AD1C_288CE8FCAEC4_FILTER</td><td/><td/><td/><td/></row>
+		<row><td>ExportArchive</td><td/><td/><td>_EB731F1C_0F1B_4627_AD75_B4B58D9E7937_FILTER</td><td/><td/><td/><td/></row>
 		<row><td>Foreign Data Router</td><td/><td/><td>_D12922D3_B0BD_4B17_9C36_4F10A3EE6042_FILTER</td><td/><td/><td/><td/></row>
 		<row><td>Java Runtime</td><td/><td/><td>_BFAB495E_5188_439C_B4F0_BBE1AFB3D87F_FILTER</td><td/><td/><td/><td/></row>
 		<row><td>Java Service Wrapper</td><td/><td/><td>_178EAD2F_4654_4D97_A16B_90D39F70DCB6_FILTER</td><td/><td/><td/><td/></row>
