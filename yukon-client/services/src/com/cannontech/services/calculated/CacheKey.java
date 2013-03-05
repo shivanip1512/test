@@ -1,6 +1,6 @@
 package com.cannontech.services.calculated;
 
-public class CacheKey {
+public final class CacheKey {
     
     private final int pointId;
     private final long timestamp;
