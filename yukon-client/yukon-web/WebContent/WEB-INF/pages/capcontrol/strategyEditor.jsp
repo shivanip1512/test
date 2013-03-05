@@ -322,6 +322,51 @@
             
             <x:htmlTag value="br" rendered="#{capControlForm.strategy.ivvc}"/>
             
+            <x:htmlTag value="fieldset" styleClass="fieldSet" rendered="#{capControlForm.strategy.ivvc}">
+                <x:htmlTag value="legend">
+                    <x:outputText value="Minimum Communication Percetages"/>
+                </x:htmlTag>
+
+                <x:panelGrid columns="2">
+					<x:outputLabel for="mcp_banks" value="Capacitor Bank: " title="Capacitor Bank Min Communication Percentage" />
+					<x:panelGroup>
+						<x:inputText id="mcp_banks"
+							disabled="#{!capControlForm.hasEditingRole || !capControlForm.editingCBCStrategy}"
+							required="true" value="#{capControlForm.strategy.minCommunicationPercentageSetting.banksReportingRatio}">
+							<f:validateDoubleRange minimum="0"/>
+							<f:validateDoubleRange maximum="100"/>
+						</x:inputText>
+						<x:outputText value="%" styleClass="padUnitsLabel" />
+					</x:panelGroup>
+
+					<x:outputLabel for="mcp_regulator" value="Voltage Regulator: " title="Voltage Regulator Min Communication Percentage" />
+					<x:panelGroup>
+						<x:inputText id="mcp_regulator"
+							disabled="#{!capControlForm.hasEditingRole || !capControlForm.editingCBCStrategy}"
+							required="true" value="#{capControlForm.strategy.minCommunicationPercentageSetting.regulatorReportingRatio}">
+							<f:validateDoubleRange minimum="0"/>
+							<f:validateDoubleRange maximum="100"/>
+						</x:inputText>
+						<x:outputText value="%" styleClass="padUnitsLabel" />
+					</x:panelGroup>
+
+					<x:outputLabel for="mcp_additional_voltage_point" value="Additional Voltage Points: " title="Additional Voltage Points Min Communication Percentage" />
+					<x:panelGroup>
+						<x:inputText id="mcp_additional_voltage_point"
+							disabled="#{!capControlForm.hasEditingRole || !capControlForm.editingCBCStrategy}"
+							required="true" value="#{capControlForm.strategy.minCommunicationPercentageSetting.voltageMonitorReportingRatio}">
+							<f:validateDoubleRange minimum="0"/>
+							<f:validateDoubleRange maximum="100"/>
+						</x:inputText>
+						<x:outputText value="%" styleClass="padUnitsLabel" />
+					</x:panelGroup>
+
+				</x:panelGrid>
+
+			</x:htmlTag>
+            
+            <x:htmlTag value="br" rendered="#{capControlForm.strategy.ivvc}"/>
+            
             <x:htmlTag value="fieldset" styleClass="fieldSet" rendered="#{!capControlForm.timeOfDay}">
                 <x:htmlTag value="legend">
                     <x:outputText value="Peak Operating Days" />

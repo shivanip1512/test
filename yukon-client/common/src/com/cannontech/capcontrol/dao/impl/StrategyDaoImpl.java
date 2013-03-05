@@ -32,6 +32,9 @@ import com.cannontech.database.YukonRowMapper;
 import com.cannontech.database.YukonRowMapperAdapter;
 import com.cannontech.database.db.capcontrol.CapControlStrategy;
 import com.cannontech.database.db.capcontrol.LiteCapControlStrategy;
+import com.cannontech.database.db.capcontrol.MinCommunicationPercentageSetting;
+import com.cannontech.database.db.capcontrol.MinCommunicationPercentageSettingName;
+import com.cannontech.database.db.capcontrol.MinCommunicationPercentageSettingType;
 import com.cannontech.database.db.capcontrol.PeakTargetSetting;
 import com.cannontech.database.db.capcontrol.PeaksTargetType;
 import com.cannontech.database.db.capcontrol.PowerFactorCorrectionSetting;
@@ -417,6 +420,50 @@ public class StrategyDaoImpl implements StrategyDao, InitializingBean {
                    PowerFactorCorrectionSettingType.MAX_COST);
         yukonJdbcTemplate.update(sql);
     }
+    
+    @Override
+    @Transactional
+    public void saveMinCommunicationPercentageSetting(CapControlStrategy strategy) {
+        int strategyId = strategy.getStrategyID();
+        
+        SqlStatementBuilder sql = new SqlStatementBuilder();
+        sql.append("DELETE FROM CCStrategyTargetSettings WHERE strategyId").eq(strategyId);
+        sql.append("AND SettingName").eq_k(MinCommunicationPercentageSettingName.MIN_COMM_PERCENTAGE.getDisplayName());
+        yukonJdbcTemplate.update(sql.getSql(), sql.getArguments());
+        
+        if (!strategy.isIvvc()) return; // Don't save these IVVC-only settings if we aren't going to use them
+        
+        MinCommunicationPercentageSetting setting = strategy.getMinCommunicationPercentageSetting();
+        /* Perform Validation */
+        validateMinCommunicationPercentageSetting(setting);
+        
+        /* Banks */
+        sql = new SqlStatementBuilder();
+        sql.append("INSERT INTO CCStrategyTargetSettings");
+        sql.values(strategyId,
+                   MinCommunicationPercentageSettingName.MIN_COMM_PERCENTAGE,
+                   setting.getBanksReportingRatio(),
+                   MinCommunicationPercentageSettingType.IVVC_BANKS_REPORTING_RATIO);
+        yukonJdbcTemplate.update(sql);
+        
+        /* Regulators */
+        sql = new SqlStatementBuilder();
+        sql.append("INSERT INTO CCStrategyTargetSettings");
+        sql.values(strategyId,
+                   MinCommunicationPercentageSettingName.MIN_COMM_PERCENTAGE,
+                   setting.getRegulatorReportingRatio(),
+                   MinCommunicationPercentageSettingType.IVVC_REGULATOR_REPORTING_RATIO);
+        yukonJdbcTemplate.update(sql);
+        
+        /* Additional Points */
+        sql = new SqlStatementBuilder();
+        sql.append("INSERT INTO CCStrategyTargetSettings");
+        sql.values(strategyId,
+                   MinCommunicationPercentageSettingName.MIN_COMM_PERCENTAGE,
+                   setting.getVoltageMonitorReportingRatio(),
+                   MinCommunicationPercentageSettingType.IVVC_VOLTAGEMONITOR_REPORTING_RATIO);
+        yukonJdbcTemplate.update(sql);
+    }
 
     @Override
     public List<PeakTargetSetting> getPeakSettings(CapControlStrategy strategy) {
@@ -467,7 +514,29 @@ public class StrategyDaoImpl implements StrategyDao, InitializingBean {
             return new PowerFactorCorrectionSetting();
         }
     }
-
+    
+    @Override
+    public MinCommunicationPercentageSetting getMinCommunicationPercentageSetting(CapControlStrategy strategy) {
+        SqlStatementBuilder sql = new SqlStatementBuilder();
+        sql.append("SELECT banks.SettingValue banksValue, regulator.SettingValue regulatorValue, voltageMonitor.SettingValue voltageMonitorValue");
+        sql.append("FROM CCStrategyTargetSettings banks, CCStrategyTargetSettings regulator, CCStrategyTargetSettings voltageMonitor");
+        sql.append("WHERE banks.SettingName = regulator.SettingName");
+        sql.append("  AND banks.SettingName = voltageMonitor.SettingName");
+        sql.append("  AND banks.SettingName").eq_k(PowerFactorCorrectionSettingName.POWER_FACTOR_CORRECTION.getDisplayName());
+        sql.append("  AND banks.strategyid = regulator.strategyid");
+        sql.append("  AND banks.strategyid = voltageMonitor.strategyid");
+        sql.append("  AND banks.strategyid").eq(strategy.getStrategyID());
+        sql.append("  AND banks.SettingType").eq_k(MinCommunicationPercentageSettingType.IVVC_BANKS_REPORTING_RATIO);
+        sql.append("  AND regulator.SettingType").eq_k(MinCommunicationPercentageSettingType.IVVC_REGULATOR_REPORTING_RATIO);
+        sql.append("  AND voltageMonitor.SettingType").eq_k(MinCommunicationPercentageSettingType.IVVC_VOLTAGEMONITOR_REPORTING_RATIO);
+        
+        try {
+            return yukonJdbcTemplate.queryForObject(sql, minCommunicationPercentageSettingMapper);
+        } catch (EmptyResultDataAccessException e) {
+            return new MinCommunicationPercentageSetting();
+        }
+    }
+    
     @Override
     public List<VoltageViolationSetting> getVoltageViolationSettings(CapControlStrategy strategy) {
         SqlStatementBuilder sql = new SqlStatementBuilder();
@@ -545,6 +614,16 @@ public class StrategyDaoImpl implements StrategyDao, InitializingBean {
         }
     };
     
+    private static YukonRowMapper<MinCommunicationPercentageSetting> minCommunicationPercentageSettingMapper = 
+            new YukonRowMapper<MinCommunicationPercentageSetting>() {
+        @Override
+        public MinCommunicationPercentageSetting mapRow(YukonResultSet rs) throws SQLException {
+            return new MinCommunicationPercentageSetting(rs.getDouble("banksValue"),
+                                                         rs.getDouble("regulatorValue"),
+                                                         rs.getDouble("voltageMonitorValue"));
+        }
+    };
+    
     private static void validateVoltageViolationSettings(List<VoltageViolationSetting> settings) {
         List<String> errors = Lists.newArrayList();
         for (VoltageViolationSetting setting : settings) {
@@ -587,6 +666,21 @@ public class StrategyDaoImpl implements StrategyDao, InitializingBean {
         if (!errors.isEmpty()) throw new IllegalArgumentException(StringUtils.join(errors, ", "));
     }
     
+    private static void validateMinCommunicationPercentageSetting(MinCommunicationPercentageSetting setting) {
+        List<String> errors = Lists.newArrayList();
+        if (setting.getBanksReportingRatio() < 0 || setting.getBanksReportingRatio() > 100) {
+            errors.add("Capaciator Bank communication percentage must be greater than or equal to zero and less than or equal to one hundred");
+        }
+        if (setting.getRegulatorReportingRatio() < 0 || setting.getRegulatorReportingRatio() > 100) {
+            errors.add("Voltage Regulator communication percentage must be greater than or equal to zero and less than or equal to one hundred");
+        }
+        if (setting.getVoltageMonitorReportingRatio() < 0 || setting.getVoltageMonitorReportingRatio() > 100) {
+            errors.add("Additional Voltage Points communication percentage must be greater than or equal to zero and less than or equal to one hundred");
+        }
+        if (!errors.isEmpty()) throw new IllegalArgumentException(StringUtils.join(errors, ", "));
+    }
+    
+    @Override
     public void afterPropertiesSet() throws Exception {
         strategyTemplate = new SimpleTableAccessTemplate<CapControlStrategy>(yukonJdbcTemplate, nextValueHelper);
         strategyTemplate.setTableName("CapControlStrategy");

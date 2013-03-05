@@ -42,6 +42,7 @@ public class CapControlStrategy extends DBPersistent implements CTIDbChange {
     private List<PeakTargetSetting> targetSettings = StrategyPeakSettingsHelper.getSettingDefaults(ControlAlgorithm.KVAR);
     private List<VoltageViolationSetting> voltageViolationSettings = VoltageViolationSettingsHelper.getVoltageViolationDefaults();
     private PowerFactorCorrectionSetting powerFactorCorrectionSetting = new PowerFactorCorrectionSetting();
+    private MinCommunicationPercentageSetting minCommunicationPercentageSetting = new MinCommunicationPercentageSetting();
     
 	public static final String SETTER_COLUMNS[] = { 
 		"StrategyName", "ControlMethod", "MaxDailyOperation",
@@ -58,7 +59,8 @@ public class CapControlStrategy extends DBPersistent implements CTIDbChange {
 	public static boolean todExists = false;
 	private StrategyDao strategyDao = YukonSpringHook.getBean(StrategyDao.class);
 	
-	public void add() throws SQLException {
+	@Override
+    public void add() throws SQLException {
 		Object[] addValues = {
 			getStrategyID(), getStrategyName(), getControlMethod().name(), getMaxDailyOperation(), 
 			getMaxOperationDisableFlag(), getPeakStartTime(), getPeakStopTime(),
@@ -71,7 +73,8 @@ public class CapControlStrategy extends DBPersistent implements CTIDbChange {
 		add( TABLE_NAME, addValues );
 	}
 	
-	public void update() throws SQLException {
+	@Override
+    public void update() throws SQLException {
         Object setValues[]= { 
             getStrategyName(), getControlMethod().name(), getMaxDailyOperation(), 
             getMaxOperationDisableFlag(), getPeakStartTime(), getPeakStopTime(),
@@ -87,9 +90,11 @@ public class CapControlStrategy extends DBPersistent implements CTIDbChange {
         strategyDao.savePeakSettings(this);
         strategyDao.saveVoltageViolationSettings(this);
         strategyDao.savePowerFactorCorrectionSetting(this);
+        strategyDao.saveMinCommunicationPercentageSetting(this);
     }
 	
-	public void retrieve() throws SQLException {
+	@Override
+    public void retrieve() throws SQLException {
         Object constraintValues[] = { getStrategyID() };
         Object results[] = retrieve( SETTER_COLUMNS, TABLE_NAME, CONSTRAINT_COLUMNS, constraintValues );
     
@@ -118,9 +123,11 @@ public class CapControlStrategy extends DBPersistent implements CTIDbChange {
         retrieveTargetSettings(this);
         retrieveVoltageViolationSettings(this);
         retrievePowerFactorCorrectionSetting(this);
+        retrieveMinCommunicationPercentageSetting(this);
     }
 	
-	public void delete() throws java.sql.SQLException {
+	@Override
+    public void delete() throws java.sql.SQLException {
 		delete( TABLE_NAME, CONSTRAINT_COLUMNS[0], getStrategyID() );	
 	}
 	
@@ -251,8 +258,13 @@ public class CapControlStrategy extends DBPersistent implements CTIDbChange {
 	private void retrievePowerFactorCorrectionSetting(CapControlStrategy strategy) {
 	    powerFactorCorrectionSetting = strategyDao.getPowerFactorCorrectionSetting(strategy);
 	}
+	
+	private void retrieveMinCommunicationPercentageSetting(CapControlStrategy strategy) {
+	    minCommunicationPercentageSetting = strategyDao.getMinCommunicationPercentageSetting(strategy);
+	}
 
-	public String toString() {
+	@Override
+    public String toString() {
 		return getStrategyName();
 	}
 
@@ -328,6 +340,14 @@ public class CapControlStrategy extends DBPersistent implements CTIDbChange {
         this.powerFactorCorrectionSetting = powerFactorCorrectionSetting;
     }
 
+    public MinCommunicationPercentageSetting getMinCommunicationPercentageSetting() {
+        return minCommunicationPercentageSetting;
+    }
+
+    public void setMinCommunicationPercentageSetting(MinCommunicationPercentageSetting minCommunicationPercentageSetting) {
+        this.minCommunicationPercentageSetting = minCommunicationPercentageSetting;
+    }
+
     public boolean isKVarAlgorithm () {
         return controlUnits == ControlAlgorithm.KVAR;
     }
@@ -364,6 +384,7 @@ public class CapControlStrategy extends DBPersistent implements CTIDbChange {
     /**
      * Generates a DBChange msg.
      */
+    @Override
     public DBChangeMsg[] getDBChangeMsgs(DbChangeType dbChangeType) {
         DBChangeMsg[] dbChange = new DBChangeMsg[1];
 
