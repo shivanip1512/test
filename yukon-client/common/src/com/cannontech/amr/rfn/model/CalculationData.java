@@ -2,7 +2,7 @@ package com.cannontech.amr.rfn.model;
 
 import com.cannontech.common.pao.definition.model.PaoPointValue;
 
-public class CalculationData {
+public final class CalculationData {
 
     private final int interval; //interval length in minutes
     private final PaoPointValue paoPointValue;
