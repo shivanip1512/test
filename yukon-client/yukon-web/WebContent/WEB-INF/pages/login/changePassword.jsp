@@ -15,15 +15,17 @@
         <title><cti:msg2 key=".pageTitle"/></title>
 
         <link rel="stylesheet" type="text/css" href="/WebConfig/yukon/styles/functional-overrides.css">
+        <link rel="stylesheet" type="text/css" href="/WebConfig/yukon/styles/yukon.css">
+        <link rel="stylesheet" type="text/css" href="/WebConfig/yukon/styles/icons.css">
         <link rel="stylesheet" type="text/css" href="/WebConfig/yukon/styles/shared/loginStyles.css">
 
         <script type="text/javascript" src="/JavaScript/lib/jQuery/jquery-1.8.3.min.js"></script>
         <script type="text/javascript" src="/JavaScript/lib/prototype/1.7.0.0/prototype.js"></script>
         <script type="text/javascript" src="/JavaScript/lib/jQuery/plugins/form/jquery.form.js"></script>
         <script type="text/javascript" src="/JavaScript/lib/jQuery/plugins/placeholder/jquery.placeholder.js"></script>
+        <script type="text/javascript" src="/JavaScript/lib/jQuery/plugins/traversable/jquery.traversable.js"></script>
         <script type="text/javascript" src="/JavaScript/yukon/ui/general.js"></script>
 
-        <cti:css key="yukon.web.login.loginStyles"/>
     </head>
 
     <body class="blank_module">
@@ -40,7 +42,7 @@
         </div>
         <div id='Menu'>
 
-            <div id='topMenu'>
+            <div id='topMenu' class="primary_background">
                 <div>
                     <div class='stdhdr_leftSide'></div>
                     <div class='stdhdr_rightSide'></div>
@@ -68,7 +70,7 @@
 
             <div class="loginMainSection">
                 <cti:msg2 var="passwordResetTitle"  key=".passwordReset" />
-                <tags:abstractContainer title="${passwordResetTitle}" type="rounded">
+                <tags:sectionContainer title="${passwordResetTitle}">
                     <cti:flashScopeMessages/>
         
         			<div style="float:left">
@@ -109,7 +111,7 @@
                     </div>
                     
                     <tags:passwordHelper passwordPolicy="${passwordPolicy}" />
-                </tags:abstractContainer>
+                </tags:sectionContainer>
             </div>
             <div class="loginTopSection">
                 <div class="formBottomLogo">

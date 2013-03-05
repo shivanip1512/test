@@ -27,7 +27,7 @@ h1 {font-size: 1.3em;font-weight:bold;}
 .standardPageHeading{margin-bottom:.8em;}
 
 /* shared form field attributes */
-input, button, textarea, select {border:solid 1px #ccc; border-radius:2px; color:#555;}
+input, button, textarea, select, .datetimeEntry_wrap {border:solid 1px #ccc; border-radius:2px; color:#555;}
 input, button, textarea {padding:2px 5px;}
 input:focus, button:focus, textarea:focus, select:focus, button:hover, input[type=submit]:hover, input[type=submit]:focus, input[type=button]:hover, input[type=button]:focus {border:solid 1px #4373A3;box-shadow:0 0 5px lightBlue;outline:0;color:black;}
 input::-moz-focus-inner, button::-moz-focus-inner, textarea::-moz-focus-inner, select::-moz-focus-inner {border:0}
@@ -93,7 +93,7 @@ table.nowrap th, table.nowrap td {white-space: nowrap;}
 .compactResultsTable, .resultsTable, .nameValueTable {width:100%;border-collapse:collapse;}
 .compactResultsTable tr.focused, .compactResultsTable tr.focused:nth-child(2n) { background-color: #DAE2FF;}
 .compactResultsTable {font-size:0.8em;}
-.compactResultsTable tr:nth-child(even), .resultsTable tr:nth-child(even), .striped-list > div:nth-child(even) {background-color:#f6f6f6;}
+.compactResultsTable tr:nth-child(even), .resultsTable tr:nth-child(even), .striped-list > div:nth-child(even), .striped tr:nth-child(even) {background-color:#f6f6f6;}
 .compactResultsTable td, .resultsTable td, .nameValueTable td {border:none;}
 .compactResultsPaging {border-top: 1px solid #ccc;}
 .compactResultsPaging .pagingArea {float: right; margin: -1px 50px 0 0; border: 1px solid #ccc; border-style: none solid solid solid; padding: 5px 10px;background-color: white;}
@@ -106,6 +106,8 @@ table.nowrap th, table.nowrap td {white-space: nowrap;}
 .aligned_4_actions .first, .aligned_4_actions .middle {width: 30%;}
 .aligned_4_actions .last {width: 10%;}
 
+.two-column-split {width:100%;}
+.two-column-split th, .two-column-split td {width:50%;}
 /* END Table Styles */
 
 /*Default Progress Bar classes - start */
@@ -140,7 +142,7 @@ div.progressBarInnerFailure {
 .toggle-title {cursor: pointer; background: white url(../Icons/icon_blockexpanded.png) no-repeat scroll 0 8px; padding-left: 14px; display: inline;}
 .collapsed .toggle-title {background: url("../Icons/icon_blockcollapsed.png") no-repeat scroll 3px 5px #FFFFFF;}
 
-.titledContainer, .pagedBox, .sectionContainer, .tabbedContainer {margin-bottom: 20px;}
+.boxContainer, .pagedBox, .tabbedContainer {margin-bottom: 20px;}
 .pagedBox, .sectionContainer, .boxContainer, .inlineTree, .resultsTable, .liteContainer {border:solid 1px #ccc; border-radius:3px;} /* .titledContainer, */
 .pagedBox > .title, .inlineTree > .tree_helper_controls, .resultsTable th {border-radius:3px 3px 0 0;} /* .titledContainer > .titleBar, */
 .resultsTable th {border-bottom: solid 1px #ccc;}
@@ -335,6 +337,7 @@ html[xmlns] .clearfix {display: block;}
 .stacked {margin-bottom: 10px;} /*  Soley for spacing vertically stacked elements */
 .wall_of_text .value {max-width: 300px;}
 .title-bar-tool {float:right !important;margin-right: 10px;}
+.dialog-no-buttons {margin-bottom: 20px;} /* buffer to get content (like scroll bar) from running into drag handle in dialogs with no button bar */
 
 .setting {border-top: dotted 1px #ccc; margin-top: -1px; padding: 10px 0;}
 .setting > .fl {margin-left: 10px;}
@@ -348,7 +351,7 @@ html[xmlns] .clearfix {display: block;}
 .groupedList .groupedItem {margin: 2px 0 0 20px;}
  
  /* dateTime Pickers */
-.datetimeEntry_wrap {display: inline-block; overflow: hidden; background: #ccc; -webkit-border-radius: 2px; -moz-border-radius: 2px; border-radius: 2px; border: solid 1px #999; float: left; margin-right: 5px;}
+.datetimeEntry_wrap {display: inline-block; overflow: hidden; background: #ccc; -webkit-border-radius: 2px; -moz-border-radius: 2px; border-radius: 2px; float: left; margin-right: 5px;}
 .datetimeEntry_wrap.date {width: 135px;}
 .datetimeEntry_wrap.dateTime {min-width: 171px;}
 .datetimeEntry_wrap.time {width: 102px;}
@@ -357,6 +360,7 @@ html[xmlns] .clearfix {display: block;}
 .datetimeEntry_wrap .datetimeEntry_control {display: none !important;}
 .ui-datepicker.hide_minutes .ui_tpicker_minute_label,.ui-datepicker.hide_minutes .ui_tpicker_minute{display: none;}
 .datetimeEntry_wrap .timezone_container {line-height: 21px; margin-left: -31px; float: left; color: #999; font-size: 13px; padding-right: 5px;}
+input.datePicker, input.timePicker, input.dateTimePicker {border-radius: 2px 0 0 2px;}
 input.datePicker {width: 7.5em;}
 input.timePicker {width: 5em;}
 input.dateTimePicker {margin: 0;}
@@ -374,19 +378,17 @@ input.dateTimePicker {margin: 0;}
 .contextual-menu-list tr:hover td.contextual-menu .dropdown-container {visibility: visible;}
 .dropdown-container.menu-open {display: block; visibility: visible;}
 .ui-datepicker::before,
-.dropdown-menu::before {position: absolute; top: -7px; display: inline-block; border-right: 7px solid transparent; border-bottom: 7px solid #ccc; border-left: 7px solid transparent; border-bottom-color: rgba(0, 0, 0, 0.2); content: '';}
-.ui-datepicker::after, .dropdown-menu::after {position: absolute; top: -6px; display: inline-block; border-right: 6px solid transparent; border-bottom: 6px solid #ffffff; border-left: 6px solid transparent; content: '';}
-.dropdown-menu.menu-left::before {right: 14px; left: auto;}
-.ui-datepicker::after, .dropdown-menu.menu-left::after {right: 15px; left: auto;}
-.dropdown-menu.menu-right::before {left: 14px; right: auto;}
-.dropdown-menu.menu-right::after {left: 15px; right: auto;}
-.ui-datepicker::before {left:3.5em;right:auto;border-bottom-color: #999;}
-.dropdown-menu {display: none; position: absolute; /*right: 0*/; left: auto; top: 100%; text-align: left; z-index: 1000; float: left; min-width: 160px; padding: 4px 0; margin: 1px 0 0; color: #999; list-style: none; background-color: #ffffff; border: 1px solid #ccc; border: 1px solid rgba(0, 0, 0, 0.2); *border-right-width: 2px; *border-bottom-width: 2px; -webkit-border-radius: 5px; -moz-border-radius: 5px; border-radius: 5px; -webkit-box-shadow: 0 5px 10px rgba(0, 0, 0, 0.2); -moz-box-shadow: 0 5px 10px rgba(0, 0, 0, 0.2); box-shadow: 0 5px 10px rgba(0, 0, 0, 0.2); -webkit-background-clip: padding-box; -moz-background-clip: padding; background-clip: padding-box; font-size: 13px; -webkit-border-radius: 2px; -moz-border-radius: 2px; border-radius: 2px;}
+.dropdown-menu::before {right: 14px; left: auto; position: absolute; top: -7px; display: inline-block; border-right: 7px solid transparent; border-bottom: 7px solid #ccc; border-left: 7px solid transparent; border-bottom-color: rgba(0, 0, 0, 0.2); content: '';}
 .dropdown-menu.long-menu-list {font-size: 11px;}
-.dropdown-menu a {display: block; padding: 0 15px; clear: both; font-weight: normal; line-height: 18px; color: #555; white-space: nowrap; text-decoration: none; cursor: pointer;}
+.ui-datepicker::after, .dropdown-menu::after {position: absolute; top: -6px; right: 15px; left: auto; display: inline-block; border-right: 6px solid transparent; border-bottom: 6px solid #ffffff; border-left: 6px solid transparent; content: '';}
+.ui-datepicker::before {left:3.5em;right:auto;border-bottom-color: #999;}
+.dropdown-menu {display: none; position: absolute; right: 0; left: auto; top: 100%; text-align: left; z-index: 1000; float: left; min-width: 160px; padding: 4px 0; margin: 1px 0 0; color: #999; list-style: none; background-color: #ffffff; border: 1px solid #ccc; border: 1px solid rgba(0, 0, 0, 0.2); *border-right-width: 2px; *border-bottom-width: 2px; -webkit-border-radius: 5px; -moz-border-radius: 5px; border-radius: 5px; -webkit-box-shadow: 0 5px 10px rgba(0, 0, 0, 0.2); -moz-box-shadow: 0 5px 10px rgba(0, 0, 0, 0.2); box-shadow: 0 5px 10px rgba(0, 0, 0, 0.2); -webkit-background-clip: padding-box; -moz-background-clip: padding; background-clip: padding-box; font-size: 13px;}
+.dropdown-menu a {display: block; padding: 0 15px; clear: both; font-weight: normal; line-height: 18px; color: #555; white-space: nowrap; text-decoration: none;}
 .dropdown-menu li a:hover, .dropdown-menu .active a, .dropdown-menu .active a:hover {color: #06C; text-decoration: none; background-color: whiteSmoke;}
 .dropdown-menu .divider {height: 1px; margin: 3px 1px; overflow: hidden; background-color: #E5E5E5; border-bottom: 1px solid white;}
+.dropdown-menu {position: absolute; right: 1px; top: 7px;}
 .dropdown-container a {cursor: pointer;}
+.dropdown-menu {-webkit-border-radius: 2px; -moz-border-radius: 2px; border-radius: 2px;}
 /* dropdown cog menu end */
 
 /* search widget */

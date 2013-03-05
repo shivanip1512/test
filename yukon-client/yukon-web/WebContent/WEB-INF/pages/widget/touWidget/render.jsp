@@ -5,20 +5,26 @@
 
 <cti:includeScript link="/JavaScript/touPreviousReadings.js"/>
 
-<tags:simpleDialog id="touDialog"/>
+<c:if test="${touAttributesAvailable}">
+<cti:url var="touSpecificsUrl" value="/meter/touPreviousReadings"><cti:param name="deviceId" value="${meter.deviceId}"/></cti:url>
+<div id="touDialog" title="<cti:msg2 key=".title"/>" class="scrollingContainer_large dn"></div>
+<script type="text/javascript">
+jQuery(function() {
+    jQuery('#touPopupLink').click(function(event) {
+        jQuery.ajax({
+            url: "${touSpecificsUrl}",
+            success: function(transport) {
+                jQuery("#touDialog").html(transport);
+                jQuery("#touDialog").dialog({width: "auto", minWidth: 400});
+            }
+        });
+    });
+});
+</script>
+</c:if>
 
 <c:choose>
 	<c:when test="${touAttributesAvailable}">
-		<div id="popupDiv" style="text-align:right;font-size:12px;">
-			<cti:url var="touSpecificsUrl" value="/meter/touPreviousReadings">
-		    	<cti:param name="deviceId" value="${meter.deviceId}"/>
-		    </cti:url>
-		    <a id="touPopupLink" href="javascript:void(0)"
-		       style="align:right"
-		       onclick="openSimpleDialog('touDialog', '${touSpecificsUrl}', '<cti:msg2 key=".title"/>')">
-		        <cti:msg2 key=".previousReadingsLink" />
-		    </a>
-		</div>
 		<div id="touTable">
 			<tags:touAttribute headerKey="yukon.web.widgets.touWidget.rateA"
 			                 usageAttribute="${TOU_RATE_A_USAGE}"
@@ -36,14 +42,11 @@
 			                 usageAttribute="${TOU_RATE_D_USAGE}"
 			                 peakAttribute="${TOU_RATE_D_PEAK_DEMAND}" />
 		</div>
-	
 		<div id="${widgetParameters.widgetId}_results"></div>
-		<div style="text-align: right">
-			<tags:widgetActionUpdate hide="${!readable}" method="read" nameKey="read" 
-                                     container="${widgetParameters.widgetId}_results" />
-		</div>
+		<div class="actionArea clearfix full_width">
+            <a id="touPopupLink" href="javascript:void(0)" class="fl"><cti:msg2 key=".previousReadingsLink"/></a>
+            <tags:widgetActionUpdate hide="${!readable}" method="read" nameKey="read" container="${widgetParameters.widgetId}_results"/>
+        </div>
 	</c:when>
-	<c:otherwise>
-		<i:inline key=".notConfigured" />
-	</c:otherwise>
+	<c:otherwise><i:inline key=".notConfigured"/></c:otherwise>
 </c:choose>

@@ -22,7 +22,12 @@
             </c:forEach>
         </ul>
     </div>
-    <h3 class="fl" style="margin-left: 40px;"><i:inline key=".sortBy"/>&nbsp;<a href="?file=${file}&sortType=alphabetic" id="alphabetic" name="alphabetic"><i:inline key=".alphabetic"/></a> or <a href="?file=${file}&sortType=date" id="date" name="alphabetic"><i:inline key=".date"/></a></h3>
+    <h3 class="fl" style="margin-left: 40px;">
+        <i:inline key=".sortBy"/>&nbsp;
+        <a href="?file=${file}&sortType=alphabetic" id="alphabetic" name="alphabetic"><i:inline key=".alphabetic"/></a>
+        &nbsp;<i:inline key="yukon.web.defaults.or"/>&nbsp;
+        <a href="?file=${file}&sortType=date" id="date" name="alphabetic"><i:inline key="yukon.web.defaults.date"/></a>
+    </h3>
 </div>
 
 <!-- Display and link to the local log files -->

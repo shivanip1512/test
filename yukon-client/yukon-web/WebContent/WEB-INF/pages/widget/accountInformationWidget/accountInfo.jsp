@@ -1,30 +1,26 @@
-<%@ taglib prefix="tags" tagdir="/WEB-INF/tags"%>
 <%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core"%>
-<%@ taglib prefix="tags" tagdir="/WEB-INF/tags"%>
 <%@ taglib prefix="cti" uri="http://cannontech.com/tags/cti"%>
 <%@ taglib prefix="i" tagdir="/WEB-INF/tags/i18n"%>
-<%@ taglib prefix="fn" uri="http://java.sun.com/jsp/jstl/functions"%>
+
+<script type="text/javascript">
+jQuery(function() {
+    jQuery("#cisDetailsLink").click(function(event){
+        jQuery("#cisDetails").dialog({width: "auto", minWidth: 400});
+    });
+});
+</script>
 
 <c:choose>
-<c:when test="${!hasVendorId}">
-	<i:inline key=".noVendor"/>
-</c:when>
-<c:otherwise>
-
-<%-- MORE INFO LINK --%>
-<div style="text-align:right;padding-right:20px;font-size:12px;">
-    <a href="javascript:void(0);" onclick="$('moreInfo').toggle();"><i:inline key=".viewDetails"/></a>
-</div>
-
-<div id="moreInfoDiv">
-<tags:simplePopup id="moreInfo" title="CIS Details" onClose="$('moreInfo').toggle();">
-    <div style="height:300px;overflow:auto;">
-        <jsp:include page="/WEB-INF/pages/widget/accountInformationWidget/moreInfo.jsp" />
-    </div>
-</tags:simplePopup>
-</div>
-
-<%@ include file="accountInfoPartial.jspf" %>
-
-</c:otherwise>
+    <c:when test="${!hasVendorId}">
+    	<i:inline key=".noVendor"/>
+    </c:when>
+    <c:otherwise>
+        <%@ include file="accountInfoPartial.jspf" %>
+        <div class="actionArea">
+            <a href="javascript:void(0);" id="cisDetailsLink" class="fl"><i:inline key=".viewDetails"/></a>
+        </div>
+        <div id="cisDetails" class="dn scrollingContainer_large dialog-no-buttons" title="<cti:msg2 key=".cisDetails.title"/>" style="min-width: 400px;">
+            <jsp:include page="/WEB-INF/pages/widget/accountInformationWidget/moreInfo.jsp" />
+        </div>
+    </c:otherwise>
 </c:choose>

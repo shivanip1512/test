@@ -49,4 +49,4 @@ function redirectToNameValue_${id}(node) {
                 height="${height}"
                 highlightNodePath="${pageScope.highlightNodePath}"
                 includeControlBar="${pageScope.includeControlBar}"
-                styleClass="bn" />
+                styleClass="bn contained" />

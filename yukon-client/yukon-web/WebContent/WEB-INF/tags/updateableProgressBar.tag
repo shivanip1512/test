@@ -30,7 +30,7 @@
 	<c:set var="hideCount" value="false"/>
 </c:if>
 
-<div id="progressContainer_${pbarId}" class="progressBar">
+<div id="progressContainer_${pbarId}" class="progressBar clearfix">
     <div class="progressBarBorder box fl ${pageScope.borderClasses}">
         <c:choose>
             <c:when test="${empty pageScope.failureCountKey}">

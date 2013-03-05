@@ -13,26 +13,22 @@ initiateCannonLogUpdate("${updateUrl}" ,2);
 </script>
 
 <div id="logInfo" style="width:600px;">
-<tags:nameValueContainer altRowOn="true">
-    <cti:msg2 var="fileNameLabel" key=".fileName"/>
-	<tags:nameValue name="${fileNameLabel} "><span id="fileName">${logFileName}</span></tags:nameValue>
-    <cti:msg2 var="lastModifiedLabel" key=".lastModified"/>
-	<tags:nameValue name="${lastModifiedLabel} "><span id="lastMod">${fileDateMod}</span></tags:nameValue>
-    <cti:msg2 var="fileSizeLabel" key=".fileSize"/>
-	<tags:nameValue name="${fileSizeLabel} "><span id="fileLength">${fileLength}</span> <i:inline key=".fileSize.unit"/></tags:nameValue>
-    <cti:msg2 var="numberOfLinesShownLabel" key=".numberOfLinesShown"/>
-	<tags:nameValue name="${numberOfLinesShownLabel} "><span id="numLinesShown">${numLines}</span></tags:nameValue>
-</tags:nameValueContainer>
+    <tags:nameValueContainer2 tableClass="stacked striped">
+    	<tags:nameValue2 nameKey=".fileName"><span id="fileName">${logFileName}</span></tags:nameValue2>
+    	<tags:nameValue2 nameKey=".lastModified"><span id="lastMod">${fileDateMod}</span></tags:nameValue2>
+    	<tags:nameValue2 nameKey=".fileSize"><span id="fileLength">${fileLength}</span>&nbsp;<i:inline key=".fileSize.unit"/>&nbsp;</tags:nameValue2>
+    	<tags:nameValue2 nameKey=".numberOfLinesShown"><span id="numLinesShown">${numLines}</span></tags:nameValue2>
+    </tags:nameValueContainer2>
 </div>
 
-<br>
-
-<form id="newLinesForm">
-<input type="hidden" id="file" name="file" value="${file}" size=5>
-<span id="numTail"><i:inline key=".numberOfLinesTailed"/> = <input onchange="$('newLinesForm').action = 'tail?file=${file}'; submit();" id="numLines" name="numLines" value=${numLines} size=5 ></span>
-&nbsp&nbsp<button id="submitLines" onclick="$('newLinesForm').action = 'tail?file=${file}'; submit();"><i:inline key=".changeButton"/></button>
-&nbsp&nbsp<button id="pauseButton" onclick="startOrPauseUpdate();" type="button"><i:inline key=".pauseButton"/></button>
-&nbsp&nbsp<button id="downloadButton" onclick="$('newLinesForm').action = 'download?file=${file}'; submit();" type="button"><i:inline key=".downloadButton"/></button>
+<form id="newLinesForm" class="stacked">
+    <input type="hidden" id="file" name="file" value="${file}" size=5>
+    <span id="numTail"><i:inline key=".numberOfLinesTailed"/>&nbsp;<input onchange="$('newLinesForm').action = 'tail?file=${file}'; submit();" id="numLines" name="numLines" value=${numLines} size=5 ></span>
+    <span class="button_container">
+        <cti:button id="submitLines" onclick="$('newLinesForm').action = 'tail?file=${file}'; submit();" nameKey="change"/>
+        <cti:button id="pauseButton" onclick="startOrPauseUpdate();" type="button" nameKey="pause"/>
+        <cti:button id="downloadButton" onclick="$('newLinesForm').action = 'download?file=${file}'; submit();" nameKey="download"/>
+    </span>
 </form>
 
 

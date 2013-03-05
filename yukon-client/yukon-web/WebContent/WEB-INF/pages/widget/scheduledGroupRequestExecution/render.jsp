@@ -60,7 +60,7 @@
 				<td style="white-space:nowrap;">${jobWrapper.scheduleDescription}</td>
 	
 	            <%-- status --%>
-	            <td id="status_${jobWrapper.job.id}">
+	            <td id="status_${jobWrapper.job.id}" class="wsnw">
 	                <span id="jobNotRunningSpan_${jobWrapper.job.id}" <c:if test="${jobWrapper.jobStatus eq 'RUNNING'}">style="display:none;"</c:if>>
 	                    <cti:dataUpdaterValue type="JOB" identifier="${jobWrapper.job.id}/STATE_TEXT"/>
 	                </span>

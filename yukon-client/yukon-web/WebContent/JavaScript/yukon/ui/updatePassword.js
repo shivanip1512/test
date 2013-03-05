@@ -1,7 +1,7 @@
 if(typeof(Yukon) === "undefined")
 	Yukon = {};
 if(typeof(Yukon.ui) === "undefined")
-	Yukon.ui = {}
+	Yukon.ui = {};
 
 Yukon.ui.passwordManager = {
 	minLength: 8,
@@ -46,14 +46,6 @@ Yukon.ui.passwordManager = {
 		var errors = ['policy_errors', 'rule_errors'];
 		var validations = ['policy_validations', 'rule_validations'];
 		
-		for(var i=0; i<errors.length; i++){
-			if(data[errors[i]]){
-				for(var j=0; j<data[errors[i]].length; j++){
-					jQuery("." + data[errors[i]][j]).addClass("fail");
-				}
-			}
-		}
-		
 		for(var i=0; i<validations.length; i++){
 			if(data[validations[i]]){
 				for(var j=0; j<data[validations[i]].length; j++){
@@ -61,5 +53,14 @@ Yukon.ui.passwordManager = {
 				}
 			}
 		}
+		
+		for(var i=0; i<errors.length; i++){
+            if(data[errors[i]]){
+                for(var j=0; j<data[errors[i]].length; j++){
+                    jQuery("." + data[errors[i]][j]).removeClass("pass");
+                    jQuery("." + data[errors[i]][j]).addClass("fail");
+                }
+            }
+        }
 	}
 };

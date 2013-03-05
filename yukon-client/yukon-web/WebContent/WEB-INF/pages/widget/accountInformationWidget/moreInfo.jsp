@@ -1,84 +1,73 @@
-<%@ taglib tagdir="/WEB-INF/tags" prefix="tags" %>
-<%@ taglib tagdir="/WEB-INF/tags/amr" prefix="amr" %>
-<%@ taglib uri="http://java.sun.com/jsp/jstl/core" prefix="c"%>
-<%@ taglib uri="http://cannontech.com/tags/cti" prefix="cti" %>
-<%@ taglib uri="http://java.sun.com/jsp/jstl/functions" prefix="fn" %>
+<%@ taglib prefix="tags" tagdir="/WEB-INF/tags"%>
+<%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core"%>
+<%@ taglib prefix="cti" uri="http://cannontech.com/tags/cti"%>
+<%@ taglib prefix="i" tagdir="/WEB-INF/tags/i18n"%>
+<%@ taglib prefix="fn" uri="http://java.sun.com/jsp/jstl/functions"%>
 
 <%-- CUSTOMER INFORMATION --%>
-<br>
-<tags:nameValueContainer tableClass="compactResultsTable nameValue" altRowOn="true">
-    <tr><th colspan="2" align="left">Customer Information:</th></tr>
-    <c:forEach var="x" items="${custBasicsInfo}">
-        <tags:nameValue name="${x.label}" nameColumnWidth="30%">${x.value}</tags:nameValue>
-    </c:forEach>
-</tags:nameValueContainer>
+<cti:msg2 var="custInfo" key=".custInfo"/>
+<tags:sectionContainer title="${custInfo}">
+    <tags:nameValueContainer tableClass="rowHighlighting striped two-column-split">
+        <c:forEach var="x" items="${custBasicsInfo}">
+            <tags:nameValue name="${x.label}">${x.value}</tags:nameValue>
+        </c:forEach>
+    </tags:nameValueContainer>
+</tags:sectionContainer>
 
+<cti:msg2 var="address" key=".address"/>
 <%-- CUSTOMER CONTACT INFORMATION --%>
-<br>
-<div style="padding-left:30px;">
-<tags:nameValueContainer tableClass="compactResultsTable nameValue" style="font-size:11px;" altRowOn="true">
-    <tr><th colspan="2" align="left">Contact Info:</th></tr>
-    <c:forEach var="x" items="${custContactInfo}">
-        <tags:nameValue name="${x.label}" nameColumnWidth="30%">${x.value}</tags:nameValue>
-    </c:forEach>
-    <tags:nameValue name="Address" nameColumnWidth="30%">
-        <tags:address address="${custAddress}" />
-    </tags:nameValue>
-</tags:nameValueContainer>
-</div>
+<tags:sectionContainer2 nameKey="contactInfo">
+    <tags:nameValueContainer tableClass="rowHighlighting striped two-column-split">
+        <c:forEach var="x" items="${custContactInfo}">
+            <tags:nameValue name="${x.label}">${x.value}</tags:nameValue>
+        </c:forEach>
+        <tags:nameValue name="${address}"><tags:address address="${custAddress}"/></tags:nameValue>
+    </tags:nameValueContainer>
+</tags:sectionContainer2>
 
 <%-- SERVICE LOCATION INFORMATION --%>
-<br>
-<br>
-<tags:nameValueContainer tableClass="compactResultsTable nameValue" altRowOn="true">
-    <tr><th colspan="2" align="left">Service Location:</th></tr>
-    <c:forEach var="x" items="${servLocBasicsInfo}">
-        <tags:nameValue name="${x.label}" nameColumnWidth="30%">${x.value}</tags:nameValue>
-    </c:forEach>
-    <tags:nameValue name="Address" nameColumnWidth="30%">
-        <tags:address address="${servLocAddress}" />
-    </tags:nameValue>
-</tags:nameValueContainer>
+<cti:msg2 var="serviceLocation" key=".serviceLocation"/>
+<tags:sectionContainer title="${serviceLocation}">
+    <tags:nameValueContainer tableClass="rowHighlighting striped two-column-split">
+        <c:forEach var="x" items="${servLocBasicsInfo}">
+            <tags:nameValue name="${x.label}">${x.value}</tags:nameValue>
+        </c:forEach>
+        <tags:nameValue name="${address}"><tags:address address="${servLocAddress}" /></tags:nameValue>
+    </tags:nameValueContainer>
+</tags:sectionContainer>
 
 <%-- SERVICE LOCATION NETWORK INFORMATION --%>
-<br>
-<div style="padding-left:30px;">
-<tags:nameValueContainer tableClass="compactResultsTable nameValue" style="font-size:11px;" altRowOn="true">
-    <tr><th colspan="2" align="left">Network:</th></tr>
-    <c:forEach var="x" items="${servLocNetworkInfo}">
-        <tags:nameValue name="${x.label}" nameColumnWidth="30%">${x.value}</tags:nameValue>
-    </c:forEach>
-</tags:nameValueContainer>
-</div>
+<tags:sectionContainer2 nameKey="network">
+    <tags:nameValueContainer tableClass="rowHighlighting striped two-column-split">
+        <c:forEach var="x" items="${servLocNetworkInfo}">
+            <tags:nameValue name="${x.label}">${x.value}</tags:nameValue>
+        </c:forEach>
+    </tags:nameValueContainer>
+</tags:sectionContainer2>
 
 <%-- METER BASIC INFORMATION --%>
-<br>
-<br>
-<tags:nameValueContainer tableClass="compactResultsTable nameValue" altRowOn="true">
-    <tr><th colspan="2" align="left">Meter:</th></tr>
-    <c:forEach var="x" items="${meterBasicsInfo}">
-        <tags:nameValue name="${x.label}" nameColumnWidth="30%">${x.value}</tags:nameValue>
-    </c:forEach>
-</tags:nameValueContainer>
+<tags:sectionContainer2 nameKey="meter">
+    <tags:nameValueContainer tableClass="rowHighlighting striped two-column-split">
+        <c:forEach var="x" items="${meterBasicsInfo}">
+            <tags:nameValue name="${x.label}">${x.value}</tags:nameValue>
+        </c:forEach>
+    </tags:nameValueContainer>
+</tags:sectionContainer2>
 
 <%-- METER NAMEPLATE INFORMATION --%>
-<br>
-<div style="padding-left:30px;">
-<tags:nameValueContainer tableClass="compactResultsTable nameValue" style="font-size:11px;" altRowOn="true">
-    <tr><th colspan="2" align="left">Nameplate:</th></tr>
-    <c:forEach var="x" items="${meterNameplateInfo}">
-        <tags:nameValue name="${x.label}" nameColumnWidth="30%">${x.value}</tags:nameValue>
-    </c:forEach>
-</tags:nameValueContainer>
-</div>
+<tags:sectionContainer2 nameKey="nameplate">
+    <tags:nameValueContainer tableClass="rowHighlighting striped two-column-split">
+        <c:forEach var="x" items="${meterNameplateInfo}">
+            <tags:nameValue name="${x.label}">${x.value}</tags:nameValue>
+        </c:forEach>
+    </tags:nameValueContainer>
+</tags:sectionContainer2>
 
 <%-- METER UTILITY INFORMATION --%>
-<br>
-<div style="padding-left:30px;">
-<tags:nameValueContainer tableClass="compactResultsTable nameValue" style="font-size:11px;" altRowOn="true">
-    <tr><th colspan="2" align="left">Utility Information:</th></tr>
-    <c:forEach var="x" items="${meterUtilInfoInfo}">
-        <tags:nameValue name="${x.label}" nameColumnWidth="30%">${x.value}</tags:nameValue>
-    </c:forEach>
-</tags:nameValueContainer>
-</div>
+<tags:sectionContainer2 nameKey="utilityInfo">
+    <tags:nameValueContainer tableClass="rowHighlighting striped two-column-split">
+        <c:forEach var="x" items="${meterUtilInfoInfo}">
+            <tags:nameValue name="${x.label}">${x.value}</tags:nameValue>
+        </c:forEach>
+    </tags:nameValueContainer>
+</tags:sectionContainer2>

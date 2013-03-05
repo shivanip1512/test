@@ -24,6 +24,7 @@
 
         <script type="text/javascript" src="/JavaScript/lib/jQuery/jquery-1.8.3.min.js"></script>
         <script type="text/javascript" src="/JavaScript/lib/jQuery/plugins/placeholder/jquery.placeholder.js"></script>
+        <script type="text/javascript" src="/JavaScript/lib/jQuery/plugins/traversable/jquery.traversable.js"></script>
         <script type="text/javascript" src="/JavaScript/lib/prototype/1.7.0.0/prototype.js"></script>
         <script type="text/javascript" src="/JavaScript/yukon/ui/general.js"></script>
 
@@ -44,7 +45,7 @@
         </div>
         <div id='Menu'>
 
-            <div id='topMenu'>
+            <div id='topMenu' class="primary_background">
                 <div>
                     <div class='stdhdr_leftSide'></div>
                     <div class='stdhdr_rightSide'></div>
@@ -72,7 +73,7 @@
 
             <div class="loginMainSection">
                 <cti:msg2 var="passwordResetTitle"  key=".passwordReset" />
-                <tags:abstractContainer title="${passwordResetTitle}" type="rounded">
+                <tags:sectionContainer title="${passwordResetTitle}">
                     <cti:flashScopeMessages/>
                     <form:form action="forgottenPassword" commandName="forgottenPassword" method="POST">
                         <i:inline key=".forgottenPasswordMessage"/>
@@ -92,7 +93,7 @@
                         <cti:url value="/login.jsp" var="loginPage"/>
                         <cti:button href="${loginPage}" nameKey="cancel"/>
                     </form:form>
-                </tags:abstractContainer>
+                </tags:sectionContainer>
             </div>
             <div class="loginTopSection">
                 <div class="formBottomLogo">
