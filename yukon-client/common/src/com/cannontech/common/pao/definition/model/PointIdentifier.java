@@ -4,10 +4,11 @@ import java.io.Serializable;
 
 import org.apache.commons.lang.builder.CompareToBuilder;
 
+import com.cannontech.common.point.YukonPoint;
 import com.cannontech.database.data.lite.LitePoint;
 import com.cannontech.database.data.point.PointType;
 
-public final class PointIdentifier implements Comparable<PointIdentifier>, Serializable {
+public final class PointIdentifier implements Comparable<PointIdentifier>, Serializable, YukonPoint {
     private int offset;
     private PointType type;
     
@@ -95,5 +96,10 @@ public final class PointIdentifier implements Comparable<PointIdentifier>, Seria
         PointType pointType = PointType.getForId(litePoint.getPointType());
         PointIdentifier pointIdentifier = new PointIdentifier(pointType, litePoint.getPointOffset());
         return pointIdentifier;
+    }
+
+    @Override
+    public PointIdentifier getPointIdentifier() {
+        return this;
     }
 }
