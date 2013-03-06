@@ -45,7 +45,7 @@ public class AuthenticationServiceImpl implements AuthenticationService, Initial
     @Autowired private PasswordPolicyService passwordPolicyService;
     @Autowired private GlobalSettingDao globalSettingDao;
     @Autowired private YukonUserDao yukonUserDao;
-    @Autowired protected YukonUserPasswordDao yukonUserPasswordDao;
+    @Autowired private YukonUserPasswordDao yukonUserPasswordDao;
 
     @Override
     public AuthType getDefaultAuthType() {
@@ -61,7 +61,8 @@ public class AuthenticationServiceImpl implements AuthenticationService, Initial
     }
 
     @Override
-    public synchronized LiteYukonUser login(String username, String password) throws BadAuthenticationException, PasswordExpiredException {
+    public synchronized LiteYukonUser login(String username, String password) throws BadAuthenticationException,
+            PasswordExpiredException {
         // see if login attempt allowed and track the attempt
         authenticationThrottleService.loginAttempted(username);
 
@@ -74,7 +75,8 @@ public class AuthenticationServiceImpl implements AuthenticationService, Initial
 
         // ensure that user is enabled
         if (user.getLoginStatus().isDisabled()) {
-            log.info("Authentication failed (disabled): username=" + username + ", id=" + user.getUserID() + ", status=" + user.getLoginStatus());
+            log.info("Authentication failed (disabled): username=" + username + ", id=" + user.getUserID() +
+                ", status=" + user.getLoginStatus());
             throw new BadAuthenticationException();
         }
 
@@ -93,7 +95,8 @@ public class AuthenticationServiceImpl implements AuthenticationService, Initial
             // Check to see if the user's password is expired.
             boolean passwordExpired = isPasswordExpired(user);
             if (passwordExpired) {
-                throw new PasswordExpiredException("The user's password is expired.  Please login to the web interface to reset it. ("+user.getUsername()+")" );
+                throw new PasswordExpiredException("The user's password is expired.  Please login to the web " +
+                		"interface to reset it. (" + user.getUsername() + ")" );
             }
 
             return user;
@@ -199,7 +202,8 @@ public class AuthenticationServiceImpl implements AuthenticationService, Initial
 
     @Override
     public AuthenticationThrottleDto getAuthenticationThrottleData(String username) {
-        AuthenticationThrottleDto authThrottleDto = authenticationThrottleService.getAuthenticationThrottleData(username);
+        AuthenticationThrottleDto authThrottleDto =
+                authenticationThrottleService.getAuthenticationThrottleData(username);
         return authThrottleDto;
     }
 
@@ -215,8 +219,10 @@ public class AuthenticationServiceImpl implements AuthenticationService, Initial
 
     @Override
     public void afterPropertiesSet() throws Exception {
-        String authenticationTimeoutStyleEnumStr = configurationSource.getString(MasterConfigStringKeysEnum.AUTHENTICATION_TIMEOUT_STYLE, "STATIC");
-        AuthenticationTimeoutStyleEnum authenticationTimeoutStyle = AuthenticationTimeoutStyleEnum.valueOf(authenticationTimeoutStyleEnumStr);
+        String authenticationTimeoutStyleEnumStr =
+                configurationSource.getString(MasterConfigStringKeysEnum.AUTHENTICATION_TIMEOUT_STYLE, "STATIC");
+        AuthenticationTimeoutStyleEnum authenticationTimeoutStyle =
+                AuthenticationTimeoutStyleEnum.valueOf(authenticationTimeoutStyleEnumStr);
         
         switch (authenticationTimeoutStyle) {
             case STATIC:

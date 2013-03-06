@@ -49,7 +49,7 @@ function addUsers() {
                                     </c:choose>
                                     <tr>
                                         <td><a href="${editUserUrl}">${fn:escapeXml(user.username)}</a></td>
-                                        <td><cti:formatObject value="${user.authenticationCategory}"/></td>
+                                        <td><cti:msg2 key="${userAuthenticationInfo[user.userID].authenticationCategory}"/></td>
                                         <td><span class="${styleClass}"><cti:formatObject value="${user.loginStatus}"/></span></td>
     
                                         <dialog:confirm on="#remove_${user.userID}" nameKey="confirmRemove" argument="${fn:escapeXml(user.username)}" />

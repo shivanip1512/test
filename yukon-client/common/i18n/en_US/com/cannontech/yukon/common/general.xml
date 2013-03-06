@@ -21,7 +21,6 @@
 <entry key="yukon.common.loginStatus.ENABLED">Enabled</entry>
 <entry key="yukon.common.loginStatus.DISABLED">Disabled</entry>
 
-<entry key="yukon.common.authType.PLAIN">Normal</entry>
 <entry key="yukon.common.authType.HASH_SHA">Hashed</entry>
 <entry key="yukon.common.authType.HASH_SHA_V2">Hashed v.2</entry>
 <entry key="yukon.common.authType.RADIUS">Radius</entry>
@@ -34,7 +33,6 @@
 <entry key="yukon.common.authenticationCategory.LDAP">LDAP</entry>
 <entry key="yukon.common.authenticationCategory.RADIUS">Radius</entry>
 <entry key="yukon.common.authenticationCategory.NONE">No Login</entry>
-<entry key="yukon.common.authenticationCategory.PLAIN">Plain - Deprecated</entry>
 
 <entry key="yukon.common.phase">Phase</entry>
 <entry key="yukon.common.noPhase">No Phase</entry>

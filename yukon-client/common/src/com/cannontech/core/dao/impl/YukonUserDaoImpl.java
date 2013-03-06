@@ -2,6 +2,8 @@ package com.cannontech.core.dao.impl;
 
 import java.sql.SQLException;
 import java.util.List;
+import java.util.Map;
+import java.util.Map.Entry;
 
 import org.apache.commons.lang.RandomStringUtils;
 import org.joda.time.Instant;
@@ -13,7 +15,10 @@ import com.cannontech.common.events.loggers.SystemEventLogService;
 import com.cannontech.common.exception.NotAuthorizedException;
 import com.cannontech.common.search.SearchResult;
 import com.cannontech.common.user.UserAuthenticationInfo;
+import com.cannontech.common.util.ChunkingMappedSqlTemplate;
 import com.cannontech.common.util.SimpleCallback;
+import com.cannontech.common.util.SqlFragmentGenerator;
+import com.cannontech.common.util.SqlFragmentSource;
 import com.cannontech.common.util.SqlStatementBuilder;
 import com.cannontech.common.util.SqlStringStatementBuilder;
 import com.cannontech.core.authentication.model.AuthType;
@@ -22,7 +27,6 @@ import com.cannontech.core.dao.DBPersistentDao;
 import com.cannontech.core.dao.YukonUserDao;
 import com.cannontech.core.users.model.LiteUserGroup;
 import com.cannontech.database.PagingResultSetExtractor;
-import com.cannontech.database.SimpleTableAccessTemplate;
 import com.cannontech.database.TransactionType;
 import com.cannontech.database.YNBoolean;
 import com.cannontech.database.YukonJdbcTemplate;
@@ -40,6 +44,9 @@ import com.cannontech.message.dispatch.message.DBChangeMsg;
 import com.cannontech.message.dispatch.message.DbChangeType;
 import com.cannontech.user.UserUtils;
 import com.cannontech.yukon.IDatabaseCache;
+import com.google.common.base.Function;
+import com.google.common.base.Functions;
+import com.google.common.collect.Maps;
 
 public class YukonUserDaoImpl implements YukonUserDao {
 
@@ -145,15 +152,16 @@ public class YukonUserDaoImpl implements YukonUserDao {
         }
 	}
 
-    private final static YukonRowMapper<UserAuthenticationInfo> userAuthenticationInfoMapper = new YukonRowMapper<UserAuthenticationInfo>() {
-        @Override
-        public UserAuthenticationInfo mapRow(YukonResultSet rs) throws SQLException {
-            int userId = rs.getInt("UserId");
-            AuthType authType = rs.getEnum("AuthType", AuthType.class);
-            Instant lastChangedDate = rs.getInstant("LastChangedDate");
-            return new UserAuthenticationInfo(userId, authType, lastChangedDate);
-        }
-    };
+    private final static YukonRowMapper<UserAuthenticationInfo> userAuthenticationInfoMapper =
+        new YukonRowMapper<UserAuthenticationInfo>() {
+            @Override
+            public UserAuthenticationInfo mapRow(YukonResultSet rs) throws SQLException {
+                int userId = rs.getInt("UserId");
+                AuthType authType = rs.getEnum("AuthType", AuthType.class);
+                Instant lastChangedDate = rs.getInstant("LastChangedDate");
+                return new UserAuthenticationInfo(userId, authType, lastChangedDate);
+            }
+        };
 
     @Override
     public UserAuthenticationInfo getUserAuthenticationInfo(int userId) {
@@ -163,6 +171,32 @@ public class YukonUserDaoImpl implements YukonUserDao {
         UserAuthenticationInfo userAuthenticationInfo =
                 yukonJdbcTemplate.queryForObject(sql, userAuthenticationInfoMapper);
         return userAuthenticationInfo;
+    }
+
+    private final static YukonRowMapper<Map.Entry<Integer, UserAuthenticationInfo>> userAuthenticationInfoEntryMapper =
+        new YukonRowMapper<Map.Entry<Integer, UserAuthenticationInfo>>() {
+            @Override
+            public Entry<Integer, UserAuthenticationInfo> mapRow(YukonResultSet rs) throws SQLException {
+                UserAuthenticationInfo userAuthenticationInfo = userAuthenticationInfoMapper.mapRow(rs);
+                return Maps.immutableEntry(userAuthenticationInfo.getUserId(), userAuthenticationInfo);
+            }
+        };
+
+    @Override
+    public Map<Integer, UserAuthenticationInfo> getUserAuthenticationInfo(Iterable<Integer> userIds) {
+        ChunkingMappedSqlTemplate template = new ChunkingMappedSqlTemplate(yukonJdbcTemplate);
+        SqlFragmentGenerator<Integer> sqlGenerator = new SqlFragmentGenerator<Integer>() {
+            @Override
+            public SqlFragmentSource generate(List<Integer> subList) {
+                SqlStatementBuilder sql = new SqlStatementBuilder();
+                sql.append("SELECT UserId, AuthType, LastChangedDate FROM YukonUser WHERE UserId").in(subList);
+                return sql;
+            }
+        };
+        Function<Integer, Integer> identityFunction = Functions.identity();
+        Map<Integer, UserAuthenticationInfo> authenticationInfo =
+                template.mappedQuery(sqlGenerator, userIds, userAuthenticationInfoEntryMapper, identityFunction);
+        return authenticationInfo;
     }
 
     @Override

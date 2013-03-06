@@ -12,6 +12,7 @@ import com.cannontech.core.authentication.service.AuthenticationService;
 import com.cannontech.core.dao.impl.LoginStatusEnum;
 import com.cannontech.database.YukonJdbcTemplate;
 import com.cannontech.spring.YukonSpringHook;
+import com.google.common.base.Function;
 
 /**
  * This class represents the non-password related bits of a user. For the password-related bits, see
@@ -22,6 +23,13 @@ public class LiteYukonUser extends LiteBase {
     private LoginStatusEnum loginStatus;
     private boolean forceReset;
     private Integer userGroupId;
+
+    public final static Function<LiteYukonUser, Integer> USER_ID_FUNCTION = new Function<LiteYukonUser, Integer>() {
+        @Override
+        public Integer apply(LiteYukonUser input) {
+            return input.getLiteID();
+        };
+    };
 
     public LiteYukonUser() {
         this(0,null,null);

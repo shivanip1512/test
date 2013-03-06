@@ -24,6 +24,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 
 import com.cannontech.common.search.SearchResult;
+import com.cannontech.common.user.UserAuthenticationInfo;
 import com.cannontech.common.util.Pair;
 import com.cannontech.common.util.StringUtils;
 import com.cannontech.common.validator.YukonMessageCodeResolver;
@@ -49,6 +50,7 @@ import com.cannontech.web.common.flashScope.FlashScope;
 import com.cannontech.web.common.flashScope.FlashScopeMessageType;
 import com.cannontech.web.security.annotation.CheckRoleProperty;
 import com.google.common.base.Function;
+import com.google.common.collect.Iterables;
 import com.google.common.collect.Lists;
 import com.google.common.collect.Multimap;
 
@@ -239,7 +241,10 @@ public class UserGroupEditorController {
         model.addAttribute("searchResult", searchResult);
         List<LiteYukonUser> users = searchResult.getResultList();
         model.addAttribute("users", users);
-        
+        Map<Integer, UserAuthenticationInfo> userAuthenticationInfo =
+                yukonUserDao.getUserAuthenticationInfo(Iterables.transform(users, LiteYukonUser.USER_ID_FUNCTION));
+        model.addAttribute("userAuthenticationInfo", userAuthenticationInfo);
+
         List<Integer> alreadyAssignedUserIds = Lists.transform(users, LiteBase.ID_FUNCTION);
         model.addAttribute("alreadyAssignedUserIds", alreadyAssignedUserIds);
         setupModelMap(model, userGroup);

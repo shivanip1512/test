@@ -1,6 +1,7 @@
 package com.cannontech.core.dao;
 
 import java.util.List;
+import java.util.Map;
 
 import org.springframework.dao.DataAccessException;
 
@@ -32,6 +33,15 @@ public interface YukonUserDao {
      * {@link AuthenticationService#setAuthenticationCategory} or {@link AuthenticationService#setPassword}.
      */
     public UserAuthenticationInfo getUserAuthenticationInfo(int userId);
+
+    /**
+     * Get user authentication information for the given user ids. This information is stored in the
+     * same database table as the stuff in {@link LiteYukonUser} but needs to be updated via
+     * {@link AuthenticationService#setAuthenticationCategory} or
+     * {@link AuthenticationService#setPassword}.
+     * @return a map of userId -> UserAuthenticationInfo
+     */
+    public Map<Integer, UserAuthenticationInfo> getUserAuthenticationInfo(Iterable<Integer> userIds);
 
     /**
      * Returns a LiteYukonUser by username or null if none exists.

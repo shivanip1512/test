@@ -18,7 +18,6 @@
     <bean id="authenticationService" class="com.cannontech.core.authentication.service.impl.AuthenticationServiceImpl">
       <property name="providerMap">
         <map>
-          <entry key="PLAIN" value-ref="localPlainAuthentication"/>
           <entry key="HASH_SHA" value-ref="localShaAuthentication"/>
           <entry key="HASH_SHA_V2" value-ref="localShaV2Authentication"/>
           <entry key="RADIUS" value-ref="radiusLoginProvider"/>
@@ -35,10 +34,6 @@
 
     <bean id="yukonUserPasswordDao" class="com.cannontech.core.authentication.dao.impl.YukonUserPasswordDaoImpl"/>
 
-    <bean id="localPlainAuthentication" class="com.cannontech.core.authentication.service.impl.LocalPlainAuthenticationService">
-      <property name="yukonUserPasswordDao" ref="yukonUserPasswordDao"/>
-    </bean>
-    
     <bean id="localShaAuthentication" class="com.cannontech.core.authentication.service.impl.LocalHashAuthenticationService"/>
 
     <bean id="localShaV2Authentication"

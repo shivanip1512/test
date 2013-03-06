@@ -5,7 +5,7 @@ import org.joda.time.Instant;
 import com.cannontech.core.authentication.model.AuthType;
 import com.cannontech.core.authentication.model.AuthenticationCategory;
 
-public class UserAuthenticationInfo {
+public final class UserAuthenticationInfo {
     private final int userId;
     private final AuthType authType;
     private final AuthenticationCategory authenticationCategory;

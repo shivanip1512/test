@@ -5,7 +5,7 @@ import com.cannontech.core.authentication.model.AuthenticationThrottleDto;
 
 public interface AuthenticationThrottleService {
     /**
-     * Add/update AuthenticationThrottle for the username. eg., after a login attempt
+     * Add/update AuthenticationThrottle for the username. e.g., after a login attempt
      * @throws AuthenticationThrottleException, if login attempted before wait time elapsed
      */
     public void loginAttempted(String username) throws AuthenticationThrottleException;

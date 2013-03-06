@@ -9,7 +9,6 @@ import com.cannontech.common.i18n.DisplayableEnum;
  * {@link AuthenticationCategory} rather than those in this class.
  */
 public enum AuthType implements DisplayableEnum {
-    PLAIN,
     HASH_SHA,
     HASH_SHA_V2,
     RADIUS,

@@ -3,6 +3,11 @@ package com.cannontech.core.dao;
 import com.cannontech.spring.YukonSpringHook;
 import com.cannontech.stars.energyCompany.dao.EnergyCompanyDao;
 
+/**
+ * Please do not use this class.  Ideally you will use beans and autowire DAOs but if necessary, please use
+ * {@link YukonSpringHook#getBean(Class)} (generally not {@link YukonSpringHook#getBean(String)}) directly.
+ */
+@Deprecated
 public class DaoFactory {
     
     public static AddressDao getAddressDao() {
@@ -36,11 +41,7 @@ public class DaoFactory {
     public static CustomerDao getCustomerDao() {
         return (CustomerDao) YukonSpringHook.getBean("customerDao");
     }
-    
-    public static DBDeleteResult getDbDeleteResultDao() {
-        return (DBDeleteResult) YukonSpringHook.getBean("dbDeleteResultDao");
-    }
-    
+
     public static DBDeletionDao getDbDeletionDao() {
         return (DBDeletionDao) YukonSpringHook.getBean("dbDeletionDao");
     }
@@ -80,11 +81,7 @@ public class DaoFactory {
     public static RoleDao getRoleDao() {
         return (RoleDao) YukonSpringHook.getBean("roleDao");
     }
-    
-    public static SimplePointAccessDao getSimplePointAccessDao() {
-        return (SimplePointAccessDao) YukonSpringHook.getBean("simplePointAccessDao");
-    }
-    
+
     public static StateDao getStateDao() {
         return (StateDao) YukonSpringHook.getBean("stateDao");
     }
@@ -116,9 +113,4 @@ public class DaoFactory {
     public static CapControlDao getCapControlDao () {
         return  (CapControlDao) YukonSpringHook.getBean("capControlDao");
     }
-    
-    public static SeasonScheduleDao getSeasonSchedule () {
-        return  (SeasonScheduleDao) YukonSpringHook.getBean("seasonScheduleDao");
-    }
-
 }
