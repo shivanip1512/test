@@ -322,7 +322,159 @@
             </bean>
         </property>
     </bean>
-
+	
+	<!-- Scheduled Billing File Export Job Definition -->
+    <bean id="scheduledBillingFileExportJobDefinition" class="com.cannontech.jobs.support.SimpleYukonJobDefinition">
+    	<property name="taskName">
+    		<idref local="scheduledBillingFileExportTask" />
+    	</property>
+    	<property name="title" value="Scheduled Billing File Export Job" />
+    	<property name="inputs">
+    		<bean class="com.cannontech.web.input.InputRoot">
+    			<property name="inputList">
+    				<list>
+    					<bean class="com.cannontech.web.input.InputBase">
+                            <property name="field" value="name"/>
+                            <property name="displayName" value="Name"/>
+                            <property name="type">
+                                <bean class="com.cannontech.web.input.type.StringType"/>
+                            </property>
+                        </bean>
+                        <bean class="com.cannontech.web.input.InputBase">
+                        	<property name="field" value="appendDateToFileName"/>
+                        	<property name="displayName" value="Append Date to File Name"/>
+                        	<property name="type">
+                        		<bean class="com.cannontech.web.input.type.BooleanType"/>
+                        	</property>
+                        </bean>
+                        <bean class="com.cannontech.web.input.InputBase">
+                        	<property name="field" value="exportFileName"/>
+                        	<property name="displayName" value="Export File Name"/>
+                        	<property name="type">
+                        		<bean class="com.cannontech.web.input.type.StringType"/>
+                        	</property>
+                        </bean>
+                        <bean class="com.cannontech.web.input.InputBase">
+                        	<property name="field" value="exportPath"/>
+                        	<property name="displayName" value="Export Path"/>
+                        	<property name="type">
+                        		<bean class="com.cannontech.web.input.type.StringType"/>
+                        	</property>
+                        </bean>
+                        <bean class="com.cannontech.web.input.InputBase">
+                        	<property name="field" value="notificationEmailAddresses"/>
+                        	<property name="displayName" value="Notification Email Addresses"/>
+                        	<property name="type">
+                        		<bean class="com.cannontech.web.input.type.StringType"/>
+                        	</property>
+                        </bean>
+                        <bean class="com.cannontech.web.input.InputBase">
+                        	<property name="field" value="deviceGroupNames"/>
+                        	<property name="displayName" value="Device Group Names"/>
+                        	<property name="type">
+                        		<bean class="com.cannontech.web.input.type.StringListType"/>
+                        	</property>
+                        </bean>
+                        <bean class="com.cannontech.web.input.InputBase">
+                        	<property name="field" value="fileFormatId"/>
+                        	<property name="displayName" value="Billing File Format Id"/>
+                        	<property name="type">
+                        		<bean class="com.cannontech.web.input.type.IntegerType"/>
+                        	</property>
+                        </bean>
+                        <bean class="com.cannontech.web.input.InputBase">
+                        	<property name="field" value="demandDays"/>
+                        	<property name="displayName" value="Demand Days"/>
+                        	<property name="type">
+                        		<bean class="com.cannontech.web.input.type.IntegerType"/>
+                        	</property>
+                        </bean>
+                        <bean class="com.cannontech.web.input.InputBase">
+                        	<property name="field" value="energyDays"/>
+                        	<property name="displayName" value="Energy Days"/>
+                        	<property name="type">
+                        		<bean class="com.cannontech.web.input.type.IntegerType"/>
+                        	</property>
+                        </bean>
+                        <bean class="com.cannontech.web.input.InputBase">
+                        	<property name="field" value="removeMultiplier"/>
+                        	<property name="displayName" value="Remove Multiplier"/>
+                        	<property name="type">
+                        		<bean class="com.cannontech.web.input.type.BooleanType"/>
+                        	</property>
+                        </bean>
+    				</list>
+    			</property>
+    		</bean>
+    	</property>
+    </bean>
+    
+    <!-- Scheduled Archived Data Export (Filtered) Export Job Definition -->
+    <!-- TODO - Inputs -->
+    <bean id="scheduledAdeFilteredFileExportJobDefinition" class="com.cannontech.jobs.support.SimpleYukonJobDefinition">
+    	<property name="taskName">
+    		<idref local="scheduledAdeFilteredFileExportTask" />
+    	</property>
+    	<property name="title" value="Scheduled Archive Data Export (Filtered) File Export Job" />
+    	<property name="inputs">
+    		<bean class="com.cannontech.web.input.InputRoot">
+    			<property name="inputList">
+    				<list>
+    					<bean class="com.cannontech.web.input.InputBase">
+                            <property name="field" value="name"/>
+                            <property name="displayName" value="Name"/>
+                            <property name="type">
+                                <bean class="com.cannontech.web.input.type.StringType"/>
+                            </property>
+                        </bean>
+    				</list>
+    			</property>
+    		</bean>
+    	</property>
+    </bean>
+    
+    <!-- Scheduled Archived Data Export (All) Export Job Definition -->
+    <!-- TODO - Inputs -->
+    <bean id="scheduledAdeAllFileExportJobDefinition" class="com.cannontech.jobs.support.SimpleYukonJobDefinition">
+    	<property name="taskName">
+    		<idref local="scheduledAdeAllFileExportTask" />
+    	</property>
+    	<property name="title" value="Scheduled Archive Data Export (All) File Export Job" />
+    	<property name="inputs">
+    		<bean class="com.cannontech.web.input.InputRoot">
+    			<property name="inputList">
+    				<list>
+    					<bean class="com.cannontech.web.input.InputBase">
+                            <property name="field" value="name"/>
+                            <property name="displayName" value="Name"/>
+                            <property name="type">
+                                <bean class="com.cannontech.web.input.type.StringType"/>
+                            </property>
+                        </bean>
+    				</list>
+    			</property>
+    		</bean>
+    	</property>
+    </bean>
+    
+    <!-- Scheduled Archived Data Export (All) Export Task -->
+    <bean id="scheduledAdeAllFileExportTask"
+    	class="com.cannontech.web.scheduledFileExport.tasks.ScheduledAdeAllFileExportTask"
+    	scope="prototype">
+    </bean>
+    
+    <!-- Scheduled Archived Data Export (Filtered) Export Task -->
+    <bean id="scheduledAdeFilteredFileExportTask"
+    	class="com.cannontech.web.scheduledFileExport.tasks.ScheduledAdeFilteredFileExportTask"
+    	scope="prototype">
+    </bean>
+    
+    <!-- Scheduled Billing File Export Task -->
+    <bean id="scheduledBillingFileExportTask"
+    	class="com.cannontech.web.scheduledFileExport.tasks.ScheduledBillingFileExportTask"
+    	scope="prototype">
+    </bean>
+	
     <!-- Scheduled Group Request Execution Task -->
     <bean id="scheduledGroupRequestExecutionTask" class="com.cannontech.amr.scheduledGroupRequestExecution.tasks.ScheduledGroupRequestExecutionTask"
         scope="prototype">

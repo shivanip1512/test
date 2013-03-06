@@ -100,11 +100,7 @@ public void doPost(javax.servlet.http.HttpServletRequest req, javax.servlet.http
         final StringBuilder fileName = new StringBuilder("billing");
         fileName.append(fileNameFormat.format(localBean.getEndDate()));
         
-        if (fileFormatValue == FileFormatTypes.ITRON_REGISTER_READINGS_EXPORT) {
-            fileName.append(".xml");
-        } else {
-            fileName.append(".txt");
-        }
+        fileName.append(FileFormatTypes.getFileExtensionByFormatId(fileFormatValue));
 
 		resp.addHeader("Content-Disposition", "attachment;filename=" + fileName.toString());
 		

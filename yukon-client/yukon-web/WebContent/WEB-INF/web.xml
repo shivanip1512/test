@@ -329,6 +329,13 @@
 		<load-on-startup>1</load-on-startup>
 	</servlet>
 	<servlet>
+		<servlet-name>scheduledBilling</servlet-name>
+		<servlet-class>
+			com.cannontech.web.spring.CannonDispatcherServlet
+		</servlet-class>
+		<load-on-startup>1</load-on-startup>
+	</servlet>
+	<servlet>
 		<servlet-name>contextualMenu</servlet-name>
 		<servlet-class>
 			com.cannontech.web.spring.CannonDispatcherServlet
@@ -899,7 +906,12 @@
 		<servlet-name>dynamicBilling </servlet-name>
 		<url-pattern>/dynamicBilling/* </url-pattern>
 	</servlet-mapping>
-
+	
+	<servlet-mapping>
+		<servlet-name>scheduledBilling</servlet-name>
+		<url-pattern>/scheduledBilling/*</url-pattern>
+	</servlet-mapping>
+	
 	<servlet-mapping>
 		<servlet-name>amr</servlet-name>
 		<url-pattern>/amr/*</url-pattern>

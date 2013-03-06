@@ -213,6 +213,19 @@ public final class FileFormatTypes {
         return typeToFormatIdsMap;
     }
     
+    /**
+     * Returns the appropriate file extension for the specified billing format id.
+     */
+    public static String getFileExtensionByFormatId(int fileFormatId) {
+    	String extension;
+    	if (fileFormatId == ITRON_REGISTER_READINGS_EXPORT) {
+			extension = ".xml";
+        } else {
+        	extension = ".txt";
+        }
+    	return extension;
+    }
+    
     public static void setSimpleJdbcTemplate(final SimpleJdbcTemplate jdbcTemplate) {
         FileFormatTypes.yukonJdbcTemplate = (YukonJdbcTemplate)jdbcTemplate;
     }

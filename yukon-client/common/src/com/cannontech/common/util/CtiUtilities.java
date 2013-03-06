@@ -30,6 +30,7 @@ import java.util.Map;
 import java.util.Set;
 import java.util.StringTokenizer;
 import java.util.TimeZone;
+import java.util.UUID;
 import java.util.jar.Attributes;
 import java.util.jar.JarFile;
 import java.util.jar.Manifest;
@@ -155,7 +156,14 @@ public final class CtiUtilities {
         }
 
     }
-
+    
+    /**
+     * Creates a random UUID and returns its String representation sans hyphen.
+     */
+    public static String getUuidString() {
+    	return StringUtils.replace(UUID.randomUUID().toString(), "-", "");
+    }
+    
     /**
      * This method does a deep copy on any Serializable object.
      * If the object has references to other objects, thos referenced objects

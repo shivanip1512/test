@@ -236,6 +236,9 @@
               <requireRoleProperty value="DYNAMIC_BILLING_FILE_SETUP" />
               <link>/dynamicBilling/overview</link>
             </option>
+            <option name="schedules">
+              <link>/scheduledBilling/jobs</link>
+            </option>
           </options>
         </option>
         <option name="scheduler">
@@ -1182,6 +1185,9 @@
             </option>
           </options>
         </option>
+        <option name="fileExportHistory">
+          <link>/support/fileExportHistory/list</link>
+        </option>
         <option name="other">
           <link>/support/threadDump</link>
           <options>
@@ -1313,6 +1319,9 @@
                             <menu>scheduler|jobs</menu>
                         </page>
                     </pages>
+                </page>
+                <page name="fileExportHistory" type="BASIC">
+                	<menu>fileExportHistory</menu>
                 </page>
                 <page name="threadDump" type="BASIC">
                     <menu>other|threadDump</menu>

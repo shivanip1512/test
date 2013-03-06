@@ -26,16 +26,28 @@
 	<cti:includeCss link="/WebConfig/yukon/styles/calendarControl.css"/>
 	
 	<script type="text/javascript">
-
-		function checkBillingGroup() {
-			
+		function validateBillingGroup() {
 			var format = $('fileFormat').options[$('fileFormat').selectedIndex].value;
 			var billingGroupSelected = $('billGroup').value.strip() != '';
 
 			if (!billingGroupSelected && format != <%= FileFormatTypes.CURTAILMENT_EVENTS_ITRON %>) {
 				alert("<cti:msg key="yukon.web.billing.mustSelectGroup"/>");
+				return false;
 			} else {
-				$('MForm').submit();
+				return true;
+			}
+		}
+		
+		function submit() {
+			if(validateBillingGroup()) {
+				jQuery('#MForm').submit();
+			}
+		}
+		
+		function editSchedule() {
+			if(validateBillingGroup()) {
+				jQuery('#MForm').attr('action', '/scheduledBilling/showForm');
+				jQuery('#MForm').submit();
 			}
 		}
 	</script>
@@ -50,7 +62,7 @@
     <cti:msg key="yukon.web.settings" var="settingsLabel"/>
     <tags:boxContainer title="${settingsLabel}" id="billingContainer" hideEnabled="false">
 
-	<form id="MForm" name = "MForm" action="<cti:url value="/servlet/BillingServlet" />" method="post">
+		<form id="MForm" name = "MForm" action="<cti:url value="/servlet/BillingServlet" />" method="post">
 	
 			<c:if test="${BILLING_BEAN.errorMsg != null}">
 				<div class="error">${BILLING_BEAN.errorMsg}</div>
@@ -101,9 +113,9 @@
 				
 			</tags:nameValueContainer>
 			<cti:msg key="yukon.web.generate" var="generateLabel" />
-			<input type="button" name="generate" value="${generateLabel}" onclick="checkBillingGroup();">
-
-	</form>
-    
+			<cti:msg key="yukon.web.billing.schedule" var="scheduleLabel" />
+			<input type="button" name="generate" value="${generateLabel}" onclick="submit();">
+			<input type="button" name="schedule" value="${scheduleLabel}" onclick="editSchedule();">
+		</form>
     </tags:boxContainer>
 </cti:standardPage>

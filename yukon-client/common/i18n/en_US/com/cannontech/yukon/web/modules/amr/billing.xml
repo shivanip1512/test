@@ -2,6 +2,49 @@
 <!DOCTYPE properties SYSTEM "http://java.sun.com/dtd/properties.dtd">
 <properties>
 
+<!-- schedule.jsp (scheduled billing) -->
+	<entry key="yukon.web.modules.amr.billing.schedule.pageName">Scheduled Billing File Export Editor</entry>
+	<entry key="yukon.web.modules.amr.billing.schedule.pageTitle">Scheduled Billing Export</entry>
+	<entry key="yukon.web.modules.amr.billing.schedule.billingParameters.title">Billing Parameters</entry>
+	<entry key="yukon.web.modules.amr.billing.schedule.deviceGroups">Device Groups</entry>
+	<entry key="yukon.web.modules.amr.billing.schedule.exportParameters.title">Export Parameters</entry>
+	<entry key="yukon.web.modules.amr.billing.schedule.scheduleName">Schedule Name</entry>
+	<entry key="yukon.web.modules.amr.billing.schedule.exportPath">Export Path</entry>
+	<entry key="yukon.web.modules.amr.billing.schedule.exportFileName">Export File Name</entry>
+	<entry key="yukon.web.modules.amr.billing.schedule.appendDateToFileName">Append Date to File Name</entry>
+	<entry key="yukon.web.modules.amr.billing.schedule.scheduleParameters.title">Schedule Parameters</entry>
+	<entry key="yukon.web.modules.amr.billing.schedule.scheduleCronString">Schedule</entry>
+	<entry key="yukon.web.modules.amr.billing.schedule.notificationParameters.title">Notification Parameters</entry>
+	<entry key="yukon.web.modules.amr.billing.schedule.notificationEmailAddresses">Notification Email Addresses</entry>
+	<entry key="yukon.web.modules.amr.billing.schedule.cancelButton.label">Cancel</entry>
+	<entry key="yukon.web.modules.amr.billing.schedule.submitButton">Schedule</entry>
+	<entry key="yukon.web.modules.amr.billing.schedule.updateButton">Update</entry>
+	<entry key="yukon.web.modules.amr.billing.schedule.invalidCron">Invalid schedule or cron string.</entry>
+
+<!-- scheduled billing validation -->
+	<entry key="yukon.web.modules.amr.billing.schedule.validation.invalidName">Invalid name.</entry>
+	<entry key="yukon.web.modules.amr.billing.schedule.validation.invalidExportPath">Invalid export path.</entry>
+	<entry key="yukon.web.modules.amr.billing.schedule.validation.invalidFileName">Invalid file name.</entry>
+	<entry key="yukon.web.modules.amr.billing.schedule.validation.invalidEmailAddress">The email address {0} is invalid.</entry>
+
+<!-- scheduled billing jobs list -->
+	<entry key="yukon.web.modules.amr.billing.jobs.title">Schedules</entry>
+	<entry key="yukon.web.modules.amr.billing.jobs.jobCreated">Scheduled Billing Export "{0}" successfully created.</entry>
+	<entry key="yukon.web.modules.amr.billing.jobs.pageName">Scheduled Billing Exports</entry>
+	<entry key="yukon.web.modules.amr.billing.jobs.pageTitle">Scheduled Billing Exports</entry>
+	<entry key="yukon.web.modules.amr.billing.jobs.nameHeader">Name</entry>
+	<entry key="yukon.web.modules.amr.billing.jobs.scheduleHeader">Schedule</entry>
+	<entry key="yukon.web.modules.amr.billing.jobs.nextRunHeader">Next Run</entry>
+	<entry key="yukon.web.modules.amr.billing.jobs.actions">Actions</entry>
+	<entry key="yukon.web.modules.amr.billing.jobs.history.imageUrl">/WebConfig/yukon/Icons/script.gif</entry>
+	<entry key="yukon.web.modules.amr.billing.jobs.history.hoverText">View export history</entry>
+	<entry key="yukon.web.modules.amr.billing.jobs.edit.imageUrl">/WebConfig/yukon/Icons/pencil.png</entry>
+	<entry key="yukon.web.modules.amr.billing.jobs.edit.hoverText">Edit this schedule</entry>
+	<entry key="yukon.web.modules.amr.billing.jobs.delete.imageUrl">/WebConfig/yukon/Icons/delete.png</entry>
+	<entry key="yukon.web.modules.amr.billing.jobs.delete.hoverText">Delete this schedule</entry>
+	<entry key="yukon.web.modules.amr.billing.jobs.deletedSuccess">Successfully deleted scheduled billing export "{0}".</entry>
+	<entry key="yukon.web.modules.amr.billing.jobs.noJobs">No scheduled billing file exports exist.</entry>
+	
 <!-- overview.jsp (dynamicBilling) -->
     <entry key="yukon.web.modules.amr.billing.DETAIL.title">Field Setup</entry>
     <entry key="yukon.web.modules.amr.billing.DETAIL.pageName">Billing Format Editor</entry>
@@ -208,4 +251,5 @@ greater than one.
 	<entry key="yukon.web.billing.removeMultiplier">Remove Multiplier</entry>
 	<entry key="yukon.web.billing.billingGroup">Billing Group</entry>
 	<entry key="yukon.web.billing.timeZoneDisclaimer">* All times are {0}</entry>
+	<entry key="yukon.web.billing.schedule">Schedule</entry>
 </properties>

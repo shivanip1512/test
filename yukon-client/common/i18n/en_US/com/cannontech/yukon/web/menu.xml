@@ -91,6 +91,7 @@
 <entry key="yukon.web.menu.config.amr.billing">Billing</entry>
 <entry key="yukon.web.menu.config.amr.billing.generation">Billing Generation</entry>
 <entry key="yukon.web.menu.config.amr.billing.setup">Billing Setup</entry>
+<entry key="yukon.web.menu.config.amr.billing.schedules">Billing Schedules</entry>
 <entry key="yukon.web.menu.config.amr.scheduler">Scripts</entry>
 <entry key="yukon.web.menu.config.amr.devicegroups">Device Groups</entry>
 <entry key="yukon.web.menu.config.amr.devicegroups.home">Editor</entry>
@@ -209,6 +210,8 @@
 <entry key="yukon.web.menu.config.support.webServices.eimTest">Web Services</entry>
 <entry key="yukon.web.menu.config.support.webServices.loadControl">Load Control Service</entry>
 <entry key="yukon.web.menu.config.support.webServices.account">Account Service</entry>
+
+<entry key="yukon.web.menu.config.support.fileExportHistory">File Export History</entry>
 
 <entry key="yukon.web.menu.config.support.other">Other</entry>
 <entry key="yukon.web.menu.config.support.other.threadDump">Thread Dump</entry>
