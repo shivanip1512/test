@@ -427,11 +427,15 @@ begin
     Enable(BACKBUTTON);
 
 	if(needsPasswordEncryption) then
-		//make sure CMD window is not hidden, so we can see logs
-		LaunchApplication("", "", "", SW_NORMAL, 0, LAAW_OPTION_WAIT);
 		//Encrypt plain text passwords.
+
+		SdShowMsg("Checking for and encrypting plain text passwords (if any). This may take a moment.", TRUE);
 		sProg = TARGETDIR ^ "\\Client\\bin\\EncryptPlainPasswords.bat";
-		LaunchAppAndWait(sProg, "", LAAW_OPTION_WAIT);
+		LaunchApplication(sProg, "", "", SW_HIDE, INFINITE, LAAW_OPTION_WAIT);
+		// Reset parameters that LaunchApplication messes with.
+		LAAW_PARAMETERS.nTimeOut = 0;
+		LAAW_STARTUPINFO.wShowWindow = SW_NORMAL;
+    	SdShowMsg("", FALSE); 
 	endif;
 
 	Dialog_StartServices:
