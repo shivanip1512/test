@@ -30,7 +30,6 @@ public interface LmHardwareCommandService {
                                                            AccountThermostatSchedule ats, 
                                                            ThermostatScheduleMode mode, 
                                                            Thermostat stat,
-                                                           int ecId,
                                                            LiteYukonUser user) throws CommandCompletionException;
 
     /**

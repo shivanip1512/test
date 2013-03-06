@@ -65,13 +65,12 @@ public class PorterExpressComCommandStrategy implements LmHardwareCommandStrateg
                                                            AccountThermostatSchedule ats,
                                                            ThermostatScheduleMode mode, 
                                                            Thermostat stat,
-                                                           int ecId,
                                                            LiteYukonUser user) {
         
         ThermostatScheduleUpdateResult result = ThermostatScheduleUpdateResult.SEND_SCHEDULE_SUCCESS;
         
         for (TimeOfWeek timeOfWeek : mode.getAssociatedTimeOfWeeks()) {
-            ThermostatScheduleUpdateResult tempResult = sendSchedulePart(account, ats, stat.getId(), timeOfWeek, mode, ecId, user);
+            ThermostatScheduleUpdateResult tempResult = sendSchedulePart(account, ats, stat.getId(), timeOfWeek, mode, user);
             if (tempResult.isFailed()) {
                 result = tempResult;  // do we really want to keep trying here? doesn't make a lot of sense
             }
@@ -86,12 +85,13 @@ public class PorterExpressComCommandStrategy implements LmHardwareCommandStrateg
                                                             int thermostatId, 
                                                             TimeOfWeek tow, 
                                                             ThermostatScheduleMode mode,
-                                                            int ecId,
                                                             LiteYukonUser user) {
 
         Thermostat stat = inventoryDao.getThermostatById(thermostatId);
         HardwareType type = stat.getType();
 
+        int ecId = yecService.getEnergyCompanyIdByOperator(user); 
+        
         if (type == HardwareType.UTILITY_PRO) {
             try {
                 // We have to update the schedule mode for Utility Pro thermostats every

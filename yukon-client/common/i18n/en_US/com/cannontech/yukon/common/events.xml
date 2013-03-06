@@ -351,6 +351,8 @@
     <!-- Configuration -->
     <entry key="yukon.common.events.system.configuration.globalSettingChanged">User {1} changed Global Setting {2} to {3}</entry>
 
+    <entry key="yukon.common.events.system.energyCompanySettings.energyCompanySettingUpdated">User {1} changed energyCompanySetting Setting {2} to {4} for energyCompanyId: {3}</entry>
+
 <!--  Monitors -->
     <!-- Status Point Monitor -->
     <entry key="yukon.common.events.system.outageEvents.statusPointMonitor.statusPointMonitorCreated">Status Point Monitor Created with ID={7} name={1} groupName={2} attribute={3} stateGroup={4} evaluatorStatus={5} by user {6}</entry>

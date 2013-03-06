@@ -232,7 +232,7 @@ public class EnergyCompanySettingDaoImpl implements EnergyCompanySettingDao {
             String comments = setting.getComments();
             log.debug(setting.getType() + " updated. Previous value (" + currentValue + ") current value (" + value + "). Comments: (" + comments + ")");
             if (user == null) user = UserUtils.getYukonUser();
-            starsEventLogService.energyCompanySettngUpdated(user, setting.getType(), ecId, value == null ? "" : value.toString());
+            starsEventLogService.energyCompanySettingUpdated(user, setting.getType(), ecId, value == null ? "" : value.toString());
             valueChanged();
         }
     }

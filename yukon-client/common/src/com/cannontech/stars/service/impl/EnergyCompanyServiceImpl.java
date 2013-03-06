@@ -71,6 +71,7 @@ import com.cannontech.stars.dr.account.service.AccountService;
 import com.cannontech.stars.dr.thermostat.dao.AccountThermostatScheduleDao;
 import com.cannontech.stars.dr.thermostat.model.AccountThermostatSchedule;
 import com.cannontech.stars.energyCompany.dao.EnergyCompanyDao;
+import com.cannontech.stars.energyCompany.model.YukonEnergyCompany;
 import com.cannontech.stars.model.EnergyCompanyDto;
 import com.cannontech.stars.service.DefaultRouteService;
 import com.cannontech.stars.service.EnergyCompanyService;
@@ -325,16 +326,13 @@ public class EnergyCompanyServiceImpl implements EnergyCompanyService {
         UserCheckerBase checker = new UserCheckerBase() {
             @Override
             public boolean check(LiteYukonUser user) {
-                boolean superUser = rolePropertyDao.getPropertyBooleanValue(YukonRoleProperty.ADMIN_SUPER_USER, user);
-                boolean edit = rolePropertyDao.getPropertyBooleanValue(YukonRoleProperty.ADMIN_EDIT_ENERGY_COMPANY, user);
-                boolean isEcOperator = isOperator(user);
-
-                return superUser || (edit && isEcOperator);
+                YukonEnergyCompany yec = yukonEnergyCompanyService.getEnergyCompanyByOperator(user);
+                return canEditEnergyCompany(user, yec.getEnergyCompanyId());
             }
         };
         return checker;
     }
-        
+
     @Override
     @Transactional
     public void deleteEnergyCompany(LiteYukonUser user, int energyCompanyId) {

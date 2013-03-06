@@ -236,7 +236,7 @@ public class ThermostatServiceImpl implements ThermostatService {
             return ThermostatScheduleUpdateResult.NO_SERIAL_ERROR;
         }
         try {
-            return lmHardwareCommandService.doScheduleUpdate(account, ats, mode, stat, ecId, user);
+            return lmHardwareCommandService.doScheduleUpdate(account, ats, mode, stat, user);
         } catch (CommandCompletionException e) {
             return ThermostatScheduleUpdateResult.SEND_SCHEDULE_ERROR;
         }

@@ -34,6 +34,7 @@ import com.cannontech.common.pao.PaoType;
 import com.cannontech.database.data.lite.LiteYukonUser;
 import com.cannontech.database.data.point.PointType;
 import com.cannontech.i18n.YukonMessageSourceResolvable;
+import com.cannontech.stars.energyCompany.EnergyCompanySettingType;
 import com.cannontech.system.GlobalSettingType;
 import com.cannontech.web.support.development.database.objects.DevEventLog;
 
@@ -449,10 +450,12 @@ public class DevEventLogCreationService {
                 int oldRouteId = 10;
                 int newRouteId = 15;
                 boolean optOutsCount = true;
+                int ecId = 456;
 
                 starsEventLogService.deleteEnergyCompanyAttempted(user,yukonEnergyCompany,devEventLog.getEventSource());
                 starsEventLogService.deleteEnergyCompany(user,yukonEnergyCompany);
                 starsEventLogService.energyCompanyDefaultRouteChanged(user,energyCompanyName,oldRouteId,newRouteId);
+                starsEventLogService.energyCompanySettingUpdated(user, EnergyCompanySettingType.METER_MCT_BASE_DESIGNATION, ecId, "Fake value");
                 starsEventLogService.addWarehouseAttempted(user,warehouseName,devEventLog.getEventSource());
                 starsEventLogService.updateWarehouseAttempted(user,warehouseName,devEventLog.getEventSource());
                 starsEventLogService.deleteWarehouseAttempted(user,warehouseName,devEventLog.getEventSource());
@@ -477,7 +480,7 @@ public class DevEventLogCreationService {
                 starsEventLogService.countTowardOptOutLimitTodayForProgram(user,programName,optOutsCount);
             }
             // This should represent the number of method calls to this logging service
-            @Override public int numMethods() {return 25;}
+            @Override public int numMethods() {return 26;}
         }),
         SYSTEM_EVENT_LOG("SystemEventLogService", SystemEventLogService.class.getMethods().length, new DevEventLogExecutable() {
             @Override

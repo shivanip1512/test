@@ -48,7 +48,6 @@ public interface LmHardwareCommandStrategy {
                                                            AccountThermostatSchedule ats, 
                                                            ThermostatScheduleMode mode, 
                                                            Thermostat stat,
-                                                           int ecId,
                                                            LiteYukonUser user);
 
     /**

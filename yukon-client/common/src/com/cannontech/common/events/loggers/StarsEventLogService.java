@@ -30,7 +30,7 @@ public interface StarsEventLogService {
                                                  @Arg(ArgEnum.routeId) int newRouteId);
 
     @YukonEventLog(transactionality=ExecutorTransactionality.TRANSACTIONAL, category="system.energyCompanySettings")
-    public void energyCompanySettngUpdated(@Arg(ArgEnum.username) LiteYukonUser user, 
+    public void energyCompanySettingUpdated(@Arg(ArgEnum.username) LiteYukonUser user, 
                                            @Arg(ArgEnum.energyCompanySettingType) EnergyCompanySettingType type, 
                                            @Arg(ArgEnum.energyCompanyId) int ecId, 
                                            @Arg(ArgEnum.energyCompanySettingValue) String value);
@@ -51,7 +51,7 @@ public interface StarsEventLogService {
     public void deleteWarehouseAttempted(@Arg(ArgEnum.username) LiteYukonUser user,
                                                    @Arg(ArgEnum.warehouseName) String warehouseName,
                                                    @Arg(ArgEnum.eventSource) EventSource source);
-    
+
     // Warehouse service level
     @YukonEventLog(transactionality = ExecutorTransactionality.ASYNCHRONOUS, category = "stars.warehouse")
     public void addWarehouse(@Arg(ArgEnum.warehouseName) String warehouseName);

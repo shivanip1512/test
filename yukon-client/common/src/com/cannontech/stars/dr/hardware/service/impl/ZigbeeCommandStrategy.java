@@ -186,7 +186,6 @@ public class ZigbeeCommandStrategy implements LmHardwareCommandStrategy {
                                  AccountThermostatSchedule ats,
                                  ThermostatScheduleMode mode, 
                                  Thermostat stat,
-                                 int ecId,
                                  LiteYukonUser user) {
         
         for (TimeOfWeek timeOfWeek : mode.getAssociatedTimeOfWeeks()) {

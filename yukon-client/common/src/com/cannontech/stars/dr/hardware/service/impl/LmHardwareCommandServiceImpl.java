@@ -96,12 +96,12 @@ public class LmHardwareCommandServiceImpl implements LmHardwareCommandService {
     public ThermostatScheduleUpdateResult doScheduleUpdate(CustomerAccount account,
                                                            AccountThermostatSchedule ats,
                                                            ThermostatScheduleMode mode,
-                                                           Thermostat stat, int ecId, LiteYukonUser user) throws CommandCompletionException {
+                                                           Thermostat stat, LiteYukonUser user) throws CommandCompletionException {
         HardwareType type = stat.getType();
         HardwareStrategyType foundStrategy = getStrategy(type);
         LmHardwareCommandStrategy impl = strategies.get(foundStrategy);
         
-        return impl.doScheduleUpdate(account, ats, mode, stat, ecId, user);
+        return impl.doScheduleUpdate(account, ats, mode, stat, user);
     }
     
     @Override

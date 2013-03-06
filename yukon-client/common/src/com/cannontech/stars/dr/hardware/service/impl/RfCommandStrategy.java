@@ -160,7 +160,6 @@ public class RfCommandStrategy implements LmHardwareCommandStrategy {
                                                            AccountThermostatSchedule ats,
                                                            ThermostatScheduleMode mode,
                                                            Thermostat stat,
-                                                           int ecId,
                                                            LiteYukonUser user) {
         /** No RF thermostats yet */
         throw new UnsupportedOperationException("Not yet implemented");
