@@ -442,7 +442,9 @@ public class ApplianceCategoryController {
                     excludedProgramIds.addAll(alternateProgramIds);
                     excludedProgramIds.addAll(parentProgramIds);
                     excludedProgramIds.add(bean.getAssignedProgram().getAssignedProgramId());
-                    excludedProgramIds.removeAll(Collections.singleton(bean.getAssignedProgram().getAlternateProgramId()));
+                    if(bean.getAssignedProgram().getAlternateProgramId() != null){
+                        excludedProgramIds.removeAll(Collections.singleton(bean.getAssignedProgram().getAlternateProgramId()));
+                    }
                     model.addAttribute("showAlternateEnrollment", showAlternateEnrollment);
                     model.addAttribute("excludedProgramIds", excludedProgramIds);
                 }

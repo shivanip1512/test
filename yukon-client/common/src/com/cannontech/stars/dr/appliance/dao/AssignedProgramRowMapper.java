@@ -97,7 +97,7 @@ public class AssignedProgramRowMapper extends
         // isLast and highestProgramOrder only make sense when looking at a full appliance category.
         boolean isLast = highestProgramOrder != null && programOrder == highestProgramOrder;
         
-        Integer alternateProgramId = rs.getInt("seasonalProgramId");
+        Integer alternateProgramId = rs.getNullableInt("seasonalProgramId");
 
         AssignedProgram assignedProgram = new AssignedProgram(applianceCategoryId, 
                                                               assignedProgramId, 
