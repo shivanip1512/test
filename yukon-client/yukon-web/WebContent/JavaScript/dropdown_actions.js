@@ -1,6 +1,6 @@
 //JavaScript for the dropdownActions.tag && deviceDropdownActionsAjax.tag
 jQuery(function() {
-    jQuery(document).on("click", ".f_dropdown_outer_container", function(e) {
+    jQuery(document).on("click", ".dropdown-container", function(e) {
         jQuery(".dropdown-container").removeClass("menu-open");
         var target = jQuery(this);
         var menu = target.find("ul.dropdown-menu");
@@ -20,7 +20,7 @@ jQuery(function() {
         }
 
         jQuery("ul.dropdown-menu").hide();
-        if (target.hasClass("ajax-menu")) {
+        if (target.closest(".f_dropdown_outer_container").hasClass("ajax-menu")) {
             ajaxMenuOpen(target, e);
             return false;
         }
@@ -29,8 +29,7 @@ jQuery(function() {
         return false;
     });
     
-    function positionDropdownMenu(menu, target) {
-        var dropdown_container = target.find(".dropdown-container");
+    function positionDropdownMenu(menu, dropdown_container) {
         dropdown_container.addClass("menu-open");
 
         var container_offset = dropdown_container.offset();
@@ -62,7 +61,7 @@ jQuery(function() {
         } else {
             target.find(".cog").removeClass("cog").addClass("loading");
             var params = {};
-            target.prev(".params").find("input").each(function() {
+            target.closest(".f_dropdown_outer_container").prev(".params").find("input").each(function() {
                 params[jQuery(this).attr("name")] = jQuery(this).val();
             });
             jQuery.ajax({
