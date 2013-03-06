@@ -42,18 +42,22 @@
     <!-- General Hardware Terms -->
     <entry key="yukon.web.modules.operator.hardware.deviceInfoSection.title">Device Info</entry>
     
-    <entry key="yukon.web.modules.operator.hardware.deviceStatusSection.title">Device Status</entry>
-    <entry key="yukon.web.modules.operator.hardware.deviceStatusHistory.title">Device Status History</entry>
+    <entry key="yukon.web.modules.operator.hardware.history.title">History</entry>
+    
+    <entry key="yukon.web.modules.operator.hardware.deviceStatusHistory.tab">Device Status</entry>
     <entry key="yukon.web.modules.operator.hardware.deviceStatusHistory.event">Event</entry>
     <entry key="yukon.web.modules.operator.hardware.deviceStatusHistory.userName">Username</entry>
     <entry key="yukon.web.modules.operator.hardware.deviceStatusHistory.timeOfEvent">Time of Event</entry>
     <entry key="yukon.web.modules.operator.hardware.deviceStatusHistory.none">No Device Status Events</entry>
     
-    <entry key="yukon.web.modules.operator.hardware.hardwareHistory.title">Hardware History</entry>
+    <entry key="yukon.web.modules.operator.hardware.hardwareHistory.tab">Hardware</entry>
     <entry key="yukon.web.modules.operator.hardware.hardwareHistory.date">Date</entry>
     <entry key="yukon.web.modules.operator.hardware.hardwareHistory.action">Action</entry>
     <entry key="yukon.web.modules.operator.hardware.hardwareHistory.none">No Hardware Events</entry>
     
+    <entry key="yukon.web.modules.operator.hardware.commandHistory.tab">Command</entry>
+    <entry key="yukon.web.modules.operator.hardware.commandHistory.viewMore">View More</entry>
+
     <entry key="yukon.web.modules.operator.hardware.accountNumber">Account #</entry>
     <entry key="yukon.web.modules.operator.hardware.actions">Actions</entry>
     <entry key="yukon.web.modules.operator.hardware.altTrackingNumber">Alt Tracking Number</entry>

@@ -93,7 +93,6 @@ import com.cannontech.web.PageEditMode;
 import com.cannontech.web.common.flashScope.FlashScope;
 import com.cannontech.web.common.flashScope.FlashScopeMessageType;
 import com.cannontech.web.input.type.DateType;
-import com.cannontech.web.security.annotation.CheckEnergyCompanySetting;
 import com.cannontech.web.security.annotation.CheckRoleProperty;
 import com.cannontech.web.stars.dr.operator.HardwareModelHelper;
 import com.cannontech.web.stars.dr.operator.general.AccountInfoFragment;
@@ -103,6 +102,7 @@ import com.cannontech.web.stars.dr.operator.hardware.service.ZigbeeDeviceService
 import com.cannontech.web.stars.dr.operator.hardware.validator.SerialNumberValidator;
 import com.cannontech.web.stars.dr.operator.service.AccountInfoFragmentHelper;
 import com.cannontech.web.stars.dr.operator.service.OperatorAccountService;
+import com.cannontech.web.stars.dr.operator.service.OperatorThermostatHelper;
 import com.cannontech.web.util.SessionUtil;
 import com.google.common.base.Predicate;
 import com.google.common.collect.ArrayListMultimap;
@@ -141,8 +141,11 @@ public class OperatorHardwareController {
     @Autowired private InventoryDao inventoryDao;
     @Autowired private HardwareModelHelper helper;
     @Autowired private OperatorAccountService operatorAccountService;
+    @Autowired private OperatorThermostatHelper operatorThermostatHelper;
     @Autowired private EnergyCompanySettingDao energyCompanySettingDao;
 
+    private static final int THERMOSTAT_DETAIL_NUM_ITEMS = 5;
+    
     /* HARDWARE LIST PAGE */
     @RequestMapping
     public String list(YukonUserContext userContext, ModelMap model, AccountInfoFragment fragment) 
@@ -337,7 +340,8 @@ public class OperatorHardwareController {
     @RequestMapping
     public String view(ModelMap model, 
                        YukonUserContext context, 
-                       AccountInfoFragment fragment, 
+                       AccountInfoFragment fragment,
+                       HttpServletRequest request,
                        int inventoryId) {
                
         hardwareUiService.validateInventoryAgainstAccount(Collections.singletonList(inventoryId), fragment.getAccountId());
@@ -350,6 +354,12 @@ public class OperatorHardwareController {
         model.addAttribute("mode", PageEditMode.VIEW);
         
         setupHardwareViewEditModel(fragment, hardware, model, context);
+        if(HardwareType.getForClass(HardwareClass.THERMOSTAT).contains(hardware.getHardwareType())) {
+            model.addAttribute("showViewMore", "true");
+            operatorThermostatHelper.setupModelMapForCommandHistory(model, request, 
+                    Collections.singletonList(inventoryId), fragment.getAccountId(), 
+                    THERMOSTAT_DETAIL_NUM_ITEMS);
+        }
         
         if(hardware.getHardwareType() == HardwareType.NON_YUKON_METER){
             return "redirect:/stars/operator/hardware/mp/view";
@@ -865,7 +875,7 @@ public class OperatorHardwareController {
                 if (type.isSupportsManualAdjustment()) {
                     model.addAttribute("showManualAction", true);
                 }
-                model.addAttribute("showThermostatHistoryAction", true);
+                model.addAttribute("showThermostatHistory", true);
             }
             break;
             

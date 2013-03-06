@@ -2,6 +2,8 @@ package com.cannontech.web.stars.dr.operator.service;
 
 import java.util.List;
 
+import javax.servlet.http.HttpServletRequest;
+
 import net.sf.json.JSONObject;
 
 import org.springframework.ui.ModelMap;
@@ -18,6 +20,13 @@ public interface OperatorThermostatHelper {
 	public List<Integer> setupModelMapForThermostats(String thermostatIds, 
 	                                                 AccountInfoFragment accountInfoFragment, 
 	                                                 ModelMap modelMap) throws IllegalArgumentException;
+	
+	public void setupModelMapForCommandHistory(ModelMap modelMap,
+            HttpServletRequest request, List<Integer> thermostatIdsList, int accountId);
+	
+	public void setupModelMapForCommandHistory(ModelMap modelMap,
+            HttpServletRequest request, List<Integer> thermostatIdsList,
+            int accountId, int numPerPage);
 	
     public List<AccountThermostatScheduleEntry> getScheduleEntriesForJSON(String jsonString, int accountThermostatScheduleId, 
                                                                           SchedulableThermostatType thermostatType, ThermostatScheduleMode mode, 

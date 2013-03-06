@@ -4,6 +4,8 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Set;
 
+import javax.servlet.http.HttpServletRequest;
+
 import net.sf.json.JSONArray;
 import net.sf.json.JSONException;
 import net.sf.json.JSONObject;
@@ -11,17 +13,28 @@ import net.sf.json.JSONObject;
 import org.apache.commons.lang.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.ui.ModelMap;
+import org.springframework.web.bind.ServletRequestUtils;
 
 import com.cannontech.common.i18n.MessageSourceAccessor;
+import com.cannontech.common.search.SearchResult;
 import com.cannontech.common.temperature.Temperature;
+import com.cannontech.core.dao.CustomerDao;
+import com.cannontech.database.data.lite.LiteCustomer;
+import com.cannontech.i18n.YukonMessageSourceResolvable;
 import com.cannontech.i18n.YukonUserContextMessageSourceResolver;
+import com.cannontech.stars.dr.account.dao.CustomerAccountDao;
+import com.cannontech.stars.dr.account.model.CustomerAccount;
 import com.cannontech.stars.dr.hardware.dao.InventoryDao;
 import com.cannontech.stars.dr.hardware.model.SchedulableThermostatType;
 import com.cannontech.stars.dr.hardware.model.Thermostat;
 import com.cannontech.stars.dr.hardware.service.HardwareUiService;
 import com.cannontech.stars.dr.thermostat.dao.AccountThermostatScheduleDao;
+import com.cannontech.stars.dr.thermostat.dao.CustomerEventDao;
+import com.cannontech.stars.dr.thermostat.dao.ThermostatEventHistoryDao;
 import com.cannontech.stars.dr.thermostat.model.AccountThermostatSchedule;
 import com.cannontech.stars.dr.thermostat.model.AccountThermostatScheduleEntry;
+import com.cannontech.stars.dr.thermostat.model.ThermostatEvent;
+import com.cannontech.stars.dr.thermostat.model.ThermostatManualEvent;
 import com.cannontech.stars.dr.thermostat.model.ThermostatScheduleMode;
 import com.cannontech.stars.dr.thermostat.model.ThermostatSchedulePeriod;
 import com.cannontech.stars.dr.thermostat.model.ThermostatSchedulePeriodStyle;
@@ -36,10 +49,16 @@ import com.google.common.collect.Lists;
 
 public class OperatorThermostatHelperImpl implements OperatorThermostatHelper {
 
-	private InventoryDao inventoryDao;
-	private HardwareUiService hardwareUiService;
-	private YukonUserContextMessageSourceResolver messageSourceResolver;
-	private AccountThermostatScheduleDao accountThermostatScheduleDao;
+	@Autowired private InventoryDao inventoryDao;
+	@Autowired private HardwareUiService hardwareUiService;
+	@Autowired private YukonUserContextMessageSourceResolver messageSourceResolver;
+	@Autowired private AccountThermostatScheduleDao accountThermostatScheduleDao;
+	@Autowired private ThermostatEventHistoryDao thermostatEventHistoryDao;
+	@Autowired private CustomerDao customerDao;
+	@Autowired private CustomerEventDao customerEventDao;
+    @Autowired private CustomerAccountDao customerAccountDao;
+	
+	private static final int DEFAULT_ITEMS_PER_PAGE = 10;
 	
 	@Override
 	public List<Integer> setupModelMapForThermostats(String thermostatIds, AccountInfoFragment accountInfoFragment, ModelMap modelMap) throws IllegalArgumentException {
@@ -72,6 +91,53 @@ public class OperatorThermostatHelperImpl implements OperatorThermostatHelper {
 		
 		return thermostatIdsList;
 	}
+	
+	@Override
+    public void setupModelMapForCommandHistory(ModelMap modelMap,
+            HttpServletRequest request, List<Integer> thermostatIdsList, int accountId) {
+	    setupModelMapForCommandHistory(modelMap, request, thermostatIdsList, accountId, DEFAULT_ITEMS_PER_PAGE);
+    }
+	
+	@Override
+    public void setupModelMapForCommandHistory(ModelMap modelMap,
+            HttpServletRequest request, List<Integer> thermostatIdsList, 
+            int accountId, int numPerPage) {
+        
+	    if (modelMap.get("thermostatIds") == null) {
+            modelMap.addAttribute("thermostatIds", thermostatIdsList.get(0));
+        }
+	    
+        Thermostat thermostat = inventoryDao.getThermostatById(thermostatIdsList.get(0));
+        
+        ThermostatManualEvent event;
+        // single thermostat
+        if (thermostatIdsList.size() == 1) {
+            Integer inventoryId = thermostatIdsList.get(0);
+            event = customerEventDao.getLastManualEvent(inventoryId);
+            modelMap.addAttribute("thermostat", thermostat);
+            modelMap.addAttribute("inventoryId", inventoryId);
+            modelMap.addAttribute("pageNameSuffix", "single");
+            modelMap.addAttribute("displayName", thermostat.getSerialNumber());
+        // multiple thermostats
+        } else {
+            event = new ThermostatManualEvent();
+            modelMap.addAttribute("pageNameSuffix", "multiple");
+            modelMap.addAttribute("displayName", new YukonMessageSourceResolvable("yukon.web.modules.operator.thermostatManual.multipleLabel"));
+        }
+        modelMap.addAttribute("event", event);
+
+        CustomerAccount customerAccount = customerAccountDao.getById(accountId);
+        LiteCustomer customer = customerDao.getLiteCustomer(customerAccount.getCustomerId());
+        modelMap.addAttribute("temperatureUnit", customer.getTemperatureUnit());
+        
+        int itemsPerPage = ServletRequestUtils.getIntParameter(request, "itemsPerPage", numPerPage);
+        int currentPage = ServletRequestUtils.getIntParameter(request, "page", 1);
+        List<ThermostatEvent> eventHistoryList = thermostatEventHistoryDao.getEventsByThermostatIds(thermostatIdsList);
+        SearchResult<ThermostatEvent> result = SearchResult.pageBasedForWholeList(currentPage, itemsPerPage, eventHistoryList);
+        modelMap.addAttribute("eventHistoryList", result.getResultList());
+        modelMap.addAttribute("searchResult", result);
+        modelMap.addAttribute("moreResults", result.getHitCount() > numPerPage);
+    }
 	
 	@Override
     public JSONObject AccountThermostatScheduleToJSON(AccountThermostatSchedule schedule) {
@@ -286,25 +352,5 @@ public class OperatorThermostatHelperImpl implements OperatorThermostatHelper {
     	}
 		
 		return scheduleName;
-	}
-	
-	@Autowired
-	public void setInventoryDao(InventoryDao inventoryDao) {
-		this.inventoryDao = inventoryDao;
-	}
-	
-	@Autowired
-	public void setHardwareUiService(HardwareUiService hardwareUiService) {
-	    this.hardwareUiService = hardwareUiService;
-	}
-	
-	@Autowired
-	public void setMessageSourceResolver(YukonUserContextMessageSourceResolver messageSourceResolver) {
-		this.messageSourceResolver = messageSourceResolver;
-	}
-	
-	@Autowired
-	public void setAccountThermostatScheduleDao(AccountThermostatScheduleDao accountThermostatScheduleDao) {
-		this.accountThermostatScheduleDao = accountThermostatScheduleDao;
 	}
 }

@@ -407,6 +407,10 @@ public class HardwareUiServiceImpl implements HardwareUiService {
         List<HardwareHistory> hardwareHistory = Lists.newArrayList();
         for (LiteLMHardwareEvent event : events) {
             YukonListEntry entry = yukonListDao.getYukonListEntry(event.getActionID());
+            // Filter the Programming action out of hardware history
+            if (entry.getYukonDefID() == YukonListEntryTypes.YUK_DEF_ID_CUST_ACT_PROGRAMMING) {
+                continue;
+            }
             HardwareHistory historyEvent = new HardwareHistory();
             historyEvent.setAction(entry.getEntryText());
             historyEvent.setDate(new Date(event.getEventDateTime()));

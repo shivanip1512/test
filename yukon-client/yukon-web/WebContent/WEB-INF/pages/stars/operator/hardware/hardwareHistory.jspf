@@ -4,59 +4,73 @@
 <%@ taglib prefix="i" tagdir="/WEB-INF/tags/i18n" %>
 <%@ taglib prefix="spring" uri="http://www.springframework.org/tags"%>
 
-<tags:boxContainer2 nameKey="deviceStatusHistory">
-    <c:choose>
-        <c:when test="${empty deviceStatusHistory}">
-            <i:inline key=".deviceStatusHistory.none"/>
-        </c:when>
-        <c:otherwise>
-            <div class="scrollingContainer_small">
-                <table class="compactResultsTable">
-                    <thead>
-                        <tr>
-                            <th class="wsnw"><i:inline key=".deviceStatusHistory.event"/></th>
-                            <th class="wsnw"><i:inline key=".deviceStatusHistory.userName"/></th>
-                            <th class="wsnw"><i:inline key=".deviceStatusHistory.timeOfEvent"/></th>
-                        </tr>
-                    </thead>
-                    <tfoot></tfoot>
-                    <tbody>
-                        <c:forEach var="event" items="${deviceStatusHistory}">
-                            <tr class="<tags:alternateRow odd="" even="altRow"/>">
-                                <td class="wsnw"><spring:escapeBody htmlEscape="true">${event.actionText}</spring:escapeBody></td>
-                                <td class="wsnw"><spring:escapeBody htmlEscape="true">${event.userName}</spring:escapeBody></td>
-                                <td class="wsnw last"><cti:formatDate value="${event.eventBase.eventTimestamp}" type="BOTH"/></td>
+<cti:tabbedContentSelector>
+    <cti:msg2 key=".deviceStatusHistory.tab" var="status"/>
+    <cti:tabbedContentSelectorContent selectorName="${status}">
+        <c:choose>
+            <c:when test="${empty deviceStatusHistory}">
+                <i:inline key=".deviceStatusHistory.none"/>
+            </c:when>
+            <c:otherwise>
+                <div class="scrollingContainer_small">
+                    <table class="compactResultsTable">
+                        <thead>
+                            <tr>
+                                <th class="wsnw"><i:inline key=".deviceStatusHistory.event"/></th>
+                                <th class="wsnw"><i:inline key=".deviceStatusHistory.userName"/></th>
+                                <th class="wsnw"><i:inline key=".deviceStatusHistory.timeOfEvent"/></th>
                             </tr>
-                        </c:forEach>
-                    </tbody>
-                </table>
-            </div>
-        </c:otherwise>
-    </c:choose>
-</tags:boxContainer2>
+                        </thead>
+                        <tfoot></tfoot>
+                        <tbody>
+                            <c:forEach var="event" items="${deviceStatusHistory}">
+                                <tr class="<tags:alternateRow odd="" even="altRow"/>">
+                                    <td class="wsnw"><spring:escapeBody htmlEscape="true">${event.actionText}</spring:escapeBody></td>
+                                    <td class="wsnw"><spring:escapeBody htmlEscape="true">${event.userName}</spring:escapeBody></td>
+                                    <td class="wsnw last"><cti:formatDate value="${event.eventBase.eventTimestamp}" type="BOTH"/></td>
+                                </tr>
+                            </c:forEach>
+                        </tbody>
+                    </table>
+                </div>
+            </c:otherwise>
+        </c:choose>
+    </cti:tabbedContentSelectorContent>
     
-<br>
+    <cti:msg2 key=".hardwareHistory.tab" var="hardware"/>
+    <cti:tabbedContentSelectorContent selectorName="${hardware}">
+            <c:choose>
+                <c:when test="${empty hardwareHistory}">
+                    <i:inline key=".hardwareHistory.none"/>
+                </c:when>
+                <c:otherwise>
+                    <div class="scrollingContainer_small">
+                        <table class="compactResultsTable">
+                            <thead>
+                                <tr>
+                                    <th><i:inline key=".hardwareHistory.date"/></th>
+                                    <th><i:inline key=".hardwareHistory.action"/></th>
+                                </tr>
+                            </thead>
+                            <tfoot></tfoot>
+                            <tbody>
+                            <c:forEach var="event" items="${hardwareHistory}">
+                                <tr class="<tags:alternateRow odd="" even="altRow"/>">
+                                    <td class="wsnw"><cti:formatDate value="${event.date}" type="BOTH"/></td>
+                                    <td class="wsnw last"><spring:escapeBody htmlEscape="true">${event.action}</spring:escapeBody></td>
+                                </tr>
+                            </c:forEach>
+                            </tbody>
+                        </table>
+                    </div>
+                </c:otherwise>
+            </c:choose>
+    </cti:tabbedContentSelectorContent>
 
-<tags:boxContainer2 nameKey="hardwareHistory">
-    <c:choose>
-        <c:when test="${empty hardwareHistory}">
-            <i:inline key=".hardwareHistory.none"/>
-        </c:when>
-        <c:otherwise>
-            <div class="scrollingContainer_small">
-                <table class="compactResultsTable">
-                    <thead></thead>
-                    <tfoot></tfoot>
-                    <tbody>
-                    <c:forEach var="event" items="${hardwareHistory}">
-                        <tr class="<tags:alternateRow odd="" even="altRow"/>">
-                            <td class="wsnw"><cti:formatDate value="${event.date}" type="BOTH"/></td>
-                            <td class="wsnw last"><spring:escapeBody htmlEscape="true">${event.action}</spring:escapeBody></td>
-                        </tr>
-                    </c:forEach>
-                    </tbody>
-                </table>
-            </div>
-        </c:otherwise>
-    </c:choose>
-</tags:boxContainer2>
+    <c:if test="${showThermostatHistory}">
+        <cti:msg2 key=".commandHistory.tab" var="command"/>
+        <cti:tabbedContentSelectorContent selectorName="${command}">
+            <jsp:include page="/WEB-INF/pages/stars/operator/operatorThermostat/history/commandHistory.jsp" />
+        </cti:tabbedContentSelectorContent>
+    </c:if>
+</cti:tabbedContentSelector>
