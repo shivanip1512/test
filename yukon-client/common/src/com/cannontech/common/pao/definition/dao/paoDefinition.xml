@@ -1443,7 +1443,7 @@
     </pao>
 
     <!-- MCT 440 BASE -->
-    <pao id="MCT_440_BASE" creatable="false" abstract="true" inherits="MCT_BASE, SUPPORTS_TOU_TAG, SUPPORTS_OUTAGE_TAG, SUPPORTS_HIGH_BILL_TAG, SUPPORTS_MOVE_TAG, SUPPORTS_LOAD_PROFILE_TAG, SUPPORTS_VOLTAGE_PROFILE_TAG, SUPPORTS_PHASE_DETECT_TAG, SUPPORTS_INTEGRATED_DISCONNECT">
+    <pao id="MCT_440_BASE" abstract="true" inherits="MCT_BASE, SUPPORTS_TOU_TAG, SUPPORTS_OUTAGE_TAG, SUPPORTS_HIGH_BILL_TAG, SUPPORTS_MOVE_TAG, SUPPORTS_LOAD_PROFILE_TAG, SUPPORTS_VOLTAGE_PROFILE_TAG, SUPPORTS_PHASE_DETECT_TAG, SUPPORTS_INTEGRATED_DISCONNECT">
         <points>
             <point type="Analog" offset="1">
                 <name>Last Interval kW</name>
@@ -2002,7 +2002,7 @@
     </pao>
 
     <!-- MCT 440-2131b -->
-    <pao id="MCT440_2131B" inherits="MCT_440_BASE">
+    <pao id="MCT440_2131B" inherits="MCT_440_BASE" creatable="false">
         <displayName>MCT-440-2131B</displayName>
         <points>
             <point type="Analog" offset="60">
@@ -2061,7 +2061,7 @@
     </pao>
 
     <!-- MCT 440-2133b -->
-    <pao id="MCT440_2133B" inherits="MCT_440_BASE, MCT_4XX_POLYPHASE_BASE">
+    <pao id="MCT440_2133B" inherits="MCT_440_BASE, MCT_4XX_POLYPHASE_BASE" creatable="false">
         <displayName>MCT-440-2133B</displayName>
         <points>
             <point type="Analog" offset="20">
