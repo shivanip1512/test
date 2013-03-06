@@ -43,7 +43,7 @@ function deleteAnswer(event) {
 			disableMoveUp(addAnswer.rowIdNums[1]);
 		} else if (rowIdNum === addAnswer.rowIdNums[addAnswer.rowIdNums.length - 1]) {
 			// disable move down on new last row
-			disableMoveDown(addAnswer.rowIdNums[addAnswer.rowIdNums.length - 2])
+			disableMoveDown(addAnswer.rowIdNums[addAnswer.rowIdNums.length - 2]);
 		}
 	}
 
@@ -54,34 +54,36 @@ function deleteAnswer(event) {
 }
 
 function addAnswer(answerKey) {
-	var answerTable = $('answerTable');
-	var rowNum = answerTable.rows.length;
-	var newRow = answerTable.insertRow(rowNum);
+	var answerTable = jQuery('#answerTable tbody');
+	var newRow = jQuery(document.createElement("tr"));
+	answerTable.append(newRow);
 	var newRowIdNum = addAnswer.nextRowIdNum++;
-	jQuery.data(newRow, 'rowIdNum', newRowIdNum);
-	newRow.id = 'answerRow' + newRowIdNum;
+	newRow.data('rowIdNum', newRowIdNum);
+	newRow.attr("id", "answerRow" + newRowIdNum);
 	var isFirstRow = addAnswer.rowIdNums.length == 0;
 
-	var keyCell = newRow.insertCell(0);
+	var keyCell = jQuery(document.createElement("td"));
+	newRow.append(keyCell);
 	var inputNode = document.createElement("input");
 	inputNode.name = 'answerKeys';
 	inputNode.type = 'text';
 	inputNode.maxLength = 64;
-	keyCell.appendChild(inputNode);
-	var actionsCell = newRow.insertCell(1);
+	keyCell.append(inputNode);
+	var actionsCell = jQuery(document.createElement("td"));
+	newRow.append(actionsCell);
 
 	var icon = (isFirstRow ? moveUpDisabledIcon : moveUpIcon).cloneNode(true);
     icon.id = 'moveUpIcon' + newRowIdNum;
-	actionsCell.appendChild(icon);
+	actionsCell.append(icon);
 
-	actionsCell.appendChild(document.createTextNode(' '));
+	actionsCell.append(document.createTextNode(' '));
 	icon = moveDownDisabledIcon.cloneNode(true);
 	icon.id = 'moveDownIcon' + newRowIdNum;
-	actionsCell.appendChild(icon);
+	actionsCell.append(icon);
 
-	actionsCell.appendChild(document.createTextNode(' '));
+	actionsCell.append(document.createTextNode(' '));
 	icon = deleteAnswerIcon.cloneNode(true);
-	actionsCell.appendChild(icon);
+	actionsCell.append(icon);
 
 	if (!isFirstRow) {
 		enableMoveDown(addAnswer.rowIdNums[addAnswer.rowIdNums.length - 1]);
@@ -91,7 +93,7 @@ function addAnswer(answerKey) {
 	if (answerKey) {
 		inputNode.value = answerKey;
 	} else {
-		var inputElements = answerTable.getElementsBySelector('input');
+		var inputElements = answerTable.find('input');
 		var maxKeyNumber = 0;
 		for (var index = 0; index < inputElements.length - 1; index++) {
 			var result = inputElements[index].value.match(/^answer(\d+)$/);

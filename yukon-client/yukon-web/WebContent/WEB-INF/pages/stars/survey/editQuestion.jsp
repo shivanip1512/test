@@ -75,23 +75,28 @@ jQuery(document).ready(function() {
 		<tags:boxContainer2 id="answersBox" nameKey="answers">
 	        <div class="dialogScrollArea">
 			    <table id="answerTable" class="compactResultsTable rowHighlighting">
-			        <tr>
-			            <th><i:inline key=".answerKey"/></th>
-                        <cti:displayForPageEditModes modes="EDIT">
-                            <th><i:inline key=".actions"/></th>
-			            </cti:displayForPageEditModes>
-			        </tr>
-					<cti:displayForPageEditModes modes="VIEW">
-					   <c:forEach var="answer" items="${question.answers}">
-                       <tr>
-                           <td><spring:escapeBody htmlEscape="true">${answer.answerKey}</spring:escapeBody> </td>
-                       </tr>
-					   </c:forEach>
-					</cti:displayForPageEditModes>
+                    <thead>
+    			        <tr>
+    			            <th><i:inline key=".answerKey"/></th>
+                            <cti:displayForPageEditModes modes="EDIT">
+                                <th><i:inline key=".actions"/></th>
+    			            </cti:displayForPageEditModes>
+    			        </tr>
+                    </thead>
+                    <tfoot></tfoot>
+                    <tbody>
+    					<cti:displayForPageEditModes modes="VIEW">
+    					   <c:forEach var="answer" items="${question.answers}">
+                           <tr>
+                               <td><spring:escapeBody htmlEscape="true">${answer.answerKey}</spring:escapeBody> </td>
+                           </tr>
+    					   </c:forEach>
+    					</cti:displayForPageEditModes>
+                    </tbody>
 			    </table>
 	        </div>
             <cti:displayForPageEditModes modes="EDIT">
-                <cti:labeledImg nameKey="addAnswer" href="javascript: addAnswer()"/>
+                <div style="margin-top: 10px;" class="clearfix"><cti:button renderMode="labeledImage" nameKey="addAnswer" href="javascript: addAnswer()" styleClass="fl"/></div>
             </cti:displayForPageEditModes>
 	    </tags:boxContainer2>
     </div>

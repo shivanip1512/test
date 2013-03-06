@@ -37,8 +37,8 @@ button, input[type=submit], input[type=button] {color:#333;border:solid 1px #888
 
 button:hover, input[type=submit]:hover, input[type=button]:hover {color:black; background:linear-gradient(#efefef, #bbbbbb);text-shadow:1px 1px 0 #eeeeee;}
 button:active, input[type=submit]:active, input[type=button]:active {color:black; background:#cccccc;text-shadow:1px 1px 0 #eeeeee;}
-button:disabled, input[type=submit]:disabled, input[type=button]:disabled {color: #999; border:solid 1px #CCC !important; background:linear-gradient(#efefef, #DEDEDE); text-shadow: 1px 1px 0 white;box-shadow:none;cursor:not-allowed;}
-button .hoverableImage {margin-top:-2px; top: 2px; margin-right: 5px; position:relative;}
+button:disabled:not(.naked), input[type=submit]:disabled:not(.naked), input[type=button]:disabled:not(.naked) {color: #999; border:solid 1px #CCC !important; background:linear-gradient(#efefef, #DEDEDE); text-shadow: 1px 1px 0 white;box-shadow:none;cursor:not-allowed;}
+button .hoverableImage, button.image img {margin-top:-2px; top: 2px; margin-right: 5px; position:relative;}
 button.image {padding: 0; width: 16px; height: 16px;}
 
 button.danger {color:white;background:#D14836 linear-gradient(#EE5F5B, #BD362F); text-shadow: 0 -1px 0 rgba(0, 0, 0, 0.25); border-color:#802D2D;}
@@ -286,10 +286,12 @@ input.error {background: pink;border-color:#D14836;}
 /* END NORMAL LAYOUTS */
 
 /* scrollable divs */
-.scrollingContainer_350, .scrollingContainer_large, .inlineTree.scroll-large .treeCanvas {overflow: auto; overflow-x: hidden; max-height:350px;}
-.scrollingContainer_350 td.last, .scrollingContainer_large td.last {padding-right: 20px !important;} /* make sure scrollbar does not hide content */
-.scrollingContainer_160, .scrollingContainer_small {overflow: auto; overflow-x: hidden; max-height:160px;}
-.scrollingContainer_160 td.last, .scrollingContainer_small td.last {padding-right: 20px !important;} /* make sure scrollbar does not hide content */
+.scrollingContainer_350, .scrollingContainer_large, .largeDialogScrollArea, .inlineTree.scroll-large .treeCanvas {overflow: auto; overflow-x: hidden; max-height:350px;}
+.scrollingContainer_350 td.last, .scrollingContainer_large td.last, .largeDialogScrollArea {padding-right: 20px !important;} /* make sure scrollbar does not hide content */
+.scrollingContainer_200, .scrollingContainer_medium, .dialogScrollArea {overflow: auto; overflow-x: hidden; max-height:160px;}
+.scrollingContainer_200 td.last, .scrollingContainer_medium td.last, .dialogScrollArea td.last {padding-right: 20px !important;} /* make sure scrollbar does not hide content */
+.scrollingContainer_160, .scrollingContainer_small, .smallDialogScrollArea {overflow: auto; overflow-x: hidden; max-height:160px;}
+.scrollingContainer_160 td.last, .scrollingContainer_small td.last, .smallDialogScrollArea td.last {padding-right: 20px !important;} /* make sure scrollbar does not hide content */
 
 /* legacy icons */
 .graycssicon, .cssicon {border-radius:3px; cursor:pointer;}
