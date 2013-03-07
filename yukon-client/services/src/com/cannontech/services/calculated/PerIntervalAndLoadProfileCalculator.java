@@ -191,7 +191,7 @@ public class PerIntervalAndLoadProfileCalculator implements PointCalculator {
         
         /** Handle load profile value */
         if (loadProfile != null && loadProfilePoint != null) {
-            double intervalsPerHour = 60 / interval;
+            double intervalsPerHour = 3600.0d / interval;
             if (foundPrevious) {
                 double previousLoadProfileValue = previousPerIntervalValue * intervalsPerHour;
                 addPointData(loadProfilePoint, previousLoadProfileValue, timestamp, pointData);
