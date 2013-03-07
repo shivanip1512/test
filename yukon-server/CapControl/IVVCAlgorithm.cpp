@@ -1,5 +1,7 @@
 #include "precompiled.h"
 
+#include <boost/assign/list_of.hpp>
+
 #include "IVVCAlgorithm.h"
 #include "IVVCStrategy.h"
 #include "capcontroller.h"
@@ -2497,7 +2499,13 @@ void IVVCAlgorithm::calculateMultiTapOperation( PointValueMap & voltages,
 
     long rootZoneId = zoneManager.getRootZoneIdForSubbus( subbus->getPaoId() );
 
-    calculateMultiTapOperationHelper( rootZoneId, voltages, 0.0, subbus, strategy, solution );
+    std::map<Cti::CapControl::Phase, double>    offsets =
+        boost::assign::map_list_of( Cti::CapControl::Phase_A, 0.0 )
+                                  ( Cti::CapControl::Phase_B, 0.0 )
+                                  ( Cti::CapControl::Phase_C, 0.0 )
+                                  ( Cti::CapControl::Phase_Poly, 0.0 );
+
+    calculateMultiTapOperationHelper( rootZoneId, voltages, offsets, subbus, strategy, solution );
 }
 
 
@@ -2524,185 +2532,236 @@ double IVVCAlgorithm::getVmaxForPoint( const long pointID, CtiCCSubstationBusPtr
 }
 
 
+void IVVCAlgorithm::updateMaxOvervoltages( const long pointID,
+                                           const Cti::CapControl::Phase & phase,
+                                           const double Vmax,
+                                           std::map<Cti::CapControl::Phase, double> cumulativeOffsets,
+                                           PointValueMap & voltages,
+                                           std::map<Cti::CapControl::Phase, double> & maxOverages )
+{
+    PointValueMap::iterator pointValue = voltages.find( pointID );
+
+    if ( pointValue != voltages.end() )
+    {
+        pointValue->second.value += cumulativeOffsets[ phase ];
+
+        if ( pointValue->second.value > Vmax )
+        {
+            maxOverages[ phase ] = std::max( maxOverages[ phase ], pointValue->second.value - Vmax );
+        }
+    }
+}
+
+
 void IVVCAlgorithm::calculateMultiTapOperationHelper( const long zoneID,
                                                       PointValueMap & voltages,
-                                                      const double cumulativeVoltageOffset,
+                                                      std::map<Cti::CapControl::Phase, double> cumulativeVoltageOffsets,
                                                       CtiCCSubstationBusPtr subbus,
                                                       IVVCStrategy * strategy,
                                                       IVVCState::TapOperationZoneMap & solution )
 {
-    bool isPeakTime = subbus->getPeakTimeFlag();
-    const std::map<long, CtiCCMonitorPointPtr> & monitorMap = subbus->getAllMonitorPoints();
-
-    CtiCCSubstationBusStore* store = CtiCCSubstationBusStore::getInstance();
-
-    ZoneManager & zoneManager = store->getZoneManager();
+    CtiCCSubstationBusStore * store = CtiCCSubstationBusStore::getInstance();
 
     try
     {
-        ZoneManager::SharedPtr zone = zoneManager.getZone( zoneID );
+        ZoneManager::SharedPtr zone = store->getZoneManager().getZone( zoneID );
 
-        for each ( const Zone::PhaseIdMap::value_type & mapping in zone->getRegulatorIds() )
+        std::map<Cti::CapControl::Phase, double>    maxOvervoltages =
+            boost::assign::map_list_of( Cti::CapControl::Phase_A, 0.0 )
+                                      ( Cti::CapControl::Phase_B, 0.0 )
+                                      ( Cti::CapControl::Phase_C, 0.0 )
+                                      ( Cti::CapControl::Phase_Poly, 0.0 );
+
+// 1.   add incoming (negative) cumulativeVoltageOffsets to all points in the zone by phase
+// 2.   scan zone for overvoltages by phase
+
+        // Capbanks
+
+        for each ( const Zone::IdSet::value_type & ID in zone->getBankIds() )
         {
-            double maxOvervoltage = 0.0;
+            if ( CtiCCCapBankPtr bank = store->findCapBankByPAObjectID( ID ) )
+            {
+                for each ( CtiCCMonitorPointPtr point in bank->getMonitorPoint() )
+                {
+                    const long                      pointID = point->getPointId();
+                    const Cti::CapControl::Phase    phase   = point->getPhase();
+
+                    updateMaxOvervoltages( pointID,
+                                           phase,
+                                           getVmaxForPoint( pointID, subbus, strategy ),
+                                           cumulativeVoltageOffsets,
+                                           voltages,
+                                           maxOvervoltages );
+                }
+            }
+        }
+
+        // Additional Voltage Points
+
+        for each ( const Zone::PhaseToVoltagePointIds::value_type & entry in zone->getPointIds() )
+        {
+            const long                      pointID = entry.second;
+            const Cti::CapControl::Phase    phase   = entry.first;
+
+            updateMaxOvervoltages( pointID,
+                                   phase,
+                                   getVmaxForPoint( pointID, subbus, strategy ),
+                                   cumulativeVoltageOffsets,
+                                   voltages,
+                                   maxOvervoltages );
+        }
+
+        // Voltage Regulators
+
+        for each ( const Zone::PhaseIdMap::value_type & entry in zone->getRegulatorIds() )
+        {
+            const long                      regulatorID = entry.second;
+            const Cti::CapControl::Phase    phase       = entry.first;
 
             VoltageRegulatorManager::SharedPtr regulator =
-                store->getVoltageRegulatorManager()->getVoltageRegulator( mapping.second );
+                store->getVoltageRegulatorManager()->getVoltageRegulator( regulatorID );
 
-// 1.   add incoming (negative) voltages to all points in the zone
-// 2.   scan zone for overvoltages
+            const long  pointID = regulator->getPointByAttribute( PointAttribute::VoltageY ).getPointId();
 
-            PointValueMap::iterator pointValue
-                = voltages.find( regulator->getPointByAttribute(PointAttribute::VoltageY).getPointId() );
-
-            if ( pointValue != voltages.end() )
-            {
-                pointValue->second.value += cumulativeVoltageOffset;    // cumulativeVoltageOffset is <= 0.0
-
-                double Vmax = getVmaxForPoint( pointValue->first, subbus, strategy );
-
-                if ( pointValue->second.value >= Vmax )
-                {
-                    maxOvervoltage = std::max( maxOvervoltage, pointValue->second.value - Vmax );
-                }
-            }
-
-            // Capbanks
-
-            for each ( const Zone::IdSet::value_type & capBankId in zone->getBankIds() )
-            {
-                CtiCCCapBankPtr bank = store->getCapBankByPaoId( capBankId );
-                if ( bank )
-                {
-                    for each ( CtiCCMonitorPointPtr point in bank->getMonitorPoint() )
-                    {
-                        //  if our zone is gang operated we grab all bank monitor points despite their phase
-                        //  if phase operated zone we grab only the bank monitor points on the same phase as our regulator
-
-                        if ( zone->isGangOperated() || point->getPhase() == regulator->getPhase() )
-                        {
-                            PointValueMap::iterator pointValue = voltages.find( point->getPointId() );
-
-                            if ( pointValue != voltages.end() )
-                            {
-                                pointValue->second.value += cumulativeVoltageOffset;
-
-                                double Vmax = getVmaxForPoint( pointValue->first, subbus, strategy );
-
-                                if ( pointValue->second.value >= Vmax )
-                                {
-                                    maxOvervoltage = std::max( maxOvervoltage, pointValue->second.value - Vmax );
-                                }
-                            }
-                        }
-                    }
-                }
-            }
-
-            // Other voltage points in this zone
-
-            for each ( const Zone::PhaseToVoltagePointIds::value_type & mapping in zone->getPointIds() )
-            {
-                //  if our zone is gang operated we grab all points despite their phase
-                //  if phase operated zone we grab only the points on the same phase as our regulator
-
-                if ( zone->isGangOperated() || mapping.first == regulator->getPhase() )
-                {
-                    PointValueMap::iterator pointValue = voltages.find( mapping.second );
-
-                    if ( pointValue != voltages.end() )
-                    {
-                        pointValue->second.value += cumulativeVoltageOffset;
-
-                        double Vmax = getVmaxForPoint( pointValue->first, subbus, strategy );
-
-                        if ( pointValue->second.value >= Vmax )
-                        {
-                            maxOvervoltage = std::max( maxOvervoltage, pointValue->second.value - Vmax );
-                        }
-                    }
-                }
-            }
+            updateMaxOvervoltages( pointID,
+                                   phase,
+                                   getVmaxForPoint( pointID, subbus, strategy ),
+                                   cumulativeVoltageOffsets,
+                                   voltages,
+                                   maxOvervoltages );
+        }
 
 // 3.   if (overvoltage)  calculate # of taps and change in voltage
 
-            double realVoltageChange = 0.0;
+        // if gang operated find the maximum of the phase overvoltages and use it to compute the tap count
+        //  else just compute a tap count for each phase...
 
-            if ( maxOvervoltage > 0.0 )
+        std::map<Cti::CapControl::Phase, double>    realVoltageChange =
+            boost::assign::map_list_of( Cti::CapControl::Phase_A, 0.0 )
+                                      ( Cti::CapControl::Phase_B, 0.0 )
+                                      ( Cti::CapControl::Phase_C, 0.0 )
+                                      ( Cti::CapControl::Phase_Poly, 0.0 );
+
+        for each ( const Zone::PhaseIdMap::value_type & entry in zone->getRegulatorIds() )
+        {
+            const long                      regulatorID = entry.second;
+            const Cti::CapControl::Phase    phase       = entry.first;
+
+            VoltageRegulatorManager::SharedPtr regulator =
+                store->getVoltageRegulatorManager()->getVoltageRegulator( regulatorID );
+
+            double theMaxVoltage = maxOvervoltages[ phase ];
+
+            if ( zone->isGangOperated() )
             {
-                double voltageChange = regulator->getVoltageChangePerTap();
+                // maximum overvoltage across all phases
+
+                for each ( const std::map<Cti::CapControl::Phase, double>::value_type & entry in maxOvervoltages )
+                {
+                    theMaxVoltage = std::max( theMaxVoltage, entry.second );
+                }
+            }
+
+            if ( theMaxVoltage > 0.0 )
+            {
+                const double voltageChange = regulator->getVoltageChangePerTap();
 
                 // tapping down so this should be negative
 
-                solution[ regulator->getPaoId() ] = -std::ceil( maxOvervoltage / voltageChange );
+                solution[ regulatorID ] = -std::ceil( theMaxVoltage / voltageChange );
 
                 // also negative
 
-                realVoltageChange = voltageChange * solution[ regulator->getPaoId() ];
-
+                realVoltageChange[ phase ] = voltageChange * solution[ regulatorID ];
             }
+
+            if ( zone->isGangOperated() )
+            {
+                // cascade the polyphase delta to each phase
+
+                realVoltageChange[ Cti::CapControl::Phase_A ] =
+                realVoltageChange[ Cti::CapControl::Phase_B ] =
+                realVoltageChange[ Cti::CapControl::Phase_C ] =
+                    realVoltageChange[ Cti::CapControl::Phase_Poly ];
+            }
+        }
 
 // 4.   subtract tap solution voltage from all members of the zone.
 
-            pointValue = voltages.find( regulator->getPointByAttribute(PointAttribute::VoltageY).getPointId() );
+        // Capbanks
 
-            if ( pointValue != voltages.end() )
+        for each ( const Zone::IdSet::value_type & ID in zone->getBankIds() )
+        {
+            if ( CtiCCCapBankPtr bank = store->findCapBankByPAObjectID( ID ) )
             {
-                pointValue->second.value += realVoltageChange;
-            }
-
-            // Capbanks
-
-            for each ( const Zone::IdSet::value_type & capBankId in zone->getBankIds() )
-            {
-                CtiCCCapBankPtr bank = store->getCapBankByPaoId( capBankId );
-                if ( bank )
+                for each ( CtiCCMonitorPointPtr point in bank->getMonitorPoint() )
                 {
-                    for each ( CtiCCMonitorPointPtr point in bank->getMonitorPoint() )
-                    {
-                        //  if our zone is gang operated we grab all bank monitor points despite their phase
-                        //  if phase operated zone we grab only the bank monitor points on the same phase as our regulator
+                    const long                      pointID = point->getPointId();
+                    const Cti::CapControl::Phase    phase   = point->getPhase();
 
-                        if ( zone->isGangOperated() || point->getPhase() == regulator->getPhase() )
-                        {
-                            PointValueMap::iterator pointValue = voltages.find( point->getPointId() );
-
-                            if ( pointValue != voltages.end() )
-                            {
-                                pointValue->second.value += realVoltageChange;
-                            }
-                        }
-                    }
-                }
-            }
-
-            // Other voltage points in this zone
-
-            for each ( const Zone::PhaseToVoltagePointIds::value_type & mapping in zone->getPointIds() )
-            {
-                //  if our zone is gang operated we grab all points despite their phase
-                //  if phase operated zone we grab only the points on the same phase as our regulator
-
-                if ( zone->isGangOperated() || mapping.first == regulator->getPhase() )
-                {
-                    PointValueMap::iterator pointValue = voltages.find( mapping.second );
+                    PointValueMap::iterator pointValue = voltages.find( pointID );
 
                     if ( pointValue != voltages.end() )
                     {
-                        pointValue->second.value += realVoltageChange;
+                        pointValue->second.value += realVoltageChange[ phase ];
                     }
                 }
             }
+        }
+
+        // Additional Voltage Points
+
+        for each ( const Zone::PhaseToVoltagePointIds::value_type & entry in zone->getPointIds() )
+        {
+            const long                      pointID = entry.second;
+            const Cti::CapControl::Phase    phase   = entry.first;
+
+            PointValueMap::iterator pointValue = voltages.find( pointID );
+
+            if ( pointValue != voltages.end() )
+            {
+                pointValue->second.value += realVoltageChange[ phase ];
+            }
+        }
+
+        // Voltage Regulators
+
+        for each ( const Zone::PhaseIdMap::value_type & entry in zone->getRegulatorIds() )
+        {
+            const long                      regulatorID = entry.second;
+            const Cti::CapControl::Phase    phase       = entry.first;
+
+            VoltageRegulatorManager::SharedPtr regulator =
+                store->getVoltageRegulatorManager()->getVoltageRegulator( regulatorID );
+
+            const long  pointID = regulator->getPointByAttribute( PointAttribute::VoltageY ).getPointId();
+
+            PointValueMap::iterator pointValue = voltages.find( pointID );
+
+            if ( pointValue != voltages.end() )
+            {
+                pointValue->second.value += realVoltageChange[ phase ];
+            }
+        }
 
 // 5.   recursion!!!
 
-            Zone::IdSet immediateChildren = zoneManager.getZone(zoneID)->getChildIds();
+        const Cti::CapControl::Phase phases[] =
+        {
+            Cti::CapControl::Phase_A,
+            Cti::CapControl::Phase_B,
+            Cti::CapControl::Phase_C,
+            Cti::CapControl::Phase_Poly
+        };
 
-            for each ( const Zone::IdSet::value_type & ID in immediateChildren )
-            {
-                calculateMultiTapOperationHelper( ID, voltages, cumulativeVoltageOffset + realVoltageChange,
-                                                  subbus, strategy, solution );
-            }
+        for each ( const Cti::CapControl::Phase phase in phases )
+        {
+            cumulativeVoltageOffsets[ phase ] += realVoltageChange[ phase ];
+        }
+
+        for each ( const Zone::IdSet::value_type & ID in zone->getChildIds() )
+        {
+            calculateMultiTapOperationHelper( ID, voltages, cumulativeVoltageOffsets, subbus, strategy, solution );
         }
     }
     catch ( const Cti::CapControl::NoVoltageRegulator & noRegulator )

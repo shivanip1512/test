@@ -91,7 +91,7 @@ class IVVCAlgorithm
 
         void calculateMultiTapOperationHelper( const long zoneID,
                                                PointValueMap & voltages,
-                                               const double cumulativeVoltageOffset,
+                                               std::map<Cti::CapControl::Phase, double> cumulativeVoltageOffsets,
                                                CtiCCSubstationBusPtr subbus,
                                                IVVCStrategy * strategy,
                                                IVVCState::TapOperationZoneMap & solution );
@@ -104,7 +104,12 @@ class IVVCAlgorithm
                                       const double minimum, const int incompleteScenario, const int staleScenario, const CtiTime & timeNow,
                                       const std::string & type );
 
-
+        void updateMaxOvervoltages( const long pointID,
+                                    const Cti::CapControl::Phase & phase,
+                                    const double Vmax,
+                                    std::map<Cti::CapControl::Phase, double> cumulativeOffsets,
+                                    PointValueMap & voltages, 
+                                    std::map<Cti::CapControl::Phase, double> & maxOverages );
 
         PointDataRequestFactoryPtr _requestFactory;
 };
