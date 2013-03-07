@@ -96,10 +96,10 @@ public interface OptOutService {
 	 * Method to resend any current opt out command
 	 * @param inventoryId - Id of device to resend opt out to
 	 * @param customerAccountId - Account the device is on
-	 * @param user - User requesting the resend
+	 * @param userContext - User requesting the resend
 	 * @throws CommandCompletionException - If the command could not be sent to the device
 	 */
-	public void resendOptOut(int inventoryId, int customerAccountId, LiteYukonUser user)
+	public void resendOptOut(int inventoryId, int customerAccountId, YukonUserContext userContext)
 			throws CommandCompletionException;
 	
 	/**
@@ -282,5 +282,15 @@ public interface OptOutService {
      * @param residentialGroup - The residential group we'll get the opt out limits from.
      * @return - This method returns null if it doesn't not exist
      */
-    public OpenInterval findOptOutLimitInterval(ReadableInstant intersectingInstant, DateTimeZone dateTimeZone, LiteYukonGroup residentialGroup);   
+    public OpenInterval findOptOutLimitInterval(ReadableInstant intersectingInstant, DateTimeZone dateTimeZone, LiteYukonGroup residentialGroup);
+
+    /**
+     * This method calculates duration in hours based on start date and duration in days
+     * 
+     * @param startDate
+     * @param durationInDays
+     * @param userContext
+     * @return - Duration in hours
+     */
+    public int calculateDurationInHours(LocalDate startDate, int durationInDays, YukonUserContext userContext);   
 }   

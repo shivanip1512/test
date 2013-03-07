@@ -92,35 +92,25 @@ public class OptOutControllerHelper {
         optOutRequest.setQuestions(questionList);
         optOutRequest.setSurveyResults(surveyResults);
         optOutRequest.setSurveyIdsByInventoryId(surveyIdsByInventoryId);
-
         LocalDate today = new LocalDate(userContext.getJodaTimeZone());
+        int durationInHours =
+            optOutService.calculateDurationInHours(optOutBackingBean.getStartDate(),
+                                             optOutBackingBean.getDurationInDays(),
+                                             userContext);
+        optOutRequest.setDurationInHours(durationInHours);
         boolean isSameDay = today.isEqual(optOutBackingBean.getStartDate());
         if (isSameDay) {
-            int extraHours = 0;
-            // If durationInDays is 1 that means the rest of today only
-            if (optOutBackingBean.getDurationInDays() > 1) {
-                // Today counts as the first day
-                extraHours = (optOutBackingBean.getDurationInDays() - 1) * 24;
-            }
-
-            Date now = new Date();
-            int hoursRemainingInDay = TimeUtil.getHoursTillMidnight(now, userContext.getTimeZone());
-            optOutRequest.setDurationInHours(hoursRemainingInDay + extraHours);
             optOutRequest.setStartDate(null); // Same day OptOut's have null start dates
         } else {
-            DateTime startDateTime = optOutBackingBean.getStartDate().toDateTimeAtStartOfDay(userContext.getJodaTimeZone());
-            Period optOutPeriod = Period.days(optOutBackingBean.getDurationInDays());
-            Interval optOutInterval = new Interval(startDateTime, optOutPeriod);
+            DateTime startDateTime =
+                optOutBackingBean.getStartDate()
+                    .toDateTimeAtStartOfDay(userContext.getJodaTimeZone());
             optOutRequest.setStartDate(startDateTime.toInstant());
-            optOutRequest.setDurationInHours(optOutInterval.toDuration()
-                                                           .toPeriod()
-                                                           .toStandardHours()
-                                                           .getHours());
         }
-
+        
         optOutService.optOut(customerAccount, optOutRequest, userContext.getYukonUser());
     }
-
+    
     private List<Result> translateSurveyResults(int accountId,
             String accountNumber, OptOutBackingBean optOutBackingBean) {
         List<Result> retVal = Lists.newArrayList();

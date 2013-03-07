@@ -23,7 +23,9 @@ import org.joda.time.DateTimeFieldType;
 import org.joda.time.DateTimeZone;
 import org.joda.time.Duration;
 import org.joda.time.Instant;
+import org.joda.time.Interval;
 import org.joda.time.LocalDate;
+import org.joda.time.Period;
 import org.joda.time.ReadableInstant;
 import org.joda.time.format.DateTimeFormat;
 import org.joda.time.format.DateTimeFormatter;
@@ -389,12 +391,13 @@ public class OptOutServiceImpl implements OptOutService {
         }
         optOut(customerAccount, request, user, optOutCounts);
     }
-
+    
 	@Override
     @Transactional
-	public void resendOptOut(int inventoryId, int customerAccountId, LiteYukonUser user) 
+	public void resendOptOut(int inventoryId, int customerAccountId, YukonUserContext userContext) 
 		throws CommandCompletionException {
 
+	    LiteYukonUser user = userContext.getYukonUser();
 		// Verify that this inventory is currently opted out
 		boolean optedOut = optOutEventDao.isOptedOut(inventoryId, customerAccountId);
 
@@ -405,18 +408,14 @@ public class OptOutServiceImpl implements OptOutService {
 		    CustomerAccount customerAccount = customerAccountDao.getById(customerAccountId);
 			
 			OptOutEvent lastEvent = optOutEventDao.findLastEvent(inventoryId);
-			
-			Instant now = new Instant();
-			Duration optOutDuration = new Duration(now, lastEvent.getStopDate());
-			int newDuration = optOutDuration.toPeriod().toStandardHours().getHours();
-			
-			OptOutRequest request = new OptOutRequest();
-			request.setInventoryIdList(Collections.singletonList(inventoryId));
-			request.setStartDate(lastEvent.getStartDate());
-			request.setDurationInHours(newDuration);
+			DateTime now = new DateTime();
+			Interval optOutInterval = new Interval(now, lastEvent.getStopDate());
+			// Add today (1 day)
+			int durationInDays = optOutInterval.toPeriod().toStandardDays().getDays()+1;
+			int durationInHours = calculateDurationInHours(new LocalDate(now), durationInDays, userContext);
 
 			// Send command out to the field
-			sendOptOutRequest(inventory, newDuration, user);
+			sendOptOutRequest(inventory, durationInHours, user);
 			
 			// Log this repeat event request
 			accountEventLogService.optOutResent(user, customerAccount.getAccountNumber(), 
@@ -1316,7 +1315,37 @@ public class OptOutServiceImpl implements OptOutService {
         
         return null;
     }
- 
+    
+    @Override
+    public int calculateDurationInHours(LocalDate startDate, int durationInDays, YukonUserContext userContext){
+         
+         int durationInHours = 0;
+         LocalDate today = new LocalDate(userContext.getJodaTimeZone());
+         boolean isSameDay = today.isEqual(startDate);
+         if (isSameDay) {
+             int extraHours = 0;
+             // If durationInDays is 1 that means the rest of today only
+             if (durationInDays > 1) {
+                 // Today counts as the first day
+                 extraHours = (durationInDays - 1) * 24;
+             }
+
+             Date now = new Date();
+             int hoursRemainingInDay = TimeUtil.getHoursTillMidnight(now, userContext.getTimeZone());
+             durationInHours = hoursRemainingInDay + extraHours;
+             
+         } else {
+             DateTime startDateTime = startDate.toDateTimeAtStartOfDay(userContext.getJodaTimeZone());
+             Period optOutPeriod = Period.days(durationInDays);
+             Interval optOutInterval = new Interval(startDateTime, optOutPeriod);
+             durationInHours = optOutInterval.toDuration() .toPeriod()
+                                                            .toStandardHours()
+                                                            .getHours();
+         }
+         logger.info("Start date:"+startDate.toString("MM/dd/yy")+"  Duration in days:"+durationInDays+" calculated duration in hours:"+durationInHours);
+         return durationInHours;
+     }
+
     @Autowired
     public void setRolePropertyDao(RolePropertyDao rolePropertyDao) {
         this.rolePropertyDao = rolePropertyDao;

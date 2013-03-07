@@ -491,7 +491,7 @@ public class OperatorOptOutController {
         optOutService.resendOptOut(
                 inventoryId,
                 customerAccount.getAccountId(),
-                userContext.getYukonUser());
+                userContext);
 
         flashScope.setConfirm(
                        new YukonMessageSourceResolvable(
