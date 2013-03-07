@@ -1,6 +1,7 @@
 #include "precompiled.h"
 
 #include <boost/assign/list_of.hpp>
+#include <boost/tuple/tuple.hpp>
 
 #include "IVVCAlgorithm.h"
 #include "IVVCStrategy.h"
@@ -2831,15 +2832,16 @@ bool IVVCAlgorithm::hasValidData( PointDataRequestPtr& request, CtiTime timeNow,
 
             Zone::PhaseIdMap    regulatorSearch = zone->getRegulatorIds();
 
-            std::pair< Zone::PhaseIdMap::const_iterator, Zone::PhaseIdMap::const_iterator >
-                regulatorFilter = regulatorSearch.equal_range( phase );
+            Zone::PhaseIdMap::const_iterator    phase_ID_iterator, phase_ID_end;
 
-            for ( ; regulatorFilter.first != regulatorFilter.second; ++regulatorFilter.first )
+            boost::tie( phase_ID_iterator, phase_ID_end ) = regulatorSearch.equal_range( phase );
+
+            for ( ; phase_ID_iterator != phase_ID_end; ++phase_ID_iterator )
             {
                 try
                 {
                     VoltageRegulatorManager::SharedPtr  regulator
-                        = store->getVoltageRegulatorManager()->getVoltageRegulator( regulatorFilter.first->second );
+                        = store->getVoltageRegulatorManager()->getVoltageRegulator( phase_ID_iterator->second );
 
                     const long voltagePointId = regulator->getPointByAttribute(PointAttribute::VoltageY).getPointId();
 
@@ -3027,17 +3029,14 @@ void IVVCAlgorithm::findPointInRequest( const long pointID,
     PointValueMap::const_iterator   pt = pointValues.find( pointID );
 
     totalPoints++;
-    if ( pt != pointValues.end() )  // found it
-    {
-        if ( pt->second.timestamp <= ( timeNow - ( _POINT_AGE * 60 ) ) )
-        {
-            stalePoints++;
-            request->removePointValue( pointID );
-        }
-    }
-    else
+    if ( pt == pointValues.end() )
     {
         missingPoints++;
+    }
+    else if ( pt->second.timestamp <= ( timeNow - ( _POINT_AGE * 60 ) ) )
+    {
+        stalePoints++;
+        request->removePointValue( pointID );
     }
 }
 

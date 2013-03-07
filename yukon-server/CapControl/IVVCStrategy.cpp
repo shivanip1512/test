@@ -236,9 +236,13 @@ void IVVCStrategy::restoreParameters( const std::string &name, const std::string
         {
             _capbankCommReportingPercentage = newValue;
         }
-        else    // type == "VOLTAGE_MONITOR"
+        else if (type == "VOLTAGE_MONITOR")
         {
             _voltageMonitorCommReportingPercentage = newValue;
+        }
+        else
+        {
+            // ignore rogue db entry...
         }
     }
 }
