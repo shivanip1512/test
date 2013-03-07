@@ -25,6 +25,59 @@ BOOST_AUTO_TEST_CASE(test_prot_xcom_extended_tier_timeout)
     }
 }
 
+BOOST_AUTO_TEST_CASE(test_prot_xcom_xcdata_ascii)
+{
+    // Test using centssign special field
+    {
+        CtiCommandParser        parse( "putconfig xcom data 'Offpeak rate:6.5*CENTSSIGN*/kWh' msgpriority 7 timeout 150 min" );
+        CtiProtocolExpresscom   xcom;
+
+        BYTE expected_result[] = { 0, 0, 0, 0, 0,       // addressing not assigned: defaults to zero
+                                   0x1D,                // message type: Data
+                                   0x20,                // config: use ascii
+                                   0x18,                // Data length
+                                   0x07,                // Display Priority 7=highest
+                                   0x00,                // Flags (Timeout in Minutes)
+                                   0x96,                // Timeout 150m
+                                   0x4F, 0x66, 0x66, 0x70, 0x65, 0x61, 0x6B, 0x20, 0x72, 0x61, 0x74, 0x65, 0x3A, 0x36, 0x2E, 0x35, 0xA2, 0x2F, 0x6B, 0x57, 0x68};
+                                   //O    f     f     p     e      a     k    ' '    r     a     t    e     :     6      .    5    cent   /     k     W      h
+
+        BOOST_CHECK_EQUAL( xcom.parseRequest(parse), NORMAL );
+        BOOST_CHECK_EQUAL( xcom.entries(), 1 );
+        BOOST_CHECK_EQUAL( xcom.messageSize(1), sizeof (expected_result) / sizeof (expected_result[0]) );
+
+        for (int i = 0; i < xcom.messageSize(1); ++i)
+        {
+            BOOST_CHECK_EQUAL( xcom.getByte(i, 1), expected_result[i] );
+        }
+    }
+
+    // Lower Priority, 150 hours
+    {
+        CtiCommandParser        parse( "putconfig xcom data 'Offpeak rate:6.5*CENTSSIGN*/kWh' msgpriority 3 timeout 150 hour" );
+        CtiProtocolExpresscom   xcom;
+
+        BYTE expected_result[] = { 0, 0, 0, 0, 0,       // addressing not assigned: defaults to zero
+                                   0x1D,                // message type: Data
+                                   0x20,                // config: use ascii
+                                   0x18,                // Data length
+                                   0x03,                // Display Priority 7=highest
+                                   0x01,                // Flags (Timeout in hours)
+                                   0x96,                // Timeout 150h
+                                   0x4F, 0x66, 0x66, 0x70, 0x65, 0x61, 0x6B, 0x20, 0x72, 0x61, 0x74, 0x65, 0x3A, 0x36, 0x2E, 0x35, 0xA2, 0x2F, 0x6B, 0x57, 0x68};
+                                   //O    f     f     p     e      a     k    ' '    r     a     t    e     :     6      .    5    cent   /     k     W      h
+
+        BOOST_CHECK_EQUAL( xcom.parseRequest(parse), NORMAL );
+        BOOST_CHECK_EQUAL( xcom.entries(), 1 );
+        BOOST_CHECK_EQUAL( xcom.messageSize(1), sizeof (expected_result) / sizeof (expected_result[0]) );
+
+        for (int i = 0; i < xcom.messageSize(1); ++i)
+        {
+            BOOST_CHECK_EQUAL( xcom.getByte(i, 1), expected_result[i] );
+        }
+    }
+}
+
 
 BOOST_AUTO_TEST_CASE(test_prot_xcom_extended_tier_delay)
 {
