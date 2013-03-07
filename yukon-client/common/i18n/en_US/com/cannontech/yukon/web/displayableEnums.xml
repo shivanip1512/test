@@ -330,7 +330,7 @@
     <entry key="yukon.common.energyCompanySetting.DEFAULT_TEMPERATURE_UNIT">Default Temperature Unit</entry>
     <entry key="yukon.common.energyCompanySetting.DEFAULT_TEMPERATURE_UNIT.description">Default temperature unit for an energy company, F(ahrenheit) or C(elsius)</entry>
     <entry key="yukon.common.energyCompanySetting.ENERGY_COMPANY_DEFAULT_TIME_ZONE">Default Time Zone</entry>
-    <entry key="yukon.common.energyCompanySetting.ENERGY_COMPANY_DEFAULT_TIME_ZONE.description">Default time zone of the energy company</entry>
+    <entry key="yukon.common.energyCompanySetting.ENERGY_COMPANY_DEFAULT_TIME_ZONE.description">Default time zone of the energy company. (e.g. America/Denver, America/Chicago, America/Los_Angeles, or America/New_York)</entry>
     <entry key="yukon.common.energyCompanySetting.INHERIT_PARENT_APP_CATS">Inherit Parent App Categories</entry>
     <entry key="yukon.common.energyCompanySetting.INHERIT_PARENT_APP_CATS.description">If part of a member structure, should appliance categories be inherited from the parent.</entry>
     <entry key="yukon.common.energyCompanySetting.OPTOUT_NOTIFICATION_RECIPIENTS">Optout Notification Recipients</entry>

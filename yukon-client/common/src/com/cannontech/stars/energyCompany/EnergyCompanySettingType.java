@@ -41,7 +41,7 @@ public enum EnergyCompanySettingType implements DisplayableEnum {
     ADMIN_EMAIL_ADDRESS(MISC, ALWAYS_SET, stringType(), "info@cannontech.com"),
     ADMIN_ALLOW_DESIGNATION_CODE(MISC, ALWAYS_SET, booleanType(), false),
     BROADCAST_OPT_OUT_CANCEL_SPID(MISC, UNSET, integerType(), 0),
-    ENERGY_COMPANY_DEFAULT_TIME_ZONE(MISC, ALWAYS_SET, stringType(), "CST"),
+    ENERGY_COMPANY_DEFAULT_TIME_ZONE(MISC, ALWAYS_SET, stringType(), "America/Chicago"),
     INHERIT_PARENT_APP_CATS(MISC, ALWAYS_SET, booleanType(), true),
     OPTOUT_NOTIFICATION_RECIPIENTS(MISC, ALWAYS_SET, stringType(), null),
     OPTIONAL_PRODUCT_DEV(MISC, UNSET, stringType(), "00000000"),

@@ -43,7 +43,7 @@ public class EnergyCompanySettingDaoImpl implements EnergyCompanySettingDao {
 
     private final Logger log = YukonLogManager.getLogger(EnergyCompanySettingDaoImpl.class);
     private SimpleTableAccessTemplate<EnergyCompanySetting> insertTemplate;
-    private final LeastRecentlyUsedCacheMap<ECSettingCacheKey, EnergyCompanySetting> cache = new LeastRecentlyUsedCacheMap<>(10000);
+    private final LeastRecentlyUsedCacheMap<ECSettingCacheKey, EnergyCompanySetting> cache = new LeastRecentlyUsedCacheMap<>(100);
     
     @Autowired private DbChangeManager dbChangeManager;
     @Autowired private NextValueHelper nextValueHelper;
