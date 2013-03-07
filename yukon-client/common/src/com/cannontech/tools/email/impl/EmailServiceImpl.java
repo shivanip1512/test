@@ -99,7 +99,7 @@ public class EmailServiceImpl implements EmailService {
     @Override
     public void sendMessage(EmailServiceMessage data) throws MessagingException {
         MimeMessage message = new MimeMessage(getSession());
-        message.setHeader("X-Mailer", "CannontechEmail");
+        message.setHeader("X-Mailer", "YukonEmail");
         
         InternetAddress fromAddress = 
                 (data.getFrom() == null) ? getGlobalSettingsFromAddress() : data.getFrom();
@@ -123,9 +123,6 @@ public class EmailServiceImpl implements EmailService {
         
         if (data.getBody() != null) {
             message.setContent(data.getBody());
-        } else {
-            // Nothing to add to the message? What do we do here?
-            message.setText("This message has no content.");
         }
         
         // Set the send date to now.
@@ -238,7 +235,7 @@ public class EmailServiceImpl implements EmailService {
             String password = globalSettingDao.getString(GlobalSettingType.SMTP_PASSWORD);
             
             if (!StringUtils.isBlank(username) && !StringUtils.isBlank(password)) {
-                log.debug("STMP username and password");
+                log.debug("SMTP username and password");
                 authentication = new PasswordAuthentication(username, password);
             }
         }
@@ -257,7 +254,7 @@ public class EmailServiceImpl implements EmailService {
     private String getRequiredGlobalSettingsString(GlobalSettingType type) throws MessagingException {
         String value = globalSettingDao.getString(type);
 
-        if (value == null) {
+        if (StringUtils.isBlank(value)) {
             // if this occurs there is either an issue with the GlobalSettingsDao or no default is set in GlobalSetting enum.
             throw new MessagingException("No " + type.name() + " defined in the GlobalSettings table in the database.");
         }
@@ -284,7 +281,7 @@ public class EmailServiceImpl implements EmailService {
     private MimeMessage prepareMessage(EmailMessageHolder holder) throws MessagingException {
         MimeMessage message = new MimeMessage(getSession());
         
-        message.setHeader("X-Mailer", "CannontechEmail");
+        message.setHeader("X-Mailer", "YukonEmail");
         message.setFrom(getGlobalSettingsFromAddress());
         message.setRecipient(Message.RecipientType.TO, new InternetAddress(holder.getRecipient()));
         message.setSubject(holder.getSubject());
