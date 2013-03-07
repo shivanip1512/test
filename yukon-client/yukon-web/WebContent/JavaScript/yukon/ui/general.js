@@ -372,13 +372,13 @@ Yukon.ui = {
             $$(".f_wizard").each(function(elem){
                 elem.select(".f_next").each(function(nextButton){
                     nextButton.observe('click', function(event){
-                        Yukon.ui.wizard.nextPage(event.element().up(".f_page"))
+                        Yukon.ui.wizard.nextPage(event.element().up(".f_page"));
                     });
                 });
                 
                 elem.select(".f_prev").each(function(prevButton){
                     prevButton.observe('click', function(event){
-                        Yukon.ui.wizard.prevPage(event.element().up(".f_page"))
+                        Yukon.ui.wizard.prevPage(event.element().up(".f_page"));
                     });
                 });
                 
@@ -455,7 +455,7 @@ Yukon.uiUtils = {
         },
         
         hide: function(element) {
-            jQuery(element).find('.glass:first').fadeOut(200, function(){jQuery(this).remove()});
+            jQuery(element).find('.glass:first').fadeOut(200, function(){jQuery(this).remove();});
         },
         
         redraw: function(glass) {
@@ -502,7 +502,7 @@ Element.prototype.trigger = function(eventName)
     if (this.fireEvent){
         return this.fireEvent('on' + eventName);
     }
-}
+};
 
 jQuery.fn.selectText = function() {
     var text = this[0];

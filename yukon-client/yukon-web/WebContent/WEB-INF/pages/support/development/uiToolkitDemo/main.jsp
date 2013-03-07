@@ -70,21 +70,23 @@ background-color: -moz-linear-gradient(#aaa, #fff);
 </style>
 
 <script>
-document.observe("dom:loaded", function() {
-    Event.observe(window, 'keyup', function(event) {
-        if (event.keyCode == 27) {
+jQuery(function() {
+    // unblock page (and elements) on escape key
+    jQuery(document).keyup(function(e) {
+        if (e.which == 27) { // esc
             Yukon.ui.unblockPage();
+        
+            jQuery(".f_block_this").each(function() {
+                Yukon.uiUtils.elementGlass.hide(jQuery(this));
+            });
         }
     });
     
-    
-    $$("button.blockElement").each(function(elem){
-        elem.observe('click', function(event){
-            var elem = event.element().up("div.blockThis");
-            if(elem) {
-                Yukon.uiUtils.elementGlass.show({element: elem, alpha: 0.5});
-            }
-        });
+    jQuery("button.blockElement").click(function(e){
+		var elem = jQuery(e.target).closest(".f_block_this");
+		if(elem) {
+		    Yukon.uiUtils.elementGlass.show(elem);
+		}
     });
 });
 </script>
@@ -370,10 +372,10 @@ $("myCloseButton").observe('click', function(){
                 </tr>
                 <tr>
                     <td>
-                        <div class="blockThis box"
+                        <div class="f_block_this box"
                             style="border: solid 1px #ccc; background: white; padding: 10px 20px;" />
                         <span class="info">In this example, clicking the block button will
-                            block only this white box.</span> Dynamic content is so cool. <br /> <br />
+                            block only this white box (hit esc key to unblock).</span> Dynamic content is so cool. <br /> <br />
                         <button name="button2" value="B" class="blockElement">Block Element</button>
                         </div>
                     </td>
@@ -382,18 +384,16 @@ $("myCloseButton").observe('click', function(){
                         block and unblock and element. <br /> <br />In this example, we have a
                         click handler on the <em>Block Element</em> button. The <br />function for
                         the handler looks like this: <br /> <br /> <pre class="code">
-$("blockTheWhiteContainer").observe('click', function(elem){
+jQuery("button.blockElement").click( function() {
     ...
-    var elem = $(&lt;THE_ELEMENT_I_WANT_TO_BLOCK&gt;);
-    ...        
-    Yukon.ui.blockElement({element:elem, opacity:0.5});
+    var elem = jQuery(this).closest('.f_block_this');
+    Yukon.uiUtils.elementGlass.show(elem);
     ...
 });
         </pre> <br /> Similarly, we need to tell the library to unblock the element: <pre class="code">
 ...
-var elem = $(&lt;THE_SAME_ELEMENT_YOU_CHOOSE_TO_BLOCK&gt;);
-...
-Yukon.ui.unblockElement({element:elem});
+    var elem = jQuery('.f_block_this');
+    Yukon.uiUtils.elementGlass.hide(elem);
 ...
         </pre>
                     </td>
