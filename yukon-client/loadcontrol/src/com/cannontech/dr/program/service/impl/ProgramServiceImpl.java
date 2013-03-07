@@ -335,17 +335,16 @@ public class ProgramServiceImpl implements ProgramService {
     }
 
     @Override
-    public ProgramStatus startProgram(int programId, int gearNumber, Date startDate,
+    public void startProgram(int programId, int gearNumber, Date startDate,
                              Duration startOffset, boolean stopScheduled, Date stopDate,
                              Duration stopOffset, boolean overrideConstraints,
                              List<GearAdjustment> gearAdjustments) {
         try {
-            return startProgramBlocking(programId, gearNumber, startDate, startOffset, 
-                                        stopScheduled, stopDate, stopOffset, overrideConstraints, 
-                                        gearAdjustments, false);
+            startProgramBlocking(programId, gearNumber, startDate, startOffset, 
+                                 stopScheduled, stopDate, stopOffset, overrideConstraints, 
+                                 gearAdjustments, false);
         } catch (TimeoutException e) {
             // This isn't actually thrown since we're passing false for block.
-            return null;
         }
     }
 
@@ -527,12 +526,13 @@ public class ProgramServiceImpl implements ProgramService {
     }
 
     @Override
-    public ProgramStatus stopProgramBlocking(int programId, Date stopDate, Duration stopOffset) throws TimeoutException {
+    public ProgramStatus stopProgramBlocking(int programId, Date stopDate, Duration stopOffset) 
+            throws TimeoutException, BadServerResponseException {
         return stopProgramBlocking(programId, stopDate, stopOffset, true);
     }
 
     @Override
-    public void stopProgram(int programId, Date stopDate, Duration stopOffset) {
+    public void stopProgram(int programId, Date stopDate, Duration stopOffset) throws BadServerResponseException {
         try {
             stopProgramBlocking(programId, stopDate, stopOffset, false);
         } catch (TimeoutException e) {
@@ -541,9 +541,8 @@ public class ProgramServiceImpl implements ProgramService {
     }
 
     @Override
-    public ProgramStatus stopProgram(int programId, Date stopTime,
-                                                          boolean force, boolean observeConstraints)
-                                                                  throws TimeoutException {
+    public ProgramStatus stopProgram(int programId, Date stopTime, boolean force, boolean observeConstraints)
+            throws TimeoutException, BadServerResponseException {
         
         if (stopTime == null) {
             stopTime = CtiUtilities.get1990GregCalendar().getTime();
@@ -577,7 +576,7 @@ public class ProgramServiceImpl implements ProgramService {
     }
 
     private ProgramStatus stopProgramBlocking(int programId, Date stopDate, Duration stopOffset, boolean block)
-            throws TimeoutException {
+            throws TimeoutException, BadServerResponseException {
         
         LMProgramBase program = loadControlClientConnection.getProgram(programId);
         Date programStopDate = datePlusOffset(stopDate, stopOffset);
@@ -624,7 +623,7 @@ public class ProgramServiceImpl implements ProgramService {
     @Override
     public List<ProgramStatus> stopScenarioBlocking(int scenarioId,  Date stopTime, boolean overrideConstraints,
                                                      boolean observeConstraints, LiteYukonUser user)
-                         throws NotFoundException, TimeoutException, NotAuthorizedException, ConnectionException {
+                         throws NotFoundException, TimeoutException, NotAuthorizedException, ConnectionException, BadServerResponseException {
 
         if (!loadControlClientConnection.isValid()) {
             throw new ConnectionException("The Load Management server connection is not valid.");

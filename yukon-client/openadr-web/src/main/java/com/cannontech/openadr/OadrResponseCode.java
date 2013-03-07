@@ -16,6 +16,7 @@ public enum OadrResponseCode {
     CONFLICT(409),
     
     // RESPONDER ERROR - 5xx
+    RESPONDER_ERROR(500),
     RESPONDER_TIMEOUT(508),
     ;
     

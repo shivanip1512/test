@@ -11,7 +11,8 @@ import com.cannontech.system.GlobalSettingType;
 import com.cannontech.system.dao.GlobalSettingDao;
 
 public class OpenAdrConfigurationServiceImpl implements OpenAdrConfigurationService {
-
+    // TODO: Get rid of this class and improve the global settings dao.
+    
     @Autowired private GlobalSettingDao globalSettingDao;
     @Autowired private YukonUserDao yukonUserDao;
     

@@ -141,10 +141,10 @@ public interface ProgramService {
      * @param overrideConstraints If this is set to true, constraints will be
      *            overridden. If not, they will be observed.
      */
-    public ProgramStatus startProgram(int programId, int gearNumber, Date startDate,
-                                      Duration startOffset, boolean stopScheduled, Date stopDate,
-                                      Duration stopOffset, boolean overrideConstraints,
-                                      List<GearAdjustment> gearAdjustments);
+    public void startProgram(int programId, int gearNumber, Date startDate,
+                             Duration startOffset, boolean stopScheduled, Date stopDate,
+                             Duration stopOffset, boolean overrideConstraints,
+                             List<GearAdjustment> gearAdjustments);
 
     /**
      * Starts a program. Blocks on Program Start Scheduled. Looks up program by programName.
@@ -160,9 +160,8 @@ public interface ProgramService {
      * @throws UserNotInRoleException
      * @throws ConnectionException
      */
-    public ProgramStatus startProgram(int programId, Date startTime,
-                       Date stopTime, String gearName, boolean overrideConstraints,
-                       boolean observeConstraints, LiteYukonUser liteYukonUser)
+    public ProgramStatus startProgram(int programId, Date startTime, Date stopTime, String gearName, 
+                                      boolean overrideConstraints, boolean observeConstraints, LiteYukonUser liteYukonUser)
                        throws NotFoundException, TimeoutException, UserNotInRoleException, ConnectionException;
 
     /**
@@ -181,10 +180,10 @@ public interface ProgramService {
      * @return
      * @throws NotAuthorizedException if neither the user (nor any groups user belongs to) have the scenario made visible to them.
      */
-    public void startScenario(int scenarioId, Date startTime, Date stopTime,
-                                   boolean overrideConstraints, boolean observeConstraints,
-                                   LiteYukonUser user) throws NotFoundException, TimeoutException,
-            NotAuthorizedException, BadServerResponseException, ConnectionException;
+    public void startScenario(int scenarioId, Date startTime, Date stopTime, boolean overrideConstraints, 
+                              boolean observeConstraints, LiteYukonUser user) 
+                      throws NotFoundException, TimeoutException, NotAuthorizedException, 
+                             BadServerResponseException, ConnectionException;
 
     /**
      * Schedules the program stop. Blocks on Program Stop Scheduled
@@ -215,7 +214,7 @@ public interface ProgramService {
      * @throws TimeoutException
      */
     public ProgramStatus stopProgram(int programId, Date stopTime, boolean overrideConstraints, boolean observeConstraints)
-                                                          throws TimeoutException;
+                                                          throws TimeoutException, BadServerResponseException;
 
     public void stopProgram(int programId);
 
@@ -235,7 +234,7 @@ public interface ProgramService {
      * @throws NotAuthorizedException if neither the user (nor any groups user belongs to) have the scenario made visible to them.
      */
     public void stopScenario(int scenarioId, Date stopTime, boolean forceStop,
-                                         boolean observeConstraintsAndExecute, LiteYukonUser user)
+                             boolean observeConstraintsAndExecute, LiteYukonUser user)
                              throws NotFoundException, NotAuthorizedException;
 
     /**
@@ -259,8 +258,8 @@ public interface ProgramService {
      * @throws NotAuthorizedException if neither the user (nor any groups user belongs to) have the scenario made visible to them.
      */
     public List<ProgramStatus> stopScenarioBlocking(int scenarioid, Date stopTime, boolean forceStop,
-                                                     boolean observeConstraintsAndExecute, LiteYukonUser user) 
-                    throws NotFoundException, TimeoutException, NotAuthorizedException;
+                                                    boolean observeConstraintsAndExecute, LiteYukonUser user) 
+                    throws NotFoundException, TimeoutException, NotAuthorizedException, BadServerResponseException;
     
     public ConstraintViolations getConstraintViolationsForStopProgram(int programId, int gearNumber,
                                                                       Date stopDate);

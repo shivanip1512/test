@@ -14,6 +14,7 @@ import java.security.cert.CertificateEncodingException;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
+import java.util.Random;
 
 import javax.annotation.PostConstruct;
 import javax.net.ssl.HttpsURLConnection;
@@ -32,9 +33,11 @@ import org.joda.time.Period;
 import org.joda.time.format.PeriodFormatter;
 import org.joda.time.format.PeriodFormatterBuilder;
 import org.oasis_open.docs.ns.energyinterop._201110.EiResponse;
+import org.oasis_open.docs.ns.energyinterop._201110.EiTargetType;
 import org.oasis_open.docs.ns.energyinterop._201110.EventResponses;
 import org.oasis_open.docs.ns.energyinterop._201110.EventResponses.EventResponse;
 import org.oasis_open.docs.ns.energyinterop._201110.EventStatusEnumeratedType;
+import org.oasis_open.docs.ns.energyinterop._201110.OptTypeType;
 import org.oasis_open.docs.ns.energyinterop._201110.payloads.EiRequestEvent;
 import org.openadr.oadr_2_0a._2012._07.OadrCreatedEvent;
 import org.openadr.oadr_2_0a._2012._07.OadrDistributeEvent;
@@ -46,6 +49,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 
 import com.cannontech.clientutils.YukonLogManager;
 import com.cannontech.common.exception.NotAuthorizedException;
+import com.cannontech.common.util.CtiUtilities;
 import com.cannontech.core.dao.NotFoundException;
 import com.cannontech.core.roleproperties.UserNotInRoleException;
 import com.cannontech.dr.program.service.ConstraintViolations;
@@ -58,10 +62,10 @@ import com.cannontech.openadr.OadrResponseCode;
 import com.cannontech.openadr.dao.OpenAdrEventDao;
 import com.cannontech.openadr.exception.OpenAdrConfigurationException;
 import com.cannontech.openadr.exception.OpenAdrEventException;
+import com.cannontech.openadr.model.OffsetEvent;
 import com.cannontech.openadr.util.CertificateUtil;
 import com.cannontech.openadr.util.OadrUtil;
 import com.cannontech.system.dao.GlobalSettingDao;
-
 
 /**
  * Service to make requests to an OpenADR VTN on an interval. Requests to see
@@ -143,7 +147,7 @@ public class OpenAdrService {
                             
                             if (StringUtils.isBlank(vtnID) || !configService.getVtnId().equals(vtnID)) {
                                 // Conformance rule 21.
-                                log.error("Received unexpected VTN ID.");
+                                log.error("Received unexpected VTN ID: " + vtnID);
                                 oadrCreatedEvent = OadrUtil.createOadrCreatedEvent(requestId, eventResponses, venId);
                                 
                                 // Change the responseCode from Success.
@@ -158,11 +162,7 @@ public class OpenAdrService {
                                     }
                                 }
                                 
-                                oadrCreatedEvent = 
-                                    OadrUtil.createOadrCreatedEvent(
-                                        requestId, 
-                                        eventResponses, 
-                                        venId);
+                                oadrCreatedEvent = OadrUtil.createOadrCreatedEvent(requestId, eventResponses, venId);
                             }
                         }
                         
@@ -226,6 +226,64 @@ public class OpenAdrService {
     }
     
     /**
+     * Returns an OadrEvent created from unmarshalled xml.
+     * @param eventXml the xml to unmarshall
+     * @return a populated OadrEvent object if the eventxml is not blank, null otherwise.
+     */
+    private OadrEvent convertXmlToEvent(String eventXml) {
+        OadrEvent event = null;
+        try {
+            if (StringUtils.isNotBlank(eventXml)) {
+                final StringReader xmlReader = new StringReader(eventXml);
+                final StreamSource xmlSource = new StreamSource(xmlReader);
+                event = (OadrEvent)unmarshaller.unmarshal(xmlSource);
+            }
+        } catch (JAXBException e) {
+            // XML was likely bad.
+            log.error("caught JAXBException in getEventFromDb", e);
+        }
+        
+        return event;
+    }
+    
+    /**
+     * Ensure that the parameters for an event request are valid and match what we expect given any
+     * prior actions for the given event id
+     * @param eventId the event id for the request
+     * @param isCancelRequest whether or not this event is requesting cancelled control
+     * @param modNumber the modification number for the event
+     * @param requestId the request id from the VTN distribute event request
+     * @return the xml string 
+     * @throws OpenAdrEventException
+     */
+    private String validateRequest(String eventId, boolean isCancelRequest, long modNumber, String requestId) 
+        throws OpenAdrEventException {
+        
+        if (StringUtils.isBlank(eventId)) {
+            // Error, eventId can't be blank.
+            throw new OpenAdrEventException(eventId, OadrResponseCode.BAD_REQUEST, modNumber, requestId);
+        }
+        
+        final boolean isCreateRequest = (modNumber == 0);
+        
+        if (isCreateRequest && isCancelRequest) {
+            // These events are at odds with each other. Cannot be!
+            throw new OpenAdrEventException(eventId, OadrResponseCode.NOT_ALLOWED, modNumber, requestId);
+        }
+        
+        final OffsetEvent dbEvent = openAdrEventDao.retrieveOffsetEvent(eventId);
+        String eventXml = dbEvent != null ? eventXml = dbEvent.getEventXml() : null;
+        final boolean eventExists = ! StringUtils.isBlank(eventXml);
+
+        if (isCreateRequest && eventExists) {
+            // Trying to create an event that already exists? No.
+            throw new OpenAdrEventException(eventId, OadrResponseCode.CONFLICT, modNumber, requestId);
+        }
+        
+        return eventXml;
+    }
+    
+    /**
      * Attempt the proper control for a single event in a VTN DistributeEvent request.
      * @param event the event being executed
      * @param requestId the VTN request Id.
@@ -239,39 +297,13 @@ public class OpenAdrService {
             final EventStatusEnumeratedType eventStatus = event.getEiEvent().getEventDescriptor().getEventStatus();
             final boolean isCancelRequest = eventStatus == EventStatusEnumeratedType.CANCELLED;
             final long modNumber = event.getEiEvent().getEventDescriptor().getModificationNumber();
-            final String eventXml = openAdrEventDao.retrieveEventXml(eventId);
             
             // Check for errors
-            if (StringUtils.isBlank(eventId)) {
-                if (isCancelRequest) {
-                    // No error as per conformance number 21. No response necessary, we didn't do anything.
-                    return null;
-                }
-                
-                // Error, eventId can't be blank.
-                throw new OpenAdrEventException(eventId, OadrResponseCode.BAD_REQUEST, modNumber, requestId);
-            } else {
-                if (isCancelRequest) {
-                    if (modNumber > 0) {
-                        if (StringUtils.isBlank(eventXml)) {
-                            // Trying to cancel a non-existent event. Conformance number 21 says no error.
-                            return null;
-                        }
-                    } else {
-                        // Cancel request with a modification number of 0? No.
-                        throw new OpenAdrEventException(eventId, OadrResponseCode.NOT_ALLOWED, modNumber, requestId);
-                    }
-                } else {
-                    if (modNumber > 0) {
-                        if (StringUtils.isBlank(eventXml)) {
-                            // Trying to modify a non-existent event. This is an error.
-                            throw new OpenAdrEventException(eventId, OadrResponseCode.NOT_FOUND, modNumber, requestId);
-                        }
-                    } else if (StringUtils.isBlank(eventXml)) {
-                        // Trying to create an event that already exists? No.
-                        throw new OpenAdrEventException(eventId, OadrResponseCode.CONFLICT, modNumber, requestId);
-                    }
-                }
+            final String eventXml = validateRequest(eventId, isCancelRequest, modNumber, requestId);
+            
+            // Conformance rule 21. Cancel request for an unknown event id isn't an error.
+            if (StringUtils.isBlank(eventXml) && isCancelRequest) {
+                return null;
             }
     
             /**
@@ -288,76 +320,67 @@ public class OpenAdrService {
                 validateModificationNumber(modNumber, eventXml, eventId, requestId);
             }
     
-            final List<String> groupIdList = event.getEiEvent().getEiTarget().getGroupID();
-            for (final String groupName : groupIdList) {
+            final List<String> targets = getTargetsForEvent(event);
+            
+            if (targets.isEmpty()) {
+                // Conformance rule 22. Nothing to target, and we're just an aggregator.
+                throw new OpenAdrEventException(eventId, OadrResponseCode.BAD_REQUEST, modNumber, requestId);
+            }
+            
+            for (final String target : targets) {
                 final Properties properties = event.getEiEvent().getEiActivePeriod().getProperties();
                 final String duration = properties.getDuration().getDuration();
                 
                 if (isDurationValid(duration)) {
                     final Period period = formatter.parsePeriod(duration);
-    
-                    final Date now = new Date();
-                    final Date start = properties.getDtstart().getDateTime().toGregorianCalendar().getTime();
-                    final Date stop = new DateTime(start).plus(period).toDate();
+
+                    Date dStart;
+                    try {
+                        dStart = properties.getDtstart().getDateTime().toGregorianCalendar().getTime();
+                    } catch (NullPointerException e) {
+                        // No start element defined.
+                        throw new OpenAdrEventException(eventId, OadrResponseCode.BAD_REQUEST, modNumber, requestId);
+                    }
+
+                    int offsetMillis = 0;
+                    try {
+                        offsetMillis = getStartAfterMillis(event, requestId);
+                    } catch (RuntimeException e) {
+                        // Improper format, bad request.
+                        throw new OpenAdrEventException(eventId, OadrResponseCode.BAD_REQUEST, modNumber, requestId);
+                    }
                     
-                    if (start.after(now) && stop.after(now) && stop.after(start)) {
+                    final Date now = new Date();
+                    final Date start = new DateTime(dStart).plus(offsetMillis).toDate();
+                    
+                    Date stop;
+                    if (period.getMillis() == 0) {
+                        // Conformance rule 47. 0 is open-ended.
+                        // TODO: Let the programService determine this by setting stop = null.
+                        stop = CtiUtilities.get2035GregCalendar().getTime();
+                    } else {
+                        stop = new DateTime(start).plus(period).toDate();
+                    }
+                    
+                    if (!start.before(now) && !stop.before(now) && !stop.before(start)) {
                         final boolean isTestEvent = ! "false".equals(event.getEiEvent().getEventDescriptor().getTestEvent());
                         
-                        try {
-                            // See if it's a program, try control if it is.
-                            final int programId = loadControlProgramDao.getProgramIdByProgramName(groupName);
-                            
-                            response = 
-                                requestProgramControl(
-                                    programId, 
-                                    start, 
-                                    stop, 
-                                    eventId, 
-                                    modNumber, 
-                                    requestId,
-                                    isTestEvent,
-                                    eventStatus);
-                        } catch (NotFoundException e) {
-                            try {
-                                // Wasn't a program, it better be a scenario.
-                                final int scenarioId = loadControlProgramDao.getScenarioIdForScenarioName(groupName);
-                                
-                                response = 
-                                    requestScenarioControl(
-                                        scenarioId, 
-                                        start, 
-                                        stop, 
-                                        eventId, 
-                                        modNumber, 
-                                        requestId,
-                                        isTestEvent, 
-                                        eventStatus);
-                            } catch (NotFoundException f) {
-                                log.error("Received control request for " + groupName + ", which is neither a program nor a scenario.");
-            
-                                response = 
-                                    OadrUtil.createEventResponse(
-                                        eventId, 
-                                        OadrResponseCode.NOT_FOUND.codeString(), 
-                                        modNumber, 
-                                        requestId);
-                            }
-                        }
+                        response = executeControl(target, start, stop, eventId, modNumber, requestId, isTestEvent, eventStatus);
                         
                         if (OadrResponseCode.getForErrorCode(response.getResponseCode()) == OadrResponseCode.SUCCESS) {
                             log.debug("Event: " + event.getEiEvent().getEventDescriptor().getEventID() + 
-                                      " controlling " + groupName + " from " + start + " to " + stop);
+                                      " controlling " + target + " from " + start + " to " + stop);
                             
                             // Things went okay, do the appropriate DB action.
                             if (isCancelRequest) {
                                 openAdrEventDao.deleteEvent(eventId);
                             } else {
-                                writeEvent(event, stop);
+                                writeEvent(event, offsetMillis, stop, requestId);
                             }
                         }
                     } else {
                         log.warn("Attempt to control failed because of invalid time elements. " +
-                                 "Now: " + now + " Start: " + start + " Stop: " + stop);
+                                 "Now: " + now + " Start: " + dStart + " Stop: " + stop);
                         
                         response = OadrUtil.createEventResponse(
                             eventId, 
@@ -387,6 +410,109 @@ public class OpenAdrService {
         
         return response;
     }
+        
+    private EventResponse executeControl(String target, Date start, Date stop, String eventId, long modNumber,
+                                         String requestId, boolean isTestEvent, EventStatusEnumeratedType eventStatus) {
+        try {
+            // Try scenario control.
+            final int scenarioId = loadControlProgramDao.getScenarioIdForScenarioName(target);
+            return requestScenarioControl(scenarioId, start, stop, eventId, modNumber, requestId, isTestEvent, eventStatus);
+        } catch (NotFoundException e) {
+            try {
+                // It wasn't a scenario, it better be a program.
+                final int programId = loadControlProgramDao.getProgramIdByProgramName(target);
+                return requestProgramControl(programId, start, stop, eventId, modNumber, requestId, isTestEvent, eventStatus);
+            } catch (NotFoundException f) {
+                // It wasn't either, error.
+                log.error("Received control request for " + target + ", which is neither a program nor a scenario.");
+                return OadrUtil.createEventResponse(eventId, OadrResponseCode.NOT_FOUND.codeString(), modNumber, requestId);
+            }
+        }
+    }
+    
+    /**
+     * Get a randomly generated number of milliseconds from the startafter element.
+     * @param properties the properties element containing the calculation data.
+     * @return a random, positive, non-zero number of milliseconds if the startafter element is
+     *      present in the properties element, zero otherwise.
+     * @throws RuntimeException if the startAfter element is not properly formatted.
+     * @throws OpenAdrEventException 
+     */
+    private int getStartAfterMillis(OadrEvent event, String requestId) throws OpenAdrEventException {
+        final long modNumber = event.getEiEvent().getEventDescriptor().getModificationNumber();
+        final String eventId = event.getEiEvent().getEventDescriptor().getEventID();
+        
+        final OffsetEvent offsetEvent = openAdrEventDao.retrieveOffsetEvent(eventId);
+        if (offsetEvent == null) {
+            // Problem retrieving the event from the database.
+            throw new OpenAdrEventException(eventId, OadrResponseCode.RESPONDER_ERROR, modNumber, requestId);
+        }
+        
+        final OadrEvent dbEvent = convertXmlToEvent(offsetEvent.getEventXml());
+        
+        String dbStartAfter = null;
+        if (dbEvent != null) {
+            // The event existed before. Grab the startAfter element for comparison.
+            try {
+                dbStartAfter = dbEvent.getEiEvent().getEiActivePeriod().getProperties().getTolerance().getTolerate().getStartafter();
+            } catch (NullPointerException e) {
+                // The Db event didn't have a startafter element. That's fine.
+            }
+        }
+        
+        String startAfterStr = null;
+        try {
+            startAfterStr = event.getEiEvent().getEiActivePeriod().getProperties().getTolerance().getTolerate().getStartafter();
+            if (!isDurationValid(startAfterStr)) {
+                log.error("Invalid startafter value received: " + startAfterStr);
+                throw new OpenAdrEventException(eventId, OadrResponseCode.BAD_REQUEST, modNumber, requestId);
+            }
+        } catch (NullPointerException e) {
+            // There wasn't a startAfter element, no offset exists.
+            return 0;
+        }
+        
+        // We got everything we need, figure out what the value should be.
+        return determineMillis(dbStartAfter, startAfterStr, offsetEvent.getOffsetMillis());
+    }
+    
+    /**
+     * Given a set of parameters, determine the correct number of milliseconds to return 
+     * as a start offset. This method was broken out for unit-testability.
+     * @param dbStartAfter the start after string of a previously written event
+     * @param startAfterStr the start after string of a received event request
+     * @param dbMillis the millisecond value used previously 
+     * @return dbMillis if dbStartAfter and startAfterStr are non-blank and equal, otherwise a 
+     *      new, randomly generated number of milliseconds between 0 and the the number of 
+     *      milliseconds represented by the startAfterStr.
+     */
+    private int determineMillis(String dbStartAfter, String startAfterStr, int dbMillis) {
+        if (startAfterStr.equals(dbStartAfter)) {
+            // Startafter value is the same, use the DB millis, don't calculate a new one.
+            return dbMillis;
+        }
+        
+        Period startAfter = formatter.parsePeriod(startAfterStr);
+        int millis = startAfter.getMillis();
+        
+        // Get a double value between 0.0 and 1.0 to randomize a time in the startAfter period.
+        Random generator = new Random();
+        double offsetMultiplier = generator.nextDouble();
+        
+        return (int)(offsetMultiplier * (double)millis);
+    }
+    
+    private List<String> getTargetsForEvent(OadrEvent event) {
+        final List<String> targets = new ArrayList<>();
+        
+        final EiTargetType eiTarget = event.getEiEvent().getEiTarget();
+    
+        targets.addAll(eiTarget.getGroupID());
+        targets.addAll(eiTarget.getPartyID());
+        targets.addAll(eiTarget.getResourceID());
+        
+        return targets;
+    }
     
     /**
      * Attempt to execute program control with the provided parameters
@@ -404,6 +530,7 @@ public class OpenAdrService {
                                                 String eventId, long modifNum, String requestId,
                                                 boolean isTestEvent, EventStatusEnumeratedType eventStatus) {
         OadrResponseCode responseCode = OadrResponseCode.SUCCESS;
+        OptTypeType optType = OptTypeType.OPT_IN;
         
         ConstraintViolations violations = null;
         try {
@@ -434,16 +561,24 @@ public class OpenAdrService {
         } catch (UserNotInRoleException | NotFoundException e) {
             log.error("caught UserNotInRoleException in requestProgramControl", e);
             responseCode = OadrResponseCode.NOT_ALLOWED;
+            optType = OptTypeType.OPT_OUT;
         } catch (ConnectionException | TimeoutException e) {
             log.error("caught exception in requestProgramControl", e);
             responseCode = OadrResponseCode.RESPONDER_TIMEOUT;
+            optType = OptTypeType.OPT_OUT;
         }
         
         if (violations != null && violations.isViolated()) {
             responseCode = OadrResponseCode.NOT_ALLOWED;
         }
         
-        return OadrUtil.createEventResponse(eventId, responseCode.codeString(), modifNum, requestId);
+        EventResponse eventResponse = OadrUtil.createEventResponse(eventId, responseCode.codeString(), modifNum, requestId);
+        
+        if (eventStatus == EventStatusEnumeratedType.CANCELLED) {
+            eventResponse.setOptType(optType);
+        }
+        
+        return eventResponse;
     }
     
     /**
@@ -463,6 +598,7 @@ public class OpenAdrService {
                                                  boolean isTestEvent, EventStatusEnumeratedType eventStatus) {
         List<ConstraintViolations> programViolations = null;
         OadrResponseCode responseCode = OadrResponseCode.SUCCESS;
+        OptTypeType optType = OptTypeType.OPT_IN;
         
         try {
             if (isTestEvent) {
@@ -512,9 +648,11 @@ public class OpenAdrService {
         } catch (NotAuthorizedException | NotFoundException e) {
             log.error("caught exception in requestScenarioControl", e);
             responseCode = OadrResponseCode.NOT_ALLOWED;
+            optType = OptTypeType.OPT_OUT;
         } catch (ConnectionException | TimeoutException e) {
             log.error("caught exception in requestScenarioControl", e);
             responseCode = OadrResponseCode.RESPONDER_TIMEOUT;
+            optType = OptTypeType.OPT_OUT;
         }
         
         /**
@@ -537,7 +675,13 @@ public class OpenAdrService {
             responseCode = successExists ? responseCode : OadrResponseCode.NOT_ALLOWED;
         }
         
-        return OadrUtil.createEventResponse(eventId, responseCode.codeString(), modifNum, requestId);
+        EventResponse eventResponse = OadrUtil.createEventResponse(eventId, responseCode.codeString(), modifNum, requestId);
+        
+        if (eventStatus == EventStatusEnumeratedType.CANCELLED) {
+            eventResponse.setOptType(optType);
+        }
+        
+        return eventResponse;
     }
     
     /**
@@ -545,7 +689,7 @@ public class OpenAdrService {
      * @param event the event being written.
      * @param endDate the time the event ends.
      */
-    private void writeEvent(OadrEvent event, Date endDate) {
+    private void writeEvent(OadrEvent event, int offsetMillis, Date endDate, String requestId) {
         StringWriter stringWriter = new StringWriter();
         
         try {
@@ -558,16 +702,16 @@ public class OpenAdrService {
         
         if (event.getEiEvent().getEventDescriptor().getModificationNumber() > 0) {
             // This was a previous event. Update instead of insert.
-            openAdrEventDao.updateEventAndPurgeExpired(eventId, stringWriter.toString(), endDate);
+            openAdrEventDao.updateEventAndPurgeExpired(eventId, stringWriter.toString(), endDate, requestId);
         } else {
-            openAdrEventDao.insertEventAndPurgeExpired(eventId, stringWriter.toString(), endDate);
+            openAdrEventDao.insertEventAndPurgeExpired(eventId, stringWriter.toString(), endDate, requestId);
         }
     }
     
     /**
      * Determines whether the HttpsURLConnection is valid given the certificate
      * thumbprint provided by the VTN.
-     * @param con
+     * @param con the connection being verified
      * @return true if the connection contains a certificate whose thumbprint matches the VTN's,
      *      false otherwise.
      */

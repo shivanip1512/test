@@ -49,19 +49,37 @@ public class OadrUtil {
         {
             eiCreatedEvent.setVenID(venId);
         }
+        
+        // Determine the error code. Currently, we only have successes.
+        OadrResponseCode errorCode = OadrResponseCode.SUCCESS;
 
         // EiResponse
         {
             EiResponse eiResponse = new EiResponse();
+
+            if (eventResponses.getEventResponse().isEmpty()) {
+                /**
+                 * Conformance rule 42 - RequestId shall be left empty if the payload
+                 * contains event responses. Only set this if EventResponses is empty.
+                 */
+                eiResponse.setRequestID(requestId);
+            }
             
-            eiResponse.setRequestID(requestId);
-            eiResponse.setResponseCode(OadrResponseCode.SUCCESS.codeString());
+            /**
+             *  Conformance rule 25 - We fall under the exception, let the eventResponses have 
+             *  their own response codes and return success here.
+             */
+            eiResponse.setResponseCode(errorCode.codeString());
             
             eiCreatedEvent.setEiResponse(eiResponse);
         }
         
         // EiEventResponses
-        {
+        if (errorCode == OadrResponseCode.SUCCESS) {
+            /**
+             * Conformance rule 35:
+             * EventResponses are mandatory except when an error condition is reported.
+             */
             eiCreatedEvent.setEventResponses(eventResponses);
         }
         
