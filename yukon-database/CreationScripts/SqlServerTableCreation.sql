@@ -1,7 +1,7 @@
 /*==============================================================*/
 /* Database name:  YukonDatabase                                */
 /* DBMS name:      Microsoft SQL Server 2005                    */
-/* Created on:     3/1/2013 1:39:42 PM                          */
+/* Created on:     3/7/2013 1:02:10 PM                          */
 /*==============================================================*/
 
 
@@ -4775,6 +4775,10 @@ create table EnergyCompanySetting (
    LastChangedDate      datetime             null,
    constraint PK_EnergyCompanySetting primary key (EnergyCompanySettingId)
 )
+go
+
+alter table EnergyCompanySetting
+   add constraint AK_ECSetting_ECId_Name unique (EnergyCompanyId, Name)
 go
 
 /*==============================================================*/
@@ -11639,6 +11643,12 @@ go
 alter table EnergyCompanyOperatorLoginList
    add constraint FK_OpLgEnCmpOpLs foreign key (OperatorLoginID)
       references YukonUser (UserID)
+go
+
+alter table EnergyCompanySetting
+   add constraint FK_EC_EnergyCompanySetting foreign key (EnergyCompanyId)
+      references EnergyCompany (EnergyCompanyID)
+         on delete cascade
 go
 
 alter table EventAccount

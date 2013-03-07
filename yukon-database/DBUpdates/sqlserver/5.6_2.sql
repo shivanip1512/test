@@ -46,7 +46,7 @@ CREATE TABLE EnergyCompanySetting (
    CONSTRAINT PK_EnergyCompanySetting PRIMARY KEY (EnergyCompanySettingId)
 );
  
-CREATE TABLE RolePropToSetting_Temp(
+CREATE TABLE RolePropToSetting_Temp (
     RolePropertyId NUMERIC      NOT NULL,
     RoleName       VARCHAR(100) NOT NULL,
     Status         VARCHAR(100) NOT NULL,
@@ -134,6 +134,7 @@ ALTER TABLE EnergyCompanySetting
 DELETE FROM YukonGroupRole    WHERE RoleID = -2;
 DELETE FROM YukonRoleProperty WHERE RoleID = -2;
 DELETE FROM YukonRole         WHERE RoleID = -2;
+DROP TABLE RolePropToSetting_Temp;
 /* End YUK-11876 */
 
 /**************************************************************/

@@ -1,7 +1,7 @@
 /*==============================================================*/
 /* Database name:  YukonDatabase                                */
 /* DBMS name:      ORACLE Version 9i                            */
-/* Created on:     3/1/2013 1:38:43 PM                          */
+/* Created on:     3/7/2013 12:50:15 PM                         */
 /*==============================================================*/
 
 
@@ -4541,6 +4541,9 @@ create table EnergyCompanySetting  (
    LastChangedDate      DATE,
    constraint PK_EnergyCompanySetting primary key (EnergyCompanySettingId)
 );
+
+alter table EnergyCompanySetting
+   add constraint AK_ECSetting_ECId_Name unique (EnergyCompanyId, Name);
 
 /*==============================================================*/
 /* Table: EsubDisplayIndex                                      */
@@ -10817,6 +10820,11 @@ alter table EnergyCompanyOperatorLoginList
 alter table EnergyCompanyOperatorLoginList
    add constraint FK_OpLgEnCmpOpLs foreign key (OperatorLoginID)
       references YukonUser (UserID);
+
+alter table EnergyCompanySetting
+   add constraint FK_EC_EnergyCompanySetting foreign key (EnergyCompanyId)
+      references EnergyCompany (EnergyCompanyID)
+      on delete cascade;
 
 alter table EventAccount
    add constraint FK_EVENTACCT_CUSTACCT foreign key (AccountID)
