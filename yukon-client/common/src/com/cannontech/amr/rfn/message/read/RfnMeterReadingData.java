@@ -13,7 +13,7 @@ public class RfnMeterReadingData implements Serializable {
     private List<DatedChannelData> datedChannelDataList; // Timestamped data like Peak Demand
     private RfnIdentifier rfnIdentifier;
     private long timeStamp;
-    private int interval; // Interval lenth in seconds , only used for interval based readings
+    private int recordInterval; // Recording interval lenth in seconds , only used for interval based readings
 
     public List<ChannelData> getChannelDataList() {
         return channelDataList;
@@ -27,10 +27,6 @@ public class RfnMeterReadingData implements Serializable {
         return datedChannelDataList;
     }
     
-    public int getInterval() {
-        return interval;
-    }
-
     public void setDatedChannelDataList(List<DatedChannelData> datedChannelDataList) {
         this.datedChannelDataList = datedChannelDataList;
     }
@@ -51,8 +47,12 @@ public class RfnMeterReadingData implements Serializable {
         this.timeStamp = timeStamp;
     }
     
-    public void setInterval(int interval) {
-        this.interval = interval;
+    public int getRecordInterval() {
+        return recordInterval;
+    }
+    
+    public void setRecordInterval(int recordInterval) {
+        this.recordInterval = recordInterval;
     }
 
     @Override
@@ -62,7 +62,7 @@ public class RfnMeterReadingData implements Serializable {
         result = prime * result + ((channelDataList == null) ? 0 : channelDataList.hashCode());
         result =
             prime * result + ((datedChannelDataList == null) ? 0 : datedChannelDataList.hashCode());
-        result = prime * result + interval;
+        result = prime * result + recordInterval;
         result = prime * result + ((rfnIdentifier == null) ? 0 : rfnIdentifier.hashCode());
         result = prime * result + (int) (timeStamp ^ (timeStamp >>> 32));
         return result;
@@ -87,7 +87,7 @@ public class RfnMeterReadingData implements Serializable {
                 return false;
         } else if (!datedChannelDataList.equals(other.datedChannelDataList))
             return false;
-        if (interval != other.interval)
+        if (recordInterval != other.recordInterval)
             return false;
         if (rfnIdentifier == null) {
             if (other.rfnIdentifier != null)
@@ -102,12 +102,12 @@ public class RfnMeterReadingData implements Serializable {
     @Override
     public String toString() {
         return String
-            .format("RfnMeterReadingData [channelDataList=%s, datedChannelDataList=%s, rfnIdentifier=%s, timeStamp=%s, interval=%s]",
+            .format("RfnMeterReadingData [channelDataList=%s, datedChannelDataList=%s, rfnIdentifier=%s, timeStamp=%s, recordInterval=%s]",
                     channelDataList,
                     datedChannelDataList,
                     rfnIdentifier,
                     timeStamp,
-                    interval);
+                    recordInterval);
     }
     
 }
