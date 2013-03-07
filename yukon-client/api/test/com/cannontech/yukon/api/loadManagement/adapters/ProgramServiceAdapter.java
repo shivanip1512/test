@@ -94,7 +94,7 @@ public class ProgramServiceAdapter implements ProgramService {
     }
 
     @Override
-    public ProgramStatus startProgram(int programId, int gearNumber, Date startDate, Duration startOffset,
+    public void startProgram(int programId, int gearNumber, Date startDate, Duration startOffset,
                                       boolean stopScheduled, Date stopDate, Duration stopOffset,
                                       boolean overrideConstraints, List<GearAdjustment> gearAdjustments) {
         throw new UnsupportedOperationException("Not Implemented");
