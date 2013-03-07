@@ -579,7 +579,7 @@ public class OptOutEventDaoImpl implements OptOutEventDao {
         Instant now = Instant.now();
 		
         SqlStatementBuilder sql = new SqlStatementBuilder();
-        sql.append("SELECT COUNT(1)");
+        sql.append("SELECT COUNT(DISTINCT OOE.OptOutEventId)");
         sql.append("FROM OptOutEvent OOE");
         sql.append("  JOIN ECToAccountMapping ectam ON OOE.CustomerAccountId = ECTAM.AccountId");
         // If the assigned programs are supplied let's use the active enrollments of those programs to calculate the total number of accounts.
