@@ -4,7 +4,7 @@ import com.cannontech.common.pao.definition.model.PaoPointValue;
 
 public final class CalculationData {
 
-    private final int interval; //interval length in minutes
+    private final int interval; //interval length in seconds
     private final PaoPointValue paoPointValue;
     
     private CalculationData(PaoPointValue paoPointValue, int interval) {
@@ -22,6 +22,11 @@ public final class CalculationData {
     
     public static CalculationData of(PaoPointValue ppv, int interval) {
         return new CalculationData(ppv, interval);
+    }
+
+    @Override
+    public String toString() {
+        return String.format("CalculationData [interval=%s, paoPointValue=%s]", interval, paoPointValue);
     }
 
     @Override
@@ -50,11 +55,6 @@ public final class CalculationData {
         } else if (!paoPointValue.equals(other.paoPointValue))
             return false;
         return true;
-    }
-
-    @Override
-    public String toString() {
-        return String.format("CalculationData [interval=%s, paoPointValue=%s]", interval, paoPointValue);
     }
     
 }
