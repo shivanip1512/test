@@ -117,8 +117,8 @@ public class OptOutServiceAdapter implements OptOutService {
 	}
 
 	@Override
-	public void resendOptOut(int inventoryId, int customerAccountId,
-			LiteYukonUser user) throws CommandCompletionException {
+	public void resendOptOut(int inventoryId, int customerAccountId, YukonUserContext userContext)
+	        throws CommandCompletionException {
 		throw new UnsupportedOperationException("not implemented");
 	}
 
@@ -179,6 +179,12 @@ public class OptOutServiceAdapter implements OptOutService {
 
     @Override
     public OpenInterval findOptOutLimitInterval(ReadableInstant intersectingInstant, DateTimeZone dateTimeZone, LiteYukonGroup residentialGroup) {
+        throw new UnsupportedOperationException("not implemented");
+    }
+
+    @Override
+    public int calculateDurationInHours(LocalDate startDate, int durationInDays,
+                                        YukonUserContext userContext) {
         throw new UnsupportedOperationException("not implemented");
     }
 }
