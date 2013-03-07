@@ -123,7 +123,7 @@ public class RfnChannelDataConverter {
             /* If this point is used to calculate other points, return it. */
             PaoTypePointIdentifier ptpi = PaoTypePointIdentifier.of(ppi.getPaoIdentifier().getPaoType(), ppi.getPointIdentifier());
             if (calculationContributors.contains(ptpi)) {
-                calculationData.add(CalculationData.of(PaoPointValue.of(ppi, pointData), reading.getRfnMeterReadingData().getInterval()));
+                calculationData.add(CalculationData.of(PaoPointValue.of(ppi, pointData), reading.getRfnMeterReadingData().getRecordInterval()));
             }
         }
         
