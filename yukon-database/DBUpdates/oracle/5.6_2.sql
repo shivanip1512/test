@@ -32,6 +32,7 @@ SET AuthType = 'NONE', Password = ' '
 WHERE UserId = -9999;
 /* End YUK-11878 */
 
+/* Start YUK-11876 */
 CREATE TABLE EnergyCompanySetting (
    EnergyCompanySettingId   NUMBER         NOT NULL,
    EnergyCompanyId          NUMBER         NOT NULL,
@@ -44,7 +45,7 @@ CREATE TABLE EnergyCompanySetting (
 );
 
 CREATE TABLE RolePropToSetting_Temp (
-    RolePropertyId NUMERIC      NOT NULL,
+    RolePropertyId NUMBER       NOT NULL,
     RoleName       VARCHAR(100) NOT NULL,
     Status         VARCHAR(100) NOT NULL,
     CONSTRAINT PK_RolePropToSetting_Temp PRIMARY KEY (RolePropertyId)
