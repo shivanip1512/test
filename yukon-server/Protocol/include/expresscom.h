@@ -4,7 +4,6 @@
 #include "cmdparse.h"
 #include "dllbase.h"
 #include "ctitime.h"
-#include "ctistring.h"
 
 #ifdef _WINDOWS
 

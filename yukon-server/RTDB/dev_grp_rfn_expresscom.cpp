@@ -12,6 +12,7 @@
 #include "devicetypes.h"
 #include "amq_connection.h"
 #include "rfnbroadcastmessage.h"
+#include "ctistring.h"
 
 using std::string;
 using std::endl;

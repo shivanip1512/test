@@ -5213,9 +5213,6 @@ void  CtiCommandParser::doParsePutConfigExpresscom(const string &_CmdStr)
         _cmd["xcascii"] = CtiParseValue(TRUE);
         if(!(str = token.match((const boost::regex) str_quoted_token)).empty() )
         {
-            boost::regex centSignWorkaround("[/*]CENTSSIGN[/*]"); //Workaround for our improper ascii conversions
-            str.replace(centSignWorkaround, "¢");
-
             _cmd["xcdata"] = CtiParseValue(str.substr(1, str.length() - 2));
         }
         if(!(temp = CmdStr.match((const boost::regex) ( CtiString("port ") + str_num) ) ).empty())

@@ -22,6 +22,7 @@
 #include "cmdparse.h"
 #include "ctidate.h"
 #include "BeatThePeakAlertLevel.h"
+#include "ctistring.h"
 
 #define EXPRESSCOM_CRC_LENGTH 2
 
@@ -959,9 +960,16 @@ INT CtiProtocolExpresscom::dataMessageBlock(BYTE priority, BOOL hourFlag, BOOL d
     msgBlock[1] = flags;
     msgBlock[2] = timePeriod;
 
-    while (i < str.length() && i < 121)
+    //Workaround for our improper ascii conversions
+    CtiString payloadStr = str;
+    boost::regex centSignWorkaround("[*]CENTSSIGN[*]");
+    std::string centSign(1, 0xa2);  //  Unicode character 'CENT SIGN' (U+00A2), which maps to 0xa2 in UTF-8 and Windows-1252 encodings
+
+    payloadStr.replace(centSignWorkaround, centSign);
+
+    while (i < payloadStr.length() && i < 121)
     {
-        msgBlock[i+3] = str.data()[i];
+        msgBlock[i+3] = payloadStr.data()[i];
         i++;
     }
 
