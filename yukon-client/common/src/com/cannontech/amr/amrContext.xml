@@ -151,16 +151,27 @@
         <property name="moveInMoveOutEmailService" ref="moveInMoveOutEmailService"/>
     </bean>
 
-
     <!-- Toggle Profiling Service -->
-    <bean id="toggleProfilingService" class="com.cannontech.amr.toggleProfiling.service.impl.ProfilingServiceImpl">
-        <property name="paoDao" ref="paoDao"/>
-        <property name="dbPersistentDao" ref="dbPersistentDao"/>
-        <property name="jobManager" ref="jobManager"/>
-        <property name="toggleProfilingDefinition" ref="toggleProfilingJob"/>
+    <bean id="profilingService" class="com.cannontech.amr.toggleProfiling.service.impl.ProfilingServiceImpl">
+        <property name="paoDao" ref="paoDao" />
+        <property name="dbPersistentDao" ref="dbPersistentDao" />
+        <property name="jobManager" ref="jobManager" />
+        <property name="toggleProfilingDefinition" ref="toggleProfilingJob" />
 
     </bean>
-
+    <!-- This is temporary.  This exports services that the EIM server uses that the web server provides.
+         (This context file is now only included in the web server.)  Yes, this is wrong (but functional)
+         and needs to be cleaned up.  See YUK-11769. -->
+    <bean id="profilingServiceExporter" class="org.springframework.jms.remoting.JmsInvokerServiceExporter">
+        <property name="serviceInterface" value="com.cannontech.amr.toggleProfiling.service.ProfilingService"/>
+        <property name="service" ref="profilingService"/>
+    </bean>
+    <bean class="org.springframework.jms.listener.SimpleMessageListenerContainer">
+        <property name="connectionFactory" ref="connectionFactory"/>
+        <property name="destination" ref="webServerServiceProxyQueue"/>
+        <property name="concurrentConsumers" value="3"/>
+        <property name="messageListener" ref="profilingServiceExporter"/>
+    </bean>
 
     <!-- Toggle Profiling Job Definition -->
     <bean id="toggleProfilingJob" class="com.cannontech.jobs.support.SimpleYukonJobDefinition">
@@ -509,13 +520,4 @@
         class="com.cannontech.amr.scheduledGroupRequestExecution.dao.impl.ScheduledGroupRequestExecutionDaoImpl"
         scope="prototype">
     </bean>
-
-    <!-- Phase Detect Service -->
-    <bean id="phaseDetectResultsCache" class="com.cannontech.common.util.RecentResultsCache"/>
-
-    <bean id="phaseDetectService" class="com.cannontech.amr.phaseDetect.service.impl.PhaseDetectServiceImpl">
-        <property name="phaseDetectResultsCache" ref="phaseDetectResultsCache"/>
-    </bean>
-
-    <bean class="com.cannontech.amr.profileCollection.service.impl.ProfileCollectionServiceImpl"/>
 </beans>

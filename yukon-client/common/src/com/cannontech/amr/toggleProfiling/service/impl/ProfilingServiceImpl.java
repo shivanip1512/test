@@ -101,14 +101,6 @@ public class ProfilingServiceImpl implements ProfilingService {
     }
 
     @Override
-    public boolean getToggleValueForDevice(DeviceLoadProfile deviceLoadProfile, int channelNum) {
-        
-        boolean toggleValue = deviceLoadProfile.loadProfileIsOnForChannel(channelNum);
-        
-        return toggleValue;
-    }
-
-    @Override
     public DeviceLoadProfile getDeviceLoadProfile(int deviceId) {
         
         LiteYukonPAObject device = paoDao.getLiteYukonPAO(deviceId);
@@ -135,7 +127,6 @@ public class ProfilingServiceImpl implements ProfilingService {
 
     @Override
     public List<Map<String, Object>> getToggleJobInfos(int deviceId, int channel) {
-        
         List<Map<String, Object>> myJobInfos = new ArrayList<Map<String, Object>>();
         
         // toggle on job

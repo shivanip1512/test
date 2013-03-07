@@ -1,5 +1,6 @@
 package com.cannontech.user;
 
+import java.io.Serializable;
 import java.util.Locale;
 import java.util.TimeZone;
 
@@ -14,7 +15,7 @@ import com.cannontech.database.data.lite.LiteYukonUser;
  * Instances of the class must be "serializable". This is the primary reason
  * that this class doesn't have convenient helpers like "getMessageSource".
  */
-public interface YukonUserContext {
+public interface YukonUserContext extends Serializable {
 
     public Locale getLocale();
 

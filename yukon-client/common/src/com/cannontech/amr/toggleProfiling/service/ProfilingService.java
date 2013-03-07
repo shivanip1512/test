@@ -21,8 +21,6 @@ public interface ProfilingService {
 
     public boolean isProfilingOnNow(int deviceId, int channelNum);
 
-    public boolean getToggleValueForDevice(DeviceLoadProfile deviceLoadProfile, int channelNum);
-
     public DeviceLoadProfile getDeviceLoadProfile(int deviceId);
 
     public List<Map<String, Object>> getToggleJobInfos(int deviceId, int channel);

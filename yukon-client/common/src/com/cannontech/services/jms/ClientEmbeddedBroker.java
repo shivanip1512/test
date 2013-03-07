@@ -35,6 +35,7 @@ public class ClientEmbeddedBroker {
         
         // if using Spring, create a CachingConnectionFactory
         CachingConnectionFactory cachingFactory = new CachingConnectionFactory();
+        cachingFactory.setCacheConsumers(false);
         cachingFactory.setTargetConnectionFactory(factory);
         cachingFactory.afterPropertiesSet();
         factory = cachingFactory;

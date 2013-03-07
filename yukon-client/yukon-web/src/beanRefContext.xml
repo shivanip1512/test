@@ -8,6 +8,8 @@
         lazy-init="true">
      <constructor-arg>
        <list>
+            <value>com/cannontech/amr/amrContext.xml</value>
+            <value>com/cannontech/jobs/jobContext.xml</value>
             <value>com/cannontech/web/devDatabaseContext.xml</value>
             <value>com/cannontech/web/serverContext.xml</value>
             <value>com/cannontech/common/alert/alertContext.xml</value>
@@ -19,7 +21,7 @@
        </list>
      </constructor-arg>
      <constructor-arg>
-         <ref bean="com.cannontech.context.baseapi"/>
+         <ref bean="com.cannontech.context.common"/>
      </constructor-arg>
    </bean>
     
