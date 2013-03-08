@@ -7,6 +7,7 @@ import java.util.Map;
 
 import junit.framework.TestCase;
 
+import com.cannontech.common.device.groups.model.DeviceGroup;
 import com.cannontech.common.device.model.DeviceCollectionReportDevice;
 import com.cannontech.common.device.model.SimpleDevice;
 import com.cannontech.common.pao.DisplayablePao;
@@ -376,6 +377,11 @@ public class ObjectMapperFactoryImplTest extends TestCase {
 		public YukonPao getYukonPao(String paoName, PaoCategory paoCategory, PaoClass paoClass) {
 		    throw new UnsupportedOperationException("Method not implemented");
 		}
+
+        @Override
+        public int getDisabledDeviceCount(DeviceGroup deviceGroup) {
+            throw new UnsupportedOperationException("Method not implemented");
+        }
     }
 
     /**
