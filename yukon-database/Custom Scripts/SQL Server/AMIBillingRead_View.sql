@@ -239,6 +239,9 @@ INSERT INTO AMIBillingReadLookup VALUES('RFN-430A3T', 'Analog', 105, 'KW', 0, 'C
 INSERT INTO AMIBillingReadLookup VALUES('RFN-430A3R', 'Analog', 1, 'KWH', 0, 'Current');
 INSERT INTO AMIBillingReadLookup VALUES('RFN-430A3R', 'Analog', 105, 'KW', 0, 'Current');
 
+INSERT INTO AMIBillingReadLookup VALUES('RFN-430A3K', 'Analog', 1, 'KWH', 0, 'Current');
+INSERT INTO AMIBillingReadLookup VALUES('RFN-430A3K', 'Analog', 105, 'KW', 0, 'Current');
+
 INSERT INTO AMIBillingReadLookup VALUES('RFN-430KV', 'Analog', 1, 'KWH', 0, 'Current');
 INSERT INTO AMIBillingReadLookup VALUES('RFN-430KV', 'Analog', 105, 'KW', 0, 'Current');
 --SQLServer
@@ -367,3 +370,5 @@ INSERT INTO AMIBillingReadLookup VALUES('RFN-430A3T', 'Analog', 1, 'KWH', 0, 'Cu
 INSERT INTO AMIBillingReadLookup VALUES('RFN-430A3T', 'Analog', 105, 'KW', 0, 'Current');
 INSERT INTO AMIBillingReadLookup VALUES('RFN-430A3R', 'Analog', 1, 'KWH', 0, 'Current');
 INSERT INTO AMIBillingReadLookup VALUES('RFN-430A3R', 'Analog', 105, 'KW', 0, 'Current');
+INSERT INTO AMIBillingReadLookup VALUES('RFN-430A3K', 'Analog', 1, 'KWH', 0, 'Current');
+INSERT INTO AMIBillingReadLookup VALUES('RFN-430A3K', 'Analog', 105, 'KW', 0, 'Current');
