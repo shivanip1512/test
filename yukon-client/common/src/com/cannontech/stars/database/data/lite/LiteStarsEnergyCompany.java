@@ -38,6 +38,8 @@ import com.cannontech.core.dao.RoleDao;
 import com.cannontech.core.dao.YukonGroupDao;
 import com.cannontech.core.dao.YukonListDao;
 import com.cannontech.core.roleproperties.YukonRole;
+import com.cannontech.core.roleproperties.YukonRoleProperty;
+import com.cannontech.core.roleproperties.dao.RolePropertyDao;
 import com.cannontech.core.service.SystemDateFormattingService;
 import com.cannontech.database.IntegerRowMapper;
 import com.cannontech.database.PoolManager;
@@ -114,6 +116,7 @@ public class LiteStarsEnergyCompany extends LiteBase implements YukonEnergyCompa
     private RoleDao roleDao;
     private YukonEnergyCompanyService yukonEnergyCompanyService;
     private EnergyCompanySettingDao energyCompanySettingDao;
+    private RolePropertyDao rolePropertyDao;
 
     private final static long serialVersionUID = 1L;
 	
@@ -799,7 +802,7 @@ public class LiteStarsEnergyCompany extends LiteBase implements YukonEnergyCompa
         }
         
         try {
-            String value = DaoFactory.getAuthDao().getRolePropertyValue(user, ConsumerInfoRole.CALL_NUMBER_AUTO_GEN);
+            String value = rolePropertyDao.getPropertyStringValue(YukonRoleProperty.OPERATOR_CALL_NUMBER_AUTO_GEN, user);
             if (value != null && value.equalsIgnoreCase(CtiUtilities.STRING_NONE)) {
                 value = "";
             }
@@ -813,7 +816,7 @@ public class LiteStarsEnergyCompany extends LiteBase implements YukonEnergyCompa
         return String.valueOf( nextCallNo++ );
     }
     
-    public void resetNextCallNumber() {
+    public synchronized void resetNextCallNumber() {
         nextCallNo = 0;
     }
     
@@ -1942,5 +1945,9 @@ public class LiteStarsEnergyCompany extends LiteBase implements YukonEnergyCompa
 
     public void setEnergyCompanySettingDao(EnergyCompanySettingDao energyCompanySettingDao) {
         this.energyCompanySettingDao = energyCompanySettingDao;
+    }
+    
+    public void setRolePropertyDao(RolePropertyDao rolePropertyDao) {
+        this.rolePropertyDao = rolePropertyDao;
     }
 }

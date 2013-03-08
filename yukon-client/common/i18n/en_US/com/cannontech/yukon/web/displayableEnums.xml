@@ -202,7 +202,7 @@
     <entry key="yukon.common.setting.LDAP_DN">LDAP Domain Name</entry>
     <entry key="yukon.common.setting.LDAP_DN.description">dc=com</entry>
     <entry key="yukon.common.setting.DEFAULT_AUTH_TYPE">Default Auth Type</entry>
-    <entry key="yukon.common.setting.DEFAULT_AUTH_TYPE.description">Default authentication type, possible values: AD, ENCRYPTED, LDAP, RADIUS, NONE.</entry>
+    <entry key="yukon.common.setting.DEFAULT_AUTH_TYPE.description">Default authentication type, possible values: Active Directory, Encrypted, LDAP, Radius, No Login.</entry>
     <entry key="yukon.common.setting.AUTH_TIMEOUT">Authentication Timeout</entry>
     <entry key="yukon.common.setting.AUTH_TIMEOUT.description">Number of seconds before the authentication process times out</entry>
     <entry key="yukon.common.setting.AUTHENTICATION_MODE">Authentication Mode</entry>
@@ -318,9 +318,9 @@
     <entry key="yukon.common.energyCompanySetting.ADMIN_ALLOW_THERMOSTAT_SCHEDULE_WEEKDAY_WEEKEND">Allow 5/2 Thermostat Schedules</entry>
     <entry key="yukon.common.energyCompanySetting.ADMIN_ALLOW_THERMOSTAT_SCHEDULE_WEEKDAY_WEEKEND.description">Allow the use of 5/2 day schedules for compatible thermostats. Weekday/Weekend.</entry>
     <entry key="yukon.common.energyCompanySetting.ADMIN_ALLOW_THERMOSTAT_SCHEDULE_7_DAY">Allow 7 Day Thermostat Schedules</entry>
-    <entry key="yukon.common.energyCompanySetting.ADMIN_ALLOW_THERMOSTAT_SCHEDULE_7_DAY.description">Allow the use of 7 day schedules (different schedule each day of the week) for compatible thermostats.</entry>
+    <entry key="yukon.common.energyCompanySetting.ADMIN_ALLOW_THERMOSTAT_SCHEDULE_7_DAY.description">Allow the use of 7 day schedules for compatible thermostats. Different schedule each day of the week.</entry>
     <entry key="yukon.common.energyCompanySetting.ADMIN_ALLOW_THERMOSTAT_SCHEDULE_ALL">Allow Single Day Thermostat Schedules</entry>
-    <entry key="yukon.common.energyCompanySetting.ADMIN_ALLOW_THERMOSTAT_SCHEDULE_ALL.description">Allow the use of schedules where every day shares the same values for compatible thermostats.</entry>
+    <entry key="yukon.common.energyCompanySetting.ADMIN_ALLOW_THERMOSTAT_SCHEDULE_ALL.description">Allow the use of weekly schedules for compatible thermostats. One schedule for the entire week.</entry>
     <entry key="yukon.common.energyCompanySetting.ADMIN_ALLOW_DESIGNATION_CODE">Allow Designation Codes</entry>
     <entry key="yukon.common.energyCompanySetting.ADMIN_ALLOW_DESIGNATION_CODE.description">Toggles on or off the regional (usually zip) code option for service companies.</entry>
     <entry key="yukon.common.energyCompanySetting.AUTOMATIC_CONFIGURATION">Automatic Configuration</entry>
@@ -333,16 +333,16 @@
     <entry key="yukon.common.energyCompanySetting.ENERGY_COMPANY_DEFAULT_TIME_ZONE.description">Default time zone of the energy company. (e.g. America/Denver, America/Chicago, America/Los_Angeles, or America/New_York)</entry>
     <entry key="yukon.common.energyCompanySetting.INHERIT_PARENT_APP_CATS">Inherit Parent App Categories</entry>
     <entry key="yukon.common.energyCompanySetting.INHERIT_PARENT_APP_CATS.description">If part of a member structure, should appliance categories be inherited from the parent.</entry>
-    <entry key="yukon.common.energyCompanySetting.OPTOUT_NOTIFICATION_RECIPIENTS">Optout Notification Recipients</entry>
-    <entry key="yukon.common.energyCompanySetting.OPTOUT_NOTIFICATION_RECIPIENTS.description">Recipients of the opt out notification email</entry>
+    <entry key="yukon.common.energyCompanySetting.OPTOUT_NOTIFICATION_RECIPIENTS">Opt Out Notification Recipients</entry>
+    <entry key="yukon.common.energyCompanySetting.OPTOUT_NOTIFICATION_RECIPIENTS.description">Comma separated list of email addresses. Recipients of the opt out notification email.</entry>
     <entry key="yukon.common.energyCompanySetting.SERIAL_NUMBER_VALIDATION">Serial Number Validation</entry>
-    <entry key="yukon.common.energyCompanySetting.SERIAL_NUMBER_VALIDATION.description">Treat serial numbers as numeric or alpha-numberic. Possible values (NUMERIC, ALPHANUMERIC)</entry>
+    <entry key="yukon.common.energyCompanySetting.SERIAL_NUMBER_VALIDATION.description">Treat serial numbers as numeric or alpha-numberic. Possible values (Numeric, Alphanumeric)</entry>
     <entry key="yukon.common.energyCompanySetting.SINGLE_ENERGY_COMPANY">Single Energy Company</entry>
     <entry key="yukon.common.energyCompanySetting.SINGLE_ENERGY_COMPANY.description">Indicates whether this is a single energy company system.</entry>
     <entry key="yukon.common.energyCompanySetting.TRACK_HARDWARE_ADDRESSING">Track Hardware Addressing</entry>
     <entry key="yukon.common.energyCompanySetting.TRACK_HARDWARE_ADDRESSING.description">Controls whether to track the hardware addressing information.</entry>
     <entry key="yukon.common.energyCompanySetting.METER_MCT_BASE_DESIGNATION">Meter Mct Base Designation</entry>
-    <entry key="yukon.common.energyCompanySetting.METER_MCT_BASE_DESIGNATION.description">Allow meters to be used general STARS entries versus Yukon MCTs</entry>
+    <entry key="yukon.common.energyCompanySetting.METER_MCT_BASE_DESIGNATION.description">Allow meters to be used general stars entries versus Yukon MCTs</entry>
     <entry key="yukon.common.energyCompanySetting.OPTIONAL_PRODUCT_DEV">Optional Product Dev</entry>
     <entry key="yukon.common.energyCompanySetting.OPTIONAL_PRODUCT_DEV.description">This feature is for development purposes only</entry>
 
@@ -354,5 +354,9 @@
     <entry key="yukon.common.eventSource.CONSUMER">Consumer</entry>
     <entry key="yukon.common.eventSource.ACCOUNT_IMPORTER">Account Importer</entry>
     <entry key="yukon.common.eventSource.OPERATOR">Operator</entry>
+
+    <!-- SerialNumberValidation enum -->
+    <entry key="yukon.common.serialNumberValidationEnum.NUMERIC">Numeric</entry>
+    <entry key="yukon.common.serialNumberValidationEnum.ALPHANUMERIC">Alphanumeric</entry>
 
 </properties>

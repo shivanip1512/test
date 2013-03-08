@@ -72,7 +72,7 @@ public class EnrollmentHelperServiceImpl implements EnrollmentHelperService {
     @Autowired private StarsDatabaseCache starsDatabaseCache;
     @Autowired private StarsSearchDao starsSearchDao;
     @Autowired private InventoryDao inventoryDao;
-	@Autowired private InventoryBaseDao inventoryBaseDao;
+    @Autowired private InventoryBaseDao inventoryBaseDao;
     @Autowired private EnergyCompanySettingDao energyCompanySettingDao;
 
     @Override

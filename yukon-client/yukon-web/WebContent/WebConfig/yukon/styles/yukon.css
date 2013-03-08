@@ -56,6 +56,7 @@ input:not([type="submit"]):not([type="radio"]):not([type="checkbox"]) { -webkit-
 
 #MainContainer {padding: 20px;}
 #Content > .centeredContainer, .dashboard {margin:0 auto; width: 960px;}
+#Content > .leftContainer, .dashboard {margin-left: 0;}
 
 /* Navigation Menu */
 #Header {width:100%; margin:0;padding:0;overflow:hidden;}

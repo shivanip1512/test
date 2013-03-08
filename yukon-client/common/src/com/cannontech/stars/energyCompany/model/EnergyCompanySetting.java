@@ -101,14 +101,21 @@ public class EnergyCompanySetting {
      */
     public boolean isChanged(EnergyCompanySetting other) {
         boolean changed = false;
-        
-        if (type.getType().equals(stringType())) {
-            changed |= StringUtils.isBlank((String)other.getValue()) ? !StringUtils.isBlank((String)value) : !other.getValue().equals(value);
-        } else {
-            changed |= other.getValue() == null ? value !=null : !other.getValue().equals(value);
-        }
+        changed |= isValueChanged(other);
         changed |= StringUtils.isBlank(other.getComments()) ? !StringUtils.isBlank(comments) : !other.getComments().equals(comments);
         changed |= other.getStatus() == null ? status !=null : !other.getStatus().equals(status);
+        return changed;
+    }
+
+    public boolean isValueChanged(EnergyCompanySetting other) {
+        boolean changed = false;
+
+        if (type.getType().equals(stringType())) {
+            changed = StringUtils.isBlank((String)other.getValue()) ? !StringUtils.isBlank((String)value) : !other.getValue().equals(value);
+        } else {
+            changed = other.getValue() == null ? value !=null : !other.getValue().equals(value);
+        }
+
         return changed;
     }
     

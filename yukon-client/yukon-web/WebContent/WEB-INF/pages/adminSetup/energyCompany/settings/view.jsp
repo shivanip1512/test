@@ -8,7 +8,7 @@
 
 <cti:standardPage module="adminSetup" page="energyCompanySettings">
 
-<div class="centeredContainer twoThirds box dashboard">
+<div class="leftContainer twoThirds box dashboard">
     <form:form commandName="settingsBean" action="save" id="settingsForm" method="post">
         <form:hidden path="ecId"/>
 
@@ -91,7 +91,6 @@ jQuery(function() {
         jQuery(this).hide();
         jQuery(this).siblings(".commentTextArea").show(200).focus();
     });
-    
 });
 
 </script>

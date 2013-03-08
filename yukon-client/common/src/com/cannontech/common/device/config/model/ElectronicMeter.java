@@ -34,4 +34,9 @@ public enum ElectronicMeter implements InputOptionProvider {
     public String getText() {
         return text;
     }
+
+    @Override
+    public Object getObj() {
+        return this;
+    }
 }

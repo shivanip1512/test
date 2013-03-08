@@ -1,6 +1,14 @@
 package com.cannontech.core.roleproperties.enums;
 
-public enum SerialNumberValidation {
+import com.cannontech.common.i18n.DisplayableEnum;
+
+public enum SerialNumberValidation implements DisplayableEnum {
+
     NUMERIC,
-    ALPHANUMERIC
+    ALPHANUMERIC;
+
+    @Override
+    public String getFormatKey() {
+        return "yukon.common.serialNumberValidationEnum." + name();
+    }
 }

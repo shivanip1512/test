@@ -15,9 +15,9 @@ import com.cannontech.web.input.type.InputOption;
 import com.cannontech.web.input.type.InputOptionProvider;
 import com.cannontech.web.input.type.InputType;
 import com.cannontech.web.input.type.IntegerType;
-import com.cannontech.web.input.type.UserType;
 import com.cannontech.web.input.type.LongType;
 import com.cannontech.web.input.type.StringType;
+import com.cannontech.web.input.type.UserType;
 import com.google.common.collect.ImmutableList;
 import com.google.common.collect.ImmutableList.Builder;
 
@@ -46,6 +46,7 @@ public class InputTypeFactory {
                     InputOption inputOption = new InputOption();
                     inputOption.setText(entry.name());
                     inputOption.setValue(entry.name());
+                    inputOption.setObj(entry);
                     builder.add(inputOption);
                 }
                 optionList = builder.build();

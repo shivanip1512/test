@@ -209,8 +209,11 @@ public class EnergyCompanySettingDaoImpl implements EnergyCompanySettingDao {
         EnergyCompanySetting currentSetting = getSetting(setting.getType(), setting.getEnergyCompanyId());
         
         if (setting.isChanged(currentSetting)) {
-            setting.setLastChanged(Instant.now());
-            
+            // Only update last changed date on value update
+            if (setting.isValueChanged(currentSetting)) {
+                setting.setLastChanged(Instant.now());
+            }
+
             if (StringUtils.isBlank(setting.getComments())) {
                 setting.setComments(null);
             }

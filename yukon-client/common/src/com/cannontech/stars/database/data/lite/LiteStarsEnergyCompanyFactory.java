@@ -10,6 +10,7 @@ import com.cannontech.core.dao.YukonGroupDao;
 import com.cannontech.core.dao.YukonListDao;
 import com.cannontech.core.dynamic.AsyncDynamicDataSource;
 import com.cannontech.core.dynamic.DatabaseChangeEventListener;
+import com.cannontech.core.roleproperties.dao.RolePropertyDao;
 import com.cannontech.core.service.SystemDateFormattingService;
 import com.cannontech.database.YukonJdbcTemplate;
 import com.cannontech.database.db.company.EnergyCompany;
@@ -50,7 +51,8 @@ public class LiteStarsEnergyCompanyFactory {
     @Autowired private YukonJdbcTemplate yukonJdbcTemplate;
     @Autowired private YukonListDao yukonListDao;
     @Autowired private EnergyCompanySettingDao energyCompanySettingDao;
-    
+    @Autowired private RolePropertyDao rolePropertyDao;
+
     public LiteStarsEnergyCompany createEnergyCompany(EnergyCompany energyCompany) {
         LiteStarsEnergyCompany liteStarsEnergyCompany = new LiteStarsEnergyCompany(energyCompany);
         applyPropertySetters(liteStarsEnergyCompany);
@@ -84,6 +86,7 @@ public class LiteStarsEnergyCompanyFactory {
         energyCompany.setRoleDao(roleDao);
         energyCompany.setYukonEnergyCompanyService(yukonEnergyCompanyService);
         energyCompany.setEnergyCompanySettingDao(energyCompanySettingDao);
+        energyCompany.setRolePropertyDao(rolePropertyDao);
 
         energyCompany.initialize();
 
