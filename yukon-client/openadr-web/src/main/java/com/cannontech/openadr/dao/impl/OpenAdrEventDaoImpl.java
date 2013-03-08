@@ -2,21 +2,21 @@ package com.cannontech.openadr.dao.impl;
 
 import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
-import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.Date;
 
 import org.apache.commons.lang.StringUtils;
 import org.apache.log4j.Logger;
-import org.joda.time.DateTime;
+import org.joda.time.Instant;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.dao.DataAccessException;
-import org.springframework.jdbc.core.simple.ParameterizedRowMapper;
 
 import com.cannontech.clientutils.YukonLogManager;
 import com.cannontech.common.util.SqlStatementBuilder;
 import com.cannontech.database.SqlParameterSink;
 import com.cannontech.database.YukonJdbcTemplate;
+import com.cannontech.database.YukonResultSet;
+import com.cannontech.database.YukonRowMapper;
 import com.cannontech.openadr.dao.OpenAdrEventDao;
 import com.cannontech.openadr.model.OffsetEvent;
 
@@ -25,9 +25,9 @@ public class OpenAdrEventDaoImpl implements OpenAdrEventDao {
 
     @Autowired private YukonJdbcTemplate jdbcTemplate;
     
-    private static final ParameterizedRowMapper<OffsetEvent> mapper = new ParameterizedRowMapper<OffsetEvent>() {
+    private static final YukonRowMapper<OffsetEvent> mapper = new YukonRowMapper<OffsetEvent>() {
         @Override
-        public OffsetEvent mapRow(ResultSet rs, int rowNum) throws SQLException {
+        public OffsetEvent mapRow(YukonResultSet rs) throws SQLException {
             String eventXml = rs.getString("EventXml");
             int startOffset = rs.getInt("StartOffset");
             
@@ -133,10 +133,9 @@ public class OpenAdrEventDaoImpl implements OpenAdrEventDao {
     }
     
     private int purgeExpiredEvents() {
-        DateTime now = new DateTime();
         SqlStatementBuilder sql = new SqlStatementBuilder();
         sql.append("DELETE FROM OpenAdrEvents");
-        sql.append("WHERE EndDate < ").appendArgument(now.toDate());
+        sql.append("WHERE EndDate").lt(new Instant());
         
         int rowsAffected = jdbcTemplate.update(sql);
         

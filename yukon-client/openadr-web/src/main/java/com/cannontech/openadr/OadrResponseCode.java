@@ -1,8 +1,5 @@
 package com.cannontech.openadr;
 
-import org.apache.log4j.Logger;
-
-import com.cannontech.clientutils.YukonLogManager;
 import com.google.common.collect.ImmutableMap;
 
 public enum OadrResponseCode {
@@ -22,21 +19,14 @@ public enum OadrResponseCode {
     
     private final int responseCode;
     
-    private static final Logger log = YukonLogManager.getLogger(OadrResponseCode.class);
-    
     private final static ImmutableMap<Integer, OadrResponseCode> lookupByErrorCode;
     
     static {
-        try {
-            ImmutableMap.Builder<Integer, OadrResponseCode> idBuilder = ImmutableMap.builder();
-            for (OadrResponseCode value : values()) {
-                idBuilder.put(value.responseCode, value);
-            }
-            lookupByErrorCode = idBuilder.build();
-        } catch (IllegalArgumentException e) {
-            log.warn("Caught exception while building lookup maps, look for a duplicate name or db string.", e);
-            throw e;
+        ImmutableMap.Builder<Integer, OadrResponseCode> idBuilder = ImmutableMap.builder();
+        for (OadrResponseCode value : values()) {
+            idBuilder.put(value.responseCode, value);
         }
+        lookupByErrorCode = idBuilder.build();
     }
     
     private OadrResponseCode(int responseCode) {
