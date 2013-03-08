@@ -8,14 +8,9 @@ import javax.mail.MessagingException;
 import javax.mail.internet.InternetAddress;
 import javax.mail.internet.MimeBodyPart;
 
-import org.apache.log4j.Logger;
-
-import com.cannontech.clientutils.YukonLogManager;
 import com.google.common.collect.Lists;
 
 public class MockEmailService implements EmailService {
-    private static final Logger log = YukonLogManager.getLogger(MockEmailService.class);
-    
     private List<EmailMessageHolder> sentMessages = new ArrayList<EmailMessageHolder>();
     
     @Override
@@ -62,7 +57,7 @@ public class MockEmailService implements EmailService {
                 builder.append(bodyPart.getContent());
             } catch (IOException e) {
                 // it failed, I guess.
-                log.error("Exception caught in sendMessage(EmailServiceMessage data)");
+                System.out.println("Exception caught in sendMessage(EmailServiceMessage data)");
             }
         }
         

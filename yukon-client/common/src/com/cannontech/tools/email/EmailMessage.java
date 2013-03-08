@@ -2,6 +2,7 @@ package com.cannontech.tools.email;
 
 import java.io.File;
 import java.util.ArrayList;
+import java.util.List;
 
 import javax.activation.DataSource;
 
@@ -20,9 +21,9 @@ public class EmailMessage {
 	private String to_CC;	//a comma separated string of email addresses for CC
 	private String to_BCC;	//a comma separated string of email addresses for BC
 	
-	private ArrayList<char[]> attachments;
-	private ArrayList<String> attachmentNames;
-	private ArrayList<DataSource> dsAttachments; 
+	private List<char[]> attachments;
+	private List<String> attachmentNames;
+	private List<DataSource> dsAttachments; 
 	
 	public EmailMessage() {
     }
@@ -82,7 +83,7 @@ public class EmailMessage {
 		return to;
 	}
 
-    public ArrayList<char[]> getAttachments() {
+    public List<char[]> getAttachments() {
         if (attachments == null) {
             attachments = new ArrayList<>();
         }
@@ -118,7 +119,7 @@ public class EmailMessage {
 		getAttachments().add( fileData );
 	}
 
-	public ArrayList<String> getAttachmentNames() {
+	public List<String> getAttachmentNames() {
 		if (attachmentNames == null) {
 			attachmentNames = new ArrayList<>();
 		}
@@ -188,7 +189,7 @@ public class EmailMessage {
 		setTo(oldTo);
 	}
 	
-	public ArrayList<DataSource> getDSAttachments() {
+	public List<DataSource> getDSAttachments() {
 		if (dsAttachments == null) {
 			dsAttachments = new ArrayList<>();
 		}

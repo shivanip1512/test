@@ -40,14 +40,16 @@ public class EmailServiceImpl implements EmailService {
     
     @Override
     public void sendMessage(EmailMessageHolder holder) throws MessagingException {
-        MimeMessage message = prepareMessage(holder);
+        Session session = getSession();
+        MimeMessage message = prepareMessage(holder, session);
         message.setText(holder.getBody());
-        send(message);
+        send(message, session);
     }
     
     @Override
     public void sendHTMLMessage(EmailMessageHolder holder) throws MessagingException {
-        MimeMessage message = prepareMessage(holder);
+        Session session = getSession();
+        MimeMessage message = prepareMessage(holder, session);
         
         Multipart mp = new MimeMultipart();
         
@@ -62,13 +64,14 @@ public class EmailServiceImpl implements EmailService {
         
         message.setContent(mp);
         
-        send(message);
+        send(message, session);
     }
     
     @Override
     public void sendAttachmentMessage(EmailAttachmentMessageHolder holder)
         throws MessagingException {
-        MimeMessage message = prepareMessage(holder);
+        Session session = getSession();
+        MimeMessage message = prepareMessage(holder, session);
         
         Multipart mp = new MimeMultipart();
         
@@ -93,12 +96,13 @@ public class EmailServiceImpl implements EmailService {
         
         message.setContent(mp);
         
-        send(message);
+        send(message, session);
     }
     
     @Override
     public void sendMessage(EmailServiceMessage data) throws MessagingException {
-        MimeMessage message = new MimeMessage(getSession());
+        Session session = getSession();
+        MimeMessage message = new MimeMessage(session);
         message.setHeader("X-Mailer", "YukonEmail");
         
         InternetAddress fromAddress = 
@@ -129,7 +133,7 @@ public class EmailServiceImpl implements EmailService {
         message.setSentDate(new Date());
         
         // Ready to go, send the message.
-        send(message);
+        send(message, session);
     }
     
     @Override
@@ -171,12 +175,12 @@ public class EmailServiceImpl implements EmailService {
      * @throws MessagingException if a problem occurs while attempting to connect to the
      * SMTP server or send the message.
      */
-    private void send(final MimeMessage message) throws MessagingException {
+    private void send(final MimeMessage message, Session session) throws MessagingException {
         SmtpAuthenticator authenticator = new SmtpAuthenticator();
         PasswordAuthentication authentication = authenticator.getPasswordAuthentication();
         
         if (authentication != null) {
-            Transport transport = getSession().getTransport("smtps");
+            Transport transport = session.getTransport("smtps");
             String username = authentication.getUserName();
             String password = authentication.getPassword();
 
@@ -278,8 +282,8 @@ public class EmailServiceImpl implements EmailService {
      * @return a populated message ready to be sent
      * @throws MessagingException if a problem occurs while populating the message
      */
-    private MimeMessage prepareMessage(EmailMessageHolder holder) throws MessagingException {
-        MimeMessage message = new MimeMessage(getSession());
+    private MimeMessage prepareMessage(EmailMessageHolder holder, Session session) throws MessagingException {
+        MimeMessage message = new MimeMessage(session);
         
         message.setHeader("X-Mailer", "YukonEmail");
         message.setFrom(getGlobalSettingsFromAddress());
