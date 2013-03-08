@@ -230,8 +230,14 @@ INSERT INTO AMIBillingReadLookup VALUES('RFN-410fX', 'Analog', 105, 'KW', 0, 'Cu
 INSERT INTO AMIBillingReadLookup VALUES('RFN-410fD', 'Analog', 1, 'KWH', 0, 'Current');
 INSERT INTO AMIBillingReadLookup VALUES('RFN-410fD', 'Analog', 105, 'KW', 0, 'Current');
 
-INSERT INTO AMIBillingReadLookup VALUES('RFN-430A3', 'Analog', 1, 'KWH', 0, 'Current');
-INSERT INTO AMIBillingReadLookup VALUES('RFN-430A3', 'Analog', 105, 'KW', 0, 'Current');
+INSERT INTO AMIBillingReadLookup VALUES('RFN-430A3D', 'Analog', 1, 'KWH', 0, 'Current');
+INSERT INTO AMIBillingReadLookup VALUES('RFN-430A3D', 'Analog', 105, 'KW', 0, 'Current');
+
+INSERT INTO AMIBillingReadLookup VALUES('RFN-430A3T', 'Analog', 1, 'KWH', 0, 'Current');
+INSERT INTO AMIBillingReadLookup VALUES('RFN-430A3T', 'Analog', 105, 'KW', 0, 'Current');
+
+INSERT INTO AMIBillingReadLookup VALUES('RFN-430A3R', 'Analog', 1, 'KWH', 0, 'Current');
+INSERT INTO AMIBillingReadLookup VALUES('RFN-430A3R', 'Analog', 105, 'KW', 0, 'Current');
 
 INSERT INTO AMIBillingReadLookup VALUES('RFN-430KV', 'Analog', 1, 'KWH', 0, 'Current');
 INSERT INTO AMIBillingReadLookup VALUES('RFN-430KV', 'Analog', 105, 'KW', 0, 'Current');
@@ -351,3 +357,13 @@ INSERT INTO AMIBillingReadLookup VALUES('RFN-430A3', 'Analog', 105, 'KW', 0, 'Cu
 
 INSERT INTO AMIBillingReadLookup VALUES('RFN-430KV', 'Analog', 1, 'KWH', 0, 'Current');
 INSERT INTO AMIBillingReadLookup VALUES('RFN-430KV', 'Analog', 105, 'KW', 0, 'Current');
+
+
+-- For update to refactor RFN-430A3 into 3 distinct types YUK-11540 Yukon 5.6 SN20130308
+DELETE FROM AMIBillingReadLookup WHERE PAOType = 'RFN-430A3';
+INSERT INTO AMIBillingReadLookup VALUES('RFN-430A3D', 'Analog', 1, 'KWH', 0, 'Current');
+INSERT INTO AMIBillingReadLookup VALUES('RFN-430A3D', 'Analog', 105, 'KW', 0, 'Current');
+INSERT INTO AMIBillingReadLookup VALUES('RFN-430A3T', 'Analog', 1, 'KWH', 0, 'Current');
+INSERT INTO AMIBillingReadLookup VALUES('RFN-430A3T', 'Analog', 105, 'KW', 0, 'Current');
+INSERT INTO AMIBillingReadLookup VALUES('RFN-430A3R', 'Analog', 1, 'KWH', 0, 'Current');
+INSERT INTO AMIBillingReadLookup VALUES('RFN-430A3R', 'Analog', 105, 'KW', 0, 'Current');
