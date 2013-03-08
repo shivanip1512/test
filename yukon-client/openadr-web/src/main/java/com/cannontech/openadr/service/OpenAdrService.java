@@ -163,6 +163,10 @@ public class OpenAdrService {
         }).start();
     }
     
+    /**
+     * Perform a request for events from the VTN and attempt to execute control
+     * for whatever events the VTN responds with.
+     */
     private void executeRequestCycle() {
         // Send a request for any control events the VTN has.
         OadrDistributeEvent distributeEvent = requestControlEvents();
