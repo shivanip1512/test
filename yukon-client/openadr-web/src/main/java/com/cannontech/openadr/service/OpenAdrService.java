@@ -379,7 +379,7 @@ public class OpenAdrService {
                         log.warn("Attempt to control failed because of invalid time elements. " +
                                 "Now: " + now + " Start: " + dStart + " Stop: " + stop);
                         
-                        response = OadrUtil.createEventResponse(
+                        return OadrUtil.createEventResponse(
                             eventId, 
                             OadrResponseCode.NOT_ALLOWED.codeString(), 
                             modNumber, 
