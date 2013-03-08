@@ -1450,12 +1450,10 @@ public class MultispeakMeterServiceImpl implements MultispeakMeterService, Messa
         updateBillingCyle(cycleGroupName, meterNumber, newDevice, METER_ADD_STRING, mspVendor);
         updateAltGroup(mspServiceLocation, meterNumber, newDevice, METER_ADD_STRING, mspVendor);
         
-        // UPDATE SubstationName GROUP
-        updateSubstationGroup(substationName, meterNumber, newDevice, METER_ADD_STRING, mspVendor);
-        
-        // ROUTES
+        // UPDATE SubstationName GROUP and ROUTES
         //update routing info regardless of substation "change" (like update method does)...because this is a _create new_ method.
-        updateMeterRouteForSubstation(newDevice, mspVendor, substationName, meterNumber);
+        YukonMeter yukonMeter = new YukonMeter(newDevice.getPaoIdentifier(), meterNumber, paoName, false);
+        updateSubstationGroupAndRoute(yukonMeter, mspVendor, substationName, METER_ADD_STRING, true);
     }
     
     private void updateMeterRouteForSubstation(YukonDevice meterDevice, MultispeakVendor mspVendor, String substationName, String meterNumber) {
@@ -1844,7 +1842,7 @@ public class MultispeakMeterServiceImpl implements MultispeakMeterService, Messa
 	 *     If Meter extensions return nothing, then attempt to return "normally". 
 	 * If MSP_ENABLE_SUBSTATIONNAME_EXTENSION cparm is NOT set, use normal loading from Meter object.
 	 * Normal loading: If the Meter does not contain a substation name in its utility info, empty string is returned.
-	 * @param mspMeter
+	 * @param mspMeter - always necessary, unless we're trying to use the extensions piece :( SEDC...argh!
 	 * @param mspServiceLocation - only necessary when using MSP_ENABLE_SUBSTATIONNAME_EXTENSION cparm
 	 * @return String substationName
 	 */
@@ -1865,7 +1863,7 @@ public class MultispeakMeterServiceImpl implements MultispeakMeterService, Messa
             log.debug("Attempting to load extension value for substation name from multispeak _serviceLocation_.");
             String extensionValue = getExtensionValue(mspServiceLocation.getExtensionsList(), extensionName, null);
             
-            if (StringUtils.isBlank(extensionValue)) {
+            if (StringUtils.isBlank(extensionValue) && mspMeter != null) {
                 // But...if not SEDC AND using extensions...why not see if it's in the meter's extension list?
                 log.debug("Attempting to load extension value for substation name from multispeak _meter_.");
                 extensionValue = getExtensionValue(mspMeter.getExtensionsList(), extensionName, null);
@@ -1879,7 +1877,7 @@ public class MultispeakMeterServiceImpl implements MultispeakMeterService, Messa
         }
 	    
 		String substationName = "";
-		if(!(mspMeter.getUtilityInfo() == null || mspMeter.getUtilityInfo().getSubstationName()== null)){
+		if(!(mspMeter == null ||mspMeter.getUtilityInfo() == null || mspMeter.getUtilityInfo().getSubstationName() == null)){
 			substationName = mspMeter.getUtilityInfo().getSubstationName();
 		}
 		
