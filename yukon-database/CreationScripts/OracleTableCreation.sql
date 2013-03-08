@@ -1,7 +1,7 @@
 /*==============================================================*/
 /* Database name:  YukonDatabase                                */
 /* DBMS name:      ORACLE Version 9i                            */
-/* Created on:     3/7/2013 12:50:15 PM                         */
+/* Created on:     3/7/2013 4:08:15 PM                          */
 /*==============================================================*/
 
 
@@ -2763,6 +2763,36 @@ create table DeviceCustomerList  (
    CustomerID           NUMBER                          not null,
    DeviceID             NUMBER                          not null,
    constraint PK_DEVICECUSTOMERLIST primary key (DeviceID, CustomerID)
+);
+
+/*==============================================================*/
+/* Table: DeviceDataMonitor                                     */
+/*==============================================================*/
+create table DeviceDataMonitor  (
+   MonitorId            NUMBER                          not null,
+   Name                 VARCHAR2(255)                   not null,
+   GroupName            VARCHAR2(255)                   not null,
+   Enabled              CHAR(1)                         not null,
+   constraint PK_DeviceDataMonitor primary key (MonitorId)
+);
+
+/*==============================================================*/
+/* Index: Indx_DeviceDataMon_MonName_UNQ                        */
+/*==============================================================*/
+create index Indx_DeviceDataMon_MonName_UNQ on DeviceDataMonitor (
+   Name ASC
+);
+
+/*==============================================================*/
+/* Table: DeviceDataMonitorProcessor                            */
+/*==============================================================*/
+create table DeviceDataMonitorProcessor  (
+   ProcessorId          NUMBER                          not null,
+   MonitorId            NUMBER                          not null,
+   Attribute            VARCHAR2(255)                   not null,
+   StateGroupId         NUMBER                          not null,
+   State                NUMBER                          not null,
+   constraint PK_DeviceDataMonitorProcessor primary key (ProcessorId)
 );
 
 /*==============================================================*/
@@ -8815,6 +8845,7 @@ INSERT INTO YukonRoleProperty VALUES(-20217,-202,'Status Point Monitor','false',
 INSERT INTO YukonRoleProperty VALUES(-20218,-202,'Porter Response Monitor','false','Controls access to the Porter Response Monitor');
 INSERT INTO YukonRoleProperty VALUES(-20219,-202,'Meter Events','false','Controls access to Meter Events.');
 INSERT INTO YukonRoleProperty VALUES(-20220,-202,'Allow Disconnect Control','true','Controls access to Disconnect, Connect, and Arm operations.');
+INSERT INTO YukonRoleProperty VALUES(-20221,-202,'Device Data Monitor','false','Controls access to the Device Data Monitor.');
 
 /* Operator Esubstation Drawings Role Properties */
 INSERT INTO YukonRoleProperty VALUES(-20600,-206,'View Drawings','true','Controls viewing of Esubstations drawings');
@@ -10539,6 +10570,11 @@ alter table DeviceCustomerList
 alter table DeviceCustomerList
    add constraint FK_DvStLsDev foreign key (DeviceID)
       references DEVICE (DEVICEID);
+
+alter table DeviceDataMonitorProcessor
+   add constraint FK_DeviceDataMonProc_DevDataM foreign key (MonitorId)
+      references DeviceDataMonitor (MonitorId)
+      on delete cascade;
 
 alter table DeviceDirectCommSettings
    add constraint SYS_C0013186 foreign key (DEVICEID)

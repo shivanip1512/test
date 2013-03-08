@@ -136,6 +136,35 @@ DELETE FROM YukonRole         WHERE RoleID = -2;
 DROP TABLE RolePropToSetting_Temp;
 /* End YUK-11876 */
 
+/* Start YUK-11906 */
+CREATE TABLE DeviceDataMonitor (
+    MonitorId               NUMBER               NOT NULL,
+    Name                    VARCHAR2(255)        NOT NULL,
+    GroupName               VARCHAR2(255)        NOT NULL,
+    Enabled                 CHAR(1)              NOT NULL,
+    CONSTRAINT PK_DeviceDataMonitor PRIMARY KEY (MonitorId)
+);
+
+CREATE UNIQUE INDEX Indx_DeviceDataMon_MonName_UNQ
+    ON DeviceDataMonitor (Name ASC);
+
+CREATE TABLE DeviceDataMonitorProcessor (
+    ProcessorId             NUMBER               NOT NULL,
+    MonitorId               NUMBER               NOT NULL,
+    Attribute               VARCHAR2(255)        NOT NULL,
+    StateGroupId            NUMBER               NOT NULL,
+    State                   NUMBER               NOT NULL,
+    CONSTRAINT PK_DeviceDataMonitorProcessor PRIMARY KEY (ProcessorId)
+);
+
+ALTER TABLE DeviceDataMonitorProcessor
+    ADD CONSTRAINT FK_DeviceDataMonProc_DevDataM FOREIGN KEY (MonitorId)
+        REFERENCES DeviceDataMonitor (MonitorId)
+            ON DELETE CASCADE;
+
+INSERT INTO YukonRoleProperty VALUES (-20221, -202, 'Device Data Monitor', 'false', 'Controls access to the Device Data Monitor.');
+/* End YUK-11906 */
+
 /**************************************************************/
 /* VERSION INFO                                               */
 /* Inserted when update script is run                         */
