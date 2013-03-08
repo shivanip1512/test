@@ -9,6 +9,7 @@ import org.joda.time.Instant;
 import org.springframework.beans.factory.annotation.Autowired;
 
 import com.cannontech.cbc.cyme.CymeWebService;
+import com.cannontech.cbc.cyme.impl.CymeSimulatorServiceImpl.CymeStudyRunnable;
 import com.cannontech.cbc.cyme.model.CymeSimulationStatus;
 import com.cannontech.cbc.cyme.model.SimulationResultSummaryData;
 import com.cannontech.clientutils.YukonLogManager;
@@ -21,7 +22,7 @@ public class CymeTaskExecutor {
     
     private static final Logger logger = YukonLogManager.getLogger(CymeTaskExecutor.class);
     
-    public void monitorSimulation(final String simulationId, final Instant simulationTime) {
+    public void monitorSimulation(final String simulationId, final Instant simulationTime, final CymeStudyRunnable studyThread) {
         Runnable task = new Runnable() {        
             @Override
             public void run() {
@@ -54,7 +55,9 @@ public class CymeTaskExecutor {
                                 
                                 // Process report into list of Point changes and send to dispatch
                                 cymeSimulationHelper.processReport(report,simulationTime);
+                                
                             }
+
                             logger.debug("Cyme IVVC: Completed processing simulation with Id: " + simulationId);
                             return;
                         } else if (simStatus == CymeSimulationStatus.ERRORED) {
@@ -66,6 +69,9 @@ public class CymeTaskExecutor {
                     logger.debug("Cyme IVVC: Timeout while processing simulation with Id: " + simulationId);
                 } catch (Exception e) {
                     logger.warn("Exception Caught in monitorSimulation.", e);
+                } finally {
+                	// set thread complete.
+                	studyThread.executionComplete();
                 }
             }
         };

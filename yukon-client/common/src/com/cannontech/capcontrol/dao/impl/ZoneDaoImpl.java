@@ -21,16 +21,16 @@ import com.cannontech.capcontrol.model.AbstractZone;
 import com.cannontech.capcontrol.model.CapBankPointDelta;
 import com.cannontech.capcontrol.model.CcEvent;
 import com.cannontech.capcontrol.model.CcEventType;
-import com.cannontech.capcontrol.model.PointPaoIdentifier;
+import com.cannontech.capcontrol.model.CymePaoPoint;
 import com.cannontech.capcontrol.model.RegulatorToZoneMapping;
 import com.cannontech.capcontrol.model.Zone;
 import com.cannontech.common.util.SqlStatementBuilder;
 import com.cannontech.core.dao.NotFoundException;
 import com.cannontech.database.AdvancedFieldMapper;
 import com.cannontech.database.FieldMapper;
-import com.cannontech.database.IntegerRowMapper;
 import com.cannontech.database.SimpleTableAccessTemplate;
 import com.cannontech.database.SimpleTableAccessTemplate.CascadeMode;
+import com.cannontech.database.RowMapper;
 import com.cannontech.database.SqlParameterChildSink;
 import com.cannontech.database.YukonJdbcTemplate;
 import com.cannontech.database.YukonResultSet;
@@ -295,7 +295,7 @@ public class ZoneDaoImpl implements ZoneDao, InitializingBean {
         sqlBuilder.append("    )");
 
         try {
-            return yukonJdbcTemplate.query(sqlBuilder, new IntegerRowMapper());
+            return yukonJdbcTemplate.query(sqlBuilder, RowMapper.INTEGER);
         } catch (EmptyResultDataAccessException e) {
             return new ArrayList<Integer>();
         }
@@ -312,7 +312,7 @@ public class ZoneDaoImpl implements ZoneDao, InitializingBean {
         sqlBuilder.append("  WHERE SubstationBusId").eq(subBusId);
         sqlBuilder.append(")");
 
-        return yukonJdbcTemplate.query(sqlBuilder, new IntegerRowMapper());
+        return yukonJdbcTemplate.query(sqlBuilder, RowMapper.INTEGER);
     }
     
     @Override
@@ -322,7 +322,7 @@ public class ZoneDaoImpl implements ZoneDao, InitializingBean {
         sqlBuilder.append("FROM CapBankToZoneMapping");
         sqlBuilder.append("WHERE ZoneId").eq(zoneId);
 
-        return yukonJdbcTemplate.query(sqlBuilder, new IntegerRowMapper());
+        return yukonJdbcTemplate.query(sqlBuilder, RowMapper.INTEGER);
     }
 
     @Override
@@ -330,7 +330,7 @@ public class ZoneDaoImpl implements ZoneDao, InitializingBean {
         SqlStatementBuilder sqlBuilder = new SqlStatementBuilder();
         sqlBuilder.append("SELECT PointId");
         sqlBuilder.append("FROM PointToZoneMapping");
-        return yukonJdbcTemplate.query(sqlBuilder, new IntegerRowMapper());
+        return yukonJdbcTemplate.query(sqlBuilder, RowMapper.INTEGER);
     }
     
     @Override
@@ -339,7 +339,7 @@ public class ZoneDaoImpl implements ZoneDao, InitializingBean {
         sqlBuilder.append("SELECT PointId");
         sqlBuilder.append("FROM PointToZoneMapping");
         sqlBuilder.append("WHERE ZoneId").eq(zoneId);
-        return yukonJdbcTemplate.query(sqlBuilder, new IntegerRowMapper());
+        return yukonJdbcTemplate.query(sqlBuilder, RowMapper.INTEGER);
     }
     
     @Override
@@ -366,7 +366,7 @@ public class ZoneDaoImpl implements ZoneDao, InitializingBean {
         sqlBuilderGetPoints.append("SELECT PointId");
         sqlBuilderGetPoints.append("FROM PointToZoneMapping");
         sqlBuilderGetPoints.append("WHERE ZoneId").eq(abstractZone.getZoneId());
-        List<Integer> oldPointIds = yukonJdbcTemplate.query(sqlBuilderGetPoints, new IntegerRowMapper());
+        List<Integer> oldPointIds = yukonJdbcTemplate.query(sqlBuilderGetPoints, RowMapper.INTEGER);
         //...then delete them all
         SqlStatementBuilder sqlBuilderDelete = new SqlStatementBuilder();
 		sqlBuilderDelete.append("DELETE FROM PointToZoneMapping");
@@ -443,7 +443,7 @@ public class ZoneDaoImpl implements ZoneDao, InitializingBean {
         sqlBuilder.append("  )");
         
         try {
-            banksToRemove = yukonJdbcTemplate.query(sqlBuilder, new IntegerRowMapper());
+            banksToRemove = yukonJdbcTemplate.query(sqlBuilder, RowMapper.INTEGER);
         } catch (EmptyResultDataAccessException e) {
             //No Banks to remove.
             return;
@@ -460,7 +460,7 @@ public class ZoneDaoImpl implements ZoneDao, InitializingBean {
         
         List<Integer> banksToRemove;
         try {
-            banksToRemove = yukonJdbcTemplate.query(sqlBuilder, new IntegerRowMapper());
+            banksToRemove = yukonJdbcTemplate.query(sqlBuilder, RowMapper.INTEGER);
         } catch (EmptyResultDataAccessException e) {
             //No Banks to remove.
             return;
@@ -566,7 +566,7 @@ public class ZoneDaoImpl implements ZoneDao, InitializingBean {
         sqlBuilder.append("WHERE DeviceId").eq(deviceId);
         sqlBuilder.append("ORDER BY DisplayOrder");
         
-        List<Integer> points = yukonJdbcTemplate.query(sqlBuilder, new IntegerRowMapper());
+        List<Integer> points = yukonJdbcTemplate.query(sqlBuilder, RowMapper.INTEGER);
         return points;
     }
 
@@ -593,18 +593,19 @@ public class ZoneDaoImpl implements ZoneDao, InitializingBean {
     }
     
     @Override
-    public List<PointPaoIdentifier> getTapPointsBySubBusId(int substationBusId) {
+    public List<CymePaoPoint> getTapPointsBySubBusId(int substationBusId) {
         SqlStatementBuilder sql = new SqlStatementBuilder();
         
-        sql.append("SELECT EPPA.PointId, YPO.PAObjectId, YPO.PaoName, YPO.Type");
+        sql.append("SELECT P.PointId, YPO.PaoName, YPO.PAObjectId, YPO.Type");
         sql.append("FROM ExtraPaoPointAssignment EPPA");
         sql.append("  JOIN YukonPAObject YPO on YPO.PAObjectID = EPPA.PAObjectID");
+        sql.append("  JOIN Point P on P.PointId = EPPA.PointId");
         sql.append("  JOIN RegulatorToZoneMapping RZM on RZM.RegulatorId = EPPA.PAObjectId");
         sql.append("  JOIN Zone Z on RZM.ZoneId = Z.ZoneId");
         sql.append("WHERE Z.SubstationBusId").eq(substationBusId);
         sql.append("  AND EPPA.Attribute").eq_k(RegulatorPointMapping.TAP_POSITION);
 
-        List<PointPaoIdentifier> results = yukonJdbcTemplate.query(sql, SubstationBusDao.pointPaoRowMapper);
+        List<CymePaoPoint> results = yukonJdbcTemplate.query(sql, SubstationBusDao.cymePaoPointRowMapper);
 
         return results;
     }

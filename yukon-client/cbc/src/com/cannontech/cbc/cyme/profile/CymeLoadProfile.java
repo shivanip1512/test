@@ -24,9 +24,9 @@ public class CymeLoadProfile {
     private Unit unit;
     private String phase;
     private List<SimulationLoadFactor> values;
-    
+
     public CymeLoadProfile() {
-        
+
     }
 
     public String getId() {

@@ -17,10 +17,12 @@ import com.cannontech.common.pao.YukonPao;
 import com.cannontech.common.search.SearchResult;
 import com.cannontech.common.util.SqlStatementBuilder;
 import com.cannontech.core.dao.PaoDao;
+import com.cannontech.core.dao.impl.LitePaoRowMapper;
 import com.cannontech.database.IntegerRowMapper;
 import com.cannontech.database.PagingResultSetExtractor;
 import com.cannontech.database.SqlParameterSink;
 import com.cannontech.database.YukonJdbcTemplate;
+import com.cannontech.database.data.lite.LiteYukonPAObject;
 import com.cannontech.message.DbChangeManager;
 import com.cannontech.message.dispatch.message.DbChangeType;
 
@@ -35,23 +37,25 @@ public class FeederDaoImpl implements FeederDao {
         liteCapControlObjectRowMapper = CapbankControllerDaoImpl.createLiteCapControlObjectRowMapper();
     }
 
-    /**
-     * This method returns all the Feeder IDs that are not assigned
-     *  to a SubBus.
-     */
     @Override
-    public List<Integer> getUnassignedFeederIds() {
-    	SqlStatementBuilder sql = new SqlStatementBuilder();
-    	
-    	sql.append("SELECT FeederID");
-    	sql.append("FROM CapControlFeeder");
-    	sql.append("WHERE FeederID NOT IN");
-    	sql.append(   "(SELECT FeederID");
-    	sql.append(    "FROM CCFeederSubAssignment)");
-    	sql.append("ORDER BY FeederID");
+    public List<LiteYukonPAObject> getUnassignedFeeders() {
+        SqlStatementBuilder sql = new SqlStatementBuilder();
         
-        List<Integer> listmap = yukonJdbcTemplate.query(sql, new IntegerRowMapper());
-        return listmap;
+        sql.append("SELECT PAO.PAObjectID, PAO.Category, PAO.PAOName,");
+        sql.append("    PAO.Type, PAO.PAOClass, PAO.Description, PAO.DisableFlag,");
+        sql.append("    D.PORTID, DCS.ADDRESS, DR.routeid"); 
+        sql.append("FROM YukonPaObject PAO");
+        sql.append("    LEFT OUTER JOIN DeviceDirectCommSettings D ON PAO.PAObjectID = D.DeviceID");
+        sql.append("    LEFT OUTER JOIN DeviceCarrierSettings DCS ON PAO.PAObjectID = DCS.DeviceID"); 
+        sql.append("    LEFT OUTER JOIN DeviceRoutes DR ON PAO.PAObjectID = DR.DeviceID");
+        sql.append("    JOIN CapControlSubStationBus SB ON PAO.PAObjectID = SB.SubstationBusID");
+        sql.append("WHERE PAO.PAObjectID NOT IN");
+        sql.append(   "(SELECT SubstationBusID");
+        sql.append(   " FROM CCSubstationSubBusList)");
+        
+        List<LiteYukonPAObject> feeders = yukonJdbcTemplate.query(sql, new LitePaoRowMapper());
+        
+        return feeders;
     }
     
     /**

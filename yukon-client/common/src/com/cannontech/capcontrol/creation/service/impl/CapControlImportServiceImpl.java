@@ -213,7 +213,7 @@ public class CapControlImportServiceImpl implements CapControlImportService {
             return;
         }
 
-        if (!capbankControllerDao.isSerialNumberValid(cbcImportData.getCbcName(), cbcImportData.getCbcSerialNumber())) {
+        if (!capbankControllerDao.isSerialNumberValid(cbcImportData.getCbcSerialNumber())) {
             results.add(new CbcImportCompleteDataResult(cbcImportData, CbcImportResultType.INVALID_SERIAL_NUMBER));
             return;
         }
@@ -335,7 +335,7 @@ public class CapControlImportServiceImpl implements CapControlImportService {
             return;
         }
 
-        if (!capbankControllerDao.isSerialNumberValid(cbcImportData.getCbcName(), cbcImportData.getCbcSerialNumber())) {
+        if (!capbankControllerDao.isSerialNumberValid(cbcImportData.getCbcSerialNumber())) {
             results.add(new CbcImportCompleteDataResult(cbcImportData, CbcImportResultType.INVALID_SERIAL_NUMBER));
             return;
         }
@@ -438,7 +438,7 @@ public class CapControlImportServiceImpl implements CapControlImportService {
         }
         
         if (cbcImportData.getCbcSerialNumber() != null) {
-            if (!capbankControllerDao.isSerialNumberValid(cbcImportData.getCbcName(), cbcImportData.getCbcSerialNumber())) {
+            if (!capbankControllerDao.isSerialNumberValid(yukonPao.getPaoIdentifier().getPaoId(), cbcImportData.getCbcSerialNumber())) {
                 results.add(new CbcImportCompleteDataResult(cbcImportData, CbcImportResultType.INVALID_SERIAL_NUMBER));
                 return;
             }

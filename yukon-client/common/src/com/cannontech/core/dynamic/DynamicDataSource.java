@@ -27,6 +27,7 @@ public interface DynamicDataSource {
      * @param pointId
      * @return
      * @throws DynamicDataAccessException
+     * @Deprecated use getPointValue
      */
     @Deprecated
     public PointData getPointData(int pointId) throws DynamicDataAccessException;
@@ -35,6 +36,7 @@ public interface DynamicDataSource {
      * @param pointId
      * @return
      * @throws DynamicDataAccessException
+     * @Deprecated use getPointValue
      */
     @Deprecated
     public Set<PointData> getPointData(Set<Integer> pointIds) throws DynamicDataAccessException;

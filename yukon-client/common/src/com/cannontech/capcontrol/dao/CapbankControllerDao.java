@@ -1,7 +1,9 @@
 package com.cannontech.capcontrol.dao;
 
 import com.cannontech.capcontrol.model.LiteCapControlObject;
+import com.cannontech.common.pao.PaoIdentifier;
 import com.cannontech.common.search.SearchResult;
+import com.cannontech.core.dao.NotFoundException;
 
 public interface CapbankControllerDao {
 	
@@ -32,13 +34,27 @@ public interface CapbankControllerDao {
     /**
      * This method checks to see if a serial number is valid for a CBC (that is, it checks
      * to see that no other CBC in the database has the same serial number.)
-     * @param cbcName the name of the CBC we're checking (if the CBC named cbcName has the serial
-     *    number in the database it's allowable, someone is essentially changing the CBC's serial
-     *    number to the same value.
+     * @param deviceId the deviceId of the CBC who is allowed to have the serialNumber (if any.)
      * @param serialNumber the serial number in question.
      * @return true if the serial number doesn't already exist in the database, false otherwise.
      */
-    public boolean isSerialNumberValid(String cbcName, int serialNumber);
+    public boolean isSerialNumberValid(Integer deviceId, int serialNumber);
+    
+    /**
+     * This method checks to see if a serial number is valid for a new CBC.
+     * @param serialNumber the serial number in question.
+     * @return true if the serial number doesn't already exist in the database, false otherwise.
+     */
+    public boolean isSerialNumberValid(int serialNumber);
 	
 	public SearchResult<LiteCapControlObject> getOrphans(final int start,final int count);
+	
+	/**
+	 * Looks up the subbus that the cbc is attached to.
+	 * 
+	 * @param cbcPaoId the paoId of the CBC
+	 * @return the paoidentifier of the parent bus
+	 * @throws NotFoundException if orphaned
+	 */
+	public PaoIdentifier getParentBus(int cbcPaoId);
 }

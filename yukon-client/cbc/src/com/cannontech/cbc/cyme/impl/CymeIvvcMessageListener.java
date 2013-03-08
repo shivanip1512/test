@@ -13,15 +13,15 @@ import com.cannontech.cbc.cyme.model.CapControlOperation;
 import com.cannontech.cbc.cyme.model.CapControlOperationMessage;
 import com.cannontech.clientutils.YukonLogManager;
 
-public class CymeIvvcMessageListener{
+public class CymeIvvcMessageListener {
     private static final Logger log = YukonLogManager.getLogger(CymeIvvcMessageListener.class);
 
     @Autowired private CymeSimulatorService cymeSimulatorService;
     
     public void handleOperationMessage(Message message) {
         log.trace("Received Operation Message");
-         CapControlOperationMessage operationMessage = null;
-                
+        CapControlOperationMessage operationMessage = null;
+
         if (message instanceof StreamMessage) {
             try {
                 operationMessage = buildCapControlOperationMessage((StreamMessage)message);
@@ -55,7 +55,8 @@ public class CymeIvvcMessageListener{
             case SCAN: {
                 cymeSimulatorService.handleScanDevice(operationMessage.getDeviceId());
                 break;
-            } case REFRESHSYSTEM: {
+            }
+            case REFRESHSYSTEM: {
                 cymeSimulatorService.handleRefreshSystem(operationMessage.getDeviceId());
                 break;
             }

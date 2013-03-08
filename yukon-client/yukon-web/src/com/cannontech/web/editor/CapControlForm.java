@@ -1439,28 +1439,13 @@ public class CapControlForm extends DBEditorForm implements ICapControlModel{
 	}
 
     public void initEditorPanels() {
-		List<Integer> unassignedBankIDs = capbankDao.getUnassignedCapBankIds();
-        unassignedBanks = new ArrayList<LiteYukonPAObject>(unassignedBankIDs.size());
-		for (Integer i : unassignedBankIDs ) {
-			LiteYukonPAObject liteYukonPAO = paoDao.getLiteYukonPAO(i);
-			if (liteYukonPAO != null) {
-				unassignedBanks.add(liteYukonPAO);
-            }
-		}
+        unassignedBanks = capbankDao.getUnassignedCapBanks();
 		Collections.sort(unassignedBanks, LiteComparators.liteStringComparator);
 		
-		List<Integer> unassignedFeederIDs = feederDao.getUnassignedFeederIds();
-        unassignedFeeders = new ArrayList<LiteYukonPAObject>(unassignedFeederIDs.size());
-        for ( Integer i : unassignedFeederIDs ) {
-			unassignedFeeders.add(paoDao.getLiteYukonPAO(i));
-		}
+        unassignedFeeders = feederDao.getUnassignedFeeders();
 		Collections.sort(unassignedFeeders, LiteComparators.liteStringComparator);
 				
-        List<Integer> allUnassignedBuses = substationBusDao.getAllUnassignedBuses();
-        unassignedSubBuses = new ArrayList<LiteYukonPAObject>(allUnassignedBuses.size());
-        for (Integer i : allUnassignedBuses) {
-			unassignedSubBuses.add( paoDao.getLiteYukonPAO(i));
-		}
+        unassignedSubBuses = substationBusDao.getUnassignedBuses();
 		Collections.sort(unassignedSubBuses, LiteComparators.liteStringComparator);
 	}
 

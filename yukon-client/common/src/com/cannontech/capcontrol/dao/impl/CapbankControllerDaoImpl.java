@@ -5,20 +5,23 @@ import java.sql.SQLException;
 import java.util.List;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.dao.IncorrectResultSizeDataAccessException;
 import org.springframework.jdbc.core.simple.ParameterizedRowMapper;
 import org.springframework.transaction.annotation.Transactional;
 
 import com.cannontech.capcontrol.dao.CapbankControllerDao;
 import com.cannontech.capcontrol.model.LiteCapControlObject;
+import com.cannontech.common.pao.PaoIdentifier;
 import com.cannontech.common.pao.PaoType;
 import com.cannontech.common.pao.YukonPao;
 import com.cannontech.common.pao.attribute.model.BuiltInAttribute;
 import com.cannontech.common.pao.attribute.service.AttributeService;
 import com.cannontech.common.search.SearchResult;
 import com.cannontech.common.util.SqlStatementBuilder;
+import com.cannontech.core.dao.NotFoundException;
 import com.cannontech.core.dao.PaoDao;
-import com.cannontech.database.IntegerRowMapper;
 import com.cannontech.database.PagingResultSetExtractor;
+import com.cannontech.database.RowMapper;
 import com.cannontech.database.SqlParameterSink;
 import com.cannontech.database.YukonJdbcTemplate;
 import com.cannontech.database.data.lite.LitePoint;
@@ -127,7 +130,7 @@ public class CapbankControllerDaoImpl implements CapbankControllerDao {
         sql.append("WHERE Type").in(PaoType.getCbcTypes());
         sql.append("    AND PAObjectID").notIn(controlSql);
 
-        int orphanCount = yukonJdbcTemplate.queryForInt(sql.getSql(), sql.getArguments());
+        int orphanCount = yukonJdbcTemplate.queryForInt(sql);
 
         /* Get the paged subset of cc objects */
         sql = new SqlStatementBuilder();
@@ -142,9 +145,7 @@ public class CapbankControllerDaoImpl implements CapbankControllerDao {
                                                                count,
                                                                liteCapControlObjectRowMapper);
         
-        yukonJdbcTemplate.getJdbcOperations().query(sql.getSql(),
-                                                    sql.getArguments(),
-                                                    cbcOrphanExtractor);
+        yukonJdbcTemplate.query(sql, cbcOrphanExtractor);
 
         List<LiteCapControlObject> unassignedCbcs = cbcOrphanExtractor.getResultList();
 
@@ -156,14 +157,42 @@ public class CapbankControllerDaoImpl implements CapbankControllerDao {
     }
     
     @Override
-    public boolean isSerialNumberValid(String cbcName, int serialNumber) {
+    public boolean isSerialNumberValid(int serialNumber) {
+        return isSerialNumberValid(null, serialNumber);
+    }
+    
+    @Override
+    public boolean isSerialNumberValid(Integer deviceId, int serialNumber) {
         SqlStatementBuilder sql = new SqlStatementBuilder();
-        sql.append("SELECT D.SerialNumber");
+        sql.append("SELECT COUNT(*)");
         sql.append("FROM YukonPaObject PAO JOIN DeviceCBC D ON PAO.PaObjectId = D.DeviceId");
-        sql.append("WHERE PAO.PaoName").neq(cbcName);
+        sql.append("WHERE D.SerialNumber").eq(serialNumber);
         
-        List<Integer> serialNumbers = yukonJdbcTemplate.query(sql, new IntegerRowMapper());
+        if (deviceId != null) {
+            sql.append("AND PAO.PaobjectId").neq(deviceId);
+        }
         
-        return !serialNumbers.contains(serialNumber);
+        return yukonJdbcTemplate.queryForInt(sql) == 0;
+    }
+    
+    @Override
+    public PaoIdentifier getParentBus(int cbcPaoId) {
+        
+        SqlStatementBuilder sql = new SqlStatementBuilder();
+        
+        sql.append("SELECT YPO2.PaObjectId, YPO2.Type");          
+        sql.append("FROM YukonPaObject YPO");
+        sql.append("JOIN CAPBANK CB ON YPO.PaObjectId = CB.CONTROLDEVICEID");
+        sql.append("JOIN CCFeederBankList FBL ON FBL.DeviceID = CB.DEVICEID");
+        sql.append("JOIN CCFeederSubAssignment FSA ON FSA.FeederID = FBL.FeederID");
+        sql.append("JOIN YukonPAObject YPO2 ON YPO2.PAObjectID = FSA.SubStationBusID");
+        sql.append("WHERE CB.CONTROLDEVICEID").eq(cbcPaoId);
+        
+        try {
+            PaoIdentifier paoIdentifier = yukonJdbcTemplate.queryForObject(sql, RowMapper.PAO_IDENTIFIER);
+            return paoIdentifier;
+        } catch (IncorrectResultSizeDataAccessException e) {
+            throw new NotFoundException("Parent Subbus was not found for cbc with ID: " + cbcPaoId);
+        }
     }
 }

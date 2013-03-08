@@ -12,6 +12,7 @@ import com.cannontech.common.pao.YukonPao;
 import com.cannontech.common.search.SearchResult;
 import com.cannontech.database.YukonResultSet;
 import com.cannontech.database.YukonRowMapper;
+import com.cannontech.database.data.lite.LiteYukonPAObject;
 
 public interface FeederDao {
     
@@ -34,10 +35,9 @@ public interface FeederDao {
     };
     
     /**
-     * This method returns all the Feeder IDs that are not assigned
-     *  to a SubBus.
+     * This method returns all the Feeders that are not assigned to a SubBus.
      */
-    public List<Integer> getUnassignedFeederIds();
+    public List<LiteYukonPAObject> getUnassignedFeeders();
     
     /**
      * This method returns all the Feeder IDs that are assigned

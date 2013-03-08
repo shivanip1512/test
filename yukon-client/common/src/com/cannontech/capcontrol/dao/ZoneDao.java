@@ -10,7 +10,7 @@ import com.cannontech.capcontrol.PointToZoneMapping;
 import com.cannontech.capcontrol.model.AbstractZone;
 import com.cannontech.capcontrol.model.CapBankPointDelta;
 import com.cannontech.capcontrol.model.CcEvent;
-import com.cannontech.capcontrol.model.PointPaoIdentifier;
+import com.cannontech.capcontrol.model.CymePaoPoint;
 import com.cannontech.capcontrol.model.RegulatorToZoneMapping;
 import com.cannontech.capcontrol.model.Zone;
 import com.cannontech.enums.Phase;
@@ -195,5 +195,5 @@ public interface ZoneDao {
      */
     public List<RegulatorToZoneMapping> getRegulatorToZoneMappingsByZoneId(int zoneId);
     
-    public List<PointPaoIdentifier> getTapPointsBySubBusId(int substationBusId);
+    public List<CymePaoPoint> getTapPointsBySubBusId(int substationBusId);
 }

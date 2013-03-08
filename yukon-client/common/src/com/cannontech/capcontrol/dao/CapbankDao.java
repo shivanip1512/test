@@ -8,6 +8,8 @@ import com.cannontech.capcontrol.model.CapbankAdditional;
 import com.cannontech.capcontrol.model.LiteCapControlObject;
 import com.cannontech.common.pao.PaoIdentifier;
 import com.cannontech.common.search.SearchResult;
+import com.cannontech.core.dao.NotFoundException;
+import com.cannontech.database.data.lite.LiteYukonPAObject;
 
 public interface CapbankDao {
     
@@ -26,10 +28,9 @@ public interface CapbankDao {
     public CapbankAdditional getCapbankAdditional(int paoId);
     
     /**
-     * This method returns all the CapBank IDs that are not assigned
-     *  to a Feeder.
+     * This method returns all the CapBanks that are not assigned to a Feeder.
      */
-    public List<Integer> getUnassignedCapBankIds();
+    public List<LiteYukonPAObject> getUnassignedCapBanks();
     
     public SearchResult<LiteCapControlObject> getOrphans(int start, int count);
     
@@ -69,4 +70,13 @@ public interface CapbankDao {
      * updated, false otherwise.
      */
     public boolean unassignCapbank(int capbankId);
+    
+    /**
+     * Looks up the subbus that the bank is attached to.
+     * 
+     * @param bankId the paoId of the Cap Bank
+     * @return
+     * @throws NotFoundException if orphaned
+     */
+    public PaoIdentifier getParentBus(int bankId);
 }

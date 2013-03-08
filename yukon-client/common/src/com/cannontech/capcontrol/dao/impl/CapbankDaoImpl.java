@@ -1,11 +1,11 @@
 package com.cannontech.capcontrol.dao.impl;
 
-import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.List;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.dao.EmptyResultDataAccessException;
+import org.springframework.dao.IncorrectResultSizeDataAccessException;
 import org.springframework.jdbc.core.simple.ParameterizedRowMapper;
 
 import com.cannontech.capcontrol.BankOpState;
@@ -17,12 +17,16 @@ import com.cannontech.common.pao.PaoType;
 import com.cannontech.common.pao.YukonPao;
 import com.cannontech.common.search.SearchResult;
 import com.cannontech.common.util.SqlStatementBuilder;
+import com.cannontech.core.dao.NotFoundException;
 import com.cannontech.core.dao.PaoDao;
+import com.cannontech.core.dao.impl.LitePaoRowMapper;
 import com.cannontech.database.PagingResultSetExtractor;
+import com.cannontech.database.RowMapper;
 import com.cannontech.database.SqlParameterSink;
 import com.cannontech.database.YukonJdbcTemplate;
 import com.cannontech.database.YukonResultSet;
 import com.cannontech.database.YukonRowMapper;
+import com.cannontech.database.data.lite.LiteYukonPAObject;
 import com.cannontech.message.DbChangeManager;
 import com.cannontech.message.dispatch.message.DbChangeType;
 
@@ -67,33 +71,27 @@ public class CapbankDaoImpl implements CapbankDao {
 		}
 	};
 	
-    /**
-     * This method returns all the CapBank IDs that are not assigned
-     *  to a Feeder.
-     */
-    @Override
-    public List<Integer> getUnassignedCapBankIds() {
+	@Override
+    public List<LiteYukonPAObject> getUnassignedCapBanks() {
         SqlStatementBuilder sql = new SqlStatementBuilder();
         
-        sql.append("SELECT DeviceID");
-        sql.append("FROM CapBank");
-        sql.append("WHERE DeviceID NOT IN");
-        sql.append(   "(SELECT DeviceID");
-        sql.append(   " FROM CCFeederBankList)");
-        sql.append("ORDER BY DeviceID");
+        sql.append("SELECT PAO.PAObjectID, PAO.Category, PAO.PAOName,");
+        sql.append("    PAO.Type, PAO.PAOClass, PAO.Description, PAO.DisableFlag,");
+        sql.append("    D.PORTID, DCS.ADDRESS, DR.routeid"); 
+        sql.append("FROM YukonPaObject PAO");
+        sql.append("    LEFT OUTER JOIN DeviceDirectCommSettings D ON PAO.PAObjectID = D.DeviceID");
+        sql.append("    LEFT OUTER JOIN DeviceCarrierSettings DCS ON PAO.PAObjectID = DCS.DeviceID"); 
+        sql.append("    LEFT OUTER JOIN DeviceRoutes DR ON PAO.PAObjectID = DR.DeviceID");
+        sql.append("    JOIN CapControlSubStationBus SB ON PAO.PAObjectID = SB.SubstationBusID");
+        sql.append("WHERE PAO.PAObjectID NOT IN");
+        sql.append(   "(SELECT SubstationBusID");
+        sql.append(   " FROM CCSubstationSubBusList)");
         
-        ParameterizedRowMapper<Integer> mapper = new ParameterizedRowMapper<Integer>() {
-            @Override
-            public Integer mapRow(ResultSet rs, int num) throws SQLException{
-                Integer i = new Integer ( rs.getInt("DEVICEID") );
-                return i;
-            }
-        };
+        List<LiteYukonPAObject> banks = yukonJdbcTemplate.query(sql, new LitePaoRowMapper());
         
-        List<Integer> listmap = yukonJdbcTemplate.query(sql, mapper);
-        return listmap;
+        return banks;
     }
-    
+	
     @Override
 	public SearchResult<LiteCapControlObject> getOrphans(int start, int count) {
 	    /* Get the unordered total count */
@@ -118,7 +116,7 @@ public class CapbankDaoImpl implements CapbankDao {
         sql.append("ORDER BY PAOName");
         
         PagingResultSetExtractor<LiteCapControlObject> orphanExtractor = new PagingResultSetExtractor<LiteCapControlObject>(start, count, liteCapControlObjectRowMapper);
-        yukonJdbcTemplate.getJdbcOperations().query(sql.getSql(), sql.getArguments(), orphanExtractor);
+        yukonJdbcTemplate.query(sql, orphanExtractor);
         
         List<LiteCapControlObject> unassignedBanks = orphanExtractor.getResultList();
         
@@ -274,4 +272,24 @@ public class CapbankDaoImpl implements CapbankDao {
 		
 		return capbankAdditional;
 	}
+	
+    @Override
+    public PaoIdentifier getParentBus(int bankId) {
+        
+        SqlStatementBuilder sql = new SqlStatementBuilder();
+        
+        sql.append("SELECT YPO2.PaObjectId, YPO2.Type");        
+        sql.append("FROM CCFeederBankList FBL");
+        sql.append("JOIN YukonPAObject YPO ON FBL.FeederID = YPO.PAObjectID");
+        sql.append("JOIN CCFeederSubAssignment FSA ON FSA.FeederID = FBL.FeederID");
+        sql.append("JOIN YukonPAObject YPO2 ON YPO2.PAObjectID = FSA.SubStationBusID");
+        sql.append("WHERE FBL.DeviceID").eq(bankId);
+        
+        try {
+            PaoIdentifier paoIdentifier = yukonJdbcTemplate.queryForObject(sql, RowMapper.PAO_IDENTIFIER);
+            return paoIdentifier;
+        } catch (IncorrectResultSizeDataAccessException e) {
+            throw new NotFoundException("Parent Subbus was not found for CapBank with ID: " + bankId);
+        }
+    }
 }

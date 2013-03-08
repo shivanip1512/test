@@ -3,9 +3,9 @@ package com.cannontech.capcontrol.dao;
 import java.sql.SQLException;
 import java.util.List;
 
+import com.cannontech.capcontrol.model.CymePaoPoint;
 import com.cannontech.capcontrol.model.LiteCapControlObject;
 import com.cannontech.capcontrol.model.PointIdContainer;
-import com.cannontech.capcontrol.model.PointPaoIdentifier;
 import com.cannontech.capcontrol.model.Substation;
 import com.cannontech.capcontrol.model.SubstationBus;
 import com.cannontech.common.pao.PaoIdentifier;
@@ -13,27 +13,24 @@ import com.cannontech.common.pao.PaoType;
 import com.cannontech.common.search.SearchResult;
 import com.cannontech.database.YukonResultSet;
 import com.cannontech.database.YukonRowMapper;
+import com.cannontech.database.data.lite.LiteYukonPAObject;
 
 public interface SubstationBusDao {
-    
-    public final YukonRowMapper<PointPaoIdentifier> pointPaoRowMapper  = new YukonRowMapper<PointPaoIdentifier>(){
+        
+    public final YukonRowMapper<CymePaoPoint> cymePaoPointRowMapper  = new YukonRowMapper<CymePaoPoint>(){
 
         @Override
-        public PointPaoIdentifier mapRow(YukonResultSet rs) throws SQLException {
-            PointPaoIdentifier bankPoint= new PointPaoIdentifier();
-
+        public CymePaoPoint mapRow(YukonResultSet rs) throws SQLException {
             int paoId = rs.getInt("PaObjectId");
+            int pointId = rs.getInt("PointId");
             String typeStr = rs.getString("Type");
             PaoType paoType = PaoType.getForDbString(typeStr);
-            bankPoint.setPaoIdentifier(new PaoIdentifier(paoId, paoType));
             
-            String paoName = rs.getString("PaoName");
-            bankPoint.setPaoName(paoName);
+            PaoIdentifier paoPointId = new PaoIdentifier(paoId,paoType);
             
-            int pointId = rs.getInt("PointId");
-            bankPoint.setPointId(pointId);
+            String name = rs.getString("PaoName");
             
-            return bankPoint;
+            return new CymePaoPoint(paoPointId,name,pointId);
         }
     };
     
@@ -45,10 +42,15 @@ public interface SubstationBusDao {
     public SubstationBus findSubBusById(int id);
     
     /**
-     * This method returns a list of integers representing the {@link SubstationBus} objects
+     * Get the PaoIdentifiers of all the sub buses in the system.
+     */
+    public List<PaoIdentifier> getAllSubstationBuses();
+    
+    /**
+     * This method returns a list of LiteYukonPAObjects representing the {@link SubstationBus} objects
      * which don't have assignments.
      */
-    public List<Integer> getAllUnassignedBuses();
+    public List<LiteYukonPAObject> getUnassignedBuses();
     
     public SearchResult<LiteCapControlObject> getOrphans(final int start, final int count);
     
@@ -78,7 +80,7 @@ public interface SubstationBusDao {
     public boolean unassignSubstationBus(int substationBusId);
     
 
-    public List<PointPaoIdentifier> getBankStatusPointPaoIdsBySubbusId(int substationBusId);
+    public List<CymePaoPoint> getBankStatusPointPaoIdsBySubbusId(int substationBusId);
     
     public List<Integer> getBankStatusPointIdsBySubbusId(int substationBusId);
     
@@ -88,4 +90,12 @@ public interface SubstationBusDao {
      * @return
      */
     public PointIdContainer getSubstationBusPointIds(int substationBusId);
-}
+    
+    /**
+     * Returns a list of feeder names from the bus
+     * 
+     * @param subbusId
+     * @return
+     */
+    public List<String> getAssignedFeederPaoNames(int subbusId);
+    }
