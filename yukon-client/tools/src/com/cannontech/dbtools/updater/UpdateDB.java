@@ -21,7 +21,6 @@ import com.cannontech.common.config.ConfigurationSource;
 import com.cannontech.common.config.MasterConfigHelper;
 import com.cannontech.common.util.CtiUtilities;
 import com.cannontech.database.PoolManager;
-import com.cannontech.database.db.version.CTIDatabase;
 import com.cannontech.tools.gui.IMessageFrame;
 
 /**
@@ -40,8 +39,10 @@ public class UpdateDB
     private boolean starsToBeCreated = false;
 
     private static final Pattern cparmPattern = Pattern.compile(DBMSDefines.START_CPARM_REGEX);
-    private static final Pattern varPattern = 
+    private static final Pattern SQLServerVarPattern = 
             Pattern.compile("SELECT @[A-Za-z_]+ = \\'?([A-Za-z0-9\\.\\-\\s,]+)\\'?;");
+    private static final Pattern OracleVarPattern = 
+            Pattern.compile("v_[A-Za-z_]+ := \\'?([A-Za-z0-9\\.\\-\\s,]+)\\'?;");
 
 	/**
 	 * 
@@ -451,9 +452,13 @@ public class UpdateDB
                             
                             String configValue = config.getString(cparmToken);
                             if (configValue != null) {
-                                Matcher matcher = varPattern.matcher(token);
-                                if (matcher.find()) {
-                                    token = token.replace(matcher.group(1), configValue);
+                                Matcher sqlServerMatcher = SQLServerVarPattern.matcher(token);
+                                Matcher oracleMatcher = OracleVarPattern.matcher(token);
+                                if (sqlServerMatcher.find()) {
+                                    token = token.replace(sqlServerMatcher.group(1), configValue);
+                                }
+                                if (oracleMatcher.find()) {
+                                    token = token.replace(oracleMatcher.group(1), configValue);
                                 }
                             }
 
