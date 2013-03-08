@@ -173,7 +173,7 @@
         
             <cti:msg var="SelectDevicesLabel" key="yukon.common.device.bulk.deviceSelection.selectDevices" />
 
-            <input type="button" id="selectDevicesButton" value="${SelectDevicesLabel}" onclick="javascript:selectDevicesPicker.show()" style="width:140px;" />
+            <input type="button" id="selectDevicesButton" value="${SelectDevicesLabel}" onclick="javascript:selectDevicesPicker.show()" class="full_width" />
             
 
             <form id="selectDevicesForm" method="post" action="${action}">
@@ -206,7 +206,7 @@
             <cti:msg var="submitButtonText" key="yukon.common.device.bulk.deviceSelection.selectDevicesByGroupTree.submitButtonText" />
             <cti:msg var="cancelButtonText" key="yukon.common.device.bulk.deviceSelection.selectDevicesByGroupTree.cancelButtonText" />
             
-            <input type="button" id="selectByGroupButton" value="${addDeviceLabel}" style="width:140px;" />
+            <input type="button" id="selectByGroupButton" value="${addDeviceLabel}" class="full_width" />
             
             
             <form id="selectDevicesByGroupForm" method="get" action="${action}">
@@ -246,7 +246,7 @@
             <cti:msg var="selectAddressPopupTitle" key="yukon.common.device.bulk.deviceSelection.selectAddressPopupTitle" />
             <cti:msg var="selectAddressLabel" key="yukon.common.device.bulk.deviceSelection.selectDevicesByAddress" />
 
-            <input type="button" id="addressButton" value="${selectAddressLabel}" onclick="toggleByAddrPopup('${byAddrPopupId}');" style="width:140px;"/>
+            <input type="button" id="addressButton" value="${selectAddressLabel}" onclick="toggleByAddrPopup('${byAddrPopupId}');" class="full_width"/>
             
             <tags:simplePopup id="${byAddrPopupId}" title="${selectAddressPopupTitle}" styleClass="deviceSelectionPopup"  onClose="toggleByAddrPopup('${byAddrPopupId}');">
                 
@@ -312,7 +312,7 @@
             <cti:msg var="selectDataFilePopupTitle" key="yukon.common.device.bulk.deviceSelection.selectDataFilePopupTitle" />
             <cti:msg var="selectFileLabel" key="yukon.common.device.bulk.deviceSelection.selectDevicesByFile" />
             
-            <input type="button" id="fileButton" value="${selectFileLabel}" onclick="toggleByFileUploadPopup('${byFileUploadId}');" style="width:140px;"/>
+            <input type="button" id="fileButton" value="${selectFileLabel}" onclick="toggleByFileUploadPopup('${byFileUploadId}');" class="full_width"/>
         
             <tags:simplePopup id="${byFileUploadId}" title="${selectDataFilePopupTitle}" styleClass="deviceSelectionPopup" onClose="toggleByFileUploadPopup('${byFileUploadId}');">
                 
