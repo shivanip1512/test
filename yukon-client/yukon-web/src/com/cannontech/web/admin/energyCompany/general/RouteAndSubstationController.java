@@ -42,7 +42,7 @@ import com.google.common.collect.Maps;
 @Controller
 public class RouteAndSubstationController { 
 
-    private enum Reason implements DisplayableEnum {
+    public enum Reason implements DisplayableEnum {
         CAN_DELETE(true),
         THIS_DEFAULT(false),
         CHILD_DEFAULT(false),
