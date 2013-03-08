@@ -7,6 +7,7 @@ package com.cannontech.core.dao.impl;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
@@ -21,6 +22,7 @@ import org.springframework.jdbc.core.JdbcOperations;
 import org.springframework.jdbc.core.RowCallbackHandler;
 import org.springframework.jdbc.core.simple.ParameterizedRowMapper;
 
+import com.cannontech.common.device.groups.model.DeviceGroup;
 import com.cannontech.common.device.model.DisplayableDevice;
 import com.cannontech.common.pao.DisplayablePao;
 import com.cannontech.common.pao.PaoCategory;
@@ -56,6 +58,7 @@ import com.cannontech.yukon.IDatabaseCache;
 import com.google.common.base.Function;
 import com.google.common.base.Functions;
 import com.google.common.collect.Maps;
+import com.cannontech.common.device.groups.service.DeviceGroupService;
 
 public final class PaoDaoImpl implements PaoDao {
     
@@ -75,6 +78,7 @@ public final class PaoDaoImpl implements PaoDao {
     private IDatabaseCache databaseCache;
     private NextValueHelper nextValueHelper;
     private AuthDao authDao;
+    @Autowired private DeviceGroupService deviceGroupService;
 	
     /*
      * (non-Javadoc)
@@ -750,5 +754,16 @@ public final class PaoDaoImpl implements PaoDao {
 		}
 
     	return result;
+    }
+    
+    public int getDisabledDeviceCount(DeviceGroup group){
+        
+        SqlStatementBuilder sql = new SqlStatementBuilder();
+        sql.append("select count(PAObjectID) from YukonPAObject ypo");
+        sql.append("where ypo.DisableFlag = 'Y'");
+        SqlFragmentSource groupSqlWhereClause =
+            deviceGroupService.getDeviceGroupSqlWhereClause(Collections.singleton(group), "YPO.paObjectId");
+        sql.append("AND").appendFragment(groupSqlWhereClause);
+        return yukonJdbcTemplate.queryForInt(sql);
     }
 }

@@ -1,12 +1,10 @@
 package com.cannontech.analysis.tablemodel;
 
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.Collections;
 import java.util.Date;
-import java.util.Iterator;
 import java.util.List;
-import java.util.Map;
-import java.util.Map.Entry;
 import java.util.Set;
 
 import org.apache.log4j.Logger;
@@ -17,39 +15,37 @@ import org.springframework.beans.factory.annotation.Autowired;
 import com.cannontech.clientutils.YukonLogManager;
 import com.cannontech.common.device.groups.model.DeviceGroup;
 import com.cannontech.common.device.groups.service.DeviceGroupService;
-import com.cannontech.common.device.model.SimpleDevice;
-import com.cannontech.common.pao.PaoIdentifier;
-import com.cannontech.common.pao.PaoUtils;
+import com.cannontech.common.pao.PaoType;
+import com.cannontech.common.pao.attribute.model.Attribute;
 import com.cannontech.common.pao.attribute.model.BuiltInAttribute;
 import com.cannontech.common.pao.attribute.service.AttributeService;
-import com.cannontech.common.pao.attribute.service.IllegalUseOfAttribute;
-import com.cannontech.common.pao.definition.model.PaoPointIdentifier;
-import com.cannontech.common.pao.definition.model.PointIdentifier;
+import com.cannontech.common.pao.definition.dao.PaoDefinitionDao;
+import com.cannontech.common.pao.definition.model.PaoTypePointIdentifier;
 import com.cannontech.common.point.PointQuality;
-import com.cannontech.common.util.ChunkingSqlTemplate;
-import com.cannontech.common.util.SqlFragmentGenerator;
 import com.cannontech.common.util.SqlFragmentSource;
 import com.cannontech.common.util.SqlStatementBuilder;
-import com.cannontech.database.RowMapper;
+import com.cannontech.core.dao.PaoDao;
 import com.cannontech.database.YukonJdbcTemplate;
 import com.cannontech.user.YukonUserContext;
-import com.google.common.collect.ImmutableMultimap;
+import com.google.common.collect.HashMultimap;
 import com.google.common.collect.Lists;
-import com.google.common.collect.Maps;
+import com.google.common.collect.Multimap;
+import com.google.common.collect.Multimaps;
+import com.google.common.collect.Sets;
 
-public class MeterReadPercentageModel extends BareDatedReportModelBase<MeterReadPercentageModel.ModelRow> implements UserContextModelAttributes {
-        
+public class MeterReadPercentageModel extends BareDatedReportModelBase<MeterReadPercentageModel.ModelRow> implements
+        UserContextModelAttributes {
+
     public enum MeterReadPercentagePeriod {
-        
-        TWO_DAYS("2 days", 35), 
+
+        TWO_DAYS("2 days", 35),
         SEVEN_DAYS("7 days", 52),
         MONTHLY("Monthly", 12);
 
         private String displayName;
-        //number of rows to display
         int rowsToDisplay;
 
-        private MeterReadPercentagePeriod (String displayName, int rowsToDisplay) {
+        private MeterReadPercentagePeriod(String displayName, int rowsToDisplay) {
             this.displayName = displayName;
             this.rowsToDisplay = rowsToDisplay;
         }
@@ -57,230 +53,233 @@ public class MeterReadPercentageModel extends BareDatedReportModelBase<MeterRead
         public String getDisplayName() {
             return displayName;
         }
-        
+
         public int getTotal() {
             return rowsToDisplay;
         }
     }
-    
+
     static public class ModelRow {
         public String groupName;
         public Date startDate;
         public Date endDate;
         public Double readPercent = 0.0;
-        public Integer countSuccessfull = 0;
+        public Integer countSuccessful = 0;
         public Integer countMissed = 0;
         public Integer countTotal = 0;
-        public Integer countDisabled = 0 ;
+        public Integer countDisabled = 0;
         public Integer countNoData = 0;
         public Integer countUnsupported = 0;
     }
-        
-    private class DateRange{
+
+    private class DateRange {
 
         private DateMidnight startDate;
         private DateMidnight stopDate;
-        
-        DateRange(DateMidnight startDate, DateMidnight stopDate){
+
+        DateRange(DateMidnight startDate, DateMidnight stopDate) {
             this.startDate = startDate;
             this.stopDate = stopDate;
         }
-        
+
         public DateMidnight getStartDate() {
             return startDate;
         }
 
         public DateMidnight getStopDate() {
             return stopDate;
-        } 
+        }
     }
-    
+
     private Logger log = YukonLogManager.getLogger(MeterReadPercentageModel.class);
-    
+
     @Autowired private YukonJdbcTemplate yukonJdbcTemplate;
     @Autowired private AttributeService attributeService;
     @Autowired private DeviceGroupService deviceGroupService;
+    @Autowired private PaoDefinitionDao paoDefinitionDao;
+    @Autowired private PaoDao paoDao;
     private List<String> groupNames;
     private YukonUserContext context;
     private MeterReadPercentagePeriod period = MeterReadPercentagePeriod.SEVEN_DAYS;
     protected List<ModelRow> data = new ArrayList<ModelRow>();
-    
-  
+
     @Override
     public void doLoadData() {
         List<DateRange> dateRanges = createDateRanges();
-        
+
         Set<? extends DeviceGroup> groups = deviceGroupService.resolveGroupNames(groupNames);
-        
-        for(DeviceGroup group : groups) { 
+
+        Multimap<PaoType, Attribute> allDefinedAttributes = paoDefinitionDao.getPaoTypeAttributesMultiMap();
+        Multimap<Attribute, PaoType> dest = HashMultimap.create();
+        Multimaps.invertFrom(allDefinedAttributes, dest);
+        Collection<PaoType> possiblePaoTypes = dest.get(BuiltInAttribute.USAGE);
+
+        for (DeviceGroup group : groups) {
+            // First get a list of all PAO types in the group we are using. This will reduce the
+            // number of queries later.
+            Collection<PaoType> actualPaoTypes = getActualPaoTypes(group, possiblePaoTypes);
             int deviceCount = deviceGroupService.getDeviceCount(Collections.singleton(group));
-            if(deviceCount > 0){
-                int countUnsupported = 0;
-                Set<SimpleDevice> devicesInGroup = deviceGroupService.getDevices(Collections.singleton(group));
-                //This list contains the device ids of the devices that support attribute "USAGE"
-                Map<Integer, PaoPointIdentifier> deviceIdToPointIdentifier = Maps.newHashMap();
-              
-                for(SimpleDevice device : devicesInGroup) {
-                    try {
-                        PaoPointIdentifier identifier = attributeService.getPaoPointIdentifierForAttribute(device, BuiltInAttribute.USAGE);
-                        deviceIdToPointIdentifier.put(device.getDeviceId(), identifier);
-                    } catch (IllegalUseOfAttribute e) {
-                        //This device does not support USAGE attribute.
-                        countUnsupported++;
-                        continue;  
-                    }
-                } ;
-                log.info("Proccessing Device Group: "+group.getFullName()+ "  devices:"+deviceCount);
-                
-                final List<Integer> disabledDeviceIds = getDisabledDeviceIds(Lists.newArrayList(deviceIdToPointIdentifier.keySet()));
-               //remove disabled devices from the list of devices
-                removeDevices(deviceIdToPointIdentifier, disabledDeviceIds);
-                
-                int count = 0;
-                
-                //this map holds device ids of the devices that have no reads for the previous 10 years
-                Map<Integer,Integer> noDataDeviceIds = Maps.newHashMap();
+            if (deviceCount > 0) {
+
+                // Find the count of devices that are Unsupported but are not disabled. This code
+                // assumes unsupported and disabled devices
+                // will be counted in the disabled list not the unsupported list.
+                int unsupportedCount = getUnsupportedDeviceCount(group, actualPaoTypes);
+
+                // As noted above, this has no restrictions so every other list must remove disabled
+                // devices from their counts.
+                int disabledCount = paoDao.getDisabledDeviceCount(group);
+
+                // find that devices that were successfully read within the last 10 years
+                DateMidnight tenYrStopDate = dateRanges.get(1).getStopDate();
+                DateMidnight tenYrStartDate = tenYrStopDate.minusYears(10);
+                DateRange tenYrDateRange = new DateRange(tenYrStartDate, tenYrStopDate);
+
+                int successTenYearCount = getSuccessfulDeviceCount(group, actualPaoTypes, tenYrDateRange);
+
                 for (DateRange range : dateRanges) {
+                    int successCount = getSuccessfulDeviceCount(group, actualPaoTypes, range);
                     ModelRow groupRow = new ModelRow();
-                    groupRow.groupName = "#" + ++count + " "+group.getFullName();
-                    groupRow.countUnsupported = countUnsupported;
+                    groupRow.groupName = group.getFullName();
+                    groupRow.countUnsupported = unsupportedCount;
                     groupRow.startDate = range.getStartDate().toDate();
                     groupRow.endDate = range.getStopDate().toDate();
                     groupRow.countTotal = deviceCount;
-                    groupRow.countDisabled = disabledDeviceIds.size();
-                    
-                    // create a map devices that have reads
-                    Map<Integer, PaoPointIdentifier> filteredDevices =
-                        filterDevices(deviceIdToPointIdentifier, Lists.newArrayList(noDataDeviceIds.values()));
+                    groupRow.countDisabled = disabledCount;
+                    groupRow.countSuccessful = successCount;
+                    groupRow.countNoData = deviceCount - successTenYearCount - unsupportedCount - disabledCount;
+                    groupRow.countMissed = deviceCount - unsupportedCount - disabledCount - groupRow.countNoData
+                                           - successCount;
+                    groupRow.readPercent = calculateReadPercent(groupRow);
+                    data.add(groupRow);
 
-                    if (!filteredDevices.isEmpty()) {
-                        // find devices with reads
-                        List<Integer> successfulDeviceIds =
-                            getSuccessfulDeviceIds(filteredDevices, range);
-                        groupRow.countSuccessfull = successfulDeviceIds.size();
-
-                        // remove devices that have successful reads
-                         removeDevices(filteredDevices, successfulDeviceIds);
-
-                        // The devices left in the map are either missed or have never been read
-                        if (!filteredDevices.isEmpty()) {
-                            DateMidnight stopDate = range.getStopDate();
-                            DateMidnight startDate = stopDate.minusYears(10);
-                            DateRange previousDateRange = new DateRange(startDate, stopDate);
-                            // find that devices that were successfully read within the last 10 years
-                            List<Integer> previouslySuccessfulDeviceIds =
-                                getSuccessfulDeviceIds(filteredDevices, previousDateRange);
-                            // count the successful devices as missed
-                            groupRow.countMissed = previouslySuccessfulDeviceIds.size();
-                            /*
-                             * remove devices that were missed, so that only devices that have no data are
-                             * left
-                             */
-                            removeDevices(filteredDevices, previouslySuccessfulDeviceIds);
-                            // save the devices without data to be omitted from the next search
-                            for (Integer deviceId : filteredDevices.keySet()) {
-                                noDataDeviceIds.put(deviceId, deviceId);
-                            }
-                        }
-                    }
-                    groupRow.countNoData = noDataDeviceIds.size();
-                          
-                    groupRow.readPercent =
-                        groupRow.countSuccessfull
-                                / (deviceCount - groupRow.countUnsupported.doubleValue()
-                                   - groupRow.countDisabled.doubleValue() - groupRow.countNoData
-                                    .doubleValue());
-                    data.add(groupRow);   
                 }
-                log.info("Proccessing Device Group: "+group.getFullName()+ " compeleted.");
+                log.info("Proccessing Device Group: " + group.getFullName() + " compeleted.");
             }
         }
-        log.info("Proccessed "+groups.size() +" device groups");
-    }
-    
-    /* This method removes objects from deviceIdToPointIdentifier which are listed in deviceIds*/
-    private void removeDevices(Map<Integer, PaoPointIdentifier> deviceIdToPointIdentifier, List<Integer> deviceIds){
-        Iterator<Entry<Integer, PaoPointIdentifier>> it = deviceIdToPointIdentifier.entrySet().iterator();
-        while (it.hasNext()){
-           Entry<Integer, PaoPointIdentifier> item = it.next();
-           if(deviceIds.contains(item.getKey())){
-               it.remove();
-           }
-        }
-    }
-    
-    /* This method creates new map of deviceIdToPointIdentifier which does not include keys listed in deviceIds*/
-    private Map<Integer, PaoPointIdentifier> filterDevices(Map<Integer, PaoPointIdentifier> deviceIdToPointIdentifier, List<Integer> deviceIds){
-        Map<Integer, PaoPointIdentifier> filteredDevices = Maps.newHashMap();
-        for(Integer deviceId:deviceIdToPointIdentifier.keySet()){
-            if(!deviceIds.contains(deviceId)){
-                filteredDevices.put(deviceId, deviceIdToPointIdentifier.get(deviceId));
-            }
-        }
-        return filteredDevices;
+        log.info("Proccessed " + groups.size() + " device groups");
     }
 
-        
-    private List<Integer> getSuccessfulDeviceIds(Map<Integer, PaoPointIdentifier> devices, final DateRange range){
-       
-        ImmutableMultimap<PointIdentifier, PaoIdentifier> paoPointIdentifiersMap = PaoUtils.mapPaoPointIdentifiers(new ArrayList<PaoPointIdentifier>(devices.values())); 
-        List<Integer> ids = new ArrayList<>(paoPointIdentifiersMap.keys().size());
-        
-        for(final PointIdentifier pointIdentifier : paoPointIdentifiersMap.keySet()){
-            List<Integer> deviceIds = Lists.newArrayList();
-            for(PaoIdentifier paoIdentifier :  paoPointIdentifiersMap.get(pointIdentifier)){
-                deviceIds.add(paoIdentifier.getPaoId());
+    /**
+     * This method returns list of all PAO types in the group
+     * 
+     * @param group
+     * @param possiblePaoTypes
+     * @return
+     */
+    private Collection<PaoType> getActualPaoTypes(DeviceGroup group, Collection<PaoType> possiblePaoTypes) {
+
+        Collection<PaoType> actualPaoTypes = Sets.newHashSet();
+
+        for (PaoType paoType : possiblePaoTypes) {
+
+            SqlStatementBuilder sql = new SqlStatementBuilder();
+            sql.append("select count(PAObjectID) from YukonPAObject ypo");
+            sql.append("where ypo.type").eq(paoType);
+            SqlFragmentSource groupSqlWhereClause =
+                deviceGroupService.getDeviceGroupSqlWhereClause(Collections.singleton(group),
+                                                                "YPO.paObjectId");
+            sql.append("AND").appendFragment(groupSqlWhereClause);
+
+            if (yukonJdbcTemplate.queryForInt(sql) > 0)
+            {
+                actualPaoTypes.add(paoType);
             }
-    
-            ChunkingSqlTemplate template = new ChunkingSqlTemplate(yukonJdbcTemplate);
-            SqlFragmentGenerator<Integer> gen = new SqlFragmentGenerator<Integer>() {
-                @Override
-                public SqlFragmentSource generate(List<Integer> subList) {
-                    SqlStatementBuilder sql = new SqlStatementBuilder();
-                    sql.append("select distinct(ypo.PAObjectID) ");
-                    sql.append("from YukonPAObject ypo");
-                    sql.append(" inner join Point p on p.PAObjectID = ypo.PAObjectID and p.POINTOFFSET = ");
-                    sql.appendArgument(pointIdentifier.getOffset()).append(" and p.POINTTYPE = ")
-                        .appendArgument(pointIdentifier.getPointType());
-                    sql.append("  inner join RAWPOINTHISTORY rph on rph.POINTID = p.POINTID");
-                    sql.append("and rph.quality").eq(PointQuality.Normal.getDatabaseRepresentation());
-                    sql.append("and ypo.DisableFlag = 'N'");
-                    sql.append("and rph.TIMESTAMP").gte(range.getStartDate());
-                    //stop date should be included
-                    sql.append("and rph.TIMESTAMP").lt(range.getStopDate().plusDays(1));
-                    sql.append("where ypo.PAObjectID in ( ").appendArgumentList(subList).append(" ) ");
-                    return sql;
-                }
-            };
-            List<Integer> successfulDeviceIds = template.query(gen, deviceIds, RowMapper.INTEGER);
-            ids.addAll(successfulDeviceIds);
         }
-        return ids;
-    }
-       
-    private List<Integer> getDisabledDeviceIds(List<Integer> deviceIds){
-        
-        ChunkingSqlTemplate template = new ChunkingSqlTemplate(yukonJdbcTemplate);
-        SqlFragmentGenerator<Integer> gen = new SqlFragmentGenerator<Integer>() {
-            @Override
-            public SqlFragmentSource generate(List<Integer> subList) {
-                SqlStatementBuilder sql = new SqlStatementBuilder();
-                sql.append("select ypo.PAObjectID from YukonPAObject ypo");
-                sql.append("where ypo.PAObjectID in ( ").appendArgumentList(subList).append(" ) ");
-                sql.append("and ypo.DisableFlag = 'Y'");
-                return sql;
-            }
-        };
-        List<Integer> disabledDeviceIds = template.query(gen, deviceIds, RowMapper.INTEGER);
-        return disabledDeviceIds;
+        return actualPaoTypes;
     }
     
-    /* This method creates date ranges for each row in the report and the date range for the report header*/
+    /**
+     * This method returns unsupported device count
+     * 
+     * @param group
+     * @param actualPaoTypes
+     * @return
+     */
+    private int getUnsupportedDeviceCount(DeviceGroup group, Collection<PaoType> actualPaoTypes) {
+        SqlStatementBuilder sql = new SqlStatementBuilder();
+        sql.append("select count(PAObjectID) from YukonPAObject ypo");
+        sql.append("where ypo.DisableFlag = 'N'");
+        SqlFragmentSource groupSqlWhereClause =
+            deviceGroupService.getDeviceGroupSqlWhereClause(Collections.singleton(group),
+                                                            "YPO.paObjectId");
+        sql.append("AND").appendFragment(groupSqlWhereClause);
+        sql.append("AND ypo.type").notIn(actualPaoTypes);
+
+        return yukonJdbcTemplate.queryForInt(sql);
+    }
+
+    /**
+     * This method returns successful device count
+     * 
+     * @param group
+     * @param actualPaoTypes
+     * @param dateRange
+     * @return
+     */
+    private int getSuccessfulDeviceCount(DeviceGroup group, Collection<PaoType> actualPaoTypes, DateRange dateRange) {
+        int successCount = 0;
+        for (PaoType paoType : actualPaoTypes) {
+            PaoTypePointIdentifier paoTypePointIdentifier =
+                attributeService.getPaoTypePointIdentifierForAttribute(paoType, BuiltInAttribute.USAGE);
+            SqlStatementBuilder sql = new SqlStatementBuilder();
+            // In the end all we care about is the count.
+            sql.append("select count(PAObjectID)");
+            sql.append("from (");
+            // This gets us all distinct PAO's with normal quality, not disabled, with a particular
+            // offset based on the attribute found above
+            // and in the time range selected.
+            sql.append("select distinct(ypo.PAObjectID) ");
+            sql.append("from YukonPAObject ypo");
+            sql.append(" inner join Point p on p.PAObjectID = ypo.PAObjectID and p.POINTOFFSET = ");
+            sql.appendArgument(paoTypePointIdentifier.getPointIdentifier().getOffset()).append(" and p.POINTTYPE = ")
+                .appendArgument(paoTypePointIdentifier.getPointIdentifier().getPointType());
+            sql.append("  inner join RAWPOINTHISTORY rph on rph.POINTID = p.POINTID");
+            sql.append("and rph.quality").eq(PointQuality.Normal.getDatabaseRepresentation());
+            sql.append("and rph.TIMESTAMP").gt(dateRange.getStartDate());
+            // stop date should be included
+            sql.append("and rph.TIMESTAMP").lte(dateRange.getStopDate().plusDays(1));
+            sql.append("where ypo.PAObjectID in (");
+            // This is forcing the DB to find the list of devices for us. This loads all pao's of a
+            // particular type from a particular group.
+            sql.append("SELECT YPO.paobjectid");
+            sql.append("FROM Device d");
+            sql.append("JOIN YukonPaObject YPO ON (d.deviceid = YPO.paobjectid)");
+            sql.append("WHERE YPO.type").eq(paoType);
+            SqlFragmentSource groupSqlWhereClause =
+                deviceGroupService.getDeviceGroupSqlWhereClause(Collections.singleton(group), "YPO.paObjectId");
+            sql.append("AND").appendFragment(groupSqlWhereClause);
+            sql.append("AND YPO.DisableFlag = 'N'");
+            sql.append(")");
+            sql.append(") as count");
+            successCount += yukonJdbcTemplate.queryForInt(sql);
+        }
+        return successCount;
+    }
+
+    /**
+     * 
+     * @param This method calculates read percentage (successful/(total - unsupported - disabled -
+     *            no data))
+     * @return
+     */
+    private double calculateReadPercent(ModelRow groupRow) {
+        return groupRow.countSuccessful
+               / (groupRow.countTotal - groupRow.countUnsupported.doubleValue()
+                  - groupRow.countDisabled.doubleValue() - groupRow.countNoData
+                   .doubleValue());
+    }
+
+    /**
+     * This method creates date ranges for each row in the report and the date range for the report
+     * header
+     * @return
+     */
     private List<DateRange> createDateRanges() {
-        List<DateRange> ranges = Lists.newArrayList();       
+        List<DateRange> ranges = Lists.newArrayList();
         DateMidnight stopDate = new DateMidnight(context.getJodaTimeZone()).minusDays(1);
         DateMidnight startDate = null;
-        
+
         switch (period) {
         case TWO_DAYS:
             startDate = stopDate.minusDays(1);
@@ -313,10 +312,10 @@ public class MeterReadPercentageModel extends BareDatedReportModelBase<MeterRead
         DatedModelAttributes datedModel = (DatedModelAttributes) this;
         // date range for the report header
         datedModel.setStartDate(startDate.toDate());
-        datedModel.setStopDate(new DateTime(new DateMidnight(context.getJodaTimeZone())).minusSeconds(1).toDate()); 
+        datedModel.setStopDate(new DateTime(new DateMidnight(context.getJodaTimeZone())).minusSeconds(1).toDate());
         return ranges;
     }
-    
+
     public MeterReadPercentagePeriod getPeriod() {
         return period;
     }
@@ -324,7 +323,7 @@ public class MeterReadPercentageModel extends BareDatedReportModelBase<MeterRead
     public void setPeriod(MeterReadPercentagePeriod period) {
         this.period = period;
     }
-    
+
     @Override
     public int getRowCount() {
         return data.size();
@@ -339,7 +338,7 @@ public class MeterReadPercentageModel extends BareDatedReportModelBase<MeterRead
     public void setUserContext(YukonUserContext context) {
         this.context = context;
     }
-    
+
     @Override
     public YukonUserContext getUserContext() {
         return context;
@@ -350,12 +349,12 @@ public class MeterReadPercentageModel extends BareDatedReportModelBase<MeterRead
     }
 
     @Override
-    public boolean useStartDate(){
+    public boolean useStartDate() {
         return false;
     }
 
     @Override
-    public boolean useStopDate(){
+    public boolean useStopDate() {
         return false;
     }
 

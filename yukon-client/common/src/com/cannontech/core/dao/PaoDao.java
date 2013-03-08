@@ -3,6 +3,7 @@ package com.cannontech.core.dao;
 import java.util.List;
 import java.util.Map;
 
+import com.cannontech.common.device.groups.model.DeviceGroup;
 import com.cannontech.common.pao.DisplayablePao;
 import com.cannontech.common.pao.PaoCategory;
 import com.cannontech.common.pao.PaoClass;
@@ -194,4 +195,11 @@ public interface PaoDao {
      * Returns true if the name is available for the PAO type's PAO class and PAO category
      */
     public boolean isNameAvailable(String paoName, PaoType paoType);
+    
+    /**
+     * Returns the count of the disabled devices in a group
+     * @param deviceGroup
+     * @return
+     */
+    public int getDisabledDeviceCount(DeviceGroup deviceGroup);
 }

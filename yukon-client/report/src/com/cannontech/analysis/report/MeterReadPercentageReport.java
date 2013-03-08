@@ -22,11 +22,11 @@ public class MeterReadPercentageReport extends SimpleYukonReportBase{
     @Override
     protected List<ColumnLayoutData> getBodyColumns() {
         ColumnLayoutData[] bodyColumns = new ColumnLayoutData[] {
-            new ColumnLayoutData("Group Name", "groupName", 120),
+            new ColumnLayoutData("Group Name", "groupName", 102),
             new ColumnLayoutData("Start Date", "startDate", 70, "MM/dd/yyyy"),
             new ColumnLayoutData("End Date", "endDate", 70, "MM/dd/yyyy"),
             new ColumnLayoutData("Reading %", "readPercent", 70, "###.##%"),
-            new ColumnLayoutData("Successful", "countSuccessfull", 70),
+            new ColumnLayoutData("Successful", "countSuccessful", 70),
             new ColumnLayoutData("Missed", "countMissed",70),
             new ColumnLayoutData("Total", "countTotal", 70),
             new ColumnLayoutData("Disabled", "countDisabled", 70),
