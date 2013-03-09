@@ -1,7 +1,7 @@
 /*==============================================================*/
 /* Database name:  YukonDatabase                                */
 /* DBMS name:      ORACLE Version 9i                            */
-/* Created on:     3/8/2013 11:33:27 PM                         */
+/* Created on:     3/9/2013 1:03:26 AM                          */
 /*==============================================================*/
 
 
@@ -6231,6 +6231,18 @@ insert into notificationgroup values( 1, '(none)', 'N' );
 /*==============================================================*/
 create unique index Indx_NOTIFGRPNme on NotificationGroup (
    GroupName ASC
+);
+
+/*==============================================================*/
+/* Table: OpenAdrEvents                                         */
+/*==============================================================*/
+create table OpenAdrEvents  (
+   EventId              VARCHAR2(64)                    not null,
+   EventXml             XMLTYPE                         not null,
+   StartOffset          NUMBER                          not null,
+   EndDate              DATE                            not null,
+   RequestId            VARCHAR2(64)                    not null,
+   constraint PK_OpenAdrEvents primary key (EventId)
 );
 
 /*==============================================================*/

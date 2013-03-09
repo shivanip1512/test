@@ -1,7 +1,7 @@
 /*==============================================================*/
 /* Database name:  YukonDatabase                                */
 /* DBMS name:      Microsoft SQL Server 2005                    */
-/* Created on:     3/8/2013 11:35:27 PM                         */
+/* Created on:     3/9/2013 1:04:38 AM                          */
 /*==============================================================*/
 
 
@@ -6600,6 +6600,19 @@ insert into notificationgroup values( 1, '(none)', 'N' );
 /*==============================================================*/
 create unique index Indx_NOTIFGRPNme on NotificationGroup (
 GroupName ASC
+)
+go
+
+/*==============================================================*/
+/* Table: OpenAdrEvents                                         */
+/*==============================================================*/
+create table OpenAdrEvents (
+   EventId              varchar(64)          not null,
+   EventXml             xml                  not null,
+   StartOffset          numeric              not null,
+   EndDate              datetime             not null,
+   RequestId            varchar(64)          not null,
+   constraint PK_OpenAdrEvents primary key (EventId)
 )
 go
 

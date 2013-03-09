@@ -216,6 +216,18 @@ ALTER TABLE ArchiveValuesExportFormat
 ALTER COLUMN FormatType VARCHAR(40) NOT NULL;
 /* End YUK-11913 */
 
+/* Start YUK-11937 */
+CREATE TABLE OpenAdrEvents (
+    EventId              VARCHAR(64)          NOT NULL,
+    EventXml             XML                  NOT NULL,
+    StartOffset          NUMERIC              NOT NULL,
+    EndDate              DATETIME             NOT NULL,
+    RequestId            VARCHAR(64)          NOT NULL,
+    CONSTRAINT PK_OpenAdrEvents PRIMARY KEY (EventId)
+);
+GO
+/* End YUK-11937 */
+
 /**************************************************************/
 /* VERSION INFO                                               */
 /* Inserted when update script is run                         */
