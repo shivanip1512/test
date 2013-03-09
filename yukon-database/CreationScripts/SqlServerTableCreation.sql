@@ -1,7 +1,7 @@
 /*==============================================================*/
 /* Database name:  YukonDatabase                                */
 /* DBMS name:      Microsoft SQL Server 2005                    */
-/* Created on:     3/7/2013 3:40:26 PM                          */
+/* Created on:     3/8/2013 11:35:27 PM                         */
 /*==============================================================*/
 
 
@@ -513,6 +513,7 @@ create table ArchiveValuesExportFormat (
    Delimiter            varchar(20)          not null,
    Header               varchar(255)         null,
    Footer               varchar(255)         null,
+   FormatType           varchar(40)          not null,
    constraint PK_ArchiveValuesExpFormat primary key (FormatId)
 )
 go

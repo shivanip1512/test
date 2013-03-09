@@ -203,6 +203,17 @@ END;
 /* @end-block */
 /* End YUK-11927 */
 
+/* Start YUK-11913 */
+ALTER TABLE ArchiveValuesExportFormat
+ADD FormatType VARCHAR2(40);
+
+UPDATE ArchiveValuesExportFormat
+SET FormatType = 'FIXED_ATTRIBUTE';
+
+ALTER TABLE ArchiveValuesExportFormat
+MODIFY FormatType VARCHAR2(40) NOT NULL;
+/* End YUK-11913 */
+
 /**************************************************************/
 /* VERSION INFO                                               */
 /* Inserted when update script is run                         */
