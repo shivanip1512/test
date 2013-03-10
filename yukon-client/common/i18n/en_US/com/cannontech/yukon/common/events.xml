@@ -14,6 +14,9 @@
     <entry key="yukon.common.events.deviceLabel">Device Label</entry>
     <entry key="yukon.common.events.deviceName">Device Name</entry>
     <entry key="yukon.common.events.energyCompanyName">Energy Company Name</entry>
+    <entry key="yukon.common.events.energyCompanyId">Energy Company Id</entry>
+    <entry key="yukon.common.events.energyCompanySettingType">Energy Company Setting</entry>
+    <entry key="yukon.common.events.energyCompanySettingValue">Energy Company Setting Value</entry>
     <entry key="yukon.common.events.eventSource">Event Source</entry>    
     <entry key="yukon.common.events.fileName">File Name</entry>
     <entry key="yukon.common.events.gatewayName">Gateway Name</entry>
@@ -41,351 +44,379 @@
     <entry key="yukon.common.events.username">Username</entry>
     <entry key="yukon.common.events.warehouseName">Warehouse Name</entry>
     <entry key="yukon.common.events.workOrderNumber">Work Order Number</entry>
-    
+    <entry key="yukon.common.events.commandScheduleId">Command Schedule Id</entry>
+    <entry key="yukon.common.events.globalSettingType">Global Setting</entry>
+    <entry key="yukon.common.events.globalSettingValue">Global Setting Value</entry>
+
 <!-- Event log message text and column names -->
 <!-- Account -->
     <!-- Account -->
-    <entry key="yukon.common.events.stars.account.accountCreationAttempted"> The user {1} is attempting to created a new account {2}.  They are attempting this through source: {3}.</entry>
-    <entry key="yukon.common.events.stars.account.accountUpdateCreationAttempted"> The user {1} is attempting to create a new account {2}.  They are attempting this through source: {3}.</entry>
-    <entry key="yukon.common.events.stars.account.accountDeletionAttempted"> The user {1} is attempting to delete the account {2}.  They are attempting this through the source: {3}.</entry>
-    <entry key="yukon.common.events.stars.account.accountUpdateAttempted"> The user {1} is attempting to update the account {2}.  They are attempting this through source: {3}.</entry>
+    <entry key="yukon.common.events.stars.account.accountCreationAttempted">User {1} attempted to create a new account {2}. Source: {3}</entry>
+    <entry key="yukon.common.events.stars.account.accountUpdateCreationAttempted">User {1} attempted to create a new account {2}. Source: {3}</entry>
+    <entry key="yukon.common.events.stars.account.accountDeletionAttempted">User {1} attempted to delete account {2}. Source: {3}.</entry>
+    <entry key="yukon.common.events.stars.account.accountUpdateAttempted">User {1} attempted to update account {2}. Source: {3}.</entry>
 
     <!-- Account Service Level -->
-    <entry key="yukon.common.events.stars.account.accountAdded">The account {2} was added by {1}</entry>
-    <entry key="yukon.common.events.stars.account.accountUpdated">The account {2} was updated by {1}</entry>
-    <entry key="yukon.common.events.stars.account.accountDeleted">The account {2} was removed by {1}</entry>
-    <entry key="yukon.common.events.stars.account.accountNumberChanged"> The user {1} changed the account number from {2} to {3}.</entry>
+    <entry key="yukon.common.events.stars.account.accountAdded">Account {2} added by {1}.</entry>
+    <entry key="yukon.common.events.stars.account.accountUpdated">Account {2} updated by {1}.</entry>
+    <entry key="yukon.common.events.stars.account.accountDeleted">Account {2} deleted by {1}.</entry>
+    <entry key="yukon.common.events.stars.account.accountNumberChanged">Account number {2} changed to {3} by {1}.</entry>
     <entry key="yukon.common.events.stars.account.accountNumberChanged.2">Old Account Number</entry>
     <entry key="yukon.common.events.stars.account.accountNumberChanged.3">New Account Number</entry>
 
     <!-- Contact Info -->
-    <entry key="yukon.common.events.stars.account.contactInfo.contactNameChanged">The user {1} changed the contact name from {2} to {3}.</entry>
+    <entry key="yukon.common.events.stars.account.contactInfo.contactNameChanged">Contact name {2} changed to {3} by {1}.</entry>
     <entry key="yukon.common.events.stars.account.contactInfo.contactNameChanged.2">Old Contact Name</entry>
     <entry key="yukon.common.events.stars.account.contactInfo.contactNameChanged.3">New Contact Name</entry>
     
-    <entry key="yukon.common.events.stars.account.contactInfo.customerTypeChanged"> The user {1} changed the customer type for the account {2} from {3} to {4}.</entry>
-    <entry key="yukon.common.events.stars.account.contactInfo.customerTypeChanged.3"> Old Customer Type</entry>
-    <entry key="yukon.common.events.stars.account.contactInfo.customerTypeChanged.4"> New Customer Type</entry>
+    <entry key="yukon.common.events.stars.account.contactInfo.customerTypeChanged">Customer type {3} changed to {4} for account {2} by {1}.</entry>
+    <entry key="yukon.common.events.stars.account.contactInfo.customerTypeChanged.3">Old Customer Type</entry>
+    <entry key="yukon.common.events.stars.account.contactInfo.customerTypeChanged.4">New Customer Type</entry>
     
-    <entry key="yukon.common.events.stars.account.contactInfo.companyNameChanged">The user {1} changed the company name of the account {2} from {3} to {4}.</entry>
+    <entry key="yukon.common.events.stars.account.contactInfo.companyNameChanged">Company name {3} changed to {4} for account {2} by {1}.</entry>
     <entry key="yukon.common.events.stars.account.contactInfo.companyNameChanged.3">Old Company Name</entry>
     <entry key="yukon.common.events.stars.account.contactInfo.companyNameChanged.4">New Company Name</entry>
 
     <!-- Contact Info Service Level -->
-    <entry key="yukon.common.events.stars.account.contactInfo.contactAdded">The user {1} added the contact {3} to the account {2}.</entry>
-    <entry key="yukon.common.events.stars.account.contactInfo.contactUpdated">The user {1} updated the contact {3} on the account {2}.</entry>
-    <entry key="yukon.common.events.stars.account.contactInfo.contactRemoved">The user {1} removed the contact {3} on the account {2}.</entry>
+    <entry key="yukon.common.events.stars.account.contactInfo.contactAdded">Contact {3} added to account {2} by {1}.</entry>
+    <entry key="yukon.common.events.stars.account.contactInfo.contactUpdated">Contact {3} updated on account {2} by {1}.</entry>
+    <entry key="yukon.common.events.stars.account.contactInfo.contactRemoved">Contact {3} removed from account {2} by {1}.</entry>
 
     <!-- Account Enrollment -->
-    <entry key="yukon.common.events.stars.account.enrollment.enrollmentModificationAttempted">The user {1} is attempting to modify enrollments for the account {2}.  They are attempting this through source: {3}.</entry>
-    <entry key="yukon.common.events.stars.account.enrollment.enrollmentAttempted">The user {1} is attempting to enroll the device {3} into {4} [{5}] for the account {2}.  They are attempting this through source: {6}.</entry>
-    <entry key="yukon.common.events.stars.account.enrollment.unenrollmentAttempted">The user {1} is attempting to unenroll the device {3} from {4} [{5}] for the account {2}.  They are attempting this through source: {6}.</entry>
+    <entry key="yukon.common.events.stars.account.enrollment.enrollmentModificationAttempted">User {1} attempted to change enrollments for account {2}. Source: {3}</entry>
+    <entry key="yukon.common.events.stars.account.enrollment.enrollmentAttempted">User {1} attempted to enroll device {3} in {4} [{5}] for account {2}. Source: {6}</entry>
+    <entry key="yukon.common.events.stars.account.enrollment.unenrollmentAttempted">User {1} attempted to unenroll device {3} from {4} [{5}] for account {2}. Source: {6}</entry>
 
     <!-- Account Enrollment Service Level -->
-    <entry key="yukon.common.events.stars.account.enrollment.deviceEnrolled">The device {3} was enrolled in the program {4} and the load group {5} for the account {2} by {1}</entry>
-    <entry key="yukon.common.events.stars.account.enrollment.deviceUnenrolled">The device {3} was unenrolled from the program {4} and the load group {5} for the account {2} by {1}</entry>
+    <entry key="yukon.common.events.stars.account.enrollment.deviceEnrolled">Device {3} enrolled in program {4} [{5}] for account {2} by {1}.</entry>
+    <entry key="yukon.common.events.stars.account.enrollment.deviceUnenrolled">Device {3} unenrolled from program {4} [{5}] for account {2} by {1}.</entry>
 
     <!-- Opt Outs -->
-    <entry key="yukon.common.events.stars.account.optOut.optOutLimitReductionAttempted">The user {1} is attempting to reduce the opt out limit for the device {3} on the account {2}.  They are attempting this through source: {4}.</entry>
-    <entry key="yukon.common.events.stars.account.optOut.optOutLimitIncreaseAttempted">The user {1} is attempting to increase the opt out limit for the device {3} on the account {2}.  They are attempting this through source: {4}.</entry>
-    <entry key="yukon.common.events.stars.account.optOut.optOutLimitResetAttempted">The user {1} is attempting to reset the opt out limit for the device {3} on the account {2}.  They are attempting this through source: {4}.</entry>
-    <entry key="yukon.common.events.stars.account.optOut.optOutResendAttempted">The user {1} is attempting to resend an opt out command for the device {3} on the account {2}.  They are attempting this through source: {4}.</entry>
-    <entry key="yukon.common.events.stars.account.optOut.optOutAttempted">The user {1} is attempting to opt out the device {3} on the account {2} for the {11}.  They are attempting this through source: {4}.</entry>
+    <entry key="yukon.common.events.stars.account.optOut.optOutLimitReductionAttempted">User {1} attempted to decrease the opt out limit for device {3} on account {2}. Source: {4}</entry>
+    <entry key="yukon.common.events.stars.account.optOut.optOutLimitIncreaseAttempted">User {1} attempted to increase the opt out limit for device {3} on account {2}. Source: {4}</entry>
+    <entry key="yukon.common.events.stars.account.optOut.optOutLimitResetAttempted">User {1} attempted to reset the opt out limit for device {3} on account {2}. Source: {4}</entry>
+    <entry key="yukon.common.events.stars.account.optOut.optOutResendAttempted">User {1} attempted to resend an opt out command for device {3} on account {2}. Source: {4}</entry>
+    <entry key="yukon.common.events.stars.account.optOut.optOutAttempted">User {1} attempted to opt out device {3} on account {2} starting at {11}. Source: {4}</entry>
     <entry key="yukon.common.events.stars.account.optOut.optOutAttempted.11">Opt Out Start Date</entry>
-    <entry key="yukon.common.events.stars.account.optOut.optOutCancelAttempted">The user {1} is attempting to cancel an opt out for the device {3} on the account {2} for the {11} through the {12}.  They are attempting this through source: {4}.</entry>
+    <entry key="yukon.common.events.stars.account.optOut.optOutCancelAttempted">User {1} attempted to cancel an opt out for device {3} on account {2} for {11} through {12}. Source: {4}</entry>
     <entry key="yukon.common.events.stars.account.optOut.optOutCancelAttempted.11">Opt Out Start Date</entry>
     <entry key="yukon.common.events.stars.account.optOut.optOutCancelAttempted.12">Opt Out Stop Date</entry>
 
-    <entry key="yukon.common.events.stars.account.optOut.optOutLimitIncreased">{7} opt outs were added to the {2} account for the device {3} by {1}</entry>
-    <entry key="yukon.common.events.stars.account.optOut.optOutLimitIncreased.7">Number of Added Opt Outs</entry>
-    <entry key="yukon.common.events.stars.account.optOut.optOutLimitReset">The opt out limit for the device {3} on the account {2} has been reset by {1}</entry>
-    <entry key="yukon.common.events.stars.account.optOut.optOutResent">The opt out command was resent for the device {3} on the account {2} has been reset by {1}</entry>
-    <entry key="yukon.common.events.stars.account.optOut.deviceOptedOut">The device {3} on the account {2} was scheduled to be opted out from {11} to {12} by {1}</entry>
+
+    <entry key="yukon.common.events.stars.account.optOut.optOutLimitIncreased">{7} opt outs added to device {3} on account {2} by {1}.</entry>
+    <entry key="yukon.common.events.stars.account.optOut.optOutLimitIncreased.7">Opt Outs Added</entry>
+    <entry key="yukon.common.events.stars.account.optOut.optOutLimitReset">Opt out limit reset for device {3} on account {2} by {1}.</entry>
+    <entry key="yukon.common.events.stars.account.optOut.optOutResent">Opt out command resent for device {3} on account {2} by {1}.</entry>
+    <entry key="yukon.common.events.stars.account.optOut.deviceOptedOut">Device {3} opted out on account {2} from {11} to {12} by {1}.</entry>
     <entry key="yukon.common.events.stars.account.optOut.deviceOptedOut.11">Opt Out Start Date</entry>
     <entry key="yukon.common.events.stars.account.optOut.deviceOptedOut.12">Opt Out Stop Date</entry>
-    <entry key="yukon.common.events.stars.account.optOut.optOutCanceled">An opt out was canceled for the device {3} on the account {2} by {1}</entry>
-    
+    <entry key="yukon.common.events.stars.account.optOut.optOutCanceled">Opt out cancelled for device {3} on account {2} by {1}.</entry>
+    <entry key="yukon.common.events.stars.account.optOut.scheduledOptOutCancelAttempted">User {1} attempted to cancel scheduled opt out for device {3} on account {2}. Source: {4}</entry>
+    <entry key="yukon.common.events.stars.account.optOut.activeOptOutCancelAttempted">User {1} attempted to cancel active opt out for device {3} on account {2}. Source (4)</entry>
+        
     <!-- Account Appliances -->
-    <entry key="yukon.common.events.stars.account.appliance.applianceAdditionAttempted">The user {1} is attempting to add the appliance {3} [{5}] to the device {4} on the account {2}.</entry>
-    <entry key="yukon.common.events.stars.account.appliance.applianceUpdateAttempted">The user {1} is attempting to update the appliance {3} [{5}] on the device {4} for the account {2}.</entry>
-    <entry key="yukon.common.events.stars.account.appliance.applianceDeletionAttempted">The user {1} is attempting to delete the appliance {3} [{5}] on the device {4} for the account {2}.</entry>
+    <entry key="yukon.common.events.stars.account.appliance.applianceAdditionAttempted">User {1} attempted to add the appliance {3} [{5}] to device {4} on account {2}.</entry>
+    <entry key="yukon.common.events.stars.account.appliance.applianceUpdateAttempted">User {1} attempted to update the appliance {3} [{5}] for device {4} on account {2}.</entry>
+    <entry key="yukon.common.events.stars.account.appliance.applianceDeletionAttempted">User {1} attempted to delete the appliance {3} [{5}] from device {4} on account {2}.</entry>
     
-    <entry key="yukon.common.events.stars.account.appliance.applianceAdded">The appliance {3} with the program {5} was added to the account {2} on device {4} by {1}</entry>
-    <entry key="yukon.common.events.stars.account.appliance.applianceUpdated">The appliance {3} with the program {5} for device {4} and account {2} was updated by {1}</entry>
-    <entry key="yukon.common.events.stars.account.appliance.applianceDeleted">The appliance {3} with the program {5} for device {4} and account {2} was removed by {1}</entry>
+    <entry key="yukon.common.events.stars.account.appliance.applianceAdded">Appliance {3} [{5}] was added to device {4} on account {2} by {1}.</entry>
+    <entry key="yukon.common.events.stars.account.appliance.applianceUpdated">Appliance {3} [{5}] was updated on device {4} by {1}.</entry>
+    <entry key="yukon.common.events.stars.account.appliance.applianceDeleted">Appliance {3} [{5}] was deleted from device {4} on account {2} by {1}.</entry>
 
     <!-- Work Order -->
-    <entry key="yukon.common.events.stars.account.workOrder.workOrderCreationAttempted">The user {1} is attempting to create the work order {3} which will be on the account {2}.</entry>
-    <entry key="yukon.common.events.stars.account.workOrder.workOrderUpdateAttempted">The user {1} is attempting to update the work order {3} which is currently on the account {2}.</entry>
-    <entry key="yukon.common.events.stars.account.workOrder.workOrderDeletionAttempted">The user {1} is attempting to delete the work order {3} which is currently on the account {2}.</entry>
+    <entry key="yukon.common.events.stars.account.workOrder.workOrderCreationAttempted">User {1} attempted to create work order {3} on account {2}.</entry>
+    <entry key="yukon.common.events.stars.account.workOrder.workOrderUpdateAttempted">User {1} attempted to update work order {3} on account {2}.</entry>
+    <entry key="yukon.common.events.stars.account.workOrder.workOrderDeletionAttempted">User {1} attempted to delete work order {3} on account {2}.</entry>
 
-    <entry key="yukon.common.events.stars.account.workOrder.workOrderCreated">The work order {3} was created on the the account {2} by {1}</entry>
-    <entry key="yukon.common.events.stars.account.workOrder.workOrderUpdated">The work order {3}, which is on the account {2}, was updated by {1}</entry>
-    <entry key="yukon.common.events.stars.account.workOrder.workOrderDeleted">The work order {3} was deleted from the account {2} by {1}</entry>
+    <entry key="yukon.common.events.stars.account.workOrder.workOrderCreated">Work order {3} was added to account {2} by {1}.</entry>
+    <entry key="yukon.common.events.stars.account.workOrder.workOrderUpdated">Work order {3} was updated on account {2} by {1}.</entry>
+    <entry key="yukon.common.events.stars.account.workOrder.workOrderDeleted">Work order {3} was deleted from account {2} by {1}.</entry>
 
     <!-- Thermostat Schedule -->
-    <entry key="yukon.common.events.stars.account.thermostat.thermostatScheduleSavingAttempted">The user {1} is attempting to save the schedule {4} to the device {3} for the account {2}.  They are attempting this through source: {5}.</entry>
-    <entry key="yukon.common.events.stars.account.thermostat.thermostatScheduleDeleteAttempted">The user {1} is attempting to delete the schedule {3} for the account {2}.  They are attempting this through source: {4}.</entry>
+    <entry key="yukon.common.events.stars.account.thermostat.thermostatScheduleSendAttempted">User {1} attempted to send the schedule {3} to thermostat {2}. Source: {4}</entry>
+    <entry key="yukon.common.events.stars.account.thermostat.thermostatScheduleSendDefaultAttempted">User {1} attempted to send the default schedule to thermostat {2}. Source: {3}</entry>
+            
+    <entry key="yukon.common.events.stars.account.thermostat.thermostatScheduleSavingAttempted">User {1} attempted to save schedule {4} to thermostat {3} for account {2}. Source: {5}</entry>
+    <entry key="yukon.common.events.stars.account.thermostat.thermostatScheduleDeleteAttempted">User {1} attempted to delete schedule {3} from account {2}. Source: {4}</entry>
 
-    <entry key="yukon.common.events.stars.account.thermostat.thermostatRunProgramAttempted">The user {1} is attempting to revert the thermostat {2}.  They are attempting this through source: {3}.</entry>
-    <entry key="yukon.common.events.stars.account.thermostat.thermostatManualSetAttempted">The user {1} is attempting to manual set the thermostat of the device {3} for the account {2}.  They are attempting this through source: {6}.</entry>
-    <entry key="yukon.common.events.stars.account.thermostat.thermostatLabelChangeAttempted">The user {1} is attempting to change the thermostat label from {3} to {4} through the for the device {2}. Source: {5}.</entry>
+    <entry key="yukon.common.events.stars.account.thermostat.thermostatRunProgramAttempted">User {1} attempted to run program for thermostat {2}. Source: {3}</entry>
+    <entry key="yukon.common.events.stars.account.thermostat.thermostatManualSetAttempted">User {1} attempted manual set of thermostat {3} on account {2}. Heat {7}, Cold {8}, Mode {4}, Hold {5}. Source: {6}</entry>
+    <entry key="yukon.common.events.stars.account.thermostat.thermostatLabelChangeAttempted">User {1} attempted to change thermostat label from {3} to {4} for thermostat {2}. Source: {5}</entry>
     <entry key="yukon.common.events.stars.account.thermostat.thermostatLabelChangeAttempted.3">Old Thermostat Label</entry>
     <entry key="yukon.common.events.stars.account.thermostat.thermostatLabelChangeAttempted.4">New Thermostat Label</entry>
     
     <!-- Thermostat Schedule Service Level -->
-    <entry key="yukon.common.events.stars.account.thermostat.thermostatScheduleSaved">The schedule {2} has been saved on the account {1}.</entry>
-    <entry key="yukon.common.events.stars.account.thermostat.thermostatScheduleDeleted">The schedule {2} has been deleted on the account {1}.</entry>
-    <entry key="yukon.common.events.stars.account.thermostat.thermostatManuallySet">The user {1} has manually set the device {2}.</entry>
-    <entry key="yukon.common.events.stars.account.thermostat.thermostatLabelChanged">The user {1} has changed the label of the device {3} from {4} to {5}, which is on the account {2}.</entry>
+    <entry key="yukon.common.events.stars.account.thermostat.thermostatScheduleSaved">Schedule {2} saved for account {1}.</entry>
+    <entry key="yukon.common.events.stars.account.thermostat.thermostatScheduleDeleted">Schedule {2} deleted from account {1}.</entry>
+    <entry key="yukon.common.events.stars.account.thermostat.thermostatManuallySet">Device {2} manually set by {1}.</entry>
+    <entry key="yukon.common.events.stars.account.thermostat.thermostatLabelChanged">Label of device {3} changed from {4} to {5} on account {2} by {1}.</entry>
     <entry key="yukon.common.events.stars.account.thermostat.thermostatLabelChanged.4">Old Thermostat Label</entry>
     <entry key="yukon.common.events.stars.account.thermostat.thermostatLabelChanged.5">New Thermostat Label</entry>
-    <entry key="yukon.common.events.stars.account.thermostat.thermostatScheduleNameChanged">The user {1} changed the schedule name from {2} to {3}</entry>
+    <entry key="yukon.common.events.stars.account.thermostat.thermostatScheduleNameChanged">Schedule name changed from {2} to {3} by {1}.</entry>
     <entry key="yukon.common.events.stars.account.thermostat.thermostatScheduleNameChanged.2">Old Schedule Name</entry>
     <entry key="yukon.common.events.stars.account.thermostat.thermostatScheduleNameChanged.3">New Schedule Name</entry>
     
     <!-- AMR -->
-    <entry key="yukon.common.events.amr.meterReading.readNowPushedForReadingsWidget">Read Now button pressed for deviceId={7} by {1}</entry>
+    <entry key="yukon.common.events.amr.meterReading.readNowPushedForReadingsWidget">Read Now button pressed for deviceId={7} by {1}.</entry>
     
-    <entry key="yukon.common.events.system.rfn.createdNewMeterAutomatically">New meter created from {2} for {1} with meter number of {3} based on archive request: {7}</entry>
-    <entry key="yukon.common.events.system.rfn.createdNewMeterAutomatically.1">RFN ID</entry>
-    <entry key="yukon.common.events.system.rfn.createdNewMeterAutomatically.2">Template</entry>
-    <entry key="yukon.common.events.system.rfn.createdNewMeterAutomatically.3">Meter Number</entry>
+    <entry key="yukon.common.events.amr.schedules.scheduleDeleted">User {1} deleted schedule {2}.</entry>
     
-    <entry key="yukon.common.events.system.rfn.receivedDataForUnkownMeterTemplate">Unable to create meter because template does not exist: {1}</entry>
-    <entry key="yukon.common.events.system.rfn.receivedDataForUnkownMeterTemplate.1">Template Name</entry>
+    <entry key="yukon.common.events.system.rfn.createdNewDeviceAutomatically">New meter created from {2} for {1} with meter number of {3} based on archive request: {7}</entry>
+    <entry key="yukon.common.events.system.rfn.createdNewDeviceAutomatically.1">RFN ID</entry>
+    <entry key="yukon.common.events.system.rfn.createdNewDeviceAutomatically.2">Template</entry>
+    <entry key="yukon.common.events.system.rfn.createdNewDeviceAutomatically.3">Meter Number</entry>
     
-    <entry key="yukon.common.events.system.rfn.unableToCreateMeterFromTemplate">Unable to create meter for template {1}: manufacturer={2}, model={3}, serial={4}</entry>
-    <entry key="yukon.common.events.system.rfn.unableToCreateMeterFromTemplate.1">Template Name</entry>
-    <entry key="yukon.common.events.system.rfn.unableToCreateMeterFromTemplate.2">Manufacturer</entry>
-    <entry key="yukon.common.events.system.rfn.unableToCreateMeterFromTemplate.3">Model</entry>
-    <entry key="yukon.common.events.system.rfn.unableToCreateMeterFromTemplate.4">Serial Number</entry>
+    <entry key="yukon.common.events.system.rfn.receivedDataForUnkownDeviceTemplate">Unable to create meter because template {1} does not exist.</entry>
+    <entry key="yukon.common.events.system.rfn.receivedDataForUnkownDeviceTemplate.1">Template Name</entry>
     
+    <entry key="yukon.common.events.system.rfn.unableToCreateDeviceFromTemplate">Unable to create meter for template {1}: manufacturer={2}, model={3}, serial={4}</entry>
+    <entry key="yukon.common.events.system.rfn.unableToCreateDeviceFromTemplate.1">Template Name</entry>
+    <entry key="yukon.common.events.system.rfn.unableToCreateDeviceFromTemplate.2">Manufacturer</entry>
+    <entry key="yukon.common.events.system.rfn.unableToCreateDeviceFromTemplate.3">Model</entry>
+    <entry key="yukon.common.events.system.rfn.unableToCreateDeviceFromTemplate.4">Serial Number</entry>
+    
+	<!-- CommandSchedule -->
+    <entry key="yukon.common.events.system.commandSchedule.scheduleCreated">ScheduleId {7} created by {1}.</entry>
+    <entry key="yukon.common.events.system.commandSchedule.scheduleUpdated">ScheduleId {7} updated by {1}.</entry>
+    <entry key="yukon.common.events.system.commandSchedule.scheduleDeleted">ScheduleId {7} deleted by {1}.</entry>
+	<entry key="yukon.common.events.system.commandSchedule.scheduleEnabled">ScheduleId {7} enabled by {1}.</entry>
+	<entry key="yukon.common.events.system.commandSchedule.scheduleDisabled">ScheduleId {7} disabled by {1}.</entry>
+	<entry key="yukon.common.events.system.commandSchedule.allSchedulesDisabled">All schedules disabled by {1}.</entry>
+
 	<!-- Database Migration Tool -->
-    <entry key="yukon.common.events.system.databaseMigration.startingExport">Database migration export file, {2}, was generated by {1}</entry>
-    <entry key="yukon.common.events.system.databaseMigration.startingValidation">Database migration validation was done on {2}, by user {1}</entry>
-    <entry key="yukon.common.events.system.databaseMigration.startingImport">Database migration import was done on {2}, by user {1}</entry>
+    <entry key="yukon.common.events.system.databaseMigration.startingExport">Database migration export file {2} generated by {1}.</entry>
+    <entry key="yukon.common.events.system.databaseMigration.startingValidation">Database migration validation of file {2} started by {1}.</entry>
+    <entry key="yukon.common.events.system.databaseMigration.startingImport">Database migration import of file {2} started by {1}.</entry>
 
 <!-- Hardware -->
     <!-- Hardware -->
-    <entry key="yukon.common.events.hardware.hardwareMeterCreationAttempted">The user {1} is attempting to create the meter {2}</entry>
-    <entry key="yukon.common.events.hardware.hardwareChangeOutForMeterAttempted">The user {1} is attempting to change out {2} for the meter {3}.</entry>
-    <entry key="yukon.common.events.hardware.hardwareChangeOutAttempted">The user {1} is attempting to change out {2} for {3}.</entry>
-    <entry key="yukon.common.events.hardware.hardwareCreationAttempted">The user {1} is attempting to create the device {3} for the account {2}.  They are attempting this through source: {4}.</entry>
-    <entry key="yukon.common.events.hardware.twoWayHardwareCreationAttempted">The user {1} is attempting to create the two way device {2}.  They are attempting this through source: {3}.</entry>
-    <entry key="yukon.common.events.hardware.assigningHardwareAttempted">The user {1} is attempting to assign the hardware {3} to the account {2}.</entry>
-    <entry key="yukon.common.events.hardware.hardwareAdditionAttempted">The user {1} is attempting to add the device {3} to the account {2}.</entry>
-    <entry key="yukon.common.events.hardware.hardwareDeletionAttempted">The user {1} is attempting to delete the device {2}.  They are attempting this through source: {3}.</entry>
-    <entry key="yukon.common.events.hardware.hardwareRemovalAttempted">The user {1} is attempting to delete the device {2} from account number {3}.  They are attempting this through source: {4}.</entry>
-    <entry key="yukon.common.events.hardware.hardwareUpdateAttempted">The user {1} is attempting to delete the device {3} from the account {2}.  They are attempting this through source: {4}.</entry>
+    <entry key="yukon.common.events.hardware.hardwareMeterCreationAttempted">User {1} attempted to create meter {2}.</entry>
+    <entry key="yukon.common.events.hardware.hardwareChangeOutForMeterAttempted">User {1} attempted to change out meter {2} for {3}.</entry>
+    <entry key="yukon.common.events.hardware.hardwareChangeOutAttempted">User {1} attempted to change out serial number {2} for {3}.</entry>
+    <entry key="yukon.common.events.hardware.hardwareCreationAttempted">User {1} attempted to create device {3} for account {2}. Source: {4}</entry>
+    <entry key="yukon.common.events.hardware.twoWayHardwareCreationAttempted">User {1} attempted to create two way device {2}. Source: {3}</entry>
+    <entry key="yukon.common.events.hardware.assigningHardwareAttempted">User {1} attempted to assign hardware {3} to account {2}. Source: {4}</entry>
+    <entry key="yukon.common.events.hardware.hardwareAdditionAttempted">User {1} attempted to add device {3} to account {2}. Source: {4}</entry>
+    <entry key="yukon.common.events.hardware.hardwareDeletionAttempted">User {1} attempted to delete device {2}. Source: {3}</entry>
+    <entry key="yukon.common.events.hardware.hardwareRemovalAttempted">User {1} attempted to remove device {2} from account {3}. Source: {4}.</entry>
+    <entry key="yukon.common.events.hardware.hardwareUpdateAttempted">User {1} attempted to delete device {3} from account {2}. Source: {4}</entry>
     
     <!-- Hardware Service Level -->
-    <entry key="yukon.common.events.hardware.hardwareCreated">The user {1} has created the device {2}.</entry>
-    <entry key="yukon.common.events.hardware.hardwareAdded">The user {1} has added the device {2} to the account {3}.</entry>
-    <entry key="yukon.common.events.hardware.hardwareUpdated">The user {1} has updated the device {2}.</entry>
-    <entry key="yukon.common.events.hardware.hardwareRemoved">The user {1} has removed the device {2} from the account {3}.</entry>
-    <entry key="yukon.common.events.hardware.hardwareDeleted">The user {1} has deleted the device {2}.</entry>
-    <entry key="yukon.common.events.hardware.serialNumberChanged">The user {1} has changed the serial number {2} to {3}.</entry>
+    <entry key="yukon.common.events.hardware.hardwareCreated">Device {2} created by {1}.</entry>
+    <entry key="yukon.common.events.hardware.hardwareAdded">Device {2} added to account {3} by {1}.</entry>
+    <entry key="yukon.common.events.hardware.hardwareUpdated">Device {2} updated by {1}.</entry>
+    <entry key="yukon.common.events.hardware.hardwareRemoved">Device {2} removed from account {3} by {1}.</entry>
+    <entry key="yukon.common.events.hardware.hardwareDeleted">Device {2} deleted by {1}.</entry>
+    <entry key="yukon.common.events.hardware.serialNumberChanged">Serial number {2} changed to {3} by {1}.</entry>
     <entry key="yukon.common.events.hardware.serialNumberChanged.2">Old Serial Number</entry>
     <entry key="yukon.common.events.hardware.serialNumberChanged.3">New Serial Number</entry>
 
     <!-- Hardware Configuration -->
-    <entry key="yukon.common.events.hardware.config.hardwareConfigAttempted">The user {1} is attempting to configure the device {2} on the account {3}.</entry>
-    <entry key="yukon.common.events.hardware.config.hardwareDisableAttempted">The user {1} is attempting to disable the device {2} on the account {3}.</entry>
-    <entry key="yukon.common.events.hardware.config.hardwareEnableAttempted">The user {1} is attempting to enable the device {2} on the account {3}.</entry>
+    <entry key="yukon.common.events.hardware.config.hardwareConfigAttempted">User {1} attempted to configure device {2} on account {3}. Source: {4}</entry>
+    <entry key="yukon.common.events.hardware.config.hardwareDisableAttempted">User {1} attempted to disable device {2} on account {3}. Source: {4}</entry>
+    <entry key="yukon.common.events.hardware.config.hardwareEnableAttempted">User {1} attempted to enable device {2} on account {3}. Source: {4}</entry>
     
     <!-- Hardware Configuration Service Level -->
-    <entry key="yukon.common.events.hardware.config.hardwareConfigUpdated">The user {1} has updated the configuration for the device {2} on the account {3}.</entry>
-    <entry key="yukon.common.events.hardware.config.hardwareDisabled">The user {1} has disabled the device {2} on the account {3}.</entry>
-    <entry key="yukon.common.events.hardware.config.hardwareEnabled">The user {1} has enabled the device {2} on the account {3}.</entry>
+    <entry key="yukon.common.events.hardware.config.hardwareConfigUpdated">Configuration updated for device {2} on account {3} by {1}.</entry>
+    <entry key="yukon.common.events.hardware.config.hardwareDisabled">Device {2} disabled on account {3} by {1}.</entry>
+    <entry key="yukon.common.events.hardware.config.hardwareEnabled">Device {2} enabled on account {3} by {1}.</entry>
 
 <!-- Demand Response -->
     <!-- Scenario -->
-    <entry key="yukon.common.events.dr.scenario.threeTierScenarioStarted">Scenario {2} was started by {1}</entry>
-    <entry key="yukon.common.events.dr.scenario.threeTierScenarioStopped">Scenario {2} was stopped by {1}</entry>
-    <entry key="yukon.common.events.dr.controlArea.threeTierControlAreaStarted">Control area {2} was started by {1}</entry>
-    <entry key="yukon.common.events.dr.controlArea.threeTierControlAreaStopped">Control area {2} was stopped by {1}</entry>
-    <entry key="yukon.common.events.dr.controlArea.threeTierControlAreaTriggersChanged">Control area {2} had its triggers changed by user {1} via 3-Tier</entry>
+    <entry key="yukon.common.events.dr.scenario.threeTierScenarioStarted">Scenario {2} started by {1}.</entry>
+    <entry key="yukon.common.events.dr.scenario.threeTierScenarioStopped">Scenario {2} stopped by {1}.</entry>
+    <entry key="yukon.common.events.dr.controlArea.threeTierControlAreaStarted">Control area {2} started by {1}.</entry>
+    <entry key="yukon.common.events.dr.controlArea.threeTierControlAreaStopped">Control area {2} stopped by {1}.</entry>
+    <entry key="yukon.common.events.dr.controlArea.threeTierControlAreaTriggersChanged">Control area {2} had its triggers changed by {1} via 3-Tier.</entry>
     <entry key="yukon.common.events.dr.controlArea.threeTierControlAreaTriggersChanged.7">First Threshold</entry>
     <entry key="yukon.common.events.dr.controlArea.threeTierControlAreaTriggersChanged.8">First Offset</entry>
     <entry key="yukon.common.events.dr.controlArea.threeTierControlAreaTriggersChanged.9">Second Threshold</entry>
     <entry key="yukon.common.events.dr.controlArea.threeTierControlAreaTriggersChanged.10">Second Offset</entry>
     
-    <entry key="yukon.common.events.dr.controlArea.threeTierControlAreaTimeWindowChanged">Control area {2} had its time window changed to {7} - {8} (in seconds from midnight) by user {1} via 3-Tier</entry>
+    <entry key="yukon.common.events.dr.controlArea.threeTierControlAreaTimeWindowChanged">Control area {2} had its time window changed to {7} - {8} (in seconds from midnight) by {1} via 3-Tier.</entry>
     <entry key="yukon.common.events.dr.controlArea.threeTierControlAreaTimeWindowChanged.7">Control Window Start </entry>
     <entry key="yukon.common.events.dr.controlArea.threeTierControlAreaTimeWindowChanged.8">Control Window End</entry>
 
-    <entry key="yukon.common.events.dr.controlArea.threeTierControlAreaEnabled">Control area {2} was enabled by user {1} via 3-Tier</entry>
-    <entry key="yukon.common.events.dr.controlArea.threeTierControlAreaDisabled">Control area {2} was disabled by user {1} via 3-Tier</entry>
-    <entry key="yukon.common.events.dr.controlArea.threeTierControlAreaPeakReset">Control area {2} had its triggers peak(s) reset by user {1} via 3-Tier</entry>
-    <entry key="yukon.common.events.dr.controlArea.controlAreaStarted">Control area {1} was started at {11}</entry>
+    <entry key="yukon.common.events.dr.controlArea.threeTierControlAreaEnabled">Control area {2} enabled by {1} via 3-Tier.</entry>
+    <entry key="yukon.common.events.dr.controlArea.threeTierControlAreaDisabled">Control area {2} disabled by {1} via 3-Tier.</entry>
+    <entry key="yukon.common.events.dr.controlArea.threeTierControlAreaPeakReset">Control area {2} had its triggers peak(s) reset by {1} via 3-Tier.</entry>
+    <entry key="yukon.common.events.dr.controlArea.controlAreaStarted">Control area {1} started at {11}.</entry>
     <entry key="yukon.common.events.dr.controlArea.controlAreaStarted.11">Control Area Start Date</entry>
-    <entry key="yukon.common.events.dr.controlArea.controlAreaStopped">Control area {1} was stopped at {11}</entry>
+    <entry key="yukon.common.events.dr.controlArea.controlAreaStopped">Control area {1} stopped at {11}.</entry>
     <entry key="yukon.common.events.dr.controlArea.controlAreaStopped.11">Control Area Stop Date</entry>
-    <entry key="yukon.common.events.dr.controlArea.controlAreaTriggersChanged">Control area {1} had its triggers changed</entry>
+    <entry key="yukon.common.events.dr.controlArea.controlAreaTriggersChanged">Control area {1} had its triggers changed.</entry>
     <entry key="yukon.common.events.dr.controlArea.controlAreaTriggersChanged.7">First Threshold</entry>
     <entry key="yukon.common.events.dr.controlArea.controlAreaTriggersChanged.8">First Offset</entry>
     <entry key="yukon.common.events.dr.controlArea.controlAreaTriggersChanged.9">Second Threshold</entry>
     <entry key="yukon.common.events.dr.controlArea.controlAreaTriggersChanged.10">Second Offset</entry>
-    <entry key="yukon.common.events.dr.controlArea.controlAreaTimeWindowChanged">Control area {1} had its time window changed to {7} - {8} (in seconds from midnight)</entry>
+    <entry key="yukon.common.events.dr.controlArea.controlAreaTimeWindowChanged">Control area {1} had its time window changed to {7} - {8} (in seconds from midnight).</entry>
     <entry key="yukon.common.events.dr.controlArea.controlAreaTimeWindowChanged.7">Control Window Start</entry>
     <entry key="yukon.common.events.dr.controlArea.controlAreaTimeWindowChanged.8">Control Window End</entry>
 
-    <entry key="yukon.common.events.dr.controlArea.controlAreaEnabled">Control area {1} was enabled</entry>
-    <entry key="yukon.common.events.dr.controlArea.controlAreaDisabled">Control area {1} was disabled</entry>
-    <entry key="yukon.common.events.dr.controlArea.controlAreaPeakReset">Control area {1} had its triggers peak(s) reset</entry>
+    <entry key="yukon.common.events.dr.controlArea.controlAreaEnabled">Control area {1} enabled.</entry>
+    <entry key="yukon.common.events.dr.controlArea.controlAreaDisabled">Control area {1} disabled.</entry>
+    <entry key="yukon.common.events.dr.controlArea.controlAreaPeakReset">Control area {1} had its triggers peak(s) reset.</entry>
 
     <!-- Program -->
-    <entry key="yukon.common.events.dr.program.threeTierProgramScheduled">Program {2} start scheduled at {11} by user {1} via 3-Tier</entry>
+    <entry key="yukon.common.events.dr.program.threeTierProgramScheduled">Program {2} start scheduled at {11} by {1} via 3-Tier.</entry>
     <entry key="yukon.common.events.dr.program.threeTierProgramScheduled.11">Scheduled Start Date</entry>
     
-    <entry key="yukon.common.events.dr.program.threeTierProgramStopped">Program {2} was stopped at {11} by user {1} via 3-Tier</entry>
+    <entry key="yukon.common.events.dr.program.threeTierProgramStopped">Program {2} stopped at {11} by {1} via 3-Tier.</entry>
     <entry key="yukon.common.events.dr.program.threeTierProgramStopped.11">Program Stop Date</entry>
     
-    <entry key="yukon.common.events.dr.program.threeTierProgramStopScheduled">Program {2} was scheduled to stop at {11} by user {1} via 3-Tier</entry>
+    <entry key="yukon.common.events.dr.program.threeTierProgramStopScheduled">Program {2} scheduled to stop at {11} by {1} via 3-Tier.</entry>
     <entry key="yukon.common.events.dr.program.threeTierProgramStopScheduled.11">Scheduled Program Stop Date</entry>
     
-    <entry key="yukon.common.events.dr.program.threeTierProgramChangeGear">Program {2} changed gears by user {1} via 3-Tier</entry>
-    <entry key="yukon.common.events.dr.program.threeTierProgramEnabled">Program {2} was enabled by user {1} via 3-Tier</entry>
-    <entry key="yukon.common.events.dr.program.threeTierProgramDisabled">Program {2} was disabled by user {1} via 3-Tier</entry>
+    <entry key="yukon.common.events.dr.program.threeTierProgramChangeGear">Program {2} changed gears by {1} via 3-Tier.</entry>
+    <entry key="yukon.common.events.dr.program.threeTierProgramEnabled">Program {2} was enabled by {1} via 3-Tier.</entry>
+    <entry key="yukon.common.events.dr.program.threeTierProgramDisabled">Program {2} was disabled by {1} via 3-Tier.</entry>
 
-    <entry key="yukon.common.events.dr.program.programScheduled">Program {1} start scheduled at {11} with gear {3}; stop scheduled {4}</entry>
+    <entry key="yukon.common.events.dr.program.programScheduled">Program {1} start scheduled at {11} with gear {3}; stop scheduled {4}.</entry>
     <entry key="yukon.common.events.dr.program.programScheduled.2">Override Constraints</entry>
     <entry key="yukon.common.events.dr.program.programScheduled.4">Stop Scheduled</entry>
     <entry key="yukon.common.events.dr.program.programScheduled.11">Scheduled Start Date</entry>
     <entry key="yukon.common.events.dr.program.programScheduled.12">Scheduled Stop Date</entry>
 
-    <entry key="yukon.common.events.dr.program.programStopped">Program {1} was stopped at {11}</entry>
+    <entry key="yukon.common.events.dr.program.programStopped">Program {1} stopped at {11}.</entry>
     <entry key="yukon.common.events.dr.program.programStopped.11">Program Stop Date</entry>
     
-    <entry key="yukon.common.events.dr.program.programStopScheduled">Program {1} was scheduled to stop at {11}</entry>
+    <entry key="yukon.common.events.dr.program.programStopScheduled">Program {1} scheduled to stop at {11}.</entry>
     <entry key="yukon.common.events.dr.program.programStopScheduled.11">Scheduled Program Stop Date</entry>
     
-    <entry key="yukon.common.events.dr.program.programChangeGear">Program {1} changed gears to {2}</entry>
-    <entry key="yukon.common.events.dr.program.programEnabled">Program {1} was enabled</entry>
-    <entry key="yukon.common.events.dr.program.programDisabled">Program {1} was disabled</entry>
+    <entry key="yukon.common.events.dr.program.programChangeGear">Program {1} changed gears to {2}.</entry>
+    <entry key="yukon.common.events.dr.program.programEnabled">Program {1} enabled.</entry>
+    <entry key="yukon.common.events.dr.program.programDisabled">Program {1} disabled.</entry>
 
     <!-- Load Group -->
-    <entry key="yukon.common.events.dr.loadGroup.threeTierLoadGroupShed">Load group {2} was shed for {7} seconds by user {1} via 3-Tier</entry>
-    <entry key="yukon.common.events.dr.loadGroup.threeTierLoadGroupRestore">Load group {2} was restored by user {1} via 3-Tier</entry>
-    <entry key="yukon.common.events.dr.loadGroup.threeTierLoadGroupEnabled">Load group {2} was enabled by user {1} via 3-Tier</entry>
-    <entry key="yukon.common.events.dr.loadGroup.threeTierLoadGroupDisabled">Load group {2} was disabled by user {1} via 3-Tier</entry>
+    <entry key="yukon.common.events.dr.loadGroup.threeTierLoadGroupShed">Load group {2} shed for {7} seconds by {1} via 3-Tier.</entry>
+    <entry key="yukon.common.events.dr.loadGroup.threeTierLoadGroupRestore">Load group {2} restored by {1} via 3-Tier.</entry>
+    <entry key="yukon.common.events.dr.loadGroup.threeTierLoadGroupEnabled">Load group {2} enabled by {1} via 3-Tier.</entry>
+    <entry key="yukon.common.events.dr.loadGroup.threeTierLoadGroupDisabled">Load group {2} disabled by {1} via 3-Tier.</entry>
 
-    <entry key="yukon.common.events.dr.loadGroup.loadGroupShed">Load group {1} was shed for {7} seconds</entry>
-    <entry key="yukon.common.events.dr.loadGroup.loadGroupRestore">Load group {1} was restored</entry>
-    <entry key="yukon.common.events.dr.loadGroup.loadGroupEnabled">Load group {1} was enabled</entry>
-    <entry key="yukon.common.events.dr.loadGroup.loadGroupDisabled">Load group {1} was disabled</entry>
+    <entry key="yukon.common.events.dr.loadGroup.loadGroupShed">Load group {1} shed for {7} seconds.</entry>
+    <entry key="yukon.common.events.dr.loadGroup.loadGroupRestore">Load group {1} restored.</entry>
+    <entry key="yukon.common.events.dr.loadGroup.loadGroupEnabled">Load group {1} enabled.</entry>
+    <entry key="yukon.common.events.dr.loadGroup.loadGroupDisabled">Load group {1} disabled.</entry>
 
     <!-- Inventory Configuration -->
-    <entry key="yukon.common.events.dr.inventoryConfig.taskCreated">User {1} created task {2}</entry>
-    <entry key="yukon.common.events.dr.inventoryConfig.taskDeleted">User {1} deleted task {2}</entry>
-    <entry key="yukon.common.events.dr.inventoryConfig.itemConfigSucceeded">Config command sent to {2}</entry>
-    <entry key="yukon.common.events.dr.inventoryConfig.itemConfigFailed">Config command to {2} failed (execution id {7})</entry>
+    <entry key="yukon.common.events.dr.inventoryConfig.taskCreated">Task {2} created by {1}.</entry>
+    <entry key="yukon.common.events.dr.inventoryConfig.taskDeleted">Task {2} deleted by {1}.</entry>
+    <entry key="yukon.common.events.dr.inventoryConfig.itemConfigSucceeded">Config command sent to {2}.</entry>
+    <entry key="yukon.common.events.dr.inventoryConfig.itemConfigFailed">Config command to {2} failed (execution id {7}).</entry>
 
     <!-- Command Request Executor -->
-    <entry key="yukon.common.events.porterRequests.commandFailedToTransmit">Command failed to transmit: command={2} type={1} error={3} user={4} id={7} contextId={8} </entry>
+    <entry key="yukon.common.events.porterRequests.commandFailedToTransmit">Command failed to transmit: command={2} type={1} error={3} user={4} id={7} contextId={8}.</entry>
     <entry key="yukon.common.events.porterRequests.commandFailedToTransmit.2">Command</entry>
     <entry key="yukon.common.events.porterRequests.commandFailedToTransmit.3">Error</entry>
-    <entry key="yukon.common.events.porterRequests.foundFailedCre">Found IN_PROGRESS CommandRequestExecution during startup, set ExecutionStatus to FAILED. CommandRequestExecId = {7}</entry>
+    <entry key="yukon.common.events.porterRequests.foundFailedCre">Found IN_PROGRESS CommandRequestExecution during startup, set ExecutionStatus to FAILED. CommandRequestExecId = {7}.</entry>
     
     <!-- VEE -->
-    <entry key="yukon.common.events.system.rphValidation.helper.deletePointValue">Deleted point value: changeId={7} value={8} timestamp={11} paoName={1} paoType={2} pointId={9} pointType={3} pointOffset={10} user={4}</entry>
-    <entry key="yukon.common.events.system.rphValidation.helper.acceptPointValue">Accepted point value: changeId={7} value={8} timestamp={11} paoName={1} paoType={2} pointId={9} pointType={3} pointOffset={10} user={4}</entry>
-    <entry key="yukon.common.events.system.rphValidation.helper.updateQuestionableQuality">Updated point quality from Questionable to Normal: changeId={7} value={8} timestamp={11} paoName={1} paoType={2} pointId={9} pointType={3} pointOffset={10} user={4}</entry>
+    <entry key="yukon.common.events.system.rphValidation.helper.deletePointValue">Deleted point value: changeId={7} value={8} timestamp={11} paoName={1} paoType={2} pointId={9} pointType={3} pointOffset={10} user={4}.</entry>
+    <entry key="yukon.common.events.system.rphValidation.helper.acceptPointValue">Accepted point value: changeId={7} value={8} timestamp={11} paoName={1} paoType={2} pointId={9} pointType={3} pointOffset={10} user={4}.</entry>
+    <entry key="yukon.common.events.system.rphValidation.helper.updateQuestionableQuality">Updated point quality from Questionable to Normal: changeId={7} value={8} timestamp={11} paoName={1} paoType={2} pointId={9} pointType={3} pointOffset={10} user={4}.</entry>
     
-    <entry key="yukon.common.events.system.rphValidation.validator.unreasonableValueCausedReRead">Meter read submitted due to unreadable usage value: paoId={7} paoName={1} paoType={2} pointId={8} pointType={3} pointOffset={9}</entry>
-    <entry key="yukon.common.events.system.rphValidation.validator.validationEngineStartup">Validation engine startup: lastChangeIdProcessed={7} tagsCleared={8}</entry>
+    <entry key="yukon.common.events.system.rphValidation.validator.unreasonableValueCausedReRead">Meter read submitted due to unreadable usage value: paoId={7} paoName={1} paoType={2} pointId={8} pointType={3} pointOffset={9}.</entry>
+    <entry key="yukon.common.events.system.rphValidation.validator.validationEngineStartup">Validation engine startup: lastChangeIdProcessed={7} tagsCleared={8}.</entry>
     <entry key="yukon.common.events.system.rphValidation.validator.validationEngineStartup.7">Last ChangeId Processed</entry>
     <entry key="yukon.common.events.system.rphValidation.validator.validationEngineStartup.8">Tags Cleared</entry>
-    <entry key="yukon.common.events.system.rphValidation.validator.changedQualityOnPeakedValue">Changed quality on peak value: changeId={7} paoId={8} paoName={1} paoType={2} pointId={9} pointType={3} pointOffset={10}</entry>
-    <entry key="yukon.common.events.system.rphValidation.helper.acceptedAllTaggedRows">All rows tagged with {1} have been accepted by {2}</entry>
-    <entry key="yukon.common.events.system.rphValidation.helper.deletedAllTaggedRows">All rows tagged with {1} have been deleted by {2}</entry>
-    <entry key="yukon.common.events.system.rphValidation.helper.validationEngineReset">The Validation Engine has been reset to reprocess all rows</entry>
-    <entry key="yukon.common.events.system.rphValidation.helper.validationEnginePartialReset">The Validation Engine has been reset to reprocess all rows since {11}</entry>
+    <entry key="yukon.common.events.system.rphValidation.validator.changedQualityOnPeakedValue">Changed quality on peak value: changeId={7} paoId={8} paoName={1} paoType={2} pointId={9} pointType={3} pointOffset={10}.</entry>
+    <entry key="yukon.common.events.system.rphValidation.helper.acceptedAllTaggedRows">All rows tagged with {1} accepted by {2}.</entry>
+    <entry key="yukon.common.events.system.rphValidation.helper.deletedAllTaggedRows">All rows tagged with {1} deleted by {2}.</entry>
+    <entry key="yukon.common.events.system.rphValidation.helper.validationEngineReset">The Validation Engine reset to re-process all rows.</entry>
+    <entry key="yukon.common.events.system.rphValidation.helper.validationEnginePartialReset">The Validation Engine reset to re-process all rows since {11}.</entry>
     
     <!-- Stars -->
-    <entry key="yukon.common.events.stars.energyCompany.deleteEnergyCompanyAttemptedByOperator">The user {1} is attempting to delete the energy company {2}.</entry>
-    <entry key="yukon.common.events.stars.energyCompany.deleteEnergyCompany">The user {1} deleted the energy company {2}.</entry>
+    <entry key="yukon.common.events.stars.energyCompany.deleteEnergyCompanyAttempted">User {1} attempted to delete the energy company {2}.</entry>
+    <entry key="yukon.common.events.stars.energyCompany.deleteEnergyCompany">Energy company {2} deleted by {1}.</entry>
     
-    <entry key="yukon.common.events.stars.warehouse.addWarehouseAttempted">The user {1} is attempting to add the warehouse {2}.</entry>
-    <entry key="yukon.common.events.stars.warehouse.deleteWarehouseAttempted">The user {1} is attempting to delete the warehouse {2}.</entry>
+    <entry key="yukon.common.events.stars.energyCompanySettings.energyCompanyDefaultRouteChanged">Default route for energy company {2} changed from routeId: {7} to routeId: {8} by {1}.</entry>
+    
+    <entry key="yukon.common.events.system.energyCompanySettings.energyCompanySettingUpdated">Energy Company setting {2} set to {3} for Energy Company ID {7} by {1}.</entry>
+    
+    <entry key="yukon.common.events.stars.warehouse.addWarehouseAttempted">User {1} attempted to add warehouse {2}.</entry>
+    <entry key="yukon.common.events.stars.warehouse.deleteWarehouseAttempted">User {1} attempted to delete warehouse {2}.</entry>
+    <entry key="yukon.common.events.stars.warehouse.updateWarehouseAttempted">User {1} attempted to update warehouse {2}.</entry>
 
-    <entry key="yukon.common.events.stars.warehouse.addWarehouse">The warehouse {1} has been added.</entry>
-    <entry key="yukon.common.events.stars.warehouse.updateWarehouse">The warehouse {1} has been updated.</entry>
-    <entry key="yukon.common.events.stars.warehouse.deleteWarehouse">The warehouse {1} has been deleted.</entry>
+    <entry key="yukon.common.events.stars.warehouse.addWarehouse">Warehouse {1} added.</entry>
+    <entry key="yukon.common.events.stars.warehouse.updateWarehouse">Warehouse {1} updated.</entry>
+    <entry key="yukon.common.events.stars.warehouse.deleteWarehouse">Warehouse {1} deleted.</entry>
 
-    <entry key="yukon.common.events.stars.optOutAdmin.cancelCurrentOptOutsAttempted">The user {1} is attempting to cancel all the opt outs in the system.  They are attempting this through source: {2}.</entry>
-    <entry key="yukon.common.events.stars.optOutAdmin.cancelCurrentOptOutsByProgramAttempted">The user {1} is attempting to cancel all the opt outs in the system for the program {2}.  They are attempting this through source: {3}.</entry>
-    <entry key="yukon.common.events.stars.optOutAdmin.enablingOptOutUsageForTodayAttempted">The user {1} is attempting to enable the ability for customers to opt out.  They are attempting this through source: {2}.</entry>
-    <entry key="yukon.common.events.stars.optOutAdmin.enablingOptOutUsageForTodayByProgramAttempted">The user {1} is attempting to enable the ability for customers to opt out of the program {2}.  They are attempting this through source: {3}.</entry>
-    <entry key="yukon.common.events.stars.optOutAdmin.disablingOptOutUsageForTodayAttempted">The user {1} is attempting to disable the ability for customers to opt out.  They are attempting this through source: {2}.</entry>
-    <entry key="yukon.common.events.stars.optOutAdmin.disablingOptOutUsageForTodayByProgramAttempted">The user {1} is attempting to disable the ability for customers to opt out of the program {2}.  They are attempting this through source: {3}.</entry>
-    <entry key="yukon.common.events.stars.optOutAdmin.countTowardOptOutLimitTodayAttempted">The user {1} is attempting to change the system to count opt outs for today.  They are attempting this through source: {2}.</entry>
-    <entry key="yukon.common.events.stars.optOutAdmin.countTowardOptOutLimitTodayByProgramAttempted">The user {1} is attempting to change the system to count opt outs for the program {2} today.  They are attempting this through source: {3}..</entry>
-    <entry key="yukon.common.events.stars.optOutAdmin.doNotCountTowardOptOutLimitTodayAttempted">The user {1} is attempting to change the system to not count opt outs for today.  They are attempting this through source: {2}..</entry>
-    <entry key="yukon.common.events.stars.optOutAdmin.doNotCountTowardOptOutLimitTodayByProgramAttempted">The user {1} is attempting to change the system to not count opt outs for the program {2} today.  They are attempting this through source: {3}.</entry>
+    <entry key="yukon.common.events.stars.optOutAdmin.cancelCurrentOptOutsAttempted">User {1} attempted to cancel all opt outs in the system. Source: {2}</entry>
+    <entry key="yukon.common.events.stars.optOutAdmin.cancelCurrentOptOutsByProgramAttempted">User {1} attempted to cancel all opt outs in the system for program {2}. Source: {3}</entry>
+    <entry key="yukon.common.events.stars.optOutAdmin.enablingOptOutUsageForTodayAttempted">User {1} attempted to enable the ability for customers to opt out. Source: {2}</entry>
+    <entry key="yukon.common.events.stars.optOutAdmin.enablingOptOutUsageForTodayByProgramAttempted">User {1} attempted to enable the ability for customers to opt out of program {2}. Source: {3}</entry>
+    <entry key="yukon.common.events.stars.optOutAdmin.disablingOptOutUsageForTodayAttempted">User {1} attempted to disable the ability for customers to opt out. Source: {2}</entry>
+    <entry key="yukon.common.events.stars.optOutAdmin.disablingOptOutUsageForTodayByProgramAttempted">User {1} attempted to disable the ability for customers to opt out of program {2}. Source: {3}</entry>
+    <entry key="yukon.common.events.stars.optOutAdmin.countTowardOptOutLimitTodayAttempted">User {1} attempted to change the system to count opt outs for today. Source: {2}</entry>
+    <entry key="yukon.common.events.stars.optOutAdmin.countTowardOptOutLimitTodayByProgramAttempted">User {1} attempted to change the system to count opt outs for program {2} for today. Source: {3}</entry>
+    <entry key="yukon.common.events.stars.optOutAdmin.doNotCountTowardOptOutLimitTodayAttempted">User {1} attempted to change the system to not count opt outs for today. Source: {2}</entry>
+    <entry key="yukon.common.events.stars.optOutAdmin.doNotCountTowardOptOutLimitTodayByProgramAttempted">User {1} attempted to change the system to not count opt outs for program {2} for today. Source: {3}</entry>
 
-    <entry key="yukon.common.events.stars.optOutAdmin.cancelCurrentOptOuts">The user {1} canceled all the opt outs in the system.</entry>
-    <entry key="yukon.common.events.stars.optOutAdmin.cancelCurrentOptOutsByProgram">The user {1} canceled all the opt outs for the program {2}.</entry>
-    <entry key="yukon.common.events.stars.optOutAdmin.optOutUsageEnabledToday">The user {1} changed the ability for customers to opt out for today to {2}.</entry>
+    <entry key="yukon.common.events.stars.optOutAdmin.cancelCurrentOptOuts">All opt outs cancelled by {1}.</entry>
+    <entry key="yukon.common.events.stars.optOutAdmin.cancelCurrentOptOutsByProgram">All opt outs canceled for program {2} by {1}.</entry>
+    <entry key="yukon.common.events.stars.optOutAdmin.optOutUsageEnabledToday">Ability for customers to opt out for today changed to {2} by {1}.</entry>
     <entry key="yukon.common.events.stars.optOutAdmin.optOutUsageEnabledToday.2">Opt Out Enabled</entry>
-    <entry key="yukon.common.events.stars.optOutAdmin.optOutUsageEnabledTodayForProgram">The user {1} changed the ability for customers to opt out of the program {2} for today to {3}.</entry>
+    <entry key="yukon.common.events.stars.optOutAdmin.optOutUsageEnabledTodayForProgram">Ability for customers to opt out of program {2} for today changed to {3} by {1}.</entry>
     <entry key="yukon.common.events.stars.optOutAdmin.optOutUsageEnabledTodayForProgram.3">Opt Out Enabled</entry>
-    <entry key="yukon.common.events.stars.optOutAdmin.countTowardOptOutLimitToday">The user {1} changed the system to count opt outs for today to {2}.</entry>
+    <entry key="yukon.common.events.stars.optOutAdmin.countTowardOptOutLimitToday">Count opt outs for today changed to {2} by {1}.</entry>
     <entry key="yukon.common.events.stars.optOutAdmin.countTowardOptOutLimitToday.2">Opt Out Counts</entry>
-    <entry key="yukon.common.events.stars.optOutAdmin.countTowardOptOutLimitTodayForProgram">The user {1} changed the system to count opt outs for the program {2} today to {3}.</entry>
+    <entry key="yukon.common.events.stars.optOutAdmin.countTowardOptOutLimitTodayForProgram">Count opt outs for program {2} today changed to {3} by {1}.</entry>
     <entry key="yukon.common.events.stars.optOutAdmin.countTowardOptOutLimitTodayForProgram.3">Opt Out Counts</entry>
 
     <!-- System -->
-    <entry key="yukon.common.events.system.login.loginWeb">User {1} logged in via Web from remote address {2}</entry>
+    <entry key="yukon.common.events.system.login.loginWeb">User {1} logged in via Web from remote address {2}.</entry>
+    <entry key="yukon.common.events.system.login.usernameChanged">Username {2} changed to {3} by {1}.</entry>
+    <entry key="yukon.common.events.system.login.loginChangeAttempted">User {1} attempted to change to user {2}. Source: {3}</entry>
+    <entry key="yukon.common.events.system.login.loginUsernameChangeAttempted">User {1} attempted to change to username {2}. Source: {3}</entry>
+    <entry key="yukon.common.events.system.login.loginPasswordChangeAttempted">User {1} attempted to change password. Source: {2}</entry>
 
-    <entry key="yukon.common.events.system.login.loginClient">User {1} logged in via GUI Client from remote address {2}</entry>
-    <entry key="yukon.common.events.system.login.loginInboundVoice">User {1} logged in via Inbound voice from remote address {2}</entry>
-    <entry key="yukon.common.events.system.login.loginOutboundVoice">User {1} logged in via Outbound voice from remote address {2}</entry>    
+    <entry key="yukon.common.events.system.login.loginClient">User {1} logged in via GUI Client from remote address {2}.</entry>
+    <entry key="yukon.common.events.system.login.loginInboundVoice">User {1} logged in via Inbound voice from remote address {2}.</entry>
+    <entry key="yukon.common.events.system.login.loginOutboundVoice">User {1} logged in via Outbound voice from remote address {2}.</entry>    
     
     <!--  System Administration -->
     <!-- Maintenance -->
     <entry key="yukon.common.events.system.maintenance.rphDeleteDuplicates">Deleted {7} duplicate RawPointHistory rows from database. Start time: {11}. Finish time: {12}.</entry>
+    <entry key="yukon.common.events.system.maintenance.systemLogDeleteDanglingEntries">Deleted {7} dangling SystemLog rows from database. Start time: {11}. Finish time: {12}.</entry>
+    <entry key="yukon.common.events.system.maintenance.rphDeleteDanglingEntries">Deleted {7} dangling RawPointHistory rows from database. Start time: {11}. Finish time: {12}.</entry>
     
     <!--  System Administration -->
     <!-- Configuration -->
-    <entry key="yukon.common.events.system.configuration.globalSettingChanged">User {1} changed Global Setting {2} to {3}</entry>
-
-    <entry key="yukon.common.events.system.energyCompanySettings.energyCompanySettingUpdated">User {1} changed energyCompanySetting Setting {2} to {4} for energyCompanyId: {3}</entry>
+    <entry key="yukon.common.events.system.configuration.globalSettingChanged">Global Setting {2} changed to {3} by {1}.</entry>
 
 <!--  Monitors -->
     <!-- Status Point Monitor -->
-    <entry key="yukon.common.events.system.outageEvents.statusPointMonitor.statusPointMonitorCreated">Status Point Monitor Created with ID={7} name={1} groupName={2} attribute={3} stateGroup={4} evaluatorStatus={5} by user {6}</entry>
-    <entry key="yukon.common.events.system.outageEvents.statusPointMonitor.statusPointMonitorUpdated">Status Point Monitor Updated with ID={7} name={1} groupName={2} attribute={3} stateGroup={4} evaluatorStatus={5} by user {6}</entry>
-    <entry key="yukon.common.events.system.outageEvents.statusPointMonitor.statusPointMonitorDeleted">Status Point Monitor Deleted with ID={7} name={1} groupName={2} attribute={3} stateGroup={4} evaluatorStatus={5} by user {6}</entry>
-    <entry key="yukon.common.events.system.outageEvents.statusPointMonitor.statusPointMonitorEnableDisable">Status Point Monitor with ID={7} set to {1} by user {2}</entry>
+    <entry key="yukon.common.events.system.outageEvents.statusPointMonitor.statusPointMonitorCreated">Status Point Monitor created with ID={7} name={1} groupName={2} attribute={3} stateGroup={4} evaluatorStatus={5} by {6}.</entry>
+    <entry key="yukon.common.events.system.outageEvents.statusPointMonitor.statusPointMonitorUpdated">Status Point Monitor updated with ID={7} name={1} groupName={2} attribute={3} stateGroup={4} evaluatorStatus={5} by {6}.</entry>
+    <entry key="yukon.common.events.system.outageEvents.statusPointMonitor.statusPointMonitorDeleted">Status Point Monitor deleted with ID={7} name={1} groupName={2} attribute={3} stateGroup={4} evaluatorStatus={5} by {6}.</entry>
+    <entry key="yukon.common.events.system.outageEvents.statusPointMonitor.statusPointMonitorEnableDisable">Status Point Monitor with ID={7} set to {1} by {2}.</entry>
     
     <!-- Porter Response Monitor -->
-    <entry key="yukon.common.events.system.outageEvents.porterResponseMonitor.porterResponseMonitorCreated">Porter Response Monitor Created with ID={7} name={1} attribute={2} stateGroup= {3} evaluatorStatus={4} by user {5}</entry>
-    <entry key="yukon.common.events.system.outageEvents.porterResponseMonitor.porterResponseMonitorUpdated">Porter Response Monitor Updated with ID={7} name={1} attribute={2} stateGroup= {3} evaluatorStatus={4} by user {5}</entry>
-    <entry key="yukon.common.events.system.outageEvents.porterResponseMonitor.porterResponseMonitorDeleted">Porter Response Monitor Deleted with ID={7} name={1} attribute={2} stateGroup= {3} evaluatorStatus={4} by user {5}</entry>
-    <entry key="yukon.common.events.system.outageEvents.porterResponseMonitor.porterResponseMonitorEnableDisable">Porter Response Monitor with ID={7} set to {1} by user {2}</entry>
+    <entry key="yukon.common.events.system.outageEvents.porterResponseMonitor.porterResponseMonitorCreated">Porter Response Monitor created with ID={7} name={1} attribute={2} stateGroup= {3} evaluatorStatus={4} by {5}.</entry>
+    <entry key="yukon.common.events.system.outageEvents.porterResponseMonitor.porterResponseMonitorUpdated">Porter Response Monitor updated with ID={7} name={1} attribute={2} stateGroup= {3} evaluatorStatus={4} by {5}.</entry>
+    <entry key="yukon.common.events.system.outageEvents.porterResponseMonitor.porterResponseMonitorDeleted">Porter Response Monitor deleted with ID={7} name={1} attribute={2} stateGroup= {3} evaluatorStatus={4} by {5}.</entry>
+    <entry key="yukon.common.events.system.outageEvents.porterResponseMonitor.porterResponseMonitorEnableDisable">Porter Response Monitor with ID={7} set to {1} by {2}.</entry>
 
-    <entry key="yukon.common.events.system.outageEvents.mspHandler.mspMessageSentToVendor">Status Point Monitor {1} sent OutageDetectionEvent with eventType={2} objectId={3} deviceType={4} to Multispeak vendor={5}</entry>
-    <entry key="yukon.common.events.system.outageEvents.outageEventGenerated">OutageDetectionEvent generated with eventType={1} eventTime={11} deviceType={2} and objectId = {3}</entry>
+    <entry key="yukon.common.events.system.outageEvents.mspHandler.mspMessageSentToVendor">Status Point Monitor {1} sent OutageDetectionEvent with eventType={2} objectId={3} deviceType={4} to Multispeak vendor={5}.</entry>
+    <entry key="yukon.common.events.system.outageEvents.outageEventGenerated">OutageDetectionEvent generated with eventType={1} eventTime={11} deviceType={2} and objectId = {3}.</entry>
     
     
 <!-- ZigBee Webservices -->
-    <entry key="yukon.common.events.hardware.commands.config.zigbeeDeviceCommission">The user {1} has pressed the commission button for ZigBee device {2}.</entry>
-    <entry key="yukon.common.events.hardware.commands.config.zigbeeDeviceDecommission">The user {1} has pressed the decommission button for ZigBee device {2}.</entry>
-    <entry key="yukon.common.events.hardware.commands.status.zigbeeDeviceRefresh">The user {1} has pressed the refresh button for the ZigBee device {2}. Source: {3}</entry>
-    <entry key="yukon.common.events.hardware.commands.actions.zigbeeSendText">The user {1} has entered a text message to send to the ZigBee device {2}: "{3}"</entry>
+    <entry key="yukon.common.events.hardware.commands.config.zigbeeDeviceCommission">User {1} attempted commission for ZigBee device {2}.</entry>
+    <entry key="yukon.common.events.hardware.commands.config.zigbeeDeviceDecommission">User {1} attempted decommission for ZigBee device {2}.</entry>
+    <entry key="yukon.common.events.hardware.commands.status.zigbeeDeviceRefresh">User {1} attempted refresh for ZigBee device {2}. Source: {3}</entry>
+    <entry key="yukon.common.events.hardware.commands.actions.zigbeeSendText">User {1} attempted to send text message to ZigBee device {2}: "{3}".</entry>
     <entry key="yukon.common.events.hardware.commands.actions.zigbeeSendText.2">Device Name</entry>
-    <entry key="yukon.common.events.hardware.config.zigbeeDeviceAssign">The user {1} pressed the assign button to link ZigBee device {2} to the ZigBee gateway {3}.</entry>
-    <entry key="yukon.common.events.hardware.config.zigbeeDeviceUnassign">The user {1} pressed the unassign button to remove the link between ZigBee device {2} and ZigBee gateway {3}.</entry>
+    <entry key="yukon.common.events.hardware.config.zigbeeDeviceAssign">User {1} attempted to assign link between ZigBee device {2} and ZigBee gateway {3}.</entry>
+    <entry key="yukon.common.events.hardware.config.zigbeeDeviceUnassign">User {1} attempted to unassign link between ZigBee device {2} and ZigBee gateway {3}.</entry>
 
-    <entry key="yukon.common.events.hardware.commands.config.zigbeeDeviceCommissioned">Commission command has been sent for ZigBee device {1}.</entry>
-    <entry key="yukon.common.events.hardware.commands.config.zigbeeDeviceDecommissioned">Decommission command has been sent for ZigBee device {1}.</entry>
-    <entry key="yukon.common.events.hardware.commands.status.zigbeeDeviceRefreshed">ZigBee device {1} was successfully refreshed.</entry>
-    <entry key="yukon.common.events.hardware.commands.actions.zigbeeSentText">The text message was successfully sent to the ZigBee device {1}: "{2}"</entry>
+    <entry key="yukon.common.events.hardware.commands.config.zigbeeDeviceCommissioned">Commission command sent for ZigBee device {1}.</entry>
+    <entry key="yukon.common.events.hardware.commands.config.zigbeeDeviceDecommissioned">Decommission command sent for ZigBee device {1}.</entry>
+    <entry key="yukon.common.events.hardware.commands.status.zigbeeDeviceRefreshed">ZigBee device {1} refreshed.</entry>
+    <entry key="yukon.common.events.hardware.commands.actions.zigbeeSentText">Text message sent to ZigBee device {1}: "{2}"</entry>
 	<entry key="yukon.common.events.hardware.commands.actions.zigbeeSentText.1">Device Name</entry>
 
-    <entry key="yukon.common.events.hardware.config.zigbeeDeviceAssigned">ZigBee device {1} was assigned to the ZigBee gateway {2}.</entry>
-    <entry key="yukon.common.events.hardware.config.zigbeeDeviceUnassigned">ZigBee device {1} was unassigned from the ZigBee gateway {2}.</entry>
+    <entry key="yukon.common.events.hardware.config.zigbeeDeviceAssigned">ZigBee device {1} assigned to ZigBee gateway {2}.</entry>
+    <entry key="yukon.common.events.hardware.config.zigbeeDeviceUnassigned">ZigBee device {1} unassigned from ZigBee gateway {2}.</entry>
 
 </properties>
