@@ -39,7 +39,7 @@ public:
 
 
    virtual CtiMessage& setConnectionHandle(void *p);
-   virtual void* getConnectionHandle();
+   virtual void* getConnectionHandle() const;
 
    virtual void dump() const;
 

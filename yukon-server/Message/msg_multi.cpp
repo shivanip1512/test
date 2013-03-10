@@ -91,7 +91,7 @@ CtiMessage& CtiMultiMsg::setConnectionHandle(void *p)
    return *this;
 }
 
-void* CtiMultiMsg::getConnectionHandle()
+void* CtiMultiMsg::getConnectionHandle() const
 {
    return ConnectionHandle;
 }

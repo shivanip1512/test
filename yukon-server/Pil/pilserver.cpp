@@ -53,6 +53,7 @@
 #include <boost/regex.hpp>
 #include <boost/bind.hpp>
 #include <boost/algorithm/string.hpp>
+#include <boost/assign/list_of.hpp>
 
 #include <iomanip>
 #include <iostream>
@@ -1596,92 +1597,77 @@ vector<long> CtiPILServer::getDeviceGroupMembers( string groupname ) const
 }
 
 
-void CtiPILServer::analyzeWhiteRabbits(CtiRequestMsg& Req, CtiCommandParser &parse, list< CtiRequestMsg* > & execList, boost::ptr_deque<CtiRequestMsg> &groupRequests, list< CtiMessage* > & retList)
+void CtiPILServer::analyzeWhiteRabbits(const CtiRequestMsg& Req, CtiCommandParser &parse, list< CtiRequestMsg* > & execList, boost::ptr_deque<CtiRequestMsg> &groupRequests, list< CtiMessage* > & retList)
 {
-    INT i;
-    bool isGroupCommand = false;
-
-    CtiRequestMsg *pReq = (CtiRequestMsg*)Req.replicateMessage();
+    std::auto_ptr<CtiRequestMsg> pReq(static_cast<CtiRequestMsg *>(Req.replicateMessage()));
     pReq->setConnectionHandle( Req.getConnectionHandle() );
 
-    static const string str_serial = "serial";
-    if(parse.isKeyValid(str_serial))
+    if( parse.isKeyValid("serial") )
     {
         pReq->setDeviceId( SYS_DID_SYSTEM );    // Make sure we are targeting the serial/system device;
     }
 
     // Can you say WHITE RABBIT?  This could override the above!
     // This code will not execute in most cases
-    static const string str_device = "device";
-    if(parse.isKeyValid(str_device))
+    if( parse.isKeyValid("device") )
     {
-        if( -1 != (i = parse.getiValue(str_device)) )
+        const int         deviceId   = parse.getiValue("device");
+        const std::string deviceName = parse.getsValue("device");
+
+        if( deviceId != -1 )
         {
             // OK, someone tried to send us an override on the device ID
-            pReq->setDeviceId( i ) ;
+            pReq->setDeviceId(deviceId);
+        }
+        else if( const CtiDeviceSPtr Dev = DeviceManager->RemoteGetEqualbyName(deviceName) )
+        {
+            pReq->setDeviceId(Dev->getID());
         }
         else
         {
-            string dname = parse.getsValue(str_device);
-            CtiDeviceSPtr Dev = DeviceManager->RemoteGetEqualbyName( dname );
-            if(Dev)
             {
-                pReq->setDeviceId( Dev->getID() ) ;
+                CtiLockGuard<CtiLogger> doubt_guard(dout);
+                dout << CtiTime() << " **** Execute Error **** " << endl;
+                dout << CtiTime() << " Device Name: " << deviceName << endl;
+                dout << CtiTime() << " Command: " << pReq->CommandString() << endl;
+                dout << CtiTime() << " No device found in the database with this device name." << endl;
             }
-            else
-            {
-                {
-                    CtiLockGuard<CtiLogger> doubt_guard(dout);
-                    dout << CtiTime() << " **** Execute Error **** " << endl;
-                    dout << CtiTime() << " Device Name: " << dname << endl;
-                    dout << CtiTime() << " Command: " << pReq->CommandString() << endl;
-                    dout << CtiTime() << " No device found in the database with this device name." << endl;
-                }
 
-                CtiReturnMsg *pcRet = CTIDBG_new CtiReturnMsg(pReq->DeviceId(),
-                                                              pReq->CommandString(),
-                                                              "No device with name '" + dname + "' exists in the database.",
-                                                              IDNF,
-                                                              pReq->RouteId(),
-                                                              pReq->MacroOffset(),
-                                                              pReq->AttemptNum(),
-                                                              pReq->GroupMessageId(),
-                                                              pReq->UserMessageId(),
-                                                              pReq->getSOE());
+            retList.push_back(
+                new CtiReturnMsg(
+                        pReq->DeviceId(),
+                        pReq->CommandString(),
+                        "No device with name '" + deviceName + "' exists in the database.",
+                        IDNF,
+                        pReq->RouteId(),
+                        pReq->MacroOffset(),
+                        pReq->AttemptNum(),
+                        pReq->GroupMessageId(),
+                        pReq->UserMessageId(),
+                        pReq->getSOE()));
 
-                retList.push_back(pcRet);
-                delete pReq;
-
-                return;
-            }
+            return;
         }
     }
 
-    static const string str_route  = "route";
-    if(parse.isKeyValid(str_route))
+    if( parse.isKeyValid("route") )
     {
-        if( (i = parse.getiValue(str_route)) != -1 )
+        const int         routeId   = parse.getiValue("route");
+        const std::string routeName = parse.getsValue("route");
+
+        if( routeId != -1 )
         {
             // OK, someone tried to send us an override on the route ID
-            pReq->setRouteId( i );
+            pReq->setRouteId(routeId);
+        }
+        else if( const CtiRouteSPtr Rte = RouteManager->getRouteByName(routeName) )
+        {
+            pReq->setRouteId( Rte->getRouteID() );
         }
         else
         {
-            //  apparently we've been sent a route name
-            string routeName = parse.getsValue(str_route);
-            CtiRouteSPtr tmpRoute;
-
-            tmpRoute = RouteManager->getRouteByName( routeName );
-
-            if(tmpRoute)
-            {
-                pReq->setRouteId( tmpRoute->getRouteID() );
-            }
-            else
-            {
-                CtiLockGuard<CtiLogger> doubt_guard(dout);
-                dout << CtiTime() << " **** Checkpoint **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
-            }
+            CtiLockGuard<CtiLogger> doubt_guard(dout);
+            dout << CtiTime() << " **** Checkpoint **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
         }
     }
 
@@ -1703,62 +1689,45 @@ void CtiPILServer::analyzeWhiteRabbits(CtiRequestMsg& Req, CtiCommandParser &par
     }
 
     //  if we have no device id, check to see if we're a group command
-    if( !pReq->DeviceId() )
+    if( ! pReq->DeviceId() )
     {
-        bool group     = false,
-             altgroup  = false,
-             billgroup = false;
+        typedef std::pair<std::string, std::string> GroupKeyAndPrefix;
 
-        //  note that only one of these will be set at once - the first one
-        //    will cause the if block to be true, and the others will be false
-        if( (group     = parse.isKeyValid("group"))    ||
-            (altgroup  = parse.isKeyValid("altgroup")) ||
-            (billgroup = parse.isKeyValid("billgroup")) )
+        //  group keys and prefixes, in the order that we look them up
+         std::vector<GroupKeyAndPrefix> ordered_group_parse_keys = boost::assign::map_list_of
+            ("group",     "/Meters/Collection/")
+            ("altgroup",  "/Meters/Alternate/")
+            ("billgroup", "/Meters/Billing/");
+
+         std::string group_key, group_prefix;
+
+        //  look for a group key we know about
+        for each( const GroupKeyAndPrefix group_info in ordered_group_parse_keys )
         {
-            string groupname;
-            int groupsubmitcnt = 0;
-            vector<long> members;
+            boost::tie(group_key, group_prefix) = group_info;
 
-            if( group )     groupname = parse.getsValue("group");
-            if( altgroup )  groupname = parse.getsValue("altgroup");
-            if( billgroup ) groupname = parse.getsValue("billgroup");
-
-            //  if it's not a new-style group, convert it
-            if( groupname.find_first_of('/') == string::npos )
+            if( parse.isKeyValid(group_key) )
             {
-                if( group )     groupname = "/Meters/Collection/" + groupname;
-                if( altgroup )  groupname = "/Meters/Alternate/"  + groupname;
-                if( billgroup ) groupname = "/Meters/Billing/"    + groupname;
-            }
+                string group_name = parse.getsValue(group_key);
 
-            //  this catches any old-style group names with embedded slashes
-            if( groupname.find_first_of('/') > 0 )
-            {
-                CtiLockGuard<CtiLogger> doubt_guard(dout);
-                dout << CtiTime() << " **** Checkpoint - groupname \"" << groupname << "\" is malformed - cannot determine group hierarchy **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
-            }
-            else
-            {
-                CtiToLower(groupname);
-
-                members = getDeviceGroupMembers(groupname);
-                isGroupCommand = true; // We will take the remaining pReq and place it on the group queue as well.
-            }
-
-            vector<long>::iterator itr, members_end = members.end();
-
-            //  the parser eliminates only the parse keywords that have already been acted on (select device, route)
-            pReq->setCommandString(parse.getCommandStr());
-
-            for( itr = members.begin(); itr != members_end; )
-            {
-                //   Note that we're going to let PIL fail us on a failed device lookup to save us the device lookup here
-                pReq->setDeviceId(*itr);
-                itr++;
-
-                //On the last loop we dont put the message into the group queue.
-                if(itr != members_end)
+                //  if it's not a new-style group, convert it
+                if( group_name.find_first_of('/') == string::npos )
                 {
+                    group_name = group_prefix + group_name;
+                }
+
+                boost::to_lower(group_name);
+
+                //  the parser eliminates only the parse keywords that have already been acted on (select device, route)
+                pReq->setCommandString(parse.getCommandStr());
+
+                const std::vector<long> deviceGroupMemberIds = getDeviceGroupMembers(group_name);
+
+                for each( const long deviceid in deviceGroupMemberIds )
+                {
+                    //   Note that we're going to let PIL fail us on a failed device lookup to save us the device lookup here
+                    pReq->setDeviceId(deviceid);
+
                     // Create a message for this one!
                     std::auto_ptr<CtiRequestMsg> pNew(static_cast<CtiRequestMsg *>(pReq->replicateMessage()));
                     pNew->setConnectionHandle(pReq->getConnectionHandle());
@@ -1767,12 +1736,28 @@ void CtiPILServer::analyzeWhiteRabbits(CtiRequestMsg& Req, CtiCommandParser &par
                     groupRequests.push_back(pNew);
                 }
 
-                groupsubmitcnt++;
-            }
+                {
+                    CtiLockGuard<CtiLogger> doubt_guard(dout);
+                    dout << CtiTime() << " " << group_name << " found " << deviceGroupMemberIds.size() << " target devices." << endl;
+                }
 
-            {
-                CtiLockGuard<CtiLogger> doubt_guard(dout);
-                dout << CtiTime() << " " << groupname << " found " << groupsubmitcnt << " target devices." << endl;
+                if( deviceGroupMemberIds.empty() )
+                {
+                    retList.push_back(
+                        new CtiReturnMsg(
+                           pReq->DeviceId(),
+                            pReq->CommandString(),
+                            "Group '" + group_name + "' found no target devices.",
+                            IDNF,
+                            pReq->RouteId(),
+                            pReq->MacroOffset(),
+                            pReq->AttemptNum(),
+                            pReq->GroupMessageId(),
+                            pReq->UserMessageId(),
+                            pReq->getSOE()));
+                }
+
+                return;
             }
         }
     }
@@ -1881,24 +1866,9 @@ void CtiPILServer::analyzeWhiteRabbits(CtiRequestMsg& Req, CtiCommandParser &par
         }
     }
 
-    // The last request from the group is not placed on the group list until now.
-    // This allows some processing to happen after the group expansion,
-    // but the message must go into the queue or MACS has serious problems.
-    if(isGroupCommand && pReq != NULL)
+    if( execList.empty() && pReq.get())
     {
-        groupRequests.push_back(pReq);
-        pReq = NULL;
-    }
-
-    if(execList.size() == 0 && pReq != NULL)
-    {
-        execList.push_back( pReq );
-        pReq = NULL;
-    }
-
-    if(pReq != NULL)
-    {
-        delete pReq;
+        execList.push_back( pReq.release() );
     }
 }
 

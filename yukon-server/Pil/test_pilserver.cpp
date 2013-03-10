@@ -250,15 +250,18 @@ BOOST_AUTO_TEST_CASE(test_analyzeWhiteRabbits_select_group_fail)
 
     testPilServer.analyzeWhiteRabbits(msg,  CtiCommandParser(msg.CommandString()), execList, groupRequests, retList);
 
-    BOOST_CHECK_EQUAL(retList.size(), 0);
+    BOOST_CHECK(groupRequests.empty());
+
+    BOOST_REQUIRE_EQUAL(retList.size(), 1);
+
+    CtiReturnMsg *retMsg = dynamic_cast<CtiReturnMsg *>(retList.front());
+
+    BOOST_REQUIRE(retMsg);
+
+    BOOST_CHECK_EQUAL(retMsg->Status(), IDNF);
+    BOOST_CHECK_EQUAL(retMsg->ResultString(), "Group '/fiddlesticks' found no target devices.");
+
     BOOST_CHECK_EQUAL(execList.size(), 0);
-    BOOST_CHECK_EQUAL(groupRequests.size(), 1);
-
-    boost::ptr_deque<CtiRequestMsg>::auto_type groupRequest;
-
-    groupRequest = groupRequests.pop_front();
-    BOOST_CHECK_EQUAL(groupRequest->CommandString(), "nonsense here select group '/fiddlesticks'");
-    BOOST_CHECK_EQUAL(groupRequest->DeviceId(), 0);
 }
 
 

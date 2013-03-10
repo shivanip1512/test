@@ -63,7 +63,7 @@ public:
    RWBoolean virtual operator<(const CtiMessage& aRef) const;
    RWBoolean virtual operator>(const CtiMessage& aRef) const;
    virtual CtiMessage& setConnectionHandle(void *p);
-   virtual void* getConnectionHandle();
+   virtual void* getConnectionHandle() const;
    void setMessagePriority(INT n);
    INT  getMessagePriority() const;
    INT  getSOE() const;
