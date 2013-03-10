@@ -121,7 +121,7 @@ public:
     ptr_type RemoteGetPortRemoteEqual (LONG Port, LONG Remote);
     ptr_type RemoteGetPortRemoteTypeEqual (LONG Port, LONG Remote, INT Type);
     ptr_type RemoteGetPortMasterSlaveTypeEqual (LONG Port, LONG Master, LONG Slave, INT Type);
-    ptr_type RemoteGetEqualbyName (const std::string &RemoteName);
+    virtual ptr_type RemoteGetEqualbyName (const std::string &RemoteName);
 
     bool containsType(int type);
 

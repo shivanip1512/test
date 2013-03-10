@@ -1102,8 +1102,15 @@ int CtiPILServer::executeRequest(CtiRequestMsg *pReq)
 
     try
     {
+        boost::ptr_deque<CtiRequestMsg> groupRequests;
+
         // Note that any and all arguments into this method may be altered on exit!
-        analyzeWhiteRabbits(*pReq, _currentParse, execList, retList);
+        analyzeWhiteRabbits(*pReq, _currentParse, execList, groupRequests, retList);
+
+        while( ! groupRequests.empty() )
+        {
+            _groupQueue.insert(groupRequests.pop_front().release());
+        }
     }
     catch(...)
     {
@@ -1589,7 +1596,7 @@ vector<long> CtiPILServer::getDeviceGroupMembers( string groupname ) const
 }
 
 
-void CtiPILServer::analyzeWhiteRabbits(CtiRequestMsg& Req, CtiCommandParser &parse, list< CtiRequestMsg* > & execList, list< CtiMessage* > & retList)
+void CtiPILServer::analyzeWhiteRabbits(CtiRequestMsg& Req, CtiCommandParser &parse, list< CtiRequestMsg* > & execList, boost::ptr_deque<CtiRequestMsg> &groupRequests, list< CtiMessage* > & retList)
 {
     INT i;
     bool isGroupCommand = false;
@@ -1753,11 +1760,11 @@ void CtiPILServer::analyzeWhiteRabbits(CtiRequestMsg& Req, CtiCommandParser &par
                 if(itr != members_end)
                 {
                     // Create a message for this one!
-                    CtiRequestMsg *pNew = (CtiRequestMsg*)pReq->replicateMessage();
-                    pNew->setConnectionHandle( pReq->getConnectionHandle() );
+                    std::auto_ptr<CtiRequestMsg> pNew(static_cast<CtiRequestMsg *>(pReq->replicateMessage()));
+                    pNew->setConnectionHandle(pReq->getConnectionHandle());
 
-                    //  put it back on the queue to be processed in order
-                    _groupQueue.insert(pNew);
+                    //  put it on the group queue to be processed in order
+                    groupRequests.push_back(pNew);
                 }
 
                 groupsubmitcnt++;
@@ -1879,7 +1886,7 @@ void CtiPILServer::analyzeWhiteRabbits(CtiRequestMsg& Req, CtiCommandParser &par
     // but the message must go into the queue or MACS has serious problems.
     if(isGroupCommand && pReq != NULL)
     {
-        _groupQueue.insert(pReq);
+        groupRequests.push_back(pReq);
         pReq = NULL;
     }
 

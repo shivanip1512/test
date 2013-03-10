@@ -6,7 +6,6 @@
 #include <rw/toolpro/neterr.h>
 #include <rw\rwerr.h>
 #include <rw\thr\mutex.h>
-#include <rw\tphasht.h>
 
 #include "dsm2.h"
 #include "server_b.h"
@@ -17,6 +16,8 @@
 #include "mgr_route.h"
 #include "mgr_config.h"
 #include "ctibase.h"
+
+#include <boost/ptr_container/ptr_deque.hpp>
 
 #include <functional>
 #include <iostream>
@@ -54,9 +55,11 @@ class IM_EX_CTIPIL CtiPILServer : public CtiServer
    CtiFIFOQueue< CtiOutMessage > _porterOMQueue;    // Queue for items to be sent to Porter!
    bool                          _broken;           // When the PILServer knows he's sick.
 
-   std::vector<long> getDeviceGroupMembers( std::string groupname ) const;
-
    void copyReturnMessageToResponseMonitorQueue(const CtiReturnMsg &returnMsg, void *connectionHandle);
+
+protected:
+
+   virtual std::vector<long> getDeviceGroupMembers( std::string groupname ) const;
 
 public:
 
@@ -96,7 +99,7 @@ public:
    void  schedulerThread();
    void  periodicActionThread();
 
-   void analyzeWhiteRabbits(CtiRequestMsg& pReq, CtiCommandParser &parse, std::list< CtiRequestMsg* > & execList, std::list< CtiMessage* > & retList);
+   void analyzeWhiteRabbits(CtiRequestMsg& pReq, CtiCommandParser &parse, std::list< CtiRequestMsg* > & execList, boost::ptr_deque<CtiRequestMsg> &groupRequests, std::list< CtiMessage* > & retList);
    INT analyzeAutoRole(CtiRequestMsg& Req, CtiCommandParser &parse, std::list< CtiRequestMsg* > & execList, std::list< CtiMessage* > & retList);
    INT analyzePointGroup(CtiRequestMsg& Req, CtiCommandParser &parse, std::list< CtiRequestMsg* > & execList, std::list< CtiMessage* > & retList);
 
