@@ -228,6 +228,20 @@ CREATE TABLE OpenAdrEvents (
 GO
 /* End YUK-11937 */
 
+/* Start YUK-11936 */
+CREATE TABLE FileExportHistory  (
+    EntryId              NUMERIC                        NOT NULL,
+    OriginalFileName     VARCHAR(100)                   NOT NULL,
+    FileName             VARCHAR(100)                   NOT NULL,
+    FileExportType       VARCHAR(50)                    NOT NULL,
+    Initiator            VARCHAR(100)                   NOT NULL,
+    Date                 DATETIME                       NOT NULL,
+    ExportPath           VARCHAR(300)                   NOT NULL,
+    CONSTRAINT PK_FileExportHistory PRIMARY KEY (EntryId)
+);
+GO
+/* End YUK-11936 */
+
 /**************************************************************/
 /* VERSION INFO                                               */
 /* Inserted when update script is run                         */

@@ -1,7 +1,7 @@
 /*==============================================================*/
 /* Database name:  YukonDatabase                                */
 /* DBMS name:      ORACLE Version 9i                            */
-/* Created on:     3/9/2013 1:03:26 AM                          */
+/* Created on:     3/10/2013 5:26:50 PM                         */
 /*==============================================================*/
 
 
@@ -4812,6 +4812,20 @@ create index Indx_FdrTransIntTyp on FDRTranslation (
 create index Indx_FdrTrnsIntTypDir on FDRTranslation (
    DirectionType ASC,
    InterfaceType ASC
+);
+
+/*==============================================================*/
+/* Table: FileExportHistory                                     */
+/*==============================================================*/
+create table FileExportHistory  (
+   EntryId              NUMBER                          not null,
+   OriginalFileName     VARCHAR2(100)                   not null,
+   FileName             VARCHAR2(100)                   not null,
+   FileExportType       VARCHAR2(50)                    not null,
+   Initiator            VARCHAR2(100)                   not null,
+   "Date"               DATE                            not null,
+   ExportPath           VARCHAR2(300)                   not null,
+   constraint PK_FileExportHistory primary key (EntryId)
 );
 
 /*==============================================================*/

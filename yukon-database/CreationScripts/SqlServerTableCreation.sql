@@ -1,7 +1,7 @@
 /*==============================================================*/
 /* Database name:  YukonDatabase                                */
 /* DBMS name:      Microsoft SQL Server 2005                    */
-/* Created on:     3/9/2013 1:04:38 AM                          */
+/* Created on:     3/10/2013 5:25:33 PM                         */
 /*==============================================================*/
 
 
@@ -5064,6 +5064,21 @@ go
 create index Indx_FdrTrnsIntTypDir on FDRTranslation (
 DirectionType ASC,
 InterfaceType ASC
+)
+go
+
+/*==============================================================*/
+/* Table: FileExportHistory                                     */
+/*==============================================================*/
+create table FileExportHistory (
+   EntryId              numeric              not null,
+   OriginalFileName     varchar(100)         not null,
+   FileName             varchar(100)         not null,
+   FileExportType       varchar(50)          not null,
+   Initiator            varchar(100)         not null,
+   Date                 datetime             not null,
+   ExportPath           varchar(300)         not null,
+   constraint PK_FileExportHistory primary key (EntryId)
 )
 go
 
