@@ -354,12 +354,14 @@ public class OperatorHardwareController {
         model.addAttribute("mode", PageEditMode.VIEW);
         
         setupHardwareViewEditModel(fragment, hardware, model, context);
+        boolean showViewMore = false;
         if(HardwareType.getForClass(HardwareClass.THERMOSTAT).contains(hardware.getHardwareType())) {
-            model.addAttribute("showViewMore", "true");
+            showViewMore = true;
             operatorThermostatHelper.setupModelMapForCommandHistory(model, request, 
                     Collections.singletonList(inventoryId), fragment.getAccountId(), 
                     THERMOSTAT_DETAIL_NUM_ITEMS);
         }
+        model.addAttribute("showViewMore", showViewMore);
         
         if(hardware.getHardwareType() == HardwareType.NON_YUKON_METER){
             return "redirect:/stars/operator/hardware/mp/view";
