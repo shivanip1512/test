@@ -9,7 +9,7 @@ CREATE INDEX Indx_ADAS_AnalysisId_SlotId ON ArchiveDataAnalysisSlot (
     SlotId ASC
 );
 GO
- 
+
 CREATE INDEX Indx_ADASV_SlotId_DeviceId ON ArchiveDataAnalysisSlotValue (
     SlotId ASC, 
     DeviceId ASC
@@ -36,14 +36,14 @@ WHERE UserId = -9999;
 
 /* Start YUK-11876 */
 CREATE TABLE EnergyCompanySetting (
-   EnergyCompanySettingId   NUMERIC       NOT NULL,
-   EnergyCompanyId          NUMERIC       NOT NULL,
-   Name                     VARCHAR(100)  NOT NULL,
-   Value                    VARCHAR(1000) NULL,
-   Status                   VARCHAR(100)  NULL,
-   Comments                 VARCHAR(1000) NULL,
-   LastChangedDate          DATETIME      NULL,
-   CONSTRAINT PK_EnergyCompanySetting PRIMARY KEY (EnergyCompanySettingId)
+    EnergyCompanySettingId   NUMERIC       NOT NULL,
+    EnergyCompanyId          NUMERIC       NOT NULL,
+    Name                     VARCHAR(100)  NOT NULL,
+    Value                    VARCHAR(1000) NULL,
+    Status                   VARCHAR(100)  NULL,
+    Comments                 VARCHAR(1000) NULL,
+    LastChangedDate          DATETIME      NULL,
+    CONSTRAINT PK_EnergyCompanySetting PRIMARY KEY (EnergyCompanySettingId)
 );
  
 CREATE TABLE RolePropToSetting_Temp (
@@ -52,7 +52,7 @@ CREATE TABLE RolePropToSetting_Temp (
     Status         VARCHAR(100) NOT NULL,
     CONSTRAINT PK_RolePropToSetting_Temp PRIMARY KEY (RolePropertyId)
 );
- 
+
 INSERT INTO RolePropToSetting_Temp VALUES (-1100, 'ADMIN_EMAIL_ADDRESS', 'ALWAYS_SET');
 INSERT INTO RolePropToSetting_Temp VALUES (-1101, 'OPTOUT_NOTIFICATION_RECIPIENTS', 'ALWAYS_SET');
 INSERT INTO RolePropToSetting_Temp VALUES (-1102, 'ENERGY_COMPANY_DEFAULT_TIME_ZONE', 'ALWAYS_SET');
@@ -75,7 +75,7 @@ INSERT INTO RolePropToSetting_Temp VALUES (-1123, 'ALLOW_THERMOSTAT_SCHEDULE_WEE
 INSERT INTO RolePropToSetting_Temp VALUES (-1124, 'ALLOW_THERMOSTAT_SCHEDULE_7_DAY', 'ALWAYS_SET');
 INSERT INTO RolePropToSetting_Temp VALUES (-1125, 'BROADCAST_OPT_OUT_CANCEL_SPID', 'UNSET');
 INSERT INTO RolePropToSetting_Temp VALUES (-1126, 'ALTERNATE_PROGRAM_ENROLLMENT', 'ALWAYS_SET');
- 
+
 /* @start-block */
 DECLARE
     @energyCompanySettingId NUMERIC; 
@@ -175,33 +175,33 @@ INSERT INTO YukonRoleProperty VALUES (-20221, -202, 'Device Data Monitor', 'fals
 DECLARE @regulatorCommReporting VARCHAR(60);
 DECLARE @capbankCommReporting VARCHAR(60);
 DECLARE @monitorCommReporting VARCHAR(60);
- 
+
 /* @start-cparm CAP_CONTROL_IVVC_REGULATOR_REPORTING_RATIO */
 SELECT @regulatorCommReporting = '100';
 /* @end-cparm */
- 
+
 /* @start-cparm CAP_CONTROL_IVVC_BANKS_REPORTING_RATIO */
 SELECT @capbankCommReporting = '100';
 /* @end-cparm */
- 
+
 /* @start-cparm CAP_CONTROL_IVVC_VOLTAGEMONITOR_REPORTING_RATIO */
 SELECT @monitorCommReporting = '100';
 /* @end-cparm */
- 
+
 INSERT INTO CCStrategyTargetSettings(StrategyId, SettingName, SettingValue, SettingType)
-	SELECT StrategyID, 'Comm Reporting Percentage', @regulatorCommReporting, 'REGULATOR'
-	FROM CapControlStrategy
-	WHERE ControlUnits = 'INTEGRATED_VOLT_VAR';
- 
+    SELECT StrategyID, 'Comm Reporting Percentage', @regulatorCommReporting, 'REGULATOR'
+    FROM CapControlStrategy
+    WHERE ControlUnits = 'INTEGRATED_VOLT_VAR';
+
 INSERT INTO CCStrategyTargetSettings(StrategyId, SettingName, SettingValue, SettingType)
-	SELECT StrategyID, 'Comm Reporting Percentage', @capbankCommReporting, 'CAPBANK'
-	FROM CapControlStrategy
-	WHERE ControlUnits = 'INTEGRATED_VOLT_VAR';
- 
+    SELECT StrategyID, 'Comm Reporting Percentage', @capbankCommReporting, 'CAPBANK'
+    FROM CapControlStrategy
+    WHERE ControlUnits = 'INTEGRATED_VOLT_VAR';
+
 INSERT INTO CCStrategyTargetSettings(StrategyId, SettingName, SettingValue, SettingType)
-	SELECT StrategyID, 'Comm Reporting Percentage', @monitorCommReporting, 'VOLTAGE_MONITOR'
-	FROM CapControlStrategy
-	WHERE ControlUnits = 'INTEGRATED_VOLT_VAR';
+    SELECT StrategyID, 'Comm Reporting Percentage', @monitorCommReporting, 'VOLTAGE_MONITOR'
+    FROM CapControlStrategy
+    WHERE ControlUnits = 'INTEGRATED_VOLT_VAR';
 /* @end-block */
 /* End YUK-11927 */
 
@@ -246,4 +246,4 @@ GO
 /* VERSION INFO                                               */
 /* Inserted when update script is run                         */
 /**************************************************************/
-/*INSERT INTO CTIDatabase VALUES ('5.6', '08-MAR-2013', 'Latest Update', 2, GETDATE());*/
+INTO CTIDatabase VALUES ('5.6', '11-MAR-2013', 'Latest Update', 2, GETDATE());

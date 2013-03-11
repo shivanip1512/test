@@ -8,7 +8,7 @@ CREATE INDEX Indx_ADAS_AnalysisId_SlotId ON ArchiveDataAnalysisSlot (
     AnalysisId ASC, 
     SlotId ASC
 );
- 
+
 CREATE INDEX Indx_ADASV_SlotId_DeviceId ON ArchiveDataAnalysisSlotValue (
     SlotId ASC, 
     DeviceId ASC
@@ -34,14 +34,14 @@ WHERE UserId = -9999;
 
 /* Start YUK-11876 */
 CREATE TABLE EnergyCompanySetting (
-   EnergyCompanySettingId   NUMBER         NOT NULL,
-   EnergyCompanyId          NUMBER         NOT NULL,
-   Name                     VARCHAR2(100)  NOT NULL,
-   Value                    VARCHAR2(1000) NULL,
-   Status                   VARCHAR2(100)  NULL,
-   Comments                 VARCHAR2(1000) NULL,
-   LastChangedDate          DATE           NULL,
-   CONSTRAINT PK_EnergyCompanySetting PRIMARY KEY (EnergyCompanySettingId)
+    EnergyCompanySettingId   NUMBER         NOT NULL,
+    EnergyCompanyId          NUMBER         NOT NULL,
+    Name                     VARCHAR2(100)  NOT NULL,
+    Value                    VARCHAR2(1000) NULL,
+    Status                   VARCHAR2(100)  NULL,
+    Comments                 VARCHAR2(1000) NULL,
+    LastChangedDate          DATE           NULL,
+    CONSTRAINT PK_EnergyCompanySetting PRIMARY KEY (EnergyCompanySettingId)
 );
 
 CREATE TABLE RolePropToSetting_Temp (
@@ -172,32 +172,32 @@ DECLARE
     v_capbankCommReporting VARCHAR2(60);
     v_monitorCommReporting VARCHAR2(60);
 BEGIN
-	/* @start-cparm CAP_CONTROL_IVVC_REGULATOR_REPORTING_RATIO */
-	v_regulatorCommReporting := '100';
-	/* @end-cparm */
-	 
-	/* @start-cparm CAP_CONTROL_IVVC_BANKS_REPORTING_RATIO */
-	v_capbankCommReporting := '100';
-	/* @end-cparm */
-	 
-	/* @start-cparm CAP_CONTROL_IVVC_VOLTAGEMONITOR_REPORTING_RATIO */
-	v_monitorCommReporting := '100';
-	/* @end-cparm */
-	 
-	INSERT INTO CCStrategyTargetSettings
-		SELECT StrategyID, 'Comm Reporting Percentage', v_regulatorCommReporting, 'REGULATOR'
-		FROM CapControlStrategy
-		WHERE ControlUnits = 'INTEGRATED_VOLT_VAR';
-	 
-	INSERT INTO CCStrategyTargetSettings
-		SELECT StrategyID, 'Comm Reporting Percentage', v_capbankCommReporting, 'CAPBANK'
-		FROM CapControlStrategy
-		WHERE ControlUnits = 'INTEGRATED_VOLT_VAR';
-	 
-	INSERT INTO CCStrategyTargetSettings
-		SELECT StrategyID, 'Comm Reporting Percentage', v_monitorCommReporting, 'VOLTAGE_MONITOR'
-		FROM CapControlStrategy
-		WHERE ControlUnits = 'INTEGRATED_VOLT_VAR';
+    /* @start-cparm CAP_CONTROL_IVVC_REGULATOR_REPORTING_RATIO */
+    v_regulatorCommReporting := '100';
+    /* @end-cparm */
+
+    /* @start-cparm CAP_CONTROL_IVVC_BANKS_REPORTING_RATIO */
+    v_capbankCommReporting := '100';
+    /* @end-cparm */
+
+    /* @start-cparm CAP_CONTROL_IVVC_VOLTAGEMONITOR_REPORTING_RATIO */
+    v_monitorCommReporting := '100';
+    /* @end-cparm */
+
+    INSERT INTO CCStrategyTargetSettings
+        SELECT StrategyID, 'Comm Reporting Percentage', v_regulatorCommReporting, 'REGULATOR'
+        FROM CapControlStrategy
+        WHERE ControlUnits = 'INTEGRATED_VOLT_VAR';
+
+    INSERT INTO CCStrategyTargetSettings
+        SELECT StrategyID, 'Comm Reporting Percentage', v_capbankCommReporting, 'CAPBANK'
+        FROM CapControlStrategy
+        WHERE ControlUnits = 'INTEGRATED_VOLT_VAR';
+
+    INSERT INTO CCStrategyTargetSettings
+        SELECT StrategyID, 'Comm Reporting Percentage', v_monitorCommReporting, 'VOLTAGE_MONITOR'
+        FROM CapControlStrategy
+        WHERE ControlUnits = 'INTEGRATED_VOLT_VAR';
 END;
 /
 /* @end-block */
@@ -242,4 +242,4 @@ CREATE TABLE FileExportHistory  (
 /* VERSION INFO                                               */
 /* Inserted when update script is run                         */
 /**************************************************************/
-/*INSERT INTO CTIDatabase VALUES ('5.6', '08-MAR-2013', 'Latest Update', 2, SYSDATE);*/
+INSERT INTO CTIDatabase VALUES ('5.6', '11-MAR-2013', 'Latest Update', 2, SYSDATE);
