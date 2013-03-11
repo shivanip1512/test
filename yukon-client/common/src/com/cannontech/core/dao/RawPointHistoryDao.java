@@ -352,8 +352,9 @@ public interface RawPointHistoryDao {
    }
 
    /**
-    * Gets the value of a point for an exact time stamp or null if no value exists for that point in time
+    * Gets the value of a point for an exact time stamp or throws {@link NotFoundException} 
+    * if no value exists for that point in time
     */
-   public PointValueQualityHolder getSpecificValue(int pointId, long timestamp);
+   public PointValueQualityHolder getSpecificValue(int pointId, long timestamp) throws NotFoundException;
 
 }

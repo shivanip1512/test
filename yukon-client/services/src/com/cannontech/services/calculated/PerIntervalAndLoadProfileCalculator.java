@@ -23,6 +23,7 @@ import com.cannontech.common.pao.definition.dao.PaoDefinitionDao;
 import com.cannontech.common.pao.definition.model.PaoTag;
 import com.cannontech.common.pao.definition.model.PaoTypePointIdentifier;
 import com.cannontech.common.point.PointQuality;
+import com.cannontech.core.dao.NotFoundException;
 import com.cannontech.core.dao.RawPointHistoryDao;
 import com.cannontech.core.dynamic.DynamicDataSource;
 import com.cannontech.core.dynamic.PointValueQualityHolder;
@@ -141,11 +142,13 @@ public class PerIntervalAndLoadProfileCalculator implements PointCalculator {
                 log.debug(String.format("Found previous interval from Dispatch: %s", previousDispatch));
             } else {
                 // try getting it from rph?
-                PointValueQualityHolder previousRph = rphDao.getSpecificValue(pvqh.getId(), previousInterval.getMillis());
-                if (previousRph != null) {
+                try {
+                    PointValueQualityHolder previousRph = rphDao.getSpecificValue(pvqh.getId(), previousInterval.getMillis());
                     previous = previousRph.getValue();
                     foundPrevious = true;
                     log.debug(String.format("Found previous interval from RPH: %s", previousRph));
+                } catch (NotFoundException e) {
+                    /* No point found in RPH, this could be caused by an outage or a change in recording interval. */
                 }
             }
         }

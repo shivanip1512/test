@@ -14,6 +14,7 @@ import java.util.Set;
 import org.apache.log4j.Logger;
 import org.joda.time.Instant;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.dao.EmptyResultDataAccessException;
 import org.springframework.jdbc.core.simple.ParameterizedRowMapper;
 
 import com.cannontech.clientutils.LogHelper;
@@ -39,6 +40,7 @@ import com.cannontech.common.util.SqlBuilder;
 import com.cannontech.common.util.SqlFragmentGenerator;
 import com.cannontech.common.util.SqlFragmentSource;
 import com.cannontech.common.util.SqlStatementBuilder;
+import com.cannontech.core.dao.NotFoundException;
 import com.cannontech.core.dao.RawPointHistoryDao;
 import com.cannontech.core.dynamic.PointValueBuilder;
 import com.cannontech.core.dynamic.PointValueHolder;
@@ -911,7 +913,9 @@ public class RawPointHistoryDaoImpl implements RawPointHistoryDao {
     
     
     @Override
-    public PointValueQualityHolder getSpecificValue(int pointId, long timestamp) {
+    public PointValueQualityHolder getSpecificValue(int pointId, long timestamp)
+    throws NotFoundException {
+        
         SqlStatementBuilder sql = new SqlStatementBuilder();
         sql.append("SELECT");
         sql.append("rph.pointId,");
@@ -924,7 +928,11 @@ public class RawPointHistoryDaoImpl implements RawPointHistoryDao {
         sql.append("WHERE p.pointid").eq(pointId);
         sql.append("AND timestamp").eq(new Date(timestamp));
         
-        return yukonTemplate.queryForObject(sql, new LiteRPHQualityRowMapper());
+        try {
+            return yukonTemplate.queryForObject(sql, new LiteRPHQualityRowMapper());
+        } catch (EmptyResultDataAccessException e) {
+            throw new NotFoundException("No point value for pointid " + pointId + " and timestamp " + timestamp, e);
+        }
     }
 
     private interface SqlFragmentGeneratorFactory {
