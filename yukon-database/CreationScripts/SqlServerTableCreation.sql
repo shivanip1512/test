@@ -1,7 +1,7 @@
 /*==============================================================*/
 /* Database name:  YukonDatabase                                */
 /* DBMS name:      Microsoft SQL Server 2005                    */
-/* Created on:     3/11/2013 3:07:43 PM                         */
+/* Created on:     3/11/2013 6:24:12 PM                         */
 /*==============================================================*/
 
 
@@ -2956,9 +2956,9 @@ create table DeviceDataMonitor (
 go
 
 /*==============================================================*/
-/* Index: Indx_DeviceDataMon_MonName_UNQ                        */
+/* Index: Indx_DeviceDataMon_Name_UNQ                           */
 /*==============================================================*/
-create index Indx_DeviceDataMon_MonName_UNQ on DeviceDataMonitor (
+create index Indx_DeviceDataMon_Name_UNQ on DeviceDataMonitor (
 Name ASC
 )
 go
@@ -11373,9 +11373,14 @@ alter table DeviceCustomerList
 go
 
 alter table DeviceDataMonitorProcessor
-   add constraint FK_DeviceDataMonProc_DevDataM foreign key (MonitorId)
+   add constraint FK_DevDataMonProc_DevDataMon foreign key (MonitorId)
       references DeviceDataMonitor (MonitorId)
          on delete cascade
+go
+
+alter table DeviceDataMonitorProcessor
+   add constraint FK_DevDataMonProc_StateGroup foreign key (StateGroupId)
+      references StateGroup (StateGroupId)
 go
 
 alter table DeviceDirectCommSettings

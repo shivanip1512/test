@@ -1,7 +1,7 @@
 /*==============================================================*/
 /* Database name:  YukonDatabase                                */
 /* DBMS name:      ORACLE Version 9i                            */
-/* Created on:     3/11/2013 3:10:26 PM                         */
+/* Created on:     3/11/2013 6:25:24 PM                         */
 /*==============================================================*/
 
 
@@ -2778,9 +2778,9 @@ create table DeviceDataMonitor  (
 );
 
 /*==============================================================*/
-/* Index: Indx_DeviceDataMon_MonName_UNQ                        */
+/* Index: Indx_DeviceDataMon_Name_UNQ                           */
 /*==============================================================*/
-create index Indx_DeviceDataMon_MonName_UNQ on DeviceDataMonitor (
+create index Indx_DeviceDataMon_Name_UNQ on DeviceDataMonitor (
    Name ASC
 );
 
@@ -10608,9 +10608,13 @@ alter table DeviceCustomerList
       references DEVICE (DEVICEID);
 
 alter table DeviceDataMonitorProcessor
-   add constraint FK_DeviceDataMonProc_DevDataM foreign key (MonitorId)
+   add constraint FK_DevDataMonProc_DevDataMon foreign key (MonitorId)
       references DeviceDataMonitor (MonitorId)
       on delete cascade;
+
+alter table DeviceDataMonitorProcessor
+   add constraint FK_DevDataMonProc_StateGroup foreign key (StateGroupId)
+      references StateGroup (StateGroupId);
 
 alter table DeviceDirectCommSettings
    add constraint SYS_C0013186 foreign key (DEVICEID)

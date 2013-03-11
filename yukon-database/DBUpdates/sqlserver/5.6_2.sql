@@ -147,7 +147,7 @@ CREATE TABLE DeviceDataMonitor (
 );
 GO
 
-CREATE UNIQUE INDEX Indx_DeviceDataMon_MonName_UNQ
+CREATE UNIQUE INDEX Indx_DeviceDataMon_Name_UNQ
     ON DeviceDataMonitor (Name ASC);
 GO
 
@@ -162,9 +162,14 @@ CREATE TABLE DeviceDataMonitorProcessor (
 GO
 
 ALTER TABLE DeviceDataMonitorProcessor
-    ADD CONSTRAINT FK_DeviceDataMonProc_DevDataM FOREIGN KEY (MonitorId)
+    ADD CONSTRAINT FK_DevDataMonProc_DevDataMon FOREIGN KEY (MonitorId)
         REFERENCES DeviceDataMonitor (MonitorId)
             ON DELETE CASCADE;
+GO
+
+ALTER TABLE DeviceDataMonitorProcessor
+    ADD CONSTRAINT FK_DevDataMonProc_StateGroup FOREIGN KEY (StateGroupId)
+        REFERENCES StateGroup (StateGroupId);
 GO
 
 INSERT INTO YukonRoleProperty VALUES (-20221, -202, 'Device Data Monitor', 'false', 'Controls access to the Device Data Monitor.');
