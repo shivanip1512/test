@@ -1,7 +1,7 @@
 /*==============================================================*/
 /* Database name:  YukonDatabase                                */
 /* DBMS name:      Microsoft SQL Server 2005                    */
-/* Created on:     3/10/2013 5:25:33 PM                         */
+/* Created on:     3/11/2013 3:07:43 PM                         */
 /*==============================================================*/
 
 
@@ -7453,6 +7453,16 @@ create table RPHTag (
 go
 
 /*==============================================================*/
+/* Table: RawPointHistoryDependentJob                           */
+/*==============================================================*/
+create table RawPointHistoryDependentJob (
+   JobId                int                  not null,
+   RawPointHistoryId    numeric              not null,
+   constraint PK_RawPointHistoryDependentJob primary key (JobId)
+)
+go
+
+/*==============================================================*/
 /* Table: Regulator                                             */
 /*==============================================================*/
 create table Regulator (
@@ -12818,6 +12828,11 @@ alter table RPHTag
    add constraint FK_RPHTag_RPH foreign key (ChangeId)
       references RAWPOINTHISTORY (CHANGEID)
          on delete cascade
+go
+
+alter table RawPointHistoryDependentJob
+   add constraint FK_RPHDependentJob_Job foreign key (JobId)
+      references JOB (JobID)
 go
 
 alter table Regulator

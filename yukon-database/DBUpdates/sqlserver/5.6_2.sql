@@ -242,6 +242,20 @@ CREATE TABLE FileExportHistory  (
 GO
 /* End YUK-11936 */
 
+/* Start YUK-11951 */
+CREATE TABLE RawPointHistoryDependentJob (
+    JobId                INT                  NOT NULL,
+    RawPointHistoryId    NUMERIC              NOT NULL,
+    CONSTRAINT PK_RawPointHistoryDependentJob PRIMARY KEY (JobId)
+);
+GO
+
+ALTER TABLE RawPointHistoryDependentJob
+    ADD CONSTRAINT FK_RPHDependentJob_Job FOREIGN KEY (JobId)
+        REFERENCES Job (JobId);
+GO
+/* End YUK-11951 */
+
 /**************************************************************/
 /* VERSION INFO                                               */
 /* Inserted when update script is run                         */

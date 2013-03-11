@@ -1,7 +1,7 @@
 /*==============================================================*/
 /* Database name:  YukonDatabase                                */
 /* DBMS name:      ORACLE Version 9i                            */
-/* Created on:     3/10/2013 5:26:50 PM                         */
+/* Created on:     3/11/2013 3:10:26 PM                         */
 /*==============================================================*/
 
 
@@ -7014,6 +7014,15 @@ create table RPHTag  (
 );
 
 /*==============================================================*/
+/* Table: RawPointHistoryDependentJob                           */
+/*==============================================================*/
+create table RawPointHistoryDependentJob  (
+   JobId                INTEGER                         not null,
+   RawPointHistoryId    NUMBER                          not null,
+   constraint PK_RawPointHistoryDependentJob primary key (JobId)
+);
+
+/*==============================================================*/
 /* Table: Regulator                                             */
 /*==============================================================*/
 create table Regulator  (
@@ -11777,6 +11786,10 @@ alter table RPHTag
    add constraint FK_RPHTag_RPH foreign key (ChangeId)
       references RAWPOINTHISTORY (CHANGEID)
       on delete cascade;
+
+alter table RawPointHistoryDependentJob
+   add constraint FK_RPHDependentJob_Job foreign key (JobId)
+      references JOB (JobID);
 
 alter table Regulator
    add constraint FK_Reg_PAO foreign key (RegulatorId)
