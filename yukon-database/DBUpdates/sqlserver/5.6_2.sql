@@ -261,32 +261,6 @@ ALTER TABLE RawPointHistoryDependentJob
 GO
 /* End YUK-11951 */
 
-/* Start YUK-11954 */
-UPDATE YukonPaobject 
-SET Type = 'RFN-430A3R' 
-FROM YukonPaobject ypao
-JOIN RFNAddress rfna ON rfna.DeviceId = ypao.PAObjectID
-WHERE Model = 'A3R';
-
-UPDATE YukonPaobject 
-SET Type = 'RFN-430A3D' 
-FROM YukonPaobject ypao
-JOIN RFNAddress rfna ON rfna.DeviceId = ypao.PAObjectID
-WHERE Model = 'A3D';
-
-UPDATE YukonPaobject 
-SET Type = 'RFN-430A3T' 
-FROM YukonPaobject ypao
-JOIN RFNAddress rfna ON rfna.DeviceId = ypao.PAObjectID
-WHERE Model = 'A3T';
-
-UPDATE YukonPaobject 
-SET Type = 'RFN-430A3K' 
-FROM YukonPaobject ypao
-JOIN RFNAddress rfna ON rfna.DeviceId = ypao.PAObjectID
-WHERE Model = 'A3K';
-/* End YUK-11954 */
-
 /**************************************************************/
 /* VERSION INFO                                               */
 /* Inserted when update script is run                         */

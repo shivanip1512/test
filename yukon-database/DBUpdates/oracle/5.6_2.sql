@@ -255,36 +255,6 @@ ALTER TABLE RawPointHistoryDependentJob
         REFERENCES Job (JobId);
 /* End YUK-11951 */
 
-/* Start YUK-11954 */
-UPDATE YukonPAObject ypao
-SET ypao.Type = 'RFN-430A3R'
-WHERE ypao.PAOBjectId IN (
-    SELECT rfna.DeviceId
-    FROM RFNAddress rfna
-    WHERE Model = 'A3R');
-
-UPDATE YukonPAObject ypao
-SET ypao.Type = 'RFN-430A3D'
-WHERE ypao.PAOBjectId IN (
-    SELECT rfna.DeviceId
-    FROM RFNAddress rfna
-    WHERE Model = 'A3D');
-
-UPDATE YukonPAObject ypao
-SET ypao.Type = 'RFN-430A3T'
-WHERE ypao.PAOBjectId IN (
-    SELECT rfna.DeviceId
-    FROM RFNAddress rfna
-    WHERE Model = 'A3T');
-
-UPDATE YukonPAObject ypao
-SET ypao.Type = 'RFN-430A3K'
-WHERE ypao.PAOBjectId IN (
-    SELECT rfna.DeviceId
-    FROM RFNAddress rfna
-    WHERE Model = 'A3K');
-/* End YUK-11954 */
-
 /**************************************************************/
 /* VERSION INFO                                               */
 /* Inserted when update script is run                         */
