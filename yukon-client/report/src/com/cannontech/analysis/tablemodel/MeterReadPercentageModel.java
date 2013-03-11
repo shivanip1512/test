@@ -1,5 +1,6 @@
 package com.cannontech.analysis.tablemodel;
 
+import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
@@ -25,13 +26,15 @@ import com.cannontech.common.point.PointQuality;
 import com.cannontech.common.util.SqlFragmentSource;
 import com.cannontech.common.util.SqlStatementBuilder;
 import com.cannontech.core.dao.PaoDao;
+import com.cannontech.database.YNBoolean;
 import com.cannontech.database.YukonJdbcTemplate;
+import com.cannontech.database.YukonResultSet;
+import com.cannontech.database.YukonRowMapper;
 import com.cannontech.user.YukonUserContext;
 import com.google.common.collect.HashMultimap;
 import com.google.common.collect.Lists;
 import com.google.common.collect.Multimap;
 import com.google.common.collect.Multimaps;
-import com.google.common.collect.Sets;
 
 public class MeterReadPercentageModel extends BareDatedReportModelBase<MeterReadPercentageModel.ModelRow> implements
         UserContextModelAttributes {
@@ -43,7 +46,7 @@ public class MeterReadPercentageModel extends BareDatedReportModelBase<MeterRead
         MONTHLY("Monthly", 12);
 
         private String displayName;
-        int rowsToDisplay;
+        private int rowsToDisplay;
 
         private MeterReadPercentagePeriod(String displayName, int rowsToDisplay) {
             this.displayName = displayName;
@@ -115,9 +118,9 @@ public class MeterReadPercentageModel extends BareDatedReportModelBase<MeterRead
         Collection<PaoType> possiblePaoTypes = dest.get(BuiltInAttribute.USAGE);
 
         for (DeviceGroup group : groups) {
-            // First get a list of all PAO types in the group we are using. This will reduce the
+            // Get list of possible PAO types in the group we are using. This will reduce the
             // number of queries later.
-            Collection<PaoType> actualPaoTypes = getActualPaoTypes(group, possiblePaoTypes);
+            Collection<PaoType> actualPaoTypes = getPaoTypesInGroup(group, possiblePaoTypes);
             int deviceCount = deviceGroupService.getDeviceCount(Collections.singleton(group));
             if (deviceCount > 0) {
 
@@ -167,26 +170,23 @@ public class MeterReadPercentageModel extends BareDatedReportModelBase<MeterRead
      * @param possiblePaoTypes
      * @return
      */
-    private Collection<PaoType> getActualPaoTypes(DeviceGroup group, Collection<PaoType> possiblePaoTypes) {
+    private  List<PaoType> getPaoTypesInGroup(DeviceGroup group, Collection<PaoType> possiblePaoTypes) {
 
-        Collection<PaoType> actualPaoTypes = Sets.newHashSet();
+        SqlStatementBuilder sql = new SqlStatementBuilder();
+        sql.append("select distinct(type) from YukonPAObject ypo");
+        sql.append("where type").in(possiblePaoTypes);
+        SqlFragmentSource groupSqlWhereClause =
+            deviceGroupService.getDeviceGroupSqlWhereClause(Collections.singleton(group),
+                                                            "YPO.paObjectId");
+        sql.append("AND").appendFragment(groupSqlWhereClause);
+        List<PaoType> paoTypes  = yukonJdbcTemplate.query(sql, new YukonRowMapper<PaoType>() {
+            @Override
+            public PaoType mapRow(YukonResultSet rs) throws SQLException {
+                PaoType type = PaoType.getForDbString(rs.getString("type"));
+                return type;
 
-        for (PaoType paoType : possiblePaoTypes) {
-
-            SqlStatementBuilder sql = new SqlStatementBuilder();
-            sql.append("select count(PAObjectID) from YukonPAObject ypo");
-            sql.append("where ypo.type").eq(paoType);
-            SqlFragmentSource groupSqlWhereClause =
-                deviceGroupService.getDeviceGroupSqlWhereClause(Collections.singleton(group),
-                                                                "YPO.paObjectId");
-            sql.append("AND").appendFragment(groupSqlWhereClause);
-
-            if (yukonJdbcTemplate.queryForInt(sql) > 0)
-            {
-                actualPaoTypes.add(paoType);
-            }
-        }
-        return actualPaoTypes;
+        }});
+        return paoTypes;
     }
     
     /**
@@ -231,10 +231,10 @@ public class MeterReadPercentageModel extends BareDatedReportModelBase<MeterRead
             // and in the time range selected.
             sql.append("select distinct(ypo.PAObjectID) ");
             sql.append("from YukonPAObject ypo");
-            sql.append(" inner join Point p on p.PAObjectID = ypo.PAObjectID and p.POINTOFFSET = ");
-            sql.appendArgument(paoTypePointIdentifier.getPointIdentifier().getOffset()).append(" and p.POINTTYPE = ")
-                .appendArgument(paoTypePointIdentifier.getPointIdentifier().getPointType());
-            sql.append("  inner join RAWPOINTHISTORY rph on rph.POINTID = p.POINTID");
+            sql.append("join Point p on p.PAObjectID = ypo.PAObjectID");
+            sql.append("and p.POINTOFFSET").eq_k(paoTypePointIdentifier.getPointIdentifier().getOffset());
+            sql.append("and p.POINTTYPE").eq_k(paoTypePointIdentifier.getPointIdentifier().getPointType());
+            sql.append("  join RAWPOINTHISTORY rph on rph.POINTID = p.POINTID");
             sql.append("and rph.quality").eq(PointQuality.Normal.getDatabaseRepresentation());
             sql.append("and rph.TIMESTAMP").gt(dateRange.getStartDate());
             // stop date should be included
@@ -249,7 +249,7 @@ public class MeterReadPercentageModel extends BareDatedReportModelBase<MeterRead
             SqlFragmentSource groupSqlWhereClause =
                 deviceGroupService.getDeviceGroupSqlWhereClause(Collections.singleton(group), "YPO.paObjectId");
             sql.append("AND").appendFragment(groupSqlWhereClause);
-            sql.append("AND YPO.DisableFlag = 'N'");
+            sql.append("AND YPO.DisableFlag").eq_k(YNBoolean.NO);
             sql.append(")");
             sql.append(") as count");
             successCount += yukonJdbcTemplate.queryForInt(sql);
