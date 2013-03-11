@@ -47,7 +47,7 @@
 
 	<tags:pagedBox2 nameKey="tableTitle" searchResult="${filterResult}"
 		baseUrl="intervalData" titleLinkHtml="${actionsMenu}">
-		<table class="compactResultsTable contextual-menu-list">
+		<table class="compactResultsTable f_traversable contextual-menu-list">
 			<tr>
 				<th>
                     <tags:sortLink nameKey="tableHeader.deviceName" baseUrl="intervalData" fieldName="DEVICE_NAME" isDefault="false" />
