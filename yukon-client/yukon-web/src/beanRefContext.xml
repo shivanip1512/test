@@ -18,6 +18,7 @@
 			<value>com/cannontech/billing/billingContext.xml</value>
 			<value>com/cannontech/cbc/cbcContext.xml</value>
             <value>com/cannontech/report/reportContext.xml</value>
+            <value>com/cannontech/web/scheduledFileExport/scheduledFileExport.xml</value>
        </list>
      </constructor-arg>
      <constructor-arg>

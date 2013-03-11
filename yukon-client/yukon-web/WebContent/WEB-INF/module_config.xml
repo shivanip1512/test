@@ -486,6 +486,10 @@
                 </page>
             </pages>
         </page>
+        <page name="archivedValueExporterScheduleSetup" type="BASIC">
+        	<menu></menu>
+            <link>/amr/archivedValuesExporter/scheduleReport</link>
+        </page>
         <page name="analysis.home" type="BASIC">
             <menu></menu>
             <pages>

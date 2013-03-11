@@ -147,7 +147,7 @@ public class RawPointHistoryDaoImpl implements RawPointHistoryDao {
     }
 
     private static void appendTimeStampClause(SqlBuilder sql, Range<Instant> dateRange) {
-        Instant startDate = dateRange.getMin();
+        Instant startDate = dateRange == null ? null : dateRange.getMin();
         if (startDate != null) {
             if (dateRange.isIncludesMinValue()) {
                 sql.append("AND rph.timestamp").gte(startDate);
@@ -155,7 +155,7 @@ public class RawPointHistoryDaoImpl implements RawPointHistoryDao {
                 sql.append("AND rph.timestamp").gt(startDate);
             }
         }
-        Instant stopDate = dateRange.getMax();
+        Instant stopDate = dateRange == null ? null : dateRange.getMax();
         if (stopDate != null) {
             if (dateRange.isIncludesMaxValue()) {
                 sql.append("AND rph.timestamp").lte(stopDate);

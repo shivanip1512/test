@@ -16,8 +16,7 @@ import com.cannontech.common.scheduledFileExport.ScheduledFileExportData;
 import com.cannontech.web.amr.util.cronExpressionTag.CronExpressionTagService;
 import com.cannontech.web.scheduledFileExport.ScheduledBillingJobData;
 import com.cannontech.web.scheduledFileExport.service.ScheduledFileExportService;
-import com.cannontech.web.scheduledFileExport.tasks.ScheduledAdeAllFileExportTask;
-import com.cannontech.web.scheduledFileExport.tasks.ScheduledAdeFilteredFileExportTask;
+import com.cannontech.web.scheduledFileExport.tasks.ScheduledArchivedDataFileExportTask;
 import com.cannontech.web.scheduledFileExport.tasks.ScheduledBillingFileExportTask;
 import com.cannontech.web.scheduledFileExport.tasks.ScheduledFileExportTask;
 import com.cannontech.jobs.dao.ScheduledRepeatingJobDao;
@@ -35,11 +34,9 @@ public class ScheduledFileExportServiceImpl implements ScheduledFileExportServic
 	@Autowired private CronExpressionTagService cronExpressionTagService;
 	@Resource(name="scheduledBillingFileExportJobDefinition")
 	private YukonJobDefinition<ScheduledBillingFileExportTask> scheduledBillingFileExportJobDefinition;
-	@Resource(name="scheduledAdeFilteredFileExportJobDefinition")
-	private YukonJobDefinition<ScheduledAdeFilteredFileExportTask> scheduledAdeFilteredFileExportJobDefinition;
-	@Resource(name="scheduledAdeAllFileExportJobDefinition")
-	private YukonJobDefinition<ScheduledAdeAllFileExportTask> scheduledAdeAllFileExportJobDefinition;
-	
+	@Resource(name="scheduledArchivedDataFileExportJobDefinition")
+	private YukonJobDefinition<ScheduledArchivedDataFileExportTask> scheduledArchivedDataFileExportJobDefinition;
+
 	private Logger log = YukonLogManager.getLogger(ScheduledFileExportServiceImpl.class);
 	
 	private Map<ScheduledExportType, YukonJobDefinition<? extends ScheduledFileExportTask>> typeToJobDefinitionMap; 
@@ -48,8 +45,7 @@ public class ScheduledFileExportServiceImpl implements ScheduledFileExportServic
 	public void init() {
 		typeToJobDefinitionMap = Maps.newEnumMap(ScheduledExportType.class);
 		typeToJobDefinitionMap.put(ScheduledExportType.BILLING, scheduledBillingFileExportJobDefinition);
-		typeToJobDefinitionMap.put(ScheduledExportType.ARCHIVED_DATA_EXPORT_FILTERED, scheduledAdeFilteredFileExportJobDefinition);
-		typeToJobDefinitionMap.put(ScheduledExportType.ARCHIVED_DATA_EXPORT_ALL, scheduledAdeAllFileExportJobDefinition);
+		typeToJobDefinitionMap.put(ScheduledExportType.ARCHIVED_DATA_EXPORT, scheduledArchivedDataFileExportJobDefinition);
 	}
 	
 	@Override
@@ -79,6 +75,11 @@ public class ScheduledFileExportServiceImpl implements ScheduledFileExportServic
 	@Override
 	public List<ScheduledRepeatingJob> getBillingExportJobs() {
 		return jobManager.getNotDeletedRepeatingJobsByDefinition(scheduledBillingFileExportJobDefinition);
+	}
+	
+	@Override
+	public List<ScheduledRepeatingJob> getArchivedDataExportJobs() {
+		return jobManager.getNotDeletedRepeatingJobsByDefinition(scheduledArchivedDataFileExportJobDefinition);
 	}
 	
 	@Override

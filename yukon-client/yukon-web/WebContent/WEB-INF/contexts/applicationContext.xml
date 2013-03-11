@@ -1950,14 +1950,12 @@
 
     <bean id="devBackingService" class="com.cannontech.web.updater.development.DevBackingService"/>
 
-    <bean id="archiveValuesExportFormatDao" class="com.cannontech.amr.archivedValueExporter.dao.impl.ArchiveValuesExportFormatDaoImpl"/>
     <bean id="exportFormatValidator" class="com.cannontech.web.amr.archivedValuesExporter.validator.ExportFormatValidator"/>
     <bean id="archiveValuesExportAttributeDao" class="com.cannontech.amr.archivedValueExporter.dao.impl.ArchiveValuesExportAttributeDaoImpl"/>
     <bean id="exportAttributeValidator" class="com.cannontech.web.amr.archivedValuesExporter.validator.ExportAttributeValidator"/>
     <bean id="archiveValuesExportFieldDao" class="com.cannontech.amr.archivedValueExporter.dao.impl.ArchiveValuesExportFieldDaoImpl"/>
     <bean id="exportFieldValidator" class="com.cannontech.web.amr.archivedValuesExporter.validator.ExportFieldValidator"/>
     <bean id="archiveValuesExporterValidator" class="com.cannontech.web.amr.archivedValuesExporter.validator.ArchiveValuesExporterValidator"/>
-    <bean id="exportReportGenaratorService" class="com.cannontech.amr.archivedValueExporter.service.impl.ExportReportGeneratorImpl"/>
     
     <bean id="widgetHelper" class="com.cannontech.web.widget.AttributeReadingWidgetHelper"/>
     
@@ -2147,5 +2145,7 @@
 
     <bean class="com.cannontech.web.common.chart.service.impl.ChartServiceImpl"/>
     <bean class="com.cannontech.web.common.chart.service.impl.FlotChartServiceImpl"/>
-
+	
+	<bean class="com.cannontech.web.scheduledFileExport.service.impl.ScheduledFileExportServiceImpl"/>
+	
 </beans>

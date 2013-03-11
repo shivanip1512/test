@@ -3,6 +3,7 @@ package com.cannontech.web.scheduledFileExport.tasks;
 import java.io.File;
 import java.io.FileOutputStream;
 import java.io.IOException;
+import java.io.OutputStream;
 import java.util.List;
 
 import org.apache.commons.lang.StringUtils;
@@ -46,8 +47,8 @@ public class ScheduledBillingFileExportTask extends ScheduledFileExportTask {
 		log.debug("Scheduled billing export \"" + name + "\" file name: " + exportFile.getAbsolutePath() + exportFile.getName());
 		
 		//Write out the billing file
-		try {
-			billingBean.generateFile(new FileOutputStream(exportFile));
+		try (OutputStream outputStream = new FileOutputStream(exportFile)){
+			billingBean.generateFile(outputStream);
 		} catch(IOException e) {
 			throw new FileCreationException("Unable to generate billing file due to I/O errors.", e);			
 		}

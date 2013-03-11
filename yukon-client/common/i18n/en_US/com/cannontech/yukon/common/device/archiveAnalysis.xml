@@ -107,7 +107,40 @@
     <entry key="yukon.web.modules.amr.analysis.readResults.failureLabel">Failed to Read:</entry>
     <entry key="yukon.web.modules.amr.analysis.readResults.collectionActionOnDevicesLabel">Choose New Operation For These Devices</entry>
     
-    <!-- expoter.jsp -->
+    <!-- schedule.jsp -->
+    <entry key="yukon.web.modules.amr.archivedValueExporterScheduleSetup.pageName">Scheduled Archive Data Export</entry>
+    <entry key="yukon.web.modules.amr.archivedValueExporterScheduleSetup.pageTitle">Scheduled Archive Data File Export Editor</entry>
+    <entry key="yukon.web.modules.amr.archivedValueExporterScheduleSetup.adeParameters.title">Archive Data Export Parameters</entry>
+    <entry key="yukon.web.modules.amr.archivedValueExporterScheduleSetup.formatName">Format Name</entry>
+    <entry key="yukon.web.modules.amr.archivedValueExporterScheduleSetup.formatType">Format Type</entry>
+    <entry key="yukon.web.modules.amr.archivedValueExporterScheduleSetup.attribute">Attribute</entry>
+    <entry key="yukon.web.modules.amr.archivedValueExporterScheduleSetup.dataRange">Data Range</entry>
+    <entry key="yukon.web.modules.amr.archivedValueExporterScheduleSetup.exportParameters.title">Export Parameters</entry>
+    <entry key="yukon.web.modules.amr.archivedValueExporterScheduleSetup.scheduleName">Schedule Name</entry>
+    <entry key="yukon.web.modules.amr.archivedValueExporterScheduleSetup.exportPath">Export Path</entry>
+    <entry key="yukon.web.modules.amr.archivedValueExporterScheduleSetup.exportFileName">Export File Name</entry>
+    <entry key="yukon.web.modules.amr.archivedValueExporterScheduleSetup.appendDateToFileName">Append Date to File Name</entry>
+    <entry key="yukon.web.modules.amr.archivedValueExporterScheduleSetup.scheduleCronString">Schedule</entry>
+    <entry key="yukon.web.modules.amr.archivedValueExporterScheduleSetup.notificationEmailAddresses">Notification Email Addresses</entry>
+    <entry key="yukon.web.modules.amr.archivedValueExporterScheduleSetup.cancelButton.label">Cancel</entry>
+    <entry key="yukon.web.modules.amr.archivedValueExporterScheduleSetup.submitButton.label">Submit</entry>
+    <entry key="yukon.web.modules.amr.archivedValueExporterScheduleSetup.scheduleSuccess">File export "{0}" scheduled successfully.</entry>
+    
+    <entry key="yukon.web.modules.amr.archivedValueExporter.jobsBox.title">Scheduled Archived Data Exports</entry>
+    <entry key="yukon.web.modules.amr.archivedValueExporter.nameHeader">Name</entry>
+    <entry key="yukon.web.modules.amr.archivedValueExporter.scheduleHeader">Schedule</entry>
+    <entry key="yukon.web.modules.amr.archivedValueExporter.nextRunHeader">Next Run</entry>
+    <entry key="yukon.web.modules.amr.archivedValueExporter.actionsHeader">Actions</entry>
+    <entry key="yukon.web.modules.amr.archivedValueExporter.edit.imageUrl">/WebConfig/yukon/Icons/pencil.png</entry>
+    <entry key="yukon.web.modules.amr.archivedValueExporter.edit.hoverText">Edit this schedule</entry>
+    <entry key="yukon.web.modules.amr.archivedValueExporter.history.imageUrl">/WebConfig/yukon/Icons/script.gif</entry>
+    <entry key="yukon.web.modules.amr.archivedValueExporter.history.hoverText">View export history</entry>
+    <entry key="yukon.web.modules.amr.archivedValueExporter.delete.imageUrl">/WebConfig/yukon/Icons/delete.png</entry>
+    <entry key="yukon.web.modules.amr.archivedValueExporter.delete.hoverText">Delete this schedule</entry>
+    <entry key="yukon.web.modules.amr.archivedValueExporter.noJobs">No scheduled archived data exports exist.</entry>
+    <entry key="yukon.web.modules.amr.archivedValueExporter.deletedJobSuccess">Job "{0}" successfully deleted.</entry>
+    
+    <!-- exporter.jsp -->
     <entry key="yukon.web.modules.amr.archivedValueExporter.saveFormat.label">Save Format</entry>
     <entry key="yukon.web.modules.amr.archivedValueExporter.createFormat.label">Create Format</entry>
     <entry key="yukon.web.modules.amr.archivedValueExporter.deleteFormat.label">Delete Format</entry>
@@ -298,7 +331,7 @@
     <entry key="yukon.web.modules.amr.archivedValueExporter.dataRangeType.END_DATE">End Date</entry>
     <entry key="yukon.web.modules.amr.archivedValueExporter.dataRangeType.DATE_RANGE">Date Range</entry>
     <entry key="yukon.web.modules.amr.archivedValueExporter.dataRangeType.DAYS_PREVIOUS">Days Previous</entry>
-    <entry key="yukon.web.modules.amr.archivedValueExporter.dataRangeType.SINCE_LAST_CHANGE_ID">Since Last Changed</entry>
+    <entry key="yukon.web.modules.amr.archivedValueExporter.dataRangeType.SINCE_LAST_CHANGE_ID">Since Last Run</entry>
 
     <!-- preview  -->
     <entry key="yukon.web.modules.amr.archivedValueExporter.previewUOMValue">kWh</entry>

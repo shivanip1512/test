@@ -32,6 +32,11 @@ public interface ScheduledFileExportService {
 	public List<ScheduledRepeatingJob> getBillingExportJobs();
 	
 	/**
+	 * @return all jobs based on the ScheduledArchivedDataFileExportTask.
+	 */
+	public List<ScheduledRepeatingJob> getArchivedDataExportJobs();
+	
+	/**
 	 * Creates a billing job data object for the specified job.
 	 */
 	public ScheduledBillingJobData getBillingJobData(ScheduledRepeatingJob job);

@@ -484,6 +484,7 @@
     <entry key="yukon.web.modules.support.fileExportHistory.singleEntry"><![CDATA[
     	You are viewing a single entry. <a href="list">View all</a> or <a href="list?initiator={0}">view all with this initiator</a>.
     ]]></entry>
+    <entry key="yukon.web.modules.support.fileExportHistory.noExports">No exports.</entry>
     
     <entry key="yukon.web.modules.support.fileExportHistory.search.title">Filter</entry>
     <entry key="yukon.web.modules.support.fileExportHistory.search.name">Name contains</entry>
