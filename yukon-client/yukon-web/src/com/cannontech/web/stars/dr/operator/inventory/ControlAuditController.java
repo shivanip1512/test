@@ -18,6 +18,8 @@ import org.springframework.context.MessageSourceResolvable;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.ModelMap;
 import org.springframework.validation.BindingResult;
+import org.springframework.validation.Errors;
+import org.springframework.validation.Validator;
 import org.springframework.web.bind.ServletRequestBindingException;
 import org.springframework.web.bind.WebDataBinder;
 import org.springframework.web.bind.annotation.InitBinder;
@@ -30,6 +32,7 @@ import com.cannontech.common.i18n.MessageSourceAccessor;
 import com.cannontech.common.inventory.InventoryIdentifier;
 import com.cannontech.common.search.SearchResult;
 import com.cannontech.common.util.RecentResultsCache;
+import com.cannontech.common.validator.SimpleValidator;
 import com.cannontech.common.validator.YukonValidationUtils;
 import com.cannontech.core.roleproperties.YukonRoleProperty;
 import com.cannontech.core.service.DateFormattingService.DateFormatEnum;
@@ -64,6 +67,37 @@ public class ControlAuditController {
     @Autowired private FlotChartService flotChartService;
     
     private RecentResultsCache<ControlAuditResult> resultsCache;
+    private static final String BASE_KEY = "yukon.web.modules.operator.controlAudit";
+    
+    private Validator auditInputValidator = new SimpleValidator<AuditSettings>(AuditSettings.class) {
+        @Override
+        public void doValidation(AuditSettings auditSettings, Errors errors) {
+            Instant now = new Instant();
+            Instant from = auditSettings.getFrom();
+            Instant to = auditSettings.getTo();
+            if (from == null) {
+                YukonValidationUtils.rejectValues(errors, BASE_KEY + ".from.error.required", "from");
+            } else {
+                if (from.isAfter(now)) {
+                    YukonValidationUtils.rejectValues(errors, BASE_KEY + ".from.error.future", "from");
+                }
+            }
+            
+            if (to == null) {
+                YukonValidationUtils.rejectValues(errors, BASE_KEY + ".to.error.required", "to");
+            } else {
+                if (to.isAfter(now)) {
+                    YukonValidationUtils.rejectValues(errors, BASE_KEY + ".to.error.future", "to");
+                }
+            }
+
+            if (from != null && to != null) {
+                if (from.isAfter(to)) {
+                    YukonValidationUtils.rejectValues(errors, BASE_KEY + ".range.error.fromAfterTo", "to", "from");
+                }
+            }
+        }
+    };
     
     @RequestMapping
     public String view(HttpServletRequest request, ModelMap model, String auditId, YukonUserContext context) throws ServletRequestBindingException {
@@ -86,20 +120,26 @@ public class ControlAuditController {
     }
     
     @RequestMapping
-    public String runAudit(@ModelAttribute AuditSettings settings, BindingResult result,
+    public String runAudit(@ModelAttribute("settings") AuditSettings settings, BindingResult result,
                            HttpServletRequest request,
                            YukonUserContext context, 
                            ModelMap model, 
                            FlashScope flash) throws ServletRequestBindingException {
+        /** gets the collection and also puts it in the model map, which we need if we fail */
+        InventoryCollection collection = inventoryCollectionFactory.addCollectionToModelMap(request, model);
+        
+        auditInputValidator.validate(settings, result);
         
         if (result.hasErrors()) {
             List<MessageSourceResolvable> messages = YukonValidationUtils.errorsForBindingResult(result);
             flash.setMessage(messages, FlashScopeMessageType.ERROR);
+            /* TODO create custom binder for this stuff */
+            settings.setCollection(collection);
+            settings.setContext(context);
             return "operator/inventory/controlAudit/view.jsp";
         }
         
-        /* TODO create custom binder for this */
-        InventoryCollection collection = inventoryCollectionFactory.createCollection(request);
+        /* TODO create custom binder for this stuff */
         settings.setCollection(collection);
         settings.setContext(context);
         

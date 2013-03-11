@@ -42,9 +42,9 @@ jQuery(function() {
                     <cti:inventoryCollection inventoryCollection="${settings.collection}"/>
                     <tags:nameValueContainer2>
                         <tags:nameValue2 nameKey=".range">
-                            <span class="fl"><dt:dateTime path="from" value="${settings.from}"/></span>
+                            <span class="fl"><dt:dateTime path="from" value="${settings.from}" cssErrorClass="fl"/></span>
                             <span class="rangeSeparator fl"><i:inline key="yukon.common.to"/></span>
-                            <span class="fl"><dt:dateTime path="to" value="${settings.to}"/></span>
+                            <span class="fl"><dt:dateTime path="to" value="${settings.to}" cssErrorClass="fl"/></span>
                         </tags:nameValue2>
                     </tags:nameValueContainer2>
                     <div class="pageActionArea"><cti:button type="submit" nameKey="runAudit"/></div>

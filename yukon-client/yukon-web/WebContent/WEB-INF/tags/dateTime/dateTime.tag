@@ -5,12 +5,13 @@
 <%@ attribute name="name" description="Name of the field in the supplied object"%>
 <%@ attribute name="value" type="java.lang.Object" description="Default: null. Sets the initial value of the input." %>
 <%@ attribute name="disabled" type="java.lang.Boolean" description="Default: false. Determines if the input is disabled." %>
-<%@ attribute name="cssClass" type="java.lang.String" description="Class added to the input of the widget" %>
-<%@ attribute name="cssDialogClass" type="java.lang.String" description="Class added to the outer dialog div" %>
+<%@ attribute name="cssClass" description="Class added to the input of the widget" %>
+<%@ attribute name="cssDialogClass" description="Class added to the outer dialog div" %>
+<%@ attribute name="cssErrorClass" description="Class added to the error element. Note: error element defaults to span." %>
 <%@ attribute name="maxDate" type="java.lang.Object" description="Set a maximum selectable date via a Date object or as a string in the current dateFormat, or a number of days from today (e.g. +7) or a string of values and periods ('y' for years, 'm' for months, 'w' for weeks, 'd' for days, e.g. '+1m +1w'), or null for no limit." %>
 <%@ attribute name="minDate" type="java.lang.Object" description="Set a maximum selectable date via a Date object or as a string in the current dateFormat, or a number of days from today (e.g. +7) or a string of values and periods ('y' for years, 'm' for months, 'w' for weeks, 'd' for days, e.g. '+1m +1w'), or null for no limit." %>
-<%@ attribute name="stepHour" type="java.lang.String" description="Steps when incrementing/decrementing hours. If step hours is greater than 1, step minutes will be ignored." %>
-<%@ attribute name="stepMinute" type="java.lang.String" description="Steps when incrementing/decrementing minutes" %>
+<%@ attribute name="stepHour" description="Steps when incrementing/decrementing hours. If step hours is greater than 1, step minutes will be ignored." %>
+<%@ attribute name="stepMinute" description="Steps when incrementing/decrementing minutes" %>
 <%@ attribute name="forceIncludes" type="java.lang.Boolean" description="Force includes of the JS assets, needed when ajaxed in." %>
 
 <%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core" %>
@@ -67,10 +68,9 @@
 <c:choose>
 	<c:when test="${not empty pageScope.path}">
 		<spring:bind path="${pageScope.path}">
-			<cti:displayForPageEditModes modes="VIEW">
-				${status.value}
-			</cti:displayForPageEditModes>
+			<cti:displayForPageEditModes modes="VIEW">${status.value}</cti:displayForPageEditModes>
 			<cti:displayForPageEditModes modes="EDIT,CREATE">
+                <c:if test="${status.error}"><c:set var="cssClass" value="${cssClass} error"/></c:if>
                 <form:input id="${id}" 
                             path="${path}" 
                             value="${dateTimeValue}"
@@ -87,8 +87,10 @@
 	                        autocomplete="off"/>
 			</cti:displayForPageEditModes>
 			<c:if test="${status.error}">
-				<br>
-				<form:errors path="${pageScope.path}" cssClass="errorMessage" />
+                <br>
+                <%-- TODO: br doesn't work here since this date/time element will be taller than
+                     than line height br will only bump you down line height, need figure out best way to fix. --%>
+				<form:errors path="${pageScope.path}" cssClass="${cssErrorClass} errorMessage" />
 			</c:if>
 		</spring:bind>
 	</c:when>
