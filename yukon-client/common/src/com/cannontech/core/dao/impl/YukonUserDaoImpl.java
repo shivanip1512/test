@@ -453,6 +453,12 @@ public class YukonUserDaoImpl implements YukonUserDao {
         sql.append("WHERE UserId").eq(userId);
         
         yukonJdbcTemplate.update(sql);
+        
+        dbChangeManager.processDbChange(userId,
+                                        DBChangeMsg.CHANGE_YUKON_USER_DB,
+                                        DBChangeMsg.CAT_YUKON_USER,
+                                        DBChangeMsg.CAT_YUKON_USER,
+                                        DbChangeType.UPDATE);
     }
 
     @Override
