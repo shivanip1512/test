@@ -1951,9 +1951,7 @@
     <bean id="devBackingService" class="com.cannontech.web.updater.development.DevBackingService"/>
 
     <bean id="exportFormatValidator" class="com.cannontech.web.amr.archivedValuesExporter.validator.ExportFormatValidator"/>
-    <bean id="archiveValuesExportAttributeDao" class="com.cannontech.amr.archivedValueExporter.dao.impl.ArchiveValuesExportAttributeDaoImpl"/>
     <bean id="exportAttributeValidator" class="com.cannontech.web.amr.archivedValuesExporter.validator.ExportAttributeValidator"/>
-    <bean id="archiveValuesExportFieldDao" class="com.cannontech.amr.archivedValueExporter.dao.impl.ArchiveValuesExportFieldDaoImpl"/>
     <bean id="exportFieldValidator" class="com.cannontech.web.amr.archivedValuesExporter.validator.ExportFieldValidator"/>
     <bean id="archiveValuesExporterValidator" class="com.cannontech.web.amr.archivedValuesExporter.validator.ArchiveValuesExporterValidator"/>
     
