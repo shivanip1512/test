@@ -21,6 +21,7 @@
 
 using Cti::CapControl::VoltageRegulatorManager;
 using Cti::CapControl::createPorterRequestMsg;
+using Cti::Messaging::CapControl::CapControlOperationMessage;
 using std::endl;
 
 extern unsigned long _CC_DEBUG;
@@ -2263,6 +2264,9 @@ void CtiCCCommandExecutor::OpenCapBank(long bankId, bool confirmImmediately)
 
     if( controlID > 0 )
     {
+        // Send the activeMQ command.
+        Cti::CapControl::sendCapControlOperationMessage( CapControlOperationMessage::createOpenBankMessage( bankId, CtiTime() ) );
+
         LitePoint controlPoint = store->getAttributeService().getLitePointsById( operatingCapBank->getControlPointId() );
         CtiRequestMsg* reqMsg = createPorterRequestMsg(controlID, controlPoint.getStateZeroControl() );
         reqMsg->setSOE(5);
@@ -2573,6 +2577,9 @@ void CtiCCCommandExecutor::CloseCapBank(long bankId, bool confirmImmediately)
 
     if( controlID > 0 )
     {
+        // Send the activeMQ command.
+        Cti::CapControl::sendCapControlOperationMessage( CapControlOperationMessage::createCloseBankMessage( bankId, CtiTime() ) );
+
         LitePoint controlPoint = store->getAttributeService().getLitePointsById( operatingCapBank->getControlPointId() );
         CtiRequestMsg* reqMsg = createPorterRequestMsg(controlID, controlPoint.getStateOneControl() );
         reqMsg->setSOE(5);
