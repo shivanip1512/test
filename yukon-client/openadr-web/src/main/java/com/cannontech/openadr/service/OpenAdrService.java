@@ -8,7 +8,6 @@ import java.io.OutputStream;
 import java.io.StringReader;
 import java.io.StringWriter;
 import java.net.ConnectException;
-import java.net.HttpURLConnection;
 import java.net.URL;
 import java.security.NoSuchAlgorithmException;
 import java.security.cert.Certificate;
@@ -21,6 +20,7 @@ import java.util.UUID;
 import javax.annotation.PostConstruct;
 import javax.net.ssl.HttpsURLConnection;
 import javax.net.ssl.SSLPeerUnverifiedException;
+import javax.net.ssl.SSLSocketFactory;
 import javax.xml.bind.JAXBContext;
 import javax.xml.bind.JAXBException;
 import javax.xml.bind.Marshaller;
@@ -852,20 +852,18 @@ public class OpenAdrService {
      * @return an object of type returnType that contains the VTN's response to our request.
      */
     private <T> T submitRequestToVTN(Object request, Class<T> returnType) {
-//        HttpsURLConnection httpsConn = null;
-        HttpURLConnection httpsConn = null;
+        HttpsURLConnection httpsConn = null;
         try {
             String vtnUrl = configService.getVtnUrl();
-//            httpsConn = (HttpsURLConnection) new URL(vtnUrl).openConnection();
-            httpsConn = (HttpURLConnection) new URL(vtnUrl).openConnection();
-//            httpsConn.setSSLSocketFactory((SSLSocketFactory)SSLSocketFactory.getDefault());
+            httpsConn = (HttpsURLConnection) new URL(vtnUrl).openConnection();
+            httpsConn.setSSLSocketFactory((SSLSocketFactory)SSLSocketFactory.getDefault());
             
-//            if (isValidConnection(httpsConn)) {
-//                log.info("Validation of connection to " + vtnUrl + " was successful.");
-//            } else {
-//                log.warn("Validation of connection to " + vtnUrl + " was not successful.");
-//                return null;
-//            }
+            if (isValidConnection(httpsConn)) {
+                log.info("Validation of connection to " + vtnUrl + " was successful.");
+            } else {
+                log.warn("Validation of connection to " + vtnUrl + " was not successful.");
+                return null;
+            }
           
             // Set the appropriate HTTP parameters.
             httpsConn.setRequestProperty("Content-Type", "application/xml");
