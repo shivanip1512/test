@@ -117,6 +117,12 @@ public class PerIntervalAndLoadProfileCalculator implements PointCalculator {
         boolean foundNext = false;
         
         int interval = data.getInterval(); // in seconds
+        
+        if (interval < 300.0) {
+            log.error(String.format("Invalid interval length: %d seconds, expected something greater than 5 minutes (300 seconds)", interval));
+            return;
+        }
+        
         Instant previousInterval = new Instant(timestamp).minus(Duration.standardSeconds(interval));
         Instant nextInterval = new Instant(timestamp).plus(Duration.standardSeconds(interval));
         
