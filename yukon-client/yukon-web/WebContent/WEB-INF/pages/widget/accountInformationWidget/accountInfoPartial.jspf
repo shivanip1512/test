@@ -47,16 +47,16 @@
 	    	<tags:nameValue2 nameKey=".serviceLocation">${fn:escapeXml(mspServLoc.objectID)}</tags:nameValue2>
 	    </c:if>
 	    <c:if test="${not empty mspServLoc.custID}">
-	    	<tags:nameValue2 nameKey=".custNumber">${mspServLoc.custID}</tags:nameValue2>
+	    	<tags:nameValue2 nameKey=".custNumber">${fn:escapeXml(mspServLoc.custID)}</tags:nameValue2>
 	    </c:if>
 	    <c:if test="${not empty mspServLoc.accountNumber}">
-	        <tags:nameValue2 nameKey=".acctNumber">${mspServLoc.accountNumber}</tags:nameValue2>
+	        <tags:nameValue2 nameKey=".acctNumber">${fn:escapeXml(mspServLoc.accountNumber)}</tags:nameValue2>
 	    </c:if>
 	    <c:if test="${not empty mspServLoc.siteID}">
-	        <tags:nameValue2 nameKey=".siteNumber">${mspServLoc.siteID}</tags:nameValue2>
+	        <tags:nameValue2 nameKey=".siteNumber">${fn:escapeXml(mspServLoc.siteID)}</tags:nameValue2>
 	    </c:if>
 	    <c:if test="${not empty mspServLoc.gridLocation}">
-	        <tags:nameValue2 nameKey=".mapLocation">${mspServLoc.gridLocation}</tags:nameValue2>
+	        <tags:nameValue2 nameKey=".mapLocation">${fn:escapeXml(mspServLoc.gridLocation)}</tags:nameValue2>
 	    </c:if>
         <tags:nameValue2 nameKey=".address"><tags:address address="${servLocAddress}" /></tags:nameValue2>
     </tags:nameValueContainer2>

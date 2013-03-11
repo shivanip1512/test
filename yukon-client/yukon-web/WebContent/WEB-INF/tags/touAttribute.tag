@@ -8,7 +8,7 @@
 
 
 <c:if test="${not empty usageAttribute || not empty peakAttribute}">
-    <cti:msg key="${headerKey}" var="headerName" />
+    <cti:msg2 key="${headerKey}" var="headerName" />
     <tags:sectionContainer title="${headerName}">
         <tags:nameValueContainer2>
             <c:if test="${not empty usageAttribute}" >
