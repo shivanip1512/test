@@ -246,4 +246,4 @@ GO
 /* VERSION INFO                                               */
 /* Inserted when update script is run                         */
 /**************************************************************/
-INTO CTIDatabase VALUES ('5.6', '11-MAR-2013', 'Latest Update', 2, GETDATE());
+INSERT INTO CTIDatabase VALUES ('5.6', '11-MAR-2013', 'Latest Update', 2, GETDATE());
