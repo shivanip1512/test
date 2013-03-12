@@ -1,7 +1,7 @@
 /*==============================================================*/
 /* Database name:  YukonDatabase                                */
 /* DBMS name:      ORACLE Version 9i                            */
-/* Created on:     3/11/2013 6:25:24 PM                         */
+/* Created on:     3/12/2013 9:24:31 AM                         */
 /*==============================================================*/
 
 
@@ -4567,7 +4567,7 @@ create table EnergyCompanySetting  (
    EnergyCompanyId      NUMBER                          not null,
    Name                 VARCHAR2(100)                   not null,
    Value                VARCHAR2(1000),
-   Status               VARCHAR2(100),
+   Enabled              CHAR(1),
    Comments             VARCHAR2(1000),
    LastChangedDate      DATE,
    constraint PK_EnergyCompanySetting primary key (EnergyCompanySettingId)

@@ -40,7 +40,7 @@ CREATE TABLE EnergyCompanySetting (
     EnergyCompanyId          NUMERIC       NOT NULL,
     Name                     VARCHAR(100)  NOT NULL,
     Value                    VARCHAR(1000) NULL,
-    Status                   VARCHAR(100)  NULL,
+    Enabled                  CHAR(1)       NULL,
     Comments                 VARCHAR(1000) NULL,
     LastChangedDate          DATETIME      NULL,
     CONSTRAINT PK_EnergyCompanySetting PRIMARY KEY (EnergyCompanySettingId)

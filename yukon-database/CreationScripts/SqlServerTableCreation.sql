@@ -1,7 +1,7 @@
 /*==============================================================*/
 /* Database name:  YukonDatabase                                */
 /* DBMS name:      Microsoft SQL Server 2005                    */
-/* Created on:     3/11/2013 6:24:12 PM                         */
+/* Created on:     3/12/2013 9:34:17 AM                         */
 /*==============================================================*/
 
 
@@ -4804,7 +4804,7 @@ create table EnergyCompanySetting (
    EnergyCompanyId      numeric              not null,
    Name                 varchar(100)         not null,
    Value                varchar(1000)        null,
-   Status               varchar(100)         null,
+   Enabled              char(1)              null,
    Comments             varchar(1000)        null,
    LastChangedDate      datetime             null,
    constraint PK_EnergyCompanySetting primary key (EnergyCompanySettingId)
