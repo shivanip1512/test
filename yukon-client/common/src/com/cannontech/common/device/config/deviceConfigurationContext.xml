@@ -522,6 +522,7 @@
 		<property name="description" value="MCT 420 Configuration" />
 		<property name="categoryList">
 			<list>
+                <ref bean="meterParametersCategory" />
 				<ref bean="displayItemList" />
 			</list>
 		</property>
@@ -529,6 +530,9 @@
 		<!-- Config field name to database item mapping -->
 		<property name="dbNameMapping">
 			<props>
+                <prop key="LCD Cycle Time">lcdCycleTime</prop>
+                <prop key="Disconnect Display Disabled">disconnectDisplayDisabled</prop>
+                <prop key="Display Digits">displayDigits</prop>
 				<prop key="Display Item 1">displayItems[0]</prop>
 				<prop key="Display Item 2">displayItems[1]</prop>
 				<prop key="Display Item 3">displayItems[2]</prop>
@@ -986,6 +990,63 @@
                     <property name="description">
                         <value>
                             Enable to allow sending of unsolicited messages following a device restart. Default: true.
+                        </value>
+                    </property>
+                    <property name="type" ref="inputBooleanType" />
+                    <property name="security" ref="configEditSecurity" />
+                </bean>
+            </list>
+        </property>
+    </bean>
+        
+    <bean id="meterParametersCategory" class="com.cannontech.common.device.config.model.CategoryTemplate">
+        <property name="name" value="Meter Parameters" />
+        <property name="inputList">
+            <list>
+                <bean class="com.cannontech.web.input.InputBase">
+                    <property name="displayName" value="LCD Cycle Time" />
+                    <property name="field" value="lcdCycleTime" />
+                    <property name="description">
+                        <value>
+                            The number of seconds the LCD displays an item before cycling.
+                        </value>
+                    </property>
+                    <property name="type" ref="inputIntegerType" />
+                    <property name="validatorList">
+                        <list>
+                            <bean class="com.cannontech.web.input.validate.IntegerRangeValidator">
+                                <property name="minValue" value="0" />
+                                <property name="maxValue" value="15" />
+                            </bean>
+                        </list>
+                    </property>
+                    <property name="security" ref="configEditSecurity" />
+                </bean>
+                <bean class="com.cannontech.web.input.InputBase">
+                    <property name="displayName" value="Display Digits" />
+                    <property name="field" value="displayDigits" />
+                    <property name="description">
+                        <value>
+                            The number of kWh digits displayed on the LCD panel.
+                        </value>
+                    </property>
+                    <property name="type" ref="inputIntegerType" />
+                    <property name="validatorList">
+                        <list>
+                            <bean class="com.cannontech.web.input.validate.IntegerRangeValidator">
+                                <property name="minValue" value="4" />
+                                <property name="maxValue" value="6" />
+                            </bean>
+                        </list>
+                    </property>
+                    <property name="security" ref="configEditSecurity" />
+                </bean>
+                <bean class="com.cannontech.web.input.InputBase">
+                    <property name="displayName" value="Disconnect Display Disabled" />
+                    <property name="field" value="disconnectDisplayDisabled" />
+                    <property name="description">
+                        <value>
+                            Whether the meter's disconnect display is enabled or disabled.
                         </value>
                     </property>
                     <property name="type" ref="inputBooleanType" />
