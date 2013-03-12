@@ -13,6 +13,7 @@ import javax.annotation.PreDestroy;
 
 import org.apache.log4j.Logger;
 
+import com.cannontech.clientutils.LogHelper;
 import com.cannontech.clientutils.YukonLogManager;
 import com.google.common.collect.ImmutableList;
 
@@ -156,7 +157,7 @@ public abstract class ServiceWorker<T extends ServiceWorkerQueueObject> {
                         // this worker thread has been interrupted b/c the same obj has been put on the worker queue
                         int currentWorkerIndex = getCurrentWorkerIndex();
                         isWorkerInterrupted.put(currentWorkerIndex, false);
-                        log.debug("caught interrupted exception on worker queue " + currentWorkerIndex);
+                        log.debug("caught interrupted exception on worker queue " + currentWorkerIndex + " for obj " + message.getId());
                     }
                     
                     // work for this object is now completed
@@ -166,8 +167,7 @@ public abstract class ServiceWorker<T extends ServiceWorkerQueueObject> {
                     clearWorkerWorkingOn();
                     
                     updateWorkerQueueSizeMap(this);
-
-                    log.info("done working on obj with id " + message.getId() + ". Queue size is " + workerQueueSize.get(getCurrentWorkerIndex()));
+                    LogHelper.debug(log, "done working on obj with id %s. Queue size is %s", message.getId(), workerQueueSize.get(getCurrentWorkerIndex()));
                 } catch (InterruptedException e) {
                     log.warn("received shutdown signal, queue size: " + inQueue.size());
                     break;
@@ -259,7 +259,7 @@ public abstract class ServiceWorker<T extends ServiceWorkerQueueObject> {
         if (obj.getId() == null) return;
         int currentWorkerIndex = getCurrentWorkerIndex();
         workerWorkingOn.put(currentWorkerIndex, obj.getId());
-        log.info("working on obj with id " + obj.getId() + ". Queue size is " + workerQueueSize.get(currentWorkerIndex));
+        LogHelper.debug(log, "working on obj with id %s. Queue size is %s", obj.getId(), workerQueueSize.get(currentWorkerIndex));
     }
     
     private void clearWorkerWorkingOn() {

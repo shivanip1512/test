@@ -22,6 +22,7 @@ import com.cannontech.amr.worker.ServiceWorker;
 import com.cannontech.clientutils.LogHelper;
 import com.cannontech.clientutils.YukonLogManager;
 import com.cannontech.common.config.ConfigurationSource;
+import com.cannontech.common.device.groups.dao.DeviceGroupProviderDao;
 import com.cannontech.common.device.groups.editor.dao.DeviceGroupEditorDao;
 import com.cannontech.common.device.groups.editor.dao.DeviceGroupMemberEditorDao;
 import com.cannontech.common.device.groups.editor.dao.SystemGroupEnum;
@@ -35,6 +36,7 @@ import com.cannontech.common.pao.attribute.model.Attribute;
 import com.cannontech.common.pao.attribute.service.AttributeService;
 import com.cannontech.common.pao.definition.model.PaoMultiPointIdentifier;
 import com.cannontech.common.pao.definition.model.PaoPointIdentifier;
+import com.cannontech.core.dao.DeviceDao;
 import com.cannontech.core.dao.DuplicateException;
 import com.cannontech.core.dao.NotFoundException;
 import com.cannontech.core.dao.PointDao;
@@ -43,8 +45,10 @@ import com.cannontech.core.dynamic.DatabaseChangeEventListener;
 import com.cannontech.core.dynamic.DynamicDataSource;
 import com.cannontech.core.dynamic.PointValueHolder;
 import com.cannontech.core.dynamic.PointValueQualityHolder;
+import com.cannontech.database.cache.DBChangeListener;
 import com.cannontech.database.data.lite.LitePoint;
 import com.cannontech.database.data.point.PointType;
+import com.cannontech.message.dispatch.message.DBChangeMsg;
 import com.cannontech.message.dispatch.message.DatabaseChangeEvent;
 import com.cannontech.message.dispatch.message.DbChangeCategory;
 import com.cannontech.message.dispatch.message.DbChangeType;
@@ -60,6 +64,8 @@ public class DeviceDataMonitorServiceImpl extends ServiceWorker<DeviceDataMonito
     @Autowired private ConnPool connPool;
     @Autowired private ConfigurationSource configurationSource;
     @Autowired private DeviceDataMonitorCacheService deviceDataMonitorCacheService;
+    @Autowired private DeviceDao deviceDao;
+    @Autowired private DeviceGroupProviderDao deviceGroupProviderDao;
     @Autowired private DeviceDataMonitorDao deviceDataMonitorDao;
     @Autowired private DeviceGroupEditorDao deviceGroupEditorDao;
     @Autowired private DeviceGroupMemberEditorDao deviceGroupMemberEditorDao;
@@ -140,6 +146,31 @@ public class DeviceDataMonitorServiceImpl extends ServiceWorker<DeviceDataMonito
                     } catch (NotFoundException e) {
                         // user deleted monitoring group - oh well!
                         log.error("Could not find device group " + monitor.getGroupName() + " for device data monitor " + monitor.getName());
+                    }
+                }
+            }
+        });
+        // listen for all ADD/UPDATE pao db change messages (there may be some overlap between this one and the
+        // DEVICE_GROUP_MEMBER one above, which should be fine since the ServiceWorker queue will
+        // handle that for us (duplicates))
+        // we don't care about delete's b/c those will get removed automatically from our violation's group
+        // if they were in there
+        asyncDynamicDataSource.addDBChangeListener(new DBChangeListener() {
+            @Override
+            public void dbChangeReceived(DBChangeMsg dbChange) {
+                if (dbChange.getDatabase() == DBChangeMsg.CHANGE_PAO_DB && dbChange.getDbChangeType() != DbChangeType.DELETE) {
+                    int paoId = dbChange.getId();
+                    SimpleDevice yukonDevice = deviceDao.getYukonDevice(paoId);
+
+                    for (DeviceDataMonitor monitor: deviceDataMonitorCacheService.getAllEnabledMonitors()) {
+                        DeviceGroup monitoringGroup = deviceGroupService.resolveGroupName(monitor.getGroupName());
+                        boolean deviceInMonitoringGroup = deviceGroupProviderDao.isDeviceInGroup(monitoringGroup, yukonDevice);
+                        
+                        if (deviceInMonitoringGroup) {
+                            // recalculate the violating paos for this monitor if this paoId belongs to the monitoring group
+                            LogHelper.debug(log, "pao change detected [id: %s] - recalculating DDM [%s]", paoId, monitor.getName());
+                            asyncRecalculateViolatingPaosForMonitor(monitor);
+                        }
                     }
                 }
             }
@@ -265,7 +296,7 @@ public class DeviceDataMonitorServiceImpl extends ServiceWorker<DeviceDataMonito
                 deviceGroupEditorDao.updateGroup(existingViolationStoredGroup);
                 log.info("Updated existing device group (" + existingMonitor.getViolationsDeviceGroupPath() + ") for Device Data Monitor to: " + updatedMonitor.getViolationsDeviceGroupPath());
             } else {
-                log.info("No updates needed to Device Data Monitor device group: " + existingMonitor.getViolationsDeviceGroupPath());
+                log.debug("No updates needed to Device Data Monitor device group: " + existingMonitor.getViolationsDeviceGroupPath());
             }
         }
 
