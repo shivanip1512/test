@@ -5,8 +5,7 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 import java.util.UUID;
-import java.util.concurrent.ConcurrentHashMap;
-import java.util.concurrent.ConcurrentMap;
+import java.util.concurrent.TimeUnit;
 
 import javax.servlet.http.HttpServletRequest;
 
@@ -23,11 +22,13 @@ import com.cannontech.common.device.model.SimpleDevice;
 import com.cannontech.common.pao.PaoIdentifier;
 import com.cannontech.common.pao.PaoUtils;
 import com.cannontech.i18n.YukonMessageSourceResolvable;
+import com.google.common.cache.Cache;
+import com.google.common.cache.CacheBuilder;
 import com.google.common.collect.Lists;
 
 public class DeviceMemoryCollectionProducer implements DeviceCollectionProducer {
     
-    private ConcurrentMap<String, DeviceCollection> memoryMap = new ConcurrentHashMap<String, DeviceCollection>();
+    private Cache<String, DeviceCollection> memoryMap = CacheBuilder.newBuilder().expireAfterAccess(2, TimeUnit.DAYS).build();
     
     @Override
     public DeviceCollectionType getSupportedType() {
@@ -44,7 +45,7 @@ public class DeviceMemoryCollectionProducer implements DeviceCollectionProducer 
         String keyName = getSupportedType().getParameterName("key");
         String key = ServletRequestUtils.getRequiredStringParameter(request, keyName);
         
-        return memoryMap.get(key);
+        return memoryMap.getIfPresent(key);
     }
     
     public DeviceCollection createDeviceCollection(Iterator<PaoIdentifier> paos) {
